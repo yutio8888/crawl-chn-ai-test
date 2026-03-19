@@ -49425,3 +49425,21 @@ tile offsets|weapon
 %%%%
 conjure a freezing cloud
 制造冰冻云
+%%%%
+    (Left/Right/Tab to switch category)
+    （左/右/Tab切换类别）
+%%%%
+Drop what? (Left/Right/Tab to switch category) 
+丢弃什么？（左/右/Tab切换类别） 
+%%%%
+Doom: 
+厄运: 
+%%%%
+Doom 
+厄运 
+%%%%
+Contam: 
+诱变辐射: 
+%%%%
+Cont 
+辐射 
