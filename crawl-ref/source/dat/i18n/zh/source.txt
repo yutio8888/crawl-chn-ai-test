@@ -7459,3 +7459,10 @@ Your apostles return to your side.
 <lightgrey>
 <yellow>你拥有 %d 枚金币%s</yellow>
 <lightgrey>
+%%%%
+%s turns aside %s attack!
+%s挡开了%s的攻击！
+%%%%
+%s turn aside %s attack!
+%s挡开了%s的攻击！
+
