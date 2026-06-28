@@ -1611,7 +1611,6 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
 
     const bool identified = ident || weap.is_identified();
 
-    const bool zh = Options.language == lang_t::ZH;
     const string curse_prefix = !dbname && !terse && weap.cursed()
         ? (T_("cursed ")) : "";
     const string plus_text = identified && !dbname && !qualname ? _plus_prefix(weap) : "";
