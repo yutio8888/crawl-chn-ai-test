@@ -6171,8 +6171,8 @@ You feel less resolute.
 
 # L1544: ⚠️ARG-DIFF EN:1 ZH:0
 %%%%
-You hold the Black Torch high and begin your conquest of %s in 
-即使是神也无法征服无尽之境；不要浪费时间尝试。
+You hold the Black Torch high and begin your conquest of %s in Yredelemnul's name!
+你高举起黑火炬，开始了对%s的征服，以伊雷德勒姆努之名！
 
 %%%%
 Yredelemnul sends servants to aid you!
@@ -6352,7 +6352,7 @@ You reveal the great annihilating truth to your foes!
 你向敌人揭示了伟大的湮灭真理！
 
 %%%%
-You stomp with the beat, sending a shockwave through the revellers 
+You stomp with the beat, sending a shockwave through the revellers around you!
 你随着节拍跺脚，向周围的狂欢者发出冲击波！
 
 %%%%
@@ -6540,12 +6540,12 @@ You carve a gateway into yourself and beckon forth the legions of chaos!
 你在自己身上刻出一个通道，召唤混沌军团前来！
 
 %%%%
-You offer yourself as an instrument of Makhleb's will and feel 
-你将自身献为马赫勒布意志的工具，感到
+You offer yourself as an instrument of Makhleb's will and feel overwhelming power flowing through you!
+你将自身献为马赫勒布意志的工具，感到无比的力量在你体内流动！
 
 %%%%
-(Slaying mortal victims (and occasionally demons) will 
-(屠杀凡人受害者（有时甚至是恶魔）将
+(Slaying mortal victims (and occasionally demons) will eventually satisfy Makhleb and create an exit.)
+(屠杀凡人受害者（有时甚至是恶魔）将最终满足马赫勒布并创造一个出口。）
 
 %%%%
  depart the Crucible.
@@ -7491,3 +7491,67 @@ You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anywa
 %%%%
 Confirm with . or Enter, or press ? or * to list all spells.
 用 . 或回车确认，或按?或*列出所有法术。
+
+%%%%
+There are no souls to scour here; only the pathetic idols of powerless gods.
+这里没有可收割的灵魂；只有无能之神的可怜偶像。
+
+%%%%
+There are no souls worth scouring here.
+这里没有值得收割的灵魂。
+
+%%%%
+Not even a god could conquer a realm without end; waste no time trying.
+即使是神也无法征服无尽之境；不要浪费时间尝试。
+
+%%%%
+You have raised the torch once already on this floor. Yredelemnul offers no second chances.
+你已在本层举起过一次火炬。伊雷德勒姆努不会给予第二次机会。
+
+%%%%
+A donation of $%d equates to an increase of piety by %d.
+一笔$%d的捐赠相当于%d的虔诚增长。
+
+%%%%
+You cannot shatter the curse on %s while it is melded with your body!
+你无法在%s与你的身体融合时粉碎其诅咒！
+
+%%%%
+Magma suddenly erupts from the ground!
+岩浆突然从地面喷涌而出！
+
+%%%%
+A blizzard blasts the area with ice!
+暴风雪以冰霜轰击了这片区域！
+
+%%%%
+A storm cloud blasts the area with cutting wind!
+风暴云以凌厉的风刃轰击了这片区域！
+
+%%%%
+The ground shakes violently, spewing rubble!
+大地猛烈震动，喷出了碎石！
+
+%%%%
+You focus your inner power and drain %s's magic in retribution!
+你集中内在力量，抽取%s的法力作为报应！
+
+%%%%
+ grants %s healing and protection!
+ 赐予了%s治疗和保护！
+
+%%%%
+ casts you out from the arena!
+ 将你逐出了角斗场！
+
+%%%%
+ crowns you victorious!
+ 加冕你为胜利者！
+
+%%%%
+ says: Flay and bleed and purify yourself, if you wish to be found worthy of leaving this place!
+ 说：剥皮流血净化自己吧，如果你想被认定为有资格离开此地！
+
+%%%%
+ acknowledges your contrition and permits you to depart the Crucible.
+ 认可了你的忏悔，允许你离开熔炉。
