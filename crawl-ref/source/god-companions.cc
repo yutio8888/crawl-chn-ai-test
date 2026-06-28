@@ -78,10 +78,7 @@ void remove_bound_soul_companion()
             mons = &entry.second.mons.mons;
         if (mons->type == MONS_BOUND_SOUL)
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s被释放了。", mons->name(DESC_THE, true).c_str());
-            else
-                mprf("%s is freed.", mons->name(DESC_THE, true).c_str());
+            mprf(T_("%s is freed."), mons->name(DESC_THE, true).c_str());
             remove_companion(mons);
             return;
         }
@@ -157,10 +154,7 @@ bool recall_offlevel_ally(mid_t mid)
     // The monster is now on this level
     remove_monster_from_transit(comp->level, mid);
     comp->level = level_id::current();
-    if (Options.language == lang_t::ZH)
-        simple_monster_message(*mons, " 被召回了。");
-    else
-        simple_monster_message(*mons, " is recalled.");
+    simple_monster_message(*mons, T_(" is recalled."));
 
     // Now that the monster is onlevel, we can safely apply traps to it.
     mons->trigger_movement_effects(MV_TRANSLOCATION);
@@ -213,10 +207,7 @@ void wizard_list_companions()
 {
     if (companion_list.size() == 0)
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你没有同伴。");
-        else
-            mpr("You have no companions.");
+        mpr(T_("You have no companions."));
         return;
     }
 
@@ -319,12 +310,8 @@ void fixup_bad_priest_monster(monster &mons)
 {
     if (!maybe_bad_priest_monster(mons))
         return;
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_ERROR, "正在从当前楼层移除损坏的前追随者：%s。",
-             mons.full_name(DESC_PLAIN).c_str());
-    else
-        mprf(MSGCH_ERROR, "Removing corrupted ex-follower from level: %s.",
-             mons.full_name(DESC_PLAIN).c_str());
+    mprf(MSGCH_ERROR, T_("Removing corrupted ex-follower from level: %s."),
+         mons.full_name(DESC_PLAIN).c_str());
     monster_die(mons, KILL_RESET, -1, true);
 }
 #endif
@@ -368,10 +355,7 @@ static void _remove_offlevel_companion(mid_t mid)
 
 void beogh_do_ostracism()
 {
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_GOD, "贝奥格把你的追随者送到了别处。");
-    else
-        mprf(MSGCH_GOD, "Beogh sends your followers elsewhere.");
+    mprf(MSGCH_GOD, T_("Beogh sends your followers elsewhere."));
     for (unsigned int i = FIRST_RECRUITED_APOSTLE; i < apostles.size(); ++i)
     {
         if (apostles[i].state == STATE_ALIVE)
@@ -603,16 +587,8 @@ bool maybe_generate_apostle_challenge()
 
 void flee_apostle_challenge()
 {
-    if (Options.language == lang_t::ZH)
-    {
-        mprf(MSGCH_GOD, "贝奥格对你的懦弱感到失望。");
-        mprf(MSGCH_GOD, "\"好好反省你的行为吧，凡人！\"");
-    }
-    else
-    {
-        mprf(MSGCH_GOD, "Beogh is disappointed with your cowardice.");
-        mprf(MSGCH_GOD, "\"Reflect upon your actions, mortal!\"");
-    }
+    mprf(MSGCH_GOD, T_("Beogh is disappointed with your cowardice."));
+    mprf(MSGCH_GOD, T_("\"Reflect upon your actions, mortal!\""));
     dock_piety(0, 15, true);
 
     // Remove the apostle (and its band)
@@ -666,24 +642,15 @@ void win_apostle_challenge(monster& apostle)
     you.duration[DUR_BEOGH_CAN_RECRUIT] = random_range(30, 45) * BASELINE_DELAY;
 
     string msg;
-    if (Options.language == lang_t::ZH)
-        msg = make_stringf("贝奥格允许你将%s纳入麾下。",
-                           apostle.name(DESC_THE, true).c_str());
-    else
-        msg = make_stringf("Beogh will allow you to induct %s into your service.",
-                           apostle.name(DESC_THE, true).c_str());
+    msg = make_stringf(T_("Beogh will allow you to induct %s into your service."),
+                       apostle.name(DESC_THE, true).c_str());
 
     // Remind the player how to do this, if they don't already have an apostle
     if (get_num_apostles() == 0)
     {
-        if (Options.language == lang_t::ZH)
-            msg += make_stringf("（按<w>%c</w>键打开<w>%s</w>菜单招募使徒）",
-                                get_talent(ABIL_BEOGH_RECRUIT_APOSTLE).hotkey,
-                                command_to_string(CMD_USE_ABILITY).c_str());
-        else
-            msg += make_stringf(" (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)",
-                                get_talent(ABIL_BEOGH_RECRUIT_APOSTLE).hotkey,
-                                command_to_string(CMD_USE_ABILITY).c_str());
+        msg += make_stringf(T_(" (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)"),
+                            get_talent(ABIL_BEOGH_RECRUIT_APOSTLE).hotkey,
+                            command_to_string(CMD_USE_ABILITY).c_str());
     }
 
     mprf(MSGCH_GOD, "%s", msg.c_str());
@@ -694,10 +661,7 @@ void win_apostle_challenge(monster& apostle)
         if (mi->is_band_follower_of(apostle))
         {
             place_cloud(CLOUD_TLOC_ENERGY, mi->pos(), 1 + random2(3), *mi);
-            if (Options.language == lang_t::ZH)
-                simple_monster_message(**mi, " 被贝奥格召回。");
-            else
-                simple_monster_message(**mi, " is recalled by Beogh.");
+            simple_monster_message(**mi, T_(" is recalled by Beogh."));
             monster_die(**mi, KILL_RESET, -1, true);
         }
     }
@@ -708,10 +672,7 @@ void end_beogh_recruit_window()
     monster* apostle = monster_by_mid(apostles[0].apostle.mons.mid);
     if (apostle && !mons_is_god_gift(*apostle))
     {
-        if (Options.language == lang_t::ZH)
-            simple_monster_message(*apostle, " 被贝奥格的力量召回。");
-        else
-            simple_monster_message(*apostle, " is recalled by the power of Beogh.");
+        simple_monster_message(*apostle, T_(" is recalled by the power of Beogh."));
         place_cloud(CLOUD_TLOC_ENERGY, apostle->pos(), 1 + random2(3), apostle);
         monster_die(*apostle, KILL_RESET, -1, true);
     }
@@ -744,10 +705,7 @@ void beogh_recruit_apostle()
         {
             if (try_recall(real->mid))
             {
-                if (Options.language == lang_t::ZH)
-                    msg += "贝奥格将" + real->name(DESC_THE, true) + "召回到你身边，";
-                else
-                    msg += "Beogh recalls " + real->name(DESC_THE, true) + " to your side and ";
+                msg += make_stringf(T_("Beogh recalls %s to your side and "), real->name(DESC_THE, true).c_str());
             }
         }
     }
@@ -755,12 +713,10 @@ void beogh_recruit_apostle()
     else
     {
         real = apostles[0].restore();
-        if (Options.language == lang_t::ZH)
-            msg += "贝奥格将生命重新注入" + real->name(DESC_THE, true) + "，";
-        else
-            msg += "Beogh breathes life back into " + real->name(DESC_THE, true) + " and ";
+        msg += make_stringf(T_("Beogh breathes life back into %s and "), real->name(DESC_THE, true).c_str());
     }
 
+    // TODO: ARG-DIFF — EN has 2 format specifiers (pronoun/name+pronoun), ZH has 0/1.
     if (Options.language == lang_t::ZH)
     {
         if (msg.length() > 0)
@@ -838,10 +794,7 @@ void beogh_dismiss_apostle(int slot)
         return;
     }
 
-    if (Options.language == lang_t::ZH)
-        mprf("你将%s从你的麾下释放了。", name.c_str());
-    else
-        mprf("You release %s from your service.", name.c_str());
+    mprf(T_("You release %s from your service."), name.c_str());
 
     // Remove our follower monster (if they are elsewhere, use an excursion to
     // remove them immediately.)
@@ -986,10 +939,7 @@ void beogh_swear_vengeance(const monster& apostle)
     }
 
     if (new_targets)
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你发誓要为%s的死复仇！", apostle.name(DESC_ITS, true).c_str());
-        else
-            mprf(MSGCH_DURATION, "You swear to avenge %s death!", apostle.name(DESC_ITS, true).c_str());
+        mprf(MSGCH_DURATION, T_("You swear to avenge %s death!"), apostle.name(DESC_ITS, true).c_str());
 
     apostle_data& a = _get_saved_apostle(apostle);
     a.state = STATE_DEAD;
@@ -1026,10 +976,7 @@ void beogh_progress_vengeance()
     you.duration[DUR_BEOGH_SEEKING_VENGEANCE] -= 1;
     if (you.duration[DUR_BEOGH_SEEKING_VENGEANCE] == 0)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你觉得倒下的同伴们的大仇已报。");
-        else
-            mprf(MSGCH_DURATION, "You feel as though your fallen companions have been avenged.");
+        mprf(MSGCH_DURATION, T_("You feel as though your fallen companions have been avenged."));
 
         // This cleanup should usually be unnecessary, since we are only supposed
         // to end when we've killed EVERY marked target, but slime creature
@@ -1110,11 +1057,7 @@ void beogh_resurrect_followers(bool end_ostracism_only)
                 if (coinflip())
                     apostle->add_ench(ENCH_WRETCHED);
 
-                if (Options.language == lang_t::ZH)
-                    simple_monster_message(*apostle, " 从深渊中杀回来了！");
-                else
-                    simple_monster_message(*apostle,
-                                " has fought their way back out of the Abyss!");
+                simple_monster_message(*apostle, T_(" has fought their way back out of the Abyss!"));
                 mons_speaks_msg(apostle,
                     getSpeakString("orc_apostle_unbanished"), MSGCH_TALK);
             }
@@ -1124,10 +1067,7 @@ void beogh_resurrect_followers(bool end_ostracism_only)
     // The rest of the bookkeeping only applies to real resurrections
     if (end_ostracism_only)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你的使徒们回到了你的身边。");
-        else
-            mprf(MSGCH_GOD, "Your apostles return to your side.");
+        mprf(MSGCH_GOD, T_("Your apostles return to your side."));
         return;
     }
 
@@ -1143,12 +1083,8 @@ void beogh_resurrect_followers(bool end_ostracism_only)
 
     if (!revived_names.empty())
     {
-        if (Options.language == lang_t::ZH)
-            mpr_comma_separated_list("贝奥格将生命重新注入", revived_names,
-                                    " 和 ", "、", MSGCH_GOD);
-        else
-            mpr_comma_separated_list("Beogh breathes life back into ", revived_names,
-                                    " and ", ", ", MSGCH_GOD);
+        mpr_comma_separated_list(T_("Beogh breathes life back into "), revived_names,
+                                T_(" and "), T_(", "), MSGCH_GOD);
     }
 
     you.props.erase(BEOGH_RES_PIETY_GAINED_KEY);
@@ -1219,14 +1155,9 @@ string apostle_short_description(int slot)
         status.c_str());
 
     // Stat line
-    if (Options.language == lang_t::ZH)
-        str += make_stringf("生命：%d    防御：%d    伤害：%d（含武器）\n",
-            apostle.max_hit_points, apostle.armour_class(),
-            _calc_attack_damage(apostle));
-    else
-        str += make_stringf("HP: %d    AC: %d    Damage:%d (w/weapon)\n",
-            apostle.max_hit_points, apostle.armour_class(),
-            _calc_attack_damage(apostle));
+    str += make_stringf(T_("HP: %d    AC: %d    Damage:%d (w/weapon)\n"),
+        apostle.max_hit_points, apostle.armour_class(),
+        _calc_attack_damage(apostle));
 
     string item_str;
     for (unsigned int i = 0; i < NUM_MONSTER_SLOTS; ++i)
