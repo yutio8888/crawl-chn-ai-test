@@ -340,7 +340,7 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         {
             if (!silent)
             {
-                mprf(Options.language == lang_t::ZH ? "你在%2$s时无法用你的%1$s射击。" : "You cannot shoot with your %s while %s.",
+                mprf(T_("You cannot shoot with your %s while %s."),
                      weapon->name(DESC_BASENAME).c_str(), held_status());
             }
             return true;

@@ -957,9 +957,7 @@ const string make_cost_description(ability_type ability)
     string ret;
     if (abil.get_mp_cost())
     {
-        ret += Options.language == lang_t::ZH
-            ? make_stringf("，%d 魔力", abil.get_mp_cost())
-            : make_stringf(", %d MP", abil.get_mp_cost());
+        ret += make_stringf(T_(", %d MP"), abil.get_mp_cost());
     }
 
     if (abil.flags & abflag::variable_mp)
@@ -968,9 +966,7 @@ const string make_cost_description(ability_type ability)
 #if TAG_MAJOR_VERSION == 34
     if (ability == ABIL_HEAL_WOUNDS)
     {
-        ret += Options.language == lang_t::ZH
-            ? make_stringf("，永久魔力（剩余%d）", get_real_mp(false))
-            : make_stringf(", Permanent MP (%d remaining)", get_real_mp(false));
+        ret += make_stringf(T_(", Permanent MP (%d remaining)"), get_real_mp(false));
     }
 #endif
 
@@ -987,16 +983,12 @@ const string make_cost_description(ability_type ability)
     const int hp_cost = abil.get_hp_cost();
     if (hp_cost)
     {
-        ret += Options.language == lang_t::ZH
-            ? make_stringf("，%d 生命", hp_cost)
-            : make_stringf(", %d HP", hp_cost);
+        ret += make_stringf(T_(", %d HP"), hp_cost);
     }
 
     if (abil.piety_cost)
     {
-        ret += Options.language == lang_t::ZH
-            ? make_stringf("，虔诚值%s", abil.piety_pips().c_str())
-            : make_stringf(", Piety %s", abil.piety_pips().c_str());
+        ret += make_stringf(T_(", Piety %s"), abil.piety_pips().c_str());
     }
 
     if (abil.flags & abflag::breath)
@@ -1004,11 +996,7 @@ const string make_cost_description(ability_type ability)
 
     if (abil.flags & abflag::drac_charges)
     {
-        ret += Options.language == lang_t::ZH
-            ? make_stringf("，%d/%d 次可用",
-                        draconian_breath_uses_available(),
-                        MAX_DRACONIAN_BREATH)
-            : make_stringf(", %d/%d uses available",
+        ret += make_stringf(T_(", %d/%d uses available"),
                         draconian_breath_uses_available(),
                         MAX_DRACONIAN_BREATH);
     }
@@ -1042,9 +1030,7 @@ const string make_cost_description(ability_type ability)
         const int amount = get_gold_cost(ability);
         if (amount)
         {
-            ret += Options.language == lang_t::ZH
-                ? make_stringf("，%d 金币", amount)
-                : make_stringf(", %d Gold", amount);
+            ret += make_stringf(T_(", %d Gold"), amount);
         }
         else if (ability == ABIL_GOZAG_POTION_PETITION)
             ret += T_(", Free");
@@ -1867,6 +1853,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             {
                 if (Options.language == lang_t::ZH)
                     // Chinese: reason first, then god name
+                    // TODO: ARG-DIFF - EN and ZH have different argument order
                     mprf("你在%s时无法呼唤%s。",
                          player_silenced_reason(),
                          god_name(you.religion).c_str());
@@ -2887,7 +2874,6 @@ bool activate_talent(const talent& tal, dist *target)
         args.mode = TARG_HOSTILE;
         args.range = range;
         args.needs_path = !testbits(abil.flags, abflag::target);
-        const bool zh = Options.language == lang_t::ZH;
         args.top_prompt = make_stringf("%s: <w>%s</w>",
             is_targeted ? (T_("Aiming"))
                         : (T_("Activating")),

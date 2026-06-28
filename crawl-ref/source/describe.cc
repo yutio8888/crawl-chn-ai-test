@@ -1310,6 +1310,7 @@ static string _your_skill_desc(skill_type skill, bool show_target_button,
     if (show_target_button &&
             you.get_training_target(skill) < min_scaled_target)
     {
+        // TODO: ARG-DIFF - "%s的目标设置为%d.%d" vs "set %d.%d as a target for %s" have %s and %d in opposite order
         if (Options.language == lang_t::ZH)
         {
             target_button_desc = make_stringf(
@@ -1357,6 +1358,7 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
                                 (double) scaled_target / 10, training, false);
     const int level_diff = xp_to_level_diff(diffs.experience / 10, 10);
 
+    // TODO: ARG-DIFF - "you would reach X in Y XLs" vs "你将在Y个经验等级内达到X级" have completely different argument and clause order
     const bool zh = Options.language == lang_t::ZH;
 
     if (max_training)
@@ -4328,6 +4330,7 @@ static string _get_skill_defense_change(skill_type skill)
     const float ev_diff = (float)(new_ev - cur_ev) / 100.0;
     const float sh_diff = (float)(new_sh - cur_sh) / 100.0;
 
+    // TODO: ARG-DIFF - format string has different argument order ("increase AC by %.1f and EV by %.1f" vs "使AC提高%.1f，EV提高%.1f")
     const bool zh = Options.language == lang_t::ZH;
     const char* msg = (cur_skill >= 26)
         ? (T_("mastering"))
@@ -5001,6 +5004,7 @@ static string _describe_draconian(const monster_info& mi)
 
     if (subsp != mi.type)
     {
+        // TODO: ARG-DIFF - sentence structure differs ("It has black scales." vs "它有着黑色的鳞片。"); Chinese adds 的 and 色 suffixes, different word order
         if (Options.language == lang_t::ZH)
         {
             description += "它有着";
@@ -5043,6 +5047,7 @@ static string _describe_draconian(const monster_info& mi)
         }
     }
 
+    // TODO: ARG-DIFF - completely different sentence content for each draconian description, not a simple key-value mapping
     if (Options.language == lang_t::ZH)
     {
         switch (subsp)
@@ -5113,7 +5118,6 @@ static string _describe_draconian(const monster_info& mi)
 
 static const char* _get_resist_name(mon_resist_flags res_type)
 {
-    const bool zh = Options.language == lang_t::ZH;
     switch (res_type)
     {
     case MR_RES_ELEC:
@@ -5532,7 +5536,6 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
 
     if (flavour_has_reach(attack.flavour))
     {
-        const bool zh = Options.language == lang_t::ZH;
         desc += (desc.empty()
                      ? (T_("Reaches"))
                      : (flavour == AF_REACH_CLEAVE_UGLY)
@@ -5695,7 +5698,6 @@ static void _attacks_table_row_throwing(const monster_info &mi,
     if (!quiv || quiv->base_type != OBJ_MISSILES)
         return;
 
-    const bool zh = Options.language == lang_t::ZH;
     string throw_str = T_("Throw: ");
     if (quiv->is_type(OBJ_MISSILES, MI_THROWING_NET))
         throw_str += quiv->name(DESC_A, false, false, true, false);
@@ -5781,9 +5783,7 @@ static void _build_table_of_attacks(mon_attack_desc_info &di,
     // Note: columns are separated by (a minimum of) 2 spaces
 
     // First, the table header
-    result << padded_str(Options.language == lang_t::ZH
-                             ? (di.plural ? "攻击方式" : "攻击")
-                             : (di.plural ? "Attacks" : "Attack"),
+    result << padded_str(di.plural ? T_("Attacks") : T_("Attack"),
                          di.attk_desc_width + 2)
            << padded_str(T_("Max Damage"),
                          di.damage_width + 2);
@@ -5909,6 +5909,7 @@ static string _monster_spells_description(const monster_info& mi, bool mark_spel
 static string _monster_notice_chance(const monster_info& mi)
 {
     ostringstream result;
+    // TODO: ARG-DIFF - verb position differs ("have a X% chance" vs "有X%几率"), different % placement in format string
     const bool zh = Options.language == lang_t::ZH;
 
     if (zh)
@@ -5933,6 +5934,7 @@ static string _monster_notice_chance(const monster_info& mi)
 
 static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxes, int chance)
 {
+    // TODO: ARG-DIFF - aux attack names need Chinese translation (off-hand punch -> 副手拳击, etc.)
     const bool zh = Options.language == lang_t::ZH;
     result << (T_(" and "))
            << chance << (T_("% to hit with your "));
@@ -6036,6 +6038,7 @@ void describe_to_hit(const monster_info &mi, ostringstream &result,
 void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *weapon,
                          bool verbose, int distance_from)
 {
+    // TODO: ARG-DIFF - hand names need Chinese translation in the "with your hand" clause, localised at use site
     const bool zh = Options.language == lang_t::ZH;
 
     if (verbose)
@@ -6138,6 +6141,7 @@ static void _describe_mons_to_hit(const monster_info& mi, ostringstream &result)
 
     const int hit_chance = beat_ev_chance * beat_sh_chance / 100;
     if (Options.language == lang_t::ZH)
+        // TODO: ARG-DIFF - verb+pronoun order differs ("has about X% to hit you" vs "有约X% 几率命中你")
         result << uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE))
                << "有约" << hit_chance << "% 几率命中你。\n";
     else
@@ -6254,6 +6258,7 @@ string _monster_habitat_description(const monster_info& mi)
     switch (mons_habitat_type(type, mi.base_type))
     {
     case HT_AMPHIBIOUS:
+        // TODO: ARG-DIFF - different verb/object placement ("travel through water" vs "在水里行动")
         if (Options.language == lang_t::ZH)
             return uppercase_first(make_stringf("%s能在%s中行动。\n",
                                    mi.pronoun(PRONOUN_SUBJECTIVE),
@@ -6264,6 +6269,7 @@ string _monster_habitat_description(const monster_info& mi)
                                mi.type == MONS_ORC_APOSTLE
                                 ? "walk on" : "travel through"));
     case HT_AMPHIBIOUS_LAVA:
+        // TODO: ARG-DIFF - same structural difference as above ("travel through lava" vs "在岩浆中行动")
         if (Options.language == lang_t::ZH)
             return uppercase_first(make_stringf("%s能在岩浆中行动。\n",
                                    mi.pronoun(PRONOUN_SUBJECTIVE)));
@@ -6496,7 +6502,6 @@ string desc_resist(int level, int max, bool immune, bool allow_spacing)
 
 static string _res_name(mon_resist_flags res)
 {
-    const bool zh = Options.language == lang_t::ZH;
     switch (res)
     {
     case MR_RES_FIRE:   return T_("rF");

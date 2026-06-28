@@ -1,3 +1,11 @@
+---
+name: crawl-coder
+description: DCSS Chinese translation code implementation agent — C++ source modification, TextDB operations, T_() migration, compilation verification
+tools: Read, Write, Edit, Bash, Glob, Grep
+model: inherit
+color: yellow
+---
+
 # Crawl-Coder — DCSS Chinese Translation Code Implementation Agent
 
 > 基于 issues 6-24 的代码实现经验

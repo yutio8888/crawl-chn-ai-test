@@ -736,26 +736,13 @@ void god_power::display(bool gaining, const char* fmt) const
     if (str[0] == '\0')
         return;
 
-    const char* zh_str = Options.language == lang_t::ZH ? zh_god_power(str) : nullptr;
+    const char* zh_str = zh_god_power(str);
     if (isupper(str[0]))
         god_speaks(you.religion, zh_str ? zh_str : str);
     else
     {
-        const char* zh_fmt = nullptr;
-        if (Options.language == lang_t::ZH)
-        {
-            // Translate the format string too
-            static const char* fmt_zh_map[][2] = {
-                {"You can now %s.", "你现在可以%s了。"},
-                {"You can no longer %s.", "你不再能%s了。"},
-                {"You have enough gold to %s.", "你有足够的金币来%s。"},
-            };
-            for (auto& p : fmt_zh_map)
-                if (!strcmp(fmt, p[0])) { zh_fmt = p[1]; break; }
-        }
         god_speaks(you.religion,
-                   make_stringf(zh_fmt ? zh_fmt : fmt,
-                                zh_str ? zh_str : str).c_str());
+                   make_stringf(T_(fmt), zh_str ? zh_str : str).c_str());
     }
 }
 
@@ -937,27 +924,18 @@ void dec_penance(god_type god, int val)
 
         if (god == GOD_IGNIS)
         {
-            if (Options.language == lang_t::ZH)
-                simple_god_message("发出最后一声怒吼，燃烧殆尽。",
-                                   false, god);
-            else
-                simple_god_message(", with one final cry of rage, "
-                                   "burns out of existence.", false, god);
+            simple_god_message(T_(", with one final cry of rage, "
+                                   "burns out of existence."),
+                               false, god);
             add_daction(DACT_REMOVE_IGNIS_ALTARS);
         }
         else
         {
             const bool dead_jiyva = (god == GOD_JIYVA && jiyva_is_dead());
-            if (Options.language == lang_t::ZH)
-                simple_god_message(
-                    make_stringf("被安抚了%s。",
-                                 dead_jiyva ? "，然后消失了" : "").c_str(),
-                    false, god);
-            else
-                simple_god_message(
-                    make_stringf(" seems mollified%s.",
-                                 dead_jiyva ? ", and vanishes" : "").c_str(),
-                    false, god);
+            simple_god_message(
+                make_stringf(T_(" seems mollified%s."),
+                             dead_jiyva ? T_(", and vanishes") : "").c_str(),
+                false, god);
 
             if (dead_jiyva)
                 add_daction(DACT_JIYVA_DEAD);
@@ -2059,16 +2037,10 @@ mgen_data hepliaklqana_ancestor_gen_data()
 /// Print a message for an ancestor's *something* being gained.
 static void _regain_memory(const monster &ancestor, string memory)
 {
-    if (Options.language == lang_t::ZH)
-        mprf("%s恢复了%s%s的记忆。",
-             ancestor.name(DESC_YOUR, true).c_str(),
-             ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
-             memory.c_str());
-    else
-        mprf("%s regains the memory of %s %s.",
-             ancestor.name(DESC_YOUR, true).c_str(),
-             ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
-             memory.c_str());
+    mprf(T_("%s regains the memory of %s %s."),
+         ancestor.name(DESC_YOUR, true).c_str(),
+         ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
+         memory.c_str());
 }
 
 static string _item_ego_name(object_class_type base_type, int brand)
@@ -2433,7 +2405,7 @@ const char* _god_name_en(god_type which_god)
 
 string god_name(god_type which_god, bool long_name)
 {
-    const bool zh = Options.language == lang_t::ZH;
+    const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — god_name() is a helper, not a T_() call site
 
     if (which_god == GOD_JIYVA)
     {
@@ -2542,7 +2514,6 @@ string god_name(god_type which_god, bool long_name)
 
 string god_name_jiyva(bool second_name)
 {
-    const bool zh = Options.language == lang_t::ZH;
     string name = T_("Jiyva");
     if (second_name)
         name += " " + you.jiyva_second_name;
@@ -2670,18 +2641,12 @@ void dock_piety(int piety_loss, int penance, bool no_lecture)
         if (last_piety_lecture != you.num_turns)
         {
             // output guilt message:
-            if (Options.language == lang_t::ZH)
-                mprf("你感到%s愧疚。",
-                     (piety_loss == 1) ? "有点" :
-                     (piety_loss <  5) ? "" :
-                     (piety_loss < 10) ? "非常"
-                                       : "极其");
-            else
-                mprf("You feel%sguilty.",
-                     (piety_loss == 1) ? " a little " :
-                     (piety_loss <  5) ? " " :
-                     (piety_loss < 10) ? " very "
-                                       : " extremely ");
+            mprf(T_("You feel%sguilty."),
+                 (piety_loss == 1) ? T_(" a little ")
+               : (piety_loss <  5) ? (Options.language == lang_t::ZH
+                                        ? "" : " ")
+               : (piety_loss < 10) ? T_(" very ")
+                                   : T_(" extremely "));
         }
 
         last_piety_lecture = you.num_turns;
@@ -2768,11 +2733,10 @@ static void _handle_piety_gain(int old_piety)
                 // In exchange for your hp, you get an ancestor!
                 const mgen_data mg = hepliaklqana_ancestor_gen_data();
                 delayed_monster(mg);
-                simple_god_message(make_stringf(Options.language == lang_t::ZH
-                                                ? "将你的一部分生命精华凝聚为你先祖%s的记忆！"
-                                                : " forms a fragment of your life essence"
-                                                  " into the memory of your ancestor, %s!",
-                                                mg.mname.c_str()).c_str());
+                simple_god_message(make_stringf(
+                    T_(" forms a fragment of your life essence"
+                       " into the memory of your ancestor, %s!"),
+                    mg.mname.c_str()).c_str());
             }
 
             for (const auto& power : get_god_powers(you.religion))
@@ -3760,14 +3724,9 @@ static void _god_welcome_handle_gear()
         item_def wpn = you.props[PARAGON_WEAPON_KEY].get_item();
         if (god_hates_item(wpn))
         {
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_GOD, "%s从你的典范武器上抹去了%s的印记。",
-                     god_name(you.religion).c_str(),
-                     wpn.name(DESC_THE).c_str());
-            else
-                mprf(MSGCH_GOD, "%s removes the imprint of %s from your paragon.",
-                     god_name(you.religion).c_str(),
-                     wpn.name(DESC_THE).c_str());
+            mprf(MSGCH_GOD, T_("%s removes the imprint of %s from your paragon."),
+                 god_name(you.religion).c_str(),
+                 wpn.name(DESC_THE).c_str());
             you.props.erase(PARAGON_WEAPON_KEY);
         }
     }
@@ -3917,12 +3876,9 @@ static string _good_god_wrath_message(god_type good_god)
         case GOD_SHINING_ONE:
             return T_("You will pay for your evil ways, mortal");
         case GOD_ZIN:
-            return Options.language == lang_t::ZH
-                   ? make_stringf("你将因拥抱这样的%s而受苦",
-                                  is_chaotic_god(you.religion) ? "混乱" : "邪恶")
-                   : make_stringf("You will suffer for embracing such %s",
-                                  is_chaotic_god(you.religion) ? "chaos"
-                                                               : "evil");
+            return make_stringf(T_("You will suffer for embracing such %s"),
+                                is_chaotic_god(you.religion)
+                                    ? T_("chaos") : T_("evil"));
         default:
             return T_("You will be buggily punished for this");
     }
@@ -4219,21 +4175,13 @@ static void _print_good_god_brand_changes(item_def *weapon, bool joining_good)
     }
     if (joining_good)
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s在你手中变得暗淡无光，毫无生气。",
-                 weapon->name(DESC_YOUR).c_str());
-        else
-            mprf("%s goes dull and lifeless in your grasp.",
-                 weapon->name(DESC_YOUR).c_str());
+        mprf(T_("%s goes dull and lifeless in your grasp."),
+             weapon->name(DESC_YOUR).c_str());
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s散发出令人恐惧的邪恶黑光！",
-                 uppercase_first(weapon->name(DESC_YOUR)).c_str());
-        else
-            mprf("%s glows horrifically with a foul blackness!",
-                 uppercase_first(weapon->name(DESC_YOUR)).c_str());
+        mprf(T_("%s glows horrifically with a foul blackness!"),
+             uppercase_first(weapon->name(DESC_YOUR)).c_str());
     }
 }
 
@@ -5431,10 +5379,7 @@ void player_change_ostracism(int amount)
     {
         _handle_piety_gain(old_piety);
         if (you.attribute[ATTR_OSTRACISM] == 0)
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_RECOVERY, "你感到神明再次完全注意到了你。");
-            else
-                mprf(MSGCH_RECOVERY, "You feel the divine notice you fully once more.");
+            mprf(MSGCH_RECOVERY, T_("You feel the divine notice you fully once more."));
     }
 
     // Redraw piety stars, which may have changed.

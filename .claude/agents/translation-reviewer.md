@@ -2,6 +2,8 @@
 name: translation-reviewer
 description: Systematic 5-layer review of DCSS Chinese translation commits. Checks protocol/display separation, translation completeness, consistency, content quality, and database integrity.
 tools: Bash, Read, Grep, Glob
+model: inherit
+color: blue
 ---
 
 # DCSS Chinese Translation Code Reviewer

@@ -182,25 +182,7 @@ struct dislike_response
         // the conduct, and the god cares, print a message & bail.
         if (!known && forgiveness_message)
         {
-            if (Options.language == lang_t::ZH)
-            {
-                string zh_msg = forgiveness_message;
-                if (strstr(forgiveness_message, "inadvertent evil act"))
-                    zh_msg = " 原谅了你无意中的邪恶行为，下不为例。";
-                else if (strstr(forgiveness_message, "inadvertent chaotic act"))
-                    zh_msg = " 原谅了你无意中的混乱行为，下不为例。";
-                else if (strstr(forgiveness_message, "inadvertent holy act"))
-                    zh_msg = " 原谅了你无意中的神圣行为，下不为例。";
-                else if (strstr(forgiveness_message, "accidental hurry"))
-                    zh_msg = " 原谅了你意外的匆忙行为，下不为例。";
-                else if (strstr(forgiveness_message, "inadvertent attack on a neutral"))
-                    zh_msg = " 原谅了你对中立者的无意攻击，下不为例。";
-                else if (strstr(forgiveness_message, "inadvertent attack on an ally"))
-                    zh_msg = " 原谅了你对盟友的无意攻击，下不为例。";
-                simple_god_message(zh_msg.c_str());
-            }
-            else
-                simple_god_message(forgiveness_message);
+            simple_god_message(T_(forgiveness_message));
             return;
         }
 
@@ -211,22 +193,14 @@ struct dislike_response
         {
             static int last_glowing_lecture = -1;
             if (!level)
-            {
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 对你周围的变异光芒不太感兴趣。");
-                else
-                    simple_god_message(" is not enthusiastic about the "
-                                       "mutagenic glow surrounding you.");
-            }
+                simple_god_message(T_(" is not enthusiastic about the "
+                                      "mutagenic glow surrounding you."));
             else if (last_glowing_lecture != you.num_turns)
             {
                 last_glowing_lecture = you.num_turns;
                 // Increase contamination within yellow glow.
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 对你周围额外的变异光芒感到不满！");
-                else
-                    simple_god_message(" does not appreciate the extra "
-                                       "mutagenic glow surrounding you!");
+                simple_god_message(T_(" does not appreciate the extra "
+                                      "mutagenic glow surrounding you!"));
             }
         }
 
@@ -508,23 +482,15 @@ string get_god_dislikes(god_type which_god)
     if (dislikes.empty() && really_dislikes.empty())
         return "";
 
+    const char* dis_conj = Options.language == lang_t::ZH ? "或" : " or ";
+    const char* dis_sep = Options.language == lang_t::ZH ? "、" : ", ";
+
     if (!dislikes.empty())
     {
         text += uppercase_first(god_name(which_god));
-        if (Options.language == lang_t::ZH)
-        {
-            text += "讨厌当";
-            text += comma_separated_line(dislikes.begin(), dislikes.end(),
-                                         "或", "、");
-            text += "。";
-        }
-        else
-        {
-            text += " dislikes it when ";
-            text += comma_separated_line(dislikes.begin(), dislikes.end(),
-                                         " or ", ", ");
-            text += ".";
-        }
+        text += make_stringf(T_(" dislikes it when %s."),
+            comma_separated_line(dislikes.begin(), dislikes.end(),
+                                 dis_conj, dis_sep).c_str());
 
         if (!really_dislikes.empty())
             text += " ";
@@ -533,22 +499,10 @@ string get_god_dislikes(god_type which_god)
     if (!really_dislikes.empty())
     {
         text += uppercase_first(god_name(which_god));
-        if (Options.language == lang_t::ZH)
-        {
-            text += "非常讨厌当";
-            text += comma_separated_line(really_dislikes.begin(),
-                                         really_dislikes.end(),
-                                         "或", "、");
-            text += "。";
-        }
-        else
-        {
-            text += " strongly dislikes it when ";
-            text += comma_separated_line(really_dislikes.begin(),
-                                         really_dislikes.end(),
-                                         " or ", ", ");
-            text += ".";
-        }
+        text += make_stringf(T_(" strongly dislikes it when %s."),
+            comma_separated_line(really_dislikes.begin(),
+                                 really_dislikes.end(),
+                                 dis_conj, dis_sep).c_str());
     }
 
     return text;
@@ -593,23 +547,7 @@ struct like_response
         god_acting gdact;
 
         if (message)
-        {
-            if (Options.language == lang_t::ZH)
-            {
-                string zh_msg = message;
-                if (strstr(message, "accepts your kill"))
-                    zh_msg = " 接受了你的杀戮。";
-                else if (strstr(message, "killing of a magic user"))
-                    zh_msg = " 对你杀死魔法使用者表示赞赏。";
-                else if (strstr(message, "claims a new guest"))
-                    zh_msg = " 又收纳了一位新客人。";
-                else if (strstr(message, "killing of a heretic priest"))
-                    zh_msg = " 对你杀死异端牧师表示赞赏。";
-                simple_god_message(zh_msg.c_str());
-            }
-            else
-                simple_god_message(message);
-        }
+            simple_god_message(T_(message));
 
         // this is all very strange, but replicates legacy behaviour.
         // See the comment on piety_bonus above.
@@ -711,21 +649,13 @@ static like_response okawaru_kill(const char* desc)
 
             if (piety > 3200)
             {
-                if (Options.language == lang_t::ZH)
-                    mprf(MSGCH_GOD, you.religion,
-                         "<white>%s因你的杀戮而感到荣耀。</white>",
-                         uppercase_first(god_name(you.religion)).c_str());
-                else
-                    mprf(MSGCH_GOD, you.religion,
-                         "<white>%s is honoured by your kill.</white>",
-                         uppercase_first(god_name(you.religion)).c_str());
+                mprf(MSGCH_GOD, you.religion,
+                     T_("<white>%s is honoured by your kill.</white>"),
+                     uppercase_first(god_name(you.religion)).c_str());
             }
             else if (piety > 9) // might still be miniscule
             {
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 接受了你的杀戮。");
-                else
-                    simple_god_message(" accepts your kill.");
+                simple_god_message(T_(" accepts your kill."));
             }
         }
     };
@@ -741,17 +671,11 @@ static const like_response _fedhas_kill_living_response()
         {
             if (victim && mons_class_can_leave_corpse(mons_species(victim->type)))
             {
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 对你为生态系统做出的贡献表示赞赏。");
-                else
-                    simple_god_message(" appreciates your contribution to the ecosystem.");
+                simple_god_message(T_(" appreciates your contribution to the ecosystem."));
             }
             else
             {
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 接受了你的杀戮。");
-                else
-                    simple_god_message(" accepts your kill.");
+                simple_god_message(T_(" accepts your kill."));
             }
         }
     };
@@ -773,6 +697,7 @@ static const like_response _yred_kill_response()
                     //Print a reminder if the torch isn't lit, but *could* be
                     if (yred_cannot_light_torch_reason().empty())
                     {
+                        // TODO: ARG-DIFF - pronoun values differ between EN and ZH
                         if (Options.language == lang_t::ZH)
                             mprf(MSGCH_GOD, "你的火炬未点燃，%s的灵魂白白浪费了……",
                                  you.can_see(*victim) ? victim->pronoun(PRONOUN_POSSESSIVE).c_str() : "一个");
@@ -783,6 +708,7 @@ static const like_response _yred_kill_response()
                 }
                 else
                 {
+                    // TODO: ARG-DIFF - pronoun/adjective values differ between EN and ZH
                     if (Options.language == lang_t::ZH)
                     {
                         const string zh_prefix = you.can_see(*victim)
@@ -990,18 +916,12 @@ static like_map divine_likes[] =
                 // Double piety for speedy monsters sometimes
                 if (mons_speed > 10 && x_chance_in_y(mons_speed - 10, 10))
                 {
-                    if (Options.language == lang_t::ZH)
-                        simple_god_message(" 非常欣赏这种节奏的变化。");
-                    else
-                        simple_god_message(" thoroughly appreciates the change of pace.");
+                    simple_god_message(T_(" thoroughly appreciates the change of pace."));
                     piety *= 2;
                 }
                 else
                 {
-                    if (Options.language == lang_t::ZH)
-                        simple_god_message(" 欣赏这种节奏的变化。");
-                    else
-                        simple_god_message(" appreciates the change of pace.");
+                    simple_god_message(T_(" appreciates the change of pace."));
                 }
             }
         } }
@@ -1265,21 +1185,14 @@ string get_god_likes(god_type which_god)
     }
     else
     {
+        const char* like_conj = Options.language == lang_t::ZH ? "、" : " and ";
+        const char* like_sep = Options.language == lang_t::ZH ? "、" : ", ";
+
         if (!likes.empty())
         {
-            if (Options.language == lang_t::ZH)
-            {
-                text += "喜欢当";
-                text += comma_separated_line(likes.begin(), likes.end(),
-                                             "、", "、");
-                text += "。";
-            }
-            else
-            {
-                text += " likes it when ";
-                text += comma_separated_line(likes.begin(), likes.end());
-                text += ".";
-            }
+            text += make_stringf(T_(" likes it when %s."),
+                comma_separated_line(likes.begin(), likes.end(),
+                                     like_conj, like_sep).c_str());
             if (!really_likes.empty())
             {
                 text += " ";
@@ -1289,21 +1202,10 @@ string get_god_likes(god_type which_god)
 
         if (!really_likes.empty())
         {
-            if (Options.language == lang_t::ZH)
-            {
-                text += "特别喜欢当";
-                text += comma_separated_line(really_likes.begin(),
-                                             really_likes.end(),
-                                             "、", "、");
-                text += "。";
-            }
-            else
-            {
-                text += " especially likes it when ";
-                text += comma_separated_line(really_likes.begin(),
-                                             really_likes.end());
-                text += ".";
-            }
+            text += make_stringf(T_(" especially likes it when %s."),
+                comma_separated_line(really_likes.begin(),
+                                     really_likes.end(),
+                                     like_conj, like_sep).c_str());
         }
     }
 

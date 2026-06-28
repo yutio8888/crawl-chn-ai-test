@@ -87,6 +87,7 @@ int god_favour_rank(god_type which_god)
 
 static string _describe_favour(god_type which_god)
 {
+    // TODO: ARG-DIFF - penance messages and favour titles have completely different EN/ZH sentence structures with godname embedding
     const bool zh = Options.language == lang_t::ZH;
 
     if (player_under_penance())
@@ -431,16 +432,8 @@ static string _describe_ash_skill_boost()
     ostringstream desc;
     desc.setf(ios::left);
     desc << "<white>";
-    if (Options.language == lang_t::ZH)
-    {
-        desc << setw(40) << "绑定物品";
-        desc << setw(30) << "诅咒加成";
-    }
-    else
-    {
-        desc << setw(40) << "Bound item";
-        desc << setw(30) << "Curse bonuses";
-    }
+    desc << setw(40) << T_("Bound item");
+    desc << setw(30) << T_("Curse bonuses");
     desc << "</white>\n";
 
     vector<item_def*> eq = you.equipment.get_slot_items(SLOT_ALL_EQUIPMENT, true);
@@ -661,6 +654,7 @@ static string _describe_god_wrath_causes(god_type which_god)
         // XXX: refactor this if any god hates chaotic but not evil gods
     }
 
+    // TODO: ARG-DIFF - complex multi-line sentences with god_name + comma_separated_fn at different positions
     const bool zh = Options.language == lang_t::ZH;
 
     switch (which_god)
@@ -730,6 +724,7 @@ static formatted_string _god_wrath_description(god_type which_god)
     if (which_god != GOD_RU) // Permanent wrath.
     {
         const bool long_wrath = initial_wrath_penance_for(which_god) > 30;
+        // TODO: ARG-DIFF - EN uses apostrophise+god_name at different position than ZH, and "长"/"短" vs "long"/"short" differ structurally
         if (Options.language == lang_t::ZH)
         {
             _add_par(desc, god_name(which_god)
@@ -834,6 +829,7 @@ static string _get_god_misc_info(god_type which_god)
     string info = "";
     skill_type skill = invo_skill(which_god);
 
+    // TODO: ARG-DIFF - god_name+skill_name interpolation in different positions between EN and ZH
     const bool zh = Options.language == lang_t::ZH;
 
     switch (skill)
@@ -891,7 +887,6 @@ static formatted_string _detailed_god_description(god_type which_god)
 static string _raw_penance_message(god_type which_god)
 {
     const int penance = you.penance[which_god];
-    const bool zh = Options.language == lang_t::ZH;
 
     // Give more appropriate message for the good gods.
     if (penance > 0 && is_good_god(which_god))
@@ -951,7 +946,6 @@ static formatted_string _describe_god_powers(god_type which_god)
     int piety = you_worship(which_god) ? you.piety() : 0;
 
     desc.textcolour(LIGHTGREY);
-    const bool zh = Options.language == lang_t::ZH;
     const char *header = T_("Granted powers:");
     const char *cost   = T_("(Cost)");
     desc.cprintf("\n\n%s%*s%s\n", header,
@@ -979,6 +973,7 @@ static formatted_string _describe_god_powers(god_type which_god)
 
         if (god_gives_passive(which_god, passive_t::lifesaving))
         {
+            // TODO: ARG-DIFF - adverb placement differs between "carefully guards" (EN) vs "细心地守护" (ZH)
             if (Options.language == lang_t::ZH)
                 how = (piety >= piety_breakpoint(5)) ? "细心地" :
                       (piety >= piety_breakpoint(3)) ? "经常" :
@@ -992,6 +987,7 @@ static formatted_string _describe_god_powers(god_type which_god)
         }
         else
         {
+            // TODO: ARG-DIFF - same adverb placement difference (sometimes/occasionally)
             if (Options.language == lang_t::ZH)
                 how = (piety >= piety_breakpoint(5)) ? "有时" : "偶尔";
             else
@@ -1024,6 +1020,7 @@ static formatted_string _describe_god_powers(god_type which_god)
     case GOD_ZIN:
     {
         have_any = true;
+        // TODO: ARG-DIFF - ZIN adverbs differ in position between EN and ZH (always/经常 before vs after verb)
         const bool zh = Options.language == lang_t::ZH;
         const char *how =
             zh ? ((piety >= piety_breakpoint(5)) ? "总是" :
@@ -1055,6 +1052,7 @@ static formatted_string _describe_god_powers(god_type which_god)
     case GOD_SHINING_ONE:
     {
         have_any = true;
+        // TSO section: all format strings have different ARG positions between EN/ZH
         desc.cprintf("%s阻止你偷袭毫无防备的敌人。\n",
                 uppercase_first(god_name(which_god)).c_str());
 
@@ -1063,6 +1061,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(DARKGREY);
         else
             desc.textcolour(god_colour(which_god));
+        // TODO: ARG-DIFF - different %s positions for halo description with variable adjective
         if (Options.language == lang_t::ZH)
             desc.cprintf("你散发出%s正义光环，其中的敌人"
                     "更容易被击中。\n",
@@ -1081,6 +1080,7 @@ static formatted_string _describe_god_powers(god_type which_god)
         else
             desc.textcolour(DARKGREY);
         const char *how;
+        // TODO: ARG-DIFF - different adverb/preposition placement between EN and ZH
         if (Options.language == lang_t::ZH)
             how = (piety >= piety_breakpoint(5)) ? "完全" :
                   (piety >= piety_breakpoint(3)) ? "大部分" :
@@ -1232,6 +1232,7 @@ static formatted_string _describe_god_powers(god_type which_god)
 
         string buf = power.general;
 
+        // TODO: ARG-DIFF - zh_god_power helper translates god power descriptions; not simple T_() conversion
         if (Options.language == lang_t::ZH)
         {
             const char* zh = zh_god_power(buf.c_str());
@@ -1351,7 +1352,6 @@ static void build_partial_god_ui(god_type which_god, shared_ptr<ui::Popup>& popu
     };
 
     int mores_index = descs[3].empty() ? 0 : 1;
-    const bool zh = Options.language == lang_t::ZH;
     const char* mores[2][4] =
     {
         {
@@ -1405,15 +1405,19 @@ static const string _god_service_fee_description(god_type which_god)
     {
         if (fee == 0)
         {
+            // TODO: ARG-DIFF - different sentence structure with random_choose and format specifiers
             return Options.language == lang_t::ZH
                 ? string("（现在行动即可免费）")
                 : string(" (no fee if you ")
                   + random_choose("act now", "join today") + ")";
         }
         else
+        {
+            // TODO: ARG-DIFF - different format specifier positions between EN and ZH
             return Options.language == lang_t::ZH
                 ? make_stringf("（%d金币；你拥有%d）", fee, you.gold)
                 : make_stringf(" (%d gold; you have %d)", fee, you.gold);
+        }
     }
 
     return "";
@@ -1459,7 +1463,7 @@ void describe_god(god_type which_god)
 {
     if (which_god == GOD_NO_GOD) //mv: No god -> say it and go away.
     {
-        mpr("你不信仰任何神祇。");
+        mpr(T_("You have no religion."));
         return;
     }
 

@@ -2993,10 +2993,7 @@ void describe_floor()
     if (feat_is_water(grid) || feat_is_lava(grid))
         return;
 
-    if (Options.language == lang_t::ZH)
-        mprf(channel, "%s%s。", prefix, feat.c_str());
-    else
-        mprf(channel, "%s%s here.", prefix, feat.c_str());
+    mprf(channel, T_("%s%s here."), prefix, feat.c_str());
     if (grid == DNGN_ENTER_GAUNTLET)
         mprf(MSGCH_EXAMINE, T_("Beware, the minotaur awaits!"));
     else if (feat_is_fountain(grid) || feat_is_food(grid))
@@ -3252,7 +3249,6 @@ string feature_description_at(const coord_def& where, bool covering,
 
         if (door_desc_veto.empty() || door_desc_veto != "veto")
         {
-            const bool zh = Options.language == lang_t::ZH;
             if (grid == DNGN_OPEN_DOOR)
                 desc += T_("open ");
             else if (grid == DNGN_CLOSED_CLEAR_DOOR)
@@ -3351,24 +3347,12 @@ static string _describe_monster_weapon(const monster_info& mi)
     if (name1.empty())
         return desc;
 
-    if (Options.language == lang_t::ZH)
-    {
-        if (mi.type == MONS_PANDEMONIUM_LORD)
-            desc += " 装备着 ";
-        else if (mons_class_is_animated_weapon(mi.type))
-            desc += " ";
-        else
-            desc += " 挥舞着 ";
-    }
+    if (mi.type == MONS_PANDEMONIUM_LORD)
+        desc += T_(" armed with ");
+    else if (mons_class_is_animated_weapon(mi.type))
+        desc += " ";
     else
-    {
-        if (mi.type == MONS_PANDEMONIUM_LORD)
-            desc += " armed with ";
-        else if (mons_class_is_animated_weapon(mi.type))
-            desc += " ";
-        else
-            desc += " wielding ";
-    }
+        desc += T_(" wielding ");
     desc += name1;
 
     if (mi.is(MB_ARMED))
@@ -3426,14 +3410,12 @@ static vector<string> _get_monster_desc_vector(const monster_info& mi)
     {
         const int pow = you.props[CONFUSING_TOUCH_KEY].get_int();
         const int wl  = apply_willpower_bypass(you, mi.willpower());
-        const bool zh = Options.language == lang_t::ZH;
         descs.emplace_back(make_stringf(T_("chance to confuse on hit: %d%%"),
                                         hex_success_chance(wl, pow, 100)));
     }
     else if (you.form == transformation::fungus
              && !mons_is_unbreathing(mi.type))
     {
-        const bool zh = Options.language == lang_t::ZH;
         descs.emplace_back(make_stringf(T_("chance to confuse on hit: %d%%"),
                                         melee_confuse_chance(mi.hd)));
     }
@@ -3442,7 +3424,6 @@ static vector<string> _get_monster_desc_vector(const monster_info& mi)
     {
         const int pow = calc_spell_power(SPELL_JINXBITE);
         const int wl = apply_willpower_bypass(you, mi.willpower());
-        const bool zh = Options.language == lang_t::ZH;
         descs.emplace_back(make_stringf(T_("chance to call a sprite on attack: %d%%"),
             hex_success_chance(wl, pow, 100)));
     }
@@ -3450,7 +3431,6 @@ static vector<string> _get_monster_desc_vector(const monster_info& mi)
     if (mi.type == MONS_ASPIRING_FLESH && mi.props.exists(PROTEAN_TARGET_KEY))
     {
         const monster_type mtype = (monster_type)mi.props[PROTEAN_TARGET_KEY].get_int();
-        const bool zh = Options.language == lang_t::ZH;
         descs.emplace_back(make_stringf(T_("becoming %s"), mons_type_name(mtype, DESC_A).c_str()));
     }
 
@@ -3474,7 +3454,6 @@ static vector<string> _get_monster_desc_vector(const monster_info& mi)
 
     if (mi.fire_blocker)
     {
-        const bool zh = Options.language == lang_t::ZH;
         descs.push_back((T_("fire blocked by ")) // FIXME, renamed features
                         + feature_description(mi.fire_blocker, NUM_TRAPS, "",
                                               DESC_A));
@@ -3582,7 +3561,6 @@ string get_monster_equipment_desc(const monster_info& mi,
     const bool mon_carry = mon_alt || mon_has_wand;
 
     // as with dancing weapons, don't claim armour echoes 'wear' their armour
-    const bool zh = Options.language == lang_t::ZH;
 
     if (mon_arm && mi.type != MONS_ARMOUR_ECHO && mi.type != MONS_HAUNTED_ARMOUR)
     {
@@ -3646,7 +3624,6 @@ static string _get_cloud_desc(const coord_def& where)
 {
     ostringstream out;
     vector<string> areas;
-    const bool zh = Options.language == lang_t::ZH;
     if (is_sanctuary(where))
         areas.emplace_back(T_("lies inside a sanctuary"));
     if (silenced(where))

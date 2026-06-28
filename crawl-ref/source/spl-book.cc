@@ -542,7 +542,7 @@ public:
 protected:
     virtual formatted_string calc_title() override
     {
-        const bool zh = Options.language == lang_t::ZH;
+        const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — column layout entirely different between EN/ZH
         const char* act_str =
             current_action == action::cast
                 ? (T_("(Cast)    "))
@@ -596,8 +596,7 @@ private:
         if (you.divine_exegesis)
         {
             desc << make_stringf(
-                zh ? "<lightgreen>用神圣解经施放：%d MP可用</lightgreen>"
-                   : "<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>",
+                T_("<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>"),
                 you.magic_points);
         }
         else
@@ -918,16 +917,14 @@ public:
         if (you.divine_exegesis)
         {
             spell_levels_str = make_stringf(
-                zh ? "<lightgreen>选择一个法术用神圣解经施放：%d MP可用</lightgreen>"
-                   : "<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>",
+                T_("<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>"),
                 you.magic_points);
         }
         else if (default_action == action::imbue)
-            spell_levels_str = zh
-                ? "<lightgreen>选择一个法术来赋予你的法术火花仆从：</lightgreen>"
-                : "<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>";
+            spell_levels_str = T_("<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>");
         else
         {
+            // TODO: ARG-DIFF — ZH has 1 format specifier (%d), EN has 2 (%d + %s for plural)
             if (zh)
                 spell_levels_str = make_stringf("<lightgreen>%d法术等级剩余"
                             "</lightgreen>", player_spell_levels());

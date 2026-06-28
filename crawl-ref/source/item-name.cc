@@ -360,13 +360,9 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
         return t == MBN_TERSE ? "obsolete" : "obsolescence";
 #endif
     case SPMSL_POISONED:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_NAME ? "淬毒" : "毒")
-            : (t == MBN_NAME ? "poisoned" : "poison");
+        return t == MBN_NAME ? T_("poisoned") : T_("poison");
     case SPMSL_CURARE:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_NAME ? "涂箭毒" : "箭毒")
-            : (t == MBN_NAME ? "curare-tipped" : "curare");
+        return t == MBN_NAME ? T_("curare-tipped") : T_("curare");
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_EXPLODING:
         return "obsolete";
@@ -392,23 +388,15 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
         return t == MBN_TERSE ? "obsolete" : "obsolescence";
 #endif
     case SPMSL_FRENZY:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_NAME ? "涂曼陀罗" : "曼陀罗")
-            : (t == MBN_NAME ? "datura-tipped" : "datura");
+        return t == MBN_NAME ? T_("datura-tipped") : T_("datura");
     case SPMSL_CHAOS:
         return T_("chaos");
     case SPMSL_DISPERSAL:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_TERSE ? "驱" : "驱散")
-            : (t == MBN_TERSE ? "disperse" : "dispersal");
+        return t == MBN_TERSE ? T_("disperse") : T_("dispersal");
     case SPMSL_DISJUNCTION:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_TERSE ? "移位" : "位移")
-            : (t == MBN_TERSE ? "disjunct" : "disjunction");
+        return t == MBN_TERSE ? T_("disjunct") : T_("disjunction");
     case SPMSL_BLINDING:
-        return Options.language == lang_t::ZH
-            ? (t == MBN_NAME ? "涂颠茄" : "颠茄")
-            : (t == MBN_NAME ? "atropa-tipped" : "atropa");
+        return t == MBN_NAME ? T_("atropa-tipped") : T_("atropa");
     case SPMSL_NORMAL:
         return "";
     default:
@@ -796,35 +784,20 @@ const char* armour_ego_name(const item_def& item, bool terse)
 
 static const char* _wand_type_name(int wandtype)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<int, const char*> zh_names = {
-            { WAND_FLAME, "火焰" }, { WAND_PARALYSIS, "麻痹" },
-            { WAND_DIGGING, "挖掘" }, { WAND_ICEBLAST, "冰爆" },
-            { WAND_POLYMORPH, "变形" }, { WAND_CHARMING, "魅惑" },
-            { WAND_ACID, "强酸" }, { WAND_MINDBURST, "心灵冲击" },
-            { WAND_LIGHT, "光亮" }, { WAND_QUICKSILVER, "水银" },
-            { WAND_ROOTS, "根须" }, { WAND_WARPING, "扭曲" },
-        };
-        auto it = zh_names.find(wandtype);
-        if (it != zh_names.end())
-            return it->second;
-    }
-
     switch (wandtype)
     {
-    case WAND_FLAME:           return "flame";
-    case WAND_PARALYSIS:       return "paralysis";
-    case WAND_DIGGING:         return "digging";
-    case WAND_ICEBLAST:        return "iceblast";
-    case WAND_POLYMORPH:       return "polymorph";
-    case WAND_CHARMING:        return "charming";
-    case WAND_ACID:            return "acid";
-    case WAND_MINDBURST:       return "mindburst";
-    case WAND_LIGHT:           return "light";
-    case WAND_QUICKSILVER:     return "quicksilver";
-    case WAND_ROOTS:           return "roots";
-    case WAND_WARPING:         return "warping";
+    case WAND_FLAME:           return T_("flame");
+    case WAND_PARALYSIS:       return T_("paralysis");
+    case WAND_DIGGING:         return T_("digging");
+    case WAND_ICEBLAST:        return T_("iceblast");
+    case WAND_POLYMORPH:       return T_("polymorph");
+    case WAND_CHARMING:        return T_("charming");
+    case WAND_ACID:            return T_("acid");
+    case WAND_MINDBURST:       return T_("mindburst");
+    case WAND_LIGHT:           return T_("light");
+    case WAND_QUICKSILVER:     return T_("quicksilver");
+    case WAND_ROOTS:           return T_("roots");
+    case WAND_WARPING:         return T_("warping");
     default:                   return item_type_removed(OBJ_WANDS, wandtype)
                                     ? "removedness"
                                     : "bugginess";
@@ -854,43 +827,25 @@ static const char* wand_primary_string(uint32_t p)
 
 const char* potion_type_name(int potiontype)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<int, const char*> zh_names = {
-            { POT_CURING, "治疗" }, { POT_HEAL_WOUNDS, "疗伤" },
-            { POT_HASTE, "加速" }, { POT_MIGHT, "力量" },
-            { POT_ATTRACTION, "吸引" }, { POT_BRILLIANCE, "智慧" },
-            { POT_ENLIGHTENMENT, "启迪" }, { POT_CANCELLATION, "消除" },
-            { POT_AMBROSIA, "神食" }, { POT_INVISIBILITY, "隐形" },
-            { POT_MOONSHINE, "月光" }, { POT_EXPERIENCE, "经验" },
-            { POT_MAGIC, "魔法" }, { POT_BERSERK_RAGE, "狂暴" },
-            { POT_MUTATION, "突变" }, { POT_RESISTANCE, "抗性" },
-            { POT_LIGNIFY, "木质化" },
-        };
-        auto it = zh_names.find(potiontype);
-        if (it != zh_names.end())
-            return it->second;
-    }
-
     switch (static_cast<potion_type>(potiontype))
     {
-    case POT_CURING:            return "curing";
-    case POT_HEAL_WOUNDS:       return "heal wounds";
-    case POT_HASTE:             return "haste";
-    case POT_MIGHT:             return "might";
-    case POT_ATTRACTION:        return "attraction";
-    case POT_BRILLIANCE:        return "brilliance";
-    case POT_ENLIGHTENMENT:     return "enlightenment";
-    case POT_CANCELLATION:      return "cancellation";
-    case POT_AMBROSIA:          return "ambrosia";
-    case POT_INVISIBILITY:      return "invisibility";
-    case POT_MOONSHINE:         return "moonshine";
-    case POT_EXPERIENCE:        return "experience";
-    case POT_MAGIC:             return "magic";
-    case POT_BERSERK_RAGE:      return "berserk rage";
-    case POT_MUTATION:          return "mutation";
-    case POT_RESISTANCE:        return "resistance";
-    case POT_LIGNIFY:           return "lignification";
+    case POT_CURING:            return T_("curing");
+    case POT_HEAL_WOUNDS:       return T_("heal wounds");
+    case POT_HASTE:             return T_("haste");
+    case POT_MIGHT:             return T_("might");
+    case POT_ATTRACTION:        return T_("attraction");
+    case POT_BRILLIANCE:        return T_("brilliance");
+    case POT_ENLIGHTENMENT:     return T_("enlightenment");
+    case POT_CANCELLATION:      return T_("cancellation");
+    case POT_AMBROSIA:          return T_("ambrosia");
+    case POT_INVISIBILITY:      return T_("invisibility");
+    case POT_MOONSHINE:         return T_("moonshine");
+    case POT_EXPERIENCE:        return T_("experience");
+    case POT_MAGIC:             return T_("magic");
+    case POT_BERSERK_RAGE:      return T_("berserk rage");
+    case POT_MUTATION:          return T_("mutation");
+    case POT_RESISTANCE:        return T_("resistance");
+    case POT_LIGNIFY:           return T_("lignification");
 
     // FIXME: Remove this once known-items no longer uses this as a sentinel.
     default:
@@ -901,55 +856,32 @@ const char* potion_type_name(int potiontype)
 
 const char* scroll_type_name(int scrolltype)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<int, const char*> zh_names = {
-            { SCR_IDENTIFY, "鉴定" }, { SCR_TELEPORTATION, "传送" },
-            { SCR_FEAR, "恐惧" }, { SCR_NOISE, "噪音" },
-            { SCR_SUMMONING, "召唤" }, { SCR_ENCHANT_WEAPON, "附魔武器" },
-            { SCR_ENCHANT_ARMOUR, "附魔护甲" }, { SCR_TORMENT, "痛苦" },
-            { SCR_IMMOLATION, "自焚" }, { SCR_POISON, "毒素" },
-            { SCR_BUTTERFLIES, "蝴蝶" }, { SCR_BLINKING, "闪烁" },
-            { SCR_REVELATION, "启示" }, { SCR_FOG, "云雾" },
-            { SCR_ACQUIREMENT, "获取" }, { SCR_BRAND_WEAPON, "烙印武器" },
-            { SCR_VULNERABILITY, "脆弱" }, { SCR_SILENCE, "沉默" },
-            { SCR_AMNESIA, "遗忘" },
-#if TAG_MAJOR_VERSION == 34
-            { SCR_HOLY_WORD, "圣言" }, { SCR_CURSE_WEAPON, "诅咒武器" },
-            { SCR_CURSE_ARMOUR, "诅咒护甲" }, { SCR_CURSE_JEWELLERY, "诅咒珠宝" },
-#endif
-        };
-        auto it = zh_names.find(scrolltype);
-        if (it != zh_names.end())
-            return it->second;
-    }
-
     switch (static_cast<scroll_type>(scrolltype))
     {
-    case SCR_IDENTIFY:           return "identify";
-    case SCR_TELEPORTATION:      return "teleportation";
-    case SCR_FEAR:               return "fear";
-    case SCR_NOISE:              return "noise";
-    case SCR_SUMMONING:          return "summoning";
-    case SCR_ENCHANT_WEAPON:     return "enchant weapon";
-    case SCR_ENCHANT_ARMOUR:     return "enchant armour";
-    case SCR_TORMENT:            return "torment";
-    case SCR_IMMOLATION:         return "immolation";
-    case SCR_POISON:             return "poison";
-    case SCR_BUTTERFLIES:        return "butterflies";
-    case SCR_BLINKING:           return "blinking";
-    case SCR_REVELATION:         return "revelation";
-    case SCR_FOG:                return "fog";
-    case SCR_ACQUIREMENT:        return "acquirement";
-    case SCR_BRAND_WEAPON:       return "brand weapon";
-    case SCR_VULNERABILITY:      return "vulnerability";
-    case SCR_SILENCE:            return "silence";
-    case SCR_AMNESIA:            return "amnesia";
+    case SCR_IDENTIFY:           return T_("identify");
+    case SCR_TELEPORTATION:      return T_("teleportation");
+    case SCR_FEAR:               return T_("fear");
+    case SCR_NOISE:              return T_("noise");
+    case SCR_SUMMONING:          return T_("summoning");
+    case SCR_ENCHANT_WEAPON:     return T_("enchant weapon");
+    case SCR_ENCHANT_ARMOUR:     return T_("enchant armour");
+    case SCR_TORMENT:            return T_("torment");
+    case SCR_IMMOLATION:         return T_("immolation");
+    case SCR_POISON:             return T_("poison");
+    case SCR_BUTTERFLIES:        return T_("butterflies");
+    case SCR_BLINKING:           return T_("blinking");
+    case SCR_REVELATION:         return T_("revelation");
+    case SCR_FOG:                return T_("fog");
+    case SCR_ACQUIREMENT:        return T_("acquirement");
+    case SCR_BRAND_WEAPON:       return T_("brand weapon");
+    case SCR_VULNERABILITY:      return T_("vulnerability");
+    case SCR_SILENCE:            return T_("silence");
+    case SCR_AMNESIA:            return T_("amnesia");
 #if TAG_MAJOR_VERSION == 34
-    case SCR_HOLY_WORD:          return "holy word";
-    case SCR_CURSE_WEAPON:       return "curse weapon";
-    case SCR_CURSE_ARMOUR:       return "curse armour";
-    case SCR_CURSE_JEWELLERY:    return "curse jewellery";
+    case SCR_HOLY_WORD:          return T_("holy word");
+    case SCR_CURSE_WEAPON:       return T_("curse weapon");
+    case SCR_CURSE_ARMOUR:       return T_("curse armour");
+    case SCR_CURSE_JEWELLERY:    return T_("curse jewellery");
 #endif
     default:                     return item_type_removed(OBJ_SCROLLS,
                                                           scrolltype)
@@ -969,76 +901,40 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
 {
     if (!terse)
     {
-        if (Options.language == lang_t::ZH)
-        {
-            static const map<int, const char*> zh_names = {
-                { RING_PROTECTION, "防护" },
-                { RING_PROTECTION_FROM_FIRE, "防火" },
-                { RING_POISON_RESISTANCE, "抗毒" },
-                { RING_PROTECTION_FROM_COLD, "防寒" },
-                { RING_SLAYING, "杀戮" },
-                { RING_SEE_INVISIBLE, "识破隐形" },
-                { RING_RESIST_CORROSION, "抗酸蚀" },
-                { RING_EVASION, "闪避" },
-                { RING_STEALTH, "潜行" },
-                { RING_STRENGTH, "力量" },
-                { RING_DEXTERITY, "敏捷" },
-                { RING_INTELLIGENCE, "智力" },
-                { RING_WIZARDRY, "精准施法" },
-                { RING_MAGICAL_POWER, "魔力强化" },
-                { RING_FLIGHT, "飞行" },
-                { RING_POSITIVE_ENERGY, "正能量" },
-                { RING_WILLPOWER, "意志力" },
-                { AMU_MANA_REGENERATION, "魔力再生" },
-                { AMU_ACROBAT, "闪避强化" },
-                { AMU_GUARDIAN_SPIRIT, "守护之灵" },
-                { AMU_FAITH, "信仰" },
-                { AMU_REFLECTION, "伤害反射" },
-                { AMU_REGENERATION, "生命再生" },
-                { AMU_WILDSHAPE, "野性变形" },
-                { AMU_CHEMISTRY, "炼金术" },
-                { AMU_DISSIPATION, "消散" },
-                { AMU_NOTHING, "虚无" },
-            };
-            auto it = zh_names.find(jeweltype);
-            if (it != zh_names.end())
-                return it->second;
-        }
-
         switch (static_cast<jewellery_type>(jeweltype))
         {
 #if TAG_MAJOR_VERSION == 34
         case RING_REGENERATION:          return "obsoleteness";
         case RING_ATTENTION:             return "obsoleteness";
 #endif
-        case RING_PROTECTION:            return "protection";
-        case RING_PROTECTION_FROM_FIRE:  return "protection from fire";
-        case RING_POISON_RESISTANCE:     return "poison resistance";
-        case RING_PROTECTION_FROM_COLD:  return "protection from cold";
-        case RING_SLAYING:               return "slaying";
-        case RING_SEE_INVISIBLE:         return "see invisible";
-        case RING_RESIST_CORROSION:      return "resist corrosion";
-        case RING_EVASION:               return "evasion";
-        case RING_STEALTH:               return "stealth";
+        case RING_PROTECTION:            return T_("protection");
+        case RING_PROTECTION_FROM_FIRE:  return T_("protection from fire");
+        case RING_POISON_RESISTANCE:     return T_("poison resistance");
+        case RING_PROTECTION_FROM_COLD:  return T_("protection from cold");
+        case RING_SLAYING:               return T_("slaying");
+        case RING_SEE_INVISIBLE:         return T_("see invisible");
+        case RING_RESIST_CORROSION:      return T_("resist corrosion");
+        case RING_EVASION:               return T_("evasion");
+        case RING_STEALTH:               return T_("stealth");
 #if TAG_MAJOR_VERSION == 34
         case RING_SUSTAIN_ATTRIBUTES:    return "obsoleteness";
 #endif
-        case RING_STRENGTH:              return "strength";
-        case RING_DEXTERITY:             return "dexterity";
-        case RING_INTELLIGENCE:          return "intelligence";
-        case RING_WIZARDRY:              return "wizardry";
-        case RING_MAGICAL_POWER:         return "magical power";
-        case RING_FLIGHT:                return "flight";
-        case RING_POSITIVE_ENERGY:       return "positive energy";
-        case RING_WILLPOWER:             return "willpower";
+        case RING_STRENGTH:              return T_("strength");
+        case RING_DEXTERITY:             return T_("dexterity");
+        case RING_INTELLIGENCE:          return T_("intelligence");
+        case RING_WIZARDRY:              return T_("wizardry");
+        case RING_MAGICAL_POWER:         return T_("magical power");
+        case RING_FLIGHT:                return T_("flight");
+        case RING_POSITIVE_ENERGY:       return T_("positive energy");
+        case RING_WILLPOWER:             return T_("willpower");
 #if TAG_MAJOR_VERSION == 34
         case RING_FIRE:                  return "obsoleteness";
         case RING_ICE:                   return "obsoleteness";
         case RING_TELEPORTATION:         return "obsoleteness";
         case RING_TELEPORT_CONTROL:      return "obsoleteness";
 #endif
-        case AMU_MANA_REGENERATION:      return "magic regeneration";
-        case AMU_ACROBAT:                return "the acrobat";
+        case AMU_MANA_REGENERATION:      return T_("magic regeneration");
+        case AMU_ACROBAT:                return T_("the acrobat");
 #if TAG_MAJOR_VERSION == 34
         case AMU_RAGE:                   return "obsoleteness";
         case AMU_THE_GOURMAND:           return "obsoleteness";
@@ -1047,14 +943,14 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case AMU_CONTROLLED_FLIGHT:      return "obsoleteness";
         case AMU_INACCURACY:             return "obsoleteness";
 #endif
-        case AMU_GUARDIAN_SPIRIT:        return "guardian spirit";
-        case AMU_FAITH:                  return "faith";
-        case AMU_REFLECTION:             return "reflection";
-        case AMU_REGENERATION:           return "regeneration";
-        case AMU_WILDSHAPE:              return "wildshape";
-        case AMU_CHEMISTRY:              return "chemistry";
-        case AMU_DISSIPATION:            return "dissipation";
-        case AMU_NOTHING:                return "nothing";
+        case AMU_GUARDIAN_SPIRIT:        return T_("guardian spirit");
+        case AMU_FAITH:                  return T_("faith");
+        case AMU_REFLECTION:             return T_("reflection");
+        case AMU_REGENERATION:           return T_("regeneration");
+        case AMU_WILDSHAPE:              return T_("wildshape");
+        case AMU_CHEMISTRY:              return T_("chemistry");
+        case AMU_DISSIPATION:            return T_("dissipation");
+        case AMU_NOTHING:                return T_("nothing");
         default: return "buggy jewellery";
         }
     }
@@ -1134,12 +1030,9 @@ static const char* _jewellery_class_name(int jeweltype)
         return "buggy"; // "buggy buggy jewellery"
     }
 
-    if (Options.language == lang_t::ZH)
-        return jeweltype < NUM_RINGS ? "戒指" : "护身符";
-
     if (jeweltype < NUM_RINGS)
-        return "ring of";
-    return "amulet of";
+        return T_("ring of");
+    return T_("amulet of");
 }
 
 /**
@@ -1153,6 +1046,7 @@ static string jewellery_type_name(int jeweltype)
     const char* effect = jewellery_effect_name(jeweltype);
     const char* cls = _jewellery_class_name(jeweltype);
 
+    // TODO: ARG-DIFF — ZH: effect+cls, EN: cls+effect (different word order)
     if (Options.language == lang_t::ZH)
         return make_stringf("%s%s", effect, cls);
 
@@ -1241,9 +1135,7 @@ const char* rune_type_name(short p)
 
 static string gem_type_name(gem_type g)
 {
-    if (Options.language == lang_t::ZH)
-        return string(gem_adj(g)) + "宝石";
-    return string(gem_adj(g)) + " gem";
+    return string(gem_adj(g)) + T_(" gem");
 }
 
 static string misc_type_name(int type)
@@ -1253,58 +1145,37 @@ static string misc_type_name(int type)
         return "removed deck";
 #endif
 
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<int, const char*> zh_names = {
-            { MISC_BOX_OF_BEASTS, "百兽之盒" },
-            { MISC_HORN_OF_GERYON, "格律翁之角" },
-            { MISC_LIGHTNING_ROD, "闪电之杖" },
-            { MISC_QUAD_DAMAGE, "四倍伤害" },
-            { MISC_PHIAL_OF_FLOODS, "洪水之瓶" },
-            { MISC_SACK_OF_SPIDERS, "蜘蛛之袋" },
-            { MISC_PHANTOM_MIRROR, "幻影之镜" },
-            { MISC_ZIGGURAT, "通天塔雕像" },
-            { MISC_TIN_OF_TREMORSTONES, "震颤石之罐" },
-            { MISC_CONDENSER_VANE, "凝聚之翼" },
-            { MISC_GRAVITAMBOURINE, "盖尔的重力铃鼓" },
-            { MISC_SHOP_VOUCHER, "商店代金券" },
-        };
-        auto it = zh_names.find(type);
-        if (it != zh_names.end())
-            return it->second;
-    }
-
     switch (static_cast<misc_item_type>(type))
     {
 #if TAG_MAJOR_VERSION == 34
     case MISC_CRYSTAL_BALL_OF_ENERGY:    return "removed crystal ball";
 #endif
-    case MISC_BOX_OF_BEASTS:             return "box of beasts";
+    case MISC_BOX_OF_BEASTS:             return T_("box of beasts");
 #if TAG_MAJOR_VERSION == 34
     case MISC_BUGGY_EBONY_CASKET:        return "removed ebony casket";
     case MISC_FAN_OF_GALES:              return "removed fan of gales";
     case MISC_LAMP_OF_FIRE:              return "removed lamp of fire";
     case MISC_BUGGY_LANTERN_OF_SHADOWS:  return "removed lantern of shadows";
 #endif
-    case MISC_HORN_OF_GERYON:            return "horn of Geryon";
-    case MISC_LIGHTNING_ROD:             return "lightning rod";
+    case MISC_HORN_OF_GERYON:            return T_("horn of Geryon");
+    case MISC_LIGHTNING_ROD:             return T_("lightning rod");
 #if TAG_MAJOR_VERSION == 34
     case MISC_BOTTLED_EFREET:            return "empty flask";
     case MISC_RUNE_OF_ZOT:               return "obsolete rune of zot";
     case MISC_STONE_OF_TREMORS:          return "removed stone of tremors";
 #endif
-    case MISC_QUAD_DAMAGE:               return "quad damage";
-    case MISC_PHIAL_OF_FLOODS:           return "phial of floods";
-    case MISC_SACK_OF_SPIDERS:           return "sack of spiders";
-    case MISC_PHANTOM_MIRROR:            return "phantom mirror";
-    case MISC_ZIGGURAT:                  return "figurine of a ziggurat";
+    case MISC_QUAD_DAMAGE:               return T_("quad damage");
+    case MISC_PHIAL_OF_FLOODS:           return T_("phial of floods");
+    case MISC_SACK_OF_SPIDERS:           return T_("sack of spiders");
+    case MISC_PHANTOM_MIRROR:            return T_("phantom mirror");
+    case MISC_ZIGGURAT:                  return T_("figurine of a ziggurat");
 #if TAG_MAJOR_VERSION == 34
     case MISC_XOMS_CHESSBOARD:           return "removed chess piece";
 #endif
-    case MISC_TIN_OF_TREMORSTONES:       return "tin of tremorstones";
-    case MISC_CONDENSER_VANE:            return "condenser vane";
-    case MISC_GRAVITAMBOURINE:           return "Gell's gravitambourine";
-    case MISC_SHOP_VOUCHER:              return "shop voucher";
+    case MISC_TIN_OF_TREMORSTONES:       return T_("tin of tremorstones");
+    case MISC_CONDENSER_VANE:            return T_("condenser vane");
+    case MISC_GRAVITAMBOURINE:           return T_("Gell's gravitambourine");
+    case MISC_SHOP_VOUCHER:              return T_("shop voucher");
 
     default:
         return "buggy miscellaneous item";
@@ -1446,58 +1317,29 @@ const char *base_type_string(const item_def &item)
 
 const char *base_type_string(object_class_type type)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        switch (type)
-        {
-        case OBJ_WEAPONS: return "武器";
-        case OBJ_MISSILES: return "投掷物";
-        case OBJ_ARMOUR: return "护甲";
-        case OBJ_WANDS: return "魔杖";
-        case OBJ_SCROLLS: return "卷轴";
-        case OBJ_JEWELLERY: return "珠宝";
-        case OBJ_POTIONS: return "药水";
-        case OBJ_BOOKS: return "书籍";
-        case OBJ_STAVES: return "法杖";
-#if TAG_MAJOR_VERSION == 34
-        case OBJ_RODS: return "已移除的棒";
-#endif
-        case OBJ_ORBS: return "宝珠";
-        case OBJ_MISCELLANY: return "杂物";
-        case OBJ_CORPSES: return "尸体";
-        case OBJ_GOLD: return "金币";
-        case OBJ_RUNES: return "符文";
-        case OBJ_GEMS: return "宝石";
-        case OBJ_TALISMANS: return "护符";
-        case OBJ_GIZMOS: return "小装置";
-        case OBJ_BAUBLES: return "小饰品";
-        default: return "";
-        }
-    }
-
     switch (type)
     {
-    case OBJ_WEAPONS: return "weapon";
-    case OBJ_MISSILES: return "missile";
-    case OBJ_ARMOUR: return "armour";
-    case OBJ_WANDS: return "wand";
-    case OBJ_SCROLLS: return "scroll";
-    case OBJ_JEWELLERY: return "jewellery";
-    case OBJ_POTIONS: return "potion";
-    case OBJ_BOOKS: return "book";
-    case OBJ_STAVES: return "staff";
+    case OBJ_WEAPONS: return T_("weapon");
+    case OBJ_MISSILES: return T_("missile");
+    case OBJ_ARMOUR: return T_("armour");
+    case OBJ_WANDS: return T_("wand");
+    case OBJ_SCROLLS: return T_("scroll");
+    case OBJ_JEWELLERY: return T_("jewellery");
+    case OBJ_POTIONS: return T_("potion");
+    case OBJ_BOOKS: return T_("book");
+    case OBJ_STAVES: return T_("staff");
 #if TAG_MAJOR_VERSION == 34
     case OBJ_RODS: return "removed rod";
 #endif
-    case OBJ_ORBS: return "orb";
-    case OBJ_MISCELLANY: return "miscellaneous";
-    case OBJ_CORPSES: return "corpse";
-    case OBJ_GOLD: return "gold";
-    case OBJ_RUNES: return "rune";
-    case OBJ_GEMS: return "gem";
-    case OBJ_TALISMANS: return "talisman";
-    case OBJ_GIZMOS: return "gizmo";
-    case OBJ_BAUBLES: return "bauble";
+    case OBJ_ORBS: return T_("orb");
+    case OBJ_MISCELLANY: return T_("miscellaneous");
+    case OBJ_CORPSES: return T_("corpse");
+    case OBJ_GOLD: return T_("gold");
+    case OBJ_RUNES: return T_("rune");
+    case OBJ_GEMS: return T_("gem");
+    case OBJ_TALISMANS: return T_("talisman");
+    case OBJ_GIZMOS: return T_("gizmo");
+    case OBJ_BAUBLES: return T_("bauble");
     default: return "";
     }
 }
@@ -1832,10 +1674,9 @@ static string _name_weapon(const item_def &weap, description_level_type desc,
     const string name_with_ego
         = identified && !dbname ? weapon_brand_desc(base_name.c_str(), weap, terse)
         : base_name;
-    const bool zh_weap = Options.language == lang_t::ZH;
     const string curse_suffix
         = weap.cursed() && terse && !dbname && !qualname
-          ? (zh_weap ? "（诅咒）" : " (curse)") :  "";
+          ? T_(" (curse)") :  "";
     return curse_prefix + plus_text + cosmetic_text
            + name_with_ego + curse_suffix;
 }
@@ -2232,6 +2073,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             break;
         }
         if (basename)
+            // TODO: ARG-DIFF — "manual" context collision with skill-menu.cc
             buff << (Options.language == lang_t::ZH
                      ? (item_typ == BOOK_MANUAL ? "手册" : "书")
                      : (item_typ == BOOK_MANUAL ? "manual" : "book"));

@@ -7555,3 +7555,522 @@ You focus your inner power and drain %s's magic in retribution!
 %%%%
  acknowledges your contrition and permits you to depart the Crucible.
  认可了你的忏悔，允许你离开熔炉。
+%%%%
+ forgives your inadvertent evil act, just this once.
+
+%%%%
+, %d MP
+，%d 魔力
+
+%%%%
+, Permanent MP (%d remaining)
+，永久魔力（剩余%d）
+
+%%%%
+, %d HP
+，%d 生命
+
+%%%%
+, Piety %s
+，虔诚值%s
+
+%%%%
+, %d/%d uses available
+，%d/%d 次可用
+
+%%%%
+, %d Gold
+，%d 金币
+
+%%%%
+You cannot shoot with your %s while %s.
+你在%2$s时无法用你的%1$s射击。
+
+%%%%
+your lifeless body
+你的尸体
+
+%%%%
+ armed with 
+ 装备着 
+
+%%%%
+ wielding 
+ 挥舞着 
+%%%%
+ forgives your inadvertent chaotic act, just this once.
+ 原谅了你无意中的混乱行为，下不为例。
+%%%%
+ forgives your inadvertent holy act, just this once.
+ 原谅了你无意中的神圣行为，下不为例。
+%%%%
+ forgives your accidental hurry, just this once.
+ 原谅了你意外的匆忙行为，下不为例。
+%%%%
+ forgives your inadvertent attack on a neutral, just this once.
+ 原谅了你对中立者的无意攻击，下不为例。
+%%%%
+ forgives your inadvertent attack on an ally, just this once.
+ 原谅了你对盟友的无意攻击，下不为例。
+%%%%
+ forgives your inadvertent unclean act, just this once.
+ 原谅了你无意中的不洁行为，下不为例。
+%%%%
+ is not enthusiastic about the mutagenic glow surrounding you.
+ 对你周围的变异光芒不太感兴趣。
+%%%%
+ does not appreciate the extra mutagenic glow surrounding you!
+ 对你周围额外的变异光芒感到不满！
+%%%%
+ accepts your kill.
+ 接受了你的杀戮。
+%%%%
+ appreciates your killing of a magic user.
+ 对你杀死魔法使用者表示赞赏。
+%%%%
+ claims a new guest.
+ 又收纳了一位新客人。
+%%%%
+ appreciates your killing of a heretic priest.
+ 对你杀死异端牧师表示赞赏。
+%%%%
+<white>%s is honoured by your kill.</white>
+<white>%s因你的杀戮而感到荣耀。</white>
+%%%%
+ appreciates your contribution to the ecosystem.
+ 对你为生态系统做出的贡献表示赞赏。
+%%%%
+ thoroughly appreciates the change of pace.
+ 非常欣赏这种节奏的变化。
+%%%%
+ appreciates the change of pace.
+ 欣赏这种节奏的变化。
+%%%%
+ dislikes it when %s.
+讨厌当%s。
+%%%%
+ strongly dislikes it when %s.
+非常讨厌当%s。
+%%%%
+ likes it when %s.
+喜欢当%s。
+%%%%
+ especially likes it when %s.
+特别喜欢当%s。
+%%%%
+This altar belongs to %s, but you can't tell which.\nPress the corresponding letter to learn more about a god, or press enter to convert or escape to cancel.
+这个祭坛属于%s，但你无法分辨是哪位神祇。\n按对应字母了解神祇详情，按回车皈依或按Esc取消。
+%%%%
+Really abandon %s for an unknown god?
+真的要为了未知神祇放弃%s吗？
+%%%%
+A being of your status worships no god.
+像你这样的存在不崇拜任何神祇。
+%%%%
+You pay a tithe of %d gold.
+你缴纳了%d金币的什一税。
+%%%%
+Bound item
+绑定物品
+%%%%
+Curse bonuses
+诅咒加成
+%%%%
+You have no religion.
+你不信仰任何神祇。
+%%%%
+Attack
+攻击
+%%%%
+Attacks
+攻击方式
+%%%%
+You can now %s.
+你现在可以%s了。
+%%%%
+You can no longer %s.
+你不再能%s了。
+%%%%
+You have enough gold to %s.
+你有足够的金币来%s。
+%%%%
+, with one final cry of rage, burns out of existence.
+发出最后一声怒吼，燃烧殆尽。
+%%%%
+ seems mollified%s.
+被安抚了%s。
+%%%%
+, and vanishes
+，然后消失了
+%%%%
+%s regains the memory of %s %s.
+%s恢复了%s%s的记忆。
+%%%%
+You feel%sguilty.
+你感到%s愧疚。
+%%%%
+ a little 
+有点
+%%%%
+ very 
+非常
+%%%%
+ extremely 
+极其
+%%%%
+ forms a fragment of your life essence into the memory of your ancestor, %s!
+将你的一部分生命精华凝聚为你先祖%s的记忆！
+%%%%
+%s removes the imprint of %s from your paragon.
+%s从你的典范武器上抹去了%s的印记。
+%%%%
+You will suffer for embracing such %s
+你将因拥抱这样的%s而受苦
+%%%%
+chaos
+混乱
+%%%%
+evil
+邪恶
+%%%%
+%s goes dull and lifeless in your grasp.
+%s在你手中变得暗淡无光，毫无生气。
+%%%%
+You feel the divine notice you fully once more.
+你感到神明再次完全注意到了你。
+%%%%
+burns
+灼烧
+%%%%
+foxfire
+狐火
+%%%%
+shooting star
+流星
+%%%%
+poisoned
+淬毒
+%%%%
+curare-tipped
+涂箭毒
+%%%%
+curare
+箭毒
+%%%%
+datura-tipped
+涂曼陀罗
+%%%%
+datura
+曼陀罗
+%%%%
+disperse
+驱
+%%%%
+dispersal
+驱散
+%%%%
+disjunct
+移位
+%%%%
+disjunction
+位移
+%%%%
+atropa-tipped
+涂颠茄
+%%%%
+atropa
+颠茄
+%%%%
+flame
+火焰
+%%%%
+paralysis
+麻痹
+%%%%
+digging
+挖掘
+%%%%
+iceblast
+冰爆
+%%%%
+polymorph
+变形
+%%%%
+charming
+魅惑
+%%%%
+acid
+强酸
+%%%%
+mindburst
+心灵冲击
+%%%%
+light
+光亮
+%%%%
+quicksilver
+水银
+%%%%
+roots
+根须
+%%%%
+warping
+扭曲
+%%%%
+curing
+治疗
+%%%%
+heal wounds
+疗伤
+%%%%
+haste
+加速
+%%%%
+might
+力量
+%%%%
+attraction
+吸引
+%%%%
+brilliance
+智慧
+%%%%
+enlightenment
+启迪
+%%%%
+cancellation
+消除
+%%%%
+ambrosia
+神食
+%%%%
+invisibility
+隐形
+%%%%
+moonshine
+月光
+%%%%
+experience
+经验
+%%%%
+berserk rage
+狂暴
+%%%%
+mutation
+突变
+%%%%
+resistance
+抗性
+%%%%
+lignification
+木质化
+%%%%
+identify
+鉴定
+%%%%
+teleportation
+传送
+%%%%
+fear
+恐惧
+%%%%
+noise
+噪音
+%%%%
+summoning
+召唤
+%%%%
+enchant weapon
+附魔武器
+%%%%
+enchant armour
+附魔护甲
+%%%%
+immolation
+自焚
+%%%%
+butterflies
+蝴蝶
+%%%%
+blinking
+闪烁
+%%%%
+revelation
+启示
+%%%%
+fog
+云雾
+%%%%
+acquirement
+获取
+%%%%
+brand weapon
+烙印武器
+%%%%
+vulnerability
+脆弱
+%%%%
+amnesia
+遗忘
+%%%%
+holy word
+圣言
+%%%%
+curse weapon
+诅咒武器
+%%%%
+curse armour
+诅咒护甲
+%%%%
+curse jewellery
+诅咒珠宝
+%%%%
+protection
+防护
+%%%%
+protection from fire
+防火
+%%%%
+poison resistance
+抗毒
+%%%%
+protection from cold
+防寒
+%%%%
+slaying
+杀戮
+%%%%
+see invisible
+识破隐形
+%%%%
+resist corrosion
+抗酸蚀
+%%%%
+evasion
+闪避
+%%%%
+stealth
+潜行
+%%%%
+dexterity
+敏捷
+%%%%
+intelligence
+智力
+%%%%
+wizardry
+精准施法
+%%%%
+magical power
+魔力强化
+%%%%
+flight
+飞行
+%%%%
+positive energy
+正能量
+%%%%
+willpower
+意志力
+%%%%
+magic regeneration
+魔力再生
+%%%%
+the acrobat
+闪避强化
+%%%%
+regeneration
+生命再生
+%%%%
+wildshape
+野性变形
+%%%%
+chemistry
+炼金术
+%%%%
+dissipation
+消散
+%%%%
+nothing
+虚无
+%%%%
+ring of
+戒指
+%%%%
+amulet of
+护身符
+%%%%
+ gem
+宝石
+%%%%
+box of beasts
+百兽之盒
+%%%%
+horn of Geryon
+格律翁之角
+%%%%
+lightning rod
+闪电之杖
+%%%%
+quad damage
+四倍伤害
+%%%%
+phial of floods
+洪水之瓶
+%%%%
+sack of spiders
+蜘蛛之袋
+%%%%
+phantom mirror
+幻影之镜
+%%%%
+figurine of a ziggurat
+通天塔雕像
+%%%%
+tin of tremorstones
+震颤石之罐
+%%%%
+condenser vane
+凝聚之翼
+%%%%
+Gell's gravitambourine
+盖尔的重力铃鼓
+%%%%
+shop voucher
+商店代金券
+%%%%
+missile
+投掷物
+%%%%
+jewellery
+珠宝
+%%%%
+orb
+宝珠
+%%%%
+miscellaneous
+杂物
+%%%%
+rune
+符文
+%%%%
+talisman
+护符
+%%%%
+gizmo
+小装置
+%%%%
+bauble
+小饰品
+%%%%
+scroll
+卷轴
+%%%%
+strength
+力量
+%%%%
+book
+书籍
+%%%%
+gold
+金币

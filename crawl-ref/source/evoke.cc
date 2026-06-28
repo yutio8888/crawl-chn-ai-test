@@ -293,6 +293,7 @@ static bool _box_of_beasts()
         return true;
     }
 
+    // TODO: ARG-DIFF - second argument is language-dependent (飞/跳 vs flies/leaps)
     if (Options.language == lang_t::ZH)
         mprf("...%s%s了出来！",
              mons->name(DESC_A).c_str(),

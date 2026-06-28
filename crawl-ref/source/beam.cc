@@ -3560,7 +3560,6 @@ bool bolt::misses_player()
                                         spell_title(origin_spell) :
                                         beam_name;
 
-            const bool zh = Options.language == lang_t::ZH;
             const item_def *shield = you.shield();
             if (is_reflectable(you))
             {
@@ -4448,11 +4447,9 @@ void bolt::affect_player()
                 hit_verb = engulfs ? (T_("engulfs"))
                                    : (T_("hits"));
             const string beam_name = _beam_display_name(*this);
-            const bool zh = Options.language == lang_t::ZH;
             mprf(T_("The %s %s %s!"),
                  beam_name.c_str(), hit_verb.c_str(),
-                 zh ? (you.hp > 0 ? "你" : "你的尸体")
-                    : (you.hp > 0 ? "you" : "your lifeless body"));
+                 you.hp > 0 ? T_("you") : T_("your lifeless body"));
         }
 
         affect_player_enchantment();
@@ -5604,7 +5601,6 @@ bool bolt::attempt_block(monster* mon)
         return false;
 
     const string beam_name = _beam_display_name(*this);
-    const bool zh = Options.language == lang_t::ZH;
     item_def *shield = mon->mslot_item(MSLOT_SHIELD);
     if (is_reflectable(*mon))
     {
@@ -5612,7 +5608,8 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                if (zh)
+                // TODO: ARG-DIFF - different argument order (EN: mon, beam, pos, shield | ZH: mon, pos, shield, beam)
+                if (Options.language == lang_t::ZH)
                     mprf("%s用%s%s格挡了%s……并将其反射了回去！",
                          mon->name(DESC_THE).c_str(),
                          mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
@@ -5909,9 +5906,7 @@ void bolt::affect_monster(monster* mon)
     {
         // Monsters are never currently helpless in ranged combat.
         if (hit_verb.empty())
-            hit_verb = (Options.language == lang_t::ZH)
-                       ? (engulfs ? "吞噬" : "击中")
-                       : (engulfs ? "engulfs" : "hits");
+            hit_verb = T_(engulfs ? "engulfs" : "hits");
 
         // If the beam did no damage because of resistances,
         // mons_adjust_flavoured below will print "%s completely resists", so

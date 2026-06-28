@@ -3884,8 +3884,7 @@ spret cast_searing_ray(actor& agent, int pow, bolt &beam, bool fail)
 
     // Announce lock-on, if this causes one.
     if (targ && !beam.aimed_at_spot && agent.is_player())
-        mprf(Options.language == lang_t::ZH ? "你将灼热射线聚焦在%s身上。"
-                : "You focus your ray upon %s.",
+        mprf(T_("You focus your ray upon %s."),
              targ->name(DESC_THE).c_str());
 
     if (agent.is_player())
@@ -3960,8 +3959,7 @@ bool handle_searing_ray(actor& agent, int turn)
 
         if (turn > 3)
         {
-            mpr(Options.language == lang_t::ZH ? "你结束了灼热射线的持续施放。"
-                    : "You finish channelling your searing ray.");
+            mpr(T_("You finish channelling your searing ray."));
             stop_channelling_spells(true);
         }
     }
@@ -4250,13 +4248,8 @@ void seeker_attack(monster& seeker, actor& target, coord_def attack_pos)
     beam.set_agent(summoner);
     zappy(ztype, seeker.get_hit_dice(), !seeker.friendly(), beam);
     beam.target      = target.pos();
-    if (Options.language == lang_t::ZH)
-    {
-        beam.name = seeker.type == MONS_FOXFIRE ? "狐火" : "流星";
-        beam.hit_verb = seeker.type == MONS_FOXFIRE ? "灼烧" : "击中";
-    }
-    else
-        beam.hit_verb = seeker.type == MONS_FOXFIRE ? "burns" : "hits";
+    beam.name = seeker.type == MONS_FOXFIRE ? T_("foxfire") : T_("shooting star");
+    beam.hit_verb = seeker.type == MONS_FOXFIRE ? T_("burns") : T_("hits");
     beam.fire();
 
     place_cloud(seeker_trail_type(seeker), seeker.pos(), 2, &seeker);

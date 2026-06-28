@@ -22,6 +22,148 @@ the main repository's index and working tree, leading to false "staged changes".
 This ensures the main repository's index and working tree stay in sync with
 the branch reference, avoiding the stale-index problem caused by `update-ref`.
 
+
+## Agent Auto-Routing
+
+When the user's request matches a scenario below, **delegate to the specified
+agent** using the Agent tool. Do NOT handle these tasks inline.
+
+### Translation → `zh-translator` agent
+
+| Trigger | Example |
+|---------|---------|
+| Translate text / files | "翻译这个文件", "translate these god descriptions" |
+| Add T_() entries | "把这些字符串加到 source.txt", "add T_() for this" |
+| Convert hardcoded ZH to T_() | "把这个文件的硬编码中文改成 T_() 形式" |
+| Batch i18n operations | "批量翻译这批 %%%%% 条目" |
+
+```
+Agent(subagent_type="zh-translator", description="Translate <target>",
+  prompt="<full translation task with file paths and context>")
+```
+
+### Code Implementation → `crawl-coder` agent
+
+| Trigger | Example |
+|---------|---------|
+| C++ source modification | "修一下这个 bug", "把这个函数加上 language guard" |
+| T_() migration (code side) | "把这个文件迁移到 T_()", "add T_() guard to mprf calls" |
+| TextDB / .txt data files | "更新 zh/source.txt", "fix %%%% separators" |
+| Compilation / build fixes | "编译报错了帮我修", "fix the build" |
+
+```
+Agent(subagent_type="crawl-coder", description="Implement <change>",
+  prompt="<full implementation task with file paths and requirements>")
+```
+
+### Code Review → `zh-code-reviewer` agent
+
+Dedicated code review for translation-related source changes. Use this when the
+user asks to review code, check correctness, or audit implementation quality.
+
+| Trigger | Example |
+|---------|---------|
+| Code review | "帮我 review 这个 commit", "审查代码改动" |
+| T_() migration review | "检查 T_() 迁移是否正确", "review the T_() changes" |
+| Protocol/display audit | "检查有没有 protocol 泄露", "audit display vs protocol separation" |
+| Database integrity | "检查 TextDB 完整性", "verify %%%% parity" |
+| Translation bug investigation | "这个翻译 bug 根因是什么", "analyze this i18n issue" |
+
+```
+Agent(subagent_type="zh-code-reviewer", description="Review <scope>",
+  prompt="<review scope: commit hash, file list, or diff>")
+```
+
+### Translation Quality Review → `translation-reviewer` agent
+
+Content-level review of Chinese translation quality. Use this for language
+quality, terminology consistency, and character voice checks.
+
+| Trigger | Example |
+|---------|---------|
+| Translation quality | "审查翻译质量", "review translation content" |
+| Terminology consistency | "检查神名一致性", "verify terminology across files" |
+| Content accuracy | "对比中英文内容是否一致", "check EN/ZH parity" |
+| Character voice | "角色语气对不对", "check character voice consistency" |
+
+```
+Agent(subagent_type="translation-reviewer", description="Review <scope>",
+  prompt="<review scope: commit hash, file list, or diff>")
+```
+
+### Full Pipeline → `translation-pipeline` workflow
+
+For complex issues requiring the full document → analyze → translate → review →
+execute cycle:
+
+| Trigger | Example |
+|---------|---------|
+| "有个翻译问题" | "神名翻译不一致，帮我看看" |
+| "translation bug" | "There's a bug in the Chinese UI text" |
+| New issue from scratch | "帮我处理 Issue #N" |
+
+```
+Skill("translation-pipeline", args={problem: "<description>"})
+```
+
+### Code Exploration → `Explore` agent
+
+| Trigger | Example |
+|---------|---------|
+| Search / find in codebase | "查找所有未翻译的 mprf", "where is spell_title defined" |
+
+```
+Agent(subagent_type="Explore", description="Find <target>",
+  prompt="<search task>")
+```
+
+### Fallback
+
+Tasks that don't match any agent above (general discussion, planning, simple git
+operations, quick questions) → handle inline. Multi-step complex tasks that span
+categories → break into steps, dispatch each step to the right agent.
+
+
+## Pre-Commit Code Review (MANDATORY)
+
+**Before any `git commit` that touches `crawl-ref/source/`, you MUST run code
+review. This is non-negotiable — the same way you must compile before committing.**
+
+### Scope
+
+Trigger when the staged diff includes any of:
+- `crawl-ref/source/*.cc`, `*.h` — C++ source
+- `crawl-ref/source/dat/i18n/zh/*.txt` — T_() translation data
+- `crawl-ref/source/dat/descript/zh/*.txt` — description database
+- `crawl-ref/source/dat/database/zh/*.txt` — TextDB entries
+
+Skip for: merge commits, `.claude/` only, `~/projects/issues/` only, or `CLAUDE.md` only.
+
+### Workflow
+
+```
+1. git diff --cached                    # Get staged changes
+2. Agent(zh-code-reviewer,              # Spawn code review
+     prompt="review the staged diff for this commit:
+              $(git diff --cached)")
+3. Wait for verdict
+```
+
+### Verdict Action
+
+| Verdict | Action |
+|---------|--------|
+| **Go** | Proceed with `git commit` |
+| **Conditional Go** | Fix 🟡 issues if quick (<2 min), otherwise note them and proceed |
+| **No-Go** | Fix 🔴 blockers → `make -j8` verify → re-review → repeat from step 1 |
+
+### Commit Message Convention
+
+All commits MUST end with:
+```
+Co-Authored-By: Claude <noreply@anthropic.com>
+```
+
 ## Build Requirements & Commands
 
 **Important**: Always compile with `-j8` (8 parallel jobs). The WSL environment has

@@ -1,6 +1,6 @@
 ---
-name: translation-reviewer
-description: Systematic 5-layer review of DCSS Chinese translation quality. Checks structural integrity, content accuracy vs EN source, Chinese language quality, terminology/voice consistency, and cross-file coherence. Produces severity-graded reports with actionable fix suggestions.
+name: zh-code-reviewer
+description: Dedicated code review agent for DCSS Chinese translation — reviews C++ source changes, T_() migrations, TextDB operations, and i18n data files. Checks protocol/display separation, translation completeness, consistency, database integrity, and compilation.
 tools: Bash, Read, Grep, Glob
 model: inherit
 color: red

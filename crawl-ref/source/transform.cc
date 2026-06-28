@@ -1766,6 +1766,7 @@ bool transforming_is_unsafe(transformation which_trans)
 {
     if (feat_dangerous_for_form(which_trans, env.grid(you.pos())))
     {
+        // TODO: ARG-DIFF - first argument is language-dependent (解除变形/变形 vs Untransforming/Transforming)
         if (Options.language == lang_t::ZH)
         {
             mprf(MSGCH_PROMPT, "现在就%s会导致你%s！",
@@ -1801,6 +1802,7 @@ bool transforming_is_unsafe(transformation which_trans)
         if (item->cursed()
             || (is_artefact(*item) && artefact_property(*item, ARTP_FRAGILE)))
         {
+            // TODO: ARG-DIFF - first argument is language-dependent (解除变形/变形 vs Untransforming/Transforming)
             if (Options.language == lang_t::ZH)
                 mprf(MSGCH_PROMPT, "现在就%s会粉碎%s！",
                      which_trans == transformation::none ? "解除变形" : "变形",
@@ -2291,6 +2293,7 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     {
         for (item_def* item : forced_remove)
         {
+            // TODO: ARG-DIFF - second argument is language-dependent (，诅咒被粉碎了！ vs , shattering the curse!)
             if (Options.language == lang_t::ZH)
                 mprf("%s%s掉落了下来！", item->name(DESC_YOUR).c_str(),
                      item->cursed() ? "，诅咒被粉碎了！" : "");
@@ -2641,6 +2644,7 @@ bool vampire_mesmerism_check(monster& mon)
     {
         if (mon.check_willpower(&you, get_form()->get_effect_chance()) <= 0)
         {
+            // TODO: ARG-DIFF - Chinese has 2 %s specifiers, English has 3 (different mouth-count references)
             if (Options.language == lang_t::ZH)
                 mprf("%s在你的眼中%s失去了自我。",
                      mon.name(DESC_THE).c_str(),
