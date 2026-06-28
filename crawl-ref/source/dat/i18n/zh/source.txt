@@ -5869,3 +5869,216 @@ This spell is %s to cast%s
 %%%%
 This spell is impossible to cast!
 这个法术不可能被施放！
+
+# P0 hardcoded Chinese fix (2026-06-28)
+%%%%
+melt
+融化
+%%%%
+freeze
+冻结
+%%%%
+You become untethered in space!
+你在空间中失去了锚定！
+%%%%
+%s appears in a puff of smoke.
+%s在一阵烟雾中出现了。
+%%%%
+You call for your canine familiar and it appears with a howl!
+你呼唤你的犬类使魔，它伴随着一声嚎叫出现了！
+%%%%
+You imbue your familiar with magical energy and its fangs glint viciously.
+你为你的使魔注入了魔法能量，它的獠牙闪烁着光芒
+%%%%
+A prickly colossus appears in a rush of desert wind.
+一个多刺的巨像随着一阵沙漠之风出现了。
+%%%%
+You are not wearing any armour!
+你没有穿戴任何护甲！
+%%%%
+A cold wind forms around you.
+一阵寒风在你周围吹起。
+%%%%
+%s answers %s call!
+%s响应了%s的召唤！
+%%%%
+%s appears.
+%s出现了。
+%%%%
+You call out to the draconic realm, and the dragon horde roars back!
+你向龙族领域呼唤，龙群咆哮着回应了！
+%%%%
+A dragon tries to answer your call, but you don't have enough magical power!
+一条龙试图回应你的召唤，但你没有足够的
+%%%%
+A dragon arrives to answer your call!
+一条龙回应你的召唤到来了！
+%%%%
+A dragon appears.
+一条龙出现了。
+%%%%
+A mana viper appears with a sibilant hiss.
+一条魔力蝰蛇伴随着嘶嘶声出现了。
+%%%%
+You are briefly dazzled by a blinding flash.
+你被一道耀眼的光芒短暂地炫目了。
+%%%%
+You cannot see a target there!
+你在那里看不到目标！
+%%%%
+%s twitches.
+%s抽搐了一下。
+%%%%
+%s dances into the air!
+%s舞到了空中！
+%%%%
+You create some orbs of lightning!
+你制造了一些球形闪电！
+%%%%
+A hum of electricity fills the air.
+一阵电流的嗡鸣充满了空气。
+%%%%
+You bind the blast furnace heart with slag iron.
+你用熔渣铁绑定了鼓风炉之心。
+%%%%
+A tiny devil pulls itself out of the air.
+一个微小的恶魔从空气中拉出了自己。
+%%%%
+Somewhere, a butterfly flaps its wings.
+在某处，一只蝴蝶扇动了翅膀。
+%%%%
+You hear the flutter of tiny wings.
+你听到了细小翅膀的拍打声。
+%%%%
+Wisps of shadow whirl around you...
+暗影的细丝在你周围旋转……
+%%%%
+The shadows disperse without effect.
+暗影毫无效果地消散了。
+%%%%
+You open a gateway and unleash terrible monstrosities upon the world.
+你打开了一道传送门，将可怕的怪物释放到了世界上。
+%%%%
+A forested plane collides here with a resounding crunch!
+一个森林遍布的位面在这里碰撞，发出了响亮的嘎吱声！
+%%%%
+A malign force gathers, but soon dissipates.
+一股邪恶力量聚集了，但很快就消散了。
+%%%%
+You cannot possess a target not hostile to you.
+你无法附身于不对你怀有敌意的目标。
+%%%%
+Phantoms take shape in the air.
+虚无的人影在空中成形。
+%%%%
+A phantom takes shape in the air.
+一个虚无的人影在空中成形。
+%%%%
+You call forth a shade to shield your allies.
+你召唤出一个暗影来保护你的盟友。
+%%%%
+%s calls forth a shade to shield themselves.
+%s召唤出一个暗影来保护自己。
+%%%%
+%s %s a servant imbued with %s destructive magic!
+%s%s召唤了一个被%s毁灭魔法灌注的仆从！
+%%%%
+You recall your battlesphere and imbue it with extra charge.
+你召回了你的战斗球，并为它注入了额外的充能。
+%%%%
+You imbue your battlesphere with extra charge.
+你为你的战斗球注入了额外的充能。
+%%%%
+%s opens fire on %s!
+%s向%s开火了！
+%%%%
+%s %s an %s energy prism!
+%s%s创造了一个%s能量棱镜！
+%%%%
+%s tears apart, and %s grows in its place.
+%s被撕裂了，%s从它的位置长了出来。
+%%%%
+%s falls apart, but nothing grows.
+%s散架了，但什么也没长出来。
+%%%%
+%s summons some %s!
+%s召唤了一些%s！
+%%%%
+%s sends a boulder rolling forward!
+%s让一块巨石向前滚去！
+%%%%
+%s sculpts two cannons from ice!
+%s用冰雕刻了两门大炮！
+%%%%
+%s sculpts a cannon from ice!
+%s用冰雕刻了一门大炮！
+%%%%
+%s is in the way!
+%s挡住了路！
+%%%%
+%s's clockwork bee winds down and falls to the ground.
+%s的发条蜜蜂发条走完了，掉到了地上。
+%%%%
+%s's clockwork bee locks onto %s.
+%s的发条蜜蜂锁定了%s。
+%%%%
+%s dismounts %s alligator.
+%s从%s鳄鱼上下来了。
+%%%%
+%s constructs an explosive harbinger and releases it.
+%s构建了一个爆炸先驱并将其释放。
+%%%%
+%s deploys a miniature bomb.
+%s部署了一个小型炸弹。
+%%%%
+%s orders the %s explosives to detonate!
+%s命令%s炸药引爆！
+%%%%
+%s shatters into a volley of icicles!
+%s碎裂成了一阵冰柱齐射！
+%%%%
+%s forges a quick-moving defender to stand alongside %s.
+%s锻造了一个快速移动的防御者站在%s身边。
+%%%%
+You feel jittery for a moment.
+你短暂地感到紧张不安。
+%%%%
+You jump in place.
+你在原地跳了一下。
+%%%%
+You jump through the air!
+你跳过了空中！
+%%%%
+Please don't blink into the map border.
+请不要闪烁到地图边界。
+%%%%
+Please don't try to blink into monsters.
+请不要尝试闪烁到怪物身上。
+%%%%
+You tried to hop, but there was no room to land!
+你试图跳，但没有着陆的空间！
+%%%%
+Boing!
+蹦！
+%%%%
+you can't see anything to charge at.
+你看不到任何可以冲锋的目标。
+%%%%
+there's one issue or another keeping you from charging at any nearby foe.
+有各种问题阻止你向附近的任何敌人冲锋。
+%%%%
+You are hurled out of the way!
+你被猛烈地推开了！
+%%%%
+You charge forward in eerie silence!
+你在诡异的寂静中向前冲锋！
+%%%%
+You charge forward with an electric crackle!
+你伴随着电流的噼啪声向前冲锋！
+%%%%
+Oops! There was something there already!
+哎呀！那里已经有东西了！
+%%%%
+You feel strangely unstable.
+你感到异常的不稳定。
+
