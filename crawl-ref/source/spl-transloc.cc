@@ -142,7 +142,7 @@ void uncontrolled_blink(bool override_stasis, int max_distance)
     if (!random_near_space(&you, you.pos(), target, false, max_distance)
         && !random_near_space(&you, you.pos(), target, true, max_distance))
     {
-        mpr("你短暂地感到紧张不安。");
+        mpr(T_("You feel jittery for a moment."));
         return;
     }
 
@@ -167,7 +167,7 @@ spret spider_jump()
     if (!random_near_space(&you, you.pos(), target, false, you.current_vision)
         && !random_near_space(&you, you.pos(), target, true, you.current_vision))
     {
-        mpr("你在原地跳了一下。");
+        mpr(T_("You jump in place."));
         return spret::success;
     }
 
@@ -200,7 +200,7 @@ spret spider_jump()
 
     you.stop_being_constricted(false, "jump");
 
-    mpr("你跳过了空中！");
+    mpr(T_("You jump through the air!"));
     place_cloud(CLOUD_DUST, you.pos(), 2 + random2(3), &you);
     you.move_to(target, MV_DELIBERATE);
     you.increase_duration(DUR_BLINK_COOLDOWN, random_range(2, 5));
@@ -338,14 +338,14 @@ void wizard_blink()
     if (!in_bounds(beam.target))
     {
         clear_messages();
-        mpr("请不要闪烁到地图边界。");
+        mpr(T_("Please don't blink into the map border."));
         return wizard_blink();
     }
 
     if (monster_at(beam.target))
     {
         clear_messages();
-        mpr("请不要尝试闪烁到怪物身上。");
+        mpr(T_("Please don't try to blink into monsters."));
         return wizard_blink();
     }
 
@@ -476,7 +476,7 @@ spret frog_hop(bool fail, dist *target)
     // invisible monster that the targeter didn't know to avoid, or similar
     if (target->target.origin())
     {
-        mpr("你试图跳，但没有着陆的空间！");
+        mpr(T_("You tried to hop, but there was no room to land!"));
         // TODO: what to do here?
         return spret::success; // of a sort
     }
@@ -485,7 +485,7 @@ spret frog_hop(bool fail, dist *target)
     you.move_to(target->target, MV_DELIBERATE);
     crawl_state.cancel_cmd_again();
     crawl_state.cancel_cmd_repeat();
-    mpr("蹦！");
+    mpr(T_("Boing!"));
     you.increase_duration(DUR_NO_HOP, 12 + random2(13));
 
     return spret::success; // TODO
@@ -514,10 +514,10 @@ string electric_charge_impossible_reason(bool allow_safe_monsters)
         }
     }
     if (!nearby_mons)
-        return "你看不到任何可以冲锋的目标。";
+        return T_("you can't see anything to charge at.");
     if (nearby_mons == 1)
         return lowercase_string(example_reason);
-    return "有各种问题阻止你向附近的任何敌人冲锋。";
+    return T_("there's one issue or another keeping you from charging at any nearby foe.");
 }
 
 string movement_impossible_reason()
@@ -692,7 +692,7 @@ static bool _displace_charge_blocker(actor& agent, coord_def pos)
             && blocker->blink_to(targ, true))
         {
             if (blocker->is_player())
-                mpr("你被猛烈地推开了！");
+                mpr(T_("You are hurled out of the way!"));
 
             continue;
         }
@@ -775,9 +775,9 @@ spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target
 
         // Monster cast messages are handled through monspell.txt
         if (silenced(dest_pos))
-            mpr("你在诡异的寂静中向前冲锋！");
+            mpr(T_("You charge forward in eerie silence!"));
         else
-            mpr("你伴随着电流的噼啪声向前冲锋！");
+            mpr(T_("You charge forward with an electric crackle!"));
     }
 
     // Trying to clear space at our destination by moving actors away from it.
@@ -885,7 +885,7 @@ spret controlled_blink(bool safe_cancel, dist *target)
     // invisible monster that the targeter didn't know to avoid
     if (monster_at(target->target))
     {
-        mpr("哎呀！那里已经有东西了！");
+        mpr(T_("Oops! There was something there already!"));
         uncontrolled_blink();
         return spret::success; // of a sort
     }
@@ -934,7 +934,7 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
         canned_msg(MSG_STRANGE_STASIS);
     else if (you.duration[DUR_TELEPORT])
     {
-        mpr("你感到异常的稳定。");
+        mpr(T_("You feel strangely stable."));
         you.duration[DUR_TELEPORT] = 0;
         you.props.erase(TELEPORTITIS_SOURCE);
     }
@@ -945,7 +945,7 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
         else if (is_hostile)
             mprf(MSGCH_WARN, "You feel a distressing malevolence running through your instability!");
         else
-            mpr("你感到异常的不稳定。");
+            mpr(T_("You feel strangely unstable."));
 
         int teleport_delay = 3 + random2(3);
 

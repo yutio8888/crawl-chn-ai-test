@@ -207,7 +207,7 @@ spret cast_summon_small_mammal(int pow, bool fail)
     if (monster* mons = create_monster(_pal_data(mon, summ_dur(3), SPELL_SUMMON_SMALL_MAMMAL)))
     {
         if (you.can_see(*mons))
-            mprf("%s在一阵烟雾中出现了。", mons->name(DESC_A).c_str());
+            mprf(T_("%s appears in a puff of smoke."), mons->name(DESC_A).c_str());
     }
     else
         canned_msg(MSG_NOTHING_HAPPENS);
@@ -268,7 +268,7 @@ spret cast_call_canine_familiar(int pow, bool fail)
         dog->ghost->init_inugami_from_player(pow);
         dog->ghost_demon_init();
 
-        mpr("你呼唤你的犬类使魔，它伴随着一声嚎叫出现了！");
+        mpr(T_("You call for your canine familiar and it appears with a howl!"));
         you.props[CANINE_FAMILIAR_MID].get_int() = dog->mid;
     }
     // If it's active, instead heal and boost its next attack.
@@ -276,8 +276,7 @@ spret cast_call_canine_familiar(int pow, bool fail)
     {
         // Heal familiar and make its next attack (within the new few turns,
         // so that you don't just prebuff for this) an instant cleave.
-        mpr("你为你的使魔注入了魔法能量，它的獠牙闪烁着光芒"
-            " viciously.");
+        mpr(T_("You imbue your familiar with magical energy and its fangs glint viciously."));
 
         old_dog->heal(random_range(5, 9) + div_rand_round(pow, 5));
         old_dog->del_ench(ENCH_POISON);
@@ -307,7 +306,7 @@ spret cast_summon_cactus(int pow, bool fail)
     if (monster* mons = create_monster(mg))
     {
         if (you.can_see(*mons))
-            mpr("一个多刺的巨像随着一阵沙漠之风出现了。");
+            mpr(T_("A prickly colossus appears in a rush of desert wind."));
     }
 
     else
@@ -322,7 +321,7 @@ spret cast_awaken_armour(int pow, bool fail)
     if (armour == nullptr)
     {
         // I don't think we can ever reach this line, but let's be safe.
-        mpr("你没有穿戴任何护甲！");
+        mpr(T_("You are not wearing any armour!"));
         return spret::abort;
     }
 
@@ -372,7 +371,7 @@ spret cast_summon_ice_beast(int pow, bool fail)
     ice_beast.hd = (3 + div_rand_round(pow, 13));
 
     if (create_monster(ice_beast))
-        mpr("一阵寒风在你周围吹起。");
+        mpr(T_("A cold wind forms around you."));
     else
         canned_msg(MSG_NOTHING_HAPPENS);
 
@@ -448,7 +447,7 @@ spret cast_sphinx_sisters(const actor& caster, int pow, bool fail)
     else if (marauder && you.can_see(*marauder) || guardian && you.can_see(*guardian))
     {
         const monster* sphinx = marauder ? marauder : guardian;
-        mprf("%s响应了%s的召唤！", sphinx->name(DESC_A).c_str(),
+        mprf(T_("%s answers %s call!"), sphinx->name(DESC_A).c_str(),
                                     caster.name(DESC_ITS).c_str());
     }
     else if (you.can_see(caster))
@@ -474,7 +473,7 @@ spret cast_summon_hydra(actor *caster, int pow, bool fail)
     if (monster *hydra = create_monster(mg))
     {
         if (you.see_cell(hydra->pos()))
-            mprf("%s出现了。", hydra->name(DESC_A).c_str());
+            mprf(T_("%s appears."), hydra->name(DESC_A).c_str());
     }
     else if (caster->is_player())
         canned_msg(MSG_NOTHING_HAPPENS);
@@ -509,7 +508,7 @@ spret cast_dragon_call(int pow, bool fail)
 
     fail_check();
 
-    mpr("你向龙族领域呼唤，龙群咆哮着回应了！");
+    mpr(T_("You call out to the draconic realm, and the dragon horde roars back!"));
     noisy(spell_effect_noise(SPELL_DRAGON_CALL), you.pos());
 
     you.duration[DUR_DRAGON_CALL] = (15 + div_rand_round(pow, 5) + random2(15))
@@ -551,8 +550,7 @@ static void _place_dragon()
         // remains, as the player might soon have enough again.
         if (!enough_mp(mp_cost, true))
         {
-            mpr("一条龙试图回应你的召唤，但你没有足够的"
-                "magical power!");
+            mpr(T_("A dragon tries to answer your call, but you don\'t have enough magical power!"));
             return;
         }
 
@@ -564,7 +562,7 @@ static void _place_dragon()
 
         pay_mp(mp_cost);
         if (you.see_cell(dragon->pos()))
-            mpr("一条龙回应你的召唤到来了！");
+            mpr(T_("A dragon arrives to answer your call!"));
         finalize_mp_cost();
 
         // The dragon is allowed to act immediately here
@@ -663,7 +661,7 @@ spret cast_summon_dragon(actor *caster, int pow, bool fail)
                 _summon_data(*caster, mon, summ_dur(6), SPELL_SUMMON_DRAGON)))
         {
             if (you.see_cell(dragon->pos()))
-                mpr("一条龙出现了。");
+                mpr(T_("A dragon appears."));
             success = true;
         }
     }
@@ -685,7 +683,7 @@ spret cast_summon_mana_viper(int pow, bool fail)
     viper.hd = (7 + div_rand_round(pow, 12));
 
     if (create_monster(viper))
-        mpr("一条魔力蝰蛇伴随着嘶嘶声出现了。");
+        mpr(T_("A mana viper appears with a sibilant hiss."));
     else
         canned_msg(MSG_NOTHING_HAPPENS);
 
@@ -808,7 +806,7 @@ bool summon_holy_warrior(int pow, bool punish)
     summon->flags |= MF_ATT_CHANGE_ATTEMPT;
 
     if (!punish)
-        mpr("你被一道耀眼的光芒短暂地炫目了。");
+        mpr(T_("You are briefly dazzled by a blinding flash."));
 
     return true;
 }
@@ -833,7 +831,7 @@ spret cast_summon_holy_warrior(int pow, bool fail)
  **/
 static bool _fail_tukimas()
 {
-    mpr("你在那里看不到目标！");
+    mpr(T_("You cannot see a target there!"));
     return false; // Waste the turn - no anti-invis tech
 }
 
@@ -931,7 +929,7 @@ static void _animate_weapon(int pow, actor* target)
 
     if (!mons)
     {
-        mprf("%s抽搐了一下。", wpn->name(DESC_THE).c_str());
+        mprf(T_("%s twitches."), wpn->name(DESC_THE).c_str());
         return;
     }
 
@@ -939,7 +937,7 @@ static void _animate_weapon(int pow, actor* target)
     mons->foe = target->mindex();
 
     // We are successful. Unwield the weapon, removing any wield effects.
-    mprf("%s舞到了空中！", wpn->name(DESC_THE).c_str());
+    mprf(T_("%s dances into the air!"), wpn->name(DESC_THE).c_str());
 
     monster * const montarget = target->as_monster();
     const int primary_weap = montarget->inv[MSLOT_WEAPON];
@@ -1021,7 +1019,7 @@ spret cast_conjure_ball_lightning(int pow, bool fail)
     }
 
     if (success)
-        mpr("你制造了一些球形闪电！");
+        mpr(T_("You create some orbs of lightning!"));
     else
         canned_msg(MSG_NOTHING_HAPPENS);
 
@@ -1055,7 +1053,7 @@ spret cast_forge_lightning_spire(int pow, bool fail)
     monster* mons = create_monster(spire);
 
     if (mons && !silenced(mons->pos()))
-        mpr("一阵电流的嗡鸣充满了空气。");
+        mpr(T_("A hum of electricity fills the air."));
     else
         canned_msg(MSG_NOTHING_HAPPENS);
 
@@ -1077,7 +1075,7 @@ spret cast_forge_blazeheart_golem(int pow, bool fail)
 
     if (mons)
     {
-        mpr("你用熔渣铁绑定了鼓风炉之心。");
+        mpr(T_("You bind the blast furnace heart with slag iron."));
 
         // Give an extra turn of grace period on the turn it is summoned.
         mons->blazeheart_heat = 4;
@@ -1105,7 +1103,7 @@ spret cast_call_imp(int pow, bool fail)
     mgen_data imp_data = _pal_data(MONS_CERULEAN_IMP, summ_dur(3), SPELL_CALL_IMP);
     if (monster *imp = create_monster(imp_data))
     {
-        mpr("一个微小的恶魔从空气中拉出了自己。");
+        mpr(T_("A tiny devil pulls itself out of the air."));
         imp->weapon()->plus = pow/10 - 4;
         _monster_greeting(imp, "_friendly_imp_greeting");
     }
@@ -1142,9 +1140,9 @@ spret summon_butterflies()
         return spret::abort;
 
     if (silenced(you.pos()))
-        mpr("在某处，一只蝴蝶扇动了翅膀。");
+        mpr(T_("Somewhere, a butterfly flaps its wings."));
     else
-        mpr("你听到了细小翅膀的拍打声。");
+        mpr(T_("You hear the flutter of tiny wings."));
 
     bool success = false;
     // push away further-away things first, so middle ones don't get stuck
@@ -1202,7 +1200,7 @@ spret summon_shadow_creatures()
     if (stop_summoning_prompt())
         return spret::abort;
 
-    mpr("暗影的细丝在你周围旋转……");
+    mpr(T_("Wisps of shadow whirl around you..."));
 
     int num = roll_dice(2, 2);
     int num_created = 0;
@@ -1245,7 +1243,7 @@ spret summon_shadow_creatures()
     }
 
     if (!num_created)
-        mpr("暗影毫无效果地消散了。");
+        mpr(T_("The shadows disperse without effect."));
 
     return spret::success;
 }
@@ -1445,7 +1443,7 @@ spret cast_summon_horrible_things(int pow, bool fail)
     if (!count)
         canned_msg(MSG_NOTHING_HAPPENS);
     else
-        mpr("你打开了一道传送门，将可怕的怪物释放到了世界上。");
+        mpr(T_("You open a gateway and unleash terrible monstrosities upon the world."));
 
     return spret::success;
 }
@@ -1544,7 +1542,7 @@ spret cast_summon_forest(actor* caster, int pow, bool fail, bool test)
         }
     }
 
-    mpr("一个森林遍布的位面在这里碰撞，发出了响亮的嘎吱声！");
+    mpr(T_("A forested plane collides here with a resounding crunch!"));
     noisy(spell_effect_noise(SPELL_SUMMON_FOREST), caster->pos());
 
     mgen_data dryad_data = _pal_data(MONS_DRYAD, 1, SPELL_SUMMON_FOREST);
@@ -1589,12 +1587,12 @@ spret cast_haunt(int pow, const coord_def& where, bool fail)
     if (m == nullptr)
     {
         fail_check();
-        mpr("一股邪恶力量聚集了，但很快就消散了。");
+        mpr(T_("A malign force gathers, but soon dissipates."));
         return spret::success; // still losing a turn
     }
     else if (m->wont_attack())
     {
-        mpr("你无法附身于不对你怀有敌意的目标。");
+        mpr(T_("You cannot possess a target not hostile to you."));
         return spret::abort;
     }
 
@@ -1626,12 +1624,12 @@ spret cast_haunt(int pow, const coord_def& where, bool fail)
 
     if (success > 1)
     {
-        mpr(friendly ? "虚无的人影在空中成形。"
+        mpr(friendly ? T_("Phantoms take shape in the air.")
                      : "You sense hostile presences.");
     }
     else if (success)
     {
-        mpr(friendly ? "一个虚无的人影在空中成形。"
+        mpr(friendly ? T_("A phantom takes shape in the air.")
                      : "You sense a hostile presence.");
     }
     else
@@ -1658,10 +1656,10 @@ spret cast_martyrs_knell(const actor* caster, int pow, bool fail)
     if (shade)
     {
         if (caster->is_player())
-            mpr("你召唤出一个暗影来保护你的盟友。");
+            mpr(T_("You call forth a shade to shield your allies."));
         else if (you.can_see(*shade))
         {
-            mprf("%s召唤出一个暗影来保护自己。",
+            mprf(T_("%s calls forth a shade to shield themselves."),
                  caster->name(DESC_THE).c_str());
         }
 
@@ -1780,7 +1778,7 @@ void init_servitor(monster* servitor, actor* caster, int pow)
 
     if (you.can_see(*caster))
     {
-        mprf("%s%s召唤了一个被%s毁灭魔法灌注的仆从！",
+        mprf(T_("%s %s a servant imbued with %s destructive magic!"),
              caster->name(DESC_THE).c_str(),
              caster->conj_verb("forge").c_str(),
              caster->pronoun(PRONOUN_POSSESSIVE).c_str());
@@ -1891,11 +1889,10 @@ spret cast_battlesphere(actor* agent, int pow, bool fail)
 
         if (recalled)
         {
-            mpr("你召回了你的战斗球，并为它注入了额外的"
-                " charge.");
+            mpr(T_("You recall your battlesphere and imbue it with extra charge."));
         }
         else
-            mpr("你为你的战斗球注入了额外的充能。");
+            mpr(T_("You imbue your battlesphere with extra charge."));
 
         battlesphere->battlecharge = min(20, (int) battlesphere->battlecharge
                                               + random_range(6, 10));
@@ -2050,7 +2047,7 @@ static void _fire_battlesphere(monster* battlesphere, bolt& beam)
 
     if (you.can_see(*battlesphere))
     {
-        mprf("%s向%s开火了！", battlesphere->name(DESC_THE).c_str(),
+        mprf(T_("%s opens fire on %s!"), battlesphere->name(DESC_THE).c_str(),
                                 actor_at(beam.target)->name(DESC_THE).c_str());
     }
     beam.fire();
@@ -2242,7 +2239,7 @@ spret cast_fulminating_prism(actor* caster, int pow, const coord_def& where,
     {
         if (caster->observable())
         {
-            mprf("%s%s创造了一个%s能量棱镜！",
+            mprf(T_("%s %s an %s energy prism!"),
                  caster->name(DESC_THE).c_str(),
                  caster->conj_verb("conjure").c_str(),
                  is_shadow ? "shadowy" : "explosive");
@@ -2738,12 +2735,12 @@ static void _overgrow_wall(const coord_def &pos)
                         summ_dur(min(3 + you.skill_rdiv(SK_INVOCATIONS, 1, 5), 6)));
     if (const monster* const plant = create_monster(mgen))
     {
-        mprf("%s被撕裂了，%s从它的位置长了出来。", what.c_str(),
+        mprf(T_("%s tears apart, and %s grows in its place."), what.c_str(),
                 plant->name(DESC_A).c_str());
     }
     // XXX: Maybe try to make this revert the terrain if a monster isn't placed.
     else
-        mprf("%s散架了，但什么也没长出来。", what.c_str());
+        mprf(T_("%s falls apart, but nothing grows."), what.c_str());
 }
 
 spret fedhas_overgrow(bool fail)
@@ -2990,7 +2987,7 @@ spret cast_foxfire(actor &agent, int pow, bool fail, bool marshlight)
 
     if (created && you.see_cell(agent.pos()))
     {
-        mprf("%s召唤了一些%s！",
+        mprf(T_("%s summons some %s!"),
              agent.name(DESC_THE).c_str(),
              agent.is_monster() ? "s" : "",
              marshlight ? "marshlight" : "foxfire");
@@ -3183,7 +3180,7 @@ spret cast_broms_barrelling_boulder(actor& agent, coord_def targ, int pow, bool 
 
     if (you.can_see(*boulder))
     {
-        mprf("%s让一块巨石向前滚去！",
+        mprf(T_("%s sends a boulder rolling forward!"),
             agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
     }
 
@@ -3327,13 +3324,13 @@ spret cast_hoarfrost_cannonade(const actor& agent, int pow, bool fail)
 
     if (num_seen > 1)
     {
-        mprf("%s用冰雕刻了两门大炮！",
+        mprf(T_("%s sculpts two cannons from ice!"),
              agent.name(DESC_THE).c_str(),
              agent.is_player() ? ""  : "s");
     }
     else if (num_seen == 1)
     {
-        mprf("%s用冰雕刻了一门大炮！",
+        mprf(T_("%s sculpts a cannon from ice!"),
              agent.name(DESC_THE).c_str(),
              agent.is_player() ? ""  : "s");
     }
@@ -3386,7 +3383,7 @@ spret cast_hellfire_mortar(const actor& agent, bolt& beam, int pow, bool fail)
         monster* mon = monster_at(beam.path_taken[0]);
         if (mon && you.can_see(*mon))
         {
-            mprf("%s挡住了路！", mon->name(DESC_THE).c_str());
+            mprf(T_("%s is in the way!"), mon->name(DESC_THE).c_str());
             return spret::abort;
         }
         else if (len == 0 && !mon)
@@ -3701,7 +3698,7 @@ void clockwork_bee_go_dormant(monster& bee)
 {
     if (you.can_see(bee))
     {
-        mprf("%s的发条蜜蜂发条走完了，掉到了地上。",
+        mprf(T_("%s's clockwork bee winds down and falls to the ground."),
              bee.summoner == MID_PLAYER ? "Your" : "The");
     }
 
@@ -3792,7 +3789,7 @@ void clockwork_bee_pick_new_target(monster& bee)
        clockwork_bee_go_dormant(bee);
     else
     {
-        mprf("%s的发条蜜蜂锁定了%s。",
+        mprf(T_("%s's clockwork bee locks onto %s."),
                 agent ? agent->pronoun(PRONOUN_POSSESSIVE).c_str() : "Someone's",
                 targ->name(DESC_THE).c_str());
         bee.add_ench(mon_enchant(ENCH_HAUNTING, targ, INFINITE_DURATION));
@@ -4024,7 +4021,7 @@ spret cast_surprising_crocodile(actor& agent, const coord_def& targ, int pow, bo
 
     if (you.can_see(agent))
     {
-        mprf("%s从%s鳄鱼上下来了。",
+        mprf(T_("%s dismounts %s alligator."),
              agent.name(DESC_THE).c_str(),
              agent.is_player() ? "" : "s",
              agent.pronoun(PRONOUN_POSSESSIVE).c_str());
@@ -4421,7 +4418,7 @@ spret cast_monarch_bomb(const actor& agent, int pow, bool fail)
     {
         if (you.can_see(*mon))
         {
-            mprf("%s构建了一个爆炸先驱并将其释放。",
+            mprf(T_("%s constructs an explosive harbinger and releases it."),
                  agent.name(DESC_THE).c_str(), agent.is_player() ? "" : "s");
         }
 
@@ -4447,7 +4444,7 @@ bool monarch_deploy_bomblet(monster& original, const coord_def& target,
     if (create_monster(mg))
     {
         if (!quiet && you.can_see(original))
-            mprf("%s部署了一个小型炸弹。", original.name(DESC_THE).c_str());
+            mprf(T_("%s deploys a miniature bomb."), original.name(DESC_THE).c_str());
 
         return true;
     }
@@ -4492,7 +4489,7 @@ spret monarch_detonation(const actor& agent, int pow, bool fail)
 
     if (you.can_see(agent))
     {
-        mprf("%s命令%s炸药引爆！",
+        mprf(T_("%s orders the %s explosives to detonate!"),
                 agent.name(DESC_THE).c_str(),
                 agent.is_player() ? "" : "s",
                 agent.pronoun(PRONOUN_POSSESSIVE).c_str());
@@ -4651,7 +4648,7 @@ bool splinterfrost_block_fragment(monster& block, const coord_def& aim)
     string msg;
     if (you.can_see(block))
     {
-        msg = make_stringf("%s碎裂成了一阵冰柱齐射！",
+        msg = make_stringf(T_("%s shatters into a volley of icicles!"),
                             block.name(DESC_THE).c_str());
     }
     schedule_splinterfrost_fragment_fineff(beam, msg);
@@ -4707,7 +4704,7 @@ spret cast_phalanx_beetle(const actor& agent, int pow, bool fail)
         }
         else if (you.can_see(agent))
         {
-            mprf("%s锻造了一个快速移动的防御者站在%s身边。",
+            mprf(T_("%s forges a quick-moving defender to stand alongside %s."),
                  agent.name(DESC_THE).c_str(), agent.pronoun(PRONOUN_POSSESSIVE).c_str());
         }
         mons_update_aura(*mons);
