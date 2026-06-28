@@ -7459,3 +7459,41 @@ Your apostles return to your side.
 <lightgrey>
 <yellow>你拥有 %d 枚金币%s</yellow>
 <lightgrey>
+
+# god-companions.cc T_() migration (2026-06-29)
+%%%%
+ is recalled.
+ 被召回了。
+%%%%
+Beogh is disappointed with your cowardice.
+贝奥格对你的懦弱感到失望。
+%%%%
+"Reflect upon your actions, mortal!"
+"好好反省你的行为吧，凡人！"
+%%%%
+Beogh will allow you to induct %s into your service.
+贝奥格允许你将%s纳入麾下。
+%%%%
+ (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)
+（按<w>%c</w>键打开<w>%s</w>菜单招募使徒）
+%%%%
+ is recalled by Beogh.
+ 被贝奥格召回。
+%%%%
+ is recalled by the power of Beogh.
+ 被贝奥格的力量召回。
+%%%%
+Beogh recalls %s to your side and 
+贝奥格将%s召回到你身边，
+%%%%
+Beogh breathes life back into %s and 
+贝奥格将生命重新注入%s，
+%%%%
+ has fought their way back out of the Abyss!
+ 从深渊中杀回来了！
+%%%%
+Beogh breathes life back into 
+贝奥格将生命重新注入
+%%%%
+HP: %d    AC: %d    Damage:%d (w/weapon)\n
+生命：%d    防御：%d    伤害：%d（含武器）\n
