@@ -1608,37 +1608,37 @@ shop_struct *shop_at(const coord_def& where, bool force_lookup)
 
 string shop_type_name(shop_type type)
 {
-    const bool zh = Options.language == lang_t::ZH;
+    // [T_() migration] const bool zh = Options.language == lang_t::ZH; // unused
     switch (type)
     {
         case SHOP_WEAPON_ANTIQUE:
-            return zh ? "古董武器" : "Antique Weapon";
+            return T_("Antique Weapon");
         case SHOP_ARMOUR_ANTIQUE:
-            return zh ? "古董护甲" : "Antique Armour";
+            return T_("Antique Armour");
         case SHOP_WEAPON:
-            return zh ? "武器" : "Weapon";
+            return T_("Weapon");
         case SHOP_ARMOUR:
-            return zh ? "护甲" : "Armour";
+            return T_("Armour");
         case SHOP_JEWELLERY:
-            return zh ? "珠宝" : "Jewellery";
+            return T_("Jewellery");
         case SHOP_BOOK:
-            return zh ? "书籍" : "Book";
+            return T_("Book");
 #if TAG_MAJOR_VERSION == 34
         case SHOP_EVOKABLES:
-            return zh ? "小装置" : "Gadget";
+            return T_("Gadget");
         case SHOP_FOOD:
-            return zh ? "已移除食品" : "Removed Food";
+            return T_("Removed Food");
 #endif
         case SHOP_SCROLL:
-            return zh ? "魔法卷轴" : "Magic Scroll";
+            return T_("Magic Scroll");
         case SHOP_GENERAL_ANTIQUE:
-            return zh ? "杂项古董" : "Assorted Antiques";
+            return T_("Assorted Antiques");
         case SHOP_DISTILLERY:
-            return zh ? "蒸馏酒坊" : "Distillery";
+            return T_("Distillery");
         case SHOP_GENERAL:
-            return zh ? "杂货铺" : "General Store";
+            return T_("General Store");
         default:
-            return zh ? "未知" : "Bug";
+            return T_("Bug");
     }
 }
 
@@ -2347,13 +2347,10 @@ public:
     string get_keyhelp(bool) const override
     {
         const bool voucher = have_voucher();
-        string s = make_stringf(Options.language == lang_t::ZH
-                                ? "<yellow>你拥有 %d 枚金币%s</yellow>\n<lightgrey>"
-                                : "<yellow>You have %d gold%s</yellow>\n<lightgrey>",
+        string s = make_stringf(T_("<yellow>You have %d gold%s</yellow>\n<lightgrey>"),
                                 you.gold,
                                 voucher
-                                    ? (Options.language == lang_t::ZH
-                                        ? "和一张凭证。" : " and a voucher.")
+                                    ? T_(" and a voucher.")
                                     : "");
 
         if (view_only)

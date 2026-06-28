@@ -7452,3 +7452,10 @@ You feel as though your fallen companions have been avenged.
 %%%%
 Your apostles return to your side.
 你的使徒们回到了你的身边。
+
+# shopping.cc manual fix
+%%%%
+<yellow>You have %d gold%s</yellow>
+<lightgrey>
+<yellow>你拥有 %d 枚金币%s</yellow>
+<lightgrey>
