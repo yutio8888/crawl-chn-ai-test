@@ -1413,10 +1413,7 @@ static const string _god_service_fee_description(god_type which_god)
         }
         else
         {
-            // TODO: ARG-DIFF - different format specifier positions between EN and ZH
-            return Options.language == lang_t::ZH
-                ? make_stringf("（%d金币；你拥有%d）", fee, you.gold)
-                : make_stringf(" (%d gold; you have %d)", fee, you.gold);
+            return make_stringf(T_(" (%d gold; you have %d)"), fee, you.gold);
         }
     }
 
@@ -1535,17 +1532,14 @@ bool describe_god_with_join(god_type which_god)
     // then when a different prompt needs to be shown, we switch to that prompt.
     // This is somewhat brittle, but ensures that the UI doesn't resize when
     // switching between prompts.
-    const string abandon_prompt =
-        Options.language == lang_t::ZH
-            ? make_stringf("你确定要放弃%s吗？",
-                    god_name(you.religion).c_str())
-            : make_stringf("Are you sure you want to abandon %s?",
-                    god_name(you.religion).c_str());
+    const string abandon_prompt = make_stringf(
+            T_("Are you sure you want to abandon %s?"),
+            god_name(you.religion).c_str());
     formatted_string prompt_fs(abandon_prompt, channel_to_colour(MSGCH_PROMPT));
 
     more_sw->add_child(make_shared<Text>(prompt_fs));
 
-    prompt_fs.cprintf(" 请输入 [Y]是 或 [n]否。");
+    prompt_fs.cprintf(T_(" Please press [Y]es or [n]no."));
     more_sw->add_child(make_shared<Text>(prompt_fs));
 
     join_step_type step = SHOW;

@@ -8315,3 +8315,15 @@ repeatedly
 %%%%
  is spurred on by your onslaught.
  被你的猛攻所激励。
+
+%%%%
+ (%d gold; you have %d)
+（%d金币；你拥有%d）
+
+%%%%
+Are you sure you want to abandon %s?
+你确定要放弃%s吗？
+
+%%%%
+ Please press [Y]es or [n]no.
+ 请输入 [Y]是 或 [n]否。
