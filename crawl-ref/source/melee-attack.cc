@@ -248,14 +248,9 @@ bool melee_attack::handle_phase_attempted()
     {
         if (you.see_cell(attack_position))
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s从黑暗中攻击%s！",
-                     attacker->name(DESC_THE, true).c_str(),
-                     defender->name(DESC_THE).c_str());
-            else
-                mprf("%s strikes at %s from the darkness!",
-                     attacker->name(DESC_THE, true).c_str(),
-                     defender->name(DESC_THE).c_str());
+            mprf(T_("%s strikes at %s from the darkness!"),
+                 attacker->name(DESC_THE, true).c_str(),
+                 defender->name(DESC_THE).c_str());
         }
         to_hit = AUTOMATIC_HIT;
         needs_message = false;
@@ -318,16 +313,11 @@ void melee_attack::handle_phase_blocked()
         {
             if (you.see_cell(defender->pos()))
             {
-                if (Options.language == lang_t::ZH)
-                    mprf("%s%s挡开了%s的攻击！",
-                            defender->name(DESC_THE).c_str(),
-                            defender->is_monster() ? "" : "",
-                            attacker->name(DESC_ITS).c_str());
-                else
-                    mprf("%s turn%s aside %s attack!",
-                            defender->name(DESC_THE).c_str(),
-                            defender->is_monster() ? "s" : "",
-                            attacker->name(DESC_ITS).c_str());
+                mprf(defender->is_monster()
+                     ? T_("%s turns aside %s attack!")
+                     : T_("%s turn aside %s attack!"),
+                     defender->name(DESC_THE).c_str(),
+                     attacker->name(DESC_ITS).c_str());
                 needs_block_message = false;
             }
 
@@ -341,6 +331,7 @@ void melee_attack::handle_phase_blocked()
         }
     }
 
+    // TODO: ARG-DIFF: conj_verb + different %s counts (EN:3, ZH:2)
     if (needs_block_message)
     {
         if (Options.language == lang_t::ZH)
@@ -364,12 +355,8 @@ void melee_attack::handle_phase_blocked()
                                         random_range(3, 5) * BASELINE_DELAY))
             && need_msg)
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s 被你盾牌的光芒致盲了。",
-                        attacker->name(DESC_THE).c_str());
-            else
-                mprf("%s is struck blind by the light of your shield.",
-                        attacker->name(DESC_THE).c_str());
+            mprf(T_("%s is struck blind by the light of your shield."),
+                 attacker->name(DESC_THE).c_str());
         }
     }
 
@@ -613,15 +600,9 @@ void melee_attack::try_parry_disarm()
         item_def *wpn = defender->as_monster()->disarm();
         if (wpn)
         {
-            if (Options.language == lang_t::ZH)
-                // Chinese: defender first (the one holding), then weapon
-                mprf("你从%s的掌握中夺下了%s！",
-                     defender->name(DESC_ITS).c_str(),
-                     wpn->name(DESC_THE).c_str());
-            else
-                mprf(T_("You knock %s out of %s grip!"),
-                     wpn->name(DESC_THE).c_str(),
-                     defender->name(DESC_ITS).c_str());
+            mprf(T_("You knock %s out of %s grip!"),
+                 wpn->name(DESC_THE).c_str(),
+                 defender->name(DESC_ITS).c_str());
         }
     }
 }
@@ -935,6 +916,7 @@ bool melee_attack::handle_phase_hit()
     {
         if (needs_message)
         {
+            // TODO: ARG-DIFF: different structure, conj_verb, conditional "do"/"does"
             if (Options.language == lang_t::ZH)
             {
                 attack_verb = attacker->is_player()
@@ -1187,6 +1169,7 @@ static void _devour(monster &victim)
     // Sometimes, one's eyes are larger than one's stomach-mouth.
     const int size_delta = victim.body_size(PSIZE_BODY)
                             - you.body_size(PSIZE_BODY);
+    // TODO: ARG-DIFF: combinatorial fragments ("half of " vs "半只") not suitable for T_()
     if (Options.language == lang_t::ZH)
         mprf("你吞噬了%s%s!",
              size_delta <= 0 ? "" :
@@ -1203,12 +1186,8 @@ static void _devour(monster &victim)
     // give a clearer message for eating invisible things
     if (!you.can_see(victim))
     {
-        if (Options.language == lang_t::ZH)
-            mprf("它尝起来像%s.",
-                 mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
-        else
-            mprf(T_("It tastes like %s."),
-                 mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
+        mprf(T_("It tastes like %s."),
+             mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
         // this could be the actual creature name, but it feels more
         // 'flavourful' this way??
     }
@@ -1261,6 +1240,7 @@ static void _consider_devouring(monster &defender)
     if (defender.is_shapeshifter())
     {
         // handle this carefully, so the player knows what's going on
+        // TODO: ARG-DIFF: conjugate_verb + different %s counts (ZH:2, EN:4)
         if (Options.language == lang_t::ZH)
             mprf("你将%s吐了出来——%s在你的嘴里扭动变形！",
                  defender.name(DESC_THE).c_str(),
@@ -2704,6 +2684,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             player_announce_aux_hit(atk);
         else
         {
+            // TODO: ARG-DIFF: different %s counts (ZH:2, EN:3)
             if (Options.language == lang_t::ZH)
                 mprf(you.can_see(*defender) ? "你%s了%s，但没有造成伤害。"
                                             : "你%s了%s。",
@@ -2793,6 +2774,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
 void melee_attack::player_announce_aux_hit(unarmed_attack_type atk)
 {
+    // TODO: ARG-DIFF: language-specific prefix arguments ("你的触须"/"你" vs "Your tendrils"/"You")
     if (Options.language == lang_t::ZH)
         mprf("%s%s了%s%s%s",
              atk == UNAT_MEDUSA_STINGER ? "你的触须" : "你",
@@ -2813,16 +2795,10 @@ void melee_attack::player_warn_miss()
 {
     did_hit = false;
 
-    if (Options.language == lang_t::ZH)
-        mprf("你%s未命中%s%s。",
-             evasion_margin_adverb().c_str(),
-             defender->name(DESC_THE).c_str(),
-             weapon_desc().c_str());
-    else
-        mprf("You%s miss %s%s.",
-             evasion_margin_adverb().c_str(),
-             defender->name(DESC_THE).c_str(),
-             weapon_desc().c_str());
+    mprf(T_("You%s miss %s%s."),
+         evasion_margin_adverb().c_str(),
+         defender->name(DESC_THE).c_str(),
+         weapon_desc().c_str());
 }
 
 // A couple additive modifiers that should be applied to both unarmed and
@@ -2895,6 +2871,7 @@ int melee_attack::player_apply_postac_multipliers(int damage)
 
 void melee_attack::set_attack_verb(int damage)
 {
+    // TODO: ARG-DIFF: function dispatch to language-specific verb set functions
     if (Options.language == lang_t::ZH)
         set_attack_verb_zh(damage);
     else
@@ -3888,6 +3865,7 @@ string melee_attack::mons_attack_verb()
         "kneecap"
     };
 
+    // TODO: ARG-DIFF: language-specific verb arrays, not simple T_() migration
     if (attacker->type == MONS_KILLER_KLOWN && attk_type == AT_HIT)
     {
         if (Options.language == lang_t::ZH)
@@ -3911,6 +3889,7 @@ string melee_attack::mons_attack_verb()
     if (is_special_mon_stab && attacker->type == MONS_PLAYER_SHADOW)
         return T_("eviscerate");
 
+    // TODO: ARG-DIFF: random_choose with language-specific word lists, not simple T_()
     if (attacker->type == MONS_HAUNTED_ARMOUR)
     {
         if (item_def* armour = attacker->as_monster()->body_armour())
@@ -3950,7 +3929,6 @@ string melee_attack::mons_attack_desc()
     if (!you.can_see(*attacker))
         return "";
 
-    const bool zh = Options.language == lang_t::ZH;
     string ret;
     int dist = (attack_position - defender->pos()).rdist();
     if (dist > 1)
@@ -3970,7 +3948,6 @@ string melee_attack::weapon_desc()
     if (!weapon || !you.offhand_weapon())
         return "";
 
-    const bool zh = Options.language == lang_t::ZH;
     return (T_(" with "))
            + weapon->name(DESC_YOUR, false, false, false);
 }
@@ -3980,9 +3957,9 @@ string melee_attack::charge_desc()
     if (!charge_pow || defender->res_elec() > 0)
         return "";
 
-    const bool zh = Options.language == lang_t::ZH;
+    // TODO: ARG-DIFF: different %s counts and structure
     const string pronoun = defender->pronoun(PRONOUN_OBJECTIVE);
-    if (zh)
+    if (Options.language == lang_t::ZH)
         return make_stringf("并电击了%s", pronoun.c_str());
     return make_stringf(" and electrocute%s %s",
                         attacker->is_player() ? "" : "s",
@@ -3997,6 +3974,7 @@ void melee_attack::announce_hit()
 
     if (attacker->is_monster())
     {
+        // TODO: ARG-DIFF: conj_verb, language-specific structure
         if (Options.language == lang_t::ZH)
         {
             string defender_zh = defender_name(true);
@@ -4030,6 +4008,7 @@ void melee_attack::announce_hit()
     }
     else
     {
+        // TODO: ARG-DIFF: different format specifier order and structure
         if (Options.language == lang_t::ZH)
         {
             mprf("你%s%s了%s%s%s%s%s",
@@ -4595,6 +4574,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message)
         {
+            // TODO: ARG-DIFF: conj_verb, different DESC/defender_zh handling
             if (Options.language == lang_t::ZH)
             {
                 string defender_zh = defender_name(true);

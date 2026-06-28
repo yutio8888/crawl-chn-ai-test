@@ -8260,3 +8260,10 @@ Beogh breathes life back into
 %%%%
 HP: %d    AC: %d    Damage:%d (w/weapon)\n
 生命：%d    防御：%d    伤害：%d（含武器）\n
+%%%%
+%s turns aside %s attack!
+%s挡开了%s的攻击！
+%%%%
+%s turn aside %s attack!
+%s挡开了%s的攻击！
+
