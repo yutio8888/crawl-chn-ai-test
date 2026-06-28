@@ -4621,9 +4621,7 @@ static string _player_spell_desc(spell_type spell)
     else if (spell_is_useless(spell, true, false))
     {
         description << "\n"
-                    << (Options.language == lang_t::ZH
-                        ? "此法术现在不会有任何效果，因为"
-                        : T_("This spell would have no effect right now because "))
+                    << (T_("This spell would have no effect right now because "))
                     << spell_uselessness_reason(spell, true, false)
                     << "\n";
     }
@@ -5900,15 +5898,7 @@ static string _monster_spells_description(const monster_info& mi, bool mark_spel
     if (mark_spells)
         description += SPELL_LIST_END;
 
-    description.cprintf(Options.language == lang_t::ZH
-        ? "\n要阅读描述，请按上方列出的按键。"
-          "(AdB) 表示伤害（A个B面骰子之和），"
-          "(x%%) 表示穿透意志的几率，"
-          "(y) 表示法术射程"
-        : "\nTo read a description, press the key listed above. "
-          "(AdB) indicates damage (the sum of A B-sided dice), "
-          "(x%%) indicates the chance to defeat your Will, "
-          "and (y) indicates the spell range");
+    description.cprintf(T_("\nTo read a description, press the key listed above. \"(AdB) indicates damage (the sum of A B-sided dice), \"\"(x%%) indicates the chance to defeat your Will, \"\"and (y) indicates the spell range\""));
     description.cprintf(crawl_state.need_save
         ? (T_("; shown in red if you are in range.\n"))
         : (T_(".\n")));
@@ -6515,7 +6505,7 @@ static string _res_name(mon_resist_flags res)
     case MR_RES_ELEC:   return T_("rElec");
     case MR_RES_NEG:    return T_("rNeg");
     case MR_RES_CORR:   return T_("rCorr");
-    default:            return zh ? "???"    : "rEggplant";
+    default:            return T_("rEggplant");
     }
 }
 

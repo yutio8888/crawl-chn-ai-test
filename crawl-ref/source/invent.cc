@@ -566,70 +566,70 @@ string no_selectables_message(int item_selector)
     switch (item_selector)
     {
     case OSEL_ANY:
-        return "You aren't carrying anything.";
+        return T_("You aren't carrying anything.");
     case OSEL_WIELD:
     case OBJ_WEAPONS:
-        return "You aren't carrying any weapons.";
+        return T_("You aren't carrying any weapons.");
     case OSEL_BLESSABLE_WEAPON:
-        return "You aren't carrying any weapons that can be blessed.";
+        return T_("You aren't carrying any weapons that can be blessed.");
     case OBJ_ARMOUR:
     {
         if (_has_temp_unwearable_armour())
-            return "You aren't carrying any currently wearable armour.";
+            return T_("You aren't carrying any currently wearable armour.");
         else
-            return "You aren't carrying any wearable armour.";
+            return T_("You aren't carrying any wearable armour.");
     }
     case OSEL_UNIDENT:
-        return "You don't currently have any unidentified items.";
+        return T_("You don't currently have any unidentified items.");
     case OSEL_ENCHANTABLE_ARMOUR:
-        return "You aren't carrying any armour which can be enchanted further.";
+        return T_("You aren't carrying any armour which can be enchanted further.");
     case OBJ_CORPSES:
-        return "You don't have any corpses.";
+        return T_("You don't have any corpses.");
     case OBJ_POTIONS:
-        return "You aren't carrying any potions.";
+        return T_("You aren't carrying any potions.");
     case OBJ_SCROLLS:
-        return "You aren't carrying any scrolls.";
+        return T_("You aren't carrying any scrolls.");
     case OBJ_BOOKS:
-        return "You don't have any books.";
+        return T_("You don't have any books.");
     case OBJ_WANDS:
-        return "You aren't carrying any wands.";
+        return T_("You aren't carrying any wands.");
     case OBJ_JEWELLERY:
-        return "You aren't carrying any pieces of jewellery.";
+        return T_("You aren't carrying any pieces of jewellery.");
     case OSEL_AMULET:
-        return "You aren't carrying any amulets.";
+        return T_("You aren't carrying any amulets.");
     case OSEL_JEWELLERY_OR_TALISMAN:
-        return "You aren't carrying any jewellery or talismans.";
+        return T_("You aren't carrying any jewellery or talismans.");
     case OSEL_LAUNCHING:
-        return "You aren't carrying any items that might be thrown or fired.";
+        return T_("You aren't carrying any items that might be thrown or fired.");
     case OSEL_EVOKABLE:
         if (you.get_mutation_level(MUT_NO_ARTIFICE)) // iffy
-            return "You cannot evoke magical items.";
-        return "You aren't carrying any items that you can evoke.";
+            return T_("You cannot evoke magical items.");
+        return T_("You aren't carrying any items that you can evoke.");
     case OSEL_CURSED_WORN:
-        return "None of your equipped items are cursed.";
+        return T_("None of your equipped items are cursed.");
     case OSEL_WORN_ARMOUR:
-        return "You aren't wearing any pieces of armour.";
+        return T_("You aren't wearing any pieces of armour.");
     case OSEL_WORN_JEWELLERY_OR_TALISMAN:
-        return "You aren't wearing any rings, amulets, or talismans.";
+        return T_("You aren't wearing any rings, amulets, or talismans.");
     case OSEL_WORN_EQUIPABLE:
-        return "You aren't wearing anything.";
+        return T_("You aren't wearing anything.");
     case OSEL_EQUIPABLE:
-        return "You aren't carrying anything that can be equipped.";
+        return T_("You aren't carrying anything that can be equipped.");
     case OSEL_BRANDABLE_WEAPON:
-        return "You aren't carrying any weapons that can be branded.";
+        return T_("You aren't carrying any weapons that can be branded.");
     case OSEL_ENCHANTABLE_WEAPON:
-        return "You aren't carrying any weapons that can be enchanted.";
+        return T_("You aren't carrying any weapons that can be enchanted.");
     case OSEL_ARTEFACT_WEAPON:
-        return "You aren't carrying any artefact melee weapons.";
+        return T_("You aren't carrying any artefact melee weapons.");
     case OSEL_CURSABLE:
-        return "You aren't wearing any cursable items.";
+        return T_("You aren't wearing any cursable items.");
     case OSEL_UNCURSED_WORN_RINGS:
-        return "You aren't wearing any uncursed rings.";
+        return T_("You aren't wearing any uncursed rings.");
     case OSEL_QUIVER_ACTION:
-        return "You don't have any quiverable items.";
+        return T_("You don't have any quiverable items.");
     }
 
-    return "You aren't carrying any such object.";
+    return T_("You aren't carrying any such object.");
 }
 
 void InvMenu::load_inv_items(int item_selector, int excluded_slot,

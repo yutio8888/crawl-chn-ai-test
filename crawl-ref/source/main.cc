@@ -1900,7 +1900,7 @@ static void _do_list_gold()
 {
     if (shopping_list.empty())
     {
-        mprf(Options.language == lang_t::ZH ? "你拥有 %d 枚金币。" : "You have %d gold piece%s.",
+        mprf(T_("You have %d gold piece%s."),
          you.gold, Options.language == lang_t::ZH ? 0 : (you.gold != 1 ? "s" : ""));
         int vouchers = you.attribute[ATTR_VOUCHER];
         if (vouchers > 0)

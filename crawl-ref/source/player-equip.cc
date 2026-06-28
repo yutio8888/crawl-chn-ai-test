@@ -1196,7 +1196,7 @@ void player_equip_set::handle_melding(vector<item_def*>& to_meld, bool skip_effe
         meld_msg.emplace_back(meld_item->name(DESC_PLAIN));
 
     const bool zh = Options.language == lang_t::ZH;
-    mprf(zh ? "你的%s融入了你的身体。" : "Your %s meld%s into your body.",
+    mprf(T_("Your %s meld%s into your body."),
             comma_separated_line(meld_msg.begin(), meld_msg.end(),
                 T_(" and "), T_(", ")).c_str(),
             meld_msg.size() > 1 ? "" : "s");
@@ -1316,7 +1316,7 @@ void player_equip_set::handle_unmelding(vector<item_def*>& to_unmeld, bool skip_
             unmeld_msg.emplace_back(unmeld_item->name(DESC_PLAIN));
 
         const bool zh = Options.language == lang_t::ZH;
-        mprf(zh ? "你的%s从你的身体中显现。" : "Your %s unmeld%s from your body.",
+        mprf(T_("Your %s unmeld%s from your body."),
                 comma_separated_line(unmeld_msg.begin(), unmeld_msg.end(),
                     T_(" and "), T_(", ")).c_str(),
                 unmeld_msg.size() > 1 ? "" : "s");

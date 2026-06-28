@@ -520,10 +520,7 @@ public:
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_DURATION, !you.duration[DUR_INVIS]
-                     ? "你逐渐变得透明消失了！"
-                     : "你变得更加透明了。");
+            if (T_("你变得更加透明了。"));
             else
                 mprf(MSGCH_DURATION, !you.duration[DUR_INVIS]
                      ? "You fade into invisibility!"

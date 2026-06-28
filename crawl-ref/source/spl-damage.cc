@@ -119,14 +119,14 @@ spret cast_fire_storm(int pow, bolt &beam, bool fail)
 {
     if (grid_distance(beam.target, beam.source) > beam.range)
     {
-        mpr(Options.language == lang_t::ZH ? "那超出了最大射程。" : "That is beyond the maximum range.");
+        mpr(T_("That is beyond the maximum range."));
         return spret::abort;
     }
 
     if (cell_is_solid(beam.target))
     {
         const char *feat = feat_type_name(env.grid(beam.target));
-        mprf(Options.language == lang_t::ZH ? "你无法在%s上放置风暴。" : "You can't place the storm on %s.", article_a(feat).c_str());
+        mprf(T_("You can't place the storm on %s."), article_a(feat).c_str());
         return spret::abort;
     }
 
@@ -176,7 +176,7 @@ bool cast_smitey_damnation(int pow, bolt &beam)
     if (cancel_beam_prompt(beam, tracer))
         return false;
 
-    mpr(Options.language == lang_t::ZH ? "你召唤了一道诅咒之柱！" : "You call forth a pillar of damnation!");
+    mpr(T_("You call forth a pillar of damnation!"));
 
     beam.in_explosion_phase = false;
     beam.explode(true);
@@ -309,7 +309,7 @@ spret cast_chain_lightning(int pow, const actor &caster, bool fail)
 
     if (you.can_see(caster))
     {
-        mprf(Options.language == lang_t::ZH ? "闪电从%s%s射出！" : "Lightning arcs from %s %s!",
+        mprf(T_("Lightning arcs from %s %s!"),
              apostrophise(caster.name(DESC_PLAIN)).c_str(),
              caster.hand_name(true).c_str());
     }
@@ -449,7 +449,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         if (target.x == -1)
         {
             if (see_source)
-                mprf(Options.language == lang_t::ZH ? "%s接地消失了。" : "The %s grounds out.", beam.name.c_str());
+                mprf(T_("The %s grounds out."), beam.name.c_str());
 
             break;
         }
@@ -461,9 +461,9 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         first = false;
 
         if (see_source && !see_targ)
-            mprf(Options.language == lang_t::ZH ? "%s在你视线之外消失了！" : "The %s arcs out of your line of sight!", beam.name.c_str());
+            mprf(T_("The %s arcs out of your line of sight!"), beam.name.c_str());
         else if (!see_source && see_targ)
-            mprf(Options.language == lang_t::ZH ? "%s突然出现了！" : "The %s suddenly appears!", beam.name.c_str());
+            mprf(T_("The %s suddenly appears!"), beam.name.c_str());
 
         beam.source = source;
         beam.target = target;
@@ -896,7 +896,7 @@ spret cast_freeze(int pow, monster* mons, bool fail)
     const int orig_hurted = beam.damage.roll();
     // calculate the resist adjustment to punctuate
     int hurted = mons_adjust_flavoured(mons, beam, orig_hurted, false);
-    mprf(Options.language == lang_t::ZH ? "你冻结了%s%s%s" : "You freeze %s%s%s",
+    mprf(T_("You freeze %s%s%s"),
          mons->name(DESC_THE).c_str(),
          hurted ? "" : " but do no damage",
          attack_strength_punctuation(hurted).c_str());
@@ -1059,7 +1059,7 @@ spret cast_momentum_strike(int pow, coord_def target, bool fail)
     if (!beam.foes_hurt && !beam.friends_hurt) // miss!
     {
         if (!mons || !you.can_see(*mons))
-            mpr(Options.language == lang_t::ZH ? "动量无害地消散了。" : "The momentum dissipates harmlessly.");
+            mpr(T_("The momentum dissipates harmlessly."));
         return spret::success;
     }
 
@@ -1465,7 +1465,7 @@ bool setup_fragmentation_beam(bolt &beam, int pow, const actor *caster,
     {
         // Couldn't find a monster or wall to shatter - abort casting!
         if (caster->is_player() && !quiet)
-            mpr(Options.language == lang_t::ZH ? "你无法分解那个！" : "You can't deconstruct that!");
+            mpr(T_("You can't deconstruct that!"));
         return false;
     }
 
@@ -1539,12 +1539,12 @@ spret cast_fragmentation(int pow, const actor *caster,
     if (what != nullptr) // Terrain explodes.
     {
         if (you.see_cell(target))
-            mprf(Options.language == lang_t::ZH ? "%s碎裂了！" : "The %s shatters!", what);
+            mprf(T_("The %s shatters!"), what);
     }
     else if (target == you.pos()) // You explode.
     {
         const int dam = beam.damage.roll();
-        mprf(Options.language == lang_t::ZH ? "你%s碎裂了" : "You shatter%s", attack_strength_punctuation(dam).c_str());
+        mprf(T_("You shatter%s"), attack_strength_punctuation(dam).c_str());
 
         ouch(dam, KILLED_BY_BEAM, caster->mid,
              "by Lee's Rapid Deconstruction", true,
@@ -1719,11 +1719,11 @@ spret cast_shatter(int pow, bool fail)
     const bool silence = silenced(you.pos());
 
     if (silence)
-        mpr(Options.language == lang_t::ZH ? "地下城震动了！" : "The dungeon shakes!");
+        mpr(T_("The dungeon shakes!"));
     else
     {
         noisy(spell_effect_noise(SPELL_SHATTER), you.pos());
-        mprf(MSGCH_SOUND, Options.language == lang_t::ZH ? "地下城隆隆作响！" : "The dungeon rumbles!");
+        mprf(MSGCH_SOUND, T_("The dungeon rumbles!"));
     }
 
     run_animation(ANIMATION_SHAKE_VIEWPORT, UA_PLAYER);
@@ -1740,7 +1740,7 @@ spret cast_shatter(int pow, bool fail)
     }
 
     if (dest && !silence)
-        mprf(MSGCH_SOUND, Options.language == lang_t::ZH ? "咔嚓——轰！" : "Ka-crash!");
+        mprf(MSGCH_SOUND, T_("Ka-crash!"));
 
     return spret::success;
 }
@@ -1756,7 +1756,7 @@ static int _shatter_player(int pow, actor *wielder, bool devastator = false)
 
     if (damage > 0)
     {
-        mprf(damage > 15 ? Options.language == lang_t::ZH ? "你因这撼地之力而战栗%s" : "You shudder from the earth-shattering force%s"
+        mprf(damage > 15 ? T_("You shudder from the earth-shattering force%s")
                         : "You shudder%s",
              attack_strength_punctuation(damage).c_str());
         if (devastator)
@@ -1777,13 +1777,13 @@ bool mons_shatter(monster* caster, bool actual)
     {
         if (silence)
         {
-            mprf(Options.language == lang_t::ZH ? "地下城在%s周围震动！" : "The dungeon shakes around %s!",
+            mprf(T_("The dungeon shakes around %s!"),
                  caster->name(DESC_THE).c_str());
         }
         else
         {
             noisy(spell_effect_noise(SPELL_SHATTER), caster->pos(), caster->mid);
-            mprf(MSGCH_SOUND, Options.language == lang_t::ZH ? "地下城在%s周围隆隆作响！" : "The dungeon rumbles around %s!",
+            mprf(MSGCH_SOUND, T_("The dungeon rumbles around %s!"),
                  caster->name(DESC_THE).c_str());
         }
     }
@@ -1818,7 +1818,7 @@ bool mons_shatter(monster* caster, bool actual)
     }
 
     if (dest && !silence)
-        mprf(MSGCH_SOUND, Options.language == lang_t::ZH ? "咔嚓——轰！" : "Ka-crash!");
+        mprf(MSGCH_SOUND, T_("Ka-crash!"));
 
     if (actual)
         run_animation(ANIMATION_SHAKE_VIEWPORT, UA_MONSTER);
@@ -1873,7 +1873,7 @@ void shillelagh(actor *wielder, coord_def where, int pow)
         if (strwidth(message) < get_number_of_cols() - 2)
             mpr(message);
         else
-            mpr(Options.language == lang_t::ZH ? "传来一阵粉碎性的冲击！" : "There is a shattering impact!");
+            mpr(T_("There is a shattering impact!"));
     }
 
     // need to do this again to do the actual damage
@@ -3195,7 +3195,7 @@ spret cast_watery_grave()
     zappy(ZAP_WATERY_GRAVE, get_form()->get_level(8), false, strike);
     strike.set_agent(&you);
     strike.damage = get_form()->get_special_damage();
-    strike.hit_verb = Options.language == lang_t::ZH ? "吞噬" : "engulfs";
+    strike.hit_verb = T_("engulfs");
 
     for (radius_iterator ri(you.pos(), 4, C_SQUARE, LOS_NO_TRANS, false); ri; ++ri)
     {
@@ -3207,7 +3207,7 @@ spret cast_watery_grave()
                 _strike.source = *ri;
                 _strike.target = *ri;
                 if (!mon->is_unbreathing())
-                    _strike.hit_verb = Options.language == lang_t::ZH ? "溺毙" : "drowns";
+                    _strike.hit_verb = T_("drowns");
                 _strike.fire();
             }
         }
@@ -3823,7 +3823,7 @@ spret cast_flame_wave(int pow, bool fail)
 
     you.props[FLAME_WAVE_POWER_KEY].get_int() = pow;
     start_channelling_spell(SPELL_FLAME_WAVE,
-        Options.language == lang_t::ZH ? "加强火焰波" : "intensify the flame waves");
+        T_("intensify the flame waves"));
 
     return spret::success;
 }
@@ -3890,7 +3890,7 @@ spret cast_searing_ray(actor& agent, int pow, bolt &beam, bool fail)
 
     if (agent.is_player())
         start_channelling_spell(SPELL_SEARING_RAY,
-            Options.language == lang_t::ZH ? "维持灼热射线" : "maintain the ray");
+            T_("maintain the ray"));
     else
     {
         int dur = min(3 + pow / 60, 5);
@@ -3973,9 +3973,7 @@ bool handle_searing_ray(actor& agent, int turn)
         mons->lose_ench_duration(me, 1);
         if (!mons->has_ench(ENCH_CHANNEL_SEARING_RAY))
             simple_monster_message(*mons,
-                Options.language == lang_t::ZH
-                    ? "结束了灼热射线的持续施放。"
-                    : " finishes channelling their searing ray.");
+                T_(" finishes channelling their searing ray."));
     }
 
     return true;
@@ -4003,7 +4001,7 @@ spret cast_glaciate(actor *caster, int pow, coord_def aim)
     beam.range             = 1;
     beam.hit               = AUTOMATIC_HIT;
     beam.source_id         = caster->mid;
-    beam.hit_verb          = Options.language == lang_t::ZH ? "吞噬" : "engulfs";
+    beam.hit_verb          = T_("engulfs");
     beam.origin_spell      = SPELL_GLACIATE;
     beam.set_agent(caster);
     beam.draw_delay = 0;
@@ -4295,7 +4293,7 @@ static void _hailstorm_cell(coord_def where, int pow, actor *agent)
     beam.redraw_per_cell = false;
     beam.source     = where;
     beam.target     = where;
-    beam.hit_verb   = Options.language == lang_t::ZH ? "猛击" : "pelts";
+    beam.hit_verb   = T_("pelts");
 
     beam.fire();
 }
@@ -4646,7 +4644,7 @@ spret cast_maxwells_coupling(int pow, bool fail, bool tracer)
        you.elapsed_time + (30 + div_rand_round(random2((200 - pow) * 40), 200));
 
     start_channelling_spell(SPELL_MAXWELLS_COUPLING,
-        Options.language == lang_t::ZH ? "继续充能" : "continue charging", false);
+        T_("continue charging"), false);
 
     return spret::success;
 }
@@ -5011,7 +5009,7 @@ static void _do_fusillade_hit(monster* mon, int power, beam_type flavour)
     exp.origin_spell  = SPELL_FULSOME_FUSILLADE;
     exp.target        = mon->pos();
     exp.source        = mon->pos();
-    exp.hit_verb      = Options.language == lang_t::ZH ? "吞噬" : "engulfs";
+    exp.hit_verb      = T_("engulfs");
     exp.aimed_at_spot = true;
     exp.flavour       = flavour;
     exp.name          = concoction_description[flavour];
@@ -5183,7 +5181,7 @@ spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
     beam.origin_spell = SPELL_GRAVE_CLAW;
     beam.source = beam.target = targ;
     zappy(ZAP_GRAVE_CLAW, pow, caster.is_monster(), beam);
-    beam.hit_verb = Options.language == lang_t::ZH ? "刺穿" : "skewer";
+    beam.hit_verb = T_("skewer");
     beam.fire();
 
     if (caster.is_player())

@@ -347,16 +347,12 @@ static spell_list _get_spell_list(bool just_check = false,
             if (you.has_mutation(MUT_INNATE_CASTER))
             {
                 mprf(MSGCH_PROMPT,
-                     Options.language == lang_t::ZH
-                     ? "你不需要图书馆来学习法术。"
-                     : "You need no library to learn spells.");
+                     T_("You need no library to learn spells."));
             }
             else
             {
                 mprf(MSGCH_PROMPT,
-                     Options.language == lang_t::ZH
-                     ? "你的法术库中没有法术。"
-                     : "Your library has no spells.");
+                     T_("Your library has no spells."));
             }
         }
         return mem_spells;
@@ -549,16 +545,16 @@ protected:
         const bool zh = Options.language == lang_t::ZH;
         const char* act_str =
             current_action == action::cast
-                ? (zh ? "(施放)  " : "(Cast)    ")
+                ? (T_("(Cast)    "))
             : current_action == action::memorise
-                ? (zh ? "(记忆)" : "(Memorise)")
+                ? (T_("(Memorise)"))
             : current_action == action::describe
-                ? (zh ? "(描述)" : "(Describe)")
+                ? (T_("(Describe)"))
             : current_action == action::hide
-                ? (zh ? "(隐藏)  " : "(Hide)    ")
+                ? (T_("(Hide)    "))
             : current_action == action::imbue
-                ? (zh ? "(赋予)  " : "(Imbue)   ")
-            : (zh ? "(显示)  " : "(Show)    ");
+                ? (T_("(Imbue)   "))
+            : (T_("(Show)    "));
 
         if (zh)
         {
@@ -613,8 +609,8 @@ private:
             desc << std::right << std::setw(5)
                  << hidden_count
                  << (hidden_count > 1
-                     ? (zh ? " 个法术被隐藏" : " spells hidden")
-                     : (zh ? " 个法术被隐藏 " : " spell hidden "))
+                     ? (T_(" spells hidden"))
+                     : (T_(" spell hidden ")))
                  << "   ";
         }
         else
@@ -661,12 +657,12 @@ private:
                  : (zh ? act + "|描述|隐藏|<w>显示</w>"
                        : act + "|Describe|Hide|<w>Show</w>"));
         desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH)
-             << (zh ? " 搜索" : " search")
-             << (zh ? "   [<w>?</w>] 帮助" : "   [<w>?</w>] help");
+             << (T_(" search"))
+             << (T_("   [<w>?</w>] help"));
 
         if (search_text.size())
             return pad_more_with(desc.str(),
-                zh ? "[<w>Esc</w>] 清除" : "[<w>Esc</w>] clear");
+                T_("[<w>Esc</w>] clear"));
         else
             return pad_more_with_esc(desc.str());
     }
@@ -752,9 +748,7 @@ private:
         {
             char linebuf[80] = "";
             const bool validline = title_prompt(linebuf, sizeof linebuf,
-                                                Options.language == lang_t::ZH
-                                                ? "搜索什么？（正则表达式）"
-                                                : "Search for what? (regex) ");
+                                                T_("Search for what? (regex) "));
             string old_search = search_text;
             if (validline)
                 search_text = linebuf;
@@ -1078,9 +1072,7 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 {
     if (spell_removed(specspell))
     {
-        mprf(Options.language == lang_t::ZH
-             ? "抱歉，法术'%s'已经不存在了！"
-             : "Sorry, the spell '%s' is gone!",
+        mprf(T_("Sorry, the spell '%s' is gone!"),
              spell_title(specspell));
         return false;
     }
@@ -1099,41 +1091,31 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 
     if (you.has_spell(specspell))
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你已经认识那个法术了！"
-            : "You already know that spell!");
+        mpr(T_("You already know that spell!"));
         return false;
     }
 
     if (you.spell_no >= MAX_KNOWN_SPELLS)
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你的头脑中已经装了太多法术了！"
-            : "Your mind is already too full of spells!");
+        mpr(T_("Your mind is already too full of spells!"));
         return false;
     }
 
     if (you.experience_level < spell_difficulty(specspell) && !wizard)
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你的经验不足，无法学习那个法术！"
-            : "You're too inexperienced to learn that spell!");
+        mpr(T_("You're too inexperienced to learn that spell!"));
         return false;
     }
 
     if (player_spell_levels() < spell_levels_required(specspell) && !wizard)
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你还不能记忆那么多等级的魔法！"
-            : "You can't memorise that many levels of magic yet!");
+        mpr(T_("You can't memorise that many levels of magic yet!"));
         return false;
     }
 
     if (!wizard && !_spell_available_to_memorize(specspell))
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你还没有找到那个法术！"
-            : "You haven't found that spell!");
+        mpr(T_("You haven't found that spell!"));
         return false;
     }
 
@@ -1162,16 +1144,12 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         if (raw_spell_fail(specspell) >= 100 && !vehumet_is_offering(specspell))
         {
             mprf(MSGCH_WARN,
-                 Options.language == lang_t::ZH
-                 ? "这个法术不可能被施放！"
-                 : "This spell is impossible to cast!");
+                 T_("This spell is impossible to cast!"));
         }
         else if (severity > 0)
         {
             mprf(MSGCH_WARN,
-                 Options.language == lang_t::ZH
-                 ? "这个法术%s施放%s"
-                 : "This spell is %s to cast%s",
+                 T_("This spell is %s to cast%s"),
                  Options.language == lang_t::ZH
                      ? fail_severity_adjs_zh[severity]
                      : fail_severity_adjs[severity],
@@ -1250,9 +1228,7 @@ spret divine_exegesis(bool fail)
     spell_list spells(_get_spell_list(true, true));
     if (spells.empty())
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你一个法术都不认识！"
-            : "You don't know of any spells!");
+        mpr(T_("You don't know of any spells!"));
         return spret::abort;
     }
 
@@ -1295,9 +1271,7 @@ spret imbue_servitor()
     spell_list spells(_get_player_servitor_spells());
     if (spells.empty())
     {
-        mpr(Options.language == lang_t::ZH
-            ? "你不认识任何你的仆从可以施放的法术！"
-            : "You don't know any spells that your servitor could cast!");
+        mpr(T_("You don't know any spells that your servitor could cast!"));
         return spret::abort;
     }
 

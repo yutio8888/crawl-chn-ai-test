@@ -6082,3 +6082,1373 @@ Oops! There was something there already!
 You feel strangely unstable.
 你感到异常的不稳定。
 
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+%%%%
+Your %s shines brightly with a divine light!
+你的%s闪耀着明亮的光芒！
+
+%%%%
+You have nothing to donate!
+你没有什么可捐赠的！
+
+%%%%
+You feel that you will soon be absolved of all your sins.
+你感到你很快就会被赦免所有的罪孽。
+
+%%%%
+You feel that your burden of sins will soon be lighter.
+你感到你的罪孽负担很快就会减轻。
+
+%%%%
+Please finish your current recitation first.
+请先完成你当前的布道。
+
+%%%%
+You are not yet ready to recite again.
+你还没准备好再次吟诵。
+
+%%%%
+Your divine stamina has worn off.
+你的神圣耐力消退了。
+
+%%%%
+You can see no monster there to imprison!
+你在那里看不到可以囚禁的怪物！
+
+%%%%
+You cannot imprison that!
+你无法囚禁那个！
+
+%%%%
+You cannot imprison law-abiding creatures!
+你无法囚禁守法的生物！
+
+%%%%
+You hear the singing of a choir!
+你听到了唱诗班的歌声！
+
+%%%%
+You are suddenly bathed in radiance!
+你突然沐浴在光辉之中！
+
+%%%%
+A divine shield appears in front of you!
+一个神圣护盾在你面前显现！
+
+%%%%
+Your divine shield is renewed.
+你的神圣护盾被更新了。
+
+%%%%
+Your divine shield fades away.
+你的神圣护盾消退了。
+
+%%%%
+You feel purified!
+你感到被净化了！
+
+%%%%
+%s grants you divine vigour.
+%s赐予了你神圣活力。
+
+%%%%
+Your divine vigour has faded away.
+你的神圣活力消退了。
+
+%%%%
+You feel resolute.
+你感到意志坚定。
+
+%%%%
+Your skin stops tingling.
+你的皮肤不再发麻。
+
+%%%%
+You feel less resolute.
+你感到意志不那么坚定了。
+
+# L1544: ⚠️ARG-DIFF EN:1 ZH:0
+%%%%
+You hold the Black Torch high and begin your conquest of %s in 
+即使是神也无法征服无尽之境；不要浪费时间尝试。
+
+%%%%
+Yredelemnul sends servants to aid you!
+伊雷德勒姆纳派来了仆从来援助你！
+
+%%%%
+The Black Torch roars with renewed intensity!
+黑火炬以新的强度咆哮着！
+
+%%%%
+The soul of %s %s.
+%s的灵魂%s。
+
+%%%%
+The flow of time bends around you.
+时间的流动在你周围弯曲了。
+
+%%%%
+You can feel time thicken for a moment.
+你能感觉到时间在一瞬间变稠了。
+
+%%%%
+You distort the flow of time around you!
+你扭曲了你周围的时间流动！
+
+%%%%
+You step out of the flow of time.
+你踏出了时间流动之外。
+
+%%%%
+You return to the normal flow of time.
+你回到了正常的时间流动中。
+
+# L2480: ⚠️ARG-DIFF EN:0 ZH:1
+%%%%
+Ashenzari invites you to share a vision
+阿申扎里邀请你分享一个关于%s的幻象和诅咒。
+
+%%%%
+Your %s glows briefly with a black light.
+你的%s短暂地发出黑色光芒。
+
+%%%%
+You cannot curse that!
+你无法诅咒那个！
+
+%%%%
+You cannot uncurse and destroy that!
+你无法解除诅咒并摧毁那个！
+
+%%%%
+You cannot shatter the curse on %s while it is 
+你无法在%s与你的身体融合时粉碎其诅咒！
+
+%%%%
+(Press <w>%c</w> on the <w>%s</w> ability menu to convert to Beogh)
+(在<w>%s</w>能力菜单上按<w>%c</w>来皈依贝奥格)
+
+%%%%
+You reach the end of your prayer and your brethren are recalled.
+你的祷告结束，你的同胞被召回了。
+
+%%%%
+%s %s%sinvigorated by your bravery.
+%s因你的英勇而%s%s精神振奋。
+
+%%%%
+Your orcish features manifest fully.
+你的兽人特征完全显现出来了。
+
+%%%%
+%s turns %s attention toward your shadow.
+%s将%s的注意力转向了你的影子。
+
+%%%%
+%s shadow slips away and your performance ends.
+%s的影子溜走了，你的表演结束了。
+
+%%%%
+Purchase which effect?
+购买哪种效果？
+
+%%%%
+Fund which merchant?
+资助哪位商人？
+
+%%%%
+%s invites you to visit %s %s%s%s.
+%s邀请你访问%s %s%s%s。
+
+%%%%
+Your bribe of %s has been exhausted.
+你对%s的贿赂已经耗尽了。
+
+%%%%
+Clouds arounds you coalesce and take form!
+你周围的云雾凝聚成形了！
+
+%%%%
+There isn't enough space here!
+这里空间不足！
+
+%%%%
+Nature churns violently around you!
+大自然在你周围猛烈翻腾！
+
+%%%%
+Ru asks you to %s.
+Ru要求你%s。
+
+%%%%
+You focus your inner power and drain %s's magic in 
+你集中内在力量，抽取%s的法力作为报应！
+
+%%%%
+You focus your inner power and paralyse %s in retribution!
+你集中内在力量，麻痹%s作为报应！
+
+%%%%
+You focus your inner power and slow %s in retribution!
+你集中内在力量，减速%s作为报应！
+
+%%%%
+You focus your inner power and blind %s in retribution!
+你集中内在力量，致盲%s作为报应！
+
+%%%%
+You focus your inner power and illuminate %s in retribution!
+你集中内在力量，照亮%s作为报应！
+
+%%%%
+You are restored by drawing out deep reserves of power within.
+你通过汲取内在深处的力量储备而恢复。
+
+%%%%
+You burst free from the webs!
+你从蛛网中挣脱出来了！
+
+%%%%
+You burst free from the net!
+你从网中挣脱出来了！
+
+%%%%
+You are too terrified to leap around!
+你太惊恐了，无法跳跃！
+
+%%%%
+Cancelling leap due to HUP.
+因HUP取消跳跃。
+
+%%%%
+You cannot leap away from %s!
+你无法跳离%s！
+
+%%%%
+You cannot leap closer to %s!
+你无法跳近%s！
+
+%%%%
+You can't leap on top of the monster!
+你不能跳到怪物身上！
+
+%%%%
+You can't leap into the sea!
+你不能跳进海里！
+
+%%%%
+You can't leap into the sea of lava!
+你不能跳进熔岩海！
+
+%%%%
+Something unexpectedly blocks you, preventing you from leaping!
+有什么东西意外地挡住了你，阻止了你的跳跃！
+
+%%%%
+You reveal the great annihilating truth to your foes!
+你向敌人揭示了伟大的湮灭真理！
+
+%%%%
+You stomp with the beat, sending a shockwave through the revellers 
+你随着节拍跺脚，向周围的狂欢者发出冲击波！
+
+%%%%
+Cancelling line pass due to HUP.
+因HUP取消直线穿越。
+
+%%%%
+You cannot move away from %s!
+你无法从%s身边移开！
+
+%%%%
+You cannot move closer to %s!
+你无法靠近%s！
+
+%%%%
+You can't stand on top of the monster!
+你不能站在怪物身上！
+
+%%%%
+You can't line pass into the sea!
+你不能直线穿越到海里！
+
+%%%%
+You can't line pass into the sea of lava!
+你不能直线穿越到熔岩海！
+
+%%%%
+You can't walk through walls!
+你不能穿墙！
+
+%%%%
+Something unexpectedly blocks you, preventing you from passing!
+有什么东西意外地挡住了你，阻止了你的穿越！
+
+%%%%
+Cancelling grand finale due to HUP.
+因HUP取消终章。
+
+%%%%
+You can't perceive a target there!
+你在那里感知不到目标！
+
+%%%%
+You cannot occupy %s.
+你无法占据%s。
+
+%%%%
+You spring back to your original position.
+你弹回了原来的位置。
+
+%%%%
+You can't make this choice while your ancestor is elsewhere.
+你的先祖不在身边时无法做出此选择。
+
+%%%%
+You have no ancestor to preserve!
+你没有需要保护先祖！
+
+%%%%
+%s isn't nearby!
+%s不在附近！
+
+%%%%
+You can't transfer your ancestor with %s.
+你无法将先祖与%s交换位置。
+
+%%%%
+You can't transfer that.
+你无法转移那个。
+
+%%%%
+%s cannot be transferred there.
+%s无法被转移到那里。
+
+%%%%
+%s swap%s places with %s!
+%s与%s交换了%s！
+
+%%%%
+Yes, %s is definitely a better name.
+没错，%s绝对是个更好的名字。
+
+%%%%
+Was %s a) male, b) female, or c) neither? (Currently %s.)
+%s是 a) 男性，b) 女性，还是 c) 中性？（当前%s。）
+
+%%%%
+%s was always %s, you are pretty sure.
+%s一直都是%s，你相当确定。
+
+%%%%
+There is nothing to wall jump against here.
+这里没有可以蹬墙跳的墙面。
+
+%%%%
+You are too terrified to wall jump!
+你太惊恐了，无法蹬墙跳！
+
+%%%%
+You cannot wall jump while caught in a %s.
+你被%s困住时无法蹬墙跳。
+
+%%%%
+Cancelling wall jump due to HUP.
+因HUP取消蹬墙跳。
+
+%%%%
+The air is filled with shimmering golden clouds!
+空气中充满了闪烁的金色云朵！
+
+%%%%
+You can see no monster there to duel!
+你在那里看不到可以决斗的怪物！
+
+%%%%
+You cannot duel that!
+你无法与那个决斗！
+
+%%%%
+You challenge %s to single combat, but %s is merely a clone!
+你向%s发起单挑，但%s只是个幻象！
+
+%%%%
+You enter into single combat with %s!
+你与%s进入了单挑！
+
+%%%%
+You feel invigorated by the roar of the crowd!
+你因人群的欢呼而倍感振奋！
+
+%%%%
+You feel like a meek peon again.
+你又感到自己像个卑微的苦工了。
+
+%%%%
+There are no walls around you to affect.
+你周围没有可以影响的墙壁。
+
+%%%%
+Slime begins to ooze from the nearby walls!
+粘液开始从附近的墙壁渗出！
+
+%%%%
+Your accumulated destruction dissipates without a target.
+你积累的毁灭之力因没有目标而消散了。
+
+%%%%
+Your destruction surges wildly!
+你的毁灭之力猛烈涌动！
+
+%%%%
+%s appears in a burst of %s!
+%s在一阵%s中出现了！
+
+%%%%
+%s answers the call of its master!
+%s响应了主人的命令！
+
+%%%%
+%s answers your call of %s!
+%s响应了你%s的召唤！
+
+%%%%
+A traitor %s dares to challenge your wrath!
+一个背叛的%s竟敢挑衅你的愤怒！
+
+%%%%
+A jealous %s chases after it!
+一个嫉妒的%s追逐着它！
+
+%%%%
+A rebellious %s flees with it!
+一个叛逆的%s带着它逃走了！
+
+%%%%
+You utter a prayer to Makhleb and carve the %s into yourself.
+你向马赫勒布祈祷，将%s刻入自己的身体。
+
+%%%%
+You are already unleashing the legions of chaos!
+你已经在释放混沌军团了！
+
+%%%%
+You carve a gateway into yourself and beckon forth the legions of chaos!
+你在自己身上刻出一个通道，召唤混沌军团前来！
+
+%%%%
+You offer yourself as an instrument of Makhleb's will and feel 
+你将自身献为马赫勒布意志的工具，感到
+
+%%%%
+(Slaying mortal victims (and occasionally demons) will 
+(屠杀凡人受害者（有时甚至是恶魔）将
+
+%%%%
+ depart the Crucible.
+ 离开熔炉。
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+%%%%
+%s strikes at %s from the darkness!
+%s从黑暗中攻击%s！
+
+%%%%
+%s turn%s aside %s attack!
+%s%s挡开了%s的攻击！
+
+# L346: ⚠️ARG-DIFF EN:3 ZH:2
+%%%%
+%s %s %s attack.
+%s格挡了%s的攻击。
+
+%%%%
+%s is struck blind by the light of your shield.
+%s 被你盾牌的光芒致盲了。
+
+%%%%
+You knock %s out of %s grip!
+你从%s的掌握中夺下了%s！
+
+%%%%
+You devour %s%s!
+你吞噬了%s%s!
+
+%%%%
+It tastes like %s.
+它尝起来像%s.
+
+# L1264: ⚠️ARG-DIFF EN:4 ZH:2
+%%%%
+You spit out %s as %s %s & %s in your maw!
+你将%s吐了出来——%s在你的嘴里扭动变形！
+
+# L2707: ⚠️ARG-DIFF EN:3 ZH:2
+%%%%
+You %s %s%s.
+你%s了%s，但没有造成伤害。
+
+%%%%
+%s %s %s%s%s
+%s%s了%s%s%s
+
+%%%%
+You%s miss %s%s.
+你%s未命中%s%s。
+
+# L3985: ⚠️ARG-DIFF EN:8 ZH:1
+%%%%
+%s %s%s %s%s%s%s%s
+并电击了%s
+
+# L122: simple
+%%%%
+That is beyond the maximum range.
+那超出了最大射程。
+
+# L129: simple
+%%%%
+You can't place the storm on %s.
+你无法在%s上放置风暴。
+
+# L179: simple
+%%%%
+You call forth a pillar of damnation!
+你召唤了一道诅咒之柱！
+
+# L312: simple
+%%%%
+Lightning arcs from %s %s!
+闪电从%s%s射出！
+
+# L452: simple
+%%%%
+The %s grounds out.
+%s接地消失了。
+
+# L464: simple
+%%%%
+The %s arcs out of your line of sight!
+%s在你视线之外消失了！
+
+# L466: simple
+%%%%
+The %s suddenly appears!
+%s突然出现了！
+
+# L899: simple
+%%%%
+You freeze %s%s%s
+你冻结了%s%s%s
+
+# L1062: simple
+%%%%
+The momentum dissipates harmlessly.
+动量无害地消散了。
+
+# L1468: simple
+%%%%
+You can't deconstruct that!
+你无法分解那个！
+
+# L1542: simple
+%%%%
+The %s shatters!
+%s碎裂了！
+
+# L1547: simple
+%%%%
+You shatter%s
+你%s碎裂了
+
+# L1722: simple
+%%%%
+The dungeon shakes!
+地下城震动了！
+
+# L1726: simple
+%%%%
+The dungeon rumbles!
+地下城隆隆作响！
+
+# L1743: simple
+%%%%
+Ka-crash!
+咔嚓——轰！
+
+# L1759: simple
+%%%%
+You shudder from the earth-shattering force%s
+你因这撼地之力而战栗%s
+
+# L1780: simple
+%%%%
+The dungeon shakes around %s!
+地下城在%s周围震动！
+
+# L1786: simple
+%%%%
+The dungeon rumbles around %s!
+地下城在%s周围隆隆作响！
+
+# L1876: simple
+%%%%
+There is a shattering impact!
+传来一阵粉碎性的冲击！
+
+# L3198: simple
+%%%%
+engulfs
+吞噬
+
+# L3210: simple
+%%%%
+drowns
+溺毙
+
+# L3826: simple
+%%%%
+intensify the flame waves
+加强火焰波
+
+# L3893: simple
+%%%%
+maintain the ray
+维持灼热射线
+
+# L4298: simple
+%%%%
+pelts
+猛击
+
+# L4649: simple
+%%%%
+continue charging
+继续充能
+
+# L5186: simple
+%%%%
+skewer
+刺穿
+
+%%%%
+ finishes channelling their searing ray.
+结束了灼热射线的持续施放。
+
+# Phase 1a: melee-attack + invent (2026-06-28)
+%%%%
+The grappling hook guides your attack.
+抓钩引导了你的攻击。
+%%%%
+You ferociously counterattack!
+你猛烈地反击了！
+%%%%
+ooze
+软泥
+%%%%
+concussive force
+冲击力
+%%%%
+%s is engulfed in spores.
+%s 被孢子吞没了。
+%%%%
+Your slime covering ruptures, deflecting the attack, %s attack away%s
+你的软泥覆盖层在偏转攻击时破裂，%s attack away%s
+%%%%
+You revel in the kill!
+你沉醉于杀戮之中！
+%%%%
+You lift your head to howl, but no sound comes out.
+你仰头欲嚎，却发不出声音。
+%%%%
+You let out a bloodcurdling howl!
+你发出了一声令人胆寒的嚎叫！
+%%%%
+%s stiffens with fear!
+%s 因恐惧而僵住了！
+%%%%
+You feel invigorated.
+你感到精力充沛。
+%%%%
+%s's fire resistance is stripped away!
+%s 的火焰抗性被剥离了！
+%%%%
+The flames cauterise the wound!
+火焰烧灼了伤口！
+%%%%
+%s poisons %s!
+%s使%s中毒了！
+%%%%
+the wall
+墙壁
+%%%%
+You aren't carrying any currently wearable armour.
+你当前没有可穿戴的护甲。
+%%%%
+You aren't carrying any wearable armour.
+你没有携带任何可穿戴的护甲。
+%%%%
+You don't currently have any unidentified items.
+你当前没有任何未鉴定的物品。
+%%%%
+You aren't carrying any armour which can be enchanted further.
+你没有携带任何可以进一步附魔的护甲。
+%%%%
+You don't have any corpses.
+你没有任何尸体。
+%%%%
+You aren't carrying any potions.
+你没有携带任何药水。
+%%%%
+You aren't carrying any scrolls.
+你没有携带任何卷轴。
+%%%%
+You don't have any books.
+你没有任何书籍。
+%%%%
+You aren't carrying any wands.
+你没有携带任何魔杖。
+%%%%
+You aren't carrying any pieces of jewellery.
+你没有携带任何珠宝。
+%%%%
+You aren't carrying any amulets.
+你没有携带任何护身符。
+%%%%
+You aren't carrying any jewellery or talismans.
+你没有携带任何珠宝或护符。
+%%%%
+You aren't carrying any items that might be thrown or fired.
+你没有携带任何可以投掷或发射的物品。
+%%%%
+You cannot evoke magical items.
+你无法唤起魔法物品。
+%%%%
+You aren't carrying any items that you can evoke.
+你没有携带任何你可以唤起的物品。
+%%%%
+None of your equipped items are cursed.
+你装备的物品都没有被诅咒。
+%%%%
+You aren't wearing any pieces of armour.
+你没有穿戴任何护甲。
+%%%%
+You aren't wearing any rings, amulets, or talismans.
+你没有穿戴任何戒指、护身符或护符。
+%%%%
+You aren't wearing anything.
+你没有穿戴任何东西。
+%%%%
+You aren't carrying anything that can be equipped.
+你没有携带任何可以装备的东西。
+%%%%
+You aren't carrying any weapons that can be branded.
+你没有携带任何可以被铭刻的武器。
+%%%%
+You aren't carrying any weapons that can be enchanted.
+你没有携带任何可以被附魔的武器。
+%%%%
+You aren't carrying any artefact melee weapons.
+你没有携带任何神器近战武器。
+%%%%
+You aren't wearing any cursable items.
+你没有穿戴任何可以被诅咒的物品。
+%%%%
+You aren't wearing any uncursed rings.
+你没有穿戴任何未被诅咒的戒指。
+%%%%
+You don't have any quiverable items.
+你没有任何可以装入箭袋的物品。
+%%%%
+You aren't carrying any such object.
+你没有携带任何此类物品。
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L1615: simple
+%%%%
+Antique Weapon
+古董武器
+
+# L1617: simple
+%%%%
+Antique Armour
+古董护甲
+
+# L1619: simple
+%%%%
+Weapon
+武器
+
+# L1621: simple
+%%%%
+Armour
+护甲
+
+# L1623: simple
+%%%%
+Jewellery
+珠宝
+
+# L1625: simple
+%%%%
+Book
+书籍
+
+# L1628: simple
+%%%%
+Gadget
+小装置
+
+# L1630: simple
+%%%%
+Removed Food
+已移除食品
+
+# L1633: simple
+%%%%
+Magic Scroll
+魔法卷轴
+
+# L1635: simple
+%%%%
+Assorted Antiques
+杂项古董
+
+# L1637: simple
+%%%%
+Distillery
+蒸馏酒坊
+
+# L1639: simple
+%%%%
+General Store
+杂货铺
+
+# L1641: simple
+%%%%
+Bug
+未知
+
+%%%%
+<yellow>You have %d gold%s</yellow>\n<lightgrey>
+<yellow>你拥有 %d 枚金币%s</yellow>
+<lightgrey>
+
+%%%%
+
+和一张凭证。
+
+# L552: simple
+%%%%
+(Cast)    
+(施放)  
+
+# L554: simple
+%%%%
+(Memorise)
+(记忆)
+
+# L556: simple
+%%%%
+(Describe)
+(描述)
+
+# L558: simple
+%%%%
+(Hide)    
+(隐藏)  
+
+# L560: simple
+%%%%
+(Imbue)   
+(赋予)  
+
+# L561: simple
+%%%%
+(Show)    
+(显示)  
+
+# L616: simple
+%%%%
+ spells hidden
+ 个法术被隐藏
+
+# L617: simple
+%%%%
+ spell hidden 
+ 个法术被隐藏 
+
+# L664: simple
+%%%%
+ search
+ 搜索
+
+# L665: simple
+%%%%
+   [<w>?</w>] help
+   [<w>?</w>] 帮助
+
+# L669: simple
+%%%%
+[<w>Esc</w>] clear
+[<w>Esc</w>] 清除
+
+%%%%
+You need no library to learn spells.
+你不需要图书馆来学习法术。
+
+%%%%
+Your library has no spells.
+你的法术库中没有法术。
+
+%%%%
+Search for what? (regex) 
+搜索什么？（正则表达式）
+
+%%%%
+Sorry, the spell '%s' is gone!
+抱歉，法术'%s'已经不存在了！
+
+%%%%
+You already know that spell!
+你已经认识那个法术了！
+
+%%%%
+Your mind is already too full of spells!
+你的头脑中已经装了太多法术了！
+
+%%%%
+You're too inexperienced to learn that spell!
+你的经验不足，无法学习那个法术！
+
+%%%%
+You can't memorise that many levels of magic yet!
+你还不能记忆那么多等级的魔法！
+
+%%%%
+You haven't found that spell!
+你还没有找到那个法术！
+
+%%%%
+This spell is impossible to cast!
+这个法术不可能被施放！
+
+%%%%
+This spell is %s to cast%s
+这个法术%s施放%s
+
+%%%%
+You don't know of any spells!
+你一个法术都不认识！
+
+%%%%
+You don't know any spells that your servitor could cast!
+你不认识任何你的仆从可以施放的法术！
+
+# L284: simple
+%%%%
+describe
+描述
+
+# L288: simple
+%%%%
+Your spells (%s)
+你的法术 (%s)
+
+# L298: simple
+%%%%
+Type
+类型
+
+# L299: simple
+%%%%
+Failure
+失败率
+
+# L300: simple
+%%%%
+Level
+等级
+
+# L303: simple
+%%%%
+Power
+威力
+
+# L304: simple
+%%%%
+Damage
+伤害
+
+# L305: simple
+%%%%
+Range
+范围
+
+# L306: simple
+%%%%
+Noise
+噪音
+
+# L322: simple
+%%%%
+help
+帮助
+
+# L330: simple
+%%%%
+ toggle spell headers
+ 切换表头
+
+%%%%
+You are unable to access your magic!
+你无法获取你的魔力！
+
+%%%%
+Something interferes with your magic!
+有什么东西干扰了你的魔力！
+
+%%%%
+You're too confused to cast spells.
+你太困惑了，无法施法。
+
+%%%%
+Magical energy flows into your mind!
+魔法能量流入了你的心智！
+
+%%%%
+Cast which spell? (? or * to list) 
+施放哪个法术？（? 或 * 列出）
+
+%%%%
+Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>
+正在施放: <w>%s</w> <lightgrey>(%s)</lightgrey>
+
+%%%%
+Confirm with . or Enter, or press 
+用 . 或回车确认，或按?或*列出所有法术。
+
+%%%%
+You don't know that spell.
+你不认识那个法术。
+
+%%%%
+You can't see any susceptible monsters within range! 
+你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+
+%%%%
+You lose access to your magic!
+你失去了获取魔力的能力！
+
+%%%%
+Couldn't try casting monster spell because you're 
+无法尝试施放怪物法术，因为你在一个怪物上面。
+
+%%%%
+Couldn't try casting monster spell because there is 
+无法尝试施放怪物法术，因为没有空的怪物槽位。
+
+%%%%
+Invalid player spell, attempting to cast it as monster spell.
+无效的玩家法术，尝试作为怪物法术施放。
+
+%%%%
+It is impossible to cast this spell 
+在此形态下无法施放此法术(100%% 失败风险)!
+
+# L1346: ⚠️ARG-DIFF EN:1 ZH:3
+%%%%
+The spell is %s to miscast 
+施放此法术%s失败（%s失败风险）%s
+
+%%%%
+Sorry, this spell works on others only.
+抱歉，这个法术只能对他人施放。
+
+%%%%
+You miscast %s.
+你施放%s失败了。
+
+%%%%
+Spell '%s' is not a player castable spell.
+法术'%s'不是玩家可施放的法术。
+
+%%%%
+Invalid spell!
+无效的法术！
+
+%%%%
+<%s>%s</%s>; <%s>%s</%s> risk of failure
+<%s>%s</%s>; <%s>%s</%s> 失败风险
+
+%%%%
+Without enough magic to sustain it, your %s dissipates.
+没有足够的魔力维持，你的%s消散了。
+
+%%%%
+You stop channelling waves of flame.
+你停止了火焰波的持续施放。
+
+%%%%
+You stop channelling your searing ray.
+你停止了灼热射线的持续施放。
+
+%%%%
+The insufficient charge dissipates harmlessly.
+不足的能量无害地消散了。
+
+%%%%
+You stop assembling your clockwork bee.
+你停止了组装发条蜜蜂。
+
+%%%%
+Casting now could cause dangerous contamination. Continue?
+现在施放可能会对你造成危险的污染。继续吗？
+
+# L121: ⚠️ARG-DIFF EN:2 ZH:0
+%%%%
+You feel a %ssurge of power%s
+你感到一股微弱的力量涌动。
+
+%%%%
+You cannot cast spells while %s!
+你在%s时无法施法！
+
+%%%%
+Magical energy flows from %s into your mind!
+魔法能量从%s流入了你的心智！
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L6518: simple
+%%%%
+rEggplant
+???
+
+%%%%
+This spell would have no effect right now because 
+此法术现在不会有任何效果，因为
+
+%%%%
+\nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, 
+
+要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L508: map:zh_map
+%%%%
+Flail
+链枷
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L1459: simple
+%%%%
+? - Help
+? - 帮助
+
+%%%%
+Do you want to play with this combination? [Y/n/q]
+你想用这个组合进行游戏吗？ [Y/n/q]
+
+%%%%
+Trunk doesn't count for the tournament, you want 
+Trunk不计入锦标赛，你想要
+
+%%%%
+This name has an existing save; really overwrite? [Y/n]
+这个名字已有存档；真的要覆盖吗？ [Y/n]
+
+%%%%
+Enter 0 for a random seed. 
+输入0获取随机种子。[Tab]/[Shift-Tab] 切换输入焦点。
+
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L2662: simple
+%%%%
+MPRegen
+回魔
+
+# L2927: simple
+%%%%
+no status effects
+无状态效果
+
+# L2939: simple
+%%%%
+\n<w>0:</w> Orb of Zot
+
+<w>0:</w> 佐特宝珠
+
+%%%%
+<darkgrey>(
+<darkgrey>（
+
+%%%%
+<darkgrey>(no 
+<darkgrey>（无
+
+%%%%
+  <darkgrey>[
+  <darkgrey>[
+
+# L78: map:zh_names
+%%%%
+Dungeon
+地牢
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L252: simple
+%%%%
+Press: ? - help
+按: ? - 帮助
+
+%%%%
+%s%s here.
+%s%s。
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+%%%%
+You lose track of time!
+你忘记了时间的流逝！
+
+%%%%
+The world leaves you behind!
+世界将你抛弃在身后！
+
+%%%%
+Your doom draws closer.
+你的厄运越来越近了。
+
+%%%%
+You feel lethargic.
+你感到昏昏欲睡。
+
+%%%%
+Your %s grows more durable.
+你的%s变得更加持久了。
+
+# L1847: ⚠️ARG-DIFF EN:2 ZH:1
+%%%%
+%s %s shrouded in protective flame, covering ground quickly, and attacking fiercely!
+%s被防护火焰笼罩，快速移动，猛烈攻击！
+
+%%%%
+The divine experience confuses you!
+神圣的体验让你头晕目眩！
+
+%%%%
+The divine experience drains your vigour!
+神圣的体验吸干了你的精力！
+
+%%%%
+ smites you!
+ 重击了你！
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+%%%%
+Your resistance to fire fades away.
+你对火焰的抵抗力消失了。
+
+%%%%
+Your resistance to cold fades away.
+你对寒冷的抵抗力消失了。
+
+%%%%
+Your resistance to electricity fades away.
+你对电击的抵抗力消失了。
+
+%%%%
+Your resistance to physical damage fades away.
+你对物理伤害的抵抗力消失了。
+
+%%%%
+The heavenly storm settles.
+天界的风暴平息了。
+
+%%%%
+You lunge%s at %s%s.
+你%s向%s突刺%s。
+
+%%%%
+You spin and attack %s%s%s.
+你旋转攻击%s%s%s。
+
+%%%%
+You %sattack %s from above%s.
+你%s从上方攻击%s%s。
+
+%%%%
+A whirlwind of blades manifests around you!
+一股刀刃旋风在你周围显现！
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L1806: simple
+%%%%
+%s stops winding %s clockwork bee.
+%s停止了给发条蜜蜂上弦。
+
+# L1817: simple
+%%%%
+%s continues winding %s clockwork bee....
+%s继续给发条蜜蜂上弦……
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+# L2245: simple
+%%%%
+Really abort (and waste the scroll)?
+真的要中止（并浪费卷轴）吗？
+
+%%%%
+(<w>?</w> for menu, <w>Esc</w> to cancel)
+(<w>?</w> 菜单，<w>Esc</w> 取消)
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠️ARG-DIFF before merging
+#
+%%%%
+%s is freed.
+%s被释放了。
+
+%%%%
+You have no companions.
+你没有同伴。
+
+%%%%
+Removing corrupted ex-follower from level: %s.
+正在从当前楼层移除损坏的前追随者：%s。
+
+%%%%
+Beogh sends your followers elsewhere.
+贝奥格把你的追随者送到了别处。
+
+%%%%
+You release %s from your service.
+你将%s从你的麾下释放了。
+
+%%%%
+You swear to avenge %s death!
+你发誓要为%s的死复仇！
+
+%%%%
+You feel as though your fallen companions have been avenged.
+你觉得倒下的同伴们的大仇已报。
+
+%%%%
+Your apostles return to your side.
+你的使徒们回到了你的身边。

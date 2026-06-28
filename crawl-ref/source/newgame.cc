@@ -385,9 +385,7 @@ static bool _reroll_random(newgame_def& ng)
     auto vbox = make_shared<Box>(Box::VERT);
     vbox->add_child(std::move(title_hbox));
     vbox->add_child(make_shared<Text>(
-    Options.language == lang_t::ZH
-        ? "你想用这个组合进行游戏吗？ [Y/n/q]"
-        : "Do you want to play with this combination? [Y/n/q]"));
+    T_("Do you want to play with this combination? [Y/n/q]")));
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 
     bool done = false;
@@ -437,9 +435,7 @@ static void _choose_char(newgame_def& ng, newgame_def& choice,
     // Apologies to non-public servers.
     if (ng.type == GAME_TYPE_NORMAL || ng.type == GAME_TYPE_DESCENT)
     {
-        if (!yesno(Options.language == lang_t::ZH
-                   ? "Trunk不计入锦标赛，你想要" TOURNEY "。仍然玩Trunk吗？ (Y/N)"
-                   : "Trunk doesn't count for the tournament, you want "
+        if (!yesno(T_("Trunk doesn't count for the tournament, you want ")
                      TOURNEY ". Still play Trunk? (Y/N)", false, 'n'))
         {
             game_ended(game_exit::abort);
@@ -726,9 +722,7 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
         prompt.textcolour(LIGHTRED);
         if (overwrite_prompt)
             prompt.cprintf(
-    Options.language == lang_t::ZH
-        ? "这个名字已有存档；真的要覆盖吗？ [Y/n]"
-        : "This name has an existing save; really overwrite? [Y/n]");
+    T_("This name has an existing save; really overwrite? [Y/n]"));
         prompt_ui->set_text(prompt);
 
         ui::pump_events();
@@ -865,11 +859,7 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
         Version::Long);
     box->add_child(make_shared<ui::Text>(formatted_string(title_text, CYAN)));
 
-    const string body_text = Options.language == lang_t::ZH
-        ? "输入0获取随机种子。"
-          "[Tab]/[Shift-Tab] 切换输入焦点。\n"
-        : "Enter 0 for a random seed. "
-          "[Tab]/[Shift-Tab] to cycle input focus.\n";
+    const string body_text =T_("Enter 0 for a random seed. \"[Tab]/[Shift-Tab] to cycle input focus.\n\"");
     box->add_child(make_shared<ui::Text>(body_text));
 
     auto seed_hbox = make_shared<ui::Box>(ui::Box::HORZ);
@@ -1456,7 +1446,7 @@ protected:
                 T_("List skill training aptitude values for all species."));
 
         _add_choice_menu_option(0, 3,
-                zh ? "? - 帮助" : "? - Help",
+                T_("? - Help"),
                 '?', M_HELP,
                 T_("Open the help screen."));
 
@@ -1863,7 +1853,7 @@ static void _construct_weapon_menu(const newgame_def& ng,
             T_("List skill training aptitude values for all species."),
             '%', M_APTITUDES);
     _add_menu_sub_item(sub_items, 0, 2,
-            Options.language == lang_t::ZH ? "? - 帮助" : "? - Help",
+            T_("? - Help"),
             T_("Open the help screen."),
             '?', M_HELP);
     _add_menu_sub_item(sub_items, 1, 0, "* - Random weapon",
@@ -2239,7 +2229,7 @@ static void _construct_gamemode_map_menu(const mapref_vector& maps,
                 T_("List skill training aptitude values for all species."),
                 '%', M_APTITUDES);
         _add_menu_sub_item(sub_items, 0, 1,
-                Options.language == lang_t::ZH ? "? - 帮助" : "? - Help",
+                T_("? - Help"),
                 T_("Open the help screen."),
                 '?', M_HELP);
         _add_menu_sub_item(sub_items, 1, 0, "* - Random map",

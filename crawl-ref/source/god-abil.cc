@@ -228,10 +228,7 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
     else
         mprf(MSGCH_GOD, T_("Your %s shines brightly with a divine light!"), wpn.name(DESC_QUALNAME).c_str());
     flash_view(UA_PLAYER, colour);
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 咆哮道：明智地使用这份恩赐吧！");
-    else
-        simple_god_message(" booms: Use this gift wisely!");
+    simple_god_message(T_(" booms: Use this gift wisely!"));
     you.one_time_ability_used.set(you.religion);
     take_note(Note(NOTE_GOD_GIFT, you.religion));
 
@@ -307,10 +304,7 @@ bool zin_donate_gold()
 
     if (donation < 1)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 认为你的慷慨不足。");
-        else
-            simple_god_message(" finds your generosity lacking.");
+        simple_god_message(T_(" finds your generosity lacking."));
         return true;
     }
 
@@ -810,10 +804,7 @@ bool zin_check_able_to_recite(bool quiet)
     {
         if (!quiet)
         {
-            if (Options.language == lang_t::ZH)
-                mpr("请先完成你当前的布道。");
-            else
-                mpr("Please finish your current recitation first.");
+            mpr(T_("Please finish your current recitation first."));
         }
         return false;
     }
@@ -1304,10 +1295,7 @@ static void _zin_saltify(monster* mon)
 
 bool zin_vitalisation()
 {
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 赐予了你神圣的耐力。");
-    else
-        simple_god_message(" grants you divine stamina.");
+    simple_god_message(T_(" grants you divine stamina."));
 
     // Add divine stamina.
     const int stamina_amt =
@@ -1450,12 +1438,7 @@ void elyvilon_divine_vigour()
     if (you.duration[DUR_DIVINE_VIGOUR])
         return;
 
-    if (Options.language == lang_t::ZH)
-        mprf("%s赐予了你神圣活力。",
-             god_name(GOD_ELYVILON).c_str());
-    else
-        mprf("%s grants you divine vigour.",
-             god_name(GOD_ELYVILON).c_str());
+    mprf(T_("%s grants you divine vigour."), god_name(GOD_ELYVILON).c_str());
 
     const int vigour_amt = 1 + you.skill_rdiv(SK_INVOCATIONS, 1, 3);
     const int old_hp_max = you.hp_max;
@@ -1608,10 +1591,7 @@ bool yred_light_the_torch()
     }
 
     if (aid)
-        if (Options.language == lang_t::ZH)
-            mpr("伊雷德勒姆纳派来了仆从来援助你！");
-        else
-            mpr("Yredelemnul sends servants to aid you!");
+        mpr(T_("Yredelemnul sends servants to aid you!"));
 
     return true;
 }
@@ -1933,11 +1913,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     // schedule our actual revival for the end of this combat round
     schedule_avoided_death_fineff(mon);
 
-    if (Options.language == lang_t::ZH)
-        mprf("%s的灵魂%s。", whose.c_str(),
-             !force_hostile ? "现在属于你" : "在反抗你");
-    else
-        mprf("The soul of %s %s.", whose.c_str(),
+    mprf(T_("The soul of %s %s."), whose.c_str(),
              !force_hostile ? "is now yours" : "fights you");
 }
 
@@ -1957,10 +1933,7 @@ bool kiku_gift_capstone_spells()
 
     if (spells.empty())
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 没有更多你可用的法术了！");
-        else
-            simple_god_message(" has no more spells that you can make use of!");
+        simple_god_message(T_(" has no more spells that you can make use of!"));
         return false;
     }
 
@@ -1974,10 +1947,7 @@ bool kiku_gift_capstone_spells()
         return false;
     }
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 赐予了你禁忌的知识！");
-    else
-        simple_god_message(" grants you forbidden knowledge!");
+    simple_god_message(T_(" grants you forbidden knowledge!"));
     library_add_spells(spells);
     flash_view(UA_PLAYER, RED);
     // Allow extra time for the flash to linger.
@@ -2617,10 +2587,7 @@ bool ashenzari_uncurse_item()
     you.props[ASHENZARI_CURSE_PROGRESS_KEY] = 0;
     if (you.props.exists(AVAILABLE_CURSE_KEY))
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 收回了幻象和诅咒。");
-        else
-            simple_god_message(" withdraws the vision and curse.");
+        simple_god_message(T_(" withdraws the vision and curse."));
         you.props.erase(AVAILABLE_CURSE_KEY);
     }
 
@@ -2662,13 +2629,7 @@ void announce_beogh_conversion_offer()
 
             ASSERT_RANGE(get_talent(ABIL_CONVERT_TO_BEOGH).hotkey,
                             'A', 'z' + 1);
-            if (Options.language == lang_t::ZH)
-                mprf("(在<w>%s</w>能力菜单上按<w>%c</w>来皈依贝奥格)",
-                    command_to_string(CMD_USE_ABILITY).c_str(),
-                    get_talent(ABIL_CONVERT_TO_BEOGH).hotkey);
-            else
-                mprf("(Press <w>%c</w> on the <w>%s</w> ability menu to convert to Beogh)",
-                    get_talent(ABIL_CONVERT_TO_BEOGH).hotkey,
+            mprf(T_("(Press <w>%c</w> on the <w>%s</w> ability menu to convert to Beogh)"), get_talent(ABIL_CONVERT_TO_BEOGH).hotkey,
                     command_to_string(CMD_USE_ABILITY).c_str());
             you.attribute[ATTR_SEEN_BEOGH] = 1;
 
@@ -2908,12 +2869,7 @@ void beogh_blood_for_blood_tick(int delay)
 
 void beogh_end_blood_for_blood()
 {
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_DURATION,
-             "你的祷告结束，你的同胞被召回了。");
-    else
-        mprf(MSGCH_DURATION,
-             "You reach the end of your prayer and your brethren are recalled.");
+    mpr(T_("You reach the end of your prayer and your brethren are recalled."));
     for (monster_iterator mi; mi; ++mi)
     {
         if (mons_is_blood_for_blood_orc(**mi))
@@ -2962,15 +2918,7 @@ void beogh_ally_healing()
         mon->heal(value);
     }
 
-    if (Options.language == lang_t::ZH)
-        mprf("%s因你的英勇而%s%s精神振奋。",
-             heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
-                                   : "你的追随者们",
-             heal_list.size() == 1 ? "" : "",
-             healing_done > 25 ? " greatly " : "");
-    else
-        mprf("%s %s%sinvigorated by your bravery.",
-             heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
+    mprf(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
                                    : "Your followers are",
              heal_list.size() == 1 ? "is " : "",
              healing_done > 25 ? " greatly " : "");
@@ -3013,10 +2961,7 @@ void beogh_increase_orcification()
     if (you.props.exists(ORCIFICATION_LEVEL_KEY))
     {
         you.props[ORCIFICATION_LEVEL_KEY] = 2;
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_MUTATION, "你的兽人特征完全显现出来了。");
-        else
-            mprf(MSGCH_MUTATION, "Your orcish features manifest fully.");
+        mpr(T_("Your orcish features manifest fully."));
         return;
     }
 
@@ -3114,13 +3059,7 @@ spret dithmenos_shadowslip(bool fail)
                 mi->foe = shadow->mindex();
                 mi->behaviour = BEH_SEEK;
 
-                if (Options.language == lang_t::ZH)
-                    mprf("%s将%s的注意力转向了你的影子。",
-                        mi->name(DESC_THE).c_str(),
-                        mi->pronoun(PRONOUN_POSSESSIVE).c_str());
-                else
-                    mprf("%s turns %s attention toward your shadow.",
-                        mi->name(DESC_THE).c_str(),
+                mprf(T_("%s turns %s attention toward your shadow."), mi->name(DESC_THE).c_str(),
                         mi->pronoun(PRONOUN_POSSESSIVE).c_str());
             }
         }
@@ -3396,12 +3335,7 @@ spret dithmenos_marionette(monster& target, bool fail)
     }
 
     target.add_ench(ENCH_SHADOWLESS);
-    if (Options.language == lang_t::ZH)
-        mprf("%s的影子溜走了，你的表演结束了。",
-            target.name(DESC_ITS).c_str());
-    else
-        mprf("%s shadow slips away and your performance ends.",
-            target.name(DESC_ITS).c_str());
+    mprf(T_("%s shadow slips away and your performance ends."), target.name(DESC_ITS).c_str());
 
     // Let the monster complain about what you did to them, in their own way.
     string msg = getSpeakString(target.name(DESC_PLAIN) + " marionette");
@@ -3565,10 +3499,7 @@ bool gozag_potion_petition()
             line += comma_separated_line(pot_names.begin(), pot_names.end());
             mpr_nojoin(MSGCH_PLAIN, line);
         }
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_PROMPT, "购买哪种效果？");
-        else
-            mprf(MSGCH_PROMPT, "Purchase which effect?");
+        mpr(T_("Purchase which effect?"));
         keyin = toalower(get_ch()) - 'a';
         if (keyin < 0 || keyin > GOZAG_MAX_POTIONS - 1)
             continue;
@@ -3759,10 +3690,7 @@ static int _gozag_choose_shop()
     for (int i = 0; i < GOZAG_MAX_SHOPS; i++)
         mpr_nojoin(MSGCH_PLAIN, _describe_gozag_shop(i).c_str());
 
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_PROMPT, "资助哪位商人？");
-    else
-        mprf(MSGCH_PROMPT, "Fund which merchant?");
+    mpr(T_("Fund which merchant?"));
     const int shop_index = toalower(get_ch()) - 'a';
     if (shop_index < 0 || shop_index > GOZAG_MAX_SHOPS - 1)
         return _gozag_choose_shop(); // tail recurse
@@ -3829,16 +3757,7 @@ static void _gozag_place_shop(int index)
     const gender_type gender = random_choose(GENDER_FEMALE, GENDER_MALE,
                                              GENDER_NEUTRAL);
 
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_GOD, "%s邀请你访问%s %s%s%s。",
-                    shop->shop_name.c_str(),
-                    decline_pronoun(gender, PRONOUN_POSSESSIVE),
-                    shop_type_name(shop->type).c_str(),
-                    !shop->shop_suffix_name.empty() ? " " : "",
-                    shop->shop_suffix_name.c_str());
-    else
-        mprf(MSGCH_GOD, "%s invites you to visit %s %s%s%s.",
-                    shop->shop_name.c_str(),
+    mprf(T_("%s invites you to visit %s %s%s%s."), shop->shop_name.c_str(),
                     decline_pronoun(gender, PRONOUN_POSSESSIVE),
                     shop_type_name(shop->type).c_str(),
                     !shop->shop_suffix_name.empty() ? " " : "",
@@ -3985,12 +3904,7 @@ void gozag_deduct_bribe(branch_type br, int amount)
     branch_bribe[br] = max(0, branch_bribe[br] - amount);
     if (branch_bribe[br] <= 0)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你对%s的贿赂已经耗尽了。",
-                 branches[br].longname);
-        else
-            mprf(MSGCH_DURATION, "Your bribe of %s has been exhausted.",
-                 branches[br].longname);
+        mprf(T_("Your bribe of %s has been exhausted."), branches[br].longname);
         add_daction(DACT_BRIBE_TIMEOUT);
     }
 }
@@ -4397,10 +4311,7 @@ spret qazlal_elemental_force(bool fail)
     }
 
     if (placed)
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你周围的云雾凝聚成形了！");
-        else
-            mprf(MSGCH_GOD, "Clouds arounds you coalesce and take form!");
+        mpr(T_("Clouds arounds you coalesce and take form!"));
     else
         canned_msg(MSG_NOTHING_HAPPENS); // can this ever happen?
 
@@ -4447,10 +4358,7 @@ spret qazlal_disaster_area(bool fail)
 
     if (targets.empty())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("这里空间不足！");
-        else
-            mpr("There isn't enough space here!");
+        mpr(T_("There isn't enough space here!"));
         return spret::abort;
     }
 
@@ -4464,10 +4372,7 @@ spret qazlal_disaster_area(bool fail)
 
     fail_check();
 
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_GOD, "大自然在你周围猛烈翻腾！");
-    else
-        mprf(MSGCH_GOD, "Nature churns violently around you!");
+    mpr(T_("Nature churns violently around you!"));
 
     // TODO: should count get a cap proportional to targets.size()?
     int count = max(1, min((int)targets.size(),
@@ -5177,10 +5082,7 @@ void ru_offer_new_sacrifices()
                                   possible_sacrifices.end());
     }
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 认为你已准备好做出新的牺牲。");
-    else
-        simple_god_message(" believes you are ready to make a new sacrifice.");
+    simple_god_message(T_(" believes you are ready to make a new sacrifice."));
     // included in default force_more_message
 }
 
@@ -5219,10 +5121,7 @@ static void _apply_ru_sacrifice(mutation_type sacrifice)
 
 static bool _execute_sacrifice(ability_type sac, const char* message)
 {
-    if (Options.language == lang_t::ZH)
-        mprf("Ru要求你%s。", message);
-    else
-        mprf("Ru asks you to %s.", message);
+    mprf(T_("Ru asks you to %s."), message);
     mpr(ru_sacrifice_description(sac));
     if (!yesno("Do you really want to make this sacrifice?",
                false, 'n'))
@@ -5468,10 +5367,7 @@ bool ru_do_sacrifice(ability_type sac)
     set_piety(min(piety_breakpoint(5), you.raw_piety + piety_gain));
 
     if (you.raw_piety == piety_breakpoint(5))
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 表示你的觉醒已经完成。");
-        else
-            simple_god_message(" indicates that your awakening is complete.");
+        simple_god_message(T_(" indicates that your awakening is complete."));
 
     // Clean up.
     _ru_expire_sacrifices();
@@ -5504,10 +5400,7 @@ bool ru_reject_sacrifices(bool forced_rejection)
 
     ru_reset_sacrifice_timer(false, forced_rejection);
     _ru_expire_sacrifices();
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 将花更长时间来评估你的准备情况。");
-    else
-        simple_god_message(" will take longer to evaluate your readiness.");
+    simple_god_message(T_(" will take longer to evaluate your readiness."));
     return true;
 }
 
@@ -5600,66 +5493,37 @@ void ru_do_retribution(monster* mons, int damage)
     }
     else if (power > 35)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你集中内在力量，麻痹%s作为报应！",
-                    mons->name(DESC_THE).c_str());
-        else
-            mprf(MSGCH_GOD, "You focus your inner power and paralyse %s in retribution!",
-                    mons->name(DESC_THE).c_str());
+        mprf(T_("You focus your inner power and paralyse %s in retribution!"), mons->name(DESC_THE).c_str());
         mons->add_ench(mon_enchant(ENCH_PARALYSIS, act, power+random2(60)));
     }
     else if (power > 25)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你集中内在力量，减速%s作为报应！",
-                    mons->name(DESC_THE).c_str());
-        else
-            mprf(MSGCH_GOD, "You focus your inner power and slow %s in retribution!",
-                    mons->name(DESC_THE).c_str());
+        mprf(T_("You focus your inner power and slow %s in retribution!"), mons->name(DESC_THE).c_str());
         mons->add_ench(mon_enchant(ENCH_SLOW, act, power+random2(100)));
     }
     else if (power > 10)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你集中内在力量，致盲%s作为报应！",
-                    mons->name(DESC_THE).c_str());
-        else
-            mprf(MSGCH_GOD, "You focus your inner power and blind %s in retribution!",
-                    mons->name(DESC_THE).c_str());
+        mprf(T_("You focus your inner power and blind %s in retribution!"), mons->name(DESC_THE).c_str());
         mons->add_ench(mon_enchant(ENCH_BLIND, act, power+random2(100)));
     }
     else if (power > 0)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你集中内在力量，照亮%s作为报应！",
-                    mons->name(DESC_THE).c_str());
-        else
-            mprf(MSGCH_GOD, "You focus your inner power and illuminate %s in retribution!",
-                    mons->name(DESC_THE).c_str());
+        mprf(T_("You focus your inner power and illuminate %s in retribution!"), mons->name(DESC_THE).c_str());
         mons->add_ench(mon_enchant(ENCH_CORONA, act, power+random2(150)));
     }
 }
 
 void ru_draw_out_power()
 {
-    if (Options.language == lang_t::ZH)
-        mpr("你通过汲取内在深处的力量储备而恢复。");
-    else
-        mpr("You are restored by drawing out deep reserves of power within.");
+    mpr(T_("You are restored by drawing out deep reserves of power within."));
 
     //Escape nets and webs
     if (you.caught())
     {
         if (you.caught_by() == CAUGHT_WEB)
-            if (Options.language == lang_t::ZH)
-                mpr("你从蛛网中挣脱出来了！");
-            else
-                mpr("You burst free from the webs!");
+            mpr(T_("You burst free from the webs!"));
         else
-            if (Options.language == lang_t::ZH)
-                mpr("你从网中挣脱出来了！");
-            else
-                mpr("You burst free from the net!");
+            mpr(T_("You burst free from the net!"));
         you.stop_being_caught();
     }
 
@@ -5707,10 +5571,7 @@ bool ru_power_leap()
     }
     if (you.is_nervous())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你太惊恐了，无法跳跃！");
-        else
-            mpr("You are too terrified to leap around!");
+        mpr(T_("You are too terrified to leap around!"));
         return false;
     }
 
@@ -5734,10 +5595,7 @@ bool ru_power_leap()
         if (crawl_state.seen_hups)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("因HUP取消跳跃。");
-            else
-                mpr("Cancelling leap due to HUP.");
+            mpr(T_("Cancelling leap due to HUP."));
             return false;
         }
 
@@ -5751,12 +5609,7 @@ bool ru_power_leap()
         if (beholder)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mprf("你无法跳离%s！",
-                     beholder->name(DESC_THE, true).c_str());
-            else
-                mprf("You cannot leap away from %s!",
-                     beholder->name(DESC_THE, true).c_str());
+            mprf(T_("You cannot leap away from %s!"), beholder->name(DESC_THE, true).c_str());
             continue;
         }
 
@@ -5764,12 +5617,7 @@ bool ru_power_leap()
         if (fearmonger)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mprf("你无法跳近%s！",
-                     fearmonger->name(DESC_THE, true).c_str());
-            else
-                mprf("You cannot leap closer to %s!",
-                     fearmonger->name(DESC_THE, true).c_str());
+            mprf(T_("You cannot leap closer to %s!"), fearmonger->name(DESC_THE, true).c_str());
             continue;
         }
 
@@ -5777,29 +5625,20 @@ bool ru_power_leap()
         if (mons && you.can_see(*mons))
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能跳到怪物身上！");
-            else
-                mpr("You can't leap on top of the monster!");
+            mpr(T_("You can't leap on top of the monster!"));
             continue;
         }
 
         if (env.grid(beam.target) == DNGN_OPEN_SEA)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能跳进海里！");
-            else
-                mpr("You can't leap into the sea!");
+            mpr(T_("You can't leap into the sea!"));
             continue;
         }
         else if (env.grid(beam.target) == DNGN_LAVA_SEA)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能跳进熔岩海！");
-            else
-                mpr("You can't leap into the sea of lava!");
+            mpr(T_("You can't leap into the sea of lava!"));
             continue;
         }
         else if (!check_moveto(beam.target, "leap", false))
@@ -5828,10 +5667,7 @@ bool ru_power_leap()
     if (cell_is_solid(beam.target) || monster_at(beam.target))
     {
         // XXX: try to jump somewhere nearby?
-        if (Options.language == lang_t::ZH)
-            mpr("有什么东西意外地挡住了你，阻止了你的跳跃！");
-        else
-            mpr("Something unexpectedly blocks you, preventing you from leaping!");
+        mpr(T_("Something unexpectedly blocks you, preventing you from leaping!"));
         return true;
     }
 
@@ -5963,10 +5799,7 @@ bool ru_apocalypse()
             return false;
         }
     }
-    if (Options.language == lang_t::ZH)
-        mpr("你向敌人揭示了伟大的湮灭真理！");
-    else
-        mpr("You reveal the great annihilating truth to your foes!");
+    mpr(T_("You reveal the great annihilating truth to your foes!"));
     noisy(30, you.pos());
     apply_area_visible(_apply_apocalypse, you.pos());
     drain_player(100, false, true);
@@ -6076,10 +5909,7 @@ bool uskayaw_line_pass()
         if (crawl_state.seen_hups)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("因HUP取消直线穿越。");
-            else
-                mpr("Cancelling line pass due to HUP.");
+            mpr(T_("Cancelling line pass due to HUP."));
             return false;
         }
 
@@ -6090,12 +5920,7 @@ bool uskayaw_line_pass()
         if (beholder)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mprf("你无法从%s身边移开！",
-                     beholder->name(DESC_THE, true).c_str());
-            else
-                mprf("You cannot move away from %s!",
-                     beholder->name(DESC_THE, true).c_str());
+            mprf(T_("You cannot move away from %s!"), beholder->name(DESC_THE, true).c_str());
             continue;
         }
 
@@ -6103,12 +5928,7 @@ bool uskayaw_line_pass()
         if (fearmonger)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mprf("你无法靠近%s！",
-                     fearmonger->name(DESC_THE, true).c_str());
-            else
-                mprf("You cannot move closer to %s!",
-                     fearmonger->name(DESC_THE, true).c_str());
+            mprf(T_("You cannot move closer to %s!"), fearmonger->name(DESC_THE, true).c_str());
             continue;
         }
 
@@ -6116,38 +5936,26 @@ bool uskayaw_line_pass()
         if (mons && you.can_see(*mons))
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能站在怪物身上！");
-            else
-                mpr("You can't stand on top of the monster!");
+            mpr(T_("You can't stand on top of the monster!"));
             continue;
         }
 
         if (env.grid(beam.target) == DNGN_OPEN_SEA)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能直线穿越到海里！");
-            else
-                mpr("You can't line pass into the sea!");
+            mpr(T_("You can't line pass into the sea!"));
             continue;
         }
         else if (env.grid(beam.target) == DNGN_LAVA_SEA)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能直线穿越到熔岩海！");
-            else
-                mpr("You can't line pass into the sea of lava!");
+            mpr(T_("You can't line pass into the sea of lava!"));
             continue;
         }
         else if (cell_is_solid(beam.target))
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你不能穿墙！");
-            else
-                mpr("You can't walk through walls!");
+            mpr(T_("You can't walk through walls!"));
             continue;
         }
         else if (!check_moveto(beam.target, "line pass", false))
@@ -6172,10 +5980,7 @@ bool uskayaw_line_pass()
     }
 
     if (monster_at(beam.target))
-        if (Options.language == lang_t::ZH)
-            mpr("有什么东西意外地挡住了你，阻止了你的穿越！");
-        else
-            mpr("Something unexpectedly blocks you, preventing you from passing!");
+        mpr(T_("Something unexpectedly blocks you, preventing you from passing!"));
     else
     {
         you.stop_being_constricted(false, "dance");
@@ -6217,10 +6022,7 @@ spret uskayaw_grand_finale(bool fail)
         if (crawl_state.seen_hups)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("因HUP取消终章。");
-            else
-                mpr("Cancelling grand finale due to HUP.");
+            mpr(T_("Cancelling grand finale due to HUP."));
             return spret::abort;
         }
 
@@ -6234,10 +6036,7 @@ spret uskayaw_grand_finale(bool fail)
         if (!mons || !you.can_see(*mons))
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("你在那里感知不到目标！");
-            else
-                mpr("You can't perceive a target there!");
+            mpr(T_("You can't perceive a target there!"));
             continue;
         }
 
@@ -6248,10 +6047,7 @@ spret uskayaw_grand_finale(bool fail)
         else if (cell_is_solid(beam.target))
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mprf("你无法占据%s。", article_a(feat_type_name(env.grid(beam.target))).c_str());
-            else
-                mprf("You cannot occupy %s.", article_a(feat_type_name(env.grid(beam.target))).c_str());
+            mprf(T_("You cannot occupy %s."), article_a(feat_type_name(env.grid(beam.target))).c_str());
         }
         else if (you.see_cell_no_trans(beam.target))
         {
@@ -6302,10 +6098,7 @@ spret uskayaw_grand_finale(bool fail)
     if (!mons->alive() && !monster_at(beam.target))
         you.move_to(beam.target, MV_TRANSLOCATION | MV_DELIBERATE);
     else
-        if (Options.language == lang_t::ZH)
-            mpr("你弹回了原来的位置。");
-        else
-            mpr("You spring back to your original position.");
+        mpr(T_("You spring back to your original position."));
 
     crawl_state.cancel_cmd_again();
     crawl_state.cancel_cmd_repeat();
@@ -6328,10 +6121,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
         && companion_is_elsewhere(hepliaklqana_ancestor()))
     {
         // ugly hack to avoid dealing with upgrading offlevel ancestors
-        if (Options.language == lang_t::ZH)
-            mpr("你的先祖不在身边时无法做出此选择。");
-        else
-            mpr("You can't make this choice while your ancestor is elsewhere.");
+        mpr(T_("You can't make this choice while your ancestor is elsewhere."));
         return false;
     }
 
@@ -6365,10 +6155,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
         set_ancestor_spells(*ancestor);
     }
 
-    if (Options.language == lang_t::ZH)
-        god_speaks(you.religion, "如你所愿。");
-    else
-        god_speaks(you.religion, "It is so.");
+    god_speaks(you.religion, T_("It is so."));
     take_note(Note(NOTE_ANCESTOR_TYPE, 0, 0, ancestor_type_name));
     const string mile_text
         = make_stringf("remembered their ancestor %s as %s.",
@@ -6391,20 +6178,14 @@ spret hepliaklqana_idealise(bool fail)
     const mid_t ancestor_mid = hepliaklqana_ancestor();
     if (ancestor_mid == MID_NOBODY)
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你没有需要保护先祖！");
-        else
-            mpr("You have no ancestor to preserve!");
+        mpr(T_("You have no ancestor to preserve!"));
         return spret::abort;
     }
 
     monster *ancestor = monster_by_mid(ancestor_mid);
     if (!ancestor || !you.can_see(*ancestor))
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s不在附近！", hepliaklqana_ally_name().c_str());
-        else
-            mprf("%s isn't nearby!", hepliaklqana_ally_name().c_str());
+        mprf(T_("%s isn't nearby!"), hepliaklqana_ally_name().c_str());
         return spret::abort;
     }
 
@@ -6495,10 +6276,7 @@ spret hepliaklqana_transference(bool fail)
     monster *ancestor = hepliaklqana_ancestor_mon();
     if (!ancestor || !you.can_see(*ancestor))
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s不在附近！", hepliaklqana_ally_name().c_str());
-        else
-            mprf("%s isn't nearby!", hepliaklqana_ally_name().c_str());
+        mprf(T_("%s isn't nearby!"), hepliaklqana_ally_name().c_str());
         return spret::abort;
     }
 
@@ -6521,12 +6299,7 @@ spret hepliaklqana_transference(bool fail)
 
     if (victim == ancestor)
     {
-        if (Options.language == lang_t::ZH)
-            mprf("你无法将先祖与%s交换位置。",
-                 ancestor->pronoun(PRONOUN_REFLEXIVE).c_str());
-        else
-            mprf("You can't transfer your ancestor with %s.",
-                 ancestor->pronoun(PRONOUN_REFLEXIVE).c_str());
+        mprf(T_("You can't transfer your ancestor with %s."), ancestor->pronoun(PRONOUN_REFLEXIVE).c_str());
         return spret::abort;
     }
 
@@ -6536,10 +6309,7 @@ spret hepliaklqana_transference(bool fail)
                      || mons_is_projectile(victim->type));
     if (victim_visible && victim_immovable)
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你无法转移那个。");
-        else
-            mpr("You can't transfer that.");
+        mpr(T_("You can't transfer that."));
         return spret::abort;
     }
 
@@ -6550,10 +6320,7 @@ spret hepliaklqana_transference(bool fail)
     const bool uninhabitable = victim && !victim->is_habitable(destination);
     if (uninhabitable && victim_visible)
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s无法被转移到那里。", victim->name(DESC_THE).c_str());
-        else
-            mprf("%s cannot be transferred there.", victim->name(DESC_THE).c_str());
+        mprf(T_("%s cannot be transferred there."), victim->name(DESC_THE).c_str());
         return spret::abort;
     }
 
@@ -6577,14 +6344,7 @@ spret hepliaklqana_transference(bool fail)
     else
         ancestor->swap_with(victim->as_monster(), MV_TRANSLOCATION, true);
 
-    if (Options.language == lang_t::ZH)
-        mprf("%s与%s交换了%s！",
-             victim->name(DESC_THE).c_str(),
-             victim->is_player() ? "" : "s",
-             ancestor->name(DESC_YOUR).c_str());
-    else
-        mprf("%s swap%s places with %s!",
-             victim->name(DESC_THE).c_str(),
+    mprf(T_("%s swap%s places with %s!"), victim->name(DESC_THE).c_str(),
              victim->is_player() ? "" : "s",
              ancestor->name(DESC_YOUR).c_str());
 
@@ -6627,10 +6387,7 @@ static void _hepliaklqana_choose_name()
     }
 
     you.props[HEPLIAKLQANA_ALLY_NAME_KEY] = new_name;
-    if (Options.language == lang_t::ZH)
-        mprf("没错，%s绝对是个更好的名字。", new_name.c_str());
-    else
-        mprf("Yes, %s is definitely a better name.", new_name.c_str());
+    mprf(T_("Yes, %s is definitely a better name."), new_name.c_str());
     upgrade_hepliaklqana_ancestor(true);
 }
 
@@ -6648,15 +6405,7 @@ static void _hepliaklqana_choose_gender()
     const string* desc = map_find(gender_map, current_gender);
     ASSERT(desc);
 
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_PROMPT,
-             "%s是 a) 男性，b) 女性，还是 c) 中性？（当前%s。）",
-             hepliaklqana_ally_name().c_str(),
-             desc->c_str());
-    else
-        mprf(MSGCH_PROMPT,
-             "Was %s a) male, b) female, or c) neither? (Currently %s.)",
-             hepliaklqana_ally_name().c_str(),
+    mprf(T_("Was %s a) male, b) female, or c) neither? (Currently %s.)"), hepliaklqana_ally_name().c_str(),
              desc->c_str());
 
     int keyin = toalower(get_ch());
@@ -6686,13 +6435,7 @@ static void _hepliaklqana_choose_gender()
     }
 
     you.props[HEPLIAKLQANA_ALLY_GENDER_KEY] = new_gender;
-    if (Options.language == lang_t::ZH)
-        mprf("%s一直都是%s，你相当确定。",
-             hepliaklqana_ally_name().c_str(),
-             map_find(gender_map, new_gender)->c_str());
-    else
-        mprf("%s was always %s, you are pretty sure.",
-             hepliaklqana_ally_name().c_str(),
+    mprf(T_("%s was always %s, you are pretty sure."), hepliaklqana_ally_name().c_str(),
              map_find(gender_map, new_gender)->c_str());
     upgrade_hepliaklqana_ancestor(true);
 }
@@ -6846,30 +6589,19 @@ spret wu_jian_wall_jump_ability()
 
     if (!has_targets)
     {
-        if (Options.language == lang_t::ZH)
-            mpr("这里没有可以蹬墙跳的墙面。");
-        else
-            mpr("There is nothing to wall jump against here.");
+        mpr(T_("There is nothing to wall jump against here."));
         return spret::abort;
     }
 
     if (you.is_nervous())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你太惊恐了，无法蹬墙跳！");
-        else
-            mpr("You are too terrified to wall jump!");
+        mpr(T_("You are too terrified to wall jump!"));
         return spret::abort;
     }
 
     if (you.attribute[ATTR_HELD])
     {
-        if (Options.language == lang_t::ZH)
-            mprf("你被%s困住时无法蹬墙跳。",
-                 you.caught_by() == CAUGHT_WEB ? "蛛网" : "网");
-        else
-            mprf("You cannot wall jump while caught in a %s.",
-                 you.caught_by() == CAUGHT_WEB ? "web" : "net");
+        mprf(T_("You cannot wall jump while caught in a %s."), you.caught_by() == CAUGHT_WEB ? "web" : "net");
         return spret::abort;
     }
 
@@ -6897,10 +6629,7 @@ spret wu_jian_wall_jump_ability()
         if (crawl_state.seen_hups)
         {
             clear_messages();
-            if (Options.language == lang_t::ZH)
-                mpr("因HUP取消蹬墙跳。");
-            else
-                mpr("Cancelling wall jump due to HUP.");
+            mpr(T_("Cancelling wall jump due to HUP."));
             return spret::abort;
         }
 
@@ -6925,10 +6654,7 @@ spret wu_jian_wall_jump_ability()
 
 void wu_jian_heavenly_storm()
 {
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_GOD, "空气中充满了闪烁的金色云朵！");
-    else
-        mprf(MSGCH_GOD, "The air is filled with shimmering golden clouds!");
+    mpr(T_("The air is filled with shimmering golden clouds!"));
     wu_jian_sifu_message(" says: The storm will not cease as long as you "
                          "keep fighting, disciple!");
 
@@ -6956,10 +6682,7 @@ spret okawaru_duel(const coord_def& target, bool fail)
     monster* mons = monster_at(target);
     if (!mons || !you.can_see(*mons))
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你在那里看不到可以决斗的怪物！");
-        else
-            mpr("You can see no monster there to duel!");
+        mpr(T_("You can see no monster there to duel!"));
         return spret::abort;
     }
 
@@ -6968,10 +6691,7 @@ spret okawaru_duel(const coord_def& target, bool fail)
         || mons->wont_attack()
         || mons->type == MONS_BOUNDLESS_TESSERACT)
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你无法与那个决斗！");
-        else
-            mpr("You cannot duel that!");
+        mpr(T_("You cannot duel that!"));
         return spret::abort;
     }
 
@@ -6984,13 +6704,7 @@ spret okawaru_duel(const coord_def& target, bool fail)
     if (mons->is_illusion())
     {
         fail_check();
-        if (Options.language == lang_t::ZH)
-            mprf("你向%s发起单挑，但%s只是个幻象！",
-                 mons->name(DESC_THE).c_str(),
-                 mons->pronoun(PRONOUN_SUBJECTIVE).c_str());
-        else
-            mprf("You challenge %s to single combat, but %s is merely a clone!",
-                 mons->name(DESC_THE).c_str(),
+        mprf(T_("You challenge %s to single combat, but %s is merely a clone!"), mons->name(DESC_THE).c_str(),
                  mons->pronoun(PRONOUN_SUBJECTIVE).c_str());
         // Still costs a turn to gain the information.
         return spret::success;
@@ -6999,21 +6713,13 @@ spret okawaru_duel(const coord_def& target, bool fail)
     // to duel a clone that's already invalid to be dueled for other reasons.
     else if (mons->is_summoned())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你无法与那个决斗！");
-        else
-            mpr("You cannot duel that!");
+        mpr(T_("You cannot duel that!"));
         return spret::abort;
     }
 
     fail_check();
 
-    if (Options.language == lang_t::ZH)
-        mprf("你与%s进入了单挑！",
-             mons->name(DESC_THE).c_str());
-    else
-        mprf("You enter into single combat with %s!",
-             mons->name(DESC_THE).c_str());
+    mprf(T_("You enter into single combat with %s!"), mons->name(DESC_THE).c_str());
 
     behaviour_event(mons, ME_ALERT, &you);
     mons->props[OKAWARU_DUEL_TARGET_KEY] = true;
@@ -7037,18 +6743,12 @@ spret okawaru_duel(const coord_def& target, bool fail)
 void okawaru_duel_healing()
 {
     if (you.heal((you.hp_max - you.hp) / 2))
-        if (Options.language == lang_t::ZH)
-            mpr("你因人群的欢呼而倍感振奋！");
-        else
-            mpr("You feel invigorated by the roar of the crowd!");
+        mpr(T_("You feel invigorated by the roar of the crowd!"));
 }
 
 void okawaru_remove_heroism()
 {
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_DURATION, "你又感到自己像个卑微的苦工了。");
-    else
-        mprf(MSGCH_DURATION, "You feel like a meek peon again.");
+    mpr(T_("You feel like a meek peon again."));
     you.duration[DUR_HEROISM] = 0;
     you.redraw_evasion      = true;
     you.redraw_armour_class = true;
@@ -7139,10 +6839,7 @@ spret jiyva_oozemancy(bool fail)
 
     if (walls.empty())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你周围没有可以影响的墙壁。");
-        else
-            mpr("There are no walls around you to affect.");
+        mpr(T_("There are no walls around you to affect."));
         return spret::abort;
     }
 
@@ -7157,10 +6854,7 @@ spret jiyva_oozemancy(bool fail)
     }
 
     you.increase_duration(DUR_OOZEMANCY, dur);
-    if (Options.language == lang_t::ZH)
-        mpr("粘液开始从附近的墙壁渗出！");
-    else
-        mpr("Slime begins to ooze from the nearby walls!");
+    mpr(T_("Slime begins to ooze from the nearby walls!"));
 
     return spret::success;
 }
@@ -7284,17 +6978,11 @@ static void _makhleb_atrocity_trigger(int power)
 
     if (targs.empty())
     {
-        if (Options.language == lang_t::ZH)
-            mprf("你积累的毁灭之力因没有目标而消散了。");
-        else
-            mprf("Your accumulated destruction dissipates without a target.");
+        mpr(T_("Your accumulated destruction dissipates without a target."));
         return;
     }
 
-    if (Options.language == lang_t::ZH)
-        mpr("你的毁灭之力猛烈涌动！");
-    else
-        mpr("Your destruction surges wildly!");
+    mpr(T_("Your destruction surges wildly!"));
 
     bolt beam;
     beam.range = you.current_vision;
@@ -7488,33 +7176,18 @@ void makhleb_infernal_servant()
             beam.is_explosion = true;
             beam.ex_size = 2;
 
-            if (Options.language == lang_t::ZH)
-                mprf("%s在一阵%s中出现了！", demon->name(DESC_A).c_str(),
-                                            beam.get_short_name().c_str());
-            else
-                mprf("%s appears in a burst of %s!", demon->name(DESC_A).c_str(),
+            mprf(T_("%s appears in a burst of %s!"), demon->name(DESC_A).c_str(),
                                             beam.get_short_name().c_str());
 
             beam.explode();
         }
         else if (tyrant)
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s响应了主人的命令！",
-                    demon->name(DESC_A).c_str());
-            else
-                mprf("%s answers the call of its master!",
-                    demon->name(DESC_A).c_str());
+            mprf(T_("%s answers the call of its master!"), demon->name(DESC_A).c_str());
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s响应了你%s的召唤！",
-                    demon->name(DESC_A).c_str(),
-                    you.has_blood() ? "鲜血" : "苦难");
-            else
-                mprf("%s answers your call of %s!",
-                    demon->name(DESC_A).c_str(),
+            mprf(T_("%s answers your call of %s!"), demon->name(DESC_A).c_str(),
                     you.has_blood() ? "blood" : "suffering");
         }
 
@@ -7539,30 +7212,15 @@ void makhleb_infernal_servant()
             {
                 if (tyrant)
                 {
-                    if (Options.language == lang_t::ZH)
-                        mprf(MSGCH_WARN, "一个背叛的%s竟敢挑衅你的愤怒！",
-                            bad_demon->name(DESC_PLAIN).c_str());
-                    else
-                        mprf(MSGCH_WARN, "A traitor %s dares to challenge your wrath!",
-                            bad_demon->name(DESC_PLAIN).c_str());
+                    mprf(T_("A traitor %s dares to challenge your wrath!"), bad_demon->name(DESC_PLAIN).c_str());
                 }
                 else if (coinflip())
                 {
-                    if (Options.language == lang_t::ZH)
-                        mprf(MSGCH_WARN, "一个嫉妒的%s追逐着它！",
-                            bad_demon->name(DESC_PLAIN).c_str());
-                    else
-                        mprf(MSGCH_WARN, "A jealous %s chases after it!",
-                            bad_demon->name(DESC_PLAIN).c_str());
+                    mprf(T_("A jealous %s chases after it!"), bad_demon->name(DESC_PLAIN).c_str());
                 }
                 else
                 {
-                    if (Options.language == lang_t::ZH)
-                        mprf(MSGCH_WARN, "一个叛逆的%s带着它逃走了！",
-                            bad_demon->name(DESC_PLAIN).c_str());
-                    else
-                        mprf(MSGCH_WARN, "A rebellious %s flees with it!",
-                            bad_demon->name(DESC_PLAIN).c_str());
+                    mprf(T_("A rebellious %s flees with it!"), bad_demon->name(DESC_PLAIN).c_str());
                 }
             }
         }
@@ -7579,12 +7237,7 @@ void makhleb_inscribe_mark(mutation_type mark)
         return;
     }
 
-    if (Options.language == lang_t::ZH)
-        mprf("你向马赫勒布祈祷，将%s刻入自己的身体。",
-             mutation_name(mark));
-    else
-        mprf("You utter a prayer to Makhleb and carve the %s into yourself.",
-             mutation_name(mark));
+    mprf(T_("You utter a prayer to Makhleb and carve the %s into yourself."), mutation_name(mark));
 
     const int hploss = min(you.hp - 1, you.hp * 2 / 3);
     blood_spray(you.pos(), MONS_PLAYER, 50);
@@ -7616,10 +7269,7 @@ spret makhleb_infernal_legion(bool fail)
 {
     if (you.duration[DUR_INFERNAL_LEGION])
     {
-        if (Options.language == lang_t::ZH)
-            mpr("你已经在释放混沌军团了！");
-        else
-            mpr("You are already unleashing the legions of chaos!");
+        mpr(T_("You are already unleashing the legions of chaos!"));
         return spret::abort;
     }
 
@@ -7627,10 +7277,7 @@ spret makhleb_infernal_legion(bool fail)
         return spret::abort;
 
     fail_check();
-    if (Options.language == lang_t::ZH)
-        mpr("你在自己身上刻出一个通道，召唤混沌军团前来！");
-    else
-        mpr("You carve a gateway into yourself and beckon forth the legions of chaos!");
+    mpr(T_("You carve a gateway into yourself and beckon forth the legions of chaos!"));
     bleed_for_makhleb(you);
     you.duration[DUR_INFERNAL_LEGION] = (you.skill_rdiv(SK_INVOCATIONS, 5, 4)
                                             + random_range(10, 20)) * BASELINE_DELAY;

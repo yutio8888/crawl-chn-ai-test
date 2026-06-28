@@ -2182,22 +2182,16 @@ static void _print_overview_screen_equip(column_composer& cols,
                 if (slot == SLOT_WEAPON && i == 0)
                     str = "  - " + you.unarmed_attack_name();
                 else if (slot_melded)
-                    str = Options.language == lang_t::ZH
-                        ? "<darkgrey>（" + slot_name_lwr + "不可用）</darkgrey>"
-                        : "<darkgrey>(" + slot_name_lwr + " unusable)</darkgrey>";
+                    str =T_("<darkgrey>(");
                 else
-                    str = Options.language == lang_t::ZH
-                        ? "<darkgrey>（无" + slot_name_lwr + "）</darkgrey>"
-                        : "<darkgrey>(no " + slot_name_lwr + ")</darkgrey>";
+                    str =T_("<darkgrey>(no ");
 
                 cols.add_formatted(1, str, false);
                 continue;
             }
             else if (equipped[i].is_overflow)
             {
-                str = Options.language == lang_t::ZH
-                    ? "  <darkgrey>[" + slot_name_lwr + "已满]</darkgrey>"
-                    : "  <darkgrey>[" + slot_name_lwr + " occupied]</darkgrey>";
+                str =T_("  <darkgrey>[");
                 cols.add_formatted(1, str, false);
                 continue;
             }
@@ -2659,7 +2653,7 @@ static vector<formatted_string> _get_overview_resistances(
 
     if (!you.has_mutation(MUT_HP_CASTING))
     {
-        out += chop_string(zh ? "回魔" : "MPRegen", cwidth);
+        out += chop_string(T_("MPRegen"), cwidth);
 #if TAG_MAJOR_VERSION == 34
         const bool etheric = you.unrand_equipped(UNRAND_ETHERIC_CAGE);
         const int mp_regen = player_mp_regen() //round up
@@ -2924,7 +2918,7 @@ static string _status_mut_rune_list(int sw)
     }
 
     if (status.empty())
-        text += zh ? "无状态效果" : "no status effects";
+        text += T_("no status effects");
     else
         text += comma_separated_line(status.begin(), status.end(), ", ", ", ");
     text += "\n";
@@ -2936,7 +2930,7 @@ static string _status_mut_rune_list(int sw)
 
     // print the Orb
     if (player_has_orb())
-        text += zh ? "\n<w>0:</w> 佐特宝珠" : "\n<w>0:</w> Orb of Zot";
+        text += T_("\n<w>0:</w> Orb of Zot");
 
     // print runes
     vector<string> runes;

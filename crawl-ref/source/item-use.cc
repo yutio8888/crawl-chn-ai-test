@@ -1181,9 +1181,7 @@ static item_def* _item_swap_prompt(const vector<item_def*>& candidates)
 
     mprf(MSGCH_PROMPT,
          T_("To do this, you must remove one of the following items:"));
-    mprf(MSGCH_PROMPT, Options.language == lang_t::ZH
-             ? "(<w>?</w> 菜单，<w>Esc</w> 取消)"
-             : "(<w>?</w> for menu, <w>Esc</w> to cancel)");
+    mprf(MSGCH_PROMPT,T_("(<w>?</w> for menu, <w>Esc</w> to cancel)"));
 
     for (size_t i = 0; i < candidates.size(); i++)
     {
@@ -2242,7 +2240,7 @@ static item_def* _choose_target_item_for_scroll(bool scroll_known, object_select
                        {
                            if (scroll_known
                                || crawl_state.seen_hups
-                               || yesno(Options.language == lang_t::ZH ? "真的要中止（并浪费卷轴）吗？" : "Really abort (and waste the scroll)?", false, 0))
+                               || yesno(T_("Really abort (and waste the scroll)?"), false, 0))
                            {
                                return true;
                            }
@@ -2568,7 +2566,7 @@ static bool _handle_amnesia(bool alreadyknown)
         {
             if (crawl_state.seen_hups)
                 return false;
-            if (!yesno(Options.language == lang_t::ZH ? "真的要中止（并浪费卷轴）吗？" : "Really abort (and waste the scroll)?", false, 0))
+            if (!yesno(T_("Really abort (and waste the scroll)?"), false, 0))
                 continue;
         }
 

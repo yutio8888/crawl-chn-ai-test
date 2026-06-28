@@ -2035,7 +2035,7 @@ void canned_msg(canned_message_type which_message)
             break;
         case MSG_HUH:
             mprf(MSGCH_EXAMINE_FILTER, "%s",
-                 Options.language == lang_t::ZH ? "嗯？" : "Huh?");
+                 T_("Huh?"));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_EMPTY_HANDED_ALREADY:

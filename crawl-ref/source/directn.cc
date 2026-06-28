@@ -249,7 +249,7 @@ void direction_chooser::print_top_prompt() const
 void direction_chooser::print_key_hints() const
 {
     // TODO: build this as a vector and insert ,s and \ns in a smarter way
-    string prompt = Options.language == lang_t::ZH ? "按: ? - 帮助" : "Press: ? - help";
+    string prompt = T_("Press: ? - help");
 
     if (just_looking)
     {

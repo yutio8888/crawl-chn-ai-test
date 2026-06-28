@@ -1714,9 +1714,7 @@ bool activate_ability()
     {
         while (selected < 0)
         {
-            msg::streams(MSGCH_PROMPT) << (Options.language == lang_t::ZH
-                ? "使用哪个能力？（?或*列出）"
-                : "Use which ability? (? or * to list) ") << endl;
+            msg::streams(MSGCH_PROMPT) << (T_("Use which ability? (? or * to list) ")) << endl;
 
             const int keyin = get_ch();
 

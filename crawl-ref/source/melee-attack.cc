@@ -277,7 +277,7 @@ bool melee_attack::handle_phase_attempted()
             flat_dmg_bonus = random_range(0, 3);
             defender->as_monster()->del_ench(ENCH_KINETIC_GRAPNEL, true);
             if (attacker->is_player())
-                mpr("抓钩引导了你的攻击。");
+                mpr(T_("The grappling hook guides your attack."));
         }
     }
 
@@ -431,7 +431,7 @@ void melee_attack::handle_phase_dodged()
                 {
                     you.track_reprisal(REPRISAL_HEADBUTT, attacker->mid);
 
-                    mpr("你猛烈地反击了！");
+                    mpr(T_("You ferociously counterattack!"));
                     melee_attack headbutt(&you, attacker);
                     headbutt.player_aux_setup(UNAT_HEADBUTT);
                     headbutt.player_aux_apply(UNAT_HEADBUTT);
@@ -679,7 +679,7 @@ void melee_attack::handle_concussion_brand()
 {
     const coord_def old_pos = defender->pos();
     bool did_move = false;
-    if (defender->stumble_away_from(attack_position, "冲击力"))
+    if (defender->stumble_away_from(attack_position, T_("concussive force")))
     {
         did_move = true;
         if (monster* mon = defender->as_monster())
@@ -697,7 +697,7 @@ void melee_attack::handle_concussion_brand()
                         attacker->name(DESC_THE).c_str(),
                         attacker->is_monster() ? "es" : "",
                         defender->name(DESC_THE).c_str(),
-                        feat_is_wall(env.grid(back)) ? "墙壁"
+                        feat_is_wall(env.grid(back)) ? T_("the wall")
                                                     : raw_feature_description(back).c_str(),
                         attack_strength_punctuation(special_damage).c_str());
             }
@@ -1030,7 +1030,7 @@ bool melee_attack::handle_phase_hit()
             && mons_has_attacks(*defender->as_monster(), false)
             && coinflip())
         {
-            mprf("%s 被孢子吞没了。", defender->name(DESC_THE).c_str());
+            mprf(T_("%s is engulfed in spores."), defender->name(DESC_THE).c_str());
             defender->weaken(&you, 3);
         }
     }
@@ -1126,7 +1126,7 @@ bool melee_attack::handle_phase_damaged()
         && !you.duration[DUR_SHROUD_TIMEOUT] && one_chance_in(4))
     {
         you.duration[DUR_SHROUD_TIMEOUT] = 100 + random2(damage_done) * 10;
-        mprf("你的软泥覆盖层在偏转攻击时破裂，%s attack away%s",
+        mprf(T_("Your slime covering ruptures, deflecting the attack, %s attack away%s"),
                      atk_name(DESC_ITS).c_str(),
                      attack_strength_punctuation(damage_done).c_str());
         did_hit = false;
@@ -1288,7 +1288,7 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
     int& power = you.props[WEREFURY_KEY].get_int();
     if (!you.duration[DUR_WEREFURY])
     {
-        mpr("你沉醉于杀戮之中！");
+        mpr(T_("You revel in the kill!"));
         power = div_rand_round(get_form()->get_werefury_kill_bonus() * 3 / 2, 10);
     }
     else
@@ -1304,12 +1304,12 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
     {
         if (you.is_silenced())
         {
-            mpr("你仰头欲嚎，却发不出声音。");
+            mpr(T_("You lift your head to howl, but no sound comes out."));
             return;
         }
 
         const int howl_power = get_form()->get_howl_power();
-        mpr("你发出了一声令人胆寒的嚎叫！");
+        mpr(T_("You let out a bloodcurdling howl!"));
         draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, 0, true, 10);
         for (monster_near_iterator mi(you.pos()); mi; ++mi)
         {
@@ -1317,7 +1317,7 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
                 && mi->can_feel_fear(true) && !mi->has_ench(ENCH_FEAR)
                 && mi->check_willpower(&you, howl_power) <= 0)
             {
-                mprf("%s 因恐惧而僵住了！", mi->name(DESC_THE).c_str());
+                mprf(T_("%s stiffens with fear!"), mi->name(DESC_THE).c_str());
                 int dur = random_range(40, 70);
                 mi->add_ench(mon_enchant(ENCH_FEAR, &you, dur));
                 mi->add_ench(mon_enchant(ENCH_BOUND, &you, dur));
@@ -2765,7 +2765,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
                                   * drain);
                     if (drain)
                     {
-                        mpr("你感到精力充沛。");
+                        mpr(T_("You feel invigorated."));
                         inc_mp(drain);
                     }
                 }
@@ -3444,7 +3444,7 @@ void melee_attack::sear_defender()
 
     if (needs_message && visible_effect)
     {
-        mprf("%s 的火焰抗性被剥离了！",
+        mprf(T_("%s's fire resistance is stripped away!"),
              def_name(DESC_ITS).c_str());
     }
 }
@@ -3506,7 +3506,7 @@ bool melee_attack::consider_decapitation(int dam)
     if (damage_brand == SPWPN_FLAMING)
     {
         if (defender_visible)
-            mpr("火焰烧灼了伤口！");
+            mpr(T_("The flames cauterise the wound!"));
         return false;
     }
 
@@ -4084,7 +4084,7 @@ bool melee_attack::mons_do_poison()
 
     if (needs_message)
     {
-        mprf("%s使%s中毒了！",
+        mprf(T_("%s poisons %s!"),
                 atk_name(DESC_THE).c_str(),
                 defender_name(true).c_str());
     }
@@ -4623,7 +4623,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (coinflip())
         {
             defender->floodify(attacker, random_range(30, 60),
-                               attacker->type == MONS_VOID_OOZE ? "软泥" : "water");
+                               attacker->type == MONS_VOID_OOZE ? T_("ooze") : "water");
         }
         break;
 

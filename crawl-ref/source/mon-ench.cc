@@ -1803,7 +1803,7 @@ void monster::apply_enchantment(const mon_enchant &me)
             del_ench(en, true, false);
             if (you.can_see(*this))
             {
-                mprf(Options.language == lang_t::ZH ? "%s停止了给发条蜜蜂上弦。" : "%s stops winding %s clockwork bee.",
+                mprf(T_("%s stops winding %s clockwork bee."),
                      name(DESC_ITS).c_str(),
                      pronoun(PRONOUN_POSSESSIVE).c_str());
             }
@@ -1814,7 +1814,7 @@ void monster::apply_enchantment(const mon_enchant &me)
             launch_clockwork_bee(*this);
         else if (you.can_see(*this))
         {
-            mprf(Options.language == lang_t::ZH ? "%s继续给发条蜜蜂上弦……" : "%s continues winding %s clockwork bee....",
+            mprf(T_("%s continues winding %s clockwork bee...."),
                     name(DESC_THE).c_str(),
                     pronoun(PRONOUN_POSSESSIVE).c_str());
         }

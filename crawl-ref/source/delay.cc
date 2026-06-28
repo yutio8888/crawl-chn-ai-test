@@ -192,9 +192,7 @@ bool EquipOnDelay::try_interrupt(bool force)
         // yesno might call this function again, don't double prompt
         was_prompted = true;
         if (!crawl_state.disables[DIS_CONFIRMATIONS]
-            && !yesno(Options.language == lang_t::ZH
-                          ? "继续装备吗？"
-                          : "Keep equipping yourself?", false, 0, false))
+            && !yesno(T_("Keep equipping yourself?"), false, 0, false))
         {
             interrupt = true;
         }

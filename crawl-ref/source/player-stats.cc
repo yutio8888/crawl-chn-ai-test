@@ -96,12 +96,7 @@ bool attribute_increase()
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
     }
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_PROMPT, "提升（S）力量、（I）智力或（D）敏捷？");
-    else
-        mprf(MSGCH_PROMPT, need_caps
-            ? "Increase (S)trength, (I)ntelligence, or (D)exterity? "
-            : "Increase (s)trength, (i)ntelligence, or (d)exterity? ");
+    if (T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
     mouse_control mc(MOUSE_MODE_PROMPT);
 
     bool tried_lua = false;

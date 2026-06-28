@@ -6010,9 +6010,7 @@ void monster::react_to_damage(const actor *oppressor, int damage,
                     mpr(T_("Your spectral weapon shares its damage with you!"));
                 else if (you.can_see(*owner))
                 {
-                    string buf = Options.language == lang_t::ZH
-                        ? "分担了" + owner->pronoun(PRONOUN_POSSESSIVE) + "幽魂武器的伤害！"
-                        : " shares " + owner->pronoun(PRONOUN_POSSESSIVE) + " spectral weapon's damage!";
+                    string buf =T_(" shares ");
                     simple_monster_message(*owner->as_monster(), buf.c_str());
                 }
 
@@ -6373,7 +6371,7 @@ void monster::steal_item_from_player()
             inv[MSLOT_GOLD] = idx;
             new_item.set_holding_monster(*this);
         }
-        mprf(Options.language == lang_t::ZH ? "%s偷走了%d枚金币！" : "%s steals %d gold piece%s!",
+        mprf(T_("%s steals %d gold piece%s!"),
              name(DESC_THE).c_str(),
              stolen_amount,
              stolen_amount != 1 ? "s" : "");
@@ -6386,7 +6384,7 @@ void monster::steal_item_from_player()
         you.attribute[ATTR_GOLD_FOUND] -= stolen_amount;
 
         you.del_gold(stolen_amount);
-        mprf(Options.language == lang_t::ZH ? "你现在还有%d枚金币。" : "You now have %d gold piece%s.",
+        mprf(T_("You now have %d gold piece%s."),
              you.gold, you.gold != 1 ? "s" : "");
 
         return;

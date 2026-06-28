@@ -1261,9 +1261,7 @@ string get_god_likes(god_type which_god)
 
     if (likes.empty() && really_likes.empty())
     {
-        text += Options.language == lang_t::ZH
-            ? "没有喜好？这是一个bug，请报告。"
-            : " doesn't like anything? This is a bug; please report it.";
+        text +=T_(" doesn't like anything? This is a bug; please report it.");
     }
     else
     {

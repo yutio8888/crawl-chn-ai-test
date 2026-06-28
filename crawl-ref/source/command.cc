@@ -1205,13 +1205,7 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     cols.add_formatted(
             0,
-            Options.language == lang_t::ZH
-            ? "\n<h>攻击怪物\n"
-              "走向怪物即可攻击它\n"
-              "使用持握的武器或徒手攻击。"
-            : "\n<h>Attacking monsters\n"
-              "Walking into a monster will attack it\n"
-              "with your wielded weapon, or unarmed.",
+            T_("\n<h>Attacking monsters\n\"Walking into a monster will attack it\n\"\"with your wielded weapon, or unarmed.\""),
             false);
 
     cols.add_formatted(
