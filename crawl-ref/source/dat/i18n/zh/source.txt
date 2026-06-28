@@ -8074,3 +8074,152 @@ book
 %%%%
 gold
 金币
+# Phase 1b: god-wrath.cc (2026-06-29)
+%%%%
+You feel the Shining One's silent rage upon you!
+你感受到光明之神的沉默怒火降临在你身上！
+%%%%
+ draws some chaos from your body!
+ 从你体内抽离了一些混沌之力！
+%%%%
+ rids your body of chaos!
+ 彻底清除你体内的混沌之力！
+%%%%
+ recites the Axioms of Law to you!
+ 向你朗诵秩序之律！
+%%%%
+ booms out: Turn to the light! REPENT!
+ 洪声说道：转向光明！忏悔吧！
+%%%%
+ strikes the hour, and time shudders.
+ 敲响时刻，时间为之颤抖。
+%%%%
+ does not welcome meddling.
+ 不容他人干涉。
+%%%%
+ rains destruction down upon you!
+ 向你降下毁灭之雨！
+%%%%
+ has no time to deal with you just now.
+ 此刻无暇理会你。
+%%%%
+ sends minions to punish you.
+ 派遣仆从来惩罚你。
+%%%%
+ sends a minion to punish you.
+ 派遣一名仆从来惩罚你。
+%%%%
+ minions fail to arrive.
+ 的仆从未能到来。
+%%%%
+ sends servants to punish you.
+ 派遣仆从来惩罚你。
+%%%%
+ sends a servant to punish you.
+ 派遣一名仆从来惩罚你。
+
+%%%%
+ servants fail to arrive.
+ 的仆从未能到来。
+%%%%
+ binds you in chains!
+ 用锁链束缚了你！
+%%%%
+ tears away your strength and self-control!
+ 撕扯着你的力量和自控力！
+%%%%
+ sends monsters to punish you.
+ 派遣怪物来惩罚你。
+%%%%
+ sends a monster to punish you.
+ 派遣一个怪物来惩罚你。
+%%%%
+ has no time to punish you... now.
+ 此刻无暇惩罚你……暂时。
+%%%%
+ throws an implement of electrocution at you.
+ 向你掷来一把电击武器。
+%%%%
+ throws implements of electrocution at you.
+ 向你掷来电击武器。
+%%%%
+ sends forth an army of orcs.
+ 派遣了一支兽人大军。
+%%%%
+ is still gathering forces against you.
+ 仍在集结兵力对付你。
+%%%%
+ sends forces against you!
+ 派遣军队来对付你！
+%%%%
+ forces are busy with other wars.
+ 的军队正忙于其他战事。
+%%%%
+ wrath finds you.
+ 的怒火找到了你。
+%%%%
+ wrath scatters you!
+ 的怒火将你撕裂传送！
+%%%%
+ draws you home!
+ 将你拉回家园！
+%%%%
+ makes you draw from the deck of Punishment.
+ 让你从惩罚牌组中抽牌。
+%%%%
+ weaves the shadows around you into monsters.
+ 将你周围的阴影编织成了怪物。
+%%%%
+ fails to incite the shadows against you.
+ 未能激起阴影来对付你。
+%%%%
+ turns your shadow against you.
+ 让你的影子反噬你。
+%%%%
+ fails to turn your shadows against you.
+ 未能让你的影子反噬你。
+%%%%
+ tears the darkness away from you.
+ 将黑暗从你身边撕裂开来。
+%%%%
+ incites the elements against you!
+ 煽动元素之力来对付你！
+%%%%
+ fails to incite the elements against you.
+ 未能煽动元素之力来对付你。
+%%%%
+ strips away your elemental protection.
+ 剥夺了你的元素防护。
+%%%%
+ causes a mighty clap of thunder!
+ 引发了一声惊雷巨响！
+%%%%
+ divine weapons fail to arrive.
+ 的神圣武器未能到来。
+%%%%
+ divine wrath fails to arrive.
+ 的神圣怒火未能降临。
+%%%%
+ burns the ground from beneath your feet!
+ 烧毁了你脚下的大地！
+%%%%
+ anoints %s as %s of vengeance!
+ 任命%s为复仇%s！
+%%%%
+anointed by %s
+被%s任命
+%%%%
+ drives %s into a dance frenzy!
+ 驱使%s陷入舞蹈狂热！
+%%%%
+ booms out: Time for someone else to take a solo!
+ 洪声说道：轮到别人秀独舞了！
+%%%%
+ booms out: Revellers, it's time to dance!
+ 洪声说道：狂欢者们，起舞的时刻到了！
+%%%%
+ blasts you with cleansing flame!
+ 用净化之焰轰击你！
+%%%%
+smitten by %s
+被%s重击

@@ -9,7 +9,6 @@
 
 #include <cmath>
 #include <queue>
-#include <sstream>
 
 #include "act-iter.h"
 #include "areas.h"
@@ -244,11 +243,8 @@ static void _tso_shouts()
  */
 static void _tso_squelches()
 {
-    if (Options.language == lang_t::ZH)
-        god_speaks(GOD_SHINING_ONE, "你感受到光明之神的沉默怒火降临在你身上！");
-    else
-        god_speaks(GOD_SHINING_ONE,
-                   "You feel the Shining One's silent rage upon you!");
+    god_speaks(GOD_SHINING_ONE,
+               T_("You feel the Shining One's silent rage upon you!"));
     cast_silence(25);
 }
 
@@ -290,10 +286,7 @@ static bool _zin_remove_good_mutations()
     const god_type god = GOD_ZIN;
     bool success = false;
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 从你体内抽离了一些混沌之力！", false, god);
-    else
-        simple_god_message(" draws some chaos from your body!", false, god);
+    simple_god_message(T_(" draws some chaos from your body!"), false, god);
 
     bool failMsg = true;
 
@@ -311,10 +304,7 @@ static bool _zin_remove_good_mutations()
     }
 
     if (success && !you.how_mutated())
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 彻底清除你体内的混沌之力！", false, god);
-        else
-            simple_god_message(" rids your body of chaos!", false, god);
+        simple_god_message(T_(" rids your body of chaos!"), false, god);
     return success;
 }
 
@@ -335,10 +325,7 @@ static bool _zin_retribution()
     case 2:
     case 3:
     case 4: // recital
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 向你朗诵秩序之律！", false, god);
-        else
-            simple_god_message(" recites the Axioms of Law to you!", false, god);
+        simple_god_message(T_(" recites the Axioms of Law to you!"), false, god);
         switch (random2(4))
         {
         case 0:
@@ -364,10 +351,7 @@ static bool _zin_retribution()
         }
         break;
     case 5: // noisiness
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 洪声说道：转向光明！忏悔吧！", false, god);
-        else
-            simple_god_message(" booms out: Turn to the light! REPENT!", false, god);
+        simple_god_message(T_(" booms out: Turn to the light! REPENT!"), false, god);
         noisy(25, you.pos()); // same as scroll of noise
         break;
     }
@@ -395,29 +379,20 @@ static bool _cheibriados_retribution()
     {
         if (you.hp >= (you.hp_max * 3 / 4))
         {
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_DANGER, "你忘记了时间的流逝！");
-            else
-                mprf(MSGCH_DANGER, "You lose track of time!");
+            mprf(MSGCH_DANGER, T_("You lose track of time!"));
             you.put_to_sleep(nullptr, random_range(5, 10) * BASELINE_DELAY);
             dec_penance(god, 1);
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_DANGER, "世界将你抛弃在身后！");
-            else
-                mprf(MSGCH_DANGER, "The world leaves you behind!");
+            mprf(MSGCH_DANGER, T_("The world leaves you behind!"));
             dec_haste_player(10000);
             slow_player(81 + random2(10));
         }
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 敲响时刻，时间为之颤抖。", false, god);
-        else
-            simple_god_message(" strikes the hour, and time shudders.", false, god);
+        simple_god_message(T_(" strikes the hour, and time shudders."), false, god);
         noisy(40, you.pos());
     }
 
@@ -453,10 +428,7 @@ void lucy_check_meddling()
         {
             if (!banished)
             {
-                if (Options.language == lang_t::ZH)
-                    simple_god_message(" 不容他人干涉。");
-                else
-                    simple_god_message(" does not welcome meddling.");
+                simple_god_message(T_(" does not welcome meddling."));
                 banished = true;
             }
             mon->banish(&you);
@@ -467,12 +439,8 @@ void lucy_check_meddling()
 static void _spell_retribution(monster* avatar, spell_type spell, god_type god,
                                const char* message = nullptr)
 {
-    if (Options.language == lang_t::ZH)
-        simple_god_message(message ? message : " 向你降下毁灭之雨！",
-                           false, god);
-    else
-        simple_god_message(message ? message : " rains destruction down upon you!",
-                           false, god);
+    simple_god_message(message ? message : T_(" rains destruction down upon you!"),
+                       false, god);
     bolt beam;
     beam.source = you.pos();
     beam.target = you.pos();
@@ -573,11 +541,8 @@ static bool _makhleb_call_down_destruction()
 
     if (avatar == nullptr)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 此刻无暇理会你。", false, god);
-        else
-            simple_god_message(" has no time to deal with you just now.", false,
-                               god);
+        simple_god_message(T_(" has no time to deal with you just now."), false,
+                           god);
         return false; // not a very dazzling divine experience...
     }
 
@@ -656,21 +621,13 @@ static bool _makhleb_summon_servants()
 
     if (summoned > 0)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(summoned > 1 ? " 派遣仆从来惩罚你。" :
-                                              " 派遣一名仆从来惩罚你。",
-                               false, GOD_MAKHLEB);
-        else
-            simple_god_message(summoned > 1 ? " sends minions to punish you." :
-                                              " sends a minion to punish you.",
-                               false, GOD_MAKHLEB);
+        simple_god_message(summoned > 1 ? T_(" sends minions to punish you.")
+                                          : T_(" sends a minion to punish you."),
+                           false, GOD_MAKHLEB);
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的仆从未能到来。", true, GOD_MAKHLEB);
-        else
-            simple_god_message(" minions fail to arrive.", true, GOD_MAKHLEB);
+        simple_god_message(T_(" minions fail to arrive."), true, GOD_MAKHLEB);
     }
 
     return true;
@@ -717,10 +674,7 @@ static bool _kikubaaqudgha_retribution()
         int doom_pow = random_range(35, 50);
 
         if (!(you.attribute[ATTR_DOOM] + doom_pow >= 100))
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_DANGER, "你的厄运越来越近了。");
-            else
-                mprf(MSGCH_DANGER, "Your doom draws closer.");
+            mprf(MSGCH_DANGER, T_("Your doom draws closer."));
 
         you.doom(doom_pow);
     }
@@ -742,29 +696,18 @@ static bool _yredelemnul_retribution()
 
     if (count > 0)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(count > 1 ? " 派遣仆从来惩罚你。" :
-                                           " 派遣一名仆从来惩罚你。",
-                               false, god);
-        else
-            simple_god_message(count > 1 ? " sends servants to punish you." :
-                                           " sends a servant to punish you.",
-                               false, god);
+        simple_god_message(count > 1 ? T_(" sends servants to punish you.")
+                                       : T_(" sends a servant to punish you."),
+                           false, god);
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的仆从未能到来。", true, god);
-        else
-            simple_god_message(" servants fail to arrive.", true, god);
+        simple_god_message(T_(" servants fail to arrive."), true, god);
     }
 
     if (coinflip())
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 用锁链束缚了你！", false, god);
-        else
-            simple_god_message(" binds you in chains!", false, god);
+        simple_god_message(T_(" binds you in chains!"), false, god);
         you.increase_duration(DUR_NO_MOMENTUM, random_range(3, 8));
     }
 
@@ -780,10 +723,7 @@ static bool _trog_retribution()
         // If the player is healthy and in a reasonable tension range,
         // make the player do a cruel mockery of berserk:
         // weakly thrashing in place, regularly hitting walls and floors.
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 撕扯着你的力量和自控力！", false, god);
-        else
-            simple_god_message(" tears away your strength and self-control!", false, god);
+        simple_god_message(T_(" tears away your strength and self-control!"), false, god);
         int vex_max = max(4, you.experience_level / 4);
         you.weaken(nullptr, 25);
         you.vex(nullptr, random_range(3, vex_max), "Trog's wrath");
@@ -820,16 +760,10 @@ static bool _trog_retribution()
             }
         }
 
-        if (Options.language == lang_t::ZH)
-            simple_god_message(count > 1 ? " 派遣怪物来惩罚你。" :
-                               count > 0 ? " 派遣一个怪物来惩罚你。"
-                                         : " 此刻无暇惩罚你……暂时。",
-                               false, god);
-        else
-            simple_god_message(count > 1 ? " sends monsters to punish you." :
-                               count > 0 ? " sends a monster to punish you."
-                                         : " has no time to punish you... now.",
-                               false, god);
+        simple_god_message(count > 1 ? T_(" sends monsters to punish you.") :
+                           count > 0 ? T_(" sends a monster to punish you.")
+                                     : T_(" has no time to punish you... now."),
+                           false, god);
     }
     return true;
 }
@@ -889,18 +823,10 @@ static bool _beogh_retribution()
 
         if (num_created > 0)
         {
-            if (Options.language == lang_t::ZH)
-                simple_god_message(num_created == 1 ? " 向你掷来一把电击武器。"
-                                                   : " 向你掷来电击武器。",
-                                   false, god);
-            else
-            {
-                ostringstream msg;
-                msg << " throws "
-                    << (num_created == 1 ? "an implement" : "implements")
-                    << " of electrocution at you.";
-                simple_god_message(msg.str().c_str(), false, god);
-            }
+            simple_god_message(num_created == 1
+                                   ? T_(" throws an implement of electrocution at you.")
+                                   : T_(" throws implements of electrocution at you."),
+                               false, god);
             break;
         } // else fall through
     }
@@ -931,14 +857,9 @@ static bool _beogh_retribution()
         if (mons && one_chance_in(3))
             give_monster_proper_name(*mons);
 
-        if (Options.language == lang_t::ZH)
-            simple_god_message(
-                mons ? " 派遣了一支兽人大军。"
-                     : " 仍在集结兵力对付你。", false, god);
-        else
-            simple_god_message(
-                mons ? " sends forth an army of orcs."
-                     : " is still gathering forces against you.", false, god);
+        simple_god_message(
+            mons ? T_(" sends forth an army of orcs.")
+                 : T_(" is still gathering forces against you."), false, god);
     }
     }
 
@@ -958,17 +879,11 @@ static bool _okawaru_retribution()
 
     if (count > 0)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 派遣军队来对付你！", false, god);
-        else
-            simple_god_message(" sends forces against you!", false, god);
+        simple_god_message(T_(" sends forces against you!"), false, god);
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的军队正忙于其他战事。", true, god);
-        else
-            simple_god_message(" forces are busy with other wars.", true, god);
+        simple_god_message(T_(" forces are busy with other wars."), true, god);
     }
 
     return true;
@@ -979,10 +894,7 @@ static bool _sif_muna_retribution()
     // magic/intelligence theme
     const god_type god = GOD_SIF_MUNA;
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 的怒火找到了你。", true, god);
-    else
-        simple_god_message(" wrath finds you.", true, god);
+    simple_god_message(T_(" wrath finds you."), true, god);
 
     switch (random2(10))
     {
@@ -1028,19 +940,13 @@ static void _lugonu_transloc_retribution()
     if (coinflip())
     {
         // Give extra opportunities for embarrassing teleports.
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的怒火将你撕裂传送！", true, god);
-        else
-            simple_god_message(" wrath scatters you!", true, god);
+        simple_god_message(T_(" wrath scatters you!"), true, god);
         you.props[TELEPORTITIS_SOURCE].get_int() = MID_NOBODY;
         you_teleport_now(false, T_("Space warps around you!"));
     }
     else if (coinflip())
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 将你拉回家园！", false, god);
-        else
-            simple_god_message(" draws you home!", false, god);
+        simple_god_message(T_(" draws you home!"), false, god);
         you.banish(nullptr, T_("Lugonu's touch"), true);
     }
 }
@@ -1101,17 +1007,11 @@ static void _lugonu_minion_retribution()
 
     if (success)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 派遣仆从来惩罚你。", false, god);
-        else
-            simple_god_message(" sends minions to punish you.", false, god);
+        simple_god_message(T_(" sends minions to punish you."), false, god);
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的仆从未能到来。", true, god);
-        else
-            simple_god_message(" minions fail to arrive.", true, god);
+        simple_god_message(T_(" minions fail to arrive."), true, god);
     }
 }
 
@@ -1199,22 +1099,16 @@ static bool _vehumet_retribution()
     monster* avatar = _get_wrath_avatar(god);
     if (!avatar)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 此刻无暇理会你。", false, god);
-        else
-            simple_god_message(" has no time to deal with you just now.", false,
-                               god);
+        simple_god_message(T_(" has no time to deal with you just now."), false,
+                           god);
         return false;
     }
 
     const spell_type spell = _vehumet_wrath_type();
     if (spell == SPELL_NO_SPELL)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 此刻无暇理会你。", false, god);
-        else
-            simple_god_message(" has no time to deal with you just now.", false,
-                               god);
+        simple_god_message(T_(" has no time to deal with you just now."), false,
+                           god);
         _reset_avatar(*avatar);
         return false;
     }
@@ -1229,11 +1123,8 @@ static bool _nemelex_retribution()
     // card theme
     const god_type god = GOD_NEMELEX_XOBEH;
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 让你从惩罚牌组中抽牌。", false, god);
-    else
-        simple_god_message(" makes you draw from the deck of Punishment.", false,
-                           god);
+    simple_god_message(T_(" makes you draw from the deck of Punishment."), false,
+                       god);
     draw_from_deck_of_punishment();
     return true;
 }
@@ -1466,21 +1357,13 @@ static bool _dithmenos_retribution()
             if (create_monster(mg, false))
                 count++;
         }
-        if (Options.language == lang_t::ZH)
-            simple_god_message(count ? " 将你周围的阴影编织成了怪物。"
-                                     : " 未能激起阴影来对付你。",
-                               false, god);
-        else
-            simple_god_message(count ? " weaves the shadows around you into monsters."
-                                     : " fails to incite the shadows against you.",
-                               false, god);
+        simple_god_message(count ? T_(" weaves the shadows around you into monsters.")
+                                 : T_(" fails to incite the shadows against you."),
+                           false, god);
 
         if (coinflip())
         {
-            if (Options.language == lang_t::ZH)
-                mpr("你感到昏昏欲睡。");
-            else
-                mpr("You feel lethargic.");
+            mpr(T_("You feel lethargic."));
             you.increase_duration(DUR_SLOW, random_range(10, 20), 100);
         }
 
@@ -1493,14 +1376,9 @@ static bool _dithmenos_retribution()
         if (!pos.origin())
         {
             monster* shadow = create_player_shadow(pos, false, spell);
-            if (Options.language == lang_t::ZH)
-                simple_god_message(shadow ? " 让你的影子反噬你。"
-                                          : " 未能让你的影子反噬你。",
-                                   false, god);
-            else
-                simple_god_message(shadow ? " turns your shadow against you."
-                                          : " fails to turn your shadows against you.",
-                                   false, god);
+            simple_god_message(shadow ? T_(" turns your shadow against you.")
+                                      : T_(" fails to turn your shadows against you."),
+                               false, god);
         }
 
         break;
@@ -1513,10 +1391,7 @@ static bool _dithmenos_retribution()
         break;
     }
     case 3:
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 将黑暗从你身边撕裂开来。", false, god);
-        else
-            simple_god_message(" tears the darkness away from you.", false, god);
+        simple_god_message(T_(" tears the darkness away from you."), false, god);
         you.sentinel_mark();
         break;
     }
@@ -1567,19 +1442,11 @@ static void _qazlal_summon_elementals()
 
     if (success)
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 煽动元素之力来对付你！", false, god);
-        else
-            simple_god_message(" incites the elements against you!", false,
-                               god);
+        simple_god_message(T_(" incites the elements against you!"), false, god);
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 未能煽动元素之力来对付你。", false, god);
-        else
-            simple_god_message(" fails to incite the elements against you.", false,
-                               god);
+        simple_god_message(T_(" fails to incite the elements against you."), false, god);
     }
 }
 
@@ -1588,10 +1455,7 @@ static void _qazlal_summon_elementals()
  */
 static void _qazlal_elemental_vulnerability()
 {
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 剥夺了你的元素防护。", false, GOD_QAZLAL);
-    else
-        simple_god_message(" strips away your elemental protection.", false, GOD_QAZLAL);
+    simple_god_message(T_(" strips away your elemental protection."), false, GOD_QAZLAL);
 
     // Pick a random elemental bane the player doesn't aready have.
     vector<bane_type> banes;
@@ -1607,10 +1471,7 @@ static void _qazlal_elemental_vulnerability()
     if (banes.empty())
     {
         bane_type bane = random_choose(BANE_HEATSTROKE, BANE_SNOW_BLINDNESS, BANE_ELECTROSPASM);
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_WARN, "你的%s变得更加持久了。", bane_name(bane).c_str());
-        else
-            mprf(MSGCH_WARN, "Your %s grows more durable.", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, T_("Your %s grows more durable."), bane_name(bane).c_str());
         you.banes[bane] += 1000;
     }
     else
@@ -1629,11 +1490,8 @@ static bool _qazlal_retribution()
 {
     if (coinflip())
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 引发了一声惊雷巨响！", false, GOD_QAZLAL);
-        else
-            simple_god_message(" causes a mighty clap of thunder!", false,
-                               GOD_QAZLAL);
+        simple_god_message(T_(" causes a mighty clap of thunder!"), false,
+                           GOD_QAZLAL);
         noisy(25, you.pos());
     }
 
@@ -1722,10 +1580,7 @@ static bool _wu_jian_retribution()
     }
     else
     {
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的神圣武器未能到来。", true, god);
-        else
-            simple_god_message(" divine weapons fail to arrive.", true, god);
+        simple_god_message(T_(" divine weapons fail to arrive."), true, god);
     }
 
     return true;
@@ -1746,10 +1601,7 @@ static void _summon_ignis_elementals()
         god_speaks(god, msg.c_str());
     }
     else
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 的神圣怒火未能降临。", true, god);
-        else
-            simple_god_message(" divine wrath fails to arrive.", true, god);
+        simple_god_message(T_(" divine wrath fails to arrive."), true, god);
 }
 
 static bool _ignis_shaft()
@@ -1759,11 +1611,8 @@ static bool _ignis_shaft()
     if (!you.shaftable())
         return false;
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 烧毁了你脚下的大地！", false, GOD_IGNIS);
-    else
-        simple_god_message(" burns the ground from beneath your feet!", false,
-                           GOD_IGNIS);
+    simple_god_message(T_(" burns the ground from beneath your feet!"), false,
+                       GOD_IGNIS);
 
     // player::do_shaft() already checks resist_dislodge, but the message is a
     // bit worse.
@@ -1832,18 +1681,13 @@ static bool _ignis_champion()
 
     // Message ordering is a bit touchy here.
     // First, we say what we're doing. TODO: more fun messages
-    if (Options.language == lang_t::ZH)
-        simple_god_message(make_stringf(" 任命%s为复仇%s！",
-                                        multimonster_name_string(mons).c_str(),
-                                        mons.size() > 1 ? "的工具" : "的工具").c_str(),
-                                        false, GOD_IGNIS);
-    else
-        simple_god_message(make_stringf(" anoints %s as %s of "
-                                        "vengeance!", multimonster_name_string(mons).c_str(),
-                                        mons.size() > 1 ? "instruments" : "an instrument").c_str(),
-                                        false, GOD_IGNIS);
+    simple_god_message(make_stringf(T_(" anoints %s as %s of vengeance!"),
+                                    multimonster_name_string(mons).c_str(),
+                                    mons.size() > 1 ? "instruments" : "an instrument").c_str(),
+                                    false, GOD_IGNIS);
 
     // Describe the effect on the monsters.
+    // TODO: ARG-DIFF EN has 2 %s, ZH has 1 %s
     if (Options.language == lang_t::ZH)
         mprf("%s被防护火焰笼罩，快速移动，猛烈攻击！",
              mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : "怪物们");
@@ -1860,7 +1704,7 @@ static bool _ignis_champion()
         // Then we alert it last. It's just reacting, after all.
         behaviour_event(mon, ME_ALERT, &you);
         // Assign blame (so we can look up funny deaths)
-        mons_add_blame(mon, Options.language == lang_t::ZH ? "被" + god_name(GOD_IGNIS) + "任命" : "anointed by " + god_name(GOD_IGNIS));
+        mons_add_blame(mon, make_stringf(T_("anointed by %s"), god_name(GOD_IGNIS).c_str()));
     }
 
     return true;
@@ -1890,14 +1734,9 @@ static bool _uskayaw_retribution()
     case 1:
         if (mon && mon->can_go_berserk())
         {
-            if (Options.language == lang_t::ZH)
-                simple_god_message(make_stringf(" 驱使%s陷入舞蹈狂热！",
-                                         mon->name(DESC_THE).c_str()).c_str(),
-                                         false, god);
-            else
-                simple_god_message(make_stringf(" drives %s into a dance frenzy!",
-                                         mon->name(DESC_THE).c_str()).c_str(),
-                                         false, god);
+            simple_god_message(make_stringf(T_(" drives %s into a dance frenzy!"),
+                                             mon->name(DESC_THE).c_str()).c_str(),
+                                             false, god);
             mon->go_berserk(true);
             return true;
         }
@@ -1907,12 +1746,8 @@ static bool _uskayaw_retribution()
     case 3:
         if (mon && you.can_be_paralysed())
         {
-            if (Options.language == lang_t::ZH)
-                simple_god_message(" 洪声说道：轮到别人秀独舞了！",
-                                   false, god);
-            else
-                simple_god_message(" booms out: Time for someone else to take a "
-                                   "solo!", false, god);
+            simple_god_message(T_(" booms out: Time for someone else to take a solo!"),
+                               false, god);
             you.paralyse(nullptr, random_range(2, 5), _god_wrath_name(god));
             dec_penance(god, 1);
             return false;
@@ -1920,12 +1755,8 @@ static bool _uskayaw_retribution()
         // else we intentionally fall through
 
     case 4:
-        if (Options.language == lang_t::ZH)
-            simple_god_message(" 洪声说道：狂欢者们，起舞的时刻到了！",
-                               false, god);
-        else
-            simple_god_message(" booms out: Revellers, it's time to dance!",
-                               false, god);
+        simple_god_message(T_(" booms out: Revellers, it's time to dance!"),
+                           false, god);
         noisy(35, you.pos());
         break;
     }
@@ -2006,19 +1837,13 @@ bool divine_retribution(god_type god, bool no_bonus, bool force)
         {
             if (!you.confused())
             {
-                if (Options.language == lang_t::ZH)
-                    mprf(MSGCH_WARN, "神圣的体验让你头晕目眩！");
-                else
-                    mprf(MSGCH_WARN, "The divine experience confuses you!");
+                mprf(MSGCH_WARN, T_("The divine experience confuses you!"));
                 confuse_player(5 + random2(3));
             }
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_WARN, "神圣的体验吸干了你的精力！");
-            else
-                mprf(MSGCH_WARN, "The divine experience drains your vigour!");
+            mprf(MSGCH_WARN, T_("The divine experience drains your vigour!"));
             slow_player(10 + random2(5));
         }
     }
@@ -2038,12 +1863,8 @@ static void _tso_blasts_cleansing_flame(const char *message)
     if (message)
         god_speaks(GOD_SHINING_ONE, message);
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 用净化之焰轰击你！", false,
-                           GOD_SHINING_ONE);
-    else
-        simple_god_message(" blasts you with cleansing flame!", false,
-                           GOD_SHINING_ONE);
+    simple_god_message(T_(" blasts you with cleansing flame!"), false,
+                       GOD_SHINING_ONE);
 
     // damage is 2d(pow), *3/2 for undead and demonspawn
     cleansing_flame(5 + (you.experience_level * 7) / 12,
@@ -2070,7 +1891,7 @@ static void _god_smites_you(god_type god, const char *message,
     if (death_type != KILLED_BY_BEOGH_SMITING
         && death_type != KILLED_BY_TSO_SMITING)
     {
-        aux = Options.language == lang_t::ZH ? "被" + god_name(god) + "重击" : "smitten by " + god_name(god);
+        aux = make_stringf(T_("smitten by %s"), god_name(god).c_str());
     }
 
     // If there's a message, display it before smiting.
@@ -2082,10 +1903,7 @@ static void _god_smites_you(god_type god, const char *message,
     for (int i = 0; i < 5; ++i)
         divine_hurt += random2(you.experience_level);
 
-    if (Options.language == lang_t::ZH)
-        simple_god_message(" 重击了你！", false, god);
-    else
-        simple_god_message(" smites you!", false, god);
+    simple_god_message(T_(" smites you!"), false, god);
     ouch(divine_hurt, death_type, MID_NOBODY, aux.c_str());
 }
 
