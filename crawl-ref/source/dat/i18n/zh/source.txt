@@ -7459,3 +7459,35 @@ Your apostles return to your side.
 <lightgrey>
 <yellow>你拥有 %d 枚金币%s</yellow>
 <lightgrey>
+
+%%%%
+You feel %s %s
+你感到%s%s
+
+%%%%
+You feel a slight surge of power.
+你感到一股微弱的力量涌动。
+
+%%%%
+You feel a surge of power!
+你感到一股力量涌动！
+
+%%%%
+Select a spell to %s
+选择一个要%s的法术
+
+%%%%
+Casting
+施放中
+
+%%%%
+It is impossible to cast this spell (100%% risk of failure)!
+在此形态下无法施放此法术(100%% 失败风险)!
+
+%%%%
+You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
+你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
+
+%%%%
+Confirm with . or Enter, or press ? or * to list all spells.
+用 . 或回车确认，或按?或*列出所有法术。
