@@ -8267,3 +8267,51 @@ HP: %d    AC: %d    Damage:%d (w/weapon)\n
 %s turn aside %s attack!
 %s挡开了%s的攻击！
 
+# god-passive.cc migration
+%%%%
+You feel %sprotected from %s.
+你感到%s抵御了%s。
+
+%%%%
+more 
+更加
+
+%%%%
+element|fire
+火焰
+
+%%%%
+element|physical attacks
+物理攻击
+
+%%%%
+ with incredible momentum
+以惊人的势头
+
+%%%%
+, in a flurry of attacks
+，以一连串的攻击
+
+%%%%
+ repeatedly
+连续
+
+%%%%
+, with incredible momentum
+，以惊人的势头
+
+%%%%
+repeatedly 
+连续
+
+%%%%
+ prepares the audience for your solo!
+ 让观众为你的独舞做好准备！
+
+%%%%
+ links your audience in an emotional bond!
+ 用情感纽带将观众连结在一起！
+
+%%%%
+ is spurred on by your onslaught.
+ 被你的猛攻所激励。
