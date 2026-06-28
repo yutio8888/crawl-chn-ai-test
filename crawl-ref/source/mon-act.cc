@@ -72,6 +72,7 @@
 #include "traps.h"
 #include "viewchar.h"
 #include "view.h"
+#include "database.h"
 
 static bool _handle_pickup(monster* mons);
 static bool _monster_move(monster* mons, coord_def& delta);
@@ -2449,7 +2450,7 @@ void monster::struggle_against_net()
             if (you.see_cell(pos()))
             {
                 if (!visible_to(&you))
-                    mpr("Something you can't see is thrashing in a web.");
+                    mpr(T_("Something you can't see is thrashing in a web."));
                 else
                     simple_monster_message(*this,
                                         " struggles to get unstuck from the web.");
@@ -2466,7 +2467,7 @@ void monster::struggle_against_net()
     if (you.see_cell(pos()))
     {
         if (!visible_to(&you))
-            mpr("Something wriggles in the net.");
+            mpr(T_("Something invisible is squirming in the web."));
         else
             simple_monster_message(*this, " struggles against the net.");
     }
@@ -2492,7 +2493,7 @@ void monster::struggle_against_net()
                      name(DESC_THE).c_str());
             }
             else
-                mpr("All of a sudden the net rips apart!");
+                mpr(T_("All of a sudden the net rips apart!"));
         }
         stop_being_caught(false);
     }
@@ -2739,7 +2740,8 @@ void print_mons_left_view_messages()
             // The monster should be visible to be in this queue.
             if (in_bounds(m->pos()) && !you.see_cell(m->pos()))
             {
-                mprf(MSGCH_PLAIN, "%s leaves your sight.",
+                mprf(MSGCH_PLAIN,
+                     T_("%s leaves your view."),
                      m->name(DESC_THE, true).c_str());
             }
         }
@@ -3680,9 +3682,13 @@ static void _maybe_launch_opportunity_attack(monster &mon, coord_def orig_pos)
     // that they already launched an attack.
     crawl_state.potential_pursuers.erase(&mon);
 
-    const string msg = make_stringf(" attacks as %s pursue%s you!",
-                                    mon.pronoun(PRONOUN_SUBJECTIVE).c_str(),
-                                    mon.pronoun_plurality() ? "" : "s");
+    const bool zh = Options.language == lang_t::ZH;
+    const string msg = zh
+        ? make_stringf("在%s追击你时发动攻击！",
+            mon.pronoun(PRONOUN_SUBJECTIVE).c_str())
+        : make_stringf(" attacks as %s pursue%s you!",
+            mon.pronoun(PRONOUN_SUBJECTIVE).c_str(),
+            mon.pronoun_plurality() ? "" : "s");
     simple_monster_message(mon, msg.c_str());
     const int old_energy = mon.speed_increment;
     _launch_opportunity_attack(mon);
@@ -3748,7 +3754,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
 
                 if (!you.can_see(mons))
                 {
-                    mpr("The door bursts into shrapnel!");
+                    mpr(T_("The door bursts into shrapnel!"));
                     interrupt_activity(activity_interrupt::sense_monster);
                 }
                 else
@@ -3776,7 +3782,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
 
                 if (!you.can_see(mons))
                 {
-                    mpr("The door mysteriously vanishes.");
+                    mpr(T_("The door mysteriously vanishes."));
                     interrupt_activity(activity_interrupt::sense_monster);
                 }
                 else

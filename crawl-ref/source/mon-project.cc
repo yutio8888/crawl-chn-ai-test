@@ -32,6 +32,7 @@
     #include "tilepick.h"
 #endif
 #include "viewchar.h"
+#include "database.h"
 
 static void _fuzz_direction(const actor *caster, monster& mon, int pow);
 
@@ -595,7 +596,7 @@ move_again:
                 if (mons->props[IOOD_DIST].get_int() < 2)
                 {
                     if (you.see_cell(pos))
-                        mpr("The orb fizzles.");
+                        mpr(T_("The orb fizzles."));
                     monster_die(*mons, KILL_RESET, NON_MONSTER);
                 }
 
@@ -603,7 +604,7 @@ move_again:
                 if (mon.props[IOOD_DIST].get_int() < 2)
                 {
                     if (you.see_cell(pos))
-                        mpr("The orb fizzles.");
+                        mpr(T_("The orb fizzles."));
                     monster_die(mon, KILL_RESET, NON_MONSTER);
                     return true;
                 }
@@ -611,9 +612,9 @@ move_again:
             else
             {
                 if (mon.observable())
-                    mpr("The orbs collide in a blinding explosion!");
+                    mpr(T_("The orbs collide in a blinding explosion!"));
                 else
-                    mpr("You hear a loud magical explosion!");
+                    mpr(T_("You hear a loud magical explosion!"));
                 noisy(25, pos);
                 monster_die(*mons, KILL_RESET, NON_MONSTER);
                 _iood_hit(mon, pos, true);
@@ -626,7 +627,7 @@ move_again:
             if (!victim->reflection())
             {
                 if (victim->is_player())
-                    mprf("You block %s.", mon.name(DESC_THE, true).c_str());
+                    mprf(T_("You block %s."), mon.name(DESC_THE, true).c_str());
                 else
                 {
                     simple_monster_message(*mons, (" blocks "

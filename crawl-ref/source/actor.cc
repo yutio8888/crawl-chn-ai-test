@@ -10,6 +10,7 @@
 #include "art-enum.h"
 #include "attack.h"
 #include "chardump.h"
+#include "database.h"
 #include "delay.h"
 #include "directn.h"
 #include "env.h"
@@ -906,7 +907,27 @@ string actor::describe_props() const
 string actor::resist_margin_phrase(int margin) const
 {
     if (willpower() == WILL_INVULN)
+    {
+        if (Options.language == lang_t::ZH)
+            return " 不受影响。";
         return " " + conj_verb("are") + " unaffected.";
+    }
+
+    if (Options.language == lang_t::ZH)
+    {
+        static const string zh_messages[] =
+        {
+            " 勉强抵抗住了。",
+            " 奋力抵抗。",
+            " 费了很大力气抵抗住了。",
+            " 费了些力气抵抗住了。",
+            " 轻松抵抗住了。",
+            " 几乎毫不费力就抵抗住了。",
+        };
+        const int index = max(0, min((int)ARRAYSZ(zh_messages) - 1,
+                                     ((margin + 45) / 15)));
+        return zh_messages[index];
+    }
 
     static const string resist_messages[][2] =
     {
@@ -1070,11 +1091,15 @@ bool actor::knockback(const actor &cause, int dist, int dmg, string source_name,
 
     if (you.can_see(*this))
     {
-        mprf("%s %s knocked back%s%s.",
-             name(DESC_THE).c_str(),
-             conj_verb("are").c_str(),
-             !source_name.empty() ? " by the " : "",
-             source_name.c_str());
+        if (Options.language == lang_t::ZH)
+            mprf(source_name.empty() ? "%s被击退了。" : "%s被%s击退了。",
+                 name(DESC_THE).c_str(), source_name.c_str());
+        else
+            mprf("%s %s knocked back%s%s.",
+                 name(DESC_THE).c_str(),
+                 conj_verb("are").c_str(),
+                 !source_name.empty() ? " by the " : "",
+                 source_name.c_str());
     }
 
     if (dmg > 0 && pos() != newpos)
@@ -1129,9 +1154,11 @@ bool actor::stumble_away_from(coord_def targ, string src)
     }
 
     if (is_player() && !src.empty())
-        mprf("%s sends you backwards.", uppercase_first(src).c_str());
+        mprf(T_("%s sends you backwards."),
+             uppercase_first(src).c_str());
     else if (you.can_see(*this) && !src.empty())
-        mprf("%s is knocked back by %s.", name(DESC_THE).c_str(), src.c_str());
+        mprf(T_("%s is knocked back by %s."),
+             name(DESC_THE).c_str(), src.c_str());
 
     move_to(newpos);
 

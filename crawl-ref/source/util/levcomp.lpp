@@ -15,28 +15,10 @@
 
 static bool alloced = false;
 
-static queue<const char *> free_queue;
-
-static void flush_free_queue(unsigned int max_allowed)
-{
-    while (free_queue.size() > max_allowed)
-    {
-        const char *s = free_queue.front();
-        free((void *) s);
-        free_queue.pop();
-    }
-}
-
-static void add_to_queue(const char *s)
-{
-    free_queue.push(s);
-    flush_free_queue(100);
-}
-
 static void clean()
 {
     if (yylval.text && alloced)
-        add_to_queue(yylval.text);
+        free((void *)yylval.text);
     yylval.text = nullptr;
     alloced = false;
 }
@@ -305,6 +287,5 @@ SUBVAULT:           { CBEGIN(ARGUMENT); return SUBVAULT; }
 int yywrap()
 {
     clean();
-    flush_free_queue(0);
     return 1;
 }

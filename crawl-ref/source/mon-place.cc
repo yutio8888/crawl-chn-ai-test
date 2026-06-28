@@ -38,6 +38,7 @@
 #include "mon-gear.h"
 #include "mon-pick.h"
 #include "mon-poly.h"
+#include "options.h"
 #include "mon-tentacle.h"
 #include "player-notices.h"
 #include "random.h"
@@ -58,6 +59,7 @@
 #include "travel.h"
 #include "unwind.h"
 #include "view.h"
+#include "database.h"
 
 band_type active_monster_band = BAND_NO_BAND;
 
@@ -3202,7 +3204,7 @@ monster* create_monster(mgen_data mg, bool fail_msg)
             fail_msg = false;
 
         if (!summd && fail_msg && you.see_cell(mg.pos))
-            mpr("You see a puff of smoke.");
+            mpr(T_("You see a puff of smoke."));
     }
 
     return summd;

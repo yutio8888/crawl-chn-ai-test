@@ -52,6 +52,7 @@
 #include "traps.h"
 #include "viewchar.h"
 #include "view.h"
+#include "database.h"
 
 static shared_ptr<quiver::action> _fire_prompt_for_item();
 static int  _get_dart_chance(const int hd);
@@ -287,7 +288,7 @@ static shared_ptr<quiver::action> _fire_prompt_for_item()
         // possibly they should get a similar message? They all do print a
         // more specific message if you try to use them, and some have a
         // prompt or the like (e.g. scroll of fear).
-        mpr("You have nothing you can fire or use right now.");
+        mpr(T_("You have nothing you can fire or use right now."));
         return make_shared<quiver::action>(); // hack: prevent "Ok, then."
     }
 
@@ -329,7 +330,7 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         if (!weapon || !is_range_weapon(*weapon))
         {
             if (!silent)
-                mprf("You cannot throw/fire anything while %s.", held_status());
+                mprf(T_("You cannot throw/fire anything while %s."), held_status());
             return true;
         }
         else
@@ -339,7 +340,7 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         {
             if (!silent)
             {
-                mprf("You cannot shoot with your %s while %s.",
+                mprf(Options.language == lang_t::ZH ? "你在%2$s时无法用你的%1$s射击。" : "You cannot shoot with your %s while %s.",
                      weapon->name(DESC_BASENAME).c_str(), held_status());
             }
             return true;
@@ -743,7 +744,7 @@ static void _player_shoot(ranged_attack_beam &pbolt)
     }
 
     // Create message.
-    mprf("You %s %s%s.",
+    mprf(T_("You %s %s%s."),
           is_thrown ? "throw" : "shoot" ,
           article_a(pbolt.atk.projectile_name()).c_str(),
           you.current_vision == 0 ? " into the darkness" : "");

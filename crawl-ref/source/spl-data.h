@@ -27,7 +27,7 @@ static const struct spell_desc spelldata[] =
 {
 
 {
-    SPELL_CAUSE_FEAR, "Cause Fear",
+    SPELL_CAUSE_FEAR, "引发恐惧",
     spschool::hexes,
     spflag::WL_check,
     4,
@@ -38,7 +38,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAGIC_DART, "Magic Dart",
+    SPELL_MAGIC_DART, "魔法飞镖",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer,
     1,
@@ -49,7 +49,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FIREBALL, "Fireball",
+    SPELL_FIREBALL, "火球术",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -60,7 +60,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_APPORTATION, "Apportation",
+    SPELL_APPORTATION, "隔空取物",
     spschool::translocation,
     spflag::target | spflag::obj | spflag::not_self,
     1,
@@ -71,7 +71,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLASTMOTE, "Volatile Blastmotes",
+    SPELL_BLASTMOTE, "不稳定爆尘",
     spschool::fire | spschool::translocation,
     spflag::destructive,
     3,
@@ -82,7 +82,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIG, "Dig",
+    SPELL_DIG, "挖掘",
     spschool::earth,
     spflag::dir_or_target | spflag::not_self | spflag::aim_at_space,
     4,
@@ -93,7 +93,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_FIRE, "Bolt of Fire",
+    SPELL_BOLT_OF_FIRE, "火焰箭",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -104,7 +104,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_COLD, "Bolt of Cold",
+    SPELL_BOLT_OF_COLD, "寒冰箭",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -115,7 +115,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LIGHTNING_BOLT, "Lightning Bolt",
+    SPELL_LIGHTNING_BOLT, "闪电箭",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -126,7 +126,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ARCJOLT, "Arcjolt",
+    SPELL_ARCJOLT, "电弧震击",
     spschool::conjuration | spschool::air,
     spflag::none,
     5,
@@ -137,7 +137,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PLASMA_BEAM, "Plasma Beam",
+    SPELL_PLASMA_BEAM, "等离子光束",
     spschool::fire | spschool::air,
     spflag::noisy | spflag::destructive,
     6,
@@ -148,7 +148,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PERMAFROST_ERUPTION, "Permafrost Eruption",
+    SPELL_PERMAFROST_ERUPTION, "永冻爆发",
     spschool::ice | spschool::earth,
     spflag::destructive,
     6,
@@ -159,7 +159,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINKBOLT, "Blinkbolt",
+    SPELL_BLINKBOLT, "闪雷",
     spschool::air | spschool::translocation,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -171,7 +171,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ELECTRIC_CHARGE, "Vhi's Electric Charge",
+    SPELL_ELECTRIC_CHARGE, "维之电荷",
     spschool::air | spschool::translocation,
     spflag::noisy | spflag::dir_or_target, // hack - should have spflag::needs_tracer
                    // and maybe spflag::hasty?
@@ -183,7 +183,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ELECTROLUNGE, "Vhi's Electrolunge",
+    SPELL_ELECTROLUNGE, "维之电冲",
     spschool::air | spschool::translocation,
     spflag::noisy | spflag::target | spflag::monster,
     4,
@@ -194,7 +194,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_MAGMA, "Bolt of Magma",
+    SPELL_BOLT_OF_MAGMA, "岩浆箭",
     spschool::conjuration | spschool::fire | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -205,7 +205,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_POLYMORPH, "Polymorph",
+    SPELL_POLYMORPH, "变形",
     spschool::alchemy | spschool::hexes,
     spflag::dir_or_target | spflag::chaotic
         | spflag::needs_tracer | spflag::WL_check,
@@ -217,7 +217,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SLOW, "Slow",
+    SPELL_SLOW, "减速",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check,
     1,
@@ -228,7 +228,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HASTE, "Haste",
+    SPELL_HASTE, "加速",
     spschool::hexes,
     spflag::helpful | spflag::hasty | spflag::selfench | spflag::monster,
     6,
@@ -239,7 +239,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PETRIFY, "Petrify",
+    SPELL_PETRIFY, "石化",
     spschool::alchemy | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check,
     4,
@@ -250,7 +250,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONFUSE, "Confuse",
+    SPELL_CONFUSE, "困惑",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
         | spflag::monster,
@@ -262,7 +262,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INVISIBILITY, "Invisibility",
+    SPELL_INVISIBILITY, "隐身术",
     spschool::hexes,
     spflag::helpful | spflag::selfench | spflag::escape | spflag::monster,
     6,
@@ -273,7 +273,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_FLAME, "Throw Flame",
+    SPELL_THROW_FLAME, "火焰投掷",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer,
     2,
@@ -284,7 +284,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_FROST, "Throw Frost",
+    SPELL_THROW_FROST, "冰霜投掷",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     2,
@@ -295,7 +295,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISJUNCTION, "Disjunction",
+    SPELL_DISJUNCTION, "空间分离",
     spschool::translocation,
     spflag::escape,
     8,
@@ -306,7 +306,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FREEZING_CLOUD, "Freezing Cloud",
+    SPELL_FREEZING_CLOUD, "冰冻云",
     spschool::conjuration | spschool::ice | spschool::air,
     spflag::target | spflag::needs_tracer | spflag::cloud,
     5,
@@ -317,7 +317,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FREEZING_GUST, "Freezing Gust",
+    SPELL_FREEZING_GUST, "冰冻阵风",
     spschool::conjuration | spschool::ice | spschool::air,
     spflag::target | spflag::needs_tracer | spflag::cloud | spflag::monster,
     5,
@@ -328,7 +328,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MEPHITIC_CLOUD, "Mephitic Cloud",
+    SPELL_MEPHITIC_CLOUD, "瘴气云",
     spschool::conjuration | spschool::alchemy | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer | spflag::cloud,
     3,
@@ -339,7 +339,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VENOM_BOLT, "Venom Bolt",
+    SPELL_VENOM_BOLT, "毒液箭",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -350,7 +350,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_OLGREBS_TOXIC_RADIANCE, "Olgreb's Toxic Radiance",
+    SPELL_OLGREBS_TOXIC_RADIANCE, "奥尔格雷布之毒辐射",
     spschool::alchemy,
     spflag::destructive,
     4,
@@ -361,7 +361,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_TELEPORT_OTHER, "Teleport Other",
+    SPELL_TELEPORT_OTHER, "传送他人",
     spschool::translocation,
     spflag::target | spflag::not_self | spflag::escape | spflag::WL_check,
     3,
@@ -372,7 +372,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEATHS_DOOR, "Death's Door",
+    SPELL_DEATHS_DOOR, "死亡之门",
     spschool::necromancy,
     spflag::no_ghost,
     9,
@@ -383,7 +383,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MASS_CONFUSION, "Mass Confusion",
+    SPELL_MASS_CONFUSION, "群体困惑",
     spschool::hexes,
     spflag::WL_check | spflag::monster,
     6,
@@ -394,7 +394,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SMITING, "Smiting",
+    SPELL_SMITING, "惩击",
     spschool::none,
     spflag::target | spflag::not_self,
     4,
@@ -405,7 +405,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SMALL_MAMMAL, "Summon Small Mammal",
+    SPELL_SUMMON_SMALL_MAMMAL, "召唤小型哺乳动物",
     spschool::summoning,
     spflag::none,
     1,
@@ -418,7 +418,7 @@ static const struct spell_desc spelldata[] =
 // Used indirectly, by monsters abjuring via other summon spells.
 // And used directly by summoning miscast monsters (nameless horrors).
 {
-    SPELL_ABJURATION, "Abjuration",
+    SPELL_ABJURATION, "驱逐术",
     spschool::summoning,
     spflag::monster,
     3,
@@ -429,7 +429,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_DRAINING, "Bolt of Draining",
+    SPELL_BOLT_OF_DRAINING, "吸取之箭",
     spschool::conjuration | spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -440,7 +440,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LEHUDIBS_CRYSTAL_SPEAR, "Lehudib's Crystal Spear",
+    SPELL_LEHUDIBS_CRYSTAL_SPEAR, "勒胡迪布之水晶矛",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer,
     8,
@@ -451,7 +451,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_POLAR_VORTEX, "Polar Vortex",
+    SPELL_POLAR_VORTEX, "极地漩涡",
     spschool::ice,
     spflag::destructive,
     9,
@@ -462,7 +462,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_POISONOUS_CLOUD, "Poisonous Cloud",
+    SPELL_POISONOUS_CLOUD, "毒云",
     spschool::conjuration | spschool::alchemy | spschool::air,
     spflag::target | spflag::needs_tracer | spflag::cloud | spflag::monster,
     5,
@@ -473,7 +473,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FIRE_STORM, "Fire Storm",
+    SPELL_FIRE_STORM, "火焰风暴",
     spschool::conjuration | spschool::fire,
     spflag::target | spflag::needs_tracer,
     9,
@@ -484,7 +484,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_DOWN_DAMNATION, "Call Down Damnation",
+    SPELL_CALL_DOWN_DAMNATION, "降下诅咒",
     spschool::conjuration,
     spflag::target | spflag::unholy | spflag::needs_tracer | spflag::monster,
     9,
@@ -495,7 +495,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_DOWN_LIGHTNING, "Call Down Lightning",
+    SPELL_CALL_DOWN_LIGHTNING, "降下闪电",
     spschool::conjuration | spschool::air,
     spflag::target | spflag::monster,
     4,
@@ -506,7 +506,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK, "Blink",
+    SPELL_BLINK, "闪烁",
     spschool::translocation,
     spflag::escape | spflag::selfench,
     2,
@@ -517,7 +517,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_RANGE, "Blink Range", // XXX needs better name
+    SPELL_BLINK_RANGE, "退避闪烁", // XXX needs better name
     spschool::translocation,
     spflag::escape | spflag::monster | spflag::selfench,
     2,
@@ -528,7 +528,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_AWAY, "Blink Away",
+    SPELL_BLINK_AWAY, "远离闪烁",
     spschool::translocation,
     spflag::escape | spflag::monster | spflag::selfench,
     2,
@@ -539,7 +539,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_CLOSE, "Blink Close",
+    SPELL_BLINK_CLOSE, "接近闪烁",
     spschool::translocation,
     spflag::monster | spflag::target,
     2,
@@ -552,7 +552,7 @@ static const struct spell_desc spelldata[] =
 // The following name was found in the hack.exe file of an early version
 // of PCHACK - credit goes to its creator (whoever that may be):
 {
-    SPELL_ISKENDERUNS_MYSTIC_BLAST, "Iskenderun's Mystic Blast",
+    SPELL_ISKENDERUNS_MYSTIC_BLAST, "伊斯肯德伦之神秘冲击",
     spschool::conjuration | spschool::translocation,
     spflag::none,
     4,
@@ -563,7 +563,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_HORRIBLE_THINGS, "Summon Horrible Things",
+    SPELL_SUMMON_HORRIBLE_THINGS, "召唤恐怖之物",
     spschool::summoning,
     spflag::unholy | spflag::chaotic | spflag::mons_abjure,
     8,
@@ -574,7 +574,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MALIGN_GATEWAY, "Malign Gateway",
+    SPELL_MALIGN_GATEWAY, "邪恶传送门",
     spschool::summoning | spschool::translocation,
     spflag::unholy | spflag::chaotic,
     7,
@@ -585,7 +585,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CHARMING, "Charm",
+    SPELL_CHARMING, "魅惑",
     spschool::hexes,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
         | spflag::WL_check,
@@ -597,7 +597,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ANIMATE_DEAD, "Animate Dead",
+    SPELL_ANIMATE_DEAD, "操纵死尸",
     spschool::necromancy,
     spflag::helpful | spflag::no_ghost,
     4,
@@ -608,7 +608,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PAIN, "Pain",
+    SPELL_PAIN, "痛苦",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
         | spflag::monster,
@@ -620,7 +620,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SOUL_SPLINTER, "Soul Splinter",
+    SPELL_SOUL_SPLINTER, "灵魂分裂",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
         | spflag::not_self,
@@ -632,7 +632,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VAMPIRIC_DRAINING, "Vampiric Draining",
+    SPELL_VAMPIRIC_DRAINING, "吸血之蚀",
     spschool::necromancy,
     spflag::dir_or_target | spflag::not_self,
     3,
@@ -643,7 +643,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HAUNT, "Haunt",
+    SPELL_HAUNT, "鬼魂缠身",
     spschool::summoning | spschool::necromancy,
     spflag::target | spflag::not_self | spflag::mons_abjure,
     7,
@@ -654,7 +654,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MARTYRS_KNELL, "Martyr's Knell",
+    SPELL_MARTYRS_KNELL, "殉道者之丧钟",
     spschool::summoning | spschool::necromancy,
     spflag::none,
     4,
@@ -665,7 +665,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BORGNJORS_REVIVIFICATION, "Borgnjor's Revivification",
+    SPELL_BORGNJORS_REVIVIFICATION, "博格尼尔之复活",
     spschool::necromancy,
     spflag::none,
     8,
@@ -676,7 +676,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FREEZE, "Freeze",
+    SPELL_FREEZE, "冰冻",
     spschool::ice,
     spflag::dir_or_target | spflag::not_self | spflag::destructive,
     1,
@@ -687,7 +687,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_OZOCUBUS_REFRIGERATION, "Ozocubu's Refrigeration",
+    SPELL_OZOCUBUS_REFRIGERATION, "奥佐库布之制冷",
     spschool::ice,
     spflag::destructive,
     7,
@@ -698,7 +698,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STICKY_FLAME, "Sticky Flame",
+    SPELL_STICKY_FLAME, "粘性火焰",
     spschool::alchemy | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer | spflag::destructive,
     4,
@@ -709,7 +709,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_ICE_BEAST, "Summon Ice Beast",
+    SPELL_SUMMON_ICE_BEAST, "召唤冰兽",
     spschool::ice | spschool::summoning,
     spflag::none,
     3,
@@ -720,7 +720,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_OZOCUBUS_ARMOUR, "Ozocubu's Armour",
+    SPELL_OZOCUBUS_ARMOUR, "奥佐库布之护甲",
     spschool::ice,
     spflag::no_ghost,
     3,
@@ -731,7 +731,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_IMP, "Call Imp",
+    SPELL_CALL_IMP, "召唤小恶魔",
     spschool::summoning,
     spflag::unholy,
     2,
@@ -742,7 +742,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEFLECT_MISSILES, "Deflect Missiles",
+    SPELL_DEFLECT_MISSILES, "偏转投射物",
     spschool::air,
     spflag::monster | spflag::selfench,
     6,
@@ -753,7 +753,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BERSERKER_RAGE, "Berserker Rage",
+    SPELL_BERSERKER_RAGE, "狂暴之怒",
     spschool::earth,
     spflag::hasty | spflag::monster | spflag::selfench,
     3,
@@ -764,7 +764,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISPEL_UNDEAD, "Dispel Undead",
+    SPELL_DISPEL_UNDEAD, "驱散亡灵",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer,
     4,
@@ -775,7 +775,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_POISON_ARROW, "Poison Arrow",
+    SPELL_POISON_ARROW, "毒箭",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -787,7 +787,7 @@ static const struct spell_desc spelldata[] =
 
 // Monster-only, players can use Lugonu's ability
 {
-    SPELL_BANISHMENT, "Banishment",
+    SPELL_BANISHMENT, "放逐",
     spschool::translocation,
     spflag::dir_or_target | spflag::unholy | spflag::chaotic | spflag::monster
         | spflag::needs_tracer | spflag::WL_check,
@@ -799,7 +799,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STING, "Sting",
+    SPELL_STING, "刺击",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     1,
@@ -810,7 +810,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUBLIMATION_OF_BLOOD, "Sublimation of Blood",
+    SPELL_SUBLIMATION_OF_BLOOD, "血液升华",
     spschool::necromancy,
     spflag::none,
     2,
@@ -821,7 +821,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_TUKIMAS_DANCE, "Tukima's Dance",
+    SPELL_TUKIMAS_DANCE, "图基玛之舞",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
         | spflag::not_self,
@@ -833,7 +833,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_DEMON, "Summon Demon",
+    SPELL_SUMMON_DEMON, "召唤恶魔",
     spschool::summoning,
     spflag::unholy
     | spflag::mons_abjure | spflag::monster,
@@ -845,7 +845,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_GREATER_DEMON, "Summon Greater Demon",
+    SPELL_SUMMON_GREATER_DEMON, "召唤高级恶魔",
     spschool::summoning,
     spflag::unholy
     | spflag::mons_abjure  | spflag::monster,
@@ -857,7 +857,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PUTREFACTION, "Cigotuvi's Putrefaction",
+    SPELL_PUTREFACTION, "西格图维之腐烂",
     spschool::necromancy | spschool::air,
     spflag::target | spflag::unclean,
     4,
@@ -868,7 +868,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_IRON_SHOT, "Iron Shot",
+    SPELL_IRON_SHOT, "铁弹",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -879,7 +879,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOMBARD, "Bombard",
+    SPELL_BOMBARD, "炮击",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer,
     6,
@@ -890,7 +890,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STONE_ARROW, "Stone Arrow",
+    SPELL_STONE_ARROW, "石箭",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer,
     3,
@@ -901,7 +901,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHOCK, "Shock",
+    SPELL_SHOCK, "电击",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer,
     1,
@@ -912,7 +912,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SWIFTNESS, "Swiftness",
+    SPELL_SWIFTNESS, "迅捷",
     spschool::air,
     spflag::hasty | spflag::selfench,
     3,
@@ -923,7 +923,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEBUGGING_RAY, "Debugging Ray",
+    SPELL_DEBUGGING_RAY, "调试射线",
     spschool::conjuration,
     spflag::dir_or_target | spflag::testing,
     7,
@@ -934,7 +934,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AGONISING_TOUCH, "Agonising Touch",
+    SPELL_AGONISING_TOUCH, "剧痛之触",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::WL_check | spflag::monster,
@@ -946,7 +946,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CURSE_OF_AGONY, "Curse of Agony",
+    SPELL_CURSE_OF_AGONY, "痛苦诅咒",
     spschool::necromancy,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
         | spflag::WL_check,
@@ -958,7 +958,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MINDBURST, "Mindburst",
+    SPELL_MINDBURST, "心智爆发",
     spschool::conjuration,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
         | spflag::WL_check,
@@ -970,7 +970,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEATH_CHANNEL, "Death Channel",
+    SPELL_DEATH_CHANNEL, "死亡通道",
     spschool::necromancy,
     spflag::helpful | spflag::selfench,
     6,
@@ -982,7 +982,7 @@ static const struct spell_desc spelldata[] =
 
 // Monster-only, players can use Kiku's ability
 {
-    SPELL_SYMBOL_OF_TORMENT, "Symbol of Torment",
+    SPELL_SYMBOL_OF_TORMENT, "折磨之符",
     spschool::necromancy,
     spflag::monster,
     6,
@@ -993,7 +993,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SIPHON_ESSENCE, "Siphon Essence",
+    SPELL_SIPHON_ESSENCE, "吸取精华",
     spschool::necromancy,
     spflag::monster,
     7,
@@ -1004,7 +1004,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_ICICLE, "Throw Icicle",
+    SPELL_THROW_ICICLE, "投掷冰柱",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -1015,7 +1015,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AIRSTRIKE, "Airstrike",
+    SPELL_AIRSTRIKE, "空袭",
     spschool::air,
     spflag::target | spflag::not_self | spflag::destructive,
     4,
@@ -1026,7 +1026,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MOMENTUM_STRIKE, "Momentum Strike",
+    SPELL_MOMENTUM_STRIKE, "动量打击",
     spschool::conjuration | spschool::translocation,
     spflag::target | spflag::not_self,
     2,
@@ -1037,7 +1037,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_CREATURES, "Shadow Creatures",
+    SPELL_SHADOW_CREATURES, "暗影生物",
     spschool::summoning,
     spflag::mons_abjure | spflag::monster,
     6,
@@ -1048,7 +1048,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONFUSING_TOUCH, "Confusing Touch",
+    SPELL_CONFUSING_TOUCH, "困惑之触",
     spschool::hexes,
     spflag::selfench | spflag::WL_check, // Show success in the static targeter
     3,
@@ -1059,7 +1059,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PASSWALL, "Passwall",
+    SPELL_PASSWALL, "穿墙术",
     spschool::earth,
     spflag::target | spflag::escape | spflag::not_self | spflag::silent,
     3,
@@ -1070,7 +1070,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_IGNITE_POISON, "Ignite Poison",
+    SPELL_IGNITE_POISON, "点燃毒素",
     spschool::fire | spschool::alchemy,
     spflag::destructive,
     4,
@@ -1081,7 +1081,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_CANINE_FAMILIAR, "Call Canine Familiar",
+    SPELL_CALL_CANINE_FAMILIAR, "召唤犬类使魔",
     spschool::summoning,
     spflag::none,
     3,
@@ -1092,7 +1092,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_DRAGON, "Summon Dragon", // see also, SPELL_DRAGON_CALL
+    SPELL_SUMMON_DRAGON, "召唤巨龙", // see also, SPELL_DRAGON_CALL
     spschool::summoning,
     spflag::mons_abjure | spflag::monster,
     9,
@@ -1103,7 +1103,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HIBERNATION, "Ensorcelled Hibernation",
+    SPELL_HIBERNATION, "冬眠",
     spschool::hexes | spschool::ice,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
         | spflag::WL_check | spflag::silent,
@@ -1115,7 +1115,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ENGLACIATION, "Metabolic Englaciation",
+    SPELL_ENGLACIATION, "深度冻结",
     spschool::hexes | spschool::ice,
     spflag::none,
     5,
@@ -1126,7 +1126,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SILENCE, "Silence",
+    SPELL_SILENCE, "沉默",
     spschool::hexes | spschool::air,
     spflag::silent, // of course!
     5,
@@ -1137,7 +1137,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHATTER, "Shatter",
+    SPELL_SHATTER, "粉碎",
     spschool::earth,
     spflag::destructive,
     9,
@@ -1148,7 +1148,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISPERSAL, "Dispersal",
+    SPELL_DISPERSAL, "驱散",
     spschool::translocation,
     spflag::escape,
     6,
@@ -1159,7 +1159,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISCHARGE, "Static Discharge",
+    SPELL_DISCHARGE, "静电释放",
     spschool::conjuration | spschool::air,
     spflag::none,
     2,
@@ -1170,7 +1170,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CORONA, "Corona",
+    SPELL_CORONA, "日冕",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::WL_check | spflag::monster,
@@ -1182,7 +1182,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INTOXICATE, "Alistair's Intoxication",
+    SPELL_INTOXICATE, "阿利斯泰尔之醉",
     spschool::alchemy,
     spflag::none,
     5,
@@ -1193,7 +1193,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LRD, "Lee's Rapid Deconstruction",
+    SPELL_LRD, "李之快速解构",
     spschool::earth,
     spflag::target | spflag::destructive,
     5,
@@ -1204,7 +1204,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SANDBLAST, "Sandblast",
+    SPELL_SANDBLAST, "沙暴",
     spschool::earth,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer
         | spflag::destructive,
@@ -1216,7 +1216,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SIMULACRUM, "Sculpt Simulacrum",
+    SPELL_SIMULACRUM, "塑造拟像",
     spschool::ice | spschool::alchemy,
     spflag::target | spflag::not_self | spflag::needs_tracer
         | spflag::unholy,
@@ -1228,7 +1228,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONJURE_BALL_LIGHTNING, "Conjure Ball Lightning",
+    SPELL_CONJURE_BALL_LIGHTNING, "召唤球形闪电",
     spschool::air | spschool::conjuration,
     spflag::none,
     6,
@@ -1239,7 +1239,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CHAIN_LIGHTNING, "Chain Lightning",
+    SPELL_CHAIN_LIGHTNING, "连锁闪电",
     spschool::air | spschool::conjuration,
     spflag::none,
     9,
@@ -1250,7 +1250,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PORTAL_PROJECTILE, "Portal Projectile",
+    SPELL_PORTAL_PROJECTILE, "传送投射物",
     spschool::translocation,
     spflag::target | spflag::monster,
     3,
@@ -1261,7 +1261,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MONSTROUS_MENAGERIE, "Monstrous Menagerie",
+    SPELL_MONSTROUS_MENAGERIE, "怪物动物园",
     spschool::summoning,
     spflag::mons_abjure | spflag::monster,
     7,
@@ -1272,7 +1272,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GOLUBRIAS_PASSAGE, "Passage of Golubria",
+    SPELL_GOLUBRIAS_PASSAGE, "戈卢布里亚之通道",
     spschool::translocation,
     spflag::target | spflag::aim_at_space | spflag::escape | spflag::selfench,
     4,
@@ -1283,7 +1283,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FULMINANT_PRISM, "Fulminant Prism",
+    SPELL_FULMINANT_PRISM, "爆裂棱镜",
     spschool::conjuration | spschool::alchemy,
     spflag::target | spflag::not_self | spflag::no_ghost,
     4,
@@ -1294,7 +1294,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PARALYSE, "Paralyse",
+    SPELL_PARALYSE, "麻痹",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::WL_check,
@@ -1306,7 +1306,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MINOR_HEALING, "Minor Healing",
+    SPELL_MINOR_HEALING, "小型治疗",
     spschool::none,
     spflag::recovery | spflag::helpful | spflag::monster | spflag::selfench,
     2,
@@ -1317,7 +1317,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAJOR_HEALING, "Major Healing",
+    SPELL_MAJOR_HEALING, "大型治疗",
     spschool::none,
     spflag::recovery | spflag::helpful | spflag::monster | spflag::selfench,
     6,
@@ -1328,7 +1328,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WOODWEAL, "Woodweal",
+    SPELL_WOODWEAL, "木质愈合",
     spschool::none,
     spflag::recovery | spflag::helpful | spflag::monster | spflag::selfench,
     4,
@@ -1339,7 +1339,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HURL_DAMNATION, "Hurl Damnation",
+    SPELL_HURL_DAMNATION, "投掷诅咒",
     spschool::conjuration,
     spflag::dir_or_target | spflag::unholy
         | spflag::needs_tracer,
@@ -1352,7 +1352,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BRAIN_BITE, "Brain Bite",
+    SPELL_BRAIN_BITE, "脑噬",
     spschool::necromancy | spschool::hexes,
     spflag::target | spflag::monster,
     3,
@@ -1363,7 +1363,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_NOXIOUS_CLOUD, "Noxious Cloud",
+    SPELL_NOXIOUS_CLOUD, "毒云",
     spschool::conjuration | spschool::alchemy | spschool::air,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
         | spflag::cloud,
@@ -1375,7 +1375,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STEAM_BALL, "Steam Ball",
+    SPELL_STEAM_BALL, "蒸汽球",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     4,
@@ -1397,7 +1397,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SIN_BEAST, "Summon Sin Beast",
+    SPELL_SUMMON_SIN_BEAST, "召唤罪兽",
     spschool::summoning,
     spflag::unholy | spflag::monster,
     4,
@@ -1408,7 +1408,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_DEVASTATION, "Bolt of Devastation",
+    SPELL_BOLT_OF_DEVASTATION, "毁灭之箭",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     5,
@@ -1419,7 +1419,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPIT_POISON, "Spit Poison",
+    SPELL_SPIT_POISON, "喷吐毒素",
     spschool::alchemy,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -1431,7 +1431,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_UNDEAD, "Summon Undead",
+    SPELL_SUMMON_UNDEAD, "召唤亡灵",
     spschool::summoning | spschool::necromancy,
     spflag::monster | spflag::mons_abjure,
     7,
@@ -1442,7 +1442,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CANTRIP, "Cantrip",
+    SPELL_CANTRIP, "小戏法",
     spschool::none,
     spflag::monster,
     1,
@@ -1453,7 +1453,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_QUICKSILVER_BOLT, "Quicksilver Bolt",
+    SPELL_QUICKSILVER_BOLT, "水银箭",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::not_self,
     5,
@@ -1464,7 +1464,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_METAL_SPLINTERS, "Metal Splinters",
+    SPELL_METAL_SPLINTERS, "金属碎片",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     5,
@@ -1475,7 +1475,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPLINTERSPRAY, "Splinterspray",
+    SPELL_SPLINTERSPRAY, "碎片喷射",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     4,
@@ -1486,7 +1486,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MIASMA_BREATH, "Miasma Breath",
+    SPELL_MIASMA_BREATH, "瘴气吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::unclean | spflag::monster
         | spflag::needs_tracer | spflag::cloud,
@@ -1498,7 +1498,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_DRAKES, "Summon Drakes",
+    SPELL_SUMMON_DRAKES, "召唤小龙",
     spschool::summoning | spschool::necromancy, // since it can summon shadow dragons
     spflag::unclean | spflag::monster | spflag::mons_abjure,
     6,
@@ -1509,7 +1509,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_OTHER, "Blink Other",
+    SPELL_BLINK_OTHER, "闪烁他人",
     spschool::translocation,
     spflag::dir_or_target | spflag::escape | spflag::monster
         | spflag::needs_tracer,
@@ -1521,7 +1521,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_OTHER_CLOSE, "Blink Other Close",
+    SPELL_BLINK_OTHER_CLOSE, "闪烁他人接近",
     spschool::translocation,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     2,
@@ -1532,7 +1532,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_MUSHROOMS, "Summon Mushrooms",
+    SPELL_SUMMON_MUSHROOMS, "召唤蘑菇",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     4,
@@ -1543,7 +1543,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPIT_ACID, "Spit Acid",
+    SPELL_SPIT_ACID, "喷吐酸液",
     spschool::alchemy,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -1555,7 +1555,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CAUSTIC_BREATH, "Caustic Breath",
+    SPELL_CAUSTIC_BREATH, "腐蚀吐息",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::noisy | spflag::needs_tracer,
     5,
@@ -1566,7 +1566,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PYRE_ARROW, "Pyre Arrow",
+    SPELL_PYRE_ARROW, "火葬之箭",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     4,
@@ -1577,7 +1577,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FIRE_BREATH, "Fire Breath",
+    SPELL_FIRE_BREATH, "火焰吐息",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -1589,7 +1589,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SEARING_BREATH, "Searing Breath",
+    SPELL_SEARING_BREATH, "灼热之息",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -1601,7 +1601,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CHAOS_BREATH, "Chaos Breath",
+    SPELL_CHAOS_BREATH, "混沌吐息",
     spschool::conjuration | spschool::random,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer | spflag::cloud,
@@ -1613,7 +1613,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_COLD_BREATH, "Cold Breath",
+    SPELL_COLD_BREATH, "寒冷吐息",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -1625,7 +1625,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GLACIAL_BREATH, "Glacial Breath",
+    SPELL_GLACIAL_BREATH, "冰川吐息",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::noisy | spflag::needs_tracer,
     5,
@@ -1636,7 +1636,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WATER_ELEMENTALS, "Summon Water Elementals",
+    SPELL_WATER_ELEMENTALS, "召唤水元素",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     5,
@@ -1647,7 +1647,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PORKALATOR, "Porkalator",
+    SPELL_PORKALATOR, "变猪术",
     spschool::hexes | spschool::alchemy,
     spflag::dir_or_target | spflag::chaotic | spflag::needs_tracer
         | spflag::WL_check | spflag::monster,
@@ -1659,7 +1659,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CREATE_TENTACLES, "Spawn Tentacles",
+    SPELL_CREATE_TENTACLES, "生成触须",
     spschool::none,
     spflag::monster,
     5,
@@ -1670,7 +1670,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_EYEBALLS, "Summon Eyeballs",
+    SPELL_SUMMON_EYEBALLS, "召唤眼球",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     5,
@@ -1681,7 +1681,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HASTE_OTHER, "Haste Other",
+    SPELL_HASTE_OTHER, "加速他人",
     spschool::hexes,
     spflag::dir_or_target | spflag::helpful
         | spflag::hasty | spflag::needs_tracer | spflag::monster,
@@ -1693,7 +1693,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_EARTH_ELEMENTALS, "Summon Earth Elementals",
+    SPELL_EARTH_ELEMENTALS, "召唤大地元素",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     5,
@@ -1704,7 +1704,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AIR_ELEMENTALS, "Summon Air Elementals",
+    SPELL_AIR_ELEMENTALS, "召唤空气元素",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     5,
@@ -1715,7 +1715,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FIRE_ELEMENTALS, "Summon Fire Elementals",
+    SPELL_FIRE_ELEMENTALS, "召唤火焰元素",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     5,
@@ -1726,7 +1726,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SLEEP, "Sleep",
+    SPELL_SLEEP, "睡眠",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::WL_check | spflag::monster,
@@ -1738,7 +1738,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FAKE_MARA_SUMMON, "Mara Summon",
+    SPELL_FAKE_MARA_SUMMON, "玛拉召唤",
     spschool::summoning,
     spflag::monster,
     5,
@@ -1749,7 +1749,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_ILLUSION, "Summon Illusion",
+    SPELL_SUMMON_ILLUSION, "召唤幻象",
     spschool::summoning,
     spflag::monster | spflag::target,
     5,
@@ -1760,7 +1760,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PRIMAL_WAVE, "Primal Wave",
+    SPELL_PRIMAL_WAVE, "原始波浪",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -1771,7 +1771,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_TIDE, "Call Tide",
+    SPELL_CALL_TIDE, "召唤潮汐",
     spschool::translocation,
     spflag::monster,
     7,
@@ -1782,7 +1782,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_IOOD, "Orb of Destruction",
+    SPELL_IOOD, "毁灭之球",
     spschool::conjuration,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer,
     7,
@@ -1793,7 +1793,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INK_CLOUD, "Ink Cloud",
+    SPELL_INK_CLOUD, "墨云",
     spschool::conjuration | spschool::ice, // it's a water spell
     spflag::monster | spflag::escape,
     7,
@@ -1804,7 +1804,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MIGHT, "Might",
+    SPELL_MIGHT, "强壮",
     spschool::hexes,
     spflag::helpful | spflag::selfench | spflag::monster,
     3,
@@ -1815,7 +1815,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MIGHT_OTHER, "Might Other",
+    SPELL_MIGHT_OTHER, "强壮他人",
     spschool::hexes,
     spflag::dir_or_target | spflag::helpful | spflag::needs_tracer | spflag::monster,
     5,
@@ -1826,7 +1826,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AWAKEN_FOREST, "Awaken Forest",
+    SPELL_AWAKEN_FOREST, "唤醒森林",
     spschool::hexes | spschool::summoning,
     spflag::monster,
     6,
@@ -1837,7 +1837,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DRUIDS_CALL, "Druid's Call",
+    SPELL_DRUIDS_CALL, "德鲁伊召唤",
     spschool::summoning,
     spflag::monster,
     6,
@@ -1848,7 +1848,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BROTHERS_IN_ARMS, "Brothers in Arms",
+    SPELL_BROTHERS_IN_ARMS, "战友召唤",
     spschool::summoning,
     spflag::monster,
     6,
@@ -1859,7 +1859,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_TROGS_HAND, "Trog's Hand",
+    SPELL_TROGS_HAND, "特洛格之手",
     spschool::none,
     spflag::monster | spflag::selfench | spflag::recovery,
     3,
@@ -1870,7 +1870,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_MORTAL_CHAMPION, "Summon Mortal Champion",
+    SPELL_SUMMON_MORTAL_CHAMPION, "召唤凡人冠军",
     spschool::summoning,
     spflag::monster,
     7,
@@ -1881,7 +1881,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VANQUISHED_VANGUARD, "Vanquished Vanguard",
+    SPELL_VANQUISHED_VANGUARD, "被征服的先锋",
     spschool::necromancy | spschool::summoning,
     spflag::monster | spflag::target,
     4,
@@ -1892,7 +1892,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_HOLIES, "Summon Holies",
+    SPELL_SUMMON_HOLIES, "召唤圣灵",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure | spflag::holy,
     5,
@@ -1903,7 +1903,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HEAL_OTHER, "Heal Other",
+    SPELL_HEAL_OTHER, "治愈他人",
     spschool::none,
     spflag::dir_or_target | spflag::helpful | spflag::needs_tracer
         | spflag::monster | spflag::recovery,
@@ -1915,7 +1915,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HOLY_FLAMES, "Holy Flames",
+    SPELL_HOLY_FLAMES, "神圣火焰",
     spschool::none,
     spflag::target | spflag::not_self | spflag::holy | spflag::monster,
     7,
@@ -1926,7 +1926,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HOLY_BREATH, "Holy Breath",
+    SPELL_HOLY_BREATH, "神圣吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::cloud
         | spflag::holy | spflag::monster,
@@ -1938,7 +1938,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INJURY_MIRROR, "Injury Mirror",
+    SPELL_INJURY_MIRROR, "伤害反射",
     spschool::none,
     spflag::selfench | spflag::monster,
     4,
@@ -1949,7 +1949,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DRAIN_LIFE, "Drain Life",
+    SPELL_DRAIN_LIFE, "吸取生命",
     spschool::necromancy,
     spflag::monster,
     6,
@@ -1960,7 +1960,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LEDAS_LIQUEFACTION, "Leda's Liquefaction",
+    SPELL_LEDAS_LIQUEFACTION, "勒达之液化",
     spschool::earth | spschool::alchemy,
     spflag::none,
     4,
@@ -1971,7 +1971,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_HYDRA, "Summon Hydra",
+    SPELL_SUMMON_HYDRA, "召唤九头蛇",
     spschool::summoning,
     spflag::mons_abjure,
     7,
@@ -1982,7 +1982,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MESMERISE, "Mesmerise",
+    SPELL_MESMERISE, "迷惑",
     spschool::hexes,
     spflag::WL_check | spflag::monster,
     5,
@@ -1993,7 +1993,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HELLFIRE_COURT, "Hellfire Court",
+    SPELL_HELLFIRE_COURT, "地狱火法庭",
     spschool::summoning | spschool::fire,
     spflag::monster | spflag::mons_abjure,
     8,
@@ -2004,7 +2004,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PETRIFYING_CLOUD, "Petrifying Cloud",
+    SPELL_PETRIFYING_CLOUD, "石化云",
     spschool::conjuration | spschool::earth | spschool::air,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     5,
@@ -2015,7 +2015,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INNER_FLAME, "Inner Flame",
+    SPELL_INNER_FLAME, "内焰",
     spschool::hexes | spschool::fire,
     spflag::target | spflag::not_self | spflag::WL_check | spflag::destructive,
     3,
@@ -2026,7 +2026,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ENSNARE, "Ensnare",
+    SPELL_ENSNARE, "束缚",
     spschool::conjuration | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -2037,7 +2037,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GREATER_ENSNARE, "Greater Ensnare",
+    SPELL_GREATER_ENSNARE, "强力束缚",
     spschool::conjuration | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -2048,7 +2048,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THUNDERBOLT, "Thunderbolt",
+    SPELL_THUNDERBOLT, "雷击",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::not_self,
     2, // 2-5, sort of
@@ -2059,7 +2059,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BATTLESPHERE, "Iskenderun's Battlesphere",
+    SPELL_BATTLESPHERE, "伊斯肯德伦之战斗球",
     spschool::conjuration | spschool::forgecraft,
     spflag::none,
     4,
@@ -2070,7 +2070,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_MINOR_DEMON, "Summon Minor Demon",
+    SPELL_SUMMON_MINOR_DEMON, "召唤小恶魔",
     spschool::summoning,
     spflag::unholy | spflag::monster,
     2,
@@ -2081,7 +2081,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STICKS_TO_SNAKES, "Sticks to Snakes",
+    SPELL_STICKS_TO_SNAKES, "棍变蛇",
     spschool::summoning,
     spflag::monster,
     2,
@@ -2092,7 +2092,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MALMUTATE, "Malmutate",
+    SPELL_MALMUTATE, "恶性变异",
     spschool::alchemy | spschool::hexes,
     spflag::dir_or_target | spflag::chaotic | spflag::needs_tracer
         | spflag::monster,
@@ -2104,7 +2104,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GLOOM, "Gloom",
+    SPELL_GLOOM, "阴郁",
     spschool::hexes | spschool::necromancy,
     spflag::silent,
     3,
@@ -2115,7 +2115,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BECKONING_GALE, "Beckoning Gale",
+    SPELL_BECKONING_GALE, "召唤强风",
     spschool::air,
     spflag::target | spflag::not_self | spflag::monster,
     3,
@@ -2126,7 +2126,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FORCE_LANCE, "Force Lance",
+    SPELL_FORCE_LANCE, "力量之矛",
     spschool::conjuration | spschool::translocation,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -2137,7 +2137,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SENTINEL_MARK, "Sentinel's Mark",
+    SPELL_SENTINEL_MARK, "哨兵印记",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
                           | spflag::monster,
@@ -2150,7 +2150,7 @@ static const struct spell_desc spelldata[] =
 
 // Ironbrand Convoker version (delayed activation, recalls only humanoids)
 {
-    SPELL_WORD_OF_RECALL, "Word of Recall",
+    SPELL_WORD_OF_RECALL, "召回之言",
     spschool::summoning | spschool::translocation,
     spflag::monster,
     3,
@@ -2161,7 +2161,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INJURY_BOND, "Injury Bond",
+    SPELL_INJURY_BOND, "伤害链接",
     spschool::hexes,
     spflag::helpful | spflag::monster,
     5,
@@ -2172,7 +2172,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPECTRAL_CLOUD, "Spectral Cloud",
+    SPELL_SPECTRAL_CLOUD, "幽灵云",
     spschool::conjuration | spschool::necromancy,
     spflag::dir_or_target | spflag::monster | spflag::cloud,
     5,
@@ -2183,7 +2183,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GHOSTLY_FIREBALL, "Ghostly Fireball",
+    SPELL_GHOSTLY_FIREBALL, "幽灵火球",
     spschool::conjuration | spschool::necromancy,
     spflag::dir_or_target | spflag::monster | spflag::unholy
         | spflag::needs_tracer,
@@ -2195,7 +2195,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_LOST_SOULS, "Call Lost Souls",
+    SPELL_CALL_LOST_SOULS, "召唤迷失灵魂",
     spschool::summoning | spschool::necromancy,
     spflag::unholy | spflag::monster,
     5,
@@ -2206,7 +2206,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIMENSION_ANCHOR, "Dimension Anchor",
+    SPELL_DIMENSION_ANCHOR, "维度锚定",
     spschool::translocation | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
                           | spflag::monster,
@@ -2218,7 +2218,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_ALLIES_ENCIRCLE, "Blink Allies Encircling",
+    SPELL_BLINK_ALLIES_ENCIRCLE, "闪烁盟友包围",
     spschool::translocation,
     spflag::target | spflag::monster,
     6,
@@ -2229,7 +2229,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AWAKEN_VINES, "Awaken Vines",
+    SPELL_AWAKEN_VINES, "唤醒藤蔓",
     spschool::hexes | spschool::summoning,
     spflag::monster | spflag::target,
     6,
@@ -2240,7 +2240,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THORN_VOLLEY, "Volley of Thorns",
+    SPELL_THORN_VOLLEY, "荆棘齐射",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -2262,7 +2262,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WATERSTRIKE, "Waterstrike",
+    SPELL_WATERSTRIKE, "水击",
     spschool::ice,
     spflag::target | spflag::not_self | spflag::monster,
     4,
@@ -2273,7 +2273,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WIND_BLAST, "Wind Blast",
+    SPELL_WIND_BLAST, "风击",
     spschool::air,
     spflag::target | spflag::monster, // wind blast is targeted when used as a (monster) spell, but not from the storm card
     3,
@@ -2284,7 +2284,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STRIP_WILLPOWER, "Strip Willpower",
+    SPELL_STRIP_WILLPOWER, "剥离意志力",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
                           | spflag::monster,
@@ -2296,7 +2296,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FUGUE_OF_THE_FALLEN, "Fugue of the Fallen",
+    SPELL_FUGUE_OF_THE_FALLEN, "亡灵赋格",
     spschool::necromancy,
     spflag::selfench,
     3,
@@ -2307,7 +2307,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_VERMIN, "Summon Vermin",
+    SPELL_SUMMON_VERMIN, "召唤害虫",
     spschool::summoning,
     spflag::monster | spflag::unholy | spflag::mons_abjure,
     5,
@@ -2318,7 +2318,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MALIGN_OFFERING, "Malign Offering",
+    SPELL_MALIGN_OFFERING, "邪恶献祭",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -2329,7 +2329,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SEARING_RAY, "Searing Ray",
+    SPELL_SEARING_RAY, "灼热射线",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer,
     2,
@@ -2340,7 +2340,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISCORD, "Discord",
+    SPELL_DISCORD, "混乱",
     spschool::hexes,
     spflag::hasty | spflag::WL_check,
     8,
@@ -2351,7 +2351,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INVISIBILITY_OTHER, "Invisibility Other",
+    SPELL_INVISIBILITY_OTHER, "隐身他人",
     spschool::hexes,
     spflag::dir_or_target | spflag::helpful | spflag::monster,
     6,
@@ -2362,7 +2362,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VIRULENCE, "Virulence",
+    SPELL_VIRULENCE, "毒性",
     spschool::alchemy | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
                           | spflag::monster,
@@ -2374,7 +2374,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ORB_OF_ELECTRICITY, "Orb of Electricity",
+    SPELL_ORB_OF_ELECTRICITY, "电击之球",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     7,
@@ -2385,7 +2385,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLASH_FREEZE, "Flash Freeze",
+    SPELL_FLASH_FREEZE, "瞬间冻结",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     7,
@@ -2396,7 +2396,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CREEPING_FROST, "Creeping Frost",
+    SPELL_CREEPING_FROST, "蔓延冰霜",
     spschool::conjuration | spschool::ice,
     spflag::monster,
     5,
@@ -2407,7 +2407,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LEGENDARY_DESTRUCTION, "Legendary Destruction",
+    SPELL_LEGENDARY_DESTRUCTION, "传奇毁灭",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     8,
@@ -2418,7 +2418,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FORCEFUL_INVITATION, "Forceful Invitation",
+    SPELL_FORCEFUL_INVITATION, "强制邀请",
     spschool::summoning,
     spflag::monster,
     4,
@@ -2429,7 +2429,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PLANEREND, "Plane Rend",
+    SPELL_PLANEREND, "位面撕裂",
     spschool::summoning,
     spflag::monster,
     8,
@@ -2440,7 +2440,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CHAIN_OF_CHAOS, "Chain of Chaos",
+    SPELL_CHAIN_OF_CHAOS, "混沌之链",
     spschool::conjuration,
     spflag::monster | spflag::chaotic,
     8,
@@ -2451,7 +2451,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CALL_OF_CHAOS, "Call of Chaos",
+    SPELL_CALL_OF_CHAOS, "混沌召唤",
     spschool::hexes,
     spflag::chaotic | spflag::monster,
     7,
@@ -2462,7 +2462,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SIGN_OF_RUIN, "Sign of Ruin",
+    SPELL_SIGN_OF_RUIN, "毁灭之印",
     spschool::necromancy,
     spflag::monster,
     7,
@@ -2473,7 +2473,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SAP_MAGIC, "Sap Magic",
+    SPELL_SAP_MAGIC, "削弱魔法",
     spschool::hexes,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     5,
@@ -2484,7 +2484,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAJOR_DESTRUCTION, "Major Destruction",
+    SPELL_MAJOR_DESTRUCTION, "大型毁灭",
     spschool::conjuration,
     spflag::dir_or_target | spflag::chaotic | spflag::needs_tracer
                           | spflag::monster,
@@ -2496,7 +2496,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BLINK_ALLIES_AWAY, "Blink Allies Away",
+    SPELL_BLINK_ALLIES_AWAY, "闪烁盟友远离",
     spschool::translocation,
     spflag::target | spflag::monster,
     6,
@@ -2507,7 +2507,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_FOREST, "Summon Forest",
+    SPELL_SUMMON_FOREST, "召唤森林",
     spschool::summoning | spschool::translocation,
     spflag::none,
     5,
@@ -2518,7 +2518,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FORGE_LIGHTNING_SPIRE, "Forge Lightning Spire",
+    SPELL_FORGE_LIGHTNING_SPIRE, "锻造闪电尖塔",
     spschool::forgecraft | spschool::air,
     spflag::none,
     4,
@@ -2529,7 +2529,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FORGE_BLAZEHEART_GOLEM, "Forge Blazeheart Golem",
+    SPELL_FORGE_BLAZEHEART_GOLEM, "锻造炽心魔像",
     spschool::forgecraft | spschool::fire,
     spflag::none,
     4,
@@ -2540,7 +2540,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_REBOUNDING_BLAZE, "Rebounding Blaze",
+    SPELL_REBOUNDING_BLAZE, "弹跳烈焰",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     7,
@@ -2551,7 +2551,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_REBOUNDING_CHILL, "Rebounding Chill",
+    SPELL_REBOUNDING_CHILL, "弹跳寒冷",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     7,
@@ -2562,7 +2562,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GLACIATE, "Glaciate",
+    SPELL_GLACIATE, "冰川",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag:: monster,
     9,
@@ -2573,7 +2573,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DRAGON_CALL, "Dragon's Call",
+    SPELL_DRAGON_CALL, "龙之呼唤",
     spschool::summoning,
     spflag::none,
     9,
@@ -2584,7 +2584,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPELLSPARK_SERVITOR, "Spellspark Servitor",
+    SPELL_SPELLSPARK_SERVITOR, "法术火花仆从",
     spschool::conjuration | spschool::forgecraft,
     spflag::none,
     7,
@@ -2595,7 +2595,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_MANA_VIPER, "Summon Mana Viper",
+    SPELL_SUMMON_MANA_VIPER, "召唤魔力蝰蛇",
     spschool::summoning | spschool::hexes,
     spflag::mons_abjure,
     5,
@@ -2606,7 +2606,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PHANTOM_MIRROR, "Phantom Mirror",
+    SPELL_PHANTOM_MIRROR, "幻影镜",
     spschool::hexes,
     spflag::none,
     5,
@@ -2617,7 +2617,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIMINISH_SPELLS, "Diminish Spells",
+    SPELL_DIMINISH_SPELLS, "削弱法术",
     spschool::hexes,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     3,
@@ -2628,7 +2628,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CORROSIVE_BOLT, "Corrosive Bolt",
+    SPELL_CORROSIVE_BOLT, "腐蚀箭",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer,
     6,
@@ -2639,7 +2639,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_LIGHT, "Bolt of Light",
+    SPELL_BOLT_OF_LIGHT, "光之箭",
     spschool::conjuration | spschool::fire | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer,
     6,
@@ -2650,7 +2650,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOLT_OF_FLESH, "Bolt of Flesh",
+    SPELL_BOLT_OF_FLESH, "血肉之箭",
     spschool::conjuration | spschool::necromancy | spschool::summoning,
     spflag::dir_or_target | spflag::needs_tracer| spflag::monster
                           | spflag::chaotic,
@@ -2662,7 +2662,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AWAKEN_FLESH, "Awaken Flesh",
+    SPELL_AWAKEN_FLESH, "唤醒血肉",
     spschool::conjuration | spschool::necromancy | spschool::hexes,
     spflag::chaotic | spflag::monster,
     6,
@@ -2673,7 +2673,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SERPENT_OF_HELL_GEH_BREATH, "gehenna serpent of hell breath",
+    SPELL_SERPENT_OF_HELL_GEH_BREATH, "火焚地狱蛇之吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2685,7 +2685,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SERPENT_OF_HELL_COC_BREATH, "cocytus serpent of hell breath",
+    SPELL_SERPENT_OF_HELL_COC_BREATH, "冰狱蛇之吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2697,7 +2697,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SERPENT_OF_HELL_DIS_BREATH, "dis serpent of hell breath",
+    SPELL_SERPENT_OF_HELL_DIS_BREATH, "铁城蛇之吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2709,7 +2709,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SERPENT_OF_HELL_TAR_BREATH, "tartarus serpent of hell breath",
+    SPELL_SERPENT_OF_HELL_TAR_BREATH, "悲叹地狱蛇之吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2721,7 +2721,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_EMPEROR_SCORPIONS, "Summon Emperor Scorpions",
+    SPELL_SUMMON_EMPEROR_SCORPIONS, "召唤帝蝎",
     spschool::summoning | spschool::alchemy,
     spflag::mons_abjure | spflag::monster,
     7,
@@ -2732,7 +2732,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_IRRADIATE, "Irradiate",
+    SPELL_IRRADIATE, "辐射",
     spschool::conjuration | spschool::alchemy,
     spflag::chaotic,
     5,
@@ -2743,7 +2743,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPIT_LAVA, "Spit Lava",
+    SPELL_SPIT_LAVA, "喷吐岩浆",
     spschool::conjuration | spschool::fire | spschool::earth,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2755,7 +2755,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ELECTRICAL_BOLT, "Electrical Bolt",
+    SPELL_ELECTRICAL_BOLT, "电击箭",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2767,7 +2767,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLAMING_CLOUD, "Flaming Cloud",
+    SPELL_FLAMING_CLOUD, "燃烧云",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
         | spflag::cloud,
@@ -2779,7 +2779,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_BARBS, "Throw Barbs",
+    SPELL_THROW_BARBS, "投掷倒刺",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::noisy
         | spflag::needs_tracer,
@@ -2791,7 +2791,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BATTLECRY, "Battlecry",
+    SPELL_BATTLECRY, "战吼",
     spschool::hexes,
     spflag::monster | spflag::selfench,
     6,
@@ -2802,7 +2802,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WARNING_CRY, "Warning Cry",
+    SPELL_WARNING_CRY, "警告之嚎",
     spschool::hexes,
     spflag::monster | spflag::selfench | spflag::noisy,
     6,
@@ -2813,7 +2813,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HUNTING_CALL, "Hunting Call",
+    SPELL_HUNTING_CALL, "狩猎呼唤",
     spschool::hexes,
     spflag::monster | spflag::selfench,
     6,
@@ -2824,7 +2824,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FUNERAL_DIRGE, "Funeral Dirge",
+    SPELL_FUNERAL_DIRGE, "葬礼哀歌",
     spschool::necromancy,
     spflag::monster,
     4,
@@ -2835,7 +2835,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SEAL_DOORS, "Seal Doors",
+    SPELL_SEAL_DOORS, "封印门",
     spschool::hexes,
     spflag::monster | spflag::selfench,
     6,
@@ -2846,7 +2846,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLAY, "Flay",
+    SPELL_FLAY, "剥皮",
     spschool::necromancy,
     spflag::target | spflag::monster,
     4,
@@ -2857,7 +2857,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BERSERK_OTHER, "Berserk Other",
+    SPELL_BERSERK_OTHER, "狂暴他人",
     spschool::hexes,
     spflag::hasty | spflag::monster | spflag::helpful,
     3,
@@ -2868,7 +2868,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CORRUPTING_PULSE, "Corrupting Pulse",
+    SPELL_CORRUPTING_PULSE, "腐化脉冲",
     spschool::hexes | spschool::alchemy,
     spflag::monster,
     6,
@@ -2879,7 +2879,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SIREN_SONG, "Siren Song",
+    SPELL_SIREN_SONG, "塞壬之歌",
     spschool::hexes,
     spflag::WL_check | spflag::monster,
     5,
@@ -2890,7 +2890,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AVATAR_SONG, "Avatar Song",
+    SPELL_AVATAR_SONG, "化身之歌",
     spschool::hexes,
     spflag::WL_check | spflag::monster,
     7,
@@ -2901,7 +2901,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PARALYSIS_GAZE, "Paralysis Gaze",
+    SPELL_PARALYSIS_GAZE, "麻痹凝视",
     spschool::hexes,
     spflag::target | spflag::monster,
     4,
@@ -2912,7 +2912,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONFUSION_GAZE, "Confusion Gaze",
+    SPELL_CONFUSION_GAZE, "困惑凝视",
     spschool::hexes,
     spflag::target | spflag::monster | spflag::WL_check,
     3,
@@ -2923,7 +2923,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ANTIMAGIC_GAZE, "Antimagic Gaze",
+    SPELL_ANTIMAGIC_GAZE, "反魔法凝视",
     spschool::hexes,
     spflag::target | spflag::monster,
     5,
@@ -2934,7 +2934,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DRAINING_GAZE, "Draining Gaze",
+    SPELL_DRAINING_GAZE, "吸取凝视",
     spschool::necromancy,
     spflag::target | spflag::monster,
     4,
@@ -2946,7 +2946,7 @@ static const struct spell_desc spelldata[] =
 
 
 {
-    SPELL_WEAKENING_GAZE, "Weakening Gaze",
+    SPELL_WEAKENING_GAZE, "虚弱凝视",
     spschool::hexes,
     spflag::target | spflag::monster,
     4,
@@ -2957,7 +2957,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MOURNING_WAIL, "Mourning Wail",
+    SPELL_MOURNING_WAIL, "哀悼嚎哭",
     spschool::necromancy,
     spflag::dir_or_target | spflag::monster,
     3,
@@ -2968,7 +2968,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEATH_RATTLE, "Death Rattle",
+    SPELL_DEATH_RATTLE, "死亡之响",
     spschool::conjuration | spschool::necromancy | spschool::air,
     spflag::dir_or_target | spflag::monster,
     7,
@@ -2979,7 +2979,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MARCH_OF_SORROWS, "March of Sorrows",
+    SPELL_MARCH_OF_SORROWS, "悲伤行军",
     spschool::conjuration | spschool::necromancy | spschool::air,
     spflag::dir_or_target | spflag::monster,
     7,
@@ -2990,7 +2990,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SCARABS, "Summon Scarabs",
+    SPELL_SUMMON_SCARABS, "召唤圣甲虫",
     spschool::summoning | spschool::necromancy,
     spflag::mons_abjure | spflag::monster,
     7,
@@ -3001,7 +3001,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_ALLY, "Throw Ally",
+    SPELL_THROW_ALLY, "投掷盟友",
     spschool::translocation,
     spflag::target | spflag::monster,
     2,
@@ -3012,7 +3012,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CLEANSING_FLAME, "Cleansing Flame",
+    SPELL_CLEANSING_FLAME, "净化之焰",
     spschool::none,
     spflag::monster | spflag::holy,
     8,
@@ -3024,7 +3024,7 @@ static const struct spell_desc spelldata[] =
 
 // Evoker-only now
 {
-    SPELL_GRAVITAS, "Gell's Gravitas",
+    SPELL_GRAVITAS, "盖尔之重力",
     spschool::translocation,
     spflag::target | spflag::needs_tracer | spflag::no_ghost,
     3,
@@ -3035,7 +3035,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VIOLENT_UNRAVELLING, "Yara's Violent Unravelling",
+    SPELL_VIOLENT_UNRAVELLING, "亚拉之猛烈解构",
     spschool::hexes | spschool::alchemy,
     spflag::target | spflag::no_ghost | spflag::chaotic | spflag::destructive,
     5,
@@ -3046,7 +3046,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ENTROPIC_WEAVE, "Entropic Weave",
+    SPELL_ENTROPIC_WEAVE, "熵之编织",
     spschool::hexes,
     spflag::target | spflag::monster,
     5,
@@ -3057,7 +3057,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_EXECUTIONERS, "Summon Executioners",
+    SPELL_SUMMON_EXECUTIONERS, "召唤行刑者",
     spschool::summoning,
     spflag::unholy | spflag::mons_abjure | spflag::monster,
     9,
@@ -3068,7 +3068,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_OBLIVION_HOWL, "Oblivion Howl",
+    SPELL_OBLIVION_HOWL, "湮灭嚎叫",
     spschool::translocation | spschool::hexes,
     spflag::target | spflag::monster | spflag::WL_check,
     3,
@@ -3079,7 +3079,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PRAYER_OF_BRILLIANCE, "Prayer of Brilliance",
+    SPELL_PRAYER_OF_BRILLIANCE, "聪慧祈祷",
     spschool::conjuration,
     spflag::helpful | spflag::monster,
     5,
@@ -3090,7 +3090,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ICEBLAST, "Iceblast",
+    SPELL_ICEBLAST, "冰爆",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3101,7 +3101,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SLUG_DART, "Slug Dart",
+    SPELL_SLUG_DART, "蛞蝓飞镖",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     1,
@@ -3112,7 +3112,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLEETFOOT, "Fleetfoot",
+    SPELL_FLEETFOOT, "轻快脚步",
     spschool::air,
     spflag::hasty | spflag::selfench | spflag::monster,
     2,
@@ -3123,7 +3123,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GREATER_SERVANT_MAKHLEB, "Infernal Servant",
+    SPELL_GREATER_SERVANT_MAKHLEB, "地狱仆从",
     spschool::summoning,
     spflag::unholy | spflag::mons_abjure | spflag::monster,
     7,
@@ -3134,7 +3134,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BIND_SOULS, "Bind Souls",
+    SPELL_BIND_SOULS, "绑定灵魂",
     spschool::necromancy | spschool::ice,
     spflag::monster,
     6,
@@ -3145,7 +3145,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_INFESTATION, "Infestation",
+    SPELL_INFESTATION, "虫群侵扰",
     spschool::necromancy,
     spflag::target | spflag::unclean,
     8,
@@ -3156,7 +3156,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STILL_WINDS, "Still Winds",
+    SPELL_STILL_WINDS, "静止风",
     spschool::hexes | spschool::air,
     spflag::monster | spflag::selfench,
     6,
@@ -3167,7 +3167,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_RESONANCE_STRIKE, "Resonance Strike",
+    SPELL_RESONANCE_STRIKE, "共鸣打击",
     spschool::earth,
     spflag::target | spflag::monster,
     5,
@@ -3178,7 +3178,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GHOSTLY_SACRIFICE, "Ghostly Sacrifice",
+    SPELL_GHOSTLY_SACRIFICE, "幽灵献祭",
     spschool::necromancy,
     spflag::target | spflag::monster,
     7,
@@ -3189,7 +3189,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DREAM_DUST, "Dream Dust",
+    SPELL_DREAM_DUST, "梦尘",
     spschool::hexes,
     spflag::target | spflag::monster,
     3,
@@ -3200,7 +3200,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BECKONING, "Lesser Beckoning",
+    SPELL_BECKONING, "次级召唤",
     spschool::translocation,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer,
     2,
@@ -3212,7 +3212,7 @@ static const struct spell_desc spelldata[] =
 
 // Monster-only, players can use Qazlal's ability
 {
-    SPELL_UPHEAVAL, "Upheaval",
+    SPELL_UPHEAVAL, "剧变",
     spschool::conjuration,
     spflag::target | spflag::needs_tracer | spflag::monster,
     5,
@@ -3223,7 +3223,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MERCURY_ARROW, "Mercury Arrow",
+    SPELL_MERCURY_ARROW, "汞矢",
     spschool::alchemy | spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer,
     2,
@@ -3234,7 +3234,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_POISONOUS_VAPOURS, "Poisonous Vapours",
+    SPELL_POISONOUS_VAPOURS, "毒气",
     spschool::alchemy | spschool::air,
     spflag::target | spflag::destructive | spflag::not_self,
     1,
@@ -3245,7 +3245,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_IGNITION, "Ignition",
+    SPELL_IGNITION, "点火",
     spschool::fire,
     spflag::destructive,
     8,
@@ -3256,7 +3256,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BORGNJORS_VILE_CLUTCH, "Borgnjor's Vile Clutch",
+    SPELL_BORGNJORS_VILE_CLUTCH, "博格尼尔之邪恶抓握",
     spschool::necromancy | spschool::earth,
     spflag::dir_or_target | spflag::not_self | spflag::needs_tracer,
     5,
@@ -3267,7 +3267,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FASTROOT, "Fastroot",
+    SPELL_FASTROOT, "快速扎根",
     spschool::hexes | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3278,7 +3278,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WARP_SPACE, "Warp Space",
+    SPELL_WARP_SPACE, "扭曲空间",
     spschool::translocation,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3289,7 +3289,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SOJOURNING_BOLT, "Sojourning Bolt",
+    SPELL_SOJOURNING_BOLT, "旅居之箭",
     spschool::conjuration | spschool::translocation,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -3300,7 +3300,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HARPOON_SHOT, "Harpoon Shot",
+    SPELL_HARPOON_SHOT, "鱼叉射击",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -3311,7 +3311,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GRASPING_ROOTS, "Grasping Roots",
+    SPELL_GRASPING_ROOTS, "抓握根须",
     spschool::earth,
     spflag::target | spflag::monster,
     5,
@@ -3322,7 +3322,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_THROW_BOLAS, "Throw Bolas",
+    SPELL_THROW_BOLAS, "投掷流星索",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -3334,7 +3334,7 @@ static const struct spell_desc spelldata[] =
 
 
 {
-    SPELL_THROW_PIE, "Throw Klown Pie",
+    SPELL_THROW_PIE, "投掷小丑派",
     spschool::conjuration | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -3345,7 +3345,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPORULATE, "Sporulate",
+    SPELL_SPORULATE, "产孢",
     spschool::conjuration | spschool::earth,
     spflag::monster,
     5,
@@ -3356,7 +3356,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LAUNCH_SPORANGIUM, "Launch Sporangium",
+    SPELL_LAUNCH_SPORANGIUM, "发射孢子囊",
     spschool::conjuration,
     spflag::monster,
     5,
@@ -3367,7 +3367,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STARBURST, "Starburst",
+    SPELL_STARBURST, "星爆",
     spschool::conjuration | spschool::fire,
     spflag::none,
     6,
@@ -3378,7 +3378,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FOXFIRE, "Foxfire",
+    SPELL_FOXFIRE, "狐火",
     spschool::conjuration | spschool::fire,
     spflag::none,
     1,
@@ -3389,7 +3389,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MARSHLIGHT, "Marshlight",
+    SPELL_MARSHLIGHT, "沼泽之光",
     spschool::conjuration | spschool::fire,
     spflag::monster,
     4,
@@ -3400,7 +3400,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HAILSTORM, "Hailstorm",
+    SPELL_HAILSTORM, "冰雹风暴",
     spschool::conjuration | spschool::ice,
     spflag::none,
     3,
@@ -3411,7 +3411,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_NOXIOUS_BOG, "Eringya's Noxious Bog",
+    SPELL_NOXIOUS_BOG, "埃林吉亚之有毒沼泽",
     spschool::alchemy,
     spflag::no_ghost | spflag::destructive,
     6,
@@ -3422,7 +3422,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AGONY, "Agony",
+    SPELL_AGONY, "痛苦折磨",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::monster | spflag::WL_check,
@@ -3434,7 +3434,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DISPEL_UNDEAD_RANGE, "Dispel Undead Range",
+    SPELL_DISPEL_UNDEAD_RANGE, "远程驱散亡灵",
     spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -3445,7 +3445,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FROZEN_RAMPARTS, "Frozen Ramparts",
+    SPELL_FROZEN_RAMPARTS, "冰冻壁垒",
     spschool::ice,
     spflag::no_ghost | spflag::destructive,
     3,
@@ -3456,7 +3456,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAXWELLS_COUPLING, "Maxwell's Capacitive Coupling",
+    SPELL_MAXWELLS_COUPLING, "麦克斯韦之电容耦合",
     spschool::air,
     spflag::no_ghost | spflag::destructive,
     8,
@@ -3471,14 +3471,14 @@ static const struct spell_desc spelldata[] =
     // and it is never triggered the way spells usually are, but it still has
     // a spell-type enum entry. So, use fake data in order to have a valid
     // entry here. If it ever were to be castable, this would need some updates.
-    SPELL_SONIC_WAVE, "Sonic wave",
+    SPELL_SONIC_WAVE, "音波",
     spschool::none,
     spflag::noisy,
     7, 0, -1, -1, 0, TILEG_ERROR
 },
 
 {
-    SPELL_ROLL, "Roll",
+    SPELL_ROLL, "滚动",
     spschool::earth,
     spflag::monster,
     5,
@@ -3489,7 +3489,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HURL_SLUDGE, "Hurl Sludge",
+    SPELL_HURL_SLUDGE, "投掷污泥",
     spschool::alchemy | spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -3500,7 +3500,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_TZITZIMITL, "Summon Tzitzimitl",
+    SPELL_SUMMON_TZITZIMITL, "召唤齐齐米特尔",
     spschool::summoning | spschool::necromancy,
     spflag::monster | spflag::mons_abjure,
     8,
@@ -3511,7 +3511,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_HELL_SENTINEL, "Summon Hell Sentinel",
+    SPELL_SUMMON_HELL_SENTINEL, "召唤地狱哨兵",
     spschool::summoning,
     spflag::monster | spflag::mons_abjure,
     8,
@@ -3522,7 +3522,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_AWAKEN_ARMOUR, "Awaken Armour",
+    SPELL_AWAKEN_ARMOUR, "唤醒护甲",
     spschool::forgecraft | spschool::earth,
     spflag::none,
     4,
@@ -3533,7 +3533,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MANIFOLD_ASSAULT, "Manifold Assault",
+    SPELL_MANIFOLD_ASSAULT, "多重攻击",
     spschool::translocation,
     spflag::none,
     7,
@@ -3544,7 +3544,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONCENTRATE_VENOM, "Concentrate Venom",
+    SPELL_CONCENTRATE_VENOM, "浓缩毒液",
     spschool::alchemy,
     spflag::dir_or_target | spflag::helpful
         | spflag::needs_tracer | spflag::monster,
@@ -3556,7 +3556,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ERUPTION, "Eruption",
+    SPELL_ERUPTION, "喷发",
     spschool::conjuration | spschool::fire | spschool::earth,
     spflag::target | spflag::needs_tracer | spflag::monster,
     5,
@@ -3567,7 +3567,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PYROCLASTIC_SURGE, "Pyroclastic Surge",
+    SPELL_PYROCLASTIC_SURGE, "火山碎屑涌",
     spschool::conjuration | spschool::fire | spschool::earth,
     spflag::monster,
     5,
@@ -3578,7 +3578,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STUNNING_BURST, "Stunning Burst",
+    SPELL_STUNNING_BURST, "眩晕爆发",
     spschool::conjuration | spschool::air,
     spflag::target | spflag::needs_tracer | spflag::monster,
     4,
@@ -3589,7 +3589,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CORRUPT_LOCALE, "Corrupt",
+    SPELL_CORRUPT_LOCALE, "腐化",
     spschool::translocation,
     spflag::monster,
     7,
@@ -3600,7 +3600,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CONJURE_LIVING_SPELLS, "Conjure Living Spells",
+    SPELL_CONJURE_LIVING_SPELLS, "召唤活体法术",
     spschool::conjuration,
     spflag::monster,
     6,
@@ -3611,7 +3611,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_CACTUS, "Summon Cactus Giant",
+    SPELL_SUMMON_CACTUS, "召唤仙人掌巨人",
     spschool::summoning,
     spflag::none,
     6,
@@ -3622,7 +3622,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STOKE_FLAMES, "Stoke Flames",
+    SPELL_STOKE_FLAMES, "煽动火焰",
     spschool::fire | spschool::conjuration,
     spflag::monster,
     8,
@@ -3633,7 +3633,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SERACFALL, "Seracfall",
+    SPELL_SERACFALL, "冰塔崩塌",
     spschool::conjuration | spschool::ice,
     spflag::monster,
     5,
@@ -3644,7 +3644,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SCORCH, "Scorch",
+    SPELL_SCORCH, "烧焦",
     spschool::fire,
     spflag::destructive,
     2,
@@ -3655,7 +3655,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLAME_WAVE, "Flame Wave",
+    SPELL_FLAME_WAVE, "火焰波",
     spschool::conjuration | spschool::fire,
     spflag::none,
     4,
@@ -3666,7 +3666,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ENFEEBLE, "Enfeeble",
+    SPELL_ENFEEBLE, "虚弱",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check,
     7,
@@ -3677,7 +3677,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SPIDERS, "Summon Spiders",
+    SPELL_SUMMON_SPIDERS, "召唤蜘蛛",
     spschool::summoning | spschool::alchemy,
     spflag::monster,
     6,
@@ -3688,7 +3688,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ANGUISH, "Anguish",
+    SPELL_ANGUISH, "痛苦",
     spschool::hexes | spschool::necromancy,
     spflag::WL_check,
     4,
@@ -3699,7 +3699,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SCORPIONS, "Summon Scorpions",
+    SPELL_SUMMON_SCORPIONS, "召唤蝎子",
     spschool::summoning | spschool::alchemy,
     spflag::mons_abjure | spflag::monster,
     4,
@@ -3710,7 +3710,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHEZAS_DANCE, "Sheza's Dance",
+    SPELL_SHEZAS_DANCE, "谢扎之舞",
     spschool::summoning | spschool::earth,
     spflag::mons_abjure | spflag::monster,
     5,
@@ -3721,7 +3721,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIVINE_ARMAMENT, "Divine Armament",
+    SPELL_DIVINE_ARMAMENT, "神圣武装",
     spschool::summoning,
     spflag::monster,
     4,
@@ -3732,7 +3732,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_KISS_OF_DEATH, "Kiss of Death",
+    SPELL_KISS_OF_DEATH, "死亡之吻",
     spschool::conjuration | spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::not_self,
     1,
@@ -3743,7 +3743,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_JINXBITE, "Jinxbite",
+    SPELL_JINXBITE, "厄运之咬",
     spschool::hexes,
     spflag::selfench,
     2,
@@ -3754,7 +3754,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SIGIL_OF_BINDING, "Sigil of Binding",
+    SPELL_SIGIL_OF_BINDING, "束缚符文",
     spschool::hexes,
     spflag::none,
     3,
@@ -3765,7 +3765,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIMENSIONAL_BULLSEYE, "Dimensional Bullseye",
+    SPELL_DIMENSIONAL_BULLSEYE, "维度靶心",
     spschool::translocation | spschool::hexes,
     spflag::target | spflag::not_self | spflag::prefer_farthest,
     4,
@@ -3776,7 +3776,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BOULDER, "Brom's Barrelling Boulder",
+    SPELL_BOULDER, "布罗姆之碾压巨石",
     spschool::earth | spschool::conjuration,
     spflag::target | spflag::not_self,
     4,
@@ -3787,7 +3787,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VITRIFY, "Vitrify",
+    SPELL_VITRIFY, "玻璃化",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::WL_check
                           | spflag::monster,
@@ -3799,7 +3799,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VITRIFYING_GAZE, "Vitrifying Gaze",
+    SPELL_VITRIFYING_GAZE, "玻璃化凝视",
     spschool::hexes,
     spflag::target | spflag::monster,
     6,
@@ -3810,7 +3810,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CRYSTALLISING_SHOT, "Crystallising Shot",
+    SPELL_CRYSTALLISING_SHOT, "结晶射击",
     spschool::conjuration | spschool::earth | spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     6,
@@ -3821,7 +3821,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_TREMORSTONE, "Tremorstone",
+    SPELL_TREMORSTONE, "震石",
     spschool::earth,
     spflag::none,
     2,
@@ -3832,7 +3832,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_REGENERATE_OTHER, "Regenerate Other",
+    SPELL_REGENERATE_OTHER, "治愈他人",
     spschool::none,
     spflag::monster | spflag::helpful | spflag::recovery,
     4,
@@ -3843,7 +3843,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MASS_REGENERATION, "Mass Regeneration",
+    SPELL_MASS_REGENERATION, "群体再生",
     spschool::none,
     spflag::monster  | spflag::helpful | spflag::recovery,
     7,
@@ -3854,7 +3854,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_NOXIOUS_BREATH, "Noxious Breath",
+    SPELL_NOXIOUS_BREATH, "毒气吐息",
     spschool::conjuration | spschool::air | spschool:: alchemy,
     spflag::dir_or_target | spflag::noisy | spflag::needs_tracer,
     5,
@@ -3866,7 +3866,7 @@ static const struct spell_desc spelldata[] =
 
 // Dummy spell for the Makhleb ability.
 {
-    SPELL_UNLEASH_DESTRUCTION, "Unleash Destruction",
+    SPELL_UNLEASH_DESTRUCTION, "释放毁灭",
     spschool::conjuration,
     spflag::dir_or_target | spflag::chaotic | spflag::needs_tracer,
     3,
@@ -3877,7 +3877,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HURL_TORCHLIGHT, "Hurl Torchlight",
+    SPELL_HURL_TORCHLIGHT, "投掷火炬之光",
     spschool::conjuration | spschool::necromancy,
     spflag::dir_or_target | spflag::needs_tracer,
     4,
@@ -3888,7 +3888,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_COMBUSTION_BREATH, "Combustion Breath",
+    SPELL_COMBUSTION_BREATH, "燃烧吐息",
     spschool::conjuration | spschool::fire,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3899,7 +3899,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_NULLIFYING_BREATH, "Nullifying Breath",
+    SPELL_NULLIFYING_BREATH, "湮灭吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3910,7 +3910,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_STEAM_BREATH, "Steam Breath",
+    SPELL_STEAM_BREATH, "蒸汽吐息",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer,
     4,
@@ -3921,7 +3921,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MUD_BREATH, "Mud Breath",
+    SPELL_MUD_BREATH, "泥浆吐息",
     spschool::conjuration | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3932,7 +3932,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GALVANIC_BREATH, "Galvanic Breath",
+    SPELL_GALVANIC_BREATH, "电流吐息",
     spschool::conjuration | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -3943,7 +3943,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PILEDRIVER, "Maxwell's Portable Piledriver",
+    SPELL_PILEDRIVER, "麦克斯韦之便携打桩机",
     spschool::translocation,
     spflag::target,
     3,
@@ -3954,7 +3954,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GELLS_GAVOTTE, "Gell's Gavotte",
+    SPELL_GELLS_GAVOTTE, "盖尔之加沃特",
     spschool::translocation,
     spflag::target | spflag::aim_at_space,
     6,
@@ -3965,7 +3965,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAGNAVOLT, "Magnavolt",
+    SPELL_MAGNAVOLT, "磁暴",
     spschool::air | spschool::earth,
     spflag::target | spflag::needs_tracer | spflag::destructive
     | spflag::prefer_farthest,
@@ -3977,7 +3977,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FULSOME_FUSILLADE, "Fulsome Fusillade",
+    SPELL_FULSOME_FUSILLADE, "猛烈连射",
     spschool::alchemy | spschool::conjuration,
     spflag::destructive | spflag::chaotic,
     8,
@@ -3988,7 +3988,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_RIMEBLIGHT, "Rimeblight",
+    SPELL_RIMEBLIGHT, "霜疫",
     spschool::necromancy | spschool::ice,
     spflag::dir_or_target | spflag::unclean | spflag::destructive
     | spflag::not_self,
@@ -4000,7 +4000,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HOARFROST_CANNONADE, "Hoarfrost Cannonade",
+    SPELL_HOARFROST_CANNONADE, "白霜炮击",
     spschool::forgecraft | spschool::ice,
     spflag::none,
     5,
@@ -4011,7 +4011,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SEISMIC_STOMP, "Seismic Stomp",
+    SPELL_SEISMIC_STOMP, "地震践踏",
     spschool::earth,
     spflag::monster,
     5,
@@ -4022,7 +4022,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HOARFROST_BULLET, "Hoarfrost Bullet",
+    SPELL_HOARFROST_BULLET, "白霜弹",
     spschool::conjuration | spschool::ice,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -4033,7 +4033,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FLASHING_BALESTRA, "Flashing Balestra",
+    SPELL_FLASHING_BALESTRA, "闪光弩击",
     spschool::conjuration,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -4044,7 +4044,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PHANTOM_BLITZ, "Phantom Blitz",
+    SPELL_PHANTOM_BLITZ, "幻影突击",
     spschool::conjuration | spschool::summoning,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     7,
@@ -4055,7 +4055,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_BESTOW_ARMS, "Bestow Arms",
+    SPELL_BESTOW_ARMS, "赐予武器",
     spschool::hexes,
     spflag::helpful | spflag::monster,
     5,
@@ -4066,7 +4066,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_HELLFIRE_MORTAR, "Hellfire Mortar",
+    SPELL_HELLFIRE_MORTAR, "地狱火迫击炮",
     spschool::earth | spschool::fire | spschool::forgecraft,
     spflag::dir_or_target | spflag::destructive,
     7,
@@ -4078,7 +4078,7 @@ static const struct spell_desc spelldata[] =
 
 // Dithmenos shadow mimic spells
 {
-    SPELL_SHADOW_SHARD, "Shadow Shard",
+    SPELL_SHADOW_SHARD, "暗影碎片",
     spschool::earth,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
     | spflag::silent,
@@ -4090,7 +4090,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_BEAM, "Shadow Beam",
+    SPELL_SHADOW_BEAM, "暗影光束",
     spschool::conjuration,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
     | spflag::silent,
@@ -4102,7 +4102,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_BALL, "Shadowball",
+    SPELL_SHADOW_BALL, "暗影球",
     spschool::fire,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
     | spflag::silent,
@@ -4114,7 +4114,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CREEPING_SHADOW, "Creeping Shadow",
+    SPELL_CREEPING_SHADOW, "蔓延暗影",
     spschool::ice,
     spflag::monster | spflag::needs_tracer | spflag::silent,
     5,
@@ -4125,7 +4125,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_TEMPEST, "Shadow Tempest",
+    SPELL_SHADOW_TEMPEST, "暗影风暴",
     spschool::air,
     spflag::monster | spflag::needs_tracer | spflag::silent,
     5,
@@ -4136,7 +4136,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_PRISM, "Shadow Prism",
+    SPELL_SHADOW_PRISM, "暗影棱镜",
     spschool::alchemy,
     spflag::target | spflag::monster | spflag::needs_tracer | spflag::silent,
     5,
@@ -4148,7 +4148,7 @@ static const struct spell_desc spelldata[] =
 
 
 {
-    SPELL_SHADOW_PUPPET, "Shadow Puppet",
+    SPELL_SHADOW_PUPPET, "暗影傀儡",
     spschool::summoning,
     spflag::monster | spflag::silent,
     5,
@@ -4159,7 +4159,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_TURRET, "Shadow Turret",
+    SPELL_SHADOW_TURRET, "暗影炮台",
     spschool::forgecraft,
     spflag::monster | spflag::silent,
     5,
@@ -4170,7 +4170,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_SHOT, "Shadow Shot",
+    SPELL_SHADOW_SHOT, "暗影射击",
     spschool::forgecraft,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
     | spflag::silent,
@@ -4182,7 +4182,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_BIND, "Shadow Bind",
+    SPELL_SHADOW_BIND, "暗影束缚",
     spschool::translocation,
     spflag::target | spflag::monster | spflag::silent,
     5,
@@ -4193,7 +4193,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_TORPOR, "Shadow Torpor",
+    SPELL_SHADOW_TORPOR, "暗影麻木",
     spschool::hexes,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer
     | spflag::silent,
@@ -4205,7 +4205,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHADOW_DRAINING, "Shadow Draining",
+    SPELL_SHADOW_DRAINING, "暗影吸取",
     spschool::necromancy,
     spflag::monster | spflag::needs_tracer | spflag::silent,
     5,
@@ -4216,7 +4216,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GRAVE_CLAW, "Grave Claw",
+    SPELL_GRAVE_CLAW, "墓爪",
     spschool::necromancy,
     spflag::target | spflag::not_self,
     2,
@@ -4227,7 +4227,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_CLOCKWORK_BEE, "Launch Clockwork Bee",
+    SPELL_CLOCKWORK_BEE, "发射发条蜜蜂",
     spschool::forgecraft,
     spflag::target | spflag::not_self,
     3,
@@ -4238,7 +4238,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPIKE_LAUNCHER, "Construct Spike Launcher",
+    SPELL_SPIKE_LAUNCHER, "构建尖刺发射器",
     spschool::forgecraft,
     spflag::none,
     2,
@@ -4249,7 +4249,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_KINETIC_GRAPNEL, "Kinetic Grapnel",
+    SPELL_KINETIC_GRAPNEL, "动能抓钩",
     spschool::forgecraft,
     spflag::dir_or_target | spflag::needs_tracer | spflag::destructive,
     1,
@@ -4260,7 +4260,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DIAMOND_SAWBLADES, "Diamond Sawblades",
+    SPELL_DIAMOND_SAWBLADES, "钻石锯片",
     spschool::forgecraft,
     spflag::none,
     7,
@@ -4271,7 +4271,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SHRED, "Shred",
+    SPELL_SHRED, "撕裂",
     spschool::forgecraft,
     spflag::monster,
     1,
@@ -4282,7 +4282,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SURPRISING_CROCODILE, "Eringya's Surprising Crocodile",
+    SPELL_SURPRISING_CROCODILE, "埃林吉亚之惊喜鳄鱼",
     spschool::summoning,
     spflag::target | spflag::not_self,
     4,
@@ -4293,7 +4293,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PLATINUM_PARAGON, "Platinum Paragon",
+    SPELL_PLATINUM_PARAGON, "白金典范",
     spschool::forgecraft,
     spflag::target | spflag::not_self,
     9,
@@ -4304,7 +4304,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WALKING_ALEMBIC, "Alistair's Walking Alembic",
+    SPELL_WALKING_ALEMBIC, "阿利斯泰尔之行走蒸馏器",
     spschool::forgecraft | spschool::alchemy,
     spflag::none,
     5,
@@ -4315,7 +4315,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MONARCH_BOMB, "Forge Monarch Bomb",
+    SPELL_MONARCH_BOMB, "锻造君主炸弹",
     spschool::forgecraft | spschool::fire,
     spflag::none,
     6,
@@ -4326,7 +4326,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DEPLOY_BOMBLET, "Launch Bomblet",
+    SPELL_DEPLOY_BOMBLET, "发射小型炸弹",
     spschool::forgecraft | spschool::fire,
     spflag::target | spflag::monster,
     6,
@@ -4337,7 +4337,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPLINTERFROST_SHELL, "Splinterfrost Shell",
+    SPELL_SPLINTERFROST_SHELL, "碎霜之壳",
     spschool::forgecraft | spschool::ice,
     spflag::target | spflag::not_self,
     7,
@@ -4348,7 +4348,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PERCUSSIVE_TEMPERING, "Nazja's Percussive Tempering",
+    SPELL_PERCUSSIVE_TEMPERING, "纳兹亚之冲击淬炼",
     spschool::forgecraft,
     spflag::target | spflag::helpful | spflag::not_self | spflag::destructive,
     5,
@@ -4359,7 +4359,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ALL_PURPOSE_TEMPERING, "Nazja's All-Purpose Tempering",
+    SPELL_ALL_PURPOSE_TEMPERING, "纳兹亚之通用淬炼",
     spschool::forgecraft,
     spflag::target | spflag::helpful | spflag::destructive
     | spflag::monster,
@@ -4371,7 +4371,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_FORTRESS_BLAST, "Fortress Blast",
+    SPELL_FORTRESS_BLAST, "堡垒冲击波",
     spschool::forgecraft,
     spflag::destructive,
     6,
@@ -4382,7 +4382,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SUMMON_SEISMOSAURUS_EGG, "Summon Seismosaurus Egg",
+    SPELL_SUMMON_SEISMOSAURUS_EGG, "召唤震龙蛋",
     spschool::summoning | spschool::earth,
     spflag::none,
     4,
@@ -4393,7 +4393,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PHALANX_BEETLE, "Forge Phalanx Beetle",
+    SPELL_PHALANX_BEETLE, "锻造方阵甲虫",
     spschool::forgecraft,
     spflag::none,
     6,
@@ -4404,7 +4404,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_RENDING_BLADE, "Rending Blade",
+    SPELL_RENDING_BLADE, "撕裂之刃",
     spschool::conjuration | spschool::forgecraft,
     spflag::none,
     4,
@@ -4415,7 +4415,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MAGMA_BARRAGE, "Magma Barrage",
+    SPELL_MAGMA_BARRAGE, "岩浆弹幕",
     spschool::conjuration | spschool::fire | spschool::earth,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -4426,7 +4426,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_VEX, "Vex",
+    SPELL_VEX, "激怒",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer
         | spflag::WL_check | spflag::monster,
@@ -4438,7 +4438,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_RAVENOUS_SWARM, "Ravenous Swarm",
+    SPELL_RAVENOUS_SWARM, "贪婪虫群",
     spschool::necromancy,
     spflag::dir_or_target | spflag::monster
         | spflag::needs_tracer | spflag::cloud,
@@ -4450,7 +4450,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DOMINATE_UNDEAD, "Dominate Undead",
+    SPELL_DOMINATE_UNDEAD, "支配亡灵",
     spschool::hexes | spschool::necromancy,
     spflag::WL_check | spflag::monster,
     6,
@@ -4461,7 +4461,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DETONATION_CATALYST, "Detonation Catalyst",
+    SPELL_DETONATION_CATALYST, "引爆催化剂",
     spschool::fire | spschool::alchemy,
     spflag::selfench,
     5,
@@ -4472,7 +4472,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_RUST_BREATH, "Rust Breath",
+    SPELL_RUST_BREATH, "锈蚀吐息",
     spschool::conjuration | spschool::alchemy | spschool::air,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -4483,7 +4483,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_GOLDEN_BREATH, "Golden Breath",
+    SPELL_GOLDEN_BREATH, "黄金吐息",
     spschool::conjuration | spschool::fire | spschool::ice | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer,
     5,
@@ -4494,7 +4494,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SPHINX_SISTERS, "Sphinx Sisters",
+    SPELL_SPHINX_SISTERS, "斯芬克斯姐妹",
     spschool::summoning | spschool::hexes,
     spflag::mons_abjure,
     7,
@@ -4505,7 +4505,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ILL_OMEN, "Ill Omen",
+    SPELL_ILL_OMEN, "凶兆",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     4,
@@ -4516,7 +4516,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DOOM_BOLT, "Doom Bolt",
+    SPELL_DOOM_BOLT, "厄运之箭",
     spschool::conjuration | spschool::hexes,
     spflag::dir_or_target | spflag::monster | spflag::needs_tracer,
     5,
@@ -4527,7 +4527,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_WARP_BODY, "Warp Body",
+    SPELL_WARP_BODY, "扭曲身体",
     spschool::hexes,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster
     | spflag::chaotic,
@@ -4539,7 +4539,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_OSTRACISE, "Ostracise",
+    SPELL_OSTRACISE, "排斥",
     spschool::hexes,
     spflag::monster | spflag::target,
     7,
@@ -4550,7 +4550,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_MUTAGENIC_GAZE, "Mutagenic Gaze",
+    SPELL_MUTAGENIC_GAZE, "变异凝视",
     spschool::hexes,
     spflag::target | spflag::monster | spflag::chaotic,
     5,
@@ -4561,7 +4561,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_ACID_BALL, "Acid Ball",
+    SPELL_ACID_BALL, "酸液球",
     spschool::conjuration | spschool::alchemy,
     spflag::dir_or_target | spflag::needs_tracer | spflag::monster,
     5,
@@ -4572,7 +4572,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_NO_SPELL, "nonexistent spell",
+    SPELL_NO_SPELL, "不存在的法术",
     spschool::none,
     spflag::testing,
     1,
@@ -4584,7 +4584,7 @@ static const struct spell_desc spelldata[] =
 
 // Dummy spells for description purposes
 {
-    SPELL_PYRRHIC_RECOLLECTION, "Pyrrhic Recollection",
+    SPELL_PYRRHIC_RECOLLECTION, "惨胜回忆",
     spschool::none,
     spflag::monster | spflag::dummy,
     6,
@@ -4595,7 +4595,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_PLANAR_OVERLAY, "Planar Overlay",
+    SPELL_PLANAR_OVERLAY, "位面叠加",
     spschool::none,
     spflag::monster | spflag::dummy,
     6,
@@ -4606,7 +4606,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_DOOMSAYING, "Doomsaying",
+    SPELL_DOOMSAYING, "宣告厄运",
     spschool::none,
     spflag::monster,
     6,
@@ -4617,7 +4617,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_SLEETSTRIKE, "Sleetstrike",
+    SPELL_SLEETSTRIKE, "冰雨打击",
     spschool::air | spschool::ice,
     spflag::target | spflag::destructive | spflag::monster,
     5,
@@ -4628,7 +4628,7 @@ static const struct spell_desc spelldata[] =
 },
 
 {
-    SPELL_LANDBREAKER, "Landbreaker",
+    SPELL_LANDBREAKER, "裂地",
     spschool::earth,
     spflag::monster,
     5,

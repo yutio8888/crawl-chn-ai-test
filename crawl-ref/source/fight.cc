@@ -57,6 +57,7 @@
 #include "transform.h"
 #include "traps.h"
 #include "travel.h"
+#include "database.h"
 
 /**
  * What are the odds of an HD-checking confusion effect (e.g. Confusing Touch,
@@ -938,7 +939,7 @@ static string _describe_weapons(const item_def *weapon,
                                 const item_def *offhand)
 {
     if (!weapon && !offhand)
-        return "nothing";
+        return T_("None");
     if (!weapon)
         return offhand->name(DESC_YOUR).c_str();
     if (!offhand)
@@ -984,8 +985,10 @@ bool wielded_weapon_check(string attack_verb)
     string wpn_desc = _describe_weapons(weapon, offhand);
 
     string prompt;
-    prompt = make_stringf("Really %s while wielding %s?",
-        attack_verb.size() ? attack_verb.c_str() : "attack",
+    prompt = make_stringf(
+        T_("Really %s while wielding %s?"),
+        attack_verb.size() ? attack_verb.c_str()
+                           : (T_("attack")),
         wpn_desc.c_str());
     if (penance)
         prompt += " This could place you under penance!";
@@ -1017,7 +1020,8 @@ bool player_unrand_bad_attempt(const item_def &weapon,
     {
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
-        return stop_attack_prompt(hitfunc, "attack",
+        return stop_attack_prompt(hitfunc,
+                               T_("attack "),
                                nullptr, nullptr, defending_monster,
                                check_only);
     }
@@ -1025,7 +1029,8 @@ bool player_unrand_bad_attempt(const item_def &weapon,
     {
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
-        return stop_attack_prompt(hitfunc, "attack",
+        return stop_attack_prompt(hitfunc,
+                               T_("attack "),
                                [] (const actor *m)
                                {
                                    return !m->res_torment();
@@ -1060,7 +1065,8 @@ bool player_unrand_bad_target(const item_def &weapon,
         targeter_smite hitfunc(&you, LOS_RADIUS, 1, 1);
         hitfunc.set_aim(defender.pos());
 
-        return stop_attack_prompt(hitfunc, "attack near",
+        return stop_attack_prompt(hitfunc,
+                                  T_("attack near"),
                                   nullptr, nullptr, defending_monster,
                                   check_only);
     }
@@ -1137,7 +1143,8 @@ bool force_player_cleave(coord_def target)
         // Rift is too funky and hence gets no special treatment.
         const int range = you.reach_range();
         targeter_cleave hitfunc(&you, target, range);
-        if (stop_attack_prompt(hitfunc, "attack"))
+        if (stop_attack_prompt(hitfunc,
+                T_("attack ")))
             return true;
 
         melee_attack atk(&you, nullptr);
@@ -1346,19 +1353,35 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
 
         if (would_cause_penance)
         {
-            adj = "your ally ";
+            if (Options.language == lang_t::ZH)
+                adj = "你的盟友";
+            else
+            {
+                adj = "your ally ";
 
-            monster_info mi(mon, MILEV_NAME);
-            if (!mi.is(MB_NAME_UNQUALIFIED))
-                adj += "the ";
+                monster_info mi(mon, MILEV_NAME);
+                if (!mi.is(MB_NAME_UNQUALIFIED))
+                    adj += "the ";
+            }
         }
         else
         {
-            adj = "your ";
+            if (Options.language == lang_t::ZH)
+            {
+                adj = "你的";
 
-            monster_info mi(mon, MILEV_NAME);
-            if (mi.is(MB_NAME_UNQUALIFIED))
-                adj += "ally ";
+                monster_info mi(mon, MILEV_NAME);
+                if (mi.is(MB_NAME_UNQUALIFIED))
+                    adj += "盟友";
+            }
+            else
+            {
+                adj = "your ";
+
+                monster_info mi(mon, MILEV_NAME);
+                if (mi.is(MB_NAME_UNQUALIFIED))
+                    adj += "ally ";
+            }
         }
 
         return true;
@@ -1369,7 +1392,7 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
             || you_worship(GOD_BEOGH) && mons_genus(mon->type) == MONS_ORC)
         && !mon->has_ench(ENCH_FRENZIED))
     {
-        adj += "neutral ";
+        adj += T_("neutral ");
         if (you_worship(GOD_SHINING_ONE) || you_worship(GOD_ELYVILON)
             || you_worship(GOD_BEOGH))
         {
@@ -1378,7 +1401,7 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
     }
     else if (mon->wont_attack())
     {
-        adj += "non-hostile ";
+        adj += T_("non-hostile ");
         if (you_worship(GOD_SHINING_ONE) || you_worship(GOD_ELYVILON))
             would_cause_penance = true;
     }
@@ -1416,27 +1439,38 @@ bool stop_attack_prompt(const monster* mon, bool beam_attack,
     // Listed in the form: "your rat", "Blorkula the orcula".
     // No "your the Royal Jelly" nor "the the Royal Jelly".
     string mon_name = remove_prepended_the(mon->name(DESC_PLAIN));
-    if (!starts_with(adj, "your"))
+    const bool zh = Options.language == lang_t::ZH;
+    // Chinese has no articles, English prepends "the " for non-your adjectives
+    if (!zh && !starts_with(adj, "your"))
         adj = "the " + adj;
     mon_name = adj + mon_name;
     string verb;
     if (beam_attack)
     {
-        verb = "fire ";
         if (beam_target == mon->pos())
-            verb += "at ";
+            verb = T_("fire at ");
         else
         {
-            verb += "in " + apostrophise(mon_name) + " direction";
-            mon_name = "";
+            if (zh)
+            {
+                verb = "向" + mon_name + "的方向";
+                mon_name = "";
+            }
+            else
+            {
+                verb = "fire in " + apostrophise(mon_name) + " direction";
+                mon_name = "";
+            }
         }
     }
     else
-        verb = "attack ";
+        verb = T_("attack ");
 
-    const string prompt = make_stringf("Really %s%s%s?%s",
+    const string prompt = make_stringf(
+             T_("Really %s%s%s?%s"),
              verb.c_str(), mon_name.c_str(), suffix.c_str(),
-             penance ? " This attack would place you under penance!" : "");
+             penance ? (T_(" This attack would place you under penance!"))
+                     : "");
 
     if (prompted)
         *prompted = true;
@@ -1513,10 +1547,15 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
             mon_name = "yourself and " + mon_name;
     }
 
-    const string prompt = make_stringf("Really %s%s %s%s?%s",
-             verb, defender_ok ? " near" : "", mon_name.c_str(),
+    const bool zh = Options.language == lang_t::ZH;
+    const string prompt = make_stringf(
+             T_("Really %s%s %s%s?%s"),
+             verb,
+             defender_ok ? (T_(" near")) : "",
+             mon_name.c_str(),
              victims.suffix(),
-             penance ? " This attack would place you under penance!" : "");
+             penance ? (T_(" This attack would place you under penance!"))
+                     : "");
 
     if (prompted)
         *prompted = true;

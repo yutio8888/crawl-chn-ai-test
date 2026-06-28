@@ -26,10 +26,16 @@ function sewer_portal(e)
 
   local messager =
     timed_msg {
-       initmsg = { "You hear the sound of rushing water.",
-                   "There is an entrance to a sewer on this level. "
-                   .. "Hurry and find it before the portal rusts away!" },
-      finalmsg = "You hear the drain falling apart.",
+       initmsg = { crawl.language() == "zh"
+                   and "你听到了流水声。"
+                    or "You hear the sound of rushing water.",
+                   crawl.language() == "zh"
+                   and "这个楼层有一个通往下水道的入口。在传送门生锈消失前找到它！"
+                    or "There is an entrance to a sewer on this level. "
+                    .. "Hurry and find it before the portal rusts away!" },
+      finalmsg = crawl.language() == "zh"
+                 and "你听到下水道崩塌的声音。"
+                  or "You hear the drain falling apart.",
 
       verb = 'rusting',
       noisemaker = 'drain',

@@ -1105,24 +1105,36 @@ static void _add_formatted_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_INSCRIBE_ITEM, "inscribe item", 2);
     _add_command(cols, 1, CMD_FIRE, "Fire the currently quivered action", 2);
     _add_command(cols, 1, CMD_FIRE_ITEM_NO_QUIVER, "select an item and Fire it", 2);
-    _add_command(cols, 1, CMD_QUIVER_ITEM, "select action to be Quivered", 2);
-    _add_command(cols, 1, CMD_SWAP_QUIVER_RECENT, "swap between most recent quiver actions", 2);
-    _add_command(cols, 1, CMD_QUAFF, "Quaff a potion", 2);
-    _add_command(cols, 1, CMD_READ, "Read a scroll", 2);
-    _add_command(cols, 1, CMD_WIELD_WEAPON, "Wield an item (<w>-</w> for none)", 2);
-    _add_command(cols, 1, CMD_WEAPON_SWAP, "wield item a, or switch to b", 2);
+    _add_command(cols, 1, CMD_QUIVER_ITEM,
+        T_("select action to be Quivered"), 2);
+    _add_command(cols, 1, CMD_SWAP_QUIVER_RECENT,
+        T_("swap to recently quivered action"), 2);
+    _add_command(cols, 1, CMD_QUAFF,
+        T_("quaff a potion"), 2);
+    _add_command(cols, 1, CMD_READ,
+        T_("read a scroll"), 2);
+    _add_command(cols, 1, CMD_WIELD_WEAPON,
+        T_("wield a weapon (<w>-</w> to unwield)"), 2);
+    _add_command(cols, 1, CMD_WEAPON_SWAP,
+        T_("wield weapon a, or switch to b"), 2);
 
-    _add_insert_commands(cols, 1, "    (use <w>%</w> to assign slots)",
+    _add_insert_commands(cols, 1,
+        T_("    (use <w>%</w> to adjust inventory letters)"),
                          { CMD_ADJUST_INVENTORY });
 
-    _add_command(cols, 1, CMD_PRIMARY_ATTACK, "attack with wielded item", 2);
-    _add_command(cols, 1, CMD_EVOKE, "eVoke wand and miscellaneous item", 2);
+    _add_command(cols, 1, CMD_PRIMARY_ATTACK,
+        T_("attack with wielded item"), 2);
+    _add_command(cols, 1, CMD_EVOKE,
+        T_("evoke wands and miscellaneous items"), 2);
 
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Equip or Unequip an item",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Equip or Unequip an item"),
                          { CMD_EQUIP, CMD_UNEQUIP });
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Wear or Take off armour",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Wear or Take off armour"),
                          { CMD_WEAR_ARMOUR, CMD_REMOVE_ARMOUR });
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Put on or Remove jewellery",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Put on or Remove jewellery"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
 
     cols.add_formatted(
@@ -1193,9 +1205,13 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     cols.add_formatted(
             0,
-            "\n<h>Attacking monsters\n"
-            "Walking into a monster will attack it\n"
-            "with the wielded weapon or barehanded.",
+            Options.language == lang_t::ZH
+            ? "\n<h>攻击怪物\n"
+              "走向怪物即可攻击它\n"
+              "使用持握的武器或徒手攻击。"
+            : "\n<h>Attacking monsters\n"
+              "Walking into a monster will attack it\n"
+              "with your wielded weapon, or unarmed.",
             false);
 
     cols.add_formatted(

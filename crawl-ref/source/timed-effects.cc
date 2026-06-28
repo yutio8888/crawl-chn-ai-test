@@ -230,7 +230,7 @@ static void _evolve(int /*time_delta*/)
         return;
     set_evolution_mut_xp(malignant);
 
-    mpr("You feel a genetic drift.");
+    mpr(T_("You feel a genetic drift."));
     const mutation_type typ = malignant ? RANDOM_BAD_MUTATION : RANDOM_GOOD_MUTATION;
     const char* const reason = malignant ? "hidden defects" : "hidden potential";
     if (!mutate(typ, reason, false, false, false, false, MUTCLASS_NORMAL))
@@ -312,7 +312,7 @@ static void _maybe_mortality_summon()
 
     if (created)
     {
-        mprf("Death has come for you....");
+        mprf(T_("Death has come for you...."));
         you.props[MORTALITY_TIME_KEY] = you.elapsed_time + random_range(2250, 4500);
     }
 }
@@ -711,7 +711,7 @@ static void _drop_tomb(const coord_def& pos, bool premature, bool zin)
     if (count)
     {
         if (seen_change && !zin)
-            mprf("The walls disappear%s!", premature ? " prematurely" : "");
+            mprf(T_("The walls disappear%s!"), premature ? " prematurely" : "");
         else if (seen_change && zin)
         {
             mprf("Zin %s %s %s.",
@@ -728,7 +728,7 @@ static void _drop_tomb(const coord_def& pos, bool premature, bool zin)
             if (!silenced(you.pos()))
                 mprf(MSGCH_SOUND, "You hear a deep rumble.");
             else
-                mpr("You feel the ground shudder.");
+                mpr(T_("You feel the ground shudder."));
         }
     }
 }

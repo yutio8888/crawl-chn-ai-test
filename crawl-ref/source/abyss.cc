@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "abyss.h"
+#include "database.h"
 
 #include <algorithm>
 #include <cmath>
@@ -281,7 +282,7 @@ void clear_abyssal_rune_knowledge()
 {
     coord_def &cur_loc = you.props[ABYSSAL_RUNE_LOC_KEY].get_coord();
     if (in_bounds(cur_loc) && !you.runes[RUNE_ABYSSAL])
-        mpr("Your memory of the abyssal rune fades away.");
+        mpr(T_("Your memory of the abyssal rune fades away."));
     cur_loc = coord_def(-1,-1);
 }
 
@@ -333,8 +334,8 @@ static void _update_abyssal_map_knowledge()
     }
     else if (detected)
     {
-        mpr("The abyssal matter surrounding you shimmers strangely.");
-        mpr("You detect the abyssal rune!");
+        mpr(T_("The abyssal matter surrounding you shimmers strangely."));
+        mpr(T_("You detect the abyssal rune!"));
     }
 
     // XX could do the xom check from here?
@@ -2270,7 +2271,7 @@ bool is_level_incorruptible(bool quiet)
     if (_is_level_corrupted())
     {
         if (!quiet)
-            mpr("This place is already infused with evil and corruption.");
+            mpr(T_("This place is already infused with evil and corruption."));
         return true;
     }
 

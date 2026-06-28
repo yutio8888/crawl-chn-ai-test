@@ -17,8 +17,11 @@
 formatted_string opening_screen()
 {
     string msg =
-    "<yellow>Hello, welcome to " CRAWL " " + string(Version::Long) + "!</yellow>\n"
-    "<brown>" CRAWL_COPYRIGHT;
+    Options.language == lang_t::ZH
+    ? "<yellow>你好，欢迎来到地牢爬行石汤 " + string(Version::Long) + "！</yellow>\n"
+      "<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队"
+    : "<yellow>Hello, welcome to " CRAWL " " + string(Version::Long) + "!</yellow>\n"
+      "<brown>" CRAWL_COPYRIGHT;
 
     return formatted_string::parse_string(msg);
 }

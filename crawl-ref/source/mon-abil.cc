@@ -380,13 +380,13 @@ static void _do_merge_slimes(monster* initial_slime, monster* merge_to)
         if (you.can_see(*merge_to))
         {
             // cases 1 and 2
-            mprf("Two slime creatures merge to form %s.",
+            mprf(T_("Two slime creatures merge to form %s."),
                  merge_to->name(DESC_A).c_str());
         }
         else
         {
             // case 3
-            mprf("Something merges into %s, and it vanishes!",
+            mprf(T_("Something merges into %s, and it vanishes!"),
                  old_name.c_str());
         }
 
@@ -913,12 +913,12 @@ void treant_release_fauna(monster& mons)
     {
         if (fauna_t == MONS_RAVEN)
         {
-            mprf("Jet-black ravens fly out from beneath %s foliage!",
+            mprf(T_("Jet-black ravens fly out from beneath %s foliage!"),
                  mons.name(DESC_ITS).c_str());
         }
         else
         {
-            mprf("Angry insects surge out from beneath %s foliage!",
+            mprf(T_("Angry insects surge out from beneath %s foliage!"),
                 mons.name(DESC_ITS).c_str());
         }
     }
@@ -1573,7 +1573,7 @@ void solar_ember_blast()
 
         flash_tile(mon->pos(), RED, 0);
         const int damage_done = mons_adjust_flavoured(mon, beam, mon->apply_ac(dmg.roll()));
-        mprf("The solar flare engulfs %s%s.", mon->name(DESC_THE).c_str(),
+        mprf(T_("The solar flare engulfs %s%s."), mon->name(DESC_THE).c_str(),
                 damage_done ? "" : " but does no damage");
         mon->hurt(ember, damage_done, BEAM_FIRE);
     }

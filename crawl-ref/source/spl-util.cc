@@ -82,6 +82,7 @@ struct spell_desc
 // TODO: apply https://isocpp.org/wiki/faq/ctors#construct-on-first-use-v2
 // to spelldata
 #include "spl-data.h"
+#include "database.h"
 
 // spell_list is a static vector mapping spell_type enum values into positions
 // in spelldata. It is not initialized until game startup, so can't be relied
@@ -150,6 +151,426 @@ static spell_name_map &_get_spell_name_cache()
     return spell_name_cache;
 }
 
+// English spell names for .des file parsing and internal lookups.
+// Must be kept in sync with spl-data.h spell order.
+static const map<spell_type, const char*> spell_english_names = {
+    { SPELL_CAUSE_FEAR, "Cause Fear" },
+    { SPELL_MAGIC_DART, "Magic Dart" },
+    { SPELL_FIREBALL, "Fireball" },
+    { SPELL_APPORTATION, "Apportation" },
+    { SPELL_BLASTMOTE, "Volatile Blastmotes" },
+    { SPELL_DIG, "Dig" },
+    { SPELL_BOLT_OF_FIRE, "Bolt of Fire" },
+    { SPELL_BOLT_OF_COLD, "Bolt of Cold" },
+    { SPELL_LIGHTNING_BOLT, "Lightning Bolt" },
+    { SPELL_ARCJOLT, "Arcjolt" },
+    { SPELL_PLASMA_BEAM, "Plasma Beam" },
+    { SPELL_PERMAFROST_ERUPTION, "Permafrost Eruption" },
+    { SPELL_BLINKBOLT, "Blinkbolt" },
+    { SPELL_ELECTRIC_CHARGE, "Vhi's Electric Charge" },
+    { SPELL_ELECTROLUNGE, "Vhi's Electrolunge" },
+    { SPELL_BOLT_OF_MAGMA, "Bolt of Magma" },
+    { SPELL_POLYMORPH, "Polymorph" },
+    { SPELL_SLOW, "Slow" },
+    { SPELL_HASTE, "Haste" },
+    { SPELL_PETRIFY, "Petrify" },
+    { SPELL_CONFUSE, "Confuse" },
+    { SPELL_INVISIBILITY, "Invisibility" },
+    { SPELL_THROW_FLAME, "Throw Flame" },
+    { SPELL_THROW_FROST, "Throw Frost" },
+    { SPELL_DISJUNCTION, "Disjunction" },
+    { SPELL_FREEZING_CLOUD, "Freezing Cloud" },
+    { SPELL_FREEZING_GUST, "Freezing Gust" },
+    { SPELL_MEPHITIC_CLOUD, "Mephitic Cloud" },
+    { SPELL_VENOM_BOLT, "Venom Bolt" },
+    { SPELL_OLGREBS_TOXIC_RADIANCE, "Olgreb's Toxic Radiance" },
+    { SPELL_TELEPORT_OTHER, "Teleport Other" },
+    { SPELL_DEATHS_DOOR, "Death's Door" },
+    { SPELL_MASS_CONFUSION, "Mass Confusion" },
+    { SPELL_SMITING, "Smiting" },
+    { SPELL_SUMMON_SMALL_MAMMAL, "Summon Small Mammal" },
+    { SPELL_ABJURATION, "Abjuration" },
+    { SPELL_BOLT_OF_DRAINING, "Bolt of Draining" },
+    { SPELL_LEHUDIBS_CRYSTAL_SPEAR, "Lehudib's Crystal Spear" },
+    { SPELL_POLAR_VORTEX, "Polar Vortex" },
+    { SPELL_POISONOUS_CLOUD, "Poisonous Cloud" },
+    { SPELL_FIRE_STORM, "Fire Storm" },
+    { SPELL_CALL_DOWN_DAMNATION, "Call Down Damnation" },
+    { SPELL_CALL_DOWN_LIGHTNING, "Call Down Lightning" },
+    { SPELL_BLINK, "Blink" },
+    { SPELL_BLINK_RANGE, "Blink Range" },
+    { SPELL_BLINK_AWAY, "Blink Away" },
+    { SPELL_BLINK_CLOSE, "Blink Close" },
+    { SPELL_ISKENDERUNS_MYSTIC_BLAST, "Iskenderun's Mystic Blast" },
+    { SPELL_SUMMON_HORRIBLE_THINGS, "Summon Horrible Things" },
+    { SPELL_MALIGN_GATEWAY, "Malign Gateway" },
+    { SPELL_CHARMING, "Charm" },
+    { SPELL_ANIMATE_DEAD, "Animate Dead" },
+    { SPELL_PAIN, "Pain" },
+    { SPELL_SOUL_SPLINTER, "Soul Splinter" },
+    { SPELL_VAMPIRIC_DRAINING, "Vampiric Draining" },
+    { SPELL_HAUNT, "Haunt" },
+    { SPELL_MARTYRS_KNELL, "Martyr's Knell" },
+    { SPELL_BORGNJORS_REVIVIFICATION, "Borgnjor's Revivification" },
+    { SPELL_FREEZE, "Freeze" },
+    { SPELL_OZOCUBUS_REFRIGERATION, "Ozocubu's Refrigeration" },
+    { SPELL_STICKY_FLAME, "Sticky Flame" },
+    { SPELL_SUMMON_ICE_BEAST, "Summon Ice Beast" },
+    { SPELL_OZOCUBUS_ARMOUR, "Ozocubu's Armour" },
+    { SPELL_CALL_IMP, "Call Imp" },
+    { SPELL_DEFLECT_MISSILES, "Deflect Missiles" },
+    { SPELL_BERSERKER_RAGE, "Berserker Rage" },
+    { SPELL_DISPEL_UNDEAD, "Dispel Undead" },
+    { SPELL_POISON_ARROW, "Poison Arrow" },
+    { SPELL_BANISHMENT, "Banishment" },
+    { SPELL_STING, "Sting" },
+    { SPELL_SUBLIMATION_OF_BLOOD, "Sublimation of Blood" },
+    { SPELL_TUKIMAS_DANCE, "Tukima's Dance" },
+    { SPELL_SUMMON_DEMON, "Summon Demon" },
+    { SPELL_SUMMON_GREATER_DEMON, "Summon Greater Demon" },
+    { SPELL_PUTREFACTION, "Cigotuvi's Putrefaction" },
+    { SPELL_IRON_SHOT, "Iron Shot" },
+    { SPELL_BOMBARD, "Bombard" },
+    { SPELL_STONE_ARROW, "Stone Arrow" },
+    { SPELL_SHOCK, "Shock" },
+    { SPELL_SWIFTNESS, "Swiftness" },
+    { SPELL_DEBUGGING_RAY, "Debugging Ray" },
+    { SPELL_AGONISING_TOUCH, "Agonising Touch" },
+    { SPELL_CURSE_OF_AGONY, "Curse of Agony" },
+    { SPELL_MINDBURST, "Mindburst" },
+    { SPELL_DEATH_CHANNEL, "Death Channel" },
+    { SPELL_SYMBOL_OF_TORMENT, "Symbol of Torment" },
+    { SPELL_SIPHON_ESSENCE, "Siphon Essence" },
+    { SPELL_THROW_ICICLE, "Throw Icicle" },
+    { SPELL_AIRSTRIKE, "Airstrike" },
+    { SPELL_MOMENTUM_STRIKE, "Momentum Strike" },
+    { SPELL_SHADOW_CREATURES, "Shadow Creatures" },
+    { SPELL_CONFUSING_TOUCH, "Confusing Touch" },
+    { SPELL_PASSWALL, "Passwall" },
+    { SPELL_IGNITE_POISON, "Ignite Poison" },
+    { SPELL_CALL_CANINE_FAMILIAR, "Call Canine Familiar" },
+    { SPELL_SUMMON_DRAGON, "Summon Dragon" },
+    { SPELL_HIBERNATION, "Ensorcelled Hibernation" },
+    { SPELL_ENGLACIATION, "Metabolic Englaciation" },
+    { SPELL_SILENCE, "Silence" },
+    { SPELL_SHATTER, "Shatter" },
+    { SPELL_DISPERSAL, "Dispersal" },
+    { SPELL_DISCHARGE, "Static Discharge" },
+    { SPELL_CORONA, "Corona" },
+    { SPELL_INTOXICATE, "Alistair's Intoxication" },
+    { SPELL_LRD, "Lee's Rapid Deconstruction" },
+    { SPELL_SANDBLAST, "Sandblast" },
+    { SPELL_SIMULACRUM, "Sculpt Simulacrum" },
+    { SPELL_CONJURE_BALL_LIGHTNING, "Conjure Ball Lightning" },
+    { SPELL_CHAIN_LIGHTNING, "Chain Lightning" },
+    { SPELL_PORTAL_PROJECTILE, "Portal Projectile" },
+    { SPELL_MONSTROUS_MENAGERIE, "Monstrous Menagerie" },
+    { SPELL_GOLUBRIAS_PASSAGE, "Passage of Golubria" },
+    { SPELL_FULMINANT_PRISM, "Fulminant Prism" },
+    { SPELL_PARALYSE, "Paralyse" },
+    { SPELL_MINOR_HEALING, "Minor Healing" },
+    { SPELL_MAJOR_HEALING, "Major Healing" },
+    { SPELL_WOODWEAL, "Woodweal" },
+    { SPELL_HURL_DAMNATION, "Hurl Damnation" },
+    { SPELL_BRAIN_BITE, "Brain Bite" },
+    { SPELL_NOXIOUS_CLOUD, "Noxious Cloud" },
+    { SPELL_STEAM_BALL, "Steam Ball" },
+    { SPELL_SUMMON_SIN_BEAST, "Summon Sin Beast" },
+    { SPELL_BOLT_OF_DEVASTATION, "Bolt of Devastation" },
+    { SPELL_SPIT_POISON, "Spit Poison" },
+    { SPELL_SUMMON_UNDEAD, "Summon Undead" },
+    { SPELL_CANTRIP, "Cantrip" },
+    { SPELL_QUICKSILVER_BOLT, "Quicksilver Bolt" },
+    { SPELL_METAL_SPLINTERS, "Metal Splinters" },
+    { SPELL_SPLINTERSPRAY, "Splinterspray" },
+    { SPELL_MIASMA_BREATH, "Miasma Breath" },
+    { SPELL_SUMMON_DRAKES, "Summon Drakes" },
+    { SPELL_BLINK_OTHER, "Blink Other" },
+    { SPELL_BLINK_OTHER_CLOSE, "Blink Other Close" },
+    { SPELL_SUMMON_MUSHROOMS, "Summon Mushrooms" },
+    { SPELL_SPIT_ACID, "Spit Acid" },
+    { SPELL_CAUSTIC_BREATH, "Caustic Breath" },
+    { SPELL_PYRE_ARROW, "Pyre Arrow" },
+    { SPELL_FIRE_BREATH, "Fire Breath" },
+    { SPELL_SEARING_BREATH, "Searing Breath" },
+    { SPELL_CHAOS_BREATH, "Chaos Breath" },
+    { SPELL_COLD_BREATH, "Cold Breath" },
+    { SPELL_GLACIAL_BREATH, "Glacial Breath" },
+    { SPELL_WATER_ELEMENTALS, "Summon Water Elementals" },
+    { SPELL_PORKALATOR, "Porkalator" },
+    { SPELL_CREATE_TENTACLES, "Spawn Tentacles" },
+    { SPELL_SUMMON_EYEBALLS, "Summon Eyeballs" },
+    { SPELL_HASTE_OTHER, "Haste Other" },
+    { SPELL_EARTH_ELEMENTALS, "Summon Earth Elementals" },
+    { SPELL_AIR_ELEMENTALS, "Summon Air Elementals" },
+    { SPELL_FIRE_ELEMENTALS, "Summon Fire Elementals" },
+    { SPELL_SLEEP, "Sleep" },
+    { SPELL_FAKE_MARA_SUMMON, "Mara Summon" },
+    { SPELL_SUMMON_ILLUSION, "Summon Illusion" },
+    { SPELL_PRIMAL_WAVE, "Primal Wave" },
+    { SPELL_CALL_TIDE, "Call Tide" },
+    { SPELL_IOOD, "Orb of Destruction" },
+    { SPELL_INK_CLOUD, "Ink Cloud" },
+    { SPELL_MIGHT, "Might" },
+    { SPELL_MIGHT_OTHER, "Might Other" },
+    { SPELL_AWAKEN_FOREST, "Awaken Forest" },
+    { SPELL_DRUIDS_CALL, "Druid's Call" },
+    { SPELL_BROTHERS_IN_ARMS, "Brothers in Arms" },
+    { SPELL_TROGS_HAND, "Trog's Hand" },
+    { SPELL_SUMMON_MORTAL_CHAMPION, "Summon Mortal Champion" },
+    { SPELL_VANQUISHED_VANGUARD, "Vanquished Vanguard" },
+    { SPELL_SUMMON_HOLIES, "Summon Holies" },
+    { SPELL_HEAL_OTHER, "Heal Other" },
+    { SPELL_HOLY_FLAMES, "Holy Flames" },
+    { SPELL_HOLY_BREATH, "Holy Breath" },
+    { SPELL_INJURY_MIRROR, "Injury Mirror" },
+    { SPELL_DRAIN_LIFE, "Drain Life" },
+    { SPELL_LEDAS_LIQUEFACTION, "Leda's Liquefaction" },
+    { SPELL_SUMMON_HYDRA, "Summon Hydra" },
+    { SPELL_MESMERISE, "Mesmerise" },
+    { SPELL_HELLFIRE_COURT, "Hellfire Court" },
+    { SPELL_PETRIFYING_CLOUD, "Petrifying Cloud" },
+    { SPELL_INNER_FLAME, "Inner Flame" },
+    { SPELL_ENSNARE, "Ensnare" },
+    { SPELL_GREATER_ENSNARE, "Greater Ensnare" },
+    { SPELL_THUNDERBOLT, "Thunderbolt" },
+    { SPELL_BATTLESPHERE, "Iskenderun's Battlesphere" },
+    { SPELL_SUMMON_MINOR_DEMON, "Summon Minor Demon" },
+    { SPELL_STICKS_TO_SNAKES, "Sticks to Snakes" },
+    { SPELL_MALMUTATE, "Malmutate" },
+    { SPELL_GLOOM, "Gloom" },
+    { SPELL_BECKONING_GALE, "Beckoning Gale" },
+    { SPELL_FORCE_LANCE, "Force Lance" },
+    { SPELL_SENTINEL_MARK, "Sentinel's Mark" },
+    { SPELL_WORD_OF_RECALL, "Word of Recall" },
+    { SPELL_INJURY_BOND, "Injury Bond" },
+    { SPELL_SPECTRAL_CLOUD, "Spectral Cloud" },
+    { SPELL_GHOSTLY_FIREBALL, "Ghostly Fireball" },
+    { SPELL_CALL_LOST_SOULS, "Call Lost Souls" },
+    { SPELL_DIMENSION_ANCHOR, "Dimension Anchor" },
+    { SPELL_BLINK_ALLIES_ENCIRCLE, "Blink Allies Encircling" },
+    { SPELL_AWAKEN_VINES, "Awaken Vines" },
+    { SPELL_THORN_VOLLEY, "Volley of Thorns" },
+    { SPELL_WATERSTRIKE, "Waterstrike" },
+    { SPELL_WIND_BLAST, "Wind Blast" },
+    { SPELL_STRIP_WILLPOWER, "Strip Willpower" },
+    { SPELL_FUGUE_OF_THE_FALLEN, "Fugue of the Fallen" },
+    { SPELL_SUMMON_VERMIN, "Summon Vermin" },
+    { SPELL_MALIGN_OFFERING, "Malign Offering" },
+    { SPELL_SEARING_RAY, "Searing Ray" },
+    { SPELL_DISCORD, "Discord" },
+    { SPELL_INVISIBILITY_OTHER, "Invisibility Other" },
+    { SPELL_VIRULENCE, "Virulence" },
+    { SPELL_ORB_OF_ELECTRICITY, "Orb of Electricity" },
+    { SPELL_FLASH_FREEZE, "Flash Freeze" },
+    { SPELL_CREEPING_FROST, "Creeping Frost" },
+    { SPELL_LEGENDARY_DESTRUCTION, "Legendary Destruction" },
+    { SPELL_FORCEFUL_INVITATION, "Forceful Invitation" },
+    { SPELL_PLANEREND, "Plane Rend" },
+    { SPELL_CHAIN_OF_CHAOS, "Chain of Chaos" },
+    { SPELL_CALL_OF_CHAOS, "Call of Chaos" },
+    { SPELL_SIGN_OF_RUIN, "Sign of Ruin" },
+    { SPELL_SAP_MAGIC, "Sap Magic" },
+    { SPELL_MAJOR_DESTRUCTION, "Major Destruction" },
+    { SPELL_BLINK_ALLIES_AWAY, "Blink Allies Away" },
+    { SPELL_SUMMON_FOREST, "Summon Forest" },
+    { SPELL_FORGE_LIGHTNING_SPIRE, "Forge Lightning Spire" },
+    { SPELL_FORGE_BLAZEHEART_GOLEM, "Forge Blazeheart Golem" },
+    { SPELL_REBOUNDING_BLAZE, "Rebounding Blaze" },
+    { SPELL_REBOUNDING_CHILL, "Rebounding Chill" },
+    { SPELL_GLACIATE, "Glaciate" },
+    { SPELL_DRAGON_CALL, "Dragon's Call" },
+    { SPELL_SPELLSPARK_SERVITOR, "Spellspark Servitor" },
+    { SPELL_SUMMON_MANA_VIPER, "Summon Mana Viper" },
+    { SPELL_PHANTOM_MIRROR, "Phantom Mirror" },
+    { SPELL_DIMINISH_SPELLS, "Diminish Spells" },
+    { SPELL_CORROSIVE_BOLT, "Corrosive Bolt" },
+    { SPELL_BOLT_OF_LIGHT, "Bolt of Light" },
+    { SPELL_BOLT_OF_FLESH, "Bolt of Flesh" },
+    { SPELL_AWAKEN_FLESH, "Awaken Flesh" },
+    { SPELL_SERPENT_OF_HELL_GEH_BREATH, "gehenna serpent of hell breath" },
+    { SPELL_SERPENT_OF_HELL_COC_BREATH, "cocytus serpent of hell breath" },
+    { SPELL_SERPENT_OF_HELL_DIS_BREATH, "dis serpent of hell breath" },
+    { SPELL_SERPENT_OF_HELL_TAR_BREATH, "tartarus serpent of hell breath" },
+    { SPELL_SUMMON_EMPEROR_SCORPIONS, "Summon Emperor Scorpions" },
+    { SPELL_IRRADIATE, "Irradiate" },
+    { SPELL_SPIT_LAVA, "Spit Lava" },
+    { SPELL_ELECTRICAL_BOLT, "Electrical Bolt" },
+    { SPELL_FLAMING_CLOUD, "Flaming Cloud" },
+    { SPELL_THROW_BARBS, "Throw Barbs" },
+    { SPELL_BATTLECRY, "Battlecry" },
+    { SPELL_WARNING_CRY, "Warning Cry" },
+    { SPELL_HUNTING_CALL, "Hunting Call" },
+    { SPELL_FUNERAL_DIRGE, "Funeral Dirge" },
+    { SPELL_SEAL_DOORS, "Seal Doors" },
+    { SPELL_FLAY, "Flay" },
+    { SPELL_BERSERK_OTHER, "Berserk Other" },
+    { SPELL_CORRUPTING_PULSE, "Corrupting Pulse" },
+    { SPELL_SIREN_SONG, "Siren Song" },
+    { SPELL_AVATAR_SONG, "Avatar Song" },
+    { SPELL_PARALYSIS_GAZE, "Paralysis Gaze" },
+    { SPELL_CONFUSION_GAZE, "Confusion Gaze" },
+    { SPELL_ANTIMAGIC_GAZE, "Antimagic Gaze" },
+    { SPELL_DRAINING_GAZE, "Draining Gaze" },
+    { SPELL_WEAKENING_GAZE, "Weakening Gaze" },
+    { SPELL_MOURNING_WAIL, "Mourning Wail" },
+    { SPELL_DEATH_RATTLE, "Death Rattle" },
+    { SPELL_MARCH_OF_SORROWS, "March of Sorrows" },
+    { SPELL_SUMMON_SCARABS, "Summon Scarabs" },
+    { SPELL_THROW_ALLY, "Throw Ally" },
+    { SPELL_CLEANSING_FLAME, "Cleansing Flame" },
+    { SPELL_GRAVITAS, "Gell's Gravitas" },
+    { SPELL_VIOLENT_UNRAVELLING, "Yara's Violent Unravelling" },
+    { SPELL_ENTROPIC_WEAVE, "Entropic Weave" },
+    { SPELL_SUMMON_EXECUTIONERS, "Summon Executioners" },
+    { SPELL_OBLIVION_HOWL, "Oblivion Howl" },
+    { SPELL_PRAYER_OF_BRILLIANCE, "Prayer of Brilliance" },
+    { SPELL_ICEBLAST, "Iceblast" },
+    { SPELL_SLUG_DART, "Slug Dart" },
+    { SPELL_FLEETFOOT, "Fleetfoot" },
+    { SPELL_GREATER_SERVANT_MAKHLEB, "Infernal Servant" },
+    { SPELL_BIND_SOULS, "Bind Souls" },
+    { SPELL_INFESTATION, "Infestation" },
+    { SPELL_STILL_WINDS, "Still Winds" },
+    { SPELL_RESONANCE_STRIKE, "Resonance Strike" },
+    { SPELL_GHOSTLY_SACRIFICE, "Ghostly Sacrifice" },
+    { SPELL_DREAM_DUST, "Dream Dust" },
+    { SPELL_BECKONING, "Lesser Beckoning" },
+    { SPELL_UPHEAVAL, "Upheaval" },
+    { SPELL_MERCURY_ARROW, "Mercury Arrow" },
+    { SPELL_POISONOUS_VAPOURS, "Poisonous Vapours" },
+    { SPELL_IGNITION, "Ignition" },
+    { SPELL_BORGNJORS_VILE_CLUTCH, "Borgnjor's Vile Clutch" },
+    { SPELL_FASTROOT, "Fastroot" },
+    { SPELL_WARP_SPACE, "Warp Space" },
+    { SPELL_SOJOURNING_BOLT, "Sojourning Bolt" },
+    { SPELL_HARPOON_SHOT, "Harpoon Shot" },
+    { SPELL_GRASPING_ROOTS, "Grasping Roots" },
+    { SPELL_THROW_BOLAS, "Throw Bolas" },
+    { SPELL_THROW_PIE, "Throw Klown Pie" },
+    { SPELL_SPORULATE, "Sporulate" },
+    { SPELL_LAUNCH_SPORANGIUM, "Launch Sporangium" },
+    { SPELL_STARBURST, "Starburst" },
+    { SPELL_FOXFIRE, "Foxfire" },
+    { SPELL_MARSHLIGHT, "Marshlight" },
+    { SPELL_HAILSTORM, "Hailstorm" },
+    { SPELL_NOXIOUS_BOG, "Eringya's Noxious Bog" },
+    { SPELL_AGONY, "Agony" },
+    { SPELL_DISPEL_UNDEAD_RANGE, "Dispel Undead Range" },
+    { SPELL_FROZEN_RAMPARTS, "Frozen Ramparts" },
+    { SPELL_MAXWELLS_COUPLING, "Maxwell's Capacitive Coupling" },
+    { SPELL_ROLL, "Roll" },
+    { SPELL_HURL_SLUDGE, "Hurl Sludge" },
+    { SPELL_SUMMON_TZITZIMITL, "Summon Tzitzimitl" },
+    { SPELL_SUMMON_HELL_SENTINEL, "Summon Hell Sentinel" },
+    { SPELL_AWAKEN_ARMOUR, "Awaken Armour" },
+    { SPELL_MANIFOLD_ASSAULT, "Manifold Assault" },
+    { SPELL_CONCENTRATE_VENOM, "Concentrate Venom" },
+    { SPELL_ERUPTION, "Eruption" },
+    { SPELL_PYROCLASTIC_SURGE, "Pyroclastic Surge" },
+    { SPELL_STUNNING_BURST, "Stunning Burst" },
+    { SPELL_CORRUPT_LOCALE, "Corrupt" },
+    { SPELL_CONJURE_LIVING_SPELLS, "Conjure Living Spells" },
+    { SPELL_SUMMON_CACTUS, "Summon Cactus Giant" },
+    { SPELL_STOKE_FLAMES, "Stoke Flames" },
+    { SPELL_SERACFALL, "Seracfall" },
+    { SPELL_SCORCH, "Scorch" },
+    { SPELL_FLAME_WAVE, "Flame Wave" },
+    { SPELL_ENFEEBLE, "Enfeeble" },
+    { SPELL_SUMMON_SPIDERS, "Summon Spiders" },
+    { SPELL_ANGUISH, "Anguish" },
+    { SPELL_SUMMON_SCORPIONS, "Summon Scorpions" },
+    { SPELL_SHEZAS_DANCE, "Sheza's Dance" },
+    { SPELL_DIVINE_ARMAMENT, "Divine Armament" },
+    { SPELL_KISS_OF_DEATH, "Kiss of Death" },
+    { SPELL_JINXBITE, "Jinxbite" },
+    { SPELL_SIGIL_OF_BINDING, "Sigil of Binding" },
+    { SPELL_DIMENSIONAL_BULLSEYE, "Dimensional Bullseye" },
+    { SPELL_BOULDER, "Brom's Barrelling Boulder" },
+    { SPELL_VITRIFY, "Vitrify" },
+    { SPELL_VITRIFYING_GAZE, "Vitrifying Gaze" },
+    { SPELL_CRYSTALLISING_SHOT, "Crystallising Shot" },
+    { SPELL_TREMORSTONE, "Tremorstone" },
+    { SPELL_REGENERATE_OTHER, "Regenerate Other" },
+    { SPELL_MASS_REGENERATION, "Mass Regeneration" },
+    { SPELL_NOXIOUS_BREATH, "Noxious Breath" },
+    { SPELL_UNLEASH_DESTRUCTION, "Unleash Destruction" },
+    { SPELL_HURL_TORCHLIGHT, "Hurl Torchlight" },
+    { SPELL_COMBUSTION_BREATH, "Combustion Breath" },
+    { SPELL_NULLIFYING_BREATH, "Nullifying Breath" },
+    { SPELL_STEAM_BREATH, "Steam Breath" },
+    { SPELL_MUD_BREATH, "Mud Breath" },
+    { SPELL_GALVANIC_BREATH, "Galvanic Breath" },
+    { SPELL_PILEDRIVER, "Maxwell's Portable Piledriver" },
+    { SPELL_GELLS_GAVOTTE, "Gell's Gavotte" },
+    { SPELL_MAGNAVOLT, "Magnavolt" },
+    { SPELL_FULSOME_FUSILLADE, "Fulsome Fusillade" },
+    { SPELL_RIMEBLIGHT, "Rimeblight" },
+    { SPELL_HOARFROST_CANNONADE, "Hoarfrost Cannonade" },
+    { SPELL_SEISMIC_STOMP, "Seismic Stomp" },
+    { SPELL_HOARFROST_BULLET, "Hoarfrost Bullet" },
+    { SPELL_FLASHING_BALESTRA, "Flashing Balestra" },
+    { SPELL_PHANTOM_BLITZ, "Phantom Blitz" },
+    { SPELL_BESTOW_ARMS, "Bestow Arms" },
+    { SPELL_HELLFIRE_MORTAR, "Hellfire Mortar" },
+    { SPELL_SHADOW_SHARD, "Shadow Shard" },
+    { SPELL_SHADOW_BEAM, "Shadow Beam" },
+    { SPELL_SHADOW_BALL, "Shadowball" },
+    { SPELL_CREEPING_SHADOW, "Creeping Shadow" },
+    { SPELL_SHADOW_TEMPEST, "Shadow Tempest" },
+    { SPELL_SHADOW_PRISM, "Shadow Prism" },
+    { SPELL_SHADOW_PUPPET, "Shadow Puppet" },
+    { SPELL_SHADOW_TURRET, "Shadow Turret" },
+    { SPELL_SHADOW_SHOT, "Shadow Shot" },
+    { SPELL_SHADOW_BIND, "Shadow Bind" },
+    { SPELL_SHADOW_TORPOR, "Shadow Torpor" },
+    { SPELL_SHADOW_DRAINING, "Shadow Draining" },
+    { SPELL_GRAVE_CLAW, "Grave Claw" },
+    { SPELL_CLOCKWORK_BEE, "Launch Clockwork Bee" },
+    { SPELL_SPIKE_LAUNCHER, "Construct Spike Launcher" },
+    { SPELL_KINETIC_GRAPNEL, "Kinetic Grapnel" },
+    { SPELL_DIAMOND_SAWBLADES, "Diamond Sawblades" },
+    { SPELL_SHRED, "Shred" },
+    { SPELL_SURPRISING_CROCODILE, "Eringya's Surprising Crocodile" },
+    { SPELL_PLATINUM_PARAGON, "Platinum Paragon" },
+    { SPELL_WALKING_ALEMBIC, "Alistair's Walking Alembic" },
+    { SPELL_MONARCH_BOMB, "Forge Monarch Bomb" },
+    { SPELL_DEPLOY_BOMBLET, "Launch Bomblet" },
+    { SPELL_SPLINTERFROST_SHELL, "Splinterfrost Shell" },
+    { SPELL_PERCUSSIVE_TEMPERING, "Nazja's Percussive Tempering" },
+    { SPELL_ALL_PURPOSE_TEMPERING, "Nazja's All-Purpose Tempering" },
+    { SPELL_FORTRESS_BLAST, "Fortress Blast" },
+    { SPELL_SUMMON_SEISMOSAURUS_EGG, "Summon Seismosaurus Egg" },
+    { SPELL_PHALANX_BEETLE, "Forge Phalanx Beetle" },
+    { SPELL_RENDING_BLADE, "Rending Blade" },
+    { SPELL_MAGMA_BARRAGE, "Magma Barrage" },
+    { SPELL_VEX, "Vex" },
+    { SPELL_RAVENOUS_SWARM, "Ravenous Swarm" },
+    { SPELL_DOMINATE_UNDEAD, "Dominate Undead" },
+    { SPELL_DETONATION_CATALYST, "Detonation Catalyst" },
+    { SPELL_RUST_BREATH, "Rust Breath" },
+    { SPELL_GOLDEN_BREATH, "Golden Breath" },
+    { SPELL_SPHINX_SISTERS, "Sphinx Sisters" },
+    { SPELL_ILL_OMEN, "Ill Omen" },
+    { SPELL_DOOM_BOLT, "Doom Bolt" },
+    { SPELL_WARP_BODY, "Warp Body" },
+    { SPELL_OSTRACISE, "Ostracise" },
+    { SPELL_MUTAGENIC_GAZE, "Mutagenic Gaze" },
+    { SPELL_ACID_BALL, "Acid Ball" },
+    { SPELL_NO_SPELL, "nonexistent spell" },
+    { SPELL_PYRRHIC_RECOLLECTION, "Pyrrhic Recollection" },
+    { SPELL_PLANAR_OVERLAY, "Planar Overlay" },
+    { SPELL_DOOMSAYING, "Doomsaying" },
+    { SPELL_SLEETSTRIKE, "Sleetstrike" },
+    { SPELL_LANDBREAKER, "Landbreaker" },
+};
+
+const char* spell_english_name(spell_type spell)
+{
+    auto it = spell_english_names.find(spell);
+    return it != spell_english_names.end() ? it->second : spell_title(spell);
+}
+
 void init_spell_name_cache()
 {
     spell_name_map &cache = _get_spell_name_cache();
@@ -164,6 +585,14 @@ void init_spell_name_cache()
         ASSERT(sptitle);
         const string spell_name = lowercase_string(sptitle);
         cache[spell_name] = type;
+
+        // Also add English name for .des file parsing compatibility
+        auto it = spell_english_names.find(type);
+        if (it != spell_english_names.end())
+        {
+            const string en_name = lowercase_string(it->second);
+            cache.emplace(en_name, type);
+        }
     }
 }
 
@@ -201,21 +630,60 @@ spell_type spell_by_name(string name, bool partial_match)
 
     if (sp == NUM_SPELLS)
     {
-        // Fall back to include remove spells.
+        // Fall back to include removed spells.
         sp = find_earliest_match(name, SPELL_NO_SPELL, NUM_SPELLS,
                                  is_valid_spell, spell_title);
+    }
+
+    // In Chinese mode, also try English names for partial match
+    if (sp == NUM_SPELLS && Options.language == lang_t::ZH)
+    {
+        auto english_name = [](spell_type s) -> const char* {
+            auto it = spell_english_names.find(s);
+            return it != spell_english_names.end() ? it->second : "";
+        };
+        sp = find_earliest_match(
+            name, SPELL_NO_SPELL, NUM_SPELLS,
+            [](spell_type s)
+            {
+                return is_valid_spell(s)
+                       && !spell_removed(s)
+                       && !spell_is_monster_only(s);
+            },
+            english_name);
+
+        if (sp == NUM_SPELLS)
+        {
+            sp = find_earliest_match(name, SPELL_NO_SPELL, NUM_SPELLS,
+                                     is_valid_spell, english_name);
+        }
     }
 
     return sp == NUM_SPELLS ? SPELL_NO_SPELL : sp;
 }
 
+// English school long names for .des file parsing compatibility
+static const map<spschool, const char*> school_english_long_names = {
+    { spschool::conjuration, "Conjuration" },
+    { spschool::hexes, "Hexes" },
+    { spschool::fire, "Fire" },
+    { spschool::ice, "Ice" },
+    { spschool::necromancy, "Necromancy" },
+    { spschool::summoning, "Summoning" },
+    { spschool::forgecraft, "Forgecraft" },
+    { spschool::translocation, "Translocation" },
+    { spschool::alchemy, "Alchemy" },
+    { spschool::earth, "Earth" },
+    { spschool::air, "Air" },
+};
+
 spschool school_by_name(string name)
 {
-    spschool short_match, long_match;
-    int                short_matches, long_matches;
+    spschool short_match, long_match, en_match;
+    int                short_matches, long_matches, en_matches;
 
-    short_match   = long_match   = spschool::none;
-    short_matches = long_matches = 0;
+    short_match   = long_match   = en_match   = spschool::none;
+    short_matches = long_matches = en_matches = 0;
 
     lowercase(name);
 
@@ -244,17 +712,33 @@ spschool school_by_name(string name)
             long_match = type;
             long_matches++;
         }
+
+        // Also match against English long name for .des file compatibility
+        auto en_it = school_english_long_names.find(type);
+        if (en_it != school_english_long_names.end())
+        {
+            string en_long = lowercase_string(en_it->second);
+            if (name == en_long)
+                return type;
+            if (en_long.find(name) != string::npos)
+            {
+                en_match = type;
+                en_matches++;
+            }
+        }
     }
 
-    if (short_matches != 1 && long_matches != 1)
+    if (short_matches != 1 && long_matches != 1 && en_matches != 1)
         return spschool::none;
 
-    if (short_matches == 1 && long_matches != 1)
+    if (short_matches == 1 && long_matches != 1 && en_matches != 1)
         return short_match;
-    if (short_matches != 1 && long_matches == 1)
+    if (short_matches != 1 && long_matches == 1 && en_matches != 1)
         return long_match;
+    if (short_matches != 1 && long_matches != 1 && en_matches == 1)
+        return en_match;
 
-    if (short_match == long_match)
+    if (short_match == long_match && long_match == en_match)
         return short_match;
 
     return spschool::none;
@@ -370,7 +854,7 @@ bool add_spell_to_memory(spell_type spell)
         }
 
     if (you.num_turns)
-        mprf("Spell assigned to '%c'.", index_to_letter(letter_j));
+        mprf(T_("Spell assigned to '%c'."), index_to_letter(letter_j));
 
     // A hint, for those who may not be aware.
     if (spell == SPELL_SPELLSPARK_SERVITOR)
@@ -430,7 +914,7 @@ bool del_spell_from_memory_by_slot(int slot)
 
     spell_skills(you.spells[slot], you.skills_to_hide);
 
-    mprf("Your memory of %s unravels.", spell_title(you.spells[slot]));
+    mprf(T_("Your memory of %s unravels."), spell_title(you.spells[slot]));
 
     you.spells[slot] = SPELL_NO_SPELL;
 
@@ -924,31 +1408,31 @@ const char* spelltype_long_name(spschool which_spelltype)
     switch (which_spelltype)
     {
     case spschool::conjuration:
-        return "Conjuration";
+        return "咒法";
     case spschool::hexes:
-        return "Hexes";
+        return "诅咒";
     case spschool::fire:
-        return "Fire";
+        return "火焰";
     case spschool::ice:
-        return "Ice";
+        return "寒冰";
     case spschool::necromancy:
-        return "Necromancy";
+        return "死灵";
     case spschool::summoning:
-        return "Summoning";
+        return "召唤";
     case spschool::forgecraft:
-        return "Forgecraft";
+        return "锻造";
     case spschool::translocation:
-        return "Translocation";
+        return "传送";
     case spschool::alchemy:
-        return "Alchemy";
+        return "炼金";
     case spschool::earth:
-        return "Earth";
+        return "大地";
     case spschool::air:
-        return "Air";
+        return "空气";
     case spschool::random:
-        return "Random";
+        return "随机";
     default:
-        return "Bug";
+        return "错误";
     }
 }
 
@@ -1194,32 +1678,32 @@ string casting_uselessness_reason(spell_type spell, bool temp)
     if (temp)
     {
         if (you.duration[DUR_CONF] > 0)
-            return "you're too confused to cast spells.";
+            return "你太困惑了，无法施法。";
 
         if (spell_difficulty(spell) > you.experience_level)
-            return "you aren't experienced enough to cast this spell.";
+            return "你的经验还不足以施放此法术。";
 
         if (you.has_mutation(MUT_HP_CASTING))
         {
             // TODO: deduplicate with enough_hp()
             if (you.duration[DUR_DEATHS_DOOR])
-                return "you cannot pay life while functionally dead.";
+                return "你功能上已死亡，无法支付生命。";
             if (!enough_hp(spell_mana(spell), true, false))
-                return "you don't have enough health to cast this spell.";
+                return "你没有足够的生命值来施放此法术。";
         }
         else if (!enough_mp(spell_mana(spell), true, false))
-            return "you don't have enough magic to cast this spell.";
+            return "你没有足够的魔力来施放此法术。";
 
         if (spell == SPELL_SUBLIMATION_OF_BLOOD
             && you.magic_points == you.max_magic_points)
         {
             if (you.has_mutation(MUT_HP_CASTING))
-                return "your magic and health are inextricable.";
-            return "your reserves of magic are already full.";
+                return "你的魔力和生命密不可分。";
+            return "你的魔力储备已经满了。";
         }
 
         if (you.form == transformation::walking_scroll && spell_difficulty(spell) > 4)
-            return "you cannot cast such powerful magic in your current form.";
+            return "当前形态下你无法施放如此强大的魔法。";
     }
 
     // Check for banned schools (Currently just Ru sacrifices)
@@ -1318,7 +1802,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     }
 
     if (!prevent && temp && spell_no_hostile_in_range(spell))
-        return "you can't see any hostile targets that would be affected.";
+        return T_("you can't see any hostile targets that would be affected.");
 
     switch (spell)
     {

@@ -2344,8 +2344,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             desc += "lava";
         else
         {
-            if (starts_with(species::skin_name(
-                        static_cast<species_type>(race)), "bandage"))
+            if (race == SP_MUMMY)
             {
                 desc += "Turned to ash by lava";
             }
@@ -2359,8 +2358,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc = "fell apart";
-            else if (starts_with(species::skin_name(
-                        static_cast<species_type>(race)), "bandage"))
+            else if (race == SP_MUMMY)
             {
                 desc = "Soaked and fell apart";
             }

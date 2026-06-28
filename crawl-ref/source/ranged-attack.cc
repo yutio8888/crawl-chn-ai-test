@@ -27,6 +27,7 @@
 #include "traps.h"
 #include "unwind.h"
 #include "xom.h"
+#include "database.h"
 
 ranged_attack::ranged_attack(actor *attk, actor *defn,
                              const item_def *wpn,
@@ -178,7 +179,7 @@ void ranged_attack::handle_phase_blocked()
         }
 
         punctuation += make_stringf("... and %s it back!",
-                                    defender->conj_verb("reflect").c_str());
+                                    "反射");
     }
     else
         range_used = BEAM_STOP;
@@ -187,7 +188,7 @@ void ranged_attack::handle_phase_blocked()
     {
         mprf("%s %s the %s%s",
              defender_name(false).c_str(),
-             defender->conj_verb("block").c_str(),
+             "格挡",
              proj_name.c_str(),
              punctuation.c_str());
     }
@@ -221,7 +222,7 @@ void ranged_attack::handle_phase_dodged()
 
     if (needs_message)
     {
-        mprf("The %s%s misses %s.",
+        mprf(T_("The %s%s misses %s."),
              proj_name.c_str(),
              evasion_margin_adverb().c_str(),
              defender_name(false).c_str());
@@ -299,7 +300,7 @@ bool ranged_attack::handle_phase_hit()
         {
             if (needs_message)
             {
-                mprf("The %s %s %s%s but does no damage.",
+                mprf(T_("The %s %s %s%s but does no damage."),
                     proj_name.c_str(),
                     attack_verb.c_str(),
                     defender->name(DESC_THE).c_str(),
@@ -495,18 +496,18 @@ special_missile_type ranged_attack::random_chaos_missile_brand()
             break;
     }
 #ifdef NOTE_DEBUG_CHAOS_BRAND
-    string brand_name = "CHAOS missile: ";
+    string brand_name = "混沌投掷物: ";
     switch (brand)
     {
     case SPMSL_NORMAL:          brand_name += "(plain)"; break;
-    case SPMSL_FLAME:           brand_name += "flame"; break;
-    case SPMSL_FROST:           brand_name += "frost"; break;
-    case SPMSL_POISONED:        brand_name += "poisoned"; break;
-    case SPMSL_CURARE:          brand_name += "curare"; break;
-    case SPMSL_CHAOS:           brand_name += "chaos"; break;
-    case SPMSL_DISPERSAL:       brand_name += "dispersal"; break;
-    case SPMSL_FRENZY:          brand_name += "frenzy"; break;
-    case SPMSL_BLINDING:        brand_name += "blinding"; break;
+    case SPMSL_FLAME:           brand_name += "火焰"; break;
+    case SPMSL_FROST:           brand_name += "冰霜"; break;
+    case SPMSL_POISONED:        brand_name += "淬毒"; break;
+    case SPMSL_CURARE:          brand_name += "箭毒"; break;
+    case SPMSL_CHAOS:           brand_name += "混沌"; break;
+    case SPMSL_DISPERSAL:       brand_name += "驱散"; break;
+    case SPMSL_FRENZY:          brand_name += "狂乱"; break;
+    case SPMSL_BLINDING:        brand_name += "致盲"; break;
     default:                    brand_name += "(other)"; break;
     }
 
@@ -615,7 +616,7 @@ bool ranged_attack::apply_missile_brand()
         break;
     case SPMSL_FLAME:
         calc_elemental_brand_damage(BEAM_FIRE,
-                                    defender->is_icy() ? "melt" : "burn",
+                                    defender->is_icy() ? "融化" : "灼烧",
                                     make_stringf("the %s", proj_name.c_str()).c_str());
 
         defender->expose_to_element(BEAM_FIRE, 2);
@@ -623,7 +624,7 @@ bool ranged_attack::apply_missile_brand()
             maybe_melt_player_enchantments(BEAM_FIRE, special_damage);
         break;
     case SPMSL_FROST:
-        calc_elemental_brand_damage(BEAM_COLD, "freeze",
+        calc_elemental_brand_damage(BEAM_COLD, "冻结",
                                     make_stringf("the %s", proj_name.c_str()).c_str());
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
@@ -697,7 +698,7 @@ bool ranged_attack::apply_missile_brand()
 
         if (defender->is_player())
         {
-            mprf(MSGCH_WARN, "You become untethered in space!");
+            mprf(MSGCH_WARN, "你在空间中失去了锚定！");
             you.duration[DUR_BLINKITIS] = random_range(30, 40);
             you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
             you.props[BLINKITIS_AUX_KEY] = proj_name;
@@ -799,11 +800,11 @@ void ranged_attack::announce_hit()
     if (!needs_message)
         return;
 
-    mprf("The %s %s %s%s%s%s",
+    mprf(T_("The %s %s %s%s%s%s"),
          proj_name.c_str(),
          attack_verb.c_str(),
          defender_name(false).c_str(),
-         mulch_bonus() ? " and shatters for extra damage" : "",
+         mulch_bonus() ? (T_(" and shatters for extra damage")) : "",
          debug_damage_number().c_str(),
          attack_strength_punctuation(damage_done).c_str());
 }

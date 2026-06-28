@@ -158,16 +158,16 @@ Q:religion
 %%%%
 A:religion
 
-A: 最直接的神灵可能是特洛戈或奥卡瓦鲁（用于提升近战和远程战斗能力），
-维胡梅特或席夫·穆纳（用于提升施法能力）和
-伊莱德莱姆努尔（用于召唤亡灵盟友）。
+A: 最直接的神灵可能是特洛格或奥卡瓦鲁（近战），
+惠普利亚卡纳或奥卡瓦鲁（远程），
+维胡梅特或西芙·穆娜（施法）。
 另外，虽然不可靠，但佐姆可能会很有趣。
 
 每当你遇到一个祭坛时，请务必阅读相应神的描述（通过在祭坛上用 '>'祈祷），
 并花点时间决定是否皈依这个神灵。作为追随者，你可以重新阅读神的描述，
 现在还可以通过'!'在'^'界面上切换为更详细的描述。
 
-你一定会在地牢的前九层找到几乎所有神的祭坛。
+你一定会在地牢的前十层找到几乎所有神的祭坛。
 %%%%
 Q:ghosts
 
@@ -266,7 +266,7 @@ https://crawl.develz.org 还存储着可下载的Windows和Mac版本的游戏文
 
 一定要在github上（https://github.com/crawl/crawl/issues）报告错误。
 如果你有mantis账号的话，也可以使用错误跟踪器。
-（https://crawl.develz.org/mantis/）。
+（https://github.com/crawl/crawl/issues）。
 
 当你这样做时，请提及当前正在游玩的游戏版本（见'?v'），
 以免出现错误已被修复或功能已经实现的情况。
@@ -277,8 +277,8 @@ Q:bug
 %%%%
 A:bug
 
-A: 请在github（https://github.com/crawl/crawl/issues）或Mantis
-（https://crawl.develz.org/mantis/）上提交错误报告，并提供尽可能多的信息：
+A: 请在github（https://github.com/crawl/crawl/issues）或GitHub Issues
+（https://github.com/crawl/crawl/issues）上提交错误报告，并提供尽可能多的信息：
 
 * 那时你在做什么？
 
@@ -333,7 +333,7 @@ A: 你可以在这几个方面发挥创造力，并且我们非常感谢你的�
 
 另外，如果你想编写补丁程序，但不知道该怎么做，
 请阅读docs/develop/目录中的patch_guide.txt。
-在我们的Mantis跟踪器上提交它和其他新内容：https://crawl.develz.org/mantis/
+在我们的GitHub Issues跟踪器上提交它和其他新内容：https://github.com/crawl/crawl/issues
 
 请记住，如果没有事先的讨论，我们可能无法使用该补丁，
 或者可能需要对它进行大量修改。它也有可能不被接受，通常是由于以下三个原因：

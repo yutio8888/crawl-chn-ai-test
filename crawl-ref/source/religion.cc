@@ -465,6 +465,245 @@ vector<god_power> get_god_powers(god_type god)
     return ret;
 }
 
+// Helper: translate English god power description strings to Chinese
+const char* zh_god_power(const char* en)
+{
+    if (!en || !en[0]) return en;
+    if (Options.language != lang_t::ZH) return en;
+    static const map<string, string> zh_map = {
+        // Zin
+        {"recite Zin's Axioms of Law", "吟诵辛的律法公理"},
+        {"call upon Zin for vitalisation", "呼唤辛赋予活力"},
+        {"call upon Zin to imprison the lawless", "呼唤辛囚禁不法之徒"},
+        {"call upon Zin to create a sanctuary", "呼唤辛创造避难所"},
+        {"Zin will now cleanse your potions of mutation.", "辛现在会净化你的变异药水。"},
+        {"Zin will no longer cleanse your potions of mutation.", "辛不再净化你的变异药水。"},
+        {"Zin will cleanse your potions of mutation.", "辛会净化你的变异药水。"},
+        {"donate money to Zin", "向辛捐款"},
+        // TSO
+        {"You and your allies can now gain power from killing the unholy and evil.", "你和你的盟友现在可以通过杀死不洁与邪恶生物获得力量。"},
+        {"You and your allies can no longer gain power from killing the unholy and evil.", "你和你的盟友不再能通过杀死不洁与邪恶生物获得力量。"},
+        {"You and your allies can gain power from killing the unholy and evil.", "你和你的盟友可以通过杀死不洁与邪恶生物获得力量。"},
+        {"call upon the Shining One for a divine shield", "呼唤光辉者赋予神圣护盾"},
+        {"channel blasts of cleansing flame", "引导净化之焰"},
+        {"summon a divine warrior", "召唤神圣战士"},
+        {"The Shining One will bless your weapon with holy wrath... once.", "光辉者将为你的武器加持神圣之怒……一次。"},
+        {"The Shining One is no longer ready to bless your weapon.", "光辉者尚未准备好再次祝福你的武器。"},
+        // Kikubaaqudgha
+        {"bring forth the wretched and dying", "唤来悲惨与垂死之物"},
+        {"Kikubaaqudgha is now protecting you from necromantic miscasts and death curses.", "奇库巴库哈现在保护你免受死灵法术失败和死亡诅咒的伤害。"},
+        {"Kikubaaqudgha will no longer protect you from necromantic miscasts or death curses.", "奇库巴库哈不再保护你免受死灵法术失败或死亡诅咒的伤害。"},
+        {"Kikubaaqudgha protects you from necromantic miscasts and death curses.", "奇库巴库哈保护你免受死灵法术失败和死亡诅咒的伤害。"},
+        {"Kikubaaqudgha is now protecting you from unholy torment.", "奇库巴库哈现在保护你免受不洁折磨。"},
+        {"Kikubaaqudgha will no longer protect you from unholy torment.", "奇库巴库哈不再保护你免受不洁折磨。"},
+        {"Kikubaaqudgha protects you from unholy torment.", "奇库巴库哈保护你免受不洁折磨。"},
+        {"invoke the sign of ruin", "唤起毁灭之印"},
+        {"Kikubaaqudgha will grant you forbidden knowledge or bloody your weapon with pain... once.", "奇库巴库哈将赐予你禁忌知识或为你的武器加持痛苦……一次。"},
+        {"Kikubaaqudgha is no longer ready to enhance your necromancy.", "奇库巴库哈尚未准备好强化你的死灵法术。"},
+        {"Kikubaaqudgha will grant you forbidden knowledge.", "奇库巴库哈将赐予你禁忌知识。"},
+        // Yredelemnul
+        {"light the black torch and reap souls in Yredelemnul's name", "点燃黑色火炬，以伊莱德莱姆努尔之名收割灵魂"},
+        {"recall your undead harvest", "召回你的亡灵收成"},
+        {"Yredelemnul will now gift you temporary undead servants when you light the torch.", "伊莱德莱姆努尔现在会在你点燃火炬时赐予你临时亡灵仆从。"},
+        {"Yredelemnul will no longer gift you temporary undead servants when you light the torch.", "伊莱德莱姆努尔不再在你点燃火炬时赐予你临时亡灵仆从。"},
+        {"Yredelemnul will gift you temporary undead servants when you light the torch.", "伊莱德莱姆努尔会在你点燃火炬时赐予你临时亡灵仆从。"},
+        {"hurl gouts of umbral torchlight", "投掷暗影火炬之光"},
+        {"bind living souls", "束缚活物灵魂"},
+        {"engulf your surroundings in Yredelemnul's grip", "用伊莱德莱姆努尔之握吞噬周围"},
+        // Vehumet
+        {"gain magical power from killing", "通过杀戮获得魔力"},
+        {"Vehumet is now aiding your destructive spells.", "维胡梅特现在协助你的破坏性法术。"},
+        {"Vehumet will no longer aid your destructive spells.", "维胡梅特不再协助你的破坏性法术。"},
+        {"Vehumet aids your destructive spells.", "维胡梅特协助你的破坏性法术。"},
+        {"Vehumet is now extending the range of your destructive spells.", "维胡梅特现在扩大你破坏性法术的射程。"},
+        {"Vehumet will no longer extend the range of your destructive spells.", "维胡梅特不再扩大你破坏性法术的射程。"},
+        {"Vehumet extends the range of your destructive spells.", "维胡梅特扩大你破坏性法术的射程。"},
+        // Okawaru
+        {"Okawaru requires that you fight alone, and prevents you from gaining allies.", "奥卡瓦鲁要求你独自战斗，阻止你获得盟友。"},
+        {"gain great but temporary skills", "获得强大但短暂的技能"},
+        {"speed up your combat", "加速你的战斗"},
+        {"enter into single combat with a foe", "与敌人进入单挑"},
+        {"Okawaru will now gift you throwing weapons as you gain piety.", "奥卡瓦鲁现在会在你获得虔诚时赐予你投掷武器。"},
+        {"Okawaru will no longer gift you throwing weapons.", "奥卡瓦鲁不再赐予你投掷武器。"},
+        {"Okawaru will gift you throwing weapons as you gain piety.", "奥卡瓦鲁会在你获得虔诚时赐予你投掷武器。"},
+        {"Okawaru will grant you a choice of weapons... once.", "奥卡瓦鲁将让你从武器中挑选……一次。"},
+        {"Okawaru is no longer ready to gift you weaponry.", "奥卡瓦鲁尚未准备好赐予你武器。"},
+        {"Okawaru will grant you a choice of armour... once.", "奥卡瓦鲁将让你从护甲中挑选……一次。"},
+        {"Okawaru is no longer ready to gift you armour.", "奥卡瓦鲁尚未准备好赐予你护甲。"},
+        // Makhleb
+        {"gain health from killing", "通过杀戮获得生命"},
+        {"unleash Makhleb's destructive might", "释放马科列布的毁灭之力"},
+        {"summon an infernal servant of Makhleb", "召唤马科列布的炼狱仆从"},
+        {"Makhleb will allow you to brand your body with an infernal mark... once.", "马科列布将允许你在身体上烙印炼狱印记……一次。"},
+        {"Makhleb will no longer allow you to brand your body with an infernal mark.", "马科列布不再允许你在身体上烙印炼狱印记。"},
+        // Sif Muna
+        {"call upon Sif Muna for magical energy", "呼唤西芙·穆娜获取魔力"},
+        {"freely open your mind to new spells", "自由开放心灵学习新法术"},
+        {"forget spells at will", "随意遗忘法术"},
+        {"call upon Sif Muna to cast any spell from your library", "呼唤西芙·穆娜施展法术库中任意法术"},
+        {"Sif Muna will now gift you books as you gain piety.", "西芙·穆娜现在会在你获得虔诚时赐予你书籍。"},
+        {"Sif Muna will no longer gift you books.", "西芙·穆娜不再赐予你书籍。"},
+        {"Sif Muna will gift you books as you gain piety.", "西芙·穆娜会在你获得虔诚时赐予你书籍。"},
+        // Trog
+        {"go berserk at will", "随意进入狂暴"},
+        {"call upon Trog for regeneration and willpower", "呼唤特洛格赋予再生和意志力"},
+        {"call in reinforcements", "召唤援军"},
+        {"Trog will now gift you melee weapons as you gain piety.", "特洛格现在会在你获得虔诚时赐予你近战武器。"},
+        {"Trog will no longer gift you weapons.", "特洛格不再赐予你武器。"},
+        {"Trog will gift you melee weapons as you gain piety.", "特洛格会在你获得虔诚时赐予你近战武器。"},
+        // Nemelex
+        {"draw from decks of power", "从力量牌组中抽取"},
+        {"Nemelex will now gift you decks of power as you gain piety.", "尼姆雷斯·索布现在会在你获得虔诚时赐予你力量牌组。"},
+        {"Nemelex will no longer gift you decks.", "尼姆雷斯·索布不再赐予你牌组。"},
+        {"Nemelex will gift you decks of power as you gain piety.", "尼姆雷斯·索布会在你获得虔诚时赐予你力量牌组。"},
+        {"choose one out of three cards", "从三张牌中选择一张"},
+        {"deal four cards at a time", "一次抽取四张牌"},
+        {"stack five cards from your decks", "从牌组中堆叠五张牌"},
+        {"stack cards", "堆叠卡牌"},
+        // Elyvilon
+        {"purify yourself", "净化自己"},
+        {"heal and attempt to pacify others", "治疗并尝试安抚他人"},
+        {"provide healing for yourself", "为自己提供治疗"},
+        {"call upon Elyvilon for divine vigour", "呼唤艾莉维隆赐予神圣活力"},
+        // Lugonu
+        {"Lugonu protects you from the effects of unwielding distortion weapons.", "卢格努保护你免受卸下扭曲武器的影响。"},
+        {"Lugonu may banish nearby foes when other gods try to punish you.", "当其他神试图惩罚你时，卢格努可能会放逐附近的敌人。"},
+        {"depart the Abyss", "离开深渊"},
+        {"depart the Abyss at will", "随意离开深渊"},
+        {"banish your foes", "放逐你的敌人"},
+        {"corrupt the fabric of space", "腐蚀空间结构"},
+        {"gate yourself to the Abyss", "打开通往深渊之门"},
+        {"Lugonu will corrupt your weapon with distortion... once.", "卢格努将用扭曲腐蚀你的武器……一次。"},
+        {"Lugonu is no longer ready to corrupt your weapon.", "卢格努尚未准备好腐蚀你的武器。"},
+        // Beogh
+        {"smite your foes", "惩戒你的敌人"},
+        {"recall your apostles", "召回你的使徒"},
+        {"Beogh will now send orc apostles to challenge you in battle as you gain piety.", "比欧弗现在会在你获得虔诚时派遣兽人使徒来挑战你。"},
+        {"Beogh will no longer send orc apostles to challenge you in battle.", "比欧弗不再派遣兽人使徒来挑战你。"},
+        {"Beogh will send orc apostles to challenge you in battle as you gain piety.", "比欧弗会在你获得虔诚时派遣兽人使徒来挑战你。"},
+        {"You can recruit apostles that you defeat into your service.", "你可以将击败的使徒招募到你的麾下。"},
+        {"Your apostles are sometimes healed when you deal damage.", "你的使徒在你造成伤害时有时会获得治疗。"},
+        {"rally a vengeful horde", "集结复仇之群"},
+        {"walk on water", "在水面行走"},
+        // Jiyva
+        {"Jiyva is now protecting you from corrosive effects.", "吉瓦现在保护你免受腐蚀效果。"},
+        {"Jiyva will no longer protect you from corrosive effects.", "吉瓦不再保护你免受腐蚀效果。"},
+        {"Jiyva protects you from corrosive effects.", "吉瓦保护你免受腐蚀效果。"},
+        {"Jiyva will now mutate your body as you gain piety.", "吉瓦现在会在你获得虔诚时变异你的身体。"},
+        {"Jiyva will no longer mutate your body.", "吉瓦不再变异你的身体。"},
+        {"Jiyva will mutate your body as you gain piety.", "吉瓦会在你获得虔诚时变异你的身体。"},
+        {"call acidic ooze from nearby walls", "从附近墙壁召唤酸性软泥"},
+        {"turn your foes to slime", "将敌人化为黏泥"},
+        {"You may now expel jellies when seriously injured.", "你现在可以在受重伤时释放史莱姆。"},
+        {"You will no longer expel jellies when injured.", "你不再在受伤时释放史莱姆。"},
+        {"You may expel jellies when seriously injured.", "你可以在受重伤时释放史莱姆。"},
+        // Fedhas
+        {"You can walk through plants and fire through allied plants.", "你可以穿越植物并透过友方植物射击。"},
+        {"encircle yourself with summoned briar patches", "用召唤的荆棘丛围绕自己"},
+        {"grow a ballistomycete", "培育掷弹菌"},
+        {"transform dungeon walls and trees into plant allies", "将地下城的墙壁和树木转化为植物盟友"},
+        {"grow an oklob plant", "培育奥克罗布植物"},
+        // Cheibriados
+        {"Cheibriados is now slowing the effects of poison on you.", "切布理亚多现在减缓毒素对你的影响。"},
+        {"Cheibriados will no longer slow the effects of poison on you.", "切布理亚多不再减缓毒素对你的影响。"},
+        {"Cheibriados slows the effects of poison on you.", "切布理亚多减缓毒素对你的影响。"},
+        {"bend time to slow others", "扭曲时间以减缓他人"},
+        {"warp the flow of time around you", "扭曲周围的时间流动"},
+        {"inflict damage on those overly hasty", "对那些过于急躁的人造成伤害"},
+        {"step out of the flow of time", "脱离时间流动"},
+        // Ashenzari
+        {"Ashenzari warns you of distant threats and treasures.\nAshenzari shows you where magical portals lie.", "阿申扎里警告你远方的威胁和宝藏。\n阿申扎里向你展示魔法传送门的位置。"},
+        {"Ashenzari will now identify your possessions.", "阿申扎里现在会鉴定你的所有物。"},
+        {"Ashenzari will no longer identify your possesions.", "阿申扎里不再鉴定你的所有物。"},
+        {"Ashenzari identifies your possessions.", "阿申扎里鉴定你的所有物。"},
+        {"Ashenzari will now reveal the unseen.", "阿申扎里现在会揭示不可见之物。"},
+        {"Ashenzari will no longer reveal the unseen.", "阿申扎里不再揭示不可见之物。"},
+        {"Ashenzari reveals the unseen.", "阿申扎里揭示不可见之物。"},
+        {"Ashenzari will now keep your mind clear.", "阿申扎里现在会保持你头脑清醒。"},
+        {"Ashenzari will no longer keep your mind clear.", "阿申扎里不再保持你头脑清醒。"},
+        {"Ashenzari keeps your mind clear.", "阿申扎里保持你头脑清醒。"},
+        {"Ashenzari will now protect you from the dungeon's malevolent forces.", "阿申扎里现在保护你免受地下城恶势力的侵害。"},
+        {"Ashenzari no longer protects you from the dungeon's malevolent forces.", "阿申扎里不再保护你免受地下城恶势力的侵害。"},
+        {"Ashenzari protects you from the dungeon's malevolent forces.", "阿申扎里保护你免受地下城恶势力的侵害。"},
+        {"Ashenzari reveals the structure of the nearby dungeon.", "阿申扎里揭示附近地下城的结构。"},
+        {"Ashenzari no longer reveals the structure of the nearby dungeon.", "阿申扎里不再揭示附近地下城的结构。"},
+        // Dithmenos
+        {"Dithmenos quiets all noise in your surroundings.", "迪斯姆诺消除了你周围的所有噪音。"},
+        {"Dithmenos no longer quiets all noise in your surroundings.", "迪斯姆诺不再消除你周围的所有噪音。"},
+        {"Your shadow now sometimes tangibly mimics your actions.", "你的影子现在有时会实体化模仿你的动作。"},
+        {"Your shadow no longer tangibly mimics your actions.", "你的影子不再实体化模仿你的动作。"},
+        {"Your shadow sometimes tangibly mimics your actions.", "你的影子有时会实体化模仿你的动作。"},
+        {"mislead enemies by swapping places with your shadow", "与影子交换位置以误导敌人"},
+        {"unleash an enemy's spells as if they were a marionette", "将敌人的法术像玩偶一样释放"},
+        {"surround yourself with impenetrable night", "用无法穿透的夜幕包围自己"},
+        // Gozag
+        {"Gozag turns your defeated foes' bodies to gold.", "哥萨戈将你击败的敌人的尸体化为黄金。"},
+        {"Your enemies may become distracted by gold.", "你的敌人可能会被黄金分散注意力。"},
+        {"petition Gozag for potion effects", "向哥萨戈请求药水效果"},
+        {"fund merchants seeking to open stores in the dungeon", "资助寻求在地下城开设商店的商人"},
+        {"bribe branches to halt enemies' attacks and recruit allies", "贿赂分支区域以停止敌人攻击并招募盟友"},
+        // Qazlal
+        {"Qazlal grants you and your divine allies immunity to clouds.", "卡兹拉尔赐予你和你的神圣盟友云雾免疫。"},
+        {"You are now surrounded by a storm.", "你现在被风暴包围。"},
+        {"Your storm dissipates completely.", "你的风暴完全消散了。"},
+        {"You are surrounded by a storm.", "你被风暴包围。"},
+        {"call upon nature to destroy your foes", "呼唤自然摧毁你的敌人"},
+        {"give life to nearby clouds", "赋予附近云雾生命"},
+        {"The storm surrounding you is now powerful enough to repel missiles.", "包围你的风暴现在强大到足以击退飞弹。"},
+        {"The storm surrounding you is now too weak to repel missiles.", "包围你的风暴现在太弱了，无法击退飞弹。"},
+        {"The storm surrounding you is powerful enough to repel missiles.", "包围你的风暴强大到足以击退飞弹。"},
+        {"You will now adapt resistances upon receiving elemental damage.", "你现在会在受到元素伤害时适应抗性。"},
+        {"You will no longer adapt resistances upon receiving elemental damage.", "你不再在受到元素伤害时适应抗性。"},
+        {"You adapt resistances upon receiving elemental damage.", "你在受到元素伤害时适应抗性。"},
+        {"call upon nature's wrath in a wide area around you", "召唤自然的愤怒覆盖周围广阔区域"},
+        // Ru
+        {"You now exude an aura of power that intimidates your foes.", "你现在散发出威吓敌人的力量光环。"},
+        {"You no longer exude an aura of power that intimidates your foes.", "你不再散发出威吓敌人的力量光环。"},
+        {"Your aura of power can now strike those that harm you.", "你的力量光环现在可以反击伤害你的人。"},
+        {"Your aura of power no longer strikes those that harm you.", "你的力量光环不再反击伤害你的人。"},
+        {"Your aura of power can strike those that harm you.", "你的力量光环可以反击伤害你的人。"},
+        {"heal your body and restore your magic", "治愈身体并恢复魔力"},
+        {"gather your power into a mighty leap", "将力量凝聚为强力跳跃"},
+        {"wreak a terrible wrath on your foes", "对敌人施加可怕的愤怒"},
+        // Uskayaw
+        {"stomp with the beat", "随节拍跺脚"},
+        {"pass through a line of other dancers", "穿过其他舞者的队列"},
+        {"Uskayaw will force your foes to helplessly watch your dance.", "乌斯卡亚将迫使你的敌人无助地观看你的舞蹈。"},
+        {"Uskayaw will no longer force your foes to helplessly watch your dance.", "乌斯卡亚不再迫使你的敌人无助地观看你的舞蹈。"},
+        {"Uskayaw will force your foes to share their pain.", "乌斯卡亚将迫使你的敌人分享他们的痛苦。"},
+        {"Uskayaw will no longer force your foes to share their pain.", "乌斯卡亚不再迫使你的敌人分享他们的痛苦。"},
+        {"merge with and destroy a victim", "与目标融合并摧毁之"},
+        // Hepliaklqana
+        {"Your ancestor manifests to aid you.", "你的先祖显现以帮助你。"},
+        {"recall your ancestor", "召回你的先祖"},
+        {"remember your ancestor's identity", "回忆起你先祖的身份"},
+        {"swap creatures with your ancestor", "与你的先祖交换位置"},
+        {"heal and protect your ancestor", "治疗并保护你的先祖"},
+        {"You now drain nearby creatures when transferring your ancestor.", "你现在在转移先祖时会吸取附近的生物。"},
+        {"You no longer drain nearby creatures when transferring your ancestor.", "你不再在转移先祖时吸取附近的生物。"},
+        {"You drain nearby creatures when transferring your ancestor.", "你在转移先祖时会吸取附近的生物。"},
+        // Wu Jian
+        {"perform damaging attacks by moving towards foes", "通过向敌人移动来施展伤害性攻击"},
+        {"perform lunging strikes", "施展突刺攻击"},
+        {"lightly attack monsters by moving around them", "通过在怪物周围移动来轻击"},
+        {"perform spinning attacks", "施展旋转攻击"},
+        {"perform airborne attacks", "施展空中攻击"},
+        {"briefly move at supernatural speeds", "短暂以超自然速度移动"},
+        {"move at supernatural speeds", "以超自然速度移动"},
+        {"summon a storm of heavenly clouds to empower your attacks", "召唤天界云暴来强化你的攻击"},
+        {"summon a storm of heavenly clouds", "召唤天界云暴"},
+        // Ignis
+        {"You are resistant to fire.", "你抵抗火焰。"},
+        {"armour yourself in flame", "用火焰武装自己"},
+        {"call a swarm of foxfires against your foes", "召唤一群狐火攻击敌人"},
+        {"rocket upward and away, once", "猛然跃起并撤离，一次"},
+        // Xom / other specials
+        {"gain power from chaos", "从混乱中获得力量"},
+    };
+    auto it = zh_map.find(en);
+    return it != zh_map.end() ? it->second.c_str() : en;
+}
+
 /**
  * Print a description of getting/losing this power.
  *
@@ -497,10 +736,27 @@ void god_power::display(bool gaining, const char* fmt) const
     if (str[0] == '\0')
         return;
 
+    const char* zh_str = Options.language == lang_t::ZH ? zh_god_power(str) : nullptr;
     if (isupper(str[0]))
-        god_speaks(you.religion, str);
+        god_speaks(you.religion, zh_str ? zh_str : str);
     else
-        god_speaks(you.religion, make_stringf(fmt, str).c_str());
+    {
+        const char* zh_fmt = nullptr;
+        if (Options.language == lang_t::ZH)
+        {
+            // Translate the format string too
+            static const char* fmt_zh_map[][2] = {
+                {"You can now %s.", "你现在可以%s了。"},
+                {"You can no longer %s.", "你不再能%s了。"},
+                {"You have enough gold to %s.", "你有足够的金币来%s。"},
+            };
+            for (auto& p : fmt_zh_map)
+                if (!strcmp(fmt, p[0])) { zh_fmt = p[1]; break; }
+        }
+        god_speaks(you.religion,
+                   make_stringf(zh_fmt ? zh_fmt : fmt,
+                                zh_str ? zh_str : str).c_str());
+    }
 }
 
 static void _place_delayed_monsters();
@@ -677,21 +933,31 @@ void dec_penance(god_type god, int val)
         you.penance[god] = 0;
 
         mark_milestone("god.mollify",
-                       "mollified " + god_name(god) + ".");
+                       (T_("mollified ")) + god_name(god) + ".");
 
         if (god == GOD_IGNIS)
         {
-            simple_god_message(", with one final cry of rage, "
-                               "burns out of existence.", false, god);
+            if (Options.language == lang_t::ZH)
+                simple_god_message("发出最后一声怒吼，燃烧殆尽。",
+                                   false, god);
+            else
+                simple_god_message(", with one final cry of rage, "
+                                   "burns out of existence.", false, god);
             add_daction(DACT_REMOVE_IGNIS_ALTARS);
         }
         else
         {
             const bool dead_jiyva = (god == GOD_JIYVA && jiyva_is_dead());
-            simple_god_message(
-                make_stringf(" seems mollified%s.",
-                             dead_jiyva ? ", and vanishes" : "").c_str(),
-                false, god);
+            if (Options.language == lang_t::ZH)
+                simple_god_message(
+                    make_stringf("被安抚了%s。",
+                                 dead_jiyva ? "，然后消失了" : "").c_str(),
+                    false, god);
+            else
+                simple_god_message(
+                    make_stringf(" seems mollified%s.",
+                                 dead_jiyva ? ", and vanishes" : "").c_str(),
+                    false, god);
 
             if (dead_jiyva)
                 add_daction(DACT_JIYVA_DEAD);
@@ -709,29 +975,29 @@ void dec_penance(god_type god, int val)
             // TSO's halo is once more available.
             if (!had_halo && have_passive(passive_t::halo))
             {
-                mprf(MSGCH_GOD, "Your divine halo returns!");
+                mprf(MSGCH_GOD, T_("Your divine halo returns!"));
                 invalidate_agrid(true);
             }
             if (!had_umbra && have_passive(passive_t::umbra))
             {
-                mprf(MSGCH_GOD, "Your aura of darkness returns!");
+                mprf(MSGCH_GOD, T_("Your aura of darkness returns!"));
                 invalidate_agrid(true);
             }
             if (have_passive(passive_t::sinv))
             {
-                mprf(MSGCH_GOD, "Your vision regains its divine sight.");
+                mprf(MSGCH_GOD, T_("Your vision regains its divine sight."));
                 autotoggle_autopickup(false);
             }
             if (have_passive(passive_t::stat_boost))
             {
-                simple_god_message(" restores the support of your attributes.");
+                simple_god_message(T_(" restores the support of your attributes."));
                 redraw_screen();
                 update_screen();
                 notify_stat_change();
             }
             if (have_passive(passive_t::storm_shield))
             {
-                mprf(MSGCH_GOD, "A storm instantly forms around you!");
+                mprf(MSGCH_GOD, T_("A storm instantly forms around you!"));
                 you.redraw_armour_class = true; // also handles shields
             }
             // When you've worked through all your penance, you get
@@ -755,7 +1021,7 @@ void dec_penance(god_type god, int val)
         else if (god == GOD_HEPLIAKLQANA)
         {
             calc_hp(); // frailty ends
-            mprf(MSGCH_GOD, god, "Your full life essence returns.");
+            mprf(MSGCH_GOD, god, T_("Your full life essence returns."));
         }
     }
     else
@@ -797,7 +1063,7 @@ static bool _need_water_walking()
 
 static void _grant_temporary_waterwalk()
 {
-    mpr("Your water-walking will last only until you reach solid ground.");
+    mpr(T_("Your water-walking will last only until you reach solid ground."));
     you.props[TEMP_WATERWALK_KEY] = true;
 }
 
@@ -831,17 +1097,16 @@ string ignore_faith_reason()
     switch (you.religion)
     {
     case GOD_GOZAG:
-        return " cares for nothing but gold!";
+        return T_(" cares for nothing but gold!");
     case GOD_ASHENZARI:
-        return " cares nothing for such trivial demonstrations of your faith.";
+        return T_(" cares nothing for such trivial demonstrations of your faith.");
     case GOD_IGNIS:
         // XXX: would it be better to offer a discount..?
-        return " already offers you all the fire that remains!";
+        return T_(" already offers you all the fire that remains!");
     case GOD_RU:
         if (you.raw_piety >= piety_breakpoint(5))
         {
-            return " says: An ascetic of your devotion"
-                   " has no use for such trinkets.";
+            return T_(" says: An ascetic of your devotion has no use for such trinkets.");
         }
         break;
     default:
@@ -882,12 +1147,12 @@ static void _inc_penance(god_type god, int val)
 
         if (had_halo && !have_passive(passive_t::halo))
         {
-            mprf(MSGCH_GOD, god, "Your divine halo fades away.");
+            mprf(MSGCH_GOD, god, T_("Your divine halo fades away."));
             invalidate_agrid();
         }
         if (had_umbra && !have_passive(passive_t::umbra))
         {
-            mprf(MSGCH_GOD, god, "Your aura of darkness fades away.");
+            mprf(MSGCH_GOD, god, T_("Your aura of darkness fades away."));
             invalidate_agrid();
         }
 
@@ -947,29 +1212,29 @@ static void _inc_penance(god_type god, int val)
             // just gained penance.
             if (you.piety() >= piety_breakpoint(0))
             {
-                mprf(MSGCH_GOD, god, "The storm surrounding you dissipates.");
+                mprf(MSGCH_GOD, god, T_("The storm surrounding you dissipates."));
                 you.redraw_armour_class = true;
             }
             if (you.duration[DUR_QAZLAL_FIRE_RES])
             {
-                mprf(MSGCH_DURATION, "Your resistance to fire fades away.");
+                mprf(MSGCH_DURATION, T_("Your resistance to fire fades away."));
                 you.duration[DUR_QAZLAL_FIRE_RES] = 0;
             }
             if (you.duration[DUR_QAZLAL_COLD_RES])
             {
-                mprf(MSGCH_DURATION, "Your resistance to cold fades away.");
+                mprf(MSGCH_DURATION, T_("Your resistance to cold fades away."));
                 you.duration[DUR_QAZLAL_COLD_RES] = 0;
             }
             if (you.duration[DUR_QAZLAL_ELEC_RES])
             {
                 mprf(MSGCH_DURATION,
-                     "Your resistance to electricity fades away.");
+                     T_("Your resistance to electricity fades away."));
                 you.duration[DUR_QAZLAL_ELEC_RES] = 0;
             }
             if (you.duration[DUR_QAZLAL_AC])
             {
                 mprf(MSGCH_DURATION,
-                     "Your resistance to physical damage fades away.");
+                     T_("Your resistance to physical damage fades away."));
                 you.duration[DUR_QAZLAL_AC] = 0;
                 you.redraw_armour_class = true;
             }
@@ -1162,8 +1427,8 @@ static bool _give_nemelex_gift(bool forced = false)
 
     if (gift_cards())
     {
-        simple_god_message(" deals you some cards!");
-        mprf(MSGCH_GOD, "You now have %s.", deck_summary().c_str());
+        simple_god_message(T_(" deals you some cards!"));
+        mprf(MSGCH_GOD, T_("You now have %s."), deck_summary().c_str());
     }
     _inc_gift_timeout(5 + random2avg(9, 2));
     you.num_current_gifts[you.religion]++;
@@ -1174,7 +1439,7 @@ static bool _give_nemelex_gift(bool forced = false)
 
 static bool _jiyva_mutate()
 {
-    simple_god_message(" alters your body.");
+    simple_god_message(T_(" alters your body."));
 
     bool deleted = false;
     // Go through each level of each existing non-temp, non-innate mutation.
@@ -1377,13 +1642,13 @@ static bool _give_trog_oka_gift(bool forced)
     switch (gift_type)
     {
     case OBJ_MISSILES:
-        simple_god_message(" grants you throwing weapons!");
+        simple_god_message(T_(" grants you throwing weapons!"));
         break;
     case OBJ_WEAPONS:
-        simple_god_message(" grants you a weapon!");
+        simple_god_message(T_(" grants you a weapon!"));
         break;
     default:
-        simple_god_message(" grants you bugs!");
+        simple_god_message(T_(" grants you bugs!"));
         break;
     }
 
@@ -1392,7 +1657,7 @@ static bool _give_trog_oka_gift(bool forced)
                 false, you.pos()) != NON_ITEM;
     if (!success)
     {
-        mpr("...but nothing appears.");
+        mpr(T_("...but nothing appears."));
         return false;
     }
     switch (gift_type)
@@ -1427,7 +1692,7 @@ static bool _gift_jiyva_gift(bool forced)
             return true;
         }
         else
-            mpr("You feel as though nothing has changed.");
+            mpr(T_("You feel as though nothing has changed."));
     }
     return false;
 }
@@ -1476,7 +1741,7 @@ static bool _give_sif_gift(bool forced)
     if (item_index == NON_ITEM)
         return false;
 
-    simple_god_message(" grants you a gift!");
+    simple_god_message(T_(" grants you a gift!"));
     // included in default force_more_message
 
     you.num_current_gifts[you.religion]++;
@@ -1559,9 +1824,9 @@ static bool _give_kiku_gift(bool forced)
             new_spell = true;
 
     if (!new_spell)
-        simple_god_message(" has no new spells for you at this time.");
+        simple_god_message(T_(" has no new spells for you at this time."));
     else
-        simple_god_message(" grants you a gift!");
+        simple_god_message(T_(" grants you a gift!"));
     // included in default force_more_message
 
     sort(chosen_spells.begin(), chosen_spells.end(), _sort_spell_level);
@@ -1589,7 +1854,7 @@ static bool _handle_veh_gift(bool forced)
         if (!offers.empty())
         {
             you.vehumet_gifts = offers;
-            string prompt = " offers you knowledge of ";
+            string prompt = T_(" offers you knowledge of ");
             for (auto it = offers.begin(); it != offers.end(); ++it)
             {
                 if (it != offers.begin())
@@ -1609,8 +1874,7 @@ static bool _handle_veh_gift(bool forced)
             prompt += ".";
             if (gifts >= NUM_VEHUMET_GIFTS - 1)
             {
-                prompt += " These spells will remain available"
-                          " as long as you worship Vehumet.";
+                prompt += T_(" These spells will remain available as long as you worship Vehumet.");
             }
 
             you.duration[DUR_VEHUMET_GIFT] = (100 + random2avg(100, 2)) * BASELINE_DELAY;
@@ -1795,10 +2059,16 @@ mgen_data hepliaklqana_ancestor_gen_data()
 /// Print a message for an ancestor's *something* being gained.
 static void _regain_memory(const monster &ancestor, string memory)
 {
-    mprf("%s regains the memory of %s %s.",
-         ancestor.name(DESC_YOUR, true).c_str(),
-         ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
-         memory.c_str());
+    if (Options.language == lang_t::ZH)
+        mprf("%s恢复了%s%s的记忆。",
+             ancestor.name(DESC_YOUR, true).c_str(),
+             ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
+             memory.c_str());
+    else
+        mprf("%s regains the memory of %s %s.",
+             ancestor.name(DESC_YOUR, true).c_str(),
+             ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
+             memory.c_str());
 }
 
 static string _item_ego_name(object_class_type base_type, int brand)
@@ -2124,19 +2394,110 @@ bool do_god_gift(bool forced)
     return success;
 }
 
+/// Always return the English name of a god, regardless of language setting.
+/// Used for database lookups (getLongDescription, getMiscString, etc.)
+/// whose keys are in English.
+const char* _god_name_en(god_type which_god)
+{
+    switch (which_god)
+    {
+    case GOD_ZIN:           return "Zin";
+    case GOD_SHINING_ONE:   return "the Shining One";
+    case GOD_KIKUBAAQUDGHA: return "Kikubaaqudgha";
+    case GOD_YREDELEMNUL:   return "Yredelemnul";
+    case GOD_VEHUMET:       return "Vehumet";
+    case GOD_OKAWARU:       return "Okawaru";
+    case GOD_MAKHLEB:       return "Makhleb";
+    case GOD_SIF_MUNA:      return "Sif Muna";
+    case GOD_TROG:          return "Trog";
+    case GOD_NEMELEX_XOBEH: return "Nemelex Xobeh";
+    case GOD_ELYVILON:      return "Elyvilon";
+    case GOD_LUGONU:        return "Lugonu";
+    case GOD_BEOGH:         return "Beogh";
+    case GOD_JIYVA:         return "Jiyva";
+    case GOD_FEDHAS:        return "Fedhas";
+    case GOD_CHEIBRIADOS:   return "Cheibriados";
+    case GOD_XOM:           return "Xom";
+    case GOD_ASHENZARI:     return "Ashenzari";
+    case GOD_DITHMENOS:     return "Dithmenos";
+    case GOD_GOZAG:         return "Gozag";
+    case GOD_QAZLAL:        return "Qazlal";
+    case GOD_RU:            return "Ru";
+    case GOD_USKAYAW:       return "Uskayaw";
+    case GOD_HEPLIAKLQANA:  return "Hepliaklqana";
+    case GOD_WU_JIAN:       return "Wu Jian";
+    case GOD_IGNIS:         return "Ignis";
+    default:                return "";
+    }
+}
+
 string god_name(god_type which_god, bool long_name)
 {
+    const bool zh = Options.language == lang_t::ZH;
+
     if (which_god == GOD_JIYVA)
     {
-        return god_name_jiyva(long_name) +
-               (long_name? " the Shapeless" : "");
+        if (long_name)
+        {
+            const string jiyva_name = god_name_jiyva(true);
+            return zh
+                ? "吉瓦「" + you.jiyva_second_name + "」无定形者"
+                : jiyva_name + " the Shapeless";
+        }
+        return zh ? "吉瓦" : god_name_jiyva(false);
     }
 
     if (long_name)
     {
-        const string shortname = god_name(which_god, false);
-        const string longname = getMiscString(shortname + " lastname");
-        return longname.empty()? shortname : longname;
+        // Use English name for getMiscString database lookup,
+        // but display name follows language setting.
+        const string en_short = _god_name_en(which_god);
+        const string longname = getMiscString(en_short + " lastname");
+        if (!longname.empty())
+            return longname;
+        return god_name(which_god, false);
+    }
+
+    // Short names
+    if (zh)
+    {
+        switch (which_god)
+        {
+        case GOD_NO_GOD:        return "无神";
+        case GOD_RANDOM:        return "随机";
+        case GOD_NAMELESS:      return "无名";
+        case GOD_ZIN:           return "辛";
+        case GOD_SHINING_ONE:   return "光辉者";
+        case GOD_KIKUBAAQUDGHA: return "奇库巴库哈";
+        case GOD_YREDELEMNUL:   return "伊莱德莱姆努尔";
+        case GOD_VEHUMET:       return "维胡梅特";
+        case GOD_OKAWARU:       return "奥卡瓦鲁";
+        case GOD_MAKHLEB:       return "马科列布";
+        case GOD_SIF_MUNA:      return "西芙·穆娜";
+        case GOD_TROG:          return "特洛格";
+        case GOD_NEMELEX_XOBEH: return "尼姆雷斯·索布";
+        case GOD_ELYVILON:      return "艾利维隆";
+        case GOD_LUGONU:        return "卢格努";
+        case GOD_BEOGH:         return "比欧弗";
+        case GOD_FEDHAS:        return "费德哈";
+        case GOD_CHEIBRIADOS:   return "切布理亚多";
+        case GOD_XOM:           return "佐姆";
+        case GOD_ASHENZARI:     return "艾申扎利";
+        case GOD_DITHMENOS:     return "迪斯姆诺";
+        case GOD_GOZAG:         return "哥萨戈";
+        case GOD_QAZLAL:        return "卡兹拉尔";
+        case GOD_RU:            return "入";
+#if TAG_MAJOR_VERSION == 34
+        case GOD_PAKELLAS:      return "帕克拉斯";
+#endif
+        case GOD_USKAYAW:       return "乌斯卡亚";
+        case GOD_HEPLIAKLQANA:  return "惠普利亚卡纳";
+        case GOD_WU_JIAN:       return "无间";
+        case GOD_IGNIS:         return "伊格尼斯";
+        case GOD_ECUMENICAL:    return "未知之神";
+        case NUM_GODS:          return "Buggy";
+        default:                return "";
+        }
     }
 
     switch (which_god)
@@ -2181,10 +2542,10 @@ string god_name(god_type which_god, bool long_name)
 
 string god_name_jiyva(bool second_name)
 {
-    string name = "Jiyva";
+    const bool zh = Options.language == lang_t::ZH;
+    string name = T_("Jiyva");
     if (second_name)
         name += " " + you.jiyva_second_name;
-
     return name;
 }
 
@@ -2203,6 +2564,19 @@ string wu_jian_random_sifu_name()
     }
 }
 
+/// Case-insensitive ASCII string equality comparison.
+/// Uses the project's internal toalower() to avoid locale-dependent
+/// behaviour of towlower on MinGW.
+static bool _ascii_ieq(const string& a, const string& b)
+{
+    if (a.size() != b.size())
+        return false;
+    for (size_t i = 0; i < a.size(); i++)
+        if (toalower((unsigned char)a[i]) != toalower((unsigned char)b[i]))
+            return false;
+    return true;
+}
+
 god_type str_to_god(const string &_name, bool exact)
 {
     string target(_name);
@@ -2217,9 +2591,11 @@ god_type str_to_god(const string &_name, bool exact)
     for (god_iterator it; it; ++it)
     {
         god_type god = *it;
-        string name = lowercase_string(god_name(god, false));
+        // Use _god_name_en() to always get the English name for matching,
+        // since input (from .des files, Lua, saves) is always in English.
+        string name = lowercase_string(_god_name_en(god));
 
-        if (name == target)
+        if (_ascii_ieq(name, target))
             return god;
 
         if (!exact && name.find(target) != string::npos)
@@ -2294,11 +2670,18 @@ void dock_piety(int piety_loss, int penance, bool no_lecture)
         if (last_piety_lecture != you.num_turns)
         {
             // output guilt message:
-            mprf("You feel%sguilty.",
-                 (piety_loss == 1) ? " a little " :
-                 (piety_loss <  5) ? " " :
-                 (piety_loss < 10) ? " very "
-                                   : " extremely ");
+            if (Options.language == lang_t::ZH)
+                mprf("你感到%s愧疚。",
+                     (piety_loss == 1) ? "有点" :
+                     (piety_loss <  5) ? "" :
+                     (piety_loss < 10) ? "非常"
+                                       : "极其");
+            else
+                mprf("You feel%sguilty.",
+                     (piety_loss == 1) ? " a little " :
+                     (piety_loss <  5) ? " " :
+                     (piety_loss < 10) ? " very "
+                                       : " extremely ");
         }
 
         last_piety_lecture = you.num_turns;
@@ -2312,8 +2695,9 @@ void dock_piety(int piety_loss, int penance, bool no_lecture)
         if (last_penance_lecture != you.num_turns && !no_lecture)
         {
             god_speaks(you.religion,
-                       you.religion == GOD_JIYVA ? "Furious gurgling surrounds you!"
-                       : "\"You will pay for your transgression, mortal!\"");
+                       you.religion == GOD_JIYVA
+                       ? (T_("Furious gurgling surrounds you!"))
+                       : (T_("\"You will pay for your transgression, mortal!\"")));
             last_penance_lecture = you.num_turns;
         }
 
@@ -2384,8 +2768,10 @@ static void _handle_piety_gain(int old_piety)
                 // In exchange for your hp, you get an ancestor!
                 const mgen_data mg = hepliaklqana_ancestor_gen_data();
                 delayed_monster(mg);
-                simple_god_message(make_stringf(" forms a fragment of your life essence"
-                                                " into the memory of your ancestor, %s!",
+                simple_god_message(make_stringf(Options.language == lang_t::ZH
+                                                ? "将你的一部分生命精华凝聚为你先祖%s的记忆！"
+                                                : " forms a fragment of your life essence"
+                                                  " into the memory of your ancestor, %s!",
                                                 mg.mname.c_str()).c_str());
             }
 
@@ -2405,13 +2791,12 @@ static void _handle_piety_gain(int old_piety)
                 }
             }
             if (rank == rank_for_passive(passive_t::halo))
-                mprf(MSGCH_GOD, "A divine halo surrounds you!");
+                mprf(MSGCH_GOD, T_("A divine halo surrounds you!"));
             if (rank == rank_for_passive(passive_t::umbra))
-                mprf(MSGCH_GOD, "You are shrouded in an aura of darkness!");
+                mprf(MSGCH_GOD, T_("You are shrouded in an aura of darkness!"));
             if (rank == rank_for_passive(passive_t::jelly_regen))
             {
-                simple_god_message(" begins accelerating your health and magic "
-                                "regeneration.");
+                simple_god_message(T_(" begins accelerating your health and magic regeneration."));
             }
             if (rank == rank_for_passive(passive_t::sinv))
                 autotoggle_autopickup(false);
@@ -2428,8 +2813,7 @@ static void _handle_piety_gain(int old_piety)
             if (have_passive(passive_t::unlock_slime_vaults)
                 && can_do_capstone_ability(you.religion))
             {
-                simple_god_message(" will now unseal the treasures of the "
-                                "Slime Pits.");
+                simple_god_message(T_(" will now unseal the treasures of the Slime Pits."));
                 dlua.callfn("dgn_set_persistent_var", "sb",
                             "fix_slime_vaults", true);
                 // If we're on Slime:$, pretend we just entered the level
@@ -2446,7 +2830,7 @@ static void _handle_piety_gain(int old_piety)
                 && rank == 2 && !you.props.exists(HEPLIAKLQANA_ALLY_TYPE_KEY))
             {
             god_speaks(you.religion,
-                        "You may now remember your ancestor's life.");
+                        T_("You may now remember your ancestor's life."));
             }
             // Qualify for an immediate apostle challenge upon hitting 3* the first time
             if (you_worship(GOD_BEOGH)
@@ -2484,10 +2868,10 @@ static void _handle_piety_gain(int old_piety)
     if (have_passive(passive_t::stat_boost)
         && chei_stat_boost(old_piety) < chei_stat_boost())
     {
-        string msg = " raises the support of your attributes";
+        string msg = T_(" raises the support of your attributes");
         if (have_passive(passive_t::slowed))
-            msg += " as your movement slows";
-        msg += ".";
+            msg += T_(" as your movement slows");
+        msg += T_(".");
         simple_god_message(msg.c_str());
         notify_stat_change();
     }
@@ -2679,10 +3063,10 @@ static void _handle_piety_loss(int old_piety)
     if (will_have_passive(passive_t::stat_boost)
         && chei_stat_boost(old_piety) > chei_stat_boost())
     {
-        string msg = " lowers the support of your attributes";
+        string msg = T_(" lowers the support of your attributes");
         if (will_have_passive(passive_t::slowed))
-            msg += " as your movement quickens";
-        msg += ".";
+            msg += T_(" as your movement quickens");
+        msg += T_(".");
         simple_god_message(msg.c_str());
         notify_stat_change();
     }
@@ -2766,10 +3150,10 @@ static string _god_hates_your_god_reaction(god_type god, god_type your_god)
 
         // Zin hates chaotic gods.
         if (god == GOD_ZIN && is_chaotic_god(your_god))
-            return " for chaos";
+            return T_(" for chaos");
 
         if (is_evil_god(your_god))
-            return " for evil";
+            return T_(" for evil");
     }
 
     return "";
@@ -2833,7 +3217,7 @@ static void _ash_uncurse()
             continue;
         if (!uncursed)
         {
-            mprf(MSGCH_GOD, GOD_ASHENZARI, "Your curses shatter.");
+            mprf(MSGCH_GOD, GOD_ASHENZARI, T_("Your curses shatter."));
             uncursed = true;
         }
         unequip_item(entry.get_item());
@@ -2852,7 +3236,7 @@ static void _jiyva_remove_slime_mutations()
             if (!slimy)
             {
                 slimy = true;
-                simple_god_message(" gift of slime is revoked.", true, GOD_JIYVA);
+                simple_god_message(T_(" gift of slime is revoked."), true, GOD_JIYVA);
             }
             // XXX: replicates _god_wrath_name()
             while (_delete_single_mutation_level(static_cast<mutation_type>(i), reason, true));
@@ -2921,7 +3305,7 @@ void excommunication(bool voluntary, god_type new_god)
     you.wield_change = true;
     quiver::set_needs_redraw();
 
-    mpr("You have lost your religion!");
+    mpr(T_("You have lost your religion!"));
     // included in default force_more_message
 
     if (old_god == GOD_BEOGH)
@@ -2930,15 +3314,15 @@ void excommunication(bool voluntary, god_type new_god)
         update_player_symbol();
     }
 
-    mark_milestone("god.renounce", "abandoned " + god_name(old_god) + ".");
+    mark_milestone("god.renounce", (T_("abandoned ")) + god_name(old_god) + ".");
     update_whereis();
 
     if (old_god == GOD_IGNIS)
-        simple_god_message(" blazes with a vengeful fury!", false, old_god);
+        simple_god_message(T_(" blazes with a vengeful fury!"), false, old_god);
     else if (god_hates_your_god(old_god, new_god))
     {
         simple_god_message(
-            make_stringf(" does not appreciate desertion%s!",
+            make_stringf(T_(" does not appreciate desertion%s!"),
                          _god_hates_your_god_reaction(old_god, new_god).c_str()).c_str(),
             false, old_god);
     }
@@ -2966,7 +3350,7 @@ void excommunication(bool voluntary, god_type new_god)
     switch (old_god)
     {
     case GOD_KIKUBAAQUDGHA:
-        mprf(MSGCH_GOD, old_god, "You sense decay."); // in the state of Denmark
+        mprf(MSGCH_GOD, old_god, T_("You sense decay.")); // in the state of Denmark
         add_daction(DACT_ROT_CORPSES);
         break;
 
@@ -3003,8 +3387,8 @@ void excommunication(bool voluntary, god_type new_god)
         break;
 
     case GOD_BEOGH:
-        simple_god_message(" voice booms out: Traitor to your kin!", true, old_god);
-        mprf(MSGCH_MONSTER_ENCHANT, "All of your followers decide to abandon you.");
+        simple_god_message(T_(" voice booms out: Traitor to your kin!"), true, old_god);
+        mprf(MSGCH_MONSTER_ENCHANT, T_("All of your followers decide to abandon you."));
 
         add_daction(DACT_ALLY_BEOGH);
         remove_all_companions(GOD_BEOGH);
@@ -3031,7 +3415,7 @@ void excommunication(bool voluntary, god_type new_god)
 
     case GOD_NEMELEX_XOBEH:
         reset_cards();
-        mprf(MSGCH_GOD, old_god, "Your access to %s's decks is revoked.",
+        mprf(MSGCH_GOD, old_god, T_("Your access to %s's decks is revoked."),
              god_name(old_god).c_str());
         break;
 
@@ -3065,7 +3449,7 @@ void excommunication(bool voluntary, god_type new_god)
 
         if (query_daction_counter(DACT_ALLY_SLIME))
         {
-            mprf(MSGCH_MONSTER_ENCHANT, "All of your fellow slimes turn on you.");
+            mprf(MSGCH_MONSTER_ENCHANT, T_("All of your fellow slimes turn on you."));
             add_daction(DACT_ALLY_SLIME);
         }
 
@@ -3075,7 +3459,7 @@ void excommunication(bool voluntary, god_type new_god)
     case GOD_FEDHAS:
         if (query_daction_counter(DACT_ALLY_PLANT))
         {
-            mprf(MSGCH_MONSTER_ENCHANT, "The plants of the dungeon turn on you.");
+            mprf(MSGCH_MONSTER_ENCHANT, T_("The plants of the dungeon turn on you."));
             add_daction(DACT_ALLY_PLANT);
         }
         break;
@@ -3092,8 +3476,7 @@ void excommunication(bool voluntary, god_type new_god)
     case GOD_GOZAG:
         if (you.attribute[ATTR_GOZAG_SHOPS_CURRENT])
         {
-            mprf(MSGCH_GOD, old_god, "Your funded stores close, unable to pay "
-                                     "their debts without your funds.");
+            mprf(MSGCH_GOD, old_god, T_("Your funded stores close, unable to pay their debts without your funds."));
             you.attribute[ATTR_GOZAG_SHOPS_CURRENT] = 0;
         }
         you.duration[DUR_GOZAG_GOLD_AURA] = 0;
@@ -3109,7 +3492,7 @@ void excommunication(bool voluntary, god_type new_god)
     case GOD_QAZLAL:
         if (old_piety >= piety_breakpoint(0))
         {
-            mprf(MSGCH_GOD, old_god, "Your storm instantly dissipates.");
+            mprf(MSGCH_GOD, old_god, T_("Your storm instantly dissipates."));
             you.redraw_armour_class = true;
         }
         if (you.duration[DUR_QAZLAL_FIRE_RES])
@@ -3145,7 +3528,7 @@ void excommunication(bool voluntary, god_type new_god)
 #endif
 
     case GOD_CHEIBRIADOS:
-        simple_god_message(" continues to slow your movements.", false,
+        simple_god_message(T_(" continues to slow your movements."), false,
                            old_god);
         break;
 
@@ -3173,18 +3556,18 @@ void excommunication(bool voluntary, god_type new_god)
         break;
 
     case GOD_IGNIS:
-        simple_god_message(" burns away your resistance to fire.", false,
+        simple_god_message(T_(" burns away your resistance to fire."), false,
                            old_god);
         if (you.duration[DUR_FIERY_ARMOUR])
         {
             you.duration[DUR_FIERY_ARMOUR] = 0;
-            mpr("Your cloak of flame burns out.");
+            mpr(T_("Your cloak of flame burns out."));
             you.redraw_armour_class = true;
         }
         if (you.duration[DUR_RISING_FLAME])
         {
             you.duration[DUR_RISING_FLAME] = 0;
-            mpr("Your rising flame fizzles out.");
+            mpr(T_("Your rising flame fizzles out."));
         }
         break;
 
@@ -3350,7 +3733,7 @@ static void _god_welcome_handle_gear()
     if (!you.has_mutation(MUT_FAITH) && ignore_faith_reason().empty()
         && you.wearing_jewellery(AMU_FAITH))
     {
-        mprf(MSGCH_GOD, "Your amulet flashes!");
+        mprf(MSGCH_GOD, T_("Your amulet flashes!"));
         flash_view_delay(UA_PLAYER, god_colour(you.religion), 300);
     }
 
@@ -3377,9 +3760,14 @@ static void _god_welcome_handle_gear()
         item_def wpn = you.props[PARAGON_WEAPON_KEY].get_item();
         if (god_hates_item(wpn))
         {
-            mprf(MSGCH_GOD, "%s removes the imprint of %s from your paragon.",
-                 god_name(you.religion).c_str(),
-                 wpn.name(DESC_THE).c_str());
+            if (Options.language == lang_t::ZH)
+                mprf(MSGCH_GOD, "%s从你的典范武器上抹去了%s的印记。",
+                     god_name(you.religion).c_str(),
+                     wpn.name(DESC_THE).c_str());
+            else
+                mprf(MSGCH_GOD, "%s removes the imprint of %s from your paragon.",
+                     god_name(you.religion).c_str(),
+                     wpn.name(DESC_THE).c_str());
             you.props.erase(PARAGON_WEAPON_KEY);
         }
     }
@@ -3493,13 +3881,13 @@ static void _transfer_good_god_piety()
     if (you.religion != old_god)
     {
         static const map<god_type, const char*> farewell_messages = {
-            { GOD_ELYVILON, "aid the meek" },
-            { GOD_SHINING_ONE, "vanquish evil" },
-            { GOD_ZIN, "enforce order" },
+            { GOD_ELYVILON, T_("aid the meek") },
+            { GOD_SHINING_ONE, T_("vanquish evil") },
+            { GOD_ZIN, T_("enforce order") },
         };
 
         // Some feedback that piety moved over.
-        simple_god_message(make_stringf(" says: Farewell. Go and %s with %s.",
+        simple_god_message(make_stringf(T_(" says: Farewell. Go and %s with %s."),
                                         lookup(farewell_messages, you.religion,
                                                "become a bug"),
                                         god_name(you.religion).c_str()).c_str(),
@@ -3525,15 +3913,18 @@ static string _good_god_wrath_message(god_type good_god)
     switch (good_god)
     {
         case GOD_ELYVILON:
-            return "Your evil deeds will not go unpunished";
+            return T_("Your evil deeds will not go unpunished");
         case GOD_SHINING_ONE:
-            return "You will pay for your evil ways, mortal";
+            return T_("You will pay for your evil ways, mortal");
         case GOD_ZIN:
-            return make_stringf("You will suffer for embracing such %s",
-                                is_chaotic_god(you.religion) ? "chaos"
-                                                             : "evil");
+            return Options.language == lang_t::ZH
+                   ? make_stringf("你将因拥抱这样的%s而受苦",
+                                  is_chaotic_god(you.religion) ? "混乱" : "邪恶")
+                   : make_stringf("You will suffer for embracing such %s",
+                                  is_chaotic_god(you.religion) ? "chaos"
+                                                               : "evil");
         default:
-            return "You will be buggily punished for this";
+            return T_("You will be buggily punished for this");
     }
 }
 
@@ -3554,7 +3945,7 @@ static void _check_good_god_wrath(god_type old_god)
         }
 
         const string wrath_message
-            = make_stringf(" says: %s!",
+            = make_stringf(T_(" says: %s!"),
                            _good_god_wrath_message(good_god).c_str());
         simple_god_message(wrath_message.c_str(), false, good_god);
         set_penance_xp_timeout();
@@ -3653,12 +4044,12 @@ static void _join_gozag()
     if (fee > 0)
     {
         ASSERT(you.gold >= fee);
-        mprf(MSGCH_GOD, "You pay a service fee of %d gold.", fee);
+        mprf(MSGCH_GOD, T_("You pay a service fee of %d gold."), fee);
         you.gold -= fee;
         you.attribute[ATTR_GOZAG_GOLD_USED] += fee;
     }
     else
-        simple_god_message(" waives the service fee.");
+        simple_god_message(T_(" waives the service fee."));
 
     // Note relevant powers.
     bool needs_redraw = false;
@@ -3698,7 +4089,7 @@ static void _join_okawaru()
         }
     }
     if (needs_message)
-        mpr("Your summoned allies are dismissed!");
+        mpr(T_("Your summoned allies are dismissed!"));
 }
 
 /// Setup when joining the sacred cult of Ru.
@@ -3739,7 +4130,7 @@ static void _join_zin()
 
     if (you.props.exists(ORCIFICATION_LEVEL_KEY))
     {
-        mprf(MSGCH_GOD, "Zin cleanses your body of Beogh's taint.");
+        mprf(MSGCH_GOD, T_("Zin cleanses your body of Beogh's taint."));
         you.props.erase(ORCIFICATION_LEVEL_KEY);
     }
 }
@@ -3747,8 +4138,7 @@ static void _join_zin()
 // Setup for joining the easygoing followers of Cheibriados.
 static void _join_cheibriados()
 {
-    simple_god_message(" begins to support your attributes as your "
-                       "movement slows.");
+    simple_god_message(T_(" begins to support your attributes as your movement slows."));
     notify_stat_change();
 }
 
@@ -3756,7 +4146,7 @@ static void _join_makhleb()
 {
     // Re-active our Mark, if we gained one, then abandoned and rejoined.
     if (!makhleb_mark_name().empty())
-        mprf("Your %s burns with power once more.", makhleb_mark_name().c_str());
+        mprf(T_("Your %s burns with power once more."), makhleb_mark_name().c_str());
 
     makhleb_initialize_marks();
 }
@@ -3799,8 +4189,7 @@ static const map<god_type, function<void ()>> on_join = {
     { GOD_BEOGH, update_player_symbol },
     { GOD_CHEIBRIADOS, _join_cheibriados },
     { GOD_FEDHAS, []() {
-        mprf(MSGCH_MONSTER_ENCHANT, "The plants of the dungeon cease their "
-             "hostilities.");
+        mprf(MSGCH_MONSTER_ENCHANT, T_("The plants of the dungeon cease their hostilities."));
         if (env.forest_awoken_until)
             for (monster_iterator mi; mi; ++mi)
                 mi->del_ench(ENCH_AWAKEN_FOREST);
@@ -3830,13 +4219,21 @@ static void _print_good_god_brand_changes(item_def *weapon, bool joining_good)
     }
     if (joining_good)
     {
-        mprf("%s goes dull and lifeless in your grasp.",
-             weapon->name(DESC_YOUR).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("%s在你手中变得暗淡无光，毫无生气。",
+                 weapon->name(DESC_YOUR).c_str());
+        else
+            mprf("%s goes dull and lifeless in your grasp.",
+                 weapon->name(DESC_YOUR).c_str());
     }
     else
     {
-        mprf("%s glows horrifically with a foul blackness!",
-             uppercase_first(weapon->name(DESC_YOUR)).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("%s散发出令人恐惧的邪恶黑光！",
+                 uppercase_first(weapon->name(DESC_YOUR)).c_str());
+        else
+            mprf("%s glows horrifically with a foul blackness!",
+                 uppercase_first(weapon->name(DESC_YOUR)).c_str());
     }
 }
 
@@ -3867,15 +4264,16 @@ void join_religion(god_type which_god)
     set_god_ability_slots();    // remove old god's slots, reserve new god's
 
     // included in default force_more_message
-    simple_god_message(make_stringf(" welcomes you%s!",
-                                    you.worshipped[which_god] ? " back"
-                                                              : "").c_str());
+    simple_god_message(make_stringf(T_(" welcomes you%s!"),
+                                    you.worshipped[which_god]
+                                    ? (T_(" back"))
+                                    : "").c_str());
     update_whereis();
 
     _set_initial_god_piety();
 
     // Only mark the milestone now that piety has been set due to invo titles.
-    mark_milestone("god.worship", "became a worshipper of "
+    mark_milestone("god.worship", (T_("became a worshipper of "))
                    + god_name(you.religion) + ".");
     take_note(Note(NOTE_GET_GOD, you.religion));
     you.piety_info.register_join();
@@ -3939,10 +4337,10 @@ void join_religion(god_type which_god)
 void god_pitch(god_type which_god)
 {
     if (which_god == GOD_BEOGH && env.grid(you.pos()) != DNGN_ALTAR_BEOGH)
-        mpr("You bow before the missionary of Beogh.");
+        mpr(T_("You bow before the missionary of Beogh."));
     else
     {
-        mprf("You %s the altar of %s.",
+        mprf(T_("You %s the altar of %s."),
              get_form()->player_prayer_action().c_str(),
              god_name(which_god).c_str());
     }
@@ -3962,7 +4360,7 @@ void god_pitch(god_type which_god)
     if (!is_good_god(which_god) && you.penance[which_god])
     {
         you.turn_is_over = false;
-        simple_god_message(" refuses to forgive you so easily!", false,
+        simple_god_message(T_(" refuses to forgive you so easily!"), false,
                            which_god);
         return;
     }
@@ -4989,26 +5387,26 @@ void ostracise_player(int amount)
 {
     if (you.religion == GOD_NO_GOD)
     {
-        mpr("You feel a momentary loss of self-confidence.");
+        mpr(T_("You feel a momentary loss of self-confidence."));
         return;
     }
     else if (you.religion == GOD_GOZAG)
     {
-        mpr("...but the rich have no need for faith.");
+        mpr(T_("...but the rich have no need for faith."));
         return;
     }
     else if (you.religion == GOD_XOM)
     {
-        mpr("...but you know Xom will still be watching.");
+        mpr(T_("...but you know Xom will still be watching."));
         return;
     }
     else if (you.attribute[ATTR_OSTRACISM] == MAX_OSTRACISM)
     {
-        mpr("...but the divine are already as distant as possible.");
+        mpr(T_("...but the divine are already as distant as possible."));
         return;
     }
 
-    mpr("You feel the divine grow more distant.");
+    mpr(T_("You feel the divine grow more distant."));
 
     // Give a bonus to ostracism first gained, so that we quickly skip past the
     // 'invisible' piety above 6 stars.
@@ -5033,7 +5431,10 @@ void player_change_ostracism(int amount)
     {
         _handle_piety_gain(old_piety);
         if (you.attribute[ATTR_OSTRACISM] == 0)
-            mprf(MSGCH_RECOVERY, "You feel the divine notice you fully once more.");
+            if (Options.language == lang_t::ZH)
+                mprf(MSGCH_RECOVERY, "你感到神明再次完全注意到了你。");
+            else
+                mprf(MSGCH_RECOVERY, "You feel the divine notice you fully once more.");
     }
 
     // Redraw piety stars, which may have changed.

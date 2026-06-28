@@ -14,6 +14,7 @@
 #include "item-prop-enum.h"
 #include "mpr.h"
 #include "operation-types.h"
+#include "options.h"
 #include "seen-context-type.h"
 #include "transformation.h"
 
@@ -239,7 +240,10 @@ class EquipOnDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue %s %s.",
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续%s%s。"
+                 : "You continue %s %s.",
              get_verb(), equip.name(DESC_YOUR).c_str());
     }
 
@@ -275,7 +279,10 @@ class EquipOffDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue %s %s.",
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续%s%s。"
+                 : "You continue %s %s.",
              get_verb(), equip.name(DESC_YOUR).c_str());
     }
 
@@ -308,7 +315,10 @@ class MemoriseDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue memorising.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续记忆法术。"
+                 : "You continue memorising.");
     }
 
     void finish() override;
@@ -334,7 +344,10 @@ class PasswallDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue meditating on the rock.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续冥想这块岩石。"
+                 : "You continue meditating on the rock.");
     }
 
     void finish() override;
@@ -616,7 +629,10 @@ class ShaftSelfDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue digging a shaft.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续挖掘竖井。"
+                 : "You continue digging a shaft.");
     }
 
     void finish() override;
@@ -669,7 +685,10 @@ class ImbueDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue imbuing your servitor.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续向仆从灌输知识。"
+                 : "You continue imbuing your servitor.");
     }
 
     void finish() override;
@@ -694,7 +713,10 @@ class ImprintDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue imprinting.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             Options.language == lang_t::ZH
+                 ? "你继续铭刻印记。"
+                 : "You continue imprinting.");
     }
 
     void finish() override;

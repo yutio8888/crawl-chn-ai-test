@@ -27,6 +27,7 @@
 #include "message.h"
 #include "monster.h"
 #include "mon-death.h"
+#include "options.h"
 #include "mon-enum.h"
 #include "mon-util.h"
 #include "mpr.h"
@@ -38,6 +39,7 @@
 #include "spl-goditem.h"
 #include "stat-type.h"
 #include "stringutil.h"
+#include "database.h"
 
 static void _do_msg(actor& target, string player_msg, string mon_seen_msg,
                     string mon_unseen_msg)
@@ -109,34 +111,48 @@ static void _curse_message(actor& target, actor* /*source*/,
     if (!target.is_player())
         return;
 
-    vector<string> messages = {
-        "You feel homesick.",
-        "The world around you seems to dim momentarily.",
-        "You feel numb.",
-        "Strange energies run through your body.",
-        "You shiver with cold.",
-        "You sense a malignant aura.",
-        "You feel very uncomfortable.",
-        "Something just walked over your grave. No, really!",
-    };
+    const bool zh = Options.language == lang_t::ZH;
+    vector<string> messages = zh
+        ? vector<string>({
+            "你想家了。",
+            "你周围的世界似乎暂时变暗了。",
+            "你感到麻木。",
+            "奇异的能量流过你的身体。",
+            "你因寒冷而颤抖。",
+            "你感觉到一股邪恶的气息。",
+            "你感觉非常不适。",
+            "有东西刚从你的坟墓上走过。不，是真的！",
+        })
+        : vector<string>({
+            "You feel homesick.",
+            "The world around you seems to dim momentarily.",
+            "You feel numb.",
+            "Strange energies run through your body.",
+            "You shiver with cold.",
+            "You sense a malignant aura.",
+            "You feel very uncomfortable.",
+            "Something just walked over your grave. No, really!",
+        });
 
     if (you.can_smell())
-        messages.push_back("You smell decay.");
+        messages.push_back(T_("You smell decay."));
 
     const string skin = species::skin_name(you.species).c_str();
-    if (starts_with(skin, "bandage"))
-        messages.push_back("Your bandages flutter.");
+    if (you.species == SP_MUMMY)
+        messages.push_back(T_("Your bandages flutter."));
     else
     {
-        messages.push_back(make_stringf("Your %s prickle%s.",
-                        skin.c_str(), ends_with(skin, "s") ? "" : "s"));
+        messages.push_back(zh
+            ? make_stringf("你的%s感到刺痛。", skin.c_str())
+            : make_stringf("Your %s prickle%s.",
+                skin.c_str(), ends_with(skin, "s") ? "" : "s"));
     }
 
     if (!silenced(you.pos()))
-        messages.push_back("You hear strange and distant voices.");
+        messages.push_back(T_("You hear strange and distant voices."));
 
     if (you.has_bones())
-        messages.push_back("Your bones ache.");
+        messages.push_back(T_("Your bones ache."));
 
     mpr(*random_iterator(messages));
 }
@@ -172,9 +188,12 @@ static const vector<curse_effect> curse_effects = {
         [](actor& target, actor* source, string cause, int severity) {
             int dmg = 5 + random2avg(2*severity,2);
             string punct = attack_strength_punctuation(dmg);
-            _do_msg(target, "A forgotten god smites you" + punct,
-                    "A forgotten god smites @The_monster@" + punct,
-                    "A forgotten god smites something" + punct);
+            const string smite_msg = T_("A forgotten god smites you");
+            const string smite_mon_msg = T_("A forgotten god smites @The_monster@");
+            const string smite_unseen_msg = T_("A forgotten god smites something");
+            _do_msg(target, smite_msg + punct,
+                    smite_mon_msg + punct,
+                    smite_unseen_msg + punct);
             _ouch(target, source, dmg, cause);
         },
         10, 25,
@@ -182,9 +201,10 @@ static const vector<curse_effect> curse_effects = {
     {
         "doom",
         [](actor& target, actor* /*source*/, string /*cause*/, int severity) {
-            _do_msg(target, "You feel doom gather around you.",
-                            "Doom gathers around @the_monster@.",
-                            "");
+            _do_msg(target,
+                    T_("You feel doom gather around you."),
+                    T_("Doom gathers around @the_monster@."),
+                    "");
             target.doom(random_range(10, 15 + severity * 2 / 3));
         },
         0, 25
@@ -193,8 +213,8 @@ static const vector<curse_effect> curse_effects = {
         "slow",
         [](actor& target, actor* source, string /*cause*/, int severity) {
             _do_msg(target,
-                    "You feel horribly lethargic.",
-                    "@The_monster@ looks incredibly listless.",
+                    T_("You feel horribly lethargic."),
+                    T_("@The_monster@ looks incredibly listless."),
                     "");
             target.slow_down(source, severity);
         },
@@ -204,9 +224,9 @@ static const vector<curse_effect> curse_effects = {
         "drain",
         [](actor& target, actor* source, string /*cause*/, int severity) {
             _do_msg(target,
-                    "You are engulfed in negative energy!",
-                    "@The_monster@ is engulfed in negative energy!",
-                    "Something is engulfed in negative energy!");
+                    T_("You are engulfed in negative energy!"),
+                    T_("@The_monster@ is engulfed in negative energy!"),
+                    T_("Something is engulfed in negative energy!"));
             target.drain(source, false, ( severity * 100 ) / 27);
         },
         10, 20,
@@ -234,12 +254,12 @@ void death_curse(actor& target, actor* source, string cause, int severity)
     {
         if (coinflip())
         {
-            simple_god_message(" averts the curse.");
+            simple_god_message(T_(" averts the curse."));
             return;
         }
         else
         {
-            simple_god_message(" partially averts the curse.");
+            simple_god_message(T_(" partially averts the curse."));
             severity = severity / 2;
         }
     }

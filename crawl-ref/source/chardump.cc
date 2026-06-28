@@ -391,7 +391,7 @@ static void _sdump_gold(dump_params &par)
     if (you.attribute[ATTR_GOLD_FOUND] > 0)
     {
         lines++;
-        text += make_stringf("You %scollected %d gold pieces.\n", have,
+        text += make_stringf("你%s收集了 %d 枚金币。\n", have,
                              you.attribute[ATTR_GOLD_FOUND]);
     }
 
@@ -1026,21 +1026,39 @@ static void _sdump_spells(dump_params &par)
     {
         int spell_levels = player_spell_levels();
 
-        if (spell_levels == 1)
-            text += "You " + verb + " one spell level left.";
-        else if (spell_levels == 0)
+        if (Options.language == lang_t::ZH)
         {
-            verb = par.se? "couldn't" : "cannot";
-
-            text += "You " + verb + " memorise any spells.";
+            if (spell_levels == 1)
+                text += "你还剩一个法术等级。";
+            else if (spell_levels == 0)
+                text += "你无法记忆任何法术。";
+            else
+            {
+                if (par.se)
+                    text += "你曾有";
+                else
+                    text += "你有";
+                text += make_stringf("%d个法术等级。", spell_levels);
+            }
         }
         else
         {
-            if (par.se)
-                text += "You had ";
+            if (spell_levels == 1)
+                text += "You " + verb + " one spell level left.";
+            else if (spell_levels == 0)
+            {
+                verb = par.se? "couldn't" : "cannot";
+
+                text += "You " + verb + " memorise any spells.";
+            }
             else
-                text += "You have ";
-            text += make_stringf("%d spell levels left.", spell_levels);
+            {
+                if (par.se)
+                    text += "You had ";
+                else
+                    text += "You have ";
+                text += make_stringf("%d spell levels left.", spell_levels);
+            }
         }
 
         text += "\n";
@@ -1058,7 +1076,12 @@ static void _sdump_spells(dump_params &par)
 
         text += "You " + verb + " the following spells:\n\n";
 
-        text += " Your Spells              Type           Power      Damage    Failure   Level" "\n";
+        text += " " + chop_string("你的法术", 25)
+                + chop_string("类型", 15)
+                + chop_string("威力", 11)
+                + chop_string("伤害", 10)
+                + chop_string("失败率", 12)
+                + "等级" "\n";
 
         for (int j = 0; j < 52; j++)
         {
@@ -1121,7 +1144,12 @@ static void _sdump_spells(dump_params &par)
     {
         verb = par.se? "contained" : "contains";
         text += "Your spell library " + verb + " the following spells:\n\n";
-        text += " Spells                   Type           Power      Damage    Failure   Level" "\n";
+        text += " " + chop_string("法术", 25)
+                + chop_string("类型", 15)
+                + chop_string("威力", 11)
+                + chop_string("伤害", 10)
+                + chop_string("失败率", 12)
+                + "等级" "\n";
 
         auto const library = get_sorted_spell_list(true, false);
 
@@ -1378,13 +1406,13 @@ static string _describe_action(caction_type type)
     case CACT_THROW:
         return "Throw";
     case CACT_ARMOUR:
-        return "Armour";
+        return "护甲";
     case CACT_BLOCK:
         return "Block";
     case CACT_DODGE:
         return "Dodge";
     case CACT_CAST:
-        return "Cast";
+        return "施放";
     case CACT_INVOKE:
         return "Invoke";
     case CACT_ABIL:

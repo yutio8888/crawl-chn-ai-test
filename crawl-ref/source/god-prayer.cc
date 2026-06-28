@@ -19,6 +19,7 @@
 #include "message.h"
 #include "notes.h"
 #include "prompt.h"
+#include "options.h"
 #include "religion.h"
 #include "shopping.h"
 #include "state.h"
@@ -61,9 +62,15 @@ static bool _prompt_ecu_worship(const vector<god_type> &gods)
                                                   god_name_list.end(), " or ");
     // This should be a proper menu, but I absolutely cannot be bothered with
     // webtiles menu code.
-    mprf(MSGCH_PROMPT, "This altar belongs to %s, but you can't tell which.\n"
-         "Press the corresponding letter to learn more about a god, "
-         "or press enter to convert or escape to cancel.", god_names.c_str());
+    mprf(MSGCH_PROMPT, "%s",
+         Options.language == lang_t::ZH
+         ? make_stringf("这个祭坛属于%s，但你无法分辨是哪位神祇。\n"
+                        "按对应字母了解神祇详情，按回车皈依或按Esc取消。",
+                        god_names.c_str()).c_str()
+         : make_stringf("This altar belongs to %s, but you can't tell which.\n"
+                        "Press the corresponding letter to learn more about a god, "
+                        "or press enter to convert or escape to cancel.",
+                        god_names.c_str()).c_str());
     while (true) {
         flush_prev_message();
         int ch = getch_ck();
@@ -96,9 +103,12 @@ static bool _pray_ecumenical_altar()
         return false;
     }
     if (!you_worship(GOD_NO_GOD)
-        && !yesno(make_stringf("Really abandon %s for an unknown god?",
-                               god_name(you.religion).c_str()).c_str(),
-                               false, 'n'))
+        && !yesno(Options.language == lang_t::ZH
+                  ? make_stringf("真的要为了未知神祇放弃%s吗？",
+                                 god_name(you.religion).c_str()).c_str()
+                  : make_stringf("Really abandon %s for an unknown god?",
+                                 god_name(you.religion).c_str()).c_str(),
+                  false, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -149,7 +159,10 @@ void try_god_conversion(god_type god)
 
     if (you.has_mutation(MUT_FORLORN))
     {
-        mpr("A being of your status worships no god.");
+        if (Options.language == lang_t::ZH)
+            mpr("像你这样的存在不崇拜任何神祇。");
+        else
+            mpr("A being of your status worships no god.");
         return;
     }
 
@@ -170,9 +183,14 @@ void try_god_conversion(god_type god)
     else
     {
         // Already worshipping this god - just print a message.
-        mprf(MSGCH_GOD, "You offer a %sprayer to %s.",
-             you.cannot_speak() ? "silent " : "",
-             god_name(god).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf(MSGCH_GOD, "你向%s献上了%s祈祷。",
+                 god_name(god).c_str(),
+                 you.cannot_speak() ? "无声的" : "");
+        else
+            mprf(MSGCH_GOD, "You offer a %sprayer to %s.",
+                 you.cannot_speak() ? "silent " : "",
+                 god_name(god).c_str());
     }
 }
 
@@ -200,7 +218,10 @@ int zin_tithe(const item_def& item, int quant, bool converting)
         }
         taken = tithe;
         you.attribute[ATTR_DONATIONS] += tithe;
-        mprf("You pay a tithe of %d gold.", tithe);
+        if (Options.language == lang_t::ZH)
+            mprf("你缴纳了%d金币的什一税。", tithe);
+        else
+            mprf("You pay a tithe of %d gold.", tithe);
 
         if (item.tithe_state == TS_NO_PIETY) // seen before worshipping Zin
         {

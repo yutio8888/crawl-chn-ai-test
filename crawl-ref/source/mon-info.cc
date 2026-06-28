@@ -52,6 +52,7 @@
 #include "tilepick.h"
 #endif
 #include "traps.h"
+#include "database.h"
 
 #define SPELL_HD_KEY "spell_hd"
 #define NIGHTVISION_KEY "nightvision"
@@ -1033,50 +1034,68 @@ string monster_info::_core_name() const
                                                "enormous ", "titanic "};
         s = get_monster_data(nametype)->name;
 
-        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER)
+        // Chinese name lookup for the base monster name
+        if (Options.language == lang_t::ZH)
+        {
+            if (const char* zh = zh_monster_name(s))
+                s = zh;
+        }
+
+        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER
+            && Options.language != lang_t::ZH)
+        {
             s = draconian_colour_name(base_type) + " " + s;
+        }
+
+        if (Options.language != lang_t::ZH)
+        {
+            switch (type)
+            {
+            case MONS_SLIME_CREATURE:
+                ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
+                s = slime_sizes[slime_size] + s;
+                break;
+            case MONS_UGLY_THING:
+            case MONS_VERY_UGLY_THING:
+                s = ugly_thing_colour_name(_colour) + " " + s;
+                break;
+
+            case MONS_DANCING_WEAPON:
+            case MONS_SPECTRAL_WEAPON:
+                if (inv[MSLOT_WEAPON])
+                {
+                    const item_def& item = *inv[MSLOT_WEAPON];
+                    s = "dancing " + item.name(DESC_PLAIN);
+                }
+                break;
+
+            case MONS_ARMOUR_ECHO:
+                if (inv[MSLOT_ARMOUR])
+                {
+                    const item_def& item = *inv[MSLOT_ARMOUR];
+                    s = "echoed " + item.name(DESC_PLAIN);
+                }
+                break;
+
+            case MONS_HAUNTED_ARMOUR:
+                if (inv[MSLOT_ARMOUR])
+                {
+                    const item_def& item = *inv[MSLOT_ARMOUR];
+                    s = "haunted " + item.name(DESC_QUALNAME);
+                }
+                break;
+            }
+        }
 
         switch (type)
         {
-        case MONS_SLIME_CREATURE:
-            ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
-            s = slime_sizes[slime_size] + s;
-            break;
-        case MONS_UGLY_THING:
-        case MONS_VERY_UGLY_THING:
-            s = ugly_thing_colour_name(_colour) + " " + s;
-            break;
-
-        case MONS_DANCING_WEAPON:
-        case MONS_SPECTRAL_WEAPON:
-            if (inv[MSLOT_WEAPON])
-            {
-                const item_def& item = *inv[MSLOT_WEAPON];
-                s = "dancing " + item.name(DESC_PLAIN);
-            }
-            break;
-
-        case MONS_ARMOUR_ECHO:
-            if (inv[MSLOT_ARMOUR])
-            {
-                const item_def& item = *inv[MSLOT_ARMOUR];
-                s = "echoed " + item.name(DESC_PLAIN);
-            }
-            break;
-
-        case MONS_HAUNTED_ARMOUR:
-            if (inv[MSLOT_ARMOUR])
-            {
-                const item_def& item = *inv[MSLOT_ARMOUR];
-                s = "haunted " + item.name(DESC_QUALNAME);
-            }
-            break;
-
         case MONS_PLAYER_GHOST:
-            s = apostrophise(mname) + " ghost";
+            s = apostrophise(mname)
+                + (T_(" ghost"));
             break;
         case MONS_PLAYER_ILLUSION:
-            s = apostrophise(mname) + " illusion";
+            s = apostrophise(mname)
+                + (T_(" illusion"));
             break;
         case MONS_PANDEMONIUM_LORD:
             s = mname;
@@ -1120,6 +1139,16 @@ string monster_info::_core_name() const
 string monster_info::_apply_adjusted_description(description_level_type desc,
                                                  const string& s) const
 {
+    if (Options.language == lang_t::ZH)
+    {
+        // Chinese: no articles, just "你的" for your/friendly
+        if (desc == DESC_ITS)
+            return apply_description(desc, s);
+        if (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A))
+            return apply_description(DESC_YOUR, s);
+        return apply_description(DESC_PLAIN, s);
+    }
+
     if (desc == DESC_ITS)
         desc = DESC_THE;
 
@@ -1145,25 +1174,25 @@ string monster_info::common_name(description_level_type desc) const
     ostringstream ss;
 
     if (props.exists(HELPLESS_KEY))
-        ss << "helpless ";
+        ss << (T_("helpless "));
 
     if (type == MONS_SPECTRAL_THING && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << "spectral ";
+        ss << (T_("spectral "));
 
     if (type == MONS_BOUND_SOUL && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << "bound ";
+        ss << (T_("bound "));
 
     if (is(MB_SPECTRALISED))
-        ss << "ghostly ";
+        ss << (T_("ghostly "));
 
     if (is(MB_VAMPIRE_THRALL))
-        ss << "vampire ";
+        ss << (T_("vampire "));
 
     if (type == MONS_SENSED && !mons_is_sensed(base_type))
-        ss << "sensed ";
+        ss << (T_("sensed "));
 
     if (type == MONS_BALLISTOMYCETE)
-        ss << (is_active ? "active " : "");
+        ss << (is_active ? (T_("active ")) : "");
 
     if (has_hydra_multi_attack()
         && type != MONS_SENSED
@@ -1175,7 +1204,7 @@ string monster_info::common_name(description_level_type desc) const
         else
             ss << std::to_string(num_heads);
 
-        ss << "-headed ";
+        ss << (T_("-headed "));
     }
 
     if (type == MONS_MUTANT_BEAST && !is(MB_NAME_REPLACE))
@@ -1501,6 +1530,9 @@ static bool _hide_moninfo_flag(monster_info_flags f)
     return false;
 }
 
+// Forward declarations for Chinese translation helpers
+static const char* _flag_long_zh(const string& en);
+
 vector<string> monster_info::attributes() const
 {
     vector<string> v;
@@ -1513,7 +1545,10 @@ vector<string> monster_info::attributes() const
                 continue;
 
             // TODO: just use `do_mon_str_replacements`?
-            v.push_back(replace_all(name.long_singular,
+            const char* zh_long = _flag_long_zh(name.long_singular);
+            const string& long_str = zh_long ? string(zh_long)
+                                             : name.long_singular;
+            v.push_back(replace_all(long_str,
                                     "@possessive@",
                                     pronoun(PRONOUN_POSSESSIVE)));
         }
@@ -1668,30 +1703,43 @@ string monster_info::speed_description() const
         return "";
 
     ostringstream result;
-    result << "Speed: " << speed * 10 << "%";
+    result << (T_("Speed: "))
+           << speed * 10 << "%";
 
     vector<string> unusuals;
 
-    _add_energy_desc(menergy.attack, "attack", speed, unusuals);
-    _add_energy_desc(menergy.missile, "shoot", speed, unusuals);
-    _add_energy_desc(menergy.move, "travel", speed, unusuals);
+    _add_energy_desc(menergy.attack,
+        T_("attack"), speed, unusuals);
+    _add_energy_desc(menergy.missile,
+        T_("shoot"), speed, unusuals);
+    _add_energy_desc(menergy.move,
+        T_("travel"), speed, unusuals);
     if (menergy.swim != menergy.move)
-        _add_energy_desc(menergy.swim, "swim", speed, unusuals);
+        _add_energy_desc(menergy.swim,
+            T_("swim"), speed, unusuals);
     // If we ever add a non-magical monster with fast/slow abilities,
     // we'll need to update this.
-    _add_energy_desc(menergy.spell, is_priest() ? "pray" : "magic",
+    _add_energy_desc(menergy.spell,
+                     is_priest()
+                         ? (T_("pray"))
+                         : (T_("magic")),
                      speed, unusuals);
 
     if (!unusuals.empty())
         result << " (" << join_strings(unusuals.begin(), unusuals.end(), ", ") << ")";
 
     if (type == MONS_SIXFIRHY || type == MONS_JIANGSHI)
-        result << " (but often pauses)";
+        result << (T_(" (but often pauses)"));
     else if (travel_delay_diff)
     {
         const bool slow = travel_delay_diff > 0;
-        const string diff_desc = slow ? "slower" : "faster";
-        result << " (normally travels " << diff_desc << " than you)";
+        if (Options.language == lang_t::ZH)
+            result << "（通常移动速度比你" << (slow ? "慢" : "快") << "）";
+        else
+        {
+            const string diff_desc = slow ? "slower" : "faster";
+            result << " (normally travels " << diff_desc << " than you)";
+        }
         // It would be interesting to qualify this with 'on land',
         // if appropriate, but sort of annoying to get player swim speed.
     }
@@ -2037,15 +2085,317 @@ static bool _has_attack_flavour(const monster_info& mi, attack_flavour af)
     return false;
 }
 
+// Chinese translations for monster status flag HUD strings.
+static const char* _flag_zh(const string& en)
+{
+    if (Options.language != lang_t::ZH)
+        return nullptr;
+
+    static const map<string, const char*> zh = {
+        // Attitudes
+        {"charmed", "被魅惑"},
+        {"hexed", "被控制"},
+        {"summoned", "被召唤"},
+        {"minion", "仆从"},
+        {"wandering", "游荡"},
+        // Bad things for the player
+        {"mesmerising", "魅惑中"},
+        {"berserk", "狂暴"},
+        {"fast", "快速"},
+        {"rolling", "滚动中"},
+        {"inner flame", "内焰"},
+        {"reflects damage", "反弹伤害"},
+        {"soul bound", "灵魂绑定"},
+        {"souls bound", "灵魂绑定"},
+        {"strong", "强壮"},
+        {"empowered", "强化"},
+        {"charged", "已充能"},
+        {"charging", "充能中"},
+        {"agile", "敏捷"},
+        {"swift", "迅捷"},
+        {"stilling wind", "静风"},
+        {"silencing", "沉默"},
+        {"can howl", "可嚎叫"},
+        {"vortex", "涡流"},
+        {"vortices", "涡流"},
+        {"gusty", "阵风"},
+        {"frenzied", "狂乱"},
+        {"scary", "恐怖"},
+        {"chanting recall", "吟唱召回"},
+        {"deflects missiles", "偏转飞弹"},
+        {"deflect missiles", "偏转飞弹"},
+        {"toxic aura", "毒性光环"},
+        {"toxic auras", "毒性光环"},
+        {"curare", "箭毒"},
+        {"sign of ruin", "毁灭印记"},
+        {"signs of ruin", "毁灭印记"},
+        {"resistant", "抗性"},
+        {"invisible", "隐形"},
+        {"regenerating", "再生中"},
+        {"strong-willed", "意志坚强"},
+        {"sheltered", "庇护"},
+        {"incited", "被煽动"},
+        {"clouds", "云雾"},
+        {"flame-wreathed", "火焰环绕"},
+        {"unsilenced", "未被沉默"},
+        {"doubled vigour", "活力加倍"},
+        // Vulnerabilities
+        {"soul-gripped", "灵魂被握"},
+        {"caught", "被网住"},
+        {"webbed", "被缠住"},
+        {"paralysed", "麻痹"},
+        {"petrified", "石化"},
+        {"confused", "混乱"},
+        {"dormant", "休眠"},
+        {"asleep", "睡眠"},
+        {"unaware", "未察觉"},
+        {"blind", "失明"},
+        {"distracted", "分心"},
+        {"unable to see you", "看不见你"},
+        {"infested", "被侵染"},
+        // Debuffs
+        {"stupefied", "迟钝"},
+        {"pinned", "被钉住"},
+        {"withering", "凋零中"},
+        {"crumbling", "崩碎中"},
+        {"petrifying", "石化中"},
+        {"mad", "疯狂"},
+        {"fleeing", "逃跑中"},
+        {"dazed", "眩晕"},
+        {"mute", "沉默"},
+        {"frozen", "冻结"},
+        {"burning", "燃烧中"},
+        {"poisoned", "中毒"},
+        {"very poisoned", "重度中毒"},
+        {"extremely poisoned", "极度中毒"},
+        {"contam", "污染"},
+        {"heavy contam", "严重污染"},
+        {"slow", "缓慢"},
+        {"catching breath", "喘息中"},
+        {"weak-willed", "意志薄弱"},
+        {"combustible", "易燃"},
+        {"easily poisoned", "易中毒"},
+        {"misshapen", "畸形"},
+        {"corroded", "被腐蚀"},
+        {"flayed", "被剥皮"},
+        {"rooted", "被缠绕"},
+        {"clutched", "被抓住"},
+        {"skewered", "被刺穿"},
+        {"sick", "生病"},
+        {"weak", "虚弱"},
+        {"drained", "被吸取"},
+        {"very drained", "严重吸取"},
+        {"magic-sapped", "魔力枯竭"},
+        {"corona", "光晕"},
+        {"coronas", "光晕"},
+        {"flooded", "被淹没"},
+        {"anchored", "被锚定"},
+        {"struggling", "挣扎中"},
+        {"pain bonded", "痛苦链接"},
+        {"idealised", "理想化"},
+        {"ally target", "盟友目标"},
+        {"magic disrupted", "魔力中断"},
+        {"anguished", "痛苦"},
+        {"reflecting", "反射中"},
+        {"teleporting", "传送中"},
+        {"bound", "束缚"},
+        {"bullseye target", "靶心目标"},
+        {"vitrified", "玻璃化"},
+        {"agonized", "受难"},
+        {"cursed with agony", "受难诅咒"},
+        {"retreating", "撤退中"},
+        {"divinely empowered", "神力强化"},
+        {"anointable", "可受膏"},
+        {"target of vengeance", "复仇目标"},
+        {"targets of vengeance", "复仇目标"},
+        {"magnetised", "被磁化"},
+        {"rimeblight", "霜疫"},
+        {"shadowless", "无影"},
+        {"paralysed with fear", "被恐惧麻痹"},
+        {"soul-splintered", "灵魂碎裂"},
+        {"grapneled", "被钩住"},
+        {"tempered", "淬炼"},
+        {"untethered", "空间游离"},
+        {"chaos-laced", "混沌编织"},
+        {"vexed", "恼怒"},
+        {"ablaze", "燃烧"},
+        {"bee", "蜜蜂"},
+        {"figment", "幻象"},
+        {"paradox", "悖论"},
+        {"warded", "被守护"},
+        {"dim", "黯淡"},
+        {"exposed", "暴露"},
+        // Plural-only (different from singular)
+        {"charmed", "被魅惑"},
+        {"summoned", "被召唤"},
+        {"minion", "仆从"},
+        {"hexed", "被控制"},
+        {"wandering", "游荡"},
+    };
+    auto it = zh.find(en);
+    return it != zh.end() ? it->second : nullptr;
+}
+
+// Chinese translations for monster status flag long_singular strings
+// (used in xv monster description and targeter).
+static const char* _flag_long_zh(const string& en)
+{
+    if (Options.language != lang_t::ZH)
+        return nullptr;
+
+    static const map<string, const char*> zh = {
+        // Attitudes
+        {"charmed", "被魅惑"},
+        {"control wrested from you", "控制权被夺走"},
+        {"summoned", "被召唤"},
+        {"minion", "仆从"},
+        {"wandering", "游荡"},
+        {"unrewarding", "无奖励"},
+        // Bad things for the player
+        {"mesmerising", "正在魅惑"},
+        {"berserk", "狂暴"},
+        {"fast", "行动迅速"},
+        {"rolling", "正在滚动"},
+        {"inner flame", "内焰"},
+        {"reflecting injuries", "反弹伤害"},
+        {"soul bound", "灵魂绑定"},
+        {"strong", "强壮"},
+        {"spells empowered", "法术被强化"},
+        {"fully charged", "已完全充能"},
+        {"partially charged", "正在充能"},
+        {"unusually agile", "异常敏捷"},
+        {"covering ground quickly", "快速移动"},
+        {"pursuing quickly", "快速追击"},
+        {"stilling the winds", "使风静止"},
+        {"radiating silence", "散发着沉默"},
+        {"ready to howl", "准备嚎叫"},
+        {"surrounded by a freezing vortex", "被冻结涡流环绕"},
+        {"surrounded by restless winds", "被不安之风环绕"},
+        {"frenzied and wild", "狂乱而野蛮"},
+        {"inspiring fear", "令人恐惧"},
+        {"chanting recall", "吟唱召回"},
+        {"deflecting missiles", "偏转飞弹"},
+        {"radiating toxic energy", "辐射毒性能量"},
+        {"concentrated venom", "浓缩毒液"},
+        {"marked with the sign of ruin", "被毁灭印记标记"},
+        {"unusually resistant", "异常有抗性"},
+        {"slightly transparent", "略显透明"},
+        {"regenerating", "正在再生"},
+        {"strong-willed", "意志坚强"},
+        {"sheltered from injuries", "免受伤痛"},
+        {"incited by Gozag", "被哥撒格煽动"},
+        {"surrounded by thunder", "被雷电环绕"},
+        {"surrounded by flames", "被火焰环绕"},
+        {"surrounded by chaotic energy", "被混沌能量环绕"},
+        {"surrounded by mutagenic energy", "被变异能量环绕"},
+        {"surrounded by fog", "被雾气环绕"},
+        {"surrounded by freezing clouds", "被冰冻云环绕"},
+        {"surrounded by negative energy", "被负能量环绕"},
+        {"surrounded by acidic fog", "被酸性雾环绕"},
+        {"surrounded by foul miasma", "被恶臭瘴气环绕"},
+        {"flame-wreathed", "火焰环绕"},
+        {"unaffected by silence", "不受沉默影响"},
+        {"doubled in vigour", "活力加倍"},
+        // Vulnerabilities
+        {"soul-gripped", "灵魂被握"},
+        {"entangled in a net", "被网缠住"},
+        {"entangled in a web", "被蛛网缠住"},
+        {"paralysed", "麻痹"},
+        {"petrified", "石化"},
+        {"confused", "混乱"},
+        {"dormant", "休眠"},
+        {"asleep", "睡眠"},
+        {"unaware", "未察觉"},
+        {"blind", "失明"},
+        {"not watching you", "没有注视你"},
+        {"unable to see you", "看不见你"},
+        {"infested", "被侵染"},
+        // Debuffs
+        {"stupefied", "迟钝"},
+        {"pinned", "被钉住"},
+        {"withering away", "正在凋零"},
+        {"crumbling away", "正在崩碎"},
+        {"petrifying slowly", "缓慢石化中"},
+        {"lost in madness", "陷入疯狂"},
+        {"fleeing", "逃跑中"},
+        {"dazed", "眩晕"},
+        {"mute", "沉默"},
+        {"encased in ice", "被冰封"},
+        {"covered in liquid flames", "被液体火焰覆盖"},
+        {"poisoned", "中毒"},
+        {"very poisoned", "重度中毒"},
+        {"extremely poisoned", "极度中毒"},
+        {"contaminated", "被污染"},
+        {"heavily contaminated", "严重污染"},
+        {"slow", "行动缓慢"},
+        {"catching @possessive@ breath", "正在喘息"},
+        {"weak-willed", "意志薄弱"},
+        {"more vulnerable to fire", "更容易被火焰伤害"},
+        {"more vulnerable to poison", "更容易中毒"},
+        {"misshapen and mutated", "畸形突变"},
+        {"corroded", "被腐蚀"},
+        {"covered in terrible wounds", "满身可怕伤痕"},
+        {"constricted by roots", "被树根缠绕"},
+        {"constricted by zombie hands", "被僵尸之手抓住"},
+        {"skewered by barbs", "被倒刺刺穿"},
+        {"sick", "生病"},
+        {"weak", "虚弱"},
+        {"lightly drained", "轻度被吸取"},
+        {"heavily drained", "严重被吸取"},
+        {"magic-sapped", "魔力枯竭"},
+        {"softly glowing", "微微发光"},
+        {"unable to breathe", "无法呼吸"},
+        {"unable to translocate", "无法传送"},
+        {"covering ground slowly", "艰难移动"},
+        {"sharing @possessive@ pain", "共享痛苦"},
+        {"idealised", "理想化"},
+        {"ally target", "盟友目标"},
+        {"magic disrupted", "魔力中断"},
+        {"anguished", "痛苦"},
+        {"reflecting blocked projectiles", "反射被格挡的飞弹"},
+        {"about to teleport", "即将传送"},
+        {"bound in place", "被束缚在原地"},
+        {"targeted by your dimensional bullseye", "被你的次元靶心标记"},
+        {"fragile as glass", "如玻璃般脆弱"},
+        {"cursed with the promise of agony", "被痛苦诅咒所诅咒"},
+        {"retreating", "撤退中"},
+        {"empowered by the touch of Beogh", "被贝奥格之触强化"},
+        {"ready to become your apostle", "准备好成为你的使徒"},
+        {"target of orcish vengeance", "兽人复仇的目标"},
+        {"covered in magnetic dust", "被磁尘覆盖"},
+        {"afflicted by rimeblight", "染上霜疫"},
+        {"missing a shadow", "失去了影子"},
+        {"paralysed with fear", "被恐惧麻痹"},
+        {"soul-splintered", "灵魂碎裂"},
+        {"grapneled", "被钩住"},
+        {"tempered", "淬炼"},
+        {"untethered in space", "空间游离"},
+        {"interlaced with chaos", "被混沌编织"},
+        {"lashing out in frustration", "因沮丧而乱打"},
+        {"ablaze with memories", "因回忆而燃烧"},
+        {"winding a clockwork bee", "正在组装发条蜜蜂"},
+        {"feeble figment", "虚弱幻象"},
+        {"touched by paradox", "被悖论触碰"},
+        {"damage-immune at range", "远程伤害免疫"},
+        {"diminished spells", "法术被削弱"},
+        {"called by a tesseract", "被超立方体召唤"},
+        {"ready to sunder", "准备好撕裂"},
+        {"exposed", "暴露"},
+    };
+    auto it = zh.find(en);
+    return it != zh.end() ? it->second : nullptr;
+}
+
 static string _condition_string(int num, int count,
                                 const monster_info_flag_name& name)
 {
     const string& word = (1 == num) ? name.short_singular : name.plural;
+    const char* zh = _flag_zh(word);
 
     if (count == num)
-        return word;
+        return zh ? zh : word;
     else
-        return make_stringf("%d %s", num, word.c_str());
+        return make_stringf("%d %s", num, (zh ? zh : word.c_str()));
 }
 
 void mons_conditions_string(string& desc, const vector<monster_info>& mi,
@@ -2197,7 +2547,10 @@ string description_for_ench(enchant_type type)
 
     for (auto& name : monster_info_flag_names)
         if (name.flag == *flag)
-            return name.long_singular;
+        {
+            const char* zh = _flag_long_zh(name.long_singular);
+            return zh ? zh : name.long_singular;
+        }
 
     return "";
 }

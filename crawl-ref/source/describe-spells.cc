@@ -8,6 +8,7 @@
 #include "describe-spells.h"
 
 #include "colour.h"
+#include "database.h"
 #include "delay.h"
 #include "describe.h"
 #include "english.h"
@@ -20,6 +21,7 @@
 #include "mon-cast.h"
 #include "mon-explode.h" // ball_lightning_damage
 #include "mon-project.h" // iood_damage
+#include "options.h"
 #include "religion.h"
 #include "shopping.h"
 #include "spl-book.h"
@@ -80,15 +82,16 @@ static string _ability_type_descriptor(mon_spell_slot_flag type)
 
 static const char* _abil_type_vuln_core(bool silencable, bool antimagicable)
 {
+    const bool zh = Options.language == lang_t::ZH;
     // No one gets confused by the rare spells that are hit by silence
     // but not antimagic, AFAIK. Let's keep it simple.
     if (!antimagicable)
-        return "silence";
+        return zh ? "沉默" : "silence";
     if (silencable)
-        return "silence and antimagic";
+        return zh ? "沉默和反魔" : "silence and antimagic";
     // Explicitly clarify about spells that are hit by antimagic but
     // NOT silence, since those confuse players nonstop.
-    return "antimagic (but not silence)";
+    return zh ? "反魔（但不受沉默影响）" : "antimagic (but not silence)";
 }
 
 /**
@@ -107,7 +110,7 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
     const bool antimagicable = type == MON_SPELL_WIZARD
                                || type == MON_SPELL_MAGICAL;
     ASSERT(silencable || antimagicable);
-    return make_stringf(", which are affected by %s",
+    return make_stringf("，受%s影响",
                         _abil_type_vuln_core(silencable, antimagicable));
 }
 
@@ -122,28 +125,42 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
  */
 static string _booktype_header(mon_spell_slot_flag type, bool pronoun_plural)
 {
+    const bool zh = Options.language == lang_t::ZH;
+
     if (type == MON_SPELL_EVOKE)
     {
-        return make_stringf("%s the following wand spells:",
-                            conjugate_verb("possess", pronoun_plural).c_str());
+        return zh ? "有以下魔杖法术："
+                  : make_stringf("%s the following wand spells:",
+                                 conjugate_verb("possess", pronoun_plural).c_str());
     }
 
     const string vulnerabilities = _ability_type_vulnerabilities(type);
 
     if (type == MON_SPELL_WIZARD)
     {
-        return make_stringf("%s mastered %s%s:",
-                            conjugate_verb("have", pronoun_plural).c_str(),
-                            "the following spells",
-                            vulnerabilities.c_str());
+        return zh
+            ? make_stringf("掌握了以下法术%s：",
+                           vulnerabilities.c_str())
+            : make_stringf("%s mastered %s%s:",
+                           conjugate_verb("have", pronoun_plural).c_str(),
+                           "the following spells",
+                           vulnerabilities.c_str());
     }
 
     const string descriptor = _ability_type_descriptor(type);
+    const char* zh_desc = !descriptor.compare("natural") ? "天生"
+                        : !descriptor.compare("magical") ? "魔法"
+                        : !descriptor.compare("divine")  ? "神圣"
+                        :                                        "未知";
 
-    return make_stringf("%s the following %s abilities%s:",
-                        conjugate_verb("possess", pronoun_plural).c_str(),
-                        descriptor.c_str(),
-                        vulnerabilities.c_str());
+    return zh
+        ? make_stringf("有以下%s能力%s：",
+                       zh_desc,
+                       vulnerabilities.c_str())
+        : make_stringf("%s the following %s abilities%s:",
+                       conjugate_verb("possess", pronoun_plural).c_str(),
+                       descriptor.c_str(),
+                       vulnerabilities.c_str());
 }
 
 /**
@@ -166,7 +183,8 @@ static void _monster_spellbooks(const monster_info &mi,
 
     spellbook_contents output_book;
 
-    output_book.label += make_stringf("\n%s %s",
+    output_book.label += make_stringf(
+        T_("\n%s %s"),
         uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)).c_str(),
         _booktype_header(type, mi.pronoun_plurality()).c_str());
 
@@ -205,7 +223,8 @@ static void _monster_wand_spellbook(const monster_info &mi,
 
     spellbook_contents book;
 
-    book.label += make_stringf("\n%s %s",
+    book.label += make_stringf(
+        T_("\n%s %s"),
         uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)).c_str(),
         _booktype_header(MON_SPELL_EVOKE, mi.pronoun_plurality()).c_str());
 
@@ -330,7 +349,7 @@ static string _spell_schools(spell_type spell)
             continue;
 
         if (!schools.empty())
-            schools += "/";
+            schools += T_("/");
         schools += spelltype_long_name(school_flag);
     }
 
@@ -626,10 +645,13 @@ static void _describe_book(const spellbook_contents &book,
     // only display header for book spells
     if (source_item)
     {
-        description.cprintf(
-            "\n Spells                              Type                    Level");
+        // Column headers: spell name (variable), school, difficulty, known
+        description.cprintf("%s",
+            ("\n " + chop_string("法术", 33)
+                  + chop_string("学派", 28)
+                  + chop_string("等级", 12)).c_str());
         if (crawl_state.need_save)
-            description.cprintf("       Known");
+            description.cprintf("%s", chop_string("已知", 12).c_str());
     }
     description.cprintf("\n");
 
@@ -704,14 +726,14 @@ static void _describe_book(const spellbook_contents &book,
 
         string schools =
 #if TAG_MAJOR_VERSION == 34
-            source_item->base_type == OBJ_RODS ? "Evocations"
+            source_item->base_type == OBJ_RODS ? "魔力释放"
                                                :
 #endif
                          _spell_schools(spell);
 
         string known = "";
         if (!mon_owner && crawl_state.need_save)
-            known = you.spell_library[spell] ? "         yes" : "          no";
+            known = you.spell_library[spell] ? chop_string("是", 12) : chop_string("否", 12);
 
         description.cprintf("%s%d%s\n",
                             chop_string(schools, 28).c_str(),
@@ -790,7 +812,7 @@ static void _write_book(const spellbook_contents &book,
 
 #if TAG_MAJOR_VERSION == 34
         string schools = (source_item && source_item->base_type == OBJ_RODS) ?
-                "Evocations" : _spell_schools(spell);
+                "魔力释放" : _spell_schools(spell);
 #else
         string schools = _spell_schools(spell);
 #endif

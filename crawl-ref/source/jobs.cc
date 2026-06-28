@@ -1,6 +1,7 @@
 #include "AppHdr.h"
 
 #include "jobs.h"
+#include "options.h"
 
 #include "errors.h"
 #include "item-prop.h"
@@ -15,6 +16,7 @@
 
 #include "job-def.h"
 #include "job-data.h"
+#include "database.h"
 
 static const job_def& _job_def(job_type job)
 {
@@ -38,10 +40,64 @@ job_type get_job_by_abbrev(const char *abbrev)
     return JOB_UNKNOWN;
 }
 
+static const map<job_type, const char*>& _job_zh_names()
+{
+    static const map<job_type, const char*> zh_names = {
+        { JOB_FIGHTER, "战士" },
+        { JOB_HEDGE_WIZARD, "杂学派法师" },
+        { JOB_PRIEST, "祭司" },
+        { JOB_GLADIATOR, "角斗士" },
+        { JOB_NECROMANCER, "死灵法师" },
+        { JOB_BRIGAND, "强盗" },
+        { JOB_BERSERKER, "狂战士" },
+        { JOB_HUNTER, "猎人" },
+        { JOB_CONJURER, "咒法师" },
+        { JOB_ENCHANTER, "附魔师" },
+        { JOB_FIRE_ELEMENTALIST, "火系元素师" },
+        { JOB_ICE_ELEMENTALIST, "冰系元素师" },
+        { JOB_SUMMONER, "召唤师" },
+        { JOB_AIR_ELEMENTALIST, "气系元素师" },
+        { JOB_EARTH_ELEMENTALIST, "地系元素师" },
+        { JOB_SKALD, "吟游诗人" },
+        { JOB_ALCHEMIST, "炼金术士" },
+        { JOB_CHAOS_KNIGHT, "混沌骑士" },
+        { JOB_SHAPESHIFTER, "变形者" },
+        { JOB_HEALER, "治疗师" },
+        { JOB_STALKER, "潜行者" },
+        { JOB_MONK, "武僧" },
+        { JOB_WARPER, "扭曲者" },
+        { JOB_WANDERER, "流浪者" },
+        { JOB_ARTIFICER, "工匠" },
+        { JOB_HEXSLINGER, "诅咒枪手" },
+        { JOB_DEATH_KNIGHT, "死亡骑士" },
+        { JOB_ABYSSAL_KNIGHT, "深渊骑士" },
+        { JOB_JESTER, "小丑" },
+        { JOB_DELVER, "挖掘者" },
+        { JOB_CINDER_ACOLYTE, "灰烬侍僧" },
+        { JOB_REAVER, "掠夺者" },
+        { JOB_FORGEWRIGHT, "锻造师" },
+    };
+    return zh_names;
+}
+
+static const char* _get_job_zh_name(job_type which_job)
+{
+    auto it = _job_zh_names().find(which_job);
+    return it != _job_zh_names().end() ? it->second : nullptr;
+}
+
 const char *get_job_name(job_type which_job)
 {
     if (which_job == JOB_UNKNOWN)
-        return "Unemployed";
+        return T_("Unemployed");
+
+    // Chinese translation lookup
+    if (Options.language == lang_t::ZH)
+    {
+        const char* zh = _get_job_zh_name(which_job);
+        if (zh)
+            return zh;
+    }
 
     return _job_def(which_job).name;
 }
@@ -51,6 +107,22 @@ job_type get_job_by_name(const char *name)
     job_type job = JOB_UNKNOWN;
 
     const string low_name = lowercase_string(name);
+
+    // Try matching against display names (may be Chinese)
+    for (int i = 0; i < NUM_JOBS; i++)
+    {
+        const job_type j = job_type(i);
+        if (low_name == lowercase_string(get_job_name(j)))
+            return j;
+    }
+
+    // Also match against Chinese names regardless of current language setting
+    // (saved game files may use Chinese names from a previous session)
+    for (auto& entry : _job_zh_names())
+    {
+        if (low_name == lowercase_string(entry.second))
+            return entry.first;
+    }
 
     for (auto& entry : job_data)
     {

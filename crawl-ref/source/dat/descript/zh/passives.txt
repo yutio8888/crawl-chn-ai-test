@@ -69,7 +69,7 @@ wizardry passive
 %%%%
 archmagi passive
 
-你的法力有所提升。
+你的法术威力有所提升。
 %%%%
 channel magic passive
 

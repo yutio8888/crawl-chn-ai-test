@@ -18,6 +18,7 @@
 #include "mgen-data.h"
 #include "mon-behv.h"
 #include "mon-death.h"
+#include "options.h"
 #include "mon-place.h"
 #include "mon-tentacle.h"
 #include "state.h"
@@ -25,6 +26,7 @@
 #include "terrain.h"
 #include "transform.h"
 #include "view.h"
+#include "database.h"
 
 static string _monster_clone_id_for(monster* mons)
 {
@@ -225,7 +227,7 @@ int mons_summon_illusion_from(monster* mons, actor *foe,
         }
         else if (card_power >= 0)
         {
-            mpr("You see a puff of smoke.");
+            mpr(T_("You see a puff of smoke."));
             return 0;
         }
     }

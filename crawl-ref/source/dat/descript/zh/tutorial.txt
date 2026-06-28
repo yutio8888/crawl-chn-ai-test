@@ -585,7 +585,7 @@ tutorial5 start
 %%%%
 tutorial5 dungeon_overview
 
-前面是狂怒者特洛戈的祭坛！特洛戈只是众神之一。在实际游戏中，
+前面是狂怒者特洛格的祭坛！特洛格只是众神之一。在实际游戏中，
 你可以通过<input>$cmd[CMD_DISPLAY_OVERMAP]</input><localtiles>
 或在命令栏中<input>点击地牢概览按钮</input></localtiles>
 来查看所有已经发现的祭坛和其他有趣的地标。
@@ -615,7 +615,7 @@ tutorial5 berserk
 
 面对特别强大的敌人时，
 你可能需要通过<input>$cmd[CMD_USE_ABILITY]</input><localtiles>
-或通过<w>命令栏</w>来使用特洛戈赐予你的狂暴能力</w></localtiles>。
+或通过<w>命令栏</w>来使用特洛格赐予你的狂暴能力</w></localtiles>。
 %%%%
 tutorial5 exhaustion
 
@@ -653,3 +653,12 @@ tutorial5 exit
   <input>$cmd[CMD_DISPLAY_OVERMAP]</input> 显示地牢概览
   <input>$cmd[CMD_DISPLAY_COMMANDS]/</input>  搜索描述文字数据库
 %%%%
+%%%%
+tutorial4 spellquivering
+法术像弹药一样显示在箭袋槽中，因此你可以使用
+<input>$cmd[CMD_QUIVER_ITEM]</input> 来准备箭袋中的法术。使用
+<input>$cmd[CMD_FIRE]</input> 或 <input>shift-tab</input> 来发射当前
+箭袋中的法术。
+
+一旦魔力耗尽，撤退并用 <input>$cmd[CMD_REST]</input><localtiles> 或
+在命令面板中 <input>点击</input> 休息图标</localtiles> 来恢复魔力。

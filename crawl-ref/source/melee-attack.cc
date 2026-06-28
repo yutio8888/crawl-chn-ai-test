@@ -18,6 +18,7 @@
 #include "attitude-change.h"
 #include "bloodspatter.h"
 #include "chardump.h"
+#include "database.h"
 #include "cloud.h"
 #include "delay.h"
 #include "directn.h"
@@ -247,9 +248,14 @@ bool melee_attack::handle_phase_attempted()
     {
         if (you.see_cell(attack_position))
         {
-            mprf("%s strikes at %s from the darkness!",
-                 attacker->name(DESC_THE, true).c_str(),
-                 defender->name(DESC_THE).c_str());
+            if (Options.language == lang_t::ZH)
+                mprf("%s从黑暗中攻击%s！",
+                     attacker->name(DESC_THE, true).c_str(),
+                     defender->name(DESC_THE).c_str());
+            else
+                mprf("%s strikes at %s from the darkness!",
+                     attacker->name(DESC_THE, true).c_str(),
+                     defender->name(DESC_THE).c_str());
         }
         to_hit = AUTOMATIC_HIT;
         needs_message = false;
@@ -271,7 +277,7 @@ bool melee_attack::handle_phase_attempted()
             flat_dmg_bonus = random_range(0, 3);
             defender->as_monster()->del_ench(ENCH_KINETIC_GRAPNEL, true);
             if (attacker->is_player())
-                mpr("The grapnel guides your strike.");
+                mpr("抓钩引导了你的攻击。");
         }
     }
 
@@ -312,10 +318,16 @@ void melee_attack::handle_phase_blocked()
         {
             if (you.see_cell(defender->pos()))
             {
-                mprf("%s turn%s aside %s attack!",
-                        defender->name(DESC_THE).c_str(),
-                        defender->is_monster() ? "s" : "",
-                        attacker->name(DESC_ITS).c_str());
+                if (Options.language == lang_t::ZH)
+                    mprf("%s%s挡开了%s的攻击！",
+                            defender->name(DESC_THE).c_str(),
+                            defender->is_monster() ? "" : "",
+                            attacker->name(DESC_ITS).c_str());
+                else
+                    mprf("%s turn%s aside %s attack!",
+                            defender->name(DESC_THE).c_str(),
+                            defender->is_monster() ? "s" : "",
+                            attacker->name(DESC_ITS).c_str());
                 needs_block_message = false;
             }
 
@@ -331,11 +343,17 @@ void melee_attack::handle_phase_blocked()
 
     if (needs_block_message)
     {
-        mprf("%s %s %s attack.",
-                 defender_name(false).c_str(),
-                 defender->conj_verb("block").c_str(),
-                 attacker == defender ? "its own"
-                                      : atk_name(DESC_ITS).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("%s格挡了%s的攻击。",
+                     defender_name(false).c_str(),
+                     attacker == defender ? "自己的"
+                                          : atk_name(DESC_ITS).c_str());
+        else
+            mprf("%s %s %s attack.",
+                     defender_name(false).c_str(),
+                     defender->conj_verb("block").c_str(),
+                     attacker == defender ? "its own"
+                                          : atk_name(DESC_ITS).c_str());
     }
 
     if (defender->is_player() && you.duration[DUR_DIVINE_SHIELD]
@@ -346,8 +364,12 @@ void melee_attack::handle_phase_blocked()
                                         random_range(3, 5) * BASELINE_DELAY))
             && need_msg)
         {
-            mprf("%s is struck blind by the light of your shield.",
-                    attacker->name(DESC_THE).c_str());
+            if (Options.language == lang_t::ZH)
+                mprf("%s 被你盾牌的光芒致盲了。",
+                        attacker->name(DESC_THE).c_str());
+            else
+                mprf("%s is struck blind by the light of your shield.",
+                        attacker->name(DESC_THE).c_str());
         }
     }
 
@@ -371,7 +393,7 @@ void melee_attack::handle_phase_dodged()
             player_warn_miss();
         else
         {
-            mprf("%s%s misses %s.",
+            mprf(T_("%s%s misses %s."),
                  atk_name(DESC_THE).c_str(),
                  evasion_margin_adverb().c_str(),
                  defender_name(true).c_str());
@@ -409,7 +431,7 @@ void melee_attack::handle_phase_dodged()
                 {
                     you.track_reprisal(REPRISAL_HEADBUTT, attacker->mid);
 
-                    mpr("You furiously retaliate!");
+                    mpr("你猛烈地反击了！");
                     melee_attack headbutt(&you, attacker);
                     headbutt.player_aux_setup(UNAT_HEADBUTT);
                     headbutt.player_aux_apply(UNAT_HEADBUTT);
@@ -574,7 +596,7 @@ void melee_attack::do_ooze_flood()
         && defender->alive()
         && coinflip())
     {
-        defender->floodify(attacker, random_range(30, 70), "ooze");
+        defender->floodify(attacker, random_range(30, 70), "软泥");
     }
 }
 
@@ -591,9 +613,15 @@ void melee_attack::try_parry_disarm()
         item_def *wpn = defender->as_monster()->disarm();
         if (wpn)
         {
-            mprf("You knock %s out of %s grip!",
-                wpn->name(DESC_THE).c_str(),
-                defender->name(DESC_ITS).c_str());
+            if (Options.language == lang_t::ZH)
+                // Chinese: defender first (the one holding), then weapon
+                mprf("你从%s的掌握中夺下了%s！",
+                     defender->name(DESC_ITS).c_str(),
+                     wpn->name(DESC_THE).c_str());
+            else
+                mprf(T_("You knock %s out of %s grip!"),
+                     wpn->name(DESC_THE).c_str(),
+                     defender->name(DESC_ITS).c_str());
         }
     }
 }
@@ -619,14 +647,14 @@ void melee_attack::do_vampire_lifesteal()
 
         if (can_heal && !can_enthrall)
         {
-            mprf("You sink your fangs into %s and drink %s %s.",
+            mprf(T_("You sink your fangs into %s and drink %s %s."),
                     mon->name(DESC_THE, true).c_str(),
                     mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
                     mon->blood_name().c_str());
         }
         else if (can_enthrall)
         {
-            mprf("You sink your fangs into %s and drain %s dry!",
+            mprf(T_("You sink your fangs into %s and drain %s dry!"),
                     mon->name(DESC_THE, true).c_str(),
                     mon->pronoun(PRONOUN_OBJECTIVE).c_str());
 
@@ -651,7 +679,7 @@ void melee_attack::handle_concussion_brand()
 {
     const coord_def old_pos = defender->pos();
     bool did_move = false;
-    if (defender->stumble_away_from(attack_position, "concussive force"))
+    if (defender->stumble_away_from(attack_position, "冲击力"))
     {
         did_move = true;
         if (monster* mon = defender->as_monster())
@@ -669,7 +697,7 @@ void melee_attack::handle_concussion_brand()
                         attacker->name(DESC_THE).c_str(),
                         attacker->is_monster() ? "es" : "",
                         defender->name(DESC_THE).c_str(),
-                        feat_is_wall(env.grid(back)) ? "wall"
+                        feat_is_wall(env.grid(back)) ? "墙壁"
                                                     : raw_feature_description(back).c_str(),
                         attack_strength_punctuation(special_damage).c_str());
             }
@@ -724,12 +752,11 @@ static void _apply_flux_contam(monster &m)
 
     if (energy <= 0)
     {
-        mprf(MSGCH_DURATION, "The last of your unstable energy dissipates and "
-                             "you return to your previous form.");
+        mprf(MSGCH_DURATION, T_("The last of your unstable energy dissipates and you return to your previous form."));
         return_to_default_form();
     }
     else if (above_warning && energy < FLUX_ENERGY_WARNING)
-        mprf(MSGCH_DURATION, "You feel the transmutational energy in your body is nearly expended.");
+        mprf(MSGCH_DURATION, T_("You feel the transmutational energy in your body is nearly expended."));
 }
 
 void melee_attack::maybe_do_mesmerism()
@@ -747,7 +774,7 @@ void melee_attack::maybe_do_mesmerism()
     const int max_dur = defender->is_player() ? 5 + you.skill_rdiv(SK_EVOCATIONS, 1, 5)
                                               : 3 + defender->get_hit_dice() / 4;
 
-    mprf("%s orb emits a pulse of dizzying energy.", defender->name(DESC_ITS).c_str());
+    mprf(T_("%s orb emits a pulse of dizzying energy."), defender->name(DESC_ITS).c_str());
     draw_ring_animation(defender->pos(), radius, LIGHTMAGENTA, MAGENTA, true, 30);
 
     for (radius_iterator ri(defender->pos(), radius, C_SQUARE, LOS_NO_TRANS); ri; ++ri)
@@ -908,16 +935,31 @@ bool melee_attack::handle_phase_hit()
     {
         if (needs_message)
         {
-            attack_verb = attacker->is_player()
-                                    ? attack_verb
-                                    : attacker->conj_verb(mons_attack_verb());
-
-            // TODO: Clean this up if possible, checking atype for do / does is ugly
-            mprf("%s %s %s but %s no damage.",
-                attacker->name(DESC_THE).c_str(),
-                attack_verb.c_str(),
-                defender_name(true).c_str(),
-                attacker->is_player() ? "do" : "does");
+            if (Options.language == lang_t::ZH)
+            {
+                attack_verb = attacker->is_player()
+                                        ? attack_verb
+                                        : mons_attack_verb();
+                string defender_zh = defender_name(true);
+                if (defender == &you)
+                    defender_zh = "你";
+                mprf("%s%s了%s，但没有造成伤害。",
+                    atk_name(DESC_PLAIN).c_str(),
+                    attack_verb.c_str(),
+                    defender_zh.c_str());
+            }
+            else
+            {
+                attack_verb = attacker->is_player()
+                                        ? attack_verb
+                                        : attacker->conj_verb(mons_attack_verb());
+                // TODO: Clean this up if possible, checking atype for do / does is ugly
+                mprf("%s %s %s but %s no damage.",
+                    attacker->name(DESC_THE).c_str(),
+                    attack_verb.c_str(),
+                    defender_name(true).c_str(),
+                    attacker->is_player() ? "do" : "does");
+            }
         }
     }
 
@@ -988,7 +1030,7 @@ bool melee_attack::handle_phase_hit()
             && mons_has_attacks(*defender->as_monster(), false)
             && coinflip())
         {
-            mprf("%s is engulfed in spores.", defender->name(DESC_THE).c_str());
+            mprf("%s 被孢子吞没了。", defender->name(DESC_THE).c_str());
             defender->weaken(&you, 3);
         }
     }
@@ -1084,7 +1126,7 @@ bool melee_attack::handle_phase_damaged()
         && !you.duration[DUR_SHROUD_TIMEOUT] && one_chance_in(4))
     {
         you.duration[DUR_SHROUD_TIMEOUT] = 100 + random2(damage_done) * 10;
-        mprf("your slimy shroud breaks as it bends %s attack away%s",
+        mprf("你的软泥覆盖层在偏转攻击时破裂，%s attack away%s",
                      atk_name(DESC_ITS).c_str(),
                      attack_strength_punctuation(damage_done).c_str());
         did_hit = false;
@@ -1145,22 +1187,33 @@ static void _devour(monster &victim)
     // Sometimes, one's eyes are larger than one's stomach-mouth.
     const int size_delta = victim.body_size(PSIZE_BODY)
                             - you.body_size(PSIZE_BODY);
-    mprf("You devour %s%s!",
-         size_delta <= 0 ? "" :
-         size_delta <= 1 ? "half of " :
-                           "a chunk of ",
-         victim.name(DESC_THE).c_str());
+    if (Options.language == lang_t::ZH)
+        mprf("你吞噬了%s%s!",
+             size_delta <= 0 ? "" :
+             size_delta <= 1 ? "半只" :
+                               "一大块",
+             victim.name(DESC_THE).c_str());
+    else
+        mprf(T_("You devour %s%s!"),
+             size_delta <= 0 ? "" :
+             size_delta <= 1 ? "half of " :
+                               "a chunk of ",
+             victim.name(DESC_THE).c_str());
 
     // give a clearer message for eating invisible things
     if (!you.can_see(victim))
     {
-        mprf("It tastes like %s.",
-             mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("它尝起来像%s.",
+                 mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
+        else
+            mprf(T_("It tastes like %s."),
+                 mons_type_name(mons_genus(victim.type), DESC_PLAIN).c_str());
         // this could be the actual creature name, but it feels more
         // 'flavourful' this way??
     }
     if (victim.has_ench(ENCH_STICKY_FLAME))
-        mpr("Spicy!");
+        mpr(T_("Spicy!"));
 
     // Devour the corpse.
     victim.props[NEVER_CORPSE_KEY] = true;
@@ -1208,11 +1261,16 @@ static void _consider_devouring(monster &defender)
     if (defender.is_shapeshifter())
     {
         // handle this carefully, so the player knows what's going on
-        mprf("You spit out %s as %s %s & %s in your maw!",
-             defender.name(DESC_THE).c_str(),
-             defender.pronoun(PRONOUN_SUBJECTIVE).c_str(),
-             conjugate_verb("twist", defender.pronoun_plurality()).c_str(),
-             conjugate_verb("change", defender.pronoun_plurality()).c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("你将%s吐了出来——%s在你的嘴里扭动变形！",
+                 defender.name(DESC_THE).c_str(),
+                 defender.pronoun(PRONOUN_SUBJECTIVE).c_str());
+        else
+            mprf("You spit out %s as %s %s & %s in your maw!",
+                 defender.name(DESC_THE).c_str(),
+                 defender.pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                 conjugate_verb("twist", defender.pronoun_plurality()).c_str(),
+                 conjugate_verb("change", defender.pronoun_plurality()).c_str());
         return;
     }
 
@@ -1230,7 +1288,7 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
     int& power = you.props[WEREFURY_KEY].get_int();
     if (!you.duration[DUR_WEREFURY])
     {
-        mpr("You revel in your kill!");
+        mpr("你沉醉于杀戮之中！");
         power = div_rand_round(get_form()->get_werefury_kill_bonus() * 3 / 2, 10);
     }
     else
@@ -1246,12 +1304,12 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
     {
         if (you.is_silenced())
         {
-            mpr("You raise your head to howl, but no sound comes out.");
+            mpr("你仰头欲嚎，却发不出声音。");
             return;
         }
 
         const int howl_power = get_form()->get_howl_power();
-        mpr("You let out a blood-chilling howl!");
+        mpr("你发出了一声令人胆寒的嚎叫！");
         draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, 0, true, 10);
         for (monster_near_iterator mi(you.pos()); mi; ++mi)
         {
@@ -1259,7 +1317,7 @@ static void _handle_werewolf_kill_bonus(const monster& victim, bool takedown)
                 && mi->can_feel_fear(true) && !mi->has_ench(ENCH_FEAR)
                 && mi->check_willpower(&you, howl_power) <= 0)
             {
-                mprf("%s freezes in fear!", mi->name(DESC_THE).c_str());
+                mprf("%s 因恐惧而僵住了！", mi->name(DESC_THE).c_str());
                 int dur = random_range(40, 70);
                 mi->add_ench(mon_enchant(ENCH_FEAR, &you, dur));
                 mi->add_ench(mon_enchant(ENCH_BOUND, &you, dur));
@@ -1804,7 +1862,7 @@ bool melee_attack::attack()
     if (attacker->is_player() && defender &&
         you.afraid_of(defender->as_monster()) && one_chance_in(3))
     {
-        mprf("You attempt to attack %s, but flinch away in fear!",
+        mprf(T_("You attempt to attack %s, but flinch away in fear!"),
              defender->name(DESC_THE).c_str());
 
         bool success = false;
@@ -1825,8 +1883,8 @@ bool melee_attack::attack()
     {
         saved_gyre_name = get_artefact_name(*weapon);
         const bool gimble = effective_attack_number % 2;
-        set_artefact_name(*mutable_wpn, gimble ? "quick blade \"Gimble\""
-                                                  : "quick blade \"Gyre\"");
+        set_artefact_name(*mutable_wpn, gimble ? "迅捷之刃 \"Gimble\""
+                                                  : "迅捷之刃 \"Gyre\"");
     }
 
     // Restore gyre's name before we return. We cannot use an unwind_var here
@@ -2052,7 +2110,7 @@ class AuxConstrict: public AuxAttackType
 {
 public:
     AuxConstrict()
-    : AuxAttackType(0, 100, "grab") { };
+    : AuxAttackType(0, 100, "抓取") { };
     bool xl_based_chance() const override { return false; }
 
     bool is_usable() const override
@@ -2068,7 +2126,7 @@ class AuxKick: public AuxAttackType
 {
 public:
     AuxKick()
-    : AuxAttackType(5, 100, "kick") { };
+    : AuxAttackType(5, 100, "踢") { };
 
     int get_damage(bool /*random*/) const override
     {
@@ -2092,16 +2150,16 @@ public:
     string get_verb() const override
     {
         if (you.has_usable_talons())
-            return "claw";
+            return "爪击";
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return "pierce";
+            return "刺穿";
         return name;
     }
 
     string get_name() const override
     {
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return "tentacle spike";
+            return "触须尖刺";
         return name;
     }
 
@@ -2117,7 +2175,7 @@ class AuxHeadbutt: public AuxAttackType
 {
 public:
     AuxHeadbutt()
-    : AuxAttackType(5, 67, "headbutt") { };
+    : AuxAttackType(5, 67, "头撞") { };
 
     int get_damage(bool /*random*/) const override
     {
@@ -2134,7 +2192,7 @@ class AuxPeck: public AuxAttackType
 {
 public:
     AuxPeck()
-    : AuxAttackType(6, 67, "peck") { };
+    : AuxAttackType(6, 67, "啄") { };
 
     bool is_usable() const override
     {
@@ -2223,7 +2281,7 @@ public:
             return "eel-slap";
 
         if (you.has_usable_claws())
-            return "claw";
+            return "爪击";
 
         if (you.has_usable_tentacles())
             return "tentacle-slap";
@@ -2528,7 +2586,7 @@ bool melee_attack::player_aux_test_hit()
         return true;
     }
 
-    mprf("Your %s misses %s.", aux_attack.c_str(),
+    mprf(T_("Your %s misses %s."), aux_attack.c_str(),
          defender->name(DESC_THE).c_str());
 
     return false;
@@ -2646,10 +2704,16 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             player_announce_aux_hit(atk);
         else
         {
-            mprf("You %s %s%s.",
-                    aux_verb.c_str(),
-                    defender->name(DESC_THE).c_str(),
-                    you.can_see(*defender) ? ", but do no damage" : "");
+            if (Options.language == lang_t::ZH)
+                mprf(you.can_see(*defender) ? "你%s了%s，但没有造成伤害。"
+                                            : "你%s了%s。",
+                     aux_verb.c_str(),
+                     defender->name(DESC_THE).c_str());
+            else
+                mprf("You %s %s%s.",
+                     aux_verb.c_str(),
+                     defender->name(DESC_THE).c_str(),
+                     you.can_see(*defender) ? ", but do no damage" : "");
         }
 
         if (atk == UNAT_MEDUSA_STINGER)
@@ -2674,7 +2738,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             {
                 if (defender->strip_willpower(&you, random_range(4, 8), true))
                 {
-                    mprf("You sap %s willpower!",
+                    mprf(T_("You sap %s willpower!"),
                          defender->as_monster()->pronoun(PRONOUN_POSSESSIVE).c_str());
                 }
             }
@@ -2686,7 +2750,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
                 antimagic_affects_defender(damage_done * 32);
 
-                mprf("You drain %s %s.",
+                mprf(T_("You drain %s %s."),
                      defender->as_monster()->pronoun(PRONOUN_POSSESSIVE).c_str(),
                      spell_user ? "magic" : "power");
 
@@ -2701,7 +2765,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
                                   * drain);
                     if (drain)
                     {
-                        mpr("You feel invigorated.");
+                        mpr("你感到精力充沛。");
                         inc_mp(drain);
                     }
                 }
@@ -2729,22 +2793,36 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
 void melee_attack::player_announce_aux_hit(unarmed_attack_type atk)
 {
-    mprf("%s %s %s%s%s",
-         atk == UNAT_MEDUSA_STINGER ? "Your tendrils" : "You",
-         aux_verb.c_str(),
-         defender->name(DESC_THE).c_str(),
-         debug_damage_number().c_str(),
-         attack_strength_punctuation(damage_done).c_str());
+    if (Options.language == lang_t::ZH)
+        mprf("%s%s了%s%s%s",
+             atk == UNAT_MEDUSA_STINGER ? "你的触须" : "你",
+             aux_verb.c_str(),
+             defender->name(DESC_THE).c_str(),
+             debug_damage_number().c_str(),
+             attack_strength_punctuation(damage_done).c_str());
+    else
+        mprf("%s %s %s%s%s",
+             atk == UNAT_MEDUSA_STINGER ? "Your tendrils" : "You",
+             aux_verb.c_str(),
+             defender->name(DESC_THE).c_str(),
+             debug_damage_number().c_str(),
+             attack_strength_punctuation(damage_done).c_str());
 }
 
 void melee_attack::player_warn_miss()
 {
     did_hit = false;
 
-    mprf("You%s miss %s%s.",
-         evasion_margin_adverb().c_str(),
-         defender->name(DESC_THE).c_str(),
-         weapon_desc().c_str());
+    if (Options.language == lang_t::ZH)
+        mprf("你%s未命中%s%s。",
+             evasion_margin_adverb().c_str(),
+             defender->name(DESC_THE).c_str(),
+             weapon_desc().c_str());
+    else
+        mprf("You%s miss %s%s.",
+             evasion_margin_adverb().c_str(),
+             defender->name(DESC_THE).c_str(),
+             weapon_desc().c_str());
 }
 
 // A couple additive modifiers that should be applied to both unarmed and
@@ -2816,6 +2894,265 @@ int melee_attack::player_apply_postac_multipliers(int damage)
 }
 
 void melee_attack::set_attack_verb(int damage)
+{
+    if (Options.language == lang_t::ZH)
+        set_attack_verb_zh(damage);
+    else
+        set_attack_verb_en(damage);
+}
+
+void melee_attack::set_attack_verb_zh(int damage)
+{
+    if (!attacker->is_player())
+        return;
+
+    int weap_type = WPN_UNKNOWN;
+
+    if (Options.has_fake_lang(flang_t::grunt))
+        damage = HIT_STRONG + 1;
+
+    if (!weapon)
+        weap_type = WPN_UNARMED;
+    else if (weapon->base_type == OBJ_STAVES)
+        weap_type = WPN_STAFF;
+    else if (weapon->base_type == OBJ_WEAPONS
+             && !is_range_weapon(*weapon))
+    {
+        weap_type = weapon->sub_type;
+    }
+
+    // All weak hits with weapons look the same.
+    if (damage < HIT_WEAK
+        && weap_type != WPN_UNARMED)
+    {
+        if (weap_type != WPN_UNKNOWN)
+            attack_verb = "hit";
+        else
+            attack_verb = "clumsily bash";
+        return;
+    }
+
+    // Take normal hits into account. If the hit is from a weapon with
+    // more than one damage type, randomly choose one damage type from
+    // it.
+    monster_type defender_genus = mons_genus(defender->type);
+    switch (weapon ? single_damage_type(*weapon) : -1)
+    {
+    case DAM_PIERCE:
+        if (damage < HIT_MED)
+            attack_verb = "puncture";
+        else if (damage < HIT_STRONG)
+            attack_verb = "impale";
+        else
+        {
+            if (defender->is_monster()
+                && defender_visible
+                && defender_genus == MONS_HOG)
+            {
+                attack_verb = "spit";
+                verb_degree = "like the proverbial pig";
+            }
+            else if (defender_genus == MONS_CRAB
+                     && Options.has_fake_lang(flang_t::grunt))
+            {
+                attack_verb = "attack";
+                verb_degree = "'s weak point";
+            }
+            else
+            {
+                static const char * const pierce_desc[][2] =
+                {
+                    {"spit", "like a pig"},
+                    {"skewer", "like a kebab"},
+                    {"stick", "like a pincushion"},
+                    {"perforate", "like a sieve"}
+                };
+                const int choice = random2(ARRAYSZ(pierce_desc));
+                attack_verb = pierce_desc[choice][0];
+                verb_degree = pierce_desc[choice][1];
+            }
+        }
+        break;
+
+    case DAM_SLICE:
+        if (damage < HIT_MED)
+            attack_verb = "slash";
+        else if (damage < HIT_STRONG)
+            attack_verb = "slice";
+        else if (defender_genus == MONS_OGRE)
+        {
+            attack_verb = "dice";
+            verb_degree = "like an onion";
+        }
+        else if (defender_genus == MONS_DRAUGR)
+        {
+            attack_verb = "fracture";
+            verb_degree = "into splinters";
+        }
+        else if (defender_genus == MONS_HOG)
+        {
+            attack_verb = "carve";
+            verb_degree = "like the proverbial ham";
+        }
+        else if ((defender_genus == MONS_TENGU
+                  || get_mon_shape(defender_genus) == MON_SHAPE_BIRD)
+                 && one_chance_in(3))
+        {
+            attack_verb = "carve";
+            verb_degree = "like a turkey";
+        }
+        else if ((defender_genus == MONS_YAK || defender_genus == MONS_YAKTAUR)
+                 && Options.has_fake_lang(flang_t::grunt))
+        {
+            attack_verb = "shave";
+        }
+        else
+        {
+            static const char * const slice_desc[][2] =
+            {
+                {"open",    "like a pillowcase"},
+                {"slice",   "like a ripe choko"},
+                {"cut",     "into ribbons"},
+                {"carve",   "like a ham"},
+                {"chop",    "into pieces"}
+            };
+            const int choice = random2(ARRAYSZ(slice_desc));
+            attack_verb = slice_desc[choice][0];
+            verb_degree = slice_desc[choice][1];
+        }
+        break;
+
+    case DAM_BLUDGEON:
+        if (damage < HIT_MED)
+            attack_verb = one_chance_in(4) ? "thump" : "sock";
+        else if (damage < HIT_STRONG)
+            attack_verb = "bludgeon";
+        else if (defender_genus == MONS_DRAUGR)
+        {
+            attack_verb = "shatter";
+            verb_degree = "into splinters";
+        }
+        else if (defender->type == MONS_GREAT_ORB_OF_EYES)
+        {
+            attack_verb = "splatter";
+            verb_degree = "into a gooey mess";
+        }
+        else
+        {
+            static const char * const bludgeon_desc[][2] =
+            {
+                {"crush",   "like a grape"},
+                {"beat",    "like a drum"},
+                {"hammer",  "like a gong"},
+                {"pound",   "like an anvil"},
+                {"flatten", "like a pancake"}
+            };
+            const int choice = random2(ARRAYSZ(bludgeon_desc));
+            attack_verb = bludgeon_desc[choice][0];
+            verb_degree = bludgeon_desc[choice][1];
+        }
+        break;
+
+    case DAM_WHIP:
+        if (damage < HIT_MED)
+            attack_verb = "flog";
+        else if (damage < HIT_STRONG)
+            attack_verb = "flagellate";
+        else
+        {
+            attack_verb = "thrash";
+            verb_degree = "mercilessly";
+        }
+        break;
+
+    case -1: // unarmed
+    {
+        const FormAttackVerbs verbs = get_form(you.form)->uc_attack_verbs;
+        if (verbs.weak != nullptr)
+        {
+            if (damage < HIT_WEAK)
+                attack_verb = verbs.weak;
+            else if (damage < HIT_MED)
+                attack_verb = verbs.medium;
+            else if (damage < HIT_STRONG)
+                attack_verb = verbs.strong;
+            else
+                attack_verb = verbs.devastating;
+            break;
+        }
+
+        if (damage_type == DVORP_CLAWING)
+        {
+            if (damage < HIT_WEAK)
+                attack_verb = "scratch";
+            else if (damage < HIT_MED)
+                attack_verb = "claw";
+            else if (damage < HIT_STRONG)
+                attack_verb = "mangle";
+            else
+                attack_verb = "eviscerate";
+        }
+        else if (damage_type == DVORP_TENTACLE)
+        {
+            if (damage < HIT_WEAK)
+                attack_verb = "tentacle-slap";
+            else if (damage < HIT_MED)
+                attack_verb = "bludgeon";
+            else if (damage < HIT_STRONG)
+                attack_verb = "batter";
+            else
+                attack_verb = "thrash";
+        }
+        else
+        {
+            if (damage < HIT_WEAK)
+                attack_verb = "hit";
+            else if (damage < HIT_MED)
+                attack_verb = "punch";
+            else if (damage < HIT_STRONG)
+                attack_verb = "pummel";
+            else if (defender->is_monster()
+                     && mons_genus(defender->type) == MONS_FORMICID)
+            {
+                attack_verb = "squash";
+                verb_degree = "like the proverbial ant";
+            }
+            else
+            {
+                static const char * const punch_desc[][2] =
+                {
+                    {"pound",     "into fine dust"},
+                    {"pummel",    "like a punching bag"},
+                    {"pulverise", ""},
+                    {"squash",    "like an ant"}
+                };
+                const int choice = random2(ARRAYSZ(punch_desc));
+                // XXX: could this distinction work better?
+                if (choice == 0
+                    && defender->is_monster()
+                    && mons_has_blood(defender->type))
+                {
+                    attack_verb = "beat";
+                    verb_degree = "into a bloody pulp";
+                }
+                else
+                {
+                    attack_verb = punch_desc[choice][0];
+                    verb_degree = punch_desc[choice][1];
+                }
+            }
+        }
+        break;
+    }
+
+    case WPN_UNKNOWN:
+    default:
+        attack_verb = "hit";
+        break;
+    }
+}
+
+void melee_attack::set_attack_verb_en(int damage)
 {
     if (!attacker->is_player())
         return;
@@ -3107,7 +3444,7 @@ void melee_attack::sear_defender()
 
     if (needs_message && visible_effect)
     {
-        mprf("%s fire resistance is stripped away!",
+        mprf("%s 的火焰抗性被剥离了！",
              def_name(DESC_ITS).c_str());
     }
 }
@@ -3169,7 +3506,7 @@ bool melee_attack::consider_decapitation(int dam)
     if (damage_brand == SPWPN_FLAMING)
     {
         if (defender_visible)
-            mpr("The flame cauterises the wound!");
+            mpr("火焰烧灼了伤口！");
         return false;
     }
 
@@ -3274,7 +3611,7 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { "rip", "tear", "claw" };
+        static const char *claw_verbs[] = { "rip", "tear", "爪击" };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
@@ -3476,7 +3813,7 @@ bool melee_attack::apply_staff_damage()
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_ATTUNEMENT)
         && you.magic_points < you.max_magic_points)
     {
-        mpr("You draw in some of the released energy.");
+        mpr(T_("You draw in some of the released energy."));
         inc_mp(1 + one_chance_in(3) + one_chance_in(3));
     }
 
@@ -3552,14 +3889,27 @@ string melee_attack::mons_attack_verb()
     };
 
     if (attacker->type == MONS_KILLER_KLOWN && attk_type == AT_HIT)
+    {
+        if (Options.language == lang_t::ZH)
+        {
+            static const char *klown_attack_zh[] =
+            {
+                "击打", "戳", "捅", "鞭打", "猛击", "拍击",
+                "挠痒", "扔出窗外", "偷袭", "肘击", "掐",
+                "锁喉", "挤压", "戏弄", "挖眼", "空手道踢",
+                "锁头", "摔跤", "绊倒", "膝撞"
+            };
+            return RANDOM_ELEMENT(klown_attack_zh);
+        }
         return RANDOM_ELEMENT(klown_attack);
+    }
 
     //XXX: then why give them it in the first place?
     if (attk_type == AT_TENTACLE_SLAP && mons_is_tentacle(attacker->type))
-        return "slap";
+        return T_("slap");
 
     if (is_special_mon_stab && attacker->type == MONS_PLAYER_SHADOW)
-        return "eviscerate";
+        return T_("eviscerate");
 
     if (attacker->type == MONS_HAUNTED_ARMOUR)
     {
@@ -3569,14 +3919,22 @@ string melee_attack::mons_attack_verb()
             {
                 case ARM_HAT:
                 case ARM_HELMET:
-                    return random_choose("headbutt", "bonk", "clobber");
+                    return Options.language == lang_t::ZH
+                        ? random_choose("头撞", "敲头", "猛砸")
+                        : random_choose("headbutt", "head-knock", "head-slam");
                 case ARM_BOOTS:
-                    return random_choose("kick", "punt", "thump");
+                    return Options.language == lang_t::ZH
+                        ? random_choose("踢", "猛踢", "重踏")
+                        : random_choose("kick", "heavy kick", "stomp");
                 case ARM_CLOAK:
                 case ARM_SCARF:
-                    return random_choose("buffet", "strangle");
+                    return Options.language == lang_t::ZH
+                        ? random_choose("抽打", "勒")
+                        : random_choose("buffet", "strangle");
                 case ARM_GLOVES:
-                    return random_choose("punch", "slap", "smack");
+                    return Options.language == lang_t::ZH
+                        ? random_choose("拳击", "拍击", "掌掴")
+                        : random_choose("punch", "slap", "smack");
 
                 default:
                     break;
@@ -3592,13 +3950,17 @@ string melee_attack::mons_attack_desc()
     if (!you.can_see(*attacker))
         return "";
 
+    const bool zh = Options.language == lang_t::ZH;
     string ret;
     int dist = (attack_position - defender->pos()).rdist();
     if (dist > 1)
-        ret = " from afar";
+        ret = T_(" from afar");
 
     if (weapon && !mons_class_is_animated_weapon(attacker->type))
-        ret += " with " + weapon->name(DESC_A, false, false, false);
+    {
+        ret += T_(" with ");
+        ret += weapon->name(DESC_A, false, false, false);
+    }
 
     return ret;
 }
@@ -3607,14 +3969,21 @@ string melee_attack::weapon_desc()
 {
     if (!weapon || !you.offhand_weapon())
         return "";
-    return " with " + weapon->name(DESC_YOUR, false, false, false);
+
+    const bool zh = Options.language == lang_t::ZH;
+    return (T_(" with "))
+           + weapon->name(DESC_YOUR, false, false, false);
 }
 
 string melee_attack::charge_desc()
 {
     if (!charge_pow || defender->res_elec() > 0)
         return "";
+
+    const bool zh = Options.language == lang_t::ZH;
     const string pronoun = defender->pronoun(PRONOUN_OBJECTIVE);
+    if (zh)
+        return make_stringf("并电击了%s", pronoun.c_str());
     return make_stringf(" and electrocute%s %s",
                         attacker->is_player() ? "" : "s",
                         pronoun.c_str());
@@ -3628,32 +3997,65 @@ void melee_attack::announce_hit()
 
     if (attacker->is_monster())
     {
-        mprf("%s %s%s %s%s%s%s%s",
-             atk_name(DESC_THE).c_str(),
-             is_special_mon_stab
-                && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL)
-                    ? "stealthily " : "",
-             attacker->conj_verb(mons_attack_verb()).c_str(),
-             defender_name(true).c_str(),
-             charge_desc().c_str(),
-             debug_damage_number().c_str(),
-             mons_attack_desc().c_str(),
-             attack_strength_punctuation(damage_done).c_str());
+        if (Options.language == lang_t::ZH)
+        {
+            string defender_zh = defender_name(true);
+            if (defender == &you)
+                defender_zh = "你";
+            string atk_name_zh = atk_name(DESC_PLAIN);
+            mprf("%s%s%s了%s%s%s%s%s",
+                 atk_name_zh.c_str(),
+                 is_special_mon_stab
+                    && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL)
+                        ? "潜行地" : "",
+                 mons_attack_verb().c_str(), // already Chinese
+                 defender_zh.c_str(),
+                 charge_desc().c_str(),
+                 debug_damage_number().c_str(),
+                 mons_attack_desc().c_str(),
+                 attack_strength_punctuation(damage_done).c_str());
+        }
+        else
+            mprf("%s %s%s %s%s%s%s%s",
+                 atk_name(DESC_THE).c_str(),
+                 is_special_mon_stab
+                    && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL)
+                        ? "stealthily " : "",
+                 attacker->conj_verb(mons_attack_verb()).c_str(),
+                 defender_name(true).c_str(),
+                 charge_desc().c_str(),
+                 debug_damage_number().c_str(),
+                 mons_attack_desc().c_str(),
+                 attack_strength_punctuation(damage_done).c_str());
     }
     else
     {
-        if (!verb_degree.empty() && verb_degree[0] != ' '
-            && verb_degree[0] != ',' && verb_degree[0] != '\'')
+        if (Options.language == lang_t::ZH)
         {
-            verb_degree = " " + verb_degree;
+            mprf("你%s%s了%s%s%s%s%s",
+                 verb_degree.c_str(),
+                 attack_verb.c_str(),
+                 defender->name(DESC_THE).c_str(),
+                 weapon_desc().c_str(),
+                 charge_desc().c_str(), debug_damage_number().c_str(),
+                 attack_strength_punctuation(damage_done).c_str());
         }
+        else
+        {
+            string degree = verb_degree;
+            if (!degree.empty() && degree[0] != ' '
+                && degree[0] != ',' && degree[0] != '\'')
+            {
+                degree = " " + degree;
+            }
 
-        mprf("You %s %s%s%s%s%s%s",
-             attack_verb.c_str(),
-             defender->name(DESC_THE).c_str(), verb_degree.c_str(),
-             weapon_desc().c_str(),
-             charge_desc().c_str(), debug_damage_number().c_str(),
-             attack_strength_punctuation(damage_done).c_str());
+            mprf("You %s %s%s%s%s%s%s",
+                 attack_verb.c_str(),
+                 defender->name(DESC_THE).c_str(), degree.c_str(),
+                 weapon_desc().c_str(),
+                 charge_desc().c_str(), debug_damage_number().c_str(),
+                 attack_strength_punctuation(damage_done).c_str());
+        }
     }
 }
 
@@ -3682,7 +4084,7 @@ bool melee_attack::mons_do_poison()
 
     if (needs_message)
     {
-        mprf("%s poisons %s!",
+        mprf("%s使%s中毒了！",
                 atk_name(DESC_THE).c_str(),
                 defender_name(true).c_str());
     }
@@ -4021,7 +4423,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         // Doesn't affect the poison-immune.
         if (defender->is_player() && you.duration[DUR_DIVINE_STAMINA] > 0)
         {
-            mpr("Your divine stamina protects you from poison!");
+            mpr(T_("Your divine stamina protects you from poison!"));
             break;
         }
         if (defender->res_poison() >= 3)
@@ -4038,7 +4440,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         // Doesn't affect the poison-immune.
         if (defender->is_player() && you.duration[DUR_DIVINE_STAMINA] > 0)
         {
-            mpr("Your divine stamina protects you from poison!");
+            mpr(T_("Your divine stamina protects you from poison!"));
             break;
         }
         else if (defender->res_poison() >= 3)
@@ -4193,10 +4595,23 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message)
         {
-            mprf("%s %s %s.",
-                 atk_name(DESC_THE).c_str(),
-                 attacker->conj_verb("grab").c_str(),
-                 defender_name(true).c_str());
+            if (Options.language == lang_t::ZH)
+            {
+                string defender_zh = defender_name(true);
+                if (defender == &you)
+                    defender_zh = "你";
+                mprf("%s%s了%s。",
+                     atk_name(DESC_PLAIN).c_str(),
+                     "抓取",
+                     defender_zh.c_str());
+            }
+            else
+            {
+                mprf("%s %s %s.",
+                     atk_name(DESC_THE).c_str(),
+                     attacker->conj_verb("grab").c_str(),
+                     defender_name(true).c_str());
+            }
         }
         attacker->start_constricting(*defender, CONSTRICT_MELEE);
         // if you got grabbed, interrupt stair climb and passwall
@@ -4208,7 +4623,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         if (coinflip())
         {
             defender->floodify(attacker, random_range(30, 60),
-                               attacker->type == MONS_VOID_OOZE ? "ooze" : "water");
+                               attacker->type == MONS_VOID_OOZE ? "软泥" : "water");
         }
         break;
 
@@ -4294,7 +4709,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                           attacker->get_hit_dice() * 12))
         {
             if (needs_message)
-                mpr("A spider bursts forth from the wound!");
+                mpr(T_("A spider bursts forth from the wound!"));
         }
         break;
     }
@@ -4491,7 +4906,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                                         8 + attacker->get_hit_dice());
         const bool caused_bane = defender->doom(amount);
         if (!caused_bane && defender->is_player())
-            mpr("Your doom draws closer.");
+            mpr(T_("Your doom draws closer."));
         break;
     }
 
@@ -4592,7 +5007,7 @@ void melee_attack::mons_do_eyeball_confusion()
 
         if (mon->check_willpower(&you, ench_pow) <= 0)
         {
-            mprf("The eyeballs on your body gaze at %s.",
+            mprf(T_("The eyeballs on your body gaze at %s."),
                  mon->name(DESC_THE).c_str());
 
             if (!mon->clarity())
@@ -4612,7 +5027,7 @@ void melee_attack::mons_do_tendril_disarm()
         item_def* mons_wpn = mon->disarm();
         if (mons_wpn)
         {
-            mprf("Your tendrils lash around %s %s and pull it to the ground!",
+            mprf(T_("Your tendrils lash around %s %s and pull it to the ground!"),
                  apostrophise(mon->name(DESC_THE)).c_str(),
                  mons_wpn->name(DESC_PLAIN).c_str());
         }
@@ -4746,7 +5161,7 @@ void melee_attack::emit_foul_stench()
 
         if (damage_done > 0 && x_chance_in_y(mut * 3 - 1, 20))
         {
-            mpr("You emit a cloud of foul miasma!");
+            mpr(T_("You emit a cloud of foul miasma!"));
             place_cloud(CLOUD_MIASMA, mon->pos(), 5 + random2(6), &you);
         }
     }
@@ -5283,7 +5698,7 @@ bool coglin_spellmotor_attack()
         return false;
 
     melee_attack attk(&you, targs[random2(targs.size())]);
-    mpr("Your spellmotor activates!");
+    mpr(T_("Your spellmotor activates!"));
     attk.launch_attack_set();
 
     count_action(CACT_ATTACK, ATTACK_SPELLMOTOR);
@@ -5357,7 +5772,7 @@ bool spellclaws_attack(int spell_level)
 
     if (you.duration[DUR_ENKINDLED] && you.hp < you.hp_max)
     {
-        mprf("You rip the existence from %s to re-knit yourself!", targ_name.c_str());
+        mprf(T_("You rip the existence from %s to re-knit yourself!"), targ_name.c_str());
         you.heal(attk.total_damage_done * 3 / 4);
     }
 

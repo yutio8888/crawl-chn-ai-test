@@ -50,10 +50,16 @@ function volcano_portal (e)
 
     local messager =
       timed_msg {
-        initmsg = { "You feel an oppressive heat about you.",
-                    "There is an entrance to a volcano on this level. "
+        initmsg = { crawl.language() == "zh"
+                    and "你感到一股令人窒息的灼热包围着你。"
+                    or "You feel an oppressive heat about you.",
+                    crawl.language() == "zh"
+                    and "这个楼层有一个通往火山的入口。在入口坍塌前找到它！"
+                    or "There is an entrance to a volcano on this level. "
                     .. "Hurry and find it before the entrance collapses!" },
-        finalmsg = "The sound of falling rocks suddenly begins to subside.",
+        finalmsg = crawl.language() == "zh"
+                   and "落石的声音突然开始减弱。"
+                   or "The sound of falling rocks suddenly begins to subside.",
 
         verb = 'rumble',
         noisemaker = 'avalanche of rocks',
@@ -66,7 +72,9 @@ function volcano_portal (e)
 
     e.lua_marker('O',
       timed_marker {
-        disappear = "There is a deep roar from within the tunnel. Moments " ..
+        disappear = crawl.language() == "zh"
+                    and "隧道深处传来一声低沉的轰鸣。片刻之后，岩浆涌出，永久地封住了入口。"
+                    or "There is a deep roar from within the tunnel. Moments " ..
                     "later, a river of lava pours forth, sealing it permanently.",
         entity = 'tunnel',
         turns = timeout_turns,

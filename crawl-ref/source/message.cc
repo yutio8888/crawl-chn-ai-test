@@ -7,6 +7,7 @@
 
 #include "message.h"
 
+#include "positional_format.h"
 #include <sstream>
 
 #include "areas.h"
@@ -32,6 +33,7 @@
 #include "tag-version.h"
 #include "unwind.h"
 #include "view.h"
+#include "database.h"
 
 static void _mpr(string text, msg_channel_type channel=MSGCH_PLAIN, int param=0,
                  bool nojoin=false, bool cap=true);
@@ -50,7 +52,22 @@ static bool _ends_in_punctuation(const string& text)
 {
     if (text.size() == 0)
         return false;
-    switch (text[text.size() - 1])
+    // Check the last Unicode code point for multi-byte UTF-8 sequences
+    const char* s = text.c_str();
+    char32_t last_ch = 0;
+    while (*s)
+    {
+        char32_t ch;
+        int len = utf8towc(&ch, s);
+        if (len)
+        {
+            s += len;
+            last_ch = ch;
+        }
+        else
+            break;
+    }
+    switch (last_ch)
     {
     case '.':
     case '!':
@@ -58,6 +75,14 @@ static bool _ends_in_punctuation(const string& text)
     case ',':
     case ';':
     case ':':
+    // Chinese/Fullwidth punctuation
+    case 0x3002:   // 。
+    case 0xFF01:   // ！
+    case 0xFF1F:   // ？
+    case 0xFF0C:   // ，
+    case 0x3001:   // 、
+    case 0xFF1B:   // ；
+    case 0xFF1A:   // ：
         return true;
     default:
         return false;
@@ -728,7 +753,7 @@ public:
                 cprintf(more_str.c_str());
             }
             else
-                cprintf("--more--");
+                cprintf(T_("--more--"));
 
             readkey_more(user);
         }
@@ -1957,7 +1982,7 @@ void canned_msg(canned_message_type which_message)
                  player_has_feet() ? "at your feet" : "before you");
             break;
         case MSG_NOTHING_HAPPENS:
-            mpr("Nothing appears to happen.");
+            mpr(T_("Nothing appears to happen."));
             break;
         case MSG_YOU_UNAFFECTED:
             mpr("You are unaffected.");
@@ -1970,26 +1995,27 @@ void canned_msg(canned_message_type which_message)
             mpr("You partially resist.");
             break;
         case MSG_TOO_BERSERK:
-            mpr("You are too berserk!");
+            mpr(T_("You are too berserk!"));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_TOO_CONFUSED:
-            mpr("You are too confused!");
+            mpr(T_("You are too confused!"));
             break;
         case MSG_PRESENT_FORM:
             mpr("You can't do that in your present form.");
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_CARRIED:
-            mpr("You aren't carrying anything.");
+            mpr(T_("You aren't carrying anything."));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_CANNOT_DO_YET:
-            mpr("You can't do that yet.");
+            mpr(T_("You can't do that yet."));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_OK:
-            mprf(MSGCH_PROMPT, "Okay, then.");
+            mprf(MSGCH_PROMPT,
+                 T_("Okay, then."));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_UNTHINKING_ACT:
@@ -1997,7 +2023,7 @@ void canned_msg(canned_message_type which_message)
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_THERE:
-            mpr("There's nothing there!");
+            mpr(T_("There's nothing there!"));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_CLOSE_ENOUGH:
@@ -2008,7 +2034,8 @@ void canned_msg(canned_message_type which_message)
             mpr("The spell fizzles.");
             break;
         case MSG_HUH:
-            mprf(MSGCH_EXAMINE_FILTER, "Huh?");
+            mprf(MSGCH_EXAMINE_FILTER, "%s",
+                 Options.language == lang_t::ZH ? "嗯？" : "Huh?");
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_EMPTY_HANDED_ALREADY:
@@ -2027,13 +2054,13 @@ void canned_msg(canned_message_type which_message)
             break;
         }
         case MSG_YOU_BLINK:
-            mpr("You blink.");
+            mpr(T_("You blink."));
             break;
         case MSG_STRANGE_STASIS:
             mpr("You feel a strange sense of stasis.");
             break;
         case MSG_NO_SPELLS:
-            mpr("You don't know any spells.");
+            mpr(T_("You don't know any spells."));
             break;
         case MSG_MANA_INCREASE:
             mpr("You feel your magic capacity increase.");
@@ -2048,19 +2075,19 @@ void canned_msg(canned_message_type which_message)
             mpr("You detect nothing.");
             break;
         case MSG_CANNOT_MOVE:
-            mpr("You cannot move.");
+            mpr(T_("You cannot move."));
             break;
         case MSG_YOU_DIE:
-            mpr_nojoin(MSGCH_PLAIN, "You die...");
+            mpr_nojoin(MSGCH_PLAIN, T_("You die..."));
             break;
         case MSG_GHOSTLY_OUTLINE:
             mpr("You see a ghostly outline there, and the spell fizzles.");
             break;
         case MSG_FULL_HEALTH:
-            mpr("Your health is already full.");
+            mpr(T_("Your health is already full."));
             break;
         case MSG_FULL_MAGIC:
-            mpr("Your reserves of magic are already full.");
+            mpr(T_("Your reserves of magic are already full."));
             break;
         case MSG_GAIN_HEALTH:
             mpr("You feel better.");
@@ -2321,4 +2348,39 @@ void formatted_mpr(const formatted_string& fs,
                    msg_channel_type channel, int param)
 {
     _mpr(fs.to_colour_string(), channel, param);
+}
+
+// mprf_p variants — use vmake_stringf_p for %n$s positional parameter support.
+// Formatted via vmake_stringf_p, then passed as plain string to existing mpr*.
+// See posfmt/positional_format.h for the formatter.
+static string _mprf_p_format(const char *format, va_list args)
+{
+    return vmake_stringf_p(format, args);
+}
+
+void mprf_p(msg_channel_type channel, int param, const char *format, ...)
+{
+    va_list argp;
+    va_start(argp, format);
+    string s = vmake_stringf_p(format, argp);
+    va_end(argp);
+    mprf(channel, param, "%s", s.c_str());
+}
+
+void mprf_p(msg_channel_type channel, const char *format, ...)
+{
+    va_list argp;
+    va_start(argp, format);
+    string s = vmake_stringf_p(format, argp);
+    va_end(argp);
+    mprf(channel, "%s", s.c_str());
+}
+
+void mprf_p(const char *format, ...)
+{
+    va_list argp;
+    va_start(argp, format);
+    string s = vmake_stringf_p(format, argp);
+    va_end(argp);
+    mprf("%s", s.c_str());
 }

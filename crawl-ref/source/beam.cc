@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "beam.h"
+#include "database.h"
 
 #include <algorithm>
 #include <cmath>
@@ -90,6 +91,7 @@
 // Helper functions (some of these should probably be public).
 static beam_type _chaos_beam_flavour();
 static string _beam_type_name(beam_type type);
+static string _beam_display_name(const bolt &beam);
 int _ench_pow_to_dur(int pow);
 
 tracer_info::tracer_info()
@@ -880,7 +882,7 @@ void bolt::digging_wall_effect()
             if (feat == DNGN_GRATE)
             {
                 // XXX: should this change for monsters?
-                mpr("The damaged grate falls apart.");
+                mpr(T_("The damaged grate falls apart."));
                 return;
             }
             else if (feat == DNGN_SLIMY_WALL)
@@ -1651,7 +1653,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                     if (!did_splash_msg)
                     {
                         if (you.see_cell(mons->pos()))
-                            mprf("The mercury splashes!");
+                            mprf(T_("The mercury splashes!"));
                         did_splash_msg = true;
                     }
 
@@ -1833,7 +1835,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         {
             if (mons->is_insubstantial() || mons->is_amorphous())
             {
-                mprf("The bolas passes through %s!",
+                mprf(T_("The bolas passes through %s!"),
                       mons->name(DESC_THE).c_str());
             }
             else
@@ -2140,7 +2142,7 @@ static bool _curare_hits_player(actor* agent, string name,
     // We force apply this poison, since the 1-in-3 chance was already passed
     poison_player(roll_dice(2, 12) + bonus_poison + 1, source_name, name, true);
 
-    mpr("You have difficulty breathing.");
+    mpr(T_("You have difficulty breathing."));
     ouch(roll_dice(2, 6), KILLED_BY_CURARE, agent->mid, "curare-induced apnoea");
     slow_player(10 + random2(2 + random2(6)));
 
@@ -2635,7 +2637,7 @@ void bolt::affect_endpoint()
     if (use_bullseye && you.duration[DUR_DIMENSIONAL_BULLSEYE] > 0)
     {
         monster* bullseye_targ = monster_by_mid(you.props[BULLSEYE_TARGET_KEY].get_int());
-        mpr("Your projectile teleports!");
+        mpr(T_("Your projectile teleports!"));
         use_target_as_pos = true;
         target = bullseye_targ->pos();
         affect_monster(bullseye_targ);
@@ -2657,9 +2659,9 @@ void bolt::affect_endpoint()
     case SPELL_PRIMAL_WAVE:
     {
         if (you.see_cell(pos()))
-            mpr("The wave splashes down.");
+            mpr(T_("The wave splashes down."));
         else
-            mpr("You hear a splash.");
+            mpr(T_("You hear a splash."));
 
         const bool is_player = agent(true) && agent(true)->is_player();
         const int num = is_player ? div_rand_round(ench_power * 3, 20) + 3 + random2(7)
@@ -2722,7 +2724,7 @@ void bolt::affect_endpoint()
 
     case SPELL_MUD_BREATH:
     {
-        mpr("The mud splashes down.");
+        mpr(T_("The mud splashes down."));
         const int num = 3 + div_rand_round(ench_power * 3, 7) + random2(4);
         const int dur = (div_rand_round(ench_power * 1, 3) + 15) * BASELINE_DELAY;
         const int rad = (num > 20) ? 3 : (num > 9) ? 2 : 1;
@@ -3552,30 +3554,32 @@ bool bolt::misses_player()
         // the player is using the Warlock's Mirror.
         if (blocked || (you.duration[DUR_DIVINE_SHIELD] && is_blockable()))
         {
+            const string beam_name = _beam_display_name(*this);
             const string refl_name = name.empty() &&
                                      origin_spell != SPELL_NO_SPELL ?
                                         spell_title(origin_spell) :
-                                        name;
+                                        beam_name;
 
+            const bool zh = Options.language == lang_t::ZH;
             const item_def *shield = you.shield();
             if (is_reflectable(you))
             {
                 if (shield && shield_reflects(*shield))
                 {
-                    mprf("Your %s blocks the %s... and reflects it back!",
+                    mprf(T_("Your %s blocks the %s... and reflects it back!"),
                             shield->name(DESC_PLAIN).c_str(),
                             refl_name.c_str());
                 }
                 else
                 {
-                    mprf("You block the %s... and reflect it back!",
+                    mprf(T_("You block the %s... and reflect it back!"),
                             refl_name.c_str());
                 }
                 reflect();
             }
             else
             {
-                mprf("You block the %s.", name.c_str());
+                mprf(T_("You block the %s."), beam_name.c_str());
                 finish_beam();
             }
             you.shield_block_succeeded(agent());
@@ -3605,14 +3609,15 @@ bool bolt::misses_player()
                             : _test_beam_hit(real_tohit, dodge, r);
     if (hit_margin < 0)
     {
+        const string beam_name = _beam_display_name(*this);
         if (hit_margin > -repel)
         {
-            mprf("The %s is repelled.", name.c_str());
+            mprf(T_("The %s is repelled."), beam_name.c_str());
             count_action(CACT_DODGE, DODGE_REPEL);
         }
         else
         {
-            mprf("The %s misses you.", name.c_str());
+            mprf(T_("The %s misses you."), beam_name.c_str());
             count_action(CACT_DODGE, DODGE_EVASION);
         }
     }
@@ -3709,7 +3714,7 @@ void bolt::affect_player_enchantment(bool resistible)
 
     case BEAM_MALMUTATE:
     case BEAM_UNRAVELLED_MAGIC:
-        mpr("Strange energies course through your body.");
+        mpr(T_("Strange energies course through your body."));
         you.malmutate(agent(), aux_source.empty() ? get_source_name() :
                       (get_source_name() + "/" + aux_source));
         obvious_effect = true;
@@ -3810,7 +3815,7 @@ void bolt::affect_player_enchantment(bool resistible)
     case BEAM_BANISH:
         if (YOU_KILL(thrower))
         {
-            mpr("This spell isn't strong enough to banish yourself.");
+            mpr(T_("This spell isn't strong enough to banish yourself."));
             break;
         }
         you.banish(agent(), get_source_name());
@@ -3825,7 +3830,7 @@ void bolt::affect_player_enchantment(bool resistible)
         const int dam = resist_adjust_damage(&you, flavour, damage.roll());
         if (dam)
         {
-            mpr("Pain shoots through your body!");
+            mpr(T_("Pain wracks your body!"));
             internal_ouch(dam);
             obvious_effect = true;
         }
@@ -3846,7 +3851,7 @@ void bolt::affect_player_enchantment(bool resistible)
             break;
         }
 
-        mpr("You convulse!");
+        mpr(T_("You convulse!"));
 
         if (aux_source.empty())
             aux_source = "by dispel undead";
@@ -3856,7 +3861,7 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_MINDBURST:
-        mpr("Your mind is blasted!");
+        mpr(T_("Your mind is blasted!"));
 
         if (aux_source.empty())
             aux_source = "mindburst bolt";
@@ -3875,7 +3880,7 @@ void bolt::affect_player_enchantment(bool resistible)
     case BEAM_PORKALATOR:
         if (!transform(20 + roll_dice(3, 10), transformation::pig, true))
         {
-            mpr("You feel a momentary urge to oink.");
+            mpr(T_("You feel a momentary urge to oink."));
             break;
         }
 
@@ -3900,7 +3905,7 @@ void bolt::affect_player_enchantment(bool resistible)
         if (you.duration[DUR_TELEPORT])
         {
             you.duration[DUR_TELEPORT] = 0;
-            mpr("Your teleport is interrupted.");
+            mpr(T_("Your teleport is interrupted."));
         }
         you.redraw_evasion = true;
         obvious_effect = true;
@@ -3973,7 +3978,7 @@ void bolt::affect_player_enchantment(bool resistible)
             break;
         }
 
-        mpr("You feel yourself grow more vulnerable to poison.");
+        mpr(T_("You feel yourself grow more vulnerable to poison."));
         you.increase_duration(DUR_POISON_VULN, 12 + random2(18), 50);
         obvious_effect = true;
         break;
@@ -4230,6 +4235,150 @@ static pie_effect _random_pie_effect(const actor &defender)
     return *random_choose_weighted(weights);
 }
 
+// Chinese translations for common non-spell ZAP/beam names.
+static const char* _zap_name_zh(const string& en)
+{
+    if (Options.language != lang_t::ZH)
+        return nullptr;
+
+    static const map<string, const char*> zh = {
+        // Elements
+        {"blast of flame", "火焰冲击"},
+        {"blast of cold", "寒冰冲击"},
+        {"blast of poison", "毒素冲击"},
+        {"blast of sand", "飞沙走石"},
+        {"bolt of fire", "火焰箭"},
+        {"bolt of cold", "寒冰箭"},
+        {"bolt of lightning", "闪电箭"},
+        {"bolt of electricity", "电击箭"},
+        {"bolt of acid", "酸液箭"},
+        {"bolt of poison", "毒液箭"},
+        {"bolt of magma", "岩浆箭"},
+        {"bolt of negative energy", "负能量箭"},
+        {"bolt of light", "光之箭"},
+        {"bolt of energy", "能量箭"},
+        {"bolt of devastation", "毁灭之箭"},
+        {"bolt of antimagic", "反魔箭"},
+        {"bolt of flesh", "血肉之箭"},
+        {"bolt of dispelling energy", "驱散能量箭"},
+        {"fireball", "火球"},
+        {"iceblast", "寒冰爆裂"},
+        {"magic dart", "魔法飞弹"},
+        {"iron shot", "铁弹"},
+        {"stone arrow", "石箭"},
+        {"poison arrow", "毒箭"},
+        {"crystal spear", "水晶矛"},
+        {"shard of ice", "冰碎片"},
+        {"shards of blighted ice", "枯萎冰碎片"},
+        {"shard of frigid ice", "极寒冰碎片"},
+        {"salvo of icicles", "冰锥齐射"},
+        {"salvo of frigid ice", "极寒冰锥齐射"},
+        {"orb of electricity", "电光球"},
+        {"ball of acid", "酸液球"},
+        {"ball of mud", "泥球"},
+        {"ball of steam", "蒸汽球"},
+        {"glob of acid", "酸液团"},
+        {"glob of lava", "熔岩团"},
+        {"glob of mercury", "水银团"},
+        {"puff of flame", "火焰喷吐"},
+        {"puff of frost", "冰霜喷吐"},
+        {"splash of acid", "酸液溅射"},
+        {"splash of poison", "毒液溅射"},
+        {"sting", "刺痛"},
+        {"sticky flame", "黏着火焰"},
+        {"throw flame", "投掷火焰"},
+        {"throw frost", "投掷冰霜"},
+        {"zap", "电击"},
+        {"freeze", "冻结"},
+        {"refrigeration", "急速冷冻"},
+        {"searing ray", "灼热射线"},
+        {"flame wave", "火焰波"},
+        {"searing blast", "灼热冲击"},
+        {"noxious fumes", "毒烟"},
+        {"poison gas", "毒气"},
+        {"stinking cloud", "恶臭云雾"},
+        {"foul vapour", "恶臭蒸汽"},
+        {"toxic sludge", "毒性淤泥"},
+        // Beams and breaths
+        {"fiery breath", "火焰吐息"},
+        {"glacial breath", "冰川吐息"},
+        {"lightning breath", "闪电吐息"},
+        {"acid spray", "酸液喷射"},
+        {"billowing rust", "滚滚锈尘"},
+        {"blast of calcifying dust", "钙化尘暴"},
+        {"blast of choking fumes", "窒息烟雾冲击"},
+        {"blast of cleansing flame", "净化之焰冲击"},
+        {"blazing flames", "炽热烈焰"},
+        {"blinding ray", "致盲射线"},
+        {"blood arrow", "血之箭"},
+        {"creeping shadow", "蔓延暗影"},
+        {"crushing gravity", "碾压重力"},
+        {"curse of agony", "痛苦诅咒"},
+        {"damnation", "诅咒"},
+        {"drain life", "吸取生命"},
+        {"explosive embers", "爆炸余烬"},
+        {"flash freeze", "急冻"},
+        {"freezing gust", "冰冻狂风"},
+        {"ghostly fireball", "幽灵火球"},
+        {"gout of destruction", "毁灭喷涌"},
+        {"hail", "冰雹"},
+        {"harpoon shot", "鱼叉射击"},
+        {"jagged bones", "锯齿骨头"},
+        {"kinetic grapnel", "动态抓钩"},
+        {"lance of force", "力之长矛"},
+        {"living lightning", "活体闪电"},
+        {"magical storm", "魔法风暴"},
+        {"mass of rock", "巨石"},
+        {"mystic blast", "神秘冲击"},
+        {"nullifying energy", "抵消能量"},
+        {"piercing cold", "刺骨严寒"},
+        {"pyre arrow", "火葬之箭"},
+        {"ray of shadow", "暗影射线"},
+        {"seething chaos", "沸腾混沌"},
+        {"seismic shockwave", "地震冲击波"},
+        {"shadow bullet", "暗影子弹"},
+        {"shadowy lightning", "暗影闪电"},
+        {"shockwave", "冲击波"},
+        {"shooting star", "流星"},
+        {"slug dart", "弹丸飞镖"},
+        {"sonic wave", "音波"},
+        {"surge of chaos", "混沌涌动"},
+        {"torrent of water", "水之激流"},
+        {"unravelling", "解除"},
+        {"volatile concoction", "不稳定混合物"},
+        {"volley of spikes", "尖刺齐射"},
+        {"volley of thorns", "荆棘齐射"},
+        {"wave of devouring shadow", "吞噬暗影之波"},
+        {"whirling bolas", "旋转流星索"},
+        {"shred", "撕裂"},
+        {"fragment of death", "死亡碎片"},
+        {"shadowball", "暗影球"},
+        {"swarm of vampire bats", "吸血蝙蝠群"},
+        {"fortress blast", "堡垒冲击"},
+        {"foxfire", "狐火"},
+        {"grasping water", "缠绕之水"},
+        {"rocky spike", "岩石尖刺"},
+        {"shard of hardened shadow", "硬化暗影碎片"},
+    };
+    auto it = zh.find(en);
+    return it != zh.end() ? it->second : nullptr;
+}
+
+// Get the display name for a beam. For spell beams in Chinese mode,
+// use the translated spell title instead of the English zap name.
+// For non-spell beams, use the _zap_name_zh() lookup table.
+static string _beam_display_name(const bolt &beam)
+{
+    if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
+        return spell_title(beam.origin_spell);
+    if (Options.language == lang_t::ZH)
+    {
+        const char* zh = _zap_name_zh(beam.name);
+        if (zh) return zh;
+    }
+    return beam.name;
+}
+
 void bolt::affect_player()
 {
     hit_count[MID_PLAYER]++;
@@ -4296,9 +4445,14 @@ void bolt::affect_player()
         if (real_flavour == BEAM_RANDOM)
         {
             if (hit_verb.empty())
-                hit_verb = engulfs ? "engulfs" : "hits";
-            mprf("The %s %s %s!", name.c_str(), hit_verb.c_str(),
-                you.hp > 0 ? "you" : "your lifeless body");
+                hit_verb = engulfs ? (T_("engulfs"))
+                                   : (T_("hits"));
+            const string beam_name = _beam_display_name(*this);
+            const bool zh = Options.language == lang_t::ZH;
+            mprf(T_("The %s %s %s!"),
+                 beam_name.c_str(), hit_verb.c_str(),
+                 zh ? (you.hp > 0 ? "你" : "你的尸体")
+                    : (you.hp > 0 ? "you" : "your lifeless body"));
         }
 
         affect_player_enchantment();
@@ -4341,17 +4495,30 @@ void bolt::affect_player()
 
     // Tell the player the beam hit
     if (hit_verb.empty())
-        hit_verb = engulfs ? "engulfs" : "hits";
+        hit_verb = engulfs ? (T_("engulfs"))
+                           : (T_("hits"));
 
     if (!is_enchantment()
         && !(damage.num == 0 && is_big_cloud()))
     {
-        mprf("The %s %s %s%s%s%s", name.c_str(), hit_verb.c_str(),
-             you.hp > 0 ? "you" : "your lifeless body",
-             real_flavour != BEAM_CHAOS ? ""
-                    : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
-             final_dam || damage.num == 0 ? "" : " but does no damage",
-             attack_strength_punctuation(final_dam).c_str());
+        const string beam_name = _beam_display_name(*this);
+        if (Options.language == lang_t::ZH)
+        {
+            mprf("%s%s了%s%s%s！", beam_name.c_str(), hit_verb.c_str(),
+                 you.hp > 0 ? "你" : "你的尸体",
+                 real_flavour != BEAM_CHAOS ? ""
+                        : make_stringf("（%s）", _beam_type_name(flavour).c_str()).c_str(),
+                 final_dam || damage.num == 0 ? "" : "但没有造成伤害");
+        }
+        else
+        {
+            mprf("The %s %s %s%s%s%s", name.c_str(), hit_verb.c_str(),
+                 you.hp > 0 ? "you" : "your lifeless body",
+                 real_flavour != BEAM_CHAOS ? ""
+                        : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
+                 final_dam || damage.num == 0 ? "" : " but does no damage",
+                 attack_strength_punctuation(final_dam).c_str());
+        }
     }
 
     // Now print the messages associated with checking resistances, so that
@@ -5208,18 +5375,6 @@ void bolt::monster_post_hit(monster* mon, int dmg)
     if (origin_spell == SPELL_QUICKSILVER_BOLT)
         debuff_monster(*mon);
 
-    if (origin_spell == SPELL_NULLIFYING_BREATH)
-    {
-        debuff_monster(*mon);
-        if (mon->antimagic_susceptible())
-        {
-            const int dur = (5 + random_range(div_rand_round(ench_power, 2),
-                                             div_rand_round(ench_power * 3, 4) + 1))
-                            * BASELINE_DELAY;
-            mon->add_ench(mon_enchant(ENCH_ANTIMAGIC, agent(), dur));
-        }
-    }
-
     if (origin_spell == SPELL_SOJOURNING_BOLT
         && x_chance_in_y(2, 3) && !(mon->no_tele()))
     {
@@ -5416,8 +5571,12 @@ void bolt::pull_actor(actor *act, int dam)
 
     if (you.can_see(*act))
     {
-        mprf("%s %s yanked forward by the %s.", act->name(DESC_THE).c_str(),
-             act->conj_verb("are").c_str(), name.c_str());
+        const string beam_name = _beam_display_name(*this);
+        if (Options.language == lang_t::ZH)
+            mprf("%s被%s向前猛拉。", act->name(DESC_THE).c_str(), beam_name.c_str());
+        else
+            mprf("%s %s yanked forward by the %s.", act->name(DESC_THE).c_str(),
+                 act->conj_verb("are").c_str(), beam_name.c_str());
     }
 
     if (act->pos() != newpos)
@@ -5444,6 +5603,8 @@ bool bolt::attempt_block(monster* mon)
     if (sh_hit >= shield_block || mon->shield_exhausted())
         return false;
 
+    const string beam_name = _beam_display_name(*this);
+    const bool zh = Options.language == lang_t::ZH;
     item_def *shield = mon->mslot_item(MSLOT_SHIELD);
     if (is_reflectable(*mon))
     {
@@ -5451,28 +5612,35 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                mprf("%s blocks the %s with %s %s... and reflects it back!",
-                     mon->name(DESC_THE).c_str(),
-                     name.c_str(),
-                     mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     shield->name(DESC_PLAIN).c_str());
+                if (zh)
+                    mprf("%s用%s%s格挡了%s……并将其反射了回去！",
+                         mon->name(DESC_THE).c_str(),
+                         mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
+                         shield->name(DESC_PLAIN).c_str(),
+                         beam_name.c_str());
+                else
+                    mprf("%s blocks the %s with %s %s... and reflects it back!",
+                         mon->name(DESC_THE).c_str(),
+                         beam_name.c_str(),
+                         mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
+                         shield->name(DESC_PLAIN).c_str());
             }
             else
             {
-                mprf("The %s reflects off an invisible shield around %s!",
-                     name.c_str(),
+                mprf(T_("The %s reflects off an invisible shield around %s!"),
+                     beam_name.c_str(),
                      mon->name(DESC_THE).c_str());
             }
         }
         else if (you.see_cell(pos()))
-            mprf("The %s bounces off of thin air!", name.c_str());
+            mprf(T_("The %s bounces off of thin air!"), beam_name.c_str());
 
         reflect();
     }
     else if (you.see_cell(pos()))
     {
-        mprf("%s blocks the %s.",
-             mon->name(DESC_THE).c_str(), name.c_str());
+        mprf(T_("%s blocks the %s."),
+             mon->name(DESC_THE).c_str(), beam_name.c_str());
         finish_beam();
     }
 
@@ -5534,10 +5702,10 @@ void bolt::affect_monster(monster* mon)
     {
         if (!is_tracer() && you.see_cell(mon->pos()))
         {
+            const string beam_name = _beam_display_name(*this);
             mprf(MSGCH_GOD, GOD_JIYVA,
-                 "%s absorbs the %s as it strikes your slime.",
-                 god_speaker(GOD_JIYVA).c_str(), !name.empty() ? name.c_str()
-                 : _beam_type_name(flavour).c_str());
+                 T_("%s absorbs the %s as it strikes your slime."),
+                 god_speaker(GOD_JIYVA).c_str(), beam_name.c_str());
         }
 
         finish_beam();
@@ -5552,7 +5720,15 @@ void bolt::affect_monster(monster* mon)
     if (flavour == BEAM_WATER && mon->type == MONS_WATER_ELEMENTAL && !is_tracer())
     {
         if (you.see_cell(mon->pos()))
-            mprf("The %s passes through %s.", name.c_str(), mon->name(DESC_THE).c_str());
+        {
+            if (Options.language == lang_t::ZH)
+                mprf("%s穿透了%s。",
+                     _beam_display_name(*this).c_str(),
+                     mon->name(DESC_THE).c_str());
+            else
+                mprf("The %s passes through %s.",
+                     name.c_str(), mon->name(DESC_THE).c_str());
+        }
     }
 
     if (ignores_monster(mon) || should_skip)
@@ -5587,11 +5763,17 @@ void bolt::affect_monster(monster* mon)
         if (real_flavour == BEAM_RANDOM)
         {
             if (hit_verb.empty())
-                hit_verb = engulfs ? "engulfs" : "hits";
+                hit_verb = engulfs ? (T_("engulfs"))
+                                   : (T_("hits"));
             if (you.see_cell(mon->pos()))
             {
-                mprf("The %s %s %s.", name.c_str(), hit_verb.c_str(),
-                     mon->name(DESC_THE).c_str());
+                const string beam_name = _beam_display_name(*this);
+                if (Options.language == lang_t::ZH)
+                    mprf("%s%s了%s。", beam_name.c_str(), hit_verb.c_str(),
+                         mon->name(DESC_THE).c_str());
+                else
+                    mprf("The %s %s %s.", name.c_str(), hit_verb.c_str(),
+                         mon->name(DESC_THE).c_str());
             }
             else if (heard && !hit_noise_msg.empty())
                 mprf(MSGCH_SOUND, "%s", hit_noise_msg.c_str());
@@ -5682,14 +5864,22 @@ void bolt::affect_monster(monster* mon)
             // if it would have hit otherwise...
             if (hit_margin > -repel)
             {
-                msg::stream << mon->name(DESC_THE) << " "
-                            << "repels the " << name
-                            << '!' << endl;
+                if (Options.language == lang_t::ZH)
+                    msg::stream << mon->name(DESC_THE) << "弹开了"
+                                << _beam_display_name(*this) << "！" << endl;
+                else
+                    msg::stream << mon->name(DESC_THE) << " "
+                                << "repels the " << name
+                                << '!' << endl;
             }
             else
             {
-                msg::stream << "The " << name << " misses "
-                            << mon->name(DESC_THE) << '.' << endl;
+                if (Options.language == lang_t::ZH)
+                    msg::stream << _beam_display_name(*this) << "未击中"
+                                << mon->name(DESC_THE) << "。" << endl;
+                else
+                    msg::stream << "The " << name << " misses "
+                                << mon->name(DESC_THE) << '.' << endl;
             }
         }
         return;
@@ -5719,21 +5909,37 @@ void bolt::affect_monster(monster* mon)
     {
         // Monsters are never currently helpless in ranged combat.
         if (hit_verb.empty())
-            hit_verb = engulfs ? "engulfs" : "hits";
+            hit_verb = (Options.language == lang_t::ZH)
+                       ? (engulfs ? "吞噬" : "击中")
+                       : (engulfs ? "engulfs" : "hits");
 
         // If the beam did no damage because of resistances,
         // mons_adjust_flavoured below will print "%s completely resists", so
         // no need to also say "does no damage" here.
         if (damage.num > 0 || !is_big_cloud())
         {
-            mprf("The %s %s %s%s%s%s",
-                name.c_str(),
-                hit_verb.c_str(),
-                mon->name(DESC_THE).c_str(),
-                real_flavour != BEAM_CHAOS ? ""
-                    : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
-                postac ? "" : " but does no damage",
-                attack_strength_punctuation(final).c_str());
+            const string beam_name = _beam_display_name(*this);
+            if (Options.language == lang_t::ZH)
+            {
+                mprf("%s%s了%s%s%s。",
+                    beam_name.c_str(),
+                    hit_verb.c_str(),
+                    mon->name(DESC_THE).c_str(),
+                    real_flavour != BEAM_CHAOS ? ""
+                        : make_stringf("（%s）", _beam_type_name(flavour).c_str()).c_str(),
+                    postac ? "" : "但没有造成伤害");
+            }
+            else
+            {
+                mprf("The %s %s %s%s%s%s",
+                    name.c_str(),
+                    hit_verb.c_str(),
+                    mon->name(DESC_THE).c_str(),
+                    real_flavour != BEAM_CHAOS ? ""
+                        : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
+                    postac ? "" : " but does no damage",
+                    attack_strength_punctuation(final).c_str());
+            }
         }
     }
     else if (heard && !hit_noise_msg.empty())
@@ -6991,8 +7197,10 @@ bool bolt::explode(bool show_more, bool hole_in_the_middle)
     {
         if (!is_tracer() && you.see_cell(pos()) && !name.empty())
         {
-            mprf(MSGCH_GOD, "By Zin's power, the %s is contained.",
-                 name.c_str());
+            const string beam_name = _beam_display_name(*this);
+            mprf(MSGCH_GOD,
+                 T_("By Zin's power, the %s is contained."),
+                 beam_name.c_str());
             return true;
         }
         return false;
@@ -7516,6 +7724,122 @@ string bolt::get_short_name() const
 
 static string _beam_type_name(beam_type type)
 {
+    if (Options.language == lang_t::ZH)
+    {
+        static const map<beam_type, const char*> zh = {
+            {BEAM_NONE, "无"},
+            {BEAM_MISSILE, "投射物"},
+            {BEAM_MMISSILE, "魔法飞弹"},
+            {BEAM_FIRE, "火焰"},
+            {BEAM_COLD, "寒冷"},
+            {BEAM_WATER, "水"},
+            {BEAM_MAGIC, "魔法"},
+            {BEAM_ELECTRICITY, "闪电"},
+            {BEAM_MEPHITIC, "毒烟"},
+            {BEAM_POISON, "毒素"},
+            {BEAM_NEG, "负能量"},
+            {BEAM_ACID, "酸液"},
+            {BEAM_LIGHT, "光"},
+            {BEAM_MIASMA, "瘴气"},
+            {BEAM_SPORE, "孢子"},
+            {BEAM_POISON_ARROW, "毒刺"},
+            {BEAM_DAMNATION, "诅咒"},
+            {BEAM_STICKY_FLAME, "黏着火焰"},
+            {BEAM_STEAM, "蒸汽"},
+            {BEAM_ENERGY, "能量"},
+            {BEAM_HOLY, "净化之焰"},
+            {BEAM_FOUL_FLAME, "污秽之焰"},
+            {BEAM_FRAG, "碎片"},
+            {BEAM_LAVA, "岩浆"},
+            {BEAM_ICE, "寒冰"},
+            {BEAM_THUNDER, "雷鸣"},
+            {BEAM_STUN_BOLT, "眩晕矢"},
+            {BEAM_DESTRUCTION, "毁灭"},
+            {BEAM_RANDOM, "随机"},
+            {BEAM_CHAOS, "混沌"},
+            {BEAM_SLOW, "减速"},
+            {BEAM_HASTE, "加速"},
+            {BEAM_MIGHT, "力量"},
+            {BEAM_HEALING, "治疗"},
+            {BEAM_PARALYSIS, "麻痹"},
+            {BEAM_CONFUSION, "混乱"},
+            {BEAM_INVISIBILITY, "隐形"},
+            {BEAM_DIGGING, "挖掘"},
+            {BEAM_TELEPORT, "传送"},
+            {BEAM_POLYMORPH, "变形"},
+            {BEAM_MALMUTATE, "恶性变异"},
+            {BEAM_CHARM, "魅惑"},
+            {BEAM_BANISH, "放逐"},
+            {BEAM_PAIN, "痛苦"},
+            {BEAM_AGONY, "剧痛"},
+            {BEAM_CURSE_OF_AGONY, "痛苦诅咒"},
+            {BEAM_DISPEL_UNDEAD, "驱散亡灵"},
+            {BEAM_MINDBURST, "心智爆发"},
+            {BEAM_BLINK, "闪烁"},
+            {BEAM_BLINK_CLOSE, "接近闪烁"},
+            {BEAM_BECKONING, "招手"},
+            {BEAM_PETRIFY, "石化"},
+            {BEAM_CORONA, "背光"},
+            {BEAM_PORKALATOR, "变猪术"},
+            {BEAM_HIBERNATION, "冬眠"},
+            {BEAM_SLEEP, "睡眠"},
+            {BEAM_BERSERK, "狂暴"},
+            {BEAM_VISUAL, "视觉效果"},
+            {BEAM_TORMENT_DAMAGE, "折磨伤害"},
+            {BEAM_AIR, "风"},
+            {BEAM_INNER_FLAME, "内焰"},
+            {BEAM_PETRIFYING_CLOUD, "钙化尘"},
+            {BEAM_ENSNARE, "魔法网"},
+            {BEAM_SENTINEL_MARK, "哨兵印记"},
+            {BEAM_DIMENSION_ANCHOR, "维度锚定"},
+            {BEAM_VULNERABILITY, "脆弱"},
+            {BEAM_MALIGN_OFFERING, "邪恶献祭"},
+            {BEAM_VIRULENCE, "毒性"},
+            {BEAM_AGILITY, "敏捷"},
+            {BEAM_SAP_MAGIC, "削弱魔法"},
+            // BEAM_ANTIMAGIC removed (not in 0.34.1)
+            {BEAM_DIMINISH_SPELLS, "削弱法术"},
+            {BEAM_TUKIMAS_DANCE, "图基玛之舞"},
+            {BEAM_DEATH_RATTLE, "死亡之息"},
+            {BEAM_RESISTANCE, "抗性"},
+            {BEAM_UNRAVELLING, "解析"},
+            {BEAM_UNRAVELLED_MAGIC, "解析魔法"},
+            {BEAM_SHARED_PAIN, "共享痛苦"},
+            {BEAM_IRRESISTIBLE_CONFUSION, "混乱"},
+            {BEAM_INFESTATION, "虫群侵扰"},
+            {BEAM_VILE_CLUTCH, "邪恶抓握"},
+            {BEAM_VAMPIRIC_DRAINING, "吸血"},
+            {BEAM_CONCENTRATE_VENOM, "浓缩毒液"},
+            {BEAM_ENFEEBLE, "衰弱"},
+            {BEAM_SOUL_SPLINTER, "灵魂分裂"},
+            {BEAM_ROOTS, "根须"},
+            {BEAM_VITRIFY, "玻璃化"},
+            {BEAM_VITRIFYING_GAZE, "玻璃化"},
+            {BEAM_WEAKNESS, "虚弱"},
+            {BEAM_DEVASTATION, "毁灭"},
+            {BEAM_UMBRAL_TORCHLIGHT, "暗影火炬之光"},
+            {BEAM_CRYSTALLISING, "结晶化"},
+            {BEAM_WARPING, "空间扰乱"},
+            {BEAM_QAZLAL, "剧变指向器"},
+            {BEAM_RIMEBLIGHT, "霜疫"},
+            {BEAM_SHADOW_TORPOR, "暗影麻木"},
+            {BEAM_HAEMOCLASM, "凝血"},
+            {BEAM_BLOODRITE, "鲜血"},
+            {BEAM_DOUBLE_VIGOUR, "活力倍增"},
+            {BEAM_VEX, "恼怒"},
+            {BEAM_SEISMIC, "地震冲击波"},
+            {BEAM_BOLAS, "缠绕流星索"},
+            {BEAM_MERCURY, "水银"},
+            {BEAM_BAT_CLOUD, "蝙蝠云"},
+            {BEAM_ILL_OMEN, "凶兆"},
+            {BEAM_WARP_BODY, "扭曲身体"},
+        };
+        auto it = zh.find(type);
+        if (it != zh.end())
+            return it->second;
+        return "unknown";
+    }
+
     switch (type)
     {
     case BEAM_NONE:                  return "none";

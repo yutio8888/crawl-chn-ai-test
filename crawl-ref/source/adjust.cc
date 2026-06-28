@@ -16,6 +16,7 @@
 #include "message.h"
 #include "prompt.h"
 #include "spl-util.h"
+#include "database.h"
 #include "ui.h"
 
 #ifdef USE_TILE_WEB
@@ -109,8 +110,11 @@ static void _adjust_spell()
     }
 
     // Select starting slot
-    mprf(MSGCH_PROMPT, "Adjust which spell? ");
-    int keyin = list_spells(false, false, false, false, "adjust");
+    mprf(MSGCH_PROMPT,
+         Options.language == lang_t::ZH ? "要调整哪个法术？"
+                                        : "Adjust which spell? ");
+    int keyin = list_spells(false, false, false, false,
+                            T_("adjust"));
 
     if (!isaalpha(keyin))
     {
@@ -147,7 +151,8 @@ static void _adjust_spell()
         // XX this does not really work well with new menu code
         if (keyin == '?' || keyin == '*')
         {
-            keyin = list_spells(true, false, false, false, "adjust it to");
+            keyin = list_spells(true, false, false, false,
+                                 T_("adjust to"));
             if (keyin < 'a' || keyin > 'Z')
                 continue;
         }

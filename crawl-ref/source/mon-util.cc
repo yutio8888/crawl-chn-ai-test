@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <sstream>
 
 #include "act-iter.h"
@@ -967,13 +968,18 @@ static void _mimic_vanish(const coord_def& pos, const string& name)
     if (!you.see_cell(pos))
         return;
 
-    const char* const smoke_str = can_place_smoke ? " in a puff of smoke" : "";
+    const bool zh = Options.language == lang_t::ZH;
+    const char* const smoke_str = can_place_smoke ? (T_(" in a puff of smoke")) : "";
 
     const bool can_cackle = !silenced(pos) && !silenced(you.pos());
-    const string cackle = can_cackle ? getSpeakString("_laughs_") + " and " : "";
+    const string cackle = can_cackle ? getSpeakString("_laughs_") + (T_(" and ")) : "";
 
-    mprf("The %s mimic %svanishes%s!",
-         name.c_str(), cackle.c_str(), smoke_str);
+    if (zh)
+        mprf("%s拟态怪%s%s消失了！",
+             name.c_str(), cackle.c_str(), smoke_str);
+    else
+        mprf("The %s mimic %svanishes%s!",
+             name.c_str(), cackle.c_str(), smoke_str);
     interrupt_activity(activity_interrupt::mimic);
 }
 
@@ -2073,7 +2079,7 @@ string mon_attack_name_short(attack_type attack)
  */
 string mon_attack_name(attack_type attack, bool with_object)
 {
-    static const char *attack_types[] =
+    static const char *attack_types_en[] =
     {
         "hit",         // including weapon attacks
         "bite",
@@ -2104,25 +2110,88 @@ string mon_attack_name(attack_type attack, bool with_object)
         "sting",
 #endif
         "hit, bite, peck, or gore", // AT_CHERUB
+    };
+    static const char *attack_types_zh[] =
+    {
+        "击中",
+        "咬",
+        "刺",
+
+        "向...释放孢子",
+
+        "触碰",
+        "吞噬",
+        "爪击",
+        "啄",
+        "头撞",
+        "拳击",
+        "踢",
+        "触手拍击",
+        "尾击",
+        "角顶",
+        "缠绕",
+        "践踏",
+        "象鼻拍击",
+#if TAG_MAJOR_VERSION == 34
+        "猛然咬合",
+        "泼溅",
+#endif
+        "扑向",
+#if TAG_MAJOR_VERSION == 34
+        "刺",
+#endif
+        "击中、撕咬、啄击或角顶",
+    };
+    static const char *attack_types_en_end[] =
+    {
 #if TAG_MAJOR_VERSION == 34
         "hit", // AT_SHOOT
 #endif
         "hit", // AT_WEAP_ONLY,
         "hit or gore", // AT_RANDOM
     };
-    COMPILE_CHECK(ARRAYSZ(attack_types) == NUM_ATTACK_TYPES - AT_FIRST_ATTACK);
+    static const char *attack_types_zh_end[] =
+    {
+#if TAG_MAJOR_VERSION == 34
+        "击中", // AT_SHOOT
+#endif
+        "击中", // AT_WEAP_ONLY,
+        "击中或角顶", // AT_RANDOM
+    };
 
-    const int verb_index = attack - AT_FIRST_ATTACK;
-    ASSERT(verb_index < (int)ARRAYSZ(attack_types));
-
-    if (with_object)
-        return attack_types[verb_index];
+    if (Options.language == lang_t::ZH)
+    {
+        const int idx = attack - AT_FIRST_ATTACK;
+        const int main_count = (int)ARRAYSZ(attack_types_zh);
+        ASSERT(idx < main_count + (int)ARRAYSZ(attack_types_zh_end));
+        const string verb = idx < main_count
+            ? attack_types_zh[idx]
+            : attack_types_zh_end[idx - main_count];
+        if (with_object)
+            return verb;
+        else
+            return replace_all(replace_all(verb, "向", ""), "扑向", "猛扑");
+    }
     else
     {
-        return replace_all(replace_all(attack_types[verb_index], " at", ""),
-                                                                 " on", "");
+        const int verb_index = attack - AT_FIRST_ATTACK;
+        static vector<string> merged_en;
+        if (merged_en.empty())
+        {
+            for (auto s : attack_types_en)
+                merged_en.push_back(s);
+            for (auto s : attack_types_en_end)
+                merged_en.push_back(s);
+        }
+        ASSERT(verb_index < (int)merged_en.size());
+        if (with_object)
+            return merged_en[verb_index];
+        else
+            return replace_all(replace_all(merged_en[verb_index], " at", ""),
+                                                               " on", "");
     }
-}
+
+    }
 
 /**
  * Does this monster attack flavour trigger even if the base attack does no
@@ -3071,7 +3140,13 @@ string mons_type_name(monster_type mc, description_level_type desc)
         return result;
     }
 
-    result += me->name;
+    if (Options.language == lang_t::ZH)
+    {
+        const char* zh_name = zh_monster_name(me->name);
+        result += zh_name ? zh_name : me->name;
+    }
+    else
+        result += me->name;
 
     // Vowel fix: Change 'a orc' to 'an orc'..
     if (result.length() >= 3
@@ -4286,9 +4361,12 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@player", "@foe");
         msg = replace_all(msg, "@Player", "@Foe");
 
-        msg = replace_all(msg, "@foe_possessive@", "your");
-        msg = replace_all(msg, "@foe@", "you");
-        msg = replace_all(msg, "@Foe@", "You");
+        msg = replace_all(msg, "@foe_possessive@",
+                          T_("your"));
+        msg = replace_all(msg, "@foe@",
+                          T_("you"));
+        msg = replace_all(msg, "@Foe@",
+                          T_("You"));
 
         msg = replace_all(msg, "@foe_name@", you.your_name);
         msg = replace_all(msg, "@foe_species@", species::name(you.species));
@@ -5349,32 +5427,30 @@ mon_dam_level_type mons_get_damage_level(const monster& mons)
 
 string get_damage_level_string(mon_holy_type holi, mon_dam_level_type mdam)
 {
-    ostringstream ss;
+    const bool zh = Options.language == lang_t::ZH;
+    const bool wd = wounded_damaged(holi);
+
     switch (mdam)
     {
     case MDAM_ALMOST_DEAD:
-        ss << "almost";
-        ss << (wounded_damaged(holi) ? " destroyed" : " dead");
-        return ss.str();
+        return zh ? (wd ? "奄奄一息" : "奄奄一息")
+                  : (string("almost") + (wd ? " destroyed" : " dead"));
     case MDAM_SEVERELY_DAMAGED:
-        ss << "severely";
-        break;
+        return zh ? (wd ? "严重受损" : "严重受伤")
+                  : (string("severely") + (wd ? " damaged" : " wounded"));
     case MDAM_HEAVILY_DAMAGED:
-        ss << "heavily";
-        break;
+        return zh ? (wd ? "重度受损" : "重度受伤")
+                  : (string("heavily") + (wd ? " damaged" : " wounded"));
     case MDAM_MODERATELY_DAMAGED:
-        ss << "moderately";
-        break;
+        return zh ? (wd ? "中度受损" : "中度受伤")
+                  : (string("moderately") + (wd ? " damaged" : " wounded"));
     case MDAM_LIGHTLY_DAMAGED:
-        ss << "lightly";
-        break;
+        return zh ? (wd ? "轻度受损" : "轻度受伤")
+                  : (string("lightly") + (wd ? " damaged" : " wounded"));
     case MDAM_OKAY:
     default:
-        ss << "not";
-        break;
+        return zh ? "未受伤" : (string("not") + (wd ? " damaged" : " wounded"));
     }
-    ss << (wounded_damaged(holi) ? " damaged" : " wounded");
-    return ss.str();
 }
 
 void print_wounds(const monster& mons)
@@ -5385,8 +5461,13 @@ void print_wounds(const monster& mons)
     mon_dam_level_type dam_level = mons_get_damage_level(mons);
     string desc = get_damage_level_string(mons.holiness(), dam_level);
 
-    desc.insert(0, " is ");
-    desc += ".";
+    if (Options.language == lang_t::ZH)
+        desc = desc + "。";
+    else
+    {
+        desc.insert(0, " is ");
+        desc += ".";
+    }
     simple_monster_message(mons, desc.c_str(), false, MSGCH_MONSTER_DAMAGE,
                            dam_level);
 }
@@ -5873,4 +5954,623 @@ int mons_leash_range(monster_type mc)
         case MONS_HAUNTED_ARMOUR:   return 2;
         default:                    return 0; // No leashing
     }
+}
+// Auto-generated Chinese monster name lookup
+// Total entries: 608
+
+const char* zh_monster_name(const string& en)
+{
+    static const map<string, const char*> zh_names = {
+        { "Aizul", "艾祖尔" },
+        { "Antaeus", "安泰俄斯" },
+        { "Antique Champion", "古代冠军" },
+        { "Arachne", "阿拉克涅" },
+        { "Asmodeus", "阿斯摩蒂斯" },
+        { "Asterion", "阿斯忒里翁" },
+        { "Azrael", "阿兹瑞尔" },
+        { "Bai Suzhen", "白素贞" },
+        { "Blorkula the orcula", "兽人布洛库拉" },
+        { "Boris", "鲍里斯" },
+        { "Brimstone Fiend", "硫磺恶魔" },
+        { "Cassandra", "卡珊德拉" },
+        { "Cerebov", "塞雷波夫" },
+        { "Chuck", "查克" },
+        { "Crazy Yiuf", "疯狂的尤夫" },
+        { "Crystal Echidna", "水晶厄喀德那" },
+        { "Dispater", "迪斯帕特" },
+        { "Donald", "唐纳德" },
+        { "Dowan", "多万" },
+        { "Duvessa", "杜维莎" },
+        { "Edmund", "埃德蒙" },
+        { "Ereshkigal", "埃列什基伽勒" },
+        { "Erica", "艾丽卡" },
+        { "Erolcha", "伊罗查" },
+        { "Eustachio", "尤斯塔奇奥" },
+        { "Fannar", "凡纳尔" },
+        { "Frances", "弗朗西斯" },
+        { "Frederick", "弗雷德里克" },
+        { "Gastronok", "加斯特罗诺克" },
+        { "Geryon", "格律翁" },
+        { "Gloorx Vloq", "格洛克斯·弗洛克" },
+        { "Grinder", "格林德" },
+        { "Grum", "格拉姆" },
+        { "Grunn", "格伦" },
+        { "Harold", "哈罗德" },
+        { "Hellbinder", "地狱缚者" },
+        { "Ignacio", "伊格纳西奥" },
+        { "Ijyb", "艾吉布" },
+        { "Ilsuiw", "伊尔苏伊" },
+        { "Jeremiah", "耶利米" },
+        { "Jessica", "杰西卡" },
+        { "Jiangshi", "僵尸" },
+        { "Jorgrun", "约格伦" },
+        { "Jory", "乔里" },
+        { "Joseph", "约瑟夫" },
+        { "Josephina", "约瑟菲娜" },
+        { "Josephine", "约瑟芬" },
+        { "Khufu", "胡夫" },
+        { "Kirke", "喀耳刻" },
+        { "Lodul", "洛杜尔" },
+        { "Lom Lobon", "洛姆·洛邦" },
+        { "Louise", "路易丝" },
+        { "Maggie", "玛吉" },
+        { "Mara", "玛拉" },
+        { "Margery", "玛杰丽" },
+        { "Maud", "莫德" },
+        { "Maurice", "莫里斯" },
+        { "Menkaure", "门卡拉" },
+        { "Mennas", "门纳斯" },
+        { "Mlioglotl", "姆利奥格洛特尔" },
+        { "Mnoleg", "姆诺雷格" },
+        { "Murray", "默里" },
+        { "Natasha", "娜塔莎" },
+        { "Nellie", "内莉" },
+        { "Nergalle", "内尔加勒" },
+        { "Nessos", "涅索斯" },
+        { "Nikola", "尼古拉" },
+        { "Norris", "诺里斯" },
+        { "Parghit", "帕吉特" },
+        { "Pargi", "帕尔吉" },
+        { "Pikel", "皮克尔" },
+        { "Polyphemus", "波吕斐摩斯" },
+        { "Prince Ribbit", "蛙王子" },
+        { "Robin", "罗宾" },
+        { "Roka", "罗卡" },
+        { "Roxanne", "罗克珊" },
+        { "Rupert", "鲁珀特" },
+        { "Saint Roka", "圣罗卡" },
+        { "Sigmund", "西格蒙德" },
+        { "Snorg", "斯诺格" },
+        { "Sojobo", "索乔波" },
+        { "Sonja", "索尼娅" },
+        { "Sprozz", "斯普罗兹" },
+        { "Terence", "特伦斯" },
+        { "Tiamat", "提亚马特" },
+        { "Tzitzimitl", "齐齐米特尔" },
+        { "Urug", "乌鲁格" },
+        { "Vashnia", "瓦什妮亚" },
+        { "Vv", "芙芙" },
+        { "Wiglaf", "威格拉夫" },
+        { "Xak'krixis", "扎克里西斯" },
+        { "Xtahua", "扎塔瓦" },
+        { "Zenata", "泽娜塔" },
+        { "Zenkiba", "禅木场" },
+        { "acid blob", "酸液团" },
+        { "acid dragon", "酸龙" },
+        { "adder", "蝰蛇" },
+        { "agate snail", "玛瑙蜗牛" },
+        { "air elemental", "气元素" },
+        { "alligator", "短吻鳄" },
+        { "alligator snapping turtle", "鳄龟" },
+        { "anaconda", "水蟒" },
+        { "ancestor", "先祖" },
+        { "ancestor champion", "先祖冠军" },
+        { "ancient bear", "远古熊" },
+        { "ancient champion", "远古冠军" },
+        { "ancient lich", "远古巫妖" },
+        { "angel", "天使" },
+        { "apis", "阿匹斯" },
+        { "arcanist", "奥术师" },
+        { "armataur", "甲马人" },
+        { "azure jelly", "天蓝果冻怪" },
+        { "baby alligator", "幼鳄" },
+        { "ball lightning", "球形闪电" },
+        { "ball python", "球蟒" },
+        { "ballistomycete", "孢子炮菌" },
+        { "ballistomycete spore", "孢子炮菌孢子" },
+        { "balrug", "巴鲁格" },
+        { "barachi", "蛙人" },
+        { "basilisk", "石化蜥蜴" },
+        { "bat", "蝙蝠" },
+        { "battlesphere", "战斗法球" },
+        { "bear", "熊" },
+        { "bee", "蜜蜂" },
+        { "beetle", "甲虫" },
+        { "bennu", "贝努鸟" },
+        { "big fish", "大鱼" },
+        { "black bear", "黑熊" },
+        { "black draconian", "黑龙人" },
+        { "black mamba", "黑曼巴蛇" },
+        { "blink frog", "闪烁蛙" },
+        { "blizzard demon", "暴雪恶魔" },
+        { "block of ice", "冰块" },
+        { "blue devil", "蓝魔鬼" },
+        { "bog body", "沼泽之躯" },
+        { "boggart", "博加特" },
+        { "bombardier beetle", "投弹甲虫" },
+        { "bone dragon", "骨龙" },
+        { "boring beetle", "钻地甲虫" },
+        { "boulder", "巨石" },
+        { "boulder beetle", "巨砾甲虫" },
+        { "brain worm", "脑虫" },
+        { "briar patch", "荆棘丛" },
+        { "brimstone fiend", "硫磺恶魔" },
+        { "brown ooze", "棕色软泥" },
+        { "bullfrog", "牛蛙" },
+        { "bultungin", "布尔通金" },
+        { "bunyip", "本耶普" },
+        { "bush", "灌木" },
+        { "butterfly", "蝴蝶" },
+        { "cacodemon", "恶灵" },
+        { "cactus giant", "仙人掌巨人" },
+        { "cane toad", "甘蔗蟾蜍" },
+        { "catoblepas", "卡托布勒帕斯" },
+        { "caustic shrike", "腐蚀伯劳" },
+        { "centaur", "半人马" },
+        { "centaur warrior", "半人马战士" },
+        { "cerulean imp", "蔚蓝小恶魔" },
+        { "chaos butterfly", "混沌蝴蝶" },
+        { "chaos spawn", "混沌之子" },
+        { "cherub", "智天使" },
+        { "chimera", "奇美拉" },
+        { "chonchon", "春春鸟" },
+        { "clay golem", "黏土魔像" },
+        { "clockroach", "发条蟑螂" },
+        { "clockwork bee", "发条蜂" },
+        { "coglin", "齿轮地精" },
+        { "crimson imp", "深红小恶魔" },
+        { "crocodile", "鳄鱼" },
+        { "crystal guardian", "水晶守护者" },
+        { "curse skull", "诅咒颅骨" },
+        { "cyclops", "独眼巨人" },
+        { "daeva", "德瓦" },
+        { "dancing weapon", "舞动武器" },
+        { "dart slug", "飞镖蛞蝓" },
+        { "death cob", "死亡天鹅" },
+        { "death drake", "死亡幼龙" },
+        { "death knight", "死亡骑士" },
+        { "death ooze", "死亡软泥" },
+        { "death yak", "死亡牦牛" },
+        { "deathcap", "死亡菌" },
+        { "deep dwarf", "深矮人" },
+        { "deep dwarf artificer", "深矮人工匠" },
+        { "deep dwarf berserker", "深矮人狂战士" },
+        { "deep dwarf necromancer", "深矮人死灵法师" },
+        { "deep dwarf scion", "深矮人后裔" },
+        { "deep elf annihilator", "精灵湮灭者" },
+        { "deep elf archer", "精灵弓箭手" },
+        { "deep elf blademaster", "精灵剑圣" },
+        { "deep elf conjurer", "精灵咒法师" },
+        { "deep elf death mage", "精灵死亡法师" },
+        { "deep elf demonologist", "精灵恶魔学家" },
+        { "deep elf elementalist", "精灵元素师" },
+        { "deep elf fighter", "精灵战士" },
+        { "deep elf high priest", "精灵大祭司" },
+        { "deep elf knight", "精灵骑士" },
+        { "deep elf master archer", "精灵神射手" },
+        { "deep elf priest", "精灵祭司" },
+        { "deep elf pyromancer", "精灵烈焰法师" },
+        { "deep elf soldier", "精灵士兵" },
+        { "deep elf sorcerer", "精灵巫师" },
+        { "deep elf summoner", "精灵召唤师" },
+        { "deep elf zephyrmancer", "精灵和风法师" },
+        { "deep troll", "深渊巨魔" },
+        { "deep troll earth mage", "深渊巨魔地法师" },
+        { "deep troll shaman", "深渊巨魔萨满" },
+        { "demigod", "半神" },
+        { "demonic plant", "恶魔植物" },
+        { "demonspawn", "恶魔裔" },
+        { "demonspawn blood saint", "恶魔裔血圣" },
+        { "demonspawn corrupter", "恶魔裔腐蚀者" },
+        { "demonspawn soul scholar", "恶魔裔灵魂学者" },
+        { "demonspawn warmonger", "恶魔裔战争贩子" },
+        { "diamond obelisk", "钻石方尖碑" },
+        { "dire elephant", "恐象" },
+        { "djinni", "灯神" },
+        { "dormant clockwork bee", "休眠发条蜂" },
+        { "draconian", "龙人" },
+        { "draconian annihilator", "龙人湮灭者" },
+        { "draconian knight", "龙人骑士" },
+        { "draconian monk", "龙人武僧" },
+        { "draconian scorcher", "龙人灼烧者" },
+        { "draconian shifter", "龙人变形者" },
+        { "draconian stormcaller", "龙人风暴召唤者" },
+        { "draconian zealot", "龙人狂热者" },
+        { "dragon", "龙" },
+        { "drake", "幼龙" },
+        { "dread lich", "恐怖巫妖" },
+        { "dream sheep", "梦之羊" },
+        { "drowned soul", "溺水之魂" },
+        { "dryad", "树精" },
+        { "dwarf", "矮人" },
+        { "earth elemental", "地元素" },
+        { "easy sensed monster", "简单感知怪物" },
+        { "electric eel", "电鳗" },
+        { "electric golem", "电击魔像" },
+        { "electroferric vortex", "电磁漩涡" },
+        { "eleionoma", "水泽仙女" },
+        { "elemental", "元素" },
+        { "elementalist", "元素师" },
+        { "elephant", "大象" },
+        { "elephant slug", "大象蛞蝓" },
+        { "elf", "精灵" },
+        { "emperor scorpion", "帝王蝎" },
+        { "endoplasm", "内质怪" },
+        { "enchantress", "附魔女妖" },
+        { "entropy weaver", "熵之编织者" },
+        { "ettin", "双头巨人" },
+        { "executioner", "处刑者" },
+        { "eye of devastation", "毁灭之眼" },
+        { "eye of draining", "吸取之眼" },
+        { "faun", "半羊人" },
+        { "felid", "猫人" },
+        { "fire bat", "火焰蝙蝠" },
+        { "fire dragon", "火龙" },
+        { "fire elemental", "火元素" },
+        { "fire giant", "火巨人" },
+        { "fire vortex", "火焰漩涡" },
+        { "flayed ghost", "剥皮幽灵" },
+        { "floating eye", "浮空之眼" },
+        { "flying skull", "飞行颅骨" },
+        { "formicid", "蚁人" },
+        { "formicid drone", "蚁人工蜂" },
+        { "formicid venom mage", "蚁人毒液法师" },
+        { "formless jellyfish", "无形水母" },
+        { "foxfire", "狐火" },
+        { "freezing wraith", "冰冻幽灵" },
+        { "friendly sensed monster", "友善感知怪物" },
+        { "frilled lizard", "褶边蜥蜴" },
+        { "frost giant", "霜巨人" },
+        { "fulminant prism", "电光棱镜" },
+        { "fulminating prism", "电光棱镜" },
+        { "fungus", "真菌" },
+        { "gargoyle", "石像鬼" },
+        { "gelid demonspawn", "冰寒恶魔裔" },
+        { "ghost", "鬼魂" },
+        { "ghost moth", "幽灵蛾" },
+        { "ghoul", "食尸鬼" },
+        { "giant", "巨人" },
+        { "giant centipede", "巨蜈蚣" },
+        { "giant cockroach", "巨蟑螂" },
+        { "giant eyeball", "巨眼" },
+        { "giant frog", "巨蛙" },
+        { "giant goldfish", "巨金鱼" },
+        { "giant lizard", "巨蜥" },
+        { "giant mite", "巨螨" },
+        { "giant slug", "巨蛞蝓" },
+        { "globe of annihilation", "湮灭之球" },
+        { "glowing orange brain", "发光的橙色大脑" },
+        { "glowing shapeshifter", "发光变形怪" },
+        { "gnoll", "豺狼人" },
+        { "gnoll bouda", "豺狼人布达" },
+        { "gnoll sergeant", "豺狼人军士" },
+        { "goblin", "地精" },
+        { "golden dragon", "金龙" },
+        { "golden eye", "金色之眼" },
+        { "golem", "魔像" },
+        { "goliath frog", "歌利亚蛙" },
+        { "great orb of eyes", "巨眼之球" },
+        { "greater mummy", "大型木乃伊" },
+        { "green death", "绿色死神" },
+        { "green draconian", "绿龙人" },
+        { "grey draconian", "灰龙人" },
+        { "grey rat", "灰鼠" },
+        { "griffon", "狮鹫" },
+        { "grizzly bear", "灰熊" },
+        { "guardian mummy", "守护木乃伊" },
+        { "guardian serpent", "守护蛇" },
+        { "guardian sphinx", "守护斯芬克斯" },
+        { "halazid warlock", "哈拉兹德术士" },
+        { "hell hog", "地狱猪" },
+        { "hell hound", "地狱犬" },
+        { "hell knight", "地狱骑士" },
+        { "hell lord", "地狱领主" },
+        { "hell rat", "地狱鼠" },
+        { "hell sentinel", "地狱哨兵" },
+        { "hellion", "地狱骑兵" },
+        { "hellwing", "地狱之翼" },
+        { "hepliaklqana ancestor", "赫普利亚克纳先祖" },
+        { "hill giant", "山丘巨人" },
+        { "hippogriff", "鹰头马" },
+        { "hobgoblin", "大哥布林" },
+        { "hog", "猪" },
+        { "holy swine", "圣猪" },
+        { "hornet", "大黄蜂" },
+        { "hound", "猎犬" },
+        { "human", "人类" },
+        { "hungry ghost", "饥饿幽灵" },
+        { "hydra", "九头蛇" },
+        { "hyperactive ballistomycete", "过度活跃的孢子炮菌" },
+        { "ice devil", "冰魔" },
+        { "ice dragon", "冰龙" },
+        { "ice fiend", "冰霜恶魔" },
+        { "ice statue", "冰雕像" },
+        { "iguana", "鬣蜥" },
+        { "imperial myrmidon", "帝国勇士" },
+        { "infernal demonspawn", "炼狱恶魔裔" },
+        { "insubstantial wisp", "虚无之息" },
+        { "iron dragon", "铁龙" },
+        { "iron elemental", "铁元素" },
+        { "iron giant", "铁巨人" },
+        { "iron golem", "铁魔像" },
+        { "iron imp", "铁小恶魔" },
+        { "iron troll", "铁巨魔" },
+        { "ironbound beastmaster", "铁缚驯兽师" },
+        { "ironbound convoker", "铁缚召唤者" },
+        { "ironbound frostheart", "铁缚霜心" },
+        { "ironbound mechanist", "铁缚机械师" },
+        { "ironbound preserver", "铁缚保护者" },
+        { "ironbound thunderhulk", "铁缚雷躯" },
+        { "jackal", "豺狼" },
+        { "jelly", "果冻怪" },
+        { "jellyfish", "水母" },
+        { "jiangshi", "僵尸" },
+        { "juggernaut", "巨像" },
+        { "jumping spider", "跳跃蜘蛛" },
+        { "killer bee", "杀人蜂" },
+        { "knight", "骑士" },
+        { "kobold", "狗头人" },
+        { "komodo dragon", "科摩多龙" },
+        { "kraken", "海妖" },
+        { "large simulacrum", "大型拟像" },
+        { "large skeleton", "大型骷髅" },
+        { "large zombie", "大型僵尸" },
+        { "laughing skull", "笑颅骨" },
+        { "lava fish", "熔岩鱼" },
+        { "lava worm", "熔岩虫" },
+        { "lemure", "劣魔" },
+        { "lernaean hydra", "勒拿九头蛇" },
+        { "lich", "巫妖" },
+        { "lightning spire", "闪电尖塔" },
+        { "lindwurm", "蛇龙" },
+        { "lorocyproca", "洛罗西普罗卡" },
+        { "lost soul", "迷失之魂" },
+        { "lurking horror", "潜伏恐怖" },
+        { "malarious merfolk avatar", "疟疾的鱼人化身" },
+        { "manticore", "蝎尾狮" },
+        { "mara fake", "玛拉分身" },
+        { "merfolk", "鱼人" },
+        { "merfolk aquamancer", "鱼人水法师" },
+        { "merfolk avatar", "鱼人化身" },
+        { "merfolk impaler", "鱼人穿刺者" },
+        { "merfolk javelineer", "鱼人标枪手" },
+        { "merfolk siren", "鱼人塞壬" },
+        { "merged slime creature", "融合史莱姆" },
+        { "meteoran", "流星人" },
+        { "minotaur", "牛头人" },
+        { "molten gargoyle", "熔岩石像鬼" },
+        { "monstrous demonspawn", "怪物恶魔裔" },
+        { "moon troll", "月巨魔" },
+        { "moth", "飞蛾" },
+        { "moth of suppression", "压制飞蛾" },
+        { "moth of wrath", "愤怒飞蛾" },
+        { "mottled draconian", "斑驳龙人" },
+        { "mummy", "木乃伊" },
+        { "mummy priest", "木乃伊祭司" },
+        { "naga", "纳迦" },
+        { "naga mage", "纳迦法师" },
+        { "naga ritualist", "纳迦仪式师" },
+        { "naga sharpshooter", "纳迦神射手" },
+        { "naga warrior", "纳迦战士" },
+        { "nagaraja", "纳迦王" },
+        { "nameless horror", "无名恐怖" },
+        { "nasty sensed monster", "危险感知怪物" },
+        { "necromancer", "死灵法师" },
+        { "necrophage", "食尸者" },
+        { "nekomata", "猫又" },
+        { "nequoxec", "涅克索克" },
+        { "obsidian bat", "黑曜石蝙蝠" },
+        { "obsidian statue", "黑曜石雕像" },
+        { "occultist", "神秘学者" },
+        { "octopode", "章鱼人" },
+        { "octopode crusher", "章鱼人粉碎者" },
+        { "ogre", "食人魔" },
+        { "ogre mage", "食人魔法师" },
+        { "oklob plant", "奥克罗布植物" },
+        { "oklob sapling", "奥克罗布树苗" },
+        { "ophan", "奥法" },
+        { "orange crystal statue", "橙色水晶雕像" },
+        { "orange demon", "橙色恶魔" },
+        { "orb of destruction", "毁灭之球" },
+        { "orb of entropy", "熵之球" },
+        { "orb of fire", "火焰之球" },
+        { "orb of winter", "寒冬之球" },
+        { "orb spider", "宝珠蜘蛛" },
+        { "orc", "兽人" },
+        { "orc apostle", "兽人使徒" },
+        { "orc high priest", "兽人大祭司" },
+        { "orc knight", "兽人骑士" },
+        { "orc priest", "兽人祭司" },
+        { "orc sorcerer", "兽人巫师" },
+        { "orc warlord", "兽人军阀" },
+        { "orc warrior", "兽人战士" },
+        { "orc wizard", "兽人巫师" },
+        { "pale draconian", "苍白龙人" },
+        { "pandemonium lord", "万魔殿领主" },
+        { "pearl dragon", "珍珠龙" },
+        { "phalanx beetle", "方阵甲虫" },
+        { "phantasmal warrior", "幻影战士" },
+        { "phantom", "幻影" },
+        { "pharaoh ant", "法老蚁" },
+        { "plant", "植物" },
+        { "player", "玩家" },
+        { "player ghost", "玩家幽灵" },
+        { "player illusion", "玩家幻象" },
+        { "polar bear", "北极熊" },
+        { "poltergeist", "吵闹鬼" },
+        { "porcupine", "豪猪" },
+        { "profane servitor", "亵渎侍者" },
+        { "program bug", "程序错误" },
+        { "pulsating lump", "脉动的肉块" },
+        { "purple draconian", "紫龙人" },
+        { "putrid demonspawn", "腐烂恶魔裔" },
+        { "queen ant", "蚁后" },
+        { "queen bee", "蜂后" },
+        { "quicksilver dragon", "水银龙" },
+        { "quicksilver elemental", "水银元素" },
+        { "quokka", "短尾矮袋鼠" },
+        { "radroach", "辐射蟑螂" },
+        { "rakshasa", "罗刹" },
+        { "rakshasa fake", "罗刹分身" },
+        { "rat", "老鼠" },
+        { "raven", "渡鸦" },
+        { "reaper", "收割者" },
+        { "red devil", "红魔鬼" },
+        { "red draconian", "红龙人" },
+        { "redback", "赤背蜘蛛" },
+        { "revenant", "归来者" },
+        { "ribbon worm", "带状虫" },
+        { "rime drake", "霜幼龙" },
+        { "river rat", "河鼠" },
+        { "roaming sludgefish", "游荡泥鱼" },
+        { "rock fish", "石鱼" },
+        { "rock troll", "岩石巨魔" },
+        { "rock worm", "岩虫" },
+        { "rockslime", "岩石史莱姆" },
+        { "rotting devil", "腐烂魔鬼" },
+        { "royal mummy", "皇家木乃伊" },
+        { "rust devil", "锈蚀魔鬼" },
+        { "salamander", "沙罗曼蛇" },
+        { "salamander firebrand", "沙罗曼蛇火焰使" },
+        { "salamander mystic", "沙罗曼蛇秘法师" },
+        { "salamander stormcaller", "沙罗曼蛇风暴召唤者" },
+        { "salamander tyrant", "沙罗曼蛇暴君" },
+        { "satyr", "萨堤尔" },
+        { "scorpion", "蝎子" },
+        { "sea snake", "海蛇" },
+        { "sensed monster", "感知到的怪物" },
+        { "seraph", "炽天使" },
+        { "servant of whispers", "低语之仆" },
+        { "shadow", "暗影" },
+        { "shadow dragon", "暗影龙" },
+        { "shadow fiend", "暗影恶魔" },
+        { "shadow imp", "暗影小恶魔" },
+        { "shadow wraith", "暗影幽灵" },
+        { "shambling mangrove", "蹒跚红树" },
+        { "shapeshifter", "变形怪" },
+        { "shard shrike", "碎片伯劳" },
+        { "shark", "鲨鱼" },
+        { "shedu", "舍杜" },
+        { "sheep", "羊" },
+        { "shining eye", "闪耀之眼" },
+        { "shock serpent", "电击蛇" },
+        { "shooting star", "流星" },
+        { "sickly merfolk siren", "病弱的鱼人塞壬" },
+        { "silver star", "银色之星" },
+        { "simulacrum", "拟像" },
+        { "sixfirhy", "六翼魔" },
+        { "skeleton", "骷髅" },
+        { "slave", "奴隶" },
+        { "slime creature", "史莱姆" },
+        { "small simulacrum", "小型拟像" },
+        { "small skeleton", "小型骷髅" },
+        { "small zombie", "小型僵尸" },
+        { "smoke demon", "烟雾恶魔" },
+        { "snapping turtle", "鳄龟" },
+        { "soldier ant", "兵蚁" },
+        { "soul eater", "噬魂者" },
+        { "soul wisp", "灵魂之息" },
+        { "spark wasp", "火花蜂" },
+        { "spatial maelstrom", "空间漩涡" },
+        { "spatial vortex", "空间漩涡" },
+        { "spectator", "旁观者" },
+        { "spectral thing", "幽灵之物" },
+        { "spectral weapon", "幽灵武器" },
+        { "spellspark servitor", "法术火花侍者" },
+        { "sphinx", "斯芬克斯" },
+        { "spiny worm", "刺虫" },
+        { "spirit wolf", "灵魂之狼" },
+        { "spriggan", "小精灵" },
+        { "spriggan air mage", "小精灵气法师" },
+        { "spriggan assassin", "小精灵刺客" },
+        { "spriggan berserker", "小精灵狂战士" },
+        { "spriggan defender", "小精灵防御者" },
+        { "spriggan druid", "小精灵德鲁伊" },
+        { "spriggan enchanter", "小精灵附魔师" },
+        { "spriggan rider", "小精灵骑手" },
+        { "star jelly", "星之果冻" },
+        { "statue", "雕像" },
+        { "steam dragon", "蒸汽龙" },
+        { "stone giant", "石巨人" },
+        { "stone golem", "石魔像" },
+        { "storm dragon", "风暴龙" },
+        { "sun demon", "太阳恶魔" },
+        { "swamp dragon", "沼泽龙" },
+        { "swamp drake", "沼泽幼龙" },
+        { "swamp worm", "沼泽虫" },
+        { "tarantella", "塔兰图拉毒蛛" },
+        { "tengu", "天狗" },
+        { "tengu conjurer", "天狗咒法师" },
+        { "tengu reaver", "天狗掠夺者" },
+        { "tengu warrior", "天狗战士" },
+        { "test blob", "测试团块" },
+        { "test spawner", "测试生成器" },
+        { "test statue", "测试雕像" },
+        { "thorn hunter", "荆棘猎手" },
+        { "thorn lotus", "荆棘莲花" },
+        { "thrashing horror", "鞭笞恐怖" },
+        { "titan", "泰坦" },
+        { "toadstool", "毒蘑菇" },
+        { "toenail golem", "趾甲魔像" },
+        { "tormentor", "折磨者" },
+        { "torpor snail", "休眠蜗牛" },
+        { "torturous demonspawn", "折磨恶魔裔" },
+        { "tough sensed monster", "困难感知怪物" },
+        { "training dummy", "训练假人" },
+        { "trapdoor spider", "陷门蜘蛛" },
+        { "trivial sensed monster", "微弱感知怪物" },
+        { "troll", "巨魔" },
+        { "twister", "旋风" },
+        { "two-headed ogre", "双头食人魔" },
+        { "tyrant leech", "暴君水蛭" },
+        { "ufetubus", "乌菲特布斯" },
+        { "ugly thing", "丑陋之物" },
+        { "unseen horror", "无形恐怖" },
+        { "vampire bat", "吸血蝙蝠" },
+        { "vapour", "蒸汽" },
+        { "vault guard", "宝库守卫" },
+        { "vault sentinel", "宝库哨兵" },
+        { "vault warden", "宝库看守" },
+        { "very ugly thing", "极丑之物" },
+        { "vine stalker", "藤蔓行者" },
+        { "wandering mushroom", "游走蘑菇" },
+        { "war gargoyle", "战斗石像鬼" },
+        { "warg", "座狼" },
+        { "wasp", "黄蜂" },
+        { "water elemental", "水元素" },
+        { "water moccasin", "水蝮蛇" },
+        { "water nymph", "水仙女" },
+        { "weeping skull", "哭泣颅骨" },
+        { "white draconian", "白龙人" },
+        { "white imp", "白色小恶魔" },
+        { "wight", "尸妖" },
+        { "wind drake", "风幼龙" },
+        { "withered plant", "枯萎植物" },
+        { "wizard", "巫师" },
+        { "wolf", "狼" },
+        { "wolf spider", "狼蛛" },
+        { "worker ant", "工蚁" },
+        { "worldbinder", "缚世者" },
+        { "worm", "蠕虫" },
+        { "wraith", "幽灵" },
+        { "wyvern", "飞龙" },
+        { "yak", "牦牛" },
+        { "yaktaur", "牦牛人" },
+        { "yaktaur captain", "牦牛人头领" },
+        { "yellow draconian", "黄龙人" },
+        { "ynoxinul", "伊诺辛努" },
+        { "zombie", "僵尸" },
+    };
+    auto it = zh_names.find(en);
+    return it != zh_names.end() ? it->second : nullptr;
 }

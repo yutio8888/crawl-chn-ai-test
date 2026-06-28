@@ -13,10 +13,16 @@ function gauntlet_portal(e)
 
   local messager =
     timed_msg {
-      initmsg = { "You hear a distant snort.",
-                  "Hark! There is a gateway to a gauntlet on this level. " ..
+      initmsg = { crawl.language() == "zh"
+                  and "你听到了远处的一声鼻息。"
+                  or "You hear a distant snort.",
+                  crawl.language() == "zh"
+                  and "听！这个楼层有一个通往挑战场的入口。在大门封闭前赶快找到它！"
+                  or "Hark! There is a gateway to a gauntlet on this level. " ..
                   "Find the entrance quickly before the gate is sealed!" },
-      finalmsg = "After a thunderous strike, the drumbeats cease.",
+      finalmsg = crawl.language() == "zh"
+                 and "一声雷鸣般的敲击后，鼓声停止了。"
+                 or "After a thunderous strike, the drumbeats cease.",
       verb = 'beating',
       noisemaker = 'drum',
       ranges = {

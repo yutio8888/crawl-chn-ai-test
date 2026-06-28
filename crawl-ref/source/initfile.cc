@@ -2537,6 +2537,9 @@ void write_newgame_options_file(const newgame_def& prefs)
     FILE *f = fopen_u(fn.c_str(), "w");
     if (!f)
         return;
+    // Write UTF-8 BOM so that FileLineInput uses utf8_validate (BOM_UTF8)
+    // instead of mb_to_utf8, which corrupts CJK on non-UTF-8 locales (MinGW).
+    fprintf(f, "\xEF\xBB\xBF");
     prefs.write_prefs(f);
     Options.write_prefs(f);
     fclose(f);

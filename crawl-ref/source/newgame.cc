@@ -146,18 +146,21 @@ static char_choice_restriction _job_allowed(species_type sp, job_type job) {
 
 string newgame_char_description(const newgame_def& ng)
 {
+    const bool zh = Options.language == lang_t::ZH;
     if (_is_random_viable_choice(ng))
-        return "Recommended character";
+        return T_("Recommended character");
     else if (_is_random_choice(ng))
-        return "Random character";
+        return T_("Random character");
     else if (_is_random_job(ng.job))
     {
-        const string j = (ng.job == JOB_RANDOM ? "Random " : "Recommended ");
+        const string j = zh ? (ng.job == JOB_RANDOM ? "随机" : "推荐")
+                            : (ng.job == JOB_RANDOM ? "Random " : "Recommended ");
         return j + species::name(ng.species);
     }
     else if (_is_random_species(ng.species))
     {
-        const string s = (ng.species == SP_RANDOM ? "Random " : "Recommended ");
+        const string s = zh ? (ng.species == SP_RANDOM ? "随机" : "推荐")
+                            : (ng.species == SP_RANDOM ? "Random " : "Recommended ");
         return s + get_job_name(ng.job);
     }
     else
@@ -175,17 +178,18 @@ static string _welcome(const newgame_def& ng)
             text += " ";
         text += get_job_name(ng.job);
     }
+    const bool zh = Options.language == lang_t::ZH;
     if (!ng.name.empty())
     {
         if (!text.empty())
-            text = " the " + text;
+            text = (T_(" the ")) + text;
         text = ng.name + text;
     }
     else if (!text.empty())
-        text = "unnamed " + text;
+        text = (T_("unnamed ")) + text;
     if (!text.empty())
-        text = ", " + text;
-    text = "Welcome" + text + ".";
+        text = (T_(", ")) + text;
+    text = (T_("Welcome")) + text + (T_("."));
     return text;
 }
 
@@ -358,8 +362,9 @@ static bool _reroll_random(newgame_def& ng)
     string specs = chop_string(species::name(ng.species), 79, false);
 
     formatted_string prompt;
-    prompt.cprintf("You are a%s %s %s.",
-            (is_vowel(specs[0])) ? "n" : "", specs.c_str(),
+    prompt.cprintf(
+        T_("You are a%s %s %s."),
+            (is_vowel(specs[0])) ? "" : "", specs.c_str(),
             get_job_name(ng.job));
 
     auto title_hbox = make_shared<Box>(Widget::HORZ);
@@ -379,7 +384,10 @@ static bool _reroll_random(newgame_def& ng)
 
     auto vbox = make_shared<Box>(Box::VERT);
     vbox->add_child(std::move(title_hbox));
-    vbox->add_child(make_shared<Text>("Do you want to play this combination? [Y/n/q]"));
+    vbox->add_child(make_shared<Text>(
+    Options.language == lang_t::ZH
+        ? "你想用这个组合进行游戏吗？ [Y/n/q]"
+        : "Do you want to play with this combination? [Y/n/q]"));
     auto popup = make_shared<ui::Popup>(std::move(vbox));
 
     bool done = false;
@@ -429,8 +437,10 @@ static void _choose_char(newgame_def& ng, newgame_def& choice,
     // Apologies to non-public servers.
     if (ng.type == GAME_TYPE_NORMAL || ng.type == GAME_TYPE_DESCENT)
     {
-        if (!yesno("Trunk doesn't count for the tournament, you want "
-                   TOURNEY ". Play trunk anyway? (Y/N)", false, 'n'))
+        if (!yesno(Options.language == lang_t::ZH
+                   ? "Trunk不计入锦标赛，你想要" TOURNEY "。仍然玩Trunk吗？ (Y/N)"
+                   : "Trunk doesn't count for the tournament, you want "
+                     TOURNEY ". Still play Trunk? (Y/N)", false, 'n'))
         {
             game_ended(game_exit::abort);
         }
@@ -581,8 +591,9 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
     string specs = chop_string(species::name(ng.species), 79, false);
 
     formatted_string title;
-    title.cprintf("You are a%s %s %s.",
-            (is_vowel(specs[0])) ? "n" : "", specs.c_str(),
+    title.cprintf(
+        T_("You are a%s %s %s."),
+            (is_vowel(specs[0])) ? "" : "", specs.c_str(),
             get_job_name(ng.job));
 
     auto title_hbox = make_shared<Box>(Widget::HORZ);
@@ -609,15 +620,18 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
     vbox->add_child(sub_items);
 
     _add_menu_sub_item(sub_items, 0, 0,
-            "Esc - Quit", "", CK_ESCAPE, CK_ESCAPE);
+            (T_("Esc - quit")),
+    "", CK_ESCAPE, CK_ESCAPE);
     _add_menu_sub_item(sub_items, 1, 0,
-            "* - Random name", "", '*', '*');
+            (T_("* - Random name")),
+    "", '*', '*');
 
     auto ok_switcher = make_shared<Switcher>();
     ok_switcher->align_y = Widget::STRETCH;
     {
         auto tmp = make_shared<Text>();
-        tmp->set_text(formatted_string("Enter - Begin!", BROWN));
+        tmp->set_text(formatted_string(
+    T_("Enter - Begin!"), BROWN));
 
         auto btn = make_shared<MenuButton>();
         btn->on_activate_event([&](const ActivateEvent&) {
@@ -704,12 +718,17 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
     {
         formatted_string prompt;
         prompt.textcolour(CYAN);
-        prompt.cprintf("What is your name today? ");
+        prompt.cprintf(
+    Options.language == lang_t::ZH ? "你今天叫什么名字？ "
+                                   : "What is your name today? ");
         prompt.textcolour(LIGHTGREY);
         prompt.cprintf("%s\n", buf);
         prompt.textcolour(LIGHTRED);
         if (overwrite_prompt)
-            prompt.cprintf("You have an existing game under this name; really overwrite? [Y/n]");
+            prompt.cprintf(
+    Options.language == lang_t::ZH
+        ? "这个名字已有存档；真的要覆盖吗？ [Y/n]"
+        : "This name has an existing save; really overwrite? [Y/n]");
         prompt_ui->set_text(prompt);
 
         ui::pump_events();
@@ -776,9 +795,11 @@ public:
     void update_buttons()
     {
         if (valid_seed())
-            begin_button->set_text(formatted_string("[Enter] Begin!", BROWN));
+            begin_button->set_text(formatted_string(
+    T_("[Enter] Begin!"), BROWN));
         else
-            begin_button->set_text(formatted_string("[Enter] Begin!", DARKGRAY));
+            begin_button->set_text(formatted_string(
+    T_("[Enter] Begin!"), DARKGRAY));
     }
 
     void set_text(const string &s) // why is it `string s` in TextEntry?
@@ -829,7 +850,8 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     bool cancel = false;
 
     auto begin_label = make_shared<ui::Text>();
-    begin_label->set_text(formatted_string("[Enter] Begin!", BROWN));
+    begin_label->set_text(formatted_string(
+    T_("[Enter] Begin!"), BROWN));
     begin_label->set_margin_for_sdl(4,8);
     begin_label->set_margin_for_crt(0, 2, 0, 0);
 
@@ -843,14 +865,17 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
         Version::Long);
     box->add_child(make_shared<ui::Text>(formatted_string(title_text, CYAN)));
 
-    const string body_text = "Choose 0 for a random seed. "
-            "[Tab]/[Shift-Tab] to cycle input focus.\n";
+    const string body_text = Options.language == lang_t::ZH
+        ? "输入0获取随机种子。"
+          "[Tab]/[Shift-Tab] 切换输入焦点。\n"
+        : "Enter 0 for a random seed. "
+          "[Tab]/[Shift-Tab] to cycle input focus.\n";
     box->add_child(make_shared<ui::Text>(body_text));
 
     auto seed_hbox = make_shared<ui::Box>(ui::Box::HORZ);
     box->add_child(seed_hbox);
 
-    const string prompt_text = "Seed: ";
+    const string prompt_text = T_("Seed: ");
     seed_hbox->add_child(make_shared<ui::Text>(prompt_text));
     auto seed_input = make_shared<SeedTextEntry>(begin_label.get());
     seed_input->set_sync_id("seed");
@@ -864,7 +889,8 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     seed_hbox->set_cross_alignment(Widget::CENTER);
 
     auto clear_btn_label = make_shared<ui::Text>();
-    clear_btn_label->set_text(formatted_string("[-] Clear", BROWN));
+    clear_btn_label->set_text(formatted_string(
+    T_("[-] Clear"), BROWN));
     clear_btn_label->set_margin_for_sdl(4, 4);
     clear_btn_label->set_margin_for_crt(0, 1, 0, 1);
     auto clear_btn = make_shared<MenuButton>();
@@ -881,7 +907,8 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     seed_hbox->add_child(std::move(clear_btn));
 
     auto d_btn_label = make_shared<ui::Text>();
-    d_btn_label->set_text(formatted_string("[d] Today's daily seed", BROWN));
+    d_btn_label->set_text(formatted_string(
+    T_("[d] Today's daily seed"), BROWN));
     d_btn_label->set_margin_for_sdl(4,8);
     d_btn_label->set_margin_for_crt(0, 2, 0, 0);
 
@@ -903,21 +930,36 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     });
     seed_hbox->add_child(std::move(daily_seed_btn));
 
-    const string footer_text =
+    const bool zh = Options.language == lang_t::ZH;
+    string footer_text;
 #ifdef USE_TILE_LOCAL
-        "\n"
-        "Press [p] or [ctrl-v] to paste a seed from the clipboard\n"
-        "(overwriting the current value).\n"
+    if (zh)
+        footer_text += "\n"
+            "按 [p] 或 [ctrl-v] 从剪贴板粘贴种子\n"
+            "（覆盖当前值）。\n";
+    else
+        footer_text += "\n"
+            "Press [p] or [ctrl-v] to paste a seed from the clipboard\n"
+            "(overriding the current value).\n";
 #endif
-        "\n"
-        "The seed will determine the dungeon layout, monsters, and items\n"
-        "that you discover, relative to this version of crawl. Upgrading\n"
-        "mid-game may affect seeding. (See the manual for more details.)\n"
+    if (zh)
+        footer_text += "\n"
+            "种子将决定地牢布局、怪物和物品\n"
+            "这些都是相对于此版本的地牢爬行。中途升级\n"
+            "可能会影响种子效果。（详见手册。）\n";
+    else
+        footer_text += "\n"
+            "The seed will determine the layout, monsters and items\n"
+            "that are all RELATIVE to this version of the Dungeon Crawl. Mid-run\n"
+            "upgrades may affect the seed's effects. (Consult the manual for details.)\n";
 #ifdef SEEDING_UNRELIABLE
-        "Warning: your build of crawl does not support stable seeding!\n"
-        "Levels may differ from 'official' seeded games.\n"
+    if (zh)
+        footer_text += "警告：你的构建版本不支持稳定种子！\n"
+            "关卡可能与"官方"种子游戏不同。\n";
+    else
+        footer_text += "WARNING: Your build does not support stable seeds!\n"
+            "The level may differ from the \"official\" seeded game.\n";
 #endif
-        ;
     box->add_child(make_shared<ui::Text>(footer_text));
 
     auto pregen_check = make_shared<ui::Checkbox>();
@@ -925,7 +967,8 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     choice.pregenerate = Options.pregen_dungeon == level_gen_type::full;
     pregen_check->set_checked(choice.pregenerate);
     pregen_check->set_visible(show_pregen_toggle);
-    pregen_check->set_child(make_shared<ui::Text>("Fully pregenerate the dungeon"));
+    pregen_check->set_child(make_shared<ui::Text>(
+        T_("Fully pregenerate the dungeon")));
     box->add_child(pregen_check);
 
     auto button_hbox = make_shared<ui::Box>(ui::Box::HORZ);
@@ -1045,7 +1088,8 @@ bool choose_game(newgame_def& ng, newgame_def& choice,
 #endif
 
     if (ng.name.empty())
-        end(1, false, "No player name specified.");
+        end(1, false,
+    T_("No player name specified."));
 
     ASSERT(is_good_name(ng.name, false)
            && _job_allowed(ng.species, ng.job)
@@ -1115,31 +1159,36 @@ static void _construct_species_menu(const newgame_def& ng,
 static job_group jobs_order[] =
 {
     {
-        "Warrior",
+        "战士",
         coord_def(0, 0), 20,
-        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND }
+        { JOB_FIGHTER, JOB_GLADIATOR, JOB_MONK, JOB_HUNTER, JOB_BRIGAND },
+        "Warrior"
     },
     {
-        "Zealot",
+        "狂热者",
         coord_def(0, 6), 25,
-        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT }
+        { JOB_BERSERKER, JOB_CINDER_ACOLYTE, JOB_CHAOS_KNIGHT },
+        "Zealot"
     },
     {
-        "Adventurer",
+        "冒险家",
         coord_def(1, 0), 20,
-        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER, }
+        { JOB_ARTIFICER, JOB_SHAPESHIFTER, JOB_WANDERER, JOB_DELVER, },
+        "Adventurer"
     },
     {
-        "Warrior-mage",
+        "战法",
         coord_def(1, 5), 26,
-        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER }
+        { JOB_WARPER, JOB_HEXSLINGER, JOB_ENCHANTER, JOB_REAVER },
+        "Warrior-mage"
     },
     {
-        "Mage",
+        "法师",
         coord_def(2, 0), 22,
         { JOB_HEDGE_WIZARD, JOB_CONJURER, JOB_SUMMONER, JOB_NECROMANCER,
           JOB_FORGEWRIGHT, JOB_FIRE_ELEMENTALIST, JOB_ICE_ELEMENTALIST,
-          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST }
+          JOB_AIR_ELEMENTALIST, JOB_EARTH_ELEMENTALIST, JOB_ALCHEMIST },
+        "Mage"
     }
 };
 
@@ -1176,15 +1225,18 @@ public:
         welcome.textcolour(BROWN);
         welcome.cprintf("%s", _welcome(m_ng).c_str());
         welcome.textcolour(YELLOW);
-        welcome.cprintf(" Please select your ");
-        welcome.cprintf(m_choice_type == C_JOB ? "background." : "species.");
+        const bool zh = Options.language == lang_t::ZH;
+        welcome.cprintf(T_(" Please select your "));
+        welcome.cprintf(m_choice_type == C_JOB
+            ? (T_("background."))
+            : (T_("species.")));
         m_vbox->add_child(make_shared<Text>(welcome));
 
         descriptions = make_shared<Switcher>();
 
         m_main_items = make_shared<OuterMenu>(true, 3, 20);
         m_main_items->menu_id = m_choice_type == C_JOB ?
-            "background-main" : "species-main";
+            (T_("Job-main")) : (T_("Species-main"));
         m_main_items->set_margin_for_crt(1, 0);
         m_main_items->set_margin_for_sdl(15, 0);
         m_main_items->descriptions = descriptions;
@@ -1207,8 +1259,9 @@ public:
             _construct_species_menu(m_ng, m_defaults, this);
 
         m_sub_items = make_shared<OuterMenu>(false, 2, 4);
-        m_sub_items->menu_id = m_choice_type == C_JOB ?
-            "background-sub" : "species-sub";
+        m_sub_items->menu_id = m_choice_type == C_JOB
+            ? (T_("Job-sub"))
+            : (T_("Species-sub"));
         m_sub_items->descriptions = descriptions;
         m_vbox->add_child(m_sub_items);
         _add_choice_menu_options(m_choice_type, m_ng, m_defaults);
@@ -1359,15 +1412,18 @@ protected:
                                         const newgame_def& ng,
                                         const newgame_def& defaults)
     {
-        string choice_name = choice_type == C_JOB ? "background" : "species";
-        string other_choice_name = choice_type == C_JOB ? "species" : "background";
+        const bool zh = Options.language == lang_t::ZH;
+        string choice_name = zh ? (choice_type == C_JOB ? "背景" : "种族")
+                                : (choice_type == C_JOB ? "Background" : "Species");
+        string other_choice_name = zh ? (choice_type == C_JOB ? "种族" : "背景")
+                                      : (choice_type == C_JOB ? "Species" : "Background");
 
         string text, desc;
 
         if (choice_type == C_SPECIES)
-            text = "+ - Recommended species";
+            text = T_("+ - Recommended species");
         else
-            text = "+ - Recommended background";
+            text = T_("+ - Recommended job");
 
         int id;
         // If the player has species chosen, use VIABLE, otherwise use RANDOM
@@ -1378,43 +1434,60 @@ protected:
         }
         else
             id = M_RANDOM;
-        desc = "Picks a random recommended " + other_choice_name + " based on your current " + choice_name + " choice.";
+        desc = zh ? "根据你当前的" + choice_name + "选择，随机推荐一个"
+                       + other_choice_name + "。"
+                  : "Randomly recommend a " + other_choice_name
+                       + " based on your current " + choice_name + " choices.";
 
         _add_choice_menu_option(0, 0,
                 text, '+', id, desc);
 
         _add_choice_menu_option(0, 1,
-                "# - Recommended character", '#', M_VIABLE_CHAR,
-                "Shuffles through random recommended character combinations "
-                "until you accept one.");
+                T_("# - Recommended character"),
+                '#', M_VIABLE_CHAR,
+                zh ? "随机切换推荐的种族/职业组合"
+                      "until you accept one."
+                   : "Randomly cycle recommended species/job combos"
+                      "until you accept one.");
 
         _add_choice_menu_option(0, 2,
-                "% - List aptitudes", '%', M_APTITUDES,
-                "Lists the numerical skill train aptitudes for all races.");
+                T_("% - View aptitudes"),
+                '%', M_APTITUDES,
+                T_("List skill training aptitude values for all species."));
 
         _add_choice_menu_option(0, 3,
-                "? - Help", '?', M_HELP,
-                "Opens the help screen.");
+                zh ? "? - 帮助" : "? - Help",
+                '?', M_HELP,
+                T_("Open the help screen."));
 
         _add_choice_menu_option(1, 0,
-                "    * - Random " + choice_name, '*', M_RANDOM,
-                "Picks a random " + choice_name + ".");
+                (T_("    * - Random ")) + choice_name,
+                '*', M_RANDOM,
+                (T_("Randomly select a ")) + choice_name
+                    + (T_(".")));
 
         _add_choice_menu_option(1, 1,
-                "    ! - Random character", '!', M_RANDOM_CHAR,
-                "Shuffles through random character combinations "
-                "until you accept one.");
+                T_("    ! - Random character"),
+                '!', M_RANDOM_CHAR,
+                zh ? "随机切换角色组合"
+                      "until you accept one."
+                   : "Randomly cycle character combos"
+                      "until you accept one.");
 
         if ((choice_type == C_JOB && ng.species != SP_UNKNOWN)
             || (choice_type == C_SPECIES && ng.job != JOB_UNKNOWN))
         {
-            text = "Space - Change " + other_choice_name;
-            desc = "Lets you change your " + other_choice_name + " choice.";
+            text = (T_("Space - Change "))
+                   + other_choice_name;
+            desc = (T_("Lets you change your "))
+                   + other_choice_name + (T_(" choice."));
         }
         else
         {
-            text = "Space - Pick " + other_choice_name + " first";
-            desc = "Lets you pick your " + other_choice_name + " first.";
+            text = (T_("Space - Pick "))
+                   + other_choice_name + (T_(" first"));
+            desc = (T_("Lets you pick "))
+                   + other_choice_name + (T_(" first."));
         }
         _add_choice_menu_option(1, 2,
                 text, ' ', M_ABORT, desc);
@@ -1424,7 +1497,7 @@ protected:
             _add_choice_menu_option(1, 3,
                     "  Tab - " + newgame_char_description(defaults), '\t',
                     M_DEFAULT_CHOICE,
-                    "Play a new game with your previous choice.");
+                    (T_("Start a new game with your previous choices.")));
         }
     }
 
@@ -1540,7 +1613,8 @@ void UINewGameMenu::menu_item_activated(int id)
 void job_group::attach(const newgame_def& ng, const newgame_def& defaults,
                        UINewGameMenu* ng_menu, menu_letter &letter)
 {
-    ng_menu->_add_group_title(name, position);
+    ng_menu->_add_group_title(
+        Options.language == lang_t::ZH ? name : name_en, position);
 
     coord_def pos(position);
 
@@ -1699,7 +1773,9 @@ static void _construct_weapon_menu(const newgame_def& ng,
         if (wpn_type == WPN_UNARMED)
         {
             choices.emplace_back(SK_UNARMED_COMBAT,
-                        species::has_claws(ng.species) ? "claws" : "unarmed");
+                        species::has_claws(ng.species)
+    ? (T_("Claws"))
+    : "unarmed");
         } else {
             string text = weapon_base_name(wpn_type);
             item_def dummy;
@@ -1782,11 +1858,14 @@ static void _construct_weapon_menu(const newgame_def& ng,
 
     _add_menu_sub_item(sub_items, 0, 0, "+ - Recommended random choice",
             "Picks a random recommended weapon", '+', M_VIABLE);
-    _add_menu_sub_item(sub_items, 0, 1, "% - List aptitudes",
-            "Lists the numerical skill train aptitudes for all races", '%',
-            M_APTITUDES);
-    _add_menu_sub_item(sub_items, 0, 2, "? - Help",
-            "Opens the help screen", '?', M_HELP);
+    _add_menu_sub_item(sub_items, 0, 1,
+            T_("% - View aptitudes"),
+            T_("List skill training aptitude values for all species."),
+            '%', M_APTITUDES);
+    _add_menu_sub_item(sub_items, 0, 2,
+            Options.language == lang_t::ZH ? "? - 帮助" : "? - Help",
+            T_("Open the help screen."),
+            '?', M_HELP);
     _add_menu_sub_item(sub_items, 1, 0, "* - Random weapon",
             "Picks a random weapon", '*', WPN_RANDOM);
     _add_menu_sub_item(sub_items, 1, 1, "Bksp - Return to character menu",
@@ -1834,7 +1913,8 @@ static bool _prompt_weapon(const newgame_def& ng, newgame_def& ng_choice,
     auto vbox = make_shared<Box>(Box::VERT);
     vbox->set_cross_alignment(Widget::Align::STRETCH);
     vbox->add_child(title_hbox);
-    auto prompt = make_shared<Text>(formatted_string("You have a choice of weapons.", CYAN));
+    auto prompt = make_shared<Text>(formatted_string(
+    T_("You have a choice of weapons."), CYAN));
     vbox->add_child(prompt);
 
     auto main_items = make_shared<OuterMenu>(true, 1, weapons.size());
@@ -2154,11 +2234,14 @@ static void _construct_gamemode_map_menu(const mapref_vector& maps,
     // Don't overwhelm new players with aptitudes or the full list of commands!
     if (!crawl_state.game_is_tutorial())
     {
-        _add_menu_sub_item(sub_items, 0, 0, "% - List aptitudes",
-                "Lists the numerical skill train aptitudes for all races",
+        _add_menu_sub_item(sub_items, 0, 0,
+                T_("% - View aptitudes"),
+                T_("List skill training aptitude values for all species."),
                 '%', M_APTITUDES);
-        _add_menu_sub_item(sub_items, 0, 1, "? - Help",
-                "Opens the help screen", '?', M_HELP);
+        _add_menu_sub_item(sub_items, 0, 1,
+                Options.language == lang_t::ZH ? "? - 帮助" : "? - Help",
+                T_("Open the help screen."),
+                '?', M_HELP);
         _add_menu_sub_item(sub_items, 1, 0, "* - Random map",
                 "Picks a random sprint map", '*', M_RANDOM);
     }
@@ -2202,10 +2285,14 @@ static void _prompt_gamemode_map(newgame_def& ng, newgame_def& ng_choice,
     welcome.textcolour(BROWN);
     welcome.cprintf("%s\n", _welcome(ng).c_str());
     if (Options.seed_from_rc)
-        welcome.cprintf("Custom seed: %" PRIu64 "\n", Options.seed_from_rc);
+        welcome.cprintf(
+        Options.language == lang_t::ZH ? "自定义种子: %" PRIu64 "\n"
+                                       : "Custom seed: %" PRIu64 "\n",
+        Options.seed_from_rc);
 
     welcome.textcolour(CYAN);
-    welcome.cprintf("\nYou have a choice of %s:",
+    welcome.cprintf(
+        T_("\nYou can choose %s:"),
             ng_choice.type == GAME_TYPE_TUTORIAL ? "lessons" : "maps");
 
     auto vbox = make_shared<Box>(Box::VERT);

@@ -222,6 +222,7 @@ void identify_inventory();
 
 const char *item_class_name(int type, bool terse = false);
 const char* equip_slot_name(equipment_slot type, bool terse = false);
+const char* equip_slot_name_en(equipment_slot type, bool terse = false);
 
 bool get_tiles_for_item(const item_def &item, vector<tile_def>& tileset, bool show_background);
 

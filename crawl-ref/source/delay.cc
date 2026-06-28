@@ -81,9 +81,11 @@ static const char *_activity_interrupt_name(activity_interrupt ai);
 
 static string _eq_category(const item_def &equip)
 {
+    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
-        return "weapon";
-    return equip.base_type == OBJ_JEWELLERY ? "amulet" : "armour";
+        return T_("weapon");
+    return equip.base_type == OBJ_JEWELLERY
+        ? (T_("amulet")) : (T_("armour"));
 }
 
 void push_delay(shared_ptr<Delay> delay)
@@ -130,7 +132,7 @@ bool MemoriseDelay::try_interrupt(bool /*force*/)
 {
     // Losing work here is okay... having to start from
     // scratch is a reasonable behaviour. -- bwr
-    mpr("Your memorisation is interrupted.");
+    mpr(T_("Your memorisation is interrupted."));
     return true;
 }
 
@@ -138,7 +140,7 @@ bool MultidropDelay::try_interrupt(bool /*force*/)
 {
     // No work lost
     if (!items.empty())
-        mpr("You stop dropping stuff.");
+        mpr(T_("You stop dropping stuff."));
     return true;
 }
 
@@ -163,19 +165,20 @@ bool MacroDelay::try_interrupt(bool /*force*/)
 
 const char* EquipOnDelay::get_verb()
 {
+    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
     {
         if (you.has_mutation(MUT_SLOW_WIELD))
-            return "attuning to";
+            return T_("attuning to");
         else
-            return "wielding";
+            return T_("wielding");
     }
     else if (you.has_mutation(MUT_FORMLESS))
-        return "haunting";
+        return T_("haunting");
     else if (equip.base_type == OBJ_ARMOUR && you.form == transformation::fortress_crab)
-        return "fusing with";
+        return T_("fusing with");
     else
-        return "putting on";
+        return T_("putting on");
 }
 
 bool EquipOnDelay::try_interrupt(bool force)
@@ -189,7 +192,9 @@ bool EquipOnDelay::try_interrupt(bool force)
         // yesno might call this function again, don't double prompt
         was_prompted = true;
         if (!crawl_state.disables[DIS_CONFIRMATIONS]
-            && !yesno("Keep equipping yourself?", false, 0, false))
+            && !yesno(Options.language == lang_t::ZH
+                          ? "继续装备吗？"
+                          : "Keep equipping yourself?", false, 0, false))
         {
             interrupt = true;
         }
@@ -197,7 +202,8 @@ bool EquipOnDelay::try_interrupt(bool force)
 
     if (interrupt)
     {
-        mprf("You stop %s your %s.", get_verb(), _eq_category(equip).c_str());
+        mprf(T_("You stop %s your %s."),
+             get_verb(), _eq_category(equip).c_str());
         return true;
     }
     return false;
@@ -205,19 +211,20 @@ bool EquipOnDelay::try_interrupt(bool force)
 
 const char* EquipOffDelay::get_verb()
 {
+    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
     {
         if (you.has_mutation(MUT_SLOW_WIELD))
-            return "parting from";
+            return T_("parting from");
         else
-            return "unwielding";
+            return T_("unwielding");
     }
     else if (you.has_mutation(MUT_FORMLESS))
-        return "removing yourself from";
+        return T_("removing yourself from");
     else if (equip.base_type == OBJ_ARMOUR && you.form == transformation::fortress_crab)
-        return "unfusing";
+        return T_("unfusing");
     else
-        return "removing";
+        return T_("removing");
 }
 
 bool EquipOffDelay::try_interrupt(bool force)
@@ -231,8 +238,11 @@ bool EquipOffDelay::try_interrupt(bool force)
         const bool is_armour = equip.base_type == OBJ_ARMOUR
                                // Shields and orbs aren't clothes.
                                && get_armour_slot(equip) != SLOT_OFFHAND;
-        const char* verb = is_armour ? "disrobing" : "removing your equipment";
-        const string prompt = make_stringf("Keep %s?", verb);
+        const char* verb = is_armour
+            ? (T_("disrobing"))
+            : (T_("removing your equipment"));
+        const string prompt = make_stringf(
+            T_("Keep %s?"), verb);
         // yesno might call this function again, don't double prompt
         was_prompted = true;
         if (!crawl_state.disables[DIS_CONFIRMATIONS]
@@ -244,7 +254,8 @@ bool EquipOffDelay::try_interrupt(bool force)
 
     if (interrupt)
     {
-        mprf("You stop %s your %s.", get_verb(), _eq_category(equip).c_str());
+        mprf(T_("You stop %s your %s."),
+             get_verb(), _eq_category(equip).c_str());
         return true;
     }
     return false;
@@ -252,14 +263,14 @@ bool EquipOffDelay::try_interrupt(bool force)
 
 bool AscendingStairsDelay::try_interrupt(bool /*force*/)
 {
-    mpr("You stop ascending the stairs.");
+    mpr(T_("You stop ascending the stairs."));
     untag_followers();
     return true;  // short... and probably what people want
 }
 
 bool DescendingStairsDelay::try_interrupt(bool /*force*/)
 {
-    mpr("You stop descending the stairs.");
+    mpr(T_("You stop descending the stairs."));
     untag_followers();
     return true;  // short... and probably what people want
 }
@@ -269,7 +280,7 @@ bool PasswallDelay::try_interrupt(bool /*force*/)
     // finish() can trigger interrupts, avoid a double message
     if (interrupt_block::blocked())
         return false;
-    mpr("Your meditation is interrupted.");
+    mpr(T_("Your meditation is interrupted."));
     you.props.erase(PASSWALL_ARMOUR_KEY);
     you.redraw_armour_class = true;
     return true;
@@ -277,7 +288,7 @@ bool PasswallDelay::try_interrupt(bool /*force*/)
 
 bool ShaftSelfDelay::try_interrupt(bool /*force*/)
 {
-    mpr("You stop digging.");
+    mpr(T_("You stop digging."));
     return true;
 }
 
@@ -300,7 +311,7 @@ bool TransformDelay::try_interrupt(bool force)
 
     if (!interrupt)
         return false;
-    mpr("You stop transforming.");
+    mpr(T_("You stop transforming."));
     return true;
 }
 
@@ -323,7 +334,7 @@ bool ImbueDelay::try_interrupt(bool force)
 
     if (interrupt)
     {
-        mpr("You stop imbuing your servitor.");
+        mpr(T_("You stop imbuing your servitor."));
         return true;
     }
     return false;
@@ -331,7 +342,7 @@ bool ImbueDelay::try_interrupt(bool force)
 
 bool ImprintDelay::try_interrupt(bool /*force*/)
 {
-    mpr("Your concentration is interrupted.");
+    mpr(T_("Your concentration is interrupted."));
     return true;
 }
 
@@ -426,7 +437,7 @@ static command_type _get_running_command()
         if (!is_resting() && you.running.hp == you.hp
             && you.running.mp == you.magic_points)
         {
-            mpr("Done waiting.");
+            mpr(T_("Done waiting."));
         }
 
         if (Options.rest_delay > 0)
@@ -457,14 +468,16 @@ void clear_macro_process_key_delay()
 
 void EquipOnDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You start %s your %s.",
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You start %s your %s."),
          get_verb(),
          _eq_category(equip).c_str());
 }
 
 void EquipOffDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You start %s your %s.",
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You start %s your %s."),
          get_verb(),
          _eq_category(equip).c_str());
 }
@@ -473,42 +486,49 @@ void MemoriseDelay::start()
 {
     if (vehumet_is_offering(spell, true))
     {
-        string message = make_stringf(" grants you knowledge of %s.",
+        string message = make_stringf(
+            T_(" grants you knowledge of %s."),
             spell_title(spell));
         simple_god_message(message.c_str());
     }
-    mprf(MSGCH_MULTITURN_ACTION, "You start memorising the spell.");
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You start memorising the spell."));
 }
 
 void PasswallDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You begin to meditate on the wall.");
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You begin to meditate on the wall."));
 }
 
 void ShaftSelfDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You begin to dig a shaft.");
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You begin to dig a shaft."));
 }
 
 void ImbueDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You begin to imbue your servitor with "
-         "knowledge of %s.",
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You begin to imbue your servitor with knowledge of %s."),
          spell_title(spell));
 }
 
 void ImprintDelay::start()
 {
-    mprf(MSGCH_MULTITURN_ACTION, "You begin to imprint %s upon your paragon.",
+    mprf(MSGCH_MULTITURN_ACTION,
+         T_("You begin to imprint %s upon your paragon."),
          wpn.name(DESC_THE).c_str());
 }
 
 void TransformDelay::start()
 {
     if (form == transformation::none)
-        mprf(MSGCH_MULTITURN_ACTION, "You begin untransforming.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             T_("You begin untransforming."));
     else
-        mprf(MSGCH_MULTITURN_ACTION, "You begin transforming.");
+        mprf(MSGCH_MULTITURN_ACTION,
+             T_("You begin transforming."));
 }
 
 command_type RunDelay::move_cmd() const
@@ -550,7 +570,7 @@ void BaseRunDelay::handle()
 
     if (want_move() && you.confused())
     {
-        mprf("You're confused, stopping %s.",
+        mprf(T_("You're confused, stopping %s."),
              you.running.runmode_name().c_str());
         stop_running();
     }
@@ -729,7 +749,8 @@ bool EquipOnDelay::invalidated()
 
 void EquipOnDelay::finish()
 {
-    mprf("You finish %s %s.", get_verb(), equip.name(DESC_YOUR).c_str());
+    mprf(T_("You finish %s %s."),
+         get_verb(), equip.name(DESC_YOUR).c_str());
 
     if (is_weapon(equip) && you.has_mutation(MUT_SLOW_WIELD))
         maybe_name_weapon(equip);
@@ -744,7 +765,8 @@ bool EquipOffDelay::invalidated()
 
 void EquipOffDelay::finish()
 {
-    mprf("You finish %s %s.", get_verb(), equip.name(DESC_YOUR).c_str());
+    mprf(T_("You finish %s %s."),
+         get_verb(), equip.name(DESC_YOUR).c_str());
     unequip_item(equip);
 
     // Banishment via coglin distortion unwield might not happen until the turn
@@ -757,7 +779,7 @@ void MemoriseDelay::finish()
 #ifdef USE_SOUND
     parse_sound(MEMORISE_SPELL_SOUND);
 #endif
-    mpr("You finish memorising.");
+    mpr(T_("You finish memorising."));
     add_spell_to_memory(spell);
     vehumet_accept_gift(spell);
     quiver::on_actions_changed();
@@ -768,7 +790,7 @@ void PasswallDelay::finish()
     // No interrupt message if our destination causes this delay to be
     // interrupted
     const interrupt_block block_double_message;
-    mpr("You finish merging with the rock.");
+    mpr(T_("You finish merging with the rock."));
     // included in default force_more_message
 
     // Immediately cancel bonus AC (since there are so many paths through this code)
@@ -879,13 +901,13 @@ void DescendingStairsDelay::finish()
 
 void ImbueDelay::finish()
 {
-    mpr("You finish imbuing your servitor.");
+    mpr(T_("You finish imbuing your servitor."));
     you.props[SERVITOR_SPELL_KEY] = spell;
 }
 
 void ImprintDelay::finish()
 {
-    mprf("You finish imprinting the physical structure of %s upon your paragon.",
+    mprf(T_("You finish imprinting the physical structure of %s upon your paragon."),
             wpn.name(DESC_THE).c_str());
     you.props[PARAGON_WEAPON_KEY].get_item() = wpn;
 }
@@ -1078,7 +1100,7 @@ void monster_interrupt_message(activity_interrupt ai, const activity_interrupt_d
     if (at.context == SC_ALREADY_IN_VIEW)
         mprf(MSGCH_MONSTER_WARNING, "%s is now too close for your liking.", mon->name(DESC_THE).c_str());
     else
-        mprf(MSGCH_MONSTER_WARNING, "%s comes into view.", mon->name(DESC_A).c_str());
+        mprf(MSGCH_MONSTER_WARNING, "%s 进入了视野。", mon->name(DESC_A).c_str());
 }
 
 // Returns true if any activity was stopped. Not reentrant.
@@ -1110,12 +1132,12 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
     if (ai == activity_interrupt::full_hp && !you.running.notified_hp_full)
     {
         you.running.notified_hp_full = true;
-        mpr("HP restored.");
+        mpr(T_("HP restored."));
     }
     else if (ai == activity_interrupt::full_mp && !you.running.notified_mp_full)
     {
         you.running.notified_mp_full = true;
-        mpr("Magic restored.");
+        mpr(T_("Magic restored."));
     }
     else if (ai == activity_interrupt::ancestor_hp
              && !you.running.notified_ancestor_hp_full)
@@ -1123,7 +1145,7 @@ bool interrupt_activity(activity_interrupt ai, const activity_interrupt_data &at
         // This interrupt only triggers when the ancestor is in LOS,
         // so this message does not leak information.
         you.running.notified_ancestor_hp_full = true;
-        mpr("Ancestor HP restored.");
+        mpr(T_("Ancestor HP restored."));
     }
 
     if (_should_stop_activity(delay.get(), ai, at))

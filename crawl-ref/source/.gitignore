@@ -5,3 +5,6 @@ coverage-html-report/
 default.profraw
 coverage.profdata
 coverage.info
+debug_tiles.log
+init.txt
+.idea/

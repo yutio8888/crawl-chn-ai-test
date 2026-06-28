@@ -28,6 +28,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "libutil.h"
+#include "options.h"
 #include "mapmark.h"
 #include "mon-cast.h" // recall for zot traps
 #include "mon-enum.h"
@@ -58,9 +59,9 @@
 static string _net_immune_reason()
 {
     if (you.unrand_equipped(UNRAND_SLICK_SLIPPERS))
-        return "You slip through the net.";
+        return "你从网中滑过了。";
     else if (you.is_insubstantial() || you.is_amorphous())
-        return "The net passes straight through you.";
+        return "网直接穿过了你。";
     return "";
 }
 
@@ -253,16 +254,17 @@ static vector<monster*> _find_and_buff_trap_targets(enchant_type enchant,
  * & webs use the same status.
  *
  * @param actor     The ensnared actor.
- * @return          Either 'held in a net' or 'caught in a web'.
+ * @return          Either '被网困住' or '被蛛网缠住'.
  */
 const char* held_status(actor *act)
 {
     act = act ? act : &you;
 
+    const bool zh = Options.language == lang_t::ZH;
     if (act->caught_by() >= CAUGHT_NET)
-        return "held in a net";
+        return T_("held in a net");
     else
-        return "caught in a web";
+        return T_("stuck in a web");
 }
 
 vector<coord_def> find_golubria_on_level()
@@ -323,7 +325,7 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
               mg.set_non_actor_summoner("a Zot trap");
               mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
               if (create_monster(mg))
-                  mpr("You sense a hostile presence.");
+                  mpr("你感知到了一个敌对的存在。");
          }, 3 },
     { [] {
              coord_def pt = find_gateway_location(&you);
@@ -337,14 +339,14 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
               mg.set_non_actor_summoner("a Zot trap");
               mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
               if (create_monster(mg))
-                  mpr("A huge vortex of air appears!");
+                  mpr("一个巨大的空气漩涡出现了！");
          }, 1 },
 };
 
 // Zot traps only target the player. This rolls their effect.
 static void _zot_trap()
 {
-    mpr("The power of Zot is invoked against you!");
+    mpr("佐特的力量被召来对抗你！");
     (*random_choose_weighted(zot_effects))();
 }
 
@@ -382,7 +384,7 @@ void trap_def::trigger(actor& triggerer)
         if (search_result == passage_type::free)
         {
             if (you_trigger)
-                mpr("You enter the passage of Golubria.");
+                mpr("你进入了戈卢布里亚之通道。");
             else
                 simple_monster_message(*m, " enters the passage of Golubria.");
 
@@ -440,7 +442,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_TYRANT:
     {
         if (you_trigger)
-            mpr("You enter a tyrant's trap.");
+            mpr("你进入了一个暴君陷阱。");
         else
         {
             mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
@@ -461,7 +463,7 @@ void trap_def::trigger(actor& triggerer)
                  visible_mons++;
 
         if (buffed_mons.size() == 0)
-           mpr("Your strength is siphoned away, and you feel your attacks grow feeble!");
+           mpr("你的力量被吸走了，你感到攻击变得虚弱！");
         else
         {
             mprf("Your strength is siphoned away as %s grow%s stronger!",
@@ -475,7 +477,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_ARCHMAGE:
     {
         if (you_trigger)
-            mpr("You enter an archmage's trap.");
+            mpr("你进入了一个大法师陷阱。");
         else
         {
             mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
@@ -511,7 +513,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_HARLEQUIN:
     {
         if (you_trigger)
-            mpr("You enter a harlequin's trap.");
+            mpr("你进入了一个小丑陷阱。");
 
         int buff_time = 200 + random2(80);
 
@@ -547,7 +549,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_DEVOURER:
     {
         if (you_trigger)
-            mpr("You enter a devourer's trap.");
+            mpr("你进入了一个吞噬者陷阱。");
 
         if (x_chance_in_y(3, 4))
         {
@@ -617,7 +619,7 @@ void trap_def::trigger(actor& triggerer)
                 triggered = true;
 
                 if (!simple_monster_message(*m, " drops a net on you."))
-                    mpr("Something launches a net on you.");
+                    mpr("有什么东西向你发射了一张网。");
             }
         }
 
@@ -625,11 +627,11 @@ void trap_def::trigger(actor& triggerer)
             break;
 
         if (you_trigger)
-            mpr("You trigger a net trap.");
+            mpr("你触发了一个网陷阱。");
 
         if (random2avg(2 * you.evasion(), 2) > 18 + env.absdepth0 / 2)
         {
-            mpr("You avoid being caught in a net.");
+            mpr("你避免了被网困住。");
             break;
         }
 
@@ -663,7 +665,7 @@ void trap_def::trigger(actor& triggerer)
         if (you_trigger)
         {
             if (one_chance_in(3))
-                mpr("You pick your way through the web.");
+                mpr("你小心翼翼地穿过了蛛网。");
             else if (you.trap_in_web())
             {
                 if (ammo_qty == 1)
@@ -681,7 +683,7 @@ void trap_def::trigger(actor& triggerer)
                 if (m->trap_in_web())
                 {
                     if (!m->visible_to(&you))
-                        mpr("A web moves frantically as something is caught in it!");
+                        mpr("一张蛛网疯狂地移动，有什么东西被困在了里面！");
                     // Don't try to escape the web in the same turn
                     m->props[NEWLY_TRAPPED_KEY] = true;
                     if (ammo_qty == 1)
@@ -694,7 +696,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_ZOT:
         if (you_trigger)
         {
-            mpr("You enter the Zot trap.");
+            mpr("你进入了佐特陷阱。");
             _zot_trap();
         }
         else if (m)
@@ -961,6 +963,9 @@ void roll_trap_effects()
 
 static string _malev_msg()
 {
+    if (Options.language == lang_t::ZH)
+        return make_stringf("一股邪恶力量充满了%s……",
+                            branches[you.where_are_you].longname);
     return make_stringf("A malevolent force fills %s...",
                         branches[you.where_are_you].longname);
 }
@@ -1020,7 +1025,7 @@ void do_trap_effects()
                 simple_god_message(" reveals an alarm trap just before you would have tripped it.");
                 return;
             }
-            mpr("With a horrendous wail, an alarm goes off!");
+            mpr("随着一声可怕的尖啸，警报响了！");
             fake_noisy(40, you.pos());
             you.sentinel_mark(true);
             apply_noises(); // Otherwise the noise from them won't kick in until the end of the turn.
@@ -1231,7 +1236,7 @@ bool player::trap_in_web()
     you.redraw_evasion      = true;
     quiver::set_needs_redraw();
 
-    mpr("You are caught in a web!");
+    mpr(T_("You are entangled in a web!"));
 
     return true;
 }
@@ -1241,7 +1246,10 @@ bool monster::trap_in_web()
     if (is_web_immune() || caught())
         return false;
 
-    simple_monster_message(*this, " is caught in a web!");
+    if (Options.language == lang_t::ZH)
+        mprf("%s被蛛网缠住了！", name(DESC_THE).c_str());
+    else
+        simple_monster_message(*this, " is entangled in a web!");
     add_ench(ENCH_HELD);
 
     return true;
@@ -1317,12 +1325,12 @@ void player::struggle_against_net()
         // Roll a chance to escape the web.
         if (x_chance_in_y(3, 10))
         {
-            mpr("You struggle to detach yourself from the web.");
+            mpr(T_("You struggle to detach yourself from the web."));
             return;
         }
         else
         {
-            mpr("You disentangle yourself.");
+            mpr(T_("You disentangle yourself."));
             stop_being_caught();
             return;
         }
@@ -1332,15 +1340,18 @@ void player::struggle_against_net()
     const int damage = random_range(1, 4);
     if (damage >= you.attribute[ATTR_HELD])
     {
-        mprf("You %s the net and break free!", damage > 3 ? "shred" : "rip");
+        if (Options.language == lang_t::ZH)
+            mprf("你把网%s，挣脱出来！", damage > 3 ? "撕碎" : "撕裂");
+        else
+            mprf("You %s the net and break free!", damage > 3 ? "shred" : "rip");
         stop_being_caught();
         return;
     }
 
     if (damage > 3)
-        mpr("You tear a large gash into the net.");
+        mpr(T_("You tear a large gash into the net."));
     else
-        mpr("You struggle against the net.");
+        mpr(T_("You struggle against the net."));
 
     you.attribute[ATTR_HELD] -= damage;
 }

@@ -1731,8 +1731,11 @@ void learned_something_new(hints_event_type seen_what, coord_def gc)
 
     case HINT_LOAD_SAVED_GAME:
     {
-        text << "Welcome back! If it's been a while, you may want to refresh "
-                "your memory.\nYour <w>%</w>nventory, ";
+        text << (Options.language == lang_t::ZH
+                ? "欢迎回来！如果已经有一段时间了，"
+                  "你可能想刷新你的记忆。\n你的<w>%</w>物品栏, "
+                : "Welcome back! If it's been a while, you may want to refresh "
+                  "your memory.\nYour <w>%</w>nventory, ");
         cmd.push_back(CMD_DISPLAY_INVENTORY);
 
         vector<const char *> listed;

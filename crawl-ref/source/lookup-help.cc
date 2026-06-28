@@ -331,7 +331,7 @@ vector<string> LookupType::get_desc_keys(string regex) const
         {
             if ((get_spell_disciplines(i) & school) && is_player_book_spell(i))
             {
-                string str = lowercase_string(make_stringf("%s spell", spell_title(i)));
+                string str = lowercase_string(make_stringf("%s spell", spell_english_name(i)));
                 key_matches.push_back(str);
             }
         }
@@ -1479,7 +1479,7 @@ static string _prompt_for_regex(const LookupType &lookup_type, string &err)
     char buf[80];
     if (msgwin_get_line(prompt, buf, sizeof(buf)) || buf[0] == '\0')
     {
-        err = "Okay, then.";
+        err = T_("Okay, then.");
         return "";
     }
 

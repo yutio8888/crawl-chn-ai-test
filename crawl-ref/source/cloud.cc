@@ -44,6 +44,7 @@
 #include "traps.h"
 #include "unwind.h"
 #include "xom.h"
+#include "database.h"
 
 cloud_struct* cloud_at(coord_def pos)
 {
@@ -504,7 +505,7 @@ static void _spread_fire(const cloud_struct &cloud)
             continue;
 
         if (you.see_cell(*ai))
-            mpr("The forest fire spreads!");
+            mpr(T_("The forest fire spreads!"));
         destroy_wall(*ai);
         env.cloud[*ai] = cloud;
         env.cloud[*ai].pos = *ai;
@@ -675,7 +676,7 @@ static void _maybe_leave_water(const coord_def pos)
         return;
 
     if (you.pos() == pos && !you.airborne())
-        mpr("The rain has left you waist-deep in water!");
+        mpr(T_("The rain has left you waist-deep in water!"));
     temp_change_terrain(pos, DNGN_SHALLOW_WATER,
                         random_range(500, 1000),
                         TERRAIN_CHANGE_FLOOD);
@@ -1091,7 +1092,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
         {
             if (1 + random2(27) >= you.experience_level)
             {
-                mpr("You choke on the stench!");
+                mpr(T_("You choke on the stench!"));
                 // effectively one or two turns, since it will be
                 // decremented right away
                 confuse_player(random_range(2, 3));
@@ -1161,7 +1162,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
     case CLOUD_MUTAGENIC:
         if (player)
         {
-            mpr("The mutagenic energy flows into you.");
+            mpr(T_("The mutagenic energy flows into you."));
             // It's possible that you got trampled into the mutagenic cloud
             // and it's not your fault... so we'll say it's not intentional.
             // (it's quite bad in any case, so players won't scum, probably.)
@@ -1179,7 +1180,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
     case CLOUD_ALCOHOL:
         if (player && (coinflip()))
         {
-            mpr("You feel dizzy.");
+            mpr(T_("You feel dizzy."));
             you.increase_duration(DUR_VERTIGO, random_range(7, 11), 50);
             return true;
         }

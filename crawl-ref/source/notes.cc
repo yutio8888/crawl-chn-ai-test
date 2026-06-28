@@ -359,7 +359,10 @@ string Note::describe(bool when, bool where, bool what) const
             result << name;
             break;
         case NOTE_SEEN_FEAT:
-            result << "Found " << name;
+            if (Options.language == lang_t::ZH)
+                result << "发现了" << name;
+            else
+                result << "Found " << name;
             break;
         case NOTE_FEAT_MIMIC:
             result << name <<" was a mimic.";

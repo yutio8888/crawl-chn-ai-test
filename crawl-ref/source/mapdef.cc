@@ -4507,7 +4507,12 @@ mons_spec mons_list::get_slime_spec(const string &name) const
  */
 mons_spec mons_list::get_shaped_spec(const string &name, monster_type type) const
 {
-    const string key = "-shaped " + mons_type_name(type, DESC_DBNAME);
+    // Use English monster name for .des file string matching.
+    // mons_type_name() returns translated names when language is ZH,
+    // but .des files always use English names.
+    const monsterentry *me = get_monster_data(type);
+    const string en_name = me ? me->name : mons_type_name(type, DESC_DBNAME);
+    const string key = "-shaped " + en_name;
     const string prefix = name.substr(0, name.find(key));
     mons_spec base_mon = mons_by_name(prefix);
     if (base_mon.type == MONS_PROGRAM_BUG)

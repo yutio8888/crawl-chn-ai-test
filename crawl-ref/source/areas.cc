@@ -28,6 +28,7 @@
 #include "terrain.h"
 #include "traps.h"
 #include "travel.h"
+#include "database.h"
 
 /// Bitmasks for area properties that center on actors
 enum class areaprop
@@ -483,7 +484,7 @@ void create_sanctuary(const coord_def& center, int time)
     if (scare_count == 1 && seen_mon != nullptr)
         simple_monster_message(*seen_mon, " turns to flee the light!");
     else if (scare_count > 0)
-        mpr("The monsters scatter in all directions!");
+        mpr(T_("The monsters scatter in all directions!"));
 }
 
 // Range calculation for spells whose radius shrinks over time with remaining

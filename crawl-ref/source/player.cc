@@ -101,13 +101,14 @@
 #include "wizard-option-type.h"
 #include "xom.h"
 #include "zot.h" // bezotting_level
+#include "database.h"
 
 static void _pruneify()
 {
     if (!you.may_pruneify())
         return;
 
-    mpr("The curse of the Prune overcomes you.");
+    mpr("普鲁恩的诅咒攫住了你。");
     did_god_conduct(DID_CHAOS, 10);
 }
 
@@ -138,7 +139,7 @@ static void _moveto_maybe_repel_stairs()
 
         if (slide_feature_over(you.pos()))
         {
-            mprf("%s slides away as you move %s it!", stair_str.c_str(),
+            mprf("%s在你移向它时滑开了%s！", stair_str.c_str(),
                  prep.c_str());
 
             if (player_in_a_dangerous_place() && one_chance_in(5))
@@ -248,7 +249,7 @@ static bool _check_moveto_dangerous(const coord_def& p, const string& msg)
     else if (species::likes_water(you.species) && feat_is_water(env.grid(p)))
     {
         // player normally likes water, but is in a form that doesn't
-        mpr("You cannot enter water in your current form.");
+        mpr("你当前形态下无法进入水中。");
     }
     else
         canned_msg(MSG_UNTHINKING_ACT);
@@ -442,7 +443,7 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
         || mons->type == MONS_BLAZEHEART_CORE)
     {
         if (!quiet)
-            mpr("It's unwise to walk into this.");
+            mpr("走进这里是不明智的。");
         return false;
     }
 
@@ -510,7 +511,7 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
     if (!swap && !quiet)
     {
         // Might not be ideal, but it's better than insta-killing the monster.
-        mprf("There is no room for %s to move out of your way! "
+        mprf("没有空间让%s从你的路上移开！"
              "(Try telling them to retreat with <w>%sr</w> instead.)",
               mons->name(DESC_THE).c_str(),
               command_to_string(CMD_SHOUT).c_str());
@@ -537,9 +538,9 @@ static void _enter_water(dungeon_feature_type old_feat,
     if (!stepped)
     {
         if (you.can_swim())
-            noisy(4, you.pos(), "Floosh!");
+            noisy(4, you.pos(), "哗啦！");
         else
-            noisy(8, you.pos(), "Splash!");
+            noisy(8, you.pos(), "扑通！");
     }
 
     // Merfolk special-case most relevant messages.
@@ -551,21 +552,21 @@ static void _enter_water(dungeon_feature_type old_feat,
         return;
 
     if (new_grid == DNGN_TOXIC_BOG)
-        mprf("You %s the toxic bog.", stepped ? "enter" : "fall into");
+        mprf("你%s了有毒的沼泽。", stepped ? "踏入" : "掉入");
     else
     {
-        mprf("You %s the %s water.",
-             stepped ? "enter" : "fall into",
-             new_grid == DNGN_SHALLOW_WATER ? "shallow" : "deep");
+        mprf("你%s了%s水。",
+             stepped ? "踏入" : "掉入",
+             new_grid == DNGN_SHALLOW_WATER ? "浅" : "深");
     }
 
     if (you.slow_in_water())
     {
-        mpr("Moving in this stuff is going to be slow.");
+        mpr("在这种东西里移动会很慢。");
         if (you.invisible())
-            mpr("...and don't expect to remain undetected.");
+            mpr("……而且别指望不被发现。");
     } else if (you.invisible())
-        mpr("Don't expect to remain undetected while in the water.");
+        mpr("在水中别指望不被发现。");
 }
 
 static bool _valid_entanglement_target(const monster& mon, bool check_no_tele)
@@ -627,7 +628,7 @@ static void _check_spatial_entanglement(const coord_def& oldpos)
     place_cloud(CLOUD_TLOC_ENERGY, mon->pos(), random_range(2, 3), &you);
     mon->move_to(spot, MV_TRANSLOCATION, true);
 
-    mprf("%s is dragged along with you!", mon->name(DESC_THE).c_str());
+    mprf("%s被你拖着走！", mon->name(DESC_THE).c_str());
     mon->speed_increment -= you.time_taken;
     mon->finalise_movement();
     if (mon->alive())
@@ -761,7 +762,7 @@ void player::finalise_movement(const actor* /*to_blame*/)
            redraw_armour_class = true;
            wield_change = true;
            if (!was_slimy)
-               mpr("Acid dripping from the walls corrodes you.");
+               mpr("从墙上滴下的酸液腐蚀了你。");
        }
     }
 
@@ -1098,7 +1099,7 @@ bool berserk_check_wielded_weapon()
         && (!is_melee_weapon(*wpn)
             || needs_handle_warning(*wpn, OPER_ATTACK, penance)))
     {
-        string prompt = "Do you really want to go berserk while wielding "
+        string prompt = "你真的要在持有"
                         + wpn->name(DESC_YOUR) + "?";
         if (penance)
             prompt += " This could place you under penance!";
@@ -2529,7 +2530,7 @@ static void _handle_hp_drain(int exp)
     calc_hp();
 
     if (drain_removed)
-        mprf(MSGCH_RECOVERY, "Your life force feels restored.");
+        mprf(MSGCH_RECOVERY, "你感觉生命力恢复了。");
 }
 
 static void _handle_breath_recharge(int exp)
@@ -2553,7 +2554,7 @@ static void _handle_breath_recharge(int exp)
     {
         you.props.erase(DRACONIAN_BREATH_RECHARGE_KEY);
         gain_draconian_breath_uses(1);
-        mprf(MSGCH_DURATION, "You feel power welling in your lungs.");
+        mprf(MSGCH_DURATION, "你感到力量在肺中涌起。");
     }
 }
 
@@ -2568,7 +2569,7 @@ static void _handle_cacophony_recharge(int exp)
     if (you.props[CACOPHONY_XP_KEY].get_int() <= 0)
     {
         you.props.erase(CACOPHONY_XP_KEY);
-        mprf(MSGCH_DURATION, "You feel ready to make another cacophony.");
+        mprf(MSGCH_DURATION, "你感觉准备好再次制造嘈杂攻击。");
     }
 }
 
@@ -2586,7 +2587,7 @@ static void _handle_batform_recharge(int exp)
     if (you.props[BATFORM_XP_KEY].get_int() <= 0)
     {
         you.props.erase(BATFORM_XP_KEY);
-        mprf(MSGCH_DURATION, "You feel ready to scatter into bats once more.");
+        mprf(MSGCH_DURATION, "你感觉准备好再次散成蝙蝠群。");
     }
 }
 
@@ -2604,7 +2605,7 @@ static void _handle_watery_grave_recharge(int exp)
     if (you.props[WATERY_GRAVE_XP_KEY].get_int() <= 0)
     {
         you.props.erase(WATERY_GRAVE_XP_KEY);
-        mprf(MSGCH_DURATION, "You feel ready to drown your foes once more.");
+        mprf(MSGCH_DURATION, "你感觉准备好再次淹溺敌人。");
     }
 }
 
@@ -2620,7 +2621,7 @@ static void _handle_banes(int exp)
         you.attribute[ATTR_DOOM] -= div_rand_round(loss, 60);
         if (you.attribute[ATTR_DOOM] <= 0)
         {
-            mprf(MSGCH_DURATION, "You feel the doom around you dissipate.");
+            mprf(MSGCH_DURATION, "你感觉周围的厄运消散了。");
             you.attribute[ATTR_DOOM] = 0;
         }
 
@@ -2751,7 +2752,7 @@ static bool _felid_extra_life()
         && you.lives < 2)
     {
         you.lives++;
-        mprf(MSGCH_INTRINSIC_GAIN, "Extra life!");
+        mprf(MSGCH_INTRINSIC_GAIN, "额外生命！");
         you.attribute[ATTR_LIFE_GAINED] = you.max_level;
         // Should play the 1UP sound from SMB...
         return true;
@@ -2893,8 +2894,8 @@ static void _gain_innate_spells()
                                      oldspell);
                 if (oldindex != end(you.spells))
                 {
-                    mpr("Your capacity for spells is full, and you lose "
-                        "access to an earlier spell.");
+                    mpr("你的法术容量已满，你失去了"
+                        "使用了之前的法术。");
                     del_spell_from_memory(oldspell);
                     spell_vec[j].get_int() = SPELL_NO_SPELL;
                     break;
@@ -2908,7 +2909,7 @@ static void _gain_innate_spells()
                 continue;
             }
         }
-        mprf("The power to cast %s wells up from within.", spell_title(spell));
+        mprf("施放%s的力量从内心涌出。", spell_title(spell));
         add_spell_to_memory(spell);
     }
 }
@@ -2926,13 +2927,13 @@ static void _revenant_spell_gift()
 
     const static vector<pair<spell_type, string>> enkindle_gifts =
     {
-        {SPELL_FOXFIRE, "wisps of flame dancing upon you"},
-        {SPELL_FREEZE, "the chill of winter seizing you"},
-        {SPELL_SHOCK, "electricity coursing through you"},
-        {SPELL_MAGIC_DART, "the impact of arcane energy battering you"},
-        {SPELL_KINETIC_GRAPNEL, "the bite of steel piercing you"},
-        {SPELL_SANDBLAST, "the sting of sand against your skin"},
-        {SPELL_POISONOUS_VAPOURS, "the taste of poison filling your lungs"},
+        {SPELL_FOXFIRE, "火焰之缕在你身上舞动"},
+        {SPELL_FREEZE, "冬日的寒意攫住了你"},
+        {SPELL_SHOCK, "电流在你体内涌动"},
+        {SPELL_MAGIC_DART, "奥术能量的冲击击打着你"},
+        {SPELL_KINETIC_GRAPNEL, "钢铁的咬合刺穿了你"},
+        {SPELL_SANDBLAST, "沙粒刺痛了你的皮肤"},
+        {SPELL_POISONOUS_VAPOURS, "毒素的味道充满了你的肺"},
     };
 
     vector<spell_type> gift_possibilities;
@@ -2944,7 +2945,7 @@ static void _revenant_spell_gift()
     // spells. Hey, it's probably not literally impossible.
     if (gift_possibilities.empty())
     {
-        mpr("You remember only oblivion.");
+        mpr("你只记得一片虚无。");
         return;
     }
 
@@ -2959,8 +2960,8 @@ static void _revenant_spell_gift()
         }
     }
 
-    mprf("You remember %s.", msg.c_str());
-    mprf("(You can now cast %s.)", spell_title(spell));
+    mprf("你记起了%s。", msg.c_str());
+    mprf("（你现在可以施放%s了。）", spell_title(spell));
     library_add_spells({spell}, true);
     add_spell_to_memory(spell);
 }
@@ -3008,7 +3009,7 @@ void level_change(bool skip_attribute_increase)
         if (new_exp <= you.max_level)
         {
             mprf(MSGCH_INTRINSIC_GAIN,
-                 "Welcome back to level %d!", new_exp);
+                 "欢迎回到第%d级！", new_exp);
 
             // No more prompts for this XL past this point.
 
@@ -3021,13 +3022,13 @@ void level_change(bool skip_attribute_increase)
             update_screen();
 
             if (new_exp == 27)
-                mprf(MSGCH_INTRINSIC_GAIN, "You have reached level 27, the final one!");
+                mprf(MSGCH_INTRINSIC_GAIN, "你已达到27级，最高等级！");
             else if (new_exp == you.get_max_xl())
-                mprf(MSGCH_INTRINSIC_GAIN, "You have reached level %d, the highest you will ever reach!",
+                mprf(MSGCH_INTRINSIC_GAIN, "你已达到%d级，你将达到的最高等级！",
                         you.get_max_xl());
             else
             {
-                mprf(MSGCH_INTRINSIC_GAIN, "You have reached level %d!",
+                mprf(MSGCH_INTRINSIC_GAIN, "你已达到%d级！",
                      new_exp);
             }
 
@@ -3062,7 +3063,7 @@ void level_change(bool skip_attribute_increase)
             case SP_NAGA:
                 if (!(you.experience_level % 3))
                 {
-                    mprf(MSGCH_INTRINSIC_GAIN, "Your skin feels tougher.");
+                    mprf(MSGCH_INTRINSIC_GAIN, "你感觉皮肤变得更加坚韧。");
                     you.redraw_armour_class = true;
                 }
                 break;
@@ -3108,7 +3109,7 @@ void level_change(bool skip_attribute_increase)
                         const int newapt = species_apt(sk, you.species);
                         if (oldapt != newapt)
                         {
-                            mprf(MSGCH_INTRINSIC_GAIN, "You learn %s %s%s.",
+                            mprf(MSGCH_INTRINSIC_GAIN, "你学会了%s %s%s。",
                                  skill_name(sk),
                                  abs(oldapt - newapt) > 1 ? "much " : "",
                                  oldapt > newapt ? "slower" : "quicker");
@@ -3156,8 +3157,8 @@ void level_change(bool skip_attribute_increase)
                         {
                             if (you.experience_level == level)
                             {
-                                mprf(MSGCH_MUTATION, "You feel monstrous as "
-                                     "your demonic heritage exerts itself.");
+                                mprf(MSGCH_MUTATION, "当你的恶魔血统发挥作用时，你感到"
+                                     "身体扭曲变异。");
                                 mark_milestone("monstrous", "discovered their "
                                                "monstrous ancestry!");
                                 take_note(Note(NOTE_MESSAGE, 0, 0,
@@ -3204,11 +3205,11 @@ void level_change(bool skip_attribute_increase)
 
                     case COGLIN_GIZMO_XL:
                     {
-                        mpr("You feel a burst of inspiration! You are finally "
-                            "ready to make a one-of-a-kind gizmo!");
-                        mprf("(press <w>%c</w> on the <w>%s</w>bility menu to create your gizmo)",
-                                get_talent(ABIL_INVENT_GIZMO).hotkey,
-                                command_to_string(CMD_USE_ABILITY).c_str());
+                        mpr("你感到一阵灵感迸发！你终于"
+                            "准备好制造一件独一无二的小装置了！");
+                        mprf("（在<w>%s</w>能力菜单上按<w>%c</w>来创造你的小装置）",
+                                command_to_string(CMD_USE_ABILITY).c_str(),
+                                get_talent(ABIL_INVENT_GIZMO).hotkey);
                     }
                     break;
                 }
@@ -3233,7 +3234,7 @@ void level_change(bool skip_attribute_increase)
 
         if (species::is_draconian(you.species) && !(you.experience_level % 3))
         {
-            mprf(MSGCH_INTRINSIC_GAIN, "Your scales feel tougher.");
+            mprf(MSGCH_INTRINSIC_GAIN, "你感觉鳞片变得更加坚韧。");
             you.redraw_armour_class = true;
         }
         if (!updated_maxhp)
@@ -3457,27 +3458,27 @@ static void _display_movement_speed()
     const bool antiswift = (you.duration[DUR_SWIFTNESS] > 0
                             && you.attribute[ATTR_SWIFTNESS] < 0);
 
-    _display_char_status(move_cost, "Your %s speed is %s%s%s",
+    _display_char_status(move_cost, "你的%s速度为%s%s%s",
           // order is important for these:
-          (swim)    ? "swimming" :
-          (water)   ? "wading" :
-          (fly)     ? "flying"
-                    : "movement",
+          (swim)    ? "游泳" :
+          (water)   ? "涉水" :
+          (fly)     ? "飞行"
+                    : "移动",
 
-          (swift) ? "aided by the wind" :
-          (antiswift) ? "hindered by the wind" : "",
+          (swift) ? "被风辅助" :
+          (antiswift) ? "被风阻碍" : "",
 
-          (swift) ? ((move_cost >= 10) ? ", but still "
-                                                 : " and ") :
-          (antiswift) ? ((move_cost <= 10) ? ", but still "
-                                                     : " and ")
+          (swift) ? ((move_cost >= 10) ? "，但仍然"
+                                                 : "且") :
+          (antiswift) ? ((move_cost <= 10) ? "，但仍然"
+                                                     : "且")
                             : "",
 
-          (move_cost <   8) ? "very quick" :
-          (move_cost <  10) ? "quick" :
-          (move_cost == 10) ? "average" :
-          (move_cost <  13) ? "slow"
-                            : "very slow");
+          (move_cost <   8) ? "非常快" :
+          (move_cost <  10) ? "快" :
+          (move_cost == 10) ? "平均" :
+          (move_cost <  13) ? "慢"
+                            : "非常慢");
 }
 
 static void _display_tohit()
@@ -3543,13 +3544,13 @@ static void _display_damage_rating(const item_def *weapon)
     if (weapon)
         weapon_name = weapon->name(DESC_YOUR);
     else
-        weapon_name = "unarmed combat";
+        weapon_name = "徒手格斗";
 
     if (weapon && is_unrandom_artefact(*weapon, UNRAND_WOE))
         mpr(uppercase_first(damage_rating(weapon)));
     else
     {
-        mprf("Your damage rating with %s is about %s",
+        mprf("你用%s的伤害评级约为%s",
              weapon_name.c_str(),
              damage_rating(weapon).c_str());
     }
@@ -3565,14 +3566,14 @@ void display_char_status()
     if (halo_size >= 0)
     {
         if (halo_size > 5)
-            mpr("You are illuminated by a large divine halo.");
+            mpr("你被一个大型神圣光环照亮。");
         else if (halo_size > 3)
-            mpr("You are illuminated by a divine halo.");
+            mpr("你被一个神圣光环照亮。");
         else
-            mpr("You are illuminated by a small divine halo.");
+            mpr("你被一个小型神圣光环照亮。");
     }
     else if (you.haloed())
-        mpr("An external divine halo illuminates you.");
+        mpr("一个外部的神圣光环照亮了你。");
 
     status_info inf;
     for (unsigned i = 0; i <= STATUS_LAST_STATUS; ++i)
@@ -3597,7 +3598,7 @@ void display_char_status()
         || innate_stat(STAT_INT) != you.intel()
         || innate_stat(STAT_DEX) != you.dex())
     {
-        mprf("Your base attributes are Str %d, Int %d, Dex %d.",
+        mprf("你的基础属性为 力量%d，智力%d，敏捷%d。",
              innate_stat(STAT_STR),
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
@@ -3895,7 +3896,7 @@ void flush_mp()
         && you.magic_points < you.max_magic_points
                               * Options.magic_point_warning / 100)
     {
-        mprf(MSGCH_DANGER, "* * * LOW MAGIC WARNING * * *");
+        mprf(MSGCH_DANGER, "* * * 低魔力警告 * * *");
     }
 
     take_note(Note(NOTE_MP_CHANGE, you.magic_points, you.max_magic_points));
@@ -3908,7 +3909,7 @@ void flush_hp()
         && you.hp <= (you.hp_max * Options.hp_warning) / 100)
     {
         flash_view_delay(UA_HP, RED, 50);
-        mprf(MSGCH_DANGER, "* * * LOW HITPOINT WARNING * * *");
+        mprf(MSGCH_DANGER, "* * * 低生命警告 * * *");
         dungeon_events.fire_event(DET_HP_WARNING);
     }
     you.redraw_hit_points = true;
@@ -3984,7 +3985,7 @@ bool enough_hp(int minimum, bool suppress_msg, bool abort_macros)
     if (you.duration[DUR_DEATHS_DOOR])
     {
         if (!suppress_msg)
-            mpr("You cannot pay life while functionally dead.");
+            mpr("你功能上已死亡，无法支付生命。");
 
         if (abort_macros)
         {
@@ -3998,7 +3999,7 @@ bool enough_hp(int minimum, bool suppress_msg, bool abort_macros)
     if (you.hp < minimum + 1)
     {
         if (!suppress_msg)
-            mpr("You don't have enough health at the moment.");
+            mpr("你当前没有足够的生命值。");
 
         if (abort_macros)
         {
@@ -4023,9 +4024,9 @@ bool enough_mp(int minimum, bool suppress_msg, bool abort_macros)
         if (!suppress_msg)
         {
             if (get_real_mp(true) < minimum)
-                mpr("You don't have enough magic capacity.");
+                mpr("你当前没有足够的魔力容量。");
             else
-                mpr("You don't have enough magic at the moment.");
+                mpr("你当前没有足够的魔力。");
         }
         if (abort_macros)
         {
@@ -4405,13 +4406,13 @@ void contaminate_player(int change, bool controlled, bool msg)
 
         if (!player_harmful_contamination() && was_glowing && you.invisible())
         {
-            mpr("You fade completely from view now that you are no longer "
+            mpr("你完全从视野中消失了，因为你不再"
                 "glowing from magical contamination.");
         }
     }
 
     if (msg && old_amount > 0 && you.magic_contamination == 0)
-        mpr("Your magical contamination has completely faded away.");
+        mpr("你的魔法污染已经完全消退了。");
 
     if (you.magic_contamination > 0)
         learned_something_new(HINT_GLOWING);
@@ -4453,14 +4454,14 @@ bool confuse_player(int amount, bool quiet, bool force)
     if (!force && you.clarity())
     {
         if (!quiet)
-            mpr("You feel momentarily confused.");
+            mpr("你感到短暂的困惑。");
         return false;
     }
 
     if (!force && you.duration[DUR_DIVINE_STAMINA] > 0)
     {
         if (!quiet)
-            mpr("Your divine stamina protects you from confusion!");
+            mpr("你的神圣耐力保护你免受困惑！");
         return false;
     }
 
@@ -4473,7 +4474,7 @@ bool confuse_player(int amount, bool quiet, bool force)
 
         if (!quiet)
         {
-            mprf(MSGCH_WARN, "You are %sconfused.",
+            mprf(MSGCH_WARN, "你%s困惑了。",
                  old_value > 0 ? "more " : "");
         }
 
@@ -4495,7 +4496,7 @@ bool poison_player(int amount, string source, string source_aux, bool force)
 
     if (you.duration[DUR_DIVINE_STAMINA] > 0)
     {
-        mpr("Your divine stamina protects you from poison!");
+        mpr("你的神圣耐力保护你免受毒素！");
         return false;
     }
 
@@ -4522,11 +4523,12 @@ bool poison_player(int amount, string source, string source_aux, bool force)
     if (you.duration[DUR_POISONING] > old_value)
     {
         if (poison_is_lethal() && !was_fatal)
-            mprf(MSGCH_DANGER, "You are lethally poisoned!");
+            mprf(MSGCH_DANGER,
+                T_("You are lethally poisoned!"));
         else
         {
-            mprf(MSGCH_WARN, "You are %spoisoned.",
-                old_value > 0 ? "more " : "");
+            mprf(MSGCH_WARN, "你中毒%s了。",
+                old_value > 0 ? "加深" : "");
         }
 
         learned_something_new(HINT_YOU_POISON);
@@ -4663,7 +4665,7 @@ void handle_player_poison(int delay)
         int oldhp = you.hp;
         ouch(dmg, KILLED_BY_POISON);
         if (you.hp < oldhp)
-            mprf(channel, "You feel %ssick.", adj);
+            mprf(channel, "你感觉%s不适。", adj);
     }
 
     // Now decrease the poison in our system
@@ -4686,7 +4688,7 @@ void reduce_player_poison(int amount)
         you.duration[DUR_POISONING] = 0;
         you.props.erase(POISONER_KEY);
         you.props.erase(POISON_AUX_KEY);
-        mprf(MSGCH_RECOVERY, "You are no longer poisoned.");
+        mprf(MSGCH_RECOVERY, "你不再中毒了。");
     }
 
     you.redraw_hit_points = true;
@@ -4789,7 +4791,7 @@ bool miasma_player(actor *who, string source_aux)
 
     if (you.duration[DUR_DIVINE_STAMINA] > 0)
     {
-        mpr("Your divine stamina protects you from the miasma!");
+        mpr("你的神圣耐力保护你免受瘴气！");
         return false;
     }
 
@@ -4834,12 +4836,12 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {
-        mprf(MSGCH_WARN, "You are even more covered in %sliquid fire!",
+        mprf(MSGCH_WARN, "你被%sliquid fire覆盖得更严重了！",
                           intensity_str.c_str());
     }
     else
     {
-        mprf(MSGCH_WARN, "You are covered in %sliquid fire! Move or burn!",
+        mprf(MSGCH_WARN, "你被%sliquid fire覆盖了！移动或被烧！",
                          intensity_str.c_str());
     }
 
@@ -4855,7 +4857,7 @@ void dec_sticky_flame_player(int delay)
 
     if (feat_is_water(env.grid(you.pos())))
     {
-        mprf(MSGCH_RECOVERY, "You dip into the water, and the flames go out!");
+        mprf(MSGCH_RECOVERY, "你浸入水中，火焰熄灭了！");
         end_sticky_flame_player();
         return;
     }
@@ -4878,7 +4880,7 @@ void dec_sticky_flame_player(int delay)
 
     if (you.duration[DUR_STICKY_FLAME == 0])
     {
-        mprf(MSGCH_RECOVERY, "The liquid fire finally exhausts itself.");
+        mprf(MSGCH_RECOVERY, "液体火焰终于耗尽了。");
         end_sticky_flame_player();
     }
 }
@@ -4900,11 +4902,11 @@ void shake_off_sticky_flame()
     // (20 aut is picked fairly arbitrarily to include even most slowed actions)
     if (dur <= 20)
     {
-        mprf(MSGCH_RECOVERY, "You shake off the liquid fire.");
+        mprf(MSGCH_RECOVERY, "你甩掉了液体火焰。");
         end_sticky_flame_player();
     }
     else
-        mpr("You shake off some of the fire as you move.");
+        mpr("你在移动时甩掉了一些火焰。");
 }
 
 // End the sticky flame status entirely
@@ -4921,9 +4923,9 @@ void silence_player(int turns)
     ASSERT(!crawl_state.game_is_arena());
 
     if (you.duration[DUR_SILENCE])
-        mpr("You feel your silence will last longer.");
+        mpr("你感觉沉默将持续更久。");
     else
-        mpr("An unnatural silence engulfs you.");
+        mpr("一股不自然的沉默吞没了你。");
 
     you.increase_duration(DUR_SILENCE, turns, 30);
 
@@ -4942,7 +4944,7 @@ bool slow_player(int turns)
 
     if (you.stasis())
     {
-        mpr("Your stasis prevents you from being slowed.");
+        mpr("你的停滞状态阻止了减速。");
         return false;
     }
 
@@ -4952,13 +4954,13 @@ bool slow_player(int turns)
     int threshold = haste_mul(100);
 
     if (you.duration[DUR_SLOW] >= threshold * BASELINE_DELAY)
-        mpr("You already are as slow as you could be.");
+        mpr("你已经慢到极限了。");
     else
     {
         if (you.duration[DUR_SLOW] == 0)
-            mprf(MSGCH_WARN, "You feel yourself slow down.");
+            mprf(MSGCH_WARN, "你感觉自己变慢了。");
         else
-            mprf(MSGCH_WARN, "You feel as though you will be slow longer.");
+            mprf(MSGCH_WARN, "你感觉减速将持续更久。");
 
         you.increase_duration(DUR_SLOW, turns, threshold);
         learned_something_new(HINT_YOU_ENCHANTED);
@@ -4991,7 +4993,7 @@ void dec_slow_player(int delay)
     {
         you.duration[DUR_SLOW] = 0;
         if (!have_stat_zero())
-            mprf(MSGCH_DURATION, "You feel yourself speed up.");
+            mprf(MSGCH_DURATION, "你感觉自己加速了。");
     }
 }
 
@@ -5007,13 +5009,13 @@ void barb_player(int turns, int pow)
 
     if (!you.duration[DUR_BARBS])
     {
-        mpr("Barbed spikes become lodged in your body.");
+        mpr("带刺的尖刺嵌入了你的身体。");
         you.set_duration(DUR_BARBS, min(max_turns, turns));
         you.attribute[ATTR_BARBS_POW] = min(max_pow, pow);
     }
     else
     {
-        mpr("More barbed spikes become lodged in your body.");
+        mpr("更多带刺的尖刺嵌入了你的身体。");
         you.increase_duration(DUR_BARBS, turns, max_turns);
         you.attribute[ATTR_BARBS_POW] =
             min(max_pow, you.attribute[ATTR_BARBS_POW]++);
@@ -5039,9 +5041,9 @@ void blind_player(int amount, colour_t flavour_colour)
     {
         you.props[BLIND_COLOUR_KEY] = flavour_colour;
         if (current > 0)
-            mpr("You are blinded for an even longer time.");
+            mpr("你被致盲的时间更长了。");
         else
-            mpr("You are blinded!");
+            mpr("你被致盲了！");
         learned_something_new(HINT_YOU_ENCHANTED);
         xom_is_stimulated((you.duration[DUR_BLIND] - current) / BASELINE_DELAY);
     }
@@ -5070,7 +5072,7 @@ void dec_berserk_recovery_player(int delay)
 
     if (you.duration[DUR_BERSERK_COOLDOWN] <= BASELINE_DELAY)
     {
-        mprf(MSGCH_DURATION, "You recover from your berserk rage.");
+        mprf(MSGCH_DURATION, "你从狂暴的愤怒中恢复过来。");
         you.duration[DUR_BERSERK_COOLDOWN] = 0;
     }
 }
@@ -5084,7 +5086,7 @@ bool haste_player(int turns, bool rageext)
 
     if (you.stasis())
     {
-        mpr("Your stasis prevents you from being hasted.");
+        mpr("你的停滞状态阻止了加速。");
         return false;
     }
     else if (have_passive(passive_t::no_haste))
@@ -5099,11 +5101,11 @@ bool haste_player(int turns, bool rageext)
     const int threshold = 80;
 
     if (!you.duration[DUR_HASTE])
-        mpr("You feel yourself speed up.");
+        mpr("你感觉自己加速了。");
     else if (you.duration[DUR_HASTE] > threshold * BASELINE_DELAY)
-        mpr("You already have as much speed as you can handle.");
+        mpr("你已经快到极限了。");
     else if (!rageext)
-        mpr("You feel as though your hastened speed will last longer.");
+        mpr("你感觉加速将持续更久。");
 
     you.increase_duration(DUR_HASTE, turns, threshold);
 
@@ -5125,7 +5127,7 @@ void dec_haste_player(int delay)
         // message if we cross the threshold
         if (old_dur > threshold && you.duration[DUR_HASTE] <= threshold)
         {
-            mprf(MSGCH_DURATION, "Your extra speed is starting to run out.");
+            mprf(MSGCH_DURATION, "你的额外速度开始消退了。");
             if (coinflip())
                 you.duration[DUR_HASTE] -= BASELINE_DELAY;
         }
@@ -5133,7 +5135,7 @@ void dec_haste_player(int delay)
     else if (you.duration[DUR_HASTE] <= BASELINE_DELAY)
     {
         if (!you.duration[DUR_BERSERK])
-            mprf(MSGCH_DURATION, "You feel yourself slow down.");
+            mprf(MSGCH_DURATION, "你感觉自己变慢了。");
         you.duration[DUR_HASTE] = 0;
     }
 }
@@ -5179,7 +5181,7 @@ void dec_ambrosia_player(int delay)
     inc_mp(you.scale_potion_mp_healing(mp_restoration));
 
     if (!you.duration[DUR_AMBROSIA])
-        mpr("You feel less invigorated.");
+        mpr("你感觉精力减退了。");
 }
 
 void dec_channel_player(int delay)
@@ -5196,7 +5198,7 @@ void dec_channel_player(int delay)
     inc_mp(mp_restoration);
 
     if (!you.duration[DUR_CHANNEL_ENERGY])
-        mpr("You feel less invigorated.");
+        mpr("你感觉精力减退了。");
 }
 
 void dec_frozen_ramparts(int delay)
@@ -5210,7 +5212,7 @@ void dec_frozen_ramparts(int delay)
     if (!you.duration[DUR_FROZEN_RAMPARTS])
     {
         end_frozen_ramparts();
-        mpr("The frozen ramparts melt away.");
+        mpr("冰冻的壁垒融化了。");
     }
 }
 
@@ -5321,13 +5323,13 @@ void float_player()
 {
     if (you.fishtail)
     {
-        mpr("Your tail turns into legs as you fly out of the water.");
+        mpr("你飞出水面时尾巴变成了腿。");
         merfolk_stop_swimming();
     }
     else if (you.has_mutation(MUT_TENGU_FLIGHT))
-        mpr("You swoop lightly up into the air.");
+        mpr("你轻盈地飞到了空中。");
     else
-        mpr("You fly up into the air.");
+        mpr("你飞到了空中。");
 }
 
 void fly_player(int pow, bool already_flying)
@@ -5337,7 +5339,7 @@ void fly_player(int pow, bool already_flying)
 
     bool standing = !you.airborne() && !already_flying;
     if (!already_flying)
-        mprf(MSGCH_DURATION, "You feel %s buoyant.", standing ? "very" : "more");
+        mprf(MSGCH_DURATION, "你感觉%s有浮力。", standing ? "非常" : "更加");
 
     you.increase_duration(DUR_FLIGHT, 25 + random2(pow), 100);
 
@@ -5347,7 +5349,7 @@ void fly_player(int pow, bool already_flying)
 
 void enable_emergency_flight()
 {
-    mprf("You can't survive in this terrain! You fly above the %s, but the "
+    mprf("你无法在这地形上生存！你飞到了%s上方，但"
          "process is draining.",
          (env.grid(you.pos()) == DNGN_LAVA)       ? "lava" :
          (env.grid(you.pos()) == DNGN_DEEP_WATER) ? "water"
@@ -5384,7 +5386,7 @@ bool land_player(bool quiet)
     }
 
     if (!quiet)
-        mpr("You float gracefully downwards.");
+        mpr("你优雅地飘落下来。");
 
     // Re-enter the terrain.
     // Interrupt travel, but not other delays.
@@ -5762,8 +5764,12 @@ string player_save_info::short_desc(bool use_qualifier) const
     if (!qualifier.empty())
         desc << "[" << qualifier << "] ";
 
-    desc << name << ", a level " << experience_level << ' '
-         << species_name << ' ' << class_name;
+    if (Options.language == lang_t::ZH)
+        desc << name << "，第" << experience_level << "级"
+             << species_name << ' ' << class_name;
+    else
+        desc << name << ", a level " << experience_level << ' '
+             << species_name << ' ' << class_name;
 
     if (religion == GOD_JIYVA)
         desc << " of " << god_name << " " << jiyva_second_name;
@@ -5961,14 +5967,14 @@ void player::banish(const actor* /*agent*/, const string &who, bool force)
 
     if (elapsed_time <= attribute[ATTR_BANISHMENT_IMMUNITY])
     {
-        mpr("You resist the pull of the Abyss.");
+        mpr("你抵抗了深渊的拉力。");
         return;
     }
 
     if (!force && player_in_branch(BRANCH_ABYSS)
         && x_chance_in_y(you.depth, brdepth[BRANCH_ABYSS]))
     {
-        mpr("You wobble for a moment.");
+        mpr("你摇晃了一下。");
         return;
     }
 
@@ -6055,9 +6061,9 @@ bool player::is_silenced() const
 const char* player_silenced_reason()
 {
     if (silenced(you.pos()))
-        return "silenced";
+        return T_("silenced");
     else if (you.duration[DUR_FLOODED])
-        return "unable to breathe";
+        return T_("unable to breathe");
     else
         return "";
 }
@@ -7372,7 +7378,7 @@ bool player::resists_dislodge(string event) const
     if (!you.unrand_equipped(UNRAND_MOUNTAIN_BOOTS))
         return false;
     if (!event.empty())
-        mprf("Your boots keep you from %s.", event.c_str());
+        mprf("你的靴子阻止了你%s。", event.c_str());
     return true;
 }
 
@@ -7411,7 +7417,7 @@ void player::splash_with_acid(actor* evildoer)
     const int dam = roll_dice(4, 3);
     const int post_res_dam = resist_adjust_damage(&you, BEAM_ACID, dam);
 
-    mprf("You are splashed with acid%s%s",
+    mprf("你被酸液溅到了%s%s",
          post_res_dam > 0 ? "" : " but take no damage",
          attack_strength_punctuation(post_res_dam).c_str());
     if (post_res_dam > 0)
@@ -7451,7 +7457,7 @@ void player::paralyse(const actor *who, int str, string source)
 
     if (stasis())
     {
-        mpr("Your stasis prevents you from being paralysed.");
+        mpr("你的停滞状态阻止了麻痹。");
         return;
     }
 
@@ -7459,13 +7465,13 @@ void player::paralyse(const actor *who, int str, string source)
     if (who && who != &you
         && (duration[DUR_PARALYSIS] || duration[DUR_STUN_IMMUNITY]))
     {
-        mpr("You shrug off the repeated attempt to disable you.");
+        mpr("你摆脱了反复的瘫痪尝试。");
         return;
     }
 
     you.wake_up();
 
-    mpr("You suddenly lose the ability to move!");
+    mpr("你突然失去了移动能力！");
     _pruneify();
 
     you.duration[DUR_PARALYSIS] = str * BASELINE_DELAY + 5;
@@ -7503,7 +7509,7 @@ void player::petrify(const actor *who, bool force)
 
     if (duration[DUR_DIVINE_STAMINA] > 0)
     {
-        mpr("Your divine stamina protects you from petrification!");
+        mpr("你的神圣耐力保护你免受石化！");
         return;
     }
 
@@ -7520,7 +7526,7 @@ void player::petrify(const actor *who, bool force)
         props.erase(DISABLED_BY_KEY);
 
     redraw_evasion = true;
-    mprf(MSGCH_WARN, "You are slowing down.");
+    mprf(MSGCH_WARN, "你正在减速。");
 }
 
 bool player::fully_petrify(bool /*quiet*/)
@@ -7529,7 +7535,7 @@ bool player::fully_petrify(bool /*quiet*/)
                         + random2(4 * BASELINE_DELAY);
     redraw_armour_class = true;
     redraw_evasion = true;
-    mpr("You have turned to stone.");
+    mpr("你变成了石头。");
     _pruneify();
 
     stop_delay(true, true);
@@ -7542,21 +7548,21 @@ bool player::vex(const actor* who, int dur, string source, string special_msg)
 {
     if (you.clarity())
     {
-        mprf("Your clarity of mind shields you.");
+        mprf("你清醒的心智保护了你。");
         return false;
     }
     else if (duration[DUR_STUN_IMMUNITY])
     {
-        mpr("You shrug off the repeated attempt to disable you.");
+        mpr("你摆脱了反复的瘫痪尝试。");
         return false;
     }
     else if (you.duration[DUR_VEXED])
         return false;
 
     if (!special_msg.empty())
-        mprf(MSGCH_WARN, "You %s", special_msg.c_str());
+        mprf(MSGCH_WARN, "你%s", special_msg.c_str());
     else
-        mprf(MSGCH_WARN, "You feel overwhelmed by frustration!");
+        mprf(MSGCH_WARN, "你被沮丧感淹没了！");
     you.duration[DUR_VEXED] = dur * BASELINE_DELAY;
 
     const bool use_actor_name = source.empty() && who != nullptr;
@@ -7766,11 +7772,11 @@ bool player::sicken(int amount)
 
     if (duration[DUR_DIVINE_STAMINA] > 0)
     {
-        mpr("Your divine stamina protects you from disease!");
+        mpr("你的神圣耐力保护你免受疾病！");
         return false;
     }
 
-    mpr("You feel ill.");
+    mpr("你感到不适。");
     increase_duration(DUR_SICKNESS, amount, 210);
 
     return true;
@@ -7872,12 +7878,12 @@ void player::backlight()
     if (!duration[DUR_INVIS])
     {
         if (duration[DUR_CORONA])
-            mpr("You glow brighter.");
+            mpr("你发光更亮了。");
         else
-            mpr("You are outlined in light.");
+            mpr("你被光芒勾勒出轮廓。");
     }
     else
-        mpr("You feel strangely conspicuous.");
+        mpr("你感觉异常引人注目。");
 
     increase_duration(DUR_CORONA, random_range(15, 35), 250);
 }
@@ -8037,7 +8043,7 @@ bool player::doom(int amount)
     if (you.attribute[ATTR_DOOM] >= 100)
     {
         you.attribute[ATTR_DOOM] = 0;
-        mprf(MSGCH_WARN, "Doom befalls you....");
+        mprf(MSGCH_WARN, "厄运降临在你身上……");
         add_bane();
         return true;
     }
@@ -8115,7 +8121,7 @@ void player::put_to_sleep(actor* source, int dur, bool hibernate)
 
     if (duration[DUR_STUN_IMMUNITY])
     {
-        mpr("You shrug off repeated attempt to disable you.");
+        mpr("你摆脱了反复的瘫痪尝试。");
         return;
     }
 
@@ -8123,7 +8129,7 @@ void player::put_to_sleep(actor* source, int dur, bool hibernate)
         || duration[DUR_PETRIFIED]
         || duration[DUR_PETRIFYING])
     {
-        mpr("You can't fall asleep in your current state!");
+        mpr("你当前状态下无法入睡！");
         return;
     }
 
@@ -8132,7 +8138,7 @@ void player::put_to_sleep(actor* source, int dur, bool hibernate)
     else
         props.erase(DISABLED_BY_KEY);
 
-    mpr("You fall asleep.");
+    mpr("你睡着了。");
     _pruneify();
 
     stop_directly_constricting_all();
@@ -8152,7 +8158,7 @@ void player::wake_up(bool break_sleep, bool break_daze)
     {
         duration[DUR_SLEEP] = 0;
         give_stun_immunity(random_range(3, 5));
-        mprf(MSGCH_RECOVERY, "You wake up.");
+        mprf(MSGCH_RECOVERY, "你醒来了。");
         flash_view(UA_MONSTER, BLACK);
         redraw_armour_class = true;
         redraw_evasion = true;
@@ -8162,7 +8168,7 @@ void player::wake_up(bool break_sleep, bool break_daze)
     {
         duration[DUR_DAZED] = 0;
         give_stun_immunity(1);
-        mprf(MSGCH_RECOVERY, "You snap out of your daze.");
+        mprf(MSGCH_RECOVERY, "你从恍惚中清醒过来。");
     }
 }
 
@@ -8199,12 +8205,12 @@ bool player::do_shaft()
     }
     if (you.species == SP_FORMICID)
     {
-        mpr("Your tunneler's instincts keep you from falling into a shaft!");
+        mpr("你挖掘者的本能阻止你掉入竖井！");
         return false;
     }
     if (you_worship(GOD_YREDELEMNUL) && yred_torch_is_raised())
     {
-        mpr("Yredelemnul refuses to let your conquest be stopped by a trick of"
+        mpr("伊雷德勒姆纳拒绝让你的征服被"
             " the earth!");
         return false;
     }
@@ -8219,21 +8225,21 @@ bool player::can_do_shaft_ability(bool quiet) const
     if (form_changes_anatomy())
     {
         if (!quiet)
-            mpr("You can't shaft yourself in your current form.");
+            mpr("当前形态下无法跳入竖井。");
         return false;
     }
 
     if (attribute[ATTR_HELD])
     {
         if (!quiet)
-            mprf("You can't shaft yourself while %s.", held_status());
+            mprf("你在%s时无法跳入竖井。", held_status());
         return false;
     }
 
     if (you.cannot_move())
     {
         if (!quiet)
-            mpr("You can't shaft yourself while unable to move.");
+            mpr("无法移动时无法跳入竖井。");
         return false;
     }
 
@@ -8242,14 +8248,14 @@ bool player::can_do_shaft_ability(bool quiet) const
         if (!is_valid_shaft_level(false))
         {
             if (!quiet)
-                mpr("You can't shaft yourself on this level.");
+                mpr("此楼层无法跳入竖井。");
             return false;
         }
     }
     else
     {
         if (!quiet)
-            mpr("You can't shaft yourself on this terrain.");
+            mpr("此地形上无法跳入竖井。");
         return false;
     }
 
@@ -8262,7 +8268,7 @@ bool player::do_shaft_ability()
 {
     if (can_do_shaft_ability(true))
     {
-        mpr("A shaft appears beneath you!");
+        mpr("你身下出现了一个竖井！");
         down_stairs(DNGN_TRAP_SHAFT, true);
         return true;
     }
@@ -8377,7 +8383,7 @@ bool player::attempt_escape()
 
     if (x_chance_in_y(_constriction_escape_chance(escape_attempts), 100))
     {
-        mprf("You escape %s grasp.", object.c_str());
+        mprf("你挣脱了%s的掌控。", object.c_str());
 
         // Stun the monster we struggled again and prevent the player from being
         // constricted for several turns (so that they are guaranteed to be able
@@ -8394,7 +8400,7 @@ bool player::attempt_escape()
     }
     else
     {
-        mprf("%s grasp on you weakens, but your attempt to escape fails.",
+        mprf("%s对你的掌控减弱了，但你逃脱的尝试失败了。",
              object.c_str());
         turn_is_over = true;
         return false;
@@ -8406,12 +8412,12 @@ void player::sentinel_mark(bool trap)
     flash_tile(you.pos(), YELLOW, 120, TILE_BOLT_SENTINEL_MARK);
     if (duration[DUR_SENTINEL_MARK])
     {
-        mpr("The mark upon you grows brighter.");
+        mpr("你身上的印记变得更亮了。");
         increase_duration(DUR_SENTINEL_MARK, random_range(20, 40), 180);
     }
     else
     {
-        mprf(MSGCH_WARN, "A sentinel's mark forms upon you.");
+        mprf(MSGCH_WARN, "一个哨兵印记在你身上形成。");
         increase_duration(DUR_SENTINEL_MARK, trap ? random_range(25, 40)
                                                   : random_range(35, 60),
                           250);
@@ -8463,9 +8469,9 @@ bool player::made_nervous_by(const monster *mons)
 void player::weaken(const actor */*attacker*/, int pow)
 {
     if (!duration[DUR_WEAK])
-        mprf(MSGCH_WARN, "You feel your attacks grow feeble.");
+        mprf(MSGCH_WARN, "你感觉你的攻击变得虚弱无力。");
     else
-        mprf(MSGCH_WARN, "You feel as though you will be weak longer.");
+        mprf(MSGCH_WARN, "你感觉虚弱将持续更久。");
 
     increase_duration(DUR_WEAK, pow + random2(pow + 3), 50);
 }
@@ -8473,9 +8479,9 @@ void player::weaken(const actor */*attacker*/, int pow)
 void player::diminish(const actor */*attacker*/, int pow)
 {
     if (!duration[DUR_DIMINISHED_SPELLS])
-        mprf(MSGCH_WARN, "You feel your spells grow feeble.");
+        mprf(MSGCH_WARN, "你感觉你的法术变得虚弱无力。");
     else
-        mprf(MSGCH_WARN, "You feel as though your spells will be weakened for longer.");
+        mprf(MSGCH_WARN, "你感觉法术削弱将持续更久。");
 
     increase_duration(DUR_DIMINISHED_SPELLS, pow + random2(pow + 3), 50);
 }
@@ -8485,7 +8491,7 @@ bool player::strip_willpower(actor */*attacker*/, int dur, bool quiet)
     // Only prints a message when you gain this status for the first time,
     // replicating old behavior. Should this change?
     if (!quiet && !you.duration[DUR_LOWERED_WL])
-        mpr("Your willpower is stripped away!");
+        mpr("你的意志力被剥夺了！");
 
     you.increase_duration(DUR_LOWERED_WL, dur, 40);
 
@@ -8498,7 +8504,7 @@ bool player::drain_magic(actor */*attacker*/, int pow)
     if (!amount)
         return false;
 
-    mprf(MSGCH_WARN, "You feel your power leaking away.");
+    mprf(MSGCH_WARN, "你感觉力量在流失。");
     drain_mp(amount);
     return true;
 }
@@ -8517,9 +8523,9 @@ void player::vitrify(const actor* /*attacker*/, int dur, bool quiet)
     if (!quiet)
     {
         if (!you.duration[DUR_VITRIFIED])
-            mprf(MSGCH_WARN, "Your body becomes as fragile as glass!");
+            mprf(MSGCH_WARN, "你的身体变得像玻璃一样脆弱！");
         else
-            mpr("You feel your fragility will last longer.");
+            mpr("你感觉脆弱将持续更久。");
     }
 
     you.increase_duration(DUR_VITRIFIED, dur, 50);
@@ -8538,7 +8544,7 @@ bool player::floodify(const actor* attacker, int dur, const char* substance)
     props[WATER_HOLDER_KEY].get_int() = attacker->mid;
     props[WATER_HOLDER_NAME_KEY] = attacker->name(DESC_A, true);
 
-    mprf(MSGCH_WARN, "%s floods into your lungs!", substance);
+    mprf(MSGCH_WARN, "%s涌入了你的肺部！", substance);
 
     return true;
 }
@@ -8594,9 +8600,8 @@ static string _constriction_description()
     const int num_free_tentacles = you.usable_tentacles();
     if (num_free_tentacles)
     {
-        cinfo += make_stringf("You have %d tentacle%s available for constriction.",
-                              num_free_tentacles,
-                              num_free_tentacles > 1 ? "s" : "");
+        cinfo += make_stringf("你有%d条可用的触须进行缠绕。",
+                              num_free_tentacles);
     }
 
     if (you.constricted_type == CONSTRICT_MELEE)
@@ -8607,7 +8612,7 @@ static string _constriction_description()
         if (!cinfo.empty())
             cinfo += "\n";
 
-        cinfo += make_stringf("You are being constricted by %s.",
+        cinfo += make_stringf("你正在被%s缠绕。",
                               constrictor->name(DESC_A).c_str());
     }
 
@@ -8629,7 +8634,7 @@ static string _constriction_description()
             if (!cinfo.empty())
                 cinfo += "\n";
 
-            cinfo += "You are constricting ";
+            cinfo += "你正在缠绕";
             cinfo += comma_separated_line(c_name.begin(), c_name.end());
             cinfo += ".";
         }
@@ -8719,19 +8724,19 @@ void print_potion_heal_message()
     {
         if (you.unrand_equipped(UNRAND_KRYIAS))
         {
-            mprf("%s enhances the healing.",
+            mprf("%s增强了治疗效果。",
                  you.body_armour()->name(DESC_THE, false, false, false).c_str());
         }
         else if (you.has_mutation(MUT_DOUBLE_POTION_HEAL))
-            mpr("You savour every drop.");
+            mpr("你品味着每一滴。");
         else
-            mpr("The healing is enhanced."); // bad message, but this should
+            mpr(T_("The healing is enhanced.")); // bad message, but this should
                                              // never be possible anyway
     }
     else if (_get_potion_heal_factor() == 0)
-        mpr("Your system rejects the healing.");
+        mpr("你的身体排斥了治疗效果。");
     else if (_get_potion_heal_factor() < 2)
-        mpr("Your system partially rejects the healing.");
+        mpr("你的身体部分排斥了治疗效果。");
 }
 
 bool player::can_potion_heal(bool temp)
@@ -8889,7 +8894,7 @@ void player_open_door(coord_def doorpos)
                 mprf(berserk_open.c_str(), adj, noun);
             }
             else
-                mprf("The %s%s flies open!", adj, noun);
+                mprf("%s%s猛然打开！", adj, noun);
         }
         else
         {
@@ -8902,7 +8907,8 @@ void player_open_door(coord_def doorpos)
                 mprf(MSGCH_SOUND, berserk_open.c_str(), adj, noun);
             }
             else
-                mprf(MSGCH_SOUND, "The %s%s flies open with a bang!", adj, noun);
+                mprf(MSGCH_SOUND, T_("The %s%s flies open with a bang!"),
+                     adj, noun);
             noisy(15, you.pos());
         }
     }
@@ -8912,7 +8918,7 @@ void player_open_door(coord_def doorpos)
             mprf(MSGCH_SOUND, door_open_creak.c_str(), adj, noun);
         else
         {
-            mprf(MSGCH_SOUND, "As you open the %s%s, it creaks loudly!",
+            mprf(MSGCH_SOUND, T_("As you open the %s%s, it creaks loudly!"),
                  adj, noun);
         }
         noisy(10, you.pos());
@@ -8925,14 +8931,14 @@ void player_open_door(coord_def doorpos)
             if (!door_airborne.empty())
                 verb = door_airborne.c_str();
             else
-                verb = "You reach down and open the %s%s.";
+                verb = T_("You reach down and open the %s%s.");
         }
         else
         {
             if (!door_open_verb.empty())
                verb = door_open_verb.c_str();
             else
-               verb = "You open the %s%s.";
+               verb = T_("You open the %s%s.");
         }
 
         mprf(verb, adj, noun);
@@ -9009,13 +9015,13 @@ void player_close_door(coord_def doorpos)
             const bool mons_unseen = !you.can_see(*mon);
             if (mons_unseen || (mon->holiness() & MH_NONLIVING))
             {
-                mprf("Something is blocking the %s!", waynoun);
+                mprf("有东西挡住了%s！", waynoun);
                 // No free detection!
                 if (mons_unseen)
                     you.turn_is_over = true;
             }
             else
-                mprf("There's a creature in the %s!", waynoun);
+                mprf("有生物在%s里！", waynoun);
             return;
         }
 
@@ -9023,7 +9029,7 @@ void player_close_door(coord_def doorpos)
         {
             if (!has_push_spaces(dc, false, &door_vec))
             {
-                mprf("There's something jamming the %s.", waynoun);
+                mprf("有东西卡住了%s。", waynoun);
                 return;
             }
         }
@@ -9031,7 +9037,7 @@ void player_close_door(coord_def doorpos)
         // messaging with gateways will be inconsistent if this isn't last
         if (you.pos() == dc)
         {
-            mprf("There's a thick-headed creature in the %s!", waynoun);
+            mprf("有个倔强的生物在%s里！", waynoun);
             return;
         }
     }
@@ -9059,7 +9065,7 @@ void player_close_door(coord_def doorpos)
                 mprf(berserk_close.c_str(), adj, noun);
             }
             else
-                mprf("You slam the %s%s shut%s!", adj, noun, items_msg);
+                mprf(T_("You slam the %s%s shut%s!"), adj, noun, items_msg);
         }
         else
         {
@@ -9099,14 +9105,16 @@ void player_close_door(coord_def doorpos)
             if (!door_airborne.empty())
                 mprf(door_airborne.c_str(), adj, noun);
             else
-                mprf("You reach down and close the %s%s%s.", adj, noun, items_msg);
+                mprf(T_("You reach down and close the %s%s%s."),
+                     adj, noun, items_msg);
         }
         else
         {
             if (!door_close_verb.empty())
                 mprf(door_close_verb.c_str(), adj, noun);
             else
-                mprf("You close the %s%s%s.", adj, noun, items_msg);
+                mprf(T_("You close the %s%s%s."),
+                     adj, noun, items_msg);
         }
     }
 
@@ -9201,7 +9209,7 @@ int player::inaccuracy() const
 void player_end_berserk()
 {
     if (!you.duration[DUR_PARALYSIS] && !you.petrified())
-        mprf(MSGCH_WARN, "You are exhausted.");
+        mprf(MSGCH_WARN, "你精疲力竭了。");
 
     you.berserk_penalty = 0;
 
@@ -9244,7 +9252,7 @@ void activate_sanguine_armour()
     you.duration[DUR_SANGUINE_ARMOUR] = random_range(60, 100);
     if (!was_active)
     {
-        mpr("Your blood congeals into armour.");
+        mpr("你的血液凝结成了护甲。");
         you.redraw_armour_class = true;
     }
 }
@@ -9256,7 +9264,7 @@ void activate_sanguine_armour()
 void refresh_weapon_protection()
 {
     if (!you.duration[DUR_SPWPN_PROTECTION])
-        mpr("Your weapon exudes an aura of protection.");
+        mpr("你的武器散发出保护的气息。");
 
     you.increase_duration(DUR_SPWPN_PROTECTION, 3 + random2(2), 5);
     you.redraw_armour_class = true;
@@ -9364,7 +9372,7 @@ void trickster_trigger(const monster& victim, enchant_type ench)
     if (!you.props.exists(TRICKSTER_POW_KEY))
     {
         you.props[TRICKSTER_POW_KEY].get_int() = 0;
-        mprf(MSGCH_DURATION, "You feel bolstered by spreading misfortune.");
+        mprf(MSGCH_DURATION, "你因散布不幸而感到鼓舞。");
     }
 
     // Start the bonus off at meaningful level, but give less for each effect
@@ -9421,7 +9429,7 @@ void maybe_harvest_memory(const monster& victim)
     if (progress < ENKINDLE_CHARGE_COST)
         return;
 
-    mprf("You devour the vestiges of %s's existence in your flames.",
+    mprf("你在火焰中吞噬了%s存在的残余。",
             victim.name(DESC_THE).c_str());
 
     you.props[ENKINDLE_CHARGES_KEY].get_int() += 1;
@@ -9481,7 +9489,7 @@ bool player::immune_to_hex(const spell_type hex) const
 void player::be_agile(int pow)
 {
     const bool were_agile = you.duration[DUR_AGILITY] > 0;
-    mprf(MSGCH_DURATION, "You feel %sagile all of a sudden.",
+    mprf(MSGCH_DURATION, "你突然感觉%s敏捷。",
          were_agile ? "more " : "");
 
     you.increase_duration(DUR_AGILITY, 35 + random2(pow), 80);

@@ -202,7 +202,7 @@ static bool _stair_moves_pre(dungeon_feature_type stair)
 
     string verb = stair_climb_verb(stair);
 
-    mprf("%s moves away as you attempt to %s it!", stair_str.c_str(),
+    mprf("%s在你试图%s它时移开了！", stair_str.c_str(),
          verb.c_str());
 
     you.turn_is_over = true;
@@ -219,37 +219,37 @@ static void _climb_message(dungeon_feature_type stair, bool going_up,
     if (feat_is_portal(stair))
     {
         if (stair != DNGN_ENTER_CRUCIBLE)
-            mpr("The world spins around you as you enter the gateway.");
+            mpr("你进入传送门时，世界在你周围旋转。");
     }
     else if (feat_is_escape_hatch(stair))
     {
         if (going_up)
-            mpr("A mysterious force pulls you upwards.");
+            mpr("一股神秘的力量将你向上拉。");
         else
         {
-            mprf("You %s downwards.",
-                 you.airborne() ? "fly" : "slide");
+            mprf("你向下%s。",
+                 you.airborne() ? "飞了下去" : "滑了下去");
         }
-        mpr("The hatch slams shut behind you.");
+        mpr("舱口在你身后砰地关上了。");
     }
     else if (feat_is_gate(stair))
     {
-        mprf("You %s %s through the gate.",
-             you.airborne() ? "fly" : "go",
-             going_up ? "up" : "down");
+        mprf("你%s穿过了大门。",
+             you.airborne() ? (going_up ? "向上飞" : "向下飞")
+                            : (going_up ? "向上走" : "向下走"));
     }
     else if (old_branch == BRANCH_SLIME && !you.royal_jelly_dead)
     {
         if (going_up)
-            mpr("You ooze up the stairs.");   // Jiyva-worshippers only
+            mpr("你沿楼梯缓缓渗了上去。");   // Jiyva-worshippers only
         else
-            mpr("You slide down the stairs, becoming coated in regenerative ooze.");
+            mpr("你滑下楼梯，被再生的软泥覆盖了。");
     }
     else if (stair != DNGN_ALTAR_IGNIS)
     {
-        mprf("You %s %swards.",
-             you.airborne() ? "fly" : "climb",
-             going_up ? "up" : "down");
+        mprf("你向%s%s。",
+             you.airborne() ? "飞" : "爬",
+             going_up ? "上" : "下");
     }
 }
 
@@ -275,7 +275,7 @@ static void _remove_unstable_monsters()
 static void _complete_zig()
 {
     if (!zot_immune())
-        mpr("You have passed through the Ziggurat. Zot will hunt you nevermore.");
+        mpr("你已穿越金字塔。佐特将不再追猎你。");
     you.zigs_completed++;
 }
 
@@ -383,13 +383,13 @@ static bool _check_stairs(const dungeon_feature_type ftype, bool going_up)
                                                      : CMD_GO_DOWNSTAIRS))
         {
             if (ftype == DNGN_STONE_ARCH)
-                mpr("There is nothing on the other side of the stone arch.");
+                mpr("石拱门的另一侧什么也没有。");
             else if (ftype == DNGN_ABANDONED_SHOP)
-                mpr("This shop has been abandoned, nothing of value remains.");
+                mpr("这家商店已被废弃，没有留下任何有价值的东西。");
             else if (going_up)
-                mpr("You can't go up here!");
+                mpr("这里无法向上走！");
             else
-                mpr("You can't go down here!");
+                mpr("这里无法向下走！");
             return false;
         }
     }
@@ -409,7 +409,7 @@ static bool _check_fall_down_stairs(const dungeon_feature_type ftype, bool going
         if (!feat_is_staircase(ftype))
             fall_where = "through the gate";
 
-        mprf("In your confused state, you trip and fall %s%s.",
+        mprf("在困惑状态下，你绊倒了并%s%s摔了下去。",
              going_up ? "back " : "", fall_where);
         if (!feat_is_staircase(ftype))
             ouch(1, KILLED_BY_FALLING_THROUGH_GATE);
@@ -446,7 +446,7 @@ static void _rune_effect(dungeon_feature_type ftype)
         // XXX: The messaging below assumes exactly three runes are needed.
         ASSERT(ZOT_ENTRY_RUNES == 3);
 
-        mprf("You insert the %s rune into the lock.", rune_type_name(runes[2]));
+        mprf("你将%s符文插入锁中。", rune_type_name(runes[2]));
 #ifdef USE_TILE_LOCAL
         view_add_tile_overlay(you.pos(), tileidx_zap(rune_colour(runes[2]),
                                                      you.pos()));
@@ -455,23 +455,23 @@ static void _rune_effect(dungeon_feature_type ftype)
 #else
         flash_view(UA_BRANCH_ENTRY, rune_colour(runes[2]));
 #endif
-        mpr("The lock glows eerily!");
+        mpr("锁发出了诡异的光芒！");
         // included in default force_more_message
 
-        mprf("You insert the %s rune into the lock.", rune_type_name(runes[1]));
+        mprf("你将%s符文插入锁中。", rune_type_name(runes[1]));
         big_cloud(CLOUD_BLUE_SMOKE, &you, you.pos(), 20, 7 + random2(7));
         viewwindow();
         update_screen();
-        mpr("Heavy smoke blows from the lock!");
+        mpr("浓烟从锁中喷出！");
         // included in default force_more_message
     }
 
-    mprf("You insert the %s rune into the lock.", rune_type_name(runes[0]));
+    mprf("你将%s符文插入锁中。", rune_type_name(runes[0]));
 
     if (silenced(you.pos()))
-        mpr("The gate opens wide!");
+        mpr("大门完全打开了！");
     else
-        mpr("With a soft hiss the gate opens wide!");
+        mpr("随着一声轻柔的嘶嘶声，大门完全打开了！");
     // these are included in default force_more_message
 }
 
@@ -501,10 +501,10 @@ static void _gauntlet_effect()
     if (you.stasis())
         return;
 
-    mprf(MSGCH_WARN, "The nature of this place prevents you from teleporting.");
+    mprf(MSGCH_WARN, "这个地方的本质阻止了你的传送。");
 
     if (you.get_base_mutation_level(MUT_TELEPORTITIS))
-        mpr("You feel stable on this floor.");
+        mpr("你在这个楼层感到稳定。");
 }
 
 static void _hell_effects()
@@ -552,7 +552,7 @@ static void _vainglory_arrival()
 
     if (!mons.empty())
     {
-        mprf(MSGCH_WARN, "You announce your regal presence to all who would look upon you.");
+        mprf(MSGCH_WARN, "你向所有仰望你的人宣告了你的王者存在。");
         for (monster* mon : mons)
             behaviour_event(mon, ME_ANNOY, &you);
 
@@ -622,7 +622,7 @@ static level_id _travel_destination(const dungeon_feature_type how,
         if (!is_valid_shaft_level(false))
         {
             if (known_shaft)
-                mpr("The shaft disappears in a puff of logic!");
+                mpr("竖井在一阵逻辑中消失了！");
             maybe_destroy_shaft(you.pos());
             return dest;
         }
@@ -670,8 +670,8 @@ static level_id _travel_destination(const dungeon_feature_type how,
         {
             if (known_shaft)
             {
-                mpr("Strange, the shaft seems to lead back to this level.");
-                mpr("The strain on the space-time continuum destroys the "
+                mpr("奇怪，竖井似乎通向回这个楼层。");
+                mpr("时空连续体的压力摧毁了"
                     "shaft!");
             }
             maybe_destroy_shaft(you.pos());
@@ -684,13 +684,22 @@ static level_id _travel_destination(const dungeon_feature_type how,
                                     + shaft_dest.describe() + ".");
         }
 
-        mprf("You %s into a shaft and drop %d floor%s!",
-             you.airborne() ? "are sucked" : "fall",
-             shaft_depth,
-             shaft_depth > 1 ? "s" : "");
+        if (Options.language == lang_t::ZH)
+        {
+            mprf("你%s入竖井，掉落了%d层！",
+                 you.airborne() ? "被吸入" : "跌",
+                 shaft_depth);
+        }
+        else
+        {
+            mprf("你%s入竖井，掉落了%d层%s！",
+                 you.airborne() ? "are sucked" : "fall",
+                 shaft_depth,
+                 shaft_depth > 1 ? "s" : "");
+        }
 
         // Shafts are one-time-use.
-        mpr("The shaft crumbles and collapses.");
+        mpr("竖井碎裂并坍塌了。");
         maybe_destroy_shaft(you.pos());
     }
 
@@ -751,18 +760,18 @@ void rise_through_ceiling()
         && you.depth == 1
         && player_has_orb())
     {
-        mpr("With a burst of heat and light, you rocket upward!");
+        mpr("随着一阵热与光的爆发，你像火箭一样向上冲！");
         floor_transition(DNGN_EXIT_DUNGEON, DNGN_EXIT_DUNGEON,
                          level_id(BRANCH_DUNGEON, 0), true, true, false, false);
     }
     if (!whither.is_valid())
     {
-        mpr("In a burst of heat and light, you rocket briefly upward... "
+        mpr("在一阵热与光的爆发中，你短暂地向上冲去……"
             "but you can't rise from here.");
         return;
     }
 
-    mpr("With a burst of heat and light, you rocket upward!");
+    mpr("随着一阵热与光的爆发，你像火箭一样向上冲！");
     untag_followers(); // XXX: is this needed?
     stop_delay(true);
     floor_transition(DNGN_ALTAR_IGNIS /*hack*/, DNGN_ALTAR_IGNIS,
@@ -841,7 +850,7 @@ void floor_transition(dungeon_feature_type how,
     if (you.duration[DUR_CACOPHONY])
     {
         you.duration[DUR_CACOPHONY] = 0;
-        mprf(MSGCH_DURATION, "Your cacophony subsides as you depart the area.");
+        mprf(MSGCH_DURATION, "你离开该区域时，嘈杂攻击平息了。");
         for (monster_iterator mi; mi; ++mi)
             if (mi->was_created_by(MON_SUMM_CACOPHONY))
                 monster_die(**mi, KILL_RESET, NON_MONSTER, true);
@@ -888,7 +897,7 @@ void floor_transition(dungeon_feature_type how,
     if (how == DNGN_EXIT_DUNGEON)
     {
         you.depth = 0;
-        mpr("You have escaped!");
+        mpr("你逃出来了！");
         ouch(INSTANT_DEATH, player_has_orb() ? KILLED_BY_WINNING
                                              : KILLED_BY_LEAVING);
     }
@@ -911,14 +920,14 @@ void floor_transition(dungeon_feature_type how,
     if (old_level.branch == BRANCH_VESTIBULE
         && !is_hell_subbranch(you.where_are_you))
     {
-        mpr("Thank you for visiting Hell. Please come again soon.");
+        mpr("感谢您访问地狱。请很快再来。");
     }
 
     if (how == DNGN_EXIT_ABYSS
         || how == DNGN_EXIT_PANDEMONIUM
         || how == DNGN_EXIT_THROUGH_ABYSS)
     {
-        mpr("You pass through the gate.");
+        mpr("你穿过了大门。");
         take_note(Note(NOTE_MESSAGE, 0, 0,
             how == DNGN_EXIT_ABYSS ? "Escaped the Abyss" :
             how == DNGN_EXIT_PANDEMONIUM ? "Escaped Pandemonium" :
@@ -954,16 +963,16 @@ void floor_transition(dungeon_feature_type how,
             break;
         if (old_level.branch == BRANCH_ABYSS)
         {
-            mprf(MSGCH_BANISHMENT, "You plunge deeper into the Abyss.");
+            mprf(MSGCH_BANISHMENT, T_("You plunge deeper into the Abyss."));
             if (!you.runes[RUNE_ABYSSAL] && you.depth >= ABYSSAL_RUNE_MIN_LEVEL)
-                mpr("The abyssal rune of Zot can be found at this depth.");
+                mpr(T_("The abyssal rune of Zot can be found at this depth."));
             break;
         }
         if (!forced)
-            mpr("You enter the Abyss!");
+            mpr(T_("You enter the Abyss!"));
 
-        mpr("To return, you must find a gate leading back.");
-        mpr("Killing monsters will force the Abyss to allow you passage.");
+        mpr(T_("To return, you must find a gate leading back."));
+        mpr(T_("Killing monsters will force the Abyss to allow you passage."));
         if (have_passive(passive_t::slow_abyss))
         {
             mprf(MSGCH_GOD, you.religion,
@@ -995,13 +1004,13 @@ void floor_transition(dungeon_feature_type how,
     {
         const branch_type branch = you.where_are_you;
         if (branch_entered(branch))
-            mprf("Welcome back to %s!", branches[branch].longname);
+            mprf("欢迎回到%s！", branches[branch].longname);
         else if (how == branches[branch].entry_stairs)
         {
             if (branches[branch].entry_message)
                 mpr(branches[branch].entry_message);
             else if (branch != BRANCH_ABYSS) // too many messages...
-                mprf("Welcome to %s!", branches[branch].longname);
+                mprf("欢迎来到%s！", branches[branch].longname);
         }
         const bool was_bezotted = bezotted_in(old_level.branch);
         if (bezotted())
@@ -1077,7 +1086,7 @@ void floor_transition(dungeon_feature_type how,
     if (player_has_ability(ABIL_SHAFT_SELF, true)
                                 && !is_valid_shaft_level(false))
     {
-        mpr("Beware, you cannot shaft yourself on this level.");
+        mpr(T_("Beware, you cannot shaft yourself on this level."));
     }
 
     const bool newlevel = load_level(how, LOAD_ENTER_LEVEL, old_level);

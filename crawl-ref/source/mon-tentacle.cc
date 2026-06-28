@@ -21,6 +21,7 @@
 #include "mon-place.h"
 #include "nearby-danger.h"
 #include "terrain.h"
+#include "database.h"
 
 const int MAX_KRAKEN_TENTACLE_DIST = 12;
 const int MAX_ACTIVE_KRAKEN_TENTACLES = 4;
@@ -876,7 +877,7 @@ void move_solo_tentacle(monster* tentacle)
     {
         if (you.can_see(*tentacle))
         {
-            mprf("The vine drags %s backwards!",
+            mprf(T_("The vine drags %s backwards!"),
                     constrictee->name(DESC_THE).c_str());
         }
         constrictee->move_to(shift_pos);
@@ -1061,7 +1062,7 @@ void move_child_tentacles(monster* mons)
         {
             if (you.can_see(*tentacle))
             {
-                mprf("The tentacle pulls %s backwards!",
+                mprf(T_("The tentacle pulls %s backwards!"),
                      constrictee->name(DESC_THE).c_str());
             }
             constrictee->move_to(old_pos);
@@ -1225,14 +1226,14 @@ void mons_create_tentacles(monster* head)
         if (visible_count == 1)
             mpr("A tentacle reaches out from the kraken!");
         else if (visible_count > 1)
-            mpr("Tentacles reach out from the kraken!");
+            mpr(T_("Tentacles reach out from the kraken!"));
     }
     else if (head->type == MONS_TENTACLED_STARSPAWN)
     {
         if (visible_count == 1)
             mpr("A tentacle flies out from the starspawn's body!");
         else if (visible_count > 1)
-            mpr("Tentacles burst from the starspawn's body!");
+            mpr(T_("Tentacles burst from the starspawn's body!"));
     }
     return;
 }

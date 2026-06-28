@@ -97,7 +97,7 @@ void surge_power_wand(const int mp_cost);
 
 int list_spells(bool toggle_with_I = true, bool transient = false,
                 bool viewing = false, bool allow_preselect = true,
-                const string &title = "cast");
+                const string &title = "施放");
 int raw_spell_fail(spell_type spell, bool enkindled = false);
 int calc_spell_power(spell_type spell);
 
@@ -126,6 +126,7 @@ spret your_spells(spell_type spell, int powc = 0, bool actual_spell = true,
                   dist *_target = nullptr, bool force_failure = false);
 
 extern const char *fail_severity_adjs[];
+extern const char *fail_severity_adjs_zh[];
 
 int max_miscast_damage(spell_type spell);
 int fail_severity(spell_type spell);

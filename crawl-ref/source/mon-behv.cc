@@ -24,6 +24,7 @@
 #include "macro.h"
 #include "message.h"
 #include "mon-act.h"
+#include "options.h"
 #include "mon-abil.h"
 #include "mon-death.h"
 #include "mon-movetarget.h"
@@ -1181,7 +1182,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             {
                 if (you.can_see(*mon))
                 {
-                    mprf("%s snaps out of %s daze.",
+                    mprf(T_("%s snaps out of %s daze."),
                             mon->name(DESC_THE).c_str(),
                             mon->pronoun(PRONOUN_POSSESSIVE).c_str());
                 }

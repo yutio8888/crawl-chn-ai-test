@@ -29,6 +29,7 @@
 #include "libutil.h"
 #include "message.h"
 #include "notes.h"
+#include "options.h"
 #include "output.h"
 #include "random.h"
 #include "religion.h"
@@ -69,63 +70,63 @@ static int _training_target_skill_point_diff(skill_type exsk, int training_targe
 static const char *skill_titles[NUM_SKILLS][7] =
 {
   //  Skill name        levels 1-7       levels 8-14        levels 15-20       levels 21-26      level 27       skill abbr
-    {"Fighting",       "Trooper",       "Fighter",         "Warrior",         "Slayer",         "Conqueror",    "Fgt"},
-    {"Short Blades",   "Cutter",        "Slicer",          "Swashbuckler",    "Cutthroat",      "Politician",   "SBl"},
-    {"Long Blades",    "Slasher",       "Carver",          "Fencer",          "@Adj@ Blade",    "Swordmaster",  "LBl"},
-    {"Axes",           "Chopper",       "Cleaver",         "Severer",         "Executioner",    "Axe Maniac",   "Axs"},
-    {"Maces & Flails", "Cudgeller",     "Basher",          "Bludgeoner",      "Shatterer",      "Skullcrusher", "M&F"},
-    {"Polearms",       "Poker",         "Spear-Bearer",    "Impaler",         "Phalangite",     "@Adj@ Porcupine", "Pla"},
-    {"Staves",         "Twirler",       "Cruncher",        "Stickfighter",    "Pulveriser",     "Chief of Staff", "Stv"},
+    {"格斗",       "Trooper",       "Fighter",         "Warrior",         "Slayer",         "Conqueror",    "Fgt"},
+    {"短刃",   "Cutter",        "Slicer",          "Swashbuckler",    "Cutthroat",      "Politician",   "SBl"},
+    {"长刃",    "Slasher",       "Carver",          "Fencer",          "@Adj@ Blade",    "Swordmaster",  "LBl"},
+    {"斧类",           "Chopper",       "Cleaver",         "Severer",         "Executioner",    "Axe Maniac",   "Axs"},
+    {"锤与链枷", "Cudgeller",     "Basher",          "Bludgeoner",      "Shatterer",      "Skullcrusher", "M&F"},
+    {"长柄武器",       "Poker",         "Spear-Bearer",    "Impaler",         "Phalangite",     "@Adj@ Porcupine", "Pla"},
+    {"棍棒",         "Twirler",       "Cruncher",        "Stickfighter",    "Pulveriser",     "Chief of Staff", "Stv"},
 #if TAG_MAJOR_VERSION == 34
-    {"Slings",         "Vandal",        "Slinger",         "Whirler",         "Slingshot",      "@Adj@ Catapult", "Slg"},
+    {"投石索",         "Vandal",        "Slinger",         "Whirler",         "Slingshot",      "@Adj@ Catapult", "Slg"},
 #endif
-    {"Ranged Weapons", "Shooter",       "Skirmisher",      "Marks@genus@",    "Crack Shot",     "Merry @Genus@",  "Rng"},
+    {"远程武器", "Shooter",       "Skirmisher",      "Marks@genus@",    "Crack Shot",     "Merry @Genus@",  "Rng"},
 #if TAG_MAJOR_VERSION == 34
-    {"Crossbows",      "Bolt Thrower",  "Quickloader",     "Sharpshooter",    "Sniper",         "@Adj@ Arbalest", "Crb"},
+    {"弩",      "Bolt Thrower",  "Quickloader",     "Sharpshooter",    "Sniper",         "@Adj@ Arbalest", "Crb"},
 #endif
-    {"Throwing",       "Chucker",       "Thrower",         "Deadly Accurate", "Hawkeye",        "@Adj@ Ballista", "Thr"},
-    {"Armour",         "Covered",       "Protected",       "Tortoise",        "Impregnable",    "Invulnerable", "Arm"},
-    {"Dodging",        "Ducker",        "Nimble",          "Spry",            "Acrobat",        "Intangible",   "Ddg"},
-    {"Stealth",        "Sneak",         "Covert",          "Unseen",          "Imperceptible",  "Ninja",        "Sth"},
+    {"投掷",       "Chucker",       "Thrower",         "Deadly Accurate", "Hawkeye",        "@Adj@ Ballista", "Thr"},
+    {"护甲",         "Covered",       "Protected",       "Tortoise",        "Impregnable",    "Invulnerable", "Arm"},
+    {"闪避",        "Ducker",        "Nimble",          "Spry",            "Acrobat",        "Intangible",   "Ddg"},
+    {"潜行",        "Sneak",         "Covert",          "Unseen",          "Imperceptible",  "Ninja",        "Sth"},
 #if TAG_MAJOR_VERSION == 34
-    {"Stabbing",       "Miscreant",     "Blackguard",      "Backstabber",     "Cutthroat",      "Politician",   "Stb"},
+    {"偷袭",       "Miscreant",     "Blackguard",      "Backstabber",     "Cutthroat",      "Politician",   "Stb"},
 #endif
-    {"Shields",        "Shield-Bearer", "Blocker",         "Peltast",         "Hoplite",        "@Adj@ Barricade", "Shd"},
+    {"盾牌",        "Shield-Bearer", "Blocker",         "Peltast",         "Hoplite",        "@Adj@ Barricade", "Shd"},
 #if TAG_MAJOR_VERSION == 34
-    {"Traps",          "Scout",         "Disarmer",        "Vigilant",        "Perceptive",     "Dungeon Master", "Trp"},
+    {"陷阱",          "Scout",         "Disarmer",        "Vigilant",        "Perceptive",     "Dungeon Master", "Trp"},
 #endif
     // STR based fighters, for DEX/martial arts titles see below. Felids get their own category, too.
-    {"Unarmed Combat", "Ruffian",       "Grappler",        "Brawler",         "Wrestler",       "@Weight@weight Champion", "UC"},
+    {"徒手格斗", "Ruffian",       "Grappler",        "Brawler",         "Wrestler",       "@Weight@weight Champion", "UC"},
 
-    {"Spellcasting",   "Magician",      "Thaumaturge",     "Eclecticist",     "Sorcerer",       "Archmage",     "Spc"},
-    {"Conjurations",   "Conjurer",      "Destroyer",       "Devastator",      "Ruinous",        "Annihilator",  "Conj"},
-    {"Hexes",          "Vexing",        "Jinx",            "Bewitcher",       "Maledictor",     "Spellbinder",  "Hex"},
+    {"施法能力",   "Magician",      "Thaumaturge",     "Eclecticist",     "Sorcerer",       "Archmage",     "Spc"},
+    {"咒法系",   "Conjurer",      "Destroyer",       "Devastator",      "Ruinous",        "Annihilator",  "Conj"},
+    {"诅咒系",          "Vexing",        "Jinx",            "Bewitcher",       "Maledictor",     "Spellbinder",  "Hex"},
 #if TAG_MAJOR_VERSION == 34
-    {"Charms",         "Charmwright",   "Infuser",         "Anointer",        "Gracecrafter",   "Miracle Worker", "Chrm"},
+    {"附魔系",         "Charmwright",   "Infuser",         "Anointer",        "Gracecrafter",   "Miracle Worker", "Chrm"},
 #endif
-    {"Summonings",     "Caller",        "Summoner",        "Convoker",        "Worldbinder",    "Planerender",  "Summ"},
-    {"Necromancy",     "Grave Robber",  "Reanimator",      "Necromancer",     "Thanatomancer",  "@Genus_Short@ of Death", "Necr"},
-    {"Translocations", "Grasshopper",   "Placeless @Genus@", "Blinker",       "Portalist",      "Plane @Walker@", "Tloc"},
-    {"Forgecraft",     "Tinkerer",      "Fabricator",      "Mechanist",       "Siegecrafter",   "Architect of Ages", "Frge"},
+    {"召唤系",     "Caller",        "Summoner",        "Convoker",        "Worldbinder",    "Planerender",  "Summ"},
+    {"死灵术",     "Grave Robber",  "Reanimator",      "Necromancer",     "Thanatomancer",  "@Genus_Short@ of Death", "Necr"},
+    {"传送系", "Grasshopper",   "Placeless @Genus@", "Blinker",       "Portalist",      "Plane @Walker@", "Tloc"},
+    {"锻造术",     "Tinkerer",      "Fabricator",      "Mechanist",       "Siegecrafter",   "Architect of Ages", "Frge"},
 
-    {"Fire Magic",     "Firebug",       "Arsonist",        "Scorcher",        "Pyromancer",     "Infernalist",  "Fire"},
-    {"Ice Magic",      "Chiller",       "Frost Mage",      "Gelid",           "Cryomancer",     "Englaciator",  "Ice"},
-    {"Air Magic",      "Gusty",         "Zephyrmancer",    "Stormcaller",     "Cloud Mage",     "Meteorologist", "Air"},
-    {"Earth Magic",    "Digger",        "Geomancer",       "Earth Mage",      "Metallomancer",  "Petrodigitator", "Erth"},
-    {"Alchemy",        "Apothecary",    "Toxicologist",    "Hermetic",        "Philosopher",    "Quintessent", "Alch"},
+    {"火焰魔法",     "Firebug",       "Arsonist",        "Scorcher",        "Pyromancer",     "Infernalist",  "Fire"},
+    {"寒冰魔法",      "Chiller",       "Frost Mage",      "Gelid",           "Cryomancer",     "Englaciator",  "Ice"},
+    {"空气魔法",      "Gusty",         "Zephyrmancer",    "Stormcaller",     "Cloud Mage",     "Meteorologist", "Air"},
+    {"大地魔法",    "Digger",        "Geomancer",       "Earth Mage",      "Metallomancer",  "Petrodigitator", "Erth"},
+    {"炼金术",        "Apothecary",    "Toxicologist",    "Hermetic",        "Philosopher",    "Quintessent", "Alch"},
 
     // These titles apply to atheists only, worshippers of the various gods
     // use the god titles instead, depending on piety or, in Gozag's case, gold.
     // or, in U's case, invocations skill.
-    {"Invocations",    "Unbeliever",    "Agnostic",        "Dissident",       "Heretic",        "Apostate",     "Invo"},
-    {"Evocations",     "Charlatan",     "Prestidigitator", "Fetichist",       "Evocator",       "Ex Machina",  "Evo"},
-    {"Shapeshifting",  "Changeling",    "Mimic",           "Metamorph",       "Skinwalker",     "Shapeless @Genus@", "Shft"},
+    {"祈神",    "Unbeliever",    "Agnostic",        "Dissident",       "Heretic",        "Apostate",     "Invo"},
+    {"魔力释放",     "Charlatan",     "Prestidigitator", "Fetichist",       "Evocator",       "Ex Machina",  "Evo"},
+    {"变形术",  "Changeling",    "Mimic",           "Metamorph",       "Skinwalker",     "Shapeless @Genus@", "Shft"},
 };
 
 static const char *martial_arts_titles[6] =
-    {"Unarmed Combat", "Insei", "Martial Artist", "Black Belt", "Sensei", "Grand Master"};
+    {"徒手格斗", "Insei", "Martial Artist", "Black Belt", "Sensei", "Grand Master"};
 static const char *claw_and_tooth_titles[6] =
-    {"Unarmed Combat", "Scratcher", "Gouger", "Ripper", "Eviscerator", "Sabretooth"};
+    {"徒手格斗", "Scratcher", "Gouger", "Ripper", "Eviscerator", "Sabretooth"};
 
 struct species_skill_aptitude
 {
@@ -142,6 +143,7 @@ struct species_skill_aptitude
 };
 
 #include "aptitudes.h"
+#include "database.h"
 
 // Traditionally, Spellcasting and In/Evocations formed the exceptions here:
 // Spellcasting skill was more expensive with about 130%, the other two got
@@ -329,22 +331,35 @@ static void _change_skill_level(skill_type exsk, int n)
     // are you drained/crosstrained/ash'd in the relevant skill?
     const bool specify_base = you.skill(exsk, 1) != you.skill(exsk, 1, true);
     if (you.skills[exsk] == MAX_SKILL_LEVEL)
-        mprf(MSGCH_INTRINSIC_GAIN, "You have mastered %s!", skill_name(exsk));
+        mprf(MSGCH_INTRINSIC_GAIN, T_("You have mastered %s!"), skill_name(exsk));
     else if (abs(n) == 1 && you.num_turns)
     {
-        mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s to level %d!",
-             specify_base ? "base " : "",
-             skill_name(exsk), (n > 0) ? "increases" : "decreases",
-             you.skills[exsk]);
+        if (Options.language == lang_t::ZH)
+            mprf(MSGCH_INTRINSIC_GAIN, "你的%s%s技能%s至%d级！",
+                 specify_base ? "基础" : "",
+                 skill_name(exsk), (n > 0) ? "提升" : "降低",
+                 you.skills[exsk]);
+        else
+            mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s to level %d!",
+                 specify_base ? "base " : "",
+                 skill_name(exsk), (n > 0) ? "increases" : "decreases",
+                 you.skills[exsk]);
     }
     else if (you.num_turns)
     {
-        mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s %d levels and is now "
-             "at level %d!",
-             specify_base ? "base " : "",
-             skill_name(exsk),
-             (n > 0) ? "gained" : "lost",
-             abs(n), you.skills[exsk]);
+        if (Options.language == lang_t::ZH)
+            mprf(MSGCH_INTRINSIC_GAIN, "你的%s%s技能%s了%d级，现为%d级！",
+                 specify_base ? "基础" : "",
+                 skill_name(exsk),
+                 (n > 0) ? "提升" : "降低",
+                 abs(n), you.skills[exsk]);
+        else
+            mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s %d levels and is now "
+                 "at level %d!",
+                 specify_base ? "base " : "",
+                 skill_name(exsk),
+                 (n > 0) ? "gained" : "lost",
+                 abs(n), you.skills[exsk]);
     }
 
     if (you.skills[exsk] == n && n > 0)
@@ -798,7 +813,7 @@ bool check_selected_skills()
         if (!you.received_noskill_warning)
         {
             you.received_noskill_warning = true;
-            mpr("You cannot train any new skills!");
+            mpr(T_("You cannot train any new skills!"));
         }
         // It's possible to have no selectable skills, if they are all
         // untrainable or level 27, so we don't assert.
@@ -821,7 +836,7 @@ bool check_selected_skills()
         return false;
     }
 
-    mpr("You need to enable at least one skill for training.");
+    mpr(T_("You need to enable at least one skill for training."));
     // Training will be fixed up on load if this ASSERT triggers.
     ASSERT(!you.has_mutation(MUT_DISTRIBUTED_TRAINING));
     more();
@@ -1573,7 +1588,7 @@ static int _train(skill_type exsk, int &max_exp, bool simu, bool check_targets)
         you.skill_manual_points[exsk] -= bonus;
         if (!you.skill_manual_points[exsk] && !simu && !crawl_state.simulating_xp_gain)
         {
-            mprf("You have finished your manual of %s and %stoss it away.",
+            mprf(T_("You have finished your manual of %s and %stoss it away."),
                  skill_name(exsk),
                  exsk == SK_THROWING ? "skilfully " : "");
         }
@@ -1836,14 +1851,14 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
 {
     if (target > 270) // if target is above 270, reject with an error
     {
-        mpr("Your training target must be 27 or below!");
+        mpr("你的training target must be 27 or below!");
         return false;
     }
     const int ranged_target = min(max((int) target, 0), 270);
     if (announce && ranged_target != (int) training_targets[sk])
     {
         if (you.has_mutation(MUT_DISTRIBUTED_TRAINING))
-            mpr("You can't set training targets!");
+            mpr(T_("You can't set training targets!"));
         else if (ranged_target == 0)
             mprf("Clearing the skill training target for %s.", skill_name(sk));
         else
@@ -1861,10 +1876,64 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
     return true;
 }
 
+static const char *_skill_english_name(skill_type sk)
+{
+    switch (sk)
+    {
+    case SK_FIGHTING:       return "Fighting";
+    case SK_SHORT_BLADES:   return "Short Blades";
+    case SK_LONG_BLADES:    return "Long Blades";
+    case SK_AXES:           return "Axes";
+    case SK_MACES_FLAILS:   return "Maces & Flails";
+    case SK_POLEARMS:       return "Polearms";
+    case SK_STAVES:         return "Staves";
+#if TAG_MAJOR_VERSION == 34
+    case SK_SLINGS:         return "Slings";
+#endif
+    case SK_RANGED_WEAPONS: return "Ranged Weapons";
+#if TAG_MAJOR_VERSION == 34
+    case SK_CROSSBOWS:      return "Crossbows";
+#endif
+    case SK_THROWING:       return "Throwing";
+    case SK_ARMOUR:         return "Armour";
+    case SK_DODGING:        return "Dodging";
+    case SK_STEALTH:        return "Stealth";
+#if TAG_MAJOR_VERSION == 34
+    case SK_STABBING:       return "Stabbing";
+#endif
+    case SK_SHIELDS:        return "Shields";
+#if TAG_MAJOR_VERSION == 34
+    case SK_TRAPS:          return "Traps";
+#endif
+    case SK_UNARMED_COMBAT: return "Unarmed Combat";
+    case SK_SPELLCASTING:   return "Spellcasting";
+    case SK_CONJURATIONS:   return "Conjurations";
+    case SK_HEXES:          return "Hexes";
+#if TAG_MAJOR_VERSION == 34
+    case SK_CHARMS:         return "Charms";
+#endif
+    case SK_SUMMONINGS:     return "Summonings";
+    case SK_NECROMANCY:     return "Necromancy";
+    case SK_TRANSLOCATIONS: return "Translocations";
+    case SK_FORGECRAFT:     return "Forgecraft";
+    case SK_FIRE_MAGIC:     return "Fire Magic";
+    case SK_ICE_MAGIC:      return "Ice Magic";
+    case SK_AIR_MAGIC:      return "Air Magic";
+    case SK_EARTH_MAGIC:    return "Earth Magic";
+    case SK_ALCHEMY:        return "Alchemy";
+    case SK_INVOCATIONS:    return "Invocations";
+    case SK_EVOCATIONS:     return "Evocations";
+    case SK_SHAPESHIFTING:  return "Shapeshifting";
+    default:                return "";
+    }
+}
+
 const char *skill_name(skill_type which_skill)
 {
     ASSERT(which_skill < NUM_SKILLS);
-    return skill_titles[which_skill][0];
+    if (Options.language == lang_t::ZH)
+        return skill_titles[which_skill][0];
+    return _skill_english_name(which_skill);
 }
 
 const char * skill_abbr(skill_type which_skill)
@@ -1882,9 +1951,15 @@ const char * skill_abbr(skill_type which_skill)
  */
 skill_type str_to_skill(const string &skill)
 {
+    const string lskill = lowercase_string(skill);
     for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
-        if (lowercase_string(skill) == lowercase_string(skill_titles[sk][0]))
+    {
+        if (lskill == lowercase_string(skill_titles[sk][0])
+            || lskill == lowercase_string(_skill_english_name(sk)))
+        {
             return sk;
+        }
+    }
 
     return SK_NONE;
 }
@@ -2014,6 +2089,333 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
  * @param conducts      Whether or not to check "special" conduct titles
  * @return              An appropriate and/or humorous title.
  */
+
+// Chinese translations for skill titles (issues/7)
+static const map<string, const char*> zh_skill_titles = {
+    // skill_titles — 格斗 (Fighting)
+    { "Trooper", "士兵" },
+    { "Fighter", "战士" },
+    { "Warrior", "勇士" },
+    { "Slayer", "屠戮者" },
+    { "Conqueror", "征服者" },
+
+    // skill_titles — 短刃 (Short Blades)
+    { "Cutter", "切割者" },
+    { "Slicer", "切片者" },
+    { "Swashbuckler", "剑客" },
+    { "Cutthroat", "刺客" },
+    { "Politician", "政客" },
+
+    // skill_titles — 长刃 (Long Blades)
+    { "Slasher", "挥砍者" },
+    { "Carver", "雕琢者" },
+    { "Fencer", "剑士" },
+    { "@Adj@ Blade", "@Adj@之刃" },
+    { "Swordmaster", "剑圣" },
+
+    // skill_titles — 斧类 (Axes)
+    { "Chopper", "砍柴者" },
+    { "Cleaver", "劈裂者" },
+    { "Severer", "断骨者" },
+    { "Executioner", "处刑人" },
+    { "Axe Maniac", "斧狂" },
+
+    // skill_titles — 锤与链枷 (Maces & Flails)
+    { "Cudgeller", "棍棒手" },
+    { "Basher", "重击者" },
+    { "Bludgeoner", "猛击者" },
+    { "Shatterer", "粉碎者" },
+    { "Skullcrusher", "碎颅者" },
+
+    // skill_titles — 长柄武器 (Polearms)
+    { "Poker", "戳刺者" },
+    { "Spear-Bearer", "持矛兵" },
+    { "Impaler", "穿刺者" },
+    { "Phalangite", "方阵兵" },
+    { "@Adj@ Porcupine", "@Adj@的豪猪" },
+
+    // skill_titles — 棍棒 (Staves)
+    { "Twirler", "旋棍者" },
+    { "Cruncher", "碾碎者" },
+    { "Stickfighter", "棍斗士" },
+    { "Pulveriser", "粉碎者" },
+    { "Chief of Staff", "棍棒长" },
+
+    // skill_titles — 远程武器 (Ranged Weapons)
+    { "Shooter", "射手" },
+    { "Skirmisher", "散兵" },
+    { "Marks@genus@", "神射@genus@" },
+    { "Crack Shot", "神枪手" },
+    { "Merry @Genus@", "快乐的@Genus@" },
+
+    // skill_titles — 投掷 (Throwing)
+    { "Chucker", "投掷手" },
+    { "Thrower", "掷物者" },
+    { "Deadly Accurate", "百发百中" },
+    { "Hawkeye", "鹰眼" },
+    { "@Adj@ Ballista", "@Adj@的弩炮" },
+
+    // skill_titles — 护甲 (Armour)
+    { "Covered", "身着护甲" },
+    { "Protected", "受庇护者" },
+    { "Tortoise", "铁乌龟" },
+    { "Impregnable", "坚不可摧" },
+    { "Invulnerable", "刀枪不入" },
+
+    // skill_titles — 闪避 (Dodging)
+    { "Ducker", "躲闪者" },
+    { "Nimble", "灵巧者" },
+    { "Spry", "矫捷者" },
+    { "Acrobat", "杂技演员" },
+    { "Intangible", "无形无影" },
+
+    // skill_titles — 潜行 (Stealth)
+    { "Sneak", "潜行者" },
+    { "Covert", "隐匿者" },
+    { "Unseen", "无形之人" },
+    { "Imperceptible", "无迹可寻" },
+    { "Ninja", "忍者" },
+
+    // skill_titles — 盾牌 (Shields)
+    { "Shield-Bearer", "持盾手" },
+    { "Blocker", "阻挡者" },
+    { "Peltast", "轻盾兵" },
+    { "Hoplite", "重装步兵" },
+    { "@Adj@ Barricade", "@Adj@的路障" },
+
+    // skill_titles — 徒手格斗 力量型 (Unarmed Combat)
+    { "Ruffian", "恶棍" },
+    { "Grappler", "擒抱者" },
+    { "Brawler", "斗殴者" },
+    { "Wrestler", "摔角手" },
+    { "@Weight@weight Champion", "@Weight@量级冠军" },
+
+    // skill_titles — 施法能力 (Spellcasting)
+    { "Magician", "魔术师" },
+    { "Thaumaturge", "奇术师" },
+    { "Eclecticist", "博法师" },
+    { "Sorcerer", "术士" },
+    { "Archmage", "大法师" },
+
+    // skill_titles — 咒法系 (Conjurations)
+    { "Conjurer", "咒术师" },
+    { "Destroyer", "毁灭者" },
+    { "Devastator", "蹂躏者" },
+    { "Ruinous", "破灭者" },
+    { "Annihilator", "湮灭者" },
+
+    // skill_titles — 诅咒系 (Hexes)
+    { "Vexing", "恼人者" },
+    { "Jinx", "灾星" },
+    { "Bewitcher", "蛊惑者" },
+    { "Maledictor", "诅咒师" },
+    { "Spellbinder", "咒缚者" },
+
+    // skill_titles — 召唤系 (Summonings)
+    { "Caller", "呼唤者" },
+    { "Summoner", "召唤师" },
+    { "Convoker", "召集者" },
+    { "Worldbinder", "缚界者" },
+    { "Planerender", "撕裂位面者" },
+
+    // skill_titles — 死灵术 (Necromancy)
+    { "Grave Robber", "盗墓贼" },
+    { "Reanimator", "复生者" },
+    { "Necromancer", "死灵法师" },
+    { "Thanatomancer", "死亡术士" },
+    { "@Genus_Short@ of Death", "死亡之@Genus_Short@" },
+
+    // skill_titles — 传送系 (Translocations)
+    { "Grasshopper", "蚂蚱" },
+    { "Placeless @Genus@", "无处可归的@Genus@" },
+    { "Blinker", "闪烁者" },
+    { "Portalist", "传送门师" },
+    { "Plane @Walker@", "位面行者" },
+
+    // skill_titles — 锻造术 (Forgecraft)
+    { "Tinkerer", "修补匠" },
+    { "Fabricator", "制造者" },
+    { "Mechanist", "机械师" },
+    { "Siegecrafter", "攻城匠师" },
+    { "Architect of Ages", "纪元建筑师" },
+
+    // skill_titles — 火焰魔法 (Fire Magic)
+    { "Firebug", "火焰虫" },
+    { "Arsonist", "纵火犯" },
+    { "Scorcher", "灼烧者" },
+    { "Pyromancer", "火法师" },
+    { "Infernalist", "地狱火使" },
+
+    // skill_titles — 寒冰魔法 (Ice Magic)
+    { "Chiller", "寒冷者" },
+    { "Frost Mage", "冰霜法师" },
+    { "Gelid", "极寒者" },
+    { "Cryomancer", "冰法师" },
+    { "Englaciator", "冰川使" },
+
+    // skill_titles — 空气魔法 (Air Magic)
+    { "Gusty", "阵风者" },
+    { "Zephyrmancer", "和风术士" },
+    { "Stormcaller", "风暴召唤者" },
+    { "Cloud Mage", "云中法师" },
+    { "Meteorologist", "天象师" },
+
+    // skill_titles — 大地魔法 (Earth Magic)
+    { "Digger", "挖掘者" },
+    { "Geomancer", "地卜师" },
+    { "Earth Mage", "大地法师" },
+    { "Metallomancer", "金铁术士" },
+    { "Petrodigitator", "点石者" },
+
+    // skill_titles — 炼金术 (Alchemy)
+    { "Apothecary", "药剂师" },
+    { "Toxicologist", "毒理学家" },
+    { "Hermetic", "赫尔墨斯之徒" },
+    { "Philosopher", "哲人" },
+    { "Quintessent", "第五元素" },
+
+    // skill_titles — 祈神 (Invocations)
+    { "Unbeliever", "不信者" },
+    { "Agnostic", "不可知论者" },
+    { "Dissident", "异见者" },
+    { "Heretic", "异端" },
+    { "Apostate", "叛教者" },
+
+    // skill_titles — 魔力释放 (Evocations)
+    { "Charlatan", "江湖骗子" },
+    { "Prestidigitator", "戏法大师" },
+    { "Fetichist", "拜物者" },
+    { "Evocator", "唤起者" },
+    { "Ex Machina", "机械降神" },
+
+    // skill_titles — 变形术 (Shapeshifting)
+    { "Changeling", "换形儿" },
+    { "Mimic", "拟态者" },
+    { "Metamorph", "变形者" },
+    { "Skinwalker", "皮行者" },
+    { "Shapeless @Genus@", "无形的@Genus@" },
+
+    // martial_arts_titles — 敏捷型徒手格斗
+    { "Insei", "院生" },
+    { "Martial Artist", "武术家" },
+    { "Black Belt", "黑带" },
+    { "Sensei", "师范" },
+    { "Grand Master", "宗师" },
+
+    // claw_and_tooth_titles — 猫人专属
+    { "Scratcher", "抓挠者" },
+    { "Gouger", "挖刨者" },
+    { "Ripper", "撕裂者" },
+    { "Eviscerator", "开膛者" },
+    { "Sabretooth", "剑齿" },
+
+    // 条件性称号 — 格斗 (Fighting)
+    { "Hell Knight", "地狱骑士" },
+    { "Death Knight", "死亡骑士" },
+
+    // 条件性称号 — 徒手格斗 (Unarmed Combat)
+    { "Pharaoh", "法老" },
+    { "Crusher", "粉碎者" },
+    { "Kraken", "海怪" },
+    { "Yokozuna", "横纲" },
+    { "Weightless Champion", "无重量冠军" },
+    { "Herculean", "大力神" },
+
+    // 条件性称号 — 短刃 (Short Blades)
+    { "Blademaster", "剑圣" },
+
+    // 条件性称号 — 长刃 (Long Blades)
+    { "Swordfish", "剑鱼" },
+
+    // 条件性称号 — 护甲 (Armour)
+    { "Iron Troll", "铁巨魔" },
+    { "Iron Golem", "铁魔像" },
+
+    // 条件性称号 — 盾牌 (Shields)
+    { "Defender", "防御者" },
+    { "Polterguardian", "吵闹护卫" },
+
+    // 条件性称号 — 远程武器 (Ranged Weapons)
+    { "Master Archer", "弓术大师" },
+
+    // 条件性称号 — 投掷 (Throwing)
+    { "Undying Armoury", "不死军械库" },
+
+    // 条件性称号 — 施法能力 (Spellcasting)
+    { "Wishgranter", "许愿者" },
+    { "Cogmind", "齿轮心智" },
+    { "Ascendant", "升华者" },
+
+    // 条件性称号 — 咒法系 (Conjurations)
+    { "Wallbreaker", "破墙者" },
+
+    // 条件性称号 — 诅咒系 (Hexes)
+    { "Faerie Dragon", "仙灵龙" },
+    { "Siren", "塞壬" },
+
+    // 条件性称号 — 死灵术 (Necromancy)
+    { "Necromech", "死灵机甲" },
+    { "Petite Mort", "小死" },
+    { "Corpseflower", "尸花" },
+
+    // 条件性称号 — 锻造术 (Forgecraft)
+    { "Brimstone Smiter", "硫磺击打者" },
+    { "Titancaster", "巨神施法者" },
+    { "Frogwright", "蛙匠" },
+
+    // 条件性称号 — 召唤系 (Summonings)
+    { "Demonologist", "恶魔学者" },
+    { "Hellbinder", "地狱缚者" },
+
+    // 条件性称号 — 传送系 (Translocations)
+    { "Teletunneler", "传送隧道者" },
+    { "Spatial Maelstrom", "空间漩涡" },
+
+    // 条件性称号 — 炼金术 (Alchemy)
+    { "Swamp Dragon", "沼泽龙" },
+
+    // 条件性称号 — 火焰魔法 (Fire Magic)
+    { "Fire Dragon", "火龙" },
+    { "Highly Combustible", "高度可燃" },
+    { "Molten", "熔融者" },
+    { "Smokeless Flame", "无烟之火" },
+    { "Fire Storm", "火焰风暴" },
+
+    // 条件性称号 — 寒冰魔法 (Ice Magic)
+    { "Ice Dragon", "冰龙" },
+    { "Marid", "马里德" },
+    { "Polar Vortex", "极地漩涡" },
+
+    // 条件性称号 — 空气魔法 (Air Magic)
+    { "Storm Dragon", "风暴龙" },
+    { "Twister", "旋风" },
+
+    // 条件性称号 — 大地魔法 (Earth Magic)
+    { "Iron Dragon", "铁龙" },
+
+    // 条件性称号 — 潜行 (Stealth)
+    { "Thief of Divinity", "神性窃贼" },
+
+    // 条件性称号 — 祈神 (Invocations)
+    { "Royal Mummy", "皇家木乃伊" },
+    { "Forbidden One", "禁忌者" },
+    { "Blood Saint", "血之圣徒" },
+    { "Necrodancer", "死灵舞者" },
+    { "Pearl Dragon", "珍珠龙" },
+    { "Rockslime", "岩石黏泥" },
+    { "Black Lotus", "黑莲花" },
+    { "Nightshade", "夜影" },
+    { "Cobgoblin", "地精妖" },
+    { "Laughing Skull", "笑颅骨" },
+    { "Danse Macabre", "死亡之舞" },
+    { "Abyssopelagic", "深渊远洋者" },
+    { "Leviathan", "利维坦" },
+    { "God-Hated", "神憎者" },
+
+    // 默认回退
+    { "Adventurer", "冒险者" },
+};
+
 string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                            species_type species, int dex, int str, int intel,
                            god_type god, int piety, bool conducts)
@@ -2284,6 +2686,19 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             result = skill_titles[best_skill][skill_rank];
     }
 
+    // Chinese title lookup — translate before placeholder replacement
+    // so that template titles like "@Adj@ Blade" use a single key.
+    if (Options.language == lang_t::ZH && !result.empty())
+    {
+        auto it = zh_skill_titles.find(result);
+        if (it != zh_skill_titles.end())
+            result = it->second;
+#ifdef DEBUG
+        else
+            dprf("Missing ZH skill title: %s", result.c_str());
+#endif
+    }
+
     const map<string, string> replacements =
     {
         { "Adj", species::name(species, species::SPNAME_ADJ) },
@@ -2308,6 +2723,9 @@ string player_title(bool the)
     const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
+    // Chinese does not use articles before titles
+    if (Options.language == lang_t::ZH)
+        return title;
     const string article = !the ? ""
                                 : title == "Petite Mort" ? "La "
                                 : title == "Who Hides the Stars" ? ", "

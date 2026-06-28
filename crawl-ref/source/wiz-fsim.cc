@@ -43,6 +43,7 @@
 #include "unwind.h"
 #include "version.h"
 #include "wiz-you.h"
+#include "database.h"
 
 #ifdef WIZARD
 
@@ -110,7 +111,8 @@ static string _equipped_weapon_name(bool show_prefix)
     if (iweap)
     {
         if (show_prefix)
-            return "Wielding: " + iweap->name(DESC_PLAIN);
+            return (T_("Wielding: "))
+                   + iweap->name(DESC_PLAIN);
         else
             return iweap->name(DESC_PLAIN);
     }

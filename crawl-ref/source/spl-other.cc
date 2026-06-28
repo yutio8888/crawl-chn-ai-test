@@ -27,17 +27,18 @@
 #include "terrain.h"
 #include "timed-effects.h"
 #include "view.h"
+#include "database.h"
 
 spret cast_sublimation_of_blood(int pow, bool fail)
 {
     bool success = false;
 
     if (you.duration[DUR_DEATHS_DOOR])
-        mpr("You can't draw power from your own body while in death's door.");
+        mpr(T_("You can't draw power from your own body while in death's door."));
     else if (!you.has_blood())
-        mpr("Your body is bloodless.");
+        mpr(T_("Your body is bloodless."));
     else if (!enough_hp(2, true))
-        mpr("Your attempt to draw power from your own body fails.");
+        mpr(T_("Your attempt to draw power from your own body fails."));
     else
     {
         // Take at most 90% of currhp.
@@ -61,7 +62,7 @@ spret cast_sublimation_of_blood(int pow, bool fail)
         if (success)
             mpr("You draw magical energy from your own body!");
         else
-            mpr("Your attempt to draw power from your own body fails.");
+            mpr(T_("Your attempt to draw power from your own body fails."));
     }
 
     return success ? spret::success : spret::abort;

@@ -132,7 +132,7 @@ int cast_selective_amnesia(const string &pre_msg)
     int slot;
 
     // Pick a spell to forget.
-    keyin = list_spells(false, false, false, false, "forget");
+    keyin = list_spells(false, false, false, false, "遗忘");
     redraw_screen();
     update_screen();
 
@@ -144,11 +144,20 @@ int cast_selective_amnesia(const string &pre_msg)
         const bool in_library = you.spell_library[spell];
         if (spell != SPELL_NO_SPELL)
         {
-            const string prompt = make_stringf(
+            const int levels_freed = spell_levels_required(spell);
+            const int total_after = player_spell_levels(false) + levels_freed;
+            string prompt;
+            if (Options.language == lang_t::ZH)
+                prompt = make_stringf(
+                    "遗忘%s，释放%d个法术等级（总计%d）？%s",
+                    spell_title(spell), levels_freed, total_after,
+                    in_library ? "" : " 此法术不在你的法术库中！");
+            else
+                prompt = make_stringf(
                     "Forget %s, freeing %d spell level%s for a total of %d?%s",
-                    spell_title(spell), spell_levels_required(spell),
-                    spell_levels_required(spell) != 1 ? "s" : "",
-                    player_spell_levels(false) + spell_levels_required(spell),
+                    spell_title(spell), levels_freed,
+                    levels_freed != 1 ? "s" : "",
+                    total_after,
                     in_library ? "" : " This spell is not in your library!");
 
             if (yesno(prompt.c_str(), in_library, 'n', false))

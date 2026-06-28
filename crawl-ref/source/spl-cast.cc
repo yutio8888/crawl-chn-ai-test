@@ -98,11 +98,18 @@ void surge_power(const int enhanced)
                                 (enhanced ==  2) ? "strong" :
                                 (enhanced  >  2) ? "huge"
                                                  : "";
-        mprf("You feel %s %s",
-             !modifier.length() ? "a"
-                                : article_a(modifier).c_str(),
-             (enhanced < 0) ? "numb sensation."
-                            : "surge of power!");
+        if (Options.language == lang_t::ZH)
+        {
+            mprf("你感到%s%s",
+                 !modifier.length() ? "一阵" : article_a(modifier).c_str(),
+                 (enhanced < 0) ? "麻木感。" : "力量涌动！");
+        }
+        else
+        {
+            mprf("You feel %s %s",
+                 !modifier.length() ? "a" : article_a(modifier).c_str(),
+                 (enhanced < 0) ? "numb sensation." : "surge of power!");
+        }
     }
 }
 
@@ -111,9 +118,12 @@ void surge_power_wand(const int mp_cost)
     if (mp_cost)
     {
         const bool slight = mp_cost < 3;
-        mprf("You feel a %ssurge of power%s",
-             slight ? "slight " : "",
-             slight ? "."      : "!");
+        if (Options.language == lang_t::ZH)
+            mpr(slight ? "你感到一股微弱的力量涌动。" : "你感到一股力量涌动！");
+        else
+            mprf("You feel a %ssurge of power%s",
+                 slight ? "slight " : "",
+                 slight ? "."      : "!");
     }
 }
 
@@ -270,18 +280,33 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     if (toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
         toggle_with_I = false;
 
-    const string real_action = viewing ? "describe" : action;
+    const bool zh = Options.language == lang_t::ZH;
+    const string real_action = viewing ? (zh ? "描述" : "describe") : action;
 
     SpellMenu spell_menu;
     const string titlestring = make_stringf("%-25.25s",
-            make_stringf("Your spells (%s)", real_action.c_str()).c_str());
+            make_stringf(zh ? "你的法术 (%s)" : "Your spells (%s)",
+                         real_action.c_str()).c_str());
 
     {
+        // Build column headers aligned with data columns.
+        // Data columns: name(32) power(10) damage(10) range(8) noise(14)
+        // Default view: name(32) schools(padded to 58) fail_rate(9) level
+        const int tlen = strwidth(titlestring);
+        const string default_header = titlestring
+            + string(32 - tlen, ' ')
+            + chop_string(zh ? "类型" : "Type", 26)
+            + chop_string(zh ? "失败率" : "Failure", 9)
+            + (zh ? "等级" : "Level");
+        const string toggle_header = titlestring
+            + string(32 - tlen, ' ')
+            + chop_string(zh ? "威力" : "Power", 10)
+            + chop_string(zh ? "伤害" : "Damage", 10)
+            + chop_string(zh ? "范围" : "Range", 8)
+            + chop_string(zh ? "噪音" : "Noise", 14);
+
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(
-                titlestring + "           Type                      Failure  Level  ",
-                titlestring + "           Power     Damage    Range   Noise         ",
-                MEL_TITLE);
+            new ToggleableMenuEntry(default_header, toggle_header, MEL_TITLE);
         spell_menu.set_title(me, true, true);
     }
     spell_menu.set_highlighter(nullptr);
@@ -290,9 +315,11 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE);
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE_REVERSE);
 
-    string more_str = make_stringf("<lightgrey>Select a spell to %s</lightgrey>",
-        real_action.c_str());
-    string help_desc = make_stringf("   [<w>?</w>] help    ");
+    string more_str = make_stringf("<lightgrey>%s</lightgrey>",
+        zh ? make_stringf("选择一个要%s的法术", real_action.c_str()).c_str()
+           : make_stringf("Select a spell to %s", real_action.c_str()).c_str());
+    string help_desc = make_stringf("   [<w>?</w>] %s    ",
+                                    zh ? "帮助" : "help");
     string toggle_desc = menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE);
     if (toggle_with_I)
     {
@@ -300,7 +327,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
         spell_menu.add_toggle_key('I');
         toggle_desc += "/[<w>I</w>]";
     }
-    toggle_desc += " toggle spell headers";
+    toggle_desc += zh ? " 切换表头" : " toggle spell headers";
     more_str = pad_more_with_esc(more_str + help_desc + toggle_desc);
     spell_menu.set_more(formatted_string::parse_string(more_str));
     // TODO: should allow toggling between execute and examine
@@ -721,7 +748,11 @@ bool can_cast_spells(bool quiet)
     if (you.duration[DUR_NO_CAST])
     {
         if (!quiet)
-            mpr("You are unable to access your magic!");
+        {
+            mpr(Options.language == lang_t::ZH
+                ? "你无法获取你的魔力！"
+                : "You are unable to access your magic!");
+        }
         return false;
     }
 
@@ -729,7 +760,11 @@ bool can_cast_spells(bool quiet)
     if (you.no_cast())
     {
         if (!quiet)
-            mpr("Something interferes with your magic!");
+        {
+            mpr(Options.language == lang_t::ZH
+                ? "有什么东西干扰了你的魔力！"
+                : "Something interferes with your magic!");
+        }
         return false;
     }
 
@@ -743,7 +778,11 @@ bool can_cast_spells(bool quiet)
     if (you.confused())
     {
         if (!quiet)
-            mpr("You're too confused to cast spells.");
+        {
+            mpr(Options.language == lang_t::ZH
+                ? "你太困惑了，无法施法。"
+                : "You're too confused to cast spells.");
+        }
         return false;
     }
 
@@ -751,7 +790,11 @@ bool can_cast_spells(bool quiet)
     {
         if (!quiet)
         {
-            mprf("You cannot cast spells while %s!", player_silenced_reason());
+            if (Options.language == lang_t::ZH)
+                mprf("你在%s时无法施法！", player_silenced_reason());
+            else
+                mprf("You cannot cast spells while %s!",
+                     player_silenced_reason());
             // included in default force_more_message
         }
         return false;
@@ -795,15 +838,27 @@ static void _handle_energy_orb(int cost, spret cast_result)
         int drain = !targs.empty() ? random_range(1, 3) + targs.size() / 2 : 0;
 
         if (targs.empty())
-            mpr("Magical energy flows into your mind!");
+        {
+            mpr(Options.language == lang_t::ZH
+                ? "魔法能量流入了你的心智！"
+                : "Magical energy flows into your mind!");
+        }
         else
-            mprf("Magical energy flows from %s into your mind!",
-                 describe_monsters_condensed(targs).c_str());
+        {
+            if (Options.language == lang_t::ZH)
+                mprf("魔法能量从%s流入了你的心智！",
+                     describe_monsters_condensed(targs).c_str());
+            else
+                mprf("Magical energy flows from %s into your mind!",
+                     describe_monsters_condensed(targs).c_str());
+        }
         inc_mp(cost + drain);
     }
     else
     {
-        mpr("Magical energy flows into your mind!");
+        mpr(Options.language == lang_t::ZH
+            ? "魔法能量流入了你的心智！"
+            : "Magical energy flows into your mind!");
         inc_mp(cost, true);
     }
     did_god_conduct(DID_WIZARDLY_ITEM, 10);
@@ -936,15 +991,24 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
                 if (you.last_cast_spell == SPELL_NO_SPELL
                     || !Options.enable_recast_spell)
                 {
-                    mprf(MSGCH_PROMPT, "Cast which spell? (? or * to list) ");
+                    mprf(MSGCH_PROMPT,
+                         Options.language == lang_t::ZH
+                         ? "施放哪个法术？（? 或 * 列出）"
+                         : "Cast which spell? (? or * to list) ");
                 }
                 else
                 {
-                    mprf(MSGCH_PROMPT, "Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>",
-                                       spell_title(you.last_cast_spell),
-                                       _spell_failure_rate_description(you.last_cast_spell).c_str());
-                    mprf(MSGCH_PROMPT, "Confirm with . or Enter, or press "
-                                       "? or * to list all spells.");
+                    mprf(MSGCH_PROMPT,
+                         Options.language == lang_t::ZH
+                         ? "正在施放: <w>%s</w> <lightgrey>(%s)</lightgrey>"
+                         : "Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>",
+                         spell_title(you.last_cast_spell),
+                         _spell_failure_rate_description(you.last_cast_spell).c_str());
+                    mprf(MSGCH_PROMPT,
+                         Options.language == lang_t::ZH
+                         ? "用 . 或回车确认，或按?或*列出所有法术。"
+                         : "Confirm with . or Enter, or press "
+                           "? or * to list all spells.");
                 }
 
                 keyin = numpad_to_regular(get_ch());
@@ -986,7 +1050,9 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         }
         else if (!isaalpha(keyin))
         {
-            mpr("You don't know that spell.");
+            mpr(Options.language == lang_t::ZH
+                ? "你不认识那个法术。"
+                : "You don't know that spell.");
             crawl_state.zero_turns_taken();
             return spret::abort;
         }
@@ -996,7 +1062,9 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
 
     if (spell == SPELL_NO_SPELL)
     {
-        mpr("You don't know that spell.");
+        mpr(Options.language == lang_t::ZH
+            ? "你不认识那个法术。"
+            : "You don't know that spell.");
         crawl_state.zero_turns_taken();
         return spret::abort;
     }
@@ -1014,8 +1082,11 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
     {
         // Abort if there are no hostiles within range, but flash the range
         // markers for a short while.
-        mpr("You can't see any susceptible monsters within range! "
-            "(Use <w>Z</w> to cast anyway.)");
+        mpr(Options.language == lang_t::ZH
+            ? "你在范围内看不到任何可受影响怪物！"
+              "（按<w>Z</w>强制施放）"
+            : "You can't see any susceptible monsters within range! "
+              "(Use <w>Z</w> to cast anyway.)");
 
         if ((Options.use_animations & UA_RANGE) && Options.darken_beyond_range)
         {
@@ -1137,7 +1208,10 @@ static void _spellcasting_side_effects(spell_type spell, god_type god,
     {
         if (you.duration[DUR_SAP_MAGIC] && !fake_spell)
         {
-            mprf(MSGCH_WARN, "You lose access to your magic!");
+            mprf(MSGCH_WARN,
+                 Options.language == lang_t::ZH
+                 ? "你失去了获取魔力的能力！"
+                 : "You lose access to your magic!");
             you.increase_duration(DUR_NO_CAST, 3 + random2(3));
         }
 
@@ -1152,20 +1226,26 @@ static void _try_monster_cast(spell_type spell, int /*powc*/,
 {
     if (monster_at(you.pos()))
     {
-        mpr("Couldn't try casting monster spell because you're "
-            "on top of a monster.");
+        mpr(Options.language == lang_t::ZH
+            ? "无法尝试施放怪物法术，因为你在一个怪物上面。"
+            : "Couldn't try casting monster spell because you're "
+              "on top of a monster.");
         return;
     }
 
     monster* mon = get_free_monster();
     if (!mon)
     {
-        mpr("Couldn't try casting monster spell because there is "
-            "no empty monster slot.");
+        mpr(Options.language == lang_t::ZH
+            ? "无法尝试施放怪物法术，因为没有空的怪物槽位。"
+            : "Couldn't try casting monster spell because there is "
+              "no empty monster slot.");
         return;
     }
 
-    mpr("Invalid player spell, attempting to cast it as monster spell.");
+    mpr(Options.language == lang_t::ZH
+        ? "无效的玩家法术，尝试作为怪物法术施放。"
+        : "Invalid player spell, attempting to cast it as monster spell.");
 
     mon->mname      = "Dummy Monster";
     mon->type       = MONS_HUMAN;
@@ -1254,14 +1334,22 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
     {
         if (failure_rate_to_int(raw_spell_fail(spell)) == 100)
         {
-            mprf(MSGCH_WARN, "It is impossible to cast this spell "
-                    "(100%% risk of failure)!");
+            mprf(MSGCH_WARN,
+                 Options.language == lang_t::ZH
+                 ? "在此形态下无法施放此法术"
+                   "(100%% 失败风险)!"
+                 : "It is impossible to cast this spell "
+                   "(100%% risk of failure)!");
             return true;
         }
 
-        string prompt = make_stringf("The spell is %s to miscast "
-                                     "(%s risk of failure)%s",
-                                     fail_severity_adjs[severity],
+        string prompt = make_stringf(Options.language == lang_t::ZH
+                                     ? "施放此法术%s失败（%s失败风险）%s"
+                                     : "The spell is %s to miscast "
+                                       "(%s risk of failure)%s",
+                                     (Options.language == lang_t::ZH
+                                      ? fail_severity_adjs_zh
+                                      : fail_severity_adjs)[severity],
                                      failure_rate.c_str(),
                                      severity > 1 ? "!" : ".");
 
@@ -2212,7 +2300,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         const char *spell_title_color = useless ? "darkgrey" : "w";
         const string verb = channelled_spell_active(spell)
             ? "<lightred>Restarting spell</lightred>"
-            : is_targeted ? "Aiming" : "Casting";
+            : is_targeted ? "瞄准中" : "施放中";
         string title = make_stringf("%s: <%s>%s</%s>", verb.c_str(),
                     spell_title_color, spell_title(spell), spell_title_color);
         if (actual_spell)
@@ -2270,7 +2358,9 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         if (testbits(flags, spflag::not_self) && target->isMe())
         {
             if (spell == SPELL_TELEPORT_OTHER)
-                mpr("Sorry, this spell works on others only.");
+                mpr(Options.language == lang_t::ZH
+                    ? "抱歉，这个法术只能对他人施放。"
+                    : "Sorry, this spell works on others only.");
             else
                 canned_msg(MSG_UNTHINKING_ACT);
 
@@ -2402,7 +2492,10 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
     {
         if (actual_spell)
         {
-            mprf("You miscast %s.", spell_title(spell));
+            mprf(Options.language == lang_t::ZH
+                 ? "你施放%s失败了。"
+                 : "You miscast %s.",
+                 spell_title(spell));
             flush_input_buffer(FLUSH_ON_FAILURE);
             learned_something_new(HINT_SPELL_MISCAST);
             miscast_effect(spell, fail);
@@ -2426,11 +2519,17 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
 
         if (is_valid_spell(spell))
         {
-            mprf(MSGCH_ERROR, "Spell '%s' is not a player castable spell.",
+            mprf(MSGCH_ERROR,
+                 Options.language == lang_t::ZH
+                 ? "法术'%s'不是玩家可施放的法术。"
+                 : "Spell '%s' is not a player castable spell.",
                  spell_title(spell));
         }
         else
-            mprf(MSGCH_ERROR, "Invalid spell!");
+            mprf(MSGCH_ERROR,
+                 Options.language == lang_t::ZH
+                 ? "无效的法术！"
+                 : "Invalid spell!");
 
         return spret::abort;
     }
@@ -2848,7 +2947,10 @@ static spret _do_cast(spell_type spell, int powc, const dist& spd,
     default:
         if (spell_removed(spell))
         {
-            mprf("Sorry, the spell '%s' is gone!", spell_title(spell));
+            mprf(Options.language == lang_t::ZH
+                 ? "抱歉，法术'%s'已经不存在了！"
+                 : "Sorry, the spell '%s' is gone!",
+                 spell_title(spell));
             return spret::abort;
         }
         break;
@@ -2970,7 +3072,19 @@ const char *fail_severity_adjs[] =
     "extremely dangerous",
     "astonishingly dangerous",
 };
+
+const char *fail_severity_adjs_zh[] =
+{
+    "安全",
+    "稍有危险",
+    "危险",
+    "相当危险",
+    "极其危险",
+    "惊人地危险",
+};
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
+COMPILE_CHECK(ARRAYSZ(fail_severity_adjs_zh)
+              == ARRAYSZ(fail_severity_adjs));
 
 // Chooses a colour for the failure rate display for a spell. The colour is
 // based on the chance of getting a severity >= 2 miscast.
@@ -3037,11 +3151,14 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 static string _spell_failure_rate_description(spell_type spell)
 {
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    const char *severity_adj = fail_severity_adjs[fail_severity(spell)];
+    const char *severity_adj = (Options.language == lang_t::ZH
+            ? fail_severity_adjs_zh : fail_severity_adjs)[fail_severity(spell)];
     const string colour = colour_to_str(failure_rate_colour(spell));
     const char *col = colour.c_str();
 
-    return make_stringf("<%s>%s</%s>; <%s>%s</%s> risk of failure",
+    return make_stringf(Options.language == lang_t::ZH
+            ? "<%s>%s</%s>; <%s>%s</%s> 失败风险"
+            : "<%s>%s</%s>; <%s>%s</%s> risk of failure",
             col, severity_adj, col, col, failure.c_str(), col);
 }
 
@@ -3056,14 +3173,24 @@ string spell_noise_string(spell_type spell, int chop_wiz_display_width)
 
     const int noise = max(casting_noise, effect_noise);
 
-    const char* noise_descriptions[] =
+    const char* noise_descriptions_zh[] =
+    {
+        "无声", "几乎无声", "安静", "稍响", "响亮", "非常响",
+        "极其响", "震耳欲聋"
+    };
+    const char* noise_descriptions_en[] =
     {
         "Silent", "Almost silent", "Quiet", "A bit loud", "Loud", "Very loud",
         "Extremely loud", "Deafening"
     };
 
     const int breakpoints[] = { 1, 2, 4, 8, 15, 20, 30 };
-    COMPILE_CHECK(ARRAYSZ(noise_descriptions) == 1 + ARRAYSZ(breakpoints));
+    COMPILE_CHECK(ARRAYSZ(noise_descriptions_zh) == 1 + ARRAYSZ(breakpoints));
+    COMPILE_CHECK(ARRAYSZ(noise_descriptions_en) == 1 + ARRAYSZ(breakpoints));
+
+    const char* const* noise_descriptions =
+        Options.language == lang_t::ZH ? noise_descriptions_zh
+                                        : noise_descriptions_en;
 
     const char* desc = noise_descriptions[breakpoint_rank(noise, breakpoints,
                                                 ARRAYSZ(breakpoints))];
@@ -3461,7 +3588,9 @@ void handle_channelled_spell()
     if ((spell == SPELL_FLAME_WAVE || spell == SPELL_SEARING_RAY)
         && turn > 1 && !enough_mp(1, true))
     {
-        mprf("Without enough magic to sustain it, your %s dissipates.",
+        mprf(Options.language == lang_t::ZH
+             ? "没有足够的魔力维持，你的%s消散了。"
+             : "Without enough magic to sustain it, your %s dissipates.",
              spell_title(spell));
         stop_channelling_spells(true);
         return;
@@ -3503,19 +3632,27 @@ void stop_channelling_spells(bool quiet)
     switch (spell)
     {
         case SPELL_FLAME_WAVE:
-            mpr("You stop channelling waves of flame.");
+            mpr(Options.language == lang_t::ZH
+                ? "你停止了火焰波的持续施放。"
+                : "You stop channelling waves of flame.");
             break;
 
         case SPELL_SEARING_RAY:
-            mpr("You stop channelling your searing ray.");
+            mpr(Options.language == lang_t::ZH
+                ? "你停止了灼热射线的持续施放。"
+                : "You stop channelling your searing ray.");
             break;
 
         case SPELL_MAXWELLS_COUPLING:
-            mpr("The insufficient charge dissipates harmlessly.");
+            mpr(Options.language == lang_t::ZH
+                ? "不足的能量无害地消散了。"
+                : "The insufficient charge dissipates harmlessly.");
             break;
 
         case SPELL_CLOCKWORK_BEE:
-            mpr("You stop assembling your clockwork bee.");
+            mpr(Options.language == lang_t::ZH
+                ? "你停止了组装发条蜜蜂。"
+                : "You stop assembling your clockwork bee.");
             break;
 
         default:
@@ -3535,7 +3672,10 @@ bool warn_about_contam_cost(int max_contam)
     const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE) ? 2 : 1;
 
     if (you.magic_contamination + (max_contam * mul) >= 1000)
-        return !yesno("Casting this now could dangerously contaminate you. Continue?", true, 'n');
+        return !yesno(Options.language == lang_t::ZH
+                      ? "现在施放可能会对你造成危险的污染。继续吗？"
+                      : "Casting now could cause dangerous contamination. Continue?",
+                      true, 'n');
 
     return false;
 }

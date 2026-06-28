@@ -19,11 +19,17 @@ function desolation_portal(e)
 
     local messager = timed_msg {
         initmsg = {
-            "You hear a distant wind.",
-            "There is a portal to the Desolation of Salt on this level." ..
+            crawl.language() == "zh"
+            and "你听到了远处的风声。"
+            or "You hear a distant wind.",
+            crawl.language() == "zh"
+            and "这个楼层有一个通往盐碱荒原的传送门。在入口坍塌前找到它！"
+            or "There is a portal to the Desolation of Salt on this level." ..
             " Hurry and find it before the gateway collapses!"
         },
-        finalmsg = "The wind is rapidly growing quiet.",
+        finalmsg = crawl.language() == "zh"
+                   and "风正在迅速平息。"
+                   or "The wind is rapidly growing quiet.",
 
         verb = 'whistling',
         noisemaker = 'wind',
@@ -36,7 +42,9 @@ function desolation_portal(e)
 
     e.lua_marker('O',
         timed_marker {
-            disappear = "The gateway collapses.",
+            disappear = crawl.language() == "zh"
+                        and "入口坍塌了。"
+                        or "The gateway collapses.",
             entity = 'gateway',
             turns = timeout_turns,
             single_timed = true,

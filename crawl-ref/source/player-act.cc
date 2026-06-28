@@ -39,6 +39,7 @@
 #include "transform.h"
 #include "traps.h"
 #include "viewgeom.h"
+#include "database.h"
 
 int player::mindex() const
 {
@@ -380,16 +381,17 @@ item_def *player::offhand_weapon() const
 
 string player::name(description_level_type dt, bool, bool) const
 {
+    const bool zh = Options.language == lang_t::ZH;
     switch (dt)
     {
     case DESC_NONE:
         return "";
     case DESC_A: case DESC_THE:
     default:
-        return "you";
+        return T_("you");
     case DESC_YOUR:
     case DESC_ITS:
-        return "your";
+        return T_("your");
     }
 }
 
@@ -567,7 +569,7 @@ string player::arm_name(bool plural, bool *can_plural) const
     else
         adj = species::skin_name(species, true);
 
-    if (adj != "fleshy")
+    if (adj != "fleshy" && adj != "皮肤的")
         str = adj + " " + str;
 
     if (plural)
@@ -585,15 +587,19 @@ string player::arm_name(bool plural, bool *can_plural) const
  */
 string player::unarmed_attack_name(string default_name) const
 {
+    const bool zh = Options.language == lang_t::ZH;
+    if (default_name.empty())
+        default_name = T_("Nothing wielded");
+
     if (has_usable_claws(true))
     {
         if (you.has_mutation(MUT_FANGS))
-            default_name = "Teeth and claws";
+            default_name = T_("Teeth and claws");
         else
-            default_name = "Claws";
+            default_name = T_("Claws");
     }
     else if (has_usable_tentacles(true))
-        default_name = "Tentacles";
+        default_name = T_("Tentacles");
 
     return get_form()->get_uc_attack_name(default_name);
 }

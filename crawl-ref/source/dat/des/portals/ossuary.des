@@ -19,10 +19,16 @@ function ossuary_portal(e)
 
   local messager =
     timed_msg {
-      initmsg = { "You hear the hiss of flowing sand.",
-                  "There is an entrance to an ossuary on this level. "
+      initmsg = { crawl.language() == "zh"
+                  and "你听到了流沙的嘶嘶声。"
+                  or "You hear the hiss of flowing sand.",
+                  crawl.language() == "zh"
+                  and "这个楼层有一个通往骨灰堂的入口。在传送门被掩埋前找到它！"
+                  or "There is an entrance to an ossuary on this level. "
                   .. "Hurry and find it before the portal is buried!" },
-      finalmsg = "The hiss of flowing sand is almost imperceptible now.",
+      finalmsg = crawl.language() == "zh"
+                 and "流沙的嘶嘶声现在几乎听不到了。"
+                 or "The hiss of flowing sand is almost imperceptible now.",
 
       verb = 'hiss',
       -- This is always preceded by an article, so...
@@ -36,7 +42,9 @@ function ossuary_portal(e)
 
   e.lua_marker('O',
       timed_marker {
-        disappear = "The hiss of flowing sand is gone.",
+        disappear = crawl.language() == "zh"
+                    and "流沙的嘶嘶声消失了。"
+                    or "The hiss of flowing sand is gone.",
         entity = 'staircase',
         turns = timeout_turns,
         single_timed = true,

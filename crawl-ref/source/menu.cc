@@ -57,6 +57,7 @@
 #ifdef USE_TILE
  #include "travel.h"
 #endif
+#include "database.h"
 #include "ui.h"
 #include "unicode.h"
 #include "unwind.h"
@@ -1360,7 +1361,8 @@ static string _command_to_string(command_type cmd)
 // standardized formatting for this
 string pad_more_with_esc(const string &s)
 {
-    return pad_more_with(s, menu_keyhelp_cmd(CMD_MENU_EXIT) + " exit");
+    return pad_more_with(s, menu_keyhelp_cmd(CMD_MENU_EXIT)
+        + (T_(" exit")));
 }
 
 string menu_keyhelp_cmd(command_type cmd)
@@ -1393,18 +1395,19 @@ string Menu::get_keyhelp(bool scrollable) const
     if (!scrollable && !is_set(MF_MULTISELECT))
         return "";
 
+    const bool zh = Options.language == lang_t::ZH;
     string navigation = "<lightgrey>";
     if (is_set(MF_ARROWS_SELECT))
-        navigation += menu_keyhelp_select_keys() + " select  ";
+        navigation += menu_keyhelp_select_keys() + (zh ? " 选择  " : " select  ");
 
     if (scrollable)
     {
         navigation +=
-            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + " page down  "
-            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + " page up  ";
+            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + (zh ? " 下一页  " : " page down  ")
+            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + (zh ? " 上一页  " : " page up  ");
     }
     if (!is_set(MF_MULTISELECT))
-        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + " exit";
+        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + (zh ? " 退出" : " exit");
     navigation += "</lightgrey>";
     if (is_set(MF_MULTISELECT))
     {
@@ -1412,20 +1415,19 @@ string Menu::get_keyhelp(bool scrollable) const
         // XX this may not work perfectly with the way InvMenu handles
         // selection
         const auto chosen_count = selected_entries().size();
-        navigation +=
-                "\n<lightgrey>"
-                "Letters toggle    ";
+        navigation += string("\n<lightgrey>")
+                + (zh ? "字母切换    " : "Letters toggle    ");
         if (is_set(MF_ARROWS_SELECT))
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_TOGGLE_SELECTED)
-                + " toggle selected    ";
+                + (zh ? " 切换选中    " : " toggle selected    ");
         }
         if (chosen_count)
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_ACCEPT_SELECTION)
                 + make_stringf(
-                    " accept (%zu chosen)"
-                    "</lightgrey>",
+                    zh ? " 确认（已选%zu项）</lightgrey>"
+                       : " accept (%zu chosen)</lightgrey>",
                 chosen_count);
         }
     }
@@ -1810,7 +1812,7 @@ bool Menu::process_command(command_type cmd)
             char linebuf[80] = "";
 
             const bool validline = title_prompt(linebuf, sizeof linebuf,
-                                                "Select what (regex)?");
+                T_("Select what (regex)?"));
 
             // XX what is the use case for this exiting, should this set lastch
             ret = (validline && linebuf[0]) ? filter_with_regex(linebuf) : true;

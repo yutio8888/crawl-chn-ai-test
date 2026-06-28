@@ -483,14 +483,14 @@ bool attack::distortion_affects_defender()
     {
     case SMALL_DMG:
         special_damage += 1 + random2avg(7, 2);
-        special_damage_message = make_stringf("Space warps around %s%s",
+        special_damage_message = make_stringf("空间在%s周围扭曲%s",
                                               defender_name(false).c_str(),
                                               attack_strength_punctuation(special_damage).c_str());
         break;
     case BIG_DMG:
         special_damage += 3 + random2avg(24, 2);
         special_damage_message =
-            make_stringf("Space warps horribly around %s%s",
+            make_stringf("空间在%s周围剧烈扭曲%s",
                          defender_name(false).c_str(),
                          attack_strength_punctuation(special_damage).c_str());
         break;
@@ -529,9 +529,8 @@ void attack::pain_affects_defender()
         if (special_damage && defender_visible)
         {
             special_damage_message =
-                make_stringf("%s %s in agony%s",
+                make_stringf("%s在痛苦中扭动%s",
                              defender->name(DESC_THE).c_str(),
-                             defender->conj_verb("writhe").c_str(),
                            attack_strength_punctuation(special_damage).c_str());
         }
     }
@@ -655,9 +654,8 @@ void attack::drain_defender()
         {
             special_damage_message =
                 make_stringf(
-                    "%s %s %s%s",
+                    "%s吸取了%s%s",
                     atk_name(DESC_THE).c_str(),
-                    attacker->conj_verb("drain").c_str(),
                     defender_name(true).c_str(),
                     attack_strength_punctuation(special_damage).c_str());
         }
@@ -732,6 +730,13 @@ string attack_strength_punctuation(int dmg)
  */
 string attack::evasion_margin_adverb()
 {
+    if (Options.language == lang_t::ZH)
+    {
+        return (ev_margin <= -20) ? "完全" :
+               (ev_margin <= -12) ? "" :
+               (ev_margin <= -6)  ? "险些"
+                                  : "勉强";
+    }
     return (ev_margin <= -20) ? " completely" :
            (ev_margin <= -12) ? "" :
            (ev_margin <= -6)  ? " closely"
@@ -1136,7 +1141,7 @@ bool attack::apply_damage_brand(const char *what)
 
     case SPWPN_FLAMING:
         calc_elemental_brand_damage(BEAM_FIRE,
-                                    defender->is_icy() ? "melt" : "burn",
+                                    defender->is_icy() ? "融化" : "灼烧",
                                     what);
         defender->expose_to_element(BEAM_FIRE, 2);
         if (defender->is_player())
@@ -1144,7 +1149,7 @@ bool attack::apply_damage_brand(const char *what)
         break;
 
     case SPWPN_FREEZING:
-        calc_elemental_brand_damage(BEAM_COLD, "freeze", what);
+        calc_elemental_brand_damage(BEAM_COLD, "冻结", what);
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
 
@@ -1159,9 +1164,8 @@ bool attack::apply_damage_brand(const char *what)
         {
             special_damage_message =
                 make_stringf(
-                    "%s %s%s",
+                    "%s抽搐了%s",
                     defender_name(false).c_str(),
-                    defender->conj_verb("convulse").c_str(),
                     attack_strength_punctuation(special_damage).c_str());
         }
         break;
@@ -1181,9 +1185,8 @@ bool attack::apply_damage_brand(const char *what)
         {
             special_damage_message =
                 make_stringf(
-                    "%s %s%s",
+                    "%s抽搐了%s",
                     defender_name(false).c_str(),
-                    defender->conj_verb("convulse").c_str(),
                     attack_strength_punctuation(special_damage).c_str());
         }
         break;
@@ -1199,8 +1202,8 @@ bool attack::apply_damage_brand(const char *what)
                     attack_strength_punctuation(special_damage);
             special_damage_message =
                 defender->is_player()
-                ? make_stringf("You are electrocuted%s", punctuation.c_str())
-                : make_stringf("Lightning courses through %s%s",
+                ? make_stringf("你被电击了%s", punctuation.c_str())
+                : make_stringf("闪电贯穿了%s%s",
                                defender->name(DESC_THE).c_str(),
                                punctuation.c_str());
             special_damage_flavour = BEAM_ELECTRICITY;
@@ -1408,16 +1411,13 @@ void attack::calc_elemental_brand_damage(beam_type flavour,
 
     if (needs_message && special_damage > 0 && verb)
     {
-        // XXX: assumes "what" is singular
         special_damage_message = make_stringf(
-            "%s %s %s%s%s",
+            "%s%s了%s%s%s",
             what ? what : atk_name(DESC_THE).c_str(),
-            what ? conjugate_verb(verb, false).c_str()
-                 : attacker->conj_verb(verb).c_str(),
-            // Don't allow reflexive if the subject wasn't the attacker.
+            verb,
             defender_name(!what).c_str(),
             flavour == BEAM_FIRE && defender->res_fire() < 0
-             || flavour == BEAM_COLD && defender->res_cold() < 0 ? " terribly"
+             || flavour == BEAM_COLD && defender->res_cold() < 0 ? "严重地"
                 : "",
             attack_strength_punctuation(special_damage).c_str());
     }

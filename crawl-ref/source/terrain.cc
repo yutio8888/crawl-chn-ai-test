@@ -13,6 +13,7 @@
 
 #include "act-iter.h"
 #include "areas.h"
+#include "options.h"
 #include "attack.h"
 #include "branch.h"
 #include "cloud.h"
@@ -831,6 +832,23 @@ void find_connected_identical(const coord_def &d, set<coord_def>& out, bool know
 
 void get_door_description(int door_size, const char** adjective, const char** noun)
 {
+    if (Options.language == lang_t::ZH)
+    {
+        static const char* zh_descriptions[] =
+        {
+            "极小的" , "有问题的门",
+            ""       , "门",
+            "大的"   , "门",
+            ""       , "大门",
+            "巨大的" , "大门",
+        };
+        int max_idx = static_cast<int>(ARRAYSZ(zh_descriptions) - 2);
+        const unsigned int idx = min(door_size*2, max_idx);
+        *adjective = zh_descriptions[idx];
+        *noun = zh_descriptions[idx+1];
+        return;
+    }
+
     const char* descriptions[] =
     {
         "miniscule " , "buggy door",
@@ -1788,10 +1806,20 @@ void fall_into_a_pool(dungeon_feature_type terrain)
         return;
     }
 
-    mprf("You fall into the %s!",
-         (terrain == DNGN_LAVA)       ? "lava" :
-         (terrain == DNGN_DEEP_WATER) ? "water"
-                                      : "programming rift");
+    if (Options.language == lang_t::ZH)
+    {
+        mprf("你掉进了%s！",
+             (terrain == DNGN_LAVA)       ? "熔岩" :
+             (terrain == DNGN_DEEP_WATER) ? "深水"
+                                          : "程序裂缝");
+    }
+    else
+    {
+        mprf("You fall into the %s!",
+             (terrain == DNGN_LAVA)       ? "lava" :
+             (terrain == DNGN_DEEP_WATER) ? "water"
+                                          : "programming rift");
+    }
     // included in default force_more_message
     enable_emergency_flight();
 }
@@ -1979,6 +2007,107 @@ const char *dungeon_feature_name(dungeon_feature_type rfeat)
         return nullptr;
 
     return get_feature_def(rfeat).vaultname;
+}
+
+// Returns Chinese display name for a feature, or nullptr to fall back to English.
+const char *dungeon_feature_name_zh(dungeon_feature_type rfeat)
+{
+    switch (rfeat)
+    {
+    // Fountains
+    case DNGN_FOUNTAIN_BLUE:       return "清澈的蓝色喷泉";
+    case DNGN_FOUNTAIN_SPARKLING:  return "闪烁的喷泉";
+    case DNGN_FOUNTAIN_BLOOD:      return "血之喷泉";
+    case DNGN_DRY_FOUNTAIN_BLUE:       return "枯竭的蓝色喷泉";
+    case DNGN_DRY_FOUNTAIN_SPARKLING:  return "枯竭的闪烁喷泉";
+    case DNGN_DRY_FOUNTAIN_BLOOD:      return "枯竭的血之喷泉";
+
+    // Branch stairs
+    case DNGN_ENTER_TEMPLE:        return "通往众神庙的阶梯";
+    case DNGN_EXIT_TEMPLE:         return "返回地牢的阶梯";
+    case DNGN_ENTER_LAIR:          return "通往巢穴的阶梯";
+    case DNGN_EXIT_LAIR:           return "返回地牢的阶梯";
+    case DNGN_ENTER_ORC:           return "通往兽人矿坑的阶梯";
+    case DNGN_EXIT_ORC:            return "返回地牢的阶梯";
+    case DNGN_ENTER_ELF:           return "通往精灵大厅的阶梯";
+    case DNGN_EXIT_ELF:            return "返回地牢的阶梯";
+    case DNGN_ENTER_SWAMP:         return "通往沼泽的阶梯";
+    case DNGN_EXIT_SWAMP:          return "返回地牢的阶梯";
+    case DNGN_ENTER_SHOALS:        return "通往浅滩的阶梯";
+    case DNGN_EXIT_SHOALS:         return "返回地牢的阶梯";
+    case DNGN_ENTER_SNAKE:         return "通往蛇坑的阶梯";
+    case DNGN_EXIT_SNAKE:          return "返回地牢的阶梯";
+    case DNGN_ENTER_SPIDER:        return "通往蜘蛛巢穴的阶梯";
+    case DNGN_EXIT_SPIDER:         return "返回地牢的阶梯";
+    case DNGN_ENTER_SLIME:         return "通往黏熔王国的阶梯";
+    case DNGN_EXIT_SLIME:          return "返回地牢的阶梯";
+    case DNGN_ENTER_VAULTS:        return "通往宝库的阶梯";
+    case DNGN_EXIT_VAULTS:         return "返回地牢的阶梯";
+    case DNGN_ENTER_CRYPT:         return "通往墓穴的阶梯";
+    case DNGN_EXIT_CRYPT:          return "返回地牢的阶梯";
+    case DNGN_ENTER_TOMB:          return "通往陵墓的阶梯";
+    case DNGN_EXIT_TOMB:           return "返回地牢的阶梯";
+    case DNGN_ENTER_DEPTHS:        return "通往深处的阶梯";
+    case DNGN_EXIT_DEPTHS:         return "返回地牢的阶梯";
+    case DNGN_ENTER_HELL:          return "通往地狱的阶梯";
+    case DNGN_EXIT_HELL:           return "返回地牢的阶梯";
+    case DNGN_ENTER_DIS:           return "通往狄斯铁城的阶梯";
+    case DNGN_EXIT_DIS:            return "返回地狱的阶梯";
+    case DNGN_ENTER_GEHENNA:       return "通往火焚地狱的阶梯";
+    case DNGN_EXIT_GEHENNA:        return "返回地狱的阶梯";
+    case DNGN_ENTER_COCYTUS:       return "通往冰封地狱的阶梯";
+    case DNGN_EXIT_COCYTUS:        return "返回地狱的阶梯";
+    case DNGN_ENTER_TARTARUS:      return "通往塔尔塔罗斯的阶梯";
+    case DNGN_EXIT_TARTARUS:       return "返回地狱的阶梯";
+    case DNGN_ENTER_ZOT:           return "通往佐特领域的阶梯";
+    case DNGN_EXIT_ZOT:            return "返回深处的阶梯";
+    case DNGN_ENTER_ABYSS:         return "通往深渊的大门";
+    case DNGN_EXIT_ABYSS:          return "返回地牢的大门";
+    case DNGN_ENTER_PANDEMONIUM:   return "通往魔界的大门";
+    case DNGN_EXIT_PANDEMONIUM:    return "返回地牢的大门";
+
+    // Portals
+    case DNGN_ENTER_OSSUARY:       return "沙覆的阶梯";
+    case DNGN_EXIT_OSSUARY:        return "返回地牢的阶梯";
+    case DNGN_ENTER_BAILEY:        return "通往监狱的大门";
+    case DNGN_EXIT_BAILEY:         return "返回地牢的大门";
+    case DNGN_ENTER_GAUNTLET:      return "通往竞技场的大门";
+    case DNGN_EXIT_GAUNTLET:       return "返回地牢的大门";
+    case DNGN_ENTER_ICE_CAVE:      return "通往冰窟的入口";
+    case DNGN_EXIT_ICE_CAVE:       return "返回地牢的入口";
+    case DNGN_ENTER_VOLCANO:       return "通往火山的入口";
+    case DNGN_EXIT_VOLCANO:        return "返回地牢的入口";
+    case DNGN_ENTER_WIZLAB:        return "通往巫师实验室的传送门";
+    case DNGN_EXIT_WIZLAB:         return "返回地牢的传送门";
+    case DNGN_ENTER_DESOLATION:    return "通往荒原的传送门";
+    case DNGN_EXIT_DESOLATION:     return "返回地牢的传送门";
+    case DNGN_ENTER_SEWER:         return "通往下水道的入口";
+    case DNGN_EXIT_SEWER:          return "返回地牢的入口";
+    case DNGN_ENTER_ZIGGURAT:      return "通往古墓迷宫的入口";
+    case DNGN_EXIT_ZIGGURAT:       return "返回地牢的入口";
+    case DNGN_ENTER_TROVE:         return "通往宝库的传送门";
+    case DNGN_EXIT_TROVE:          return "返回地牢的传送门";
+    // Shops
+    case DNGN_ENTER_SHOP:          return "商店入口";
+    case DNGN_ABANDONED_SHOP:      return "废弃的商店入口";
+
+    // Runed doors
+    case DNGN_RUNED_DOOR:          return "符文门";
+    case DNGN_RUNED_CLEAR_DOOR:    return "已开启的符文门";
+
+    // Misc
+    case DNGN_EXIT_DUNGEON:        return "通往地牢外的阶梯";
+    case DNGN_ESCAPE_HATCH_DOWN:   return "向下的逃生舱口";
+    case DNGN_ESCAPE_HATCH_UP:     return "向上的逃生舱口";
+    case DNGN_TRANSPORTER:         return "传送器";
+    case DNGN_TRANSPORTER_LANDING: return "传送器着陆点";
+    case DNGN_SEALED_DOOR:         return "封印之门";
+    case DNGN_OPEN_DOOR:           return "打开的门";
+    case DNGN_CLOSED_DOOR:         return "关闭的门";
+    case DNGN_ZOT_STATUE:          return "佐特雕像";
+
+    default: return nullptr;
+    }
 }
 
 void destroy_wall(const coord_def& p)

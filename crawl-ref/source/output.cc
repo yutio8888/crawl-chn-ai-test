@@ -16,6 +16,7 @@
 #include "areas.h"
 #include "branch.h"
 #include "colour.h"
+#include "database.h"
 #include "describe.h"
 #ifndef USE_TILE_LOCAL
 #endif
@@ -70,10 +71,39 @@ static string _level_description_string_hud()
     const PlaceInfo& place = you.get_place_info();
     string short_name = branches[place.branch].shortname;
 
+    // Chinese branch name lookup
+    if (Options.language == lang_t::ZH)
+    {
+        static const map<string, const char*> zh_names = {
+            { "Dungeon", "地牢" }, { "Temple", "神殿" },
+            { "Orcish Mines", "兽人矿坑" }, { "Elven Halls", "精灵殿堂" },
+            { "Lair", "兽巢" }, { "Swamp", "沼泽" },
+            { "Shoals", "浅滩" }, { "Snake Pit", "蛇坑" },
+            { "Spider Nest", "蜘蛛巢穴" }, { "Slime Pits", "史莱姆坑" },
+            { "Vaults", "宝库" }, { "Crypt", "墓穴" },
+            { "Tomb", "陵墓" }, { "Hell", "地狱" },
+            { "Dis", "铁之城" }, { "Gehenna", "火焚谷" },
+            { "Cocytus", "冰封湖" }, { "Tartarus", "深渊牢狱" },
+            { "Zot", "佐特领域" }, { "Depths", "深处" },
+            { "Abyss", "深渊" }, { "Pandemonium", "万魔殿" },
+            { "Ziggurat", "通天塔" }, { "Labyrinth", "迷宫" },
+            { "Bazaar", "集市" }, { "Troves", "宝藏库" },
+            { "Sewer", "下水道" }, { "Ossuary", "骨堂" },
+            { "Bailey", "堡垒" }, { "Gauntlet", "竞技场" },
+            { "Ice Cave", "冰窟" }, { "Volcano", "火山" },
+            { "Wizlab", "巫师实验室" }, { "Desolation", "荒原" },
+            { "Arena", "竞技场" },
+        };
+        auto it = zh_names.find(short_name);
+        if (it != zh_names.end())
+            short_name = it->second;
+    }
+
     if (brdepth[place.branch] > 1)
         short_name += make_stringf(":%d", you.depth);
-    // Indefinite articles
-    else if (place.branch != BRANCH_PANDEMONIUM
+    // Indefinite articles — not used in Chinese
+    else if (Options.language != lang_t::ZH
+             && place.branch != BRANCH_PANDEMONIUM
              && place.branch != BRANCH_DESOLATION
              && place.branch != BRANCH_ARENA
              && !is_connected_branch(place.branch))
@@ -338,10 +368,10 @@ static void _cprintf_touchui(const char *format, ...)
             cprintf("%2s", buf.c_str());
             break;
         case TOUCH_T_XL:
-            cprintf("XL Next");
+            cprintf("级下级");
             break;
         case TOUCH_T_PLACE:
-            cprintf("Place");
+            cprintf("位置");
             break;
         case TOUCH_V_PLACE:
             parts = split_string(":", _level_description_string_hud());
@@ -351,7 +381,7 @@ static void _cprintf_touchui(const char *format, ...)
                 cprintf("%s:%s", parts[0].substr(0,8-parts[1].size()).c_str(), parts[1].c_str());
             break;
         case TOUCH_T_NOISE:
-            cprintf("Noise");
+            cprintf("噪音");
             break;
         case TOUCH_T_TIME:
             buf = buf.substr(0, buf.size()-1);
@@ -714,7 +744,7 @@ static void _print_stats_equip(int x, int y)
     for (int i = SLOT_FIRST_STANDARD; i < NUM_EQUIP_SLOTS; ++i)
         total_slots += you.equipment.num_slots[i];
 
-    cprintf(total_slots > 8 ? "Eq: " : "Equip: ");
+    cprintf(total_slots > 8 ? "Eq: " : "装备: ");
     textcolour(LIGHTGREY);
     for (equipment_slot slot : slot_order)
     {
@@ -764,7 +794,7 @@ static void _print_stats_noise(int x, int y)
     bool silence = silenced(you.pos());
     int level = silence ? 0 : you.get_noise_perception(true);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Noise: ");
+    CPRINTF("噪音: ");
     colour_t noisecolour;
 
     // This is calibrated roughly so that in an open-ish area:
@@ -817,7 +847,7 @@ static void _print_stats_noise(int x, int y)
 
         // This needs to be one extra wide in case silence happens
         // immediately after super-loud (magenta) noise
-        CPRINTF("Silenced  ");
+        CPRINTF("沉默  ");
         Noise_Bar.reset(); // so it doesn't display a change bar after silence ends
     }
     else
@@ -859,7 +889,7 @@ static void _print_stats_gold(int x, int y)
     if (!_is_using_small_layout())
     {
         CGOTOXY(x, y, GOTO_STAT);
-        CPRINTF("Gold:");
+        CPRINTF("金币:");
         CGOTOXY(x+6, y, GOTO_STAT);
     }
     else
@@ -903,7 +933,7 @@ static void _print_stats_mp(int x, int y)
     }
 
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "MP: " : "Magic:  ");
+    CPRINTF(player_drained() ? "魔: " : "魔力:  ");
     textcolour(mp_colour);
     CPRINTF("%d", you.magic_points);
     if (!boosted)
@@ -969,7 +999,7 @@ static void _print_stats_hp(int x, int y)
     // Health: xxx/yyy (zzz)
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "HP: " : "Health: ");
+    CPRINTF(player_drained() ? "命: " : "生命: ");
     textcolour(hp_colour);
     CPRINTF("%d", you.hp);
     if (!boosted)
@@ -1448,7 +1478,7 @@ static void _redraw_title()
     else if (you.suppress_wizard && !small_layout)
         _draw_wizmode_flag("EX-WIZARD");
     else if (you.explore && !small_layout)
-        _draw_wizmode_flag("EXPLORE");
+        _draw_wizmode_flag("探索");
 #ifdef DGL_SIMPLE_MESSAGING
     update_message_status();
 #endif
@@ -1582,7 +1612,7 @@ void print_stats()
     {
         CGOTOXY(1, 8 - rows_hidden, GOTO_STAT);
         textcolour(Options.status_caption_colour);
-        CPRINTF("XL: ");
+        CPRINTF("级: ");
         if (_is_using_small_layout())
             CGOTOXY(5, 8, GOTO_STAT);
         textcolour(HUD_VALUE_COLOUR);
@@ -1593,7 +1623,7 @@ void print_stats()
         {
             textcolour(Options.status_caption_colour);
             if (!_is_using_small_layout())
-                CPRINTF("Next: ");
+                CPRINTF("下级: ");
             else
                 CGOTOXY(14, 8, GOTO_STAT);
             textcolour(HUD_VALUE_COLOUR);
@@ -1634,7 +1664,7 @@ void print_stats_level()
 
     CGOTOXY(19, ypos, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Place: ");
+    CPRINTF("位置: ");
 
     if (_is_using_small_layout())
         CGOTOXY(26, ypos, GOTO_STAT);
@@ -1670,18 +1700,18 @@ void draw_border()
     int dex_pos = sh_pos;
 
     // "Health:" and "Magic:" printed elsewhere
-    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("AC:");
-    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("EV:");
-    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("SH:");
+    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("防:");
+    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("闪:");
+    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("盾:");
 
-    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("Str:");
-    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("Int:");
-    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("Dex:");
+    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("力:");
+    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("智:");
+    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("敏:");
 
     // "XL:" and "Place:" printed elsewhere
     // "Noise:" printed elsewhere
     CGOTOXY(19, ac_pos + 4, GOTO_STAT);
-    CPRINTF(Options.show_game_time ? "Time:" : "Turn:");
+    CPRINTF(Options.show_game_time ? "时间:" : "回合:");
 }
 
 #ifndef USE_TILE_LOCAL
@@ -1689,7 +1719,7 @@ void smallterm_warning()
 {
     CGOTOXY(1,1, GOTO_CRT);
     clrscr();
-    CPRINTF("Your terminal window is too small; please resize to at least %d,%d", MIN_COLS, MIN_LINES);
+    CPRINTF("你的终端窗口太小；请至少调整到%d,%d", MIN_COLS, MIN_LINES);
 }
 #endif
 
@@ -1820,7 +1850,7 @@ string mpr_monster_list(bool past)
 
     describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
 
-    msg = "You ";
+    msg = "你 ";
     msg += (past ? "could" : "can");
     msg += " see ";
 
@@ -2012,6 +2042,23 @@ int equip_slot_by_name(const char *s)
         }
     }
 
+    // ZH fallback: equip_slot_name() returns Chinese in ZH mode, but Lua
+    // scripts and other programmatic callers pass English slot name strings
+    // (e.g. items.equipped_at("weapon")). Try matching against the invariant
+    // English names via equip_slot_name_en().
+    if (Options.language == lang_t::ZH)
+    {
+        for (int i = SLOT_FIRST_STANDARD; i <= SLOT_LAST_STANDARD; ++i)
+        {
+            const equipment_slot slot = static_cast<equipment_slot>(i);
+            if (!strcasecmp(s, equip_slot_name_en(slot, true)) ||
+                !strcasecmp(s, equip_slot_name_en(slot, false)))
+            {
+                return i;
+            }
+        }
+    }
+
     return -1;
 }
 
@@ -2059,7 +2106,7 @@ static string _stealth_bar(int label_length, int sw)
     string bar;
     //no colouring
     bar += _determine_colour_string(0, 5);
-    bar += chop_string("Stlth", label_length);
+    bar += chop_string(T_("Stlth"), label_length);
 
     const int unadjusted_pips = stealth_pips();
     const int bar_len = 10;
@@ -2097,7 +2144,7 @@ static void _append_overview_screen_item(column_composer& cols,
                     "<w>%c</w> - <%s>%s%s</%s>",
                     equip_char,
                     colname.c_str(),
-                    melded ? "melded " : "",
+                    melded ? (T_("melded ")) : "",
                     chop_string(item.name(DESC_PLAIN, true),
                             melded ? sw - 32 : sw - 25, false).c_str(),
                     colname.c_str());
@@ -2135,16 +2182,22 @@ static void _print_overview_screen_equip(column_composer& cols,
                 if (slot == SLOT_WEAPON && i == 0)
                     str = "  - " + you.unarmed_attack_name();
                 else if (slot_melded)
-                    str = "<darkgrey>(" + slot_name_lwr + " unavailable)</darkgrey>";
+                    str = Options.language == lang_t::ZH
+                        ? "<darkgrey>（" + slot_name_lwr + "不可用）</darkgrey>"
+                        : "<darkgrey>(" + slot_name_lwr + " unusable)</darkgrey>";
                 else
-                    str = "<darkgrey>(no " + slot_name_lwr + ")</darkgrey>";
+                    str = Options.language == lang_t::ZH
+                        ? "<darkgrey>（无" + slot_name_lwr + "）</darkgrey>"
+                        : "<darkgrey>(no " + slot_name_lwr + ")</darkgrey>";
 
                 cols.add_formatted(1, str, false);
                 continue;
             }
             else if (equipped[i].is_overflow)
             {
-                str = "  <darkgrey>[" + slot_name_lwr + " occupied]</darkgrey>";
+                str = Options.language == lang_t::ZH
+                    ? "  <darkgrey>[" + slot_name_lwr + "已满]</darkgrey>"
+                    : "  <darkgrey>[" + slot_name_lwr + " occupied]</darkgrey>";
                 cols.add_formatted(1, str, false);
                 continue;
             }
@@ -2172,7 +2225,7 @@ static string _overview_screen_title(int sw)
                                       get_job_name(you.char_class));
 
     handle_real_time();
-    string time_turns = make_stringf(" Turns: %d, Time: ", you.num_turns)
+    string time_turns = make_stringf(" 回合: %d, 时间: ", you.num_turns)
                       + make_time_string(you.real_time(), true);
 
     const int char_width = strwidth(species_job);
@@ -2308,9 +2361,9 @@ static vector<formatted_string> _get_overview_stats()
 
     entry.textcolour(HUD_CAPTION_COLOUR);
     if (player_drained())
-        entry.cprintf("HP:   ");
+        entry.cprintf(T_("HP:   "));
     else
-        entry.cprintf("Health: ");
+        entry.cprintf(T_("HP:   "));
 
     if (_boosted_hp())
         entry.textcolour(LIGHTBLUE);
@@ -2328,9 +2381,9 @@ static vector<formatted_string> _get_overview_stats()
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
         if (player_drained())
-            entry.cprintf("MP:   ");
+            entry.cprintf(T_("MP:   "));
         else
-            entry.cprintf("Magic:  ");
+            entry.cprintf(T_("MP:   "));
 
         if (_boosted_mp())
             entry.textcolour(LIGHTBLUE);
@@ -2352,9 +2405,9 @@ static vector<formatted_string> _get_overview_stats()
 
     entry.textcolour(HUD_CAPTION_COLOUR);
     if (player_drained())
-        entry.cprintf("Gold: ");
+        entry.cprintf("金币: ");
     else
-        entry.cprintf("Gold:   ");
+        entry.cprintf("金币:   ");
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2364,7 +2417,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("AC: ");
+    entry.cprintf("防: ");
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ac_mod()));
 
@@ -2374,7 +2427,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("EV: ");
+    entry.cprintf("闪: ");
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ev_mod()));
 
@@ -2384,7 +2437,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("SH: ");
+    entry.cprintf("盾: ");
 
     entry.textcolour(_colour_from_stat_mod(you.temp_sh_mod()));
 
@@ -2394,7 +2447,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Str: ");
+    entry.cprintf("力: ");
 
     entry.textcolour(_get_stat_colour(STAT_STR));
 
@@ -2404,7 +2457,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Int: ");
+    entry.cprintf("智: ");
 
     entry.textcolour(_get_stat_colour(STAT_INT));
 
@@ -2414,7 +2467,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Dex: ");
+    entry.cprintf("敏: ");
 
     entry.textcolour(_get_stat_colour(STAT_DEX));
 
@@ -2424,7 +2477,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("XL:     ");
+    entry.cprintf("等级:     ");
 
     entry.textcolour(HUD_VALUE_COLOUR);
     entry.cprintf("%d", you.experience_level);
@@ -2432,7 +2485,7 @@ static vector<formatted_string> _get_overview_stats()
     if (you.experience_level < you.get_max_xl())
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   Next: ");
+        entry.cprintf("   下一级: ");
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d%%", get_exp_progress());
@@ -2442,7 +2495,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("God:    ");
+    entry.cprintf("神:    ");
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2459,10 +2512,10 @@ static vector<formatted_string> _get_overview_stats()
     if (!you.has_mutation(MUT_INNATE_CASTER))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("Spells: ");
+        entry.cprintf("法术: ");
 
         entry.textcolour(HUD_VALUE_COLOUR);
-        entry.cprintf("%d/%d levels left",
+        entry.cprintf("剩余%d/%d等级",
                       player_spell_levels(), player_total_spell_levels());
 
         cols.add_formatted(3, entry.to_colour_string(), false);
@@ -2472,13 +2525,13 @@ static vector<formatted_string> _get_overview_stats()
     if (you.has_mutation(MUT_MULTILIVED))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("Lives:  ");
+        entry.cprintf("生命:  ");
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.lives);
 
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   Deaths: ");
+        entry.cprintf("   死亡: ");
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.deaths);
@@ -2572,6 +2625,7 @@ static vector<formatted_string> _get_overview_resistances(
     // First column, resist name is up to 8 chars
     int cwidth = 8;
     string out;
+    const bool zh = Options.language == lang_t::ZH;
 
     const int rfire = player_res_fire(false);
     out += _resist_composer("rFire", cwidth, rfire, 3, MR_RES_FIRE) + "\n";
@@ -2605,7 +2659,7 @@ static vector<formatted_string> _get_overview_resistances(
 
     if (!you.has_mutation(MUT_HP_CASTING))
     {
-        out += chop_string("MPRegen", cwidth);
+        out += chop_string(zh ? "回魔" : "MPRegen", cwidth);
 #if TAG_MAJOR_VERSION == 34
         const bool etheric = you.unrand_equipped(UNRAND_ETHERIC_CAGE);
         const int mp_regen = player_mp_regen() //round up
@@ -2727,29 +2781,29 @@ static string _extra_passive_effects()
 
     // Fo don't need a reminder that they can't teleport
     if (!you.stasis() && you.no_tele(false, false))
-        passives.emplace_back("no teleportation");
+        passives.emplace_back(T_("no teleportation"));
 
     if (you.no_cast())
-        passives.emplace_back("no spellcasting");
+        passives.emplace_back(T_("no spellcasting"));
 
     if (you.inaccuracy())
     {
         passives.emplace_back(
-            make_stringf("inaccuracy (-%d)", you.inaccuracy_penalty()).c_str());
+            make_stringf(T_("inaccuracy (-%d)"), you.inaccuracy_penalty()).c_str());
     }
 
     const int anger = you.angry();
     if (anger && !you.stasis() && !you.clarity() && !you.is_lifeless_undead())
     {
         passives.emplace_back(
-            make_stringf("random rage (%d%%)", anger).c_str());
+            make_stringf(T_("random rage (%d%%)"), anger).c_str());
     }
 
     const int corrode = you.scan_artefacts(ARTP_CORRODE);
     if (corrode)
     {
         passives.emplace_back(
-            make_stringf("corrode self (%d%%)",
+            make_stringf(T_("corrode self (%d%%)"),
                          corrosion_chance(corrode)).c_str());
     }
 
@@ -2757,54 +2811,54 @@ static string _extra_passive_effects()
     if (you.scan_artefacts(ARTP_SLOW))
     {
         passives.emplace_back(
-            make_stringf("slow self (%d%%)", slow).c_str());
+            make_stringf(T_("slow self (%d%%)"), slow).c_str());
     }
 
     const int harm = you.extra_harm();
     if (harm)
     {
         passives.emplace_back(
-            make_stringf("harm (+%d%% outgoing, +%d%% incoming)",
+            make_stringf(T_("harm (+%d%% outgoing, +%d%% incoming)"),
                          outgoing_harm_amount(harm),
                          incoming_harm_amount(harm)).c_str());
     }
 
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_MAYHEM))
-        passives.emplace_back("mayhem");
+        passives.emplace_back(T_("mayhem"));
 
     if (you.missile_repulsion())
-        passives.emplace_back("repel missiles");
+        passives.emplace_back(T_("repel missiles"));
 
     if (you.reflection())
-        passives.emplace_back("reflection");
+        passives.emplace_back(T_("reflection"));
 
     if (player_acrobatic())
-        passives.emplace_back("acrobat");
+        passives.emplace_back(T_("acrobat"));
 
     if (you.clarity())
-        passives.emplace_back("clarity");
+        passives.emplace_back(T_("clarity"));
 
     if (you.rmut_from_item()
         || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
     {
-        passives.emplace_back("resist mutation");
+        passives.emplace_back(T_("resist mutation"));
     }
 
     if (you.spirit_shield())
-        passives.emplace_back("guardian spirit");
+        passives.emplace_back(T_("guardian spirit"));
 
     if (you.rampaging())
         passives.emplace_back(_rampage_passive_string().c_str());
 
     if (you.faith())
-        passives.emplace_back("faith");
+        passives.emplace_back(T_("faith"));
 
     const int wizardry = player_wizardry();
     if (wizardry)
-        passives.emplace_back(make_stringf("wizardry (x%d)", wizardry));
+        passives.emplace_back(make_stringf(T_("wizardry (x%d)"), wizardry));
 
     if (you.archmagi())
-        passives.emplace_back("archmagi");
+        passives.emplace_back(T_("archmagi"));
 
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_ENERGY))
     {
@@ -2812,21 +2866,21 @@ static string _extra_passive_effects()
         if (channel)
         {
             passives.emplace_back(
-                make_stringf("channel magic (%d%%)", channel).c_str());
+                make_stringf(T_("channel magic (%d%%)"), channel).c_str());
         }
     }
 
     if (you.infusion_amount())
     {
         passives.emplace_back(
-            make_stringf("infuse magic (%d %s)",
+            make_stringf(T_("infuse magic (%d %s)"),
                          you.infusion_amount(),
                          you.has_mutation(MUT_HP_CASTING) ? "HP"
                                                           : "MP").c_str());
     }
 
     if (passives.empty())
-        return "no passive effects";
+        return T_("no passive effects");
     else
         return comma_separated_line(passives.begin(), passives.end(),
                                     ", ", ", ");
@@ -2837,6 +2891,8 @@ static string _extra_passive_effects()
 /// and runes/Orbs of Zot.
 static string _status_mut_rune_list(int sw)
 {
+    const bool zh = Options.language == lang_t::ZH;
+
     // print passive information
     string text = "<w>%:</w> ";
     text += _extra_passive_effects();
@@ -2855,15 +2911,20 @@ static string _status_mut_rune_list(int sw)
     int move_cost = (player_speed() * player_movement_speed()) / 10;
     if (move_cost != 10)
     {
-        const char *help = (move_cost <   8) ? "very quick" :
-                           (move_cost <  10) ? "quick" :
-                           (move_cost <  13) ? "slow"
-                                             : "very slow";
+        const char *help = zh
+            ? ((move_cost <   8) ? "极快" :
+               (move_cost <  10) ? "快" :
+               (move_cost <  13) ? "慢"
+                                 : "极慢")
+            : ((move_cost <   8) ? "very quick" :
+               (move_cost <  10) ? "quick" :
+               (move_cost <  13) ? "slow"
+                                 : "very slow");
         status.emplace_back(help);
     }
 
     if (status.empty())
-        text += "no status effects";
+        text += zh ? "无状态效果" : "no status effects";
     else
         text += comma_separated_line(status.begin(), status.end(), ", ", ", ");
     text += "\n";
@@ -2875,7 +2936,7 @@ static string _status_mut_rune_list(int sw)
 
     // print the Orb
     if (player_has_orb())
-        text += "\n<w>0:</w> Orb of Zot";
+        text += zh ? "\n<w>0:</w> 佐特宝珠" : "\n<w>0:</w> Orb of Zot";
 
     // print runes
     vector<string> runes;
@@ -2884,7 +2945,14 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        text += make_stringf("\n<w>%s:</w> %d/%d rune%s: %s",
+        if (zh)
+            text += make_stringf("\n<w>%s:</w> %d/%d个符文：%s",
+                    command_to_string(CMD_DISPLAY_RUNES).c_str(),
+                    (int)runes.size(), you.obtainable_runes,
+                    comma_separated_line(runes.begin(), runes.end(),
+                                         ", ", ", ").c_str());
+        else
+            text += make_stringf("\n<w>%s:</w> %d/%d rune%s: %s",
                     command_to_string(CMD_DISPLAY_RUNES).c_str(),
                     (int)runes.size(), you.obtainable_runes,
                     you.obtainable_runes == 1 ? "" : "s",

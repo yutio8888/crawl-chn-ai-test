@@ -17,6 +17,7 @@
 #include "artefact.h"
 #include "colour.h"
 #include "command.h"
+#include "database.h"
 #include "describe.h"
 #include "env.h"
 #include "evoke.h"
@@ -325,7 +326,7 @@ void InvMenu::set_preselect(const vector<SelItem> *pre)
 
 string slot_description()
 {
-    return make_stringf("%d/%d gear slots", inv_count(INVENT_GEAR), MAX_GEAR);
+    return make_stringf("%d/%d 装备栏位", inv_count(INVENT_GEAR), MAX_GEAR);
 }
 
 void InvMenu::set_title(const string &s)
@@ -557,7 +558,7 @@ static bool _has_temp_unwearable_armour()
  * the given selector and don't find any?
  *
  * @param selector      The given type of object_selector.
- * @return              A message such as "You aren't carrying any weapons."
+ * @return              A message such as T_("You aren't carrying any weapons.")
  *                      "Your armour is currently melded into you.", etc.
  */
 string no_selectables_message(int item_selector)
@@ -991,11 +992,11 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
     {
         // Mention the class selection shortcuts.
         if (is_set(MF_SECONDARY_SCROLL))
-            select_all = "go to first";
+            select_all = "跳至首个";
         else if (is_set(MF_MULTISELECT))
-            select_all = "select all";
+            select_all = "全选";
         else
-            select_all = "select first";
+            select_all = "选择首个";
     }
 
     for (int obj = 0; obj < NUM_OBJECT_CLASSES; ++obj)
@@ -1017,10 +1018,20 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
                 const string str = "Magical Staves ";
                 subtitle += string(strwidth(str) - strwidth(subtitle),
                                    ' ');
-                subtitle += "("+select_all+" with <w>";
-                for (char gly : glyphs)
-                    subtitle += gly;
-                subtitle += "</w><blue>)";
+                if (Options.language == lang_t::ZH)
+                {
+                    subtitle += "（按<w>";
+                    for (char gly : glyphs)
+                        subtitle += gly;
+                    subtitle += "</w><blue> " + select_all + "）";
+                }
+                else
+                {
+                    subtitle += "("+select_all+" with <w>";
+                    for (char gly : glyphs)
+                        subtitle += gly;
+                    subtitle += "</w><blue>)";
+                }
             }
         }
         add_entry(new MenuEntry(subtitle, MEL_SUBTITLE));
@@ -1155,47 +1166,62 @@ const char *item_class_name(int type, bool terse)
 {
     if (terse)
     {
+        // Terse names are used for internal matching (e.g. .des file parsing)
+        // and must remain in English. Display names use the else branch below.
         switch (type)
         {
+        case OBJ_WEAPONS:    return "weapon";
+        case OBJ_MISSILES:   return "missile";
+        case OBJ_ARMOUR:     return "armour";
+        case OBJ_WANDS:      return "wand";
+        case OBJ_SCROLLS:    return "scroll";
+        case OBJ_JEWELLERY:  return "jewellery";
+        case OBJ_POTIONS:    return "potion";
+        case OBJ_BOOKS:      return "book";
         case OBJ_STAVES:     return "magical staff";
+        case OBJ_ORBS:       return "orb";
         case OBJ_MISCELLANY: return "misc";
-        default:             return base_type_string((object_class_type) type);
+        case OBJ_CORPSES:    return "corpse";
+        case OBJ_GOLD:       return "gold";
+        case OBJ_RUNES:      return "rune";
+        case OBJ_GEMS:       return "gem";
+        case OBJ_TALISMANS:  return "talisman";
+        case OBJ_GIZMOS:     return "gizmo";
+        case OBJ_BAUBLES:    return "bauble";
+        default:             return "";
         }
     }
     else
     {
         switch (type)
         {
-        case OBJ_GOLD:       return "Gold";
-        case OBJ_WEAPONS:    return "Hand Weapons";
-        case OBJ_MISSILES:   return "Missiles";
-        case OBJ_ARMOUR:     return "Armour";
-        case OBJ_WANDS:      return "Wands";
-#if TAG_MAJOR_VERSION == 34
-        case OBJ_FOOD:       return "Comestibles";
-#endif
-        case OBJ_SCROLLS:    return "Scrolls";
-        case OBJ_JEWELLERY:  return "Jewellery";
-        case OBJ_POTIONS:    return "Potions";
-        case OBJ_BOOKS:      return "Books";
-        case OBJ_STAVES:     return "Magical Staves";
-#if TAG_MAJOR_VERSION == 34
-        case OBJ_RODS:       return "Rods";
-#endif
-        case OBJ_ORBS:       return "Orbs of Power";
-        case OBJ_MISCELLANY: return "Miscellaneous";
-        case OBJ_CORPSES:    return "Carrion";
-        case OBJ_RUNES:      return "Runes of Zot";
-        case OBJ_GEMS:       return "Ancient Gems";
-        case OBJ_TALISMANS:  return "Talismans";
-        case OBJ_GIZMOS:     return "Gizmo";
-        case OBJ_BAUBLES:    return "Baubles";
+        case OBJ_GOLD:       return "金币";
+        case OBJ_WEAPONS:    return "手持武器";
+        case OBJ_MISSILES:   return "投掷物";
+        case OBJ_ARMOUR:     return "护甲";
+        case OBJ_WANDS:      return "魔杖";
+        case OBJ_SCROLLS:    return "卷轴";
+        case OBJ_JEWELLERY:  return "珠宝";
+        case OBJ_POTIONS:    return "药水";
+        case OBJ_BOOKS:      return "书籍";
+        case OBJ_STAVES:     return "法杖";
+        case OBJ_ORBS:       return "宝珠";
+        case OBJ_MISCELLANY: return "杂物";
+        case OBJ_CORPSES:    return "尸体";
+        case OBJ_RUNES:      return "佐特符文";
+        case OBJ_GEMS:       return "远古宝石";
+        case OBJ_TALISMANS:  return "护符";
+        case OBJ_GIZMOS:     return "小装置";
+        case OBJ_BAUBLES:    return "小饰品";
         }
     }
     return "";
 }
 
-const char* equip_slot_name(equipment_slot type, bool terse)
+// Always returns the English slot name, regardless of language setting.
+// Used by equip_slot_by_name() and other programmatic slot name lookups
+// where the return value is compared against English string constants.
+const char* equip_slot_name_en(equipment_slot type, bool terse)
 {
     switch (type)
     {
@@ -1214,6 +1240,32 @@ const char* equip_slot_name(equipment_slot type, bool terse)
     case SLOT_HAUNTED_AUX: return "Armour";
     default:               return "";
     }
+}
+
+const char* equip_slot_name(equipment_slot type, bool terse)
+{
+    if (Options.language == lang_t::ZH)
+    {
+        switch (type)
+        {
+        case SLOT_WEAPON:      return "武器";
+        case SLOT_CLOAK:       return "披风";
+        case SLOT_HELMET:      return "头盔";
+        case SLOT_GLOVES:      return "手套";
+        case SLOT_BOOTS:       return "靴子";
+        case SLOT_WEAPON_OR_OFFHAND:
+        case SLOT_OFFHAND:     return "副手";
+        case SLOT_BODY_ARMOUR: return terse ? "护甲" : "身体护甲";
+        case SLOT_BARDING:     return "战甲";
+        case SLOT_RING:        return "戒指";
+        case SLOT_AMULET:      return "护身符";
+        case SLOT_GIZMO:       return "小装置";
+        case SLOT_HAUNTED_AUX: return "护甲";
+        default:               return "";
+        }
+    }
+
+    return equip_slot_name_en(type, terse);
 }
 
 vector<SelItem> select_items(const vector<const item_def*> &items,
@@ -1619,7 +1671,7 @@ bool maybe_warn_about_removing(const item_def& item)
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
         prompt += "Really unwield ";
     else if (item.base_type == OBJ_ARMOUR)
-        prompt += "Really take off ";
+        prompt += "真的要脱下";
     else
         prompt += "Really remove ";
 
@@ -1640,7 +1692,7 @@ static string _operation_verb(operation_types oper)
     case OPER_WIELD:          return "wield";
     case OPER_QUAFF:          return "quaff";
     case OPER_DROP:           return "drop";
-    case OPER_TAKEOFF:        return "take off";
+    case OPER_TAKEOFF:        return "脱下";
     case OPER_WEAR:           return "wear";
     case OPER_PUTON:          return "put on";
     case OPER_REMOVE:         return "remove";
@@ -1831,7 +1883,9 @@ int prompt_invent_item(const char *prompt,
         }
 
         if (need_prompt)
-            mprf(MSGCH_PROMPT, "%s (<w>?</w> for menu, <w>Esc</w> to quit)", prompt);
+            mprf(MSGCH_PROMPT,
+                 T_("%s (<w>?</w> for menu, <w>Esc</w> to quit)"),
+                 prompt);
         else
             flush_prev_message();
 

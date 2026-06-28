@@ -377,3 +377,15 @@ CMD_GAME_MENU
 CMD_GAME_MENU verbose
 
 显示这个游戏的菜单。
+%%%%
+CMD_CHARACTER_DUMP
+
+导出角色进度
+%%%%
+CMD_EXPLORE_NO_REST
+
+自动探索当前楼层，不先休息
+%%%%
+CMD_TOGGLE_KEYBOARD verbose
+
+切换屏幕键盘的可见性。

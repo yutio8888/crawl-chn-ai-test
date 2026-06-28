@@ -152,6 +152,7 @@ const char* feat_type_name(dungeon_feature_type feat);
 dungeon_feature_type dungeon_feature_by_name(const string &name);
 vector<string> dungeon_feature_matches(const string &name);
 const char *dungeon_feature_name(dungeon_feature_type rfeat);
+const char *dungeon_feature_name_zh(dungeon_feature_type rfeat);
 void destroy_wall(const coord_def& p);
 void set_terrain_changed(const coord_def c);
 bool cell_triggers_conduct(const coord_def pos);

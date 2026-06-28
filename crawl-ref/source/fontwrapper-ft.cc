@@ -28,6 +28,9 @@
 #define GLYPHS_PER_ROWCOL 16
 // char to use if we can't find it in the font (upside-down question mark)
 #define MISSING_CHAR 0xbf
+// CJK fallback font — loaded alongside the primary font to provide glyphs
+// for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
+#define CJK_FALLBACK_FONT "contrib/fonts/SarasaMonoSC-Regular.ttf"
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -69,6 +72,8 @@ FTFontWrapper::FTFontWrapper() :
     m_max_height(0),
     ttf(nullptr),
     face(nullptr),
+    cjk_face(nullptr),
+    cjk_ttf(nullptr),
     pixels(nullptr),
     fsize(0)
 {
@@ -82,7 +87,10 @@ FTFontWrapper::~FTFontWrapper()
     delete m_buf;
     if (face)
         FT_Done_Face(face);
+    if (cjk_face)
+        FT_Done_Face(cjk_face);
     delete[] ttf;
+    delete[] cjk_ttf;
 }
 
 /**
@@ -113,8 +121,9 @@ bool FTFontWrapper::configure_font()
     m_min_offset    = 0;
 
     charsz = coord_def(1,1);
-    // Grow character size to power of 2
-    while (charsz.x <= m_max_advance.x)
+    // Grow character size to power of 2.
+    // CJK glyphs can be up to 2x the base advance, so use 2x width.
+    while (charsz.x <= m_max_advance.x * 2)
         charsz.x *= 2;
     while (charsz.y <= m_max_advance.y)
         charsz.y *= 2;
@@ -216,6 +225,43 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     m_atlas_lru.clear();
     m_atlas_lru.reserve(MAX_GLYPHS);
 
+    // Load CJK fallback font for Chinese/Japanese/Korean characters.
+    // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
+    // that exist in neither font.
+    string cjk_path = datafile_path(CJK_FALLBACK_FONT, false, true);
+    if (cjk_path.c_str()[0] != 0)
+    {
+        FILE *fc = fopen_u(cjk_path.c_str(), "rb");
+        if (fc)
+        {
+            unsigned long cjk_size = file_size(fc);
+            cjk_ttf = new FT_Byte[cjk_size];
+            if (fread(cjk_ttf, 1, cjk_size, fc) == cjk_size)
+            {
+                FT_Error cjk_err = FT_New_Memory_Face(library, cjk_ttf,
+                                        cjk_size, 0, &cjk_face);
+                if (!cjk_err)
+                {
+                    FT_Set_Pixel_Sizes(cjk_face,
+                        display_density.logical_to_device(fsize),
+                        display_density.logical_to_device(fsize));
+                }
+                else
+                {
+                    delete[] cjk_ttf;
+                    cjk_ttf = nullptr;
+                    cjk_face = nullptr;
+                }
+            }
+            else
+            {
+                delete[] cjk_ttf;
+                cjk_ttf = nullptr;
+            }
+            fclose(fc);
+        }
+    }
+
     return configure_font();
 }
 
@@ -240,20 +286,39 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
     if (!glyph.valid)
     {
         FT_Int glyph_index = FT_Get_Char_Index(face, ch);
+        FT_Face use_face = face;
+
+        // Try CJK fallback font if the primary font lacks this glyph
+        if (!glyph_index && cjk_face)
+        {
+            glyph_index = FT_Get_Char_Index(cjk_face, ch);
+            if (glyph_index)
+                use_face = cjk_face;
+        }
+
         if (!glyph_index)
-            glyph_index = FT_Get_Char_Index(face, MISSING_CHAR);
+            glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
+
         // need to use FT_LOAD_RENDER, otherwise glyph->bitmap isn't loaded
-        FT_Error error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER |
+        FT_Error error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
                 (Options.tile_font_ft_light ? FT_LOAD_TARGET_LIGHT : 0));
         ASSERT(!error);
-        FT_Bitmap *bmp = &face->glyph->bitmap;
+        FT_Bitmap *bmp = &use_face->glyph->bitmap;
         ASSERT(bmp);
 
-        glyph.offset = face->glyph->bitmap_left;
-        glyph.advance = face->glyph->advance.x >> 6;
-        glyph.ascender = face->glyph->bitmap_top;
+        glyph.offset = use_face->glyph->bitmap_left;
+        glyph.advance = use_face->glyph->advance.x >> 6;
+        glyph.ascender = use_face->glyph->bitmap_top;
         glyph.width = bmp->width;
         glyph.renderable = !!bmp->buffer;
+
+        // For CJK fallback glyphs, use Sarasa's native ascender values.
+        // Forcing a uniform ascender caused glyphs to appear at different
+        // heights because each CJK character's bitmap has different visual
+        // content within the same glyph cell (e.g. "一" vs "龘").
+        // Sarasa Mono SC is designed to be baseline-compatible at the same
+        // point size, so native ascenders give consistent results.
+
         glyph.valid = true;
     }
     return glyph;
@@ -264,15 +329,24 @@ void FTFontWrapper::load_glyph(unsigned int c, char32_t uchar)
     // get on with rendering the new glyph
     FT_Error error;
     FT_Int glyph_index = FT_Get_Char_Index(face, uchar);
+    FT_Face use_face = face;
+
+    // Try CJK fallback font if the primary font lacks this glyph
+    if (!glyph_index && cjk_face)
+    {
+        glyph_index = FT_Get_Char_Index(cjk_face, uchar);
+        if (glyph_index)
+            use_face = cjk_face;
+    }
 
     if (!glyph_index)
-        glyph_index = FT_Get_Char_Index(face, MISSING_CHAR);
+        glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
 
-    error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER |
+    error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
         (Options.tile_font_ft_light ? FT_LOAD_TARGET_LIGHT : 0));
     ASSERT(!error);
 
-    FT_Bitmap *bmp = &face->glyph->bitmap;
+    FT_Bitmap *bmp = &use_face->glyph->bitmap;
     ASSERT(bmp);
 
     // Was int prior to freetype 2.5.4, then became unsigned.
@@ -373,14 +447,29 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
     {
         for (unsigned int x = 0; x < width; x++)
         {
-            GlyphInfo &glyph = get_glyph_info(chars[i]);
+            char32_t ch = chars[i];
+
+            // Skip CJK continuation markers (ZERO WIDTH SPACE) inserted
+            // by TextRegion::addstr_aux for double-width characters.
+            if (ch == 0x200B)
+            {
+                i++;
+                continue;
+            }
+
+            GlyphInfo &glyph = get_glyph_info(ch);
             uint8_t col_bg = colours[i] >> 4;
             uint8_t col_fg = colours[i] & 0xF;
+
+            int char_w = wcwidth(ch);
+            if (char_w <= 0)
+                char_w = 1; // combining/control chars: treat as width 1
 
             if (col_bg != 0)
             {
                 GLWPrim rect(adv.x, adv.y,
-                             adv.x + m_max_advance.x, adv.y + m_max_advance.y);
+                             adv.x + m_max_advance.x * char_w,
+                             adv.y + m_max_advance.y);
                 // Leave tex coords at their default 0.0f
                 VColour col(term_colours[col_bg].r,
                             term_colours[col_bg].g,
@@ -393,7 +482,7 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
 
             if (glyph.renderable)
             {
-                unsigned int c = map_unicode(chars[i]);
+                unsigned int c = map_unicode(ch);
                 int this_width = glyph.width;
 
                 float tex_x = (float)(c % GLYPHS_PER_ROWCOL) / (float)GLYPHS_PER_ROWCOL;

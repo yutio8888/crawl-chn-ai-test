@@ -44,6 +44,7 @@
 #include "traps.h"
 #include "rltiles/tiledef-icons.h"
 #include "wiz-dgn.h"
+#include "database.h"
 
 #define LAST_MISSILE_SLOT_KEY "last_missile_type"
 
@@ -124,16 +125,18 @@ namespace quiver
             return true;
         }
         if (af_hp_check)
-            mpr("You are too injured to fight recklessly!");
+            mpr(T_("You are too injured to fight recklessly!"));
         else if (af_mp_check && !you.has_mutation(MUT_HP_CASTING)
             && you.magic_points == 0)
         {
-            mpr("You are out of magic!");
+            mpr("魔力耗尽！");
         }
         else if (af_mp_check)
         {
-            mprf("You are too depleted to draw on your %s recklessly!",
-                you.has_mutation(MUT_HP_CASTING) ? "health" : "magic");
+            const bool zh = Options.language == lang_t::ZH;
+            mprf(T_("You are too depleted to draw on your %s recklessly!"),
+                zh ? (you.has_mutation(MUT_HP_CASTING) ? "生命" : "魔力")
+                   : (you.has_mutation(MUT_HP_CASTING) ? "health" : "magic"));
         }
         return af_hp_check || af_mp_check;
     }
@@ -249,9 +252,13 @@ namespace quiver
     string action_cycler::fire_key_hints() const
     {
         const bool no_other_items = *get() == *next();
-        string key_hint = no_other_items
-                            ? ", <w>%</w> - select action"
-                            : ", <w>%</w> - select action, <w>%</w> or <w>%</w> - cycle";
+        string key_hint = Options.language == lang_t::ZH
+            ? (no_other_items
+                ? ", <w>%</w> - 选择动作"
+                : ", <w>%</w> - 选择动作, <w>%</w> 或 <w>%</w> - 循环")
+            : (no_other_items
+                ? ", <w>%</w> - select action"
+                : ", <w>%</w> - select action, <w>%</w> or <w>%</w> - cycle");
         insert_commands(key_hint,
                         { CMD_TARGET_SELECT_ACTION,
                           CMD_TARGET_CYCLE_QUIVER_BACKWARD,
@@ -378,7 +385,7 @@ namespace quiver
 
         string quiver_verb() const override
         {
-            return "fire";
+            return T_("fire");
         }
 
         formatted_string quiver_description(bool short_desc=false) const override
@@ -394,7 +401,9 @@ namespace quiver
 
             if (!short_desc)
             {
-                string verb = you.confused() ? "confused " : "";
+                string verb = you.confused()
+                    ? (T_("confused "))
+                    : "";
                 verb += quiver_verb();
                 qdesc.cprintf("%s: %c) ", uppercase_first(verb).c_str(),
                                 weapon.slot);
@@ -457,6 +466,7 @@ namespace quiver
 
         string quiver_verb() const override
         {
+            const bool zh = Options.language == lang_t::ZH;
             const item_def *weapon = you.weapon();
 
             if (!weapon)
@@ -471,17 +481,17 @@ namespace quiver
                     // melee_attack::set_attack_verb for the real thing.
                     const vorpal_damage_type dt = you.damage_type(nullptr);
                     if (dt & DVORP_CLAWING || dt & DVORP_TENTACLE)
-                        return "attack";
+                        return T_("attack");
                 }
-                return "punch";
+                return T_("punch");
             }
 
             if (weapon_reach(*weapon) > 1)
-                return "reach";
+                return T_("reach");
             else if (attack_cleaves(you))
-                return "cleave";
+                return T_("cleave");
             else
-                return "hit"; // could use more subtype flavor Vs?
+                return T_("hit"); // could use more subtype flavor Vs?
         }
 
         formatted_string quiver_description(bool short_desc=false) const override
@@ -497,7 +507,9 @@ namespace quiver
 
             if (!short_desc)
             {
-                string verb = you.confused() ? "confused " : "";
+                string verb = you.confused()
+                    ? (T_("confused "))
+                    : "";
 
                 verb += quiver_verb();
                 qdesc.cprintf("%s: %c) ", uppercase_first(verb).c_str(),
@@ -831,7 +843,10 @@ namespace quiver
 
         // TODO: can get_fire_order be generalized?
 
-        string quiver_verb() const override { return "Activate"; }
+        string quiver_verb() const override
+        {
+            return T_("Activate");
+        }
         virtual bool is_enabled() const override = 0;
         virtual void trigger(dist &) override = 0;
 
@@ -937,8 +952,14 @@ namespace quiver
             {
                 const string verb =
                     make_stringf("%s%s",
-                                 you.confused() ? "confused " : "",
-                                 is_throwable(&you, quiver) ? "throw" : "toss (no damage)");
+                                 you.confused()
+                                    ? (T_("confused "))
+                                    : "",
+                                 Options.language == lang_t::ZH
+                                    ? (is_throwable(&you, quiver)
+                                        ? "投掷" : "抛掷（无伤害）")
+                                    : (is_throwable(&you, quiver)
+                                        ? "throw" : "toss (no damage)"));
                 qdesc.cprintf("%s: ", uppercase_first(verb).c_str());
             }
 
@@ -1171,9 +1192,9 @@ namespace quiver
 
             qdesc.textcolour(Options.status_caption_colour);
             if (channelled_spell_active(spell))
-                qdesc.cprintf("Continue: ");
+                qdesc.cprintf(T_("Continue: "));
             else
-                qdesc.cprintf("Cast: ");
+                qdesc.cprintf("施放: ");
 
             qdesc.textcolour(quiver_color());
 
@@ -1579,6 +1600,9 @@ namespace quiver
         {
             if (!is_valid())
                 return "Buggy";
+            if (Options.language == lang_t::ZH)
+                return you.inv[item_slot].base_type == OBJ_SCROLLS ? "阅读"
+                                                                   : "饮用";
             return you.inv[item_slot].base_type == OBJ_SCROLLS ? "Read"
                                                                : "Drink";
         }
@@ -1706,7 +1730,7 @@ namespace quiver
 
         virtual string quiver_verb() const override
         {
-            return "Zap";
+            return T_("Zap");
         }
 
         virtual vector<shared_ptr<action>> get_fire_order(
@@ -1797,7 +1821,7 @@ namespace quiver
 
         string quiver_verb() const override
         {
-            return "Evoke";
+            return T_("Evoke");
         }
 
         bool is_targeted() const override
@@ -2456,14 +2480,14 @@ namespace quiver
             string s = more_message + "\n";
 
             if (any_items)
-                s += "[<w>*/%</w>] inventory  ";
+                s += "[<w>*/%</w>] 物品栏  ";
             if (any_spells)
-                s += "[<w>&</w>] all spells  ";
+                s += "[<w>&</w>] 所有法术  ";
             if (any_abilities)
-                s += "[<w>^</w>] all abilities  ";
+                s += "[<w>^</w>] 所有能力  ";
 
 
-            string mode = make_stringf("%s focus mode: %s",
+            string mode = make_stringf("%s 聚焦模式: %s",
                 menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
                 focus_mode == Focus::NONE ? "<w>off</w>|on"
                                           : "off|<w>on</w>");;
@@ -2661,8 +2685,8 @@ namespace quiver
         bool _choose_from_inv()
         {
             int slot = prompt_invent_item(allow_empty
-                                            ? "Quiver which item? (- for none)"
-                                            : "Quiver which item?",
+                                            ? "要设置哪个物品为快捷动作？（- 清除）"
+                                            : "要设置哪个物品为快捷动作？",
                                           menu_type::invlist, OSEL_QUIVER_ACTION,
                                           OPER_QUIVER, invprompt_flag::hide_known, '-');
 
@@ -2769,7 +2793,7 @@ namespace quiver
             else if (key == '&' && any_spells)
             {
                 const int skey = list_spells(false, false, false, false,
-                                                    "quiver");
+                                                    "快捷施放");
                 if (skey == 0)
                     return true;
                 if (isalpha(skey))
@@ -2787,7 +2811,7 @@ namespace quiver
 
         virtual formatted_string calc_title() override
         {
-            string s = "Quiver which action? ";
+            string s = "要设置哪个快捷动作？";
             vector<string> extra_cmds;
 
             if (allow_empty)

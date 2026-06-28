@@ -13,6 +13,7 @@
 
 #include "artefact.h"
 #include "branch.h"
+#include "database.h"
 #include "cio.h"
 #include "colour.h"
 #include "describe.h"
@@ -1123,10 +1124,10 @@ void ShopMenu::update_help()
     //[Esc] exit          [Tab] buy|examine items     [a-j] mark item for purchase
     //[/] sort (type)     [Enter] buy marked items    [A-J] put item on shopping list
     const bool voucher = have_voucher();
-    string top_line = make_stringf("<yellow>You have %d gold piece%s%s.",
+    string top_line = make_stringf("<yellow>你拥有 %d 枚金币%s%s。",
                                    you.gold,
-                                   you.gold != 1 ? "s" : "",
-                                   voucher ? " and a voucher" : "");
+                                   you.gold != 1 ? "" : "",
+                                   voucher ? "和一张代金券" : "");
     const int total_cost = !can_purchase ? 0 : selected_cost(true);
     if (total_cost > you.gold)
     {
@@ -1135,27 +1136,24 @@ void ShopMenu::update_help()
         {
             top_line += "<lightred>";
             top_line +=
-                make_stringf(" Purchasing will use your shop voucher and %d gold piece%s.",
-                             total_cost - max,
-                             (total_cost - max != 1) ? "s" : "");
+                make_stringf(" 购买将使用你的代金券和 %d 枚金币。",
+                             total_cost - max);
             top_line += "</lightred>";
         }
         else
         {
             top_line += "<lightred>";
             top_line +=
-                make_stringf(" You are short %d gold piece%s for the purchase.",
-                             total_cost - you.gold,
-                             (total_cost - you.gold != 1) ? "s" : "");
+                make_stringf(" 你还差 %d 枚金币才能购买。",
+                             total_cost - you.gold);
             top_line += "</lightred>";
         }
     }
     else if (total_cost)
     {
         top_line +=
-            make_stringf(" After the purchase, you will have %d gold piece%s.",
-                         you.gold - total_cost,
-                         (you.gold - total_cost != 1) ? "s" : "");
+            make_stringf(" 购买后，你将剩余 %d 枚金币。",
+                         you.gold - total_cost);
     }
     top_line += "</yellow>";
 
@@ -1574,9 +1572,9 @@ void shop()
     redraw_screen();
     update_screen();
     if (menu.bought_something)
-        mprf("Thank you for shopping at %s!", shopname.c_str());
+        mprf(T_("Thank you for shopping at %s!"), shopname.c_str());
     if (any_on_list)
-        mpr("You can access your shopping list by pressing '$'.");
+        mpr(T_("You can access your shopping list by pressing '$'."));
 }
 
 void shop(shop_struct& shop, const level_pos& pos)
@@ -1610,36 +1608,37 @@ shop_struct *shop_at(const coord_def& where, bool force_lookup)
 
 string shop_type_name(shop_type type)
 {
+    const bool zh = Options.language == lang_t::ZH;
     switch (type)
     {
         case SHOP_WEAPON_ANTIQUE:
-            return "Antique Weapon";
+            return zh ? "古董武器" : "Antique Weapon";
         case SHOP_ARMOUR_ANTIQUE:
-            return "Antique Armour";
+            return zh ? "古董护甲" : "Antique Armour";
         case SHOP_WEAPON:
-            return "Weapon";
+            return zh ? "武器" : "Weapon";
         case SHOP_ARMOUR:
-            return "Armour";
+            return zh ? "护甲" : "Armour";
         case SHOP_JEWELLERY:
-            return "Jewellery";
+            return zh ? "珠宝" : "Jewellery";
         case SHOP_BOOK:
-            return "Book";
+            return zh ? "书籍" : "Book";
 #if TAG_MAJOR_VERSION == 34
         case SHOP_EVOKABLES:
-            return "Gadget";
+            return zh ? "小装置" : "Gadget";
         case SHOP_FOOD:
-            return "Removed Food";
+            return zh ? "已移除食品" : "Removed Food";
 #endif
         case SHOP_SCROLL:
-            return "Magic Scroll";
+            return zh ? "魔法卷轴" : "Magic Scroll";
         case SHOP_GENERAL_ANTIQUE:
-            return "Assorted Antiques";
+            return zh ? "杂项古董" : "Assorted Antiques";
         case SHOP_DISTILLERY:
-            return "Distillery";
+            return zh ? "蒸馏酒坊" : "Distillery";
         case SHOP_GENERAL:
-            return "General Store";
+            return zh ? "杂货铺" : "General Store";
         default:
-            return "Bug";
+            return zh ? "未知" : "Bug";
     }
 }
 
@@ -2321,7 +2320,7 @@ void ShoppingList::gold_changed(int old_amount, int new_amount)
 
         mpr_comma_separated_list("You now have enough gold to ", descs,
                                  ", or ");
-        mpr("You can access your shopping list by pressing '$'.");
+        mpr(T_("You can access your shopping list by pressing '$'."));
 
         // Our gold has changed, maybe we can buy different things now.
         refresh();
@@ -2348,9 +2347,14 @@ public:
     string get_keyhelp(bool) const override
     {
         const bool voucher = have_voucher();
-        string s = make_stringf("<yellow>You have %d gold pieces%s</yellow>\n"
-                                "<lightgrey>", you.gold,
-                                voucher ? " and a voucher." : "");
+        string s = make_stringf(Options.language == lang_t::ZH
+                                ? "<yellow>你拥有 %d 枚金币%s</yellow>\n<lightgrey>"
+                                : "<yellow>You have %d gold%s</yellow>\n<lightgrey>",
+                                you.gold,
+                                voucher
+                                    ? (Options.language == lang_t::ZH
+                                        ? "和一张凭证。" : " and a voucher.")
+                                    : "");
 
         if (view_only)
             s += "Choose to examine item  ";
@@ -2394,7 +2398,7 @@ formatted_string ShoppingListMenu::calc_title()
     const int total_cost = you.props[SHOPPING_LIST_COST_KEY];
 
     fs.textcolour(title->colour);
-    fs.cprintf("Shopping list: %d %s%s, total cost %d gold pieces",
+    fs.cprintf("购物清单: %d %s%s，共需 %d 枚金币",
                 title->quantity, title->text.c_str(),
                 title->quantity > 1 ? "s" : "",
                 total_cost);
@@ -2480,7 +2484,7 @@ bool ShoppingListMenu::examine_index(int i)
     {
         // HACK: Assume it's some kind of portal vault.
         const string info = make_stringf(
-                     "%s with an entry fee of %d gold pieces.",
+                     "%s 入场费 %d 枚金币。",
                      list.describe_thing(*thing, DESC_A).c_str(),
                      (int) list.thing_cost(*thing));
         show_description(info.c_str());

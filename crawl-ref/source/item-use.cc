@@ -150,32 +150,32 @@ static string _default_use_title(operation_types oper)
     {
     case OPER_EQUIP:
         return Options.equip_unequip
-            ? "Equip or unequip which item?"
-            : "Equip which item?";
+            ? "装备或卸下哪个物品？"
+            : "装备哪个物品？";
     case OPER_WIELD:
         return Options.equip_unequip
-            ? "Wield or unwield which item (- for none)?"
-            : "Wield which item (- for none)?";
+            ? "持握或放下哪个物品（- 取消）？"
+            : "持握哪个物品（- 取消）？";
     case OPER_WEAR:
         if (Options.equip_unequip)
-            return "Wear or take off which item?";
-        return "Wear which item?";
+            return "穿戴或脱下哪个物品？";
+        return "穿戴哪个物品？";
     case OPER_PUTON:
         return Options.equip_unequip
-            ? "Put on or remove which piece of jewellery?"
-            : "Put on which piece of jewellery?";
+            ? "佩戴或摘下哪个首饰？"
+            : "佩戴哪个首饰？";
     case OPER_QUAFF:
-        return "Drink which item?";
+        return "饮用哪个物品？";
     case OPER_READ:
-        return "Read which item?";
+        return "阅读哪个物品？";
     case OPER_EVOKE:
-        return "Evoke which item?";
+        return "激发哪个物品？";
     case OPER_TAKEOFF:
-        return "Take off which piece of armour?";
+        return "脱下哪件防具？";
     case OPER_REMOVE:
-        return "Remove which piece of jewellery?";
+        return "摘下哪个首饰？";
     case OPER_UNEQUIP:
-        return "Unequip which item?";
+        return "卸下哪个物品？";
     default:
         return "buggy";
     }
@@ -457,9 +457,9 @@ void UseItemMenu::populate_menu()
     // it (currently) enables the inv section.
     if (show_unarmed())
     {
-        string hands_string = you.unarmed_attack_name("Unarmed");
+        string hands_string = you.unarmed_attack_name("徒手");
         if (!you.weapon())
-            hands_string += " (current attack)";
+            hands_string += "（当前攻击方式）";
 
         MenuEntry *hands = new MenuEntry(hands_string, MEL_ITEM);
         if (!you.weapon())
@@ -627,14 +627,14 @@ void UseItemMenu::update_sections()
         && (is_inventory || !inv_header);
     if (inv_header)
     {
-        inv_header->text = "Inventory Items";
+        inv_header->text = "背包物品";
         if (!is_inventory)
             inv_header->text += cycle_hint;
     }
 
     if (floor_header)
     {
-        floor_header->text = "Floor Items";
+        floor_header->text = "地面物品";
         if (easy_floor)
         {
             floor_header->text += make_stringf(
@@ -727,7 +727,7 @@ string UseItemMenu::get_keyhelp(bool) const
 
     // XX the logic here is getting convoluted, if only these were widgets...
     const string desc_key = is_set(MF_ARROWS_SELECT)
-                                    ? "[<w>?</w>] describe selected" : "";
+                                    ? "[<w>?</w>] 描述选中项" : "";
     string full;
     string eu_modes;
     string modes;
@@ -739,7 +739,7 @@ string UseItemMenu::get_keyhelp(bool) const
         {
             eu_modes = "[<w>tab</w>] ";
             eu_modes += (generalize_oper(oper) == OPER_EQUIP)
-                ? "<w>equip</w>|unequip  " : "equip|<w>unequip</w>  ";
+                ? "<w>装备</w>|卸下  " : "装备|<w>卸下</w>  ";
         }
 
         if (available_modes.size() > 1)
@@ -891,7 +891,7 @@ string item_unequip_verb(const item_def& item)
 {
     const operation_types oper = _item_type_to_remove_oper(item.base_type);
     if (oper == OPER_WIELD)
-        return "unwield";
+        return "卸下武器";
     else
         return _oper_name(oper);
 }
@@ -907,10 +907,10 @@ static bool _can_generically_use_armour(bool wear=true)
     if (you.has_mutation(MUT_NO_ARMOUR))
     {
         if (wear)
-            mprf(MSGCH_PROMPT, "You can't wear anything.");
+            mprf(MSGCH_PROMPT, T_("You can't wear anything."));
         else
         {
-            mprf(MSGCH_PROMPT, "You can't remove your %s, sorry.",
+            mprf(MSGCH_PROMPT, T_("You can't remove your %s, sorry."),
                 species::skin_name(you.species).c_str());
         }
         return false;
@@ -918,7 +918,7 @@ static bool _can_generically_use_armour(bool wear=true)
 
     if (!form_can_wear())
     {
-        mprf(MSGCH_PROMPT, "You can't %s anything in your present form.",
+        mprf(MSGCH_PROMPT, T_("You can't %s anything in your present form."),
             wear ? "wear" : "remove");
         return false;
     }
@@ -976,7 +976,7 @@ static bool _can_generically_use(operation_types oper)
             && you_can_wear(SLOT_AMULET, true) == false
             && you.transform_uncancellable)
         {
-            mprf(MSGCH_PROMPT, "You can't %s jewellery%s.",
+            mprf(MSGCH_PROMPT, T_("You can't %s jewellery%s."),
                 oper == OPER_PUTON ? "wear" : "remove",
                 you.has_mutation(MUT_NO_JEWELLERY) ? "" :  " in your present form");
             return false;
@@ -1067,7 +1067,7 @@ static int _move_item_from_floor_to_inv(const item_def &to_get)
 
     if (!move_item_to_inv(to_get.index(), to_get.quantity, true))
     {
-        mpr("You can't carry that many items.");
+        mpr("你无法携带那么多物品。");
         you.last_pickup = tmp_l_p;
     }
     // Get the slot of the last thing picked up
@@ -1105,7 +1105,7 @@ static item_def* _item_swap_menu(const vector<item_def*>& candidates)
         item->flags |= ISFLAG_MARKED_FOR_MENU;
 
     int ret = prompt_invent_item(
-                "To do this, you must remove one of the following items:",
+                T_("To do this, you must remove one of the following items:"),
                 menu_type::invlist, OSEL_MARKED_ITEMS, OPER_UNEQUIP,
                 invprompt_flag::no_warning | invprompt_flag::hide_known);
 
@@ -1180,8 +1180,10 @@ static item_def* _item_swap_prompt(const vector<item_def*>& candidates)
     clear_messages();
 
     mprf(MSGCH_PROMPT,
-         "To do this, you must remove one of the following items:");
-    mprf(MSGCH_PROMPT, "(<w>?</w> for menu, <w>Esc</w> to cancel)");
+         T_("To do this, you must remove one of the following items:"));
+    mprf(MSGCH_PROMPT, Options.language == lang_t::ZH
+             ? "(<w>?</w> 菜单，<w>Esc</w> 取消)"
+             : "(<w>?</w> for menu, <w>Esc</w> to cancel)");
 
     for (size_t i = 0; i < candidates.size(); i++)
     {
@@ -1191,7 +1193,8 @@ static item_def* _item_swap_prompt(const vector<item_def*>& candidates)
         if (key == '<')
             m += '<';
 
-        m += "</w> or " + candidates[i]->name(DESC_INVENTORY);
+        m += T_("</w> or ");
+        m += candidates[i]->name(DESC_INVENTORY);
         mprf_nocap("%s", m.c_str());
     }
     flush_prev_message();
@@ -1258,7 +1261,7 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
     // Switching to a launcher while berserk is likely a mistake.
     if (to_equip && you.berserk() && is_range_weapon(*to_equip))
     {
-        string prompt = "You can't shoot while berserk! Really wield " +
+        string prompt = T_("You can't shoot while berserk! Really wield ") +
                         to_equip->name(DESC_INVENTORY) + "?";
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -1310,7 +1313,7 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
             {
                 if (++removed_flight >= equipped_flight)
                 {
-                    mprf(MSGCH_PROMPT, "Removing %s right now would cause you to %s!",
+                    mprf(MSGCH_PROMPT, T_("Removing %s right now would cause you to %s!"),
                             item->name(DESC_YOUR).c_str(),
                             env.grid(you.pos()) == DNGN_DEEP_WATER ? "drown" : "burn");
                     return false;
@@ -1338,7 +1341,7 @@ bool try_equip_item(item_def& item)
     // to even pick it up, first
     if (item.pos != ITEM_IN_INVENTORY && !room_in_inventory(item))
     {
-        mpr("You can't carry that many items.");
+        mpr("你无法携带那么多物品。");
         return false;
     }
     else if (item_is_equipped(item))
@@ -1582,8 +1585,9 @@ void do_equipment_change(item_def* to_equip, equipment_slot equip_slot,
                 start_delay<EquipOffDelay>(1, *item);
             else
             {
-                mprf("You %s %s.", item_unequip_verb(*item).c_str(),
-                                   item->name(DESC_YOUR).c_str());
+                mprf(T_("You %s %s."),
+                     item_unequip_verb(*item).c_str(),
+                     item->name(DESC_YOUR).c_str());
                 unequip_item(*item);
             }
         }
@@ -1836,7 +1840,7 @@ void prompt_inscribe_item()
 {
     if (inv_count() < 1)
     {
-        mpr("You don't have anything to inscribe.");
+        mpr("你没有任何需要刻写的东西。");
         return;
     }
 
@@ -1885,7 +1889,7 @@ bool oni_drunken_swing()
                  you.weapon()->name(DESC_YOUR).c_str());
         }
         else
-            mpr("You take a swig of the potion and flex your muscles.");
+            mpr("你喝了一大口药水，鼓起了肌肉。");
 
         for (actor* victim : targets)
         {
@@ -2006,7 +2010,7 @@ bool drink(item_def* potion)
     {
         if (heal_on_id)
         {
-            mpr("The energy of discovery flows from your fingertips!");
+            mpr("发现之能量从你的指尖流出！");
             potionlike_effect(POT_HEAL_WOUNDS, 40);
         }
 
@@ -2238,7 +2242,7 @@ static item_def* _choose_target_item_for_scroll(bool scroll_known, object_select
                        {
                            if (scroll_known
                                || crawl_state.seen_hups
-                               || yesno("Really abort (and waste the scroll)?", false, 0))
+                               || yesno(Options.language == lang_t::ZH ? "真的要中止（并浪费卷轴）吗？" : "Really abort (and waste the scroll)?", false, 0))
                            {
                                return true;
                            }
@@ -2550,7 +2554,7 @@ static void _vulnerability_scroll()
     }
 
     you.strip_willpower(&you, dur, true);
-    mpr("A wave of despondency washes over your surroundings.");
+    mpr("一阵沮丧之浪潮席卷了你的周围。");
 }
 
 static bool _handle_amnesia(bool alreadyknown)
@@ -2564,7 +2568,7 @@ static bool _handle_amnesia(bool alreadyknown)
         {
             if (crawl_state.seen_hups)
                 return false;
-            if (!yesno("Really abort (and waste the scroll)?", false, 0))
+            if (!yesno(Options.language == lang_t::ZH ? "真的要中止（并浪费卷轴）吗？" : "Really abort (and waste the scroll)?", false, 0))
                 continue;
         }
 
@@ -2959,10 +2963,14 @@ bool read(item_def* scroll, dist *target)
     // For cancellable scrolls leave printing this message to their
     // respective functions.
     const string pre_succ_msg =
-            make_stringf("As you %s the %s, it %s.",
-                          is_loud ? "thunderously recite" : "read",
+            make_stringf(T_("As you %s the %s, it %s."),
+                          Options.language == lang_t::ZH
+                              ? (is_loud ? "大声诵念" : "阅读")
+                              : (is_loud ? "thunderously recite" : "read"),
                           scroll->name(DESC_QUALNAME).c_str(),
-                         which_scroll == SCR_FOG ? "dissolves into smoke" : "crumbles to dust");
+                         (Options.language == lang_t::ZH
+                              ? (which_scroll == SCR_FOG ? "化为烟雾消散" : "化为尘土")
+                              : (which_scroll == SCR_FOG ? "dissolves into smoke" : "crumbles to dust")));
     if (!_is_cancellable_scroll(which_scroll))
     {
         mpr(pre_succ_msg);
@@ -3022,7 +3030,7 @@ bool read(item_def* scroll, dist *target)
 
     case SCR_ACQUIREMENT:
         if (!alreadyknown)
-            mpr("This is a scroll of acquirement!");
+            mpr("这是一张获取卷轴！");
 
         // included in default force_more_message
         // Identify it early in case the player checks the '\' screen.
@@ -3030,7 +3038,7 @@ bool read(item_def* scroll, dist *target)
 
         if (feat_eliminates_items(env.grid(you.pos())))
         {
-            mpr("Anything you acquired here would fall and be lost!");
+            mpr("你在这里获取的任何东西都会掉落并丢失！");
             cancel_scroll = true;
             break;
         }
@@ -3039,7 +3047,7 @@ bool read(item_def* scroll, dist *target)
         break;
 
     case SCR_FEAR:
-        mpr("You assume a fearsome visage.");
+        mpr("你摆出了一副可怕的面容。");
         mass_enchantment(ENCH_FEAR, 1000);
         break;
 
@@ -3093,9 +3101,9 @@ bool read(item_def* scroll, dist *target)
         }
 
         if (had_effect)
-            mpr("The creatures around you are filled with an inner flame!");
+            mpr("你周围的生物被内心的火焰充满了！");
         else
-            mpr("The air around you briefly surges with heat, but it dissipates.");
+            mpr("你周围的空气短暂地涌动着热量，但很快就消散了。");
 
         bad_effect = true;
         break;
@@ -3116,7 +3124,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("It is a scroll of enchant weapon.");
+            mpr("这是一张附魔武器卷轴。");
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_ENCHANT_WEAPON);
@@ -3130,7 +3138,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("It is a scroll of brand weapon.");
+            mpr("这是一张武器烙印卷轴。");
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_BRAND_WEAPON);
@@ -3144,7 +3152,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("It is a scroll of identify.");
+            mpr("这是一张鉴定卷轴。");
             // included in default force_more_message (to show it before menu)
             // Do this here so it doesn't turn up in the ID menu.
             identify_item(*scroll);
@@ -3160,7 +3168,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("It is a scroll of enchant armour.");
+            mpr("这是一张附魔护甲卷轴。");
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_ENCHANT_ARMOUR);
@@ -3177,7 +3185,7 @@ bool read(item_def* scroll, dist *target)
     case SCR_RANDOM_USELESSNESS:
     case SCR_HOLY_WORD:
     {
-        mpr("This item has been removed, sorry!");
+        mpr("此物品已被移除，抱歉！");
         cancel_scroll = true;
         break;
     }
@@ -3195,12 +3203,12 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("It is a scroll of amnesia.");
+            mpr("这是一张遗忘卷轴。");
             // included in default force_more_message (to show it before menu)
         }
         if (you.spell_no == 0 || you.has_mutation(MUT_INNATE_CASTER))
         {
-            mpr("You feel forgetful for a moment.");
+            mpr("你短暂地感到健忘。");
             break;
         }
 
@@ -3212,7 +3220,7 @@ bool read(item_def* scroll, dist *target)
         break;
 
     default:
-        mpr("Read a buggy scroll, please report this.");
+        mpr("阅读了一张有问题的卷轴，请报告此问题。");
         break;
     }
 
@@ -3254,7 +3262,7 @@ bool read(item_def* scroll, dist *target)
     {
         if (you.unrand_equipped(UNRAND_DELATRAS_GLOVES))
         {
-            mpr("The energy of discovery flows from your fingertips!");
+            mpr("发现之能量从你的指尖流出！");
             potionlike_effect(POT_MAGIC, 40);
         }
 
@@ -3401,7 +3409,7 @@ bool use_talisman(item_def& talisman)
 
     if (talisman.pos != ITEM_IN_INVENTORY && !room_in_inventory(talisman))
     {
-        mpr("You can't carry that many items.");
+        mpr("你无法携带那么多物品。");
         return false;
     }
 

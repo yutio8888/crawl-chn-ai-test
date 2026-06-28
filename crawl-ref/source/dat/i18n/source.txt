@@ -1,0 +1,6 @@
+%%%%
+Your memory of the abyssal rune fades away.
+Your memory of the abyssal rune fades away.
+%%%%
+The %s misses you.
+The %s misses you.

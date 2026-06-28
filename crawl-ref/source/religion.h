@@ -122,6 +122,8 @@ void nemelex_death_message();
 
 string ignore_faith_reason();
 bool faith_has_penalty();
+const char* zh_god_power(const char* en);
+const char* _god_name_en(god_type which_god);
 
 void mons_make_god_gift(monster& mon, god_type god = you.religion);
 bool mons_is_god_gift(const monster& mon, god_type god = you.religion);

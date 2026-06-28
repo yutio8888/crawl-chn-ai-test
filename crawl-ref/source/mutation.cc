@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -37,6 +38,7 @@
 #include "message.h"
 #include "mon-place.h"
 #include "notes.h"
+#include "options.h"
 #include "output.h"
 #include "player-stats.h"
 #include "religion.h"
@@ -379,6 +381,8 @@ static string _formmut(string desc, bool terse=false)
     return terse ? desc : "<green>" + desc + "</green>";
 }
 
+static const char* _zh_mutation_name(const char* en);
+
 static string _badmut(string desc, bool terse=false)
 {
     return terse ? desc : "<lightred>" + desc + "</lightred>";
@@ -645,24 +649,24 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (!species::is_draconian(you.species)
             || you.species == SP_BASE_DRACONIAN) // ugh
         {
-            result.push_back({ "golden breath", _formmut("You can breathe a blast of fire, cold, and poison.")});
+            result.push_back({ "golden breath", _formmut(T_("You can breathe a blast of fire, cold, and poison."))});
         }
         else if (species::draconian_breath(you.species) != ABIL_NON_ABILITY)
-            result.push_back({ "", _formmut("Your breath weapon is enhanced in this form.")});
+            result.push_back({ "", _formmut(T_("Your breath weapon is enhanced in this form."))});
     }
 
     // form-based flying can't be stopped, so don't print amphibiousness
     if (form->player_can_fly())
-        result.push_back({"flying", _formmut("You are flying.")});
+        result.push_back({"flying", _formmut(T_("You are flying."))});
     // n.b. this could cause issues for non-dragon giant forms if they exist
     else if (form->player_can_swim() && !species::can_swim(you.species))
-        result.push_back({"amphibious", _formmut("You are amphibious.")});
+        result.push_back({"amphibious", _formmut(Options.language == lang_t::ZH ? "你是两栖的。" : T_("You are amphibious."))});
 
     const int hp_mod = form->mult_hp(10);
     if (hp_mod > 10)
     {
         result.push_back({"boosted hp",
-                            _formmut(make_stringf("Your maximum health is %sincreased.",
+                            _formmut(make_stringf(T_("Your maximum health is %sincreased."),
                                                     hp_mod < 13 ? "" : "greatly "))});
     } // see badmuts section below for max health reduction
 
@@ -672,13 +676,13 @@ static vector<pair<string,string>> _get_form_fakemuts()
     if (hp_mod < 10)
     {
         result.push_back({"reduced hp",
-                            _badmut(make_stringf("Your maximum health is decreased%s.",
+                            _badmut(make_stringf(T_("Your maximum health is decreased%s."),
                                 form->underskilled() ? ", since you lack skill for your form"
                                 : ""))});
     }
 
     if (!form->can_cast)
-        result.push_back({"no casting", _badmut("You cannot cast spells.")});
+        result.push_back({"no casting", _badmut(T_("You cannot cast spells."))});
 
     vector<pair<string,string>> form_badmuts = form->get_bad_fakemuts();
     for (const auto &p : form_badmuts)
@@ -696,7 +700,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         else
         {
             result.push_back({"cold-blooded",
-                _badmut("You are cold-blooded and may be slowed by cold attacks.")});
+                _badmut(T_("You are cold-blooded and may be slowed by cold attacks."))});
         }
     }
 
@@ -707,7 +711,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (penalty_percent < 0)
         {
             result.push_back({"blade armour",
-                    _badmut(make_stringf("Your body armour is %s at protecting you.",
+                    _badmut(make_stringf(T_("Your body armour is %s at protecting you."),
                           penalty_percent <=  -45 ? "much less effective"
                         : penalty_percent <   -20 ? "less effective"
                                                   : "slightly less effective"
@@ -718,7 +722,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     if (!form->can_wield() && !you.has_mutation(MUT_NO_GRASPING))
     {
         // same as MUT_NO_GRASPING
-        result.push_back({"", _badmut("You are incapable of wielding weapons or throwing items.")});
+        result.push_back({"", _badmut(T_("You are incapable of wielding weapons or throwing items."))});
     }
 
     // XX say something about AC? Best would be to compare it to AC without
@@ -752,16 +756,16 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         result.push_back({"walk on water",
                     have_passive(passive_t::water_walk)
-                        ? _formmut("You can walk on water.")
-                        : _formmut("You can walk on water until reaching land.")});
+                        ? _formmut(T_("You can walk on water."))
+                        : _formmut(T_("You can walk on water until reaching land."))});
     }
 
     if (you.props.exists(ORCIFICATION_LEVEL_KEY))
     {
         result.push_back({"",
                     you.props[ORCIFICATION_LEVEL_KEY].get_int() == 1
-                        ? _formmut("Your facial features look somewhat orcish.")
-                        : _formmut("Your facial features are unmistakably orcish.")});
+                        ? _formmut(T_("Your facial features look somewhat orcish."))
+                        : _formmut(T_("Your facial features are unmistakably orcish."))});
     }
 
     if (have_passive(passive_t::frail)
@@ -812,7 +816,7 @@ static vector<pair<string, string>> _get_fakemuts()
     // amphibiousness.
     if (species::can_swim(you.species) && !you.has_innate_mutation(MUT_MERTAIL))
     {
-        result.push_back(_annotate_form_based({"amphibious", "You are amphibious."},
+        result.push_back(_annotate_form_based({"amphibious", Options.language == lang_t::ZH ? "你是两栖的。" : T_("You are amphibious.")},
                                               !form_can_swim()));
     }
 
@@ -929,7 +933,13 @@ static vector<string> _get_mutations_descs(bool terse)
     {
         const string& mut = terse ? p.first : p.second;
         if (!mut.empty() && mut != "--transformation--")
-            result.push_back(mut);
+        {
+            // Translate fakemut terse names for Chinese
+            if (terse && Options.language == lang_t::ZH)
+                result.push_back(_zh_mutation_name(mut.c_str()));
+            else
+                result.push_back(mut);
+        }
     }
 
     for (mutation_type mut : _get_ordered_mutations())
@@ -947,7 +957,7 @@ string terse_mutation_list()
     const vector<string> mutations = _get_mutations_descs(true);
 
     if (mutations.empty())
-        return "no striking features";
+        return T_("no striking features");
     else
     {
         return comma_separated_line(mutations.begin(), mutations.end(),
@@ -969,14 +979,14 @@ string describe_mutations(bool drop_title)
     if (!drop_title)
     {
         result += "<white>";
-        result += "Innate Abilities, Weirdness & Mutations";
+        result += T_("Innate Abilities, Weirdness & Mutations");
         result += "</white>\n\n";
     }
 
     const vector<string> mutations = _get_mutations_descs(false);
 
     if (mutations.empty())
-        result += "You are rather mundane.\n";
+        result += T_("You are rather mundane.\n");
     else
         result += join_strings(mutations.begin(), mutations.end(), "\n");
 
@@ -1036,8 +1046,9 @@ public:
           banes(_get_active_banes())
     {
         set_highlighter(nullptr);
-        set_title(new MenuEntry("Innate Abilities, Weirdness & Mutations",
-                                MEL_TITLE));
+        set_title(new MenuEntry(
+            T_("Innate Abilities, Weirdness & Mutations"),
+            MEL_TITLE));
         menu_action = ACT_EXAMINE;
         update_muts();
         update_more();
@@ -1379,7 +1390,7 @@ static void _maybe_remove_equipment(mutation_type mut)
     {
         if (mut == MUT_MISSING_HAND)
         {
-            mprf("You can no longer %s %s!",
+            mprf("你不能再%s%s了！",
                     item->base_type == OBJ_JEWELLERY ? "wear" : "hold",
                     item->name(DESC_YOUR).c_str());
         }
@@ -1387,13 +1398,13 @@ static void _maybe_remove_equipment(mutation_type mut)
         {
             if (item_is_melded(*item))
             {
-                mprf("%s is forced from your body%s!",
+                mprf("%s被从你的身体中强制移除了%s！",
                         item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
             else
             {
-                mprf("%s falls away%s!", item->name(DESC_YOUR).c_str(),
+                mprf("%s%s掉落了下来！", item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
 
@@ -1836,7 +1847,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (!god_gift && _resist_mutation(mutclass, beneficial))
         {
             if (failMsg)
-                mprf(MSGCH_MUTATION, "You feel odd for a moment.");
+                mprf(MSGCH_MUTATION, "你短暂地感到奇怪。");
             return false;
         }
 
@@ -1859,7 +1870,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 return false;
             // fallthrough to normal mut
         case MUTCLASS_NORMAL:
-            mprf(MSGCH_MUTATION, "Your body decomposes!");
+            mprf(MSGCH_MUTATION, "你的身体腐烂了！");
             drain_player(30, false, true, true);
             return true;
         case MUTCLASS_INNATE:
@@ -1918,7 +1929,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                     you.attribute[ATTR_TEMP_MUT_KILLS] = 0;
             }
             you.mutation[mutat]--;
-            mprf(MSGCH_MUTATION, "Your %s mutation feels more permanent.",
+            mprf(MSGCH_MUTATION, "你的%s变异感觉更加永久了。",
                                   mutation_name(mutat));
             take_note(Note(NOTE_PERM_MUTATION, mutat,
                     you.get_base_mutation_level(mutat), reason.c_str()));
@@ -1970,7 +1981,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         {
         case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
         case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-            mprf(MSGCH_MUTATION, "You feel %s.", _stat_mut_desc(mutat, true));
+            mprf(MSGCH_MUTATION, "你感到%s了。", _stat_mut_desc(mutat, true));
             gain_msg = false;
             break;
 
@@ -2172,7 +2183,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     {
     case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
     case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-        mprf(MSGCH_MUTATION, "You feel %s.", _stat_mut_desc(mutat, false));
+        mprf(MSGCH_MUTATION, "你感到%s了。", _stat_mut_desc(mutat, false));
         lose_msg = false;
         break;
 
@@ -2338,7 +2349,7 @@ bool delete_mutation(mutation_type which_mutation, const string &reason,
                     || coinflip()))
             {
                 if (failMsg)
-                    mprf(MSGCH_MUTATION, "You feel rather odd for a moment.");
+                    mprf(MSGCH_MUTATION, "你短暂地感到相当奇怪。");
                 return false;
             }
         }
@@ -2419,7 +2430,7 @@ bool delete_temp_mutation()
         // games.
         if (mutat == NUM_MUTATIONS)
         {
-            mprf(MSGCH_ERROR, "Found no temp mutations, clearing.");
+            mprf(MSGCH_ERROR, "未发现临时变异，正在清除。");
             you.attribute[ATTR_TEMP_MUTATIONS] = 0;
             return false;
         }
@@ -2505,16 +2516,137 @@ string get_mutation_tags(mutation_type mut)
     return make_stringf("[%s]", comma_separated_line(tags.begin(), tags.end(), ", ").c_str());
 }
 
+// Translate mutation short_desc for Chinese
+static const char* _zh_mutation_name(const char* en)
+{
+    if (Options.language != lang_t::ZH || !en || !en[0])
+        return en;
+
+    static const map<string, const char*> zh_names = {
+        { "+LOS", "+视野" }, { "Cocytus destruction", "科塞特斯毁灭" },
+        { "Dis destruction", "迪斯毁灭" }, { "East Wind's embodiment", "东风化身" },
+        { "Gehenna destruction", "基希纳毁灭" }, { "HP casting", "生命施法" },
+        { "MP-powered wands", "魔杖消耗魔力" }, { "Mark of Annihilation", "湮灭印记" },
+        { "Mark of Atrocity", "暴行印记" }, { "Mark of Carnage", "杀戮印记" },
+        { "Mark of Execution", "处决印记" }, { "Mark of Haemoclasm", "血破印记" },
+        { "Mark of the Celebrant", "颂礼者印记" }, { "Mark of the Fanatic", "狂热者印记" },
+        { "Mark of the Legion", "军团印记" }, { "Mark of the Tyrant", "暴君印记" },
+        { "North Wind's embodiment", "北风化身" }, { "South Wind's embodiment", "南风化身" },
+        { "Tartarus destruction", "塔耳塔洛斯毁灭" }, { "West Wind's embodiment", "西风化身" },
+        { "accursed", "被诅咒" }, { "acid resistance", "酸蚀抗性" },
+        { "acidic bite", "酸蚀咬击" }, { "acrobatic", "特技" }, { "agile", "敏捷" },
+        { "antennae", "触角" }, { "antimagic bite", "禁魔咬击" },
+        { "armoured tail", "装甲尾巴" }, { "artefact enchanting", "神器附魔" },
+        { "augmentation", "增强" }, { "aura of silence", "沉默光环" },
+        { "beak", "喙" }, { "bedevilling", "纠缠" }, { "big brain", "大型大脑" },
+        { "big wings", "大翅膀" }, { "black mark", "黑色印记" },
+        { "booming voice", "洪亮嗓音" }, { "camouflage", "伪装" }, { "clarity", "清晰" },
+        { "claws", "爪" }, { "clever", "聪明" }, { "clumsy", "笨拙" },
+        { "cold resistance", "寒冷抗性" }, { "cold vulnerability", "寒冷弱点" },
+        { "cold-blooded", "冷血" }, { "condensation shield", "凝结护盾" },
+        { "contamination susceptible", "易受污染" }, { "corrupting presence", "腐败存在" },
+        { "cowardly", "懦弱" }, { "deformed body", "变形身体" }, { "demonic guardian", "恶魔守护者" },
+        { "demonic magic", "恶魔魔法" }, { "demonic touch", "恶魔之触" },
+        { "demonic willpower", "恶魔意志" }, { "devolution", "退化" }, { "devour on kill", "击杀吞噬" },
+        { "disrupted magic", "干扰魔法" }, { "distributed training", "分散训练" },
+        { "divine attributes", "神圣属性" }, { "dopey", "迟钝" },
+        { "double potion healing", "双倍药水治疗" }, { "drunken brawling", "醉拳" },
+        { "efficient magic", "高效魔法" }, { "electricity resistance", "电击抗性" },
+        { "electricity vulnerability", "电击弱点" }, { "ephemeral shield", "短暂护盾" },
+        { "evasive flight", "闪避飞行" }, { "evolution", "进化" },
+        { "explore regen", "探索再生" }, { "extra vitality", "额外活力" },
+        { "eyeballs", "眼球" }, { "faith", "信仰" }, { "fangs", "獠牙" },
+        { "feed off suffering", "以痛苦为食" }, { "fire resistance", "火焰抗性" },
+        { "flame cloud immunity", "火焰云免疫" }, { "float", "漂浮" },
+        { "forlorn", "凄凉" }, { "formless", "无形" }, { "foul shadow", "污秽之影" },
+        { "foul stench", "恶臭" }, { "four strong arms", "四条强壮手臂" },
+        { "frail", "脆弱" }, { "freezing cloud immunity", "冰冻云免疫" },
+        { "frog-like legs", "蛙腿" }, { "gelatinous body", "凝胶身体" },
+        { "hated by all", "被所有生物憎恨" }, { "heat vulnerability", "炎热弱点" },
+        { "high MP", "高魔力" }, { "hooves", "蹄" }, { "horns", "角" },
+        { "hurl damnation", "投掷诅咒" }, { "icemail", "冰甲" },
+        { "icy blue scales", "冰蓝鳞片" }, { "ignite blood", "点燃血液" },
+        { "in touch with death", "与死亡接触" }, { "inability to train armour", "无法训练护甲" },
+        { "inability to train dodging", "无法训练闪避" }, { "inability to use devices", "无法使用装置" },
+        { "inhibited regeneration", "再生抑制" }, { "initially attractive", "初始吸引力" },
+        { "innate caster", "天生施法者" }, { "inviolate magic", "不可侵犯魔法" },
+        { "iridescent scales", "虹彩鳞片" }, { "iron-fused scales", "铁融鳞片" },
+        { "jelly absorbing missiles", "果冻吸收飞弹" }, { "jelly sensing items", "果冻感知物品" },
+        { "large bone plates", "大型骨板" }, { "low MP", "低魔力" },
+        { "magic link", "魔力链接" }, { "magic regeneration", "魔力再生" },
+        { "magic shield", "魔法护盾" }, { "meek", "懦弱" }, { "mertail", "人鱼尾" },
+        { "missing a hand", "缺失一只手" }, { "missing an eye", "缺失一只眼" },
+        { "molten scales", "熔岩鳞片" }, { "multi-lived", "多条命" },
+        { "mutation resistance", "变异抗性" }, { "naga tail", "纳迦尾巴" },
+        { "negative energy resistance", "负能量抗性" }, { "nightstalker", "夜行者" },
+        { "nimble swimmer", "敏捷游泳者" }, { "no air magic", "无法使用空气魔法" },
+        { "no alchemy magic", "无法使用炼金魔法" }, { "no armour", "无法穿甲" },
+        { "no conjurations magic", "无法使用咒法魔法" }, { "no earth magic", "无法使用大地魔法" },
+        { "no fire magic", "无法使用火焰魔法" }, { "no forgecraft magic", "无法使用锻造魔法" },
+        { "no forms", "无法变形" }, { "no hexes magic", "无法使用诅咒魔法" },
+        { "no ice magic", "无法使用寒冰魔法" }, { "no jewellery", "无法佩戴珠宝" },
+        { "no necromancy magic", "无法使用死灵魔法" }, { "no potion heal", "无法用药水治疗" },
+        { "no potions", "无法饮用药水" }, { "no regeneration", "无法再生" },
+        { "no stealth", "无法潜行" }, { "no summoning magic", "无法使用召唤魔法" },
+        { "no translocations magic", "无法使用位移魔法" }, { "no weapons or thrown items", "无法使用武器或投掷物" },
+        { "off-hand wielding", "副手持有" }, { "ooze flood", "软泥洪流" },
+        { "otherworldly", "异界" }, { "passive freeze", "被动冻结" },
+        { "persistent drain", "持续虚弱" }, { "poison resistance", "毒素抗性" },
+        { "poor constitution", "体质虚弱" }, { "potion fungus", "药水真菌" },
+        { "powered by death", "死亡赋能" }, { "powered by pain", "痛苦赋能" },
+        { "pseudopods", "伪足" }, { "reduced AC", "降低防御" }, { "reduced EV", "降低闪避" },
+        { "regeneration", "再生" }, { "renounce potions", "放弃药水" },
+        { "renounce scrolls", "放弃卷轴" }, { "repulsion field", "排斥场" },
+        { "retaliatory headbutt", "报复性头槌" }, { "robust", "强健" },
+        { "rugged brown scales", "粗糙棕鳞" }, { "runic magic", "符文魔法" },
+        { "sanguine armour", "血之护甲" }, { "screaming", "尖叫" },
+        { "see invisible", "看破隐形" }, { "sense surroundings", "感知环境" },
+        { "shaggy fur", "蓬松毛发" }, { "sharp scales", "锋利鳞片" },
+        { "slime shroud", "黏液护罩" }, { "slimy green scales", "黏滑绿鳞" },
+        { "slow wielding", "缓慢持武" }, { "slowness", "缓慢" },
+        { "spark swarm", "火花群" }, { "spatial entanglement", "空间纠缠" },
+        { "speed", "速度" }, { "spiny", "尖刺" }, { "spit poison", "喷吐毒素" },
+        { "spiteful blood", "怨恨之血" }, { "stampede", "奔踏" },
+        { "stealthy paws", "潜行爪垫" }, { "steam resistance", "蒸汽抗性" },
+        { "stinger", "毒刺" }, { "stone body", "石质身体" }, { "strong", "强壮" },
+        { "strong-willed", "坚强意志" }, { "sturdy frame", "健壮体格" },
+        { "subdued magic", "压制魔法" }, { "talons", "利爪" },
+        { "teleportitis", "传送症" }, { "temperature sensitive", "温度敏感" },
+        { "tendrils", "卷须" }, { "tentacle spike", "触手尖刺" },
+        { "tentacles", "触手" }, { "thin metallic scales", "薄金属鳞片" },
+        { "thin skeletal structure", "薄骨骼结构" }, { "time-warped blood", "时间扭曲之血" },
+        { "torment resistance", "折磨抗性" }, { "tough skin", "坚韧皮肤" },
+        { "translucent skin", "半透明皮肤" }, { "treasure sense", "宝物感知" },
+        { "trickster", "戏法者" }, { "unskilled", "无技能" },
+        { "warmup strikes", "预热打击" }, { "weak", "虚弱" },
+        { "weak-willed", "意志薄弱" }, { "weakness stinger", "虚弱毒刺" },
+        { "wild magic", "狂野魔法" }, { "word of chaos", "混沌之语" },
+        { "yellow scales", "黄色鳞片" },
+        // Fakemut terse names (form, divine, species)
+        { "(cold-blooded)", "（冷血）" }, { "AC +", "防御 +" },
+        { "blade armour", "刃甲" }, { "boosted hp", "生命提升" },
+        { "flying", "飞行" }, { "golden breath", "金龙吐息" },
+        { "no casting", "无法施法" }, { "no large weapons", "无法使用大型武器" },
+        { "reduced essence", "生命精华减少" }, { "reduced hp", "生命减少" },
+        { "size adjective", "体型" }, { "unfitting armour", "不合身护甲" },
+        { "walk on water", "水上行走" },
+    };
+    auto it = zh_names.find(en);
+    return it != zh_names.end() ? it->second : en;
+}
+
 const char* mutation_name(mutation_type mut, bool allow_category)
 {
+    const char* en;
     if (allow_category && mut >= CATEGORY_MUTATIONS && mut < MUT_NON_MUTATION)
-        return _get_category_mutation_def(mut).short_desc;
-
+        en = _get_category_mutation_def(mut).short_desc;
     // note -- this can produce crashes if fed invalid mutations, e.g. if allow_category is false and mut is a category mutation
-    if (!_is_valid_mutation(mut))
+    else if (!_is_valid_mutation(mut))
         return nullptr;
+    else
+        en = _get_mutation_def(mut).short_desc;
 
-    return _get_mutation_def(mut).short_desc;
+    return _zh_mutation_name(en);
 }
 
 const char* category_mutation_name(mutation_type mut)
@@ -2574,6 +2706,22 @@ mutation_type mutation_from_name(string name, bool allow_category, vector<mutati
             break;
         }
 
+        // Also match against English short_desc for .des file compatibility
+        if (_is_valid_mutation(mut))
+        {
+            const char *en_name = _get_mutation_def(mut).short_desc;
+            if (en_name && spec == lowercase_string(en_name))
+            {
+                mutat = mut;
+                break;
+            }
+            if (partial_matches && en_name
+                && strstr(lowercase_string(en_name).c_str(), spec.c_str()))
+            {
+                partial_matches->push_back(mut);
+            }
+        }
+
         if (partial_matches && strstr(mut_name.c_str(), spec.c_str()))
             partial_matches->push_back(mut);
     }
@@ -2613,6 +2761,404 @@ int mutation_max_levels(mutation_type mut)
 /// Return a string describing the mutation.
 /// If colour is true, also add the colour annotation.
 /// Not to be confused with get_mutation_desc().
+// Translate mutation have[] long descriptions for Chinese
+static const char* _zh_mutation_desc(const string& en)
+{
+    if (Options.language != lang_t::ZH || en.empty())
+        return nullptr;
+
+    static const map<string, const char*> zh_names = {
+        { "A demonic guardian rushes to your aid.", "一个恶魔守护者冲来援助你。" },
+        { "A fragile, slimy shroud covers you, deflecting attacks.", "一层脆弱的黏液护罩覆盖着你，偏转攻击。" },
+        { "A frigid envelope surrounds you and freezes all who hurt you.", "一层寒气包裹环绕着你，冻结所有伤害你的人。" },
+        { "A meltable icy envelope protects you from harm. (AC +", "一层可融化的冰封包裹保护你免受伤害。（防御+" },
+        { "A meltable shield of frost defends you. (SH +", "一层可融化的冰霜护盾保护你。（盾挡+" },
+        { "A powerful demonic guardian rushes to your aid.", "一个强大的恶魔守护者冲来援助你。" },
+        { "A shield forms around you when casting spells or using Invocations. (SH +7)", "当你施放法术或使用祈祷时，周围会形成一个护盾。（盾挡+7）" },
+        { "A thick, meltable icy envelope protects you from harm. (AC +", "一层厚实可融化的冰封包裹保护你免受伤害。（防御+" },
+        { "A weak demonic guardian rushes to your aid.", "一个弱小的恶魔守护者冲来援助你。" },
+        { "Armour fits poorly on your large pseudopods.", "护甲在你较大的伪足上不合身。" },
+        { "Armour fits poorly on your massive pseudopods.", "护甲在你巨大的伪足上不合身。" },
+        { "Armour fits poorly on your pseudopods.", "护甲在你的伪足上不合身。" },
+        { "Armour fits poorly on your strangely shaped body.", "护甲在你变形奇怪的身体上不合身。" },
+        { "Foes burned or shocked in your presence are regularly outlined in light.", "在你面前被烧伤或电击的敌人经常会被光线勾勒出来。" },
+        { "Foes burned or shocked in your presence may be outlined in light.", "在你面前被烧伤或电击的敌人可能会被光线勾勒出来。" },
+        { "It takes a long time for you to wield or remove held weapons.", "你持握或移除武器需要很长时间。" },
+        { "One of your tentacles bears a large vicious spike.", "你的一条触手上有一根巨大的凶猛尖刺。" },
+        { "One of your tentacles bears a nasty spike.", "你的一条触手上有一根锐利的尖刺。" },
+        { "One of your tentacles bears a spike.", "你的一条触手上有一根尖刺。" },
+        { "Potions are less effective at restoring your health.", "药水恢复你生命的效果降低。" },
+        { "Potions cannot restore your health.", "药水无法恢复你的生命。" },
+        { "Spells you cast and wands you use may paralyse nearby enemies.", "你施放的法术和使用的魔杖可能会麻痹附近的敌人。" },
+        { "Spells you cast cost 1 less MP (to a minimum of 1).", "你施放的法术消耗减少1点魔力（最低为1）。" },
+        { "Spells you cast cost 2 less MP (to a minimum of 1).", "你施放的法术消耗减少2点魔力（最低为1）。" },
+        { "Spells you cast may paralyse adjacent enemies.", "你施放的法术可能会麻痹相邻的敌人。" },
+        { "Spells you cast may paralyse nearby enemies.", "你施放的法术可能会麻痹附近的敌人。" },
+        { "The East Wind leaves your foes to susceptible to magic after you Rampage.", "东风使你在狂暴后敌人更容易受到魔法影响。" },
+        { "The North Wind lets you shrug off injuries taken while stampeding.", "北风让你能够无视奔踏时受到的伤害。" },
+        { "The South Wind quickens your rampage movements after stabbing.", "南风在刺击后加速你的狂暴移动。" },
+        { "The West Wind empowers your ranged attacks as you Rampage.", "西风在你狂暴时增强你的远程攻击。" },
+        { "When hurt, damage is shared between your health and your magic reserves.", "受伤时，伤害在你的生命和魔力储备之间分摊。" },
+        { "When low on magic, you restore magic in place of health.", "当魔力不足时，你以消耗生命为代价恢复魔力。" },
+        { "When seriously injured, your blood forms armour. (AC +", "当你严重受伤时，血液会形成护甲。（防御+" },
+        { "When seriously injured, your blood forms thick armour. (AC +", "当你严重受伤时，血液会形成厚实的护甲。（防御+" },
+        { "When seriously injured, your blood forms very thick armour. (AC +", "当你严重受伤时，血液会形成非常厚实的护甲。（防御+" },
+        { "When you translocate, a monster is sometimes pulled along with you.", "当你位移时，有时会将一个怪物一起拉过去。" },
+        { "Whenever you drink a healing potion, you attack all around you.", "每当你饮用治疗药水时，你会攻击周围的所有敌人。" },
+        { "You absorb twice as much mutagenic energy from being contaminated.", "你从污染中吸收双倍的变异能量。" },
+        { "You are agile. (Dex +4, Str/Int -1)", "你很敏捷。（敏捷+4，力量/智力-1）" },
+        { "You are almost entirely resistant to further mutation and mutation removal.", "你几乎完全抵抗进一步变异和变异移除。" },
+        { "You are almost immune to the effects of cold. (rC+++)", "你几乎对寒冷效果免疫。（冰抗+++）" },
+        { "You are almost immune to the effects of heat. (rF+++)", "你几乎对火焰效果免疫。（火抗+++）" },
+        { "You are camouflaged when in or above water. (Stealth+)", "你在水中或水上时获得伪装。（潜行+）" },
+        { "You are clumsy. (Dex -3)", "你很笨拙。（敏捷-3）" },
+        { "You are cold resistant. (rC+)", "你耐寒。（冰抗+）" },
+        { T_("You are cold-blooded and may be slowed by cold attacks."), "你是冷血动物，可能被寒冷攻击减速。" },
+        { "You are completely attuned to the shadows.", "你完全与暗影同调。" },
+        { "You are completely covered in icy blue scales. (AC +4, rC+)", "你完全覆盖着冰蓝鳞片。（防御+4，冰抗+）" },
+        { "You are completely covered in iridescent scales. (AC +6)", "你完全覆盖着虹彩鳞片。（防御+6）" },
+        { "You are completely covered in large bone plates. (SH +8)", "你完全覆盖着大型骨板。（盾挡+8）" },
+        { "You are completely covered in molten scales. (AC +4, rF+)", "你完全覆盖着熔岩鳞片。（防御+4，火抗+）" },
+        { "You are completely covered in razor-sharp scales. (AC +3, Slay +3)", "你完全覆盖着锋利鳞片。（防御+3，杀戮+3）" },
+        { "You are completely covered in rugged brown scales. (AC +3, +7% HP)", "你完全覆盖着粗糙棕鳞。（防御+3，+7%生命）" },
+        { "You are completely covered in sharp spines.", "你完全覆盖着锋利的尖刺。" },
+        { "You are completely covered in slimy green scales. (AC +4, rPois)", "你完全覆盖着黏滑绿鳞。（防御+4，毒抗）" },
+        { "You are completely covered in thin metallic scales. (AC +4, rElec)", "你完全覆盖着薄金属鳞片。（防御+4，电抗）" },
+        { "You are completely covered in yellow scales. (AC +4, rCorr)", "你完全覆盖着黄色鳞片。（防御+4，酸抗）" },
+        { "You are covered in fur. (AC +1)", "你覆盖着毛发。（防御+1）" },
+        { "You are covered in slimy tendrils that may disarm your opponents.", "你覆盖着黏液卷须，可能缴械对手。" },
+        { "You are covered in thick fur. (AC +2)", "你覆盖着浓密毛发。（防御+2）" },
+        { "You are darkly shadowed, frequently releasing foul flame when damaged in melee.", "你被深沉的阴影笼罩，在近战受伤时经常会释放污秽火焰。" },
+        { "You are dopey. (Int -3)", "你很迟钝。（智力-3）" },
+        { "You are easily found by Zot.", "你很容易被佐特发现。" },
+        { "You are empowered by your non-innate mutations. (+", "你被你非先天变异所增强。（+" },
+        { "You are extremely frail. (-30% HP)", "你极其脆弱。（-30%生命）" },
+        { "You are extremely inexperienced. (-3 XL)", "你极其缺乏经验。（-3级）" },
+        { "You are extremely robust. (+30% HP)", "你极其健壮。（+30%生命）" },
+        { "You are extremely strong-willed. (Will+++)", "你意志极其坚强。（意志+++）" },
+        { "You are extremely unskilled. (-3 Apt)", "你天赋极其不足。（-3资质）" },
+        { "You are extremely vulnerable to cold. (rC---)", "你极其怕冷。（冰抗---）" },
+        { "You are extremely vulnerable to heat. (rF---)", "你极其怕热。（火抗---）" },
+        { "You are extremely weak-willed. (Will---)", "你意志极其薄弱。（意志---）" },
+        { "You are faintly shadowed, very rarely releasing foul flame when damaged in melee.", "你被淡淡的阴影笼罩，在近战受伤时极少释放污秽火焰。" },
+        { "You are frail. (-10% HP)", "你很脆弱。（-10%生命）" },
+        { "You are hated by all.", "你被所有生物憎恨。" },
+        { "You are heat resistant. (rF+)", "你耐热。（火抗+）" },
+        { "You are highly strong-willed. (Will++)", "你意志非常坚强。（意志++）" },
+        { "You are immune to clouds of flame.", "你对火焰云免疫。" },
+        { "You are immune to freezing clouds.", "你对冰冻云免疫。" },
+        { "You are immune to negative energy. (rN+++)", "你对负能量免疫。（负抗+++）" },
+        { "You are immune to poison.", "你对毒素免疫。" },
+        { "You are immune to the effects of steam.", "你对蒸汽效果免疫。" },
+        { "You are immune to unholy pain and torment.", "你对邪恶痛苦和折磨免疫。" },
+        { "You are in touch with the powers of death.", "你与死亡的力量相通。" },
+        { T_("You are incapable of wielding weapons or throwing items."), "你无法持握武器或投掷物品。" },
+        { "You are inexperienced. (-2 XL)", "你缺乏经验。（-2级）" },
+        { "You are missing a hand.", "你缺少一只手。" },
+        { "You are missing an eye, making it more difficult to aim.", "你缺少一只眼睛，瞄准更加困难。" },
+        { "You are mostly covered in icy blue scales. (AC +3)", "你大部分覆盖着冰蓝鳞片。（防御+3）" },
+        { "You are mostly covered in iridescent scales. (AC +4)", "你大部分覆盖着虹彩鳞片。（防御+4）" },
+        { "You are mostly covered in large bone plates. (SH +6)", "你大部分覆盖着大型骨板。（盾挡+6）" },
+        { "You are mostly covered in molten scales. (AC +3)", "你大部分覆盖着熔岩鳞片。（防御+3）" },
+        { "You are mostly covered in razor-sharp scales. (AC +2, Slay +2)", "你大部分覆盖着锋利鳞片。（防御+2，杀戮+2）" },
+        { "You are mostly covered in rugged brown scales. (AC +2, +5% HP)", "你大部分覆盖着粗糙棕鳞。（防御+2，+5%生命）" },
+        { "You are mostly covered in sharp spines.", "你大部分覆盖着锋利的尖刺。" },
+        { "You are mostly covered in slimy green scales. (AC +3)", "你大部分覆盖着黏滑绿鳞。（防御+3）" },
+        { "You are mostly covered in thin metallic scales. (AC +3)", "你大部分覆盖着薄金属鳞片。（防御+3）" },
+        { "You are mostly covered in yellow scales. (AC +3)", "你大部分覆盖着黄色鳞片。（防御+3）" },
+        { "You are occasionally teleported next to monsters.", "你偶尔会被传送到怪物旁边。" },
+        { "You are often teleported next to monsters.", "你经常会被传送到怪物旁边。" },
+        { "You are partially covered in icy blue scales. (AC +2)", "你部分覆盖着冰蓝鳞片。（防御+2）" },
+        { "You are partially covered in iridescent scales. (AC +2)", "你部分覆盖着虹彩鳞片。（防御+2）" },
+        { "You are partially covered in large bone plates. (SH +4)", "你部分覆盖着大型骨板。（盾挡+4）" },
+        { "You are partially covered in molten scales. (AC +2)", "你部分覆盖着熔岩鳞片。（防御+2）" },
+        { "You are partially covered in razor-sharp scales. (AC +1, Slay +1)", "你部分覆盖着锋利鳞片。（防御+1，杀戮+1）" },
+        { "You are partially covered in rugged brown scales. (AC +1, +3% HP)", "你部分覆盖着粗糙棕鳞。（防御+1，+3%生命）" },
+        { "You are partially covered in sharp spines.", "你部分覆盖着锋利的尖刺。" },
+        { "You are partially covered in slimy green scales. (AC +2)", "你部分覆盖着黏滑绿鳞。（防御+2）" },
+        { "You are partially covered in thin metallic scales. (AC +2)", "你部分覆盖着薄金属鳞片。（防御+2）" },
+        { "You are partially covered in yellow scales. (AC +2)", "你部分覆盖着黄色鳞片。（防御+2）" },
+        { "You are powered by pain.", "你被痛苦所赋能。" },
+        { "You are quite resistant to negative energy. (rN++)", "你相当抵抗负能量。（负抗++）" },
+        { "You are resistant to acid. (rCorr)", "你对酸蚀有抗性。（酸抗）" },
+        { "You are resistant to electric shocks. (rElec)", "你对电击有抗性。（电抗）" },
+        { "You are resistant to poisons. (rPois)", "你对毒素有抗性。（毒抗）" },
+        { "You are resistant to unholy torment.", "你抵抗邪恶折磨。" },
+        { "You are robust. (+10% HP)", "你很健壮。（+10%生命）" },
+        { "You are sensitive to extremes of temperature. (rF-, rC-)", "你对极端温度敏感。（火抗-，冰抗-）" },
+        { "You are shadowed, sometimes releasing foul flame when damaged in melee.", "你被阴影笼罩，在近战受伤时有时会释放污秽火焰。" },
+        { "You are significantly more attuned to the shadows.", "你与暗影的同调显著增强。" },
+        { "You are slightly more attuned to the shadows.", "你与暗影的同调略微增强。" },
+        { "You are slightly weak-willed. (Will-)", "你意志略微薄弱。（意志-）" },
+        { "You are somewhat inexperienced. (-1 XL)", "你有些缺乏经验。（-1级）" },
+        { "You are somewhat resistant to both further mutation and mutation removal.", "你对进一步变异和变异移除都有一定抗性。" },
+        { "You are somewhat resistant to further mutation.", "你对进一步变异有一定抗性。" },
+        { "You are somewhat unskilled. (-1 Apt)", "你天赋有些不足。（-1资质）" },
+        { "You are strong-willed. (Will+)", "你意志坚强。（意志+）" },
+        { "You are strong. (Str +4, Int/Dex -1)", "你很强壮。（力量+4，智力/敏捷-1）" },
+        { "You are strongly in touch with the powers of death.", "你与死亡的力量深度相通。" },
+        { "You are surrounded by a mild repulsion field. (EV +2)", "你被一个温和的排斥场包围。（闪避+2）" },
+        { "You are surrounded by a moderate repulsion field. (EV +3)", "你被一个中等的排斥场包围。（闪避+3）" },
+        { "You are surrounded by a strong repulsion field. (EV +4, RMsl)", "你被一个强大的排斥场包围。（闪避+4，弹飞弹）" },
+        { "You are surrounded by an aura of silence.", "你被一个沉默光环包围。" },
+        { "You are unskilled. (-2 Apt)", "你天赋不足。（-2资质）" },
+        { "You are very agile. (Dex +8, Str/Int -2)", "你非常敏捷。（敏捷+8，力量/智力-2）" },
+        { "You are very clumsy. (Dex -6)", "你非常笨拙。（敏捷-6）" },
+        { "You are very cold resistant. (rC++)", "你非常耐寒。（冰抗++）" },
+        { "You are very dopey. (Int -6)", "你非常迟钝。（智力-6）" },
+        { "You are very frail. (-20% HP)", "你非常脆弱。（-20%生命）" },
+        { "You are very heat resistant. (rF++)", "你非常耐热。（火抗++）" },
+        { "You are very nimble when in or above water. (Stealth+, EV+, Speed+++)", "你在水中或水上非常灵活。（潜行+，闪避+，速度+++）" },
+        { "You are very robust. (+20% HP)", "你非常健壮。（+20%生命）" },
+        { "You are very strong. (Str +8, Int/Dex -2)", "你非常强壮。（力量+8，智力/敏捷-2）" },
+        { "You are very vulnerable to cold. (rC--)", "你非常怕冷。（冰抗--）" },
+        { "You are very vulnerable to heat. (rF--)", "你非常怕热。（火抗--）" },
+        { "You are very weak. (Str -6)", "你非常虚弱。（力量-6）" },
+        { "You are vulnerable to cold. (rC-)", "你怕冷。（冰抗-）" },
+        { "You are vulnerable to electric shocks. (rElec-)", "你容易被电击。（电抗-）" },
+        { "You are vulnerable to heat. (rF-)", "你怕热。（火抗-）" },
+        { "You are weak-willed. (Will--)", "你意志薄弱。（意志--）" },
+        { "You are weak. (Str -3)", "你很虚弱。（力量-3）" },
+        { "You bear the Mark of Annihilation.", "你携带着湮灭印记。" },
+        { "You bear the Mark of Atrocity.", "你携带着暴行印记。" },
+        { "You bear the Mark of Carnage.", "你携带着杀戮印记。" },
+        { "You bear the Mark of Execution.", "你携带着处决印记。" },
+        { "You bear the Mark of Haemoclasm.", "你携带着血破印记。" },
+        { "You bear the Mark of the Celebrant.", "你携带着颂礼者印记。" },
+        { "You bear the Mark of the Fanatic.", "你携带着狂热者印记。" },
+        { "You bear the Mark of the Legion.", "你携带着军团印记。" },
+        { "You bear the Mark of the Tyrant.", "你携带着暴君印记。" },
+        { "You begin to heal more quickly.", "你开始恢复得更快。" },
+        { "You can enhance your damage-dealing spells by burning harvested memories.", "你可以通过燃烧收集的记忆来增强你的伤害法术。" },
+        { "You can equip up to 6 pieces of aux armour in any combination and unleash them.", "你最多可以装备6件辅助护甲任意组合并释放它们。" },
+        { "You can equip up to 6 pieces of aux armour in any combination.", "你最多可以装备6件辅助护甲任意组合。" },
+        { "You can exhale a cloud of poison.", "你可以喷吐一团毒雾。" },
+        { "You can hop long distances, but move slowly.", "你可以长距离跳跃，但移动缓慢。" },
+        { "You can hop short distances, but move slowly.", "你可以短距离跳跃，但移动缓慢。" },
+        { "You can hurl damnation.", "你可以投掷诅咒之火。" },
+        { "You can magically evade attacks while moving or waiting.", "你可以在移动或等待时魔法般地闪避攻击。" },
+        { "You can regularly gain power from killing poisoned or drained foes.", "你经常可以通过杀死中毒或虚弱的敌人获得力量。" },
+        { "You can sometimes gain power from killing poisoned or drained foes.", "你有时可以通过杀死中毒或虚弱的敌人获得力量。" },
+        { "You can speak a Word of Chaos.", "你可以说出混沌之语。" },
+        { "You can spit poison.", "你可以喷吐毒素。" },
+        { "You can wield a second weapon in your off-hand.", "你可以在副手持有第二把武器。" },
+        { "You cannot be stealthy.", "你无法潜行。" },
+        { "You cannot drink.", "你无法饮用。" },
+        { "You cannot equip rings or amulets.", "你无法佩戴戒指或护身符。" },
+        { "You cannot study or cast Air magic.", "你无法学习或施放空气魔法。" },
+        { "You cannot study or cast Alchemy magic.", "你无法学习或施放炼金魔法。" },
+        { "You cannot study or cast Conjurations magic.", "你无法学习或施放咒法魔法。" },
+        { "You cannot study or cast Earth magic.", "你无法学习或施放大地魔法。" },
+        { "You cannot study or cast Fire magic.", "你无法学习或施放火焰魔法。" },
+        { "You cannot study or cast Forgecraft magic.", "你无法学习或施放锻造魔法。" },
+        { "You cannot study or cast Hexes magic.", "你无法学习或施放诅咒魔法。" },
+        { "You cannot study or cast Ice magic.", "你无法学习或施放寒冰魔法。" },
+        { "You cannot study or cast Necromancy magic.", "你无法学习或施放死灵魔法。" },
+        { "You cannot study or cast Summoning magic.", "你无法学习或施放召唤魔法。" },
+        { "You cannot study or cast Translocations magic.", "你无法学习或施放位移魔法。" },
+        { "You cannot study or use magical devices.", "你无法学习或使用魔法装置。" },
+        { "You cannot train Armour skill.", "你无法训练护甲技能。" },
+        { "You cannot train Dodging skill.", "你无法训练闪避技能。" },
+        { "You cannot voluntarily change form.", "你无法自愿改变形态。" },
+        { "You cannot wear armour.", "你无法穿戴护甲。" },
+        { "You cover ground extremely slowly.", "你移动极其缓慢。" },
+        { "You cover ground slowly.", "你移动缓慢。" },
+        { "You cover ground very slowly.", "你移动非常缓慢。" },
+        { "You discover more artefacts.", "你发现的神器增多。" },
+        { "You discover slightly more artefacts.", "你发现的神器略微增多。" },
+        { "You do not regenerate naturally.", "你无法自然再生。" },
+        { "You do not regenerate when monsters are visible.", "当怪物在视野中时你无法再生。" },
+        { "You do not regenerate.", "你无法再生。" },
+        { "You draw destruction from the endless fires of Gehenna.", "你从基希纳的无尽火焰中汲取毁灭之力。" },
+        { "You draw destruction from the frigid wastes of Cocytus.", "你从科塞特斯的冰冷荒原中汲取毁灭之力。" },
+        { "You draw destruction from the ruthless spite of Dis.", "你从迪斯的无情怨恨中汲取毁灭之力。" },
+        { "You draw destruction from the wailing grief of Tartarus.", "你从塔耳塔洛斯的哀嚎悲伤中汲取毁灭之力。" },
+        { "You expend magic power (3 MP) to strengthen your wands.", "你消耗魔力（3点）来增强你的魔杖。" },
+        { "You float through the air rather than walking.", "你在空中漂浮，而非行走。" },
+        { "You frequently emit foul miasma when damaged in melee.", "你在近战受伤时经常会散发出恶臭的瘴气。" },
+        { "You frequently pull newly seen creatures towards you.", "你经常将新看到的生物拉向你。" },
+        { "You frequently scream uncontrollably at those who injure you.", "你经常不受控制地对伤害你的人尖叫。" },
+        { "You gain AC when you inflict magical misfortune on nearby enemies.", "当你对附近的敌人施加魔法灾厄时，你获得防御。" },
+        { "You gain doubled healing and magic from potions.", "你从药水中获得双倍的治疗和魔力恢复。" },
+        { "You gain extra lives every three experience levels.", "你每三级获得一条额外生命。" },
+        { "You generate static electricity when injured, which occasionally lashes out at nearby attackers.", "你受伤时产生静电，偶尔会攻击附近的敌人。" },
+        { "You have a beak for a mouth.", "你有一张喙状的嘴。" },
+        { "You have a considerably increased reservoir of magic. (+20% MP)", "你的魔力储备大幅增加。（+20%魔力）" },
+        { "You have a greatly increased reservoir of magic. (+30% MP)", "你的魔力储备极大增加。（+30%魔力）" },
+        { "You have a heavy armoured tail.", "你有一条沉重的装甲尾巴。" },
+        { "You have a moderately thin skeletal structure. (Dex +4, Stealth++)", "你的骨骼结构相当纤细。（敏捷+4，潜行++）" },
+        { "You have a pair of antennae on your head.", "你头上有一对触角。" },
+        { "You have a pair of horns on your head.", "你头上有一对角。" },
+        { "You have a pair of large antennae on your head. (SInv)", "你头上有一对大触角。（看破隐形）" },
+        { "You have a pair of large horns on your head.", "你头上有一对大角。" },
+        { "You have a pair of small antennae on your head.", "你头上有一对小触角。" },
+        { "You have a pair of small horns on your head.", "你头上有一对小角。" },
+        { "You have a sharp stinger which inflicts weakening toxins.", "你有一根锋利的毒刺，能造成虚弱毒素。" },
+        { "You have a small jelly attached to you that may absorb projectiles.", "你身上附着一个小果冻，可能吸收飞弹。" },
+        { "You have a small jelly attached to you that senses nearby items.", "你身上附着一个小果冻，能够感知附近的物品。" },
+        { "You have a small tail.", "你有一条小尾巴。" },
+        { "You have a somewhat thin skeletal structure. (Dex +2, Stealth+)", "你的骨骼结构有些纤细。（敏捷+2，潜行+）" },
+        { "You have a special connection with the divine. (Faith)", "你与神圣有特殊的联系。（信仰）" },
+        { "You have a tail ending in a sharp stinger.", "你的尾巴末端是一根锋利的毒刺。" },
+        { "You have acidic saliva.", "你有酸性唾液。" },
+        { "You have an absolutely massive brain. (Int +6, Wiz)", "你有一个绝对庞大无比的大脑。（智力+6，巫术）" },
+        { "You have an armoured tail.", "你有一条装甲尾巴。" },
+        { "You have an extended range of vision and can be seen from far away.", "你的视野范围扩大，也可以从远处被看到。" },
+        { "You have an extremely huge brain. (Int +4)", "你有一个极其巨大的大脑。（智力+4）" },
+        { "You have an increased reservoir of magic. (+10% MP)", "你的魔力储备增加。（+10%魔力）" },
+        { "You have an uncanny knack for detecting items.", "你有探测物品的奇特能力。" },
+        { "You have an unnaturally thin skeletal structure. (Dex +6, Stealth+++)", "你的骨骼结构异常纤细。（敏捷+6，潜行+++）" },
+        { "You have an unusually large brain. (Int +2)", "你有一个异常大的大脑。（智力+2）" },
+        { "You have claws for feet.", "你脚上有爪子。" },
+        { "You have claws for hands.", "你手上有爪子。" },
+        { "You have exceptionally superior vitality. (+12 MHP)", "你拥有异常出众的活力。（+12最大生命）" },
+        { "You have extremely sharp teeth.", "你有极其锋利的牙齿。" },
+        { "You have extremely tough skin. (AC +3)", "你拥有极其坚韧的皮肤。（防御+3）" },
+        { "You have great hidden genetic potential.", "你拥有巨大的隐藏基因潜力。" },
+        { "You have hidden genetic defects.", "你拥有隐藏的基因缺陷。" },
+        { "You have hidden genetic potential.", "你拥有隐藏的基因潜力。" },
+        { "You have hoof-like feet.", "你有蹄状脚。" },
+        { "You have hooves in place of feet.", "你的脚变成了蹄子。" },
+        { "You have large cloven feet.", "你有大型分趾蹄。" },
+        { "You have much superior vitality. (+8 MHP)", "你拥有非常出众的活力。（+8最大生命）" },
+        { "You have razor-sharp teeth.", "你有剃刀般锋利的牙齿。" },
+        { "You have razor-sharp toenails.", "你有剃刀般锋利的趾甲。" },
+        { "You have sharp fingernails.", "你有锋利的指甲。" },
+        { "You have sharp toenails.", "你有锋利的趾甲。" },
+        { "You have slow reflexes. (EV -10)", "你的反应迟钝。（闪避-10）" },
+        { "You have somewhat slow reflexes. (EV -5)", "你的反应有些迟钝。（闪避-5）" },
+        { "You have superior vitality. (+4 MHP)", "你拥有出众的活力。（+4最大生命）" },
+        { "You have supernaturally acute vision. (SInv)", "你拥有超自然的敏锐视觉。（看破隐形）" },
+        { "You have tentacles for arms and can constrict enemies.", "你的手臂是触手，可以缠绕敌人。" },
+        { "You have terrible hidden genetic defects.", "你拥有可怕的隐藏基因缺陷。" },
+        { "You have tough skin. (AC +1)", "你拥有坚韧的皮肤。（防御+1）" },
+        { "You have very sharp fingernails.", "你有非常锋利的指甲。" },
+        { "You have very sharp teeth.", "你有非常锋利的牙齿。" },
+        { "You have very slow reflexes. (EV -15)", "你的反应非常迟钝。（闪避-15）" },
+        { "You have very tough skin. (AC +2)", "你拥有非常坚韧的皮肤。（防御+2）" },
+        { "You heal very quickly.", "你恢复得非常快。" },
+        { "You heal yourself by feeding off the suffering of those around you.", "你通过汲取周围生物的苦难来治愈自己。" },
+        { "You learn spells naturally, not from books.", "你自然地学习法术，不需要书籍。" },
+        { "You may rarely emit foul miasma when damaged in melee.", "你在近战受伤时可能极少散发出恶臭的瘴气。" },
+        { "You may spread the effect of potions you drink to nearby monsters.", "你饮用药水的效果可能会传播到附近的怪物。" },
+        { "You move with supernatural speed. (Speed+)", "你以超自然的速度移动。（速度+）" },
+        { "You move with supernatural speed. (Speed++)", "你以非常超自然的速度移动。（速度++）" },
+        { "You move with supernatural speed. (Speed+++)", "你以极其超自然的速度移动。（速度+++）" },
+        { "You occasionally shout uncontrollably at those who injure you.", "你偶尔不受控制地对伤害你的人大喊。" },
+        { "You passively map a large area around you.", "你被动地绘制周围大片区域的地图。" },
+        { "You passively map the area around you.", "你被动地绘制周围区域的地图。" },
+        { "You perform a melee attack whenever you cast damage-dealing spells.", "每当你施放伤害法术时，你会进行一次近战攻击。" },
+        { "You possess an exceptional clarity of mind.", "你拥有非凡的心智清晰。" },
+        { "You punish those that try to bend your will. (Will+)", "你惩罚那些试图扭曲你意志的人。（意志+）" },
+        { "You read scrolls incredibly loudly when enemies are in sight.", "你在敌人视野中时，阅读卷轴的声音异常响亮。" },
+        { "You recover more slowly from Doom and Banes.", "你从厄运和灾祸中恢复得更慢。" },
+        { "You reflexively headbutt those who attack you in melee.", "你会反射性地用头槌反击近战攻击你的敌人。" },
+        { "You refuse to drink potions in combat unless seriously injured.", "除非严重受伤，否则你在战斗中拒绝饮用药水。" },
+        { "You refuse to read scrolls in combat unless seriously injured.", "除非严重受伤，否则你在战斗中拒绝阅读卷轴。" },
+        { "You regain HP and MP as you explore.", "你在探索时恢复生命和魔力。" },
+        { "You regenerate a little health from kills.", "你通过击杀恢复少量生命。" },
+        { "You regenerate a lot of health from kills.", "你通过击杀恢复大量生命。" },
+        { "You regenerate health from kills.", "你通过击杀恢复生命。" },
+        { "You regenerate magic rapidly.", "你快速恢复魔力。" },
+        { "You regenerate.", "你具有再生能力。" },
+        { "You resist negative energy. (rN+)", "你抵抗负能量。（负抗+）" },
+        { "You shall have no god before yourself.", "你将自己置于神之前。" },
+        { "You sometimes emit foul miasma when damaged in melee.", "你在近战受伤时有时会散发出恶臭的瘴气。" },
+        { "You sometimes gain a little power by taking damage.", "你有时通过承受伤害获得少量力量。" },
+        { "You sometimes gain power by taking damage.", "你有时通过承受伤害获得力量。" },
+        { "You sometimes pull newly seen creatures towards you.", "你有时将新看到的生物拉向你。" },
+        { "You stampede swiftly towards enemies and can push them backward.", "你向敌人猛冲，可以将他们推回去。" },
+        { "You take considerably more damage. (AC -15)", "你受到相当多的伤害。（防御-15）" },
+        { "You take more damage. (AC -10)", "你受到更多伤害。（防御-10）" },
+        { "You take slightly more damage. (AC -5)", "你受到稍微更多的伤害。（防御-5）" },
+        { "You thrive by killing the living.", "你通过杀戮活物而茁壮成长。" },
+        { "You use scrolls of enchantment on lesser artefacts.", "你可以使用附魔卷轴来增强低级神器。" },
+        { "Your SH is halved, but you deal more damage with two-handed weapons.", "你的盾挡减半，但双手武器造成更多伤害。" },
+        { "Your attacks are a little less effective. (Slay -3)", "你的攻击效果略微降低。（杀戮-3）" },
+        { "Your attacks are less effective. (Slay -5)", "你的攻击效果降低。（杀戮-5）" },
+        { "Your attacks are much less effective. (Slay -7)", "你的攻击效果大幅降低。（杀戮-7）" },
+        { "Your bite disrupts and absorbs the magic of your enemies.", "你的咬击能干扰并吸收敌人的魔法。" },
+        { "Your blood hastes a few of your allies when you are sufficiently damaged.", "当你受到足够伤害时，你的血液会加速少数盟友。" },
+        { "Your blood hastes several of your allies when you are sufficiently damaged.", "当你受到足够伤害时，你的血液会加速数名盟友。" },
+        { "Your body has grown eyes which may confuse attackers. (Acc +3)", "你的身体长出了可能迷惑攻击者的眼睛。（精准+3）" },
+        { "Your body has grown many eyes which may confuse attackers. (Acc +5)", "你的身体长出了许多可能迷惑攻击者的眼睛。（精准+5）" },
+        { "Your body is covered in eyes which may confuse attackers. (Acc +7, SInv)", "你的身体遍布可能迷惑攻击者的眼睛。（精准+7，看破隐形）" },
+        { "Your body sometimes grows weak and slow upon taking damage.", "你的身体有时在受伤后会变得虚弱和缓慢。" },
+        { "Your body sometimes grows weak upon taking damage.", "你的身体有时在受伤后会变得虚弱。" },
+        { "Your casting is disrupted.", "你的施法受到干扰。" },
+        { "Your casting is seriously disrupted.", "你的施法受到严重干扰。" },
+        { "Your casting is slightly disrupted.", "你的施法受到轻微干扰。" },
+        { "Your cowardice makes you less effective in combat with threatening foes.", "你的懦弱使你在面对有威胁的敌人时战斗效率降低。" },
+        { "Your demonic aura causes all spilled blood to erupt in flames.", "你的恶魔光环会让所有流出的血液燃烧起来。" },
+        { "Your demonic aura often causes spilled blood to erupt in flames.", "你的恶魔光环经常会让流出的血液燃烧起来。" },
+        { "Your demonic aura sometimes causes spilled blood to erupt in flames.", "你的恶魔光环有时会让流出的血液燃烧起来。" },
+        { "Your demonic guardian is weakened.", "你的恶魔守护者变弱了。" },
+        { "Your divine heritage dramatically boosts your attributes as you level up.", "你的神圣血统在升级时大幅提升你的属性。" },
+        { "Your experience applies equally to all skills.", "你的经验平均分配于所有技能。" },
+        { "Your first few attacks do less damage.", "你的前几次攻击造成较少伤害。" },
+        { "Your four strong arms can wield two-handed weapons with a shield.", "你的四条强壮手臂可以持盾使用双手武器。" },
+        { "Your gelatinous body deflects attacks. (AC +3, EV +3)", "你凝胶般的身体偏转攻击。（防御+3，闪避+3）" },
+        { "Your guardian grows in power.", "你的守护者力量增长了。" },
+        { "Your health recovers twice as slowly from being drained.", "你被虚弱后生命恢复速度减半。" },
+        { "Your hexes are more powerful.", "你的诅咒更加强大。" },
+        { "Your large and strong wings let you fly.", "你大而强壮的翅膀让你能够飞行。" },
+        { "Your lower body shifts to a powerful aquatic tail in water.", "在水中你的下半身会变成一条强大的水生尾巴。" },
+        { "Your magical and physical power is enhanced at high health.", "你在高生命时魔法和物理力量增强。" },
+        { "Your magical and physical power is greatly enhanced at high health.", "你在高生命时魔法和物理力量大幅增强。" },
+        { "Your magical and physical power is slightly enhanced at high health.", "你在高生命时魔法和物理力量略微增强。" },
+        { "Your magical capacity is extremely low. (-30% MP)", "你的魔力容量极低。（-30%魔力）" },
+        { "Your magical capacity is low. (-10% MP)", "你的魔力容量较低。（-10%魔力）" },
+        { "Your magical capacity is very low. (-20% MP)", "你的魔力容量很低。（-20%魔力）" },
+        { "Your magical flight helps you evade attacks. (EV +4)", "你的魔法飞行帮助你闪避攻击。（闪避+4）" },
+        { "Your magical power and effects resist disruption.", "你的魔法力量和效果能够抵抗干扰。" },
+        { "Your magical power is your life essence.", "你的魔力就是你的生命精华。" },
+        { "Your melee attacks may debilitate your foes.", "你的近战攻击可能会削弱你的敌人。" },
+        { "Your melee attacks may flood your foes with ooze.", "你的近战攻击可能会用软泥淹没你的敌人。" },
+        { "Your metabolism doubles the duration of potion status effects.", "你的新陈代谢使药水状态效果持续时间翻倍。" },
+        { "Your mind is acute. (Int +4, Str/Dex -1)", "你的头脑敏锐。（智力+4，力量/敏捷-1）" },
+        { "Your mind is very acute. (Int +8, Str/Dex -2)", "你的头脑非常敏锐。（智力+8，力量/敏捷-2）" },
+        { "Your movements are less encumbered by armour. (ER -4)", "护甲对你的移动阻碍减少。（负重-4）" },
+        { "Your movements are significantly less encumbered by armour. (ER -6)", "护甲对你的移动阻碍显著减少。（负重-6）" },
+        { "Your movements are slightly less encumbered by armour. (ER -2)", "护甲对你的移动阻碍略微减少。（负重-2）" },
+        { "Your natural rate of healing is unusually fast.", "你的自然恢复速度异常快。" },
+        { "Your paws help you pounce on unaware monsters.", "你的爪垫帮助你扑向毫无防备的怪物。" },
+        { "Your pliable body absorbs attacks. (AC +2, EV +2)", "你柔韧的身体吸收攻击。（防御+2，闪避+2）" },
+        { "Your presence sometimes corrodes or deforms those you injure.", "你的存在有时会腐蚀或变形你伤害的人。" },
+        { "Your presence sometimes corrodes those you injure.", "你的存在有时会腐蚀你伤害的人。" },
+        { "Your rate of healing slows.", "你的恢复速度变慢。" },
+        { "Your rubbery body absorbs attacks. (AC +1, EV +1)", "你橡胶般的身体吸收攻击。（防御+1，闪避+1）" },
+        { "Your scales are fused with iron. (AC + 5)", "你的鳞片与铁融合。（防御+5）" },
+        { "Your shed blood may rise up to attack you as a group.", "你流出的血液可能会成群地起来攻击你。" },
+        { "Your shed blood may rise up to attack you.", "你流出的血液可能会起来攻击你。" },
+        { "Your skin blends seamlessly with your surroundings (Stealth++).", "你的皮肤与周围环境完美融合。（潜行++）" },
+        { "Your skin changes colour to match your surroundings (Stealth+).", "你的皮肤会变色以匹配环境。（潜行+）" },
+        { "Your skin perfectly mimics your surroundings (Stealth+++).", "你的皮肤完美模拟周围环境。（潜行+++）" },
+        { "Your snake-like lower body moves slowly, but can constrict enemies.", "你的蛇形下半身移动缓慢，但可以缠绕敌人。" },
+        { "Your snake-like lower body moves slowly.", "你的蛇形下半身移动缓慢。" },
+        { "Your spellcasting is much less encumbered by armour.", "你的法术施放受护甲的阻碍大大减少。" },
+        { "Your spells are a little easier to cast, but a little less powerful.", "你的法术施放稍微更容易，但威力稍微更弱。" },
+        { "Your spells are a little harder to cast, but a little more powerful.", "你的法术施放稍微更困难，但威力稍微更强。" },
+        { "Your spells are easier to cast, but less powerful.", "你的法术施放更容易，但威力更弱。" },
+        { "Your spells are harder to cast, but more powerful.", "你的法术施放更困难，但威力更强。" },
+        { "Your spells are much easier to cast, but much less powerful.", "你的法术施放容易得多，但威力弱得多。" },
+        { "Your spells are much harder to cast, but much more powerful.", "你的法术施放困难得多，但威力强得多。" },
+        { "Your stone body is resiliant and immune to petrification. (AC +", "你的石质身体坚韧且免疫石化。（防御+" },
+        { "Your system is resistant to poisons. (rPois+)", "你的身体对毒素有抗性。（毒抗+）" },
+        { "Your tail ends in a sharp venomous barb.", "你的尾巴末端是一根锋利的毒刺。" },
+        { "Your tail ends in a venomous barb.", "你的尾巴末端是一根毒刺。" },
+        { "Your tail ends in a wickedly sharp and venomous barb.", "你的尾巴末端是一根极其锋利的毒刺。" },
+        { "Your thick and shaggy fur keeps you warm. (AC +3, rC+)", "你浓密蓬松的毛发让你保持温暖。（防御+3，冰抗+）" },
+        { "Your touch may inflict irresistible damage on your foes.", "你的触碰可能对敌人造成不可抵抗的伤害。" },
+        { "Your touch may inflict minor irresistible damage on your foes.", "你的触碰可能对敌人造成少量不可抵抗的伤害。" },
+        { "Your touch may irresistibly damage your foes and sap their willpower.", "你的触碰可能对敌人造成不可抵抗的伤害并削弱他们的意志力。" },
+        { "Your translucent skin reduces your foes' accuracy. (Stealth+)", "你半透明的皮肤降低了敌人的精准度。（潜行+）" },
+        { "Your translucent skin slightly reduces your foes' accuracy. (Stealth+)", "你半透明的皮肤略微降低了敌人的精准度。（潜行+）" },
+        { "Your transparent skin significantly reduces your foes' accuracy. (Stealth+)", "你透明的皮肤显著降低了敌人的精准度。（潜行+）" }
+    };
+    auto it = zh_names.find(en);
+    return it != zh_names.end() ? it->second : nullptr;
+}
+
 string mutation_desc(mutation_type mut, int level, bool colour,
         bool is_sacrifice)
 {
@@ -2630,50 +3176,69 @@ string mutation_desc(mutation_type mut, int level, bool colour,
 
     const mutation_def& mdef = _get_mutation_def(mut);
 
+    // Helper to append dynamic value with Chinese base string support
+    auto _get_base = [](const char* en) -> string {
+        if (Options.language == lang_t::ZH)
+        {
+            const char* zh = _zh_mutation_desc(en);
+            return zh ? zh : en;
+        }
+        return en;
+    };
+
     if (mut == MUT_ICEMAIL)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << player_icemail_armour_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_icemail_armour_class() << ")";
         result = ostr.str();
     }
     else if (mut == MUT_CONDENSATION_SHIELD)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << player_condensation_shield_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_condensation_shield_class() << ")";
         result = ostr.str();
     }
     else if (mut == MUT_SANGUINE_ARMOUR)
     {
         ostringstream ostr;
-        ostr << mdef.have[level - 1] << sanguine_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[level - 1]) << sanguine_armour_bonus() / 100 << ")";
         result = ostr.str();
     }
     else if (mut == MUT_STONE_BODY)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << stone_body_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[0]) << stone_body_armour_bonus() / 100 << ")";
         result = ostr.str();
     }
     else if (mut == MUT_PROTEAN_GRACE)
     {
         ostringstream ostr;
         int num = protean_grace_amount();
-        ostr << mdef.have[0] << num << " EV, Slay +" << num << ")";
+        ostr << _get_base(mdef.have[0]) << num << (T_(" EV, Slay +")) << num << ")";
         result = ostr.str();
     }
     else if (mut == MUT_MP_WANDS && you.has_mutation(MUT_HP_CASTING))
-        result = "You expend health (3 HP) to strengthen your wands.";
+        result = T_("You expend health (3 HP) to strengthen your wands.");
     else if (!ignore_player && mut == MUT_TENTACLE_ARMS)
     {
         const string num_tentacles = number_in_words(you.has_tentacles(false));
         result = make_stringf(
-            "You have tentacles for arms and can constrict up to %s enemies at once.",
+            T_("You have tentacles for arms and can constrict up to %s enemies at once."),
             num_tentacles.c_str());
     }
     else if (!ignore_player && you.has_innate_mutation(MUT_PAWS) && mut == MUT_CLAWS)
-        result = "You have sharp claws."; // XX ugly override
+        result = T_("You have sharp claws."); // XX ugly override
     else if (result.empty() && level > 0)
         result = mdef.have[level - 1];
+
+    // Translate for Chinese mode — must happen before formatting wrappers
+    // because colour/parens/brackets are added below.
+    if (Options.language == lang_t::ZH && !result.empty())
+    {
+        const char* zh = _zh_mutation_desc(result);
+        if (zh)
+            result = zh;
+    }
 
     if (!ignore_player && !active)
         result = "(" + result + ")";
@@ -3075,7 +3640,7 @@ bool temp_mutation_wanes()
 
     const int num_remove = min(starting_tmuts, random_range(2, 3));
 
-    mprf(MSGCH_DURATION, "You feel the corruption within you wane %s.",
+    mprf(MSGCH_DURATION, "你感觉体内的腐败%s减弱了。",
         (num_remove >= starting_tmuts ? "completely" : "somewhat"));
 
     for (int i = 0; i < num_remove; ++i)
@@ -3206,7 +3771,7 @@ void check_demonic_guardian()
         // no more guardians for mutlevel+1 to mutlevel+20 turns
         you.duration[DUR_DEMONIC_GUARDIAN] = 10*(mutlevel + random2(20));
 
-        mpr("A demonic guardian appears!");
+        mpr("一个恶魔守护者出现了！");
     }
 }
 
@@ -3475,7 +4040,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
         if (candidates.empty())
         {
-            mprf("You are already as afflicted as possible.");
+            mprf("你已经受到了最大程度的折磨。");
             return false;
         }
 
@@ -3487,9 +4052,9 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
     duration = duration * mult / 100;
 
     if (you.banes[bane] == 0)
-        mprf(MSGCH_WARN, "You are stricken with the %s.", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, "你被%s折磨了。", bane_name(bane).c_str());
     else
-        mprf(MSGCH_WARN, "Your %s grows stronger.", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, "你的%s变得更强了。", bane_name(bane).c_str());
 
     you.banes[bane] += duration;
 
@@ -3504,7 +4069,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
 void remove_bane(bane_type bane)
 {
-    mprf(MSGCH_RECOVERY, "The %s upon you is lifted.", bane_name(bane).c_str());
+    mprf(MSGCH_RECOVERY, "你身上的%s被解除了。", bane_name(bane).c_str());
     you.banes[bane] = 0;
 
     if (bane == BANE_MORTALITY)

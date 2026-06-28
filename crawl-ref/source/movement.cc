@@ -56,6 +56,7 @@
 #include "transform.h"
 #include "unwind.h"
 #include "xom.h" // XOM_CLOUD_TRAIL_TYPE_KEY
+#include "database.h"
 
 // Move a monster to a given location, in preparation for the player moving to
 // their current location themselves.
@@ -365,7 +366,7 @@ void open_door_action(coord_def move)
 
         if (num == 0)
         {
-            mpr("There's nothing to open nearby.");
+            mpr(T_("There's nothing to open nearby."));
             return;
         }
 

@@ -1,0 +1,351 @@
+# DECISIONS.md — Translation Decision Registry
+
+Single Source of Truth for all cross-issue Chinese translation naming decisions.
+Before translating any entity name, check this file for existing rulings.
+
+**Maintenance rule**: Decision execution status is updated by the commit that fixes
+the affected file. Each commit body annotates `Updates: DECISION-XXX` when it
+resolves an outstanding ❌.
+
+**Status values**:
+- `active` — Currently in effect
+- `superseded` → points to replacement decision ID
+- `reversed` — Explicitly abandoned (e.g., English source misunderstood)
+
+**Relationship to Memory**: The Claude memory system stores the fact that this
+file exists and should be consulted. This file stores the actual ruling content.
+
+---
+
+## Type-A: Entity Rulings (god/monster/spell/item names)
+
+---
+
+### D-A-001 — Sif Muna → 西芙·穆娜
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-26
+- **Source**: issues/2 (TODO_GODNAME.md)
+- **Choice**: 西芙·穆娜
+- **Rejected**: 席夫·穆纳
+- **Rationale**: `芙` (lotus) is common in goddess names, better matches the Norse goddess gender than `夫` (man/husband)
+- **Affected files**:
+  - `dat/database/zh/godname.txt` ✅
+  - `dat/descript/zh/gods.txt` (×4) ✅
+  - `dat/database/zh/godspeak.txt` (×2) ✅
+  - `dat/database/zh/FAQ.txt` ✅
+  - `dat/descript/zh/features.txt` ✅
+- **Tracking issue**: issue 13
+- **Resolved**: 2026-06-27 (commit: issue 13 + follow-up)
+
+---
+
+### D-A-002 — Trog → 特洛格
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-26
+- **Source**: issues/2 (TODO_GODNAME.md)
+- **Choice**: 特洛格
+- **Rejected**: 特洛戈
+- **Rationale**: `格` matches the hard 'g' ending better; `戈` (dagger-axe) reads as an ancient weapon rather than a name syllable
+- **Affected files**:
+  - `dat/database/zh/godname.txt` ✅
+  - `dat/descript/zh/egos.txt` ✅
+  - `dat/descript/zh/hints.txt` ✅
+  - `dat/descript/zh/spells.txt` ✅
+  - `dat/descript/zh/status.txt` ✅
+  - `dat/descript/zh/gods.txt` (×10) ✅
+  - `dat/database/zh/godspeak.txt` (×2) ✅
+  - `dat/database/zh/FAQ.txt` ✅
+  - `dat/database/zh/help.txt` ✅
+  - `dat/descript/zh/unrand.txt` (×2) ✅
+  - `dat/descript/zh/backgrounds.txt` ✅
+  - `dat/descript/zh/features.txt` ✅
+  - `dat/descript/zh/tutorial.txt` (×2) ✅
+  - `dat/descript/zh/ability.txt` ✅
+- **Tracking issue**: issue 13
+- **Resolved**: 2026-06-27 (commit: issue 13 + follow-up)
+
+---
+
+### D-A-003 — Kikubaaqudgha → 奇库巴库哈
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 13
+- **Choice**: 奇库巴库哈
+- **Rejected**: 奇库巴库加
+- **Rationale**: `哈` preserves the breathy 'gha' ending; `加` (add/plus) was a phonetic mismatch
+- **Affected files**:
+  - `dat/database/zh/godspeak.txt` ✅
+  - `dat/descript/zh/gods.txt` ✅
+  - `dat/descript/zh/ability.txt` ✅
+  - `dat/descript/zh/features.txt` ✅
+  - `dat/descript/zh/items.txt` ✅
+  - `dat/descript/zh/monsters.txt` ✅
+  - `dat/database/zh/graffiti.txt` ✅ (created with correct name in Phase 1)
+- **Tracking issue**: issue 13
+
+---
+
+### D-A-004 — Nemelex Xobeh middle dot → U+00B7
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 12 Phase 0
+- **Choice**: U+00B7 (·) as separator in 尼姆雷斯·索布
+- **Rejected**: U+30FB (・) katakana middle dot
+- **Rationale**: U+00B7 is the standard Chinese middle dot; U+30FB is CJK-specific and renders inconsistently across fonts
+- **Affected files**:
+  - `dat/database/zh/godname.txt` ✅
+  - All other references use U+00B7 ✅
+- **Tracking issue**: issue 12
+
+---
+
+### D-A-005 — Vehumet → 维胡梅特
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 12 Phase 0
+- **Choice**: 维胡梅特
+- **Rejected**: (none — this was the original translation, confirmed correct)
+- **Rationale**: Phonetic transliteration is accurate and already in use across all files
+- **Affected files**: All files use 维胡梅特 ✅
+- **Tracking issue**: issue 12
+
+---
+
+### D-A-006 — The Shining One → 光辉者
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 12 Phase 0
+- **Choice**: 光辉者
+- **Rejected**: (none — confirmed correct)
+- **Rationale**: Semantic translation; `光辉` (radiance/glory) + `者` (-er suffix) matches the god title pattern
+- **Affected files**: All files use 光辉者 ✅
+- **Tracking issue**: issue 12
+
+---
+
+## Type-B: Rule Rulings (style/grammar/formatting conventions)
+
+---
+
+### D-B-001 — Brand genitive unified to 之
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/8 commit 3
+- **Choice**: `Y之X` for all weapon/armour brand names (e.g., `flaming sword` → `火焰之剑`)
+- **Rejected**: `Y的X` (colloquial form)
+- **Rationale**: `之` is the literary/classical genitive marker appropriate for item names; `的` is colloquial and reads as lower register. Unified across all brands to avoid mixed styles.
+- **Scope**: `item-name.cc` brand naming, all weapon/armour ego prefixes
+- **Tracking issue**: issues/8
+
+---
+
+### D-B-002 — comma_separated_line Chinese separators
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/8 commit 2
+- **Choice**: `、` (U+3001) for list separator, `和` for final conjunction
+- **Rejected**: English `, ` and ` and `
+- **Rationale**: Chinese enumeration uses `、` between items and `和` before the last item. Using English separators reads as a formatting bug.
+- **Scope**: All `comma_separated_line()` calls where the output is player-visible Chinese text
+- **Tracking issue**: issues/8
+
+---
+
+### D-B-003 — article_a Chinese skip
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/8 commit 1
+- **Choice**: `article_a()` returns empty string in Chinese mode
+- **Rejected**: Translating "a/an" as "一个" (over-specifies quantity)
+- **Rationale**: Chinese has no articles. Adding `一个` where English uses `a/an` introduces unwanted quantification. Omission is the correct default.
+- **Scope**: `english.cc:article_a()`
+- **Tracking issue**: issues/8
+
+---
+
+### D-B-004 — conj_verb Chinese disable
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/8 anti-pattern #2
+- **Choice**: Never call `conj_verb()` on Chinese strings
+- **Rejected**: Calling `conj_verb()` and getting garbled output (e.g., `"抓取s"`)
+- **Rationale**: `conj_verb()` applies English conjugation rules (adding -s/-es/-ing suffix). Chinese has no verb conjugation — person/number/tense are expressed through particles and word order, not suffixes.
+- **Scope**: All .cc files — this is a NEVER rule (anti-pattern #2 in CLAUDE.md)
+- **Tracking issue**: issues/8
+
+---
+
+### D-B-005 — Chinese no plural marking
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/8 commit 2
+- **Choice**: Remove English plural `"s"` suffix logic in Chinese mode
+- **Rejected**: Retaining English plural markers on Chinese text
+- **Rationale**: Chinese nouns have no singular/plural distinction. Plurality is expressed through context, numbers, or measure words — never through noun suffixes.
+- **Scope**: All string formatting that conditionally appends "s" based on count
+- **Tracking issue**: issues/8
+
+---
+
+### D-B-006 — Adverb position: BEFORE verb in Chinese
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: CLAUDE.md translation rules
+- **Choice**: Adverbs always precede verbs in Chinese translations
+- **Rejected**: English adverb placement (can be post-verbal)
+- **Rationale**: Chinese word order is strictly modifier-before-modified. English allows adverbs after verbs; Chinese does not.
+- **Scope**: All translation work
+- **Tracking issue**: N/A (standing rule)
+
+---
+
+### D-B-007 — spell_title() changes do not affect DB keys
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 16
+- **Choice**: Database keys use `spell_english_names` (English), not `spell_title()` (Chinese).
+  `spell_title()` translation revisions do not require syncing `zh/spells.txt` keys.
+- **Rejected**: Chinese spell_title() as DB key source — causes key breakage on translation change
+  and key collisions when two spells share the same Chinese name (e.g., Pain/Anguish both 痛苦).
+- **Rationale**: English keys eliminate the translation-revision→key-breakage fragility.
+  zh/spells.txt now matches all 9 other zh/ database files in using English keys.
+- **Scope**: `ability.cc` (ABIL_SIF_MUNA_REPEAT_EXEGESIS), `zh/spells.txt` keys
+- **Note**: Issue 16 listed 3 "missing" spells (Gell's Gravity, Unleash Destruction, Stoneshock)
+  whose EN keys do not exist in the 0.34.1 spells.txt database. These were likely misidentified
+  or refer to spells removed/renamed in earlier versions. No action needed.
+- **Tracking issue**: issue 16
+
+---
+
+## Type-C: Batch Rulings (large-scale translation sets)
+
+---
+
+### D-C-001 — Skill titles (216 items)
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues/7
+- **Choice**: Full Chinese translation of all 216 skill rank titles via `zh_skill_titles` map
+- **Rejected**: Partial translation or machine-only translation
+- **Rationale**: Skill titles are high-visibility UI text. Each title was manually translated with attention to rank hierarchy and thematic consistency within each skill.
+- **Scope**: `skills.cc:zh_skill_titles` map + `skill_title_by_rank()` lookup
+- **Tracking issue**: issues/7
+
+---
+
+### D-C-002 — Spell name fixes (6 items)
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-06-26
+- **Source**: i18n-improve (`_spell_review/impl_plan.md`)
+- **Choice**: 6 spell name corrections:
+  - MERCURY_ARROW: 水银箭 → 汞矢
+  - BLINK_RANGE: → 退避闪烁
+  - ENGLACIATION: → 深度冻结
+  - (plus 3 more from impl_plan.md)
+- **Rejected**: Original translations (inaccurate, inconsistent, or unidiomatic)
+- **Rationale**: Each correction addressed a specific quality issue: inaccurate element description, missing nuance, or unidiomatic compound formation.
+- **Scope**: `spl-data.h` spell name definitions
+- **Tracking issue**: i18n-improve
+
+---
+
+### D-C-003 — Item base names (200 items, including 10 dragon scales)
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 10
+- **Choice**: Chinese `item_base_name()` mapping for all item types
+- **Rejected**: English-only item names in Chinese mode
+- **Rationale**: Item names are Type I static display data — must be translated at the data layer for consistency.
+- **Scope**: `item-name.cc:item_base_name()` — deferred to independent issue
+- **Tracking issue**: issue 10
+
+---
+
+### D-C-004 — Portal .des file messages (~40 items)
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 9
+- **Choice**: Chinese initmsg/finalmsg for all 13 portal vault .des files
+- **Rejected**: English-only portal messages
+- **Rationale**: Portal entry/exit messages are player-visible atmospheric text. Uses `crawl.language()` Lua function for runtime language selection.
+- **Scope**: `dat/des/variable/*.des` portal files — deferred to independent issue
+- **Tracking issue**: issue 9
+
+---
+
+### D-B-011 — 工具函数语言守卫
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-28
+- **Source**: issue 22
+- **Choice**: 返回用户可见字符串的工具函数必须有语言守卫。
+  典型模式：`return zh ? "中文" : "English";`
+  或在调用点包裹 `Options.language` 检查。
+- **Rejected**: 在工具函数中直接返回中文（无守卫），导致 EN 模式下显示中文。
+- **Rationale**: `_beam_type_name` 等 Layer 3 函数的返回值直接进入 `mprf`/
+  消息系统。如果函数内无语言守卫检查，EN 模式下会显示中文。
+  这与 Type II 数据（动态格式串）的语言守卫原则一致。
+  `scan_untranslated.sh --layer3` 可自动检测 `zh ? "X" : "X"` stub 模式。
+- **Scope**: 所有返回用户可见字符串的 `_zh_*` 工具函数、Layer 3 显示函数、
+  `zh_names` map 查找函数、`dungeon_feature_name_zh` 等。
+- **Tracking issue**: issue 22
+
+---
+
+## Quick Reference: All Decision IDs
+
+| ID | Entity | Choice | Status |
+|----|--------|--------|--------|
+| D-A-001 | Sif Muna | 西芙·穆娜 | active — all ✅ |
+| D-A-002 | Trog | 特洛格 | active — all ✅ |
+| D-A-003 | Kikubaaqudgha | 奇库巴库哈 | active — all ✅ |
+| D-A-004 | Nemelex Xobeh · | U+00B7 | active — all ✅ |
+| D-A-005 | Vehumet | 维胡梅特 | active — all ✅ |
+| D-A-006 | The Shining One | 光辉者 | active — all ✅ |
+| D-B-001 | Brand genitive | 之 | active |
+| D-B-002 | List separators | 、+ 和 | active |
+| D-B-003 | article_a | skip in ZH | active |
+| D-B-004 | conj_verb | disable in ZH | active |
+| D-B-005 | Plural marking | remove in ZH | active |
+| D-B-006 | Adverb position | before verb | active |
+| D-B-007 | spell_title() → DB key | use English | active |
+| D-B-011 | Tool function language guard | must guard return values | active |
+| D-C-001 | Skill titles | 216 items | active |
+| D-C-002 | Spell names | 6 fixes | active |
+| D-C-003 | Item base names | ~200 items | active — deferred |
+| D-C-004 | Portal .des | ~40 messages | active — deferred |

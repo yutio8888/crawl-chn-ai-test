@@ -18,6 +18,7 @@
 #include "env.h"
 #include "items.h"
 #include "hints.h"
+#include "options.h"
 #include "god-conduct.h"
 #include "god-passive.h"
 #include "god-wrath.h"
@@ -75,7 +76,7 @@ static bool _check_monster_alert(const monster& mon)
         // And if it wasn't a monster that would get an encounter warning due to
         // being a summon, make sure to say something.
         if (mon.is_summoned())
-            mprf(MSGCH_MONSTER_WARNING, "%s comes into view.", mon.name(DESC_A).c_str());
+            mprf(MSGCH_MONSTER_WARNING, "%s 进入了视野。", mon.name(DESC_A).c_str());
 
         more(true);
         return true;
@@ -219,6 +220,7 @@ static void _monster_headsup(const vector<monster*> &monsters,
                                ostringstream& out)
 {
     int listed = 0;
+    const bool zh = Options.language == lang_t::ZH;
     for (const monster* mon : monsters)
     {
         monster_info mi(mon);
@@ -239,29 +241,38 @@ static void _monster_headsup(const vector<monster*> &monsters,
 
         ++listed;
 
-        string monname;
-        if (monsters.size() == 1)
-            monname = mon->pronoun(PRONOUN_SUBJECTIVE);
-        else if (mon->type == MONS_DANCING_WEAPON)
-            monname = "There";
-        else if (single.count(mon))
-            monname = mon->full_name(DESC_THE);
-        else
-            monname = mon->full_name(DESC_A);
-        out << uppercase_first(monname) << " ";
-
-        if (monsters.size() == 1)
-            out << conjugate_verb("are", mon->pronoun_plurality());
-        else
-            out << "is";
-
-        if (mon->type != MONS_DANCING_WEAPON)
-            out << " ";
-
         mons_equip_desc_level_type level = mon->type == MONS_DANCING_WEAPON ? DESC_WEAPON
                                                 : monsters.size() > 1 ? DESC_NOTEWORTHY
                                                                       : DESC_NOTEWORTHY_AND_WEAPON;
-        out << get_monster_equipment_desc(mi, level, DESC_NONE) << ".";
+
+        if (zh)
+        {
+            // Chinese: no "It is" prefix — just append the equipment description
+            out << get_monster_equipment_desc(mi, level, DESC_NONE) << "。";
+        }
+        else
+        {
+            string monname;
+            if (monsters.size() == 1)
+                monname = mon->pronoun(PRONOUN_SUBJECTIVE);
+            else if (mon->type == MONS_DANCING_WEAPON)
+                monname = "There";
+            else if (single.count(mon))
+                monname = mon->full_name(DESC_THE);
+            else
+                monname = mon->full_name(DESC_A);
+            out << uppercase_first(monname) << " ";
+
+            if (monsters.size() == 1)
+                out << conjugate_verb("are", mon->pronoun_plurality());
+            else
+                out << "is";
+
+            if (mon->type != MONS_DANCING_WEAPON)
+                out << " ";
+
+            out << get_monster_equipment_desc(mi, level, DESC_NONE) << ".";
+        }
     }
 }
 
@@ -434,13 +445,19 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
     }
     else if (sc == SC_ORBRUN)
     {
-        out << _describe_monsters_from_species(species).c_str() << " appear";
-        if (monsters.size() == 1)
-            out << "s";
-        out << " in pursuit of the Orb! ";
+        if (Options.language == lang_t::ZH)
+            out << _describe_monsters_from_species(species).c_str() << "出现，追踪宝珠而来！";
+        else
+        {
+            out << _describe_monsters_from_species(species).c_str() << " appear";
+            if (monsters.size() == 1)
+                out << "s";
+            out << " in pursuit of the Orb! ";
+        }
     }
     else
-        out << "You encounter " << _describe_monsters_from_species(species) << ".";
+        out << (T_("You encounter "))
+            << _describe_monsters_from_species(species) << "。";
 
     _monster_headsup(monsters, single, out);
 

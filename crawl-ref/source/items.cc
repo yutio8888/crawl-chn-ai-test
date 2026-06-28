@@ -903,7 +903,8 @@ string item_message(vector<const item_def *> const &items)
     for (const item_def *it : items)
         colour_names.push_back(menu_colour_item_name(*it, DESC_A));
 
-    return join_strings(colour_names.begin(), colour_names.end(), "; ");
+    return join_strings(colour_names.begin(), colour_names.end(),
+                    T_("; "));
 }
 
 void item_check()
@@ -923,21 +924,22 @@ void item_check()
     {
         const item_def& it(*items[0]);
         string name = menu_colour_item_name(it, DESC_A);
-        strm << "You see here " << name << '.' << endl;
+        strm << (T_("You see here "))
+             << name << (T_(".")) << endl;
         return;
     }
 
     string desc_string = item_message(items);
     // Stack summary case
     if (static_cast<int>(items.size()) >= Options.item_stack_summary_minimum)
-        mprf_nojoin(MSGCH_FLOOR_ITEMS, "Items here: %s.", desc_string.c_str());
+        mprf_nojoin(MSGCH_FLOOR_ITEMS, T_("Items here: %s."), desc_string.c_str());
     else if (items.size() <= msgwin_lines() - 1)
     {
-        mpr_nojoin(MSGCH_FLOOR_ITEMS, "Things that are here:");
+        mpr_nojoin(MSGCH_FLOOR_ITEMS, T_("Things that are here:"));
         mprf_nocap("%s", desc_string.c_str());
     }
     else
-        strm << "There are many items here." << endl;
+        strm << (T_("There are many items here.")) << endl;
 
     if (items.size() > 2 && crawl_state.game_is_hints_tutorial())
     {
@@ -1170,7 +1172,9 @@ void origin_acquired(item_def &item, int agent)
 
 static string _milestone_collectible(const item_def &item)
 {
-    return string("found ") + item.name(DESC_A) + ".";
+    return (Options.language == lang_t::ZH ? string("找到了") : string("found "))
+           + item.name(DESC_A)
+           + (T_("."));
 }
 
 void milestone_check(const item_def &item)
@@ -1321,13 +1325,13 @@ string origin_desc(const item_def &item)
             switch (iorig)
             {
             case IT_SRC_SHOP:
-                desc += "You bought " + _article_it(item) + " in a shop ";
+                desc += (T_("You bought ") + _article_it(item) + " in a shop ");
                 break;
             case IT_SRC_START:
                 desc += "Buggy Original Equipment: ";
                 break;
             case AQ_SCROLL:
-                desc += "You acquired " + _article_it(item) + " ";
+                desc += (T_("You acquired ") + _article_it(item) + " ");
                 break;
             case AQ_INVENTED:
                 desc += "You invented it yourself ";
@@ -1338,18 +1342,18 @@ string origin_desc(const item_def &item)
                 break;
 #endif
             case AQ_WIZMODE:
-                desc += "Your wizardly powers created "+ _article_it(item)+ " ";
+                desc += (T_("Your wizardly powers created ")+ _article_it(item)+ " ");
                 break;
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
                 {
                     desc += god_name(static_cast<god_type>(iorig))
-                        + " gifted " + _article_it(item) + " to you ";
+                        + (T_(" gifted ") + _article_it(item) + " to you ");
                 }
                 else
                 {
                     // Bug really.
-                    desc += "You stumbled upon " + _article_it(item) + " ";
+                    desc += (T_("You stumbled upon ") + _article_it(item) + " ");
                 }
                 break;
             }
@@ -1358,12 +1362,12 @@ string origin_desc(const item_def &item)
             desc += "You subdued it ";
         else
         {
-            desc += "You took " + _article_it(item) + " off "
+            desc += (T_("You took ") + _article_it(item) + " off ")
                     + _origin_monster_name(item) + " ";
         }
     }
     else
-        desc += "You found " + _article_it(item) + " ";
+        desc += (T_("You found ") + _article_it(item) + " ");
 
     desc += _origin_place_desc(item);
     return desc;
@@ -1463,7 +1467,7 @@ void pickup(bool partial_quantity)
     you.last_pickup.clear();
 
     if (o == NON_ITEM)
-        mpr("There are no items here.");
+        mpr(T_("There are no items here."));
     else if (num_items == 1) // just one movable item?
     {
         // Get the link to the movable item in the pile.
@@ -1482,9 +1486,9 @@ void pickup(bool partial_quantity)
     {
         int next;
         if (num_items == 0)
-            mpr("There are no objects that can be picked up here.");
+            mpr(T_("There are no objects that can be picked up here."));
         else
-            mpr("There are several objects here.");
+            mpr(T_("There are several objects here."));
         string pickup_warning;
         bool any_selectable = false;
         while (o != NON_ITEM)
@@ -1743,11 +1747,14 @@ void get_gold(const item_def& item, int quant, bool quiet)
     if (!quiet)
     {
         const string gain = quant != you.gold
-                            ? make_stringf(" (gained %d)", quant)
+                            ? make_stringf(T_(" (gained %d)"), quant)
                             : "";
 
-        mprf("You now have %d gold piece%s%s.",
-             you.gold, you.gold != 1 ? "s" : "", gain.c_str());
+        if (Options.language == lang_t::ZH)
+            mprf("你现在有%d枚金币%s。", you.gold, gain.c_str());
+        else
+            mprf("You now have %d gold piece%s%s.",
+                 you.gold, you.gold != 1 ? "s" : "", gain.c_str());
         learned_something_new(HINT_SEEN_GOLD);
     }
 }
@@ -1852,7 +1859,7 @@ static void _get_book(item_def& it)
                  it.name(DESC_THE).c_str());
             return;
         }
-        mprf("You pick up %s and begin reading...", it.name(DESC_A).c_str());
+        mprf("你捡起了%s并开始阅读...", it.name(DESC_A).c_str());
 
         if (!library_add_spells(spells_in_book(it)))
             mpr("Unfortunately, you learned nothing new or useful.");
@@ -1868,22 +1875,24 @@ static void _get_book(item_def& it)
 
     if (is_useless_skill(sk))
     {
-        mprf("You pick up %s. Unfortunately, it's quite useless to you.",
+        mprf(T_("You pick up %s. Unfortunately, it's quite useless to you."),
              it.name(DESC_A).c_str());
         return;
     }
 
     if (you.skills[sk] >= MAX_SKILL_LEVEL)
     {
-        mprf("You pick up %s, but it has nothing more to teach you.",
+        mprf(T_("You pick up %s, but it has nothing more to teach you."),
              it.name(DESC_A).c_str());
         return;
     }
 
     if (you.skill_manual_points[sk])
-        mprf("You pick up another %s and continue studying.", it.name(DESC_PLAIN).c_str());
+        mprf(T_("You pick up another %s and continue studying."),
+             it.name(DESC_PLAIN).c_str());
     else
-        mprf("You pick up %s and begin studying.", it.name(DESC_A).c_str());
+        mprf(T_("You pick up %s and begin studying."),
+             it.name(DESC_A).c_str());
     you.skill_manual_points[sk] += it.skill_points;
     you.skills_to_show.insert(sk);
 }
@@ -1934,7 +1943,7 @@ static void _get_rune(const item_def& it, bool quiet)
     if (!quiet)
     {
         flash_view_delay(UA_PICKUP, rune_colour(it.sub_type), 300);
-        mprf("You pick up the %s rune and feel its power.",
+        mprf(T_("You pick up the %s rune and feel its power."),
              rune_type_name(it.sub_type));
         int nrunes = runes_in_pack();
         if (nrunes >= you.obtainable_runes)
@@ -1949,10 +1958,10 @@ static void _get_rune(const item_def& it, bool quiet)
         {
             if (player_in_branch(BRANCH_PANDEMONIUM) && _got_all_pan_runes())
                 mpr("You've emptied out Pandemonium! Nothing left here but demons.");
-            mprf("You now have %d runes.", nrunes);
+            mprf(T_("You now have %d runes."), nrunes);
         }
 
-        mpr("Press } to see all the runes you have collected.");
+        mpr(T_("Press } to see all the runes you have collected."));
     }
 
     if (it.sub_type == RUNE_ABYSSAL)
@@ -2001,14 +2010,14 @@ static void _get_gem(const item_def& it, bool quiet)
 
     flash_view_delay(UA_PICKUP, it.gem_colour(), 300);
     // XXX: consider customizing this message per-gem
-    mprf("You pick up %s and feel its impossibly delicate weight in your %s.",
+    mprf(T_("You pick up %s and feel its impossibly delicate weight in your %s."),
          it.name(DESC_THE).c_str(), you.hand_name(true).c_str());
     if (_got_all_gems())
     {
         mprf("You've found all the gems! Together, they sparkle an otherworldly %s!",
              getSpeakString("misc_colour").c_str());
     }
-    mpr("Press } and ! to see all the gems you have collected.");
+    mpr(T_("Press } and ! to see all the gems you have collected."));
     print_gem_warnings(it.sub_type, 0);
 }
 
@@ -2085,11 +2094,13 @@ static bool _merge_stackable_item_into_inv(const item_def &it, int quant_got,
 #endif
             string prefix = you.inv[inv_slot].slot != old_slot
                             ? make_stringf("%c -> ", old_slot) : "";
-            mprf_nocap("%s%s (gained %d)",
+            mprf_nocap("%s%s %s",
                         prefix.c_str(),
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        quant_got);
+                        Options.language == lang_t::ZH
+                            ? make_stringf("（获得了%d）", quant_got).c_str()
+                            : make_stringf("(gained %d)", quant_got).c_str());
         }
         return true;
     }
@@ -2167,10 +2178,13 @@ static bool _merge_wand_charges(const item_def &it, int &inv_slot, bool quiet)
 #ifdef USE_SOUND
             parse_sound(PICKUP_SOUND);
 #endif
-            mprf_nocap("%s (gained %d charge%s)",
+            mprf_nocap("%s %s",
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        it.charges, it.charges == 1 ? "" : "s");
+                        Options.language == lang_t::ZH
+                            ? make_stringf("（获得了%d次充能）", it.charges).c_str()
+                            : make_stringf("(gained %d charge%s)", it.charges,
+                                           it.charges == 1 ? "" : "s").c_str());
         }
 
         return true;
@@ -2654,7 +2668,8 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
     }
 
     if (p == you.pos() && _id_floor_item(item))
-        mprf("You see here %s.", item.name(DESC_A).c_str());
+        mprf(T_("You see here %s."),
+             item.name(DESC_A).c_str());
 
     return true;
 }

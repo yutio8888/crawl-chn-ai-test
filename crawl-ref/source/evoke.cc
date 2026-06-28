@@ -75,6 +75,7 @@
 #include "traps.h"
 #include "unicode.h"
 #include "view.h"
+#include "database.h"
 
 #define PHIAL_RANGE 5
 
@@ -111,7 +112,7 @@ static bool _evoke_horn_of_geryon()
             created = true;
     }
     if (!created)
-        mpr("Nothing answers your call.");
+        mpr(T_("Nothing answers your call."));
     return true;
 }
 
@@ -186,7 +187,7 @@ void zap_wand(int slot, dist *_target)
     item_def& wand = you.inv[item_slot];
     if (wand.base_type != OBJ_WANDS)
     {
-        mpr("You can't zap that!");
+        mpr(T_("You can't zap that!"));
         return;
     }
 
@@ -229,7 +230,7 @@ void zap_wand(int slot, dist *_target)
         || you.unrand_equipped(UNRAND_GADGETEER))
         && x_chance_in_y(3, 10))
     {
-        mpr("You conserve a charge of your wand.");
+        mpr(T_("You conserve a charge of your wand."));
     }
     else
         wand.charges--;
@@ -238,7 +239,7 @@ void zap_wand(int slot, dist *_target)
     {
         ASSERT(in_inventory(wand));
 
-        mpr("The now-empty wand crumbles to dust.");
+        mpr(T_("The now-empty wand crumbles to dust."));
         dec_inv_item_quantity(wand.link, 1);
     }
 
@@ -268,7 +269,7 @@ static bool _box_of_beasts()
     if (!player_summon_check(MONS_MUTANT_BEAST))
         return false;
 
-    mpr("You open the lid...");
+    mpr(T_("You open the lid..."));
 
     // two rolls to reduce std deviation - +-6 so can get < max even at 27 sk
     int rnd_factor = random2(7);
@@ -288,12 +289,18 @@ static bool _box_of_beasts()
     if (!mons)
     {
         // Failed to create monster for some reason
-        mpr("...but nothing happens.");
+        mpr(T_("...but nothing happens."));
         return true;
     }
 
-    mprf("...and %s %s out!",
-         mons->name(DESC_A).c_str(), mons->airborne() ? "flies" : "leaps");
+    if (Options.language == lang_t::ZH)
+        mprf("...%s%s了出来！",
+             mons->name(DESC_A).c_str(),
+             mons->airborne() ? "飞" : "跳");
+    else
+        mprf("...and %s %s out!",
+             mons->name(DESC_A).c_str(),
+             mons->airborne() ? "flies" : "leaps");
     did_god_conduct(DID_CHAOS, random_range(5,10));
 
     return true;
@@ -392,21 +399,25 @@ static bool _sack_of_spiders()
     if (!player_summon_check(MONS_REDBACK))
         return false;
 
-    mpr("You reach into the sack...");
+    mpr(T_("You reach into the sack..."));
 
     const bool made_mons = _spill_out_spiders();
     if (made_mons)
-        mpr("...and things crawl out!");
+    {
+        mpr(T_("...and things crawl out!"));
+    }
 
     const bool webbed = _place_webs();
     if (!made_mons && !webbed)
     {
-        mpr("...but nothing happens.");
+        mpr(T_("...but nothing happens."));
         return true;
     }
 
     if (!made_mons)
-        mpr("...but only cobwebs fall out.");
+    {
+        mpr(T_("...but only cobwebs fall out."));
+    }
     return true;
 }
 
@@ -417,7 +428,7 @@ static bool _make_zig(item_def &zig)
         || player_in_branch(BRANCH_ARENA)
         || is_temp_terrain(you.pos()))
     {
-        mpr("You can't place a gateway to a ziggurat here.");
+        mpr(T_("You can't place a gateway to a ziggurat here."));
         return false;
     }
     for (int lev = 1; lev <= brdepth[BRANCH_ZIGGURAT]; lev++)
@@ -425,7 +436,7 @@ static bool _make_zig(item_def &zig)
         if (is_level_on_stack(level_id(BRANCH_ZIGGURAT, lev))
             || you.where_are_you == BRANCH_ZIGGURAT)
         {
-            mpr("Finish your current ziggurat first!");
+            mpr(T_("Finish your current ziggurat first!"));
             return false;
         }
     }
@@ -433,7 +444,7 @@ static bool _make_zig(item_def &zig)
     ASSERT(in_inventory(zig));
     dec_inv_item_quantity(zig.link, 1);
     dungeon_terrain_changed(you.pos(), DNGN_ENTER_ZIGGURAT);
-    mpr("You set the figurine down, and a mystic portal to a ziggurat forms.");
+    mpr(T_("You set the figurine down, and a mystic portal to a ziggurat forms."));
     return true;
 }
 
@@ -501,9 +512,13 @@ void wind_blast(actor* agent, int pow, coord_def target)
     {
         // Nemelex card only.
         if (pow > 120)
-            mpr("A mighty gale blasts forth from the card!");
+        {
+            mpr(T_("A mighty gale blasts forth from the card!"));
+        }
         else
-            mpr("A fierce wind blows from the card.");
+        {
+            mpr(T_("A fierce wind blows from the card."));
+        }
     }
 
     noisy(8, agent->pos());

@@ -26,6 +26,7 @@
 #include "rltiles/tiledef-main.h"
 #include "view.h"
 #include "viewchar.h"
+#include "database.h"
 
 int englaciate(coord_def where, int pow, actor *agent)
 {
@@ -82,7 +83,7 @@ int englaciate(coord_def where, int pow, actor *agent)
 spret cast_englaciation(int pow, bool fail)
 {
     fail_check();
-    mpr("You radiate an aura of cold.");
+    mpr(T_("You radiate an aura of cold."));
     apply_area_visible([pow] (coord_def where) {
         return englaciate(where, pow, &you);
     }, you.pos());
@@ -214,7 +215,7 @@ bool enfeeble_player(actor *source, int pow)
     if (res_margin > 0)
         canned_msg(MSG_YOU_PARTIALLY_RESIST);
 
-    mpr("You are enfeebled!");
+    mpr(T_("You are enfeebled!"));
     return true;
 }
 
@@ -330,7 +331,7 @@ void tick_rimeblight(monster& victim)
     if ((ticks == 4 || ticks > 4 && x_chance_in_y(ticks, ticks + 16))
         && you.see_cell_no_trans(victim.pos()))
     {
-        mprf("Shards of ice erupt from %s body!", apostrophise(victim.name(DESC_THE)).c_str());
+        mprf(T_("Shards of ice erupt from %s body!"), apostrophise(victim.name(DESC_THE)).c_str());
         do_rimeblight_explosion(victim.pos(), pow, 1);
     }
 

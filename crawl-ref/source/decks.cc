@@ -44,6 +44,7 @@
 #include "mutation.h"
 #include "notes.h"
 #include "output.h"
+#include "options.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -147,38 +148,39 @@ vector<ability_type> deck_ability = {
 
 const char* card_name(card_type card)
 {
+    const bool zh = Options.language == lang_t::ZH;
     switch (card)
     {
-    case CARD_VELOCITY:        return "Velocity";
-    case CARD_EXILE:           return "Exile";
-    case CARD_ELIXIR:          return "the Elixir";
-    case CARD_TOMB:            return "the Tomb";
-    case CARD_WILD_MAGIC:      return "Wild Magic";
-    case CARD_ELEMENTS:        return "the Elements";
-    case CARD_SUMMON_DEMON:    return "the Pentagram";
-    case CARD_SUMMON_WEAPON:   return "the Dance";
-    case CARD_SUMMON_BEE:      return "the Swarm";
-    case CARD_RANGERS:         return "the Rangers";
-    case CARD_VITRIOL:         return "Vitriol";
-    case CARD_CLOUD:           return "the Cloud";
-    case CARD_STORM:           return "the Storm";
-    case CARD_PAIN:            return "Pain";
-    case CARD_TORMENT:         return "Torment";
-    case CARD_WRATH:           return "Wrath";
-    case CARD_WRAITH:          return "the Wraith";
-    case CARD_SWINE:           return "the Swine";
-    case CARD_ORB:             return "the Orb";
-    case CARD_ILLUSION:        return "the Illusion";
-    case CARD_DEGEN:           return "Degeneration";
+    case CARD_VELOCITY:        return T_("Velocity");
+    case CARD_EXILE:           return T_("Exile");
+    case CARD_ELIXIR:          return T_("the Elixir");
+    case CARD_TOMB:            return T_("the Tomb");
+    case CARD_WILD_MAGIC:      return T_("Wild Magic");
+    case CARD_ELEMENTS:        return T_("the Elements");
+    case CARD_SUMMON_DEMON:    return T_("the Pentagram");
+    case CARD_SUMMON_WEAPON:   return T_("the Dance");
+    case CARD_SUMMON_BEE:      return T_("the Swarm");
+    case CARD_RANGERS:         return T_("the Rangers");
+    case CARD_VITRIOL:         return T_("Vitriol");
+    case CARD_CLOUD:           return T_("the Cloud");
+    case CARD_STORM:           return T_("the Storm");
+    case CARD_PAIN:            return T_("Pain");
+    case CARD_TORMENT:         return T_("Torment");
+    case CARD_WRATH:           return T_("Wrath");
+    case CARD_WRAITH:          return T_("the Wraith");
+    case CARD_SWINE:           return T_("the Swine");
+    case CARD_ORB:             return T_("the Orb");
+    case CARD_ILLUSION:        return T_("the Illusion");
+    case CARD_DEGEN:           return T_("Degeneration");
 
 #if TAG_MAJOR_VERSION == 34
     case CARD_FAMINE_REMOVED:
     case CARD_SHAFT_REMOVED:
     case CARD_STAIRS_REMOVED:
 #endif
-    case NUM_CARDS:            return "a buggy card";
+    case NUM_CARDS:            return T_("a buggy card");
     }
-    return "a very buggy card";
+    return T_("a very buggy card");
 }
 
 bool card_is_removed(card_type card)
@@ -1246,7 +1248,7 @@ static void _summon_demon_card(int power)
                                   you.pos(), MHITYOU, MG_AUTOFOE)
                         .set_summoned(&you, 0, summ_dur(5 - power_level))))
     {
-        mpr("You see a puff of smoke.");
+        mpr(T_("You see a puff of smoke."));
     }
     else if (hostile
              && mons_class_flag(dct, M_INVIS)
@@ -1292,7 +1294,7 @@ static void _summon_dancing_weapon(int power)
 
     if (!mon)
     {
-        mpr("You see a puff of smoke.");
+        mpr(T_("You see a puff of smoke."));
         return;
     }
 

@@ -102,6 +102,7 @@
 #include "view.h"
 #include "xom.h"
 #include "zot.h"
+#include "database.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -2342,7 +2343,8 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         && !get_level_annotation().empty()
         && !crawl_state.level_annotation_shown)
     {
-        mprf(MSGCH_PLAIN, YELLOW, "Level annotation: %s",
+        mprf(MSGCH_PLAIN, YELLOW,
+             T_("Level annotation: %s"),
              get_level_annotation().c_str());
     }
 

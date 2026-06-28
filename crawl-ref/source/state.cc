@@ -12,6 +12,7 @@
 #endif
 
 #include "dbg-util.h"
+#include "options.h"
 #include "delay.h"
 #include "directn.h"
 #include "hints.h"
@@ -24,6 +25,7 @@
 #include "religion.h"
 #include "showsymb.h"
 #include "unwind.h"
+#include "database.h"
 
 game_state::game_state()
     : game_crashed(false), crash_debug_scans_safe(true),
@@ -262,9 +264,9 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
     if (crawl_state.repeat_cmd == CMD_WAIT)
     {
         if (ai == activity_interrupt::full_mp)
-            crawl_state.cancel_cmd_repeat("Magic restored.");
+            crawl_state.cancel_cmd_repeat(T_("Magic restored."));
         else if (ai == activity_interrupt::full_hp)
-            crawl_state.cancel_cmd_repeat("HP restored");
+            crawl_state.cancel_cmd_repeat(T_("HP restored"));
         else
             crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
 

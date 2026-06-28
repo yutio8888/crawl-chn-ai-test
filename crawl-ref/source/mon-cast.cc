@@ -520,7 +520,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             if (foe->is_player())
             {
                 flash_tile(you.pos(), LIGHTBLUE, 25);
-                mpr("Mutagenic energy flows into you.");
+                mpr(T_("Mutagenic energy flows into you."));
                 contaminate_player(random_range(160, 270)
                                     + (you.magic_contamination < 1000 ? 120 : 0));
             }
@@ -1012,7 +1012,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         },
         [](monster &caster, mon_spell_slot, bolt&) {
             caster.props[DOOMSAYING_USED_KEY] = true;
-            mprf(MSGCH_WARN, "You feel a dangerous fate closing in on you...");
+            mprf(MSGCH_WARN, T_("You feel a dangerous fate closing in on you..."));
             you.attribute[ATTR_DOOM] += (100 - you.attribute[ATTR_DOOM]) / 2;
             you.redraw_doom = true;
         },
@@ -1074,7 +1074,7 @@ static const map<spell_type, mons_spell_logic> marionette_spell_to_logic {
             return ai_action::good_or_impossible(!you.duration[DUR_MIGHT]);
         },
         [] (monster&, mon_spell_slot /*slot*/, bolt& /*beem*/) {
-            mprf(MSGCH_DURATION, "You feel very mighty all of a sudden.");
+            mprf(MSGCH_DURATION, T_("You feel very mighty all of a sudden."));
             you.increase_duration(DUR_MIGHT, random_range(15, 25));
         }
     } },
@@ -1422,11 +1422,11 @@ static void _cast_brain_bite(monster &caster, mon_spell_slot slot, bolt&)
         if (you.magic_points <= you.max_magic_points / 5)
         {
             dam_multiplier = 2;
-            mpr("Something gnaws heavily on your mind!");
+            mpr(T_("Something gnaws heavily on your mind!"));
             xom_is_stimulated(30);
         }
         else
-            mpr("Something gnaws on your mind!");
+            mpr(T_("Something gnaws on your mind!"));
 
     }
     else
@@ -1450,7 +1450,7 @@ static void _cast_brain_bite(monster &caster, mon_spell_slot slot, bolt&)
         drain = min(you.magic_points, max(1, you.max_magic_points / 5));
         if (drain > 0)
         {
-            mprf(MSGCH_WARN, "You feel your power leaking away.");
+            mprf(MSGCH_WARN, T_("You feel your power leaking away."));
             drain_mp(drain);
         }
     }
@@ -1534,12 +1534,12 @@ static void _cast_beckoning_gale(monster &caster, mon_spell_slot, bolt&)
 
     if (moved)
     {
-        mprf("A beckoning whirlwind drags %s forward!",
+        mprf(T_("A beckoning whirlwind drags %s forward!"),
             foe->name(DESC_THE).c_str());
     }
     else
     {
-        mprf("A beckoning whirlwind swirls around %s.",
+        mprf(T_("A beckoning whirlwind swirls around %s."),
             foe->name(DESC_THE).c_str());
     }
 
@@ -1785,9 +1785,14 @@ static void _cast_siphon_essence(monster &caster, mon_spell_slot, bolt&)
         caster.heal(heal);
 
         if (seen)
-            mprf("Stolen life floods into %s!", caster.name(DESC_THE).c_str());
+        {
+            mprf(T_("Stolen life floods into %s!"),
+                 caster.name(DESC_THE).c_str());
+        }
         else
-            mpr("Stolen life floods into an unseen void!");
+        {
+            mpr(T_("Stolen life floods into an unseen void!"));
+        }
     }
 }
 
@@ -3143,7 +3148,7 @@ static bool _mons_awaken_flesh(const monster& caster, const int power,
 
     if (seen_affected > 0)
     {
-        mprf("Chaos surges forth from %s of flesh, awakening new unlife!",
+        mprf(T_("Chaos surges forth from %s of flesh, awakening new unlife!"),
              seen_affected == 1 ? "the pile" : "piles");
     }
 
@@ -3566,12 +3571,12 @@ static bool _seal_doors_and_stairs(const monster* warden,
                 (warden->visible_to(&you) ? warden->name(DESC_THE, true).c_str()
                                           : "Someone"));
         if (num_closed > 1)
-            mpr("The doors slam shut!");
+            mpr(T_("The doors slam shut!"));
         else if (num_closed == 1)
-            mpr("A door slams shut!");
+            mpr(T_("A door slams shut!"));
 
         if (player_pushed)
-            mpr("You are pushed out of the doorway!");
+            mpr(T_("You are pushed out of the doorway!"));
 
         for (actor* act : pushed)
             act->finalise_movement();
@@ -4151,7 +4156,7 @@ static bool _awaken_vines(monster* mon, bool test_only = false)
     else
     {
         if (seen)
-            mpr("Vines fly forth from the trees!");
+            mpr(T_("Vines fly forth from the trees!"));
         return true;
     }
 }
@@ -4343,7 +4348,7 @@ static bool _wall_of_brambles(monster* mons)
     }
 
     if (seen)
-        mpr("Thorny briars emerge from the ground!");
+        mpr(T_("Thorny briars emerge from the ground!"));
 
     return true;
 }
@@ -5290,7 +5295,7 @@ bool handle_mon_spell(monster* mons)
 
             if (ignore_good_idea)
             {
-                mprf(MSGCH_GOD, "You redirect %s's attack!",
+                mprf(MSGCH_GOD, T_("You redirect %s's attack!"),
                      mons->name(DESC_THE).c_str());
             }
         }
@@ -5508,7 +5513,7 @@ static int _monster_abjuration(const monster& caster, bool actual)
     int maffected = 0;
 
     if (actual)
-        mpr("Send 'em back where they came from!");
+        mpr(T_("Send 'em back where they came from!"));
 
     const int pow = mons_spellpower(caster, SPELL_ABJURATION);
 
@@ -6146,7 +6151,7 @@ static int _mons_cause_fear(monster* mons, bool actual)
         if (you.can_see(*mons))
             simple_monster_message(*mons, " radiates an aura of fear!");
         else if (you.see_cell(mons->pos()))
-            mpr("An aura of fear fills the air!");
+            mpr(T_("An aura of fear fills the air!"));
     }
 
     int retval = -1;
@@ -6645,12 +6650,12 @@ static void _flay(const monster &caster, actor &defender, int damage)
     {
         if (was_flayed)
         {
-            mprf("Terrible wounds spread across more of %s body!",
+            mprf(T_("Terrible wounds spread across more of %s body!"),
                  defender.name(DESC_ITS).c_str());
         }
         else
         {
-            mprf("Terrible wounds open up all over %s body!",
+            mprf(T_("Terrible wounds open up all over %s body!"),
                  defender.name(DESC_ITS).c_str());
         }
     }
@@ -6750,7 +6755,7 @@ static void _cast_resonance_strike(monster &caster, mon_spell_slot, bolt&)
 
     if (you.see_cell(target->pos()))
     {
-        mprf("A blast of power from the earth%s strikes %s!",
+        mprf(T_("A blast of power from the earth%s strikes %s!"),
              constructs_desc.c_str(),
              target->name(DESC_THE).c_str());
     }
@@ -6853,7 +6858,8 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
     {
         if (!sleep_pow)
         {
-            mprf(chan, "Motes of dream dust float from an unseen source.");
+            mprf(chan,
+                 T_("Motes of dream dust float from an unseen source."));
             mprf("%s is unaffected.", foe_name.c_str());
             return;
         }
@@ -7036,13 +7042,13 @@ static void _mons_vortex(monster *mons)
     if (you.can_see(*mons))
     {
         bool flying = mons->airborne();
-        mprf("A freezing vortex appears %s%s%s!",
+        mprf(T_("A freezing vortex appears %s%s%s!"),
              flying ? "around " : "and lifts ",
              mons->name(DESC_THE).c_str(),
              flying ? "" : " up!");
     }
     else if (you.see_cell(mons->pos()))
-        mpr("A freezing vortex appears out of thin air!");
+        mpr("一个冰冻漩涡凭空出现！");
 
     const int ench_dur = 60;
 
@@ -7648,7 +7654,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
         if (you.can_see(*foe))
         {
-                mprf("The water %s and strikes %s%s",
+                mprf(T_("The water %s and strikes %s%s"),
                         foe->airborne() ? "rises up" : "swirls",
                         foe->name(DESC_THE).c_str(),
                         attack_strength_punctuation(damage_taken).c_str());
@@ -7700,7 +7706,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         {
             if (foe->is_player() && !you.duration[DUR_FROZEN])
             {
-                mprf(MSGCH_WARN, "You are encased in ice.");
+                mprf(MSGCH_WARN, T_("You are encased in ice."));
                 you.duration[DUR_FROZEN] = (random_range(5, 8)) * BASELINE_DELAY;
             }
             else if (monster* monfoe = foe->as_monster())
@@ -7725,9 +7731,9 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (!foe)
             return;
         if (foe->is_player())
-            mpr("The long-dead rise up around you.");
+            mpr(T_("The long-dead rise up around you."));
         else if (you.can_see(*foe))
-            mprf("The long-dead rise up around %s.", foe->name(DESC_THE).c_str());
+            mprf(T_("The long-dead rise up around %s."), foe->name(DESC_THE).c_str());
         _cast_vanquished_vanguard(mons);
         return;
 
@@ -7740,9 +7746,9 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     case SPELL_HAUNT:
         ASSERT(foe);
         if (foe->is_player())
-            mpr("You feel haunted.");
+            mpr(T_("You feel haunted."));
         else
-            mpr("You sense an evil presence.");
+            mpr(T_("You sense an evil presence."));
         _mons_cast_haunt(mons);
         return;
 
@@ -8253,7 +8259,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     {
         monster* spire = _summon(*mons, MONS_LIGHTNING_SPIRE, summ_dur(2), slot, false);
         if (spire && !silenced(spire->pos()))
-            mpr("An electric hum fills the air.");
+            mpr(T_("An electric hum fills the air."));
         return;
     }
 
@@ -8332,7 +8338,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         if (you.can_see(*mons))
             simple_monster_message(*mons, " radiates an aura of cold.");
         else if (mons->see_cell_no_trans(you.pos()))
-            mpr("A wave of cold passes over you.");
+            mpr(T_("A wave of cold passes over you."));
         apply_area_visible([splpow, mons] (coord_def where) {
             return englaciate(where, min(splpow, 200), mons);
         }, mons->pos());
@@ -8759,7 +8765,7 @@ static void _speech_keys(vector<string>& key_list,
     const bool magical {slot_flags & MON_SPELL_MAGICAL};
 
     const mon_body_shape shape = get_mon_shape(*mons);
-    const string    spell_name = spell_title(spell);
+    const string    spell_name = spell_english_name(spell);
     const bool      real_spell = priest || wizard;
 
     // Before just using generic per-spell and per-monster casts, try
@@ -9114,7 +9120,9 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
     const bool gestured = msg.find("Gesture") != string::npos
                           || msg.find(" gesture") != string::npos
                           || msg.find("Point") != string::npos
-                          || msg.find(" point") != string::npos;
+                          || msg.find(" point") != string::npos
+                          || msg.find("手势") != string::npos
+                          || msg.find("指向") != string::npos;
 
     string targ_prep = "at";
     string target    = "NO_TARGET";
@@ -9294,9 +9302,15 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
                                                 foe->name(DESC_THE).c_str()) :
                                    "out of sight";
 
-        mprf("%s throws %s %s!",
-             (thrower_seen ? thrower.name(DESC_THE).c_str() : "Something"),
-             (throwee_seen ? throwee.name(DESC_THE, true).c_str() : "something"),
+        mprf(T_("%s throws %s %s!"),
+             (thrower_seen ? (Options.language == lang_t::ZH
+                                  ? thrower.name(DESC_PLAIN).c_str()
+                                  : thrower.name(DESC_THE).c_str())
+                           : (T_("Something"))),
+             (throwee_seen ? (Options.language == lang_t::ZH
+                                  ? throwee.name(DESC_PLAIN, true).c_str()
+                                  : throwee.name(DESC_THE, true).c_str())
+                           : (T_("something"))),
              destination.c_str());
 
         bolt beam;

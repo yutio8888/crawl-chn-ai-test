@@ -1499,6 +1499,8 @@ static int crawl_bane_desc(lua_State *ls)
     return 1;
 }
 
+static int crawl_language(lua_State *ls);
+
 static const struct luaL_Reg crawl_clib[] =
 {
     { "mpr",                crawl_mpr },
@@ -1573,8 +1575,20 @@ static const struct luaL_Reg crawl_clib[] =
     { "hints_type",         crawl_hints_type },
     { "bane_name",          crawl_bane_name },
     { "bane_description",   crawl_bane_desc },
+    { "language",           crawl_language },
     { nullptr, nullptr },
 };
+
+/*** Get the current UI language.
+ * @within crawl
+ * @treturn string "zh" or "en"
+ * @function language
+ */
+static int crawl_language(lua_State *ls)
+{
+    lua_pushstring(ls, Options.language == lang_t::ZH ? "zh" : "en");
+    return 1;
+}
 
 void cluaopen_crawl(lua_State *ls)
 {

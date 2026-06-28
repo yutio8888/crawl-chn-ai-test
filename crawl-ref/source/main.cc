@@ -437,10 +437,16 @@ NORETURN static void _launch_game()
 
     if (!crawl_state.game_is_tutorial())
     {
-        msg::stream << "<yellow>Welcome" << (game_start? "" : " back") << ", "
-                    << you.your_name << " the "
-                    << species::name(you.species)
-                    << " " << get_job_name(you.char_class) << ".</yellow>";
+        if (Options.language == lang_t::ZH)
+            msg::stream << "<yellow>欢迎" << (game_start? "" : "回来") << "，"
+                        << you.your_name << "（"
+                        << species::name(you.species)
+                        << " " << get_job_name(you.char_class) << "）。</yellow>";
+        else
+            msg::stream << "<yellow>Welcome" << (game_start? "" : " back") << ", "
+                        << you.your_name << " the "
+                        << species::name(you.species)
+                        << " " << get_job_name(you.char_class) << ".</yellow>";
         // TODO: seeded sprint?
         if (crawl_state.type == GAME_TYPE_CUSTOM_SEED)
             msg::stream << endl << "<white>" << seed_description() << "</white>";
@@ -464,7 +470,12 @@ NORETURN static void _launch_game()
     _god_greeting_message(game_start);
 
     if (!crawl_state.game_is_tutorial())
-        mpr("Press <w>?</w> for a list of commands and other information.");
+    {
+        if (Options.language == lang_t::ZH)
+            mpr("按<w>?</w>查看命令列表和其他信息。");
+        else
+            mpr("Press <w>?</w> for a list of commands and other information.");
+    }
 
     _prep_input();
 
@@ -691,8 +702,9 @@ static void _wanderer_note_equipment()
     mprf("You begin with %s%s%s.", equip_str.c_str(),
          spell_str.c_str(), library_str.c_str());
 
-    const string combined_str = you.your_name + " set off with "
-                                + equip_str + spell_str + library_str + ".";
+    const string combined_str = Options.language == lang_t::ZH
+        ? you.your_name + "携带" + equip_str + spell_str + library_str + "出发了。"
+        : you.your_name + " set off with " + equip_str + spell_str + library_str + ".";
     take_note(Note(NOTE_MESSAGE, 0, 0, combined_str));
 }
 
@@ -746,10 +758,16 @@ static void _god_greeting_message(bool game_start)
 static void _take_starting_note()
 {
     ostringstream notestr;
-    notestr << you.your_name << " the "
-            << species::name(you.species) << " "
-            << get_job_name(you.char_class)
-            << " began the quest for the Orb.";
+    if (Options.language == lang_t::ZH)
+        notestr << you.your_name << "（"
+                << species::name(you.species) << " "
+                << get_job_name(you.char_class)
+                << "）开始了寻找宝珠的征程。";
+    else
+        notestr << you.your_name << " the "
+                << species::name(you.species) << " "
+                << get_job_name(you.char_class)
+                << " began the quest for the Orb.";
     take_note(Note(NOTE_MESSAGE, 0, 0, notestr.str()));
     mark_milestone("begin", "began the quest for the Orb.");
 
@@ -950,7 +968,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
 
     case CMD_NO_CMD:
     case CMD_NO_CMD_DEFAULT:
-        mpr("Unknown command, not repeating.");
+        mpr(T_("Unknown command, not repeating."));
         return false;
 
     default:
@@ -1406,18 +1424,18 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
             && (!down || !known_shaft))
         {
             if (ftype == DNGN_STONE_ARCH)
-                mpr("There is nothing on the other side of the stone arch.");
+                mpr(T_("There is nothing on the other side of the stone arch."));
             else if (ftype == DNGN_ABANDONED_SHOP)
-                mpr("This shop appears to be closed.");
+                mpr(T_("This shop appears to be closed."));
             else if (ftype == DNGN_SEALED_STAIRS_UP
                      || ftype == DNGN_SEALED_STAIRS_DOWN )
             {
-                mpr("A magical barricade bars your way!");
+                mpr(T_("A magical barricade bars your way!"));
             }
             else if (down)
-                mpr("You can't go down here!");
+                mpr(T_("You can't go down here!"));
             else
-                mpr("You can't go up here!");
+                mpr(T_("You can't go up here!"));
             return false;
         }
     }
@@ -1428,14 +1446,14 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     case DNGN_EXIT_VAULTS:
         if (runes_in_pack() < 1)
         {
-            mpr("You need a rune to leave the Vaults.");
+            mpr(T_("You need a rune to leave the Vaults."));
             return false;
         }
         break;
     case DNGN_ENTER_ZOT:
         if (runes_in_pack() < ZOT_ENTRY_RUNES && !crawl_state.game_is_descent())
         {
-            mprf("You need at least %d runes to enter the Realm of Zot.",
+            mprf(T_("You need at least %d runes to enter the Realm of Zot."),
                  ZOT_ENTRY_RUNES);
             return false;
         }
@@ -1447,7 +1465,7 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     if (player_in_branch(BRANCH_SLIME) && !down && you.depth > 1
             && !you_worship(GOD_JIYVA) && !you.royal_jelly_dead)
     {
-        mpr("The stairs are too slimy for you to climb back up!");
+        mpr(T_("The stairs are too slimy for you to climb back up!"));
         return false;
     }
 
@@ -1738,7 +1756,7 @@ static void _take_stairs(bool down)
 
 static void _experience_check()
 {
-    mprf("You are a level %d %s %s.",
+    mprf("你是 %d 级的 %s%s。",
          you.experience_level,
          species::name(you.species).c_str(),
          get_job_name(you.char_class));
@@ -1746,13 +1764,12 @@ static void _experience_check()
 
     if (you.experience_level < you.get_max_xl())
     {
-        mprf("You are %d%% of the way to level %d.", perc,
-              you.experience_level + 1);
+        mprf("你距离升级到 %d 级还有 %d%%。", you.experience_level + 1, perc);
     }
     else
     {
-        mprf("I'm sorry, level %d is as high as you can go.", you.get_max_xl());
-        mpr("With the way you've been playing, I'm surprised you got this far.");
+        mprf("抱歉，%d 级已经是最高等级了。", you.get_max_xl());
+        mpr("以你的游玩方式，能走到这一步真是令人惊讶。");
     }
 
     if (you.has_mutation(MUT_MULTILIVED))
@@ -1776,8 +1793,8 @@ static void _experience_check()
     }
 
     handle_real_time();
-    msg::stream << "Play time: " << make_time_string(you.real_time())
-                << " (" << you.num_turns << " turns)."
+    msg::stream << "游戏时间: " << make_time_string(you.real_time())
+                << " (" << you.num_turns << " 回合)。"
                 << endl;
 
     if (!crawl_state.game_is_sprint())
@@ -1788,9 +1805,8 @@ static void _experience_check()
             msg::stream << "You have unlimited time to explore this branch.";
         else
         {
-            msg::stream << "Zot will find you in " << turns_until_zot()
-                        << " turns if you stay in this branch and explore no"
-                        << " new floors.";
+            msg::stream << "如果你停留在此区域且不探索新楼层，" << turns_until_zot()
+                        << " 回合后佐特会发现你。";
         }
         msg::stream << endl << gem_status();
     }
@@ -1822,12 +1838,12 @@ static void _do_rest()
     {
         if (you.is_sufficiently_rested(true) && ancestor_full_hp())
         {
-            mpr("You start waiting.");
+            mpr("你开始等待。");
             _start_running(RDIR_REST, RMODE_WAIT_DURATION);
             return;
         }
         else
-            mpr("You start resting.");
+            mpr("你开始休息。");
     }
     // intentional fallthrough for else case! Messaging is handled in
     // _start_running, update the corresponding conditional there if you
@@ -1844,8 +1860,7 @@ static void _do_display_map()
 #ifdef USE_TILE_LOCAL
     // Since there's no actual overview map, but the functionality
     // exists, give a message to explain what's going on.
-    mpr("Move the cursor to view the level map, or type <w>?</w> for "
-        "a list of commands.");
+    mpr("移动光标查看楼层地图，或输入<w>?</w>查看命令列表。");
     flush_prev_message();
 #endif
 
@@ -1885,7 +1900,8 @@ static void _do_list_gold()
 {
     if (shopping_list.empty())
     {
-        mprf("You have %d gold piece%s.", you.gold, you.gold != 1 ? "s" : "");
+        mprf(Options.language == lang_t::ZH ? "你拥有 %d 枚金币。" : "You have %d gold piece%s.",
+         you.gold, Options.language == lang_t::ZH ? 0 : (you.gold != 1 ? "s" : ""));
         int vouchers = you.attribute[ATTR_VOUCHER];
         if (vouchers > 0)
             mprf("You also have %d voucher%s.", vouchers, vouchers > 1 ? "s" : "");
@@ -2044,39 +2060,39 @@ public:
     {
         clear();
         add_entry(new CmdMenuEntry("", MEL_SUBTITLE));
-        add_entry(new CmdMenuEntry("Return to game", MEL_ITEM, CK_ESCAPE,
+        add_entry(new CmdMenuEntry("返回游戏", MEL_ITEM, CK_ESCAPE,
             CMD_NO_CMD, false));
         items[1]->add_tile(tileidx_command(CMD_GAME_MENU));
         // n.b. CMD_SAVE_GAME_NOW crashes on returning to the main menu if we
         // don't exit out of this popup now, not sure why
         add_entry(new CmdMenuEntry(
             (crawl_should_restart(game_exit::save)
-                            ? "Save and return to main menu"
-                            : "Save and exit"),
+                            ? "保存并返回主菜单"
+                            : "保存并退出"),
             MEL_ITEM, 'S', CMD_SAVE_GAME_NOW, false));
-        add_entry(new CmdMenuEntry("Generate and view character dump",
+        add_entry(new CmdMenuEntry("生成并查看角色报告",
             MEL_ITEM, '#', CMD_SHOW_CHARACTER_DUMP));
 #ifdef USE_TILE_LOCAL
-        add_entry(new CmdMenuEntry("Edit player tile",
+        add_entry(new CmdMenuEntry("编辑玩家图标",
             MEL_ITEM, '-', CMD_EDIT_PLAYER_TILE));
 #endif
-        add_entry(new CmdMenuEntry("Edit macros",
+        add_entry(new CmdMenuEntry("编辑宏",
             MEL_ITEM, '~', CMD_MACRO_MENU));
-        add_entry(new CmdMenuEntry("Help and manual",
+        add_entry(new CmdMenuEntry("帮助和手册",
             MEL_ITEM, '?', CMD_DISPLAY_COMMANDS));
-        add_entry(new CmdMenuEntry("Lookup info",
+        add_entry(new CmdMenuEntry("查找信息",
             MEL_ITEM, '/', CMD_LOOKUP_HELP));
 #ifdef TARGET_OS_MACOSX
-        add_entry(new CmdMenuEntry("Show options file in finder",
+        add_entry(new CmdMenuEntry("在文件管理器中显示选项文件",
             MEL_ITEM, 'O', CMD_REVEAL_OPTIONS));
 #endif
 #ifdef __ANDROID__
-        add_entry(new CmdMenuEntry("Toggle on-screen keyboard",
+        add_entry(new CmdMenuEntry("切换屏幕键盘",
             MEL_ITEM, CK_F12, CMD_TOGGLE_KEYBOARD));
 #endif
         add_entry(new CmdMenuEntry("", MEL_SUBTITLE));
         add_entry(new CmdMenuEntry(
-                            "Quit and <lightred>abandon character</lightred>",
+                            "退出并<lightred>放弃角色</lightred>",
             MEL_ITEM, 'Q', CMD_QUIT, false));
     }
 
@@ -2188,13 +2204,19 @@ void process_command(command_type cmd, command_type prev_cmd)
             Options.autopickup_on = 1;
         else
             Options.autopickup_on = 0;
-        mprf("Autopickup is now %s.", Options.autopickup_on > 0 ? "on" : "off");
+        if (Options.language == lang_t::ZH)
+            mprf("自动拾取已%s。", Options.autopickup_on > 0 ? "开启" : "关闭");
+        else
+            mprf("Autopickup is now %s.", Options.autopickup_on > 0 ? "on" : "off");
         break;
 
 #ifdef USE_SOUND
     case CMD_TOGGLE_SOUND:
         Options.sounds_on = !Options.sounds_on;
-        mprf("Sound effects are now %s.", Options.sounds_on ? "on" : "off");
+        if (Options.language == lang_t::ZH)
+            mprf("音效已%s。", Options.sounds_on ? "开启" : "关闭");
+        else
+            mprf("Sound effects are now %s.", Options.sounds_on ? "on" : "off");
         break;
 #endif
 
@@ -2440,8 +2462,8 @@ void process_command(command_type cmd, command_type prev_cmd)
     {
         const char * const prompt
             = (crawl_should_restart(game_exit::save))
-              ? "Save game and return to main menu?"
-              : "Save game and exit?";
+              ? "保存游戏并返回主菜单？"
+              : "保存游戏并退出？";
         explicit_keymap map;
         map['S'] = 'y';
         if (yesno(prompt, true, 'n', true, true, false, &map))
@@ -2460,7 +2482,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     {
         // TODO: msg whether this will start a new game? not very important
         if (crawl_state.disables[DIS_CONFIRMATIONS]
-            || confirm_prompt("quit", "Are you sure you want to abandon this character%s?",
+            || confirm_prompt("quit", "你确定要放弃这个角色%s吗？",
                 Options.newgame_after_quit ? "" : // hard to predict this case
                 (crawl_should_restart(game_exit::quit)
                                             ? " and return to the main menu"
@@ -2491,9 +2513,14 @@ void process_command(command_type cmd, command_type prev_cmd)
     default:
         // The backslash in ?\? is there so it doesn't start a trigraph.
         if (crawl_state.game_is_hints())
-            mpr("Unknown command. (For a list of commands type <w>?\?</w>.)");
+        {
+            if (Options.language == lang_t::ZH)
+                mpr("未知命令。（输入<w>?\?</w>查看命令列表。）");
+            else
+                mpr("Unknown command. (For a list of commands type <w>?\?</w>.)");
+        }
         else // well, not examine, but...
-            mprf(MSGCH_EXAMINE_FILTER, "Unknown command.");
+            mprf(MSGCH_EXAMINE_FILTER, T_("Unknown command."));
 
         if (feat_is_altar(env.grid(you.pos())))
         {

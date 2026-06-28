@@ -215,7 +215,7 @@ static spret _try_to_pacify(monster &mon, int healed, int pow,
     if (pacified_roll * 23 / 20 < mon_hp)
     {
         // not even close.
-        mprf("The light of Elyvilon fails to reach %s.",
+        mprf(T_("The light of Elyvilon fails to reach %s."),
              mon.name(DESC_THE).c_str());
         return spret::success;
     }
@@ -223,7 +223,7 @@ static spret _try_to_pacify(monster &mon, int healed, int pow,
     if (pacified_roll < mon_hp)
     {
         // closer! ...but not quite.
-        mprf("The light of Elyvilon almost touches upon %s.",
+        mprf(T_("The light of Elyvilon almost touches upon %s."),
              mon.name(DESC_THE).c_str());
         return spret::success;
     }
@@ -271,7 +271,7 @@ bool heal_monster(monster& patient, int amount)
     if (!patient.heal(amount))
         return false;
 
-    mprf("You heal %s.", patient.name(DESC_THE).c_str());
+    mprf(T_("You heal %s."), patient.name(DESC_THE).c_str());
 
     if (patient.hit_points == patient.max_hit_points)
         simple_monster_message(patient, " is completely healed.");

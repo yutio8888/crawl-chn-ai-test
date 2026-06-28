@@ -301,7 +301,7 @@ Sonja title
 %%%%
 Terence title
 
-鲁莽的泰伦斯
+老练的泰伦斯
 %%%%
 Tiamat title
 
@@ -327,3 +327,23 @@ Zenata title
 
 塞奈达，西泽的追寻者
 %%%%
+%%%%
+Cassandra title
+
+注定毁灭的先知卡珊德拉
+%%%%
+Nobody title
+
+無名者，未被哀悼者的怨恨
+%%%%
+Sprozz title
+
+创意养蜂人斯普罗兹
+%%%%
+Wiglaf title
+
+炮手矮人维格拉夫
+%%%%
+Xak'krixis title
+
+王家远征炼金师扎克里西斯

@@ -49,6 +49,7 @@
 #include "terrain.h"
 #include "transform.h"
 #include "view.h"
+#include "database.h"
 
 class final_effect
 {
@@ -1012,7 +1013,7 @@ void mirror_damage_fineff::fire()
                  reflector->name(DESC_THE).c_str());
         }
         else
-            mpr("Your damage is reflected back at you!");
+            mpr(T_("Your damage is reflected back at you!"));
         ouch(damage, KILLED_BY_MIRROR_DAMAGE);
     }
     else
@@ -1161,7 +1162,7 @@ void trj_spawn_fineff::fire()
         }
     }
     else if (spawned == 1)
-        mpr("One of the Royal Jelly's fragments survives.");
+        mpr(T_("One of the Royal Jelly's fragments survives."));
     else
     {
         mprf("The dying Royal Jelly spits out %s more jellies.",
@@ -1319,7 +1320,7 @@ void shock_discharge_fineff::fire()
     }
     else if (you.can_see(oppressor))
     {
-        mprf("The air sparks with electricity, shocking %s%s",
+        mprf(T_("The air sparks with electricity, shocking %s%s"),
              oppressor.name(DESC_THE).c_str(),
              attack_strength_punctuation(final_dmg).c_str());
     }
@@ -1711,7 +1712,9 @@ void stardust_fineff::fire()
         return;
 
     if (is_star_jelly)
-        mprf("A flurry of magic pours from %s injured body!", agent->name(DESC_ITS).c_str());
+        mprf(T_("A flurry of magic pours from %s injured body!"), agent->name(DESC_ITS).c_str());
+    else if (Options.language == lang_t::ZH)
+        mprf("%s的宝珠释放出一阵流星雨！", agent->name(DESC_ITS).c_str());
     else
         mprf("%s orb unleashes a flurry of shooting stars!", agent->name(DESC_ITS).c_str());
 
@@ -1766,7 +1769,7 @@ void pyromania_fineff::fire()
     exp.source = you.pos();
     exp.ex_size = 3;
 
-    mpr("Your orb flickers with a hungry flame!");
+    mpr(T_("Your orb flickers with a hungry flame!"));
     exp.explode(true, true);
 }
 
@@ -1846,7 +1849,6 @@ void eeljolt_fineff::fire()
 {
     do_eel_arcjolt();
 }
-
 // Effects that occur after all other effects, even if the monster is dead.
 // For example, explosions that would hit other creatures, but we want
 // to deal with only one creature at a time, so that's handled last.

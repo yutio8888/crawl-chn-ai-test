@@ -1506,11 +1506,15 @@ static void _parse_maps(const string &s)
 
     extern int yyparse();
     extern FILE *yyin;
+    extern void yyrestart(FILE *);
+    extern int yylex_destroy();
     yyin = dat;
 
     const size_t file_start = vdefs.size();
+    yyrestart(yyin);
     yyparse();
     fclose(dat);
+    yylex_destroy();
 
     global_preludes.push_back(lc_global_prelude);
 

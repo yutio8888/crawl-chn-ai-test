@@ -66,6 +66,7 @@
 #include "unwind.h"
 #include "view.h"
 #include "zot.h"
+#include "database.h"
 
 #define AUTO_REST_STATUS_POS "autorest_status_pos"
 
@@ -331,11 +332,12 @@ bool feat_is_traversable(dungeon_feature_type feat, bool try_fallback)
 
 static const char *_run_mode_name(int runmode)
 {
-    return runmode == RMODE_TRAVEL         ? "travel" :
-           runmode == RMODE_INTERLEVEL     ? "intertravel" :
-           runmode == RMODE_EXPLORE        ? "explore" :
-           runmode == RMODE_EXPLORE_GREEDY ? "explore_greedy" :
-           runmode > 0                     ? "run"
+    const bool zh = Options.language == lang_t::ZH;
+    return runmode == RMODE_TRAVEL         ? (T_("travel")) :
+           runmode == RMODE_INTERLEVEL     ? (T_("intertravel")) :
+           runmode == RMODE_EXPLORE        ? (T_("explore")) :
+           runmode == RMODE_EXPLORE_GREEDY ? (T_("explore_greedy")) :
+           runmode > 0                     ? (T_("run"))
                                            : "";
 }
 
@@ -385,9 +387,9 @@ static pair<bool, string> _feat_is_blocking_door_strict(
     {
         string barrier;
         if (feat_is_runed(grid))
-            return {true, "unopened runed door"};
+            return {true, T_("unopened runed door")};
         else
-            return {true, "unopened door"};
+            return {true, T_("unopened door")};
     }
     return {true, ""};
 }
@@ -772,7 +774,7 @@ static void _explore_find_target_square()
         const bool unknown_trans = _level_has_unknown_transporters();
         if (!estatus && !unknown_trans)
         {
-            mpr("Done exploring.");
+            mpr(T_("Done exploring."));
             learned_something_new(HINT_DONE_EXPLORE);
         }
         else
@@ -781,33 +783,36 @@ static void _explore_find_target_square()
             vector<const char *> inacc;
             string inacc_desc = "";
 
+            const bool zh = Options.language == lang_t::ZH;
+
             if (runed_door_pause)
-                reasons.push_back("unopened runed door");
+                reasons.push_back(T_("unopened runed door"));
 
             if (unknown_trans)
-                reasons.push_back("unvisited transporter");
+                reasons.push_back(T_("unvisited transporter"));
 
             if (closed_door_pause)
-                reasons.push_back("unopened door");
+                reasons.push_back(T_("unopened door"));
 
             if (estatus & EST_GREED_UNFULFILLED)
-                inacc.push_back("items");
+                inacc.push_back(T_("items"));
             // A runed door already implies an unexplored place.
             if (!runed_door_pause && !closed_door_pause &&
                 estatus & EST_PARTLY_EXPLORED)
             {
-                inacc.push_back("places");
+                inacc.push_back(T_("places"));
             }
 
             if (!inacc.empty())
             {
-                inacc_desc = make_stringf("can't reach some %s",
+                inacc_desc = make_stringf(T_("can't reach some %s"),
                                  comma_separated_line(inacc.begin(),
-                                                      inacc.end()).c_str());
+                                     inacc.end(), T_(", ")).c_str());
                 reasons.push_back(inacc_desc.c_str());
             }
-            mprf("Partly explored, %s.",
-                 comma_separated_line(reasons.begin(), reasons.end()).c_str());
+            mprf(T_("Partly explored, %s."),
+                 comma_separated_line(reasons.begin(), reasons.end(),
+                     T_(" and ")).c_str());
         }
         stop_running();
     }
@@ -1061,7 +1066,8 @@ command_type travel()
 
     if (Options.travel_key_stop && kbhit())
     {
-        mprf("Key pressed, stopping %s.", you.running.runmode_name().c_str());
+        mprf(T_("Key pressed, stopping %s."),
+             you.running.runmode_name().c_str());
         stop_running();
         return CMD_NO_CMD;
     }
@@ -1069,7 +1075,7 @@ command_type travel()
     // Excluded squares are only safe if marking stairs, i.e. another level.
     if (is_excluded(you.pos()) && !is_stair_exclusion(you.pos()))
     {
-        mprf("You're in a travel-excluded area, stopping %s.",
+        mprf(T_("You're in a travel-excluded area, stopping %s."),
              you.running.runmode_name().c_str());
         stop_running();
         return CMD_NO_CMD;
@@ -4810,17 +4816,19 @@ bool runrest::is_any_travel() const
 
 string runrest::runmode_name() const
 {
+    const bool zh = Options.language == lang_t::ZH;
     switch (runmode)
     {
     case RMODE_EXPLORE:
     case RMODE_EXPLORE_GREEDY:
-        return "explore";
+        return T_("explore");
     case RMODE_INTERLEVEL:
     case RMODE_TRAVEL:
-        return "travel";
+        return T_("travel");
     default:
         if (runmode > 0)
-            return pos.origin()? "rest" : "run";
+            return pos.origin() ? (T_("rest"))
+                                : (T_("run"));
         return "";
     }
 }
@@ -5115,6 +5123,26 @@ template <class C> void explore_discoveries::say_any(
     if (size != 1)
         category = plural.c_str();
 
+    // "Found X" → "发现了X" for Chinese
+    if (Options.language == lang_t::ZH)
+    {
+        if (has_duplicates(coll.begin(), coll.end()))
+        {
+            mprf("发现了%s %s。", number_in_words(size).c_str(), category);
+            return;
+        }
+
+        const auto message_zh = "发现了" +
+                               comma_separated_line(coll.begin(), coll.end(),
+                                   "和", "、") + "。";
+
+        if (formatted_string::parse_string(message_zh).width() >= get_number_of_cols())
+            mprf("发现了%s %s。", number_in_words(size).c_str(), category);
+        else
+            mpr(message_zh);
+        return;
+    }
+
     if (has_duplicates(coll.begin(), coll.end()))
     {
         mprf("Found %s %s.", number_in_words(size).c_str(), category);
@@ -5143,7 +5171,8 @@ vector<string> explore_discoveries::apply_quantities(
     for (const named_thing<int> &nt : v)
     {
         if (nt.thing == 1)
-            things.push_back(article_a(nt.name));
+            things.push_back(Options.language == lang_t::ZH
+                             ? nt.name : article_a(nt.name));
         else
         {
             things.push_back(number_in_words(nt.thing)
@@ -5162,7 +5191,7 @@ bool explore_discoveries::stop_explore() const
         mpr(msg);
 
     for (const string &marked : marked_feats)
-        mprf("Found %s", marked.c_str());
+        mprf(T_("Found %s"), marked.c_str());
 
     if (!es_flags)
         return marker_stop;

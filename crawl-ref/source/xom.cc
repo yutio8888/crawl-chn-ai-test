@@ -554,14 +554,14 @@ static void _xom_divination(int sever)
         // still on the map when the original one has been killed. Then
         // another one is spawned, so the number is the same as before.
         // There's no way we can check this, however.
-        mpr("You detect items, but no nearby creatures.");
+        mpr(T_("You detect items, but no nearby creatures."));
     }
     else
     {
         if (num_items > 0)
-            mpr("You detect items and creatures!");
+            mpr(T_("You detect items and creatures!"));
         else
-            mpr("You detect creatures, but no further items.");
+            mpr(T_("You detect creatures, but no further items."));
     }
 
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, "divination: all"), true);
@@ -588,7 +588,7 @@ static void _try_brand_switch(const int item_index)
         return;
 
     // TODO: shared code with _do_chaos_upgrade
-    mprf("%s erupts in a glittering mayhem of colour.",
+    mprf(T_("%s erupts in a glittering mayhem of colour."),
                             item.name(DESC_THE, false, false, false).c_str());
     if (is_random_artefact(item))
         artefact_set_property(item, ARTP_BRAND, SPWPN_CHAOS);
@@ -797,7 +797,7 @@ static void _do_chaos_upgrade(item_def &item, const monster* mon)
     {
         const description_level_type desc = mon->friendly() ? DESC_YOUR
                                                             : DESC_THE;
-        mprf("%s %s erupts in a glittering mayhem of colour.",
+        mprf(T_("%s %s erupts in a glittering mayhem of colour."),
             apostrophise(mon->name(desc)).c_str(),
             item.name(DESC_PLAIN, false, false, false).c_str());
     }
@@ -1400,7 +1400,7 @@ static void _xom_rearrange_pieces(int sever)
             {
                 if (!did_message)
                 {
-                    mpr("Some monsters swap places.");
+                    mpr(T_("Some monsters swap positions."));
                     did_message = true;
                 }
                 if (one_chance_in(4))
@@ -1485,7 +1485,8 @@ static void _xom_snakes_to_sticks(int /*sever*/)
         item.quantity = 1;
 
         // Output some text since otherwise snakes will disappear silently.
-        mprf("%s reforms as %s.", mi->name(DESC_THE).c_str(),
+        mprf(T_("%s turns into %s."),
+     mi->name(DESC_THE).c_str(),
              item.name(DESC_A).c_str());
 
         // Dismiss monster silently.
@@ -1541,8 +1542,8 @@ static void _xom_lights_up_webs(int /*sever*/)
     if (webs_count > 0)
     {
         god_speaks(GOD_XOM, _get_xom_speech("lights up webs").c_str());
-        mprf("%s %s into flame!", number_in_words(webs_count).c_str(),
-              webs_count == 1 ? "web bursts" : "webs burst");
+        mprf(T_("%s webs catch fire!"),
+     number_in_words(webs_count).c_str());
         string note = make_stringf("lit up %d webs", webs_count);
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
     }
@@ -1611,7 +1612,7 @@ static void _xom_animate_monster_weapon(int sever)
     // Make the monster unwield its weapon.
     mon->unequip(MSLOT_WEAPON, false, true);
 
-    mprf("%s %s dances into the air!",
+    mprf(T_("%s's %s flies into the air!"),
          apostrophise(mon->name(DESC_THE)).c_str(),
          env.item[wpn].name(DESC_PLAIN).c_str());
 
@@ -1660,9 +1661,9 @@ static void _xom_harmless_flora(int /*sever*/)
     {
         god_speaks(GOD_XOM, _get_xom_speech("flora ring").c_str());
         if (mon_type == MONS_DEMONIC_PLANT)
-            mpr("Demonic plants sprout up around you!");
+            mpr(T_("Demonic plants sprout around you!"));
         else
-            mpr("Toadstools sprout up around you!");
+            mpr(T_("Poisonous toadstools sprout around you!"));
 
         const string note = make_stringf("made a garden");
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
@@ -1943,9 +1944,9 @@ static int _xom_shatter_walls(coord_def where, bool more_than_dig)
     if (you.see_cell(where))
     {
         if (feat_is_door(feat))
-            mpr("A door shatters!");
+            mpr(T_("A door shatters!"));
         else if (feat == DNGN_GRATE)
-            mpr("An iron grate is ripped into pieces!");
+            mpr(T_("An iron grate is ripped into pieces!"));
     }
 
     noisy(spell_effect_noise(SPELL_SHATTER), where);
@@ -1973,7 +1974,9 @@ static void _xom_fake_shatter(int /*sever*/)
     god_speaks(GOD_XOM, _get_xom_speech("fake shatter").c_str());
 
     if (silenced(you.pos()))
-        mpr("The dungeon shakes... harmlessly?");
+        mpr(Options.language == lang_t::ZH
+    ? "地牢震动了一下……但什么都没有发生？"
+    : "The dungeon shudders... but nothing happens?");
     else
     {
         noisy(spell_effect_noise(SPELL_SHATTER), you.pos());
@@ -2006,7 +2009,7 @@ static void _xom_fake_shatter(int /*sever*/)
     }
 
     if (rocks)
-        mpr("Some rocks are dislodged from the ceiling.");
+        mpr(T_("Some rocks are dislodged from the ceiling."));
 
     if (dest)
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, "fake shatter"), true);
@@ -2032,7 +2035,7 @@ static void _xom_give_mutations(bool good)
              num_tries > 1 ? "s" : "");
 
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
-    mpr("Your body is suffused with distortional energy.");
+    mpr(T_("Your body is filled with warped energy."));
 
     bool failMsg = true;
 
@@ -2677,9 +2680,9 @@ static void _xom_enchant_monster(int sever, bool helpful)
         if (affected == cap)
             break;
 
-        mprf("%s suddenly %s %s!",
+        mprf(T_("%s suddenly %s%s!"),
               application->name(DESC_THE).c_str(),
-              (ench == ENCH_PETRIFYING || ench == ENCH_REGENERATION) ? "starts" : "looks",
+              (ench == ENCH_PETRIFYING || ench == ENCH_REGENERATION) ? "开始" : "看起来",
               ench_name.c_str());
 
         application->add_ench(mon_enchant(ench, &you, time));
@@ -2801,6 +2804,7 @@ static void _xom_hyper_enchant_monster(int sever)
 
     if (!targetable.empty())
     {
+        const bool zh = Options.language == lang_t::ZH;
         string lines = "";
 
         for (enchant_type apply : buff_list)
@@ -2837,14 +2841,14 @@ static void _xom_hyper_enchant_monster(int sever)
         if (targetable[0]->hit_points < targetable[0]->max_hit_points)
         {
             targetable[0]->heal(targetable[0]->max_hit_points);
-            lines += make_stringf("is healed, ");
+            lines += T_("is healed, ");
         }
 
         god_speaks(GOD_XOM, _get_xom_speech("good hyper enchant monster").c_str());
 
         // Rather than figuring out sentence structure from the above list,
         // just staple on a line from casting Cantrip onto the end instead.
-        mprf("%s suddenly %sand looks braver for a moment!",
+        mprf(T_("%s suddenly %sand looks braver for a moment!"),
               targetable[0]->name(DESC_THE, true).c_str(), lines.c_str());
     }
 
@@ -2928,10 +2932,13 @@ static void _xom_wave_of_despair(int sever)
     }
 
     if (skeleton_count)
-        mpr("Skeletons, inanimate yet cursed, drop down from the ceiling.");
+        mpr(T_("Skeletons, inanimate yet cursed, drop down from the ceiling."));
 
     draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, MAGENTA, true, 35);
-    mprf(MSGCH_DANGER, "A draining tide of despair and horror washes over you and your surroundings!");
+    if (Options.language == lang_t::ZH)
+        mprf(MSGCH_DANGER, "一股令人绝望的恐惧之潮淹没了你和周围的一切！");
+    else
+        god_speaks(GOD_XOM, _get_xom_speech("wave of despair").c_str());
 
     const int pow = 50 + random_range(sever / 2, sever);
 
@@ -2952,7 +2959,8 @@ static void _xom_wave_of_despair(int sever)
     you.strip_willpower(&you, pow, true);
     mass_enchantment(ENCH_FEAR, pow * 5);
 
-    const string note = make_stringf("spooky wave of despair");
+    const string note = make_stringf(
+        T_("spooky wave of despair"));
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 }
 
@@ -3211,7 +3219,7 @@ static void _xom_pseudo_miscast(int /*sever*/)
     // Body, player species, transformations, etc.
 
     if (get_form()->flesh_equivalent.empty()
-        && starts_with(species::skin_name(you.species), "bandage")
+        && you.species == SP_MUMMY
         && you_can_wear(SLOT_BODY_ARMOUR, true) != false)
     {
         string str = _get_xom_speech(
@@ -3667,8 +3675,12 @@ bool move_stair(coord_def stair_pos, bool away, bool allow_under)
 
     string stair_str = feature_description_at(stair_pos, false, DESC_THE);
 
-    mprf("%s slides %s you!", stair_str.c_str(),
-         away ? "away from" : "towards");
+    if (Options.language == lang_t::ZH)
+        mprf(away ? "%s从你身边滑走了！" : "%s向你滑了过来！",
+             stair_str.c_str());
+    else
+        mprf("%s slides %s you!", stair_str.c_str(),
+             away ? "away from" : "towards");
 
     // Animate stair moving.
     const feature_def &feat_def = get_feature_def(feat);
@@ -3763,7 +3775,7 @@ static void _xom_repel_stairs(bool unclimbable)
     if (!count_moved)
     {
         if (one_chance_in(8))
-            mpr("Nothing appears to happen... Ominous!");
+            mpr(T_("Nothing appears to happen... Ominous!"));
         else
             canned_msg(MSG_NOTHING_HAPPENS);
     }
@@ -3841,7 +3853,7 @@ static void _xom_doom(int /*sever*/)
     }
 
     if (!(you.attribute[ATTR_DOOM] + power >= 100))
-        mpr("Your doom draws closer.");
+        mpr(T_("Your doom draws closer."));
 
     you.doom(power);
 
@@ -5339,8 +5351,12 @@ void xom_new_level_noise_or_stealth()
         if (!player_under_penance(GOD_XOM) && coinflip())
         {
             god_speaks(GOD_XOM, _get_xom_speech("stealth player").c_str());
-            mpr(you.duration[DUR_STEALTH] ? "You feel more stealthy."
-                                          : "You feel stealthy.");
+            if (Options.language == lang_t::ZH)
+                mpr(you.duration[DUR_STEALTH] ? "你感觉自己更隐秘了。"
+                                              : "你感觉自己变隐秘了。");
+            else
+                mpr(you.duration[DUR_STEALTH] ? "You feel more stealthy."
+                                              : "You feel stealthy.");
             you.increase_duration(DUR_STEALTH, 10 + random2(80));
             take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1,
                            "stealth player"), true);

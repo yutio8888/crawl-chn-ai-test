@@ -345,9 +345,19 @@ static spell_list _get_spell_list(bool just_check = false,
         if (!just_check)
         {
             if (you.has_mutation(MUT_INNATE_CASTER))
-                mprf(MSGCH_PROMPT, "You need no library to learn spells.");
+            {
+                mprf(MSGCH_PROMPT,
+                     Options.language == lang_t::ZH
+                     ? "你不需要图书馆来学习法术。"
+                     : "You need no library to learn spells.");
+            }
             else
-                mprf(MSGCH_PROMPT, "Your library has no spells.");
+            {
+                mprf(MSGCH_PROMPT,
+                     Options.language == lang_t::ZH
+                     ? "你的法术库中没有法术。"
+                     : "Your library has no spells.");
+            }
         }
         return mem_spells;
     }
@@ -405,7 +415,7 @@ static spell_list _get_spell_list(bool just_check = false,
     if (num_memable || num_low_levels > 0 || num_low_xl > 0)
         unavail_reason = "";
     else if (num_known == total)
-        unavail_reason = "You already know all available spells.";
+        unavail_reason = T_("You already know all available spells.");
     else if (num_restricted == total || num_restricted + num_known == total)
     {
         unavail_reason = "You cannot currently memorise any of the available "
@@ -415,7 +425,7 @@ static spell_list _get_spell_list(bool just_check = false,
     else if (num_misc == total || (num_known + num_misc) == total
              || num_misc + num_known + num_restricted == total)
     {
-        unavail_reason = "You cannot memorise any of the available spells.";
+        unavail_reason = T_("You cannot memorise any of the available spells.");
     }
     else
     {
@@ -536,15 +546,39 @@ public:
 protected:
     virtual formatted_string calc_title() override
     {
-        return formatted_string::parse_string(
-                    make_stringf("<w>Spells %s                   Type                      %sLevel",
-                        current_action == action::cast ? "(Cast)    "
-                        : current_action == action::memorise ? "(Memorise)"
-                        : current_action == action::describe ? "(Describe)"
-                        : current_action == action::hide ? "(Hide)    "
-                        : current_action == action::imbue ? "(Imbue)   "
-                        : "(Show)    ",
-                        you.divine_exegesis ? "         " : "Failure  "));
+        const bool zh = Options.language == lang_t::ZH;
+        const char* act_str =
+            current_action == action::cast
+                ? (zh ? "(施放)  " : "(Cast)    ")
+            : current_action == action::memorise
+                ? (zh ? "(记忆)" : "(Memorise)")
+            : current_action == action::describe
+                ? (zh ? "(描述)" : "(Describe)")
+            : current_action == action::hide
+                ? (zh ? "(隐藏)  " : "(Hide)    ")
+            : current_action == action::imbue
+                ? (zh ? "(赋予)  " : "(Imbue)   ")
+            : (zh ? "(显示)  " : "(Show)    ");
+
+        if (zh)
+        {
+            const string prefix = make_stringf("法术 %s", act_str);
+            const int pw = strwidth(prefix);
+            const string header = make_stringf("<w>%s%s%s%s等级",
+                prefix.c_str(),
+                string(max(0, 32 - pw), ' ').c_str(),
+                chop_string("学派", 26).c_str(),
+                you.divine_exegesis ? chop_string("", 9).c_str()
+                                    : chop_string("失败率", 9).c_str());
+            return formatted_string::parse_string(header);
+        }
+        else
+        {
+            return formatted_string::parse_string(
+                make_stringf("<w>Spells %s                   Type                      %sLevel",
+                    act_str,
+                    you.divine_exegesis ? "         " : "Failure  "));
+        }
     }
 
 private:
@@ -561,10 +595,13 @@ private:
         ostringstream desc;
 
         // line 1
+        const bool zh = Options.language == lang_t::ZH;
+
         if (you.divine_exegesis)
         {
             desc << make_stringf(
-                "<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>",
+                zh ? "<lightgreen>用神圣解经施放：%d MP可用</lightgreen>"
+                   : "<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>",
                 you.magic_points);
         }
         else
@@ -575,7 +612,9 @@ private:
         {
             desc << std::right << std::setw(5)
                  << hidden_count
-                 << (hidden_count > 1 ? " spells hidden" : " spell hidden ")
+                 << (hidden_count > 1
+                     ? (zh ? " 个法术被隐藏" : " spells hidden")
+                     : (zh ? " 个法术被隐藏 " : " spell hidden "))
                  << "   ";
         }
         else
@@ -588,7 +627,8 @@ private:
                 max_size -= 19;
             const bool search_overflow =
                             static_cast<int>(search_text.size()) > max_size;
-            desc << make_stringf("Matches: <w>%.*s%s</w>",
+            desc << make_stringf(zh ? "匹配: <w>%.*s%s</w>"
+                                   : "Matches: <w>%.*s%s</w>",
                             search_overflow ? max_size - 2 : max_size,
                             replace_all(search_text, "<", "<<").c_str(),
                             search_overflow ? ".." : "");
@@ -596,26 +636,37 @@ private:
 
         desc << "\n";
 
-        const string act = default_action == action::memorise ? "Memorise"
-                           : default_action == action::imbue ? "Imbue" : "Cast";
+        const string act =
+            zh ? (default_action == action::memorise ? "记忆"
+                   : default_action == action::imbue ? "赋予" : "施放")
+               : (default_action == action::memorise ? "Memorise"
+                   : default_action == action::imbue ? "Imbue" : "Cast");
         // line 2
         desc << menu_keyhelp_cmd(CMD_MENU_RIGHT) << " ";
         desc << ( current_action == action::cast
-                            ? "<w>Cast</w>|Describe|Hide|Show"
+                    ? (zh ? "<w>施放</w>|描述|隐藏|显示"
+                          : "<w>Cast</w>|Describe|Hide|Show")
                  : current_action == action::memorise
-                            ? "<w>Memorise</w>|Describe|Hide|Show"
+                    ? (zh ? "<w>记忆</w>|描述|隐藏|显示"
+                          : "<w>Memorise</w>|Describe|Hide|Show")
                  : current_action == action::imbue
-                            ? "<w>Imbue</w>|Describe|Hide|Show"
+                    ? (zh ? "<w>赋予</w>|描述|隐藏|显示"
+                          : "<w>Imbue</w>|Describe|Hide|Show")
                  : current_action == action::describe
-                            ? act + "|<w>Describe</w>|Hide|Show"
+                    ? (zh ? act + "|<w>描述</w>|隐藏|显示"
+                          : act + "|<w>Describe</w>|Hide|Show")
                  : current_action == action::hide
-                            ? act + "|Describe|<w>Hide</w>|Show"
-                 : act + "|Describe|Hide|<w>Show</w>");
-        desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH) << " search"
-                "   [<w>?</w>] help"; // XX hardcoded for this menu
+                    ? (zh ? act + "|描述|<w>隐藏</w>|显示"
+                          : act + "|Describe|<w>Hide</w>|Show")
+                 : (zh ? act + "|描述|隐藏|<w>显示</w>"
+                       : act + "|Describe|Hide|<w>Show</w>"));
+        desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH)
+             << (zh ? " 搜索" : " search")
+             << (zh ? "   [<w>?</w>] 帮助" : "   [<w>?</w>] help");
 
         if (search_text.size())
-            return pad_more_with(desc.str(), "[<w>Esc</w>] clear"); // esc is hardcoded for this case
+            return pad_more_with(desc.str(),
+                zh ? "[<w>Esc</w>] 清除" : "[<w>Esc</w>] clear");
         else
             return pad_more_with_esc(desc.str());
     }
@@ -701,7 +752,9 @@ private:
         {
             char linebuf[80] = "";
             const bool validline = title_prompt(linebuf, sizeof linebuf,
-                                                "Search for what? (regex) ");
+                                                Options.language == lang_t::ZH
+                                                ? "搜索什么？（正则表达式）"
+                                                : "Search for what? (regex) ");
             string old_search = search_text;
             if (validline)
                 search_text = linebuf;
@@ -856,7 +909,8 @@ public:
         : Menu(MF_SINGLESELECT | MF_ALLOW_FORMATTING
                 | MF_ARROWS_SELECT | MF_INIT_HOVER | MF_SHOW_EMPTY
                 // To have the ctrl-f menu show up in webtiles
-                | MF_ALLOW_FILTER, "spell"),
+                | MF_ALLOW_FILTER,
+                T_("spell")),
         current_action(_default_action),
         default_action(_default_action),
         spells(list),
@@ -866,20 +920,29 @@ public:
         // Actual text handled by calc_title
         set_title(new MenuEntry(""), true, true);
 
+        const bool zh = Options.language == lang_t::ZH;
         if (you.divine_exegesis)
         {
             spell_levels_str = make_stringf(
-                "<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>",
+                zh ? "<lightgreen>选择一个法术用神圣解经施放：%d MP可用</lightgreen>"
+                   : "<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>",
                 you.magic_points);
         }
         else if (default_action == action::imbue)
-            spell_levels_str = "<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>";
+            spell_levels_str = zh
+                ? "<lightgreen>选择一个法术来赋予你的法术火花仆从：</lightgreen>"
+                : "<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>";
         else
         {
-            spell_levels_str = make_stringf("<lightgreen>%d spell level%s"
-                        "</lightgreen>", player_spell_levels(),
-                        (player_spell_levels() > 1 || player_spell_levels() == 0)
-                                                    ? "s left" : " left ");
+            if (zh)
+                spell_levels_str = make_stringf("<lightgreen>%d法术等级剩余"
+                            "</lightgreen>", player_spell_levels());
+            else
+                spell_levels_str = make_stringf("<lightgreen>%d spell level%s"
+                            "</lightgreen>", player_spell_levels(),
+                            (player_spell_levels() > 1
+                             || player_spell_levels() == 0)
+                                ? "s left" : " left ");
             if (player_spell_levels() < 9)
                 spell_levels_str += " ";
         }
@@ -1015,7 +1078,10 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 {
     if (spell_removed(specspell))
     {
-        mprf("Sorry, the spell '%s' is gone!", spell_title(specspell));
+        mprf(Options.language == lang_t::ZH
+             ? "抱歉，法术'%s'已经不存在了！"
+             : "Sorry, the spell '%s' is gone!",
+             spell_title(specspell));
         return false;
     }
 
@@ -1033,31 +1099,41 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 
     if (you.has_spell(specspell))
     {
-        mpr("You already know that spell!");
+        mpr(Options.language == lang_t::ZH
+            ? "你已经认识那个法术了！"
+            : "You already know that spell!");
         return false;
     }
 
     if (you.spell_no >= MAX_KNOWN_SPELLS)
     {
-        mpr("Your mind is already too full of spells!");
+        mpr(Options.language == lang_t::ZH
+            ? "你的头脑中已经装了太多法术了！"
+            : "Your mind is already too full of spells!");
         return false;
     }
 
     if (you.experience_level < spell_difficulty(specspell) && !wizard)
     {
-        mpr("You're too inexperienced to learn that spell!");
+        mpr(Options.language == lang_t::ZH
+            ? "你的经验不足，无法学习那个法术！"
+            : "You're too inexperienced to learn that spell!");
         return false;
     }
 
     if (player_spell_levels() < spell_levels_required(specspell) && !wizard)
     {
-        mpr("You can't memorise that many levels of magic yet!");
+        mpr(Options.language == lang_t::ZH
+            ? "你还不能记忆那么多等级的魔法！"
+            : "You can't memorise that many levels of magic yet!");
         return false;
     }
 
     if (!wizard && !_spell_available_to_memorize(specspell))
     {
-        mpr("You haven't found that spell!");
+        mpr(Options.language == lang_t::ZH
+            ? "你还没有找到那个法术！"
+            : "You haven't found that spell!");
         return false;
     }
 
@@ -1084,12 +1160,22 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         const int severity = fail_severity(specspell);
 
         if (raw_spell_fail(specspell) >= 100 && !vehumet_is_offering(specspell))
-            mprf(MSGCH_WARN, "This spell is impossible to cast!");
+        {
+            mprf(MSGCH_WARN,
+                 Options.language == lang_t::ZH
+                 ? "这个法术不可能被施放！"
+                 : "This spell is impossible to cast!");
+        }
         else if (severity > 0)
         {
-            mprf(MSGCH_WARN, "This spell is %s to cast%s",
-                             fail_severity_adjs[severity],
-                             severity > 1 ? "!" : ".");
+            mprf(MSGCH_WARN,
+                 Options.language == lang_t::ZH
+                 ? "这个法术%s施放%s"
+                 : "This spell is %s to cast%s",
+                 Options.language == lang_t::ZH
+                     ? fail_severity_adjs_zh[severity]
+                     : fail_severity_adjs[severity],
+                 severity > 1 ? "!" : ".");
         }
     }
 
@@ -1101,7 +1187,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
     if (interactive)
     {
         const string prompt = make_stringf(
-                 "Memorise %s, consuming %d spell level%s and leaving %d?%s%s",
+                 T_("Memorise %s, consuming %d spell level%s and leaving %d?%s%s"),
                  spell_title(specspell), spell_levels_required(specspell),
                  spell_levels_required(specspell) != 1 ? "s" : "",
                  player_spell_levels() - spell_levels_required(specspell),
@@ -1164,7 +1250,9 @@ spret divine_exegesis(bool fail)
     spell_list spells(_get_spell_list(true, true));
     if (spells.empty())
     {
-        mpr("You don't know of any spells!");
+        mpr(Options.language == lang_t::ZH
+            ? "你一个法术都不认识！"
+            : "You don't know of any spells!");
         return spret::abort;
     }
 
@@ -1207,7 +1295,9 @@ spret imbue_servitor()
     spell_list spells(_get_player_servitor_spells());
     if (spells.empty())
     {
-        mpr("You don't know any spells that your servitor could cast!");
+        mpr(Options.language == lang_t::ZH
+            ? "你不认识任何你的仆从可以施放的法术！"
+            : "You don't know any spells that your servitor could cast!");
         return spret::abort;
     }
 

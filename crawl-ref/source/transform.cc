@@ -33,6 +33,7 @@
 #include "mon-speak.h"
 #include "mutation.h"
 #include "nearby-danger.h"
+#include "options.h"
 #include "output.h"
 #include "player-equip.h"
 #include "player-stats.h"
@@ -1765,9 +1766,18 @@ bool transforming_is_unsafe(transformation which_trans)
 {
     if (feat_dangerous_for_form(which_trans, env.grid(you.pos())))
     {
-        mprf(MSGCH_PROMPT, "%s right now would cause you to %s!",
-                which_trans == transformation::none ? "Untransforming" : "Transforming",
-                env.grid(you.pos()) == DNGN_LAVA ? "burn" : "drown");
+        if (Options.language == lang_t::ZH)
+        {
+            mprf(MSGCH_PROMPT, "现在就%s会导致你%s！",
+                 which_trans == transformation::none ? "解除变形" : "变形",
+                 env.grid(you.pos()) == DNGN_LAVA ? "被烧死" : "溺亡");
+        }
+        else
+        {
+            mprf(MSGCH_PROMPT, "%s right now would cause you to %s!",
+                 which_trans == transformation::none ? "Untransforming" : "Transforming",
+                 env.grid(you.pos()) == DNGN_LAVA ? "burn" : "drown");
+        }
         return true;
     }
 
@@ -1791,9 +1801,14 @@ bool transforming_is_unsafe(transformation which_trans)
         if (item->cursed()
             || (is_artefact(*item) && artefact_property(*item, ARTP_FRAGILE)))
         {
-            mprf(MSGCH_PROMPT, "%s right now would shatter %s!",
-                 which_trans == transformation::none ? "Untransforming" : "Transforming",
-                 item->name(DESC_YOUR).c_str());
+            if (Options.language == lang_t::ZH)
+                mprf(MSGCH_PROMPT, "现在就%s会粉碎%s！",
+                     which_trans == transformation::none ? "解除变形" : "变形",
+                     item->name(DESC_YOUR).c_str());
+            else
+                mprf(MSGCH_PROMPT, "%s right now would shatter %s!",
+                     which_trans == transformation::none ? "Untransforming" : "Transforming",
+                     item->name(DESC_YOUR).c_str());
             return true;
         }
     }
@@ -1833,20 +1848,20 @@ string cant_transform_reason(transformation which_trans,
                              bool involuntary, bool temp)
 {
     if (!involuntary && you.has_mutation(MUT_NO_FORMS))
-        return "You have sacrificed the ability to change form!";
+        return T_("You have sacrificed the ability to change form!");
 
     // the undead cannot enter most forms.
     if (lifeless_prevents_form(which_trans))
-        return "Your unliving flesh cannot be transformed in this way.";
+        return T_("Your unliving flesh cannot be transformed in this way.");
 
     if (SP_GARGOYLE == you.species && which_trans == transformation::statue)
-        return "You're already a statue.";
+        return T_("You're already a statue.");
 
     if (!temp)
         return "";
 
     if (you.transform_uncancellable && which_trans != transformation::slaughter)
-        return "You are stuck in your current form!";
+        return T_("You are stuck in your current form!");
 
     if (which_trans == transformation::death && you.duration[DUR_DEATHS_DOOR])
         return "You cannot mock death while in death's door.";
@@ -1885,8 +1900,10 @@ bool check_transform_into(transformation which_trans, bool involuntary,
     const auto feat = env.grid(you.pos());
     if (!involuntary && feat_dangerous_for_form(which_trans, feat, talisman))
     {
-        mprf("Transforming right now would cause you to %s!",
-             feat == DNGN_DEEP_WATER ? "drown" : "burn");
+        mprf(T_("Transforming right now would cause you to %s!"),
+             feat == DNGN_DEEP_WATER
+                 ? (T_("drown"))
+                 : (T_("burn")));
         return false;
     }
 
@@ -1912,12 +1929,12 @@ static void _print_death_brand_changes(item_def *weapon, bool entering_death)
     }
     if (entering_death)
     {
-        mprf("%s goes dull and lifeless in your grasp.",
+        mprf(T_("%s glows dimly in your hand."),
              weapon->name(DESC_YOUR).c_str());
     }
     else
     {
-        mprf("%s softly glows with a divine radiance!",
+        mprf(T_("%s softly glows with a divine radiance!"),
              uppercase_first(weapon->name(DESC_YOUR)).c_str());
     }
 }
@@ -1929,11 +1946,11 @@ static void _on_enter_form(transformation which_trans)
     switch (which_trans)
     {
     case transformation::tree:
-        mpr("Your roots penetrate the ground.");
+        mpr(T_("Your roots penetrate the ground."));
         if (you.duration[DUR_TELEPORT])
         {
             you.duration[DUR_TELEPORT] = 0;
-            mpr("You feel strangely stable.");
+            mpr(T_("You feel strangely stable."));
         }
         you.duration[DUR_FLIGHT] = 0;
         break;
@@ -1958,8 +1975,8 @@ static void _on_enter_form(transformation which_trans)
     case transformation::maw:
         if (have_passive(passive_t::goldify_corpses))
         {
-            mprf(MSGCH_WARN, "Gozag's golden gift will leave your new mouth "
-                             "with nothing to eat.");
+            mprf(MSGCH_WARN,
+                 T_("Gozag's golden gift will leave your new mouth with nothing to eat."));
         }
         break;
 
@@ -2028,7 +2045,7 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
 
     if (you.digging && form_changes_anatomy(which_trans))
     {
-        mpr("Your mandibles meld away.");
+        mpr(T_("Your lower jaw melts away."));
         you.digging = false;
     }
 
@@ -2238,7 +2255,8 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
         if (monster* ember = get_solar_ember())
         {
             monster_die(*ember, KILL_RESET, NON_MONSTER);
-            mprf(MSGCH_DURATION, "Your tiny sun winks out.");
+            mprf(MSGCH_DURATION,
+                 T_("Your tiny sun winks out."));
         }
     }
     else if (old_form == transformation::rime_yak)
@@ -2273,8 +2291,12 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     {
         for (item_def* item : forced_remove)
         {
-            mprf("%s falls away%s!", item->name(DESC_YOUR).c_str(),
-                    item->cursed() ? ", shattering the curse!" : "");
+            if (Options.language == lang_t::ZH)
+                mprf("%s%s掉落了下来！", item->name(DESC_YOUR).c_str(),
+                     item->cursed() ? "，诅咒被粉碎了！" : "");
+            else
+                mprf("%s falls away%s!", item->name(DESC_YOUR).c_str(),
+                     item->cursed() ? ", shattering the curse!" : "");
 
             unequip_item(*item, false);
         }
@@ -2381,10 +2403,12 @@ void merfolk_start_swimming()
     if (you.fishtail)
         return;
 
-    mpr("Your legs become a tail as you dive into the water.");
+    mpr(T_("Your legs become a tail as you dive into the water."));
 
     if (you.invisible())
-        mpr("...but don't expect to remain undetected.");
+    {
+        mpr(T_("...but don't expect to remain undetected."));
+    }
 
     you.fishtail = true;
     you.redraw_evasion = true;
@@ -2557,8 +2581,9 @@ void sun_scarab_spawn_ember(bool first_time)
     if (monster* mon = create_monster(mg))
     {
         you.props[SOLAR_EMBER_MID_KEY].get_int() = mon->mid;
-        mprf(MSGCH_DURATION, first_time ? "A tiny sun coalesces beside you."
-                                        : "You reconstitute your solar ember.");
+        mprf(MSGCH_DURATION, first_time
+                 ? (T_("A miniature sun coalesces next to you."))
+                 : (T_("You reconstitute your solar ember.")));
         you.props.erase(SOLAR_EMBER_REVIVAL_KEY);
     }
 }
@@ -2591,12 +2616,13 @@ bool maw_hunger_check(monster* mon)
     {
         if (!you.clarity())
         {
-            mprf("Your maw growls hungrily at the sight of %s.", mon->name(DESC_THE).c_str());
+            mprf(T_("Your maw growls hungrily at the sight of %s."),
+                 mon->name(DESC_THE).c_str());
             you.add_beholder(*mon, true, random_range(6, 10));
         }
         else
         {
-            mprf("Your maw growls hungrily at the sight of %s, but you resist your urges.",
+            mprf(T_("Your maw growls hungrily at the sight of %s, but you resist your urges."),
                  mon->name(DESC_THE).c_str());
         }
 
@@ -2615,15 +2641,21 @@ bool vampire_mesmerism_check(monster& mon)
     {
         if (mon.check_willpower(&you, get_form()->get_effect_chance()) <= 0)
         {
-            mprf("%s loses %s in your eye%s.",
-                    mon.name(DESC_THE).c_str(),
-                    mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
-                    you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
+            if (Options.language == lang_t::ZH)
+                mprf("%s在你的眼中%s失去了自我。",
+                     mon.name(DESC_THE).c_str(),
+                     mon.pronoun(PRONOUN_REFLEXIVE).c_str());
+            else
+                mprf("%s loses %s in your eye%s.",
+                     mon.name(DESC_THE).c_str(),
+                     mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
+                     you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
             mon.daze(random_range(3, 5));
         }
         else
         {
-            mprf("%s is briefly mesmerised by your gaze.", mon.name(DESC_THE).c_str());
+            mprf(T_("%s is briefly mesmerised by your gaze."),
+                 mon.name(DESC_THE).c_str());
             // This works even if called during the stealth check, whereas a 1-turn daze
             // would wear off with no effect and produce extra messages on top of that.
             mon.speed_increment -= 10;

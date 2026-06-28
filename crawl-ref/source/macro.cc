@@ -40,6 +40,7 @@
 
 #include "cio.h"
 #include "command.h"
+#include "database.h"
 #include "files.h"
 #include "initfile.h"
 #include "libutil.h"
@@ -354,7 +355,7 @@ static int _name_to_keycode(string s)
         return CK_HOME;
     else if (lower == "end")
         return CK_END;
-    else if (lower == "clear")
+    else if (lower == "清除" || lower == "clear")
         return CK_CLEAR;
     else if (lower == "pgup")
         return CK_PGUP;
@@ -1044,7 +1045,10 @@ public:
         // TODO: this seems like somehow it should involve ui::Switcher, but I
         // have no idea how to use that class with a Menu
         clear();
-        add_entry(new MenuEntry("Create/edit " + mode_name() + " from key", '~',
+        add_entry(new MenuEntry(
+            (T_("Create/edit "))
+                + mode_name()
+                + (T_(" from key")), '~',
             [this](const MenuEntry &)
                 {
                     edit_mapping(keyseq());
@@ -1052,7 +1056,9 @@ public:
                 }));
         if (get_map().size())
         {
-            MenuEntry *clear_entry = new MenuEntry("Clear all " + mode_name() + "s", '-',
+            MenuEntry *clear_entry = new MenuEntry(
+                (T_("Clear all "))
+                    + mode_name() + "s", '-',
                 [this](const MenuEntry &)
                     {
                         status_msg = "";
@@ -1066,7 +1072,9 @@ public:
             clear_entry->add_hotkey(CK_NUMPAD_SUBTRACT2);
 
             add_entry(clear_entry);
-            add_entry(new MenuEntry("Current " + mode_name() + "s", MEL_SUBTITLE));
+            add_entry(new MenuEntry(
+                (T_("Current "))
+                    + mode_name() + "s", MEL_SUBTITLE));
             for (auto &mapping : get_map())
             {
                 // TODO: indicate if macro is from rc file somehow?
@@ -1299,14 +1307,17 @@ public:
             reset_key_prompt();
             set_more(string(""));
 
-            add_entry(new MenuEntry("redefine", 'r',
+            add_entry(new MenuEntry(
+                T_("redefine"), 'r',
                 [this](const MenuEntry &)
                 {
                     set_more("");
                     return !edit_action();
                 }));
 
-            add_entry(new MenuEntry("redefine with raw key entry", 'R',
+            add_entry(new MenuEntry(
+                T_("redefine with raw key entry"),
+                'R',
                 [this](const MenuEntry &)
                 {
                     set_more("");
@@ -1316,7 +1327,8 @@ public:
 
             if (!action.empty())
             {
-                add_entry(new MenuEntry("clear", 'c',
+                add_entry(new MenuEntry(
+                    T_("clear"), 'c',
                     [this](const MenuEntry &)
                     {
                         //weirdly MSVC requires the use of `this->` here
@@ -1325,7 +1337,8 @@ public:
                     }));
             }
 
-            add_entry(new MenuEntry("abort", 'a',
+            add_entry(new MenuEntry(
+                T_("abort"), 'a',
                 [this](const MenuEntry &)
                 {
                     abort = true;

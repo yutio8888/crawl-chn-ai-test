@@ -36,6 +36,7 @@
 #include "travel.h"
 #include "unicode.h"
 #include "zot.h"
+#include "database.h"
 
 enum annotation_menu_commands
 {
@@ -850,7 +851,14 @@ static void _update_tracked_feature_annot(dungeon_feature_type feat,
     const level_id li = level_id::current();
     const char *feat_key = _get_tracked_feature_key(feat);
     const int new_num = env.properties[feat_key];
-    const char *feat_desc = get_feature_def(feat).name;
+    const char *feat_desc;
+    if (Options.language == lang_t::ZH)
+    {
+        const char* zh_name = dungeon_feature_name_zh(feat);
+        feat_desc = zh_name ? zh_name : get_feature_def(feat).name;
+    }
+    else
+        feat_desc = get_feature_def(feat).name;
     const string new_string = make_stringf("%d %s%s", new_num, feat_desc,
                                            new_num == 1 ? "" : "s");
     const string old_string = make_stringf("%d %s%s", old_num, feat_desc,
@@ -943,7 +951,7 @@ static void _update_unique_annotation(level_id level)
 
     for (const auto &annot : auto_unique_annotations)
         if (annot.first.find(',') != string::npos)
-            sep = "; ";
+            sep = T_("; ");
 
     for (const auto &annot : auto_unique_annotations)
     {
@@ -1182,7 +1190,7 @@ static int _prompt_annotate_branch(level_id lid)
         if (is_known_branch_id(it->id))
             brs.push_back(it->id);
 
-    mprf(MSGCH_PROMPT, "Annotate which branch? (. - %s, ? - help, ! - show branch list)",
+    mprf(MSGCH_PROMPT, T_("Annotate which branch? (. - %s, ? - help, ! - show branch list)"),
         lid.describe(false, true).c_str());
 
     while (true)
@@ -1285,12 +1293,13 @@ void annotate_level(level_id li)
     const string old = get_level_annotation(li, true, true);
     if (!old.empty())
     {
-        mprf(MSGCH_PROMPT, "Current level annotation: <lightgrey>%s</lightgrey>",
+        mprf(MSGCH_PROMPT,
+             T_("Current level annotation: <lightgrey>%s</lightgrey>"),
              old.c_str());
     }
 
-    const string prompt = "New annotation for " + li.describe()
-                          + " (include '!' for warning): ";
+    const string prompt = "为 " + li.describe()
+                          + " 添加新标注（包含'!'则为警告）: ";
 
     char buf[77];
     if (msgwin_get_line_autohist(prompt, buf, sizeof(buf), old))

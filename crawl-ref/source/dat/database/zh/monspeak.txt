@@ -1,0 +1,2784 @@
+# 怪物语音数据库 — 中文翻译覆盖
+# 此文件中的条目会覆盖 monspeak.txt 中对应键的英文消息。
+# 仅包含需要中文翻译的条目；未列出的键仍使用 monspeak.txt 的英文原文。
+
+%%%%
+default 'cap-J'
+
+VISUAL:@The_monster@ 颤动着。
+%%%%
+default 'j'
+
+VISUAL:@The_monster@ 颤动着。
+%%%%
+_dissolution_common_
+
+@The_monster@ 咕噜作响。
+
+@The_monster@ 大声咕噜作响。
+
+@The_monster@ 发出嘶嘶声。
+
+VISUAL:@The_monster@ 颤动着。
+
+VISUAL:@The_monster@ 摇晃着。
+%%%%
+# ===================================
+# Phase 2 F1: 高频独特怪物
+# ===================================
+
+############ SIGMUND ### 狡猾的老兵
+Sigmund
+
+@_Sigmund_common_@
+
+w:2
+@_Sigmund_rare_@
+%%%%
+_Sigmund_common_
+
+w:20
+@The_monster@ 阴沉地笑着。
+
+VISUAL:@The_monster@ 愤怒地看着你。
+
+@The_monster@ 闪烁了一下，仿佛不真实一般。
+
+@The_monster@ 对 @foe@ 说："你这种人以前来过这里。我现在明白了为什么。你渴望死亡……"
+
+@The_monster@ 对 @foe@ 说："现在你看见我，现在你看不见……"
+
+@The_monster@ 对 @foe@ 说："别担心，我会让你死得很快。"
+
+@The_monster@ 对 @foe@ 说："你很快就会忘记一切。"
+
+@The_monster@ 对 @foe@ 说："看着我的眼睛。"
+
+@The_monster@ 对 @foe@ 说："我就是你的命运。"
+
+@The_monster@ 对 @foe@ 尖叫道："死吧，怪物！"
+
+@The_monster@ 对 @foe@ 尖叫道："别想反抗！"
+
+@The_monster@ 咯咯笑着。"是时候收获你所播种的了。"
+
+VISUAL:@The_monster_possessive@ 的双眼开始发出红色的光芒。
+
+@The_monster@ 低声念了句什么。
+VISUAL:@The_monster_possessive@ 的双手开始疯狂地闪烁。
+
+VISUAL:@The_monster@ 突然被苍白的 @_spell_colour_@ 光芒所笼罩。
+%%%%
+_Sigmund_rare_
+
+@The_monster@ 问 @foe@："你喜欢我吗？"
+
+@The_monster@ 对 @foe@ 尖叫道："你永远也不会……永远！！！"
+
+@The_monster@ 对 @foe@ 尖叫道："我是佐特的天使！！！"
+
+@The_monster@ 对 @foe@ 尖叫道："唯有死亡能让你解脱！"
+
+@The_monster@ 低语道："你只是庞大机器中的一个小小齿轮……"
+
+@The_monster@ 狂笑道："你以为你能打败我？我杀过的比你更高大！"
+%%%%
+Sigmund triumphant
+
+@The_monster@ 说："又一个灵魂收获了。"
+
+@The_monster@ 低语道："命运站在我这一边。"
+
+@The_monster@ 喊道："看见了吗？没人能打败西格蒙德！"
+%%%%
+############ EDMUND ### 嫉妒的弟弟
+Edmund
+
+@_Edmund_common_@
+
+w:5
+@_Edmund_rare_@
+%%%%
+_Edmund_common_
+
+VISUAL:@The_monster@ 用 @possessive@ 的链枷朝 @at_foe@ 比划了一下。
+
+@The_monster@ 清了清 @possessive@ 的喉咙。
+
+@The_monster@ 说："你不会相信我花了多少钱买这把链枷。"
+
+@The_monster@ 问 @foe@："你见过我那了不起的哥哥吗？"
+
+@The_monster@ 对 @foe@ 说："我虽然不擅长魔法，但我还是能杀了你！"
+
+@The_monster@ 说："人人都觉得我哥最厉害。我觉得他疯了。"
+
+@The_monster@ 说："我还挺擅长算数的。"
+
+@The_monster@ 说："居然有人诬陷我是扒手！"
+%%%%
+_Edmund_rare_
+
+VISUAL:@The_monster@ 咬了咬牙，然后叹了口气。
+
+w:1
+VISUAL:@The_monster@ 看起来相当嫉妒。
+
+@The_monster@ 说："链枷比镰刀强多了，一周哪一天都是！"
+
+w:5
+@The_monster@ 说："法术到底有什么用？"
+
+w:5
+@The_monster@ 咕哝道："谁需要法术啊？"
+
+@The_monster@ 说："人人都记得我哥。'埃德蒙是谁？'他们都这么问！"
+
+@The_monster@ 说："人们会记住我的！他们会记住我，然后死掉！"
+
+w:1
+@The_monster@ 说："也许我该买个爵位。埃德蒙伯爵听起来如何？"
+
+w:1
+@The_monster@ 哀怨道："我父母从来没时间陪我！"
+%%%%
+Edmund triumphant
+
+@The_monster@ 说："这下我哥该服气了吧！"
+
+@The_monster@ 说："我倒想看看镰刀能不能做到这个！"
+
+@The_monster@ 哀怨道："他们最好现在注意到我了！"
+%%%%
+############ ERICA ### 脾气暴躁的触手女巫
+Erica
+
+@_Erica_common_@
+
+w:5
+@_Erica_rare_@
+%%%%
+_Erica_common_
+VISUAL:@The_monster@ 愤怒地扭动着她的触手。
+
+@The_monster@ 疯狂地咕噜着。
+
+@The_monster@ 对 @foe@ 说："我比你强太多了。"
+
+@The_monster@ 对 @foe@ 说："我喜欢吓人，但杀戮更棒。"
+
+@The_monster@ 对 @foe@ 说："又快又完美。这就是我的杀戮之道。"
+
+# 维克多·雨果
+@The_monster@ 对 @foe@ 尖叫道："你的血会喷涌，你的皮会炸裂！"
+%%%%
+_Erica_rare_
+
+@The_monster@ 对 @foe@ 尖叫道："快，死亡在等着你！"
+
+@The_monster@ 对 @foe@ 尖叫道："我绝不会告诉你在哪！"
+
+@The_monster@ 对 @foe@ 尖叫道："你永远也得不到它！"
+
+# 又是维克多·雨果
+@The_monster@ 对 @foe@ 说："爪子跟吸盘比起来，不值一提！"
+
+@The_monster@ 对 @foe@ 夸耀道："如果恐怖是目标，我就是杰作！"
+
+@The_monster@ 对 @foe@ 夸耀道："理性本应合理——要不是有我的话！"
+%%%%
+Erica triumphant
+
+@The_monster@ 开始欢快地、不可抑制地咕噜起来。
+%%%%
+############ I J Y B ### 疯狂的哥布林发明家
+Ijyb
+
+@_Ijyb_common_@
+
+w:5
+@_Ijyb_rare_@
+%%%%
+_Ijyb_common_
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 停下来[研究|检查] @possessive@ 的魔杖。
+
+@The_monster@ 对 @foe@ 尖叫道："继续实验的时间到！"
+
+@The_monster@ 对 @foe@ 尖叫道："俺魔杖比你强！"
+
+@The_monster@ 对 @foe@ 尖叫道："全是俺的！"
+
+@The_monster@ 对 @foe@ 尖叫道："这层是俺的！全是俺的！"
+
+@The_monster@ 对 @foe@ 尖叫道："{{
+    if you.skill("Evocations") >= 2 then
+      return "俺接下来要学你的魔杖！"
+    else
+      return "你看起来是个好试验品！"
+    end }}" @player_only@
+%%%%
+_Ijyb_rare_
+
+@The_monster@ 对 @foe@ 尖叫道："别挡进步的道！"
+
+@The_monster@ 对 @foe@ 尖叫道："俺当神了！"
+
+@The_monster@ 尖叫道："他们都说俺疯了！"
+
+w:5
+@The_monster@ 对 @foe@ 尖叫道："俺还没见过谁能比魔杖聪明！"
+
+@The_monster@ 对 @foe@ 尖叫道："俺不喜欢你！"
+%%%%
+confused Ijyb
+
+@The_monster@ 畏缩着尖叫道："俺的头！啊啊啊！快出去！"
+
+@The_monster@ 对 @foe@ 尖叫道："俺把整层都给你！然后你别来烦俺！"
+
+@The_monster@ 对 @foe@ 尖叫道："魔杖还是更强！你非常坏！"
+
+w:5
+@The_monster@ 尖叫道："科学不该遭受这样的事！"
+
+@The_monster@ 对 @foe@ 尖叫道："俺会对你好！俺保证！"
+
+@The_monster@ 尖叫道："俺回画板去！"
+
+@The_monster@ 对 @foe@ 尖叫道："别用坏魔法对俺！"
+
+VISUAL:@The_monster@ 抱着 @possessive@ 的头，摇摆着快速地胡言乱语。
+%%%%
+ijyb triumphant
+
+@The_monster@ 尖叫道："下一个实验的时间到！"
+
+@The_monster@ 呻吟道："好帮手太难找了！"
+%%%%
+############ JESSICA ### 冷峻的复仇者
+Jessica
+
+@_Jessica_common_@
+
+w:5
+@_Jessica_rare_@
+%%%%
+_Jessica_common_
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 看起来非常愤怒。
+
+@The_monster@ 对 @foe@ 喊道："你在打扰我！我只能杀了你！"
+
+VISUAL:@The_monster@ 疯狂地比划着。
+
+@The_monster@ 咕哝着某种奇怪的东西。
+%%%%
+_Jessica_rare_
+
+@The_monster@ 对 @foe@ 说："你为什么要来这里？"
+
+@The_monster@ 对 @foe@ 说："我真的不高兴了。"
+
+@The_monster@ 非常冷淡地对 @foe@ 说："我讨厌你的陪伴。"
+
+@The_monster@ 对 @foe@ 喊道："我不喜欢你这样的东西！"
+
+@The_monster@ 对 @foe@ 喊道："别再烦我了，不然我杀了你！"
+
+@The_monster@ 对 @foe@ 喊道："你真是个讨厌的麻烦精！"
+%%%%
+############ NATASHA ### 顽皮的猫妖
+Natasha
+
+@_Natasha_common_@
+
+w:5
+@_Natasha_rare_@
+%%%%
+_Natasha_common_
+
+@_wizard_common_spell_@
+@_fake_spell_effect_@
+%%%%
+_Natasha_rare_
+
+@The_monster@ 对 @foe@ 发出嘶嘶声。
+
+@The_monster@ 对 @foe@ 低吼着。
+
+@The_monster@ 悲伤地呜咽着。
+
+VISUAL:@The_monster@ 伸出了 @possessive@ 的爪子。
+%%%%
+friendly Natasha
+
+@The_monster@ 喵喵叫着。
+
+@The_monster@ 发出咕噜咕噜声。
+%%%%
+Natasha killed
+
+@_Natasha_death_common_@
+
+w:1
+@_Natasha_death_rare_@
+%%%%
+_Natasha_death_common_
+
+@The_monster@ 在死去时凄凉地惨叫着！
+
+@The_monster@ 在死去时愤怒地尖叫着！
+
+@The_monster@ 在死去时痛苦地尖叫着！
+
+@The_monster@ 在痛苦中低吼着！
+%%%%
+_Natasha_death_rare_
+
+突然，@the_monster_possessive@ 的灵体从 @possessive@ 毫无生气的躯体中升起。
+
+@the_monster_possessive@ 的灵体凄凉地呻吟着，一头扎进了地面。
+
+你听到一声微弱的回响的咆哮，充满了仇恨与悲伤！
+%%%%
+Natasha permanently killed
+
+你感到 @the_monster_possessive@ 的灵体终于安息了。
+%%%%
+confused Natasha killed
+
+@Natasha killed@
+%%%%
+confused Natasha permanently killed
+
+@Natasha permanently killed@
+%%%%
+Natasha triumphant
+
+VISUAL:@The_monster@ 蜷缩起来，开始发出咕噜咕噜声。
+
+VISUAL:@The_monster@ 开始舔舐着 @possessive@ 的毛，把它弄干净。
+%%%%
+############ TERENCE ### 绝望的退役老兵
+Terence
+
+@_Terence_common_@
+
+w:4
+@_Terence_rare_@
+%%%%
+_Terence_common_
+
+VISUAL:@The_monster@ 轻蔑地看着 @foe@。
+
+VISUAL:@The_monster@ 露出了 @possessive@ 的牙齿。
+
+VISUAL:@The_monster@ 看起来很烦躁。
+
+@The_monster@ 对 @foe@ 尖叫道："老子跟强壮的大象骑兵打过仗！你一点也不强！"
+
+@The_monster@ 上下打量着 @foe@。"你不是真正的战士！让你看看什么叫战士！"
+
+@The_monster@ 对 @foe@ 说："我曾把好些人马骑士送进死地。连大象一起。"
+
+@The_monster@ 对 @foe@ 尖叫道："我恨人马骑士！他们没有荣誉！"
+
+@The_monster@ 对 @foe@ 说："我退休到这个副本里。你想退到阴间去吗？"
+
+@The_monster@ 对 @foe@ 尖叫道："我退休了！滚开！"
+
+@The_monster@ 对 @foe@ 尖叫道："我想一个人待着！"
+%%%%
+_Terence_rare_
+
+@The_monster@ 对 @foe@ 尖叫道："你那点所谓的技巧救不了你！"
+
+@The_monster@ 对 @foe@ 尖叫道："你的力量哪去了？！"
+
+@The_monster@ 对 @foe@ 尖叫道："站住，懦夫！你想打，就拿出点荣誉来！"
+
+@The_monster@ 对 @foe@ 说："我厌倦了战争。但如果你想要血，那就血！"
+
+@The_monster@ 对 @foe@ 尖叫道："滚出去，别等我赶你出去！"
+
+@The_monster@ 对 @foe@ 尖叫道："我恨闯入者！"
+
+@The_monster@ 对 @foe@ 尖叫道："我挂了'请勿打扰'的牌子！你不识字吗？！"
+%%%%
+Terence triumphant
+
+@The_monster@ 说："终于，安静了。"
+
+@The_monster@ 说："别再回来了！"
+
+# 艾拉，《时空之轮》
+@The_monster@ 说："赢则生，败则死。这就是生命的法则。"
+
+# 《亚特兰界》
+@The_monster@ 说："荣誉并不妨碍我利用战术优势。"
+%%%%
+############ EROLCHA ### 凶残的施法食人魔
+Erolcha
+
+@_Erolcha_common_@
+
+w:5
+@_Erolcha_rare_@
+%%%%
+_Erolcha_common_
+
+@The_monster@ 咆哮着。
+
+@The_monster@ 低吼着。
+
+VISUAL:@The_monster@ 试图邪恶地咧嘴笑。
+
+@The_monster@ 对 @foe@ 尖叫道："死！"
+
+@The_monster@ 对 @foe@ 尖叫道："午餐！"
+
+@The_monster@ 对 @foe@ 尖叫道："埃罗查杀了你！"
+%%%%
+_Erolcha_rare_
+
+@The_monster@ 对 @foe@ 尖叫道："吃！"
+
+@The_monster@ 对 @foe@ 尖叫道："站住！埃罗查打你！"
+
+@The_monster@ 对 @foe@ 尖叫道："血！"
+
+@The_monster@ 对 @foe@ 尖叫道："埃罗查捏碎你的头！"
+
+@The_monster@ 对 @foe@ 尖叫道："埃罗查很高兴杀你！"
+
+@The_monster@ 对 @foe@ 尖叫道："埃罗查生气了！"
+%%%%
+Erolcha banished
+
+__NONE
+
+############ AIZUL ### 嗜睡的守护蛇
+Aizul
+
+@_Aizul_common_@
+
+w:5
+@_Aizul_rare_@
+%%%%
+_Aizul_common_
+
+VISUAL:@The_monster@ 打了个哈欠，然后假装没打过。
+
+@The_monster@ 说："困了吗？"
+
+@The_monster@ 说："我其实没在睡觉！"
+
+VISUAL:@The_monster@ 凶狠地嘶嘶作响。
+
+@The_monster@ 对 @foe@ 尖叫道："我会在你的噩梦里缠着你！"
+%%%%
+_Aizul_rare_
+
+@The_monster@ 说："好梦！"
+
+@The_monster@ 哼着摇篮曲。
+
+VISUAL:@The_monster@ 盘起来，然后又展开了。
+
+@The_monster@ 说："每个人总得睡觉的。"
+
+@The_monster@ 对 @foe@ 说："想来个午觉吗？"
+
+@The_monster@ 说："他们说找了更好的人来！"
+
+@The_monster@ 说："被取代了！被取代的滋味怎么样？"
+
+@The_monster@ 哀叹道："没有工作机会了！谁会雇嗜睡的艾祖尔看守他们的宝藏？"
+
+VISUAL:@The_monster@ 朝 @foe@ 眨了好几次眼。
+%%%%
+############ AGNES ### 来自遥远国度的光荣战士
+Agnes
+
+@_Agnes_common_@
+
+w:5
+@_Agnes_rare_@
+%%%%
+_Agnes_common_
+
+VISUAL:@The_monster@ 鞠了一躬。
+
+@The_monster@ 对 @foe@ 说："你辱没了你的祖先。"
+
+@The_monster@ 对 @foe@ 说："我鄙视不光彩的对手。"
+
+@The_monster@ 对 @foe@ 说："杀你是我的责任，但也是我的荣幸。"
+
+@The_monster@ 咕哝道："我从来没训练过应对这种情况。"
+
+@The_monster@ 对 @foe@ 说："你会发现，在死亡中，平和之道很容易遵循。"
+%%%%
+_Agnes_rare_
+
+@The_monster@ 说："宝珠理当属于我。"
+
+@The_monster@ 对 @foe@ 喊道："我会像踢藤球一样踢你！"
+
+@The_monster@ 问："你看见我的短剑了吗？"
+
+@The_monster@ 咕哝道："我现在真想来个好吃的面包果。"
+%%%%
+Agnes triumphant
+
+@The_monster@ 说："愿你下一世走上平和之道。"
+%%%%
+############ FANNAR ### 冷酷的冰法师
+Fannar
+
+@_Fannar_common_@
+
+w:5
+@_Fannar_rare_@
+%%%%
+_Fannar_common_
+
+VISUAL:@The_monster@ 冷冷地瞪着 @foe@。
+
+VISUAL:一些雪花凝结在 @the_monster@ 身上。
+
+VISUAL:@The_monster@ 从 @possessive@ 的长袍上拂去几片雪花。
+
+@The_monster@ 对着 @reflexive@ 低语了几句神秘的话语。
+%%%%
+_Fannar_rare_
+
+@The_monster@ 对 @foe@ 说："冻结！"
+
+@The_monster@ 对 @foe@ 说："我要把你冻到灵魂深处！"
+
+@The_monster@ 对 @foe@ 说："一个冰冷的拥抱在等着你……"
+
+@The_monster@ 对 @foe@ 说："你会成为一座精美的冰雕。"
+
+@The_monster@ 对 @foe@ 说："这难道不让你胆寒吗？"
+%%%%
+############ GASTRONOK ### 饥饿的法师蛞蝓
+Gastronok
+
+@_Gastronok_common_@
+
+w:4
+@_Gastronok_rare_@
+%%%%
+_Gastronok_common_
+
+VISUAL:@The_monster@ 摇晃着发出噗噗声。
+
+@The_monster@ 咕噜道："我会吃了你的，一定会的！"
+
+@The_monster@ 咕噜道："点心！点心！"
+
+@The_monster@ 发出咕噜声。
+
+@The_monster@ 发出了一种奇怪的声音。
+%%%%
+_Gastronok_rare_
+
+VISUAL:@The_monster_possessive@ 的嘴张开，齿舌疯狂地挥舞着。
+
+VISUAL:@The_monster@ 被一阵突然的微风吹得东倒西歪。
+
+VISUAL:@The_monster_possessive@ 的眼柄晃动着，差点把 @possessive@ 的巫师帽抖下来。
+
+@The_monster@ 咕噜道："你这速度正好是我喜欢的食物。快！"
+
+@The_monster@ 咕噜道："慢下来，让我吃了你。"
+
+@The_monster@ 咕噜道："你是法师吗？法师味道好……"
+
+@The_monster@ 咕噜道："饿饿饿饿饿饿——！"
+
+@The_monster@ 咕噜道："真的，人如其食。"
+
+@The_monster@ 咕噜道："我打赌你会很好吃。"
+%%%%
+Gastronok triumphant
+
+@The_monster@ 咕噜道："开吃的时间到了！"
+
+@The_monster@ 咕噜道："终于。我快饿死了！"
+
+@The_monster@ 咕噜道："让我看看你是不是和那个法师一样好吃。"
+%%%%
+############ GRINDER ### 失业的低效拷问官
+Grinder
+
+@_Grinder_common_@
+
+w:2
+@_Grinder_rare_@
+%%%%
+_Grinder_common_
+
+VISUAL:@The_monster@ 咧嘴露出锋利的牙齿。
+
+@The_monster@ 说："你看起来需要来一场好的拉肢刑。"
+
+@The_monster@ 说："我以前在黑市卖过脚趾甲。"
+
+@The_monster@ 说："舌头只有一个好用处：割掉。"
+
+@The_monster@ 说："大多数情况下我都没能让他们活下来。"
+
+@The_monster@ 说："趴下！"
+
+@The_monster@ 叹了口气："没人欣赏我的工作。"
+
+@The_monster@ 说："等一下。"
+
+@The_monster@ 说："就站在那里别动一下……"
+
+@The_monster@ 说："别动一根肌肉。"
+
+@The_monster@ 说："告诉我你所有的秘密，否则我就杀了你。"
+%%%%
+_Grinder_rare_
+
+@The_monster@ 说："你是鱼吗？"
+
+@The_monster@ 说："宇宙是为了什么？"
+
+@The_monster@ 说："我老板说我是废物。他的内脏说了相反的话。"
+
+@The_monster@ 说："至少 @my_God@ 欣赏我的工作。"
+
+@The_monster@ 说："表现得像棵树！"
+
+VISUAL:@The_monster@ 翻了翻 @possessive@ 的眼睛。
+%%%%
+Grinder triumphant
+
+@The_monster@ 说："真正的乐趣现在才开始！"
+
+@The_monster@ 说："嘿，我还没折磨完你呢！"
+
+@The_monster@ 叹了口气："已经死了？我要退款。"
+%%%%
+############ GRUM ### 培育战犬的豺狼人
+Grum
+
+@_Grum_common_@
+
+w:2
+@_Grum_rare_@
+%%%%
+_Grum_common_
+
+VISUAL:@The_monster@ 露出了 @possessive@ 的牙齿。
+
+@The_monster@ @_Grum_verb_@。
+
+@The_monster@ 专注地盯着 @foe@，@_Grum_verb_@。
+
+@The_monster@ 发出了一声令人生畏的嚎叫。
+
+############ CRAZY YIUF ### 疯狂的隐士
+Crazy Yiuf
+
+@_crazy_yiuf_speech_@
+%%%%
+# 佐姆信徒会发现疯狂的伊夫颇有几分启发。
+Xom Crazy Yiuf
+
+# 苏格拉底
+@The_monster@ 说："未经审视的人生不值得过。"
+
+# 霍金
+@The_monster@ 说："我的目标很简单。那就是完全理解宇宙——它为何如此，以及它为何存在。"
+
+# 爱因斯坦
+@The_monster@ 说："可以说，世界永恒的神秘在于它的可理解性。"
+
+# 克尔凯郭尔
+@The_monster@ 说："什么更难？是唤醒一个睡着的人，还是唤醒一个醒着却梦见自己醒着的人？"
+
+# 契诃夫
+@The_monster@ 说："每个人都有同样的神；只是人不同而已。"
+
+# 尼采
+@The_monster@ 说："面对无聊，即使是众神也徒劳挣扎。"
+
+# 爱默生
+@The_monster@ 说："对我来说，没有什么是神圣的；也没有什么是亵渎的；我只是一个实验者，一个无休止的探索者，身后没有过去。"
+
+# 罗伯特·英格索尔
+@The_monster@ 说："现在是所有过去的孩子——必然的孩子——也是所有未来的母亲。"
+
+# 休谟
+@The_monster@ 说："理性不过是我们灵魂中一种奇妙而不可理解的本能。"
+
+# 康德
+@The_monster@ 说："期望从理性中获得启迪，却又事先规定理性必须倾向哪一边——这极其荒谬。"
+
+# 《混沌教典》
+@The_monster@ 说："真正的现实就在那里，但你所'知道'关于它的一切都在你的头脑里，随你怎么处置。"
+
+VISUAL:@The_monster@ 思考着辩证唯物主义。
+
+VISUAL:@The_monster@ 思考着一个存在主义困境。
+
+VISUAL:@The_monster@ 把 @possessive@ 的笔记塞到了 @possessive@ 的斗篷下。
+
+VISUAL:@The_monster@ 在沉思中长叹一声。
+%%%%
+orb Crazy Yiuf
+
+@The_monster@ 说："等等我！"
+
+@The_monster@ 说："你找到了！"
+
+@The_monster@ 说："把我弄出这个地方。"
+
+@The_monster@ 说："你回来找我了。"
+%%%%
+confused Crazy Yiuf
+
+@The_monster@ 说："这胡子痒得厉害！"
+
+@The_monster@ 说："我是不是忘了关窗。"
+
+VISUAL:@The_monster@ 若有所思地挠了挠 @possessive@ 的头。
+
+@The_monster@ 说："你看见我的眼镜了吗？"
+
+@The_monster@ 说："也许晚餐吃羊肉吧。"
+
+@The_monster@ 说："哦，这还挺不错的。"
+
+@The_monster@ 说："你看见我的斗篷了吗？"
+
+@The_monster@ 笑着。
+
+VISUAL:@The_monster@ 用手指算着什么东西。
+
+@The_monster@ 说："哎呀，我的头都转晕了！"
+
+@The_monster@ 说："我感觉相当奇怪。"
+%%%%
+_crazy_yiuf_speech_
+
+w:300
+@The_monster@ @_crazy_yiuf_speech_verbs_@："@_crazy_yiuf_sentence_@"
+
+VISUAL:@The_monster@ 朝你挥舞着 @possessive@ 的铁头棍。 @player_only@
+
+@The_monster@ 喊道："你腿断了歌，不是吗？"
+
+VISUAL:@The_monster@ 怒目而视。
+
+VISUAL:@The_monster@ 在原地转着圈。
+
+VISUAL:@The_monster@ 拍打着 @possessive@ 的斗篷。
+
+@The_monster@ 说："疯了？疯了！？豪猪！"
+
+@The_monster@ 唱道："树，树，树，马戏团！"
+
+w:2
+@The_monster@ 说："我没疯！"
+
+w:2
+# 《天堂的车床》
+@The_monster@ 说："什么样的正常人能活在这世界上而不疯掉？"
+%%%%
+_crazy_yiuf_speech_verbs_
+
+w:20
+说
+
+呜咽着
+
+喊道
+
+笑着
+
+尖叫着
+
+低语着
+
+咯咯笑着
+
+嚎道
+%%%%
+_crazy_yiuf_sentence_
+
+树在跳华尔兹
+
+月亮很嫉妒
+
+手指会唱歌
+
+梦在溶化
+
+星星在坠落
+
+天空是紫色的
+
+墙壁在偷听
+
+蜘蛛教会我一切
+
+鞋子会说话
+
+万物皆燃烧
+
+地板是熔岩
+
+时间尝起来像锡
+
+混沌是答案
+
+没有人是真实的
+
+宇宙是一个汉堡包
+
+############ HAROLD ### 即将退休的赏金猎人
+Harold
+
+@_Harold_common_@
+
+w:6
+@_Harold_rare_@
+%%%%
+_Harold_common_
+
+VISUAL:@The_monster@ 看起来急于把这事了结。
+
+@The_monster@ 对 @foe@ 喊道："我可没一整天时间！"
+
+@The_monster@ 对 @foe@ 嘟囔道："赶紧放弃吧，我想回家了！"
+
+@The_monster@ 对 @foe@ 说："我本来希望最后一单工作更有挑战性的，但钱就是钱。"
+
+@The_monster@ 对 @foe@ 喊道："你现在能死了吗？我今天还有别的计划！"
+
+@The_monster@ 说："你知道有人愿意出多少钱来要你的命吗，@player_name@？" @player_only@
+
+@The_monster@ 对 @foe@ 说："咱们快点，好吗？我还有嘴要喂呢。"
+
+@The_monster@ 对 @foe@ 说："听着，这不是私人恩怨。只是工作而已。"
+
+@The_monster@ 对 @foe@ 说："这太令人兴奋了！用这个来结束我的职业生涯真是太好了！"
+
+@The_monster@ 对 @foe@ 说："啊，我就是为了这个才入这行的！"
+%%%%
+_Harold_rare_
+
+VISUAL:@The_monster@ 停顿了片刻，脸上带着微笑想象着什么。
+
+@The_monster@ 盘算道："我想用你的赏金买个 @_Harold_retirement_plan_@……" @player_only@
+
+@The_monster@ 问："你介意我把我的船命名为'@player_name@'号吗？毕竟是你的脑袋付的钱。" @player_only@
+
+@The_monster@ 高兴地说："你头上的悬赏能好好充实我的退休金了！" @player_only@
+
+@The_monster@ 想了想，对 @foe@ 说："也许完事之后我会去学@_Harold_ret_hobby_@……"
+
+@The_monster@ 说："往好处想。你的死能帮我的孩子们读完书。" @player_only@
+
+@The_monster@ 对 @foe@ 说："赏金猎人生涯很棒，但我等不及要退休了。"
+
+@The_monster@ 对 @foe@ 说："我老婆不用再从我衣服上洗掉血渍了，她肯定会很感激的。"
+
+%%%%
+fleeing Harold
+
+__NEXT
+
+w:5
+@The_monster@ @_yells_@："我已经老得干不动这事了！"
+%%%%
+Harold killed
+
+__NONE
+
+w:4
+@The_monster@ 呻吟道："我的……家人……" 然后倒地而死。
+
+w:3
+@The_monster@ 低头看着 @possessive@ 的致命伤口，哭喊道："可是……这是我退休前的最后一天……"
+
+w:2
+@The_monster@ 用 @possessive@ 最后一口气喘息道："我后悔应该少工作些……"
+
+w:1
+@The_monster@ 倒地，紧紧按着 @possessive@ 的伤口。"但我本来要买个 @_Harold_retirement_plan_@ 的……"
+%%%%
+Harold triumphant
+
+@The_monster@ 说："等不及要告诉我的小家伙们了。"
+
+@The_monster@ 说："该退休了。"
+
+@The_monster@ 叹了口气："终于，我可以弄个 @_Harold_retirement_plan_@ 安定下来了。"
+
+@The_monster@ 叹了口气："这之后，老 @the_monster@ 就只有 @_Harold_ret_hobby_@ 了。"
+%%%%
+_Harold_retirement_plan_
+
+@_Harold_ret_house_@ @_Harold_ret_place_@
+
+钓鱼船
+
+马场
+
+养牛场
+
+一块好地
+%%%%
+_Harold_ret_house_
+
+别墅
+
+豪宅
+
+小屋
+
+退休社区
+%%%%
+_Harold_ret_place_
+
+在海边
+
+在乡下
+
+在山里
+
+在湖边
+%%%%
+_Harold_ret_hobby_
+
+钓鱼
+
+养蜂
+
+园艺
+
+木工
+
+高尔夫
+
+观鸟
+
+绘画
+
+############ ROBIN ### 自负的哥布林首领
+Robin
+
+@_Robin_common_@
+
+w:5
+@_Robin_rare_@
+%%%%
+_Robin_common_
+@The_monster@ 说："跪下，虫子！"
+
+@The_monster@ 说："我的军队是无敌的！"
+
+@The_monster@ 说："感到孤独了？"
+
+@The_monster@ 说："趴下！"
+
+@The_monster@ 以一种极其得意的样子笑着。
+
+VISUAL:@The_monster_possessive@ 的手镯叮当作响。
+
+VISUAL:@The_monster_possessive@ 的角盔咔嗒作响。
+
+VISUAL:@The_monster@ 威胁地绷紧了一条肱二头肌。
+
+@The_monster@ 指着 @foe@。"杀！"
+%%%%
+_Robin_rare_
+@The_monster@ 说："像你这样可怜的小 @player_genus@，永远也找不到宝珠！"
+
+@The_monster@ 说："匍匐在我面前吧，哥布林中最强大的存在！"
+
+@The_monster@ 说："我的哥布林们会大啖你的骨头。"
+
+w:2
+@The_monster@ 说："我们把山地矮人都灭了——你就是下一个！"
+%%%%
+Robin triumphant
+
+@The_monster@ 发出一声得意的笑声。
+
+@The_monster@ 喊道："来庆祝吧！该摆宴了！"
+
+@The_monster@ 说："这就是为什么我是老大。"
+%%%%
+############ NELLIE ### 逃跑的马戏团大象
+Nellie
+
+@_Nellie_common_@
+
+w:2
+@_Nellie_rare_@
+%%%%
+_Nellie_common_
+
+@The_monster@ 说："你能在沙滩球上平衡吗？我能！"
+
+@The_monster@ 说："马戏团其实不过是监狱。"
+
+@The_monster@ 说："我不会回去的，绝不！"
+
+@The_monster@ 说："我再也不走钢索了！"
+
+@The_monster@ 说："别担心被喂给狮子。担心被喂给我。"
+
+VISUAL:@The_monster@ 跺了跺地面。
+
+VISUAL:@The_monster@ 怀疑地凝视着你。
+
+VISUAL:@The_monster@ 扇动 @possessive@ 的耳朵，试图飞行。
+%%%%
+_Nellie_rare_
+
+w:2
+@The_monster@ 说："你认识罗米吗？一个好朋友！"
+
+@The_monster@ 说："我曾经踩平过一个车队。"
+
+@The_monster@ 说："不，我对老鼠没问题。"
+
+@The_monster@ 说："我觉得我记得你……"
+%%%%
+############ NERGALLE ### 兽人典籍守护者
+Nergalle
+
+@The_monster@ 说："你根本不知道真正一无所有意味着什么。我们会教你。"
+
+@The_monster@ 说："我活得足够长，已经看过一百个像你这样失败的人了。"
+
+VISUAL:@The_monster@ 查阅了一卷巨大的羊皮纸，点了点头。
+
+VISUAL:@The_monster@ 与 @objective@ 身边的空气进行了一场热烈的交谈。
+
+@The_monster@ 说："兽人的忠诚超越死亡这种小事。"
+
+@The_monster@ 说："从一个老妇人那里听听忠告：你的时间到了。"
+
+############ JOSEPH ### 乐在其中的佣兵守卫
+Joseph
+
+@_Joseph_common_@
+
+w:2
+@_Joseph_rare_@
+%%%%
+_Joseph_common_
+
+w:20
+@_mercenary_guard_@
+
+VISUAL:@The_monster@ 开心地笑着。
+
+VISUAL:@The_monster@ 试图邪恶地咧嘴笑。
+
+@The_monster@ 对 @foe@ 说："见到你很高兴。杀了你也会很高兴。"
+
+@The_monster@ 对 @foe@ 说："我等这一刻等了太久了。"
+
+@The_monster@ 对 @foe@ 说："不是私人恩怨，但我不得不杀你。"
+
+@The_monster@ 说："你永远也拿不到宝珠，抱歉。" @player_only@
+
+@The_monster@ 对 @foe@ 喊道："我爱打架！我爱杀戮！"
+
+@The_monster@ 对 @foe@ 说："我是来杀闯入者的。我喜欢我的工作。"
+
+@The_monster@ 对 @foe@ 说："你必须受到惩罚！或者说……我想惩罚你！"
+%%%%
+_Joseph_rare_
+
+@The_monster@ 对 @foe@ 喊道："终于，有点行动了！"
+
+@The_monster@ 对 @foe@ 叹了口气："当守卫通常太无聊了……"
+
+@The_monster@ 对 @foe@ 喊道："哇！"
+%%%%
+############ JOSEPHINA ### 半冻结的巫妖
+Josephina
+
+@_Josephina_common_@
+
+w:5
+@_Josephina_rare_@
+%%%%
+_Josephina_common_
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 恶毒地咧嘴笑着。
+
+@The_monster@ 疯狂地笑着。
+
+@The_monster@ 长长地咯咯笑着。
+
+VISUAL:@The_monster@ 冰冷地闪烁着。
+
+@The_monster@ 对 @foe@ 尖叫道："死！"
+%%%%
+_Josephina_rare_
+
+VISUAL:@The_monster@ 磨着 @possessive@ 的牙齿。
+
+VISUAL:@the_monster_possessive@ 的一根冰冷手指掉了下来。
+
+@The_monster@ 对 @foe@ 说："我要用你的皮做地毯。"
+
+@The_monster@ 对 @foe@ 说："你的死法会非常有趣。"
+
+############ AZRAEL ### 纵火的恶魔
+Azrael
+
+@_Azrael_common_@
+
+w:2
+@_Azrael_rare_@
+%%%%
+_Azrael_common_
+
+@The_monster@ 疯狂地笑着。
+
+@The_monster@ 愤怒地咆哮着。
+
+@The_monster@ 对 @foe@ 尖叫道："烧！烧！一切都必须烧掉！"
+
+VISUAL:@The_monster@ 吹出了烟圈。
+
+VISUAL:@The_monster_possessive@ 的眼睛看起来燃烧着火焰。
+
+VISUAL:@The_monster@ 短暂地被一团火焰遮蔽了。
+%%%%
+_Azrael_rare_
+
+@The_monster@ 咧嘴问道 @foe@："你[易燃吗|不易燃吗|感到热吗]？"
+
+@The_monster@ 对 @foe@ 说："今晚我们有美味的 @foe_genus@ 烤肉串吃了！"
+
+@The_monster@ 对 @foe@ 尖叫道："不！不！对！不！"
+
+VISUAL:@The_monster@ 在原地转着圈。
+
+@The_monster@ 对 @foe@ 说："愿一千头骆驼的跳蚤在你的腋下安家。"
+
+@The_monster@ 对 @foe@ 纳闷道："你还在受够格妄想的困扰吗？"
+
+@The_monster@ 对 @foe@ 说："愿你的屁股痒个不停，而你的 @_player_arms_@ 短得挠不到。"
+
+@The_monster@ 对 @foe@ 说："你这没娘的山羊崽子。"
+
+@The_monster@ 对 @foe@ 说："你这疯狗崽子！臭豺狼孙子！秃鹫曾孙子！"
+
+@The_monster@ 对 @foe@ 说："愿一只豪猪在你的裤裆里住上一千天，又在里面死上一千零一天。"
+%%%%
+_player_arms_
+
+{{
+if you.race() == "Felid" then
+    return "爪子"
+elseif you.race() == "Octopode" then
+    return "触手"
+elseif you.race() == "Formicid" then
+    return "四肢"
+else
+    return "手臂"
+end
+}}
+%%%%
+############ BAI SUZHEN ### 中国民间传说中的龙女 白素贞
+Bai Suzhen
+
+@_Bai_Suzhen_common_@
+
+w:6
+@_Bai_Suzhen_rare_@
+%%%%
+_Bai_Suzhen_common_
+
+@The_monster@ 咕哝道："那个嫉妒的龟和尚，该死。"
+
+@The_monster@ 思念着 @possessive@ 失散的丈夫。
+
+@The_monster@ 咆哮道："就算是天条也不能永远分开我们！"
+
+@The_monster@ 查看着 @possessive@ 采集的草药。
+
+VISUAL:@The_monster@ 在暴风雨中扭动着 @possessive@ 的身躯。
+%%%%
+_Bai_Suzhen_rare_
+
+@The_monster@ 叹道："官人，你在何方？"
+
+@The_monster@ 低声吟诵着古老的咒文。
+
+VISUAL:@The_monster@ 挥洒出一片水雾。
+
+@The_monster@ 怒视着 @foe@："区区凡人，也敢阻我。"
+%%%%
+############ LOUISE ### 疯癫的传送法师
+Louise
+
+@_Louise_common_@
+
+w:2
+@_Louise_rare_@
+%%%%
+_Louise_common_
+
+@The_monster@ 说："想来一次旅行吗？"
+
+@The_monster@ 说："就连深渊都没能杀死我！你凭什么觉得你能？"
+
+@The_monster@ 说："超越现实的力量任由我召唤！"
+
+@The_monster@ 说："需要一条通往宝珠的捷径吗？来，让我帮你！"
+
+@The_monster@ 语无伦次地胡言乱语着。
+
+@The_monster@ 尖叫着！
+
+@The_monster@ 不可抑制地笑着。
+
+@The_monster@ 开始啜泣。
+
+@The_monster@ 问："你为什么不愿意做我的朋友？"
+
+@_wizard_common_spell_@
+@_fake_spell_effect_@
+%%%%
+_Louise_rare_
+
+@The_monster@ 说："我感觉不太舒服……"
+
+@The_monster@ 说："你把我当成什么了，普通的雇佣兵？"
+
+@The_monster@ 说："这是一年中最适合度假的季节！"
+%%%%
+Louise banished
+
+__NONE
+
+w:1
+@The_monster@ 说："我回来过一次……我会再回来！"
+%%%%
+############ MAGGIE ### 年幼的魔法学徒
+Maggie
+
+@_Maggie_common_@
+
+w:5
+@_Maggie_rare_@
+%%%%
+_Maggie_common_
+
+VISUAL:@The_monster@ 练习着一个姿势。
+
+VISUAL:@The_monster@ 微笑着，但明显是假装的。
+
+@The_monster@ 对 @foe@ 说："现在离开吧，去传颂玛吉的仁慈！"
+
+@The_monster@ 对 @foe@ 说："别怕。我会在我第一次杀戮的传说中让你不朽。"
+
+VISUAL:@The_monster@ 给 @reflexive@ 加了一个魔法光环，但它很快就熄灭了。
+
+@The_monster@ 咕哝着咒语的词句，但顺序不对。
+%%%%
+_Maggie_rare_
+
+@The_monster@ 对 @foe@ 说："如果你死在副本里，但周围没有人看到，那这重要吗？"
+
+@The_monster@ 对 @foe@ 说："是兰斯大师派你来的吗？"
+
+@The_monster@ 对 @foe@ 说："你见过龙吗？"
+
+@The_monster@ 对 @foe@ 说："住在这里的人怎么受得了这种与世隔绝的？"
+
+@The_monster@ 对 @foe@ 喊道："别烦我！"
+
+@The_monster@ 对 @reflexive@ 咕哝道："兰斯大师不会要我回去了。这就是前进的路。"
+%%%%
+############ MARA ### 幻象之主，强大的恶魔领主
+Mara
+
+@_Mara_common_@
+
+w:5
+@_Mara_rare_@
+%%%%
+_Mara_common_
+
+VISUAL:@The_monster@ 投下了一个巨大而不祥的影子。
+
+@The_monster@ 低语道："哪个是真实的你？"
+
+@The_monster@ 说："我创造了我自己的你。比你更好。"
+
+@The_monster@ 笑道："你以为你是真实的？你只是你自己的影子。"
+
+VISUAL:@The_monster@ 短暂地分裂成了三个幻影。
+%%%%
+_Mara_rare_
+
+@The_monster@ 说："现实是一种幻觉。尤其是我创造的现实。"
+
+@The_monster@ 对 @foe@ 说："我可以让你看见你最深层的恐惧。免费的。"
+
+@The_monster@ 低语道："你以为你是谁？你什么也不是。什么人都不是。"
+
+VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。
+%%%%
+Mara riddle
+
+@The_monster@ 问："真实与虚幻之间的界线在哪里？"
+
+@The_monster@ 低语道："我是谁？你又是谁？有区别吗？"
+
+@The_monster@ 问："你相信你是真的吗？证明它。"
+%%%%
+############ MAURICE ### 老练的小偷
+Maurice
+
+@_Maurice_common_@
+
+w:5
+@_Maurice_rare_@
+%%%%
+_Maurice_common_
+
+VISUAL:@The_monster@ 狡猾地咧嘴笑着。
+
+@The_monster@ 说："偷东西是门艺术，小子。"
+
+@The_monster@ 说："我可以把你的口袋清空——而你甚至不会注意到。"
+
+@The_monster@ 对 @foe@ 说："想要我给你变个魔术吗？现在你看见它……现在你看不见了！"
+
+VISUAL:@The_monster@ 敏捷地倒换着 @possessive@ 的手指。
+
+@The_monster@ 说："你的东西？我的东西。"
+%%%%
+_Maurice_rare_
+
+@The_monster@ 说："我偷过王座、宝珠、还有某个领主的假牙。你那点小玩意不值得我费心。"
+
+############ MENKAURE ### 不安宁的法老木乃伊
+Menkaure
+
+@_Menkaure_common_@
+
+w:2
+@_Menkaure_rare_@
+%%%%
+_Menkaure_common_
+
+VISUAL:@The_monster_possessive@ 的裹尸布飘动着。
+
+@The_monster@ 用一种无法辨识的语言 @_Menkaure_verb_@。
+
+@The_monster@ @_wails_@："为什么你们不能让我安息？"
+
+@The_monster@ 咯咯笑道："这裹尸布好痒……"
+
+@The_monster@ @_Menkaure_verb_@："让我来履行仪式……"
+
+VISUAL:@The_monster@ 朝你呼出了烟灰。
+
+VISUAL:@The_monster@ 迸发出黑暗的能量！
+
+@The_monster@ @_Menkaure_verb_@ 了几个词。
+
+VISUAL:@The_monster@ 干燥地 @_Menkaure_verb_@ 着。
+
+@The_monster@ @_Menkaure_verb_@："如果你自己把脑子从鼻子里拉出来，其实不疼。"
+%%%%
+_Menkaure_rare_
+
+@the_monster_possessive@ 的脚踝释放出一缕尘烟，他坦白道："其实我不是真的木乃伊，你知道的。"
+
+VISUAL:@The_monster@ 忘记了如何说话，被岁月沉寂了。
+
+VISUAL:@The_monster@ 不祥地朝 @foe@ 打了个手势。
+
+@The_monster@ 对 @foe@ 喊道："你打扰了我的安息！死！"
+
+@The_monster@ @_Menkaure_verb_@ 对 @foe@ 说："尘归尘，土归土。"
+
+@The_monster@ 对 @foe@ 喊道："时光之沙将把你从历史中抹去！"
+
+@The_monster@ 对 @foe@ 喊道："法老之诅咒降临于你！"
+
+VISUAL:@The_monster@ 在尘土中画下了"乌加特"之眼。
+%%%%
+_Menkaure_verb_
+
+哼着
+
+低语着
+
+叹着
+
+咕哝着
+
+沙沙作响地
+
+轻语着
+%%%%
+############ NESSOS ### 半人马神射手
+Nessos
+
+@_Nessos_common_@
+
+w:3
+@_Nessos_rare_@
+%%%%
+_Nessos_common_
+
+@The_monster@ 用 @possessive@ 的蹄子猛击大地。
+
+@The_monster@ 专注地看着 @foe@，缓缓摆动 @possessive@ 的尾巴。
+
+@The_monster@ 短暂地用后腿站立起来。
+%%%%
+_Nessos_rare_
+
+@The_monster@ 说："学学你的古典文学！"
+
+@The_monster@ 说："我会教你。迟早会教你的！"
+
+@The_monster@ 说："就算你是匹母马，我也杀！"
+
+@The_monster@ 吼道："我是半人！半马！而且是百分之百冷酷的杀手！"
+
+w:1
+@The_monster@ 说："站住别动，好吗？我有一记绝招想试试。"
+
+w:1
+@The_monster@ 说："我可是教训过那个大家伙。你没问题。"
+
+w:1
+@The_monster@ 试图跟 @foe@ 讲一个关于九头蛇、@possessive@ 的血和婚姻的复杂故事。
+%%%%
+############ NIKOLA ### 痴迷于电的天才科学家
+Nikola
+
+@The_monster@ 喊道："危险！危险！高压电！"
+
+@The_monster@ 说："你的眼睛里有魔法的火花。"
+
+@The_monster@ 狂热地说："你能感觉到吗？能感觉到吗？能感觉到吗？"
+
+@The_monster@ 警告道："如果你看到我的魔像，小心靠近，它们会咬人。"
+
+@The_monster@ 问："你是绝缘的吗？"
+
+@The_monster@ 说："你看起来不像一个好的绝缘体。"
+
+@The_monster@ 咕哝道："嗯，我好奇你是不是导电的。"
+%%%%
+############ NOBODY ### 无数人拼成的归来者
+Nobody
+
+@The_monster@ 沙哑地说："告诉我们……我们……是谁……"
+
+@The_monster@ 咆哮道："还给我们……我们的名字！"
+
+@The_monster@ 沙哑地说："我们……会被……记住的。"
+
+@The_monster@ 哀叹道："无名的……被遗忘的……"
+
+VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。
+%%%%
+############ PIKEL ### 音乐感十足的奴隶贩子
+Pikel
+
+@_Pikel_common_@
+
+w:5
+@_Pikel_rare_@
+%%%%
+_Pikel_common_
+
+VISUAL:@The_monster@ 敲打着某种节奏。
+
+@The_monster@ 说："皮克尔有奴隶。你，下一个！"
+
+@The_monster@ 说："皮克尔让你跟着节奏干活！"
+
+@The_monster@ 唱着："叮——当——叮——"
+
+VISUAL:@The_monster@ 调整着他的镣铐，使之发出悦耳的节拍。
+%%%%
+_Pikel_rare_
+
+@The_monster@ 喊道："皮克尔不喜欢懒惰的奴隶！干活！"
+
+@The_monster@ 哼着一首欢快的小调。
+
+@The_monster@ 说："皮克尔可以用你的骨头做很好的排箫。"
+%%%%
+Pikel triumphant
+
+@The_monster@ 说："皮克尔让你休息了。永远休息。"
+
+@The_monster@ 唱道："又一个奴隶，倒——下——了——！"
+%%%%
+############ PRINCE RIBBIT ### 不凡的蛙人王子
+Prince Ribbit
+
+@_Prince_Ribbit_common_@
+
+w:5
+@_Prince_Ribbit_rare_@
+%%%%
+_Prince_Ribbit_common_
+
+VISUAL:@The_monster@ 挺起胸脯，鼓起喉咙。
+
+@The_monster@ 呱呱叫道："我是王子！呱！"
+
+@The_monster@ 呱呱叫道："这副本将成为我的王国！呱！"
+
+@The_monster@ 说："即使在这丑陋的形态中，我仍保持我的尊严。"
+
+VISUAL:@The_monster@ 跳上一块石头，戏剧性地巡视着他的领土。
+%%%%
+_Prince_Ribbit_rare_
+
+@The_monster@ 呱呱叫道："吻我！也许我会变成更糟的东西！呱！"
+
+@The_monster@ 喊道："总有一天他们会写戏剧和歌曲讲述我的故事！"
+
+@The_monster@ 呱呱道："你——不如一条虫子。呱！你应该被吃掉！"
+
+VISUAL:@The_monster@ 用 @possessive@ 的舌头抓住了一只路过的苍蝇。王子也需要吃东西。
+
+############ DOWAN ### 双胞胎中的男法师
+Dowan
+
+@_Dowan_common_@
+
+w:2
+@_Dowan_rare_@
+%%%%
+fleeing Dowan
+
+VISUAL:@The_monster@ 惊恐地哭喊着。
+%%%%
+_Dowan_common_
+
+VISUAL:@The_monster@ 得意地笑着，朝 @foe@ 伸出了一根修长的手指。
+
+@The_monster@ 对 @foe@ 说："我的弱点就是她的强项！"
+
+@The_monster@ 对 @foe@ 说："离我的脸远点！"
+
+@The_monster@ 对 @foe@ 说："魔法与剑，合在一起，将打败你。" @player_only@
+%%%%
+_Dowan_rare_
+
+VISUAL:@The_monster@ 抛起又接住一把魔法火焰，然后得意地笑了。
+
+VISUAL:@The_monster_possessive@ 的长袍被一阵魔法微风吹得飘起。
+
+VISUAL:@The_monster_possessive@ 的双脚短暂地与地面融为了一体。
+
+VISUAL:@The_monster@ 制造出一股清泉，然后残忍地笑了起来。
+
+@The_monster@ 对 @foe@ 低语道："不会太久了。"
+
+@The_monster@ 对 @foe@ 嘶嘶地说："侮辱我的美貌只会让我打得更狠！"
+
+@The_monster@ 对 @foe@ 说："剑失败的地方，魔法就会成功！"
+
+@The_monster@ 对 @foe@ 说："死亡中有一种美，你不觉得吗？"
+
+@The_monster@ 嘲笑你。"别抱有妄想，你赢不了的！"
+%%%%
+Dowan_Duvessa_dies
+
+@The_monster@ 尖叫道："不！不！"
+
+VISUAL:@The_monster@ 似乎被悲伤淹没了。
+
+@The_monster@ 尖叫道："不！哦，不！"
+
+@the_monster_possessive@ 的眼神变得阴沉。"你犯了一个严重的错误。"
+%%%%
+############ DUVESSA ### 双胞胎中的女战士
+Duvessa
+
+@_Duvessa_common_@
+
+w:2
+@_Duvessa_rare_@
+%%%%
+_Duvessa_common_
+
+VISUAL:@The_monster@ 用 @possessive@ 的武器朝 @foe@ 比划了一下。
+
+@The_monster@ 对 @foe@ 说："我的弱点就是他的强项！"
+
+@The_monster@ 对 @foe@ 说："魔法失败的地方，剑就会成功！"
+
+@The_monster@ 对 @foe@ 说："当魔法与剑合在一起，没什么能挡在它们面前。"
+%%%%
+_Duvessa_rare_
+
+@The_monster@ @_shouts_@ 对 @foe@："你可以跑，但你永远也逃不出我们的手心！" @player_only@
+
+@The_monster@ 对 @foe@ 说："我不在乎外表，我在乎的是技巧！"
+
+@The_monster@ 对 @foe@ 说："你看见那个动作了吗？完美！"
+
+@The_monster@ 对 @foe@ 说："美貌只是表面的，而我的武器能穿透得比那深得多。"
+
+@The_monster@ 对 @foe@ 说："练习，练习，练习！总有一天你会和我一样好。" @player_only@
+%%%%
+Duvessa_Dowan_dies
+
+@The_monster@ 愤怒地尖叫着。
+
+@The_monster@ 尖叫道："不！你怎么敢！"
+
+VISUAL:@The_monster@ 哭泣着，朝 @foe@ 挥舞着 @possessive@ 的武器。
+%%%%
+Duvessa_Dowan_dies_invisible
+
+@The_monster@ 愤怒地尖叫着。
+%%%%
+############ EUSTACHIO ### 倒霉的盗贼
+Eustachio
+
+@_Eustachio_common_@
+
+w:5
+@_Eustachio_rare_@
+%%%%
+_Eustachio_common_
+
+VISUAL:@The_monster@ 试图偷偷溜到你身后。
+
+@The_monster@ 说："嘘，别出声。"
+
+@The_monster@ 小声说："我没有偷那个东西。是那个人偷的。"
+
+@The_monster@ 对 @foe@ 说："我们可以谈价格。你不必死的。"
+
+VISUAL:@The_monster@ 快速环顾四周寻找出口。
+%%%%
+_Eustachio_rare_
+
+@The_monster@ 喊道："不是我！不是我干的！"
+
+@The_monster@ 说："我只是恰好出现在犯罪现场。"
+
+@The_monster@ 对 @foe@ 说："你看起来是个讲道理的人。我们好好谈谈。"
+%%%%
+Eustachio triumphant
+
+@The_monster@ 说："又一个问题被解决了。"
+
+@The_monster@ 说："没人会知道了。"
+%%%%
+############ NORRIS ### 热爱生活的冲浪哲学家
+Norris
+
+@_Norris_common_@
+
+w:5
+@_Norris_rare_@
+%%%%
+_Norris_common_
+
+VISUAL:@The_monster@ 摆出一个惬意的姿势，仿佛正乘着一道看不见的浪。
+
+@The_monster@ 说："嘿，伙计。没必要这么紧张。跟着感觉走吧。"
+
+@The_monster@ 说："生活就是一场大浪。要么你驾驭它，要么它把你卷走。"
+
+@The_monster@ 对 @foe@ 说："放松点！这副本也不是那么糟糕。"
+%%%%
+_Norris_rare_
+
+@The_monster@ 说："我在太平洋冲过四十五英尺的巨浪。你觉得你比那道浪还难对付吗？"
+
+@The_monster@ 说："放轻松。深呼吸。然后被我杀掉。"
+
+@The_monster@ 说："每一场战斗都是一次禅修。我是说，反正对我来说是这样。"
+
+VISUAL:@The_monster@ 懒洋洋地伸展着，仿佛在温暖的沙滩上晒太阳。
+%%%%
+############ ROXANNE ### 岩石学法师
+Roxanne
+
+@_Roxanne_common_@
+
+w:5
+@_Roxanne_rare_@
+%%%%
+_Roxanne_common_
+
+VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。
+
+@The_monster@ 说："我研究岩石已经几百年了。你很柔软。"
+
+@The_monster@ 咕哝道："这里的地质构造极其有趣。"
+
+VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。
+%%%%
+_Roxanne_rare_
+
+@The_monster@ 说："你有花岗岩的优雅。而我有陨石的力量。"
+
+@The_monster@ 对 @foe@ 说："黄铁矿是愚人金。你连黄铁矿都不如。"
+
+@The_monster@ 喊道："大地将吞噬你！"
+%%%%
+Roxanne blink_other_closer
+
+@The_monster@ 低语道："靠近些。让我好好看看你。"
+
+VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。
+%%%%
+############ SNORG ### 极度饥饿的巨魔
+Snorg
+
+@_Snorg_common_@
+
+w:5
+@_Snorg_rare_@
+%%%%
+_Snorg_common_
+
+VISUAL:@The_monster@ 拍了拍 @possessive@ 的大肚子。
+
+@The_monster@ 嚎道："斯诺格饿！"
+
+@The_monster@ 吼道："斯诺格要吃了你！连骨头一起！"
+
+@The_monster@ 盯着 @foe@。"你看上去……好吃。"
+%%%%
+_Snorg_rare_
+
+@The_monster@ 喊道："斯诺格永远吃不饱！永远！"
+
+@The_monster@ 吼道："你跑，斯诺格追！斯诺格追上了，斯诺格吃了！"
+
+@The_monster@ 呻吟道："斯诺格肚子在咕咕叫。"
+%%%%
+############ SONJA ### 冷酷的杀手
+Sonja
+
+@_Sonja_common_@
+
+w:5
+@_Sonja_rare_@
+%%%%
+_Sonja_common_
+
+VISUAL:@The_monster@ 冷冷地打量着你。
+
+@The_monster@ 说："这是工作。没什么私人恩怨。"
+
+@The_monster@ 对 @foe@ 说："有人出价很高。我不能拒绝。"
+
+VISUAL:@The_monster@ 检查着 @possessive@ 的刀刃。
+%%%%
+_Sonja_rare_
+
+@The_monster@ 说："我从来不失手。你不会是第一个。"
+
+@The_monster@ 对 @foe@ 说："我追踪过更难缠的目标。在更糟的地方。"
+
+@The_monster@ 低声说："你死得安静，还是吵吵闹闹？"
+%%%%
+Sonja triumphant
+
+@The_monster@ 说："工作完成。"
+
+@The_monster@ 说："该去收报酬了。"
+
+############ DONALD ### 永远在抱怨的冒险者
+# 唐纳德是一个贯穿全游戏的独特怪物，在不同分支有不同的抱怨内容
+# 核心性格：讽刺、厌世、对一切都有意见
+
+Swamp Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："那是什么可怕的味道？闻起来像……呕。"
+
+@The_monster@ 说："如果说我有什么比水更恨的，那就是沼泽的咸水。"
+
+@The_monster@ 说："我恨树。我恨沼泽水。我恨这地方。"
+
+@The_monster@ 说："那嗡嗡声？那是我最恨的。"
+
+@The_monster@ 说："蚊子到底想要我的血干什么？"
+
+@The_monster@ 说："我希望这些沼泽虫子全淹死。"
+
+@The_monster@ 说："该死的，我把我的火焰剑忘在家了。"
+
+@The_monster@ 说："你不恨水蛭吗？我知道我恨。"
+
+@The_monster@ 说："我恨蚊子。几乎跟我恨沼泽水一样恨。"
+
+@The_monster@ 说："至少还有点干地。我讨厌被弄湿。"
+
+@The_monster@ 说："这是青蛙灾害还是怎么？至少不是蝗虫。"
+
+@The_monster@ 说："它们长的头越多，我就越恨九头蛇。"
+%%%%
+Shoals Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："潮汐？我鄙视潮汐。不，等等，我恨潮汐！"
+
+@The_monster@ 说："我喜欢乌龟汤。我恨乌龟。"
+
+@The_monster@ 说："我还没看见海盗。我恨海盗。"
+
+@The_monster@ 说："至少这地方没有沼泽那么臭。"
+
+@The_monster@ 说："那些海妖开始刺到我的耳朵了。"
+
+@The_monster@ 说："海妖就那声音？我唱得都比那好！"
+
+@The_monster@ 说："这海从哪来的？我还以为这地方是地下。"
+
+@The_monster@ 说："我喜欢海滩，但我恨大海。"
+
+@The_monster@ 说："这潮汐也太快了。这不自然！"
+
+@The_monster@ 说："至少这里没有鸭子。我恨鸭子。"
+
+@The_monster@ 说："我全身湿透了。我讨厌被弄湿！"
+
+@The_monster@ 说："那些克拉肯看起来根本不像真的。"
+
+@The_monster@ 说："我在找美杜莎女士。你见过她吗？"
+%%%%
+Spider Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："你脖子上有只蜘蛛！"
+
+@The_monster@ 说："我恨爬来爬去的东西。"
+
+@The_monster@ 说："该有人清理一下这些角落。我恨蜘蛛网。"
+
+@The_monster@ 说："我叔叔的阁楼有更大的蜘蛛网。我恨那个。"
+
+@The_monster@ 说："我讨厌被困住。"
+
+@The_monster@ 说："会跳舞的蜘蛛？没有手杖也没有高帽？"
+
+@The_monster@ 说："有东西爬进我裤子里了！啊啊啊！"
+
+@The_monster@ 说："我恨毒液。我恨被咬。"
+
+@The_monster@ 说："蜘蛛恐惧症不是病，是常识。"
+
+@The_monster@ 说："那里，天花板上！还有那面墙上！"
+%%%%
+Slime Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："战利品都哪去了？"
+
+@The_monster@ 说："我现在觉得自己像个果冻三明治。"
+
+@The_monster@ 说："这地方简直是个坑。"
+
+@The_monster@ 说："我恨绿色。"
+
+@The_monster@ 说："在这里我什么都闻不到。我恨这个。"
+
+@The_monster@ 说："我脚上这恶心的黏液弄不掉了。"
+
+@The_monster@ 说："我老觉得有人在看着我。好诡异。"
+
+@The_monster@ 说："每次觉得有人在看我的时候，我就僵住了。"
+
+@The_monster@ 说："酸液泡让我想起胃反流。我恨反流。"
+
+@The_monster@ 说："这些黏糊糊的东西是什么情况？简直是黏液世界。我恨黏液。"
+
+@The_monster@ 说："有人说我可以靠酸来解决所有问题。结果只是让问题更糟了。"
+
+@The_monster@ 说："希望符文别是黏的。"
+
+@The_monster@ 说："一块石头硌了我的脚趾。我恨那个。"
+
+@The_monster@ 说："水银到底有什么神奇的啊？"
+%%%%
+Snake Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："我恨蛇。为什么非要是蛇？"
+
+@The_monster@ 说："蛇皮靴子不错。蛇就免了。"
+
+@The_monster@ 说："它们没有腿！它们怎么跑得这么快？"
+
+@The_monster@ 说："我恨被缠住的感觉。"
+
+@The_monster@ 说："纳加比普通蛇更糟。它们还能施法！"
+
+@The_monster@ 说："你听见嘶嘶声了吗？我恨嘶嘶声。"
+
+@The_monster@ 说："我希望它们都回到自己的坑里去。"
+
+@The_monster@ 说："蛇坑？更像是个蛇的聚会场所。"
+
+@The_monster@ 说："它们在蜕皮！太恶心了！"
+
+@The_monster@ 说："我恨这里。全都是蛇。为什么啊！"
+%%%%
+Orc Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："兽人。我恨兽人。"
+
+@The_monster@ 说："那些该死的鼓声什么时候才停？"
+
+@The_monster@ 说："这地方到处都是金子和白痴。我是说，到处都是。到处都是兽人。我是说兽人。"
+
+@The_monster@ 说："他们就不能去别的地方打架吗？比如，去互相打架？"
+
+@The_monster@ 说："我以为他们只会杀自己人来着。"
+
+@The_monster@ 说："你闻到那个味道了吗？几十个没洗澡的兽人住在地下。"
+
+@The_monster@ 说："我恨他们的尖叫声。还有他们的吼叫声。还有他们说话的声音。"
+
+@The_monster@ 说："你以为比欧弗会给他们上堂卫生课。"
+
+@The_monster@ 说："我想知道他们有没有更值钱的东西。"
+
+@The_monster@ 说："至少他们很容易被激怒。等等，我恨那个。"
+%%%%
+Crypt Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："又是一座古墓。我恨古墓。"
+
+@The_monster@ 说："我说，当我说'我恨活死人'的时候，是不是有点多余？"
+
+@The_monster@ 说："这地方闻起来像我奶奶的客厅。我恨我奶奶。"
+
+@The_monster@ 说："木乃伊。为什么是木乃伊？至少我不恨绷带。"
+
+@The_monster@ 说："你有没有注意到每个古墓都有完全相同的陷阱？"
+
+@The_monster@ 说："骷髅根本不合理。没有肌肉它们怎么动的？"
+
+@The_monster@ 说："我恨那些在你背后从棺材里蹦出来的东西。"
+
+@The_monster@ 说："你听到那种呻吟声了吗？亡灵。绝对是亡灵。"
+
+@The_monster@ 说："古老的诅咒？更多的像是古老的烦人。"
+
+@The_monster@ 说："我喜欢金子。这就是为什么我更恨这里的金子被诅咒。"
+
+@The_monster@ 说："我觉得有东西在跟着我。肯定是那些浮着的骷髅头。"
+%%%%
+Zot Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："所以我们终于到这儿了。佐特的领域。我恨它。"
+
+@The_monster@ 说："宝珠最好值这趟功夫。"
+
+@The_monster@ 说："我恨宝珠守卫者。我恨宝珠。我恨佐特。"
+
+@The_monster@ 说："这些触手是怎么回事？到处都是触手！"
+
+@The_monster@ 说："我恨地狱。我恨深渊。我真的、真的恨这个地方。"
+
+@The_monster@ 说："最后一层了。你知道还有多少梯子吗？我也很恨梯子。"
+
+@The_monster@ 说："如果我再看到一只柯卡特里斯，我就要尖叫了。"
+
+@The_monster@ 说："古代巫妖。我恨古代巫妖。还有普通巫妖。任何巫妖。"
+
+@The_monster@ 说："宝珠最好能实现愿望。我希望这东西能完成我所有的愿望。"
+
+@The_monster@ 说："我真的不想再死了。我今天已经死了好几次了。"
+%%%%
+Beogh Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："比欧弗说你会帮我。我恨你的帮助。"
+
+@The_monster@ 说："兽人服从我。我恨有责任。"
+
+@The_monster@ 说："比欧弗告诉我带更多援军来。我恨带援军。"
+
+@The_monster@ 说："我的兽人部队在哪？开小差了。我恨逃兵。"
+
+@The_monster@ 说："我不该皈依一个要我领导别人的神。"
+
+@The_monster@ 说："他们指望我做个好榜样。我恨做榜样。"
+%%%%
+Kikubaaqudgha Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："奇库巴库哈说多做死灵术。我恨做死灵术。"
+
+@The_monster@ 说："我有了一群僵尸。它们连自己都绊倒。有什么用？"
+
+@The_monster@ 说："我讨厌这些尸体。我讨厌关于死亡的谈话。但我喜欢力量。"
+
+@The_monster@ 说："奇库巴库哈要我杀更多人。更多尸体。我累。"
+%%%%
+Makhleb Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："马科列布要血。永远是更多血。我恨流血。"
+
+@The_monster@ 说："你知道清理祭坛有多难吗？到处都是血。恶魔。内脏。"
+
+@The_monster@ 说："我没申请做这个。我只是想毁灭一些东西。"
+%%%%
+Sif Muna Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："西芙·穆娜要我读书。我恨读书。"
+
+@The_monster@ 说："我不在乎这法术有多古老。它灼伤了我的手。"
+
+@The_monster@ 说："知识就是力量。力量是毁灭。我觉得我更喜欢直接毁灭。"
+
+@The_monster@ 说："为什么所有的魔法书都这么重？我的背疼。"
+%%%%
+Trog Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："特洛格讨厌魔法。我也讨厌魔法。至少我们有共同点。"
+
+@The_monster@ 说："我试图施法，我的手烧伤了。特洛格只是笑了笑。"
+
+@The_monster@ 说："狂战士的狂暴是很棒，但事后头疼真要命。"
+%%%%
+Ignis Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："曳焰给我一把火焰剑。我恨我的袖子着火了。"
+
+@The_monster@ 说："不要用火焰剑指着自己。这是我学到的一个教训。"
+
+@The_monster@ 说："我要求永生。曳焰给了我一个打火石。"
+%%%%
+Xom Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："佐姆刚刚把我变成了一只羊。持续了五秒钟。我恨羊。"
+
+@The_monster@ 说："你永远不知道佐姆接下来会做什么。我恨这种不确定性。"
+
+@The_monster@ 说："不久前佐姆给了我一群友好的恶魔。他们没待多久。"
+
+@The_monster@ 说："佐姆说我是他最有趣的宠物。我觉得这不是夸奖。"
+
+%%%%
+_generic_Donald_
+
+@The_monster@ 说："你真丑。你知道吗？"
+
+@The_monster@ 说："这真是个毫无意义的远征。"
+
+@The_monster@ 说："没有宝珠，他们不让我加入他们的冒险俱乐部。"
+
+@The_monster@ 说："我恨这地方。"
+
+@The_monster@ 说："我也恨你。"
+
+@The_monster@ 说："我的脚疼。"
+
+@The_monster@ 说："我的手也疼。"
+
+@The_monster@ 说："我觉得我开始咳嗽了。我恨那个。"
+
+@The_monster@ 说："我头疼。我恨那个。"
+
+@The_monster@ 说："你穿的那颜色？我恨那个。"
+
+@The_monster@ 说："就像我一直说的，罐子是半空的。"
+
+@The_monster@ 说："你还觉得你过得不好……"
+
+@The_monster@ 说："我好奇这地方有没有尽头。"
+
+@The_monster@ 说："下面是无穷无尽的海龟吗？"
+
+@The_monster@ 说："建造这地方的人？他们肯定疯了。"
+
+@The_monster@ 说："这里的空气臭死了。我恨那个。"
+
+@The_monster@ 说："我打赌宝珠根本没那么伟大。"
+
+@The_monster@ 说："所以，这宝珠到底是什么东西啊？"
+
+@The_monster@ 说："希望我走了这么远不是只为了个高级镇纸。"
+
+@The_monster@ 说："我不明白数字二十七有什么特别的。"
+
+@The_monster@ 说："这里的其他人真没礼貌。"
+
+@The_monster@ 说："也许下一站去地狱吧。"
+
+@The_monster@ 说："宝库看起来有点无聊。"
+
+@The_monster@ 说："这些卷轴到底是说什么的，我老弄不明白。"
+
+@The_monster@ 说："至少这里没有蚊子。等等，有吗？"
+
+@The_monster@ 说："我恨冒险。"
+
+@The_monster@ 说："退休听起来不错。真的不错。"
+%%%%
+############ BORIS ### 无法被杀死的古老战士
+Boris
+
+@_Boris_common_@
+
+w:2
+@_Boris_rare_@
+%%%%
+_Boris_common_
+
+@The_monster@ 说："你以为你能杀死我？我见过比你能干得多的人尝试过。"
+
+@The_monster@ 说："我来，我见，我被杀。然后我再来。"
+
+VISUAL:@The_monster@ 平静地检查着他的武器。
+
+@The_monster@ 说："死亡……只是个小麻烦。"
+%%%%
+_Boris_rare_
+
+@The_monster@ 说："你以为这次会不一样吗？"
+
+@The_monster@ 叹了口气："我已经死过太多次了，数不清了。"
+
+@The_monster@ 说："你只是在浪费力气。还有我的时间。"
+
+@The_monster@ 说："即使你杀了我，我还是会回来的。我总是回来的。"
+%%%%
+Boris killed
+
+@The_monster@ 呻吟道："这次……疼得更厉害。"
+
+@The_monster@ 说："下次再见。"
+
+@The_monster@ 喘息道："我……会……回来的……"
+%%%%
+Boris timeout
+
+@The_monster@ 说："你不能解雇我，我自己辞职！"
+%%%%
+Boris triumphant
+
+@The_monster@ 说："又搞定了。"
+
+@The_monster@ 说："我说过我会回来的。"
+%%%%
+Boris riddle
+
+@The_monster@ 问："什么永远死不了，却一直在尝试？"
+%%%%
+############ FREDERICK ### 自负的决斗者
+Frederick
+
+@_Frederick_common_@
+
+w:2
+@_Frederick_rare_@
+%%%%
+_Frederick_common_
+
+VISUAL:@The_monster@ 耍弄着他的剑。
+
+@The_monster@ 说："En garde！"
+
+@The_monster@ 说："你面对的是弗雷德里克——本地区最伟大的剑客。"
+
+@The_monster@ 说："我学过好几年的剑术。你没有机会的。"
+%%%%
+_Frederick_rare_
+
+@The_monster@ 说："你没有我想象中那么丑。"
+
+@The_monster@ 说："也许我会饶了你。或者也许不会。"
+
+@The_monster@ 说："我今天的发型很完美。连战斗都不能弄乱它。"
+%%%%
+Frederick triumphant
+
+@The_monster@ 说："又是一个失败者。没什么新鲜的。"
+%%%%
+Frederick riddle
+
+@The_monster@ 问："什么比剑更快？"
+
+%%%%
+# ===================================
+# 共享库条目
+# ===================================
+
+_hostile_imp_
+
+@_hostile_imp_common_@
+
+w:7
+@_hostile_imp_rare_@
+%%%%
+_hostile_imp_common_
+
+@The_monster@ 疯狂地笑着。
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 甩动着 @possessive@ 的尾巴。
+
+VISUAL:@The_monster@ 磨着 @possessive@ 的牙齿。
+
+VISUAL:@The_monster@ 朝 @foe@ 喷出雾气。
+
+VISUAL:@The_monster@ 朝 @foe@ 吐口水。
+
+VISUAL:@The_monster@ 捡起一只甲虫吃了下去。
+
+VISUAL:@The_monster@ 短暂地消失了。
+
+VISUAL:@The_monster@ 召唤了一群苍蝇。
+%%%%
+_hostile_imp_rare_
+
+@The_monster@ 尖叫道："死吧，凡人！"
+
+@The_monster@ 尖叫道："你的灵魂是我的！"
+
+@The_monster@ 咯咯笑道："多么美味的小点心……"
+
+VISUAL:@The_monster@ 疯狂地比划着手势。
+
+VISUAL:@The_monster@ 说着什么，但你什么都听不到。
+
+VISUAL:@The_monster@ 看起来很困惑。
+
+@The_monster@ 说："我真希望我更像一位恶魔领主。"
+%%%%
+_player_ghost_common_
+
+VISUAL:@The_monster@ 转向你，目光中充满了怨恨。
+
+@The_monster@ 呻吟着。
+
+@The_monster@ 用空洞的声音哀叹着。
+
+@The_monster@ 用空洞的声音嚎叫着。
+
+@The_monster@ 低语道："离开……这地方……"
+
+@The_monster@ 低语道："你不是……我们中的一员……"
+%%%%
+_player_ghost_medium_
+
+@The_monster@ 尖叫道："我们的宝珠！"
+
+@The_monster@ 喊道："你们永远无法活着离开！"
+
+@The_monster@ 哀叹道："我们……迷失了……"
+
+@The_monster@ 低语道："你也将加入我们……"
+
+@The_monster@ 喊道："死在这里！像我们一样！"
+%%%%
+_fleeing_humanoid_common_
+
+@The_monster@ 喊道："救命！"
+
+@The_monster@ 喊道："我不想死！"
+
+@The_monster@ 尖叫道："别杀我！"
+
+@The_monster@ 喊道："我投降！我投降！"
+%%%%
+_fleeing_humanoid_rare_
+
+@The_monster@ 喊道："这不值得！"
+
+@The_monster@ 喊道："这不是我报名参加的！"
+
+@The_monster@ 喊道："我得重新考虑我的人生选择了！"
+%%%%
+_suck_up_adj2_
+
+光辉的
+
+卓越的
+
+无与伦比的
+
+至高无上的
+
+神圣的
+
+无敌的
+
+令人敬畏的
+
+强大的
+
+宏伟的
+
+杰出的
+
+非凡的
+
+惊人的
+
+令人惊叹的
+
+壮丽的
+
+传奇的
+%%%%
+friendly hound
+
+VISUAL:@The_monster@ 摇着尾巴。
+
+VISUAL:@The_monster@ 兴奋地吠叫着。
+
+VISUAL:@The_monster@ 舔着你的手。
+
+@The_monster@ 高兴地呜咽着。
+
+@The_monster@ 把一根棍子叼到你面前。
+
+@The_monster@ 期待地看着你。
+%%%%
+# ===================================
+# 默认通用行为状态
+# ===================================
+
+default hostile confused Donald
+
+@The_monster@ 看起来很困惑。
+
+@The_monster@ 说："等等，我为什么又在做这个？"
+
+@The_monster@ 说："我恨被搞糊涂。"
+
+@The_monster@ 喊道："停下来！让我想想！"
+%%%%
+default stupid friendly humanoid
+
+@The_monster@ 茫然地看着你。
+
+VISUAL:@The_monster@ 挠了挠头。
+%%%%
+default stupid silenced humanoid
+
+VISUAL:@The_monster@ 试图说话，但什么声音都没有。
+%%%%
+default silenced confused humanoid
+
+VISUAL:@The_monster@ 看起来很困惑。
+
+VISUAL:@The_monster@ 做着夸张的哑剧动作。
+%%%%
+default fleeing silenced humanoid
+
+VISUAL:@The_monster@ 无声地惊恐尖叫着。
+%%%%
+default friendly silenced humanoid
+
+VISUAL:@The_monster@ 友好地挥着手。
+%%%%
+default silenced humanoid
+
+VISUAL:@The_monster@ 无声地说着什么。
+%%%%
+default friendly confused humanoid
+
+@The_monster@ 困惑地歪着头。
+
+VISUAL:@The_monster@ 友好但困惑地挥着手。
+%%%%
+default friendly fleeing humanoid
+
+@The_monster@ 一边逃跑一边喊道："对不起！对不起！"
+%%%%
+default friendly related humanoid
+
+@The_monster@ 喊道："嘿，表亲！"
+
+@The_monster@ 友好地朝你点点头。
+%%%%
+default friendly humanoid
+
+@The_monster@ 友好地挥着手。
+
+VISUAL:@The_monster@ 开心地点着头。
+%%%%
+# ===================================
+# 剩余 Donald 变体
+# ===================================
+
+Abyss Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："深渊。我恨深渊。"
+
+@The_monster@ 说："这个地方根本不合理。空间在变形。"
+
+@The_monster@ 说："我恨不合理的空间。"
+
+@The_monster@ 说："这里有过多的触手。为什么总是触手？"
+
+@The_monster@ 说："我恨触手。我也恨恶魔。"
+
+@The_monster@ 说："谁说深渊是个好主意的？我恨那个人。"
+%%%%
+Zin Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："辛要我遵守律法。我恨遵守规则。"
+
+@The_monster@ 说："不要偷窃。不要杀人。不要随地吐痰。烦死了。"
+
+@The_monster@ 说："你知道在副本里保持纯洁有多难吗？"
+
+@The_monster@ 说："辛说我应该成为一个榜样。我恨做榜样。"
+%%%%
+Ashenzari Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："艾申扎利给了我一切知识。我现在更恨这个世界了。"
+
+@The_monster@ 说："被诅咒确实增加了全新的维度。一个糟糕的维度。"
+
+@The_monster@ 说："你知道一切并不会让事情变得更好。反而更糟。"
+%%%%
+Fedhas Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："费德哈要我保护自然。自然一直在试图杀了我。"
+
+@The_monster@ 说："我讨厌蘑菇。真菌、霉菌、藻类——全都讨厌。"
+
+@The_monster@ 说："费德哈说有东西在我脚底生长。我恨那个。"
+%%%%
+Cheibriados Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："切布理亚多要我慢下来。我已经够慢的了。"
+
+@The_monster@ 说："耐心是一种美德。我恨美德。"
+
+@The_monster@ 说："慢慢来？我在这副本里都快急死了。"
+%%%%
+No God Donald
+
+w:50
+@_generic_Donald_@
+
+@The_monster@ 说："没有神会要我。我恨被拒绝。"
+
+@The_monster@ 说："他们说我的态度不适合崇拜。我恨态度问题。"
+
+@The_monster@ 说："无神论者。就我一个。我恨孤独。"
+%%%%
+Gozag permabribe
+
+@The_monster@ 贪婪地朝 @foe@ 咧嘴笑着，叮当地晃着一袋钱币。
+
+@The_monster@ 说："哥萨戈让我给你开个价。"
+
+@The_monster@ 说："每个人都喜欢钱。连我都喜欢钱。我不恨钱。"
+
+@The_monster@ 说："来吧。你知道你想要这交易。"
+%%%%
+# ===================================
+# 剩余独特怪物
+# ===================================
+
+############ JORY ### 沉默的杀手
+Jory
+
+@_Jory_common_@
+
+w:2
+@_Jory_rare_@
+%%%%
+_Jory_common_
+
+VISUAL:@The_monster@ 静静地打量着你。
+
+VISUAL:@The_monster@ 缓缓地拔出剑。
+
+@The_monster@ 什么都没说。只是凝视着。
+%%%%
+_Jory_silent_
+
+@The_monster@ 没说一句话。
+
+VISUAL:@The_monster@ 用手指指着你。
+
+VISUAL:@The_monster@ 用口型说着一个字："死。"
+
+@The_monster@ 踏前一步。安静地。致命地。
+%%%%
+############ Urug ### 半盲的独眼兽人
+Urug
+
+@_Urug_common_@
+
+w:2
+@_Urug_rare_@
+%%%%
+_Urug_common_
+
+@_generic_orc_speech_@
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 调整着她的眼罩。
+
+VISUAL:@The_monster@ 用她的独眼瞪着 @foe@。
+
+@The_monster@ 咆哮着。
+
+@The_monster@ 喊道："鹰身女妖！我要杀了每一只鹰身女妖！"
+
+@The_monster@ 对 @foe@ 吼道："你——你就是一只该死的鹰身女妖，不是吗？！"
+
+@The_monster@ 尖叫道："我看到你了！我看到你了！"（她没有。）
+%%%%
+_Urug_rare_
+
+@The_monster@ 喊道："我要为我的眼睛报仇！"
+
+@The_monster@ 咆哮道："每一只鹰身女妖都必须死！"
+
+@The_monster@ 眯起她的独眼。很难判断她是不是在看着你。
+
+VISUAL:@The_monster@ 对着一根柱子大喊大叫，显然以为是只鹰身女妖。
+%%%%
+############ ASTERION ### 迷宫中的牛头人
+Asterion
+
+@_Asterion_common_@
+
+w:2
+@_Asterion_rare_@
+%%%%
+_Asterion_common_
+
+@The_monster@ 吼道："我闻到了一个闯入者！"
+
+@The_monster@ 咆哮道："你无法逃出我的迷宫！"
+
+@The_monster@ 说："来。玩玩杀牛头人的游戏。"
+
+VISUAL:@The_monster@ 用蹄子刨着地面。
+
+@The_monster@ 咆哮道："他们把我关在这里。现在我把他们关在这里。还有你。"
+%%%%
+_Asterion_rare_
+
+@The_monster@ 说："你知道在迷宫里生活多年是什么感觉吗？"
+
+@The_monster@ 低吼道："我的迷宫。我的规则。我的食物。"
+
+@The_monster@ 说："你看起来够嫩。正好当午餐。"
+%%%%
+Asterion triumphant
+
+@The_monster@ 吼道："又一个祭品献给迷宫。"
+
+@The_monster@ 说："走好。他们总是走好。"
+%%%%
+############ JEREMIAH ### 被梦境囚禁的做梦者
+Jeremiah
+
+@_Jeremiah_common_@
+
+w:3
+@_Jeremiah_rare_@
+%%%%
+_Jeremiah_common_
+
+@The_monster@ 说："哦，这真是个非常奇怪的梦。"
+
+@The_monster@ 问："我在做梦吗？这是真的吗？"
+
+@The_monster@ 喊道："停下！别让我继续了！"
+
+@The_monster@ 对 @foe@ 说："我不想伤害你。只是——走吧！跑！"
+
+@The_monster@ 问："我在哪里？你为什么要跟我打架？"
+
+@The_monster@ 低语道："我服从。我服从。我服从。"
+
+VISUAL:@The_monster_possessive@ 的眼睛短暂地闭上，然后猛地睁开。
+
+VISUAL:@The_monster_possessive@ 的眼睛瞬间闪过了亮红色的光。
+
+VISUAL:@The_monster@ 打了个哈欠。
+
+VISUAL:@The_monster@ 从指尖划出了彩虹。
+
+VISUAL:@The_monster@ 盯着 @possessive@ 的宝珠，像被迷住了一样。
+
+VISUAL:@The_monster@ 困惑地看着 @possessive@ 的武器。
+%%%%
+_Jeremiah_rare_
+
+@The_monster@ 嚎道："为什么我醒不来？"
+
+@The_monster@ 哀泣道："结束这一切吧！放我走！"
+
+@The_monster@ 抽泣道："我不想要。让它停下！让它停下！"
+
+@The_monster@ 说："哦，这一定是个梦。这完全不合理。"
+%%%%
+############ BLORKULA ### 兽人吸血鬼
+Blorkula the orcula
+
+@_Blorkula_common_@
+
+w:2
+@_Blorkula_rare_@
+%%%%
+_Blorkula_common_
+
+@The_monster@ 嘶嘶地说："我——是——布拉库拉——兽人——吸血鬼！"
+
+@The_monster@ 喊道："我恨阳光！我恨大蒜！"
+
+@The_monster@ 对 @foe@ 说："你的脖子。给我。我不想咬两次。"
+
+VISUAL:@The_monster@ 试图变成蝙蝠——变成了一个长着獠牙的绿色小飞球。
+
+@The_monster@ 说："喝血！强壮的兽人需要血！不是麦酒——血！"
+%%%%
+_Blorkula_rare_
+
+@The_monster@ 吼道："我恨镜子！永远映不出我的帅气。"
+
+@The_monster@ 说："数百年。我已经数百年没吃过蒜香面包了。"
+
+@The_monster@ 对 @foe@ 说："你——新鲜。温暖。还活着。完美。"
+%%%%
+############ FRANCES ### 烦躁的猎人
+Frances
+
+@_Frances_common_@
+
+w:2
+@_Frances_rare_@
+%%%%
+_Frances_common_
+
+@The_monster@ 说："我追踪了你好几里路。"
+
+@The_monster@ 说："你闻起来——像是副本的味道。"
+
+VISUAL:@The_monster@ 调整着她的弓弦。
+
+@The_monster@ 对 @foe@ 说："我不在乎赏金。我在乎挑战。"
+%%%%
+_Frances_rare_
+
+@The_monster@ 说："你比大多数人跑得远。不过还是不够。"
+
+@The_monster@ 说："我见过更大的。更快的。更丑的。你只是又一个标记。"
+%%%%
+############ KILLER KLOWN ### 杀人的小丑
+Killer Klown
+
+@_Killer_Klown_common_@
+
+w:2
+@_Killer_Klown_rare_@
+%%%%
+_Killer_Klown_common_
+
+VISUAL:@The_monster@ 向你抛出了一个馅饼。它有毒。
+
+@The_monster@ 尖叫道："来点小丑魔法怎么样！"
+
+@The_monster@ 咯咯笑道："我的鞋太大了！但我的刀刚好！"
+
+VISUAL:@The_monster@ 从袖子里拉出一条无穷无尽的围巾。
+%%%%
+_Killer_Klown_rare_
+
+@The_monster@ 尖叫道："你喜欢气球动物吗？" 然后吹出了一个看起来像你尸体的气球。
+
+@The_monster@ 说："每个人都在笑。直到他们不再笑。"
+
+@The_monster@ 咯咯笑道："有趣的是如何……致命的。对，致命的。"

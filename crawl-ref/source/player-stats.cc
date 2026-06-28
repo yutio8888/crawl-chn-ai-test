@@ -24,6 +24,7 @@
 #include "stringutil.h"
 #include "tag-version.h"
 #include "transform.h"
+#include "database.h"
 
 static int _stat_modifier(stat_type stat, bool innate_only);
 
@@ -77,10 +78,12 @@ bool attribute_increase()
 
     const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 4 : 2;
 
-    const string stat_gain_message = make_stringf("Your experience leads to a%s "
-                                                  "increase in your attributes!",
-                                                  (statgain > 2) ?
-                                                  " dramatic" : "n");
+    const string stat_gain_message = Options.language == lang_t::ZH
+        ? make_stringf("你的经验使你的属性%s提升了！",
+                       (statgain > 2) ? "大幅" : "")
+        : make_stringf("Your experience leads to a%s "
+                       "increase in your attributes!",
+                       (statgain > 2) ? " dramatic" : "n");
     crawl_state.stat_gain_prompt = true;
     mprf(MSGCH_INTRINSIC_GAIN, "%s", stat_gain_message.c_str());
     learned_something_new(HINT_CHOOSE_STAT);
@@ -93,9 +96,12 @@ bool attribute_increase()
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
     }
-    mprf(MSGCH_PROMPT, need_caps
-        ? "Increase (S)trength, (I)ntelligence, or (D)exterity? "
-        : "Increase (s)trength, (i)ntelligence, or (d)exterity? ");
+    if (Options.language == lang_t::ZH)
+        mprf(MSGCH_PROMPT, "提升（S）力量、（I）智力或（D）敏捷？");
+    else
+        mprf(MSGCH_PROMPT, need_caps
+            ? "Increase (S)trength, (I)ntelligence, or (D)exterity? "
+            : "Increase (s)trength, (i)ntelligence, or (d)exterity? ");
     mouse_control mc(MOUSE_MODE_PROMPT);
 
     bool tried_lua = false;
@@ -165,8 +171,17 @@ static const char* descs[NUM_STATS][NUM_STAT_DESCS] =
     { "dexterity", "clumsy", "clumsy", "agile" }
 };
 
+static const char* zh_descs[NUM_STATS][NUM_STAT_DESCS] =
+{
+    { "力量", "变虚弱", "变弱", "变强壮" },
+    { "智力", "变迟钝", "变笨", "变聪明" },
+    { "敏捷", "变笨拙", "变笨拙", "变敏捷" }
+};
+
 const char* stat_desc(stat_type stat, stat_desc_type desc)
 {
+    if (Options.language == lang_t::ZH)
+        return zh_descs[stat][desc];
     return descs[stat][desc];
 }
 
@@ -184,7 +199,7 @@ void modify_stat(stat_type which_stat, int amount, bool suppress_msg)
     if (!suppress_msg)
     {
         mprf((amount > 0) ? MSGCH_INTRINSIC_GAIN : MSGCH_WARN,
-             "You feel %s.",
+             T_("You feel %s."),
              stat_desc(which_stat, (amount > 0) ? SD_INCREASE : SD_DECREASE));
     }
 
@@ -207,7 +222,7 @@ void notify_stat_change(stat_type which_stat, int amount, bool suppress_msg)
     if (!suppress_msg)
     {
         mprf((amount > 0) ? MSGCH_INTRINSIC_GAIN : MSGCH_WARN,
-             "You feel %s.",
+             T_("You feel %s."),
              stat_desc(which_stat, (amount > 0) ? SD_INCREASE : SD_DECREASE));
     }
 
@@ -407,14 +422,13 @@ static void _handle_stat_change(stat_type stat)
     if (val <= 0 && !was_zero)
     {
         // Notify the player and make the penalty explicit.
-        mprf(MSGCH_WARN, "You have lost all your %s. It will be difficult to act "
-                         "quickly in this state!", stat_desc(stat, SD_NAME));
+        mprf(MSGCH_WARN, T_("You have lost all your %s. It will be difficult to act quickly in this state!"), stat_desc(stat, SD_NAME));
 
         you.attribute[ATTR_STAT_ZERO] |= 1 << (int)stat;
     }
     else if (was_zero && val > 0)
     {
-        mprf(MSGCH_RECOVERY, "You have recovered your %s.", stat_desc(stat, SD_NAME));
+        mprf(MSGCH_RECOVERY, T_("You have recovered your %s."), stat_desc(stat, SD_NAME));
         you.attribute[ATTR_STAT_ZERO] &= ~(1 << (int)stat);
     }
 

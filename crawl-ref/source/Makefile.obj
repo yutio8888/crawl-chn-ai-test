@@ -183,6 +183,7 @@ outer-menu.o \
 output.o \
 package.o \
 pattern.o \
+positional_format.o \
 pcg.o \
 perlin.o \
 piety-info.o \

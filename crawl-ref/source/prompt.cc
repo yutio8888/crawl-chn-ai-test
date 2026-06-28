@@ -24,6 +24,7 @@
 #endif
 #include "viewchar.h"
 #include "ui.h"
+#include "database.h"
 
 namespace ui
 {
@@ -182,11 +183,15 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
 
     if (use_popup)
     {
-        MenuEntry * const y_me = new MenuEntry("Yes", MEL_ITEM, 1, 'Y');
+        const char* yes_str = T_("Yes");
+        const char* no_str = T_("No");
+        const char* always_str = T_("Always");
+
+        MenuEntry * const y_me = new MenuEntry(yes_str, MEL_ITEM, 1, 'Y');
         y_me->add_hotkey('y');
-        MenuEntry * const n_me = new MenuEntry("No", MEL_ITEM, 1, 'N');
+        MenuEntry * const n_me = new MenuEntry(no_str, MEL_ITEM, 1, 'N');
         n_me->add_hotkey('n');
-        MenuEntry * const a_me = new MenuEntry("Always", MEL_ITEM, 1, 'A');
+        MenuEntry * const a_me = new MenuEntry(always_str, MEL_ITEM, 1, 'A');
         a_me->add_hotkey('a');
         y_me->add_tile(tile_def(TILEG_PROMPT_YES));
         n_me->add_tile(tile_def(TILEG_PROMPT_NO));
@@ -210,9 +215,9 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
         if (enter_defaults)
         {
             pop.set_more(make_stringf("<white>[enter]</white>: %s",
-                default_answer == 'Y' ? "Yes"
-                : default_answer == 'N' ? "No"
-                : (ask_always && default_answer == 'A') ? "Always"
+                default_answer == 'Y' ? yes_str
+                : default_answer == 'N' ? no_str
+                : (ask_always && default_answer == 'A') ? always_str
                 : "bugs"));
         }
     }
