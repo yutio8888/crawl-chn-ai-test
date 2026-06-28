@@ -2869,7 +2869,7 @@ void beogh_blood_for_blood_tick(int delay)
 
 void beogh_end_blood_for_blood()
 {
-    mpr(T_("You reach the end of your prayer and your brethren are recalled."));
+    mprf(MSGCH_DURATION, T_("You reach the end of your prayer and your brethren are recalled."));
     for (monster_iterator mi; mi; ++mi)
     {
         if (mons_is_blood_for_blood_orc(**mi))
@@ -2961,7 +2961,7 @@ void beogh_increase_orcification()
     if (you.props.exists(ORCIFICATION_LEVEL_KEY))
     {
         you.props[ORCIFICATION_LEVEL_KEY] = 2;
-        mpr(T_("Your orcish features manifest fully."));
+        mprf(MSGCH_MUTATION, T_("Your orcish features manifest fully."));
         return;
     }
 
@@ -3499,7 +3499,7 @@ bool gozag_potion_petition()
             line += comma_separated_line(pot_names.begin(), pot_names.end());
             mpr_nojoin(MSGCH_PLAIN, line);
         }
-        mpr(T_("Purchase which effect?"));
+        mprf(MSGCH_PROMPT, T_("Purchase which effect?"));
         keyin = toalower(get_ch()) - 'a';
         if (keyin < 0 || keyin > GOZAG_MAX_POTIONS - 1)
             continue;
@@ -3690,7 +3690,7 @@ static int _gozag_choose_shop()
     for (int i = 0; i < GOZAG_MAX_SHOPS; i++)
         mpr_nojoin(MSGCH_PLAIN, _describe_gozag_shop(i).c_str());
 
-    mpr(T_("Fund which merchant?"));
+    mprf(MSGCH_PROMPT, T_("Fund which merchant?"));
     const int shop_index = toalower(get_ch()) - 'a';
     if (shop_index < 0 || shop_index > GOZAG_MAX_SHOPS - 1)
         return _gozag_choose_shop(); // tail recurse
@@ -4311,7 +4311,7 @@ spret qazlal_elemental_force(bool fail)
     }
 
     if (placed)
-        mpr(T_("Clouds arounds you coalesce and take form!"));
+        mprf(MSGCH_GOD, T_("Clouds arounds you coalesce and take form!"));
     else
         canned_msg(MSG_NOTHING_HAPPENS); // can this ever happen?
 
@@ -4372,7 +4372,7 @@ spret qazlal_disaster_area(bool fail)
 
     fail_check();
 
-    mpr(T_("Nature churns violently around you!"));
+    mprf(MSGCH_GOD, T_("Nature churns violently around you!"));
 
     // TODO: should count get a cap proportional to targets.size()?
     int count = max(1, min((int)targets.size(),
@@ -6654,7 +6654,7 @@ spret wu_jian_wall_jump_ability()
 
 void wu_jian_heavenly_storm()
 {
-    mpr(T_("The air is filled with shimmering golden clouds!"));
+    mprf(MSGCH_GOD, T_("The air is filled with shimmering golden clouds!"));
     wu_jian_sifu_message(" says: The storm will not cease as long as you "
                          "keep fighting, disciple!");
 
@@ -6748,7 +6748,7 @@ void okawaru_duel_healing()
 
 void okawaru_remove_heroism()
 {
-    mpr(T_("You feel like a meek peon again."));
+    mprf(MSGCH_DURATION, T_("You feel like a meek peon again."));
     you.duration[DUR_HEROISM] = 0;
     you.redraw_evasion      = true;
     you.redraw_armour_class = true;

@@ -859,7 +859,7 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
         Version::Long);
     box->add_child(make_shared<ui::Text>(formatted_string(title_text, CYAN)));
 
-    const string body_text =T_("Enter 0 for a random seed. \"[Tab]/[Shift-Tab] to cycle input focus.\n\"");
+    const string body_text =T_("Enter 0 for a random seed. [Tab]/[Shift-Tab] to cycle input focus.\n");
     box->add_child(make_shared<ui::Text>(body_text));
 
     auto seed_hbox = make_shared<ui::Box>(ui::Box::HORZ);

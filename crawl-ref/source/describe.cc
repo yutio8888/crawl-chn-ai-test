@@ -5898,7 +5898,7 @@ static string _monster_spells_description(const monster_info& mi, bool mark_spel
     if (mark_spells)
         description += SPELL_LIST_END;
 
-    description.cprintf(T_("\nTo read a description, press the key listed above. \"(AdB) indicates damage (the sum of A B-sided dice), \"\"(x%%) indicates the chance to defeat your Will, \"\"and (y) indicates the spell range\""));
+    description.cprintf(T_("\nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range"));
     description.cprintf(crawl_state.need_save
         ? (T_("; shown in red if you are in range.\n"))
         : (T_(".\n")));

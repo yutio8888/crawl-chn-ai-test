@@ -6229,7 +6229,7 @@ You cannot shatter the curse on %s while it is
 
 %%%%
 (Press <w>%c</w> on the <w>%s</w> ability menu to convert to Beogh)
-(在<w>%s</w>能力菜单上按<w>%c</w>来皈依贝奥格)
+(按<w>%c</w>键在<w>%s</w>能力菜单上皈依贝奥格)
 
 %%%%
 You reach the end of your prayer and your brethren are recalled.

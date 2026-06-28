@@ -520,11 +520,9 @@ public:
         }
         else
         {
-            if (T_("你变得更加透明了。"));
-            else
-                mprf(MSGCH_DURATION, !you.duration[DUR_INVIS]
-                     ? "You fade into invisibility!"
-                     : "You fade further into invisibility.");
+            mprf(MSGCH_DURATION, !you.duration[DUR_INVIS]
+                 ? T_("You fade into invisibility!")
+                 : T_("You fade further into invisibility."));
         }
 
         const int dur = _scale_pot_duration(15 + random2(pow), is_potion);

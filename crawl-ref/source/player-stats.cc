@@ -96,7 +96,7 @@ bool attribute_increase()
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
     }
-    if (T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
+    mprf(MSGCH_PROMPT, T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
     mouse_control mc(MOUSE_MODE_PROMPT);
 
     bool tried_lua = false;

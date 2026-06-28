@@ -6010,7 +6010,8 @@ void monster::react_to_damage(const actor *oppressor, int damage,
                     mpr(T_("Your spectral weapon shares its damage with you!"));
                 else if (you.can_see(*owner))
                 {
-                    string buf =T_(" shares ");
+                    string buf = make_stringf(T_(" shares %s spectral weapon's damage!"),
+                        owner->pronoun(PRONOUN_POSSESSIVE).c_str());
                     simple_monster_message(*owner->as_monster(), buf.c_str());
                 }
 

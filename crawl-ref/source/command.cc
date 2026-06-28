@@ -1205,7 +1205,7 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     cols.add_formatted(
             0,
-            T_("\n<h>Attacking monsters\n\"Walking into a monster will attack it\n\"\"with your wielded weapon, or unarmed.\""),
+            T_("\n<h>Attacking monsters\nWalking into a monster will attack it\nwith your wielded weapon, or unarmed."),
             false);
 
     cols.add_formatted(

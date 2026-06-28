@@ -2182,16 +2182,19 @@ static void _print_overview_screen_equip(column_composer& cols,
                 if (slot == SLOT_WEAPON && i == 0)
                     str = "  - " + you.unarmed_attack_name();
                 else if (slot_melded)
-                    str =T_("<darkgrey>(");
+                    str = make_stringf(T_("<darkgrey>(%s unusable)</darkgrey>"),
+                                      slot_name_lwr.c_str());
                 else
-                    str =T_("<darkgrey>(no ");
+                    str = make_stringf(T_("<darkgrey>(no %s)</darkgrey>"),
+                                      slot_name_lwr.c_str());
 
                 cols.add_formatted(1, str, false);
                 continue;
             }
             else if (equipped[i].is_overflow)
             {
-                str =T_("  <darkgrey>[");
+                str = make_stringf(T_("  <darkgrey>[%s occupied]</darkgrey>"),
+                      slot_name_lwr.c_str());
                 cols.add_formatted(1, str, false);
                 continue;
             }
