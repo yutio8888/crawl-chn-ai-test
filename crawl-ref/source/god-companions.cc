@@ -716,20 +716,16 @@ void beogh_recruit_apostle()
         msg += make_stringf(T_("Beogh breathes life back into %s and "), real->name(DESC_THE, true).c_str());
     }
 
-    // TODO: ARG-DIFF — structural, different logic branches for ZH/EN
-    if (Options.language == lang_t::ZH)
+    if (msg.length() > 0)
     {
-        if (msg.length() > 0)
-            msg += "你用灰烬和炭为其涂油，欢迎其成为同伴。";
-        else
-            msg += "你用灰烬和炭为" + real->name(DESC_THE, true) + "涂油，欢迎其成为同伴。";
+        msg += make_stringf(T_("you anoint %1$s with ash and charcoal and welcome %1$s as a companion."),
+            real->pronoun(PRONOUN_OBJECTIVE).c_str());
     }
     else
     {
-        if (msg.length() > 0)
-            msg += "you anoint " + real->pronoun(PRONOUN_OBJECTIVE) + " with ash and charcoal and welcome " + real->pronoun(PRONOUN_OBJECTIVE) + " as a companion.";
-        else
-            msg += "You anoint " + real->name(DESC_THE, true) + " with ash and charcoal and welcome " + real->pronoun(PRONOUN_OBJECTIVE) + " as a companion.";
+        msg += make_stringf(T_("You anoint %1$s with ash and charcoal and welcome %2$s as a companion."),
+            real->name(DESC_THE, true).c_str(),
+            real->pronoun(PRONOUN_OBJECTIVE).c_str());
     }
 
     mpr(msg.c_str());
