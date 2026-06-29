@@ -1310,21 +1310,10 @@ static string _your_skill_desc(skill_type skill, bool show_target_button,
     if (show_target_button &&
             you.get_training_target(skill) < min_scaled_target)
     {
-        // TODO: ARG-DIFF - "%s的目标设置为%d.%d" vs "set %d.%d as a target for %s" have %s and %d in opposite order
-        if (Options.language == lang_t::ZH)
-        {
-            target_button_desc = make_stringf(
-                "；使用<white>(s)</white>将%s的目标设置为%d.%d。",
-                skill_name(skill),
-                min_scaled_target / 10, min_scaled_target % 10);
-        }
-        else
-        {
-            target_button_desc = make_stringf(
-                "; use <white>(s)</white> to set %d.%d as a target for %s.",
-                min_scaled_target / 10, min_scaled_target % 10,
-                skill_name(skill));
-        }
+        target_button_desc = make_stringf(
+            T_("; use <white>(s)</white> to set %1$d.%2$d as a target for %3$s."),
+            min_scaled_target / 10, min_scaled_target % 10,
+            skill_name(skill));
     }
     int you_skill_temp = you.skill(skill, 10);
     int you_skill = you.skill(skill, 10, false, false);
@@ -1358,9 +1347,6 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
                                 (double) scaled_target / 10, training, false);
     const int level_diff = xp_to_level_diff(diffs.experience / 10, 10);
 
-    // TODO: ARG-DIFF - "you would reach X in Y XLs" vs "你将在Y个经验等级内达到X级" have completely different argument and clause order
-    const bool zh = Options.language == lang_t::ZH;
-
     if (max_training)
         description += T_("At 100% training ");
     else if (!hypothetical)
@@ -1372,24 +1358,19 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
         description += make_stringf(T_("At a training level of %d%% "),
                                     training);
 
-    if (zh)
-    {
-        description += make_stringf(
-            "%s你将在%d.%d个经验等级内达到%d.%d级。",
-            hypothetical ? "如果进行训练，" : "",
-            level_diff / 10, level_diff % 10,
-            scaled_target / 10, scaled_target % 10);
-    }
-    else
-    {
-        description += make_stringf(
-            "you %sreach %d.%d in %s %d.%d XLs.",
-            hypothetical ? "would " : "",
-            scaled_target / 10, scaled_target % 10,
-            (you.experience_level + (level_diff + 9) / 10) > 27
-                                ? "the equivalent of" : "about",
-            level_diff / 10, level_diff % 10);
-    }
+    // Build the "reach target" sentence with positional format specifiers.
+    string cond_prefix = hypothetical ? T_("would ") : "";
+    string level_equiv;
+    if (Options.language != lang_t::ZH)
+        level_equiv = (you.experience_level + (level_diff + 9) / 10) > 27
+            ? "the equivalent of" : "about";
+
+    description += make_stringf(
+        T_("you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs."),
+        cond_prefix.c_str(),
+        scaled_target / 10, scaled_target % 10,
+        level_equiv.c_str(),
+        level_diff / 10, level_diff % 10);
     if (you.wizard)
     {
         description += make_stringf("\n    (%d xp, %d skp)",
@@ -4330,49 +4311,31 @@ static string _get_skill_defense_change(skill_type skill)
     const float ev_diff = (float)(new_ev - cur_ev) / 100.0;
     const float sh_diff = (float)(new_sh - cur_sh) / 100.0;
 
-    // TODO: ARG-DIFF - format string has different argument order ("increase AC by %.1f and EV by %.1f" vs "使AC提高%.1f，EV提高%.1f")
-    const bool zh = Options.language == lang_t::ZH;
     const char* msg = (cur_skill >= 26)
         ? (T_("mastering"))
         : (T_("training 1 level of"));
 
     if (skill == SK_ARMOUR)
     {
-        if (zh)
-        {
-            return make_stringf("\n以你当前的属性和装备，%s"
-                                "此技能将使你的AC提高%.1f，"
-                                "你的EV提高%.1f。",
-                                msg, ac_diff, ev_diff);
-        }
-        return make_stringf("\nWith your current stats and equipment, %s "
-                            "this skill would increase your AC by %.1f "
-                            "and your EV by %.1f.",
-                            msg, ac_diff, ev_diff);
+        return make_stringf(
+            T_("\nWith your current stats and equipment, %1$s "
+               "this skill would increase your AC by %2$.1f "
+               "and your EV by %3$.1f."),
+            msg, ac_diff, ev_diff);
     }
     else if (skill == SK_DODGING)
     {
-        if (zh)
-        {
-            return make_stringf("\n以你当前的属性和装备，%s"
-                                "此技能将使你的EV提高%.1f。",
-                                msg, ev_diff);
-        }
-        return make_stringf("\nWith your current stats and equipment, %s "
-                            "this skill would increase your EV by %.1f.",
-                            msg, ev_diff);
+        return make_stringf(
+            T_("\nWith your current stats and equipment, %1$s "
+               "this skill would increase your EV by %2$.1f."),
+            msg, ev_diff);
     }
     else if (skill == SK_SHIELDS)
     {
-        if (zh)
-        {
-            return make_stringf("\n以你当前的属性和装备，%s"
-                                "此技能将使你的SH提高%.1f。",
-                                msg, sh_diff);
-        }
-        return make_stringf("\nWith your current stats and equipment, %s "
-                            "this skill would increase your SH by %.1f.",
-                            msg, sh_diff);
+        return make_stringf(
+            T_("\nWith your current stats and equipment, %1$s "
+               "this skill would increase your SH by %2$.1f."),
+            msg, sh_diff);
     }
 
     return "";
@@ -5004,113 +4967,45 @@ static string _describe_draconian(const monster_info& mi)
 
     if (subsp != mi.type)
     {
-        // TODO: ARG-DIFF - sentence structure differs ("It has black scales." vs "它有着黑色的鳞片。"); Chinese adds 的 and 色 suffixes, different word order
-        if (Options.language == lang_t::ZH)
-        {
-            description += "它有着";
-
-            switch (subsp)
-            {
-            case MONS_BLACK_DRACONIAN:  description += "黑色"; break;
-            case MONS_YELLOW_DRACONIAN: description += "黄色"; break;
-            case MONS_GREEN_DRACONIAN:  description += "绿色"; break;
-            case MONS_PURPLE_DRACONIAN: description += "紫色"; break;
-            case MONS_RED_DRACONIAN:    description += "红色"; break;
-            case MONS_WHITE_DRACONIAN:  description += "白色"; break;
-            case MONS_GREY_DRACONIAN:   description += "灰色"; break;
-            case MONS_PALE_DRACONIAN:   description += "苍白"; break;
-            default:
-                break;
-            }
-
-            description += "色的鳞片。";
-        }
-        else
-        {
-            description += "It has ";
-
-            switch (subsp)
-            {
-            case MONS_BLACK_DRACONIAN:  description += "black ";  break;
-            case MONS_YELLOW_DRACONIAN: description += "yellow "; break;
-            case MONS_GREEN_DRACONIAN:  description += "green ";  break;
-            case MONS_PURPLE_DRACONIAN: description += "purple "; break;
-            case MONS_RED_DRACONIAN:    description += "red ";    break;
-            case MONS_WHITE_DRACONIAN:  description += "white ";  break;
-            case MONS_GREY_DRACONIAN:   description += "grey ";   break;
-            case MONS_PALE_DRACONIAN:   description += "pale ";   break;
-            default:
-                break;
-            }
-
-            description += "scales. ";
-        }
+        // Draconian scale color description
+        static const map<monster_type, string> scale_desc = {
+            { MONS_BLACK_DRACONIAN,  T_("It has black scales. ") },
+            { MONS_YELLOW_DRACONIAN, T_("It has yellow scales. ") },
+            { MONS_GREEN_DRACONIAN,  T_("It has green scales. ") },
+            { MONS_PURPLE_DRACONIAN, T_("It has purple scales. ") },
+            { MONS_RED_DRACONIAN,    T_("It has red scales. ") },
+            { MONS_WHITE_DRACONIAN,  T_("It has white scales. ") },
+            { MONS_GREY_DRACONIAN,   T_("It has grey scales. ") },
+            { MONS_PALE_DRACONIAN,   T_("It has pale scales. ") },
+        };
+        auto it = scale_desc.find(static_cast<monster_type>(subsp));
+        if (it != scale_desc.end())
+            description += it->second;
     }
 
-    // TODO: ARG-DIFF - completely different sentence content for each draconian description, not a simple key-value mapping
-    if (Options.language == lang_t::ZH)
     {
-        switch (subsp)
-        {
-        case MONS_BLACK_DRACONIAN:
-            description += "电火花从它的嘴和鼻孔中迸发。";
-            break;
-        case MONS_YELLOW_DRACONIAN:
-            description += "酸性烟雾在它周围缭绕。";
-            break;
-        case MONS_GREEN_DRACONIAN:
-            description += "毒液从它的下颚和刺尾滴落。";
-            break;
-        case MONS_PURPLE_DRACONIAN:
-            description += "它的轮廓闪烁着魔法能量。";
-            break;
-        case MONS_RED_DRACONIAN:
-            description += "烟雾从它的鼻孔中涌出。";
-            break;
-        case MONS_WHITE_DRACONIAN:
-            description += "寒气从它的鼻孔中喷出。";
-            break;
-        case MONS_GREY_DRACONIAN:
-            description += "它的鳞片和尾巴适应了水域生活。";
-            break;
-        case MONS_PALE_DRACONIAN:
-            description += "它被过热蒸汽的帷幕笼罩。";
-            break;
-        default:
-            break;
-        }
-    }
-    else
-    {
-        switch (subsp)
-        {
-        case MONS_BLACK_DRACONIAN:
-            description += "Sparks flare out of its mouth and nostrils.";
-            break;
-        case MONS_YELLOW_DRACONIAN:
-            description += "Acidic fumes swirl around it.";
-            break;
-        case MONS_GREEN_DRACONIAN:
-            description += "Venom drips from its jaws and stinger tail.";
-            break;
-        case MONS_PURPLE_DRACONIAN:
-            description += "Its outline shimmers with magical energy.";
-            break;
-        case MONS_RED_DRACONIAN:
-            description += "Smoke pours from its nostrils.";
-            break;
-        case MONS_WHITE_DRACONIAN:
-            description += "Frost pours from its nostrils.";
-            break;
-        case MONS_GREY_DRACONIAN:
-            description += "Its scales and tail are adapted to the water.";
-            break;
-        case MONS_PALE_DRACONIAN:
-            description += "It is cloaked in a pall of superheated steam.";
-            break;
-        default:
-            break;
-        }
+        // Draconian ability description
+        static const map<monster_type, string> ability_desc = {
+            { MONS_BLACK_DRACONIAN,
+                T_("Sparks flare out of its mouth and nostrils.") },
+            { MONS_YELLOW_DRACONIAN,
+                T_("Acidic fumes swirl around it.") },
+            { MONS_GREEN_DRACONIAN,
+                T_("Venom drips from its jaws and stinger tail.") },
+            { MONS_PURPLE_DRACONIAN,
+                T_("Its outline shimmers with magical energy.") },
+            { MONS_RED_DRACONIAN,
+                T_("Smoke pours from its nostrils.") },
+            { MONS_WHITE_DRACONIAN,
+                T_("Frost pours from its nostrils.") },
+            { MONS_GREY_DRACONIAN,
+                T_("Its scales and tail are adapted to the water.") },
+            { MONS_PALE_DRACONIAN,
+                T_("It is cloaked in a pall of superheated steam.") },
+        };
+        auto it = ability_desc.find(static_cast<monster_type>(subsp));
+        if (it != ability_desc.end())
+            description += it->second;
     }
 
     return description;
@@ -5909,35 +5804,48 @@ static string _monster_spells_description(const monster_info& mi, bool mark_spel
 static string _monster_notice_chance(const monster_info& mi)
 {
     ostringstream result;
-    // TODO: ARG-DIFF - verb position differs ("have a X% chance" vs "有X%几率"), different % placement in format string
-    const bool zh = Options.language == lang_t::ZH;
-
-    if (zh)
-        result << uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)) << "每回合有";
-    else
-        result << uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)) << " "
-               << conjugate_verb("have", mi.pronoun_plurality())
-               << " a ";
 
     int perception = mi.perception() * 100;
     int stealth = player_stealth() * 100;
 
+    int chance;
     if (stealth < perception)
-        result << 100;
+        chance = 100;
     else
-        result << perception * 100 / stealth;
+        chance = perception * 100 / stealth;
 
-    result << (T_("% chance to notice you each turn.\n"));
+    string pronoun = uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE));
+    if (mi.pronoun_plurality())
+        result << make_stringf(T_("%s have a %d%% chance to notice you each turn.\n"),
+                              pronoun.c_str(), chance);
+    else
+        result << make_stringf(T_("%s has a %d%% chance to notice you each turn.\n"),
+                              pronoun.c_str(), chance);
 
     return result.str();
 }
 
 static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxes, int chance)
 {
-    // TODO: ARG-DIFF - aux attack names need Chinese translation (off-hand punch -> 副手拳击, etc.)
-    const bool zh = Options.language == lang_t::ZH;
     result << (T_(" and "))
            << chance << (T_("% to hit with your "));
+
+    // Translate common aux attack names via T_()
+    static const map<string, string> aux_names = {
+        { "off-hand punch",    T_("off-hand punch") },
+        { "kick",              T_("kick") },
+        { "headbutt",          T_("headbutt") },
+        { "bite",              T_("bite") },
+        { "tail slap",         T_("tail slap") },
+        { "peck",              T_("peck") },
+        { "tentacle slap",     T_("tentacle slap") },
+        { "pseudopods",        T_("pseudopods") },
+        { "talons",            T_("talons") },
+        { "hooves",            T_("hooves") },
+        { "horns",             T_("horns") },
+        { "constriction",      T_("constriction") },
+    };
+
     for (size_t i = 0; i < auxes.size(); ++i)
     {
         if (i > 0 && auxes.size() > 2)
@@ -5950,24 +5858,9 @@ static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxe
         else if (i == 1 && auxes.size() == 2)
             result << (T_(" and "));
 
-        if (zh)
-        {
-            // Translate common aux attack names
-            const string &name = auxes[i];
-            if (name == "off-hand punch")          result << "副手拳击";
-            else if (name == "kick")               result << "踢";
-            else if (name == "headbutt")           result << "头撞";
-            else if (name == "bite")               result << "咬";
-            else if (name == "tail slap")          result << "尾击";
-            else if (name == "peck")               result << "啄";
-            else if (name == "tentacle slap")      result << "触手拍击";
-            else if (name == "pseudopods")         result << "伪足";
-            else if (name == "talons")             result << "爪";
-            else if (name == "hooves")             result << "蹄";
-            else if (name == "horns")              result << "角顶";
-            else if (name == "constriction")       result << "缠绕";
-            else                                    result << name;
-        }
+        auto it = aux_names.find(auxes[i]);
+        if (it != aux_names.end())
+            result << it->second;
         else
             result << auxes[i];
     }
@@ -6038,9 +5931,6 @@ void describe_to_hit(const monster_info &mi, ostringstream &result,
 void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *weapon,
                          bool verbose, int distance_from)
 {
-    // TODO: ARG-DIFF - hand names need Chinese translation in the "with your hand" clause, localised at use site
-    const bool zh = Options.language == lang_t::ZH;
-
     if (verbose)
         result << (T_("about "));
 
@@ -6051,20 +5941,21 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
         result << (T_(" with "));
         if (weapon == nullptr)
         {
-            if (zh)
-            {
-                // Translate common hand names
-                const string hand_en = you.hand_name(true);
-                result << (hand_en == "hand"     ? "手" :
-                           hand_en == "claw"     ? "爪" :
-                           hand_en == "tentacle" ? "触手" :
-                           hand_en == "paw"      ? "爪子" :
-                           hand_en == "talon"    ? "爪" :
-                           hand_en == "hoof"     ? "蹄" :
-                                                    hand_en);
-            }
+            // Translate common hand names via T_()
+            static const map<string, string> hand_names = {
+                { "hand",     T_("your hand") },
+                { "claw",     T_("your claw") },
+                { "tentacle", T_("your tentacle") },
+                { "paw",      T_("your paw") },
+                { "talon",    T_("your talon") },
+                { "hoof",     T_("your hoof") },
+            };
+            const string hand_en = you.hand_name(true);
+            auto it = hand_names.find(hand_en);
+            if (it != hand_names.end())
+                result << it->second;
             else
-                result << "your " << you.hand_name(true);
+                result << "your " << hand_en;
         }
         else
             result << weapon->name(DESC_YOUR, false, false, false);
@@ -6140,14 +6031,13 @@ static void _describe_mons_to_hit(const monster_info& mi, ostringstream &result)
     const int beat_sh_chance = mon_beat_sh_pct(shield_bypass, scaled_sh);
 
     const int hit_chance = beat_ev_chance * beat_sh_chance / 100;
-    if (Options.language == lang_t::ZH)
-        // TODO: ARG-DIFF - verb+pronoun order differs ("has about X% to hit you" vs "有约X% 几率命中你")
-        result << uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE))
-               << "有约" << hit_chance << "% 几率命中你。\n";
+    string pronoun = uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE));
+    if (mi.pronoun_plurality())
+        result << make_stringf(T_("%s have about %d%% to hit you.\n"),
+                              pronoun.c_str(), hit_chance);
     else
-        result << uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)) << " "
-               << conjugate_verb("have", mi.pronoun_plurality())
-               << " about " << hit_chance << "% to hit you.\n";
+        result << make_stringf(T_("%s has about %d%% to hit you.\n"),
+                              pronoun.c_str(), hit_chance);
 }
 
 /**
@@ -6258,23 +6148,17 @@ string _monster_habitat_description(const monster_info& mi)
     switch (mons_habitat_type(type, mi.base_type))
     {
     case HT_AMPHIBIOUS:
-        // TODO: ARG-DIFF - different verb/object placement ("travel through water" vs "在水里行动")
-        if (Options.language == lang_t::ZH)
-            return uppercase_first(make_stringf("%s能在%s中行动。\n",
-                                   mi.pronoun(PRONOUN_SUBJECTIVE),
-                                   mi.type == MONS_ORC_APOSTLE
-                                       ? "水面行走" : "水里"));
-        return uppercase_first(make_stringf("%s can %s water.\n",
-                               mi.pronoun(PRONOUN_SUBJECTIVE),
-                               mi.type == MONS_ORC_APOSTLE
-                                ? "walk on" : "travel through"));
+    {
+        string verb = (mi.type == MONS_ORC_APOSTLE)
+            ? T_("walk on") : T_("travel through");
+        return uppercase_first(make_stringf(
+            T_("%1$s can %2$s water.\n"),
+            mi.pronoun(PRONOUN_SUBJECTIVE), verb));
+    }
     case HT_AMPHIBIOUS_LAVA:
-        // TODO: ARG-DIFF - same structural difference as above ("travel through lava" vs "在岩浆中行动")
-        if (Options.language == lang_t::ZH)
-            return uppercase_first(make_stringf("%s能在岩浆中行动。\n",
-                                   mi.pronoun(PRONOUN_SUBJECTIVE)));
-        return uppercase_first(make_stringf("%s can travel through lava.\n",
-                               mi.pronoun(PRONOUN_SUBJECTIVE)));
+        return uppercase_first(make_stringf(
+            T_("%1$s can travel through lava.\n"),
+            mi.pronoun(PRONOUN_SUBJECTIVE)));
     default:
         return "";
     }

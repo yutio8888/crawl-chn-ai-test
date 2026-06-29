@@ -8888,3 +8888,141 @@ smack
 
 掌掴
 %%%%
+; use <white>(s)</white> to set %1$d.%2$d as a target for %3$s.
+；使用<white>(s)</white>将%3$s的目标设置为%1$d.%2$d。
+%%%%
+you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs.
+%1$s你将在%5$d.%6$d个经验等级内达到%2$d.%3$d级。
+%%%%
+would 
+如果进行训练，
+%%%%
+\nWith your current stats and equipment, %1$s this skill would increase your AC by %2$.1f and your EV by %3$.1f.
+\n以你当前的属性和装备，%1$s此技能将使你的AC提高%2$.1f，你的EV提高%3$.1f。
+%%%%
+\nWith your current stats and equipment, %1$s this skill would increase your EV by %2$.1f.
+\n以你当前的属性和装备，%1$s此技能将使你的EV提高%2$.1f。
+%%%%
+\nWith your current stats and equipment, %1$s this skill would increase your SH by %2$.1f.
+\n以你当前的属性和装备，%1$s此技能将使你的SH提高%2$.1f。
+%%%%
+It has black scales. 
+它有着黑色的鳞片。
+%%%%
+It has yellow scales. 
+它有着黄色的鳞片。
+%%%%
+It has green scales. 
+它有着绿色的鳞片。
+%%%%
+It has purple scales. 
+它有着紫色的鳞片。
+%%%%
+It has red scales. 
+它有着红色的鳞片。
+%%%%
+It has white scales. 
+它有着白色的鳞片。
+%%%%
+It has grey scales. 
+它有着灰色的鳞片。
+%%%%
+It has pale scales. 
+它有着苍白的鳞片。
+%%%%
+Sparks flare out of its mouth and nostrils.
+电火花从它的嘴和鼻孔中迸发。
+%%%%
+Acidic fumes swirl around it.
+酸性烟雾在它周围缭绕。
+%%%%
+Venom drips from its jaws and stinger tail.
+毒液从它的下颚和刺尾滴落。
+%%%%
+Its outline shimmers with magical energy.
+它的轮廓闪烁着魔法能量。
+%%%%
+Smoke pours from its nostrils.
+烟雾从它的鼻孔中涌出。
+%%%%
+Frost pours from its nostrils.
+寒气从它的鼻孔中喷出。
+%%%%
+Its scales and tail are adapted to the water.
+它的鳞片和尾巴适应了水域生活。
+%%%%
+It is cloaked in a pall of superheated steam.
+它被过热蒸汽的帷幕笼罩。
+%%%%
+%s have a %d%% chance to notice you each turn.\n
+%s每回合有%d%%几率注意到你。\n
+%%%%
+%s has a %d%% chance to notice you each turn.\n
+%s每回合有%d%%几率注意到你。\n
+%%%%
+off-hand punch
+副手拳击
+%%%%
+bite
+咬
+%%%%
+tail slap
+尾击
+%%%%
+peck
+啄
+%%%%
+tentacle slap
+触手拍击
+%%%%
+pseudopods
+伪足
+%%%%
+talons
+爪
+%%%%
+hooves
+蹄
+%%%%
+horns
+角顶
+%%%%
+constriction
+缠绕
+%%%%
+your hand
+手
+%%%%
+your claw
+爪
+%%%%
+your tentacle
+触手
+%%%%
+your paw
+爪子
+%%%%
+your talon
+爪
+%%%%
+your hoof
+蹄
+%%%%
+%s have about %d%% to hit you.\n
+%s有约%d%% 几率命中你。\n
+%%%%
+%s has about %d%% to hit you.\n
+%s有约%d%% 几率命中你。\n
+%%%%
+%1$s can %2$s water.\n
+%1$s能在%2$s中行动。\n
+%%%%
+%1$s can travel through lava.\n
+%1$s能在岩浆中行动。\n
+%%%%
+walk on
+水面行走
+%%%%
+travel through
+水里
+%%%%
