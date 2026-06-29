@@ -40,6 +40,7 @@
 #include "options.h"
 #include "orb-type.h"
 #include "player.h"
+#include "positional_format.h"
 #include "potion.h"
 #include "prompt.h"
 #include "religion.h"
@@ -1046,7 +1047,7 @@ static string jewellery_type_name(int jeweltype)
     const char* effect = jewellery_effect_name(jeweltype);
     const char* cls = _jewellery_class_name(jeweltype);
 
-    return make_stringf(T_("%1$s %2$s"), cls, effect);
+    return make_stringf_p(T_("%1$s %2$s"), cls, effect);
 }
 
 

@@ -917,14 +917,19 @@ bool melee_attack::handle_phase_hit()
     {
         if (needs_message)
         {
-            // T_() key: "%s %s %s but does no damage."
-            // EN: "<atk> <verb> <def> but does no damage."
+            // T_() keys:
+            //   "%s %s %s but do no damage."    — player attacker
+            //   "%s %s %s but does no damage."  — monster attacker
+            // EN: "<atk> <verb> <def> but do/does no damage."
             // ZH: "<atk><verb>了<def>，但没有造成伤害。"
             {
-                const char* verb = attacker->is_player()
+                const bool is_player = attacker->is_player();
+                const char* verb = is_player
                     ? attack_verb.c_str()
                     : attacker->conj_verb(mons_attack_verb()).c_str();
-                mprf(T_("%s %s %s but does no damage."),
+                mprf(T_(is_player
+                        ? "%s %s %s but do no damage."
+                        : "%s %s %s but does no damage."),
                      attacker->name(DESC_THE).c_str(),
                      verb,
                      defender_name(true).c_str());

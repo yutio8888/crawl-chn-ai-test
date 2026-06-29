@@ -35,6 +35,7 @@
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "notes.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "spl-other.h"
@@ -718,12 +719,12 @@ void beogh_recruit_apostle()
 
     if (msg.length() > 0)
     {
-        msg += make_stringf(T_("you anoint %1$s with ash and charcoal and welcome %1$s as a companion."),
+        msg += make_stringf_p(T_("you anoint %1$s with ash and charcoal and welcome %1$s as a companion."),
             real->pronoun(PRONOUN_OBJECTIVE).c_str());
     }
     else
     {
-        msg += make_stringf(T_("You anoint %1$s with ash and charcoal and welcome %2$s as a companion."),
+        msg += make_stringf_p(T_("You anoint %1$s with ash and charcoal and welcome %2$s as a companion."),
             real->name(DESC_THE, true).c_str(),
             real->pronoun(PRONOUN_OBJECTIVE).c_str());
     }

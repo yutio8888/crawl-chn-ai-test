@@ -9093,6 +9093,9 @@ book_type:book
 %1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s
 %1$s%2$s%3$s了%4$s%5$s%6$s%7$s%8$s
 %%%%
+%s %s %s but do no damage.
+%s%s了%s，但没有造成伤害。
+%%%%
 %s %s %s but does no damage.
 %s%s了%s，但没有造成伤害。
 %%%%
@@ -9998,6 +10001,7 @@ rocket upward and away, once
 %%%% 
 gain power from chaos
 从混乱中获得力量
+%%%%
 Spells %s
 法术 %s
 %%%%
