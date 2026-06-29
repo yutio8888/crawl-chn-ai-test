@@ -716,7 +716,7 @@ void beogh_recruit_apostle()
         msg += make_stringf(T_("Beogh breathes life back into %s and "), real->name(DESC_THE, true).c_str());
     }
 
-    // TODO: ARG-DIFF — EN has 2 format specifiers (pronoun/name+pronoun), ZH has 0/1.
+    // TODO: ARG-DIFF — structural, different logic branches for ZH/EN
     if (Options.language == lang_t::ZH)
     {
         if (msg.length() > 0)
