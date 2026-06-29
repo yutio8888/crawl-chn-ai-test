@@ -236,17 +236,36 @@ With 了 for completed action narrative.
 Don't translate literally. Find the Chinese idiom that conveys the same meaning.
 "a rolling stone gathers no moss" → "滚石不生苔" (preserved, well-known in Chinese)
 
-## Quality Self-Check
+## Evidence Protocol (REQUIRED — replaces self-check)
 
-After translating, verify:
-1. All @keyword@ preserved? (grep for @ in EN vs ZH)
-2. All w:N weights preserved?
-3. All VISUAL:/SOUND: prefixes preserved?
-4. No English articles left in Chinese text?
-5. No English plural markers on Chinese nouns?
-6. Are god names using the correct DECISIONS.md form?
-7. Does dialogue match the character's voice profile?
-8. Are format strings matching argument count?
+**Do NOT self-check.** LLM self-reporting is unreliable; the same model that made
+errors will rationalize them on re-inspection. Instead, verification is done by
+deterministic scripts — your job is to trigger them and let the orchestrator
+judge the raw output.
+
+### Post-Translation Verification
+
+After completing translations, run:
+```bash
+bash .claude/scripts/post-translator.sh
+```
+This aggregates: term validation (rejected names from decisions.md), format
+integrity (%%%% parity), and database @keyword@ integrity. Output goes to
+`.claude/metrics/verify/translator-<ts>.log`.
+
+### Output Rule
+
+Report the verification report path to the orchestrator. Do **not** summarize,
+filter, or interpret script output. The orchestrator reads the raw log directly.
+
+### Knowledge Reference (read, understand, apply — but scripts do the checking)
+
+The following rules guide your translation quality. Read and apply them, but
+the mechanical verification is handled by `post-translator.sh`:
+- God names: use DECISIONS.md forms (西芙·穆娜, not 席夫·穆纳)
+- Format strings: %s count must match EN key
+- @keyword@, w:N weights, VISUAL:/SOUND: prefixes: preserve exactly
+- No English articles or plural markers in Chinese text
 
 ## Workflow
 
@@ -256,7 +275,7 @@ When given a translation task:
 3. Identify the speaker (if dialogue) and apply the correct voice profile
 4. Check the glossary for any game terms
 5. Translate, preserving all format markers
-6. Self-check against the quality checklist
+6. Run `bash .claude/scripts/post-translator.sh` and report the log path
 
 When translating many entries at once, organize output with:
 ```

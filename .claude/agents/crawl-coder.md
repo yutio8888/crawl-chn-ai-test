@@ -119,18 +119,32 @@ const char* verbs[] = { T_("headbutt"), T_("head-knock"), T_("head-slam") };
 return RANDOM_ELEMENT(verbs);
 ```
 
-## 常见错误 (Agent 自检清单)
+## 证据协议（替代自检）
 
-在 commit 前检查：
+**不要自检。** LLM 自检不可靠。改为运行确定性脚本，让编排者直接读输出。
 
-| # | 检查项 | 错误示例 | 正确 |
-|---|--------|---------|------|
-| 1 | `const char*` 不加 `.c_str()` | `skill_name(sk).c_str()` | `skill_name(sk)` |
-| 2 | 位置参数用 `mprf_p` | `mprf(T_("%1$s..."))` | `mprf_p(T_("%1$s..."))` |
-| 3 | source.txt key 去重 | 直接追加 | `grep -F "$key" source.txt` 先检查 |
-| 4 | 所有文本碎片都 T_() 包裹 | `T_("You %s."), "silent "` | `T_("You %s."), T_("silent ")` |
-| 5 | `god_name()` 返回 `string` | 忘记 `.c_str()` | `god_name(god).c_str()` |
-| 6 | 编译验证 | commit 前不编译 | `make -j4` 零错误再 commit |
+### 代码修改后验证
+
+修改完成后，运行：
+```bash
+bash .claude/scripts/post-coder.sh
+```
+
+这会聚合：T_() key 覆盖率、mprf_p 兼容性、%s 数量一致性、anti-patterns --strict。
+输出写入 `.claude/metrics/verify/coder-<ts>.log`。
+
+### 输出规则
+
+向编排者报告验证日志路径。**不要**总结、过滤或解读脚本输出。编排者直接读原始日志。
+
+### 保留的知识参考
+
+以下规则指导编码质量。**理解并遵守它们**，但机械验证由 `post-coder.sh` 处理：
+- `const char*` 返回值不加 `.c_str()` — `skill_name(sk)` 不是 `skill_name(sk).c_str()`
+- 位置参数用 `mprf_p` 而非 `mprf` — MinGW vsnprintf 不支持 `%n$s`
+- source.txt 追加前 `grep -F` 去重
+- 所有文本碎片都 T_() 包裹
+- `god_name()` 返回 `string`，需 `.c_str()`
 
 ## 禁止事项
 

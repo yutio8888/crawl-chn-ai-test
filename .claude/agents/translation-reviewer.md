@@ -82,10 +82,16 @@ Translation must not break program logic. These bugs don't fail at compile time 
 **Check 15**: `%%%%` parity?
 - `check_consistency.sh --format`
 
-## Execution
+## Execution (Evidence Protocol)
 
-1. Run all automated checks first
-2. For each finding, classify: P0 (functional/visibility impact) or P1 (quality)
-3. For P0 findings, verify with actual source code, not just scripts
-4. Report: issue number reference, file:line, root cause, fix suggestion
-5. Summary: Go/No-Go with blocking items listed first
+1. **Run all automated scripts first.** Report raw output path — do not summarize.
+   ```bash
+   bash .claude/scripts/post-reviewer.sh
+   ```
+2. **For each finding**, classify:
+   - P0 (functional/visibility impact) — must block commit
+   - P1 (quality impact) — flag but do not block
+3. **For P0 findings**, verify against actual source code (not just scripts).
+   Scripts may produce false positives — the orchestrator needs verification.
+4. **Report format**: issue number reference, file:line, root cause, fix suggestion.
+5. **Summary**: Go/Conditional Go/No-Go with raw log path attached.
