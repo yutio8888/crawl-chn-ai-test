@@ -1,0 +1,11 @@
+=== Language-dependent args — untranslated arguments in T_() calls ===
+
+Legend:
+  [HIGH]  String literal arg — always English at runtime
+  [MED]   conj_verb() — may not be needed in CN
+  [LOW]   pronoun() — needs manual review
+
+[HIGH] lang_dependent.cc:4  "silent "
+        mprf(T_("You offer a %sprayer to %s."), "silent ", god_name);
+
+Summary: 1 candidates

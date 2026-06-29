@@ -1,0 +1,6 @@
+=== mprf_p required — positional format in source.txt but mprf used in code ===
+
+missing_mprf_p.cc:4  T_("you cannot shoot with your %s while %s.")
+  source.txt has %n$s: "你在%2$s时无法用你的%1$s射击。..." → needs mprf_p
+
+Summary: 1 violations

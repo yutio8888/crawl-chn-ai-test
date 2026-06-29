@@ -5608,7 +5608,7 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                mprf(T_("%s blocks the %s with %s %s... and reflects it back!"),
+                mprf_p(T_("%s blocks the %s with %s %s... and reflects it back!"),
                      mon->name(DESC_THE).c_str(),
                      beam_name.c_str(),
                      mon->pronoun(PRONOUN_POSSESSIVE).c_str(),

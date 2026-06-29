@@ -1,0 +1,8 @@
+=== Missing T_() — mprf/mpr calls without translation wrapper ===
+
+untranslated_sample.cc:4  "%s %s healed."
+untranslated_sample.cc:5  "You resist."
+untranslated_sample.cc:6  "The %s hits %s."
+
+Summary: 3 untranslated calls across 1 files
+  untranslated_sample.cc: 3
