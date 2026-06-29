@@ -410,6 +410,51 @@ The WSL environment has limited CPU and memory. To avoid system instability:
 3. **No background compile storms**: If one agent is already compiling, other
    agents must wait for it to finish before starting their own compilation.
 
+### Multi-Agent Parallel Development Pattern
+
+When distributing work across multiple agents, follow this pattern to avoid
+chaos and merge conflicts:
+
+```
+1. SPAN: Launch N agents simultaneously, each with `isolation: worktree`
+         Each agent works on different files (no overlap)
+2. WAIT:  All agents complete and commit in their own worktrees
+3. CONSOLIDATE: Create a `consolidate-*` worktree from chn-0.34.1-base
+                Cherry-pick ALL agent commits into it
+                Resolve source.txt conflicts (see below)
+4. VERIFY: make -j4 in the consolidate worktree, fix any compilation errors
+5. MERGE:   Fast-forward merge consolidate worktree into chn-0.34.1-base
+```
+
+**Never cherry-pick agent commits directly to `chn-0.34.1-base`.** Always go
+through a consolidation worktree first. This keeps the main branch clean if
+the agent changes need rework.
+
+#### source.txt Merge Conflicts
+
+When multiple agents add entries to `dat/i18n/zh/source.txt`, they always
+append to the end, causing conflicts during consolidation. Resolution:
+
+```bash
+# All conflicts are append-only — keep both sides
+sed -i '/^<<<<<<< HEAD$/d; /^=======$/d; /^>>>>>>> .*$/d' \
+    crawl-ref/source/dat/i18n/zh/source.txt
+git add crawl-ref/source/dat/i18n/zh/source.txt
+git cherry-pick --continue
+```
+
+#### Agent-Prone Mistakes (Review Checklist)
+
+When reviewing agent output, check for these common errors:
+
+| Mistake | Example | Fix |
+|---------|---------|-----|
+| `.c_str()` on `const char*` | `skill_name(sk).c_str()` | Remove `.c_str()` — `skill_name()` returns `const char*` |
+| `mprf` with positional params | `mprf(T_("%1$s..."), ...)` | Use `mprf_p` — MinGW vsnprintf doesn't support `%n$s` |
+| Untranslated inline args | `T_("You %s %s."), verb, "... the rest"` | Wrap ALL text fragments: `T_(", but do no damage")` |
+| Duplicate source.txt keys | Agent adds key that already exists | Agent must `grep` source.txt before adding |
+| `git add -A` in main repo | Stages worktrees, cache files | Only `git add` specific source files |
+
 ## Issue Tracking
 
 All translation issues live under `~/projects/issues/` (independent git repo,
