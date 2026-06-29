@@ -66,6 +66,7 @@
 #include "potion.h"
 #include "prompt.h"
 #include "player.h"
+#include "positional_format.h"
 #include "ranged-attack.h" // describe_to_hit
 #include "religion.h"
 #include "rltiles/tiledef-feat.h"
@@ -1310,8 +1311,7 @@ static string _your_skill_desc(skill_type skill, bool show_target_button,
     if (show_target_button &&
             you.get_training_target(skill) < min_scaled_target)
     {
-        target_button_desc = make_stringf(
-            T_("; use <white>(s)</white> to set %1$d.%2$d as a target for %3$s."),
+        target_button_desc = make_stringf_p(T_("; use <white>(s)</white> to set %1$d.%2$d as a target for %3$s."),
             min_scaled_target / 10, min_scaled_target % 10,
             skill_name(skill));
     }
@@ -1365,8 +1365,7 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
         level_equiv = (you.experience_level + (level_diff + 9) / 10) > 27
             ? "the equivalent of" : "about";
 
-    description += make_stringf(
-        T_("you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs."),
+    description += make_stringf_p(T_("you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs."),
         cond_prefix.c_str(),
         scaled_target / 10, scaled_target % 10,
         level_equiv.c_str(),
@@ -6151,13 +6150,11 @@ string _monster_habitat_description(const monster_info& mi)
     {
         string verb = (mi.type == MONS_ORC_APOSTLE)
             ? T_("walk on") : T_("travel through");
-        return uppercase_first(make_stringf(
-            T_("%1$s can %2$s water.\n"),
+        return uppercase_first(make_stringf_p(T_("%1$s can %2$s water.\n"),
             mi.pronoun(PRONOUN_SUBJECTIVE), verb));
     }
     case HT_AMPHIBIOUS_LAVA:
-        return uppercase_first(make_stringf(
-            T_("%1$s can travel through lava.\n"),
+        return uppercase_first(make_stringf_p(T_("%1$s can travel through lava.\n"),
             mi.pronoun(PRONOUN_SUBJECTIVE)));
     default:
         return "";
