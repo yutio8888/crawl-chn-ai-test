@@ -542,7 +542,6 @@ public:
 protected:
     virtual formatted_string calc_title() override
     {
-        const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — column layout algorithm, needs strwidth-aware redesign
         const char* act_str =
             current_action == action::cast
                 ? (T_("(Cast)    "))
@@ -556,25 +555,16 @@ protected:
                 ? (T_("(Imbue)   "))
             : (T_("(Show)    "));
 
-        if (zh)
-        {
-            const string prefix = make_stringf("法术 %s", act_str);
-            const int pw = strwidth(prefix);
-            const string header = make_stringf("<w>%s%s%s%s等级",
-                prefix.c_str(),
-                string(max(0, 32 - pw), ' ').c_str(),
-                chop_string("学派", 26).c_str(),
-                you.divine_exegesis ? chop_string("", 9).c_str()
-                                    : chop_string("失败率", 9).c_str());
-            return formatted_string::parse_string(header);
-        }
-        else
-        {
-            return formatted_string::parse_string(
-                make_stringf("<w>Spells %s                   Type                      %sLevel",
-                    act_str,
-                    you.divine_exegesis ? "         " : "Failure  "));
-        }
+        const string prefix = make_stringf(T_("Spells %s"), act_str);
+        const int pw = strwidth(prefix);
+        const string header = make_stringf("<w>%s%s%s%s%s",
+            prefix.c_str(),
+            string(max(0, 32 - pw), ' ').c_str(),
+            chop_string(T_("Type"), 26).c_str(),
+            you.divine_exegesis ? chop_string("", 9).c_str()
+                                : chop_string(T_("Failure"), 9).c_str(),
+            T_("Level"));
+        return formatted_string::parse_string(header);
     }
 
 private:

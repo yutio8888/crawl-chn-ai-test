@@ -2640,7 +2640,7 @@ Two slime creatures merge to form %s.
 两个黏泥生物融合成了%s。
 %%%%
 Type
-类型
+学派
 %%%%
 Unemployed
 无业
@@ -7070,7 +7070,7 @@ Your spells (%s)
 # L298: simple
 %%%%
 Type
-类型
+学派
 
 # L299: simple
 %%%%
@@ -9998,3 +9998,15 @@ rocket upward and away, once
 %%%% 
 gain power from chaos
 从混乱中获得力量
+Spells %s
+法术 %s
+%%%%
+%1$s %2$s
+%2$s%1$s
+%%%%
+you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
+你用灰烬和炭为其涂油，欢迎其成为同伴。
+%%%%
+You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
+你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
+%%%%
