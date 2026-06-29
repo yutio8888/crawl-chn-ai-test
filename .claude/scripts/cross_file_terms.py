@@ -2,15 +2,15 @@
 """
 cross_file_terms.py — Cross-file term consistency scanner.
 
-Detects the same game term translated differently across split i18n files.
-Example: if "spellpower" is translated as "法术威力" in source.txt but as
-"法力" in spells.txt, this scanner flags the inconsistency.
+Detects:
+  1. Duplicate EN keys with different CN translations across split files
+  2. Rejected terms (from decisions.md) appearing in any translation file
+  3. Same CN term used inconsistently for different EN concepts across files
+
+Term pairs are derived from docs/decisions.md — no hardcoded lists.
+This is the same SSOT used by validate-terms, ensuring consistency.
 
 Usage:
-    # Scan all .txt files under i18n/zh/
-    python3 cross_file_terms.py crawl-ref/source/dat/i18n/zh/
-
-    # With a glossary for known-term checking
     python3 cross_file_terms.py crawl-ref/source/dat/i18n/zh/ \
         --glossary docs/decisions.md
 """
@@ -21,27 +21,13 @@ import re
 import sys
 from collections import defaultdict
 
-
-# Known ambiguous Chinese terms — same EN term, different CN translations
-# indicate inconsistency.
-AMBIGUOUS_TERMS = {
-    'spellpower': ['法术威力', '法力'],
-    '法力': ['spellpower', 'MP', 'magic points'],
-}
-
-# Pairs of Chinese terms that represent DISTINCT game concepts.
-# If both appear in the same translation value, it indicates confusion.
-# NOTE: Do NOT add stylistic variants (e.g. 神祇/神) — only add pairs
-# where confusing the two concepts has gameplay impact.
-TERM_PAIRS = [
-    ('法术威力', '法力'),  # spellpower vs MP — gameplay-critical distinction
-    ('激活技能', '召唤术'),  # Evocations vs Summoning — distinct skill schools
-    ('施法失误', '施法失败'),  # miscast vs cast failure — different mechanics
-]
+# Import parse_decisions from sibling script
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from scan_i18n import parse_decisions
 
 
 def parse_source_txt(filepath: str) -> dict:
-    """Parse a source.txt-style file, return {key: value}."""
+    """Parse a source.txt-style %%%%-separated file, return {key: value}."""
     entries = {}
     if not os.path.exists(filepath):
         return entries
@@ -73,15 +59,16 @@ def parse_source_txt(filepath: str) -> dict:
     return entries
 
 
-def find_term_in_value(term: str, value: str) -> bool:
-    """Check if term appears in the translation value."""
-    return term in value
-
-
-def scan_cross_file(zh_dir: str):
+def scan_cross_file(zh_dir: str, glossary_path: str = None):
     """Scan all .txt files in zh_dir for cross-file term inconsistencies."""
     all_entries = {}  # key -> (filename, value)
     file_entries = defaultdict(dict)  # filename -> {key: value}
+    findings = []
+
+    # Load term registry from decisions.md (if available)
+    rejected_map = {}
+    if glossary_path and os.path.exists(glossary_path):
+        rejected_map = parse_decisions(glossary_path)
 
     for fn in sorted(os.listdir(zh_dir)):
         if not fn.endswith('.txt'):
@@ -89,50 +76,88 @@ def scan_cross_file(zh_dir: str):
         filepath = os.path.join(zh_dir, fn)
         entries = parse_source_txt(filepath)
         file_entries[fn] = entries
+
         for key, value in entries.items():
+            # Check 1: Duplicate key across files with different values
             if key in all_entries:
-                # Duplicate key across files — the last file processed wins
-                # at DB build time. Report if values differ.
                 prev_fn, prev_val = all_entries[key]
                 if prev_val != value:
-                    print(f"⚠️  DUPLICATE KEY with different values:")
-                    print(f"   key: \"{key[:80]}\"")
-                    print(f"   {prev_fn}: \"{prev_val[:80]}\"")
-                    print(f"   {fn}: \"{value[:80]}\"")
-                    print()
+                    findings.append({
+                        'type': 'duplicate_key',
+                        'key': key[:80],
+                        'file_a': prev_fn, 'value_a': prev_val[:80],
+                        'file_b': fn, 'value_b': value[:80],
+                    })
+
             all_entries[key] = (fn, value)
 
-    # Check term pair consistency across files
-    findings = []
-    for pair in TERM_PAIRS:
-        primary = pair[0]
-        alternates = pair[1:]
-        for fn, entries in file_entries.items():
-            for key, value in entries.items():
-                uses_primary = primary in value
-                if not uses_primary:
-                    continue
-                for alt in alternates:
-                    # Skip if one term is a substring of the other
-                    if primary in alt or alt in primary:
-                        continue
-                    if alt in value:
-                        # Same value uses both — potential confusion
-                        findings.append({
-                            'file': fn,
-                            'key': key[:60],
-                            'primary': primary,
-                            'alternate': alt,
-                            'snippet': value[:100],
-                        })
+            # Check 2: Rejected terms from decisions.md
+            for rejected, correct in rejected_map.items():
+                if rejected in value:
+                    findings.append({
+                        'type': 'rejected_term',
+                        'file': fn,
+                        'key': key[:60],
+                        'rejected': rejected,
+                        'correct': correct,
+                        'snippet': value[:100],
+                    })
 
-    if findings:
-        print(f"=== Cross-file term consistency ({len(findings)} potential issues) ===")
+    # Check 3: Cross-file term usage inconsistency
+    # Build CN term → EN keys index to detect when the same CN term
+    # is used for different EN concepts across files.
+    cn_term_index = defaultdict(lambda: defaultdict(set))  # cn_term -> {en_key: {files}}
+    for fn, entries in file_entries.items():
+        for en_key, cn_val in entries.items():
+            # Only index multi-word CN terms (single chars are too noisy)
+            for cn_term in re.findall(r'[一-鿿]{2,6}', cn_val):
+                cn_term_index[cn_term][en_key].add(fn)
+
+    for cn_term, en_keys in cn_term_index.items():
+        if len(en_keys) >= 3:  # Same CN term used for 3+ different EN keys
+            files_using = set()
+            for fset in en_keys.values():
+                files_using.update(fset)
+            if len(files_using) >= 2:  # Across 2+ files
+                findings.append({
+                    'type': 'term_overload',
+                    'cn_term': cn_term,
+                    'en_key_count': len(en_keys),
+                    'file_count': len(files_using),
+                    'sample_en_keys': list(en_keys.keys())[:3],
+                })
+
+    # Report
+    dupes = [f for f in findings if f['type'] == 'duplicate_key']
+    rejected = [f for f in findings if f['type'] == 'rejected_term']
+    overloads = [f for f in findings if f['type'] == 'term_overload']
+
+    if dupes:
+        print(f"=== Duplicate keys with different values ({len(dupes)}) ===")
         print()
-        for f in findings:
-            print(f"  ⚠️  {f['file']}: uses both '{f['primary']}' and '{f['alternate']}'")
+        for f in dupes:
+            print(f"  ⚠️  key: \"{f['key']}\"")
+            print(f"     {f['file_a']}: \"{f['value_a']}\"")
+            print(f"     {f['file_b']}: \"{f['value_b']}\"")
+            print()
+
+    if rejected:
+        print(f"=== Rejected terms from decisions.md ({len(rejected)}) ===")
+        print()
+        for f in rejected:
+            print(f"  ❌ {f['file']}: \"{f['rejected']}\" → should be \"{f['correct']}\"")
             print(f"     key: \"{f['key']}\"")
             print(f"     \"{f['snippet']}\"")
+            print()
+
+    if overloads:
+        print(f"=== Term overload — same CN term for different EN concepts "
+              f"({len(overloads)}) ===")
+        print()
+        for f in overloads:
+            print(f"  ⚠️  \"{f['cn_term']}\" used for {f['en_key_count']} different EN keys")
+            print(f"     across {f['file_count']} files")
+            print(f"     sample EN keys: {f['sample_en_keys']}")
             print()
 
     return findings
@@ -143,19 +168,22 @@ def main():
         description="Cross-file i18n term consistency scanner"
     )
     parser.add_argument('zh_dir', help='Path to i18n zh directory')
-    parser.add_argument('--glossary', help='Path to decisions.md (optional)')
+    parser.add_argument('--glossary', default='docs/decisions.md',
+                        help='Path to decisions.md (default: docs/decisions.md)')
     args = parser.parse_args()
 
     if not os.path.isdir(args.zh_dir):
         print(f"ERROR: Directory not found: {args.zh_dir}")
         return 1
 
-    findings = scan_cross_file(args.zh_dir)
+    findings = scan_cross_file(args.zh_dir, args.glossary)
     if findings:
         return 1
     else:
         files = [f for f in os.listdir(args.zh_dir) if f.endswith('.txt')]
-        print(f"OK: No cross-file term inconsistencies across {len(files)} file(s).")
+        rejected_count = len(parse_decisions(args.glossary)) if os.path.exists(args.glossary) else 0
+        print(f"OK: No cross-file issues across {len(files)} file(s) "
+              f"(checked against {rejected_count} term rulings from decisions.md).")
         return 0
 
 
