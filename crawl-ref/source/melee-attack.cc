@@ -331,20 +331,21 @@ void melee_attack::handle_phase_blocked()
         }
     }
 
-    // TODO: ARG-DIFF: conj_verb + different %s counts (EN:3, ZH:2)
+    // The verb differs in English (singular "blocks" vs plural "block"),
+    // but Chinese uses the same verb form regardless.
     if (needs_block_message)
     {
-        if (Options.language == lang_t::ZH)
-            mprf("%s格挡了%s的攻击。",
-                     defender_name(false).c_str(),
-                     attacker == defender ? "自己的"
-                                          : atk_name(DESC_ITS).c_str());
-        else
-            mprf("%s %s %s attack.",
-                     defender_name(false).c_str(),
-                     defender->conj_verb("block").c_str(),
-                     attacker == defender ? "its own"
-                                          : atk_name(DESC_ITS).c_str());
+        // English uses "blocks" (singular) vs "block" (plural);
+        // conj_verb() handles the conjugation. Use the result
+        // to select the correct T_() key.
+        const string block_verb = defender->conj_verb("block");
+        const bool use_plural = (block_verb == "block");
+        const char* block_key = use_plural
+            ? T_("%s block %s attack.")
+            : T_("%s blocks %s attack.");
+        mprf(block_key,
+             defender_name(false).c_str(),
+             attacker == defender ? T_("its own") : atk_name(DESC_ITS).c_str());
     }
 
     if (defender->is_player() && you.duration[DUR_DIVINE_SHIELD]
@@ -1169,19 +1170,12 @@ static void _devour(monster &victim)
     // Sometimes, one's eyes are larger than one's stomach-mouth.
     const int size_delta = victim.body_size(PSIZE_BODY)
                             - you.body_size(PSIZE_BODY);
-    // TODO: ARG-DIFF: combinatorial fragments ("half of " vs "半只") not suitable for T_()
-    if (Options.language == lang_t::ZH)
-        mprf("你吞噬了%s%s!",
-             size_delta <= 0 ? "" :
-             size_delta <= 1 ? "半只" :
-                               "一大块",
-             victim.name(DESC_THE).c_str());
-    else
-        mprf(T_("You devour %s%s!"),
-             size_delta <= 0 ? "" :
-             size_delta <= 1 ? "half of " :
-                               "a chunk of ",
-             victim.name(DESC_THE).c_str());
+    const char* size_prefix = size_delta <= 0 ? "" :
+                              size_delta <= 1 ? T_("half of") :
+                                                T_("a chunk of");
+    mprf(T_("You devour %s%s!"),
+         size_prefix,
+         victim.name(DESC_THE).c_str());
 
     // give a clearer message for eating invisible things
     if (!you.can_see(victim))

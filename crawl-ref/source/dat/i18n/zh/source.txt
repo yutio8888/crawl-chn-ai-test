@@ -6570,9 +6570,26 @@ You offer yourself as an instrument of Makhleb's will and feel overwhelming powe
 %s is struck blind by the light of your shield.
 %s 被你盾牌的光芒致盲了。
 
+# Phase 1b: ARG-DIFF fixes in melee-attack.cc (2026-06-29)
 %%%%
-You knock %s out of %s grip!
-你从%s的掌握中夺下了%s！
+%s blocks %s attack.
+%s格挡了%s的攻击。
+
+%%%%
+%s block %s attack.
+%s格挡了%s的攻击。
+
+%%%%
+its own
+自己的
+
+%%%%
+half of
+半只
+
+%%%%
+a chunk of
+一大块
 
 %%%%
 You devour %s%s!
