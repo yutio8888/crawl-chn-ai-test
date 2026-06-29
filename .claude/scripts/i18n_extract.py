@@ -177,7 +177,7 @@ def parse_source_txt(filepath: str) -> OrderedDict:
 
     for line in lines:
         stripped = line.rstrip("\n").rstrip("\r")
-        if stripped.startswith("#") and not in_entry:
+        if stripped.startswith("#") and key is None:
             continue
         if stripped.startswith("%%%%"):
             if key is not None:

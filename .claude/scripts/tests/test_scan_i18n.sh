@@ -30,8 +30,6 @@ echo ""
 # ── missing-t ──
 echo "--- missing-t ---"
 python3 "$SCAN_I18N" missing-t "$FIXTURES/missing-t/" > /tmp/actual_missing_t.txt 2>&1 || true
-# Filter to only untranslated_sample.cc output (strip translated_sample.cc lines)
-grep -v "untranslated_sample.cc:4\|untranslated_sample.cc:5\|untranslated_sample.cc:6\|untranslated_sample.cc:" /tmp/actual_missing_t.txt > /tmp/filtered.txt 2>/dev/null || true
 assert_output "missing-t: finds untranslated" \
     /tmp/actual_missing_t.txt "$EXPECTED/missing-t_untranslated.txt"
 

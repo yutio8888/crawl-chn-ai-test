@@ -109,7 +109,7 @@ def parse_source_txt(filepath: str) -> OrderedDict:
 
     for line in lines:
         stripped = line.rstrip("\n").rstrip("\r")
-        if stripped.startswith("#") and not in_entry:
+        if stripped.startswith("#") and key is None:
             continue
         if stripped.startswith("%%%%"):
             if key is not None:
@@ -305,9 +305,6 @@ def cmd_lang_args(args):
     findings = []
 
     # Patterns for language-dependent arguments
-    LITERAL_EN_RE = re.compile(
-        r'T_\("(?:[^"\\]|\\.)*"\)\s*,'
-    )
     # After T_("..."), look for extra string literal arguments
     EXTRA_LITERAL_RE = re.compile(
         r'T_\s*\(\s*"(?:[^"\\]|\\.)*"\s*\)\s*,\s*"([^"]*)"'
