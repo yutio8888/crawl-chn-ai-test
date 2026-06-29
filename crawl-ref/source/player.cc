@@ -5764,13 +5764,9 @@ string player_save_info::short_desc(bool use_qualifier) const
     if (!qualifier.empty())
         desc << "[" << qualifier << "] ";
 
-    // TODO: ARG-DIFF - completely different stream structure (Chinese uses suffix particles, English uses prepositions)
-    if (Options.language == lang_t::ZH)
-        desc << name << "，第" << experience_level << "级"
-             << species_name << ' ' << class_name;
-    else
-        desc << name << ", a level " << experience_level << ' '
-             << species_name << ' ' << class_name;
+    desc << make_stringf(T_("%s, a level %d %s %s"),
+                         name.c_str(), experience_level,
+                         species_name.c_str(), class_name.c_str());
 
     if (religion == GOD_JIYVA)
         desc << " of " << god_name << " " << jiyva_second_name;

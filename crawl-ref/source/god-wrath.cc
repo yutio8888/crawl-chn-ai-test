@@ -1687,14 +1687,11 @@ static bool _ignis_champion()
                                     false, GOD_IGNIS);
 
     // Describe the effect on the monsters.
-    // TODO: ARG-DIFF EN has 2 %s, ZH has 1 %s
-    if (Options.language == lang_t::ZH)
-        mprf("%s被防护火焰笼罩，快速移动，猛烈攻击！",
-             mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : "怪物们");
-    else
-        mprf("%s %s shrouded in protective flame, covering ground quickly, and attacking fiercely!",
-             mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : "The monsters",
-             mons.size() == 1 ? "is" : "are");
+    const char* shroud_key = (mons.size() == 1)
+        ? T_("%s is shrouded in protective flame, covering ground quickly, and attacking fiercely!")
+        : T_("%s are shrouded in protective flame, covering ground quickly, and attacking fiercely!");
+    mprf(shroud_key,
+         mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : "The monsters");
 
     for (monster* mon : mons)
     {

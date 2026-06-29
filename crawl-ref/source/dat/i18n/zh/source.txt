@@ -8521,4 +8521,21 @@ A stygian plague fills %s body.
 The %s %s %s.
 %s%s了%s。
 
+# Phase 1b: ARG-DIFF fixes — 5 low-count files (2026-06-29)
+%%%%
+%s, a level %d %s %s
+%1$s，第%2$d级%3$s %4$s
+
+%%%%
+%s is shrouded in protective flame, covering ground quickly, and attacking fiercely!
+%s被防护火焰笼罩，快速移动，猛烈攻击！
+
+%%%%
+%s are shrouded in protective flame, covering ground quickly, and attacking fiercely!
+%s被防护火焰笼罩，快速移动，猛烈攻击！
+
+%%%%
+You offer a %sprayer to %s.
+你向%2$s献上了%1$s祈祷。
+
 %%%%

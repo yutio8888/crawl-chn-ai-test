@@ -173,15 +173,10 @@ void try_god_conversion(god_type god)
     else
     {
         // Already worshipping this god - just print a message.
-        // TODO: ARG-DIFF - argument order swapped between EN and ZH
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_GOD, "你向%s献上了%s祈祷。",
-                 god_name(god).c_str(),
-                 you.cannot_speak() ? "无声的" : "");
-        else
-            mprf(MSGCH_GOD, "You offer a %sprayer to %s.",
-                 you.cannot_speak() ? "silent " : "",
-                 god_name(god).c_str());
+        // Chinese word order: god name before prayer qualifier
+        mprf(MSGCH_GOD, T_("You offer a %sprayer to %s."),
+             you.cannot_speak() ? "silent " : "",
+             god_name(god).c_str());
     }
 }
 
