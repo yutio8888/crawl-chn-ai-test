@@ -461,7 +461,12 @@ def cmd_lang_args(args):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def parse_decisions(filepath: str) -> dict:
-    """Parse decisions.md and return {rejected_name: correct_name} for active decisions."""
+    """Parse decisions.md and return {rejected_name: correct_name} for active Type-A decisions.
+
+    Only Type-A (entity rulings) are processed — they have specific rejected
+    term strings. Type-B (process) and Type-C (constraint) decisions use
+    descriptive Rejected fields that are not searchable terms.
+    """
     rejected_map = {}
     if not os.path.exists(filepath):
         return rejected_map
@@ -469,11 +474,10 @@ def parse_decisions(filepath: str) -> dict:
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Split by decision blocks (Type-A entity, Type-B process, Type-C constraint)
-    blocks = re.split(r'\n(?=### D-[ABC]-\d+)', content)
+    # Only Type-A: entity name rulings have specific rejected terms
+    blocks = re.split(r'\n(?=### D-A-\d+)', content)
 
     for block in blocks:
-        # Only active decisions
         if not re.search(r'\*\*Status\*\*:\s*active', block):
             continue
         choice_m = re.search(r'\*\*Choice\*\*:\s*(.+)', block)
@@ -481,12 +485,24 @@ def parse_decisions(filepath: str) -> dict:
         if not choice_m or not rejected_m:
             continue
         choice = choice_m.group(1).strip()
-        # Rejected can be comma-separated: "席夫·穆纳, 席夫穆納"
         rejected_raw = rejected_m.group(1).strip()
+
+        # Skip explanatory markers: "(none — confirmed correct)" etc.
+        if rejected_raw.startswith('(none'):
+            continue
+
+        # Rejected can be comma-separated: "席夫·穆纳, 席夫穆納"
         for r in re.split(r'[,;]', rejected_raw):
             r = r.strip()
-            if r:
-                rejected_map[r] = choice
+            # Skip non-term entries: descriptions, code snippets, etc.
+            # Real rejected terms are Chinese/Unicode strings, not sentences.
+            if not r:
+                continue
+            # Skip entries that are clearly descriptive (contain spaces
+            # and English words, indicating a sentence rather than a term)
+            if ' ' in r and re.search(r'[A-Za-z]{3,}', r):
+                continue
+            rejected_map[r] = choice
     return rejected_map
 
 
@@ -566,7 +582,7 @@ def cmd_validate_terms(args):
 # CORRECT on those. This rule intentionally targets only const char* returns.
 CONST_CHAR_FUNCTIONS = re.compile(
     r'\b(?:skill_name|spell_title|'
-    r'equip_slot_name|job_name|'
+    r'equip_slot_name|get_job_name|'
     r'mons_class_name|held_status'
     r')\s*\([^)]*\)\s*\.c_str\s*\(\s*\)'
 )
