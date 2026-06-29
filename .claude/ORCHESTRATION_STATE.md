@@ -1,6 +1,6 @@
 ---
-updated: 2026-06-30T00:10:00+08:00
-last_commit: ff18ebd4115b
+updated: 2026-06-30T08:00:00+08:00
+last_commit: 9f06b19f83
 session_id: 00000000-0000-0000-0000-000000000000
 ---
 
@@ -20,11 +20,38 @@ session_id: 00000000-0000-0000-0000-000000000000
 
 ## 一、当前决策栈（最近优先）
 
-### D-20260630-001: Phase A 架构优化基础设施
-- **决策**: 实施 check_consistency.sh --strict、ORCHESTRATION_STATE.md、check_checkpoint.sh、record_review.sh、post-*.sh 聚合脚本
-- **为什么**: 建立"Agent 生成 / 脚本验证 / 编排者判断"三层架构的基础设施
-- **状态**: `executing` — 在 worktree phase-a-checkpoint 中实施
-- **约束**: 验证逻辑不写在 prompt 里，全部活在 scripts/ 下
+### D-20260630-008: Phase A-E 架构优化全部完成 + 审查修复
+- **决策**: 6 个 Phase 全线实施，25 条审查发现全部修复
+- **核心原则**: Agent 只生成修改；脚本负责结构化验证；编排者负责语义判断
+- **状态**: `approved` — 已合入 chn-0.34.1-base（9f06b19f83）
+- **新建脚本（12 个）**: check_checkpoint, record_review, post-translator, post-coder, post-reviewer, smoke_test, cross_file_terms, split_source, context_resolve, validate-terms, anti-patterns, missing-t (扩展)
+- **修改文件（6 个）**: CLAUDE.md, check_consistency.sh, scan_i18n.py, database.cc, crawl-coder.md, TOOLCHAIN.md
+- **约束**: 验证逻辑不写在 prompt 里，全部活在 scripts/ 下；Agent prompt 不含自检段
+
+### D-20260630-007: Phase E — 动态上下文注入 + 增量验证
+- **决策**: context_resolve.sh 按任务类型生成精简上下文；crawl-coder 增量验证协议
+- **状态**: `approved` — 已合入
+
+### D-20260630-006: Phase D — source.txt 拆分支持 + 跨文件术语扫描
+- **决策**: database.cc 目录扫描（所有 .txt 文件自动加载）；cross_file_terms.py 跨文件检测
+- **状态**: `approved` — 基础设施已就绪，实际数据拆分待执行
+- **约束**: 拆分后需同步启用 cross_file_terms.py
+
+### D-20260630-005: Phase C — 运行时冒烟测试
+- **决策**: smoke_test.sh 检测启动输出中的协议泄露、英文残留、崩溃
+- **状态**: `approved` — 已合入（仅检查启动输出，ncurses 交互需 expect 驱动）
+
+### D-20260630-004: Phase B+ — Agent prompt 改造
+- **决策**: 4 个 Agent 全部删除自检段 → 替换为证据协议（调用 post-*.sh）
+- **状态**: `approved` — 已合入
+
+### D-20260630-003: Phase B — validate-terms + anti-patterns
+- **决策**: scan_i18n.py 新增两个子命令；check_consistency.sh --strict 模式
+- **状态**: `approved` — 已合入（3 轮审查修复后零误报）
+
+### D-20260630-002: Phase A — 编排者基础设施
+- **决策**: ORCHESTRATION_STATE.md + check_checkpoint.sh + post-*.sh + record_review.sh
+- **状态**: `approved` — 已合入
 
 ### D-20260629-008: Issue 26 equip_slot_name() — 显示 T_()，协议用英文
 - **决策**: `equip_slot_name()` 写入存档用英文（protocol），显示时经 T_() 翻译
@@ -72,6 +99,8 @@ session_id: 00000000-0000-0000-0000-000000000000
 | C-05 | `conj_verb()` 绝不包裹中文 | 已知反模式 | 所有动词处理代码 |
 | C-06 | 位置参数 → `mprf_p`（非 `mprf`） | Issue 30, MinGW 限制 | 所有 `%n$s` 格式串 |
 | C-07 | Lua 比较字符串绝不翻译 | 已知反模式 | `"Mummy"`, `"Zin"` 等 |
+| C-08 | Agent 不做自检 → 调用 post-*.sh，编排者读原始日志 | Phase A/B+ | 所有 Agent |
+| C-09 | 验证逻辑不写在 prompt 里 → 活在 `.claude/scripts/` 下 | Phase A 核心原则 | 所有验证相关代码 |
 
 ---
 
@@ -83,6 +112,8 @@ session_id: 00000000-0000-0000-0000-000000000000
 | P-02 | Issue 25 Phase 1 strwidth + 翻译文件修复 | 调度 | 2026-06-28 |
 | P-03 | Issue 27 ARG-DIFF beam.cc conj_verb 迁移 | crawl-coder | 2026-06-29 |
 | P-04 | Issue 31 存档中文化执行 | 方案确认 | 2026-06-29 |
+| P-05 | source.txt 实际拆分（基础设施已就绪，数据待拆分） | 确认拆分方案 | 2026-06-30 |
+| P-06 | 远期：完整测试框架 + 趋势分析 + prompt 自动调优 | Phase E 交付 | 远期 |
 
 ---
 
@@ -90,7 +121,18 @@ session_id: 00000000-0000-0000-0000-000000000000
 
 | 时间 | Agent | Worktree | 任务 | 结果 |
 |------|-------|----------|------|------|
-| 2026-06-30 | — | phase-a-checkpoint | Phase A 基础设施实施 | 进行中 |
+| 2026-06-30 | — | fix-green-suggestions | 🟢 5 条建议修复 | ✅ |
+| 2026-06-30 | — | fix-all-review-issues | 12 条 🔴🟡 修复 | ✅ |
+| 2026-06-30 | — | fix-hardcoded-terms | cross_file_terms 去硬编码 | ✅ |
+| 2026-06-30 | — | phase-e-context | Phase E 上下文注入 | ✅ |
+| 2026-06-30 | — | phase-d-source-split | Phase D source 拆分 | ✅ |
+| 2026-06-30 | — | fix-review-n1-n3 | N1+N3 审查修复 | ✅ |
+| 2026-06-30 | — | fix-parse-decisions | parse_decisions 修复 | ✅ |
+| 2026-06-30 | — | fix-anti-patterns-bugs | 3 个阻断 bug 修复 | ✅ |
+| 2026-06-30 | — | phase-c-smoke-test | Phase C smoke test | ✅ |
+| 2026-06-30 | — | phase-b-plus-prompts | Phase B+ prompt 改造 | ✅ |
+| 2026-06-30 | — | phase-b-scripts | Phase B 验证脚本 | ✅ |
+| 2026-06-30 | — | phase-a-checkpoint | Phase A 基础设施 | ✅ |
 | 2026-06-29 | zh-code-reviewer | — | Issue 27 review | ✅ Go |
 | 2026-06-29 | crawl-coder | fix-tcr1-v2 | TCR1 P0 fix | ✅ |
 
@@ -100,9 +142,9 @@ session_id: 00000000-0000-0000-0000-000000000000
 
 > Phase B+ 改造 prompt 时的对照基线。每次修改 Agent prompt 后更新。
 
-| Agent | Phase A 基线 | 当前 | 备注 |
-|-------|-------------|------|------|
-| zh-translator | 266 | — | 2026-06-30 基线 |
-| crawl-coder | 167 | — | 2026-06-30 基线 |
-| zh-code-reviewer | 218 | — | 2026-06-30 基线 |
-| translation-reviewer | 91 | — | 2026-06-30 基线 |
+| Agent | Phase A 基线 | Phase B+ | 当前 | 备注 |
+|-------|-------------|----------|------|------|
+| zh-translator | 266 | 285 | 285 | 自检删除，证据协议替换 |
+| crawl-coder | 167 | 181 | 183 | 增量验证协议 + @keyword@ 检查 |
+| zh-code-reviewer | 218 | 235 | 235 | 自检删除，证据协议替换 |
+| translation-reviewer | 91 | 97 | 97 | Execution 证据协议替换 |
