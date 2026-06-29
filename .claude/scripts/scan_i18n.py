@@ -40,6 +40,9 @@ HAS_T_RE = re.compile(r'\b[TtCc]_\(\s*"')
 # Detect positional format specifiers: %1$s, %2$d, etc.
 POSFMT_RE = re.compile(r'%(\d+)\$[sdlxcu]')
 
+# Detect silent positional consumption: %2$.0s (Issue 29 pattern)
+SILENT_RE = re.compile(r'%(\d+)\$\.0s')
+
 # Plain format specifiers: %s, %d, %c, %x, %ld, %lu
 PLAIN_FMT_RE = re.compile(r'%(?:l[du]|[sdcxlufeEgG])')
 
@@ -296,6 +299,54 @@ def cmd_arg_mismatch(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: check-gaps
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_check_gaps(args):
+    """Detect gaps in positional format numbering in CN translations."""
+    entries = parse_source_txt(args.source_txt)
+    if not entries:
+        print("ERROR: Could not parse source.txt")
+        return 1
+
+    ok_count = 0
+    nopos_count = 0
+    gaps = []
+
+    for en_key, cn_val in entries.items():
+        disp = set(int(m.group(1)) for m in POSFMT_RE.finditer(cn_val))
+        silent = set(int(m.group(1)) for m in SILENT_RE.finditer(cn_val))
+        all_pos = disp | silent
+        if not all_pos:
+            nopos_count += 1
+            continue
+        expected = set(range(1, max(all_pos) + 1))
+        missing = expected - all_pos
+        if missing:
+            gaps.append((en_key, cn_val, sorted(all_pos), sorted(missing)))
+        else:
+            ok_count += 1
+
+    if gaps:
+        print("=== POSITIONAL GAPS — missing position numbers "
+              "in CN translations ===")
+        print()
+        for en_key, cn_val, found, missing in gaps:
+            cn_short = cn_val[:100]
+            print(f"  translation: \"{cn_short}\"")
+            print(f"  found positions: {found}")
+            print(f"  missing positions: {missing}")
+            print()
+        print(f"Summary: {len(gaps)} gaps found, {ok_count} OK, "
+              f"{nopos_count} without positional format")
+        return 1
+    else:
+        print(f"OK: {ok_count} positional entries have no gaps "
+              f"({nopos_count} without positional format).")
+        return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: lang-args
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -402,6 +453,14 @@ def main():
     p_arg.add_argument("--source-txt", required=True,
                        help="Path to source.txt")
 
+    # check-gaps
+    p_gaps = subparsers.add_parser(
+        "check-gaps",
+        help="Detect gaps in positional format numbering (Issue 29 %%N$.0s)"
+    )
+    p_gaps.add_argument("--source-txt", required=True,
+                        help="Path to source.txt")
+
     # lang-args
     p_lang = subparsers.add_parser(
         "lang-args",
@@ -417,6 +476,8 @@ def main():
         return cmd_mprf_p(args)
     elif args.command == "arg-mismatch":
         return cmd_arg_mismatch(args)
+    elif args.command == "check-gaps":
+        return cmd_check_gaps(args)
     elif args.command == "lang-args":
         return cmd_lang_args(args)
     else:

@@ -50,6 +50,12 @@ python3 "$SCAN_I18N" arg-mismatch --source-txt "$FIXTURES/arg-mismatch/source.tx
 assert_output "arg-mismatch: finds %s count mismatch" \
     /tmp/actual_arg.txt "$EXPECTED/arg-mismatch.txt"
 
+# ── check-gaps ──
+echo "--- check-gaps ---"
+python3 "$SCAN_I18N" check-gaps --source-txt "$FIXTURES/arg-mismatch/gap_source.txt" > /tmp/actual_gaps.txt 2>&1 || true
+assert_output "check-gaps: finds positional gaps" \
+    /tmp/actual_gaps.txt "$EXPECTED/check-gaps.txt"
+
 # ── lang-args ──
 echo "--- lang-args ---"
 python3 "$SCAN_I18N" lang-args "$FIXTURES/lang-args/" > /tmp/actual_lang.txt 2>&1 || true
