@@ -31,8 +31,21 @@ from collections import OrderedDict
 # Utilities
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Call-like patterns that we scan for
-MPR_CALL_RE = re.compile(r'\b(?:mprf|mprf_nojoin|mprf_p|mpr)\s*\(')
+# Call-like patterns that we scan for — message output + UI construction
+MPR_CALL_RE = re.compile(
+    r'\b(?:mprf|mprf_nojoin|mprf_p|mpr|cprintf|formatted_string|make_stringf)\s*\(')
+
+# Severity grading: which function was matched
+def _severity(line: str) -> str:
+    """Classify a call site by function type."""
+    if re.search(r'\bmprf_p\s*\(', line):     return 'MSG'
+    if re.search(r'\bmprf_nojoin\s*\(', line): return 'MSG'
+    if re.search(r'\bmprf\s*\(', line):        return 'MSG'
+    if re.search(r'\bmpr\s*\(', line):         return 'MSG'
+    if re.search(r'\bcprintf\s*\(', line):     return 'UI'
+    if re.search(r'\bformatted_string\s*\(', line): return 'UI'
+    if re.search(r'\bmake_stringf\s*\(', line):    return 'STR'
+    return 'MSG'
 
 # Check if a line has T_() or C_() wrapping
 HAS_T_RE = re.compile(r'\b[TtCc]_\(\s*"')
@@ -141,9 +154,9 @@ def parse_source_txt(filepath: str) -> OrderedDict:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def cmd_missing_t(args):
-    """Find mprf/mpr calls without T_() wrapping."""
+    """Find untranslated calls across mprf/mpr/cprintf/formatted_string/make_stringf."""
     source_dir = args.source_dir
-    findings = []
+    findings = []  # (rel_path, lineno, display, severity)
     files_scanned = 0
 
     for dirpath, _, filenames in os.walk(source_dir):
@@ -157,45 +170,55 @@ def cmd_missing_t(args):
                 lines = f.readlines()
 
             for lineno, line in enumerate(lines, 1):
-                # Skip preprocessor lines
                 if SKIP_PP_RE.match(line):
                     continue
-                # Skip diagnostics/debug channels
                 if SKIP_CHANNEL_RE.search(line):
                     continue
-                # Must contain an mpr* call
                 if not MPR_CALL_RE.search(line):
                     continue
-                # Already has T_() or C_() wrapping — skip
                 if HAS_T_RE.search(line):
                     continue
-                # Must contain a string literal with at least one ASCII letter
                 stripped = strip_cpp_string_literal(line)
                 if not stripped or not has_alpha(stripped):
                     continue
-                # Skip pure format strings (just %s placeholders, no words)
                 display = stripped[:80]
                 rel_path = os.path.relpath(filepath, source_dir)
-                findings.append((rel_path, lineno, display))
+                sev = _severity(line)
+                findings.append((rel_path, lineno, display, sev))
 
     # Output
     if findings:
-        print("=== Missing T_() — mprf/mpr calls without translation wrapper ===")
+        print("=== Untranslated calls — missing T_() wrapper ===")
         print()
-        for fpath, lineno, msg in findings:
-            print(f"{fpath}:{lineno}  \"{msg}\"")
+        for fpath, lineno, msg, sev in findings:
+            print(f"[{sev}] {fpath}:{lineno}  \"{msg}\"")
         print()
-        # Group by file for summary
-        file_counts = {}
-        for fpath, _, _ in findings:
-            file_counts[fpath] = file_counts.get(fpath, 0) + 1
-        print(f"Summary: {len(findings)} untranslated calls across "
-              f"{len(file_counts)} files")
-        for fpath in sorted(file_counts, key=lambda x: -file_counts[x]):
-            print(f"  {fpath}: {file_counts[fpath]}")
+        # Per-file summary with severity breakdown
+        file_stats = {}  # filepath -> {severity: count}
+        for fpath, _, _, sev in findings:
+            if fpath not in file_stats:
+                file_stats[fpath] = {}
+            file_stats[fpath][sev] = file_stats[fpath].get(sev, 0) + 1
+        total = len(findings)
+        total_msg = sum(1 for _, _, _, s in findings if s == 'MSG')
+        total_ui = sum(1 for _, _, _, s in findings if s == 'UI')
+        total_str = sum(1 for _, _, _, s in findings if s == 'STR')
+        print(f"Summary: {total} untranslated calls across "
+              f"{len(file_stats)} files")
+        print(f"  MSG (mprf/mpr): {total_msg}")
+        print(f"  UI  (cprintf/formatted_string): {total_ui}")
+        print(f"  STR (make_stringf): {total_str}")
+        print()
+        print("Per-file breakdown:")
+        for fpath in sorted(file_stats, key=lambda x: -sum(file_stats[x].values())):
+            parts = []
+            for sev in ('MSG', 'UI', 'STR'):
+                if sev in file_stats[fpath]:
+                    parts.append(f"{sev}:{file_stats[fpath][sev]}")
+            print(f"  {fpath}: {', '.join(parts)}")
         return 1
     else:
-        print("OK: No untranslated mprf/mpr calls found.")
+        print("OK: No untranslated calls found.")
         return 0
 
 

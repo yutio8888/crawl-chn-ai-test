@@ -1,1 +1,1 @@
-OK: No untranslated mprf/mpr calls found.
+OK: No untranslated calls found.
