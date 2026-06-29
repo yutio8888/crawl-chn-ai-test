@@ -357,6 +357,22 @@ Before submitting any review touching entity names:
 6. EN mode: play 10 min                      # Required for Phase 2+
 ```
 
+### Translation Toolchain
+
+Before committing translation changes, run the pre-commit CI checks:
+
+```bash
+# T_() key coverage + mprf_p compatibility + %s count parity
+python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/scan_i18n.py arg-mismatch \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+```
+
+Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`
+
 ## Agent Commit Discipline
 
 **Before committing** any Agent-authored changes to crawl-ref:
