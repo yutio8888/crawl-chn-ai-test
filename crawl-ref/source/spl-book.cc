@@ -542,7 +542,7 @@ public:
 protected:
     virtual formatted_string calc_title() override
     {
-        const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — column layout entirely different between EN/ZH
+        const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — column layout algorithm, needs strwidth-aware redesign
         const char* act_str =
             current_action == action::cast
                 ? (T_("(Cast)    "))
