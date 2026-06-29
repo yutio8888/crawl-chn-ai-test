@@ -25,6 +25,10 @@ mkdir -p .claude/metrics/verify
     python3 .claude/scripts/scan_i18n.py arg-mismatch \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
     echo ""
+    echo "--- Anti-patterns (strict) ---"
+    python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ \
+        --strict 2>&1 || true
+    echo ""
     echo "=== post-coder.sh complete ==="
 } > "$OUT" 2>&1
 
