@@ -840,14 +840,14 @@ static string _get_god_misc_info(god_type which_god)
             info += make_stringf(T_("%s powers are not affected by the %s skill."),
                          zh ? god_name(which_god).c_str()
                             : uppercase_first(apostrophise(god_name(which_god))).c_str(),
-                         skill_name(SK_INVOCATIONS).c_str());
+                         skill_name(SK_INVOCATIONS));
             break;
         default:
             info += make_stringf(T_("%s powers are based on %s instead of %s skill."),
                          zh ? god_name(which_god).c_str()
                             : uppercase_first(apostrophise(god_name(which_god))).c_str(),
-                         skill_name(skill).c_str(),
-                         skill_name(SK_INVOCATIONS).c_str());
+                         skill_name(skill),
+                         skill_name(SK_INVOCATIONS));
             break;
     }
 
