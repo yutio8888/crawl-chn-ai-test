@@ -319,36 +319,28 @@ bool zin_donate_gold()
     }
     else
     {
-        // TODO: ARG-DIFF - complex string construction with dynamic god_name()
-        // and language-dependent piety description texts; cannot use simple T_()
-        if (Options.language == lang_t::ZH)
-        {
-            string result = "你感到" + god_name(GOD_ZIN) + "很快就会";
-            result +=
-                (estimated_piety >= piety_breakpoint(5)) ? "因你的崇拜而荣升" :
-                (estimated_piety >= piety_breakpoint(4)) ? "对你极为满意" :
-                (estimated_piety >= piety_breakpoint(3)) ? "对你非常满意" :
-                (estimated_piety >= piety_breakpoint(2)) ? "对你相当满意" :
-                (estimated_piety >= piety_breakpoint(1)) ? "对你感到满意" :
-                (estimated_piety >= piety_breakpoint(0)) ? "注意到你的虔诚"
-                                                         : "态度不明确";
-            result += (donation >= 30 && you.raw_piety < piety_breakpoint(5)) ? "！" : "。";
-            mpr(result);
-        }
+        string piety_text;
+        if (estimated_piety >= piety_breakpoint(5))
+            piety_text = T_("exalted by your worship");
+        else if (estimated_piety >= piety_breakpoint(4))
+            piety_text = T_("extremely pleased with you");
+        else if (estimated_piety >= piety_breakpoint(3))
+            piety_text = T_("greatly pleased with you");
+        else if (estimated_piety >= piety_breakpoint(2))
+            piety_text = T_("most pleased with you");
+        else if (estimated_piety >= piety_breakpoint(1))
+            piety_text = T_("pleased with you");
+        else if (estimated_piety >= piety_breakpoint(0))
+            piety_text = T_("aware of your devotion");
         else
-        {
-            string result = "You feel that " + god_name(GOD_ZIN) + " will soon be ";
-            result +=
-                (estimated_piety >= piety_breakpoint(5)) ? "exalted by your worship" :
-                (estimated_piety >= piety_breakpoint(4)) ? "extremely pleased with you" :
-                (estimated_piety >= piety_breakpoint(3)) ? "greatly pleased with you" :
-                (estimated_piety >= piety_breakpoint(2)) ? "most pleased with you" :
-                (estimated_piety >= piety_breakpoint(1)) ? "pleased with you" :
-                (estimated_piety >= piety_breakpoint(0)) ? "aware of your devotion"
-                                                         : "noncommittal";
-            result += (donation >= 30 && you.raw_piety < piety_breakpoint(5)) ? "!" : ".";
-            mpr(result);
-        }
+            piety_text = T_("noncommittal");
+
+        if (donation >= 30 && you.raw_piety < piety_breakpoint(5))
+            mprf(T_("You feel that %s will soon be %s!"),
+                 god_name(GOD_ZIN).c_str(), piety_text.c_str());
+        else
+            mprf(T_("You feel that %s will soon be %s."),
+                 god_name(GOD_ZIN).c_str(), piety_text.c_str());
     }
 
     return true;
@@ -1547,38 +1539,17 @@ void yred_end_conquest()
     int ratio = kills * 100 / (kills + souls_remaining + 1);
 
     // Print a message about how happy Yred is about our performance this floor
-    // TODO: ARG-DIFF - complex string construction with different EN/ZH messages;
-    // cannot use simple T_()
-    if (Options.language == lang_t::ZH)
-    {
-        string msg = "你献上黑火炬的火焰，";
-
-        if (ratio > 90)
-            msg += "伊雷德勒姆纳因你的征服而荣耀！";
-        else if (ratio > 65)
-            msg += "伊雷德勒姆纳对你的征服感到满意。";
-        else if (ratio > 30)
-            msg += "你感受到伊雷德勒姆纳对你贫弱征伐的失望。";
-        else
-            msg += "你感受到伊雷德勒姆纳对你失败的蔑视。";
-
-        mprf(MSGCH_GOD, "%s", msg.c_str());
-    }
+    const char* msg;
+    if (ratio > 90)
+        msg = T_("You offer up the Black Torch's flame, and Yredelemnul is glorified by your conquest!");
+    else if (ratio > 65)
+        msg = T_("You offer up the Black Torch's flame, and Yredelemnul is satisfied with your conquest.");
+    else if (ratio > 30)
+        msg = T_("You offer up the Black Torch's flame, and feel Yredelemnul's disappointment in your meagre crusade.");
     else
-    {
-        string msg = "You offer up the Black Torch's flame,";
+        msg = T_("You offer up the Black Torch's flame, and feel Yredelemnul's disdain for your failure.");
 
-        if (ratio > 90)
-            msg += " and Yredelemnul is glorified by your conquest!";
-        else if (ratio > 65)
-            msg += " and Yredelemnul is satisfied with your conquest.";
-        else if (ratio > 30)
-            msg += " and feel Yredelemnul's disappointment in your meagre crusade.";
-        else
-            msg += " and feel Yredelemnul's disdain for your failure.";
-
-        mprf(MSGCH_GOD, "%s", msg.c_str());
-    }
+    mprf(MSGCH_GOD, "%s", msg);
 
     // Actually end the torch effect
     you.props.erase(YRED_TORCH_POWER_KEY);
@@ -2357,14 +2328,8 @@ void ashenzari_offer_new_curse()
     const string offer_string = curse_names.empty() ? "" :
                                 (" of " + curse_names);
 
-    // TODO: ARG-DIFF - format specifier positions differ between EN and ZH;
-    // EN: "a curse%s" (suffix), ZH: "关于%s的幻象" (infix)
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_GOD, "阿申扎里邀请你分享一个关于%s的幻象和诅咒。",
-                        offer_string.c_str());
-    else
-        mprf(MSGCH_GOD, "Ashenzari invites you to share a vision"
-                        " and a curse%s.", offer_string.c_str());
+    mprf_p(MSGCH_GOD, T_("Ashenzari invites you to share a vision and a curse%s."),
+           offer_string.c_str());
 }
 
 static void _do_curse_item(item_def &item)

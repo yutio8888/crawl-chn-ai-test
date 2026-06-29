@@ -913,7 +913,6 @@ public:
         // Actual text handled by calc_title
         set_title(new MenuEntry(""), true, true);
 
-        const bool zh = Options.language == lang_t::ZH;
         if (you.divine_exegesis)
         {
             spell_levels_str = make_stringf(
@@ -924,16 +923,12 @@ public:
             spell_levels_str = T_("<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>");
         else
         {
-            // TODO: ARG-DIFF — ZH has 1 format specifier (%d), EN has 2 (%d + %s for plural)
-            if (zh)
-                spell_levels_str = make_stringf("<lightgreen>%d法术等级剩余"
-                            "</lightgreen>", player_spell_levels());
+            if (player_spell_levels() > 1 || player_spell_levels() == 0)
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell levels left</lightgreen>"),
+                                                player_spell_levels());
             else
-                spell_levels_str = make_stringf("<lightgreen>%d spell level%s"
-                            "</lightgreen>", player_spell_levels(),
-                            (player_spell_levels() > 1
-                             || player_spell_levels() == 0)
-                                ? "s left" : " left ");
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell level left </lightgreen>"),
+                                                player_spell_levels());
             if (player_spell_levels() < 9)
                 spell_levels_str += " ";
         }

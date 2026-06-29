@@ -697,33 +697,24 @@ static const like_response _yred_kill_response()
                     //Print a reminder if the torch isn't lit, but *could* be
                     if (yred_cannot_light_torch_reason().empty())
                     {
-                        // TODO: ARG-DIFF - pronoun values differ between EN and ZH
-                        if (Options.language == lang_t::ZH)
-                            mprf(MSGCH_GOD, "你的火炬未点燃，%s的灵魂白白浪费了……",
-                                 you.can_see(*victim) ? victim->pronoun(PRONOUN_POSSESSIVE).c_str() : "一个");
+                        if (you.can_see(*victim))
+                            mprf(MSGCH_GOD, T_("With your torch unlit, %s soul goes wasted..."),
+                                 victim->pronoun(PRONOUN_POSSESSIVE).c_str());
                         else
-                            mprf(MSGCH_GOD, "With your torch unlit, %s soul goes wasted...",
-                                 you.can_see(*victim) ? victim->pronoun(PRONOUN_POSSESSIVE).c_str() : "a");
+                            mprf(MSGCH_GOD, T_("With your torch unlit, a soul goes wasted..."));
                     }
                 }
                 else
                 {
-                    // TODO: ARG-DIFF - pronoun/adjective values differ between EN and ZH
-                    if (Options.language == lang_t::ZH)
-                    {
-                        const string zh_prefix = you.can_see(*victim)
-                            ? "其" : "一个";
-                        const char* zh_adj = mons_is_unique(victim->type)
-                            ? "强大的" : victim->holiness() & MH_HOLY
-                            ? "未被玷污的" : "";
-                        mprf(MSGCH_GOD, "%s%s灵魂化为了火炬的燃料。",
-                             zh_prefix.c_str(), zh_adj);
-                    }
+                    if (you.can_see(*victim))
+                        mprf(MSGCH_GOD, T_("%s %ssoul becomes fuel for the torch."),
+                             victim->pronoun(PRONOUN_POSSESSIVE).c_str(),
+                             mons_is_unique(victim->type) ? T_("potent ")
+                               : victim->holiness() & MH_HOLY ? T_("unsullied ") : "");
                     else
-                        mprf(MSGCH_GOD, "%s %ssoul becomes fuel for the torch.",
-                             you.can_see(*victim) ? victim->pronoun(PRONOUN_POSSESSIVE).c_str() : "A",
-                             mons_is_unique(victim->type) ? "potent "
-                                 : victim->holiness() & MH_HOLY ? "unsullied " : "");
+                        mprf(MSGCH_GOD, T_("A %ssoul becomes fuel for the torch."),
+                             mons_is_unique(victim->type) ? T_("potent ")
+                               : victim->holiness() & MH_HOLY ? T_("unsullied ") : "");
 
                     if (mons_is_unique(victim->type))
                         piety *= 3;
