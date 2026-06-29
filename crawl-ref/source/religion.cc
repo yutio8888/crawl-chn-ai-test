@@ -2405,24 +2405,18 @@ const char* _god_name_en(god_type which_god)
 
 string god_name(god_type which_god, bool long_name)
 {
-    const bool zh = Options.language == lang_t::ZH; // TODO: ARG-DIFF — god_name() is a helper, not a T_() call site
-
+    // Jiyva special case: always return English for protocol safety.
+    // Callers needing Chinese display should use T_(god_name(...)).
     if (which_god == GOD_JIYVA)
     {
         if (long_name)
-        {
-            const string jiyva_name = god_name_jiyva(true);
-            return zh
-                ? "吉瓦「" + you.jiyva_second_name + "」无定形者"
-                : jiyva_name + " the Shapeless";
-        }
-        return zh ? "吉瓦" : god_name_jiyva(false);
+            return string("Jiyva ") + you.jiyva_second_name + " the Shapeless";
+        return "Jiyva";
     }
 
     if (long_name)
     {
-        // Use English name for getMiscString database lookup,
-        // but display name follows language setting.
+        // Use English name for getMiscString database lookup.
         const string en_short = _god_name_en(which_god);
         const string longname = getMiscString(en_short + " lastname");
         if (!longname.empty())
@@ -2430,84 +2424,43 @@ string god_name(god_type which_god, bool long_name)
         return god_name(which_god, false);
     }
 
-    // Short names
-    if (zh)
-    {
-        switch (which_god)
-        {
-        case GOD_NO_GOD:        return "无神";
-        case GOD_RANDOM:        return "随机";
-        case GOD_NAMELESS:      return "无名";
-        case GOD_ZIN:           return "辛";
-        case GOD_SHINING_ONE:   return "光辉者";
-        case GOD_KIKUBAAQUDGHA: return "奇库巴库哈";
-        case GOD_YREDELEMNUL:   return "伊莱德莱姆努尔";
-        case GOD_VEHUMET:       return "维胡梅特";
-        case GOD_OKAWARU:       return "奥卡瓦鲁";
-        case GOD_MAKHLEB:       return "马科列布";
-        case GOD_SIF_MUNA:      return "西芙·穆娜";
-        case GOD_TROG:          return "特洛格";
-        case GOD_NEMELEX_XOBEH: return "尼姆雷斯·索布";
-        case GOD_ELYVILON:      return "艾利维隆";
-        case GOD_LUGONU:        return "卢格努";
-        case GOD_BEOGH:         return "比欧弗";
-        case GOD_FEDHAS:        return "费德哈";
-        case GOD_CHEIBRIADOS:   return "切布理亚多";
-        case GOD_XOM:           return "佐姆";
-        case GOD_ASHENZARI:     return "艾申扎利";
-        case GOD_DITHMENOS:     return "迪斯姆诺";
-        case GOD_GOZAG:         return "哥萨戈";
-        case GOD_QAZLAL:        return "卡兹拉尔";
-        case GOD_RU:            return "入";
-#if TAG_MAJOR_VERSION == 34
-        case GOD_PAKELLAS:      return "帕克拉斯";
-#endif
-        case GOD_USKAYAW:       return "乌斯卡亚";
-        case GOD_HEPLIAKLQANA:  return "惠普利亚卡纳";
-        case GOD_WU_JIAN:       return "无间";
-        case GOD_IGNIS:         return "伊格尼斯";
-        case GOD_ECUMENICAL:    return "未知之神";
-        case NUM_GODS:          return "Buggy";
-        default:                return "";
-        }
-    }
-
+    // Short names — T_() enables bilingual display without explicit language checks.
     switch (which_god)
     {
-    case GOD_NO_GOD:        return "No God";
-    case GOD_RANDOM:        return "random";
-    case GOD_NAMELESS:      return "nameless";
-    case GOD_ZIN:           return "Zin";
-    case GOD_SHINING_ONE:   return "the Shining One";
-    case GOD_KIKUBAAQUDGHA: return "Kikubaaqudgha";
-    case GOD_YREDELEMNUL:   return "Yredelemnul";
-    case GOD_VEHUMET:       return "Vehumet";
-    case GOD_OKAWARU:       return "Okawaru";
-    case GOD_MAKHLEB:       return "Makhleb";
-    case GOD_SIF_MUNA:      return "Sif Muna";
-    case GOD_TROG:          return "Trog";
-    case GOD_NEMELEX_XOBEH: return "Nemelex Xobeh";
-    case GOD_ELYVILON:      return "Elyvilon";
-    case GOD_LUGONU:        return "Lugonu";
-    case GOD_BEOGH:         return "Beogh";
-    case GOD_FEDHAS:        return "Fedhas";
-    case GOD_CHEIBRIADOS:   return "Cheibriados";
-    case GOD_XOM:           return "Xom";
-    case GOD_ASHENZARI:     return "Ashenzari";
-    case GOD_DITHMENOS:     return "Dithmenos";
-    case GOD_GOZAG:         return "Gozag";
-    case GOD_QAZLAL:        return "Qazlal";
-    case GOD_RU:            return "Ru";
+    case GOD_NO_GOD:        return T_("No God");
+    case GOD_RANDOM:        return T_("random");
+    case GOD_NAMELESS:      return T_("nameless");
+    case GOD_ZIN:           return T_("Zin");
+    case GOD_SHINING_ONE:   return T_("the Shining One");
+    case GOD_KIKUBAAQUDGHA: return T_("Kikubaaqudgha");
+    case GOD_YREDELEMNUL:   return T_("Yredelemnul");
+    case GOD_VEHUMET:       return T_("Vehumet");
+    case GOD_OKAWARU:       return T_("Okawaru");
+    case GOD_MAKHLEB:       return T_("Makhleb");
+    case GOD_SIF_MUNA:      return T_("Sif Muna");
+    case GOD_TROG:          return T_("Trog");
+    case GOD_NEMELEX_XOBEH: return T_("Nemelex Xobeh");
+    case GOD_ELYVILON:      return T_("Elyvilon");
+    case GOD_LUGONU:        return T_("Lugonu");
+    case GOD_BEOGH:         return T_("Beogh");
+    case GOD_FEDHAS:        return T_("Fedhas");
+    case GOD_CHEIBRIADOS:   return T_("Cheibriados");
+    case GOD_XOM:           return T_("Xom");
+    case GOD_ASHENZARI:     return T_("Ashenzari");
+    case GOD_DITHMENOS:     return T_("Dithmenos");
+    case GOD_GOZAG:         return T_("Gozag");
+    case GOD_QAZLAL:        return T_("Qazlal");
+    case GOD_RU:            return T_("Ru");
 #if TAG_MAJOR_VERSION == 34
-    case GOD_PAKELLAS:      return "Pakellas";
+    case GOD_PAKELLAS:      return T_("Pakellas");
 #endif
-    case GOD_USKAYAW:       return "Uskayaw";
-    case GOD_HEPLIAKLQANA:  return "Hepliaklqana";
-    case GOD_WU_JIAN:       return "Wu Jian";
-    case GOD_IGNIS:         return "Ignis";
-    case GOD_JIYVA: // This is handled at the beginning of the function
-    case GOD_ECUMENICAL:    return "an unknown god";
-    case NUM_GODS:          return "Buggy";
+    case GOD_USKAYAW:       return T_("Uskayaw");
+    case GOD_HEPLIAKLQANA:  return T_("Hepliaklqana");
+    case GOD_WU_JIAN:       return T_("Wu Jian");
+    case GOD_IGNIS:         return T_("Ignis");
+    case GOD_JIYVA:         return T_("Jiyva"); // handled above normally
+    case GOD_ECUMENICAL:    return T_("an unknown god");
+    case NUM_GODS:          return T_("Buggy");
     }
     return "";
 }

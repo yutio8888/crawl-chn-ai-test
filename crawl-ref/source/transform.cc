@@ -1766,19 +1766,13 @@ bool transforming_is_unsafe(transformation which_trans)
 {
     if (feat_dangerous_for_form(which_trans, env.grid(you.pos())))
     {
-        // TODO: ARG-DIFF - first argument is language-dependent (解除变形/变形 vs Untransforming/Transforming)
-        if (Options.language == lang_t::ZH)
-        {
-            mprf(MSGCH_PROMPT, "现在就%s会导致你%s！",
-                 which_trans == transformation::none ? "解除变形" : "变形",
-                 env.grid(you.pos()) == DNGN_LAVA ? "被烧死" : "溺亡");
-        }
-        else
-        {
-            mprf(MSGCH_PROMPT, "%s right now would cause you to %s!",
-                 which_trans == transformation::none ? "Untransforming" : "Transforming",
-                 env.grid(you.pos()) == DNGN_LAVA ? "burn" : "drown");
-        }
+        // T_() handles language-dependent action words (Untransforming/解除变形 etc.)
+        const char* action = which_trans == transformation::none
+                                ? T_("Untransforming") : T_("Transforming");
+        const char* danger = env.grid(you.pos()) == DNGN_LAVA
+                                ? T_("burn") : T_("drown");
+        mprf(MSGCH_PROMPT, T_("%s right now would cause you to %s!"),
+             action, danger);
         return true;
     }
 
@@ -1802,15 +1796,11 @@ bool transforming_is_unsafe(transformation which_trans)
         if (item->cursed()
             || (is_artefact(*item) && artefact_property(*item, ARTP_FRAGILE)))
         {
-            // TODO: ARG-DIFF - first argument is language-dependent (解除变形/变形 vs Untransforming/Transforming)
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_PROMPT, "现在就%s会粉碎%s！",
-                     which_trans == transformation::none ? "解除变形" : "变形",
-                     item->name(DESC_YOUR).c_str());
-            else
-                mprf(MSGCH_PROMPT, "%s right now would shatter %s!",
-                     which_trans == transformation::none ? "Untransforming" : "Transforming",
-                     item->name(DESC_YOUR).c_str());
+            // T_() handles language-dependent action words
+            const char* action = which_trans == transformation::none
+                                    ? T_("Untransforming") : T_("Transforming");
+            mprf(MSGCH_PROMPT, T_("%s right now would shatter %s!"),
+                 action, item->name(DESC_YOUR).c_str());
             return true;
         }
     }
@@ -2293,13 +2283,9 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     {
         for (item_def* item : forced_remove)
         {
-            // TODO: ARG-DIFF - second argument is language-dependent (，诅咒被粉碎了！ vs , shattering the curse!)
-            if (Options.language == lang_t::ZH)
-                mprf("%s%s掉落了下来！", item->name(DESC_YOUR).c_str(),
-                     item->cursed() ? "，诅咒被粉碎了！" : "");
-            else
-                mprf("%s falls away%s!", item->name(DESC_YOUR).c_str(),
-                     item->cursed() ? ", shattering the curse!" : "");
+            // T_() handles language-dependent curse fragments
+            const char* shatter = item->cursed() ? T_(", shattering the curse!") : "";
+            mprf(T_("%s falls away%s!"), item->name(DESC_YOUR).c_str(), shatter);
 
             unequip_item(*item, false);
         }
@@ -2644,16 +2630,11 @@ bool vampire_mesmerism_check(monster& mon)
     {
         if (mon.check_willpower(&you, get_form()->get_effect_chance()) <= 0)
         {
-            // TODO: ARG-DIFF - Chinese has 2 %s specifiers, English has 3 (different mouth-count references)
-            if (Options.language == lang_t::ZH)
-                mprf("%s在你的眼中%s失去了自我。",
-                     mon.name(DESC_THE).c_str(),
-                     mon.pronoun(PRONOUN_REFLEXIVE).c_str());
-            else
-                mprf("%s loses %s in your eye%s.",
-                     mon.name(DESC_THE).c_str(),
-                     mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
-                     you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
+            // T_() handles the language-dependent eye/眼 suffix differences
+            mprf(T_("%s loses %s in your eye%s."),
+                 mon.name(DESC_THE).c_str(),
+                 mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
+                 you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
             mon.daze(random_range(3, 5));
         }
         else

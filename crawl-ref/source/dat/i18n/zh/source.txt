@@ -8534,3 +8534,221 @@ You offer a %sprayer to %s.
 你向%2$s献上了%1$s祈祷。
 
 %%%%
+
+# Phase 1c: ARG-DIFF fixes — god-abil.cc, god-conduct.cc, spl-book.cc (2026-06-29)
+%%%%
+exalted by your worship
+因你的崇拜而荣升
+
+%%%%
+extremely pleased with you
+对你极为满意
+
+%%%%
+greatly pleased with you
+对你非常满意
+
+%%%%
+most pleased with you
+对你相当满意
+
+%%%%
+pleased with you
+对你感到满意
+
+%%%%
+aware of your devotion
+注意到你的虔诚
+
+%%%%
+noncommittal
+态度不明确
+
+%%%%
+potent 
+强大的
+
+%%%%
+unsullied 
+未被玷污的
+
+%%%%
+you feel that %s will soon be %s!
+你感到%s很快就会%s！
+
+%%%%
+you feel that %s will soon be %s.
+你感到%s很快就会%s。
+
+%%%%
+you offer up the black torch's flame, and yredelemnul is glorified by your conquest!
+你献上黑火炬的火焰，伊雷德勒姆纳因你的征服而荣耀！
+
+%%%%
+you offer up the black torch's flame, and yredelemnul is satisfied with your conquest.
+你献上黑火炬的火焰，伊雷德勒姆纳对你的征服感到满意。
+
+%%%%
+you offer up the black torch's flame, and feel yredelemnul's disappointment in your meagre crusade.
+你献上黑火炬的火焰，你感受到伊雷德勒姆纳对你贫弱征伐的失望。
+
+%%%%
+you offer up the black torch's flame, and feel yredelemnul's disdain for your failure.
+你献上黑火炬的火焰，你感受到伊雷德勒姆纳对你失败的蔑视。
+
+%%%%
+ashenzari invites you to share a vision and a curse%s.
+阿申扎里邀请你分享一个关于%1$s的幻象和诅咒。
+
+%%%%
+with your torch unlit, %s soul goes wasted...
+你的火炬未点燃，%s的灵魂白白浪费了……
+
+%%%%
+with your torch unlit, a soul goes wasted...
+你的火炬未点燃，一个灵魂白白浪费了……
+
+%%%%
+%s %ssoul becomes fuel for the torch.
+%s%s灵魂化为了火炬的燃料。
+
+%%%%
+a %ssoul becomes fuel for the torch.
+一个%s灵魂化为了火炬的燃料。
+
+%%%%
+<lightgreen>%d spell levels left</lightgreen>
+<lightgreen>%d法术等级剩余</lightgreen>
+
+%%%%
+<lightgreen>%d spell level left </lightgreen>
+<lightgreen>%d法术等级剩余</lightgreen>
+
+# Phase 1c: ARG-DIFF structural refactors — religion.cc/evoke.cc/ability.cc/transform.cc (2026-06-29)
+%%%%
+No God
+无神
+%%%%
+random
+随机
+%%%%
+nameless
+无名
+%%%%
+Zin
+辛
+%%%%
+the Shining One
+光辉者
+%%%%
+Kikubaaqudgha
+奇库巴库哈
+%%%%
+Yredelemnul
+伊莱德莱姆努尔
+%%%%
+Vehumet
+维胡梅特
+%%%%
+Okawaru
+奥卡瓦鲁
+%%%%
+Makhleb
+马科列布
+%%%%
+Sif Muna
+西芙·穆娜
+%%%%
+Trog
+特洛格
+%%%%
+Nemelex Xobeh
+尼姆雷斯·索布
+%%%%
+Elyvilon
+艾利维隆
+%%%%
+Lugonu
+卢格努
+%%%%
+Beogh
+比欧弗
+%%%%
+Fedhas
+费德哈
+%%%%
+Cheibriados
+切布理亚多
+%%%%
+Xom
+佐姆
+%%%%
+Ashenzari
+艾申扎利
+%%%%
+Dithmenos
+迪斯姆诺
+%%%%
+Gozag
+哥萨戈
+%%%%
+Qazlal
+卡兹拉尔
+%%%%
+Ru
+入
+%%%%
+Pakellas
+帕克拉斯
+%%%%
+Uskayaw
+乌斯卡亚
+%%%%
+Hepliaklqana
+惠普利亚卡纳
+%%%%
+Wu Jian
+无间
+%%%%
+Ignis
+伊格尼斯
+%%%%
+an unknown god
+未知之神
+%%%%
+Buggy
+Buggy
+%%%%
+...and %s %s out!
+...%s%s了出来！
+%%%%
+flies
+飞
+%%%%
+leaps
+跳
+%%%%
+You cannot call out to %s while %s.
+你在%2$s时无法呼唤%1$s。
+%%%%
+Untransforming
+解除变形
+%%%%
+Transforming
+变形
+%%%%
+%s right now would cause you to %s!
+现在%s会导致你%s！
+%%%%
+%s right now would shatter %s!
+现在%s会粉碎%s！
+%%%%
+%s falls away%s!
+%s%s掉落了下来！
+%%%%
+, shattering the curse!
+，诅咒被粉碎了！
+%%%%
+%s loses %s in your eye%s.
+%s在你的眼中%s失去了自我。
+%%%%

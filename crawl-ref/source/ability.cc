@@ -1851,16 +1851,10 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         {
             if (!quiet)
             {
-                if (Options.language == lang_t::ZH)
-                    // Chinese: reason first, then god name
-                    // TODO: ARG-DIFF - EN and ZH have different argument order
-                    mprf("你在%s时无法呼唤%s。",
-                         player_silenced_reason(),
-                         god_name(you.religion).c_str());
-                else
-                    mprf("You cannot call out to %s while %s.",
-                         god_name(you.religion).c_str(),
-                         player_silenced_reason());
+                // mprf_p enables positional %n$s params in T_() translation
+                mprf_p(T_("You cannot call out to %s while %s."),
+                       god_name(you.religion).c_str(),
+                       player_silenced_reason());
             }
             return false;
         }

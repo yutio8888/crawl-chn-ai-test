@@ -293,15 +293,10 @@ static bool _box_of_beasts()
         return true;
     }
 
-    // TODO: ARG-DIFF - second argument is language-dependent (飞/跳 vs flies/leaps)
-    if (Options.language == lang_t::ZH)
-        mprf("...%s%s了出来！",
-             mons->name(DESC_A).c_str(),
-             mons->airborne() ? "飞" : "跳");
-    else
-        mprf("...and %s %s out!",
-             mons->name(DESC_A).c_str(),
-             mons->airborne() ? "flies" : "leaps");
+    // T_() handles language-dependent verb fragments (flies/飞 vs leaps/跳)
+    const char* verb = mons->airborne() ? T_("flies") : T_("leaps");
+    mprf(T_("...and %s %s out!"),
+         mons->name(DESC_A).c_str(), verb);
     did_god_conduct(DID_CHAOS, random_range(5,10));
 
     return true;
