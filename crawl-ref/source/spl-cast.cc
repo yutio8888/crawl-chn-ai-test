@@ -98,9 +98,23 @@ void surge_power(const int enhanced)
                                 (enhanced ==  2) ? "strong" :
                                 (enhanced  >  2) ? "huge"
                                                  : "";
-        mprf(T_("You feel %s %s"),
-             !modifier.length() ? "a" : article_a(modifier).c_str(),
-             (enhanced < 0) ? "numb sensation." : "surge of power!");
+        if (Options.language == lang_t::ZH)
+        {
+            const char* zh_modifier = !modifier.length() ? "一阵" :
+                                      enhanced == -2   ? "极其" :
+                                      enhanced < -2    ? "异常" :
+                                      enhanced == 2    ? "强烈的" :
+                                                         "巨大的";
+            mprf("你感到%s%s",
+                 zh_modifier,
+                 (enhanced < 0) ? "麻木感。" : "力量涌动！");
+        }
+        else
+        {
+            mprf("You feel %s %s",
+                 !modifier.length() ? "a" : article_a(modifier).c_str(),
+                 (enhanced < 0) ? "numb sensation." : "surge of power!");
+        }
     }
 }
 

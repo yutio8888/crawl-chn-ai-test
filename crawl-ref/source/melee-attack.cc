@@ -1171,8 +1171,8 @@ static void _devour(monster &victim)
     const int size_delta = victim.body_size(PSIZE_BODY)
                             - you.body_size(PSIZE_BODY);
     const char* size_prefix = size_delta <= 0 ? "" :
-                              size_delta <= 1 ? T_("half of") :
-                                                T_("a chunk of");
+                              size_delta <= 1 ? T_("half of ") :
+                                                T_("a chunk of ");
     mprf(T_("You devour %s%s!"),
          size_prefix,
          victim.name(DESC_THE).c_str());

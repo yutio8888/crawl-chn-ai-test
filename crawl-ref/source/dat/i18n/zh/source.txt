@@ -6206,11 +6206,6 @@ You step out of the flow of time.
 You return to the normal flow of time.
 你回到了正常的时间流动中。
 
-# L2480: ⚠️ARG-DIFF EN:0 ZH:1
-%%%%
-Ashenzari invites you to share a vision
-阿申扎里邀请你分享一个关于%s的幻象和诅咒。
-
 %%%%
 Your %s glows briefly with a black light.
 你的%s短暂地发出黑色光芒。
@@ -6584,11 +6579,11 @@ its own
 自己的
 
 %%%%
-half of
+half of 
 半只
 
 %%%%
-a chunk of
+a chunk of 
 一大块
 
 %%%%
@@ -7178,11 +7173,6 @@ Invalid player spell, attempting to cast it as monster spell.
 It is impossible to cast this spell 
 在此形态下无法施放此法术(100%% 失败风险)!
 
-# L1346: ⚠️ARG-DIFF EN:1 ZH:3
-%%%%
-The spell is %s to miscast 
-施放此法术%s失败（%s失败风险）%s
-
 %%%%
 Sorry, this spell works on others only.
 抱歉，这个法术只能对他人施放。
@@ -7252,7 +7242,7 @@ This spell would have no effect right now because
 此法术现在不会有任何效果，因为
 
 %%%%
-\nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, 
+\nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
 
 要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
 # Extracted by extract_ternaries.py
@@ -7283,7 +7273,7 @@ This name has an existing save; really overwrite? [Y/n]
 这个名字已有存档；真的要覆盖吗？ [Y/n]
 
 %%%%
-Enter 0 for a random seed. 
+Enter 0 for a random seed. [Tab]/[Shift-Tab] to cycle input focus.\n
 输入0获取随机种子。[Tab]/[Shift-Tab] 切换输入焦点。
 
 # Extracted by extract_ternaries.py
@@ -7476,10 +7466,6 @@ Your apostles return to your side.
 <lightgrey>
 <yellow>你拥有 %d 枚金币%s</yellow>
 <lightgrey>
-
-%%%%
-You feel %s %s
-你感到%s%s
 
 %%%%
 You feel a slight surge of power.
@@ -8344,3 +8330,109 @@ Are you sure you want to abandon %s?
 %%%%
  Please press [Y]es or [n]no.
  请输入 [Y]是 或 [n]否。
+
+# === Issue X2 P0-2: Missing source.txt entries ===
+
+%%%%
+Use which ability? (? or * to list)
+使用哪个能力？（? 或 * 列出）
+
+%%%%
+Huh?
+嗯？
+
+%%%%
+It is so.
+正该如此。
+
+%%%%
+Keep equipping yourself?
+继续装备自己吗？
+
+%%%%
+Increase (s)trength, (i)ntelligence, or (d)exterity?
+增加(s)力量、(i)智力还是(d)敏捷？
+
+%%%%
+You have %d gold piece%s.
+你持有%d枚金币。
+
+%%%%
+You fade into invisibility!
+你隐入了无形！
+
+%%%%
+You fade further into invisibility.
+你进一步隐入了无形。
+
+%%%%
+Your %s meld%s into your body.
+你的%s融入了你的身体。
+
+%%%%
+Your %s unmeld%s from your body.
+你的%s从你的身体中分离。
+
+%%%%
+ booms: Use this gift wisely!
+ 咆哮道：善用这份恩赐！
+
+%%%%
+ finds your generosity lacking.
+ 认为你的慷慨不足。
+
+%%%%
+ grants you divine stamina.
+ 赐予你神圣的耐力。
+
+%%%%
+ grants you forbidden knowledge!
+ 赐予你禁忌的知识！
+
+%%%%
+ has no more spells that you can make use of!
+ 已经没有更多你可以使用的法术了！
+
+%%%%
+ indicates that your awakening is complete.
+ 示意你的觉醒已经完成。
+
+%%%%
+ will take longer to evaluate your readiness.
+ 需要更长时间来评估你的准备程度。
+
+%%%%
+ withdraws the vision and curse.
+ 收回了幻象和诅咒。
+
+%%%%
+ believes you are ready to make a new sacrifice.
+ 相信你已经准备好进行新的献祭。
+
+%%%%
+ doesn't like anything? This is a bug; please report it.
+ 什么都不喜欢？这是一个bug，请报告。
+
+%%%%
+\n<h>Attacking monsters\nWalking into a monster will attack it\nwith your wielded weapon, or unarmed.
+\n<h>攻击怪物\n走向怪物会用你装备的武器或空手攻击它。
+
+%%%%
+<darkgrey>(%s unusable)</darkgrey>
+<darkgrey>(%s 不可用)</darkgrey>
+
+%%%%
+<darkgrey>(no %s)</darkgrey>
+<darkgrey>(无%s)</darkgrey>
+
+%%%%
+  <darkgrey>[%s occupied]</darkgrey>
+  <darkgrey>[%s 已占用]</darkgrey>
+
+%%%%
+element|cold
+寒冷
+
+%%%%
+element|electricity
+闪电
