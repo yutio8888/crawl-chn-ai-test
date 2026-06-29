@@ -87,23 +87,13 @@ int god_favour_rank(god_type which_god)
 
 static string _describe_favour(god_type which_god)
 {
-    // TODO: ARG-DIFF — structural sentence order: favour titles have completely different EN/ZH patterns with godname embedding
-    const bool zh = Options.language == lang_t::ZH;
-
     if (player_under_penance())
     {
         const int penance = you.penance[which_god];
-        if (zh)
-        {
-            return (penance >= 50) ? "神怒降临于你！" :
-                   (penance >= 20) ? "你犯下了严重的罪过！忏悔吧！" :
-                   (penance >=  5) ? "你正处于苦修中。"
-                                   : "你应当更加自律。";
-        }
-        return (penance >= 50) ? "Godly wrath is upon you!" :
-               (penance >= 20) ? "You've transgressed heavily! Be penitent!" :
-               (penance >=  5) ? "You are under penance."
-                               : "You should show more discipline.";
+        return (penance >= 50) ? T_("Godly wrath is upon you!") :
+               (penance >= 20) ? T_("You've transgressed heavily! Be penitent!") :
+               (penance >=  5) ? T_("You are under penance.")
+                               : T_("You should show more discipline.");
     }
 
     if (which_god == GOD_XOM)
@@ -113,34 +103,25 @@ static string _describe_favour(god_type which_god)
     switch (god_favour_rank(which_god))
     {
         case 7:
-            return zh ? (godname + "珍视的化身。")
-                      : "A prized avatar of " + godname + ".";
+            return make_stringf(T_("A prized avatar of %s."), godname.c_str());
         case 6:
-            return zh ? (godname + "眷顾的仆人。")
-                      : "A favoured servant of " + godname + ".";
+            return make_stringf(T_("A favoured servant of %s."), godname.c_str());
         case 5:
             if (you_worship(GOD_DITHMENOS))
-                return zh ? ("在" + godname + "眼中是辉煌的暗影。")
-                          : "A glorious shadow in the eyes of " + godname + ".";
+                return make_stringf(T_("A glorious shadow in the eyes of %s."), godname.c_str());
             else
-                return zh ? ("在" + godname + "眼中是闪耀的明星。")
-                          : "A shining star in the eyes of " + godname + ".";
+                return make_stringf(T_("A shining star in the eyes of %s."), godname.c_str());
         case 4:
             if (you_worship(GOD_DITHMENOS))
-                return zh ? ("在" + godname + "眼中是初升的暗影。")
-                          : "A rising shadow in the eyes of " + godname + ".";
+                return make_stringf(T_("A rising shadow in the eyes of %s."), godname.c_str());
             else
-                return zh ? ("在" + godname + "眼中是冉冉升起的新星。")
-                          : "A rising star in the eyes of " + godname + ".";
+                return make_stringf(T_("A rising star in the eyes of %s."), godname.c_str());
         case 3:
-            return zh ? (uppercase_first(godname) + "对你感到满意。")
-                      : uppercase_first(godname) + " is pleased with you.";
+            return make_stringf(T_("%s is pleased with you."), uppercase_first(godname).c_str());
         case 2:
-            return zh ? (uppercase_first(godname) + "察觉到了你的虔诚。")
-                      : uppercase_first(godname) + " is aware of your devotion.";
+            return make_stringf(T_("%s is aware of your devotion."), uppercase_first(godname).c_str());
         default:
-            return zh ? (uppercase_first(godname) + "对你态度不明朗。")
-                      : uppercase_first(godname) + " is noncommittal.";
+            return make_stringf(T_("%s is noncommittal."), uppercase_first(godname).c_str());
     }
 }
 
@@ -654,57 +635,51 @@ static string _describe_god_wrath_causes(god_type which_god)
         // XXX: refactor this if any god hates chaotic but not evil gods
     }
 
-    // TODO: ARG-DIFF — structural sentence order: god_name + comma_separated_fn multi-line sentences at different EN/ZH positions
-    const bool zh = Options.language == lang_t::ZH;
+    // Language-appropriate delimiters for list joining
+    const char* and_word = Options.language == lang_t::ZH ? "和" : " and ";
+    const char* sep_word = Options.language == lang_t::ZH ? "、" : ", ";
 
     switch (which_god)
     {
         case GOD_SHINING_ONE:
         case GOD_ELYVILON:
-            if (zh)
-                return god_name(which_god) +
-                       "原谅追随者的弃离；但那些后来信仰邪恶之神的人将受到惩罚。（" +
-                       comma_separated_fn(begin(evil_gods), end(evil_gods),
-                                          bind(god_name, placeholders::_1, false),
-                                          "和", "、") +
-                       "是邪恶之神。）";
-            return uppercase_first(god_name(which_god)) +
-                   " forgives followers for abandonment; however, those who"
-                   " later take up the worship of an evil god will be"
-                   " punished. (" +
-                   comma_separated_fn(begin(evil_gods), end(evil_gods),
-                                      bind(god_name, placeholders::_1, false)) +
-                   " are evil gods.)";
+        {
+            string evil_list = comma_separated_fn(
+                begin(evil_gods), end(evil_gods),
+                bind(god_name, placeholders::_1, false),
+                and_word, sep_word);
+            return make_stringf(
+                T_("%s forgives followers for abandonment; however, those who "
+                   "later take up the worship of an evil god will be "
+                   "punished. (%s are evil gods.)"),
+                uppercase_first(god_name(which_god)).c_str(),
+                evil_list.c_str());
+        }
 
         case GOD_ZIN:
-            if (zh)
-                return god_name(which_god) +
-                       "原谅追随者的弃离；但那些后来信仰邪恶或混乱之神的人将被鞭笞。（" +
-                       comma_separated_fn(begin(evil_gods), end(evil_gods),
-                                          bind(god_name, placeholders::_1, false),
-                                          "和", "、") +
-                       "是邪恶的，" +
-                       comma_separated_fn(begin(chaotic_gods), end(chaotic_gods),
-                                          bind(god_name, placeholders::_1, false),
-                                          "和", "、") +
-                       "是混乱的。）";
-            return uppercase_first(god_name(which_god)) +
-                   " forgives followers for abandonment; however, those who"
-                   " later take up the worship of an evil or chaotic god will"
-                   " be scourged. (" +
-                   comma_separated_fn(begin(evil_gods), end(evil_gods),
-                                      bind(god_name, placeholders::_1, false)) +
-                   " are evil, and " +
-                   comma_separated_fn(begin(chaotic_gods), end(chaotic_gods),
-                                      bind(god_name, placeholders::_1, false)) +
-                   " are chaotic.)";
+        {
+            string evil_list = comma_separated_fn(
+                begin(evil_gods), end(evil_gods),
+                bind(god_name, placeholders::_1, false),
+                and_word, sep_word);
+            string chaotic_list = comma_separated_fn(
+                begin(chaotic_gods), end(chaotic_gods),
+                bind(god_name, placeholders::_1, false),
+                and_word, sep_word);
+            return make_stringf(
+                T_("%s forgives followers for abandonment; however, those who "
+                   "later take up the worship of an evil or chaotic god will "
+                   "be scourged. (%s are evil, and %s are chaotic.)"),
+                uppercase_first(god_name(which_god)).c_str(),
+                evil_list.c_str(),
+                chaotic_list.c_str());
+        }
+
         default:
-            if (zh)
-                return god_name(which_god) +
-                       "不欣赏弃离行为，并将对不忠的追随者降下可怕的惩罚！";
-            return uppercase_first(god_name(which_god)) +
-                   " does not appreciate abandonment, and will call down"
-                   " fearful punishments on disloyal followers!";
+            return make_stringf(
+                T_("%s does not appreciate abandonment, and will call down "
+                   "fearful punishments on disloyal followers!"),
+                uppercase_first(god_name(which_god)).c_str());
     }
 }
 
@@ -1202,15 +1177,7 @@ static formatted_string _describe_god_powers(god_type which_god)
                 continue;
         }
 
-        string buf = power.general;
-
-        // TODO: ARG-DIFF — helper function pattern: zh_god_power translates god power descriptions; not simple T_() conversion
-        if (Options.language == lang_t::ZH)
-        {
-            const char* zh = zh_god_power(buf.c_str());
-            if (zh && zh[0])
-                buf = zh;
-        }
+        string buf = T_(power.general);
 
         // Skip listing powers with no description (they are intended to be hidden)
         if (buf.length() == 0)
@@ -1377,11 +1344,9 @@ static const string _god_service_fee_description(god_type which_god)
     {
         if (fee == 0)
         {
-            // TODO: ARG-DIFF — structural sentence order: random_choose + format specifiers differ between EN and ZH
-            return Options.language == lang_t::ZH
-                ? string("（现在行动即可免费）")
-                : string(" (no fee if you ")
-                  + random_choose("act now", "join today") + ")";
+            const char* fees[] = { T_(" (no fee if you act now)"),
+                                   T_(" (no fee if you join today)") };
+            return RANDOM_ELEMENT(fees);
         }
         else
         {
