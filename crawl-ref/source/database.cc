@@ -196,6 +196,28 @@ TextDB::TextDB(TextDB *parent)
       _input_files(parent->_input_files), // FIXME: pointless copy
       _db(nullptr), timestamp(""), _parent(parent), translation(nullptr)
 {
+    // For language-specific child DBs, scan the directory for all .txt
+    // files. This allows translation data to be split across multiple
+    // files (e.g. source.txt + spells.txt + monsters.txt) so that
+    // parallel agent work doesn't cause append-only merge conflicts.
+    // source.txt is sorted first so domain-specific files can override
+    // entries when keys are intentionally moved.
+    if (Options.lang_name && *Options.lang_name)
+    {
+        vector<string> found = get_dir_files_ext(_directory, "txt");
+        if (!found.empty())
+        {
+            // Ensure source.txt is always first
+            vector<string> ordered;
+            for (const string &f : found)
+                if (f == "source.txt")
+                    ordered.push_back(f);
+            for (const string &f : found)
+                if (f != "source.txt")
+                    ordered.push_back(f);
+            _input_files = ordered;
+        }
+    }
 }
 
 bool TextDB::open_db()
