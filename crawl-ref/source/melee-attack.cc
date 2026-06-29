@@ -917,7 +917,7 @@ bool melee_attack::handle_phase_hit()
     {
         if (needs_message)
         {
-            // TODO: ARG-DIFF: different structure, conj_verb, conditional "do"/"does"
+            // TODO: ARG-DIFF — structural control flow
             if (Options.language == lang_t::ZH)
             {
                 attack_verb = attacker->is_player()
@@ -1234,17 +1234,15 @@ static void _consider_devouring(monster &defender)
     if (defender.is_shapeshifter())
     {
         // handle this carefully, so the player knows what's going on
-        // TODO: ARG-DIFF: conjugate_verb + different %s counts (ZH:2, EN:4)
-        if (Options.language == lang_t::ZH)
-            mprf("你将%s吐了出来——%s在你的嘴里扭动变形！",
+        // TODO: ARG-DIFF: conj_verb + diff %s count — fixed with singular/plural T_() keys
+        if (defender.pronoun_plurality())
+            mprf(T_("You spit out %s as %s twist & change in your maw!"),
                  defender.name(DESC_THE).c_str(),
                  defender.pronoun(PRONOUN_SUBJECTIVE).c_str());
         else
-            mprf("You spit out %s as %s %s & %s in your maw!",
+            mprf(T_("You spit out %s as %s twists & changes in your maw!"),
                  defender.name(DESC_THE).c_str(),
-                 defender.pronoun(PRONOUN_SUBJECTIVE).c_str(),
-                 conjugate_verb("twist", defender.pronoun_plurality()).c_str(),
-                 conjugate_verb("change", defender.pronoun_plurality()).c_str());
+                 defender.pronoun(PRONOUN_SUBJECTIVE).c_str());
         return;
     }
 
@@ -2678,17 +2676,15 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             player_announce_aux_hit(atk);
         else
         {
-            // TODO: ARG-DIFF: different %s counts (ZH:2, EN:3)
-            if (Options.language == lang_t::ZH)
-                mprf(you.can_see(*defender) ? "你%s了%s，但没有造成伤害。"
-                                            : "你%s了%s。",
+            // TODO: ARG-DIFF: diff %s count (ZH:2, EN:3) — fixed with two T_() keys
+            if (you.can_see(*defender))
+                mprf(T_("You %s %s, but do no damage."),
                      aux_verb.c_str(),
                      defender->name(DESC_THE).c_str());
             else
-                mprf("You %s %s%s.",
+                mprf(T_("You %s %s."),
                      aux_verb.c_str(),
-                     defender->name(DESC_THE).c_str(),
-                     you.can_see(*defender) ? ", but do no damage" : "");
+                     defender->name(DESC_THE).c_str());
         }
 
         if (atk == UNAT_MEDUSA_STINGER)
@@ -2768,21 +2764,16 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
 void melee_attack::player_announce_aux_hit(unarmed_attack_type atk)
 {
-    // TODO: ARG-DIFF: language-specific prefix arguments ("你的触须"/"你" vs "Your tendrils"/"You")
-    if (Options.language == lang_t::ZH)
-        mprf("%s%s了%s%s%s",
-             atk == UNAT_MEDUSA_STINGER ? "你的触须" : "你",
+    // TODO: ARG-DIFF: lang-specific prefix — fixed with T_() fragments
+    {
+        string prefix = atk == UNAT_MEDUSA_STINGER ? T_("Your tendrils") : T_("You");
+        mprf(T_("%s %s %s%s%s"),
+             prefix.c_str(),
              aux_verb.c_str(),
              defender->name(DESC_THE).c_str(),
              debug_damage_number().c_str(),
              attack_strength_punctuation(damage_done).c_str());
-    else
-        mprf("%s %s %s%s%s",
-             atk == UNAT_MEDUSA_STINGER ? "Your tendrils" : "You",
-             aux_verb.c_str(),
-             defender->name(DESC_THE).c_str(),
-             debug_damage_number().c_str(),
-             attack_strength_punctuation(damage_done).c_str());
+    }
 }
 
 void melee_attack::player_warn_miss()
@@ -2865,7 +2856,7 @@ int melee_attack::player_apply_postac_multipliers(int damage)
 
 void melee_attack::set_attack_verb(int damage)
 {
-    // TODO: ARG-DIFF: function dispatch to language-specific verb set functions
+    // TODO: ARG-DIFF — structural control flow
     if (Options.language == lang_t::ZH)
         set_attack_verb_zh(damage);
     else
@@ -3837,44 +3828,31 @@ string melee_attack::mons_attack_verb()
 {
     static const char *klown_attack[] =
     {
-        "hit",
-        "poke",
-        "prod",
-        "flog",
-        "pound",
-        "slap",
-        "tickle",
-        "defenestrate",
-        "sucker-punch",
-        "elbow",
-        "pinch",
-        "strangle-hug",
-        "squeeze",
-        "tease",
-        "eye-gouge",
-        "karate-kick",
-        "headlock",
-        "wrestle",
-        "trip-wire",
-        "kneecap"
+        T_("hit"),
+        T_("poke"),
+        T_("prod"),
+        T_("flog"),
+        T_("pound"),
+        T_("slap"),
+        T_("tickle"),
+        T_("defenestrate"),
+        T_("sucker-punch"),
+        T_("elbow"),
+        T_("pinch"),
+        T_("strangle-hug"),
+        T_("squeeze"),
+        T_("tease"),
+        T_("eye-gouge"),
+        T_("karate-kick"),
+        T_("headlock"),
+        T_("wrestle"),
+        T_("trip-wire"),
+        T_("kneecap")
     };
 
-    // TODO: ARG-DIFF: language-specific verb arrays, not simple T_() migration
+    // TODO: ARG-DIFF: lang-specific arrays — fixed with T_() array
     if (attacker->type == MONS_KILLER_KLOWN && attk_type == AT_HIT)
-    {
-        if (Options.language == lang_t::ZH)
-        {
-            static const char *klown_attack_zh[] =
-            {
-                "击打", "戳", "捅", "鞭打", "猛击", "拍击",
-                "挠痒", "扔出窗外", "偷袭", "肘击", "掐",
-                "锁喉", "挤压", "戏弄", "挖眼", "空手道踢",
-                "锁头", "摔跤", "绊倒", "膝撞"
-            };
-            return RANDOM_ELEMENT(klown_attack_zh);
-        }
         return RANDOM_ELEMENT(klown_attack);
-    }
 
     //XXX: then why give them it in the first place?
     if (attk_type == AT_TENTACLE_SLAP && mons_is_tentacle(attacker->type))
@@ -3883,7 +3861,7 @@ string melee_attack::mons_attack_verb()
     if (is_special_mon_stab && attacker->type == MONS_PLAYER_SHADOW)
         return T_("eviscerate");
 
-    // TODO: ARG-DIFF: random_choose with language-specific word lists, not simple T_()
+    // TODO: ARG-DIFF: lang-specific random_choose — fixed with T_() arrays
     if (attacker->type == MONS_HAUNTED_ARMOUR)
     {
         if (item_def* armour = attacker->as_monster()->body_armour())
@@ -3892,22 +3870,26 @@ string melee_attack::mons_attack_verb()
             {
                 case ARM_HAT:
                 case ARM_HELMET:
-                    return Options.language == lang_t::ZH
-                        ? random_choose("头撞", "敲头", "猛砸")
-                        : random_choose("headbutt", "head-knock", "head-slam");
+                {
+                    const char* verbs[] = { T_("headbutt"), T_("head-knock"), T_("head-slam") };
+                    return RANDOM_ELEMENT(verbs);
+                }
                 case ARM_BOOTS:
-                    return Options.language == lang_t::ZH
-                        ? random_choose("踢", "猛踢", "重踏")
-                        : random_choose("kick", "heavy kick", "stomp");
+                {
+                    const char* verbs[] = { T_("kick"), T_("heavy kick"), T_("stomp") };
+                    return RANDOM_ELEMENT(verbs);
+                }
                 case ARM_CLOAK:
                 case ARM_SCARF:
-                    return Options.language == lang_t::ZH
-                        ? random_choose("抽打", "勒")
-                        : random_choose("buffet", "strangle");
+                {
+                    const char* verbs[] = { T_("buffet"), T_("strangle") };
+                    return RANDOM_ELEMENT(verbs);
+                }
                 case ARM_GLOVES:
-                    return Options.language == lang_t::ZH
-                        ? random_choose("拳击", "拍击", "掌掴")
-                        : random_choose("punch", "slap", "smack");
+                {
+                    const char* verbs[] = { T_("punch"), T_("slap"), T_("smack") };
+                    return RANDOM_ELEMENT(verbs);
+                }
 
                 default:
                     break;
@@ -3951,13 +3933,11 @@ string melee_attack::charge_desc()
     if (!charge_pow || defender->res_elec() > 0)
         return "";
 
-    // TODO: ARG-DIFF: different %s counts and structure
+    // TODO: ARG-DIFF: diff %s count — fixed with singular/plural T_() keys
     const string pronoun = defender->pronoun(PRONOUN_OBJECTIVE);
-    if (Options.language == lang_t::ZH)
-        return make_stringf("并电击了%s", pronoun.c_str());
-    return make_stringf(" and electrocute%s %s",
-                        attacker->is_player() ? "" : "s",
-                        pronoun.c_str());
+    if (attacker->is_player())
+        return make_stringf(T_(" and electrocute %s"), pronoun.c_str());
+    return make_stringf(T_(" and electrocutes %s"), pronoun.c_str());
 
 }
 
@@ -3968,7 +3948,7 @@ void melee_attack::announce_hit()
 
     if (attacker->is_monster())
     {
-        // TODO: ARG-DIFF: conj_verb, language-specific structure
+        // TODO: ARG-DIFF — structural control flow
         if (Options.language == lang_t::ZH)
         {
             string defender_zh = defender_name(true);
@@ -4002,7 +3982,7 @@ void melee_attack::announce_hit()
     }
     else
     {
-        // TODO: ARG-DIFF: different format specifier order and structure
+        // TODO: ARG-DIFF — structural control flow (argument order differs)
         if (Options.language == lang_t::ZH)
         {
             mprf("你%s%s了%s%s%s%s%s",
@@ -4568,22 +4548,19 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message)
         {
-            // TODO: ARG-DIFF: conj_verb, different DESC/defender_zh handling
-            if (Options.language == lang_t::ZH)
+            // TODO: ARG-DIFF: conj_verb — fixed with singular/plural T_() keys
+            if (attacker->is_player()
+                || (attacker->as_monster()
+                    && attacker->as_monster()->pronoun_plurality()))
             {
-                string defender_zh = defender_name(true);
-                if (defender == &you)
-                    defender_zh = "你";
-                mprf("%s%s了%s。",
-                     atk_name(DESC_PLAIN).c_str(),
-                     "抓取",
-                     defender_zh.c_str());
+                mprf(T_("%s grab %s."),
+                     atk_name(DESC_THE).c_str(),
+                     defender_name(true).c_str());
             }
             else
             {
-                mprf("%s %s %s.",
+                mprf(T_("%s grabs %s."),
                      atk_name(DESC_THE).c_str(),
-                     attacker->conj_verb("grab").c_str(),
                      defender_name(true).c_str());
             }
         }

@@ -6594,11 +6594,6 @@ You devour %s%s!
 It tastes like %s.
 它尝起来像%s.
 
-# L1264: ⚠️ARG-DIFF EN:4 ZH:2
-%%%%
-You spit out %s as %s %s & %s in your maw!
-你将%s吐了出来——%s在你的嘴里扭动变形！
-
 # L2707: ⚠️ARG-DIFF EN:3 ZH:2
 %%%%
 You %s %s%s.
@@ -8751,4 +8746,145 @@ Transforming
 %%%%
 %s loses %s in your eye%s.
 %s在你的眼中%s失去了自我。
+%%%%
+
+You spit out %s as %s twist & change in your maw!
+
+你将%s吐了出来——%s在你的嘴里扭动变形！
+%%%%
+You spit out %s as %s twists & changes in your maw!
+
+你将%s吐了出来——%s在你的嘴里扭动变形！
+%%%%
+You %s %s, but do no damage.
+
+你%s了%s，但没有造成伤害。
+%%%%
+Your tendrils
+
+你的触须
+%%%%
+ and electrocute %s
+
+并电击了%s
+%%%%
+ and electrocutes %s
+
+并电击了%s
+%%%%
+%s grab %s.
+
+%s抓住了%s。
+%%%%
+%s grabs %s.
+
+%s抓住了%s。
+%%%%
+poke
+
+戳
+%%%%
+prod
+
+捅
+%%%%
+flog
+
+鞭打
+%%%%
+pound
+
+猛击
+%%%%
+tickle
+
+挠痒
+%%%%
+defenestrate
+
+扔出窗外
+%%%%
+sucker-punch
+
+偷袭
+%%%%
+elbow
+
+肘击
+%%%%
+pinch
+
+掐
+%%%%
+strangle-hug
+
+锁喉
+%%%%
+squeeze
+
+挤压
+%%%%
+tease
+
+戏弄
+%%%%
+eye-gouge
+
+挖眼
+%%%%
+karate-kick
+
+空手道踢
+%%%%
+headlock
+
+锁头
+%%%%
+wrestle
+
+摔跤
+%%%%
+trip-wire
+
+绊倒
+%%%%
+kneecap
+
+膝撞
+%%%%
+headbutt
+
+头撞
+%%%%
+head-knock
+
+敲头
+%%%%
+head-slam
+
+猛砸
+%%%%
+kick
+
+踢
+%%%%
+heavy kick
+
+猛踢
+%%%%
+stomp
+
+重踏
+%%%%
+buffet
+
+抽打
+%%%%
+strangle
+
+勒
+%%%%
+smack
+
+掌掴
 %%%%
