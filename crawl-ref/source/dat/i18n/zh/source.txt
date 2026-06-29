@@ -8524,7 +8524,7 @@ The %s %s %s.
 # Phase 1b: ARG-DIFF fixes — 5 low-count files (2026-06-29)
 %%%%
 %s, a level %d %s %s
-%1$s，第%2$d级%3$s %4$s
+%s，第%d级%s %s
 
 %%%%
 %s is shrouded in protective flame, covering ground quickly, and attacking fiercely!

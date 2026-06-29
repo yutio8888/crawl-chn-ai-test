@@ -340,8 +340,8 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         {
             if (!silent)
             {
-                mprf(T_("You cannot shoot with your %s while %s."),
-                     weapon->name(DESC_BASENAME).c_str(), held_status());
+                mprf_p(T_("You cannot shoot with your %s while %s."),
+                       weapon->name(DESC_BASENAME).c_str(), held_status());
             }
             return true;
         }

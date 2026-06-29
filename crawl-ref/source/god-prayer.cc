@@ -174,9 +174,9 @@ void try_god_conversion(god_type god)
     {
         // Already worshipping this god - just print a message.
         // Chinese word order: god name before prayer qualifier
-        mprf(MSGCH_GOD, T_("You offer a %sprayer to %s."),
-             you.cannot_speak() ? "silent " : "",
-             god_name(god).c_str());
+        mprf_p(MSGCH_GOD, T_("You offer a %sprayer to %s."),
+               you.cannot_speak() ? "silent " : "",
+               god_name(god).c_str());
     }
 }
 
