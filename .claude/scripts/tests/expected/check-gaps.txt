@@ -1,10 +1,12 @@
 === POSITIONAL GAPS — missing position numbers in CN translations ===
 
-  translation: "%1$s%2$s了%4$s%5$.0s。"
+  EN: "gap: positions 1,2,4,5 used, missing 3"
+  CN: "%1$s%2$s了%4$s%5$.0s。"
   found positions: [1, 2, 4, 5]
   missing positions: [3]
 
-  translation: "%1$s被%3$s向前猛拉。"
+  EN: "gap: positions 1,3 used, missing 2"
+  CN: "%1$s被%3$s向前猛拉。"
   found positions: [1, 3]
   missing positions: [2]
 

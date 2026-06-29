@@ -37,8 +37,8 @@ MPR_CALL_RE = re.compile(r'\b(?:mprf|mprf_nojoin|mprf_p|mpr)\s*\(')
 # Check if a line has T_() or C_() wrapping
 HAS_T_RE = re.compile(r'\b[TtCc]_\(\s*"')
 
-# Detect positional format specifiers: %1$s, %2$d, etc.
-POSFMT_RE = re.compile(r'%(\d+)\$[sdlxcu]')
+# Detect positional format specifiers: %1$s, %2$d, %3$f, etc.
+POSFMT_RE = re.compile(r'%(\d+)\$(?:[sdxcunfFeEgG]|l[du])')
 
 # Detect silent positional consumption: %2$.0s (Issue 29 pattern)
 SILENT_RE = re.compile(r'%(\d+)\$\.0s')
@@ -333,7 +333,8 @@ def cmd_check_gaps(args):
         print()
         for en_key, cn_val, found, missing in gaps:
             cn_short = cn_val[:100]
-            print(f"  translation: \"{cn_short}\"")
+            print(f"  EN: \"{en_key}\"")
+            print(f"  CN: \"{cn_short}\"")
             print(f"  found positions: {found}")
             print(f"  missing positions: {missing}")
             print()
