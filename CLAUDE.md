@@ -2,20 +2,24 @@
 
 This file guides ongoing Chinese (zh) translation work and CJK tiles rendering
 support for DCSS.
-Current branch: `chinese-translation-0.34.1` (based on `0.34.1` stable tag).
-Sibling branch: `worktree-cjk-tiles-fix` (based on `master`, original development).
+
+| Branch | Role | Based on |
+|--------|------|----------|
+| `chn-0.34.1-base` | **Active dev branch** | `chinese-translation-0.34.1` |
+| `chinese-translation-0.34.1` | Stable integration target | `0.34.1` stable tag |
+| `worktree-cjk-tiles-fix` | CJK tiles original dev | `master` |
 
 ## ⚠️ Worktree Branch Discipline
 
-This worktree uses branch `cr0626`. **Do NOT push, merge, or update-ref
-directly from this worktree to other branches** (e.g. `chinese-translation-0.34.1`).
-Doing so causes `git update-ref` to move the branch pointer without updating
-the main repository's index and working tree, leading to false "staged changes".
+Each worktree operates on its own isolated branch. **Do NOT push, merge, or
+update-ref directly from a worktree to other branches.** Doing so causes
+`git update-ref` to move the branch pointer without updating the main
+repository's index and working tree, leading to false "staged changes".
 
-**Correct procedure after committing in this worktree:**
+**Correct procedure after committing in a worktree:**
 1. `cd ~/projects/crawl` (the main repository)
-2. `git checkout chinese-translation-0.34.1` (or the target branch)
-3. `git merge cr0626` (or `git reset --hard cr0626` for fast-forward)
+2. `git checkout <target-branch>` (e.g. `chinese-translation-0.34.1` or `chn-0.34.1-base`)
+3. `git merge <worktree-branch>` (or `git reset --hard <worktree-branch>` for fast-forward)
 4. Resolve any conflicts in the main repository
 5. `git reset --hard HEAD` to sync index and working tree
 
@@ -258,7 +262,11 @@ Three patterns:
 
 ## Current Branch Status
 
-### `chinese-translation-0.34.1` (current, stable-based)
+### `chn-0.34.1-base` (active dev, current)
+Based on `chinese-translation-0.34.1`. Active translation work happens here.
+Cherry-picked commits land on `chinese-translation-0.34.1` after verification.
+
+### `chinese-translation-0.34.1` (stable integration)
 Based on `0.34.1` stable tag. Merged 96 translation commits from
 `worktree-cjk-tiles-fix`. ~1635+ Chinese strings across ~96 .cc files.
 18 merge conflicts resolved. Both WSL console and Windows tiles compile.
@@ -341,11 +349,36 @@ Before submitting any review touching entity names:
 ### Verification Checklist (Per Commit)
 
 ```
-1. make -j8 TILES=y                         # Compiles cleanly
-2. grep to confirm target functions          # No missed guards
-3. git diff self-review                      # Only intended lines changed
-4. EN mode: launch and confirm no crash      # Required for Phase 0-1
-5. EN mode: play 10 min                      # Required for Phase 2+
+1. make clean && make -j8                    # Console build passes (0 errors)
+2. make -j8 TILES=y                          # Tiles build passes (if touching tiles code)
+3. grep to confirm target functions          # No missed guards
+4. git diff self-review                      # Only intended lines changed
+5. EN mode: launch and confirm no crash      # Required for Phase 0-1
+6. EN mode: play 10 min                      # Required for Phase 2+
+```
+
+## Agent Commit Discipline
+
+**Before committing** any Agent-authored changes to crawl-ref:
+
+1. **Verify the dev branch compiles**: `make clean && make -j8` in the main
+   repository on the active dev branch (`chn-0.34.1-base`). If compilation fails,
+   diagnose and fix before committing — never commit code that breaks the build.
+2. **Prefer cherry-pick over merge**: When moving individual commits between
+   branches (e.g. from a worktree branch to `chn-0.34.1-base`, or from
+   `chn-0.34.1-base` to `chinese-translation-0.34.1`), use `git cherry-pick`
+   rather than `git merge`. Cherry-pick keeps history linear, makes each commit's
+   intent clear, and allows reverting individual changes without affecting
+   unrelated work.
+
+```bash
+# Example: cherry-pick a single commit from worktree branch to dev branch
+cd ~/projects/crawl
+git checkout chn-0.34.1-base
+git cherry-pick <commit-hash>
+
+# Example: cherry-pick a range
+git cherry-pick <start-hash>..<end-hash>
 ```
 
 ## Issue Tracking
