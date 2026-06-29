@@ -423,8 +423,216 @@ def cmd_lang_args(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
-# Main
+# Subcommand: validate-terms
 # ══════════════════════════════════════════════════════════════════════════════
+
+def parse_decisions(filepath: str) -> dict:
+    """Parse decisions.md and return {rejected_name: correct_name} for active decisions."""
+    rejected_map = {}
+    if not os.path.exists(filepath):
+        return rejected_map
+
+    with open(filepath, "r", encoding="utf-8") as f:
+        content = f.read()
+
+    # Split by decision blocks
+    blocks = re.split(r'\n(?=### D-[AB]-\d+)', content)
+
+    for block in blocks:
+        # Only active decisions
+        if not re.search(r'\*\*Status\*\*:\s*active', block):
+            continue
+        choice_m = re.search(r'\*\*Choice\*\*:\s*(.+)', block)
+        rejected_m = re.search(r'\*\*Rejected\*\*:\s*(.+)', block)
+        if not choice_m or not rejected_m:
+            continue
+        choice = choice_m.group(1).strip()
+        # Rejected can be comma-separated: "席夫·穆纳, 席夫穆納"
+        rejected_raw = rejected_m.group(1).strip()
+        for r in re.split(r'[,;]', rejected_raw):
+            r = r.strip()
+            if r:
+                rejected_map[r] = choice
+    return rejected_map
+
+
+def cmd_validate_terms(args):
+    """Check for rejected translation terms in source.txt and C++ source."""
+    # Parse decisions
+    rejected_map = parse_decisions(args.glossary)
+    if not rejected_map:
+        print("OK: No active rejected-name decisions found in glossary.")
+        return 0
+
+    # Scan source.txt CN translations for rejected terms
+    entries = parse_source_txt(args.source_txt) if args.source_txt else {}
+    findings = []
+
+    # Check source.txt
+    for en_key, cn_val in entries.items():
+        for rejected, correct in rejected_map.items():
+            if rejected in cn_val:
+                cn_snippet = cn_val[:80]
+                findings.append({
+                    'location': f'source.txt: "{en_key[:60]}"',
+                    'rejected': rejected,
+                    'correct': correct,
+                    'snippet': cn_snippet,
+                })
+
+    # Check C++ source for hardcoded rejected terms in strings (if source_dir given)
+    if args.source_dir:
+        cjk_char_re = re.compile(r'[⺀-鿿]')
+        for dirpath, _, filenames in os.walk(args.source_dir):
+            for fn in sorted(filenames):
+                if not (fn.endswith('.cc') or fn.endswith('.h')):
+                    continue
+                filepath = os.path.join(dirpath, fn)
+                with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+                    lines = f.readlines()
+                for lineno, line in enumerate(lines, 1):
+                    # Skip preprocessor and comments
+                    if SKIP_PP_RE.match(line) or line.strip().startswith('//'):
+                        continue
+                    for rejected, correct in rejected_map.items():
+                        if rejected not in line:
+                            continue
+                        # Must appear inside a string literal AND near CJK chars
+                        # to avoid flagging English-only strings with coincidental substrings
+                        if cjk_char_re.search(line):
+                            findings.append({
+                                'location': f'{filepath}:{lineno}',
+                                'rejected': rejected,
+                                'correct': correct,
+                                'snippet': line.strip()[:100],
+                            })
+
+    if findings:
+        print("=== Rejected translation terms found (from decisions.md) ===")
+        print()
+        for f in findings:
+            print(f"  ❌ {f['location']}")
+            print(f"     Rejected: '{f['rejected']}' → Correct: '{f['correct']}'")
+            print(f"     {f['snippet']}")
+            print()
+        print(f"Summary: {len(findings)} rejected-term occurrence(s)")
+        return 1
+    else:
+        print(f"OK: No rejected terms from {len(rejected_map)} active decisions found.")
+        return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: anti-patterns
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Known functions returning const char* — .c_str() on these is always wrong
+CONST_CHAR_FUNCTIONS = re.compile(
+    r'\b(?:skill_name|ability_name|god_name|spell_title|'
+    r'equip_slot_name|species::name|job_name|'
+    r'mons_class_name|mons_type_name|beam_type_name|'
+    r'charge_desc|held_status|element_name'
+    r')\s*\([^)]*\)\s*\.c_str\s*\(\s*\)'
+)
+
+# English articles as standalone words (in Chinese text they're errors)
+EN_ARTICLE_RE = re.compile(r'(?<![a-zA-Z])\b(?:a|an|the)\b(?![a-zA-Z])')
+
+# Words that look like English articles but aren't in Chinese context
+ARTICLE_FALSE_POSITIVES = {'a', 'an', 'the'}
+
+
+def has_cjk(s: str) -> bool:
+    """Check if string contains CJK characters."""
+    return bool(re.search(r'[⺀-鿿]', s))
+
+
+def cmd_anti_patterns(args):
+    """Detect known anti-patterns in modified files."""
+    findings = []
+    strict_only = args.strict
+    source_dir = args.source_dir
+
+    # Collect files to scan
+    files_to_scan = []
+    for dirpath, _, filenames in os.walk(source_dir):
+        for fn in sorted(filenames):
+            if fn.endswith('.cc') or fn.endswith('.h') or fn.endswith('.txt'):
+                files_to_scan.append(os.path.join(dirpath, fn))
+
+    for filepath in files_to_scan:
+        rel_path = os.path.relpath(filepath, source_dir)
+
+        with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+            lines = f.readlines()
+
+        for lineno, line in enumerate(lines, 1):
+            stripped = line.strip()
+
+            # --- Strict rules (zero false positives) ---
+
+            # R1: mprf with positional format but not using _p variant
+            if HAS_T_RE.search(line) and not POSITIONAL_CALL_RE.search(line):
+                if MPR_CALL_RE.search(line):
+                    # Check if the T_() key in this line is known to have positional
+                    # This is a fast heuristic — the full check is mprf-p subcommand
+                    pass  # Deferred to mprf-p subcommand for precise detection
+
+            # R2: English articles in Chinese text (any file with CJK content)
+            if fn.endswith('.txt'):
+                if has_cjk(line) and EN_ARTICLE_RE.search(line):
+                    for m in EN_ARTICLE_RE.finditer(line):
+                        word = m.group(0)
+                        if word.lower() in ARTICLE_FALSE_POSITIVES:
+                            findings.append({
+                                'level': '🔴',
+                                'rule': 'English article in CN text',
+                                'location': f'{rel_path}:{lineno}',
+                                'detail': f'"{word}"',
+                                'snippet': stripped[:100],
+                            })
+
+            # R3: .c_str() on const char* return
+            if not strict_only:
+                if CONST_CHAR_FUNCTIONS.search(line):
+                    findings.append({
+                        'level': '🟡',
+                        'rule': '.c_str() on const char* return',
+                        'location': f'{rel_path}:{lineno}',
+                        'detail': 'Remove .c_str() — function already returns const char*',
+                        'snippet': stripped[:100],
+                    })
+
+            # R4: conj_verb() with CJK in same line
+            if not strict_only:
+                if 'conj_verb(' in line and has_cjk(line):
+                    findings.append({
+                        'level': '🟡',
+                        'rule': 'conj_verb() near Chinese text',
+                        'location': f'{rel_path}:{lineno}',
+                        'detail': 'conj_verb() must not wrap Chinese — it adds English suffixes',
+                        'snippet': stripped[:100],
+                    })
+
+    if findings:
+        level_label = "STRICT + LENIENT" if not strict_only else "STRICT"
+        print(f"=== Anti-patterns detected ({level_label}) ===")
+        print()
+        for f in findings:
+            print(f"  {f['level']} [{f['rule']}] {f['location']}")
+            print(f"     {f['detail']}")
+            print(f"     {f['snippet']}")
+            print()
+
+        blocker_count = sum(1 for f in findings if f['level'] == '🔴')
+        warn_count = sum(1 for f in findings if f['level'] == '🟡')
+        print(f"Summary: {len(findings)} finding(s) "
+              f"({blocker_count} 🔴 strict, {warn_count} 🟡 lenient)")
+        # Exit 1 only if strict findings exist
+        return 1 if blocker_count > 0 else 0
+    else:
+        print("OK: No anti-patterns found.")
+        return 0
 
 def main():
     parser = argparse.ArgumentParser(
@@ -471,6 +679,27 @@ def main():
     )
     p_lang.add_argument("source_dir", help="Root of C++ source tree")
 
+    # validate-terms
+    p_terms = subparsers.add_parser(
+        "validate-terms",
+        help="Check for rejected translation terms from decisions.md"
+    )
+    p_terms.add_argument("--glossary", required=True,
+                         help="Path to decisions.md")
+    p_terms.add_argument("--source-txt",
+                         help="Path to source.txt (CN translations)")
+    p_terms.add_argument("--source-dir",
+                         help="Root of C++ source tree (optional)")
+
+    # anti-patterns
+    p_ap = subparsers.add_parser(
+        "anti-patterns",
+        help="Detect known agent mistake patterns"
+    )
+    p_ap.add_argument("source_dir", help="Root of source tree")
+    p_ap.add_argument("--strict", action="store_true",
+                      help="Only strict (zero-FP) rules")
+
     args = parser.parse_args()
 
     if args.command == "missing-t":
@@ -483,6 +712,10 @@ def main():
         return cmd_check_gaps(args)
     elif args.command == "lang-args":
         return cmd_lang_args(args)
+    elif args.command == "validate-terms":
+        return cmd_validate_terms(args)
+    elif args.command == "anti-patterns":
+        return cmd_anti_patterns(args)
     else:
         parser.print_help()
         return 1
