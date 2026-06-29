@@ -36,7 +36,7 @@ if [ -f "$SOURCE_DIR/init.txt" ]; then
     INIT_BAK="$SOURCE_DIR/.init.txt.smoke-bak"
     mv "$SOURCE_DIR/init.txt" "$INIT_BAK"
 fi
-trap "rm -f $SOURCE_DIR/init.txt $ZH_OUT; [ -n '$INIT_BAK' ] && mv $INIT_BAK $SOURCE_DIR/init.txt" EXIT
+trap "rm -f $SOURCE_DIR/init.txt $ZH_OUT; [ -n '$INIT_BAK' ] && mv $INIT_BAK $SOURCE_DIR/init.txt; stty sane 2>/dev/null" EXIT
 
 echo 'language = zh' > "$SOURCE_DIR/init.txt"
 

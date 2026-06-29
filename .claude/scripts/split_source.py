@@ -31,7 +31,7 @@ def parse_entries(filepath: str) -> list:
     in_entry = False
     for i, line in enumerate(lines):
         stripped = line.rstrip('\n').rstrip('\r')
-        if stripped.startswith('#') and key is None:
+        if stripped.startswith('#'):
             continue
         if stripped.startswith('%%%%'):
             if key is not None:
@@ -84,12 +84,15 @@ def main():
         print(f"No entries matched pattern '{args.pattern}'")
         return 0
 
-    # Write domain file
+    # Write domain file (%%%%-separated, with blank lines between key and value)
     with open(args.output, 'w', encoding='utf-8') as f:
         for key, value in matched:
             f.write('%%%%\n')
             f.write(f'{key}\n')
-            f.write(f'{value}\n')
+            if value:
+                f.write('\n')
+                f.write(f'{value}\n')
+            f.write('\n')
     print(f"Wrote {len(matched)} entries to {args.output}")
 
     # Optionally remove from source
@@ -98,7 +101,10 @@ def main():
             for key, value in unmatched:
                 f.write('%%%%\n')
                 f.write(f'{key}\n')
-                f.write(f'{value}\n')
+                if value:
+                    f.write('\n')
+                    f.write(f'{value}\n')
+                f.write('\n')
         print(f"Removed {len(matched)} entries from {args.source_txt}")
         print(f"Remaining: {len(unmatched)} entries")
     else:

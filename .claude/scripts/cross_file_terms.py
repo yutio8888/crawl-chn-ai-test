@@ -177,9 +177,10 @@ def main():
         return 1
     else:
         files = [f for f in os.listdir(args.zh_dir) if f.endswith('.txt')]
-        rejected_count = len(parse_decisions(args.glossary)) if os.path.exists(args.glossary) else 0
-        print(f"OK: No cross-file issues across {len(files)} file(s) "
-              f"(checked against {rejected_count} term rulings from decisions.md).")
+        # parse_decisions already called in scan_cross_file — count from
+        # findings count (0 here) or re-parse only if needed for display.
+        # For the OK message, just report files scanned.
+        print(f"OK: No cross-file issues across {len(files)} file(s).")
         return 0
 
 
