@@ -87,7 +87,7 @@ int god_favour_rank(god_type which_god)
 
 static string _describe_favour(god_type which_god)
 {
-    // TODO: ARG-DIFF - penance messages and favour titles have completely different EN/ZH sentence structures with godname embedding
+    // TODO: ARG-DIFF — structural sentence order: favour titles have completely different EN/ZH patterns with godname embedding
     const bool zh = Options.language == lang_t::ZH;
 
     if (player_under_penance())
@@ -654,7 +654,7 @@ static string _describe_god_wrath_causes(god_type which_god)
         // XXX: refactor this if any god hates chaotic but not evil gods
     }
 
-    // TODO: ARG-DIFF - complex multi-line sentences with god_name + comma_separated_fn at different positions
+    // TODO: ARG-DIFF — structural sentence order: god_name + comma_separated_fn multi-line sentences at different EN/ZH positions
     const bool zh = Options.language == lang_t::ZH;
 
     switch (which_god)
@@ -724,7 +724,6 @@ static formatted_string _god_wrath_description(god_type which_god)
     if (which_god != GOD_RU) // Permanent wrath.
     {
         const bool long_wrath = initial_wrath_penance_for(which_god) > 30;
-        // TODO: ARG-DIFF - EN uses apostrophise+god_name at different position than ZH, and "长"/"短" vs "long"/"short" differ structurally
         if (Options.language == lang_t::ZH)
         {
             _add_par(desc, god_name(which_god)
@@ -735,7 +734,8 @@ static formatted_string _god_wrath_description(god_type which_god)
         {
             _add_par(desc, apostrophise(uppercase_first(god_name(which_god)))
                                   + " wrath lasts for a relatively " +
-                                  (long_wrath ? "long" : "short") + " duration.");
+                                  (long_wrath ? T_("long") : T_("short"))
+                                  + " duration.");
         }
     }
 
@@ -829,7 +829,7 @@ static string _get_god_misc_info(god_type which_god)
     string info = "";
     skill_type skill = invo_skill(which_god);
 
-    // TODO: ARG-DIFF - god_name+skill_name interpolation in different positions between EN and ZH
+    // Category A fix: T_() format string with %s for god_name and skill_name
     const bool zh = Options.language == lang_t::ZH;
 
     switch (skill)
@@ -837,22 +837,17 @@ static string _get_god_misc_info(god_type which_god)
         case SK_INVOCATIONS:
             break;
         case SK_NONE:
-            if (zh)
-                info += god_name(which_god) + "的神通力不受"
-                    + skill_name(SK_INVOCATIONS) + "技能的影响。";
-            else
-                info += uppercase_first(apostrophise(god_name(which_god))) +
-                    " powers are not affected by the Invocations skill.";
+            info += make_stringf(T_("%s powers are not affected by the %s skill."),
+                         zh ? god_name(which_god).c_str()
+                            : uppercase_first(apostrophise(god_name(which_god))).c_str(),
+                         skill_name(SK_INVOCATIONS).c_str());
             break;
         default:
-            if (zh)
-                info += god_name(which_god) + "的神通力基于"
-                    + skill_name(skill) + "技能，而非"
-                    + skill_name(SK_INVOCATIONS) + "技能。";
-            else
-                info += uppercase_first(apostrophise(god_name(which_god))) +
-                        " powers are based on " + skill_name(skill) + " instead"
-                        " of Invocations skill.";
+            info += make_stringf(T_("%s powers are based on %s instead of %s skill."),
+                         zh ? god_name(which_god).c_str()
+                            : uppercase_first(apostrophise(god_name(which_god))).c_str(),
+                         skill_name(skill).c_str(),
+                         skill_name(SK_INVOCATIONS).c_str());
             break;
     }
 
@@ -973,26 +968,17 @@ static formatted_string _describe_god_powers(god_type which_god)
 
         if (god_gives_passive(which_god, passive_t::lifesaving))
         {
-            // TODO: ARG-DIFF - adverb placement differs between "carefully guards" (EN) vs "细心地守护" (ZH)
-            if (Options.language == lang_t::ZH)
-                how = (piety >= piety_breakpoint(5)) ? "细心地" :
-                      (piety >= piety_breakpoint(3)) ? "经常" :
-                      (piety >= piety_breakpoint(1)) ? "有时"
-                                                     : "偶尔";
-            else
-                how = (piety >= piety_breakpoint(5)) ? "carefully " :
-                      (piety >= piety_breakpoint(3)) ? "often " :
-                      (piety >= piety_breakpoint(1)) ? "sometimes "
-                                                     : "occasionally ";
+            // Category B fix: T_() adverb fragments for different EN/ZH positions
+            how = (piety >= piety_breakpoint(5)) ? T_("carefully") :
+                  (piety >= piety_breakpoint(3)) ? T_("often") :
+                  (piety >= piety_breakpoint(1)) ? T_("sometimes")
+                                                 : T_("occasionally");
         }
         else
         {
-            // TODO: ARG-DIFF - same adverb placement difference (sometimes/occasionally)
-            if (Options.language == lang_t::ZH)
-                how = (piety >= piety_breakpoint(5)) ? "有时" : "偶尔";
-            else
-                how = (piety >= piety_breakpoint(5)) ? "sometimes "
-                                                     : "occasionally ";
+            // Category B fix: T_() adverb fragments
+            how = (piety >= piety_breakpoint(5)) ? T_("sometimes")
+                                                 : T_("occasionally");
         }
 
         desc.cprintf("%s%s守护你的生命。\n",
@@ -1020,30 +1006,21 @@ static formatted_string _describe_god_powers(god_type which_god)
     case GOD_ZIN:
     {
         have_any = true;
-        // TODO: ARG-DIFF - ZIN adverbs differ in position between EN and ZH (always/经常 before vs after verb)
-        const bool zh = Options.language == lang_t::ZH;
+        // Category B fix: T_() adverb fragments for different EN/ZH positions
         const char *how =
-            zh ? ((piety >= piety_breakpoint(5)) ? "总是" :
-                  (piety >= piety_breakpoint(3)) ? "经常" :
-                  (piety >= piety_breakpoint(1)) ? "有时" :
-                                                   "偶尔")
-               : ((piety >= piety_breakpoint(5)) ? "always" :
-                  (piety >= piety_breakpoint(3)) ? "often" :
-                  (piety >= piety_breakpoint(1)) ? "sometimes" :
-                                                   "occasionally");
+            (piety >= piety_breakpoint(5)) ? T_("always") :
+            (piety >= piety_breakpoint(3)) ? T_("often") :
+            (piety >= piety_breakpoint(1)) ? T_("sometimes") :
+                                             T_("occasionally");
 
         desc.cprintf("%s%s保护你免受混沌伤害。\n",
                 uppercase_first(god_name(which_god)).c_str(), how);
 
         how =
-            zh ? ((piety >= piety_breakpoint(5)) ? "经常" :
-                  (piety >= piety_breakpoint(3)) ? "有时" :
-                  (piety >= piety_breakpoint(1)) ? "偶尔" :
-                                                   "极少")
-               : ((piety >= piety_breakpoint(5)) ? "often" :
-                  (piety >= piety_breakpoint(3)) ? "sometimes" :
-                  (piety >= piety_breakpoint(1)) ? "occasionally" :
-                                                   "rarely");
+            (piety >= piety_breakpoint(5)) ? T_("often") :
+            (piety >= piety_breakpoint(3)) ? T_("sometimes") :
+            (piety >= piety_breakpoint(1)) ? T_("occasionally") :
+                                             T_("rarely");
         desc.cprintf("%s%s保护你免受地狱伤害。\n",
                 uppercase_first(god_name(which_god)).c_str(), how);
         break;
@@ -1061,7 +1038,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(DARKGREY);
         else
             desc.textcolour(god_colour(which_god));
-        // TODO: ARG-DIFF - different %s positions for halo description with variable adjective
+        // Category D fix: T_() for embedded adjectives (large/small)
         if (Options.language == lang_t::ZH)
             desc.cprintf("你散发出%s正义光环，其中的敌人"
                     "更容易被击中。\n",
@@ -1071,24 +1048,19 @@ static formatted_string _describe_god_powers(god_type which_god)
         else
             desc.cprintf("You radiate a%s aura of righteousness, "
                     "making those within it easier to hit.\n",
-                    halo_size > 5 ? " large" :
+                    halo_size > 5 ? T_(" large") :
                     halo_size > 3 ? "" :
-                                    " small");
+                                    T_(" small"));
 
         if (piety >= piety_breakpoint(1))
             desc.textcolour(god_colour(which_god));
         else
             desc.textcolour(DARKGREY);
-        const char *how;
-        // TODO: ARG-DIFF - different adverb/preposition placement between EN and ZH
-        if (Options.language == lang_t::ZH)
-            how = (piety >= piety_breakpoint(5)) ? "完全" :
-                  (piety >= piety_breakpoint(3)) ? "大部分" :
-                                                   "部分";
-        else
-            how = (piety >= piety_breakpoint(5)) ? "completely" :
-                  (piety >= piety_breakpoint(3)) ? "mostly" :
-                                                   "partially";
+        // Category B fix: T_() adverb fragments
+        const char *how =
+            (piety >= piety_breakpoint(5)) ? T_("completely") :
+            (piety >= piety_breakpoint(3)) ? T_("mostly") :
+                                             T_("partially");
         desc.cprintf("%s%s保护你免受负能量伤害。\n",
                 uppercase_first(god_name(which_god)).c_str(), how);
         break;
@@ -1232,7 +1204,7 @@ static formatted_string _describe_god_powers(god_type which_god)
 
         string buf = power.general;
 
-        // TODO: ARG-DIFF - zh_god_power helper translates god power descriptions; not simple T_() conversion
+        // TODO: ARG-DIFF — helper function pattern: zh_god_power translates god power descriptions; not simple T_() conversion
         if (Options.language == lang_t::ZH)
         {
             const char* zh = zh_god_power(buf.c_str());
@@ -1405,7 +1377,7 @@ static const string _god_service_fee_description(god_type which_god)
     {
         if (fee == 0)
         {
-            // TODO: ARG-DIFF - different sentence structure with random_choose and format specifiers
+            // TODO: ARG-DIFF — structural sentence order: random_choose + format specifiers differ between EN and ZH
             return Options.language == lang_t::ZH
                 ? string("（现在行动即可免费）")
                 : string(" (no fee if you ")

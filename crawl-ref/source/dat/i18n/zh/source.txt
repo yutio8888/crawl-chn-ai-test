@@ -9025,4 +9025,63 @@ walk on
 %%%%
 travel through
 水里
+long
+%%%%
+长
+%%%%
+short
+%%%%
+短
+%%%%
+%s powers are not affected by the %s skill.
+%%%%
+%s的神通力不受%s技能的影响。
+%%%%
+%s powers are based on %s instead of %s skill.
+%%%%
+%s的神通力基于%s技能，而非%s技能。
+%%%%
+carefully
+%%%%
+细心地
+%%%%
+often
+%%%%
+经常
+%%%%
+sometimes
+%%%%
+有时
+%%%%
+occasionally
+%%%%
+偶尔
+%%%%
+always
+%%%%
+总是
+%%%%
+rarely
+%%%%
+极少
+%%%%
+ large
+%%%%
+强大的
+%%%%
+ small
+%%%%
+微弱的
+%%%%
+completely
+%%%%
+完全
+%%%%
+mostly
+%%%%
+大部分
+%%%%
+partially
+%%%%
+部分
 %%%%
