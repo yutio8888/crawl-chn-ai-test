@@ -1842,7 +1842,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
             {
                 mons->add_ench(mon_enchant(ENCH_BOUND, pbolt.agent(),
                                            random_range(4, 8)));
-                mprf("The bolas warps around %s and binds %s in place!",
+                mprf(T_("The bolas warps around %s and binds %s in place!"),
                      mons->name(DESC_THE).c_str(),
                      mons->pronoun(PRONOUN_OBJECTIVE).c_str());
             }
@@ -5415,7 +5415,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
         const int dur = 3 + div_rand_round(dmg, 3);
         if (!mon->has_ench(ENCH_FIRE_VULN))
         {
-            mprf("%s fire resistance burns away.",
+            mprf(T_("%s fire resistance burns away."),
                 mon->name(DESC_ITS).c_str());
             mon->add_ench(mon_enchant(ENCH_FIRE_VULN, agent(),
                                       dur * BASELINE_DELAY));
@@ -5608,19 +5608,11 @@ bool bolt::attempt_block(monster* mon)
         {
             if (shield && shield_reflects(*shield))
             {
-                // TODO: ARG-DIFF - different argument order (EN: mon, beam, pos, shield | ZH: mon, pos, shield, beam)
-                if (Options.language == lang_t::ZH)
-                    mprf("%s用%s%s格挡了%s……并将其反射了回去！",
-                         mon->name(DESC_THE).c_str(),
-                         mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                         shield->name(DESC_PLAIN).c_str(),
-                         beam_name.c_str());
-                else
-                    mprf("%s blocks the %s with %s %s... and reflects it back!",
-                         mon->name(DESC_THE).c_str(),
-                         beam_name.c_str(),
-                         mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                         shield->name(DESC_PLAIN).c_str());
+                mprf(T_("%s blocks the %s with %s %s... and reflects it back!"),
+                     mon->name(DESC_THE).c_str(),
+                     beam_name.c_str(),
+                     mon->pronoun(PRONOUN_POSSESSIVE).c_str(),
+                     shield->name(DESC_PLAIN).c_str());
             }
             else
             {
@@ -5718,13 +5710,9 @@ void bolt::affect_monster(monster* mon)
     {
         if (you.see_cell(mon->pos()))
         {
-            if (Options.language == lang_t::ZH)
-                mprf("%s穿透了%s。",
-                     _beam_display_name(*this).c_str(),
-                     mon->name(DESC_THE).c_str());
-            else
-                mprf("The %s passes through %s.",
-                     name.c_str(), mon->name(DESC_THE).c_str());
+            mprf(T_("The %s passes through %s."),
+                 _beam_display_name(*this).c_str(),
+                 mon->name(DESC_THE).c_str());
         }
     }
 
@@ -5764,13 +5752,9 @@ void bolt::affect_monster(monster* mon)
                                    : (T_("hits"));
             if (you.see_cell(mon->pos()))
             {
-                const string beam_name = _beam_display_name(*this);
-                if (Options.language == lang_t::ZH)
-                    mprf("%s%s了%s。", beam_name.c_str(), hit_verb.c_str(),
-                         mon->name(DESC_THE).c_str());
-                else
-                    mprf("The %s %s %s.", name.c_str(), hit_verb.c_str(),
-                         mon->name(DESC_THE).c_str());
+                mprf(T_("The %s %s %s."),
+                     _beam_display_name(*this).c_str(), hit_verb.c_str(),
+                     mon->name(DESC_THE).c_str());
             }
             else if (heard && !hit_noise_msg.empty())
                 mprf(MSGCH_SOUND, "%s", hit_noise_msg.c_str());
@@ -6407,7 +6391,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         const int dam = damage.roll();
         if (you.see_cell(mon->pos()))
         {
-            mprf("%s is dispelled%s",
+            mprf(T_("%s is dispelled%s"),
                  mon->name(DESC_THE).c_str(),
                  attack_strength_punctuation(dam).c_str());
             obvious_effect = true;
@@ -6436,7 +6420,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             return MON_UNAFFECTED;
         if (you.see_cell(mon->pos()))
         {
-            mprf("%s writhes in agony%s",
+            mprf(T_("%s writhes in agony%s"),
                  mon->name(DESC_THE).c_str(),
                  attack_strength_punctuation(dam).c_str());
             obvious_effect = true;
@@ -6481,7 +6465,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         {
             if (mon->type == MONS_GLOWING_ORANGE_BRAIN)
             {
-                mprf("%s is blasted smooth%s",
+                mprf(T_("%s is blasted smooth%s"),
                      mon->name(DESC_THE).c_str(),
                      attack_strength_punctuation(dam).c_str());
             } else {
@@ -6821,7 +6805,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         {
             if (you.can_see(*mon))
             {
-                mprf("%s seems less certain of %s magic.",
+                mprf(T_("%s seems less certain of %s magic."),
                      mon->name(DESC_THE).c_str(), mon->pronoun(PRONOUN_POSSESSIVE).c_str());
                 obvious_effect = true;
             }
@@ -6853,7 +6837,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
 
         if (mon->is_abjurable())
         {
-            mprf("The magic binding %s to this plane unravels!",
+            mprf(T_("The magic binding %s to this plane unravels!"),
                  mon->name(DESC_THE).c_str());
             monster_die(*mon, KILL_RESET, actor_to_death_source(agent()));
         }
@@ -6907,7 +6891,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
     case BEAM_RIMEBLIGHT:
         if (apply_rimeblight(*mon, ench_power, true))
         {
-            mprf("A stygian plague fills %s body.",
+            mprf(T_("A stygian plague fills %s body."),
                  apostrophise(mon->name(DESC_THE)).c_str());
             obvious_effect = true;
         }

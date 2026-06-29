@@ -1985,14 +1985,14 @@ void canned_msg(canned_message_type which_message)
             mpr(T_("Nothing appears to happen."));
             break;
         case MSG_YOU_UNAFFECTED:
-            mpr("You are unaffected.");
+            mpr(T_("You are unaffected."));
             break;
         case MSG_YOU_RESIST:
-            mpr("You resist.");
+            mpr(T_("You resist."));
             learned_something_new(HINT_YOU_RESIST);
             break;
         case MSG_YOU_PARTIALLY_RESIST:
-            mpr("You partially resist.");
+            mpr(T_("You partially resist."));
             break;
         case MSG_TOO_BERSERK:
             mpr(T_("You are too berserk!"));

@@ -8469,4 +8469,56 @@ surge of power!
 
 %%%%
 You feel %s %s
-你感到%s%s
+%%%%
+You are unaffected.
+你未受影响。
+
+%%%%
+You resist.
+你抵抗了。
+
+%%%%
+You partially resist.
+你部分抵抗了。
+
+%%%%
+The bolas warps around %s and binds %s in place!
+绳球缠绕住了%s并将%s束缚在原地！
+
+%%%%
+%s fire resistance burns away.
+%s的火焰抗性被烧尽了。
+
+%%%%
+The %s passes through %s.
+%s穿透了%s。
+
+%%%%
+%s is dispelled%s
+%s被驱散了%s
+
+%%%%
+%s writhes in agony%s
+%s痛苦地扭动着%s
+
+%%%%
+%s is blasted smooth%s
+%s被轰平了%s
+
+%%%%
+%s seems less certain of %s magic.
+%s似乎对%s的魔力不那么自信了。
+
+%%%%
+The magic binding %s to this plane unravels!
+将%s束缚在此位面的魔法瓦解了！
+
+%%%%
+A stygian plague fills %s body.
+冥河瘟疫充满了%s的身体。
+
+%%%%
+The %s %s %s.
+%s%s了%s。
+
+%%%%
