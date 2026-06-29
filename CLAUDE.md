@@ -401,13 +401,20 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 ```
 
+**Dynamic context injection**: For focused agent tasks, generate a minimal context
+block with only relevant terminology and constraints:
+```bash
+bash .claude/scripts/context_resolve.sh "task description" --files <target-files>
+```
+Pipe the output into the agent prompt to reduce context bloat.
+
 **Aggregated verification**: Instead of running individual checks, use the post-agent
 aggregation scripts that capture all output to `.claude/metrics/verify/`:
 
 ```bash
-bash .claude/scripts/post-coder.sh       # After code changes (T_() coverage + mprf-p + arg-mismatch)
-bash .claude/scripts/post-translator.sh  # After translation (format + database @keyword@)
-bash .claude/scripts/post-reviewer.sh    # After review (all consistency checks)
+bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + anti-patterns + smoke)
+bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
+bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)
 ```
 
 Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`
