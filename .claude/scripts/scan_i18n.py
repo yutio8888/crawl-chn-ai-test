@@ -626,18 +626,19 @@ def cmd_anti_patterns(args):
 
             # R1: English articles in Chinese text (.txt files with CJK content)
             # Only flag when article appears embedded in Chinese prose —
-            # not as keyboard key (a/b/c), quoted English, or XML markup.
+            # not as quoted English, keyboard shortcuts, or XML markup.
             if filepath.endswith('.txt') and has_cjk(line) and EN_ARTICLE_RE.search(line):
                 for m in EN_ARTICLE_RE.finditer(line):
                     word = m.group(0)
                     if word.lower() not in ARTICLE_FALSE_POSITIVES:
                         continue
-                    # Skip if CJK immediately before the match — this means
-                    # the "article" is a keyboard key (能力a菜单) or a letter
-                    # reference (字母"a"), not an actual English article.
-                    pre2 = line[max(0, m.start()-2):m.start()]
-                    if has_cjk(pre2):
-                        continue
+                    # Skip single-char "a" when CJK immediately precedes —
+                    # this is a keyboard key or option letter (能力a菜单,
+                    # 武器 a，, a) 男性), not an English article.
+                    if word.lower() == 'a':
+                        pre2 = line[max(0, m.start()-2):m.start()]
+                        if has_cjk(pre2):
+                            continue
                     # Skip if XML/HTML tags nearby (e.g. <w>a</w>) —
                     # these are UI markup, not prose.
                     near_tag = line[max(0, m.start()-10):m.end()+10]

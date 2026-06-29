@@ -29,8 +29,15 @@ fi
 #   Enter through name, species, background, weapon
 #   Open inventory (i), close (Esc)
 #   Open help (?), close (Esc)
+INIT_BAK="$SOURCE_DIR/.init.txt.smoke-bak"
+# Back up existing init.txt if present
+[ -f "$SOURCE_DIR/init.txt" ] && mv "$SOURCE_DIR/init.txt" "$INIT_BAK"
 echo 'language = zh' > "$SOURCE_DIR/init.txt"
+trap "rm -f $SOURCE_DIR/init.txt $ZH_OUT; [ -f $INIT_BAK ] && mv $INIT_BAK $SOURCE_DIR/init.txt" EXIT
 
+# Key sequence is best-effort: the game may have slightly different prompts
+# depending on version. The test catches crashes and protocol leaks during
+# startup even if the key sequence doesn't navigate perfectly.
 printf 'y\ny\ny\ny\n\x1b\ni\n\x1b\n?\n\x1b\n' \
     | timeout "$TIMEOUT_SEC" "$CRAWL" > "$ZH_OUT" 2>&1 || true
 
@@ -99,7 +106,7 @@ else
 fi
 
 # ── Cleanup ───────────────────────────────────────────────────────────
-rm -f "$SOURCE_DIR/init.txt" "$ZH_OUT"
+# trap handles init.txt restore and temp file removal
 
 echo ""
 if [ "$ERRORS" -eq 0 ]; then
