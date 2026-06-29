@@ -1046,11 +1046,7 @@ static string jewellery_type_name(int jeweltype)
     const char* effect = jewellery_effect_name(jeweltype);
     const char* cls = _jewellery_class_name(jeweltype);
 
-    // TODO: ARG-DIFF — ZH: effect+cls, EN: cls+effect (structural word order difference)
-    if (Options.language == lang_t::ZH)
-        return make_stringf("%s%s", effect, cls);
-
-    return make_stringf("%s %s", cls, effect);
+    return make_stringf(T_("%1$s %2$s"), cls, effect);
 }
 
 
