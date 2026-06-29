@@ -9090,3 +9090,15 @@ book_type:manual
 book_type:book
 书
 %%%%
+%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s
+%1$s%2$s%3$s了%4$s%5$s%6$s%7$s%8$s
+%%%%
+%s %s %s but does no damage.
+%s%s了%s，但没有造成伤害。
+%%%%
+stealthily 
+潜行地
+%%%%
+You %1$s %2$s%3$s%4$s%5$s%6$s%7$s
+你%3$s%1$s了%2$s%4$s%5$s%6$s%7$s
+%%%%

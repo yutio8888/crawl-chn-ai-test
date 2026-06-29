@@ -917,31 +917,17 @@ bool melee_attack::handle_phase_hit()
     {
         if (needs_message)
         {
-            // TODO: ARG-DIFF — structural control flow
-            if (Options.language == lang_t::ZH)
+            // T_() key: "%s %s %s but does no damage."
+            // EN: "<atk> <verb> <def> but does no damage."
+            // ZH: "<atk><verb>了<def>，但没有造成伤害。"
             {
-                attack_verb = attacker->is_player()
-                                        ? attack_verb
-                                        : mons_attack_verb();
-                string defender_zh = defender_name(true);
-                if (defender == &you)
-                    defender_zh = "你";
-                mprf("%s%s了%s，但没有造成伤害。",
-                    atk_name(DESC_PLAIN).c_str(),
-                    attack_verb.c_str(),
-                    defender_zh.c_str());
-            }
-            else
-            {
-                attack_verb = attacker->is_player()
-                                        ? attack_verb
-                                        : attacker->conj_verb(mons_attack_verb());
-                // TODO: Clean this up if possible, checking atype for do / does is ugly
-                mprf("%s %s %s but %s no damage.",
-                    attacker->name(DESC_THE).c_str(),
-                    attack_verb.c_str(),
-                    defender_name(true).c_str(),
-                    attacker->is_player() ? "do" : "does");
+                const char* verb = attacker->is_player()
+                    ? attack_verb.c_str()
+                    : attacker->conj_verb(mons_attack_verb()).c_str();
+                mprf(T_("%s %s %s but does no damage."),
+                     attacker->name(DESC_THE).c_str(),
+                     verb,
+                     defender_name(true).c_str());
             }
         }
     }
@@ -1234,7 +1220,7 @@ static void _consider_devouring(monster &defender)
     if (defender.is_shapeshifter())
     {
         // handle this carefully, so the player knows what's going on
-        // TODO: ARG-DIFF: conj_verb + diff %s count — fixed with singular/plural T_() keys
+        // conj_verb handled via singular/plural T_() keys
         if (defender.pronoun_plurality())
             mprf(T_("You spit out %s as %s twist & change in your maw!"),
                  defender.name(DESC_THE).c_str(),
@@ -2676,7 +2662,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
             player_announce_aux_hit(atk);
         else
         {
-            // TODO: ARG-DIFF: diff %s count (ZH:2, EN:3) — fixed with two T_() keys
+            // %s count differs — handled with two T_() keys
             if (you.can_see(*defender))
                 mprf(T_("You %s %s, but do no damage."),
                      aux_verb.c_str(),
@@ -2764,7 +2750,7 @@ bool melee_attack::player_aux_apply(unarmed_attack_type atk)
 
 void melee_attack::player_announce_aux_hit(unarmed_attack_type atk)
 {
-    // TODO: ARG-DIFF: lang-specific prefix — fixed with T_() fragments
+    // T_() fragment handles prefix language
     {
         string prefix = atk == UNAT_MEDUSA_STINGER ? T_("Your tendrils") : T_("You");
         mprf(T_("%s %s %s%s%s"),
@@ -2855,266 +2841,6 @@ int melee_attack::player_apply_postac_multipliers(int damage)
 }
 
 void melee_attack::set_attack_verb(int damage)
-{
-    // TODO: ARG-DIFF — structural control flow
-    if (Options.language == lang_t::ZH)
-        set_attack_verb_zh(damage);
-    else
-        set_attack_verb_en(damage);
-}
-
-void melee_attack::set_attack_verb_zh(int damage)
-{
-    if (!attacker->is_player())
-        return;
-
-    int weap_type = WPN_UNKNOWN;
-
-    if (Options.has_fake_lang(flang_t::grunt))
-        damage = HIT_STRONG + 1;
-
-    if (!weapon)
-        weap_type = WPN_UNARMED;
-    else if (weapon->base_type == OBJ_STAVES)
-        weap_type = WPN_STAFF;
-    else if (weapon->base_type == OBJ_WEAPONS
-             && !is_range_weapon(*weapon))
-    {
-        weap_type = weapon->sub_type;
-    }
-
-    // All weak hits with weapons look the same.
-    if (damage < HIT_WEAK
-        && weap_type != WPN_UNARMED)
-    {
-        if (weap_type != WPN_UNKNOWN)
-            attack_verb = "hit";
-        else
-            attack_verb = "clumsily bash";
-        return;
-    }
-
-    // Take normal hits into account. If the hit is from a weapon with
-    // more than one damage type, randomly choose one damage type from
-    // it.
-    monster_type defender_genus = mons_genus(defender->type);
-    switch (weapon ? single_damage_type(*weapon) : -1)
-    {
-    case DAM_PIERCE:
-        if (damage < HIT_MED)
-            attack_verb = "puncture";
-        else if (damage < HIT_STRONG)
-            attack_verb = "impale";
-        else
-        {
-            if (defender->is_monster()
-                && defender_visible
-                && defender_genus == MONS_HOG)
-            {
-                attack_verb = "spit";
-                verb_degree = "like the proverbial pig";
-            }
-            else if (defender_genus == MONS_CRAB
-                     && Options.has_fake_lang(flang_t::grunt))
-            {
-                attack_verb = "attack";
-                verb_degree = "'s weak point";
-            }
-            else
-            {
-                static const char * const pierce_desc[][2] =
-                {
-                    {"spit", "like a pig"},
-                    {"skewer", "like a kebab"},
-                    {"stick", "like a pincushion"},
-                    {"perforate", "like a sieve"}
-                };
-                const int choice = random2(ARRAYSZ(pierce_desc));
-                attack_verb = pierce_desc[choice][0];
-                verb_degree = pierce_desc[choice][1];
-            }
-        }
-        break;
-
-    case DAM_SLICE:
-        if (damage < HIT_MED)
-            attack_verb = "slash";
-        else if (damage < HIT_STRONG)
-            attack_verb = "slice";
-        else if (defender_genus == MONS_OGRE)
-        {
-            attack_verb = "dice";
-            verb_degree = "like an onion";
-        }
-        else if (defender_genus == MONS_DRAUGR)
-        {
-            attack_verb = "fracture";
-            verb_degree = "into splinters";
-        }
-        else if (defender_genus == MONS_HOG)
-        {
-            attack_verb = "carve";
-            verb_degree = "like the proverbial ham";
-        }
-        else if ((defender_genus == MONS_TENGU
-                  || get_mon_shape(defender_genus) == MON_SHAPE_BIRD)
-                 && one_chance_in(3))
-        {
-            attack_verb = "carve";
-            verb_degree = "like a turkey";
-        }
-        else if ((defender_genus == MONS_YAK || defender_genus == MONS_YAKTAUR)
-                 && Options.has_fake_lang(flang_t::grunt))
-        {
-            attack_verb = "shave";
-        }
-        else
-        {
-            static const char * const slice_desc[][2] =
-            {
-                {"open",    "like a pillowcase"},
-                {"slice",   "like a ripe choko"},
-                {"cut",     "into ribbons"},
-                {"carve",   "like a ham"},
-                {"chop",    "into pieces"}
-            };
-            const int choice = random2(ARRAYSZ(slice_desc));
-            attack_verb = slice_desc[choice][0];
-            verb_degree = slice_desc[choice][1];
-        }
-        break;
-
-    case DAM_BLUDGEON:
-        if (damage < HIT_MED)
-            attack_verb = one_chance_in(4) ? "thump" : "sock";
-        else if (damage < HIT_STRONG)
-            attack_verb = "bludgeon";
-        else if (defender_genus == MONS_DRAUGR)
-        {
-            attack_verb = "shatter";
-            verb_degree = "into splinters";
-        }
-        else if (defender->type == MONS_GREAT_ORB_OF_EYES)
-        {
-            attack_verb = "splatter";
-            verb_degree = "into a gooey mess";
-        }
-        else
-        {
-            static const char * const bludgeon_desc[][2] =
-            {
-                {"crush",   "like a grape"},
-                {"beat",    "like a drum"},
-                {"hammer",  "like a gong"},
-                {"pound",   "like an anvil"},
-                {"flatten", "like a pancake"}
-            };
-            const int choice = random2(ARRAYSZ(bludgeon_desc));
-            attack_verb = bludgeon_desc[choice][0];
-            verb_degree = bludgeon_desc[choice][1];
-        }
-        break;
-
-    case DAM_WHIP:
-        if (damage < HIT_MED)
-            attack_verb = "flog";
-        else if (damage < HIT_STRONG)
-            attack_verb = "flagellate";
-        else
-        {
-            attack_verb = "thrash";
-            verb_degree = "mercilessly";
-        }
-        break;
-
-    case -1: // unarmed
-    {
-        const FormAttackVerbs verbs = get_form(you.form)->uc_attack_verbs;
-        if (verbs.weak != nullptr)
-        {
-            if (damage < HIT_WEAK)
-                attack_verb = verbs.weak;
-            else if (damage < HIT_MED)
-                attack_verb = verbs.medium;
-            else if (damage < HIT_STRONG)
-                attack_verb = verbs.strong;
-            else
-                attack_verb = verbs.devastating;
-            break;
-        }
-
-        if (damage_type == DVORP_CLAWING)
-        {
-            if (damage < HIT_WEAK)
-                attack_verb = "scratch";
-            else if (damage < HIT_MED)
-                attack_verb = "claw";
-            else if (damage < HIT_STRONG)
-                attack_verb = "mangle";
-            else
-                attack_verb = "eviscerate";
-        }
-        else if (damage_type == DVORP_TENTACLE)
-        {
-            if (damage < HIT_WEAK)
-                attack_verb = "tentacle-slap";
-            else if (damage < HIT_MED)
-                attack_verb = "bludgeon";
-            else if (damage < HIT_STRONG)
-                attack_verb = "batter";
-            else
-                attack_verb = "thrash";
-        }
-        else
-        {
-            if (damage < HIT_WEAK)
-                attack_verb = "hit";
-            else if (damage < HIT_MED)
-                attack_verb = "punch";
-            else if (damage < HIT_STRONG)
-                attack_verb = "pummel";
-            else if (defender->is_monster()
-                     && mons_genus(defender->type) == MONS_FORMICID)
-            {
-                attack_verb = "squash";
-                verb_degree = "like the proverbial ant";
-            }
-            else
-            {
-                static const char * const punch_desc[][2] =
-                {
-                    {"pound",     "into fine dust"},
-                    {"pummel",    "like a punching bag"},
-                    {"pulverise", ""},
-                    {"squash",    "like an ant"}
-                };
-                const int choice = random2(ARRAYSZ(punch_desc));
-                // XXX: could this distinction work better?
-                if (choice == 0
-                    && defender->is_monster()
-                    && mons_has_blood(defender->type))
-                {
-                    attack_verb = "beat";
-                    verb_degree = "into a bloody pulp";
-                }
-                else
-                {
-                    attack_verb = punch_desc[choice][0];
-                    verb_degree = punch_desc[choice][1];
-                }
-            }
-        }
-        break;
-    }
-
-    case WPN_UNKNOWN:
-    default:
-        attack_verb = "hit";
-        break;
-    }
-}
-
-void melee_attack::set_attack_verb_en(int damage)
 {
     if (!attacker->is_player())
         return;
@@ -3850,7 +3576,7 @@ string melee_attack::mons_attack_verb()
         T_("kneecap")
     };
 
-    // TODO: ARG-DIFF: lang-specific arrays — fixed with T_() array
+    // T_() array handles verb localization
     if (attacker->type == MONS_KILLER_KLOWN && attk_type == AT_HIT)
         return RANDOM_ELEMENT(klown_attack);
 
@@ -3861,7 +3587,7 @@ string melee_attack::mons_attack_verb()
     if (is_special_mon_stab && attacker->type == MONS_PLAYER_SHADOW)
         return T_("eviscerate");
 
-    // TODO: ARG-DIFF: lang-specific random_choose — fixed with T_() arrays
+    // T_() arrays handle verb localization per armour type
     if (attacker->type == MONS_HAUNTED_ARMOUR)
     {
         if (item_def* armour = attacker->as_monster()->body_armour())
@@ -3933,7 +3659,7 @@ string melee_attack::charge_desc()
     if (!charge_pow || defender->res_elec() > 0)
         return "";
 
-    // TODO: ARG-DIFF: diff %s count — fixed with singular/plural T_() keys
+    // singular/plural T_() keys handle diff %s count
     const string pronoun = defender->pronoun(PRONOUN_OBJECTIVE);
     if (attacker->is_player())
         return make_stringf(T_(" and electrocute %s"), pronoun.c_str());
@@ -3948,52 +3674,31 @@ void melee_attack::announce_hit()
 
     if (attacker->is_monster())
     {
-        // TODO: ARG-DIFF — structural control flow
-        if (Options.language == lang_t::ZH)
+        // T_() keys with positional params handle structural differences
         {
-            string defender_zh = defender_name(true);
-            if (defender == &you)
-                defender_zh = "你";
-            string atk_name_zh = atk_name(DESC_PLAIN);
-            mprf("%s%s%s了%s%s%s%s%s",
-                 atk_name_zh.c_str(),
-                 is_special_mon_stab
-                    && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL)
-                        ? "潜行地" : "",
-                 mons_attack_verb().c_str(), // already Chinese
-                 defender_zh.c_str(),
-                 charge_desc().c_str(),
-                 debug_damage_number().c_str(),
-                 mons_attack_desc().c_str(),
-                 attack_strength_punctuation(damage_done).c_str());
+            string stealth;
+            if (is_special_mon_stab
+                && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL))
+            {
+                stealth = T_("stealthily "); // ZH: "潜行地" (no trailing space)
+            }
+
+            mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"),
+                   atk_name(DESC_THE).c_str(),
+                   stealth.c_str(),
+                   attacker->conj_verb(mons_attack_verb()).c_str(),
+                   defender_name(true).c_str(),
+                   charge_desc().c_str(),
+                   debug_damage_number().c_str(),
+                   mons_attack_desc().c_str(),
+                   attack_strength_punctuation(damage_done).c_str());
         }
-        else
-            mprf("%s %s%s %s%s%s%s%s",
-                 atk_name(DESC_THE).c_str(),
-                 is_special_mon_stab
-                    && attacker->as_monster()->has_ench(ENCH_VAMPIRE_THRALL)
-                        ? "stealthily " : "",
-                 attacker->conj_verb(mons_attack_verb()).c_str(),
-                 defender_name(true).c_str(),
-                 charge_desc().c_str(),
-                 debug_damage_number().c_str(),
-                 mons_attack_desc().c_str(),
-                 attack_strength_punctuation(damage_done).c_str());
     }
     else
     {
-        // TODO: ARG-DIFF — structural control flow (argument order differs)
-        if (Options.language == lang_t::ZH)
-        {
-            mprf("你%s%s了%s%s%s%s%s",
-                 verb_degree.c_str(),
-                 attack_verb.c_str(),
-                 defender->name(DESC_THE).c_str(),
-                 weapon_desc().c_str(),
-                 charge_desc().c_str(), debug_damage_number().c_str(),
-                 attack_strength_punctuation(damage_done).c_str());
-        }
-        else
+        // T_() key with positional params handles argument order difference
+        // EN: "You %1$s %2$s%3$s%4$s%5$s%6$s%7$s"
+        // ZH: "你%3$s%1$s了%2$s%4$s%5$s%6$s%7$s"
         {
             string degree = verb_degree;
             if (!degree.empty() && degree[0] != ' '
@@ -4002,12 +3707,14 @@ void melee_attack::announce_hit()
                 degree = " " + degree;
             }
 
-            mprf("You %s %s%s%s%s%s%s",
-                 attack_verb.c_str(),
-                 defender->name(DESC_THE).c_str(), degree.c_str(),
-                 weapon_desc().c_str(),
-                 charge_desc().c_str(), debug_damage_number().c_str(),
-                 attack_strength_punctuation(damage_done).c_str());
+            mprf_p(T_("You %1$s %2$s%3$s%4$s%5$s%6$s%7$s"),
+                   attack_verb.c_str(),
+                   defender->name(DESC_THE).c_str(),
+                   degree.c_str(),
+                   weapon_desc().c_str(),
+                   charge_desc().c_str(),
+                   debug_damage_number().c_str(),
+                   attack_strength_punctuation(damage_done).c_str());
         }
     }
 }
@@ -4548,7 +4255,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message)
         {
-            // TODO: ARG-DIFF: conj_verb — fixed with singular/plural T_() keys
+            // conj_verb handled via singular/plural T_() keys
             if (attacker->is_player()
                 || (attacker->as_monster()
                     && attacker->as_monster()->pronoun_plurality()))

@@ -164,8 +164,6 @@ private:
 
     /* Output methods */
     void set_attack_verb(int damage) override;
-    void set_attack_verb_zh(int damage);
-    void set_attack_verb_en(int damage);
     void announce_hit() override;
 private:
     // Monster-attack specific stuff
