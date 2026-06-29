@@ -8436,3 +8436,37 @@ element|cold
 %%%%
 element|electricity
 闪电
+
+# === Issue X2 P0-1: surge_power() T_() migration ===
+
+%%%%
+a
+一阵
+
+%%%%
+strong
+强烈的
+
+%%%%
+huge
+巨大的
+
+%%%%
+extremely
+极其
+
+%%%%
+extraordinarily
+异常
+
+%%%%
+numb sensation.
+麻木感。
+
+%%%%
+surge of power!
+力量涌动！
+
+%%%%
+You feel %s %s
+你感到%s%s
