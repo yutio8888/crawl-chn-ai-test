@@ -617,6 +617,9 @@
 %s %s erupts in a glittering mayhem of colour.
 %s的%s爆发出一片五彩缤纷的混乱光芒。
 %%%%
+%s %s yanked forward by the %s.
+%1$s被%3$s向前猛拉%2$.0s。
+%%%%
 %s (<w>?</w> for menu, <w>Esc</w> to quit)
 %s (<w>?</w> 菜单，<w>Esc</w> 退出)
 %%%%

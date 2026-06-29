@@ -5569,11 +5569,10 @@ void bolt::pull_actor(actor *act, int dam)
     if (you.can_see(*act))
     {
         const string beam_name = _beam_display_name(*this);
-        if (Options.language == lang_t::ZH)
-            mprf("%s被%s向前猛拉。", act->name(DESC_THE).c_str(), beam_name.c_str());
-        else
-            mprf("%s %s yanked forward by the %s.", act->name(DESC_THE).c_str(),
-                 act->conj_verb("are").c_str(), beam_name.c_str());
+        mprf_p(T_("%s %s yanked forward by the %s."),
+               act->name(DESC_THE).c_str(),
+               act->conj_verb("are").c_str(),
+               beam_name.c_str());
     }
 
     if (act->pos() != newpos)
