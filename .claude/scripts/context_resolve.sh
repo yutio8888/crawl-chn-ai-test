@@ -21,20 +21,28 @@ FILES=""
 
 while [ $# -gt 0 ]; do
     case "$1" in
-        --task-type) TASK_TYPE="$2"; shift 2 ;;
-        --files) FILES="$2"; shift 2 ;;
+        --task-type)
+            [ $# -ge 2 ] || { echo "ERROR: --task-type requires a value" >&2; exit 1; }
+            TASK_TYPE="$2"; shift 2 ;;
+        --files)
+            [ $# -ge 2 ] || { echo "ERROR: --files requires a value" >&2; exit 1; }
+            FILES="$FILES $2"; shift 2 ;;
         *) shift ;;
     esac
 done
+FILES="${FILES# }"  # trim leading space
 
 # Detect task type from keywords if not specified
 if [ -z "$TASK_TYPE" ]; then
-    if echo "$TASK $FILES" | grep -qiE 'translate|翻译|txt$|source\.txt|descript|database'; then
-        TASK_TYPE="translate"
-    elif echo "$TASK $FILES" | grep -qiE '\.cc$|\.h$|T_\(|mprf|compile|build|bug|fix'; then
-        TASK_TYPE="code"
-    elif echo "$TASK $FILES" | grep -qiE 'review|审查|audit|check'; then
+    # Check review first (narrower patterns, higher priority)
+    if echo "$TASK $FILES" | grep -qiE 'review|审查|审核|audit'; then
         TASK_TYPE="review"
+    # Check code second
+    elif echo "$TASK $FILES" | grep -qiE '\.cc$|\.h$|T_\(|mprf|compile|build|bug|fix|编译|代码|函数|修复|修改|添加'; then
+        TASK_TYPE="code"
+    # Check translate last (broadest patterns)
+    elif echo "$TASK $FILES" | grep -qiE 'translate|翻译|source\.txt|descript|database|dat/.*\.txt'; then
+        TASK_TYPE="translate"
     else
         TASK_TYPE="general"
     fi

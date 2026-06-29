@@ -70,7 +70,11 @@ def scan_cross_file(zh_dir: str, glossary_path: str = None):
     if glossary_path and os.path.exists(glossary_path):
         rejected_map = parse_decisions(glossary_path)
 
-    for fn in sorted(os.listdir(zh_dir)):
+    files = sorted(os.listdir(zh_dir))
+    # Match database.cc ordering: source.txt first, rest alphabetical
+    ordered_files = [f for f in files if f == 'source.txt']
+    ordered_files += [f for f in files if f != 'source.txt']
+    for fn in ordered_files:
         if not fn.endswith('.txt'):
             continue
         filepath = os.path.join(zh_dir, fn)
@@ -103,29 +107,18 @@ def scan_cross_file(zh_dir: str, glossary_path: str = None):
                         'snippet': value[:100],
                     })
 
-    # Check 3: Cross-file term usage inconsistency
-    # Build CN term → EN keys index to detect when the same CN term
-    # is used for different EN concepts across files.
-    cn_term_index = defaultdict(lambda: defaultdict(set))  # cn_term -> {en_key: {files}}
-    for fn, entries in file_entries.items():
-        for en_key, cn_val in entries.items():
-            # Only index multi-word CN terms (single chars are too noisy)
-            for cn_term in re.findall(r'[一-鿿]{2,6}', cn_val):
-                cn_term_index[cn_term][en_key].add(fn)
-
-    for cn_term, en_keys in cn_term_index.items():
-        if len(en_keys) >= 3:  # Same CN term used for 3+ different EN keys
-            files_using = set()
-            for fset in en_keys.values():
-                files_using.update(fset)
-            if len(files_using) >= 2:  # Across 2+ files
-                findings.append({
-                    'type': 'term_overload',
-                    'cn_term': cn_term,
-                    'en_key_count': len(en_keys),
-                    'file_count': len(files_using),
-                    'sample_en_keys': list(en_keys.keys())[:3],
-                })
+    # Check 3: Cross-file term usage inconsistency (DISABLED)
+    # The CJK regex r'[一-鿿]{2,6}' cannot handle word boundaries in
+    # non-space-separated text, producing 300+ noise fragments per
+    # directory. Re-enable when a proper Chinese tokenizer is available
+    # (e.g. jieba) or when term pairs are explicitly listed in decisions.md.
+    #
+    # cn_term_index = defaultdict(lambda: defaultdict(set))
+    # for fn, entries in file_entries.items():
+    #     for en_key, cn_val in entries.items():
+    #         for cn_term in re.findall(r'[一-鿿]{2,6}', cn_val):
+    #             cn_term_index[cn_term][en_key].add(fn)
+    # ...
 
     # Report
     dupes = [f for f in findings if f['type'] == 'duplicate_key']
@@ -168,8 +161,11 @@ def main():
         description="Cross-file i18n term consistency scanner"
     )
     parser.add_argument('zh_dir', help='Path to i18n zh directory')
-    parser.add_argument('--glossary', default='docs/decisions.md',
-                        help='Path to decisions.md (default: docs/decisions.md)')
+    default_glossary = os.path.join(
+        os.path.dirname(os.path.abspath(__file__)),
+        '..', '..', 'docs', 'decisions.md')
+    parser.add_argument('--glossary', default=default_glossary,
+                        help='Path to decisions.md')
     args = parser.parse_args()
 
     if not os.path.isdir(args.zh_dir):

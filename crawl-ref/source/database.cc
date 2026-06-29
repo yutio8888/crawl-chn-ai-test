@@ -204,18 +204,25 @@ TextDB::TextDB(TextDB *parent)
     // entries when keys are intentionally moved.
     if (Options.lang_name && *Options.lang_name)
     {
-        vector<string> found = get_dir_files_ext(_directory, "txt");
-        if (!found.empty())
+        // Resolve through datafile_path: _directory is a relative path
+        // like "i18n/zh/" but actual files live under "dat/i18n/zh/".
+        string test_path = datafile_path(_directory + "source.txt", false);
+        if (!test_path.empty())
         {
-            // Ensure source.txt is always first
-            vector<string> ordered;
-            for (const string &f : found)
-                if (f == "source.txt")
-                    ordered.push_back(f);
-            for (const string &f : found)
-                if (f != "source.txt")
-                    ordered.push_back(f);
-            _input_files = ordered;
+            string dir = get_parent_directory(test_path);
+            vector<string> found = get_dir_files_ext(dir, "txt");
+            if (!found.empty())
+            {
+                // Ensure source.txt is always first
+                vector<string> ordered;
+                for (const string &f : found)
+                    if (f == "source.txt")
+                        ordered.push_back(f);
+                for (const string &f : found)
+                    if (f != "source.txt")
+                        ordered.push_back(f);
+                _input_files = ordered;
+            }
         }
     }
 }

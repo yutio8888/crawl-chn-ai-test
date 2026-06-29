@@ -404,9 +404,11 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 **Dynamic context injection**: For focused agent tasks, generate a minimal context
 block with only relevant terminology and constraints:
 ```bash
-bash .claude/scripts/context_resolve.sh "task description" --files <target-files>
+# Capture context into a variable, include in agent dispatch prompt
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
+    --files <target-files>)
+# Then include $CONTEXT in the agent prompt to reduce context bloat.
 ```
-Pipe the output into the agent prompt to reduce context bloat.
 
 **Aggregated verification**: Instead of running individual checks, use the post-agent
 aggregation scripts that capture all output to `.claude/metrics/verify/`:
