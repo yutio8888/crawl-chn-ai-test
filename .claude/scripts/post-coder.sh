@@ -29,6 +29,9 @@ mkdir -p .claude/metrics/verify
     python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ \
         --strict 2>&1 || true
     echo ""
+    echo "--- Smoke test (ZH mode) ---"
+    bash .claude/scripts/smoke_test.sh 2>&1 || true
+    echo ""
     echo "=== post-coder.sh complete ==="
 } > "$OUT" 2>&1
 
