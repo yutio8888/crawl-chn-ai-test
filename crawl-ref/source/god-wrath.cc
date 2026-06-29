@@ -1691,7 +1691,7 @@ static bool _ignis_champion()
         ? T_("%s is shrouded in protective flame, covering ground quickly, and attacking fiercely!")
         : T_("%s are shrouded in protective flame, covering ground quickly, and attacking fiercely!");
     mprf(shroud_key,
-         mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : "The monsters");
+         mons.size() == 1 ? mons[0]->name(DESC_THE).c_str() : T_("The monsters"));
 
     for (monster* mon : mons)
     {

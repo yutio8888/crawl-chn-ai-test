@@ -7348,11 +7348,6 @@ You feel lethargic.
 Your %s grows more durable.
 你的%s变得更加持久了。
 
-# L1847: ⚠️ARG-DIFF EN:2 ZH:1
-%%%%
-%s %s shrouded in protective flame, covering ground quickly, and attacking fiercely!
-%s被防护火焰笼罩，快速移动，猛烈攻击！
-
 %%%%
 The divine experience confuses you!
 神圣的体验让你头晕目眩！
