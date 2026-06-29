@@ -46,8 +46,9 @@ SILENT_RE = re.compile(r'%(\d+)\$\.0s')
 # Plain format specifiers: %s, %d, %c, %x, %ld, %lu
 PLAIN_FMT_RE = re.compile(r'%(?:l[du]|[sdcxlufeEgG])')
 
-# Detect if a line uses mprf_p (vs plain mprf)
-MPRF_P_RE = re.compile(r'\bmprf_p\s*\(')
+# Detect if a line uses a positional-format-aware function
+POSITIONAL_CALL_RE = re.compile(
+    r'\b(?:mprf_p|make_stringf_p|vmake_stringf_p)\s*\(')
 
 # Lines to skip: diagnostics, debug, error channels
 SKIP_CHANNEL_RE = re.compile(
@@ -242,23 +243,24 @@ def cmd_mprf_p(args):
                     if en_key not in line.lower():
                         continue
                     # Found a match — check if it uses mprf_p
-                    if not MPRF_P_RE.search(line):
+                    if not POSITIONAL_CALL_RE.search(line):
                         findings.append((filepath, lineno, en_key, cn_val[:60]))
 
     if findings:
-        print("=== mprf_p required — positional format in source.txt "
-              "but mprf used in code ===")
+        print("=== Positional format in source.txt "
+              "but code doesn't use _p variant ===")
         print()
         for fpath, lineno, en_key, cn_snippet in findings:
             rel_path = os.path.relpath(fpath, source_dir) if source_dir in fpath else fpath
             print(f"{rel_path}:{lineno}  T_(\"{en_key}\")")
-            print(f"  source.txt has %n$s: \"{cn_snippet}...\" → needs mprf_p")
+            print(f"  source.txt has %n$s: \"{cn_snippet}...\""
+                  f" → needs mprf_p or make_stringf_p")
             print()
         print(f"Summary: {len(findings)} violations")
         return 1
     else:
-        print(f"OK: All {len(pos_keys)} positional-format entries use mprf_p "
-              f"correctly.")
+        print(f"OK: All {len(pos_keys)} positional-format entries use "
+              f"a _p variant correctly.")
         return 0
 
 
