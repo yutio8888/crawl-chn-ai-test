@@ -349,7 +349,7 @@ Before submitting any review touching entity names:
 ### Verification Checklist (Per Commit)
 
 ```
-1. make clean && make -j8                    # Console build passes (0 errors)
+1. make -j8                                   # Console build passes (0 errors)
 2. make -j8 TILES=y                          # Tiles build passes (if touching tiles code)
 3. grep to confirm target functions          # No missed guards
 4. git diff self-review                      # Only intended lines changed
@@ -361,9 +361,9 @@ Before submitting any review touching entity names:
 
 **Before committing** any Agent-authored changes to crawl-ref:
 
-1. **Verify the dev branch compiles**: `make clean && make -j8` in the main
-   repository on the active dev branch (`chn-0.34.1-base`). If compilation fails,
-   diagnose and fix before committing — never commit code that breaks the build.
+1. **Verify the dev branch compiles**: `make -j8` in the main repository on the
+   active dev branch (`chn-0.34.1-base`). If compilation fails, diagnose and fix
+   before committing — never commit code that breaks the build.
 2. **Prefer cherry-pick over merge**: When moving individual commits between
    branches (e.g. from a worktree branch to `chn-0.34.1-base`, or from
    `chn-0.34.1-base` to `chinese-translation-0.34.1`), use `git cherry-pick`
@@ -380,6 +380,19 @@ git cherry-pick <commit-hash>
 # Example: cherry-pick a range
 git cherry-pick <start-hash>..<end-hash>
 ```
+
+### Agent Concurrency Limits
+
+The WSL environment has limited CPU and memory. To avoid system instability:
+
+1. **Max 2 agents in parallel**: Never launch more than 2 Agent/Workflow
+   subagents concurrently. If a task seems to need more, run them sequentially
+   or ask the user to approve the scale.
+2. **Agent compile with `-j4`**: When an agent needs to compile crawl-ref (e.g.
+   to verify a change), use `make -j4` instead of `make -j8`. This leaves cores
+   free for other agents and the main session.
+3. **No background compile storms**: If one agent is already compiling, other
+   agents must wait for it to finish before starting their own compilation.
 
 ## Issue Tracking
 
