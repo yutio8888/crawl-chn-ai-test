@@ -71,6 +71,14 @@ SKIP_CHANNEL_RE = re.compile(
 # Preprocessor lines to skip
 SKIP_PP_RE = re.compile(r'^\s*#\s*(?:if|ifdef|ifndef|else|elif|endif|pragma)')
 
+# Directories to exclude from file traversal
+SKIP_DIRS = {'morgue', '.cache', 'contrib', '.git', 'worktrees', '__pycache__'}
+
+
+def prune_dirs(dirnames):
+    """Remove unwanted directories (in-place) to avoid traversing them."""
+    dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
+
 
 def count_format_args(s: str) -> int:
     """Count unique format specifier arguments in a string.
@@ -159,7 +167,8 @@ def cmd_missing_t(args):
     findings = []  # (rel_path, lineno, display, severity)
     files_scanned = 0
 
-    for dirpath, _, filenames in os.walk(source_dir):
+    for dirpath, dirnames, filenames in os.walk(source_dir):
+        prune_dirs(dirnames)
         for fn in sorted(filenames):
             if not (fn.endswith(".cc") or fn.endswith(".h")):
                 continue
@@ -247,7 +256,8 @@ def cmd_mprf_p(args):
     source_dir = args.source_dir
     findings = []
 
-    for dirpath, _, filenames in os.walk(source_dir):
+    for dirpath, dirnames, filenames in os.walk(source_dir):
+        prune_dirs(dirnames)
         for fn in sorted(filenames):
             if not (fn.endswith(".cc") or fn.endswith(".h")):
                 continue
@@ -389,7 +399,8 @@ def cmd_lang_args(args):
     CONJ_VERB_RE = re.compile(r'conj_verb\s*\(')
     PRONOUN_RE = re.compile(r'pronoun\s*\(')
 
-    for dirpath, _, filenames in os.walk(source_dir):
+    for dirpath, dirnames, filenames in os.walk(source_dir):
+        prune_dirs(dirnames)
         for fn in sorted(filenames):
             if not (fn.endswith(".cc") or fn.endswith(".h")):
                 continue
@@ -458,8 +469,8 @@ def parse_decisions(filepath: str) -> dict:
     with open(filepath, "r", encoding="utf-8") as f:
         content = f.read()
 
-    # Split by decision blocks
-    blocks = re.split(r'\n(?=### D-[AB]-\d+)', content)
+    # Split by decision blocks (Type-A entity, Type-B process, Type-C constraint)
+    blocks = re.split(r'\n(?=### D-[ABC]-\d+)', content)
 
     for block in blocks:
         # Only active decisions
@@ -549,12 +560,14 @@ def cmd_validate_terms(args):
 # Subcommand: anti-patterns
 # ══════════════════════════════════════════════════════════════════════════════
 
-# Known functions returning const char* — .c_str() on these is always wrong
+# Known functions returning const char* — .c_str() on these is always wrong.
+# NOTE: god_name(), ability_name(), charge_desc(), species::name(),
+# mons_type_name(), _beam_type_name() all return std::string — .c_str() is
+# CORRECT on those. This rule intentionally targets only const char* returns.
 CONST_CHAR_FUNCTIONS = re.compile(
-    r'\b(?:skill_name|ability_name|god_name|spell_title|'
-    r'equip_slot_name|species::name|job_name|'
-    r'mons_class_name|mons_type_name|beam_type_name|'
-    r'charge_desc|held_status|element_name'
+    r'\b(?:skill_name|spell_title|'
+    r'equip_slot_name|job_name|'
+    r'mons_class_name|held_status'
     r')\s*\([^)]*\)\s*\.c_str\s*\(\s*\)'
 )
 
@@ -578,7 +591,8 @@ def cmd_anti_patterns(args):
 
     # Collect files to scan
     files_to_scan = []
-    for dirpath, _, filenames in os.walk(source_dir):
+    for dirpath, dirnames, filenames in os.walk(source_dir):
+        prune_dirs(dirnames)
         for fn in sorted(filenames):
             if fn.endswith('.cc') or fn.endswith('.h') or fn.endswith('.txt'):
                 files_to_scan.append(os.path.join(dirpath, fn))
@@ -594,28 +608,44 @@ def cmd_anti_patterns(args):
 
             # --- Strict rules (zero false positives) ---
 
-            # R1: mprf with positional format but not using _p variant
-            if HAS_T_RE.search(line) and not POSITIONAL_CALL_RE.search(line):
-                if MPR_CALL_RE.search(line):
-                    # Check if the T_() key in this line is known to have positional
-                    # This is a fast heuristic — the full check is mprf-p subcommand
-                    pass  # Deferred to mprf-p subcommand for precise detection
+            # R1: English articles in Chinese text (.txt files with CJK content)
+            # Only flag when article appears embedded in Chinese prose —
+            # not as keyboard key (a/b/c), quoted English, or XML markup.
+            if filepath.endswith('.txt') and has_cjk(line) and EN_ARTICLE_RE.search(line):
+                for m in EN_ARTICLE_RE.finditer(line):
+                    word = m.group(0)
+                    if word.lower() not in ARTICLE_FALSE_POSITIVES:
+                        continue
+                    # Skip if CJK immediately before the match — this means
+                    # the "article" is a keyboard key (能力a菜单) or a letter
+                    # reference (字母"a"), not an actual English article.
+                    pre2 = line[max(0, m.start()-2):m.start()]
+                    if has_cjk(pre2):
+                        continue
+                    # Skip if XML/HTML tags nearby (e.g. <w>a</w>) —
+                    # these are UI markup, not prose.
+                    near_tag = line[max(0, m.start()-10):m.end()+10]
+                    if re.search(r'<[/]?\w+>', near_tag):
+                        continue
+                    # Require CJK context within 10 chars BEFORE the match
+                    pre_context = line[max(0, m.start()-10):m.start()]
+                    if not has_cjk(pre_context):
+                        continue
+                    # Require CJK within 5 chars AFTER the match — if CJK
+                    # only appears before (but not after), we're looking at
+                    # quoted English text within Chinese explanation.
+                    post_context = line[m.end():min(len(line), m.end()+5)]
+                    if not has_cjk(post_context):
+                        continue
+                    findings.append({
+                        'level': '🔴',
+                        'rule': 'English article in CN text',
+                        'location': f'{rel_path}:{lineno}',
+                        'detail': f'"{word}" near CJK',
+                        'snippet': stripped[:100],
+                    })
 
-            # R2: English articles in Chinese text (any file with CJK content)
-            if fn.endswith('.txt'):
-                if has_cjk(line) and EN_ARTICLE_RE.search(line):
-                    for m in EN_ARTICLE_RE.finditer(line):
-                        word = m.group(0)
-                        if word.lower() in ARTICLE_FALSE_POSITIVES:
-                            findings.append({
-                                'level': '🔴',
-                                'rule': 'English article in CN text',
-                                'location': f'{rel_path}:{lineno}',
-                                'detail': f'"{word}"',
-                                'snippet': stripped[:100],
-                            })
-
-            # R3: .c_str() on const char* return
+            # R2: .c_str() on const char* return (lenient only)
             if not strict_only:
                 if CONST_CHAR_FUNCTIONS.search(line):
                     findings.append({
