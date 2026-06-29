@@ -146,11 +146,14 @@ Skip for: merge commits, `.claude/` only, `~/projects/issues/` only, or `CLAUDE.
 ### Workflow
 
 ```
+0.5 bash .claude/scripts/check_checkpoint.sh
+    → If stale (exit 2/3), update ORCHESTRATION_STATE.md first
 1. git diff --cached                    # Get staged changes
 2. Agent(zh-code-reviewer,              # Spawn code review
      prompt="review the staged diff for this commit:
               $(git diff --cached)")
 3. Wait for verdict
+4. Record review metrics (see Review Metrics Logging below)
 ```
 
 ### Verdict Action
@@ -160,6 +163,28 @@ Skip for: merge commits, `.claude/` only, `~/projects/issues/` only, or `CLAUDE.
 | **Go** | Proceed with `git commit` |
 | **Conditional Go** | Fix 🟡 issues if quick (<2 min), otherwise note them and proceed |
 | **No-Go** | Fix 🔴 blockers → `make -j8` verify → re-review → repeat from step 1 |
+
+### Review Metrics Logging
+
+After each code review (step 4 in the workflow), record the results to establish
+a quality baseline for future optimization validation:
+
+```bash
+bash .claude/scripts/record_review.sh '{
+  "date": "'"$(date -Iseconds)"'",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of <summary>",
+  "findings": {"blocker": N, "needs_fix": N, "suggestion": N},
+  "fix_iterations": N,
+  "verdict": "Go|Conditional Go|No-Go",
+  "trigger": "pre-commit",
+  "session_id": "<from ORCHESTRATION_STATE.md>"
+}'
+```
+
+The review metrics log (`.claude/metrics/review-log.jsonl`) establishes a baseline
+for quantitatively validating future optimization scripts (Phase B #1 term
+validation, #5 anti-pattern detection). Target: ≥30 records before first trend analysis.
 
 ### Commit Message Convention
 
@@ -344,7 +369,9 @@ Before submitting any review touching entity names:
 
 1. Read `~/projects/issues/INDEX.md` → understand issue landscape
 2. Read `docs/decisions.md` → know existing rulings
-3. If modifying files under `crawl-ref/source/`, run `check_consistency.sh --rulings`
+3. Check checkpoint: `bash .claude/scripts/check_checkpoint.sh`
+   → If it warns (exit 2/3), update `.claude/ORCHESTRATION_STATE.md` before starting new work
+4. If modifying files under `crawl-ref/source/`, run `check_consistency.sh --rulings`
 
 ### Verification Checklist (Per Commit)
 
@@ -362,13 +389,25 @@ Before submitting any review touching entity names:
 Before committing translation changes, run the pre-commit CI checks:
 
 ```bash
-# T_() key coverage + mprf_p compatibility + %s count parity
+# 0. Check checkpoint is current
+bash .claude/scripts/check_checkpoint.sh
+
+# 1. T_() key coverage + mprf_p compatibility + %s count parity
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py arg-mismatch \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+```
+
+**Aggregated verification**: Instead of running individual checks, use the post-agent
+aggregation scripts that capture all output to `.claude/metrics/verify/`:
+
+```bash
+bash .claude/scripts/post-coder.sh       # After code changes (T_() coverage + mprf-p + arg-mismatch)
+bash .claude/scripts/post-translator.sh  # After translation (format + database @keyword@)
+bash .claude/scripts/post-reviewer.sh    # After review (all consistency checks)
 ```
 
 Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`

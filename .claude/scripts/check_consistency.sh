@@ -26,6 +26,11 @@ SOURCEDIR="crawl-ref/source"
 GREP_SCOPE=(--include='*.cc' --include='*.h' --include='*.txt')
 EXCLUDE_PATTERN='worktrees|contrib/'
 
+# Global flag: set to true when any violation is detected.
+# In --strict mode, the script exits 1 if this is true at the end.
+# Without --strict, the script always exits 0 (backward compatible).
+violations_found=false
+
 # ============================================================
 # Mode 1: Ruling consistency — rejected names must not persist
 # ============================================================
@@ -41,6 +46,7 @@ check_entity() {
             echo "$found" | while IFS= read -r line; do
                 echo "     $line"
             done
+            violations_found=true
         else
             echo "  ✅ '$wrong' not found"
         fi
@@ -58,6 +64,7 @@ check_english_residual() {
         echo "$found" | while IFS= read -r line; do
             echo "     $line"
         done
+        violations_found=true
     else
         echo "  ✅ '$en_name' fully translated to '$zh_name'"
     fi
@@ -87,6 +94,7 @@ do_rulings() {
     if [ -n "$cv_zh" ]; then
         echo "  ❌ conj_verb called with Chinese string:"
         echo "$cv_zh" | while IFS= read -r line; do echo "     $line"; done
+        violations_found=true
     else
         echo "  ✅ No conj_verb calls with Chinese strings detected"
     fi
@@ -196,6 +204,7 @@ do_format() {
             if [ "$en_count" != "$zh_count" ]; then
                 echo "  ❌ $basename: %%%% count mismatch (EN: $en_count, ZH: $zh_count)"
                 issues=$((issues + 1))
+                violations_found=true
             fi
         fi
     done
@@ -244,6 +253,7 @@ do_spells() {
             echo "  ❌ Duplicate: $dup"
         done
         issues=$((issues + 1))
+        violations_found=true
     else
         echo "  ✅ No duplicate keys"
     fi
@@ -257,6 +267,7 @@ do_spells() {
             echo "  ⚠️  $orphan"
         done
         issues=$((issues + 1))
+        violations_found=true
     else
         echo "  ✅ No orphan keys"
     fi
@@ -270,6 +281,7 @@ do_spells() {
             echo "  ⚠️  $miss"
         done
         issues=$((issues + 1))
+        violations_found=true
     else
         echo "  ✅ No missing keys"
     fi
@@ -430,6 +442,7 @@ do_database() {
             echo "     @$ref@ — not defined in ZH, EN same file, or any EN database"
             file_issues=$((file_issues + 1))
             issues=$((issues + 1))
+            violations_found=true
         done
     done
 
@@ -445,10 +458,33 @@ do_database() {
 }
 
 # ============================================================
-# Main — parse mode
+# Main — parse mode and --strict flag
 # ============================================================
 
-MODE="${1:---rulings}"
+MODE="--rulings"
+STRICT_MODE=false
+
+while [ $# -gt 0 ]; do
+    case "$1" in
+        --strict) STRICT_MODE=true; shift ;;
+        --rulings|--gods|--skills|--format|--spells|--database|--all)
+            MODE="$1"; shift ;;
+        *)
+            echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--all] [--strict]"
+            echo ""
+            echo "  --rulings   Check rejected translations from decisions.md (default)"
+            echo "  --gods      Verify all 28 god names translated in ZH paths"
+            echo "  --skills    Verify all 14 skill school names translated in ZH paths"
+            echo "  --format    Check %%%% separator count parity"
+            echo "  --spells    Verify spell key consistency (duplicates, orphans, missing)"
+            echo "  --database  Verify @keyword@ reference integrity in database/zh/"
+            echo "  --all       Run all modes"
+            echo "  --strict    Exit with non-zero code when violations are found"
+            echo "              (default: always exit 0 for backward compatibility)"
+            exit 1
+            ;;
+    esac
+done
 
 case "$MODE" in
     --rulings)
@@ -482,16 +518,13 @@ case "$MODE" in
         echo ""
         do_database
         ;;
-    *)
-        echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--all]"
-        echo ""
-        echo "  --rulings   Check rejected translations from decisions.md (default)"
-        echo "  --gods      Verify all 28 god names translated in ZH paths"
-        echo "  --skills    Verify all 14 skill school names translated in ZH paths"
-        echo "  --format    Check %%%% separator count parity"
-        echo "  --spells    Verify spell key consistency (duplicates, orphans, missing)"
-        echo "  --database  Verify @keyword@ reference integrity in database/zh/"
-        echo "  --all       Run all modes"
-        exit 1
-        ;;
 esac
+
+# In strict mode, exit 1 if any violation was detected.
+# Without --strict, always exit 0 (backward compatible).
+if [ "$STRICT_MODE" = true ] && [ "$violations_found" = true ]; then
+    echo ""
+    echo "❌ Consistency violations found (strict mode)."
+    exit 1
+fi
+exit 0
