@@ -6559,11 +6559,6 @@ You offer yourself as an instrument of Makhleb's will and feel overwhelming powe
 %s turn%s aside %s attack!
 %s%s挡开了%s的攻击！
 
-# L346: ⚠️ARG-DIFF EN:3 ZH:2
-%%%%
-%s %s %s attack.
-%s格挡了%s的攻击。
-
 %%%%
 %s is struck blind by the light of your shield.
 %s 被你盾牌的光芒致盲了。
@@ -6597,11 +6592,6 @@ You devour %s%s!
 It tastes like %s.
 它尝起来像%s.
 
-# L2707: ⚠️ARG-DIFF EN:3 ZH:2
-%%%%
-You %s %s%s.
-你%s了%s，但没有造成伤害。
-
 %%%%
 %s %s %s%s%s
 %s%s了%s%s%s
@@ -6610,12 +6600,6 @@ You %s %s%s.
 You%s miss %s%s.
 你%s未命中%s%s。
 
-# L3985: ⚠️ARG-DIFF EN:8 ZH:1
-%%%%
-%s %s%s %s%s%s%s%s
-并电击了%s
-
-# L122: simple
 %%%%
 That is beyond the maximum range.
 那超出了最大射程。
@@ -7214,11 +7198,6 @@ You stop assembling your clockwork bee.
 %%%%
 Casting now could cause dangerous contamination. Continue?
 现在施放可能会对你造成危险的污染。继续吗？
-
-# L121: ⚠️ARG-DIFF EN:2 ZH:0
-%%%%
-You feel a %ssurge of power%s
-你感到一股微弱的力量涌动。
 
 %%%%
 You cannot cast spells while %s!
@@ -8462,6 +8441,7 @@ surge of power!
 
 %%%%
 You feel %s %s
+你感到%s%s
 %%%%
 You are unaffected.
 你未受影响。
@@ -9037,11 +9017,9 @@ short
 短
 %%%%
 %s powers are not affected by the %s skill.
-%%%%
 %s的神通力不受%s技能的影响。
 %%%%
 %s powers are based on %s instead of %s skill.
-%%%%
 %s的神通力基于%s技能，而非%s技能。
 %%%%
 carefully
@@ -10012,8 +9990,8 @@ Spells %s
 %2$s%1$s
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
-你用灰烬和炭为其涂油，欢迎其成为同伴。
+你用灰烬和炭为其涂油，欢迎其成为同伴。%.0s
 %%%%
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
-你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
+你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
 %%%%
