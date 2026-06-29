@@ -1046,7 +1046,7 @@ static string jewellery_type_name(int jeweltype)
     const char* effect = jewellery_effect_name(jeweltype);
     const char* cls = _jewellery_class_name(jeweltype);
 
-    // TODO: ARG-DIFF — ZH: effect+cls, EN: cls+effect (different word order)
+    // TODO: ARG-DIFF — ZH: effect+cls, EN: cls+effect (structural word order difference)
     if (Options.language == lang_t::ZH)
         return make_stringf("%s%s", effect, cls);
 
@@ -2072,10 +2072,8 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             break;
         }
         if (basename)
-            // TODO: ARG-DIFF — "manual" context collision with skill-menu.cc
-            buff << (Options.language == lang_t::ZH
-                     ? (item_typ == BOOK_MANUAL ? "手册" : "书")
-                     : (item_typ == BOOK_MANUAL ? "manual" : "book"));
+            // "manual" context collision with skill-menu.cc
+            buff << C_("book_type", item_typ == BOOK_MANUAL ? "manual" : "book");
         else
             buff << sub_type_string(*this, !dbname);
         break;

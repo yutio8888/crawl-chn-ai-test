@@ -9084,4 +9084,9 @@ mostly
 partially
 %%%%
 部分
+book_type:manual
+手册
+%%%%
+book_type:book
+书
 %%%%
