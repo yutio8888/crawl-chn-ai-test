@@ -10001,3 +10001,367 @@ You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
 %%
 %1$s %2$s life force from %3$s%4$s
 %1$s从%3$s%4$s汲取了生命力。
+
+%%%%
+%1$s %2$s knocked back by the %3$s.
+%1$s被%3$s击退了。
+
+%%%%
+%1$s %2$s knocked back.
+%1$s被击退了。
+
+%%%%
+%s %s %s vigour!
+%1$s汲取了%3$s的精力！
+
+%%%%
+%s becomes entangled by vines.
+%s被藤蔓缠住了。
+
+%%%%
+%s draws strength from your wounds!
+%s从你的伤口汲取力量！
+
+%%%%
+%1$s fails to defend %2$s.
+%1$s未能防守。
+
+%%%%
+%s is completely immune to your confusing touch!
+%s完全免疫你的混乱之触！
+
+%%%%
+%s is healed.
+%s被治愈了。
+
+%%%%
+You catch %s completely off-guard!
+你完全出其不意地击中了%s！
+
+%%%%
+You pounce on the unaware %s!
+你扑向毫无防备的%s！
+
+%%%%
+You %s %s from behind!
+你从背后%s了%s！
+
+%%%%
+You feel devious.
+你感到狡诈。
+
+%%%%
+Your autodazzler retaliates!
+你的自动炫目器反击了！
+
+%%%%
+Your paragon deflects %s attack away from you.
+你的典范将%s的攻击偏转开了。
+
+%%%%
+pounce on
+扑向
+
+%%%%
+strike
+攻击
+
+%%%%
+...and sense your way blocked. You quickly turn back.
+……但感觉到前方被堵，你迅速折返。
+
+%%%%
+...yet there is something new on the other side. You quickly turn back.
+……但对面有了新情况，你迅速折返。
+
+%%%%
+Reactivating autopickup.
+重新开启自动拾取。
+
+%%%%
+You continue transforming.
+你继续变形。
+
+%%%%
+You continue untransforming.
+你继续解除变形。
+
+%%%%
+You sense a monster nearby.
+你感知到附近有怪物。
+
+%%%%
+%s comes into view.
+%s进入了视野。
+
+%%%%
+%s is now too close for your liking.
+%s现在离你太近了，让你不安。
+
+%%%%
+You finish doing something buggy.
+你完成了一件有问题的操作。
+
+%%%%
+Clouds condense from the air!
+云朵从空气中凝聚而出！
+
+%%%%
+QUAD DAMAGE!
+四倍伤害！
+
+%%%%
+The box is emptied!
+盒子被清空了！
+
+%%%%
+The condenser dries out!
+冷凝器干涸了！
+
+%%%%
+The lightning rod overheats!
+避雷针过热了！
+
+%%%%
+The mirror can't reflect that.
+镜子无法反射那个。
+
+%%%%
+The mirror clouds!
+镜子变模糊了！
+
+%%%%
+The sack is emptied!
+袋子被清空了！
+
+%%%%
+The tin is emptied!
+罐头被清空了！
+
+%%%%
+The tremorstone explodes into fragments!
+震颤石炸成了碎片！
+
+%%%%
+You can't see anything there to clone.
+你看不到任何可以克隆的东西。
+
+%%%%
+You can't use the mirror on yourself.
+你不能对自己使用镜子。
+
+%%%%
+You crush the flux bauble in your %s and feel its energy flooding your body.
+你的%s捏碎了通量小玩意，能量涌遍全身！
+
+%%%%
+You produce a hideous howling noise!
+你发出了一声可怕的嚎叫！
+
+%%%%
+You reflect %s with the mirror!
+你用镜子反射了%s！
+
+%%%%
+You don't have any such object.
+你没有这样的物品。
+
+%%%%
+That's the wrong kind of item!
+那是错误类型的物品！
+
+%%%%
+Buggy note passed: unknown note type
+错误提示：未知的笔记类型
+
+%%%%
+A red film seems to cover your vision as you go berserk!
+一层红雾笼罩了你的视野，你陷入了狂暴！
+
+%%%%
+Your anger overwhelms your terror!
+你的愤怒压倒了恐惧！
+
+%%%%
+Your finesse ends abruptly.
+你的精妙打击突然结束了。
+
+%%%%
+Your unstable footing causes you to fumble your attack.
+你的立足不稳导致攻击失误。
+
+%%%%
+You feel mighty!
+你感到力量强大！
+
+%%%%
+You feel yourself moving faster!
+你感到自己动作更快了！
+
+%%%%
+Your %1$s attune%2$s to your body, and you begin to %3$s.
+%1$s适应了你的身体，你开始%3$s。
+
+%%%%
+You feel %s all of a sudden.
+你突然感到%s。
+
+%%%%
+You feel %sclever all of a sudden.
+你突然感到%s聪明了。
+
+%%%%
+You feel %sattractive to monsters.
+你感到对怪物%s有吸引力了。
+
+%%%%
+You feel%s invigorated.
+你感到%s精力充沛。
+
+%%%%
+mightier
+力量更加强大了
+
+%%%%
+very mighty
+力量无比强大
+
+%%%%
+ is enlightened!
+被启迪了！
+
+%%%%
+ is healed!
+被治愈了！
+
+%%%%
+ magic is enhanced!
+的魔力增强了！
+
+%%%%
+ resists.
+抵抗了。
+
+%%%%
+ is unaffected.
+不受影响。
+
+%%%%
+ more
+更加
+
+%%%%
+Clearing quiver.
+清空箭袋。
+
+%%%%
+No targets found!
+未发现目标！
+
+%%%%
+Something you can't see
+你看不见的东西
+
+%%%%
+You are out of magic!
+你魔力耗尽！
+
+%%%%
+You cannot attack while %s.
+你在%s状态下无法攻击。
+
+%%%%
+You deconstruct %s.
+你解构了%s。
+
+%%%%
+You have nothing to quiver.
+你没有东西可装入箭袋。
+
+%%%%
+You nearly hit yourself!
+你差点打到自己！
+
+%%%%
+You reach to attack!
+你伸臂攻击！
+
+%%%%
+You swing at nothing.
+你挥向了空处。
+
+%%%%
+You attack %s.
+你攻击了%s。
+
+%%%%
+You attack empty space.
+你攻击了空无一物之处。
+
+%%%%
+You fail to reach past %s.
+你无法越过%s。
+
+%%%%
+Your weapon can't reach that far!
+你的武器够不到那么远！
+
+%%%%
+You're too confused to aim your attacks!
+你太混乱了，无法瞄准攻击！
+
+%%%%
+You're too confused to attack without stumbling around!
+你太混乱了，无法不跌跌撞撞地攻击！
+
+%%%%
+%s is in the way.
+%s挡在了路上。
+
+%%%%
+You can't see any hostile targets in range.
+你看不到范围内有任何敌对目标。
+
+%%%%
+Your attached jelly eats the %s!
+你身上的果冻吃掉了%s！
+
+%%%%
+ becomes untethered in space!
+在空间中失联了！
+
+%%%%
+%s falls away.
+%s脱落了。
+
+%%%%
+Your search expression is invalid.
+你的搜索表达式无效。
+
+%%%%
+Can't find anything matching that.
+找不到匹配项。
+
+%%%%
+Too many matches; use a more specific search.
+匹配太多；请使用更精确的搜索。
+
+%%%%
+The demon of the infinite void smiles upon you.
+无限虚空的恶魔对你微笑。
+
+%%%%
+You assemble %s and install it in your exoskeleton!
+你组装了%s并将其安装到你的外骨骼上！
+
+%%%%
+You don't have room to hold a gizmo! Drop something first.
+你没有空间容纳小装置！先丢弃一些物品。
+
+%%%%
+Your brain swirls with designs for %s. You just need some more time...
+你的脑海中盘旋着关于%s的设计。你只需要更多时间……
+
+%%%%
+health
+生命

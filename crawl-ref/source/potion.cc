@@ -286,12 +286,8 @@ public:
     {
         const bool were_mighty = you.duration[DUR_MIGHT] > 0;
 
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你突然感到%s。",
-                 were_mighty ? "力量更加强大了" : "力量无比强大");
-        else
-            mprf(MSGCH_DURATION, "You feel %s all of a sudden.",
-                 were_mighty ? "mightier" : "very mighty");
+        const char* feel_mighty = were_mighty ? T_("mightier") : T_("very mighty");
+        mprf(MSGCH_DURATION, T_("You feel %s all of a sudden."), feel_mighty);
         const int dur = _scale_pot_duration(35 + random2(pow), is_potion);
         you.increase_duration(DUR_MIGHT, dur);
         return true;
@@ -332,12 +328,8 @@ public:
     {
         const bool were_brilliant = you.duration[DUR_BRILLIANCE] > 0;
 
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你突然感到%s聪明了。",
-                 were_brilliant ? "更加" : "");
-        else
-            mprf(MSGCH_DURATION, "You feel %sclever all of a sudden.",
-                 were_brilliant ? "more " : "");
+        const char* feel_clever = were_brilliant ? T_("more ") : "";
+        mprf(MSGCH_DURATION, T_("You feel %sclever all of a sudden."), feel_clever);
         const int dur = _scale_pot_duration(35 + random2(pow), is_potion);
         you.increase_duration(DUR_BRILLIANCE, dur);
         return true;
@@ -363,12 +355,8 @@ public:
     {
         const bool was_attractive = you.duration[DUR_ATTRACTIVE] > 0;
 
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_DURATION, "你感到对怪物%s有吸引力了。",
-                 was_attractive ? "更加" : "");
-        else
-            mprf(MSGCH_DURATION, "You feel %sattractive to monsters.",
-                 was_attractive ? "more " : "");
+        const char* attractive_more = was_attractive ? T_("more ") : "";
+        mprf(MSGCH_DURATION, T_("You feel %sattractive to monsters."), attractive_more);
 
         const int dur = _scale_pot_duration((20 + random2(pow)/2), is_potion);
         you.increase_duration(DUR_ATTRACTIVE, dur);
@@ -456,12 +444,8 @@ public:
         if (confuse_player(ambrosia_turns, false, true))
         {
             print_potion_heal_message();
-            if (Options.language == lang_t::ZH)
-                mprf("你感到%s精力充沛。",
-                     you.duration[DUR_AMBROSIA] ? "更加" : "");
-            else
-                mprf("You feel%s invigorated.",
-                     you.duration[DUR_AMBROSIA] ? " more" : "");
+            const char* vigor = you.duration[DUR_AMBROSIA] ? T_(" more") : "";
+            mprf(T_("You feel%s invigorated."), vigor);
             you.increase_duration(DUR_AMBROSIA, ambrosia_turns);
             return true;
         }
@@ -1120,17 +1104,17 @@ void mons_potion_effect(monster& mon, potion_type potion, const actor& source)
             break;
 
         case POT_BRILLIANCE:
-            simple_monster_message(mon, " magic is enhanced!", true);
+            simple_monster_message(mon, T_(" magic is enhanced!"), true);
             mon.add_ench(mon_enchant(ENCH_EMPOWERED_SPELLS, &source));
             break;
 
         case POT_HEAL_WOUNDS:
-            simple_monster_message(mon, " is healed!");
+            simple_monster_message(mon, T_(" is healed!"));
             mon.heal(random_range(30, 50));
             break;
 
         case POT_CURING:
-            simple_monster_message(mon, " is healed!");
+            simple_monster_message(mon, T_(" is healed!"));
             mon.heal(random_range(10, 20));
             mon.del_ench(ENCH_POISON);
             mon.del_ench(ENCH_CONFUSION);
@@ -1138,7 +1122,7 @@ void mons_potion_effect(monster& mon, potion_type potion, const actor& source)
 
         case POT_ENLIGHTENMENT:
         {
-            simple_monster_message(mon, " is enlightened!");
+            simple_monster_message(mon, T_(" is enlightened!"));
             const int dur = random_range(300, 450);
             mon.add_ench(mon_enchant(ENCH_FLIGHT, &source, dur));
             mon.add_ench(mon_enchant(ENCH_STRONG_WILLED, &source, dur));

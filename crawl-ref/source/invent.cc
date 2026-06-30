@@ -1999,9 +1999,9 @@ int prompt_invent_item(const char *prompt,
                 ret = letter_to_index(keyin);
 
             if (must_exist && !you.inv[ret].defined())
-                mpr("You don't have any such object.");
+                mpr(T_("You don't have any such object."));
             else if (must_exist && !item_is_selected(you.inv[ret], type_expect))
-                mpr("That's the wrong kind of item!");
+                mpr(T_("That's the wrong kind of item!"));
             else if (!do_warning || check_warning_inscriptions(you.inv[ret], oper))
                 break;
         }

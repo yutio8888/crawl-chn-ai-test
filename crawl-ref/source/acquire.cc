@@ -1046,7 +1046,7 @@ static bool _do_book_acquirement(item_def &book, int agent)
 static int _failed_acquirement(bool quiet)
 {
     if (!quiet)
-        mpr("The demon of the infinite void smiles upon you.");
+        mpr(T_("The demon of the infinite void smiles upon you."));
     return NON_ITEM;
 }
 
@@ -1541,7 +1541,7 @@ static void _create_acquirement_item(item_def &item, string items_key,
         {
             if (you.inv[i].base_type == OBJ_GIZMOS)
             {
-                mprf("You assemble %s and install it in your exoskeleton!",
+                mprf(T_("You assemble %s and install it in your exoskeleton!"),
                      item.name(DESC_A).c_str());
                 equip_item(SLOT_GIZMO, i, false);
                 break;
@@ -2002,7 +2002,7 @@ bool coglin_invent_gizmo()
 {
     if (inv_count(INVENT_GEAR) >= MAX_GEAR)
     {
-        mpr("You don't have room to hold a gizmo! Drop something first.");
+        mpr(T_("You don't have room to hold a gizmo! Drop something first."));
         return false;
     }
 
@@ -2044,6 +2044,6 @@ void coglin_announce_gizmo_name()
     string name = _generate_gizmo_name();
     names.push_back(name);
 
-    mprf("Your brain swirls with designs for %s. You just need some more time...",
+    mprf(T_("Your brain swirls with designs for %s. You just need some more time..."),
          article_a(name).c_str());
 }

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "activity-interrupt-type.h"
+#include "database.h"
 #include "command-type.h"
 #include "enum.h"
 #include "equipment-slot.h"
@@ -130,7 +131,7 @@ class Delay
      */
     virtual void finish()
     {
-        mpr("You finish doing something buggy.");
+        mpr(T_("You finish doing something buggy."));
     }
 protected:
     bool started = false;

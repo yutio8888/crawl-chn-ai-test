@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "stash.h"
 
 #include <algorithm>
@@ -1408,7 +1409,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (!search->valid() && csearch != "*")
     {
-        mprf(MSGCH_PLAIN, "Your search expression is invalid.");
+        mprf(MSGCH_PLAIN, T_("Your search expression is invalid."));
         return ;
     }
 
@@ -1423,7 +1424,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (results.empty())
     {
-        mprf(MSGCH_PLAIN, "Can't find anything matching that.");
+        mprf(MSGCH_PLAIN, T_("Can't find anything matching that."));
         return;
     }
 
@@ -1432,7 +1433,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (dedup_results.size() > SEARCH_SPAM_THRESHOLD)
     {
-        mprf(MSGCH_PLAIN, "Too many matches; use a more specific search.");
+        mprf(MSGCH_PLAIN, T_("Too many matches; use a more specific search."));
         return;
     }
 

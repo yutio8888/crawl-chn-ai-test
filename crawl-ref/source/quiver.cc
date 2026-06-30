@@ -129,14 +129,12 @@ namespace quiver
         else if (af_mp_check && !you.has_mutation(MUT_HP_CASTING)
             && you.magic_points == 0)
         {
-            mpr("魔力耗尽！");
+            mpr(T_("You are out of magic!"));
         }
         else if (af_mp_check)
         {
-            const bool zh = Options.language == lang_t::ZH;
-            mprf(T_("You are too depleted to draw on your %s recklessly!"),
-                zh ? (you.has_mutation(MUT_HP_CASTING) ? "生命" : "魔力")
-                   : (you.has_mutation(MUT_HP_CASTING) ? "health" : "magic"));
+            const char* resource = you.has_mutation(MUT_HP_CASTING) ? T_("health") : T_("magic");
+            mprf(T_("You are too depleted to draw on your %s recklessly!"), resource);
         }
         return af_hp_check || af_mp_check;
     }
@@ -360,7 +358,7 @@ namespace quiver
             monster* mons = monster_at(target.target);
             if (mons && is_valid_tempering_target(*mons, you, true) && !you.confused())
             {
-                mprf("You deconstruct %s.", mons->name(DESC_THE).c_str());
+                mprf(T_("You deconstruct %s."), mons->name(DESC_THE).c_str());
                 monster_die(*mons, KILL_RESET, NON_MONSTER);
                 you.turn_is_over = true;
                 return;
@@ -553,7 +551,7 @@ namespace quiver
                         coord_def move(random2(3) - 1, random2(3) - 1);
                         if (move.origin())
                         {
-                            mpr("You nearly hit yourself!");
+                            mpr(T_("You nearly hit yourself!"));
                             you.turn_is_over = true;
                             return;
                         }
@@ -565,9 +563,9 @@ namespace quiver
                 else
                 {
                     if (target.needs_targeting())
-                        mpr("You're too confused to aim your attacks!");
+                        mpr(T_("You're too confused to aim your attacks!"));
                     else
-                        mpr("You're too confused to attack without stumbling around!");
+                        mpr(T_("You're too confused to attack without stumbling around!"));
                     return;
                 }
             }
@@ -575,7 +573,7 @@ namespace quiver
             if (you.caught())
             {
                 if (target.needs_targeting())
-                    mprf("You cannot attack while %s.", held_status());
+                    mprf(T_("You cannot attack while %s."), held_status());
                 else
                 {
                     // assume that if a target was explicitly supplied, it was
@@ -640,7 +638,7 @@ namespace quiver
 
             if (x_distance > reach_range || y_distance > reach_range)
             {
-                mpr("Your weapon can't reach that far!");
+                mpr(T_("Your weapon can't reach that far!"));
                 return;
             }
 
@@ -651,7 +649,7 @@ namespace quiver
             {
                 if (you.confused())
                 {
-                    mprf("You attack %s.",
+                    mprf(T_("You attack %s."),
                          feature_description_at(target.target,
                                                 false, DESC_THE).c_str());
                     you.time_taken = attack_delay;
@@ -706,7 +704,7 @@ namespace quiver
                     if (midmons->wont_attack())
                     {
                         // Let's assume friendlies cooperate.
-                        mprf("You fail to reach past %s.", midmons->name(DESC_THE).c_str());
+                        mprf(T_("You fail to reach past %s."), midmons->name(DESC_THE).c_str());
                         you.time_taken = attack_delay;
                         you.turn_is_over = true;
 
@@ -724,12 +722,12 @@ namespace quiver
                 }
 
                 if (success)
-                    mpr("You reach to attack!");
+                    mpr(T_("You reach to attack!"));
                 else
                 {
-                    mprf("%s is in the way.",
+                    mprf(T_("%s is in the way."),
                          mons->observable() ? mons->name(DESC_THE).c_str()
-                                            : "Something you can't see");
+                                            : T_("Something you can't see"));
                 }
             }
 
@@ -741,9 +739,9 @@ namespace quiver
                 if (!force_player_cleave(target.target) && !you.fumbles_attack())
                 {
                     if (x_distance <= 1 && y_distance <= 1)
-                        mpr("You swing at nothing.");
+                        mpr(T_("You swing at nothing."));
                     else
-                        mpr("You attack empty space.");
+                        mpr(T_("You attack empty space."));
                 }
                 you.time_taken = attack_delay;
                 you.turn_is_over = true;
@@ -752,7 +750,7 @@ namespace quiver
             {
                 if (is_valid_tempering_target(*mons, you, true) && !you.confused())
                 {
-                    mprf("You deconstruct %s.", mons->name(DESC_THE).c_str());
+                    mprf(T_("You deconstruct %s."), mons->name(DESC_THE).c_str());
                     monster_die(*mons, KILL_RESET, NON_MONSTER);
                     you.turn_is_over = true;
                     return;
@@ -1315,7 +1313,7 @@ namespace quiver
 
         {
             if (!quiet)
-                mpr("You can't see any hostile targets in range.");
+                mpr(T_("You can't see any hostile targets in range."));
             return false;
         }
         return true;
@@ -1473,7 +1471,7 @@ namespace quiver
 
             // TODO: does non-targeted case come up?
             if (target.isCancel && !target.interactive && is_targeted())
-                mpr("No targets found!");
+                mpr(T_("No targets found!"));
 
             t = target; // copy back, in case they are different
         }
@@ -2771,7 +2769,7 @@ namespace quiver
             {
                 set_to_quiver(make_shared<quiver::action>());
                 // TODO maybe drop this messaging?
-                mpr("Clearing quiver.");
+                mpr(T_("Clearing quiver."));
                 return false;
             }
             else if (isadigit(key))
@@ -2947,7 +2945,7 @@ namespace quiver
 
         if (menu.pointless())
         {
-            mpr("You have nothing to quiver.");
+            mpr(T_("You have nothing to quiver."));
             return;
         }
 

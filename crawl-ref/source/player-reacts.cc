@@ -1197,13 +1197,9 @@ static void _maybe_attune_regen_items()
     plural = plural || eq_list.size() > 1;
     string eq_str = comma_separated_line(eq_list.begin(), eq_list.end());
     string msg_str = comma_separated_line(msgs.begin(), msgs.end());
-    if (Options.language == lang_t::ZH)
-        mprf("你的%s适应了你的身体，你开始%s。",
-             eq_str.c_str(), msg_str.c_str());
-    else
-        mprf("Your %s attune%s to your body, and you begin to %s.",
-             eq_str.c_str(), plural ? " themselves" : "s itself",
-             msg_str.c_str());
+    const char* verb_form = plural ? "attune themselves" : "attunes itself";
+    mprf_p(T_("Your %1$s attune%2$s to your body, and you begin to %3$s."),
+           eq_str.c_str(), verb_form, msg_str.c_str());
 }
 
 // cjo: Handles player hp and mp regeneration. If the counter

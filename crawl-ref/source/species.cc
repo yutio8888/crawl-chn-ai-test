@@ -1,6 +1,7 @@
 #include "AppHdr.h"
 #include <map>
 
+#include "database.h"
 #include "mpr.h"
 #include "options.h"
 #include "species.h"
@@ -824,7 +825,7 @@ void change_species_to(species_type sp)
     vector<item_def*> to_remove = you.equipment.get_forced_removal_list();
     for (item_def* item : to_remove)
     {
-        mprf("%s falls away.", item->name(DESC_YOUR).c_str());
+        mprf(T_("%s falls away."), item->name(DESC_YOUR).c_str());
         you.equipment.remove(*item);
     }
     you.equipment.update();

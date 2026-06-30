@@ -18,6 +18,7 @@
 
 #include "art-enum.h"
 #include "chardump.h"
+#include "database.h"
 #include "delay.h"
 #include "english.h"
 #include "env.h"
@@ -666,10 +667,10 @@ void attack::drain_defender_speed()
 {
     if (needs_message)
     {
-        mprf("%s %s %s vigour!",
-             atk_name(DESC_THE).c_str(),
-             attacker->conj_verb("drain").c_str(),
-             def_name(DESC_ITS).c_str());
+        mprf_p(T_("%s %s %s vigour!"),
+               atk_name(DESC_THE).c_str(),
+               attacker->conj_verb("drain").c_str(),
+               def_name(DESC_ITS).c_str());
     }
     defender->slow_down(attacker, 5 + random2(7));
 }
@@ -752,26 +753,27 @@ void attack::stab_message()
     case 4:     // confused/fleeing/distracted
         if (!one_chance_in(3))
         {
-            mprf("You catch %s completely off-guard!",
+            mprf(T_("You catch %s completely off-guard!"),
                   defender->name(DESC_THE).c_str());
         }
         else
         {
-            mprf("You %s %s from behind!",
-                  you.has_mutation(MUT_PAWS) ? "pounce on" : "strike",
+            const char* action = you.has_mutation(MUT_PAWS) ? T_("pounce on") : T_("strike");
+            mprf(T_("You %s %s from behind!"),
+                  action,
                   defender->name(DESC_THE).c_str());
         }
         break;
     case 1:
         if (you.has_mutation(MUT_PAWS) && coinflip())
         {
-            mprf("You pounce on the unaware %s!",
+            mprf(T_("You pounce on the unaware %s!"),
                  defender->name(DESC_PLAIN).c_str());
             break;
         }
-        mprf("%s fails to defend %s.",
-              defender->name(DESC_THE).c_str(),
-              defender->pronoun(PRONOUN_REFLEXIVE).c_str());
+        mprf_p(T_("%1$s fails to defend %2$s."),
+               defender->name(DESC_THE).c_str(),
+               defender->pronoun(PRONOUN_REFLEXIVE).c_str());
         break;
     }
 
@@ -1247,12 +1249,12 @@ bool attack::apply_damage_brand(const char *what)
             {
                 if (defender->is_player())
                 {
-                    mprf("%s draws strength from your wounds!",
+                    mprf(T_("%s draws strength from your wounds!"),
                          attacker->name(DESC_THE).c_str());
                 }
                 else
                 {
-                    mprf("%s is healed.",
+                    mprf(T_("%s is healed."),
                          attacker->name(DESC_THE).c_str());
                 }
             }
@@ -1320,7 +1322,7 @@ bool attack::apply_damage_brand(const char *what)
             else if (!ench_flavour_affects_monster(attacker, beam_temp.flavour, mon)
                      || mons_invuln_will(*mon))
             {
-                mprf("%s is completely immune to your confusing touch!",
+                mprf(T_("%s is completely immune to your confusing touch!"),
                      mon->name(DESC_THE).c_str());
                 you.duration[DUR_CONFUSING_TOUCH] = 1;
             }
@@ -1353,7 +1355,7 @@ bool attack::apply_damage_brand(const char *what)
         if (coinflip() && attacker->can_constrict(*defender, CONSTRICT_ENTANGLE))
         {
             if (you.can_see(*defender))
-                mprf("%s becomes entangled by vines.", defender->name(DESC_THE).c_str());
+                mprf(T_("%s becomes entangled by vines."), defender->name(DESC_THE).c_str());
             attacker->start_constricting(*defender, CONSTRICT_ENTANGLE);
         }
         break;
@@ -1468,7 +1470,7 @@ int attack::player_stab(int damage)
         {
             if (!you.duration[DUR_DEVIOUS])
             {
-                mprf(MSGCH_DURATION, "You feel devious.");
+                mprf(MSGCH_DURATION, T_("You feel devious."));
                 you.props.erase(DEVIOUS_KEY);
             }
 
@@ -1615,7 +1617,7 @@ void attack::maybe_trigger_autodazzler()
         proj.fire(tracer);
         if (tracer.friend_info.count == 0)
         {
-            mpr("Your autodazzler retaliates!");
+            mpr(T_("Your autodazzler retaliates!"));
 
             proj.fire();
         }
@@ -1627,7 +1629,7 @@ bool attack::paragon_defends_player()
     if (defender->is_player() && paragon_defense_bonus_active()
         && one_chance_in(3))
     {
-        mprf("Your paragon deflects %s attack away from you.",
+        mprf(T_("Your paragon deflects %s attack away from you."),
                     attacker->name(DESC_ITS).c_str());
         return true;
     }

@@ -1091,15 +1091,19 @@ bool actor::knockback(const actor &cause, int dist, int dmg, string source_name,
 
     if (you.can_see(*this))
     {
-        if (Options.language == lang_t::ZH)
-            mprf(source_name.empty() ? "%s被击退了。" : "%s被%s击退了。",
-                 name(DESC_THE).c_str(), source_name.c_str());
+        if (!source_name.empty())
+        {
+            mprf_p(T_("%1$s %2$s knocked back by the %3$s."),
+                   name(DESC_THE).c_str(),
+                   conj_verb("are").c_str(),
+                   source_name.c_str());
+        }
         else
-            mprf("%s %s knocked back%s%s.",
-                 name(DESC_THE).c_str(),
-                 conj_verb("are").c_str(),
-                 !source_name.empty() ? " by the " : "",
-                 source_name.c_str());
+        {
+            mprf_p(T_("%1$s %2$s knocked back."),
+                   name(DESC_THE).c_str(),
+                   conj_verb("are").c_str());
+        }
     }
 
     if (dmg > 0 && pos() != newpos)

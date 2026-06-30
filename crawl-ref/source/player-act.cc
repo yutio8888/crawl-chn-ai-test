@@ -614,7 +614,7 @@ bool player::fumbles_attack()
     {
         if (x_chance_in_y(3, 8))
         {
-            mpr("Your unstable footing causes you to fumble your attack.");
+            mpr(T_("Your unstable footing causes you to fumble your attack."));
             did_fumble = true;
         }
         if (floundering())
@@ -676,25 +676,25 @@ bool player::go_berserk(bool intentional, bool potion)
     if (crawl_state.game_is_hints())
         Hints.hints_berserk_counter++;
 
-    mpr("A red film seems to cover your vision as you go berserk!");
+    mpr(T_("A red film seems to cover your vision as you go berserk!"));
 
     if (you.duration[DUR_FINESSE] > 0)
     {
         you.duration[DUR_FINESSE] = 0; // Totally incompatible.
-        mpr("Your finesse ends abruptly.");
+        mpr(T_("Your finesse ends abruptly."));
     }
 
     if (you.duration[DUR_AFRAID] > 0)
     {
         you.clear_fearmongers();
         you.duration[DUR_AFRAID] = 0; // Too angry to be scared.
-        mpr("Your anger overwhelms your terror!");
+        mpr(T_("Your anger overwhelms your terror!"));
     }
 
     if (!_god_prevents_berserk_haste(intentional))
-        mpr("You feel yourself moving faster!");
+        mpr(T_("You feel yourself moving faster!"));
 
-    mpr("You feel mighty!");
+    mpr(T_("You feel mighty!"));
 
     int dur = (20 + random2avg(19,2)) / 2;
     if (potion && you.has_mutation(MUT_EFFICIENT_METABOLISM))

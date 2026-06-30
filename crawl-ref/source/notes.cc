@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "notes.h"
 
 #include <iomanip>
@@ -183,7 +184,7 @@ static bool _is_noteworthy(const Note& note)
             break;
 
         default:
-            mpr("Buggy note passed: unknown note type");
+            mpr(T_("Buggy note passed: unknown note type"));
             // Return now, rather than give a "Buggy note passed" message
             // for each note of the matching type in the note list.
             return true;

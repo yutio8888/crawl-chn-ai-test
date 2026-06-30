@@ -688,9 +688,9 @@ void DropItemDelay::tick()
 void TransformDelay::tick()
 {
     if (form == transformation::none)
-        mprf(MSGCH_MULTITURN_ACTION, "You continue untransforming.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue untransforming."));
     else
-        mprf(MSGCH_MULTITURN_ACTION, "You continue transforming.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue transforming."));
 }
 
 void Delay::handle()
@@ -803,8 +803,7 @@ void PasswallDelay::finish()
     default:
         if (!you.is_habitable(dest))
         {
-            mpr("...yet there is something new on the other side. "
-                "You quickly turn back.");
+            mpr(T_("...yet there is something new on the other side. You quickly turn back."));
             redraw_screen();
             update_screen();
             return;
@@ -838,7 +837,7 @@ void PasswallDelay::finish()
         // If we failed to move them, cancel.
         if (m->pos() == dest)
         {
-            mpr("...and sense your way blocked. You quickly turn back.");
+            mpr(T_("...and sense your way blocked. You quickly turn back."));
             redraw_screen();
             update_screen();
             return;
@@ -1071,7 +1070,7 @@ void autotoggle_autopickup(bool off)
     else if (Options.autopickup_on < 0) // was turned off automatically
     {
         Options.autopickup_on = 1;
-        mprf(MSGCH_WARN, "Reactivating autopickup.");
+        mprf(MSGCH_WARN, T_("Reactivating autopickup."));
     }
 }
 
@@ -1088,7 +1087,7 @@ void monster_interrupt_message(activity_interrupt ai, const activity_interrupt_d
 
     if (ai == activity_interrupt::sense_monster)
     {
-        mprf(MSGCH_WARN, "You sense a monster nearby.");
+        mprf(MSGCH_WARN, T_("You sense a monster nearby."));
         return;
     }
 
@@ -1096,9 +1095,9 @@ void monster_interrupt_message(activity_interrupt ai, const activity_interrupt_d
     ASSERT(mon);
 
     if (at.context == SC_ALREADY_IN_VIEW)
-        mprf(MSGCH_MONSTER_WARNING, "%s is now too close for your liking.", mon->name(DESC_THE).c_str());
+        mprf(MSGCH_MONSTER_WARNING, T_("%s is now too close for your liking."), mon->name(DESC_THE).c_str());
     else
-        mprf(MSGCH_MONSTER_WARNING, "%s 进入了视野。", mon->name(DESC_A).c_str());
+        mprf(MSGCH_MONSTER_WARNING, T_("%s comes into view."), mon->name(DESC_A).c_str());
 }
 
 // Returns true if any activity was stopped. Not reentrant.

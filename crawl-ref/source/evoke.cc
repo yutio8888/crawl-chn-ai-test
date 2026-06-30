@@ -86,7 +86,7 @@ static bool _evoke_horn_of_geryon()
 
     bool created = false;
 
-    mprf(MSGCH_SOUND, "You produce a hideous howling noise!");
+    mprf(MSGCH_SOUND, T_("You produce a hideous howling noise!"));
     noisy(15, you.pos()); // same as hell effect noise
     did_god_conduct(DID_EVIL, 3);
     int num = 1;
@@ -659,9 +659,9 @@ static spret _phantom_mirror(dist *target)
     if (!victim || !you.can_see(*victim))
     {
         if (beam.target == you.pos())
-            mpr("You can't use the mirror on yourself.");
+            mpr(T_("You can't use the mirror on yourself."));
         else
-            mpr("You can't see anything there to clone.");
+            mpr(T_("You can't see anything there to clone."));
         return spret::abort;
     }
 
@@ -670,7 +670,7 @@ static spret _phantom_mirror(dist *target)
     if (!actor_is_illusion_cloneable(victim)
         && !victim->has_ench(ENCH_PHANTOM_MIRROR))
     {
-        mpr("The mirror can't reflect that.");
+        mpr(T_("The mirror can't reflect that."));
         return spret::abort;
     }
 
@@ -716,7 +716,7 @@ static spret _phantom_mirror(dist *target)
     // mirrored copy will not properly count as summoned for some purposes.
     mon->flags &= ~(MF_HARD_RESET | MF_NO_REWARD);
 
-    mprf("You reflect %s with the mirror!",
+    mprf(T_("You reflect %s with the mirror!"),
          victim->name(DESC_THE).c_str());
 
     return spret::success;
@@ -871,7 +871,7 @@ static spret _tremorstone()
     beam.ex_size = 2;
     beam.target = center;
 
-    mpr("The tremorstone explodes into fragments!");
+    mpr(T_("The tremorstone explodes into fragments!"));
 
     const int num_explosions = tremorstone_count(power);
     for (int i = 0; i < num_explosions; i++)
@@ -963,7 +963,7 @@ static spret _condenser()
     }
 
     if (did_something)
-        mpr("Clouds condense from the air!");
+        mprf(MSGCH_PLAIN, T_("Clouds condense from the air!"));
 
     return spret::success;
 }
@@ -1113,8 +1113,8 @@ bool evoke_item(item_def& item, dist *preselect)
         if (!check_transform_into(transformation::flux, false))
             return false;
 
-        mprf("You crush the flux bauble in your %s and feel its energy "
-            "flooding your body.", you.hand_name(false).c_str());
+        mprf(T_("You crush the flux bauble in your %s and feel its energy flooding your body."),
+            you.hand_name(false).c_str());
         ASSERT(in_inventory(item));
         dec_inv_item_quantity(item.link, 1);
         transform(0, transformation::flux, true);
@@ -1169,7 +1169,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 return false;
             expend_xp_evoker(item.sub_type);
             if (!evoker_charges(item.sub_type))
-                mpr("The box is emptied!");
+                mpr(T_("The box is emptied!"));
             practise_evoking(1);
             break;
 
@@ -1178,7 +1178,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 return false;
             expend_xp_evoker(item.sub_type);
             if (!evoker_charges(item.sub_type))
-                mpr("The sack is emptied!");
+                mpr(T_("The sack is emptied!"));
             practise_evoking(1);
             break;
 
@@ -1188,14 +1188,14 @@ bool evoke_item(item_def& item, dist *preselect)
                 practise_evoking(1);
                 expend_xp_evoker(item.sub_type);
                 if (!evoker_charges(item.sub_type))
-                    mpr("The lightning rod overheats!");
+                    mpr(T_("The lightning rod overheats!"));
             }
             else
                 return false;
             break;
 
         case MISC_QUAD_DAMAGE:
-            mpr("QUAD DAMAGE!");
+            mpr(T_("QUAD DAMAGE!"));
             you.duration[DUR_QUAD_DAMAGE] = 30 * BASELINE_DELAY;
             ASSERT(in_inventory(item));
             dec_inv_item_quantity(item.link, 1);
@@ -1212,7 +1212,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The mirror clouds!");
+                        mpr(T_("The mirror clouds!"));
                     // deliberate fall-through
                 case spret::fail:
                     practise_evoking(1);
@@ -1235,7 +1235,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The tin is emptied!");
+                        mpr(T_("The tin is emptied!"));
                 case spret::fail:
                     practise_evoking(1);
                     break;
@@ -1252,7 +1252,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The condenser dries out!");
+                        mpr(T_("The condenser dries out!"));
                 case spret::fail:
                     practise_evoking(1);
                     break;
