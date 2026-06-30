@@ -2007,8 +2007,6 @@ Also at (%d, %d): %s, midx = %d
 Always
 始终
 %%%%
-always
-%%%%
 Ambiguous: can be spell '%s' or school '%s'.
 Ambiguous: can be spell '%s' or school '%s'.
 %%%%
@@ -2750,8 +2748,6 @@ Cantrips
 Careful! %s
 小心！%s
 %%%%
-carefully
-%%%%
  cares for nothing but gold!
 只在乎黄金！
 %%%%
@@ -2907,8 +2903,6 @@ clouds of all kinds
 %%%%
 cold
 寒冷
-%%%%
-completely
 %%%%
  completely resists.
 完全抵抗了。
@@ -3846,8 +3840,6 @@ forget spells at will
 %%%%
  forgives your inadvertent chaotic act, just this once.
  原谅了你无意中的混乱行为，下不为例。
-%%%%
- forgives your inadvertent evil act, just this once.
 %%%%
  forgives your inadvertent holy act, just this once.
  原谅了你无意中的神圣行为，下不为例。
@@ -4872,8 +4864,6 @@ kneecap
 Known levels:
 Known levels:
 %%%%
- large
-%%%%
 lava and is incinerated
 岩浆并被烧成了灰烬
 %%%%
@@ -5280,8 +5270,6 @@ More spells requested for fixed level (%d) randart spellbook than there are vali
 most pleased with you
 对你相当满意
 %%%%
-mostly
-%%%%
 Motes of dream dust float from an unseen source.
 梦尘的微粒从看不见的来源飘来。
 %%%%
@@ -5292,7 +5280,7 @@ Move the cursor to view the level map, or press <w>?</w> for a list of commands.
 移动光标查看楼层地图，或输入<w>?</w>查看命令列表。
 %%%%
 Movement
-Movement
+移动
 %%%%
 MP:
 魔力:
@@ -5528,15 +5516,11 @@ Now linked to your health, your magic stops regenerating.
 numb sensation.
 麻木感。
 %%%%
-occasionally
-%%%%
 off-hand punch
 副手拳击
 %%%%
  offers you knowledge of
 为你提供了
-%%%%
-often
 %%%%
 Ok; try placing with &L or go to the relevant location to
 Ok; try placing with &L or go to the relevant location to
@@ -5660,8 +5644,6 @@ pandemonium lord
 %%%%
 paralysis
 麻痹
-%%%%
-partially
 %%%%
  partially averts the curse.
 部分转移了诅咒。
@@ -5981,8 +5963,6 @@ Randomly select a
 %%%%
 Range
 范围
-%%%%
-rarely
 %%%%
 rC
 冰抗
@@ -6336,7 +6316,7 @@ Saving game... please wait.
  says: You must forswear the aid of any and all before you are fit to worship.
 %%%%
 Scorching
-Scorching
+灼热
 %%%%
 scroll
 卷轴
@@ -6512,8 +6492,6 @@ shop voucher
 Shopping list: removing %s
 购物清单：正在移除%s
 %%%%
-short
-%%%%
  shudders and withdraws towards its neighbour.
  颤抖着缩回了它的邻居身边。
 %%%%
@@ -6614,7 +6592,7 @@ slimy stone staircase leading up
 向上通往的黏滑石梯
 %%%%
 Sloth
-Sloth
+懒惰
 %%%%
 slow self (%d%%)
 自慢（%d%%）
@@ -6631,8 +6609,6 @@ SlowM
 smack
 
 掌掴
-%%%%
- small
 %%%%
 smite your foes
 惩戒你的敌人
@@ -6742,8 +6718,6 @@ Something you can't see is thrashing in a web.
 %%%%
 Something you can't see occupies that space!
 有什么你看不见的东西占据了那个位置！
-%%%%
-sometimes
 %%%%
 Somewhere, a butterfly flaps its wings.
 在某处，一只蝴蝶扇动了翅膀。
@@ -6991,7 +6965,7 @@ Storm clouds gather above %s.
 风暴之云在%s上方聚集。
 %%%%
 Storms
-Storms
+风暴
 %%%%
 Strange energies course through your body.
 奇怪的能量在你体内奔涌。
@@ -7254,8 +7228,6 @@ That's too far away.
 %%%%
 That's too large for you to wield.
 那对你来说太大了，无法持握。
-%%%%
- the
 %%%%
 the
 the
@@ -7637,7 +7609,7 @@ The monsters scatter in all directions!
 怪物们四散奔逃！
 %%%%
 the Moon
-the Moon
+月亮
 %%%%
 The mud splashes down.
 泥浆溅下去了。
@@ -7730,7 +7702,7 @@ The sceptre summons one of its terrible servants.
 权杖召唤了它的一名恐怖仆从。
 %%%%
 the Senses
-the Senses
+感知
 %%%%
 The shadows disperse without effect.
 暗影毫无效果地消散了。
@@ -7841,7 +7813,7 @@ The tremorstone explodes into fragments!
 震颤石炸成了碎片！
 %%%%
 the Tundra
-the Tundra
+冻土
 %%%%
 The vine drags %s backwards!
 藤蔓把%s向后拖去！
@@ -8196,7 +8168,7 @@ torment
 折磨
 %%%%
 Touch
-Touch
+接触
 %%%%
 Train
 训练
@@ -8549,7 +8521,7 @@ weapon
 武器
 %%%%
 Weapons
-Weapons
+武器
 %%%%
 wear
 穿戴
@@ -12208,35 +12180,11 @@ Zot's power touches on you...
 
 # Phase 1b-2 fix: book type names and misc items
 %%%%
-偶尔
-%%%%
 和一张凭证。
 
 # L552: simple
 %%%%
-大部分
-%%%%
-完全
-%%%%
-强大的
-%%%%
-微弱的
-%%%%
-总是
-%%%%
-有时
-%%%%
-极少
-%%%%
-短
-%%%%
-细心地
-%%%%
-经常
-%%%%
 部分
 book_type:manual
 手册
-%%%%
-长
 %%%%
