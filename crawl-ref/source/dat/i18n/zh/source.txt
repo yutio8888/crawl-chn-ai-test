@@ -38,7 +38,7 @@ You are under penance.
 
 %%%% 
 You should show more discipline.
-你应当更加自律。
+你应当更加严守戒律。
 
 %%%% 
 # Entry 1: _describe_favour — godname-embedding favour titles
@@ -52,7 +52,7 @@ A favoured servant of %s.
 
 %%%% 
 A glorious shadow in the eyes of %s.
-在%s眼中是辉煌的暗影。
+在%s眼中是荣耀的暗影。
 
 %%%% 
 A shining star in the eyes of %s.
@@ -76,7 +76,7 @@ A rising star in the eyes of %s.
 
 %%%% 
 %s is noncommittal.
-%s对你态度不明朗。
+%s不置可否。
 
 %%%% 
 # Entry 2: _describe_god_wrath_causes — multi-line wrath format strings
@@ -100,7 +100,7 @@ A rising star in the eyes of %s.
 
 %%%% 
  (no fee if you join today)
-（现在行动即可免费）
+（现在加入即可免费）
 
 
 %%%% 
@@ -176,15 +176,15 @@ bring forth the wretched and dying
 
 %%%% 
 Kikubaaqudgha is now protecting you from necromantic miscasts and death curses.
-奇库巴库哈现在保护你免受死灵法术失败和死亡诅咒的伤害。
+奇库巴库哈现在保护你免受死灵法术失误和死亡诅咒的伤害。
 
 %%%% 
 Kikubaaqudgha will no longer protect you from necromantic miscasts or death curses.
-奇库巴库哈不再保护你免受死灵法术失败或死亡诅咒的伤害。
+奇库巴库哈不再保护你免受死灵法术失误或死亡诅咒的伤害。
 
 %%%% 
 Kikubaaqudgha protects you from necromantic miscasts and death curses.
-奇库巴库哈保护你免受死灵法术失败和死亡诅咒的伤害。
+奇库巴库哈保护你免受死灵法术失误和死亡诅咒的伤害。
 
 %%%% 
 Kikubaaqudgha is now protecting you from unholy torment.
@@ -1466,7 +1466,7 @@ gain power from chaos
 %s对你持中立态度。
 %%%%
 %s is noncommittal.
-%s对你态度不明朗。
+%s不置可否。
 %%%%
 %s is now too close for your liking.
 %s现在离你太近了，让你不安。
@@ -1939,7 +1939,7 @@ gain power from chaos
 （现在行动即可免费）
 %%%%
  (no fee if you join today)
-（现在行动即可免费）
+（现在加入即可免费）
 %%%%
  (offhand)
 （副手）
@@ -2529,7 +2529,7 @@ A giggling sprite jumps out, %s
 一个咯咯笑的小精灵跳了出来，%s
 %%%%
 A glorious shadow in the eyes of %s.
-在%s眼中是辉煌的暗影。
+在%s眼中是荣耀的暗影。
 %%%%
 A great freezing vortex %s.
 一股巨大的冰封漩涡%s。
@@ -3777,7 +3777,7 @@ Damage
 # L305: simple
 %%%%
 damnation
-诅咒
+永罚
 %%%%
 dancing weapon
 舞动武器
@@ -5324,13 +5324,13 @@ Kikubaaqudgha is no longer ready to enhance your necromancy.
 奇库巴库哈尚未准备好强化你的死灵法术。
 %%%%
 Kikubaaqudgha is now protecting you from necromantic miscasts and death curses.
-奇库巴库哈现在保护你免受死灵法术失败和死亡诅咒的伤害。
+奇库巴库哈现在保护你免受死灵法术失误和死亡诅咒的伤害。
 %%%%
 Kikubaaqudgha is now protecting you from unholy torment.
 奇库巴库哈现在保护你免受不洁折磨。
 %%%%
 Kikubaaqudgha protects you from necromantic miscasts and death curses.
-奇库巴库哈保护你免受死灵法术失败和死亡诅咒的伤害。
+奇库巴库哈保护你免受死灵法术失误和死亡诅咒的伤害。
 %%%%
 Kikubaaqudgha protects you from unholy torment.
 奇库巴库哈保护你免受不洁折磨。
@@ -5342,7 +5342,7 @@ Kikubaaqudgha will grant you forbidden knowledge.
 奇库巴库哈将赐予你禁忌知识。
 %%%%
 Kikubaaqudgha will no longer protect you from necromantic miscasts or death curses.
-奇库巴库哈不再保护你免受死灵法术失败或死亡诅咒的伤害。
+奇库巴库哈不再保护你免受死灵法术失误或死亡诅咒的伤害。
 %%%%
 Kikubaaqudgha will no longer protect you from unholy torment.
 奇库巴库哈不再保护你免受不洁折磨。
@@ -8544,7 +8544,7 @@ unequip
 卸下
 %%%%
 Unfortunately, you learned nothing new or useful.
-遗憾的是，你没有学到任何新或有用的东西。
+遗憾的是，你没有学到任何新的或有用的东西。
 %%%%
 unfusing
 解除融合
@@ -9805,7 +9805,7 @@ You cannot %s closer to %s!
 你不能靠近%s进行%s！
 %%%%
 You cannot apport that!
-你不能隔空取物那个！
+你无法对其使用隔空取物！
 %%%%
 You cannot attack while %s.
 你在%s状态下无法攻击。
@@ -10520,7 +10520,7 @@ You feel strangely alone.
 你莫名感到孤独。
 %%%%
 You feel strangely lacking in power.
-你奇怪地感到力量不足。
+你感到奇怪地缺乏力量。
 %%%%
 You feel strangely numb.
 你奇怪地感到麻木。
@@ -10572,13 +10572,13 @@ You feel the ground shudder.
 你感到大地在颤抖。
 %%%%
 You feel the Orb delaying your translocation!
-你感到奥布在延缓你的传送！
+你感到天球在延缓你的传送！
 %%%%
 You feel the orb feeding on your energy!
 你感到宝珠在汲取你的能量！
 %%%%
 You feel the Orb interfering with your translocation!
-你感到奥布在干扰你的传送！
+你感到天球在干扰你的传送！
 %%%%
 You feel the power of the Abyss delaying your translocation!
 你感到深渊的力量在延缓你的传送！
@@ -10763,7 +10763,7 @@ You have already called for blood!
 你已经在召唤血战了！
 %%%%
 You have collected all the runes! Now go and win!
-你已经收集了所有符文！现在去赢吧！
+你已经收集了所有符文！去夺取最终的胜利吧！
 %%%%
 You have difficulty breathing.
 你呼吸困难。
@@ -10900,7 +10900,7 @@ You hold the Black Torch high and begin your conquest of %s in Yredelemnul's nam
 你高举起黑火炬，开始了对%s的征服，以伊雷德勒姆努之名！
 %%%%
 You imbue your battlesphere with extra charge.
-你为你的战斗球注入了额外的充能。
+你为你的战斗球体注入了额外的充能。
 %%%%
 You imbue your familiar with magical energy and its fangs glint viciously.
 你为你的使魔注入了魔法能量，它的獠牙闪烁着光芒
@@ -10972,7 +10972,7 @@ You may now remember your ancestor's life.
 你现在可以回忆起先祖的生平了。
 %%%%
 You miscast %s.
-你施放%s失败了。
+你施法%s失误了。
 %%%%
 You must be standing atop the corpse of a fallen apostle!
 你必须站在倒下的使徒的尸体上！
@@ -11191,7 +11191,7 @@ You really shouldn't be using an unclean item like this.
 你真的不应该这样使用不洁物品。
 %%%%
 You recall your battlesphere and imbue it with extra charge.
-你召回了你的战斗球，并为它注入了额外的充能。
+你召回了你的战斗球体，并为它注入了额外的充能。
 %%%%
 You reconstitute your solar ember.
 你重新凝聚了你的微型太阳。
@@ -11303,7 +11303,7 @@ You should not fight recklessly!
 你不应该鲁莽战斗！
 %%%%
 You should show more discipline.
-你应当更加自律。
+你应当更加严守戒律。
 %%%%
 You shred the net and break free!
 你把网撕碎，挣脱出来！
@@ -11714,7 +11714,7 @@ Your battlesphere expends the last of its energy and dissipates.
 你的战斗球体耗尽了最后的能量，消散了。
 %%%%
 Your battlesphere wavers and loses cohesion.
-你的战斗球体摇晃着失去了凝聚力。
+你的战斗球体不稳定地闪动着，失去了凝聚力。
 %%%%
 Your bee can only target hostiles.
 你的蜜蜂只能瞄准敌对目标。
