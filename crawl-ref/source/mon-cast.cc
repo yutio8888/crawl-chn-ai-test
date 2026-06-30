@@ -399,7 +399,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         [](monster &caster, mon_spell_slot, bolt&) {
             if (you.can_see(caster))
             {
-                mprf("%s liquefies the ground around %s!",
+                mprf(T_("%s liquefies the ground around %s!"),
                      caster.name(DESC_THE).c_str(),
                      caster.pronoun(PRONOUN_REFLEXIVE).c_str());
                 flash_view_delay(UA_MONSTER, BROWN, 80);
@@ -830,7 +830,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
                                                 random_range(3, 5) * BASELINE_DELAY));
                 if (you.can_see(*targs[i]))
                 {
-                    mprf("%s is pinned to %s own shadow.",
+                    mprf(T_("%s is pinned to %s own shadow."),
                          targs[i]->name(DESC_THE).c_str(),
                          targs[i]->pronoun(PRONOUN_POSSESSIVE).c_str());
                 }
@@ -843,7 +843,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
             {
                 targeter_radius hitfunc(&caster, LOS_SOLID, 2);
                 flash_view_delay(UA_MONSTER, DARKGREY, 200, &hitfunc);
-                mprf("%s draws nearby shadows into %s.",
+                mprf(T_("%s draws nearby shadows into %s."),
                     caster.name(DESC_THE).c_str(),
                     caster.pronoun(PRONOUN_REFLEXIVE).c_str());
             }
@@ -887,7 +887,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
 
                 if (you.can_see(caster))
                 {
-                    mprf("%s shreds %s%s", caster.name(DESC_THE).c_str(),
+                    mprf(T_("%s shreds %s%s"), caster.name(DESC_THE).c_str(),
                         victim->name(DESC_THE).c_str(),
                         final ? attack_strength_punctuation(final).c_str()
                                 : ", but does no damage.");
@@ -1400,7 +1400,7 @@ static void _cast_smiting(monster &caster, mon_spell_slot slot, bolt&)
     ASSERT(foe);
 
     if (foe->is_player())
-        mprf("%s smites you!", _god_name(god).c_str());
+        mprf(T_("%s smites you!"), _god_name(god).c_str());
     else
         simple_monster_message(*foe->as_monster(), " is smitten.");
 
@@ -2947,12 +2947,12 @@ static void _print_battlecry_announcement(const monster& chief,
 
     if (spell_cast == SPELL_BATTLECRY)
     {
-        mprf(channel, "%s %s go into a battle-frenzy!",
+        mprf(channel, T_("%s %s go into a battle-frenzy!"),
             chief.friendly() ? "Your" : "The", ally_desc.c_str());
     }
     else if (spell_cast == SPELL_HUNTING_CALL)
     {
-        mprf(channel, "%s %s pick up the pace!",
+        mprf(channel, T_("%s %s pick up the pace!"),
             chief.friendly() ? "Your" : "The", ally_desc.c_str());
     }
 }
@@ -3206,7 +3206,7 @@ static void _corrupt_locale(monster &mons)
     if (player_in_branch(BRANCH_ABYSS))
         return;
 
-    mprf("%s corrupts the dungeon around %s!",
+    mprf(T_("%s corrupts the dungeon around %s!"),
          mons.name(DESC_THE).c_str(), mons.pronoun(PRONOUN_OBJECTIVE).c_str());
 
     lugonu_corrupt_level_monster(mons);
@@ -3901,13 +3901,13 @@ static bool _make_monster_angry(const monster* mon, monster* targ, bool actual)
         if (mon->type == MONS_QUEEN_BEE && (targ->type == MONS_KILLER_BEE ||
                                             targ->type == MONS_MELIAI))
         {
-            mprf("%s calls on %s to defend %s!",
+            mprf(T_("%s calls on %s to defend %s!"),
                 mon->name(DESC_THE).c_str(),
                 targ->name(DESC_THE).c_str(),
                 mon->pronoun(PRONOUN_OBJECTIVE).c_str());
         }
         else
-            mprf("%s goads %s on!", mon->name(DESC_THE).c_str(),
+            mprf(T_("%s goads %s on!"), mon->name(DESC_THE).c_str(),
                  targ->name(DESC_THE).c_str());
     }
 
@@ -4042,7 +4042,7 @@ bool mons_word_of_recall(monster* mons, int recall_target, int min_dist)
             if (you.can_see(*mon))
                 simple_monster_message(*mon, " is recalled.");
             else if (could_see)
-                mprf("%s is recalled away.", mon->name(DESC_THE, true).c_str());
+                mprf(T_("%s is recalled away."), mon->name(DESC_THE, true).c_str());
         }
         // Can only recall a couple things at once
         if ((int)recalled.size() == recall_target)
@@ -5853,7 +5853,7 @@ static bool _mons_cast_freeze(monster* mons)
 
     if (you.can_see(*target))
     {
-        mprf("%s %s frozen%s", target->name(DESC_THE).c_str(),
+        mprf_p(T_("%1$s %2$s frozen%3$s"), target->name(DESC_THE).c_str(),
                               target->conj_verb("are").c_str(),
                               attack_strength_punctuation(damage).c_str());
     }
@@ -7688,7 +7688,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         {
             tileidx_t tile = TILE_BOLT_DEFAULT_WHITE;
 
-            mprf("%s and strikes %s%s%s",
+            mprf(T_("%s and strikes %s%s%s"),
                  airstrike_intensity_display(empty_space, tile).c_str(),
                  foe->name(DESC_THE).c_str(),
                  spell_cast == SPELL_SLEETSTRIKE ? " with frigid sleet" : "",

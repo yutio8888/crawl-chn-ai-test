@@ -968,18 +968,13 @@ static void _mimic_vanish(const coord_def& pos, const string& name)
     if (!you.see_cell(pos))
         return;
 
-    const bool zh = Options.language == lang_t::ZH;
     const char* const smoke_str = can_place_smoke ? (T_(" in a puff of smoke")) : "";
 
     const bool can_cackle = !silenced(pos) && !silenced(you.pos());
     const string cackle = can_cackle ? getSpeakString("_laughs_") + (T_(" and ")) : "";
 
-    if (zh)
-        mprf("%s拟态怪%s%s消失了！",
-             name.c_str(), cackle.c_str(), smoke_str);
-    else
-        mprf("The %s mimic %svanishes%s!",
-             name.c_str(), cackle.c_str(), smoke_str);
+    mprf_p(T_("The %1$s mimic %2$svanishes%3$s!"),
+         name.c_str(), cackle.c_str(), smoke_str);
     interrupt_activity(activity_interrupt::mimic);
 }
 
@@ -1029,7 +1024,7 @@ void discover_mimic(const coord_def& pos)
     const bool plural = feature_mimic ? false : item->quantity > 1;
 
     if (you.see_cell(pos))
-        mprf("%s %s a mimic!", name.c_str(), plural ? "are" : "is");
+        mprf_p(T_("%1$s %2$s a mimic!"), name.c_str(), plural ? "are" : "is");
 
     const string shortname = feature_mimic ? feat_type_name(feat)
                                            : item->name(DESC_BASENAME);
@@ -5656,7 +5651,7 @@ void throw_monster_bits(const monster& mon)
 
         int damage = 1 + random2(mon.get_hit_dice());
 
-        mprf("%s is hit by a flying piece of %s!",
+        mprf(T_("%s is hit by a flying piece of %s!"),
                 target->name(DESC_THE, false).c_str(),
                 mon.name(DESC_THE, false).c_str());
 
@@ -5726,7 +5721,7 @@ void set_ancestor_spells(monster &ancestor, bool notify)
         if (find(old_spells.begin(), old_spells.end(), spellslot.spell)
             == old_spells.end())
         {
-            mprf("%s regains %s memory of %s.",
+            mprf(T_("%s regains %s memory of %s."),
                  ancestor.name(DESC_YOUR, true).c_str(),
                  ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
                  spell_title(spellslot.spell));
@@ -5829,7 +5824,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
             // TODO: this message does not work very well for all sorts of attacks
             // should this be a god message?
             if (announce && you.can_see(*target))
-                mprf("%s avoids your attack.", target->name(DESC_THE).c_str());
+                mprf(T_("%s avoids your attack."), target->name(DESC_THE).c_str());
             return true;
         }
 
@@ -5843,7 +5838,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
         if (agent->is_player() && testbits(mon->flags, MF_DEMONIC_GUARDIAN))
         {
             if (announce && you.can_see(*mon))
-                mpr("Your demonic guardian avoids your attack.");
+                mpr(T_("Your demonic guardian avoids your attack."));
             return true;
         }
 

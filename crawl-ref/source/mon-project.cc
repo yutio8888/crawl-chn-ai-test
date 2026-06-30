@@ -249,7 +249,7 @@ static void _iood_stop(monster& mon, bool msg = true)
         return;
 
     if (msg)
-        simple_monster_message(mon, " dissipates.");
+        simple_monster_message(mon, T_(" dissipates."));
     dprf("iood: dissipating");
     monster_die(mon, KILL_RESET, NON_MONSTER);
 }
@@ -418,7 +418,7 @@ static bool _iood_hit(monster& mon, const coord_def &pos, bool big_boom = false)
         _iood_hit_setup(mon, beam);
 
     if (mon.type == MONS_GLOBE_OF_ANNIHILATION && you.can_see(mon) && big_boom)
-        simple_monster_message(mon, " detonates violently!");
+        simple_monster_message(mon, T_(" detonates violently!"));
 
     monster_die(mon, KILL_RESET, NON_MONSTER);
 
@@ -578,7 +578,7 @@ move_again:
             && you.see_cell(pos)
             && you.see_cell(starting_pos))
         {
-            mprf("%s hits %s.", mon.name(DESC_THE, true).c_str(),
+            mprf(T_("%s hits %s."), mon.name(DESC_THE, true).c_str(),
                  feature_description_at(pos, false, DESC_A).c_str());
         }
 
@@ -643,13 +643,13 @@ move_again:
             {
                 if (shield && shield_reflects(*shield))
                 {
-                    mprf("Your %s blocks %s... and reflects it back!",
+                    mprf(T_("Your %s blocks %s... and reflects it back!"),
                          shield->name(DESC_PLAIN).c_str(),
                          mon.name(DESC_THE, true).c_str());
                 }
                 else // has reflection property not from shield
                 {
-                    mprf("You block %s... and reflect it back!",
+                    mprf(T_("You block %s... and reflect it back!"),
                          mon.name(DESC_THE, true).c_str());
                 }
             }
@@ -659,7 +659,7 @@ move_again:
                 {
                     if (shield && shield_reflects(*shield))
                     {
-                        mprf("%s blocks %s with %s %s... and reflects it back!",
+                        mprf(T_("%s blocks %s with %s %s... and reflects it back!"),
                              victim->name(DESC_THE, true).c_str(),
                              mon.name(DESC_THE, true).c_str(),
                              victim->pronoun(PRONOUN_POSSESSIVE).c_str(),
@@ -667,14 +667,14 @@ move_again:
                     }
                     else
                     {
-                        mprf("%s reflects off an invisible shield around %s!",
+                        mprf(T_("%s reflects off an invisible shield around %s!"),
                              mon.name(DESC_THE, true).c_str(),
                              victim->name(DESC_THE, true).c_str());
                     }
                 }
                 else
                 {
-                    mprf("%s bounces off of thin air!",
+                    mprf(T_("%s bounces off of thin air!"),
                          mon.name(DESC_THE, true).c_str());
                 }
             }

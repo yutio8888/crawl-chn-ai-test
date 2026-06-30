@@ -1327,7 +1327,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     {
         mon->patrol_point = mon->pos();
 #ifdef DEBUG_PATHFIND
-        mprf("Monster %s is patrolling around (%d, %d).",
+        mprf(T_("Monster %s is patrolling around (%d, %d)."),
              mon->name(DESC_PLAIN).c_str(), mon->pos().x, mon->pos().y);
 #endif
     }
@@ -1512,7 +1512,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     // A rare case of a debug message NOT showing in the debug mode.
     if (mons_class_flag(mon->type, M_UNFINISHED))
     {
-        mprf(MSGCH_WARN, "Warning: monster '%s' is not yet fully coded.",
+        mprf(MSGCH_WARN, T_("Warning: monster '%s' is not yet fully coded."),
              mon->name(DESC_PLAIN, true).c_str());
     }
 #endif
@@ -3122,7 +3122,7 @@ void check_lovelessness(monster &mons)
     mons.attitude = ATT_HOSTILE;
     mons.del_ench(ENCH_CHARM);
     behaviour_event(&mons, ME_ALERT, &you);
-    mprf("%s feels only hate for you!", mons.name(DESC_THE).c_str());
+    mprf(T_("%s feels only hate for you!"), mons.name(DESC_THE).c_str());
 }
 
 /**

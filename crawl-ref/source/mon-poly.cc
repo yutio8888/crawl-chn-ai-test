@@ -15,6 +15,7 @@
 #include "delay.h"
 #include "describe.h"
 #include "dgn-overview.h"
+#include "database.h"
 #include "dungeon.h"
 #include "fineff.h"
 #include "god-conduct.h"
@@ -247,8 +248,8 @@ void change_monster_type(monster* mons, monster_type targetc, bool do_seen)
     // trj spills out jellies when polied, as if he'd been hit for mhp.
     if (mons->type == MONS_ROYAL_JELLY)
     {
-        simple_monster_message(*mons, " form twists and warps, and jellies "
-                               "spill out!", true);
+        simple_monster_message(*mons, T_(" form twists and warps, and jellies "
+                               "spill out!"), true);
         schedule_trj_spawn_fineff(nullptr, mons, mons->pos(),
                                   mons->hit_points);
     }
@@ -610,12 +611,12 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     if (mons_demon_tier(mons->type) == -1)
     {
         return simple_monster_message(*mons,
-            " appearance momentarily alters.", true);
+            T_(" appearance momentarily alters."), true);
     }
 
     targetc = _concretize_target(*mons, targetc, power);
     if (targetc == MONS_NO_MONSTER)
-        return simple_monster_message(*mons, " shudders.");
+        return simple_monster_message(*mons, T_(" shudders."));
 
     const bool was_invisible = mons->has_ench(ENCH_INVIS) && !mons->friendly();
     bool could_see = you.can_see(*mons);
@@ -625,7 +626,7 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     monster_type oldc = mons->type;
 
     if (power != PPT_SLIME && !_valid_morph(mons, targetc))
-        return simple_monster_message(*mons, " looks momentarily different.");
+        return simple_monster_message(*mons, T_(" looks momentarily different."));
 
     change_monster_type(mons, targetc, false);
 
@@ -651,10 +652,10 @@ bool monster_polymorph(monster* mons, monster_type targetc,
         else
             verb = "evaporates and reforms as ";
 
-        mprf("%s %s%s!", old_name_the.c_str(), verb.c_str(), obj.c_str());
+        mprf(T_("%s %s%s!"), old_name_the.c_str(), verb.c_str(), obj.c_str());
     }
     else if (can_see)
-        mprf("%s appears out of thin air!", mons->name(DESC_A).c_str());
+        mprf(T_("%s appears out of thin air!"), mons->name(DESC_A).c_str());
     else
         player_messaged = false;
 
@@ -741,7 +742,7 @@ void slimify_monster(monster* mon)
     // Bail out if jellies can't live here.
     if (!monster_habitable_grid(target, mon->pos()))
     {
-        simple_monster_message(*mon, " quivers momentarily.");
+        simple_monster_message(*mon, T_(" quivers momentarily."));
         return;
     }
 

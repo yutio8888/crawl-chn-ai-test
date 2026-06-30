@@ -1262,7 +1262,7 @@ static bool _actor_apply_cloud_side_effects(actor *act,
             if (mon->get_ench(ENCH_DROWSY).duration >= 100)
             {
                 mon->del_ench(ENCH_DROWSY);
-                simple_monster_message(*mon, " falls asleep!");
+                simple_monster_message(*mon, T_(" falls asleep!"));
                 mon->put_to_sleep(cloud.agent(), random_range(3, 5) * BASELINE_DELAY);
             }
         }
@@ -1755,21 +1755,21 @@ void cloud_struct::announce_actor_engulfed(const actor *act,
 
     if (type == CLOUD_RAIN)
     {
-        mprf("%s %s in the rain.",
+        mprf_p(T_("%1$s %2$s in the rain."),
             act->name(DESC_THE).c_str(),
             act->conj_verb(silenced(act->pos())?
                         "steam" : "sizzle").c_str());
     }
     else if (type == CLOUD_BATS)
     {
-        mprf("%s %s %s.",
+        mprf_p(T_("%1$s %2$s %3$s."),
              act->name(DESC_THE).c_str(),
              (act->conj_verb("are") + " swarmed by").c_str(),
              cloud_name().c_str());
     }
     else
     {
-        mprf("%s %s in %s.",
+        mprf_p(T_("%1$s %2$s in %3$s."),
              act->name(DESC_THE).c_str(),
              beneficial ? act->conj_verb("bask").c_str()
                         : (act->conj_verb("are") + " engulfed").c_str(),
@@ -1939,13 +1939,13 @@ void start_still_winds()
 {
     delete_all_clouds();
     env.level_state |= LSTATE_STILL_WINDS;
-    mprf(MSGCH_WARN, "%s", "The air becomes perfectly still.");
+    mprf(MSGCH_WARN, T_("%s"), T_("The air becomes perfectly still."));
 }
 
 void end_still_winds()
 {
     env.level_state &= ~LSTATE_STILL_WINDS;
-    mpr("The air resumes its normal movements.");
+    mpr(T_("The air resumes its normal movements."));
 }
 
 /**

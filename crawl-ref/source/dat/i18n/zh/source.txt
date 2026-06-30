@@ -11102,3 +11102,528 @@ Zot can harm you no longer.
 %%
 Lua error: 
 Lua错误：
+%%
+You are terrified of %s!
+你恐惧着%s！
+%%
+You are no longer terrified.
+你不再恐惧了。
+%%%%
+Being near %s leaves you feeling lethargic.
+靠近%s让你感到昏昏欲睡。
+%%%%
+%s gaze reveals you to all!
+%s的凝视将你暴露给所有人！
+%%%%
+appearance momentarily alters.
+appearance momentarily alters.
+%%%%
+blazes with a fierce heat.
+blazes with a fierce heat.
+%%%%
+burns!
+burns!
+%%%%
+bursts through the door, destroying it!
+bursts through the door, destroying it!
+%%%%
+core flares to life once more.
+core flares to life once more.
+%%%%
+core grows cold and it stops moving.
+core grows cold and it stops moving.
+%%%%
+crackles loudly.
+crackles loudly.
+%%%%
+cracks slightly.
+cracks slightly.
+%%%%
+crumbles as it rolls away.
+crumbles as it rolls away.
+%%%%
+departs this earthly plane.
+departs this earthly plane.
+%%%%
+detonates violently!
+detonates violently!
+%%%%
+dissipates.
+dissipates.
+%%%%
+eats the door!
+eats the door!
+%%%%
+escapes!
+escapes!
+%%%%
+falls asleep!
+falls asleep!
+%%%%
+falters for a moment.
+falters for a moment.
+%%%%
+flashes!
+flashes!
+%%%%
+flows through the trees.
+flows through the trees.
+%%%%
+flows with the water.
+flows with the water.
+%%%%
+glows brighter.
+glows brighter.
+%%%%
+hatches with a roar like a landslide!
+hatches with a roar like a landslide!
+%%%%
+is dazed by the spores.
+is dazed by the spores.
+%%%%
+is duplicated!
+is duplicated!
+%%%%
+is empowered by the presence of the orb!
+is empowered by the presence of the orb!
+%%%%
+looks momentarily different.
+looks momentarily different.
+%%%%
+passes through the gate.
+passes through the gate.
+%%%%
+quivers momentarily.
+quivers momentarily.
+%%%%
+returns to the mists of memory.
+returns to the mists of memory.
+%%%%
+returns to your side.
+returns to your side.
+%%%%
+shakes eagerly.
+shakes eagerly.
+%%%%
+shudders and withdraws towards its neighbour.
+shudders and withdraws towards its neighbour.
+%%%%
+shudders.
+shudders.
+%%%%
+sinks back into the magma.
+sinks back into the magma.
+%%%%
+splits in two!
+splits in two!
+%%%%
+struggles against the net.
+struggles against the net.
+%%%%
+struggles to escape constriction.
+struggles to escape constriction.
+%%%%
+suffers a backlash!
+suffers a backlash!
+%%%%
+tears free of the web.
+tears free of the web.
+%%%%
+violently releases its spores.
+violently releases its spores.
+%%%%
+zaps a wand.
+zaps a wand.
+%%%%
+%1$s %2$s %3$s.
+%1$s%2$s%3$s。
+%%%%
+%1$s %2$s a mimic!
+%1$s%2$s拟态怪！
+%%%%
+%1$s %2$s frozen%3$s
+%1$s%2$s被冻结了%3$s
+%%%%
+%1$s %2$s in %3$s.
+%1$s在%3$s中%2$s。
+%%%%
+%1$s %2$s in the rain.
+%1$s在雨中%2$s。
+%%%%
+%1$s %2$s knocked back by the blast.
+%1$s被爆炸%2$s击退。
+%%%%
+%1$s steals %2$d gold piece%3$s!
+%1$s偷走了%2$d枚金币！
+%%%%
+%d slime creatures are ejected from %s body as it begins to warp and change.
+%d只粘液生物从%s开始扭曲变化的身体中被排出。
+%%%%
+%s
+%s
+%%%%
+%s %s
+%s%s
+%%%%
+%s %s discharges%s, shocking %s%s
+%s%s释放出%s电流，电击了%s%s
+%%%%
+%s %s go into a battle-frenzy!
+%s%s进入了战斗狂热状态！
+%%%%
+%s %s pick up the pace!
+%s%s加快了步伐！
+%%%%
+%s %s%s!
+%s%s%s！
+%%%%
+%s abandons %s pursuit.
+%s放弃了%s的追击。
+%%%%
+%s absorbs %d nearby slime creatures and %s.
+%s吸收了附近的%d只粘液生物和%s。
+%%%%
+%s absorbs a nearby slime creature and %s.
+%s吸收了附近的一只粘液生物和%s。
+%%%%
+%s and strikes %s%s%s
+%s and strikes %s%s%s
+%%%%
+%s appears from out of thin air!
+%s appears from out of thin air!
+%%%%
+%s appears out of thin air!
+%s凭空出现了！
+%%%%
+%s assumes the form of %s%s!
+%s变成了%s%s！
+%%%%
+%s attack snaps %s out of %s fear.
+%s的攻击将%s从恐惧中惊醒。
+%%%%
+%s avoids your attack.
+%s躲过了你的攻击。
+%%%%
+%s blocks %s with %s %s... and reflects it back!
+%s用%s%s挡住了%s……并将其反弹了回去！
+%%%%
+%s bounces off of thin air!
+%s从空气中弹了回来！
+%%%%
+%s bursts from %s!
+%s从%s中爆发出来！
+%%%%
+%s calls on %s to defend %s!
+%s召唤%s来保护%s！
+%%%%
+%s corrupts the dungeon around %s!
+%s腐化了%s周围的地城！
+%%%%
+%s crumbles against %s.
+%s撞在%s上碎裂了。
+%%%%
+%s crushes %s against %s and falls apart!
+%s把%s压在%s上撞碎了！
+%%%%
+%s draws nearby shadows into %s.
+%s将附近的阴影吸入了%s体内。
+%%%%
+%s feels only hate for you!
+%s只对你感到仇恨！
+%%%%
+%s goads %s on!
+%s怂恿%s继续战斗！
+%%%%
+%s hits %s.
+%s hits %s.
+%%%%
+%s ignites a memory of %s%s.
+%s ignites a memory of %s%s.
+%%%%
+%s is abraded by the %s and falls apart.
+%s被%s磨损而碎裂了。
+%%%%
+%s is hit by a flying piece of %s!
+%s被一块飞溅的%s碎片击中了！
+%%%%
+%s is pinned to %s own shadow.
+%s被钉在了%s自己的影子上。
+%%%%
+%s is recalled away.
+%s被召回。
+%%%%
+%s liquefies the ground around %s!
+%s将%s周围的地面液化！
+%%%%
+%s merges with something you can't see.
+%s与你无法看见的某种存在融合了。
+%%%%
+%s orb unleashes a flurry of shooting stars!
+%s的宝珠释放出一阵流星雨！
+%%%%
+%s reflects off an invisible shield around %s!
+%s从%s周围的隐形护盾上弹开！
+%%%%
+%s reflects your damage back at you!
+%s将你的伤害反弹了回来！
+%%%%
+%s regains %s memory of %s.
+%s恢复了%s关于%s的记忆。
+%%%%
+%s sacrifices itself to reknit %s!
+%s牺牲自己来重组%s！
+%%%%
+%s seems to draw %s out of %s!
+%s似乎把%s从%s中拖了出来！
+%%%%
+%s seems to step out of %s!
+%s似乎从%s中走了出来！
+%%%%
+%s separates from %s.
+%s从%s分离了出来。
+%%%%
+%s shreds %s%s
+%s撕碎了%s%s
+%%%%
+%s slams into %s and falls apart!
+%s撞上了%s并碎裂了！
+%%%%
+%s slips past %s!
+%s从%s身边溜过！
+%%%%
+%s smites you!
+%s重击了你！
+%%%%
+%s spits out %s more jellies.
+%s又吐出了%s只果冻。
+%%%%
+%s spits out another jelly.
+%s吐出了另一只果冻。
+%%%%
+%s splits.
+%s分裂了。
+%%%%
+%s swoops through the air toward %s!
+%s从空中扑向%s！
+%%%%
+%s trembles before you.
+%s trembles before you.
+%%%%
+%s watery aura covers %s.
+%s的水灵光环笼罩了%s。
+%%%%
+A malignant aura surrounds %s.
+一股邪恶灵气环绕着%s。
+%%%%
+A slime creature is ejected from %s body as it begins to warp and change.
+一只粘液生物从%s开始扭曲变化的身体中被排出。
+%%%%
+A tentacle flies out from the starspawn's body!
+一条触手从星之子体内飞出！
+%%%%
+A tentacle reaches out from the kraken!
+一条触手从克拉肯体内伸出！
+%%%%
+Doom befalls %s.
+厄运降临在%s头上。
+%%%%
+It's been too long! Stop travelling.
+时间太久了！停止移动。
+%%%%
+Monster %s is patrolling around (%d, %d).
+怪物%s正在(%d, %d)附近巡逻。
+%%%%
+Something unseen %s
+Something unseen %s
+%%%%
+Suddenly you stand beside yourself.
+突然你站在了自己身旁。
+%%%%
+The %1$s mimic %2$svanishes%3$s!
+%1$s拟态怪%2$s消失了%3$s！
+%%%%
+The air becomes perfectly still.
+空气变得完全静止。
+%%%%
+The air resumes its normal movements.
+空气恢复了正常的流动。
+%%%%
+The dying Royal Jelly spits out %s more jellies.
+垂死的皇家果冻又吐出了%s只果冻。
+%%%%
+The hog vanishes!
+猪消失了！
+%%%%
+The net rips apart, and %s comes free!
+网撕裂了，%s挣脱了出来！
+%%%%
+The portal closes; %s is severed.
+传送门关闭了；%s被切断了。
+%%%%
+The shaft crumbles and collapses.
+竖井碎裂坍塌了。
+%%%%
+There is a horrible, sudden wrenching feeling in your soul!
+你的灵魂深处传来一阵可怕的、突如其来的撕裂感！
+%%%%
+Warning: monster '%s' is not yet fully coded.
+警告：怪物'%s'尚未完全编码。
+%%%%
+With Pikel's spell broken, his former %s freedom.
+皮克尔的法术被打破了，他曾经的%s自由了。
+%%%%
+You block %s... and reflect it back!
+你挡住了%s……并将其反弹了回去！
+%%%%
+You consecrate your suffering and invoke the rites of blood!
+你献祭了自己的痛苦并举行了血之仪式！
+%%%%
+You feel extremely nervous for a moment...
+你感到一阵极度的不安……
+%%%%
+You feel the power of Zot begin to gather its forces!
+你感到Zot的力量开始聚集！
+%%%%
+You hear a%s slurping noise.
+你听到一声%s啜饮声。
+%%%%
+You now have %1$d gold piece%2$s.
+你还有%1$d枚金币。
+%%%%
+Your %s blocks %s... and reflects it back!
+你的%s挡住了%s……并将其反弹了回去！
+%%%%
+Your demonic guardian avoids your attack.
+你的恶魔守卫躲过了你的攻击。
+%%%%
+minion
+随从
+%%%%
+minion thanks you for its
+随从感谢你给了它
+%%%%
+minions
+随从们
+%%%%
+minions thank you for their
+随从们感谢你给了他们
+%%%%
+ appearance momentarily alters.
+ 外观暂时改变了。
+%%%%
+ blazes with a fierce heat.
+ 散发出炽热的光芒。
+%%%%
+ burns!
+ 燃烧了起来！
+%%%%
+ bursts through the door, destroying it!
+ 撞破了门！
+%%%%
+ core flares to life once more.
+ 的核心再次亮起。
+%%%%
+ core grows cold and it stops moving.
+ 的核心变冷，停止了移动。
+%%%%
+ crackles loudly.
+ 发出响亮的噼啪声。
+%%%%
+ cracks slightly.
+ 出现了细微的裂纹。
+%%%%
+ crumbles as it rolls away.
+ 滚走时碎裂了。
+%%%%
+ departs this earthly plane.
+ 离开了这个位面。
+%%%%
+ detonates violently!
+ 剧烈地爆炸了！
+%%%%
+ dissipates.
+ 消散了。
+%%%%
+ eats the door!
+ 吃掉了门！
+%%%%
+ escapes!
+ 逃脱了！
+%%%%
+ falls asleep!
+ 睡着了！
+%%%%
+ falters for a moment.
+ 踉跄了一下。
+%%%%
+ flashes!
+ 闪了一下！
+%%%%
+ flows through the trees.
+ 在树林中流动。
+%%%%
+ flows with the water.
+ 随水流移动。
+%%%%
+ glows brighter.
+ 变得更亮了。
+%%%%
+ hatches with a roar like a landslide!
+ 伴随着山崩地裂般的轰鸣破壳而出！
+%%%%
+ is dazed by the spores.
+ 被孢子弄得晕头转向。
+%%%%
+ is duplicated!
+ 被复制了！
+%%%%
+ is empowered by the presence of the orb!
+ 因宝珠的力量而获得了强化！
+%%%%
+ looks momentarily different.
+ 看起来短暂地改变了。
+%%%%
+ passes through the gate.
+ 穿过了大门。
+%%%%
+ quivers momentarily.
+ 短暂地颤动了一下。
+%%%%
+ returns to the mists of memory.
+ 回到了记忆的迷雾中。
+%%%%
+ returns to your side.
+ 回到了你身边。
+%%%%
+ shakes eagerly.
+ 急切地摇晃着。
+%%%%
+ shudders and withdraws towards its neighbour.
+ 颤抖着缩回了它的邻居身边。
+%%%%
+ shudders.
+ 颤抖了一下。
+%%%%
+ sinks back into the magma.
+ 沉回了岩浆中。
+%%%%
+ splits in two!
+ 分裂成了两个！
+%%%%
+ struggles against the net.
+ 在网中挣扎。
+%%%%
+ struggles to escape constriction.
+ 挣扎着想要挣脱束缚。
+%%%%
+ suffers a backlash!
+ 遭受了反噬！
+%%%%
+ tears free of the web.
+ 挣脱了蛛网。
+%%%%
+ violently releases its spores.
+ 猛烈地释放出孢子。
+%%%%
+ zaps a wand.
+ 激活了一根魔杖。

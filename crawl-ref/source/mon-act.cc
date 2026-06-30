@@ -820,13 +820,13 @@ static bool _handle_swoop_or_flank(monster& mons)
         {
             if (is_swoop)
             {
-                mprf("%s swoops through the air toward %s!",
+                mprf(T_("%s swoops through the air toward %s!"),
                 mons.name(DESC_THE).c_str(),
                 defender->name(DESC_THE).c_str());
             }
             else
             {
-                mprf("%s slips past %s!",
+                mprf(T_("%s slips past %s!"),
                 mons.name(DESC_THE).c_str(),
                 defender->name(DESC_THE).c_str());
             }
@@ -907,7 +907,7 @@ static void _handle_boulder_movement(monster& boulder)
     if (boulder.summoner == MID_PLAYER
         && (!you.can_see(boulder) || !you.see_cell(targ)))
     {
-        simple_monster_message(boulder, " crumbles as it rolls away.");
+        simple_monster_message(boulder, T_(" crumbles as it rolls away."));
         monster_die(boulder, KILL_RESET, true);
         return;
     }
@@ -917,7 +917,7 @@ static void _handle_boulder_movement(monster& boulder)
     {
         if (you.can_see(boulder))
         {
-            mprf("%s slams into %s and falls apart!",
+            mprf(T_("%s slams into %s and falls apart!"),
                  boulder.name(DESC_THE).c_str(),
                  article_a(feat_type_name(env.grid(targ))).c_str());
         }
@@ -972,7 +972,7 @@ static void _handle_boulder_movement(monster& boulder)
             {
                 if (you.can_see(boulder) || you.can_see(*obstruction))
                 {
-                    mprf("%s crushes %s against %s and falls apart!",
+                    mprf(T_("%s crushes %s against %s and falls apart!"),
                             boulder.name(DESC_THE).c_str(),
                             obstruction->name(DESC_THE).c_str(),
                             blocker_name.c_str());
@@ -987,7 +987,7 @@ static void _handle_boulder_movement(monster& boulder)
             {
                 if (you.can_see(boulder))
                 {
-                    mprf("%s crumbles against %s.",
+                    mprf(T_("%s crumbles against %s."),
                             boulder.name(DESC_THE).c_str(),
                             obstruction->name(DESC_THE).c_str());
                 }
@@ -1021,7 +1021,7 @@ static void _handle_boulder_movement(monster& boulder)
         const int self_dmg = roll_dice(solid_count, BOULDER_ABRASION_DAMAGE);
         if (self_dmg > boulder.hit_points)
         {
-            mprf("%s is abraded by the %s and falls apart.",
+            mprf(T_("%s is abraded by the %s and falls apart."),
                     boulder.name(DESC_THE).c_str(), solid_name.c_str());
             monster_die(boulder, nullptr, true);
         }
@@ -1083,7 +1083,7 @@ static void _handle_hellfire_mortar(monster& mortar)
             // We've reached the end of our path.
             if (i + 1 == path.size())
             {
-                simple_monster_message(mortar, " sinks back into the magma.");
+                simple_monster_message(mortar, T_(" sinks back into the magma."));
                 monster_die(mortar, KILL_NON_ACTOR, NON_MONSTER, true);
                 return;
             }
@@ -1133,7 +1133,7 @@ static void _check_blazeheart_golem_link(monster& mons)
         mons.blazeheart_heat -= 1;
         if (mons.blazeheart_heat <= 0 && !mons.has_ench(ENCH_PARALYSIS))
         {
-            simple_monster_message(mons, " core grows cold and it stops moving.", true);
+            simple_monster_message(mons, T_(" core grows cold and it stops moving."), true);
             mons.add_ench(mon_enchant(ENCH_PARALYSIS, &mons, INFINITE_DURATION));
         }
     }
@@ -1143,7 +1143,7 @@ static void _check_blazeheart_golem_link(monster& mons)
         if (mons.has_ench(ENCH_PARALYSIS))
         {
             mons.del_ench(ENCH_PARALYSIS, true);
-            simple_monster_message(mons, " core flares to life once more.", true);
+            simple_monster_message(mons, T_(" core flares to life once more."), true);
         }
 
         // Give the golem another turn before it goes cold.
@@ -1226,7 +1226,7 @@ static void _fire_rending_blade(monster& blade, coord_def target, int pow)
     slash.aimed_at_spot = true;
     slash.hit_verb = "slices through";
 
-    simple_monster_message(blade, " flashes!");
+    simple_monster_message(blade, T_(" flashes!"));
 
     slash.fire();
     blade.blink_to(target, true, true);
@@ -1388,7 +1388,7 @@ static void _burstshroom_grow(monster& mons)
             }
         }
 
-        simple_monster_message(mons, " violently releases its spores.");
+        simple_monster_message(mons, T_(" violently releases its spores."));
         if (need_redraw)
             animation_delay(20, true);
 
@@ -1407,7 +1407,7 @@ static void _burstshroom_grow(monster& mons)
                 && x_chance_in_y(get_form(transformation::spore)->get_level(10), targ->get_hit_dice() * 30))
             {
                 targ->daze(random_range(2, 5));
-                simple_monster_message(*targ, " is dazed by the spores.");
+                simple_monster_message(*targ, T_(" is dazed by the spores."));
             }
         }
 
@@ -1419,7 +1419,7 @@ static void _burstshroom_grow(monster& mons)
 
 static void _mons_fire_wand(monster& mons, spell_type mzap, bolt &beem)
 {
-    if (!simple_monster_message(mons, " zaps a wand."))
+    if (!simple_monster_message(mons, T_(" zaps a wand.")))
     {
         if (!silenced(you.pos()))
             mprf(MSGCH_SOUND, "You hear a zap.");
@@ -2012,7 +2012,7 @@ void handle_monster_move(monster* mons)
             {
                 if (you.can_see(*mons))
                 {
-                    simple_monster_message(*mons, " crackles loudly.", false,
+                    simple_monster_message(*mons, T_(" crackles loudly."), false,
                                            MSGCH_WARN);
                 }
                 else
@@ -2077,7 +2077,7 @@ void handle_monster_move(monster* mons)
             if (find_habitable_spot_near(you.pos(), MONS_HAUNTED_ARMOUR, 3, spot,
                                          -1, &you))
             {
-                simple_monster_message(*mons, " returns to your side.");
+                simple_monster_message(*mons, T_(" returns to your side."));
                 mons->move_to(spot, MV_TRANSLOCATION);
             }
             // If returning is impossible, kill it immediately.
@@ -2458,7 +2458,7 @@ void monster::struggle_against_net()
             return;
         }
         else
-            simple_monster_message(*this, " tears free of the web.");
+            simple_monster_message(*this, T_(" tears free of the web."));
 
         stop_being_caught();
         return;
@@ -2469,7 +2469,7 @@ void monster::struggle_against_net()
         if (!visible_to(&you))
             mpr(T_("Something invisible is squirming in the web."));
         else
-            simple_monster_message(*this, " struggles against the net.");
+            simple_monster_message(*this, T_(" struggles against the net."));
     }
 
     int damage = 1 + random2(2);
@@ -2489,7 +2489,7 @@ void monster::struggle_against_net()
         {
             if (visible_to(&you))
             {
-                mprf("The net rips apart, and %s comes free!",
+                mprf(T_("The net rips apart, and %s comes free!"),
                      name(DESC_THE).c_str());
             }
             else
@@ -2537,8 +2537,8 @@ static void _ancient_zyme_sicken(monster* mons)
         {
             if (!you.duration[DUR_SICKENING])
             {
-                mprf(MSGCH_WARN, "You feel yourself growing ill in the "
-                                 "presence of %s.",
+                mprf(MSGCH_WARN, T_("You feel yourself growing ill in the "
+                                 "presence of %s."),
                     mons->name(DESC_THE).c_str());
             }
 
@@ -2603,7 +2603,7 @@ static void _post_monster_move(monster* mons)
                     && env.grid(*ai) != DNGN_FLOOR
                     && you.see_cell(*ai))
                 {
-                    mprf("%s watery aura covers %s.",
+                    mprf(T_("%s watery aura covers %s."),
                          apostrophise(mons->name(DESC_THE)).c_str(),
                          feature_description_at(*ai, false, DESC_THE).c_str());
                 }
@@ -2858,7 +2858,7 @@ static bool _jelly_divide(monster& parent)
     child->set_new_monster_id();
     child->move_to(child_spot, MV_INTERNAL);
 
-    if (!simple_monster_message(parent, " splits in two!")
+    if (!simple_monster_message(parent, T_(" splits in two!"))
         && (player_can_hear(parent.pos()) || player_can_hear(child->pos())))
     {
         mprf(MSGCH_SOUND, "You hear a squelching noise.");
@@ -2913,7 +2913,7 @@ static bool _monster_eat_item(monster* mons)
 
         if (eaten && !shown_msg && player_can_hear(mons->pos()))
         {
-            mprf(MSGCH_SOUND, "You hear a%s slurping noise.",
+            mprf(MSGCH_SOUND, T_("You hear a%s slurping noise."),
                  you.see_cell(mons->pos()) ? "" : " distant");
             shown_msg = true;
         }
@@ -3063,11 +3063,11 @@ static void _mons_open_door(monster& mons, const coord_def &pos)
 
         if (!you.can_see(mons))
         {
-            mprf("Something unseen %s", open_str.c_str());
+            mprf(T_("Something unseen %s"), open_str.c_str());
             interrupt_activity(activity_interrupt::sense_monster);
         }
         else
-            mprf("%s %s", mons.name(DESC_A).c_str(), open_str.c_str());
+            mprf(T_("%s %s"), mons.name(DESC_A).c_str(), open_str.c_str());
 
         update_monsters_in_view();
     }
@@ -3542,7 +3542,7 @@ static void _jelly_grows(monster& mons)
 {
     if (player_can_hear(mons.pos()))
     {
-        mprf(MSGCH_SOUND, "You hear a%s slurping noise.",
+        mprf(MSGCH_SOUND, T_("You hear a%s slurping noise."),
              you.see_cell(mons.pos()) ? "" : " distant");
     }
 
@@ -3724,10 +3724,10 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
     if (mons.is_constricted() && !mons.cannot_move())
     {
         if (mons.attempt_escape())
-            simple_monster_message(mons, " escapes!");
+            simple_monster_message(mons, T_(" escapes!"));
         else
         {
-            simple_monster_message(mons, " struggles to escape constriction.");
+            simple_monster_message(mons, T_(" struggles to escape constriction."));
             _swim_or_move_energy(mons);
             return true;
         }
@@ -3758,7 +3758,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
                     interrupt_activity(activity_interrupt::sense_monster);
                 }
                 else
-                    simple_monster_message(mons, " bursts through the door, destroying it!");
+                    simple_monster_message(mons, T_(" bursts through the door, destroying it!"));
 
                 update_monsters_in_view();
             }
@@ -3786,7 +3786,7 @@ static bool _do_move_monster(monster& mons, const coord_def& delta)
                     interrupt_activity(activity_interrupt::sense_monster);
                 }
                 else
-                    simple_monster_message(mons, " eats the door!");
+                    simple_monster_message(mons, T_(" eats the door!"));
 
                 update_monsters_in_view();
             }
@@ -3857,7 +3857,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
         }
         if (adj_move.empty())
         {
-            simple_monster_message(*mons, " flops around on dry land!");
+            simple_monster_message(*mons, T_(" flops around on dry land!"));
             return false;
         }
 
@@ -3873,7 +3873,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
             && (newpos == you.pos() && mons->wont_attack()
                 || (mon2 && mons->wont_attack() == mon2->wont_attack())))
         {
-            simple_monster_message(*mons, " flops around on dry land!");
+            simple_monster_message(*mons, T_(" flops around on dry land!"));
             return false;
         }
 
@@ -3992,7 +3992,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
                         mons->spell_slot_flags(SPELL_DIG));
         }
         else
-            simple_monster_message(*mons, " falters for a moment.");
+            simple_monster_message(*mons, T_(" falters for a moment."));
         mons->lose_energy(EUT_SPELL);
         return true;
     }

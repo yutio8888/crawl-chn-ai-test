@@ -121,12 +121,12 @@ static void _mons_summon_monster_illusion(monster* caster,
         {
             if (!you.can_see(*caster))
             {
-                mprf("%s seems to step out of %s!",
+                mprf(T_("%s seems to step out of %s!"),
                      foe->name(DESC_THE).c_str(),
                      foe->pronoun(PRONOUN_REFLEXIVE).c_str());
             }
             else
-                mprf("%s seems to draw %s out of %s!",
+                mprf(T_("%s seems to draw %s out of %s!"),
                      caster->name(DESC_THE).c_str(),
                      foe->name(DESC_THE).c_str(),
                      foe->pronoun(PRONOUN_REFLEXIVE).c_str());
@@ -216,9 +216,9 @@ int mons_summon_illusion_from(monster* mons, actor *foe,
                  .set_summoned(mons, spell_cast, summ_dur(dur))))
         {
             if (card_power >= 0)
-                mpr("Suddenly you stand beside yourself.");
+                mpr(T_("Suddenly you stand beside yourself."));
             else
-                mprf(MSGCH_WARN, "There is a horrible, sudden wrenching feeling in your soul!");
+                mprf(MSGCH_WARN, T_("There is a horrible, sudden wrenching feeling in your soul!"));
 
             get_monster_data(MONS_PLAYER_ILLUSION)->holiness = you.holiness();
             _mons_load_player_enchantments(mons, clone);
@@ -389,7 +389,7 @@ monster* clone_mons(const monster* orig, bool quiet, bool* obvious,
     if (you.can_see(*orig) && you.can_see(*mons))
     {
         if (!quiet)
-            simple_monster_message(*orig, " is duplicated!");
+            simple_monster_message(*orig, T_(" is duplicated!"));
         *obvious = true;
     }
 

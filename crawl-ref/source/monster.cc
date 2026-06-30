@@ -758,9 +758,8 @@ void monster::equip_weapon_message(item_def &item)
     {
         bool plural = true;
         string hand = hand_name(true, &plural);
-        mprf(Options.language == lang_t::ZH ? "%s%s短暂%s穿过它，然后%s牢牢握住了它。"
-             : "%s %s briefly %s through it before %s %s to get a "
-             "firm grip on it.",
+        mprf_p(T_("%1$s %2$s briefly %3$s through it before %4$s %5$s to get a "
+             "firm grip on it."),
              pronoun(PRONOUN_POSSESSIVE).c_str(),
              hand.c_str(),
              // Not conj_verb: the monster isn't the subject.
@@ -2617,7 +2616,7 @@ bool monster::fumbles_attack()
     {
         if (you.can_see(*this))
         {
-            mprf("%s %s", name(DESC_THE).c_str(), liquefied(pos())
+            mprf(T_("%s %s"), name(DESC_THE).c_str(), liquefied(pos())
                  ? (T_("becomes momentarily stuck in the liquid earth."))
                  : env.grid(pos()) == DNGN_TOXIC_BOG
                  ? (T_("becomes momentarily stuck in the toxic bog."))
@@ -4426,11 +4425,11 @@ int monster::hurt(const actor *agent, int amount, beam_type flavour,
             if (you.can_see(*this))
             {
                 if (type == MONS_WITHERED_PLANT)
-                    mprf("%s begins to crumble.", this->name(DESC_THE).c_str());
+                    mprf(T_("%s begins to crumble."), this->name(DESC_THE).c_str());
                 if (type == MONS_PILE_OF_DEBRIS)
-                    mprf("%s begins to collapse.", this->name(DESC_THE).c_str());
+                    mprf(T_("%s begins to collapse."), this->name(DESC_THE).c_str());
                 else
-                    mprf("%s begins to die.", this->name(DESC_THE).c_str());
+                    mprf(T_("%s begins to die."), this->name(DESC_THE).c_str());
             }
         }
     }
@@ -5271,7 +5270,7 @@ bool monster::doom(int amount)
     {
         stacks = 0;
         if (you.can_see(*this))
-            mprf("Doom befalls %s.", name(DESC_THE).c_str());
+            mprf(T_("Doom befalls %s."), name(DESC_THE).c_str());
 
         enchant_type ench = random_choose(ENCH_SLOW, ENCH_VITRIFIED, ENCH_WEAK, ENCH_BLIND, ENCH_DRAINED);
 
@@ -6373,7 +6372,7 @@ void monster::steal_item_from_player()
             inv[MSLOT_GOLD] = idx;
             new_item.set_holding_monster(*this);
         }
-        mprf(Options.language == lang_t::ZH ? "%s偷走了%d枚金币！" : "%s steals %d gold piece%s!",
+        mprf_p(T_("%1$s steals %2$d gold piece%3$s!"),
              name(DESC_THE).c_str(),
              stolen_amount,
              stolen_amount != 1 ? "s" : "");
@@ -6386,7 +6385,7 @@ void monster::steal_item_from_player()
         you.attribute[ATTR_GOLD_FOUND] -= stolen_amount;
 
         you.del_gold(stolen_amount);
-        mprf(Options.language == lang_t::ZH ? "你现在还有%d枚金币。" : "You now have %d gold piece%s.",
+        mprf_p(T_("You now have %1$d gold piece%2$s."),
              you.gold, you.gold != 1 ? "s" : "");
 
         return;

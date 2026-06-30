@@ -1224,14 +1224,14 @@ void mons_create_tentacles(monster* head)
     if (mons_base_type(*head) == MONS_KRAKEN)
     {
         if (visible_count == 1)
-            mpr("A tentacle reaches out from the kraken!");
+            mpr(T_("A tentacle reaches out from the kraken!"));
         else if (visible_count > 1)
             mpr(T_("Tentacles reach out from the kraken!"));
     }
     else if (head->type == MONS_TENTACLED_STARSPAWN)
     {
         if (visible_count == 1)
-            mpr("A tentacle flies out from the starspawn's body!");
+            mpr(T_("A tentacle flies out from the starspawn's body!"));
         else if (visible_count > 1)
             mpr(T_("Tentacles burst from the starspawn's body!"));
     }

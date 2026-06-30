@@ -783,7 +783,7 @@ void handle_behaviour(monster* mon)
                 if (mon->is_travelling() && mon->travel_target != MTRAV_PATROL)
                 {
 #ifdef DEBUG_PATHFIND
-                    mpr("It's been too long! Stop travelling.");
+                    mpr(T_("It's been too long! Stop travelling."));
 #endif
                     mon->travel_path.clear();
                     mon->travel_target = MTRAV_NONE;
@@ -1119,7 +1119,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
 
             if (you.can_see(*mon))
             {
-                mprf("%s attack snaps %s out of %s fear.",
+                mprf(T_("%s attack snaps %s out of %s fear."),
                         src ? src->name(DESC_ITS).c_str() : "the",
                         mon->name(DESC_THE).c_str(),
                         mon->pronoun(PRONOUN_POSSESSIVE).c_str());
@@ -1460,7 +1460,7 @@ static void _mons_indicate_level_exit(const monster* mon)
     const bool is_shaft = (get_trap_type(mon->pos()) == TRAP_SHAFT);
 
     if (feat_is_gate(feat))
-        simple_monster_message(*mon, " passes through the gate.");
+        simple_monster_message(*mon, T_(" passes through the gate."));
     else if (feat_is_travelable_stair(feat))
     {
         command_type dir = feat_stair_direction(feat);
@@ -1480,7 +1480,7 @@ static void _mons_indicate_level_exit(const monster* mon)
                                 : "jumps into").c_str());
 
         // Shafts are one-time-use.
-        mpr("The shaft crumbles and collapses.");
+        mpr(T_("The shaft crumbles and collapses."));
         maybe_destroy_shaft(mon->pos());
     }
 }

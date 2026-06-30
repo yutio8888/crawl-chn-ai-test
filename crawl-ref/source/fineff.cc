@@ -1009,7 +1009,7 @@ void mirror_damage_fineff::fire()
                                    defender()->as_monster() : nullptr;
         if (reflector)
         {
-            mprf("%s reflects your damage back at you!",
+            mprf(T_("%s reflects your damage back at you!"),
                  reflector->name(DESC_THE).c_str());
         }
         else
@@ -1018,7 +1018,7 @@ void mirror_damage_fineff::fire()
     }
     else
     {
-        simple_monster_message(*monster_by_mid(att), " suffers a backlash!");
+        simple_monster_message(*monster_by_mid(att), T_(" suffers a backlash!"));
         attack->hurt(defender(), damage);
     }
 }
@@ -1153,10 +1153,10 @@ void trj_spawn_fineff::fire()
              spawned > 1 ? " vigorously" : "");
 
         if (spawned == 1)
-            mprf("%s spits out another jelly.", monnam.c_str());
+            mprf(T_("%s spits out another jelly."), monnam.c_str());
         else
         {
-            mprf("%s spits out %s more jellies.",
+            mprf(T_("%s spits out %s more jellies."),
                  monnam.c_str(),
                  number_in_words(spawned).c_str());
         }
@@ -1165,7 +1165,7 @@ void trj_spawn_fineff::fire()
         mpr(T_("One of the Royal Jelly's fragments survives."));
     else
     {
-        mprf("The dying Royal Jelly spits out %s more jellies.",
+        mprf(T_("The dying Royal Jelly spits out %s more jellies."),
              number_in_words(spawned).c_str());
     }
 }
@@ -1284,7 +1284,7 @@ void starcursed_merge_fineff::fire()
 
             if (moved)
             {
-                simple_monster_message(*mon, " shudders and withdraws towards its neighbour.");
+                simple_monster_message(*mon, T_(" shudders and withdraws towards its neighbour."));
                 mon->speed_increment -= 10;
                 mon->finalise_movement();
             }
@@ -1311,7 +1311,7 @@ void shock_discharge_fineff::fire()
     const actor *serpent = defender();
     if (serpent && you.can_see(*serpent))
     {
-        mprf("%s %s discharges%s, shocking %s%s",
+        mprf(T_("%s %s discharges%s, shocking %s%s"),
              serpent->name(DESC_ITS).c_str(),
              shock_source.c_str(),
              power < 4 ? "" : " violently",
@@ -1385,7 +1385,7 @@ void explosion_fineff::fire()
             act->move_to(newpos, MV_DEFAULT, true);
             if (you.can_see(*act))
             {
-                mprf("%s %s knocked back by the blast.",
+                mprf_p(T_("%1$s %2$s knocked back by the blast."),
                      act->name(DESC_THE).c_str(),
                      act->conj_verb("are").c_str());
             }
@@ -1479,7 +1479,7 @@ void infestation_death_fineff::fire()
     {
         if (you.see_cell(posn) || you.can_see(*scarab))
         {
-            mprf("%s bursts from %s!", scarab->name(DESC_A, true).c_str(),
+            mprf(T_("%s bursts from %s!"), scarab->name(DESC_A, true).c_str(),
                                        name.c_str());
         }
     }
@@ -1564,10 +1564,10 @@ void mummy_death_curse_fineff::fire()
         return;
 
     if (victim->is_player())
-        mprf(MSGCH_MONSTER_SPELL, "You feel extremely nervous for a moment...");
+        mprf(MSGCH_MONSTER_SPELL, T_("You feel extremely nervous for a moment..."));
     else if (you.can_see(*victim))
     {
-        mprf(MSGCH_MONSTER_SPELL, "A malignant aura surrounds %s.",
+        mprf(MSGCH_MONSTER_SPELL, T_("A malignant aura surrounds %s."),
              victim->name(DESC_THE).c_str());
     }
     // The real mummy is dead, but we pass along a cached copy save at the time
@@ -1713,10 +1713,8 @@ void stardust_fineff::fire()
 
     if (is_star_jelly)
         mprf(T_("A flurry of magic pours from %s injured body!"), agent->name(DESC_ITS).c_str());
-    else if (Options.language == lang_t::ZH)
-        mprf("%s的宝珠释放出一阵流星雨！", agent->name(DESC_ITS).c_str());
     else
-        mprf("%s orb unleashes a flurry of shooting stars!", agent->name(DESC_ITS).c_str());
+        mprf(T_("%s orb unleashes a flurry of shooting stars!"), agent->name(DESC_ITS).c_str());
 
     count = is_star_jelly ? max_stars : min(max_stars, count + 1);
     const int foe = agent->is_player() ? int{MHITYOU} : agent->as_monster()->foe;
@@ -1788,7 +1786,7 @@ void celebrant_bloodrite_fineff::fire()
     if (targs.empty())
         return;
 
-    mpr("You consecrate your suffering and invoke the rites of blood!");
+    mpr(T_("You consecrate your suffering and invoke the rites of blood!"));
 
     // Set cooldown before firing, in case we recieve damage during the volley
     // (eg: via reflected projectiles) that would trigger this again.

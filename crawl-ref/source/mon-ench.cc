@@ -1611,7 +1611,7 @@ void monster::apply_enchantment(const mon_enchant &me)
 
         if (dam > 0)
         {
-            simple_monster_message(*this, " burns!");
+            simple_monster_message(*this, T_(" burns!"));
             dprf("sticky flame damage: %d", dam);
             hurt(me.agent(), dam, BEAM_STICKY_FLAME);
         }
@@ -1656,7 +1656,7 @@ void monster::apply_enchantment(const mon_enchant &me)
             coord_def base_position = props[BASE_POSITION_KEY].get_coord();
             // Do a thing.
             if (you.see_cell(base_position))
-                mprf("The portal closes; %s is severed.", name(DESC_THE).c_str());
+                mprf(T_("The portal closes; %s is severed."), name(DESC_THE).c_str());
 
             if (env.grid(base_position) == DNGN_MALIGN_GATEWAY)
                 env.grid(base_position) = DNGN_FLOOR;
