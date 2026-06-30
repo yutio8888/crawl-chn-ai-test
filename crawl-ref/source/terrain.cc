@@ -58,6 +58,7 @@
 #include "travel.h"
 #include "viewchar.h"
 #include "view.h"
+#include "database.h"
 
 static bool _revert_terrain_to(coord_def pos, dungeon_feature_type feat);
 
