@@ -10365,3 +10365,297 @@ Your brain swirls with designs for %s. You just need some more time...
 %%%%
 health
 生命
+
+%%%%
+ appears confused.
+显得困惑了。
+
+%%%%
+ becomes paralysed!
+被麻痹了！
+
+%%%%
+ begins to grow on the wall!
+开始在墙上生长！
+
+%%%%
+ begins to petrify.
+开始石化。
+
+%%%%
+ body is warped painfully!
+的身体痛苦地扭曲了！
+
+%%%%
+ completely resists.
+完全抵抗了。
+
+%%%%
+ falls asleep!
+睡着了！
+
+%%%%
+ is blinded.
+被致盲了。
+
+%%%%
+ is burned terribly!
+被严重烧伤了！
+
+%%%%
+ is charmed!
+被魅惑了！
+
+%%%%
+ is charmed.
+被魅惑了。
+
+%%%%
+ is chilled terribly!
+被严重冻伤了！
+
+%%%%
+ is covered in liquid fire!
+被液态火焰覆盖了！
+
+%%%%
+ is doused terribly!
+被严重浇透了！
+
+%%%%
+ is drained terribly!
+被严重汲取了！
+
+%%%%
+ is electrocuted!
+被电击了！
+
+%%%%
+ is empowered.
+被增强了。
+
+%%%%
+ is filled with an inner flame.
+被内在火焰充满了。
+
+%%%%
+ is filled with an intense inner flame!
+被强烈的内在火焰充满！
+
+%%%%
+ is firmly anchored in space.
+被牢牢固定在空间中。
+
+%%%%
+ is flash-frozen.
+被瞬间冻结了。
+
+%%%%
+ is frozen into a solid block of ice!
+被冻成了一整块冰！
+
+%%%%
+ is haunted by guilt!
+被罪恶感折磨着！
+
+%%%%
+ is healed by the life force!
+被生命力治愈了！
+
+%%%%
+ is healed somewhat.
+被治愈了一些。
+
+%%%%
+ is infested!
+被寄生了！
+
+%%%%
+ is on fire!
+着火了！
+
+%%%%
+ is paralysed.
+被麻痹了。
+
+%%%%
+ is pinned in place!
+被钉在了原地！
+
+%%%%
+ is poisoned.
+中毒了。
+
+%%%%
+ is scalded terribly!
+被严重烫伤了！
+
+%%%%
+ looks as sick as possible!
+看起来病得不能再病了！
+
+%%%%
+ looks drowsy...
+看起来昏昏欲睡……
+
+%%%%
+ looks even sicker.
+看起来病得更重了。
+
+%%%%
+ looks frightened!
+看起来很害怕！
+
+%%%%
+ melts!
+融化了！
+
+%%%%
+ partially resists.
+部分抵抗了。
+
+%%%%
+ resists.
+抵抗了。
+
+%%%%
+ seems to be slow for longer.
+似乎会减速更久。
+
+%%%%
+ seems to grow stronger.
+似乎变得更强了。
+
+%%%%
+ seems to slow down.
+似乎减速了。
+
+%%%%
+ seems to speed up.
+似乎加速了。
+
+%%%%
+ shatters and turns to gold!
+碎裂成了黄金！
+
+%%%%
+ struggles to breathe.
+艰难地呼吸着。
+
+%%%%
+ suddenly seems more agile.
+突然变得更加敏捷了。
+
+%%%%
+ suddenly seems more resistant.
+突然变得更加抗性了。
+
+%%%%
+ surges with doubled vitality!
+涌动着双倍活力！
+
+%%%%
+ venom grows more potent.
+毒液变得更加致命了。
+
+%%%%
+ wounds heal themselves!
+伤口自行愈合了！
+
+%%%%
+ writhes in agony!
+痛苦地扭动着！
+
+%%%%
+%s appears from out of thin air!
+%s凭空出现了！
+
+%%%%
+%s appears from out of your range of vision.
+%s从你的视野之外出现了。
+
+%%%%
+%s life force is offered up.
+%s的生命力被献祭了。
+
+%%%%
+A part of your body evaporates into steam!
+你身体的一部分蒸发成了蒸汽！
+
+%%%%
+An unnatural silence engulfs you.
+一阵不自然的沉默吞没了你。
+
+%%%%
+Software bugs nibble your toes!
+软件虫子啃咬着你的脚趾！
+
+%%%%
+Something tries to affect you, but you %s.
+有什么东西试图影响你，但你%s了。
+
+%%%%
+You are skewered in place!
+你被钉在了原地！
+
+%%%%
+You feel %sfirmly anchored in space.
+你感到%s牢牢固定在空间中。
+
+%%%%
+You feel an ill-omen....
+你感到不祥的预兆……
+
+%%%%
+You feel life coursing into your body%s
+你感到生命力涌入你的身体%s
+
+%%%%
+You feel light-headed.
+你感到头晕。
+
+%%%%
+You feel unable to drink.
+你感到无法饮用。
+
+%%%%
+You feel your inability to drink will last longer.
+你感到你无法饮用的状态将持续更久。
+
+%%%%
+You feel your light-headedness will last longer.
+你感到你的头晕将持续更久。
+
+%%%%
+You feel your silence will last longer.
+你感到你的沉默将持续更久。
+
+%%%%
+You hear a grinding noise.
+你听到一阵研磨声。
+
+%%%%
+You hear a sizzling sound!
+你听到一阵嘶嘶声！
+
+%%%%
+Your body is warped painfully!
+你的身体痛苦地扭曲了！
+
+%%%%
+Your magic feels %stainted.
+你的魔力感到%s被玷污了。
+
+%%%%
+Your will is overpowered!
+你的意志被压制了！
+
+%%%%
+Your will lashes out at %s%s
+你的意志猛击%s%s
+%%
+ is cursed with the promise of agony.
+被诅咒承受痛苦的承诺。
+%%
+ looks more vulnerable to fire.
+看起来对火焰更加脆弱。

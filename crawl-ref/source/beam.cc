@@ -665,7 +665,7 @@ void bolt::initialise_fire()
             && !crawl_state.is_god_acting()
             && (!mon || !mon->observable()))
         {
-            mprf("%s appears from out of thin air!",
+            mprf(T_("%s appears from out of thin air!"),
                  article_a(name, false).c_str());
         }
     }
@@ -868,7 +868,7 @@ void bolt::digging_wall_effect()
             {
                 if (!silenced(you.pos()))
                 {
-                    mprf(MSGCH_SOUND, "You hear a grinding noise.");
+                    mprf(MSGCH_SOUND, T_("You hear a grinding noise."));
                     obvious_effect = true; // You may still see the caster.
                     msg_generated = true;
                 }
@@ -996,7 +996,7 @@ void bolt::sporangium_wall_effect()
     mg.set_summoned(orig_plasmodium, SPELL_LAUNCH_SPORANGIUM, INFINITE_DURATION, false);
 
     if (monster* plasm = create_monster(mg))
-        simple_monster_message(*plasm, " begins to grow on the wall!", false, MSGCH_PLAIN, 0, DESC_A);
+        simple_monster_message(*plasm, T_(" begins to grow on the wall!"), false, MSGCH_PLAIN, 0, DESC_A);
 }
 
 int bolt::range_used(bool leg_only) const
@@ -1403,7 +1403,7 @@ void bolt::do_fire()
 
         if (flavour != BEAM_VISUAL && !was_seen && seen && !is_tracer())
         {
-            mprf("%s appears from out of your range of vision.",
+            mprf(T_("%s appears from out of your range of vision."),
                  article_a(name, false).c_str());
         }
 
@@ -1504,33 +1504,33 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (!hurted)
         {
             if (original > 0 && doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
         }
         else if (original > hurted)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " resists.");
+                simple_monster_message(*mons, T_(" resists."));
         }
         else if (original < hurted && doFlavouredEffects)
         {
             if (mons->is_icy())
-                simple_monster_message(*mons, " melts!");
+                simple_monster_message(*mons, T_(" melts!"));
             else if (mons_species(mons->type) == MONS_BUSH
                      && mons->res_fire() < 0)
             {
-                simple_monster_message(*mons, " is on fire!");
+                simple_monster_message(*mons, T_(" is on fire!"));
             }
             else if (pbolt.flavour == BEAM_FIRE)
-                simple_monster_message(*mons, " is burned terribly!");
+                simple_monster_message(*mons, T_(" is burned terribly!"));
             else
-                simple_monster_message(*mons, " is scalded terribly!");
+                simple_monster_message(*mons, T_(" is scalded terribly!"));
         }
         break;
 
     case BEAM_WATER:
         hurted = resist_adjust_damage(mons, pbolt.flavour, hurted);
         if (hurted > original && doFlavouredEffects)
-            simple_monster_message(*mons, " is doused terribly!");
+            simple_monster_message(*mons, T_(" is doused terribly!"));
         break;
 
     case BEAM_COLD:
@@ -1538,17 +1538,17 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (!hurted)
         {
             if (original > 0 && doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
         }
         else if (original > hurted)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " resists.");
+                simple_monster_message(*mons, T_(" resists."));
         }
         else if (original < hurted)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " is chilled terribly!");
+                simple_monster_message(*mons, T_(" is chilled terribly!"));
         }
         break;
 
@@ -1559,17 +1559,17 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (!hurted)
         {
             if (original > 0 && doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
         }
         else if (original > hurted)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " resists.");
+                simple_monster_message(*mons, T_(" resists."));
         }
         else if (original < hurted)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " is electrocuted!");
+                simple_monster_message(*mons, T_(" is electrocuted!"));
         }
         break;
 
@@ -1579,7 +1579,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (!hurted)
         {
             if (original > 0 && doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
         }
         else if (doFlavouredEffects && !one_chance_in(3))
             mons->corrode(pbolt.agent());
@@ -1591,7 +1591,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         hurted = resist_adjust_damage(mons, pbolt.flavour, hurted);
 
         if (!hurted && doFlavouredEffects && original > 0)
-            simple_monster_message(*mons, " completely resists.");
+            simple_monster_message(*mons, T_(" completely resists."));
         else if (doFlavouredEffects && !one_chance_in(3))
         {
             if (pbolt.origin_spell == SPELL_SPIT_POISON &&
@@ -1621,7 +1621,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         {
             if (doFlavouredEffects)
             {
-                simple_monster_message(*mons, " partially resists.");
+                simple_monster_message(*mons, T_(" partially resists."));
                 poison_monster(mons, pbolt.agent(), div_rand_round(stacks, 2),
                                true);
             }
@@ -1670,7 +1670,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (mons->res_negative_energy() == 3)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
 
             hurted = 0;
         }
@@ -1683,9 +1683,9 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
                 return hurted;
 
             if (original > hurted)
-                simple_monster_message(*mons, " resists.");
+                simple_monster_message(*mons, T_(" resists."));
             else if (original < hurted)
-                simple_monster_message(*mons, " is drained terribly!");
+                simple_monster_message(*mons, T_(" is drained terribly!"));
 
             if (mons->observable())
                 pbolt.obvious_effect = true;
@@ -1701,7 +1701,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (mons->res_miasma())
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
 
             hurted = 0;
         }
@@ -1725,9 +1725,9 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (doFlavouredEffects && original > 0
             && (!hurted || hurted != original))
         {
-            simple_monster_message(*mons, hurted == 0 ? " completely resists." :
-                                    hurted < original ? " resists." :
-                                    " writhes in agony!");
+            simple_monster_message(*mons, hurted == 0 ? T_(" completely resists.") :
+                                    hurted < original ? T_(" resists.") :
+                                    T_(" writhes in agony!"));
         }
         break;
     }
@@ -1739,12 +1739,12 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (hurted < original)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " partially resists.");
+                simple_monster_message(*mons, T_(" partially resists."));
         }
         else if (hurted > original)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " is chilled terribly!");
+                simple_monster_message(*mons, T_(" is chilled terribly!"));
         }
         break;
 
@@ -1754,19 +1754,19 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (hurted < original)
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " partially resists.");
+                simple_monster_message(*mons, T_(" partially resists."));
         }
         else if (hurted > original)
         {
             if (mons->is_icy())
             {
                 if (doFlavouredEffects)
-                    simple_monster_message(*mons, " melts!");
+                    simple_monster_message(*mons, T_(" melts!"));
             }
             else
             {
                 if (doFlavouredEffects)
-                    simple_monster_message(*mons, " is burned terribly!");
+                    simple_monster_message(*mons, T_(" is burned terribly!"));
             }
         }
         break;
@@ -1775,7 +1775,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (mons->res_damnation())
         {
             if (doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
 
             hurted = 0;
         }
@@ -1785,7 +1785,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
         if (mons->res_poison() > 0)
         {
             if (original > 0 && doFlavouredEffects)
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
 
             hurted = 0;
         }
@@ -1811,7 +1811,7 @@ int mons_adjust_flavoured(monster* mons, bolt &pbolt, int hurted,
             || mons->holiness() & ~(MH_NATURAL | MH_DEMONIC | MH_HOLY))
         {
             if (doFlavouredEffects && !mons_aligned(mons, pbolt.agent(true)))
-                simple_monster_message(*mons, " completely resists.");
+                simple_monster_message(*mons, T_(" completely resists."));
 
             hurted = 0;
         }
@@ -1885,7 +1885,7 @@ static bool _monster_resists_mass_enchantment(monster* mons,
 
         if (!mons->can_feel_fear(true))
         {
-            if (simple_monster_message(*mons, " is unaffected."))
+            if (simple_monster_message(*mons, T_(" is unaffected.")))
                 *did_msg = true;
             return true;
         }
@@ -1893,7 +1893,7 @@ static bool _monster_resists_mass_enchantment(monster* mons,
     case ENCH_FRENZIED:
         if (!mons->can_go_frenzy())
         {
-            if (simple_monster_message(*mons, " is unaffected."))
+            if (simple_monster_message(*mons, T_(" is unaffected.")))
                 *did_msg = true;
             return true;
         }
@@ -1903,7 +1903,7 @@ static bool _monster_resists_mass_enchantment(monster* mons,
             return true;
         if (mons_intel(*mons) <= I_BRAINLESS)
         {
-            if (simple_monster_message(*mons, " is unaffected."))
+            if (simple_monster_message(*mons, T_(" is unaffected.")))
                 *did_msg = true;
             return true;
         }
@@ -1965,9 +1965,9 @@ spret mass_enchantment(enchant_type wh_enchant, int pow, bool fail)
             // Do messaging.
             const char* msg = nullptr;
             if (wh_enchant == ENCH_FEAR)
-                msg = " looks frightened!";
+                msg = T_(" looks frightened!");
             else if (wh_enchant == ENCH_ANGUISH)
-                msg = " is haunted by guilt!";
+                msg = T_(" is haunted by guilt!");
 
             if (msg && simple_monster_message(**mi, msg))
                 did_msg = true;
@@ -1995,7 +1995,7 @@ void bolt::apply_bolt_paralysis(monster* mons)
         return;
 
     if (!mons->is_firewood()
-        && simple_monster_message(*mons, " becomes paralysed!"))
+        && simple_monster_message(*mons, T_(" becomes paralysed!")))
     {
         obvious_effect = true;
     }
@@ -2015,7 +2015,7 @@ void bolt::apply_bolt_petrify(monster* mons)
 
     if (mons->add_ench(mon_enchant(ENCH_PETRIFYING, agent())))
     {
-        simple_monster_message(*mons, " begins to petrify.");
+        simple_monster_message(*mons, T_(" begins to petrify."));
         obvious_effect = true;
     }
 }
@@ -2030,14 +2030,14 @@ static bool _curare_hits_monster(actor *agent, monster* mons, int bonus_poison)
 
     poison_monster(mons, agent, 2 + (bonus_poison / 7), true);
 
-    simple_monster_message(*mons, " struggles to breathe.");
+    simple_monster_message(*mons, T_(" struggles to breathe."));
     mons->hurt(agent, roll_dice(2, 6), BEAM_POISON);
 
     if (mons->alive() && !mons->stasis())
     {
         simple_monster_message(*mons, mons->has_ench(ENCH_SLOW)
-                                         ? " seems to be slow for longer."
-                                         : " seems to slow down.");
+                                         ? T_(" seems to be slow for longer.")
+                                         : T_(" seems to slow down."));
         mons->add_ench(mon_enchant(ENCH_SLOW, agent));
     }
 
@@ -2066,11 +2066,11 @@ bool poison_monster(monster* mons, const actor *who, int levels,
         {
             const char* msg;
             if (new_pois.degree >= MAX_ENCH_DEGREE_DEFAULT)
-                msg = " looks as sick as possible!";
+                msg = T_(" looks as sick as possible!");
             else if (old_pois.degree > 0)
-                msg = " looks even sicker.";
+                msg = T_(" looks even sicker.");
             else
-                msg = " is poisoned.";
+                msg = T_(" is poisoned.");
 
             simple_monster_message(*mons, msg);
         }
@@ -2120,7 +2120,7 @@ bool sticky_flame_monster(monster* mons, const actor *who, int dur, bool verbose
     const bool had_sticky_flame = mons->has_ench(ENCH_STICKY_FLAME);
 
     if (!had_sticky_flame && verbose)
-        simple_monster_message(*mons, " is covered in liquid fire!");
+        simple_monster_message(*mons, T_(" is covered in liquid fire!"));
 
     mons->add_ench(mon_enchant(ENCH_STICKY_FLAME, who, dur * BASELINE_DELAY));
 
@@ -2185,7 +2185,7 @@ int silver_damages_victim(actor* victim, int damage, string &dmg_msg)
     else
         return 0;
 
-    dmg_msg = "The silver sears " + victim->name(DESC_THE) + "!";
+    dmg_msg = T_("The silver sears ") + victim->name(DESC_THE) + "!";
     return ret;
 }
 
@@ -2317,7 +2317,7 @@ static void _malign_offering_effect(actor* victim, const actor* agent, int damag
     coord_def c = victim->pos();
 
     if (you.see_cell(c) || you.see_cell(agent->pos()))
-        mprf("%s life force is offered up.", victim->name(DESC_ITS).c_str());
+        mprf(T_("%s life force is offered up."), victim->name(DESC_ITS).c_str());
     damage = victim->hurt(agent, damage, BEAM_MALIGN_OFFERING, KILLED_BY_BEAM,
                           "", "by a malign offering");
 
@@ -2364,7 +2364,7 @@ static void _vampiric_draining_effect(actor& victim, actor& agent, int damage)
     {
         const int hp_gain = drain_amount * 2 / 3;
         if (agent.heal(hp_gain))
-            simple_monster_message(*agent.as_monster(), " is healed by the life force!");
+            simple_monster_message(*agent.as_monster(), T_(" is healed by the life force!"));
     }
     else
     {
@@ -2374,7 +2374,7 @@ static void _vampiric_draining_effect(actor& victim, actor& agent, int damage)
         const int hp_gain = div_rand_round(drain_amount, 2);
         if (hp_gain)
         {
-            mprf("You feel life coursing into your body%s",
+            mprf(T_("You feel life coursing into your body%s"),
                  attack_strength_punctuation(hp_gain).c_str());
             inc_hp(hp_gain);
         }
@@ -3004,7 +3004,7 @@ void bolt::affect_place_clouds()
             || (cloud->type == CLOUD_FIRE && flavour == BEAM_COLD))
         {
             if (player_can_hear(p))
-                mprf(MSGCH_SOUND, "You hear a sizzling sound!");
+                mprf(MSGCH_SOUND, T_("You hear a sizzling sound!"));
 
             delete_cloud(p);
             extra_range_used += 5;
@@ -3641,7 +3641,7 @@ void bolt::affect_player_enchantment(bool resistible)
             const monster* mon = monster_by_mid(source_id);
             if (mon && !mon->observable())
             {
-                mprf("Something tries to affect you, but you %s.",
+                mprf(T_("Something tries to affect you, but you %s."),
                      you.willpower() == WILL_INVULN ? "are unaffected"
                                                    : "resist");
                 need_msg = false;
@@ -3666,7 +3666,7 @@ void bolt::affect_player_enchantment(bool resistible)
             if (mon && mon->alive())
             {
                 const int dam = 3 + random2(1 + div_rand_round(ench_power, 10));
-                mprf("Your will lashes out at %s%s",
+                mprf(T_("Your will lashes out at %s%s"),
                      mon->name(DESC_THE).c_str(),
                      attack_strength_punctuation(dam).c_str());
                 mon->hurt(&you, dam);
@@ -3806,7 +3806,7 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_CHARM:
-        mprf(MSGCH_WARN, "Your will is overpowered!");
+        mprf(MSGCH_WARN, T_("Your will is overpowered!"));
         confuse_player(5 + random2(3));
         obvious_effect = true;
         break;     // charming - confusion?
@@ -3898,7 +3898,7 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_DIMENSION_ANCHOR:
-        mprf("You feel %sfirmly anchored in space.",
+        mprf(T_("You feel %sfirmly anchored in space."),
              you.duration[DUR_DIMENSION_ANCHOR] ? "more " : "");
         you.increase_duration(DUR_DIMENSION_ANCHOR, 12 + random2(15), 50);
         if (you.duration[DUR_TELEPORT])
@@ -3995,7 +3995,7 @@ void bolt::affect_player_enchantment(bool resistible)
         break;
 
     case BEAM_SAP_MAGIC:
-        mprf(MSGCH_WARN, "Your magic feels %stainted.",
+        mprf(MSGCH_WARN, T_("Your magic feels %stainted."),
              you.duration[DUR_SAP_MAGIC] ? "more " : "");
         flash_tile(you.pos(), GREEN, 120, TILE_BOLT_SAP_MAGIC);
         you.increase_duration(DUR_SAP_MAGIC, random_range(20, 30), 50);
@@ -4034,7 +4034,7 @@ void bolt::affect_player_enchantment(bool resistible)
     case BEAM_ILL_OMEN:
         obvious_effect = true;
         if (!you.doom(random_range(16, 30) + ench_power / 20))
-            mpr("You feel an ill-omen....");
+            mpr(T_("You feel an ill-omen...."));
         break;
 
     case BEAM_ENFEEBLE:
@@ -4044,7 +4044,7 @@ void bolt::affect_player_enchantment(bool resistible)
 
     case BEAM_WARP_BODY:
         obvious_effect = true;
-        mpr("Your body is warped painfully!");
+        mpr(T_("Your body is warped painfully!"));
         if (temp_mutation_count() >= 3)
             you.vitrify(agent(), random_range(12, 22));
         else
@@ -4054,7 +4054,7 @@ void bolt::affect_player_enchantment(bool resistible)
 
     default:
         // _All_ enchantments should be enumerated here!
-        mpr("Software bugs nibble your toes!");
+        mpr(T_("Software bugs nibble your toes!"));
         break;
     }
 
@@ -4120,9 +4120,9 @@ static const vector<pie_effect> pie_effects = {
         },
         [](actor &/*defender*/, const bolt &/*beam*/) {
             if (you.duration[DUR_VERTIGO])
-                mpr("You feel your light-headedness will last longer.");
+                mpr(T_("You feel your light-headedness will last longer."));
             else
-                mpr("You feel light-headed.");
+                mpr(T_("You feel light-headed."));
 
             you.increase_duration(DUR_VERTIGO, 10 + random2(11), 50);
         },
@@ -4136,9 +4136,9 @@ static const vector<pie_effect> pie_effects = {
         },
         [](actor &/*defender*/, const bolt &/*beam*/) {
             if (you.duration[DUR_NO_POTIONS])
-                mpr("You feel your inability to drink will last longer.");
+                mpr(T_("You feel your inability to drink will last longer."));
             else
-                mpr("You feel unable to drink.");
+                mpr(T_("You feel unable to drink."));
 
             you.increase_duration(DUR_NO_POTIONS, 10 + random2(11), 50);
         },
@@ -4156,9 +4156,9 @@ static const vector<pie_effect> pie_effects = {
             else
             {
                 if (you.duration[DUR_SILENCE])
-                    mpr("You feel your silence will last longer.");
+                    mpr(T_("You feel your silence will last longer."));
                 else
-                    mpr("An unnatural silence engulfs you.");
+                    mpr(T_("An unnatural silence engulfs you."));
 
                 silence_player(4 + random2(7));
 
@@ -4175,8 +4175,7 @@ static const vector<pie_effect> pie_effects = {
             if (defender.is_monster())
             {
                 monster *mons = defender.as_monster();
-                simple_monster_message(*mons,
-                        " looks more vulnerable to fire.");
+                simple_monster_message(*mons, T_(" looks more vulnerable to fire."));
                 mons->add_ench(mon_enchant(ENCH_FIRE_VULN, beam.agent(),
                                            15 + random2(11) * BASELINE_DELAY));
             }
@@ -4589,7 +4588,7 @@ void bolt::affect_player()
 
     if (origin_spell == SPELL_GRAVE_CLAW && !you.unrand_equipped(UNRAND_SLICK_SLIPPERS))
     {
-        mpr("You are skewered in place!");
+        mpr(T_("You are skewered in place!"));
         you.increase_duration(DUR_NO_MOMENTUM, random_range(2, 4));
     }
 
@@ -4674,7 +4673,7 @@ void bolt::affect_player()
     {
         if (!you.duration[DUR_FROZEN])
         {
-            mprf(MSGCH_WARN, "You are encased in ice.");
+            mprf(MSGCH_WARN, T_("You are encased in ice."));
             you.duration[DUR_FROZEN] = (random_range(3, 5)) * BASELINE_DELAY;
         }
     }
@@ -4683,7 +4682,7 @@ void bolt::affect_player()
         && is_fiery() && x_chance_in_y(final_dam, you.hp_max * 2 / 3))
     {
         const int pow = div_rand_round(final_dam * 100 / you.hp_max, 10);
-        mpr("A part of your body evaporates into steam!");
+        mpr(T_("A part of your body evaporates into steam!"));
         big_cloud(CLOUD_STEAM, monster_by_mid(MID_YOU_FAULTLESS), you.pos(),
                   random_range(1, 4) + pow, random_range(2, 7));
     }
@@ -5125,7 +5124,7 @@ void bolt::enchantment_affect_monster(monster* mon)
             }
             break;
         case MON_UNAFFECTED:
-            if (simple_monster_message(*mon, " is unaffected."))
+            if (simple_monster_message(*mon, T_(" is unaffected.")))
                 msg_generated = true;
             break;
         case MON_AFFECTED:
@@ -5260,9 +5259,9 @@ static void _print_pre_death_message(const monster &mon, bool goldify,
         return;
     }
     if (goldify)
-        simple_monster_message(mon, " shatters and turns to gold!");
+        simple_monster_message(mon, T_(" shatters and turns to gold!"));
     else
-        simple_monster_message(mon, " is frozen into a solid block of ice!");
+        simple_monster_message(mon, T_(" is frozen into a solid block of ice!"));
 }
 
 void bolt::kill_monster(monster &mon)
@@ -5403,7 +5402,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
     {
         if (!mon->has_ench(ENCH_FROZEN))
         {
-            simple_monster_message(*mon, " is flash-frozen.");
+            simple_monster_message(*mon, T_(" is flash-frozen."));
             mon->add_ench(mon_enchant(ENCH_FROZEN, agent()));
         }
     }
@@ -5442,7 +5441,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
         && mon->res_elec() <= 0
         && !mon->stasis())
     {
-        simple_monster_message(*mon, " is paralysed.");
+        simple_monster_message(*mon, T_(" is paralysed."));
         mon->add_ench(mon_enchant(ENCH_PARALYSIS, agent(), BASELINE_DELAY));
     }
 
@@ -5453,7 +5452,7 @@ void bolt::monster_post_hit(monster* mon, int dmg)
         const int dur = max(1, div_rand_round(54, mon->get_hit_dice())) * BASELINE_DELAY;
         auto ench = mon_enchant(ENCH_BLIND, agent(), random_range(dur, dur * 2));
         if (mon->add_ench(ench))
-            simple_monster_message(*mon, " is blinded.");
+            simple_monster_message(*mon, T_(" is blinded."));
     }
 
     if (origin_spell == SPELL_HURL_TORCHLIGHT && mon->holiness() & MH_UNDEAD
@@ -5464,12 +5463,12 @@ void bolt::monster_post_hit(monster* mon, int dmg)
                                * BASELINE_DELAY;
         mon->add_ench(mon_enchant(ENCH_MIGHT, agent(), dur));
         mon->speed_increment += 10;
-        simple_monster_message(*mon, " is empowered.");
+        simple_monster_message(*mon, T_(" is empowered."));
     }
 
     if (origin_spell == SPELL_GRAVE_CLAW && !mon->has_ench(ENCH_BOUND))
     {
-        simple_monster_message(*mon, " is pinned in place!");
+        simple_monster_message(*mon, T_(" is pinned in place!"));
         mon->add_ench(mon_enchant(ENCH_BOUND, agent(), random_range(2, 4) * BASELINE_DELAY));
     }
 
@@ -6452,7 +6451,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                                       random_range(6, 8) * BASELINE_DELAY, 2)))
         {
             obvious_effect = true;
-            simple_monster_message(*mon, " is cursed with the promise of agony.");
+            simple_monster_message(*mon, T_(" is cursed with the promise of agony."));
 
         }
         return MON_AFFECTED;
@@ -6483,7 +6482,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
     case BEAM_HIBERNATION:
         if (mon->can_hibernate())
         {
-            if (simple_monster_message(*mon, " looks drowsy..."))
+            if (simple_monster_message(*mon, T_(" looks drowsy...")))
                 obvious_effect = true;
             // Since 1 turn will pass for the player's own action here, EH will
             // put a monster to sleep for between ~20-55 aut, slanted towards
@@ -6521,7 +6520,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             && mon->add_ench(ENCH_HASTE))
         {
             if (!mons_is_immotile(*mon)
-                && simple_monster_message(*mon, " seems to speed up."))
+                && simple_monster_message(*mon, T_(" seems to speed up.")))
             {
                 obvious_effect = true;
             }
@@ -6533,7 +6532,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             && mons_has_attacks(*mon)
             && mon->add_ench(ENCH_MIGHT))
         {
-            if (simple_monster_message(*mon, " seems to grow stronger."))
+            if (simple_monster_message(*mon, T_(" seems to grow stronger.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6542,7 +6541,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         if (!mon->has_ench(ENCH_DOUBLED_VIGOUR)
             && mon->add_ench(ENCH_DOUBLED_VIGOUR))
         {
-            if (simple_monster_message(*mon, " surges with doubled vitality!"))
+            if (simple_monster_message(*mon, T_(" surges with doubled vitality!")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6576,10 +6575,10 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         {
             if (mon->hit_points == mon->max_hit_points)
             {
-                if (simple_monster_message(*mon, " wounds heal themselves!", true))
+                if (simple_monster_message(*mon, T_(" wounds heal themselves!"), true))
                     obvious_effect = true;
             }
-            else if (simple_monster_message(*mon, " is healed somewhat."))
+            else if (simple_monster_message(*mon, T_(" is healed somewhat.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6624,7 +6623,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         {
             // FIXME: Put in an exception for things you won't notice
             // becoming confused.
-            if (simple_monster_message(*mon, " appears confused."))
+            if (simple_monster_message(*mon, T_(" appears confused.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6635,7 +6634,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             return MON_UNAFFECTED;
 
         mon->put_to_sleep(agent(), random_range(4, 7) * BASELINE_DELAY);
-        if (simple_monster_message(*mon, " falls asleep!"))
+        if (simple_monster_message(*mon, T_(" falls asleep!")))
             obvious_effect = true;
 
         return MON_AFFECTED;
@@ -6662,7 +6661,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                 obvious_effect = mon->del_ench(bad);
                 return MON_AFFECTED;
             }
-            if (simple_monster_message(*mon, " is charmed!"))
+            if (simple_monster_message(*mon, T_(" is charmed!")))
                 obvious_effect = true;
             mon->add_ench(mon_enchant(good, agent()));
             if (!obvious_effect && could_see && !you.can_see(*mon))
@@ -6680,7 +6679,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         if (mons_is_mons_class(mon, MONS_PIKEL))
             pikel_band_neutralise();
 
-        if (simple_monster_message(*mon, " is charmed."))
+        if (simple_monster_message(*mon, T_(" is charmed.")))
             obvious_effect = true;
         mon->add_ench(mon_enchant(ENCH_CHARM, agent()));
         if (you.can_see(*mon))
@@ -6720,8 +6719,8 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         {
             if (simple_monster_message(*mon,
                                        (mon->body_size(PSIZE_BODY) > SIZE_LARGE)
-                                        ? " is filled with an intense inner flame!"
-                                        : " is filled with an inner flame."))
+                                        ? T_(" is filled with an intense inner flame!")
+                                        : T_(" is filled with an inner flame.")))
             {
                 obvious_effect = true;
             }
@@ -6733,7 +6732,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             && mon->add_ench(mon_enchant(ENCH_DIMENSION_ANCHOR, agent(),
                                          random_range(20, 30) * BASELINE_DELAY)))
         {
-            if (simple_monster_message(*mon, " is firmly anchored in space."))
+            if (simple_monster_message(*mon, T_(" is firmly anchored in space.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6770,7 +6769,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         }
         else
         {
-            simple_monster_message(*mon, " is unaffected.");
+            simple_monster_message(*mon, T_(" is unaffected."));
             return MON_UNAFFECTED;
         }
     }
@@ -6793,7 +6792,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
             && !mon->is_stationary()
             && mon->add_ench(ENCH_AGILE))
         {
-            if (simple_monster_message(*mon, " suddenly seems more agile."))
+            if (simple_monster_message(*mon, T_(" suddenly seems more agile.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6825,7 +6824,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         if (!mon->has_ench(ENCH_RESISTANCE)
             && mon->add_ench(ENCH_RESISTANCE))
         {
-            if (simple_monster_message(*mon, " suddenly seems more resistant."))
+            if (simple_monster_message(*mon, T_(" suddenly seems more resistant.")))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6850,7 +6849,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         const int dur = (5 + random2avg(div_rand_round(ench_power,2), 2))
                             * BASELINE_DELAY;
         mon->add_ench(mon_enchant(ENCH_INFESTATION, &you, dur));
-        if (simple_monster_message(*mon, " is infested!"))
+        if (simple_monster_message(*mon, T_(" is infested!")))
             obvious_effect = true;
         return MON_AFFECTED;
     }
@@ -6877,7 +6876,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
         if (!mon->has_ench(ENCH_CONCENTRATE_VENOM)
             && mon->add_ench(ENCH_CONCENTRATE_VENOM))
         {
-            if (simple_monster_message(*mon, " venom grows more potent.", true))
+            if (simple_monster_message(*mon, T_(" venom grows more potent."), true))
                 obvious_effect = true;
         }
         return MON_AFFECTED;
@@ -6909,7 +6908,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
 
     case BEAM_WARP_BODY:
         obvious_effect = true;
-        simple_monster_message(*mon, " body is warped painfully!", true);
+        simple_monster_message(*mon, T_(" body is warped painfully!"), true);
         if (mon->has_ench(ENCH_WRETCHED))
             mon->vitrify(agent(), random_range(8, 12), true);
         else
