@@ -253,8 +253,8 @@
 %s assumes the form of %s%s!
 %s变成了%s%s！
 %%%%
-%s attack snaps %s out of %s fear.
-%s的攻击将%s从恐惧中惊醒。
+%1$s attack snaps %2$s out of %3$s fear.
+%1$s的攻击将%2$s从恐惧中惊醒。
 %%%%
 %s avoids your attack.
 %s躲过了你的攻击。
@@ -334,8 +334,8 @@
 %s constructs an explosive harbinger and releases it.
 %s构建了一个爆炸先驱并将其释放。
 %%%%
-%s continues winding %s clockwork bee....
-%s继续给发条蜜蜂上弦……
+%1$s continues winding %2$s clockwork bee....
+%1$s继续给发条蜜蜂上弦……
 %%%%
 %s corrodes %s!
 %s腐蚀了%s！
@@ -908,8 +908,8 @@
 %s stops radiating force.
 %s停止了散发力量。
 %%%%
-%s stops winding %s clockwork bee.
-%s停止了给发条蜜蜂上弦。
+%1$s stops winding %2$s clockwork bee.
+%1$s停止了给发条蜜蜂上弦。
 %%%%
 %s strikes at %s from the darkness!
 %s从黑暗中攻击%s！
