@@ -1078,12 +1078,14 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     // Only DB-retrieved values go through unescape (source.txt values use
     // escape notation like \n for newlines). The EN fallback string is
     // already a C++ runtime value with actual control characters.
-    // trim_string must run BEFORE unescape: _parse_text_db appends \n
-    // (0x0A) to every stored value; unescape would convert a translated
-    // trailing \n to 0x0A, which trim would then incorrectly strip.
+    // _parse_text_db appends \n (0x0A) to every stored value — strip only
+    // that trailing artifact. Do NOT strip leading/trailing spaces: they
+    // are semantically significant for fragment concatenation in message
+    // assembly (e.g. T_(" wielding ") returns " 挥舞着 " with spaces).
     if (!zh.empty())
     {
-        trim_string(zh);
+        while (!zh.empty() && (zh.back() == '\n' || zh.back() == '\r'))
+            zh.pop_back();
         zh = i18n_unescape_value(zh);
     }
     else

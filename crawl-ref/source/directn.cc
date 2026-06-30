@@ -3550,7 +3550,11 @@ string get_monster_equipment_desc(const monster_info& mi,
             || item_is_worth_listing(*mon_wpn)
             || (mi.wields_two_weapons() && mon_alt && item_is_worth_listing(*mon_alt))))
     {
-        item_descriptions.push_back(weap.substr(1)); // strip leading space
+                // strip leading space only if actually present (safe for CJK)
+        if (!weap.empty() && weap[0] == ' ')
+            item_descriptions.push_back(weap.substr(1));
+        else
+            item_descriptions.push_back(weap);
     }
 
     // _describe_monster_weapon already took care of this

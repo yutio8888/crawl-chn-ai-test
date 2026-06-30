@@ -17,7 +17,7 @@
 % 命中
 %%%%
 % to hit with your 
-% 命中，使用你的
+% 命中，使用你的 
 %%%%
 %%%% 
 # Phase 2a: ARG-DIFF structural refactor — describe-god.cc (2026-06-29)
@@ -1869,7 +1869,7 @@ gain power from chaos
 （当前）
 %%%%
 (Boost: 
-（增幅：
+（增幅： 
 %%%%
  (but often pauses)
 （但经常停顿）
@@ -1983,7 +1983,7 @@ gain power from chaos
 ）
 %%%%
     * - Random 
-    * - 随机
+    * - 随机 
 %%%%
 * - Random name
 * - 随机名字
@@ -1998,7 +1998,7 @@ gain power from chaos
 + - 推荐种族
 %%%%
 , 
-、
+、 
 %%%%
 , %d Gold
 ，%d 金币
@@ -2016,7 +2016,7 @@ gain power from chaos
 , . - 移动
 %%%%
 , and 
-和
+和 
 %%%%
 , and vanishes
 ，然后消失了
@@ -2100,7 +2100,7 @@ gain power from chaos
 --更多--
 %%%%
 -headed 
-头
+头 
 %%%%
 -Potion
 -药水
@@ -2160,7 +2160,7 @@ gain power from chaos
 12（箭毒）
 %%%%
 ; 
-、
+、 
 %%%%
 ; cleaves
 ；横扫
@@ -2193,7 +2193,7 @@ gain power from chaos
 <darkgrey>(%s 不可用)</darkgrey>
 %%%%
 <darkgrey>(no 
-<darkgrey>（无
+<darkgrey>（无 
 %%%%
 <darkgrey>(no %s)</darkgrey>
 <darkgrey>(无%s)</darkgrey>
@@ -2370,7 +2370,7 @@ gain power from chaos
 \"你将为自己的罪行付出代价，凡人！\"
 %%%%
 \n stacked deck: 
-\n 已堆叠牌组：
+\n 已堆叠牌组： 
 %%%%
 \n%s %s
 \n%s%s
@@ -2448,7 +2448,7 @@ A Card
 一张卡牌 
 %%%%
 a chunk of 
-一大块
+一大块 
 %%%%
 A chunk of your corpse armour falls away.
 一块你的尸体盔甲脱落了。
@@ -2541,7 +2541,7 @@ A jealous %s chases after it!
 一个嫉妒的%s追逐着它！
 %%%%
  a little 
-有点
+有点 
 %%%%
 A lumbering aparatus takes shape within a cloud of fumes.
 一个笨重的装置在烟雾中成形。
@@ -2668,7 +2668,7 @@ A whirlwind of blades manifests around you!
 # L1806: simple
 %%%%
 abandoned 
-背弃了
+背弃了 
 %%%%
 Ability - describe what?
 能力 - 做什么？
@@ -2677,7 +2677,7 @@ abort
 中止
 %%%%
 about 
-约
+约 
 %%%%
  accept (%zu chosen)</lightgrey>
  确认（已选%zu项）</lightgrey>
@@ -2713,7 +2713,7 @@ Activating
 激活
 %%%%
 active 
-活跃
+活跃 
 %%%%
 Add new annotation for %s (include '!' for warning):
 为 %s 添加新标注（包含'!'则为警告）:
@@ -3013,13 +3013,13 @@ Assorted Antiques
 # L1637: simple
 %%%%
 At 100% training 
-以100%训练率
+以100%训练率 
 %%%%
 At a training level of %d%% 
-以%d%%的训练程度
+以%d%%的训练程度 
 %%%%
 At current training (%d%%) 
-以当前训练率（%d%%）
+以当前训练率（%d%%） 
 %%%%
  at this distance
  在此距离
@@ -3037,7 +3037,7 @@ attack
 攻击
 %%%%
 attack 
-攻击
+攻击 
 %%%%
 attack near
 攻击附近的
@@ -3106,10 +3106,10 @@ Beasts
 野兽
 %%%%
 became a worshipper of 
-成为了
+成为了 
 %%%%
 becomes %s, 
-变得%s，
+变得%s， 
 %%%%
  becomes audible again.
 恢复声音了。
@@ -3160,7 +3160,7 @@ Beogh appreciates your bravery.
 比奥格赞赏你的勇敢。
 %%%%
 Beogh breathes life back into 
-贝奥格将生命重新注入
+贝奥格将生命重新注入 
 %%%%
 Beogh breathes life back into %s and 
 贝奥格将生命重新注入%s，
@@ -3279,7 +3279,7 @@ book_type:book
  咆哮道：善用这份恩赐！
 %%%%
 bound 
-束缚
+束缚 
 %%%%
 Bound item
 绑定物品
@@ -3306,10 +3306,10 @@ bring forth the wretched and dying
 唤来悲惨与垂死之物
 %%%%
 broken 
-破损的
+破损的 
 %%%%
 broken translucent 
-破损的透明
+破损的透明 
 %%%%
 Brought monster down to 1 HP.
 将怪物生命值降至1点。
@@ -3477,7 +3477,7 @@ carefully
 毫不在意你这微不足道的信仰表现。
 %%%%
 carrying 
-携带着
+携带着 
 %%%%
 Cast into level %d of the Abyss
 被抛入深渊第%d层
@@ -3528,7 +3528,7 @@ Chaos surges forth from %s of flesh, awakening new unlife!
 混沌从%s的肉体中涌出，唤醒了新的亡灵！
 %%%%
 chaotic 
-混乱
+混乱 
 %%%%
 Char dump unsuccessful! Sorry about that.
 角色转储失败！抱歉。
@@ -3579,7 +3579,7 @@ clear
 清除
 %%%%
 Clear all 
-清除所有
+清除所有 
 %%%%
 Cleared annotation.
 已清除标注。
@@ -3600,10 +3600,10 @@ cleave
 横扫
 %%%%
 closed 
-关闭的
+关闭的 
 %%%%
 closed translucent 
-关闭的半透明
+关闭的半透明 
 %%%%
 Clouds appear around your foes!
 云层出现在你的敌人周围！
@@ -3638,7 +3638,7 @@ Confirm with . or Enter, or press ? or * to list all spells.
 用 . 或回车确认，或按?或*列出所有法术。
 %%%%
 confused 
-困惑地
+困惑地 
 %%%%
 Conjurations
 咒法系
@@ -3721,7 +3721,7 @@ Couldn't try casting monster spell because you're on top of a monster.
  出现了细微的裂纹。
 %%%%
 Create/edit 
-创建/编辑
+创建/编辑 
 %%%%
 Creating a passage of Golubria requires sufficient empty space.
 创造戈卢布里亚通道需要足够空旷的空间。
@@ -3748,7 +3748,7 @@ curing
 治疗
 %%%%
 Current 
-当前
+当前 
 %%%%
 Current level annotation: <lightgrey>%s</lightgrey>
 当前楼层注释：<lightgrey>%s</lightgrey>
@@ -3769,7 +3769,7 @@ Curse which item? (Esc to abort)
 诅咒哪件物品？（Esc取消）
 %%%%
 cursed 
-诅咒
+诅咒 
 %%%%
 Damage
 伤害
@@ -3894,7 +3894,7 @@ disjunction
 讨厌当%s。
 %%%%
 Dismiss 
-遣散
+遣散 
 %%%%
 dispersal
 驱散
@@ -4185,7 +4185,7 @@ experience
 经验
 %%%%
 Expiring: 
-即将消失：
+即将消失： 
 %%%%
 explore
 探索
@@ -4206,7 +4206,7 @@ extremely
 极其
 %%%%
  extremely 
-极其
+极其 
 %%%%
 extremely pleased with you
 对你极为满意
@@ -4286,7 +4286,7 @@ fire
 发射
 %%%%
 fire at 
-向
+向 
 %%%%
 fire blocked by 
 火焰被挡住了： 
@@ -4501,13 +4501,13 @@ ghost
 幽灵
 %%%%
 ghostly 
-鬼魅
+鬼魅 
 %%%%
  gift of slime is revoked.
 的黏泥赠礼被收回了。
 %%%%
  gifted 
-赐予了你
+赐予了你 
 %%%%
 give life to nearby clouds
 赋予附近云雾生命
@@ -4580,7 +4580,7 @@ Gravity reorients to the %s!
 重力重新定向到%s！
 %%%%
 greatly 
-大幅
+大幅 
 %%%%
 greatly pleased with you
 对你非常满意
@@ -4598,7 +4598,7 @@ guardian spirit
 守护之魂
 %%%%
 half of 
-半只
+半只 
 %%%%
 haloed
 被光环笼罩
@@ -4610,7 +4610,7 @@ harm (+%d%% outgoing, +%d%% incoming)
  从深渊中杀回来了！
 %%%%
 has its spells empowered, 
-法术得到了强化，
+法术得到了强化， 
 %%%%
  has no more spells that you can make use of!
  已经没有更多你可以使用的法术了！
@@ -4689,7 +4689,7 @@ help
 # L330: simple
 %%%%
 helpless 
-无助的
+无助的 
 %%%%
 Hepliaklqana
 惠普利亚卡纳
@@ -4773,7 +4773,7 @@ immolation
 自焚
 %%%%
 immune to 
-免疫
+免疫 
 %%%%
 In %d experience levels, you will have learned enough to assemble a masterpiece.
 在%d经验等级内，你将学到足以组装一件杰作。
@@ -4949,7 +4949,7 @@ is covered in magical glow
 被治愈了！
 %%%%
 is healed, 
-被治愈了，
+被治愈了， 
 %%%%
  is infested!
 被寄生了！
@@ -5135,28 +5135,28 @@ It glows with a cold blue light!
 它闪烁着寒冷的蓝光！
 %%%%
 It has black scales. 
-它有着黑色的鳞片。
+它有着黑色的鳞片。 
 %%%%
 It has green scales. 
-它有着绿色的鳞片。
+它有着绿色的鳞片。 
 %%%%
 It has grey scales. 
-它有着灰色的鳞片。
+它有着灰色的鳞片。 
 %%%%
 It has pale scales. 
-它有着苍白的鳞片。
+它有着苍白的鳞片。 
 %%%%
 It has purple scales. 
-它有着紫色的鳞片。
+它有着紫色的鳞片。 
 %%%%
 It has red scales. 
-它有着红色的鳞片。
+它有着红色的鳞片。 
 %%%%
 It has white scales. 
-它有着白色的鳞片。
+它有着白色的鳞片。 
 %%%%
 It has yellow scales. 
-它有着黄色的鳞片。
+它有着黄色的鳞片。 
 %%%%
 It is a fabulous contraption, custom-made by your own hands.
 这是一件由你亲手定制的精巧装置。
@@ -5240,7 +5240,7 @@ Items here: %s.
 此处物品：%s。
 %%%%
 its 
-它的
+它的 
 %%%%
 Its appearance distorts for a moment.
 它的外形短暂扭曲了一下。
@@ -5372,10 +5372,10 @@ lethally
 致命
 %%%%
 Lets you change your 
-让你更改
+让你更改 
 %%%%
 Lets you pick 
-让你先选择
+让你先选择 
 %%%%
 Letters toggle    
 字母切换    
@@ -5439,7 +5439,7 @@ lit torch
 点燃的火炬
 %%%%
 looks %s, 
-看起来%s，
+看起来%s， 
 %%%%
  looks as sick as possible!
 看起来病得不能再病了！
@@ -5690,7 +5690,7 @@ modified
 已修正
 %%%%
 mollified 
-安抚了
+安抚了 
 %%%%
 Monster %s is patrolling around (%d, %d).
 怪物%s正在(%d, %d)附近巡逻。
@@ -5705,7 +5705,7 @@ moonshine
 更加
 %%%%
 more 
-更加
+更加 
 %%%%
 More spells requested for fixed level (%d) randart spellbook than there are valid spells.
 为固定等级（%d）的随机法术书请求的法术数量超过了有效法术数量。
@@ -5784,7 +5784,7 @@ neutral
 中立
 %%%%
 neutral 
-中立的
+中立的 
 %%%%
 New Game
 新游戏
@@ -5863,7 +5863,7 @@ noise
 噪音
 %%%%
 non-hostile 
-非敌对的
+非敌对的 
 %%%%
 noncommittal
 态度不明确
@@ -5928,7 +5928,7 @@ off-hand punch
 副手拳击
 %%%%
  offers you knowledge of 
-为你提供了
+为你提供了 
 %%%%
 often
 %%%%
@@ -5978,13 +5978,13 @@ ooze
 缓缓穿过了蛛网。
 %%%%
 open 
-打开的
+打开的 
 %%%%
 Open the help screen.
 打开帮助屏幕
 %%%%
 open translucent 
-打开的透明
+打开的透明 
 %%%%
 orb
 宝珠
@@ -6123,7 +6123,7 @@ Please finish your current recitation first.
 # === Issue X2 P0-2: Missing source.txt entries ===
 %%%%
  Please select your 
- 请选择你的
+ 请选择你的 
 %%%%
 Please submit a bug report.
 请提交一个错误报告。
@@ -6175,7 +6175,7 @@ positive energy
 正能量
 %%%%
 potent 
-强大的
+强大的 
 %%%%
 potion
 药水
@@ -6270,7 +6270,7 @@ put on
 佩戴
 %%%%
  puts on 
-戴上了
+戴上了 
 %%%%
 putting on
 穿戴
@@ -6330,7 +6330,7 @@ random rage (%d%%)
 随机狂暴（%d%%）
 %%%%
 Randomly select a 
-随机选择一个
+随机选择一个 
 %%%%
 Range
 范围
@@ -6412,7 +6412,7 @@ Recommended character
 从霜疫中恢复了过来。
 %%%%
 Recruit 
-招募
+招募 
 %%%%
 redefine
 重新定义
@@ -6504,13 +6504,13 @@ Repeat Exegesis
 连续
 %%%%
 repeatedly 
-连续
+连续 
 %%%%
 repel missiles
 弹开飞弹
 %%%%
 replica 
-复制品
+复制品 
 %%%%
 resist corrosion
 抗酸蚀
@@ -6522,7 +6522,7 @@ resistance
 抗性
 %%%%
 resistant to 
-抵抗
+抵抗 
 %%%%
  resists.
 抵抗了。
@@ -6606,10 +6606,10 @@ rune of Zot
 佐特符文
 %%%%
 runed 
-刻有符文的
+刻有符文的 
 %%%%
 runed translucent 
-刻有符文的透明
+刻有符文的透明 
 %%%%
 Running acquirement tests.
 正在运行获得测试。
@@ -6624,7 +6624,7 @@ sack of spiders
 蜘蛛之袋
 %%%%
 Sacrifice 
-献祭
+献祭 
 %%%%
 Salvo (%d)
 齐射（%d）
@@ -6669,10 +6669,10 @@ scroll
 卷轴
 %%%%
 sealed 
-封印的
+封印的 
 %%%%
 sealed translucent 
-封印的透明
+封印的透明 
 %%%%
  search
  搜索
@@ -6680,7 +6680,7 @@ sealed translucent
 # L665: simple
 %%%%
 Search for what? (regex) 
-搜索什么？（正则表达式）
+搜索什么？（正则表达式） 
 %%%%
 see invisible
 识破隐形
@@ -6764,7 +6764,7 @@ Send 'em back where they came from!
  派遣仆从来惩罚你。
 %%%%
 sensed 
-感知到的
+感知到的 
 %%%%
 seriously
 严重
@@ -6886,10 +6886,10 @@ skills
 技能
 %%%%
 Skills enhanced by 
-被以下效果增强的技能以<green>绿色</green>显示：
+被以下效果增强的技能以<green>绿色</green>显示： 
 %%%%
 Skills reduced by 
-被以下效果削弱的技能以<magenta>紫色</magenta>显示：
+被以下效果削弱的技能以<magenta>紫色</magenta>显示： 
 %%%%
 slap
 拍击
@@ -6901,7 +6901,7 @@ sleepwalking
 梦游中
 %%%%
 slightly 
-略微
+略微 
 %%%%
 Slime begins to ooze from the nearby walls!
 粘液开始从附近的墙壁渗出！
@@ -7084,10 +7084,10 @@ Sound effects are now %s.
 音效已%s。
 %%%%
 Space - Change 
-空格 - 更换
+空格 - 更换 
 %%%%
 Space - Pick 
-空格 - 先选择
+空格 - 先选择 
 %%%%
 Space begins to contract around you, but something blocks your path.
 你周围的空间开始收缩，但有东西挡住了你的去路。
@@ -7129,7 +7129,7 @@ Spectacle
 奇观
 %%%%
 spectral 
-幽灵
+幽灵 
 %%%%
 speed up your combat
 加速你的战斗
@@ -7203,7 +7203,7 @@ Start a new game with your previous choices.
 用你之前的选择开始新游戏。
 %%%%
 starts %s, 
-开始了%s，
+开始了%s， 
 %%%%
 Stash search prefixes: 
 储藏搜索前缀: 
@@ -7212,7 +7212,7 @@ stealth
 潜行
 %%%%
 stealthily 
-潜行地
+潜行地 
 %%%%
 steam
 蒸汽
@@ -7380,7 +7380,7 @@ take off
 脱下
 %%%%
  takes off 
-脱下了
+脱下了 
 %%%%
 talisman
 护符
@@ -8192,7 +8192,7 @@ There are several objects here.
 这里有几样物品。
 %%%%
 There is 
-这里有
+这里有 
 %%%%
 There is %s there.
 那里有%s。
@@ -8212,7 +8212,7 @@ there is a strange disturbance nearby
 附近有奇怪的扰动
 %%%%
 There is an entrance to 
-这里有一个通向
+这里有一个通向 
 %%%%
 There is no available space!
 没有可用空间！
@@ -8293,7 +8293,7 @@ Things that are here:
 此处有：
 %%%%
 This 
-这
+这 
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
 此能力在使用时有一定几率降低你的最大魔力容量。
@@ -8562,7 +8562,7 @@ Unlife
 不死
 %%%%
 unnamed 
-未命名的
+未命名的 
 %%%%
 unopened door
 未开启的门
@@ -8571,7 +8571,7 @@ unopened runed door
 未开启的符文门
 %%%%
 unsullied 
-未被玷污的
+未被玷污的 
 %%%%
 unswift
 迟缓
@@ -8586,7 +8586,7 @@ unwielding
 收起武器
 %%%%
  unwields 
-收起了
+收起了 
 %%%%
 Uppercase letters only, please.
 请只使用大写字母。
@@ -8616,7 +8616,7 @@ V. Small
 很小
 %%%%
 vampire 
-吸血鬼
+吸血鬼 
 %%%%
 vanquish evil
 征服邪恶
@@ -8652,19 +8652,19 @@ Venom drips from its jaws and stinger tail.
 毒液变得更加致命了。
 %%%%
  very 
-非常
+非常 
 %%%%
  very far
 （极远）
 %%%%
 very greatly 
-大幅
+大幅 
 %%%%
 very mighty
 力量无比强大
 %%%%
 very resistant to 
-高度抵抗
+高度抵抗 
 %%%%
 Vines begin sprouting from %s.
 藤蔓从%s开始生长。
@@ -8750,7 +8750,7 @@ wearing %s
 穿着%s
 %%%%
  wears 
-穿上了
+穿上了 
 %%%%
  weaves the shadows around you into monsters.
  将你周围的阴影编织成了怪物。
@@ -8819,7 +8819,7 @@ Wielding:
 持有: 
 %%%%
  wields 
-挥舞着
+挥舞着 
 %%%%
 Wild Magic
 狂野魔法
@@ -8852,7 +8852,7 @@ Wisps of shadow whirl around you...
 暗影的细丝在你周围旋转……
 %%%%
  with 
-用
+用 
 %%%%
 With a burst of heat and light, you rocket upwards!
 随着一阵热与光的爆发，你像火箭一样向上冲！
@@ -8920,7 +8920,7 @@ wizardry (x%d)
 短暂摇晃了一下。
 %%%%
 would 
-如果进行训练，
+如果进行训练， 
 %%%%
  wounds heal themselves!
 伤口自行愈合了！
@@ -9030,7 +9030,7 @@ You %sattack %s from above%s.
 你%s从上方攻击%s%s。
 %%%%
 You acquired 
-你获得了
+你获得了 
 %%%%
 You adapt resistances upon receiving elemental damage.
 你在受到元素伤害时适应抗性。
@@ -9451,7 +9451,7 @@ You block the %s... and reflect it back!
 你格挡了%s……并将其反射了回去！
 %%%%
 You bought 
-你在商店购买了
+你在商店购买了 
 %%%%
 You bow before the missionary of Beogh.
 你在比欧弗的传教士面前鞠躬。
@@ -10140,7 +10140,7 @@ You emit a cloud of foul miasma!
 你释放出一团恶臭的瘴气！
 %%%%
 You encounter 
-你遇到了
+你遇到了 
 %%%%
 You enter %s!
 你进入了%s！
@@ -10716,7 +10716,7 @@ You forge whirling saws of razor-sharp crystal.
 你铸造了数把由锋利水晶构成的旋转锯刃。
 %%%%
 You found 
-你发现了
+你发现了 
 %%%%
 You freeze %s%s%s
 你冻结了%s%s%s
@@ -11244,7 +11244,7 @@ You see a puff of smoke.
 你看到一阵烟雾。
 %%%%
 You see here 
-你在这里看到
+你在这里看到 
 %%%%
 You see here %s.
 你在这里看到%s。
@@ -11409,7 +11409,7 @@ You struggle to detach yourself from the web.
 你挣扎着想要脱离蛛网。
 %%%%
 You stumbled upon 
-你偶然发现了
+你偶然发现了 
 %%%%
 You sublimate a sliver of %s essence and reconstitute it in ice.
 你将%s的一丝精华升华，并使其在冰中重组。
@@ -11436,7 +11436,7 @@ You tear a large gash into the net.
 你把网撕开一个大口子。
 %%%%
 You took 
-你从
+你从 
 %%%%
 You tried to hop, but there was no room to land!
 你试图跳，但没有着陆的空间！
@@ -11553,7 +11553,7 @@ your
 你的
 %%%%
 your 
-你的
+你的 
 %%%%
 Your %1$s attune%2$s to your body, and you begin to %3$s.
 %1$s适应了你的身体，你开始%3$s。
@@ -12195,7 +12195,7 @@ Your wings%s won't fit in that.
 你的翅膀%s穿不进去。
 %%%%
 Your wizardly powers created 
-你的巫师力量创造了
+你的巫师力量创造了 
 %%%%
 Yredelemnul
 伊莱德莱姆努尔
@@ -12320,4 +12320,5 @@ book_type:manual
 手册
 %%%%
 长
+%%%%
 %%%%
