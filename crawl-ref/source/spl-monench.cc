@@ -239,9 +239,9 @@ bool start_ranged_constriction(actor& caster, actor& target, int duration,
     {
         string msg;
         if (type == CONSTRICT_ROOTS)
-            msg = make_stringf("The roots grab %s!", target.name(DESC_THE).c_str());
+            msg = make_stringf(T_("The roots grab %s!"), target.name(DESC_THE).c_str());
         else if (type == CONSTRICT_BVC)
-            msg = make_stringf("Zombie hands grab %s from below!", target.name(DESC_THE).c_str());
+            msg = make_stringf(T_("Zombie hands grab %s from below!"), target.name(DESC_THE).c_str());
 
         mprf(target.is_player() ? MSGCH_WARN : MSGCH_PLAIN, "%s", msg.c_str());
     }

@@ -12217,3 +12217,119 @@ Poisonous fumes billow around %s!
 %%%%
 Poisonous fumes billow in the air!
 有毒烟雾在空中翻涌！
+
+%%%%
+ spreading your bribes among %s!
+ 将你的贿赂传播给了%s！
+
+%%%%
+%1$s %2$s a Word of immense power!
+%1$s说出了一句强大的话语！
+
+%%%%
+%s of %s
+%s之%s
+
+%%%%
+Are you sure you want to remember your ancestor as %s?
+你确定要记住你的先祖作为%s吗？
+
+%%%%
+Cast into level %d of the Abyss
+被抛入深渊第%d层
+
+%%%%
+Corrupted %s
+腐化了%s
+
+%%%%
+Curse which item? (Esc to abort)
+诅咒哪件物品？（Esc取消）
+
+%%%%
+Do you want to bribe the denizens of %s?
+你想贿赂%s的居民吗？
+
+%%%%
+It would be unwise to slip onto %s.
+潜行到%s上是不明智的。
+
+%%%%
+Really brand yourself with the %s?
+真的要给自己打上%s烙印吗？
+
+%%%%
+Really remove and destroy %s?%s
+真的要移除并摧毁%s吗？%s
+
+%%%%
+Remember %s name as what? 
+将%s的名字记作什么？
+
+%%%%
+The roots grab %s!
+树根抓住了%s！
+
+%%%%
+The wall %ss %s!
+墙壁%s了%s！
+
+%%%%
+The walls %s %s!
+墙壁们%s了%s！
+
+%%%%
+This is %s sacrifice. Piety after sacrifice: %s
+这是%s献祭。献祭后的虔诚度：%s
+
+%%%%
+Which god (%s)? 
+选择哪个神（%s）？
+
+%%%%
+You cannot pacify immobile monsters!
+你不能安抚不可移动的怪物！
+
+%%%%
+You cannot pacify mindless monsters!
+你不能安抚无意识的怪物！
+
+%%%%
+You cannot pacify nonliving monsters!
+你不能安抚非活的怪物！
+
+%%%%
+You cannot pacify this monster while %1$s %2$s %3$s!
+你不能在怪物%1$s%3$s时安抚它！
+
+%%%%
+You cannot wall jump away from %s!
+你不能远离%s进行墙壁跳跃！
+
+%%%%
+You cannot wall jump closer to %s!
+你不能靠近%s进行墙壁跳跃！
+
+%%%%
+Zombie hands grab %s from below!
+僵尸手从下方抓住了%s！
+
+%%%%
+accepted the %s
+接受了%s
+
+%%%%
+chance to pacify: %d%%
+安抚几率：%d%%
+
+%%%%
+chance to pacify: <<1%%
+安抚几率：<<1%%
+
+%%%%
+remembered their ancestor %s as %s.
+将先祖%s铭记为%s。
+
+%%%%
+the denizens of %s
+%s的居民

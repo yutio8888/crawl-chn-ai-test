@@ -423,7 +423,7 @@ void banished(const string &who)
                      level_id(BRANCH_ABYSS), true);
     // This is an honest abyss entry, mark milestone and take note
     // floor_transition will determine our final destination in the abyss
-    const string what = make_stringf("Cast into level %d of the Abyss",
+    const string what = make_stringf(T_("Cast into level %d of the Abyss"),
                                      you.depth) + _who_banished(who);
     take_note(Note(NOTE_MESSAGE, 0, 0, what), true);
     mark_milestone("abyss.enter",
@@ -2311,7 +2311,7 @@ void lugonu_corrupt_level(int power)
         return;
 
     simple_god_message(" Hand of Corruption reaches out!", true);
-    take_note(Note(NOTE_MESSAGE, 0, 0, make_stringf("Corrupted %s",
+    take_note(Note(NOTE_MESSAGE, 0, 0, make_stringf(T_("Corrupted %s"),
               level_id::current().describe().c_str()).c_str()));
     mark_corrupted_level(level_id::current());
 

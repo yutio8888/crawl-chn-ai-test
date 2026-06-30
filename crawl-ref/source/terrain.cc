@@ -955,7 +955,7 @@ void slime_wall_damage(actor* act, int delay)
     if (dam > 0 && you.see_cell_no_trans(act->pos()))
     {
         const char *verb = act->is_icy() ? "melt" : "burn";
-        mprf((walls > 1) ? "The walls %s %s!" : "The wall %ss %s!",
+        mprf((walls > 1) ? T_("The walls %s %s!") : T_("The wall %ss %s!"),
               verb, act->name(DESC_THE).c_str());
         act->hurt(&you, dam, BEAM_ACID);
         if (act->alive())

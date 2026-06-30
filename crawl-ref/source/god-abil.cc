@@ -2362,7 +2362,7 @@ static void _do_curse_item(item_def &item)
  */
 bool ashenzari_curse_item()
 {
-    const string prompt_msg = make_stringf("Curse which item? (Esc to abort)");
+    const string prompt_msg = make_stringf(T_("Curse which item? (Esc to abort)"));
     const int item_slot = prompt_invent_item(prompt_msg.c_str(),
                                              menu_type::invlist,
                                              OSEL_CURSABLE, OPER_ANY,
@@ -2419,7 +2419,7 @@ bool ashenzari_uncurse_item()
         return false;
     }
 
-    if (!yesno(make_stringf("Really remove and destroy %s?%s",
+    if (!yesno(make_stringf(T_("Really remove and destroy %s?%s"),
                             item.name(DESC_THE).c_str(),
                             you.props.exists(AVAILABLE_CURSE_KEY) ?
                                 " Ashenzari will withdraw the offered vision "
@@ -3793,10 +3793,10 @@ bool gozag_check_bribe_branch(bool quiet)
                 break;
             }
     }
-    const string who = make_stringf("the denizens of %s",
+    const string who = make_stringf(T_("the denizens of %s"),
                                    branches[branch].longname);
     const string who2 = branch2 != NUM_BRANCHES
-                        ? make_stringf("the denizens of %s",
+                        ? make_stringf(T_("the denizens of %s"),
                                        branches[branch2].longname)
                         : "";
     if (!gozag_branch_bribable(branch)
@@ -3829,7 +3829,7 @@ bool gozag_bribe_branch()
             {
                 branch_type stair_branch = gozag_fixup_branch(it->id);
                 string prompt =
-                    make_stringf("Do you want to bribe the denizens of %s?",
+                    make_stringf(T_("Do you want to bribe the denizens of %s?"),
                                  stair_branch == BRANCH_VESTIBULE ? "the Hells"
                                  : branches[stair_branch].longname);
                 if (yesno(prompt.c_str(), true, 'n'))
@@ -3847,7 +3847,7 @@ bool gozag_bribe_branch()
                 break;
             }
     }
-    string who = make_stringf("the denizens of %s",
+    string who = make_stringf(T_("the denizens of %s"),
                               branches[branch].longname);
     if (!gozag_branch_bribable(branch))
     {
@@ -3856,7 +3856,7 @@ bool gozag_bribe_branch()
     }
 
     string prompt =
-        make_stringf("Do you want to bribe the denizens of %s?",
+        make_stringf(T_("Do you want to bribe the denizens of %s?"),
                      branch == BRANCH_VESTIBULE ? "the Hells" :
                      branches[branch].longname);
 
@@ -3865,7 +3865,7 @@ bool gozag_bribe_branch()
         you.del_gold(bribe_amount);
         you.attribute[ATTR_GOZAG_GOLD_USED] += bribe_amount;
         branch_bribe[branch] += bribe_amount;
-        string msg = make_stringf(" 将你的贿赂传播给了%s！",
+        string msg = make_stringf(T_(" spreading your bribes among %s!"),
                                   branch == BRANCH_VESTIBULE ? "the Hells" :
                                   branches[branch].longname);
         simple_god_message(msg.c_str());
@@ -5094,7 +5094,7 @@ string ru_sacrifice_description(ability_type sac)
         return "";
 
     const int piety_gain = _ru_get_sac_piety_gain(sac);
-    return make_stringf("This is %s sacrifice. Piety after sacrifice: %s",
+    return make_stringf(T_("This is %s sacrifice. Piety after sacrifice: %s"),
                         _describe_sacrifice_piety_gain(piety_gain),
                         _piety_asterisks(you.raw_piety + piety_gain).c_str());
 }
@@ -5979,8 +5979,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
     const auto ancestor_type = *ancestor_mapped;
     const string ancestor_type_name = mons_type_name(ancestor_type, DESC_A);
 
-    if (!yesno(make_stringf("Are you sure you want to remember your ancestor "
-                            "as %s?", ancestor_type_name.c_str()).c_str(),
+    if (!yesno(make_stringf(T_("Are you sure you want to remember your ancestor as %s?"), ancestor_type_name.c_str()).c_str(),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6324,7 +6323,7 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
     monster* beholder = you.get_beholder(wall_jump_landing_spot);
     if (beholder)
     {
-        error_ret = make_stringf("You cannot wall jump away from %s!",
+        error_ret = make_stringf(T_("You cannot wall jump away from %s!"),
              beholder->name(DESC_THE, true).c_str());
         return false;
     }
@@ -6332,7 +6331,7 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
     monster* fearmonger = you.get_fearmonger(wall_jump_landing_spot);
     if (fearmonger)
     {
-        error_ret = make_stringf("You cannot wall jump closer to %s!",
+        error_ret = make_stringf(T_("You cannot wall jump closer to %s!"),
              fearmonger->name(DESC_THE, true).c_str());
         return false;
     }
@@ -7063,7 +7062,7 @@ void makhleb_infernal_servant()
 
 void makhleb_inscribe_mark(mutation_type mark)
 {
-    string prompt = make_stringf("Really brand yourself with the %s?",
+    string prompt = make_stringf(T_("Really brand yourself with the %s?"),
                                     mutation_name(mark));
     if (!yesno(prompt.c_str(), true, 'n'))
     {
@@ -7081,7 +7080,7 @@ void makhleb_inscribe_mark(mutation_type mark)
 
     you.one_time_ability_used.set(GOD_MAKHLEB);
 
-    const string mile_text = make_stringf("accepted the %s", mutation_name(mark));
+    const string mile_text = make_stringf(T_("accepted the %s"), mutation_name(mark));
     take_note(Note(NOTE_INFERNAL_MARK, 0, 0, mutation_name(mark)));
     mark_milestone("mark", mile_text);
 }

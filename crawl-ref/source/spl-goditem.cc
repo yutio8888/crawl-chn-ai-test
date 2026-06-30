@@ -94,20 +94,20 @@ string unpacifiable_reason(const monster_info& mi)
     if (mi.intel() <= I_BRAINLESS // no self-awareness
         || mons_is_tentacle_or_tentacle_segment(mi.type)) // body part
     {
-        return "You cannot pacify mindless monsters!";
+        return T_("You cannot pacify mindless monsters!");
     }
 
     const mon_holy_type holiness = mi.holi;
 
     if (holiness & MH_NONLIVING)
-        return "You cannot pacify nonliving monsters!";
+        return T_("You cannot pacify nonliving monsters!");
 
     if (mons_class_is_stationary(mi.type)) // not able to leave the level
-        return "You cannot pacify immobile monsters!";
+        return T_("You cannot pacify immobile monsters!");
 
     if (mi.is(MB_SLEEPING) || mi.is(MB_DORMANT)) // unaware of what's happening
     {
-        return make_stringf("You cannot pacify this monster while %s %s %s!",
+        return make_stringf(T_("You cannot pacify this monster while %1$s %2$s %3$s!"),
                             mi.pronoun(PRONOUN_SUBJECTIVE),
                             conjugate_verb("are",
                                            mi.pronoun_plurality()).c_str(),
@@ -325,9 +325,9 @@ static vector<string> _desc_pacify_chance(const monster_info& mi, const int pow)
     {
         const int success = _pacify_chance(mi, pow, 100);
         if (success == 0)
-            descs.push_back(make_stringf("chance to pacify: <<1%%"));
+            descs.push_back(make_stringf(T_("chance to pacify: <<1%%")));
         else
-            descs.push_back(make_stringf("chance to pacify: %d%%", success));
+            descs.push_back(make_stringf(T_("chance to pacify: %d%%"), success));
     }
     return descs;
 }
@@ -1072,7 +1072,7 @@ void holy_word(int pow, holy_word_source_type source, const coord_def& where,
 {
     if (!silent && attacker)
     {
-        mprf("%s %s a Word of immense power!",
+        mprf_p(T_("%1$s %2$s a Word of immense power!"),
              attacker->name(DESC_THE).c_str(),
              attacker->conj_verb("speak").c_str());
     }

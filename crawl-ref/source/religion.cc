@@ -2078,7 +2078,7 @@ static void _regain_item_memory(const monster &ancestor,
 
     const string ego_name = _item_ego_name(base_type, brand);
     const string item_name
-        = make_stringf("%s of %s",
+        = make_stringf(T_("%s of %s"),
                        item_base_name(base_type, sub_type).c_str(),
                        ego_name.c_str());
     _regain_memory(ancestor, item_name);
@@ -4335,7 +4335,7 @@ god_type choose_god(god_type def_god)
 
     string help = def_god == NUM_GODS ? "by name"
                                       : "default " + god_name(def_god);
-    string prompt = make_stringf("Which god (%s)? ", help.c_str());
+    string prompt = make_stringf(T_("Which god (%s)? "), help.c_str());
 
     if (msgwin_get_line(prompt, specs, sizeof(specs)) != 0)
         return NUM_GODS; // FIXME: distinguish cancellation from no match
