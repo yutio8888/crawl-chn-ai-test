@@ -1767,7 +1767,7 @@ static void _experience_check()
 
     if (you.experience_level < you.get_max_xl())
     {
-        mprf(T_("You need %d%% to reach level %d."), perc, you.experience_level + 1);
+        mprf_p(T_("You need %1$d%% to reach level %2$d."), perc, you.experience_level + 1);
     }
     else
     {
