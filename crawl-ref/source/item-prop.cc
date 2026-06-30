@@ -16,6 +16,7 @@
 #include "artefact.h"
 #include "art-enum.h"
 #include "branch.h" // gem_time_limit
+#include "database.h"
 #include "describe.h"
 #include "english.h" // number_in_words
 #include "equipment-slot.h"
@@ -3503,10 +3504,14 @@ void seen_item(item_def &item)
                 && you.inv[i].sub_type == item.sub_type)
             {
                 held = &you.inv[i];
-                mprf("You learned that %s %s actually %s.",
-                        held->name(DESC_YOUR).c_str(),
-                        held->quantity > 1 ? "are" : "is",
-                        held->name(DESC_A, false, true).c_str());
+                if (held->quantity > 1)
+                    mprf(T_("You learned that %s are actually %s."),
+                            held->name(DESC_YOUR).c_str(),
+                            held->name(DESC_A, false, true).c_str());
+                else
+                    mprf(T_("You learned that %s is actually %s."),
+                            held->name(DESC_YOUR).c_str(),
+                            held->name(DESC_A, false, true).c_str());
                 break;
             }
         }

@@ -438,15 +438,21 @@ NORETURN static void _launch_game()
     if (!crawl_state.game_is_tutorial())
     {
         if (Options.language == lang_t::ZH)
-            msg::stream << "<yellow>欢迎" << (game_start? "" : "回来") << "，"
+        {
+            const char* welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
+            msg::stream << "<yellow>" << welcome_word << "，"
                         << you.your_name << "（"
                         << species::name(you.species)
                         << " " << get_job_name(you.char_class) << "）。</yellow>";
+        }
         else
-            msg::stream << "<yellow>Welcome" << (game_start? "" : " back") << ", "
+        {
+            const char* welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
+            msg::stream << "<yellow>" << welcome_word << ", "
                         << you.your_name << " the "
                         << species::name(you.species)
                         << " " << get_job_name(you.char_class) << ".</yellow>";
+        }
         // TODO: seeded sprint?
         if (crawl_state.type == GAME_TYPE_CUSTOM_SEED)
             msg::stream << endl << "<white>" << seed_description() << "</white>";
@@ -471,10 +477,7 @@ NORETURN static void _launch_game()
 
     if (!crawl_state.game_is_tutorial())
     {
-        if (Options.language == lang_t::ZH)
-            mpr("按<w>?</w>查看命令列表和其他信息。");
-        else
-            mpr("Press <w>?</w> for a list of commands and other information.");
+        mpr(T_("Press <w>?</w> for a list of commands and other information."));
     }
 
     _prep_input();
@@ -665,7 +668,7 @@ static void _djinn_announce_spells()
         return;
 
     const string spacer = spell_str.empty() || equip_str.empty() ? "" : "; and ";
-    mprf("You begin with %s%s%s.", equip_str.c_str(), spacer.c_str(), spell_str.c_str());
+    mprf(T_("You begin with %s%s%s."), equip_str.c_str(), spacer.c_str(), spell_str.c_str());
 
     take_note(Note(NOTE_MESSAGE, 0, 0, you.your_name + " set off with " +
                                        equip_str + spacer + spell_str + "."));
@@ -699,7 +702,7 @@ static void _wanderer_note_equipment()
 
     // Announce the starting equipment and spells, because it is otherwise
     // not obvious if the player has any spells.
-    mprf("You begin with %s%s%s.", equip_str.c_str(),
+    mprf(T_("You begin with %s%s%s."), equip_str.c_str(),
          spell_str.c_str(), library_str.c_str());
 
     const string combined_str = Options.language == lang_t::ZH
@@ -729,7 +732,7 @@ static string _welcome_spam_suffix()
 static void _announce_goal_message()
 {
     const string type = _welcome_spam_suffix();
-    mprf(MSGCH_PLAIN, "<yellow>%s</yellow>",
+    mprf(MSGCH_PLAIN, T_("<yellow>%s</yellow>"),
          getMiscString("welcome_spam" + type).c_str());
 }
 
@@ -855,7 +858,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_READ_MESSAGES:
     case CMD_SEARCH_STASHES:
     case CMD_LOOKUP_HELP:
-        mpr("You can't repeat informational commands.");
+        mpr(T_("You can't repeat informational commands."));
         return false;
 
     // Multi-turn commands
@@ -876,7 +879,7 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_REMOVE_ARMOUR:
     case CMD_EQUIP:
     case CMD_WEAR_ARMOUR:
-        mpr("You can't repeat multi-turn commands.");
+        mpr(T_("You can't repeat multi-turn commands."));
         return false;
 
     // Miscellaneous non-repeatable commands.
@@ -901,20 +904,20 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_EDIT_PLAYER_TILE:
 #endif
     case CMD_LUA_CONSOLE:
-        mpr("You can't repeat that command.");
+        mpr(T_("You can't repeat that command."));
         return false;
 
     case CMD_DISPLAY_MAP:
-        mpr("You can't repeat map commands.");
+        mpr(T_("You can't repeat map commands."));
         return false;
 
     case CMD_MOUSE_MOVE:
     case CMD_MOUSE_CLICK:
-        mpr("You can't repeat mouse clicks or movements.");
+        mpr(T_("You can't repeat mouse clicks or movements."));
         return false;
 
     case CMD_REPEAT_CMD:
-        mpr("You can't repeat the repeat command!");
+        mpr(T_("You can't repeat the repeat command!"));
         return false;
 
     case CMD_RUN_LEFT:
@@ -925,14 +928,14 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_RUN_DOWN_LEFT:
     case CMD_RUN_UP_RIGHT:
     case CMD_RUN_DOWN_RIGHT:
-        mpr("Why would you want to repeat a run command?");
+        mpr(T_("Why would you want to repeat a run command?"));
         return false;
 
     case CMD_PREV_CMD_AGAIN:
         ASSERT(!is_again);
         if (crawl_state.prev_cmd == CMD_NO_CMD)
         {
-            mpr("No previous command to repeat.");
+            mpr(T_("No previous command to repeat."));
             return false;
         }
 
@@ -1370,7 +1373,7 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     {
         if (crawl_state.doing_prev_cmd_again)
         {
-            mprf("You can't repeat %s actions.",
+            mprf(T_("You can't repeat %s actions."),
                 ftype == DNGN_ENTER_SHOP ? "shop" : "altar");
             crawl_state.cancel_cmd_all();
         }
@@ -1400,7 +1403,7 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
         return true;
     else if (you.duration[DUR_VAINGLORY])
     {
-        mpr("It simply wouldn't do to leave so soon after announcing yourself.");
+        mpr(T_("It simply wouldn't do to leave so soon after announcing yourself."));
         return false;
     }
 
@@ -1408,7 +1411,7 @@ static bool _can_take_stairs(dungeon_feature_type ftype, bool down,
     if (you.beheld() && !you.confused())
     {
         const monster* beholder = you.get_any_beholder();
-        mprf("You cannot move away from %s!",
+        mprf(T_("You cannot move away from %s!"),
              beholder->name(DESC_THE, true).c_str());
         return false;
     }
@@ -1520,7 +1523,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     // Prompt for entering excluded transporters.
     if (ygrd == DNGN_TRANSPORTER && is_exclude_root(you.pos()))
     {
-        mprf(MSGCH_WARN, "This transporter is marked as excluded!");
+        mprf(MSGCH_WARN, T_("This transporter is marked as excluded!"));
         if (!yesno("Enter transporter anyway?", true, 'n', true, false))
         {
             canned_msg(MSG_OK);
@@ -1595,7 +1598,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
                                      " This will make you lose the game!");
         if (!yesno(prompt.c_str(), false, 'n'))
         {
-            mpr("Alright, then stay!");
+            mpr(T_("Alright, then stay!"));
             return false;
         }
     }
@@ -1662,7 +1665,7 @@ static void _take_transporter()
 
     if (dest == INVALID_COORD || !you.is_habitable(dest))
     {
-        mpr("The transporter is blocked on the other side!");
+        mpr(T_("The transporter is blocked on the other side!"));
         return;
     }
 
@@ -1675,7 +1678,7 @@ static void _take_transporter()
         // monsters. -gammafunk
         if (!mon->find_home_near_place(dest))
         {
-            mpr("The transporter is blocked by a creature on the other side!");
+            mpr(T_("The transporter is blocked by a creature on the other side!"));
             return;
         }
         // Trigger any traps thatmight be at the displaced monster's destination.
@@ -1695,7 +1698,7 @@ static void _take_transporter()
             li->update_transporter(old_pos, you.pos());
             explored_tracked_feature(DNGN_TRANSPORTER);
         }
-        mpr("You enter the transporter and appear at another place.");
+        mpr(T_("You enter the transporter and appear at another place."));
         you.finalise_movement();
     }
 }
@@ -1756,7 +1759,7 @@ static void _take_stairs(bool down)
 
 static void _experience_check()
 {
-    mprf("你是 %d 级的 %s%s。",
+    mprf(T_("You are level %d %s %s."),
          you.experience_level,
          species::name(you.species).c_str(),
          get_job_name(you.char_class));
@@ -1764,12 +1767,12 @@ static void _experience_check()
 
     if (you.experience_level < you.get_max_xl())
     {
-        mprf("你距离升级到 %d 级还有 %d%%。", you.experience_level + 1, perc);
+        mprf(T_("You need %d%% to reach level %d."), perc, you.experience_level + 1);
     }
     else
     {
-        mprf("抱歉，%d 级已经是最高等级了。", you.get_max_xl());
-        mpr("以你的游玩方式，能走到这一步真是令人惊讶。");
+        mprf(T_("Sorry, level %d is the maximum level."), you.get_max_xl());
+        mpr(T_("It's surprising you made it this far with your playstyle."));
     }
 
     if (you.has_mutation(MUT_MULTILIVED))
@@ -1787,8 +1790,8 @@ static void _experience_check()
              / (exp_needed(xl + 1) - exp_needed(xl));
         perc = (nl - xl) * 100 - perc;
         you.lives < 2 ?
-             mprf("You'll get an extra life in %d.%02d levels' worth of XP.", perc / 100, perc % 100) :
-             mprf("If you died right now, you'd get an extra life in %d.%02d levels' worth of XP.",
+             mprf(T_("You'll get an extra life in %d.%02d levels' worth of XP."), perc / 100, perc % 100) :
+             mprf(T_("If you died right now, you'd get an extra life in %d.%02d levels' worth of XP."),
              perc / 100 , perc % 100);
     }
 
@@ -1823,7 +1826,7 @@ static void _do_rest()
 #ifdef WIZARD
     if (you.props.exists(FREEZE_TIME_KEY))
     {
-        mprf(MSGCH_WARN, "Cannot rest while time is frozen.");
+        mprf(MSGCH_WARN, T_("Cannot rest while time is frozen."));
         return;
     }
 #endif
@@ -1838,12 +1841,12 @@ static void _do_rest()
     {
         if (you.is_sufficiently_rested(true) && ancestor_full_hp())
         {
-            mpr("你开始等待。");
+            mpr(T_("You begin waiting."));
             _start_running(RDIR_REST, RMODE_WAIT_DURATION);
             return;
         }
         else
-            mpr("你开始休息。");
+            mpr(T_("You begin resting."));
     }
     // intentional fallthrough for else case! Messaging is handled in
     // _start_running, update the corresponding conditional there if you
@@ -1860,7 +1863,7 @@ static void _do_display_map()
 #ifdef USE_TILE_LOCAL
     // Since there's no actual overview map, but the functionality
     // exists, give a message to explain what's going on.
-    mpr("移动光标查看楼层地图，或输入<w>?</w>查看命令列表。");
+    mpr(T_("Move the cursor to view the level map, or press <w>?</w> for a list of commands."));
     flush_prev_message();
 #endif
 
@@ -1868,7 +1871,7 @@ static void _do_display_map()
     const bool travel = show_map(pos, true, true);
 
 #ifdef USE_TILE_LOCAL
-    mpr("Returning to the game...");
+    mpr(T_("Returning to the game..."));
 #endif
     if (travel)
         start_translevel_travel(pos);
@@ -1889,7 +1892,7 @@ static void _do_cycle_quiver(int dir)
         // the menu. This messaging still excludes stuff that requires
         // force-quivering, e.g. zigfigs
         const bool others = !valid && quiver::anything_to_quiver();
-        mprf("No %squiver actions available for cycling.%s",
+        mprf(T_("No %squiver actions available for cycling.%s"),
             valid ? "other " : "",
             others ? " Use [<white>Q</white>] to select from all actions."
                    : "");
@@ -1904,7 +1907,7 @@ static void _do_list_gold()
              you.gold != 1 ? "s" : "");
         int vouchers = you.attribute[ATTR_VOUCHER];
         if (vouchers > 0)
-            mprf("You also have %d voucher%s.", vouchers, vouchers > 1 ? "s" : "");
+            mprf(T_("You also have %d voucher%s."), vouchers, vouchers > 1 ? "s" : "");
     }
     else
         shopping_list.display();
@@ -1920,7 +1923,7 @@ static bool _check_recklessness(command_type prev_cmd)
             || prev_cmd == CMD_AUTOFIGHT_NOMOVE
             || prev_cmd == CMD_AUTOFIRE))
     {
-        mprf(MSGCH_DANGER, "You should not fight recklessly!");
+        mprf(MSGCH_DANGER, T_("You should not fight recklessly!"));
         return true;
     }
     return false;
@@ -1953,7 +1956,7 @@ static void _handle_autofight(command_type cmd, command_type prev_cmd)
         auto a = quiver::get_secondary_action();
         if (!a || !a->is_valid())
         {
-            mpr("Nothing quivered!"); // Can this happen?
+            mpr(T_("Nothing quivered!")); // Can this happen?
             return;
         }
 
@@ -2205,18 +2208,18 @@ void process_command(command_type cmd, command_type prev_cmd)
         else
             Options.autopickup_on = 0;
         if (Options.language == lang_t::ZH)
-            mprf("自动拾取已%s。", Options.autopickup_on > 0 ? "开启" : "关闭");
+            mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? "开启" : "关闭");
         else
-            mprf("Autopickup is now %s.", Options.autopickup_on > 0 ? "on" : "off");
+            mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? "on" : "off");
         break;
 
 #ifdef USE_SOUND
     case CMD_TOGGLE_SOUND:
         Options.sounds_on = !Options.sounds_on;
         if (Options.language == lang_t::ZH)
-            mprf("音效已%s。", Options.sounds_on ? "开启" : "关闭");
+            mprf(T_("Sound effects are now %s."), Options.sounds_on ? "开启" : "关闭");
         else
-            mprf("Sound effects are now %s.", Options.sounds_on ? "on" : "off");
+            mprf(T_("Sound effects are now %s."), Options.sounds_on ? "on" : "off");
         break;
 #endif
 
@@ -2377,7 +2380,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_SHOW_CHARACTER_DUMP:
     case CMD_CHARACTER_DUMP:
         if (!dump_char(you.your_name))
-            mpr("Char dump unsuccessful! Sorry about that.");
+            mpr(T_("Char dump unsuccessful! Sorry about that."));
 #ifdef USE_TILE_WEB
         else
             tiles.send_dump_info("command", you.your_name);
@@ -2474,7 +2477,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     }
 
     case CMD_SAVE_GAME_NOW:
-        mpr("Saving game... please wait.");
+        mpr(T_("Saving game... please wait."));
         save_game(true);
         break;
 
@@ -2514,10 +2517,7 @@ void process_command(command_type cmd, command_type prev_cmd)
         // The backslash in ?\? is there so it doesn't start a trigraph.
         if (crawl_state.game_is_hints())
         {
-            if (Options.language == lang_t::ZH)
-                mpr("未知命令。（输入<w>?\?</w>查看命令列表。）");
-            else
-                mpr("Unknown command. (For a list of commands type <w>?\?</w>.)");
+            mpr(T_("Unknown command. (For a list of commands type <w>?\?</w>.)"));
         }
         else // well, not examine, but...
             mprf(MSGCH_EXAMINE_FILTER, T_("Unknown command."));
@@ -2562,9 +2562,9 @@ static void _prep_input()
     {
         ASSERT(have_passive(passive_t::detect_portals));
         if (you.seen_portals == 1)
-            mprf(MSGCH_GOD, "You have a vision of a gate.");
+            mprf(MSGCH_GOD, T_("You have a vision of a gate."));
         else
-            mprf(MSGCH_GOD, "You have a vision of multiple gates.");
+            mprf(MSGCH_GOD, T_("You have a vision of multiple gates."));
 
         you.seen_portals = 0;
     }
@@ -2599,9 +2599,9 @@ static void _update_golubria_traps(int dur)
             if (trap->ammo_qty <= 0)
             {
                 if (you.see_cell(c))
-                    mpr("Your passage of Golubria closes with a snap!");
+                    mpr(T_("Your passage of Golubria closes with a snap!"));
                 else
-                    mprf(MSGCH_SOUND, "You hear a snapping sound.");
+                    mprf(MSGCH_SOUND, T_("You hear a snapping sound."));
                 trap->destroy();
                 noisy(spell_effect_noise(SPELL_GOLUBRIAS_PASSAGE), c);
             }
@@ -2692,9 +2692,9 @@ void world_reacts()
         // a gigabyte of bzipped ttyrec.
         // We could extend the counters to 64 bits, but in the light of the
         // above, it's an useless exercise.
-        mpr("Outside, the world ends.");
-        mpr("Sorry, but your quest for the Orb is now rather pointless. "
-            "You quit...");
+        mpr(T_("Outside, the world ends."));
+        mpr(T_("Sorry, but your quest for the Orb is now rather pointless. "
+            "You quit..."));
         // Please do not give it a custom ktyp or make it cool in any way
         // whatsoever, because players are insane. Usually, not being dragged
         // down by sanity is good, but this is not the case here.
@@ -2886,13 +2886,13 @@ static void _do_berserk_no_combat_penalty()
         switch (you.berserk_penalty)
         {
         case 2:
-            mprf(MSGCH_DURATION, "You feel a strong urge to attack something.");
+            mprf(MSGCH_DURATION, T_("You feel a strong urge to attack something."));
             break;
         case 4:
-            mprf(MSGCH_DURATION, "You feel your anger nearly subside.");
+            mprf(MSGCH_DURATION, T_("You feel your anger nearly subside."));
             break;
         case 6:
-            mprf(MSGCH_DURATION, "Your blood rage is quickly leaving you.");
+            mprf(MSGCH_DURATION, T_("Your blood rage is quickly leaving you."));
             break;
         }
 
@@ -3017,7 +3017,7 @@ static void _do_cmd_repeat()
 
     if (strlen(buf) == 0)
     {
-        mpr("You must enter the number of times for the command to repeat.");
+        mpr(T_("You must enter the number of times for the command to repeat."));
         _cancel_cmd_repeat();
         return;
     }
@@ -3035,7 +3035,7 @@ static void _do_cmd_repeat()
     c_input_reset(true);
     if (ch == ' ' || ch == CK_ENTER)
     {
-        mprf(MSGCH_PROMPT, "Enter command to be repeated: ");
+        mprf(MSGCH_PROMPT, T_("Enter command to be repeated: "));
         // Enable the cursor to read input.
         cursor_control con(true);
 
@@ -3111,7 +3111,7 @@ static void _do_prev_cmd_again()
 {
     if (is_processing_macro())
     {
-        mpr("Can't re-do previous command from within a macro.");
+        mpr(T_("Can't re-do previous command from within a macro."));
         flush_input_buffer(FLUSH_ABORT_MACRO);
         crawl_state.cancel_cmd_again();
         crawl_state.cancel_cmd_repeat();

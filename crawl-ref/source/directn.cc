@@ -2012,7 +2012,7 @@ void direction_chooser::toggle_beam()
 {
     if (!needs_path)
     {
-        mprf(MSGCH_EXAMINE_FILTER, "This spell doesn't need a beam path.");
+        mprf(MSGCH_EXAMINE_FILTER, T_("This spell doesn't need a beam path."));
         return;
     }
 
@@ -2151,7 +2151,7 @@ void direction_chooser::handle_wizard_command(command_type key_command,
 
     case CMD_TARGET_WIZARD_HURT_MONSTER:
         m->hit_points = 1;
-        mpr("Brought monster down to 1 HP.");
+        mpr(T_("Brought monster down to 1 HP."));
         flush_prev_message();
         break;
 

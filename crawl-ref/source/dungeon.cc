@@ -24,6 +24,7 @@
 #include "chardump.h"
 #include "cloud.h"
 #include "coordit.h"
+#include "database.h"
 #include "corpse.h"
 #include "describe.h"
 #include "directn.h"
@@ -3435,7 +3436,7 @@ static void _slime_connectivity_fixup()
                             // squares should have adjacency of DISCONNECT_DIST
                             // but oh well
                             if (env.level_map_mask(*adj_it) & MMT_VAULT)
-                                mpr("Whoops, nicked a vault in slime connectivity fixup");
+                                mpr(T_("Whoops, nicked a vault in slime connectivity fixup"));
                             env.grid(*adj_it) = DNGN_FLOOR;
                         }
                     }

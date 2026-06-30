@@ -1814,7 +1814,7 @@ void skill_menu(int flag, int exp)
     // case where we abort is if all in-principle trainable skills are maxed.
     if (flag & SKMF_EXPERIENCE && !trainable_skills(true))
     {
-        mpr("You feel omnipotent.");
+        mpr(T_("You feel omnipotent."));
         return;
     }
 

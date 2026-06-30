@@ -13,6 +13,7 @@
 #include "cloud.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dgn-overview.h"
 #include "english.h"
 #include "env.h"
@@ -119,7 +120,7 @@ void add_auto_excludes()
     if (mons.empty())
         return;
 
-    mprf(MSGCH_WARN, "Marking area around %s as unsafe for travelling.",
+    mprf(MSGCH_WARN, T_("Marking area around %s as unsafe for travelling."),
             describe_monsters_condensed(mons).c_str());
     learned_something_new(HINT_AUTO_EXCLUSION);
 }

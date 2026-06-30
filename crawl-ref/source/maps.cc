@@ -19,6 +19,7 @@
 #include "branch.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dbg-maps.h"
 #include "dungeon.h"
 #include "end.h"
@@ -1499,7 +1500,7 @@ static void _parse_maps(const string &s)
     printf("Regenerating des: %s\n", s.c_str());
 #endif
     // won't be seen by the user unless they look for it
-    mprf(MSGCH_PLAIN, "Regenerating des: %s", s.c_str());
+    mprf(MSGCH_PLAIN, T_("Regenerating des: %s"), s.c_str());
 
     time_t mtime = file_modtime(dat);
     _reset_map_parser();

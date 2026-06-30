@@ -892,7 +892,7 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
 
                     if (!ap_disabled.empty())
                     {
-                        mprf("Autopickup disabled for %s.",
+                        mprf(T_("Autopickup disabled for %s."),
                              comma_separated_line(ap_disabled.begin(),
                                                   ap_disabled.end()).c_str());
                     }
@@ -2825,8 +2825,8 @@ static level_pos _prompt_travel_depth(const level_id &id, bool remember_targ)
     while (true)
     {
         msgwin_clear_temporary();
-        mprf(MSGCH_PROMPT, "What level of %s? "
-             "(default %s, ? - help) ",
+        mprf(MSGCH_PROMPT, T_("What level of %s? "
+             "(default %s, ? - help) "),
              branches[target.id.branch].longname,
              _get_trans_travel_dest(target, true).c_str());
 
@@ -2926,12 +2926,12 @@ static void _start_translevel_travel()
         if (level_target.pos.x == -1 &&
             level_target.id.depth == branches[level_target.id.branch].numlevels)
         {
-            mpr("You're already at the bottom of this branch!");
+            mpr(T_("You're already at the bottom of this branch!"));
             return;
         }
         else if (level_target.pos.x == -1 || level_target.pos == you.pos())
         {
-            mpr("You're already here!");
+            mpr(T_("You're already here!"));
             return;
         }
     }
@@ -2964,15 +2964,15 @@ void start_translevel_travel(const level_pos &pos)
     if (!can_travel_to(pos.id))
     {
         if (!can_travel_interlevel())
-            mpr("Sorry, you can't auto-travel out of here.");
+            mpr(T_("Sorry, you can't auto-travel out of here."));
         else
-            mpr("Sorry, I don't know how to get there.");
+            mpr(T_("Sorry, I don't know how to get there."));
         return;
     }
 
     if (pos.is_valid() && !in_bounds(pos.pos))
     {
-        mpr("Sorry, I don't know how to get there.");
+        mpr(T_("Sorry, I don't know how to get there."));
         return;
     }
 
@@ -3001,7 +3001,7 @@ void start_translevel_travel(const level_pos &pos)
         {
             if (!_loadlev_populate_stair_distances(pos))
             {
-                mpr("Level memory is imperfect, aborting.");
+                mpr(T_("Level memory is imperfect, aborting."));
                 return ;
             }
         }
@@ -3404,7 +3404,7 @@ static bool _find_transtravel_square(const level_pos &target, bool verbose)
         return false;
     if (maybe_traversable)
     {
-        mpr("Sorry, I don't know how to get there.");
+        mpr(T_("Sorry, I don't know how to get there."));
         return false;
     }
 
@@ -3412,7 +3412,7 @@ static bool _find_transtravel_square(const level_pos &target, bool verbose)
     coord_def closest_alt = _find_closest_adj(target.pos);
     if (closest_alt.origin())
     {
-        mpr("Sorry, I don't know how to traverse that place.");
+        mpr(T_("Sorry, I don't know how to traverse that place."));
         return false;
     }
 
@@ -3487,7 +3487,7 @@ void start_explore(bool grab_items, bool skip_autorest)
 void do_explore_cmd(bool skip_autorest)
 {
     if (you.berserk())
-        mpr("Calm down first, please.");
+        mpr(T_("Calm down first, please."));
     else                        // Start exploring
         start_explore(Options.explore_greedy, skip_autorest);
 }
@@ -4353,9 +4353,9 @@ void TravelCache::delete_waypoint()
     while (get_waypoint_count())
     {
         clear_messages();
-        mpr("Existing waypoints:");
+        mpr(T_("Existing waypoints:"));
         list_waypoints();
-        mprf(MSGCH_PROMPT, "Delete which waypoint? (* - delete all, Esc - exit) ");
+        mprf(MSGCH_PROMPT, T_("Delete which waypoint? (* - delete all, Esc - exit) "));
 
         int key = getchm();
         if (key >= '0' && key <= '9')
@@ -4381,7 +4381,7 @@ void TravelCache::delete_waypoint()
     }
 
     clear_messages();
-    mpr("All waypoints deleted. Have a nice day!");
+    mpr(T_("All waypoints deleted. Have a nice day!"));
 }
 
 void TravelCache::add_waypoint(int x, int y)
@@ -4391,15 +4391,15 @@ void TravelCache::add_waypoint(int x, int y)
     const bool waypoints_exist = get_waypoint_count();
     if (waypoints_exist)
     {
-        mpr("Existing waypoints:");
+        mpr(T_("Existing waypoints:"));
         list_waypoints();
     }
 
     if (you.where_are_you == BRANCH_ABYSS)
-        mprf(MSGCH_PROMPT, "Waypoints on this level may disappear at any time.");
+        mprf(MSGCH_PROMPT, T_("Waypoints on this level may disappear at any time."));
     else if (!is_connected_branch(you.where_are_you))
-        mprf(MSGCH_PROMPT, "Waypoints will disappear once you leave this level.");
-    mprf(MSGCH_PROMPT, "Assign waypoint to what number? (0-9%s) ",
+        mprf(MSGCH_PROMPT, T_("Waypoints will disappear once you leave this level."));
+    mprf(MSGCH_PROMPT, T_("Assign waypoint to what number? (0-9%s) "),
          waypoints_exist? ", D - delete waypoint" : "");
 
     int keyin = toalower(get_ch());
@@ -4443,15 +4443,15 @@ void TravelCache::set_waypoint(int waynum, int x, int y)
     if (overwrite)
     {
         if (lid == old_lid) // same level
-            mprf("Waypoint %d re-assigned to %s.", waynum, new_dest.c_str());
+            mprf(T_("Waypoint %d re-assigned to %s."), waynum, new_dest.c_str());
         else
         {
-            mprf("Waypoint %d re-assigned from %s to %s.",
+            mprf(T_("Waypoint %d re-assigned from %s to %s."),
                  waynum, old_dest.c_str(), new_dest.c_str());
         }
     }
     else
-        mprf("Waypoint %d assigned to %s.", waynum, new_dest.c_str());
+        mprf(T_("Waypoint %d assigned to %s."), waynum, new_dest.c_str());
 
     update_waypoints();
 }
@@ -4722,7 +4722,7 @@ bool runrest::run_should_stop() const
     {
 #ifndef USE_TILE_LOCAL
         // XXX: Remove this once exclusions are visible.
-        mprf(MSGCH_WARN, "Stopped running for exclusion.");
+        mprf(MSGCH_WARN, T_("Stopped running for exclusion."));
 #endif
         return true;
     }
@@ -5123,37 +5123,17 @@ template <class C> void explore_discoveries::say_any(
     if (size != 1)
         category = plural.c_str();
 
-    // "Found X" → "发现了X" for Chinese
-    if (Options.language == lang_t::ZH)
-    {
-        if (has_duplicates(coll.begin(), coll.end()))
-        {
-            mprf("发现了%s %s。", number_in_words(size).c_str(), category);
-            return;
-        }
-
-        const auto message_zh = "发现了" +
-                               comma_separated_line(coll.begin(), coll.end(),
-                                   "和", "、") + "。";
-
-        if (formatted_string::parse_string(message_zh).width() >= get_number_of_cols())
-            mprf("发现了%s %s。", number_in_words(size).c_str(), category);
-        else
-            mpr(message_zh);
-        return;
-    }
-
     if (has_duplicates(coll.begin(), coll.end()))
     {
-        mprf("Found %s %s.", number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
         return;
     }
 
-    const auto message = "Found " +
-                           comma_separated_line(coll.begin(), coll.end()) + ".";
+    const auto message = make_stringf(T_("Found %s."),
+                           comma_separated_line(coll.begin(), coll.end()).c_str());
 
     if (formatted_string::parse_string(message).width() >= get_number_of_cols())
-        mprf("Found %s %s.", number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
     else
         mpr(message);
 }

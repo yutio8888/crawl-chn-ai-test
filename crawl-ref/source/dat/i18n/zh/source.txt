@@ -10529,6 +10529,159 @@ health
 %%%%
  seems to slow down.
 似乎减速了。
+%%%%
+Adjust (g)ear, (s)pells, (a)bilities, (p)otions, sc(r)olls or e(v)ocables? 
+整理（g）装备、（s）法术、（a）能力、（p）药水、卷（r）轴或（v）可施放物品？
+
+%%%%
+Adjust which spell? 
+要调整哪个法术？
+
+%%%%
+Adjust to which letter? 
+调整到哪个字母？ 
+
+%%%%
+You don't currently have any abilities.
+你目前没有任何能力。
+
+%%%%
+Adjust which ability? 
+要调整哪个能力？
+
+%%%%
+No such ability.
+没有这个能力。
+
+%%%%
+Adjust to which letter?
+调整到哪个字母？
+%%%%
+No questions found in FAQ! Please submit a bug report!
+FAQ 中没有找到问题！请提交错误报告！
+
+%%%%
+Regenerating db: %s [%s]
+正在重新生成数据库：%s [%s]
+
+%%%%
+Regenerating db: %s
+正在重新生成数据库：%s
+
+%%%%
+Your messages:
+你的消息：
+
+%%%%
+Beep! Your pager goes off! Use _ to check your messages.
+哔！你的寻呼机响了！使用 _ 查看你的消息。
+
+%%%%
+Sorry, you haven't seen any altar yet.
+抱歉，你还没有见过任何祭坛。
+
+%%%%
+Sorry, you haven't seen any shop yet.
+抱歉，你还没有见过任何商店。
+
+%%%%
+There is no level above you.
+你上方没有楼层。
+
+%%%%
+There is no level below you in this branch.
+在这个分支中你下方没有楼层。
+
+%%%%
+That's not a valid depth.
+这不是一个有效的深度。
+
+%%%%
+Cleared annotation.
+已清除标注。
+
+%%%%
+Add new annotation for %s (include '!' for warning): 
+为 %s 添加新标注（包含'!'则为警告）: 
+
+%%%%
+The tide is released from %s call.
+潮汐从%s呼唤中释放。
+
+%%%%
+Not in Shoals or no heightmap; tide not available.
+不在浅滩中或没有高度图；潮汐不可用。
+
+%%%%
+Whoops, nicked a vault in slime connectivity fixup
+哎呀，在黏液连接修复中碰到了保险库
+
+%%%%
+Marking area around %s as unsafe for travelling.
+将 %s 周围区域标记为旅行不安全。
+%%%%
+You %s a card...
+你%s了一张牌……
+
+%%%%
+That deck is empty!
+那副牌是空的！
+
+%%%%
+You are out of cards!
+你没有牌了！
+
+%%%%
+There's only one card left!
+只剩下一张牌了！
+
+%%%%
+You draw... (choose one card, ? for their descriptions)
+你抽牌……（选择一张牌，? 查看描述）
+
+%%%%
+You radiate a wave of entropy!
+你散发出熵波！
+
+%%%%
+You reveal a symbol of torment!
+你揭示了折磨的符号！
+
+%%%%
+You begin rapidly regenerating health and magic.
+你开始快速恢复生命和魔法。
+
+%%%%
+You somehow manage to escape divine attention...
+你不知何故逃脱了神的注意……
+
+%%%%
+You sense the presence of something unfriendly.
+你感觉到有不友好的东西存在。
+
+%%%%
+Clouds appear around your foes!
+云层出现在你的敌人周围！
+
+%%%%
+You %s %s%s peal%s of thunder!
+你%s了%s%s雷声%s
+
+%%%%
+ is dazed by the mutagenic energy.
+被变异能量弄得晕眩。
+
+%%%%
+You feel a surge of magic.
+你感到一股魔力涌动。
+
+%%%%
+You have %s %s.
+你已经%s了%s。
+
+%%%%
+You have %s a buggy card!
+你已经%s了一张有问题的牌！
 
 %%%%
  seems to speed up.
@@ -12333,3 +12486,1121 @@ remembered their ancestor %s as %s.
 %%%%
 the denizens of %s
 %s的居民
+                   g - Guard the area.      f - Follow me.
+                   g - 守卫区域。      f - 跟随我。
+
+%%%%
+                   r - Retreat!             s - Stop attacking.
+                   r - 撤退！             s - 停止攻击。
+
+%%%%
+ Anything else - Cancel.
+ 其他 - 取消。
+
+%%%%
+ dissipates!
+消散了！
+
+%%%%
+ drops a net on you.
+向你丢出了一张网。
+
+%%%%
+ enters the passage of Golubria.
+进入了戈卢布里亚之通道。
+
+%%%%
+ evades a web.
+躲开了蛛网。
+
+%%%%
+ fails to trigger a net trap.
+未能触发网陷阱。
+
+%%%%
+ is caught in the net!
+被网困住了！
+
+%%%%
+ is entangled in a web!
+被蛛网缠住了！
+
+%%%%
+ oozes through a web.
+缓缓穿过了蛛网。
+
+%%%%
+ passes through a web.
+穿过了蛛网。
+
+%%%%
+ refuses to make way for you. (Use ctrl+direction or * direction to attack.)
+拒绝为你让路。（使用ctrl+方向或*方向进行攻击。）
+
+%%%%
+ t - %s!
+ t - %s！
+
+%%%%
+%s %s the alarm!
+%s%s了警报！
+
+%%%%
+%s %s!
+%s%s！
+
+%%%%
+%s appears to be closed.
+%s似乎已经关门了。
+
+%%%%
+%s disappears.
+%s消失了。
+
+%%%%
+%s effortlessly oozes through the net!
+%s毫不费力地穿过了网！
+
+%%%%
+%s enters %s!
+%s进入了%s！
+
+%%%%
+%s enters a devourer's trap.
+%s进入了一个吞噬者陷阱。
+
+%%%%
+%s enters a harlequin's trap.
+%s进入了一个小丑陷阱。
+
+%%%%
+%s has entered your field of view.
+%s进入了视野。
+
+%%%%
+%s is invisible, and %s can't see %s.
+%s是隐形的，%s看不到%s。
+
+%%%%
+%s is invisible, and you have no allies that can see %s.
+%s是隐形的，你没有盟友能看到%s。
+
+%%%%
+%s shaft crumbles and collapses.
+%s竖井碎裂并坍塌了。
+
+%%%%
+%s the attacks of %s are laced with chaos!
+%s%s的攻击被注入了混乱！
+
+%%%%
+%s vibrates slightly, failing to make a sound.
+%s轻微振动，未能发出声音。
+
+%%%%
+<green>Wyrmbane glows as a worthy foe approaches.</green>
+<green>斩龙剑在强大的敌人接近时发出光芒。</green>
+
+%%%%
+A massive air vortex appears!
+一个巨大的空气漩涡出现了！
+
+%%%%
+A mysterious force pulls you upwards.
+一股神秘的力量将你向上拉。
+
+%%%%
+A web thrashes wildly, something is caught inside!
+一张蛛网疯狂地移动，有什么东西被困在了里面！
+
+%%%%
+All waypoints deleted. Have a nice day!
+所有路径点已删除。祝您愉快！
+
+%%%%
+Alright, then stay!
+好吧，那就留下！
+
+%%%%
+Assign waypoint to what number? (0-9%s) 
+将路径点分配给哪个编号？（0-9%s）
+
+%%%%
+Attack!
+攻击！
+
+%%%%
+Autopickup disabled for %s.
+自动拾取已为%s禁用。
+
+%%%%
+Autopickup is now %s.
+自动拾取已%s。
+
+%%%%
+Base training target %d.%d for %s reached!
+基础训练目标%d.%d为%s已达到！
+
+%%%%
+Brought monster down to 1 HP.
+将怪物生命值降至1点。
+
+%%%%
+Calm down first, please.
+请先冷静下来。
+
+%%%%
+Can't re-do previous command from within a macro.
+无法从宏中重做之前的命令。
+
+%%%%
+Cannot rest while time is frozen.
+时间冻结时无法休息。
+
+%%%%
+Clearing monster memory.
+正在清除怪物记忆。
+
+%%%%
+Clearing the skill training target for %s.
+正在清除%s的技能训练目标。
+
+%%%%
+Clearing travel trail.
+正在清除旅行轨迹。
+
+%%%%
+Delete which waypoint? (* - delete all, Esc - exit) 
+删除哪个路径点？（* - 删除全部，Esc - 退出）
+
+%%%%
+Discarded %d spells due to being uncastable and %d spells due to being disliked by %s.
+因无法施放丢弃了%d个法术，因不被%s喜欢丢弃了%d个法术。
+
+%%%%
+Enter command to be repeated: 
+输入要重复的命令：
+
+%%%%
+Existing waypoints:
+现有路径点：
+
+%%%%
+Fall back!
+撤退！
+
+%%%%
+Follow me!
+跟随我！
+
+%%%%
+Found %s %s.
+发现了%s %s。
+
+%%%%
+Found %s.
+发现了%s。
+
+%%%%
+Gozag incites %s against you.
+戈扎格煽动%s对抗你。
+
+%%%%
+Guard this area!
+守卫这个区域！
+
+%%%%
+If you died right now, you'd get an extra life in %d.%02d levels' worth of XP.
+如果你现在死了，你将在%d.%02d级的经验值后获得额外生命。
+
+%%%%
+In a burst of heat and light, you briefly surge upwards...but you can't rise from here.
+在一阵热与光的爆发中，你短暂地向上冲去……但无法从这里升起。
+
+%%%%
+It simply wouldn't do to leave so soon after announcing yourself.
+刚宣告自己的存在就离开，这不太合适。
+
+%%%%
+It's already closed!
+它已经关上了！
+
+%%%%
+It's already open!
+它已经打开了！
+
+%%%%
+It's broken and can't be closed!
+它坏了，无法关闭！
+
+%%%%
+It's broken and can't be closed.
+它坏了，无法关闭。
+
+%%%%
+It's surprising you made it this far with your playstyle.
+以你的游玩方式，能走到这一步真是令人惊讶。
+
+%%%%
+Level map cleared.
+楼层地图已清除。
+
+%%%%
+Level map wiped.
+楼层地图已擦除。
+
+%%%%
+Level memory is imperfect, aborting.
+楼层记忆不完整，正在中止。
+
+%%%%
+More spells requested for fixed level (%d) randart spellbook than there are valid spells.
+为固定等级（%d）的随机法术书请求的法术数量超过了有效法术数量。
+
+%%%%
+Move the cursor to view the level map, or press <w>?</w> for a list of commands.
+移动光标查看楼层地图，或输入<w>?</w>查看命令列表。
+
+%%%%
+No previous command to repeat.
+没有之前的命令可以重复。
+
+%%%%
+No remembered map.
+没有记忆的地图。
+
+%%%%
+Orders for allies: a - Attack new target.
+对盟友的命令：a - 攻击新目标。
+
+%%%%
+Outside, the world ends.
+外面，世界终结了。
+
+%%%%
+Press 'a' to toggle all layers. Press any other key to exit.
+按'a'切换所有图层。按其他键退出。
+
+%%%%
+Press <w>?</w> for a list of commands and other information.
+按<w>?</w>查看命令列表和其他信息。
+
+%%%%
+Regenerating des: %s
+重新生成des：%s
+
+%%%%
+Remembered map restored.
+已恢复记忆的地图。
+
+%%%%
+Restoring view layers.
+恢复视图图层。
+
+%%%%
+Returning to the game...
+返回游戏……
+
+%%%%
+Running acquirement tests.
+正在运行获得测试。
+
+%%%%
+Running generate_armour_item tests.
+正在运行生成护甲物品测试。
+
+%%%%
+Running generate_weapon_item tests.
+正在运行生成武器物品测试。
+
+%%%%
+Saving game... please wait.
+保存游戏……请稍候。
+
+%%%%
+See you next game!
+下次游戏再见！
+
+%%%%
+Setting a skill training target for %s at %d.%d.
+正在为%s设定%d.%d的技能训练目标。
+
+%%%%
+Shopping list: removing %s
+购物清单：正在移除%s
+
+%%%%
+Something appears %s!
+有什么东西%s出现！
+
+%%%%
+Something gets caught in the net!
+有什么东西被网困住了！
+
+%%%%
+Something shoots a net at you.
+有什么东西向你发射了一张网。
+
+%%%%
+Sorry, I don't know how to get there.
+抱歉，我不知道怎么去那里。
+
+%%%%
+Sorry, I don't know how to traverse that place.
+抱歉，我不知道如何穿越那个地方。
+
+%%%%
+Sorry, but your quest for the Orb is now rather pointless. You quit...
+抱歉，但你对宝珠的追求现在已毫无意义。你退出了……
+
+%%%%
+Sorry, level %d is the maximum level.
+抱歉，%d 级已经是最高等级了。
+
+%%%%
+Sorry, you can't auto-travel out of here.
+抱歉，你无法自动旅行离开这里。
+
+%%%%
+Sound effects are now %s.
+音效已%s。
+
+%%%%
+Stop fighting!
+停止战斗！
+
+%%%%
+Stopped running for exclusion.
+因排除区域而停止奔跑。
+
+%%%%
+Strange, the shaft seems to lead back to this level.
+奇怪，竖井似乎通向回这个楼层。
+
+%%%%
+Thank you for visiting Hell. Please come again soon.
+感谢您访问地狱。请很快再来。
+
+%%%%
+That door is sealed shut!
+那扇门被封死了！
+
+%%%%
+The barbed spikes dig painfully into your body as you move.
+倒刺在你移动时痛苦地刺入你的身体。
+
+%%%%
+The cacophony subsides as you leave the area.
+你离开该区域时，嘈杂攻击平息了。
+
+%%%%
+The door is shut tight!
+门关得紧紧的！
+
+%%%%
+The door slams shut behind you.
+门在你身后砰地关上了。
+
+%%%%
+The endless sea of lava is not a nice place.
+无尽的熔岩海可不是个好地方。
+
+%%%%
+The ferocious winds and tides of the open sea thwart your progress.
+公海的狂风和潮汐阻止了你的前进。
+
+%%%%
+The frozen ramparts melt away as you move.
+冰冻壁垒在你移动时融化了。
+
+%%%%
+The gate opens fully!
+大门完全打开了！
+
+%%%%
+The hatch slams shut behind you.
+舱口在你身后砰地关上了。
+
+%%%%
+The lock glows eerily!
+锁发出了诡异的光芒！
+
+%%%%
+The malign portal rejects you as you step towards it.
+恶意的传送门在你靠近时拒绝了你。
+
+%%%%
+The nature of this place prevents your teleportation.
+这个地方的本质阻止了你的传送。
+
+%%%%
+The net passes right through %s!
+网直接穿过了%s！
+
+%%%%
+The shaft crumbles and collapses.
+竖井碎裂并坍塌了。
+
+%%%%
+The shaft vanishes in a puff of logic!
+竖井在一阵逻辑中消失了！
+
+%%%%
+The spell fizzles.
+法术失败了。
+
+%%%%
+The stress on the space-time continuum destroys the shaft!
+时空连续体的压力摧毁了竖井！
+
+%%%%
+The transporter is blocked by a creature on the other side!
+传送器的另一侧被一个生物挡住了！
+
+%%%%
+The transporter is blocked on the other side!
+传送器的另一侧被堵住了！
+
+%%%%
+The trap seems to be inoperative.
+这个陷阱似乎不起作用。
+
+%%%%
+The world spins around you as you enter the portal.
+你进入传送门时，世界在你周围旋转。
+
+%%%%
+There is no available space!
+没有可用空间！
+
+%%%%
+There isn't anything that you can close there!
+那里没有任何你可以关闭的东西！
+
+%%%%
+There isn't anything that you can open there!
+那里没有任何你可以打开的东西！
+
+%%%%
+There's nothing close enough!
+没有足够近的东西！
+
+%%%%
+There's nothing to close nearby.
+附近没有可以关闭的东西。
+
+%%%%
+Thick smoke pours from the lock!
+浓烟从锁中喷出！
+
+%%%%
+This passage %s!
+这条通道%s！
+
+%%%%
+This shop has been abandoned, nothing of value remains.
+这家商店已被废弃，没有留下任何有价值的东西。
+
+%%%%
+This spell doesn't need a beam path.
+这个法术不需要弹道路径。
+
+%%%%
+This transporter is marked as excluded!
+这个传送器被标记为排除！
+
+%%%%
+This wall is too hard to dig through.
+这面墙太硬了，无法挖穿。
+
+%%%%
+Training target %d.%d for %s reached!
+训练目标%d.%d为%s已达到！
+
+%%%%
+Trying to dig through that would dissolve your mandibles.
+试图挖穿那个会溶解你的下颌。
+
+%%%%
+Unknown command. (For a list of commands type <w>?\?</w>.)
+未知命令。（输入<w>?\?</w>查看命令列表。）
+
+%%%%
+Uppercase letters only, please.
+请只使用大写字母。
+
+%%%%
+Waypoint %d assigned to %s.
+路径点%d已分配给%s。
+
+%%%%
+Waypoint %d re-assigned from %s to %s.
+路径点%d已从%s重新分配给%s。
+
+%%%%
+Waypoint %d re-assigned to %s.
+路径点%d已重新分配给%s。
+
+%%%%
+Waypoints on this level may disappear at any time.
+此楼层的路径点随时可能消失。
+
+%%%%
+Waypoints will disappear once you leave this level.
+路径点在你离开此楼层后将消失。
+
+%%%%
+Welcome back
+欢迎回来
+
+%%%%
+Welcome back to %s!
+欢迎回到%s！
+
+%%%%
+Welcome to %s!
+欢迎来到%s！
+
+%%%%
+What are your orders?
+你的命令是什么？
+
+%%%%
+What level of %s? (default %s, ? - help) 
+哪个层级的%s？（默认为%s，? - 帮助）
+
+%%%%
+Why would you want to do that?
+你为什么要那样做？
+
+%%%%
+Why would you want to repeat a run command?
+你为什么要重复执行奔跑命令？
+
+%%%%
+With a burst of heat and light, you rocket upwards!
+随着一阵热与光的爆发，你像火箭一样向上冲！
+
+%%%%
+With a soft hiss, the gate opens fully!
+随着一声轻柔的嘶嘶声，大门完全打开了！
+
+%%%%
+With a terrible screech, the alarm sounds!
+随着一声可怕的尖啸，警报响了！
+
+%%%%
+Writing noise grid with %d noise sources
+正在写入包含%d个噪声源的噪声网格
+
+%%%%
+You %s towards %s!
+你%s向%s！
+
+%%%%
+You also have %d voucher%s.
+你还有 %d 张优惠券%s。
+
+%%%%
+You announce your regal presence to all who look upon you.
+你向所有仰望你的人宣告了你的王者存在。
+
+%%%%
+You are %s empty-clawed.
+你%s是空爪状态。
+
+%%%%
+You are %s empty-handed.
+你%s是空手状态。
+
+%%%%
+You are %s empty-tentacled.
+你%s是空触手状态。
+
+%%%%
+You are level %d %s %s.
+你是 %d 级的 %s%s。
+
+%%%%
+You are too frail to live.
+你太脆弱了，无法生存。
+
+%%%%
+You are unable to make a sound!
+你无法发出声音！
+
+%%%%
+You avoid being caught in the net.
+你避免了被网困住。
+
+%%%%
+You become entangled in the net!
+你被网缠住了！
+
+%%%%
+You begin resting.
+你开始休息。
+
+%%%%
+You begin waiting.
+你开始等待。
+
+%%%%
+You bump into %s.
+你撞到了%s。
+
+%%%%
+You can't annotate this level.
+你无法注释此楼层。
+
+%%%%
+You can't close doors while %s.
+你在%s时无法关门。
+
+%%%%
+You can't dig through that.
+你无法挖穿那个。
+
+%%%%
+You can't do that in your present form.
+你无法以现在的形态做那件事。
+
+%%%%
+You can't repeat %s actions.
+你不能重复%s行动。
+
+%%%%
+You can't repeat informational commands.
+你不能重复执行信息命令。
+
+%%%%
+You can't repeat map commands.
+你不能重复执行地图命令。
+
+%%%%
+You can't repeat mouse clicks or movements.
+你不能重复鼠标点击或移动。
+
+%%%%
+You can't repeat multi-turn commands.
+你不能重复执行多回合命令。
+
+%%%%
+You can't repeat that command.
+你不能重复那个命令。
+
+%%%%
+You can't repeat the repeat command!
+你不能重复执行重复命令！
+
+%%%%
+You cannot dig through the dense trees.
+你无法挖穿茂密的树木。
+
+%%%%
+You cannot move. (Use ctrl+direction or * direction to attack while stationary and confused.)
+你无法移动。（使用ctrl+方向或*方向在困惑状态下站在原地攻击。）
+
+%%%%
+You cannot walk through the dense trees.
+你无法穿过茂密的树木。
+
+%%%%
+You carefully make your way through the web.
+你小心翼翼地穿过了蛛网。
+
+%%%%
+You detect nothing.
+你什么也没有探测到。
+
+%%%%
+You dig through %s.
+你挖穿了%s。
+
+%%%%
+You enter %s!
+你进入了%s！
+
+%%%%
+You enter a Zot trap.
+你进入了佐特陷阱。
+
+%%%%
+You enter a devourer's trap.
+你进入了一个吞噬者陷阱。
+
+%%%%
+You enter a harlequin's trap.
+你进入了一个小丑陷阱。
+
+%%%%
+You enter a tyrant's trap.
+你进入了一个暴君陷阱。
+
+%%%%
+You enter an archmage's trap.
+你进入了一个大法师陷阱。
+
+%%%%
+You enter the passage of Golubria.
+你进入了戈卢布里亚之通道。
+
+%%%%
+You enter the transporter and appear at another place.
+你进入传送器，出现在另一个地方。
+
+%%%%
+You escape!
+你逃出来了！
+
+%%%%
+You feel %s rip itself from your throat, but you make no sound!
+你感到%s从喉咙里撕裂而出，但你没有发出任何声音！
+
+%%%%
+You feel Zot lose track of you.
+你感到佐特失去了你的踪迹。
+
+%%%%
+You feel a strange sense of stasis.
+你感到一种奇异的停滞感。
+
+%%%%
+You feel a strong urge to %s, but you are unable to make a sound!
+你感到强烈的冲动想%s，但你无法发出声音！
+
+%%%%
+You feel a strong urge to attack something.
+你感到一阵强烈的攻击欲望。
+
+%%%%
+You feel a twinge of divine disapproval.
+你感到一丝神的反对。
+
+%%%%
+You feel aware of your surroundings.
+你感到对周围环境有了意识。
+
+%%%%
+You feel better.
+你感觉好多了。
+
+%%%%
+You feel momentarily disoriented.
+你感到短暂的迷失方向。
+
+%%%%
+You feel momentarily drained.
+你感到瞬间被抽空。
+
+%%%%
+You feel omnipotent.
+你感到无所不能。
+
+%%%%
+You feel something solid in that direction.
+你感觉到那个方向有坚固的东西。
+
+%%%%
+You feel stable on this level.
+你在这个楼层感到稳定。
+
+%%%%
+You feel your anger nearly subside.
+你感到你的愤怒几乎消退了。
+
+%%%%
+You feel your magic capacity decrease.
+你感到你的魔力容量减少了。
+
+%%%%
+You feel your magic capacity increase.
+你感到你的魔力容量增加了。
+
+%%%%
+You feel your power returning.
+你感到你的力量正在恢复。
+
+%%%%
+You have a vision of a gate.
+你看到了一个门的幻象。
+
+%%%%
+You have a vision of multiple gates.
+你看到了多个门的幻象。
+
+%%%%
+You have traversed the Zig. Zot will no longer hunt you.
+你已穿越金字塔。佐特将不再追猎你。
+
+%%%%
+You hear a loud "Zot"!
+你听到一声响亮的"佐特"！
+
+%%%%
+You hear a snapping sound.
+你听到啪的一声。
+
+%%%%
+You learned that %s are actually %s.
+你了解到%s实际上是%s。
+
+%%%%
+You learned that %s is actually %s.
+你了解到%s实际上是%s。
+
+%%%%
+You must enter the number of times for the command to repeat.
+你必须输入命令重复执行的次数。
+
+%%%%
+You nearly stumble into %s!
+你差点绊倒在%s上！
+
+%%%%
+You need %d%%%% to reach level %d.
+你距离升级到 %d 级还有 %d%%。
+
+%%%%
+You ooze up the stairs.
+你沿楼梯缓缓渗了上去。
+
+%%%%
+You pass through the gate.
+你穿过了大门。
+
+%%%%
+You push %s out of the way.
+你把%s推到一边。
+
+%%%%
+You rejoin the land of the living...
+你重新回到了生者的国度……
+
+%%%%
+You rip the net and break free!
+你把网撕裂，挣脱出来！
+
+%%%%
+You see a ghostly outline there, and the spell fizzles.
+你看到那里有一个鬼影轮廓，法术失败了。
+
+%%%%
+You sense a hostile presence.
+你感知到了一个敌对的存在。
+
+%%%%
+You set off the alarm!
+你触发了警报！
+
+%%%%
+You should not fight recklessly!
+你不应该鲁莽战斗！
+
+%%%%
+You shred the net and break free!
+你把网撕碎，挣脱出来！
+
+%%%%
+You slide down the stairs, covered in regenerating slime.
+你滑下楼梯，被再生的软泥覆盖了。
+
+%%%%
+You suddenly feel drained of magical energy!
+你突然感到魔力被抽空！
+
+%%%%
+You swap places with %s.
+你与%s交换了位置。
+
+%%%%
+You trigger a net trap.
+你触发了一个网陷阱。
+
+%%%%
+You weave more energy into your solar ember.
+你将更多能量编织进你的太阳余烬。
+
+%%%%
+You'll get an extra life in %d.%02d levels' worth of XP.
+你将在%d.%02d级的经验值后获得额外生命。
+
+%%%%
+You're already at the bottom of this branch!
+你已经在这个分支的最底层了！
+
+%%%%
+You're already here!
+你已经在这里了！
+
+%%%%
+You're too berserk to give orders, and you can't shout!
+你太狂暴了，无法下达命令，也无法喊叫！
+
+%%%%
+You're too confused to move!
+你太困惑了，无法移动！
+
+%%%%
+You're too terrified to move while being watched!
+你太害怕了，在被注视时无法移动！
+
+%%%%
+Your %s skill decreases to level %d!
+你的%s技能降低至%d级！
+
+%%%%
+Your %s skill gained %d levels and is now at level %d!
+你的%s技能提升了%d级，现为%d级！
+
+%%%%
+Your %s skill increases to level %d!
+你的%s技能提升至%d级！
+
+%%%%
+Your %s skill lost %d levels and is now at level %d!
+你的%s技能降低了%d级，现为%d级！
+
+%%%%
+Your base %s skill decreases to level %d!
+你的基础%s技能降低至%d级！
+
+%%%%
+Your base %s skill gained %d levels and is now at level %d!
+你的基础%s技能提升了%d级，现为%d级！
+
+%%%%
+Your base %s skill increases to level %d!
+你的基础%s技能提升至%d级！
+
+%%%%
+Your base %s skill lost %d levels and is now at level %d!
+你的基础%s技能降低了%d级，现为%d级！
+
+%%%%
+Your base attributes are Str %d, Int %d, Dex %d.
+你的基础属性是力量%d，智力%d，敏捷%d。
+
+%%%%
+Your blood rage is quickly leaving you.
+你的血怒正在迅速消退。
+
+%%%%
+Your god isn't willing to do this for you now.
+你的神现在不愿意为你这样做。
+
+%%%%
+Your icy armour cracks and falls away as you move.
+你的冰甲在你移动时碎裂并脱落。
+
+%%%%
+Your mouth is %s empty.
+你的嘴里%s是空的。
+
+%%%%
+Your passage of Golubria closes with a snap!
+你的戈卢布里亚通道啪地一声关闭了！
+
+%%%%
+Your power is siphoned away!
+你的力量被吸走了！
+
+%%%%
+Your shopping list is now empty.
+你的购物清单现在是空的。
+
+%%%%
+Your strength is siphoned away, and your attacks feel weak!
+你的力量被吸走了，你感到攻击变得虚弱！
+
+%%%%
+Your training target must be 27 or below!
+你的训练目标必须在27或以下！
+
+%%%%
+Zot already knows this place too well. Descend or flee this branch!
+佐特已经太了解这个地方了。离开或逃离这个分支！
+
+%%%%
+Zot has no power in the Abyss.
+佐特在深渊中没有力量。
+
+%%%%
+Zot's attention fixes on you again. Descend or flee this branch!
+佐特的注意力再次锁定你。离开或逃离这个分支！
+
+%%%%
+Zot's power is invoked against you!
+佐特的力量被召来对抗你！
+
+%%%%
+%s slides away from you as you try to %s it!
+%s在你试图%s它时移开了！
+
+%%%%
+<cyan>Lucky! %s was actually %s</cyan>!
+<cyan>幸运！%s实际上是%s</cyan>！
+
+%%%%
+<yellow>%s</yellow>
+<yellow>%s</yellow>
+
+%%%%
+In your confused state, you trip and fall %s%s.
+在困惑状态下，你绊倒了并%s%s摔了下去。
+
+%%%%
+No %squiver actions available for cycling.%s
+没有可循环的%s箭袋动作%s
+
+%%%%
+The spells of %s are empowered!
+%s的法术被强化了！
+
+%%%%
+Unknown command. (For a list of commands type <w>??</w>.)
+未知命令。（输入<w>?</w>查看命令列表。）
+
+%%%%
+You %1$s into a shaft and fall %2$d level%3$s!
+你%1$s入竖井，掉了%2$d层！
+
+%%%%
+You %s carefully through the %s.
+你小心翼翼地%s穿过%s。
+
+%%%%
+You %s down.
+你向下%s。
+
+%%%%
+You %s through the gate.
+你%s穿过了大门。
+
+%%%%
+You %s%s at %s!
+你对%s%s%s！
+
+%%%%
+You %s%s%s!
+你%s%s%s！
+
+%%%%
+You begin with %s%s%s.
+你携带%s%s%s出发了。
+
+%%%%
+You insert the %s rune into the lock.
+你将%s符文插入锁中。
+
+%%%%
+You pass into a different region of Pandemonium.
+你进入了潘德蒙尼姆的不同区域。
+
+%%%%
+Your power is siphoned away as the spells of %s are empowered!
+你的力量被吸走，%s的法术被强化了！
+
+%%%%
+Your strength is siphoned away as %s grow%s stronger!
+你的力量被吸走，%s变得更加强大！

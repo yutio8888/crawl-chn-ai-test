@@ -76,7 +76,7 @@ static bool _check_monster_alert(const monster& mon)
         // And if it wasn't a monster that would get an encounter warning due to
         // being a summon, make sure to say something.
         if (mon.is_summoned())
-            mprf(MSGCH_MONSTER_WARNING, "%s 进入了视野。", mon.name(DESC_A).c_str());
+            mprf(MSGCH_MONSTER_WARNING, T_("%s has entered your field of view."), mon.name(DESC_A).c_str());
 
         more(true);
         return true;
@@ -654,7 +654,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
             wyrmbane = offhand_wpn;
 
         if (wyrmbane && mons->dragon_level() > wyrmbane->plus)
-            mpr("<green>Wyrmbane glows as a worthy foe approaches.</green>");
+            mpr(T_("<green>Wyrmbane glows as a worthy foe approaches.</green>"));
     }
 
     // attempt any god conversions on first sight
@@ -696,7 +696,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && coinflip()
         && mons->get_experience_level() >= random2(you.experience_level))
     {
-        mprf(MSGCH_GOD, GOD_GOZAG, "Gozag incites %s against you.",
+        mprf(MSGCH_GOD, GOD_GOZAG, T_("Gozag incites %s against you."),
                 mons->name(DESC_THE).c_str());
         gozag_incite(mons);
     }

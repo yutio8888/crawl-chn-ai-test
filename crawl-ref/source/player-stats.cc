@@ -91,7 +91,7 @@ bool attribute_increase()
         || innate_stat(STAT_INT) != you.intel()
         || innate_stat(STAT_DEX) != you.dex())
     {
-        mprf(MSGCH_PROMPT, "Your base attributes are Str %d, Int %d, Dex %d.",
+        mprf(MSGCH_PROMPT, T_("Your base attributes are Str %d, Int %d, Dex %d."),
              innate_stat(STAT_STR),
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
@@ -153,7 +153,7 @@ bool attribute_increase()
         case 's':
         case 'i':
         case 'd':
-            mprf(MSGCH_PROMPT, "Uppercase letters only, please.");
+            mprf(MSGCH_PROMPT, T_("Uppercase letters only, please."));
             break;
         }
     }

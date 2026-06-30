@@ -588,11 +588,11 @@ bool make_book_level_randart(item_def &book, int level, bool sif)
     {
         num_spells = spells.size();
 #if defined(DEBUG) || defined(DEBUG_DIAGNOSTICS)
-        mprf(MSGCH_WARN, "More spells requested for fixed level (%d) "
-             "randart spellbook than there are valid spells.",
+        mprf(MSGCH_WARN, T_("More spells requested for fixed level (%d) "
+             "randart spellbook than there are valid spells."),
              level);
-        mprf(MSGCH_WARN, "Discarded %d spells due to being uncastable and "
-             "%d spells due to being disliked by %s.",
+        mprf(MSGCH_WARN, T_("Discarded %d spells due to being uncastable and "
+             "%d spells due to being disliked by %s."),
              uncastable_discard, god_discard, god_name(god).c_str());
 #endif
     }

@@ -502,12 +502,12 @@ void revive()
     if (you.hp_max <= 0)
     {
         you.lives = 0;
-        mpr("You are too frail to live.");
+        mpr(T_("You are too frail to live."));
         // possible only with an extreme abuse of Borgnjor's
         // might be impossible now that felids don't level down on death?
         ouch(INSTANT_DEATH, KILLED_BY_DRAINING);
     }
 
-    mpr("You rejoin the land of the living...");
+    mpr(T_("You rejoin the land of the living..."));
     // included in default force_more_message
 }

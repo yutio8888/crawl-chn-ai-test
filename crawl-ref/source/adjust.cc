@@ -28,8 +28,8 @@ static void _adjust_ability();
 
 void adjust()
 {
-    mprf(MSGCH_PROMPT, "Adjust (g)ear, (s)pells, (a)bilities, "
-                       "(p)otions, sc(r)olls or e(v)ocables? ");
+    mprf(MSGCH_PROMPT, T_("Adjust (g)ear, (s)pells, (a)bilities, "
+                       "(p)otions, sc(r)olls or e(v)ocables? "));
 
     const int keyin = toalower(get_ch());
 
@@ -110,9 +110,7 @@ static void _adjust_spell()
     }
 
     // Select starting slot
-    mprf(MSGCH_PROMPT,
-         Options.language == lang_t::ZH ? "要调整哪个法术？"
-                                        : "Adjust which spell? ");
+    mprf(MSGCH_PROMPT, T_("Adjust which spell? "));
     int keyin = list_spells(false, false, false, false,
                             T_("adjust"));
 
@@ -128,7 +126,7 @@ static void _adjust_spell()
 
     if (spell == SPELL_NO_SPELL)
     {
-        mpr("You don't know that spell.");
+        mpr(T_("You don't know that spell."));
         return;
     }
 
@@ -139,7 +137,7 @@ static void _adjust_spell()
     keyin = 0;
     while (!isaalpha(keyin))
     {
-        mprf(MSGCH_PROMPT, "Adjust to which letter? ");
+        mprf(MSGCH_PROMPT, T_("Adjust to which letter? "));
         keyin = get_ch();
         if (key_is_escape(keyin))
         {
@@ -188,17 +186,17 @@ static void _adjust_ability()
 
     if (talents.empty())
     {
-        mpr("You don't currently have any abilities.");
+        mpr(T_("You don't currently have any abilities."));
         return;
     }
 
-    mprf(MSGCH_PROMPT, "Adjust which ability? ");
+    mprf(MSGCH_PROMPT, T_("Adjust which ability? "));
     int selected = choose_ability_menu(talents);
 
     // If we couldn't find anything, cancel out.
     if (selected == -1)
     {
-        mpr("No such ability.");
+        mpr(T_("No such ability."));
         return;
     }
 
@@ -208,7 +206,7 @@ static void _adjust_ability()
 
     const int index1 = letter_to_index(old_key);
 
-    mprf(MSGCH_PROMPT, "Adjust to which letter?");
+    mprf(MSGCH_PROMPT, T_("Adjust to which letter?"));
 
     const int keyin = get_ch();
 

@@ -4,6 +4,7 @@
 
 #include "cloud.h"
 #include "coordit.h"
+#include "database.h"
 #include "directn.h"
 #include "dgn-overview.h"
 #include "env.h"
@@ -83,12 +84,12 @@ void clear_map_or_travel_trail()
 {
     if (Options.show_travel_trail && env.travel_trail.size())
     {
-        mpr("Clearing travel trail.");
+        mpr(T_("Clearing travel trail."));
         clear_travel_trail();
     }
     else
     {
-        mpr("Clearing monster memory.");
+        mpr(T_("Clearing monster memory."));
         /* Items (other than corpses) cannot in general be moved or destroyed
          * once they have been seen, so there is no need to clear them.
          */
@@ -563,7 +564,7 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
     if (!suppress_msg)
     {
         if (did_map)
-            mpr("You feel aware of your surroundings.");
+            mpr(T_("You feel aware of your surroundings."));
         else
             canned_msg(MSG_DISORIENTED);
 

@@ -334,32 +334,45 @@ static void _change_skill_level(skill_type exsk, int n)
         mprf(MSGCH_INTRINSIC_GAIN, T_("You have mastered %s!"), skill_name(exsk));
     else if (abs(n) == 1 && you.num_turns)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_INTRINSIC_GAIN, "你的%s%s技能%s至%d级！",
-                 specify_base ? "基础" : "",
-                 skill_name(exsk), (n > 0) ? "提升" : "降低",
-                 you.skills[exsk]);
+        if (specify_base)
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill increases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill decreases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+        }
         else
-            mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s to level %d!",
-                 specify_base ? "base " : "",
-                 skill_name(exsk), (n > 0) ? "increases" : "decreases",
-                 you.skills[exsk]);
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill increases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill decreases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+        }
     }
     else if (you.num_turns)
     {
-        if (Options.language == lang_t::ZH)
-            mprf(MSGCH_INTRINSIC_GAIN, "你的%s%s技能%s了%d级，现为%d级！",
-                 specify_base ? "基础" : "",
-                 skill_name(exsk),
-                 (n > 0) ? "提升" : "降低",
-                 abs(n), you.skills[exsk]);
+        if (specify_base)
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill gained %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill lost %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+        }
         else
-            mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s %d levels and is now "
-                 "at level %d!",
-                 specify_base ? "base " : "",
-                 skill_name(exsk),
-                 (n > 0) ? "gained" : "lost",
-                 abs(n), you.skills[exsk]);
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill gained %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill lost %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+        }
     }
 
     if (you.skills[exsk] == n && n > 0)
@@ -1407,8 +1420,12 @@ bool check_training_target(skill_type sk)
             set_magic_training(TRAINING_DISABLED);
         else
             you.train_alt[sk] = you.train[sk] = TRAINING_DISABLED;
-        mprf("%sraining target %d.%d for %s reached!",
-            base ? "Base t" : "T", targ / 10, targ % 10, skill_name(sk));
+        if (base)
+            mprf(T_("Base training target %d.%d for %s reached!"),
+                 targ / 10, targ % 10, skill_name(sk));
+        else
+            mprf(T_("Training target %d.%d for %s reached!"),
+                 targ / 10, targ % 10, skill_name(sk));
         return true;
     }
     return false;
@@ -1851,7 +1868,7 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
 {
     if (target > 270) // if target is above 270, reject with an error
     {
-        mpr("你的training target must be 27 or below!");
+        mpr(T_("Your training target must be 27 or below!"));
         return false;
     }
     const int ranged_target = min(max((int) target, 0), 270);
@@ -1860,10 +1877,10 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
         if (you.has_mutation(MUT_DISTRIBUTED_TRAINING))
             mpr(T_("You can't set training targets!"));
         else if (ranged_target == 0)
-            mprf("Clearing the skill training target for %s.", skill_name(sk));
+            mprf(T_("Clearing the skill training target for %s."), skill_name(sk));
         else
         {
-            mprf("Setting a skill training target for %s at %d.%d.", skill_name(sk),
+            mprf(T_("Setting a skill training target for %s at %d.%d."), skill_name(sk),
                                     ranged_target / 10, ranged_target % 10);
         }
     }

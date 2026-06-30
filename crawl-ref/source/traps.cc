@@ -325,7 +325,7 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
               mg.set_non_actor_summoner("a Zot trap");
               mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
               if (create_monster(mg))
-                  mpr("你感知到了一个敌对的存在。");
+                  mpr(T_("You sense a hostile presence."));
          }, 3 },
     { [] {
              coord_def pt = find_gateway_location(&you);
@@ -339,14 +339,14 @@ static const vector<pair<function<void ()>, int>> zot_effects = {
               mg.set_non_actor_summoner("a Zot trap");
               mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
               if (create_monster(mg))
-                  mpr("一个巨大的空气漩涡出现了！");
+                  mpr(T_("A massive air vortex appears!"));
          }, 1 },
 };
 
 // Zot traps only target the player. This rolls their effect.
 static void _zot_trap()
 {
-    mpr("佐特的力量被召来对抗你！");
+    mpr(T_("Zot's power is invoked against you!"));
     (*random_choose_weighted(zot_effects))();
 }
 
@@ -384,9 +384,9 @@ void trap_def::trigger(actor& triggerer)
         if (search_result == passage_type::free)
         {
             if (you_trigger)
-                mpr("你进入了戈卢布里亚之通道。");
+                mpr(T_("You enter the passage of Golubria."));
             else
-                simple_monster_message(*m, " enters the passage of Golubria.");
+                simple_monster_message(*m, T_(" enters the passage of Golubria."));
 
             // Should always be true.
             bool moved = triggerer.move_to(to, MV_TRANSLOCATION | MV_GOLUBRIA);
@@ -398,7 +398,7 @@ void trap_def::trigger(actor& triggerer)
         }
         else if (you_trigger)
         {
-            mprf("This passage %s!", search_result == passage_type::blocked ?
+            mprf(T_("This passage %s!"), search_result == passage_type::blocked ?
                  "seems to be blocked by something" : "doesn't lead anywhere");
         }
         break;
@@ -407,9 +407,9 @@ void trap_def::trigger(actor& triggerer)
     {
         dprf("Triggered dispersal.");
         if (you_trigger)
-            mprf("You enter %s!", name(DESC_A).c_str());
+            mprf(T_("You enter %s!"), name(DESC_A).c_str());
         else
-            mprf("%s enters %s!", triggerer.name(DESC_THE).c_str(),
+            mprf(T_("%s enters %s!"), triggerer.name(DESC_THE).c_str(),
                     name(DESC_A).c_str());
 
         for (monster_near_iterator mi(pos, LOS_NO_TRANS); mi; ++mi)
@@ -426,13 +426,13 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_TELEPORT:
     case TRAP_TELEPORT_PERMANENT:
         if (you_trigger)
-            mprf("You enter %s!", name(DESC_A).c_str());
+            mprf(T_("You enter %s!"), name(DESC_A).c_str());
         if (ammo_qty > 0 && !--ammo_qty)
         {
             // can't use trap_destroyed, as we might recurse into a shaft
             // or be banished by a Zot trap
             env.map_knowledge(pos).set_feature(DNGN_FLOOR);
-            mprf("%s disappears.", name(DESC_THE).c_str());
+            mprf(T_("%s disappears."), name(DESC_THE).c_str());
             destroy();
         }
         if (!triggerer.no_tele())
@@ -442,10 +442,10 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_TYRANT:
     {
         if (you_trigger)
-            mpr("你进入了一个暴君陷阱。");
+            mpr(T_("You enter a tyrant's trap."));
         else
         {
-            mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
+            mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
                  mons_intel(*m) >= I_HUMAN ? "invokes a tyrant's trap upon you" :
                                              "sets off a tyrant's trap");
         }
@@ -463,10 +463,10 @@ void trap_def::trigger(actor& triggerer)
                  visible_mons++;
 
         if (buffed_mons.size() == 0)
-           mpr("你的力量被吸走了，你感到攻击变得虚弱！");
+           mpr(T_("Your strength is siphoned away, and your attacks feel weak!"));
         else
         {
-            mprf("Your strength is siphoned away as %s grow%s stronger!",
+            mprf(T_("Your strength is siphoned away as %s grow%s stronger!"),
                 describe_monsters_condensed(buffed_mons).c_str(),
                 visible_mons > 1 ? "" : "s");
         }
@@ -477,10 +477,10 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_ARCHMAGE:
     {
         if (you_trigger)
-            mpr("你进入了一个大法师陷阱。");
+            mpr(T_("You enter an archmage's trap."));
         else
         {
-            mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
+            mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
                  mons_intel(*m) >= I_HUMAN ? "invokes an archmage's trap upon you" :
                                              "sets off an archmage's trap");
         }
@@ -494,16 +494,16 @@ void trap_def::trigger(actor& triggerer)
                                                                    pos, buff_time);
 
         if (buffed_mons.size() == 0)
-           mprf(MSGCH_WARN, "Your power is siphoned away!");
+           mprf(MSGCH_WARN, T_("Your power is siphoned away!"));
         else
         {
             string m_list = describe_monsters_condensed(buffed_mons);
 
             if (drain == 0)
-                mprf("The spells of %s are empowered!", m_list.c_str());
+                mprf(T_("The spells of %s are empowered!"), m_list.c_str());
             else
             {
-                mprf(MSGCH_WARN, "Your power is siphoned away as the spells of %s are empowered!",
+                mprf(MSGCH_WARN, T_("Your power is siphoned away as the spells of %s are empowered!"),
                      m_list.c_str());
             }
         }
@@ -513,7 +513,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_HARLEQUIN:
     {
         if (you_trigger)
-            mpr("你进入了一个小丑陷阱。");
+            mpr(T_("You enter a harlequin's trap."));
 
         int buff_time = 200 + random2(80);
 
@@ -526,22 +526,22 @@ void trap_def::trigger(actor& triggerer)
             // monsters walking on the trap unless it actually does something.
             if (!you_trigger)
             {
-                mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
+                mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
                  mons_intel(*m) >= I_HUMAN ? "invokes a harlequin's trap" :
                                              "sets off a harlequin's trap");
             }
 
             string m_list = describe_monsters_condensed(buffed_mons);
-            mprf(MSGCH_MONSTER_ENCHANT, "%s the attacks of %s are laced with chaos!",
+            mprf(MSGCH_MONSTER_ENCHANT, T_("%s the attacks of %s are laced with chaos!"),
                  getMiscString("harlequin_trap_lines").c_str(),  m_list.c_str());
 
             // Almost certainly not worth setting up any penance;
             // player-triggered Zot traps summoning demons don't either.
             if (you_trigger && is_good_god(you.religion))
-                mprf(MSGCH_GOD, "You feel a twinge of divine disapproval.");
+                mprf(MSGCH_GOD, T_("You feel a twinge of divine disapproval."));
         }
         else if (!you_trigger)
-            mprf("%s enters a harlequin's trap.", triggerer.name(DESC_THE).c_str());
+            mprf(T_("%s enters a harlequin's trap."), triggerer.name(DESC_THE).c_str());
 
         break;
     }
@@ -549,13 +549,13 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_DEVOURER:
     {
         if (you_trigger)
-            mpr("你进入了一个吞噬者陷阱。");
+            mpr(T_("You enter a devourer's trap."));
 
         if (x_chance_in_y(3, 4))
         {
             if (!you_trigger)
             {
-                mprf("%s %s!", triggerer.name(DESC_THE).c_str(),
+                mprf(T_("%s %s!"), triggerer.name(DESC_THE).c_str(),
                 mons_intel(*m) >= I_HUMAN ? "invokes an devourer's trap upon you" :
                                             "sets off an devourer's trap");
             }
@@ -563,7 +563,7 @@ void trap_def::trigger(actor& triggerer)
             you.corrode(nullptr, "The trap's stomach acid", 6);
         }
         else if (!you_trigger)
-            mprf("%s enters a devourer's trap.", triggerer.name(DESC_THE).c_str());
+            mprf(T_("%s enters a devourer's trap."), triggerer.name(DESC_THE).c_str());
 
         break;
     }
@@ -576,14 +576,14 @@ void trap_def::trigger(actor& triggerer)
             break;
         trap_destroyed = true;
         if (you_trigger)
-            mpr("You set off the alarm!");
+            mpr(T_("You set off the alarm!"));
         else
-            mprf("%s %s the alarm!", triggerer.name(DESC_THE).c_str(),
+            mprf(T_("%s %s the alarm!"), triggerer.name(DESC_THE).c_str(),
                  mons_intel(*m) >= I_HUMAN ? "pulls" : "sets off");
 
         if (silenced(pos))
         {
-            mprf("%s vibrates slightly, failing to make a sound.",
+            mprf(T_("%s vibrates slightly, failing to make a sound."),
                  name(DESC_THE).c_str());
         }
         else
@@ -611,15 +611,15 @@ void trap_def::trigger(actor& triggerer)
             if (mons_intel(*m) < I_HUMAN || !one_chance_in(3))
             {
                 // Not triggered, trap stays.
-                simple_monster_message(*m, " fails to trigger a net trap.");
+                simple_monster_message(*m, T_(" fails to trigger a net trap."));
             }
             else
             {
                 // Triggered, net the player.
                 triggered = true;
 
-                if (!simple_monster_message(*m, " drops a net on you."))
-                    mpr("有什么东西向你发射了一张网。");
+                if (!simple_monster_message(*m, T_(" drops a net on you.")))
+                    mpr(T_("Something shoots a net at you."));
             }
         }
 
@@ -627,11 +627,11 @@ void trap_def::trigger(actor& triggerer)
             break;
 
         if (you_trigger)
-            mpr("你触发了一个网陷阱。");
+            mpr(T_("You trigger a net trap."));
 
         if (random2avg(2 * you.evasion(), 2) > 18 + env.absdepth0 / 2)
         {
-            mpr("你避免了被网困住。");
+            mpr(T_("You avoid being caught in the net."));
             break;
         }
 
@@ -654,9 +654,9 @@ void trap_def::trigger(actor& triggerer)
             if (m)
             {
                 if (m->is_insubstantial())
-                    simple_monster_message(*m, " passes through a web.");
+                    simple_monster_message(*m, T_(" passes through a web."));
                 else if (m->is_amorphous())
-                    simple_monster_message(*m, " oozes through a web.");
+                    simple_monster_message(*m, T_(" oozes through a web."));
                 // too spammy for spiders, and expected
             }
             break;
@@ -665,7 +665,7 @@ void trap_def::trigger(actor& triggerer)
         if (you_trigger)
         {
             if (one_chance_in(3))
-                mpr("你小心翼翼地穿过了蛛网。");
+                mpr(T_("You carefully make your way through the web."));
             else if (you.trap_in_web())
             {
                 if (ammo_qty == 1)
@@ -677,13 +677,13 @@ void trap_def::trigger(actor& triggerer)
         else if (m)
         {
             if (one_chance_in(3))
-                simple_monster_message(*m, " evades a web.");
+                simple_monster_message(*m, T_(" evades a web."));
             else
             {
                 if (m->trap_in_web())
                 {
                     if (!m->visible_to(&you))
-                        mpr("一张蛛网疯狂地移动，有什么东西被困在了里面！");
+                        mpr(T_("A web thrashes wildly, something is caught inside!"));
                     // Don't try to escape the web in the same turn
                     m->props[NEWLY_TRAPPED_KEY] = true;
                     if (ammo_qty == 1)
@@ -696,7 +696,7 @@ void trap_def::trigger(actor& triggerer)
     case TRAP_ZOT:
         if (you_trigger)
         {
-            mpr("你进入了佐特陷阱。");
+            mpr(T_("You enter a Zot trap."));
             _zot_trap();
         }
         else if (m)
@@ -707,7 +707,7 @@ void trap_def::trigger(actor& triggerer)
 
             // Give the player a chance to figure out what happened
             if (player_can_hear(pos))
-                mprf(MSGCH_SOUND, "You hear a loud \"Zot\"!");
+                mprf(MSGCH_SOUND, T_("You hear a loud \"Zot\"!"));
 
             if (you.see_cell_no_trans(pos) && one_chance_in(5))
                 _zot_trap();
@@ -735,7 +735,7 @@ void trap_def::trigger(actor& triggerer)
         // after one use in down_stairs()
         if (!you_trigger)
         {
-            mprf("%s shaft crumbles and collapses.",
+            mprf(T_("%s shaft crumbles and collapses."),
                  triggerer_seen ? "The" : "A");
             know_trap_destroyed = true;
             trap_destroyed = true;
@@ -760,7 +760,7 @@ void trap_def::trigger(actor& triggerer)
 #if TAG_MAJOR_VERSION == 34
         if (is_removed_trap(type))
         {
-            mpr("The trap seems to be inoperative.");
+            mpr(T_("The trap seems to be inoperative."));
             trap_destroyed = true;
         }
 #endif
@@ -1025,7 +1025,7 @@ void do_trap_effects()
                 simple_god_message(" reveals an alarm trap just before you would have tripped it.");
                 return;
             }
-            mpr("随着一声可怕的尖啸，警报响了！");
+            mpr(T_("With a terrible screech, the alarm sounds!"));
             fake_noisy(40, you.pos());
             you.sentinel_mark(true);
             apply_noises(); // Otherwise the noise from them won't kick in until the end of the turn.
@@ -1246,10 +1246,7 @@ bool monster::trap_in_web()
     if (is_web_immune() || caught())
         return false;
 
-    if (Options.language == lang_t::ZH)
-        mprf("%s被蛛网缠住了！", name(DESC_THE).c_str());
-    else
-        simple_monster_message(*this, " is entangled in a web!");
+    simple_monster_message(*this, T_(" is entangled in a web!"));
     add_ench(ENCH_HELD);
 
     return true;
@@ -1267,7 +1264,7 @@ bool player::trap_in_net(bool real, bool quiet)
     quiver::set_needs_redraw();
 
     if (!quiet)
-        mpr("You become entangled in the net!");
+        mpr(T_("You become entangled in the net!"));
 
     stop_running();
     stop_delay(true); // even stair delays
@@ -1292,9 +1289,9 @@ bool monster::trap_in_net(bool real, bool quiet)
         if (!quiet && you.can_see(*this))
         {
             if (is_insubstantial())
-                mprf("The net passes right through %s!", name(DESC_THE).c_str());
+                mprf(T_("The net passes right through %s!"), name(DESC_THE).c_str());
             else
-                mprf("%s effortlessly oozes through the net!", name(DESC_THE).c_str());
+                mprf(T_("%s effortlessly oozes through the net!"), name(DESC_THE).c_str());
         }
         return false;
     }
@@ -1309,9 +1306,9 @@ bool monster::trap_in_net(bool real, bool quiet)
     if (!quiet && you.see_cell(pos()))
     {
         if (!visible_to(&you))
-            mpr("Something gets caught in the net!");
+            mpr(T_("Something gets caught in the net!"));
         else
-            simple_monster_message(*this, " is caught in the net!");
+            simple_monster_message(*this, T_(" is caught in the net!"));
     }
 
     props[NET_IS_REAL_KEY].get_bool() = real;
@@ -1340,10 +1337,10 @@ void player::struggle_against_net()
     const int damage = random_range(1, 4);
     if (damage >= you.attribute[ATTR_HELD])
     {
-        if (Options.language == lang_t::ZH)
-            mprf("你把网%s，挣脱出来！", damage > 3 ? "撕碎" : "撕裂");
+        if (damage > 3)
+            mpr(T_("You shred the net and break free!"));
         else
-            mprf("You %s the net and break free!", damage > 3 ? "shred" : "rip");
+            mpr(T_("You rip the net and break free!"));
         stop_being_caught();
         return;
     }

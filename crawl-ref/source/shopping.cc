@@ -1540,7 +1540,7 @@ void shop()
     // Quick out, if no inventory
     if (shop.stock.empty())
     {
-        mprf("%s appears to be closed.", shopname.c_str());
+        mprf(T_("%s appears to be closed."), shopname.c_str());
         destroy_shop_at(you.pos());
         return;
     }
@@ -2048,7 +2048,7 @@ bool ShoppingList::cull_identical_items(const item_def& item, int cost)
             if (yesno(prompt.c_str(), true, 'y', false))
             {
                 to_del.push_back(listed);
-                mprf("Shopping list: removing %s",
+                mprf(T_("Shopping list: removing %s"),
                      describe_thing(thing, DESC_A).c_str());
             }
             else
@@ -2547,7 +2547,7 @@ void ShoppingList::display(bool view_only)
 
             if (this->list->empty())
             {
-                mpr("Your shopping list is now empty.");
+                mpr(T_("Your shopping list is now empty."));
                 return false;
             }
 

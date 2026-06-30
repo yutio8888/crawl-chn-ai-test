@@ -1978,7 +1978,7 @@ void canned_msg(canned_message_type which_message)
     switch (which_message)
     {
         case MSG_SOMETHING_APPEARS:
-            mprf("Something appears %s!",
+            mprf(T_("Something appears %s!"),
                  player_has_feet() ? "at your feet" : "before you");
             break;
         case MSG_NOTHING_HAPPENS:
@@ -2002,7 +2002,7 @@ void canned_msg(canned_message_type which_message)
             mpr(T_("You are too confused!"));
             break;
         case MSG_PRESENT_FORM:
-            mpr("You can't do that in your present form.");
+            mpr(T_("You can't do that in your present form."));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_CARRIED:
@@ -2019,7 +2019,7 @@ void canned_msg(canned_message_type which_message)
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_UNTHINKING_ACT:
-            mpr("Why would you want to do that?");
+            mpr(T_("Why would you want to do that?"));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_THERE:
@@ -2027,11 +2027,11 @@ void canned_msg(canned_message_type which_message)
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_NOTHING_CLOSE_ENOUGH:
-            mpr("There's nothing close enough!");
+            mpr(T_("There's nothing close enough!"));
             crawl_state.cancel_cmd_repeat();
             break;
         case MSG_SPELL_FIZZLES:
-            mpr("The spell fizzles.");
+            mpr(T_("The spell fizzles."));
             break;
         case MSG_HUH:
             mprf(MSGCH_EXAMINE_FILTER, "%s",
@@ -2044,35 +2044,35 @@ void canned_msg(canned_message_type which_message)
             const char* when =
             (which_message == MSG_EMPTY_HANDED_ALREADY ? "already" : "now");
             if (you.has_mutation(MUT_NO_GRASPING))
-                mprf("Your mouth is %s empty.", when);
+                mprf(T_("Your mouth is %s empty."), when);
             else if (you.has_usable_claws(true))
-                mprf("You are %s empty-clawed.", when);
+                mprf(T_("You are %s empty-clawed."), when);
             else if (you.has_usable_tentacles(true))
-                mprf("You are %s empty-tentacled.", when);
+                mprf(T_("You are %s empty-tentacled."), when);
             else
-                mprf("You are %s empty-handed.", when);
+                mprf(T_("You are %s empty-handed."), when);
             break;
         }
         case MSG_YOU_BLINK:
             mpr(T_("You blink."));
             break;
         case MSG_STRANGE_STASIS:
-            mpr("You feel a strange sense of stasis.");
+            mpr(T_("You feel a strange sense of stasis."));
             break;
         case MSG_NO_SPELLS:
             mpr(T_("You don't know any spells."));
             break;
         case MSG_MANA_INCREASE:
-            mpr("You feel your magic capacity increase.");
+            mpr(T_("You feel your magic capacity increase."));
             break;
         case MSG_MANA_DECREASE:
-            mpr("You feel your magic capacity decrease.");
+            mpr(T_("You feel your magic capacity decrease."));
             break;
         case MSG_DISORIENTED:
-            mpr("You feel momentarily disoriented.");
+            mpr(T_("You feel momentarily disoriented."));
             break;
         case MSG_DETECT_NOTHING:
-            mpr("You detect nothing.");
+            mpr(T_("You detect nothing."));
             break;
         case MSG_CANNOT_MOVE:
             mpr(T_("You cannot move."));
@@ -2081,7 +2081,7 @@ void canned_msg(canned_message_type which_message)
             mpr_nojoin(MSGCH_PLAIN, T_("You die..."));
             break;
         case MSG_GHOSTLY_OUTLINE:
-            mpr("You see a ghostly outline there, and the spell fizzles.");
+            mpr(T_("You see a ghostly outline there, and the spell fizzles."));
             break;
         case MSG_FULL_HEALTH:
             mpr(T_("Your health is already full."));
@@ -2090,30 +2090,30 @@ void canned_msg(canned_message_type which_message)
             mpr(T_("Your reserves of magic are already full."));
             break;
         case MSG_GAIN_HEALTH:
-            mpr("You feel better.");
+            mpr(T_("You feel better."));
             break;
         case MSG_GAIN_MAGIC:
-            mpr("You feel your power returning.");
+            mpr(T_("You feel your power returning."));
             break;
         case MSG_MAGIC_DRAIN:
         {
             if (you.has_mutation(MUT_HP_CASTING))
-                mpr("You feel momentarily drained.");
+                mpr(T_("You feel momentarily drained."));
             else
-                mprf(MSGCH_WARN, "You suddenly feel drained of magical energy!");
+                mprf(MSGCH_WARN, T_("You suddenly feel drained of magical energy!"));
             break;
         }
         case MSG_SOMETHING_IN_WAY:
-            mpr("There's something in the way.");
+            mpr(T_("There's something in the way."));
             break;
         case MSG_CANNOT_SEE:
-            mpr("You can't see that place.");
+            mpr(T_("You can't see that place."));
             break;
         case MSG_GOD_DECLINES:
-            mpr("Your god isn't willing to do this for you now.");
+            mpr(T_("Your god isn't willing to do this for you now."));
             break;
         case MSG_NO_AVAILABLE_SPACE:
-            mpr("There is no available space!");
+            mpr(T_("There is no available space!"));
             break;
     }
 }

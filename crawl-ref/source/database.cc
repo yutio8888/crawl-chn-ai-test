@@ -323,14 +323,14 @@ void TextDB::_regenerate_db()
 #if defined(DEBUG_DIAGNOSTICS) && !(defined(TARGET_COMPILER_VC) && defined(USE_TILE))
         printf("Regenerating db: %s [%s]\n", _db_name, Options.lang_name);
 #endif
-        mprf(MSGCH_PLAIN, "Regenerating db: %s [%s]", _db_name, Options.lang_name);
+        mprf(MSGCH_PLAIN, T_("Regenerating db: %s [%s]"), _db_name, Options.lang_name);
     }
     else
     {
 #if defined(DEBUG_DIAGNOSTICS) && !(defined(TARGET_COMPILER_VC) && defined(USE_TILE))
         printf("Regenerating db: %s\n", _db_name);
 #endif
-        mprf(MSGCH_PLAIN, "Regenerating db: %s", _db_name);
+        mprf(MSGCH_PLAIN, T_("Regenerating db: %s"), _db_name);
     }
 
     string db_path = _db_cache_path(_db_name, lang());

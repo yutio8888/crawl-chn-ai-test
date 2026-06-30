@@ -757,13 +757,13 @@ static void _process_command(const char keypress)
                 do_interlevel_travel();
             }
             else
-                mpr("Sorry, you haven't seen any altar yet.");
+                mpr(T_("Sorry, you haven't seen any altar yet."));
             return;
         case '$':
             if (!shops_present.empty())
                 StashTrack.search_stashes("shop");
             else
-                mpr("Sorry, you haven't seen any shop yet.");
+                mpr(T_("Sorry, you haven't seen any shop yet."));
             return;
         case '!':
             do_annotate();
@@ -1252,13 +1252,13 @@ void do_annotate()
         case ID_UP:
             // level_id() is the error value of find_up_level(lid)
             if (find_up_level(lid) == level_id())
-                mpr("There is no level above you.");
+                mpr(T_("There is no level above you."));
             else
                 annotate_level(find_up_level(lid));
             return;
         case ID_DOWN:
             if (find_down_level(lid) == lid)
-                mpr("There is no level below you in this branch.");
+                mpr(T_("There is no level below you in this branch."));
             else
                 annotate_level(find_down_level(lid));
             return;
@@ -1284,7 +1284,7 @@ void do_annotate()
         annotate_level(level_id(br, depth));
     }
     else
-        mpr("That's not a valid depth.");
+        mpr(T_("That's not a valid depth."));
     }
 }
 
@@ -1298,8 +1298,7 @@ void annotate_level(level_id li)
              old.c_str());
     }
 
-    const string prompt = "为 " + li.describe()
-                          + " 添加新标注（包含'!'则为警告）: ";
+    const string prompt = make_stringf(T_("Add new annotation for %s (include '!' for warning): "), li.describe().c_str());
 
     char buf[77];
     if (msgwin_get_line_autohist(prompt, buf, sizeof(buf), old))
@@ -1310,7 +1309,7 @@ void annotate_level(level_id li)
         level_annotations[li] = string(buf);
     else
     {
-        mpr("Cleared annotation.");
+        mpr(T_("Cleared annotation."));
         level_annotations.erase(li);
     }
 }

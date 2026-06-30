@@ -572,7 +572,7 @@ void hints_death_screen()
     mprf(MSGCH_TUTORIAL, "%s", untag_tiles_console(text).c_str());
     more();
 
-    mprf(MSGCH_TUTORIAL, "See you next game!");
+    mprf(MSGCH_TUTORIAL, T_("See you next game!"));
 
     Hints.hints_events.init(false);
 }

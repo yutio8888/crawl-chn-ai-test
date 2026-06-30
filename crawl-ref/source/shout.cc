@@ -470,21 +470,21 @@ static void _set_allies_withdraw(const coord_def &target)
 /// Prompt the player to issue orders. Returns the key pressed.
 static int _issue_orders_prompt()
 {
-    mprf(MSGCH_PROMPT, "What are your orders?");
+    mprf(MSGCH_PROMPT, T_("What are your orders?"));
     if (!you.cannot_speak())
     {
         string cap_shout = you.shout_verb(false);
         cap_shout[0] = toupper_safe(cap_shout[0]);
-        mprf(" t - %s!", cap_shout.c_str());
+        mprf(T_(" t - %s!"), cap_shout.c_str());
     }
 
     if (!you.berserk() && !you.confused())
     {
-        mpr("Orders for allies: a - Attack new target.");
-        mpr("                   r - Retreat!             s - Stop attacking.");
-        mpr("                   g - Guard the area.      f - Follow me.");
+        mpr(T_("Orders for allies: a - Attack new target."));
+        mpr(T_("                   r - Retreat!             s - Stop attacking."));
+        mpr(T_("                   g - Guard the area.      f - Follow me."));
     }
-    mpr(" Anything else - Cancel.");
+    mpr(T_(" Anything else - Cancel."));
 
     flush_prev_message(); // buffer doesn't get flushed otherwise
 
@@ -530,14 +530,14 @@ static bool _issue_order(int keyn, int &mons_targd)
             {
                 // Don't reset patrol points for 'Stop fighting!'
                 _set_allies_patrol_point(true);
-                mpr("Follow me!");
+                mpr(T_("Follow me!"));
             }
             else
-                mpr("Stop fighting!");
+                mpr(T_("Stop fighting!"));
             break;
 
         case 'g':
-            mpr("Guard this area!");
+            mpr(T_("Guard this area!"));
             mons_targd = MHITNOT;
             _set_allies_patrol_point();
             break;
@@ -573,7 +573,7 @@ static bool _issue_order(int keyn, int &mons_targd)
 
             if (!_allies_can_see(*m))
             {
-                mprf("%s is invisible, and you have no allies that can see %s.",
+                mprf(T_("%s is invisible, and you have no allies that can see %s."),
                      m->name(DESC_THE).c_str(),
                      m->pronoun(PRONOUN_OBJECTIVE).c_str());
                 return false;
@@ -601,7 +601,7 @@ static bool _issue_order(int keyn, int &mons_targd)
 
             if (targ.isValid)
             {
-                mpr("Fall back!");
+                mpr(T_("Fall back!"));
                 mons_targd = MHITNOT;
             }
 
@@ -645,7 +645,7 @@ static void _check_unseen_target(int mindex)
     const string allies = _allies_who_cant_see_invis();
     if (allies.empty())
         return;
-    mprf("%s is invisible, and %s can't see %s.",
+    mprf(T_("%s is invisible, and %s can't see %s."),
          target.name(DESC_THE).c_str(),
          allies.c_str(),
          target.pronoun(PRONOUN_OBJECTIVE).c_str());
@@ -663,7 +663,7 @@ void issue_orders()
 
     if (you.cannot_speak() && you.berserk())
     {
-        mpr("You're too berserk to give orders, and you can't shout!");
+        mpr(T_("You're too berserk to give orders, and you can't shout!"));
         return;
     }
 
@@ -686,7 +686,7 @@ void issue_orders()
 
     if (mons_targd != MHITNOT && mons_targd != MHITYOU)
     {
-        mpr("Attack!");
+        mpr(T_("Attack!"));
         _check_unseen_target(mons_targd);
     }
 }
@@ -709,26 +709,26 @@ void yell(const actor* target)
         {
             if (silenced(you.pos()))
             {
-                mprf("You feel %s rip itself from your throat, "
-                     "but you make no sound!",
+                mprf(T_("You feel %s rip itself from your throat, "
+                     "but you make no sound!"),
                      article_a(shout_verb).c_str());
             }
             else
             {
-                mprf("You feel a strong urge to %s, but "
-                     "you are unable to make a sound!",
+                mprf(T_("You feel a strong urge to %s, but "
+                     "you are unable to make a sound!"),
                      shout_verb.c_str());
             }
         }
         else
-            mpr("You are unable to make a sound!");
+            mpr(T_("You are unable to make a sound!"));
 
         return;
     }
 
     if (target)
     {
-        mprf("You %s%s at %s!",
+        mprf(T_("You %s%s at %s!"),
              shout_verb.c_str(),
              you.duration[DUR_RECITE] ? " your recitation" : "",
              target && target->is_player() ? "yourself"
@@ -738,7 +738,7 @@ void yell(const actor* target)
     {
         const char *fugue_suff = you.duration[DUR_FUGUE] ?
             ", and the damned howl along" : "";
-        mprf(MSGCH_SOUND, "You %s%s%s!",
+        mprf(MSGCH_SOUND, T_("You %s%s%s!"),
              shout_verb.c_str(),
              you.berserk() ? " wildly" : " for attention",
              fugue_suff);
@@ -1004,7 +1004,7 @@ void noise_grid::propagate_noise()
 #ifdef DEBUG_NOISE_PROPAGATION
     if (affected_actor_count)
     {
-        mprf(MSGCH_WARN, "Writing noise grid with %d noise sources",
+        mprf(MSGCH_WARN, T_("Writing noise grid with %d noise sources"),
              (int) noises.size());
         dump_noise_grid("noise-grid.html");
     }

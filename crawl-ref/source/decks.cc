@@ -615,7 +615,7 @@ static void _evoke_deck(deck_type deck, bool dealt = false)
 {
     ASSERT(deck_cards(deck) > 0);
 
-    mprf("You %s a card...", dealt ? "deal" : "draw");
+    mprf(T_("You %s a card..."), dealt ? "deal" : "draw");
 
     if (deck == DECK_STACK)
     {
@@ -639,7 +639,7 @@ bool deck_draw(deck_type deck)
 {
     if (!deck_cards(deck))
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return false;
     }
 
@@ -669,7 +669,7 @@ spret deck_stack(bool fail)
 
     if (!total_cards)
     {
-        mpr("You are out of cards!");
+        mpr(T_("You are out of cards!"));
         return spret::abort;
     }
 
@@ -881,7 +881,7 @@ spret deck_deal(bool fail)
 
     if (!num_cards)
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return spret::abort;
     }
 
@@ -913,7 +913,7 @@ spret deck_triple_draw(bool fail)
 
     if (!num_cards)
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return spret::abort;
     }
 
@@ -929,7 +929,7 @@ spret deck_triple_draw(bool fail)
     if (num_cards == 1)
     {
         // Only one card to draw, so just draw it.
-        mpr("There's only one card left!");
+        mpr(T_("There's only one card left!"));
         _evoke_deck(choice);
         return spret::success;
     }
@@ -958,7 +958,7 @@ bool draw_three()
     {
         if (need_prompt_redraw)
         {
-            mpr("You draw... (choose one card, ? for their descriptions)");
+            mpr(T_("You draw... (choose one card, ? for their descriptions)"));
             for (int i = 0; i < draws.size(); ++i)
             {
                 msg::streams(MSGCH_PROMPT)
@@ -999,7 +999,7 @@ void draw_from_deck_of_punishment(bool deal)
 {
     card_type card = _random_card(DECK_OF_PUNISHMENT);
 
-    mprf("You %s a card...", deal ? "deal" : "draw");
+    mprf(T_("You %s a card..."), deal ? "deal" : "draw");
     card_effect(card, deal, true);
 }
 
@@ -1057,7 +1057,7 @@ static void _velocity_card(int power)
                   }
 
                   if (did_haste)
-                      simple_monster_message(mon, " seems to speed up.");
+                      simple_monster_message(mon, T_(" seems to speed up."));
               }
               return affected;
           })
@@ -1125,7 +1125,7 @@ static void _damaging_card(card_type card, int power,
         {
             done_prompt = true;
             mpr(prompt);
-            mpr("You radiate a wave of entropy!");
+            mpr(T_("You radiate a wave of entropy!"));
             apply_visible_monsters([](monster& mons)
             {
                 return !mons.wont_attack()
@@ -1144,7 +1144,7 @@ static void _damaging_card(card_type card, int power,
     case CARD_PAIN:
         if (power_level == 2)
         {
-            mpr("You reveal a symbol of torment!");
+            mpr(T_("You reveal a symbol of torment!"));
             torment(&you, TORMENT_CARD_PAIN, you.pos());
         }
 
@@ -1196,7 +1196,7 @@ static void _elixir_card(int power)
     int power_level = _get_power_level(power);
 
     you.set_duration(DUR_ELIXIR, 1 + 3 * power_level + random2(3));
-    mpr("You begin rapidly regenerating health and magic.");
+    mpr(T_("You begin rapidly regenerating health and magic."));
 }
 
 // Special case for *your* god, maybe?
@@ -1211,7 +1211,7 @@ static void _godly_wrath()
             return; // Stop once we find a god willing to punish the player.
     }
 
-    mpr("You somehow manage to escape divine attention...");
+    mpr(T_("You somehow manage to escape divine attention..."));
 }
 
 static void _summon_demon_card(int power)
@@ -1254,7 +1254,7 @@ static void _summon_demon_card(int power)
              && mons_class_flag(dct, M_INVIS)
              && !you.can_see_invisible())
     {
-        mpr("You sense the presence of something unfriendly.");
+        mpr(T_("You sense the presence of something unfriendly."));
     }
 
     _friendly(dct2, 5 - power_level);
@@ -1446,7 +1446,7 @@ static void _cloud_card(int power)
 
     if (something_happened)
     {
-        mpr("Clouds appear around your foes!");
+        mpr(T_("Clouds appear around your foes!"));
 
         // Make the player not be immediately affected by clouds that may have
         // been created beneath them until they act again.
@@ -1519,7 +1519,7 @@ static void _storm_card(int power)
         vector<string> thunder_adjectives = { "mighty",
                                               "violent",
                                               "cataclysmic" };
-        mprf("You %s %s%s peal%s of thunder!",
+        mprf(T_("You %s %s%s peal%s of thunder!"),
               heard ? "hear" : "feel",
               targets.size() > 1 ? "" : "a ",
               thunder_adjectives[power_level].c_str(),
@@ -1570,7 +1570,7 @@ static void _degeneration_card(int power)
                {
                    mons.daze(2 + 3 * power_level);
                    simple_monster_message(mons,
-                                          " is dazed by the mutagenic energy.");
+                                          T_(" is dazed by the mutagenic energy."));
                }
                return true;
            }))
@@ -1620,7 +1620,7 @@ static void _wild_magic_card(int power)
         for (int i = 0; i < num_affected; ++i)
             mp += random2(5);
 
-        mpr("You feel a surge of magic.");
+        mpr(T_("You feel a surge of magic."));
         if (mp && you.magic_points < you.max_magic_points)
         {
             inc_mp(mp);
@@ -1674,7 +1674,7 @@ void card_effect(card_type which_card,
             && which_card != CARD_PAIN
             && which_card != CARD_ORB)
         {
-            mprf("You have %s %s.", participle, card_name(which_card));
+            mprf(T_("You have %s %s."), participle, card_name(which_card));
         }
     }
 
@@ -1711,7 +1711,7 @@ void card_effect(card_type which_card,
         if (transform(roll_dice(10, 10), transformation::pig, true))
             you.transform_uncancellable = true;
         else
-            mpr("You feel a momentary urge to oink.");
+            mpr(T_("You feel a momentary urge to oink."));
         break;
 
 #if TAG_MAJOR_VERSION == 34
@@ -1721,7 +1721,7 @@ void card_effect(card_type which_card,
 #endif
     case NUM_CARDS:
         // The compiler will complain if any card remains unhandled.
-        mprf("You have %s a buggy card!", participle);
+        mprf(T_("You have %s a buggy card!"), participle);
         break;
     }
 }
