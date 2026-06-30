@@ -20,11 +20,7 @@
 % 命中，使用你的
 %%%%
 %%
-%1$s %2$s healed.
-%1$s被治愈了。
-%%
-%1$s %2$s life force from %3$s%4$s
-%1$s从%3$s%4$s汲取了生命力。
+%
 %%%%
 %-10s : %s
 %-10s : %s
@@ -340,10 +336,6 @@
 %%%%
 %s continues winding %s clockwork bee....
 %s继续给发条蜜蜂上弦……
-# Extracted by extract_ternaries.py
-# Review entries marked with ⚠️ARG-DIFF before merging
-#
-# L2245: simple
 %%%%
 %s corrodes %s!
 %s腐蚀了%s！
@@ -793,6 +785,9 @@
 %s seems to be corroded for longer.
 %s似乎被腐蚀得更久了。
 %%%%
+%s seems to burn from within!
+%s似乎从内部燃烧起来！
+%%%%
 %s seems to draw %s out of %s!
 %s似乎把%s从%s中拖了出来！
 %%%%
@@ -915,8 +910,6 @@
 %%%%
 %s stops winding %s clockwork bee.
 %s停止了给发条蜜蜂上弦。
-
-# L1817: simple
 %%%%
 %s strikes at %s from the darkness!
 %s从黑暗中攻击%s！
@@ -8903,7 +8896,7 @@ You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
-你用灰烬和炭为其涂油，欢迎其成为同伴。%.0s
+你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
 %%%%
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
@@ -12136,9 +12129,7 @@ Zap
 发射
 %%%%
  zaps a wand.
- 激活了一根魔杖。
-%s seems to burn from within!
-%s似乎从内部燃烧起来！
+激活了一根魔杖。
 %%%%
 zaps a wand.
 zaps a wand.
@@ -12169,13 +12160,6 @@ Zot already knows this place too well. Descend or flee this branch!
 %%%%
 Zot can harm you no longer.
 佐特再也无法伤害你了。
-%%
-Lua error:
-Lua错误：
-%%
-You are terrified of %s!
-你恐惧着%s！
-%%
 You are no longer terrified.
 你不再恐惧了。
 %%%%
