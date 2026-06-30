@@ -4888,6 +4888,9 @@ is covered in magical glow
  is cursed with the promise of agony.
 被诅咒承受痛苦的承诺。
 %%%%
+ is cursed with the promise of agony.
+被诅咒承受痛苦的承诺。
+%%%%
  is dazed by the mutagenic energy.
 被变异能量弄得晕眩。
 %%%%
@@ -5467,6 +5470,9 @@ looks %s,
 %%%%
  looks more stable.
 看起来更稳定了。
+%%%%
+ looks more vulnerable to fire.
+看起来对火焰更加脆弱。
 %%%%
  looks more vulnerable to fire.
 看起来对火焰更加脆弱。
@@ -8000,6 +8006,9 @@ The Shining One is no longer ready to bless your weapon.
 The Shining One will bless your weapon with holy wrath... once.
 光辉者将为你的武器加持神圣之怒……一次。
 %%%%
+The silver sears 
+银光灼烧
+%%%%
 The Singing Sword hums in delight!
 歌唱之剑愉快地哼唱着！
 %%%%
@@ -9175,6 +9184,9 @@ You are no longer being poisoned.
 %%%%
 You are no longer poisoned.
 你不再中毒了。
+%%%%
+You are no longer terrified.
+你不再恐惧了。
 %%%%
 You are not wearing any armour!
 你没有穿戴任何护甲！
@@ -12184,12 +12196,6 @@ Your will is overpowered!
 %%%%
 Your will lashes out at %s%s
 你的意志猛击%s%s
-%%
- is cursed with the promise of agony.
-被诅咒承受痛苦的承诺。
-%%
- looks more vulnerable to fire.
-看起来对火焰更加脆弱。
 %%%%
 Your wings%s won't fit in that.
 你的翅膀%s穿不进去。
@@ -12244,8 +12250,6 @@ Zot already knows this place too well. Descend or flee this branch!
 %%%%
 Zot can harm you no longer.
 佐特再也无法伤害你了。
-You are no longer terrified.
-你不再恐惧了。
 %%%%
 Zot draws nearer. Dive deeper or flee this branch before you suffer!
 佐特正在逼近。在遭受苦难之前潜得更深或逃离这个分支吧！
