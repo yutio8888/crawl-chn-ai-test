@@ -1,5 +1,6 @@
 #include "positional_format.h"
 #include <cstdarg>
+#include <cstdint>
 #include <cstdio>
 #include <cstring>
 #include <cstdlib>
@@ -187,22 +188,11 @@ std::string vmake_stringf_p(const char *fmt, va_list args)
         specs.push_back(spec);
     }
 
-    bool gap = false;
-    for (int i = 0; i < max_pos; i++)
-        if (pos_type[i] == AC_NONE) gap = true;
-
-    if (malformed || gap)
-    {
-        va_list copy;
-        va_copy(copy, args);
-        int n = vsnprintf(nullptr, 0, fmt, copy);
-        va_end(copy);
-        if (n < 0) return std::string(fmt);
-        std::vector<char> buf(n + 1);
-        vsnprintf(buf.data(), n + 1, fmt, args);
-        return std::string(buf.data(), n);
-    }
-
+    // Read ALL args from va_list first, even for AC_NONE (dropped) positions.
+    // This is required because glibc vsnprintf aborts on sparse %N$s like
+    // %2$s without %1$s — common in CN Mode 2b translations. For dropped
+    // positions we consume via uintptr_t (pointer-sized, safe for all arg
+    // types passed to mprf_p in DCSS: const char* and int).
     std::vector<arg_value> values(max_pos);
     for (int i = 0; i < max_pos; i++)
     {
@@ -219,10 +209,13 @@ std::string vmake_stringf_p(const char *fmt, va_list args)
         case AC_DOUBLE: av.v.d = va_arg(args, double); break;
         case AC_STR:    av.v.s = va_arg(args, const char *); break;
         case AC_PTR:    av.v.p = va_arg(args, const void *); break;
-        default: break;
+        default:
+            va_arg(args, uintptr_t);
+            break;
         }
     }
 
+    // Manual formatting — args already consumed above.
     std::string out;
     size_t spec_idx = 0;
     for (const char *p = fmt; *p; )
@@ -230,7 +223,11 @@ std::string vmake_stringf_p(const char *fmt, va_list args)
         if (*p != '%') { out += *p++; continue; }
         if (p[1] == '%') { out += '%'; p += 2; continue; }
         const conv_spec &spec = specs[spec_idx++];
-        out += format_one(spec, values[spec.position - 1]);
+        if (spec.position > 0 && spec.position <= max_pos
+            && values[spec.position - 1].cls != AC_NONE)
+        {
+            out += format_one(spec, values[spec.position - 1]);
+        }
         conv_spec skip;
         parse_positional(p, skip);
     }
