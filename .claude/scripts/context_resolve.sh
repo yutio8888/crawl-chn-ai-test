@@ -70,43 +70,65 @@ if [ "$TASK_TYPE" = "translate" ]; then
     echo "- Preserve all @keyword@, w:N weights, %%%% separators"
     echo ""
 
-    # Detect domain-specific terminology
-    if echo "$FILES $TASK" | grep -qi 'god\|神\|trog\|zin\|sif'; then
-        echo "### God Names (from DECISIONS.md)"
-        echo ""
-        echo "| EN | ZH |"
-        echo "|----|-----|"
-        echo "| Sif Muna | 西芙·穆娜 |"
-        echo "| Trog | 特洛格 |"
-        echo "| Kikubaaqudgha | 奇库巴库哈 |"
-        echo "| The Shining One | 光辉者 |"
-        echo "| Zin | 辛 |"
-        echo "| Vehumet | 维胡梅特 |"
-        echo "| Xom | 佐姆 |"
-        echo ""
+    # ── Domain extraction from glossary.md ──
+    GLOSSARY="docs/glossary.md"
+
+    extract_domain() {
+        awk "/^[[:space:]]*<!-- domain:$1 -->/{f=1; next}
+             /^[[:space:]]*---[[:space:]]*$/{if(f)exit}
+             f" "$GLOSSARY" 2>/dev/null
+    }
+
+    # Derive domains from file paths + keyword fallback
+    DOMAINS=""
+
+    # File path derivation
+    if echo "$FILES" | grep -qi 'god\|godspeak\|godname\|altar\|pray\|penance\|piety'; then
+        DOMAINS="$DOMAINS gods"
+    fi
+    if echo "$FILES" | grep -qi 'spell\|magic\|cast\|conjure\|summon\|necrom\|hex\|enchant'; then
+        DOMAINS="$DOMAINS magic"
+    fi
+    if echo "$FILES" | grep -qi 'monster\|monspeak\|monspell\|shout\|demon\|undead\|dragon'; then
+        DOMAINS="$DOMAINS monsters"
+    fi
+    if echo "$FILES" | grep -qi 'item\|weapon\|armour\|ring\|amulet\|scroll\|potion\|wand'; then
+        DOMAINS="$DOMAINS items"
+    fi
+    if echo "$FILES" | grep -qi 'combat\|attack\|damage\|fight\|battle\|hit\|block\|dodge'; then
+        DOMAINS="$DOMAINS combat"
+    fi
+    if echo "$FILES" | grep -qi 'dialogue\|speak\|say\|shout\|taunt\|growl\|whisper'; then
+        DOMAINS="$DOMAINS dialogue"
     fi
 
-    if echo "$FILES $TASK" | grep -qi 'spell\|magic\|法术\|咒\|魔法'; then
-        echo "### Magic Terminology"
-        echo ""
-        echo "- spellpower = 法术威力 (NOT 法力 — that's MP)"
-        echo "- Conjuration = 咒法系"
-        echo "- Hexes = 诅咒系"
-        echo "- Summoning = 召唤系"
-        echo "- Necromancy = 死灵术"
-        echo ""
+    # Keyword fallback (task description)
+    if echo "$TASK" | grep -qi '神\|god\|trog\|zin\|sif'; then
+        DOMAINS="$DOMAINS gods"
+    fi
+    if echo "$TASK" | grep -qi '法术\|魔法\|spell\|magic'; then
+        DOMAINS="$DOMAINS magic"
+    fi
+    if echo "$TASK" | grep -qi '怪物\|monster\|creature'; then
+        DOMAINS="$DOMAINS monsters"
     fi
 
-    if echo "$FILES $TASK" | grep -qi 'monster\|creature\|怪物\|dragon\|demon\|undead'; then
-        echo "### Monster Terminology"
-        echo ""
-        echo "- monster = 怪物"
-        echo "- demon = 恶魔"
-        echo "- undead = 亡灵"
-        echo "- dragon = 龙"
-        echo "- flee = 逃跑"
-        echo ""
+    # Generic files: inject core terms
+    if echo "$FILES" | grep -qi 'help\|FAQ\|tutorial\|source\.txt'; then
+        DOMAINS="$DOMAINS core"
     fi
+
+    # Always include core terms for any translation task
+    DOMAINS="$DOMAINS core"
+
+    # Extract and inject each domain
+    for domain in $(echo "$DOMAINS" | tr ' ' '\n' | sort -u); do
+        SECTION=$(extract_domain "$domain")
+        if [ -n "$SECTION" ]; then
+            echo "$SECTION"
+            echo ""
+        fi
+    done
 
     echo "### Post-task: run \`bash .claude/scripts/post-translator.sh\`"
     echo ""

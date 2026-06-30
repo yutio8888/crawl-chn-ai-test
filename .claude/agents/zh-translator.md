@@ -62,101 +62,15 @@ that reads like native game dialogue — not translated text.
 - God names in code comparisons: `you.god() == "Zin"` → keep "Zin"
 - File paths, function names, variable names
 
-## Terminology (MUST use these exact translations)
+## 术语表
 
-### God Names (from DECISIONS.md)
-| English | Chinese | Notes |
-|---------|---------|-------|
-| Zin | 辛 | Single character |
-| Yredelemnul | 伊莱德莱姆努尔 | |
-| Okawaru | 奥卡瓦鲁 | |
-| Makhleb | 马科列布 | |
-| Sif Muna | 西芙·穆娜 | U+00B7 middle dot |
-| Trog | 特洛格 | |
-| Elyvilon | 艾利维隆 | |
-| Lugonu | 卢格努 | 堕落者 |
-| Beogh | 比欧弗 | 牧者 |
-| Fedhas | 费德哈 | |
-| Cheibriados | 切布理亚多 | |
-| Ashenzari | 艾申扎利 | 被缚者 |
-| Dithmenos | 迪斯姆诺 | |
-| Nemelex Xobeh | 尼姆雷斯·索布 | U+00B7 |
-| Gozag | 哥萨戈·亿·赛格斯 | |
-| Qazlal | 卡兹拉尔 | |
-| Ru | 入 | "enter",意译 |
-| Pakellas | 帕克拉斯 | 发明者 |
-| Uskayaw | 乌斯卡亚 | |
-| Hepliaklqana | 惠普利亚卡纳 | |
-| Ignis | 曳焰 | 意译 |
-| Wu Jian | 无间门派 | 门派=sect |
-| Xom | 佐姆 | |
-| Zot | 佐特 | |
-| Jiyva | 吉瓦 | |
-| Kikubaaqudgha | 奇库巴库哈 | |
-| Vehumet | 维胡梅特 | |
-| The Shining One | 光辉者 | 意译 |
+编排器在 dispatch 时会自动注入任务相关的术语上下文。术语的权威来源是 `docs/glossary.md`。
 
-### Key Game Terms
-| English | Chinese |
-|---------|---------|
-| spell | 法术 |
-| spellpower | 法术威力 (NOT 法力 — that's MP) |
-| monster | 怪物 |
-| demon | 恶魔 |
-| god | 神祇 / 神 |
-| cast | 施法 (generic), 吟诵 (ritual), 咏唱 (sacred) |
-| miscast | 施法失误 |
-| penance | 惩戒 (law gods), 苦修 (self-sacrifice gods) |
-| flee | 逃跑 |
-| shout | 喊叫 |
-| curse | 诅咒 |
-| soul | 灵魂 |
-| blood | 鲜血 (emphasis), 血 (normal) |
-| Abyss | 深渊 |
-| Orb of Zot | 佐特宝珠 / 力量宝珠 |
-| Dungeon | 地牢 |
-| player ghost | 玩家鬼魂 |
+如果 prompt 中没有术语表：
+1. 运行 `bash .claude/scripts/context_resolve.sh --files <targets>` 获取相关术语
+2. 或直接阅读 `docs/glossary.md` 的相关领域 section
 
-### Magic Schools
-| English | Chinese |
-|---------|---------|
-| Conjuration | 咒法系 |
-| Hexes | 诅咒系 |
-| Summoning | 召唤系 |
-| Necromancy | 死灵术 |
-| Translocation | 传送系 |
-| Forgecraft | 锻造术 |
-| Fire/Ice/Air/Earth Magic | 火焰/寒冰/空气/大地魔法 |
-| Alchemy | 炼金术 |
-| Shapeshifting | 变形术 |
-
-### Dialogue Verbs
-| English | Chinese |
-|---------|---------|
-| says | 说 / 说道 |
-| whispers | 低语 / 轻声说 |
-| shouts / yells | 喊道 / 大喊 |
-| growls / snarls | 咆哮道 |
-| mutters / mumbles | 咕哝道 / 嘟囔道 |
-| laughs / chuckles | 笑道 / 咯咯笑着 |
-| taunts | 嘲讽道 |
-| begs / pleads | 乞求道 / 恳求道 |
-| roars | 咆哮道 / 吼道 |
-
-### Monster Shout Types
-| Key | Chinese |
-|-----|---------|
-| __SHOUT | 喊叫 |
-| __BARK | 吠叫 |
-| __HOWL | 嚎叫 |
-| __ROAR | 咆哮 |
-| __SCREAM | 尖叫 |
-| __BELLOW | 吼叫 |
-| __MOAN | 呻吟 |
-| __HISS | 嘶嘶声 |
-| __BUZZ | 嗡嗡声 |
-| __CROAK | 呱呱叫 |
-| __SKITTER | 窸窣声 |
+术语表中的译名是强制规范。消歧术语（如 cast→施法/吟诵/咏唱）见 `docs/decisions.md` Type-D 裁决。
 
 ## Character Voice Profiles
 
@@ -271,10 +185,11 @@ the mechanical verification is handled by `post-translator.sh`:
 
 When given a translation task:
 1. Read the EN source text carefully
-2. Identify the text type (dialogue/description/decorative/name-fragment)
-3. Identify the speaker (if dialogue) and apply the correct voice profile
-4. Check the glossary for any game terms
-5. Translate, preserving all format markers
+2. If no terminology context is present, run:
+   `bash .claude/scripts/context_resolve.sh "<task>" --files <targets>`
+3. Identify the text type (dialogue/description/decorative/name-fragment)
+4. Identify the speaker (if dialogue) and apply the correct voice profile
+5. Translate using the injected terminology; check `docs/glossary.md` if missing terms
 6. Run `bash .claude/scripts/post-translator.sh` and report the log path
 
 When translating many entries at once, organize output with:

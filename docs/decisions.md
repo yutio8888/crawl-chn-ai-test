@@ -327,6 +327,70 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+## Type-D: Context-Sensitive Resolution
+
+These terms have multiple valid Chinese translations depending on context.
+The glossary and context_resolve.sh use these tables for disambiguation.
+
+---
+
+### D-D-001 — cast 翻译消歧
+
+- **Type**: D — Context-sensitive resolution
+- **Status**: active
+- **Date**: 2026-06-30
+- **EN term**: cast
+
+| Context | ZH |
+|---------|----|
+| Generic spellcasting | 施法 |
+| Ritualistic/religious | 吟诵 |
+| Sacred/divine | 咏唱 |
+
+---
+
+### D-D-002 — blood 翻译消歧
+
+- **Type**: D — Context-sensitive resolution
+- **Status**: active
+- **Date**: 2026-06-30
+- **EN term**: blood
+
+| Context | ZH |
+|---------|----|
+| Normal usage | 血 |
+| Emphatic/literary (god descriptions) | 鲜血 |
+
+---
+
+### D-D-003 — penance 翻译消歧
+
+- **Type**: D — Context-sensitive resolution
+- **Status**: active
+- **Date**: 2026-06-30
+- **EN term**: penance
+
+| Context | ZH |
+|---------|----|
+| Law gods (Zin, The Shining One) | 惩戒 |
+| Self-sacrifice gods (Elyvilon) | 苦修 |
+
+---
+
+### D-D-004 — god 翻译消歧
+
+- **Type**: D — Context-sensitive resolution
+- **Status**: active
+- **Date**: 2026-06-30
+- **EN term**: god
+
+| Context | ZH |
+|---------|----|
+| Formal, narrative | 神祇 |
+| Casual, spoken dialogue | 神 |
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |

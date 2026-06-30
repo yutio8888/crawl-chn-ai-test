@@ -42,8 +42,10 @@ agent** using the Agent tool. Do NOT handle these tasks inline.
 | Batch i18n operations | "批量翻译这批 %%%%% 条目" |
 
 ```
+# Auto-inject terminology context before dispatch
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --files <target-files> 2>/dev/null)
 Agent(subagent_type="zh-translator", description="Translate <target>",
-  prompt="<full translation task with file paths and context>")
+  prompt="<full translation task>\n\n## Terminology Context\n${CONTEXT}")
 ```
 
 ### Code Implementation → `crawl-coder` agent
