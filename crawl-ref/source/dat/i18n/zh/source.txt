@@ -1340,7 +1340,7 @@
 ……但只掉出了蜘蛛网。
 %%%%
 ...but somehow remain%1$s in the same place.
-……但却停留在了原地。%.0s
+……但却停留在了原地。%1$.0s
 %%%%
 ...but the divine are already as distant as possible.
 ……但神明已经尽可能地遥远了。

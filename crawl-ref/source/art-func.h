@@ -1645,9 +1645,9 @@ static void _AUTUMN_KATANA_melee_effects(item_def* /*weapon*/, actor* attacker,
     if (cast_manifold_assault(*attacker, 0, false, false, defender) == spret::abort)
         return;
 
-    mprf("%s slice%s through the folds of space itself!",
-         attacker->name(DESC_THE).c_str(),
-         attacker->is_player() ? "" : "s");
+    mprf_p(T_("%1$s slice%2$s through the folds of space itself!"),
+           attacker->name(DESC_THE).c_str(),
+           attacker->is_player() ? "" : "s");
 
     // Casting with 100 power = up to 8 targets hit
     cast_manifold_assault(*attacker, 100, false, true, defender);

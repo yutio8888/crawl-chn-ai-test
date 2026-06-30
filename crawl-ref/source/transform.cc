@@ -2631,10 +2631,10 @@ bool vampire_mesmerism_check(monster& mon)
         if (mon.check_willpower(&you, get_form()->get_effect_chance()) <= 0)
         {
             // T_() handles the language-dependent eye/眼 suffix differences
-            mprf(T_("%s loses %s in your eye%s."),
-                 mon.name(DESC_THE).c_str(),
-                 mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
-                 you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
+            mprf_p(T_("%1$s loses %2$s in your eye%3$s."),
+                   mon.name(DESC_THE).c_str(),
+                   mon.pronoun(PRONOUN_REFLEXIVE).c_str(),
+                   you.has_mutation(MUT_MISSING_EYE) ? "" : "s");
             mon.daze(random_range(3, 5));
         }
         else
