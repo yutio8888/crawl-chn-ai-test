@@ -466,7 +466,7 @@ void trap_def::trigger(actor& triggerer)
            mpr(T_("Your strength is siphoned away, and your attacks feel weak!"));
         else
         {
-            mprf(T_("Your strength is siphoned away as %s grow%s stronger!"),
+            mprf_p(T_("Your strength is siphoned away as %1$s grow%2$s stronger!"),
                 describe_monsters_condensed(buffed_mons).c_str(),
                 visible_mons > 1 ? "" : "s");
         }

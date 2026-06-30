@@ -1903,7 +1903,7 @@ static void _do_list_gold()
 {
     if (shopping_list.empty())
     {
-        mprf(T_("You have %d gold piece%s."), you.gold,
+        mprf_p(T_("You have %1$d gold piece%2$s."), you.gold,
              you.gold != 1 ? "s" : "");
         int vouchers = you.attribute[ATTR_VOUCHER];
         if (vouchers > 0)

@@ -683,8 +683,8 @@
 %s looks sick.
 %s看起来生病了。
 %%%%
-%s loses %s in your eye%s.
-%s在你的眼中%s失去了自我。
+%1$s loses %2$s in your eye%3$s.
+%1$s在你的眼中%2$s失去了自我。
 %%%%
 %s magic leaks into the air.
 %s的魔力泄漏到了空气中。
@@ -824,8 +824,8 @@
 %s slams into %s and falls apart!
 %s撞上了%s并碎裂了！
 %%%%
-%s slice%s through the folds of space itself!
-%s切穿了空间本身的褶皱！
+%1$s slice%2$s through the folds of space itself!
+%1$s切穿了空间本身的褶皱！
 %%%%
 %s slides away from you as you try to %s it!
 %s在你试图%s它时移开了！
@@ -1340,7 +1340,7 @@
 ……但只掉出了蜘蛛网。
 %%%%
 ...but somehow remain%1$s in the same place.
-……但却停留在了原地。
+……但却停留在了原地。%.0s
 %%%%
 ...but the divine are already as distant as possible.
 ……但神明已经尽可能地遥远了。
@@ -10619,8 +10619,8 @@ You grasp %s shadow with your own and put on a performance!
 You have
 你有
 %%%%
-You have %d gold piece%s.
-你持有%d枚金币。
+You have %1$d gold piece%2$s.
+你持有%1$d枚金币。
 %%%%
 You have %s %s.
 你已经%s了%s。
@@ -11492,8 +11492,8 @@ Your %s grows stronger.
 Your %s have fully recharged.
 你的%s已经完全充能了。
 %%%%
-Your %s meld%s into your body.
-你的%s融入了你的身体。
+Your %1$s meld%2$s into your body.
+你的%1$s融入了你的身体。
 %%%%
 Your %s misses %s.
 你的%s未命中%s。
@@ -11516,8 +11516,8 @@ Your %s skill increases to level %d!
 Your %s skill lost %d levels and is now at level %d!
 你的%s技能降低了%d级，现为%d级！
 %%%%
-Your %s unmeld%s from your body.
-你的%s从你的身体中分离。
+Your %1$s unmeld%2$s from your body.
+你的%1$s从你的身体中分离。
 %%%%
 Your %s violently discharge electricity!
 你的%s猛烈地释放出电流！
@@ -12003,8 +12003,8 @@ Your storm dissipates completely.
 Your storm instantly dissipates.
 你的风暴立刻消散了。
 %%%%
-Your strength is siphoned away as %s grow%s stronger!
-你的力量被吸走，%s变得更加强大！
+Your strength is siphoned away as %1$s grow%2$s stronger!
+你的力量被吸走，%1$s变得更加强大！
 %%%%
 Your strength is siphoned away, and your attacks feel weak!
 你的力量被吸走了，你感到攻击变得虚弱！

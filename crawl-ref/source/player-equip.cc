@@ -1195,7 +1195,7 @@ void player_equip_set::handle_melding(vector<item_def*>& to_meld, bool skip_effe
     for (item_def* meld_item : to_meld)
         meld_msg.emplace_back(meld_item->name(DESC_PLAIN));
 
-    mprf(T_("Your %s meld%s into your body."),
+    mprf_p(T_("Your %1$s meld%2$s into your body."),
             comma_separated_line(meld_msg.begin(), meld_msg.end(),
                 T_(" and "), T_(", ")).c_str(),
             meld_msg.size() > 1 ? "" : "s");
@@ -1314,7 +1314,7 @@ void player_equip_set::handle_unmelding(vector<item_def*>& to_unmeld, bool skip_
         for (item_def* unmeld_item : to_unmeld)
             unmeld_msg.emplace_back(unmeld_item->name(DESC_PLAIN));
 
-        mprf(T_("Your %s unmeld%s from your body."),
+        mprf_p(T_("Your %1$s unmeld%2$s from your body."),
                 comma_separated_line(unmeld_msg.begin(), unmeld_msg.end(),
                     T_(" and "), T_(", ")).c_str(),
                 unmeld_msg.size() > 1 ? "" : "s");
