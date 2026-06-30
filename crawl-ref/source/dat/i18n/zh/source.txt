@@ -1190,9 +1190,6 @@ gain power from chaos
 %s constructs an explosive harbinger and releases it.
 %s构建了一个爆炸先驱并将其释放。
 %%%%
-%s continues winding %s clockwork bee....
-%s继续给发条蜜蜂上弦……
-%%%%
 %s corrodes %s!
 %s腐蚀了%s！
 %%%%
@@ -1736,9 +1733,6 @@ gain power from chaos
 %%%%
 %s stops radiating force.
 %s停止了散发力量。
-%%%%
-%s stops winding %s clockwork bee.
-%s停止了给发条蜜蜂上弦。
 %%%%
 %s strikes at %s from the darkness!
 %s从黑暗中攻击%s！
@@ -10738,9 +10732,6 @@ You have
 You have %1$d gold piece%2$s.
 你持有%1$d枚金币。
 %%%%
-You have %d gold piece%s.
-你持有%d枚金币。
-%%%%
 You have %s %s.
 你已经%s了%s。
 %%%%
@@ -11597,9 +11588,6 @@ Your %s grows stronger.
 Your %s have fully recharged.
 你的%s已经完全充能了。
 %%%%
-Your %s meld%s into your body.
-你的%s融入了你的身体。
-%%%%
 Your %s misses %s.
 你的%s未命中%s。
 %%%%
@@ -11620,9 +11608,6 @@ Your %s skill increases to level %d!
 %%%%
 Your %s skill lost %d levels and is now at level %d!
 你的%s技能降低了%d级，现为%d级！
-%%%%
-Your %s unmeld%s from your body.
-你的%s从你的身体中分离。
 %%%%
 Your %s violently discharge electricity!
 你的%s猛烈地释放出电流！
