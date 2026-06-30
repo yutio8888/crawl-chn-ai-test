@@ -1192,10 +1192,6 @@ gain power from chaos
 %%%%
 %s continues winding %s clockwork bee....
 %s继续给发条蜜蜂上弦……
-# Extracted by extract_ternaries.py
-# Review entries marked with ⚠️ARG-DIFF before merging
-#
-# L2245: simple
 %%%%
 %s corrodes %s!
 %s腐蚀了%s！
@@ -1528,9 +1524,6 @@ gain power from chaos
 %s looks sick.
 %s看起来生病了。
 %%%%
-%s loses %s in your eye%s.
-%s在你的眼中%s失去了自我。
-%%%%
 %s magic leaks into the air.
 %s的魔力泄漏到了空气中。
 %%%%
@@ -1746,8 +1739,6 @@ gain power from chaos
 %%%%
 %s stops winding %s clockwork bee.
 %s停止了给发条蜜蜂上弦。
-
-# L1817: simple
 %%%%
 %s strikes at %s from the darkness!
 %s从黑暗中攻击%s！
@@ -9081,7 +9072,7 @@ You announce your regal presence to all who look upon you.
 你向所有仰望你的人宣告了你的王者存在。
 %%%%
 you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
-你用灰烬和炭为其涂油，欢迎其成为同伴。%.0s
+你用灰烬和炭为%1$s涂油，欢迎其成为同伴。
 %%%%
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
