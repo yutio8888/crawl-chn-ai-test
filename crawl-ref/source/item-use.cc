@@ -933,7 +933,7 @@ static bool _can_wield_anything()
     string veto_reason;
     bool ret = can_equip_item(dummy_weapon, true, &veto_reason);
     if (!veto_reason.empty())
-        mprf(T_("%s"), veto_reason.c_str());
+        mprf(MSGCH_PROMPT, T_("%s"), veto_reason.c_str());
 
     return ret;
 }
@@ -992,7 +992,7 @@ static bool _can_generically_use(operation_types oper)
 
     if (!err.empty())
     {
-        mprf(T_("%s"), err.c_str());
+        mprf(MSGCH_PROMPT, T_("%s"), err.c_str());
         return false;
     }
     return true;
@@ -1331,7 +1331,7 @@ bool try_equip_item(item_def& item)
     string reason;
     if (!can_equip_item(item, true, &reason))
     {
-        mprf(T_("%s"), reason.c_str());
+        mprf(MSGCH_PROMPT, T_("%s"), reason.c_str());
         return false;
     }
 
@@ -2284,7 +2284,7 @@ static bool _handle_brand_weapon(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_brand_weapon", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(T_("Lua error: %s"), clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2352,7 +2352,7 @@ static bool _identify(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_identify", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(T_("Lua error: %s"), clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2424,7 +2424,7 @@ static bool _handle_enchant_weapon(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_enchant_weapon", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(T_("Lua error: %s"), clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2493,7 +2493,7 @@ static bool _handle_enchant_armour(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_enchant_armour", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(T_("Lua error: %s"), clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {

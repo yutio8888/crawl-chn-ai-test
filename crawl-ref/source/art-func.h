@@ -487,7 +487,7 @@ static void _GONG_melee_effects(item_def* /*item*/, actor* wearer,
     string msg = getSpeakString("shield of the gong");
     if (msg.empty())
         msg = "You hear a strange loud sound.";
-    mprf(T_("%s"), msg.c_str());
+    mprf(MSGCH_SOUND, T_("%s"), msg.c_str());
 
     noisy(40, wearer->pos());
 }
@@ -1146,7 +1146,7 @@ static void _MAJIN_equip(item_def *item, bool *show_msgs, bool /*unmeld*/)
     {
         const string msg = "A voice whispers, \"" +
                            getSpeakString("majin-bo greeting") + "\"";
-        mprf(T_("%s"), msg.c_str());
+        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
         item->props[MB_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1808,7 +1808,7 @@ static void _SKULL_OF_ZONGULDROK_equip(item_def *item, bool *show_msgs, bool /*u
                                 : "zonguldrok reprise";
 
         const string msg = "A voice whispers, \"" + getSpeakString(key) + "\"";
-        mprf(T_("%s"), msg.c_str());
+        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
         item->props[ZONGULDROK_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1820,7 +1820,7 @@ static void _SKULL_OF_ZONGULDROK_unequip(item_def */*item*/, bool *show_msgs)
     {
         const string msg = "A voice whispers, \"" +
                             getSpeakString("zonguldrok farewell") + "\"";
-        mprf(T_("%s"), msg.c_str());
+        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
     }
 }
 
@@ -1847,7 +1847,7 @@ static void _FISTICLOAK_world_reacts(item_def */*item*/)
 {
     // First, a chance of flavor message.
     if (one_chance_in(1500))
-        mprf(T_("%s"), getSpeakString("fungus thoughts").c_str());
+        mprf(MSGCH_TALK, T_("%s"), getSpeakString("fungus thoughts").c_str());
 
     // Now, the chance for our shroompunch
     if (!one_chance_in(4))
