@@ -9995,3 +9995,9 @@ you anoint %1$s with ash and charcoal and welcome %1$s as a companion.
 You anoint %1$s with ash and charcoal and welcome %2$s as a companion.
 你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s
 %%%%
+%%
+%1$s %2$s healed.
+%1$s被治愈了。
+%%
+%1$s %2$s life force from %3$s%4$s
+%1$s从%3$s%4$s汲取了生命力。
