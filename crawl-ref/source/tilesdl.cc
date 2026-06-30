@@ -12,6 +12,7 @@
 #include "env.h"
 #include "files.h"
 #include "glwrapper.h"
+#include "i18n.h"
 #include "libutil.h"
 #include "map-knowledge.h"
 #include "menu.h"

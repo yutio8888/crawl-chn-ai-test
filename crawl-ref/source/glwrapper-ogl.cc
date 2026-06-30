@@ -23,6 +23,7 @@
 # endif
 #endif
 
+#include "i18n.h"
 #include "options.h"
 #include "stringutil.h"
 #include "tilesdl.h"
