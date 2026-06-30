@@ -3457,7 +3457,7 @@ void do_demonic_magic(int pow, int rank)
     if (rank < 1)
         return;
 
-    mpr("Malevolent energies surge around you.");
+    mpr(T_("Malevolent energies surge around you."));
 
     for (radius_iterator ri(you.pos(), rank, C_SQUARE, LOS_NO_TRANS, true); ri; ++ri)
     {
@@ -3547,7 +3547,7 @@ void handle_channelled_spell()
             return;
 
         default:
-            mprf(MSGCH_WARN, "Attempting to channel buggy spell: %s", spell_title(spell));
+            mprf(MSGCH_WARN, T_("Attempting to channel buggy spell: %s"), spell_title(spell));
     }
 }
 

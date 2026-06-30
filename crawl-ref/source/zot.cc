@@ -159,9 +159,9 @@ void decr_zot_clock(bool extra_life)
         if (bezotted())
         {
             if (extra_life)
-                mpr("As you die, Zot loses track of you.");
+                mpr(T_("As you die, Zot loses track of you."));
             else
-                mpr("As you enter the new level, Zot loses track of you.");
+                mpr(T_("As you enter the new level, Zot loses track of you."));
         }
         zot = max(0, zot - ZOT_CLOCK_PER_FLOOR / div);
     }
@@ -190,7 +190,7 @@ void incr_zot_clock()
 
     if (_zot_clock() >= MAX_ZOT_CLOCK)
     {
-        mpr("Zot's power touches on you...");
+        mpr(T_("Zot's power touches on you..."));
         // Use your 'base' MHP (excluding forms, berserk, artefacts...)
         // to calculate loss, so that Dragon Form doesn't penalize extra HP
         // and players in unskilled talisman forms don't lose less HP.
@@ -215,16 +215,16 @@ void incr_zot_clock()
     switch (lvl)
     {
         case 1:
-            mpr("You have lingered too long. Zot senses you. "
-                "Dive deeper or flee this branch before you suffer!");
+            mpr(T_("You have lingered too long. Zot senses you. "
+                "Dive deeper or flee this branch before you suffer!"));
             break;
         case 2:
-            mpr("Zot draws nearer. "
-                "Dive deeper or flee this branch before you suffer!");
+            mpr(T_("Zot draws nearer. "
+                "Dive deeper or flee this branch before you suffer!"));
             break;
         case 3:
-            mpr("Zot has nearly found you. Suffering is imminent. "
-                "Descend or flee this branch!");
+            mpr(T_("Zot has nearly found you. Suffering is imminent. "
+                "Descend or flee this branch!"));
             break;
     }
 
@@ -280,13 +280,13 @@ static void _shatter_floor_gem(gem_type gem, bool quiet = false)
 
             if (was_mimic)
             {
-                mprf("The power of Zot manifests... and reveals the %s gem was"
-                     " a mimic! It cackles and vanishes.", gem_adj(gem));
+                mprf(T_("The power of Zot manifests... and reveals the %s gem was"
+                     " a mimic! It cackles and vanishes."), gem_adj(gem));
                 continue;
             }
 
-            mprf("With a frightful flash, the power of Zot shatters the %s"
-                 " gem into ten thousand fragments!", gem_adj(gem));
+            mprf(T_("With a frightful flash, the power of Zot shatters the %s"
+                 " gem into ten thousand fragments!"), gem_adj(gem));
             // Using UA_PICKUP here is dubious.
             flash_view_delay(UA_PICKUP, MAGENTA, 100);
             flash_view_delay(UA_PICKUP, LIGHTMAGENTA, 100);
@@ -319,14 +319,14 @@ void print_gem_warnings(int gem_int, int old_time_taken)
 
     if (old_time_taken + 2700 < limit && time_taken + 2700 >= limit)
     {
-        mprf("If you linger in this branch much longer, the power of Zot will "
-             "shatter your %s gem.", gem_adj(gem));
+        mprf(T_("If you linger in this branch much longer, the power of Zot will "
+             "shatter your %s gem."), gem_adj(gem));
     }
 
     if (old_time_taken + 1000 < limit && time_taken + 1000 >= limit)
     {
-        mprf("Zot senses the otherworldly energies of your %s gem, and will "
-             "surely shatter it if you linger in this branch any longer!",
+        mprf(T_("Zot senses the otherworldly energies of your %s gem, and will "
+             "surely shatter it if you linger in this branch any longer!"),
              gem_adj(gem));
     }
 }
@@ -364,8 +364,8 @@ void incr_gem_clock()
 
         if (Options.more_gem_info)
         {
-            mprf("With a frightful flash, the power of Zot shatters your %s gem "
-                 "into ten thousand fragments!", gem_adj(gem));
+            mprf(T_("With a frightful flash, the power of Zot shatters your %s gem "
+                 "into ten thousand fragments!"), gem_adj(gem));
             // Using UA_PICKUP here is dubious.
             flash_view_delay(UA_PICKUP, MAGENTA, 100);
             flash_view_delay(UA_PICKUP, LIGHTMAGENTA, 100);

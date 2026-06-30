@@ -121,7 +121,7 @@ static bool _pray_ecumenical_altar()
             return true;
         }
 
-        mprf(MSGCH_GOD, "%s accepts your prayer!",
+        mprf(MSGCH_GOD, T_("%s accepts your prayer!"),
                         god_name(altar_god).c_str());
         if (you_worship(altar_god))
             return true;

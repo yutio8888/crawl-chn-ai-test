@@ -11627,3 +11627,593 @@ minions thank you for their
 %%%%
  zaps a wand.
  激活了一根魔杖。
+%s seems to burn from within!
+%s似乎从内部燃烧起来！
+
+%%%%
+%1$s %2$s %3$s!
+%1$s召唤了%3$s！
+
+%%%%
+%1$s %2$s %3$s.
+%1$s的%2$s抽搐了一下。
+
+%%%%
+%1$s %2$s a powerful frost blast!
+%1$s释放了一股强大的冰霜冲击！
+
+%%%%
+%1$s %2$s suddenly forward!
+%1$s猛然向前冲去！
+
+%%%%
+%1$s %2$s the poison around %3$s!
+%1$s引爆了%3$s周围的毒素！
+
+%%%%
+%1$s %2$s.
+%1$s抽搐了一下。
+
+%%%%
+%1$s vibrate%2$s crazily for a second.
+%1$s疯狂振动了一秒。
+
+%%%%
+%1$s wind%2$s %3$s clockwork bee back up and it locks its sights upon %4$s!
+%1$s重绕了%3$s的发条蜜蜂，将其锁定在%4$s身上！
+
+%%%%
+%s accepts your prayer!
+%s接受了你的祈祷！
+
+%%%%
+%s crashes into %s%s
+%s撞向了%s%s
+
+%%%%
+%s is attracted toward you.
+%s被你吸引了过来。
+
+%%%%
+%s is forcibly removed from your body%s!
+%s从你的身体中被强制移除%s！
+
+%%%%
+%s is immovably fixed there.
+%s牢牢地固定在那里。
+
+%%%%
+%s is lifted from you.
+%s从你身上被解除了。
+
+%%%%
+%s is pinned by gravity.
+%s被重力钉住了。
+
+%%%%
+%s torments you.
+%s折磨着你。
+
+%%%%
+%s tunnels through space-time and arrives with you!
+%s穿越时空而来，与你一同抵达！
+
+%%%%
+%s%s falls off!
+%s%s掉落了下来！
+
+%%%%
+...but somehow remain%1$s in the same place.
+……但却停留在了原地。
+
+%%%%
+A ballistomycete grows from the ground.
+一枚真菌从地面生长出来。
+
+%%%%
+A briar patch grows up from the ground.
+一片荆棘从地面生长出来。
+
+%%%%
+A cloud of jellies burst out of %s as the current ripples through it%s
+一团胶质怪从%s中爆出，电流在其表面泛起涟漪%s
+
+%%%%
+A crocodile bursts forth beneath %s and grabs %s in its jaws!
+一条鳄鱼从%s下方冲出，用巨颚咬住了%s！
+
+%%%%
+A fragment of %s is already outside their body!
+%s的灵魂碎片已经在其体外了！
+
+%%%%
+A fragment of %s soul is dislodged from %s body.
+%s的一片灵魂从%s体内被剥离。
+
+%%%%
+A giggling sprite jumps out, %s
+一个咯咯笑的小精灵跳了出来，%s
+
+%%%%
+A lumbering aparatus takes shape within a cloud of fumes.
+一个笨重的装置在烟雾中成形。
+
+%%%%
+A magic seal in the Gauntlet prevents you from opening a passage!
+手套中的魔法封印阻止了你打开通道！
+
+%%%%
+A prism of %s energy appears from nowhere!
+一个%s能量的棱镜凭空出现！
+
+%%%%
+A rock-encrusted egg appears nearby and begins to stir.
+一个裹着石皮的石蛋出现在附近，开始晃动。
+
+%%%%
+An oklob plant grows from the ground.
+一棵欧克洛普植物从地面长出。
+
+%%%%
+Another %s is drawn to the feast!
+又一只%s被吸引来赴宴！
+
+%%%%
+As you die, Zot loses track of you.
+在你死亡之际，佐特失去了对你的感知。
+
+%%%%
+As you enter the new level, Zot loses track of you.
+当你进入新楼层时，佐特失去了对你的感知。
+
+%%%%
+Attempting to channel buggy spell: %s
+试图引导有问题的法术：%s
+
+%%%%
+But you're too far away!
+但你离得太远了！
+
+%%%%
+Cancelling %s due to HUP.
+因HUP取消%s。
+
+%%%%
+Creating a passage of Golubria requires sufficient empty space.
+创造戈卢布里亚通道需要足够空旷的空间。
+
+%%%%
+Even you can't go there right now. Sorry!
+连你现在也去不了那里。抱歉！
+
+%%%%
+Flames leap up around you!
+火焰在你周围腾起！
+
+%%%%
+Gravity reorients to the %s!
+重力重新定向到%s！
+
+%%%%
+If you linger in this branch much longer, the power of Zot will shatter your %s gem.
+如果你在这个分支逗留更久，佐特的力量将粉碎你的%s宝石。
+
+%%%%
+If you tried to rewind gears in your present state, you'd only break them.
+以你现在的状态试图重绕齿轮的话，你只会把它们弄坏。
+
+%%%%
+Malevolent energies surge around you.
+恶意能量在你周围涌动。
+
+%%%%
+Mmmm... tastes like %s.
+唔……尝起来像是%s。
+
+%%%%
+Not with that terrain in the way!
+有那种地形挡路可不行！
+
+%%%%
+Something buggy happened.
+发生了某种错误。
+
+%%%%
+Something prevents your mortar from forming!
+有什么东西阻止了你的迫击炮成形！
+
+%%%%
+Something unseen blocks growth in %s.
+有什么看不见的东西阻止了%s的生长。
+
+%%%%
+Something unseen is already there!
+有什么看不见的东西已经在那里了！
+
+%%%%
+Something unseen prevents your spell from working!
+有什么看不见的东西阻止了你的法术生效！
+
+%%%%
+Something you can't see blocks your briars from growing!
+有什么你看不见的东西阻止了你的荆棘生长！
+
+%%%%
+Something you can't see is occupying that space!
+有什么你看不见的东西占据了那个位置！
+
+%%%%
+Something you can't see occupies that space!
+有什么你看不见的东西占据了那个位置！
+
+%%%%
+Space begins to contract around you, but something blocks your path.
+你周围的空间开始收缩，但有东西挡住了你的去路。
+
+%%%%
+Space contracts around you and %s and then re-expands violently!
+你与%s周围的空间收缩，然后猛烈地重新扩张！
+
+%%%%
+Space folds impossibly around %s blade!
+空间在%s的刀锋周围以不可能的方式折叠！
+
+%%%%
+Space momentarily warps into an impossible shape!
+空间短暂地扭曲成了不可能的形态！
+
+%%%%
+That space is already occupied.
+那个位置已经被占据了。
+
+%%%%
+That's out of range!
+超出范围！
+
+%%%%
+That's too far away.
+那太远了。
+
+%%%%
+The air shimmers briefly around you.
+你周围的空气短暂地闪烁了一下。
+
+%%%%
+The dungeon shakes, a horrible noise fills the air, and a portal to some otherworldly place is opened!
+地牢震动着，可怕的噪音充满了空气，通往异界的传送门被打开了！
+
+%%%%
+The potion freezes solid before it can reach you!
+药水在到达你之前就冻成了固体！
+
+%%%%
+The power of Zot manifests... and reveals the %s gem was a mimic! It cackles and vanishes.
+佐特的力量显现……并揭示%s宝石是个拟态怪！它嘎嘎笑着消失了。
+
+%%%%
+There is not enough space to conjure foxfire!
+没有足够的空间来召唤狐火！
+
+%%%%
+There's no room for the soul wisp to form!
+没有足够的空间让灵魂之丝成形！
+
+%%%%
+There's no room!
+没有空间了！
+
+%%%%
+There's no space to create foxfire here.
+这里没有创造狐火的空间。
+
+%%%%
+Waves of gravity draw inward%s%s.
+引力波向内汇聚%s%s。
+
+%%%%
+With a deafening crack, the ground splits apart in the path of %s chthonic artillery!
+伴随着一声震耳欲聋的巨响，大地沿着%s的地狱火炮路径裂开！
+
+%%%%
+With a frightful flash, the power of Zot shatters the %s gem into ten thousand fragments!
+伴随着可怕的闪光，佐特的力量将%s宝石粉碎成了无数碎片！
+
+%%%%
+With a frightful flash, the power of Zot shatters your %s gem into ten thousand fragments!
+伴随着可怕的闪光，佐特的力量将你的%s宝石粉碎成了无数碎片！
+
+%%%%
+With a metallic buzz, %s clockwork bee launches itself at %s.
+伴随着金属的嗡鸣声，%s的发条蜜蜂向%s发射出去。
+
+%%%%
+Without a target and with nowhere to land, your clockwork bee falls apart in a shower of cogs and coils.
+没有目标且无处可落，你的发条蜜蜂在一阵齿轮和线圈的碎雨中散架了。
+
+%%%%
+Without a target, your clockwork bee falls to the ground.
+没有目标，你的发条蜜蜂掉在了地上。
+
+%%%%
+Yoink! You pull the item%s towards yourself.
+哟！你将物品%s拉向自己。
+
+%%%%
+You add the spell%1$s %2$s to your library.
+你将法术%2$s添加到你的法术书中。
+
+%%%%
+You are hurled through space towards %s monster%s!
+你被抛向空间中的%s怪物%s！
+
+%%%%
+You call forth a plague of scarabs!
+你召唤出了一群圣甲虫！
+
+%%%%
+You can no longer %s %s!
+你不能再%s%s了！
+
+%%%%
+You can't %s into that!
+你不能%s到那里！
+
+%%%%
+You can't %s onto %s!
+你不能%s到%s身上！
+
+%%%%
+You can't conjure that within a solid object!
+你不能在固体物体中召唤那个！
+
+%%%%
+You can't create a passage there!
+你不能在那里创造通道！
+
+%%%%
+You can't grow a ballistomycete there.
+你不能在那里种真菌。
+
+%%%%
+You can't grow an oklob plant there.
+你不能在那里种欧克洛普植物。
+
+%%%%
+You can't make simulacra of that!
+你不能制造那个的拟像！
+
+%%%%
+You can't place the prism on a creature.
+你不能把棱镜放在生物身上。
+
+%%%%
+You can't see anything to attack.
+你看不到任何可以攻击的目标。
+
+%%%%
+You can't see anything you can safely attack.
+你看不到任何可以安全攻击的目标。
+
+%%%%
+You cannot %s away from %s!
+你不能远离%s进行%s！
+
+%%%%
+You cannot %s closer to %s!
+你不能靠近%s进行%s！
+
+%%%%
+You cannot apport that!
+你不能隔空取物那个！
+
+%%%%
+You cannot blinkbolt away from %s!
+你不能用闪现之矢远离%s！
+
+%%%%
+You cannot blinkbolt closer to %s!
+你不能用闪现之矢靠近%s！
+
+%%%%
+You cannot create a passage on the other side of the transparent wall.
+你不能在透明墙壁的另一侧创造通道。
+
+%%%%
+You condense your magic into a crackling blade!
+你将魔力凝结成噼啪作响的利刃！
+
+%%%%
+You construct a shell of ice in front of yourself.
+你在自己面前构筑了一面冰壳。
+
+%%%%
+You craft a gleaming metal champion and it leaps into the fray!
+你锻造了一个闪亮的金属冠军，它跃入了战斗！
+
+%%%%
+You create a dimensional link between your ranged weaponry and %s.
+你创建了一个远程武器与%s之间的维度链接。
+
+%%%%
+You don't see anything to apport there.
+你在那里看不到任何可以隔空取物的东西。
+
+%%%%
+You extract %smagical energy from the potion.
+你从药水中提取了%s魔力。
+
+%%%%
+You feel a distressing malevolence running through your instability!
+你感到一种令人不安的恶意在你的不稳定中流淌！
+
+%%%%
+You feel space start to destabilise around you!
+你感到周围的空间开始变得不稳定！
+
+%%%%
+You feel the Orb delaying your translocation!
+你感到奥布在延缓你的传送！
+
+%%%%
+You feel the Orb interfering with your translocation!
+你感到奥布在干扰你的传送！
+
+%%%%
+You feel the corruptions in your body subside %s.
+你感觉体内的腐败%s减弱了。
+
+%%%%
+You feel the power of the Abyss delaying your translocation!
+你感到深渊的力量在延缓你的传送！
+
+%%%%
+You feel your bond with your battlesphere wane.
+你感到与战斗球体的联结减弱了。
+
+%%%%
+You forge a skittering defender to stand by your side.
+你铸造了一个飞窜的守卫立于你身旁。
+
+%%%%
+You forge a whirling saw of razor-sharp crystal.
+你铸造了一把由锋利水晶构成的旋转锯刃。
+
+%%%%
+You forge whirling saws of razor-sharp crystal.
+你铸造了数把由锋利水晶构成的旋转锯刃。
+
+%%%%
+You have lingered too long. Zot senses you. Dive deeper or flee this branch before you suffer!
+你逗留太久了。佐特感知到了你。在遭受苦难之前潜得更深或逃离这个分支吧！
+
+%%%%
+You hear a distant slurping noise.
+你听到远处传来啜吸的声音。
+
+%%%%
+You lack sufficient magical power to recharge your bee.
+你没有足够的魔力来给你的蜜蜂充能。
+
+%%%%
+You need a visible target to rewind your bee! (Use ctrl+direction or * direction to deconstruct it instead.)
+你需要一个可见的目标来重绕你的蜜蜂！（使用Ctrl+方向键或*方向键来将其拆解。）
+
+%%%%
+You pounce on %s with bestial fury!
+你以野兽般的狂暴扑向%s！
+
+%%%%
+You rattle the tambourine.
+你摇响了铃鼓。
+
+%%%%
+You see nothing there to target!
+你在那里看不到任何目标！
+
+%%%%
+You see nothing there to target.
+你在那里看不到任何目标。
+
+%%%%
+You sigh wistfully at the memory of the taste.
+你怀念地叹了口气，回味着那味道。
+
+%%%%
+You speak a word of chaos!
+你念出了一个混乱之词！
+
+%%%%
+You sublimate a sliver of %s essence and reconstitute it in ice.
+你将%s的一丝精华升华，并使其在冰中重组。
+
+%%%%
+You try to forge sawblades, but something it already there!
+你试图锻造锯刃，但已经有东西在那里了！
+
+%%%%
+Your %s grows stronger.
+你的%s变得更强了。
+
+%%%%
+Your %s mutation feels more permanent.
+你的%s变异感觉更加永久了。
+
+%%%%
+Your battlesphere expends the last of its energy and dissipates.
+你的战斗球体耗尽了最后的能量，消散了。
+
+%%%%
+Your battlesphere wavers and loses cohesion.
+你的战斗球体摇晃着失去了凝聚力。
+
+%%%%
+Your bee can only target hostiles.
+你的蜜蜂只能瞄准敌对目标。
+
+%%%%
+Your bee fails to deploy!
+你的蜜蜂部署失败！
+
+%%%%
+Your existing bee falls apart.
+你的现有蜜蜂散架了。
+
+%%%%
+Your familiar is too far away to imbue with magic.
+你的使魔太远了，无法为其注入魔力。
+
+%%%%
+Your paragon attacks with you!
+你的典范与你一同攻击！
+
+%%%%
+Your paragon expends all of its energy in an overwhelming flurry of blows!
+你的典范耗尽所有能量，发动了一轮压倒性的猛攻！
+
+%%%%
+Your paragon has reached its maximum power!
+你的典范已达到最大能量！
+
+%%%%
+Your paragon is now ready to unleash a masterful attack.
+你的典范现在准备释放一次精妙的攻击。
+
+%%%%
+Your surroundings flicker for a moment.
+你周围的环境闪烁了一下。
+
+%%%%
+Your surroundings seem slightly different.
+你周围的环境似乎略有不同。
+
+%%%%
+Zot draws nearer. Dive deeper or flee this branch before you suffer!
+佐特正在逼近。在遭受苦难之前潜得更深或逃离这个分支吧！
+
+%%%%
+Zot has nearly found you. Suffering is imminent. Descend or flee this branch!
+佐特已几乎找到你。苦难即将来临。向下或逃离这个分支吧！
+
+%%%%
+Zot senses the otherworldly energies of your %s gem, and will surely shatter it if you linger in this branch any longer!
+佐特感知到了你的%s宝石的异界能量，如果你再在这个分支逗留，它一定会将其粉碎！
+
+%%%%
+Zot's power touches on you...
+佐特的力量触及了你……
+
+%%%%
+Flames lash %s%s.
+火焰舔舐%s%s。
+
+%%%%
+Magnetic shrapnel attaches itself to %s.
+磁性碎片附着在%s身上。
+
+%%%%
+Poisonous fumes billow around %s!
+有毒烟雾在%s周围翻涌！
+
+%%%%
+Poisonous fumes billow in the air!
+有毒烟雾在空中翻涌！

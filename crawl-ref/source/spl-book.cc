@@ -452,10 +452,10 @@ bool library_add_spells(vector<spell_type> spells, bool quiet)
     {
         vector<string> spellnames(new_spells.size());
         transform(new_spells.begin(), new_spells.end(), spellnames.begin(), spell_title);
-        mprf("You add the spell%s %s to your library.",
-             spellnames.size() > 1 ? "s" : "",
-             comma_separated_line(spellnames.begin(),
-                                  spellnames.end()).c_str());
+        mprf_p(T_("You add the spell%1$s %2$s to your library."),
+               spellnames.size() > 1 ? "s" : "",
+               comma_separated_line(spellnames.begin(),
+                                    spellnames.end()).c_str());
     }
     return !new_spells.empty();
 }

@@ -1390,7 +1390,7 @@ static void _maybe_remove_equipment(mutation_type mut)
     {
         if (mut == MUT_MISSING_HAND)
         {
-            mprf("你不能再%s%s了！",
+            mprf(T_("You can no longer %s %s!"),
                     item->base_type == OBJ_JEWELLERY ? "wear" : "hold",
                     item->name(DESC_YOUR).c_str());
         }
@@ -1398,13 +1398,13 @@ static void _maybe_remove_equipment(mutation_type mut)
         {
             if (item_is_melded(*item))
             {
-                mprf("%s被从你的身体中强制移除了%s！",
+                mprf(T_("%s is forcibly removed from your body%s!"),
                         item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
             else
             {
-                mprf("%s%s掉落了下来！", item->name(DESC_YOUR).c_str(),
+                mprf(T_("%s%s falls off!"), item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
 
@@ -1929,7 +1929,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                     you.attribute[ATTR_TEMP_MUT_KILLS] = 0;
             }
             you.mutation[mutat]--;
-            mprf(MSGCH_MUTATION, "你的%s变异感觉更加永久了。",
+            mprf(MSGCH_MUTATION, T_("Your %s mutation feels more permanent."),
                                   mutation_name(mutat));
             take_note(Note(NOTE_PERM_MUTATION, mutat,
                     you.get_base_mutation_level(mutat), reason.c_str()));
@@ -1981,7 +1981,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         {
         case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
         case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-            mprf(MSGCH_MUTATION, "你感到%s了。", _stat_mut_desc(mutat, true));
+            mprf(MSGCH_MUTATION, T_("You feel %s."), _stat_mut_desc(mutat, true));
             gain_msg = false;
             break;
 
@@ -2183,7 +2183,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     {
     case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
     case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-        mprf(MSGCH_MUTATION, "你感到%s了。", _stat_mut_desc(mutat, false));
+        mprf(MSGCH_MUTATION, T_("You feel %s."), _stat_mut_desc(mutat, false));
         lose_msg = false;
         break;
 
@@ -3640,7 +3640,7 @@ bool temp_mutation_wanes()
 
     const int num_remove = min(starting_tmuts, random_range(2, 3));
 
-    mprf(MSGCH_DURATION, "你感觉体内的腐败%s减弱了。",
+    mprf(MSGCH_DURATION, T_("You feel the corruptions in your body subside %s."),
         (num_remove >= starting_tmuts ? "completely" : "somewhat"));
 
     for (int i = 0; i < num_remove; ++i)
@@ -4052,9 +4052,9 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
     duration = duration * mult / 100;
 
     if (you.banes[bane] == 0)
-        mprf(MSGCH_WARN, "你被%s折磨了。", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, T_("%s torments you."), bane_name(bane).c_str());
     else
-        mprf(MSGCH_WARN, "你的%s变得更强了。", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, T_("Your %s grows stronger."), bane_name(bane).c_str());
 
     you.banes[bane] += duration;
 
@@ -4069,7 +4069,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
 void remove_bane(bane_type bane)
 {
-    mprf(MSGCH_RECOVERY, "你身上的%s被解除了。", bane_name(bane).c_str());
+    mprf(MSGCH_RECOVERY, T_("%s is lifted from you."), bane_name(bane).c_str());
     you.banes[bane] = 0;
 
     if (bane == BANE_MORTALITY)

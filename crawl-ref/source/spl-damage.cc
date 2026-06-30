@@ -2475,9 +2475,10 @@ spret cast_ignite_poison(actor* agent, int pow, bool fail, bool tracer)
 
     targeter_radius hitfunc(agent, LOS_NO_TRANS);
 
-    mprf("%s%s引爆了%s周围的毒素！", agent->name(DESC_THE).c_str(),
-         agent->conj_verb("ignite").c_str(),
-         agent->pronoun(PRONOUN_POSSESSIVE).c_str());
+    mprf_p(T_("%1$s %2$s the poison around %3$s!"),
+           agent->name(DESC_THE).c_str(),
+           agent->conj_verb("ignite").c_str(),
+           agent->pronoun(PRONOUN_POSSESSIVE).c_str());
 
     // this could conceivably cause crashes if the player dies midway through
     // maybe split it up...?
@@ -4027,9 +4028,9 @@ spret cast_glaciate(actor *caster, int pow, coord_def aim)
 
     if (you.can_see(*caster) || caster->is_player())
     {
-        mprf("%s%s释放了一股强大的冰霜冲击！",
-             caster->name(DESC_THE).c_str(),
-             caster->conj_verb("conjure").c_str());
+        mprf_p(T_("%1$s %2$s a powerful frost blast!"),
+               caster->name(DESC_THE).c_str(),
+               caster->conj_verb("conjure").c_str());
     }
 
     beam.glyph = 0;
@@ -4208,7 +4209,7 @@ void attempt_jinxbite_hit(actor& victim)
 
     if (you.can_see(victim))
     {
-        mprf("一个咯咯笑的小精灵跳了出来，%s",
+        mprf(T_("A giggling sprite jumps out, %s"),
                 _get_jinxsprite_message(*mons).c_str());
     }
 
@@ -4460,7 +4461,7 @@ void actor_apply_toxic_bog(actor * act)
     else if (final_damage > 0)
     {
         behaviour_event(mons, ME_DISTURB, 0, act->pos());
-        mprf("%s festers in the toxic bog%s",
+        mprf(T_("%s festers in the toxic bog%s"),
                 mons->name(DESC_THE).c_str(),
                 attack_strength_punctuation(final_damage).c_str());
     }
@@ -4663,12 +4664,12 @@ static void _discharge_maxwells_coupling()
     if (mon->type == MONS_ROYAL_JELLY && !mon->is_summoned())
     {
         // need to do this here, because react_to_damage is never called
-        mprf("A cloud of jellies burst out of %s as the current"
-             " ripples through it%s", mon->name(DESC_THE).c_str(), attack_punctuation.c_str());
+        mprf(T_("A cloud of jellies burst out of %s as the current"
+             " ripples through it%s"), mon->name(DESC_THE).c_str(), attack_punctuation.c_str());
         schedule_trj_spawn_fineff(&you, mon, mon->pos(), mon->hit_points);
     }
     else
-        mprf("The electricity discharges through %s%s", mon->name(DESC_THE).c_str(), attack_punctuation.c_str());
+        mprf(T_("The electricity discharges through %s%s"), mon->name(DESC_THE).c_str(), attack_punctuation.c_str());
 
     // XX the messaging and corpse logic here would be better handled in
     // monster_die, so that various special cases (e.g. dancing weapons in
@@ -4785,7 +4786,7 @@ void do_boulder_impact(monster& boulder, actor& victim, bool quiet)
     {
         if (!quiet)
         {
-            mprf("%s撞向了%s%s",
+            mprf(T_("%s crashes into %s%s"),
                     boulder.name(DESC_THE).c_str(),
                     victim.name(DESC_THE).c_str(),
                     attack_strength_punctuation(dam).c_str());
@@ -5063,7 +5064,7 @@ void fire_fusillade()
     {
         if (!enough_mp(2, true))
         {
-            mpr("Your magical reserves are too exhausted to conjure more reagents.");
+            mpr(T_("Your magical reserves are too exhausted to conjure more reagents."));
             you.duration[DUR_FUSILLADE] = 0;
             return;
         }
@@ -5071,7 +5072,7 @@ void fire_fusillade()
         finalize_mp_cost();
     }
 
-    mpr("Flasks of reagents rain from above!");
+    mpr(T_("Flasks of reagents rain from above!"));
 
     int pow = you.props[FUSILLADE_POWER_KEY].get_int();
 
@@ -5144,7 +5145,7 @@ void fire_fusillade()
     you.duration[DUR_FUSILLADE] -= 1;
 
     if (!you.duration[DUR_FUSILLADE])
-        mprf(MSGCH_DURATION, "Your rain of reagents ends.");
+        mprf(MSGCH_DURATION, T_("Your rain of reagents ends."));
 }
 
 spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
@@ -5161,7 +5162,7 @@ spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
 
     if (caster.is_player())
     {
-        mpr("You unleash the spiteful dead!");
+        mpr(T_("You unleash the spiteful dead!"));
         you.props[GRAVE_CLAW_CHARGES_KEY].get_int()--;
     }
 
@@ -5180,7 +5181,7 @@ spret cast_grave_claw(actor& caster, coord_def targ, int pow, bool fail)
     if (caster.is_player())
     {
         if (you.props[GRAVE_CLAW_CHARGES_KEY].get_int() == 0)
-            mprf(MSGCH_DURATION, "The last of your harvested death is exhausted.");
+            mprf(MSGCH_DURATION, T_("The last of your harvested death is exhausted."));
     }
 
     return spret::success;
@@ -5205,13 +5206,13 @@ void gain_grave_claw_soul(bool silent, bool wizard)
 
         if (charges == GRAVE_CLAW_MAX_CHARGES)
         {
-            mprf(MSGCH_DURATION, "You have harvested as much death for "
-                                 "Grave Claw as you can hold at once.");
+            mprf(MSGCH_DURATION, T_("You have harvested as much death for "
+                                 "Grave Claw as you can hold at once."));
         }
         else
         {
-            mprf(MSGCH_DURATION, "You have harvested enough death to cast "
-                                 "Grave Claw an additional time.");
+            mprf(MSGCH_DURATION, T_("You have harvested enough death to cast "
+                                 "Grave Claw an additional time."));
         }
     }
 }
@@ -5224,7 +5225,7 @@ spret cast_fortress_blast(actor& caster, int pow, bool fail)
     {
         const int delay = 70 - div_rand_round(pow * 10, 25);
         you.duration[DUR_FORTRESS_BLAST_TIMER] = delay;
-        mprf("You steady yourself in place and focus your resilience into a mighty blast.");
+        mprf(T_("You steady yourself in place and focus your resilience into a mighty blast."));
     }
     // Todo: Add monster implementation here
 
@@ -5249,7 +5250,7 @@ void unleash_fortress_blast(actor& caster)
             desc = "a very strong";
         else if (power > 80)
             desc = "a strong";
-        mprf(MSGCH_DURATION, "You unleash %s concussive blast!", desc.c_str());
+        mprf(MSGCH_DURATION, T_("You unleash %s concussive blast!"), desc.c_str());
     }
 
     bolt blast;

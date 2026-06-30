@@ -238,7 +238,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
 
         if (crawl_state.seen_hups)
         {
-            mprf("Cancelling %s due to HUP.", verb.c_str());
+            mprf(T_("Cancelling %s due to HUP."), verb.c_str());
             return false;
         }
 
@@ -259,7 +259,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         const monster* beholder = you.get_beholder(target.target);
         if (beholder)
         {
-            mprf("You cannot %s away from %s!",
+            mprf(T_("You cannot %s away from %s!"),
                  verb.c_str(),
                  beholder->name(DESC_THE, true).c_str());
             continue;
@@ -268,7 +268,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         const monster* fearmonger = you.get_fearmonger(target.target);
         if (fearmonger)
         {
-            mprf("You cannot %s closer to %s!",
+            mprf(T_("You cannot %s closer to %s!"),
                  verb.c_str(),
                  fearmonger->name(DESC_THE, true).c_str());
             continue;
@@ -277,14 +277,14 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         if (cell_is_solid(target.target))
         {
             clear_messages();
-            mprf("You can't %s into that!", verb.c_str());
+            mprf(T_("You can't %s into that!"), verb.c_str());
             continue;
         }
 
         monster* target_mons = monster_at(target.target);
         if (target_mons && you.can_see(*target_mons))
         {
-            mprf("You can't %s onto %s!", verb.c_str(),
+            mprf(T_("You can't %s onto %s!"), verb.c_str(),
                  target_mons->name(DESC_THE).c_str());
             continue;
         }
@@ -462,7 +462,7 @@ spret frog_hop(bool fail, dist *target)
 
         if (grid_distance(you.pos(), target->target) > hop_range)
         {
-            mpr("That's out of range!"); // ! targeting
+            mpr(T_("That's out of range!")); // ! targeting
             continue;
         }
         break;
@@ -758,7 +758,7 @@ spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target
     if (invalid_dest)
     {
         if (agent.is_player())
-            mprf("%s is immovably fixed there.", dest_mon->name(DESC_THE).c_str());
+            mprf(T_("%s is immovably fixed there."), dest_mon->name(DESC_THE).c_str());
         return spret::success;
     }
 
@@ -786,8 +786,8 @@ spret electric_charge(actor& agent, int powc, bool fail, const coord_def &target
     {
         if (agent.is_player() || (agent.is_monster() && you.can_see(agent)))
         {
-            mprf("...but somehow remain%s in the same place.",
-                                                agent.is_monster() ? "s" : "");
+            mprf_p(T_("...but somehow remain%1$s in the same place."),
+                   agent.is_monster() ? "s" : "");
         }
 
         return spret::success;
@@ -872,7 +872,7 @@ spret controlled_blink(bool safe_cancel, dist *target)
         if (!_find_cblink_target(*target, safe_cancel, "blink", &tgt))
             return spret::abort;
         target->target = _fuzz_blink_destination(target->target);
-        mprf(MSGCH_ORB, "You feel the Orb interfering with your translocation!");
+        mprf(MSGCH_ORB, T_("You feel the Orb interfering with your translocation!"));
     }
     else
     {
@@ -941,9 +941,9 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
     else
     {
         if (teleportitis_source == MID_PLAYER)
-            mprf(MSGCH_WARN, "You feel space start to destabilise around you!");
+            mprf(MSGCH_WARN, T_("You feel space start to destabilise around you!"));
         else if (is_hostile)
-            mprf(MSGCH_WARN, "You feel a distressing malevolence running through your instability!");
+            mprf(MSGCH_WARN, T_("You feel a distressing malevolence running through your instability!"));
         else
             mpr(T_("You feel strangely unstable."));
 
@@ -951,12 +951,12 @@ void you_teleport(bool is_hostile, mid_t teleportitis_source)
 
         if (player_in_branch(BRANCH_ABYSS))
         {
-            mpr("You feel the power of the Abyss delaying your translocation!");
+            mpr(T_("You feel the power of the Abyss delaying your translocation!"));
             teleport_delay += 5 + random2(10);
         }
         else if (orb_limits_translocation())
         {
-            mprf(MSGCH_ORB, "You feel the Orb delaying your translocation!");
+            mprf(MSGCH_ORB, T_("You feel the Orb delaying your translocation!"));
             teleport_delay += 5 + random2(5);
         }
 
@@ -1014,12 +1014,12 @@ static bool _real_teleport_cleanup(coord_def oldpos, coord_def newpos, bool quie
     if (newpos == oldpos)
     {
         if (!quiet)
-            mpr("Your surroundings flicker for a moment.");
+            mpr(T_("Your surroundings flicker for a moment."));
     }
     else if (you.see_cell(newpos))
     {
         if (!quiet)
-            mpr("Your surroundings seem slightly different.");
+            mpr(T_("Your surroundings seem slightly different."));
     }
     else
     {
@@ -1099,7 +1099,7 @@ static bool _teleport_player(bool wizard_tele, string reason="")
 
         if (cell_vetoes_teleport(pos, true, wizard_tele))
         {
-            mprf(MSGCH_WARN, "Even you can't go there right now. Sorry!");
+            mprf(MSGCH_WARN, T_("Even you can't go there right now. Sorry!"));
             return false;
         }
         else
@@ -1228,7 +1228,7 @@ bool hostile_teleport_player(monster* source)
                 break;
         }
 
-        mprf("You are hurled through space towards %s monster%s!",
+        mprf(T_("You are hurled through space towards %s monster%s!"),
                 mons_near_target > 1 ? "some" : "a",
                 mons_near_target > 1 ? "s" : "");
 
@@ -1249,7 +1249,7 @@ bool hostile_teleport_player(monster* source)
             _place_tloc_cloud(source->pos());
             source->move_to(source_newpos, MV_DELIBERATE | MV_TRANSLOCATION, true);
             source->target = you.pos();
-            mprf(MSGCH_WARN, "%s tunnels through space-time and arrives with you!",
+            mprf(MSGCH_WARN, T_("%s tunnels through space-time and arrives with you!"),
                  source->name(DESC_THE).c_str());
             source->finalise_movement();
         }
@@ -1374,7 +1374,7 @@ spret cast_dimensional_bullseye(int pow, monster *target, bool fail)
             old_targ->del_ench(ENCH_BULLSEYE_TARGET);
     }
 
-    mprf("You create a dimensional link between your ranged weaponry and %s.",
+    mprf(T_("You create a dimensional link between your ranged weaponry and %s."),
          target->name(DESC_THE).c_str());
 
     // So we can automatically end the status if the target dies or becomes
@@ -1443,9 +1443,9 @@ spret cast_manifold_assault(actor& agent, int pow, bool fail, bool real,
         if (agent.is_player() && !katana_defender)
         {
             if (real && !found_unsafe_target)
-                mpr("You can't see anything to attack.");
+                mpr(T_("You can't see anything to attack."));
             else if (real && found_unsafe_target)
-                mpr("You can't see anything you can safely attack.");
+                mpr(T_("You can't see anything you can safely attack."));
         }
         return spret::abort;
     }
@@ -1467,9 +1467,9 @@ spret cast_manifold_assault(actor& agent, int pow, bool fail, bool real,
     if ((agent.is_player() || you.can_see(agent)) && !katana_defender)
     {
         if (weapon && is_unrandom_artefact(*weapon, UNRAND_AUTUMN_KATANA))
-            mprf("Space folds impossibly around %s blade!", agent.name(DESC_ITS).c_str());
+            mprf(T_("Space folds impossibly around %s blade!"), agent.name(DESC_ITS).c_str());
         else if (!(agent.is_monster() && agent.as_monster()->has_ench(ENCH_PARADOX_TOUCHED)))
-            mpr("Space momentarily warps into an impossible shape!");
+            mpr(T_("Space momentarily warps into an impossible shape!"));
     }
 
     shuffle_array(targets);
@@ -1539,7 +1539,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
     const int item_idx = you.visible_igrd(where);
     if (item_idx == NON_ITEM || !in_bounds(where))
     {
-        mpr("You don't see anything to apport there.");
+        mpr(T_("You don't see anything to apport there."));
         return spret::abort;
     }
 
@@ -1547,7 +1547,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
 
     if (item_is_stationary(item))
     {
-        mpr("You cannot apport that!");
+        mpr(T_("You cannot apport that!"));
         return spret::abort;
     }
 
@@ -1614,7 +1614,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
         if (location_on_path == dist)
         {
             // we've checked every position in beam.path_taken within max_dist
-            mpr("Not with that terrain in the way!");
+            mpr(T_("Not with that terrain in the way!"));
             return spret::success; // of a sort
         }
         new_spot = beam.path_taken[location_on_path];
@@ -1622,7 +1622,7 @@ spret cast_apportation(int pow, bolt& beam, bool fail)
     dprf("Apport: new spot is %d/%d", new_spot.x, new_spot.y);
 
     // Actually move the item.
-    mprf("Yoink! You pull the item%s towards yourself.",
+    mprf(T_("Yoink! You pull the item%s towards yourself."),
          (item.quantity > 1) ? "s" : "");
 
     move_top_item(where, new_spot);
@@ -1645,21 +1645,21 @@ spret cast_golubrias_passage(int pow, const coord_def& where, bool fail)
 {
     if (player_in_branch(BRANCH_GAUNTLET))
     {
-        mprf(MSGCH_ORB, "A magic seal in the Gauntlet prevents you from "
-                "opening a passage!");
+        mprf(MSGCH_ORB, T_("A magic seal in the Gauntlet prevents you from "
+                "opening a passage!"));
         return spret::abort;
     }
 
     if (grid_distance(where, you.pos())
         > spell_range(SPELL_GOLUBRIAS_PASSAGE, &you, pow))
     {
-        mpr("That's out of range!");
+        mpr(T_("That's out of range!"));
         return spret::abort;
     }
 
     if (cell_is_solid(where))
     {
-        mpr("You can't create a passage there!");
+        mpr(T_("You can't create a passage there!"));
         return spret::abort;
     }
 
@@ -1694,14 +1694,14 @@ spret cast_golubrias_passage(int pow, const coord_def& where, bool fail)
     {
         if (you.trans_wall_blocking(randomized_where))
         {
-            mpr("You cannot create a passage on the other side of the "
-                "transparent wall.");
+            mpr(T_("You cannot create a passage on the other side of the "
+                "transparent wall."));
         }
         else
         {
             // XXX: bleh, dumb message
-            mpr("Creating a passage of Golubria requires sufficient empty "
-                "space.");
+            mpr(T_("Creating a passage of Golubria requires sufficient empty "
+                "space."));
         }
 
         return spret::abort;
@@ -1716,7 +1716,7 @@ spret cast_golubrias_passage(int pow, const coord_def& where, bool fail)
     trap_def *trap2 = trap_at(randomized_here);
     if (!trap || !trap2)
     {
-        mpr("Something buggy happened.");
+        mpr(T_("Something buggy happened."));
         return spret::abort;
     }
 
@@ -1751,7 +1751,7 @@ spret cast_dispersal(int pow, bool fail)
             return _disperse_monster(mon, pow);
         }, you.pos(), radius))
     {
-        mpr("The air shimmers briefly around you.");
+        mpr(T_("The air shimmers briefly around you."));
     }
     return spret::success;
 }
@@ -1823,9 +1823,9 @@ spret cast_gravitas(int pow, const coord_def& where, bool fail)
     const int radius = gravitas_radius(pow);
 
     // XXX: If this is ever usable from elsewhere than the item, change this.
-    mpr("You rattle the tambourine.");
+    mpr(T_("You rattle the tambourine."));
 
-    mprf("Waves of gravity draw inward%s%s.",
+    mprf(T_("Waves of gravity draw inward%s%s."),
          mons || feat_is_solid(env.grid(where)) ? " around " : "",
          mons ? mons->name(DESC_THE).c_str() :
                 feat_is_solid(env.grid(where)) ? feature_description(env.grid(where),
@@ -1853,7 +1853,7 @@ spret cast_gravitas(int pow, const coord_def& where, bool fail)
             dmg = mon->apply_ac(dmg);
 
             if (you.can_see(*mon))
-                mprf("%s is pinned by gravity.", mon->name(DESC_THE).c_str());
+                mprf(T_("%s is pinned by gravity."), mon->name(DESC_THE).c_str());
             mon->hurt(&you, dmg);
             mon->add_ench(mon_enchant(ENCH_BOUND, &you, dur));
             behaviour_event(mon, ME_WHACK, &you, you.pos());
@@ -1918,9 +1918,9 @@ bool beckon(actor &beckoned, const bolt &path)
     if (!beckoned.move_to(dest, MV_TRANSLOCATION, true))
         return false;
 
-    mprf("%s %s suddenly forward!",
-         beckoned.name(DESC_THE).c_str(),
-         beckoned.conj_verb("hurl").c_str());
+    mprf_p(T_("%1$s %2$s suddenly forward!"),
+           beckoned.name(DESC_THE).c_str(),
+           beckoned.conj_verb("hurl").c_str());
 
     beckoned.finalise_movement();
 
@@ -1958,7 +1958,7 @@ void attract_monster(monster &mon, int max_move)
     if (!mon.move_to(ray.pos(), MV_TRANSLOCATION, true))
         return;
 
-    mprf("%s is attracted toward you.", mon.name(DESC_THE).c_str());
+    mprf(T_("%s is attracted toward you."), mon.name(DESC_THE).c_str());
 
     _place_tloc_cloud(old_pos);
     _place_tloc_cloud(ray.pos());
@@ -2017,7 +2017,7 @@ spret word_of_chaos(int pow, bool fail)
     fail_check();
     shuffle_array(targets);
 
-    mpr("You speak a word of chaos!");
+    mpr(T_("You speak a word of chaos!"));
     for (auto mons : targets)
     {
         if (mons->no_tele())
@@ -2051,7 +2051,7 @@ spret blinkbolt(int power, bolt &beam, bool fail)
     monster* mons = monster_at(beam.target);
     if (!mons || !you.can_see(*mons))
     {
-        mpr("You see nothing there to target!");
+        mpr(T_("You see nothing there to target!"));
         return spret::abort;
     }
 
@@ -2064,7 +2064,7 @@ spret blinkbolt(int power, bolt &beam, bool fail)
     const monster* beholder = you.get_beholder(beam.target);
     if (beholder)
     {
-        mprf("You cannot blinkbolt away from %s!",
+        mprf(T_("You cannot blinkbolt away from %s!"),
             beholder->name(DESC_THE, true).c_str());
         return spret::abort;
     }
@@ -2072,7 +2072,7 @@ spret blinkbolt(int power, bolt &beam, bool fail)
     const monster* fearmonger = you.get_fearmonger(beam.target);
     if (fearmonger)
     {
-        mprf("You cannot blinkbolt closer to %s!",
+        mprf(T_("You cannot blinkbolt closer to %s!"),
             fearmonger->name(DESC_THE, true).c_str());
         return spret::abort;
     }
@@ -2243,12 +2243,12 @@ spret cast_piledriver(const coord_def& target, int pow, bool fail)
     // There must be something invisible blocking all possible paths, so 'fail'.
     if (length == 0)
     {
-        mprf("Space begins to contract around you, but something blocks your path.");
+        mprf(T_("Space begins to contract around you, but something blocks your path."));
         return spret::success;
     }
 
     mons = _get_monster_line(target, true);
-    mprf("Space contracts around you and %s and then re-expands violently!",
+    mprf(T_("Space contracts around you and %s and then re-expands violently!"),
             mons.size() == 1 ? mons[0]->name(DESC_THE).c_str()
                              : make_stringf("%s other creatures",
                                     number_in_words(mons.size()).c_str()).c_str());
@@ -2379,7 +2379,7 @@ spret cast_gavotte(int pow, const coord_def dir, bool fail)
     else if (dir.x == 1 && dir.y == 1)
         dir_msg = "southeast";
 
-    mprf("Gravity reorients to the %s!", dir_msg.c_str());
+    mprf(T_("Gravity reorients to the %s!"), dir_msg.c_str());
 
     if (you.stasis())
         canned_msg(MSG_STRANGE_STASIS);
@@ -2558,7 +2558,7 @@ spret do_bestial_takedown(coord_def target)
     if (monster_at(landing))
         _displace_charge_blocker(you, landing);
 
-    mprf("You pounce on %s with bestial fury!", targ->name(DESC_THE).c_str());
+    mprf(T_("You pounce on %s with bestial fury!"), targ->name(DESC_THE).c_str());
 
     you.move_to(landing, MV_DELIBERATE, true);
 
