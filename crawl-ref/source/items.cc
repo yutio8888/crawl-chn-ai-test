@@ -1388,7 +1388,7 @@ bool pickup_single_item(int link, int qty)
     item_def* item = &env.item[link];
     if (item_is_stationary(env.item[link]))
     {
-        mpr("You can't pick that up.");
+        mpr(T_("You can't pick that up."));
         return false;
     }
     if (item->base_type == OBJ_GOLD && !qty && !i_feel_safe()
@@ -1432,7 +1432,7 @@ bool pickup_single_item(int link, int qty)
 
     if (!pickup_succ)
     {
-        mpr("You can't carry that many items.");
+        mpr(T_("You can't carry that many items."));
         learned_something_new(HINT_FULL_INVENTORY);
         return false;
     }
@@ -1772,7 +1772,7 @@ static bool _put_item_in_inv(item_def& it, int quant_got, bool quiet, bool& put_
     if (item_is_stationary(it))
     {
         if (!quiet)
-            mpr("You can't pick that up.");
+            mpr(T_("You can't pick that up."));
         // Fake a successful pickup (return 1), so we can continue to
         // pick up anything else that might be on this square.
         return true;
@@ -1862,7 +1862,7 @@ static void _get_book(item_def& it)
         mprf("你捡起了%s并开始阅读...", it.name(DESC_A).c_str());
 
         if (!library_add_spells(spells_in_book(it)))
-            mpr("Unfortunately, you learned nothing new or useful.");
+            mpr(T_("Unfortunately, you learned nothing new or useful."));
 
         taken_new_item(it.base_type);
 
@@ -1947,7 +1947,7 @@ static void _get_rune(const item_def& it, bool quiet)
              rune_type_name(it.sub_type));
         int nrunes = runes_in_pack();
         if (nrunes >= you.obtainable_runes)
-            mpr("You have collected all the runes! Now go and win!");
+            mpr(T_("You have collected all the runes! Now go and win!"));
         else if (nrunes == ZOT_ENTRY_RUNES)
         {
             // might be inappropriate in new Sprints, please change it then
@@ -1957,7 +1957,7 @@ static void _get_rune(const item_def& it, bool quiet)
         else if (nrunes > 1)
         {
             if (player_in_branch(BRANCH_PANDEMONIUM) && _got_all_pan_runes())
-                mpr("You've emptied out Pandemonium! Nothing left here but demons.");
+                mpr(T_("You've emptied out Pandemonium! Nothing left here but demons."));
             mprf(T_("You now have %d runes."), nrunes);
         }
 
@@ -1965,7 +1965,7 @@ static void _get_rune(const item_def& it, bool quiet)
     }
 
     if (it.sub_type == RUNE_ABYSSAL)
-        mpr("You feel the abyssal rune guiding you out of this place.");
+        mpr(T_("You feel the abyssal rune guiding you out of this place."));
 }
 
 static bool _is_disabled_gem(gem_type gem)
@@ -2031,7 +2031,7 @@ static void _get_orb()
     mprf(MSGCH_ORB, "You pick up the Orb of Zot!");
 
     if (bezotted())
-        mpr("Zot can harm you no longer.");
+        mpr(T_("Zot can harm you no longer."));
 
     env.orb_pos = you.pos(); // can be wrong in wizmode
     orb_pickup_noise(you.pos(), 30);
@@ -2859,7 +2859,7 @@ bool drop_item(int item_dropped, int quant_drop)
     {
         if (item.base_type == OBJ_GIZMOS)
         {
-            mpr("That is permanently installed in your exoskeleton.");
+            mpr(T_("That is permanently installed in your exoskeleton."));
             return false;
         }
 
@@ -2893,11 +2893,11 @@ bool drop_item(int item_dropped, int quant_drop)
 
     if (copy_item_to_grid(item, you.pos(), quant_drop, true, true) == NON_ITEM)
     {
-        mpr("Too many items on this level, not dropping the item.");
+        mpr(T_("Too many items on this level, not dropping the item."));
         return false;
     }
 
-    mprf("You drop %s.", quant_name(item, quant_drop, DESC_A).c_str());
+    mprf(T_("You drop %s."), quant_name(item, quant_drop, DESC_A).c_str());
 
     // If you drop an item in as a merfolk, it is below the water line and
     // makes no noise falling.
@@ -2927,7 +2927,7 @@ void drop_last()
     }
 
     if (items_to_drop.empty())
-        mpr("No item to drop.");
+        mpr(T_("No item to drop."));
     else
     {
         you.last_pickup.clear();
@@ -3005,7 +3005,7 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
              pluralise(last_touched_item->name(DESC_DBNAME)).c_str());
     }
     else if (autopickup_remove_count > 1)
-        mprf("Autopickup disabled for %d items.", autopickup_remove_count);
+        mprf(T_("Autopickup disabled for %d items."), autopickup_remove_count);
 }
 
 /**
@@ -4560,7 +4560,7 @@ static void _rune_from_specs(const char* _specs, item_def &item)
             line += make_stringf("[%c] %-10s ", i + 'a', rune_type_name(i));
             if (i % 5 == 4 || i == NUM_RUNE_TYPES - 1)
             {
-                mprf(MSGCH_PROMPT, "%s", line.c_str());
+                mprf(T_("%s"), line.c_str());
                 line.clear();
             }
         }
@@ -4771,7 +4771,7 @@ bool get_item_by_name(item_def *item, const char* specs,
                 item->skill = skill;
             else
             {
-                mpr("Sorry, no books on that skill today.");
+                mpr(T_("Sorry, no books on that skill today."));
                 item->skill = SK_FIGHTING; // Was probably that anyway.
             }
             item->skill_points = random_range(2000, 3000);
@@ -4783,7 +4783,7 @@ bool get_item_by_name(item_def *item, const char* specs,
             if (buf[0] != '\0')
             {
                 if (!_book_from_spell(buf, *item))
-                    mpr("That parchment doesn't seem to exist.");
+                    mpr(T_("That parchment doesn't seem to exist."));
             }
         }
         else if (type_wanted == BOOK_RANDART_THEME)
@@ -5006,7 +5006,7 @@ static void _identify_last_item(item_def &item)
     const string class_name = item.base_type == OBJ_JEWELLERY ?
                                     item_base_name(item) :
                                     item_class_name(item.base_type, true);
-    mprf("You have identified the last %s.", class_name.c_str());
+    mprf(T_("You have identified the last %s."), class_name.c_str());
 
     if (in_inventory(item))
     {
@@ -5111,7 +5111,7 @@ void say_farewell_to_weapon(const item_def &item)
     string name = get_weapon_name(item, false);
 
     // TODO: variant messages? (in the database?)
-    mprf("You whisper farewell to %s.", name.c_str());
+    mprf(T_("You whisper farewell to %s."), name.c_str());
 }
 
 // Returns whether an additional copy of a given item in the player's inventory

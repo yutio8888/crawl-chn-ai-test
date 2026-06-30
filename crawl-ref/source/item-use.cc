@@ -933,7 +933,7 @@ static bool _can_wield_anything()
     string veto_reason;
     bool ret = can_equip_item(dummy_weapon, true, &veto_reason);
     if (!veto_reason.empty())
-        mprf(MSGCH_PROMPT, "%s", veto_reason.c_str());
+        mprf(T_("%s"), veto_reason.c_str());
 
     return ret;
 }
@@ -992,7 +992,7 @@ static bool _can_generically_use(operation_types oper)
 
     if (!err.empty())
     {
-        mprf(MSGCH_PROMPT, "%s", err.c_str());
+        mprf(T_("%s"), err.c_str());
         return false;
     }
     return true;
@@ -1331,7 +1331,7 @@ bool try_equip_item(item_def& item)
     string reason;
     if (!can_equip_item(item, true, &reason))
     {
-        mprf(MSGCH_PROMPT, "%s", reason.c_str());
+        mprf(T_("%s"), reason.c_str());
         return false;
     }
 
@@ -2128,87 +2128,87 @@ static void _brand_weapon(item_def &wpn)
     {
     case SPWPN_HEAVY:
         flash_colour = BROWN;
-        mprf("%s becomes incredibly heavy!",itname.c_str());
+        mprf(T_("%s becomes incredibly heavy!"),itname.c_str());
         break;
 
     case SPWPN_PROTECTION:
         flash_colour = YELLOW;
-        mprf("%s projects an invisible shield of force!",itname.c_str());
+        mprf(T_("%s projects an invisible shield of force!"),itname.c_str());
         break;
 
     case SPWPN_FLAMING:
         flash_colour = RED;
-        mprf("%s is engulfed in flames!", itname.c_str());
+        mprf(T_("%s is engulfed in flames!"), itname.c_str());
         break;
 
     case SPWPN_FREEZING:
         flash_colour = LIGHTCYAN;
-        mprf("%s is covered with a thin layer of ice!", itname.c_str());
+        mprf(T_("%s is covered with a thin layer of ice!"), itname.c_str());
         break;
 
     case SPWPN_DRAINING:
         flash_colour = DARKGREY;
-        mprf("%s craves living souls!", itname.c_str());
+        mprf(T_("%s craves living souls!"), itname.c_str());
         break;
 
     case SPWPN_VAMPIRISM:
         flash_colour = DARKGREY;
-        mprf("%s thirsts for the lives of mortals!", itname.c_str());
+        mprf(T_("%s thirsts for the lives of mortals!"), itname.c_str());
         break;
 
     case SPWPN_VENOM:
         flash_colour = GREEN;
-        mprf("%s drips with poison.", itname.c_str());
+        mprf(T_("%s drips with poison."), itname.c_str());
         break;
 
     case SPWPN_ELECTROCUTION:
         flash_colour = LIGHTCYAN;
-        mprf("%s crackles with electricity.", itname.c_str());
+        mprf(T_("%s crackles with electricity."), itname.c_str());
         break;
 
     case SPWPN_CHAOS:
         flash_colour = random_colour();
-        mprf("%s erupts in a glittering mayhem of colour.", itname.c_str());
+        mprf(T_("%s erupts in a glittering mayhem of colour."), itname.c_str());
         break;
 
     case SPWPN_ACID:
         flash_colour = ETC_SLIME;
-        mprf("%s oozes corrosive slime.", itname.c_str());
+        mprf(T_("%s oozes corrosive slime."), itname.c_str());
         break;
 
     case SPWPN_SPECTRAL:
         flash_colour = BLUE;
-        mprf("%s acquires a faint afterimage.", itname.c_str());
+        mprf(T_("%s acquires a faint afterimage."), itname.c_str());
         break;
 
     case SPWPN_REBUKE:
         flash_colour = WHITE;
-        mprf("%s quivers with indignation.", itname.c_str());
+        mprf(T_("%s quivers with indignation."), itname.c_str());
         break;
 
     case SPWPN_VALOUR:
         flash_colour = WHITE;
-        mprf("%s thrums with vital power.", itname.c_str());
+        mprf(T_("%s thrums with vital power."), itname.c_str());
         break;
 
     case SPWPN_ENTANGLING:
         flash_colour = LIGHTGREEN;
-        mprf("%s erupts in a tangle of vines.", itname.c_str());
+        mprf(T_("%s erupts in a tangle of vines."), itname.c_str());
         break;
 
     case SPWPN_SUNDERING:
         flash_colour = LIGHTRED;
-        mprf("%s becomes viciously sharp.", itname.c_str());
+        mprf(T_("%s becomes viciously sharp."), itname.c_str());
         break;
 
     case SPWPN_CONCUSSION:
         flash_colour = YELLOW;
-        mprf("%s begins to exert an overwhelming pressure.", itname.c_str());
+        mprf(T_("%s begins to exert an overwhelming pressure."), itname.c_str());
         break;
 
     case SPWPN_DEVIOUS:
         flash_colour = BLUE;
-        mprf("%s glints wickedly in the shadows.", itname.c_str());
+        mprf(T_("%s glints wickedly in the shadows."), itname.c_str());
         break;
 
     default:
@@ -2284,7 +2284,7 @@ static bool _handle_brand_weapon(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_brand_weapon", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2322,7 +2322,7 @@ bool enchant_weapon(item_def &wpn, bool quiet)
         if (!quiet)
         {
             const char* dur = wpn.plus < MAX_WPN_ENCHANT ? "moment" : "while";
-            mprf("%s glows red for a %s.", iname.c_str(), dur);
+            mprf(T_("%s glows red for a %s."), iname.c_str(), dur);
         }
     }
 
@@ -2352,7 +2352,7 @@ static bool _identify(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_identify", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2424,7 +2424,7 @@ static bool _handle_enchant_weapon(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_enchant_weapon", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -2479,7 +2479,7 @@ bool enchant_armour(item_def &arm, bool quiet)
                             && arm.sub_type != ARM_TROLL_LEATHER_ARMOUR;
         string glow = conjugate_verb("glow", plural);
         const char* dur = is_enchantable_armour(arm) ? "moment" : "while";
-        mprf("%s %s green for a %s.", name.c_str(), glow.c_str(), dur);
+        mprf(T_("%s %s green for a %s."), name.c_str(), glow.c_str(), dur);
     }
 
     return true;
@@ -2493,7 +2493,7 @@ static bool _handle_enchant_armour(bool alreadyknown, const string &pre_msg)
     if (!clua.callfn("c_choose_enchant_armour", ">s", &letter))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua error: %s", clua.error.c_str());
+            mprf(T_("Lua error: %s"), clua.error.c_str());
     }
     else if (isalpha(letter.c_str()[0]))
     {
@@ -3456,7 +3456,7 @@ void tile_item_pickup(int idx, bool part)
 {
     if (item_is_stationary(env.item[idx]))
     {
-        mpr("You can't pick that up.");
+        mpr(T_("You can't pick that up."));
         return;
     }
 

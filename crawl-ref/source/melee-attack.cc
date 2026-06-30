@@ -810,7 +810,7 @@ static void _grow_mushrooms(const monster& mon)
     }
 
     if (created)
-        mprf("Mushrooms sprout behind %s.", mon.name(DESC_THE).c_str());
+        mprf(T_("Mushrooms sprout behind %s."), mon.name(DESC_THE).c_str());
 }
 
 /* An attack has been determined to have hit something
@@ -4475,7 +4475,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
     case AF_ALEMBIC:
     {
         if (needs_message)
-            mprf("%s vents fumes.", attacker->name(DESC_THE).c_str());
+            mprf(T_("%s vents fumes."), attacker->name(DESC_THE).c_str());
 
         int dur = random_range(3, 7);
         place_cloud(CLOUD_POISON, defender->pos(), dur, attacker);

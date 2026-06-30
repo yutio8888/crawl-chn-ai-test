@@ -3126,7 +3126,7 @@ void level_change(bool skip_attribute_increase)
 
                     // Tell the player about their new species
                     for (auto &mut : species::fake_mutations(you.species, false))
-                        mprf(MSGCH_INTRINSIC_GAIN, "%s", mut.c_str());
+                        mprf(T_("%s"), mut.c_str());
 
                     gain_draconian_breath_uses(2);
 
@@ -3438,9 +3438,9 @@ static void _display_char_status(int value, const char *fmt, ...)
     string msg = vmake_stringf(fmt, argp);
 
     if (you.wizard)
-        mprf("%s (%d).", msg.c_str(), value);
+        mprf(T_("%s (%d)."), msg.c_str(), value);
     else
-        mprf("%s.", msg.c_str());
+        mprf(T_("%s."), msg.c_str());
 
     va_end(argp);
 }

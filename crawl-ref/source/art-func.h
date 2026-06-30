@@ -105,7 +105,7 @@ static void _CEREBOV_melee_effects(item_def* /*weapon*/, actor* attacker,
             && defender->res_fire() <= 3
             && !you.duration[DUR_FIRE_VULN])
         {
-            mpr("The sword of Cerebov burns away your fire resistance.");
+            mpr(T_("The sword of Cerebov burns away your fire resistance."));
             you.increase_duration(DUR_FIRE_VULN, 3 + random2(dam), 50);
         }
         if (defender->is_monster()
@@ -454,7 +454,7 @@ static void _VARIABILITY_melee_effects(item_def* /*weapon*/, actor* attacker,
     {
         const int pow = 75 + random2avg(75, 2);
         if (you.can_see(*attacker))
-            mpr("The mace of Variability scintillates.");
+            mpr(T_("The mace of Variability scintillates."));
         cast_chain_spell(SPELL_CHAIN_OF_CHAOS, pow, attacker);
     }
 }
@@ -487,7 +487,7 @@ static void _GONG_melee_effects(item_def* /*item*/, actor* wearer,
     string msg = getSpeakString("shield of the gong");
     if (msg.empty())
         msg = "You hear a strange loud sound.";
-    mprf(MSGCH_SOUND, "%s", msg.c_str());
+    mprf(T_("%s"), msg.c_str());
 
     noisy(40, wearer->pos());
 }
@@ -536,7 +536,7 @@ static void _DEMON_AXE_melee_effects(item_def* /*item*/, actor* attacker,
                     mgen_data(type, BEH_COPY, you.pos(), MHITYOU, MG_FORCE_BEH | MG_AUTOFOE)
                     .set_summoned(&you, SPELL_SUMMON_DEMON, summ_dur(6))))
             {
-                mpr("A gate to Pandemonium opens briefly!");
+                mpr(T_("A gate to Pandemonium opens briefly!"));
             }
         }
 
@@ -583,7 +583,7 @@ static void _DEMON_AXE_world_reacts(item_def */*item*/)
 
     if (you.confused())
     {
-        mpr("Your confusion fades away as the thirst for blood takes over your mind.");
+        mpr(T_("Your confusion fades away as the thirst for blood takes over your mind."));
         you.duration[DUR_CONF] = 0;
     }
 
@@ -599,7 +599,7 @@ static void _DEMON_AXE_unequip(item_def */*item*/, bool */*show_msgs*/)
         // Since unwielding it costs scrolls of rem curse, we might say getting
         // the demon away is enough of a shock to get you back to senses.
         you.clear_beholders();
-        mpr("Your thirst for blood fades away.");
+        mpr(T_("Your thirst for blood fades away."));
     }
 }
 
@@ -972,9 +972,9 @@ static void _ARC_BLADE_melee_effects(item_def* /*weapon*/, actor* attacker,
         const int pow = 100 + random2avg(100, 2);
 
         if (you.can_see(*attacker))
-            mpr("The arc blade crackles.");
+            mpr(T_("The arc blade crackles."));
         else
-            mpr("You hear the crackle of electricity.");
+            mpr(T_("You hear the crackle of electricity."));
 
         if (attacker->pos().distance_from(defender->pos()) <= 1)
             cast_discharge(pow, *attacker, false, false);
@@ -1146,7 +1146,7 @@ static void _MAJIN_equip(item_def *item, bool *show_msgs, bool /*unmeld*/)
     {
         const string msg = "A voice whispers, \"" +
                            getSpeakString("majin-bo greeting") + "\"";
-        mprf(MSGCH_TALK, "%s", msg.c_str());
+        mprf(T_("%s"), msg.c_str());
         item->props[MB_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1496,17 +1496,17 @@ static void _EMBRACE_world_reacts(item_def *item)
         armour = 0;
         item->plus = base_plus;
         if (last_plus > base_plus)
-            mpr("Your corpse armour falls away.");
+            mpr(T_("Your corpse armour falls away."));
     }
     else
     {
         item->plus = base_plus + 1 + (armour-1) * 6 / 100;
         if (item->plus < last_plus)
-            mpr("A chunk of your corpse armour falls away.");
+            mpr(T_("A chunk of your corpse armour falls away."));
         else if (last_plus == base_plus)
-            mpr("The bodies of the dead rush to embrace you!");
+            mpr(T_("The bodies of the dead rush to embrace you!"));
         else if (item->plus > last_plus)
-            mpr("Your shell of carrion and bone grows thicker.");
+            mpr(T_("Your shell of carrion and bone grows thicker."));
     }
 
     if (item->plus != last_plus)
@@ -1588,7 +1588,7 @@ static void _RCLOUDS_world_reacts(item_def */*item*/)
         if (m && !m->wont_attack() && mons_is_threatening(*m)
             && x_chance_in_y(you.time_taken, 7 * BASELINE_DELAY))
         {
-            mprf("Storm clouds gather above %s.", m->name(DESC_THE).c_str());
+            mprf(T_("Storm clouds gather above %s."), m->name(DESC_THE).c_str());
             place_cloud(CLOUD_STORM, *ri, random_range(4, 8), &you);
         }
     }
@@ -1760,7 +1760,7 @@ static void _ASMODEUS_melee_effects(item_def* /*weapon*/, actor* attacker,
 
         if (create_monster(mg))
         {
-            mpr("The sceptre summons one of its terrible servants.");
+            mpr(T_("The sceptre summons one of its terrible servants."));
             did_god_conduct(DID_EVIL, 3);
         }
     }
@@ -1808,7 +1808,7 @@ static void _SKULL_OF_ZONGULDROK_equip(item_def *item, bool *show_msgs, bool /*u
                                 : "zonguldrok reprise";
 
         const string msg = "A voice whispers, \"" + getSpeakString(key) + "\"";
-        mprf(MSGCH_TALK, "%s", msg.c_str());
+        mprf(T_("%s"), msg.c_str());
         item->props[ZONGULDROK_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1820,7 +1820,7 @@ static void _SKULL_OF_ZONGULDROK_unequip(item_def */*item*/, bool *show_msgs)
     {
         const string msg = "A voice whispers, \"" +
                             getSpeakString("zonguldrok farewell") + "\"";
-        mprf(MSGCH_TALK, "%s", msg.c_str());
+        mprf(T_("%s"), msg.c_str());
     }
 }
 
@@ -1840,14 +1840,14 @@ static void _FISTICLOAK_unequip(item_def */*item*/, bool *show_msgs)
 {
     const bool should_msg = !show_msgs || *show_msgs;
     if (should_msg)
-        mpr("Your thoughts feel a little more lonely.");
+        mpr(T_("Your thoughts feel a little more lonely."));
 }
 
 static void _FISTICLOAK_world_reacts(item_def */*item*/)
 {
     // First, a chance of flavor message.
     if (one_chance_in(1500))
-        mprf(MSGCH_TALK, "%s", getSpeakString("fungus thoughts").c_str());
+        mprf(T_("%s"), getSpeakString("fungus thoughts").c_str());
 
     // Now, the chance for our shroompunch
     if (!one_chance_in(4))

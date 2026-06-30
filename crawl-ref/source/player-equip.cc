@@ -1736,27 +1736,27 @@ void equip_artefact_effect(item_def &item, bool *show_msgs, bool unmeld)
         _flight_equip();
 
     if (proprt[ARTP_CONTAM] && msg && !unmeld)
-        mpr("You feel a build-up of mutagenic energy.");
+        mpr(T_("You feel a build-up of mutagenic energy."));
 
     if (proprt[ARTP_BANE] && !unmeld)
     {
         if (msg)
-            mpr("You feel a malign power afflict you.");
+            mpr(T_("You feel a malign power afflict you."));
         add_bane(NUM_BANES, "Equipping an artefact");
     }
 
     if (proprt[ARTP_RAMPAGING] && msg && !unmeld
         && !you.has_mutation(MUT_ROLLPAGE))
     {
-        mpr("You feel ready to rampage towards enemies.");
+        mpr(T_("You feel ready to rampage towards enemies."));
     }
 
     if (proprt[ARTP_ARCHMAGI] && msg && !unmeld)
     {
         if (!you.skill(SK_SPELLCASTING))
-            mpr("You feel strangely lacking in power.");
+            mpr(T_("You feel strangely lacking in power."));
         else
-            mpr("You feel powerful.");
+            mpr(T_("You feel powerful."));
     }
 
     if (proprt[ARTP_HP])
@@ -1803,18 +1803,18 @@ void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld)
 
     if (proprt[ARTP_CONTAM] && !meld)
     {
-        mpr("Mutagenic energies flood into your body!");
+        mpr(T_("Mutagenic energies flood into your body!"));
         contaminate_player(1200, true);
     }
 
     if (proprt[ARTP_RAMPAGING] && msg && !meld
         && !you.rampaging())
     {
-        mpr("You no longer feel able to rampage towards enemies.");
+        mpr(T_("You no longer feel able to rampage towards enemies."));
     }
 
     if (proprt[ARTP_ARCHMAGI] && msg && !meld)
-        mpr("You feel strangely numb.");
+        mpr(T_("You feel strangely numb."));
 
     if (proprt[ARTP_DRAIN] && !meld)
         drain_player(150, true, true);
@@ -1832,7 +1832,7 @@ void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld)
 
     if (artefact_property(item, ARTP_FRAGILE) && !meld)
     {
-        mprf("%s crumbles to dust!", item.name(DESC_THE).c_str());
+        mprf(T_("%s crumbles to dust!"), item.name(DESC_THE).c_str());
 
         // Hide unwield messages for weapons that have already been destroyed.
         if (item.base_type == OBJ_WEAPONS)
@@ -1843,17 +1843,17 @@ void unequip_artefact_effect(item_def &item,  bool *show_msgs, bool meld)
 static void _equip_use_warning(const item_def& item)
 {
     if (is_holy_item(item) && you_worship(GOD_YREDELEMNUL))
-        mpr("You really shouldn't be using a holy item like this.");
+        mpr(T_("You really shouldn't be using a holy item like this."));
     else if (is_evil_item(item) && is_good_god(you.religion))
-        mpr("You really shouldn't be using an evil item like this.");
+        mpr(T_("You really shouldn't be using an evil item like this."));
     else if (is_unclean_item(item) && you_worship(GOD_ZIN))
-        mpr("You really shouldn't be using an unclean item like this.");
+        mpr(T_("You really shouldn't be using an unclean item like this."));
     else if (is_chaotic_item(item) && you_worship(GOD_ZIN))
-        mpr("You really shouldn't be using a chaotic item like this.");
+        mpr(T_("You really shouldn't be using a chaotic item like this."));
     else if (is_hasty_item(item) && you_worship(GOD_CHEIBRIADOS))
-        mpr("You really shouldn't be using a hasty item like this.");
+        mpr(T_("You really shouldn't be using a hasty item like this."));
     else if (is_wizardly_item(item) && you_worship(GOD_TROG))
-        mpr("You really shouldn't be using a wizardly item like this.");
+        mpr(T_("You really shouldn't be using a wizardly item like this."));
 }
 
 // Provide a function for handling initial wielding of 'special' weapons
@@ -2065,22 +2065,22 @@ static void _unequip_weapon_effect(item_def& item, bool showMsgs, bool meld)
 
             case SPWPN_HOLY_WRATH:
                 if (showMsgs && !you.undead_or_demonic())
-                    mprf("%s stops glowing.", msg.c_str());
+                    mprf(T_("%s stops glowing."), msg.c_str());
                 break;
 
             case SPWPN_FOUL_FLAME:
                 if (showMsgs && !you.is_holy())
-                    mprf("%s stops glowing.", msg.c_str());
+                    mprf(T_("%s stops glowing."), msg.c_str());
                 break;
 
             case SPWPN_FREEZING:
                 if (showMsgs)
-                    mprf("%s stops glowing.", msg.c_str());
+                    mprf(T_("%s stops glowing."), msg.c_str());
                 break;
 
             case SPWPN_ELECTROCUTION:
                 if (showMsgs)
-                    mprf("%s stops crackling.", msg.c_str());
+                    mprf(T_("%s stops crackling."), msg.c_str());
                 break;
 
             case SPWPN_VENOM:
@@ -2216,7 +2216,7 @@ static void _zonguldrok_comment_on_hat(const item_def& hat)
     }
 
     const string msg = "A voice whispers, \"" + getSpeakString(key) + "\"";
-        mprf(MSGCH_TALK, "%s", msg.c_str());
+        mprf(T_("%s"), msg.c_str());
 }
 
 static void _equip_armour_effect(item_def& arm, bool unmeld)
@@ -2302,21 +2302,21 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
             break;
 
         case SPARM_HURLING:
-            mpr("You feel that your aim is more steady.");
+            mpr(T_("You feel that your aim is more steady."));
             break;
 
         case SPARM_REPULSION:
-            mpr("You are surrounded by a repulsion field.");
+            mpr(T_("You are surrounded by a repulsion field."));
             break;
 
         case SPARM_SHADOWS:
-            mpr("It gets dark.");
+            mpr(T_("It gets dark."));
             update_vision_range();
             break;
 
         case SPARM_RAMPAGING:
             if (!you.has_mutation(MUT_ROLLPAGE))
-                mpr("You feel ready to rampage towards enemies.");
+                mpr(T_("You feel ready to rampage towards enemies."));
             break;
 
         case SPARM_INFUSION:
@@ -2437,7 +2437,7 @@ static void _unequip_armour_effect(item_def& item, bool meld)
             mpr(T_("You feel strangely alone."));
 #if TAG_MAJOR_VERSION == 34
             if (you.species == SP_DEEP_DWARF)
-                mpr("Your magic begins regenerating once more.");
+                mpr(T_("Your magic begins regenerating once more."));
 #endif
         }
         break;
@@ -2754,7 +2754,7 @@ static void _unequip_jewellery_effect(item_def &item, bool meld)
 #if TAG_MAJOR_VERSION == 34
     case AMU_GUARDIAN_SPIRIT:
         if (you.species == SP_DEEP_DWARF && player_regenerates_mp())
-            mpr("Your magic begins regenerating once more.");
+            mpr(T_("Your magic begins regenerating once more."));
         break;
 #endif
 
@@ -2807,7 +2807,7 @@ void unwield_distortion(bool brand)
     }
     else
     {
-        mpr("Space warps into you!");
+        mpr(T_("Space warps into you!"));
         contaminate_player(random2avg(3000, 3), true);
     }
 }
