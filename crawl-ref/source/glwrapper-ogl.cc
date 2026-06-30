@@ -154,7 +154,7 @@ OGLStateManager::OGLStateManager()
     const GLubyte* versionString = glGetString(GL_VERSION);
     if (versionString == nullptr)
     {
-        mprf("Mipmap Setup: Failed to load OpenGL version.");
+        mprf(T_("Mipmap Setup: Failed to load OpenGL version."));
         return;
     }
     // We will never see 2 digit OpenGL major versions - 4.6 came out in 2016,
@@ -169,8 +169,8 @@ OGLStateManager::OGLStateManager()
     bool second_character_is_dot = versionString[1] == '.';
     if (!supported_first_digit || !second_character_is_dot)
     {
-        mprf("Mipmap Setup: Disabled because OpenGL version: %s does not "
-             "provide glGenerateMipmap.", versionString);
+        mprf(T_("Mipmap Setup: Disabled because OpenGL version: %s does not "
+             "provide glGenerateMipmap."), versionString);
         return;
     }
 
@@ -184,7 +184,7 @@ OGLStateManager::OGLStateManager()
         // success == 0 for this API.
         // If we can't load it, we probably wouldn't get this far at all.
         // But just in case, we'll handle it.
-        mprf("Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed.");
+        mprf(T_("Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed."));
         return;
     }
 
@@ -194,16 +194,16 @@ OGLStateManager::OGLStateManager()
     m_mipmapFn = SDL_GL_GetProcAddress("glGenerateMipmap");
     if (m_mipmapFn == nullptr)
     {
-        mprf("Mipmap Setup: Failed to load glGenerateMipmap function.");
+        mprf(T_("Mipmap Setup: Failed to load glGenerateMipmap function."));
         return;
     }
     else
     {
-        mprf("Mipmap Setup: success, loaded with OpenGL version: %s",
+        mprf(T_("Mipmap Setup: success, loaded with OpenGL version: %s"),
              versionString);
     }
 #else
-    mprf("Mipmap Setup: skipped, not supported in this build configuration.");
+    mprf(T_("Mipmap Setup: skipped, not supported in this build configuration."));
 #endif
 }
 

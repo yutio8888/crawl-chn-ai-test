@@ -8,6 +8,7 @@
 #include "wiz-dgn.h"
 
 #include "abyss.h"
+#include "database.h"
 #include "act-iter.h"
 #include "branch.h"
 #include "coordit.h"
@@ -60,7 +61,7 @@ static dungeon_feature_type _find_appropriate_stairs(bool down)
     // Can't go down from bottom level of a branch.
     if (depth > brdepth[you.where_are_you])
     {
-        mpr("Can't go down from the bottom of a branch.");
+        mpr(T_("Can't go down from the bottom of a branch."));
         return DNGN_UNSEEN;
     }
     // Going up from top level of branch
@@ -76,7 +77,7 @@ static dungeon_feature_type _find_appropriate_stairs(bool down)
     }
     else
     {
-        mpr("Bug in determining level exit.");
+        mpr(T_("Bug in determining level exit."));
         return DNGN_UNSEEN;
     }
 }
@@ -88,7 +89,7 @@ void wizard_place_stairs(bool down)
     if (stairs == DNGN_UNSEEN)
         return;
 
-    mprf("Creating %sstairs.", down ? "down" : "up");
+    mprf(T_("Creating %sstairs."), down ? "down" : "up");
     dungeon_terrain_changed(you.pos(), stairs);
 }
 
@@ -197,9 +198,9 @@ dungeon_feature_type wizard_select_feature(bool mimic, bool allow_fprop)
     char specs[256];
     // TODO: this sub-ui is very annoying to use
     if (mimic)
-        mprf(MSGCH_PROMPT, "Create what kind of feature mimic? ");
+        mprf(MSGCH_PROMPT, T_("Create what kind of feature mimic? "));
     else
-        mprf(MSGCH_PROMPT, "Create which feature? ");
+        mprf(MSGCH_PROMPT, T_("Create which feature? "));
 
     if (cancellable_get_line_autohist(specs, sizeof(specs)) || specs[0] == 0)
     {
@@ -227,7 +228,7 @@ dungeon_feature_type wizard_select_feature(bool mimic, bool allow_fprop)
                 if (fprop != FPROP_NONE && allow_fprop)
                 {
                     env.pgrid(you.pos()) |= fprop;
-                    mprf("Set fprops \"%s\" at (%d,%d)",
+                    mprf(T_("Set fprops \"%s\" at (%d,%d)"),
                          name.c_str(), you.pos().x, you.pos().y);
                 }
                 else
@@ -449,7 +450,7 @@ void wizard_map_level()
         env.properties[FORCE_MAPPABLE_KEY] = true;
     }
 
-    mpr("Mapping level.");
+    mpr(T_("Mapping level."));
     magic_mapping(GDM, 100, true, true, false, true, false);
 
     for (rectangle_iterator ri(BOUNDARY_BORDER - 1); ri; ++ri)
@@ -471,7 +472,7 @@ bool debug_make_trap(const coord_def& pos, trap_type trap)
 {
     if (env.grid(pos) != DNGN_FLOOR)
     {
-        mprf("You can only make a %s on a floor square.",
+        mprf(T_("You can only make a %s on a floor square."),
              trap == TRAP_UNASSIGNED ? "trap" : full_trap_name(trap).c_str());
         return false;
     }
@@ -495,13 +496,13 @@ bool debug_make_trap(const coord_def& pos, trap_type trap)
     }
     place_specific_trap(pos, trap);
 
-    mprf("Created %s.",
+    mprf(T_("Created %s."),
          (trap == TRAP_RANDOM)
             ? "a random trap"
             : trap_at(pos)->name(DESC_A).c_str());
 
     if (trap == TRAP_SHAFT && !is_valid_shaft_level())
-        mpr("NOTE: Shaft traps aren't valid on this level.");
+        mpr(T_("NOTE: Shaft traps aren't valid on this level."));
 
     return true;
 }
@@ -510,7 +511,7 @@ bool debug_make_shop(const coord_def& pos)
 {
     if (env.grid(pos) != DNGN_FLOOR)
     {
-        mpr("Insufficient floor-space for new Wal-Mart.");
+        mpr(T_("Insufficient floor-space for new Wal-Mart."));
         return false;
     }
 
@@ -529,7 +530,7 @@ bool debug_make_shop(const coord_def& pos)
         return false;
 
     place_spec_shop(pos, static_cast<shop_type>(menu.result()));
-    mpr("Done.");
+    mpr(T_("Done."));
     return true;
 }
 
@@ -559,7 +560,7 @@ static void debug_load_map_by_name(string name, bool primary)
 
         if (matches.empty())
         {
-            mprf("Can't find map named '%s'.", name.c_str());
+            mprf(T_("Can't find map named '%s'."), name.c_str());
             return;
         }
         else if (matches.size() == 1)
@@ -598,8 +599,8 @@ static void debug_load_map_by_name(string name, bool primary)
             {
                 if (!in_bounds(*ri))
                 {
-                    mprf("Placing %s on top of you would put part of the "
-                         "map outside of the level, cancelling.",
+                    mprf(T_("Placing %s on top of you would put part of the "
+                         "map outside of the level, cancelling."),
                          toplace->name.c_str());
                     return;
                 }
@@ -609,7 +610,7 @@ static void debug_load_map_by_name(string name, bool primary)
         }
         else
         {
-            mprf("%s decides where it goes, can't place where you are.",
+            mprf(T_("%s decides where it goes, can't place where you are."),
                  toplace->name.c_str());
         }
     }
@@ -623,8 +624,8 @@ static void debug_load_map_by_name(string name, bool primary)
                        "for this location; placing it with &P may result in "
                        "crashes and save corruption. Continue?", true, 'y'))
         {
-            mpr("Ok; try placing with &L or go to the relevant location to "
-                "safely place with &P.");
+            mpr(T_("Ok; try placing with &L or go to the relevant location to "
+                "safely place with &P."));
             return;
         }
         if (toplace->is_minivault())
@@ -650,7 +651,7 @@ static void debug_load_map_by_name(string name, bool primary)
         unwind_var<string_set> lumt(env.level_uniq_map_tags, string_set());
         if (dgn_place_map(toplace, false, false, where))
         {
-            mprf("Successfully placed %s.", toplace->name.c_str());
+            mprf(T_("Successfully placed %s."), toplace->name.c_str());
             // Fix up doors from vaults and any changes to the default walls
             // and floors from the vault.
             tile_init_flavour();
@@ -660,7 +661,7 @@ static void debug_load_map_by_name(string name, bool primary)
         }
         else
         {
-            mprf("Failed to place %s; last builder error: %s",
+            mprf(T_("Failed to place %s; last builder error: %s"),
                 toplace->name.c_str(), crawl_state.last_builder_error.c_str());
         }
     }
@@ -672,8 +673,8 @@ void debug_place_map(bool primary)
 {
     char what_to_make[100];
     clear_messages();
-    mprf(MSGCH_PROMPT, primary ? "Enter map name: " :
-         "Enter map name (prefix it with * for local placement): ");
+    mprf(MSGCH_PROMPT, primary ? T_("Enter map name: ") :
+         T_("Enter map name (prefix it with * for local placement): "));
     if (cancellable_get_line(what_to_make, sizeof what_to_make,
                             primary ? &primary_hist : &mini_hist))
     {
@@ -764,14 +765,14 @@ void debug_test_explore()
     // Return to starting point.
     you.move_to(where, MV_INTERNAL);
 
-    mprf("Explore took %d turns.", explore_turns);
+    mprf(T_("Explore took %d turns."), explore_turns);
 }
 
 void wizard_list_levels()
 {
     if (!you.level_stack.empty())
     {
-        mpr("Level stack:");
+        mpr(T_("Level stack:"));
         for (unsigned int i = 0; i < you.level_stack.size(); i++)
         {
             mprf(MSGCH_DIAGNOSTICS, i+1, // inhibit merging
@@ -784,7 +785,7 @@ void wizard_list_levels()
 
     vector<level_id> levs = travel_cache.known_levels();
 
-    mpr("Known levels:");
+    mpr(T_("Known levels:"));
     for (unsigned int i = 0; i < levs.size(); i++)
     {
         const LevelInfo* lv = travel_cache.find_level_info(levs[i]);
@@ -802,12 +803,12 @@ void wizard_list_levels()
     for (int j = 0; j < NUM_DACTION_COUNTERS; j++)
         cnts += make_stringf("%d/", query_daction_counter((daction_type)j));
 
-    mprf("%-10s : %s", "`- total", cnts.c_str());
+    mprf(T_("%-10s : %s"), "`- total", cnts.c_str());
 }
 
 void wizard_recreate_level()
 {
-    mpr("Regenerating level.");
+    mpr(T_("Regenerating level."));
 
     // Need to allow reuse of vaults, otherwise we'd run out of them fast.
     #ifndef DEBUG_VETO_RESUME
@@ -865,21 +866,21 @@ void wizard_clear_used_vaults()
     env.level_uniq_map_tags.clear();
     for (int i = 0; i < NUM_BRANCHES; ++i)
         branch_uniq_map_tags[i].clear();
-    mpr("All vaults are now eligible for [re]use.");
+    mpr(T_("All vaults are now eligible for [re]use."));
 }
 
 void wizard_abyss_speed()
 {
     char specs[256];
-    mprf(MSGCH_PROMPT, "Set Abyss speed to what? (now %d, higher value = "
-                       "higher speed) ", you.abyss_speed);
+    mprf(MSGCH_PROMPT, T_("Set Abyss speed to what? (now %d, higher value = "
+                       "higher speed) "), you.abyss_speed);
 
     if (!cancellable_get_line(specs, sizeof(specs)))
     {
         const int speed = atoi(specs);
         if (speed || specs[0] == '0')
         {
-            mprf("Setting Abyss speed to %i.", speed);
+            mprf(T_("Setting Abyss speed to %i."), speed);
             you.abyss_speed = speed;
             return;
         }

@@ -539,7 +539,7 @@ void validate_basedirs()
         else // true -- found a complete data directory
         {
             if (!found)
-                mprf(MSGCH_PLAIN, "Data directory '%s' found.", d.c_str());
+                mprf(MSGCH_PLAIN, T_("Data directory '%s' found."), d.c_str());
             found = true;
         }
     }
@@ -1295,16 +1295,16 @@ static void _grab_followers_and_expire_summons()
         // Summons won't follow and will time out.
         if (non_stair_using_summons > 0)
         {
-            mprf("Your summoned %s left behind.",
-                 non_stair_using_allies > 1 ? "allies are" : "ally is");
+            mprf(T_("Your summoned %s left behind."),
+                 non_stair_using_allies > 1 ? T_("allies are") : T_("ally is"));
         }
         else
         {
             const bool all_dead = non_stair_using_undead == non_stair_using_allies;
             // Permanent undead are left behind but stay.
-            mprf("Your mindless puppet%s behind%s.",
-                 non_stair_using_allies > 1 ? "s stay" : " stays",
-                 all_dead ? " to rot" : "");
+            mprf(T_("Your mindless puppet%s behind%s."),
+                 non_stair_using_allies > 1 ? T_("s stay") : T_(" stays"),
+                 all_dead ? T_(" to rot") : "");
         }
     }
 
@@ -2466,14 +2466,14 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
                 if (coinflip()
                     && slide_feature_over(you.pos()))
                 {
-                    mprf("%s slides away from you right after you %s it!",
+                    mprf(T_("%s slides away from you right after you %s it!"),
                          stair_str.c_str(), verb.c_str());
                 }
 
                 if (coinflip())
                 {
                     // Stairs stop fleeing from you now you actually caught one.
-                    mprf("%s settles down.", stair_str.c_str());
+                    mprf(T_("%s settles down."), stair_str.c_str());
                     you.duration[DUR_REPEL_STAIRS_MOVE]  = 0;
                     you.duration[DUR_REPEL_STAIRS_CLIMB] = 0;
                 }
@@ -2640,7 +2640,7 @@ void save_game(bool leave_game, const char *farewellmsg)
     {
         if (!dump_char(you.your_name, true))
         {
-            mpr("Char dump unsuccessful! Sorry about that.");
+            mpr(T_("Char dump unsuccessful! Sorry about that."));
             if (!crawl_state.seen_hups)
                 more();
         }

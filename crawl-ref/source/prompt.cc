@@ -116,7 +116,7 @@ bool confirm_prompt(const char* require, const char* fmt, ...)
     va_end(args);
     buf[sizeof(buf)-1] = 0;
 
-    mprf(MSGCH_PROMPT, "%s (Confirm with \"%s\".) ", buf, require);
+    mprf(MSGCH_PROMPT, T_("%s (Confirm with \"%s\".) "), buf, require);
 
     if (cancellable_get_line(buf, sizeof buf))
         return false;

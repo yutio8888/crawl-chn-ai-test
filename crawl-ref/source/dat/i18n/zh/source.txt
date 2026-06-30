@@ -13604,3 +13604,870 @@ Your power is siphoned away as the spells of %s are empowered!
 %%%%
 Your strength is siphoned away as %s grow%s stronger!
 你的力量被吸走，%s变得更加强大！
+%%%%
+ (less than 1% of your maximum possible piety)
+ (less than 1% of your maximum possible piety)
+%%%%
+(Boost: 
+(Boost: 
+%%%%
+Sacrifice 
+Sacrifice 
+%%%%
+A Card 
+A Card 
+%%%%
+Sorry, you're not good enough to have a special ability.
+Sorry, you're not good enough to have a special ability.
+%%%%
+Lua error: %s
+Lua error: %s
+%%%%
+Use which ability? (? or * to list) 
+Use which ability? (? or * to list) 
+%%%%
+Your legs are too worn out to hop.
+Your legs are too worn out to hop.
+%%%%
+You're already rising!
+You're already rising!
+%%%%
+You can't rise from this level without the Orb!
+You can't rise from this level without the Orb!
+%%%%
+You can't rise from this level!
+You can't rise from this level!
+%%%%
+That deck is empty!
+That deck is empty!
+%%%%
+There's no appreciative audience!
+There's no appreciative audience!
+%%%%
+You are not zealous enough to affect this audience!
+You are not zealous enough to affect this audience!
+%%%%
+There's already a sanctuary in place on this level.
+There's already a sanctuary in place on this level.
+%%%%
+You are already engaged in single combat!
+You are already engaged in single combat!
+%%%%
+Any gift you received here would fall and be lost!
+Any gift you received here would fall and be lost!
+%%%%
+You can't heal while in death's door.
+You can't heal while in death's door.
+%%%%
+Nothing ails you!
+Nothing ails you!
+%%%%
+You have already been granted divine vigour!
+You have already been granted divine vigour!
+%%%%
+You are already calling forth ooze!
+You are already calling forth ooze!
+%%%%
+You aren't in the Abyss!
+You aren't in the Abyss!
+%%%%
+You're already here!
+You're already here!
+%%%%
+There isn't enough space to grow briars here.
+There isn't enough space to grow briars here.
+%%%%
+You're too exhausted to draw out your power.
+You're too exhausted to draw out your power.
+%%%%
+You have no need to draw out power.
+You have no need to draw out power.
+%%%%
+You're too exhausted to power leap.
+You're too exhausted to power leap.
+%%%%
+You're too exhausted to unleash your apocalyptic power.
+You're too exhausted to unleash your apocalyptic power.
+%%%%
+You have exhausted your breath weapon. Slay more foes!
+You have exhausted your breath weapon. Slay more foes!
+%%%%
+You don't have enough innate magic capacity.
+You don't have enough innate magic capacity.
+%%%%
+In %d experience levels, you will have learned enough to assemble a masterpiece.
+在%d经验等级内，你将学到足以组装一件杰作。
+%%%%
+%s is still trapped in memory!
+%s仍被困在记忆中！
+%%%%
+Night has already fallen.
+Night has already fallen.
+%%%%
+Makhleb denies you. Endure the Crucible first!
+Makhleb denies you. Endure the Crucible first!
+%%%%
+A dragon answers your prayer!
+A dragon answers your prayer!
+%%%%
+%s forbids using such a weapon!
+%s禁止使用这样的武器！
+%%%%
+Your flames flare with remembrance!
+你的火焰因回忆而燃烧！
+%%%%
+You call down Yredelemnul's inexorable grip.
+你召唤了叶德雷姆诺无可抗拒的掌握之力。
+%%%%
+You can now deal lightning-fast blows.
+你现在可以施展闪电般的快速攻击了。
+%%%%
+A thick mucus forms on %s.
+一层厚厚的粘液在%s上形成了。
+%%%%
+Your muscles tense, ready for explosive movement...
+你的肌肉紧绷，准备进行爆发性移动……
+%%%%
+Now building '%s'
+正在建造'%s'
+%%%%
+Sorry, you can't do that.
+抱歉，你不能那样做。
+%%%%
+ toggle between ability selection and description.
+ toggle between ability selection and description.
+%%%%
+That species isn't available.
+That species isn't available.
+%%%%
+Cast which spell? 
+Cast which spell? 
+%%%%
+Cannot find that spell.
+Cannot find that spell.
+%%%%
+Memorise which spell? 
+Memorise which spell? 
+%%%%
+Spell is monster-only - unpredictable behaviour may result.
+Spell is monster-only - unpredictable behaviour may result.
+%%%%
+Super healing.
+Super healing.
+%%%%
+Healing.
+Healing.
+%%%%
+Piety needs to be between 0 and %d.
+Piety needs to be between 0 and %d.
+%%%%
+Ru piety can't be greater than %d.
+Ru piety can't be greater than %d.
+%%%%
+Interest must be between 0 and 255.
+Interest must be between 0 and 255.
+%%%%
+Set piety to %d, interest to %d.
+Set piety to %d, interest to %d.
+%%%%
+Setting piety to %d.
+Setting piety to %d.
+%%%%
+Enter new gold value (current = %d, Enter for %d): 
+Enter new gold value (current = %d, Enter for %d): 
+%%%%
+You now have %d gold piece%s.
+You now have %d gold piece%s.
+%%%%
+You are not religious!
+You are not religious!
+%%%%
+Current progress to next sacrifice: %d  Progress needed: %d
+Current progress to next sacrifice: %d  Progress needed: %d
+%%%%
+Enter new piety value (current = %d, Enter for 0): 
+Enter new piety value (current = %d, Enter for 0): 
+%%%%
+That skill doesn't seem to exist.
+That skill doesn't seem to exist.
+%%%%
+That skill was removed.
+That skill was removed.
+%%%%
+Exercising...
+Exercising...
+%%%%
+Can't change a useless skill.
+Can't change a useless skill.
+%%%%
+%s %s to skill level %.1f.
+%s %s to skill level %.1f.
+%%%%
+Ignoring mut resistance to apply mutation.
+Ignoring mut resistance to apply mutation.
+%%%%
+No matching mutation names.
+No matching mutation names.
+%%%%
+Found #%d: %s ("%s")
+Found #%d: %s ("%s")
+%%%%
+No matching bane names.
+No matching bane names.
+%%%%
+Enter values for X, Y, Z (space separated) or return: 
+Enter values for X, Y, Z (space separated) or return: 
+%%%%
+Enter values for Str, Int, Dex (space separated): 
+Enter values for Str, Int, Dex (space separated): 
+%%%%
+Setting attributes (Str, Int, Dex) to: %i, %i, %i
+Setting attributes (Str, Int, Dex) to: %i, %i, %i
+%%%%
+Edit which duration (name)? 
+Edit which duration (name)? 
+%%%%
+No durations matching '%s'.
+No durations matching '%s'.
+%%%%
+Can't set duration directly to 0, setting it to 1 instead.
+Can't set duration directly to 0, setting it to 1 instead.
+%%%%
+Enter new experience level: 
+Enter new experience level: 
+%%%%
+Experience level set to %d.
+Experience level set to %d.
+%%%%
+Nothing happens.
+Nothing happens.
+%%%%
+X-ray vision %s.
+X-ray vision %s.
+%%%%
+You allow the flow of time to resume.
+You allow the flow of time to resume.
+%%%%
+You bring the flow of time to a stop.
+You bring the flow of time to a stop.
+%%%%
+That god doesn't seem to exist!
+That god doesn't seem to exist!
+%%%%
+You suffer the terrible wrath of No God.
+You suffer the terrible wrath of No God.
+%%%%
+%s is not feeling wrathful today.
+%s is not feeling wrathful today.
+%%%%
+You are not under penance.
+You are not under penance.
+%%%%
+Transformation failed.
+Transformation failed.
+%%%%
+Not even in wizmode may divine creatures worship a god!
+Not even in wizmode may divine creatures worship a god!
+%%%%
+You already have no god!
+You already have no god!
+%%%%
+You already worship that god!
+You already worship that god!
+%%%%
+(Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
+(Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
+%%%%
+%s tension value: %d
+%s tension value: %d
+%%%%
+Zot clock should be between 0 and %d
+Zot clock should be between 0 and %d
+%%%%
+Enter monster name (or MONS spec) (? for help): 
+Enter monster name (or MONS spec) (? for help): 
+%%%%
+%d monsters, %d total exp value (%d non-uniq)
+%d monsters, %d total exp value (%d non-uniq)
+%%%%
+%d monsters, %d total exp value (%d non-uniq, %d adjusted)
+%d monsters, %d total exp value (%d non-uniq, %d adjusted)
+%%%%
+Which monster?
+Which monster?
+%%%%
+Detected %i monster%s.
+Detected %i monster%s.
+%%%%
+What monsters to dismiss (ENTER for all, 
+What monsters to dismiss (ENTER for all, 
+%%%%
+Dismissed %i monster%s.
+Dismissed %i monster%s.
+%%%%
+Make the monster (S)hout or (T)alk? 
+Make the monster (S)hout or (T)alk? 
+%%%%
+The monster is invisible and likely won't speak.
+The monster is invisible and likely won't speak.
+%%%%
+You are silenced but the monster isn't; you will 
+You are silenced but the monster isn't; you will 
+%%%%
+The monster is silenced and likely won't say anything.
+The monster is silenced and likely won't say anything.
+%%%%
+Both you and the monster are silenced, so you likely 
+Both you and the monster are silenced, so you likely 
+%%%%
+== Done ==
+== Done ==
+%%%%
+Apply blessing of the (S)hining One? 
+Apply blessing of the (S)hining One? 
+%%%%
+%s won't bless this monster for you!
+%s won't bless this monster for you!
+%%%%
+That type of monster can't use any items.
+That type of monster can't use any items.
+%%%%
+Can't give equipped items to a monster.
+Can't give equipped items to a monster.
+%%%%
+You can't give that type of item to a monster.
+You can't give that type of item to a monster.
+%%%%
+Error: monster failed to take item.
+Error: monster failed to take item.
+%%%%
+Cannot move out of bounds.
+Cannot move out of bounds.
+%%%%
+Already doing a move command.
+Already doing a move command.
+%%%%
+You can't move yourself into the arena.
+You can't move yourself into the arena.
+%%%%
+Monster is already summoned.
+Monster is already summoned.
+%%%%
+No such spell.
+No such spell.
+%%%%
+Monster is now summoned.
+Monster is now summoned.
+%%%%
+Invalid monster type.
+Invalid monster type.
+%%%%
+Old type and new type are the same, not polymorphing.
+Old type and new type are the same, not polymorphing.
+%%%%
+Target species must be different from current species.
+Target species must be different from current species.
+%%%%
+Trying harder
+Trying harder
+%%%%
+Polymorph failed.
+Polymorph failed.
+%%%%
+Monster turned into something other than the desired type.
+Monster turned into something other than the desired type.
+%%%%
+Choose a destination!
+Choose a destination!
+%%%%
+Attempting to calculate a path from (%d, %d) to (%d, %d)...
+Attempting to calculate a path from (%d, %d) to (%d, %d)...
+%%%%
+Here's the shortest path: 
+Here's the shortest path: 
+%%%%
+-> path length: %u
+-> path length: %u
+%%%%
+And here are the needed waypoints: 
+And here are the needed waypoints: 
+%%%%
+-> #waypoints: %u
+-> #waypoints: %u
+%%%%
+Can't make already dead target miscast.
+Can't make already dead target miscast.
+%%%%
+Miscast which school or spell, by name? 
+Miscast which school or spell, by name? 
+%%%%
+No matching spell or spell school.
+No matching spell or spell school.
+%%%%
+Ambiguous: can be spell '%s' or school '%s'.
+Ambiguous: can be spell '%s' or school '%s'.
+%%%%
+Spell '%s' has no disciplines.
+Spell '%s' has no disciplines.
+%%%%
+Miscasting spell %s.
+Miscasting spell %s.
+%%%%
+Miscasting school %s.
+Miscasting school %s.
+%%%%
+Enter fail: 
+Enter fail: 
+%%%%
+Enter level, fail: 
+Enter level, fail: 
+%%%%
+Can only enter spell level for schools, not spells.
+Can only enter spell level for schools, not spells.
+%%%%
+Spell level can be at most 9.
+Spell level can be at most 9.
+%%%%
+Key pressed, interrupting miscast testing.
+Key pressed, interrupting miscast testing.
+%%%%
+(C)reate, create (T)emporary, or (L)oad bones file?
+(C)reate, create (T)emporary, or (L)oad bones file?
+%%%%
+Enter name of item (or ITEM spec): 
+Enter name of item (or ITEM spec): 
+%%%%
+Could not allocate item.
+Could not allocate item.
+%%%%
+No such monster.
+No such monster.
+%%%%
+That monster doesn't leave corpses.
+That monster doesn't leave corpses.
+%%%%
+You can't make a draconian corpse by its background.
+You can't make a draconian corpse by its background.
+%%%%
+Failed to create corpse.
+Failed to create corpse.
+%%%%
+No such item.
+No such item.
+%%%%
+You can't tweak the randart properties of an equipped item.
+You can't tweak the randart properties of an equipped item.
+%%%%
+Toggling %s to %s.
+Toggling %s to %s.
+%%%%
+%s was %d.
+%s was %d.
+%%%%
+Value for %s must be non-negative
+Value for %s must be non-negative
+%%%%
+%s was %s.
+%s was %s.
+%%%%
+No such ego as: %s
+No such ego as: %s
+%%%%
+Ego '%s' is invalid for %s.
+Ego '%s' is invalid for %s.
+%%%%
+Old value: %
+Old value: %
+%%%%
+Old value: 0x%08
+Old value: 0x%08
+%%%%
+You can't set this flag on a non-artefact.
+You can't set this flag on a non-artefact.
+%%%%
+Make book fixed [t]heme or fixed [l]evel? 
+Make book fixed [t]heme or fixed [l]evel? 
+%%%%
+Real value: %d (known: %d)
+Real value: %d (known: %d)
+%%%%
+Value: %d
+Value: %d
+%%%%
+That item is already an unrandom artefact.
+That item is already an unrandom artefact.
+%%%%
+That item cannot be turned into an artefact.
+That item cannot be turned into an artefact.
+%%%%
+Fake item as gift from which god (ENTER to leave alone): 
+Fake item as gift from which god (ENTER to leave alone): 
+%%%%
+No such god, leaving item origin alone.
+No such god, leaving item origin alone.
+%%%%
+God gift of %s.
+God gift of %s.
+%%%%
+Failed to turn book into randart.
+Failed to turn book into randart.
+%%%%
+Failed to turn item into randart.
+Failed to turn item into randart.
+%%%%
+You feel a rush of knowledge.
+You feel a rush of knowledge.
+%%%%
+You feel a rush of antiknowledge.
+You feel a rush of antiknowledge.
+%%%%
+Item stacks (by location and top item):
+Item stacks (by location and top item):
+%%%%
+(%2d,%2d): %s%s
+(%2d,%2d): %s%s
+%%%%
+Floor items (stacks only show top item):
+Floor items (stacks only show top item):
+%%%%
+%3d at (%2d,%2d): %s%s
+%3d at (%2d,%2d): %s%s
+%%%%
+Too many items on level.
+Too many items on level.
+%%%%
+Stopping early due to keyboard input.
+Stopping early due to keyboard input.
+%%%%
+Acquirement failed, stopping early.
+Acquirement failed, stopping early.
+%%%%
+%d%% done.
+%d%% done.
+%%%%
+No items generated.
+No items generated.
+%%%%
+Results written into acquirement_stats.txt.
+Results written into acquirement_stats.txt.
+%%%%
+Results written into 'randart_stats.txt'.
+Results written into 'randart_stats.txt'.
+%%%%
+Generate stats for: [a] acquirement [b] randart properties
+Generate stats for: [a] acquirement [b] randart properties
+%%%%
+Unknown card.
+Unknown card.
+%%%%
+Evokers recharged.
+Evokers recharged.
+%%%%
+Unobtained all runes and the Orb of Zot.
+Unobtained all runes and the Orb of Zot.
+%%%%
+Can't go down from the bottom of a branch.
+Can't go down from the bottom of a branch.
+%%%%
+Bug in determining level exit.
+Bug in determining level exit.
+%%%%
+Creating %sstairs.
+Creating %sstairs.
+%%%%
+Create what kind of feature mimic? 
+Create what kind of feature mimic? 
+%%%%
+Create which feature? 
+Create which feature? 
+%%%%
+Set fprops "%s" at (%d,%d)
+Set fprops "%s" at (%d,%d)
+%%%%
+Mapping level.
+Mapping level.
+%%%%
+You can only make a %s on a floor square.
+You can only make a %s on a floor square.
+%%%%
+Created %s.
+Created %s.
+%%%%
+NOTE: Shaft traps aren't valid on this level.
+NOTE: Shaft traps aren't valid on this level.
+%%%%
+Insufficient floor-space for new Wal-Mart.
+Insufficient floor-space for new Wal-Mart.
+%%%%
+Done.
+Done.
+%%%%
+Can't find map named '%s'.
+Can't find map named '%s'.
+%%%%
+Placing %s on top of you would put part of the 
+Placing %s on top of you would put part of the 
+%%%%
+%s decides where it goes, can't place where you are.
+%s decides where it goes, can't place where you are.
+%%%%
+Ok; try placing with &L or go to the relevant location to 
+Ok; try placing with &L or go to the relevant location to 
+%%%%
+Successfully placed %s.
+Successfully placed %s.
+%%%%
+Failed to place %s; last builder error: %s
+Failed to place %s; last builder error: %s
+%%%%
+Enter map name: 
+Enter map name: 
+%%%%
+Enter map name (prefix it with * for local placement): 
+Enter map name (prefix it with * for local placement): 
+%%%%
+Explore took %d turns.
+Explore took %d turns.
+%%%%
+Level stack:
+Level stack:
+%%%%
+Known levels:
+Known levels:
+%%%%
+%-10s : %s
+%-10s : %s
+%%%%
+Regenerating level.
+Regenerating level.
+%%%%
+All vaults are now eligible for [re]use.
+All vaults are now eligible for [re]use.
+%%%%
+Set Abyss speed to what? (now %d, higher value = 
+Set Abyss speed to what? (now %d, higher value = 
+%%%%
+Setting Abyss speed to %i.
+Setting Abyss speed to %i.
+%%%%
+Wielding: 
+Wielding: 
+%%%%
+Enter monster name (or MONS spec): 
+Enter monster name (or MONS spec): 
+%%%%
+Failed to create monster.
+Failed to create monster.
+%%%%
+Could not put monster adjacent to player.
+Could not put monster adjacent to player.
+%%%%
+Fighting %s with %s\n
+Fighting %s with %s\n
+%%%%
+%8s%s
+%8s%s
+%%%%
+Attack: 
+Attack: 
+%%%%
+Defend: 
+Defend: 
+%%%%
+Cancelling simulation.\n
+Cancelling simulation.\n
+%%%%
+%s %d, %s %d: %d
+%s %d, %s %d: %d
+%%%%
+(A)ttack or (D)efence?
+(A)ttack or (D)efence?
+%%%%
+Aborting sim on %s
+Aborting sim on %s
+%%%%
+Unknown species: %s
+Unknown species: %s
+%%%%
+Unknown job: %s
+Unknown job: %s
+%%%%
+unknown item: %s
+unknown item: %s
+%%%%
+You can only abyss_teleport() inside the Abyss.
+You can only abyss_teleport() inside the Abyss.
+%%%%
+Running Jiyva off-level sacrifice.
+Running Jiyva off-level sacrifice.
+%%%%
+Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d
+Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d
+%%%%
+Failure to give mutation.
+Failure to give mutation.
+%%%%
+Failure to toggle bane.
+Failure to toggle bane.
+%%%%
+Re-activating wizard mode.
+Re-activating wizard mode.
+%%%%
+WARNING: ABOUT TO ENTER WIZARD MODE!
+WARNING: ABOUT TO ENTER WIZARD MODE!
+%%%%
+If you continue, your game will not be scored!
+If you continue, your game will not be scored!
+%%%%
+Enter Wizard Command (? - help): 
+Enter Wizard Command (? - help): 
+%%%%
+WARNING: ABOUT TO ENTER EXPLORE MODE!
+WARNING: ABOUT TO ENTER EXPLORE MODE!
+%%%%
+In explore mode, death is optional.
+In explore mode, death is optional.
+%%%%
+Once you set a character to explore mode, you can't switch back.
+Once you set a character to explore mode, you can't switch back.
+%%%%
+env.igrid(%d,%d) = %d
+env.igrid(%d,%d) = %d
+%%%%
+Held by monster #%d: %s at (%d,%d)
+Held by monster #%d: %s at (%d,%d)
+%%%%
+Additionally, it isn't alive.
+Additionally, it isn't alive.
+%%%%
+Floating monster: %s at (%d,%d), midx = %d
+Floating monster: %s at (%d,%d), midx = %d
+%%%%
+Also at (%d, %d): %s, midx = %d
+Also at (%d, %d): %s, midx = %d
+%%%%
+Dead mon also at (%d, %d): %s,
+Dead mon also at (%d, %d): %s,
+%%%%
+Monster %s (%d, %d) holding invalid item in 
+Monster %s (%d, %d) holding invalid item in 
+%%%%
+Monster %s (%d, %d) [midx = %d] holding 
+Monster %s (%d, %d) [midx = %d] holding 
+%%%%
+Other monster thinks it's holding the item, too.
+Other monster thinks it's holding the item, too.
+%%%%
+Other monster isn't holding it, though.
+Other monster isn't holding it, though.
+%%%%
+%s not in any vaults.
+%s not in any vaults.
+%%%%
+Which monster by name? 
+Which monster by name? 
+%%%%
+Currently generating level.
+Currently generating level.
+%%%%
+Vault being placed: %s
+Vault being placed: %s
+%%%%
+Subvaults: %s
+Subvaults: %s
+%%%%
+Level build method = %s, level layout type  = %s, absdepth0 = %d
+Level build method = %s, level layout type  = %s, absdepth0 = %d
+%%%%
+Level vaults:
+Level vaults:
+%%%%
+    %s
+    %s
+%%%%
+This save was not generated on a build that stores logs.
+This save was not generated on a build that stores logs.
+%%%%
+No builder logs are saved for %s.
+No builder logs are saved for %s.
+%%%%
+    item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d
+    item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d
+%%%%
+    quant: %d; ident: 0x%08
+    quant: %d; ident: 0x%08
+%%%%
+    x: %d; y: %d; link: %d
+    x: %d; y: %d; link: %d
+%%%%
+Diagnostic messages are available only in debug builds.
+Diagnostic messages are available only in debug builds.
+%%%%
+Toggle which debug class (ESC to exit)? 
+Toggle which debug class (ESC to exit)? 
+%%%%
+%s messages will be %s.
+%s messages will be %s.
+%%%%
+On %s; %d g, %d fail, %u err%s, %u uniq, 
+On %s; %d g, %d fail, %u err%s, %u uniq, 
+%%%%
+User requested cancel
+User requested cancel
+%%%%
+On %d of %d; %d g, %d fail, %u err%s, %u uniq, 
+On %d of %d; %d g, %d fail, %u err%s, %u uniq, 
+%%%%
+Examining random maps at %s
+Examining random maps at %s
+%%%%
+Generating dungeon map stats
+Generating dungeon map stats
+%%%%
+ looks rather more confused.
+ looks rather more confused.
+%%%%
+ looks rather confused.
+ looks rather confused.
+%%%%
+ is shoved forward by the hand of Xom!
+ is shoved forward by the hand of Xom!
+%%%%
+The dungeon rumbles... harmlessly?
+The dungeon rumbles... harmlessly?
+%%%%
+%s!
+%s!
+%%%%
+is healed, 
+is healed, 
+%%%%
+ is charmed.
+ is charmed.
+%%%%
+A wave of despair washes over you and everything around you!
+一股令人绝望的恐惧之潮淹没了你和周围的一切！
+%%%%
+You are %sconfused.
+You are %sconfused.
+%%%%
+You feel %s and %sconfused.
+You feel %s and %sconfused.
+%%%%
+%s slides away from you!
+%s从你身边滑走了！
+%%%%
+%s slides towards you!
+%s向你滑了过来！
+%%%%
+You feel nearly all of your power leaking away!
+You feel nearly all of your power leaking away!
+%%%%
+%s is forced to slowly start %s a word of recall!
+%s is forced to slowly start %s a word of recall!
+%%%%
+You feel more stealthy.
+你感觉自己更隐秘了。
+%%%%
+Results written into 'xom_debug.stat'.
+Results written into 'xom_debug.stat'.

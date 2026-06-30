@@ -78,7 +78,7 @@ static bool _is_disconnected_level()
 static bool _do_build_level()
 {
     clear_messages();
-    mprf("On %s; %d g, %d fail, %u err%s, %u uniq, "
+    mprf(T_("On %s; %d g, %d fail, %u err%s, %u uniq, "
          "%d try, %d (%.2f%%) vetos",
          level_id::current().describe().c_str(), levels_tried, levels_failed,
          (unsigned int)errors.size(), last_error.empty() ? ""
@@ -91,7 +91,7 @@ static bool _do_build_level()
     msg::suppress mx;
     if (kbhit() && key_is_escape(getch_ck()))
     {
-        mprf(MSGCH_WARN, "User requested cancel");
+        mprf(MSGCH_WARN, T_("User requested cancel");
         return false;
     }
 
@@ -243,7 +243,7 @@ bool mapstat_build_levels()
     for (int i = 0; i < SysEnv.map_gen_iters; ++i)
     {
         clear_messages();
-        mprf("On %d of %d; %d g, %d fail, %u err%s, %u uniq, "
+        mprf(T_("On %d of %d; %d g, %d fail, %u err%s, %u uniq, "
              "%d try, %d (%.2f%%) vetoes",
              i, SysEnv.map_gen_iters, levels_tried, levels_failed,
              (unsigned int)errors.size(),
@@ -325,7 +325,7 @@ static void _report_available_random_vaults(FILE *outf)
         watchdog();
         fprintf(outf, "\n%s -------------\n", lvl.describe().c_str());
         clear_messages();
-        mprf("Examining random maps at %s", lvl.describe().c_str());
+        mprf(T_("Examining random maps at %s"), lvl.describe().c_str());
         mapstat_report_random_maps(outf, lvl);
         if (kbhit() && key_is_escape(getch_ck()))
             break;
@@ -538,7 +538,7 @@ void mapstat_generate_stats()
     _dungeon_places();
 
     clear_messages();
-    mpr("Generating dungeon map stats");
+    mpr(T_("Generating dungeon map stats");
     printf("Generating map stats for %d iteration(s) of %d level(s) over "
            "%d branch(es).\n", SysEnv.map_gen_iters,
            (int) generated_levels.size(), branch_count);

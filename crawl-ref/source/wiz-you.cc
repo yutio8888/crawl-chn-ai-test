@@ -8,6 +8,7 @@
 #include "wiz-you.h"
 
 #include <algorithm>
+#include "database.h"
 #include <functional>
 
 #include "abyss.h"
@@ -127,7 +128,7 @@ void wizard_change_species()
     // Means from_str_loose couldn't interpret `specs`.
     if (sp == SP_UNKNOWN)
     {
-        mpr("That species isn't available.");
+        mpr(T_("That species isn't available."));
         return;
     }
 
@@ -140,7 +141,7 @@ void wizard_cast_spec_spell()
     char specs[80], *end;
     int spell;
 
-    mprf(MSGCH_PROMPT, "Cast which spell? ");
+    mprf(MSGCH_PROMPT, T_("Cast which spell? "));
     if (cancellable_get_line_autohist(specs, sizeof(specs))
         || specs[0] == '\0')
     {
@@ -155,7 +156,7 @@ void wizard_cast_spec_spell()
     {
         if ((spell = spell_by_name(specs, true)) == SPELL_NO_SPELL)
         {
-            mpr("Cannot find that spell.");
+            mpr(T_("Cannot find that spell."));
             crawl_state.cancel_cmd_repeat();
             return;
         }
@@ -170,7 +171,7 @@ void wizard_memorise_spec_spell()
     char specs[80], *end;
     int spell;
 
-    mprf(MSGCH_PROMPT, "Memorise which spell? ");
+    mprf(MSGCH_PROMPT, T_("Memorise which spell? "));
     if (cancellable_get_line_autohist(specs, sizeof(specs))
         || specs[0] == '\0')
     {
@@ -185,14 +186,14 @@ void wizard_memorise_spec_spell()
     {
         if ((spell = spell_by_name(specs, true)) == SPELL_NO_SPELL)
         {
-            mpr("Cannot find that spell.");
+            mpr(T_("Cannot find that spell."));
             crawl_state.cancel_cmd_repeat();
             return;
         }
     }
 
     if (spell_is_monster_only(static_cast<spell_type>(spell)))
-        mpr("Spell is monster-only - unpredictable behaviour may result.");
+        mpr(T_("Spell is monster-only - unpredictable behaviour may result."));
     if (!learn_spell(static_cast<spell_type>(spell), true))
         crawl_state.cancel_cmd_repeat();
 }
@@ -201,7 +202,7 @@ void wizard_heal(bool super_heal)
 {
     if (super_heal)
     {
-        mpr("Super healing.");
+        mpr(T_("Super healing."));
         // Clear more stuff.
         undrain_hp(9999);
         you.magic_contamination = 0;
@@ -266,7 +267,7 @@ void wizard_heal(bool super_heal)
         you.props.erase(COGLIN_GIZMO_KEY);
     }
     else
-        mpr("Healing.");
+        mpr(T_("Healing."));
 
     // Clear some status ailments.
     you.duration[DUR_CONF]      = 0;
@@ -282,12 +283,12 @@ void wizard_set_piety_to(int newpiety, bool force)
 {
     if (newpiety < 0 || newpiety > MAX_PIETY)
     {
-        mprf("Piety needs to be between 0 and %d.", MAX_PIETY);
+        mprf(T_("Piety needs to be between 0 and %d."), MAX_PIETY);
         return;
     }
     if (newpiety > piety_breakpoint(5) && you_worship(GOD_RU))
     {
-        mprf("Ru piety can't be greater than %d.", piety_breakpoint(5));
+        mprf(T_("Ru piety can't be greater than %d."), piety_breakpoint(5));
         return;
     }
 
@@ -320,9 +321,9 @@ void wizard_set_piety_to(int newpiety, bool force)
         if (newinterest >= 0 && newinterest < 256)
             you.gift_timeout = newinterest;
         else
-            mpr("Interest must be between 0 and 255.");
+            mpr(T_("Interest must be between 0 and 255."));
 
-        mprf("Set piety to %d, interest to %d.", you.raw_piety, newinterest);
+        mprf(T_("Set piety to %d, interest to %d."), you.raw_piety, newinterest);
 
         const string new_xom_favour = describe_xom_favour();
         const string msg = "You are now " + new_xom_favour;
@@ -341,7 +342,7 @@ void wizard_set_piety_to(int newpiety, bool force)
             canned_msg(MSG_OK);
         return;
     }
-    mprf("Setting piety to %d.", newpiety);
+    mprf(T_("Setting piety to %d."), newpiety);
     set_piety(newpiety);
 
     // Automatically reduce penance to 0.
@@ -352,7 +353,7 @@ void wizard_set_piety_to(int newpiety, bool force)
 void wizard_set_gold()
 {
     const int default_gold = you.gold + 1000;
-    mprf(MSGCH_PROMPT, "Enter new gold value (current = %d, Enter for %d): ",
+    mprf(MSGCH_PROMPT, T_("Enter new gold value (current = %d, Enter for %d): "),
          you.gold, default_gold);
 
     char buf[30];
@@ -367,25 +368,25 @@ void wizard_set_gold()
     else
         you.set_gold(max(atoi(buf), 0));
 
-    mprf("You now have %d gold piece%s.", you.gold, you.gold != 1 ? "s" : "");
+    mprf(T_("You now have %d gold piece%s."), you.gold, you.gold != 1 ? "s" : "");
 }
 
 void wizard_set_piety()
 {
     if (you_worship(GOD_NO_GOD))
     {
-        mpr("You are not religious!");
+        mpr(T_("You are not religious!"));
         return;
     }
 
     if (you_worship(GOD_RU))
     {
-        mprf("Current progress to next sacrifice: %d  Progress needed: %d",
+        mprf(T_("Current progress to next sacrifice: %d  Progress needed: %d"),
             you.props[RU_SACRIFICE_PROGRESS_KEY].get_int(),
             you.props[RU_SACRIFICE_DELAY_KEY].get_int());
     }
 
-    mprf(MSGCH_PROMPT, "Enter new piety value (current = %d, Enter for 0): ",
+    mprf(MSGCH_PROMPT, T_("Enter new piety value (current = %d, Enter for 0): "),
          you.raw_piety);
     char buf[30];
     if (cancellable_get_line_autohist(buf, sizeof buf))
@@ -402,12 +403,12 @@ void wizard_exercise_skill()
     skill_type skill = debug_prompt_for_skill("Which skill (by name)? ");
 
     if (skill == SK_NONE)
-        mpr("That skill doesn't seem to exist.");
+        mpr(T_("That skill doesn't seem to exist."));
     else if (is_removed_skill(skill))
-        mpr("That skill was removed.");
+        mpr(T_("That skill was removed."));
     else
     {
-        mpr("Exercising...");
+        mpr(T_("Exercising..."));
         exercise(skill, 10);
     }
 }
@@ -418,19 +419,19 @@ void wizard_set_skill_level(skill_type skill)
         skill = debug_prompt_for_skill("Which skill (by name)? ");
 
     if (is_removed_skill(skill)){
-        mpr("That skill was removed.");
+        mpr(T_("That skill was removed."));
         return;
     }
 
     if (skill == SK_NONE)
     {
-        mpr("That skill doesn't seem to exist.");
+        mpr(T_("That skill doesn't seem to exist."));
         return;
     }
 
     if (is_useless_skill(skill))
     {
-        mpr("Can't change a useless skill.");
+        mpr(T_("Can't change a useless skill."));
         return;
     }
 
@@ -458,7 +459,7 @@ void wizard_set_skill_level(skill_type skill)
 
     redraw_skill(skill);
 
-    mprf("%s %s to skill level %.1f.", (old_amount < amount ? "Increased" :
+    mprf(T_("%s %s to skill level %.1f."), (old_amount < amount ? "Increased" :
                                       old_amount > amount ? "Lowered"
                                                           : "Reset"),
          skill_name(skill), amount);
@@ -507,7 +508,7 @@ bool wizard_add_mutation()
     char specs[80];
 
     if (you.has_mutation(MUT_MUTATION_RESISTANCE))
-        mpr("Ignoring mut resistance to apply mutation.");
+        mpr(T_("Ignoring mut resistance to apply mutation."));
 
     msgwin_get_line("Which mutation (name, 'good', 'bad', 'any', "
                     "'xom', 'slime', 'qazlal')? ",
@@ -530,7 +531,7 @@ bool wizard_add_mutation()
         crawl_state.cancel_cmd_repeat();
 
         if (partial_matches.empty())
-            mpr("No matching mutation names.");
+            mpr(T_("No matching mutation names."));
         else
         {
             vector<string> matches;
@@ -554,7 +555,7 @@ bool wizard_add_mutation()
     }
     else
     {
-        mprf("Found #%d: %s (\"%s\")", (int) mutat,
+        mprf(T_("Found #%d: %s (\"%s\")"), (int) mutat,
              mutation_name(mutat),
              mutation_desc(mutat, 1, false).c_str());
 
@@ -605,7 +606,7 @@ bool wizard_toggle_bane()
         crawl_state.cancel_cmd_repeat();
 
         if (partial_matches.empty())
-            mpr("No matching bane names.");
+            mpr(T_("No matching bane names."));
         else
         {
             vector<string> matches;
@@ -629,7 +630,7 @@ bool wizard_toggle_bane()
     }
     else
     {
-        mprf("Found #%d: %s (\"%s\")", (int) bane,
+        mprf(T_("Found #%d: %s (\"%s\")"), (int) bane,
              bane_name(bane).c_str(),
              bane_desc(bane).c_str());
 
@@ -648,7 +649,7 @@ bool wizard_toggle_bane()
 void wizard_set_abyss()
 {
     char buf[80];
-    mprf(MSGCH_PROMPT, "Enter values for X, Y, Z (space separated) or return: ");
+    mprf(MSGCH_PROMPT, T_("Enter values for X, Y, Z (space separated) or return: "));
     if (!cancellable_get_line_autohist(buf, sizeof buf))
         abyss_teleport();
 
@@ -660,7 +661,7 @@ void wizard_set_abyss()
 void wizard_set_stats()
 {
     char buf[80];
-    mprf(MSGCH_PROMPT, "Enter values for Str, Int, Dex (space separated): ");
+    mprf(MSGCH_PROMPT, T_("Enter values for Str, Int, Dex (space separated): "));
     if (cancellable_get_line_autohist(buf, sizeof buf) || buf[0] == '\0')
     {
         canned_msg(MSG_OK);
@@ -673,7 +674,7 @@ void wizard_set_stats()
 
     sscanf(buf, "%d %d %d", &sstr, &sint, &sdex);
 
-    mprf("Setting attributes (Str, Int, Dex) to: %i, %i, %i", sstr, sint, sdex);
+    mprf(T_("Setting attributes (Str, Int, Dex) to: %i, %i, %i"), sstr, sint, sdex);
     you.base_stats[STAT_STR] = debug_cap_stat(sstr);
     you.base_stats[STAT_INT] = debug_cap_stat(sint);
     you.base_stats[STAT_DEX] = debug_cap_stat(sdex);
@@ -688,7 +689,7 @@ static bool _wizard_enter_duration_name(duration_type &choice)
     char buf[80];
     vector<string> match_names;
 
-    mprf(MSGCH_PROMPT, "Edit which duration (name)? ");
+    mprf(MSGCH_PROMPT, T_("Edit which duration (name)? "));
 
     if (cancellable_get_line_autohist(buf, sizeof buf) || !*buf
         || !strlcpy(buf, lowercase_string(trimmed_string(buf)).c_str(),
@@ -716,7 +717,7 @@ static bool _wizard_enter_duration_name(duration_type &choice)
         return true;
     else if (match_names.empty())
     {
-        mprf(MSGCH_PROMPT, "No durations matching '%s'.", buf);
+        mprf(MSGCH_PROMPT, T_("No durations matching '%s'."), buf);
         return false;
     }
     else
@@ -763,7 +764,7 @@ void wizard_edit_durations()
 
     if (num == 0)
     {
-        mprf(MSGCH_PROMPT, "Can't set duration directly to 0, setting it to 1 instead.");
+        mprf(MSGCH_PROMPT, T_("Can't set duration directly to 0, setting it to 1 instead."));
         num = 1;
     }
     you.duration[choice] = num;
@@ -869,7 +870,7 @@ static void debug_downtick_xl(int newxl)
 
 void wizard_set_xl(bool change_skills)
 {
-    mprf(MSGCH_PROMPT, "Enter new experience level: ");
+    mprf(MSGCH_PROMPT, T_("Enter new experience level: "));
     char buf[30];
     if (cancellable_get_line_autohist(buf, sizeof buf))
     {
@@ -885,7 +886,7 @@ void wizard_set_xl(bool change_skills)
     }
 
     set_xl(newxl, change_skills);
-    mprf("Experience level set to %d.", newxl);
+    mprf(T_("Experience level set to %d."), newxl);
 }
 
 void set_xl(const int newxl, const bool train, const bool silent)
@@ -902,7 +903,7 @@ void wizard_get_god_gift()
 {
     if (you_worship(GOD_NO_GOD))
     {
-        mpr("You are not religious!");
+        mpr(T_("You are not religious!"));
         return;
     }
 
@@ -919,13 +920,13 @@ void wizard_get_god_gift()
     }
 
     if (!do_god_gift(true))
-        mpr("Nothing happens.");
+        mpr(T_("Nothing happens."));
 }
 
 void wizard_toggle_xray_vision()
 {
     you.wizard_vision = !you.wizard_vision;
-    mprf("X-ray vision %s.", you.wizard_vision ? "enabled" : "disabled");
+    mprf(T_("X-ray vision %s."), you.wizard_vision ? "enabled" : "disabled");
     viewwindow(true);
     update_screen();
 }
@@ -937,12 +938,12 @@ void wizard_freeze_time()
     if (props.exists(FREEZE_TIME_KEY))
     {
         props.erase(FREEZE_TIME_KEY);
-        mpr("You allow the flow of time to resume.");
+        mpr(T_("You allow the flow of time to resume."));
     }
     else
     {
         props[FREEZE_TIME_KEY] = true;
-        mpr("You bring the flow of time to a stop.");
+        mpr(T_("You bring the flow of time to a stop."));
     }
 }
 
@@ -950,13 +951,13 @@ void wizard_god_wrath()
 {
     const god_type god = choose_god(you.religion);
     if (god == NUM_GODS)
-        mpr("That god doesn't seem to exist!");
+        mpr(T_("That god doesn't seem to exist!"));
     else if (god == GOD_NO_GOD)
-        mpr("You suffer the terrible wrath of No God.");
+        mpr(T_("You suffer the terrible wrath of No God."));
     else if (!divine_retribution(god, true, true))
     {
         // Dead Jiyva, or Ru/Gozag/Ashenzari.
-        mprf("%s is not feeling wrathful today.", god_name(god).c_str());
+        mprf(T_("%s is not feeling wrathful today."), god_name(god).c_str());
     }
 }
 
@@ -972,7 +973,7 @@ void wizard_god_mollify()
         }
     }
     if (!mollified)
-        mpr("You are not under penance.");
+        mpr(T_("You are not under penance."));
 }
 
 void wizard_transform()
@@ -1013,28 +1014,28 @@ void wizard_transform()
         you.cur_talisman = -1;
     }
     if (!transform(200, form, true) && you.form != form)
-        mpr("Transformation failed.");
+        mpr(T_("Transformation failed."));
 }
 
 void wizard_join_religion()
 {
     if (you.has_mutation(MUT_FORLORN))
     {
-        mpr("Not even in wizmode may divine creatures worship a god!");
+        mpr(T_("Not even in wizmode may divine creatures worship a god!"));
         return;
     }
     god_type god = choose_god();
     if (god == NUM_GODS)
-        mpr("That god doesn't seem to exist!");
+        mpr(T_("That god doesn't seem to exist!"));
     else if (god == GOD_NO_GOD)
     {
         if (you_worship(GOD_NO_GOD))
-            mpr("You already have no god!");
+            mpr(T_("You already have no god!"));
         else
             excommunication();
     }
     else if (you_worship(god))
-        mpr("You already worship that god!");
+        mpr(T_("You already worship that god!"));
     else
     {
         if (god == GOD_GOZAG)
@@ -1045,10 +1046,10 @@ void wizard_join_religion()
 
 void wizard_get_god_tension()
 {
-    mpr("(Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)");
+    mpr(T_("(Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)"));
     god_type god = choose_god(you.religion);
     int tension = get_tension(god);
-    mprf("%s tension value: %d", !(god == GOD_NO_GOD) ? god_name(god).c_str()
+    mprf(T_("%s tension value: %d"), !(god == GOD_NO_GOD) ? god_name(god).c_str()
                                                       : "General", tension);
 }
 
@@ -1097,7 +1098,7 @@ void wizard_set_zot_clock()
     if (turns_left == -1)
         canned_msg(MSG_OK);
     else if (turns_left > max_zot_clock)
-        mprf("Zot clock should be between 0 and %d", max_zot_clock);
+        mprf(T_("Zot clock should be between 0 and %d"), max_zot_clock);
     else
         set_turns_until_zot(turns_left);
 }

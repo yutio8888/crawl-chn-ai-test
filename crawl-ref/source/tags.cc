@@ -7144,7 +7144,7 @@ void _tag_construct_level_tiles(writer &th)
     {
         marshallString(th, name);
 #ifdef DEBUG_TILE_NAMES
-        mprf("Writing '%s' into save.", name.c_str());
+        mprf(T_("Writing '%s' into save."), name.c_str());
 #endif
     }
 
@@ -8311,7 +8311,7 @@ void _tag_read_level_tiles(reader &th)
     {
 #ifdef DEBUG_TILE_NAMES
         string temp = unmarshallString(th);
-        mprf("Reading tile_names[%d] = %s", i, temp.c_str());
+        mprf(T_("Reading tile_names[%d] = %s"), i, temp.c_str());
         tile_env.names.push_back(temp);
 #else
         tile_env.names.push_back(unmarshallString(th));
@@ -8352,7 +8352,7 @@ static tileidx_t _get_tile_from_vector(const unsigned int idx)
     if (idx <= 0 || idx > tile_env.names.size())
     {
 #ifdef DEBUG_TILE_NAMES
-        mprf("Index out of bounds: idx = %d - 1, size(tile_names) = %d",
+        mprf(T_("Index out of bounds: idx = %d - 1, size(tile_names) = %d"),
             idx, tile_env.names.size());
 #endif
         return 0;
@@ -8363,13 +8363,13 @@ static tileidx_t _get_tile_from_vector(const unsigned int idx)
     if (!tile_dngn_index(tilename.c_str(), &tile))
     {
 #ifdef DEBUG_TILE_NAMES
-        mprf("tilename %s (index %d) not found",
+        mprf(T_("tilename %s (index %d) not found"),
              tilename.c_str(), idx - 1);
 #endif
         return 0;
     }
 #ifdef DEBUG_TILE_NAMES
-    mprf("tilename %s (index %d) resolves to tile %d",
+    mprf(T_("tilename %s (index %d) resolves to tile %d"),
          tilename.c_str(), idx - 1, (int) tile);
 #endif
 

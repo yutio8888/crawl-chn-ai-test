@@ -13,6 +13,8 @@
 
 #include "initfile.h"
 
+#include "database.h"
+
 #include "json.h"
 #include "json-wrapper.h"
 
@@ -3481,7 +3483,7 @@ sound_mapping::sound_mapping(const string &s)
         // This might be a bit non-ideal, as it only shows up in the main menu
         // message log...
         _sound_warning_issued = true;
-        mprf(MSGCH_PLAIN, "Options warning: `sound` will have no effect on this build.");
+        mprf(MSGCH_PLAIN, T_("Options warning: `sound` will have no effect on this build."));
     }
 #endif
 
@@ -3574,7 +3576,7 @@ static bool _set_crawl_dir(const string &d)
     const string new_crawl_dir = _resolve_dir(d, "");
     if (!dir_exists(new_crawl_dir))
         return false;
-    mprf("Setting crawl_dir to `%s`.", new_crawl_dir.c_str());
+    mprf(T_("Setting crawl_dir to `%s`."), new_crawl_dir.c_str());
     SysEnv.crawl_dir = new_crawl_dir;
     // need to double check that a valid data directory can still be found,so
     // revalidate.

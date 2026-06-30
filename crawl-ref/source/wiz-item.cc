@@ -8,6 +8,7 @@
 #include "wiz-item.h"
 
 #include <cerrno>
+#include "database.h"
 
 #include "acquire.h"
 #include "act-iter.h"
@@ -75,7 +76,7 @@ static void _make_all_books()
 void wizard_create_spec_object_by_name()
 {
     char buf[1024];
-    mprf(MSGCH_PROMPT, "Enter name of item (or ITEM spec): ");
+    mprf(MSGCH_PROMPT, T_("Enter name of item (or ITEM spec): "));
     if (cancellable_get_line_autohist(buf, sizeof buf) || !*buf)
     {
         canned_msg(MSG_OK);
@@ -112,7 +113,7 @@ void wizard_create_spec_object()
     int thing_created = get_mitm_slot();
     if (thing_created == NON_ITEM)
     {
-        mpr("Could not allocate item.");
+        mpr(T_("Could not allocate item."));
         return;
     }
     item_def& item(env.item[thing_created]);
@@ -145,19 +146,19 @@ void wizard_create_spec_object()
 
         if (mon == MONS_NO_MONSTER || mon == MONS_PROGRAM_BUG)
         {
-            mpr("No such monster.");
+            mpr(T_("No such monster."));
             return;
         }
 
         if (!mons_class_can_leave_corpse(mon))
         {
-            mpr("That monster doesn't leave corpses.");
+            mpr(T_("That monster doesn't leave corpses."));
             return;
         }
 
         if (mons_is_draconian_job(mon))
         {
-            mpr("You can't make a draconian corpse by its background.");
+            mpr(T_("You can't make a draconian corpse by its background."));
             mon = MONS_DRACONIAN;
         }
 
@@ -173,7 +174,7 @@ void wizard_create_spec_object()
 
         if (!place_monster_corpse(dummy, true))
         {
-            mpr("Failed to create corpse.");
+            mpr(T_("Failed to create corpse."));
             return;
         }
     }
@@ -205,7 +206,7 @@ void wizard_create_spec_object()
 
         if (!get_item_by_name(&item, specs, class_wanted, true))
         {
-            mpr("No such item.");
+            mpr(T_("No such item."));
 
             // Clean up item
             destroy_item(thing_created);
@@ -231,7 +232,7 @@ static void _tweak_randart(item_def &item)
 {
     if (item_is_equipped(item))
     {
-        mprf(MSGCH_PROMPT, "You can't tweak the randart properties of an equipped item.");
+        mprf(MSGCH_PROMPT, T_("You can't tweak the randart properties of an equipped item."));
         return;
     }
     else
@@ -269,7 +270,7 @@ static void _tweak_randart(item_def &item)
     switch (artp_value_type(prop))
     {
     case ARTP_VAL_BOOL:
-        mprf(MSGCH_PROMPT, "Toggling %s to %s.", artp_name(prop),
+        mprf(MSGCH_PROMPT, T_("Toggling %s to %s."), artp_name(prop),
              props[prop] ? "off" : "on");
         artefact_set_property(item, static_cast<artefact_prop_type>(prop),
                              !props[prop]);
@@ -277,12 +278,12 @@ static void _tweak_randart(item_def &item)
 
     case ARTP_VAL_POS:
     {
-        mprf(MSGCH_PROMPT, "%s was %d.", artp_name(prop), props[prop]);
+        mprf(MSGCH_PROMPT, T_("%s was %d."), artp_name(prop), props[prop]);
         const int val = prompt_for_int("New value? ", true);
 
         if (val < 0)
         {
-            mprf(MSGCH_PROMPT, "Value for %s must be non-negative",
+            mprf(MSGCH_PROMPT, T_("Value for %s must be non-negative"),
                  artp_name(prop));
             return;
         }
@@ -292,7 +293,7 @@ static void _tweak_randart(item_def &item)
     }
     case ARTP_VAL_ANY:
     {
-        mprf(MSGCH_PROMPT, "%s was %d.", artp_name(prop), props[prop]);
+        mprf(MSGCH_PROMPT, T_("%s was %d."), artp_name(prop), props[prop]);
         const int val = prompt_for_int("New value? ", false);
         artefact_set_property(item, static_cast<artefact_prop_type>(prop),
                              val);
@@ -301,7 +302,7 @@ static void _tweak_randart(item_def &item)
 
     case ARTP_VAL_BRAND:
     {
-        mprf(MSGCH_PROMPT, "%s was %s.", artp_name(prop),
+        mprf(MSGCH_PROMPT, T_("%s was %s."), artp_name(prop),
              props[prop] ? ego_type_string(item, false).c_str() : "normal");
 
         char specs[80];
@@ -316,12 +317,12 @@ static void _tweak_randart(item_def &item)
 
         if (ego == 0 && string(specs) != "normal") // this is secretly a hack
         {
-            mprf("No such ego as: %s", specs);
+            mprf(T_("No such ego as: %s"), specs);
             break;
         }
         if (ego == -1)
         {
-            mprf("Ego '%s' is invalid for %s.",
+            mprf(T_("Ego '%s' is invalid for %s."),
                  specs, item.name(DESC_A).c_str());
             break;
         }
@@ -384,9 +385,9 @@ void wizard_tweak_object()
         }
 
         if (keyin != 'e')
-            mprf("Old value: %" PRId64" (0x%04" PRIx64")", old_val, old_val);
+            mprf(T_("Old value: %" PRId64 " (0x%04" PRIx64 ")"), old_val, old_val);
         else
-            mprf("Old value: 0x%08" PRIx64, old_val);
+            mprf(T_("Old value: 0x%08" PRIx64), old_val);
 
         msgwin_get_line("New value? ", specs, sizeof(specs));
         if (specs[0] == '\0')
@@ -402,7 +403,7 @@ void wizard_tweak_object()
         if (keyin == 'e' && new_val & ISFLAG_ARTEFACT_MASK
             && !you.inv[item].props.exists(ARTEFACT_PROPS_KEY))
         {
-            mpr("You can't set this flag on a non-artefact.");
+            mpr(T_("You can't set this flag on a non-artefact."));
             continue;
         }
 
@@ -437,7 +438,7 @@ static bool _make_book_randart(item_def &book)
 
     do
     {
-        mprf(MSGCH_PROMPT, "Make book fixed [t]heme or fixed [l]evel? ");
+        mprf(MSGCH_PROMPT, T_("Make book fixed [t]heme or fixed [l]evel? "));
         type = toalower(getch_ck());
     }
     while (type != 't' && type != 'l');
@@ -461,9 +462,9 @@ void wizard_value_item()
     const int real_value = item_value(item, true);
     const int known_value = item_value(item, false);
     if (real_value != known_value)
-        mprf("Real value: %d (known: %d)", real_value, known_value);
+        mprf(T_("Real value: %d (known: %d)"), real_value, known_value);
     else
-        mprf("Value: %d", real_value);
+        mprf(T_("Value: %d"), real_value);
 }
 
 /**
@@ -570,13 +571,13 @@ void wizard_make_object_randart()
 
     if (is_unrandom_artefact(item))
     {
-        mpr("That item is already an unrandom artefact.");
+        mpr(T_("That item is already an unrandom artefact."));
         return;
     }
 
     if (!item_type_can_be_artefact(item.base_type))
     {
-        mpr("That item cannot be turned into an artefact.");
+        mpr(T_("That item cannot be turned into an artefact."));
         return;
     }
 
@@ -601,16 +602,16 @@ void wizard_make_object_randart()
         item.props.clear();
     }
 
-    mprf(MSGCH_PROMPT, "Fake item as gift from which god (ENTER to leave alone): ");
+    mprf(MSGCH_PROMPT, T_("Fake item as gift from which god (ENTER to leave alone): "));
     char name[80];
     if (!cancellable_get_line(name, sizeof(name)) && name[0])
     {
         god_type god = str_to_god(name, false);
         if (god == GOD_NO_GOD)
-            mpr("No such god, leaving item origin alone.");
+            mpr(T_("No such god, leaving item origin alone."));
         else
         {
-            mprf("God gift of %s.", god_name(god, false).c_str());
+            mprf(T_("God gift of %s."), god_name(god, false).c_str());
             item.orig_monnum = -god;
         }
     }
@@ -619,13 +620,13 @@ void wizard_make_object_randart()
     {
         if (!_make_book_randart(item))
         {
-            mpr("Failed to turn book into randart.");
+            mpr(T_("Failed to turn book into randart."));
             return;
         }
     }
     else if (!make_item_randart(item, true))
     {
-        mpr("Failed to turn item into randart.");
+        mpr(T_("Failed to turn item into randart."));
         return;
     }
 
@@ -638,7 +639,7 @@ void wizard_make_object_randart()
 
 void wizard_identify_pack()
 {
-    mpr("You feel a rush of knowledge.");
+    mpr(T_("You feel a rush of knowledge."));
     identify_inventory();
     you.wield_change  = true;
     quiver::set_needs_redraw();
@@ -655,7 +656,7 @@ static void _forget_item(item_def &item)
 
 void wizard_unidentify_pack()
 {
-    mpr("You feel a rush of antiknowledge.");
+    mpr(T_("You feel a rush of antiknowledge."));
     for (auto &item : you.inv)
         if (item.defined())
             _forget_item(item);
@@ -673,19 +674,19 @@ void wizard_unidentify_pack()
 
 void wizard_list_items()
 {
-    mpr("Item stacks (by location and top item):");
+    mpr(T_("Item stacks (by location and top item):"));
     for (const auto &item : env.item)
     {
         if (item.defined() && !item.held_by_monster() && item.link != NON_ITEM)
         {
-            mprf("(%2d,%2d): %s%s", item.pos.x, item.pos.y,
+            mprf(T_("(%2d,%2d): %s%s"), item.pos.x, item.pos.y,
                  item.name(DESC_PLAIN, false, false, false).c_str(),
                  item.flags & ISFLAG_MIMIC ? " mimic" : "");
         }
     }
 
     mpr("");
-    mpr("Floor items (stacks only show top item):");
+    mpr(T_("Floor items (stacks only show top item):"));
 
     const coord_def start(1,1), end(GXM-1, GYM-1);
     for (rectangle_iterator ri(start, end); ri; ++ri)
@@ -693,7 +694,7 @@ void wizard_list_items()
         int item = env.igrid(*ri);
         if (item != NON_ITEM)
         {
-            mprf("%3d at (%2d,%2d): %s%s", item, ri->x, ri->y,
+            mprf(T_("%3d at (%2d,%2d): %s%s"), item, ri->x, ri->y,
                  env.item[item].name(DESC_PLAIN, false, false, false).c_str(),
                  env.item[item].flags & ISFLAG_MIMIC ? " mimic" : "");
         }
@@ -756,7 +757,7 @@ static void _debug_acquirement_stats()
     int p = get_mitm_slot(11);
     if (p == NON_ITEM)
     {
-        mpr("Too many items on level.");
+        mpr(T_("Too many items on level."));
         return;
     }
     env.item[p].base_type = OBJ_UNASSIGNED;
@@ -811,7 +812,7 @@ static void _debug_acquirement_stats()
         if (kbhit())
         {
             getch_ck();
-            mpr("Stopping early due to keyboard input.");
+            mpr(T_("Stopping early due to keyboard input."));
             break;
         }
 
@@ -820,7 +821,7 @@ static void _debug_acquirement_stats()
 
         if (item_index == NON_ITEM || !env.item[item_index].defined())
         {
-            mpr("Acquirement failed, stopping early.");
+            mpr(T_("Acquirement failed, stopping early."));
             break;
         }
 
@@ -873,7 +874,7 @@ static void _debug_acquirement_stats()
         if (num_itrs >= 10 && (i + 1) % (num_itrs / 10) == 0)
         {
             clear_messages();
-            mprf("%d%% done.", 100 * (i + 1) / num_itrs);
+            mprf(T_("%d%% done."), 100 * (i + 1) / num_itrs);
             viewwindow();
             update_screen();
         }
@@ -881,7 +882,7 @@ static void _debug_acquirement_stats()
 
     if (total_quant == 0 || acq_calls == 0)
     {
-        mpr("No items generated.");
+        mpr(T_("No items generated."));
         return;
     }
 
@@ -1107,7 +1108,7 @@ static void _debug_acquirement_stats()
 
     fprintf(ostat, "-----------------------------------------\n\n");
     fclose(ostat);
-    mpr("Results written into acquirement_stats.txt.");
+    mpr(T_("Results written into acquirement_stats.txt."));
 }
 
 /**
@@ -1122,7 +1123,7 @@ static int _median(vector<int> &counts)
 static void _debug_randart_stats()
 {
     char buf[1024];
-    mprf(MSGCH_PROMPT, "Enter name of item (or ITEM spec): ");
+    mprf(MSGCH_PROMPT, T_("Enter name of item (or ITEM spec): "));
     if (cancellable_get_line_autohist(buf, sizeof buf) || !*buf)
     {
         canned_msg(MSG_OK);
@@ -1182,7 +1183,7 @@ static void _debug_randart_stats()
         if (kbhit())
         {
             getch_ck();
-            mpr("Stopping early due to keyboard input.");
+            mpr(T_("Stopping early due to keyboard input."));
             break;
         }
 
@@ -1265,7 +1266,7 @@ static void _debug_randart_stats()
         if (num_itrs >= 10 && (i + 1) % (num_itrs / 10) == 0)
         {
             clear_messages();
-            mprf("%d%% done.", 100 * (i + 1) / num_itrs);
+            mprf(T_("%d%% done."), 100 * (i + 1) / num_itrs);
             viewwindow();
             update_screen();
         }
@@ -1327,13 +1328,13 @@ static void _debug_randart_stats()
     }
 
     fprintf(ostat, "\n-----------------------------------------\n\n");
-    mpr("Results written into 'randart_stats.txt'.");
+    mpr(T_("Results written into 'randart_stats.txt'."));
     fclose(ostat);
 }
 
 void debug_item_statistics()
 {
-    mpr("Generate stats for: [a] acquirement [b] randart properties");
+    mpr(T_("Generate stats for: [a] acquirement [b] randart properties"));
     flush_prev_message();
 
     const int keyin = toalower(get_ch());
@@ -1353,7 +1354,7 @@ void wizard_draw_card()
     char buf[80];
     if (cancellable_get_line_autohist(buf, sizeof buf))
     {
-        mpr("Unknown card.");
+        mpr(T_("Unknown card."));
         return;
     }
 
@@ -1374,7 +1375,7 @@ void wizard_draw_card()
         }
     }
     if (!found_card)
-        mpr("Unknown card.");
+        mpr(T_("Unknown card."));
 }
 
 void wizard_identify_all_items()
@@ -1428,7 +1429,7 @@ void wizard_recharge_evokers()
 
         evoker_debt(dummy.sub_type) = 0;
     }
-    mpr("Evokers recharged.");
+    mpr(T_("Evokers recharged."));
 }
 
 void wizard_unobtain_runes_and_orb()
@@ -1438,6 +1439,6 @@ void wizard_unobtain_runes_and_orb()
     you.chapter = CHAPTER_ORB_HUNTING;
     invalidate_agrid(true);
 
-    mpr("Unobtained all runes and the Orb of Zot.");
+    mpr(T_("Unobtained all runes and the Orb of Zot."));
 }
 #endif

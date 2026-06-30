@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "arena.h"
+#include "database.h"
 
 #include <stdexcept>
 
@@ -834,7 +835,7 @@ namespace arena
             while (fight_is_on() && !contest_cancelled)
             {
 #ifdef ARENA_VERBOSE
-                mprf("---- Turn #%d ----", turns);
+                mprf(T_("---- Turn #%d ----"), turns);
 #endif
 
                 if (crawl_state.terminal_resized)
@@ -865,7 +866,7 @@ namespace arena
 
         if (contest_cancelled)
         {
-            mpr("Cancelling contest at user request");
+            mpr(T_("Cancelling contest at user request"));
             clear_messages();
             return;
         }
@@ -1074,7 +1075,7 @@ namespace arena
                     trials_done, trials_done > 1 ? "s" : "");
             }
 
-            mpr("---- Contest finished ----\n" + outcome);
+            mpr(T_("---- Contest finished ----\n") + outcome);
             if (!skipped_arena_ui)
             {
                 ui::message(outcome, "Arena results:",
@@ -1198,11 +1199,11 @@ void arena_placed_monster(monster* mons)
     const bool summoned = mons->is_summoned();
 
 #ifdef ARENA_VERBOSE
-    mprf("%s %s!",
+    mprf(T_("%s %s!"),
          mons->full_name(DESC_A).c_str(),
-         arena::is_respawning                ? "respawns" :
-         (summoned && ! arena::real_summons) ? "is summoned"
-                                             : "enters the arena");
+         arena::is_respawning                ? T_("respawns") :
+         (summoned && ! arena::real_summons) ? T_("is summoned")
+                                             : T_("enters the arena"));
 #endif
 
     for (mon_inv_iterator ii(*mons); ii; ++ii)
@@ -1275,7 +1276,7 @@ void arena_monster_died(monster* mons, killer_type killer,
              && arena::faction_b.active_members <= 0)
     {
         if (mons->flags & MF_HARD_RESET && !MON_KILL(killer))
-            mpr("Last arena monster was dismissed.");
+            mpr(T_("Last arena monster was dismissed."));
         // If all monsters are dead, and the last one to die is a giant
         // spore or ball lightning, then that monster's faction is the
         // winner, since self-destruction is their purpose. But if a

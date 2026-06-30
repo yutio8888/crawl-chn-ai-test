@@ -8,6 +8,7 @@
 #include "wiz-mon.h"
 
 #include <sstream>
+#include "database.h"
 
 #include "abyss.h"
 #include "act-iter.h"
@@ -53,7 +54,7 @@
 void wizard_create_spec_monster_name()
 {
     char specs[1024];
-    mprf(MSGCH_PROMPT, "Enter monster name (or MONS spec) (? for help): ");
+    mprf(MSGCH_PROMPT, T_("Enter monster name (or MONS spec) (? for help): "));
     if (cancellable_get_line_autohist(specs, sizeof specs) || !*specs)
     {
         canned_msg(MSG_OK);
@@ -226,12 +227,12 @@ void debug_list_monsters()
 
     if (total_adj_exp == total_exp)
     {
-        mprf("%d monsters, %d total exp value (%d non-uniq)",
+        mprf(T_("%d monsters, %d total exp value (%d non-uniq)"),
              nfound, total_exp, total_nonuniq_exp);
     }
     else
     {
-        mprf("%d monsters, %d total exp value (%d non-uniq, %d adjusted)",
+        mprf(T_("%d monsters, %d total exp value (%d non-uniq, %d adjusted)"),
              nfound, total_exp, total_nonuniq_exp, total_adj_exp);
     }
 }
@@ -271,7 +272,7 @@ void debug_stethoscope(int mon)
         i = mon;
     else
     {
-        mprf(MSGCH_PROMPT, "Which monster?");
+        mprf(MSGCH_PROMPT, T_("Which monster?"));
 
         direction(stth, direction_chooser_args());
 
@@ -469,7 +470,7 @@ void wizard_detect_creatures()
 #endif
         count++;
     }
-    mprf("Detected %i monster%s.", count, count == 1 ? "" : "s");
+    mprf(T_("Detected %i monster%s."), count, count == 1 ? "" : "s");
 }
 
 // Dismisses all monsters on the level or all monsters that match a user
@@ -479,9 +480,9 @@ void wizard_dismiss_all_monsters(bool force_all)
     char buf[1024] = "";
     if (!force_all)
     {
-        mprf(MSGCH_PROMPT, "What monsters to dismiss (ENTER for all, "
+        mprf(MSGCH_PROMPT, T_("What monsters to dismiss (ENTER for all, "
                            "\"harmful\", \"mobile\", \"los\" or a regex, "
-                           "\"keepitem\" to leave items)? ");
+                           "\"keepitem\" to leave items)? "));
         bool validline = !cancellable_get_line_autohist(buf, sizeof buf);
 
         if (!validline)
@@ -492,7 +493,7 @@ void wizard_dismiss_all_monsters(bool force_all)
     }
 
     int count = dismiss_monsters(buf);
-    mprf("Dismissed %i monster%s.", count, count == 1 ? "" : "s");
+    mprf(T_("Dismissed %i monster%s."), count, count == 1 ? "" : "s");
     // If it was turned off turn autopickup back on if all monsters went away.
     if (!*buf)
         autotoggle_autopickup(false);
@@ -500,7 +501,7 @@ void wizard_dismiss_all_monsters(bool force_all)
 
 void debug_make_monster_shout(monster* mon)
 {
-    mprf(MSGCH_PROMPT, "Make the monster (S)hout or (T)alk? ");
+    mprf(MSGCH_PROMPT, T_("Make the monster (S)hout or (T)alk? "));
 
     char type = (char) getchm(KMC_DEFAULT);
     type = toalower(type);
@@ -525,31 +526,31 @@ void debug_make_monster_shout(monster* mon)
     else
     {
         if (mon->invisible())
-            mpr("The monster is invisible and likely won't speak.");
+            mpr(T_("The monster is invisible and likely won't speak."));
 
         if (silenced(you.pos()) && !silenced(mon->pos()))
         {
-            mpr("You are silenced but the monster isn't; you will "
-                "probably hear/see nothing.");
+            mpr(T_("You are silenced but the monster isn't; you will "
+                "probably hear/see nothing."));
         }
         else if (!silenced(you.pos()) && silenced(mon->pos()))
-            mpr("The monster is silenced and likely won't say anything.");
+            mpr(T_("The monster is silenced and likely won't say anything."));
         else if (silenced(you.pos()) && silenced(mon->pos()))
         {
-            mpr("Both you and the monster are silenced, so you likely "
-                "won't hear anything.");
+            mpr(T_("Both you and the monster are silenced, so you likely "
+                "won't hear anything."));
         }
 
         for (int i = 0; i< num_times; ++i)
             mons_speaks(mon);
     }
 
-    mpr("== Done ==");
+    mpr(T_("== Done =="));
 }
 
 void wizard_apply_monster_blessing(monster* mon)
 {
-    mprf(MSGCH_PROMPT, "Apply blessing of the (S)hining One? ");
+    mprf(MSGCH_PROMPT, T_("Apply blessing of the (S)hining One? "));
 
     char type = (char) getchm(KMC_DEFAULT);
     type = toalower(type);
@@ -562,7 +563,7 @@ void wizard_apply_monster_blessing(monster* mon)
     god_type god = GOD_SHINING_ONE;
 
     if (!bless_follower(mon, god, true))
-        mprf("%s won't bless this monster for you!", god_name(god).c_str());
+        mprf(T_("%s won't bless this monster for you!"), god_name(god).c_str());
 }
 
 void wizard_give_monster_item(monster* mon)
@@ -570,7 +571,7 @@ void wizard_give_monster_item(monster* mon)
     mon_itemuse_type item_use = mons_itemuse(*mon);
     if (item_use < MONUSE_STARTING_EQUIPMENT)
     {
-        mpr("That type of monster can't use any items.");
+        mpr(T_("That type of monster can't use any items."));
         return;
     }
 
@@ -584,7 +585,7 @@ void wizard_give_monster_item(monster* mon)
 
     if (item_is_equipped(item))
     {
-        mpr("Can't give equipped items to a monster.");
+        mpr(T_("Can't give equipped items to a monster."));
         return;
     }
 
@@ -592,7 +593,7 @@ void wizard_give_monster_item(monster* mon)
 
     if (mon_slot == NUM_MONSTER_SLOTS)
     {
-        mpr("You can't give that type of item to a monster.");
+        mpr(T_("You can't give that type of item to a monster."));
         return;
     }
 
@@ -603,7 +604,7 @@ void wizard_give_monster_item(monster* mon)
     }
 
     if (!mon->take_item(player_slot, mon_slot))
-        mpr("Error: monster failed to take item.");
+        mpr(T_("Error: monster failed to take item."));
 }
 
 static void _move_player(const coord_def& where)
@@ -658,7 +659,7 @@ void wizard_move_player_or_monster(const coord_def& where)
 
     if (!in_bounds(where))
     {
-        mpr("Cannot move out of bounds.");
+        mpr(T_("Cannot move out of bounds."));
         return;
     }
 
@@ -666,7 +667,7 @@ void wizard_move_player_or_monster(const coord_def& where)
 
     if (already_moving)
     {
-        mpr("Already doing a move command.");
+        mpr(T_("Already doing a move command."));
         return;
     }
 
@@ -678,7 +679,7 @@ void wizard_move_player_or_monster(const coord_def& where)
     {
         if (crawl_state.arena_suspended)
         {
-            mpr("You can't move yourself into the arena.");
+            mpr(T_("You can't move yourself into the arena."));
             more();
             return;
         }
@@ -694,7 +695,7 @@ void wizard_make_monster_summoned(monster* mon)
 {
     if (mon->is_summoned())
     {
-        mprf(MSGCH_PROMPT, "Monster is already summoned.");
+        mprf(MSGCH_PROMPT, T_("Monster is already summoned."));
         return;
     }
 
@@ -736,13 +737,13 @@ void wizard_make_monster_summoned(monster* mon)
         spell_type spell = spell_by_name(specs, true);
         if (spell == SPELL_NO_SPELL)
         {
-            mprf(MSGCH_PROMPT, "No such spell.");
+            mprf(MSGCH_PROMPT, T_("No such spell."));
             return;
         }
         type = (int) spell;
     }
     mon->mark_summoned(type, dur);
-    mpr("Monster is now summoned.");
+    mpr(T_("Monster is now summoned."));
 }
 
 void wizard_polymorph_monster(monster* mon)
@@ -758,19 +759,19 @@ void wizard_polymorph_monster(monster* mon)
 
     if (invalid_monster_type(type))
     {
-        mprf(MSGCH_PROMPT, "Invalid monster type.");
+        mprf(MSGCH_PROMPT, T_("Invalid monster type."));
         return;
     }
 
     if (type == old_type)
     {
-        mpr("Old type and new type are the same, not polymorphing.");
+        mpr(T_("Old type and new type are the same, not polymorphing."));
         return;
     }
 
     if (mons_species(type) == mons_species(old_type))
     {
-        mpr("Target species must be different from current species.");
+        mpr(T_("Target species must be different from current species."));
         return;
     }
 
@@ -786,7 +787,7 @@ void wizard_polymorph_monster(monster* mon)
 
     if (mon->type == old_type)
     {
-        mpr("Trying harder");
+        mpr(T_("Trying harder"));
         change_monster_type(mon, type);
         if (!mon->alive())
         {
@@ -798,9 +799,9 @@ void wizard_polymorph_monster(monster* mon)
     }
 
     if (mon->type == old_type)
-        mpr("Polymorph failed.");
+        mpr(T_("Polymorph failed."));
     else if (mon->type != type)
-        mpr("Monster turned into something other than the desired type.");
+        mpr(T_("Monster turned into something other than the desired type."));
 }
 
 void debug_pathfind(int idx)
@@ -808,7 +809,7 @@ void debug_pathfind(int idx)
     if (idx == NON_MONSTER)
         return;
 
-    mpr("Choose a destination!");
+    mpr(T_("Choose a destination!"));
 #ifndef USE_TILE_LOCAL
     more();
 #endif
@@ -825,7 +826,7 @@ void debug_pathfind(int idx)
     }
 
     monster& mon = env.mons[idx];
-    mprf("Attempting to calculate a path from (%d, %d) to (%d, %d)...",
+    mprf(T_("Attempting to calculate a path from (%d, %d) to (%d, %d)..."),
          mon.pos().x, mon.pos().y, dest.x, dest.y);
     monster_pathfind mp;
     bool success = mp.init_pathfind(&mon, dest, true, true);
@@ -838,21 +839,21 @@ void debug_pathfind(int idx)
             tiles.update_minimap(pos);
 #endif
         string path_str;
-        mpr("Here's the shortest path: ");
+        mpr(T_("Here's the shortest path: "));
         for (coord_def pos : path)
             path_str += make_stringf("(%d, %d)  ", pos.x, pos.y);
         mpr(path_str);
-        mprf("-> path length: %u", (unsigned int)path.size());
+        mprf(T_("-> path length: %u"), (unsigned int)path.size());
 
         mpr("");
         path = mp.calc_waypoints();
         path_str = "";
         mpr("");
-        mpr("And here are the needed waypoints: ");
+        mpr(T_("And here are the needed waypoints: "));
         for (coord_def pos : path)
             path_str += make_stringf("(%d, %d)  ", pos.x, pos.y);
         mpr(path_str);
-        mprf("-> #waypoints: %u", (unsigned int)path.size());
+        mprf(T_("-> #waypoints: %u"), (unsigned int)path.size());
     }
 }
 
@@ -881,12 +882,12 @@ void debug_miscast(int target_index)
 
     if (!target->alive())
     {
-        mpr("Can't make already dead target miscast.");
+        mpr(T_("Can't make already dead target miscast."));
         return;
     }
 
     char specs[100];
-    mprf(MSGCH_PROMPT, "Miscast which school or spell, by name? ");
+    mprf(MSGCH_PROMPT, T_("Miscast which school or spell, by name? "));
     if (cancellable_get_line_autohist(specs, sizeof specs) || !*specs)
     {
         canned_msg(MSG_OK);
@@ -907,12 +908,12 @@ void debug_miscast(int target_index)
 
     if (spell == SPELL_NO_SPELL && school == spschool::none)
     {
-        mpr("No matching spell or spell school.");
+        mpr(T_("No matching spell or spell school."));
         return;
     }
     else if (spell != SPELL_NO_SPELL && school != spschool::none)
     {
-        mprf("Ambiguous: can be spell '%s' or school '%s'.",
+        mprf(T_("Ambiguous: can be spell '%s' or school '%s'."),
             spell_title(spell), spelltype_short_name(school));
         return;
     }
@@ -924,20 +925,20 @@ void debug_miscast(int target_index)
 
         if (!disciplines)
         {
-            mprf("Spell '%s' has no disciplines.", spell_title(spell));
+            mprf(T_("Spell '%s' has no disciplines."), spell_title(spell));
             return;
         }
     }
 
     if (spell != SPELL_NO_SPELL)
-        mprf("Miscasting spell %s.", spell_title(spell));
+        mprf(T_("Miscasting spell %s."), spell_title(spell));
     else
-        mprf("Miscasting school %s.", spelltype_long_name(school));
+        mprf(T_("Miscasting school %s."), spelltype_long_name(school));
 
     if (spell != SPELL_NO_SPELL)
-        mprf(MSGCH_PROMPT, "Enter fail: ");
+        mprf(MSGCH_PROMPT, T_("Enter fail: "));
     else
-        mprf(MSGCH_PROMPT, "Enter level, fail: ");
+        mprf(MSGCH_PROMPT, T_("Enter level, fail: "));
 
     if (cancellable_get_line_autohist(specs, sizeof specs) || !*specs)
     {
@@ -963,7 +964,7 @@ void debug_miscast(int target_index)
     {
         if (spell != SPELL_NO_SPELL)
         {
-            mpr("Can only enter spell level for schools, not spells.");
+            mpr(T_("Can only enter spell level for schools, not spells."));
             return;
         }
 
@@ -975,7 +976,7 @@ void debug_miscast(int target_index)
         }
         else if (level > 9)
         {
-            mpr("Spell level can be at most 9.");
+            mpr(T_("Spell level can be at most 9."));
             return;
         }
     }
@@ -993,7 +994,7 @@ void debug_miscast(int target_index)
     {
         if (kbhit())
         {
-            mpr("Key pressed, interrupting miscast testing.");
+            mpr(T_("Key pressed, interrupting miscast testing."));
             getchm();
             break;
         }
@@ -1013,7 +1014,7 @@ void debug_miscast(int target_index)
 #ifdef DEBUG_BONES
 void debug_ghosts()
 {
-    mprf(MSGCH_PROMPT, "(C)reate, create (T)emporary, or (L)oad bones file?");
+    mprf(MSGCH_PROMPT, T_("(C)reate, create (T)emporary, or (L)oad bones file?"));
     const char c = toalower(getchm());
 
     if (c == 'c')

@@ -17,6 +17,7 @@
 #include "luaterp.h"
 
 #include "clua.h"
+#include "database.h"
 #include "dlua.h"
 #include "message.h"
 #include "options.h"
@@ -112,7 +113,7 @@ static void _run_dlua_interpreter(lua_State *ls)
     _luaterp_running = true;
 
     int status;
-    mpr("[Hit ESC to exit interpreter.]");
+    mpr(T_("[Hit ESC to exit interpreter.]"));
     while (!crawl_state.seen_hups && (status = _loadline(ls)) != -1)
     {
         if (status == 0)
@@ -124,7 +125,7 @@ static void _run_dlua_interpreter(lua_State *ls)
             lua_insert(ls, 1);
             if (lua_pcall(ls, lua_gettop(ls) - 1, 0, 0) != 0)
             {
-                mprf(MSGCH_ERROR, "error calling __echo (%s)",
+                mprf(MSGCH_ERROR, T_("error calling __echo (%s)"),
                                   lua_tostring(ls, -1));
             }
         }
@@ -150,7 +151,7 @@ void debug_terp_dlua(CLua &vm)
         {
             vm.execfile(file.c_str(), false, false);
             if (!vm.error.empty())
-                mprf(MSGCH_ERROR, "Lua error: %s", vm.error.c_str());
+                mprf(MSGCH_ERROR, T_("Lua error: %s"), vm.error.c_str());
         }
         _loaded_terp_files = true;
     }

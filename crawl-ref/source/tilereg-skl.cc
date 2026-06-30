@@ -62,7 +62,7 @@ int SkillRegion::handle_mouse(wm_mouse_event &event)
         if (!you.can_currently_train[skill])
             mpr(T_("You cannot train this skill."));
         else if (you.has_mutation(MUT_DISTRIBUTED_TRAINING))
-            mpr("You can't change your training allocations!");
+            mpr(T_("You can't change your training allocations!"));
         else if (you.skills[skill] >= 27)
             mpr(T_("There's no point to toggling this skill anymore."));
         else

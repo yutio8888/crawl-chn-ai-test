@@ -7,6 +7,8 @@
 
 #include "chardump.h"
 
+#include "database.h"
+
 #include <string>
 #include <cctype>
 #include <cinttypes>
@@ -1954,13 +1956,13 @@ static bool _write_dump(const string &fname, const dump_params &par, bool quiet)
         succeeded = true;
         if (!quiet)
 #ifdef DGAMELAUNCH
-            mpr("Char dumped successfully.");
+            mpr(T_("Char dumped successfully."));
 #else
-            mprf("Char dumped to '%s'.", file_name.c_str());
+            mprf(T_("Char dumped to '%s'."), file_name.c_str());
 #endif
     }
     else
-        mprf(MSGCH_ERROR, "Error opening file '%s'", file_name.c_str());
+        mprf(MSGCH_ERROR, T_("Error opening file '%s'"), file_name.c_str());
 
     return succeeded;
 }

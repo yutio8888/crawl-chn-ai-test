@@ -27,6 +27,7 @@
 #include "mapdef.h" // item_spec
 #include "mon-util.h"
 #include "mpr.h"
+#include "database.h"
 #include "output.h"
 #include "player.h"
 #include "player-equip.h"
@@ -153,7 +154,7 @@ static int l_item_do_remove(lua_State *ls)
 {
     if (you.turn_is_over)
     {
-        mpr("Turn is over");
+        mpr(T_("Turn is over"));
         return 0;
     }
 
@@ -161,13 +162,13 @@ static int l_item_do_remove(lua_State *ls)
 
     if (!item || !in_inventory(*item))
     {
-        mpr("Bad item");
+        mpr(T_("Bad item"));
         return 0;
     }
 
     if (!item_is_equipped(*item))
     {
-        mpr("Item is not equipped");
+        mpr(T_("Item is not equipped"));
         return 0;
     }
 

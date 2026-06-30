@@ -1117,9 +1117,9 @@ static void _confuse_monster(monster* mons, int sever)
           &env.mons[ANON_FRIENDLY_MONSTER], random2(sever) * 10)))
     {
         if (was_confused)
-            simple_monster_message(*mons, " looks rather more confused.");
+            simple_monster_message(*mons, T_(" looks rather more confused."));
         else
-            simple_monster_message(*mons, " looks rather confused.");
+            simple_monster_message(*mons, T_(" looks rather confused."));
     }
 }
 
@@ -1724,7 +1724,7 @@ static int _xom_count_and_move_group(int min_range, int max_range,
 
             if (moving_mons->blink_to(empty, true))
             {
-                simple_monster_message(*moving_mons, " is shoved forward by the hand of Xom!");
+                simple_monster_message(*moving_mons, T_(" is shoved forward by the hand of Xom!"));
                 moving_mons->drain_action_energy();
                 behaviour_event(moving_mons, ME_DISTURB, nullptr, you.pos());
                 ++moved;
@@ -1980,7 +1980,7 @@ static void _xom_fake_shatter(int /*sever*/)
     else
     {
         noisy(spell_effect_noise(SPELL_SHATTER), you.pos());
-        mprf(MSGCH_SOUND, "The dungeon rumbles... harmlessly?");
+        mprf(MSGCH_SOUND, T_("The dungeon rumbles... harmlessly?"));
     }
 
     run_animation(ANIMATION_SHAKE_VIEWPORT, UA_PLAYER);
@@ -2413,7 +2413,7 @@ static void _xom_change_scenery(int /*sever*/)
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, ("scenery: "
             + comma_separated_line(terse.begin(), terse.end(), ", ", ", ")).c_str()),
             true);
-        mprf("%s!",
+        mprf(T_("%s!"),
              comma_separated_line(effects.begin(), effects.end(),
                                   ", and ").c_str());
     }
@@ -2489,7 +2489,7 @@ static void _xom_open_and_close_doors(int /* sever */)
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, ("scenery: "
             + comma_separated_line(terse.begin(), terse.end(), ", ", ", ")).c_str()),
             true);
-        mprf("%s!",
+        mprf(T_("%s!"),
              comma_separated_line(effects.begin(), effects.end(),
                                   ", and ").c_str());
     }
@@ -2891,7 +2891,7 @@ static void _xom_mass_charm(int sever)
         if (iters == 0 || (iters > 1 && affected <= target_count / 2
             && application->get_hit_dice() + random_range(-1, 1) <= hd_target))
         {
-            simple_monster_message(*application, " is charmed.");
+            simple_monster_message(*application, T_(" is charmed."));
             application->add_ench(mon_enchant(ENCH_CHARM, &you, time));
             affected++;
         }
@@ -2936,7 +2936,7 @@ static void _xom_wave_of_despair(int sever)
 
     draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, MAGENTA, true, 35);
     if (Options.language == lang_t::ZH)
-        mprf(MSGCH_DANGER, "一股令人绝望的恐惧之潮淹没了你和周围的一切！");
+        mprf(MSGCH_DANGER, T_("A wave of despair washes over you and everything around you!"));
     else
         god_speaks(GOD_XOM, _get_xom_speech("wave of despair").c_str());
 
@@ -3506,7 +3506,7 @@ static void _xom_player_confusion_effect(int sever)
     if (you.can_drink())
     {
         god_speaks(GOD_XOM, _get_xom_speech("confusion").c_str());
-        mprf(MSGCH_WARN, "You are %sconfused.", conf ? "more " : "");
+        mprf(MSGCH_WARN, T_("You are %sconfused."), conf ? "more " : "");
     }
     else
     {
@@ -3515,7 +3515,7 @@ static void _xom_player_confusion_effect(int sever)
         const bool was_mighty = you.duration[DUR_MIGHT];
         you.increase_duration(DUR_MIGHT, dur);
         god_speaks(GOD_XOM, _get_xom_speech("drinkless confusion").c_str());
-        mprf(MSGCH_WARN, "You feel %s and %sconfused.",
+        mprf(MSGCH_WARN, T_("You feel %s and %sconfused."),
             was_mighty ? "mightier" : "very mighty", conf ? "more " : "");
     }
 
@@ -3675,12 +3675,8 @@ bool move_stair(coord_def stair_pos, bool away, bool allow_under)
 
     string stair_str = feature_description_at(stair_pos, false, DESC_THE);
 
-    if (Options.language == lang_t::ZH)
-        mprf(away ? "%s从你身边滑走了！" : "%s向你滑了过来！",
-             stair_str.c_str());
-    else
-        mprf("%s slides %s you!", stair_str.c_str(),
-             away ? "away from" : "towards");
+    mprf(away ? T_("%s slides away from you!") : T_("%s slides towards you!"),
+         stair_str.c_str());
 
     // Animate stair moving.
     const feature_def &feat_def = get_feature_def(feat);
@@ -4132,7 +4128,7 @@ static void _xom_brain_drain(int sever)
         }
         else
         {
-            mprf(MSGCH_WARN, "You feel nearly all of your power leaking away!");
+            mprf(MSGCH_WARN, T_("You feel nearly all of your power leaking away!"));
             const string note = make_stringf("drained mp");
             take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
         }
@@ -4219,7 +4215,7 @@ static void _xom_grants_word_of_recall(int /*sever*/)
         xom_speech = "grant voiceless word of recall";
 
     god_speaks(GOD_XOM, _get_xom_speech(xom_speech).c_str());
-    mprf(MSGCH_WARN, "%s is forced to slowly start %s a word of recall!",
+    mprf(MSGCH_WARN, T_("%s is forced to slowly start %s a word of recall!"),
                      targetable[0]->name(DESC_A, true, false).c_str(),
                      phrasing.c_str());
     mon_enchant chant_timer = mon_enchant(ENCH_WORD_OF_RECALL, targetable[0], duration);
@@ -5351,12 +5347,8 @@ void xom_new_level_noise_or_stealth()
         if (!player_under_penance(GOD_XOM) && coinflip())
         {
             god_speaks(GOD_XOM, _get_xom_speech("stealth player").c_str());
-            if (Options.language == lang_t::ZH)
-                mpr(you.duration[DUR_STEALTH] ? "你感觉自己更隐秘了。"
-                                              : "你感觉自己变隐秘了。");
-            else
-                mpr(you.duration[DUR_STEALTH] ? "You feel more stealthy."
-                                              : "You feel stealthy.");
+            mpr(you.duration[DUR_STEALTH] ? T_("You feel more stealthy.")
+                                          : T_("You feel stealthy."));
             you.increase_duration(DUR_STEALTH, 10 + random2(80));
             take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1,
                            "stealth player"), true);
@@ -5764,7 +5756,7 @@ void debug_xom_effects()
     }
     fprintf(ostat, "---- FINISHED XOM DEBUG TESTING ----\n");
     fclose(ostat);
-    mpr("Results written into 'xom_debug.stat'.");
+    mpr(T_("Results written into 'xom_debug.stat'."));
 
     you.raw_piety= real_piety;
     you.religion = real_god;

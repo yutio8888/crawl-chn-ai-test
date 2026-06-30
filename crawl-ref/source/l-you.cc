@@ -14,6 +14,7 @@
 #include "branch.h"
 #include "chardump.h"
 #include "cluautil.h"
+#include "database.h"
 #include "delay.h"
 #include "describe.h"
 #include "english.h"
@@ -1848,7 +1849,7 @@ LUAFN(you_change_species)
 
     if (sp == SP_UNKNOWN)
     {
-        mpr("That species isn't available.");
+        mpr(T_("That species isn't available."));
         PLUARET(boolean, false);
     }
 
@@ -1863,7 +1864,7 @@ LUAFN(you_set_xl)
     bool train = lua_toboolean(ls, 2); // whether to train skills
     if (newxl < 1 || newxl > you.get_max_xl())
     {
-        mprf("Can't change to invalid xl %d", newxl);
+        mprf(T_("Can't change to invalid xl %d"), newxl);
         PLUARET(boolean, false);
     }
     if (newxl == you.experience_level)

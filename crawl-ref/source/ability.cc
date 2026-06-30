@@ -1642,7 +1642,7 @@ static void _print_talent_description(const talent& tal)
 
 void no_ability_msg()
 {
-    mpr("抱歉，你还不够强，没有特殊能力。");
+    mpr(T_("Sorry, you're not good enough to have a special ability."));
 }
 
 // Prompts the user for an ability to use, first checking the lua hook
@@ -1665,7 +1665,7 @@ bool activate_ability()
     if (!clua.callfn("c_choose_ability", ">s", &luachoice))
     {
         if (!clua.error.empty())
-            mprf(MSGCH_ERROR, "Lua错误: %s", clua.error.c_str());
+            mprf(MSGCH_ERROR, T_("Lua error: %s"), clua.error.c_str());
     }
     else if (!luachoice.empty())
     {
@@ -1736,7 +1736,7 @@ bool activate_ability()
                 // If we can't, cancel out.
                 if (selected < 0)
                 {
-                    mpr("你不能那样做。");
+                    mpr(T_("You can't do that."));
                     crawl_state.zero_turns_taken();
                     return false;
                 }
@@ -1761,7 +1761,7 @@ static bool _can_hop(bool quiet)
     if (you.duration[DUR_NO_HOP])
     {
         if (!quiet)
-            mpr("你的腿太累了，跳不动了。");
+            mpr(T_("Your legs are too worn out to hop."));
         return false;
     }
     return _can_movement_ability(quiet);
@@ -1784,7 +1784,7 @@ static bool _can_rising_flame(bool quiet)
     if (you.duration[DUR_RISING_FLAME])
     {
         if (!quiet)
-            mpr("你已经在上升了！");
+            mpr(T_("You're already rising!"));
         return false;
     }
     if (you.where_are_you == BRANCH_DUNGEON && you.depth == 1)
@@ -1794,14 +1794,14 @@ static bool _can_rising_flame(bool quiet)
         else
         {
             if (!quiet)
-                mpr("没有宝珠，你无法从这个楼层升起！");
+                mpr(T_("You can't rise from this level without the Orb!"));
             return false;
         }
     }
     if (!level_above().is_valid())
     {
         if (!quiet)
-            mpr("你无法从这个楼层升起！");
+            mpr(T_("You can't rise from this level!"));
         return false;
     }
     return true;
@@ -1877,7 +1877,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
     if (testbits(abil.flags, abflag::card) && !deck_cards(ability_deck(abil.ability)))
     {
         if (!quiet)
-            mpr("那副牌是空的！");
+            mpr(T_("That deck is empty!"));
         return false;
     }
 
@@ -1926,9 +1926,9 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             if (!quiet)
             {
                 if (result == 0)
-                    mpr("没有懂得欣赏的观众！");
+                    mpr(T_("There's no appreciative audience!"));
                 else if (result == -1)
-                    mpr("你不够狂热，无法影响这群观众！");
+                    mpr(T_("You are not zealous enough to affect this audience!"));
             }
             return false;
         }
@@ -1939,7 +1939,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (env.sanctuary_time)
         {
             if (!quiet)
-                mpr("这个楼层已经有一个避难所了。");
+                mpr(T_("There's already a sanctuary in place on this level."));
             return false;
         }
         return true;
@@ -1948,7 +1948,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (!you.gold)
         {
             if (!quiet)
-                mpr("你没有什么可捐赠的！");
+                mpr(T_("You have nothing to donate!"));
             return false;
         }
         return true;
@@ -1957,7 +1957,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (okawaru_duel_active() || player_in_branch(BRANCH_ARENA))
         {
             if (!quiet)
-                mpr("你已经在单挑中了！");
+                mpr(T_("You are already engaged in single combat!"));
             return false;
         }
         return true;
@@ -1967,7 +1967,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (feat_eliminates_items(env.grid(you.pos())))
         {
             if (!quiet)
-                mpr("你在这里收到的任何礼物都会掉落并丢失！");
+                mpr(T_("Any gift you received here would fall and be lost!"));
             return false;
         }
         return true;
@@ -1982,7 +1982,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_DEATHS_DOOR])
         {
             if (!quiet)
-                mpr("在死亡之门中无法治疗。");
+                mpr(T_("You can't heal while in death's door."));
             return false;
         }
         return true;
@@ -1996,7 +1996,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             && !you.duration[DUR_WEAK])
         {
             if (!quiet)
-                mpr("你没有任何不适！");
+                mpr(T_("Nothing ails you!"));
             return false;
         }
         return true;
@@ -2005,7 +2005,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_DIVINE_VIGOUR])
         {
             if (!quiet)
-                mpr("你已经被赐予了神圣活力！");
+                mpr(T_("You have already been granted divine vigour!"));
             return false;
         }
         return true;
@@ -2014,7 +2014,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_OOZEMANCY])
         {
             if (!quiet)
-                mpr("你已经在召唤软泥了！");
+                mpr(T_("You are already calling forth ooze!"));
             return false;
         }
         return true;
@@ -2023,7 +2023,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (!player_in_branch(BRANCH_ABYSS))
         {
             if (!quiet)
-                mpr("你不在深渊中！");
+                mpr(T_("You aren't in the Abyss!"));
             return false;
         }
         return true;
@@ -2035,7 +2035,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (player_in_branch(BRANCH_ABYSS))
         {
             if (!quiet)
-                mpr("你已经在这里了！");
+                mpr(T_("You're already here!"));
             return false;
         }
         return true;
@@ -2058,7 +2058,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (spaces.empty())
         {
             if (!quiet)
-                mpr("这里没有足够的空间生长荆棘。");
+                mpr(T_("There isn't enough space to grow briars here."));
             return false;
         }
         return true;
@@ -2068,7 +2068,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_EXHAUSTED])
         {
             if (!quiet)
-                mpr("你太疲惫了，无法引出力量。");
+                mpr(T_("You're too exhausted to draw out your power."));
             return false;
         }
         if (you.hp == you.hp_max && you.magic_points == you.max_magic_points
@@ -2081,7 +2081,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             && !you.is_constricted())
         {
             if (!quiet)
-                mpr("你不需要引出力量。");
+                mpr(T_("You have no need to draw out power."));
             return false;
         }
         return true;
@@ -2090,7 +2090,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_EXHAUSTED])
         {
             if (!quiet)
-                mpr("你太疲惫了，无法力量跳跃。");
+                mpr(T_("You're too exhausted to power leap."));
             return false;
         }
         return true;
@@ -2099,7 +2099,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_EXHAUSTED])
         {
             if (!quiet)
-                mpr("你太疲惫了，无法释放末日之力。");
+                mpr(T_("You're too exhausted to unleash your apocalyptic power."));
             return false;
         }
         return true;
@@ -2110,7 +2110,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (clouds.empty())
         {
             if (!quiet)
-                mpr("你看不到任何可以强化的云雾。");
+                mpr(T_("You can't see any clouds you can empower."));
             return false;
         }
         return true;
@@ -2128,7 +2128,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (draconian_breath_uses_available() <= 0)
         {
             if (!quiet)
-                mpr("你的吐息武器耗尽了。击杀更多敌人吧！");
+                mpr(T_("You have exhausted your breath weapon. Slay more foes!"));
             return false;
         }
         return true;
@@ -2154,13 +2154,13 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_DEATHS_DOOR])
         {
             if (!quiet)
-                mpr("在死亡之门中无法治疗。");
+                mpr(T_("You can't heal while in death's door."));
             return false;
         }
         if (get_real_mp(false) < 1)
         {
             if (!quiet)
-                mpr("你没有足够的先天魔力容量。");
+                mpr(T_("You don't have enough innate magic capacity."));
             return false;
         }
         return true;
@@ -2178,8 +2178,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         {
             if (!quiet)
             {
-                mprf("在%d经验等级内，你将学到足够的"
-                     "assemble a masterpiece.", (COGLIN_GIZMO_XL - you.experience_level));
+                mprf(T_("In %d experience levels, you will have learned enough to assemble a masterpiece."), (COGLIN_GIZMO_XL - you.experience_level));
             }
             return false;
         }
@@ -2344,7 +2343,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         {
             if (!quiet)
             {
-                mprf("%s仍被困在记忆中！",
+                mprf(T_("%s is still trapped in memory!"),
                      hepliaklqana_ally_name().c_str());
             }
             return false;
@@ -2526,7 +2525,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (you.duration[DUR_PRIMORDIAL_NIGHTFALL])
         {
             if (!quiet)
-                mpr("黑夜已经降临了。");
+                mpr(T_("Night has already fallen."));
             return false;
         }
         return true;
@@ -2535,7 +2534,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         if (player_in_branch(BRANCH_CRUCIBLE))
         {
             if (!quiet)
-                mpr("马赫勒布拒绝了你。先忍受熔炉的考验吧！");
+                mpr(T_("Makhleb denies you. Endure the Crucible first!"));
             return false;
         }
         else if (you.form == transformation::slaughter)
@@ -2808,7 +2807,7 @@ static bool _invoke_dragons()
     if (create_monster(mg))
         {
             made_mons = true;
-            mpr("一条龙回应了你的祈祷！");
+            mpr(T_("A dragon answers your prayer!"));
         }
     return made_mons;
 }
@@ -3326,7 +3325,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
             if (god_hates_item(*wpn))
             {
-                mprf(MSGCH_WARN, "%s禁止使用这样的武器！",
+                mprf(MSGCH_WARN, T_("%s forbids using such a weapon!"),
                      god_name(you.religion).c_str());
                 return spret::abort;
             }
@@ -3439,7 +3438,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     case ABIL_ENKINDLE:
     {
         draw_ring_animation(you.pos(), 3, LIGHTCYAN, CYAN, true);
-        mprf(MSGCH_DURATION, "Your flames flare with remembrance!");
+        mprf(MSGCH_DURATION, T_("Your flames flare with remembrance!"));
         you.duration[DUR_ENKINDLED] = (random_range(12, 20)
                                        + (you.props[ENKINDLE_CHARGES_KEY].get_int() * 3))
                                             * BASELINE_DELAY;
@@ -3563,7 +3562,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
 
     case ABIL_YRED_FATHOMLESS_SHACKLES:
         fail_check();
-        mprf(MSGCH_DURATION, "You call down Yredelemnul's inexorable grip.");
+        mprf(MSGCH_DURATION, T_("You call down Yredelemnul's inexorable grip."));
         // XXX: Some invo formula
         you.duration[DUR_FATHOMLESS_SHACKLES] = random_range(15, 25) * BASELINE_DELAY;
         yred_make_blasphemy();
@@ -3616,7 +3615,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
                  you.hands_act("get", "new energy.").c_str());
         }
         else
-            mprf(MSGCH_DURATION, "You can now deal lightning-fast blows.");
+            mprf(MSGCH_DURATION, T_("You can now deal lightning-fast blows."));
 
         you.increase_duration(DUR_FINESSE,
                               10 + random2avg(you.skill(SK_INVOCATIONS, 6), 2),
@@ -3884,7 +3883,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         const item_def* const weapon = you.weapon();
         const string msg = weapon ? weapon->name(DESC_YOUR)
                                   : ("your " + you.hand_name(true));
-        mprf(MSGCH_DURATION, "一层厚厚的粘液在%s上形成了。", msg.c_str());
+        mprf(MSGCH_DURATION, T_("A thick mucus forms on %s."), msg.c_str());
         you.increase_duration(DUR_SLIMIFY,
                               random2avg(you.piety() / 4, 2) + 3, 100);
         break;
@@ -4038,7 +4037,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_WU_JIAN_SERPENTS_LASH:
-        mprf(MSGCH_GOD, "Your muscles tense, ready for explosive movement...");
+        mprf(MSGCH_GOD, T_("Your muscles tense, ready for explosive movement..."));
         you.attribute[ATTR_SERPENTS_LASH] = 2;
         you.redraw_status_lights = true;
         return spret::success;
@@ -4111,12 +4110,12 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         if (feat == DNGN_UNSEEN)
             return spret::abort;
         you.props[WIZ_LAST_FEATURE_TYPE_PROP] = static_cast<int>(feat);
-        mprf("Now building '%s'", dungeon_feature_name(feat));
+        mprf(T_("Now building '%s'"), dungeon_feature_name(feat));
         break;
     }
 #endif
     case ABIL_NON_ABILITY:
-        mpr("Sorry, you can't do that.");
+        mpr(T_("Sorry, you can't do that."));
         break;
 
     default:
