@@ -604,63 +604,63 @@ step out of the flow of time
 
 %%%% 
 Ashenzari warns you of distant threats and treasures.\nAshenzari shows you where magical portals lie.
-阿申扎里警告你远方的威胁和宝藏。\n阿申扎里向你展示魔法传送门的位置。
+艾申扎利警告你远方的威胁和宝藏。\n艾申扎利向你展示魔法传送门的位置。
 
 %%%% 
 Ashenzari will now identify your possessions.
-阿申扎里现在会鉴定你的所有物。
+艾申扎利现在会鉴定你的所有物。
 
 %%%% 
 Ashenzari will no longer identify your possesions.
-阿申扎里不再鉴定你的所有物。
+艾申扎利不再鉴定你的所有物。
 
 %%%% 
 Ashenzari identifies your possessions.
-阿申扎里鉴定你的所有物。
+艾申扎利鉴定你的所有物。
 
 %%%% 
 Ashenzari will now reveal the unseen.
-阿申扎里现在会揭示不可见之物。
+艾申扎利现在会揭示不可见之物。
 
 %%%% 
 Ashenzari will no longer reveal the unseen.
-阿申扎里不再揭示不可见之物。
+艾申扎利不再揭示不可见之物。
 
 %%%% 
 Ashenzari reveals the unseen.
-阿申扎里揭示不可见之物。
+艾申扎利揭示不可见之物。
 
 %%%% 
 Ashenzari will now keep your mind clear.
-阿申扎里现在会保持你头脑清醒。
+艾申扎利现在会保持你头脑清醒。
 
 %%%% 
 Ashenzari will no longer keep your mind clear.
-阿申扎里不再保持你头脑清醒。
+艾申扎利不再保持你头脑清醒。
 
 %%%% 
 Ashenzari keeps your mind clear.
-阿申扎里保持你头脑清醒。
+艾申扎利保持你头脑清醒。
 
 %%%% 
 Ashenzari will now protect you from the dungeon's malevolent forces.
-阿申扎里现在保护你免受地下城恶势力的侵害。
+艾申扎利现在保护你免受地下城恶势力的侵害。
 
 %%%% 
 Ashenzari no longer protects you from the dungeon's malevolent forces.
-阿申扎里不再保护你免受地下城恶势力的侵害。
+艾申扎利不再保护你免受地下城恶势力的侵害。
 
 %%%% 
 Ashenzari protects you from the dungeon's malevolent forces.
-阿申扎里保护你免受地下城恶势力的侵害。
+艾申扎利保护你免受地下城恶势力的侵害。
 
 %%%% 
 Ashenzari reveals the structure of the nearby dungeon.
-阿申扎里揭示附近地下城的结构。
+艾申扎利揭示附近地下城的结构。
 
 %%%% 
 Ashenzari no longer reveals the structure of the nearby dungeon.
-阿申扎里不再揭示附近地下城的结构。
+艾申扎利不再揭示附近地下城的结构。
 
 %%%% 
 Dithmenos quiets all noise in your surroundings.
@@ -2954,55 +2954,55 @@ Ashenzari
 艾申扎利
 %%%%
 Ashenzari identifies your possessions.
-阿申扎里鉴定你的所有物。
+艾申扎利鉴定你的所有物。
 %%%%
 ashenzari invites you to share a vision and a curse%s.
-阿申扎里邀请你分享一个关于%1$s的幻象和诅咒。
+艾申扎利邀请你分享一个关于%1$s的幻象和诅咒。
 %%%%
 Ashenzari keeps your mind clear.
-阿申扎里保持你头脑清醒。
+艾申扎利保持你头脑清醒。
 %%%%
 Ashenzari no longer protects you from the dungeon's malevolent forces.
-阿申扎里不再保护你免受地下城恶势力的侵害。
+艾申扎利不再保护你免受地下城恶势力的侵害。
 %%%%
 Ashenzari no longer reveals the structure of the nearby dungeon.
-阿申扎里不再揭示附近地下城的结构。
+艾申扎利不再揭示附近地下城的结构。
 %%%%
 Ashenzari protects you from the dungeon's malevolent forces.
-阿申扎里保护你免受地下城恶势力的侵害。
+艾申扎利保护你免受地下城恶势力的侵害。
 %%%%
 Ashenzari reveals the structure of the nearby dungeon.
-阿申扎里揭示附近地下城的结构。
+艾申扎利揭示附近地下城的结构。
 %%%%
 Ashenzari reveals the unseen.
-阿申扎里揭示不可见之物。
+艾申扎利揭示不可见之物。
 %%%%
 Ashenzari supports the following skill groups because of your curses:
-由于你的诅咒，阿申扎里支持以下技能组：
+由于你的诅咒，艾申扎利支持以下技能组：
 %%%%
 Ashenzari warns you of distant threats and treasures.\nAshenzari shows you where magical portals lie.
-阿申扎里警告你远方的威胁和宝藏。\n阿申扎里向你展示魔法传送门的位置。
+艾申扎利警告你远方的威胁和宝藏。\n艾申扎利向你展示魔法传送门的位置。
 %%%%
 Ashenzari will no longer identify your possesions.
-阿申扎里不再鉴定你的所有物。
+艾申扎利不再鉴定你的所有物。
 %%%%
 Ashenzari will no longer keep your mind clear.
-阿申扎里不再保持你头脑清醒。
+艾申扎利不再保持你头脑清醒。
 %%%%
 Ashenzari will no longer reveal the unseen.
-阿申扎里不再揭示不可见之物。
+艾申扎利不再揭示不可见之物。
 %%%%
 Ashenzari will now identify your possessions.
-阿申扎里现在会鉴定你的所有物。
+艾申扎利现在会鉴定你的所有物。
 %%%%
 Ashenzari will now keep your mind clear.
-阿申扎里现在会保持你头脑清醒。
+艾申扎利现在会保持你头脑清醒。
 %%%%
 Ashenzari will now protect you from the dungeon's malevolent forces.
-阿申扎里现在保护你免受地下城恶势力的侵害。
+艾申扎利现在保护你免受地下城恶势力的侵害。
 %%%%
 Ashenzari will now reveal the unseen.
-阿申扎里现在会揭示不可见之物。
+艾申扎利现在会揭示不可见之物。
 %%%%
 Assign waypoint to what number? (0-9%s)
 将路径点分配给哪个编号？（0-9%s）
@@ -3406,7 +3406,7 @@ Calm down first, please.
 请先冷静下来。
 %%%%
  can be affected by reciting Zin's laws.
-会受到吉恩律法吟诵的影响。
+会受到辛律法吟诵的影响。
 %%%%
  can burrow through diggable terrain.\n
 能在可挖掘的地形中掘进。\n
@@ -3454,7 +3454,7 @@ Cancelling wall jump due to HUP.
 因HUP取消蹬墙跳。
 %%%%
  cannot be affected by reciting Zin's laws.
-不会受到吉恩律法吟诵的影响。
+不会受到辛律法吟诵的影响。
 %%%%
  cannot move.\n
 无法移动。\n
@@ -4283,7 +4283,7 @@ Fire
 火焰
 %%%%
 fire
-发射
+火焰
 %%%%
 fire at 
 向
@@ -5096,7 +5096,7 @@ is sucked into
 被吸入
 %%%%
  is too strong to be affected by reciting Zin's laws.
-过于强大，不受吉恩律法吟诵影响。
+过于强大，不受辛律法吟诵影响。
 %%%%
  is unaffected.
 不受影响。
@@ -9466,7 +9466,7 @@ You burst free from the webs!
 你从蛛网中挣脱出来了！
 %%%%
 You call down Yredelemnul's inexorable grip.
-你召唤了叶德雷姆诺无可抗拒的掌握之力。
+你召唤了伊莱德莱姆努尔无可抗拒的掌握之力。
 %%%%
 You call for your canine familiar and it appears with a howl!
 你呼唤你的犬类使魔，它伴随着一声嚎叫出现了！
