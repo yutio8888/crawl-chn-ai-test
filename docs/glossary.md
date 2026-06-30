@@ -77,6 +77,19 @@
 | Alchemy | 炼金术 |
 | Shapeshifting | 变形术 |
 
+### 常用法术/效果名
+
+| EN | ZH | 注意事项 |
+|----|----|---------|
+| Orb of Destruction | 毁灭之球 | 法术名 |
+| Might | 强效 | +10% 伤害 |
+| Haste | 加速 | 行动速度 +50% |
+| Berserk | 狂暴 | 近战加成但结束后减速 |
+| Teleport | 传送 | 位移效果 |
+| Invisibility | 隐形 | 不可被看见 |
+| Confusing Touch | 混乱之触 | 接触混乱效果 |
+| Silence | 沉默 | 禁止施法/阅读卷轴 |
+
 ---
 
 <!-- domain:core -->
@@ -126,6 +139,8 @@
 | shield | 盾牌 |
 | critical hit | 暴击 |
 | resist | 抵抗 |
+| Drain | 汲取 | 生命/魔力吸取效果 |
+| Torment | 折磨 | 按比例造成伤害 |
 | vulnerable | 脆弱 |
 | immune | 免疫 |
 

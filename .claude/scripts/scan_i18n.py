@@ -308,10 +308,20 @@ def cmd_arg_mismatch(args):
         print("ERROR: Could not parse source.txt")
         return 1
 
+    allow_drop = getattr(args, 'allow_positional_drop', False)
     findings = []
     for en_key, cn_val in entries.items():
         en_count = count_format_args(en_key)
         cn_count = count_format_args(cn_val)
+        if allow_drop:
+            en_has_pos = bool(POSFMT_RE.search(en_key))
+            cn_has_pos = bool(POSFMT_RE.search(cn_val))
+            if en_has_pos and cn_has_pos:
+                en_max = max(int(m.group(1)) for m in POSFMT_RE.finditer(en_key))
+                cn_max = max(int(m.group(1)) for m in POSFMT_RE.finditer(cn_val))
+                if cn_max > en_max:  # CN cannot reference undefined EN position
+                    findings.append((en_key, cn_val, en_count, cn_count))
+                continue  # both positional and cn_max <= en_max → allow drop
         if en_count != cn_count:
             findings.append((en_key, cn_val, en_count, cn_count))
 
@@ -733,6 +743,8 @@ def main():
     )
     p_arg.add_argument("--source-txt", required=True,
                        help="Path to source.txt")
+    p_arg.add_argument("--allow-positional-drop", action="store_true",
+                       help="Allow CN to drop positional args (cn_max_pos <= en_max_pos)")
 
     # check-gaps
     p_gaps = subparsers.add_parser(

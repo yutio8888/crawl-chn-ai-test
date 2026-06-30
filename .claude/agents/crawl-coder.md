@@ -99,6 +99,32 @@ const char* key = use_plural ? T_("%s block %s attack.")
 ```
 中文两个 key 翻译相同 (汉语不区分单复数动词)。
 
+### 2b. 位置参数丢弃 (保留 conj_verb，CN 丢弃动词位)
+
+当 conj_verb() 提供英语语法必需的动词变位、但中文不需要时：
+
+```cpp
+// Before: mprf("%s %s healed.", name, conj_verb("are").c_str());
+// After:
+mprf_p(T_("%1$s %2$s healed."), name, conj_verb("are").c_str());
+```
+EN key: `"%1$s %2$s healed."` (标记所有参数位置)
+CN: `"%1$s被治愈了。"` (只引用需要的参数，动词位自动丢弃)
+
+- EN 模式语法完美，CN 模式 vmake_stringf_p 按 max_pos 消费参数
+- **必须用 mprf_p**（不是 mprf），EN key 中每个参数用位置标记
+- **禁止混用** `%1$s` 与 `%s`（POSIX 未定义行为）
+- **约束**：丢弃的参数必须在格式串**末尾**。若动词不在末尾，改用 Mode 2
+- **负面示例（常见错误）**：
+  ```cpp
+  // ❌ 错误：将 name + conj_verb 拼接成一个字符串塞给 %1$s
+  mprf_p(T_("%1$s healed."),
+         (name + " " + conj_verb("are")).c_str());
+  // ✅ 正确：name 和 conj_verb 是两个独立的位置参数
+  mprf_p(T_("%1$s %2$s healed."),
+         name, conj_verb("are").c_str());
+  ```
+
 ### 3. T_() 碎片 (语言依赖的参数值)
 ```cpp
 // Before: zh ? "无声的" : "silent "
