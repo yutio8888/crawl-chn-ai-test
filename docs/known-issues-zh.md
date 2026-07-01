@@ -60,6 +60,24 @@
 
 ## 主动选择不翻译
 
+### chardump.cc 咒语列表段落未翻译
+
+- **日期**: 2026-07-01
+- **文件**: `crawl-ref/source/chardump.cc`
+- **位置**: 行 1057, 1059, 1122, 1123, 1127, 1128
+- **内容**: "You knew/know the following spells", "Your spell library was/is empty", "Your spell library contained/contains the following spells" 等整句
+- **状态**: 暂不修复，需统一 T_() 迁移（涉及过去时/现在时切换）
+
+### spl-cast.cc "N/A" 未翻译
+
+- **日期**: 2026-07-01
+- **文件**: `crawl-ref/source/spl-cast.cc`
+- **位置**: 行 178
+- **内容**: `"N/A"` — 咒语伤害描述中的无伤害占位符
+- **状态**: 暂不修复，中国玩家理解 "N/A"，且需要确认 source.txt 是否已有条目
+
+---
+
 ### monname.txt — 专有名词保留原文
 
 - **日期**: 2026-06-27

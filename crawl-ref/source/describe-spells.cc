@@ -630,11 +630,11 @@ static void _describe_book(const spellbook_contents &book,
     {
         // Column headers: spell name (variable), school, difficulty, known
         description.cprintf("%s",
-            ("\n " + chop_string("法术", 33)
-                  + chop_string("学派", 28)
-                  + chop_string("等级", 12)).c_str());
+            ("\n " + chop_string(T_("Spells"), 33)
+                  + chop_string(T_("Type"), 28)
+                  + chop_string(T_("Level"), 12)).c_str());
         if (crawl_state.need_save)
-            description.cprintf("%s", chop_string("已知", 12).c_str());
+            description.cprintf("%s", chop_string(T_("Known"), 12).c_str());
     }
     description.cprintf("\n");
 
@@ -709,14 +709,14 @@ static void _describe_book(const spellbook_contents &book,
 
         string schools =
 #if TAG_MAJOR_VERSION == 34
-            source_item->base_type == OBJ_RODS ? "魔力释放"
+            source_item->base_type == OBJ_RODS ? T_("Evocations")
                                                :
 #endif
                          _spell_schools(spell);
 
         string known = "";
         if (!mon_owner && crawl_state.need_save)
-            known = you.spell_library[spell] ? chop_string("是", 12) : chop_string("否", 12);
+            known = you.spell_library[spell] ? chop_string(T_("yes"), 12) : chop_string(T_("no"), 12);
 
         description.cprintf("%s%d%s\n",
                             chop_string(schools, 28).c_str(),

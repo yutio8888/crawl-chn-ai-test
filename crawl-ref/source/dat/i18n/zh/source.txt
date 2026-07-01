@@ -17568,3 +17568,18 @@ monster info|Size
 monster info|Intelligence
 智力
 %%%%
+Known
+已知
+%%%%
+Spells
+法术
+%%%%
+Your Spells
+你的法术
+%%%%
+yes
+是
+%%%%
+no
+否
+%%%%

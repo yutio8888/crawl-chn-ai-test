@@ -1058,12 +1058,12 @@ static void _sdump_spells(dump_params &par)
 
         text += "You " + verb + " the following spells:\n\n";
 
-        text += " " + chop_string("你的法术", 25)
-                + chop_string("类型", 15)
-                + chop_string("威力", 11)
-                + chop_string("伤害", 10)
-                + chop_string("失败率", 12)
-                + "等级" "\n";
+        text += " " + chop_string(T_("Your Spells"), 25)
+                + chop_string(T_("Type"), 15)
+                + chop_string(T_("Power"), 11)
+                + chop_string(T_("Damage"), 10)
+                + chop_string(T_("Failure"), 12)
+                + T_("Level") + "\n";
 
         for (int j = 0; j < 52; j++)
         {
@@ -1126,12 +1126,12 @@ static void _sdump_spells(dump_params &par)
     {
         string verb = par.se ? "contained" : "contains";
         text += "Your spell library " + verb + " the following spells:\n\n";
-        text += " " + chop_string("法术", 25)
-                + chop_string("类型", 15)
-                + chop_string("威力", 11)
-                + chop_string("伤害", 10)
-                + chop_string("失败率", 12)
-                + "等级" "\n";
+        text += " " + chop_string(T_("Spells"), 25)
+                + chop_string(T_("Type"), 15)
+                + chop_string(T_("Power"), 11)
+                + chop_string(T_("Damage"), 10)
+                + chop_string(T_("Failure"), 12)
+                + T_("Level") + "\n";
 
         auto const library = get_sorted_spell_list(true, false);
 
