@@ -17430,3 +17430,141 @@ weakness
 %%%%
 will-reducing
 意志削弱
+beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s
+%1$s%2$s了%3$s%4$s%5$s！
+%%%%
+beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
+%1$s%2$s了%3$s%4$s%5$s。
+%%%%
+ with %s
+（%s）
+%%%%
+ but does no damage
+但没有造成伤害
+%%%%
+The %1$s repels the %2$s!
+%2$s弹开了%1$s！
+%%%%
+The %1$s misses %2$s.
+%1$s未击中%2$s。
+%%%%
+You %sdetect the %s %s.
+你%s察觉到%s%s。
+%%%%
+can no longer 
+不再能
+%%%%
+attributive|dominated
+被支配的
+%%%%
+attributive|charmed
+被魅惑的
+%%%%
+attributive|bribed
+被贿赂的
+%%%%
+As %s %s, the sound returns.
+随着%s%s，声音回来了。
+%%%%
+is destroyed
+被摧毁
+%%%%
+dies
+死亡
+%%%%
+ seems to regain %1$s courage.
+似乎重拾了勇气。
+%%%%
+%s is no longer %s.
+%s不再%s。
+%%%%
+You can %s detect %s.
+你%s察觉到%s。
+%%%%
+once again
+再次
+%%%%
+no longer
+不再能
+%%%%
+ is no longer charmed.
+不再被魅惑。
+%%%%
+ is no longer hexed.
+不再被支配。
+%%%%
+ is no longer bribed.
+不再被贿赂。
+%%%%
+ seems to return to %1$s normal shape.
+似乎恢复了正常形态。
+%%%%
+%1$s finishes expelling the %2$s from %3$s %4$s.
+%1$s将%2$s从%4$s中排出。
+%%%%
+%1$s is freed from %2$s curse.
+%1$s从其诅咒中解脱了。
+%%%%
+%1$s turns %2$s attention back to you.
+%1$s将注意力转回你身上。
+%%%%
+ is no longer sharing %1$s pain.
+不再分担痛苦。
+%%%%
+charmed
+被魅惑
+%%%%
+dominated
+被支配
+%%%%
+bribed
+被贿赂
+%%%%
+Random 
+随机
+%%%%
+Recommended 
+推荐
+%%%%
+What is your name today? 
+你今天叫什么名字？ 
+%%%%
+Press [p] or [ctrl-v] to paste a seed from the clipboard\n(overriding the current value).\n
+按 [p] 或 [ctrl-v] 从剪贴板粘贴种子\n（覆盖当前值）。\n
+%%%%
+The seed will determine the layout, monsters and items\nthat are all RELATIVE to this version of the Dungeon Crawl. Mid-run\nupgrades may affect the seed's effects. (Consult the manual for details.)\n
+种子将决定地牢布局、怪物和物品\n这些都是相对于此版本的地牢爬行。中途升级\n可能会影响种子效果。（详见手册。）\n
+%%%%
+WARNING: Your build does not support stable seeds!\nThe level may differ from the "official" seeded game.\n
+警告：你的构建版本不支持稳定种子！\n关卡可能与"官方"种子游戏不同。\n
+%%%%
+Background
+背景
+%%%%
+Species
+种族
+%%%%
+Randomly recommend a %1$s based on your current %2$s choices.
+根据你当前的%2$s选择，随机推荐一个%1$s。
+%%%%
+Randomly cycle recommended species/job combos until you accept one.
+随机切换推荐的种族/职业组合，直到你接受其中一个。
+%%%%
+Randomly cycle character combos until you accept one.
+随机切换角色组合，直到你接受其中一个。
+%%%%
+Custom seed: %lu\n
+自定义种子: %lu\n
+%%%%
+Threat
+威胁
+%%%%
+monster info|Type
+类型
+%%%%
+monster info|Size
+体型
+%%%%
+monster info|Intelligence
+智力
+%%%%

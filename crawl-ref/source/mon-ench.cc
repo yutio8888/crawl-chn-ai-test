@@ -7,6 +7,7 @@
 
 #include "monster.h"
 #include "options.h"
+#include "positional_format.h"
 
 #include <sstream>
 #include <unordered_map>
@@ -314,24 +315,13 @@ void monster::add_enchantment_effect(const mon_enchant &ench, bool quiet)
         {
             if (!quiet)
             {
-                if (Options.language == lang_t::ZH)
-                {
-                    mprf("你%s察觉到%s%s。",
-                         friendly() ? "" : "不再能",
-                         ench.ench == ENCH_HEXED ? "被支配的" :
-                         ench.ench == ENCH_CHARM ? "被魅惑的"
-                                                 : "被贿赂的",
-                         name(DESC_PLAIN, true).c_str());
-                }
-                else
-                {
-                    mprf("You %sdetect the %s %s.",
-                         friendly() ? "" : "can no longer ",
-                         ench.ench == ENCH_HEXED ? "dominated" :
-                         ench.ench == ENCH_CHARM ? "charmed"
-                                                 : "bribed",
-                         name(DESC_PLAIN, true).c_str());
-                }
+                const char* detect_neg = friendly() ? "" : T_("can no longer ");
+                const char* ench_attr = ench.ench == ENCH_HEXED
+                    ? C_("attributive", "dominated")
+                    : ench.ench == ENCH_CHARM ? C_("attributive", "charmed")
+                    : C_("attributive", "bribed");
+                mprf(T_("You %sdetect the %s %s."), detect_neg, ench_attr,
+                     name(DESC_PLAIN, true).c_str());
             }
 
             autotoggle_autopickup(!friendly());
@@ -503,18 +493,10 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
                     T_(" becomes audible again."));
             else
             {
-                if (Options.language == lang_t::ZH)
-                {
-                    mprf("随着%s%s，声音回来了。",
-                         name(DESC_THE).c_str(),
-                         wounded_damaged(holiness()) ? "被摧毁" : "死亡");
-                }
-                else
-                {
-                    mprf("As %s %s, the sound returns.",
-                         name(DESC_THE).c_str(),
-                         wounded_damaged(holiness()) ? "is destroyed" : "dies");
-                }
+                const char* death_msg = wounded_damaged(holiness())
+                    ? T_("is destroyed") : T_("dies");
+                mprf(T_("As %s %s, the sound returns."),
+                     name(DESC_THE).c_str(), death_msg);
             }
         }
         break;
@@ -572,11 +554,8 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
         }
         else if (!mons_is_tentacle_or_tentacle_segment(type))
         {
-            if (Options.language == lang_t::ZH)
-                msg = "似乎重拾了勇气。";
-            else
-                msg = " seems to regain " + pronoun(PRONOUN_POSSESSIVE, true)
-                                          + " courage.";
+            msg = make_stringf_p(T_(" seems to regain %1$s courage."),
+                                 pronoun(PRONOUN_POSSESSIVE, true).c_str());
         }
 
         if (!quiet)
@@ -631,28 +610,16 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
         {
             if (!quiet)
             {
-                if (Options.language == lang_t::ZH)
-                {
-                    mprf("%s不再%s。", name(DESC_THE, true).c_str(),
-                            me.ench == ENCH_CHARM   ? "被魅惑"
-                            : me.ench == ENCH_HEXED ? "被支配"
-                                                    : "被贿赂");
+                const char* ench_pred = me.ench == ENCH_CHARM ? T_("charmed")
+                                     : me.ench == ENCH_HEXED ? T_("dominated")
+                                     : T_("bribed");
+                mprf(T_("%s is no longer %s."), name(DESC_THE, true).c_str(),
+                     ench_pred);
 
-                    mprf("你%s察觉到%s。",
-                         friendly() ? "再次" : "不再能",
-                         name(DESC_THE, true).c_str());
-                }
-                else
-                {
-                    mprf("%s is no longer %s.", name(DESC_THE, true).c_str(),
-                            me.ench == ENCH_CHARM   ? "charmed"
-                            : me.ench == ENCH_HEXED ? "dominated"
-                                                    : "bribed");
-
-                    mprf("You can %s detect %s.",
-                         friendly() ? "once again" : "no longer",
-                         name(DESC_THE, true).c_str());
-                }
+                const char* detect_ability = friendly() ? T_("once again")
+                                                        : T_("no longer");
+                mprf(T_("You can %s detect %s."), detect_ability,
+                     name(DESC_THE, true).c_str());
             }
 
             if (!friendly())
@@ -665,18 +632,11 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
         {
             if (!quiet)
             {
-                simple_monster_message(*this,
-                                    Options.language == lang_t::ZH
-                                    ? (me.ench == ENCH_CHARM
-                                       ? "不再被魅惑。"
-                                       : me.ench == ENCH_HEXED
-                                       ? "不再被支配。"
-                                       : "不再被贿赂。")
-                                    : (me.ench == ENCH_CHARM
-                                       ? " is no longer charmed."
-                                       : me.ench == ENCH_HEXED
-                                       ? " is no longer hexed."
-                                       : " is no longer bribed."));
+                const char* msg = me.ench == ENCH_CHARM
+                    ? T_(" is no longer charmed.")
+                    : me.ench == ENCH_HEXED ? T_(" is no longer hexed.")
+                    : T_(" is no longer bribed.");
+                simple_monster_message(*this, msg);
             }
 
         }
@@ -830,17 +790,10 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
     case ENCH_WRETCHED:
         if (!quiet)
         {
-            if (Options.language == lang_t::ZH)
-            {
-                simple_monster_message(*this, "似乎恢复了正常形态。");
-            }
-            else
-            {
-                const string msg = " seems to return to " +
-                                   pronoun(PRONOUN_POSSESSIVE, true) +
-                                   " normal shape.";
-                simple_monster_message(*this, msg.c_str());
-            }
+            const string msg = make_stringf_p(
+                T_(" seems to return to %1$s normal shape."),
+                pronoun(PRONOUN_POSSESSIVE, true).c_str());
+            simple_monster_message(*this, msg.c_str());
         }
         break;
 
@@ -986,21 +939,12 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
     case ENCH_FLOODED:
         if (!quiet && you.can_see(*this))
         {
-            if (Options.language == lang_t::ZH)
-            {
-                mprf("%s将%s从%s中排出。",
-                        name(DESC_THE).c_str(),
-                        props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str(),
-                        get_mon_shape(*this) >= MON_SHAPE_INSECT ? "气管" : "肺部");
-            }
-            else
-            {
-                mprf("%s finishes expelling the %s from %s %s.",
-                        name(DESC_THE).c_str(),
-                        props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str(),
-                        pronoun(PRONOUN_POSSESSIVE).c_str(),
-                        get_mon_shape(*this) >= MON_SHAPE_INSECT ? "airways" : "lungs");
-            }
+            mprf_p(T_("%1$s finishes expelling the %2$s from %3$s %4$s."),
+                   name(DESC_THE).c_str(),
+                   props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str(),
+                   pronoun(PRONOUN_POSSESSIVE).c_str(),
+                   T_(get_mon_shape(*this) >= MON_SHAPE_INSECT
+                      ? "airways" : "lungs"));
         }
         props.erase(WATER_HOLD_SUBSTANCE_KEY);
         break;
@@ -1067,15 +1011,9 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
     case ENCH_CURSE_OF_AGONY:
         if (you.can_see(*this) && !quiet)
         {
-            if (Options.language == lang_t::ZH)
-            {
-                mprf("%s从其诅咒中解脱了。", name(DESC_THE).c_str());
-            }
-            else
-            {
-                mprf("%s is freed from %s curse.", name(DESC_THE).c_str(),
-                     pronoun(PRONOUN_POSSESSIVE).c_str());
-            }
+            mprf_p(T_("%1$s is freed from %2$s curse."),
+                   name(DESC_THE).c_str(),
+                   pronoun(PRONOUN_POSSESSIVE).c_str());
         }
         break;
 
@@ -1107,10 +1045,9 @@ void monster::remove_enchantment_effect(const mon_enchant &me, bool quiet)
             if (can_see(you))
             {
                 target = you.pos();
-                mprf(Options.language == lang_t::ZH ? "%s将注意力转回你身上。"
-                     : "%s turns %s attention back to you.",
-                        name(DESC_THE).c_str(),
-                        pronoun(PRONOUN_POSSESSIVE).c_str());
+                mprf_p(T_("%1$s turns %2$s attention back to you."),
+                       name(DESC_THE).c_str(),
+                       pronoun(PRONOUN_POSSESSIVE).c_str());
             }
         }
         break;
@@ -1909,15 +1846,10 @@ void monster::apply_enchantment(const mon_enchant &me)
     case ENCH_PAIN_BOND:
         if (decay_enchantment(en))
         {
-            if (Options.language == lang_t::ZH)
-                simple_monster_message(*this, "不再分担痛苦。");
-            else
-            {
-                const string msg = " is no longer sharing " +
-                                   pronoun(PRONOUN_POSSESSIVE, true) +
-                                   " pain.";
-                simple_monster_message(*this, msg.c_str());
-            }
+            const string msg = make_stringf_p(
+                T_(" is no longer sharing %1$s pain."),
+                pronoun(PRONOUN_POSSESSIVE, true).c_str());
+            simple_monster_message(*this, msg.c_str());
         }
         break;
 

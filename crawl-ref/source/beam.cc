@@ -4233,6 +4233,7 @@ static pie_effect _random_pie_effect(const actor &defender)
     return *random_choose_weighted(weights);
 }
 
+// TODO: Issue 32 Phase 2 — migrate to T_()
 // Chinese translations for common non-spell ZAP/beam names.
 static const char* _zap_name_zh(const string& en)
 {
@@ -4362,6 +4363,7 @@ static const char* _zap_name_zh(const string& en)
     return it != zh.end() ? it->second : nullptr;
 }
 
+// TODO: Issue 32 Phase 2 — migrate _zap_name_zh/_beam_display_name to T_()
 // Get the display name for a beam. For spell beams in Chinese mode,
 // use the translated spell title instead of the English zap name.
 // For non-spell beams, use the _zap_name_zh() lookup table.
@@ -4498,23 +4500,18 @@ void bolt::affect_player()
         && !(damage.num == 0 && is_big_cloud()))
     {
         const string beam_name = _beam_display_name(*this);
-        if (Options.language == lang_t::ZH)
-        {
-            mprf("%s%s了%s%s%s！", beam_name.c_str(), hit_verb.c_str(),
-                 you.hp > 0 ? "你" : "你的尸体",
-                 real_flavour != BEAM_CHAOS ? ""
-                        : make_stringf("（%s）", _beam_type_name(flavour).c_str()).c_str(),
-                 final_dam || damage.num == 0 ? "" : "但没有造成伤害");
-        }
-        else
-        {
-            mprf("The %s %s %s%s%s%s", name.c_str(), hit_verb.c_str(),
-                 you.hp > 0 ? "you" : "your lifeless body",
-                 real_flavour != BEAM_CHAOS ? ""
-                        : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
-                 final_dam || damage.num == 0 ? "" : " but does no damage",
-                 attack_strength_punctuation(final_dam).c_str());
-        }
+        const char* body = you.hp > 0 ? T_("you") : T_("your lifeless body");
+        string chaos_prefix = real_flavour != BEAM_CHAOS ? ""
+            : make_stringf(T_(" with %s"), _beam_type_name(flavour).c_str());
+        const char* no_damage = final_dam || damage.num == 0 ? ""
+            : T_(" but does no damage");
+        mprf_p(C_("beam hit player",
+                  "The %1$s %2$s %3$s%4$s%5$s%6$s"),
+               name.c_str(), hit_verb.c_str(),
+               body,
+               chaos_prefix.c_str(),
+               no_damage,
+               attack_strength_punctuation(final_dam).c_str());
     }
 
     // Now print the messages associated with checking resistances, so that
@@ -5843,22 +5840,15 @@ void bolt::affect_monster(monster* mon)
             // if it would have hit otherwise...
             if (hit_margin > -repel)
             {
-                if (Options.language == lang_t::ZH)
-                    msg::stream << mon->name(DESC_THE) << "弹开了"
-                                << _beam_display_name(*this) << "！" << endl;
-                else
-                    msg::stream << mon->name(DESC_THE) << " "
-                                << "repels the " << name
-                                << '!' << endl;
+                const string beam_display = _beam_display_name(*this);
+                mprf_p(T_("The %1$s repels the %2$s!"),
+                       mon->name(DESC_THE).c_str(), beam_display.c_str());
             }
             else
             {
-                if (Options.language == lang_t::ZH)
-                    msg::stream << _beam_display_name(*this) << "未击中"
-                                << mon->name(DESC_THE) << "。" << endl;
-                else
-                    msg::stream << "The " << name << " misses "
-                                << mon->name(DESC_THE) << '.' << endl;
+                const string beam_display = _beam_display_name(*this);
+                mprf_p(T_("The %1$s misses %2$s."),
+                       beam_display.c_str(), mon->name(DESC_THE).c_str());
             }
         }
         return;
@@ -5896,27 +5886,16 @@ void bolt::affect_monster(monster* mon)
         if (damage.num > 0 || !is_big_cloud())
         {
             const string beam_name = _beam_display_name(*this);
-            if (Options.language == lang_t::ZH)
-            {
-                mprf("%s%s了%s%s%s。",
-                    beam_name.c_str(),
-                    hit_verb.c_str(),
-                    mon->name(DESC_THE).c_str(),
-                    real_flavour != BEAM_CHAOS ? ""
-                        : make_stringf("（%s）", _beam_type_name(flavour).c_str()).c_str(),
-                    postac ? "" : "但没有造成伤害");
-            }
-            else
-            {
-                mprf("The %s %s %s%s%s%s",
-                    name.c_str(),
-                    hit_verb.c_str(),
-                    mon->name(DESC_THE).c_str(),
-                    real_flavour != BEAM_CHAOS ? ""
-                        : make_stringf(" with %s", _beam_type_name(flavour).c_str()).c_str(),
-                    postac ? "" : " but does no damage",
-                    attack_strength_punctuation(final).c_str());
-            }
+            string chaos_prefix = real_flavour != BEAM_CHAOS ? ""
+                : make_stringf(T_(" with %s"), _beam_type_name(flavour).c_str());
+            const char* no_damage = postac ? "" : T_(" but does no damage");
+            mprf_p(C_("beam hit monster",
+                      "The %1$s %2$s %3$s%4$s%5$s%6$s"),
+                   name.c_str(), hit_verb.c_str(),
+                   mon->name(DESC_THE).c_str(),
+                   chaos_prefix.c_str(),
+                   no_damage,
+                   attack_strength_punctuation(final).c_str());
         }
     }
     else if (heard && !hit_noise_msg.empty())
@@ -7699,6 +7678,7 @@ string bolt::get_short_name() const
     return _beam_type_name(flavour);
 }
 
+// TODO: Issue 32 Phase 2 — migrate to T_()
 static string _beam_type_name(beam_type type)
 {
     if (Options.language == lang_t::ZH)

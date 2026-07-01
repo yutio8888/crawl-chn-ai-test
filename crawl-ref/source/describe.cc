@@ -1361,6 +1361,7 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
     // Build the "reach target" sentence with positional format specifiers.
     string cond_prefix = hypothetical ? T_("would ") : "";
     string level_equiv;
+    // TODO: Issue 32 Phase 2 — T_() empty-value support for ZH omission
     if (Options.language != lang_t::ZH)
         level_equiv = (you.experience_level + (level_diff + 9) / 10) > 27
             ? "the equivalent of" : "about";
@@ -5179,6 +5180,7 @@ static string _flavour_base_desc(attack_flavour flavour)
         { AF_PLAIN,             "" },
     };
 
+    // TODO: Issue 32 Phase 2 — migrate base_descs_zh to T_()
     const map<attack_flavour, string> &base_descs =
         Options.language == lang_t::ZH ? base_descs_zh : base_descs_en;
 
@@ -6501,17 +6503,18 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     const string holi = holiness == MH_NONLIVING
         ? (T_("Nonliv."))
         : single_holiness_description(holiness);
+    // TODO: Issue 32 Phase 2 — migrate _holiness_zh_name/_size_zh_name/_intel_zh_name to T_()
     const bool zh = Options.language == lang_t::ZH;
     pr.AddRow();
     if (mi.threat != MTHRT_UNDEF && !mons_class_is_peripheral(mi.type))
-        pr.AddCell("威胁", _get_threat_desc(mi.threat));
+        pr.AddCell(T_("Threat"), _get_threat_desc(mi.threat));
     else // ?/m
         pr.AddCell(); // ensure alignment
-    pr.AddCell("类型",
+    pr.AddCell(C_("monster info", "Type"),
                zh ? _holiness_zh_name(holiness) : uppercase_first(holi).c_str());
-    pr.AddCell("体型",
+    pr.AddCell(C_("monster info", "Size"),
                zh ? _size_zh_name(sz) : size_desc.c_str());
-    pr.AddCell("智力",
+    pr.AddCell(C_("monster info", "Intelligence"),
                zh ? _intel_zh_name(mi.intel()) : intelligence_description(mi.intel()));
     if (mi.is(MB_SICK) || mi.is(MB_NO_REGEN))
         pr.AddCell("再生", T_("None"));

@@ -660,7 +660,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         result.push_back({"flying", _formmut(T_("You are flying."))});
     // n.b. this could cause issues for non-dragon giant forms if they exist
     else if (form->player_can_swim() && !species::can_swim(you.species))
-        result.push_back({"amphibious", _formmut(Options.language == lang_t::ZH ? "你是两栖的。" : T_("You are amphibious."))});
+        result.push_back({"amphibious", _formmut(T_("You are amphibious."))});
 
     const int hp_mod = form->mult_hp(10);
     if (hp_mod > 10)
@@ -816,7 +816,7 @@ static vector<pair<string, string>> _get_fakemuts()
     // amphibiousness.
     if (species::can_swim(you.species) && !you.has_innate_mutation(MUT_MERTAIL))
     {
-        result.push_back(_annotate_form_based({"amphibious", Options.language == lang_t::ZH ? "你是两栖的。" : T_("You are amphibious.")},
+        result.push_back(_annotate_form_based({"amphibious", T_("You are amphibious.")},
                                               !form_can_swim()));
     }
 
@@ -934,6 +934,7 @@ static vector<string> _get_mutations_descs(bool terse)
         const string& mut = terse ? p.first : p.second;
         if (!mut.empty() && mut != "--transformation--")
         {
+            // TODO: Issue 32 Phase 2 — migrate _zh_mutation_name to T_()
             // Translate fakemut terse names for Chinese
             if (terse && Options.language == lang_t::ZH)
                 result.push_back(_zh_mutation_name(mut.c_str()));
@@ -2516,6 +2517,7 @@ string get_mutation_tags(mutation_type mut)
     return make_stringf("[%s]", comma_separated_line(tags.begin(), tags.end(), ", ").c_str());
 }
 
+// TODO: Issue 32 Phase 2 — migrate to T_()
 // Translate mutation short_desc for Chinese
 static const char* _zh_mutation_name(const char* en)
 {
@@ -2761,6 +2763,7 @@ int mutation_max_levels(mutation_type mut)
 /// Return a string describing the mutation.
 /// If colour is true, also add the colour annotation.
 /// Not to be confused with get_mutation_desc().
+// TODO: Issue 32 Phase 2 — migrate to T_()
 // Translate mutation have[] long descriptions for Chinese
 static const char* _zh_mutation_desc(const string& en)
 {

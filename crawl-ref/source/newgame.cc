@@ -27,6 +27,7 @@
 #include "ng-restr.h"
 #include "options.h"
 #include "playable.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "skills.h"
 #include "species-groups.h"
@@ -146,21 +147,18 @@ static char_choice_restriction _job_allowed(species_type sp, job_type job) {
 
 string newgame_char_description(const newgame_def& ng)
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (_is_random_viable_choice(ng))
         return T_("Recommended character");
     else if (_is_random_choice(ng))
         return T_("Random character");
     else if (_is_random_job(ng.job))
     {
-        const string j = zh ? (ng.job == JOB_RANDOM ? "随机" : "推荐")
-                            : (ng.job == JOB_RANDOM ? "Random " : "Recommended ");
+        const string j = T_(ng.job == JOB_RANDOM ? "Random " : "Recommended ");
         return j + species::name(ng.species);
     }
     else if (_is_random_species(ng.species))
     {
-        const string s = zh ? (ng.species == SP_RANDOM ? "随机" : "推荐")
-                            : (ng.species == SP_RANDOM ? "Random " : "Recommended ");
+        const string s = T_(ng.species == SP_RANDOM ? "Random " : "Recommended ");
         return s + get_job_name(ng.job);
     }
     else
@@ -713,9 +711,7 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
     {
         formatted_string prompt;
         prompt.textcolour(CYAN);
-        prompt.cprintf(
-    Options.language == lang_t::ZH ? "你今天叫什么名字？ "
-                                   : "What is your name today? ");
+        prompt.cprintf(T_("What is your name today? "));
         prompt.textcolour(LIGHTGREY);
         prompt.cprintf("%s\n", buf);
         prompt.textcolour(LIGHTRED);
@@ -919,35 +915,19 @@ static void _choose_seed(newgame_def& ng, newgame_def& choice,
     });
     seed_hbox->add_child(std::move(daily_seed_btn));
 
-    const bool zh = Options.language == lang_t::ZH;
     string footer_text;
 #ifdef USE_TILE_LOCAL
-    if (zh)
-        footer_text += "\n"
-            "按 [p] 或 [ctrl-v] 从剪贴板粘贴种子\n"
-            "（覆盖当前值）。\n";
-    else
-        footer_text += "\n"
-            "Press [p] or [ctrl-v] to paste a seed from the clipboard\n"
-            "(overriding the current value).\n";
+    footer_text += "\n";
+    footer_text += T_("Press [p] or [ctrl-v] to paste a seed from the clipboard\n"
+                       "(overriding the current value).\n");
 #endif
-    if (zh)
-        footer_text += "\n"
-            "种子将决定地牢布局、怪物和物品\n"
-            "这些都是相对于此版本的地牢爬行。中途升级\n"
-            "可能会影响种子效果。（详见手册。）\n";
-    else
-        footer_text += "\n"
-            "The seed will determine the layout, monsters and items\n"
-            "that are all RELATIVE to this version of the Dungeon Crawl. Mid-run\n"
-            "upgrades may affect the seed's effects. (Consult the manual for details.)\n";
+    footer_text += "\n";
+    footer_text += T_("The seed will determine the layout, monsters and items\n"
+                       "that are all RELATIVE to this version of the Dungeon Crawl. Mid-run\n"
+                       "upgrades may affect the seed's effects. (Consult the manual for details.)\n");
 #ifdef SEEDING_UNRELIABLE
-    if (zh)
-        footer_text += "警告：你的构建版本不支持稳定种子！\n"
-            "关卡可能与"官方"种子游戏不同。\n";
-    else
-        footer_text += "WARNING: Your build does not support stable seeds!\n"
-            "The level may differ from the \"official\" seeded game.\n";
+    footer_text += T_("WARNING: Your build does not support stable seeds!\n"
+                       "The level may differ from the \"official\" seeded game.\n");
 #endif
     box->add_child(make_shared<ui::Text>(footer_text));
 
@@ -1400,11 +1380,8 @@ protected:
                                         const newgame_def& ng,
                                         const newgame_def& defaults)
     {
-        const bool zh = Options.language == lang_t::ZH;
-        string choice_name = zh ? (choice_type == C_JOB ? "背景" : "种族")
-                                : (choice_type == C_JOB ? "Background" : "Species");
-        string other_choice_name = zh ? (choice_type == C_JOB ? "种族" : "背景")
-                                      : (choice_type == C_JOB ? "Species" : "Background");
+        string choice_name = choice_type == C_JOB ? T_("Background") : T_("Species");
+        string other_choice_name = choice_type == C_JOB ? T_("Species") : T_("Background");
 
         string text, desc;
 
@@ -1422,10 +1399,8 @@ protected:
         }
         else
             id = M_RANDOM;
-        desc = zh ? "根据你当前的" + choice_name + "选择，随机推荐一个"
-                       + other_choice_name + "。"
-                  : "Randomly recommend a " + other_choice_name
-                       + " based on your current " + choice_name + " choices.";
+        desc = make_stringf_p(T_("Randomly recommend a %1$s based on your current %2$s choices."),
+                             other_choice_name.c_str(), choice_name.c_str());
 
         _add_choice_menu_option(0, 0,
                 text, '+', id, desc);
@@ -1433,10 +1408,7 @@ protected:
         _add_choice_menu_option(0, 1,
                 T_("# - Recommended character"),
                 '#', M_VIABLE_CHAR,
-                zh ? "随机切换推荐的种族/职业组合"
-                      "until you accept one."
-                   : "Randomly cycle recommended species/job combos"
-                      "until you accept one.");
+                T_("Randomly cycle recommended species/job combos until you accept one."));
 
         _add_choice_menu_option(0, 2,
                 T_("% - View aptitudes"),
@@ -1457,10 +1429,7 @@ protected:
         _add_choice_menu_option(1, 1,
                 T_("    ! - Random character"),
                 '!', M_RANDOM_CHAR,
-                zh ? "随机切换角色组合"
-                      "until you accept one."
-                   : "Randomly cycle character combos"
-                      "until you accept one.");
+                T_("Randomly cycle character combos until you accept one."));
 
         if ((choice_type == C_JOB && ng.species != SP_UNKNOWN)
             || (choice_type == C_SPECIES && ng.job != JOB_UNKNOWN))
@@ -1601,6 +1570,7 @@ void UINewGameMenu::menu_item_activated(int id)
 void job_group::attach(const newgame_def& ng, const newgame_def& defaults,
                        UINewGameMenu* ng_menu, menu_letter &letter)
 {
+    // TODO: Issue 32 Phase 2 — migrate job_group name/name_en to T_()
     ng_menu->_add_group_title(
         Options.language == lang_t::ZH ? name : name_en, position);
 
@@ -2274,8 +2244,7 @@ static void _prompt_gamemode_map(newgame_def& ng, newgame_def& ng_choice,
     welcome.cprintf("%s\n", _welcome(ng).c_str());
     if (Options.seed_from_rc)
         welcome.cprintf(
-        Options.language == lang_t::ZH ? "自定义种子: %" PRIu64 "\n"
-                                       : "Custom seed: %" PRIu64 "\n",
+        T_("Custom seed: %" PRIu64 "\n"),
         Options.seed_from_rc);
 
     welcome.textcolour(CYAN);
