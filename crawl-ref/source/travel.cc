@@ -4910,19 +4910,19 @@ void explore_discoveries::found_feature(const coord_def &pos,
     else if (feat_is_stair(feat) && ES_stair)
     {
         const named_thing<int> stair(cleaned_feature_description(pos), 1);
-        add_stair(stair);
+        add_stair(stair, feat);
         es_flags |= ES_STAIR;
     }
     else if (_feat_is_branchlike(feat) && ES_branch)
     {
         const named_thing<int> stair(cleaned_feature_description(pos), 1);
-        add_stair(stair);
+        add_stair(stair, feat);
         es_flags |= ES_BRANCH;
     }
     else if (feat_is_portal(feat) && ES_portal)
     {
         const named_thing<int> portal(cleaned_feature_description(pos), 1);
-        add_stair(portal);
+        add_stair(portal, feat);
         es_flags |= ES_PORTAL;
     }
     else if (feat_is_runed(feat))
@@ -5010,16 +5010,27 @@ void explore_discoveries::found_feature(const coord_def &pos,
 }
 
 void explore_discoveries::add_stair(
-    const explore_discoveries::named_thing<int> &stair)
+    const explore_discoveries::named_thing<int> &stair,
+    dungeon_feature_type feat)
 {
-    if (merge_feature(stairs, stair) || merge_feature(portals, stair))
-        return;
+    // Use feat type (language-independent) instead of translated name to
+    // distinguish stairs from portals (stairs contain "stair" in English
+    // names, but Chinese translated names like "向下通往的石梯" do not).
+    const bool is_actual_stair = feat_is_stair(feat)
+                                 || feat_is_branch_entrance(feat);
 
-    // Hackadelic
-    if (stair.name.find("stair") != string::npos)
+    if (is_actual_stair)
+    {
+        if (merge_feature(stairs, stair))
+            return;
         stairs.push_back(stair);
+    }
     else
+    {
+        if (merge_feature(portals, stair))
+            return;
         portals.push_back(stair);
+    }
 }
 
 void explore_discoveries::add_item(const item_def &i)
@@ -5150,7 +5161,7 @@ vector<string> explore_discoveries::apply_quantities(
     for (const named_thing<int> &nt : v)
     {
         if (nt.thing == 1)
-            things.push_back(make_stringf_p(T_("a %1$s"), nt.name));
+            things.push_back(make_stringf_p(T_("a %1$s"), nt.name.c_str()));
         else
         {
             things.push_back(number_in_words(nt.thing)
