@@ -165,7 +165,7 @@ static const char* descs[NUM_STATS][NUM_STAT_DESCS] =
 
 const char* stat_desc(stat_type stat, stat_desc_type desc)
 {
-    return descs[stat][desc];
+    return T_(descs[stat][desc]);
 }
 
 void modify_stat(stat_type which_stat, int amount, bool suppress_msg)
