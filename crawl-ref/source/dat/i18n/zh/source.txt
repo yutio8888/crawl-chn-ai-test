@@ -2382,7 +2382,7 @@ gain power from chaos
 
 <w>0:</w> 佐特宝珠
 %%%%
-\nFavour -
+\nFavour - 
 \n神眷 -
 %%%%
 \nLevel: %d
@@ -13741,11 +13741,7 @@ slightly
 %%%%
 \nTitle - 
 
-\n称号 -
-%%%%
-\nFavour -
-
-\n恩赐 -
+\n称号 - 
 %%%%
 There is 
 
@@ -13819,3 +13815,337 @@ carrying
 
 、
 %%%%
+%%%%
+# Issue 34: 83 missing keys with exact whitespace (2026-07-01)
+%%%%
+                   g - Guard the area.      f - Follow me.
+
+                   g - 守卫此区域。      f - 跟我来。
+%%%%
+  [%c] - %d gold - 
+
+  [%c] - %d金币 - 
+%%%%
+ spell hidden 
+
+ 法术隐藏 
+%%%%
+%s %s
+
+%s%s
+%%%%
+%s (Confirm with "%s".) 
+
+%s（输入"%s"确认。）
+%%%%
+%s.
+
+%s。
+%%%%
+(Cast)    
+
+（施放）    
+%%%%
+(Hide)    
+
+（隐藏）    
+%%%%
+(Imbue)   
+
+（注入）   
+%%%%
+(Show)    
+
+（显示）    
+%%%%
+-headed 
+
+头
+%%%%
+</w> or 
+
+</w>或
+%%%%
+<white>[tab]</white> quick-load last game: 
+
+<white>[tab]</white>快速加载上次游戏：
+%%%%
+<white>[tab]</white> quick-start last combo: 
+
+<white>[tab]</white>快速开始上次组合：
+%%%%
+A %ssoul becomes fuel for the torch.
+
+一个%s灵魂成为了火炬的燃料。
+%%%%
+Add new annotation for %s (include '!' for warning): 
+
+为%s添加新注释（包含'!'表示警告）：
+%%%%
+Adjust to which letter? 
+
+调整到哪个字母？
+%%%%
+Adjust which ability? 
+
+调整哪个能力？
+%%%%
+Adjust which spell? 
+
+调整哪个法术？
+%%%%
+Ashenzari invites you to share a vision and a curse%s.
+
+艾申扎利邀请你共享一个幻象与诅咒%s。
+%%%%
+Beogh breathes life back into 
+
+比欧弗吹入生命之气复活了
+%%%%
+Beogh breathes life back into %s and 
+
+比欧弗吹入生命之气复活了%s，
+%%%%
+Beogh recalls %s to your side and 
+
+比欧弗将%s召回你身边，
+%%%%
+Bonus from skill manuals is in <lightred>red</lightred>. 
+
+技能手册加成以<lightred>红色</lightred>显示。
+%%%%
+Cast which spell? (? or * to list) 
+
+施放哪个法术？（?或*列出）
+%%%%
+Clear all 
+
+全部清除
+%%%%
+Continue: 
+
+继续：
+%%%%
+Create/edit 
+
+创建/编辑
+%%%%
+Current 
+
+当前
+%%%%
+Enter command to be repeated: 
+
+输入要重复的命令：
+%%%%
+Error opening file '%s'
+
+打开文件'%s'出错
+%%%%
+Expiring: 
+
+即将到期：
+%%%%
+HP:   
+
+生命：   
+%%%%
+Increase (s)trength, (i)ntelligence, or (d)exterity? 
+
+提升(s)力量、(i)智力还是(d)敏捷？
+%%%%
+MP:   
+
+法力：   
+%%%%
+Search for what? (regex) 
+
+搜索什么？（正则表达式）
+%%%%
+Skills enhanced by 
+
+被增强的技能
+%%%%
+Skills reduced by 
+
+被削弱的技能
+%%%%
+Speed: 
+
+速度：
+%%%%
+That species isn't available.
+
+该种族不可用。
+%%%%
+The silver sears 
+
+银光灼烧了
+%%%%
+The species aptitude is in <white>white</white>. 
+
+种族资质以<white>白色</white>显示。
+%%%%
+What level of %s? 
+
+%s的哪一层？
+%%%%
+With your torch unlit, %s soul goes wasted...
+
+火炬未燃，%s的灵魂白白消散了……
+%%%%
+With your torch unlit, a soul goes wasted...
+
+火炬未燃，一个灵魂白白消散了……
+%%%%
+You can't shoot while berserk! Really wield 
+
+狂暴中无法射击！确定持握
+%%%%
+You encounter 
+
+你遭遇了
+%%%%
+You feel that %s will soon be %s!
+
+你感到%s即将%s！
+%%%%
+You feel that %s will soon be %s.
+
+你感到%s即将%s。
+%%%%
+You offer up the Black Torch's flame, and Yredelemnul is glorified by your conquest!
+
+你献上黑炬之火，伊莱德莱姆努尔因你的征服而荣耀！
+%%%%
+You offer up the Black Torch's flame, and Yredelemnul is satisfied with your conquest.
+
+你献上黑炬之火，伊莱德莱姆努尔对你的征服感到满意。
+%%%%
+You offer up the Black Torch's flame, and feel Yredelemnul's disappointment in your meagre crusade.
+
+你献上黑炬之火，感到伊莱德莱姆努尔对你苍白的十字军感到失望。
+%%%%
+You offer up the Black Torch's flame, and feel Yredelemnul's disdain for your failure.
+
+你献上黑炬之火，感到伊莱德莱姆努尔对你的失败嗤之以鼻。
+%%%%
+"Reflect upon your actions, mortal!"
+
+"好好反省你的行为吧，凡人！"
+%%%%
+a chunk of 
+
+一大块
+%%%%
+active 
+
+激活
+%%%%
+attack 
+
+攻击
+%%%%
+bound 
+
+束缚
+%%%%
+chaotic 
+
+混乱的
+%%%%
+confused 
+
+混乱的
+%%%%
+constricted by 
+
+被束缚——
+%%%%
+constricting 
+
+束缚着
+%%%%
+cursed 
+
+诅咒的
+%%%%
+fire at 
+
+向……射击
+%%%%
+ghostly 
+
+鬼魅
+%%%%
+half of 
+
+半个
+%%%%
+helpless 
+
+无助
+%%%%
+its 
+
+它的
+%%%%
+melded 
+
+融入
+%%%%
+more 
+
+更强的
+%%%%
+neutral 
+
+中立
+%%%%
+non-hostile 
+
+非敌对
+%%%%
+potent 
+
+强大的
+%%%%
+repeatedly 
+
+连续的
+%%%%
+replica 
+
+复制品
+%%%%
+sensed 
+
+被感知
+%%%%
+silent 
+
+无声的
+%%%%
+spectral 
+
+幻影
+%%%%
+stealthily 
+
+潜行
+%%%%
+the 
+
+此
+%%%%
+unsullied 
+
+圣洁的
+%%%%
+vampire 
+
+吸血
+%%%%
+your 
+
+你的
