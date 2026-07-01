@@ -12826,6 +12826,996 @@ You enter an ornate necropolis!
 
 你进入了一座华丽的死灵城！
 %%%%
+# Scattered missing keys — beam.cc (4 keys)
+
+%%%%
+The silver sears
+
+银光灼烧了
+%%%%
+%1$s %2$s healed.
+
+%1$s%2$s恢复了生命值。
+%%%%
+%1$s %2$s life force from %3$s%4$s
+
+%1$s从%3$s身上%2$s了生命力%4$s
+%%%%
+%s blocks the %s with %s %s... and reflects it back!
+
+%s用%s%s格挡了%s……并将其反射了回去！
+%%%%
+# mon-info.cc — status fragments (11 keys)
+
+%%%%
+constricted by
+
+被束缚——
+%%%%
+constricting
+
+束缚着
+%%%%
+helpless
+
+无助
+%%%%
+spectral
+
+幻影
+%%%%
+bound
+
+束缚
+%%%%
+ghostly
+
+鬼魅
+%%%%
+vampire
+
+吸血
+%%%%
+sensed
+
+被感知
+%%%%
+active
+
+激活
+%%%%
+-headed
+
+头
+%%%%
+Speed:
+
+速度：
+%%%%
+# spl-cast.cc
+
+%%%%
+Cast which spell? (? or * to list)
+
+施放哪个法术？（?或*列出）
+%%%%
+# attitude-change.cc
+
+%%%%
+%s trembles before you.
+
+%s在你面前颤抖。
+%%%%
+# macro.cc (3 keys)
+
+%%%%
+Create/edit
+
+创建/编辑
+%%%%
+Clear all
+
+全部清除
+%%%%
+Current
+
+当前
+%%%%
+# initfile.cc (2 keys)
+
+%%%%
+Options warning: `sound` will have no effect on this build.
+
+选项警告：`sound`在此版本中无效。
+%%%%
+Setting crawl_dir to `%s`.
+
+将crawl_dir设置为`%s`。
+%%%%
+# cloud.cc
+
+%%%%
+%1$s %2$s %3$s.
+
+%1$s%2$s了%3$s。
+%%%%
+%s
+
+%s
+%%%%
+# l-item.cc (3 keys)
+
+%%%%
+Turn is over
+
+回合已结束
+%%%%
+Bad item
+
+无效物品
+%%%%
+Item is not equipped
+
+物品未装备
+%%%%
+# mon-cast.cc
+
+%%%%
+%s and strikes %s%s%s
+
+%s落下，击中了%s%s%s
+%%%%
+# mon-abil.cc
+
+%%%%
+%s ignites a memory of %s%s.
+
+%s点燃了关于%s的记忆%s。
+%%%%
+# chardump.cc (3 keys)
+
+%%%%
+Char dumped successfully.
+
+角色转储成功。
+%%%%
+Char dumped to '%s'.
+
+角色已转储至'%s'。
+%%%%
+Error opening file '%s'.
+
+打开文件'%s'出错。
+%%%%
+# mon-act.cc
+
+%%%%
+Something unseen %s
+
+某物悄然%s
+%%%%
+# spl-damage.cc (2 keys)
+
+%%%%
+You fester in the toxic bog%s
+
+你在毒沼中溃烂%s
+%%%%
+%s festers in the toxic bog%s
+
+%s在毒沼中溃烂%s
+%%%%
+Flasks of reagents rain from above!
+
+试剂瓶如雨般从天而降！
+%%%%
+# dgn-overview.cc
+
+%%%%
+Add new annotation for %s (include '!' for warning):
+
+为%s添加新注释（包含'!'表示警告）：
+%%%%
+# fearmonger.cc
+
+%%%%
+You are terrified of %s!
+
+你对%s感到极度恐惧！
+%%%%
+# l-you.cc
+
+%%%%
+Can't change to invalid xl %d
+
+无法切换到无效等级xl %d
+%%%%
+# god-abil.cc
+
+%%%%
+[%c] - %d gold -
+
+[%c] - %d金币 -
+%%%%
+# status.cc
+
+%%%%
+Expiring:
+
+即将到期：
+%%%%
+# prompt.cc
+
+%%%%
+%s (Confirm with "%s".)
+
+%s（输入"%s"确认。）
+%%%%
+# adjust.cc (3 keys)
+
+%%%%
+Adjust which spell?
+
+调整哪个法术？
+%%%%
+Adjust to which letter?
+
+调整到哪个字母？
+%%%%
+Adjust which ability?
+
+调整哪个能力？
+%%%%
+# i18n.h (2 keys)
+
+%%%%
+ctx|en
+
+ctx|zh
+%%%%
+English
+
+中文
+%%%%
+# item-name.cc (6 keys)
+
+%%%%
+the
+
+此
+%%%%
+your
+
+你的
+%%%%
+its
+
+它的
+%%%%
+cursed
+
+诅咒的
+%%%%
+chaotic
+
+混乱的
+%%%%
+replica
+
+复制品
+%%%%
+# traps.cc
+
+%%%%
+%s %s!
+
+%s%s！
+%%%%
+# travel.cc (2 keys, already have Delete/Assign, but need these exact forms)
+
+%%%%
+Delete which waypoint? (Enter to confirm, ? to list)
+
+删除哪个路径点？（回车确认，?列出）
+%%%%
+Assign waypoint to what number? (0-9)
+
+将路径点分配到哪个编号？（0-9）
+%%%%
+# god-conduct.cc (2 keys)
+
+%%%%
+potent
+
+强大的
+%%%%
+unsullied
+
+圣洁的
+%%%%
+# god-prayer.cc
+
+%%%%
+silent
+
+无声的
+%%%%
+# god-passive.cc (2 keys)
+
+%%%%
+more
+
+更强的
+%%%%
+repeatedly
+
+连续的
+%%%%
+# fight.cc (4 keys)
+
+%%%%
+attack
+
+攻击
+%%%%
+neutral
+
+中立
+%%%%
+non-hostile
+
+非敌对
+%%%%
+fire at
+
+向……射击
+%%%%
+# menu.cc
+
+%%%%
+Select what (regex)?
+
+选择什么（正则表达式）？
+%%%%
+# quiver.cc (2 keys)
+
+%%%%
+confused
+
+混乱的
+%%%%
+Continue:
+
+继续：
+%%%%
+# tilereg-skl.cc
+
+%%%%
+You can't change your training allocations!
+
+你无法更改训练分配！
+%%%%
+# item-use.cc (2 keys)
+
+%%%%
+</w> or
+
+</w>或
+%%%%
+You can't shoot while berserk! Really wield
+
+狂暴中无法射击！确定持握
+%%%%
+# player-stats.cc
+
+%%%%
+Increase (s)trength, (i)ntelligence, or (d)exterity?
+
+提升(s)力量、(i)智力还是(d)敏捷？
+%%%%
+# startup.cc (2 keys)
+
+%%%%
+<white>[tab]</white> quick-load last game:
+
+<white>[tab]</white>快速加载上次游戏：
+%%%%
+<white>[tab]</white> quick-start last combo:
+
+<white>[tab]</white>快速开始上次组合：
+%%%%
+# player.cc
+
+%%%%
+%s (%d).
+
+%s（%d）。
+%%%%
+# skill-menu.cc (4 keys)
+
+%%%%
+Skills enhanced by
+
+被增强的技能
+%%%%
+Skills reduced by
+
+被削弱的技能
+%%%%
+The species aptitude is in <white>white</white>.
+
+种族资质以<white>白色</white>显示。
+%%%%
+Bonus from skill manuals is in <lightred>red</lightred>.
+
+技能手册加成以<lightred>红色</lightred>显示。
+%%%%
+# player-notices.cc
+
+%%%%
+You encounter
+
+你遭遇了
+%%%%
+# tilesdl.cc (2 keys)
+
+%%%%
+Couldn't find font '%s', falling back on '%s'
+
+找不到字体'%s'，正在回退为'%s'
+%%%%
+Zooming to %.2f
+
+缩放到%.2f
+%%%%
+# mon-project.cc
+
+%%%%
+%s hits %s.
+
+%s击中了%s。
+%%%%
+# mon-poly.cc
+
+%%%%
+%s %s%s!
+
+%s%s%s！
+%%%%
+# teleport.cc (5 keys)
+
+%%%%
+ seems more stable.
+
+看起来更稳定了。
+%%%%
+ looks slightly unstable.
+
+看起来略微不稳定。
+%%%%
+ flickers for a moment.
+
+闪烁了一瞬。
+%%%%
+ disappears!
+
+消失了！
+%%%%
+ reappears nearby!
+
+在附近重新出现了！
+%%%%
+# target-compass.cc (2 keys)
+
+%%%%
+Which direction?
+
+哪个方向？
+%%%%
+Targeting interrupted by HUP signal.
+
+锁定被HUP信号中断。
+%%%%
+# output.cc (3 keys)
+
+%%%%
+melded
+
+融入
+%%%%
+HP:
+
+生命：
+%%%%
+MP:
+
+法力：
+%%%%
+# melee-attack.cc (3 keys)
+
+%%%%
+half of
+
+半个
+%%%%
+a chunk of
+
+一大块
+%%%%
+stealthily
+
+潜行
+%%%%
+# shout.cc (2 keys)
+
+%%%%
+ t - %s!
+
+ t - %s！
+%%%%
+ g - Guard the area.      f - Follow me.
+
+ g - 守卫此区域。      f - 跟我来。
+%%%%
+# main.cc (3 keys)
+
+%%%%
+<yellow>%s</yellow>
+
+<yellow>%s</yellow>
+%%%%
+You need %1$d%% to reach level %2$d.
+
+你需要%1$d%%才能达到%2$d级。
+%%%%
+Enter command to be repeated:
+
+输入要重复的命令：
+%%%%
+# god-companions.cc (3 keys)
+
+%%%%
+Beogh recalls %s to your side and
+
+比欧弗将%s召回你身边，
+%%%%
+Beogh breathes life back into %s and
+
+比欧弗吹入生命之气复活了%s，
+%%%%
+Beogh breathes life back into
+
+比欧弗吹入生命之气复活了
+%%%%
+# god-wrath.cc
+
+%%%%
+The monsters
+
+怪物们
+%%%%
+# spl-book.cc (6 keys)
+
+%%%%
+(Cast)
+
+（施放）
+%%%%
+(Hide)
+
+（隐藏）
+%%%%
+(Imbue)
+
+（注入）
+%%%%
+(Show)
+
+（显示）
+%%%%
+ spell hidden
+
+ 法术隐藏
+%%%%
+Search for what? (regex)
+
+搜索什么？（正则表达式）
+%%%%
+# --- End of scattered keys ---
+%%%%
 What level of %s?
 
 %s的哪一层？
+%%%%
+Sorry, you're not good enough to have a special ability.
+抱歉，你的能力还不足以拥有特殊能力。
+%%%%
+Lua error: %s
+Lua错误：%s
+%%%%
+Use which ability? (? or * to list) 
+使用哪个能力？（? 或 * 列出）
+%%%%
+Your legs are too worn out to hop.
+你的腿太累了，跳不动了。
+%%%%
+You're already rising!
+你已经在上升了！
+%%%%
+You can't rise from this level without the Orb!
+没有天球，你无法从这层上升！
+%%%%
+You can't rise from this level!
+你无法从这层上升！
+%%%%
+There's no appreciative audience!
+这里没有懂得欣赏的观众！
+%%%%
+You are not zealous enough to affect this audience!
+你的热忱不足以打动这群观众！
+%%%%
+There's already a sanctuary in place on this level.
+这层已经有一个避难所了。
+%%%%
+You are already engaged in single combat!
+你已经在单挑中了！
+%%%%
+Any gift you received here would fall and be lost!
+你在这里收到的任何礼物都会掉落丢失！
+%%%%
+You can't heal while in death's door.
+你在死之门中无法治疗。
+%%%%
+Nothing ails you!
+你没有任何不适！
+%%%%
+You have already been granted divine vigour!
+你已经获得了神圣活力！
+%%%%
+You are already calling forth ooze!
+你已经在召唤软泥了！
+%%%%
+You aren't in the Abyss!
+你不在深渊中！
+%%%%
+There isn't enough space to grow briars here.
+这里没有足够的空间生长荆棘。
+%%%%
+You're too exhausted to draw out your power.
+你太疲惫了，无法引出力量。
+%%%%
+You have no need to draw out power.
+你无需引出力量。
+%%%%
+You're too exhausted to power leap.
+你太疲惫了，无法进行强力跳跃。
+%%%%
+You're too exhausted to unleash your apocalyptic power.
+你太疲惫了，无法释放末日之力。
+%%%%
+You have exhausted your breath weapon. Slay more foes!
+你的吐息武器已耗尽。杀死更多敌人吧！
+%%%%
+You don't have enough innate magic capacity.
+你的先天魔力不足。
+%%%%
+Night has already fallen.
+夜幕已经降临。
+%%%%
+Makhleb denies you. Endure the Crucible first!
+马科列布拒绝了你。先在熔炉中证明自己！
+%%%%
+A dragon answers your prayer!
+一条龙回应了你的祈祷！
+%%%%
+(Boost: 
+（增益：
+%%%%
+Sacrifice 
+献祭
+%%%%
+A Card 
+一张牌
+%%%%
+Identified 
+鉴定
+%%%%
+Got 
+获得了
+%%%%
+ with 
+用
+%%%%
+Acquired 
+获得了
+%%%%
+Bought 
+购买了
+%%%%
+ for 
+花了
+%%%%
+Donated 
+捐献了
+%%%%
+Found 
+发现了
+%%%%
+; 
+；
+%%%%
+You see here 
+你在这里看到了
+%%%%
+Pick up what? 
+要拾取什么？
+%%%%
+You bought 
+你购买了
+%%%%
+You acquired 
+你获得了
+%%%%
+Your wizardly powers created 
+你的巫师力量创造了
+%%%%
+ gifted 
+赐予了你
+%%%%
+You stumbled upon 
+你偶然发现了
+%%%%
+You took 
+你拿走了
+%%%%
+You found 
+你发现了
+%%%%
+Gear: 
+装备：
+%%%%
+Potions: 
+药水：
+%%%%
+Scrolls: 
+卷轴：
+%%%%
+Evocable Items: 
+可激活物品：
+%%%%
+Inventory: 
+物品栏：
+%%%%
+Drop what? (Left/Right to switch category) 
+要丢弃什么？（左右键切换分类）
+%%%%
+ wields 
+持握
+%%%%
+ wears 
+穿戴
+%%%%
+ puts on 
+穿上
+%%%%
+ unwields 
+卸下
+%%%%
+ takes off 
+脱下
+At 100% training 
+
+在100%训练度下 
+%%%%
+At current training (%d%%) 
+
+在当前训练度（%d%%）下 
+%%%%
+At a training level of %d%% 
+
+在%d%%的训练等级下 
+%%%%
+would 
+
+将 
+%%%%
+This 
+
+此
+%%%%
+Charges: 
+
+充能次数：
+%%%%
+Stash search prefixes: 
+
+储藏搜索前缀：
+%%%%
+This spell would have no effect right now because 
+
+此法术当前不会产生任何效果，因为 
+%%%%
+This spell has no description. Casting it may therefore be unwise. 
+
+此法术没有描述。因此施放此法术可能并非明智之举。
+%%%%
+It has black scales. 
+
+它拥有黑色鳞片。
+%%%%
+It has yellow scales. 
+
+它拥有黄色鳞片。
+%%%%
+It has green scales. 
+
+它拥有绿色鳞片。
+%%%%
+It has purple scales. 
+
+它拥有紫色鳞片。
+%%%%
+It has red scales. 
+
+它拥有红色鳞片。
+%%%%
+It has white scales. 
+
+它拥有白色鳞片。
+%%%%
+It has grey scales. 
+
+它拥有灰色鳞片。
+%%%%
+It has pale scales. 
+
+它拥有苍白鳞片。
+%%%%
+Throw: 
+
+投掷：
+%%%%
+% to hit with your 
+
+% 命中，
+%%%%
+, and 
+
+，以及 
+%%%%
+about 
+
+约
+%%%%
+(while you are blinded and from distance 
+
+（失明且远距时
+%%%%
+none (normally 
+
+无（通常
+%%%%
+Explosion damage: 
+
+爆炸伤害：
+%%%%
+You have 
+
+你拥有
+%%%%
+immune to 
+
+免疫
+%%%%
+very resistant to 
+
+高度抵抗
+%%%%
+resistant to 
+
+抵抗
+%%%%
+Shooting star damage: 
+
+流星伤害：
+%%%%
+long
+
+长
+%%%%
+\n stacked deck: 
+
+\n 堆叠牌组：
+%%%%
+very greatly 
+
+极大程度地
+%%%%
+greatly 
+
+显著地
+%%%%
+slightly 
+
+略微
+%%%%
+\nTitle - 
+
+\n称号 -
+%%%%
+\nFavour -
+
+\n恩赐 -
+%%%%
+There is 
+
+这里有 
+%%%%
+There is an entrance to 
+
+有一个通往
+%%%%
+open 
+
+开启的 
+%%%%
+closed translucent 
+
+关闭的半透明 
+%%%%
+open translucent 
+
+开启的半透明 
+%%%%
+runed 
+
+刻有符文的 
+%%%%
+runed translucent 
+
+刻有符文的半透明 
+%%%%
+sealed 
+
+封印的 
+%%%%
+sealed translucent 
+
+封印的半透明 
+%%%%
+broken 
+
+破碎的 
+%%%%
+broken translucent 
+
+破碎的半透明 
+%%%%
+closed 
+
+关闭的 
+%%%%
+ armed with 
+
+ 装备着 
+%%%%
+ wielding 
+
+ 持握着 
+%%%%
+ and 
+
+ 以及 
+%%%%
+fire blocked by 
+
+火焰阻隔：
+%%%%
+carrying 
+
+携带着 
+%%%%
+, 
+
+、
+%%%%
