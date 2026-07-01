@@ -3,7 +3,7 @@
 > 本文件仅记录太小而无需开 issue 的零散问题。
 > 翻译工程进展和已追踪的 issue → ~/projects/issues/INDEX.md
 > 翻译裁决（术语选择）→ docs/decisions.md
-> 最后更新：2026-06-27
+> 最后更新：2026-07-01
 
 ---
 
@@ -38,21 +38,23 @@
 
 ---
 
-## 待处理（全部由 issue 12 追踪）
+## ✅ 已完成（Issue 12 — 2026-07-01 关闭）
 
-| 项目 | 文件 | 进度 |
-|------|------|------|
-| rand* 模板重设计 | randname.txt 等 5 文件 | D1 完成，D2 待执行 |
-| 怪物对话 | monspeak.txt | ~24 行（0.4%），~700 条待译 |
-| 神祇对话 | godspeak.txt | 114/195（58%） |
-| 装饰性文本 | decorlines.txt | 依赖项就绪，待译 |
-| 法术失误描述 | miscast.txt | 待译（33 条） |
-| 怪物施法宣言 | monspell.txt | 214/277（77%） |
-| 武器噪音 | wpnnoise.txt | 49/69（71%） |
-| 怪物嘲讽 | insult.txt | Phase 1 已完成 |
-| 怪物喊叫 | shout.txt | Phase 1 已完成（100%） |
-| 涂鸦 | graffiti.txt | Phase 1 已完成 |
-| 颜色名 | colourname.txt | Phase 1 已完成 |
+所有 22 个 `dat/database/zh/*.txt` 文件均达到 100%+ 覆盖率。
+
+| 项目 | 文件 | 覆盖率 |
+|------|------|--------|
+| rand* 模板重设计 | randname.txt 等 5 文件 | 100% |
+| 怪物对话 | monspeak.txt | 99.5%（732/736） |
+| 神祇对话 | godspeak.txt | 100%+（195/193） |
+| 装饰性文本 | decorlines.txt | 100%+（138/133） |
+| 法术失误描述 | miscast.txt | 100%（33/33） |
+| 怪物施法宣言 | monspell.txt | 100%+（290/265） |
+| 武器噪音 | wpnnoise.txt | 100%+（69/65） |
+| 怪物嘲讽 | insult.txt | 100%（33/33） |
+| 怪物喊叫 | shout.txt | 100%（94/94） |
+| 涂鸦 | graffiti.txt | 100%（58/58） |
+| 颜色名 | colourname.txt | 100%（9/9） |
 
 ---
 
