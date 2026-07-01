@@ -326,7 +326,9 @@ void InvMenu::set_preselect(const vector<SelItem> *pre)
 
 string slot_description()
 {
-    return make_stringf("%d/%d 装备栏位", inv_count(INVENT_GEAR), MAX_GEAR);
+    if (Options.language == lang_t::ZH)
+        return make_stringf("%d/%d 装备栏位", inv_count(INVENT_GEAR), MAX_GEAR);
+    return make_stringf("%d/%d gear slots", inv_count(INVENT_GEAR), MAX_GEAR);
 }
 
 void InvMenu::set_title(const string &s)
@@ -336,17 +338,17 @@ void InvMenu::set_title(const string &s)
         string str;
         switch (cur_osel)
         {
-            case 0: str = "Gear: " + slot_description(); break;
-            case 1: str = "Potions: "; break;
-            case 2: str = "Scrolls: "; break;
-            case 3: str = "Evocable Items: "; break;
+            case 0: str = T_("Gear: ") + slot_description(); break;
+            case 1: str = T_("Potions: "); break;
+            case 2: str = T_("Scrolls: "); break;
+            case 3: str = T_("Evocable Items: "); break;
         }
-        str += "    (Left/Right to switch category)";
+        str += T_("    (Left/Right to switch category)");
         set_title(new InvTitle(this, str, title_annotate));
         return;
     }
 
-    set_title(new InvTitle(this, s.empty() ? "Inventory: " + slot_description()
+    set_title(new InvTitle(this, s.empty() ? T_("Inventory: ") + slot_description()
                                            : s,
                            title_annotate));
 }
@@ -1541,7 +1543,7 @@ void display_inventory()
 
 static string _drop_menu_titlefn(const Menu*, const string &)
 {
-    return "Drop what? (Left/Right to switch category) " + slot_description() + " (_ for help)";
+    return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
 /**
