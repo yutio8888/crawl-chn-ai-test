@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "hints.h"
+#include "i18n.h"
 
 #include <cstring>
 #include <sstream>
@@ -1822,14 +1823,14 @@ string hints_skills_info()
 {
     ostringstream text;
     text << "<" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
-    string broken = "This screen shows the skill set of your character. "
+    string broken = T_("This screen shows the skill set of your character. "
         "The number next to the skill is your current level, the higher the "
         "better. <w>Training</w> displays training percentages. "
         "<w>Costs</w> displays relative training costs. "
         "<w>Targets</w> displays skill training targets. "
         "You can toggle which skills to train by "
         "pressing their slot letters. A <darkgrey>grey</darkgrey> skill "
-        "will not be trained and ease the training of others.";
+        "will not be trained and ease the training of others.");
     text << broken;
     text << "</" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
 
@@ -1840,11 +1841,11 @@ string hints_skill_training_info()
 {
     ostringstream text;
     text << "<" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
-    string broken = "The training percentage (in <brown>brown</brown>) "
+    string broken = T_("The training percentage (in <brown>brown</brown>) "
         "shows the relative amount of the experience gained which will be "
         "used to train each skill. It is automatically set depending on "
         "which skills you have used recently. Disabling a skill sets the "
-        "training rate to 0.";
+        "training rate to 0.");
     text << broken;
     text << "</" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
 
@@ -1855,10 +1856,10 @@ string hints_skill_costs_info()
 {
     ostringstream text;
     text << "<" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
-    string broken = "The training cost (in <cyan>cyan</cyan>) "
+    string broken = T_("The training cost (in <cyan>cyan</cyan>) "
         "shows the experience cost to raise the given skill one level, "
         "relative to the cost of raising an aptitude zero skill from level "
-        "zero to level one.";
+        "zero to level one.");
     text << broken;
     text << "</" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
 
@@ -1869,9 +1870,9 @@ string hints_skill_targets_info()
 {
     ostringstream text;
     text << "<" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
-    string broken = "Press the letter of a skill to set a training target. "
+    string broken = T_("Press the letter of a skill to set a training target. "
         "When the target is reached a message will appear and "
-        "the training of the skill will be disabled.";
+        "the training of the skill will be disabled.");
     text << broken;
     text << "</" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
 
@@ -1882,9 +1883,9 @@ string hints_skills_description_info()
 {
     ostringstream text;
     text << "<" << colour_to_str(channel_to_colour(MSGCH_TUTORIAL)) << ">";
-    string broken = "This screen shows the skill set of your character. "
+    string broken = T_("This screen shows the skill set of your character. "
                     "Press the letter of a skill to read its description, or "
-                    "press <w>?</w> again to return to the skill selection.";
+                    "press <w>?</w> again to return to the skill selection.");
 
     linebreak_string(broken, _get_hints_cols());
     text << broken;

@@ -7926,10 +7926,10 @@ the Pentagram
 五芒星
 %%%%
 The percentage of incoming experience used to train each skill is in <brown>brown</brown>.\n
-The percentage of incoming experience used to train each skill is in <brown>brown</brown>.\n
+用于训练每项技能的经验百分比以<brown>棕色</brown>显示。\n
 %%%%
 The percentage of the progress done before reaching next level is in <cyan>cyan</cyan>.\n
-The percentage of the progress done before reaching next level is in <cyan>cyan</cyan>.\n
+达到下一等级前的进度百分比以<cyan>青色</cyan>显示。\n
 %%%%
 The plants of the dungeon cease their hostilities.
 地牢中的植物停止了它们的敌意。
