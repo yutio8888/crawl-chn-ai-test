@@ -2622,8 +2622,6 @@ static vector<formatted_string> _get_overview_resistances(
     // First column, resist name is up to 8 chars
     int cwidth = 8;
     string out;
-    const bool zh = Options.language == lang_t::ZH;
-
     const int rfire = player_res_fire(false);
     out += _resist_composer("rFire", cwidth, rfire, 3, MR_RES_FIRE) + "\n";
 

@@ -14288,3 +14288,24 @@ enters the arena
 %%%%
 Last arena monster was dismissed.
 最后一只竞技场怪物已被清除。
+%%%%
+ (while you are blinded and from distance 
+（失明且远距时
+%%%%
+ a little 
+略微
+%%%%
+ extremely 
+极其
+%%%%
+ very 
+非常
+%%%%
+ # - Recommended character
+ # - 推荐角色
+%%%%
+Assign waypoint to what number? (0-9%s) 
+将路径点分配给哪个编号？（0-9%s） 
+%%%%
+Delete which waypoint? (* - delete all, Esc - exit) 
+删除哪个路径点？（* - 删除全部，Esc - 退出） 
