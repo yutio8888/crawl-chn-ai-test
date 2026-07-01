@@ -1353,6 +1353,7 @@ bool bad_attack(const monster *mon, string& adj, string& suffix,
 
         if (would_cause_penance)
         {
+            // ZH uses complete phrases; EN handles articles
             if (Options.language == lang_t::ZH)
                 adj = "你的盟友";
             else
@@ -1440,7 +1441,7 @@ bool stop_attack_prompt(const monster* mon, bool beam_attack,
     // No "your the Royal Jelly" nor "the the Royal Jelly".
     string mon_name = remove_prepended_the(mon->name(DESC_PLAIN));
     const bool zh = Options.language == lang_t::ZH;
-    // Chinese has no articles, English prepends "the " for non-your adjectives
+    // EN only: articles
     if (!zh && !starts_with(adj, "your"))
         adj = "the " + adj;
     mon_name = adj + mon_name;

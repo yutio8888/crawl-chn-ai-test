@@ -16737,3 +16737,696 @@ you banish creatures to the Abyss
 use unnaturally quick items
 使用异常快速的物品
 %%%%
+%%%%
+Archery
+箭术
+%%%%
+Archmagi
+大法师
+%%%%
+Arena
+竞技场
+%%%%
+Attunement
+同调
+%%%%
+Command
+命令
+%%%%
+Earth
+大地
+%%%%
+Energy
+能量
+%%%%
+Fly
+飞行
+%%%%
+Glass
+玻璃化
+%%%%
+Guile
+狡诈
+%%%%
+Harm
+伤害
+%%%%
+Hurl
+投掷
+%%%%
+Infuse
+注入
+%%%%
+Light
+光亮
+%%%%
+Mayhem
+混乱
+%%%%
+Mesmerism
+催眠
+%%%%
+Parrying
+格挡
+%%%%
+Ponderous
+笨重
+%%%%
+Pyromania
+纵火
+%%%%
+Rampage
+狂暴
+%%%%
+Reflect
+反射
+%%%%
+Repulsion
+排斥
+%%%%
+Resonance
+共鸣
+%%%%
+Shadows
+暗影
+%%%%
+Snipe
+狙击
+%%%%
+Spirit
+精神护盾
+%%%%
+Stardust
+星尘
+%%%%
+acid dragon scales
+酸龙鳞甲
+%%%%
+air
+大气
+%%%%
+alchemy
+炼金
+%%%%
+animal skin
+动物皮
+%%%%
+arbalest
+钢弩
+%%%%
+archery
+箭术
+%%%%
+athame
+仪式匕首
+%%%%
+attunement
+同调
+%%%%
+bardiche
+长柄斧
+%%%%
+barding
+纳迦战甲
+%%%%
+battleaxe
+战斗斧
+%%%%
+blade talisman
+利刃护符
+%%%%
+boomerang
+回旋镖
+%%%%
+boots
+靴子
+%%%%
+broad axe
+阔斧
+%%%%
+buckler
+小圆盾
+%%%%
+cap
+帽子
+%%%%
+centaur barding
+半人马战甲
+%%%%
+chain mail
+锁子甲
+%%%%
+cloak
+披风
+%%%%
+club
+棍棒
+%%%%
+cold resistance
+寒冷抗性
+%%%%
+command
+命令
+%%%%
+conjuration
+咒法
+%%%%
+corrosion resistance
+酸蚀抗性
+%%%%
+crystal plate armour
+水晶板甲
+%%%%
+dagger
+匕首
+%%%%
+dart
+飞镖
+%%%%
+death
+死亡
+%%%%
+demon blade
+恶魔之刃
+%%%%
+demon trident
+恶魔三叉戟
+%%%%
+demon whip
+恶魔之鞭
+%%%%
+dire flail
+恐怖链枷
+%%%%
+double sword
+双刃剑
+%%%%
+dragon-coil talisman
+龙卷护符
+%%%%
+dyed 
+染色
+%%%%
+earth
+大地
+%%%%
+eel talisman
+鳗鱼护符
+%%%%
+embroidered 
+绣花
+%%%%
+energy
+能量
+%%%%
+eudemon blade
+善灵之刃
+%%%%
+eveningstar
+黄昏之星
+%%%%
+executioner's axe
+刽子手之斧
+%%%%
+falchion
+弯刃刀
+%%%%
+fire dragon scales
+火龙鳞甲
+%%%%
+fire resistance
+火焰抗性
+%%%%
+flail
+链枷
+%%%%
+flying
+飞行
+%%%%
+fortress talisman
+堡垒护符
+%%%%
+giant club
+巨棍
+%%%%
+giant spiked club
+巨刺棍
+%%%%
+glaive
+长柄刀
+%%%%
+glass
+玻璃化
+%%%%
+gloves
+手套
+%%%%
+glowing 
+发光
+%%%%
+golden dragon scales
+金龙鳞甲
+%%%%
+granite talisman
+花岗岩护符
+%%%%
+great mace
+大战锤
+%%%%
+great sword
+巨剑
+%%%%
+guile
+狡诈
+%%%%
+halberd
+长戟
+%%%%
+hand axe
+手斧
+%%%%
+hand cannon
+手炮
+%%%%
+harm
+伤害增幅
+%%%%
+hat
+帽子
+%%%%
+helmet
+头盔
+%%%%
+hive talisman
+蜂巢护符
+%%%%
+hurling
+投掷强化
+%%%%
+ice
+寒冰
+%%%%
+ice dragon scales
+冰龙鳞甲
+%%%%
+infusion
+魔力注入
+%%%%
+inkwell talisman
+墨池护符
+%%%%
+javelin
+标枪
+%%%%
+kite shield
+鸢盾
+%%%%
+lajatang
+双头杖
+%%%%
+large rock
+巨石
+%%%%
+leather armour
+皮甲
+%%%%
+long sword
+长剑
+%%%%
+longbow
+长弓
+%%%%
+lupine talisman
+狼形护符
+%%%%
+mace
+钉头锤
+%%%%
+maw talisman
+巨口护符
+%%%%
+medusa talisman
+美杜莎护符
+%%%%
+mesmerism
+催眠
+%%%%
+morningstar
+流星锤
+%%%%
+necromancy
+死灵
+%%%%
+off
+关闭
+%%%%
+on
+开启
+%%%%
+orcbow
+兽人弓
+%%%%
+parrying
+格挡
+%%%%
+partisan
+阔刃戟
+%%%%
+pearl dragon scales
+珍珠龙鳞甲
+%%%%
+plate armour
+板甲
+%%%%
+ponderousness
+笨重
+%%%%
+protean talisman
+千变护符
+%%%%
+pyromania
+纵火
+%%%%
+quarterstaff
+铁头棍
+%%%%
+quick
+快
+%%%%
+quick blade
+迅捷之刃
+%%%%
+quicksilver dragon scales
+水银龙鳞甲
+%%%%
+quill talisman
+羽毛护符
+%%%%
+rampaging
+狂暴冲锋
+%%%%
+rapier
+刺剑
+%%%%
+removed troll hide
+已移除的巨魔皮
+%%%%
+repulsion
+排斥力场
+%%%%
+resonance
+共鸣
+%%%%
+riddle talisman
+谜语护符
+%%%%
+rimehorn talisman
+霜角护符
+%%%%
+ring mail
+环甲
+%%%%
+robe
+长袍
+%%%%
+sacred scourge
+神圣之鞭
+%%%%
+sanguine talisman
+血族护符
+%%%%
+scale mail
+鳞甲
+%%%%
+scarab talisman
+圣甲虫护符
+%%%%
+scarf
+围巾
+%%%%
+scimitar
+弯刀
+%%%%
+serpent talisman
+蛇之护符
+%%%%
+shadow dragon scales
+暗影龙鳞甲
+%%%%
+shadows
+暗影庇护
+%%%%
+shiny 
+闪亮
+%%%%
+short sword
+短剑
+%%%%
+shortbow
+短弓
+%%%%
+sling
+投石索
+%%%%
+slow
+慢
+%%%%
+sniping
+狙击
+%%%%
+spear
+长矛
+%%%%
+spider talisman
+蜘蛛护符
+%%%%
+spirit shield
+精神护盾
+%%%%
+spore talisman
+孢子护符
+%%%%
+stardust
+星尘
+%%%%
+steam dragon scales
+蒸汽龙鳞甲
+%%%%
+stone
+石头
+%%%%
+storm dragon scales
+风暴龙鳞甲
+%%%%
+storm talisman
+风暴护符
+%%%%
+swamp dragon scales
+沼泽龙鳞甲
+%%%%
+talisman of death
+死亡护符
+%%%%
+the Archmagi
+大法师
+%%%%
+throwing net
+投网
+%%%%
+tower shield
+塔盾
+%%%%
+trident
+三叉戟
+%%%%
+triple crossbow
+三连弩
+%%%%
+triple sword
+三刃剑
+%%%%
+trishula
+圣三叉戟
+%%%%
+troll leather armour
+巨魔皮甲
+%%%%
+very quick
+极快
+%%%%
+very slow
+极慢
+%%%%
+war axe
+战斧
+%%%%
+wellspring talisman
+泉源护符
+%%%%
+whip
+鞭子
+%%%%
+wrath
+狂怒
+%%%%
+acidic
+酸蚀
+%%%%
+antimagic
+禁魔
+%%%%
+concuss
+震荡
+%%%%
+concussing
+震荡
+%%%%
+concussion
+震荡
+%%%%
+confuse
+迷惑
+%%%%
+confusing
+迷惑
+%%%%
+confusion
+迷惑
+%%%%
+devious
+狡诈
+%%%%
+distort
+扭曲
+%%%%
+distorting
+扭曲
+%%%%
+distortion
+扭曲
+%%%%
+drain
+吸血
+%%%%
+draining
+生命吸取
+%%%%
+elec
+雷电
+%%%%
+electric
+雷电
+%%%%
+electrocution
+雷电
+%%%%
+entangle
+缠绕
+%%%%
+entangling
+缠绕
+%%%%
+fast
+疾速
+%%%%
+flaming
+烈焰
+%%%%
+foul flame
+秽焰
+%%%%
+freezing
+寒霜
+%%%%
+heavy
+沉重
+%%%%
+holy
+圣光
+%%%%
+holy wrath
+圣光
+%%%%
+pain
+痛苦
+%%%%
+painful
+痛苦
+%%%%
+penet
+穿透
+%%%%
+penetrating
+穿透
+%%%%
+penetration
+穿透
+%%%%
+protect
+防护
+%%%%
+protective
+防护
+%%%%
+reap
+收割
+%%%%
+reaping
+收割
+%%%%
+rebuke
+斥责
+%%%%
+rebuking
+斥责
+%%%%
+spect
+幽魂
+%%%%
+spectralising
+幽魂
+%%%%
+speed
+疾速
+%%%%
+sunder
+碎裂
+%%%%
+sundering
+碎裂
+%%%%
+valour
+勇武
+%%%%
+valourous
+勇武
+%%%%
+vamp
+生命吸取
+%%%%
+vampiric
+吸血
+%%%%
+vampirism
+吸血
+%%%%
+venom
+剧毒
+%%%%
+venomous
+剧毒
+%%%%
+vuln
+脆弱
+%%%%
+weak
+弱化
+%%%%
+weakening
+弱化
+%%%%
+weakness
+弱化
+%%%%
+will-reducing
+意志削弱

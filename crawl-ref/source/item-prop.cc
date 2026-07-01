@@ -2043,22 +2043,7 @@ const char* staff_type_name(stave_type s)
     if (s == NUM_STAVES)
         return "bugginess"; // used for known items
     ASSERT_RANGE(s, 0, NUM_STAVES);
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<string, const char*> zh_names = {
-            { "fire", "火焰" }, { "cold", "寒冰" }, { "alchemy", "炼金" },
-            { "necromancy", "死灵" }, { "conjuration", "咒法" },
-            { "air", "大气" }, { "earth", "大地" },
-            { "wizardry", "巫术" }, { "power", "力量" },
-            { "energy", "能量" }, { "enchantment", "附魔" },
-            { "summoning", "召唤" }, { "channelling", "引导" },
-        };
-        const char* en = Staff_prop[Staff_index[s]].name;
-        auto it = zh_names.find(en);
-        if (it != zh_names.end())
-            return it->second;
-    }
-    return Staff_prop[Staff_index[s]].name;
+    return T_(Staff_prop[Staff_index[s]].name);
 }
 
 skill_type staff_skill(stave_type s)
@@ -2197,21 +2182,7 @@ const char *missile_name(missile_type ammo)
     if (ammo < 0 || ammo >= NUM_MISSILES)
         return "eggplant";
     const char* en = Missile_prop[ Missile_index[ammo] ].name;
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<string, const char*> zh_names = {
-            { "dart", "飞镖" }, { "stone", "石头" },
-            { "large rock", "巨石" }, { "javelin", "标枪" },
-            { "throwing net", "投网" }, { "boomerang", "回旋镖" },
-            { "needle", "吹箭" }, { "arrow", "箭" },
-            { "bolt", "弩箭" }, { "slug", "弹丸" },
-            { "sling bullet", "投石索弹丸" },
-        };
-        auto it = zh_names.find(en);
-        if (it != zh_names.end())
-            return it->second;
-    }
-    return en;
+    return T_(en);
 }
 
 // Returns the name of the projectiles launched by a given item, or the item
@@ -3195,61 +3166,30 @@ bool is_mana_regen_item(const item_def& item)
 
 string talisman_type_name(int type)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<int, const char*> zh_names = {
-            { TALISMAN_QUILL, "羽毛护符" },
-            { TALISMAN_INKWELL, "墨池护符" },
-            { TALISMAN_PROTEAN, "千变护符" },
-            { TALISMAN_RIMEHORN, "霜角护符" },
-            { TALISMAN_SPIDER, "蜘蛛护符" },
-            { TALISMAN_AQUA, "泉源护符" },
-            { TALISMAN_SCARAB, "圣甲虫护符" },
-            { TALISMAN_MEDUSA, "美杜莎护符" },
-            { TALISMAN_SPORE, "孢子护符" },
-            { TALISMAN_MAW, "巨口护符" },
-            { TALISMAN_SERPENT, "蛇之护符" },
-            { TALISMAN_EEL, "鳗鱼护符" },
-            { TALISMAN_BLADE, "利刃护符" },
-            { TALISMAN_WEREWOLF, "狼形护符" },
-            { TALISMAN_FORTRESS, "堡垒护符" },
-            { TALISMAN_STATUE, "花岗岩护符" },
-            { TALISMAN_HIVE, "蜂巢护符" },
-            { TALISMAN_DRAGON, "龙卷护符" },
-            { TALISMAN_SPHINX, "谜语护符" },
-            { TALISMAN_VAMPIRE, "血族护符" },
-            { TALISMAN_DEATH, "死亡护符" },
-            { TALISMAN_STORM, "风暴护符" },
-        };
-        auto it = zh_names.find(type);
-        if (it != zh_names.end())
-            return it->second;
-    }
-
     switch (type)
     {
-    case TALISMAN_QUILL:    return "quill talisman";
-    case TALISMAN_INKWELL:  return "inkwell talisman";
-    case TALISMAN_PROTEAN:  return "protean talisman";
-    case TALISMAN_RIMEHORN: return "rimehorn talisman";
-    case TALISMAN_SPIDER:   return "spider talisman";
-    case TALISMAN_AQUA:     return "wellspring talisman";
-    case TALISMAN_SCARAB:   return "scarab talisman";
-    case TALISMAN_MEDUSA:   return "medusa talisman";
-    case TALISMAN_SPORE:    return "spore talisman";
-    case TALISMAN_MAW:      return "maw talisman";
-    case TALISMAN_SERPENT:  return "serpent talisman";
-    case TALISMAN_EEL:      return "eel talisman";
-    case TALISMAN_BLADE:    return "blade talisman";
-    case TALISMAN_WEREWOLF: return "lupine talisman";
-    case TALISMAN_FORTRESS: return "fortress talisman";
-    case TALISMAN_STATUE:   return "granite talisman";
-    case TALISMAN_HIVE:     return "hive talisman";
-    case TALISMAN_DRAGON:   return "dragon-coil talisman";
-    case TALISMAN_SPHINX:   return "riddle talisman";
-    case TALISMAN_VAMPIRE:  return "sanguine talisman";
-    case TALISMAN_DEATH:    return "talisman of death";
-    case TALISMAN_STORM:    return "storm talisman";
+    case TALISMAN_QUILL:    return T_("quill talisman");
+    case TALISMAN_INKWELL:  return T_("inkwell talisman");
+    case TALISMAN_PROTEAN:  return T_("protean talisman");
+    case TALISMAN_RIMEHORN: return T_("rimehorn talisman");
+    case TALISMAN_SPIDER:   return T_("spider talisman");
+    case TALISMAN_AQUA:     return T_("wellspring talisman");
+    case TALISMAN_SCARAB:   return T_("scarab talisman");
+    case TALISMAN_MEDUSA:   return T_("medusa talisman");
+    case TALISMAN_SPORE:    return T_("spore talisman");
+    case TALISMAN_MAW:      return T_("maw talisman");
+    case TALISMAN_SERPENT:  return T_("serpent talisman");
+    case TALISMAN_EEL:      return T_("eel talisman");
+    case TALISMAN_BLADE:    return T_("blade talisman");
+    case TALISMAN_WEREWOLF: return T_("lupine talisman");
+    case TALISMAN_FORTRESS: return T_("fortress talisman");
+    case TALISMAN_STATUE:   return T_("granite talisman");
+    case TALISMAN_HIVE:     return T_("hive talisman");
+    case TALISMAN_DRAGON:   return T_("dragon-coil talisman");
+    case TALISMAN_SPHINX:   return T_("riddle talisman");
+    case TALISMAN_VAMPIRE:  return T_("sanguine talisman");
+    case TALISMAN_DEATH:    return T_("talisman of death");
+    case TALISMAN_STORM:    return T_("storm talisman");
     default:
         return "buggy talisman";
     }
@@ -3311,124 +3251,18 @@ string item_base_name(const item_def &item)
     return item_base_name(item.base_type, item.sub_type);
 }
 
-static const char* _zh_item_name(object_class_type type, int sub_type)
-{
-    if (Options.language != lang_t::ZH)
-        return nullptr;
-
-    switch (type)
-    {
-    case OBJ_WEAPONS:
-    {
-        static const map<string, const char*> zh_names = {
-            { "club", "棍棒" }, { "whip", "鞭子" }, { "mace", "钉头锤" },
-            { "flail", "链枷" }, { "morningstar", "流星锤" },
-            { "demon whip", "恶魔之鞭" }, { "sacred scourge", "神圣之鞭" },
-            { "dire flail", "恐怖链枷" }, { "eveningstar", "黄昏之星" },
-            { "great mace", "大战锤" }, { "giant club", "巨棍" },
-            { "giant spiked club", "巨刺棍" }, { "dagger", "匕首" },
-            { "quick blade", "迅捷之刃" }, { "short sword", "短剑" },
-            { "rapier", "刺剑" }, { "athame", "仪式匕首" },
-            { "falchion", "弯刃刀" }, { "long sword", "长剑" },
-            { "scimitar", "弯刀" }, { "demon blade", "恶魔之刃" },
-            { "eudemon blade", "善灵之刃" }, { "double sword", "双刃剑" },
-            { "great sword", "巨剑" }, { "triple sword", "三刃剑" },
-            { "hand axe", "手斧" }, { "war axe", "战斧" },
-            { "broad axe", "阔斧" }, { "battleaxe", "战斗斧" },
-            { "executioner's axe", "刽子手之斧" }, { "spear", "长矛" },
-            { "trident", "三叉戟" }, { "halberd", "长戟" },
-            { "partisan", "阔刃戟" }, { "demon trident", "恶魔三叉戟" },
-            { "trishula", "圣三叉戟" }, { "glaive", "长柄刀" },
-            { "bardiche", "长柄斧" }, { "staff", "长棍" },
-            { "quarterstaff", "铁头棍" }, { "lajatang", "双头杖" },
-            { "sling", "投石索" }, { "hand cannon", "手炮" },
-            { "shortbow", "短弓" }, { "orcbow", "兽人弓" },
-            { "arbalest", "钢弩" }, { "longbow", "长弓" },
-            { "triple crossbow", "三连弩" },
-            // Old/removed weapons still referenced
-            { "old spiked flail", "旧尖刺链枷" }, { "old hammer", "旧锤子" },
-            { "old cutlass", "旧弯刀" }, { "old falchion", "旧弯刃刀" },
-            { "old long sword", "旧长剑" }, { "old scimitar", "旧弯刀" },
-            { "old double sword", "旧双刃剑" }, { "old great sword", "旧巨剑" },
-            { "old triple sword", "旧三刃剑" }, { "old scythe", "旧镰刀" },
-            { "old blowgun", "旧吹箭筒" }, { "old fustibalus", "旧投石杖" },
-        };
-        const char* en = Weapon_prop[Weapon_index[sub_type]].name;
-        auto it = zh_names.find(en);
-        return it != zh_names.end() ? it->second : nullptr;
-    }
-    case OBJ_MISSILES:
-    {
-        static const map<string, const char*> zh_names = {
-            { "dart", "飞镖" }, { "stone", "石头" },
-            { "large rock", "巨石" }, { "javelin", "标枪" },
-            { "throwing net", "投网" }, { "boomerang", "回旋镖" },
-            { "needle", "吹箭" }, { "arrow", "箭" },
-            { "bolt", "弩箭" }, { "slug", "弹丸" },
-            { "sling bullet", "投石索弹丸" },
-        };
-        const char* en = Missile_prop[Missile_index[sub_type]].name;
-        auto it = zh_names.find(en);
-        return it != zh_names.end() ? it->second : nullptr;
-    }
-    case OBJ_ARMOUR:
-    {
-        static const map<string, const char*> zh_names = {
-            { "animal skin", "动物皮" }, { "robe", "长袍" },
-            { "leather armour", "皮甲" }, { "ring mail", "环甲" },
-            { "scale mail", "鳞甲" }, { "chain mail", "锁子甲" },
-            { "plate armour", "板甲" },
-            { "crystal plate armour", "水晶板甲" },
-            { "troll leather armour", "巨魔皮甲" },
-            // 龙鳞护甲
-            { "steam dragon scales",      "蒸汽龙鳞甲" },
-            { "acid dragon scales",       "酸龙鳞甲" },
-            { "quicksilver dragon scales","水银龙鳞甲" },
-            { "swamp dragon scales",      "沼泽龙鳞甲" },
-            { "fire dragon scales",       "火龙鳞甲" },
-            { "ice dragon scales",        "冰龙鳞甲" },
-            { "pearl dragon scales",      "珍珠龙鳞甲" },
-            { "storm dragon scales",      "风暴龙鳞甲" },
-            { "shadow dragon scales",     "暗影龙鳞甲" },
-            { "golden dragon scales",     "金龙鳞甲" },
-            { "cloak", "披风" }, { "scarf", "围巾" },
-            { "gloves", "手套" }, { "helmet", "头盔" },
-            { "cap", "帽子" }, { "hat", "帽子" },
-            { "boots", "靴子" }, { "centaur barding", "半人马战甲" },
-            { "barding", "纳迦战甲" }, { "orb", "宝珠" },
-            { "buckler", "小圆盾" }, { "kite shield", "鸢盾" },
-            { "tower shield", "塔盾" },
-            { "removed troll hide", "已移除的巨魔皮" },
-        };
-        const char* en = Armour_prop[Armour_index[sub_type]].name;
-        auto it = zh_names.find(en);
-        return it != zh_names.end() ? it->second : nullptr;
-    }
-    case OBJ_JEWELLERY:
-        return jewellery_is_amulet(sub_type) ? "护身符" : "戒指";
-    case OBJ_TALISMANS:
-        return nullptr; // handled by talisman_type_name
-    default:
-        return nullptr;
-    }
-}
-
 string item_base_name(object_class_type type, int sub_type)
 {
-    const char* zh = _zh_item_name(type, sub_type);
-    if (zh)
-        return zh;
-
     switch (type)
     {
     case OBJ_WEAPONS:
-        return Weapon_prop[Weapon_index[sub_type]].name;
+        return T_(Weapon_prop[Weapon_index[sub_type]].name);
     case OBJ_MISSILES:
-        return Missile_prop[Missile_index[sub_type]].name;
+        return T_(Missile_prop[Missile_index[sub_type]].name);
     case OBJ_ARMOUR:
-        return Armour_prop[Armour_index[sub_type]].name;
+        return T_(Armour_prop[Armour_index[sub_type]].name);
     case OBJ_JEWELLERY:
-        return jewellery_is_amulet(sub_type) ? "amulet" : "ring";
+        return T_(jewellery_is_amulet(sub_type) ? "amulet" : "ring");
     case OBJ_TALISMANS:
         return talisman_type_name(sub_type);
     default:

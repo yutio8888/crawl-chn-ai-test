@@ -71,37 +71,11 @@ static string _level_description_string_hud()
     const PlaceInfo& place = you.get_place_info();
     string short_name = branches[place.branch].shortname;
 
-    // Chinese branch name lookup
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<string, const char*> zh_names = {
-            { "Dungeon", "地牢" }, { "Temple", "神殿" },
-            { "Orcish Mines", "兽人矿坑" }, { "Elven Halls", "精灵殿堂" },
-            { "Lair", "兽巢" }, { "Swamp", "沼泽" },
-            { "Shoals", "浅滩" }, { "Snake Pit", "蛇坑" },
-            { "Spider Nest", "蜘蛛巢穴" }, { "Slime Pits", "史莱姆坑" },
-            { "Vaults", "宝库" }, { "Crypt", "墓穴" },
-            { "Tomb", "陵墓" }, { "Hell", "地狱" },
-            { "Dis", "铁之城" }, { "Gehenna", "火焚谷" },
-            { "Cocytus", "冰封湖" }, { "Tartarus", "深渊牢狱" },
-            { "Zot", "佐特领域" }, { "Depths", "深处" },
-            { "Abyss", "深渊" }, { "Pandemonium", "万魔殿" },
-            { "Ziggurat", "通天塔" }, { "Labyrinth", "迷宫" },
-            { "Bazaar", "集市" }, { "Troves", "宝藏库" },
-            { "Sewer", "下水道" }, { "Ossuary", "骨堂" },
-            { "Bailey", "堡垒" }, { "Gauntlet", "竞技场" },
-            { "Ice Cave", "冰窟" }, { "Volcano", "火山" },
-            { "Wizlab", "巫师实验室" }, { "Desolation", "荒原" },
-            { "Arena", "竞技场" },
-        };
-        auto it = zh_names.find(short_name);
-        if (it != zh_names.end())
-            short_name = it->second;
-    }
+    short_name = T_(short_name.c_str());
 
     if (brdepth[place.branch] > 1)
         short_name += make_stringf(":%d", you.depth);
-    // Indefinite articles — not used in Chinese
+    // EN only: indefinite articles
     else if (Options.language != lang_t::ZH
              && place.branch != BRANCH_PANDEMONIUM
              && place.branch != BRANCH_DESOLATION
@@ -2042,10 +2016,9 @@ int equip_slot_by_name(const char *s)
         }
     }
 
-    // ZH fallback: equip_slot_name() returns Chinese in ZH mode, but Lua
-    // scripts and other programmatic callers pass English slot name strings
-    // (e.g. items.equipped_at("weapon")). Try matching against the invariant
-    // English names via equip_slot_name_en().
+    // Protocol: Lua callers pass English slot names (e.g. "weapon").
+    // equip_slot_name() returns Chinese in ZH mode, so use
+    // equip_slot_name_en() for invariant matching regardless of language.
     if (Options.language == lang_t::ZH)
     {
         for (int i = SLOT_FIRST_STANDARD; i <= SLOT_LAST_STANDARD; ++i)
@@ -2886,8 +2859,6 @@ static string _extra_passive_effects()
 /// and runes/Orbs of Zot.
 static string _status_mut_rune_list(int sw)
 {
-    const bool zh = Options.language == lang_t::ZH;
-
     // print passive information
     string text = "<w>%:</w> ";
     text += _extra_passive_effects();
@@ -2906,15 +2877,10 @@ static string _status_mut_rune_list(int sw)
     int move_cost = (player_speed() * player_movement_speed()) / 10;
     if (move_cost != 10)
     {
-        const char *help = zh
-            ? ((move_cost <   8) ? "极快" :
-               (move_cost <  10) ? "快" :
-               (move_cost <  13) ? "慢"
-                                 : "极慢")
-            : ((move_cost <   8) ? "very quick" :
-               (move_cost <  10) ? "quick" :
-               (move_cost <  13) ? "slow"
-                                 : "very slow");
+        const char *help = T_((move_cost <   8) ? "very quick"
+                             : (move_cost <  10) ? "quick"
+                             : (move_cost <  13) ? "slow"
+                             : "very slow");
         status.emplace_back(help);
     }
 
@@ -2940,7 +2906,8 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        if (zh)
+        // Structural: ZH uses different counter/plural format
+        if (Options.language == lang_t::ZH)
             text += make_stringf("\n<w>%s:</w> %d/%d个符文：%s",
                     command_to_string(CMD_DISPLAY_RUNES).c_str(),
                     (int)runes.size(), you.obtainable_runes,

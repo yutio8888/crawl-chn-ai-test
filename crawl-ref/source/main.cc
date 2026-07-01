@@ -439,6 +439,7 @@ NORETURN static void _launch_game()
     {
         if (Options.language == lang_t::ZH)
         {
+            // ZH: uses Chinese punctuation and name format without "the"
             const char* welcome_word = game_start ? T_("Welcome") : T_("Welcome back");
             msg::stream << "<yellow>" << welcome_word << "，"
                         << you.your_name << "（"
@@ -705,6 +706,7 @@ static void _wanderer_note_equipment()
     mprf(T_("You begin with %s%s%s."), equip_str.c_str(),
          spell_str.c_str(), library_str.c_str());
 
+    // ZH uses different sentence structure for the starting note
     const string combined_str = Options.language == lang_t::ZH
         ? you.your_name + "携带" + equip_str + spell_str + library_str + "出发了。"
         : you.your_name + " set off with " + equip_str + spell_str + library_str + ".";
@@ -761,6 +763,7 @@ static void _god_greeting_message(bool game_start)
 static void _take_starting_note()
 {
     ostringstream notestr;
+    // ZH uses different name format and punctuation
     if (Options.language == lang_t::ZH)
         notestr << you.your_name << "（"
                 << species::name(you.species) << " "
@@ -2207,19 +2210,13 @@ void process_command(command_type cmd, command_type prev_cmd)
             Options.autopickup_on = 1;
         else
             Options.autopickup_on = 0;
-        if (Options.language == lang_t::ZH)
-            mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? "开启" : "关闭");
-        else
-            mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? "on" : "off");
+        mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? T_("on") : T_("off"));
         break;
 
 #ifdef USE_SOUND
     case CMD_TOGGLE_SOUND:
         Options.sounds_on = !Options.sounds_on;
-        if (Options.language == lang_t::ZH)
-            mprf(T_("Sound effects are now %s."), Options.sounds_on ? "开启" : "关闭");
-        else
-            mprf(T_("Sound effects are now %s."), Options.sounds_on ? "on" : "off");
+        mprf(T_("Sound effects are now %s."), Options.sounds_on ? T_("on") : T_("off"));
         break;
 #endif
 

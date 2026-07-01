@@ -190,7 +190,7 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
            && base_type != OBJ_GIZMOS)
     {
         // Artefacts always get "the" unless we just want the plain name.
-        // Chinese has no articles.
+        // EN only: articles
         if (Options.language != lang_t::ZH)
         {
             switch (descrip)
@@ -245,6 +245,7 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         case DESC_A:
         case DESC_INVENTORY_EQUIP:
         case DESC_INVENTORY:
+            // EN only: articles (a/an)
             if (Options.language != lang_t::ZH)
                 buff << (startvowel ? "an " : "a ");
             break;
@@ -574,11 +575,8 @@ const char* brand_type_name(brand_type brand, bool terse)
     if (brand < 0 || brand >= NUM_SPECIAL_WEAPONS)
         return terse ? "buggy" : "bugginess";
 
-    if (Options.language == lang_t::ZH)
-        return terse ? zh_weapon_brands_terse[brand]
-                     : zh_weapon_brands_adj[brand];
-
-    return (terse ? weapon_brands_terse : weapon_brands_verbose)[brand];
+    return T_(terse ? weapon_brands_terse[brand]
+                    : weapon_brands_verbose[brand]);
 }
 
 const char* brand_type_adj(brand_type brand)
@@ -586,10 +584,7 @@ const char* brand_type_adj(brand_type brand)
     if (brand < 0 || brand >= NUM_SPECIAL_WEAPONS)
         return "buggy";
 
-    if (Options.language == lang_t::ZH)
-        return zh_weapon_brands_adj[brand];
-
-    return weapon_brands_adj[brand];
+    return T_(weapon_brands_adj[brand]);
 }
 
 /**
@@ -617,110 +612,55 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
     if (ego == SPARM_NORMAL)
         return "";
 
-    const bool zh = Options.language == lang_t::ZH;
-
-    if (zh && !terse)
-    {
-        switch (ego)
-        {
-        case SPARM_FIRE_RESISTANCE:   return "火焰抗性";
-        case SPARM_COLD_RESISTANCE:   return "寒冷抗性";
-        case SPARM_POISON_RESISTANCE: return "毒素抗性";
-        case SPARM_SEE_INVISIBLE:     return "识破隐形";
-        case SPARM_INVISIBILITY:      return "隐形";
-        case SPARM_STRENGTH:          return "力量";
-        case SPARM_DEXTERITY:         return "敏捷";
-        case SPARM_INTELLIGENCE:      return "智力";
-        case SPARM_PONDEROUSNESS:     return "笨重";
-        case SPARM_FLYING:            return "飞行";
-        case SPARM_WILLPOWER:         return "意志力";
-        case SPARM_PROTECTION:        return "防护";
-        case SPARM_STEALTH:           return "潜行";
-        case SPARM_RESISTANCE:        return "元素抗性";
-        case SPARM_POSITIVE_ENERGY:   return "正能量";
-        case SPARM_ARCHMAGI:          return "大法师";
-        case SPARM_CORROSION_RESISTANCE: return "酸蚀抗性";
-        case SPARM_REFLECTION:        return "伤害反射";
-        case SPARM_SPIRIT_SHIELD:     return "精神护盾";
-        case SPARM_HURLING:           return "投掷强化";
-        case SPARM_REPULSION:         return "排斥力场";
-        case SPARM_HARM:              return "伤害增幅";
-        case SPARM_SHADOWS:           return "暗影庇护";
-        case SPARM_RAMPAGING:         return "狂暴冲锋";
-        case SPARM_INFUSION:          return "魔力注入";
-        case SPARM_LIGHT:             return "光亮";
-        case SPARM_RAGE:              return "狂怒";
-        case SPARM_MAYHEM:            return "混乱";
-        case SPARM_GUILE:             return "狡诈";
-        case SPARM_ENERGY:            return "能量";
-        case SPARM_SNIPING:           return "狙击";
-        case SPARM_ICE:               return "寒冰强化";
-        case SPARM_FIRE:              return "火焰强化";
-        case SPARM_AIR:               return "大气强化";
-        case SPARM_EARTH:             return "大地强化";
-        case SPARM_ARCHERY:           return "箭术强化";
-        case SPARM_COMMAND:           return "命令";
-        case SPARM_DEATH:             return "死亡";
-        case SPARM_RESONANCE:         return "共鸣";
-        case SPARM_PARRYING:          return "格挡强化";
-        case SPARM_GLASS:             return "玻璃化";
-        case SPARM_PYROMANIA:         return "纵火";
-        case SPARM_STARDUST:          return "星尘";
-        case SPARM_MESMERISM:         return "催眠";
-        case SPARM_ATTUNEMENT:        return "同调";
-        default:                      return "bugginess";
-        }
-    }
-
     if (!terse)
     {
         switch (ego)
         {
-        case SPARM_FIRE_RESISTANCE:   return "fire resistance";
-        case SPARM_COLD_RESISTANCE:   return "cold resistance";
-        case SPARM_POISON_RESISTANCE: return "poison resistance";
-        case SPARM_SEE_INVISIBLE:     return "see invisible";
-        case SPARM_INVISIBILITY:      return "invisibility";
-        case SPARM_STRENGTH:          return "strength";
-        case SPARM_DEXTERITY:         return "dexterity";
-        case SPARM_INTELLIGENCE:      return "intelligence";
-        case SPARM_PONDEROUSNESS:     return "ponderousness";
-        case SPARM_FLYING:            return "flying";
-        case SPARM_WILLPOWER:         return "willpower";
-        case SPARM_PROTECTION:        return "protection";
-        case SPARM_STEALTH:           return "stealth";
-        case SPARM_RESISTANCE:        return "resistance";
-        case SPARM_POSITIVE_ENERGY:   return "positive energy";
-        case SPARM_ARCHMAGI:          return "the Archmagi";
-        case SPARM_CORROSION_RESISTANCE: return "corrosion resistance";
-        case SPARM_REFLECTION:        return "reflection";
-        case SPARM_SPIRIT_SHIELD:     return "spirit shield";
-        case SPARM_HURLING:           return "hurling";
-        case SPARM_REPULSION:         return "repulsion";
-        case SPARM_HARM:              return "harm";
-        case SPARM_SHADOWS:           return "shadows";
-        case SPARM_RAMPAGING:         return "rampaging";
-        case SPARM_INFUSION:          return "infusion";
-        case SPARM_LIGHT:             return "light";
-        case SPARM_RAGE:              return "wrath";
-        case SPARM_MAYHEM:            return "mayhem";
-        case SPARM_GUILE:             return "guile";
-        case SPARM_ENERGY:            return "energy";
-        case SPARM_SNIPING:           return "sniping";
-        case SPARM_ICE:               return "ice";
-        case SPARM_FIRE:              return "fire";
-        case SPARM_AIR:               return "air";
-        case SPARM_EARTH:             return "earth";
-        case SPARM_ARCHERY:           return "archery";
-        case SPARM_COMMAND:           return "command";
-        case SPARM_DEATH:             return "death";
-        case SPARM_RESONANCE:         return "resonance";
-        case SPARM_PARRYING:          return "parrying";
-        case SPARM_GLASS:             return "glass";
-        case SPARM_PYROMANIA:         return "pyromania";
-        case SPARM_STARDUST:          return "stardust";
-        case SPARM_MESMERISM:         return "mesmerism";
-        case SPARM_ATTUNEMENT:        return "attunement";
+        case SPARM_FIRE_RESISTANCE:   return T_("fire resistance");
+        case SPARM_COLD_RESISTANCE:   return T_("cold resistance");
+        case SPARM_POISON_RESISTANCE: return T_("poison resistance");
+        case SPARM_SEE_INVISIBLE:     return T_("see invisible");
+        case SPARM_INVISIBILITY:      return T_("invisibility");
+        case SPARM_STRENGTH:          return T_("strength");
+        case SPARM_DEXTERITY:         return T_("dexterity");
+        case SPARM_INTELLIGENCE:      return T_("intelligence");
+        case SPARM_PONDEROUSNESS:     return T_("ponderousness");
+        case SPARM_FLYING:            return T_("flying");
+        case SPARM_WILLPOWER:         return T_("willpower");
+        case SPARM_PROTECTION:        return T_("protection");
+        case SPARM_STEALTH:           return T_("stealth");
+        case SPARM_RESISTANCE:        return T_("resistance");
+        case SPARM_POSITIVE_ENERGY:   return T_("positive energy");
+        case SPARM_ARCHMAGI:          return T_("the Archmagi");
+        case SPARM_CORROSION_RESISTANCE: return T_("corrosion resistance");
+        case SPARM_REFLECTION:        return T_("reflection");
+        case SPARM_SPIRIT_SHIELD:     return T_("spirit shield");
+        case SPARM_HURLING:           return T_("hurling");
+        case SPARM_REPULSION:         return T_("repulsion");
+        case SPARM_HARM:              return T_("harm");
+        case SPARM_SHADOWS:           return T_("shadows");
+        case SPARM_RAMPAGING:         return T_("rampaging");
+        case SPARM_INFUSION:          return T_("infusion");
+        case SPARM_LIGHT:             return T_("light");
+        case SPARM_RAGE:              return T_("wrath");
+        case SPARM_MAYHEM:            return T_("mayhem");
+        case SPARM_GUILE:             return T_("guile");
+        case SPARM_ENERGY:            return T_("energy");
+        case SPARM_SNIPING:           return T_("sniping");
+        case SPARM_ICE:               return T_("ice");
+        case SPARM_FIRE:              return T_("fire");
+        case SPARM_AIR:               return T_("air");
+        case SPARM_EARTH:             return T_("earth");
+        case SPARM_ARCHERY:           return T_("archery");
+        case SPARM_COMMAND:           return T_("command");
+        case SPARM_DEATH:             return T_("death");
+        case SPARM_RESONANCE:         return T_("resonance");
+        case SPARM_PARRYING:          return T_("parrying");
+        case SPARM_GLASS:             return T_("glass");
+        case SPARM_PYROMANIA:         return T_("pyromania");
+        case SPARM_STARDUST:          return T_("stardust");
+        case SPARM_MESMERISM:         return T_("mesmerism");
+        case SPARM_ATTUNEMENT:        return T_("attunement");
         default:                      return "bugginess";
         }
     }
@@ -728,51 +668,51 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
     {
         switch (ego)
         {
-        case SPARM_FIRE_RESISTANCE:   return "rF+";
-        case SPARM_COLD_RESISTANCE:   return "rC+";
-        case SPARM_POISON_RESISTANCE: return "rPois";
-        case SPARM_SEE_INVISIBLE:     return "SInv";
-        case SPARM_INVISIBILITY:      return "+Inv";
-        case SPARM_STRENGTH:          return "Str+3";
-        case SPARM_DEXTERITY:         return "Dex+3";
-        case SPARM_INTELLIGENCE:      return "Int+3";
-        case SPARM_PONDEROUSNESS:     return "Ponderous";
-        case SPARM_FLYING:            return "Fly";
-        case SPARM_WILLPOWER:         return "Will+";
-        case SPARM_PROTECTION:        return "AC+3";
-        case SPARM_STEALTH:           return "Stlth+";
-        case SPARM_RESISTANCE:        return "rC+ rF+";
-        case SPARM_POSITIVE_ENERGY:   return "rN+";
-        case SPARM_ARCHMAGI:          return "Archmagi";
-        case SPARM_CORROSION_RESISTANCE: return "rCorr";
-        case SPARM_REFLECTION:        return "Reflect";
-        case SPARM_SPIRIT_SHIELD:     return "Spirit";
-        case SPARM_HURLING:           return "Hurl";
-        case SPARM_REPULSION:         return "Repulsion";
-        case SPARM_HARM:              return "Harm";
-        case SPARM_SHADOWS:           return "Shadows";
-        case SPARM_RAMPAGING:         return "Rampage";
-        case SPARM_INFUSION:          return "Infuse";
-        case SPARM_LIGHT:             return "Light";
-        case SPARM_RAGE:              return "*Rage";
-        case SPARM_MAYHEM:            return "Mayhem";
-        case SPARM_GUILE:             return "Guile";
-        case SPARM_ENERGY:            return "Energy";
-        case SPARM_SNIPING:           return "Snipe";
-        case SPARM_ICE:               return "寒冰";
-        case SPARM_FIRE:              return "火焰";
-        case SPARM_AIR:               return "空气";
-        case SPARM_EARTH:             return "大地";
-        case SPARM_ARCHERY:           return "Archery";
-        case SPARM_COMMAND:           return "Command";
-        case SPARM_DEATH:             return "死亡";
-        case SPARM_RESONANCE:         return "Resonance";
-        case SPARM_PARRYING:          return "Parrying";
-        case SPARM_GLASS:             return "Glass";
-        case SPARM_PYROMANIA:         return "Pyromania";
-        case SPARM_STARDUST:          return "Stardust";
-        case SPARM_MESMERISM:         return "Mesmerism";
-        case SPARM_ATTUNEMENT:        return "Attunement";
+        case SPARM_FIRE_RESISTANCE:   return T_("rF+");
+        case SPARM_COLD_RESISTANCE:   return T_("rC+");
+        case SPARM_POISON_RESISTANCE: return T_("rPois");
+        case SPARM_SEE_INVISIBLE:     return T_("SInv");
+        case SPARM_INVISIBILITY:      return T_("+Inv");
+        case SPARM_STRENGTH:          return T_("Str+3");
+        case SPARM_DEXTERITY:         return T_("Dex+3");
+        case SPARM_INTELLIGENCE:      return T_("Int+3");
+        case SPARM_PONDEROUSNESS:     return T_("Ponderous");
+        case SPARM_FLYING:            return T_("Fly");
+        case SPARM_WILLPOWER:         return T_("Will+");
+        case SPARM_PROTECTION:        return T_("AC+3");
+        case SPARM_STEALTH:           return T_("Stlth+");
+        case SPARM_RESISTANCE:        return T_("rC+ rF+");
+        case SPARM_POSITIVE_ENERGY:   return T_("rN+");
+        case SPARM_ARCHMAGI:          return T_("Archmagi");
+        case SPARM_CORROSION_RESISTANCE: return T_("rCorr");
+        case SPARM_REFLECTION:        return T_("Reflect");
+        case SPARM_SPIRIT_SHIELD:     return T_("Spirit");
+        case SPARM_HURLING:           return T_("Hurl");
+        case SPARM_REPULSION:         return T_("Repulsion");
+        case SPARM_HARM:              return T_("Harm");
+        case SPARM_SHADOWS:           return T_("Shadows");
+        case SPARM_RAMPAGING:         return T_("Rampage");
+        case SPARM_INFUSION:          return T_("Infuse");
+        case SPARM_LIGHT:             return T_("Light");
+        case SPARM_RAGE:              return T_("*Rage");
+        case SPARM_MAYHEM:            return T_("Mayhem");
+        case SPARM_GUILE:             return T_("Guile");
+        case SPARM_ENERGY:            return T_("Energy");
+        case SPARM_SNIPING:           return T_("Snipe");
+        case SPARM_ICE:               return T_("Ice");
+        case SPARM_FIRE:              return T_("Fire");
+        case SPARM_AIR:               return T_("Air");
+        case SPARM_EARTH:             return T_("Earth");
+        case SPARM_ARCHERY:           return T_("Archery");
+        case SPARM_COMMAND:           return T_("Command");
+        case SPARM_DEATH:             return T_("Death");
+        case SPARM_RESONANCE:         return T_("Resonance");
+        case SPARM_PARRYING:          return T_("Parrying");
+        case SPARM_GLASS:             return T_("Glass");
+        case SPARM_PYROMANIA:         return T_("Pyromania");
+        case SPARM_STARDUST:          return T_("Stardust");
+        case SPARM_MESMERISM:         return T_("Mesmerism");
+        case SPARM_ATTUNEMENT:        return T_("Attunement");
         default:                      return "buggy";
         }
     }
@@ -1363,6 +1303,7 @@ string sub_type_string(const item_def &item, bool known)
         {
         case BOOK_MANUAL:
             {
+            // Structural: ZH "X手册" vs EN "manual of X"
             if (Options.language == lang_t::ZH)
             {
                 if (!known)
@@ -1377,6 +1318,7 @@ string sub_type_string(const item_def &item, bool known)
             }
         case BOOK_PARCHMENT:
             {
+            // Structural: ZH "X羊皮纸" vs EN "parchment of X"
             if (Options.language == lang_t::ZH)
             {
                 if (item.plus == 0 || !known)
@@ -1439,6 +1381,7 @@ string sub_type_string(const item_def &item, bool known)
             return "Akashic Record";
 #endif
         default:
+            // Structural: ZH "X之书" vs EN "book of X"
             if (Options.language == lang_t::ZH)
                 return string(_book_type_name(sub_type)) + "之书";
             return string("book of ") + _book_type_name(sub_type);
@@ -1579,6 +1522,7 @@ string weapon_brand_desc(const char *body, const item_def &weap,
         else
             return body;
     }
+    // Structural: ZH prefix "之" vs EN " of "
     else if (Options.language == lang_t::ZH)
         return make_stringf("%s之%s", brand_name.c_str(), body);
     else
@@ -1726,6 +1670,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
                 buff << " (" <<  missile_brand_name(*this, MBN_TERSE) << ")";
             else if (_missile_brand_is_postfix(msl_brand)) // see above for prefix brands
             {
+                // Structural: ZH prefix "之" vs EN " of "
                 if (Options.language == lang_t::ZH)
                     buff << missile_brand_name(*this, MBN_NAME) << "之";
                 else
@@ -1747,6 +1692,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             && !is_unrandom_artefact(*this, UNRAND_POWER_GLOVES)
             && !is_unrandom_artefact(*this, UNRAND_DELATRAS_GLOVES))
         {
+            // EN only: "pair of" for gloves/boots
             if (Options.language != lang_t::ZH)
                 buff << "pair of ";
         }
@@ -1759,65 +1705,33 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (show_cosmetic)
         {
-            if (Options.language == lang_t::ZH)
+            switch (get_equip_desc(*this))
             {
-                switch (get_equip_desc(*this))
+            case ISFLAG_EMBROIDERED_SHINY:
+                if (item_typ == ARM_ROBE || item_typ == ARM_CLOAK
+                    || item_typ == ARM_GLOVES || item_typ == ARM_BOOTS
+                    || item_typ == ARM_SCARF || item_typ == ARM_HAT)
                 {
-                case ISFLAG_EMBROIDERED_SHINY:
-                    if (item_typ == ARM_ROBE || item_typ == ARM_CLOAK
-                        || item_typ == ARM_GLOVES || item_typ == ARM_BOOTS
-                        || item_typ == ARM_SCARF || item_typ == ARM_HAT)
-                    {
-                        buff << "绣花";
-                    }
-                    else if (item_typ != ARM_LEATHER_ARMOUR
-                             && item_typ != ARM_ANIMAL_SKIN)
-                    {
-                        buff << "闪亮";
-                    }
-                    else
-                        buff << "染色";
-                    break;
-                case ISFLAG_RUNED:
-                    buff << "符文";
-                    break;
-                case ISFLAG_GLOWING:
-                    buff << "发光";
-                    break;
+                    buff << T_("embroidered ");
                 }
-            }
-            else
-            {
-                switch (get_equip_desc(*this))
+                else if (item_typ != ARM_LEATHER_ARMOUR
+                         && item_typ != ARM_ANIMAL_SKIN)
                 {
-                case ISFLAG_EMBROIDERED_SHINY:
-                    if (item_typ == ARM_ROBE || item_typ == ARM_CLOAK
-                        || item_typ == ARM_GLOVES || item_typ == ARM_BOOTS
-                        || item_typ == ARM_SCARF || item_typ == ARM_HAT)
-                    {
-                        buff << "embroidered ";
-                    }
-                    else if (item_typ != ARM_LEATHER_ARMOUR
-                             && item_typ != ARM_ANIMAL_SKIN)
-                    {
-                        buff << "shiny ";
-                    }
-                    else
-                        buff << "dyed ";
-                    break;
-
-                case ISFLAG_RUNED:
-                    buff << "runed ";
-                    break;
-
-                case ISFLAG_GLOWING:
-                    buff << "glowing ";
-                    break;
+                    buff << T_("shiny ");
                 }
+                else
+                    buff << T_("dyed ");
+                break;
+            case ISFLAG_RUNED:
+                buff << T_("runed ");
+                break;
+            case ISFLAG_GLOWING:
+                buff << T_("glowing ");
+                break;
             }
         }
 
-        // For Chinese, ego goes before the base name; for English, after.
+        // Structural: ZH puts ego before base name; EN puts it after.
         {
             string ego_str;
             if (identified && !dbname && !qualname && !is_artefact(*this))
@@ -1840,8 +1754,9 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
             buff << item_base_name(*this);
 
+            // EN only: ego after base name
             if (Options.language != lang_t::ZH && !ego_str.empty())
-                buff << ego_str; // ego after base name in English
+                buff << ego_str;
         }
 
         if (cursed() && terse && !dbname && !qualname)
@@ -1857,6 +1772,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (identified)
         {
+            // Structural: ZH "X魔杖" vs EN "wand of X"
             if (Options.language == lang_t::ZH)
                 buff << _wand_type_name(item_typ) << "魔杖";
             else
@@ -1864,6 +1780,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
         else
         {
+            // Structural: ZH uses "魔杖" suffix, EN uses " wand"
             if (Options.language == lang_t::ZH)
             {
                 buff << wand_secondary_string(subtype_rnd / NDSC_WAND_PRI)
@@ -1895,6 +1812,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
         if (identified)
         {
+            // Structural: ZH "X药水" vs EN "potion of X"
             if (Options.language == lang_t::ZH)
                 buff << potion_type_name(item_typ) << "药水";
             else
@@ -1932,6 +1850,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             const char *clr =  (pcolour < 0 || pcolour >= PDC_NCOLOURS) ?
                                    "bogus" : potion_colours[pcolour];
 
+            // Structural: ZH "药水" suffix vs EN " potion"
             if (Options.language == lang_t::ZH)
                 buff << qualifier << clr << "药水";
             else
@@ -1946,6 +1865,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 #endif
 
     case OBJ_SCROLLS:
+        // Structural: ZH scroll naming uses prefix "标有X的卷轴"/"X卷轴"
         if (Options.language == lang_t::ZH)
         {
             if (basename)
@@ -2006,6 +1926,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
         else
         {
+            // Structural: ZH uses "护身符"/"戒指" suffix vs EN " amulet"/" ring"
             const bool zh = Options.language == lang_t::ZH;
             if (jewellery_is_amulet(*this))
             {
@@ -2089,6 +2010,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         {
             if (identified)
             {
+                // Structural: ZH "X法杖" vs EN "X staff"
                 if (Options.language == lang_t::ZH)
                     buff << staff_type_name(static_cast<stave_type>(sub_type)) << "法杖";
                 else
@@ -2111,6 +2033,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
         else
         {
+            // Structural: ZH "X法杖" vs EN "staff of X"
             if (Options.language == lang_t::ZH)
                 buff << staff_type_name(static_cast<stave_type>(item_typ)) << "法杖";
             else
