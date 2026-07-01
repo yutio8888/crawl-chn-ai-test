@@ -12325,3 +12325,170 @@ book_type:manual
 %%%%
 长
 %%%%
+Gear:
+
+装备：
+%%%%
+Potions:
+
+药水：
+%%%%
+Scrolls:
+
+卷轴：
+%%%%
+Evocable Items:
+
+可激活物品：
+%%%%
+Inventory:
+
+物品栏：
+%%%%
+    (Left/Right to switch category)
+
+    （左右键切换分类）
+%%%%
+Drop what? (Left/Right to switch category)
+
+要丢弃什么？（左右键切换分类）
+%%%%
+ (_ for help)
+
+（_查看帮助）
+%%%%
+Pick up what?
+
+要拾取什么？
+%%%%
+Select pick up quantity by entering a number, then select the item
+
+输入数字选择拾取数量，然后选择物品
+%%%%
+Are you sure you want to pick up this pile of gold now?
+
+你确定现在要拾取这堆金币吗？
+%%%%
+(gained %d)
+
+（获得了%d）
+%%%%
+fly
+
+飞
+%%%%
+climb
+
+爬
+%%%%
+up
+
+上
+%%%%
+down
+
+下
+%%%%
+slide
+
+滑
+%%%%
+fly up
+
+向上飞
+%%%%
+fly down
+
+向下飞
+%%%%
+go up
+
+向上走
+%%%%
+go down
+
+向下走
+%%%%
+constricted by
+
+被
+%%%%
+constricting
+
+正在缠绕
+%%%%
+Identified
+
+鉴定了
+%%%%
+Got
+
+获得了
+%%%%
+ turn
+
+回合
+%%%%
+ turns
+
+回合
+%%%%
+ to spare
+
+剩余
+%%%%
+Acquired
+
+获得了
+%%%%
+Bought
+
+购买了
+%%%%
+ for
+
+花了
+%%%%
+gold pieces
+
+金币
+%%%%
+Donated
+
+捐献了
+%%%%
+ to Zin
+
+给辛
+%%%%
+Found
+
+发现了
+%%%%
+_ - list branches
+
+_ - 列出分支
+%%%%
+* - list branches
+
+* - 列出分支
+%%%%
+* - list waypoints
+
+* - 列出路径点
+%%%%
+? - help
+
+？ - 帮助
+%%%%
+Where to? %s
+
+去哪里？%s
+%%%%
+What do you want to examine?
+
+你想检查什么？
+%%%%
+What do you want to remember?
+
+你想记住什么？
