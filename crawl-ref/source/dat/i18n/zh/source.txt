@@ -8474,8 +8474,7 @@ travel
 旅行
 %%%%
 travel through
-水里
-long
+水
 %%%%
 trip-wire
 
@@ -8703,7 +8702,7 @@ vulnerability
 再次醒来了。
 %%%%
 walk on
-水面行走
+水面
 %%%%
 walk on water
 在水面行走

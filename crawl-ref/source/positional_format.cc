@@ -129,39 +129,16 @@ namespace
         return std::string(heap.data(), n);
     }
 
-    bool has_positional(const char *fmt)
-    {
-        for (const char *p = fmt; *p; )
-        {
-            if (*p != '%') { p++; continue; }
-            if (p[1] == '%') { p += 2; continue; }
-            const char *q = p + 1;
-            if (*q >= '1' && *q <= '9')
-            {
-                while (*q >= '0' && *q <= '9') q++;
-                if (*q == '$') return true;
-            }
-            p++;
-        }
-        return false;
-    }
 }
 
 std::string vmake_stringf_p(const char *fmt, va_list args)
 {
     if (!fmt) return std::string();
-    if (!has_positional(fmt))
-    {
-        va_list copy;
-        va_copy(copy, args);
-        int n = vsnprintf(nullptr, 0, fmt, copy);
-        va_end(copy);
-        if (n < 0) return std::string();
-        std::vector<char> buf(n + 1);
-        vsnprintf(buf.data(), n + 1, fmt, args);
-        return std::string(buf.data(), n);
-    }
 
+    // First pass: scan for positional format specs. If any non-positional
+    // % spec is mixed in (e.g. "%1$s %s"), flag as malformed and fall
+    // back to standard vsnprintf. Mixed positional/non-positional is
+    // undefined by POSIX and cannot be safely handled manually.
     std::vector<conv_spec> specs;
     std::vector<arg_class> pos_type;
     int max_pos = 0;
@@ -186,6 +163,20 @@ std::string vmake_stringf_p(const char *fmt, va_list args)
         else if (slot != spec.cls) malformed = true;
         if (spec.position > max_pos) max_pos = spec.position;
         specs.push_back(spec);
+    }
+
+    // Fall back to standard vsnprintf if no positional specs found
+    // or if the format string is malformed (mixed positional + non-positional).
+    if (specs.empty() || malformed)
+    {
+        va_list copy;
+        va_copy(copy, args);
+        int n = vsnprintf(nullptr, 0, fmt, copy);
+        va_end(copy);
+        if (n < 0) return std::string();
+        std::vector<char> buf(n + 1);
+        vsnprintf(buf.data(), n + 1, fmt, args);
+        return std::string(buf.data(), n);
     }
 
     // Read ALL args from va_list first, even for AC_NONE (dropped) positions.

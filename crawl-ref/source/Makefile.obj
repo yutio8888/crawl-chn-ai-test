@@ -325,7 +325,8 @@ catch2-tests/test_tags.o \
 catch2-tests/test_tilecell.o \
 catch2-tests/test_ui.o \
 catch2-tests/test_viewmap.o \
-catch2-tests/test_spl-util.o
+catch2-tests/test_spl-util.o \
+catch2-tests/test_positional_format.o
 
 WEBTILES_OBJECTS = \
 tileweb.o \
