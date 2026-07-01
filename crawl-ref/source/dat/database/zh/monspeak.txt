@@ -2782,3 +2782,341 @@ _Killer_Klown_rare_
 @The_monster@ 说："每个人都在笑。直到他们不再笑。"
 
 @The_monster@ 咯咯笑道："有趣的是如何……致命的。对，致命的。"
+%%%%
+hound
+
+VISUAL:@The_monster@ [停下脚步|驻足]嗅了嗅@surface@。
+%%%%
+elephant slug
+
+VISUAL:@The_monster@ 短暂地伸出了@possessive@眼柄。
+%%%%
+Sewer brain worm
+
+w:30
+@brain worm@
+
+VISUAL:@The_monster@ [困惑地|迷茫地]盯着水坑中自己的倒影。
+%%%%
+deep elf sorcerer
+
+@_wizard_@
+%%%%
+crimson imp
+
+w:1
+@_says_imp_taunt_@
+
+w:2
+@_hostile_imp_@
+%%%%
+iron imp
+
+w:1
+@_says_imp_taunt_@
+
+w:2
+@_hostile_imp_@
+%%%%
+shadow imp
+
+w:1
+@_says_imp_taunt_@
+
+w:2
+@_hostile_imp_@
+%%%%
+white imp
+
+w:1
+@_says_imp_taunt_@
+
+w:2
+@_hostile_imp_@
+%%%%
+_tormentor_
+
+@_tormentor_common_@
+
+w:5
+@_tormentor_rare_@
+%%%%
+_tormentor_common_
+
+w:15
+@The_monster@ 对 @foe@ 说："我会一根一根地碾碎你的骨头。"
+
+VISUAL:@The_monster@ 邪恶地咧嘴笑着。
+
+VISUAL:@The_monster@ 疯狂地咧嘴笑着。
+
+VISUAL:@The_monster@ 恶毒地咧嘴笑着。
+
+@The_monster@ 对 @foe@ 说："我会让你见识什么是痛苦。"
+
+@The_monster@ 对 @foe@ 说："等我抓到你，你会恨不得去死。"
+
+@The_monster@ 对 @foe@ 说："我知道你的命运。那就是痛苦。"
+
+@The_monster@ 对 @foe@ 尖叫道："你会死得惨不忍睹！"
+%%%%
+_tormentor_rare_
+
+@The_monster@ 疯狂地笑着。
+
+@The_monster@ 对 @foe@ 说："我就是你所有噩梦的化身。"
+
+@The_monster@ 对 @foe@ 说："我要让你在自己的鲜血里溺亡。"
+
+@The_monster@ 对 @foe@ 说："我要吃掉你的肝脏。"
+
+@The_monster@ 对 @foe@ 说："我知道一千零一种杀死你的方法。"
+
+@The_monster@ 对 @foe@ 说："我来带你参观我的刑房！"
+
+@The_monster@ 对 @foe@ 说："准备好了！痛苦的折磨在等着你。"
+
+@The_monster@ 对 @foe@ 喊道："准备好迎接我的千针之痛吧！"
+
+@The_monster@ 对 @foe@ 喊道："我要把你撕成碎片！"
+## END _tormentor_ ##
+# 兽人语音翻译 — 批次 1b
+# 包含兽人语音模板宏及贝奥格信徒对话
+
+%%%%
+_truckle_
+
+屈服
+
+皈依
+
+投降
+
+俯首
+
+认输
+%%%%
+_orc_modifier_
+
+。
+
+w:3
+，此乃兽人常事。
+
+w:1
+，兽人传统如此。
+%%%%
+_generic_orc_speech_
+
+w:50
+@The_monster@ @_loudly_or_repeatedly_@@_orc_shouts_@@_orc_modifier_@
+
+w:20
+@The_monster@ 突然 @_orc_shouts_@@_orc_modifier_@
+
+w:5
+@The_monster@ 不知对谁 @_orc_shouts_@。
+
+w:2
+@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@ 打气之词，也不知谁在听。
+
+@The_monster@ 唱了几句兽人颂歌。
+%%%%
+_orc_says_to_foe_
+
+对 @foe@ 喊道
+
+对 @foe@ 说
+
+对 @foe@ 咕哝道
+
+w:5
+对 @foe@ 嘲弄道
+%%%%
+_orc_says_
+
+喊道
+
+说
+
+咕哝道
+
+w:5
+嘲弄道
+%%%%
+_hostile_orc_beogh_unbeliever_speech_common_
+
+@The_monster@ @_orc_says_to_foe_@："比欧弗管不着老子！"
+
+@The_monster@ 对 @foe@ @_shouts_@："你不是救世主，老子才是！"
+%%%%
+_hostile_orc_beogh_believer_speech_common_
+
+@The_monster@ 对 @foe@ 嘟囔道："你可不是兽人的救世主。"
+
+@The_monster@ 对 @foe@ 抱怨道："你连个像样的兽人都不是……"
+
+@The_monster@ @_orc_says_to_foe_@："比欧弗怎么可能选你？"
+
+@The_monster@ 嘟囔了些难听的话。
+
+@The_monster@ @_orc_says_to_foe_@："比欧弗定会因你的傲慢惩罚你！"
+
+@The_monster@ 对 @foe@ 咕哝道："你？救世主？你连个样子都不像！"
+
+@The_monster@ @_orc_says_to_foe_@："救世主绝不会是个 {{ return you.race() }}！"
+
+@The_monster@ @_orc_says_to_foe_@："救世主必定是个真正的兽人！"
+
+@The_monster@ 对 @foe@ @_shouts_@："去死吧，@_orc_heathen_@！"
+
+@The_monster@ @_shouts_@："去死吧，@foe_name@，竟敢玷污比欧弗之名！"
+
+VISUAL:@The_monster@ 做了个鬼脸。
+%%%%
+_hostile_orc_beogh_unbeliever_speech_rare_
+
+@The_monster@ @_orc_says_to_foe_@："兽人不需要比欧弗！"
+
+@The_monster@ @_orc_says_to_foe_@："比欧弗的救世主不过是童话故事罢了。"
+
+@The_monster@ 对 @foe@ 说："就算真有救世主，也轮不到你。"
+%%%%
+_hostile_orc_beogh_believer_speech_rare_
+
+@The_monster@ 对 @foe@ 笑道："你，我们的救世主？！"
+
+@The_monster@ 对 @foe@ @_shouts_@："兽人们！@foe_name@ 在撒谎！"
+
+@The_monster@ @_orc_says_to_foe_@："身为救世主，你看起来可真够[可怜的|窝囊的|凄惨的]。"
+
+@The_monster@ @_orc_says_to_foe_@："你的[伪装|假扮|花招]骗不了我。"
+
+@The_monster@ @_orc_says_to_foe_@："我倒要看看，比欧弗会不会让你复活？"
+
+VISUAL:@The_monster@ 摇了摇头。
+
+VISUAL:@The_monster@ 疑惑地盯着你看。 @player_only@
+%%%%
+_friendly_beogh_speech_
+
+@_friendly_beogh_speech_common_@
+
+w:5
+@_friendly_beogh_speech_rare_@
+%%%%
+_friendly_beogh_speech_common_
+
+w:5
+@The_monster@ @_loudly_or_repeatedly_@ @_shouts_@ 打气@_orc_modifier_@
+
+@The_monster@ 喊道："兽人为比欧弗杀，兽人为比欧弗死！"
+
+@The_monster@ 说："你的出现改变了我的一生！"
+
+@The_monster@ @_says_or_shouts_@："为比欧弗而死，我的人生才有了意义。"
+
+@The_monster@ @_shouts_@："以比欧弗之名洒血！"
+
+@The_monster@ 喊道："所有敌人都得死！"
+
+@The_monster@ @_shouts_@："谁敢挡路，就[杀了|砸烂|烧死|砍翻]谁！"
+
+@The_monster@ @_orc_says_@："有比欧弗相助，我们将推翻所有伪神！"
+
+@The_monster@ @_shouts_@："消灭 @_orc_heathen_@！"
+
+@The_monster@ @_shouts_@："夺回属于我们的一切！"
+
+# 由 Lemuel 提交的消息
+@The_monster@ @_says_or_shouts_@："效力为荣，赴死无悔。"
+
+@The_monster@ 说："愿比欧弗对你微笑，@player_name@。"
+
+@The_monster@ 喊道："别怕，@player_name@！比欧弗对战场上的阵亡者微笑！"
+
+@The_monster@ 以比欧弗之名发出一连串肮脏的咒骂。
+
+@The_monster@ @_says_or_shouts_@："我为 @player_name@ 而战，比欧弗牧养众生！"
+
+@The_monster@ @_says_or_shouts_@："兽人会把他们都杀光！"
+
+@The_monster@ @_shouts_@："兽人统治一切！"
+
+@The_monster@ 说："我只愿为你效死，@player_name@！"
+
+@The_monster@ 说："比欧弗可不介意这些杀戮，你知道的。"
+%%%%
+_friendly_beogh_speech_rare_
+
+@The_monster@ @_says_or_shouts_@："比欧弗伟大，@player_name@ 也同样伟大！"
+
+@The_monster@ @_says_or_shouts_@："真高兴能遇到你。"
+
+@The_monster@ @_orc_says_@："死了的 @_orc_heathen_@ 就不会再折磨我的灵魂了。"
+
+@The_monster@ 说："我以前从没见过异象。"
+
+@The_monster@ @_says_or_shouts_@："我们倒下的兄弟不会被遗忘。"
+
+VISUAL:@The_monster@ 紧张地看了看四周。
+
+# 由 Lemuel 提交的消息
+@The_monster@ 看着 @foe@ 说："我其实不太想为你效死啊，@player_name@。"
+
+@The_monster@ 吟诵道："我必不怕邪恶，因 @player_name@ 是我的救主。"
+
+@The_monster@ 说："身为兽人，我自豪。"
+
+@The_monster@ 说："我是兽人，你也是兽人，没毛病。"
+
+@The_monster@ 看起来 @subjective@ 想对你说些什么，但又停住了。
+
+@The_monster@ @_mutters_@："等这都结束了，我要去开个蘑菇农场。"
+%%%%
+orc high priest
+
+@_high_priest_@
+
+w:1
+@_generic_orc_speech_@
+
+w:1
+__NONE
+%%%%
+orc sorcerer
+
+@_wizard_@
+
+w:1
+@_generic_orc_speech_@
+
+w:1
+__NONE
+%%%%
+orc_apostle_dismissed
+
+@The_monster@ 说："我永远不会忘记你！"
+
+@The_monster@ 离开，去地面传播比欧弗的福音。
+
+@The_monster@ 在离开前向你行礼。
+%%%%
+orc_apostle_unbanished
+
+VISUAL:@The_monster@ 从靴子里拽出一截断掉的触手，重重地叹了口气。
+
+@The_monster@ 咧嘴笑道："连无形者都挡不住比欧弗的选民！"
+
+@The_monster@ 得意地喊道："现在是谁在笑了？！"
+
+@The_monster@ 打了个寒颤。"刚才我好像觉得脑袋都长到胳膊肘上去了……"
+
+@The_monster@ 说："我想我再也无法用同样的眼光看星星了。"
+
+@The_monster@ 吼道："有种再来一次！老子奉陪！"
+
+w:1
+@The_monster@ 轻声喃喃道："不过是一只蝴蝶而已……"
+
+VISUAL:@The_monster@ 摇摇晃晃地站着，但朝你竖了个大拇指。
