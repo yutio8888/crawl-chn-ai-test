@@ -398,51 +398,12 @@ static peeve_map divine_peeves[] =
     peeve_map(),
 };
 
-/// Map of English conduct descriptions to Chinese translations.
-static const map<string, string> _conduct_desc_zh = {
-    // divine_prohibitions desc
-    {"using evil magic or items", "使用邪恶魔法或物品"},
-    {"using chaotic magic or items", "使用混乱魔法或物品"},
-    {"mutating or transforming yourself or others", "变异或变形自己或他人"},
-    {"using holy magic or items", "使用神圣魔法或物品"},
-    {"casting or memorising spells", "施放或记忆法术"},
-    {"training magic skills", "训练魔法技能"},
-    {"using magical staves or other wizardly items", "使用魔法法杖或其他法师物品"},
-    {"hastening yourself or using unnaturally quick items", "加速自己或使用异常快速的物品"},
-    // divine_peeves desc
-    {"you attack non-hostile holy beings", "你攻击非敌意的神圣生物"},
-    {"you kill non-hostile holy beings", "你杀死非敌意的神圣生物"},
-    {"you attack neutral beings", "你攻击中立生物"},
-    {"you attack allies", "你攻击盟友"},
-    {"you attack your followers", "你攻击你的追随者"},
-    {"you attack non-hostile orcs", "你攻击非敌意的兽人"},
-    // divine_likes desc
-    {"you kill living beings", "你杀死活物"},
-    {"you destroy the undead", "你摧毁亡灵"},
-    {"you kill demons", "你杀死恶魔"},
-    {"you kill holy beings", "你杀死神圣生物"},
-    {"you destroy nonliving beings", "你摧毁非生物体"},
-    {"you kill unclean or chaotic beings", "你杀死不洁或混乱生物"},
-    {"you kill the undead", "你杀死亡灵"},
-    {"you kill evil beings", "你杀死邪恶生物"},
-    {"you encounter other hostile creatures", "你遭遇其他敌意生物"},
-    {"you explore the world", "你探索世界"},
-    {"you explore the world outside of the Slime Pits", "你探索黏坑之外的世界"},
-    {"you hurt your foes; however, effects that cause damage over "
-     "time do not interest Uskayaw", "你伤害敌人；然而，持续伤害效果不引起乌斯卡亚的兴趣"},
-    {"you kill the priests of other religions", "你杀死其他宗教的祭司"},
-    {"you kill wizards and other users of magic", "你杀死法师和其他魔法使用者"},
-    {"you kill non-sluggish things", "你杀死不迟缓的生物"},
-    {"you banish creatures to the Abyss", "你将生物放逐到深渊"},
-};
-
-/// Look up the Chinese translation for a conduct description, if available.
+/// Look up the Chinese translation for a conduct description, via T_().
 static const char* _zh_conduct(const char* en)
 {
-    if (!en || !en[0] || Options.language != lang_t::ZH)
+    if (!en || !en[0])
         return en;
-    auto it = _conduct_desc_zh.find(en);
-    return it != _conduct_desc_zh.end() ? it->second.c_str() : en;
+    return T_(en);
 }
 
 string get_god_dislikes(god_type which_god)
@@ -477,11 +438,12 @@ string get_god_dislikes(god_type which_god)
     }
 
     if (which_god == GOD_CHEIBRIADOS)
-        really_dislikes.emplace_back("use unnaturally quick items");
+        really_dislikes.emplace_back(_zh_conduct("use unnaturally quick items"));
 
     if (dislikes.empty() && really_dislikes.empty())
         return "";
 
+    // RETAIN: List join characters — UI formatting, not translation text
     const char* dis_conj = Options.language == lang_t::ZH ? "或" : " or ";
     const char* dis_sep = Options.language == lang_t::ZH ? "、" : ", ";
 
@@ -1176,6 +1138,7 @@ string get_god_likes(god_type which_god)
     }
     else
     {
+        // RETAIN: List join characters — UI formatting, not translation text
         const char* like_conj = Options.language == lang_t::ZH ? "、" : " and ";
         const char* like_sep = Options.language == lang_t::ZH ? "、" : ", ";
 

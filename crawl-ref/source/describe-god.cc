@@ -130,256 +130,135 @@ static string _describe_favour(god_type which_god)
 // placeholders.
 static const char *divine_title[][8] =
 {
+
     // No god.
-    {"Buglet",             "Firebug",               "Bogeybug",                 "Bugger",
-        "Bugbear",            "Bugged One",            "Giant Bug",                "Lord of the Bugs"},
+    {T_("Buglet"),             T_("Firebug"),               T_("Bogeybug"),                 T_("Bugger"),
+        T_("Bugbear"),            T_("Bugged One"),            T_("Giant Bug"),                T_("Lord of the Bugs")},
 
     // Zin.
-    {"Blasphemer",         "Anchorite",             "Apologist",                "Pious",
-        "Devout",             "Orthodox",              "Immaculate",               "Bringer of Law"},
+    {T_("Blasphemer"),         T_("Anchorite"),             T_("Apologist"),                T_("Pious"),
+        T_("Devout"),             T_("Orthodox"),              T_("Immaculate"),               T_("Bringer of Law")},
 
     // The Shining One.
-    {"Honourless",         "Acolyte",               "Righteous",                "Unflinching",
-        "Holy Warrior",       "Exorcist",              "Demon Slayer",             "Bringer of Light"},
+    {T_("Honourless"),         T_("Acolyte"),               T_("Righteous"),                T_("Unflinching"),
+        T_("Holy Warrior"),       T_("Exorcist"),              T_("Demon Slayer"),             T_("Bringer of Light")},
 
     // Kikubaaqudgha -- death scholar theme.
-    {"Tormented",          "Purveyor of Pain",       "Pupil of Sorrows",        "Merchant of Misery",
-     "Scholar of Souls",   "Artisan of Death",       "Demagogue of Despair",    "Lord of Darkness"},
+    {T_("Tormented"),          T_("Purveyor of Pain"),       T_("Pupil of Sorrows"),        T_("Merchant of Misery"),
+     T_("Scholar of Souls"),   T_("Artisan of Death"),       T_("Demagogue of Despair"),    T_("Lord of Darkness")},
 
     // Yredelemnul -- fervent death knight theme.
-    {"Traitor",            "Torchbearer",            "Despoiler",               "Black Crusader",
-     "Fallen @Genus@",     "Harbinger of Doom",      "Inexorable Tide",         "Bringer of Blasphemy"},
+    {T_("Traitor"),            T_("Torchbearer"),            T_("Despoiler"),               T_("Black Crusader"),
+     T_("Fallen @Genus@"),     T_("Harbinger of Doom"),      T_("Inexorable Tide"),         T_("Bringer of Blasphemy")},
 
     // Xom.
-    {"Toy",                "Toy",                   "Toy",                      "Toy",
-        "Toy",                "Toy",                   "Toy",                      "Toy"},
+    {T_("Toy"),                T_("Toy"),                   T_("Toy"),                      T_("Toy"),
+        T_("Toy"),                T_("Toy"),                   T_("Toy"),                      T_("Toy")},
 
     // Vehumet -- battle mage theme.
-    {"Meek",               "Sorcerer's Apprentice", "Scholar of Destruction",   "Caster of Ruination",
-        "Traumaturge",        "Battlemage",            "Warlock",                  "Luminary of Lethal Lore"},
+    {T_("Meek"),               T_("Sorcerer's Apprentice"), T_("Scholar of Destruction"),   T_("Caster of Ruination"),
+        T_("Traumaturge"),        T_("Battlemage"),            T_("Warlock"),                  T_("Luminary of Lethal Lore")},
 
     // Okawaru -- battle theme.
-    {"Coward",             "Struggler",             "Combatant",                "@Genus@-At-Arms",
-        "Knight",             "Myrmidon",             "Warmonger",                "Victor of a Thousand Battles"},
+    {T_("Coward"),             T_("Struggler"),             T_("Combatant"),                T_("@Genus@-At-Arms"),
+        T_("Knight"),             T_("Myrmidon"),             T_("Warmonger"),                T_("Victor of a Thousand Battles")},
 
     // Makhleb -- chaos theme.
-    {"Orderly",            "Spawn of Chaos",        "Disciple of Destruction",  "Fanfare of Bloodshed",
-        "Fiendish",           "Demolition @Genus@",    "Pandemonic",               "Champion of Chaos"},
+    {T_("Orderly"),            T_("Spawn of Chaos"),        T_("Disciple of Destruction"),  T_("Fanfare of Bloodshed"),
+        T_("Fiendish"),           T_("Demolition @Genus@"),    T_("Pandemonic"),               T_("Champion of Chaos")},
 
     // Sif Muna -- generalist scholarly theme.
-    {"Ignorant",           "Disciple",              "Student",                  "Adept",
-        "Scribe",             "Scholar",               "Sage",                     "Genius of the Arcane"},
+    {T_("Ignorant"),           T_("Disciple"),              T_("Student"),                  T_("Adept"),
+        T_("Scribe"),             T_("Scholar"),               T_("Sage"),                     T_("Genius of the Arcane")},
 
     // Trog -- anger theme.
-    {"Puny",               "Troglodyte",            "Angry Troglodyte",         "Frenzied",
-        "@Genus@ of Prey",    "Rampant",               "Wild @Genus@",             "Bane of Scribes"},
+    {T_("Puny"),               T_("Troglodyte"),            T_("Angry Troglodyte"),         T_("Frenzied"),
+        T_("@Genus@ of Prey"),    T_("Rampant"),               T_("Wild @Genus@"),             T_("Bane of Scribes")},
 
     // Nemelex Xobeh -- alluding to Tarot and cards.
-    {"Unlucky @Genus@",    "Pannier",               "Jester",                   "Fortune-Teller",
-        "Soothsayer",         "Magus",                 "Cardsharp",                "Hand of Fortune"},
+    {T_("Unlucky @Genus@"),    T_("Pannier"),               T_("Jester"),                   T_("Fortune-Teller"),
+        T_("Soothsayer"),         T_("Magus"),                 T_("Cardsharp"),                T_("Hand of Fortune")},
 
     // Elyvilon.
-    {"Sinner",                "Practitioner",       "Comforter",             "Caregiver",
-        "Mender",           "Pacifist",                "Purifying @Genus@",        "Bringer of Life"},
+    {T_("Sinner"),                T_("Practitioner"),       T_("Comforter"),             T_("Caregiver"),
+        T_("Mender"),           T_("Pacifist"),                T_("Purifying @Genus@"),        T_("Bringer of Life")},
 
     // Lugonu -- distortion theme.
-    {"Pure",               "Abyss-Baptised",        "Unweaver",                 "Distorting @Genus@",
-        "Agent of Entropy",   "Schismatic",            "Envoy of Void",            "Corrupter of Planes"},
+    {T_("Pure"),               T_("Abyss-Baptised"),        T_("Unweaver"),                 T_("Distorting @Genus@"),
+        T_("Agent of Entropy"),   T_("Schismatic"),            T_("Envoy of Void"),            T_("Corrupter of Planes")},
 
     // Beogh -- messiah theme.
-    {"Apostate",           "Convert",               "Proselytiser",             "Priest",
-        "Missionary",         "Evangelist",            "Unifier",                  "Messiah"},
+    {T_("Apostate"),           T_("Convert"),               T_("Proselytiser"),             T_("Priest"),
+        T_("Missionary"),         T_("Evangelist"),            T_("Unifier"),                  T_("Messiah")},
 
     // Jiyva -- slime and jelly theme.
-    {"Scum",               "Squelcher",             "Ooze",                     "Jelly",
-        "Slime Creature",     "Dissolving @Genus@",    "Blob",                     "Royal Jelly"},
+    {T_("Scum"),               T_("Squelcher"),             T_("Ooze"),                     T_("Jelly"),
+        T_("Slime Creature"),     T_("Dissolving @Genus@"),    T_("Blob"),                     T_("Royal Jelly")},
 
     // Fedhas Madash -- nature theme.
-    {"@Walking@ Fertiliser", "Fungal",              "Green @Genus@",            "Cultivator",
-        "Fruitful",           "Photosynthesist",       "Green Death",              "Force of Nature"},
+    {T_("@Walking@ Fertiliser"), T_("Fungal"),              T_("Green @Genus@"),            T_("Cultivator"),
+        T_("Fruitful"),           T_("Photosynthesist"),       T_("Green Death"),              T_("Force of Nature")},
 
     // Cheibriados -- slow theme
-    {"Hasty",              "Sluggish @Genus@",      "Deliberate",               "Unhurried",
-     "Contemplative",         "Epochal",               "Timeless",                 "@Adj@ Aeon"},
+    {T_("Hasty"),              T_("Sluggish @Genus@"),      T_("Deliberate"),               T_("Unhurried"),
+     T_("Contemplative"),         T_("Epochal"),               T_("Timeless"),                 T_("@Adj@ Aeon")},
 
     // Ashenzari -- divination theme
-    {"Star-crossed",       "Cursed",                "Initiated",                "Seer",
-        "Oracle",            "Illuminatus",            "Prince of Secrets",        "Omniscient"},
+    {T_("Star-crossed"),       T_("Cursed"),                T_("Initiated"),                T_("Seer"),
+        T_("Oracle"),            T_("Illuminatus"),            T_("Prince of Secrets"),        T_("Omniscient")},
 
     // Dithmenos -- darkness theme
-    {"Conspicuous",         "Nocturnal",            "Bump in the Night",        "Thespian",
-        "Tenebrous",          "Puppetmaster",          "@Walking@ Midnight",       "Who Hides the Stars"},
+    {T_("Conspicuous"),         T_("Nocturnal"),            T_("Bump in the Night"),        T_("Thespian"),
+        T_("Tenebrous"),          T_("Puppetmaster"),          T_("@Walking@ Midnight"),       T_("Who Hides the Stars")},
 
     // Gozag -- entrepreneur theme
-    {"Profligate",         "Pauper",                "Entrepreneur",             "Capitalist",
-        "Rich",               "Opulent",               "Tycoon",                   "Plutocrat"},
+    {T_("Profligate"),         T_("Pauper"),                T_("Entrepreneur"),             T_("Capitalist"),
+        T_("Rich"),               T_("Opulent"),               T_("Tycoon"),                   T_("Plutocrat")},
 
     // Qazlal -- natural disaster theme
-    {"Unspoiled",          "@Adj@ Mishap",          "Lightning Rod",            "@Adj@ Disaster",
-        "Eye of the Storm",   "@Adj@ Catastrophe",     "@Adj@ Cataclysm",          "End of an Era"},
+    {T_("Unspoiled"),          T_("@Adj@ Mishap"),          T_("Lightning Rod"),            T_("@Adj@ Disaster"),
+        T_("Eye of the Storm"),   T_("@Adj@ Catastrophe"),     T_("@Adj@ Cataclysm"),          T_("End of an Era")},
 
     // Ru -- enlightenment theme
-    {"Sleeper",           "Questioner",             "Initiate",                 "Seeker of Truth",
-        "@Walker@ of the Path","Lifter of the Veil",     "Transcendent",     "Drop of Water"},
+    {T_("Sleeper"),           T_("Questioner"),             T_("Initiate"),                 T_("Seeker of Truth"),
+        T_("@Walker@ of the Path"),T_("Lifter of the Veil"),     T_("Transcendent"),     T_("Drop of Water")},
 
 #if TAG_MAJOR_VERSION == 34
     // Pakellas -- inventor theme
-    {"Reactionary",       "Apprentice",             "Inquisitive",              "Experimenter",
-        "Inventor",           "Pioneer",               "Brilliant",                "Grand Gadgeteer"},
+    {T_("Reactionary"),       T_("Apprentice"),             T_("Inquisitive"),              T_("Experimenter"),
+        T_("Inventor"),           T_("Pioneer"),               T_("Brilliant"),                T_("Grand Gadgeteer")},
 #endif
 
     // Uskayaw -- reveler theme
-    {"Prude",             "Wallflower",             "Party-goer",              "Dancer",
-        "Impassioned",        "Rapturous",             "Ecstatic",                "Rhythm of Life and Death"},
+    {T_("Prude"),             T_("Wallflower"),             T_("Party-goer"),              T_("Dancer"),
+        T_("Impassioned"),        T_("Rapturous"),             T_("Ecstatic"),                T_("Rhythm of Life and Death")},
 
     // Hepliaklqana -- memory/ancestry theme
-    {"Damnatio Memoriae",       "Hazy",             "@Adj@ @Child@",              "Storyteller",
-        "Brooding",           "Anamnesiscian",               "Grand Scion",                "Unforgettable"},
+    {T_("Damnatio Memoriae"),       T_("Hazy"),             T_("@Adj@ @Child@"),              T_("Storyteller"),
+        T_("Brooding"),           T_("Anamnesiscian"),               T_("Grand Scion"),                T_("Unforgettable")},
 
     // Wu Jian -- animal/chinese martial arts monk theme
-    {"Wooden Rat",          "Young Dog",             "Young Crane",              "Young Tiger",
-        "Young Dragon",     "Red Sash",               "Golden Sash",              "Sifu"},
+    {T_("Wooden Rat"),          T_("Young Dog"),             T_("Young Crane"),              T_("Young Tiger"),
+        T_("Young Dragon"),     T_("Red Sash"),               T_("Golden Sash"),              T_("Sifu")},
 
     // Ignis -- fire/candles theme
-    {"Extinguished",          "Last Ember",             "Glowing Coal",              "Thurifer",
-        "Hearthfire",     "Furnace",               "Raging Flame",              "Inferno"},
-};
+    {T_("Extinguished"),          T_("Last Ember"),             T_("Glowing Coal"),              T_("Thurifer"),
+        T_("Hearthfire"),     T_("Furnace"),               T_("Raging Flame"),              T_("Inferno")},
 
-// Chinese translations for divine titles
-static const char *divine_title_zh[][8] =
-{
-    // 无神
-    {"小虫",               "萤火虫",               "妖怪虫",                  "臭虫",
-        "熊虫",               "被虫蛀者",             "巨虫",                    "虫之王"},
-
-    // 辛
-    {"亵渎者",             "隐修士",               "辩护者",                  "虔诚者",
-        "虔信者",             "正统派",               "无垢者",                  "律法使者"},
-
-    // 光辉者
-    {"无耻之徒",           "侍僧",                 "正义者",                  "不屈者",
-        "圣武士",             "驱魔师",               "恶魔杀手",                "光明使者"},
-
-    // 奇库巴库德加 —— 死亡学者
-    {"受折磨者",           "痛苦贩子",             "悲伤学徒",                "苦难商人",
-        "灵魂学者",           "死亡工匠",             "绝望煽动者",              "黑暗之主"},
-
-    // 伊雷德勒姆努 —— 狂热死亡骑士
-    {"叛徒",               "火炬手",               "掠夺者",                  "黑色十字军",
-        "堕落的@Genus@",     "末日先驱",             "不可阻挡之潮",            "亵渎使者"},
-
-    // 佐姆
-    {"玩具",               "玩具",                 "玩具",                    "玩具",
-        "玩具",               "玩具",                 "玩具",                    "玩具"},
-
-    // 维胡梅特 —— 战斗法师
-    {"懦弱者",             "术士学徒",             "毁灭学者",                "毁灭施法者",
-        "创伤师",             "战斗法师",             "术士",                    "致命学识之光"},
-
-    // 奥卡瓦鲁 —— 战斗
-    {"懦夫",               "挣扎者",               "战士",                    "武装@Genus@",
-        "骑士",               "好战者",               "战争贩子",                "千战胜利者"},
-
-    // 马克勒布 —— 混沌
-    {"守序者",             "混沌之卵",             "毁灭信徒",                "杀戮赞歌",
-        "恶魔般的",           "破坏@Genus@",          "万魔殿的",                "混沌斗士"},
-
-    // 西芙穆娜 —— 博学学者
-    {"无知者",             "门徒",                 "学生",                    "熟手",
-        "抄写员",             "学者",                 "圣贤",                    "奥术天才"},
-
-    // 特罗格 —— 愤怒
-    {"弱小者",             "穴居者",               "愤怒的穴居者",            "狂暴者",
-        "掠食@Genus@",       "暴怒者",               "狂野的@Genus@",           "文士之灾"},
-
-    // 涅梅莱克斯·索贝 —— 塔罗牌
-    {"不幸的@Genus@",      "牌筐",                 "小丑",                    "算命师",
-        "预言师",             "魔术师",               "牌技高手",                "命运之手"},
-
-    // 埃利维隆
-    {"罪人",               "修行者",               "安慰者",                  "看护者",
-        "修补者",             "和平主义者",           "净化@Genus@",             "生命使者"},
-
-    // 卢戈努 —— 扭曲
-    {"纯净者",             "深渊洗礼者",           "解织者",                  "扭曲@Genus@",
-        "熵之使者",           "分裂者",               "虚空特使",                "位面腐化者"},
-
-    // 比奥格 —— 弥赛亚
-    {"背教者",             "皈依者",               "传教者",                  "牧师",
-        "传教士",             "福音使者",             "统一者",                  "弥赛亚"},
-
-    // 吉瓦 —— 史莱姆
-    {"浮渣",               "踩踏者",               "软泥",                    "果冻",
-        "史莱姆生物",         "溶解的@Genus@",        "凝胶团",                  "皇家果冻"},
-
-    // 菲达斯·马达什 —— 自然
-    {"@Walking@肥料",      "真菌",                 "绿色@Genus@",             "栽培者",
-        "肥沃的",             "光合作用者",           "绿色死神",                "自然之力"},
-
-    // 切布里亚多斯 —— 缓慢
-    {"急躁者",             "迟缓的@Genus@",        "从容者",                  "不急者",
-        "沉思者",             "划时代的",             "永恒者",                  "@Adj@ 永世者"},
-
-    // 阿申扎里 —— 占卜
-    {"厄运缠身者",         "受诅咒者",             "入门者",                  "预言者",
-        "神谕者",             "启示者",               "奥秘王子",                "全知者"},
-
-    // 迪斯米诺斯 —— 黑暗
-    {"显眼者",             "夜行者",               "夜中怪声",                "演员",
-        "晦暗者",             "傀儡师",               "@Walking@午夜",           "隐匿星辰者"},
-
-    // 戈扎格 —— 企业家
-    {"挥霍者",             "穷光蛋",               "企业家",                  "资本家",
-        "富人",               "富豪",                 "大亨",                    "财阀"},
-
-    // 卡兹拉尔 —— 自然灾害
-    {"未损者",             "@Adj@小灾",            "避雷针",                  "@Adj@灾难",
-        "风暴眼",             "@Adj@大灾",           "@Adj@巨灾",              "时代终结者"},
-
-    // 鲁 —— 悟道
-    {"沉睡者",             "提问者",               "入门者",                  "求真者",
-        "行路@Walker@",      "揭纱者",               "超越者",                  "一滴水"},
-
-#if TAG_MAJOR_VERSION == 34
-    // 帕克拉斯 —— 发明家 (已移除)
-    {"守旧者",             "学徒",                 "好奇者",                  "实验者",
-        "发明家",             "先驱",                 "才华横溢者",              "伟大发明家"},
-#endif
-
-    // 乌斯卡亚 —— 狂欢
-    {"假正经",             "壁花",                 "派对客",                  "舞者",
-        "激情者",             "狂喜者",               "入迷者",                  "生死之韵律"},
-
-    // 赫普利亚克娜 —— 记忆/先祖
-    {"记忆抹除者",         "朦胧者",               "@Adj@@Child@",            "讲故事者",
-        "沉思者",             "记忆学家",             "伟大后裔",                "不可忘怀者"},
-
-    // 吴建 —— 中国武术
-    {"木鼠",               "幼犬",                 "幼鹤",                    "幼虎",
-        "幼龙",               "红带",                 "金带",                    "师父"},
-
-    // 伊格尼斯 —— 火/蜡烛
-    {"已熄灭者",           "最后余烬",             "发光煤块",                "持香者",
-        "炉火",               "熔炉",                 "烈焰",                    "地狱之火"},
 };
 COMPILE_CHECK(ARRAYSZ(divine_title) == NUM_GODS);
-COMPILE_CHECK(ARRAYSZ(divine_title_zh) == NUM_GODS);
 
 string god_title(god_type which_god, species_type which_species, int piety)
 {
-    const bool zh = Options.language == lang_t::ZH;
     string title;
     if (player_under_penance(which_god))
-        title = zh ? divine_title_zh[which_god][0] : divine_title[which_god][0];
+        title = divine_title[which_god][0];
     else if (which_god == GOD_USKAYAW)
-        title = zh ? divine_title_zh[which_god][_invocations_level()]
-                   : divine_title[which_god][_invocations_level()];
+        title = divine_title[which_god][_invocations_level()];
     else if (which_god == GOD_GOZAG)
-        title = zh ? divine_title_zh[which_god][_gold_level()]
-                   : divine_title[which_god][_gold_level()];
+        title = divine_title[which_god][_gold_level()];
     else
-        title = zh ? divine_title_zh[which_god][_piety_level(piety)]
-                   : divine_title[which_god][_piety_level(piety)];
+        title = divine_title[which_god][_piety_level(piety)];
 
     const map<string, string> replacements =
     {
@@ -473,41 +352,12 @@ static const map<monster_type, vector<ancestor_upgrade> > ancestor_data =
     },
 };
 
-/// Translate ancestor upgrade name to Chinese.
+/// Translate ancestor upgrade name to Chinese (via T_()).
 static const char* _zh_ancestor_upgrade(const char* en)
 {
-    if (Options.language != lang_t::ZH || !en || !en[0])
+    if (!en || !en[0])
         return en;
-    static const map<string, string> zh_map = {
-        {"Flail", "链枷"},
-        {"Shield", "盾牌"},
-        {"Chain mail (+AC)", "链甲（+AC）"},
-        {"Broad axe (flame)", "阔斧（火焰）"},
-        {"Binding melee attacks", "束缚近战攻击"},
-        {"Tower shield (reflect)", "塔盾（反射）"},
-        {"Bolster", "强化"},
-        {"Broad axe (speed)", "阔斧（速度）"},
-        {"Increased hit points", "提升生命值"},
-        {"Staff", "法杖"},
-        {"Shock", "震击"},
-        {"Stone Arrow", "石箭术"},
-        {"Deflect Missiles", "偏转飞弹"},
-        {"Iceblast", "冰爆术"},
-        {"Bolt of Magma", "岩浆箭"},
-        {"Lee's Rapid Deconstruction", "李的快速分解"},
-        {"Increased spell damage", "提升法术伤害"},
-        {"Plasma Beam", "等离子束"},
-        {"Permafrost Eruption", "永冻爆发"},
-        {"Dagger (drain)", "匕首（吸取）"},
-        {"Slow", "减速"},
-        {"Confuse", "混乱"},
-        {"Paralyse", "麻痹"},
-        {"Mass Confusion", "群体混乱"},
-        {"Haste", "加速"},
-        {"Quick blade (antimagic)", "迅捷之刃（反魔）"},
-    };
-    auto it = zh_map.find(en);
-    return it != zh_map.end() ? it->second.c_str() : en;
+    return T_(en);
 }
 
 /// Build & return a table of Hep's upgrades for your chosen ancestor type.
@@ -522,14 +372,12 @@ static string _describe_ancestor_upgrades()
     const vector<ancestor_upgrade> *upgrades = map_find(ancestor_data,
                                                         ancestor);
 
-    const bool zh = Options.language == lang_t::ZH;
     if (upgrades)
     {
         desc = T_("Ancestor Upgrades:\n\n<white>XL              Upgrade\n</white>");
         for (auto &entry : *upgrades)
         {
-            const char* name = zh ? _zh_ancestor_upgrade(entry.second.c_str())
-                                  : entry.second.c_str();
+            const char* name = _zh_ancestor_upgrade(entry.second.c_str());
             desc += make_stringf("%s%2d              %s%s\n",
                                  you.experience_level < entry.first
                                      ? "<darkgrey>" : "",
@@ -635,7 +483,7 @@ static string _describe_god_wrath_causes(god_type which_god)
         // XXX: refactor this if any god hates chaotic but not evil gods
     }
 
-    // Language-appropriate delimiters for list joining
+    // RETAIN: Language-appropriate delimiters for list joining — UI formatting, not translation text
     const char* and_word = Options.language == lang_t::ZH ? "和" : " and ";
     const char* sep_word = Options.language == lang_t::ZH ? "、" : ", ";
 
@@ -699,19 +547,16 @@ static formatted_string _god_wrath_description(god_type which_god)
     if (which_god != GOD_RU) // Permanent wrath.
     {
         const bool long_wrath = initial_wrath_penance_for(which_god) > 30;
+        // ZH uses "的" genitive, EN uses apostrophise() + uppercase_first()
+        string wrath_god_label;
         if (Options.language == lang_t::ZH)
-        {
-            _add_par(desc, god_name(which_god)
-                          + "的愤怒持续时间相对较"
-                          + (long_wrath ? "长" : "短") + "。");
-        }
+            wrath_god_label = god_name(which_god);
         else
-        {
-            _add_par(desc, apostrophise(uppercase_first(god_name(which_god)))
-                                  + " wrath lasts for a relatively " +
-                                  (long_wrath ? T_("long") : T_("short"))
-                                  + " duration.");
-        }
+            wrath_god_label = uppercase_first(apostrophise(god_name(which_god)));
+        _add_par(desc,
+            make_stringf(T_("%s wrath lasts for a relatively %s duration."),
+                wrath_god_label.c_str(),
+                long_wrath ? T_("long") : T_("short")));
     }
 
     return desc;
@@ -804,26 +649,33 @@ static string _get_god_misc_info(god_type which_god)
     string info = "";
     skill_type skill = invo_skill(which_god);
 
-    // Category A fix: T_() format string with %s for god_name and skill_name
-    const bool zh = Options.language == lang_t::ZH;
-
+    // T_() format string with %s for god_name and skill_name
+    // Minimal genitive wrapper: ZH uses god_name() directly, EN uses apostrophise()
     switch (skill)
     {
         case SK_INVOCATIONS:
             break;
         case SK_NONE:
+        {
+            const string god_label = Options.language == lang_t::ZH
+                ? god_name(which_god)
+                : uppercase_first(apostrophise(god_name(which_god)));
             info += make_stringf(T_("%s powers are not affected by the %s skill."),
-                         zh ? god_name(which_god).c_str()
-                            : uppercase_first(apostrophise(god_name(which_god))).c_str(),
+                         god_label.c_str(),
                          skill_name(SK_INVOCATIONS));
             break;
+        }
         default:
+        {
+            const string god_label = Options.language == lang_t::ZH
+                ? god_name(which_god)
+                : uppercase_first(apostrophise(god_name(which_god)));
             info += make_stringf(T_("%s powers are based on %s instead of %s skill."),
-                         zh ? god_name(which_god).c_str()
-                            : uppercase_first(apostrophise(god_name(which_god))).c_str(),
+                         god_label.c_str(),
                          skill_name(skill),
                          skill_name(SK_INVOCATIONS));
             break;
+        }
     }
 
     if (!info.empty())
@@ -1013,16 +865,9 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(DARKGREY);
         else
             desc.textcolour(god_colour(which_god));
-        // Category D fix: T_() for embedded adjectives (large/small)
-        if (Options.language == lang_t::ZH)
-            desc.cprintf("你散发出%s正义光环，其中的敌人"
-                    "更容易被击中。\n",
-                    halo_size > 5 ? "强大的" :
-                    halo_size > 3 ? "" :
-                                    "微弱的");
-        else
-            desc.cprintf("You radiate a%s aura of righteousness, "
-                    "making those within it easier to hit.\n",
+        // T_() format string with embedded adjective (large/small/none)
+        desc.cprintf(T_("You radiate a%s aura of righteousness, "
+                    "making those within it easier to hit.\n"),
                     halo_size > 5 ? T_(" large") :
                     halo_size > 3 ? "" :
                                     T_(" small"));
@@ -1031,12 +876,12 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(god_colour(which_god));
         else
             desc.textcolour(DARKGREY);
-        // Category B fix: T_() adverb fragments
+        // T_() adverb fragments for intensity; format string via T_()
         const char *how =
             (piety >= piety_breakpoint(5)) ? T_("completely") :
             (piety >= piety_breakpoint(3)) ? T_("mostly") :
                                              T_("partially");
-        desc.cprintf("%s%s保护你免受负能量伤害。\n",
+        desc.cprintf(T_("%s%s protects you from negative energy.\n"),
                 uppercase_first(god_name(which_god)).c_str(), how);
         break;
     }
@@ -1186,7 +1031,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             continue;
         }
 
-        // Only wrap with "You can" for English; Chinese translations are full sentences.
+        // RETAIN: Only wrap with "You can" for English; Chinese translations are full sentences.
         if (Options.language != lang_t::ZH && !isupper(buf[0]))
             buf = "You can " + buf + ".";
         const int desc_len = strwidth(buf);
