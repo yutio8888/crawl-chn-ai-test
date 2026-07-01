@@ -16,901 +16,901 @@
 % to hit
 % 命中
 %%%%
-% to hit with your 
+% to hit with your
 % 命中，使用你的
 %%%%
-%%%% 
+%%%%
 # Phase 2a: ARG-DIFF structural refactor — describe-god.cc (2026-06-29)
 
-%%%% 
+%%%%
 # Entry 1: _describe_favour — penance messages
-%%%% 
+%%%%
 Godly wrath is upon you!
 神怒降临于你！
 
-%%%% 
+%%%%
 You've transgressed heavily! Be penitent!
 你犯下了严重的罪过！忏悔吧！
 
-%%%% 
+%%%%
 You are under penance.
 你正处于苦修中。
 
-%%%% 
+%%%%
 You should show more discipline.
 你应当更加严守戒律。
 
-%%%% 
+%%%%
 # Entry 1: _describe_favour — godname-embedding favour titles
-%%%% 
+%%%%
 A prized avatar of %s.
 %s珍视的化身。
 
-%%%% 
+%%%%
 A favoured servant of %s.
 %s眷顾的仆人。
 
-%%%% 
+%%%%
 A glorious shadow in the eyes of %s.
 在%s眼中是荣耀的暗影。
 
-%%%% 
+%%%%
 A shining star in the eyes of %s.
 在%s眼中是闪耀的明星。
 
-%%%% 
+%%%%
 A rising shadow in the eyes of %s.
 在%s眼中是初升的暗影。
 
-%%%% 
+%%%%
 A rising star in the eyes of %s.
 在%s眼中是冉冉升起的新星。
 
-%%%% 
+%%%%
 %s is pleased with you.
 %s对你感到满意。
 
-%%%% 
+%%%%
 %s is aware of your devotion.
 %s察觉到了你的虔诚。
 
-%%%% 
+%%%%
 %s is noncommittal.
 %s不置可否。
 
-%%%% 
+%%%%
 # Entry 2: _describe_god_wrath_causes — multi-line wrath format strings
-%%%% 
+%%%%
 %s forgives followers for abandonment; however, those who later take up the worship of an evil god will be punished. (%s are evil gods.)
 %s原谅追随者的弃离；但那些后来信仰邪恶之神的人将受到惩罚。（%s是邪恶之神。）
 
-%%%% 
+%%%%
 %s forgives followers for abandonment; however, those who later take up the worship of an evil or chaotic god will be scourged. (%s are evil, and %s are chaotic.)
 %s原谅追随者的弃离；但那些后来信仰邪恶或混乱之神的人将被鞭笞。（%s是邪恶的，%s是混乱的。）
 
-%%%% 
+%%%%
 %s does not appreciate abandonment, and will call down fearful punishments on disloyal followers!
 %s不欣赏弃离行为，并将对不忠的追随者降下可怕的惩罚！
 
-%%%% 
+%%%%
 # Entry 4: Gozag service fee — random_choose fee descriptions
-%%%% 
+%%%%
  (no fee if you act now)
 （现在行动即可免费）
 
-%%%% 
+%%%%
  (no fee if you join today)
 （现在加入即可免费）
 
 
-%%%% 
+%%%%
 # Phase 2b: ARG-DIFF structural refactor — zh_god_power entries (2026-06-29)
 
-%%%% 
+%%%%
 recite Zin's Axioms of Law
 吟诵辛的律法公理
 
-%%%% 
+%%%%
 call upon Zin for vitalisation
 呼唤辛赋予活力
 
-%%%% 
+%%%%
 call upon Zin to imprison the lawless
 呼唤辛囚禁不法之徒
 
-%%%% 
+%%%%
 call upon Zin to create a sanctuary
 呼唤辛创造避难所
 
-%%%% 
+%%%%
 Zin will now cleanse your potions of mutation.
 辛现在会净化你的变异药水。
 
-%%%% 
+%%%%
 Zin will no longer cleanse your potions of mutation.
 辛不再净化你的变异药水。
 
-%%%% 
+%%%%
 Zin will cleanse your potions of mutation.
 辛会净化你的变异药水。
 
-%%%% 
+%%%%
 donate money to Zin
 向辛捐款
 
-%%%% 
+%%%%
 You and your allies can now gain power from killing the unholy and evil.
 你和你的盟友现在可以通过杀死不洁与邪恶生物获得力量。
 
-%%%% 
+%%%%
 You and your allies can no longer gain power from killing the unholy and evil.
 你和你的盟友不再能通过杀死不洁与邪恶生物获得力量。
 
-%%%% 
+%%%%
 You and your allies can gain power from killing the unholy and evil.
 你和你的盟友可以通过杀死不洁与邪恶生物获得力量。
 
-%%%% 
+%%%%
 call upon the Shining One for a divine shield
 呼唤光辉者赋予神圣护盾
 
-%%%% 
+%%%%
 channel blasts of cleansing flame
 引导净化之焰
 
-%%%% 
+%%%%
 summon a divine warrior
 召唤神圣战士
 
-%%%% 
+%%%%
 The Shining One will bless your weapon with holy wrath... once.
 光辉者将为你的武器加持神圣之怒……一次。
 
-%%%% 
+%%%%
 The Shining One is no longer ready to bless your weapon.
 光辉者尚未准备好再次祝福你的武器。
 
-%%%% 
+%%%%
 bring forth the wretched and dying
 唤来悲惨与垂死之物
 
-%%%% 
+%%%%
 Kikubaaqudgha is now protecting you from necromantic miscasts and death curses.
 奇库巴库哈现在保护你免受死灵法术失误和死亡诅咒的伤害。
 
-%%%% 
+%%%%
 Kikubaaqudgha will no longer protect you from necromantic miscasts or death curses.
 奇库巴库哈不再保护你免受死灵法术失误或死亡诅咒的伤害。
 
-%%%% 
+%%%%
 Kikubaaqudgha protects you from necromantic miscasts and death curses.
 奇库巴库哈保护你免受死灵法术失误和死亡诅咒的伤害。
 
-%%%% 
+%%%%
 Kikubaaqudgha is now protecting you from unholy torment.
 奇库巴库哈现在保护你免受不洁折磨。
 
-%%%% 
+%%%%
 Kikubaaqudgha will no longer protect you from unholy torment.
 奇库巴库哈不再保护你免受不洁折磨。
 
-%%%% 
+%%%%
 Kikubaaqudgha protects you from unholy torment.
 奇库巴库哈保护你免受不洁折磨。
 
-%%%% 
+%%%%
 invoke the sign of ruin
 唤起毁灭之印
 
-%%%% 
+%%%%
 Kikubaaqudgha will grant you forbidden knowledge or bloody your weapon with pain... once.
 奇库巴库哈将赐予你禁忌知识或为你的武器加持痛苦……一次。
 
-%%%% 
+%%%%
 Kikubaaqudgha is no longer ready to enhance your necromancy.
 奇库巴库哈尚未准备好强化你的死灵法术。
 
-%%%% 
+%%%%
 Kikubaaqudgha will grant you forbidden knowledge.
 奇库巴库哈将赐予你禁忌知识。
 
-%%%% 
+%%%%
 light the black torch and reap souls in Yredelemnul's name
 点燃黑色火炬，以伊莱德莱姆努尔之名收割灵魂
 
-%%%% 
+%%%%
 recall your undead harvest
 召回你的亡灵收成
 
-%%%% 
+%%%%
 Yredelemnul will now gift you temporary undead servants when you light the torch.
 伊莱德莱姆努尔现在会在你点燃火炬时赐予你临时亡灵仆从。
 
-%%%% 
+%%%%
 Yredelemnul will no longer gift you temporary undead servants when you light the torch.
 伊莱德莱姆努尔不再在你点燃火炬时赐予你临时亡灵仆从。
 
-%%%% 
+%%%%
 Yredelemnul will gift you temporary undead servants when you light the torch.
 伊莱德莱姆努尔会在你点燃火炬时赐予你临时亡灵仆从。
 
-%%%% 
+%%%%
 hurl gouts of umbral torchlight
 投掷暗影火炬之光
 
-%%%% 
+%%%%
 bind living souls
 束缚活物灵魂
 
-%%%% 
+%%%%
 engulf your surroundings in Yredelemnul's grip
 用伊莱德莱姆努尔之握吞噬周围
 
-%%%% 
+%%%%
 gain magical power from killing
 通过杀戮获得魔力
 
-%%%% 
+%%%%
 Vehumet is now aiding your destructive spells.
 维胡梅特现在协助你的破坏性法术。
 
-%%%% 
+%%%%
 Vehumet will no longer aid your destructive spells.
 维胡梅特不再协助你的破坏性法术。
 
-%%%% 
+%%%%
 Vehumet aids your destructive spells.
 维胡梅特协助你的破坏性法术。
 
-%%%% 
+%%%%
 Vehumet is now extending the range of your destructive spells.
 维胡梅特现在扩大你破坏性法术的射程。
 
-%%%% 
+%%%%
 Vehumet will no longer extend the range of your destructive spells.
 维胡梅特不再扩大你破坏性法术的射程。
 
-%%%% 
+%%%%
 Vehumet extends the range of your destructive spells.
 维胡梅特扩大你破坏性法术的射程。
 
-%%%% 
+%%%%
 Okawaru requires that you fight alone, and prevents you from gaining allies.
 奥卡瓦鲁要求你独自战斗，阻止你获得盟友。
 
-%%%% 
+%%%%
 gain great but temporary skills
 获得强大但短暂的技能
 
-%%%% 
+%%%%
 speed up your combat
 加速你的战斗
 
-%%%% 
+%%%%
 enter into single combat with a foe
 与敌人进入单挑
 
-%%%% 
+%%%%
 Okawaru will now gift you throwing weapons as you gain piety.
 奥卡瓦鲁现在会在你获得虔诚时赐予你投掷武器。
 
-%%%% 
+%%%%
 Okawaru will no longer gift you throwing weapons.
 奥卡瓦鲁不再赐予你投掷武器。
 
-%%%% 
+%%%%
 Okawaru will gift you throwing weapons as you gain piety.
 奥卡瓦鲁会在你获得虔诚时赐予你投掷武器。
 
-%%%% 
+%%%%
 Okawaru will grant you a choice of weapons... once.
 奥卡瓦鲁将让你从武器中挑选……一次。
 
-%%%% 
+%%%%
 Okawaru is no longer ready to gift you weaponry.
 奥卡瓦鲁尚未准备好赐予你武器。
 
-%%%% 
+%%%%
 Okawaru will grant you a choice of armour... once.
 奥卡瓦鲁将让你从护甲中挑选……一次。
 
-%%%% 
+%%%%
 Okawaru is no longer ready to gift you armour.
 奥卡瓦鲁尚未准备好赐予你护甲。
 
-%%%% 
+%%%%
 gain health from killing
 通过杀戮获得生命
 
-%%%% 
+%%%%
 unleash Makhleb's destructive might
 释放马科列布的毁灭之力
 
-%%%% 
+%%%%
 summon an infernal servant of Makhleb
 召唤马科列布的炼狱仆从
 
-%%%% 
+%%%%
 Makhleb will allow you to brand your body with an infernal mark... once.
 马科列布将允许你在身体上烙印炼狱印记……一次。
 
-%%%% 
+%%%%
 Makhleb will no longer allow you to brand your body with an infernal mark.
 马科列布不再允许你在身体上烙印炼狱印记。
 
-%%%% 
+%%%%
 call upon Sif Muna for magical energy
 呼唤西芙·穆娜获取魔力
 
-%%%% 
+%%%%
 freely open your mind to new spells
 自由开放心灵学习新法术
 
-%%%% 
+%%%%
 forget spells at will
 随意遗忘法术
 
-%%%% 
+%%%%
 call upon Sif Muna to cast any spell from your library
 呼唤西芙·穆娜施展法术库中任意法术
 
-%%%% 
+%%%%
 Sif Muna will now gift you books as you gain piety.
 西芙·穆娜现在会在你获得虔诚时赐予你书籍。
 
-%%%% 
+%%%%
 Sif Muna will no longer gift you books.
 西芙·穆娜不再赐予你书籍。
 
-%%%% 
+%%%%
 Sif Muna will gift you books as you gain piety.
 西芙·穆娜会在你获得虔诚时赐予你书籍。
 
-%%%% 
+%%%%
 go berserk at will
 随意进入狂暴
 
-%%%% 
+%%%%
 call upon Trog for regeneration and willpower
 呼唤特洛格赋予再生和意志力
 
-%%%% 
+%%%%
 call in reinforcements
 召唤援军
 
-%%%% 
+%%%%
 Trog will now gift you melee weapons as you gain piety.
 特洛格现在会在你获得虔诚时赐予你近战武器。
 
-%%%% 
+%%%%
 Trog will no longer gift you weapons.
 特洛格不再赐予你武器。
 
-%%%% 
+%%%%
 Trog will gift you melee weapons as you gain piety.
 特洛格会在你获得虔诚时赐予你近战武器。
 
-%%%% 
+%%%%
 draw from decks of power
 从力量牌组中抽取
 
-%%%% 
+%%%%
 Nemelex will now gift you decks of power as you gain piety.
 尼姆雷斯·索布现在会在你获得虔诚时赐予你力量牌组。
 
-%%%% 
+%%%%
 Nemelex will no longer gift you decks.
 尼姆雷斯·索布不再赐予你牌组。
 
-%%%% 
+%%%%
 Nemelex will gift you decks of power as you gain piety.
 尼姆雷斯·索布会在你获得虔诚时赐予你力量牌组。
 
-%%%% 
+%%%%
 choose one out of three cards
 从三张牌中选择一张
 
-%%%% 
+%%%%
 deal four cards at a time
 一次抽取四张牌
 
-%%%% 
+%%%%
 stack five cards from your decks
 从牌组中堆叠五张牌
 
-%%%% 
+%%%%
 stack cards
 堆叠卡牌
 
-%%%% 
+%%%%
 purify yourself
 净化自己
 
-%%%% 
+%%%%
 heal and attempt to pacify others
 治疗并尝试安抚他人
 
-%%%% 
+%%%%
 provide healing for yourself
 为自己提供治疗
 
-%%%% 
+%%%%
 call upon Elyvilon for divine vigour
 呼唤艾莉维隆赐予神圣活力
 
-%%%% 
+%%%%
 Lugonu protects you from the effects of unwielding distortion weapons.
 卢格努保护你免受卸下扭曲武器的影响。
 
-%%%% 
+%%%%
 Lugonu may banish nearby foes when other gods try to punish you.
 当其他神试图惩罚你时，卢格努可能会放逐附近的敌人。
 
-%%%% 
+%%%%
 depart the Abyss
 离开深渊
 
-%%%% 
+%%%%
 depart the Abyss at will
 随意离开深渊
 
-%%%% 
+%%%%
 banish your foes
 放逐你的敌人
 
-%%%% 
+%%%%
 corrupt the fabric of space
 腐蚀空间结构
 
-%%%% 
+%%%%
 gate yourself to the Abyss
 打开通往深渊之门
 
-%%%% 
+%%%%
 Lugonu will corrupt your weapon with distortion... once.
 卢格努将用扭曲腐蚀你的武器……一次。
 
-%%%% 
+%%%%
 Lugonu is no longer ready to corrupt your weapon.
 卢格努尚未准备好腐蚀你的武器。
 
-%%%% 
+%%%%
 smite your foes
 惩戒你的敌人
 
-%%%% 
+%%%%
 recall your apostles
 召回你的使徒
 
-%%%% 
+%%%%
 Beogh will now send orc apostles to challenge you in battle as you gain piety.
 比欧弗现在会在你获得虔诚时派遣兽人使徒来挑战你。
 
-%%%% 
+%%%%
 Beogh will no longer send orc apostles to challenge you in battle.
 比欧弗不再派遣兽人使徒来挑战你。
 
-%%%% 
+%%%%
 Beogh will send orc apostles to challenge you in battle as you gain piety.
 比欧弗会在你获得虔诚时派遣兽人使徒来挑战你。
 
-%%%% 
+%%%%
 You can recruit apostles that you defeat into your service.
 你可以将击败的使徒招募到你的麾下。
 
-%%%% 
+%%%%
 Your apostles are sometimes healed when you deal damage.
 你的使徒在你造成伤害时有时会获得治疗。
 
-%%%% 
+%%%%
 rally a vengeful horde
 集结复仇之群
 
-%%%% 
+%%%%
 walk on water
 在水面行走
 
-%%%% 
+%%%%
 Jiyva is now protecting you from corrosive effects.
 吉瓦现在保护你免受腐蚀效果。
 
-%%%% 
+%%%%
 Jiyva will no longer protect you from corrosive effects.
 吉瓦不再保护你免受腐蚀效果。
 
-%%%% 
+%%%%
 Jiyva protects you from corrosive effects.
 吉瓦保护你免受腐蚀效果。
 
-%%%% 
+%%%%
 Jiyva will now mutate your body as you gain piety.
 吉瓦现在会在你获得虔诚时变异你的身体。
 
-%%%% 
+%%%%
 Jiyva will no longer mutate your body.
 吉瓦不再变异你的身体。
 
-%%%% 
+%%%%
 Jiyva will mutate your body as you gain piety.
 吉瓦会在你获得虔诚时变异你的身体。
 
-%%%% 
+%%%%
 call acidic ooze from nearby walls
 从附近墙壁召唤酸性软泥
 
-%%%% 
+%%%%
 turn your foes to slime
 将敌人化为黏泥
 
-%%%% 
+%%%%
 You may now expel jellies when seriously injured.
 你现在可以在受重伤时释放史莱姆。
 
-%%%% 
+%%%%
 You will no longer expel jellies when injured.
 你不再在受伤时释放史莱姆。
 
-%%%% 
+%%%%
 You may expel jellies when seriously injured.
 你可以在受重伤时释放史莱姆。
 
-%%%% 
+%%%%
 You can walk through plants and fire through allied plants.
 你可以穿越植物并透过友方植物射击。
 
-%%%% 
+%%%%
 encircle yourself with summoned briar patches
 用召唤的荆棘丛围绕自己
 
-%%%% 
+%%%%
 grow a ballistomycete
 培育掷弹菌
 
-%%%% 
+%%%%
 transform dungeon walls and trees into plant allies
 将地下城的墙壁和树木转化为植物盟友
 
-%%%% 
+%%%%
 grow an oklob plant
 培育奥克罗布植物
 
-%%%% 
+%%%%
 Cheibriados is now slowing the effects of poison on you.
 切布理亚多现在减缓毒素对你的影响。
 
-%%%% 
+%%%%
 Cheibriados will no longer slow the effects of poison on you.
 切布理亚多不再减缓毒素对你的影响。
 
-%%%% 
+%%%%
 Cheibriados slows the effects of poison on you.
 切布理亚多减缓毒素对你的影响。
 
-%%%% 
+%%%%
 bend time to slow others
 扭曲时间以减缓他人
 
-%%%% 
+%%%%
 warp the flow of time around you
 扭曲周围的时间流动
 
-%%%% 
+%%%%
 inflict damage on those overly hasty
 对那些过于急躁的人造成伤害
 
-%%%% 
+%%%%
 step out of the flow of time
 脱离时间流动
 
-%%%% 
+%%%%
 Ashenzari warns you of distant threats and treasures.\nAshenzari shows you where magical portals lie.
 艾申扎利警告你远方的威胁和宝藏。\n艾申扎利向你展示魔法传送门的位置。
 
-%%%% 
+%%%%
 Ashenzari will now identify your possessions.
 艾申扎利现在会鉴定你的所有物。
 
-%%%% 
+%%%%
 Ashenzari will no longer identify your possesions.
 艾申扎利不再鉴定你的所有物。
 
-%%%% 
+%%%%
 Ashenzari identifies your possessions.
 艾申扎利鉴定你的所有物。
 
-%%%% 
+%%%%
 Ashenzari will now reveal the unseen.
 艾申扎利现在会揭示不可见之物。
 
-%%%% 
+%%%%
 Ashenzari will no longer reveal the unseen.
 艾申扎利不再揭示不可见之物。
 
-%%%% 
+%%%%
 Ashenzari reveals the unseen.
 艾申扎利揭示不可见之物。
 
-%%%% 
+%%%%
 Ashenzari will now keep your mind clear.
 艾申扎利现在会保持你头脑清醒。
 
-%%%% 
+%%%%
 Ashenzari will no longer keep your mind clear.
 艾申扎利不再保持你头脑清醒。
 
-%%%% 
+%%%%
 Ashenzari keeps your mind clear.
 艾申扎利保持你头脑清醒。
 
-%%%% 
+%%%%
 Ashenzari will now protect you from the dungeon's malevolent forces.
 艾申扎利现在保护你免受地下城恶势力的侵害。
 
-%%%% 
+%%%%
 Ashenzari no longer protects you from the dungeon's malevolent forces.
 艾申扎利不再保护你免受地下城恶势力的侵害。
 
-%%%% 
+%%%%
 Ashenzari protects you from the dungeon's malevolent forces.
 艾申扎利保护你免受地下城恶势力的侵害。
 
-%%%% 
+%%%%
 Ashenzari reveals the structure of the nearby dungeon.
 艾申扎利揭示附近地下城的结构。
 
-%%%% 
+%%%%
 Ashenzari no longer reveals the structure of the nearby dungeon.
 艾申扎利不再揭示附近地下城的结构。
 
-%%%% 
+%%%%
 Dithmenos quiets all noise in your surroundings.
 迪斯姆诺消除了你周围的所有噪音。
 
-%%%% 
+%%%%
 Dithmenos no longer quiets all noise in your surroundings.
 迪斯姆诺不再消除你周围的所有噪音。
 
-%%%% 
+%%%%
 Your shadow now sometimes tangibly mimics your actions.
 你的影子现在有时会实体化模仿你的动作。
 
-%%%% 
+%%%%
 Your shadow no longer tangibly mimics your actions.
 你的影子不再实体化模仿你的动作。
 
-%%%% 
+%%%%
 Your shadow sometimes tangibly mimics your actions.
 你的影子有时会实体化模仿你的动作。
 
-%%%% 
+%%%%
 mislead enemies by swapping places with your shadow
 与影子交换位置以误导敌人
 
-%%%% 
+%%%%
 unleash an enemy's spells as if they were a marionette
 将敌人的法术像玩偶一样释放
 
-%%%% 
+%%%%
 surround yourself with impenetrable night
 用无法穿透的夜幕包围自己
 
-%%%% 
+%%%%
 Gozag turns your defeated foes' bodies to gold.
 哥萨戈将你击败的敌人的尸体化为黄金。
 
-%%%% 
+%%%%
 Your enemies may become distracted by gold.
 你的敌人可能会被黄金分散注意力。
 
-%%%% 
+%%%%
 petition Gozag for potion effects
 向哥萨戈请求药水效果
 
-%%%% 
+%%%%
 fund merchants seeking to open stores in the dungeon
 资助寻求在地下城开设商店的商人
 
-%%%% 
+%%%%
 bribe branches to halt enemies' attacks and recruit allies
 贿赂分支区域以停止敌人攻击并招募盟友
 
-%%%% 
+%%%%
 Qazlal grants you and your divine allies immunity to clouds.
 卡兹拉尔赐予你和你的神圣盟友云雾免疫。
 
-%%%% 
+%%%%
 You are now surrounded by a storm.
 你现在被风暴包围。
 
-%%%% 
+%%%%
 Your storm dissipates completely.
 你的风暴完全消散了。
 
-%%%% 
+%%%%
 You are surrounded by a storm.
 你被风暴包围。
 
-%%%% 
+%%%%
 call upon nature to destroy your foes
 呼唤自然摧毁你的敌人
 
-%%%% 
+%%%%
 give life to nearby clouds
 赋予附近云雾生命
 
-%%%% 
+%%%%
 The storm surrounding you is now powerful enough to repel missiles.
 包围你的风暴现在强大到足以击退飞弹。
 
-%%%% 
+%%%%
 The storm surrounding you is now too weak to repel missiles.
 包围你的风暴现在太弱了，无法击退飞弹。
 
-%%%% 
+%%%%
 The storm surrounding you is powerful enough to repel missiles.
 包围你的风暴强大到足以击退飞弹。
 
-%%%% 
+%%%%
 You will now adapt resistances upon receiving elemental damage.
 你现在会在受到元素伤害时适应抗性。
 
-%%%% 
+%%%%
 You will no longer adapt resistances upon receiving elemental damage.
 你不再在受到元素伤害时适应抗性。
 
-%%%% 
+%%%%
 You adapt resistances upon receiving elemental damage.
 你在受到元素伤害时适应抗性。
 
-%%%% 
+%%%%
 call upon nature's wrath in a wide area around you
 召唤自然的愤怒覆盖周围广阔区域
 
-%%%% 
+%%%%
 You now exude an aura of power that intimidates your foes.
 你现在散发出威吓敌人的力量光环。
 
-%%%% 
+%%%%
 You no longer exude an aura of power that intimidates your foes.
 你不再散发出威吓敌人的力量光环。
 
-%%%% 
+%%%%
 Your aura of power can now strike those that harm you.
 你的力量光环现在可以反击伤害你的人。
 
-%%%% 
+%%%%
 Your aura of power no longer strikes those that harm you.
 你的力量光环不再反击伤害你的人。
 
-%%%% 
+%%%%
 Your aura of power can strike those that harm you.
 你的力量光环可以反击伤害你的人。
 
-%%%% 
+%%%%
 heal your body and restore your magic
 治愈身体并恢复魔力
 
-%%%% 
+%%%%
 gather your power into a mighty leap
 将力量凝聚为强力跳跃
 
-%%%% 
+%%%%
 wreak a terrible wrath on your foes
 对敌人施加可怕的愤怒
 
-%%%% 
+%%%%
 stomp with the beat
 随节拍跺脚
 
-%%%% 
+%%%%
 pass through a line of other dancers
 穿过其他舞者的队列
 
-%%%% 
+%%%%
 Uskayaw will force your foes to helplessly watch your dance.
 乌斯卡亚将迫使你的敌人无助地观看你的舞蹈。
 
-%%%% 
+%%%%
 Uskayaw will no longer force your foes to helplessly watch your dance.
 乌斯卡亚不再迫使你的敌人无助地观看你的舞蹈。
 
-%%%% 
+%%%%
 Uskayaw will force your foes to share their pain.
 乌斯卡亚将迫使你的敌人分享他们的痛苦。
 
-%%%% 
+%%%%
 Uskayaw will no longer force your foes to share their pain.
 乌斯卡亚不再迫使你的敌人分享他们的痛苦。
 
-%%%% 
+%%%%
 merge with and destroy a victim
 与目标融合并摧毁之
 
-%%%% 
+%%%%
 Your ancestor manifests to aid you.
 你的先祖显现以帮助你。
 
-%%%% 
+%%%%
 recall your ancestor
 召回你的先祖
 
-%%%% 
+%%%%
 remember your ancestor's identity
 回忆起你先祖的身份
 
-%%%% 
+%%%%
 swap creatures with your ancestor
 与你的先祖交换位置
 
-%%%% 
+%%%%
 heal and protect your ancestor
 治疗并保护你的先祖
 
-%%%% 
+%%%%
 You now drain nearby creatures when transferring your ancestor.
 你现在在转移先祖时会吸取附近的生物。
 
-%%%% 
+%%%%
 You no longer drain nearby creatures when transferring your ancestor.
 你不再在转移先祖时吸取附近的生物。
 
-%%%% 
+%%%%
 You drain nearby creatures when transferring your ancestor.
 你在转移先祖时会吸取附近的生物。
 
-%%%% 
+%%%%
 perform damaging attacks by moving towards foes
 通过向敌人移动来施展伤害性攻击
 
-%%%% 
+%%%%
 perform lunging strikes
 施展突刺攻击
 
-%%%% 
+%%%%
 lightly attack monsters by moving around them
 通过在怪物周围移动来轻击
 
-%%%% 
+%%%%
 perform spinning attacks
 施展旋转攻击
 
-%%%% 
+%%%%
 perform airborne attacks
 施展空中攻击
 
-%%%% 
+%%%%
 briefly move at supernatural speeds
 短暂以超自然速度移动
 
-%%%% 
+%%%%
 move at supernatural speeds
 以超自然速度移动
 
-%%%% 
+%%%%
 summon a storm of heavenly clouds to empower your attacks
 召唤天界云暴来强化你的攻击
 
-%%%% 
+%%%%
 summon a storm of heavenly clouds
 召唤天界云暴
 
-%%%% 
+%%%%
 You are resistant to fire.
 你抵抗火焰。
 
-%%%% 
+%%%%
 armour yourself in flame
 用火焰武装自己
 
-%%%% 
+%%%%
 call a swarm of foxfires against your foes
 召唤一群狐火攻击敌人
 
-%%%% 
+%%%%
 rocket upward and away, once
 猛然跃起并撤离，一次
 
-%%%% 
+%%%%
 gain power from chaos
 从混乱中获得力量
 %%%%
@@ -1868,14 +1868,14 @@ gain power from chaos
  (at present)
 （当前）
 %%%%
-(Boost: 
+(Boost:
 （增幅：
 %%%%
  (but often pauses)
 （但经常停顿）
 %%%%
-(Cast)    
-(施放)  
+(Cast)
+(施放)
 
 # L554: simple
 %%%%
@@ -1905,16 +1905,16 @@ gain power from chaos
  (haunted)
 （被附身）
 %%%%
-(Hide)    
-(隐藏)  
+(Hide)
+(隐藏)
 
 # L560: simple
 %%%%
  (hostile)
 （敌对）
 %%%%
-(Imbue)   
-(赋予)  
+(Imbue)
+(赋予)
 
 # L561: simple
 %%%%
@@ -1956,8 +1956,8 @@ gain power from chaos
  (quivered)
 （已装入箭袋）
 %%%%
-(Show)    
-(显示)  
+(Show)
+(显示)
 
 # L616: simple
 %%%%
@@ -1973,8 +1973,8 @@ gain power from chaos
  (while incapacitated)
 （在无力化状态下）
 %%%%
- (while you are blinded and from distance 
-（处于失明状态，距离 
+ (while you are blinded and from distance
+（处于失明状态，距离
 %%%%
  (worn)
 （已穿戴）
@@ -1982,7 +1982,7 @@ gain power from chaos
 )
 ）
 %%%%
-    * - Random 
+    * - Random
     * - 随机
 %%%%
 * - Random name
@@ -1997,7 +1997,7 @@ gain power from chaos
 + - Recommended species
 + - 推荐种族
 %%%%
-, 
+,
 、
 %%%%
 , %d Gold
@@ -2015,7 +2015,7 @@ gain power from chaos
 , . - travel
 , . - 移动
 %%%%
-, and 
+, and
 和
 %%%%
 , and vanishes
@@ -2099,7 +2099,7 @@ gain power from chaos
 --more--
 --更多--
 %%%%
--headed 
+-headed
 头
 %%%%
 -Potion
@@ -2159,7 +2159,7 @@ gain power from chaos
 12 (curare)
 12（箭毒）
 %%%%
-; 
+;
 、
 %%%%
 ; cleaves
@@ -2177,8 +2177,8 @@ gain power from chaos
 <%s>%s</%s>; <%s>%s</%s> risk of failure
 <%s>%s</%s>; <%s>%s</%s> 失败风险
 %%%%
-</w> or 
-</w> 或 
+</w> or
+</w> 或
 %%%%
 <blue>Apt </blue>
 <blue>资质</blue>
@@ -2192,7 +2192,7 @@ gain power from chaos
 <darkgrey>(%s unusable)</darkgrey>
 <darkgrey>(%s 不可用)</darkgrey>
 %%%%
-<darkgrey>(no 
+<darkgrey>(no
 <darkgrey>（无
 %%%%
 <darkgrey>(no %s)</darkgrey>
@@ -2265,11 +2265,11 @@ gain power from chaos
 <white>[ctrl-p]</white> view rc file information and log
 <white>[ctrl-p]</white> 查看rc文件信息和日志
 %%%%
-<white>[tab]</white> quick-load last game: 
-<white>[tab]</white> 快速加载上次游戏: 
+<white>[tab]</white> quick-load last game:
+<white>[tab]</white> 快速加载上次游戏:
 %%%%
-<white>[tab]</white> quick-start last combo: 
-<white>[tab]</white> 快速开始上次组合: 
+<white>[tab]</white> quick-start last combo:
+<white>[tab]</white> 快速开始上次组合:
 %%%%
 <white>The lance glows brightly as it skewers %s. You feel
 <white>长矛刺穿%s时发出明亮的光芒。你感到
@@ -2298,8 +2298,8 @@ gain power from chaos
   [%c] %5d gold - %s %s %s
   [%c] %5d 金币 - %s %s %s
 %%%%
-  [%c] - %d gold - 
-  [%c] - %d 金币 - 
+  [%c] - %d gold -
+  [%c] - %d 金币 -
 %%%%
 [-] Clear
 [-] 清除
@@ -2369,7 +2369,7 @@ gain power from chaos
 \"You will pay for your transgression, mortal!\"
 \"你将为自己的罪行付出代价，凡人！\"
 %%%%
-\n stacked deck: 
+\n stacked deck:
 \n 已堆叠牌组：
 %%%%
 \n%s %s
@@ -2382,14 +2382,14 @@ gain power from chaos
 
 <w>0:</w> 佐特宝珠
 %%%%
-\nFavour - 
-\n神眷 - 
+\nFavour -
+\n神眷 -
 %%%%
 \nLevel: %d
 \n等级: %d
 %%%%
-\nTitle - 
-\n称号  - 
+\nTitle -
+\n称号  -
 %%%%
 \nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
 
@@ -2444,10 +2444,10 @@ A briar patch grows up from the ground.
 a buggy card
 有 bug 的卡牌
 %%%%
-A Card 
-一张卡牌 
+A Card
+一张卡牌
 %%%%
-a chunk of 
+a chunk of
 一大块
 %%%%
 A chunk of your corpse armour falls away.
@@ -2540,7 +2540,7 @@ A hum of electricity fills the air.
 A jealous %s chases after it!
 一个嫉妒的%s追逐着它！
 %%%%
- a little 
+ a little
 有点
 %%%%
 A lumbering aparatus takes shape within a cloud of fumes.
@@ -2667,7 +2667,7 @@ A whirlwind of blades manifests around you!
 #
 # L1806: simple
 %%%%
-abandoned 
+abandoned
 背弃了
 %%%%
 Ability - describe what?
@@ -2676,7 +2676,7 @@ Ability - describe what?
 abort
 中止
 %%%%
-about 
+about
 约
 %%%%
  accept (%zu chosen)</lightgrey>
@@ -2712,7 +2712,7 @@ Activate
 Activating
 激活
 %%%%
-active 
+active
 活跃
 %%%%
 Add new annotation for %s (include '!' for warning):
@@ -2816,8 +2816,8 @@ Ancestor HP restored.
 Ancestor Upgrades:\n\n<white>XL              Upgrade\n</white>
 先祖升级：\n\n<white>等级              升级\n</white>
 %%%%
- and 
- 和 
+ and
+ 和
 %%%%
  and a voucher.
 和一张凭证。
@@ -2909,8 +2909,8 @@ Are you sure you want to remember your ancestor as %s?
 Armaments
 武装
 %%%%
- armed with 
- 装备着 
+ armed with
+ 装备着
 %%%%
 Armour
 护甲
@@ -3012,13 +3012,13 @@ Assorted Antiques
 
 # L1637: simple
 %%%%
-At 100% training 
+At 100% training
 以100%训练率
 %%%%
-At a training level of %d%% 
+At a training level of %d%%
 以%d%%的训练程度
 %%%%
-At current training (%d%%) 
+At current training (%d%%)
 以当前训练率（%d%%）
 %%%%
  at this distance
@@ -3036,7 +3036,7 @@ Attack
 attack
 攻击
 %%%%
-attack 
+attack
 攻击
 %%%%
 attack near
@@ -3105,10 +3105,10 @@ Bearserk
 Beasts
 野兽
 %%%%
-became a worshipper of 
+became a worshipper of
 成为了
 %%%%
-becomes %s, 
+becomes %s,
 变得%s，
 %%%%
  becomes audible again.
@@ -3159,16 +3159,16 @@ Beogh
 Beogh appreciates your bravery.
 比奥格赞赏你的勇敢。
 %%%%
-Beogh breathes life back into 
+Beogh breathes life back into
 贝奥格将生命重新注入
 %%%%
-Beogh breathes life back into %s and 
+Beogh breathes life back into %s and
 贝奥格将生命重新注入%s，
 %%%%
 Beogh is disappointed with your cowardice.
 贝奥格对你的懦弱感到失望。
 %%%%
-Beogh recalls %s to your side and 
+Beogh recalls %s to your side and
 贝奥格将%s召回到你身边，
 %%%%
 Beogh sends your followers elsewhere.
@@ -3252,8 +3252,8 @@ Boing!
 Bonus
 附伤
 %%%%
-Bonus from skill manuals is in <lightred>red</lightred>. 
-技能手册加成以<lightred>红色</lightred>显示。 
+Bonus from skill manuals is in <lightred>red</lightred>.
+技能手册加成以<lightred>红色</lightred>显示。
 %%%%
 Book
 书籍
@@ -3278,7 +3278,7 @@ book_type:book
  booms: Use this gift wisely!
  咆哮道：善用这份恩赐！
 %%%%
-bound 
+bound
 束缚
 %%%%
 Bound item
@@ -3305,10 +3305,10 @@ brilliance
 bring forth the wretched and dying
 唤来悲惨与垂死之物
 %%%%
-broken 
+broken
 破损的
 %%%%
-broken translucent 
+broken translucent
 破损的透明
 %%%%
 Brought monster down to 1 HP.
@@ -3476,13 +3476,13 @@ carefully
  cares nothing for such trivial demonstrations of your faith.
 毫不在意你这微不足道的信仰表现。
 %%%%
-carrying 
+carrying
 携带着
 %%%%
 Cast into level %d of the Abyss
 被抛入深渊第%d层
 %%%%
-Cast which spell? (? or * to list) 
+Cast which spell? (? or * to list)
 施放哪个法术？（? 或 * 列出）
 %%%%
 Casting
@@ -3527,14 +3527,14 @@ chaos
 Chaos surges forth from %s of flesh, awakening new unlife!
 混沌从%s的肉体中涌出，唤醒了新的亡灵！
 %%%%
-chaotic 
+chaotic
 混乱
 %%%%
 Char dump unsuccessful! Sorry about that.
 角色转储失败！抱歉。
 %%%%
-Charges: 
-充能: 
+Charges:
+充能:
 %%%%
 charming
 魅惑
@@ -3578,7 +3578,7 @@ Claws
 clear
 清除
 %%%%
-Clear all 
+Clear all
 清除所有
 %%%%
 Cleared annotation.
@@ -3599,10 +3599,10 @@ Clearing travel trail.
 cleave
 横扫
 %%%%
-closed 
+closed
 关闭的
 %%%%
-closed translucent 
+closed translucent
 关闭的半透明
 %%%%
 Clouds appear around your foes!
@@ -3631,13 +3631,13 @@ concussive force
 condenser vane
 凝聚之翼
 %%%%
-Confirm with . or Enter, or press 
+Confirm with . or Enter, or press
 用 . 或回车确认，或按?或*列出所有法术。
 %%%%
 Confirm with . or Enter, or press ? or * to list all spells.
 用 . 或回车确认，或按?或*列出所有法术。
 %%%%
-confused 
+confused
 困惑地
 %%%%
 Conjurations
@@ -3657,8 +3657,8 @@ continue charging
 continue winding your bee
 继续组装你的蜜蜂
 %%%%
-Continue: 
-继续施放: 
+Continue:
+继续施放:
 %%%%
  continues to slow your movements.
 继续减缓你的移动速度。
@@ -3702,13 +3702,13 @@ Cost
 cost
 消耗
 %%%%
-Couldn't try casting monster spell because there is 
+Couldn't try casting monster spell because there is
 无法尝试施放怪物法术，因为没有空的怪物槽位。
 %%%%
 Couldn't try casting monster spell because there is no empty monster slot.
 Couldn't try casting monster spell because there is no empty monster slot.
 %%%%
-Couldn't try casting monster spell because you're 
+Couldn't try casting monster spell because you're
 无法尝试施放怪物法术，因为你在一个怪物上面。
 %%%%
 Couldn't try casting monster spell because you're on top of a monster.
@@ -3720,7 +3720,7 @@ Couldn't try casting monster spell because you're on top of a monster.
  cracks slightly.
  出现了细微的裂纹。
 %%%%
-Create/edit 
+Create/edit
 创建/编辑
 %%%%
 Creating a passage of Golubria requires sufficient empty space.
@@ -3747,7 +3747,7 @@ curare-tipped
 curing
 治疗
 %%%%
-Current 
+Current
 当前
 %%%%
 Current level annotation: <lightgrey>%s</lightgrey>
@@ -3768,7 +3768,7 @@ curse weapon
 Curse which item? (Esc to abort)
 诅咒哪件物品？（Esc取消）
 %%%%
-cursed 
+cursed
 诅咒
 %%%%
 Damage
@@ -3893,7 +3893,7 @@ disjunction
  dislikes it when %s.
 讨厌当%s。
 %%%%
-Dismiss 
+Dismiss
 遣散
 %%%%
 dispersal
@@ -3955,8 +3955,8 @@ Do you want to bribe the denizens of %s?
 Do you want to play with this combination? [Y/n/q]
 你想用这个组合进行游戏吗？ [Y/n/q]
 %%%%
- does not accept service from beggars like you! 
-不接受你这样的乞丐的服务！ 
+ does not accept service from beggars like you!
+不接受你这样的乞丐的服务！
 %%%%
  does not accept worship from the loveless!
 不接受没有爱人的存在崇拜！
@@ -4184,7 +4184,7 @@ Existing waypoints:
 experience
 经验
 %%%%
-Expiring: 
+Expiring:
 即将消失：
 %%%%
 explore
@@ -4193,8 +4193,8 @@ explore
 explore_greedy
 贪婪探索
 %%%%
-Explosion damage: 
-爆炸伤害: 
+Explosion damage:
+爆炸伤害:
 %%%%
 extract magic from the potions you drink
 从你饮用的药水中提取魔法
@@ -4205,7 +4205,7 @@ extraordinarily
 extremely
 极其
 %%%%
- extremely 
+ extremely
 极其
 %%%%
 extremely pleased with you
@@ -4285,11 +4285,11 @@ Fire
 fire
 火焰
 %%%%
-fire at 
+fire at
 向
 %%%%
-fire blocked by 
-火焰被挡住了： 
+fire blocked by
+火焰被挡住了：
 %%%%
  first
  第一
@@ -4500,13 +4500,13 @@ Geomancy
 ghost
 幽灵
 %%%%
-ghostly 
+ghostly
 鬼魅
 %%%%
  gift of slime is revoked.
 的黏泥赠礼被收回了。
 %%%%
- gifted 
+ gifted
 赐予了你
 %%%%
 give life to nearby clouds
@@ -4579,7 +4579,7 @@ Granted powers:
 Gravity reorients to the %s!
 重力重新定向到%s！
 %%%%
-greatly 
+greatly
 大幅
 %%%%
 greatly pleased with you
@@ -4597,7 +4597,7 @@ Guard this area!
 guardian spirit
 守护之魂
 %%%%
-half of 
+half of
 半只
 %%%%
 haloed
@@ -4609,7 +4609,7 @@ harm (+%d%% outgoing, +%d%% incoming)
  has fought their way back out of the Abyss!
  从深渊中杀回来了！
 %%%%
-has its spells empowered, 
+has its spells empowered,
 法术得到了强化，
 %%%%
  has no more spells that you can make use of!
@@ -4688,7 +4688,7 @@ help
 
 # L330: simple
 %%%%
-helpless 
+helpless
 无助的
 %%%%
 Hepliaklqana
@@ -4727,8 +4727,8 @@ HP restored
 HP restored.
 生命已恢复。
 %%%%
-HP:   
-生命: 
+HP:
+生命:
 %%%%
 HP: %d    AC: %d    Damage:%d (w/weapon)\n
 生命：%d    防御：%d    伤害：%d（含武器）\n
@@ -4772,7 +4772,7 @@ Ignis
 immolation
 自焚
 %%%%
-immune to 
+immune to
 免疫
 %%%%
 In %d experience levels, you will have learned enough to assemble a masterpiece.
@@ -4951,7 +4951,7 @@ is covered in magical glow
  is healed!
 被治愈了！
 %%%%
-is healed, 
+is healed,
 被治愈了，
 %%%%
  is infested!
@@ -5137,28 +5137,28 @@ It glows horrifically with a foul blackness!
 It glows with a cold blue light!
 它闪烁着寒冷的蓝光！
 %%%%
-It has black scales. 
+It has black scales.
 它有着黑色的鳞片。
 %%%%
-It has green scales. 
+It has green scales.
 它有着绿色的鳞片。
 %%%%
-It has grey scales. 
+It has grey scales.
 它有着灰色的鳞片。
 %%%%
-It has pale scales. 
+It has pale scales.
 它有着苍白的鳞片。
 %%%%
-It has purple scales. 
+It has purple scales.
 它有着紫色的鳞片。
 %%%%
-It has red scales. 
+It has red scales.
 它有着红色的鳞片。
 %%%%
-It has white scales. 
+It has white scales.
 它有着白色的鳞片。
 %%%%
-It has yellow scales. 
+It has yellow scales.
 它有着黄色的鳞片。
 %%%%
 It is a fabulous contraption, custom-made by your own hands.
@@ -5179,7 +5179,7 @@ It is cloaked in a pall of superheated steam.
 It is covered in frost.
 它被寒霜覆盖。
 %%%%
-It is impossible to cast this spell 
+It is impossible to cast this spell
 在此形态下无法施放此法术(100%% 失败风险)!
 %%%%
 It is impossible to cast this spell (100%% risk of failure)!
@@ -5242,7 +5242,7 @@ items
 Items here: %s.
 此处物品：%s。
 %%%%
-its 
+its
 它的
 %%%%
 Its appearance distorts for a moment.
@@ -5374,14 +5374,14 @@ Lethal
 lethally
 致命
 %%%%
-Lets you change your 
+Lets you change your
 让你更改
 %%%%
-Lets you pick 
+Lets you pick
 让你先选择
 %%%%
-Letters toggle    
-字母切换    
+Letters toggle
+字母切换
 %%%%
 Level
 等级
@@ -5441,7 +5441,7 @@ List skill training aptitude values for all species.
 lit torch
 点燃的火炬
 %%%%
-looks %s, 
+looks %s,
 看起来%s，
 %%%%
  looks as sick as possible!
@@ -5608,8 +5608,8 @@ mayhem
 melded
 融合
 %%%%
-melded 
-融合 
+melded
+融合
 %%%%
 melt
 融化
@@ -5695,7 +5695,7 @@ mode
 modified
 已修正
 %%%%
-mollified 
+mollified
 安抚了
 %%%%
 Monster %s is patrolling around (%d, %d).
@@ -5710,7 +5710,7 @@ moonshine
  more
 更加
 %%%%
-more 
+more
 更加
 %%%%
 More spells requested for fixed level (%d) randart spellbook than there are valid spells.
@@ -5733,8 +5733,8 @@ Move the cursor to view the level map, or press <w>?</w> for a list of commands.
 Movement
 移动
 %%%%
-MP:   
-魔力:  
+MP:
+魔力:
 %%%%
 MPRegen
 回魔
@@ -5789,7 +5789,7 @@ Nemelex Xobeh
 neutral
 中立
 %%%%
-neutral 
+neutral
 中立的
 %%%%
 New Game
@@ -5868,7 +5868,7 @@ Noise
 noise
 噪音
 %%%%
-non-hostile 
+non-hostile
 非敌对的
 %%%%
 noncommittal
@@ -5880,8 +5880,8 @@ None
 none
 无
 %%%%
-none (normally 
-无（通常为 
+none (normally
+无（通常为
 %%%%
 None of your equipped items are cursed.
 你装备的物品都没有被诅咒。
@@ -5933,7 +5933,7 @@ occasionally
 off-hand punch
 副手拳击
 %%%%
- offers you knowledge of 
+ offers you knowledge of
 为你提供了
 %%%%
 often
@@ -5983,13 +5983,13 @@ ooze
  oozes through a web.
 缓缓穿过了蛛网。
 %%%%
-open 
+open
 打开的
 %%%%
 Open the help screen.
 打开帮助屏幕
 %%%%
-open translucent 
+open translucent
 打开的透明
 %%%%
 orb
@@ -6010,11 +6010,11 @@ Ouch! That really hurt!
 Outside, the world ends.
 外面，世界终结了。
 %%%%
- page down  
- 下一页  
+ page down
+ 下一页
 %%%%
- page up  
- 上一页  
+ page up
+ 上一页
 %%%%
 Pain
 痛苦
@@ -6128,7 +6128,7 @@ Please finish your current recitation first.
 
 # === Issue X2 P0-2: Missing source.txt entries ===
 %%%%
- Please select your 
+ Please select your
  请选择你的
 %%%%
 Please submit a bug report.
@@ -6180,7 +6180,7 @@ polymorph
 positive energy
 正能量
 %%%%
-potent 
+potent
 强大的
 %%%%
 potion
@@ -6245,8 +6245,8 @@ Progr
 progress
 进度
 %%%%
-Projectile damage: 
-投射物伤害: 
+Projectile damage:
+投射物伤害:
 %%%%
 protection
 防护
@@ -6275,7 +6275,7 @@ purify yourself
 put on
 佩戴
 %%%%
- puts on 
+ puts on
 戴上了
 %%%%
 putting on
@@ -6335,7 +6335,7 @@ Random character
 random rage (%d%%)
 随机狂暴（%d%%）
 %%%%
-Randomly select a 
+Randomly select a
 随机选择一个
 %%%%
 Range
@@ -6417,7 +6417,7 @@ Recommended character
  recovers from rimeblight.
 从霜疫中恢复了过来。
 %%%%
-Recruit 
+Recruit
 招募
 %%%%
 redefine
@@ -6509,13 +6509,13 @@ Repeat Exegesis
  repeatedly
 连续
 %%%%
-repeatedly 
+repeatedly
 连续
 %%%%
 repel missiles
 弹开飞弹
 %%%%
-replica 
+replica
 复制品
 %%%%
 resist corrosion
@@ -6527,7 +6527,7 @@ resist mutation
 resistance
 抗性
 %%%%
-resistant to 
+resistant to
 抵抗
 %%%%
  resists.
@@ -6611,10 +6611,10 @@ rune
 rune of Zot
 佐特符文
 %%%%
-runed 
+runed
 刻有符文的
 %%%%
-runed translucent 
+runed translucent
 刻有符文的透明
 %%%%
 Running acquirement tests.
@@ -6629,7 +6629,7 @@ Running generate_weapon_item tests.
 sack of spiders
 蜘蛛之袋
 %%%%
-Sacrifice 
+Sacrifice
 献祭
 %%%%
 Salvo (%d)
@@ -6674,10 +6674,10 @@ Scorching
 scroll
 卷轴
 %%%%
-sealed 
+sealed
 封印的
 %%%%
-sealed translucent 
+sealed translucent
 封印的透明
 %%%%
  search
@@ -6685,7 +6685,7 @@ sealed translucent
 
 # L665: simple
 %%%%
-Search for what? (regex) 
+Search for what? (regex)
 搜索什么？（正则表达式）
 %%%%
 see invisible
@@ -6694,8 +6694,8 @@ see invisible
 See you next game!
 下次游戏再见！
 %%%%
-Seed: 
-种子: 
+Seed:
+种子:
 %%%%
  seems less brilliant.
 看起来不那么闪耀了。
@@ -6724,8 +6724,8 @@ Seed:
  seems to speed up.
 似乎加速了。
 %%%%
- select  
- 选择  
+ select
+ 选择
 %%%%
 Select a spell to %s
 选择一个要%s的法术
@@ -6769,7 +6769,7 @@ Send 'em back where they came from!
  sends servants to punish you.
  派遣仆从来惩罚你。
 %%%%
-sensed 
+sensed
 感知到的
 %%%%
 seriously
@@ -6817,8 +6817,8 @@ shoot
 shooting star
 流星
 %%%%
-Shooting star damage: 
-流星伤害: 
+Shooting star damage:
+流星伤害:
 %%%%
 shop voucher
 商店代金券
@@ -6891,10 +6891,10 @@ skill descriptions
 skills
 技能
 %%%%
-Skills enhanced by 
+Skills enhanced by
 被以下效果增强的技能以<green>绿色</green>显示：
 %%%%
-Skills reduced by 
+Skills reduced by
 被以下效果削弱的技能以<magenta>紫色</magenta>显示：
 %%%%
 slap
@@ -6906,7 +6906,7 @@ slaying
 sleepwalking
 梦游中
 %%%%
-slightly 
+slightly
 略微
 %%%%
 Slime begins to ooze from the nearby walls!
@@ -7089,10 +7089,10 @@ Sorry, you haven't seen any shop yet.
 Sound effects are now %s.
 音效已%s。
 %%%%
-Space - Change 
+Space - Change
 空格 - 更换
 %%%%
-Space - Pick 
+Space - Pick
 空格 - 先选择
 %%%%
 Space begins to contract around you, but something blocks your path.
@@ -7134,14 +7134,14 @@ species.
 Spectacle
 奇观
 %%%%
-spectral 
+spectral
 幽灵
 %%%%
 speed up your combat
 加速你的战斗
 %%%%
-Speed: 
-速度: 
+Speed:
+速度:
 %%%%
 spell
 法术
@@ -7152,8 +7152,8 @@ Spell '%s' is not a player castable spell.
 Spell assigned to '%c'.
 法术已分配给\'%c\'。
 %%%%
- spell hidden 
- 个法术被隐藏 
+ spell hidden
+ 个法术被隐藏
 
 # L664: simple
 %%%%
@@ -7183,8 +7183,8 @@ Spontaneous Combustion
 spooky wave of despair
 令人毛骨悚然的绝望之波
 %%%%
-Spore damage: 
-孢子伤害: 
+Spore damage:
+孢子伤害:
 %%%%
  spreading your bribes among %s!
  将你的贿赂传播给了%s！
@@ -7208,16 +7208,16 @@ stampede
 Start a new game with your previous choices.
 用你之前的选择开始新游戏。
 %%%%
-starts %s, 
+starts %s,
 开始了%s，
 %%%%
-Stash search prefixes: 
-储藏搜索前缀: 
+Stash search prefixes:
+储藏搜索前缀:
 %%%%
 stealth
 潜行
 %%%%
-stealthily 
+stealthily
 潜行地
 %%%%
 steam
@@ -7385,7 +7385,7 @@ tail slap
 take off
 脱下
 %%%%
- takes off 
+ takes off
 脱下了
 %%%%
 talisman
@@ -7498,11 +7498,11 @@ That's too far away.
 That's too large for you to wield.
 那对你来说太大了，无法持握。
 %%%%
- the 
- 
+ the
+
 %%%%
-the 
-the 
+the
+the
 %%%%
 The %1$s mimic %2$svanishes%3$s!
 %1$s拟态怪%2$s消失了%3$s！
@@ -8006,7 +8006,7 @@ The Shining One is no longer ready to bless your weapon.
 The Shining One will bless your weapon with holy wrath... once.
 光辉者将为你的武器加持神圣之怒……一次。
 %%%%
-The silver sears 
+The silver sears
 银光灼烧
 %%%%
 The Singing Sword hums in delight!
@@ -8021,8 +8021,8 @@ The solar flare engulfs %s%s.
 The soul of %s %s.
 %s的灵魂%s。
 %%%%
-The species aptitude is in <white>white</white>. 
-种族天赋以<white>白色</white>显示。 
+The species aptitude is in <white>white</white>.
+种族天赋以<white>白色</white>显示。
 %%%%
 The spell fizzles.
 法术失败了。
@@ -8200,7 +8200,7 @@ There are no walls around you to affect.
 There are several objects here.
 这里有几样物品。
 %%%%
-There is 
+There is
 这里有
 %%%%
 There is %s there.
@@ -8220,7 +8220,7 @@ There is a shattering impact!
 there is a strange disturbance nearby
 附近有奇怪的扰动
 %%%%
-There is an entrance to 
+There is an entrance to
 这里有一个通向
 %%%%
 There is no available space!
@@ -8301,7 +8301,7 @@ Thick smoke pours from the lock!
 Things that are here:
 此处有：
 %%%%
-This 
+This
 这
 %%%%
 This ability has a chance of reducing your maximum magic capacity when used.
@@ -8343,7 +8343,7 @@ This shop has been abandoned, nothing of value remains.
 This spell doesn't need a beam path.
 这个法术不需要弹道路径。
 %%%%
-This spell has no description. Casting it may therefore be unwise. 
+This spell has no description. Casting it may therefore be unwise.
 此法术没有描述。施放它可能是不明智的。
 %%%%
 This spell is %s to cast%s
@@ -8355,7 +8355,7 @@ This spell is impossible to cast!
 This spell isn't strong enough to banish yourself.
 这个法术不够强，无法放逐你自己。
 %%%%
-This spell would have no effect right now because 
+This spell would have no effect right now because
 此法术现在不会有任何效果，因为
 %%%%
 This transporter is marked as excluded!
@@ -8382,8 +8382,8 @@ Those can't fit on your %s.
 Those can't fit over your huge %s.
 那套不进你的巨大%s。
 %%%%
-Throw: 
-投掷: 
+Throw:
+投掷:
 %%%%
  throws an implement of electrocution at you.
  向你掷来一把电击武器。
@@ -8407,8 +8407,8 @@ To return, you must find a gate leading back.
  toggle between ability selection and description.
  切换能力选择与描述模式。
 %%%%
- toggle selected    
- 切换选中    
+ toggle selected
+ 切换选中
 %%%%
  toggle spell headers
  切换表头
@@ -8498,7 +8498,7 @@ Trog will no longer gift you weapons.
 Trog will now gift you melee weapons as you gain piety.
 特洛格现在会在你获得虔诚时赐予你近战武器。
 %%%%
-Trunk doesn't count for the tournament, you want 
+Trunk doesn't count for the tournament, you want
 Trunk不计入锦标赛，你想要
 %%%%
 Trying to dig through that would dissolve your mandibles.
@@ -8569,7 +8569,7 @@ unleash Makhleb's destructive might
 Unlife
 不死
 %%%%
-unnamed 
+unnamed
 未命名的
 %%%%
 unopened door
@@ -8578,7 +8578,7 @@ unopened door
 unopened runed door
 未开启的符文门
 %%%%
-unsullied 
+unsullied
 未被玷污的
 %%%%
 unswift
@@ -8593,7 +8593,7 @@ unvisited transporter
 unwielding
 收起武器
 %%%%
- unwields 
+ unwields
 收起了
 %%%%
 Uppercase letters only, please.
@@ -8623,7 +8623,7 @@ Uskayaw will no longer force your foes to share their pain.
 V. Small
 很小
 %%%%
-vampire 
+vampire
 吸血鬼
 %%%%
 vanquish evil
@@ -8659,19 +8659,19 @@ Venom drips from its jaws and stinger tail.
  venom grows more potent.
 毒液变得更加致命了。
 %%%%
- very 
+ very
 非常
 %%%%
  very far
 （极远）
 %%%%
-very greatly 
+very greatly
 大幅
 %%%%
 very mighty
 力量无比强大
 %%%%
-very resistant to 
+very resistant to
 高度抵抗
 %%%%
 Vines begin sprouting from %s.
@@ -8757,7 +8757,7 @@ wear
 wearing %s
 穿着%s
 %%%%
- wears 
+ wears
 穿上了
 %%%%
  weaves the shadows around you into monsters.
@@ -8820,13 +8820,13 @@ wield weapon a, or switch to b
 wielding
 持握
 %%%%
- wielding 
- 挥舞着 
+ wielding
+ 挥舞着
 %%%%
-Wielding: 
-持有: 
+Wielding:
+持有:
 %%%%
- wields 
+ wields
 挥舞着
 %%%%
 Wild Magic
@@ -8841,7 +8841,7 @@ Will
  will have no effect
  不会有任何效果
 %%%%
- will not accept your worship while you use 
+ will not accept your worship while you use
 不会接受你的崇拜，只要你还使用
 %%%%
  will now unseal the treasures of the Slime Pits.
@@ -8859,7 +8859,7 @@ Winter
 Wisps of shadow whirl around you...
 暗影的细丝在你周围旋转……
 %%%%
- with 
+ with
 用
 %%%%
 With a burst of heat and light, you rocket upwards!
@@ -8927,7 +8927,7 @@ wizardry (x%d)
  wobbles for a moment.
 短暂摇晃了一下。
 %%%%
-would 
+would
 如果进行训练，
 %%%%
  wounds heal themselves!
@@ -9037,7 +9037,7 @@ You %s%s%s!
 You %sattack %s from above%s.
 你%s从上方攻击%s%s。
 %%%%
-You acquired 
+You acquired
 你获得了
 %%%%
 You adapt resistances upon receiving elemental damage.
@@ -9461,7 +9461,7 @@ You block the %s.
 You block the %s... and reflect it back!
 你格挡了%s……并将其反射了回去！
 %%%%
-You bought 
+You bought
 你在商店购买了
 %%%%
 You bow before the missionary of Beogh.
@@ -9713,7 +9713,7 @@ You can't see any item there.
 You can't see any nearby targets.
 你看不到附近有任何目标。
 %%%%
-You can't see any susceptible monsters within range! 
+You can't see any susceptible monsters within range!
 你在范围内看不到任何可受影响怪物！（按<w>Z</w>强制施放）
 %%%%
 You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)
@@ -9740,7 +9740,7 @@ You can't see that place.
 You can't set training targets!
 你无法设置训练目标！
 %%%%
-You can't shoot while berserk! Really wield 
+You can't shoot while berserk! Really wield
 你狂暴时无法射击！真的要持握
 %%%%
 You can't stand on top of the monster!
@@ -9908,7 +9908,7 @@ You cannot see a target there!
 You cannot set exclusions on this level.
 你无法在此层级设置排除区域。
 %%%%
-You cannot shatter the curse on %s while it is 
+You cannot shatter the curse on %s while it is
 你无法在%s与你的身体融合时粉碎其诅咒！
 %%%%
 You cannot shatter the curse on %s while it is melded with your body!
@@ -10150,7 +10150,7 @@ You emit a cloud of colourful smoke!
 You emit a cloud of foul miasma!
 你释放出一团恶臭的瘴气！
 %%%%
-You encounter 
+You encounter
 你遇到了
 %%%%
 You enter %s!
@@ -10699,7 +10699,7 @@ You focus on the pain.
 You focus your inner power and blind %s in retribution!
 你集中内在力量，致盲%s作为报应！
 %%%%
-You focus your inner power and drain %s's magic in 
+You focus your inner power and drain %s's magic in
 你集中内在力量，抽取%s的法力作为报应！
 %%%%
 You focus your inner power and drain %s's magic in retribution!
@@ -10726,7 +10726,7 @@ You forge a whirling saw of razor-sharp crystal.
 You forge whirling saws of razor-sharp crystal.
 你铸造了数把由锋利水晶构成的旋转锯刃。
 %%%%
-You found 
+You found
 你发现了
 %%%%
 You freeze %s%s%s
@@ -10737,8 +10737,8 @@ You freeze %s%s%s
 You grasp %s shadow with your own and put on a performance!
 你用自己的影子抓住%s的影子，开始表演！
 %%%%
-You have 
-你有 
+You have
+你有
 %%%%
 You have %1$d gold piece%2$s.
 你持有%1$d枚金币。
@@ -11254,7 +11254,7 @@ You see a ghostly outline there, and the spell fizzles.
 You see a puff of smoke.
 你看到一阵烟雾。
 %%%%
-You see here 
+You see here
 你在这里看到
 %%%%
 You see here %s.
@@ -11419,7 +11419,7 @@ You struggle against the net.
 You struggle to detach yourself from the web.
 你挣扎着想要脱离蛛网。
 %%%%
-You stumbled upon 
+You stumbled upon
 你偶然发现了
 %%%%
 You sublimate a sliver of %s essence and reconstitute it in ice.
@@ -11446,7 +11446,7 @@ You take a swig of the potion and twirl %s.
 You tear a large gash into the net.
 你把网撕开一个大口子。
 %%%%
-You took 
+You took
 你从
 %%%%
 You tried to hop, but there was no room to land!
@@ -11563,7 +11563,7 @@ You've transgressed heavily! Be penitent!
 your
 你的
 %%%%
-your 
+your
 你的
 %%%%
 Your %1$s attune%2$s to your body, and you begin to %3$s.
@@ -12199,7 +12199,7 @@ Your will lashes out at %s%s
 Your wings%s won't fit in that.
 你的翅膀%s穿不进去。
 %%%%
-Your wizardly powers created 
+Your wizardly powers created
 你的巫师力量创造了
 %%%%
 Yredelemnul
@@ -12826,6 +12826,6 @@ You enter an ornate necropolis!
 
 你进入了一座华丽的死灵城！
 %%%%
-What level of %s? 
+What level of %s?
 
 %s的哪一层？
