@@ -3,6 +3,18 @@
 .vscode/
 .vs
 
+# Claude Code
+.claude/worktrees/
+.claude/metrics/
+.claude/scripts/__pycache__/
+
+# External tool configs
+.opencode/
+.mcp.json
+
+# Game data
+saves/
+
 *.sublime-workspace
 *.sublime-project
 games.d/

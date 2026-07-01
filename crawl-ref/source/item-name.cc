@@ -3823,15 +3823,10 @@ void init_item_name_cache()
     item_names_cache.clear();
     item_names_by_glyph_cache.clear();
 
-    // Cache both English and Chinese names so that internal lookups
-    // (e.g., auto_consumable_letters in options) work with English,
-    // while Chinese users can also look up items by Chinese name.
+    // Item name cache is used for internal lookups (option parsing,
+    // auto_consumable_letters, etc.). Always use English.
     const lang_t saved_lang = Options.language;
-    const lang_t cache_langs[] = { lang_t::EN, lang_t::ZH };
-
-    for (lang_t cache_lang : cache_langs)
-    {
-        Options.language = cache_lang;
+    Options.language = lang_t::EN;
 
     for (int i = 0; i < NUM_OBJECT_CLASSES; i++)
     {
@@ -3897,7 +3892,6 @@ void init_item_name_cache()
                 }
             }
         }
-    }
     }
 
     Options.language = saved_lang;

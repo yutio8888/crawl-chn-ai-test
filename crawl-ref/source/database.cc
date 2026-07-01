@@ -381,6 +381,7 @@ void databaseSystemInit()
 {
     for (unsigned int i = 0; i < NUM_DB; i++)
         AllDBs[i].init();
+    i18n_cache_clear();
 }
 
 void databaseSystemShutdown()
@@ -1047,13 +1048,20 @@ static string i18n_unescape_value(const string &s)
 // String lifetime: deque guarantees push_back never invalidates references
 // to existing elements. index stores const char* pointers into storage strings,
 // which remain valid for the entire program lifetime.
+
+static map<string, const char*> i18n_index;
+static deque<string> i18n_storage;
+
+void i18n_cache_clear()
+{
+    i18n_index.clear();
+    i18n_storage.clear();
+}
+
 const char* i18n_source_lookup(const char* ctx, const char* en)
 {
     if (Options.language == lang_t::EN || !en || !en[0])
         return en;
-
-    static map<string, const char*> index;
-    static deque<string> storage;
 
     string lookup_key = (ctx && ctx[0])
         ? make_stringf("%s|%s", ctx, en)
@@ -1061,8 +1069,8 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     lookup_key = i18n_escape_key(lookup_key);
     string en_key = i18n_escape_key(en);
 
-    auto it = index.find(lookup_key);
-    if (it != index.end())
+    auto it = i18n_index.find(lookup_key);
+    if (it != i18n_index.end())
         return it->second;    // pointer into deque — guaranteed stable
 
     // Try context-qualified key first (if applicable)
@@ -1094,9 +1102,9 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     // Store permanently in deque. deque::push_back never invalidates
     // references to existing elements, so the returned const char* is
     // as stable as a string literal pointer.
-    storage.push_back(zh);
-    const char* ptr = storage.back().c_str();
-    index[lookup_key] = ptr;
+    i18n_storage.push_back(zh);
+    const char* ptr = i18n_storage.back().c_str();
+    i18n_index[lookup_key] = ptr;
     return ptr;
 }
 

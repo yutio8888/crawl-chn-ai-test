@@ -2596,33 +2596,33 @@ static vector<formatted_string> _get_overview_resistances(
     int cwidth = 8;
     string out;
     const int rfire = player_res_fire(false);
-    out += _resist_composer("rFire", cwidth, rfire, 3, MR_RES_FIRE) + "\n";
+    out += _resist_composer(T_("rFire"), cwidth, rfire, 3, MR_RES_FIRE) + "\n";
 
     const int rcold = player_res_cold(false);
-    out += _resist_composer("rCold", cwidth, rcold, 3, MR_RES_COLD) + "\n";
+    out += _resist_composer(T_("rCold"), cwidth, rcold, 3, MR_RES_COLD) + "\n";
 
     const int rlife = player_prot_life(false);
-    out += _resist_composer("rNeg", cwidth, rlife, 3, MR_RES_NEG) + "\n";
+    out += _resist_composer(T_("rNeg"), cwidth, rlife, 3, MR_RES_NEG) + "\n";
 
     const int rpois = player_res_poison(false);
-    out += _resist_composer("rPois", cwidth, rpois, 1, MR_RES_POISON) + "\n";
+    out += _resist_composer(T_("rPois"), cwidth, rpois, 1, MR_RES_POISON) + "\n";
 
     const int relec = player_res_electricity(false);
-    out += _resist_composer("rElec", cwidth, relec, 1, MR_RES_ELEC) + "\n";
+    out += _resist_composer(T_("rElec"), cwidth, relec, 1, MR_RES_ELEC) + "\n";
 
     const int rcorr = player_res_corrosion(false);
-    out += _resist_composer("rCorr", cwidth, rcorr, 1, MR_RES_CORR) + "\n";
+    out += _resist_composer(T_("rCorr"), cwidth, rcorr, 1, MR_RES_CORR) + "\n";
 
     const int sinv = you.can_see_invisible();
-    out += _resist_composer("SInv", cwidth, sinv) + "\n";
+    out += _resist_composer(T_("SInv"), cwidth, sinv) + "\n";
 
     const int rmagi = player_willpower() / WL_PIP;
-    out += _resist_composer("Will", cwidth, rmagi, MAX_WILL_PIPS) + "\n";
+    out += _resist_composer(T_("Will"), cwidth, rmagi, MAX_WILL_PIPS) + "\n";
 
     out += _stealth_bar(cwidth, 20) + "\n";
 
     const int regen = player_regen(); // round up
-    out += chop_string("HPRegen", cwidth);
+    out += chop_string(T_("HPRegen"), cwidth);
     out += make_stringf("%d.%02d/turn\n", regen/100, regen%100);
 
     if (!you.has_mutation(MUT_HP_CASTING))
