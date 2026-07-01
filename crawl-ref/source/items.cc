@@ -1054,10 +1054,10 @@ void pickup_menu(int item_link)
     auto items = const_item_list_on_square(item_link);
     ASSERT(items.size());
 
-    string prompt = "Pick up what? " + slot_description() + " (_ for help)";
+    string prompt = T_("Pick up what? ") + slot_description() + T_(" (_ for help)");
 
     if (items.size() == 1 && items[0]->quantity > 1)
-        prompt = "Select pick up quantity by entering a number, then select the item";
+        prompt = T_("Select pick up quantity by entering a number, then select the item");
     vector<SelItem> selected = select_items(items, prompt.c_str(), false,
                                             menu_type::pickup);
     if (selected.empty())
@@ -1392,7 +1392,7 @@ bool pickup_single_item(int link, int qty)
         return false;
     }
     if (item->base_type == OBJ_GOLD && !qty && !i_feel_safe()
-        && !yesno("Are you sure you want to pick up this pile of gold now?",
+        && !yesno(T_("Are you sure you want to pick up this pile of gold now?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);
