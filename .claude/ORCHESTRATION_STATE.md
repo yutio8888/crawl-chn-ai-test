@@ -1,6 +1,6 @@
 ---
-updated: 2026-06-30T16:00:00+08:00
-last_commit: 0764a82dea0f
+updated: 2026-07-01T12:00:00+08:00
+last_commit: 371e7445b6c0
 session_id: 00000000-0000-0000-0000-000000000000
 ---
 
@@ -19,6 +19,17 @@ session_id: 00000000-0000-0000-0000-000000000000
 ---
 
 ## 一、当前决策栈（最近优先）
+
+### D-20260701-013: Issue 32 并发分析 — 6 Agent 3 轮计划
+- **决策**: 剩余 ~79 分支分为 6 Agent、3 轮并发执行，按共享数据依赖分组
+- **状态**: `planned` — 待 zh-code-reviewer 审阅
+- **分组**: 第 1 轮独立简单文件(A1:8 文件/A2:5 文件)，第 2 轮共享集群(A3:5 文件/A4:2 文件)，第 3 轮复杂独立文件(A5:2 文件/A6:2 文件)
+- **约束**: 按 share 数据结构分组；source.txt 冲突用 append-only 合并；consolidation worktree 收集所有 commit 后一次性 merge
+
+### D-20260701-012: Issue 34/X1 T_() 迁移完成 + Issue 12 DB 100%
+- **决策**: 49 个 commit 合入 chn-0.34.1-base，T_() 覆盖率 93.5%，ARG-DIFF 清零，Issue 12 全部 DB 文件完成
+- **状态**: `approved` — Issues 12/24/25/27/28/34/X1/X2 全部关闭
+- **剩余活跃 Issue**: 仅 31（存档兼容）和 32（硬编码分支清理）
 
 ### D-20260630-008: Phase A-E 架构优化全部完成 + 审查修复
 - **决策**: 6 个 Phase 全线实施，25 条审查发现全部修复
@@ -108,9 +119,7 @@ session_id: 00000000-0000-0000-0000-000000000000
 
 | ID | 事项 | 阻塞于 | 创建 |
 |----|------|--------|------|
-| P-01 | Issue 32 Options.language 清理 (~50 处, 20+ 文件) | analysis.md | 2026-06-29 |
-| P-02 | Issue 25 Phase 1 strwidth + 翻译文件修复 | 调度 | 2026-06-28 |
-| P-03 | Issue 27 ARG-DIFF beam.cc conj_verb 迁移 | crawl-coder | 2026-06-29 |
+| P-01 | Issue 32 Options.language 清理 — 6 Agent 3 轮并发计划已出，待 review | zh-code-reviewer 审阅 | 2026-06-29 |
 | P-04 | Issue 31 存档中文化执行 | 方案确认 | 2026-06-29 |
 | P-05 | source.txt 实际拆分（基础设施已就绪，数据待拆分） | 确认拆分方案 | 2026-06-30 |
 | P-06 | 远期：完整测试框架 + 趋势分析 + prompt 自动调优 | Phase E 交付 | 远期 |
