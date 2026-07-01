@@ -27,6 +27,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "item-use.h"
+#include "positional_format.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "known-items.h"
@@ -1018,19 +1019,14 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
                 const string str = "Magical Staves ";
                 subtitle += string(strwidth(str) - strwidth(subtitle),
                                    ' ');
-                if (Options.language == lang_t::ZH)
                 {
-                    subtitle += "（按<w>";
+                    string glyph_str;
                     for (char gly : glyphs)
-                        subtitle += gly;
-                    subtitle += "</w><blue> " + select_all + "）";
-                }
-                else
-                {
-                    subtitle += "("+select_all+" with <w>";
-                    for (char gly : glyphs)
-                        subtitle += gly;
-                    subtitle += "</w><blue>)";
+                        glyph_str += gly;
+                    string markup = "<w>" + glyph_str + "</w><blue>";
+                    subtitle += make_stringf_p(T_("(%1$s with %2$s)"),
+                                               select_all.c_str(),
+                                               markup.c_str());
                 }
             }
         }
@@ -1244,28 +1240,7 @@ const char* equip_slot_name_en(equipment_slot type, bool terse)
 
 const char* equip_slot_name(equipment_slot type, bool terse)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        switch (type)
-        {
-        case SLOT_WEAPON:      return "武器";
-        case SLOT_CLOAK:       return "披风";
-        case SLOT_HELMET:      return "头盔";
-        case SLOT_GLOVES:      return "手套";
-        case SLOT_BOOTS:       return "靴子";
-        case SLOT_WEAPON_OR_OFFHAND:
-        case SLOT_OFFHAND:     return "副手";
-        case SLOT_BODY_ARMOUR: return terse ? "护甲" : "身体护甲";
-        case SLOT_BARDING:     return "战甲";
-        case SLOT_RING:        return "戒指";
-        case SLOT_AMULET:      return "护身符";
-        case SLOT_GIZMO:       return "小装置";
-        case SLOT_HAUNTED_AUX: return "护甲";
-        default:               return "";
-        }
-    }
-
-    return equip_slot_name_en(type, terse);
+    return T_(equip_slot_name_en(type, terse));
 }
 
 vector<SelItem> select_items(const vector<const item_def*> &items,

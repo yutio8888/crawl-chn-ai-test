@@ -1948,9 +1948,7 @@ static const char *_skill_english_name(skill_type sk)
 const char *skill_name(skill_type which_skill)
 {
     ASSERT(which_skill < NUM_SKILLS);
-    if (Options.language == lang_t::ZH)
-        return skill_titles[which_skill][0];
-    return _skill_english_name(which_skill);
+    return T_(_skill_english_name(which_skill));
 }
 
 const char * skill_abbr(skill_type which_skill)
@@ -2703,18 +2701,10 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             result = skill_titles[best_skill][skill_rank];
     }
 
-    // Chinese title lookup — translate before placeholder replacement
+    // Translate title before placeholder replacement
     // so that template titles like "@Adj@ Blade" use a single key.
-    if (Options.language == lang_t::ZH && !result.empty())
-    {
-        auto it = zh_skill_titles.find(result);
-        if (it != zh_skill_titles.end())
-            result = it->second;
-#ifdef DEBUG
-        else
-            dprf("Missing ZH skill title: %s", result.c_str());
-#endif
-    }
+    if (!result.empty())
+        result = T_(result.c_str());
 
     const map<string, string> replacements =
     {
@@ -2740,13 +2730,10 @@ string player_title(bool the)
     const skill_type best = best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
-    // Chinese does not use articles before titles
-    if (Options.language == lang_t::ZH)
-        return title;
     const string article = !the ? ""
-                                : title == "Petite Mort" ? "La "
-                                : title == "Who Hides the Stars" ? ", "
-                                : "the ";
+                                 : title == "Petite Mort" ? C_("title article", "La ")
+                                 : title == "Who Hides the Stars" ? C_("title article", ", ")
+                                 : C_("title article", "the ");
     return article + title;
 }
 

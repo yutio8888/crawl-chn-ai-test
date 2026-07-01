@@ -56,6 +56,7 @@
 #include "notes.h"
 #include "options.h"
 #include "orb.h"
+#include "positional_format.h"
 #include "output.h"
 #include "place.h"
 #include "player-equip.h"
@@ -1172,7 +1173,7 @@ void origin_acquired(item_def &item, int agent)
 
 static string _milestone_collectible(const item_def &item)
 {
-    return (Options.language == lang_t::ZH ? string("找到了") : string("found "))
+    return string(T_("found "))
            + item.name(DESC_A)
            + (T_("."));
 }
@@ -2172,13 +2173,14 @@ static bool _merge_wand_charges(const item_def &it, int &inv_slot, bool quiet)
 #ifdef USE_SOUND
             parse_sound(PICKUP_SOUND);
 #endif
+            const string charge_msg = make_stringf_p(
+                T_("(gained %1$d charge%2$s)"),
+                it.charges,
+                it.charges == 1 ? "" : "s");
             mprf_nocap("%s %s",
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        Options.language == lang_t::ZH
-                            ? make_stringf("（获得了%d次充能）", it.charges).c_str()
-                            : make_stringf("(gained %d charge%s)", it.charges,
-                                           it.charges == 1 ? "" : "s").c_str());
+                        charge_msg.c_str());
         }
 
         return true;

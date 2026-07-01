@@ -2962,13 +2962,11 @@ bool read(item_def* scroll, dist *target)
     // respective functions.
     const string pre_succ_msg =
             make_stringf(T_("As you %s the %s, it %s."),
-                          Options.language == lang_t::ZH
-                              ? (is_loud ? "大声诵念" : "阅读")
-                              : (is_loud ? "thunderously recite" : "read"),
+                          is_loud ? T_("thunderously recite") : T_("read"),
                           scroll->name(DESC_QUALNAME).c_str(),
-                         (Options.language == lang_t::ZH
-                              ? (which_scroll == SCR_FOG ? "化为烟雾消散" : "化为尘土")
-                              : (which_scroll == SCR_FOG ? "dissolves into smoke" : "crumbles to dust")));
+                          which_scroll == SCR_FOG
+                              ? T_("dissolves into smoke")
+                              : T_("crumbles to dust"));
     if (!_is_cancellable_scroll(which_scroll))
     {
         mpr(pre_succ_msg);

@@ -14369,6 +14369,182 @@ Your %1$s prickle%2$s.
 <yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>
 <brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
 %%%%
+ are unaffected.
+ 不受影响。
+%%%%
+ barely resist.
+ 勉强抵抗住了。
+%%%%
+ struggle to resist.
+ 奋力抵抗。
+%%%%
+ resist with significant effort.
+ 费了很大力气抵抗住了。
+%%%%
+ resist with some effort.
+ 费了些力气抵抗住了。
+%%%%
+ easily resist.
+ 轻松抵抗住了。
+%%%%
+ resist with almost no effort.
+ 几乎毫不费力就抵抗住了。
+%%%%
+, vulnerable to %s
+，受%s影响
+%%%%
+possess the following wand spells:
+有以下魔杖法术：
+%%%%
+%1$s mastered %2$s%3$s:
+掌握了以下法术%3$s：
+%%%%
+%1$s the following %2$s abilities%3$s:
+有以下%2$s能力%3$s：
+%%%%
+natural
+天生
+%%%%
+magical
+魔法
+%%%%
+divine
+神圣
+%%%%
+buggy
+未知
+%%%%
+found 
+找到了
+%%%%
+(gained %1$d charge%2$s)
+（获得了%1$d次充能）
+%%%%
+The dungeon shudders... but nothing happens?
+地牢震动了一下……但什么都没有发生？
+%%%%
+You become %stransparent, but the glow from %s %s prevents you from becoming completely invisible.
+你变得%s透明了，但%s的光芒%s阻止了你完全隐形。
+%%%%
+You cannot mutate%s.
+你无法变异%s。
+%%%%
+ at present
+（暂时）
+%%%%
+monster equip|%1$s %2$s.
+%2$s。
+%%%%
+%s appears in pursuit of the Orb! 
+%s出现，追踪宝珠而来！
+%%%%
+%s appear in pursuit of the Orb! 
+%s出现，追踪宝珠而来！
+%%%%
+Dungeon Crawl
+地牢爬行
+%%%%
+Dungeon Crawl: The main game mode: full of monsters, items, gods, and danger!
+地牢爬行：主要游戏模式：充满怪物、物品、神祇和危险！
+%%%%
+Choose Game Seed
+选择游戏种子
+%%%%
+Play using a chosen dungeon seed.
+使用自选的地牢种子进行游戏。
+%%%%
+Tutorial for Dungeon Crawl
+地牢爬行教程
+%%%%
+Tutorial that covers the basics of Dungeon Crawl survival.
+涵盖地牢爬行生存基础知识的教程。
+%%%%
+Hints Mode for Dungeon Crawl
+地牢爬行提示模式
+%%%%
+A mostly normal game mode that provides more advanced hints than the tutorial.
+一个基本正常的游戏模式，提供比教程更高级的提示。
+%%%%
+Dungeon Descent
+地牢下降
+%%%%
+A game mode consisting of a branching, one-way path through the dungeon.
+通过地牢的分支单向路径的游戏模式。
+%%%%
+Dungeon Sprint
+地牢冲刺
+%%%%
+A difficult, fixed, single-floor game mode.
+困难、固定的单层游戏模式。
+%%%%
+Instructions
+操作指南
+%%%%
+Help menu.
+帮助菜单。
+%%%%
+The Arena
+竞技场
+%%%%
+Let computer-controlled teams battle it out!
+让计算机控制的队伍互相竞技！
+%%%%
+High Scores
+最高分数
+%%%%
+View the high score list.
+查看最高分数列表。
+%%%%
+ shakes off the sticky flame as %1$s %2$s.
+随着%1$s的移动，抖掉了身上的黏性火焰。
+%%%%
+ shares %s spectral weapon's damage!
+分担了%s幽魂武器的伤害！
+%%%%
+(%1$s with %2$s)
+（按%2$s%1$s）
+%%%%
+Cloak
+披风
+%%%%
+Helmet
+头盔
+%%%%
+Gloves
+手套
+%%%%
+Boots
+靴子
+%%%%
+Offhand
+副手
+%%%%
+Body Armour
+身体护甲
+%%%%
+Barding
+战甲
+%%%%
+Ring
+戒指
+%%%%
+Amulet
+护身符
+%%%%
+Gizmo
+小装置
+%%%%
+thunderously recite
+大声诵念
+%%%%
+dissolves into smoke
+化为烟雾消散
+%%%%
+crumbles to dust
+化为尘土
+%%%%
+Trooper
+士兵
 %%%%
 Fighter
 战士
@@ -14405,6 +14581,257 @@ Fire Elementalist
 %%%%
 Ice Elementalist
 冰系元素师
+Warrior
+勇士
+%%%%
+Slayer
+屠戮者
+%%%%
+Conqueror
+征服者
+%%%%
+Cutter
+切割者
+%%%%
+Slicer
+切片者
+%%%%
+Swashbuckler
+剑客
+%%%%
+Cutthroat
+刺客
+%%%%
+Politician
+政客
+%%%%
+Slasher
+挥砍者
+%%%%
+Carver
+雕琢者
+%%%%
+Fencer
+剑士
+%%%%
+@Adj@ Blade
+@Adj@之刃
+%%%%
+Swordmaster
+剑圣
+%%%%
+Chopper
+砍柴者
+%%%%
+Cleaver
+劈裂者
+%%%%
+Severer
+断骨者
+%%%%
+Executioner
+处刑人
+%%%%
+Axe Maniac
+斧狂
+%%%%
+Cudgeller
+棍棒手
+%%%%
+Basher
+重击者
+%%%%
+Bludgeoner
+猛击者
+%%%%
+Shatterer
+粉碎者
+%%%%
+Skullcrusher
+碎颅者
+%%%%
+Poker
+戳刺者
+%%%%
+Spear-Bearer
+持矛兵
+%%%%
+Impaler
+穿刺者
+%%%%
+Phalangite
+方阵兵
+%%%%
+@Adj@ Porcupine
+@Adj@的豪猪
+%%%%
+Twirler
+旋棍者
+%%%%
+Cruncher
+碾碎者
+%%%%
+Stickfighter
+棍斗士
+%%%%
+Pulveriser
+粉碎者
+%%%%
+Chief of Staff
+棍棒长
+%%%%
+Shooter
+射手
+%%%%
+Skirmisher
+散兵
+%%%%
+Marks@genus@
+神射@genus@
+%%%%
+Crack Shot
+神枪手
+%%%%
+Merry @Genus@
+快乐的@Genus@
+%%%%
+Chucker
+投掷手
+%%%%
+Thrower
+掷物者
+%%%%
+Deadly Accurate
+百发百中
+%%%%
+Hawkeye
+鹰眼
+%%%%
+@Adj@ Ballista
+@Adj@的弩炮
+%%%%
+Covered
+身着护甲
+%%%%
+Protected
+受庇护者
+%%%%
+Tortoise
+铁乌龟
+%%%%
+Impregnable
+坚不可摧
+%%%%
+Invulnerable
+刀枪不入
+%%%%
+Ducker
+躲闪者
+%%%%
+Nimble
+灵巧者
+%%%%
+Spry
+矫捷者
+%%%%
+Acrobat
+杂技演员
+%%%%
+Intangible
+无形无影
+%%%%
+Sneak
+潜行者
+%%%%
+Covert
+隐匿者
+%%%%
+Unseen
+无形之人
+%%%%
+Imperceptible
+无迹可寻
+%%%%
+Ninja
+忍者
+%%%%
+Shield-Bearer
+持盾手
+%%%%
+Blocker
+阻挡者
+%%%%
+Peltast
+轻盾兵
+%%%%
+Hoplite
+重装步兵
+%%%%
+@Adj@ Barricade
+@Adj@的路障
+%%%%
+Ruffian
+恶棍
+%%%%
+Grappler
+擒抱者
+%%%%
+Brawler
+斗殴者
+%%%%
+Wrestler
+摔角手
+%%%%
+@Weight@weight Champion
+@Weight@量级冠军
+%%%%
+Magician
+魔术师
+%%%%
+Thaumaturge
+奇术师
+%%%%
+Eclecticist
+博法师
+%%%%
+Sorcerer
+术士
+%%%%
+Archmage
+大法师
+%%%%
+Conjurer
+咒术师
+%%%%
+Destroyer
+毁灭者
+%%%%
+Devastator
+蹂躏者
+%%%%
+Ruinous
+破灭者
+%%%%
+Annihilator
+湮灭者
+%%%%
+Vexing
+恼人者
+%%%%
+Jinx
+灾星
+%%%%
+Bewitcher
+蛊惑者
+%%%%
+Maledictor
+诅咒师
+%%%%
+Spellbinder
+咒缚者
+%%%%
+Caller
+呼唤者
 %%%%
 Summoner
 召唤师
@@ -14447,6 +14874,212 @@ Artificer
 %%%%
 Hexslinger
 诅咒枪手
+Convoker
+召集者
+%%%%
+Worldbinder
+缚界者
+%%%%
+Planerender
+撕裂位面者
+%%%%
+Grave Robber
+盗墓贼
+%%%%
+Reanimator
+复生者
+%%%%
+Necromancer
+死灵法师
+%%%%
+Thanatomancer
+死亡术士
+%%%%
+@Genus_Short@ of Death
+死亡之@Genus_Short@
+%%%%
+Grasshopper
+蚂蚱
+%%%%
+Placeless @Genus@
+无处可归的@Genus@
+%%%%
+Blinker
+闪烁者
+%%%%
+Portalist
+传送门师
+%%%%
+Plane @Walker@
+位面行者
+%%%%
+Tinkerer
+修补匠
+%%%%
+Fabricator
+制造者
+%%%%
+Mechanist
+机械师
+%%%%
+Siegecrafter
+攻城匠师
+%%%%
+Architect of Ages
+纪元建筑师
+%%%%
+Firebug
+火焰虫
+%%%%
+Arsonist
+纵火犯
+%%%%
+Scorcher
+灼烧者
+%%%%
+Pyromancer
+火法师
+%%%%
+Infernalist
+地狱火使
+%%%%
+Chiller
+寒冷者
+%%%%
+Frost Mage
+冰霜法师
+%%%%
+Gelid
+极寒者
+%%%%
+Cryomancer
+冰法师
+%%%%
+Englaciator
+冰川使
+%%%%
+Gusty
+阵风者
+%%%%
+Zephyrmancer
+和风术士
+%%%%
+Stormcaller
+风暴召唤者
+%%%%
+Cloud Mage
+云中法师
+%%%%
+Meteorologist
+天象师
+%%%%
+Digger
+挖掘者
+%%%%
+Geomancer
+地卜师
+%%%%
+Earth Mage
+大地法师
+%%%%
+Metallomancer
+金铁术士
+%%%%
+Petrodigitator
+点石者
+%%%%
+Apothecary
+药剂师
+%%%%
+Toxicologist
+毒理学家
+%%%%
+Hermetic
+赫尔墨斯之徒
+%%%%
+Philosopher
+哲人
+%%%%
+Quintessent
+第五元素
+%%%%
+Unbeliever
+不信者
+%%%%
+Agnostic
+不可知论者
+%%%%
+Dissident
+异见者
+%%%%
+Heretic
+异端
+%%%%
+Apostate
+叛教者
+%%%%
+Charlatan
+江湖骗子
+%%%%
+Prestidigitator
+戏法大师
+%%%%
+Fetichist
+拜物者
+%%%%
+Evocator
+唤起者
+%%%%
+Ex Machina
+机械降神
+%%%%
+Changeling
+换形儿
+%%%%
+Mimic
+拟态者
+%%%%
+Metamorph
+变形者
+%%%%
+Skinwalker
+皮行者
+%%%%
+Shapeless @Genus@
+无形的@Genus@
+%%%%
+Insei
+院生
+%%%%
+Martial Artist
+武术家
+%%%%
+Black Belt
+黑带
+%%%%
+Sensei
+师范
+%%%%
+Grand Master
+宗师
+%%%%
+Scratcher
+抓挠者
+%%%%
+Gouger
+挖刨者
+%%%%
+Ripper
+撕裂者
+%%%%
+Eviscerator
+开膛者
+%%%%
+Sabretooth
+剑齿
+%%%%
+Hell Knight
+地狱骑士
 %%%%
 Death Knight
 死亡骑士
@@ -14713,3 +15346,278 @@ The world feels relentlessly logical and grey.
 You feel supremely confident.
 你感到无比自信。
 %%%%
+Pharaoh
+法老
+%%%%
+Crusher
+粉碎者
+%%%%
+Kraken
+海怪
+%%%%
+Yokozuna
+横纲
+%%%%
+Weightless Champion
+无重量冠军
+%%%%
+Herculean
+大力神
+%%%%
+Blademaster
+剑圣
+%%%%
+Swordfish
+剑鱼
+%%%%
+Iron Troll
+铁巨魔
+%%%%
+Iron Golem
+铁魔像
+%%%%
+Defender
+防御者
+%%%%
+Polterguardian
+吵闹护卫
+%%%%
+Master Archer
+弓术大师
+%%%%
+Undying Armoury
+不死军械库
+%%%%
+Wishgranter
+许愿者
+%%%%
+Cogmind
+齿轮心智
+%%%%
+Ascendant
+升华者
+%%%%
+Wallbreaker
+破墙者
+%%%%
+Faerie Dragon
+仙灵龙
+%%%%
+Siren
+塞壬
+%%%%
+Necromech
+死灵机甲
+%%%%
+Petite Mort
+小死
+%%%%
+Corpseflower
+尸花
+%%%%
+Brimstone Smiter
+硫磺击打者
+%%%%
+Titancaster
+巨神施法者
+%%%%
+Frogwright
+蛙匠
+%%%%
+Demonologist
+恶魔学者
+%%%%
+Hellbinder
+地狱缚者
+%%%%
+Teletunneler
+传送隧道者
+%%%%
+Spatial Maelstrom
+空间漩涡
+%%%%
+Swamp Dragon
+沼泽龙
+%%%%
+Fire Dragon
+火龙
+%%%%
+Highly Combustible
+高度可燃
+%%%%
+Molten
+熔融者
+%%%%
+Smokeless Flame
+无烟之火
+%%%%
+Fire Storm
+火焰风暴
+%%%%
+Ice Dragon
+冰龙
+%%%%
+Marid
+马里德
+%%%%
+Polar Vortex
+极地漩涡
+%%%%
+Storm Dragon
+风暴龙
+%%%%
+Twister
+旋风
+%%%%
+Iron Dragon
+铁龙
+%%%%
+Thief of Divinity
+神性窃贼
+%%%%
+Royal Mummy
+皇家木乃伊
+%%%%
+Forbidden One
+禁忌者
+%%%%
+Blood Saint
+血之圣徒
+%%%%
+Necrodancer
+死灵舞者
+%%%%
+Pearl Dragon
+珍珠龙
+%%%%
+Rockslime
+岩石黏泥
+%%%%
+Black Lotus
+黑莲花
+%%%%
+Nightshade
+夜影
+%%%%
+Cobgoblin
+地精妖
+%%%%
+Laughing Skull
+笑颅骨
+%%%%
+Danse Macabre
+死亡之舞
+%%%%
+Abyssopelagic
+深渊远洋者
+%%%%
+Leviathan
+利维坦
+%%%%
+God-Hated
+神憎者
+%%%%
+Adventurer
+冒险者
+%%%%
+Fighting
+格斗
+%%%%
+Short Blades
+短刃
+%%%%
+Long Blades
+长刃
+%%%%
+Axes
+斧类
+%%%%
+Maces & Flails
+锤与链枷
+%%%%
+Polearms
+长柄武器
+%%%%
+Staves
+棍棒
+%%%%
+Ranged Weapons
+远程武器
+%%%%
+Throwing
+投掷
+%%%%
+Dodging
+闪避
+%%%%
+Stealth
+潜行
+%%%%
+Shields
+盾牌
+%%%%
+Unarmed Combat
+徒手格斗
+%%%%
+Spellcasting
+施法能力
+%%%%
+Summonings
+召唤系
+%%%%
+Translocations
+传送系
+%%%%
+Forgecraft
+锻造术
+%%%%
+Fire Magic
+火焰魔法
+%%%%
+Ice Magic
+寒冰魔法
+%%%%
+Air Magic
+空气魔法
+%%%%
+Earth Magic
+大地魔法
+%%%%
+Alchemy
+炼金术
+%%%%
+Invocations
+祈神
+%%%%
+Evocations
+魔力释放
+%%%%
+Shapeshifting
+变形术
+%%%%
+title article|La 
+
+%%%%
+title article|, 
+
+%%%%
+title article|the 
+
+%%%%
+, <w>%</w> - select action
+，<w>%</w> - 选择动作
+%%%%
+, <w>%</w> - select action, <w>%</w> or <w>%</w> - cycle
+，<w>%</w> - 选择动作，<w>%</w> 或 <w>%</w> - 循环
+%%%%
+throw
+投掷
+%%%%
+toss (no damage)
+抛掷（无伤害）
+%%%%
+Read
+阅读
+%%%%
+Drink
+饮用

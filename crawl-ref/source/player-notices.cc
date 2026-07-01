@@ -19,6 +19,7 @@
 #include "items.h"
 #include "hints.h"
 #include "options.h"
+#include "positional_format.h"
 #include "god-conduct.h"
 #include "god-passive.h"
 #include "god-wrath.h"
@@ -220,7 +221,6 @@ static void _monster_headsup(const vector<monster*> &monsters,
                                ostringstream& out)
 {
     int listed = 0;
-    const bool zh = Options.language == lang_t::ZH;
     for (const monster* mon : monsters)
     {
         monster_info mi(mon);
@@ -245,34 +245,24 @@ static void _monster_headsup(const vector<monster*> &monsters,
                                                 : monsters.size() > 1 ? DESC_NOTEWORTHY
                                                                       : DESC_NOTEWORTHY_AND_WEAPON;
 
-        if (zh)
-        {
-            // Chinese: no "It is" prefix — just append the equipment description
-            out << get_monster_equipment_desc(mi, level, DESC_NONE) << "。";
-        }
+        // Build subject+verb prefix (EN only; ZH drops this via positional params)
+        string subject_verb;
+        if (monsters.size() == 1)
+            subject_verb = uppercase_first(mon->pronoun(PRONOUN_SUBJECTIVE))
+                           + " " + conjugate_verb("are", mon->pronoun_plurality());
+        else if (mon->type == MONS_DANCING_WEAPON)
+            subject_verb = "There is";
+        else if (single.count(mon))
+            subject_verb = uppercase_first(mon->full_name(DESC_THE)) + " is";
         else
-        {
-            string monname;
-            if (monsters.size() == 1)
-                monname = mon->pronoun(PRONOUN_SUBJECTIVE);
-            else if (mon->type == MONS_DANCING_WEAPON)
-                monname = "There";
-            else if (single.count(mon))
-                monname = mon->full_name(DESC_THE);
-            else
-                monname = mon->full_name(DESC_A);
-            out << uppercase_first(monname) << " ";
+            subject_verb = uppercase_first(mon->full_name(DESC_A)) + " is";
 
-            if (monsters.size() == 1)
-                out << conjugate_verb("are", mon->pronoun_plurality());
-            else
-                out << "is";
+        string equip = get_monster_equipment_desc(mi, level, DESC_NONE);
 
-            if (mon->type != MONS_DANCING_WEAPON)
-                out << " ";
-
-            out << get_monster_equipment_desc(mi, level, DESC_NONE) << ".";
-        }
+        out << make_stringf_p(C_("monster equip",
+                                 "%1$s %2$s."),
+                              subject_verb.c_str(),
+                              equip.c_str());
     }
 }
 
@@ -445,15 +435,11 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
     }
     else if (sc == SC_ORBRUN)
     {
-        if (Options.language == lang_t::ZH)
-            out << _describe_monsters_from_species(species).c_str() << "出现，追踪宝珠而来！";
-        else
-        {
-            out << _describe_monsters_from_species(species).c_str() << " appear";
-            if (monsters.size() == 1)
-                out << "s";
-            out << " in pursuit of the Orb! ";
-        }
+        const char* orbrun_fmt = monsters.size() == 1
+            ? T_("%s appears in pursuit of the Orb! ")
+            : T_("%s appear in pursuit of the Orb! ");
+        out << make_stringf(orbrun_fmt,
+                            _describe_monsters_from_species(species).c_str());
     }
     else
         out << (T_("You encounter "))

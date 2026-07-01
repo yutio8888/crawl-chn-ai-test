@@ -1974,9 +1974,7 @@ static void _xom_fake_shatter(int /*sever*/)
     god_speaks(GOD_XOM, _get_xom_speech("fake shatter").c_str());
 
     if (silenced(you.pos()))
-        mpr(Options.language == lang_t::ZH
-    ? "地牢震动了一下……但什么都没有发生？"
-    : "The dungeon shudders... but nothing happens?");
+        mpr(T_("The dungeon shudders... but nothing happens?"));
     else
     {
         noisy(spell_effect_noise(SPELL_SHATTER), you.pos());
@@ -2934,10 +2932,7 @@ static void _xom_wave_of_despair(int sever)
         mpr(T_("Skeletons, inanimate yet cursed, drop down from the ceiling."));
 
     draw_ring_animation(you.pos(), you.current_vision, DARKGRAY, MAGENTA, true, 35);
-    if (Options.language == lang_t::ZH)
-        mprf(MSGCH_DANGER, T_("A wave of despair washes over you and everything around you!"));
-    else
-        god_speaks(GOD_XOM, _get_xom_speech("wave of despair").c_str());
+    god_speaks(GOD_XOM, _get_xom_speech("wave of despair").c_str());
 
     const int pow = 50 + random_range(sever / 2, sever);
 

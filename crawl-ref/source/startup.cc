@@ -415,41 +415,31 @@ struct game_modes_menu_item
 {
     game_type id;
     const char *label;
-    const char *label_en;
     const char *description;
-    const char *description_en;
 };
 
 static const vector<game_modes_menu_item> entries =
 {
-    {GAME_TYPE_NORMAL, "地牢爬行", "Dungeon Crawl",
-        "地牢爬行：主要游戏模式：充满怪物、物品、神祇和危险！",
+    {GAME_TYPE_NORMAL, "Dungeon Crawl",
         "Dungeon Crawl: The main game mode: full of monsters, items, "
         "gods, and danger!" },
-    {GAME_TYPE_CUSTOM_SEED, "选择游戏种子", "Choose Game Seed",
-        "使用自选的地牢种子进行游戏。",
+    {GAME_TYPE_CUSTOM_SEED, "Choose Game Seed",
         "Play using a chosen dungeon seed." },
-    {GAME_TYPE_TUTORIAL, "地牢爬行教程", "Tutorial for Dungeon Crawl",
-        "涵盖地牢爬行生存基础知识的教程。",
+    {GAME_TYPE_TUTORIAL, "Tutorial for Dungeon Crawl",
         "Tutorial that covers the basics of Dungeon Crawl survival." },
-    {GAME_TYPE_HINTS, "地牢爬行提示模式", "Hints Mode for Dungeon Crawl",
-        "一个基本正常的游戏模式，提供比教程更高级的提示。",
+    {GAME_TYPE_HINTS, "Hints Mode for Dungeon Crawl",
         "A mostly normal game mode that provides more advanced hints "
         "than the tutorial."},
-    {GAME_TYPE_DESCENT, "地牢下降", "Dungeon Descent",
-        "通过地牢的分支单向路径的游戏模式。",
+    {GAME_TYPE_DESCENT, "Dungeon Descent",
         "A game mode consisting of a branching, one-way path through "
         "the dungeon." },
-    {GAME_TYPE_SPRINT, "地牢冲刺", "Dungeon Sprint",
-        "困难、固定的单层游戏模式。",
+    {GAME_TYPE_SPRINT, "Dungeon Sprint",
         "A difficult, fixed, single-floor game mode." },
-    {GAME_TYPE_INSTRUCTIONS, "操作指南", "Instructions",
-        "帮助菜单。", "Help menu." },
-    {GAME_TYPE_ARENA, "竞技场", "The Arena",
-        "让计算机控制的队伍互相竞技！",
+    {GAME_TYPE_INSTRUCTIONS, "Instructions",
+        "Help menu." },
+    {GAME_TYPE_ARENA, "The Arena",
         "Let computer-controlled teams battle it out!" },
-    {GAME_TYPE_HIGH_SCORES, "最高分数", "High Scores",
-        "查看最高分数列表。",
+    {GAME_TYPE_HIGH_SCORES, "High Scores",
         "View the high score list." },
 };
 
@@ -474,7 +464,7 @@ static void _construct_game_modes_menu(shared_ptr<OuterMenu>& container)
 #endif
 
         label->set_text(formatted_string(
-            Options.language == lang_t::ZH ? entry.label : entry.label_en,
+            T_(entry.label),
             WHITE));
 
         auto btn = make_shared<MenuButton>();
@@ -485,8 +475,7 @@ static void _construct_game_modes_menu(shared_ptr<OuterMenu>& container)
         btn->set_child(std::move(label));
 #endif
         btn->id = entry.id;
-        btn->description = Options.language == lang_t::ZH
-            ? entry.description : entry.description_en;
+        btn->description = T_(entry.description);
         btn->highlight_colour = LIGHTGREY;
         container->add_button(std::move(btn), 0, i);
     }

@@ -22,6 +22,7 @@
 #include "mon-explode.h" // ball_lightning_damage
 #include "mon-project.h" // iood_damage
 #include "options.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "shopping.h"
 #include "spl-book.h"
@@ -82,16 +83,15 @@ static string _ability_type_descriptor(mon_spell_slot_flag type)
 
 static const char* _abil_type_vuln_core(bool silencable, bool antimagicable)
 {
-    const bool zh = Options.language == lang_t::ZH;
     // No one gets confused by the rare spells that are hit by silence
     // but not antimagic, AFAIK. Let's keep it simple.
     if (!antimagicable)
-        return zh ? "沉默" : "silence";
+        return T_("silence");
     if (silencable)
-        return zh ? "沉默和反魔" : "silence and antimagic";
+        return T_("silence and antimagic");
     // Explicitly clarify about spells that are hit by antimagic but
     // NOT silence, since those confuse players nonstop.
-    return zh ? "反魔（但不受沉默影响）" : "antimagic (but not silence)";
+    return T_("antimagic (but not silence)");
 }
 
 /**
@@ -110,7 +110,7 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
     const bool antimagicable = type == MON_SPELL_WIZARD
                                || type == MON_SPELL_MAGICAL;
     ASSERT(silencable || antimagicable);
-    return make_stringf("，受%s影响",
+    return make_stringf(T_(", vulnerable to %s"),
                         _abil_type_vuln_core(silencable, antimagicable));
 }
 
@@ -125,42 +125,25 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
  */
 static string _booktype_header(mon_spell_slot_flag type, bool pronoun_plural)
 {
-    const bool zh = Options.language == lang_t::ZH;
-
     if (type == MON_SPELL_EVOKE)
-    {
-        return zh ? "有以下魔杖法术："
-                  : make_stringf("%s the following wand spells:",
-                                 conjugate_verb("possess", pronoun_plural).c_str());
-    }
+        return T_("possess the following wand spells:");
 
     const string vulnerabilities = _ability_type_vulnerabilities(type);
 
     if (type == MON_SPELL_WIZARD)
     {
-        return zh
-            ? make_stringf("掌握了以下法术%s：",
-                           vulnerabilities.c_str())
-            : make_stringf("%s mastered %s%s:",
-                           conjugate_verb("have", pronoun_plural).c_str(),
-                           "the following spells",
-                           vulnerabilities.c_str());
+        return make_stringf_p(T_("%1$s mastered %2$s%3$s:"),
+                              conjugate_verb("have", pronoun_plural).c_str(),
+                              "the following spells",
+                              vulnerabilities.c_str());
     }
 
     const string descriptor = _ability_type_descriptor(type);
-    const char* zh_desc = !descriptor.compare("natural") ? "天生"
-                        : !descriptor.compare("magical") ? "魔法"
-                        : !descriptor.compare("divine")  ? "神圣"
-                        :                                        "未知";
 
-    return zh
-        ? make_stringf("有以下%s能力%s：",
-                       zh_desc,
-                       vulnerabilities.c_str())
-        : make_stringf("%s the following %s abilities%s:",
-                       conjugate_verb("possess", pronoun_plural).c_str(),
-                       descriptor.c_str(),
-                       vulnerabilities.c_str());
+    return make_stringf_p(T_("%1$s the following %2$s abilities%3$s:"),
+                          conjugate_verb("possess", pronoun_plural).c_str(),
+                          T_(descriptor.c_str()),
+                          vulnerabilities.c_str());
 }
 
 /**

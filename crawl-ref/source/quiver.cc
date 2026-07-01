@@ -250,13 +250,9 @@ namespace quiver
     string action_cycler::fire_key_hints() const
     {
         const bool no_other_items = *get() == *next();
-        string key_hint = Options.language == lang_t::ZH
-            ? (no_other_items
-                ? ", <w>%</w> - 选择动作"
-                : ", <w>%</w> - 选择动作, <w>%</w> 或 <w>%</w> - 循环")
-            : (no_other_items
-                ? ", <w>%</w> - select action"
-                : ", <w>%</w> - select action, <w>%</w> or <w>%</w> - cycle");
+        string key_hint = no_other_items
+            ? T_(", <w>%</w> - select action")
+            : T_(", <w>%</w> - select action, <w>%</w> or <w>%</w> - cycle");
         insert_commands(key_hint,
                         { CMD_TARGET_SELECT_ACTION,
                           CMD_TARGET_CYCLE_QUIVER_BACKWARD,
@@ -952,11 +948,9 @@ namespace quiver
                                  you.confused()
                                     ? (T_("confused "))
                                     : "",
-                                 Options.language == lang_t::ZH
-                                    ? (is_throwable(&you, quiver)
-                                        ? "投掷" : "抛掷（无伤害）")
-                                    : (is_throwable(&you, quiver)
-                                        ? "throw" : "toss (no damage)"));
+                                 is_throwable(&you, quiver)
+                                    ? T_("throw")
+                                    : T_("toss (no damage)"));
                 qdesc.cprintf("%s: ", uppercase_first(verb).c_str());
             }
 
@@ -1597,11 +1591,8 @@ namespace quiver
         {
             if (!is_valid())
                 return "Buggy";
-            if (Options.language == lang_t::ZH)
-                return you.inv[item_slot].base_type == OBJ_SCROLLS ? "阅读"
-                                                                   : "饮用";
-            return you.inv[item_slot].base_type == OBJ_SCROLLS ? "Read"
-                                                               : "Drink";
+            return you.inv[item_slot].base_type == OBJ_SCROLLS
+                ? T_("Read") : T_("Drink");
         }
 
         bool use_autofight_targeting() const override { return false; }

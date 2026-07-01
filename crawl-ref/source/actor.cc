@@ -907,43 +907,22 @@ string actor::describe_props() const
 string actor::resist_margin_phrase(int margin) const
 {
     if (willpower() == WILL_INVULN)
-    {
-        if (Options.language == lang_t::ZH)
-            return " 不受影响。";
-        return " " + conj_verb("are") + " unaffected.";
-    }
+        return T_(" are unaffected.");
 
-    if (Options.language == lang_t::ZH)
+    static const string resist_phrases[] =
     {
-        static const string zh_messages[] =
-        {
-            " 勉强抵抗住了。",
-            " 奋力抵抗。",
-            " 费了很大力气抵抗住了。",
-            " 费了些力气抵抗住了。",
-            " 轻松抵抗住了。",
-            " 几乎毫不费力就抵抗住了。",
-        };
-        const int index = max(0, min((int)ARRAYSZ(zh_messages) - 1,
-                                     ((margin + 45) / 15)));
-        return zh_messages[index];
-    }
-
-    static const string resist_messages[][2] =
-    {
-      { " barely %s.",                  "resist" },
-      { " %s to resist.",               "struggle" },
-      { " %s with significant effort.", "resist" },
-      { " %s with some effort.",        "resist" },
-      { " easily %s.",                  "resist" },
-      { " %s with almost no effort.",   "resist" },
+        T_(" barely resist."),
+        T_(" struggle to resist."),
+        T_(" resist with significant effort."),
+        T_(" resist with some effort."),
+        T_(" easily resist."),
+        T_(" resist with almost no effort."),
     };
 
-    const int index = max(0, min((int)ARRAYSZ(resist_messages) - 1,
+    const int index = max(0, min((int)ARRAYSZ(resist_phrases) - 1,
                                  ((margin + 45) / 15)));
 
-    return make_stringf(resist_messages[index][0].c_str(),
-                        conj_verb(resist_messages[index][1]).c_str());
+    return resist_phrases[index];
 }
 
 void actor::collide(coord_def newpos, const actor *agent, int damage)

@@ -485,22 +485,13 @@ public:
                 afflictions.push_back("!!!QUAD DAMAGE!!!");
             if (you.form == transformation::flux)
                 afflictions.push_back("form");
-            if (Options.language == lang_t::ZH)
-                mprf(MSGCH_DURATION,
-                     "你变得%s透明了，但%s的光芒"
-                     "%s阻止了你完全隐形。",
-                     you.duration[DUR_INVIS] ? "更加" : "",
-                     you.haloed() && you.halo_radius() == -1 ? "" : "你的",
-                     comma_separated_line(afflictions.begin(),
-                                          afflictions.end()).c_str());
-            else
-                mprf(MSGCH_DURATION,
-                     "You become %stransparent, but the glow from %s "
-                     "%s prevents you from becoming completely invisible.",
-                     you.duration[DUR_INVIS] ? "more " : "",
-                     you.haloed() && you.halo_radius() == -1 ? "the" : "your",
-                     comma_separated_line(afflictions.begin(),
-                                          afflictions.end()).c_str());
+            mprf(MSGCH_DURATION,
+                 T_("You become %stransparent, but the glow from %s "
+                    "%s prevents you from becoming completely invisible."),
+                 you.duration[DUR_INVIS] ? T_("more ") : "",
+                 you.haloed() && you.halo_radius() == -1 ? T_("the") : T_("your"),
+                 comma_separated_line(afflictions.begin(),
+                                      afflictions.end()).c_str());
         }
         else
         {
@@ -710,11 +701,9 @@ static bool _can_mutate(string *reason, bool temp)
 
     if (reason)
     {
-        *reason = Options.language == lang_t::ZH
-            ? make_stringf("你无法变异%s。",
-                           you.can_safely_mutate(false) ? "（暂时）" : "")
-            : make_stringf("You cannot mutate%s.",
-                           you.can_safely_mutate(false) ? " at present" : "");
+        *reason = make_stringf(T_("You cannot mutate%s."),
+                               you.can_safely_mutate(false)
+                                   ? T_(" at present") : "");
     }
     return false;
 }

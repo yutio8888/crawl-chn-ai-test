@@ -43,6 +43,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
+#include "positional_format.h"
 #include "makeitem.h"
 #include "message.h"
 #include "misc.h"
@@ -5577,11 +5578,10 @@ void monster::finalise_movement(const actor* to_blame)
             flame.duration -= 50;
             if (flame.duration <= 0)
             {
-                const string message = Options.language == lang_t::ZH
-                    ? string("随着") + pronoun(PRONOUN_SUBJECTIVE) + "的移动，抖掉了身上的黏性火焰。"
-                    : " shakes off the sticky flame as "
-                    + pronoun(PRONOUN_SUBJECTIVE) + " "
-                    + conjugate_verb("move", pronoun_plurality()) + ".";
+                const string message = make_stringf_p(
+                    T_(" shakes off the sticky flame as %1$s %2$s."),
+                    pronoun(PRONOUN_SUBJECTIVE).c_str(),
+                    conjugate_verb("move", pronoun_plurality()).c_str());
                 simple_monster_message(*this, message.c_str());
                 del_ench(ENCH_STICKY_FLAME, true);
             }
@@ -6009,9 +6009,9 @@ void monster::react_to_damage(const actor *oppressor, int damage,
                     mpr(T_("Your spectral weapon shares its damage with you!"));
                 else if (you.can_see(*owner))
                 {
-                    string buf = Options.language == lang_t::ZH
-                        ? "分担了" + owner->pronoun(PRONOUN_POSSESSIVE) + "幽魂武器的伤害！"
-                        : " shares " + owner->pronoun(PRONOUN_POSSESSIVE) + " spectral weapon's damage!";
+                    string buf = make_stringf(
+                        T_(" shares %s spectral weapon's damage!"),
+                        owner->pronoun(PRONOUN_POSSESSIVE).c_str());
                     simple_monster_message(*owner->as_monster(), buf.c_str());
                 }
 
