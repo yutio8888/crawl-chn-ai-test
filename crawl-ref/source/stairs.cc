@@ -993,13 +993,13 @@ void floor_transition(dungeon_feature_type how,
     {
         const branch_type branch = you.where_are_you;
         if (branch_entered(branch))
-            mprf(T_("Welcome back to %s!"), branches[branch].longname);
+            mprf(T_("Welcome back to %s!"), T_(branches[branch].longname));
         else if (how == branches[branch].entry_stairs)
         {
             if (branches[branch].entry_message)
-                mpr(branches[branch].entry_message);
+                mpr(T_(branches[branch].entry_message));
             else if (branch != BRANCH_ABYSS) // too many messages...
-                mprf(T_("Welcome to %s!"), branches[branch].longname);
+                mprf(T_("Welcome to %s!"), T_(branches[branch].longname));
         }
         const bool was_bezotted = bezotted_in(old_level.branch);
         if (bezotted())

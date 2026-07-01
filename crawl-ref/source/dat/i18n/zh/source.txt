@@ -12512,3 +12512,321 @@ pass through gate
 %s slides away from you right after you %s it!
 
 %s在你%s它后立刻移开了！
+%%%%
+Dungeon
+
+地牢
+%%%%
+Temple
+
+神殿
+%%%%
+Orcish Mines
+
+兽人矿坑
+%%%%
+Elven Halls
+
+精灵殿堂
+%%%%
+Lair
+
+兽巢
+%%%%
+Swamp
+
+沼泽
+%%%%
+Shoals
+
+浅滩
+%%%%
+Snake Pit
+
+蛇坑
+%%%%
+Spider Nest
+
+蜘蛛巢穴
+%%%%
+Slime Pits
+
+史莱姆坑
+%%%%
+Vaults
+
+宝库
+%%%%
+Crypt
+
+墓穴
+%%%%
+Tomb
+
+陵墓
+%%%%
+Hell
+
+地狱
+%%%%
+Dis
+
+铁之城
+%%%%
+Gehenna
+
+火焚谷
+%%%%
+Cocytus
+
+冰封湖
+%%%%
+Tartarus
+
+深渊牢狱
+%%%%
+Zot
+
+佐特领域
+%%%%
+Depths
+
+深处
+%%%%
+Abyss
+
+深渊
+%%%%
+Pandemonium
+
+万魔殿
+%%%%
+Ziggurat
+
+通天塔
+%%%%
+Labyrinth
+
+迷宫
+%%%%
+Bazaar
+
+集市
+%%%%
+Troves
+
+宝藏库
+%%%%
+Sewer
+
+下水道
+%%%%
+Ossuary
+
+骨堂
+%%%%
+Bailey
+
+堡垒
+%%%%
+Gauntlet
+
+竞技场
+%%%%
+Ice Cave
+
+冰窟
+%%%%
+Volcano
+
+火山
+%%%%
+Wizlab
+
+巫师实验室
+%%%%
+Desolation
+
+荒原
+%%%%
+the Dungeon
+
+地牢
+%%%%
+the Ecumenical Temple
+
+普世神殿
+%%%%
+the Orcish Mines
+
+兽人矿坑
+%%%%
+the Elven Halls
+
+精灵殿堂
+%%%%
+the Lair of Beasts
+
+百兽之巢
+%%%%
+the Swamp
+
+沼泽
+%%%%
+the Shoals
+
+浅滩
+%%%%
+the Snake Pit
+
+蛇坑
+%%%%
+the Spider Nest
+
+蜘蛛巢穴
+%%%%
+the Pits of Slime
+
+史莱姆之坑
+%%%%
+the Vaults
+
+宝库
+%%%%
+the Crypt
+
+墓穴
+%%%%
+the Tomb of the Ancients
+
+远古陵墓
+%%%%
+the Vestibule of Hell
+
+地狱前厅
+%%%%
+the Iron City of Dis
+
+铁之城·迪斯
+%%%%
+Gehenna
+
+火焚谷
+%%%%
+Cocytus
+
+冰封湖
+%%%%
+Tartarus
+
+深渊牢狱
+%%%%
+the Realm of Zot
+
+佐特领域
+%%%%
+the Depths
+
+深处
+%%%%
+the Abyss
+
+深渊
+%%%%
+Pandemonium
+
+万魔殿
+%%%%
+Welcome to Hell!
+Please enjoy your stay.
+
+欢迎来到地狱！
+祝你入住愉快。
+%%%%
+An ancient malice corrodes your equipment.
+
+一股古老的恶意腐蚀着你的装备。
+%%%%
+Your scrolls appear blurry in the acrid smoke.
+
+你的卷轴在刺鼻的烟雾中显得模糊不清。
+%%%%
+Your potions freeze solid in the terrible cold.
+
+你的药水在可怕的严寒中冻结成冰。
+%%%%
+This decaying realm drains your will.
+
+这片腐朽的领域侵蚀着你的意志。
+%%%%
+You feel the power of the Orb interfering with translocations here.
+
+你感到天球的力量在此干扰着传送。
+%%%%
+To return, you must find a gate leading back.
+
+要返回，你必须找到一扇回去的门。
+%%%%
+You land on top of a ziggurat so tall you cannot make out the ground.
+
+你落在一座通天塔顶端，高得看不清地面。
+%%%%
+You enter a labyrinth!
+
+你进入了一座迷宫！
+%%%%
+You enter an inter-dimensional bazaar!
+
+你进入了一个跨维度集市！
+%%%%
+You enter a treasure trove!
+
+你进入了一个宝藏库！
+%%%%
+You enter a sewer!
+
+你进入了下水道！
+%%%%
+You enter an ossuary!
+
+你进入了一座骨堂！
+%%%%
+You enter a bailey!
+
+你进入了一座堡垒！
+%%%%
+You enter a gauntlet!
+
+你进入了一座竞技场！
+%%%%
+You enter an ice cave!
+
+你进入了一个冰窟！
+%%%%
+You enter a volcano!
+
+你进入了一座火山！
+%%%%
+You enter a wizard's laboratory!
+
+你进入了一个巫师实验室！
+%%%%
+You enter a great desolation of salt!
+
+你进入了一片广袤的盐之荒原！
+%%%%
+You enter Okawaru's Arena!
+
+你进入了欧卡瓦鲁的竞技场！
+%%%%
+You are dragged down into the Crucible of Flesh!
+
+你被拖入了血肉熔炉！
+%%%%
+You enter an ornate necropolis!
+
+你进入了一座华丽的死灵城！
+%%%%
+What level of %s? 
+
+%s的哪一层？

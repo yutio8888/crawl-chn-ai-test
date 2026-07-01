@@ -2448,7 +2448,7 @@ public:
         {
             for (const branch_type &br : prompt_branches)
             {
-                MenuEntry *br_entry = new MenuEntry(branches[br].shortname,
+                MenuEntry *br_entry = new MenuEntry(T_(branches[br].shortname),
                     branches[br].travel_shortcut,
                     [this,&br](const MenuEntry&)
                     {
@@ -2828,7 +2828,7 @@ static level_pos _prompt_travel_depth(const level_id &id, bool remember_targ)
         msgwin_clear_temporary();
         mprf(MSGCH_PROMPT, T_("What level of %s? "
              "(default %s, ? - help) "),
-             branches[target.id.branch].longname,
+             T_(branches[target.id.branch].longname),
              _get_trans_travel_dest(target, true).c_str());
 
         char buf[100];
@@ -3550,7 +3550,7 @@ level_id level_id::get_next_level_id(const coord_def &pos)
 
 string level_id::describe(bool long_name, bool with_number) const
 {
-    string result = (long_name ? branches[branch].longname
+    string result = (long_name ? T_(branches[branch].longname)
                                : branches[branch].abbrevname);
 
     if (with_number && brdepth[branch] != 1)

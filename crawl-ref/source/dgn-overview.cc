@@ -162,7 +162,7 @@ static string coloured_branch(branch_type br)
     if (br < 0 || br >= NUM_BRANCHES)
         return "<lightred>Buggy buglands</lightred>";
 
-    return make_stringf("<yellow>%s</yellow>", branches[br].shortname);
+    return make_stringf("<yellow>%s</yellow>", T_(branches[br].shortname));
 }
 
 static string shoptype_to_string(shop_type s)
@@ -1173,7 +1173,7 @@ static void _show_dungeon_overview(vector<branch_type> brs)
         }
         line += make_stringf("(%c) %-14s ",
                              branches[br].travel_shortcut,
-                             branches[br].shortname);
+                             T_(branches[br].shortname));
         ++linec;
     }
     if (!line.empty())
@@ -1274,8 +1274,8 @@ void do_annotate()
     else
     {
         clear_messages();
-        const string prompt = make_stringf ("What level of %s? ",
-                    branches[branch].longname);
+        const string prompt = make_stringf (T_("What level of %s? "),
+                    T_(branches[branch].longname));
         depth = prompt_for_int(prompt.c_str(), true);
     }
     if (depth > 0 && depth <= max_depth)

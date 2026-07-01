@@ -587,12 +587,12 @@ static string _describe_branch_bribability()
 
     size_t width = 0;
     for (branch_type br : targets)
-        width = max(width, strlen(branches[br].shortname));
+        width = max(width, (size_t)strwidth(T_(branches[br].shortname)));
 
     for (branch_type br : targets)
     {
         string line = " ";
-        line += branches[br].shortname;
+        line += T_(branches[br].shortname);
         line += string(width + 3 - strwidth(line), ' ');
 
         if (!branch_bribe[br])
