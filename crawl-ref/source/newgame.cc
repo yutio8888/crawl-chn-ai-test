@@ -178,7 +178,6 @@ static string _welcome(const newgame_def& ng)
             text += " ";
         text += get_job_name(ng.job);
     }
-    const bool zh = Options.language == lang_t::ZH;
     if (!ng.name.empty())
     {
         if (!text.empty())
@@ -1215,7 +1214,6 @@ public:
         welcome.textcolour(BROWN);
         welcome.cprintf("%s", _welcome(m_ng).c_str());
         welcome.textcolour(YELLOW);
-        const bool zh = Options.language == lang_t::ZH;
         welcome.cprintf(T_(" Please select your "));
         welcome.cprintf(m_choice_type == C_JOB
             ? (T_("background."))

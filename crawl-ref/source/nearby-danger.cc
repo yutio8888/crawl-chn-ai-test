@@ -243,7 +243,6 @@ vector<monster* > get_nearby_monsters(bool want_move,
 bool i_feel_safe(bool announce, bool want_move, bool just_monsters,
                  bool check_dist, int range, string* reason)
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (!just_monsters)
     {
         // check clouds

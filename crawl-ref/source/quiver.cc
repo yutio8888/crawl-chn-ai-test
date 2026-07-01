@@ -464,7 +464,6 @@ namespace quiver
 
         string quiver_verb() const override
         {
-            const bool zh = Options.language == lang_t::ZH;
             const item_def *weapon = you.weapon();
 
             if (!weapon)

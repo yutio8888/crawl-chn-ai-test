@@ -1547,7 +1547,6 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
             mon_name = "yourself and " + mon_name;
     }
 
-    const bool zh = Options.language == lang_t::ZH;
     const string prompt = make_stringf(
              T_("Really %s%s %s%s?%s"),
              verb,

@@ -333,7 +333,6 @@ bool feat_is_traversable(dungeon_feature_type feat, bool try_fallback)
 
 static const char *_run_mode_name(int runmode)
 {
-    const bool zh = Options.language == lang_t::ZH;
     return runmode == RMODE_TRAVEL         ? (T_("travel")) :
            runmode == RMODE_INTERLEVEL     ? (T_("intertravel")) :
            runmode == RMODE_EXPLORE        ? (T_("explore")) :
@@ -784,7 +783,6 @@ static void _explore_find_target_square()
             vector<const char *> inacc;
             string inacc_desc = "";
 
-            const bool zh = Options.language == lang_t::ZH;
 
             if (runed_door_pause)
                 reasons.push_back(T_("unopened runed door"));
@@ -4817,7 +4815,6 @@ bool runrest::is_any_travel() const
 
 string runrest::runmode_name() const
 {
-    const bool zh = Options.language == lang_t::ZH;
     switch (runmode)
     {
     case RMODE_EXPLORE:

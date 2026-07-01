@@ -1608,7 +1608,6 @@ shop_struct *shop_at(const coord_def& where, bool force_lookup)
 
 string shop_type_name(shop_type type)
 {
-    // [T_() migration] const bool zh = Options.language == lang_t::ZH; // unused
     switch (type)
     {
         case SHOP_WEAPON_ANTIQUE:

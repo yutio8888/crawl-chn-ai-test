@@ -260,7 +260,6 @@ const char* held_status(actor *act)
 {
     act = act ? act : &you;
 
-    const bool zh = Options.language == lang_t::ZH;
     if (act->caught_by() >= CAUGHT_NET)
         return T_("held in a net");
     else

@@ -148,7 +148,6 @@ vector<ability_type> deck_ability = {
 
 const char* card_name(card_type card)
 {
-    const bool zh = Options.language == lang_t::ZH;
     switch (card)
     {
     case CARD_VELOCITY:        return T_("Velocity");

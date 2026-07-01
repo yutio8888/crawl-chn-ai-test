@@ -2804,7 +2804,6 @@ static void _xom_hyper_enchant_monster(int sever)
 
     if (!targetable.empty())
     {
-        const bool zh = Options.language == lang_t::ZH;
         string lines = "";
 
         for (enchant_type apply : buff_list)

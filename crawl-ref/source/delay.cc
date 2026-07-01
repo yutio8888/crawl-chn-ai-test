@@ -81,7 +81,6 @@ static const char *_activity_interrupt_name(activity_interrupt ai);
 
 static string _eq_category(const item_def &equip)
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
         return T_("weapon");
     return equip.base_type == OBJ_JEWELLERY
@@ -209,7 +208,6 @@ bool EquipOnDelay::try_interrupt(bool force)
 
 const char* EquipOffDelay::get_verb()
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
     {
         if (you.has_mutation(MUT_SLOW_WIELD))

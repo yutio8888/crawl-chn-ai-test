@@ -381,7 +381,6 @@ item_def *player::offhand_weapon() const
 
 string player::name(description_level_type dt, bool, bool) const
 {
-    const bool zh = Options.language == lang_t::ZH;
     switch (dt)
     {
     case DESC_NONE:
@@ -587,7 +586,6 @@ string player::arm_name(bool plural, bool *can_plural) const
  */
 string player::unarmed_attack_name(string default_name) const
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (default_name.empty())
         default_name = T_("Nothing wielded");
 
