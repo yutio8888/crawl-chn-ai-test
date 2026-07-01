@@ -19119,6 +19119,33 @@ Awaken Earth
 Animate Skeleton
 Animate Skeleton
 %%%%
+throws
+投掷
+%%%%
+shoots
+射击
+%%%%
+ magically
+凭空
+%%%%
+ into the darkness
+向黑暗中
+%%%%
+pierces through
+穿透
+%%%%
+ and shatters,
+并碎裂，
+%%%%
+%s%s %s %s.
+%s%s%s了%s。
+%%%%
+The wall freezes %s%s%s
+墙壁冻结了%s%s%s
+%%%%
+The frigid air chills %s%s%s
+寒冷空气冻伤了%s%s%s
+%%%%
 Drain Magic
 Drain Magic
 %%%%

@@ -998,10 +998,10 @@ spret cast_airstrike(int pow, coord_def target, bool fail)
 #endif
     hurted = mons->apply_ac(mons->beam_resists(pbeam, hurted, false));
     dprf("preac: %d, postac: %d", preac, hurted);
-    mprf("%s并击中了%s%s%s",
+    mprf(T_("%s and strikes %s%s%s"),
          airstrike_intensity_display(empty_space, tile).c_str(),
          mons->name(DESC_THE).c_str(),
-         hurted ? "" : " but does no damage",
+         hurted ? "" : T_(" but does no damage"),
          attack_strength_punctuation(hurted).c_str());
 
     flash_tile(mons->pos(), WHITE, 60, tile);

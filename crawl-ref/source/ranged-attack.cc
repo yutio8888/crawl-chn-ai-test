@@ -304,7 +304,7 @@ bool ranged_attack::handle_phase_hit()
                     proj_name.c_str(),
                     attack_verb.c_str(),
                     defender->name(DESC_THE).c_str(),
-                    mulch_bonus() ? " and shatters," : "");
+                    mulch_bonus() ? T_(" and shatters,") : "");
             }
         }
 
@@ -792,7 +792,7 @@ bool ranged_attack::player_good_stab()
 
 void ranged_attack::set_attack_verb(int/* damage*/)
 {
-    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? "pierces through" : "hits";
+    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? T_("pierces through") : T_("hits");
 }
 
 void ranged_attack::announce_hit()

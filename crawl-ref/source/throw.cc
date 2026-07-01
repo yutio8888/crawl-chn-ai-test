@@ -745,9 +745,11 @@ static void _player_shoot(ranged_attack_beam &pbolt)
 
     // Create message.
     mprf(T_("You %s %s%s."),
-          is_thrown ? "throw" : "shoot" ,
-          article_a(pbolt.atk.projectile_name()).c_str(),
-          you.current_vision == 0 ? " into the darkness" : "");
+          is_thrown ? T_("throw") : T_("shoot"),
+          (Options.language == lang_t::ZH
+           ? pbolt.atk.projectile_name()
+           : article_a(pbolt.atk.projectile_name())).c_str(),
+          you.current_vision == 0 ? T_(" into the darkness") : "");
 
     pbolt.beam.set_is_tracer(false);
 
@@ -834,11 +836,12 @@ bool mons_throw(monster* mons, ranged_attack_beam& ratk, bool teleport, bool was
     const bool thrown = is_throwable(mons, weapon);
     if (mons->observable())
     {
-        mpr(make_stringf("%s%s %s %s.",
-                         mons->name(DESC_THE).c_str(),
-                         teleport ? " magically" : "",
-                         thrown ? "throws" : "shoots",
-                         article_a(ratk.atk.projectile_name()).c_str()).c_str());
+        const string proj = ratk.atk.projectile_name();
+        mprf(T_("%s%s %s %s."),
+             mons->name(DESC_THE).c_str(),
+             teleport ? T_(" magically") : "",
+             thrown ? T_("throws") : T_("shoots"),
+             (Options.language == lang_t::ZH ? proj : article_a(proj)).c_str());
     }
 
     _throw_noise(mons, weapon);
