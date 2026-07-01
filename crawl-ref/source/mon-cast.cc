@@ -9302,6 +9302,9 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
                                                 foe->name(DESC_THE).c_str()) :
                                    "out of sight";
 
+        // ZH: Chinese has no articles — this branches on DESC_PLAIN vs DESC_THE
+        // to select the appropriate monster name format. Not a translation
+        // branch per se; this is a display layout rule.
         mprf(T_("%s throws %s %s!"),
              (thrower_seen ? (Options.language == lang_t::ZH
                                   ? thrower.name(DESC_PLAIN).c_str()

@@ -1139,9 +1139,12 @@ string monster_info::_core_name() const
 string monster_info::_apply_adjusted_description(description_level_type desc,
                                                  const string& s) const
 {
+    // ZH: Chinese has no articles — this is a UI display rule, not a
+    // translation branch. DESC_THE/DESC_A are remapped because Chinese
+    // grammar uses 你的 (yours) for friendly monsters and bare nouns
+    // (no articles) for all others.
     if (Options.language == lang_t::ZH)
     {
-        // Chinese: no articles, just "你的" for your/friendly
         if (desc == DESC_ITS)
             return apply_description(desc, s);
         if (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A))
@@ -1733,13 +1736,8 @@ string monster_info::speed_description() const
     else if (travel_delay_diff)
     {
         const bool slow = travel_delay_diff > 0;
-        if (Options.language == lang_t::ZH)
-            result << "（通常移动速度比你" << (slow ? "慢" : "快") << "）";
-        else
-        {
-            const string diff_desc = slow ? "slower" : "faster";
-            result << " (normally travels " << diff_desc << " than you)";
-        }
+        result << (slow ? T_(" (normally travels slower than you)")
+                        : T_(" (normally travels faster than you)"));
         // It would be interesting to qualify this with 'on land',
         // if appropriate, but sort of annoying to get player swim speed.
     }
@@ -2086,6 +2084,7 @@ static bool _has_attack_flavour(const monster_info& mi, attack_flavour af)
 }
 
 // Chinese translations for monster status flag HUD strings.
+// TODO: Issue 32 Phase 2 — migrate to T_() lookup in source.txt (~150 entries)
 static const char* _flag_zh(const string& en)
 {
     if (Options.language != lang_t::ZH)
@@ -2251,6 +2250,7 @@ static const char* _flag_zh(const string& en)
 
 // Chinese translations for monster status flag long_singular strings
 // (used in xv monster description and targeter).
+// TODO: Issue 32 Phase 2 — migrate to T_() lookup in source.txt (~138 entries)
 static const char* _flag_long_zh(const string& en)
 {
     if (Options.language != lang_t::ZH)

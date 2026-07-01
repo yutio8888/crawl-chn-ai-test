@@ -833,30 +833,13 @@ void find_connected_identical(const coord_def &d, set<coord_def>& out, bool know
 
 void get_door_description(int door_size, const char** adjective, const char** noun)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const char* zh_descriptions[] =
-        {
-            "极小的" , "有问题的门",
-            ""       , "门",
-            "大的"   , "门",
-            ""       , "大门",
-            "巨大的" , "大门",
-        };
-        int max_idx = static_cast<int>(ARRAYSZ(zh_descriptions) - 2);
-        const unsigned int idx = min(door_size*2, max_idx);
-        *adjective = zh_descriptions[idx];
-        *noun = zh_descriptions[idx+1];
-        return;
-    }
-
     const char* descriptions[] =
     {
-        "miniscule " , "buggy door",
-        ""           , "door",
-        "large "     , "door",
-        ""           , "gate",
-        "huge "      , "gate",
+        T_("miniscule ") , T_("buggy door"),
+        ""               , T_("door"),
+        T_("large ")     , T_("door"),
+        ""               , T_("gate"),
+        T_("huge ")      , T_("gate"),
     };
 
     int max_idx = static_cast<int>(ARRAYSZ(descriptions) - 2);
@@ -1807,20 +1790,9 @@ void fall_into_a_pool(dungeon_feature_type terrain)
         return;
     }
 
-    if (Options.language == lang_t::ZH)
-    {
-        mprf("你掉进了%s！",
-             (terrain == DNGN_LAVA)       ? "熔岩" :
-             (terrain == DNGN_DEEP_WATER) ? "深水"
-                                          : "程序裂缝");
-    }
-    else
-    {
-        mprf("You fall into the %s!",
-             (terrain == DNGN_LAVA)       ? "lava" :
-             (terrain == DNGN_DEEP_WATER) ? "water"
-                                          : "programming rift");
-    }
+    mprf(T_("You fall into the %s!"),
+         T_(terrain == DNGN_LAVA ? "lava" :
+            terrain == DNGN_DEEP_WATER ? "water" : "programming rift"));
     // included in default force_more_message
     enable_emergency_flight();
 }

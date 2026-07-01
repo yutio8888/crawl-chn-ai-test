@@ -1132,9 +1132,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         {
             mprf(MSGCH_WARN,
                  T_("This spell is %s to cast%s"),
-                 Options.language == lang_t::ZH
-                     ? fail_severity_adjs_zh[severity]
-                     : fail_severity_adjs[severity],
+                 fail_severity_adjs[severity],
                  severity > 1 ? "!" : ".");
         }
     }

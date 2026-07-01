@@ -851,14 +851,7 @@ static void _update_tracked_feature_annot(dungeon_feature_type feat,
     const level_id li = level_id::current();
     const char *feat_key = _get_tracked_feature_key(feat);
     const int new_num = env.properties[feat_key];
-    const char *feat_desc;
-    if (Options.language == lang_t::ZH)
-    {
-        const char* zh_name = dungeon_feature_name_zh(feat);
-        feat_desc = zh_name ? zh_name : get_feature_def(feat).name;
-    }
-    else
-        feat_desc = get_feature_def(feat).name;
+    const char *feat_desc = T_(get_feature_def(feat).name);
     const string new_string = make_stringf("%d %s%s", new_num, feat_desc,
                                            new_num == 1 ? "" : "s");
     const string old_string = make_stringf("%d %s%s", old_num, feat_desc,

@@ -3112,32 +3112,28 @@ static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
     else if (feat_is_stone_stair_up(grid))
         return T_("stone staircase leading up");
     else if (feat_is_escape_hatch(grid))
-        return Options.language == lang_t::ZH ? "逃生舱口" : get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
     else if (grid == DNGN_EXIT_DUNGEON)
-        return Options.language == lang_t::ZH ? "通往地牢外的阶梯" : get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
     else if (grid == DNGN_OPEN_DOOR)
-        return Options.language == lang_t::ZH ? "打开的门" : get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
     else if (grid == DNGN_CLOSED_DOOR)
-        return Options.language == lang_t::ZH ? "关闭的门" : get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
     else if (grid == DNGN_ALTAR_ECUMENICAL)
-        return Options.language == lang_t::ZH ? "未知神祇的褪色祭坛" : get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
     else if (feat_is_altar(grid))
     {
-        if (Options.language == lang_t::ZH)
-            return string(get_feature_def(grid).name) + "的祭坛";
-        return get_feature_def(grid).name;
+        god_type god = feat_altar_god(grid);
+        if (god != GOD_NO_GOD)
+            return make_stringf(T_("altar of %s"), god_name(god).c_str());
+        return T_(get_feature_def(grid).name);
     }
     else if (grid == DNGN_ZOT_STATUE && you.zot_orb_monster_known)
         return make_stringf("statue of %s", mons_type_name(you.zot_orb_monster, DESC_A).c_str());
     else if (!is_valid_feature_type(grid))
         return "";
-    else if (Options.language == lang_t::ZH)
-    {
-        const char* zh_name = dungeon_feature_name_zh(grid);
-        return zh_name ? zh_name : get_feature_def(grid).name;
-    }
     else
-        return get_feature_def(grid).name;
+        return T_(get_feature_def(grid).name);
 }
 
 string feature_description(dungeon_feature_type grid, trap_type trap,

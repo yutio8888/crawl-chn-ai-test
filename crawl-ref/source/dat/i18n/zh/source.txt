@@ -15621,3 +15621,105 @@ Read
 %%%%
 Drink
 饮用
+%%%%
+safe
+安全
+%%%%
+mildly dangerous
+稍有危险
+%%%%
+dangerous
+危险
+%%%%
+quite dangerous
+相当危险
+%%%%
+extremely dangerous
+极其危险
+%%%%
+astonishingly dangerous
+惊人地危险
+%%%%
+The spell is %s to miscast (%s risk of failure)%s
+施放此法术%s失败（%s失败风险）%s
+%%%%
+Silent
+无声
+%%%%
+Almost silent
+几乎无声
+%%%%
+Quiet
+安静
+%%%%
+A bit loud
+稍响
+%%%%
+Loud
+响亮
+%%%%
+Very loud
+非常响
+%%%%
+Extremely loud
+极其响
+%%%%
+Deafening
+震耳欲聋
+%%%%
+miniscule 
+极小的
+%%%%
+buggy door
+有问题的门
+%%%%
+door
+门
+%%%%
+large 
+大的
+%%%%
+gate
+大门
+%%%%
+huge 
+巨大的
+%%%%
+You fall into the %s!
+你掉进了%s！
+%%%%
+lava
+熔岩
+%%%%
+water
+深水
+%%%%
+programming rift
+程序裂缝
+%%%%
+escape hatch in the floor
+逃生舱口
+%%%%
+escape hatch in the ceiling
+逃生舱口
+%%%%
+staircase leading out of the dungeon
+通往地牢外的阶梯
+%%%%
+open door
+打开的门
+%%%%
+closed door
+关闭的门
+%%%%
+faded altar of an unknown god
+未知神祇的褪色祭坛
+%%%%
+altar of %s
+%s的祭坛
+%%%%
+ (normally travels slower than you)
+（通常移动速度比你慢）
+%%%%
+ (normally travels faster than you)
+（通常移动速度比你快）

@@ -3135,13 +3135,8 @@ string mons_type_name(monster_type mc, description_level_type desc)
         return result;
     }
 
-    if (Options.language == lang_t::ZH)
-    {
-        const char* zh_name = zh_monster_name(me->name);
-        result += zh_name ? zh_name : me->name;
-    }
-    else
-        result += me->name;
+    const char* zh_name = zh_monster_name(me->name);
+    result += zh_name ? zh_name : me->name;
 
     // Vowel fix: Change 'a orc' to 'an orc'..
     if (result.length() >= 3
@@ -5952,9 +5947,18 @@ int mons_leash_range(monster_type mc)
 }
 // Auto-generated Chinese monster name lookup
 // Total entries: 608
-
+// TODO: Issue 32 Phase 2 — migrate all entries to source.txt and remove the static map.
 const char* zh_monster_name(const string& en)
 {
+    if (Options.language == lang_t::EN)
+        return nullptr;
+
+    // Try T_() source.txt lookup first (enables incremental migration)
+    const char* t_result = T_(en.c_str());
+    if (strcmp(t_result, en.c_str()) != 0)
+        return t_result;
+
+    // Fall back to internal static map
     static const map<string, const char*> zh_names = {
         { "Aizul", "艾祖尔" },
         { "Antaeus", "安泰俄斯" },

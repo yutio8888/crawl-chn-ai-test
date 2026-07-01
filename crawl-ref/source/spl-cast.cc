@@ -1284,14 +1284,8 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
             return true;
         }
 
-        // TODO: migrate to T_() — uses fail_severity_adjs arrays (ARG-DIFF)
-        string prompt = make_stringf(Options.language == lang_t::ZH
-                                     ? "施放此法术%s失败（%s失败风险）%s"
-                                     : "The spell is %s to miscast "
-                                       "(%s risk of failure)%s",
-                                     (Options.language == lang_t::ZH
-                                      ? fail_severity_adjs_zh
-                                      : fail_severity_adjs)[severity],
+        string prompt = make_stringf(T_("The spell is %s to miscast (%s risk of failure)%s"),
+                                     fail_severity_adjs[severity],
                                      failure_rate.c_str(),
                                      severity > 1 ? "!" : ".");
 
@@ -2997,26 +2991,14 @@ int fail_severity(spell_type spell)
 
 const char *fail_severity_adjs[] =
 {
-    "safe",
-    "mildly dangerous",
-    "dangerous",
-    "quite dangerous",
-    "extremely dangerous",
-    "astonishingly dangerous",
-};
-
-const char *fail_severity_adjs_zh[] =
-{
-    "安全",
-    "稍有危险",
-    "危险",
-    "相当危险",
-    "极其危险",
-    "惊人地危险",
+    T_("safe"),
+    T_("mildly dangerous"),
+    T_("dangerous"),
+    T_("quite dangerous"),
+    T_("extremely dangerous"),
+    T_("astonishingly dangerous"),
 };
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
-COMPILE_CHECK(ARRAYSZ(fail_severity_adjs_zh)
-              == ARRAYSZ(fail_severity_adjs));
 
 // Chooses a colour for the failure rate display for a spell. The colour is
 // based on the chance of getting a severity >= 2 miscast.
@@ -3083,15 +3065,11 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 static string _spell_failure_rate_description(spell_type spell)
 {
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    // TODO: migrate to T_() — uses fail_severity_adjs arrays (ARG-DIFF)
-    const char *severity_adj = (Options.language == lang_t::ZH
-            ? fail_severity_adjs_zh : fail_severity_adjs)[fail_severity(spell)];
+    const char *severity_adj = fail_severity_adjs[fail_severity(spell)];
     const string colour = colour_to_str(failure_rate_colour(spell));
     const char *col = colour.c_str();
 
-    return make_stringf(Options.language == lang_t::ZH
-            ? "<%s>%s</%s>; <%s>%s</%s> 失败风险"
-            : "<%s>%s</%s>; <%s>%s</%s> risk of failure",
+    return make_stringf(T_("<%s>%s</%s>; <%s>%s</%s> risk of failure"),
             col, severity_adj, col, col, failure.c_str(), col);
 }
 
@@ -3106,25 +3084,14 @@ string spell_noise_string(spell_type spell, int chop_wiz_display_width)
 
     const int noise = max(casting_noise, effect_noise);
 
-    // TODO: migrate to T_() — uses array pointer switching (ARG-DIFF)
-    const char* noise_descriptions_zh[] =
+    const char* noise_descriptions[] =
     {
-        "无声", "几乎无声", "安静", "稍响", "响亮", "非常响",
-        "极其响", "震耳欲聋"
-    };
-    const char* noise_descriptions_en[] =
-    {
-        "Silent", "Almost silent", "Quiet", "A bit loud", "Loud", "Very loud",
-        "Extremely loud", "Deafening"
+        T_("Silent"), T_("Almost silent"), T_("Quiet"), T_("A bit loud"),
+        T_("Loud"), T_("Very loud"), T_("Extremely loud"), T_("Deafening")
     };
 
     const int breakpoints[] = { 1, 2, 4, 8, 15, 20, 30 };
-    COMPILE_CHECK(ARRAYSZ(noise_descriptions_zh) == 1 + ARRAYSZ(breakpoints));
-    COMPILE_CHECK(ARRAYSZ(noise_descriptions_en) == 1 + ARRAYSZ(breakpoints));
-
-    const char* const* noise_descriptions =
-        Options.language == lang_t::ZH ? noise_descriptions_zh
-                                        : noise_descriptions_en;
+    COMPILE_CHECK(ARRAYSZ(noise_descriptions) == 1 + ARRAYSZ(breakpoints));
 
     const char* desc = noise_descriptions[breakpoint_rank(noise, breakpoints,
                                                 ARRAYSZ(breakpoints))];
