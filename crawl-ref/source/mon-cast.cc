@@ -8911,7 +8911,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
                                 const monster* mons, const bolt& pbolt,
                                 bool gestured)
 {
-    targ_prep = "at";
+    targ_prep = T_("at");
     target    = "nothing";
 
     bolt tracer_beam = pbolt;
@@ -8923,7 +8923,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
     fire_tracer(mons, tracer, tracer_beam);
 
     if (pbolt.target == you.pos())
-        target = "you";
+        target = T_("you");
     else if (pbolt.target == mons->pos())
         target = mons->pronoun(PRONOUN_REFLEXIVE);
     // Monsters should only use targeted spells while foe == MHITNOT
@@ -8958,7 +8958,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 const actor* act = actor_at(*ai);
                 if (act && act != mons && you.can_see(*act))
                 {
-                    targ_prep = "next to";
+                    targ_prep = T_("next to");
 
                     if (act->is_player() || one_chance_in(++count))
                         target = act->name(DESC_THE);
@@ -9124,7 +9124,7 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
                           || msg.find("手势") != string::npos
                           || msg.find("指向") != string::npos;
 
-    string targ_prep = "at";
+    string targ_prep = T_("at");
     string target    = "NO_TARGET";
 
     if (targeted)

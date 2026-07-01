@@ -17593,3 +17593,1529 @@ no
 \nYour SH would %s.
 \n你的护盾将%s。
 %%%%
+at
+向
+%%%%
+next to
+旁边
+%%%%
+
+\nYour spell failure would 
+\n你的咒语失败率将
+%%%%
+worsen
+恶化
+%%%%
+improve
+改善
+%%%%
+ trivially.
+ 轻微变化。
+%%%%
+ by up to %d%% (press '!' for details).
+，最多%d%%（按'!'查看详情）。
+%%%%
+
+Cause Fear
+引发恐惧
+%%%%
+Magic Dart
+魔法飞镖
+%%%%
+Fireball
+火球术
+%%%%
+Apportation
+隔空取物
+%%%%
+Volatile Blastmotes
+不稳定爆尘
+%%%%
+Dig
+挖掘
+%%%%
+Bolt of Fire
+火焰箭
+%%%%
+Bolt of Cold
+寒冰箭
+%%%%
+Lightning Bolt
+闪电箭
+%%%%
+Arcjolt
+电弧震击
+%%%%
+Plasma Beam
+等离子光束
+%%%%
+Blinkbolt
+闪雷
+%%%%
+Vhi's Electric Charge
+维之电荷
+%%%%
+Vhi's Electrolunge
+维之电冲
+%%%%
+Polymorph
+变形
+%%%%
+Petrify
+石化
+%%%%
+Confuse
+困惑
+%%%%
+Invisibility
+隐身术
+%%%%
+Throw Flame
+火焰投掷
+%%%%
+Throw Frost
+冰霜投掷
+%%%%
+Disjunction
+空间分离
+%%%%
+Freezing Cloud
+冰冻云
+%%%%
+Freezing Gust
+冰冻阵风
+%%%%
+Mephitic Cloud
+瘴气云
+%%%%
+Venom Bolt
+毒液箭
+%%%%
+Olgreb's Toxic Radiance
+奥尔格雷布之毒辐射
+%%%%
+Teleport Other
+传送他人
+%%%%
+Death's Door
+死亡之门
+%%%%
+Mass Confusion
+群体困惑
+%%%%
+Smiting
+惩击
+%%%%
+Summon Small Mammal
+召唤小型哺乳动物
+%%%%
+Abjuration
+驱逐术
+%%%%
+Bolt of Draining
+吸取之箭
+%%%%
+Lehudib's Crystal Spear
+勒胡迪布之水晶矛
+%%%%
+Poisonous Cloud
+毒云
+%%%%
+Fire Storm
+火焰风暴
+%%%%
+Call Down Damnation
+降下诅咒
+%%%%
+Call Down Lightning
+降下闪电
+%%%%
+Blink
+闪烁
+%%%%
+Blink Range
+退避闪烁
+%%%%
+Blink Away
+远离闪烁
+%%%%
+Blink Close
+接近闪烁
+%%%%
+Iskenderun's Mystic Blast
+伊斯肯德伦之神秘冲击
+%%%%
+Summon Horrible Things
+召唤恐怖之物
+%%%%
+Malign Gateway
+邪恶传送门
+%%%%
+Charm
+魅惑
+%%%%
+Animate Dead
+操纵死尸
+%%%%
+Soul Splinter
+灵魂分裂
+%%%%
+Vampiric Draining
+吸血之蚀
+%%%%
+Haunt
+鬼魂缠身
+%%%%
+Martyr's Knell
+殉道者之丧钟
+%%%%
+Borgnjor's Revivification
+博格尼尔之复活
+%%%%
+Freeze
+冰冻
+%%%%
+Ozocubu's Refrigeration
+奥佐库布之制冷
+%%%%
+Sticky Flame
+粘性火焰
+%%%%
+Summon Ice Beast
+召唤冰兽
+%%%%
+Ozocubu's Armour
+奥佐库布之护甲
+%%%%
+Call Imp
+召唤小恶魔
+%%%%
+Berserker Rage
+狂暴之怒
+%%%%
+Dispel Undead
+驱散亡灵
+%%%%
+Poison Arrow
+毒箭
+%%%%
+Banishment
+放逐
+%%%%
+Sting
+刺击
+%%%%
+Sublimation of Blood
+血液升华
+%%%%
+Tukima's Dance
+图基玛之舞
+%%%%
+Summon Demon
+召唤恶魔
+%%%%
+Summon Greater Demon
+召唤高级恶魔
+%%%%
+Cigotuvi's Putrefaction
+西格图维之腐烂
+%%%%
+Iron Shot
+铁弹
+%%%%
+Bombard
+炮击
+%%%%
+Stone Arrow
+石箭
+%%%%
+Swiftness
+迅捷
+%%%%
+Debugging Ray
+调试射线
+%%%%
+Agonising Touch
+剧痛之触
+%%%%
+Curse of Agony
+痛苦诅咒
+%%%%
+Mindburst
+心智爆发
+%%%%
+Death Channel
+死亡通道
+%%%%
+Symbol of Torment
+折磨之符
+%%%%
+Siphon Essence
+吸取精华
+%%%%
+Throw Icicle
+投掷冰柱
+%%%%
+Airstrike
+空袭
+%%%%
+Momentum Strike
+动量打击
+%%%%
+Shadow Creatures
+暗影生物
+%%%%
+Confusing Touch
+困惑之触
+%%%%
+Passwall
+穿墙术
+%%%%
+Ignite Poison
+点燃毒素
+%%%%
+Call Canine Familiar
+召唤犬类使魔
+%%%%
+Summon Dragon
+召唤巨龙
+%%%%
+Ensorcelled Hibernation
+冬眠
+%%%%
+Metabolic Englaciation
+深度冻结
+%%%%
+Silence
+沉默
+%%%%
+Shatter
+粉碎
+%%%%
+Dispersal
+驱散
+%%%%
+Static Discharge
+静电释放
+%%%%
+Corona
+日冕
+%%%%
+Alistair's Intoxication
+阿利斯泰尔之醉
+%%%%
+Lee's Rapid Deconstruction
+李之快速解构
+%%%%
+Sandblast
+沙暴
+%%%%
+Sculpt Simulacrum
+塑造拟像
+%%%%
+Conjure Ball Lightning
+召唤球形闪电
+%%%%
+Chain Lightning
+连锁闪电
+%%%%
+Portal Projectile
+传送投射物
+%%%%
+Monstrous Menagerie
+怪物动物园
+%%%%
+Passage of Golubria
+戈卢布里亚之通道
+%%%%
+Fulminant Prism
+爆裂棱镜
+%%%%
+Minor Healing
+小型治疗
+%%%%
+Major Healing
+大型治疗
+%%%%
+Woodweal
+木质愈合
+%%%%
+Hurl Damnation
+投掷诅咒
+%%%%
+Brain Bite
+脑噬
+%%%%
+Noxious Cloud
+毒云
+%%%%
+Steam Ball
+蒸汽球
+%%%%
+Summon Ufetubus
+Summon Ufetubus
+%%%%
+Summon Sin Beast
+召唤罪兽
+%%%%
+Bolt of Devastation
+毁灭之箭
+%%%%
+Spit Poison
+喷吐毒素
+%%%%
+Summon Undead
+召唤亡灵
+%%%%
+Cantrip
+小戏法
+%%%%
+Quicksilver Bolt
+水银箭
+%%%%
+Metal Splinters
+金属碎片
+%%%%
+Splinterspray
+碎片喷射
+%%%%
+Miasma Breath
+瘴气吐息
+%%%%
+Summon Drakes
+召唤小龙
+%%%%
+Blink Other
+闪烁他人
+%%%%
+Blink Other Close
+闪烁他人接近
+%%%%
+Summon Mushrooms
+召唤蘑菇
+%%%%
+Spit Acid
+喷吐酸液
+%%%%
+Caustic Breath
+腐蚀吐息
+%%%%
+Pyre Arrow
+火葬之箭
+%%%%
+Fire Breath
+火焰吐息
+%%%%
+Searing Breath
+灼热之息
+%%%%
+Chaos Breath
+混沌吐息
+%%%%
+Cold Breath
+寒冷吐息
+%%%%
+Glacial Breath
+冰川吐息
+%%%%
+Summon Water Elementals
+召唤水元素
+%%%%
+Porkalator
+变猪术
+%%%%
+Spawn Tentacles
+生成触须
+%%%%
+Summon Eyeballs
+召唤眼球
+%%%%
+Haste Other
+加速他人
+%%%%
+Summon Earth Elementals
+召唤大地元素
+%%%%
+Summon Air Elementals
+召唤空气元素
+%%%%
+Summon Fire Elementals
+召唤火焰元素
+%%%%
+Sleep
+睡眠
+%%%%
+Mara Summon
+玛拉召唤
+%%%%
+Summon Illusion
+召唤幻象
+%%%%
+Primal Wave
+原始波浪
+%%%%
+Call Tide
+召唤潮汐
+%%%%
+Orb of Destruction
+毁灭之球
+%%%%
+Ink Cloud
+墨云
+%%%%
+Might
+强壮
+%%%%
+Might Other
+强壮他人
+%%%%
+Awaken Forest
+唤醒森林
+%%%%
+Druid's Call
+德鲁伊召唤
+%%%%
+Brothers in Arms
+战友召唤
+%%%%
+Trog's Hand
+特洛格之手
+%%%%
+Summon Mortal Champion
+召唤凡人冠军
+%%%%
+Vanquished Vanguard
+被征服的先锋
+%%%%
+Summon Holies
+召唤圣灵
+%%%%
+Heal Other
+治愈他人
+%%%%
+Holy Flames
+神圣火焰
+%%%%
+Holy Breath
+神圣吐息
+%%%%
+Injury Mirror
+伤害反射
+%%%%
+Drain Life
+吸取生命
+%%%%
+Leda's Liquefaction
+勒达之液化
+%%%%
+Summon Hydra
+召唤九头蛇
+%%%%
+Mesmerise
+迷惑
+%%%%
+Hellfire Court
+地狱火法庭
+%%%%
+Petrifying Cloud
+石化云
+%%%%
+Inner Flame
+内焰
+%%%%
+Ensnare
+束缚
+%%%%
+Greater Ensnare
+强力束缚
+%%%%
+Thunderbolt
+雷击
+%%%%
+Iskenderun's Battlesphere
+伊斯肯德伦之战斗球
+%%%%
+Summon Minor Demon
+召唤小恶魔
+%%%%
+Sticks to Snakes
+棍变蛇
+%%%%
+Malmutate
+恶性变异
+%%%%
+Gloom
+阴郁
+%%%%
+Beckoning Gale
+召唤强风
+%%%%
+Force Lance
+力量之矛
+%%%%
+Sentinel's Mark
+哨兵印记
+%%%%
+Word of Recall
+召回之言
+%%%%
+Injury Bond
+伤害链接
+%%%%
+Spectral Cloud
+幽灵云
+%%%%
+Ghostly Fireball
+幽灵火球
+%%%%
+Call Lost Souls
+召唤迷失灵魂
+%%%%
+Dimension Anchor
+维度锚定
+%%%%
+Blink Allies Encircling
+闪烁盟友包围
+%%%%
+Awaken Vines
+唤醒藤蔓
+%%%%
+Volley of Thorns
+荆棘齐射
+%%%%
+Wall of Brambles
+Wall of Brambles
+%%%%
+Waterstrike
+水击
+%%%%
+Wind Blast
+风击
+%%%%
+Strip Willpower
+剥离意志力
+%%%%
+Fugue of the Fallen
+亡灵赋格
+%%%%
+Summon Vermin
+召唤害虫
+%%%%
+Malign Offering
+邪恶献祭
+%%%%
+Searing Ray
+灼热射线
+%%%%
+Discord
+混乱
+%%%%
+Invisibility Other
+隐身他人
+%%%%
+Virulence
+毒性
+%%%%
+Orb of Electricity
+电击之球
+%%%%
+Flash Freeze
+瞬间冻结
+%%%%
+Creeping Frost
+蔓延冰霜
+%%%%
+Legendary Destruction
+传奇毁灭
+%%%%
+Forceful Invitation
+强制邀请
+%%%%
+Plane Rend
+位面撕裂
+%%%%
+Chain of Chaos
+混沌之链
+%%%%
+Call of Chaos
+混沌召唤
+%%%%
+Sign of Ruin
+毁灭之印
+%%%%
+Sap Magic
+削弱魔法
+%%%%
+Major Destruction
+大型毁灭
+%%%%
+Blink Allies Away
+闪烁盟友远离
+%%%%
+Summon Forest
+召唤森林
+%%%%
+Forge Lightning Spire
+锻造闪电尖塔
+%%%%
+Forge Blazeheart Golem
+锻造炽心魔像
+%%%%
+Rebounding Blaze
+弹跳烈焰
+%%%%
+Rebounding Chill
+弹跳寒冷
+%%%%
+Glaciate
+冰川
+%%%%
+Dragon's Call
+龙之呼唤
+%%%%
+Spellspark Servitor
+法术火花仆从
+%%%%
+Summon Mana Viper
+召唤魔力蝰蛇
+%%%%
+Phantom Mirror
+幻影镜
+%%%%
+Diminish Spells
+削弱法术
+%%%%
+Corrosive Bolt
+腐蚀箭
+%%%%
+Bolt of Light
+光之箭
+%%%%
+Bolt of Flesh
+血肉之箭
+%%%%
+Awaken Flesh
+唤醒血肉
+%%%%
+gehenna serpent of hell breath
+火焚地狱蛇之吐息
+%%%%
+cocytus serpent of hell breath
+冰狱蛇之吐息
+%%%%
+dis serpent of hell breath
+铁城蛇之吐息
+%%%%
+tartarus serpent of hell breath
+悲叹地狱蛇之吐息
+%%%%
+Summon Emperor Scorpions
+召唤帝蝎
+%%%%
+Irradiate
+辐射
+%%%%
+Spit Lava
+喷吐岩浆
+%%%%
+Electrical Bolt
+电击箭
+%%%%
+Flaming Cloud
+燃烧云
+%%%%
+Throw Barbs
+投掷倒刺
+%%%%
+Battlecry
+战吼
+%%%%
+Warning Cry
+警告之嚎
+%%%%
+Hunting Call
+狩猎呼唤
+%%%%
+Funeral Dirge
+葬礼哀歌
+%%%%
+Seal Doors
+封印门
+%%%%
+Flay
+剥皮
+%%%%
+Berserk Other
+狂暴他人
+%%%%
+Corrupting Pulse
+腐化脉冲
+%%%%
+Siren Song
+塞壬之歌
+%%%%
+Avatar Song
+化身之歌
+%%%%
+Paralysis Gaze
+麻痹凝视
+%%%%
+Confusion Gaze
+困惑凝视
+%%%%
+Antimagic Gaze
+反魔法凝视
+%%%%
+Draining Gaze
+吸取凝视
+%%%%
+Weakening Gaze
+虚弱凝视
+%%%%
+Mourning Wail
+哀悼嚎哭
+%%%%
+Death Rattle
+死亡之响
+%%%%
+March of Sorrows
+悲伤行军
+%%%%
+Summon Scarabs
+召唤圣甲虫
+%%%%
+Throw Ally
+投掷盟友
+%%%%
+Cleansing Flame
+净化之焰
+%%%%
+Gell's Gravitas
+盖尔之重力
+%%%%
+Yara's Violent Unravelling
+亚拉之猛烈解构
+%%%%
+Entropic Weave
+熵之编织
+%%%%
+Summon Executioners
+召唤行刑者
+%%%%
+Oblivion Howl
+湮灭嚎叫
+%%%%
+Prayer of Brilliance
+聪慧祈祷
+%%%%
+Iceblast
+冰爆
+%%%%
+Slug Dart
+蛞蝓飞镖
+%%%%
+Fleetfoot
+轻快脚步
+%%%%
+Infernal Servant
+地狱仆从
+%%%%
+Bind Souls
+绑定灵魂
+%%%%
+Infestation
+虫群侵扰
+%%%%
+Still Winds
+静止风
+%%%%
+Resonance Strike
+共鸣打击
+%%%%
+Ghostly Sacrifice
+幽灵献祭
+%%%%
+Dream Dust
+梦尘
+%%%%
+Lesser Beckoning
+次级召唤
+%%%%
+Upheaval
+剧变
+%%%%
+Mercury Arrow
+汞矢
+%%%%
+Poisonous Vapours
+毒气
+%%%%
+Ignition
+点火
+%%%%
+Borgnjor's Vile Clutch
+博格尼尔之邪恶抓握
+%%%%
+Fastroot
+快速扎根
+%%%%
+Warp Space
+扭曲空间
+%%%%
+Sojourning Bolt
+旅居之箭
+%%%%
+Harpoon Shot
+鱼叉射击
+%%%%
+Grasping Roots
+抓握根须
+%%%%
+Throw Bolas
+投掷流星索
+%%%%
+Throw Klown Pie
+投掷小丑派
+%%%%
+Sporulate
+产孢
+%%%%
+Launch Sporangium
+发射孢子囊
+%%%%
+Starburst
+星爆
+%%%%
+Foxfire
+狐火
+%%%%
+Marshlight
+沼泽之光
+%%%%
+Hailstorm
+冰雹风暴
+%%%%
+Eringya's Noxious Bog
+埃林吉亚之有毒沼泽
+%%%%
+Agony
+痛苦折磨
+%%%%
+Dispel Undead Range
+远程驱散亡灵
+%%%%
+Frozen Ramparts
+冰冻壁垒
+%%%%
+Maxwell's Capacitive Coupling
+麦克斯韦之电容耦合
+%%%%
+Sonic wave
+音波
+%%%%
+Roll
+滚动
+%%%%
+Hurl Sludge
+投掷污泥
+%%%%
+Summon Tzitzimitl
+召唤齐齐米特尔
+%%%%
+Summon Hell Sentinel
+召唤地狱哨兵
+%%%%
+Awaken Armour
+唤醒护甲
+%%%%
+Manifold Assault
+多重攻击
+%%%%
+Concentrate Venom
+浓缩毒液
+%%%%
+Eruption
+喷发
+%%%%
+Pyroclastic Surge
+火山碎屑涌
+%%%%
+Stunning Burst
+眩晕爆发
+%%%%
+Corrupt
+腐化
+%%%%
+Conjure Living Spells
+召唤活体法术
+%%%%
+Summon Cactus Giant
+召唤仙人掌巨人
+%%%%
+Stoke Flames
+煽动火焰
+%%%%
+Seracfall
+冰塔崩塌
+%%%%
+Scorch
+烧焦
+%%%%
+Flame Wave
+火焰波
+%%%%
+Enfeeble
+虚弱
+%%%%
+Summon Spiders
+召唤蜘蛛
+%%%%
+Anguish
+痛苦
+%%%%
+Summon Scorpions
+召唤蝎子
+%%%%
+Sheza's Dance
+谢扎之舞
+%%%%
+Divine Armament
+神圣武装
+%%%%
+Kiss of Death
+死亡之吻
+%%%%
+Jinxbite
+厄运之咬
+%%%%
+Sigil of Binding
+束缚符文
+%%%%
+Dimensional Bullseye
+维度靶心
+%%%%
+Brom's Barrelling Boulder
+布罗姆之碾压巨石
+%%%%
+Vitrify
+玻璃化
+%%%%
+Vitrifying Gaze
+玻璃化凝视
+%%%%
+Crystallising Shot
+结晶射击
+%%%%
+Tremorstone
+震石
+%%%%
+Regenerate Other
+治愈他人
+%%%%
+Mass Regeneration
+群体再生
+%%%%
+Noxious Breath
+毒气吐息
+%%%%
+Unleash Destruction
+释放毁灭
+%%%%
+Hurl Torchlight
+投掷火炬之光
+%%%%
+Combustion Breath
+燃烧吐息
+%%%%
+Nullifying Breath
+湮灭吐息
+%%%%
+Steam Breath
+蒸汽吐息
+%%%%
+Mud Breath
+泥浆吐息
+%%%%
+Galvanic Breath
+电流吐息
+%%%%
+Maxwell's Portable Piledriver
+麦克斯韦之便携打桩机
+%%%%
+Gell's Gavotte
+盖尔之加沃特
+%%%%
+Magnavolt
+磁暴
+%%%%
+Fulsome Fusillade
+猛烈连射
+%%%%
+Rimeblight
+霜疫
+%%%%
+Hoarfrost Cannonade
+白霜炮击
+%%%%
+Seismic Stomp
+地震践踏
+%%%%
+Hoarfrost Bullet
+白霜弹
+%%%%
+Flashing Balestra
+闪光弩击
+%%%%
+Phantom Blitz
+幻影突击
+%%%%
+Bestow Arms
+赐予武器
+%%%%
+Hellfire Mortar
+地狱火迫击炮
+%%%%
+Shadow Shard
+暗影碎片
+%%%%
+Shadow Beam
+暗影光束
+%%%%
+Shadowball
+暗影球
+%%%%
+Creeping Shadow
+蔓延暗影
+%%%%
+Shadow Tempest
+暗影风暴
+%%%%
+Shadow Prism
+暗影棱镜
+%%%%
+Shadow Puppet
+暗影傀儡
+%%%%
+Shadow Turret
+暗影炮台
+%%%%
+Shadow Shot
+暗影射击
+%%%%
+Shadow Bind
+暗影束缚
+%%%%
+Shadow Torpor
+暗影麻木
+%%%%
+Shadow Draining
+暗影吸取
+%%%%
+Grave Claw
+墓爪
+%%%%
+Launch Clockwork Bee
+发射发条蜜蜂
+%%%%
+Construct Spike Launcher
+构建尖刺发射器
+%%%%
+Kinetic Grapnel
+动能抓钩
+%%%%
+Diamond Sawblades
+钻石锯片
+%%%%
+Shred
+撕裂
+%%%%
+Eringya's Surprising Crocodile
+埃林吉亚之惊喜鳄鱼
+%%%%
+Platinum Paragon
+白金典范
+%%%%
+Alistair's Walking Alembic
+阿利斯泰尔之行走蒸馏器
+%%%%
+Forge Monarch Bomb
+锻造君主炸弹
+%%%%
+Launch Bomblet
+发射小型炸弹
+%%%%
+Splinterfrost Shell
+碎霜之壳
+%%%%
+Nazja's Percussive Tempering
+纳兹亚之冲击淬炼
+%%%%
+Nazja's All-Purpose Tempering
+纳兹亚之通用淬炼
+%%%%
+Fortress Blast
+堡垒冲击波
+%%%%
+Summon Seismosaurus Egg
+召唤震龙蛋
+%%%%
+Forge Phalanx Beetle
+锻造方阵甲虫
+%%%%
+Rending Blade
+撕裂之刃
+%%%%
+Magma Barrage
+岩浆弹幕
+%%%%
+Vex
+激怒
+%%%%
+Ravenous Swarm
+贪婪虫群
+%%%%
+Dominate Undead
+支配亡灵
+%%%%
+Detonation Catalyst
+引爆催化剂
+%%%%
+Rust Breath
+锈蚀吐息
+%%%%
+Golden Breath
+黄金吐息
+%%%%
+Sphinx Sisters
+斯芬克斯姐妹
+%%%%
+Ill Omen
+凶兆
+%%%%
+Doom Bolt
+厄运之箭
+%%%%
+Warp Body
+扭曲身体
+%%%%
+Ostracise
+排斥
+%%%%
+Mutagenic Gaze
+变异凝视
+%%%%
+Acid Ball
+酸液球
+%%%%
+nonexistent spell
+不存在的法术
+%%%%
+Pyrrhic Recollection
+惨胜回忆
+%%%%
+Planar Overlay
+位面叠加
+%%%%
+Doomsaying
+宣告厄运
+%%%%
+Sleetstrike
+冰雨打击
+%%%%
+Landbreaker
+裂地
+%%%%
+Aura of Abjuration
+Aura of Abjuration
+%%%%
+Bolt of Inaccuracy
+Bolt of Inaccuracy
+%%%%
+Chant Fire Storm
+Chant Fire Storm
+%%%%
+Cigotuvi's Degeneration
+Cigotuvi's Degeneration
+%%%%
+Cigotuvi's Embrace
+Cigotuvi's Embrace
+%%%%
+Condensation Shield
+Condensation Shield
+%%%%
+Controlled Blink
+Controlled Blink
+%%%%
+Control Teleport
+Control Teleport
+%%%%
+Control Undead
+Control Undead
+%%%%
+Control Winds
+Control Winds
+%%%%
+Corrupt Body
+Corrupt Body
+%%%%
+Cure Poison
+Cure Poison
+%%%%
+Darkness
+Darkness
+%%%%
+Old Deflect Missiles
+Old Deflect Missiles
+%%%%
+Delayed Fireball
+Delayed Fireball
+%%%%
+Demonic Horde
+Demonic Horde
+%%%%
+Draconian Breath
+Draconian Breath
+%%%%
+Ephemeral Infusion
+Ephemeral Infusion
+%%%%
+Evaporate
+Evaporate
+%%%%
+Explosive Bolt
+Explosive Bolt
+%%%%
+Rakshasa Summon
+Rakshasa Summon
+%%%%
+Fire Brand
+Fire Brand
+%%%%
+Flight
+Flight
+%%%%
+Forceful Dismissal
+Forceful Dismissal
+%%%%
+Freezing Aura
+Freezing Aura
+%%%%
+Frenzy
+Frenzy
+%%%%
+Fulsome Distillation
+Fulsome Distillation
+%%%%
+Grand Avatar
+Grand Avatar
+%%%%
+Haste Plants
+Haste Plants
+%%%%
+Holy Light
+Holy Light
+%%%%
+Hunting Cry
+Hunting Cry
+%%%%
+Localized Ignite Poison
+Localized Ignite Poison
+%%%%
+Insulation
+Insulation
+%%%%
+Infusion
+Infusion
+%%%%
+Summon Iron Elementals
+Summon Iron Elementals
+%%%%
+Lethal Infusion
+Lethal Infusion
+%%%%
+Melee
+Melee
+%%%%
+Mislead
+Mislead
+%%%%
+Phase Shift
+Phase Shift
+%%%%
+Poison Weapon
+Poison Weapon
+%%%%
+Random Bolt
+Random Bolt
+%%%%
+Rearrange the Pieces
+Rearrange the Pieces
+%%%%
+Recall
+Recall
+%%%%
+Regeneration
+Regeneration
+%%%%
+Ring of Flames
+Ring of Flames
+%%%%
+See Invisible
+See Invisible
+%%%%
+Shaft Self
+Shaft Self
+%%%%
+Shroud of Golubria
+Shroud of Golubria
+%%%%
+Silver Blast
+Silver Blast
+%%%%
+Singularity
+Singularity
+%%%%
+Song of Shielding
+Song of Shielding
+%%%%
+Spectral Weapon
+Spectral Weapon
+%%%%
+Stoneskin
+Stoneskin
+%%%%
+Summon Butterflies
+Summon Butterflies
+%%%%
+Summon Elemental
+Summon Elemental
+%%%%
+Summon Rakshasa
+Summon Rakshasa
+%%%%
+Summon Twister
+Summon Twister
+%%%%
+Sunray
+Sunray
+%%%%
+Sure Blade
+Sure Blade
+%%%%
+Throw
+Throw
+%%%%
+Vampire Summon
+Vampire Summon
+%%%%
+Warp Weapon
+Warp Weapon
+%%%%
+Weave Shadows
+Weave Shadows
+%%%%
+Striking
+Striking
+%%%%
+Resurrect
+Resurrect
+%%%%
+Holy word
+Holy word
+%%%%
+Miasma cloud
+Miasma cloud
+%%%%
+Poison cloud
+Poison cloud
+%%%%
+Fire cloud
+Fire cloud
+%%%%
+Steam cloud
+Steam cloud
+%%%%
+Homunculus
+Homunculus
+%%%%
+Old serpent of hell breath
+Old serpent of hell breath
+%%%%
+Scattershot
+Scattershot
+%%%%
+Summon swarm
+Summon swarm
+%%%%
+Cloud Cone
+Cloud Cone
+%%%%
+Ring of Thunder
+Ring of Thunder
+%%%%
+Twisted Resurrection
+Twisted Resurrection
+%%%%
+Random Effects
+Random Effects
+%%%%
+Hydra Form
+Hydra Form
+%%%%
+Vortex
+Vortex
+%%%%
+Goad Beasts
+Goad Beasts
+%%%%
+Teleport Self
+Teleport Self
+%%%%
+Tomb of Doroklohe
+Tomb of Doroklohe
+%%%%
+Excruciating Wounds
+Excruciating Wounds
+%%%%
+Conjure Flame
+Conjure Flame
+%%%%
+Corpse Rot
+Corpse Rot
+%%%%
+Flame Tongue
+Flame Tongue
+%%%%
+Beastly Appendage
+Beastly Appendage
+%%%%
+Spider Form
+Spider Form
+%%%%
+Ice Form
+Ice Form
+%%%%
+Blade Hands
+Blade Hands
+%%%%
+Statue Form
+Statue Form
+%%%%
+Storm Form
+Storm Form
+%%%%
+Dragon Form
+Dragon Form
+%%%%
+Necromutation
+Necromutation
+%%%%
+Awaken Earth
+Awaken Earth
+%%%%
+Animate Skeleton
+Animate Skeleton
+%%%%
+Drain Magic
+Drain Magic
+%%%%

@@ -1957,13 +1957,13 @@ static string _equipment_property_change_description(const item_def &item,
 
     if (fail_change != 0)
     {
-        description += "\nYour spell failure would ";
-        description += (fail_change > 0) ? "worsen" : "improve";
+        description += T_("\nYour spell failure would ");
+        description += (fail_change > 0) ? T_("worsen") : T_("improve");
         if (visible_fail_change == 0)
-            description += " trivially.";
+            description += T_(" trivially.");
         else
         {
-            description += make_stringf(" by up to %d%% (press '!' for details).",
+            description += make_stringf(T_(" by up to %d%% (press '!' for details)."),
                                     abs(visible_fail_change)).c_str();
         }
     }

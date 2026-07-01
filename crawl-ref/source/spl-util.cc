@@ -568,7 +568,7 @@ static const map<spell_type, const char*> spell_english_names = {
 const char* spell_english_name(spell_type spell)
 {
     auto it = spell_english_names.find(spell);
-    return it != spell_english_names.end() ? it->second : spell_title(spell);
+    return it != spell_english_names.end() ? it->second : _seekspell(spell)->title;
 }
 
 void init_spell_name_cache()
@@ -1119,7 +1119,7 @@ int count_bits(uint64_t bits)
 
 const char *spell_title(spell_type spell)
 {
-    return _seekspell(spell)->title;
+    return T_(_seekspell(spell)->title);
 }
 
 // FUNCTION APPLICATORS: Idea from Juho Snellman <jsnell@lyseo.edu.ouka.fi>
