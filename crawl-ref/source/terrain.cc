@@ -1927,11 +1927,11 @@ string stair_climb_verb(dungeon_feature_type feat)
     ASSERT(feat_stair_direction(feat) != CMD_NO_CMD);
 
     if (feat_is_staircase(feat))
-        return Options.language == lang_t::ZH ? "攀爬" : "climb";
+        return "climb stairs";
     else if (feat_is_escape_hatch(feat))
-        return Options.language == lang_t::ZH ? "使用" : "use";
+        return "use stairs";
     else
-        return Options.language == lang_t::ZH ? "穿过" : "pass through";
+        return "pass through gate";
 }
 
 /** Find the feature with this name.

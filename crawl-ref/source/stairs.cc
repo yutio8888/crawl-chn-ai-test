@@ -203,7 +203,7 @@ static bool _stair_moves_pre(dungeon_feature_type stair)
     string verb = stair_climb_verb(stair);
 
     mprf(T_("%s slides away from you as you try to %s it!"), stair_str.c_str(),
-         verb.c_str());
+         T_(verb.c_str()));
 
     you.turn_is_over = true;
 

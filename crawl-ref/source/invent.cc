@@ -326,9 +326,7 @@ void InvMenu::set_preselect(const vector<SelItem> *pre)
 
 string slot_description()
 {
-    if (Options.language == lang_t::ZH)
-        return make_stringf("%d/%d 装备栏位", inv_count(INVENT_GEAR), MAX_GEAR);
-    return make_stringf("%d/%d gear slots", inv_count(INVENT_GEAR), MAX_GEAR);
+    return make_stringf(T_("%d/%d gear slots"), inv_count(INVENT_GEAR), MAX_GEAR);
 }
 
 void InvMenu::set_title(const string &s)

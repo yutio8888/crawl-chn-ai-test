@@ -12492,3 +12492,23 @@ What do you want to examine?
 What do you want to remember?
 
 你想记住什么？
+%%%%
+climb stairs
+
+攀爬
+%%%%
+use stairs
+
+使用
+%%%%
+pass through gate
+
+穿过
+%%%%
+%d/%d gear slots
+
+%d/%d 装备栏位
+%%%%
+%s slides away from you right after you %s it!
+
+%s在你%s它后立刻移开了！
