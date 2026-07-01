@@ -36,6 +36,7 @@
 #include "god-abil.h"
 #include "god-passive.h"
 #include "hints.h"
+#include "i18n.h"
 #include "item-name.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
@@ -2310,11 +2311,11 @@ public:
         // in the prompt itself
         // XX convert this to keyhints in a more?
         if (travel_mode == Mode::altars)
-            segs.emplace_back("_ - list branches");
+            segs.emplace_back(T_("_ - list branches"));
         else if (travel_mode == Mode::waypoints)
-            segs.emplace_back("* - list branches");
+            segs.emplace_back(T_("* - list branches"));
         else if (mode_allowed(Mode::waypoints))
-            segs.emplace_back("* - list waypoints");
+            segs.emplace_back(T_("* - list waypoints"));
 
         if (has_default_target())
         {
@@ -2325,7 +2326,7 @@ public:
         }
 
         if (!(prompt_flags & TPF_SHOW_ALL_BRANCHES))
-            segs.emplace_back("? - help");
+            segs.emplace_back(T_("? - help"));
 
         string shortcuts;
         if (!segs.empty())
@@ -2335,7 +2336,7 @@ public:
                                               ", ", ", ");
             shortcuts += ") ";
         }
-        set_title(make_stringf("Where to? %s", shortcuts.c_str()));
+        set_title(make_stringf(T_("Where to? %s"), shortcuts.c_str()));
     }
 
     bool seen_altars() const
@@ -5197,12 +5198,12 @@ void do_interlevel_travel()
     {
         if (you.running.pos == you.pos())
         {
-            mpr("You're already here!");
+            mpr(T_("You're already here!"));
             return;
         }
         else if (!you.running.pos.x || !you.running.pos.y)
         {
-            mpr("Sorry, you can't auto-travel out of here.");
+            mpr(T_("Sorry, you can't auto-travel out of here."));
             return;
         }
 

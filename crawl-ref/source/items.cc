@@ -1750,11 +1750,7 @@ void get_gold(const item_def& item, int quant, bool quiet)
                             ? make_stringf(T_(" (gained %d)"), quant)
                             : "";
 
-        if (Options.language == lang_t::ZH)
-            mprf("你现在有%d枚金币%s。", you.gold, gain.c_str());
-        else
-            mprf("You now have %d gold piece%s%s.",
-                 you.gold, you.gold != 1 ? "s" : "", gain.c_str());
+        mprf_p(T_("You now have %1$d gold piece%2$s."), you.gold, gain.c_str());
         learned_something_new(HINT_SEEN_GOLD);
     }
 }
@@ -2098,9 +2094,7 @@ static bool _merge_stackable_item_into_inv(const item_def &it, int quant_got,
                         prefix.c_str(),
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        Options.language == lang_t::ZH
-                            ? make_stringf("（获得了%d）", quant_got).c_str()
-                            : make_stringf("(gained %d)", quant_got).c_str());
+                        make_stringf(T_("(gained %d)"), quant_got).c_str());
         }
         return true;
     }

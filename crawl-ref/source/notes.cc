@@ -268,29 +268,31 @@ string Note::describe(bool when, bool where, bool what) const
                 result << " (" << name << ")";
             break;
         case NOTE_ID_ITEM:
-            result << "Identified " << name;
+            result << T_("Identified ") << name;
             if (!desc.empty())
                 result << " (" << desc << ")";
             break;
         case NOTE_GET_ITEM:
-            result << "Got " << name;
+            result << T_("Got ") << name;
             if (first != 0) // gems
             {
                 const int turns = (first + 9) / 10;
-                result << " with " << turns << " turn"
-                       << (first == 1 ? "" : "s") << " to spare";
+                result << T_(" with ") << turns
+                       << (first == 1 ? T_(" turn") : T_(" turns"))
+                       << T_(" to spare");
             }
             break;
         case NOTE_ACQUIRE_ITEM:
-            result << "Acquired " << name;
+            result << T_("Acquired ") << name;
             break;
         case NOTE_BUY_ITEM:
-            result << "Bought " << name << " for " << first << " gold piece"
-                   << (first == 1 ? "" : "s");
+            result << T_("Bought ") << name << T_(" for ") << first << " "
+                   << (first == 1 ? T_("gold piece") : T_("gold pieces"));
             break;
         case NOTE_DONATE_MONEY:
-            result << "Donated " << first << " gold piece"
-                   << (first == 1 ? "" : "s") << " to Zin";
+            result << T_("Donated ") << first << " "
+                   << (first == 1 ? T_("gold piece") : T_("gold pieces"))
+                   << T_(" to Zin");
             break;
         case NOTE_GAIN_SKILL:
             result << "Reached skill level " << second
@@ -360,10 +362,7 @@ string Note::describe(bool when, bool where, bool what) const
             result << name;
             break;
         case NOTE_SEEN_FEAT:
-            if (Options.language == lang_t::ZH)
-                result << "发现了" << name;
-            else
-                result << "Found " << name;
+            result << T_("Found ") << name;
             break;
         case NOTE_FEAT_MIMIC:
             result << name <<" was a mimic.";

@@ -400,30 +400,30 @@ static void _sdump_gold(dump_params &par)
     if (you.attribute[ATTR_PURCHASES] > 0)
     {
         lines++;
-        text += make_stringf("You %sspent %d gold pieces at shops.\n", have,
-                             you.attribute[ATTR_PURCHASES]);
+        text += make_stringf("You %sspent %d %s at shops.\n", have,
+                             you.attribute[ATTR_PURCHASES], T_("gold pieces"));
     }
 
     if (you.attribute[ATTR_DONATIONS] > 0)
     {
         lines++;
-        text += make_stringf("You %sdonated %d gold pieces to Zin.\n", have,
-                             you.attribute[ATTR_DONATIONS]);
+        text += make_stringf("You %sdonated %d %s to Zin.\n", have,
+                             you.attribute[ATTR_DONATIONS], T_("gold pieces"));
     }
 
     if (you.attribute[ATTR_GOZAG_GOLD_USED] > 0)
     {
         lines++;
-        text += make_stringf("You %spaid %d gold pieces to Gozag.\n", have,
-                             you.attribute[ATTR_GOZAG_GOLD_USED]);
+        text += make_stringf("You %spaid %d %s to Gozag.\n", have,
+                             you.attribute[ATTR_GOZAG_GOLD_USED], T_("gold pieces"));
     }
 
     if (you.attribute[ATTR_MISC_SPENDING] > 0)
     {
         lines++;
-        text += make_stringf("You %sused %d gold pieces for miscellaneous "
+        text += make_stringf("You %sused %d %s for miscellaneous "
                              "purposes.\n", have,
-                             you.attribute[ATTR_MISC_SPENDING]);
+                             you.attribute[ATTR_MISC_SPENDING], T_("gold pieces"));
     }
 
     if (lines > 0)

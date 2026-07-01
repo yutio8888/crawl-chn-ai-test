@@ -810,7 +810,7 @@ monster_info::monster_info(const monster* m, int milev)
     {
         const actor * const constrictor = actor_by_mid(m->constricted_by);
         ASSERT(constrictor);
-        constrictor_name = "constricted by "
+        constrictor_name = T_("constricted by ")
                            + constrictor->name(_article_for(constrictor),
                                                true);
     }
@@ -824,7 +824,7 @@ monster_info::monster_info(const monster* m, int milev)
 
             if (constrictee && constrictee->constricted_type == CONSTRICT_MELEE)
             {
-                constricting_name.push_back("constricting "
+                constricting_name.push_back(T_("constricting ")
                                             + constrictee->name(
                                                   _article_for(constrictee),
                                                   true));
@@ -2225,6 +2225,19 @@ static const char* _flag_zh(const string& en)
         {"warded", "被守护"},
         {"dim", "黯淡"},
         {"exposed", "暴露"},
+        // Equipment/Attack flavours
+        {"constriction", "缠绕"},
+        {"drag", "拖拽"},
+        {"launcher", "发射器"},
+        {"launchers", "发射器"},
+        {"missile", "投掷物"},
+        {"missiles", "投掷物"},
+        {"polearm", "长柄武器"},
+        {"polearms", "长柄武器"},
+        {"reaching", "触及"},
+        {"trample", "践踏"},
+        {"wand", "魔杖"},
+        {"wands", "魔杖"},
         // Plural-only (different from singular)
         {"charmed", "被魅惑"},
         {"summoned", "被召唤"},

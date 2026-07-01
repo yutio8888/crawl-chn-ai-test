@@ -32,6 +32,7 @@
 #include "fight.h" // melee_confuse_chance
 #include "god-abil.h"
 #include "hints.h"
+#include "i18n.h"
 #include "invent.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
@@ -2818,8 +2819,8 @@ bool full_describe_square(const coord_def &c, bool cleanup)
     {
         const coord_def describe_result =
             _full_describe_menu(list_mons, list_items, list_features, "", true,
-                    false, you.see_cell(c) ? "What do you want to examine?"
-                                           : "What do you want to remember?");
+                    false, you.see_cell(c) ? T_("What do you want to examine?")
+                                           : T_("What do you want to remember?"));
         if (describe_result != coord_def(-1, -1))
             return true; // something happened, we want to exit
     }

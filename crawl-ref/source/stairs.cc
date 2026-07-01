@@ -228,15 +228,15 @@ static void _climb_message(dungeon_feature_type stair, bool going_up,
         else
         {
             mprf(T_("You %s down."),
-                 you.airborne() ? "fly" : "slide");
+                 you.airborne() ? T_("fly") : T_("slide"));
         }
         mpr(T_("The hatch slams shut behind you."));
     }
     else if (feat_is_gate(stair))
     {
         mprf(T_("You %s through the gate."),
-             you.airborne() ? (going_up ? "fly up" : "fly down")
-                            : (going_up ? "go up" : "go down"));
+             you.airborne() ? (going_up ? T_("fly up") : T_("fly down"))
+                            : (going_up ? T_("go up") : T_("go down")));
     }
     else if (old_branch == BRANCH_SLIME && !you.royal_jelly_dead)
     {
@@ -248,8 +248,8 @@ static void _climb_message(dungeon_feature_type stair, bool going_up,
     else if (stair != DNGN_ALTAR_IGNIS)
     {
         mprf(T_("You %s %s."),
-             you.airborne() ? "fly" : "climb",
-             going_up ? "up" : "down");
+             you.airborne() ? T_("fly") : T_("climb"),
+             going_up ? T_("up") : T_("down"));
     }
 }
 
