@@ -1182,7 +1182,10 @@ void SkillMenu::help()
 void SkillMenu::select(skill_type sk, int keyn)
 {
     if (is_set(SKMF_HELP))
+    {
         show_description(sk);
+        refresh_names();
+    }
     else if (skm.get_state(SKM_VIEW) == SKM_VIEW_TARGETS
                                             && skm.is_set(SKMF_SET_TARGET))
     {
