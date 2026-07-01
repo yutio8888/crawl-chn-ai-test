@@ -5557,6 +5557,9 @@ Magnetic shrapnel attaches itself to %s.
 %%%%
 maintain the ray
 维持灼热射线
+%%%%
+(Press <w>%%</w> to %s.)
+（按<w>%%</w>来%s。）
 
 # L4298: simple
 %%%%

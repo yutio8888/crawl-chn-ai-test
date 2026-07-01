@@ -3455,7 +3455,7 @@ void start_channelling_spell(spell_type spell, string reminder_msg, bool do_effe
 
     if (!reminder_msg.empty())
     {
-        string msg = "(Press <w>%</w> to " + reminder_msg + ".)";
+        string msg = make_stringf(T_("(Press <w>%%</w> to %s.)"), reminder_msg.c_str());
         insert_commands(msg, { CMD_WAIT });
         mpr(msg);
     }

@@ -4507,7 +4507,7 @@ void bolt::affect_player()
             : T_(" but does no damage");
         mprf_p(C_("beam hit player",
                   "The %1$s %2$s %3$s%4$s%5$s%6$s"),
-               name.c_str(), hit_verb.c_str(),
+               beam_name.c_str(), hit_verb.c_str(),
                body,
                chaos_prefix.c_str(),
                no_damage,
