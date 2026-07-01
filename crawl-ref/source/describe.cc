@@ -1935,8 +1935,8 @@ static string _equipment_property_change_description(const item_def &item,
     if (item.base_type == OBJ_ARMOUR && get_armour_slot(item) != SLOT_OFFHAND
         || cur_ac != new_ac)
     {
-        description += "\nYour AC would "
-                       + _describe_point_diff(cur_ac, new_ac) + ".";
+        description += make_stringf(T_("\nYour AC would %s."),
+                        _describe_point_diff(cur_ac, new_ac).c_str());
     }
 
     // Always display EV line on non-orb armour, even if there is no change
@@ -1944,15 +1944,15 @@ static string _equipment_property_change_description(const item_def &item,
     if (item.base_type == OBJ_ARMOUR && item.sub_type != ARM_ORB
         || cur_ev != new_ev)
     {
-        description += "\nYour EV would "
-                       + _describe_point_diff(cur_ev, new_ev) + ".";
+        description += make_stringf(T_("\nYour EV would %s."),
+                        _describe_point_diff(cur_ev, new_ev).c_str());
     }
 
     // Always display SH line on shields, even if there is no change
     if (is_shield(item) || cur_sh != new_sh)
     {
-        description += "\nYour SH would "
-                       + _describe_point_diff(cur_sh, new_sh) + ".";
+        description += make_stringf(T_("\nYour SH would %s."),
+                        _describe_point_diff(cur_sh, new_sh).c_str());
     }
 
     if (fail_change != 0)

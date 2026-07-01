@@ -17583,3 +17583,13 @@ yes
 no
 否
 %%%%
+
+\nYour AC would %s.
+\n你的护甲将%s。
+%%%%
+\nYour EV would %s.
+\n你的闪避将%s。
+%%%%
+\nYour SH would %s.
+\n你的护盾将%s。
+%%%%

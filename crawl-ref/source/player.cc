@@ -3527,7 +3527,7 @@ static void _display_attack_delay(const item_def *offhand)
                          shield_penalty ? "shield" : "armour");
     }
 
-    mprf("Your attack delay is about %.1f%s%s.",
+    mprf(T_("Your attack delay is about %.1f%s%s."),
          (float)delay / 10,
          at_min_delay ?
             " (and cannot be improved with additional weapon skill)" : "",

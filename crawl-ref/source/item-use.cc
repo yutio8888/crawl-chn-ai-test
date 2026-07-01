@@ -186,16 +186,16 @@ static string _oper_name(operation_types oper)
 {
     switch (oper)
     {
-    case OPER_EQUIP: return "equip";
-    case OPER_WIELD: return "wield";
-    case OPER_WEAR:  return "wear";
-    case OPER_PUTON: return "put on";
-    case OPER_QUAFF: return "quaff";
-    case OPER_READ:  return "read";
-    case OPER_EVOKE: return "evoke";
-    case OPER_TAKEOFF: return "take off";
-    case OPER_REMOVE:  return "remove";
-    case OPER_UNEQUIP: return "unequip";
+    case OPER_EQUIP: return T_("equip");
+    case OPER_WIELD: return T_("wield");
+    case OPER_WEAR:  return T_("wear");
+    case OPER_PUTON: return T_("put on");
+    case OPER_QUAFF: return T_("quaff");
+    case OPER_READ:  return T_("read");
+    case OPER_EVOKE: return T_("evoke");
+    case OPER_TAKEOFF: return T_("take off");
+    case OPER_REMOVE:  return T_("remove");
+    case OPER_UNEQUIP: return T_("unequip");
     default:
         return "buggy";
     }
