@@ -14149,3 +14149,142 @@ vampire
 your 
 
 你的
+%%%%
+ the 
+ 
+ 
+%%%%
+unnamed 
+未命名
+%%%%
+Trunk doesn't count for the tournament, you want 
+开发版本不计入锦标赛，你确定要选
+%%%%
+Seed: 
+种子：
+%%%%
+ Please select your 
+请选择你的
+%%%%
+    * - Random 
+    * - 随机
+%%%%
+Randomly select a 
+随机选择
+%%%%
+Space - Change 
+空格 - 更改
+%%%%
+Lets you change your 
+更改
+%%%%
+Space - Pick 
+空格 - 选择
+%%%%
+Lets you pick 
+选择
+%%%%
+ looks rather more confused.
+看起来更加困惑了。
+%%%%
+ looks rather confused.
+看起来很困惑。
+%%%%
+ is shoved forward by the hand of Xom!
+被佐姆之手猛推向前！
+%%%%
+The dungeon rumbles... harmlessly?
+地牢隆隆作响……无害的？
+%%%%
+%s!
+%s！
+%%%%
+is healed, 
+被治愈，
+%%%%
+You are %sconfused.
+你感到%s困惑了。
+%%%%
+You feel %s and %sconfused.
+你感到%s且%s困惑了。
+%%%%
+You feel nearly all of your power leaking away!
+你感到你的力量几乎全部流失了！
+%%%%
+%s is forced to slowly start %s a word of recall!
+%s被迫缓慢地开始%s召回术！
+%%%%
+mollified 
+安抚了
+%%%%
+ offers you knowledge of 
+赋予你
+%%%%
+a little 
+略微
+%%%%
+very 
+非常
+%%%%
+extremely 
+极度
+%%%%
+"You will pay for your transgression, mortal!"
+"你会为你的罪过付出代价的，凡人！"
+%%%%
+abandoned 
+背弃了
+%%%%
+became a worshipper of 
+开始信奉
+%%%%
+Which god (%s)? 
+选择哪位神祇（%s）？
+%%%%
+Your summoned %s left behind.
+你召唤的%s被留在了身后。
+%%%%
+allies are
+盟友
+%%%%
+ally is
+盟友
+%%%%
+Your mindless puppet%s behind%s.
+你的无意识傀儡%s身后%s。
+%%%%
+s stay
+留在了
+%%%%
+ stays
+留在了
+%%%%
+ to rot
+，任其腐烂
+%%%%
+%s settles down.
+%s安静了下来。
+%%%%
+Data directory '%s' found.
+数据目录'%s'已找到。
+%%%%
+---- Turn #%d ----
+---- 第%d回合 ----
+%%%%
+Cancelling contest at user request
+应玩家要求取消比赛
+%%%%
+---- Contest finished ----\n
+---- 比赛结束 ----\n
+%%%%
+respawns
+重生
+%%%%
+is summoned
+被召唤
+%%%%
+enters the arena
+进入竞技场
+%%%%
+Last arena monster was dismissed.
+最后一只竞技场怪物已被清除。
