@@ -986,11 +986,9 @@ static void _decrement_durations()
     if (!you.cannot_act()
         && !you.confused())
     {
-        const string barbs_msg = Options.language == lang_t::ZH
-            ? make_stringf("你%s了身上的倒刺。",
-                  you.berserk() ? "狂暴地撕扯" : "小心地拔出")
-            : make_stringf("You %s the barbed spikes from your body.",
-                  you.berserk() ? "rip and tear" : "carefully extract");
+        const string barbs_msg = make_stringf(
+            T_("You %s the barbed spikes from your body."),
+            T_(you.berserk() ? "rip and tear" : "carefully extract"));
         extract_barbs(barbs_msg.c_str());
     }
 
@@ -1183,13 +1181,11 @@ static void _maybe_attune_regen_items()
 
     if (gained_regen || gained_mana_regen)
     {
-        msgs.emplace_back(Options.language == lang_t::ZH
-            ? make_stringf("更快地再生%s",
-                  gained_regen && gained_mana_regen ? "生命和魔法"
-                  : (gained_regen ? "" : "魔法"))
-            : make_stringf("regenerate%s more quickly",
-                  gained_regen && gained_mana_regen ? " health and magic"
-                  : (gained_regen ? "" : " magic")));
+        const char* regen_type = gained_regen && gained_mana_regen
+            ? T_(" health and magic")
+            : (gained_regen ? "" : T_(" magic"));
+        msgs.emplace_back(make_stringf(
+            T_("regenerate%s more quickly"), regen_type));
     }
     if (gained_chemistry)
         msgs.emplace_back(T_("extract magic from the potions you drink"));

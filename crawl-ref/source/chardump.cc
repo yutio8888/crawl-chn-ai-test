@@ -1022,45 +1022,24 @@ static void _sdump_spells(dump_params &par)
 {
     string &text(par.text);
 
-    string verb = par.se? "had" : "have";
-
     if (!you.has_mutation(MUT_INNATE_CASTER))
     {
         int spell_levels = player_spell_levels();
 
-        if (Options.language == lang_t::ZH)
+        if (spell_levels == 1)
         {
-            if (spell_levels == 1)
-                text += "你还剩一个法术等级。";
-            else if (spell_levels == 0)
-                text += "你无法记忆任何法术。";
-            else
-            {
-                if (par.se)
-                    text += "你曾有";
-                else
-                    text += "你有";
-                text += make_stringf("%d个法术等级。", spell_levels);
-            }
+            text += par.se ? T_("You had one spell level left.")
+                           : T_("You have one spell level left.");
+        }
+        else if (spell_levels == 0)
+        {
+            text += par.se ? T_("You couldn't memorise any spells.")
+                           : T_("You cannot memorise any spells.");
         }
         else
         {
-            if (spell_levels == 1)
-                text += "You " + verb + " one spell level left.";
-            else if (spell_levels == 0)
-            {
-                verb = par.se? "couldn't" : "cannot";
-
-                text += "You " + verb + " memorise any spells.";
-            }
-            else
-            {
-                if (par.se)
-                    text += "You had ";
-                else
-                    text += "You have ";
-                text += make_stringf("%d spell levels left.", spell_levels);
-            }
+            text += par.se ? make_stringf(T_("You had %d spell levels left."), spell_levels)
+                           : make_stringf(T_("You have %d spell levels left."), spell_levels);
         }
 
         text += "\n";
@@ -1068,13 +1047,14 @@ static void _sdump_spells(dump_params &par)
 
     if (!you.spell_no)
     {
-        verb = par.se? "didn't" : "don't";
+        const char* verb = par.se ? T_("didn't") : T_("don't");
 
-        text += "You " + verb + " know any spells.\n";
+        text += make_stringf(T_("You %s know any spells."), verb);
+        text += "\n";
     }
     else
     {
-        verb = par.se? "knew" : "know";
+        string verb = par.se ? "knew" : "know";
 
         text += "You " + verb + " the following spells:\n\n";
 
@@ -1139,12 +1119,12 @@ static void _sdump_spells(dump_params &par)
 
     if (!you.spell_library.count())
     {
-        verb = par.se ? "was" : "is";
+        string verb = par.se ? "was" : "is";
         text += "Your spell library " + verb + " empty.\n\n";
     }
     else
     {
-        verb = par.se? "contained" : "contains";
+        string verb = par.se ? "contained" : "contains";
         text += "Your spell library " + verb + " the following spells:\n\n";
         text += " " + chop_string("法术", 25)
                 + chop_string("类型", 15)

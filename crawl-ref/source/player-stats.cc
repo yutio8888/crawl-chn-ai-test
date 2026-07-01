@@ -78,12 +78,9 @@ bool attribute_increase()
 
     const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 4 : 2;
 
-    const string stat_gain_message = Options.language == lang_t::ZH
-        ? make_stringf("你的经验使你的属性%s提升了！",
-                       (statgain > 2) ? "大幅" : "")
-        : make_stringf("Your experience leads to a%s "
-                       "increase in your attributes!",
-                       (statgain > 2) ? " dramatic" : "n");
+    const string stat_gain_message = make_stringf(
+        T_("Your experience leads to a%s increase in your attributes!"),
+        T_((statgain > 2) ? " dramatic" : "n"));
     crawl_state.stat_gain_prompt = true;
     mprf(MSGCH_INTRINSIC_GAIN, "%s", stat_gain_message.c_str());
     learned_something_new(HINT_CHOOSE_STAT);
@@ -161,22 +158,13 @@ bool attribute_increase()
 
 static const char* descs[NUM_STATS][NUM_STAT_DESCS] =
 {
-    { "strength", "weakened", "weaker", "stronger" },
-    { "intelligence", "dopey", "stupid", "clever" },
-    { "dexterity", "clumsy", "clumsy", "agile" }
-};
-
-static const char* zh_descs[NUM_STATS][NUM_STAT_DESCS] =
-{
-    { "力量", "变虚弱", "变弱", "变强壮" },
-    { "智力", "变迟钝", "变笨", "变聪明" },
-    { "敏捷", "变笨拙", "变笨拙", "变敏捷" }
+    { T_("strength"), T_("weakened"), T_("weaker"), T_("stronger") },
+    { T_("intelligence"), T_("dopey"), T_("stupid"), T_("clever") },
+    { T_("dexterity"), T_("clumsy"), T_("clumsy"), T_("agile") }
 };
 
 const char* stat_desc(stat_type stat, stat_desc_type desc)
 {
-    if (Options.language == lang_t::ZH)
-        return zh_descs[stat][desc];
     return descs[stat][desc];
 }
 

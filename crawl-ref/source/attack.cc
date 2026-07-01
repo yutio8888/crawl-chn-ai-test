@@ -731,17 +731,10 @@ string attack_strength_punctuation(int dmg)
  */
 string attack::evasion_margin_adverb()
 {
-    if (Options.language == lang_t::ZH)
-    {
-        return (ev_margin <= -20) ? "完全" :
-               (ev_margin <= -12) ? "" :
-               (ev_margin <= -6)  ? "险些"
-                                  : "勉强";
-    }
-    return (ev_margin <= -20) ? " completely" :
+    return (ev_margin <= -20) ? T_(" completely") :
            (ev_margin <= -12) ? "" :
-           (ev_margin <= -6)  ? " closely"
-                              : " barely";
+           (ev_margin <= -6)  ? T_(" closely")
+                              : T_(" barely");
 }
 
 void attack::stab_message()

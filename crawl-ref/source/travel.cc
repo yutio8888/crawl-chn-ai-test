@@ -39,6 +39,7 @@
 #include "i18n.h"
 #include "item-name.h"
 #include "item-prop.h"
+#include "positional_format.h"
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
@@ -5149,8 +5150,7 @@ vector<string> explore_discoveries::apply_quantities(
     for (const named_thing<int> &nt : v)
     {
         if (nt.thing == 1)
-            things.push_back(Options.language == lang_t::ZH
-                             ? nt.name : article_a(nt.name));
+            things.push_back(make_stringf_p(T_("a %1$s"), nt.name));
         else
         {
             things.push_back(number_in_words(nt.thing)

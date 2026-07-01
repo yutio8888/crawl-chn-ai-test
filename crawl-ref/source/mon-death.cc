@@ -28,6 +28,7 @@
 #include "english.h"
 #include "env.h"
 #include "evoke.h"
+#include "positional_format.h"
 #include "fineff.h"
 #include "god-abil.h"
 #include "god-blessing.h"
@@ -2328,7 +2329,6 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
 
         if (feed && (healing || powering))
         {
-            const bool zh = Options.language == lang_t::ZH;
             const char* energy_name =
                 mons.has_ench(ENCH_POISON) && mons.has_ench(ENCH_DRAINED)
                     ? (T_("poison and negative energy"))
@@ -2336,17 +2336,10 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
                         ? (T_("poison"))
                         : (T_("negative energy")));
 
-            if (zh)
-            {
-                mprf("你从%s的衰减%s中汲取了力量。",
-                     mons.name(DESC_THE).c_str(), energy_name);
-            }
-            else
-            {
-                mprf("%s feeds on the fading %s of %s!",
-                     mons.name(DESC_THE).c_str(),
-                     energy_name, mons.pronoun(PRONOUN_OBJECTIVE).c_str());
-            }
+            mprf_p(T_("%1$s feeds on the fading %2$s of %3$s!"),
+                   mons.name(DESC_THE).c_str(),
+                   energy_name,
+                   mons.pronoun(PRONOUN_OBJECTIVE).c_str());
         }
 
         if (healing)

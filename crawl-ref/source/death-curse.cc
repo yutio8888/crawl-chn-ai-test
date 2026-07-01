@@ -34,6 +34,7 @@
 #include "ouch.h"
 #include "player.h"
 #include "player-stats.h"
+#include "positional_format.h"
 #include "random.h"
 #include "species-type.h"
 #include "spl-goditem.h"
@@ -111,28 +112,17 @@ static void _curse_message(actor& target, actor* /*source*/,
     if (!target.is_player())
         return;
 
-    const bool zh = Options.language == lang_t::ZH;
-    vector<string> messages = zh
-        ? vector<string>({
-            "你想家了。",
-            "你周围的世界似乎暂时变暗了。",
-            "你感到麻木。",
-            "奇异的能量流过你的身体。",
-            "你因寒冷而颤抖。",
-            "你感觉到一股邪恶的气息。",
-            "你感觉非常不适。",
-            "有东西刚从你的坟墓上走过。不，是真的！",
-        })
-        : vector<string>({
-            "You feel homesick.",
-            "The world around you seems to dim momentarily.",
-            "You feel numb.",
-            "Strange energies run through your body.",
-            "You shiver with cold.",
-            "You sense a malignant aura.",
-            "You feel very uncomfortable.",
-            "Something just walked over your grave. No, really!",
-        });
+    vector<string> messages =
+    {
+        T_("You feel homesick."),
+        T_("The world around you seems to dim momentarily."),
+        T_("You feel numb."),
+        T_("Strange energies run through your body."),
+        T_("You shiver with cold."),
+        T_("You sense a malignant aura."),
+        T_("You feel very uncomfortable."),
+        T_("Something just walked over your grave. No, really!"),
+    };
 
     if (you.can_smell())
         messages.push_back(T_("You smell decay."));
@@ -142,10 +132,8 @@ static void _curse_message(actor& target, actor* /*source*/,
         messages.push_back(T_("Your bandages flutter."));
     else
     {
-        messages.push_back(zh
-            ? make_stringf("你的%s感到刺痛。", skin.c_str())
-            : make_stringf("Your %s prickle%s.",
-                skin.c_str(), ends_with(skin, "s") ? "" : "s"));
+        messages.push_back(make_stringf_p(T_("Your %1$s prickle%2$s."),
+            skin.c_str(), ends_with(skin, "s") ? "" : "s"));
     }
 
     if (!silenced(you.pos()))

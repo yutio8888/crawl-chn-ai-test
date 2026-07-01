@@ -962,10 +962,7 @@ void roll_trap_effects()
 
 static string _malev_msg()
 {
-    if (Options.language == lang_t::ZH)
-        return make_stringf("一股邪恶力量充满了%s……",
-                            branches[you.where_are_you].longname);
-    return make_stringf("A malevolent force fills %s...",
+    return make_stringf(T_("A malevolent force fills %s..."),
                         branches[you.where_are_you].longname);
 }
 

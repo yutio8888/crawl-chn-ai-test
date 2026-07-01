@@ -81,10 +81,7 @@ static void _equip_mpr(bool* show_msgs, const char* msg,
 
     if (*show_msgs)
     {
-        if (msg_zh && Options.language == lang_t::ZH)
-            mprf(chan, "%s", msg_zh);
-        else
-            mprf(chan, "%s", msg);
+        mprf(chan, "%s", msg_zh ? T_(msg) : msg);
     }
 
     // Caller shouldn't give any more messages.

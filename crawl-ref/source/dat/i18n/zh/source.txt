@@ -14309,3 +14309,407 @@ Assign waypoint to what number? (0-9%s)
 %%%%
 Delete which waypoint? (* - delete all, Esc - exit) 
 删除哪个路径点？（* - 删除全部，Esc - 退出） 
+%%%%
+You continue %s %s.
+你继续%s%s。
+%%%%
+You continue memorising.
+你继续记忆法术。
+%%%%
+You continue meditating on the rock.
+你继续冥想这块岩石。
+%%%%
+You continue digging a shaft.
+你继续挖掘竖井。
+%%%%
+You continue imbuing your servitor.
+你继续向仆从灌输知识。
+%%%%
+You continue imprinting.
+你继续铭刻印记。
+%%%%
+You feel homesick.
+你想家了。
+%%%%
+The world around you seems to dim momentarily.
+你周围的世界似乎暂时变暗了。
+%%%%
+You feel numb.
+你感到麻木。
+%%%%
+Strange energies run through your body.
+奇异的能量流过你的身体。
+%%%%
+You shiver with cold.
+你因寒冷而颤抖。
+%%%%
+You sense a malignant aura.
+你感觉到一股邪恶的气息。
+%%%%
+You feel very uncomfortable.
+你感觉非常不适。
+%%%%
+Something just walked over your grave. No, really!
+有东西刚从你的坟墓上走过。不，是真的！
+%%%%
+Your %1$s prickle%2$s.
+你的%1$s感到刺痛。
+%%%%
+ completely
+完全
+%%%%
+ closely
+险些
+%%%%
+ barely
+勉强
+%%%%
+<yellow>Hello, welcome to Dungeon Crawl Stone Soup %s!</yellow>
+<brown>(c) Copyright 1997-2002 Linley Henzell, 2002-2025 Crawl DevTeam
+<yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>
+<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
+%%%%
+%%%%
+Fighter
+战士
+%%%%
+Hedge Wizard
+杂学派法师
+%%%%
+Priest
+祭司
+%%%%
+Gladiator
+角斗士
+%%%%
+Necromancer
+死灵法师
+%%%%
+Brigand
+强盗
+%%%%
+Berserker
+狂战士
+%%%%
+Hunter
+猎人
+%%%%
+Conjurer
+咒法师
+%%%%
+Enchanter
+附魔师
+%%%%
+Fire Elementalist
+火系元素师
+%%%%
+Ice Elementalist
+冰系元素师
+%%%%
+Summoner
+召唤师
+%%%%
+Air Elementalist
+气系元素师
+%%%%
+Earth Elementalist
+地系元素师
+%%%%
+Skald
+吟游诗人
+%%%%
+Alchemist
+炼金术士
+%%%%
+Chaos Knight
+混沌骑士
+%%%%
+Shapeshifter
+变形者
+%%%%
+Healer
+治疗师
+%%%%
+Stalker
+潜行者
+%%%%
+Monk
+武僧
+%%%%
+Warper
+扭曲者
+%%%%
+Wanderer
+流浪者
+%%%%
+Artificer
+工匠
+%%%%
+Hexslinger
+诅咒枪手
+%%%%
+Death Knight
+死亡骑士
+%%%%
+Abyssal Knight
+深渊骑士
+%%%%
+Jester
+小丑
+%%%%
+Delver
+挖掘者
+%%%%
+Cinder Acolyte
+灰烬侍僧
+%%%%
+Reaver
+掠夺者
+%%%%
+Forgewright
+锻造师
+%%%%
+rip and tear
+狂暴地撕扯
+%%%%
+carefully extract
+小心地拔出
+%%%%
+You %s the barbed spikes from your body.
+你%s了身上的倒刺。
+%%%%
+ health and magic
+生命和魔法
+%%%%
+ magic
+魔法
+%%%%
+regenerate%s more quickly
+更快地再生%s
+%%%%
+A malevolent force fills %s...
+一股邪恶力量充满了%s……
+%%%%
+%1$s attacks as %2$s pursue you!
+在%1$s追击你时发动攻击！
+%%%%
+%%%%
+%1$s feeds on the fading %2$s of %3$s!
+你从%1$s的衰减%2$s中汲取了力量。
+%%%%
+You have one spell level left.
+你还剩一个法术等级。
+%%%%
+You had one spell level left.
+你曾剩一个法术等级。
+%%%%
+You cannot memorise any spells.
+你无法记忆任何法术。
+%%%%
+You couldn't memorise any spells.
+你无法记忆任何法术。
+%%%%
+You have %d spell levels left.
+你有%d个法术等级。
+%%%%
+You had %d spell levels left.
+你曾有%d个法术等级。
+%%%%
+didn't
+没有
+%%%%
+don't
+没有
+%%%%
+You %s know any spells.
+你%s学会任何法术。
+%%%%
+a %1$s
+%1$s
+%%%%
+Welcome back! If it's been a while, you may want to refresh your memory.
+Your <w>%</w>nventory, 
+欢迎回来！如果已经有一段时间了，你可能想刷新你的记忆。
+你的<w>%</w>物品栏, 
+%%%%
+%s is nearby
+%s在附近
+%%%%
+Your experience leads to a%s increase in your attributes!
+你的经验使你的属性%s提升了！
+%%%%
+ dramatic
+大幅
+%%%%
+n
+
+%%%%
+strength
+力量
+%%%%
+weakened
+变虚弱
+%%%%
+weaker
+变弱
+%%%%
+stronger
+变强壮
+%%%%
+intelligence
+智力
+%%%%
+dopey
+变迟钝
+%%%%
+stupid
+变笨
+%%%%
+clever
+变聪明
+%%%%
+dexterity
+敏捷
+%%%%
+clumsy
+变笨拙
+%%%%
+agile
+变敏捷
+%%%%
+%%%%
+You feel a strange sense of familiarity.
+你感到一种奇怪的熟悉感。
+%%%%
+You feel oddly sad, like being parted from an old friend.
+你莫名感到悲伤，仿佛与老友离别。
+%%%%
+A shiver runs down your spine.
+一阵寒意沿着你的脊背蔓延。
+%%%%
+You smell chlorine.
+你闻到了氯气的味道。
+%%%%
+The staff glows a sickly green.
+法杖发出病态的绿光。
+%%%%
+The smell of chlorine vanishes.
+氯气的味道消失了。
+%%%%
+The staff's sickly green glow vanishes.
+法杖的病态绿光消失了。
+%%%%
+You struggle to resist the curse of the Prune...
+你挣扎着抵抗诅咒之梅的诅咒……
+%%%%
+The curse of the Prune has no hold on the dead.
+诅咒之梅的诅咒对亡者无效。
+%%%%
+The curse of the Prune lifts from you.
+诅咒之梅的诅咒从你身上解除了。
+%%%%
+You feel lightning quick.
+你感到迅如闪电。
+%%%%
+You feel rather sluggish.
+你感到相当迟缓。
+%%%%
+A terrible, searing pain shoots up your arm!
+一阵可怕的灼痛直冲你的手臂！
+%%%%
+You feel the exhaustion of battles past.
+你感到了昔日战斗的疲惫。
+%%%%
+You feel less violent.
+你感到不那么暴戾了。
+%%%%
+You sense an extremely unholy aura.
+你感知到了极度不洁的灵气。
+%%%%
+The arc blade crackles to life.
+电弧之刃噼啪作响地激活了。
+%%%%
+The arc blade stops crackling.
+电弧之刃停止了噼啪作响。
+%%%%
+You are filled with an inner flame.
+你体内燃起了火焰。
+%%%%
+Your inner flame fades away.
+你体内的火焰熄灭了。
+%%%%
+The dagger glows with an icy blue light!
+匕首散发出冰蓝色的光芒！
+%%%%
+The dagger stops glowing.
+匕首停止了发光。
+%%%%
+The scimitar bursts into red hot flame!
+弯刀爆发出赤热的火焰！
+%%%%
+The scimitar stops flaming.
+弯刀停止了燃烧。
+%%%%
+You feel a darkness envelop your magic.
+你感到黑暗笼罩了你的魔力。
+%%%%
+You feel like a king!
+你感到自己像个国王！
+%%%%
+You feel regal.
+你感到威严。
+%%%%
+En garde!
+准备接招！
+%%%%
+You sense a greater flux of ambient magical fields.
+你感知到周围魔法场的流动增强了。
+%%%%
+The vines latch onto your body!
+藤蔓缠绕住了你的身体！
+%%%%
+The vines fall away from your body!
+藤蔓从你的身体上脱落了！
+%%%%
+Your attunement to healing potions increases.
+你对治疗药水的亲和力增强了。
+%%%%
+Your attunement to healing potions decreases.
+你对治疗药水的亲和力减弱了。
+%%%%
+The engine hums to life!
+引擎嗡嗡启动！
+%%%%
+The engine shudders to a halt.
+引擎颤动着停止了。
+%%%%
+Your corpse armour falls away.
+你的尸体护甲脱落了。
+%%%%
+The air around you leaps into flame!
+你周围的空气燃成了火焰！
+%%%%
+Your ring of flames gutters out.
+你的火焰之环熄灭了。
+%%%%
+Your spectral weapon disappears.
+你的幽灵武器消失了。
+%%%%
+You feel ready to stride towards your foes.
+你感到准备好大步迈向敌人。
+%%%%
+You feel an incredible surge of magic.
+你感到一股难以置信的魔力涌动。
+%%%%
+The surge of magic dissipates.
+魔力的涌动消散了。
+%%%%
+You feel a whimsical energy watch over you.
+你感到一股奇异的能量在守护着你。
+%%%%
+The world feels relentlessly logical and grey.
+世界变得无情地合乎逻辑，灰暗无光。
+%%%%
+You feel supremely confident.
+你感到无比自信。
+%%%%

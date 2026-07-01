@@ -152,9 +152,7 @@ static string _seen_monsters_announcement(const vector<monster*> &visible,
     if (visible.size() == 1)
     {
         const monster& m = *visible[0];
-        if (Options.language == lang_t::ZH)
-            return make_stringf("%s在附近", m.name(DESC_A).c_str());
-        return make_stringf("%s is nearby", m.name(DESC_A).c_str());
+        return make_stringf(T_("%s is nearby"), m.name(DESC_A).c_str());
     }
     if (visible.size() > 1)
         return T_("there are monsters nearby");

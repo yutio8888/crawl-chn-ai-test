@@ -80,26 +80,12 @@ static const map<job_type, const char*>& _job_zh_names()
     return zh_names;
 }
 
-static const char* _get_job_zh_name(job_type which_job)
-{
-    auto it = _job_zh_names().find(which_job);
-    return it != _job_zh_names().end() ? it->second : nullptr;
-}
-
 const char *get_job_name(job_type which_job)
 {
     if (which_job == JOB_UNKNOWN)
         return T_("Unemployed");
 
-    // Chinese translation lookup
-    if (Options.language == lang_t::ZH)
-    {
-        const char* zh = _get_job_zh_name(which_job);
-        if (zh)
-            return zh;
-    }
-
-    return _job_def(which_job).name;
+    return T_(_job_def(which_job).name);
 }
 
 job_type get_job_by_name(const char *name)

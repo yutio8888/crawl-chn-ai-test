@@ -28,6 +28,7 @@
 #include "god-passive.h"
 #include "god-prayer.h"
 #include "hints.h"
+#include "positional_format.h"
 #include "item-name.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
@@ -3682,13 +3683,10 @@ static void _maybe_launch_opportunity_attack(monster &mon, coord_def orig_pos)
     // that they already launched an attack.
     crawl_state.potential_pursuers.erase(&mon);
 
-    const bool zh = Options.language == lang_t::ZH;
-    const string msg = zh
-        ? make_stringf("在%s追击你时发动攻击！",
-            mon.pronoun(PRONOUN_SUBJECTIVE).c_str())
-        : make_stringf(" attacks as %s pursue%s you!",
-            mon.pronoun(PRONOUN_SUBJECTIVE).c_str(),
-            mon.pronoun_plurality() ? "" : "s");
+    const string msg = make_stringf_p(
+        T_("%1$s attacks as %2$s pursue you!"),
+        mon.pronoun(PRONOUN_SUBJECTIVE).c_str(),
+        mon.pronoun_plurality() ? "" : "s");
     simple_monster_message(mon, msg.c_str());
     const int old_energy = mon.speed_increment;
     _launch_opportunity_attack(mon);

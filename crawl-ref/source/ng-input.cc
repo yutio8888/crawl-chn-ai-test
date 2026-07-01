@@ -4,6 +4,7 @@
 
 #include <cwctype>
 
+#include "database.h"
 #include "end.h"
 #include "format.h"
 #include "item-name.h" // make_name
@@ -16,12 +17,10 @@
 // Eventually, this should be something more grand. {dlb}
 formatted_string opening_screen()
 {
-    string msg =
-    Options.language == lang_t::ZH
-    ? "<yellow>你好，欢迎来到地牢爬行石汤 " + string(Version::Long) + "！</yellow>\n"
-      "<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队"
-    : "<yellow>Hello, welcome to " CRAWL " " + string(Version::Long) + "!</yellow>\n"
-      "<brown>" CRAWL_COPYRIGHT;
+    string msg = make_stringf(
+        T_("<yellow>Hello, welcome to " CRAWL " %s!</yellow>\n"
+           "<brown>" CRAWL_COPYRIGHT),
+        Version::Long);
 
     return formatted_string::parse_string(msg);
 }
