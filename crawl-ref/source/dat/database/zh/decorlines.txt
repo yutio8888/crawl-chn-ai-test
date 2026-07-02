@@ -3,19 +3,30 @@
 default peaceful fountain_blue
 
 {{
-  -- Wisps can drink potions, so no need for another message here.
   if you.transform() == "death" or you.race() == "Mummy" then
     if crawl.one_chance_in(3) then
       return "你短暂地凝视着饮水喷泉，叹了口气。"
+    else
+      return "__NONE"
+    end
+  elseif you.transform() == "storm" then
     return "喷泉在你身下噼啪作响。"
-    return "你从喷泉中喝了一小口。清爽宜人。";
+  else
+    return "你从喷泉中喝了一小口。清爽宜人。"
+  end
+}}
 
 {{
   if you.transform() == "storm" then
     return "细小的电击在喷泉中涌动着。"
+  elseif you.transform() == "wisp" then
     return "你的倒影在水中奇异地闪烁着。"
+  elseif crawl.coinflip() or you.god() == "Okawaru" then
     return "你短暂地停下来洗了洗@your_hands@。"
+  else
     return "你短暂地停下来清理了一下@your_weapon@。"
+  end
+}}
 
 w:1
 你在喷泉上看到了@any_graffiti@。
@@ -33,10 +44,17 @@ default peaceful fountain_sparkling
   if you.transform() == "death" or you.race() == "Mummy" then
     if crawl.one_chance_in(3) then
       return "你短暂地凝视着闪闪发光的喷泉，叹了口气。"
+    else
+      return "__NONE"
+    end
+  elseif you.transform() == "storm" then
     return "喷泉在你身下奇异地噼啪作响。"
+  elseif crawl.coinflip() or you.god == "Zin" or you.god == "Cheibriados" then
     return "喷泉脉动着奇异的@any_colour_pattern@，你决定不喝它里面的水。"
+  else
     return "你从喷泉中喝了一小口。@sparkling_message@"
-
+  end
+}}
 w:1
 你在喷泉上看到了@any_graffiti@。
 %%%%
@@ -62,9 +80,12 @@ default fountain_blood
 {{
    if you.can_smell() then
      return "你闻到了喷泉不断涌出的血液所散发出的发霉金属气味。"
+   elseif you.god() == "Trog" then
      return "你确保不再把更多的血沾到身上。"
+   else
      return "你确保不再把血沾到身上。"
-
+   end
+}}
 微小的蚊子醉血地蜂拥在喷泉表面。
 
 w:3
@@ -211,8 +232,13 @@ Trog peaceful fountain_blue
 {{
 if you.transform() == "wisp" then
   return "你在喷泉中的倒影因安静的愤怒而扭曲着。"
+elseif you.transform() == "fungus" then
   return "你短暂地停下来，从菌丝体中拧出了一些血。"
+else
   return "你短暂地停下来，洗掉了脸上的一些血迹。"
+end
+}}
+
 %%%%
 Trog peaceful fountain_sparkling
 
