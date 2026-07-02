@@ -22450,3 +22450,206 @@ rF+
 rN+
 负抗+
 %%%%
+howler monkey
+吼猴
+%%%%
+kobold brigand
+狗头人强盗
+%%%%
+empty arch of ancient stone
+古老的石制空拱门
+%%%%
+gate leading back out of this place
+通往此地的出口
+%%%%
+glowing drain
+发光的排水口
+%%%%
+staircase to the Ecumenical Temple
+通往普世神殿的楼梯
+%%%%
+No target in view!
+视线内没有目标！
+%%%%
+
+%%%%%
+puncture
+穿刺
+%%%%%
+impale
+刺穿
+%%%%%
+spit
+吐刺
+%%%%%
+slash
+劈斩
+%%%%%
+slice
+切割
+%%%%%
+dice
+切碎
+%%%%%
+fracture
+碎裂
+%%%%%
+carve
+切削
+%%%%%
+shave
+削刮
+%%%%%
+thump
+重击
+%%%%%
+sock
+猛击
+%%%%%
+bludgeon
+锤击
+%%%%%
+shatter
+粉碎
+%%%%%
+splatter
+砸烂
+%%%%%
+crush
+压碎
+%%%%%
+beat
+捶打
+%%%%%
+hammer
+锤打
+%%%%%
+flatten
+压扁
+%%%%%
+flagellate
+鞭笞
+%%%%%
+thrash
+鞭抽
+%%%%%
+scratch
+抓挠
+%%%%%
+claw
+爪击
+%%%%%
+mangle
+撕碎
+%%%%%
+tentacle-slap
+触手拍击
+%%%%%
+batter
+猛撞
+%%%%%
+pummel
+殴击
+%%%%%
+squash
+压扁
+%%%%%
+cut
+切割
+%%%%%
+chop
+剁
+%%%%%
+stick
+扎
+%%%%%
+perforate
+穿孔
+%%%%%
+pulverise
+粉碎
+%%%%%
+clumsily bash
+笨拙地猛击
+%%%%%
+'s weak point
+的弱点
+%%%%%
+like a pig
+像猪一样
+%%%%%
+like a kebab
+像烤肉串一样
+%%%%%
+like a pincushion
+像针垫一样
+%%%%%
+like a sieve
+像筛子一样
+%%%%%
+like an onion
+像洋葱一样
+%%%%%
+into splinters
+粉碎四溅
+%%%%%
+like the proverbial ham
+像俗话中的火腿一样
+%%%%%
+like a turkey
+像火鸡一样
+%%%%%
+like a grape
+像葡萄一样
+%%%%%
+like a drum
+像鼓一样
+%%%%%
+like a gong
+像锣一样
+%%%%%
+like an anvil
+像铁砧一样
+%%%%%
+like a pancake
+像煎饼一样
+%%%%%
+like a pillowcase
+像枕套一样
+%%%%%
+like a ripe choko
+像成熟的佛手瓜一样
+%%%%%
+into ribbons
+成碎条
+%%%%%
+like a ham
+像火腿一样
+%%%%%
+into pieces
+成碎片
+%%%%%
+into fine dust
+成粉末
+%%%%%
+like a punching bag
+像沙袋一样
+%%%%%
+like an ant
+像蚂蚁一样
+%%%%%
+into a bloody pulp
+打成血泥
+%%%%%
+mercilessly
+毫不留情地
+%%%%%
+like the proverbial ant
+像俗话中的蚂蚁一样
+%%%%%
+like the proverbial pig
+像俗话中的猪一样
+%%%%%
+into a gooey mess
+成一团黏糊
+%%%%%
