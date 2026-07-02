@@ -120,6 +120,25 @@ bool FTFontWrapper::configure_font()
     m_max_height    = (face->bbox.yMax >> 6) - (face->bbox.yMin >> 6);
     m_min_offset    = 0;
 
+    if (cjk_face)
+    {
+        int target_w = display_density.logical_to_device(fsize);
+        FT_Set_Pixel_Sizes(cjk_face, target_w, target_w);
+
+        FT_UInt idx = FT_Get_Char_Index(cjk_face, 0x6C49);
+        if (idx)
+        {
+            FT_Load_Glyph(cjk_face, idx, FT_LOAD_DEFAULT);
+            int cjk_adv = cjk_face->glyph->advance.x >> 6;
+            int target = m_max_advance.x * 2;
+            if (cjk_adv > 0 && cjk_adv != target)
+            {
+                int new_w = target_w * (float)target / cjk_adv;
+                FT_Set_Pixel_Sizes(cjk_face, new_w, target_w);
+            }
+        }
+    }
+
     charsz = coord_def(1,1);
     // Grow character size to power of 2.
     // CJK glyphs can be up to 2x the base advance, so use 2x width.
@@ -242,9 +261,8 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
                                         cjk_size, 0, &cjk_face);
                 if (!cjk_err)
                 {
-                    FT_Set_Pixel_Sizes(cjk_face,
-                        display_density.logical_to_device(fsize),
-                        display_density.logical_to_device(fsize));
+                    // Pixel size will be set in configure_font() after
+                    // m_max_advance is available for CJK advance calibration.
                 }
                 else
                 {
@@ -480,9 +498,6 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             int char_w = wcwidth(ch);
             if (char_w <= 0)
                 char_w = 1; // combining/control chars: treat as width 1
-
-            if (char_w > 1)
-                glyph.advance = m_max_advance.x * char_w;
 
             if (col_bg != 0)
             {
