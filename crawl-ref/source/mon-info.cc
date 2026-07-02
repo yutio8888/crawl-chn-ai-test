@@ -1228,31 +1228,31 @@ string monster_info::common_name(description_level_type desc) const
     {
     case MONS_ZOMBIE:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "zombie";
+            ss << (nocore ? "" : " ") << T_("zombie");
         break;
     case MONS_DRAUGR:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "draugr";
+            ss << (nocore ? "" : " ") << T_("draugr");
         break;
     case MONS_SIMULACRUM:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "simulacrum";
+            ss << (nocore ? "" : " ") << T_("simulacrum");
         break;
     case MONS_SPECTRAL_THING:
         if (nocore)
-            ss << "spectre";
+            ss << T_("spectre");
         break;
     case MONS_BOUND_SOUL:
         if (nocore)
-            ss << "bound soul";
+            ss << T_("bound soul");
         break;
     case MONS_PILLAR_OF_SALT:
         if (base_type != type)
-            ss << (nocore ? "" : " ") << "shaped pillar of salt";
+            ss << (nocore ? "" : " ") << T_("shaped pillar of salt");
         break;
     case MONS_BLOCK_OF_ICE:
         if (base_type != type)
-            ss << (nocore ? "" : " ") << "shaped block of ice";
+            ss << (nocore ? "" : " ") << T_("shaped block of ice");
         break;
     default:
         break;

@@ -8913,6 +8913,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
 {
     targ_prep = T_("at");
     target    = "nothing";
+    bool is_at_prep = true;
 
     bolt tracer_beam = pbolt;
     targeting_tracer tracer;
@@ -8959,6 +8960,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 if (act && act != mons && you.can_see(*act))
                 {
                     targ_prep = T_("next to");
+                    is_at_prep = false;
 
                     if (act->is_player() || one_chance_in(++count))
                         target = act->name(DESC_THE);
@@ -8968,7 +8970,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 }
             }
 
-            if (targ_prep == "at")
+            if (is_at_prep)
             {
                 if (env.grid(pbolt.target) != DNGN_FLOOR)
                 {
@@ -8976,7 +8978,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
                                                  NUM_TRAPS, "", DESC_THE);
                 }
                 else
-                    target = "thin air";
+                    target = T_("thin air");
             }
 
             return;
@@ -8997,8 +8999,9 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 // a beam aimed at an ally.
                 if (!mons->wont_attack())
                 {
-                    targ_prep = "at";
-                    target    = "you";
+                    targ_prep = T_("at");
+                    is_at_prep = true;
+                    target    = T_("you");
                     break;
                 }
                 // If the ally is confused or aiming at an invisible enemy,
@@ -9007,12 +9010,13 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 // in the path.
                 else if (target == "nothing")
                 {
-                    targ_prep         = "at";
-                    target            = "you";
+                    targ_prep         = T_("at");
+                    is_at_prep = true;
+                    target            = T_("you");
                     mons_targ_aligned = true;
                 }
             }
-            else if (visible_path && m && you.can_see(*m))
+                else if (visible_path && m && you.can_see(*m))
             {
                 bool is_aligned  = mons_aligned(m, mons);
                 string name = m->name(DESC_THE);
@@ -9030,7 +9034,8 @@ static void _speech_fill_target(string& targ_prep, string& target,
                     mons_targ_aligned = false;
                     target            = name;
                 }
-                targ_prep = "at";
+                targ_prep = T_("at");
+                is_at_prep = true;
             }
             else if (visible_path && target == "nothing")
             {
@@ -9040,7 +9045,8 @@ static void _speech_fill_target(string& targ_prep, string& target,
                     const actor* act = monster_at(*ai);
                     if (act && act != mons && you.can_see(*act))
                     {
-                        targ_prep = "past";
+                        targ_prep = T_("past");
+                        is_at_prep = false;
                         if (act->is_player()
                             || one_chance_in(++count))
                         {
@@ -9072,7 +9078,8 @@ static void _speech_fill_target(string& targ_prep, string& target,
         && visible_path)
     {
         target = foe->name(DESC_THE);
-        targ_prep = (pbolt.aimed_at_spot ? "next to" : "past");
+        targ_prep = (pbolt.aimed_at_spot ? T_("next to") : T_("past"));
+        is_at_prep = false;
     }
 
     // If the monster gestures to create an invisible beam then
@@ -9081,11 +9088,14 @@ static void _speech_fill_target(string& targ_prep, string& target,
     // misses still say that the monster gestured "at" the target,
     // rather than "past".
     if (gestured || target == "nothing")
-        targ_prep = "at";
+    {
+        targ_prep = T_("at");
+        is_at_prep = true;
+    }
 
     // "throws whatever at something" is better than "at nothing"
     if (target == "nothing")
-        target = "something";
+        target = T_("something");
 }
 
 void mons_cast_noise(monster* mons, const bolt &pbolt,

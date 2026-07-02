@@ -10,6 +10,7 @@
 #include "beam.h"
 #include "cloud.h"
 #include "coordit.h"
+#include "database.h"
 #include "dungeon-char-type.h"
 #include "english.h"
 #include "env.h"
@@ -345,7 +346,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     bolt beam;
     const monster_type type = mons->type;
     string sanct_msg = "";
-    string boom_msg = make_stringf("%s explodes!", mons->full_name(DESC_THE).c_str());
+    string boom_msg = make_stringf(T_("%s explodes!"), mons->full_name(DESC_THE).c_str());
     actor* agent = nullptr;
     bool inner_flame = false;
 
@@ -394,7 +395,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     {
         _setup_haemoclasm_explosion(beam, *mons);
         mons->flags |= MF_EXPLODE_KILL;
-        boom_msg = make_stringf("%s shudders for a moment, then explodes violently!",
+        boom_msg = make_stringf(T_("%s shudders for a moment, then explodes violently!"),
                                 mons->name(DESC_THE).c_str());
     }
 

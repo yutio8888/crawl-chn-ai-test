@@ -177,7 +177,7 @@ static bool _decrement_a_duration(duration_type dur, int delay,
     {
         you.duration[dur] = 0;
         if (endmsg && *endmsg != '\0')
-            mprf(chan, "%s", endmsg);
+            mprf(chan, "%s", T_(endmsg));
         return true;
     }
 

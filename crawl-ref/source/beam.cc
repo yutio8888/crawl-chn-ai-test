@@ -7936,16 +7936,16 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
         string prompt;
         if (tracer.hit_self_count > 1)
         {
-            prompt = make_stringf("That %s could hit you up to %d times."
-                " Continue anyway?",
-                beam.ranged_atk ? beam.ranged_atk->projectile_name().c_str() : "beam",
+            prompt = make_stringf(T_("That %s could hit you up to %d times."
+                " Continue anyway?"),
+                beam.ranged_atk ? beam.ranged_atk->projectile_name().c_str() : T_("beam"),
                 tracer.hit_self_count);
         }
         else
         {
-            prompt = make_stringf("That %s is likely to hit you."
-                " Continue anyway?",
-                beam.ranged_atk ? beam.ranged_atk->projectile_name().c_str() : "beam");
+            prompt = make_stringf(T_("That %s is likely to hit you."
+                " Continue anyway?"),
+                beam.ranged_atk ? beam.ranged_atk->projectile_name().c_str() : T_("beam"));
         }
         if (!yesno(prompt.c_str(), false, 'n'))
         {

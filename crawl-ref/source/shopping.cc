@@ -1016,7 +1016,7 @@ class ShopEntry : public InvEntry
         const string keystr = colour_to_str(keycol);
         const string itemstr =
             colour_to_str(menu_colour(text, item_prefix(*item, false), tag, false));
-        return make_stringf(" <%s>%c %c </%s><%s>%4d gold   %s%s</%s>",
+        return make_stringf(T_(" <%s>%c %c </%s><%s>%4d gold   %s%s</%s>"),
                             keystr.c_str(),
                             hotkeys[0],
                             selected() ? '+' : on_list ? '$' : '-',
@@ -1024,7 +1024,7 @@ class ShopEntry : public InvEntry
                             itemstr.c_str(),
                             cost,
                             text.c_str(),
-                            shop_item_unknown(*item) ? " (unknown)" : "",
+                            shop_item_unknown(*item) ? T_(" (unknown)") : "",
                             itemstr.c_str());
     }
 
@@ -1172,39 +1172,39 @@ void ShopMenu::update_help()
         : menu_keyhelp_cmd(CMD_MENU_ACCEPT_SELECTION);
     const string action_desc = action_key +
             (no_action                   ? "                  "
-            : menu_action == ACT_EXAMINE ? " describe         "
-            : from_shopping_list         ? " buy shopping list"
-                                         : " buy marked items ");
+            : menu_action == ACT_EXAMINE ? T_(" describe         ")
+            : from_shopping_list         ? T_(" buy shopping list")
+                                         : T_(" buy marked items "));
 
     // XX swap shopping list / select by letter?
     const string mode_desc = !can_purchase ? ""
         : menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE)
-            + (menu_action == ACT_EXECUTE ? " <w>buy</w>|examine items"
-                                          : " buy|<w>examine</w> items");
-    string m = menu_keyhelp_cmd(CMD_MENU_EXIT)+ " exit          ";
+            + (menu_action == ACT_EXECUTE ? T_(" <w>buy</w>|examine items")
+                                          : T_(" buy|<w>examine</w> items"));
+    string m = menu_keyhelp_cmd(CMD_MENU_EXIT)+ T_(" exit          ");
     m += mode_desc;
     m = pad_more_with(m, make_stringf("%s %s",
         hyphenated_hotkey_letters(item_count(), 'a').c_str(),
-        menu_action == ACT_EXECUTE ? "mark item for purchase   "
-                                   : "examine item             "));
-    m += make_stringf("\n[<w>/</w>] sort (%s)%s  %s",
-        shopping_order_names[order],
-        string(7 - strwidth(shopping_order_names[order]), ' ').c_str(),
+        menu_action == ACT_EXECUTE ? T_("mark item for purchase   ")
+                                   : T_("examine item             ")));
+    m += make_stringf(T_("\n[<w>/</w>] sort (%s)%s  %s"),
+        T_(shopping_order_names[order]),
+        string(7 - strwidth(T_(shopping_order_names[order])), ' ').c_str(),
         action_desc.c_str());
 
     m = pad_more_with(m, hyphenated_hotkey_letters(item_count(), 'A')
-                                  + " put item on shopping list");
+                                  + T_(" put item on shopping list"));
 
 
     const string col = colour_to_str(channel_to_colour(MSGCH_PROMPT));
     if (outside_items)
     {
         const formatted_string outside = formatted_string::parse_string(make_stringf(
-            "<%s>I'll put %s outside for you.</%s>\n",
+            T_("<%s>I'll put %s outside for you.</%s>\n"),
             col.c_str(),
-            bought_indices.size() == 1             ? "it" :
-      (int) bought_indices.size() == outside_items ? "them"
-                                                   : "some of them",
+            bought_indices.size() == 1             ? T_("it") :
+      (int) bought_indices.size() == outside_items ? T_("them")
+                                                   : T_("some of them"),
             col.c_str()));
         set_more(outside + formatted_string::parse_string(top_line + m));
     }
@@ -1263,7 +1263,7 @@ void ShopMenu::purchase_selected()
         if (!have_voucher() || cost - max_cost(buying_from_list) > you.gold)
         {
             more = formatted_string::parse_string(make_stringf(
-                    "<%s>You don't have enough money.</%s>\n",
+                    T_("<%s>You don't have enough money.</%s>\n"),
                     col.c_str(),
                     col.c_str()));
             more += old_more;
@@ -1272,11 +1272,11 @@ void ShopMenu::purchase_selected()
         }
     }
     more = formatted_string::parse_string(make_stringf(
-               "<%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n",
+               T_("<%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n"),
                col.c_str(),
-               buying_from_list ? " in shopping list" : "",
+               buying_from_list ? T_(" in shopping list") : "",
                cost,
-               too_expensive ? "This will use your shop voucher." : "",
+               too_expensive ? T_("This will use your shop voucher.") : "",
                Options.easy_confirm == easy_confirm_type::none ? "Y" : "y",
                col.c_str()));
     more += old_more;
@@ -1803,7 +1803,7 @@ bool ShoppingList::add_thing(const item_def &item, int cost,
 
     if (!find_thing(item, pos).empty()) // TODO: this check isn't working?
     {
-        ui::error(make_stringf("%s is already on the shopping list.",
+        ui::error(make_stringf(T_("%s is already on the shopping list."),
              item.name(DESC_THE).c_str()));
         return false;
     }
@@ -1873,7 +1873,7 @@ bool ShoppingList::del_thing(const item_def &item,
 
     if (indices.empty())
     {
-        ui::error(make_stringf("%s isn't on shopping list, can't delete it.",
+        ui::error(make_stringf(T_("%s isn't on shopping list, can't delete it."),
              item.name(DESC_THE).c_str()));
         return false;
     }
@@ -1890,7 +1890,7 @@ bool ShoppingList::del_thing(string desc, const level_pos* _pos)
 
     if (indices.empty())
     {
-        ui::error(make_stringf("%s isn't on shopping list, can't delete it.",
+        ui::error(make_stringf(T_("%s isn't on shopping list, can't delete it."),
              desc.c_str()));
         return false;
     }
@@ -2308,7 +2308,7 @@ void ShoppingList::gold_changed(int old_amount, int new_amount)
             if (thing.exists(SHOPPING_THING_VERB_KEY))
                 desc += thing[SHOPPING_THING_VERB_KEY].get_string();
             else
-                desc = "buy";
+                desc = T_("buy");
             desc += " ";
 
             desc += describe_thing(thing, DESC_A);
@@ -2317,8 +2317,8 @@ void ShoppingList::gold_changed(int old_amount, int new_amount)
         }
         ASSERT(!descs.empty());
 
-        mpr_comma_separated_list("You now have enough gold to ", descs,
-                                 ", or ");
+        mpr_comma_separated_list(T_("You now have enough gold to "), descs,
+                                 T_(", or "));
         mpr(T_("You can access your shopping list by pressing '$'."));
 
         // Our gold has changed, maybe we can buy different things now.
@@ -2353,30 +2353,30 @@ public:
                                     : "");
 
         if (view_only)
-            s += "Choose to examine item  ";
+            s += T_("Choose to examine item  ");
         else
         {
             s += menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE);
             switch (menu_action)
             {
             case ACT_EXECUTE:
-                s += " <w>travel</w>|examine|delete";
+                s += T_(" <w>travel</w>|examine|delete");
                 break;
             case ACT_EXAMINE:
-                s += " travel|<w>examine</w>|delete";
+                s += T_(" travel|<w>examine</w>|delete");
                 break;
             default:
-                s += " travel|examine|<w>delete</w>";
+                s += T_(" travel|examine|<w>delete</w>");
                 break;
             }
 
-            s += " items    ";
+            s += T_(" items    ");
         }
         if (items.size() > 0)
         {
             // could be dropped if there's ever more interesting hotkeys
             s += hyphenated_hotkey_letters(items.size(), 'a')
-                    + " choose item</lightgray>";
+                    + T_(" choose item") + "</lightgray>";
         }
         return pad_more_with_esc(s);
     }
@@ -2434,7 +2434,7 @@ void ShoppingList::fill_out_menu(Menu& shopmenu)
                 describe_thing_pos(thing).c_str(),
                 cost,
                 name_thing(thing, DESC_A).c_str(),
-                unknown ? " (unknown)" : "");
+                unknown ? T_(" (unknown)") : "");
 
         MenuEntry *me = new MenuEntry(etitle, MEL_ITEM, 1, hotkey);
         me->data = &thing;
@@ -2498,7 +2498,7 @@ void ShoppingList::display(bool view_only)
     shopmenu.set_tag("shop");
     shopmenu.menu_action  = view_only ? Menu::ACT_EXAMINE : Menu::ACT_EXECUTE;
     shopmenu.action_cycle = view_only ? Menu::CYCLE_NONE : Menu::CYCLE_CYCLE;
-    string title          = "item";
+    string title          = T_("item");
 
     MenuEntry *mtitle = new MenuEntry(title, MEL_TITLE);
     mtitle->quantity = list->size();
@@ -2519,8 +2519,8 @@ void ShoppingList::display(bool view_only)
             if (cost > you.gold)
             {
                 string prompt =
-                   make_stringf("Travel to: %s\nYou cannot afford this item; travel there "
-                                "anyway? (y/N)",
+                   make_stringf(T_("Travel to: %s\nYou cannot afford this item; travel there "
+                                "anyway? (y/N)"),
                                 describe_thing(*thing, DESC_A).c_str());
                 clrscr();
                 if (!yesno(prompt.c_str(), true, 'n'))
@@ -2722,11 +2722,11 @@ string ShoppingList::name_thing(const CrawlHashTable& thing,
 string ShoppingList::describe_thing(const CrawlHashTable& thing,
                                     description_level_type descrip)
 {
-    string desc = name_thing(thing, descrip) + " on ";
+    string desc = name_thing(thing, descrip) + T_(" on ");
 
     const level_pos pos = thing_pos(thing);
     if (pos.id == level_id::current())
-        desc += "this level";
+        desc += T_("this level");
     else
         desc += pos.id.describe();
 

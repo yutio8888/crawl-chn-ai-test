@@ -1287,9 +1287,9 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
         string prompt = make_stringf(T_("The spell is %s to miscast (%s risk of failure)%s"),
                                      fail_severity_adjs[severity],
                                      failure_rate.c_str(),
-                                     severity > 1 ? "!" : ".");
+                                     severity > 1 ? T_("!") : T_("."));
 
-        prompt = make_stringf("%s Continue anyway?", prompt.c_str());
+        prompt = make_stringf(T_("%s Continue anyway?"), prompt.c_str());
         if (!yesno(prompt.c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);

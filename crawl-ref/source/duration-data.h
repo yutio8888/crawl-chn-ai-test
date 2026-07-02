@@ -6,6 +6,7 @@
 
 #include "areas.h"
 #include "act-iter.h"
+#include "database.h"
 #include "cloud.h"
 #include "mon-death.h"
 #include "god-abil.h"
@@ -723,7 +724,7 @@ static const duration_def duration_data[] =
     { DUR_BLIND, RED, "Blind", "blinded", "blindness",
       "The further away your target is the more your accuracy is reduced.",
       D_DISPELLABLE | D_EXPIRES | D_NEGATIVE, {{ "",
-        [](){mprf(MSGCH_RECOVERY, "Your vision returns to normal.");}}}},
+        [](){mprf(MSGCH_RECOVERY, T_("Your vision returns to normal."));}}}},
     { DUR_SIGN_OF_RUIN, RED, "Ruin",
       "sign of ruin", "ruin",
       "The sign of ruin enfeebles you when you suffer attacks.", D_DISPELLABLE | D_NEGATIVE,

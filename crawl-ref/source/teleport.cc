@@ -59,7 +59,7 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
     if (dest == pos())
         return false;
 
-    const string verb = (jump ? mons_genus(type) == MONS_FROG ? "hop" : "leap" : "blink");
+    const string verb = (jump ? mons_genus(type) == MONS_FROG ? T_("hop") : T_("leap") : T_("blink"));
 
     if (is_constricted())
     {

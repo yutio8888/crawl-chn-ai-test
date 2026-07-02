@@ -537,8 +537,8 @@ bool prompt_descent_shortcut(dungeon_feature_type ftype)
     if (ftype == DNGN_ENTER_DEPTHS && !player_in_branch(BRANCH_SLIME)
         || ftype == DNGN_ENTER_SLIME && !player_in_branch(BRANCH_VAULTS))
     {
-        return yesno("This entrance appears to skip some branches and may be "
-                     "quite dangerous. Continue anyway?", false, 'n');
+        return yesno(T_("This entrance appears to skip some branches and may be "
+                     "quite dangerous. Continue anyway?"), false, 'n');
     }
     return true;
 }

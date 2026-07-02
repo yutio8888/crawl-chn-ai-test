@@ -990,17 +990,17 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
     {
         if (!can_pass_through_feat(env.grid(newpos)))
         {
-            mprf("%s %s into %s%s",
+            mprf(T_("%s %s into %s%s"),
                  name(DESC_THE).c_str(), conj_verb("slam").c_str(),
                  env.map_knowledge(newpos).known()
                  ? feature_description_at(newpos, false, DESC_THE)
                        .c_str()
-                 : "something",
+                 : T_("something"),
                  attack_strength_punctuation(dam).c_str());
         }
         else
         {
-            mprf("%s violently %s moving%s",
+            mprf(T_("%s violently %s moving%s"),
                  name(DESC_THE).c_str(), conj_verb("stop").c_str(),
                  attack_strength_punctuation(dam).c_str());
         }

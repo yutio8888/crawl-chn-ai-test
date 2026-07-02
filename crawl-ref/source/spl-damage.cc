@@ -3674,7 +3674,7 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
     hitfunc.set_aim(target);
 
     if (hitfunc.is_affected(you.pos()) >= AFF_MAYBE
-        && !yesno("The unravelling is likely to hit you. Continue anyway?",
+        && !yesno(T_("The unravelling is likely to hit you. Continue anyway?"),
                   false, 'n'))
     {
         canned_msg(MSG_OK);
