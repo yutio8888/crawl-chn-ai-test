@@ -2878,7 +2878,15 @@ void Menu::update_title()
 
     if (m_indent_title)
     {
+        // Items have a 5-char hotkey prefix (" a - ") or 5-space indent.
+        // In console mode, this prefix is rendered inline and shifts item
+        // columns right by 5 cells relative to the title. Match the indent
+        // width so title labels align with item data columns.
+#ifdef USE_TILE_LOCAL
         formatted_string indented(" ");
+#else
+        formatted_string indented("     ");
+#endif
         indented += fs;
         fs = indented;
     }
