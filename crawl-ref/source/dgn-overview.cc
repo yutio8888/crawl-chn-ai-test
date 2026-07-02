@@ -423,7 +423,7 @@ static string _get_unseen_branches()
                 disp += (num_printed_branches % 4) == 0
                         ? "\n"
                         // Each branch entry takes up 20 spaces
-                        : string(20 + 21 - strlen(buffer), ' ');
+                        : string(20 + 21 - strwidth(string(buffer)), ' ');
             }
             else
             {
@@ -455,7 +455,7 @@ static string _get_unseen_branches()
                     disp += (num_printed_branches % 4) == 0
                             ? "\n"
                             // Each branch entry takes up 20 spaces
-                            : string(20 + 21 - strlen(buffer), ' ');
+                            : string(20 + 21 - strwidth(string(buffer)), ' ');
                 }
 
             }

@@ -1301,13 +1301,12 @@ formatted_string pad_more_with(formatted_string s,
     if (min_width <= 0)
         return s;
     // Needs to be done as a parsed formatted_string so that columns are
-    // counted correctly.
-    const auto lines = split_string("\n", s.tostring(), false, true);
-    const int last_len = static_cast<int>(lines.back().size());
-    const int pad_size = static_cast<int>(pad.tostring().size());
-    if (last_len < (min_width - pad_size))
+    // counted correctly (with strwidth for CJK characters).
+    const int last_display_width = s.width();
+    const int pad_display_width = static_cast<int>(pad.width());
+    if (last_display_width < (min_width - pad_display_width))
     {
-        s += string(min_width - (last_len + pad_size), ' ');
+        s += string(min_width - (last_display_width + pad_display_width), ' ');
         s += pad;
     }
     return s;
