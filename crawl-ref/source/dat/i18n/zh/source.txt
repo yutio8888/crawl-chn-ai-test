@@ -19415,3 +19415,56 @@ You pick up the %s and begin to read...
 %%%%
 %s stands up to serve you!
 %s站起来为你服务！
+
+# X3 H2: missing weapon/missile base names for T_() lookup
+%%%%
+old spiked flail
+旧带刺链枷
+%%%%
+old hammer
+旧锤子
+%%%%
+old cutlass
+旧短弯刀
+%%%%
+old falchion
+旧弯刃刀
+%%%%
+old long sword
+旧长剑
+%%%%
+old scimitar
+旧弯刀
+%%%%
+old double sword
+旧双刃剑
+%%%%
+old great sword
+旧巨剑
+%%%%
+old triple sword
+旧三刃剑
+%%%%
+old scythe
+旧镰刀
+%%%%
+old blowgun
+旧吹箭筒
+%%%%
+old fustibalus
+旧投石索
+%%%%
+needle
+吹箭
+%%%%
+arrow
+箭矢
+%%%%
+bolt
+弩箭
+%%%%
+slug
+弹丸
+%%%%
+sling bullet
+投石弹

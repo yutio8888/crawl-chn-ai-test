@@ -72,17 +72,14 @@
  *******************/
 
 static void _equip_mpr(bool* show_msgs, const char* msg,
-                       msg_channel_type chan = MSGCH_PLAIN,
-                       const char* msg_zh = nullptr)
+                       msg_channel_type chan = MSGCH_PLAIN)
 {
     bool do_show = true;
     if (show_msgs == nullptr)
         show_msgs = &do_show;
 
     if (*show_msgs)
-    {
-        mprf(chan, "%s", msg_zh ? T_(msg) : msg);
-    }
+        mprf(chan, "%s", msg);
 
     // Caller shouldn't give any more messages.
     *show_msgs = false;
@@ -126,13 +123,13 @@ static void _CEREBOV_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _CONDEMNATION_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
 {
     if (!unmeld && you.species == SP_BARACHI)
-        _equip_mpr(show_msgs, "You feel a strange sense of familiarity.", MSGCH_PLAIN, "你感到一种奇怪的熟悉感。");
+        _equip_mpr(show_msgs, T_("You feel a strange sense of familiarity."), MSGCH_PLAIN);
 }
 
 static void _CONDEMNATION_unequip(item_def */*item*/, bool *show_msgs)
 {
     if (you.species == SP_BARACHI)
-        _equip_mpr(show_msgs, "You feel oddly sad, like being parted from an old friend.", MSGCH_PLAIN, "你莫名感到悲伤，仿佛与老友离别。");
+        _equip_mpr(show_msgs, T_("You feel oddly sad, like being parted from an old friend."), MSGCH_PLAIN);
 }
 
 static void _CONDEMNATION_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -153,7 +150,7 @@ static void _CONDEMNATION_melee_effects(item_def* /*weapon*/, actor* attacker,
 
 static void _CURSES_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
 {
-    _equip_mpr(show_msgs, "A shiver runs down your spine.", MSGCH_PLAIN, "一阵寒意沿着你的脊背蔓延。");
+    _equip_mpr(show_msgs, T_("A shiver runs down your spine."), MSGCH_PLAIN);
     if (!unmeld)
         death_curse(you, nullptr, "the scythe of Curses", 0);
 }
@@ -238,17 +235,17 @@ static void _THROATCUTTER_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _OLGREB_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
     if (you.can_smell())
-        _equip_mpr(show_msgs, "You smell chlorine.", MSGCH_PLAIN, "你闻到了氯气的味道。");
+        _equip_mpr(show_msgs, T_("You smell chlorine."), MSGCH_PLAIN);
     else
-        _equip_mpr(show_msgs, "The staff glows a sickly green.", MSGCH_PLAIN, "法杖发出病态的绿光。");
+        _equip_mpr(show_msgs, T_("The staff glows a sickly green."), MSGCH_PLAIN);
 }
 
 static void _OLGREB_unequip(item_def */*item*/, bool *show_msgs)
 {
     if (you.can_smell())
-        _equip_mpr(show_msgs, "The smell of chlorine vanishes.", MSGCH_PLAIN, "氯气的味道消失了。");
+        _equip_mpr(show_msgs, T_("The smell of chlorine vanishes."), MSGCH_PLAIN);
     else
-        _equip_mpr(show_msgs, "The staff's sickly green glow vanishes.", MSGCH_PLAIN, "法杖的病态绿光消失了。");
+        _equip_mpr(show_msgs, T_("The staff's sickly green glow vanishes."), MSGCH_PLAIN);
 }
 
 // Based on melee_attack::staff_damage(), but using only evocations skill.
@@ -390,34 +387,34 @@ static void _SINGING_SWORD_melee_effects(item_def* weapon, actor* attacker,
 static void _PRUNE_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
     if (you.undead_state() == US_ALIVE)
-        _equip_mpr(show_msgs, "You struggle to resist the curse of the Prune...", MSGCH_PLAIN, "你挣扎着抵抗诅咒之梅的诅咒……");
+        _equip_mpr(show_msgs, T_("You struggle to resist the curse of the Prune..."), MSGCH_PLAIN);
     else
-        _equip_mpr(show_msgs, "The curse of the Prune has no hold on the dead.", MSGCH_PLAIN, "诅咒之梅的诅咒对亡者无效。");
+        _equip_mpr(show_msgs, T_("The curse of the Prune has no hold on the dead."), MSGCH_PLAIN);
 }
 
 static void _PRUNE_unequip(item_def */*item*/, bool *show_msgs)
 {
     if (you.undead_state() == US_ALIVE)
-        _equip_mpr(show_msgs, "The curse of the Prune lifts from you.", MSGCH_PLAIN, "诅咒之梅的诅咒从你身上解除了。");
+        _equip_mpr(show_msgs, T_("The curse of the Prune lifts from you."), MSGCH_PLAIN);
 }
 
 ////////////////////////////////////////////////////
 
 static void _LIGHTNING_SCALES_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel lightning quick.", MSGCH_PLAIN, "你感到迅如闪电。");
+    _equip_mpr(show_msgs, T_("You feel lightning quick."), MSGCH_PLAIN);
 }
 
 static void _LIGHTNING_SCALES_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "You feel rather sluggish.", MSGCH_PLAIN, "你感到相当迟缓。");
+    _equip_mpr(show_msgs, T_("You feel rather sluggish."), MSGCH_PLAIN);
 }
 
 ////////////////////////////////////////////////////
 
 static void _TORMENT_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "A terrible, searing pain shoots up your arm!", MSGCH_PLAIN, "一阵可怕的灼痛直冲你的手臂！");
+    _equip_mpr(show_msgs, T_("A terrible, searing pain shoots up your arm!"), MSGCH_PLAIN);
 }
 
 static void _TORMENT_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -432,13 +429,13 @@ static void _TORMENT_melee_effects(item_def* /*weapon*/, actor* attacker,
 
 static void _TROG_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel the exhaustion of battles past.", MSGCH_PLAIN, "你感到了昔日战斗的疲惫。");
+    _equip_mpr(show_msgs, T_("You feel the exhaustion of battles past."), MSGCH_PLAIN);
     player_end_berserk();
 }
 
 static void _TROG_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "You feel less violent.", MSGCH_PLAIN, "你感到不那么暴戾了。");
+    _equip_mpr(show_msgs, T_("You feel less violent."), MSGCH_PLAIN);
 }
 
 ///////////////////////////////////////////////////
@@ -461,7 +458,7 @@ static void _VARIABILITY_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _ZONGULDROK_equip(item_def */*item*/, bool *show_msgs,
                               bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You sense an extremely unholy aura.", MSGCH_PLAIN, "你感知到了极度不洁的灵气。");
+    _equip_mpr(show_msgs, T_("You sense an extremely unholy aura."), MSGCH_PLAIN);
 }
 
 static void _ZONGULDROK_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -952,12 +949,12 @@ static void _ELEMENTAL_STAFF_melee_effects(item_def*, actor* attacker,
 
 static void _ARC_BLADE_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "The arc blade crackles to life.", MSGCH_PLAIN, "电弧之刃噼啪作响地激活了。");
+    _equip_mpr(show_msgs, T_("The arc blade crackles to life."), MSGCH_PLAIN);
 }
 
 static void _ARC_BLADE_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The arc blade stops crackling.", MSGCH_PLAIN, "电弧之刃停止了噼啪作响。");
+    _equip_mpr(show_msgs, T_("The arc blade stops crackling."), MSGCH_PLAIN);
 }
 
 static void _ARC_BLADE_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -1021,12 +1018,12 @@ static void _ORDER_melee_effects(item_def* /*item*/, actor* attacker,
 static void _FIRESTARTER_equip(item_def */*item*/, bool *show_msgs,
                                bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You are filled with an inner flame.", MSGCH_PLAIN, "你体内燃起了火焰。");
+    _equip_mpr(show_msgs, T_("You are filled with an inner flame."), MSGCH_PLAIN);
 }
 
 static void _FIRESTARTER_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "Your inner flame fades away.", MSGCH_PLAIN, "你体内的火焰熄灭了。");
+    _equip_mpr(show_msgs, T_("Your inner flame fades away."), MSGCH_PLAIN);
 }
 
 static void _FIRESTARTER_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -1064,12 +1061,12 @@ static void _FORCE_LANCE_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _CHILLY_DEATH_equip(item_def */*item*/, bool *show_msgs,
                                 bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "The dagger glows with an icy blue light!", MSGCH_PLAIN, "匕首散发出冰蓝色的光芒！");
+    _equip_mpr(show_msgs, T_("The dagger glows with an icy blue light!"), MSGCH_PLAIN);
 }
 
 static void _CHILLY_DEATH_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The dagger stops glowing.", MSGCH_PLAIN, "匕首停止了发光。");
+    _equip_mpr(show_msgs, T_("The dagger stops glowing."), MSGCH_PLAIN);
 }
 
 static void _CHILLY_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -1103,12 +1100,12 @@ static void _CHILLY_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _FLAMING_DEATH_equip(item_def */*item*/, bool *show_msgs,
                                  bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "The scimitar bursts into red hot flame!", MSGCH_PLAIN, "弯刀爆发出赤热的火焰！");
+    _equip_mpr(show_msgs, T_("The scimitar bursts into red hot flame!"), MSGCH_PLAIN);
 }
 
 static void _FLAMING_DEATH_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The scimitar stops flaming.", MSGCH_PLAIN, "弯刀停止了燃烧。");
+    _equip_mpr(show_msgs, T_("The scimitar stops flaming."), MSGCH_PLAIN);
 }
 
 static void _FLAMING_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
@@ -1137,7 +1134,7 @@ static void _MAJIN_equip(item_def *item, bool *show_msgs, bool /*unmeld*/)
         return;
 
     const bool should_msg = !show_msgs || *show_msgs;
-    _equip_mpr(show_msgs, "You feel a darkness envelop your magic.", MSGCH_PLAIN, "你感到黑暗笼罩了你的魔力。");
+    _equip_mpr(show_msgs, T_("You feel a darkness envelop your magic."), MSGCH_PLAIN);
 
     if (!item->props.exists(MB_WELCOME_KEY) && should_msg)
     {
@@ -1177,9 +1174,9 @@ static void _OCTOPUS_KING_equip(item_def *item, bool *show_msgs,
     int rings = _octorings_worn();
 
     if (rings == 8)
-        _equip_mpr(show_msgs, "You feel like a king!", MSGCH_PLAIN, "你感到自己像个国王！");
+        _equip_mpr(show_msgs, T_("You feel like a king!"), MSGCH_PLAIN);
     else if (rings)
-        _equip_mpr(show_msgs, "You feel regal.", MSGCH_PLAIN, "你感到威严。");
+        _equip_mpr(show_msgs, T_("You feel regal."), MSGCH_PLAIN);
     item->plus = 8 + 2 * rings;
 }
 
@@ -1219,7 +1216,7 @@ static void _CAPTAIN_melee_effects(item_def* /*weapon*/, actor* attacker,
 
 static void _FENCERS_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "En garde!", MSGCH_PLAIN, "准备接招！");
+    _equip_mpr(show_msgs, T_("En garde!"), MSGCH_PLAIN);
 }
 
 #if TAG_MAJOR_VERSION == 34
@@ -1228,7 +1225,7 @@ static void _FENCERS_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 static void _ETHERIC_CAGE_equip(item_def */*item*/, bool *show_msgs,
                                 bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You sense a greater flux of ambient magical fields.", MSGCH_PLAIN, "你感知到周围魔法场的流动增强了。");
+    _equip_mpr(show_msgs, T_("You sense a greater flux of ambient magical fields."), MSGCH_PLAIN);
 }
 
 static void _ETHERIC_CAGE_world_reacts(item_def */*item*/)
@@ -1267,24 +1264,24 @@ static void _ETERNAL_TORMENT_unequip(item_def */*item*/, bool */*show_msgs*/)
 
 static void _VINES_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "The vines latch onto your body!", MSGCH_PLAIN, "藤蔓缠绕住了你的身体！");
+    _equip_mpr(show_msgs, T_("The vines latch onto your body!"), MSGCH_PLAIN);
 }
 
 static void _VINES_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The vines fall away from your body!", MSGCH_PLAIN, "藤蔓从你的身体上脱落了！");
+    _equip_mpr(show_msgs, T_("The vines fall away from your body!"), MSGCH_PLAIN);
 }
 
 ///////////////////////////////////////////////////
 
 static void _KRYIAS_equip(item_def */*item*/, bool *show_msgs, bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "Your attunement to healing potions increases.", MSGCH_PLAIN, "你对治疗药水的亲和力增强了。");
+    _equip_mpr(show_msgs, T_("Your attunement to healing potions increases."), MSGCH_PLAIN);
 }
 
 static void _KRYIAS_unequip(item_def */*item*/, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "Your attunement to healing potions decreases.", MSGCH_PLAIN, "你对治疗药水的亲和力减弱了。");
+    _equip_mpr(show_msgs, T_("Your attunement to healing potions decreases."), MSGCH_PLAIN);
 }
 
 ///////////////////////////////////////////////////
@@ -1320,13 +1317,13 @@ static void _LEECH_melee_effects(item_def* /*item*/, actor* attacker,
 static void _THERMIC_ENGINE_equip(item_def *item, bool *show_msgs,
                                   bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "The engine hums to life!", MSGCH_PLAIN, "引擎嗡嗡启动！");
+    _equip_mpr(show_msgs, T_("The engine hums to life!"), MSGCH_PLAIN);
     item->plus = 2;
 }
 
 static void _THERMIC_ENGINE_unequip(item_def *item, bool *show_msgs)
 {
-    _equip_mpr(show_msgs, "The engine shudders to a halt.", MSGCH_PLAIN, "引擎颤动着停止了。");
+    _equip_mpr(show_msgs, T_("The engine shudders to a halt."), MSGCH_PLAIN);
     item->plus = 2;
 }
 
@@ -1416,7 +1413,7 @@ static void _EMBRACE_unequip(item_def *item, bool *show_msgs)
     int &armour = item->props[EMBRACE_ARMOUR_KEY].get_int();
     if (armour > 0)
     {
-        _equip_mpr(show_msgs, "Your corpse armour falls away.", MSGCH_PLAIN, "你的尸体护甲脱落了。");
+        _equip_mpr(show_msgs, T_("Your corpse armour falls away."), MSGCH_PLAIN);
         armour = 0;
         item->plus = get_unrand_entry(item->unrand_idx)->plus;
     }
@@ -1523,13 +1520,13 @@ static void _manage_fire_shield()
 static void _SALAMANDER_equip(item_def * /* item */, bool * show_msgs,
                               bool /* unmeld */)
 {
-    _equip_mpr(show_msgs, "The air around you leaps into flame!", MSGCH_PLAIN, "你周围的空气燃成了火焰！");
+    _equip_mpr(show_msgs, T_("The air around you leaps into flame!"), MSGCH_PLAIN);
     _manage_fire_shield();
 }
 
 static void _SALAMANDER_unequip(item_def * /* item */, bool * show_msgs)
 {
-   _equip_mpr(show_msgs, "Your ring of flames gutters out.", MSGCH_PLAIN, "你的火焰之环熄灭了。");
+   _equip_mpr(show_msgs, T_("Your ring of flames gutters out."), MSGCH_PLAIN);
 }
 
 static void _SALAMANDER_world_reacts(item_def * /* item */)
@@ -1544,7 +1541,7 @@ static void _GUARD_unequip(item_def *item, bool * show_msgs)
     monster *spectral_weapon = find_spectral_weapon(*item);
     if (spectral_weapon)
     {
-        _equip_mpr(show_msgs, "Your spectral weapon disappears.", MSGCH_PLAIN, "你的幽灵武器消失了。");
+        _equip_mpr(show_msgs, T_("Your spectral weapon disappears."), MSGCH_PLAIN);
         end_spectral_weapon(spectral_weapon, false, true);
     }
 }
@@ -1566,7 +1563,7 @@ static void _WUCAD_MU_equip(item_def */*item*/, bool *show_msgs,
 static void _SEVEN_LEAGUE_BOOTS_equip(item_def * /*item*/, bool *show_msgs,
                                       bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel ready to stride towards your foes.", MSGCH_PLAIN, "你感到准备好大步迈向敌人。");
+    _equip_mpr(show_msgs, T_("You feel ready to stride towards your foes."), MSGCH_PLAIN);
 }
 
 static void _SEVEN_LEAGUE_BOOTS_unequip(item_def * /*item*/, bool *show_msgs)
@@ -1602,13 +1599,13 @@ static void _POWER_GLOVES_equip(item_def * /*item*/, bool *show_msgs,
                               "magical essence.");
     }
     else
-        _equip_mpr(show_msgs, "You feel an incredible surge of magic.", MSGCH_PLAIN, "你感到一股难以置信的魔力涌动。");
+        _equip_mpr(show_msgs, T_("You feel an incredible surge of magic."), MSGCH_PLAIN);
 }
 
 static void _POWER_GLOVES_unequip(item_def * /*item*/, bool *show_msgs)
 {
     if (!you.has_mutation(MUT_HP_CASTING))
-        _equip_mpr(show_msgs, "The surge of magic dissipates.", MSGCH_PLAIN, "魔力的涌动消散了。");
+        _equip_mpr(show_msgs, T_("The surge of magic dissipates."), MSGCH_PLAIN);
 }
 
 ////////////////////////////////////////////////////
@@ -1616,12 +1613,12 @@ static void _POWER_GLOVES_unequip(item_def * /*item*/, bool *show_msgs)
 static void _DREAMSHARD_NECKLACE_equip(item_def * /*item*/, bool *show_msgs,
                                       bool /*unmeld*/)
 {
-    _equip_mpr(show_msgs, "You feel a whimsical energy watch over you.", MSGCH_PLAIN, "你感到一股奇异的能量在守护着你。");
+    _equip_mpr(show_msgs, T_("You feel a whimsical energy watch over you."), MSGCH_PLAIN);
 }
 
 static void _DREAMSHARD_NECKLACE_unequip(item_def * /* item */, bool * show_msgs)
 {
-    _equip_mpr(show_msgs, "The world feels relentlessly logical and grey.", MSGCH_PLAIN, "世界变得无情地合乎逻辑，灰暗无光。");
+    _equip_mpr(show_msgs, T_("The world feels relentlessly logical and grey."), MSGCH_PLAIN);
 }
 
 ////////////////////////////////////////////////////
@@ -1869,7 +1866,7 @@ static void _FISTICLOAK_world_reacts(item_def */*item*/)
 static void _VAINGLORY_equip(item_def */*item*/, bool *show_msgs, bool unmeld)
 {
     if (!unmeld)
-        _equip_mpr(show_msgs, "You feel supremely confident.", MSGCH_PLAIN, "你感到无比自信。");
+        _equip_mpr(show_msgs, T_("You feel supremely confident."), MSGCH_PLAIN);
 }
 
 static void _VAINGLORY_unequip(item_def */*item*/, bool */*show_msgs*/)

@@ -3111,16 +3111,18 @@ static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
         return T_("stone staircase leading down");
     else if (feat_is_stone_stair_up(grid))
         return T_("stone staircase leading up");
-    else if (feat_is_escape_hatch(grid))
-        return T_(get_feature_def(grid).name);
+    else if (grid == DNGN_ESCAPE_HATCH_DOWN)
+        return T_("escape hatch in the floor");
+    else if (grid == DNGN_ESCAPE_HATCH_UP)
+        return T_("escape hatch in the ceiling");
     else if (grid == DNGN_EXIT_DUNGEON)
-        return T_(get_feature_def(grid).name);
+        return T_("staircase leading out of the dungeon");
     else if (grid == DNGN_OPEN_DOOR)
-        return T_(get_feature_def(grid).name);
+        return T_("open door");
     else if (grid == DNGN_CLOSED_DOOR)
-        return T_(get_feature_def(grid).name);
+        return T_("closed door");
     else if (grid == DNGN_ALTAR_ECUMENICAL)
-        return T_(get_feature_def(grid).name);
+        return T_("faded altar of an unknown god");
     else if (feat_is_altar(grid))
     {
         god_type god = feat_altar_god(grid);
