@@ -1793,9 +1793,9 @@ static vector<string> _desc_englaciate_chance(const monster_info& mi,
 static vector<string> _desc_gloom_chance(const monster_info& mi, int pow)
 {
     if (mons_res_blind(mi.type))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
-    return vector<string>{make_stringf("chance to blind: %d%%", gloom_success_chance(pow, mi.hd))};
+    return vector<string>{make_stringf(T_("chance to blind: %d%%"), gloom_success_chance(pow, mi.hd))};
 }
 
 static vector<string> _desc_airstrike_bonus(const monster_info& mi)
@@ -1915,11 +1915,11 @@ static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
     if (wl != WILL_INVULN)
     {
         const int success = hex_success_chance(wl, pow, 100);
-        all_effects.push_back(make_stringf("chance to daze and blind: %d%%", success));
+        all_effects.push_back(make_stringf(T_("chance to daze and blind: %d%%"), success));
     }
 
     if (all_effects.empty())
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     return all_effects;
 }

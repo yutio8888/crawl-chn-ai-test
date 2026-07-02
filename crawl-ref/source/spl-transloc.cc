@@ -325,7 +325,7 @@ void wizard_blink()
     tgt.obeys_mesmerise = false;
     args.hitfunc = &tgt;
 
-    args.top_prompt = "Blink to where?";
+    args.top_prompt = T_("Blink to where?");
     dist beam;
     direction(beam, args);
 

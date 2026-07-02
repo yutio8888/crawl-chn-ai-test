@@ -2205,13 +2205,11 @@ static void _special_corpse_messaging(monster &mons)
                     ? mons.props[OLD_HEADS_KEY].get_int()
                     : mons.number;
     unwind_var<unsigned int> number(mons.number, num);
-    const string message = " returns to " +
-                            mons.pronoun(PRONOUN_POSSESSIVE) +
-                            " original shape as " +
-                            mons.pronoun(PRONOUN_SUBJECTIVE) + " " +
-                            conjugate_verb("die", mons.pronoun_plurality()) +
-                            ".";
-    simple_monster_message(mons, message.c_str());
+    mprf_p(MSGCH_PLAIN, T_("%1$s returns to %2$s original shape as %3$s %4$s."),
+           mons.name(DESC_THE).c_str(),
+           mons.pronoun(PRONOUN_POSSESSIVE).c_str(),
+           mons.pronoun(PRONOUN_SUBJECTIVE).c_str(),
+           conjugate_verb("die", mons.pronoun_plurality()).c_str());
 }
 
 bool mons_will_goldify(const monster &mons)

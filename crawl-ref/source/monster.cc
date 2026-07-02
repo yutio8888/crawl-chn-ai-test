@@ -2138,9 +2138,9 @@ static string _mon_special_name(const monster& mon, description_level_type desc,
         switch (desc)
         {
         case DESC_THE: case DESC_A: case DESC_PLAIN: case DESC_YOUR:
-            return "something";
+            return T_("something");
         case DESC_ITS:
-            return "something's";
+            return T_("something's");
         default:
             return "it (buggy)";
         }

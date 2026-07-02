@@ -2321,7 +2321,7 @@ bool enchant_weapon(item_def &wpn, bool quiet)
         success = true;
         if (!quiet)
         {
-            const char* dur = wpn.plus < MAX_WPN_ENCHANT ? "moment" : "while";
+            const char* dur = wpn.plus < MAX_WPN_ENCHANT ? T_("moment") : T_("while");
             mprf(T_("%s glows red for a %s."), iname.c_str(), dur);
         }
     }

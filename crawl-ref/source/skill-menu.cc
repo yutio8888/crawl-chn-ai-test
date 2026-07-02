@@ -582,7 +582,7 @@ string SkillMenuSwitch::get_help()
                                  + " power");
             }
             if (_any_crosstrained())
-                causes.push_back("cross-training");
+                causes.push_back(T_("cross-training"));
             if (_hermit_bonus())
                 causes.push_back("the Hermit's pendant");
             if (_wildshape_bonus())

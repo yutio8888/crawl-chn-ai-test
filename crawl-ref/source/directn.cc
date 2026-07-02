@@ -1795,8 +1795,8 @@ void direction_chooser::print_target_monster_description(bool &did_cloud) const
     string text = target_description();
     if (text > "")
     {
-        mprf(MSGCH_PROMPT, "%s: <lightgrey>%s</lightgrey>",
-            target_prefix ? target_prefix : !behaviour->targeted() ? "Look" : "Aim",
+        mprf(MSGCH_PROMPT, T_("%s: <lightgrey>%s</lightgrey>"),
+            target_prefix ? target_prefix : !behaviour->targeted() ? T_("Look") : T_("Aim"),
             text.c_str());
         // If there's a cloud here, it's been described.
         did_cloud = true;
@@ -1889,8 +1889,8 @@ void direction_chooser::print_target_object_description() const
         return;
 
     // FIXME: remove the duplication with print_items_description().
-    mprf(MSGCH_PROMPT, "%s: %s",
-         target_prefix ? target_prefix : "Aim",
+    mprf(MSGCH_PROMPT, T_("%s: %s"),
+         target_prefix ? target_prefix : T_("Aim"),
          menu_colour_item_name(*item, DESC_A).c_str());
 }
 

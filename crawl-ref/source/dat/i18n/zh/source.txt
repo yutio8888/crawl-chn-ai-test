@@ -24512,3 +24512,95 @@ white marble altar of Elyvilon
 zot statue
 佐特雕像
 %%%%
+%%%%
+something
+某个东西
+%%%%
+%%%%
+something's
+某个东西的
+%%%%
+%%%%
+not susceptible
+不受影响
+%%%%
+%%%%
+chance to blind: %d%%
+致盲几率：%d%%
+%%%%
+%%%%
+chance to daze and blind: %d%%
+眩晕兼致盲几率：%d%%
+%%%%
+%%%%
+Aim
+瞄准
+%%%%
+%%%%
+Look
+观察
+%%%%
+%%%%
+%s: <lightgrey>%s</lightgrey>
+%s：<lightgrey>%s</lightgrey>
+%%%%
+%%%%
+%s: %s
+%s：%s
+%%%%
+%%%%
+%1$s returns to %2$s original shape as %3$s %4$s.
+%1$s在死亡时变回了原来的形态。
+%%%%
+%%%%
++ - Recommended random choice
++ - 推荐随机选择
+%%%%
+%%%%
+Picks a random recommended weapon
+随机选择一把推荐的武器
+%%%%
+%%%%
+* - Random weapon
+* - 随机武器
+%%%%
+%%%%
+Picks a random weapon
+随机选择一把武器
+%%%%
+%%%%
+Bksp - Return to character menu
+Bksp - 返回角色菜单
+%%%%
+%%%%
+Lets you return back to Character choice menu
+返回角色选择菜单
+%%%%
+%%%%
+Empty
+空
+%%%%
+%%%%
+Nothing quivered
+未选择箭矢
+%%%%
+%%%%
+cross-training
+跨系训练
+%%%%
+%%%%
+moment
+一瞬
+%%%%
+%%%%
+while
+一段时间
+%%%%
+%%%%
+Blink to where?
+要闪烁到哪里？
+%%%%
+%%%%
+ terribly
+极其
+%%%%

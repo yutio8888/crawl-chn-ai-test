@@ -1814,8 +1814,8 @@ static void _construct_weapon_menu(const newgame_def& ng,
         main_items->add_button(std::move(btn), 0, i);
     }
 
-    _add_menu_sub_item(sub_items, 0, 0, "+ - Recommended random choice",
-            "Picks a random recommended weapon", '+', M_VIABLE);
+    _add_menu_sub_item(sub_items, 0, 0, T_("+ - Recommended random choice"),
+            T_("Picks a random recommended weapon"), '+', M_VIABLE);
     _add_menu_sub_item(sub_items, 0, 1,
             T_("% - View aptitudes"),
             T_("List skill training aptitude values for all species."),
@@ -1824,10 +1824,10 @@ static void _construct_weapon_menu(const newgame_def& ng,
             T_("? - Help"),
             T_("Open the help screen."),
             '?', M_HELP);
-    _add_menu_sub_item(sub_items, 1, 0, "* - Random weapon",
-            "Picks a random weapon", '*', WPN_RANDOM);
-    _add_menu_sub_item(sub_items, 1, 1, "Bksp - Return to character menu",
-            "Lets you return back to Character choice menu", CK_BKSP, M_ABORT);
+    _add_menu_sub_item(sub_items, 1, 0, T_("* - Random weapon"),
+            T_("Picks a random weapon"), '*', WPN_RANDOM);
+    _add_menu_sub_item(sub_items, 1, 1, T_("Bksp - Return to character menu"),
+            T_("Lets you return back to Character choice menu"), CK_BKSP, M_ABORT);
 
     if (defweapon != WPN_UNKNOWN)
     {

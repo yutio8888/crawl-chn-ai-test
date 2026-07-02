@@ -142,8 +142,8 @@ namespace quiver
     formatted_string action::quiver_description(bool short_desc) const
     {
         return formatted_string::parse_string(
-                        short_desc ? "<darkgrey>Empty</darkgrey>"
-                                   : "<darkgrey>Nothing quivered</darkgrey>");
+                        short_desc ? string("<darkgrey>") + T_("Empty") + "</darkgrey>"
+                                   : string("<darkgrey>") + T_("Nothing quivered") + "</darkgrey>");
     }
 
     vector<tile_def> action::get_tiles() const
