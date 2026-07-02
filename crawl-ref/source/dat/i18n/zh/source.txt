@@ -2779,6 +2779,7 @@ Always
 始终
 %%%%
 always
+总是
 %%%%
 ambrosia
 神食
@@ -3469,6 +3470,7 @@ Careful! %s
 小心！%s
 %%%%
 carefully
+细心地
 %%%%
  cares for nothing but gold!
 只在乎黄金！
@@ -3619,8 +3621,6 @@ clouds of all kinds
 %%%%
 cold
 寒冷
-%%%%
-completely
 %%%%
  completely resists.
 完全抵抗了。
@@ -5358,6 +5358,7 @@ kneecap
 膝撞
 %%%%
  large
+大
 %%%%
 lava and is incinerated
 岩浆并被烧成了灰烬
@@ -5723,6 +5724,7 @@ most pleased with you
 对你相当满意
 %%%%
 mostly
+大部分
 %%%%
 Motes of dream dust float from an unseen source.
 梦尘的微粒从看不见的来源飘来。
@@ -5932,6 +5934,7 @@ numb sensation.
 麻木感。
 %%%%
 occasionally
+偶尔
 %%%%
 off-hand punch
 副手拳击
@@ -5940,6 +5943,7 @@ off-hand punch
 为你提供了
 %%%%
 often
+经常
 %%%%
 Okawaru
 奥卡瓦鲁
@@ -6038,6 +6042,7 @@ paralysis
 麻痹
 %%%%
 partially
+部分
 %%%%
  partially averts the curse.
 部分转移了诅咒。
@@ -6347,6 +6352,7 @@ Range
 # L306: simple
 %%%%
 rarely
+极少
 %%%%
 rC
 冰抗
@@ -6830,6 +6836,7 @@ Shopping list: removing %s
 购物清单：正在移除%s
 %%%%
 short
+短
 %%%%
  shudders and withdraws towards its neighbour.
  颤抖着缩回了它的邻居身边。
@@ -6941,6 +6948,7 @@ smack
 掌掴
 %%%%
  small
+小
 %%%%
 smite your foes
 惩戒你的敌人
@@ -7049,6 +7057,7 @@ Something you can't see occupies that space!
 有什么你看不见的东西占据了那个位置！
 %%%%
 sometimes
+有时
 %%%%
 Somewhere, a butterfly flaps its wings.
 在某处，一只蝴蝶扇动了翅膀。
@@ -12295,37 +12304,8 @@ Zot's power touches on you...
 
 # Phase 1b-2 fix: book type names and misc items
 %%%%
-偶尔
-%%%%
-和一张凭证。
-
-# L552: simple
-%%%%
-大部分
-%%%%
-完全
-%%%%
+powerful
 强大的
-%%%%
-微弱的
-%%%%
-总是
-%%%%
-有时
-%%%%
-极少
-%%%%
-短
-%%%%
-细心地
-%%%%
-经常
-%%%%
-部分
-book_type:manual
-手册
-%%%%
-长
 %%%%
 Gear:
 
@@ -14153,10 +14133,6 @@ your
 
 你的
 %%%%
- the 
- 
- 
-%%%%
 unnamed 
 未命名
 %%%%
@@ -14358,7 +14334,7 @@ Something just walked over your grave. No, really!
 Your %1$s prickle%2$s.
 你的%1$s感到刺痛。
 %%%%
- completely
+completely
 完全
 %%%%
  closely
@@ -16552,8 +16528,6 @@ Inferno
 地狱之火
 
 %%%%
-
-%%%%
 # Phase 3: describe-god.cc T_() migration (Agent A4)
 %%%%
 You radiate a%s aura of righteousness, making those within it easier to hit.
@@ -16642,8 +16616,6 @@ Haste
 %%%%
 Quick blade (antimagic)
 迅捷之刃（反魔）
-%%%%
-
 %%%%
 # Phase 3: god-conduct.cc T_() migration (Agent A4)
 %%%%
@@ -17433,6 +17405,7 @@ weakness
 %%%%
 will-reducing
 意志削弱
+%%%%
 beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s
 %1$s%2$s了%3$s%4$s%5$s！
 %%%%
@@ -19149,8 +19122,6 @@ The frigid air chills %s%s%s
 Drain Magic
 Drain Magic
 %%%%
-
-%%%%
 # describe.cc weapon description i18n — _your_skill_desc / _skill_target_desc (2026-07-02)
 %%%%
 Your %s skill: %s%d.%d%s
@@ -19384,3 +19355,4 @@ It is%s good for stabbing helpless or unaware enemies.
 \n\nIt has a 1/%d chance to be destroyed on impact.
 \n\n它在击中时有1/%d几率损坏。
 %%%%
+ the 
