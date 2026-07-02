@@ -314,6 +314,8 @@ static void _count_monster_types(const vector<monster*> &monsters,
 
 static string _describe_monsters_from_species(const vector<details> &species)
 {
+    const string and_sep = Options.language == lang_t::ZH ? " 和 " : " and ";
+    const string comma_sep = Options.language == lang_t::ZH ? "、" : ", ";
     return comma_separated_fn(species.begin(), species.end(),
         [] (const details &det)
         {
@@ -343,7 +345,7 @@ static string _describe_monsters_from_species(const vector<details> &species)
             else if (det.count > 1)
                 name = " "+pluralise(det.name);
             return apply_description(DESC_A, name, det.count);
-        });
+        }, and_sep, comma_sep);
 }
 
 /**

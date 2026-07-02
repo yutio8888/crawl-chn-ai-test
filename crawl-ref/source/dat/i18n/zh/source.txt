@@ -22260,3 +22260,16 @@ flag long|rolling
 %%%%
 flag long|regenerating
 正在再生
+
+%%%%
+damnation bolt
+毁灭之矢
+%%%%
+eggplant
+茄子
+%%%%
+%d.%02d/turn\n
+%d.%02d/回合\n
+%%%%
+%d.%02d/turn%s\n
+%d.%02d/回合%s\n
