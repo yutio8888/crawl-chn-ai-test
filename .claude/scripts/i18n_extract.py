@@ -3,6 +3,7 @@
 i18n_extract.py — Extract and validate T_() translation keys.
 
 Scans C++ source files for T_("English") and C_("ctx", "English") calls,
+and Lua files for crawl.t_("English") calls,
 extracts the English keys, and compares them against source.txt entries.
 
 The escape logic in i18n_escape() MUST exactly mirror the C++ function
@@ -75,6 +76,22 @@ C_RE = re.compile(r'''
 ''', re.VERBOSE)
 
 
+# ── Regex for extracting crawl.t_("...") and crawl.t_('...') from Lua ──
+
+# Matches crawl.t_("string") — Lua uses same C-style escapes in strings.
+LUA_T_RE_DQ = re.compile(r'''
+    \b crawl \s* \. \s* t_ \s* \( \s*
+    " ( (?: [^"\\] | \\. )* ) "   # group 1: double-quoted string
+    \s* \)
+''', re.VERBOSE)
+
+LUA_T_RE_SQ = re.compile(r'''
+    \b crawl \s* \. \s* t_ \s* \( \s*
+    ' ( (?: [^'\\] | \\. )* ) '   # group 1: single-quoted string
+    \s* \)
+''', re.VERBOSE)
+
+
 def cpp_unescape(s: str) -> str:
     """Convert C++ string-literal escape sequences to their runtime characters.
 
@@ -114,10 +131,10 @@ def cpp_unescape(s: str) -> str:
 
 
 def extract_keys_from_file(filepath: str):
-    """Yield (key, context, line_number) tuples from a C++ source file.
+    """Yield (key, context, line_number) tuples from a C++ or Lua source file.
 
     key: the normalized source.txt key (cpp_unescape + i18n_escape applied)
-    context: None for T_(), context string for C_()
+    context: None for T_()/crawl.t_(), context string for C_()
     """
     with open(filepath, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
@@ -125,6 +142,28 @@ def extract_keys_from_file(filepath: str):
     offsets = _build_lineno_map(content)
     lines = content.split("\n")
 
+    is_lua = filepath.endswith(".lua")
+
+    if is_lua:
+        # Scan for crawl.t_("...") and crawl.t_('...') in Lua
+        for match in LUA_T_RE_DQ.finditer(content):
+            str_raw = match.group(1)
+            key_runtime = cpp_unescape(str_raw)
+            key = i18n_escape(key_runtime)
+            lineno = _offset_to_lineno(offsets, match.start())
+            line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
+            yield (key, None, filepath, lineno, line_text)
+
+        for match in LUA_T_RE_SQ.finditer(content):
+            str_raw = match.group(1)
+            key_runtime = cpp_unescape(str_raw)
+            key = i18n_escape(key_runtime)
+            lineno = _offset_to_lineno(offsets, match.start())
+            line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
+            yield (key, None, filepath, lineno, line_text)
+        return
+
+    # C++ source: T_() and C_()
     for match in C_RE.finditer(content):
         ctx_raw = match.group(1)
         str_raw = match.group(2)
@@ -203,11 +242,11 @@ def parse_source_txt(filepath: str) -> OrderedDict:
 
 
 def scan_source_dir(root: str) -> list:
-    """Walk a source directory and extract all T_() / C_() keys."""
+    """Walk a source directory and extract all T_() / C_() / crawl.t_() keys."""
     all_keys = []  # [(key, context, file, line, line_text), ...]
     for dirpath, _, filenames in os.walk(root):
         for fn in filenames:
-            if fn.endswith(".cc") or fn.endswith(".h"):
+            if fn.endswith(".cc") or fn.endswith(".h") or fn.endswith(".lua"):
                 filepath = os.path.join(dirpath, fn)
                 for item in extract_keys_from_file(filepath):
                     all_keys.append(item)
