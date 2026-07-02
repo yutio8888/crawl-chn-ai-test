@@ -406,6 +406,63 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
     }
 }
 
+const char* missile_brand_name_en(const item_def &item, mbn_type t)
+{
+    const special_missile_type brand
+        = static_cast<special_missile_type>(item.brand);
+    switch (brand)
+    {
+#if TAG_MAJOR_VERSION == 34
+    case SPMSL_FLAME:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_FROST:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+#endif
+    case SPMSL_POISONED:
+        return t == MBN_NAME ? "poisoned" : "poison";
+    case SPMSL_CURARE:
+        return t == MBN_NAME ? "curare-tipped" : "curare";
+#if TAG_MAJOR_VERSION == 34
+    case SPMSL_EXPLODING:
+        return "obsolete";
+    case SPMSL_STEEL:
+        return "obsolete";
+    case SPMSL_RETURNING:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_PENETRATION:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+#endif
+    case SPMSL_SILVER:
+        return "silver";
+#if TAG_MAJOR_VERSION == 34
+    case SPMSL_PARALYSIS:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_SLOW:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_SLEEP:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_CONFUSION:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+    case SPMSL_SICKNESS:
+        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+#endif
+    case SPMSL_FRENZY:
+        return t == MBN_NAME ? "datura-tipped" : "datura";
+    case SPMSL_CHAOS:
+        return "chaos";
+    case SPMSL_DISPERSAL:
+        return t == MBN_TERSE ? "disperse" : "dispersal";
+    case SPMSL_DISJUNCTION:
+        return t == MBN_TERSE ? "disjunct" : "disjunction";
+    case SPMSL_BLINDING:
+        return t == MBN_NAME ? "atropa-tipped" : "atropa";
+    case SPMSL_NORMAL:
+        return "";
+    default:
+        return t == MBN_TERSE ? "buggy" : "bugginess";
+    }
+}
+
 static const char *weapon_brands_terse[] =
 {
     "", "flame", "freeze", "holy", "elec",
@@ -603,6 +660,15 @@ const char* weapon_brand_name(const item_def& item, bool terse,
     return brand_type_name(brand, terse);
 }
 
+const char* brand_type_name_en(brand_type brand, bool terse)
+{
+    if (brand < 0 || brand >= NUM_SPECIAL_WEAPONS)
+        return terse ? "buggy" : "bugginess";
+
+    return terse ? weapon_brands_terse[brand]
+                 : weapon_brands_verbose[brand];
+}
+
 const char* special_armour_type_name(special_armour_type ego, bool terse)
 {
 #if TAG_MAJOR_VERSION == 34
@@ -721,6 +787,121 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
 const char* armour_ego_name(const item_def& item, bool terse)
 {
     return special_armour_type_name(get_armour_ego_type(item), terse);
+}
+
+const char* special_armour_type_name_en(special_armour_type ego, bool terse)
+{
+#if TAG_MAJOR_VERSION == 34
+    if (ego == SPARM_RUNNING || ego == SPARM_JUMPING || ego == SPARM_CLOUD_IMMUNE)
+        return terse ? "obsolete" : "obsolescence";
+#endif
+    if (ego == SPARM_NORMAL)
+        return "";
+
+    if (!terse)
+    {
+        switch (ego)
+        {
+        case SPARM_FIRE_RESISTANCE:   return "fire resistance";
+        case SPARM_COLD_RESISTANCE:   return "cold resistance";
+        case SPARM_POISON_RESISTANCE: return "poison resistance";
+        case SPARM_SEE_INVISIBLE:     return "see invisible";
+        case SPARM_INVISIBILITY:      return "invisibility";
+        case SPARM_STRENGTH:          return "strength";
+        case SPARM_DEXTERITY:         return "dexterity";
+        case SPARM_INTELLIGENCE:      return "intelligence";
+        case SPARM_PONDEROUSNESS:     return "ponderousness";
+        case SPARM_FLYING:            return "flying";
+        case SPARM_WILLPOWER:         return "willpower";
+        case SPARM_PROTECTION:        return "protection";
+        case SPARM_STEALTH:           return "stealth";
+        case SPARM_RESISTANCE:        return "resistance";
+        case SPARM_POSITIVE_ENERGY:   return "positive energy";
+        case SPARM_ARCHMAGI:          return "the Archmagi";
+        case SPARM_CORROSION_RESISTANCE: return "corrosion resistance";
+        case SPARM_REFLECTION:        return "reflection";
+        case SPARM_SPIRIT_SHIELD:     return "spirit shield";
+        case SPARM_HURLING:           return "hurling";
+        case SPARM_REPULSION:         return "repulsion";
+        case SPARM_HARM:              return "harm";
+        case SPARM_SHADOWS:           return "shadows";
+        case SPARM_RAMPAGING:         return "rampaging";
+        case SPARM_INFUSION:          return "infusion";
+        case SPARM_LIGHT:             return "light";
+        case SPARM_RAGE:              return "wrath";
+        case SPARM_MAYHEM:            return "mayhem";
+        case SPARM_GUILE:             return "guile";
+        case SPARM_ENERGY:            return "energy";
+        case SPARM_SNIPING:           return "sniping";
+        case SPARM_ICE:               return "ice";
+        case SPARM_FIRE:              return "fire";
+        case SPARM_AIR:               return "air";
+        case SPARM_EARTH:             return "earth";
+        case SPARM_ARCHERY:           return "archery";
+        case SPARM_COMMAND:           return "command";
+        case SPARM_DEATH:             return "death";
+        case SPARM_RESONANCE:         return "resonance";
+        case SPARM_PARRYING:          return "parrying";
+        case SPARM_GLASS:             return "glass";
+        case SPARM_PYROMANIA:         return "pyromania";
+        case SPARM_STARDUST:          return "stardust";
+        case SPARM_MESMERISM:         return "mesmerism";
+        case SPARM_ATTUNEMENT:        return "attunement";
+        default:                      return "bugginess";
+        }
+    }
+    else
+    {
+        switch (ego)
+        {
+        case SPARM_FIRE_RESISTANCE:   return "rF+";
+        case SPARM_COLD_RESISTANCE:   return "rC+";
+        case SPARM_POISON_RESISTANCE: return "rPois";
+        case SPARM_SEE_INVISIBLE:     return "SInv";
+        case SPARM_INVISIBILITY:      return "+Inv";
+        case SPARM_STRENGTH:          return "Str+3";
+        case SPARM_DEXTERITY:         return "Dex+3";
+        case SPARM_INTELLIGENCE:      return "Int+3";
+        case SPARM_PONDEROUSNESS:     return "Ponderous";
+        case SPARM_FLYING:            return "Fly";
+        case SPARM_WILLPOWER:         return "Will+";
+        case SPARM_PROTECTION:        return "AC+3";
+        case SPARM_STEALTH:           return "Stlth+";
+        case SPARM_RESISTANCE:        return "rC+ rF+";
+        case SPARM_POSITIVE_ENERGY:   return "rN+";
+        case SPARM_ARCHMAGI:          return "Archmagi";
+        case SPARM_CORROSION_RESISTANCE: return "rCorr";
+        case SPARM_REFLECTION:        return "Reflect";
+        case SPARM_SPIRIT_SHIELD:     return "Spirit";
+        case SPARM_HURLING:           return "Hurl";
+        case SPARM_REPULSION:         return "Repulsion";
+        case SPARM_HARM:              return "Harm";
+        case SPARM_SHADOWS:           return "Shadows";
+        case SPARM_RAMPAGING:         return "Rampage";
+        case SPARM_INFUSION:          return "Infuse";
+        case SPARM_LIGHT:             return "Light";
+        case SPARM_RAGE:              return "*Rage";
+        case SPARM_MAYHEM:            return "Mayhem";
+        case SPARM_GUILE:             return "Guile";
+        case SPARM_ENERGY:            return "Energy";
+        case SPARM_SNIPING:           return "Snipe";
+        case SPARM_ICE:               return "Ice";
+        case SPARM_FIRE:              return "Fire";
+        case SPARM_AIR:               return "Air";
+        case SPARM_EARTH:             return "Earth";
+        case SPARM_ARCHERY:           return "Archery";
+        case SPARM_COMMAND:           return "Command";
+        case SPARM_DEATH:             return "Death";
+        case SPARM_RESONANCE:         return "Resonance";
+        case SPARM_PARRYING:          return "Parrying";
+        case SPARM_GLASS:             return "Glass";
+        case SPARM_PYROMANIA:         return "Pyromania";
+        case SPARM_STARDUST:          return "Stardust";
+        case SPARM_MESMERISM:         return "Mesmerism";
+        case SPARM_ATTUNEMENT:        return "Attunement";
+        default:                      return "buggy";
+        }
+    }
 }
 
 static const char* _wand_type_name(int wandtype)

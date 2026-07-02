@@ -18210,7 +18210,7 @@ Ring of Flames
 Ring of Flames
 %%%%
 See Invisible
-See Invisible
+识破隐形
 %%%%
 Shaft Self
 Shaft Self
@@ -22276,3 +22276,78 @@ eggplant
 %%%%
 %1$s向%4$s%3$s%5$s%6$s%7$s%8$s
 %1$s向%4$s%3$s%5$s%6$s%7$s%8$s
+%%%%
+sleepcap
+眠帽
+%%%%
+\n\nit affects your ac (%+d).
+\n\n它影响你的AC(%+d)。
+%%%%
+\n\nit affects your shielding (%+d).
+\n\n它影响你的SH(%+d)。
+%%%%
+\n\nit affects your evasion (%+d).
+\n\n它影响你的闪避(%+d)。
+%%%%
+\n\nit affects your strength (%+d).
+\n\n它影响你的力量(%+d)。
+%%%%
+\n\nit affects your intelligence (%+d).
+\n\n它影响你的智力(%+d)。
+%%%%
+\n\nit affects your dexterity (%+d).
+\n\n它影响你的敏捷(%+d)。
+%%%%
+\n\nit affects your accuracy and damage with ranged weapons and melee (%+d).
+\n\n它影响你远程和近战武器的命中与伤害(%+d)。
+%%%%
+\n\nspell refund chance: %d%% (max %d%%)
+\n\n法术返还几率：%d%%（最大%d%%）
+%%%%
+\n\nenemy willpower: -%d (max -%d)
+\n\n敌人意志力：-%d（最大-%d）
+%%%%
+\n\nvitrify chance: %d%% (max %d%%)
+\n\n玻璃化几率：%d%%（最大%d%%）
+%%%%
+\n\nexplosion chance: %d%% (max %d%%)\nexplosion damage: %dd%d (max %dd%d)\n
+\n\n爆炸几率：%d%%（最大%d%%）\n爆炸伤害：%dd%d（最大%dd%d）
+%%%%
+\n\nbase shooting star damage: %dd%d (max %dd%d) + 25%% per mp spent\nshooting stars conjured: 1 + 1 per visible enemy, up to %d (%d at max skill)
+\n\n基础流星伤害：%dd%d（最大%dd%d）+每消耗1MP增加25%%\n召唤流星：1 + 每个可见敌人增加1，最多%d（满技能时%d）
+%%%%
+level %d of %s
+%2$s第%d层
+%%%%
+on 
+在
+%%%%
+in 
+在
+%%%%
+在
+在
+%%%%
+original equipment
+初始装备
+%%%%
+buggy original equipment: 
+有问题的初始装备：
+%%%%
+you invented it yourself 
+你自己发明了它
+%%%%
+you drew the genie 
+你抽到了精灵
+%%%%
+you subdued it 
+你制服了它
+%%%%
+在%s%s
+在%s%s
+%%%%
+
+\n\nMesmerism radius: %d (max %d)
+
+\n\n魅惑半径：%d（最大%d）
+%%%%

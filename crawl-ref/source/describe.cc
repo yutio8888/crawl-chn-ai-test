@@ -1529,8 +1529,8 @@ string damage_rating(const item_def *item, int *rating_value)
 
 static string _weapon_ego_key(brand_type ego)
 {
-    string verbose_ego_name = lowercase_first(brand_type_name(ego, false));
-    string terse_ego_name = lowercase_first(brand_type_name(ego, true));
+    string verbose_ego_name = lowercase_first(brand_type_name_en(ego, false));
+    string terse_ego_name = lowercase_first(brand_type_name_en(ego, true));
     string ego_key = verbose_ego_name + " (" + terse_ego_name + ") weapon ego";
 
     return ego_key;
@@ -2146,8 +2146,8 @@ static string _describe_weapon(const item_def &item, bool verbose, bool monster)
 
 static string _missile_ego_key(const item_def &item)
 {
-    string verbose_ego_name = lowercase_first(missile_brand_name(item, MBN_NAME));
-    string terse_ego_name = lowercase_first(missile_brand_name(item, MBN_TERSE));
+    string verbose_ego_name = lowercase_first(missile_brand_name_en(item, MBN_NAME));
+    string terse_ego_name = lowercase_first(missile_brand_name_en(item, MBN_TERSE));
     string ego_key = verbose_ego_name + " (" + terse_ego_name + ") missile ego";
 
     return ego_key;
@@ -2225,8 +2225,8 @@ static string _warlock_mirror_reflect_desc()
 
 static string _armour_ego_key(special_armour_type ego)
 {
-    string verbose_ego_name = lowercase_first(special_armour_type_name(ego, false));
-    string terse_ego_name = lowercase_first(special_armour_type_name(ego, true));
+    string verbose_ego_name = lowercase_first(special_armour_type_name_en(ego, false));
+    string terse_ego_name = lowercase_first(special_armour_type_name_en(ego, true));
     string ego_key = verbose_ego_name + " (" + terse_ego_name + ") armour ego";
 
     return ego_key;
@@ -2237,20 +2237,20 @@ static string _orb_ego_details(special_armour_type ego)
     switch (ego)
     {
         case SPARM_ENERGY:
-            return make_stringf("\n\nSpell refund chance: %d%% (max %d%%)",
+            return make_stringf(T_("\n\nSpell refund chance: %d%% (max %d%%)"),
                                 player_channelling_chance(), player_channelling_chance(true));
 
         case SPARM_GUILE:
-            return make_stringf("\n\nEnemy Willpower: -%d (max -%d)",
+            return make_stringf(T_("\n\nEnemy Willpower: -%d (max -%d)"),
                                 guile_will_reduction(), guile_will_reduction(true));
 
         case SPARM_GLASS:
-            return make_stringf("\n\nVitrify chance: %d%% (max %d%%)",
+            return make_stringf(T_("\n\nVitrify chance: %d%% (max %d%%)"),
                         (20 + you.skill(SK_EVOCATIONS, 5)) * 100 / 500,
                         (20 + 135) * 100 / 500);
 
         case SPARM_PYROMANIA:
-            return make_stringf("\n\nExplosion chance: %d%% (max %d%%)\nExplosion damage: %dd%d (max %dd%d)\n",
+            return make_stringf(T_("\n\nExplosion chance: %d%% (max %d%%)\nExplosion damage: %dd%d (max %dd%d)\n"),
                                 pyromania_trigger_chance(), pyromania_trigger_chance(true),
                                 pyromania_damage(false, false).num, pyromania_damage(false, false).size,
                                 pyromania_damage(false, true).num, pyromania_damage(false, true).size);
@@ -2259,15 +2259,15 @@ static string _orb_ego_details(special_armour_type ego)
         {
             dice_def base_dam = zap_damage(ZAP_SHOOTING_STAR, stardust_orb_power(0), false, false);
             dice_def max_dam = zap_damage(ZAP_SHOOTING_STAR, stardust_orb_power(0, true), false, false);
-            return make_stringf("\n\nBase shooting star damage: %dd%d (max %dd%d) + 25%% per MP spent"
-                                "\nShooting stars conjured: 1 + 1 per visible enemy, up to %d (%d at max skill)",
+            return make_stringf(T_("\n\nBase shooting star damage: %dd%d (max %dd%d) + 25%% per MP spent"
+                                    "\nShooting stars conjured: 1 + 1 per visible enemy, up to %d (%d at max skill)"),
                                     base_dam.num, base_dam.size,
                                     max_dam.num, max_dam.size,
                                     stardust_orb_max(), stardust_orb_max(true));
         }
 
         case SPARM_MESMERISM:
-            return make_stringf("\n\nMesmerism radius: %d (max %d)", mesmerism_orb_radius(), mesmerism_orb_radius(true));
+            return make_stringf(T_("\n\nMesmerism radius: %d (max %d)"), mesmerism_orb_radius(), mesmerism_orb_radius(true));
 
         default:
             return "";
@@ -2345,11 +2345,17 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             // Make this match the formatting in _randart_descrip,
             // since instead of the item being named something like
             // 'cloak of invisiblity', it's 'the cloak of the Snail (+Inv, ...)'
-            string name = string(armour_ego_name(item, true)) + ": ";
+            const char* colon = Options.language == lang_t::ZH ? "：" : ": ";
+            string name = string(armour_ego_name(item, true)) + colon;
             ego_prefix = make_stringf("%-*s", MAX_ARTP_NAME_LEN + 1, name.c_str());
         }
         else
-            ego_prefix = "'Of " + string(armour_ego_name(item, false)) + "': ";
+        {
+            if (Options.language == lang_t::ZH)
+                ego_prefix = string(armour_ego_name(item, false)) + "：";
+            else
+                ego_prefix = "'Of " + string(armour_ego_name(item, false)) + "': ";
+        }
 
         string ego_key = _armour_ego_key(ego);
         string ego_desc = getEgoString(ego_key);
@@ -2470,7 +2476,7 @@ static string _describe_jewellery(const item_def &item, bool verbose)
         // Explicit description of ring or amulet power.
         if (item.sub_type == AMU_REFLECTION)
         {
-            description += make_stringf("\n\nIt affects your shielding (%+d).",
+            description += make_stringf(T_("\n\nIt affects your shielding (%+d)."),
                                         AMU_REFLECT_SH / 2);
         }
         else if (item.plus != 0)
@@ -2478,33 +2484,33 @@ static string _describe_jewellery(const item_def &item, bool verbose)
             switch (item.sub_type)
             {
             case RING_PROTECTION:
-                description += make_stringf("\n\nIt affects your AC (%+d).",
+                description += make_stringf(T_("\n\nIt affects your AC (%+d)."),
                                             item.plus);
                 break;
 
             case RING_EVASION:
-                description += make_stringf("\n\nIt affects your evasion (%+d).",
+                description += make_stringf(T_("\n\nIt affects your evasion (%+d)."),
                                             item.plus);
                 break;
 
             case RING_STRENGTH:
-                description += make_stringf("\n\nIt affects your strength (%+d).",
+                description += make_stringf(T_("\n\nIt affects your strength (%+d)."),
                                             item.plus);
                 break;
 
             case RING_INTELLIGENCE:
-                description += make_stringf("\n\nIt affects your intelligence (%+d).",
+                description += make_stringf(T_("\n\nIt affects your intelligence (%+d)."),
                                             item.plus);
                 break;
 
             case RING_DEXTERITY:
-                description += make_stringf("\n\nIt affects your dexterity (%+d).",
+                description += make_stringf(T_("\n\nIt affects your dexterity (%+d)."),
                                             item.plus);
                 break;
 
             case RING_SLAYING:
-                description += make_stringf("\n\nIt affects your accuracy and"
-                      " damage with ranged weapons and melee (%+d).",
+                description += make_stringf(T_("\n\nIt affects your accuracy and"
+                      " damage with ranged weapons and melee (%+d)."),
                       item.plus);
                 break;
 
@@ -2870,7 +2876,7 @@ string get_item_description(const item_def &item,
         }
         if (verbose)
         {
-            description << "\n\nIt falls into the 'Staves' category. ";
+            description << "\n\n" << _category_string(item, mode == IDM_MONSTER);
             description << _handedness_string(item);
         }
         break;
