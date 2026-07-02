@@ -4232,151 +4232,13 @@ static pie_effect _random_pie_effect(const actor &defender)
 
     return *random_choose_weighted(weights);
 }
-
-// TODO: Issue 32 Phase 2 — migrate to T_()
-// Chinese translations for common non-spell ZAP/beam names.
-static const char* _zap_name_zh(const string& en)
-{
-    if (Options.language != lang_t::ZH)
-        return nullptr;
-
-    static const map<string, const char*> zh = {
-        // Elements
-        {"blast of flame", "火焰冲击"},
-        {"blast of cold", "寒冰冲击"},
-        {"blast of poison", "毒素冲击"},
-        {"blast of sand", "飞沙走石"},
-        {"bolt of fire", "火焰箭"},
-        {"bolt of cold", "寒冰箭"},
-        {"bolt of lightning", "闪电箭"},
-        {"bolt of electricity", "电击箭"},
-        {"bolt of acid", "酸液箭"},
-        {"bolt of poison", "毒液箭"},
-        {"bolt of magma", "岩浆箭"},
-        {"bolt of negative energy", "负能量箭"},
-        {"bolt of light", "光之箭"},
-        {"bolt of energy", "能量箭"},
-        {"bolt of devastation", "毁灭之箭"},
-        {"bolt of antimagic", "反魔箭"},
-        {"bolt of flesh", "血肉之箭"},
-        {"bolt of dispelling energy", "驱散能量箭"},
-        {"fireball", "火球"},
-        {"iceblast", "寒冰爆裂"},
-        {"magic dart", "魔法飞弹"},
-        {"iron shot", "铁弹"},
-        {"stone arrow", "石箭"},
-        {"poison arrow", "毒箭"},
-        {"crystal spear", "水晶矛"},
-        {"shard of ice", "冰碎片"},
-        {"shards of blighted ice", "枯萎冰碎片"},
-        {"shard of frigid ice", "极寒冰碎片"},
-        {"salvo of icicles", "冰锥齐射"},
-        {"salvo of frigid ice", "极寒冰锥齐射"},
-        {"orb of electricity", "电光球"},
-        {"ball of acid", "酸液球"},
-        {"ball of mud", "泥球"},
-        {"ball of steam", "蒸汽球"},
-        {"glob of acid", "酸液团"},
-        {"glob of lava", "熔岩团"},
-        {"glob of mercury", "水银团"},
-        {"puff of flame", "火焰喷吐"},
-        {"puff of frost", "冰霜喷吐"},
-        {"splash of acid", "酸液溅射"},
-        {"splash of poison", "毒液溅射"},
-        {"sting", "刺痛"},
-        {"sticky flame", "黏着火焰"},
-        {"throw flame", "投掷火焰"},
-        {"throw frost", "投掷冰霜"},
-        {"zap", "电击"},
-        {"freeze", "冻结"},
-        {"refrigeration", "急速冷冻"},
-        {"searing ray", "灼热射线"},
-        {"flame wave", "火焰波"},
-        {"searing blast", "灼热冲击"},
-        {"noxious fumes", "毒烟"},
-        {"poison gas", "毒气"},
-        {"stinking cloud", "恶臭云雾"},
-        {"foul vapour", "恶臭蒸汽"},
-        {"toxic sludge", "毒性淤泥"},
-        // Beams and breaths
-        {"fiery breath", "火焰吐息"},
-        {"glacial breath", "冰川吐息"},
-        {"lightning breath", "闪电吐息"},
-        {"acid spray", "酸液喷射"},
-        {"billowing rust", "滚滚锈尘"},
-        {"blast of calcifying dust", "钙化尘暴"},
-        {"blast of choking fumes", "窒息烟雾冲击"},
-        {"blast of cleansing flame", "净化之焰冲击"},
-        {"blazing flames", "炽热烈焰"},
-        {"blinding ray", "致盲射线"},
-        {"blood arrow", "血之箭"},
-        {"creeping shadow", "蔓延暗影"},
-        {"crushing gravity", "碾压重力"},
-        {"curse of agony", "痛苦诅咒"},
-        {"damnation", "诅咒"},
-        {"drain life", "吸取生命"},
-        {"explosive embers", "爆炸余烬"},
-        {"flash freeze", "急冻"},
-        {"freezing gust", "冰冻狂风"},
-        {"ghostly fireball", "幽灵火球"},
-        {"gout of destruction", "毁灭喷涌"},
-        {"hail", "冰雹"},
-        {"harpoon shot", "鱼叉射击"},
-        {"jagged bones", "锯齿骨头"},
-        {"kinetic grapnel", "动态抓钩"},
-        {"lance of force", "力之长矛"},
-        {"living lightning", "活体闪电"},
-        {"magical storm", "魔法风暴"},
-        {"mass of rock", "巨石"},
-        {"mystic blast", "神秘冲击"},
-        {"nullifying energy", "抵消能量"},
-        {"piercing cold", "刺骨严寒"},
-        {"pyre arrow", "火葬之箭"},
-        {"ray of shadow", "暗影射线"},
-        {"seething chaos", "沸腾混沌"},
-        {"seismic shockwave", "地震冲击波"},
-        {"shadow bullet", "暗影子弹"},
-        {"shadowy lightning", "暗影闪电"},
-        {"shockwave", "冲击波"},
-        {"shooting star", "流星"},
-        {"slug dart", "弹丸飞镖"},
-        {"sonic wave", "音波"},
-        {"surge of chaos", "混沌涌动"},
-        {"torrent of water", "水之激流"},
-        {"unravelling", "解除"},
-        {"volatile concoction", "不稳定混合物"},
-        {"volley of spikes", "尖刺齐射"},
-        {"volley of thorns", "荆棘齐射"},
-        {"wave of devouring shadow", "吞噬暗影之波"},
-        {"whirling bolas", "旋转流星索"},
-        {"shred", "撕裂"},
-        {"fragment of death", "死亡碎片"},
-        {"shadowball", "暗影球"},
-        {"swarm of vampire bats", "吸血蝙蝠群"},
-        {"fortress blast", "堡垒冲击"},
-        {"foxfire", "狐火"},
-        {"grasping water", "缠绕之水"},
-        {"rocky spike", "岩石尖刺"},
-        {"shard of hardened shadow", "硬化暗影碎片"},
-    };
-    auto it = zh.find(en);
-    return it != zh.end() ? it->second : nullptr;
-}
-
-// TODO: Issue 32 Phase 2 — migrate _zap_name_zh/_beam_display_name to T_()
 // Get the display name for a beam. For spell beams in Chinese mode,
 // use the translated spell title instead of the English zap name.
-// For non-spell beams, use the _zap_name_zh() lookup table.
 static string _beam_display_name(const bolt &beam)
 {
     if (Options.language == lang_t::ZH && beam.origin_spell != SPELL_NO_SPELL)
         return spell_title(beam.origin_spell);
-    if (Options.language == lang_t::ZH)
-    {
-        const char* zh = _zap_name_zh(beam.name);
-        if (zh) return zh;
-    }
-    return beam.name;
+    return T_(beam.name.c_str());
 }
 
 void bolt::affect_player()
@@ -7678,233 +7540,117 @@ string bolt::get_short_name() const
     return _beam_type_name(flavour);
 }
 
-// TODO: Issue 32 Phase 2 — migrate to T_()
 static string _beam_type_name(beam_type type)
 {
-    if (Options.language == lang_t::ZH)
-    {
-        static const map<beam_type, const char*> zh = {
-            {BEAM_NONE, "无"},
-            {BEAM_MISSILE, "投射物"},
-            {BEAM_MMISSILE, "魔法飞弹"},
-            {BEAM_FIRE, "火焰"},
-            {BEAM_COLD, "寒冷"},
-            {BEAM_WATER, "水"},
-            {BEAM_MAGIC, "魔法"},
-            {BEAM_ELECTRICITY, "闪电"},
-            {BEAM_MEPHITIC, "毒烟"},
-            {BEAM_POISON, "毒素"},
-            {BEAM_NEG, "负能量"},
-            {BEAM_ACID, "酸液"},
-            {BEAM_LIGHT, "光"},
-            {BEAM_MIASMA, "瘴气"},
-            {BEAM_SPORE, "孢子"},
-            {BEAM_POISON_ARROW, "毒刺"},
-            {BEAM_DAMNATION, "诅咒"},
-            {BEAM_STICKY_FLAME, "黏着火焰"},
-            {BEAM_STEAM, "蒸汽"},
-            {BEAM_ENERGY, "能量"},
-            {BEAM_HOLY, "净化之焰"},
-            {BEAM_FOUL_FLAME, "污秽之焰"},
-            {BEAM_FRAG, "碎片"},
-            {BEAM_LAVA, "岩浆"},
-            {BEAM_ICE, "寒冰"},
-            {BEAM_THUNDER, "雷鸣"},
-            {BEAM_STUN_BOLT, "眩晕矢"},
-            {BEAM_DESTRUCTION, "毁灭"},
-            {BEAM_RANDOM, "随机"},
-            {BEAM_CHAOS, "混沌"},
-            {BEAM_SLOW, "减速"},
-            {BEAM_HASTE, "加速"},
-            {BEAM_MIGHT, "力量"},
-            {BEAM_HEALING, "治疗"},
-            {BEAM_PARALYSIS, "麻痹"},
-            {BEAM_CONFUSION, "混乱"},
-            {BEAM_INVISIBILITY, "隐形"},
-            {BEAM_DIGGING, "挖掘"},
-            {BEAM_TELEPORT, "传送"},
-            {BEAM_POLYMORPH, "变形"},
-            {BEAM_MALMUTATE, "恶性变异"},
-            {BEAM_CHARM, "魅惑"},
-            {BEAM_BANISH, "放逐"},
-            {BEAM_PAIN, "痛苦"},
-            {BEAM_AGONY, "剧痛"},
-            {BEAM_CURSE_OF_AGONY, "痛苦诅咒"},
-            {BEAM_DISPEL_UNDEAD, "驱散亡灵"},
-            {BEAM_MINDBURST, "心智爆发"},
-            {BEAM_BLINK, "闪烁"},
-            {BEAM_BLINK_CLOSE, "接近闪烁"},
-            {BEAM_BECKONING, "招手"},
-            {BEAM_PETRIFY, "石化"},
-            {BEAM_CORONA, "背光"},
-            {BEAM_PORKALATOR, "变猪术"},
-            {BEAM_HIBERNATION, "冬眠"},
-            {BEAM_SLEEP, "睡眠"},
-            {BEAM_BERSERK, "狂暴"},
-            {BEAM_VISUAL, "视觉效果"},
-            {BEAM_TORMENT_DAMAGE, "折磨伤害"},
-            {BEAM_AIR, "风"},
-            {BEAM_INNER_FLAME, "内焰"},
-            {BEAM_PETRIFYING_CLOUD, "钙化尘"},
-            {BEAM_ENSNARE, "魔法网"},
-            {BEAM_SENTINEL_MARK, "哨兵印记"},
-            {BEAM_DIMENSION_ANCHOR, "维度锚定"},
-            {BEAM_VULNERABILITY, "脆弱"},
-            {BEAM_MALIGN_OFFERING, "邪恶献祭"},
-            {BEAM_VIRULENCE, "毒性"},
-            {BEAM_AGILITY, "敏捷"},
-            {BEAM_SAP_MAGIC, "削弱魔法"},
-            // BEAM_ANTIMAGIC removed (not in 0.34.1)
-            {BEAM_DIMINISH_SPELLS, "削弱法术"},
-            {BEAM_TUKIMAS_DANCE, "图基玛之舞"},
-            {BEAM_DEATH_RATTLE, "死亡之息"},
-            {BEAM_RESISTANCE, "抗性"},
-            {BEAM_UNRAVELLING, "解析"},
-            {BEAM_UNRAVELLED_MAGIC, "解析魔法"},
-            {BEAM_SHARED_PAIN, "共享痛苦"},
-            {BEAM_IRRESISTIBLE_CONFUSION, "混乱"},
-            {BEAM_INFESTATION, "虫群侵扰"},
-            {BEAM_VILE_CLUTCH, "邪恶抓握"},
-            {BEAM_VAMPIRIC_DRAINING, "吸血"},
-            {BEAM_CONCENTRATE_VENOM, "浓缩毒液"},
-            {BEAM_ENFEEBLE, "衰弱"},
-            {BEAM_SOUL_SPLINTER, "灵魂分裂"},
-            {BEAM_ROOTS, "根须"},
-            {BEAM_VITRIFY, "玻璃化"},
-            {BEAM_VITRIFYING_GAZE, "玻璃化"},
-            {BEAM_WEAKNESS, "虚弱"},
-            {BEAM_DEVASTATION, "毁灭"},
-            {BEAM_UMBRAL_TORCHLIGHT, "暗影火炬之光"},
-            {BEAM_CRYSTALLISING, "结晶化"},
-            {BEAM_WARPING, "空间扰乱"},
-            {BEAM_QAZLAL, "剧变指向器"},
-            {BEAM_RIMEBLIGHT, "霜疫"},
-            {BEAM_SHADOW_TORPOR, "暗影麻木"},
-            {BEAM_HAEMOCLASM, "凝血"},
-            {BEAM_BLOODRITE, "鲜血"},
-            {BEAM_DOUBLE_VIGOUR, "活力倍增"},
-            {BEAM_VEX, "恼怒"},
-            {BEAM_SEISMIC, "地震冲击波"},
-            {BEAM_BOLAS, "缠绕流星索"},
-            {BEAM_MERCURY, "水银"},
-            {BEAM_BAT_CLOUD, "蝙蝠云"},
-            {BEAM_ILL_OMEN, "凶兆"},
-            {BEAM_WARP_BODY, "扭曲身体"},
-        };
-        auto it = zh.find(type);
-        if (it != zh.end())
-            return it->second;
-        return "unknown";
-    }
 
     switch (type)
     {
-    case BEAM_NONE:                  return "none";
-    case BEAM_MISSILE:               return "missile";
-    case BEAM_MMISSILE:              return "magic missile";
-    case BEAM_FIRE:                  return "fire";
-    case BEAM_COLD:                  return "cold";
-    case BEAM_WATER:                 return "water";
-    case BEAM_MAGIC:                 return "magic";
-    case BEAM_ELECTRICITY:           return "electricity";
-    case BEAM_MEPHITIC:              return "noxious fumes";
-    case BEAM_POISON:                return "poison";
-    case BEAM_NEG:                   return "negative energy";
-    case BEAM_ACID:                  return "acid";
-    case BEAM_LIGHT:                 return "light";
-    case BEAM_MIASMA:                return "miasma";
-    case BEAM_SPORE:                 return "spores";
-    case BEAM_POISON_ARROW:          return "poison sting";
-    case BEAM_DAMNATION:             return "damnation";
-    case BEAM_STICKY_FLAME:          return "sticky fire";
-    case BEAM_STEAM:                 return "steam";
-    case BEAM_ENERGY:                return "energy";
-    case BEAM_HOLY:                  return "cleansing flame";
-    case BEAM_FOUL_FLAME:            return "foul flame";
-    case BEAM_FRAG:                  return "fragments";
-    case BEAM_LAVA:                  return "magma";
-    case BEAM_ICE:                   return "ice";
-    case BEAM_THUNDER:               return "thunder";
-    case BEAM_STUN_BOLT:             return "stunning bolt";
-    case BEAM_DESTRUCTION:           return "destruction";
-    case BEAM_RANDOM:                return "random";
-    case BEAM_CHAOS:                 return "chaos";
-    case BEAM_SLOW:                  return "slow";
-    case BEAM_HASTE:                 return "haste";
-    case BEAM_MIGHT:                 return "might";
-    case BEAM_HEALING:               return "healing";
-    case BEAM_PARALYSIS:             return "paralysis";
-    case BEAM_CONFUSION:             return "confusion";
-    case BEAM_INVISIBILITY:          return "invisibility";
-    case BEAM_DIGGING:               return "digging";
-    case BEAM_TELEPORT:              return "teleportation";
-    case BEAM_POLYMORPH:             return "polymorph";
-    case BEAM_MALMUTATE:             return "malmutation";
-    case BEAM_CHARM:                 return "charming";
-    case BEAM_BANISH:                return "banishment";
-    case BEAM_PAIN:                  return "pain";
-    case BEAM_AGONY:                 return "agony";
-    case BEAM_CURSE_OF_AGONY:        return "curse of agony";
-    case BEAM_DISPEL_UNDEAD:         return "dispel undead";
-    case BEAM_MINDBURST:             return "mindburst";
-    case BEAM_BLINK:                 return "blink";
-    case BEAM_BLINK_CLOSE:           return "blink close";
-    case BEAM_BECKONING:             return "beckoning";
-    case BEAM_PETRIFY:               return "petrify";
-    case BEAM_CORONA:                return "backlight";
-    case BEAM_PORKALATOR:            return "porkalator";
-    case BEAM_HIBERNATION:           return "hibernation";
-    case BEAM_SLEEP:                 return "sleep";
-    case BEAM_BERSERK:               return "berserk";
-    case BEAM_VISUAL:                return "visual effects";
-    case BEAM_TORMENT_DAMAGE:        return "torment damage";
-    case BEAM_AIR:                   return "air";
-    case BEAM_INNER_FLAME:           return "inner flame";
-    case BEAM_PETRIFYING_CLOUD:      return "calcifying dust";
-    case BEAM_ENSNARE:               return "magic web";
-    case BEAM_SENTINEL_MARK:         return "sentinel's mark";
-    case BEAM_DIMENSION_ANCHOR:      return "dimension anchor";
-    case BEAM_VULNERABILITY:         return "vulnerability";
-    case BEAM_MALIGN_OFFERING:       return "malign offering";
-    case BEAM_VIRULENCE:             return "virulence";
-    case BEAM_AGILITY:               return "agility";
-    case BEAM_SAP_MAGIC:             return "sap magic";
-    case BEAM_DRAIN_MAGIC:           return "drain magic";
-    case BEAM_DIMINISH_SPELLS:       return "diminish spells";
-    case BEAM_TUKIMAS_DANCE:         return "tukima's dance";
-    case BEAM_DEATH_RATTLE:          return "breath of the dead";
-    case BEAM_RESISTANCE:            return "resistance";
-    case BEAM_UNRAVELLING:           return "unravelling";
-    case BEAM_UNRAVELLED_MAGIC:      return "unravelled magic";
-    case BEAM_SHARED_PAIN:           return "shared pain";
-    case BEAM_IRRESISTIBLE_CONFUSION:return "confusion";
-    case BEAM_INFESTATION:           return "infestation";
-    case BEAM_VILE_CLUTCH:           return "vile clutch";
-    case BEAM_VAMPIRIC_DRAINING:     return "vampiric draining";
-    case BEAM_CONCENTRATE_VENOM:     return "concentrate venom";
-    case BEAM_ENFEEBLE:              return "enfeeble";
-    case BEAM_SOUL_SPLINTER:         return "soul splinter";
-    case BEAM_ROOTS:                 return "roots";
-    case BEAM_VITRIFY:               return "vitrification";
-    case BEAM_VITRIFYING_GAZE:       return "vitrification";
-    case BEAM_WEAKNESS:              return "weakness";
-    case BEAM_DEVASTATION:           return "devastation";
-    case BEAM_UMBRAL_TORCHLIGHT:     return "umbral torchlight";
-    case BEAM_CRYSTALLISING:         return "crystallising";
-    case BEAM_WARPING:               return "spatial disruption";
-    case BEAM_QAZLAL:                return "upheaval targetter";
-    case BEAM_RIMEBLIGHT:            return "rimeblight";
-    case BEAM_SHADOW_TORPOR:         return "shadow torpor";
-    case BEAM_HAEMOCLASM:            return "gore";
-    case BEAM_BLOODRITE:             return "blood";
-    case BEAM_DOUBLE_VIGOUR:         return "vigour-doubling";
-    case BEAM_VEX:                   return "vexing";
-    case BEAM_SEISMIC:               return "seismic shockwave";
-    case BEAM_BOLAS:                 return "entwining bolas";
-    case BEAM_MERCURY:               return "mercury";
-    case BEAM_BAT_CLOUD:             return "cloud of bats";
-    case BEAM_ILL_OMEN:              return "omen";
-    case BEAM_WARP_BODY:             return "warp body";
+    case BEAM_NONE:                  return T_("none");
+    case BEAM_MISSILE:                  return T_("missile");
+    case BEAM_MMISSILE:                  return T_("magic missile");
+    case BEAM_FIRE:                  return T_("fire");
+    case BEAM_COLD:                  return T_("cold");
+    case BEAM_WATER:                  return T_("water");
+    case BEAM_MAGIC:                  return T_("magic");
+    case BEAM_ELECTRICITY:                  return T_("electricity");
+    case BEAM_MEPHITIC:                  return T_("noxious fumes");
+    case BEAM_POISON:                  return T_("poison");
+    case BEAM_NEG:                  return T_("negative energy");
+    case BEAM_ACID:                  return T_("acid");
+    case BEAM_LIGHT:                  return T_("light");
+    case BEAM_MIASMA:                  return T_("miasma");
+    case BEAM_SPORE:                  return T_("spores");
+    case BEAM_POISON_ARROW:                  return T_("poison sting");
+    case BEAM_DAMNATION:                  return T_("damnation");
+    case BEAM_STICKY_FLAME:                  return T_("sticky fire");
+    case BEAM_STEAM:                  return T_("steam");
+    case BEAM_ENERGY:                  return T_("energy");
+    case BEAM_HOLY:                  return T_("cleansing flame");
+    case BEAM_FOUL_FLAME:                  return T_("foul flame");
+    case BEAM_FRAG:                  return T_("fragments");
+    case BEAM_LAVA:                  return T_("magma");
+    case BEAM_ICE:                  return T_("ice");
+    case BEAM_THUNDER:                  return T_("thunder");
+    case BEAM_STUN_BOLT:                  return T_("stunning bolt");
+    case BEAM_DESTRUCTION:                  return T_("destruction");
+    case BEAM_RANDOM:                  return T_("random");
+    case BEAM_CHAOS:                  return T_("chaos");
+    case BEAM_SLOW:                  return T_("slow");
+    case BEAM_HASTE:                  return T_("haste");
+    case BEAM_MIGHT:                  return T_("might");
+    case BEAM_HEALING:                  return T_("healing");
+    case BEAM_PARALYSIS:                  return T_("paralysis");
+    case BEAM_CONFUSION:                  return T_("confusion");
+    case BEAM_INVISIBILITY:                  return T_("invisibility");
+    case BEAM_DIGGING:                  return T_("digging");
+    case BEAM_TELEPORT:                  return T_("teleportation");
+    case BEAM_POLYMORPH:                  return T_("polymorph");
+    case BEAM_MALMUTATE:                  return T_("malmutation");
+    case BEAM_CHARM:                  return T_("charming");
+    case BEAM_BANISH:                  return T_("banishment");
+    case BEAM_PAIN:                  return T_("pain");
+    case BEAM_AGONY:                  return T_("agony");
+    case BEAM_CURSE_OF_AGONY:                  return T_("curse of agony");
+    case BEAM_DISPEL_UNDEAD:                  return T_("dispel undead");
+    case BEAM_MINDBURST:                  return T_("mindburst");
+    case BEAM_BLINK:                  return T_("blink");
+    case BEAM_BLINK_CLOSE:                  return T_("blink close");
+    case BEAM_BECKONING:                  return T_("beckoning");
+    case BEAM_PETRIFY:                  return T_("petrify");
+    case BEAM_CORONA:                  return T_("backlight");
+    case BEAM_PORKALATOR:                  return T_("porkalator");
+    case BEAM_HIBERNATION:                  return T_("hibernation");
+    case BEAM_SLEEP:                  return T_("sleep");
+    case BEAM_BERSERK:                  return T_("berserk");
+    case BEAM_VISUAL:                  return T_("visual effects");
+    case BEAM_TORMENT_DAMAGE:                  return T_("torment damage");
+    case BEAM_AIR:                  return T_("air");
+    case BEAM_INNER_FLAME:                  return T_("inner flame");
+    case BEAM_PETRIFYING_CLOUD:                  return T_("calcifying dust");
+    case BEAM_ENSNARE:                  return T_("magic web");
+    case BEAM_SENTINEL_MARK:                  return T_("sentinel's mark");
+    case BEAM_DIMENSION_ANCHOR:                  return T_("dimension anchor");
+    case BEAM_VULNERABILITY:                  return T_("vulnerability");
+    case BEAM_MALIGN_OFFERING:                  return T_("malign offering");
+    case BEAM_VIRULENCE:                  return T_("virulence");
+    case BEAM_AGILITY:                  return T_("agility");
+    case BEAM_SAP_MAGIC:                  return T_("sap magic");
+    case BEAM_DRAIN_MAGIC:                  return T_("drain magic");
+    case BEAM_DIMINISH_SPELLS:                  return T_("diminish spells");
+    case BEAM_TUKIMAS_DANCE:                  return T_("tukima's dance");
+    case BEAM_DEATH_RATTLE:                  return T_("breath of the dead");
+    case BEAM_RESISTANCE:                  return T_("resistance");
+    case BEAM_UNRAVELLING:                  return T_("unravelling");
+    case BEAM_UNRAVELLED_MAGIC:                  return T_("unravelled magic");
+    case BEAM_SHARED_PAIN:                  return T_("shared pain");
+    case BEAM_IRRESISTIBLE_CONFUSION:                  return T_("confusion");
+    case BEAM_INFESTATION:                  return T_("infestation");
+    case BEAM_VILE_CLUTCH:                  return T_("vile clutch");
+    case BEAM_VAMPIRIC_DRAINING:                  return T_("vampiric draining");
+    case BEAM_CONCENTRATE_VENOM:                  return T_("concentrate venom");
+    case BEAM_ENFEEBLE:                  return T_("enfeeble");
+    case BEAM_SOUL_SPLINTER:                  return T_("soul splinter");
+    case BEAM_ROOTS:                  return T_("roots");
+    case BEAM_VITRIFY:                  return T_("vitrification");
+    case BEAM_VITRIFYING_GAZE:                  return T_("vitrification");
+    case BEAM_WEAKNESS:                  return T_("weakness");
+    case BEAM_DEVASTATION:                  return T_("devastation");
+    case BEAM_UMBRAL_TORCHLIGHT:                  return T_("umbral torchlight");
+    case BEAM_CRYSTALLISING:                  return T_("crystallising");
+    case BEAM_WARPING:                  return T_("spatial disruption");
+    case BEAM_QAZLAL:                  return T_("upheaval targetter");
+    case BEAM_RIMEBLIGHT:                  return T_("rimeblight");
+    case BEAM_SHADOW_TORPOR:                  return T_("shadow torpor");
+    case BEAM_HAEMOCLASM:                  return T_("gore");
+    case BEAM_BLOODRITE:                  return T_("blood");
+    case BEAM_DOUBLE_VIGOUR:                  return T_("vigour-doubling");
+    case BEAM_VEX:                  return T_("vexing");
+    case BEAM_SEISMIC:                  return T_("seismic shockwave");
+    case BEAM_BOLAS:                  return T_("entwining bolas");
+    case BEAM_MERCURY:                  return T_("mercury");
+    case BEAM_BAT_CLOUD:                  return T_("cloud of bats");
+    case BEAM_ILL_OMEN:                  return T_("omen");
+    case BEAM_WARP_BODY:                  return T_("warp body");
 
     case NUM_BEAMS:                  die("invalid beam type");
     }
