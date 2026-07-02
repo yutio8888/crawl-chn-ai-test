@@ -279,6 +279,37 @@ Three patterns:
 - **Pattern B**: Runtime language check — used for species/job names
 - **Pattern C**: Format string adjustment — Chinese grammar differs (了 particle, adverb position, no conjugation)
 
+### Layer 3: Data-Driven Translation Sources (Invisible to Static Analysis)
+
+These sources use `T_()` with runtime variables (not string literals), making
+them invisible to `i18n_extract.py`'s `T_("literal")` regex. **Always audit
+with `audit_data_i18n.py` after modifying any of these data sources.**
+
+| Source | Data File | Code Path | Key Type |
+|--------|-----------|-----------|----------|
+| Duration expiry messages | `duration-data.h` | `player-reacts.cc:180` → `T_(endmsg)` | Static `const char*` array |
+| Duration warning messages | `duration-data.h` | `player-reacts.cc:170-172` → `T_(expmsg)` | Static `const char*` array |
+| Monster names | `dat/mons/*.yaml` | `mon-util.cc:5957` → `T_(en.c_str())` | YAML → `zh_monster_name()` |
+| Feature/dungeon names | `feature-data.h` | `directn.cc:3138` → `T_(...)` | Static struct array |
+| Lua UI messages | `dat/clua/*.lua` | `l-crawl.cc:crawl_t_()` → `i18n_source_lookup()` | Lua `crawl.t_("string")` |
+
+**Rule**: When adding `T_()` to any of these data sources, always add
+the corresponding source.txt entry in the same commit. Static analysis
+cannot verify coverage of `T_(variable)` calls.
+
+### Layer 4: Lua-Layer i18n (`crawl.t_()`)
+
+Lua files can now access the i18n database through `crawl.t_("English")`:
+
+```lua
+-- autofight.lua, automagic.lua, lm_tmsg.lua, etc.
+crawl.mpr(crawl.t_("No target in view!"))
+```
+
+`crawl.t_()` is registered in `l-crawl.cc` and calls `i18n_source_lookup()` —
+the same database as C++ `T_()`. Key format is identical; entries in
+`source.txt` work for both C++ and Lua.
+
 ## Common Translation Rules
 
 - No verb conjugation — remove `conj_verb()` calls
@@ -356,6 +387,10 @@ All translated strings fall into one of four types:
 5. **NEVER assume argument order is the same in both languages** — Chinese grammar often swaps subject/object positions
 6. **NEVER change `god_name()` return value for DB lookups** — use `_god_name_en()` for database keys
 7. **NEVER use `buf.size()` for CJK alignment** — use `strwidth()` for display-width-aware padding
+8. **NEVER add `T_()` to a runtime variable without a source.txt entry** —
+   `T_(variable)` is invisible to `i18n_extract.py`; always run
+   `audit_data_i18n.py` after changes to data-driven files
+   (`duration-data.h`, `dat/mons/*.yaml`, `feature-data.h`, `.lua`)
 
 ### Translation Decision Registry
 
@@ -384,6 +419,7 @@ Before submitting any review touching entity names:
 4. git diff self-review                      # Only intended lines changed
 5. EN mode: launch and confirm no crash      # Required for Phase 0-1
 6. EN mode: play 10 min                      # Required for Phase 2+
+7. audit_data_i18n.py check                  # Data-driven source coverage
 ```
 
 ### Translation Toolchain
@@ -394,8 +430,10 @@ Before committing translation changes, run the pre-commit CI checks:
 # 0. Check checkpoint is current
 bash .claude/scripts/check_checkpoint.sh
 
-# 1. T_() key coverage + mprf_p compatibility + %s count parity
+# 1. T_() key coverage + data-driven sources + mprf_p compatibility + %s count parity
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \

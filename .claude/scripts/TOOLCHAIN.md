@@ -7,15 +7,16 @@
 ```
 Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
                                     ↓
-                  ┌──────────────────────────────────┐
-                  │  scan_i18n.py (6 子命令)          │
-                  │  i18n_extract.py (4 子命令)       │
-                  │  check_consistency.sh (7 模式)    │
-                  │  cross_file_terms.py              │
-                  │  smoke_test.sh                    │
-                  │  check_checkpoint.sh              │
-                  │  record_review.sh                 │
-                  └──────────────────────────────────┘
+                  ┌──────────────────────────────────────────┐
+                  │  scan_i18n.py (6 子命令)                  │
+                  │  i18n_extract.py (4 子命令)               │
+                  │  audit_data_i18n.py (数据驱动覆盖)        │
+                  │  check_consistency.sh (7 模式)             │
+                  │  cross_file_terms.py                      │
+                  │  smoke_test.sh                            │
+                  │  check_checkpoint.sh                      │
+                  │  record_review.sh                         │
+                  └──────────────────────────────────────────┘
 ```
 
 ## 快速参考
@@ -23,6 +24,7 @@ Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
 | 需求 | 命令 |
 |------|------|
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
+| **数据驱动翻译覆盖** | `python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **发现未翻译消息** | `python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/` |
 | **mprf_p 兼容性** | `python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **%s 数量一致** | `python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
@@ -42,7 +44,14 @@ Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
 
 ### i18n_extract.py — T_() 键提取与验证
 
-从 C++ 源码中提取所有 `T_("...")` 和 `C_("ctx", "...")` 调用，与 source.txt 对比。
+从 C++ 和 Lua 源码中提取所有 `T_("...")`、`C_("ctx", "...")` 和 `crawl.t_("...")` 字面量调用，与 source.txt 对比。
+
+**已知限制**：只匹配 `T_("字面字符串")`，不匹配 `T_(变量)`。以下场景会遗漏：
+- `duration-data.h`: endmsg/expmsg → `T_(endmsg)` at runtime
+- `mon-util.cc`: 怪物名 → `T_(en.c_str())` at runtime
+- `dat/mons/*.yaml`: 怪物名定义（非 .cc/.h 文件）
+
+这些场景由 `audit_data_i18n.py` 补充扫描。
 
 ```bash
 python3 .claude/scripts/i18n_extract.py extract crawl-ref/source/        # 提取所有 T_() 键
@@ -87,6 +96,24 @@ python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ --strict
 # lang-args: 检测 T_() 中语言依赖参数（启发式，始终 exit 0）
 python3 .claude/scripts/scan_i18n.py lang-args crawl-ref/source/
 ```
+
+### audit_data_i18n.py — 数据驱动翻译覆盖检查
+
+`i18n_extract.py` 只能检测 `T_("字面量")`。本脚本补充扫描三类运行时变量调用：
+
+| 扫描源 | 数据文件 | 运行时路径 |
+|--------|----------|-----------|
+| **怪物名** | `dat/mons/*.yaml` | `mon-util.cc:5957` → `T_(en.c_str())` + `zh_monster_name()` 静态 map |
+| **Duration 消息** | `duration-data.h` | `player-reacts.cc:180` → `T_(endmsg)`、`T_(expmsg)` |
+| **Feature 名** | `feature-data.h` | `directn.cc:3138` → `T_(get_feature_def().name)` |
+
+```bash
+# 检查怪物名、duration、feature 覆盖情况
+python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+```
+
+怪物名同时检查 source.txt 和 `zh_monster_name()` 静态 map 两层回退。
 
 ### check_consistency.sh — 数据库完整性
 
@@ -142,7 +169,7 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
 ### 聚合验证脚本（推荐使用，替代单独运行）
 
 ```bash
-bash .claude/scripts/post-coder.sh       # 代码修改后: T_() + mprf-p + arg-mismatch + anti-patterns(strict) + smoke
+bash .claude/scripts/post-coder.sh       # 代码修改后: T_() + 数据驱动 + mprf-p + arg-mismatch + anti-patterns + smoke
 bash .claude/scripts/post-translator.sh  # 翻译后: validate-terms + format + @keyword@
 bash .claude/scripts/post-reviewer.sh    # 审查后: all consistency + cross-file terms + anti-patterns(lenient)
 ```
