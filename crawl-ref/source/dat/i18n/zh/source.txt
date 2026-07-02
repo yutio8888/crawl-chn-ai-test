@@ -23005,10 +23005,7 @@ The sentinel's mark upon you fades away.
 The sign of ruin upon you fades.
 你身上的毁灭印记消退了。
 %%%%
-%%%%
-You are able to move again.
-你又能移动了。
-%%%%
+
 %%%%
 You are no longer berserk.
 你不再狂暴了。
@@ -23017,10 +23014,7 @@ You are no longer berserk.
 You are no longer corroded.
 你不再被腐蚀了。
 %%%%
-%%%%
-You are no longer firmly anchored in space.
-你不再被牢固地固定在空间中了。
-%%%%
+
 %%%%
 You are ready to hop once more.
 你准备好再次跳跃了。
@@ -23077,10 +23071,7 @@ You feel less exhausted.
 You feel less fragile.
 你感到不那么脆弱了。
 %%%%
-%%%%
-You feel less stealthy.
-你感到不那么隐蔽了。
-%%%%
+
 %%%%
 You feel less vulnerable to fire.
 你感到不那么怕火了。
@@ -23419,7 +23410,7 @@ harpy
 %%%%
 %%%%
 haunted armour
-附魔盔甲
+怨灵盔甲
 %%%%
 %%%%
 hellephant
