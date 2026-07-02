@@ -481,6 +481,9 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             if (char_w <= 0)
                 char_w = 1; // combining/control chars: treat as width 1
 
+            if (char_w > 1)
+                glyph.advance = m_max_advance.x * char_w;
+
             if (col_bg != 0)
             {
                 GLWPrim rect(adv.x, adv.y,
