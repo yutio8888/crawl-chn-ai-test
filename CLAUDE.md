@@ -52,7 +52,7 @@ Agent(subagent_type="zh-translator", description="Translate <target>",
 
 | Trigger | Example |
 |---------|---------|
-| C++ source modification | "修一下这个 bug", "把这个函数加上 language guard" |
+| C++ source modification | "修一下这个 bug", "把这个函数迁移到 T_()" |
 | T_() migration (code side) | "把这个文件迁移到 T_()", "add T_() guard to mprf calls" |
 | TextDB / .txt data files | "更新 zh/source.txt", "fix %%%% separators" |
 | Compilation / build fixes | "编译报错了帮我修", "fix the build" |
@@ -359,31 +359,12 @@ cp -r dat/* /mnt/d/crawl-game/dat/
 cp contrib/fonts/SarasaMonoSC-Regular.ttf /mnt/d/crawl-game/contrib/fonts/
 ```
 
-## Language Guard Design
-
-### English Mode Goal: 基本可用 (Basically Usable)
-
-The current branch hardcodes many strings as Chinese without `Options.language` guards.
-The goal for English mode is **basic usability**: no crashes, readable UI, core operations
-functional. Perfect bilingual parity is a long-term goal (no hard deadline).
-
-### Translation Data Classification Framework
-
-All translated strings fall into one of four types:
-
-| Type | Description | Correct Approach |
-|------|-------------|-----------------|
-| **I — Static Display Data** | Names, descriptions from DB | Method B: Chinese data + English fallback for DB lookups |
-| **II — Dynamic Format Strings** | `mprf()` messages with `%s` | Method A: `Options.language` guard at each call site |
-| **III — Helper Function Returns** | `held_status()`, `charge_desc()` | Must be language-aware — return value used by callers |
-| **IV — Internal/Protocol Data** | JSON keys, `.des` tags, Lua API | Must always be English regardless of language setting |
-
-### Known Anti-Patterns (DO NOT REPEAT)
+## Known Anti-Patterns (DO NOT REPEAT)
 
 1. **NEVER translate protocol keys** — JSON keys, `.des` tags, file format identifiers must remain English
 2. **NEVER call `conj_verb()` on Chinese strings** — produces garbled output like `"抓取s"`
 3. **NEVER change `.name` fields used as DB lookup keys** — use `zh_ability_map` for display names instead
-4. **NEVER mix CN/EN in the same format string without a language guard** — produces mixed-language output
+4. **NEVER mix CN/EN in the same format string** — produces mixed-language output; use `T_()` on ALL text fragments
 5. **NEVER assume argument order is the same in both languages** — Chinese grammar often swaps subject/object positions
 6. **NEVER change `god_name()` return value for DB lookups** — use `_god_name_en()` for database keys
 7. **NEVER use `buf.size()` for CJK alignment** — use `strwidth()` for display-width-aware padding
@@ -392,7 +373,7 @@ All translated strings fall into one of four types:
    `audit_data_i18n.py` after changes to data-driven files
    (`duration-data.h`, `dat/mons/*.yaml`, `feature-data.h`, `.lua`)
 
-### Translation Decision Registry
+## Translation Decision Registry
 
 Before translating any entity name (god, monster, spell, item, skill):
 1. Read `docs/decisions.md` — the Single Source of Truth for naming decisions
