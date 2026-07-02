@@ -22351,3 +22351,102 @@ you subdued it
 
 \n\n魅惑半径：%d（最大%d）
 %%%%
+ a little 
+有点
+%%%%
+ very 
+很
+%%%%
+# - Recommended character
+# - 推荐角色
+%%%%
+%s%s protects you from negative energy.\n
+%s%s保护你免受负能量伤害。
+%%%%
+*Rage
+*狂怒
+%%%%
++Inv
++隐身
+%%%%
+AC+3
+护甲+3
+%%%%
+Acolyte
+侍僧
+%%%%
+Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d
+技能等级：%d  总经验：%d  下一等级：%d  技能费用：%d
+%%%%
+Dex+3
+敏捷+3
+%%%%
+Enter Wizard Command (? - help): 
+输入巫师命令（? - 帮助）：
+%%%%
+Failure to give mutation.
+赋予变异失败。
+%%%%
+Failure to toggle bane.
+切换灾祸属性失败。
+%%%%
+If you continue, your game will not be scored!
+如果继续，你的游戏将不计分！
+%%%%
+In explore mode, death is optional.
+探索模式下，死亡是可选的。
+%%%%
+Int+3
+智力+3
+%%%%
+Inventor
+发明家
+%%%%
+Jelly
+凝胶
+%%%%
+Knight
+骑士
+%%%%
+Once you set a character to explore mode, you can't switch back.
+一旦角色进入探索模式，就无法切换回来了。
+%%%%
+Re-activating wizard mode.
+重新激活巫师模式。
+%%%%
+Royal Jelly
+皇家史莱姆
+%%%%
+Stlth+
+潜行+
+%%%%
+Str+3
+力量+3
+%%%%
+Traitor
+背叛者
+%%%%
+WARNING: ABOUT TO ENTER EXPLORE MODE!
+警告：即将进入探索模式！
+%%%%
+WARNING: ABOUT TO ENTER WIZARD MODE!
+警告：即将进入巫师模式！
+%%%%
+Will+
+意志+
+%%%%
+gem
+宝石
+%%%%
+rC+
+冰抗+
+%%%%
+rC+ rF+
+冰抗+ 火抗+
+%%%%
+rF+
+火抗+
+%%%%
+rN+
+负抗+
+%%%%
