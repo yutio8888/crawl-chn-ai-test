@@ -23888,3 +23888,627 @@ Your resistance to elements expires.
 Your unholy channel expires.
 你的不洁引导结束了。
 %%%%
+%%%%
+a binding sigil
+束缚符文
+%%%%
+%%%%
+a toxic bog
+毒沼
+%%%%
+%%%%
+abandoned shop
+废弃的商店
+%%%%
+%%%%
+alarm trap
+警报陷阱
+%%%%
+%%%%
+ancient bone altar of Kikubaaqudgha
+奇库巴库哈的远古骸骨祭坛
+%%%%
+%%%%
+archmage's trap
+大法师陷阱
+%%%%
+%%%%
+basalt altar of Yredelemnul
+伊莱德莱姆努尔的玄武岩祭坛
+%%%%
+%%%%
+bloodstained altar of Trog
+特洛格的染血祭坛
+%%%%
+%%%%
+blossoming altar of Fedhas
+费德哈的繁花祭坛
+%%%%
+%%%%
+bolt trap
+弩箭陷阱
+%%%%
+%%%%
+broken altar of Ashenzari
+艾申扎利的破碎祭坛
+%%%%
+%%%%
+broken door
+破门
+%%%%
+%%%%
+broken translucent door
+破碎的半透明门
+%%%%
+%%%%
+burning altar of Makhleb
+马科列布的燃烧祭坛
+%%%%
+%%%%
+cache of baked goods
+烘焙食品储藏
+%%%%
+%%%%
+cache of fruit
+水果储藏
+%%%%
+%%%%
+cache of meat
+肉类储藏
+%%%%
+%%%%
+candlelit altar of Ignis
+曳焰的烛光祭坛
+%%%%
+%%%%
+closed translucent door
+关闭的半透明门
+%%%%
+%%%%
+collapsed entrance
+塌陷的入口
+%%%%
+%%%%
+corrupted altar of Lugonu
+卢格努的腐化祭坛
+%%%%
+%%%%
+crawl-hole back to the Lair
+返回巢穴的爬洞
+%%%%
+%%%%
+crumbling gateway
+崩坏的传送门
+%%%%
+%%%%
+crystal wall
+水晶墙
+%%%%
+%%%%
+dark tunnel
+黑暗隧道
+%%%%
+%%%%
+decorative floor
+装饰地面
+%%%%
+%%%%
+demonic tree
+恶魔树
+%%%%
+%%%%
+detected altar
+已探测的祭坛
+%%%%
+%%%%
+detected shop or portal
+已探测的商店或传送门
+%%%%
+%%%%
+devourer's trap
+吞噬者陷阱
+%%%%
+%%%%
+dispersal trap
+驱散陷阱
+%%%%
+%%%%
+dispersal trap (recharging)
+驱散陷阱（充能中）
+%%%%
+%%%%
+dormant shadow trap
+休眠暗影陷阱
+%%%%
+%%%%
+dry fountain
+干涸的喷泉
+%%%%
+%%%%
+endless expanse of salt
+无尽盐原
+%%%%
+%%%%
+exit through the horrors of the Abyss
+深渊恐怖出口
+%%%%
+%%%%
+explore horizon
+探索边界
+%%%%
+%%%%
+flagged portal
+旗标传送门
+%%%%
+%%%%
+fountain of blood
+鲜血喷泉
+%%%%
+%%%%
+fountain of clear blue water
+清澈蓝水喷泉
+%%%%
+%%%%
+fountain of eyes
+眼之喷泉
+%%%%
+%%%%
+fountain of sparkling water
+闪烁水喷泉
+%%%%
+%%%%
+frigid wall
+冰墙
+%%%%
+%%%%
+frozen archway
+冰封拱门
+%%%%
+%%%%
+gate leading out of Pandemonium
+通往魔窟之外的传送门
+%%%%
+%%%%
+gate leading to Okawaru's Arena
+通往奥卡瓦鲁竞技场的传送门
+%%%%
+%%%%
+gate leading to a distant place
+通往远方的传送门
+%%%%
+%%%%
+gate leading to a gauntlet
+通往试炼场的传送门
+%%%%
+%%%%
+gate leading to another region of Pandemonium
+通往魔窟另一区域的传送门
+%%%%
+%%%%
+gate leading to the Crucible of Flesh
+通往血肉熔炉的传送门
+%%%%
+%%%%
+gate to the Realm of Zot
+通往佐特领域的传送门
+%%%%
+%%%%
+gate to the Vaults
+通往宝库的传送门
+%%%%
+%%%%
+gateway back to the Dungeon
+返回地城的传送门
+%%%%
+%%%%
+gateway leading deeper into the Abyss
+通往深渊深处的传送门
+%%%%
+%%%%
+gateway leading out of Cocytus
+通往悲叹河之外的传送门
+%%%%
+%%%%
+gateway leading out of Dis
+通往狄斯之外的传送门
+%%%%
+%%%%
+gateway leading out of Gehenna
+通往欣嫩谷之外的传送门
+%%%%
+%%%%
+gateway leading out of Tartarus
+通往塔尔塔罗斯之外的传送门
+%%%%
+%%%%
+gateway leading out of the Abyss
+通往深渊之外的传送门
+%%%%
+%%%%
+gateway to Hell
+通往地狱的传送门
+%%%%
+%%%%
+gateway to a bazaar
+通往集市的传送门
+%%%%
+%%%%
+gateway to the Iron City of Dis
+通往狄斯铁城的传送门
+%%%%
+%%%%
+gateway to the ashen valley of Gehenna
+通往欣嫩谷的传送门
+%%%%
+%%%%
+gateway to the decaying netherworld of Tartarus
+通往塔尔塔罗斯的传送门
+%%%%
+%%%%
+gateway to the freezing wastes of Cocytus
+通往悲叹河的传送门
+%%%%
+%%%%
+glowing golden altar of the Shining One
+光辉者的金色祭坛
+%%%%
+%%%%
+glowing silver altar of Zin
+辛的银色祭坛
+%%%%
+%%%%
+granite statue
+花岗岩雕像
+%%%%
+%%%%
+harlequin's trap
+丑角陷阱
+%%%%
+%%%%
+hazy altar of Hepliaklqana
+惠普利亚卡纳的朦胧祭坛
+%%%%
+%%%%
+hide-covered altar of Uskayaw
+乌斯卡亚的兽皮祭坛
+%%%%
+%%%%
+hole to the Spider Nest
+通往蜘蛛巢穴的洞
+%%%%
+%%%%
+ice covered gate leading back out of this place
+冰封归返之门
+%%%%
+%%%%
+iron altar of Okawaru
+奥卡瓦鲁的铁制祭坛
+%%%%
+%%%%
+iron grate
+铁栅栏
+%%%%
+%%%%
+labyrinth entrance
+迷宫入口
+%%%%
+%%%%
+magical portal
+魔法传送门
+%%%%
+%%%%
+mechanical trap
+机械陷阱
+%%%%
+%%%%
+metal statue
+金属雕像
+%%%%
+%%%%
+metal wall
+金属墙
+%%%%
+%%%%
+oddly glowing altar of Pakellas
+帕克拉斯的奇异发光祭坛
+%%%%
+%%%%
+one-way gate leading to the halls of Pandemonium
+通往万魔殿大厅的单向传送门
+%%%%
+%%%%
+one-way gate to the infinite horrors of the Abyss
+通往无尽恐怖深渊的单向传送门
+%%%%
+%%%%
+one-way gateway to a ziggurat
+通往通灵塔的单向传送门
+%%%%
+%%%%
+open translucent door
+打开的透明门
+%%%%
+%%%%
+opulent altar of Gozag
+哥萨戈·亿·赛格斯的奢华祭坛
+%%%%
+%%%%
+orcish idol
+兽人神像
+%%%%
+%%%%
+ornate altar of the Wu Jian Council
+无间门派议会的华丽祭坛
+%%%%
+%%%%
+passage of Golubria
+戈卢布里亚之通道
+%%%%
+%%%%
+passage of golubria
+戈卢布里亚之通道
+%%%%
+%%%%
+permanent teleport trap
+永久传送陷阱
+%%%%
+%%%%
+petrified tree
+石化之树
+%%%%
+%%%%
+phantasmal passage
+幻影通道
+%%%%
+%%%%
+portal leading out of this place
+离开此地的传送门
+%%%%
+%%%%
+portal to a secret trove of treasure
+通往秘密宝库的传送门
+%%%%
+%%%%
+portal to somewhere
+通往某处的传送门
+%%%%
+%%%%
+pressure plate
+压力板
+%%%%
+%%%%
+radiant altar of Vehumet
+维胡梅特的辉光祭坛
+%%%%
+%%%%
+rock wall
+岩壁
+%%%%
+%%%%
+rocky tunnel leading out of this place
+离开此地的岩石隧道
+%%%%
+%%%%
+roughly hewn altar of Beogh
+比欧弗的粗凿祭坛
+%%%%
+%%%%
+runed door
+符文门
+%%%%
+%%%%
+runed translucent door
+刻有符文的透明门
+%%%%
+%%%%
+sacrificial altar of Ru
+入的献祭祭坛
+%%%%
+%%%%
+sand-covered staircase
+覆沙楼梯
+%%%%
+%%%%
+sealed door
+封印门
+%%%%
+%%%%
+sealed passage leading down
+向下通往的封印通道
+%%%%
+%%%%
+sealed passage leading up
+向上通往的封印通道
+%%%%
+%%%%
+sealed translucent door
+封印的透明门
+%%%%
+%%%%
+shadow trap
+阴影陷阱
+%%%%
+%%%%
+shadowy altar of Dithmenos
+迪斯姆诺的幽影祭坛
+%%%%
+%%%%
+shimmering altar of Xom
+佐姆的闪烁祭坛
+%%%%
+%%%%
+shimmering blue altar of Sif Muna
+西芙·穆娜的湛蓝闪烁祭坛
+%%%%
+%%%%
+short-range portal
+短距传送门
+%%%%
+%%%%
+slime covered rock wall
+覆满软泥的岩壁
+%%%%
+%%%%
+snail-covered altar of Cheibriados
+切布理亚多的蜗覆祭坛
+%%%%
+%%%%
+some deep water
+深水区
+%%%%
+%%%%
+some lava
+一片熔岩
+%%%%
+%%%%
+some shallow water
+一片浅水
+%%%%
+%%%%
+sparkling altar of Nemelex Xobeh
+内姆雷斯·索贝赫的闪烁祭坛
+%%%%
+%%%%
+spear trap
+长矛陷阱
+%%%%
+%%%%
+spike launcher
+尖刺发射器
+%%%%
+%%%%
+staircase back to the Crypt
+返回墓穴的楼梯
+%%%%
+%%%%
+staircase back to the Dungeon
+返回地城的楼梯
+%%%%
+%%%%
+staircase back to the Lair
+返回巢穴的楼梯
+%%%%
+%%%%
+staircase back to the Mines
+返回矿井的楼梯
+%%%%
+%%%%
+staircase back to the Vaults
+返回宝库的楼梯
+%%%%
+%%%%
+staircase to the Crypt
+通往墓穴的楼梯
+%%%%
+%%%%
+staircase to the Depths
+通往深处的楼梯
+%%%%
+%%%%
+staircase to the Dwarven Hall
+通往矮人大厅的楼梯
+%%%%
+%%%%
+staircase to the Elven Halls
+通往精灵殿堂的楼梯
+%%%%
+%%%%
+staircase to the Enchanted Forest
+通往附魔森林的楼梯
+%%%%
+%%%%
+staircase to the Hall of Blades
+通往刀锋殿堂的楼梯
+%%%%
+%%%%
+staircase to the Lair
+通往巢穴的楼梯
+%%%%
+%%%%
+staircase to the Orcish Mines
+通往兽人矿井的楼梯
+%%%%
+%%%%
+staircase to the Shoals
+通往浅滩的楼梯
+%%%%
+%%%%
+staircase to the Slime Pits
+通往史莱姆深渊的楼梯
+%%%%
+%%%%
+staircase to the Snake Pit
+通往蛇坑的楼梯
+%%%%
+%%%%
+staircase to the Swamp
+通往沼泽的楼梯
+%%%%
+%%%%
+staircase to the Tomb
+通往古墓的楼梯
+%%%%
+%%%%
+stone wall
+石墙
+%%%%
+%%%%
+stormy altar of Qazlal
+卡兹拉尔的暴风祭坛
+%%%%
+%%%%
+teleport trap
+传送陷阱
+%%%%
+%%%%
+the endless lava
+无尽熔岩
+%%%%
+%%%%
+the open sea
+开阔海域
+%%%%
+%%%%
+the orb dais
+宝珠台座
+%%%%
+%%%%
+translucent rock wall
+半透明岩壁
+%%%%
+%%%%
+translucent stone wall
+半透明石墙
+%%%%
+%%%%
+translucent unnaturally hard rock wall
+半透明异常坚硬岩壁
+%%%%
+%%%%
+transporter landing site
+传送台着陆点
+%%%%
+%%%%
+travel trail
+旅行步迹
+%%%%
+%%%%
+tyrant's trap
+暴君陷阱
+%%%%
+%%%%
+unnaturally hard rock wall
+异常坚硬岩壁
+%%%%
+%%%%
+viscous altar of Jiyva
+吉瓦的黏质祭坛
+%%%%
+%%%%
+white marble altar of Elyvilon
+艾利维隆的白色大理石祭坛
+%%%%
+%%%%
+zot statue
+佐特雕像
+%%%%
