@@ -3304,7 +3304,7 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { "rip", "tear", "爪击" };
+        static const char *claw_verbs[] = { T_("rip"), T_("tear") };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
@@ -3321,10 +3321,10 @@ void melee_attack::decapitate()
     {
         if (defender_visible)
         {
-            mprf("%s %s %s last head off!",
-                 atk_name(DESC_THE).c_str(),
-                 attacker->conj_verb(verb).c_str(),
-                 apostrophise(defender_name(true)).c_str());
+            mprf_p(T_("%s %s %s last head off!"),
+                   atk_name(DESC_THE).c_str(),
+                   attacker->conj_verb(verb).c_str(),
+                   apostrophise(defender_name(true)).c_str());
         }
 
         if (!defender->is_summoned())
@@ -3341,10 +3341,10 @@ void melee_attack::decapitate()
 
     if (defender_visible)
     {
-        mprf("%s %s one of %s heads off!",
-             atk_name(DESC_THE).c_str(),
-             attacker->conj_verb(verb).c_str(),
-             apostrophise(defender_name(true)).c_str());
+        mprf_p(T_("%s %s one of %s heads off!"),
+               atk_name(DESC_THE).c_str(),
+               attacker->conj_verb(verb).c_str(),
+               apostrophise(defender_name(true)).c_str());
     }
 
     defender->as_monster()->num_heads--;

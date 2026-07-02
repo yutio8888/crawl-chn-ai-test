@@ -343,12 +343,12 @@ string attack::anon_name(description_level_type desc)
         return "";
     case DESC_YOUR:
     case DESC_ITS:
-        return "something's";
+        return T_("something's");
     case DESC_THE:
     case DESC_A:
     case DESC_PLAIN:
     default:
-        return "something";
+        return T_("something");
     }
 }
 
@@ -1136,7 +1136,7 @@ bool attack::apply_damage_brand(const char *what)
 
     case SPWPN_FLAMING:
         calc_elemental_brand_damage(BEAM_FIRE,
-                                    defender->is_icy() ? "融化" : "灼烧",
+                                    defender->is_icy() ? T_("melt") : T_("burn"),
                                     what);
         defender->expose_to_element(BEAM_FIRE, 2);
         if (defender->is_player())
@@ -1144,7 +1144,7 @@ bool attack::apply_damage_brand(const char *what)
         break;
 
     case SPWPN_FREEZING:
-        calc_elemental_brand_damage(BEAM_COLD, "冻结", what);
+        calc_elemental_brand_damage(BEAM_COLD, T_("freeze"), what);
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
 
@@ -1159,7 +1159,7 @@ bool attack::apply_damage_brand(const char *what)
         {
             special_damage_message =
                 make_stringf(
-                    "%s抽搐了%s",
+                    T_("%s convulses%s"),
                     defender_name(false).c_str(),
                     attack_strength_punctuation(special_damage).c_str());
         }
@@ -1180,7 +1180,7 @@ bool attack::apply_damage_brand(const char *what)
         {
             special_damage_message =
                 make_stringf(
-                    "%s抽搐了%s",
+                    T_("%s convulses%s"),
                     defender_name(false).c_str(),
                     attack_strength_punctuation(special_damage).c_str());
         }
@@ -1407,12 +1407,12 @@ void attack::calc_elemental_brand_damage(beam_type flavour,
     if (needs_message && special_damage > 0 && verb)
     {
         special_damage_message = make_stringf(
-            "%s%s了%s%s%s",
+            T_("%s %s %s%s%s"),
             what ? what : atk_name(DESC_THE).c_str(),
             verb,
             defender_name(!what).c_str(),
             flavour == BEAM_FIRE && defender->res_fire() < 0
-             || flavour == BEAM_COLD && defender->res_cold() < 0 ? "严重地"
+             || flavour == BEAM_COLD && defender->res_cold() < 0 ? T_("severely ")
                 : "",
             attack_strength_punctuation(special_damage).c_str());
     }

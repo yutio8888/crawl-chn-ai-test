@@ -1876,8 +1876,8 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
         case SPWPN_FREEZING:
             mprf("%s %s", item_name.c_str(),
                 is_range_weapon(item) ?
-                    "is covered in frost." :
-                    "glows with a cold blue light!");
+                    T_("is covered in frost.") :
+                    T_("glows with a cold blue light!"));
             break;
 
         case SPWPN_HOLY_WRATH:

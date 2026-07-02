@@ -13644,7 +13644,7 @@ Something just walked over your grave. No, really!
 Your %1$s prickle%2$s.
 你的%1$s感到刺痛。
 %%%%
-completely
+ completely
 完全
 %%%%
  closely
@@ -24646,3 +24646,26 @@ Your experience leads to an increase in your attributes!
 A freezing vortex appears from out of thin air!
 一个冰冻漩涡凭空出现了！
 %%%%
+severely 
+严重地
+%%%%
+is covered in frost.
+被寒霜覆盖。
+%%%%
+glows with a cold blue light!
+闪烁着寒冷的蓝光！
+%%%%
+%s convulses%s
+%s抽搐了%s
+%%%%
+rip
+撕下
+%%%%
+tear
+撕裂
+%%%%
+%s %s %s last head off!
+%s%s了%s最后一个头！
+%%%%
+%s %s one of %s heads off!
+%s%s了%s一个头！
