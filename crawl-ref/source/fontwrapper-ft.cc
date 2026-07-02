@@ -262,6 +262,22 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
         }
     }
 
+    // Warn if CJK fallback font could not be loaded — Chinese, Japanese, and
+    // Korean characters will display as placeholder blocks.
+    if (!cjk_face)
+    {
+        fprintf(stderr, "WARNING: CJK fallback font not found or failed to load.\n"
+                        "  Expected at: %s\n"
+                        "  CJK characters will render as placeholder blocks.\n"
+                        "  Download SarasaMonoSC-Regular.ttf and place it in\n"
+                        "  contrib/fonts/ for proper CJK rendering.\n",
+                        cjk_path.c_str()[0] ? cjk_path.c_str()
+                                            : "(not found in search path)");
+        mprf(MSGCH_ERROR,
+            "CJK fallback font not found: download SarasaMonoSC-Regular.ttf"
+            " to contrib/fonts/ for proper CJK rendering.");
+    }
+
     return configure_font();
 }
 

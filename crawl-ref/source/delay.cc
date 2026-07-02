@@ -164,7 +164,6 @@ bool MacroDelay::try_interrupt(bool /*force*/)
 
 const char* EquipOnDelay::get_verb()
 {
-    const bool zh = Options.language == lang_t::ZH;
     if (is_weapon(equip))
     {
         if (you.has_mutation(MUT_SLOW_WIELD))
