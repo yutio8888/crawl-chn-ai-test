@@ -266,7 +266,7 @@ CRITICAL rules (from CLAUDE.md):
 - Never call conj_verb() on Chinese strings
 - Type III: add source.txt entries with T_(variable)
 - Type V: report that text should remain English (not a bug)`,
-    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA }
+    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA, isolation: 'worktree' }
   ),
 
   () => agent(

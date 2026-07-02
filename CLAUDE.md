@@ -506,7 +506,7 @@ git cherry-pick <start-hash>..<end-hash>
 
 The WSL environment has limited CPU and memory. To avoid system instability:
 
-1. **Max 2 agents in parallel**: Never launch more than 2 Agent/Workflow
+1. **Max 4 agents in parallel**: Never launch more than 4 Agent/Workflow
    subagents concurrently. If a task seems to need more, run them sequentially
    or ask the user to approve the scale.
 2. **Agent compile with `-j4`**: When an agent needs to compile crawl-ref (e.g.
