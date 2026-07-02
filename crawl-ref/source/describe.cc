@@ -5131,74 +5131,11 @@ static string _flavour_base_desc(attack_flavour flavour)
         { AF_PLAIN,             "" },
     };
 
-    static const map<attack_flavour, string> base_descs_zh = {
-        { AF_ACID,              "酸伤害"},
-        { AF_REACH_TONGUE,      "酸伤害" },
-        { AF_BLINK,             "自身闪烁" },
-        { AF_BLINK_WITH,        "与目标一起闪烁" },
-        { AF_COLD,              "寒冷伤害" },
-        { AF_CONFUSE,           "造成混乱" },
-        { AF_DRAIN,             "吸取生命" },
-        { AF_VAMPIRIC,          "从活物吸取生命" },
-        { AF_DRAIN_SPEED,       "吸取速度" },
-        // AF_ANTIMAGIC removed (not in 0.34.1)
-        { AF_SCARAB,            "吸取速度与生命" },
-        { AF_ELEC,              "电击伤害" },
-        { AF_FIRE,              "火焰伤害" },
-        { AF_SEAR,              "移除火焰抗性" },
-        { AF_MINIPARA,          "毒素与短暂麻痹" },
-        { AF_POISON_PARALYSE,   "毒素与麻痹/减速" },
-        { AF_POISON,            "毒素" },
-        { AF_REACH_STING,       "毒素" },
-        { AF_POISON_STRONG,     "强毒素" },
-        { AF_DISTORT,           "扭曲" },
-        { AF_RIFT,              "扭曲" },
-        { AF_RAGE,              "使目标狂暴" },
-        { AF_CHAOTIC,           "混沌" },
-        { AF_STEAL,             "偷窃物品" },
-        { AF_CRUSH,             "开始持续缠绕" },
-        { AF_REACH,             "" },
-        { AF_HOLY,              "对亡灵/恶魔额外伤害" },
-        { AF_PAIN,              "对活物额外痛苦伤害" },
-        { AF_ENSNARE,           "用蛛网缠绕" },
-        { AF_FLOOD,             "淹没目标肺部" },
-        { AF_PURE_FIRE,         "" },
-        { AF_VULN,              "降低意志力" },
-        { AF_SHADOWSTAB,        "隐身时增加伤害" },
-        { AF_DROWN,             "溺水伤害" },
-        // AF_CONTAM_WATER removed (not in 0.34.1)
-        { AF_CORRODE,           "造成腐蚀" },
-        { AF_TRAMPLE,           "击退目标" },
-        { AF_WEAKNESS,          "造成虚弱" },
-        { AF_BARBS,             "嵌入倒刺" },
-        { AF_SPIDER,            "召唤蜘蛛" },
-        { AF_BLOODZERK,         "见血后狂暴" },
-        { AF_SLEEP,             "造成睡眠" },
-        { AF_SWOOP,             "先俯冲到目标身后" },
-        { AF_FLANK,             "先绕到目标身后" },
-        { AF_DRAG,              "将目标向后拖拽"},
-        { AF_FOUL_FLAME,        "额外伤害，尤其对善良阵营" },
-        { AF_HELL_HUNT,         "召唤恶魔野兽" },
-        { AF_SWARM,             "召唤同类" },
-        { AF_ALEMBIC,           "释放毒雾" },
-        { AF_BOMBLET,           "部署炸弹" },
-        { AF_AIRSTRIKE,         "空袭伤害" },
-        { AF_TRICKSTER,         "吸取、晕眩或混乱" },
-        { AF_REACH_CLEAVE_UGLY, "随机丑东西伤害" },
-        { AF_DOOM,              "施加厄运" },
-        { AF_SLIMIFY,           "缓慢黏液化目标" },
-        { AF_DIM,               "削弱目标法术" },
-        // AF_BURSTSHROOM removed (not in 0.34.1)
-        { AF_PLAIN,             "" },
-    };
-
-    // TODO: Issue 32 Phase 2 — migrate base_descs_zh to T_()
-    const map<attack_flavour, string> &base_descs =
-        Options.language == lang_t::ZH ? base_descs_zh : base_descs_en;
-
-    const string* desc = map_find(base_descs, flavour);
+    const string* desc = map_find(base_descs_en, flavour);
     ASSERT(desc);
-    return *desc;
+    if (desc->empty())
+        return "";
+    return T_(desc->c_str());
 }
 
 struct mon_attack_info
@@ -6448,42 +6385,6 @@ static void _desc_mon_death_explosion(ostringstream &result,
 // Describe a monster's (intrinsic) resistances, speed and a few other
 // attributes.
 
-static const char* _holiness_zh_name(const mon_holy_type holiness)
-{
-    if (holiness & MH_HOLY)      return "神圣";
-    if (holiness & MH_DEMONIC)   return "恶魔";
-    if (holiness & MH_UNDEAD)    return "亡灵";
-    if (holiness & MH_NATURAL)   return "自然";
-    if (holiness & MH_PLANT)     return "植物";
-    if (holiness & MH_NONLIVING) return "无生命";
-    return "未知";
-}
-
-static const char* _size_zh_name(size_type sz)
-{
-    switch (sz)
-    {
-    case SIZE_LITTLE:  return "很小";
-    case SIZE_TINY:    return "极小";
-    case SIZE_SMALL:   return "小";
-    case SIZE_MEDIUM:  return "中等";
-    case SIZE_LARGE:   return "大";
-    case SIZE_GIANT:   return "巨型";
-    default:           return "未知";
-    }
-}
-
-static const char* _intel_zh_name(mon_intel_type intel)
-{
-    switch (intel)
-    {
-    case I_BRAINLESS: return "无意识";
-    case I_ANIMAL:    return "动物";
-    case I_HUMAN:     return "人类";
-    default:          return "未知";
-    }
-}
-
 static string _monster_stat_description(const monster_info& mi, bool mark_spells)
 {
     if (mons_is_sensed(mi.type) || mons_is_projectile(mi.type))
@@ -6509,13 +6410,12 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     // Less important common properties. Arguably should be lower down.
     const size_type sz = mi.body_size();
     const string size_desc = sz == SIZE_LITTLE
-        ? (T_("V. Small"))
+        ? "V. Small"
         : uppercase_first(get_size_adj(sz));
     const auto holiness = mons_class_holiness(mi.type);
     const string holi = holiness == MH_NONLIVING
-        ? (T_("Nonliv."))
+        ? "Nonliving"
         : single_holiness_description(holiness);
-    // TODO: Issue 32 Phase 2 — migrate _holiness_zh_name/_size_zh_name/_intel_zh_name to T_()
     const bool zh = Options.language == lang_t::ZH;
     pr.AddRow();
     if (mi.threat != MTHRT_UNDEF && !mons_class_is_peripheral(mi.type))
@@ -6523,11 +6423,11 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     else // ?/m
         pr.AddCell(); // ensure alignment
     pr.AddCell(C_("monster info", "Type"),
-               zh ? _holiness_zh_name(holiness) : uppercase_first(holi).c_str());
+               T_(uppercase_first(holi).c_str()));
     pr.AddCell(C_("monster info", "Size"),
-               zh ? _size_zh_name(sz) : size_desc.c_str());
+               T_(size_desc.c_str()));
     pr.AddCell(C_("monster info", "Intelligence"),
-               zh ? _intel_zh_name(mi.intel()) : intelligence_description(mi.intel()));
+               T_(intelligence_description(mi.intel())));
     if (mi.is(MB_SICK) || mi.is(MB_NO_REGEN))
         pr.AddCell("再生", T_("None"));
     else if (mons_class_fast_regen(mi.type) || mi.is(MB_REGENERATION))
