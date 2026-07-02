@@ -665,8 +665,9 @@ void bolt::initialise_fire()
             && !crawl_state.is_god_acting()
             && (!mon || !mon->observable()))
         {
+            const string display_name = _beam_display_name(*this);
             mprf(T_("%s appears from out of thin air!"),
-                 article_a(name, false).c_str());
+                 article_a(display_name, false).c_str());
         }
     }
 
@@ -1403,8 +1404,9 @@ void bolt::do_fire()
 
         if (flavour != BEAM_VISUAL && !was_seen && seen && !is_tracer())
         {
+            const string display_name = _beam_display_name(*this);
             mprf(T_("%s appears from out of your range of vision."),
-                 article_a(name, false).c_str());
+                 article_a(display_name, false).c_str());
         }
 
         // Reset chaos beams so that it won't be considered an invisible

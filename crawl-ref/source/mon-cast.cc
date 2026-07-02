@@ -7048,7 +7048,7 @@ static void _mons_vortex(monster *mons)
              flying ? "" : " up!");
     }
     else if (you.see_cell(mons->pos()))
-        mpr("一个冰冻漩涡凭空出现！");
+        mpr(T_("A freezing vortex appears from out of thin air!"));
 
     const int ench_dur = 60;
 

@@ -1382,29 +1382,29 @@ static string _describe_action(caction_type type)
     switch (type)
     {
     case CACT_MELEE:
-        return "Melee";
+        return T_("Melee");
     case CACT_FIRE:
-        return "Fire";
+        return T_("Fire");
     case CACT_THROW:
-        return "Throw";
+        return T_("Throw");
     case CACT_ARMOUR:
-        return "护甲";
+        return T_("Armour");
     case CACT_BLOCK:
-        return "Block";
+        return T_("Block");
     case CACT_DODGE:
-        return "Dodge";
+        return T_("Dodge");
     case CACT_CAST:
-        return "施放";
+        return T_("Cast");
     case CACT_INVOKE:
-        return "Invoke";
+        return T_("Invoke");
     case CACT_ABIL:
-        return "Ability";
+        return T_("Ability");
     case CACT_EVOKE:
-        return "Evoke";
+        return T_("Evoke");
     case CACT_USE:
-        return "Use";
+        return T_("Use");
     case CACT_STAB:
-        return "Stab";
+        return T_("Stab");
 #if TAG_MAJOR_VERSION == 34
     case CACT_EAT:
         return "Eat";

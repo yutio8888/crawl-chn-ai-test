@@ -2874,6 +2874,28 @@ Armaments
 Armour
 护甲
 
+%%%%
+Block
+格挡
+%%%%
+Dodge
+闪避
+%%%%
+Invoke
+祈祷
+%%%%
+Ability
+能力
+%%%%
+Use
+使用
+%%%%
+Stab
+偷袭
+%%%%
+Cast
+施放
+%%%%
 # L1623: simple
 %%%%
 armour
@@ -18171,7 +18193,7 @@ Lethal Infusion
 Lethal Infusion
 %%%%
 Melee
-Melee
+近战
 %%%%
 Mislead
 Mislead
@@ -18192,7 +18214,7 @@ Recall
 Recall
 %%%%
 Regeneration
-Regeneration
+快速再生
 %%%%
 Ring of Flames
 Ring of Flames
@@ -18240,7 +18262,7 @@ Sure Blade
 Sure Blade
 %%%%
 Throw
-Throw
+投掷
 %%%%
 Vampire Summon
 Vampire Summon
@@ -24620,4 +24642,7 @@ Your experience leads to a dramatic increase in your attributes!
 %%%%
 Your experience leads to an increase in your attributes!
 你的经验使你的属性提升了！
+%%%%
+A freezing vortex appears from out of thin air!
+一个冰冻漩涡凭空出现了！
 %%%%
