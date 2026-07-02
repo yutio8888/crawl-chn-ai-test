@@ -688,7 +688,7 @@ void dec_penance(god_type god, int val)
         you.penance[god] = 0;
 
         mark_milestone("god.mollify",
-                       (T_("mollified ")) + god_name(god) + ".");
+                       (T_("mollified ")) + string(_god_name_en(god)) + ".");
 
         if (god == GOD_IGNIS)
         {
