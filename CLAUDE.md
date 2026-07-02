@@ -270,7 +270,7 @@ breakage with Chinese text.
 ### Layer 1: Descript Database (`dat/descript/zh/*.txt`)
 
 Format: `%%%%`-separated entries with `key\n\ndescription` blocks.
-Spell keys must match `spell_title() + " spell"` — update keys when translating spell names.
+Spell keys use English names from `spell_english_names` (see D-B-007). Translation changes to `spell_title()` do NOT require syncing `zh/spells.txt` keys.
 
 ### Layer 2: Hardcoded Source Strings
 

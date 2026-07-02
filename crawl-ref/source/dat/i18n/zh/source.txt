@@ -19468,3 +19468,7 @@ slug
 %%%%
 sling bullet
 投石弹
+
+%%%%
+A demonic guardian appears!
+一个恶魔守护者出现了！

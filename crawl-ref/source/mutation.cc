@@ -3774,7 +3774,7 @@ void check_demonic_guardian()
         // no more guardians for mutlevel+1 to mutlevel+20 turns
         you.duration[DUR_DEMONIC_GUARDIAN] = 10*(mutlevel + random2(20));
 
-        mpr("一个恶魔守护者出现了！");
+        mpr(T_("A demonic guardian appears!"));
     }
 }
 
