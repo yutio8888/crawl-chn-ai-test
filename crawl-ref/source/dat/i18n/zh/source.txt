@@ -22957,3 +22957,943 @@ Deactivated automagic.
 Invalid spell slot.
 无效的法术槽位。
 %%%%
+%%%%
+You are no longer firmly anchored in space.
+你不再被牢固地固定在空间中了。
+%%%%
+%%%%
+You are able to move again.
+你又能移动了。
+%%%%
+%%%%
+Your roots weaken.
+缠绕你的根须减弱了。
+%%%%
+%%%%
+You feel less anchored.
+你感觉不再那么牢固地被固定了。
+%%%%
+%%%%
+Gravity stabilises in your vicinity.
+你周围的重力稳定了。
+%%%%
+%%%%
+Night gives way to day once more.
+黑夜再次让位于白昼。
+%%%%
+%%%%
+Space becomes stable.
+空间变得稳定了。
+%%%%
+%%%%
+The ice encasing you melts away.
+包裹着你的冰融化了。
+%%%%
+%%%%
+The jinxing sprites lose interest in you.
+捣乱的精灵对你失去了兴趣。
+%%%%
+%%%%
+The regenerative ooze finishes dripping off of you.
+再生的软泥从你身上滴完了。
+%%%%
+%%%%
+The sentinel's mark upon you fades away.
+你身上的哨兵印记消失了。
+%%%%
+%%%%
+The sign of ruin upon you fades.
+你身上的毁灭印记消退了。
+%%%%
+%%%%
+You are able to move again.
+你又能移动了。
+%%%%
+%%%%
+You are no longer berserk.
+你不再狂暴了。
+%%%%
+%%%%
+You are no longer corroded.
+你不再被腐蚀了。
+%%%%
+%%%%
+You are no longer firmly anchored in space.
+你不再被牢固地固定在空间中了。
+%%%%
+%%%%
+You are ready to hop once more.
+你准备好再次跳跃了。
+%%%%
+%%%%
+You are ready to recite again.
+你准备好再次吟诵了。
+%%%%
+%%%%
+You are ready to siphon essence again.
+你准备好再次汲取精华了。
+%%%%
+%%%%
+You are ready to speak a word of chaos again.
+你准备好再次说出混沌之言了。
+%%%%
+%%%%
+You break out of your daze.
+你从恍惚中清醒过来。
+%%%%
+%%%%
+You can once more reach out to the dragon horde.
+你可以再次召唤龙群了。
+%%%%
+%%%%
+You feel a little less clever now.
+你感到不那么聪明了。
+%%%%
+%%%%
+You feel a little less mighty now.
+你感到不那么强大了。
+%%%%
+%%%%
+You feel a little less murderous for the moment.
+你暂时不那么嗜杀了。
+%%%%
+%%%%
+You feel energetic enough to blinkbolt again.
+你感觉有足够的能量再次闪击了。
+%%%%
+%%%%
+You feel less confused.
+你感到不那么困惑了。
+%%%%
+%%%%
+You feel less drowsy.
+你感到不那么困倦了。
+%%%%
+%%%%
+You feel less exhausted.
+你感到不那么疲惫了。
+%%%%
+%%%%
+You feel less fragile.
+你感到不那么脆弱了。
+%%%%
+%%%%
+You feel less stealthy.
+你感到不那么隐蔽了。
+%%%%
+%%%%
+You feel less vulnerable to fire.
+你感到不那么怕火了。
+%%%%
+%%%%
+You feel less vulnerable to poison.
+你感到不那么怕毒了。
+%%%%
+%%%%
+You feel more stable.
+你感到更稳定了。
+%%%%
+%%%%
+You feel ready to blink again.
+你准备好再次闪烁了。
+%%%%
+%%%%
+You feel ready to split the earth once more.
+你准备好再次分裂大地了。
+%%%%
+%%%%
+You feel willing to depart the floor again.
+你愿意再次离开这一层了。
+%%%%
+%%%%
+You feel your health improve.
+你感到身体状况好转了。
+%%%%
+%%%%
+You feel your willpower return.
+你感到意志力恢复了。
+%%%%
+%%%%
+You finish digesting your meal.
+你消化完了你的食物。
+%%%%
+%%%%
+You regain access to your magic.
+你恢复了使用魔法的能力。
+%%%%
+%%%%
+You step away from death's doorway.
+你从死亡之门中走了出来。
+%%%%
+%%%%
+You stop calling forth ooze.
+你停止了召唤软泥。
+%%%%
+%%%%
+Your attacks no longer feel as feeble.
+你的攻击不再那么无力了。
+%%%%
+%%%%
+Your blood armour dries and flakes away.
+你的血甲干燥并剥落了。
+%%%%
+%%%%
+Your cleaving frenzy subsides.
+你的劈砍狂暴消退了。
+%%%%
+%%%%
+Your dimensional bullseye dissipates.
+你的次元靶消散了。
+%%%%
+%%%%
+Your enlightenment fades.
+你的启迪消退了。
+%%%%
+%%%%
+Your fear fades away.
+你的恐惧消退了。
+%%%%
+%%%%
+Your flames start to waver.
+你的火焰开始摇曳。
+%%%%
+%%%%
+Your hearing returns.
+你的听力恢复了。
+%%%%
+%%%%
+Your icy envelope is restored.
+你的冰霜护罩恢复了。
+%%%%
+%%%%
+Your infernal gateway subsides.
+你的地狱之门消退了。
+%%%%
+%%%%
+Your magic seems less tainted.
+你的魔法似乎不那么污浊了。
+%%%%
+%%%%
+Your noxious spew wanes.
+你的毒雾喷吐减弱了。
+%%%%
+%%%%
+Your orb has recharged its mesmeric power.
+你的宝珠重新充能了其催眠之力。
+%%%%
+%%%%
+Your slime shroud regrows.
+你的黏液护盾重新生长了。
+%%%%
+%%%%
+Your slimification abates.
+你的黏液化消退了。
+%%%%
+%%%%
+Your spells return to their normal power.
+你的法术恢复到正常威力。
+%%%%
+%%%%
+Your toxic aura wanes.
+你的毒性光环减弱了。
+%%%%
+%%%%
+Amaemon
+亚麦蒙
+%%%%
+%%%%
+Dissolution
+分解者
+%%%%
+%%%%
+Enchantress
+妖术女王
+%%%%
+%%%%
+Head Instructor
+总教官
+%%%%
+%%%%
+Hell Sentinel
+地狱哨兵
+%%%%
+%%%%
+Ice Fiend
+冰霜邪魔
+%%%%
+%%%%
+Killer Klown
+杀手小丑
+%%%%
+%%%%
+Lernaean hydra
+勒拿九头蛇
+%%%%
+%%%%
+Nobody
+无名氏
+%%%%
+%%%%
+Orb Guardian
+宝珠守卫
+%%%%
+%%%%
+Serpent of Hell
+地狱巨蛇
+%%%%
+%%%%
+alderking
+桤木王
+%%%%
+%%%%
+ancient zyme
+古酶
+%%%%
+%%%%
+animated tree
+活化树
+%%%%
+%%%%
+antique champion
+古代斗士
+%%%%
+%%%%
+apocalypse crab
+天启螃蟹
+%%%%
+%%%%
+armour echo
+铠甲回响
+%%%%
+%%%%
+aspiring flesh
+渴望之肉
+%%%%
+%%%%
+battlemage
+战斗法师
+%%%%
+%%%%
+bes kemwar
+贝斯·凯姆瓦
+%%%%
+%%%%
+blazeheart core
+焰心核心
+%%%%
+%%%%
+blazeheart golem
+焰心魔像
+%%%%
+%%%%
+bloated husk
+肿胀尸壳
+%%%%
+%%%%
+bomblet
+爆弹
+%%%%
+%%%%
+boundless tesseract
+无界超立方体
+%%%%
+%%%%
+broodmother
+育母蜘蛛
+%%%%
+%%%%
+burial acolyte
+殡葬侍僧
+%%%%
+%%%%
+burstshroom
+爆裂菇
+%%%%
+%%%%
+caustic sporangium
+腐蚀孢子囊
+%%%%
+%%%%
+cognitogaunt
+智性鬼
+%%%%
+%%%%
+colossal amoeba
+巨型变形虫
+%%%%
+%%%%
+crab
+螃蟹
+%%%%
+%%%%
+crawling flesh cage
+爬行血肉笼
+%%%%
+%%%%
+creeping inferno
+蔓延地狱火
+%%%%
+%%%%
+creeping plasmodium
+蔓延原质团
+%%%%
+%%%%
+crystal echidna
+水晶针鼹
+%%%%
+%%%%
+culicivora
+库蚊蛛
+%%%%
+%%%%
+curse toe
+诅咒趾
+%%%%
+%%%%
+death scarab
+死亡圣甲虫
+%%%%
+%%%%
+demonic crawler
+恶魔爬虫
+%%%%
+%%%%
+diamond sawblade
+钻石锯刃
+%%%%
+%%%%
+drude
+德鲁德
+%%%%
+%%%%
+eidolon
+幻灵
+%%%%
+%%%%
+eldritch tentacle
+诡异触手
+%%%%
+%%%%
+eldritch tentacle segment
+诡异触手段
+%%%%
+%%%%
+elemental wellspring
+元素泉源
+%%%%
+%%%%
+erythrospite
+猩红魔
+%%%%
+%%%%
+fenstrider witch
+沼行女巫
+%%%%
+%%%%
+fire crab
+火螃蟹
+%%%%
+%%%%
+ghost crab
+幽灵螃蟹
+%%%%
+%%%%
+glass eye
+玻璃眼
+%%%%
+%%%%
+goblin rider
+地精骑手
+%%%%
+%%%%
+god wrath avatar
+神罚化身
+%%%%
+%%%%
+halfling
+半身人
+%%%%
+%%%%
+harpy
+鹰身女妖
+%%%%
+%%%%
+haunted armour
+附魔盔甲
+%%%%
+%%%%
+hellephant
+地狱象
+%%%%
+%%%%
+hellfire mortar
+地狱火迫击炮
+%%%%
+%%%%
+hexer
+诅咒师
+%%%%
+%%%%
+hoarfrost cannon
+霜冻炮
+%%%%
+%%%%
+ice beast
+冰兽
+%%%%
+%%%%
+inugami
+犬神
+%%%%
+%%%%
+jorogumo
+络新妇
+%%%%
+%%%%
+kobold blastminer
+狗头人爆破矿工
+%%%%
+%%%%
+kobold demonologist
+狗头人恶魔学家
+%%%%
+%%%%
+kobold fleshcrafter
+狗头人血肉匠师
+%%%%
+%%%%
+kobold geomancer
+狗头人地理术士
+%%%%
+%%%%
+large abomination
+大型畸变体
+%%%%
+%%%%
+lava snake
+熔岩蛇
+%%%%
+%%%%
+living spell
+活体法术
+%%%%
+%%%%
+mana viper
+魔力毒蛇
+%%%%
+%%%%
+marrowcuda
+骨髓梭鱼
+%%%%
+%%%%
+martyred shade
+殉教幽影
+%%%%
+%%%%
+monarch bomb
+君主炸弹
+%%%%
+%%%%
+morphogenic ooze
+变形软泥
+%%%%
+%%%%
+mountainshell
+山壳兽
+%%%%
+%%%%
+mutant beast
+变异野兽
+%%%%
+%%%%
+nargun
+纳尔根
+%%%%
+%%%%
+nascent plasmodium
+初生原质团
+%%%%
+%%%%
+neqoxec
+内科塞克
+%%%%
+%%%%
+oblivion hound
+湮灭猎犬
+%%%%
+%%%%
+oni
+鬼
+%%%%
+%%%%
+oni incarcerator
+监禁鬼
+%%%%
+%%%%
+peacekeeper
+维和者
+%%%%
+%%%%
+petrified flower
+石化花
+%%%%
+%%%%
+pile of debris
+碎石堆
+%%%%
+%%%%
+pile of flesh
+血肉堆
+%%%%
+%%%%
+pillar of rime
+霜柱
+%%%%
+%%%%
+pillar of salt
+盐柱
+%%%%
+%%%%
+platinum paragon
+白金典范
+%%%%
+%%%%
+polterguardian
+骚灵护卫
+%%%%
+%%%%
+protean progenitor
+千变始祖
+%%%%
+%%%%
+putrid mouth
+腐臭之口
+%%%%
+%%%%
+ragged hierophant
+褴褛祭司
+%%%%
+%%%%
+raiju
+雷兽
+%%%%
+%%%%
+rending blade
+撕裂之刃
+%%%%
+%%%%
+revenant soulmonger
+灵魂贩子亡魂
+%%%%
+%%%%
+sacred lotus
+圣莲
+%%%%
+%%%%
+saltling
+盐偶
+%%%%
+%%%%
+screaming refraction
+尖叫折射体
+%%%%
+%%%%
+scrub nettle
+矮荨麻
+%%%%
+%%%%
+searing wretch
+灼烧恶徒
+%%%%
+%%%%
+seismosaurus
+地震龙
+%%%%
+%%%%
+seismosaurus egg
+地震龙蛋
+%%%%
+%%%%
+shadow demon
+暗影恶魔
+%%%%
+%%%%
+shadow prism
+暗影棱镜
+%%%%
+%%%%
+shadow puppet
+暗影傀儡
+%%%%
+%%%%
+shadow turret
+暗影炮塔
+%%%%
+%%%%
+shadowghast
+暗影食尸鬼
+%%%%
+%%%%
+silent spectre
+沉默幽灵
+%%%%
+%%%%
+sin beast
+罪孽兽
+%%%%
+%%%%
+skeletal warrior
+骷髅战士
+%%%%
+%%%%
+sky beast
+天空兽
+%%%%
+%%%%
+skyshark
+天鲨
+%%%%
+%%%%
+slymdra
+斯莱姆德拉
+%%%%
+%%%%
+small abomination
+小型畸变体
+%%%%
+%%%%
+snake
+蛇
+%%%%
+%%%%
+snaplasher vine
+鞭击藤蔓
+%%%%
+%%%%
+snaplasher vine segment
+鞭击藤蔓段
+%%%%
+%%%%
+solar ember
+太阳余烬
+%%%%
+%%%%
+sphinx marauder
+斯芬克斯掠袭者
+%%%%
+%%%%
+spider
+蜘蛛
+%%%%
+%%%%
+splinterfrost barricade
+碎冰壁垒
+%%%%
+%%%%
+starcursed mass
+受星诅咒的聚合体
+%%%%
+%%%%
+starflower
+星花
+%%%%
+%%%%
+starspawn tentacle
+星之后裔触手
+%%%%
+%%%%
+starspawn tentacle segment
+星之后裔触手段
+%%%%
+%%%%
+steelbarb worm
+钢刺蠕虫
+%%%%
+%%%%
+stoker
+焚炉者
+%%%%
+%%%%
+strange machine
+奇异机械
+%%%%
+%%%%
+sun moth
+太阳蛾
+%%%%
+%%%%
+tainted leviathan
+污秽利维坦
+%%%%
+%%%%
+tentacle
+触手
+%%%%
+%%%%
+tentacle segment
+触手段
+%%%%
+%%%%
+tentacled monstrosity
+触手巨怪
+%%%%
+%%%%
+tentacled starspawn
+触手星之后裔
+%%%%
+%%%%
+thermic dynamo
+热力发电机
+%%%%
+%%%%
+undertaker
+送葬者
+%%%%
+%%%%
+undying armoury
+不灭军械库
+%%%%
+%%%%
+ushabti
+乌沙布提
+%%%%
+%%%%
+vampire bloodprince
+吸血鬼血王子
+%%%%
+%%%%
+vampire knight
+吸血鬼骑士
+%%%%
+%%%%
+vampire mage
+吸血鬼法师
+%%%%
+%%%%
+vampire mosquito
+吸血鬼蚊子
+%%%%
+%%%%
+void ooze
+虚空软泥
+%%%%
+%%%%
+walking alembic
+行走的蒸馏器
+%%%%
+%%%%
+walking crystal tome
+行走的水晶宝典
+%%%%
+%%%%
+walking divine tome
+行走的神圣宝典
+%%%%
+%%%%
+walking earthen tome
+行走的土石宝典
+%%%%
+%%%%
+walking frostbound tome
+行走的冰封宝典
+%%%%
+%%%%
+walking tome
+行走的宝典
+%%%%
+%%%%
+wendigo
+温迪戈
+%%%%
+%%%%
+will-o-the-wisp
+鬼火
+%%%%
+%%%%
+wretched star
+厄运之星
+%%%%
+%%%%
+wyrmhole
+虫洞
+%%%%
+%%%%
+zykzyl
+泽科齐尔
+%%%%
+%%%%
+The ground is no longer liquid beneath you.
+你脚下的地面不再是液态了。
+%%%%
+%%%%
+The infernal howling subsides.
+地狱的嚎叫声消退了。
+%%%%
+%%%%
+The roar of the dragon horde subsides.
+龙群的咆哮声消退了。
+%%%%
+%%%%
+The translocation energy dissipates.
+传送能量消散了。
+%%%%
+%%%%
+The winds around you calm down.
+你周围的风平静下来了。
+%%%%
+%%%%
+The world stops spinning.
+世界停止了旋转。
+%%%%
+%%%%
+You feel a little less agile now.
+你感到不那么敏捷了。
+%%%%
+%%%%
+You feel less devious.
+你感到不那么狡黠了。
+%%%%
+%%%%
+You feel less protected from cold.
+你感到防寒效果减弱了。
+%%%%
+%%%%
+You feel less protected from electricity.
+你感到防电效果减弱了。
+%%%%
+%%%%
+You feel less protected from fire.
+你感到防火效果减弱了。
+%%%%
+%%%%
+You feel less protected from physical attacks.
+你感到物理防护减弱了。
+%%%%
+%%%%
+You feel less slimy.
+你感到不那么黏滑了。
+%%%%
+%%%%
+Your bloodlust subsides.
+你的嗜血欲望消退了。
+%%%%
+%%%%
+Your fiery armour burns out.
+你的火焰铠甲燃尽了。
+%%%%
+%%%%
+Your fugue has ended.
+你的神游结束了。
+%%%%
+%%%%
+Your reaping aura expires.
+你的收割光环消失了。
+%%%%
+%%%%
+Your resistance to elements expires.
+你的元素抗性消失了。
+%%%%
+%%%%
+Your unholy channel expires.
+你的不洁引导结束了。
+%%%%

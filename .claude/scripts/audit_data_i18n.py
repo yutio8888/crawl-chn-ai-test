@@ -23,9 +23,16 @@ def parse_source_txt(filepath: str) -> dict:
     with open(filepath, 'r', encoding='utf-8') as f:
         content = f.read()
     for entry in re.split(r'^%%%%\n', content, flags=re.MULTILINE)[1:]:
-        parts = entry.strip().split('\n\n', 1)
+        entry = entry.strip()
+        # Some entries have blank-line (\n\n) key/value separator, some don't
+        parts = entry.split('\n\n', 1)
         if len(parts) == 2:
-            entries[parts[0].strip()] = parts[1].strip()
+            entries[parts[0].strip()] = parts[1].rstrip('\n').strip()
+        elif len(parts) == 1 and '\n' in parts[0]:
+            # Single newline separator: key\nvalue or key\nvalue\n%%%%
+            lines = parts[0].rstrip('\n').split('\n', 1)
+            if len(lines) == 2:
+                entries[lines[0].strip()] = lines[1].strip()
     return entries
 
 
