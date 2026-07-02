@@ -19472,3 +19472,353 @@ sling bullet
 %%%%
 A demonic guardian appears!
 一个恶魔守护者出现了！
+
+# X3 H1: player.cc hardcoded Chinese -> T_()
+%%%%
+The curse of the Prune grips you.
+普鲁恩的诅咒攫住了你。
+%%%%
+You cannot enter the water in your current form.
+你当前形态下无法进入水中。
+%%%%
+It would be unwise to walk in here.
+走进这里是不明智的。
+%%%%
+Moving in this stuff is going to be slow.
+在这种东西里移动会很慢。
+%%%%
+...and don't expect to remain unnoticed.
+……而且别指望不被发现。
+%%%%
+Don't expect to remain unnoticed in the water.
+在水中别指望不被发现。
+%%%%
+%s is dragged alongside you!
+%s被你拖着走！
+%%%%
+The acid dripping from the walls corrodes you.
+从墙上滴下的酸液腐蚀了你。
+%%%%
+You feel your vitality returning.
+你感觉生命力恢复了。
+%%%%
+You feel power surging in your lungs.
+你感到力量在肺中涌起。
+%%%%
+You feel ready to make another noisy attack.
+你感觉准备好再次制造嘈杂攻击。
+%%%%
+You feel ready to scatter into a bat swarm again.
+你感觉准备好再次散成蝙蝠群。
+%%%%
+You feel ready to drown foes again.
+你感觉准备好再次淹溺敌人。
+%%%%
+You feel the doom around you dissipate.
+你感觉周围的厄运消散了。
+%%%%
+Extra life!
+额外生命！
+%%%%
+The power to cast %s surges from within.
+施放%s的力量从内心涌出。
+%%%%
+You remember nothing but emptiness.
+你只记得一片虚无。
+%%%%
+You recall %s.
+你记起了%s。
+%%%%
+(You can now cast %s.)
+（你现在可以施放%s了。）
+%%%%
+You have reached level 27, the maximum!
+你已达到27级，最高等级！
+%%%%
+You feel your skin toughen.
+你感觉皮肤变得更加坚韧。
+%%%%
+You feel your scales toughen.
+你感觉鳞片变得更加坚韧。
+%%%%
+You are illuminated by a large divine aura.
+你被一个大型神圣光环照亮。
+%%%%
+You are illuminated by a divine aura.
+你被一个神圣光环照亮。
+%%%%
+You are illuminated by a small divine aura.
+你被一个小型神圣光环照亮。
+%%%%
+An external divine aura illuminates you.
+一个外部的神圣光环照亮了你。
+%%%%
+* * * LOW MAGIC WARNING * * *
+* * * 低魔力警告 * * *
+%%%%
+* * * LOW HITPOINT WARNING * * *
+* * * 低生命警告 * * *
+%%%%
+You are functionally dead and cannot pay life.
+你功能上已死亡，无法支付生命。
+%%%%
+You don't have enough health right now.
+你当前没有足够的生命值。
+%%%%
+You don't have enough magic capacity right now.
+你当前没有足够的魔力容量。
+%%%%
+You don't have enough magic right now.
+你当前没有足够的魔力。
+%%%%
+Your magical contamination has completely subsided.
+你的魔法污染已经完全消退了。
+%%%%
+You feel briefly confused.
+你感到短暂的困惑。
+%%%%
+Your divine stamina protects you from confusion!
+你的神圣耐力保护你免受困惑！
+%%%%
+You feel %s sick.
+你感觉%s不适。
+%%%%
+Your divine stamina protects you from miasma!
+你的神圣耐力保护你免受瘴气！
+%%%%
+You dive into the water, extinguishing the flames!
+你浸入水中，火焰熄灭了！
+%%%%
+The liquid flame finally runs out.
+液体火焰终于耗尽了。
+%%%%
+You shake off the liquid flame.
+你甩掉了液体火焰。
+%%%%
+You shake off some fire as you move.
+你在移动时甩掉了一些火焰。
+%%%%
+You feel the silence will last longer.
+你感觉沉默将持续更久。
+%%%%
+Your stasis prevents slowing.
+你的停滞状态阻止了减速。
+%%%%
+You are as slow as you can get.
+你已经慢到极限了。
+%%%%
+You feel yourself slowing down.
+你感觉自己变慢了。
+%%%%
+You feel the slowness will last longer.
+你感觉减速将持续更久。
+%%%%
+You feel yourself speed up.
+你感觉自己加速了。
+%%%%
+Barbed spikes embed themselves in your body.
+带刺的尖刺嵌入了你的身体。
+%%%%
+More barbed spikes embed themselves in your body.
+更多带刺的尖刺嵌入了你的身体。
+%%%%
+You are blinded for longer.
+你被致盲的时间更长了。
+%%%%
+You are blinded!
+你被致盲了！
+%%%%
+You recover from your berserk rage.
+你从狂暴的愤怒中恢复过来。
+%%%%
+Your stasis prevents speeding up.
+你的停滞状态阻止了加速。
+%%%%
+You feel yourself speeding up.
+你感觉自己加速了。
+%%%%
+You are as fast as you can get.
+你已经快到极限了。
+%%%%
+You feel the speed will last longer.
+你感觉加速将持续更久。
+%%%%
+Your extra speed is starting to fade.
+你的额外速度开始消退了。
+%%%%
+You feel yourself slowing down.
+你感觉自己变慢了。
+%%%%
+You feel your energy waning.
+你感觉精力减退了。
+%%%%
+The frozen ramparts melt away.
+冰冻的壁垒融化了。
+%%%%
+Your tail turns into legs as you fly out of the water.
+你飞出水面时尾巴变成了腿。
+%%%%
+You fly gracefully into the air.
+你轻盈地飞到了空中。
+%%%%
+You fly into the air.
+你飞到了空中。
+%%%%
+You drift gracefully down.
+你优雅地飘落下来。
+%%%%
+You resist the pull of the Abyss.
+你抵抗了深渊的拉力。
+%%%%
+You stagger.
+你摇晃了一下。
+%%%%
+Your stasis prevents paralysis.
+你的停滞状态阻止了麻痹。
+%%%%
+You shrug off repeated attempts at paralysis.
+你摆脱了反复的瘫痪尝试。
+%%%%
+You suddenly lose the ability to move!
+你突然失去了移动能力！
+%%%%
+Your divine stamina protects you from petrification!
+你的神圣耐力保护你免受石化！
+%%%%
+You are slowing down.
+你正在减速。
+%%%%
+You turn to stone.
+你变成了石头。
+%%%%
+Your clear mind protects you.
+你清醒的心智保护了你。
+%%%%
+You are overwhelmed with despair!
+你被沮丧感淹没了！
+%%%%
+Your divine stamina protects you from sickness!
+你的神圣耐力保护你免受疾病！
+%%%%
+You feel sick.
+你感到不适。
+%%%%
+You glow brighter.
+你发光更亮了。
+%%%%
+You are outlined in light.
+你被光芒勾勒出轮廓。
+%%%%
+You feel extraordinarily conspicuous.
+你感觉异常引人注目。
+%%%%
+Doom falls upon you...
+厄运降临在你身上……
+%%%%
+You cannot fall asleep in your current state!
+你当前状态下无法入睡！
+%%%%
+You fall asleep.
+你睡着了。
+%%%%
+You wake up.
+你醒来了。
+%%%%
+You snap out of the daze.
+你从恍惚中清醒过来。
+%%%%
+Your digger instincts prevent you from falling into the shaft!
+你挖掘者的本能阻止你掉入竖井！
+%%%%
+Cannot jump into a shaft in your current form.
+当前形态下无法跳入竖井。
+%%%%
+You cannot jump into a shaft while %s.
+你在%s时无法跳入竖井。
+%%%%
+Cannot jump into a shaft while unable to move.
+无法移动时无法跳入竖井。
+%%%%
+Cannot jump into a shaft on this floor.
+此楼层无法跳入竖井。
+%%%%
+Cannot jump into a shaft on this terrain.
+此地形上无法跳入竖井。
+%%%%
+A shaft opens beneath you!
+你身下出现了一个竖井！
+%%%%
+You break free of %s.
+你挣脱了%s的掌控。
+%%%%
+The mark on you glows brighter.
+你身上的印记变得更亮了。
+%%%%
+A sentinel's mark forms upon you.
+一个哨兵印记在你身上形成。
+%%%%
+You feel your attacks become weak and feeble.
+你感觉你的攻击变得虚弱无力。
+%%%%
+You feel the weakness will last longer.
+你感觉虚弱将持续更久。
+%%%%
+You feel your spells become weak and feeble.
+你感觉你的法术变得虚弱无力。
+%%%%
+You feel the spell weakness will last longer.
+你感觉法术削弱将持续更久。
+%%%%
+Your willpower is stripped away!
+你的意志力被剥夺了！
+%%%%
+You feel your strength ebbing away.
+你感觉力量在流失。
+%%%%
+Your body becomes as fragile as glass!
+你的身体变得像玻璃一样脆弱！
+%%%%
+You feel the fragility will last longer.
+你感觉脆弱将持续更久。
+%%%%
+%s floods into your lungs!
+%s涌入了你的肺部！
+%%%%
+Your body rejects the healing.
+你的身体排斥了治疗效果。
+%%%%
+Your body partially rejects the healing.
+你的身体部分排斥了治疗效果。
+%%%%
+%s%s swings open!
+%s%s猛然打开！
+%%%%
+Something is blocking the %s!
+有东西挡住了%s！
+%%%%
+There is a creature in the %s!
+有生物在%s里！
+%%%%
+Something is stuck in the %s.
+有东西卡住了%s。
+%%%%
+There is a stubborn creature in the %s!
+有个倔强的生物在%s里！
+%%%%
+You are exhausted.
+你精疲力竭了。
+%%%%
+Your blood congeals into armour.
+你的血液凝结成了护甲。
+%%%%
+Your weapon exudes an aura of protection.
+你的武器散发出保护的气息。
+%%%%
+You feel invigorated by spreading misfortune.
+你因散布不幸而感到鼓舞。
+%%%%
+Your boots prevent you from %s.
+你的靴子阻止了你%s。
+%%%%
+You %s
+你%s
