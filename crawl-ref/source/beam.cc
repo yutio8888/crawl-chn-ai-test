@@ -7507,7 +7507,7 @@ bool bolt::is_enchantment() const
 string bolt::get_short_name() const
 {
     if (!short_name.empty())
-        return short_name;
+        return T_(short_name.c_str());
 
     if (ranged_atk)
         return ranged_atk->projectile_name();
@@ -7522,19 +7522,19 @@ string bolt::get_short_name() const
         && (origin_spell == SPELL_STICKY_FLAME
             || origin_spell == SPELL_PYRE_ARROW))
     {
-        return "sticky fire";
+        return T_("sticky fire");
     }
 
     if (flavour == BEAM_ELECTRICITY && pierce)
-        return "lightning";
+        return T_("lightning");
 
     if (name == "bolt of dispelling energy")
-        return "dispelling energy";
+        return T_("dispelling energy");
 
     if (flavour == BEAM_NONE || flavour == BEAM_MISSILE
         || flavour == BEAM_MMISSILE)
     {
-        return name;
+        return T_(name.c_str());
     }
 
     return _beam_type_name(flavour);

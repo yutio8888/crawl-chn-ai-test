@@ -1014,7 +1014,7 @@ gain power from chaos
 %s%s召唤了一个被%s毁灭魔法灌注的仆从！
 %%%%
 %s %s an %s energy prism!
-%s%s创造了一个%s能量棱镜！
+%s创造了一个%s能量棱镜！
 %%%%
 %s %s discharges%s, shocking %s%s
 %s%s释放出%s电流，电击了%s%s
@@ -22894,4 +22894,14 @@ zombie
 %%%%
  <%s>%c %c </%s><%s>%4d gold   %s%s</%s>
  <%s>%c %c </%s><%s>%4d 金币   %s%s</%s>
+%%%%
+%%%%
+sticky fire
+黏性火焰
+%%%%
+lightning
+闪电
+%%%%
+dispelling energy
+驱散能量
 %%%%
