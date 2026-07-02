@@ -268,12 +268,14 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-06-26
 - **Source**: i18n-improve (`_spell_review/impl_plan.md`)
 - **Choice**: 6 spell name corrections:
-  - MERCURY_ARROW: 水银箭 → 汞矢
-  - BLINK_RANGE: → 退避闪烁
-  - ENGLACIATION: → 深度冻结
-  - (plus 3 more from impl_plan.md)
+  - MERCURY_ARROW: 水银箭 → 汞矢 (P0 — 与 QUICKSILVER_BOLT 重名)
+  - BLINK_RANGE: 范围闪烁 → 退避闪烁 (P1 — "范围"误解核心效果)
+  - ENGLACIATION: 代谢冻结 → 深度冻结 (P1 — "代谢"与冰冻效果冲突)
+  - HIBERNATION: 施法冬眠 → 冬眠 (P1 — 唯一带"施法"前缀，破坏一致性)
+  - BOULDER: 布罗姆之滚石 → 布罗姆之碾压巨石 (P1 — 丢失 Barrelling 含义)
+  - SUMMON_DRAGON: 召唤龙 → 召唤巨龙 (P2 — 与"龙之呼唤"区分不足)
 - **Rejected**: Original translations (inaccurate, inconsistent, or unidiomatic)
-- **Rationale**: Each correction addressed a specific quality issue: inaccurate element description, missing nuance, or unidiomatic compound formation.
+- **Rationale**: Each correction addressed a specific quality issue: inaccurate element description, missing nuance, unidiomatic compound formation, or naming inconsistency within the spell list.
 - **Scope**: `spl-data.h` spell name definitions
 - **Tracking issue**: i18n-improve
 
@@ -288,8 +290,9 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Choice**: Chinese `item_base_name()` mapping for all item types
 - **Rejected**: English-only item names in Chinese mode
 - **Rationale**: Item names are Type I static display data — must be translated at the data layer for consistency.
-- **Scope**: `item-name.cc:item_base_name()` — deferred to independent issue
+- **Scope**: `item-name.cc:item_base_name()`
 - **Tracking issue**: issue 10
+- **Resolved**: 2026-06-27
 
 ---
 
@@ -302,10 +305,71 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Choice**: Chinese initmsg/finalmsg for all 13 portal vault .des files
 - **Rejected**: English-only portal messages
 - **Rationale**: Portal entry/exit messages are player-visible atmospheric text. Uses `crawl.language()` Lua function for runtime language selection.
-- **Scope**: `dat/des/variable/*.des` portal files — deferred to independent issue
+- **Scope**: `dat/des/variable/*.des` portal files
 - **Tracking issue**: issue 9
+- **Resolved**: 2026-06-27
 
 ---
+
+
+---
+
+### D-B-008 — Descript ZH 必须与 EN 保持机制一致
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 17
+- **Choice**: ZH descriptions (descript/zh/) must not add, remove, or alter game
+  mechanics described in the corresponding EN entry.
+- **Rejected**: Fabricating mechanics in translation (e.g., adding healing effects,
+  knockback, god associations, or stealth penalties not present in EN)
+- **Rationale**: Translation must preserve the player's mechanical understanding
+  of the game. Fabricated mechanics mislead players and violate the
+  translator's responsibility to faithfully represent the source material.
+- **Scope**: All `dat/descript/zh/*.txt` files
+- **Verification**: `check_consistency.sh --descript` catches key mismatches;
+  content parity requires periodic manual EN/ZH sampling.
+- **Tracking issue**: issue 17
+
+---
+
+### D-B-009 — @keyword@ 引用完整性
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issue 18
+- **Choice**: Every @keyword@ referenced in a ZH database file must have a
+  corresponding definition in either the same ZH file or the EN fallback.
+  Prefix conventions (e.g., `@_graffiti_xxx_@`) must match exactly.
+- **Rejected**: Broken @keyword@ references that silently fail at runtime
+- **Rationale**: @keyword@ references are resolved at display time. A missing
+  definition produces blank output or raw `@_key_@` text — both are
+  user-visible bugs. Prefix mismatches (e.g., `@_hailed_god_@` missing
+  the `graffiti_` prefix) are a known failure mode (issue 19).
+- **Scope**: All `dat/database/zh/*.txt` files
+- **Verification**: `check_consistency.sh --database --keywords`
+- **Tracking issue**: issue 18
+
+---
+
+### D-B-010 — EN 内容变更时需要 ZH 重新审查
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-06-27
+- **Source**: issues 17+18
+- **Choice**: When EN database/descript entries are modified (content change, not
+  just formatting), the corresponding ZH entries must be flagged for review.
+- **Rejected**: ZH entries silently drifting out of sync with updated EN content
+- **Rationale**: Entry count mismatch >10% is a strong signal that ZH has not
+  been updated to match EN content changes. Version drift is most common in
+  `gods.txt`, `mutations.txt`, `ability.txt` — files tied to game mechanics
+  that evolve across versions.
+- **Scope**: All `dat/descript/zh/*.txt` and `dat/database/zh/*.txt`
+- **Verification**: `check_consistency.sh --stale`
+- **Tracking issue**: issues 17+18
 
 ### D-B-011 — 工具函数语言守卫
 
@@ -408,8 +472,11 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-005 | Plural marking | remove in ZH | active |
 | D-B-006 | Adverb position | before verb | active |
 | D-B-007 | spell_title() → DB key | use English | active |
+| D-B-008 | Descript mechanics parity | ZH must match EN | active |
+| D-B-009 | @keyword@ integrity | must resolve at runtime | active |
+| D-B-010 | EN change → ZH review | flag on version drift | active |
 | D-B-011 | Tool function language guard | must guard return values | active |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
-| D-C-003 | Item base names | ~200 items | active — deferred |
-| D-C-004 | Portal .des | ~40 messages | active — deferred |
+| D-C-003 | Item base names | ~200 items | active — all ✅ |
+| D-C-004 | Portal .des | ~40 messages | active — all ✅ |
