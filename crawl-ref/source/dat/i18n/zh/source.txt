@@ -22653,3 +22653,245 @@ like the proverbial pig
 into a gooey mess
 成一团黏糊
 %%%%%
+%%%%
+(unknown)
+（未知）
+%%%%
+%%%%
+ <w>buy</w>|examine items
+ <w>购买</w>|检视物品
+%%%%
+%%%%
+ <w>travel</w>|examine|delete
+ <w>前往</w>|检视|删除
+%%%%
+%%%%
+ buy marked items
+ 购买标记物品
+%%%%
+%%%%
+ buy shopping list
+ 购买购物清单
+%%%%
+%%%%
+ buy|<w>examine</w> items
+ 购买|<w>检视</w>物品
+%%%%
+%%%%
+ choose item
+ 选择物品
+%%%%
+%%%%
+ describe
+ 描述
+%%%%
+%%%%
+ exit
+ 退出
+%%%%
+%%%%
+ in shopping list
+（在购物清单中）
+%%%%
+%%%%
+ items
+物品
+%%%%
+%%%%
+ on
+第
+%%%%
+%%%%
+ put item on shopping list
+ 将物品加入购物清单
+%%%%
+%%%%
+ travel|<w>examine</w>|delete
+ 前往|<w>检视</w>|删除
+%%%%
+%%%%
+ travel|examine|<w>delete</w>
+ 前往|检视|<w>删除</w>
+%%%%
+%%%%
+!
+！
+%%%%
+%%%%
+# - Recommended character
+# - 推荐角色
+%%%%
+%%%%
+%s %s into %s%s
+%s%s撞上了%s%s
+%%%%
+%%%%
+%s Continue anyway?
+%s 仍然继续吗？
+%%%%
+%%%%
+%s explodes violently into a cloud of jellies%s
+%s猛烈爆裂成一团凝胶%s
+%%%%
+%%%%
+%s explodes violently%s
+%s猛烈爆炸%s
+%%%%
+%%%%
+%s explodes!
+%s爆炸了！
+%%%%
+%%%%
+%s is already on the shopping list.
+%s已经在购物清单中了。
+%%%%
+%%%%
+%s isn't on shopping list, can't delete it.
+%s不在购物清单中，无法删除。
+%%%%
+%%%%
+%s shudders for a moment, then explodes violently!
+%s颤抖了片刻，然后猛烈爆炸！
+%%%%
+%%%%
+%s violently %s moving%s
+%s猛然%s停住了%s
+%%%%
+%%%%
+, or
+，或
+%%%%
+%%%%
+<%s>I'll put %s outside for you.</%s>
+
+<%s>我会将%s放在外面给你。</%s>
+
+%%%%
+%%%%
+<%s>Purchase items%s for %d gold? %s (%s/N)</%s>
+
+<%s>以%d金币购买%s？%s（%s/N）</%s>
+
+%%%%
+%%%%
+<%s>You don't have enough money.</%s>
+
+<%s>你的金币不够。</%s>
+
+%%%%
+%%%%
+Choose to examine item
+选择检视物品
+%%%%
+%%%%
+The unravelling is likely to hit you. Continue anyway?
+解离可能会击中你自己。仍然继续吗？
+%%%%
+%%%%
+This will use your shop voucher.
+这将使用你的商店代金券。
+%%%%
+%%%%
+You now have enough gold to
+你现在有足够的金币
+%%%%
+%%%%
+Your vision returns to normal.
+你的视力恢复正常了。
+%%%%
+%%%%
+\n[<w>/</w>] sort (%s)%s  %s
+\n[<w>/</w>] 排序（%s）%s  %s
+%%%%
+%%%%
+beam
+光束
+%%%%
+%%%%
+bound soul
+缚魂
+%%%%
+%%%%
+buy
+购买
+%%%%
+%%%%
+draugr
+尸鬼
+%%%%
+%%%%
+examine item
+检视物品
+%%%%
+%%%%
+explosive
+爆炸
+%%%%
+%%%%
+hop
+跳跃
+%%%%
+%%%%
+it
+它
+%%%%
+%%%%
+item
+物品
+%%%%
+%%%%
+leap
+飞扑
+%%%%
+%%%%
+mark item for purchase
+ 标记物品购买
+%%%%
+%%%%
+past
+掠过
+%%%%
+%%%%
+shadowy
+暗影
+%%%%
+%%%%
+shaped block of ice
+冰雕块
+%%%%
+%%%%
+shaped pillar of salt
+盐雕柱
+%%%%
+%%%%
+simulacrum
+拟像
+%%%%
+%%%%
+some of them
+其中一些
+%%%%
+%%%%
+spectre
+幽灵
+%%%%
+%%%%
+them
+它们
+%%%%
+%%%%
+thin air
+空气
+%%%%
+%%%%
+this level
+本层
+%%%%
+%%%%
+zombie
+僵尸
+%%%%
+%%%%
+ <%s>%c %c </%s><%s>%4d gold   %s%s</%s>
+ <%s>%c %c </%s><%s>%4d 金币   %s%s</%s>
+%%%%
