@@ -3559,7 +3559,7 @@ string level_id::describe(bool long_name, bool with_number) const
             // decapitalise 'the'
             if (starts_with(result, "The"))
                 result[0] = 't';
-            result = make_stringf("Level %d of %s",
+            result = make_stringf_p(T_("Level %d of %s"),
                       depth, result.c_str());
         }
         else if (depth)

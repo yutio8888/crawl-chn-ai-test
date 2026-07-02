@@ -1259,6 +1259,8 @@ bool origin_describable(const item_def &item)
 
 static string _article_it(const item_def &/*item*/)
 {
+    if (Options.language == lang_t::ZH)
+        return "它";
     // "it" is always correct, since gloves and boots also come in pairs.
     return "it";
 }
@@ -1315,7 +1317,7 @@ string origin_desc(const item_def &item)
         return "";
 
     if (_origin_is_original_equip(item))
-        return "Original Equipment";
+        return T_("Original Equipment");
 
     string desc;
     if (item.orig_monnum)
@@ -1329,17 +1331,17 @@ string origin_desc(const item_def &item)
                 desc += (T_("You bought ") + _article_it(item) + " in a shop ");
                 break;
             case IT_SRC_START:
-                desc += "Buggy Original Equipment: ";
+                desc += T_("Buggy Original Equipment: ");
                 break;
             case AQ_SCROLL:
                 desc += (T_("You acquired ") + _article_it(item) + " ");
                 break;
             case AQ_INVENTED:
-                desc += "You invented it yourself ";
+                desc += T_("You invented it yourself ");
                 break;
 #if TAG_MAJOR_VERSION == 34
             case AQ_CARD_GENIE:
-                desc += "You drew the Genie ";
+                desc += T_("You drew the Genie ");
                 break;
 #endif
             case AQ_WIZMODE:
@@ -1360,7 +1362,7 @@ string origin_desc(const item_def &item)
             }
         }
         else if (item.orig_monnum == MONS_DANCING_WEAPON)
-            desc += "You subdued it ";
+            desc += T_("You subdued it ");
         else
         {
             desc += (T_("You took ") + _article_it(item) + " off ")
@@ -1370,7 +1372,14 @@ string origin_desc(const item_def &item)
     else
         desc += (T_("You found ") + _article_it(item) + " ");
 
-    desc += _origin_place_desc(item);
+    string place = _origin_place_desc(item);
+    if (!place.empty())
+    {
+        if (Options.language == lang_t::ZH)
+            desc = make_stringf(T_("在%s%s"), place.c_str(), desc.c_str());
+        else
+            desc += place;
+    }
     return desc;
 }
 
