@@ -4335,7 +4335,7 @@ static string _get_skill_defense_change(skill_type skill)
 
     if (skill == SK_ARMOUR)
     {
-        return make_stringf(
+        return make_stringf_p(
             T_("\nWith your current stats and equipment, %1$s "
                "this skill would increase your AC by %2$.1f "
                "and your EV by %3$.1f."),
@@ -4343,14 +4343,14 @@ static string _get_skill_defense_change(skill_type skill)
     }
     else if (skill == SK_DODGING)
     {
-        return make_stringf(
+        return make_stringf_p(
             T_("\nWith your current stats and equipment, %1$s "
                "this skill would increase your EV by %2$.1f."),
             msg, ev_diff);
     }
     else if (skill == SK_SHIELDS)
     {
-        return make_stringf(
+        return make_stringf_p(
             T_("\nWith your current stats and equipment, %1$s "
                "this skill would increase your SH by %2$.1f."),
             msg, sh_diff);
