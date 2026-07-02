@@ -780,7 +780,7 @@ static bool _vampire_make_thrall(monster* mons, killer_type killer)
     const unsigned int exp = exp_value(*mons);
 
     // Okay, let's try to make them for real!
-    mprf("%s站起来为你服务！", mons->name(DESC_THE).c_str());
+    mprf(T_("%s stands up to serve you!"), mons->name(DESC_THE).c_str());
     record_monster_defeat(mons, KILL_YOU);
 
     mons->hit_points = mons->max_hit_points;

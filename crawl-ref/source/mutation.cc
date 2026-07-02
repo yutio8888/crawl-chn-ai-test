@@ -1848,7 +1848,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (!god_gift && _resist_mutation(mutclass, beneficial))
         {
             if (failMsg)
-                mprf(MSGCH_MUTATION, "你短暂地感到奇怪。");
+                mprf(MSGCH_MUTATION, T_("You briefly feel strange."));
             return false;
         }
 
@@ -1871,7 +1871,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 return false;
             // fallthrough to normal mut
         case MUTCLASS_NORMAL:
-            mprf(MSGCH_MUTATION, "你的身体腐烂了！");
+            mprf(MSGCH_MUTATION, T_("Your body is rotting!"));
             drain_player(30, false, true, true);
             return true;
         case MUTCLASS_INNATE:
@@ -2350,7 +2350,7 @@ bool delete_mutation(mutation_type which_mutation, const string &reason,
                     || coinflip()))
             {
                 if (failMsg)
-                    mprf(MSGCH_MUTATION, "你短暂地感到相当奇怪。");
+                    mprf(MSGCH_MUTATION, T_("You briefly feel rather strange."));
                 return false;
             }
         }
@@ -2431,7 +2431,7 @@ bool delete_temp_mutation()
         // games.
         if (mutat == NUM_MUTATIONS)
         {
-            mprf(MSGCH_ERROR, "未发现临时变异，正在清除。");
+            mprf(MSGCH_ERROR, T_("No temporary mutations found; clearing."));
             you.attribute[ATTR_TEMP_MUTATIONS] = 0;
             return false;
         }
@@ -4043,7 +4043,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
         if (candidates.empty())
         {
-            mprf("你已经受到了最大程度的折磨。");
+            mprf(T_("You have been tormented as much as possible."));
             return false;
         }
 

@@ -1856,7 +1856,7 @@ static void _get_book(item_def& it)
                  it.name(DESC_THE).c_str());
             return;
         }
-        mprf("你捡起了%s并开始阅读...", it.name(DESC_A).c_str());
+        mprf(T_("You pick up the %s and begin to read..."), it.name(DESC_A).c_str());
 
         if (!library_add_spells(spells_in_book(it)))
             mpr(T_("Unfortunately, you learned nothing new or useful."));

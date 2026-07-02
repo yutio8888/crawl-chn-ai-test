@@ -552,12 +552,24 @@ static void _enter_water(dungeon_feature_type old_feat,
         return;
 
     if (new_grid == DNGN_TOXIC_BOG)
-        mprf("你%s了有毒的沼泽。", stepped ? "踏入" : "掉入");
+    {
+        if (stepped)
+            mprf(T_("You stepped into the poisonous swamp."));
+        else
+            mprf(T_("You fell into the poisonous swamp."));
+    }
     else
     {
-        mprf("你%s了%s水。",
-             stepped ? "踏入" : "掉入",
-             new_grid == DNGN_SHALLOW_WATER ? "浅" : "深");
+        if (stepped)
+        {
+            mprf(T_("You stepped into %s water."),
+                 new_grid == DNGN_SHALLOW_WATER ? T_("shallow") : T_("deep"));
+        }
+        else
+        {
+            mprf(T_("You fell into %s water."),
+                 new_grid == DNGN_SHALLOW_WATER ? T_("shallow") : T_("deep"));
+        }
     }
 
     if (you.slow_in_water())
@@ -4836,12 +4848,12 @@ bool sticky_flame_player(int intensity, int duration, string source, string sour
 
     if (you.duration[DUR_STICKY_FLAME] > 0)
     {
-        mprf(MSGCH_WARN, "你被%sliquid fire覆盖得更严重了！",
+        mprf(MSGCH_WARN, T_("You are covered in even more %sliquid fire!"),
                           intensity_str.c_str());
     }
     else
     {
-        mprf(MSGCH_WARN, "你被%sliquid fire覆盖了！移动或被烧！",
+        mprf(MSGCH_WARN, T_("You are covered in %sliquid fire! Move or burn!"),
                          intensity_str.c_str());
     }
 
@@ -5339,7 +5351,12 @@ void fly_player(int pow, bool already_flying)
 
     bool standing = !you.airborne() && !already_flying;
     if (!already_flying)
-        mprf(MSGCH_DURATION, "你感觉%s有浮力。", standing ? "非常" : "更加");
+    {
+        if (standing)
+            mprf(MSGCH_DURATION, T_("You feel very buoyant."));
+        else
+            mprf(MSGCH_DURATION, T_("You feel more buoyant."));
+    }
 
     you.increase_duration(DUR_FLIGHT, 25 + random2(pow), 100);
 
