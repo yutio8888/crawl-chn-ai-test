@@ -19149,3 +19149,238 @@ The frigid air chills %s%s%s
 Drain Magic
 Drain Magic
 %%%%
+
+%%%%
+# describe.cc weapon description i18n — _your_skill_desc / _skill_target_desc (2026-07-02)
+%%%%
+Your %s skill: %s%d.%d%s
+你的%s技能: %s%d.%d%s
+%%%%
+(base)
+（基础）
+%%%%
+At 100% training 
+在100%训练度下
+%%%%
+At current training (%d%%) 
+在当前训练度（%d%%）下
+%%%%
+At a training level of %d%% 
+在%d%%训练度下
+%%%%
+would 
+将
+%%%%
+%%%%
+you %1$sreach %2$d.%3$d in the equivalent of %4$d.%5$d XLs.
+你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
+%%%%
+you %1$sreach %2$d.%3$d in about %4$d.%5$d XLs.
+你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
+%%%%
+; use <white>(s)</white> to set %1$d.%2$d as a target for %3$s.
+；使用<white>(s)</white>将%3$s的目标设置为%1$d.%2$d。
+%%%%
+
+# describe.cc weapon description i18n — _desc_attack_delay (2026-07-02)
+%%%%
+\n    Current attack delay: %.1f.
+\n    当前攻击延迟: %.1f。
+%%%%
+
+# describe.cc weapon description i18n — damage_rating (2026-07-02)
+%%%%
+your enemies will bleed and die for Makhleb.
+你的敌人将为马赫勒布流血而死。
+%%%%
+[%d + %d (Thrw)]
+[%d + %d (投掷)]
+%%%%
+[%d + %d (UC)]
+[%d + %d (徒手)]
+%%%%
+[%d + %d (Hvy)]
+[%d + %d (重型)]
+%%%%
+Ench + Slay
+附魔 + 杀敌
+%%%%
+Ench
+附魔
+%%%%
+Slay
+杀敌
+%%%%
+%d (Base %s x %d%% (%s) x %d%% (%s)%s)%s.
+%d (基础 %s x %d%% (%s) x %d%% (%s)%s)%s。
+%%%%
+Str
+力量
+%%%%
+Dex
+敏捷
+%%%%
+
+# describe.cc weapon description i18n — _append_weapon_stats (2026-07-02)
+%%%%
+Your inability to study %s prevents you from drawing on the full power of this staff in melee.\n\n
+你无法学习%s，因此无法在近战中发挥此法杖的全部威力。\n\n
+%%%%
+Base accuracy: %s  Base damage: %s  
+基础命中: %s  基础伤害: %s  
+%%%%
+Base accuracy: %+d  Base damage: %d  
+基础命中: %+d  基础伤害: %d  
+%%%%
+Base attack delay: %.1f\nThis weapon's minimum attack delay (%.1f) is reached at skill level %d.
+基础攻击延迟: %.1f\n该武器的最小攻击延迟(%.1f)在技能等级%d时达到。
+%%%%
+Your heavy armour
+你的重甲
+%%%%
+ slows your attacks with this weapon by %.1f
+ 使此武器的攻击延迟增加%.1f
+%%%%
+ slightly slows your attacks with this weapon
+ 略微减慢了此武器的攻击速度
+%%%%
+Wearing heavy armour would reduce your attack speed with this weapon
+穿戴重甲会降低你使用此武器的攻击速度
+%%%%
+\nDamage rating: 
+\n伤害评级: 
+%%%%
+
+# describe.cc weapon description i18n — _handedness_string (2026-07-02)
+%%%%
+You cannot wield it.
+你无法持有它。
+%%%%
+It is too large for you to wield.
+它对你来说太大了，无法持有。
+%%%%
+It is a %s weapon.
+它是一把%s武器。
+%%%%
+one-handed
+单手
+%%%%
+two-handed
+双手
+%%%%
+one-clawed
+单爪
+%%%%
+two-clawed
+双爪
+%%%%
+one-pawed
+单爪
+%%%%
+two-pawed
+双爪
+%%%%
+one-tentacled
+单触手
+%%%%
+two-tentacled
+双触手
+%%%%
+one-graspered
+单抓握器
+%%%%
+two-graspered
+双抓握器
+%%%%
+one-tendriled
+单卷须
+%%%%
+two-tendriled
+双卷须
+%%%%
+one hand-pair
+一对爪
+%%%%
+two hand-pairs
+两对爪
+%%%%
+one claw-pair
+一对爪
+%%%%
+two claw-pairs
+两对爪
+%%%%
+one paw-pair
+一对爪
+%%%%
+two paw-pairs
+两对爪
+%%%%
+one tentacle-pair
+一对触手
+%%%%
+two tentacle-pairs
+两对触手
+%%%%
+one grasper-pair
+一对抓握器
+%%%%
+two grasper-pairs
+两对抓握器
+%%%%
+one tendril-pair
+一对卷须
+%%%%
+two tendril-pairs
+两对卷须
+%%%%
+
+# describe.cc weapon description i18n — _category_string (2026-07-02)
+ falls into the
+属于
+%%%%
+ '%s' category. 
+'%s'类别。
+%%%%
+weapon-category|buggy
+有问题
+%%%%
+It has an extended reach
+它有延伸攻击范围
+%%%%
+ (target with [<white>v</white>])
+（使用[<white>v</white>]瞄准）
+%%%%
+It hits all enemies adjacent to the wielder
+它会击中持有者相邻的所有敌人
+%%%%
+, dealing less damage to non-targets
+，对非目标造成较少伤害
+%%%%
+It is%s good for stabbing helpless or unaware enemies. 
+它%s适合刺击无助或无防备的敌人。
+%%%%
+ extremely
+极其
+%%%%
+
+# describe.cc weapon description i18n — _describe_weapon enchantment (2026-07-02)
+%%%%
+\n\nIt can be enchanted up to +%d.
+\n\n它可以被附魔到+%d。
+%%%%
+\n\nIt cannot be enchanted further.
+\n\n它无法被进一步附魔。
+%%%%
+
+# describe.cc weapon description i18n — _describe_ammo (2026-07-02)
+%%%%
+\n\nBase damage: %d  Base attack delay: %.1f\nThis projectile's minimum attack delay (%.1f) is reached at skill level %d.
+\n\n基础伤害: %d  基础攻击延迟: %.1f\n该投掷物的最小攻击延迟(%.1f)在技能等级%d时达到。
+%%%%
+\n\nIt is always destroyed on impact.
+\n\n它在击中时总是会损坏。
+%%%%
+\n\nIt has a 1/%d chance to be destroyed on impact.
+\n\n它在击中时有1/%d几率损坏。
+%%%%

@@ -1318,8 +1318,8 @@ static string _your_skill_desc(skill_type skill, bool show_target_button,
     int you_skill_temp = you.skill(skill, 10);
     int you_skill = you.skill(skill, 10, false, false);
 
-    return make_stringf("你的%s技能: %s%d.%d%s",
-                            (you_skill_temp != you_skill ? "（基础）" : ""),
+    return make_stringf(T_("Your %s skill: %s%d.%d%s"),
+                            (you_skill_temp != you_skill ? T_("(base)") : ""),
                             padding.c_str(), you_skill / 10, you_skill % 10,
                             target_button_desc.c_str());
 }
@@ -1359,18 +1359,27 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
                                     training);
 
     // Build the "reach target" sentence with positional format specifiers.
+    // Two variants: one for high levels ("the equivalent of"), one for normal
+    // ("about"). Chinese translations of both omit the filler phrase entirely.
     string cond_prefix = hypothetical ? T_("would ") : "";
-    string level_equiv;
-    // TODO: Issue 32 Phase 2 — T_() empty-value support for ZH omission
-    if (Options.language != lang_t::ZH)
-        level_equiv = (you.experience_level + (level_diff + 9) / 10) > 27
-            ? "the equivalent of" : "about";
+    const bool high_level = (you.experience_level + (level_diff + 9) / 10) > 27;
 
-    description += make_stringf_p(T_("you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs."),
-        cond_prefix.c_str(),
-        scaled_target / 10, scaled_target % 10,
-        level_equiv.c_str(),
-        level_diff / 10, level_diff % 10);
+    if (high_level)
+    {
+        description += make_stringf_p(
+            T_("you %1$sreach %2$d.%3$d in the equivalent of %4$d.%5$d XLs."),
+            cond_prefix.c_str(),
+            scaled_target / 10, scaled_target % 10,
+            level_diff / 10, level_diff % 10);
+    }
+    else
+    {
+        description += make_stringf_p(
+            T_("you %1$sreach %2$d.%3$d in about %4$d.%5$d XLs."),
+            cond_prefix.c_str(),
+            scaled_target / 10, scaled_target % 10,
+            level_diff / 10, level_diff % 10);
+    }
     if (you.wizard)
     {
         description += make_stringf("\n    (%d xp, %d skp)",
@@ -1408,7 +1417,7 @@ static string _desc_attack_delay(const item_def &item)
 
     const int cur_delay = you.attack_delay_with(&dummy).expected();
 
-    return make_stringf("\n    Current attack delay: %.1f.", (float)cur_delay / 10);
+    return make_stringf(T_("\n    Current attack delay: %.1f."), (float)cur_delay / 10);
 }
 
 static string _describe_missile_dmg_brand(const item_def &item)
@@ -1438,7 +1447,7 @@ string damage_rating(const item_def *item, int *rating_value)
         if (rating_value)
             *rating_value = 666;
 
-        return "your enemies will bleed and die for Makhleb.";
+        return T_("your enemies will bleed and die for Makhleb.");
     }
 
     const bool thrown = item && item->base_type == OBJ_MISSILES;
@@ -1485,11 +1494,11 @@ string damage_rating(const item_def *item, int *rating_value)
     if (rating_value)
         *rating_value = rating;
 
-    const string base_dam_desc = thrown ? make_stringf("[%d + %d (Thrw)]",
+    const string base_dam_desc = thrown ? make_stringf(T_("[%d + %d (Thrw)]"),
                                                        base_dam, extra_base_dam) :
-                                  !item ? make_stringf("[%d + %d (UC)]",
+                                  !item ? make_stringf(T_("[%d + %d (UC)]"),
                                                        base_dam, extra_base_dam) :
-                   brand == SPWPN_HEAVY ? make_stringf("[%d + %d (Hvy)]",
+                   brand == SPWPN_HEAVY ? make_stringf(T_("[%d + %d (Hvy)]"),
                                                        base_dam, extra_base_dam) :
                                           make_stringf("%d", base_dam);
 
@@ -1499,21 +1508,21 @@ string damage_rating(const item_def *item, int *rating_value)
         plusses_desc = make_stringf(" %s %d (%s)",
                                     plusses < 0 ? "-" : "+",
                                     abs(plusses),
-                                    slaying && ench ? "Ench + Slay" :
-                                               ench ? "Ench"
-                                                    : "Slay");
+                                    slaying && ench ? T_("Ench + Slay") :
+                                               ench ? T_("Ench")
+                                                    : T_("Slay"));
     }
 
     const string dmg_brand_desc = thrown ? _describe_missile_dmg_brand(*item) : "";
 
     return make_stringf(
-        "%d (Base %s x %d%% (%s) x %d%% (%s)%s)%s.",
+        T_("%d (Base %s x %d%% (%s) x %d%% (%s)%s)%s."),
         rating,
         base_dam_desc.c_str(),
         stat_mult,
-        use_str ? "Str" : "Dex",
+        use_str ? T_("Str") : T_("Dex"),
         skill_mult,
-        use_weapon_skill ? "技能" : "格斗",
+        use_weapon_skill ? T_("skill") : T_("Fighting"),
         plusses_desc.c_str(),
         dmg_brand_desc.c_str());
 }
@@ -1560,8 +1569,8 @@ static void _append_weapon_stats(string &description, const item_def &item)
         && is_useless_skill(staff_skill(static_cast<stave_type>(item.sub_type))))
     {
         description += make_stringf(
-            "Your inability to study %s prevents you from drawing on the"
-            " full power of this staff in melee.\n\n",
+            T_("Your inability to study %s prevents you from drawing on the"
+            " full power of this staff in melee.\n\n"),
             skill_name(staff_skill(static_cast<stave_type>(item.sub_type))));
     }
 
@@ -1569,21 +1578,21 @@ static void _append_weapon_stats(string &description, const item_def &item)
     {
         const char *inf = Options.char_set == CSET_ASCII ? "inf" : "\u221e"; //"∞"
         description += make_stringf(
-            "基础命中: %s  基础伤害: %s  ",
+            T_("Base accuracy: %s  Base damage: %s  "),
             inf,
             inf);
     }
     else
     {
         description += make_stringf(
-            "Base accuracy: %+d  Base damage: %d  ",
+            T_("Base accuracy: %+d  Base damage: %d  "),
             property(item, PWPN_HIT),
             base_dam);
     }
 
     description += make_stringf(
-        "基础攻击延迟: %.1f\n"
-        "This weapon's minimum attack delay (%.1f) is reached at skill level %d.",
+        T_("Base attack delay: %.1f\n"
+        "This weapon's minimum attack delay (%.1f) is reached at skill level %d."),
             (float) property(item, PWPN_SPEED) / 10,
             (float) weapon_min_delay(item, item.is_identified()) / 10,
             mindelay_skill / 10);
@@ -1600,22 +1609,22 @@ static void _append_weapon_stats(string &description, const item_def &item)
             const item_def *body_armour = you.body_armour();
             description += (body_armour ? uppercase_first(
                                               body_armour->name(DESC_YOUR))
-                                        : "Your heavy armour");
+                                        : T_("Your heavy armour"));
 
             const bool significant = armour_penalty >= penalty_scale;
             if (significant)
             {
                 description +=
-                    make_stringf(" slows your attacks with this weapon by %.1f",
+                    make_stringf(T_(" slows your attacks with this weapon by %.1f"),
                                  armour_penalty / (10.0f * penalty_scale));
             }
             else
-                description += " slightly slows your attacks with this weapon";
+                description += T_(" slightly slows your attacks with this weapon");
         }
         else
         {
-            description += "Wearing heavy armour would reduce your attack "
-                           "speed with this weapon";
+            description += T_("Wearing heavy armour would reduce your attack "
+                           "speed with this weapon");
         }
         description += ".";
     }
@@ -1624,7 +1633,7 @@ static void _append_weapon_stats(string &description, const item_def &item)
     if (want_player_stats)
     {
         description += _desc_attack_delay(item);
-        description += "\nDamage rating: " + damage_rating(&item);
+        description += T_("\nDamage rating: ") + damage_rating(&item);
     }
 
     const string brand_desc = _describe_weapon_brand(item);
@@ -1665,13 +1674,13 @@ static void _append_weapon_stats(string &description, const item_def &item)
 static string _handedness_string(const item_def &item)
 {
     if (you.has_mutation(MUT_NO_GRASPING))
-        return "\n你无法持有它。";
+        return string("\n") + T_("You cannot wield it.");
 
     if (crawl_state.need_save
         && is_weapon_too_large(item, you.body_size(PSIZE_TORSO))
         && !you.has_mutation(MUT_QUADRUMANOUS))
     {
-        return "\n它对你来说太大了，无法持有。";
+        return string("\n") + T_("It is too large for you to wield.");
     }
 
     const bool quad = you.has_mutation(MUT_QUADRUMANOUS);
@@ -1692,14 +1701,15 @@ static string _handedness_string(const item_def &item)
         break;
     }
 
+    // Build the English compound adjective (e.g. "one-handed", "two-clawed",
+    // "one hand-pair", "two claw-pairs") and translate as a unit.
+    string compound;
     if (quad)
-        return make_stringf("它是%s %s的武器。", n.c_str(), handname.c_str());
+        compound = n + " " + handname;
     else
-    {
-        return make_stringf("它是一把%s-%s%s武器。", n.c_str(),
-            handname.c_str(),
-            ends_with(handname, "e") ? "d" : "ed");
-    }
+        compound = n + "-" + handname + (ends_with(handname, "e") ? "d" : "ed");
+
+    return string("\n") + make_stringf(T_("It is a %s weapon."), T_(compound.c_str()));
 
 }
 
@@ -1709,39 +1719,41 @@ static string _category_string(const item_def &item, bool monster)
         return ""; // handled in art-data DBRAND
 
     string description = "";
-    description += "This ";
+    description += T_("This");
+    description += " ";
     if (is_unrandom_artefact(item))
         description += get_artefact_base_name(item);
     else
-        description += "武器";
-    description += " falls into the";
+        description += T_("weapon");
+    description += T_(" falls into the");
 
     const skill_type skill = item_attack_skill(item);
 
     description +=
-        make_stringf(" '%s' category. ",
-                     skill == SK_FIGHTING ? "有问题" : skill_name(skill));
+        make_stringf(T_(" '%s' category. "),
+                     skill == SK_FIGHTING ? C_("weapon-category", "buggy")
+                                          : skill_name(skill));
 
     switch (item_attack_skill(item))
     {
     case SK_POLEARMS:
         // TODO(PF): maybe remove this whole section for util/monster summaries..?
-        description += "It has an extended reach";
+        description += T_("It has an extended reach");
         if (!monster)
-            description += " (target with [<white>v</white>])";
+            description += T_(" (target with [<white>v</white>])");
         description += ". ";
         break;
     case SK_AXES:
-        description += "它会击中持有者相邻的所有敌人";
+        description += T_("It hits all enemies adjacent to the wielder");
         if (!is_unrandom_artefact(item, UNRAND_WOE))
-            description += "对非目标造成较少伤害";
+            description += T_(", dealing less damage to non-targets");
         description += ". ";
         break;
     case SK_SHORT_BLADES:
         {
             description += make_stringf(
-                "It is%s good for stabbing helpless or unaware enemies. ",
-                (item.sub_type == WPN_DAGGER) ? " extremely" : "");
+                T_("It is%s good for stabbing helpless or unaware enemies. "),
+                (item.sub_type == WPN_DAGGER) ? T_(" extremely") : "");
 
         }
         break;
@@ -2122,11 +2134,11 @@ static string _describe_weapon(const item_def &item, bool verbose, bool monster)
     {
         if (is_enchantable_weapon(item))
         {
-            description += "\n\n它可以被最大附魔到+"
-                           + to_string(MAX_WPN_ENCHANT) + ".";
+            description += make_stringf(T_("\n\nIt can be enchanted up to +%d."),
+                                       MAX_WPN_ENCHANT);
         }
         else
-            description += "\n\nIt cannot be enchanted further.";
+            description += T_("\n\nIt cannot be enchanted further.");
     }
 
     return description;
@@ -2165,9 +2177,9 @@ static string _describe_ammo(const item_def &item)
         const int target_skill = _item_training_target(item);
 
         description += make_stringf(
-            "\n\nBase damage: %d  Base attack delay: %.1f"
+            T_("\n\nBase damage: %d  Base attack delay: %.1f"
             "\nThis projectile's minimum attack delay (%.1f) "
-                "is reached at skill level %d.",
+                "is reached at skill level %d."),
             dam,
             (float) throw_delay / 10,
             (float) FASTEST_PLAYER_THROWING_SPEED / 10,
@@ -2180,16 +2192,16 @@ static string _describe_ammo(const item_def &item)
             description += _desc_attack_delay(item);
 
             if (property(item, PWPN_DAMAGE))
-                description += "\nDamage rating: " + damage_rating(&item);
+                description += T_("\nDamage rating: ") + damage_rating(&item);
         }
     }
 
     if (ammo_always_destroyed(item))
-        description += "\n\nIt is always destroyed on impact.";
+        description += T_("\n\nIt is always destroyed on impact.");
     else if (!ammo_never_destroyed(item))
     {
         description += make_stringf(
-            "\n\nIt has a 1/%d chance to be destroyed on impact.",
+            T_("\n\nIt has a 1/%d chance to be destroyed on impact."),
             ammo_destroy_chance(item)
         );
     }
