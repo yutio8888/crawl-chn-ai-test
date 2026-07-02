@@ -17,6 +17,10 @@ mkdir -p .claude/metrics/verify
     python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
     echo ""
+    echo "--- Data-driven i18n coverage (monsters, durations, features) ---"
+    python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
     echo "--- mprf_p compatibility ---"
     python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
