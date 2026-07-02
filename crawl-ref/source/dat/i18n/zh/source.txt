@@ -22905,3 +22905,55 @@ lightning
 dispelling energy
 驱散能量
 %%%%
+%%%%
+Failed to move towards target.
+无法移向目标。
+%%%%
+%%%%
+Failed to move towards target because you cannot move.
+无法移向目标，因为你不能移动。
+%%%%
+%%%%
+You are too confused!
+你太困惑了！
+%%%%
+%%%%
+No target in view!
+视线内没有目标！
+%%%%
+%%%%
+No reachable target in view!
+视线内没有可到达的目标！
+%%%%
+%%%%
+No target in range!
+范围内没有目标！
+%%%%
+%%%%
+Enabling autothrow.
+启用自动投掷。
+%%%%
+%%%%
+Disabling autothrow.
+禁用自动投掷。
+%%%%
+%%%%
+You don't have enough magic to cast 
+你没有足够的魔力来施放 
+%%%%
+%%%%
+You are too depleted to cast spells recklessly!
+你消耗太大，无法随意施放法术！
+%%%%
+%%%%
+Cancelled.
+已取消。
+%%%%
+%%%%
+Deactivated automagic.
+已禁用自动施法。
+%%%%
+%%%%
+Invalid spell slot.
+无效的法术槽位。
+%%%%
