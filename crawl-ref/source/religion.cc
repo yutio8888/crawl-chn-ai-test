@@ -2685,7 +2685,7 @@ bool gain_piety(int original_gain, int denominator, bool should_scale_piety)
             && you.piety_max[you.religion] < piety_breakpoint(5))
         {
             mark_milestone("god.maxpiety", "became the Champion of "
-                           + god_name(you.religion) + ".");
+                           + string(_god_name_en(you.religion)) + ".");
         }
         you.piety_max[you.religion] = you.raw_piety;
     }
@@ -3000,7 +3000,7 @@ void excommunication(bool voluntary, god_type new_god)
         update_player_symbol();
     }
 
-    mark_milestone("god.renounce", (T_("abandoned ")) + god_name(old_god) + ".");
+    mark_milestone("god.renounce", (T_("abandoned ")) + string(_god_name_en(old_god)) + ".");
     update_whereis();
 
     if (old_god == GOD_IGNIS)
@@ -3944,7 +3944,7 @@ void join_religion(god_type which_god)
 
     // Only mark the milestone now that piety has been set due to invo titles.
     mark_milestone("god.worship", (T_("became a worshipper of "))
-                   + god_name(you.religion) + ".");
+                   + string(_god_name_en(you.religion)) + ".");
     take_note(Note(NOTE_GET_GOD, you.religion));
     you.piety_info.register_join();
 

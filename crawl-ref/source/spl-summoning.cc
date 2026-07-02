@@ -748,7 +748,7 @@ bool summon_berserker(int pow, actor *caster, monster_type override_mons)
     if (!caster)
     {
         mg.set_summoned(nullptr, MON_SUMM_WRATH);
-        mg.non_actor_summoner = "the rage of " + god_name(GOD_TROG, false);
+        mg.non_actor_summoner = "the rage of " + string(_god_name_en(GOD_TROG));
         mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
     }
     else
@@ -795,7 +795,7 @@ bool summon_holy_warrior(int pow, bool punish)
     if (punish)
     {
         mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
-        mg.non_actor_summoner = god_name(GOD_SHINING_ONE, false);
+        mg.non_actor_summoner = _god_name_en(GOD_SHINING_ONE);
     }
 
     monster *summon = create_monster(mg);

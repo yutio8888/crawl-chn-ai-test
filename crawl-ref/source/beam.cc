@@ -3164,7 +3164,7 @@ void bolt::affect_place_explosion_clouds()
                 if (!source_name.empty())
                     mg.non_actor_summoner = source_name;
                 else if (god != GOD_NO_GOD)
-                    mg.non_actor_summoner = god_name(god);
+                    mg.non_actor_summoner = _god_name_en(god);
             }
 
             mons_place(mg);

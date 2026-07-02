@@ -1148,7 +1148,7 @@ void TilesFramework::_send_player(bool force_full)
     if (you_worship(GOD_JIYVA))
         god = god_name_jiyva(true);
     else if (!you_worship(GOD_NO_GOD))
-        god = god_name(you.religion);
+        god = _god_name_en(you.religion);
     _update_string(force_full, c.god, god, "god");
     _update_int(force_full, c.under_penance, (bool) player_under_penance(), "penance");
     int prank = 0;

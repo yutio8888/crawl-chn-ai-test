@@ -115,7 +115,7 @@ LUARET1(you_wizard, boolean, you.wizard)
  * @treturn string
  * @function god
  */
-LUARET1(you_god, string, god_name(you.religion).c_str())
+LUARET1(you_god, string, _god_name_en(you.religion))
 
 /*** Is this [player's] god good?
  * @tparam[opt=you.god()] string god

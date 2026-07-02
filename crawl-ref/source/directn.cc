@@ -3043,10 +3043,10 @@ void _walk_on_decor(dungeon_feature_type new_grid)
             // written for that particular god with that particular fountain.
             // XXX: maybe different arrangements for "generic" versus "default"?
             if (peaceful && x_chance_in_y(3, 4))
-                decorLine = getMiscString(god_name(you.religion) + " peaceful " + messageLookup);
+                decorLine = getMiscString(string(_god_name_en(you.religion)) + " peaceful " + messageLookup);
 
             if (decorLine == "" && x_chance_in_y(3, 4))
-                decorLine = getMiscString(god_name(you.religion) + " " + messageLookup);
+                decorLine = getMiscString(string(_god_name_en(you.religion)) + " " + messageLookup);
 
             if (decorLine == "" && peaceful)
                 decorLine = getMiscString("default peaceful " + messageLookup);
