@@ -954,7 +954,7 @@ gain power from chaos
 %1$s引爆了%3$s周围的毒素！
 %%%%
 %1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s
-%1$s%2$s%3$s了%4$s%5$s%6$s%7$s%8$s
+%1$s%7$s%2$s%3$s了%4$s%5$s%6$s%8$s
 %%%%
 %1$s %2$s.
 %1$s抽搐了一下。
@@ -5807,10 +5807,8 @@ Press the letter of a skill to choose whether you want to practise it. Skills ma
 Press the letter of a skill to cycle between <darkgrey>disabled</darkgrey> (<darkgrey>-</darkgrey>), enabled (+) and <white>focused</white> (<white>*</white>). Focused skills train twice as fast relative to others.
 按下技能字母在<darkgrey>禁用</darkgrey>(<darkgrey>-</darkgrey>)、启用(+)和<white>专注</white>(<white>*</white>)之间切换。专注技能训练速度是其他的两倍。
 %%%%
-Press the letter of a skill to read its description.
-Press <w>?</w> for a general explanation of skilling and the various toggles.
-按下技能字母查看说明。
-按<w>?</w>查看技能训练和各项开关的通用说明。
+Press the letter of a skill to read its description.\nPress <w>?</w> for a general explanation of skilling and the various toggles.
+按下技能字母查看说明。\n按<w>?</w>查看技能训练和各项开关的通用说明。
 
 # Phase 1b V2: output.cc
 %%%%
@@ -12952,7 +12950,6 @@ It has pale scales.
 它拥有苍白鳞片。
 %%%%
 Throw: 
-
 投掷：
 %%%%
 % to hit with your 
@@ -14431,15 +14428,6 @@ Your <w>%</w>nventory,
 %%%%
 %s is nearby
 %s在附近
-%%%%
-Your experience leads to a%s increase in your attributes!
-你的经验使你的属性%s提升了！
-%%%%
- dramatic
-大幅
-%%%%
-n
-
 %%%%
 weakened
 变虚弱
@@ -24603,4 +24591,33 @@ Blink to where?
 %%%%
  terribly
 极其
+NO GOD
+无神
+%%%%
+a god
+某个神
+%%%%
+A god
+某个神
+%%%%
+%s god
+%s神
+%%%%
+my God
+我的神
+%%%%
+My God
+我的神
+%%%%
+That %s is likely to hit you. Continue anyway?
+那%s很可能会击中你。仍然继续吗？
+%%%%
+That %s could hit you up to %d times. Continue anyway?
+那%s可能会击中你最多%d次。仍然继续吗？
+%%%%
+Your experience leads to a dramatic increase in your attributes!
+你的经验使你的属性大幅提升了！
+%%%%
+Your experience leads to an increase in your attributes!
+你的经验使你的属性提升了！
 %%%%

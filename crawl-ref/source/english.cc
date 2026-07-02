@@ -203,6 +203,10 @@ string apostrophise(const string &name)
     if (name.empty())
         return name;
 
+    // Chinese has no possessive 's — use 的 instead.
+    if (Options.language == lang_t::ZH)
+        return name + "的";
+
     if (name == "you" || name == "You")
         return name + "r";
 

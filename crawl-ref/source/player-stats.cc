@@ -78,9 +78,9 @@ bool attribute_increase()
 
     const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 4 : 2;
 
-    const string stat_gain_message = make_stringf(
-        T_("Your experience leads to a%s increase in your attributes!"),
-        T_((statgain > 2) ? " dramatic" : "n"));
+    const string stat_gain_message = (statgain > 2)
+        ? T_("Your experience leads to a dramatic increase in your attributes!")
+        : T_("Your experience leads to an increase in your attributes!");
     crawl_state.stat_gain_prompt = true;
     mprf(MSGCH_INTRINSIC_GAIN, "%s", stat_gain_message.c_str());
     learned_something_new(HINT_CHOOSE_STAT);

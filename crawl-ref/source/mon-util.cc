@@ -4591,24 +4591,25 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     // if it gets one, it should be used for the last two entries.
     if (mons.god == GOD_NO_GOD)
     {
-        msg = replace_all(msg, "@a_God@", "NO GOD");
-        msg = replace_all(msg, "@A_God@", "NO GOD");
-        msg = replace_all(msg, "@possessive_God@", "NO GOD");
-        msg = replace_all(msg, "@Possessive_God@", "NO GOD");
+        msg = replace_all(msg, "@a_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@A_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@possessive_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@Possessive_God@", T_("NO GOD"));
 
-        msg = replace_all(msg, "@my_God@", "NO GOD");
-        msg = replace_all(msg, "@My_God@", "NO GOD");
+        msg = replace_all(msg, "@my_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@My_God@", T_("NO GOD"));
     }
     else if (mons.god == GOD_NAMELESS)
     {
-        msg = replace_all(msg, "@a_God@", "a god");
-        msg = replace_all(msg, "@A_God@", "A god");
-        const string possessive = mons.pronoun(PRONOUN_POSSESSIVE) + " god";
+        msg = replace_all(msg, "@a_God@", T_("a god"));
+        msg = replace_all(msg, "@A_God@", T_("A god"));
+        const string possessive = make_stringf(T_("%s god"),
+            mons.pronoun(PRONOUN_POSSESSIVE).c_str());
         msg = replace_all(msg, "@possessive_God@", possessive);
         msg = replace_all(msg, "@Possessive_God@", uppercase_first(possessive));
 
-        msg = replace_all(msg, "@my_God@", "my God");
-        msg = replace_all(msg, "@My_God@", "My God");
+        msg = replace_all(msg, "@my_God@", T_("my God"));
+        msg = replace_all(msg, "@My_God@", T_("My God"));
     }
     else
     {
