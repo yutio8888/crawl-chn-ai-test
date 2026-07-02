@@ -267,48 +267,78 @@ breakage with Chinese text.
 
 ## Translation System Architecture
 
-### Layer 1: Descript Database (`dat/descript/zh/*.txt`)
+### Overview
 
-Format: `%%%%`-separated entries with `key\n\ndescription` blocks.
-Spell keys use English names from `spell_english_names` (see D-B-007). Translation changes to `spell_title()` do NOT require syncing `zh/spells.txt` keys.
+All translation flows through `T_("English")` → `i18n_source_lookup()` → `source.txt`.
+When no Chinese translation is found, `T_()` returns the English key unchanged —
+no `Options.language` guard is needed at call sites. The codebase is language-neutral;
+language selection happens entirely at the translation database level.
 
-### Layer 2: Hardcoded Source Strings
+### Type I — C++ Literal `T_("string")` (primary pattern, ~93%)
 
-Three patterns:
-- **Pattern A**: Direct replacement (most common) — Chinese strings replace English
-- **Pattern B**: Runtime language check — used for species/job names
-- **Pattern C**: Format string adjustment — Chinese grammar differs (了 particle, adverb position, no conjugation)
-
-### Layer 3: Data-Driven Translation Sources (Invisible to Static Analysis)
-
-These sources use `T_()` with runtime variables (not string literals), making
-them invisible to `i18n_extract.py`'s `T_("literal")` regex. **Always audit
-with `audit_data_i18n.py` after modifying any of these data sources.**
-
-| Source | Data File | Code Path | Key Type |
-|--------|-----------|-----------|----------|
-| Duration expiry messages | `duration-data.h` | `player-reacts.cc:180` → `T_(endmsg)` | Static `const char*` array |
-| Duration warning messages | `duration-data.h` | `player-reacts.cc:170-172` → `T_(expmsg)` | Static `const char*` array |
-| Monster names | `dat/mons/*.yaml` | `mon-util.cc:5957` → `T_(en.c_str())` | YAML → `zh_monster_name()` |
-| Feature/dungeon names | `feature-data.h` | `directn.cc:3138` → `T_(...)` | Static struct array |
-| Lua UI messages | `dat/clua/*.lua` | `l-crawl.cc:crawl_t_()` → `i18n_source_lookup()` | Lua `crawl.t_("string")` |
-
-**Rule**: When adding `T_()` to any of these data sources, always add
-the corresponding source.txt entry in the same commit. Static analysis
-cannot verify coverage of `T_(variable)` calls.
-
-### Layer 4: Lua-Layer i18n (`crawl.t_()`)
-
-Lua files can now access the i18n database through `crawl.t_("English")`:
-
-```lua
--- autofight.lua, automagic.lua, lm_tmsg.lua, etc.
-crawl.mpr(crawl.t_("No target in view!"))
+```cpp
+mprf(T_("You hit %s."), mon_name);    // ← literal key, statically auditable
 ```
 
-`crawl.t_()` is registered in `l-crawl.cc` and calls `i18n_source_lookup()` —
-the same database as C++ `T_()`. Key format is identical; entries in
-`source.txt` work for both C++ and Lua.
+`i18n_extract.py` scans all `.cc`/`.h`/`.lua` files for `T_("...")` and
+cross-references with `source.txt`. This is the fully-verified path.
+
+### Type II — Function Wrappers (internal `T_()`, ~5%)
+
+Functions that internally call `T_()` on their return data. Callers are
+translation-unaware — they just call `skill_name(sk)` and it's already Chinese.
+
+| Wrapper | Internal T_() pattern | Source data |
+|---------|----------------------|-------------|
+| `skill_name()` | `T_(_skill_english_name(skill))` | `skills.cc` static array |
+| `spell_title()` | `T_(_seekspell(spell)->title)` | `spl-data.h` spell table |
+| `item_base_name()` | `T_(Weapon_prop[...].name)` | `item-prop.cc` prop tables |
+| `brand_type_name()` | `T_(weapon_brands_verbose[brand])` | `item-name.cc` arrays |
+| `jewellery_effect_name()` | `T_("see invisible")` etc. | `item-name.cc` switch |
+| `special_armour_type_name()` | `T_("fire resistance")` etc. | `item-name.cc` switch |
+| `feature_description_at()` | `T_(get_feature_def(grid).name)` | `feature-data.h` struct |
+| `mons_type_name()` | `T_(get_monster_data(mc)->name)` | `dat/mons/*.yaml` |
+| `ability_name()` | `T_(ability_names[...])` | `ability.cc` array |
+
+### Type III — Runtime Variable `T_(variable)` (~1%, invisible to static scan)
+
+Strings defined as data arrays and translated at runtime via `T_(variable)`.
+`i18n_extract.py` **cannot** detect these — always audit with `audit_data_i18n.py`.
+
+| Source | Definition | Runtime trigger | Count |
+|--------|-----------|-----------------|-------|
+| Duration expiry/warning | `duration-data.h` struct array | `player-reacts.cc:170-180` → `T_(endmsg)` / `T_(expmsg)` | ~56/39 |
+| Monster names | `dat/mons/*.yaml` `name:` | `mon-util.cc:5957` → `T_(en.c_str())` + `zh_monster_name()` map | 667 |
+| Feature/dungeon names | `feature-data.h` struct array | `directn.cc:3138` → `T_(get_feature_def(grid).name)` | ~200 |
+| Lua UI messages | `dat/clua/*.lua` | `l-crawl.cc` → `crawl.t_("string")` | ~20 |
+
+**Rule**: When adding `T_()` to any of these data sources, always add the
+corresponding `source.txt` entry in the same commit. Run `audit_data_i18n.py`
+to verify coverage.
+
+### Type IV — TextDB Descriptors (separate `.txt` database files)
+
+Descriptive text stored in `%%%%`-separated key-value files under `dat/descript/zh/`
+and `dat/database/zh/`, accessed by C++ lookup functions.
+
+| Domain | DB file | Access function | Key format |
+|--------|---------|-----------------|------------|
+| Monster descriptions | `zh/monsters.txt` | `getLongDescription()` | Monster name → description |
+| Ego/brand descriptions | `zh/egos.txt` | `getEgoString()` | `"flaming (flame) weapon ego"` |
+| Spell descriptions | `zh/spells.txt` | `getLongDescription()` | Spell name → description |
+| God speech | `zh/godspeak/` | `getMiscString()` | `"Trog":speech` → text |
+| Decorative lines | `zh/decorlines.txt` | Lua `{{ }}` template | Lua template blocks |
+
+Keys in these files are **always English** (used as DB lookup keys independent
+of display language). Only the value side is translated.
+
+### Type V — Protocol / Internal (never translated)
+
+Identifiers that must remain English regardless of language setting:
+- `.des` file tags (`TAG_MAJOR_VERSION`, `BRANCH_ENTRY`)
+- JSON / Lua API keys
+- Save-file identifiers
+- Internal enum-to-string mappings used for serialisation
 
 ## Common Translation Rules
 
