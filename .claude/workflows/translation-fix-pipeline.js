@@ -1,0 +1,457 @@
+export const meta = {
+  name: 'translation-fix-pipeline',
+  description: '翻译问题完整修复流程：分析→方案→审查→执行→审核→交叉验证→报告。由 translation-pipeline skill 驱动。',
+  phases: [
+    { title: 'Analyze', detail: '根因分析：定位未翻译文本的类型、来源和影响范围' },
+    { title: 'Plan', detail: '制定修复方案：涉及文件、修改策略、风险评估' },
+    { title: 'Review Plan', detail: '方案审核闸门：不通过则回退修订（最多3轮）' },
+    { title: 'Execute', detail: '并行执行：crawl-coder 改代码 + zh-translator 翻译' },
+    { title: 'Review', detail: '三方并行审核：代码审查 + 翻译质量 + 术语一致性' },
+    { title: 'Cross-validate', detail: '交叉验证：全部校验脚本 + 遗漏检测 + 副作用' },
+    { title: 'Report', detail: '最终报告：汇总结果 + 合入建议' },
+  ],
+}
+
+const ISSUE = args?.description || '未提供问题描述'
+const ISSUE_FILE = args?.issueFile || null
+
+// ── Structured Output Schemas ───────────────────────────
+
+const ANALYSIS_SCHEMA = {
+  type: 'object',
+  properties: {
+    category: { type: 'string', enum: ['missing_t', 'wrong_translation', 'protocol_leak', 'textdb_missing', 'format_error', 'type_ii_wrapper', 'other'] },
+    summary: { type: 'string' },
+    rootCause: { type: 'string' },
+    affectedFiles: { type: 'array', items: { type: 'string' } },
+    translationType: { type: 'string', enum: ['I', 'II', 'III', 'IV', 'V'] },
+    severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+  },
+  required: ['category', 'summary', 'rootCause', 'affectedFiles', 'translationType'],
+}
+
+const PLAN_SCHEMA = {
+  type: 'object',
+  properties: {
+    approach: { type: 'string' },
+    codeChanges: { type: 'array', items: { type: 'object', properties: {
+      file: { type: 'string' }, change: { type: 'string' }, reason: { type: 'string' },
+    } } },
+    translationsNeeded: { type: 'array', items: { type: 'object', properties: {
+      english: { type: 'string' }, context: { type: 'string' },
+    } } },
+    risks: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['approach', 'codeChanges', 'translationsNeeded'],
+}
+
+const REVIEW_PLAN_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['approved', 'changes_requested', 'rejected'] },
+    issues: { type: 'array', items: { type: 'object', properties: {
+      severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+      description: { type: 'string' }, suggestion: { type: 'string' },
+    } } },
+    summary: { type: 'string' },
+  },
+  required: ['verdict', 'issues'],
+}
+
+const CODE_RESULT_SCHEMA = {
+  type: 'object',
+  properties: {
+    filesModified: { type: 'array', items: { type: 'string' } },
+    changesSummary: { type: 'string' },
+    compileStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
+  },
+  required: ['filesModified', 'changesSummary', 'compileStatus'],
+}
+
+const TRANS_RESULT_SCHEMA = {
+  type: 'object',
+  properties: {
+    entriesAdded: { type: 'number' },
+    entriesModified: { type: 'number' },
+  },
+  required: ['entriesAdded', 'entriesModified'],
+}
+
+const CODE_REVIEW_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['Go', 'Conditional Go', 'No-Go'] },
+    blockers: { type: 'number' }, needsFix: { type: 'number' }, suggestions: { type: 'number' },
+    summary: { type: 'string' },
+  },
+  required: ['verdict', 'blockers', 'needsFix', 'suggestions'],
+}
+
+const TRANS_REVIEW_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['Go', 'Conditional Go', 'No-Go'] },
+    p0Issues: { type: 'number' }, p1Issues: { type: 'number' }, summary: { type: 'string' },
+  },
+  required: ['verdict', 'p0Issues', 'p1Issues'],
+}
+
+const TERM_CHECK_SCHEMA = {
+  type: 'object',
+  properties: {
+    violations: { type: 'array', items: { type: 'object', properties: {
+      term: { type: 'string' }, used: { type: 'string' }, shouldBe: { type: 'string' },
+    } } },
+    passed: { type: 'boolean' },
+  },
+  required: ['violations', 'passed'],
+}
+
+const CROSS_VALIDATE_SCHEMA = {
+  type: 'object',
+  properties: {
+    passed: { type: 'boolean' },
+    missedItems: { type: 'array', items: { type: 'string' } },
+    sideEffects: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['passed'],
+}
+
+// ── Phase 1: Analyze ────────────────────────────────────
+
+phase('Analyze')
+const analysis = await agent(
+  `Analyze this DCSS Chinese translation issue to find the root cause.
+
+Issue: ${ISSUE}
+${ISSUE_FILE ? 'Tracking file: ' + ISSUE_FILE : ''}
+
+Steps:
+1. grep the codebase for the reported English text to locate the source
+2. Read the surrounding code to understand how the text is displayed
+3. Classify using DCSS Translation System Architecture (Type I-V):
+   I = literal T_("string") missing | II = function wrapper issue
+   III = runtime T_(variable) without source.txt | IV = TextDB descriptor missing
+   V = protocol/internal (should stay English, not a bug)
+4. Determine severity: blocker (crash/fully English UI), major, minor
+
+Reference CLAUDE.md "Translation System Architecture" section.`,
+  { label: 'analyze', schema: ANALYSIS_SCHEMA }
+)
+
+if (!analysis) {
+  log('FAIL: Analysis returned no result')
+  return { error: 'analysis_failed', phase: 'Analyze' }
+}
+
+log('Type ' + analysis.translationType + ' | ' + analysis.category + ' | ' + analysis.summary)
+log('Root cause: ' + analysis.rootCause)
+log('Files: ' + analysis.affectedFiles.join(', '))
+
+// ── Phase 2: Plan ───────────────────────────────────────
+
+phase('Plan')
+let plan = await agent(
+  `Create a fix plan based on this analysis:
+
+${JSON.stringify(analysis, null, 2)}
+
+Issue: ${ISSUE}
+
+Design the minimal, correct fix:
+- Type I: wrap with T_() + add source.txt entry
+- Type II: fix the wrapper function's internal T_() call
+- Type III: add source.txt entries, run audit_data_i18n.py to verify
+- Type IV: add/update entry in zh/*.txt database file (English key, Chinese value)
+- Type V: revert to English — this is NOT a bug
+
+For each code change: file path, what to change, why.
+For each translation: English text and context.
+Follow CLAUDE.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.`,
+  { label: 'plan', schema: PLAN_SCHEMA }
+)
+
+if (!plan) {
+  log('FAIL: Plan returned no result')
+  return { error: 'plan_failed', phase: 'Plan', analysis }
+}
+
+log('Approach: ' + plan.approach)
+log('Changes: ' + plan.codeChanges.length + ' code, ' + plan.translationsNeeded.length + ' trans, ' + plan.risks.length + ' risks')
+
+// ── Phase 3: Review Plan (gate with retry) ──────────────
+
+phase('Review Plan')
+let planReview = await agent(
+  `Review this fix plan. Be a skeptical gatekeeper.
+
+Analysis: ${JSON.stringify(analysis)}
+Plan: ${JSON.stringify(plan)}
+
+Check:
+1. Translation type classification correct?
+2. ALL affected files identified? (grep to verify)
+3. Approach minimal — only changes what's needed?
+4. Format string risks (%s count, arg order)?
+5. Project conventions followed (CLAUDE.md)?
+6. Missing edge cases or side effects?
+
+Verdict: approved (proceed) | changes_requested (revise) | rejected (abort)`,
+  { label: 'review-plan', schema: REVIEW_PLAN_SCHEMA }
+)
+
+if (!planReview) {
+  log('FAIL: Plan review returned no result')
+  return { error: 'plan_review_failed', phase: 'Review Plan', analysis, plan }
+}
+
+let planIterations = 0
+while (planReview.verdict !== 'approved' && planIterations < 3) {
+  planIterations++
+  log('Plan review: ' + planReview.verdict + ' (round ' + planIterations + '/3)')
+
+  if (planReview.verdict === 'rejected') {
+    log('FAIL: Plan rejected — ' + (planReview.issues?.[0]?.description || 'fundamental'))
+    return { error: 'plan_rejected', phase: 'Review Plan', analysis, plan, planReview }
+  }
+
+  plan = await agent(
+    `Revise the plan. Address EVERY issue from the review.
+
+Review issues: ${JSON.stringify(planReview.issues)}
+Current plan: ${JSON.stringify(plan)}
+
+Explain how each revision addresses the feedback.`,
+    { label: 'revise-plan-r' + planIterations, schema: PLAN_SCHEMA }
+  )
+  if (!plan) { log('FAIL: Revision failed'); return { error: 'plan_revision_failed' } }
+
+  planReview = await agent(
+    `Re-review. Were ALL previous issues addressed?
+
+Previous issues: ${JSON.stringify(planReview.issues)}
+Revised plan: ${JSON.stringify(plan)}`,
+    { label: 'rereview-plan-r' + planIterations, schema: REVIEW_PLAN_SCHEMA }
+  )
+  if (!planReview) { log('FAIL: Re-review failed'); return { error: 'plan_rereview_failed' } }
+}
+
+if (planReview.verdict !== 'approved') {
+  log('FAIL: Plan not approved after max revisions')
+  return { error: 'plan_not_approved', phase: 'Review Plan', planIterations, planReview }
+}
+log('Plan approved after ' + planIterations + ' revision(s)')
+
+// ── Phase 4: Execute (parallel code + translate) ────────
+
+phase('Execute')
+
+const [codeResult, translationResult] = await parallel([
+  () => agent(
+    `Implement code changes for this translation fix.
+
+Code changes: ${JSON.stringify(plan.codeChanges)}
+Analysis type: ${analysis.translationType}
+
+Steps:
+1. Make each code change as specified in the plan
+2. Run make -j4 to verify compilation
+3. If compilation fails, diagnose, fix, recompile — iterate until pass
+4. Run: bash .claude/scripts/post-coder.sh
+
+CRITICAL rules (from CLAUDE.md):
+- Use mprf_p (not mprf) for positional format strings
+- Never add .c_str() on const char* return values
+- Never translate protocol/internal strings
+- Never call conj_verb() on Chinese strings
+- Type III: add source.txt entries with T_(variable)
+- Type V: report that text should remain English (not a bug)`,
+    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA }
+  ),
+
+  () => agent(
+    `Add Chinese translations for these entries.
+
+Translations needed: ${JSON.stringify(plan.translationsNeeded)}
+Context: ${ISSUE}
+${ISSUE_FILE ? 'Issue file: ' + ISSUE_FILE : ''}
+
+Steps:
+1. Read docs/decisions.md and docs/glossary.md for terminology rulings
+2. For each entry, grep source.txt first to avoid duplicates
+3. Add entries to crawl-ref/source/dat/i18n/zh/source.txt
+4. Run: bash .claude/scripts/post-translator.sh
+
+Translation rules:
+- No verb conjugation (remove conj_verb calls)
+- Add 了 after verbs for completed actions
+- Adverbs BEFORE verbs in Chinese
+- No articles (the/a/an), no plural forms
+- Format specifiers (%s, %d) must match argument count
+- TextDB (Type IV): English key, Chinese value in zh/*.txt`,
+    { agentType: 'zh-translator', label: 'translate', schema: TRANS_RESULT_SCHEMA }
+  ),
+])
+
+if (codeResult && codeResult.compileStatus === 'pass') {
+  log('Code: compile OK | ' + codeResult.changesSummary)
+} else {
+  log('Code: ' + (codeResult?.compileStatus || 'skipped'))
+}
+
+if (translationResult) {
+  log('Translation: +' + translationResult.entriesAdded + ' added, ' + (translationResult.entriesModified || 0) + ' modified')
+} else {
+  log('Translation: skipped')
+}
+
+// ── Phase 5: Review (parallel 3-way) ────────────────────
+
+phase('Review')
+
+const reviews = await parallel([
+  () => agent(
+    `Review the code changes for this translation fix.
+
+First run: bash .claude/scripts/post-reviewer.sh
+
+Then review the diff:
+1. Protocol/display separation — any protocol keys translated?
+2. T_() correctness — correct usage, no missing source.txt entries?
+3. Compilation — does make -j4 pass?
+4. Database integrity — %%%% parity, duplicate keys, @keyword@ refs?
+5. EN mode safety — does English mode still work?
+
+Classify: blocker (functional/runtime) | needs-fix (quality) | suggestion.
+Output verdict with counts.`,
+    { agentType: 'zh-code-reviewer', label: 'code-review', schema: CODE_REVIEW_SCHEMA }
+  ),
+
+  () => agent(
+    `Review the Chinese translation quality.
+
+First run: bash .claude/scripts/post-reviewer.sh
+
+Then review:
+1. Semantic accuracy — ZH matches EN exactly?
+2. No fabrication — no mechanics added not in EN?
+3. Language quality — natural Chinese, no translationese?
+4. Precision — numbers/percentages preserved?
+5. Cross-reference docs/glossary.md for terminology.
+
+Classify: P0 (functional/visibility) | P1 (quality).
+Output verdict with counts.`,
+    { agentType: 'translation-reviewer', label: 'trans-review', schema: TRANS_REVIEW_SCHEMA }
+  ),
+
+  () => agent(
+    `Verify terminology consistency.
+
+Run:
+  bash .claude/scripts/check_consistency.sh --rulings
+  bash .claude/scripts/check_consistency.sh --gods
+  bash .claude/scripts/check_consistency.sh --skills
+
+Grep changes for terms in docs/decisions.md rejected list.
+Cross-reference entity names against docs/glossary.md.
+
+Report each violation: term used → what it should be (canonical source).`,
+    { label: 'terminology', schema: TERM_CHECK_SCHEMA }
+  ),
+])
+
+const [codeReview, transReview, termCheck] = reviews
+
+log([
+  codeReview ? 'Code:' + codeReview.verdict + ' B' + codeReview.blockers + 'F' + codeReview.needsFix + 'S' + codeReview.suggestions : 'Code:N/A',
+  transReview ? 'Trans:' + transReview.verdict + ' P0:' + transReview.p0Issues + 'P1:' + transReview.p1Issues : 'Trans:N/A',
+  termCheck ? 'Terms:' + (termCheck.passed ? 'OK' : 'FAIL+'+termCheck.violations.length) : 'Terms:N/A',
+].join(' | '))
+
+const hasBlockers = (codeReview?.blockers > 0) || (transReview?.p0Issues > 0)
+
+// ── Phase 6: Cross-validate ─────────────────────────────
+
+phase('Cross-validate')
+
+const crossValidation = await agent(
+  `Adversarial cross-validation. Be skeptical — assume something was missed.
+
+Issue: ${ISSUE}
+Analysis: ${JSON.stringify(analysis)}
+Code result: ${JSON.stringify(codeResult)}
+Translation result: ${JSON.stringify(translationResult)}
+Reviews: code=${codeReview?.verdict}(B${codeReview?.blockers}) trans=${transReview?.verdict}(P0:${transReview?.p0Issues})
+
+Run ALL verification scripts:
+  python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+  python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+  python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+  python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+
+Answer:
+1. Any edge cases missed?
+2. Any side effects on other features?
+3. Same pattern elsewhere that also needs fixing?
+4. Does EN mode still work?
+5. Any format string mismatches?
+6. Any DB lookup key broken?
+
+Report everything — prefer false positives over missed issues.`,
+  { label: 'cross-validate', schema: CROSS_VALIDATE_SCHEMA }
+)
+
+if (crossValidation) {
+  log('Cross-validate: ' + (crossValidation.passed ? 'PASS' : 'ISSUES FOUND'))
+  if (crossValidation.missedItems?.length) log('Missed: ' + crossValidation.missedItems.join('; '))
+  if (crossValidation.sideEffects?.length) log('Side effects: ' + crossValidation.sideEffects.join('; '))
+}
+
+// ── Phase 7: Report ─────────────────────────────────────
+
+phase('Report')
+
+const finalVerdict = hasBlockers ? 'NO-GO' :
+  ((codeReview?.needsFix > 0 || transReview?.p1Issues > 0 || crossValidation?.passed === false) ? 'CONDITIONAL GO' : 'GO')
+
+await agent(
+  `Generate the final pipeline report as clean markdown.
+
+Issue: ${ISSUE}
+Analysis: Type ${analysis?.translationType} | ${analysis?.category} | ${analysis?.summary}
+Root cause: ${analysis?.rootCause}
+Files: ${analysis?.affectedFiles?.join(', ')}
+
+Plan: ${plan?.approach}
+Changes: ${plan?.codeChanges?.length} code, ${plan?.translationsNeeded?.length} translations
+Risks: ${plan?.risks?.join('; ')}
+Plan review rounds: ${planIterations}
+
+Code: ${codeResult?.compileStatus || 'N/A'} | ${codeResult?.changesSummary || ''}
+Files: ${codeResult?.filesModified?.join(', ') || 'N/A'}
+Translation: +${translationResult?.entriesAdded || 0} added, ${translationResult?.entriesModified || 0} modified
+
+Code Review: ${codeReview?.verdict || 'N/A'} (B:${codeReview?.blockers || 0} F:${codeReview?.needsFix || 0} S:${codeReview?.suggestions || 0})
+  ${codeReview?.summary || ''}
+Translation Review: ${transReview?.verdict || 'N/A'} (P0:${transReview?.p0Issues || 0} P1:${transReview?.p1Issues || 0})
+  ${transReview?.summary || ''}
+Terminology: ${termCheck?.passed ? 'PASS' : 'FAIL'} (${termCheck?.violations?.length || 0} violations)
+
+Cross-Validation: ${crossValidation?.passed ? 'PASS' : 'ISSUES'}
+  Missed: ${crossValidation?.missedItems?.join('; ') || 'none'}
+  Side effects: ${crossValidation?.sideEffects?.join('; ') || 'none'}
+
+Verdict: ${finalVerdict}
+${!hasBlockers ? 'Merge: git checkout chn-0.34.1-base && git merge <worktree-branch>' : 'Resolve blockers first, then re-run pipeline.'}
+
+Format as a structured markdown report with sections: Summary, Analysis, Changes Made, Review Results, Cross-Validation, Verdict, Merge Instructions.`,
+  { label: 'report' }
+)
+
+return {
+  analysis, plan, planReview, planIterations,
+  codeResult, translationResult,
+  codeReview, transReview, termCheck,
+  crossValidation,
+  verdict: finalVerdict, hasBlockers,
+}

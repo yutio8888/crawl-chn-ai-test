@@ -97,20 +97,26 @@ Agent(subagent_type="translation-reviewer", description="Review <scope>",
   prompt="<review scope: commit hash, file list, or diff>")
 ```
 
-### Full Pipeline → `translation-pipeline` workflow
+### Full Pipeline → `translation-pipeline` skill + workflow
 
-For complex issues requiring the full document → analyze → translate → review →
-execute cycle:
+For complex issues requiring the full analyze → plan → review → execute → verify
+cycle, the `translation-pipeline` skill handles structured intake, then invokes
+the `translation-fix-pipeline` workflow for deterministic multi-agent orchestration.
 
 | Trigger | Example |
 |---------|---------|
 | "有个翻译问题" | "神名翻译不一致，帮我看看" |
 | "translation bug" | "There's a bug in the Chinese UI text" |
+| "这里没翻译" | "XX还是显示英文" |
 | New issue from scratch | "帮我处理 Issue #N" |
 
 ```
-Skill("translation-pipeline", args={problem: "<description>"})
+# Skill handles intake → creates issue file → invokes Workflow
+Skill("translation-pipeline")
+# → Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {...}})
 ```
+
+Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (code+translate parallel) → Review (3-way parallel) → Cross-validate → Report.
 
 ### Code Exploration → `Explore` agent
 
