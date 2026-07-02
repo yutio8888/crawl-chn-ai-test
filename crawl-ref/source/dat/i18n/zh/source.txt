@@ -24669,3 +24669,39 @@ tear
 %%%%
 %s %s one of %s heads off!
 %s%s了%s一个头！
+Deactivating autopickup; reactivate with <w>%s</w>.
+关闭自动拾取；按 <w>%s</w> 重新开启。
+%%%%
+flickers and vanishes
+闪烁了一下就消失了
+%%%%
+Search for what%s? 
+搜索什么%s？ 
+%%%%
+You are too small for most types of armour.
+你的体型过小，大多数护甲都不合身。
+%%%%
+You are very small and have problems with some larger weapons.
+你的体型非常小，使用一些大型武器会有困难。
+%%%%
+You are small and have problems with some larger weapons.
+你的体型较小，使用一些大型武器会有困难。
+%%%%
+You are too large for most types of armour.
+你的体型过大，大多数护甲都不合身。
+%%%%
+You cannot fit into any form of body armour or wear helmets.
+你无法穿戴任何形式的身体护甲或头盔。
+%%%%
+You flicker for a moment.
+你的身影闪烁了一下。
+%%%%
+You flicker back into view.
+你的身影重新出现。
+%%%%
+You turn into %s
+你变成了%s
+%%%%
+You feel less wooden.
+你感觉不那么像木头了。
+%%%%

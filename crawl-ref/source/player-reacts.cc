@@ -167,9 +167,9 @@ static bool _decrement_a_duration(duration_type dur, int delay,
             if (you.duration[dur] <= 0)
                 you.duration[dur] = 1;
             if (need_expiration_warning(dur))
-                mprf(MSGCH_DANGER, T_("Careful! %s"), expmsg);
+                mprf(MSGCH_DANGER, T_("Careful! %s"), T_(expmsg));
             else
-                mprf(chan, "%s", expmsg);
+                mprf(chan, "%s", T_(expmsg));
         }
     }
 

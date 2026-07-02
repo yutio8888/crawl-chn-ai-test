@@ -240,7 +240,7 @@ string Form::get_description(bool past_tense) const
  */
 string Form::transform_message() const
 {
-    return make_stringf("You turn into %s", get_transform_description().c_str());
+    return make_stringf(T_("You turn into %s"), get_transform_description().c_str());
 }
 
 /**
@@ -898,7 +898,7 @@ public:
     /**
      * Get a message for untransforming from this form.
      */
-    string get_untransform_message() const override { return "You feel less wooden."; }
+    string get_untransform_message() const override { return T_("You feel less wooden."); }
 };
 
 #if TAG_MAJOR_VERSION == 34

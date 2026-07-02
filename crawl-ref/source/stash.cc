@@ -1104,7 +1104,7 @@ string StashTracker::stash_search_prompt()
     if (!prompt_qual.empty())
         prompt_qual = " [" + prompt_qual + "]";
 
-    return make_stringf("Search for what%s? ", prompt_qual.c_str());
+    return make_stringf(T_("Search for what%s? "), prompt_qual.c_str());
 }
 
 void StashTracker::remove_shop(const level_pos &pos)

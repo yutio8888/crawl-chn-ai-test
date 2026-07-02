@@ -29,7 +29,7 @@ static void _end_invis()
     if (you.invisible())
         mprf(MSGCH_DURATION, "You feel more conspicuous.");
     else
-        mprf(MSGCH_DURATION, "You flicker back into view.");
+        mprf(MSGCH_DURATION, T_("You flicker back into view."));
 }
 
 static void _end_corrosion()

@@ -845,17 +845,17 @@ static vector<pair<string, string>> _get_fakemuts()
     {
     case SIZE_LITTLE:
         armour_mut = {"unfitting armour",
-                      _innatemut("You are too small for most types of armour.")};
+                      _innatemut(T_("You are too small for most types of armour."))};
         weapon_mut = {"no large weapons",
-                      _innatemut("You are very small and have problems with some larger weapons.")};
+                      _innatemut(T_("You are very small and have problems with some larger weapons."))};
         break;
     case SIZE_SMALL:
         weapon_mut = {"no large weapons",
-                      _innatemut("You are small and have problems with some larger weapons.")};
+                      _innatemut(T_("You are small and have problems with some larger weapons."))};
         break;
     case SIZE_LARGE:
         armour_mut = {"unfitting armour",
-                      _innatemut("You are too large for most types of armour.")};
+                      _innatemut(T_("You are too large for most types of armour."))};
         break;
     default: // no giant species
         break;
@@ -865,7 +865,7 @@ static vector<pair<string, string>> _get_fakemuts()
     if (species::is_draconian(you.species))
     {
         armour_mut = {"unfitting armour",
-                      _innatemut("You cannot fit into any form of body armour or wear helmets.")};
+                      _innatemut(T_("You cannot fit into any form of body armour or wear helmets."))};
     }
     if (!weapon_mut.first.empty() && !you.has_mutation(MUT_NO_GRASPING))
         result.push_back(weapon_mut);

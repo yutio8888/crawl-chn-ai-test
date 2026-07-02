@@ -6484,7 +6484,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
 
     case BEAM_INVISIBILITY:
     {
-        if (enchant_monster_invisible(mon, "flickers and vanishes"))
+        if (enchant_monster_invisible(mon, T_("flickers and vanishes")))
             obvious_effect = true;
 
         return MON_AFFECTED;
