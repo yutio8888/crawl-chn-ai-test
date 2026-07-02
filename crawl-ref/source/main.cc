@@ -247,7 +247,7 @@ int main(int argc, char *argv[])
 #ifdef USE_TILE_WEB
     if (strcasecmp(nl_langinfo(CODESET), "UTF-8"))
     {
-        fprintf(stderr, "Webtiles require an UTF-8 locale.\n");
+        fprintf(stderr, "Webtiles requires a UTF-8 locale.\n");
         exit(1);
     }
 #endif
