@@ -2112,7 +2112,7 @@ string mon_attack_name(attack_type attack, bool with_object)
         "咬",
         "刺",
 
-        "向...释放孢子",
+        "释放孢子",
 
         "触碰",
         "吞噬",

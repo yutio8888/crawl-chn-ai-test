@@ -3688,15 +3688,31 @@ void melee_attack::announce_hit()
                 stealth = T_("stealthily "); // ZH: "潜行地" (no trailing space)
             }
 
-            mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"),
-                   atk_name(DESC_THE).c_str(),
-                   stealth.c_str(),
-                   attacker->conj_verb(mons_attack_verb()).c_str(),
-                   defender_name(true).c_str(),
-                   charge_desc().c_str(),
-                   debug_damage_number().c_str(),
-                   mons_attack_desc().c_str(),
-                   attack_strength_punctuation(damage_done).c_str());
+            if (Options.language == lang_t::ZH && attk_type == AT_SPORE)
+            {
+                // Chinese: attacker 向 defender verb
+                mprf_p(T_("%1$s向%4$s%3$s%5$s%6$s%7$s%8$s"),
+                       atk_name(DESC_THE).c_str(),
+                       stealth.c_str(),
+                       attacker->conj_verb(mons_attack_verb()).c_str(),
+                       defender_name(true).c_str(),
+                       charge_desc().c_str(),
+                       debug_damage_number().c_str(),
+                       mons_attack_desc().c_str(),
+                       attack_strength_punctuation(damage_done).c_str());
+            }
+            else
+            {
+                mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"),
+                       atk_name(DESC_THE).c_str(),
+                       stealth.c_str(),
+                       attacker->conj_verb(mons_attack_verb()).c_str(),
+                       defender_name(true).c_str(),
+                       charge_desc().c_str(),
+                       debug_damage_number().c_str(),
+                       mons_attack_desc().c_str(),
+                       attack_strength_punctuation(damage_done).c_str());
+            }
         }
     }
     else
