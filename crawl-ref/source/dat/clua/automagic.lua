@@ -261,7 +261,7 @@ function mag_attack(allow_movement)
       attack(allow_movement)
     else
       crawl.mpr(crawl.t_("You don't have enough magic to cast " ..
-          you.spell_table()[AUTOMAGIC_SPELL_SLOT] .. "!")
+          you.spell_table()[AUTOMAGIC_SPELL_SLOT] .. "!"))
     end
   elseif mp_is_low() then
     if AUTOMAGIC_FIGHT then
