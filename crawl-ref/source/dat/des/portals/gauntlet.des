@@ -23,13 +23,7 @@ function gauntlet_portal(e)
         { 5000, 'faint ' },  { 4000, '' }, { 2500, 'loud ' },
         { 1500, 'thunderous ' }, { 0, 'deafening ' }
       },
-      zh_range_msgs = crawl.language() == "zh" and {
-        [5000] = '你听到微弱的鼓声。',
-        [4000] = '你听到了鼓声。',
-        [2500] = '你听到响亮的鼓声。',
-        [1500] = '你听到雷鸣般的鼓声。',
-        [0]    = '你听到震耳欲聋的鼓声。',
-      } or nil
+      range_msg_fmt = crawl.t_("You hear the {prefix}beating of drum.")
     }
 
     e.lua_marker('O',

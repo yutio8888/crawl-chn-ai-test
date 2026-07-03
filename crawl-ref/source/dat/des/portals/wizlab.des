@@ -121,13 +121,7 @@ function wizlab_portal (e, crystalise)
 
         verb = 'crackle',
         noisemaker = 'magical portal',
-        zh_range_msgs = crawl.language() == "zh" and {
-          [5000] = '你听到远处魔法传送门的噼啪声。',
-          [4000] = '你听到魔法传送门的噼啪声。',
-          [2500] = '你听到魔法传送门轻快的噼啪声。',
-          [1500] = '你听到魔法传送门急促的噼啪声。',
-          [0]    = '你听到魔法传送门狂乱的噼啪声。',
-        } or nil
+        range_msg_fmt = crawl.t_("You hear the {prefix}crackle of magical portal.")
     }
 
     e.lua_marker('O',

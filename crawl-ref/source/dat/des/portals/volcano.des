@@ -62,13 +62,7 @@ function volcano_portal (e)
           { 2500, 'brisk ' }, { 1500, 'quick ' },
           { 0, 'rapid ' }
         },
-        zh_range_msgs = crawl.language() == "zh" and {
-          [5000] = '你听到岩石缓慢的轰隆声。',
-          [4000] = '你听到岩石的轰隆声。',
-          [2500] = '你听到岩石快速的轰隆声。',
-          [1500] = '你听到岩石急促的轰隆声。',
-          [0]    = '你听到岩石急速的轰隆声。',
-        } or nil
+        range_msg_fmt = crawl.t_("You hear the {prefix}rumble of avalanche of rocks.")
       }
 
     e.lua_marker('O',

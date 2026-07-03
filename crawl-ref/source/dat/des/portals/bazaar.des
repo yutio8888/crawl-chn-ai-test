@@ -31,13 +31,7 @@ function bazaar_portal()
       finalmsg = crawl.t_("You hear the last, dying notes of the bell."),
       verb = 'tolling',
       noisemaker = 'bell',
-      zh_range_msgs = crawl.language() == "zh" and {
-        [5000] = '你听到远处庄严的钟声。',
-        [4000] = '你听到了钟声。',
-        [2500] = '你听到轻快的钟声。',
-        [1500] = '你听到急促的钟声。',
-        [0]    = '你听到狂乱的钟声。',
-      } or nil
+      range_msg_fmt = crawl.t_("You hear the {prefix}tolling of bell.")
     }
   local blow = 200 + 30*(40 - you.absdepth()) + crawl.random2(200)
   local bhigh = blow + crawl.random2(blow) + 100

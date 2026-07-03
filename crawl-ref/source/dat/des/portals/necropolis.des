@@ -68,13 +68,7 @@ function necropolis_portal_entry(e)
             { 3250, 'gathering chorus' }, { 2250, 'rising multitudes' },
             { 0, 'full choir' }
         },
-        zh_range_msgs = crawl.language() == "zh" and {
-          [7500] = '你听到了葬礼仪式单一的哀嚎。',
-          [6000] = '你听到了葬礼仪式小合奏。',
-          [3250] = '你听到了葬礼仪式渐强的合唱。',
-          [2250] = '你听到了葬礼仪式越来越响亮的众多声音。',
-          [0]    = '你听到了葬礼仪式齐声合唱。',
-        } or nil
+        range_msg_fmt = crawl.t_("You hear the {prefix} of funeral chant.")
     }
     dgn.persist.necropolis_difficulty = necropolis_difficulty()
 

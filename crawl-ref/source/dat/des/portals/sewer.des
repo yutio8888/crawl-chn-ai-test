@@ -38,13 +38,7 @@ function sewer_portal(e)
         { 2500, 'brisk ' }, { 1500, 'quick ' },
         { 0, 'rapid ' }
       },
-      zh_range_msgs = crawl.language() == "zh" and {
-        [5000] = '你听到下水道缓慢的锈蚀声。',
-        [4000] = '你听到下水道的锈蚀声。',
-        [2500] = '你听到下水道快速的锈蚀声。',
-        [1500] = '你听到下水道急促的锈蚀声。',
-        [0]    = '你听到下水道急速的锈蚀声。',
-      } or nil
+      range_msg_fmt = crawl.t_("You hear the {prefix}rusting of drain.")
     }
 
   e.lua_marker('O',

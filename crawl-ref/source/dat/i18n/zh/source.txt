@@ -30198,6 +30198,93 @@ Entered
 You've discovered 
 你发现了
 %%%%
-entered 
+entered
 进入了
+%%%%
+You hear the {prefix}rusting of drain.
+你听到下水道{prefix}的锈蚀声。
+%%%%
+You hear the {prefix}hiss of avalanche of sand.
+你听到流沙{prefix}的嘶嘶声。
+%%%%
+You hear the {prefix}creaking of portcullis.
+你听到吊闸{prefix}的吱嘎声。
+%%%%
+You hear the {prefix}crackling of melting archway.
+你听到拱门{prefix}的噼啪声。
+%%%%
+You hear the {prefix}rumble of avalanche of rocks.
+你听到岩石{prefix}的轰隆声。
+%%%%
+You hear the {prefix}whistling of wind.
+你听到风{prefix}的呼啸声。
+%%%%
+You hear the {prefix}beating of drum.
+你听到了{prefix}鼓声。
+%%%%
+You hear the {prefix}tolling of bell.
+你听到了{prefix}钟声。
+%%%%
+You hear the {prefix}crackle of magical portal.
+你听到魔法传送门{prefix}的噼啪声。
+%%%%
+You hear the {prefix} of funeral chant.
+你听到了葬礼仪式{prefix}。
+%%%%
+slow
+缓慢
+%%%%
+brisk
+快速
+%%%%
+quick
+急促
+%%%%
+rapid
+急速
+%%%%
+faint
+微弱
+%%%%
+steady
+持续
+%%%%
+loud
+响亮
+%%%%
+quiet
+安静
+%%%%
+ear-piercing
+刺耳
+%%%%
+thunderous
+雷鸣般
+%%%%
+deafening
+震耳欲聋
+%%%%
+stately
+庄严
+%%%%
+urgent
+急促
+%%%%
+frantic
+狂乱
+%%%%
+lone wailing
+单一的哀嚎
+%%%%
+small ensemble
+小合奏
+%%%%
+gathering chorus
+渐强的合唱
+%%%%
+rising multitudes
+越来越响亮的众多声音
+%%%%
+full choir
+齐声合唱
 %%%%

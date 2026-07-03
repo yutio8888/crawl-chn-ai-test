@@ -151,13 +151,14 @@ function TimedMessaging:say_message(cm, dur)
   local noisemaker =
     self.noisemaker and self:range_adjective(cm, self.noisemaker)
 
-  if self.zh_range_msgs then
+  if self.range_msg_fmt then
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                       local msg = self.zh_range_msgs[chk[1]]
-                       if msg then
-                         self:emit_message(nil, msg)
-                       end
+                       local msg = self.range_msg_fmt
+                         :gsub("{prefix}", crawl.t_(chk[2]))
+                         :gsub("{verb}", crawl.t_(self.verb))
+                         :gsub("{noisemaker}", crawl.t_(self.noisemaker))
+                       self:emit_message(nil, msg)
                      end)
   else
     self:proc_ranges(self.ranges, dur,

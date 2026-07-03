@@ -32,13 +32,7 @@ function desolation_portal(e)
             { 2500, '' }, { 1500, 'loud ' },
             { 0, 'ear-piercing ' }
         },
-        zh_range_msgs = crawl.language() == "zh" and {
-          [5000] = '你听到风微弱的呼啸声。',
-          [4000] = '你听到风安静的呼啸声。',
-          [2500] = '你听到风呼啸声。',
-          [1500] = '你听到风响亮的呼啸声。',
-          [0]    = '你听到风刺耳的呼啸声。',
-        } or nil
+        range_msg_fmt = crawl.t_("You hear the {prefix}whistling of wind.")
     }
 
     e.lua_marker('O',
