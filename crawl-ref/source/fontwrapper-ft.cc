@@ -338,15 +338,17 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         glyph.width = bmp->width;
         glyph.renderable = !!bmp->buffer;
 
-        // For double-width characters (CJK, etc.), force advance to
-        // match the monospace grid. Without this, the CJK fallback
-        // font's native advance may differ slightly from 2x the
-        // primary font's m_max_advance. This leads to inconsistent
-        // pixel widths between layout (string_width, called before
-        // first render) and rendering (render_textblock), causing
-        // cumulative column misalignment in tiles mode.
+        // For double-width characters from the primary font (e.g.
+        // fullwidth punctuation that DejaVu supports), force advance
+        // to the grid metric so grid rendering stays aligned.
+        // For CJK fallback font glyphs, keep the native advance: in
+        // free-form rendering (tooltips, menus, item descriptions),
+        // the CJK font's own advance produces correct tight spacing.
+        // render_textblock() computes grid-aligned advance
+        // independently using m_max_advance.x * char_w, so grid
+        // alignment is never affected by this field.
         int cw = wcwidth(ch);
-        if (cw > 1)
+        if (cw > 1 && use_face != cjk_face)
             glyph.advance = m_max_advance.x * cw;
 
         // For CJK fallback glyphs, use Sarasa's native ascender values.
@@ -540,7 +542,11 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             }
 
             i++;
-            adv.x += glyph.advance - glyph.offset;
+            // Use grid-based advance derived from primary font metrics.
+            // This keeps grid alignment consistent with addstr_aux()'s
+            // wcwidth()-based cell counting, independently of whether
+            // the glyph was sourced from the primary or CJK fallback face.
+            adv.x += m_max_advance.x * char_w - glyph.offset;
 
             // See if we need to flush prematurely.
             if (n_subst == MAX_GLYPHS - 1)
