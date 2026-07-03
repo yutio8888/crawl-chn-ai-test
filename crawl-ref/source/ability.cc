@@ -1062,7 +1062,30 @@ const string make_cost_description(ability_type ability)
     if (ret.empty())
         return T_("None");
 
-    ret.erase(0, 2);
+    // Strip leading cost separator. Each cost entry is prepended with a
+    // translated ", " separator. In English this is 2 ASCII bytes: ", ".
+    // In Chinese it's a 3-byte UTF-8 fullwidth comma: "，" (U+FF0C).
+    // Detect the separator's byte length from the first character so we
+    // don't corrupt UTF-8 multi-byte sequences.
+    {
+        size_t sep_len = 1;
+        const uint8_t c = static_cast<uint8_t>(ret[0]);
+        if (c < 0x80)
+        {
+            // ASCII: the separator is ", " (comma + space, 2 bytes)
+            if (ret.size() >= 2 && ret[0] == ',' && ret[1] == ' ')
+                sep_len = 2;
+            else
+                sep_len = 1;
+        }
+        else if (c < 0xE0)
+            sep_len = 2; // 2-byte UTF-8 sequence
+        else if (c < 0xF0)
+            sep_len = 3; // 3-byte UTF-8 sequence (fullwidth comma)
+        else
+            sep_len = 4; // 4-byte UTF-8 sequence
+        ret.erase(0, sep_len);
+    }
     return ret;
 }
 
