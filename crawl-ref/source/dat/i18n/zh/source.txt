@@ -29553,3 +29553,509 @@ you refuse to depend on such disposable conveniences.
 , and
 ，和
 
+%%%%
+# Category C: DBRAND/DESCRIP entries — unrand artefact descriptions (2026-07-04)
+# Phase 2: name-only bodies + Phase 3: none names + Phase 4: none bodies
+
+%%%%
+Sonic Wave
+音波
+%%%%
+Chaos Arc
+混沌弧光
+%%%%
+Radiate
+辐射
+%%%%
+Envenom
+淬毒
+%%%%
+Megavamp
+巨力吸血
+%%%%
+Curses
+诅咒
+%%%%
+Hellfire
+地狱火
+%%%%
+Evervamp
+永续吸血
+%%%%
+Execute
+处决
+%%%%
+Spectral
+灵体
+%%%%
+Damnation
+天谴
+%%%%
+Decimate
+屠戮
+%%%%
+Ele
+元素
+%%%%
+Slay Drac
+屠龙
+%%%%
+Mutate
+突变
+%%%%
+Deathbane
+亡灵克星
+%%%%
+Curare
+箭毒
+%%%%
+Disarm
+缴械
+%%%%
+Penet
+穿透
+%%%%
+Bear
+熊灵
+%%%%
+Detect
+侦测
+%%%%
+Stab+
+偷袭+
+%%%%
+Brill
+聪慧
+%%%%
+Will-∞
+意志-∞
+%%%%
+*Thunder
+雷鸣
+%%%%
+rCloud
+免疫云雾
+%%%%
+Swift
+迅捷
+%%%%
+Avatar's Aegis
+神使之盾
+%%%%
+Discharge
+放电
+%%%%
+Disrupt
+干扰
+%%%%
+Silver
+白银
+%%%%
+Immolate
+献祭
+%%%%
+Spellvamp
+法术吸血
+%%%%
+Omnireflect
+全反射
+%%%%
+Rev
+加速
+%%%%
+Reach+
+长触及+
+%%%%
+Destructive
+毁灭
+%%%%
+Corpsefed
+食尸
+%%%%
+rMiasma
+免疫瘴气
+%%%%
+Infuse+∞
+注魔+∞
+%%%%
+VampMP
+吸魔
+%%%%
+Coup de Grace
+致命一击
+%%%%
+Meekguard
+弱者护佑
+%%%%
+Steadfast
+稳固
+%%%%
+Reach-Cleave
+长触及-横扫
+%%%%
+Invo=14
+祈唤=14
+%%%%
+Evo=0
+激活=0
+%%%%
+Slick
+滑溜
+%%%%
+Slippery
+滑步
+%%%%
+Knockback
+击退
+%%%%
+Backblast
+后坐力
+%%%%
+Wandboost
+魔杖增幅
+%%%%
+Inspire
+激励
+%%%%
+Amulet+
+护符+
+%%%%
+Reaping
+收割
+%%%%
+Hat+
+头盔+
+%%%%
+Shroompunch
+蘑菇拳
+%%%%
+Gloves+
+手套+
+%%%%
+Majesty
+威仪
+%%%%
+Ring++
+戒指++
+%%%%
+rFlCloud
+免疫火云
+%%%%
+It radiates damaging sonic waves as it strikes, especially in combat involving dangerous or numerous foes.
+它攻击时释放破坏性音波，在对抗危险或众多敌人的战斗中尤为有效。
+%%%%
+It causes slowness and exhaustion when equipped.
+装备时造成缓慢和疲惫。
+%%%%
+It extends the wielder's berserk rage when killing foes.
+使用者在击杀敌人时会延长自身的狂暴之怒。
+%%%%
+It occasionally unleashes arcs of chaos on nearby creatures upon striking a foe.
+攻击敌人时会偶尔向附近生物释放混沌弧光。
+%%%%
+It halves damage taken while paralysed, petrified or unconscious.
+其佩戴者在麻痹、石化或昏迷时受到的伤害减半。
+%%%%
+It can be activated via the 'a'bility menu to radiate toxic energy, with effectiveness depending on Evocations skill.
+可以通过能力菜单激活，释放毒素能量，其效果取决于激活技能。
+%%%%
+It enhances your alchemy magic.
+它增强你的炼金魔法。
+%%%%
+It grants immunity to poison.
+它赋予毒素免疫。
+%%%%
+If the wielder is skilled in Evocations, they can envenom those struck by it, dealing poison damage which bypasses armour.
+若使用者精通激活技能，可以在攻击时为武器淬毒，造成无视护甲的毒素伤害。
+%%%%
+Whenever a successful spell causes magic to be channelled from it, it may also drain additional magic from other enemies in sight, with a chance increasing with spell level.
+每当成功施法从中引导魔力时，也可能从视野内的其他敌人身上汲取额外魔力，几率随法术等级提高。
+%%%%
+It occasionally heals its wielder for the full amount of damage dealt when it wounds a living foe.
+攻击活着的敌人时，偶尔将造成伤害的全额转化为使用者的生命值。
+%%%%
+It inflicts powerful necromantic curses on any living foe it strikes.
+对击中的任何活着的敌人施加强大的亡灵诅咒。
+%%%%
+It occasionally torments all nearby living foes when it strikes in combat.
+战斗时攻击会偶尔折磨附近所有活着的敌人。
+%%%%
+It temporarily reduces the fire resistance of those it strikes.
+暂时降低被击中者的火焰抗性。
+%%%%
+It grants the ability to hurl damnation at the cost of health and magic, with strength depending on Evocations skill.
+赋予投掷天谴的能力，消耗生命与法力，威力取决于激活技能。
+%%%%
+It may summon demons of flame and damnation when striking foes.
+攻击敌人时可能召唤火焰与天谴之恶魔。
+%%%%
+It surrounds you with an aura of shadow, increasing your stealth and reducing the accuracy of all others within it.
+以暗影光环环绕你，提升你的潜行能力并降低光环内所有其他生物的命中率。
+%%%%
+It heals its wielder for a portion of the damage dealt every time it strikes a living foe.
+每次攻击活着的敌人时，将造成伤害的一部分转化为使用者的生命值。
+%%%%
+It may instantly slay those it strikes, especially weaker foes.
+可能直接斩杀被击中的敌人，尤其对较弱的对手更为有效。
+%%%%
+When it strikes, its spirit leaps out and fights alongside the wielder.
+攻击时，其灵体跃出并与使用者并肩作战。
+%%%%
+Whenever the wielder enters a berserk rage, their allies are berserked alongside them.
+当使用者进入狂暴之怒时，其盟友也会一同狂暴。
+%%%%
+Any ammunition fired from it explodes in a burst of damnation on striking a foe, dealing damage which bypasses armour.
+射出的任何弹药在击中敌人时爆发出天谴之焰，造成无视护甲的伤害。
+%%%%
+It inflicts additional damage proportional to its victim's maximum health.
+根据受害者的最大生命值比例造成额外伤害。
+%%%%
+It grants its wielder a halo, revealing invisible creatures and increasing accuracy against all within it other than the wielder.
+赋予使用者光环，可以揭示隐形生物，并提升对光环内除使用者外所有生物的命中率。
+%%%%
+It enhances your fire, ice, earth and air magic. If skilled in Evocations, you can discharge powerful blasts of elemental energy when striking with it.
+增强你的火焰、寒冰、大地和空气魔法。若精通激活技能，在使用其攻击时可以释放强大的元素能量冲击。
+%%%%
+It never misses its target.
+它绝不会失手。
+%%%%
+It inflicts extra damage against dragons and draconians.
+对龙和龙裔造成额外伤害。
+%%%%
+It is more effective when stabbing unaware enemies, sometimes treating them as though they were completely helpless.
+在偷袭未察觉的敌人时效果更佳，有时会将其视为完全无助。
+%%%%
+It occasionally inflicts wild transmutation effects on those it strikes, inflicting malmutation or extra damage, or polymorphing them into a new form.
+偶尔对被击中的目标施加狂野的变形效果，造成恶性突变或额外伤害，或将其变形成新形态。
+%%%%
+It inflicts significantly more damage against the undead.
+对亡灵造成大量额外伤害。
+%%%%
+It occasionally inflicts asphyxiating poison on those it strikes, dealing poison damage and causing slowness.
+偶尔对被击中的目标施加窒息毒药，造成毒素伤害并导致缓慢。
+%%%%
+It may disarm weapon-wielding foes when striking them, dealing extra damage in the process.
+攻击持武器敌人时可能缴除其武器，并在过程中造成额外伤害。
+%%%%
+Any ammunition fired by it passes through the targets it hits, potentially hitting all targets in its path until it reaches maximum range.
+射出的任何弹药都会穿透击中的目标，可能击中路径上的所有目标直至达到最大射程。
+%%%%
+All noise in your surroundings is dampened.
+你周围的所有噪音都被抑制。
+%%%%
+Going berserk makes the wearer exceptionally tough, and they are slowed for a shorter time afterward.
+进入狂暴状态使穿戴者异常坚韧，且狂暴后的减速时间缩短。
+%%%%
+It allows the wearer to sense nearby creatures.
+使穿戴者能够感知附近的生物。
+%%%%
+It allows the wearer to make particularly effective stabbing attacks against helpless or unaware enemies with any melee weapon.
+使穿戴者使用任何近战武器对无助或未察觉的敌人进行特别有效的偷袭攻击。
+%%%%
+It radiates cold, occasionally slowing all nearby creatures who are not resistant to cold.
+它散发寒气，偶尔减速附近所有不抗寒的生物。
+%%%%
+It surrounds you with flame clouds.
+它用火焰云环绕你。
+%%%%
+It grants immunity to flame clouds.
+它赋予对火焰云的免疫。
+%%%%
+It increases the power of your magical spells and halves their MP cost (rounding up).
+它增强你法术的威力并将法力消耗减半（向上取整）。
+%%%%
+It reduces your willpower to zero.
+它将你的意志力降为零。
+%%%%
+It occasionally summons a dragon when using Invocations with hostile monsters in sight. Chance is 10% + twice the piety cost of the ability used.
+在视野内有敌对怪物时使用祈唤，偶尔会召唤一条龙。触发几率为10% + 所使用能力的虔诚消耗的两倍。
+%%%%
+It shrouds the wearer in darkness, reducing the range at which they can see and be seen by others.
+将穿戴者笼罩于黑暗中，缩短其视野范围以及被他人看见的距离。
+%%%%
+It allows the wearer to riposte with melee weapons, swiftly retaliating against missed or blocked melee attacks.
+使穿戴者能够使用近战武器还击，在敌人近战攻击落空或被格挡时迅速反击。
+%%%%
+It may blind adjacent enemies who miss an attack against the wearer in melee combat.
+近战战斗中攻击穿戴者失手的相邻敌人可能会被致盲。
+%%%%
+When the wearer is hurt, rats may emerge from it to assist them.
+当穿戴者受伤时，老鼠可能从中涌出前来协助。
+%%%%
+It is deafeningly noisy when blocking attacks.
+格挡攻击时响声震耳欲聋。
+%%%%
+It reduces the accuracy of your attacks and spells.
+降低你的攻击和法术的命中率。
+%%%%
+It extends the wearer's berserk rage when killing foes.
+穿戴者在击杀敌人时会延长自身的狂暴之怒。
+%%%%
+It occasionally creates storm clouds above nearby enemies.
+偶尔在附近敌人的头顶制造风暴云。
+%%%%
+It grants its wearer immunity to clouds.
+赋予穿戴者对云雾的免疫。
+%%%%
+It occasionally summons demons to assist the wielder when it strikes in combat.
+战斗时攻击偶尔召唤恶魔前来协助使用者。
+%%%%
+Its wielder is mesmerised by any visible foes, and it cannot be unequipped while any foes are visible.
+使用者会被任何可见的敌人催眠，且在有敌人可见时无法被卸下。
+%%%%
+It allows the wearer to cover ground more swiftly.
+使穿戴者能够更快地移动。
+%%%%
+It sometimes launches melee attacks against multiple visible enemies.
+有时会向多个可见敌人发起近战攻击。
+%%%%
+It releases a powerful concussive burst when it strikes, dealing extra damage to the target and all other creatures adjacent to them.
+攻击时释放强力冲击波，对目标及相邻的所有其他生物造成额外伤害。
+%%%%
+It grants the wearer a chance to resist fire, cold, poison, electricity, acid, and negative energy.
+赋予穿戴者抵抗火焰、寒冷、毒素、电击、酸蚀和负能量的几率。
+%%%%
+It enables you to equip an extra ring.
+使你能够装备一枚额外的戒指。
+%%%%
+It occasionally unleashes powerful arcs of lightning upon striking a foe. These may arc to other adjacent creatures (including the wielder, but dealing reduced damage to them) before grounding out.
+攻击敌人时偶尔释放强大的闪电弧。这些闪电弧可能跳转到附近的其他生物（包括使用者，但对其伤害降低）然后接地消散。
+%%%%
+It unleashes wild and unpredictable magical effects upon striking a wizard or a creature with magical abilities.
+攻击巫师或有魔法能力的生物时释放狂野而不可预测的魔法效果。
+%%%%
+It inflicts extra damage upon those it strikes, and deals substantially increased damage to chaotic, mutated and magically transformed beings.
+对被击中的目标造成额外伤害，并对混沌、突变和魔法变形生物造成大幅增加的伤害。
+%%%%
+It fills those it strikes with an explosive inner flame.
+在被击中的目标体内注入爆裂内在火焰。
+%%%%
+It grants immunity to clouds of flame.
+它赋予对火焰云的免疫。
+%%%%
+It heals its wielder for a portion of the damage dealt when they wound a living foe with it or with a spell, but its wielder's spells cost health as well as magical power.
+当使用者以此武器或法术伤害活着的敌人时，将造成伤害的一部分转化为生命值，但使用者的法术同时消耗生命和法力。
+%%%%
+It can block and reflect piercing ranged attacks and magical attacks against the wielder's willpower.
+它可以阻挡并反射穿刺类远程攻击和魔法攻击，反射对抗使用者的意志力。
+%%%%
+It freezes victims, dealing an additional one-quarter of any damage that pierces defenders' armour. It may also slow down cold-blooded creatures.
+冰冻目标，对穿透防御者护甲的任何伤害再附加四分之一。也可能减速冷血生物。
+%%%%
+It becomes more effective when it hits something. This effect fades over time.
+击中目标后变得更有效，此效果会随时间消退。
+%%%%
+It can reach especially far, and its reaching attacks ignore other creatures in the way.
+可以触及极远的距离，且其远程攻击无视路径上的其他生物。
+%%%%
+It summons a battlesphere in combat, with strength depending on Conjurations skill.
+战斗中召唤战斗法球，其强度取决于咒语魔法技能。
+%%%%
+It enhances your destructive magic, and weakens non-destructive magic.
+增强你的毁灭魔法，削弱非毁灭魔法。
+%%%%
+It gathers nearby corpses to temporarily increase the armour it provides.
+收集附近的尸体以暂时提升其提供的护甲值。
+%%%%
+It protects you from foul pestilence.
+保护你不受秽恶瘟疫的侵害。
+%%%%
+When moving toward enemies, its wearer moves as far as possible, alerting their target en route.
+向敌人移动时，穿戴者尽可能移动最大距离，途中会惊醒目标。
+%%%%
+It empowers its wearer's blows with all of their magic.
+将穿戴者的魔力全部灌注于其攻击之中。
+%%%%
+Blows struck in melee replenish the wearer's magic.
+近战攻击会补充穿戴者的法力。
+%%%%
+It absorbs a single lethal wound into itself, holding its wearer just short of death and releasing dream-creatures to guard them.
+吸收一次致命伤害，使穿戴者濒死而不亡，并释放梦境生物来守护他们。
+%%%%
+It heals its wearer when they drink unknown potions, and restores their MP when they read unknown scrolls.
+穿戴者饮用未知药水时回复生命，阅读未知卷轴时回复法力。
+%%%%
+It may instantly kill foes which have little health.
+可能瞬间杀死生命值较低的敌人。
+%%%%
+It provides extra protection to wielders with little health.
+为生命值较低的使用者提供额外防护。
+%%%%
+It makes its victims' attacks reflect back on them.
+使受害者的攻击反弹回自身。
+%%%%
+It prevents involuntary movement, except for blinking, teleportation, or banishment.
+防止非自愿移动，但闪烁、传送和放逐除外。
+%%%%
+It can be evoked to extend its reach, and strikes at all foes within reach, dealing less damage to those not targeted.
+可被激活以延伸触及范围，并攻击触及范围内的所有敌人，非指定目标的伤害降低。
+%%%%
+It uses either Axes or Polearms skill, whichever is higher.
+使用斧技或长柄技能中较高者。
+%%%%
+It sets your Invocations skill to 14.
+将你的祈唤技能设为14。
+%%%%
+It sets your Evocations skill to 0.
+将你的激活技能设为0。
+%%%%
+Its wearer cannot be constricted, netted, webbed, or stopped by binding sigils.
+其穿戴者无法被缠绕、被网住、被蜘蛛网困住或被束缚法印阻止。
+%%%%
+Its wearer slips away from damaging melee attacks, pulling the attacker onward.
+其穿戴者从伤害性近战攻击中滑开，将攻击者向前拉扯。
+%%%%
+It sometimes drives back enemies it hits.
+有时将击中的敌人击退。
+%%%%
+It becomes more powerful as more dangerous foes come into view.
+视野中出现更危险的敌人时会变得更加有力。
+%%%%
+When the wearer kills a threatening monster, it has a chance to gain +1 AC, +1 Slay, and +1 Int, capping at +7. When the wearer uses a scroll or a potion with a hostile monster in sight, its bonuses reset to +0. Unequipping it also resets its bonuses to +0.
+穿戴者杀死威胁性怪物时，有几率获得+1护甲、+1杀戮和+1智力，上限+7。当穿戴者在有敌对怪物可见时使用卷轴或药水，其加成重置为+0。卸下它也会将加成重置为+0。
+%%%%
+When it blocks an attack, it may electrocute the attacker. This works even against foes who are a short distance away.
+格挡攻击时可能电击攻击者。此效果对短距离外的敌人也有效。
+%%%%
+When fired, it often launches its wielder backwards.
+开火时经常将使用者向后弹射。
+%%%%
+Your evocable items recharge 30% faster and wands have a 30% chance to not spend a charge.
+你的可激活物品充能速度加快30%，魔杖有30%几率不消耗充能。
+%%%%
+Your wands are more powerful.
+你的魔杖威力更强。
+%%%%
+It massively reduces your stealth.
+它大幅降低你的潜行能力。
+%%%%
+It interferes with translocations, delaying teleports.
+它干扰传送魔法，延迟传送。
+%%%%
+It boosts your other skills by 20% of your base Evocations skill.
+以你基础激活技能的20%提升你的其他技能。
+%%%%
+When you summon or create an ally, it gains Regeneration.
+当你召唤或创造一个盟友时，它获得再生能力。
+%%%%
+You can equip an additional amulet.
+你可以装备一枚额外的护符。
+%%%%
+When you kill an enemy with your weapon, its spirit may be forced to fight for you.
+当你以武器杀死敌人时，其灵魂可能被迫为你而战。
+%%%%
+You can equip an additional hat (on the skull).
+你可以装备一顶额外的头盔（戴在头骨上）。
+%%%%
+The cloak sometimes lashes out at its wearer's enemies, inflicting confusion with its spores.
+这件斗篷有时会抽打穿戴者的敌人，用孢子造成困惑。
+%%%%
+Your cloak can equip an additional pair of gloves.
+你的斗篷可以装备一副额外的手套。
+%%%%
+You are bathed in light that prevents you from turning invisible. Whenever you enter a new floor, you announce yourself to nearby enemies and refuse to leave the floor again for some time.
+你沐浴在光芒之中，无法隐形。每当你进入新的楼层，你会向附近的敌人宣告自己的到来，并在一段时间内拒绝再次离开该楼层。
+%%%%
+You can equip two additional rings.
+你可以装备两枚额外的戒指。
+%%%%
