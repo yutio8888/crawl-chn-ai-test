@@ -888,7 +888,7 @@ ability_type ability_by_name(const string &key)
         if (abil.ability == ABIL_NON_ABILITY)
             continue;
 
-        const string name = lowercase_string(ability_name(abil.ability));
+        const string name = lowercase_string(ability_name(abil.ability, true));
         if (name == lowercase_string(key))
             return abil.ability;
     }
@@ -4572,7 +4572,7 @@ vector<talent> your_talents(bool include_unusable, bool ignore_piety)
 int auto_assign_ability_slot(int slot)
 {
     const ability_type abil_type = you.ability_letter_table[slot];
-    const string abilname = lowercase_string(ability_name(abil_type));
+    const string abilname = lowercase_string(ability_name(abil_type, true));
     bool overwrite = false;
     // check to see whether we've chosen an automatic label:
     for (auto& mapping : Options.auto_ability_letters)
