@@ -25672,3 +25672,120 @@ You consume the remnants of %s's existence in flames.
 %%%%
 You suddenly feel %sagile.
 你突然感觉%s敏捷。
+%%%%
+Equip or unequip which item?
+装备或卸下哪个物品？
+%%%%
+Equip which item?
+装备哪个物品？
+%%%%
+Wield or put away which item? (- to cancel)
+持握或放下哪个物品（- 取消）？
+%%%%
+Wield which item? (- to cancel)
+持握哪个物品（- 取消）？
+%%%%
+Wear or take off which item?
+穿戴或脱下哪个物品？
+%%%%
+Wear which item?
+穿戴哪个物品？
+%%%%
+Put on or remove which piece of jewellery?
+佩戴或摘下哪个首饰？
+%%%%
+Put on which piece of jewellery?
+佩戴哪个首饰？
+%%%%
+Drink which item?
+饮用哪个物品？
+%%%%
+Read which item?
+阅读哪个物品？
+%%%%
+Evoke which item?
+激发哪个物品？
+%%%%
+Take off which item?
+脱下哪件防具？
+%%%%
+Remove which piece of jewellery?
+摘下哪个首饰？
+%%%%
+Unequip which item?
+卸下哪个物品？
+%%%%
+Unarmed
+徒手
+%%%%
+ (current attack)
+（当前攻击方式）
+%%%%
+Inventory Items
+背包物品
+%%%%
+Floor Items
+地面物品
+%%%%
+[<w>?</w>] describe selected
+[<w>?</w>] 描述选中项
+%%%%
+<w>equip</w>|unequip  
+<w>装备</w>|卸下  
+%%%%
+equip|<w>unequip</w>  
+装备|<w>卸下</w>  
+%%%%
+take off weapon
+卸下武器
+%%%%
+You don't have anything to inscribe.
+你没有任何需要刻写的东西。
+%%%%
+You take a swig of the potion and bulge your muscles.
+你喝了一大口药水，鼓起了肌肉。
+%%%%
+The power of discovery flows from your fingertips!
+发现之能量从你的指尖流出！
+%%%%
+A wave of despondency surges through the area.
+一阵沮丧之浪潮席卷了你的周围。
+%%%%
+It is a scroll of acquirement!
+这是一张获取卷轴！
+%%%%
+Anything you acquire here would fall and be lost!
+你在这里获取的任何东西都会掉落并丢失！
+%%%%
+You assume a fearsome visage.
+你摆出了一副可怕的面容。
+%%%%
+The creatures around you are filled with an inner flame!
+你周围的生物被内心的火焰充满了！
+%%%%
+The air around you briefly surges with heat, but it quickly dissipates.
+你周围的空气短暂地涌动着热量，但很快就消散了。
+%%%%
+It is a scroll of enchant weapon.
+这是一张附魔武器卷轴。
+%%%%
+It is a scroll of brand weapon.
+这是一张武器烙印卷轴。
+%%%%
+It is a scroll of identify.
+这是一张鉴定卷轴。
+%%%%
+It is a scroll of enchant armour.
+这是一张附魔护甲卷轴。
+%%%%
+This item has been removed, sorry!
+此物品已被移除，抱歉！
+%%%%
+It is a scroll of amnesia.
+这是一张遗忘卷轴。
+%%%%
+You feel briefly forgetful.
+你短暂地感到健忘。
+%%%%
+Read a buggy scroll, please report this.
+阅读了一张有问题的卷轴，请报告此问题。

@@ -150,32 +150,32 @@ static string _default_use_title(operation_types oper)
     {
     case OPER_EQUIP:
         return Options.equip_unequip
-            ? "装备或卸下哪个物品？"
-            : "装备哪个物品？";
+            ? T_("Equip or unequip which item?")
+            : T_("Equip which item?");
     case OPER_WIELD:
         return Options.equip_unequip
-            ? "持握或放下哪个物品（- 取消）？"
-            : "持握哪个物品（- 取消）？";
+            ? T_("Wield or put away which item? (- to cancel)")
+            : T_("Wield which item? (- to cancel)");
     case OPER_WEAR:
         if (Options.equip_unequip)
-            return "穿戴或脱下哪个物品？";
-        return "穿戴哪个物品？";
+            return T_("Wear or take off which item?");
+        return T_("Wear which item?");
     case OPER_PUTON:
         return Options.equip_unequip
-            ? "佩戴或摘下哪个首饰？"
-            : "佩戴哪个首饰？";
+            ? T_("Put on or remove which piece of jewellery?")
+            : T_("Put on which piece of jewellery?");
     case OPER_QUAFF:
-        return "饮用哪个物品？";
+        return T_("Drink which item?");
     case OPER_READ:
-        return "阅读哪个物品？";
+        return T_("Read which item?");
     case OPER_EVOKE:
-        return "激发哪个物品？";
+        return T_("Evoke which item?");
     case OPER_TAKEOFF:
-        return "脱下哪件防具？";
+        return T_("Take off which item?");
     case OPER_REMOVE:
-        return "摘下哪个首饰？";
+        return T_("Remove which piece of jewellery?");
     case OPER_UNEQUIP:
-        return "卸下哪个物品？";
+        return T_("Unequip which item?");
     default:
         return "buggy";
     }
@@ -457,9 +457,9 @@ void UseItemMenu::populate_menu()
     // it (currently) enables the inv section.
     if (show_unarmed())
     {
-        string hands_string = you.unarmed_attack_name("徒手");
+        string hands_string = you.unarmed_attack_name(T_("Unarmed"));
         if (!you.weapon())
-            hands_string += "（当前攻击方式）";
+            hands_string += T_(" (current attack)");
 
         MenuEntry *hands = new MenuEntry(hands_string, MEL_ITEM);
         if (!you.weapon())
@@ -479,7 +479,7 @@ void UseItemMenu::populate_menu()
         // items.
         if (!item_floor.empty())
         {
-            inv_header = new MenuEntry("Inventory Items", MEL_TITLE);
+            inv_header = new MenuEntry(T_("Inventory Items"), MEL_TITLE);
             inv_header->colour = LIGHTCYAN;
             add_entry(inv_header);
         }
@@ -502,7 +502,7 @@ void UseItemMenu::populate_menu()
 #endif
         // Load floor items to menu. Always add a subtitle, even if there are
         // no inv items.
-        floor_header = new MenuEntry("Floor Items", MEL_TITLE);
+        floor_header = new MenuEntry(T_("Floor Items"), MEL_TITLE);
         floor_header->colour = LIGHTCYAN;
         add_entry(floor_header);
 
@@ -627,14 +627,14 @@ void UseItemMenu::update_sections()
         && (is_inventory || !inv_header);
     if (inv_header)
     {
-        inv_header->text = "背包物品";
+        inv_header->text = T_("Inventory Items");
         if (!is_inventory)
             inv_header->text += cycle_hint;
     }
 
     if (floor_header)
     {
-        floor_header->text = "地面物品";
+        floor_header->text = T_("Floor Items");
         if (easy_floor)
         {
             floor_header->text += make_stringf(
@@ -727,7 +727,7 @@ string UseItemMenu::get_keyhelp(bool) const
 
     // XX the logic here is getting convoluted, if only these were widgets...
     const string desc_key = is_set(MF_ARROWS_SELECT)
-                                    ? "[<w>?</w>] 描述选中项" : "";
+                                    ? T_("[<w>?</w>] describe selected") : "";
     string full;
     string eu_modes;
     string modes;
@@ -739,7 +739,7 @@ string UseItemMenu::get_keyhelp(bool) const
         {
             eu_modes = "[<w>tab</w>] ";
             eu_modes += (generalize_oper(oper) == OPER_EQUIP)
-                ? "<w>装备</w>|卸下  " : "装备|<w>卸下</w>  ";
+                ? T_("<w>equip</w>|unequip  ") : T_("equip|<w>unequip</w>  ");
         }
 
         if (available_modes.size() > 1)
@@ -891,7 +891,7 @@ string item_unequip_verb(const item_def& item)
 {
     const operation_types oper = _item_type_to_remove_oper(item.base_type);
     if (oper == OPER_WIELD)
-        return "卸下武器";
+        return T_("take off weapon");
     else
         return _oper_name(oper);
 }
@@ -1067,7 +1067,7 @@ static int _move_item_from_floor_to_inv(const item_def &to_get)
 
     if (!move_item_to_inv(to_get.index(), to_get.quantity, true))
     {
-        mpr("你无法携带那么多物品。");
+        mpr(T_("You can't carry that many items."));
         you.last_pickup = tmp_l_p;
     }
     // Get the slot of the last thing picked up
@@ -1339,7 +1339,7 @@ bool try_equip_item(item_def& item)
     // to even pick it up, first
     if (item.pos != ITEM_IN_INVENTORY && !room_in_inventory(item))
     {
-        mpr("你无法携带那么多物品。");
+        mpr(T_("You can't carry that many items."));
         return false;
     }
     else if (item_is_equipped(item))
@@ -1838,7 +1838,7 @@ void prompt_inscribe_item()
 {
     if (inv_count() < 1)
     {
-        mpr("你没有任何需要刻写的东西。");
+        mpr(T_("You don't have anything to inscribe."));
         return;
     }
 
@@ -1887,7 +1887,7 @@ bool oni_drunken_swing()
                  you.weapon()->name(DESC_YOUR).c_str());
         }
         else
-            mpr("你喝了一大口药水，鼓起了肌肉。");
+            mpr(T_("You take a swig of the potion and bulge your muscles."));
 
         for (actor* victim : targets)
         {
@@ -2007,7 +2007,7 @@ bool drink(item_def* potion)
     {
         if (heal_on_id)
         {
-            mpr("发现之能量从你的指尖流出！");
+            mpr(T_("The power of discovery flows from your fingertips!"));
             potionlike_effect(POT_HEAL_WOUNDS, 40);
         }
 
@@ -2551,7 +2551,7 @@ static void _vulnerability_scroll()
     }
 
     you.strip_willpower(&you, dur, true);
-    mpr("一阵沮丧之浪潮席卷了你的周围。");
+    mpr(T_("A wave of despondency surges through the area."));
 }
 
 static bool _handle_amnesia(bool alreadyknown)
@@ -3025,7 +3025,7 @@ bool read(item_def* scroll, dist *target)
 
     case SCR_ACQUIREMENT:
         if (!alreadyknown)
-            mpr("这是一张获取卷轴！");
+            mpr(T_("It is a scroll of acquirement!"));
 
         // included in default force_more_message
         // Identify it early in case the player checks the '\' screen.
@@ -3033,7 +3033,7 @@ bool read(item_def* scroll, dist *target)
 
         if (feat_eliminates_items(env.grid(you.pos())))
         {
-            mpr("你在这里获取的任何东西都会掉落并丢失！");
+            mpr(T_("Anything you acquire here would fall and be lost!"));
             cancel_scroll = true;
             break;
         }
@@ -3042,7 +3042,7 @@ bool read(item_def* scroll, dist *target)
         break;
 
     case SCR_FEAR:
-        mpr("你摆出了一副可怕的面容。");
+        mpr(T_("You assume a fearsome visage."));
         mass_enchantment(ENCH_FEAR, 1000);
         break;
 
@@ -3096,9 +3096,9 @@ bool read(item_def* scroll, dist *target)
         }
 
         if (had_effect)
-            mpr("你周围的生物被内心的火焰充满了！");
+            mpr(T_("The creatures around you are filled with an inner flame!"));
         else
-            mpr("你周围的空气短暂地涌动着热量，但很快就消散了。");
+            mpr(T_("The air around you briefly surges with heat, but it quickly dissipates."));
 
         bad_effect = true;
         break;
@@ -3119,7 +3119,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("这是一张附魔武器卷轴。");
+            mpr(T_("It is a scroll of enchant weapon."));
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_ENCHANT_WEAPON);
@@ -3133,7 +3133,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("这是一张武器烙印卷轴。");
+            mpr(T_("It is a scroll of brand weapon."));
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_BRAND_WEAPON);
@@ -3147,7 +3147,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("这是一张鉴定卷轴。");
+            mpr(T_("It is a scroll of identify."));
             // included in default force_more_message (to show it before menu)
             // Do this here so it doesn't turn up in the ID menu.
             identify_item(*scroll);
@@ -3163,7 +3163,7 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("这是一张附魔护甲卷轴。");
+            mpr(T_("It is a scroll of enchant armour."));
             // included in default force_more_message (to show it before menu)
 
             run_uncancel(UNC_ENCHANT_ARMOUR);
@@ -3180,7 +3180,7 @@ bool read(item_def* scroll, dist *target)
     case SCR_RANDOM_USELESSNESS:
     case SCR_HOLY_WORD:
     {
-        mpr("此物品已被移除，抱歉！");
+        mpr(T_("This item has been removed, sorry!"));
         cancel_scroll = true;
         break;
     }
@@ -3198,12 +3198,12 @@ bool read(item_def* scroll, dist *target)
         if (!alreadyknown)
         {
             mpr(pre_succ_msg);
-            mpr("这是一张遗忘卷轴。");
+            mpr(T_("It is a scroll of amnesia."));
             // included in default force_more_message (to show it before menu)
         }
         if (you.spell_no == 0 || you.has_mutation(MUT_INNATE_CASTER))
         {
-            mpr("你短暂地感到健忘。");
+            mpr(T_("You feel briefly forgetful."));
             break;
         }
 
@@ -3215,7 +3215,7 @@ bool read(item_def* scroll, dist *target)
         break;
 
     default:
-        mpr("阅读了一张有问题的卷轴，请报告此问题。");
+        mpr(T_("Read a buggy scroll, please report this."));
         break;
     }
 
@@ -3257,7 +3257,7 @@ bool read(item_def* scroll, dist *target)
     {
         if (you.unrand_equipped(UNRAND_DELATRAS_GLOVES))
         {
-            mpr("发现之能量从你的指尖流出！");
+            mpr(T_("The power of discovery flows from your fingertips!"));
             potionlike_effect(POT_MAGIC, 40);
         }
 
@@ -3404,7 +3404,7 @@ bool use_talisman(item_def& talisman)
 
     if (talisman.pos != ITEM_IN_INVENTORY && !room_in_inventory(talisman))
     {
-        mpr("你无法携带那么多物品。");
+        mpr(T_("You can't carry that many items."));
         return false;
     }
 
