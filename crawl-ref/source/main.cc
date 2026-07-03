@@ -1799,8 +1799,9 @@ static void _experience_check()
     }
 
     handle_real_time();
-    msg::stream << "游戏时间: " << make_time_string(you.real_time())
-                << " (" << you.num_turns << " 回合)。"
+    msg::stream << make_stringf(T_("Game time: %s (%d turns)."),
+                                make_time_string(you.real_time()).c_str(),
+                                you.num_turns)
                 << endl;
 
     if (!crawl_state.game_is_sprint())
@@ -1811,8 +1812,8 @@ static void _experience_check()
             msg::stream << "You have unlimited time to explore this branch.";
         else
         {
-            msg::stream << "如果你停留在此区域且不探索新楼层，" << turns_until_zot()
-                        << " 回合后佐特会发现你。";
+            msg::stream << make_stringf(T_("If you stay in this area without exploring new floors, Zot will find you after %d turns."),
+                                        turns_until_zot());
         }
         msg::stream << endl << gem_status();
     }
@@ -2066,39 +2067,39 @@ public:
     {
         clear();
         add_entry(new CmdMenuEntry("", MEL_SUBTITLE));
-        add_entry(new CmdMenuEntry("返回游戏", MEL_ITEM, CK_ESCAPE,
+        add_entry(new CmdMenuEntry(T_("Return to game"), MEL_ITEM, CK_ESCAPE,
             CMD_NO_CMD, false));
         items[1]->add_tile(tileidx_command(CMD_GAME_MENU));
         // n.b. CMD_SAVE_GAME_NOW crashes on returning to the main menu if we
         // don't exit out of this popup now, not sure why
         add_entry(new CmdMenuEntry(
             (crawl_should_restart(game_exit::save)
-                            ? "保存并返回主菜单"
-                            : "保存并退出"),
+                            ? T_("Save and return to main menu")
+                            : T_("Save and quit")),
             MEL_ITEM, 'S', CMD_SAVE_GAME_NOW, false));
-        add_entry(new CmdMenuEntry("生成并查看角色报告",
+        add_entry(new CmdMenuEntry(T_("Generate and view character dump"),
             MEL_ITEM, '#', CMD_SHOW_CHARACTER_DUMP));
 #ifdef USE_TILE_LOCAL
-        add_entry(new CmdMenuEntry("编辑玩家图标",
+        add_entry(new CmdMenuEntry(T_("Edit player doll"),
             MEL_ITEM, '-', CMD_EDIT_PLAYER_TILE));
 #endif
-        add_entry(new CmdMenuEntry("编辑宏",
+        add_entry(new CmdMenuEntry(T_("Edit macros"),
             MEL_ITEM, '~', CMD_MACRO_MENU));
-        add_entry(new CmdMenuEntry("帮助和手册",
+        add_entry(new CmdMenuEntry(T_("Help and manual"),
             MEL_ITEM, '?', CMD_DISPLAY_COMMANDS));
-        add_entry(new CmdMenuEntry("查找信息",
+        add_entry(new CmdMenuEntry(T_("Look up information"),
             MEL_ITEM, '/', CMD_LOOKUP_HELP));
 #ifdef TARGET_OS_MACOSX
-        add_entry(new CmdMenuEntry("在文件管理器中显示选项文件",
+        add_entry(new CmdMenuEntry(T_("Reveal options file"),
             MEL_ITEM, 'O', CMD_REVEAL_OPTIONS));
 #endif
 #ifdef __ANDROID__
-        add_entry(new CmdMenuEntry("切换屏幕键盘",
+        add_entry(new CmdMenuEntry(T_("Toggle screen keyboard"),
             MEL_ITEM, CK_F12, CMD_TOGGLE_KEYBOARD));
 #endif
         add_entry(new CmdMenuEntry("", MEL_SUBTITLE));
         add_entry(new CmdMenuEntry(
-                            "退出并<lightred>放弃角色</lightred>",
+                            T_("Quit and <lightred>abandon character</lightred>"),
             MEL_ITEM, 'Q', CMD_QUIT, false));
     }
 
@@ -2462,8 +2463,8 @@ void process_command(command_type cmd, command_type prev_cmd)
     {
         const char * const prompt
             = (crawl_should_restart(game_exit::save))
-              ? "保存游戏并返回主菜单？"
-              : "保存游戏并退出？";
+              ? T_("Save game and return to main menu?")
+              : T_("Save game and quit?");
         explicit_keymap map;
         map['S'] = 'y';
         if (yesno(prompt, true, 'n', true, true, false, &map))
@@ -2482,7 +2483,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     {
         // TODO: msg whether this will start a new game? not very important
         if (crawl_state.disables[DIS_CONFIRMATIONS]
-            || confirm_prompt("quit", "你确定要放弃这个角色%s吗？",
+            || confirm_prompt("quit", T_("Are you sure you want to abandon this character%s?"),
                 Options.newgame_after_quit ? "" : // hard to predict this case
                 (crawl_should_restart(game_exit::quit)
                                             ? " and return to the main menu"

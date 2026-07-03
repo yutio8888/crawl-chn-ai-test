@@ -342,10 +342,10 @@ static void _cprintf_touchui(const char *format, ...)
             cprintf("%2s", buf.c_str());
             break;
         case TOUCH_T_XL:
-            cprintf("级下级");
+            cprintf(T_("XL Next"));
             break;
         case TOUCH_T_PLACE:
-            cprintf("位置");
+            cprintf(T_("Place"));
             break;
         case TOUCH_V_PLACE:
             parts = split_string(":", _level_description_string_hud());
@@ -355,7 +355,7 @@ static void _cprintf_touchui(const char *format, ...)
                 cprintf("%s:%s", parts[0].substr(0,8-parts[1].size()).c_str(), parts[1].c_str());
             break;
         case TOUCH_T_NOISE:
-            cprintf("噪音");
+            cprintf(T_("Noise"));
             break;
         case TOUCH_T_TIME:
             buf = buf.substr(0, buf.size()-1);
@@ -718,7 +718,7 @@ static void _print_stats_equip(int x, int y)
     for (int i = SLOT_FIRST_STANDARD; i < NUM_EQUIP_SLOTS; ++i)
         total_slots += you.equipment.num_slots[i];
 
-    cprintf(total_slots > 8 ? "Eq: " : "装备: ");
+    cprintf(total_slots > 8 ? "Eq: " : T_("Eq: "));
     textcolour(LIGHTGREY);
     for (equipment_slot slot : slot_order)
     {
@@ -768,7 +768,7 @@ static void _print_stats_noise(int x, int y)
     bool silence = silenced(you.pos());
     int level = silence ? 0 : you.get_noise_perception(true);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("噪音: ");
+    CPRINTF("%s", T_("Noise: "));
     colour_t noisecolour;
 
     // This is calibrated roughly so that in an open-ish area:
@@ -821,7 +821,7 @@ static void _print_stats_noise(int x, int y)
 
         // This needs to be one extra wide in case silence happens
         // immediately after super-loud (magenta) noise
-        CPRINTF("沉默  ");
+        CPRINTF("%s", T_("Sil"));
         Noise_Bar.reset(); // so it doesn't display a change bar after silence ends
     }
     else
@@ -863,7 +863,7 @@ static void _print_stats_gold(int x, int y)
     if (!_is_using_small_layout())
     {
         CGOTOXY(x, y, GOTO_STAT);
-        CPRINTF("金币:");
+        CPRINTF("%s", T_("Gold:"));
         CGOTOXY(x+6, y, GOTO_STAT);
     }
     else
@@ -907,7 +907,7 @@ static void _print_stats_mp(int x, int y)
     }
 
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "魔: " : "魔力:  ");
+    CPRINTF(player_drained() ? T_("MP: ") : T_("MP:  "));
     textcolour(mp_colour);
     CPRINTF("%d", you.magic_points);
     if (!boosted)
@@ -973,7 +973,7 @@ static void _print_stats_hp(int x, int y)
     // Health: xxx/yyy (zzz)
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "命: " : "生命: ");
+    CPRINTF(player_drained() ? T_("HP: ") : T_("HP:  "));
     textcolour(hp_colour);
     CPRINTF("%d", you.hp);
     if (!boosted)
@@ -1452,7 +1452,7 @@ static void _redraw_title()
     else if (you.suppress_wizard && !small_layout)
         _draw_wizmode_flag("EX-WIZARD");
     else if (you.explore && !small_layout)
-        _draw_wizmode_flag("探索");
+        _draw_wizmode_flag(T_("Explore"));
 #ifdef DGL_SIMPLE_MESSAGING
     update_message_status();
 #endif
@@ -1586,7 +1586,7 @@ void print_stats()
     {
         CGOTOXY(1, 8 - rows_hidden, GOTO_STAT);
         textcolour(Options.status_caption_colour);
-        CPRINTF("级: ");
+        CPRINTF("%s", T_("XL: "));
         if (_is_using_small_layout())
             CGOTOXY(5, 8, GOTO_STAT);
         textcolour(HUD_VALUE_COLOUR);
@@ -1597,7 +1597,7 @@ void print_stats()
         {
             textcolour(Options.status_caption_colour);
             if (!_is_using_small_layout())
-                CPRINTF("下级: ");
+                CPRINTF("%s", T_("Next: "));
             else
                 CGOTOXY(14, 8, GOTO_STAT);
             textcolour(HUD_VALUE_COLOUR);
@@ -1638,7 +1638,7 @@ void print_stats_level()
 
     CGOTOXY(19, ypos, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("位置: ");
+    CPRINTF("%s", T_("Place: "));
 
     if (_is_using_small_layout())
         CGOTOXY(26, ypos, GOTO_STAT);
@@ -1674,18 +1674,18 @@ void draw_border()
     int dex_pos = sh_pos;
 
     // "Health:" and "Magic:" printed elsewhere
-    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("防:");
-    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("闪:");
-    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("盾:");
+    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("%s", T_("AC:"));
+    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("%s", T_("EV:"));
+    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("%s", T_("SH:"));
 
-    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("力:");
-    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("智:");
-    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("敏:");
+    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("%s", T_("Str:"));
+    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("%s", T_("Int:"));
+    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("%s", T_("Dex:"));
 
     // "XL:" and "Place:" printed elsewhere
     // "Noise:" printed elsewhere
     CGOTOXY(19, ac_pos + 4, GOTO_STAT);
-    CPRINTF(Options.show_game_time ? "时间:" : "回合:");
+    CPRINTF("%s", Options.show_game_time ? T_("Time:") : T_("Turns:"));
 }
 
 #ifndef USE_TILE_LOCAL
@@ -1693,7 +1693,7 @@ void smallterm_warning()
 {
     CGOTOXY(1,1, GOTO_CRT);
     clrscr();
-    CPRINTF("你的终端窗口太小；请至少调整到%d,%d", MIN_COLS, MIN_LINES);
+    CPRINTF(T_("Your terminal window is too small; please resize to at least %d,%d."), MIN_COLS, MIN_LINES);
 }
 #endif
 
@@ -1824,7 +1824,7 @@ string mpr_monster_list(bool past)
 
     describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
 
-    msg = "你 ";
+    msg = T_("You ");
     msg += (past ? "could" : "can");
     msg += " see ";
 
@@ -2195,7 +2195,7 @@ static string _overview_screen_title(int sw)
                                       get_job_name(you.char_class));
 
     handle_real_time();
-    string time_turns = make_stringf(" 回合: %d, 时间: ", you.num_turns)
+    string time_turns = make_stringf(T_(" Turns: %d, Time: "), you.num_turns)
                       + make_time_string(you.real_time(), true);
 
     const int char_width = strwidth(species_job);
@@ -2375,9 +2375,9 @@ static vector<formatted_string> _get_overview_stats()
 
     entry.textcolour(HUD_CAPTION_COLOUR);
     if (player_drained())
-        entry.cprintf("金币: ");
+        entry.cprintf(T_("Gold: "));
     else
-        entry.cprintf("金币:   ");
+        entry.cprintf(T_("Gold:   "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2387,7 +2387,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("防: ");
+    entry.cprintf(T_("AC: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ac_mod()));
 
@@ -2397,7 +2397,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("闪: ");
+    entry.cprintf(T_("EV: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ev_mod()));
 
@@ -2407,7 +2407,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("盾: ");
+    entry.cprintf(T_("SH: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_sh_mod()));
 
@@ -2417,7 +2417,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("力: ");
+    entry.cprintf(T_("Str: "));
 
     entry.textcolour(_get_stat_colour(STAT_STR));
 
@@ -2427,7 +2427,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("智: ");
+    entry.cprintf(T_("Int: "));
 
     entry.textcolour(_get_stat_colour(STAT_INT));
 
@@ -2437,7 +2437,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("敏: ");
+    entry.cprintf(T_("Dex: "));
 
     entry.textcolour(_get_stat_colour(STAT_DEX));
 
@@ -2447,7 +2447,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("等级:     ");
+    entry.cprintf(T_("Level:     "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
     entry.cprintf("%d", you.experience_level);
@@ -2455,7 +2455,7 @@ static vector<formatted_string> _get_overview_stats()
     if (you.experience_level < you.get_max_xl())
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   下一级: ");
+        entry.cprintf(T_("   Next: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d%%", get_exp_progress());
@@ -2465,7 +2465,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("神:    ");
+    entry.cprintf(T_("God:    "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2482,10 +2482,10 @@ static vector<formatted_string> _get_overview_stats()
     if (!you.has_mutation(MUT_INNATE_CASTER))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("法术: ");
+        entry.cprintf(T_("Spells: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
-        entry.cprintf("剩余%d/%d等级",
+        entry.cprintf(T_("%d/%d levels remaining"),
                       player_spell_levels(), player_total_spell_levels());
 
         cols.add_formatted(3, entry.to_colour_string(), false);
@@ -2495,13 +2495,13 @@ static vector<formatted_string> _get_overview_stats()
     if (you.has_mutation(MUT_MULTILIVED))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("生命:  ");
+        entry.cprintf(T_("Lives:  "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.lives);
 
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   死亡: ");
+        entry.cprintf(T_("   Deaths: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.deaths);

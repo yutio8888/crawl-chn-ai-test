@@ -25789,3 +25789,171 @@ You feel briefly forgetful.
 %%%%
 Read a buggy scroll, please report this.
 阅读了一张有问题的卷轴，请报告此问题。
+%%%%
+XL Next
+级下级
+%%%%
+Place
+位置
+%%%%
+Eq: 
+装备: 
+%%%%
+Noise: 
+噪音: 
+%%%%
+Sil
+沉默  
+%%%%
+Gold:
+金币:
+%%%%
+MP: 
+魔: 
+%%%%
+MP:  
+魔力:  
+%%%%
+HP: 
+命: 
+%%%%
+HP:  
+生命: 
+%%%%
+Explore
+探索
+%%%%
+XL: 
+级: 
+%%%%
+Next: 
+下级: 
+%%%%
+Place: 
+位置: 
+%%%%
+AC:
+防:
+%%%%
+EV:
+闪:
+%%%%
+SH:
+盾:
+%%%%
+Str:
+力:
+%%%%
+Int:
+智:
+%%%%
+Dex:
+敏:
+%%%%
+Time:
+时间:
+%%%%
+Turns:
+回合:
+%%%%
+Your terminal window is too small; please resize to at least %d,%d.
+你的终端窗口太小；请至少调整到%d,%d
+%%%%
+You 
+你 
+%%%%
+ Turns: %d, Time: 
+ 回合: %d, 时间: 
+%%%%
+Gold: 
+金币: 
+%%%%
+Gold:   
+金币:   
+%%%%
+AC: 
+防: 
+%%%%
+EV: 
+闪: 
+%%%%
+SH: 
+盾: 
+%%%%
+Str: 
+力: 
+%%%%
+Int: 
+智: 
+%%%%
+Dex: 
+敏: 
+%%%%
+Level:     
+等级:     
+%%%%
+   Next: 
+   下一级: 
+%%%%
+God:    
+神:    
+%%%%
+Spells: 
+法术: 
+%%%%
+%d/%d levels remaining
+剩余%d/%d等级
+%%%%
+Lives:  
+生命:  
+%%%%
+   Deaths: 
+   死亡: 
+%%%%
+Return to game
+返回游戏
+%%%%
+Save and return to main menu
+保存并返回主菜单
+%%%%
+Save and quit
+保存并退出
+%%%%
+Generate and view character dump
+生成并查看角色报告
+%%%%
+Edit player doll
+编辑玩家图标
+%%%%
+Edit macros
+编辑宏
+%%%%
+Help and manual
+帮助和手册
+%%%%
+Look up information
+查找信息
+%%%%
+Reveal options file
+在文件管理器中显示选项文件
+%%%%
+Toggle screen keyboard
+切换屏幕键盘
+%%%%
+Quit and <lightred>abandon character</lightred>
+退出并<lightred>放弃角色</lightred>
+%%%%
+Save game and return to main menu?
+保存游戏并返回主菜单？
+%%%%
+Save game and quit?
+保存游戏并退出？
+%%%%
+Are you sure you want to abandon this character%s?
+你确定要放弃这个角色%s吗？
+%%%%
+Game time: %s (%d turns).
+游戏时间: %s (%d 回合)。
+%%%%
+If you stay in this area without exploring new floors, Zot will find you after %d turns.
+如果你停留在此区域且不探索新楼层，%d 回合后佐特会发现你。
