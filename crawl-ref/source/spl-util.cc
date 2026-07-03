@@ -1408,31 +1408,31 @@ const char* spelltype_long_name(spschool which_spelltype)
     switch (which_spelltype)
     {
     case spschool::conjuration:
-        return "咒法";
+        return T_("Conjuration");
     case spschool::hexes:
-        return "诅咒";
+        return T_("Hexes");
     case spschool::fire:
-        return "火焰";
+        return T_("Fire");
     case spschool::ice:
-        return "寒冰";
+        return T_("Ice");
     case spschool::necromancy:
-        return "死灵";
+        return T_("Necromancy");
     case spschool::summoning:
-        return "召唤";
+        return T_("Summoning");
     case spschool::forgecraft:
-        return "锻造";
+        return T_("Forgecraft");
     case spschool::translocation:
-        return "传送";
+        return T_("Translocation");
     case spschool::alchemy:
-        return "炼金";
+        return T_("Alchemy");
     case spschool::earth:
-        return "大地";
+        return T_("Earth");
     case spschool::air:
-        return "空气";
+        return T_("Air");
     case spschool::random:
-        return "随机";
+        return T_("Random");
     default:
-        return "错误";
+        return T_("Error");
     }
 }
 
@@ -1678,32 +1678,32 @@ string casting_uselessness_reason(spell_type spell, bool temp)
     if (temp)
     {
         if (you.duration[DUR_CONF] > 0)
-            return "你太困惑了，无法施法。";
+            return T_("you're too confused to cast spells.");
 
         if (spell_difficulty(spell) > you.experience_level)
-            return "你的经验还不足以施放此法术。";
+            return T_("you aren't experienced enough to cast this spell.");
 
         if (you.has_mutation(MUT_HP_CASTING))
         {
             // TODO: deduplicate with enough_hp()
             if (you.duration[DUR_DEATHS_DOOR])
-                return "你功能上已死亡，无法支付生命。";
+                return T_("you cannot pay life while functionally dead.");
             if (!enough_hp(spell_mana(spell), true, false))
-                return "你没有足够的生命值来施放此法术。";
+                return T_("you don't have enough health to cast this spell.");
         }
         else if (!enough_mp(spell_mana(spell), true, false))
-            return "你没有足够的魔力来施放此法术。";
+            return T_("you don't have enough magic to cast this spell.");
 
         if (spell == SPELL_SUBLIMATION_OF_BLOOD
             && you.magic_points == you.max_magic_points)
         {
             if (you.has_mutation(MUT_HP_CASTING))
-                return "你的魔力和生命密不可分。";
-            return "你的魔力储备已经满了。";
+                return T_("your magic and health are inextricable.");
+            return T_("your reserves of magic are already full.");
         }
 
         if (you.form == transformation::walking_scroll && spell_difficulty(spell) > 4)
-            return "当前形态下你无法施放如此强大的魔法。";
+            return T_("you cannot cast such powerful magic in your current form.");
     }
 
     // Check for banned schools (Currently just Ru sacrifices)

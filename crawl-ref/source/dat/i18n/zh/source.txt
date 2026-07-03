@@ -24878,3 +24878,41 @@ pierce
 %%%%
  ring
 戒指
+Conjuration
+咒法
+%%%%
+Summoning
+召唤
+%%%%
+Translocation
+传送
+%%%%
+Random
+随机
+%%%%
+Error
+错误
+%%%%
+you're too confused to cast spells.
+你太困惑了，无法施法。
+%%%%
+you aren't experienced enough to cast this spell.
+你的经验还不足以施放此法术。
+%%%%
+you cannot pay life while functionally dead.
+你功能上已死亡，无法支付生命。
+%%%%
+you don't have enough health to cast this spell.
+你没有足够的生命值来施放此法术。
+%%%%
+you don't have enough magic to cast this spell.
+你没有足够的魔力来施放此法术。
+%%%%
+your magic and health are inextricable.
+你的魔力和生命密不可分。
+%%%%
+your reserves of magic are already full.
+你的魔力储备已经满了。
+%%%%
+you cannot cast such powerful magic in your current form.
+当前形态下你无法施放如此强大的魔法。
