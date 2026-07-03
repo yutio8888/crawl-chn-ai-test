@@ -36,6 +36,7 @@
 #include "options.h"
 #include "output.h"
 #include "player-equip.h"
+#include "positional_format.h"
 #include "player-stats.h"
 #include "prompt.h"
 #include "religion.h"
@@ -94,11 +95,11 @@ string Form::melding_description(bool itemized) const
     {
         // this is a bit rough and ready...
         if (blocked_slots == EQF_ALL)
-            return "Your equipment is entirely melded.";
+            return T_("Your equipment is entirely melded.");
         else if (blocked_slots == EQF_PHYSICAL
                  && !(you.has_mutation(MUT_NO_ARMOUR) && you.has_mutation(MUT_NO_GRASPING)))
         {
-            return "Your weapons and armour are melded.";
+            return T_("Your weapons and armour are melded.");
         }
         else
         {
@@ -114,12 +115,12 @@ string Form::melding_description(bool itemized) const
             if (!tags.empty())
             {
                 if (testbits(blocked_slots, EQF_AUXES))
-                    return "Your auxiliary armour is melded.";
+                    return T_("Your auxiliary armour is melded.");
                 else if (tags.size() > 5)
-                    return "Your equipment is almost entirely melded";
+                    return T_("Your equipment is almost entirely melded");
                 else
                 {
-                    return make_stringf("Your %s %s melded.",
+                    return make_stringf_p(T_("Your %1$s %2$s melded."),
                                         comma_separated_line(tags.begin(), tags.end()).c_str(),
                                         tags.size() > 1 ? "are" : "is");
                 }
@@ -227,7 +228,7 @@ int Form::get_level(int scale) const
  */
 string Form::get_description(bool past_tense) const
 {
-    return make_stringf("You %s %s",
+    return make_stringf_p(T_("You %1$s %2$s"),
                         past_tense ? "were" : "are",
                         get_transform_description().c_str());
 }
@@ -250,7 +251,7 @@ string Form::transform_message() const
  */
 string Form::get_untransform_message() const
 {
-    return "Your transformation has ended.";
+    return T_("Your transformation has ended.");
 }
 
 int Form::raw_scaling_value(const FormScaling &sc, int level) const
@@ -395,7 +396,7 @@ static string _brand_suffix(brand_type brand)
 {
     if (brand == SPWPN_NORMAL)
         return "";
-    return make_stringf(" (%s)", brand_type_name(brand, true));
+    return make_stringf(T_(" (%s)"), brand_type_name(brand, true));
 }
 
 /**
@@ -550,7 +551,7 @@ string Form::player_prayer_action() const
     // XXX: if we ever get a default-permaflying species again that wants to
     // have a separate verb, we'll want to check for that right here.
     if (you.airborne())
-        return "hover solemnly before";
+        return T_("hover solemnly before");
     // Otherwise, if you have a verb, use that...
     if (!prayer_action.empty())
         return prayer_action;
@@ -581,7 +582,7 @@ public:
      * Get a string describing the form you're turning into. (If not the same
      * as the one used to describe this form in @.
      */
-    string get_transform_description() const override { return "your old self."; }
+    string get_transform_description() const override { return T_("your old self."); }
 };
 
 class FormSpider : public Form
@@ -608,18 +609,18 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf("You %s overflowing with transmutational energy.",
+        return make_stringf(T_("You %s overflowing with transmutational energy."),
                             past_tense ? "were" : "are");
     }
 
     string transform_message() const override
     {
-        return "Your body destabilises.";
+        return T_("Your body destabilises.");
     }
 
     string get_untransform_message() const override
     {
-        return "Your body stabilises again.";
+        return T_("Your body stabilises again.");
     }
 };
 
@@ -636,7 +637,7 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf("You %s blades growing out of your body.",
+        return make_stringf(T_("You %s blades growing out of your body."),
                             past_tense ? "had" : "have");
     }
 
@@ -645,7 +646,7 @@ public:
      */
     string transform_message() const override
     {
-        return "Blades grow out of your body!";
+        return T_("Blades grow out of your body!");
     }
 
     /**
@@ -653,7 +654,7 @@ public:
      */
     string get_untransform_message() const override
     {
-        return "Your blades shrink back into your body and disappear.";
+        return T_("Your blades shrink back into your body and disappear.");
     }
 
     int get_aux_damage(bool random, int skill) const override
@@ -683,7 +684,7 @@ public:
     {
 #if TAG_MAJOR_VERSION == 34
         if (you.species == SP_DEEP_DWARF && one_chance_in(10))
-            return "You inwardly fear your resemblance to a lawn ornament.";
+            return T_("You inwardly fear your resemblance to a lawn ornament.");
 #endif
         return Form::transform_message();
     }
@@ -694,7 +695,7 @@ public:
      */
     string get_transform_description() const override
     {
-        return "a living statue of rough stone.";
+        return T_("a living statue of rough stone.");
     }
 
     /**
@@ -702,7 +703,7 @@ public:
      */
     string get_untransform_message() const override
     {
-        return "You revert to your normal fleshy form.";
+        return T_("You revert to your normal fleshy form.");
     }
 
     /**
@@ -712,7 +713,7 @@ public:
     {
         // there's special casing in base_hand_name to get "fists"
         string hand = you.base_hand_name(true, true);
-        return make_stringf("Stone %s", hand.c_str());
+        return make_stringf(T_("Stone %s"), hand.c_str());
     }
 };
 
@@ -758,7 +759,7 @@ public:
     {
         if (species::is_draconian(you.species))
         {
-            return make_stringf("a fearsome %s!",
+            return make_stringf(T_("a fearsome %s!"),
                           mons_class_name(get_equivalent_mons()));
         }
         else
@@ -837,7 +838,7 @@ public:
      */
     string transform_message() const override
     {
-        return "Your flesh twists and warps into a mockery of life!";
+        return T_("Your flesh twists and warps into a mockery of life!");
     }
 
     /**
@@ -845,7 +846,7 @@ public:
      */
     string get_untransform_message() const override
     {
-        return "You feel yourself come back to life.";
+        return T_("You feel yourself come back to life.");
     }
 
     int will_bonus() const override { return WL_PIP; }
@@ -859,7 +860,7 @@ private:
 public:
     static const FormBat &instance() { static FormBat inst; return inst; }
 
-    string get_untransform_message() const override { return "You feel less batty."; }
+    string get_untransform_message() const override { return T_("You feel less batty."); }
 };
 
 class FormPig : public Form
@@ -869,7 +870,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(FormPig);
 public:
     static const FormPig &instance() { static FormPig inst; return inst; }
-    string get_untransform_message() const override { return "You feel less porcine."; }
+    string get_untransform_message() const override { return T_("You feel less porcine."); }
 };
 
 #if TAG_MAJOR_VERSION == 34
@@ -923,7 +924,7 @@ private:
     DISALLOW_COPY_AND_ASSIGN(FormWisp);
 public:
     static const FormWisp &instance() { static FormWisp inst; return inst; }
-    string get_untransform_message() const override { return "You condense into your normal self."; }
+    string get_untransform_message() const override { return T_("You condense into your normal self."); }
 };
 
 class FormJelly : public Form
@@ -946,7 +947,7 @@ public:
     /**
      * Get a message for untransforming from this form.
      */
-    string get_untransform_message() const override { return "You stop sporulating."; }
+    string get_untransform_message() const override { return T_("You stop sporulating."); }
 };
 
 #if TAG_MAJOR_VERSION == 34
@@ -964,8 +965,8 @@ public:
     string get_untransform_message() const override
     {
         if (you.invisible())
-            return "You feel less shadowy.";
-        return "You emerge from the shadows.";
+            return T_("You feel less shadowy.");
+        return T_("You emerge from the shadows.");
     }
 };
 #endif
@@ -985,7 +986,7 @@ public:
     {
         // there's special casing in base_hand_name to get "fists"
         string hand = you.base_hand_name(true, true);
-        return make_stringf("Storm %s", hand.c_str());
+        return make_stringf(T_("Storm %s"), hand.c_str());
     }
 };
 
@@ -999,12 +1000,12 @@ public:
 
     string transform_message() const override
     {
-        return "Sharp quills grow all over your body.";
+        return T_("Sharp quills grow all over your body.");
     }
 
     string get_untransform_message() const override
     {
-        return "Your quills recede back into your body.";
+        return T_("Your quills recede back into your body.");
     }
 };
 
@@ -1055,7 +1056,7 @@ public:
      */
     string get_untransform_message() const override
     {
-        return "Makhleb calls their payment due...";
+        return T_("Makhleb calls their payment due...");
     }
 
     /**
@@ -1064,7 +1065,7 @@ public:
     string get_long_name() const override
     {
         const int boost = you.props[MAKHLEB_SLAUGHTER_BOOST_KEY].get_int();
-        return make_stringf("vessel of slaughter (+%d%% damage done)", boost);
+        return make_stringf(T_("vessel of slaughter (+%d%% damage done)"), boost);
     }
 };
 
@@ -1142,18 +1143,18 @@ public:
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf("Your body %s made of elemental water.",
+        return make_stringf(T_("Your body %s made of elemental water."),
                             past_tense ? "was" : "is");
     }
 
     string transform_message() const override
     {
-        return "Your body transforms into elemental water.";
+        return T_("Your body transforms into elemental water.");
     }
 
     string get_untransform_message() const override
     {
-        return "Your body returns to its normal shape and substance.";
+        return T_("Your body returns to its normal shape and substance.");
     }
 };
 
@@ -1259,17 +1260,17 @@ public:
 
     string transform_message() const override
     {
-        return "A mane of stinging tendrils grows from your head.";
+        return T_("A mane of stinging tendrils grows from your head.");
     }
 
     string get_untransform_message() const override
     {
-        return "Your tendrils shrivel away.";
+        return T_("Your tendrils shrivel away.");
     }
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf("You %s a mane of long, stinging tendrils on your head.",
+        return make_stringf(T_("You %s a mane of long, stinging tendrils on your head."),
                             past_tense ? "had" : "have");
     }
 
@@ -1308,7 +1309,7 @@ public:
      */
     string get_description(bool past_tense) const override
     {
-        return make_stringf("You %s %s for %s.",
+        return make_stringf_p(T_("You %1$s %2$s for %3$s."),
                             past_tense ? "had" : "have",
                             you.arm_count() == 1 ? "an electric eel" : "electric eels",
                             hand_transform_parts().c_str());
@@ -1322,7 +1323,7 @@ public:
         const bool singular = you.arm_count() == 1;
 
         // XXX: a little ugly
-        return make_stringf("Your %s turn%s into%s wriggling electric eel%s!",
+        return make_stringf_p(T_("Your %1$s turn%2$s into%3$s wriggling electric eel%4$s!"),
                             hand_transform_parts().c_str(), singular ? "s" : "",
                             singular ? " a" : " a pair of", singular ? "" : "s");
     }
@@ -1335,7 +1336,7 @@ public:
         const bool singular = you.arm_count() == 1;
 
         // XXX: a little ugly
-        return make_stringf("Your %s revert%s to %s normal form.",
+        return make_stringf_p(T_("Your %1$s revert%2$s to %3$s normal form."),
                             hand_transform_parts().c_str(), singular ? "s" : "",
                             singular ? "its" : "their");
     }
@@ -1345,7 +1346,7 @@ public:
      */
     string get_uc_attack_name(string /*default_name*/) const override
     {
-        return "Eel " + hand_transform_parts(true);
+        return T_("Eel ") + hand_transform_parts(true);
     }
 };
 
@@ -1362,7 +1363,7 @@ public:
      */
     string transform_message() const override
     {
-        return make_stringf("Dense mycelia sprout from your %s and %s.",
+        return make_stringf_p(T_("Dense mycelia sprout from your %1$s and %2$s."),
                             you.arm_name(false).c_str(),
                             you.foot_name(true).c_str());
     }
@@ -1372,12 +1373,12 @@ public:
      */
     string get_untransform_message() const override
     {
-        return make_stringf("Your mycelia shrivel away.");
+        return T_("Your mycelia shrivel away.");
     }
 
     string get_description(bool past_tense) const override
     {
-        return make_stringf("Your %s %s a mass of colorful fungus.",
+        return make_stringf_p(T_("Your %1$s %2$s a mass of colorful fungus."),
                             you.arm_name(false).c_str(),
                             past_tense ? "was" : "is");
     }
@@ -1856,7 +1857,7 @@ string cant_transform_reason(transformation which_trans,
         return T_("You are stuck in your current form!");
 
     if (which_trans == transformation::death && you.duration[DUR_DEATHS_DOOR])
-        return "You cannot mock death while in death's door.";
+        return T_("You cannot mock death while in death's door.");
 
     return "";
 }
@@ -2116,7 +2117,7 @@ static void _enter_form(int dur, transformation which_trans, bool using_talisman
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf("gaining the %s transformation",
+             make_stringf(T_("gaining the %s transformation"),
                           transform_name(which_trans)).c_str());
     }
 }
@@ -2318,7 +2319,7 @@ void untransform(bool skip_move, bool scale_hp, bool preserve_equipment,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf("losing the %s form",
+             make_stringf(T_("losing the %s form"),
                           transform_name(old_form)).c_str());
     }
 

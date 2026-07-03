@@ -25957,3 +25957,554 @@ Game time: %s (%d turns).
 %%%%
 If you stay in this area without exploring new floors, Zot will find you after %d turns.
 如果你停留在此区域且不探索新楼层，%d 回合后佐特会发现你。
+%%%%
+ (tiles)
+（图形版）
+
+%%%%
+ (webtiles)
+（网页版）
+
+%%%%
+ (console)
+（控制台版）
+
+%%%%
+ (classic levelgen)
+（经典地牢生成）
+
+%%%%
+ (custom seed)
+（自定义种子）
+
+%%%%
+ (completing %d)
+（完成了%d座）
+
+%%%%
+ (deepest: %d)
+（最深处：%d层）
+
+%%%%
+ (%d times)
+（%d次）
+
+%%%%
+Game seed: %1$" PRIu64 "%2$s
+游戏种子：%1$" PRIu64 "%2$s
+
+%%%%
+ %s version %s
+ %s 版本 %s
+
+%%%%
+Your equipment is entirely melded.
+你的装备完全融化了。
+
+%%%%
+Your weapons and armour are melded.
+你的武器和护甲融化了。
+
+%%%%
+Your auxiliary armour is melded.
+你的辅助护甲融化了。
+
+%%%%
+Your equipment is almost entirely melded
+你的装备几乎完全融化了
+
+%%%%
+Your %1$s %2$s melded.
+你的%1$s融化了。
+
+%%%%
+Your transformation has ended.
+你的变形结束了。
+
+%%%%
+hover solemnly before
+庄严地盘旋在
+
+%%%%
+your old self.
+原来的自己
+
+%%%%
+You %1$s %2$s
+你%1$s%2$s
+
+%%%%
+You %s overflowing with transmutational energy.
+你%s充满了变形能量。
+
+%%%%
+Your body destabilises.
+你的身体变得不稳定了。
+
+%%%%
+Your body stabilises again.
+你的身体重新稳定下来了。
+
+%%%%
+You %s blades growing out of your body.
+你%s身体上长出了利刃。
+
+%%%%
+Blades grow out of your body!
+利刃从你身上长出来了！
+
+%%%%
+Your blades shrink back into your body and disappear.
+利刃缩回了你的身体并消失了。
+
+%%%%
+You inwardly fear your resemblance to a lawn ornament.
+你在内心深处担心自己看起来像个草坪装饰品。
+
+%%%%
+a living statue of rough stone.
+一尊粗糙的活石像。
+
+%%%%
+You revert to your normal fleshy form.
+你恢复到了原本的肉体形态。
+
+%%%%
+Stone %s
+石质%s
+
+%%%%
+a fearsome %s!
+一只可怕的%s！
+
+%%%%
+Your flesh twists and warps into a mockery of life!
+你的血肉扭曲成了对生命的拙劣模仿！
+
+%%%%
+You feel yourself come back to life.
+你感到自己重新活过来了。
+
+%%%%
+You feel less batty.
+你感觉不那么像蝙蝠了。
+
+%%%%
+You feel less porcine.
+你感觉不那么像猪了。
+
+%%%%
+You condense into your normal self.
+你凝聚回了正常的形态。
+
+%%%%
+You stop sporulating.
+你不再产生孢子了。
+
+%%%%
+You feel less shadowy.
+你感觉不那么阴暗了。
+
+%%%%
+You emerge from the shadows.
+你从阴影中显现出来了。
+
+%%%%
+Storm %s
+风暴%s
+
+%%%%
+Sharp quills grow all over your body.
+锋利的刺从你全身长了出来。
+
+%%%%
+Your quills recede back into your body.
+刺缩回了你的体内。
+
+%%%%
+Makhleb calls their payment due...
+马克勒布索要了应付的代价……
+
+%%%%
+vessel of slaughter (+%d%% damage done)
+杀戮之器（伤害+%d%%）
+
+%%%%
+Your body %s made of elemental water.
+你的身体%s由元素之水构成。
+
+%%%%
+Your body transforms into elemental water.
+你的身体变成了元素之水。
+
+%%%%
+Your body returns to its normal shape and substance.
+你的身体恢复到了正常的形态和物质。
+
+%%%%
+A mane of stinging tendrils grows from your head.
+一丛刺人的触须从你头上长了出来。
+
+%%%%
+Your tendrils shrivel away.
+你的触须枯萎脱落了。
+
+%%%%
+You %s a mane of long, stinging tendrils on your head.
+你%s头上有一丛长长的刺人触须。
+
+%%%%
+You %1$s %2$s for %3$s.
+你%1$s的%3$s变成了%2$s。
+
+%%%%
+Your %1$s turn%2$s into%3$s wriggling electric eel%4$s!
+你的%1$s变成了一条扭动的电鳗！
+
+%%%%
+Your %1$s revert%2$s to %3$s normal form.
+你的%1$s恢复到了%3$s正常形态。
+
+%%%%
+Eel 
+鳗鱼
+
+%%%%
+Dense mycelia sprout from your %1$s and %2$s.
+密集的菌丝从你的%1$s和%2$s中萌发出来。
+
+%%%%
+Your mycelia shrivel away.
+你的菌丝枯萎了。
+
+%%%%
+Your %1$s %2$s a mass of colorful fungus.
+你的%1$s变成了一团彩色的菌菇。
+
+%%%%
+You cannot mock death while in death's door.
+在生死之门中你无法嘲弄死亡。
+
+%%%%
+gaining the %s transformation
+获得了%s变形
+
+%%%%
+losing the %s form
+失去了%s形态
+
+%%%%
+You %1$svisited %2$d branch
+你访问了%2$d个分支
+
+%%%%
+es
+
+
+%%%%
+s
+
+
+%%%%
+ of the dungeon, and %1$s %2$d of its levels.\n
+（地牢），并探索了其中的%2$d层。\n
+
+%%%%
+You %1$svisited Pandemonium %2$d time
+你访问了潘德莫尼恩%2$d次
+
+%%%%
+, and %1$s %2$d of its levels.\n
+，并探索了其中的%2$d层。\n
+
+%%%%
+You %1$svisited the Abyss %2$d time
+你访问了深渊%2$d次
+
+%%%%
+You %1$svisited %2$d bazaar
+你访问了%2$d个市集
+
+%%%%
+You %1$svisited the chambers of the Necropolis %2$d time
+你访问了亡灵城%2$d次
+
+%%%%
+You %1$s%2$s %3$d ziggurat
+你%2$s了%3$d座ziggurat
+
+%%%%
+completed
+完成
+
+%%%%
+visited
+访问
+
+%%%%
+, and %1$s %2$d of %3$s levels
+，并探索了%3$s中的%2$d层
+
+%%%%
+You %1$salso visited: 
+你还访问了：
+
+%%%%
+You %1$sspent %2$d %3$s at shops.\n
+你在商店消费了%2$d%3$s。\n
+
+%%%%
+You %1$sdonated %2$d %3$s to Zin.\n
+你向辛恩捐献了%2$d%3$s。\n
+
+%%%%
+You %1$spaid %2$d %3$s to Gozag.\n
+你向戈扎格支付了%2$d%3$s。\n
+
+%%%%
+You %1$sused %2$d %3$s for miscellaneous purposes.\n
+你将%2$d%3$s用于了各种用途。\n
+
+%%%%
+Table legend: (Time is in decaauts)\n A = Elapsed time spent in this place.\n B = Non-inter-level travel time spent in this place.\n C = Inter-level travel time spent in this place.\n D = Time resting spent in this place.\n E = Time spent auto-exploring this place.\n F = Levels seen in this place.\n G = Mean time per level.\n
+表格说明：（时间单位为 decaaut）\n A = 在此地点消耗的总时间。\n B = 在此地点非跨层移动消耗的时间。\n C = 在此地点跨层移动消耗的时间。\n D = 在此地点休息消耗的时间。\n E = 在此地点自动探索消耗的时间。\n F = 在此地点探索过的层数。\n G = 每层的平均时间。\n
+
+%%%%
+Top non-repeatable levels by time:\n
+用时最多的非重复层：\n
+
+%%%%
+Note: time per level data comes from an upgraded game and may be incomplete.\n
+注意：每层时间数据来自升级后的游戏存档，可能不完整。\n
+
+%%%%
+%8s: %d daAuts\n
+%8s: %d daAuts\n
+
+%%%%
+Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of total XP\n D = Non-vault monster count\n E = Vault monster count\n F = Vault count percentage of total count\n\n
+表格说明：\n A = 非宝库经验值\n B = 宝库经验值\n C = 宝库经验值占总经验值的百分比\n D = 非宝库怪物数量\n E = 宝库怪物数量\n F = 宝库数量占总数的百分比\n\n
+
+%%%%
+Table legend:\n A = Kills in this place as a percentage of kills in the entire game.\n B = Kills by you in this place as a percentage of kills by you in\n     the entire game.\n C = Kills by friends in this place as a percentage of kills by\n     friends in the entire game.\n D = Other kills in this place as a percentage of other kills in the\n     entire game.\n E = Experience gained in this place as a percentage of experience\n     gained in the entire game.\n F = Experience gained in this place divided by the number of levels of\n     this place that you have seen.\n\n
+表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的百分比。\n E = 此地点的经验值占整个游戏经验值的百分比。\n F = 此地点的经验值除以你所探索过的此地点层数。\n\n
+
+%%%%
+Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
+表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
+
+%%%%
+Conducts for god: %s\n
+神明戒律：%s\n
+
+%%%%
+Piety from conduct\n
+戒律获得的虔诚度\n
+
+%%%%
+Conduct
+戒律
+
+%%%%
+ || total\n
+ || 总计\n
+
+%%%%
+Conduct count\n
+戒律计数\n
+
+%%%%
+Illustrated notes\n\n
+带图笔记\n\n
+
+%%%%
+Turn %d on 
+第%d回合 
+
+%%%%
+Notes\n
+笔记\n
+
+%%%%
+Turn   | Place    | Note\n
+回合   | 地点     | 笔记\n
+
+%%%%
+You escaped
+你逃离了
+
+%%%%
+You are 
+你现在
+
+%%%%
+You were 
+你曾
+
+%%%%
+You worship %s.\n
+你信仰%s。\n
+
+%%%%
+You worshipped %s.\n
+你曾信仰%s。\n
+
+%%%%
+You are %s\n
+你对柯苏特%s\n
+
+%%%%
+You were %s\n
+你曾对柯苏特%s\n
+
+%%%%
+You know the following spells:\n\n
+你掌握以下法术：\n\n
+
+%%%%
+You knew the following spells:\n\n
+你曾掌握以下法术：\n\n
+
+%%%%
+Your spell library is empty.\n\n
+你的法术库是空的。\n\n
+
+%%%%
+Your spell library was empty.\n\n
+你的法术库曾经是空的。\n\n
+
+%%%%
+Your spell library contains the following spells:\n\n
+你的法术库包含以下法术：\n\n
+
+%%%%
+Your spell library contained the following spells:\n\n
+你的法术库曾包含以下法术：\n\n
+
+%%%%
+N/A
+N/A
+
+%%%%
+Unusable
+不可用
+
+%%%%
+Action
+动作
+
+%%%%
+Eat
+进食
+
+%%%%
+Riposte
+还击
+
+%%%%
+Form
+变形
+
+%%%%
+Normal
+普通
+
+%%%%
+Held in net/web
+被困网中
+
+%%%%
+Sleeping
+睡眠
+
+%%%%
+Betrayed ally
+背叛的盟友
+
+%%%%
+No attack
+无攻击
+
+%%%%
+Constrict
+束缚
+
+%%%%
+Tailslap
+尾击
+
+%%%%
+Maw
+大口
+
+%%%%
+Executioner Blades
+处刑利刃
+
+%%%%
+Fungal Fists
+菌菇之拳
+
+%%%%
+Stingers
+毒刺
+
+%%%%
+Lunge
+突刺
+
+%%%%
+Whirlwind
+旋风
+
+%%%%
+Spellmotor
+法术驱动
+
+%%%%
+Spellclaws
+法术之爪
+
+%%%%
+Drunken Brawl
+醉拳
+
+%%%%
+Dodged
+闪避
+
+%%%%
+Repelled
+弹开
+
+%%%%
+tome
+典籍
+
+%%%%
+Default
+默认
+
+%%%%
+Skill      XL: |
+技能      XL: |
+
+%%%%
+Apostles: \n\n
+使徒：\n\n
+
+%%%%
+was
+曾经
+
+%%%%
+is
+现在
+
+%%%%
+their
+它们的
+
+%%%%
+ (%s)
+（%s）
