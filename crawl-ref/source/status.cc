@@ -263,7 +263,7 @@ static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
     inf.light_colour = ddef->light_colour;
     inf.light_text   = _zh_status_short(ddef->light_text);
     inf.short_text   = _zh_status_short(ddef->short_text);
-    inf.long_text    = ddef->long_text;
+    inf.long_text    = T_(ddef->long_text);
     if (ddef->duration_has_flag(D_EXPIRES))
     {
         inf.light_colour = _dur_colour(inf.light_colour, dur_expiring(dur));

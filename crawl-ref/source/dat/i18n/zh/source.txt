@@ -26703,3 +26703,1824 @@ glares at
 %%%%
 the silver walls,
 银色的墙壁
+%%%%
+A menacing aura infuses your magic.
+一股凶险的气息注入了你的魔法。
+%%%%
+A pair of antennae grows on your head!
+一对触角从你的头上长了出来！
+%%%%
+A pair of horns grows on your head!
+一对角从你的头上长了出来！
+%%%%
+A sentinel's mark is revealing your location to enemies.
+哨兵的标记正在向敌人揭示你的位置。
+%%%%
+A servant of Beogh has come to challenge you.
+一位贝欧格的仆从来挑战你了。
+%%%%
+A symbiotic fungus spreads across your body.
+一种共生真菌蔓延到你全身。
+%%%%
+A thin film of slime covers your body.
+一层薄薄的黏液覆盖了你的身体。
+%%%%
+A venomous barb forms on the end of your tail.
+你尾巴的末端形成了一根毒钩。
+%%%%
+A wave of death washes over you.
+一波死亡之潮席卷了你。
+%%%%
+Acid begins to drip from your mouth.
+酸液开始从你的口中滴落。
+%%%%
+Ambient excess energy starts collecting around you.
+周围的过剩能量开始聚集在你身边。
+%%%%
+An icy envelope takes form around you.
+一层冰霜外壳在你周围形成。
+%%%%
+An ominous black mark forms on your body.
+一个不祥的黑色印记在你身上形成。
+%%%%
+An unnatural silence shrouds you.
+一种不自然的寂静笼罩了你。
+%%%%
+Barbed spikes are embedded in your body.
+倒刺尖刺嵌在了你的身体里。
+%%%%
+Casting spells may cause you to lose access to your magic.
+施法可能导致你失去使用魔法的能力。
+%%%%
+Even fiends shall kneel before you now.
+即使是恶魔现在也会在你面前下跪。
+%%%%
+Eyeballs cover a large portion of your body.
+眼球覆盖了你身体的大部分。
+%%%%
+Eyeballs cover you completely.
+眼球完全覆盖了你。
+%%%%
+Eyeballs grow over part of your body.
+眼球从你身体的部分部位长出。
+%%%%
+Frost condenses into a shield before you.
+冰霜在你面前凝结成盾。
+%%%%
+Fur sprouts all over your body.
+全身长出了毛发。
+%%%%
+Gore shall rain upon your enemies.
+血雨将降在你敌人头上。
+%%%%
+Heavenly clouds are increasing your accuracy and damage.
+天界之云正在增强你的精准度和伤害。
+%%%%
+Icy blue scales cover your body completely.
+冰蓝色的鳞片完全覆盖了你的身体。
+%%%%
+Icy blue scales grow over part of your body.
+冰蓝色的鳞片覆盖了你身体的一部分。
+%%%%
+Icy blue scales spread over more of your body.
+冰蓝色的鳞片蔓延到你身体的更多部位。
+%%%%
+Iridescent scales cover your body completely.
+虹彩色的鳞片完全覆盖了你的身体。
+%%%%
+Iridescent scales grow over part of your body.
+虹彩色的鳞片覆盖了你身体的一部分。
+%%%%
+Iridescent scales spread over more of your body.
+虹彩色的鳞片蔓延到你身体的更多部位。
+%%%%
+Iron fuses itself to your scales.
+铁质融入了你的鳞片。
+%%%%
+Iron will fuse itself to your scales. (AC + 5)
+铁质将融入你的鳞片。（AC + 5）
+%%%%
+Large bone plates cover your arms completely.
+巨大的骨板完全覆盖了你的手臂。
+%%%%
+Large bone plates grow over parts of your arms.
+巨大的骨板覆盖了你的手臂。
+%%%%
+Large bone plates spread over more of your arms.
+巨大的骨板蔓延到你手臂的更多部位。
+%%%%
+Molten scales cover your body completely.
+熔岩般的鳞片完全覆盖了你的身体。
+%%%%
+Molten scales grow over part of your body.
+熔岩般的鳞片覆盖了你身体的一部分。
+%%%%
+Molten scales spread over more of your body.
+熔岩般的鳞片蔓延到你身体的更多部位。
+%%%%
+Murder takes root in your soul.
+杀戮在你灵魂中扎下了根。
+%%%%
+Mutagenic power surges through your limbs.
+突变能量在你四肢中涌动。
+%%%%
+One of your hands has vanished, leaving only a stump!
+你的一只手消失了，只剩下一个残桩！
+%%%%
+One of your lower tentacles grows a sharp spike.
+你的一根下方触手长出了一根锐利的尖刺。
+%%%%
+Pseudopods emerge from your body.
+伪足从你的身体长出。
+%%%%
+Qazlal is protecting you from cold.
+卡兹拉尔正在保护你免受寒冷伤害。
+%%%%
+Qazlal is protecting you from electricity.
+卡兹拉尔正在保护你免受电击伤害。
+%%%%
+Qazlal is protecting you from fire.
+卡兹拉尔正在保护你免受火焰伤害。
+%%%%
+Qazlal is protecting you from physical damage.
+卡兹拉尔正在保护你免受物理伤害。
+%%%%
+Rugged brown scales cover your body completely.
+粗糙的棕色的鳞片完全覆盖了你的身体。
+%%%%
+Rugged brown scales grow over part of your body.
+粗糙的棕色的鳞片覆盖了你身体的一部分。
+%%%%
+Rugged brown scales spread over more of your body.
+粗糙的棕色的鳞片蔓延到你身体的更多部位。
+%%%%
+Sharp scales cover your body completely.
+锐利的鳞片完全覆盖了你的身体。
+%%%%
+Sharp scales grow over part of your body.
+锐利的鳞片覆盖了你身体的一部分。
+%%%%
+Sharp scales spread over more of your body.
+锐利的鳞片蔓延到你身体的更多部位。
+%%%%
+Sharp spines emerge from more of your body.
+锐利的尖刺从你身体的更多部位长出。
+%%%%
+Sharp spines emerge from parts of your body.
+锐利的尖刺从你身体的部分部位长出。
+%%%%
+Sharp spines emerge from your entire body.
+锐利的尖刺从你的全身长出。
+%%%%
+Slimy green scales cover your body completely.
+黏滑的绿色的鳞片完全覆盖了你的身体。
+%%%%
+Slimy green scales grow over part of your body.
+黏滑的绿色的鳞片覆盖了你身体的一部分。
+%%%%
+Slimy green scales spread over more of your body.
+黏滑的绿色的鳞片蔓延到你身体的更多部位。
+%%%%
+The ambient excess energy around you dissipates.
+你周围的过剩能量消散了。
+%%%%
+The antennae on your head grow some more.
+你头上的触角又长大了一些。
+%%%%
+The antennae on your head shrink a bit.
+你头上的触角缩小了一些。
+%%%%
+The antennae on your head shrink away.
+你头上的触角缩没了。
+%%%%
+The armies of chaos are now yours to lead.
+混沌大军现在由你统领。
+%%%%
+The barb on your tail disappears.
+你尾巴上的毒钩消失了。
+%%%%
+The barb on your tail looks sharper.
+你尾巴上的毒钩看起来更锋利了。
+%%%%
+The barb on your tail looks very sharp.
+你尾巴上的毒钩看起来非常锋利。
+%%%%
+The barb on your tail seems less sharp.
+你尾巴上的毒钩似乎不那么锋利了。
+%%%%
+The darkness flees at your approach.
+黑暗在你接近时四散逃逸。
+%%%%
+The eyeballs on your body disappear.
+你身体上的眼球消失了。
+%%%%
+The eyeballs on your body recede somewhat.
+你身体上的眼球有所消退。
+%%%%
+The flow of your blood desyncs from the flow of time itself.
+你血液的流动与时间本身不同步了。
+%%%%
+The flow of your blood has become unstuck from time.
+你血液的流动脱离了时间。
+%%%%
+The flow of your magic slips from your grasp.
+魔法的流动从你的掌控中滑落了。
+%%%%
+The flow of your magic starts slipping from your grasp.
+魔法的流动开始从你的掌控中滑落。
+%%%%
+The fungus across your body shrivels and falls away.
+遍布你全身的真菌枯萎脱落了。
+%%%%
+The horns on your head grow some more.
+你头上的角又长大了一些。
+%%%%
+The horns on your head shrink a bit.
+你头上的角缩小了一些。
+%%%%
+The horns on your head shrink away.
+你头上的角缩没了。
+%%%%
+The iron flakes away from your scales.
+铁质从你的鳞片上剥落了。
+%%%%
+The jelly growth is reabsorbed into your body.
+凝胶增生被你的身体重新吸收了。
+%%%%
+The malignance inside you grows.
+你体内的恶念增长了。
+%%%%
+The mutagenic power surging through your limbs dissipates.
+在你四肢中涌动的突变能量消散了。
+%%%%
+The shadows grow bolder once more.
+阴影再次变得大胆。
+%%%%
+The sign of ruin enfeebles you when you suffer attacks.
+毁灭之印在你受到攻击时使你衰弱。
+%%%%
+The vile energy swirling through your soul dissipates.
+在你灵魂中回旋的邪恶能量消散了。
+%%%%
+The vile energy whirling through your soul weakens.
+在你灵魂中回旋的邪恶能量减弱了。
+%%%%
+The vile energy whirls more vigorously through your soul.
+邪恶的能量在你灵魂中回旋得更加猛烈。
+%%%%
+The wave of death grows in power.
+死亡之潮的力量增长了。
+%%%%
+There is a nasty taste in your mouth for a moment.
+你口中一时有种恶心的味道。
+%%%%
+Thin metallic scales cover your body completely.
+薄金属的鳞片完全覆盖了你的身体。
+%%%%
+Thin metallic scales grow over part of your body.
+薄金属的鳞片覆盖了你身体的一部分。
+%%%%
+Thin metallic scales spread over more of your body.
+薄金属的鳞片蔓延到你身体的更多部位。
+%%%%
+Thin, slimy tendrils emerge from your body.
+细细的黏滑触须从你的身体长出。
+%%%%
+Two of your arms shrink away.
+你的两只手臂萎缩消失了。
+%%%%
+Vile energies swirl pleasantly through your soul.
+邪恶的能量愉快地在你灵魂中回旋。
+%%%%
+Yellow scales cover your body completely.
+黄色的鳞片完全覆盖了你的身体。
+%%%%
+Yellow scales grow over part of your body.
+黄色的鳞片覆盖了你身体的一部分。
+%%%%
+Yellow scales spread over more of your body.
+黄色的鳞片蔓延到你身体的更多部位。
+%%%%
+You are beckoning forth the legions of chaos.
+你正在召唤混沌军团。
+%%%%
+You are brilliant.
+你正处于聪慧状态。
+%%%%
+You are calling forth ooze from nearby walls.
+你正在从附近墙壁中召唤软泥。
+%%%%
+You are channelling the dead.
+你正在引导亡灵。
+%%%%
+You are channelling the inexorable grasp of Yredelemnul.
+你正在引导伊雷德勒姆努尔的无情掌控。
+%%%%
+You are chanting a vengeful prayer.
+你正在吟唱复仇祷文。
+%%%%
+You are cleaving through your foes.
+你正在劈砍敌人。
+%%%%
+You are confused.
+你处于混乱状态。
+%%%%
+You are corroded.
+你被腐蚀了。
+%%%%
+You are covered in liquid fire.
+你被液态火焰覆盖了。
+%%%%
+You are covered in terrible wounds.
+你身负可怕的创伤。
+%%%%
+You are divinely vitalised.
+你被神圣力量注入了活力。
+%%%%
+You are enlightened. (Will+)
+你处于顿悟状态。（意志+）
+%%%%
+You are enveloped in primordial darkness.
+你被原初黑暗包围了。
+%%%%
+You are especially stealthy.
+你特别善于潜行。
+%%%%
+You are firmly anchored to this plane.
+你被牢固地锚定在这个位面。
+%%%%
+You are fragile as glass.
+你如玻璃般脆弱。
+%%%%
+You are horrified, weakening your attacks and spells.
+你感到恐惧，攻击和法术被削弱了。
+%%%%
+You are imbued with divine vigour.
+你被注入了神圣活力。
+%%%%
+You are in the eye of a polar vortex.
+你正处于极地漩涡的中央。
+%%%%
+You are losing your grip on the fallen.
+你对亡者的掌控正在减弱。
+%%%%
+You are making an unholy racket with your haunted armour.
+你被诅咒的盔甲正在发出不洁的噪音。
+%%%%
+You are more vulnerable to fire.
+你更容易受到火焰伤害。
+%%%%
+You are more vulnerable to poison.
+你更容易中毒。
+%%%%
+You are no longer hated by all.
+你不再被所有人憎恨。
+%%%%
+You are no longer immune to the effects of steam.
+你不再对蒸汽效果免疫。
+%%%%
+You are no longer multi-lived.
+你不再是多重生命了。
+%%%%
+You are now hated by all.
+你现在被所有人憎恨。
+%%%%
+You are now immune to the effects of steam.
+你现在对蒸汽效果免疫了。
+%%%%
+You are paralysed.
+你处于麻痹状态。
+%%%%
+You are partly encased in ice.
+你被部分冰封了。
+%%%%
+You are petrified.
+你被石化了。
+%%%%
+You are possessed by a berserker rage.
+你被狂暴之怒所控制。
+%%%%
+You are protected by a layer of icy armour.
+你被一层冰霜护甲保护着。
+%%%%
+You are radiating toxic energy.
+你正在散发毒性能量。
+%%%%
+You are rapidly regenerating health and magic.
+你的生命和魔力正在快速再生。
+%%%%
+You are rapidly regenerating magical energy.
+你的魔力正在快速再生。
+%%%%
+You are reanimating the dead.
+你正在复活死者。
+%%%%
+You are reciting Zin's Axioms of Law.
+你正在诵读Zin的法律公理。
+%%%%
+You are regenerating under the effects of ambrosia.
+你正在仙酿的作用下再生。
+%%%%
+You are resistant to the elements.
+你对元素有抗性。
+%%%%
+You are rising toward the ceiling.
+你正在向天花板上升。
+%%%%
+You are seeking vengeance for the death of your brethren.
+你正在为同胞之死寻求复仇。
+%%%%
+You are shielded by the power of the Shining One.
+你受到光辉者之力的护佑。
+%%%%
+You are short of breath.
+你喘不过气来。
+%%%%
+You are sleeping.
+你正在沉睡。
+%%%%
+You are spewing a noxious bog.
+你正在喷射毒沼。
+%%%%
+You are summoning a forest.
+你正在召唤森林。
+%%%%
+You are surrounded by a whirlwind of blades.
+你被利刃旋风包围着。
+%%%%
+You are surrounded by darkness.
+你被黑暗包围。
+%%%%
+You are surrounded by jinxing sprites.
+你被诅咒精灵包围着。
+%%%%
+You are teleporting projectiles at a target.
+你正在将弹射物传送至目标。
+%%%%
+You are turning to stone.
+你正在变为石像。
+%%%%
+You are unable to berserk.
+你无法进入狂暴状态。
+%%%%
+You are unable to blink.
+你无法闪烁。
+%%%%
+You are unable to call dragons.
+你无法召唤龙。
+%%%%
+You are unable to cast Gavotte.
+你无法施放加沃特舞曲。
+%%%%
+You are unable to cast Hellfire Mortar.
+你无法施放地狱火迫击炮。
+%%%%
+You are unable to cast spells.
+你无法施法。
+%%%%
+You are unable to enter death's door.
+你无法进入死门状态。
+%%%%
+You are unable to hop.
+你无法跳跃。
+%%%%
+You are unable to move around.
+你无法移动。
+%%%%
+You are unable to performed a blood rite.
+你无法进行血之仪式。
+%%%%
+You are unable to recite.
+你无法诵读。
+%%%%
+You are unable to siphon essence.
+你无法吸取精华。
+%%%%
+You are unable to speak a word of chaos.
+你无法说出混沌之语。
+%%%%
+You are unleashing a barrage of alchemical reagents.
+你正在释放一连串炼金试剂。
+%%%%
+You are untethered in space.
+你在空间中不受束缚。
+%%%%
+You are weak-willed.
+你意志薄弱。
+%%%%
+You attract monsters toward you.
+你吸引怪物向你靠近。
+%%%%
+You begin exuding ooze.
+你开始渗出软泥。
+%%%%
+You begin to radiate repulsive energy.
+你开始散发出排斥能量。
+%%%%
+You begin to recover more slowly from draining effects.
+你开始更慢地从吸取效果中恢复。
+%%%%
+You begin to regenerate health when rolling toward enemies.
+你向敌人翻滚时开始恢复生命。
+%%%%
+You begin to regenerate magic when rolling toward enemies.
+你向敌人翻滚时开始恢复魔力。
+%%%%
+You begin to regenerate regardless of the presence of monsters.
+无论附近是否有怪物，你都开始再生了。
+%%%%
+You begin to regenerate.
+你开始再生。
+%%%%
+You brawl whenever you drink a healing potion.
+你每次喝治疗药水都会引发斗殴。
+%%%%
+You briefly stop moving.
+你短暂地停止了移动。
+%%%%
+You can move swiftly.
+你可以快速移动。
+%%%%
+You can no longer be stealthy.
+你无法再潜行。
+%%%%
+You can no longer grasp objects.
+你无法再抓取物品。
+%%%%
+You can no longer regenerate health when rolling toward enemies.
+你不再能通过向敌人翻滚恢复生命。
+%%%%
+You can no longer roll toward enemies.
+你无法再向敌人翻滚。
+%%%%
+You can no longer study or cast Air magic.
+你无法再学习或施放Air魔法。
+%%%%
+You can no longer study or cast Alchemy magic.
+你无法再学习或施放Alchemy魔法。
+%%%%
+You can no longer study or cast Conjurations magic.
+你无法再学习或施放Conjurations魔法。
+%%%%
+You can no longer study or cast Earth magic.
+你无法再学习或施放Earth魔法。
+%%%%
+You can no longer study or cast Fire magic.
+你无法再学习或施放Fire魔法。
+%%%%
+You can no longer study or cast Forgecraft magic.
+你无法再学习或施放Forgecraft魔法。
+%%%%
+You can no longer study or cast Hexes magic.
+你无法再学习或施放Hexes魔法。
+%%%%
+You can no longer study or cast Ice magic.
+你无法再学习或施放Ice魔法。
+%%%%
+You can no longer study or cast Necromancy magic.
+你无法再学习或施放Necromancy魔法。
+%%%%
+You can no longer study or cast Summoning magic.
+你无法再学习或施放Summoning魔法。
+%%%%
+You can no longer study or cast Translocations magic.
+你无法再学习或施放Translocations魔法。
+%%%%
+You can no longer study or use magical devices.
+你无法再学习或使用魔法装置。
+%%%%
+You can no longer train Armour skill.
+你无法再训练盔甲技能。
+%%%%
+You can no longer train Dodging skill.
+你无法再训练闪避技能。
+%%%%
+You can no longer use scrolls of enchantment on lesser artefacts.
+你无法再对低级神器使用附魔卷轴了。
+%%%%
+You can no longer voluntarily change form.
+你无法再主动变形。
+%%%%
+You can no longer wear armour.
+你无法再穿戴盔甲。
+%%%%
+You can now gain extra lives.
+你现在可以获得额外生命。
+%%%%
+You can now grasp objects.
+你现在可以抓取物品了。
+%%%%
+You can now use scrolls of enchantment on lesser artefacts.
+你现在可以对低级神器使用附魔卷轴了。
+%%%%
+You can now wear armour.
+你现在可以穿戴盔甲了。
+%%%%
+You can once more be stealthy.
+你可以重新潜行了。
+%%%%
+You can once more change form.
+你可以重新变形了。
+%%%%
+You can once more study and cast Air magic.
+你可以重新学习和施放Air魔法。
+%%%%
+You can once more study and cast Alchemy magic.
+你可以重新学习和施放Alchemy魔法。
+%%%%
+You can once more study and cast Conjurations magic.
+你可以重新学习和施放Conjurations魔法。
+%%%%
+You can once more study and cast Earth magic.
+你可以重新学习和施放Earth魔法。
+%%%%
+You can once more study and cast Fire magic.
+你可以重新学习和施放Fire魔法。
+%%%%
+You can once more study and cast Forgecraft magic.
+你可以重新学习和施放Forgecraft魔法。
+%%%%
+You can once more study and cast Hexes magic.
+你可以重新学习和施放Hexes魔法。
+%%%%
+You can once more study and cast Ice magic.
+你可以重新学习和施放Ice魔法。
+%%%%
+You can once more study and cast Necromancy magic.
+你可以重新学习和施放Necromancy魔法。
+%%%%
+You can once more study and cast Summoning magic.
+你可以重新学习和施放Summoning魔法。
+%%%%
+You can once more study and cast Translocations magic.
+你可以重新学习和施放Translocations魔法。
+%%%%
+You can once more study and use magical devices.
+你可以重新学习和使用魔法装置。
+%%%%
+You can once more train Armour skill.
+你可以重新训练盔甲技能。
+%%%%
+You can once more train Dodging skill.
+你可以重新训练闪避技能。
+%%%%
+You feel a fierce wanderlust.
+你感到强烈的漫游欲望。
+%%%%
+You feel a hidden malignance growing inside you.
+你感到体内有一种隐藏的恶念正在成长。
+%%%%
+You feel a hidden potential growing inside you.
+你感到体内有一种隐藏的潜能正在成长。
+%%%%
+You feel a little less attractive.
+你感到魅力减退了。
+%%%%
+You feel a little less lucky.
+你感到运气变差了。
+%%%%
+You feel a little less meek.
+你感到不那么温顺了。
+%%%%
+You feel a little less reckless.
+你感到不那么鲁莽了。
+%%%%
+You feel a strange anaesthesia.
+你感到一种奇怪的麻木。
+%%%%
+You feel a strange attunement to the structure of the dungeons.
+你感到与地牢结构有种奇特的调谐。
+%%%%
+You feel a strong urge to scream.
+你感到强烈的尖叫冲动。
+%%%%
+You feel a sudden disregard for your own safety.
+你突然不顾自身安全。
+%%%%
+You feel a sudden thirst for magic.
+你突然渴望魔法。
+%%%%
+You feel a very strange anaesthesia.
+你感到一种非常奇怪的麻木。
+%%%%
+You feel a willful anger gathering in your blood.
+你感到血液中积聚着一股任性的愤怒。
+%%%%
+You feel accursed.
+你感到被诅咒了。
+%%%%
+You feel aggression return to you.
+你感到攻击性回归了。
+%%%%
+You feel an ache in your throat.
+你感到喉咙疼痛。
+%%%%
+You feel both weightless and legless.
+你感到既失重又失腿。
+%%%%
+You feel cold-blooded.
+你变得冷血了。
+%%%%
+You feel comfortable near water.
+你在水边感到舒适。
+%%%%
+You feel completely energised by your suffering.
+你因痛苦而感到完全充满能量。
+%%%%
+You feel conductive.
+你感到导电。
+%%%%
+You feel connected to something greater than you.
+你感到与某种比你更伟大的存在相连。
+%%%%
+You feel corrupt.
+你感到腐化。
+%%%%
+You feel destructive magic coursing through your claws.
+你感到毁灭魔法在爪间流淌。
+%%%%
+You feel devilish.
+你感到如恶魔般。
+%%%%
+You feel energised by your suffering.
+你因痛苦而感到充满能量。
+%%%%
+You feel even more attractive.
+你感到更加有魅力。
+%%%%
+You feel even more energised by your suffering.
+你因痛苦而感到更加充满能量。
+%%%%
+You feel even more meek.
+你感到更加温顺。
+%%%%
+You feel even more weirdly uncertain.
+你感到更加莫名的不确定。
+%%%%
+You feel forlorn.
+你感到孤苦。
+%%%%
+You feel fortune smile more brightly upon you.
+你感到幸运之神更加明亮地眷顾着你。
+%%%%
+You feel fortune smile upon you.
+你感到幸运之神的眷顾。
+%%%%
+You feel frail.
+你感到脆弱。
+%%%%
+You feel genetically immutable.
+你感到基因不可改变。
+%%%%
+You feel genetically stable.
+你感到基因稳定。
+%%%%
+You feel genetically unstable.
+你感到基因不稳定。
+%%%%
+You feel hungry for flesh.
+你感到渴望血肉。
+%%%%
+You feel insulated.
+你感到绝缘。
+%%%%
+You feel less accursed.
+你感到诅咒减轻了。
+%%%%
+You feel less attractive.
+你感到不那么有魅力了。
+%%%%
+You feel less cold resistant.
+你感到对寒冷的抗性减弱了。
+%%%%
+You feel less comfortable near water.
+你在水边感到不那么舒适了。
+%%%%
+You feel less concerned about cold.
+你感到不那么受寒冷影响了。
+%%%%
+You feel less concerned about heat.
+你感到不那么受高温影响了。
+%%%%
+You feel less encumbered by your armour.
+你感到盔甲不那么累赘了。
+%%%%
+You feel less energetic.
+你感到精力不足。
+%%%%
+You feel less experienced.
+你感到经验不足。
+%%%%
+You feel less heat resistant.
+你感到对高温的抗性减弱了。
+%%%%
+You feel less hungry for flesh.
+你感到不那么渴望血肉了。
+%%%%
+You feel less in control of your magic.
+你感到对魔法的控制力减弱了。
+%%%%
+You feel less repulsive.
+你感到不那么排斥他人了。
+%%%%
+You feel less resistant to acid.
+你感到对酸液的抗性减弱了。
+%%%%
+You feel less resistant to poisons.
+你感到对毒素的抗性减弱了。
+%%%%
+You feel less skilled.
+你感到技能减退了。
+%%%%
+You feel less susceptible to contamination.
+你感到不易受污染了。
+%%%%
+You feel less vital.
+你感到活力不足。
+%%%%
+You feel less vulnerable to cold.
+你感到对寒冷的脆弱减轻了。
+%%%%
+You feel less vulnerable to electricity.
+你感到对电击的脆弱减轻了。
+%%%%
+You feel less vulnerable to harm.
+你感到对伤害的脆弱减轻了。
+%%%%
+You feel less vulnerable to heat.
+你感到对高温的脆弱减轻了。
+%%%%
+You feel less weak-willed.
+你感到意志不那么薄弱了。
+%%%%
+You feel like a homebody.
+你感到恋家。
+%%%%
+You feel like your luck has run out.
+你感到好运已经用尽。
+%%%%
+You feel long-lived.
+你感到长寿。
+%%%%
+You feel meek as a lamb.
+你感到如羔羊般温顺。
+%%%%
+You feel meek.
+你感到温顺。
+%%%%
+You feel more divine.
+你感到更加神圣。
+%%%%
+You feel more encumbered by your armour.
+你感到盔甲更加累赘了。
+%%%%
+You feel more energetic.
+你感到精力充沛。
+%%%%
+You feel more in control of your magic.
+你感到对魔法的控制力增强了。
+%%%%
+You feel more in touch with the powers of death.
+你感到与死亡之力更加紧密相连。
+%%%%
+You feel more mortal.
+你感到更加凡俗。
+%%%%
+You feel more resistant to cold.
+你感到对寒冷的抗性增强了。
+%%%%
+You feel more resistant to heat.
+你感到对高温的抗性增强了。
+%%%%
+You feel more resistant to negative energy.
+你感到对负能量的抗性增强了。
+%%%%
+You feel more spiritual.
+你感到更加灵性。
+%%%%
+You feel more strong-willed.
+你感到意志更加坚定。
+%%%%
+You feel more susceptible to contamination.
+你感到更易受污染了。
+%%%%
+You feel more vital.
+你感到更有活力。
+%%%%
+You feel more vulnerable to harm.
+你感到更易受到伤害。
+%%%%
+You feel more weak-willed.
+你感到意志更加薄弱。
+%%%%
+You feel mystic power welling inside you.
+你感到神秘力量在体内涌起。
+%%%%
+You feel power flowing into your body.
+你感到力量流入体内。
+%%%%
+You feel power rushing into your body.
+你感到力量涌入体内。
+%%%%
+You feel quick.
+你感到敏捷。
+%%%%
+You feel ready to unleash a true cacophony.
+你感到准备好释放真正的刺耳之音。
+%%%%
+You feel rebellious.
+你感到叛逆。
+%%%%
+You feel resistant to acid.
+你感到对酸液有抗性。
+%%%%
+You feel resistant to heat.
+你感到对高温有抗性。
+%%%%
+You feel resistant to negative energy.
+你感到对负能量有抗性。
+%%%%
+You feel resistant to poisons.
+你感到对毒素有抗性。
+%%%%
+You feel robust.
+你感到强健。
+%%%%
+You feel saturated with power.
+你感到被力量充满。
+%%%%
+You feel sensitive to extremes of temperature.
+你感到对极端温度敏感。
+%%%%
+You feel slightly disoriented.
+你感到有些迷失方向。
+%%%%
+You feel space untangle itself from you.
+你感到空间从你身上解开了纠缠。
+%%%%
+You feel stable.
+你感到稳定。
+%%%%
+You feel strangely attractive.
+你感到有种奇特的魅力。
+%%%%
+You feel the destructive energies within you surge violently.
+你感到体内的毁灭能量猛烈涌动。
+%%%%
+You feel the effects of Trog's Hand fading.
+你感到特洛格之手的效力正在消退。
+%%%%
+You feel the presence of a demonic guardian.
+你感到有一位恶魔守护者存在。
+%%%%
+You feel the urge to shout.
+你感到想要大喊。
+%%%%
+You feel very comfortable near water.
+你在水边感到非常舒适。
+%%%%
+You feel vulnerable to cold.
+你感到易受寒冷伤害。
+%%%%
+You feel vulnerable to electricity.
+你感到易受电击伤害。
+%%%%
+You feel vulnerable to heat.
+你感到易受高温伤害。
+%%%%
+You feel warm-blooded.
+你变得温血了。
+%%%%
+You feel weak-willed.
+你感到意志薄弱。
+%%%%
+You feel weirdly uncertain.
+你感到莫名的不确定。
+%%%%
+You feel wilful.
+你感到任性。
+%%%%
+You feel willing to use your potions freely once again.
+你再次感到可以随意使用药水。
+%%%%
+You feel your blood become entirely quiescent.
+你感到血液完全平息了。
+%%%%
+You feel your blood grow even more spiteful.
+你感到血液中的怨恨更加强烈了。
+%%%%
+You feel your blood ready itself to protect you.
+你感到血液准备好保护你了。
+%%%%
+You feel your blood thicken.
+你感到血液变浓了。
+%%%%
+You feel your blood thin.
+你感到血液变稀了。
+%%%%
+You feel your bloodlust ebbing.
+你感到嗜血欲望正在消退。
+%%%%
+You feel your constitution grow even weaker.
+你感到体质变得更加虚弱。
+%%%%
+You feel your constitution improve a little.
+你感到体质略有改善。
+%%%%
+You feel your constitution return to normal.
+你感到体质恢复了正常。
+%%%%
+You feel your constitution weaken.
+你感到体质变弱了。
+%%%%
+You feel your life force and your magical essence meld.
+你感到生命力和魔法精华融合了。
+%%%%
+You feel your magical essence form a protective shroud around your flesh.
+你感到魔法精华在你的肉体周围形成了一层保护罩。
+%%%%
+You feel your magical essence link to the dungeon's wands.
+你感到魔法精华与地牢的魔杖链接了。
+%%%%
+You feel your magical power running wild!
+你感到魔力失控了！
+%%%%
+You feel your soul grow bitter with the corrosive destruction of Dis.
+你感到灵魂因狄斯的腐蚀毁灭而变苦。
+%%%%
+You feel your soul grow cold with the frigid destruction of Cocytus.
+你感到灵魂因科赛特斯的严寒毁灭而变冷。
+%%%%
+You feel your soul grow hot with the fiery destruction of Gehenna.
+你感到灵魂因基赫纳的烈焰毁灭而变热。
+%%%%
+You feel your soul grow tainted with the deathly destruction of Tartarus.
+你感到灵魂因塔塔罗斯的死亡毁灭而变得污浊。
+%%%%
+You feel your time running out.
+你感到时间不多了。
+%%%%
+You feel your voice swell to a thunderous volume.
+你感到声音膨胀到雷鸣般的音量。
+%%%%
+You feel your will become almost unbreakable.
+你感到意志几乎牢不可破。
+%%%%
+You gain a new grip on the flow of your magic.
+你获得了对魔法流动的新掌控。
+%%%%
+You gain the ability to drink.
+你获得了饮酒的能力。
+%%%%
+You grow a small tail.
+你长出了一条小尾巴。
+%%%%
+You grow two extra arms.
+你长出了两只额外的手臂。
+%%%%
+You have covered nearby walls with an icy ambush.
+你已用冰霜伏击覆盖了附近的墙壁。
+%%%%
+You have got your breath back.
+你恢复了呼吸。
+%%%%
+You have lost your courage.
+你失去了勇气。
+%%%%
+You have regained your courage.
+你重新获得了勇气。
+%%%%
+You heal twice as much from potions.
+你从药水中获得的治疗量翻倍了。
+%%%%
+You may recruit a defeated apostle into your service
+你可以将击败的使徒招募到麾下。
+%%%%
+You no longer brawl whenever you drink a healing potion.
+你不再因喝治疗药水而斗殴。
+%%%%
+You no longer feel a hidden potential within.
+你不再感到体内有隐藏的潜能。
+%%%%
+You no longer feel a malignance within.
+你不再感到体内有恶念。
+%%%%
+You no longer feel aware of treasure.
+你不再感到能感知宝物。
+%%%%
+You no longer feel cold resistant.
+你不再感到对寒冷有抗性。
+%%%%
+You no longer feel destructive magic coursing through your claws.
+你不再感到毁灭魔法在爪间流淌。
+%%%%
+You no longer feel extra vulnerable to harm.
+你不再感到特别容易受到伤害。
+%%%%
+You no longer feel heat resistant.
+你不再感到对高温有抗性。
+%%%%
+You no longer feel sensitive to extremes of temperature
+你不再对极端温度敏感。
+%%%%
+You no longer feel strong-willed.
+你不再感到意志坚定。
+%%%%
+You no longer feel vulnerable to cold.
+你不再感到易受寒冷伤害。
+%%%%
+You no longer feel vulnerable to heat.
+你不再感到易受高温伤害。
+%%%%
+You no longer feel weak-willed.
+你不再感到意志薄弱。
+%%%%
+You no longer heal twice as much from potions.
+你不再从药水中获得双倍治疗。
+%%%%
+You possess the skills of a mighty hero.
+你拥有强大英雄的技能。
+%%%%
+You recover from draining at a normal speed again.
+你从吸取效果中恢复的速度恢复正常了。
+%%%%
+You reflexes return to normal.
+你的反应恢复了正常。
+%%%%
+You reflexes speed back up.
+你的反应速度恢复了。
+%%%%
+You refuse to leave the level so soon after announcing yourself.
+你拒绝在宣告自己后如此迅速地离开这一层。
+%%%%
+You regain all your potential.
+你恢复了全部潜能。
+%%%%
+You regain all your skill.
+你恢复了全部技能。
+%%%%
+You regain control of your magic.
+你恢复了对魔法的控制。
+%%%%
+You regain some potential.
+你恢复了一些潜能。
+%%%%
+You regain some skill.
+你恢复了一些技能。
+%%%%
+You renounce the frivolity of worldly writings.
+你放弃了世俗文字之轻浮。
+%%%%
+You renounce the hedonism of uninhibited drinking.
+你放弃了不加节制饮酒的享乐主义。
+%%%%
+You shed all your fur.
+你褪去了所有毛发。
+%%%%
+You slip further into the darkness.
+你更深地滑入了黑暗之中。
+%%%%
+You slip into the darkness of the dungeon.
+你滑入了地牢的黑暗之中。
+%%%%
+You smell a hint of brimstone.
+你闻到一丝硫磺味。
+%%%%
+You start regenerating.
+你开始再生。
+%%%%
+You start to feel less resistant.
+你开始感到抗性减弱了。
+%%%%
+You stop exuding ooze.
+你停止了渗出软泥。
+%%%%
+You stop regenerating.
+你停止了再生。
+%%%%
+You suddenly feel aware of treasure.
+你突然感到能感知宝物。
+%%%%
+You voice quiets to a reasonable volume.
+你的声音安静到了合理的音量。
+%%%%
+You will be able to unleash your equipped armour.
+你将能够发动装备的盔甲。
+%%%%
+You will become an instrument of Makhleb's will.
+你将成为马克勒布意志的工具。
+%%%%
+You will scour this world clean.
+你将净化这个世界。
+%%%%
+Your Destruction is growing increasingly wild.
+你的毁灭之力正变得越来越狂野。
+%%%%
+Your ability to control magic is disrupted.
+你控制魔法的能力受到了干扰。
+%%%%
+Your ability to control magic is less disrupted.
+你控制魔法的能力受到的干扰减轻了。
+%%%%
+Your ability to control magic is more disrupted.
+你控制魔法的能力受到了更严重的干扰。
+%%%%
+Your ability to control magic is no longer disrupted.
+你控制魔法的能力不再受到干扰。
+%%%%
+Your affinity for the darkness vanishes.
+你对黑暗的亲和力消失了。
+%%%%
+Your affinity for the darkness weakens.
+你对黑暗的亲和力减弱了。
+%%%%
+Your arms feel tentacular.
+你的手臂感到如触手般。
+%%%%
+Your arms no longer feel tentacular.
+你的手臂不再感到如触手般了。
+%%%%
+Your attacks are enfeebled.
+你的攻击被削弱了。
+%%%%
+Your attunement to dungeon structure grows further.
+你与地牢结构的调谐进一步增强了。
+%%%%
+Your beak shortens and softens into a mouth.
+你的喙变短变软，成了正常的嘴。
+%%%%
+Your blood burns even hotter!
+你的血液燃烧得更加炽热！
+%%%%
+Your blood calms down again.
+你的血液再次平静下来。
+%%%%
+Your blood feels a little less spiteful.
+你感到血液中的怨恨少了一些。
+%%%%
+Your blood flow once more matches the normal passage of time.
+你的血液流动再次与正常的时间流逝同步了。
+%%%%
+Your blood flow starts aligning itself with the normal passage of time.
+你的血液流动开始与正常的时间流逝同步。
+%%%%
+Your blood heats up.
+你的血液升温了。
+%%%%
+Your blood runs red-hot!
+你的血液变得炽热！
+%%%%
+Your blows are lightning fast.
+你的打击快如闪电。
+%%%%
+Your body becomes darker with foul flame.
+你的身体因邪恶火焰而变得更暗。
+%%%%
+Your body becomes less malleable.
+你的身体不那么可塑了。
+%%%%
+Your body becomes less viscous.
+你的身体不那么粘稠了。
+%%%%
+Your body becomes more malleable.
+你的身体变得更加可塑。
+%%%%
+Your body becomes stretchy.
+你的身体变得有弹性。
+%%%%
+Your body becomes viscous.
+你的身体变得粘稠。
+%%%%
+Your body churns, leaving you strangely parched.
+你的身体翻腾，使你异常干渴。
+%%%%
+Your body churns, leaving you strangely quenched.
+你的身体翻腾，使你异常解渴。
+%%%%
+Your body darkens with foul flame.
+你的身体因邪恶火焰而变暗。
+%%%%
+Your body partially splits into a small jelly.
+你的身体部分分裂成一个小凝胶体。
+%%%%
+Your body returns to its normal consistency.
+你的身体恢复了正常的质地。
+%%%%
+Your body twists and deforms.
+你的身体扭曲变形。
+%%%%
+Your body vibrates.
+你的身体在震动。
+%%%%
+Your body's darkness fades completely.
+你身体的暗色完全褪去了。
+%%%%
+Your body's darkness fades.
+你身体的暗色褪去了。
+%%%%
+Your body's shape seems more normal.
+你的身体形状似乎正常了一些。
+%%%%
+Your bones become less dense.
+你的骨骼密度降低了。
+%%%%
+Your bones become slightly less dense.
+你的骨骼密度略有降低。
+%%%%
+Your bones become somewhat less dense.
+你的骨骼密度有所降低。
+%%%%
+Your brain expands to incredible size.
+你的大脑膨胀到了惊人的大小。
+%%%%
+Your brain expands.
+你的大脑膨胀了。
+%%%%
+Your brain returns to normal size.
+你的大脑恢复了正常大小。
+%%%%
+Your brain shrinks.
+你的大脑缩小了。
+%%%%
+Your connection to magic feels less subdued.
+你与魔法的连接不那么被抑制了。
+%%%%
+Your connection to magic feels more subdued.
+你与魔法的连接感到更加被抑制了。
+%%%%
+Your connection to magic feels nearly dormant.
+你与魔法的连接几乎沉睡。
+%%%%
+Your connection to magic feels subdued.
+你与魔法的连接感到被抑制了。
+%%%%
+Your control of surrounding life forces is gone.
+你对周围生命力的控制消失了。
+%%%%
+Your control of surrounding life forces weakens.
+你对周围生命力的控制减弱了。
+%%%%
+Your corrupting presence intensifies.
+你的腐化存在变得更加强烈。
+%%%%
+Your demonic guardian is gone.
+你的恶魔守护者消失了。
+%%%%
+Your experience no longer applies equally to all skills.
+你的经验不再均等地应用于所有技能。
+%%%%
+Your experience now applies equally to all skills.
+你的经验现在均等地应用于所有技能。
+%%%%
+Your feet have mutated into hooves.
+你的双脚变异成了蹄子。
+%%%%
+Your feet stretch into talons.
+你的双脚伸成了利爪。
+%%%%
+Your feet thicken and deform.
+你的双脚变厚变形了。
+%%%%
+Your film of slime dries up.
+你的黏液膜干涸了。
+%%%%
+Your fingernails lengthen.
+你的指甲变长了。
+%%%%
+Your fingernails look duller.
+你的指甲看起来变钝了。
+%%%%
+Your fingernails sharpen.
+你的指甲变锋利了。
+%%%%
+Your fingernails shrink to normal size.
+你的指甲缩回了正常大小。
+%%%%
+Your flames burn bright with remembrance.
+你的火焰因追忆而燃烧得更加明亮。
+%%%%
+Your flames grow less ravenous.
+你的火焰变得不那么贪婪了。
+%%%%
+Your fur grows into a thick mane.
+你的毛发长成了厚密的鬃毛。
+%%%%
+Your genetic malignance weakens.
+你基因的恶念减弱了。
+%%%%
+Your grip strengthens on the flow of your magic.
+你对魔法流动的掌控增强了。
+%%%%
+Your hands begin to faintly glow with unholy energy.
+你的双手开始散发出微弱的邪恶光芒。
+%%%%
+Your hands feel fleshier.
+你的双手感觉更有肉了。
+%%%%
+Your hands glow brighter with unholy energy.
+你的双手散发出更亮的邪恶光芒。
+%%%%
+Your hands have recently discharged their full voltage.
+你的双手最近已释放了全部电压。
+%%%%
+Your hands twist and begin to emit a powerful aura of unholy energy.
+你的双手扭曲并开始散发出强大的邪恶气息。
+%%%%
+Your hands twist into claws.
+你的双手扭曲成了爪子。
+%%%%
+Your hidden genetic potential grows.
+你隐藏的基因潜能增长了。
+%%%%
+Your hidden genetic potential wanes.
+你隐藏的基因潜能衰退了。
+%%%%
+Your hooves expand and flesh out into feet!
+你的蹄子扩展长成了脚！
+%%%%
+Your hooves look more like feet.
+你的蹄子看起来更像脚了。
+%%%%
+Your icy blue scales disappear.
+你冰蓝色的鳞片消失了。
+%%%%
+Your icy blue scales recede somewhat.
+你冰蓝色的鳞片有所消退。
+%%%%
+Your icy envelope grows thicker.
+你的冰霜外壳变厚了。
+%%%%
+Your iridescent scales disappear.
+你虹彩色的鳞片消失了。
+%%%%
+Your iridescent scales recede somewhat.
+你虹彩色的鳞片有所消退。
+%%%%
+Your large bone plates disappear.
+你巨大的骨板消失了。
+%%%%
+Your large bone plates recede somewhat.
+你巨大的骨板有所消退。
+%%%%
+Your legs feel aquatic.
+你的双腿感到适应水栖。
+%%%%
+Your legs feel stronger.
+你的双腿感到更强壮了。
+%%%%
+Your lithotoxin has recently activated.
+你的石化毒素最近已被激活。
+%%%%
+Your lower body returns to normal.
+你的下半身恢复了正常。
+%%%%
+Your lower body turns into a snake tail.
+你的下半身变成了一条蛇尾。
+%%%%
+Your magic begins to regenerate rapidly.
+你的魔力开始快速再生。
+%%%%
+Your magic grows more menacing.
+你的魔法变得更加凶险。
+%%%%
+Your magic regains its normal vibrancy.
+你的魔法恢复了正常的活力。
+%%%%
+Your magical appetite wanes.
+你的魔力需求减少了。
+%%%%
+Your magical essence no longer links to wands of the dungeon.
+你的魔法精华不再与地牢的魔杖链接。
+%%%%
+Your magical flight will help you evade attacks. (EV + 4)
+你的魔法飞行将帮助你躲避攻击。（EV + 4）
+%%%%
+Your magical nature develops, letting you fly evasively.
+你的魔法本质发展了，使你能以闪避之姿飞行。
+%%%%
+Your magical power and health merge together.
+你的魔力和生命融合在了一起。
+%%%%
+Your magical power grows resistant to disruption.
+你的魔力变得能够抵御干扰。
+%%%%
+Your magical power loses its resistance to disruption.
+你的魔力失去了抵御干扰的能力。
+%%%%
+Your magical power will grow resistant to disruption.
+你的魔力将会变得能够抵御干扰。
+%%%%
+Your maw is digesting a delicious meal.
+你的大嘴正在消化一顿美味大餐。
+%%%%
+Your melee and ranged attacks are strengthened by the souls of the fallen.
+你的近战和远程攻击被亡者的灵魂所增强。
+%%%%
+Your melee attacks are strengthened by primal bloodlust.
+你的近战攻击被原始嗜血所增强。
+%%%%
+Your molten scales disappear.
+你熔岩般的鳞片消失了。
+%%%%
+Your molten scales recede somewhat.
+你熔岩般的鳞片有所消退。
+%%%%
+Your mouth dries to ashes.
+你的嘴干如灰烬。
+%%%%
+Your mouth feels dry.
+你的嘴感到干燥。
+%%%%
+Your mouth lengthens and hardens into a beak!
+你的嘴变长变硬，成了一只喙！
+%%%%
+Your natural camouflage becomes less effective.
+你的天然伪装效果减弱了。
+%%%%
+Your natural camouflage becomes more effective.
+你的天然伪装更加有效了。
+%%%%
+Your orb of mesmerism has temporarily expended its magic.
+你的迷魂宝珠暂时耗尽了魔力。
+%%%%
+Your orb of stardust has temporarily expended its magic.
+你的星尘宝珠暂时耗尽了魔力。
+%%%%
+Your prayer is nearing its end.
+你的祈祷即将结束。
+%%%%
+Your protection from cold is fading.
+你对寒冷的防护正在消退。
+%%%%
+Your protection from electricity is fading.
+你对电击的防护正在消退。
+%%%%
+Your protection from fire is fading.
+你对火焰的防护正在消退。
+%%%%
+Your protection from physical attacks is fading.
+你对物理攻击的防护正在消退。
+%%%%
+Your pseudopods become smaller.
+你的伪足变小了。
+%%%%
+Your pseudopods grow in size.
+你的伪足变大了。
+%%%%
+Your pseudopods retract into your body.
+你的伪足缩回了体内。
+%%%%
+Your reaping aura is weakening.
+你的收割光环正在减弱。
+%%%%
+Your reflexes slow further.
+你的反应变得更慢了。
+%%%%
+Your reflexes slow.
+你的反应变慢了。
+%%%%
+Your regeneration stops near monsters.
+你在怪物附近时停止了再生。
+%%%%
+Your repulsive radiation grows stronger.
+你的排斥辐射变强了。
+%%%%
+Your retaliatory reflexes feel dull.
+你的反击反射感到迟钝。
+%%%%
+Your retaliatory reflexes feel sharp.
+你的反击反射感到敏锐。
+%%%%
+Your right eye suddenly reappears! The world regains its depth.
+你的右眼突然重新出现了！世界恢复了深度感。
+%%%%
+Your right eye vanishes! The world loses its depth.
+你的右眼消失了！世界失去了深度感。
+%%%%
+Your rugged brown scales disappear.
+你粗糙的棕色鳞片消失了。
+%%%%
+Your rugged brown scales recede somewhat.
+你粗糙的棕色鳞片有所消退。
+%%%%
+Your servants grow eager to unleash destruction.
+你的仆从们渴望释放毁灭。
+%%%%
+Your shaggy fur recedes somewhat.
+你的蓬松毛发有所消退。
+%%%%
+Your sharp scales disappear.
+你锐利的鳞片消失了。
+%%%%
+Your sharp scales recede somewhat.
+你锐利的鳞片有所消退。
+%%%%
+Your sharp spines disappear entirely.
+你锐利的尖刺完全消失了。
+%%%%
+Your sharp spines retract somewhat.
+你锐利的尖刺有所收缩。
+%%%%
+Your shed blood clings to and protects you.
+你流出的血液附着并保护着你。
+%%%%
+Your shroud of slime is broken and needs time to repair.
+你的黏液屏障已破裂，需要时间修复。
+%%%%
+Your sickness prevents you from regenerating health.
+你的疾病阻止了生命再生。
+%%%%
+Your skeletal structure densifies.
+你的骨骼结构变密了。
+%%%%
+Your skeletal structure returns to normal.
+你的骨骼结构恢复了正常。
+%%%%
+Your skin becomes completely transparent.
+你的皮肤变得完全透明。
+%%%%
+Your skin becomes more translucent.
+你的皮肤变得更加半透明。
+%%%%
+Your skin becomes partially translucent.
+你的皮肤变得部分半透明。
+%%%%
+Your skin feels delicate.
+你的皮肤变得娇嫩了。
+%%%%
+Your skin feels very cold.
+你的皮肤感到极寒。
+%%%%
+Your skin functions as natural camouflage.
+你的皮肤成为了天然伪装。
+%%%%
+Your skin no longer functions as natural camouflage.
+你的皮肤不再是天然伪装了。
+%%%%
+Your skin returns to its normal opacity.
+你的皮肤恢复了正常的不透明度。
+%%%%
+Your skin toughens.
+你的皮肤变坚韧了。
+%%%%
+Your skin warms up.
+你的皮肤暖和起来了。
+%%%%
+Your skin's translucency fades.
+你的皮肤不再半透明了。
+%%%%
+Your skin's transparency fades.
+你的皮肤不再透明了。
+%%%%
+Your slime is starting to congeal.
+你的黏液开始凝固。
+%%%%
+Your slimy green scales disappear.
+你黏滑的绿色鳞片消失了。
+%%%%
+Your slimy green scales recede somewhat.
+你黏滑的绿色鳞片有所消退。
+%%%%
+Your snake tail weakens and can no longer constrict your enemies.
+你的蛇尾变弱了，无法再勒住敌人。
+%%%%
+Your spell have diminished power.
+你的法术威力减弱了。
+%%%%
+Your spellcasting becomes less encumbered by armour.
+你的施法受到盔甲的阻碍减小了。
+%%%%
+Your spellcasting no longer less encumbered by armour.
+你的施法不再受到盔甲的阻碍。
+%%%%
+Your stinger grows larger and begins to produce weakening toxins.
+你的毒刺变得更大并开始产生衰弱毒素。
+%%%%
+Your strikes ignite an explosive catalyst.
+你的打击点燃了爆炸催化剂。
+%%%%
+Your stump has regrown into a hand!
+你的残桩重新长成了一只手！
+%%%%
+Your suffering will be repaid in blood.
+你的苦难将以鲜血偿还。
+%%%%
+Your swarm has recently come to your defense.
+你的蜂群最近来保护你了。
+%%%%
+Your system completely accepts the healing effects of potions.
+你的身体完全接受了药水的治疗效果。
+%%%%
+Your system completely rejects the healing effects of potions.
+你的身体完全排斥药水的治疗效果。
+%%%%
+Your system partially rejects the healing effects of potions.
+你的身体部分排斥药水的治疗效果。
+%%%%
+Your system partly accepts the healing effects of potions.
+你的身体部分接受了药水的治疗效果。
+%%%%
+Your tail grows a sharp stinger.
+你的尾巴长出了一根锋利的毒刺。
+%%%%
+Your tail grows strong enough to constrict your enemies.
+你的尾巴变得足够强壮，可以勒住敌人。
+%%%%
+Your talons dull and shrink into feet.
+你的利爪变钝缩成了脚。
+%%%%
+Your talons look more like feet.
+你的利爪看起来更像脚了。
+%%%%
+Your teeth grow very long and razor-sharp.
+你的牙齿长得极长且锋利如刀。
+%%%%
+Your teeth lengthen and sharpen some more.
+你的牙齿又变长变锋利了一些。
+%%%%
+Your teeth lengthen and sharpen.
+你的牙齿变长变锋利了。
+%%%%
+Your teeth shrink and become duller.
+你的牙齿缩小且变钝了。
+%%%%
+Your teeth shrink to normal size.
+你的牙齿缩回了正常大小。
+%%%%
+Your tendrils retract into your body.
+你的触须缩回了体内。
+%%%%
+Your tentacle spike becomes smaller.
+你的触手尖刺变小了。
+%%%%
+Your tentacle spike disappears.
+你的触手尖刺消失了。
+%%%%
+Your tentacle spike grows bigger.
+你的触手尖刺变大了。
+%%%%
+Your tentacle spike grows even bigger.
+你的触手尖刺变得更大了。
+%%%%
+Your tentacle spike recedes somewhat.
+你的触手尖刺有所消退。
+%%%%
+Your thick fur grows shaggy and warm.
+你的厚密毛发长得蓬松而温暖。
+%%%%
+Your thick fur recedes somewhat.
+你的厚密毛发有所消退。
+%%%%
+Your thin metallic scales disappear.
+你薄金属鳞片消失了。
+%%%%
+Your thin metallic scales recede somewhat.
+你薄金属鳞片有所消退。
+%%%%
+Your thinking seems confused.
+你的思维似乎混乱了。
+%%%%
+Your thoughts seem clearer.
+你的思维似乎更清晰了。
+%%%%
+Your toenails lengthen and sharpen.
+你的趾甲变长变锋利了。
+%%%%
+Your tongue twists.
+你的舌头扭曲了。
+%%%%
+Your unholy channel is weakening.
+你的不洁引导正在减弱。
+%%%%
+Your urge to scream lessens.
+你尖叫的冲动减轻了。
+%%%%
+Your urge to shout disappears.
+你想要大喊的冲动消失了。
+%%%%
+Your vision seems duller.
+你的视力似乎变迟钝了。
+%%%%
+Your vision sharpens.
+你的视力变敏锐了。
+%%%%
+Your wands become infused with your menacing aura.
+你的魔杖被你的凶险气息所灌注。
+%%%%
+Your weapon is exuding a protective aura.
+你的武器正在散发保护光环。
+%%%%
+Your willpower is greatly increased.
+你的意志力大幅增强了。
+%%%%
+Your wings grow larger and stronger.
+你的翅膀长得更大更强壮。
+%%%%
+Your wings shrivel and weaken.
+你的翅膀萎缩变弱了。
+%%%%
+Your yellow scales disappear.
+你黄色的鳞片消失了。
+%%%%
+Your yellow scales recede somewhat.
+你黄色的鳞片有所消退。

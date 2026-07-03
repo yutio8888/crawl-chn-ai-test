@@ -1986,7 +1986,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
             {
                 const string arms = pluralise(species::arm_name(you.species));
                 mprf(MSGCH_MUTATION, "%s",
-                     replace_all(mdef.gain[cur_base_level - 1], "arms",
+                     replace_all(T_(mdef.gain[cur_base_level - 1]), "arms",
                                  arms).c_str());
                 gain_msg = false;
             }
@@ -1999,7 +1999,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 // it into account.
                 const string hands = pluralise(you.hand_name(false));
                 mprf(MSGCH_MUTATION, "%s",
-                     replace_all(mdef.gain[cur_base_level - 1], "hands",
+                     replace_all(T_(mdef.gain[cur_base_level - 1]), "hands",
                                  hands).c_str());
                 gain_msg = false;
             }
@@ -2023,7 +2023,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         notify_stat_change();
 
         if (gain_msg)
-            mprf(MSGCH_MUTATION, "%s", mdef.gain[cur_base_level - 1]);
+            mprf(MSGCH_MUTATION, "%s", T_(mdef.gain[cur_base_level - 1]));
 
         // Do post-mutation effects.
         switch (mutat)
@@ -2236,7 +2236,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     you.equipment.update();
 
     if (lose_msg)
-        mprf(MSGCH_MUTATION, "%s", mdef.lose[you.mutation[mutat]]);
+        mprf(MSGCH_MUTATION, "%s", T_(mdef.lose[you.mutation[mutat]]));
 
     // Do post-mutation effects.
     if (mutat == MUT_FRAIL || mutat == MUT_ROBUST
@@ -2766,7 +2766,7 @@ static string _future_mutation_description(mutation_type mut_type, int levels)
     // If we have a custom message defined for this future mutation, use it.
     const char* const* future_desc = _get_mutation_def(mut_type).will_gain;
     if (future_desc[levels - 1] != NULL)
-        return string(future_desc[levels - 1]);
+        return string(T_(future_desc[levels - 1]));
 
     // Otherwise do some simple string replacements to cover common cases.
     mut_desc = replace_all(mut_desc, " can ", " will be able to ");
