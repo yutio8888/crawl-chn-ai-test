@@ -24916,3 +24916,47 @@ your reserves of magic are already full.
 %%%%
 you cannot cast such powerful magic in your current form.
 当前形态下你无法施放如此强大的魔法。
+fravashi
+弗拉瓦希
+%%%%
+efreet
+伊弗利特
+%%%%
+Agnes
+艾格尼丝
+%%%%
+meliai
+墨利埃
+%%%%
+mangrove
+红树林
+%%%%
+tree
+树
+%%%%
+You feel more conspicuous.
+你感觉更加显眼了。
+%%%%
+The sprites lose interest in your situation.
+精灵对你的处境失去了兴趣。
+%%%%
+You lose your grip on the chains of life and death.
+你失去了对生死之链的掌控。
+%%%%
+You are no longer glowing.
+你不再发光了。
+%%%%
+You feel more in control of yourself again.
+你再次感觉更能控制自己了。
+%%%%
+Your life is in your own %s again!
+你的生命再次掌握在自己的%s中！
+%%%%
+Your familiar recovers from its injuries.
+你的魔宠从伤势中恢复了。
+%%%%
+You can drink potions again.
+你又可以饮用药水了。
+%%%%
+You can read scrolls again.
+你又可以阅读卷轴了。
