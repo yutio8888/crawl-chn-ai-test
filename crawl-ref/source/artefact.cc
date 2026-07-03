@@ -1112,9 +1112,15 @@ bool artp_value_is_valid(artefact_prop_type prop, int value)
 const char *artp_name(artefact_prop_type prop)
 {
     ASSERT_RANGE(prop, 0, ARRAYSZ(artp_data));
-    return artp_data[prop].name;
+    return T_(artp_data[prop].name);
 }
 
+
+const char *artp_raw_name(artefact_prop_type prop)
+{
+    ASSERT_RANGE(prop, 0, ARRAYSZ(artp_data));
+    return artp_data[prop].name;
+}
 /**
  * Return the property type for a given artefact property name.
  *
@@ -1128,7 +1134,7 @@ artefact_prop_type artp_type_from_name(const string &name)
     for (int i = 0; i < ARTP_NUM_PROPERTIES; ++i)
     {
         const auto prop = static_cast<artefact_prop_type>(i);
-        const string pname = artp_name(prop);
+        const string pname = artp_raw_name(prop);
         if (lowercase_string(pname) == prop_name)
             return prop;
     }

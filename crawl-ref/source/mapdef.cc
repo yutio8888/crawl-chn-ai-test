@@ -5418,7 +5418,7 @@ bool item_list::parse_single_spec(item_spec& result, string s)
                 return false;
             }
 
-            const string prop_name = artp_name(prop);
+            const string prop_name = artp_raw_name(prop);
             if (!artp_value_is_valid(prop, val))
             {
                 error = make_stringf("Bad value for artefact property %s: %d",

@@ -150,6 +150,7 @@ artefact_value_type artp_value_type(artefact_prop_type prop);
 bool artp_value_is_valid(artefact_prop_type prop, int value);
 
 const char *artp_name(artefact_prop_type prop);
+const char *artp_raw_name(artefact_prop_type prop);
 artefact_prop_type artp_type_from_name(const string &name);
 bool artp_potentially_good(artefact_prop_type prop);
 bool artp_potentially_bad(artefact_prop_type prop);

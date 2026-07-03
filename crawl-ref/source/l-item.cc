@@ -861,7 +861,7 @@ IDEF(artprops)
         int value = artefact_property(*item, (artefact_prop_type)i);
         if (value)
         {
-            lua_pushstring(ls, artp_name((artefact_prop_type)i));
+            lua_pushstring(ls, artp_raw_name((artefact_prop_type)i));
             lua_pushinteger(ls, value);
             lua_settable(ls, -3);
         }
