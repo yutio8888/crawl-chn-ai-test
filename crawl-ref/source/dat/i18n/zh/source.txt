@@ -26805,6 +26805,7 @@ Shooting star damage:
 %%%%
 Skill
 技能
+%%%%
 Your stasis prevents you from teleporting.
 你的停滞状态阻止你传送。
 %%%%
@@ -28021,3 +28022,8 @@ Error! failed to place monster in tentacle connect change
 tentacle connect failed! What the heck!  severed status %d
 触手连接失败！怎么回事！切断状态%d
 %%%%
+ falls into the
+属于
+%%%%
+\nYour AC would %s.
+\n你的AC将%s。
