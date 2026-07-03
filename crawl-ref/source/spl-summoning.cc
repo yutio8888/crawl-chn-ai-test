@@ -2239,10 +2239,10 @@ spret cast_fulminating_prism(actor* caster, int pow, const coord_def& where,
     {
         if (caster->observable())
         {
-            mprf(T_("%s %s an %s energy prism!"),
-                 caster->name(DESC_THE).c_str(),
-                 caster->conj_verb("conjure").c_str(),
-                 is_shadow ? T_("shadowy") : T_("explosive"));
+            mprf_p(T_("%1$s %3$s an %2$s energy prism!"),
+                   caster->name(DESC_THE).c_str(),
+                   is_shadow ? T_("shadowy") : T_("explosive"),
+                   caster->conj_verb("conjure").c_str());
         }
         else if (you.can_see(*prism))
         {

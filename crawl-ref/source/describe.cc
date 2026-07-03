@@ -2288,10 +2288,10 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             const char* cumber_desc = evp < 100 ? T_("slightly ") :
                                       evp > 100 ? T_("greatly ") : T_("");
             description += make_stringf(
-                "It is cumbersome to wear, and %simpedes the evasion, "
+                T_("It is cumbersome to wear, and %simpedes the evasion, "
                 "spellcasting ability, and attack speed of the wearer. "
                 "These penalties are reduced by the wearer's Shields skill "
-                "and Strength; mastering Shields eliminates penalties.",
+                "and Strength; mastering Shields eliminates penalties."),
                 cumber_desc);
         }
         if (!monster)
@@ -7039,7 +7039,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         }
         else
             inf.body << "Killing " << it_o << " yields ";
-        inf.body << "no experience or items";
+        inf.body << T_("no experience or items");
 
         if (!did_stair_use)
             inf.body << "; " << it << " " << is << " incapable of using stairs";
@@ -7047,7 +7047,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         inf.body << ".\n";
     }
     else if (mi.is(MB_NO_REWARD))
-        inf.body << "\nKilling this monster yields no experience or items.";
+        inf.body << "\n" << T_("Killing this monster yields no experience or items.");
     else if (mons_class_leaves_hide(mi.type))
     {
         inf.body << "\nIf " << it << " " << is <<

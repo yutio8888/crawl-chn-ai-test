@@ -3223,13 +3223,13 @@ item_def* monster_die(monster& mons, killer_type killer,
             else if (mons.type == MONS_PLATINUM_PARAGON)
                 msg = " expends the last of its power.";
             else if (mons.type == MONS_RENDING_BLADE)
-                msg = " implodes with a snap.";
+                msg = T_(" implodes with a snap.");
             else if (mons.type == MONS_ERYTHROSPITE)
-                msg = " expends the last of its anger.";
+                msg = T_(" expends the last of its anger.");
             else if (mons.type == MONS_CREEPING_PLASMODIUM
                      || mons.type == MONS_NASCENT_PLASMODIUM)
             {
-                msg = " shrivels and dies.";
+                msg = T_(" shrivels and dies.");
             }
             else
             {
@@ -3237,12 +3237,12 @@ item_def* monster_die(monster& mons, killer_type killer,
                     mprf(T_("A nearby %s perishes wretchedly."), mons.name(DESC_PLAIN, false).c_str());
                 else if (mons_class_is_fragile(mons.type))
                 {
-                    mprf(MSGCH_MONSTER_TIMEOUT, "A nearby %s withers and dies.",
+                    mprf(MSGCH_MONSTER_TIMEOUT, T_("A nearby %s withers and dies."),
                          mons.name(DESC_PLAIN, false).c_str());
                 }
                 // Default message so that at least *something* is printed.
                 else
-                    msg = " fades away.";
+                    msg = T_(" fades away.");
             }
 
             if (!msg.empty())
@@ -3942,18 +3942,18 @@ string summoned_poof_msg(const monster& mons)
     case MON_SUMM_WRATH:
     case MON_SUMM_AID:
         if (is_good_god(mons.god))
-            msg = "dissolves into sparkling lights";
+            msg = T_("dissolves into sparkling lights");
         else if (mons.god == GOD_YREDELEMNUL)
-            msg = "returns to the grave";
+            msg = T_("returns to the grave");
         break;
 
     case SPELL_SPECTRAL_CLOUD:
     case SPELL_CALL_LOST_SOULS:
-        msg = "fades away";
+        msg = T_("fades away");
         break;
 
     case SPELL_STICKS_TO_SNAKES:
-        msg = "turns back into a lifeless stick";
+        msg = T_("turns back into a lifeless stick");
         break;
     }
 
@@ -3967,7 +3967,7 @@ string summoned_poof_msg(const monster& mons)
         && summon_type != SPELL_SHADOW_CREATURES
         && summon_type != MON_SUMM_CHAOS)
     {
-        msg = "dissolves into sparkling lights";
+        msg = T_("dissolves into sparkling lights");
     }
 
     if (mons_is_slime(mons)

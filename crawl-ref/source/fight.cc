@@ -1665,7 +1665,7 @@ bool stop_summoning_prompt(resists_t resists, monclass_flags_t flags,
     if (noun.empty())
         return false;
 
-    string prompt = make_stringf("Really %s while %s?",
+    string prompt = make_stringf(T_("Really %s while %s?"),
                                  verb.c_str(), noun.c_str());
 
     if (yesno(prompt.c_str(), false, 'n'))

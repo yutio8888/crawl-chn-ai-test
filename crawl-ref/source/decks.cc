@@ -344,8 +344,8 @@ string deck_summary()
         const string name = deck_data ? deck_data->name : "bugginess";
         if (cards)
         {
-            stats.push_back(make_stringf("%d %s card%s", cards,
-               name.c_str(), cards == 1 ? "" : "s"));
+            stats.push_back(make_stringf(T_("%d %s card%s"), cards,
+               name.c_str(), cards == 1 ? T_("") : T_("s")));
         }
     }
     return comma_separated_line(stats.begin(), stats.end());
@@ -499,7 +499,7 @@ string deck_description(deck_type deck)
         else
             desc << "It is currently empty ";
 
-        desc << make_stringf("and can contain up to %d cards.",
+        desc << make_stringf(T_("and can contain up to %d cards."),
                              all_decks[deck].deck_max);
         desc << "\n";
     }
@@ -1105,10 +1105,10 @@ static void _damaging_card(card_type card, int power,
                            bool dealt = false)
 {
     const int power_level = _get_power_level(power);
-    const char *participle = dealt ? "dealt" : "drawn";
+    const char *participle = dealt ? T_("dealt") : T_("drawn");
 
     bool done_prompt = false;
-    string prompt = make_stringf("You have %s %s.", participle,
+    string prompt = make_stringf(T_("You have %s %s."), participle,
                                  card_name(card));
 
     dist target;
@@ -1660,7 +1660,7 @@ void card_effect(card_type which_card,
                  bool dealt,
                  bool punishment, bool tell_card)
 {
-    const char *participle = dealt ? "dealt" : "drawn";
+    const char *participle = dealt ? T_("dealt") : T_("drawn");
     const int power = _card_power(punishment);
 
     dprf("Card power: %d", power);

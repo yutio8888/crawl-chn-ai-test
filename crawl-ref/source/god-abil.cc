@@ -2857,9 +2857,9 @@ string dithmenos_cannot_shadowslip_reason()
         return "Your shadow isn't in sight!";
     else if (is_feat_dangerous(env.grid(shadow->pos())))
     {
-        return make_stringf("It would be unwise to slip onto %s.",
+        return make_stringf(T_("It would be unwise to slip onto %s."),
                              env.grid(shadow->pos()) == DNGN_DEEP_WATER
-                                ? "deep water" : "lava");
+                                ? T_("deep water") : T_("lava"));
     }
 
     return "";

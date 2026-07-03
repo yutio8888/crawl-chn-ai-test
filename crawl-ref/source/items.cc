@@ -1861,7 +1861,7 @@ static void _get_book(item_def& it)
     {
         if (you.has_mutation(MUT_INNATE_CASTER))
         {
-            mprf("%s burns to shimmering ash in your grasp.",
+            mprf(T_("%s burns to shimmering ash in your grasp."),
                  it.name(DESC_THE).c_str());
             return;
         }
@@ -1957,7 +1957,7 @@ static void _get_rune(const item_def& it, bool quiet)
         else if (nrunes == ZOT_ENTRY_RUNES)
         {
             // might be inappropriate in new Sprints, please change it then
-            mprf("%d runes! That's enough to enter the realm of Zot.",
+            mprf(T_("%d runes! That's enough to enter the realm of Zot."),
                  nrunes);
         }
         else if (nrunes > 1)
@@ -2128,7 +2128,7 @@ static bool _merge_evokers(const item_def &it, int &inv_slot, bool quiet)
         {
             if (!quiet)
             {
-                mprf("%s cannot be improved any further.",
+                mprf(T_("%s cannot be improved any further."),
                      you.inv[inv_slot].name(DESC_YOUR).c_str());
             }
             return true;

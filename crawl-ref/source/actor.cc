@@ -467,17 +467,17 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!escape_verb.empty())
         {
-            mprf("%s %s free of %s!",
+            mprf(T_("%s %s free of %s!"),
                  constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else
         {
-            mprf("%s %s %s grip on %s.",
+            mprf(T_("%s %s %s grip on %s."),
                 attacker_desc.c_str(),
                 force_plural ? verb.c_str()
                             : conj_verb(verb).c_str(),
-                force_plural ? "their" : pronoun(PRONOUN_POSSESSIVE).c_str(),
+                force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
                 constrictee->name(DESC_THE).c_str());
         }
     }
@@ -790,7 +790,7 @@ void actor::constriction_damage_defender(actor &defender)
     }
     else if (you.can_see(defender) || defender.is_player())
     {
-        mprf("%s %s constricted%s%s",
+        mprf(T_("%s %s constricted%s%s"),
              defender.name(DESC_THE).c_str(),
              defender.conj_verb("are").c_str(),
 #ifdef DEBUG_DIAGNOSTICS
@@ -952,7 +952,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         const int damother = other->apply_ac(damage);
         if (you.can_see(*this) || you.can_see(*other))
         {
-            mprf("%s %s with %s%s",
+            mprf(T_("%s %s with %s%s"),
                  name(DESC_THE).c_str(),
                  conj_verb("collide").c_str(),
                  other->name(DESC_THE).c_str(),

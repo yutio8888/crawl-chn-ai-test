@@ -1369,25 +1369,25 @@ string ability_name(ability_type ability, bool dbname)
             if (dbname)
                 return "Recruit Apostle";
             else
-                return "Recruit " + get_apostle_name(0);
+                return make_stringf(T_("Recruit %s"), get_apostle_name(0).c_str());
 
         case ABIL_BEOGH_DISMISS_APOSTLE_1:
             if (dbname)
                 return "Dismiss Apostle";
             else
-                return "Dismiss " + get_apostle_name(1, true);
+                return make_stringf(T_("Dismiss %s"), get_apostle_name(1, true).c_str());
 
         case ABIL_BEOGH_DISMISS_APOSTLE_2:
             if (dbname)
                 return "Dismiss Apostle";
             else
-                return "Dismiss " + get_apostle_name(2, true);
+                return make_stringf(T_("Dismiss %s"), get_apostle_name(2, true).c_str());
 
         case ABIL_BEOGH_DISMISS_APOSTLE_3:
             if (dbname)
                 return "Dismiss Apostle";
             else
-                return "Dismiss " + get_apostle_name(3, true);
+                return make_stringf(T_("Dismiss %s"), get_apostle_name(3, true).c_str());
 
         case ABIL_MAKHLEB_BRAND_SELF_1:
         case ABIL_MAKHLEB_BRAND_SELF_2:
@@ -1396,12 +1396,13 @@ string ability_name(ability_type ability, bool dbname)
                 return "Brand Self";
             else
             {
-                return make_stringf("Accept %s",
+                return make_stringf(T_("Accept %s"),
                                     mutation_name(makhleb_ability_to_mutation(ability)));
             }
 
         default:
-            return get_ability_def(ability).name;
+            return dbname ? get_ability_def(ability).name
+                          : T_(get_ability_def(ability).name);
     }
 }
 
@@ -2599,7 +2600,7 @@ static vector<string> _desc_slouch_damage(const monster_info& mi)
     if (!monster_at(mi.pos) || !you.can_see(*monster_at(mi.pos)))
         return vector<string>{};
     else if (!is_slouchable(mi.pos))
-        return vector<string>{make_stringf("not susceptible")};
+        return vector<string>{make_stringf(T_("not susceptible"))};
     else
         return vector<string>{make_stringf("damage: %dd3 / 2", slouch_damage(monster_at(mi.pos)))};
 }

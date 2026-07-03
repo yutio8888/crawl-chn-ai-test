@@ -378,7 +378,7 @@ static const map<spell_type, mons_spell_logic> spell_to_logic = {
         },
         [](monster &caster, mon_spell_slot, bolt&) {
             const string god = apostrophise(god_name(caster.god));
-            const string msg = make_stringf(" invokes %s protection!",
+            const string msg = make_stringf(T_(" invokes %s protection!"),
                                             god.c_str());
             simple_monster_message(caster, msg.c_str(), false, MSGCH_MONSTER_SPELL);
             // Not spell_hd(spell_cast); this is an invocation
@@ -1385,7 +1385,7 @@ static function<void(bolt&, const monster&, int)>
 
 static void _cast_injury_mirror(monster &mons, mon_spell_slot /*slot*/, bolt&)
 {
-    const string msg = make_stringf(" is filled with unearthly specular energy.");
+    const string msg = make_stringf(T_(" is filled with unearthly specular energy."));
     simple_monster_message(mons, msg.c_str(), false, MSGCH_MONSTER_SPELL);
     mons.add_ench(mon_enchant(ENCH_MIRROR_DAMAGE, &mons,
                               random_range(7, 9) * BASELINE_DELAY));
@@ -4509,7 +4509,7 @@ static void _prayer_of_brilliance(monster* agent)
         {
             if (!mi->has_ench(ENCH_EMPOWERED_SPELLS) && you.can_see(**mi))
             {
-               mprf("%s spells are empowered by the prayer of brilliance!",
+               mprf(T_("%s spells are empowered by the prayer of brilliance!"),
                     mi->name(DESC_ITS).c_str());
             }
             mi->add_ench(mon_enchant(ENCH_EMPOWERED_SPELLS, agent));
@@ -4619,7 +4619,7 @@ static bool _prepare_ghostly_sacrifice(monster &caster, bolt &beam)
 
     if (you.see_cell(victim->pos()))
     {
-        mprf("%s animating energy erupts into ghostly fire!",
+        mprf(T_("%s animating energy erupts into ghostly fire!"),
              apostrophise(victim->name(DESC_THE)).c_str());
     }
     monster_die(*victim, &caster, true);
@@ -4769,7 +4769,7 @@ static bool _prepare_seracfall(monster &caster, bolt &beam)
 
     // Beam origin message handled here
     beam.seen = true;
-    mprf("%s collapses into a mass of ice!", victim->name(DESC_THE).c_str());
+    mprf(T_("%s collapses into a mass of ice!"), victim->name(DESC_THE).c_str());
     monster_die(*victim, &caster, true);
     return true;
 }
@@ -5260,7 +5260,7 @@ bool handle_mon_spell(monster* mons)
         if (interference == DO_BLOCK_ATTACK)
         {
             const string message
-                = make_stringf(" begins to %s, but is stunned by your conviction!",
+                = make_stringf(T_(" begins to %s, but is stunned by your conviction!"),
                                _ru_spell_stop_desc(*mons).c_str());
             simple_monster_message(*mons, message.c_str(), false, MSGCH_GOD);
             mons->lose_energy(EUT_SPELL);
@@ -6823,15 +6823,15 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
         message = "The dream sheep are wreathed in dream dust.";
     else if (sleep_pow >= MIN_DREAM_SUCCESS_POWER)
     {
-        message = make_stringf("The dream sheep shake%s wool and sparkle%s.",
-                               num_sheep == 1 ? "s its" : " their",
-                               num_sheep == 1 ? "s": "");
+        message = make_stringf(T_("The dream sheep shake%s wool and sparkle%s."),
+                               num_sheep == 1 ? T_("s its") : T_(" their"),
+                               num_sheep == 1 ? T_("s") : T_(""));
     }
     else // if sleep fails
     {
-        message = make_stringf("The dream sheep ruffle%s wool and motes of "
-                               "dream dust sparkle, to no effect.",
-                               num_sheep == 1 ? "s its" : " their");
+        message = make_stringf(T_("The dream sheep ruffle%s wool and motes of "
+                               "dream dust sparkle, to no effect."),
+                               num_sheep == 1 ? T_("s its") : T_(" their"));
     }
 
     if (foe.is_player())
@@ -7888,7 +7888,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 
         if (you.can_see(*mons))
         {
-            mprf("%s shimmers and seems to become %s!",
+            mprf(T_("%s shimmers and seems to become %s!"),
                  mons->name(DESC_THE).c_str(),
                  number_in_words(n_wanted + 1).c_str());
         }
@@ -8228,7 +8228,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         {
             if (you.can_see(*mons))
             {
-                mprf("%s commands the forest to attack, but nothing happens.",
+                mprf(T_("%s commands the forest to attack, but nothing happens."),
                      mons->name(DESC_THE).c_str());
             }
             return;

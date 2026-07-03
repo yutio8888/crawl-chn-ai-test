@@ -177,7 +177,7 @@ bool check_moveto_cloud(const coord_def& p, const string &move_verb,
 
         if (prompted)
             *prompted = true;
-        string prompt = make_stringf("Really %s into that cloud of %s?",
+        string prompt = make_stringf(T_("Really %s into that cloud of %s?"),
                                      move_verb.c_str(),
                                      cloud_type_name(ctype).c_str());
         learned_something_new(HINT_CLOUD_WARNING);
@@ -222,10 +222,10 @@ bool check_moveto_trap(const coord_def& p, const string &move_verb,
 
         if (prompted)
             *prompted = true;
-        prompt = make_stringf("Really %s %s that %s?", move_verb.c_str(),
+        prompt = make_stringf(T_("Really %s %s that %s?"), move_verb.c_str(),
                               (trap->type == TRAP_ALARM
-                               || trap->type == TRAP_PLATE) ? "onto"
-                              : "into",
+                               || trap->type == TRAP_PLATE) ? T_("onto")
+                              : T_("into"),
                               feature_description_at(p, false, DESC_BASENAME).c_str());
         if (!yesno(prompt.c_str(), true, 'n'))
         {
@@ -3530,9 +3530,9 @@ static void _display_attack_delay(const item_def *offhand)
         // TODO: add amount, as in item description (see _describe_armour)
         // double parens are awkward
         penalty_msg =
-            make_stringf( " (and is slowed by your %s)",
-                         shield_penalty && armour_penalty ? "shield and armour" :
-                         shield_penalty ? "shield" : "armour");
+            make_stringf(T_(" (and is slowed by your %s)"),
+                         shield_penalty && armour_penalty ? T_("shield and armour") :
+                         shield_penalty ? T_("shield") : T_("armour"));
     }
 
     mprf(T_("Your attack delay is about %.1f%s%s."),
@@ -7194,7 +7194,7 @@ string player::no_tele_reason(bool blinking, bool temp) const
         {
             if (item->base_type == OBJ_WEAPONS)
             {
-                problems.push_back(make_stringf("wielding %s",
+                problems.push_back(make_stringf(T_("wielding %s"),
                                                 item->name(DESC_A).c_str()));
             }
             else
@@ -7204,14 +7204,14 @@ string player::no_tele_reason(bool blinking, bool temp) const
         if (worn_notele.size() > static_cast<size_t>(problems.empty() ? 3 : 1))
         {
             problems.push_back(
-                make_stringf("wearing %s %s preventing teleportation",
+                make_stringf(T_("wearing %s %s preventing teleportation"),
                              number_in_words(worn_notele.size()).c_str(),
-                             found_nonartefact ? "items": "artefacts"));
+                             found_nonartefact ? T_("items") : T_("artefacts")));
         }
         else if (!worn_notele.empty())
         {
             problems.push_back(
-                make_stringf("wearing %s",
+                make_stringf(T_("wearing %s"),
                              comma_separated_line(worn_notele.begin(),
                                                   worn_notele.end()).c_str()));
         }
@@ -7220,8 +7220,8 @@ string player::no_tele_reason(bool blinking, bool temp) const
     if (problems.empty())
         return ""; // no problem
 
-    return make_stringf("You cannot %s because you are %s.",
-                        blinking ? "blink" : "teleport",
+    return make_stringf(T_("You cannot %s because you are %s."),
+                        blinking ? T_("blink") : T_("teleport"),
                         comma_separated_line(problems.begin(),
                                              problems.end()).c_str());
 }

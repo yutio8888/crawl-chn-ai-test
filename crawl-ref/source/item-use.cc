@@ -3248,8 +3248,8 @@ bool read(item_def* scroll, dist *target)
         && which_scroll != SCR_AMNESIA
         && which_scroll != SCR_ACQUIREMENT)
     {
-        mprf("It %s %s.",
-             scroll->quantity < prev_quantity ? "was" : "is",
+        mprf(T_("It %s %s."),
+             scroll->quantity < prev_quantity ? T_("was") : T_("is"),
              article_a(scroll_name).c_str());
     }
 
@@ -3417,7 +3417,7 @@ bool use_talisman(item_def& talisman)
                                                      TALISMAN_MEDUSA,
                                                      TALISMAN_SPORE);
 
-        mprf("%s responds to your shapeshifting skill and transforms into a %s!",
+        mprf(T_("%s responds to your shapeshifting skill and transforms into a %s!"),
              real_item.name(DESC_YOUR).c_str(), talisman_type_name(new_type).c_str());
 
         real_item.sub_type = new_type;

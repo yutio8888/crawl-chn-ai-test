@@ -2522,7 +2522,7 @@ void process_command(command_type cmd, command_type prev_cmd)
 
         if (feat_is_altar(env.grid(you.pos())))
         {
-            string msg = "Press <w>%</w> or <w>%</w> to pray at altars.";
+            string msg = T_("Press <w>%</w> or <w>%</w> to pray at altars.");
             insert_commands(msg, { CMD_GO_UPSTAIRS, CMD_GO_DOWNSTAIRS });
             mpr(msg);
         }

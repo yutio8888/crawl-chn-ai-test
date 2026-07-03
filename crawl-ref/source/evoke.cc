@@ -1074,7 +1074,7 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
     if (temp && is_xp_evoker(*item) && evoker_charges(item->sub_type) <= 0)
     {
         // DESC_THE prints "The tin of tremorstones (inert) is presently inert."
-        return make_stringf("The %s is presently inert.",
+        return make_stringf(T_("The %s is presently inert."),
                                             item->name(DESC_DBNAME).c_str());
     }
 

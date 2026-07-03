@@ -121,7 +121,7 @@ static void _removed_beholder_msg(const monster *mons)
 
     if (is_sanctuary(you.pos()) && !mons_is_fleeing(mon))
     {
-        string msg = make_stringf("The Sanctuary denies %s grip on your mind.",
+        string msg = make_stringf(T_("The Sanctuary denies %s grip on your mind."),
                                   mons->name(DESC_ITS).c_str());
         god_speaks(GOD_ZIN, msg.c_str());
         return;

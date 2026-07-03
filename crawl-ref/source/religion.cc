@@ -1886,7 +1886,7 @@ void upgrade_hepliaklqana_ancestor(bool quiet_force)
 
     if (!quiet_force)
     {
-        mprf("%s remembers more of %s old skill.",
+        mprf(T_("%s remembers more of %s old skill."),
              ancestor->name(DESC_YOUR, true).c_str(),
              ancestor->pronoun(PRONOUN_POSSESSIVE, true).c_str());
     }
@@ -1914,7 +1914,7 @@ void upgrade_hepliaklqana_ancestor(bool quiet_force)
         else if (brand != _hepliaklqana_weapon_brand(ancestor->type, old_hd)
                  && !quiet_force)
         {
-            mprf("%s remembers %s %s %s.",
+            mprf(T_("%s remembers %s %s %s."),
                  ancestor->name(DESC_YOUR, true).c_str(),
                  ancestor->pronoun(PRONOUN_POSSESSIVE, true).c_str(),
                  apostrophise(item_base_name(OBJ_WEAPONS, wpn)).c_str(),

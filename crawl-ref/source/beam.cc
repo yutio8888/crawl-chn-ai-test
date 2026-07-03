@@ -893,8 +893,8 @@ void bolt::digging_wall_effect()
             else
                 wall = "rock";
 
-            mprf("%s %s shatters into small pieces.",
-                 agent() && agent()->is_player() ? "The" : "Some",
+            mprf(T_("%s %s shatters into small pieces."),
+                 agent() && agent()->is_player() ? T_("The") : T_("Some"),
                  wall.c_str());
         }
     }
@@ -6123,11 +6123,11 @@ bool enchant_monster_invisible(monster* mon, const string &how)
         // Can't use simple_monster_message(*) here, since it checks
         // for visibility of the monster (and it's now invisible).
         // - bwr
-        mprf("%s %s%s",
+        mprf(T_("%s %s%s"),
              monster_name.c_str(),
              how.c_str(),
-             is_visible ? " for a moment."
-                        : "!");
+             is_visible ? T_(" for a moment.")
+                        : T_("!"));
 
         if (!is_visible && !mons_is_safe(mon))
             autotoggle_autopickup(true);
@@ -6311,9 +6311,9 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                      attack_strength_punctuation(dam).c_str());
             } else {
                 const bool plural = mon->heads() > 1;
-                mprf("%s mind%s blasted%s",
+                mprf(T_("%s mind%s blasted%s"),
                      mon->name(DESC_ITS).c_str(),
-                     plural ? "s are" : " is",
+                     plural ? T_("s are") : T_(" is"),
                      attack_strength_punctuation(dam).c_str());
             }
             obvious_effect = true;
@@ -6900,7 +6900,7 @@ void bolt::refine_for_explosion(const string& explode_msg)
     if (!explode_msg.empty())
     {
         seeMsg  = explode_msg;
-        hearMsg = "You hear an explosion!";
+        hearMsg = T_("You hear an explosion!");
     }
     else
     {
@@ -6909,7 +6909,7 @@ void bolt::refine_for_explosion(const string& explode_msg)
         if (explosion)
         {
             seeMsg = explosion->seeMsg;
-            hearMsg = make_stringf("You hear %s!", explosion->sound);
+            hearMsg = make_stringf(T_("You hear %s!"), explosion->sound);
         }
         else
         {
@@ -7927,7 +7927,7 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
         const monster* mon = tracer.bad_charm_target;
         monclass_flags_t flags = monster_info(mon).airborne() ? M_FLIES
                                                               : M_NO_FLAGS;
-        const string verb = make_stringf("charm %s",
+        const string verb = make_stringf(T_("charm %s"),
                                          mon->name(DESC_THE).c_str());
         if (stop_summoning_prompt(monster_info(mon).resists(), flags, verb))
             return true;

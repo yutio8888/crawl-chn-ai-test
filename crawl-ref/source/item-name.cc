@@ -2285,7 +2285,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
     break;
 
     case OBJ_BAUBLES:
-        buff << "flux bauble";
+        buff << T_("flux bauble");
     break;
 
     default:
@@ -3407,22 +3407,22 @@ static string _general_cannot_read_reason()
 {
     // general checks
     if (player_in_branch(BRANCH_GEHENNA))
-        return "You cannot see clearly; the smoke and ash is too thick!";
+        return T_("You cannot see clearly; the smoke and ash is too thick!");
 
     if (you.berserk())
-        return "You are too berserk!";
+        return T_("You are too berserk!");
 
     if (you.confused())
-        return "You are too confused!";
+        return T_("You are too confused!");
 
     if (you.duration[DUR_NO_SCROLLS])
-        return "You cannot read scrolls in your current state!";
+        return T_("You cannot read scrolls in your current state!");
 
     if (you.is_silenced())
-        return make_stringf("You cannot read scrolls while %s!", player_silenced_reason());
+        return make_stringf(T_("You cannot read scrolls while %s!"), player_silenced_reason());
 
     if (you.has_mutation(MUT_RENOUNCE_SCROLLS) && you.props.exists(RENOUNCE_SCROLLS_TIMER_KEY))
-        return "You refuse to depend on such disposable conveniences.";
+        return T_("You refuse to depend on such disposable conveniences.");
 
     return "";
 }

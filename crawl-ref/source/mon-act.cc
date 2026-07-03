@@ -2017,7 +2017,7 @@ void handle_monster_move(monster* mons)
                                            MSGCH_WARN);
                 }
                 else
-                    mprf(MSGCH_SOUND, "You hear a loud crackle.");
+                    mprf(MSGCH_SOUND, T_("You hear a loud crackle."));
             }
             // Done this way to keep the detonation timer predictable
             mons->speed_increment -= BASELINE_DELAY;
@@ -4008,9 +4008,9 @@ static bool _monster_move(monster* mons, coord_def& delta)
             if (you.see_cell(target))
             {
                 const bool actor_visible = you.can_see(*mons);
-                mprf("%s knocks down a tree!",
+                mprf(T_("%s knocks down a tree!"),
                         actor_visible?
-                        mons->name(DESC_THE).c_str() : "Something");
+                        mons->name(DESC_THE).c_str() : T_("Something"));
                 noisy(25, target);
             }
             else

@@ -675,9 +675,16 @@ void melee_attack::handle_concussion_brand()
             special_damage = random2(damage_done) * 3 / 4 + 1;
             if (needs_message)
             {
-                mprf("%s crush%s %s against the %s%s",
+                if (attacker->is_monster())
+                    mprf(T_("%s crushes %s against the %s%s"),
                         attacker->name(DESC_THE).c_str(),
-                        attacker->is_monster() ? "es" : "",
+                        defender->name(DESC_THE).c_str(),
+                        feat_is_wall(env.grid(back)) ? T_("the wall")
+                                                    : raw_feature_description(back).c_str(),
+                        attack_strength_punctuation(special_damage).c_str());
+                else
+                    mprf(T_("%s crush %s against the %s%s"),
+                        attacker->name(DESC_THE).c_str(),
                         defender->name(DESC_THE).c_str(),
                         feat_is_wall(env.grid(back)) ? T_("the wall")
                                                     : raw_feature_description(back).c_str(),
@@ -1905,7 +1912,7 @@ bool melee_attack::attack()
 
     if (is_sunder && !cleaving && is_sundering_weapon() && you.can_see(*attacker))
     {
-        mprf("%s %s flashes viciously!", attacker->name(DESC_ITS).c_str(),
+        mprf(T_("%s %s flashes viciously!"), attacker->name(DESC_ITS).c_str(),
                                          weapon->name(DESC_PLAIN).c_str());
         draw_ring_animation(attacker->pos(), 2, WHITE, WHITE, true, 25, TILE_BOLT_SUNDERING);
     }
@@ -4813,7 +4820,7 @@ void melee_attack::do_foul_flame()
 
             dprf(DIAG_COMBAT, "Foul flame damage: raw_dmg %d, dmg %d", raw_dmg,
                  dmg);
-            mprf("%s is seared by the foul flame within you%s",
+            mprf(T_("%s is seared by the foul flame within you%s"),
                  attacker->name(DESC_THE).c_str(),
                  attack_strength_punctuation(dmg).c_str());
 
@@ -4881,8 +4888,10 @@ void melee_attack::riposte()
 {
     if (you.see_cell(defender->pos()))
     {
-        mprf("%s riposte%s.", defender->name(DESC_THE).c_str(),
-             defender->is_player() ? "" : "s");
+        if (defender->is_player())
+            mprf(T_("%s riposte."), defender->name(DESC_THE).c_str());
+        else
+            mprf(T_("%s ripostes."), defender->name(DESC_THE).c_str());
     }
     melee_attack attck(defender, attacker, 0, effective_attack_number + 1);
     attck.is_riposte = true;
