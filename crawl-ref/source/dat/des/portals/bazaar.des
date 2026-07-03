@@ -24,17 +24,11 @@ end
 function bazaar_portal()
   local messager =
     timed_msg {
-      initmsg = { crawl.language() == "zh"
-                  and "你听到了数钱的声音。"
-                  or "You hear coins being counted.",
-                  crawl.language() == "zh"
-                  and "一支跨次元商队在这个楼层停了下来，开设了集市。在他们离开前找到入口！"
-                  or "An interdimensional caravan has stopped on this level "
+      initmsg = { crawl.t_("You hear coins being counted."),
+                  crawl.t_("An interdimensional caravan has stopped on this level "
                   .. "and set up a bazaar. Hurry and find its entrance before "
-                  .. "they move on!" },
-      finalmsg = crawl.language() == "zh"
-                 and "你听到了最后一声微弱的铃响。"
-                 or "You hear the last, dying notes of the bell.",
+                  .. "they move on!") },
+      finalmsg = crawl.t_("You hear the last, dying notes of the bell."),
       verb = 'tolling',
       noisemaker = 'bell',
       zh_range_msgs = crawl.language() == "zh" and {
@@ -50,9 +44,7 @@ function bazaar_portal()
 
   return timed_marker {
                low=blow, high=bhigh, msg=messager, single_timed=true,
-               disappear= crawl.language() == "zh"
-                         and "通往集市的大门消失了！"
-                         or 'The gate to the bazaar disappears!',
+               disappear= crawl.t_('The gate to the bazaar disappears!'),
                desc = "flickering gateway to a bazaar",
                floor = 'stone_arch', feat_tile = 'dngn_portal_bazaar_gone'
   }

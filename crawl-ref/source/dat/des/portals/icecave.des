@@ -22,16 +22,10 @@ function ice_cave_portal(e)
     local timeout_turns = crawl.random_range(600, 800)
 
     local messager = timed_msg {
-        initmsg = { crawl.language() == "zh"
-                    and "你感到一阵寒霜掠过全身。"
-                    or "You feel a wave of frost pass over you.",
-                    crawl.language() == "zh"
-                    and "这个楼层有一个通往冰洞的入口。在传送门融化前找到它！"
-                    or "There is an entrance to an ice cave on this level. "
-                    .. "Hurry and find it before the portal melts!" },
-        finalmsg = crawl.language() == "zh"
-                   and "冰层融化的噼啪声正在迅速减弱。"
-                   or "The crackling of melting ice is subsiding rapidly.",
+        initmsg = { crawl.t_("You feel a wave of frost pass over you."),
+                    crawl.t_("There is an entrance to an ice cave on this level. "
+                    .. "Hurry and find it before the portal melts!") },
+        finalmsg = crawl.t_("The crackling of melting ice is subsiding rapidly."),
         verb = 'crackling',
         noisemaker = 'melting archway',
         ranges = {
@@ -58,9 +52,7 @@ function ice_cave_portal(e)
 
     e.lua_marker('O',
         timed_marker {
-          disappear = crawl.language() == "zh"
-                      and "拱门融化了，消失不见。"
-                      or "The archway melts and disappears.",
+          disappear = crawl.t_("The archway melts and disappears."),
           entity = 'archway',
           turns = timeout_turns,
           single_timed = true,

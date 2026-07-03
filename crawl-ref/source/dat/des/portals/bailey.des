@@ -18,16 +18,10 @@ function bailey_portal(e, ptype)
 
   local messager =
     timed_msg {
-      initmsg = { crawl.language() == "zh"
-                  and "你听到了战斗的怒吼。"
-                  or "You hear the roar of battle.",
-                  crawl.language() == "zh"
-                  and "这个楼层有一个通往城寨的入口。在传送门永久关闭前找到它！"
-                  or "There is an entrance to a bailey on this level. "
-                  .. "Hurry and find it before the portal closes forever!" },
-      finalmsg = crawl.language() == "zh"
-                 and "吊闸几乎已降至地面。"
-                 or "$F{The} has been lowered almost to the ground.",
+      initmsg = { crawl.t_("You hear the roar of battle."),
+                  crawl.t_("There is an entrance to a bailey on this level. "
+                  .. "Hurry and find it before the portal closes forever!") },
+      finalmsg = crawl.t_("$F{The} has been lowered almost to the ground."),
 
       verb = 'creaking',
       noisemaker = 'portcullis',
@@ -49,9 +43,7 @@ function bailey_portal(e, ptype)
 
   e.lua_marker('O',
       timed_marker {
-        disappear = crawl.language() == "zh"
-                    and "传送门砰然关闭。"
-                    or "The portal closes with a thud.",
+        disappear = crawl.t_("The portal closes with a thud."),
         entity = 'portcullis',
         bailey_type = ptype,
         turns = timeout_turns,

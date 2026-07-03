@@ -149,9 +149,7 @@ function trove.portal(e)
         return trove_marker  {
             toll = toll,
             entity = "portal",
-            toll_desc = crawl.language() == "zh"
-                       and "进入宝库"
-                       or "to enter a treasure trove",
+            toll_desc = crawl.t_("to enter a treasure trove"),
             floor = "expired_portal",
             feat_tile = "dngn_portal_trove_gone",
         }
@@ -208,15 +206,11 @@ end
 
 function trove_milestone (e, trove_desc)
     crawl.mark_milestone("br.enter",
-        (crawl.language() == "zh" and "进入了" or "entered ")
-        .. trove_desc ..
-        (crawl.language() == "zh" and "。" or "."),
+        crawl.t_("entered ") .. trove_desc .. crawl.t_("."),
         "parent")
-    crawl.take_note((crawl.language() == "zh" and "进入了" or "Entered ")
-        .. trove_desc)
-    crawl.mpr((crawl.language() == "zh" and "你发现了" or "You've discovered ")
-        .. trove_desc
-        .. (crawl.language() == "zh" and "！" or "!"))
+    crawl.take_note(crawl.t_("Entered ") .. trove_desc)
+    crawl.mpr(crawl.t_("You've discovered ") .. trove_desc
+        .. crawl.t_("!"))
 end
 
 function trove_setup(e)
