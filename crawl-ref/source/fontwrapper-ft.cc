@@ -662,8 +662,13 @@ unsigned int FTFontWrapper::string_width(const char *text, bool logical)
             char32_t ch;
             utf8towc(&ch, itr);
             GlyphInfo &glyph = get_glyph_info(ch);
-            width += glyph.advance;
-            adjust = max(0, glyph.width - glyph.advance);
+            // For double-width chars, use grid-based advance to stay
+            // consistent with render_textblock(). Native CJK advances
+            // produce tighter spacing in free-form rendering but break
+            // column alignment when string_width is used for menu layout.
+            int cw = wcwidth(ch);
+            width += (cw > 1) ? m_max_advance.x * cw : glyph.advance;
+            adjust = max(0, glyph.width - (cw > 1 ? m_max_advance.x * cw : glyph.advance));
         }
     }
 
@@ -689,8 +694,10 @@ int FTFontWrapper::find_index_before_width(const char *text, int max_str_width)
         char32_t ch;
         utf8towc(&ch, itr);
         GlyphInfo &glyph = get_glyph_info(ch);
-        width += glyph.advance;
-        int adjust = max(0, glyph.width - glyph.advance);
+        int cw = wcwidth(ch);
+        int adv = (cw > 1) ? m_max_advance.x * cw : glyph.advance;
+        width += adv;
+        int adjust = max(0, glyph.width - adv);
         if (width + adjust > max_str_width)
             return itr-text;
     }
