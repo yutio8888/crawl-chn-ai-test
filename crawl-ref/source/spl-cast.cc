@@ -2993,12 +2993,12 @@ int fail_severity(spell_type spell)
 
 const char *fail_severity_adjs[] =
 {
-    "safe",
-    "mildly dangerous",
-    "dangerous",
-    "quite dangerous",
-    "extremely dangerous",
-    "astonishingly dangerous",
+    T_("safe"),
+    T_("mildly dangerous"),
+    T_("dangerous"),
+    T_("quite dangerous"),
+    T_("extremely dangerous"),
+    T_("astonishingly dangerous"),
 };
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
 
