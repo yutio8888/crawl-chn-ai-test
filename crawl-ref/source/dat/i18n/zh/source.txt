@@ -26957,6 +26957,7 @@ on
 %%%%
  ring
 戒指
+%%%%
 Conjuration
 咒法
 %%%%
@@ -27594,6 +27595,7 @@ like the proverbial pig
 %%%%
 into a gooey mess
 成一团黏糊
+%%%%
 Really use %s?
 确定要使用%s吗？
 %%%%
@@ -28027,3 +28029,42 @@ tentacle connect failed! What the heck!  severed status %d
 %%%%
 \nYour AC would %s.
 \n你的AC将%s。
+%%%%
+'%s' category.\n'%s'类别。
+'%s' category.\n'%s'类别。
+%%%%
+and electrocute %s\n并电击%s
+and electrocute %s\n并电击%s
+%%%%
+and electrocutes %s\n并电击%s
+and electrocutes %s\n并电击%s
+%%%%
+by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
+by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
+%%%%
++ %d (silver)\n+ %d（银）
++ %d (silver)\n+ %d（银）
+%%%%
+%s a shaft!\n%s掉进了竖井！
+%s a shaft!\n%s掉进了竖井！
+%%%%
+with %s\n携带%s
+with %s\n携带%s
+%%%%
+It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
+It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
+%%%%
+ (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
+ (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
+%%%%
+ (next: %s)\n（下一个：%s）
+ (next: %s)\n（下一个：%s）
+%%%%
+ (%d in deck)\n（牌组中%d张）
+ (%d in deck)\n（牌组中%d张）
+%%%%
+ <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
+ <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
+%%%%
+ (%s)\n（%s）
+ (%s)\n（%s）
