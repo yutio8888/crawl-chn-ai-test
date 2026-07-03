@@ -1084,34 +1084,34 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_REGENERATION:          return "obsolete";
         case RING_ATTENTION:             return "obsolete";
 #endif
-        case RING_PROTECTION:            return "AC";
-        case RING_PROTECTION_FROM_FIRE:  return "rF+";
-        case RING_POISON_RESISTANCE:     return "rPois";
-        case RING_PROTECTION_FROM_COLD:  return "rC+";
-        case RING_SLAYING:               return "Slay";
-        case RING_SEE_INVISIBLE:         return "sInv";
-        case RING_RESIST_CORROSION:      return "rCorr";
-        case RING_EVASION:               return "EV";
-        case RING_STEALTH:               return "Stlth+";
+        case RING_PROTECTION:            return T_("AC");
+        case RING_PROTECTION_FROM_FIRE:  return T_("rF+");
+        case RING_POISON_RESISTANCE:     return T_("rPois");
+        case RING_PROTECTION_FROM_COLD:  return T_("rC+");
+        case RING_SLAYING:               return T_("Slay");
+        case RING_SEE_INVISIBLE:         return T_("sInv");
+        case RING_RESIST_CORROSION:      return T_("rCorr");
+        case RING_EVASION:               return T_("EV");
+        case RING_STEALTH:               return T_("Stlth+");
 #if TAG_MAJOR_VERSION == 34
         case RING_SUSTAIN_ATTRIBUTES:    return "obsolete";
 #endif
-        case RING_STRENGTH:              return "Str";
-        case RING_DEXTERITY:             return "Dex";
-        case RING_INTELLIGENCE:          return "Int";
-        case RING_WIZARDRY:              return "Wiz";
-        case RING_MAGICAL_POWER:         return "MP+9";
+        case RING_STRENGTH:              return T_("Str");
+        case RING_DEXTERITY:             return T_("Dex");
+        case RING_INTELLIGENCE:          return T_("Int");
+        case RING_WIZARDRY:              return T_("Wiz");
+        case RING_MAGICAL_POWER:         return T_("MP+9");
         case RING_FLIGHT:                return T_("Fly");
-        case RING_POSITIVE_ENERGY:       return "rN+";
-        case RING_WILLPOWER:             return "Will+";
+        case RING_POSITIVE_ENERGY:       return T_("rN+");
+        case RING_WILLPOWER:             return T_("Will+");
 #if TAG_MAJOR_VERSION == 34
         case RING_FIRE:                  return "obsolete";
         case RING_ICE:                   return "obsolete";
         case RING_TELEPORTATION:         return "obsolete";
         case RING_TELEPORT_CONTROL:      return "obsolete";
 #endif
-        case AMU_MANA_REGENERATION:      return "RegenMP";
-        case AMU_ACROBAT:                return "Acrobat";
+        case AMU_MANA_REGENERATION:      return T_("RegenMP");
+        case AMU_ACROBAT:                return T_("Acrobat");
 #if TAG_MAJOR_VERSION == 34
         case AMU_RAGE:                   return "obsolete";
         case AMU_THE_GOURMAND:           return "obsolete";
@@ -1120,13 +1120,13 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case AMU_CONTROLLED_FLIGHT:      return "obsolete";
         case AMU_INACCURACY:             return "obsolete";
 #endif
-        case AMU_GUARDIAN_SPIRIT:        return "Spirit";
-        case AMU_FAITH:                  return "Faith";
-        case AMU_REFLECTION:             return "Reflect";
-        case AMU_REGENERATION:           return "Regen";
-        case AMU_WILDSHAPE:              return "Wildshape";
-        case AMU_CHEMISTRY:              return "Chemistry";
-        case AMU_DISSIPATION:            return "Dissipate";
+        case AMU_GUARDIAN_SPIRIT:        return T_("Spirit");
+        case AMU_FAITH:                  return T_("Faith");
+        case AMU_REFLECTION:             return T_("Reflect");
+        case AMU_REGENERATION:           return T_("Regen");
+        case AMU_WILDSHAPE:              return T_("Wildshape");
+        case AMU_CHEMISTRY:              return T_("Chemistry");
+        case AMU_DISSIPATION:            return T_("Dissipate");
         case AMU_NOTHING:                return "";
         default: return "buggy";
         }
@@ -1304,10 +1304,10 @@ const char* gizmo_effect_name(int type)
 {
     switch (static_cast<special_gizmo_type>(type))
     {
-        case SPGIZMO_SPELLMOTOR:    return "SpellMotor";
-        case SPGIZMO_GADGETEER:     return "Gadgeteer";
-        case SPGIZMO_REVGUARD:      return "RevGuard";
-        case SPGIZMO_AUTODAZZLE:    return "AutoDazzle";
+        case SPGIZMO_SPELLMOTOR:    return T_("SpellMotor");
+        case SPGIZMO_GADGETEER:     return T_("Gadgeteer");
+        case SPGIZMO_REVGUARD:      return T_("RevGuard");
+        case SPGIZMO_AUTODAZZLE:    return T_("AutoDazzle");
 
         default:
         case SPGIZMO_NORMAL:        return "";

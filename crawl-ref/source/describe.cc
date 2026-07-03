@@ -594,7 +594,7 @@ static vector<string> _randart_propnames(const item_def& item,
     {
         entry = get_unrand_entry(item.unrand_idx);
         if (testbits(item.flags, ISFLAG_CHAOTIC))
-            propnames.push_back("chaos,");
+            propnames.push_back(T_("chaos,"));
     }
     const bool skip_ego = is_unrandom_artefact(item)
                           && entry && entry->flags & UNRAND_FLAG_SKIP_EGO;
@@ -639,7 +639,7 @@ static vector<string> _randart_propnames(const item_def& item,
     }
 
     if (is_unrandom_artefact(item) && entry && entry->inscrip != nullptr)
-        propnames.push_back(entry->inscrip);
+        propnames.push_back(T_(entry->inscrip));
 
     for (const artefact_prop_type &prop : artprop_annotation_order)
     {
