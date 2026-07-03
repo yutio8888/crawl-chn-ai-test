@@ -6401,12 +6401,12 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     TablePrinter pr;
 
     pr.AddRow();
-    pr.AddCell("最大生命", mi.get_max_hp_desc());
-    pr.AddCell("意志", _describe_monster_wl(mi));
-    pr.AddCell("防", _build_bar(mi.ac, 5));
-    pr.AddCell("闪", _build_bar(mi.base_ev, 5));
+    pr.AddCell(T_("Max HP"), mi.get_max_hp_desc());
+    pr.AddCell(T_("Will"), _describe_monster_wl(mi));
+    pr.AddCell(T_("AC"), _build_bar(mi.ac, 5));
+    pr.AddCell(T_("EV"), _build_bar(mi.base_ev, 5));
     if (mi.sh / 2 > 0)  // rescale to match player SH
-        pr.AddCell("盾", _build_bar(mi.sh / 2, 5));
+        pr.AddCell(T_("SH"), _build_bar(mi.sh / 2, 5));
     else
         pr.AddCell(); // ensure alignment
 
@@ -6435,9 +6435,9 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
     pr.AddCell(C_("monster info", "Intelligence"),
                T_(intelligence_description(mi.intel())));
     if (mi.is(MB_SICK) || mi.is(MB_NO_REGEN))
-        pr.AddCell("再生", T_("None"));
+        pr.AddCell(T_("Regen"), T_("None"));
     else if (mons_class_fast_regen(mi.type) || mi.is(MB_REGENERATION))
-        pr.AddCell("再生", make_stringf("%d/回合", mi.regen_rate(1)));
+        pr.AddCell(T_("Regen"), make_stringf(T_("%d/turn"), mi.regen_rate(1)));
                                         // (Wait, what's a 'turn'?)
 
     pr.Print(result);
@@ -6567,23 +6567,12 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
     if (!resist_descriptions.empty())
     {
-        if (zh)
-        {
-            result << uppercase_first(pronoun)
-                   << comma_separated_line(resist_descriptions.begin(),
-                                           resist_descriptions.end(),
-                                           "；", "；")
-                   << "。\n";
-        }
-        else
-        {
-            result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural) << " "
-                   << comma_separated_line(resist_descriptions.begin(),
-                                           resist_descriptions.end(),
-                                           "; and ", "; ")
-                   << ".\n";
-        }
+        result << uppercase_first(pronoun) << " "
+               << conjugate_verb("are", plural) << " "
+               << comma_separated_line(resist_descriptions.begin(),
+                                       resist_descriptions.end(),
+                                       T_("; and "), T_("; "))
+               << T_(".\n");
     }
 
     // Is monster susceptible to anything? (On a new line.)
@@ -6649,20 +6638,9 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
     if (mons_class_flag(mi.type, M_ACID_SPLASH))
     {
-        if (zh)
-            result << uppercase_first(pronoun)
-                   << "近战攻击时会额外造成1d5点酸伤害。\n";
-        else
-            result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("inflict", plural)
-                   << " 1d5 acid damage when struck in melee.\n";
-    }
-
-    if (mons_class_flag(mi.type, M_ACID_SPLASH))
-    {
         result << uppercase_first(pronoun) << " "
-               << conjugate_verb("inflict", plural)
-               << " 1d5 acid damage when struck in melee.\n";
+               << T_("inflict 1d5 acid damage when struck in melee.")
+               << "\n";
     }
 
     // Insubstantialness should take priority.
@@ -7807,7 +7785,7 @@ static string _describe_talisman_form(transformation form_type)
     pr.AddRow();
 
     if (form->size != SIZE_CHARACTER)
-        pr.AddCell("体型", uppercase_first(get_size_adj(form->size)));
+        pr.AddCell(T_("Size"), uppercase_first(get_size_adj(form->size)));
 
     _desc_form_val(pr, "Str", form->str_mod);
     _desc_form_val(pr, "Dex", form->dex_mod);
@@ -7829,42 +7807,42 @@ static string _describe_talisman_form(transformation form_type)
     // Various ad hoc properties of individual forms
     if (form_type == transformation::statue)
     {
-        pr.AddCell("近战伤害", "+50%");
-        pr.AddCell("闪", "-20%", RED);
+        pr.AddCell(T_("Melee damage"), "+50%");
+        pr.AddCell(T_("EV"), "-20%", RED);
     }
     else if (form_type == transformation::maw)
-        pr.AddCell("撕咬速度", "15 aut");
+        pr.AddCell(T_("Bite speed"), "15 aut");
     else if (form_type == transformation::eel_hands)
-        pr.AddCell("电击概率", "50%");
+        pr.AddCell(T_("Shock probability"), "50%");
     else if (form_type == transformation::blade)
-        pr.AddCell("辅助概率", "60% (x2)");
+        pr.AddCell(T_("Aux probability"), "60% (x2)");
     else if (form_type == transformation::death)
-        pr.AddCell("意志", "+");
+        pr.AddCell(T_("Will"), "+");
     else if (form_type == transformation::vampire)
-        pr.AddCell("潜行", "++");
+        pr.AddCell(T_("Stealth"), "++");
     else if (form_type == transformation::spider)
-        pr.AddCell("潜行", "+");
+        pr.AddCell(T_("Stealth"), "+");
     else if (form_type == transformation::aqua)
-        pr.AddCell("攻击距离", "+2");
+        pr.AddCell(T_("Attack range"), "+2");
     else if (form_type == transformation::sphinx)
     {
         if (!you.has_mutation(MUT_NO_ARMOUR))
-            pr.AddCell("马甲", "Yes");
-        pr.AddCell("意志", "+");
+            pr.AddCell(T_("Barding"), "Yes");
+        pr.AddCell(T_("Will"), "+");
     }
     else if (form_type == transformation::werewolf)
     {
-        pr.AddCell("意志", "-", RED);
-        pr.AddCell("Claws", "3");
+        pr.AddCell(T_("Will"), "-", RED);
+        pr.AddCell(T_("Claws"), "3");
     }
     else if (form_type == transformation::walking_scroll
              || form_type == transformation::flux)
     {
-        pr.AddCell("Melee damage", "-50%", RED);
+        pr.AddCell(T_("Melee damage"), "-50%", RED);
     }
 
     if (form_type == transformation::vampire || form_type == transformation::sphinx)
-        pr.AddCell("SInv", "+");
+        pr.AddCell(T_("SInv"), "+");
 
     // Don't output extra blank lines if there's no content.
     if (pr.NumCells() > 0)

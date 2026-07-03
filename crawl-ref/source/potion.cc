@@ -521,7 +521,7 @@ public:
             canned_msg(MSG_OK);
             return false;
         }
-        if (Options.show_invis_targeter && !invisibility_target_check("Confirm quaff"))
+        if (Options.show_invis_targeter && !invisibility_target_check(T_("Confirm quaff")))
         {
             canned_msg(MSG_OK);
             return false;

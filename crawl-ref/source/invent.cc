@@ -1191,24 +1191,24 @@ const char *item_class_name(int type, bool terse)
     {
         switch (type)
         {
-        case OBJ_GOLD:       return "金币";
-        case OBJ_WEAPONS:    return "手持武器";
-        case OBJ_MISSILES:   return "投掷物";
-        case OBJ_ARMOUR:     return "护甲";
-        case OBJ_WANDS:      return "魔杖";
-        case OBJ_SCROLLS:    return "卷轴";
-        case OBJ_JEWELLERY:  return "珠宝";
-        case OBJ_POTIONS:    return "药水";
-        case OBJ_BOOKS:      return "书籍";
-        case OBJ_STAVES:     return "法杖";
-        case OBJ_ORBS:       return "宝珠";
-        case OBJ_MISCELLANY: return "杂物";
-        case OBJ_CORPSES:    return "尸体";
-        case OBJ_RUNES:      return "佐特符文";
-        case OBJ_GEMS:       return "远古宝石";
-        case OBJ_TALISMANS:  return "护符";
-        case OBJ_GIZMOS:     return "小装置";
-        case OBJ_BAUBLES:    return "小饰品";
+        case OBJ_GOLD:       return T_("gold");
+        case OBJ_WEAPONS:    return T_("weapon");
+        case OBJ_MISSILES:   return T_("throwable");
+        case OBJ_ARMOUR:     return T_("armour");
+        case OBJ_WANDS:      return T_("wand");
+        case OBJ_SCROLLS:    return T_("scroll");
+        case OBJ_JEWELLERY:  return T_("jewellery");
+        case OBJ_POTIONS:    return T_("potion");
+        case OBJ_BOOKS:      return T_("book");
+        case OBJ_STAVES:     return T_("magical staff");
+        case OBJ_ORBS:       return T_("orb");
+        case OBJ_MISCELLANY: return T_("misc");
+        case OBJ_CORPSES:    return T_("corpse");
+        case OBJ_RUNES:      return T_("rune");
+        case OBJ_GEMS:       return T_("gem");
+        case OBJ_TALISMANS:  return T_("talisman");
+        case OBJ_GIZMOS:     return T_("gizmo");
+        case OBJ_BAUBLES:    return T_("bauble");
         }
     }
     return "";
@@ -1644,19 +1644,19 @@ bool maybe_warn_about_removing(const item_def& item)
         return true;
 
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
-        prompt += "Really unwield ";
+        prompt += T_("Really unwield ");
     else if (item.base_type == OBJ_ARMOUR)
-        prompt += "真的要脱下";
+        prompt += T_("Really take off");
     else
-        prompt += "Really remove ";
+        prompt += T_("Really remove ");
 
     // now ask
     if (item.cursed())
-        prompt += "and destroy ";
+        prompt += T_("and destroy ");
     prompt += item.name(DESC_INVENTORY);
     prompt += "?";
     if (penance)
-        prompt += " This could place you under penance!";
+        prompt += T_(" This could place you under penance!");
     return yesno(prompt.c_str(), false, 'n');
 }
 
@@ -1667,7 +1667,7 @@ static string _operation_verb(operation_types oper)
     case OPER_WIELD:          return "wield";
     case OPER_QUAFF:          return "quaff";
     case OPER_DROP:           return "drop";
-    case OPER_TAKEOFF:        return "脱下";
+    case OPER_TAKEOFF:        return T_("take off");
     case OPER_WEAR:           return "wear";
     case OPER_PUTON:          return "put on";
     case OPER_REMOVE:         return "remove";

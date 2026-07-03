@@ -2475,10 +2475,18 @@ namespace quiver
                 s += "[<w>^</w>] 所有能力  ";
 
 
-            string mode = make_stringf("%s 聚焦模式: %s",
+            string off_str = T_("off");
+            string on_str = T_("on");
+            string mode = make_stringf("%s %s: %s",
                 menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
-                focus_mode == Focus::NONE ? "<w>off</w>|on"
-                                          : "off|<w>on</w>");;
+                T_("Focus mode"),
+                focus_mode == Focus::NONE
+                    ? make_stringf("<w>%s</w>|%s",
+                                   off_str.c_str(),
+                                   on_str.c_str()).c_str()
+                    : make_stringf("%s|<w>%s</w>",
+                                   off_str.c_str(),
+                                   on_str.c_str()).c_str());;
 
             return pad_more_with(s, mode);
         }
@@ -2799,11 +2807,11 @@ namespace quiver
 
         virtual formatted_string calc_title() override
         {
-            string s = "要设置哪个快捷动作？";
+            string s = T_("Set which quick action?");
             vector<string> extra_cmds;
 
             if (allow_empty)
-                s += "([<w>-</w>] to clear)";
+                s += make_stringf(" ([<w>-</w>] %s)", T_("to clear"));
             return formatted_string::parse_string(s);
         }
 

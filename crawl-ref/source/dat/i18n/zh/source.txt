@@ -24705,3 +24705,165 @@ You turn into %s
 You feel less wooden.
 你感觉不那么像木头了。
 %%%%
+%%%%
+inflict 1d5 acid damage when struck in melee.
+在近战中受到攻击时会额外造成1d5点酸伤害。
+%%%%
+; and 
+；
+%%%%
+; 
+；
+%%%%
+.\n
+。\n
+%%%%
+Confirm quaff
+确认饮用
+%%%%
+Really quaff the %s?%s
+真的要饮用%s吗？%s
+%%%%
+Really quaff with monsters nearby while wearing %s?
+附近有怪物，确定要装备着%s饮用吗？
+%%%%
+Set which quick action?
+要设置哪个快捷动作？
+%%%%
+to clear
+清除
+%%%%
+Focus mode
+聚焦模式
+%%%%
+off
+关闭
+%%%%
+on
+开启
+%%%%
+take off
+脱下
+%%%%
+Melee damage
+近战伤害
+%%%%
+Bite speed
+撕咬速度
+%%%%
+Shock probability
+电击概率
+%%%%
+Aux probability
+辅助概率
+%%%%
+Stealth
+潜行
+%%%%
+Attack range
+攻击距离
+%%%%
+Barding
+马甲
+%%%%
+Max HP
+最大生命
+%%%%
+Will
+意志
+%%%%
+AC
+防
+%%%%
+EV
+闪
+%%%%
+SH
+盾
+%%%%
+Regen
+再生
+%%%%
+%d/turn
+%d/回合
+%%%%
+Size
+体型
+%%%%
+Claws
+爪
+%%%%
+SInv
+看破隐形
+%%%%
+gold
+金币
+%%%%
+weapon
+手持武器
+%%%%
+throwable
+投掷物
+%%%%
+armour
+护甲
+%%%%
+wand
+魔杖
+%%%%
+scroll
+卷轴
+%%%%
+jewellery
+珠宝
+%%%%
+potion
+药水
+%%%%
+book
+书籍
+%%%%
+magical staff
+法杖
+%%%%
+orb
+宝珠
+%%%%
+misc
+杂物
+%%%%
+corpse
+尸体
+%%%%
+rune
+佐特符文
+%%%%
+gem
+远古宝石
+%%%%
+talisman
+护符
+%%%%
+gizmo
+小装置
+%%%%
+bauble
+小饰品
+%%%%
+Really unwield 
+真的要卸下
+%%%%
+Really take off
+真的要脱下
+%%%%
+Really remove 
+真的要移除
+%%%%
+and destroy 
+并摧毁
+%%%%
+ This could place you under penance!
+这可能会让你受到神罚！
+%%%%
+ This action would place you under penance!
+这会使你受到神罚！
