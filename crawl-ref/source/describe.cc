@@ -6567,12 +6567,23 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
     if (!resist_descriptions.empty())
     {
-        result << uppercase_first(pronoun) << " "
-               << conjugate_verb("are", plural) << " "
-               << comma_separated_line(resist_descriptions.begin(),
-                                       resist_descriptions.end(),
-                                       T_("; and "), T_("; "))
-               << T_(".\n");
+        if (zh)
+        {
+            result << uppercase_first(pronoun)
+                   << comma_separated_line(resist_descriptions.begin(),
+                                           resist_descriptions.end(),
+                                           "；", "；")
+                   << "。\n";
+        }
+        else
+        {
+            result << uppercase_first(pronoun) << " "
+                   << conjugate_verb("are", plural) << " "
+                   << comma_separated_line(resist_descriptions.begin(),
+                                           resist_descriptions.end(),
+                                           T_("; and "), T_("; "))
+                   << T_(".\n");
+        }
     }
 
     // Is monster susceptible to anything? (On a new line.)
@@ -6638,9 +6649,17 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
     if (mons_class_flag(mi.type, M_ACID_SPLASH))
     {
-        result << uppercase_first(pronoun) << " "
-               << T_("inflict 1d5 acid damage when struck in melee.")
-               << "\n";
+        if (zh)
+        {
+            result << uppercase_first(pronoun)
+                   << "近战攻击时会额外造成1d5点酸伤害。\n";
+        }
+        else
+        {
+            result << uppercase_first(pronoun) << " "
+                   << conjugate_verb("inflict", plural)
+                   << " 1d5 acid damage when struck in melee.\n";
+        }
     }
 
     // Insubstantialness should take priority.

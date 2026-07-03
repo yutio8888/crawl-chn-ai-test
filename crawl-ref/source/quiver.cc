@@ -2486,7 +2486,7 @@ namespace quiver
                                    on_str.c_str()).c_str()
                     : make_stringf("%s|<w>%s</w>",
                                    off_str.c_str(),
-                                   on_str.c_str()).c_str());;
+                                   on_str.c_str()).c_str());
 
             return pad_more_with(s, mode);
         }

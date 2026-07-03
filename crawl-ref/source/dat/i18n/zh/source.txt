@@ -24705,7 +24705,6 @@ You turn into %s
 You feel less wooden.
 你感觉不那么像木头了。
 %%%%
-%%%%
 inflict 1d5 acid damage when struck in melee.
 在近战中受到攻击时会额外造成1d5点酸伤害。
 %%%%
@@ -24867,3 +24866,6 @@ and destroy
 %%%%
  This action would place you under penance!
 这会使你受到神罚！
+%%%%
+pierce
+刺穿

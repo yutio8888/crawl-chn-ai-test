@@ -2113,16 +2113,16 @@ public:
     string get_verb() const override
     {
         if (you.has_usable_talons())
-            return "爪击";
+            return T_("claw");
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return "刺穿";
+            return T_("pierce");
         return name;
     }
 
     string get_name() const override
     {
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
-            return "触须尖刺";
+            return T_("tentacle spike");
         return name;
     }
 
@@ -2244,7 +2244,7 @@ public:
             return "eel-slap";
 
         if (you.has_usable_claws())
-            return "爪击";
+            return T_("claw");
 
         if (you.has_usable_tentacles())
             return "tentacle-slap";
@@ -3304,7 +3304,7 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { T_("rip"), T_("tear") };
+        static const char *claw_verbs[] = { T_("rip"), T_("tear"), T_("claw") };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
