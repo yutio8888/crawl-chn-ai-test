@@ -122,21 +122,13 @@ bool FTFontWrapper::configure_font()
 
     if (cjk_face)
     {
-        int target_w = display_density.logical_to_device(fsize);
-        FT_Set_Pixel_Sizes(cjk_face, target_w, target_w);
-
-        FT_UInt idx = FT_Get_Char_Index(cjk_face, 0x6C49);
-        if (idx)
-        {
-            FT_Load_Glyph(cjk_face, idx, FT_LOAD_DEFAULT);
-            int cjk_adv = cjk_face->glyph->advance.x >> 6;
-            int target = m_max_advance.x * 2;
-            if (cjk_adv > 0 && cjk_adv != target)
-            {
-                int new_w = target_w * (float)target / cjk_adv;
-                FT_Set_Pixel_Sizes(cjk_face, new_w, target_w);
-            }
-        }
+        // Load CJK face at the same pixel size as the primary font.
+        // CJK glyph advance is forced to the monospace grid + centering
+        // is applied in render_textblock() — pixel-size calibration here
+        // would distort the glyph aspect ratio and make CJK text appear
+        // visually too large/small relative to the primary font.
+        int device_w = display_density.logical_to_device(fsize);
+        FT_Set_Pixel_Sizes(cjk_face, device_w, device_w);
     }
 
     charsz = coord_def(1,1);
@@ -513,6 +505,20 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             }
 
             adv.x += glyph.offset;
+
+            // For CJK (double-width) characters, force advance to match
+            // the monospace grid and center the glyph in its cell. This
+            // fixes cumulative column misalignment without changing the
+            // CJK font's physical pixel size (which would distort glyph
+            // aspect ratio and cause visual size mismatch).
+            if (char_w > 1)
+            {
+                int cell_w = m_max_advance.x * char_w;
+                int diff = cell_w - glyph.advance;
+                if (diff != 0)
+                    adv.x += diff / 2; // center glyph in cell
+                glyph.advance = cell_w;
+            }
 
             if (glyph.renderable)
             {
