@@ -182,15 +182,14 @@ bool bless_weapon(god_type god, brand_type brand, colour_t colour)
         return false;
     }
 
-    string prompt = "Do you wish to have " + wpn.name(DESC_YOUR)
-                       + " ";
+    string what;
     if (brand == SPWPN_PAIN)
-        prompt += "bloodied with pain";
+        what = T_("bloodied with pain");
     else if (brand == SPWPN_DISTORTION)
-        prompt += "corrupted with distortion";
+        what = T_("corrupted with distortion");
     else
-        prompt += "blessed with holy wrath";
-    prompt += "?";
+        what = T_("blessed with holy wrath");
+    string prompt = make_stringf(T_("Do you wish to have %s %s?"), wpn.name(DESC_YOUR).c_str(), what.c_str());
     if (!yesno(prompt.c_str(), true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -272,7 +271,7 @@ bool zin_donate_gold()
         return false;
     }
 
-    if (!yesno("Do you wish to donate half of your money?", true, 'n'))
+    if (!yesno(T_("Do you wish to donate half of your money?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -1833,9 +1832,8 @@ bool kiku_gift_capstone_spells()
         return false;
     }
 
-    string msg = "Do you wish to receive knowledge of "
-                 + comma_separated_fn(spells.begin(), spells.end(), spell_title)
-                 + "?";
+    string msg = make_stringf(T_("Do you wish to receive knowledge of %s?"),
+                              comma_separated_fn(spells.begin(), spells.end(), spell_title).c_str());
 
     if (!yesno(msg.c_str(), true, 'n'))
     {
@@ -1976,7 +1974,7 @@ spret cheibriados_slouch(bool fail)
 {
     int count = apply_area_visible(is_slouchable, you.pos());
     if (!count)
-        if (!yesno("There's no one hasty visible. Invoke Slouch anyway?",
+        if (!yesno(T_("There's no one hasty visible. Invoke Slouch anyway?"),
                    true, 'n'))
         {
             canned_msg(MSG_OK);
@@ -2435,13 +2433,13 @@ bool ashenzari_uncurse_item()
     if (!handle_chain_removal(to_remove, true))
         return false;
 
-    mprf("You shatter the curse binding %s!", item.name(DESC_THE).c_str());
+    mprf_p(T_("You shatter the curse binding %1$s!"), item.name(DESC_THE).c_str());
     item_skills(item, you.skills_to_hide);
 
     for (item_def* _item : to_remove)
     {
         if (_item-> link != item_slot)
-            mprf("%s falls away from you.", _item->name(DESC_YOUR).c_str());
+            mprf_p(T_("%1$s falls away from you."), _item->name(DESC_YOUR).c_str());
         unequip_item(*_item);
     }
 
@@ -2796,8 +2794,8 @@ bool beogh_cancel_leaving_floor()
 
     if (you.duration[DUR_BEOGH_DIVINE_CHALLENGE])
     {
-        if (!yesno("Are you sure you wish to flee a divine trial? This will "
-                   "place you under penance!", false, 'n'))
+        if (!yesno(T_("Are you sure you wish to flee a divine trial? This will "
+                   "place you under penance!"), false, 'n'))
         {
             mpr(T_("Beogh appreciates your bravery."));
             return true;
@@ -2806,8 +2804,8 @@ bool beogh_cancel_leaving_floor()
 
     if (you.duration[DUR_BLOOD_FOR_BLOOD])
     {
-        if (!yesno("Your vengeful prayer will end if you leave here."
-                   " Continue?", false, 'n'))
+        if (!yesno(T_("Your vengeful prayer will end if you leave here."
+                   " Continue?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return true;
@@ -2831,7 +2829,7 @@ void beogh_increase_orcification()
     // Adjust the message we give to the player's physiology.
     string msg = species::orcification_msg(you.species);
 
-    mprf(MSGCH_MUTATION, "%s", msg.c_str());
+    mprf(MSGCH_MUTATION, "%s", T_(msg.c_str()));
     you.props[ORCIFICATION_LEVEL_KEY] = 1;
 }
 
@@ -4214,8 +4212,8 @@ spret qazlal_disaster_area(bool fail)
     }
 
     if (friendlies
-        && !yesno("There are friendlies around; are you sure you want to hurt "
-                  "them?", true, 'n'))
+        && !yesno(T_("There are friendlies around; are you sure you want to hurt "
+                  "them?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -4974,7 +4972,7 @@ static bool _execute_sacrifice(ability_type sac, const char* message)
 {
     mprf(T_("Ru asks you to %s."), message);
     mpr(ru_sacrifice_description(sac));
-    if (!yesno("Do you really want to make this sacrifice?",
+    if (!yesno(T_("Do you really want to make this sacrifice?"),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -5242,7 +5240,7 @@ bool ru_do_sacrifice(ability_type sac)
 bool ru_reject_sacrifices(bool forced_rejection)
 {
     if (!forced_rejection &&
-        !yesno("Do you really want to reject the sacrifices Ru is offering?",
+        !yesno(T_("Do you really want to reject the sacrifices Ru is offering?"),
                false, 'n'))
     {
         canned_msg(MSG_OK);
@@ -5639,7 +5637,7 @@ bool ru_apocalypse()
     int count = apply_area_visible(cell_has_valid_target, you.pos());
     if (!count)
     {
-        if (!yesno("There are no visible enemies. Unleash your apocalypse anyway?",
+        if (!yesno(T_("There are no visible enemies. Unleash your apocalypse anyway?"),
             true, 'n'))
         {
             canned_msg(MSG_OK);
@@ -5692,8 +5690,8 @@ bool uskayaw_stomp()
     // XXX: this 'friendlies' wording feels a little odd, but we do use it in a
     // a few places already; see spl-vortex.cc, disaster area, etc.
     if (friendlies
-        && !yesno("There are friendlies around, "
-                  "are you sure you want to hurt them?",
+        && !yesno(T_("There are friendlies around, "
+                  "are you sure you want to hurt them?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6128,7 +6126,7 @@ spret hepliaklqana_transference(bool fail)
     actor* victim = actor_at(target);
     const bool victim_visible = victim && you.can_see(*victim);
     if ((!victim || !victim_visible)
-        && !yesno("You can't see anything there. Try transferring anyway?",
+        && !yesno(T_("You can't see anything there. Try transferring anyway?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -6594,7 +6592,7 @@ void okawaru_remove_heroism()
 
 void okawaru_remove_finesse()
 {
-    mprf(MSGCH_DURATION, "%s", you.hands_act("slow", "down.").c_str());
+    mprf(MSGCH_DURATION, "%s", T_(you.hands_act("slow", "down.").c_str()));
     you.duration[DUR_FINESSE] = 0;
 }
 

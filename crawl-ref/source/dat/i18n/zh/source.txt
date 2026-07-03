@@ -26508,3 +26508,198 @@ their
 %%%%
  (%s)
 （%s）
+%%%%
+%1$s falls away from you.
+%1$s从你身上脱落了。
+%%%%
+%1$s glares at %2$s!
+%1$s怒视着%2$s！
+%%%%
+%1$s loses %2$s grip on your mind.
+%1$s对你精神的控制力减弱了。
+%%%%
+%1$s shimmers and splits apart.
+%1$s闪烁着分裂开来。
+%%%%
+%1$s stops singing.
+%1$s停止了歌唱。
+%%%%
+A magical hammer augments %1$s in a flurry of sparks and slag.
+一把魔法锤在火星和熔渣的飞溅中强化了%1$s。
+%%%%
+Are you sure you want to cancel this %s?
+你确定要取消这个%s吗？
+%%%%
+Are you sure you wish to flee a divine trial? This will place you under penance!
+你确定要逃离这场神圣试炼吗？这将使你受到惩罚！
+%%%%
+Blessed fire suddenly surrounds you!
+圣火突然包围了你！
+%%%%
+By Zin's power, all blood is cleared from the sanctuary.
+凭借辛恩之力，庇护所中的鲜血被全部清除了。
+%%%%
+By Zin's power, all foul fumes within the sanctuary are swept away.
+凭借辛恩之力，庇护所中的污浊雾气被全部驱散了。
+%%%%
+By Zin's power, the foul cloud within the sanctuary is swept away.
+凭借辛恩之力，庇护所中的污浊云团被驱散了。
+%%%%
+Careful! You are now flying above %1$s.
+小心！你正在%1$s上方飞行。
+%%%%
+Controlled teleport interrupted by HUP signal, cancelling teleport.
+受控传送被HUP信号中断，取消传送。
+%%%%
+Do you really want to make this sacrifice?
+你真的要做出这个牺牲吗？
+%%%%
+Do you really want to reject the sacrifices Ru is offering?
+你真的要拒绝如神提供的牺牲吗？
+%%%%
+Do you wish to donate half of your money?
+你希望捐献一半的金钱吗？
+%%%%
+Do you wish to have %s %s?
+你希望让你的%s%s吗？
+%%%%
+Do you wish to receive knowledge of %s?
+你希望获得%s的知识吗？
+%%%%
+The Abyss bends around you!
+深渊在你周围扭曲了！
+%%%%
+The Orb lets out a furious burst of light!
+天球发出了愤怒的光芒！
+%%%%
+The Orb lets out an agonising shriek!
+天球发出了痛苦的尖叫！
+%%%%
+The abyss shimmers again as the detected abyssal rune vanishes from your memory%1$s.
+深渊再次闪烁，你记忆中探测到的深渊符文消失了%1$s。
+%%%%
+The air fills with toxic fumes!
+空气中充满了毒雾！
+%%%%
+The lords of Pandemonium are not amused. Beware!
+魔窟的领主们被激怒了。小心！
+%%%%
+The runic seal fades away.
+符文封印消散了。
+%%%%
+The runic seals fade away.
+符文封印消散了。
+%%%%
+The sanctuary disappears.
+庇护所消失了。
+%%%%
+The sanctuary starts shrinking.
+庇护所开始缩小了。
+%%%%
+The sign of ruin forms upon %1$s!
+毁灭之兆在%1$s身上显现！
+%%%%
+The sign of ruin forms upon you!
+毁灭之兆在你身上显现！
+%%%%
+The silence clears your mind.
+寂静净化了你的心灵。
+%%%%
+The substance of the Abyss twists violently, and a gateway leading %1$s appears!
+深渊的物质猛烈扭曲，一座通往%1$s的传送门出现了！
+%%%%
+There are friendlies around, are you sure you want to hurt them?
+周围有友方单位，你确定要伤害他们吗？
+%%%%
+There are friendlies around; are you sure you want to hurt them?
+周围有友方单位，你确定要伤害他们吗？
+%%%%
+There are no visible enemies. Unleash your apocalypse anyway?
+没有可见的敌人。仍然释放你的天启吗？
+%%%%
+There's no one hasty visible. Invoke Slouch anyway?
+看不到匆忙的敌人。仍然发动迟缓吗？
+%%%%
+There's no open space to fill with poison.
+没有可填充毒气的空地。
+%%%%
+You are banished to a different region of the Abyss.
+你被放逐到了深渊的另一个区域。
+%%%%
+You are cast deeper into the Abyss!
+你被投入了深渊的更深处！
+%%%%
+You are cast into the Abyss!
+你被投入了深渊！
+%%%%
+You are mesmerised by %1$s!
+你被%1$s迷住了！
+%%%%
+You are no longer mesmerised.
+你不再被迷住了。
+%%%%
+You are suddenly pulled into a different region of the Abyss!
+你突然被拉入了深渊的另一个区域！
+%%%%
+You can no longer hear %1$s singing!
+你再也听不到%1$s的歌声了！
+%%%%
+You can't see anything there. Try transferring anyway?
+你在那里什么也看不到。仍然尝试传送吗？
+%%%%
+You cannot see any enemies that you can affect. Speak a word of chaos anyway?
+你看不到任何你可以影响的敌人。仍然说出混沌之语吗？
+%%%%
+You hear %1$s splatter%2$s.
+你听到了%1$s溅落的声音%2$s。
+%%%%
+You hear a deep rumble.
+你听到了一阵低沉的隆隆声。
+%%%%
+You shatter the curse binding %1$s!
+你粉碎了束缚着%1$s的诅咒！
+%%%%
+Your binding sigil disappears.
+你的束缚符文消失了。
+%%%%
+Your binding sigils disappear.
+你的束缚符文消失了。
+%%%%
+Your body momentarily shudders from a surge of wild energies until Zin's power calms it.
+你的身体因狂野能量的涌动而短暂颤抖，但辛恩之力使其平息了下来。
+%%%%
+Your body shudders with the violent release of wild energies!
+你的身体因狂野能量的猛烈释放而剧烈颤抖！
+%%%%
+Your flames quiet as the last of your memories are burnt away.
+随着最后的记忆被燃尽，你的火焰平息了。
+%%%%
+Your vengeful prayer will end if you leave here. Continue?
+如果你离开这里，你的复仇祈祷将会终止。继续吗？
+%%%%
+Zin %1$s %2$s %3$s.
+辛恩%1$s了%2$s%3$s。
+%%%%
+blessed with holy wrath
+以圣怒祝福
+%%%%
+bloodied with pain
+以痛苦染血
+%%%%
+but there is nothing inside them
+但里面什么也没有
+%%%%
+corrupted with distortion
+以扭曲腐化
+%%%%
+dismisses
+消散
+%%%%
+from %s prison
+从%s的囚牢中
+%%%%
+glares at
+怒视
+%%%%
+the silver walls,
+银色的墙壁

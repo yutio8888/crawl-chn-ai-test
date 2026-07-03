@@ -245,7 +245,7 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         if (!target.isValid || target.target == you.pos())
         {
             const string prompt =
-                "Are you sure you want to cancel this " + verb + "?";
+                make_stringf(T_("Are you sure you want to cancel this %s?"), verb.c_str());
             if (!safe_cancel && !yesno(prompt.c_str(), false, 'n'))
             {
                 clear_messages();
@@ -1081,8 +1081,8 @@ static bool _teleport_player(bool wizard_tele, string reason="")
             // location, so cancel the teleport.
             if (crawl_state.seen_hups)
             {
-                mprf(MSGCH_ERROR, "Controlled teleport interrupted by HUP signal, "
-                                  "cancelling teleport.");
+                mprf(MSGCH_ERROR, "%s", T_("Controlled teleport interrupted by HUP signal, "
+                                  "cancelling teleport."));
                 return false;
             }
 
@@ -2006,8 +2006,8 @@ spret word_of_chaos(int pow, bool fail)
     vector<monster *> targets = find_chaos_targets();
     if (visible_targets.empty())
     {
-        if (!yesno("You cannot see any enemies that you can affect. Speak a "
-                   "word of chaos anyway?", true, 'n'))
+        if (!yesno(T_("You cannot see any enemies that you can affect. Speak a "
+                     "word of chaos anyway?"), true, 'n'))
         {
             canned_msg(MSG_OK);
             return spret::abort;

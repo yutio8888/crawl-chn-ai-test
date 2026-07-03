@@ -385,13 +385,13 @@ spret cast_sign_of_ruin(actor& caster, coord_def target, int duration, bool chec
     {
         if (act->is_player())
         {
-            mprf(MSGCH_WARN, "The sign of ruin forms upon you!");
+            mprf(MSGCH_WARN, "%s", T_("The sign of ruin forms upon you!"));
             you.duration[DUR_SIGN_OF_RUIN] = random_range(duration, duration * 3 / 2);
         }
         else
         {
             if (you.can_see(*act))
-                mprf("The sign of ruin forms upon %s!", act->name(DESC_THE).c_str());
+                mprf_p(T_("The sign of ruin forms upon %1$s!"), act->name(DESC_THE).c_str());
 
             act->as_monster()->add_ench(mon_enchant(ENCH_SIGN_OF_RUIN, &caster,
                                                     random_range(duration, duration * 3 / 2)));
@@ -408,8 +408,8 @@ spret cast_percussive_tempering(const actor& caster, monster& target, int power,
 
     if (you.can_see(target))
     {
-        mprf("A magical hammer augments %s in a flurry of sparks and slag.",
-             target.name(DESC_THE).c_str());
+        mprf_p(T_("A magical hammer augments %1$s in a flurry of sparks and slag."),
+               target.name(DESC_THE).c_str());
     }
 
     flash_tile(target.pos(), WHITE, 0, TILE_BOLT_PERCUSSIVE_TEMPERING);
@@ -504,10 +504,10 @@ void do_vexed_attack(actor& attacker, bool always_hit_ally)
                             : feature_description_at(pos, false, DESC_THE);
         if (you.can_see(attacker))
         {
-            mprf("%s %s %s!",
+            mprf_p(T_("%1$s %2$s %3$s!"),
                     attacker.name(DESC_THE).c_str(),
-                    has_attacks ? attacker.is_monster() ? "attacks" : "attack"
-                                : "glares at",
+                    has_attacks ? (attacker.is_monster() ? T_("attacks") : T_("attack"))
+                                : T_("glares at"),
                     targ_desc.c_str());
         }
 
@@ -529,7 +529,7 @@ void do_vexed_attack(actor& attacker, bool always_hit_ally)
         {
             if (you.can_see(attacker))
             {
-                mprf("%s glares at %s!",
+                mprf_p(T_("%1$s glares at %2$s!"),
                         attacker.name(DESC_THE).c_str(),
                         victim->name(DESC_THE).c_str());
             }

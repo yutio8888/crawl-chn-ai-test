@@ -187,7 +187,7 @@ void holy_flames(monster* caster, actor* defender)
     if (cloud_count)
     {
         if (defender->is_player())
-            mpr("Blessed fire suddenly surrounds you!");
+            mpr(T_("Blessed fire suddenly surrounds you!"));
         else
             simple_monster_message(*defender->as_monster(),
                                    " is surrounded by blessed fire!");
@@ -212,12 +212,12 @@ spret scroll_of_poison(bool scroll_unknown)
 
     if (created > 0)
     {
-        mpr("The air fills with toxic fumes!");
+        mpr(T_("The air fills with toxic fumes!"));
         return spret::success;
     }
     if (!scroll_unknown && !unknown_unseen)
     {
-        mpr("There's no open space to fill with poison.");
+        mpr(T_("There's no open space to fill with poison."));
         return spret::abort;
     }
     canned_msg(MSG_NOTHING_HAPPENS);
