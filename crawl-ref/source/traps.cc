@@ -398,7 +398,7 @@ void trap_def::trigger(actor& triggerer)
         else if (you_trigger)
         {
             mprf(T_("This passage %s!"), search_result == passage_type::blocked ?
-                 "seems to be blocked by something" : "doesn't lead anywhere");
+                 T_("seems to be blocked by something") : T_("doesn't lead anywhere"));
         }
         break;
     }
@@ -963,7 +963,7 @@ void roll_trap_effects()
 static string _malev_msg()
 {
     return make_stringf(T_("A malevolent force fills %s..."),
-                        branches[you.where_are_you].longname);
+                        T_(branches[you.where_are_you].longname));
 }
 
 static void _print_malev()

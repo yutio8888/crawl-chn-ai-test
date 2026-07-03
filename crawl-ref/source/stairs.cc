@@ -405,12 +405,12 @@ static bool _check_fall_down_stairs(const dungeon_feature_type ftype, bool going
         && !crawl_state.game_is_descent()
         && coinflip())
     {
-        const char* fall_where = "down the stairs";
+        const char* fall_where = T_("down the stairs");
         if (!feat_is_staircase(ftype))
-            fall_where = "through the gate";
+            fall_where = T_("through the gate");
 
         mprf(T_("In your confused state, you trip and fall %s%s."),
-             going_up ? "back " : "", fall_where);
+             going_up ? T_("back ") : "", fall_where);
         if (!feat_is_staircase(ftype))
             ouch(1, KILLED_BY_FALLING_THROUGH_GATE);
         else
@@ -684,9 +684,9 @@ static level_id _travel_destination(const dungeon_feature_type how,
         }
 
         mprf_p(T_("You %1$s into a shaft and fall %2$d level%3$s!"),
-               you.airborne() ? "are sucked" : "fall",
+               you.airborne() ? T_("are sucked") : T_("fall"),
                shaft_depth,
-               shaft_depth > 1 ? "s" : "");
+               shaft_depth > 1 ? T_("s") : "");
 
         // Shafts are one-time-use.
         mpr(T_("The shaft crumbles and collapses."));

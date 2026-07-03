@@ -711,7 +711,7 @@ static void _drop_tomb(const coord_def& pos, bool premature, bool zin)
     if (count)
     {
         if (seen_change && !zin)
-            mprf(T_("The walls disappear%s!"), premature ? " prematurely" : "");
+            mprf(T_("The walls disappear%s!"), premature ? T_(" prematurely") : "");
         else if (seen_change && zin)
         {
             mprf_p(T_("Zin %1$s %2$s %3$s."),

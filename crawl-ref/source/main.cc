@@ -1908,10 +1908,10 @@ static void _do_list_gold()
     if (shopping_list.empty())
     {
         mprf_p(T_("You have %1$d gold piece%2$s."), you.gold,
-             you.gold != 1 ? "s" : "");
+             you.gold != 1 ? T_("s") : "");
         int vouchers = you.attribute[ATTR_VOUCHER];
         if (vouchers > 0)
-            mprf(T_("You also have %d voucher%s."), vouchers, vouchers > 1 ? "s" : "");
+            mprf(T_("You also have %d voucher%s."), vouchers, vouchers > 1 ? T_("s") : "");
     }
     else
         shopping_list.display();

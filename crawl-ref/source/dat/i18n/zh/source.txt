@@ -29228,3 +29228,90 @@ It cannot be enchanted further.
 %%
 This ancient artefact cannot be changed by magic or mundane means.
 这件远古神器无法被魔法或凡俗手段改变。
+%%%%
+are sucked
+被吸入
+%%%%
+fall
+坠落
+%%%%
+down the stairs
+滚下楼梯
+%%%%
+through the gate
+穿过大门
+%%%%
+back 
+向后
+%%%%
+seems to be blocked by something
+似乎被什么东西堵住了
+%%%%
+doesn't lead anywhere
+不通往任何地方
+%%%%
+the Hells
+地狱
+%%%%
+is now yours
+已归你所有
+%%%%
+fights you
+与你为敌
+%%%%
+Your followers are
+你的追随者们
+%%%%
+is 
+%%%%
+ greatly 
+极其
+%%%%
+web
+蜘蛛网
+%%%%
+net
+捕网
+%%%%
+suffering
+苦难
+%%%%
+deal
+发牌
+%%%%
+draw
+抽牌
+%%%%
+mighty
+雷鸣
+%%%%
+violent
+猛烈
+%%%%
+cataclysmic
+惊天动地
+%%%%
+hear
+听到
+%%%%
+feel
+感受到
+%%%%
+a 
+%%%%
+ prematurely
+过早地
+%%%%
+are
+%%%%
+ wildly
+疯狂地
+%%%%
+ for attention
+以引起注意
+%%%%
+kneel at
+跪在
+%%%%
+, and the damned howl along
+，被诅咒者随之嚎叫

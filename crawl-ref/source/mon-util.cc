@@ -1024,7 +1024,7 @@ void discover_mimic(const coord_def& pos)
     const bool plural = feature_mimic ? false : item->quantity > 1;
 
     if (you.see_cell(pos))
-        mprf_p(T_("%1$s %2$s a mimic!"), name.c_str(), plural ? "are" : "is");
+        mprf_p(T_("%1$s %2$s a mimic!"), name.c_str(), plural ? T_("are") : T_("is "));
 
     const string shortname = feature_mimic ? feat_type_name(feat)
                                            : item->name(DESC_BASENAME);

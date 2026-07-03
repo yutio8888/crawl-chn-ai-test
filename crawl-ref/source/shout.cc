@@ -737,10 +737,10 @@ void yell(const actor* target)
     else
     {
         const char *fugue_suff = you.duration[DUR_FUGUE] ?
-            ", and the damned howl along" : "";
+            T_(", and the damned howl along") : "";
         mprf(MSGCH_SOUND, T_("You %s%s%s!"),
              shout_verb.c_str(),
-             you.berserk() ? " wildly" : " for attention",
+             you.berserk() ? T_(" wildly") : T_(" for attention"),
              fugue_suff);
     }
 

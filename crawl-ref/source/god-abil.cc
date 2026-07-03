@@ -1809,7 +1809,7 @@ void yred_make_bound_soul(monster* mon, bool force_hostile)
     schedule_avoided_death_fineff(mon);
 
     mprf(T_("The soul of %s %s."), whose.c_str(),
-             !force_hostile ? "is now yours" : "fights you");
+             !force_hostile ? T_("is now yours") : T_("fights you"));
 }
 
 bool kiku_gift_capstone_spells()
@@ -2780,9 +2780,9 @@ void beogh_ally_healing()
     }
 
     mprf(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
-                                   : "Your followers are",
-             heal_list.size() == 1 ? "is " : "",
-             healing_done > 25 ? " greatly " : "");
+                                   : T_("Your followers are"),
+             heal_list.size() == 1 ? T_("is ") : "",
+             healing_done > 25 ? T_(" greatly ") : "");
 }
 
 // Prompts the player for reasons they may not wish to leave a floor.
@@ -3765,7 +3765,7 @@ void gozag_deduct_bribe(branch_type br, int amount)
     branch_bribe[br] = max(0, branch_bribe[br] - amount);
     if (branch_bribe[br] <= 0)
     {
-        mprf(T_("Your bribe of %s has been exhausted."), branches[br].longname);
+        mprf(T_("Your bribe of %s has been exhausted."), T_(branches[br].longname));
         add_daction(DACT_BRIBE_TIMEOUT);
     }
 }
@@ -3792,10 +3792,10 @@ bool gozag_check_bribe_branch(bool quiet)
             }
     }
     const string who = make_stringf(T_("the denizens of %s"),
-                                   branches[branch].longname);
+                                   T_(branches[branch].longname));
     const string who2 = branch2 != NUM_BRANCHES
                         ? make_stringf(T_("the denizens of %s"),
-                                       branches[branch2].longname)
+                                       T_(branches[branch2].longname))
                         : "";
     if (!gozag_branch_bribable(branch)
         && (branch2 == NUM_BRANCHES
@@ -3828,8 +3828,8 @@ bool gozag_bribe_branch()
                 branch_type stair_branch = gozag_fixup_branch(it->id);
                 string prompt =
                     make_stringf(T_("Do you want to bribe the denizens of %s?"),
-                                 stair_branch == BRANCH_VESTIBULE ? "the Hells"
-                                 : branches[stair_branch].longname);
+                                 stair_branch == BRANCH_VESTIBULE ? T_("the Hells")
+                                 : T_(branches[stair_branch].longname));
                 if (yesno(prompt.c_str(), true, 'n'))
                 {
                     branch = stair_branch;
@@ -3846,7 +3846,7 @@ bool gozag_bribe_branch()
             }
     }
     string who = make_stringf(T_("the denizens of %s"),
-                              branches[branch].longname);
+                              T_(branches[branch].longname));
     if (!gozag_branch_bribable(branch))
     {
         mprf(T_("You can't bribe %s."), who.c_str());
@@ -3855,8 +3855,8 @@ bool gozag_bribe_branch()
 
     string prompt =
         make_stringf(T_("Do you want to bribe the denizens of %s?"),
-                     branch == BRANCH_VESTIBULE ? "the Hells" :
-                     branches[branch].longname);
+                     branch == BRANCH_VESTIBULE ? T_("the Hells") :
+                     T_(branches[branch].longname));
 
     if (prompted || yesno(prompt.c_str(), true, 'n'))
     {
@@ -3864,8 +3864,8 @@ bool gozag_bribe_branch()
         you.attribute[ATTR_GOZAG_GOLD_USED] += bribe_amount;
         branch_bribe[branch] += bribe_amount;
         string msg = make_stringf(T_(" spreading your bribes among %s!"),
-                                  branch == BRANCH_VESTIBULE ? "the Hells" :
-                                  branches[branch].longname);
+                                  branch == BRANCH_VESTIBULE ? T_("the Hells") :
+                                  T_(branches[branch].longname));
         simple_god_message(msg.c_str());
         add_daction(DACT_SET_BRIBES);
         return true;
@@ -6437,7 +6437,7 @@ spret wu_jian_wall_jump_ability()
 
     if (you.attribute[ATTR_HELD])
     {
-        mprf(T_("You cannot wall jump while caught in a %s."), you.caught_by() == CAUGHT_WEB ? "web" : "net");
+        mprf(T_("You cannot wall jump while caught in a %s."), you.caught_by() == CAUGHT_WEB ? T_("web") : T_("net"));
         return spret::abort;
     }
 
@@ -7019,7 +7019,7 @@ void makhleb_infernal_servant()
         else
         {
             mprf(T_("%s answers your call of %s!"), demon->name(DESC_A).c_str(),
-                    you.has_blood() ? "blood" : "suffering");
+                    you.has_blood() ? T_("blood") : T_("suffering"));
         }
 
         // Top-tier demons are more costly to summon.

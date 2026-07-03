@@ -614,7 +614,7 @@ static void _evoke_deck(deck_type deck, bool dealt = false)
 {
     ASSERT(deck_cards(deck) > 0);
 
-    mprf(T_("You %s a card..."), dealt ? "deal" : "draw");
+    mprf(T_("You %s a card..."), dealt ? T_("deal") : T_("draw"));
 
     if (deck == DECK_STACK)
     {
@@ -998,7 +998,7 @@ void draw_from_deck_of_punishment(bool deal)
 {
     card_type card = _random_card(DECK_OF_PUNISHMENT);
 
-    mprf(T_("You %s a card..."), deal ? "deal" : "draw");
+    mprf(T_("You %s a card..."), deal ? T_("deal") : T_("draw"));
     card_effect(card, deal, true);
 }
 
@@ -1515,14 +1515,14 @@ static void _storm_card(int power)
     // Thunder comes after the animation runs.
     if (targets.size() > 0)
     {
-        vector<string> thunder_adjectives = { "mighty",
-                                              "violent",
-                                              "cataclysmic" };
+        vector<string> thunder_adjectives = { T_("mighty"),
+                                              T_("violent"),
+                                              T_("cataclysmic") };
         mprf(T_("You %s %s%s peal%s of thunder!"),
-              heard ? "hear" : "feel",
-              targets.size() > 1 ? "" : "a ",
+              heard ? T_("hear") : T_("feel"),
+              targets.size() > 1 ? "" : T_("a "),
               thunder_adjectives[power_level].c_str(),
-              targets.size() > 1 ? "s" : "");
+              targets.size() > 1 ? T_("s") : "");
     }
 }
 

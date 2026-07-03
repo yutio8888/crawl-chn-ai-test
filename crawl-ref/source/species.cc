@@ -476,7 +476,7 @@ namespace species
     string prayer_action(species_type species)
     {
       auto action = get_species_def(species).altar_action;
-      return action ? action : "kneel at";
+      return action ? T_(action) : T_("kneel at");
     }
 
     static const string shout_verbs[] = {"shout", "yell", "scream"};
