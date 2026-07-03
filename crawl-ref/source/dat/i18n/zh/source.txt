@@ -25429,3 +25429,101 @@ clouds
 %%%%
 You dream of 
 你梦到了
+ (about %d%% of your maximum possible piety)
+ （约你最大可能虔诚值的%d%%）
+%%%%
+ (next: %s)
+ （下一个: %s）
+%%%%
+ (%d in deck)
+ （牌组中%d张）
+%%%%
+%dd3 / 2 (against normal-speed enemies)
+%dd3 / 2（对正常速度的敌人）
+%%%%
+%dd%d/upheaval
+%dd%d/剧变
+%%%%
+%dd%d + 1/6 of current HP
+%dd%d + 当前生命值的1/6
+%%%%
+Damage: %s\n
+伤害: %s\n
+%%%%
+Range: %s\n
+射程: %s\n
+%%%%
+%d/%d spells available
+%d/%d 法术可用
+%%%%
+ <lightgrey>(%s failure risk)</lightgrey>
+ <lightgrey>（%s失败风险）</lightgrey>
+%%%%
+ Invoke -
+ 祈神 -
+%%%%
+<yellow>You have %1$d gold piece%2$s%3$s.
+<yellow>你拥有%1$d枚金币%3$s。
+%%%%
+ and a credit voucher
+和一张代金券
+%%%%
+ The purchase will use your credit voucher and %d gold pieces.
+ 购买将使用你的代金券和 %d 枚金币。
+%%%%
+ You still need %d gold pieces to make the purchase.
+ 你还差 %d 枚金币才能购买。
+%%%%
+ After purchase, you will have %d gold pieces remaining.
+ 购买后，你将剩余 %d 枚金币。
+%%%%
+Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces
+购物清单: %1$d %2$s%3$s，共需 %4$d 枚金币
+%%%%
+%s entry fee %d gold pieces.
+%s 入场费 %d 枚金币。
+%%%%
+You slip out of the net.
+你从网中滑过了。
+%%%%
+The net passes right through you.
+网直接穿过了你。
+%%%%
+Space distorts around %s%s
+空间在%s周围扭曲%s
+%%%%
+Space warps violently around %s%s
+空间在%s周围剧烈扭曲%s
+%%%%
+%s writhes in agony%s
+%s在痛苦中扭动%s
+%%%%
+%s drains %s%s
+%s吸取了%s%s
+%%%%
+You are electrocuted%s
+你被电击了%s
+%%%%
+Lightning courses through %s%s
+闪电贯穿了%s%s
+%%%%
+You %1$s collected %2$d gold pieces.\n
+你收集了%2$d枚金币。\n
+%%%%
+Jump to first
+跳至首个
+%%%%
+Select all
+全选
+%%%%
+Select first
+选择首个
+%%%%
+[<w>*/%</w>] Inventory
+[<w>*/%</w>] 物品栏
+%%%%
+[<w>&</w>] All spells
+[<w>&</w>] 所有法术
+%%%%
+[<w>^</w>] All abilities
+[<w>^</w>] 所有能力

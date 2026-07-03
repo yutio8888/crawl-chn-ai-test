@@ -2468,11 +2468,11 @@ namespace quiver
             string s = more_message + "\n";
 
             if (any_items)
-                s += "[<w>*/%</w>] 物品栏  ";
+                s += T_("[<w>*/%</w>] Inventory  ");
             if (any_spells)
-                s += "[<w>&</w>] 所有法术  ";
+                s += T_("[<w>&</w>] All spells  ");
             if (any_abilities)
-                s += "[<w>^</w>] 所有能力  ";
+                s += T_("[<w>^</w>] All abilities  ");
 
 
             string off_str = T_("off");

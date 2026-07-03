@@ -484,14 +484,14 @@ bool attack::distortion_affects_defender()
     {
     case SMALL_DMG:
         special_damage += 1 + random2avg(7, 2);
-        special_damage_message = make_stringf("空间在%s周围扭曲%s",
+        special_damage_message = make_stringf(T_("Space distorts around %s%s"),
                                               defender_name(false).c_str(),
                                               attack_strength_punctuation(special_damage).c_str());
         break;
     case BIG_DMG:
         special_damage += 3 + random2avg(24, 2);
         special_damage_message =
-            make_stringf("空间在%s周围剧烈扭曲%s",
+            make_stringf(T_("Space warps violently around %s%s"),
                          defender_name(false).c_str(),
                          attack_strength_punctuation(special_damage).c_str());
         break;
@@ -530,7 +530,7 @@ void attack::pain_affects_defender()
         if (special_damage && defender_visible)
         {
             special_damage_message =
-                make_stringf("%s在痛苦中扭动%s",
+                make_stringf(T_("%s writhes in agony%s"),
                              defender->name(DESC_THE).c_str(),
                            attack_strength_punctuation(special_damage).c_str());
         }
@@ -655,7 +655,7 @@ void attack::drain_defender()
         {
             special_damage_message =
                 make_stringf(
-                    "%s吸取了%s%s",
+                    T_("%s drains %s%s"),
                     atk_name(DESC_THE).c_str(),
                     defender_name(true).c_str(),
                     attack_strength_punctuation(special_damage).c_str());
@@ -1197,8 +1197,8 @@ bool attack::apply_damage_brand(const char *what)
                     attack_strength_punctuation(special_damage);
             special_damage_message =
                 defender->is_player()
-                ? make_stringf("你被电击了%s", punctuation.c_str())
-                : make_stringf("闪电贯穿了%s%s",
+                ? make_stringf(T_("You are electrocuted%s"), punctuation.c_str())
+                : make_stringf(T_("Lightning courses through %s%s"),
                                defender->name(DESC_THE).c_str(),
                                punctuation.c_str());
             special_damage_flavour = BEAM_ELECTRICITY;

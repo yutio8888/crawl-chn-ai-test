@@ -59,9 +59,9 @@
 static string _net_immune_reason()
 {
     if (you.unrand_equipped(UNRAND_SLICK_SLIPPERS))
-        return "你从网中滑过了。";
+        return T_("You slip out of the net.");
     else if (you.is_insubstantial() || you.is_amorphous())
-        return "网直接穿过了你。";
+        return T_("The net passes right through you.");
     return "";
 }
 

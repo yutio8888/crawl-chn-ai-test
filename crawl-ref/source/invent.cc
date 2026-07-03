@@ -993,11 +993,11 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
     {
         // Mention the class selection shortcuts.
         if (is_set(MF_SECONDARY_SCROLL))
-            select_all = "跳至首个";
+            select_all = T_("Jump to first");
         else if (is_set(MF_MULTISELECT))
-            select_all = "全选";
+            select_all = T_("Select all");
         else
-            select_all = "选择首个";
+            select_all = T_("Select first");
     }
 
     for (int obj = 0; obj < NUM_OBJECT_CLASSES; ++obj)

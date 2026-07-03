@@ -34,6 +34,7 @@
 #include "options.h"
 #include "output.h"
 #include "player.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "spl-book.h"
 #include "stash.h"
@@ -1124,10 +1125,10 @@ void ShopMenu::update_help()
     //[Esc] exit          [Tab] buy|examine items     [a-j] mark item for purchase
     //[/] sort (type)     [Enter] buy marked items    [A-J] put item on shopping list
     const bool voucher = have_voucher();
-    string top_line = make_stringf("<yellow>你拥有 %d 枚金币%s%s。",
+    string top_line = make_stringf_p(T_("<yellow>You have %1$d gold piece%2$s%3$s."),
                                    you.gold,
-                                   you.gold != 1 ? "" : "",
-                                   voucher ? "和一张代金券" : "");
+                                   you.gold != 1 ? "s" : "",
+                                   voucher ? T_(" and a credit voucher") : "");
     const int total_cost = !can_purchase ? 0 : selected_cost(true);
     if (total_cost > you.gold)
     {
@@ -1136,7 +1137,7 @@ void ShopMenu::update_help()
         {
             top_line += "<lightred>";
             top_line +=
-                make_stringf(" 购买将使用你的代金券和 %d 枚金币。",
+                make_stringf(T_(" The purchase will use your credit voucher and %d gold pieces."),
                              total_cost - max);
             top_line += "</lightred>";
         }
@@ -1144,7 +1145,7 @@ void ShopMenu::update_help()
         {
             top_line += "<lightred>";
             top_line +=
-                make_stringf(" 你还差 %d 枚金币才能购买。",
+                make_stringf(T_(" You still need %d gold pieces to make the purchase."),
                              total_cost - you.gold);
             top_line += "</lightred>";
         }
@@ -1152,7 +1153,7 @@ void ShopMenu::update_help()
     else if (total_cost)
     {
         top_line +=
-            make_stringf(" 购买后，你将剩余 %d 枚金币。",
+            make_stringf(T_(" After purchase, you will have %d gold pieces remaining."),
                          you.gold - total_cost);
     }
     top_line += "</yellow>";
@@ -2394,10 +2395,10 @@ formatted_string ShoppingListMenu::calc_title()
     const int total_cost = you.props[SHOPPING_LIST_COST_KEY];
 
     fs.textcolour(title->colour);
-    fs.cprintf("购物清单: %d %s%s，共需 %d 枚金币",
+    fs.cprintf(make_stringf_p(T_("Shopping list: %1$d %2$s%3$s, total cost %4$d gold pieces"),
                 title->quantity, title->text.c_str(),
                 title->quantity > 1 ? "s" : "",
-                total_cost);
+                total_cost));
 
     return fs;
 }
@@ -2480,7 +2481,7 @@ bool ShoppingListMenu::examine_index(int i)
     {
         // HACK: Assume it's some kind of portal vault.
         const string info = make_stringf(
-                     "%s 入场费 %d 枚金币。",
+                     T_("%s entry fee %d gold pieces."),
                      list.describe_thing(*thing, DESC_A).c_str(),
                      (int) list.thing_cost(*thing));
         show_description(info.c_str());

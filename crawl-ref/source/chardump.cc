@@ -46,6 +46,7 @@
 #include "output.h"
 #include "place.h"
 #include "prompt.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "scroller.h"
 #include "showsymb.h"
@@ -393,7 +394,7 @@ static void _sdump_gold(dump_params &par)
     if (you.attribute[ATTR_GOLD_FOUND] > 0)
     {
         lines++;
-        text += make_stringf("你%s收集了 %d 枚金币。\n", have,
+        text += make_stringf_p(T_("You %1$s collected %2$d gold pieces.\n"), have,
                              you.attribute[ATTR_GOLD_FOUND]);
     }
 

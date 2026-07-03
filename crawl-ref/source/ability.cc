@@ -315,7 +315,7 @@ struct ability_def
 
         // Round up
         const int perc = max((avg_piety_cost() * 100 + 199) / 200, 0);
-        return make_stringf(" （约你最大可能虔诚值的%d%%）", perc);
+        return make_stringf(T_(" (about %d%% of your maximum possible piety)"), perc);
     }
 };
 
@@ -937,9 +937,9 @@ string nemelex_card_text(ability_type ability)
     int cards = deck_cards(ability_deck(ability));
 
     if (ability == ABIL_NEMELEX_DRAW_STACK)
-        return make_stringf("（下一个: %s）", stack_top().c_str());
+        return make_stringf(T_(" (next: %s)"), stack_top().c_str());
     else
-        return make_stringf("（牌组中%d张）", cards);
+        return make_stringf(T_(" (%d in deck)"), cards);
 }
 
 static string _ashenzari_curse_text()
@@ -1508,7 +1508,7 @@ static string _ability_damage_string(ability_type ability)
         case ABIL_TSO_CLEANSING_FLAME:
             return make_stringf("2d%d*", _tso_cleansing_flame_power(false));
         case ABIL_CHEIBRIADOS_SLOUCH:
-            return make_stringf("%dd3 / 2（对正常速度的敌人）",
+            return make_stringf(T_("%dd3 / 2 (against normal-speed enemies)"),
                                 slouch_damage_for_speed());
         case ABIL_IGNIS_FOXFIRE:
             return "1d8/foxfire"; // constant
@@ -1517,7 +1517,7 @@ static string _ability_damage_string(ability_type ability)
             break;
         case ABIL_QAZLAL_DISASTER_AREA:
             dam = qazlal_upheaval_damage(false);
-            return make_stringf("%dd%d/剧变", dam.num, dam.size);
+            return make_stringf(T_("%dd%d/upheaval"), dam.num, dam.size);
         case ABIL_RU_POWER_LEAP:
             dam = ru_power_leap_damage(false);
             break;
@@ -1529,7 +1529,7 @@ static string _ability_damage_string(ability_type ability)
             return "2d(3-24)";
         case ABIL_USKAYAW_STOMP:
             dam = uskayaw_stomp_extra_damage(false);
-            return make_stringf("%dd%d + 当前生命值的1/6",
+            return make_stringf(T_("%dd%d + 1/6 of current HP"),
                                 dam.num, dam.size);
         case ABIL_USKAYAW_GRAND_FINALE: // infinity
             return Options.char_set == CSET_ASCII ? "death" : "\u221e";
@@ -1620,8 +1620,8 @@ string get_ability_desc(const ability_type ability, bool need_title)
     lookup += "\n";
 
     if (damage_str != "")
-        lookup += make_stringf("伤害: %s\n ", damage_str.c_str());
-    lookup += make_stringf("射程: %s\n", range_str.c_str());
+        lookup += make_stringf(T_("Damage: %s\n "), damage_str.c_str());
+    lookup += make_stringf(T_("Range: %s\n"), range_str.c_str());
 
     ostringstream res;
     if (need_title)
@@ -2597,7 +2597,7 @@ static vector<string> _desc_marionette_spells(const monster_info& mi)
     int num_spells = spells.size();
     int num_usable_spells = monster_at(mi.pos)->props[DITHMENOS_MARIONETTE_SPELLS_KEY].get_int();
 
-    return vector<string>{make_stringf("%d/%d 法术可用", num_usable_spells, num_spells)};
+    return vector<string>{make_stringf(T_("%d/%d spells available"), num_usable_spells, num_spells)};
 }
 
 static vector<coord_def> _find_shadowslip_affected()
@@ -2890,7 +2890,7 @@ bool activate_talent(const talent& tal, dist *target)
         if (abil.failure.base_chance)
         {
             args.top_prompt +=
-                make_stringf(" <lightgrey>（%s失败风险）</lightgrey>",
+                make_stringf(T_(" <lightgrey>(%s failure risk)</lightgrey>"),
                              failure_rate_to_string(tal.fail).c_str());
         }
         args.behaviour = &beh;
@@ -4239,11 +4239,11 @@ int choose_ability_menu(const vector<talent>& talents)
     if (found_invocations)
     {
 #ifdef USE_TILE_LOCAL
-        MenuEntry* subtitle = new MenuEntry(" 祈神 -    ", MEL_ITEM);
+        MenuEntry* subtitle = new MenuEntry(T_(" Invoke -    "), MEL_ITEM);
         subtitle->colour = BLUE;
         abil_menu.add_entry(subtitle);
 #else
-        abil_menu.add_entry(new MenuEntry(" 祈神 -    ", MEL_SUBTITLE));
+        abil_menu.add_entry(new MenuEntry(T_(" Invoke -    "), MEL_SUBTITLE));
 #endif
         for (unsigned int i = 0; i < talents.size(); ++i)
         {
