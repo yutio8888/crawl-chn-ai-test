@@ -344,6 +344,54 @@ def cmd_arg_mismatch(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: format-malformed
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_format_malformed(args):
+    """Detect mixed positional/non-positional format specifiers in CN values.
+
+    vmake_stringf_p falls back to system vsnprintf when the format string
+    mixes %n$s (positional) with plain %s/%d (non-positional). On MinGW
+    (Windows tiles), system vsnprintf does not support positional %n$s,
+    causing literal '%2$s' to appear in game text.
+    """
+    entries = parse_source_txt(args.source_txt)
+    if not entries:
+        print("ERROR: Could not parse source.txt")
+        return 1
+
+    findings = []
+    for en_key, cn_val in entries.items():
+        has_pos = bool(POSFMT_RE.search(cn_val))
+        if not has_pos:
+            continue
+        # Check for non-positional format specs (exclude %% literals)
+        cleaned = re.sub(r'%%', '', cn_val)
+        plain_matches = [m for m in PLAIN_FMT_RE.finditer(cleaned)
+                         if not POSFMT_RE.match(m.group(0))]
+        if plain_matches:
+            findings.append((en_key, cn_val))
+
+    if findings:
+        print("=== FORMAT-MALFORMED — mixed positional and non-positional "
+              "format specifiers ===")
+        print("  These cause literal '%2$s' on Windows tiles (MinGW vsnprintf)")
+        print()
+        for en_key, cn_val in sorted(findings):
+            en_short = en_key[:80]
+            cn_short = cn_val[:80]
+            print(f"EN: \"{en_short}\"")
+            print(f"CN: \"{cn_short}\" <- MALFORMED (mixed pos/plain)")
+            print()
+        print(f"Summary: {len(findings)} malformed entries")
+        return 1
+    else:
+        print(f"OK: All {len(entries)} entries have consistent format "
+              f"specifier types (no mixed positional/plain).")
+        return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: check-gaps
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -746,6 +794,15 @@ def main():
     p_arg.add_argument("--allow-positional-drop", action="store_true",
                        help="Allow CN to drop positional args (cn_max_pos <= en_max_pos)")
 
+    # format-malformed
+    p_fmtmal = subparsers.add_parser(
+        "format-malformed",
+        help="Detect mixed positional/non-positional format specifiers "
+             "(MinGW tiles crash risk)"
+    )
+    p_fmtmal.add_argument("--source-txt", required=True,
+                          help="Path to source.txt")
+
     # check-gaps
     p_gaps = subparsers.add_parser(
         "check-gaps",
@@ -790,6 +847,8 @@ def main():
         return cmd_mprf_p(args)
     elif args.command == "arg-mismatch":
         return cmd_arg_mismatch(args)
+    elif args.command == "format-malformed":
+        return cmd_format_malformed(args)
     elif args.command == "check-gaps":
         return cmd_check_gaps(args)
     elif args.command == "lang-args":

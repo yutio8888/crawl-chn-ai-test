@@ -27,6 +27,8 @@ mkdir -p .claude/metrics/verify
     echo ""
     echo "--- %s count parity ---"
     python3 .claude/scripts/scan_i18n.py arg-mismatch \
+    python3 .claude/scripts/scan_i18n.py format-malformed \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
     echo ""
     echo "--- Anti-patterns (strict) ---"
