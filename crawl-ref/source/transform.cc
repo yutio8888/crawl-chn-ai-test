@@ -1902,8 +1902,8 @@ bool check_transform_into(transformation which_trans, bool involuntary,
 
     if (!involuntary && get_form(which_trans)->mult_hp(100) < 90)
     {
-        if (!yesno("This transformation would significantly lower your maximum hit points. "
-                  "Transform anyway?", true, 'n'))
+        if (!yesno(T_("This transformation would significantly lower your maximum hit points. "
+                  "Transform anyway?"), true, 'n'))
         {
             return false;
         }

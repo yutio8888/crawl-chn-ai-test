@@ -966,8 +966,8 @@ static bool _cmd_is_repeatable(command_type cmd, bool is_again = false)
     case CMD_MOVE_DOWN_RIGHT:
         if (!i_feel_safe())
         {
-            return yesno("Really repeat movement command while danger "
-                         "is nearby?", false, 'n');
+            return yesno(T_("Really repeat movement command while danger "
+                         "is nearby?"), false, 'n');
         }
 
         return true;
@@ -1527,7 +1527,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     if (ygrd == DNGN_TRANSPORTER && is_exclude_root(you.pos()))
     {
         mprf(MSGCH_WARN, T_("This transporter is marked as excluded!"));
-        if (!yesno("Enter transporter anyway?", true, 'n', true, false))
+        if (!yesno(T_("Enter transporter anyway?"), true, 'n', true, false))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1544,7 +1544,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     {
         // "unsafe", as often you bail at single-digit hp and a wasted turn to
         // an overeager prompt cancellation might be nasty.
-        if (!yesno("Are you sure you want to leave this ziggurat?", false, 'n'))
+        if (!yesno(T_("Are you sure you want to leave this ziggurat?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1555,7 +1555,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     if (ygrd == DNGN_EXIT_TROVE
         && you.depth == brdepth[BRANCH_TROVE])
     {
-        if (!yesno("Are you sure you want to leave this trove?", false, 'n'))
+        if (!yesno(T_("Are you sure you want to leave this trove?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1567,7 +1567,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
         && you.depth == brdepth[BRANCH_ZIGGURAT]
         && find_floor_item(OBJ_MISCELLANY, MISC_ZIGGURAT))
     {
-        if (!yesno("Really leave the ziggurat figurine behind?", false, 'n'))
+        if (!yesno(T_("Really leave the ziggurat figurine behind?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1585,7 +1585,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
         && you.depth == brdepth[BRANCH_ZOT]
         && you.chapter == CHAPTER_ANGERED_PANDEMONIUM)
     {
-        if (!yesno("Really leave the Orb behind?", false, 'n'))
+        if (!yesno(T_("Really leave the Orb behind?"), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1595,7 +1595,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     // Escaping.
     if (!down && ygrd == DNGN_EXIT_DUNGEON && !player_has_orb())
     {
-        string prompt = make_stringf("Are you sure you want to leave %s?%s",
+        string prompt = make_stringf(T_("Are you sure you want to leave %s?%s"),
                                      branches[root_branch].longname,
                                      crawl_state.game_is_tutorial() ? "" :
                                      " This will make you lose the game!");
@@ -1616,7 +1616,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     {
         if (feat_is_escape_hatch(ygrd))
         {
-            if (!yesno("Really go through this one-way escape hatch?", true, 'n'))
+            if (!yesno(T_("Really go through this one-way escape hatch?"), true, 'n'))
             {
                 canned_msg(MSG_OK);
                 return false;
@@ -1625,7 +1625,7 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
 
         if (down && shaft) // voluntary shaft usage
         {
-            if (!yesno("Really dive through this shaft in the floor?", true, 'n'))
+            if (!yesno(T_("Really dive through this shaft in the floor?"), true, 'n'))
             {
                 canned_msg(MSG_OK);
                 return false;
@@ -1648,8 +1648,8 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
     if (down && player_in_branch(BRANCH_SLIME) && you.depth == 1
         && !you.royal_jelly_dead && !you_worship(GOD_JIYVA))
     {
-        if (!yesno("You will be unable to climb back up again until you either destroy or join "
-                   "the power ruling this place. Continue?", true, 'n'))
+        if (!yesno(T_("You will be unable to climb back up again until you either destroy or join "
+                   "the power ruling this place. Continue?"), true, 'n'))
         {
             canned_msg(MSG_OK);
             return false;
@@ -1835,7 +1835,7 @@ static void _do_rest()
     }
 #endif
 
-    if (should_fear_zot() && !yesno("Really rest while Zot is near?", false, 'n'))
+    if (should_fear_zot() && !yesno(T_("Really rest while Zot is near?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return;

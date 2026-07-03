@@ -1565,7 +1565,7 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
 
             dprf("Damage: %d; Hit points: %d", dam, you.hp);
 
-            if (crawl_state.test || !yesno("Die?", false, 'n'))
+            if (crawl_state.test || !yesno(T_("Die?"), false, 'n'))
             {
                 mpr(T_("As expected."));
                 take_note(Note(NOTE_DEATH, you.hp, you.hp_max,

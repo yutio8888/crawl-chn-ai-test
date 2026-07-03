@@ -854,7 +854,7 @@ static spret _tremorstone()
         return act && _valid_tremorstone_target(*act->as_monster());
     };
     if ((!see_target
-        && !yesno("You can't see anything, release a tremorstone anyway?",
+        && !yesno(T_("You can't see anything, release a tremorstone anyway?"),
                  true, 'n'))
         || stop_attack_prompt(hitfunc, "release a tremorstone", vulnerable))
     {
@@ -925,7 +925,7 @@ static spret _condenser()
     }
 
     if (!see_targets
-        && !yesno("You can't see anything. Try to condense clouds anyway?",
+        && !yesno(T_("You can't see anything. Try to condense clouds anyway?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);

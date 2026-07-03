@@ -2377,17 +2377,14 @@ static int _ignite_enemy_harm(const coord_def &where, actor* agent)
  */
 static bool maybe_abort_ignite()
 {
-    string prompt = "You are standing ";
-
     // XXX XXX XXX major code duplication (ChrisOelmueller)
     if (const cloud_struct* cloud = cloud_at(you.pos()))
     {
         if ((cloud->type == CLOUD_MEPHITIC || cloud->type == CLOUD_POISON)
             && !actor_cloud_immune(you, CLOUD_FIRE))
         {
-            prompt += "in a cloud of ";
-            prompt += cloud->cloud_name(true);
-            prompt += "! Ignite poison anyway?";
+            string prompt = make_stringf(T_("You are standing in a cloud of %s! Ignite poison anyway?"),
+                                          cloud->cloud_name(true).c_str());
             if (!yesno(prompt.c_str(), false, 'n'))
                 return true;
         }
@@ -2395,7 +2392,7 @@ static bool maybe_abort_ignite()
 
     if (apply_area_visible(_ignite_ally_harm, you.pos()) > 0)
     {
-        return !yesno("You might harm nearby allies! Ignite poison anyway?",
+        return !yesno(T_("You might harm nearby allies! Ignite poison anyway?"),
                       false, 'n');
     }
 
@@ -3655,7 +3652,7 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
 
     const actor* victim = actor_at(target);
     if ((!victim || !you.can_see(*victim))
-        && !yesno("You can't see anything there. Cast anyway?", false, 'n'))
+        && !yesno(T_("You can't see anything there. Cast anyway?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return spret::abort;

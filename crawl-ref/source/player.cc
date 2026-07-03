@@ -5284,7 +5284,7 @@ bool invis_allowed(bool quiet, string *fail_reason, bool temp)
         msg = "You are backlit; invisibility will do you no good right now";
         if (quiet)
             success = false;
-        else if (!quiet && !yesno((msg + "; use anyway?").c_str(), false, 'n'))
+        else if (!quiet && !yesno((msg + T_("; use anyway?")).c_str(), false, 'n'))
         {
             // XX this shouldn't be here. Currently used only for evoke invis.
             canned_msg(MSG_OK);
@@ -8850,7 +8850,7 @@ void player_open_door(coord_def doorpos)
                     canned_msg(MSG_OK);
                 else
                 {
-                    if (yesno("Put travel exclusion on door? (Y/n)",
+                    if (yesno(T_("Put travel exclusion on door? (Y/n)"),
                               true, 'y'))
                     {
                         // Zero radius exclusion right on top of door.

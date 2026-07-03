@@ -1290,7 +1290,7 @@ bool warn_about_changing_gear(const vector<item_def*>& to_remove, item_def* to_e
     string reason;
     if (needs_delay && !i_feel_safe(false, false, false, true, -1, &reason))
     {
-        string warning = make_stringf("Spend multiple turns changing equipment while %s?", reason.c_str());
+        string warning = make_stringf(T_("Spend multiple turns changing equipment while %s?"), reason.c_str());
         if (!yesno(warning.c_str(), true, 'n'))
         {
             canned_msg(MSG_OK);
@@ -2860,11 +2860,11 @@ bool read(item_def* scroll, dist *target)
         bool penance = god_hates_item(*scroll);
         string verb_object = "read the " + scroll->name(DESC_DBNAME);
 
-        string penance_prompt = make_stringf("Really %s? This action would"
-                                             " place you under penance%s!",
+        string penance_prompt = make_stringf(T_("Really %s? This action would"
+                                             " place you under penance%s!"),
                                              verb_object.c_str(),
                                              hostile_check ? ""
-                    : " and you can't even see any enemies this would affect");
+                    : T_(" and you can't even see any enemies this would affect"));
 
         targeter_radius hitfunc(&you, LOS_NO_TRANS);
 
@@ -2889,10 +2889,10 @@ bool read(item_def* scroll, dist *target)
             return false;
         }
         else if (bad_item
-                 && !yesno(make_stringf("Really %s?%s",
+                 && !yesno(make_stringf(T_("Really %s?%s"),
                                         verb_object.c_str(),
                                         hostile_check ? ""
-                        : " You can't even see any enemies this would affect."
+                        : T_(" You can't even see any enemies this would affect.")
                                         ).c_str(),
                            false, 'n'))
         {
@@ -2915,8 +2915,8 @@ bool read(item_def* scroll, dist *target)
         && !you.props.exists(VICTORY_CONDUCT_KEY))
     {
         item_def *item = you.equipment.get_first_slot_item(SLOT_BODY_ARMOUR, true);
-        string unrand_prompt = make_stringf("Really read with monsters nearby "
-                                            "while wearing %s?",
+        string unrand_prompt = make_stringf(T_("Really read with monsters nearby "
+                                            "while wearing %s?"),
                                             item->name(DESC_THE, false, true,
                                                        false).c_str());
 
@@ -3340,7 +3340,7 @@ bool invisibility_target_check(const char* prompt)
     if (!found_any)
         return true;
     if (!found_susceptible)
-        return yesno("You can't see any enemy this would conceal you from. Use anyway?", true, 'n');
+        return yesno(T_("You can't see any enemy this would conceal you from. Use anyway?"), true, 'n');
 
     direction_chooser_args args;
     unique_ptr<targeter> hitfunc = make_unique<targeter_invisibility>();
@@ -3432,7 +3432,7 @@ bool use_talisman(item_def& talisman)
         return false;
     if (transforming_is_unsafe(trans))
         return false;
-    if (!i_feel_safe(true) && !yesno("Still begin transforming?", true, 'n'))
+    if (!i_feel_safe(true) && !yesno(T_("Still begin transforming?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return false;

@@ -134,7 +134,7 @@ bool check_next_floor_warning()
                                  || bezotting_warning != "";
 
     if (might_be_dangerous
-        && !yesno("Enter next level anyway?", true, 'n', true, false))
+        && !yesno(T_("Enter next level anyway?"), true, 'n', true, false))
     {
         canned_msg(MSG_OK);
         interrupt_activity(activity_interrupt::force);

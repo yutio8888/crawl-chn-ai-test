@@ -27587,4 +27587,111 @@ like the proverbial pig
 %%%%
 into a gooey mess
 成一团黏糊
+Really use %s?
+确定要使用%s吗？
+%%%%
+There are no victims visible. Siphon anyway?
+没有可见的目标。仍然吸取吗？
+%%%%
+Are you sure you want to shaft yourself?
+确定要将自己送入竖井吗？
+%%%%
+Really renounce your faith, foregoing its fabulous benefits?
+确定要放弃信仰，舍弃其无上恩惠吗？
+%%%%
+Are you sure?
+你确定吗？
+%%%%
+Really repeat movement command while danger is nearby?
+附近有危险，确定要重复移动命令吗？
+%%%%
+Enter transporter anyway?
+仍然进入传送器吗？
+%%%%
+Are you sure you want to leave this ziggurat?
+确定要离开这个金字塔吗？
+%%%%
+Are you sure you want to leave this trove?
+确定要离开这个宝库吗？
+%%%%
+Really leave the ziggurat figurine behind?
+确定要把金字塔雕像留在这里吗？
+%%%%
+Really leave the Orb behind?
+确定要把宝珠留在这里吗？
+%%%%
+Are you sure you want to leave %s?%s
+确定要离开%s吗？%s
+%%%%
+Really go through this one-way escape hatch?
+确定要穿过这个单向逃生舱口吗？
+%%%%
+Really dive through this shaft in the floor?
+确定要跳入地面的竖井吗？
+%%%%
+You will be unable to climb back up again until you either destroy or join the power ruling this place. Continue?
+在你摧毁或加入统治此地的力量之前，你将无法返回。继续吗？
+%%%%
+Really rest while Zot is near?
+佐特就在附近，确定要休息吗？
+%%%%
+You can't see anything, release a tremorstone anyway?
+你什么也看不见，仍然释放震动石吗？
+%%%%
+You can't see anything. Try to condense clouds anyway?
+你什么也看不见。仍然尝试凝结云雾吗？
+%%%%
+You are standing in a cloud of %s! Ignite poison anyway?
+你正站在%s之中！仍然点燃毒气吗？
+%%%%
+You might harm nearby allies! Ignite poison anyway?
+可能会伤害附近的友方！仍然点燃毒气吗？
+%%%%
+You can't see anything there. Cast anyway?
+那里什么也看不见。仍然施法吗？
+%%%%
+Animating this weapon would place you under penance. Really cast this spell?
+激活此武器会让你遭受苦修。确定要施放此法术吗？
+%%%%
+Die?
+死？
+%%%%
+This transformation would significantly lower your maximum hit points. Transform anyway?
+此变形会显著降低你的最大生命值。仍然变形吗？
+%%%%
+Put travel exclusion on door? (Y/n)
+在门上设置旅行排除区域？(Y/n)
+%%%%
+; use anyway?
+；仍然使用吗？
+%%%%
+Spend multiple turns changing equipment while %s?
+在%s的情况下花费多回合更换装备吗？
+%%%%
+Really %s? This action would place you under penance%s!
+确定要%s吗？此行为会让你遭受苦修%s！
+%%%%
+ and you can't even see any enemies this would affect
+，而且你甚至看不到会被此影响的敌人
+%%%%
+Really %s?%s
+确定要%s吗？%s
+%%%%
+ You can't even see any enemies this would affect.
+ 你甚至看不到会被此影响的敌人。
+%%%%
+Really read with monsters nearby while wearing %s?
+附近有怪物，确定要在穿戴%s时阅读吗？
+%%%%
+You can't see any enemy this would conceal you from. Use anyway?
+你看不到任何会被此隐藏的敌人。仍然使用吗？
+%%%%
+Still begin transforming?
+仍然开始变形吗？
+%%%%
+Enter next level anyway?
+仍然进入下一层吗？
+%%%%
+ This would place you under penance!
+ 这会让你遭受苦修！
 %%%%

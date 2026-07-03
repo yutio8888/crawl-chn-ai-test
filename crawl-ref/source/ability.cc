@@ -1891,7 +1891,7 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
             {
                 if (action.matches(name))
                 {
-                    string prompt = "Really use " + name + "?";
+                    string prompt = make_stringf(T_("Really use %s?"), name.c_str());
                     if (!yesno(prompt.c_str(), false, 'n'))
                     {
                         canned_msg(MSG_OK);
@@ -3056,7 +3056,7 @@ static vector<monster*> _get_siphon_victims(bool known)
 static spret _siphon_essence(bool fail)
 {
     if (_get_siphon_victims(true).empty()
-        && !yesno("There are no victims visible. Siphon anyway?", true, 'n'))
+        && !yesno(T_("There are no victims visible. Siphon anyway?"), true, 'n'))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -3266,7 +3266,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
             if (beogh_cancel_leaving_floor())
                 return spret::abort;
 
-            if (yesno("Are you sure you want to shaft yourself?", true, 'n'))
+            if (yesno(T_("Are you sure you want to shaft yourself?"), true, 'n'))
                 start_delay<ShaftSelfDelay>(1);
             else
             {
@@ -4067,9 +4067,9 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return spret::success;
 
     case ABIL_RENOUNCE_RELIGION:
-        if (yesno("Really renounce your faith, foregoing its fabulous benefits?",
+        if (yesno(T_("Really renounce your faith, foregoing its fabulous benefits?"),
                   false, 'n')
-            && yesno("Are you sure?", false, 'n'))
+            && yesno(T_("Are you sure?"), false, 'n'))
         {
             excommunication(true);
         }

@@ -320,8 +320,8 @@ static bool _stop_because_god_hates_target_prompt(const monster* mon,
         {
             if (check_only)
                 return true;
-            if (!yesno("Animating this weapon would place you under penance. "
-                "Really cast this spell?", false, 'n'))
+            if (!yesno(T_("Animating this weapon would place you under penance. "
+                "Really cast this spell?"), false, 'n'))
             {
                 canned_msg(MSG_OK);
                 return true;
@@ -7979,10 +7979,10 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
             verb += "towards ";
         const bool penance = victims.penance();
 
-        const string prompt = make_stringf("Really %s%s%s?%s",
+        const string prompt = make_stringf(T_("Really %s%s%s?%s"),
                         verb.c_str(), mon_name.c_str(),
                         victims.suffix(),
-                        penance ? " This would place you under penance!" : "");
+                        penance ? T_(" This would place you under penance!") : "");
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
