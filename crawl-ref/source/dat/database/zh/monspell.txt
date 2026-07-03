@@ -996,7 +996,7 @@ Might Other priest cast
 %%%%
 Malign Offering priest cast
 
-@The_monster@进行黑暗祈祷时，做出指向动作@at@ @target@。
+@The_monster@进行黑暗祈祷，指向@target@。
 %%%%
 Blink magical cast
 
@@ -1050,7 +1050,7 @@ wizard cast targeted
 
 @The_monster@在吟诵时，做出的手势@at@ @target@。
 
-@The_monster@在咕哝着一些奇怪的话时，做出的指向动作@at@ @target@。
+@The_monster@咕哝着奇怪的话，指向@target@。
 
 @The_monster@施展的一个法术@at@ @target@。
 %%%%

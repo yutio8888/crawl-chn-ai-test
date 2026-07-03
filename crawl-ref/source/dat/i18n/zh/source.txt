@@ -2910,7 +2910,7 @@ base
 基础
 %%%%
 Base training target %d.%d for %s reached!
-基础训练目标%d.%d为%s已达到！
+已达到基础训练目标%d.%d：%s！
 %%%%
 Battle
 战斗
@@ -7467,7 +7467,7 @@ training 1 level of
 训练1级
 %%%%
 Training target %d.%d for %s reached!
-训练目标%d.%d为%s已达到！
+已达到训练目标%d.%d：%s！
 %%%%
 Transfigurations
 变形
@@ -29546,3 +29546,10 @@ you hear an explosion!
 %%%%
 you refuse to depend on such disposable conveniences.
 你拒绝依赖这种一次性便利品。
+%%%%
+ and
+ 和
+%%%%
+, and
+，和
+
