@@ -22236,9 +22236,6 @@ tear
 %s %s one of %s heads off!
 %s%s了%s一个头！
 %%%%
-Deactivating autopickup; reactivate with <w>%s</w>.
-关闭自动拾取；按 <w>%s</w> 重新开启。
-%%%%
 flickers and vanishes
 闪烁了一下就消失了
 %%%%
@@ -26535,9 +26532,6 @@ This spell is empowered while you are enkindled.\n
 Airstrike Dmg
 空袭伤害
 %%%%
-Your stasis prevents you from teleporting.
-你的停滞状态阻止你传送。
-%%%%
 You spin around.
 你原地转了圈。
 %%%%
@@ -26808,9 +26802,6 @@ Skill
 %%%%
 Your stasis prevents you from teleporting.
 你的停滞状态阻止你传送。
-%%%%
-slightly
-略微
 %%%%
 Space - Change
 空格 - 更换
@@ -27800,9 +27791,6 @@ You now have enough gold to
 %%%%
 
 %%%%
-You stand defiantly in death's doorway!
-你勇敢地站在死亡之门中！
-%%%%
 
 %%%%
 Your stasis prevents you from teleporting.
@@ -27829,9 +27817,6 @@ releases
 释放
 %%%%
 
-%%%%
-You feel nauseous.
-你感到恶心。
 %%%%
 
 %%%%
@@ -28563,7 +28548,7 @@ slay drac,
 屠龙，
 %%%%
 slick, slippery,
-滑溜，防滑，
+滑溜，滑溜，
 %%%%
 sonic wave
 音波
