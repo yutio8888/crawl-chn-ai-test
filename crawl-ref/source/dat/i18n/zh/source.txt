@@ -25190,3 +25190,242 @@ You lack an exoframe to install that in.
 %%%%
 Your %s briefly %s through it before you manage to get a firm grip on it.
 你的%s在你握紧之前短暂地%s穿过了它。
+You stand defiantly in death's doorway!
+你无畏地站在死亡的门槛上！
+%%%%
+You seem to hear sand running through an hourglass...
+你仿佛听到沙漏中沙子流逝的声音……
+%%%%
+Your icy armour melts away.
+你的冰霜护甲融化了。
+%%%%
+Your icy armour thickens.
+你的冰霜护甲变厚了。
+%%%%
+A film of ice covers your body!
+一层冰霜覆盖了你的身体！
+%%%%
+Your cloak of flame flares fiercely!
+你的火焰斗篷猛烈燃烧起来！
+%%%%
+A sizzling cloak of flame settles atop your icy armour.
+一件滋滋作响的火焰斗篷覆盖在你的冰霜护甲上。
+%%%%
+A protective cloak of flame settles atop you.
+一件保护性的火焰斗篷覆盖在你身上。
+%%%%
+Your body is healed in an amazingly painful way.
+你的身体以极其痛苦的方式被治愈了。
+%%%%
+Your life is in your own hands once again.
+你的生命再次掌握在自己手中。
+%%%%
+You release your grip on the fallen and begin the cycle anew!
+你松开了对亡者的掌控，重新开始循环！
+%%%%
+You call out to the remnants of the fallen!
+你召唤了亡者的残骸！
+%%%%
+The fallen lash out in pain!
+亡者在痛苦中猛烈反击！
+%%%%
+A profound silence engulfs you.
+深深的寂静包围了你。
+%%%%
+The ground around you becomes liquefied!
+你周围的地面液化了！
+%%%%
+There is nobody nearby that the sprites are interested in.
+附近没有精灵感兴趣的目标。
+%%%%
+You beckon %s vexing sprites to accompany your attacks.
+你召唤了%s缠人的精灵来辅助你的攻击。
+%%%%
+more
+更多
+%%%%
+some
+一些
+%%%%
+You ready an explosive catalyst.
+你准备好了爆裂催化剂。
+%%%%
+Forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s
+遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s
+%%%%
+You draw magical energy from your own body!
+你从自己体内汲取了魔法能量！
+%%%%
+Malign forces permeate your being, awaiting release.
+邪恶的力量渗透了你的身体，等待释放。
+%%%%
+You dismiss your zombies and call upon the dead to rise afresh.
+你遣散了僵尸，重新召唤亡者复苏。
+%%%%
+You call upon the dead to rise.
+你召唤亡者复苏。
+%%%%
+ is recalled.
+被召回了。
+%%%%
+Nothing appears to have answered your call.
+似乎没有响应你的召唤。
+%%%%
+Please select a wall.
+请选择一面墙。
+%%%%
+There is no adjacent passable wall in that direction.
+那个方向没有可穿越的相邻墙壁。
+%%%%
+This rock feels extremely deep.
+这块岩石感觉极深。
+%%%%
+You sense an overwhelming volume of rock.
+你感应到了大量的岩石。
+%%%%
+Something is blocking your path through the rock.
+有东西阻挡了你穿越岩石的路径。
+%%%%
+You sense a deep body of water on the other side of the rock.
+你感应到岩石另一侧有一片深水。
+%%%%
+You sense an intense heat on the other side of the rock.
+你感应到岩石另一侧有强烈的热量。
+%%%%
+ looks rather confused.
+看起来相当困惑。
+%%%%
+You attempt to intoxicate your foes!
+你试图使敌人陶醉！
+%%%%
+The world spins around you!
+你感到天旋地转！
+%%%%
+There was nowhere nearby to inscribe sigils!
+附近没有可以刻印符文的地方！
+%%%%
+You inscribe a pair of binding sigils.
+你刻印了一对束缚符文。
+%%%%
+You inscribe a binding sigil.
+你刻印了一个束缚符文。
+%%%%
+You slip past the binding sigil.
+你滑过了束缚符文。
+%%%%
+%s cannot be bound by the sigil due to %s high momentum!
+%s由于%s的高速移动而无法被符文束缚！
+%%%%
+You move over the binding sigil and are bound in place!
+你踩过束缚符文，被固定在原地！
+%%%%
+ moves over the binding sigil and is bound in place!
+踩过束缚符文，被固定在原地！
+%%%%
+You shape a spike launcher from a nearby wall.
+你从附近的墙上塑造了一个尖刺发射器。
+%%%%
+Your spike launcher falls apart as you grow too distant to maintain it.
+你离得太远，无法维持尖刺发射器，它散架了。
+%%%%
+Your spike launcher falls apart.
+你的尖刺发射器散架了。
+%%%%
+%s would be completely unfazed by your meagre offer of peace.
+%s对你微不足道的和平提议完全无动于衷。
+%%%%
+ turns neutral.
+变得中立了。
+%%%%
+ is completely healed.
+被完全治愈了。
+%%%%
+mindless
+无心智
+%%%%
+uninterested
+无兴趣
+%%%%
+as magically contaminated
+受到魔法污染
+%%%%
+transformed
+变形
+%%%%
+flying
+飞行
+%%%%
+Your magical effects refuse to unravel!
+你的魔法效果拒绝瓦解！
+%%%%
+You feel limber!
+你感到身体柔软了！
+%%%%
+You are no longer on fire.
+你身上的火焰熄灭了。
+%%%%
+Your magical effects are unravelling.
+你的魔法效果正在瓦解。
+%%%%
+ magical effects unravel!
+的魔法效果瓦解了！
+%%%%
+You briefly glimpse something next to %s.
+你短暂地瞥见了%s旁边的东西。
+%%%%
+You need more space to imprison %s.
+你需要更多空间来囚禁%s。
+%%%%
+Zin imprisons %s with walls of pure silver!
+辛用纯银之墙囚禁了%s！
+%%%%
+Walls emerge from the floor!
+墙壁从地面升起！
+%%%%
+Beogh will not strike down an ally of the cause.
+贝奥不会击倒同道中人。
+%%%%
+ booms: This is a trial of mortal prowess. Fight with your own strength!
+低沉地说：这是对凡人之力的考验。用你自己的力量战斗吧！
+%%%%
+You smite %s%s
+你惩戒了%s%s
+%%%%
+You are blasted by holy energy!
+你被神圣能量冲击了！
+%%%%
+ is blasted by Zin's holy word!
+被辛的圣言冲击了！
+%%%%
+ convulses!
+抽搐起来！
+%%%%
+ shields you from torment!
+保护你免受折磨！
+%%%%
+ partially shields you from torment!
+部分保护你免受折磨！
+%%%%
+You feel a surge of unholy energy.
+你感受到一股邪秽能量涌动。
+%%%%
+Your body is wracked with pain!
+你的身体被痛苦撕裂！
+%%%%
+Something is bathed in an unholy light!
+某物被邪秽之光照亮了！
+%%%%
+Your necklace shatters, unleashing a wave of protective dreams!
+你的项链碎裂了，释放出一股守护之梦的波浪！
+%%%%
+life
+生命
+%%%%
+friendship
+友谊
+%%%%
+clouds
+云朵
+%%%%
+You dream of 
+你梦到了
