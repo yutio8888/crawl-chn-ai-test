@@ -326,7 +326,7 @@ static vector<string> _desc_pacify_chance(const monster_info& mi, const int pow)
     {
         const int success = _pacify_chance(mi, pow, 100);
         if (success == 0)
-            descs.push_back(make_stringf(T_("chance to pacify: <<1%%")));
+            descs.push_back(T_("chance to pacify: <<1%%"));
         else
             descs.push_back(make_stringf(T_("chance to pacify: %d%%"), success));
     }

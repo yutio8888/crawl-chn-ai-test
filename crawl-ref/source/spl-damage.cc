@@ -44,6 +44,7 @@
 #include "mon-tentacle.h"
 #include "mutation.h"
 #include "ouch.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -1867,7 +1868,7 @@ void shillelagh(actor *wielder, coord_def where, int pow)
     if (!affected_monsters.empty())
     {
         const string message =
-            make_stringf(T_("%1$s shudder%2$s."),
+            make_stringf_p(T_("%1$s shudder%2$s."),
                          affected_monsters.describe().c_str(),
                          affected_monsters.count() == 1? "s" : "");
         if (strwidth(message) < get_number_of_cols() - 2)
@@ -5206,12 +5207,12 @@ void gain_grave_claw_soul(bool silent, bool wizard)
 
         if (charges == GRAVE_CLAW_MAX_CHARGES)
         {
-            mprf(MSGCH_DURATION, T_("You have harvested as much death for "
+            mprf(MSGCH_DURATION, "%s", T_("You have harvested as much death for "
                                  "Grave Claw as you can hold at once."));
         }
         else
         {
-            mprf(MSGCH_DURATION, T_("You have harvested enough death to cast "
+            mprf(MSGCH_DURATION, "%s", T_("You have harvested enough death to cast "
                                  "Grave Claw an additional time."));
         }
     }
@@ -5225,7 +5226,7 @@ spret cast_fortress_blast(actor& caster, int pow, bool fail)
     {
         const int delay = 70 - div_rand_round(pow * 10, 25);
         you.duration[DUR_FORTRESS_BLAST_TIMER] = delay;
-        mprf(T_("You steady yourself in place and focus your resilience into a mighty blast."));
+        mpr(T_("You steady yourself in place and focus your resilience into a mighty blast."));
     }
     // Todo: Add monster implementation here
 
