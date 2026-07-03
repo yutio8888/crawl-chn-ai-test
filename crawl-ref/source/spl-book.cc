@@ -1133,7 +1133,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         {
             mprf(MSGCH_WARN,
                  T_("This spell is %s to cast%s"),
-                 fail_severity_adjs[severity],
+                 T_(fail_severity_adjs[severity]),
                  severity > 1 ? "!" : ".");
         }
     }

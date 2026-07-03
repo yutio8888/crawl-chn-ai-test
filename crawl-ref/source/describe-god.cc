@@ -252,13 +252,13 @@ string god_title(god_type which_god, species_type which_species, int piety)
 {
     string title;
     if (player_under_penance(which_god))
-        title = divine_title[which_god][0];
+        title = T_(divine_title[which_god][0]);
     else if (which_god == GOD_USKAYAW)
-        title = divine_title[which_god][_invocations_level()];
+        title = T_(divine_title[which_god][_invocations_level()]);
     else if (which_god == GOD_GOZAG)
-        title = divine_title[which_god][_gold_level()];
+        title = T_(divine_title[which_god][_gold_level()]);
     else
-        title = divine_title[which_god][_piety_level(piety)];
+        title = T_(divine_title[which_god][_piety_level(piety)]);
 
     const map<string, string> replacements =
     {

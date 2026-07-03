@@ -1287,7 +1287,7 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
         }
 
         string prompt = make_stringf(T_("The spell is %s to miscast (%s risk of failure)%s"),
-                                     fail_severity_adjs[severity],
+                                     T_(fail_severity_adjs[severity]),
                                      failure_rate.c_str(),
                                      severity > 1 ? T_("!") : T_("."));
 
@@ -2993,12 +2993,12 @@ int fail_severity(spell_type spell)
 
 const char *fail_severity_adjs[] =
 {
-    T_("safe"),
-    T_("mildly dangerous"),
-    T_("dangerous"),
-    T_("quite dangerous"),
-    T_("extremely dangerous"),
-    T_("astonishingly dangerous"),
+    "safe",
+    "mildly dangerous",
+    "dangerous",
+    "quite dangerous",
+    "extremely dangerous",
+    "astonishingly dangerous",
 };
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
 
@@ -3067,7 +3067,7 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 static string _spell_failure_rate_description(spell_type spell)
 {
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    const char *severity_adj = fail_severity_adjs[fail_severity(spell)];
+    const char *severity_adj = T_(fail_severity_adjs[fail_severity(spell)]);
     const string colour = colour_to_str(failure_rate_colour(spell));
     const char *col = colour.c_str();
 
