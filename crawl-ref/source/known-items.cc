@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "decks.h"
 #include "describe.h"
 #include "english.h"
@@ -118,7 +119,7 @@ protected:
             {
                 lastch = CONTROL('D');
                 temp_title = title->text;
-                set_title("Select to reset item to default ([*] for all): ");
+                set_title(T_("Select to reset item to default ([*] for all): "));
             }
 
             return true;
@@ -502,13 +503,13 @@ void check_item_knowledge(bool unknown_items)
     string stitle;
 
     if (unknown_items)
-        stitle = "Items not yet recognised:";
+        stitle = T_("Items not yet recognised:");
     else if (!all_items_known)
-        stitle = "Recognised items. (Select to toggle autopickup)";
+        stitle = T_("Recognised items. (Select to toggle autopickup)");
     else
-        stitle = "You recognise all items. (Select to toggle autopickup)";
+        stitle = T_("You recognise all items. (Select to toggle autopickup)");
 
-    string prompt = "(_ for help)";
+    string prompt = T_("(_ for help)");
     //TODO: when the menu is opened, the text is not justified properly.
     stitle = stitle + string(max(0, MIN_COLS - strwidth(stitle + prompt)),
                              ' ') + prompt;

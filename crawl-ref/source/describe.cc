@@ -326,163 +326,163 @@ static const vector<property_descriptor> & _get_all_artp_desc_data()
     static vector<property_descriptor> data =
     {
         { ARTP_AC,
-            "影响你的AC（%d）。",
+            T_("It affects your AC (%d)."),
             prop_note::numeral },
         { ARTP_EVASION,
-            "影响你的闪避（%d）。",
+            T_("It affects your evasion (%d)."),
             prop_note::numeral },
         { ARTP_STRENGTH,
-            "影响你的力量（%d）。",
+            T_("It affects your strength (%d)."),
             prop_note::numeral },
         { ARTP_INTELLIGENCE,
-            "影响你的智力（%d）。",
+            T_("It affects your intelligence (%d)."),
             prop_note::numeral },
         { ARTP_DEXTERITY,
-            "影响你的敏捷（%d）。",
+            T_("It affects your dexterity (%d)."),
             prop_note::numeral },
         { ARTP_SLAYING,
-            "影响你远程和近战武器的命中率与伤害（%d）。",
+            T_("It affects your accuracy & damage with ranged weapons and melee (%d)."),
             prop_note::numeral },
         { ARTP_FIRE,
-            "火焰",
+            T_("fire"),
             prop_note::symbolic },
         { ARTP_COLD,
-            "寒冷",
+            T_("cold"),
             prop_note::symbolic },
         { ARTP_ELECTRICITY,
-            "使你免受电击伤害。",
+            T_("It insulates you from electricity."),
             prop_note::plain },
         { ARTP_POISON,
-            "保护你免受毒素伤害。",
+            T_("It protects you from poison."),
             prop_note::plain },
         { ARTP_NEGATIVE_ENERGY,
-            "负能量",
+            T_("negative energy"),
             prop_note::symbolic },
         { ARTP_WILLPOWER,
-            "意志力",
+            T_("buggy willpower"),
             prop_note::symbolic },
         { ARTP_HP,
-            "影响你的生命值（%d）。",
+            T_("It affects your health (%d)."),
             prop_note::numeral },
         { ARTP_MAGICAL_POWER,
-            "影响你的魔力容量（%d）。",
+            T_("It affects your magic capacity (%d)."),
             prop_note::numeral },
         { ARTP_SEE_INVISIBLE,
-            "让你能看见隐形之物。",
+            T_("It lets you see invisible."),
             prop_note::plain },
         { ARTP_INVISIBLE,
-            "让你可以隐身。",
+            T_("It lets you turn invisible."),
             prop_note::plain },
         { ARTP_FLY,
-            "赋予你飞行能力。",
+            T_("It grants you flight."),
             prop_note::plain },
         { ARTP_BLINK,
-            "让你可以闪烁传送。",
+            T_("It lets you blink."),
             prop_note::plain },
         { ARTP_NOISE,
-            "挥舞时可能发出巨大噪音。",
+            T_("It may make a loud noise when swung."),
             prop_note::plain },
         { ARTP_PREVENT_SPELLCASTING,
-            "阻止施法。",
+            T_("It prevents spellcasting."),
             prop_note::plain },
         { ARTP_PREVENT_TELEPORTATION,
-            "阻止大多数形式的传送。",
+            T_("It prevents most forms of teleportation."),
             prop_note::plain },
         { ARTP_ANGRY,
-            "近战攻击时有概率使你狂暴（%d%%概率）。",
+            T_("It berserks you when you make melee attacks (%d% chance)."),
             prop_note::plain },
         { ARTP_CLARITY,
-            "保护你免受困惑、狂怒、迷惑和恐惧。",
+            T_("It protects you from confusion, rage, mesmerisation and fear."),
             prop_note::plain },
         { ARTP_CONTAM,
-            "卸下时造成魔法污染。",
+            T_("It causes magical contamination when unequipped."),
             prop_note::plain },
         { ARTP_RMSL,
-            "保护你免受投射物伤害。",
+            T_("It protects you from missiles."),
             prop_note::plain },
         { ARTP_REGENERATION,
-            "提高你的生命值恢复速度。",
+            T_("It increases your rate of health regeneration."),
             prop_note::symbolic },
         { ARTP_RCORR,
-            "保护你免受酸液和腐蚀。",
+            T_("It protects you from acid and corrosion."),
             prop_note::plain },
         { ARTP_RMUT,
-            "保护你免受变异。",
+            T_("It protects you from mutation."),
             prop_note::plain },
         { ARTP_CORRODE,
-            "受到伤害时可能腐蚀你。",
+            T_("It may corrode you when you take damage."),
             prop_note::plain },
         { ARTP_DRAIN,
-            "卸下时消耗你的最大生命值。",
+            T_("It drains your maximum health when unequipped."),
             prop_note::plain },
         { ARTP_SLOW,
-            "受到伤害时可能减速你。",
+            T_("It may slow you when you take damage."),
             prop_note::plain },
         { ARTP_FRAGILE,
-            "卸下时将被摧毁。",
+            T_("It will be destroyed if unequipped."),
             prop_note::plain },
         { ARTP_SHIELDING,
-            "影响你的盾牌格挡值（%d）。",
+            T_("It affects your SH (%d)."),
             prop_note::numeral },
         { ARTP_HARM,
-            "增加你造成和受到的伤害。",
+            T_("It increases damage dealt and taken."),
             prop_note::plain },
         { ARTP_RAMPAGING,
-            "向敌人移动时可以多走一步，如果因此发动攻击会短暂眩晕它们。",
+            T_("It causes one to take an extra step when moving towards enemies, briefly stunning them if this results in an attack."),
             prop_note::plain },
         { ARTP_STEALTH,
-            "潜行",
+            T_("buggy stealth"),
             prop_note::symbolic },
         { ARTP_ARCHMAGI,
-            "增强你魔法法术的威力。",
+            T_("It increases the power of your magical spells."),
             prop_note::plain },
         { ARTP_ENHANCE_CONJ,
-            "增强你咒法系法术的威力。",
+            T_("It increases the power of your Conjurations spells."),
             prop_note::plain },
         { ARTP_ENHANCE_HEXES,
-            "增强你诅咒系法术的威力。",
+            T_("It increases the power of your Hexes spells."),
             prop_note::plain },
         { ARTP_ENHANCE_SUMM,
-            "增强你召唤系法术的威力。",
+            T_("It increases the power of your Summonings spells."),
             prop_note::plain },
         { ARTP_ENHANCE_NECRO,
-            "增强你死灵术法术的威力。",
+            T_("It increases the power of your Necromancy spells."),
             prop_note::plain },
         { ARTP_ENHANCE_TLOC,
-            "增强你传送系法术的威力。",
+            T_("It increases the power of your Translocations spells."),
             prop_note::plain },
         { ARTP_ENHANCE_FIRE,
-            "增强你火焰法术的威力。",
+            T_("It increases the power of your Fire spells."),
             prop_note::plain },
         { ARTP_ENHANCE_ICE,
-            "增强你寒冰法术的威力。",
+            T_("It increases the power of your Ice spells."),
             prop_note::plain },
         { ARTP_ENHANCE_AIR,
-            "增强你空气法术的威力。",
+            T_("It increases the power of your Air spells."),
             prop_note::plain },
         { ARTP_ENHANCE_EARTH,
-            "增强你大地法术的威力。",
+            T_("It increases the power of your Earth spells."),
             prop_note::plain },
         { ARTP_ENHANCE_ALCHEMY,
-            "增强你炼金术法术的威力。",
+            T_("It increases the power of your Alchemy spells."),
             prop_note::plain },
         { ARTP_ENHANCE_FORGECRAFT,
-            "增强你锻造术法术的威力。",
+            T_("It increases the power of your Forgecraft spells."),
             prop_note::plain },
         { ARTP_ACROBAT,
-            "移动或等待后提高你的闪避。",
+            T_("It increases your evasion after moving or waiting."),
             prop_note::plain },
         { ARTP_MANA_REGENERATION,
-            "提高你的魔力恢复速度。",
+            T_("It increases your rate of magic regeneration."),
             prop_note::symbolic },
         { ARTP_WIZARDRY,
-            "提高你魔法法术的成功率。",
+            T_("It increases the success rate of your magical spells."),
             prop_note::plain },
         { ARTP_SILENCE,
-            "受到伤害时可能沉默你。",
+            T_("It may silence you when you take damage."),
             prop_note::plain },
         { ARTP_BANE,
-            "装备时对你施加一个随机的灾祸。",
+            T_("It inflicts you with a random bane when you equip it."),
             prop_note::plain },
     };
     return data;
@@ -506,7 +506,7 @@ static string _randart_prop_abbrev(artefact_prop_type prop, int val)
     case prop_note::plain: // e.g. rPois or SInv
         return artp_name(prop);
     }
-    return "有问题";
+    return T_("buggy");
 }
 
 static const vector<artefact_prop_type> artprop_annotation_order =
@@ -703,17 +703,17 @@ static const char* _jewellery_base_ability_description(int subtype)
         return "It reduces the accuracy of all your attacks.";
 #endif
     case AMU_GUARDIAN_SPIRIT:
-        return "使受到的伤害在你的生命值和魔力储备之间分摊。";
+        return T_("It causes incoming damage to be divided between your reserves of health and magic.");
     case AMU_FAITH:
-        return "使你能够快速获得神眷。";
+        return T_("It allows you to gain divine favour quickly.");
     case AMU_REFLECTION:
-        return "反射被格挡的远程攻击。";
+        return T_("It reflects blocked missile attacks.");
     case AMU_WILDSHAPE:
-        return "提高你的变形术技能（+5）。";
+        return T_("It improves your skill with shapeshifting (+5).");
     case AMU_CHEMISTRY:
-        return "饮用任何药水时恢复部分魔力，同时增强你的炼金术法术。";
+        return T_("It restores some MP whenever you drink a potion and also enhances your alchemy spells.");
     case AMU_DISSIPATION:
-        return "缩短敌对附魔的持续时间，并加快魔法污染的消退速度。";
+        return T_("It reduces the duration of hostile enchantments and decays magical contamination more quickly.");
     }
     return "";
 }
@@ -765,17 +765,18 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
         // these two have some custom string replacement
         if (prop == ARTP_WILLPOWER)
         {
-            lines.push_back(make_stringf("%s%s%s你的意志力。",
+            lines.push_back(make_stringf(T_("%sIt %s%s your willpower."),
                      _padded_artp_name(ARTP_WILLPOWER, stval).c_str(),
-                     (stval < -1 || stval > 1) ? "大幅" : "",
-                     (stval < 0) ? "降低" : "提高"));
+                     (stval < -1 || stval > 1) ? T_("greatly ") : T_(""),
+                     (stval < 0) ? T_("decreases") : T_("increases")));
             continue;
         }
         else if (prop == ARTP_STEALTH)
         {
-            lines.push_back(make_stringf("%s使你变得%s潜行。",
+            lines.push_back(make_stringf_p(T_("%1$sIt makes you %2$s%3$s stealthy."),
                      _padded_artp_name(ARTP_STEALTH, stval).c_str(),
-                     (stval < -1) ? "极不" : (stval == -1) ? "不" : (stval == 1) ? "更" : "极其"));
+                     (stval < -1 || stval > 1) ? T_("much ") : T_(""),
+                     (stval < 0) ? T_("less") : T_("more")));
             continue;
         }
 
@@ -796,13 +797,13 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
 
             const char* prefixes[] =
             {
-                "使你极易受到",
-                "使你非常容易受到",
-                "使你容易受到",
+                T_("It makes you extremely vulnerable to "),
+                T_("It makes you very vulnerable to "),
+                T_("It makes you vulnerable to "),
                 "Buggy descriptor!",
-                "保护你免受",
-                "极大地保护你免受",
-                "使你几乎免疫"
+                T_("It protects you from "),
+                T_("It greatly protects you from "),
+                T_("It renders you almost immune to ")
             };
             sdesc = prefixes[idx] + sdesc + '.';
         }
@@ -992,7 +993,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     static const char* body_types[] =
     {
-        "装甲的",
+        T_("armoured"),
         "vast, spindly",
         "fat",
         "obese",
@@ -1062,56 +1063,56 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     static const char* misc_descs[] =
     {
-        " 它沸腾着对生者的憎恨。",
-        " 微小的橙色火焰在其周围舞动。",
-        " 微小的紫色火焰在其周围舞动。",
-        " 它被一股奇异的薄雾环绕。",
-        " 它散发着恶毒的光芒。",
-        " 它看起来异常愤怒。",
-        " 它渗出软泥。",
-        " 它不停地滴落液体。",
-        " 霉菌长满了它的全身。",
-        " 它的身体被真菌覆盖。",
-        " 它被稀疏的长毛覆盖。",
-        " 它看起来患病了。",
-        " 它看起来和你一样害怕对方。",
-        " 它以一种可怕的抽搐方式移动。",
-        " 它以一种超凡的优雅移动。",
-        " 它留下一条闪闪发光的油性痕迹。",
-        " 它在你的眼前闪烁不定。",
-        " 它被一道灿烂的光辉环绕。",
-        " 它散发着极端力量的气息。",
-        " 它似乎彻底心碎了。",
-        " 它似乎充满了无法抑制的欢乐。",
-        " 它不停地颤抖和抽搐。",
-        " 蓝色的火花在它身体上爬行。",
-        " 它似乎犹豫不决。",
-        " 一群苍蝇在它周围嗡嗡作响。",
-        " 它周围的空气因高温而扭曲。",
-        " 靠近它的一切都长出了晶体结构。",
-        " 它表现出极度的自信。",
-        " 它的皮肤布满裂纹。",
-        " 它的皮肤有着令人恶心的油光。",
-        " 它似乎有些眼熟。",
-        " 它不知何故总在阴影之中。",
-        " 很难将目光从它身上移开。",
-        " 它不停地说着听不懂的语言。",
-        " 它永无止境地喋喋不休。",
-        " 它的身体被诅咒折磨着。",
-        " 它的身体布满大量疤痕。",
-        " 你发觉很难移开视线。",
-        " 奇怪的机械声音伴随着它不协调的动作。",
-        " 它的皮肤看起来令人不安地褶皱。",
+        T_(" It seethes with hatred of the living."),
+        T_(" Tiny orange flames dance around it."),
+        T_(" Tiny purple flames dance around it."),
+        T_(" It is surrounded by a weird haze."),
+        T_(" It glows with a malevolent light."),
+        T_(" It looks incredibly angry."),
+        T_(" It oozes with slime."),
+        T_(" It dribbles constantly."),
+        T_(" Mould grows all over it."),
+        T_(" Its body is covered in fungus."),
+        T_(" It is covered with lank hair."),
+        T_(" It looks diseased."),
+        T_(" It looks as frightened of you as you are of it."),
+        T_(" It moves in a series of hideous convulsions."),
+        T_(" It moves with an unearthly grace."),
+        T_(" It leaves a glistening oily trail."),
+        T_(" It shimmers before your eyes."),
+        T_(" It is surrounded by a brilliant glow."),
+        T_(" It radiates an aura of extreme power."),
+        T_(" It seems utterly heartbroken."),
+        T_(" It seems filled with irrepressible glee."),
+        T_(" It constantly shivers and twitches."),
+        T_(" Blue sparks crawl across its body."),
+        T_(" It seems uncertain."),
+        T_(" A cloud of flies swarms around it."),
+        T_(" The air around it ripples with heat."),
+        T_(" Crystalline structures grow on everything near it."),
+        T_(" It appears supremely confident."),
+        T_(" Its skin is covered in a network of cracks."),
+        T_(" Its skin has a disgusting oily sheen."),
+        T_(" It seems somehow familiar."),
+        T_(" It is somehow always in shadow."),
+        T_(" It is difficult to look away."),
+        T_(" It is constantly speaking in tongues."),
+        T_(" It babbles unendingly."),
+        T_(" Its body is scourged by damnation."),
+        T_(" Its body is extensively scarred."),
+        T_(" You find it difficult to look away."),
+        T_(" Oddly mechanical noises accompany its jarring movements."),
+        T_(" Its skin looks unnervingly wrinkled."),
     };
 
     static const char* smell_descs[] =
     {
-        " 它散发着硫磺的气味。",
-        " 它被一股令人作呕的恶臭环绕。",
-        " 它闻起来有腐肉的味道。",
-        " 它散发着死亡的气息。",
-        " 它散发着腐朽的臭味。",
-        " 它闻起来美味极了！",
+        T_(" It smells of brimstone."),
+        T_(" It is surrounded by a sickening stench."),
+        T_(" It smells of rotting flesh."),
+        T_(" It stinks of death."),
+        T_(" It stinks of decay."),
+        T_(" It smells delicious!"),
     };
 
     ostringstream description;
@@ -1801,7 +1802,7 @@ static string _describe_weapon_brand(const item_def &item)
     if (ego == SPWPN_VALOUR)
     {
         dice_def dmg = zap_damage(ZAP_VALOUR_BEAM, property(item, PWPN_DAMAGE), false, false);
-        ego_desc += make_stringf("光束造成%dd%d伤害。", dmg.num, dmg.size);
+        ego_desc += make_stringf(T_("Beam deals %dd%d damage."), dmg.num, dmg.size);
     }
 
     return ego_desc;
@@ -1811,8 +1812,8 @@ static string _describe_point_change(float points)
 {
     string point_diff_description;
 
-    point_diff_description += make_stringf("%s%.1f",
-                                           points > 0 ? "增加" : "减少",
+    point_diff_description += make_stringf(T_("%s by %.1f"),
+                                           points > 0 ? T_("increase") : T_("decrease"),
                                            abs(points));
 
     return point_diff_description;
@@ -1824,7 +1825,7 @@ static string _describe_point_diff(int original,
     string description;
 
     if (original == changed)
-        return "保持不变";
+        return T_("remain unchanged");
 
     // Truncate to 1 decimal place, rather than round (so that it matches what
     // will be displayed as the player's AC/EV if they actually put this on.)
@@ -1848,9 +1849,9 @@ static string _equip_type_name(const item_def &item)
     if (item.base_type == OBJ_JEWELLERY)
     {
         if (jewellery_is_amulet(item))
-            return "护身符";
+            return T_("amulet");
         else
-            return "戒指";
+            return T_("ring");
     }
 
     return base_type_string(item.base_type);
@@ -1859,10 +1860,10 @@ static string _equip_type_name(const item_def &item)
 static string _equipment_switchto_string(const item_def &item)
 {
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
-        return "持有";
+        return T_("wielding");
     // Not always the same verb used elsewhere, but "switch putting on" sounds weird
     else
-        return "穿戴";
+        return T_("wearing");
 }
 
 /**
@@ -1928,19 +1929,19 @@ static string _equipment_property_change_description(const item_def &item,
 
     if (remove)
     {
-        description += "如果你" + item_unequip_verb(item) + "这个"
-                        + _equip_type_name(item) + ":";
+        description += T_("If you ") + item_unequip_verb(item) + T_(" this ")
+                        + _equip_type_name(item) + T_(":");
     }
     else if (item.base_type == OBJ_TALISMANS)
-        description += "If you transformed using this talisman:";
+        description += T_("If you transformed using this talisman:");
     else if (item.base_type == OBJ_JEWELLERY && !jewellery_is_amulet(item))
-        description += "如果你戴着这枚戒指：";
+        description += T_("If you were wearing this ring:");
     else if (item.base_type == OBJ_WEAPONS && you.has_mutation(MUT_WIELD_OFFHAND))
-        description += "如果你切换到主手持有此武器：";
+        description += T_("If you switch to wielding this weapon in your main hand:");
     else
     {
-        description += "如果你切换到" + _equipment_switchto_string(item)
-                         + "这个" + _equip_type_name(item) + ":";
+        description += T_("If you switch to ") + _equipment_switchto_string(item)
+                         + T_(" this ") + _equip_type_name(item) + T_(":");
     }
 
     // Always display AC line on proper armour, even if there is no change
@@ -2034,9 +2035,9 @@ static string _spell_fail_change_description(const item_def &item,
 
     // Otherwise, generate a complete list of all non-trivial changes
     string desc;
-    desc = make_stringf("If you %s this item, your spell failure would %s:\n",
-                        remove ? "移除" : "装备",
-                        fail_change < 0 ? "变差" : "改善");
+    desc = make_stringf(T_("If you %s this item, your spell failure would %s:\n"),
+                        remove ? T_("removed") : T_("equipped"),
+                        fail_change < 0 ? T_("worsen") : T_("improve"));
 
     // Sort spells by degree of change in their fail rates (and then by
     // absolute fail rate after that)
@@ -2284,8 +2285,8 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
         if (!monster && is_shield(item))
         {
             const int evp = -property(item, PARM_EVASION);
-            const char* cumber_desc = evp < 100 ? "轻微地" :
-                                      evp > 100 ? "极大地" : "";
+            const char* cumber_desc = evp < 100 ? T_("slightly ") :
+                                      evp > 100 ? T_("greatly ") : T_("");
             description += make_stringf(
                 "It is cumbersome to wear, and %simpedes the evasion, "
                 "spellcasting ability, and attack speed of the wearer. "
@@ -2297,11 +2298,11 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             description += "\n\n";
         if (is_shield(item))
         {
-            description += "基础盾牌评级: "
+            description += T_("Base shield rating: ")
                         + to_string(property(item, PARM_AC));
-            description += "     负重评级: "
+            description += T_("     Encumbrance rating: ")
                         + to_string(-property(item, PARM_EVASION) / 10);
-            description += "     每回合最大格挡: "
+            description += T_("     Max blocks/turn: ")
                         + to_string(shield_block_limit(item));
             if (is_unrandom_artefact(item, UNRAND_WARLOCK_MIRROR))
                 description += _warlock_mirror_reflect_desc();
@@ -2309,11 +2310,11 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
         else
         {
             const int evp = property(item, PARM_EVASION);
-            description += "基础护甲评级: "
+            description += T_("Base armour rating: ")
                         + to_string(property(item, PARM_AC));
             if (get_armour_slot(item) == SLOT_BODY_ARMOUR)
             {
-                description += "       负重评级: "
+                description += T_("       Encumbrance rating: ")
                             + to_string(-evp / 10);
             }
             // Bardings reduce evasion by a fixed amount, and don't have any of
@@ -2379,8 +2380,8 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
     {
         if (is_enchantable_armour(item))
         {
-            description += "\n\n它可以被最大附魔到+"
-                           + to_string(armour_max_enchant(item)) + ".";
+            description += make_stringf(T_("\n\nIt can be maximally enchanted to +%s."),
+                           to_string(armour_max_enchant(item)).c_str());
         }
         else if (armour_is_enchantable(item))
             description += "\n\nIt cannot be enchanted further.";
@@ -2439,7 +2440,7 @@ static string _describe_lignify_ac()
     you.equipment.unmeld_all_equipment(true);
     you.equipment.meld_equipment(tree_form->blocked_slots, true);
 
-    return make_stringf("如果你饮下这瓶药水，你的AC将变为%d。",
+    return make_stringf(T_("If you quaff this potion your AC would be %d."),
                         you.armour_class_scaled(1));
 }
 
@@ -2461,7 +2462,7 @@ string describe_item_rarity(const item_def &item)
         return "very common";
     case RARITY_NONE:
     default:
-        return "有问题";
+        return T_("buggy");
     }
 }
 
@@ -3790,22 +3791,22 @@ static string _actions_desc(const vector<command_type>& actions)
     // XX code duplication
     static const map<command_type, string> act_str =
     {
-        { CMD_WIELD_WEAPON, "(w)持有" },
-        { CMD_UNWIELD_WEAPON, "(u)卸下" },
-        { CMD_QUIVER_ITEM, "(q)箭袋" }, // except for potions, see below
-        { CMD_WEAR_ARMOUR, "(w)穿戴" },
-        { CMD_REMOVE_ARMOUR, "(t)脱下" },
-        { CMD_EVOKE, "e(v)使用" },
-        { CMD_READ, "(r)阅读" },
-        { CMD_WEAR_JEWELLERY, "(p)戴上" },
-        { CMD_REMOVE_JEWELLERY, "(r)移除" },
-        { CMD_QUAFF, "(q)饮用" },
-        { CMD_PICKUP, "(g)拾取" },
-        { CMD_DROP, "(d)丢弃" },
-        { CMD_INSCRIBE_ITEM, "(i)刻写" },
-        { CMD_ADJUST_INVENTORY, "(=)调整" },
-        { CMD_SET_SKILL_TARGET, "(s)技能目标" },
-        { CMD_MAP_GOTO_TARGET, "(g)前往位置" },
+        { CMD_WIELD_WEAPON, T_("(w)ield") },
+        { CMD_UNWIELD_WEAPON, T_("(u)nwield") },
+        { CMD_QUIVER_ITEM, T_("(q)uiver") }, // except for potions, see below
+        { CMD_WEAR_ARMOUR, T_("(w)ear") },
+        { CMD_REMOVE_ARMOUR, T_("(t)ake off") },
+        { CMD_EVOKE, T_("e(v)oke") },
+        { CMD_READ, T_("(r)ead") },
+        { CMD_WEAR_JEWELLERY, T_("(p)ut on") },
+        { CMD_REMOVE_JEWELLERY, T_("(r)emove") },
+        { CMD_QUAFF, T_("(q)uaff") },
+        { CMD_PICKUP, T_("(g)et") },
+        { CMD_DROP, T_("(d)rop") },
+        { CMD_INSCRIBE_ITEM, T_("(i)nscribe") },
+        { CMD_ADJUST_INVENTORY, T_("(=)adjust") },
+        { CMD_SET_SKILL_TARGET, T_("(s)kill target") },
+        { CMD_MAP_GOTO_TARGET, T_("(g)o to") },
     };
     bool push_quiver = false;
     return comma_separated_fn(begin(actions), end(actions),
@@ -4091,7 +4092,7 @@ command_type describe_item_popup(const item_def &item,
     if (!actions.empty())
     {
         if (!spells.empty())
-            footer_text.cprintf("选择一个法术，或");
+            footer_text.cprintf(T_("Select a spell, or "));
         footer_text += formatted_string(_actions_desc(actions));
         auto footer = make_shared<Text>();
         footer->set_text(footer_text);
@@ -4248,7 +4249,7 @@ static string _player_spell_stats(const spell_type spell)
 
     const string schools = spell_schools_string(spell);
     description +=
-        make_stringf("        学派%s: %s",
+        make_stringf_p(T_("        School%1$s: %2$s"),
                      schools.find("/") != string::npos ? "s" : "",
                      schools.c_str());
 
@@ -4272,36 +4273,36 @@ static string _player_spell_stats(const spell_type spell)
     }
     else
         failure = failure_rate_to_string(raw_spell_fail(spell));
-    description += make_stringf("        失败率: %s", failure.c_str());
+    description += make_stringf(T_("        Fail: %s"), failure.c_str());
 
     const string damage_string = spell_damage_string(spell);
     const string max_dam_string = spell_max_damage_string(spell);
     const int acc = spell_acc(spell);
     // TODO: generalize this pattern? It's very common in descriptions
     const int padding = (acc != -1) ? 8 : damage_string.size() ? 6 : 5;
-    description += make_stringf("\n\n%*s: ", padding, "威力");
+    description += make_stringf(T_("\n\n%*s: "), padding, T_("Power"));
     description += spell_power_string(spell);
 
     if (damage_string != "")
     {
-        description += make_stringf("\n%*s: ", padding, "伤害");
+        description += make_stringf(T_("\n%*s: "), padding, T_("Damage"));
         description += damage_string;
 
         const string max_dam = spell_max_damage_string(spell);
         if (!max_dam.empty())
-            description += " (最大" + max_dam + ")";
+            description += make_stringf(T_(" (max %s)"), max_dam.c_str());
     }
     if (acc != -1)
     {
         ostringstream acc_str;
         _print_bar(acc, 3, "", acc_str);
-        description += make_stringf("\n%*s: %s", padding, "命中率",
+        description += make_stringf(T_("\n%*s: %s"), padding, T_("Accuracy"),
                                                     acc_str.str().c_str());
     }
 
-    description += make_stringf("\n%*s: ", padding, "射程");
+    description += make_stringf(T_("\n%*s: "), padding, T_("Range"));
     description += spell_range_string(spell);
-    description += make_stringf("\n%*s: ", padding, "噪音");
+    description += make_stringf(T_("\n%*s: "), padding, T_("Noise"));
     description += spell_noise_string(spell);
     description += "\n";
     return description;
@@ -4446,20 +4447,20 @@ int hex_chance(const spell_type spell, const monster_info* mi, bool is_wand)
 static string _miscast_damage_string(spell_type spell)
 {
     const map <spschool, string> damage_flavor = {
-        { spschool::conjuration, "不可抵抗" },
-        { spschool::necromancy, "吸取" },
-        { spschool::fire, "火焰" },
-        { spschool::ice, "寒冷" },
-        { spschool::air, "电击" },
-        { spschool::earth, "碎片" },
+        { spschool::conjuration, T_("irresistible") },
+        { spschool::necromancy, T_("draining") },
+        { spschool::fire, T_("fire") },
+        { spschool::ice, T_("cold") },
+        { spschool::air, T_("electric") },
+        { spschool::earth, T_("fragmentation") },
     };
 
     const map <spschool, string> special_flavor = {
-        { spschool::summoning, "召唤无名恐怖" },
-        { spschool::translocation, "将你锚定在原地" },
-        { spschool::hexes, "减速你" },
-        { spschool::alchemy, "使其中毒" },
-        { spschool::forgecraft, "腐蚀你" },
+        { spschool::summoning, T_("summon unnamed horrors") },
+        { spschool::translocation, T_("anchor you in place") },
+        { spschool::hexes, T_("slow you") },
+        { spschool::alchemy, T_("envenom you") },
+        { spschool::forgecraft, T_("corrode you") },
     };
 
     spschools_type disciplines = get_spell_disciplines(spell);
@@ -4477,14 +4478,14 @@ static string _miscast_damage_string(spell_type spell)
 
     if (!dam_flavors.empty())
     {
-        descs.push_back(make_stringf("造成至多%d点%s伤害", dam,
+        descs.push_back(make_stringf(T_("deals up to %d %s damage"), dam,
                                      comma_separated_line(dam_flavors.begin(),
                                                          dam_flavors.end(),
-                                                         "或").c_str()));
+                                                         T_(" or ")).c_str()));
     }
 
-    return (descs.size() > 1 ? "可能" : "")
-         + comma_separated_line(descs.begin(), descs.end(), "或", "; ");
+    return (descs.size() > 1 ? T_("either ") : T_(""))
+         + comma_separated_line(descs.begin(), descs.end(), T_(" or "), T_("; "));
 }
 
 /**
@@ -4506,52 +4507,52 @@ static string _player_spell_desc(spell_type spell)
 
     ostringstream description;
 
-    description << "施放失败会导致魔法污染"
+    description << T_("Miscasting this spell causes magic contamination")
                 << (fail_severity(spell) ?
-                    "并可能造成" + _miscast_damage_string(spell) : "")
-                << ".\n";
+                    T_(" and also ") + _miscast_damage_string(spell) : "")
+                << T_(".\n");
 
     if (spell == SPELL_BATTLESPHERE)
     {
         vector<spell_type> battlesphere_spells = player_battlesphere_spells();
-        description << "你的战斗球";
+        description << T_("Your battlesphere");
         if (battlesphere_spells.empty())
-            description << "不会被你的任何法术激活";
+            description << T_(" is not activated by any of your spells");
         else
         {
-            description << "会在你施放"
+            description << T_(" fires when you cast ")
                         << comma_separated_fn(battlesphere_spells.begin(),
                                               battlesphere_spells.end(),
                                               spell_title,
-                                              "或");
+                                              T_(" or "));
         }
-        description << ".\n";
+        description << T_(".\n");
     }
 
     if (spell == SPELL_SPELLSPARK_SERVITOR)
     {
         spell_type servitor_spell = player_servitor_spell();
-        description << "你的仆从";
+        description << T_("Your servitor");
         if (servitor_spell == SPELL_NO_SPELL)
-            description << "无法模仿你的任何法术";
+            description << T_(" is unable to mimic any of your spells");
         else
-            description << "会施放" << spell_title(player_servitor_spell());
-        description << ".\n";
+            description << T_(" casts ") << spell_title(player_servitor_spell());
+        description << T_(".\n");
     }
     else if (spell == SPELL_PLATINUM_PARAGON)
     {
         if (you.props.exists(PARAGON_WEAPON_KEY))
         {
-            description << "你的典范持有"
+            description << T_("Your paragon wields ")
                         << you.props[PARAGON_WEAPON_KEY].get_item()
                            .name(DESC_A, true).c_str()
-                        << ".\n";
+                        << T_(".\n");
         }
     }
     else if (you.has_spell(SPELL_SPELLSPARK_SERVITOR) && spell_servitorable(spell))
     {
         if (failure_rate_to_int(raw_spell_fail(spell)) <= 20)
-            description << "你的仆从可以被赋予此法术。\n";
+            description << T_("Your servitor can be imbued with this spell.\n");
         else
         {
             description << (T_("Your servitor could be imbued with this spell if your spell success rate were higher.\n"));
@@ -4559,17 +4560,17 @@ static string _player_spell_desc(spell_type spell)
     }
 
     if (spell == SPELL_IRRADIATE)
-        description << "施放时会对你造成至多40%%的魔法污染。\n";
+        description << T_("This inflicts up to 40% magical contamination when cast by you.\n");
 
     // Report summon cap
     const int limit = summons_limit(spell, true);
     if (limit)
     {
-        description << "你最多可以维持" + number_in_words(limit)
+        description << T_("You can sustain at most ") + number_in_words(limit)
                     // Attempt to clarify that flayed ghosts are NOT included in the cap
-                    << (spell == SPELL_MARTYRS_KNELL ? " 个殉道暗影" : " 个生物")
-                    << (limit > 1 ? "s" : "")
-                    << " 由此法术召唤。\n";
+                    << (spell == SPELL_MARTYRS_KNELL ? T_(" martyred shade") : T_(" creature"))
+                    << (limit > 1 ? T_("s") : T_(""))
+                    << T_(" summoned by this spell.\n");
     }
 
     if (god_hates_spell(spell, you.religion))
@@ -4584,7 +4585,7 @@ static string _player_spell_desc(spell_type spell)
     }
 
     if (you.has_mutation(MUT_MNEMOPHAGE) && spell_can_be_enkindled(spell))
-        description << "此法术在燃魂状态下被强化。\n";
+        description << T_("This spell is empowered while you are enkindled.\n");
 
     if (!you_can_memorise(spell))
     {
@@ -7621,7 +7622,7 @@ static void _maybe_note_airstrike_damage(vector<vector<string>>& items,
     }
 
     vector<string> labels;
-    labels.push_back("空袭伤害");
+    labels.push_back(T_("Airstrike Dmg"));
     labels.push_back(make_stringf("(%d-%d)d%d", data[0][0].num, data[0][1].num, data[0][0].size));
     labels.push_back(make_stringf("(%d-%d)d%d", data[1][0].num, data[1][1].num, data[1][0].size));
     labels.push_back(make_stringf("(%d-%d)d%d", data[2][0].num, data[2][1].num, data[2][0].size));
@@ -7707,7 +7708,7 @@ static string _describe_talisman_form(transformation form_type)
     const string cur_skill = (shapeshifting < 10*form->min_skill ? make_stringf("<red>%s</red>", skill_string.c_str())
                              : (shapeshifting >= 10*form->max_skill ? make_stringf("[%d]", form->max_skill)
                              : skill_string));
-    items.push_back({"技能", to_string(skill[0]), to_string(skill[1]), cur_skill});
+    items.push_back({T_("Skill"), to_string(skill[0]), to_string(skill[1]), cur_skill});
 
     _maybe_populate_form_table(items, bind(&Form::mult_hp, form, 100, true, placeholders::_1), "HP", skill, -100, true, true, 1);
     _maybe_populate_form_table(items, bind(&Form::get_base_unarmed_damage, form, false, placeholders::_1), "UC Base Dmg", skill, -3);

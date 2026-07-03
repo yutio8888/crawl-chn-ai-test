@@ -319,7 +319,7 @@ bool gift_cards()
             deck_names.push_back(deck_data ? deck_data->name : "bugginess");
         }
         mprf(MSGCH_GOD, you.religion,
-             "%s goes to deal, but finds you have enough %s cards.",
+             T_("%s goes to deal, but finds you have enough %s cards."),
              god_name(you.religion).c_str(),
              join_strings(deck_names.begin(), deck_names.end(), " and ").c_str());
     }
@@ -493,7 +493,7 @@ string deck_description(deck_type deck)
         desc << "\n";
 
         if (cards > 1)
-            desc << make_stringf("It currently has %d cards ", cards);
+            desc << make_stringf(T_("It currently has %d cards "), cards);
         else if (cards == 1)
             desc << "It currently has 1 card ";
         else
@@ -659,7 +659,7 @@ spret deck_stack(bool fail)
     for (int i = FIRST_PLAYER_DECK; i <= LAST_PLAYER_DECK; ++i)
         total_cards += deck_cards((deck_type) i);
 
-    if (deck_cards(DECK_STACK) && !yesno("Replace your current stack?",
+    if (deck_cards(DECK_STACK) && !yesno(T_("Replace your current stack?"),
                                           false, 0))
     {
         canned_msg(MSG_OK);
@@ -672,8 +672,8 @@ spret deck_stack(bool fail)
         return spret::abort;
     }
 
-    if (total_cards < 5 && !yesno("You have fewer than five cards, "
-                                  "stack them anyway?", false, 0))
+    if (total_cards < 5 && !yesno(T_("You have fewer than five cards, "
+                                  "stack them anyway?"), false, 0))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -843,7 +843,7 @@ bool stack_five(int to_stack)
     }
 
     StackFiveMenu menu(stack);
-    MenuEntry *const title = new MenuEntry("Select two cards to swap them:", MEL_TITLE);
+    MenuEntry *const title = new MenuEntry(T_("Select two cards to swap them:"), MEL_TITLE);
     menu.set_title(title);
     for (unsigned int i = 0; i < stack.size(); i++)
     {
@@ -916,8 +916,8 @@ spret deck_triple_draw(bool fail)
         return spret::abort;
     }
 
-    if (num_cards < 3 && !yesno("There's fewer than three cards, "
-                                "still triple draw?", false, 0))
+    if (num_cards < 3 && !yesno(T_("There's fewer than three cards, "
+                                "still triple draw?"), false, 0))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -1163,12 +1163,12 @@ static void _damaging_card(card_type card, int power,
         args.top_prompt = prompt;
 
     // Confirm aborts as they waste the card.
-    prompt = make_stringf("Aiming: %s", card_name(card));
+    prompt = make_stringf(T_("Aiming: %s"), card_name(card));
     while (!(spell_direction(target, beam, &args)
             && player_tracer(ZAP_SEARING_RAY, power/6, beam)))
     {
         if (crawl_state.seen_hups
-            || yesno("Really abort (and waste the card)?", false, 0))
+            || yesno(T_("Really abort (and waste the card)?"), false, 0))
         {
             canned_msg(MSG_OK);
             return;

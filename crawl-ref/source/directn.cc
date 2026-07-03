@@ -315,7 +315,7 @@ void direction_chooser::describe_cell() const
     if (Options.monster_item_view_coordinates)
     {
         const coord_def relpos = target() - you.pos();
-        string location_str = make_stringf("Location (%d, %d)", relpos.x, -relpos.y);
+        string location_str = make_stringf(T_("Location (%d, %d)"), relpos.x, -relpos.y);
         mprf(MSGCH_PLAIN, "%s", location_str.c_str());
     }
     if (!you.see_cell(target()))
@@ -1019,7 +1019,7 @@ bool direction_chooser::move_is_ok() const
                     // calling in non-interactive mode
                     if (!moves.interactive)
                         return false;
-                    return yesno("Really target yourself?", false, 'n',
+                    return yesno(T_("Really target yourself?"), false, 'n',
                                  true, true, false, nullptr, false);
                 }
             }
@@ -1037,7 +1037,7 @@ bool direction_chooser::move_is_ok() const
 
     // Some odd cases
     if (!moves.isValid && !moves.isCancel)
-        return yesno("Are you sure you want to fizzle?", false, 'n');
+        return yesno(T_("Are you sure you want to fizzle?"), false, 'n');
 
     return true;
 }
@@ -3651,7 +3651,7 @@ static string _get_cloud_desc(const coord_def& where)
 
     if (!areas.empty())
     {
-        out << make_stringf("This square %s.",
+        out << make_stringf(T_("This square %s."),
              comma_separated_line(areas.begin(), areas.end()).c_str());
     }
 
@@ -3660,7 +3660,7 @@ static string _get_cloud_desc(const coord_def& where)
         if (out.tellp() > 0)
             out << "\n";
 
-        out << make_stringf("There is a cloud of %s here.",
+        out << make_stringf(T_("There is a cloud of %s here."),
                                 cloud->cloud_name(true).c_str());
     }
 

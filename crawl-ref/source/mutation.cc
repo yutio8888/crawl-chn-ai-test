@@ -1154,7 +1154,7 @@ private:
 
         if (items.empty())
         {
-            add_entry(new MenuEntry("You are rather mundane.",
+            add_entry(new MenuEntry(T_("You are rather mundane."),
                                     MEL_ITEM, 1, 0));
         }
     }

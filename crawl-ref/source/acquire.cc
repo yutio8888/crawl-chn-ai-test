@@ -1502,9 +1502,9 @@ AcquireMenu::AcquireMenu(CrawlVector &aitems, string ikey,
     init_entries();
 
     if (is_gizmo)
-        set_title("Choose a gizmo to assemble.");
+        set_title(T_("Choose a gizmo to assemble."));
     else
-        set_title("Choose an item to acquire.");
+        set_title(T_("Choose an item to acquire."));
 }
 
 static void _create_acquirement_item(item_def &item, string items_key,

@@ -1626,7 +1626,7 @@ public:
     {
         action_cycle = Menu::CYCLE_NONE;
         menu_action  = Menu::ACT_EXECUTE;
-        set_title(new MenuEntry("Lookup information about:", MEL_TITLE));
+        set_title(new MenuEntry(T_("Lookup information about:"), MEL_TITLE));
         on_single_selection = [](const MenuEntry& item)
         {
             const LookupHelpMenuEntry *lhme

@@ -28524,3 +28524,735 @@ Your yellow scales disappear.
 %%%%
 Your yellow scales recede somewhat.
 你黄色的鳞片有所消退。
+%%%%
+It affects your AC (%d).
+影响你的AC（%d）。
+%%%%
+It affects your evasion (%d).
+影响你的闪避（%d）。
+%%%%
+It affects your strength (%d).
+影响你的力量（%d）。
+%%%%
+It affects your intelligence (%d).
+影响你的智力（%d）。
+%%%%
+It affects your dexterity (%d).
+影响你的敏捷（%d）。
+%%%%
+It affects your accuracy & damage with ranged weapons and melee (%d).
+影响你远程和近战武器的命中率与伤害（%d）。
+%%%%
+fire
+火焰
+%%%%
+cold
+寒冷
+%%%%
+It insulates you from electricity.
+使你免受电击伤害。
+%%%%
+It protects you from poison.
+保护你免受毒素伤害。
+%%%%
+negative energy
+负能量
+%%%%
+buggy willpower
+意志力
+%%%%
+It affects your health (%d).
+影响你的生命值（%d）。
+%%%%
+It affects your magic capacity (%d).
+影响你的魔力容量（%d）。
+%%%%
+It lets you see invisible.
+让你能看见隐形之物。
+%%%%
+It lets you turn invisible.
+让你可以隐身。
+%%%%
+It grants you flight.
+赋予你飞行能力。
+%%%%
+It lets you blink.
+让你可以闪烁传送。
+%%%%
+It may make a loud noise when swung.
+挥舞时可能发出巨大噪音。
+%%%%
+It prevents spellcasting.
+阻止施法。
+%%%%
+It prevents most forms of teleportation.
+阻止大多数形式的传送。
+%%%%
+It berserks you when you make melee attacks (%d% chance).
+近战攻击时有概率使你狂暴（%d%%概率）。
+%%%%
+It protects you from confusion, rage, mesmerisation and fear.
+保护你免受困惑、狂怒、迷惑和恐惧。
+%%%%
+It causes magical contamination when unequipped.
+卸下时造成魔法污染。
+%%%%
+It protects you from missiles.
+保护你免受投射物伤害。
+%%%%
+It increases your rate of health regeneration.
+提高你的生命值恢复速度。
+%%%%
+It protects you from acid and corrosion.
+保护你免受酸液和腐蚀。
+%%%%
+It protects you from mutation.
+保护你免受变异。
+%%%%
+It may corrode you when you take damage.
+受到伤害时可能腐蚀你。
+%%%%
+It drains your maximum health when unequipped.
+卸下时消耗你的最大生命值。
+%%%%
+It may slow you when you take damage.
+受到伤害时可能减速你。
+%%%%
+It will be destroyed if unequipped.
+卸下时将被摧毁。
+%%%%
+It affects your SH (%d).
+影响你的盾牌格挡值（%d）。
+%%%%
+It increases damage dealt and taken.
+增加你造成和受到的伤害。
+%%%%
+It causes one to take an extra step when moving towards enemies, briefly stunning them if this results in an attack.
+向敌人移动时可以多走一步，如果因此发动攻击会短暂眩晕它们。
+%%%%
+buggy stealth
+潜行
+%%%%
+It increases the power of your magical spells.
+增强你魔法法术的威力。
+%%%%
+It increases the power of your Conjurations spells.
+增强你咒法系法术的威力。
+%%%%
+It increases the power of your Hexes spells.
+增强你诅咒系法术的威力。
+%%%%
+It increases the power of your Summonings spells.
+增强你召唤系法术的威力。
+%%%%
+It increases the power of your Necromancy spells.
+增强你死灵术法术的威力。
+%%%%
+It increases the power of your Translocations spells.
+增强你传送系法术的威力。
+%%%%
+It increases the power of your Fire spells.
+增强你火焰法术的威力。
+%%%%
+It increases the power of your Ice spells.
+增强你寒冰法术的威力。
+%%%%
+It increases the power of your Air spells.
+增强你空气法术的威力。
+%%%%
+It increases the power of your Earth spells.
+增强你大地法术的威力。
+%%%%
+It increases the power of your Alchemy spells.
+增强你炼金术法术的威力。
+%%%%
+It increases the power of your Forgecraft spells.
+增强你锻造术法术的威力。
+%%%%
+It increases your evasion after moving or waiting.
+移动或等待后提高你的闪避。
+%%%%
+It increases your rate of magic regeneration.
+提高你的魔力恢复速度。
+%%%%
+It increases the success rate of your magical spells.
+提高你魔法法术的成功率。
+%%%%
+It may silence you when you take damage.
+受到伤害时可能沉默你。
+%%%%
+It inflicts you with a random bane when you equip it.
+装备时对你施加一个随机的灾祸。
+%%%%
+buggy
+有问题
+%%%%
+It causes incoming damage to be divided between your reserves of health and magic.
+使受到的伤害在你的生命值和魔力储备之间分摊。
+%%%%
+It allows you to gain divine favour quickly.
+使你能够快速获得神眷。
+%%%%
+It reflects blocked missile attacks.
+反射被格挡的远程攻击。
+%%%%
+It improves your skill with shapeshifting (+5).
+提高你的变形术技能（+5）。
+%%%%
+It restores some MP whenever you drink a potion and also enhances your alchemy spells.
+饮用任何药水时恢复部分魔力，同时增强你的炼金术法术。
+%%%%
+It reduces the duration of hostile enchantments and decays magical contamination more quickly.
+缩短敌对附魔的持续时间，并加快魔法污染的消退速度。
+%%%%
+%sIt %s%s your willpower.
+%s%s%s你的意志力。
+%%%%
+greatly 
+大幅
+%%%%
+decreases
+降低
+%%%%
+increases
+提高
+%%%%
+%1$sIt makes you %2$s%3$s stealthy.
+%1$s使你变得%3$s潜行。
+%%%%
+much 
+极
+%%%%
+less
+不
+%%%%
+more
+更
+%%%%
+It makes you extremely vulnerable to 
+使你极易受到
+%%%%
+It makes you very vulnerable to 
+使你非常容易受到
+%%%%
+It makes you vulnerable to 
+使你容易受到
+%%%%
+It greatly protects you from 
+极大地保护你免受
+%%%%
+It renders you almost immune to 
+使你几乎免疫
+%%%%
+armoured
+装甲的
+%%%%
+ It seethes with hatred of the living.
+ 它沸腾着对生者的憎恨。
+%%%%
+ Tiny orange flames dance around it.
+ 微小的橙色火焰在其周围舞动。
+%%%%
+ Tiny purple flames dance around it.
+ 微小的紫色火焰在其周围舞动。
+%%%%
+ It is surrounded by a weird haze.
+ 它被一股奇异的薄雾环绕。
+%%%%
+ It glows with a malevolent light.
+ 它散发着恶毒的光芒。
+%%%%
+ It looks incredibly angry.
+ 它看起来异常愤怒。
+%%%%
+ It oozes with slime.
+ 它渗出软泥。
+%%%%
+ It dribbles constantly.
+ 它不停地滴落液体。
+%%%%
+ Mould grows all over it.
+ 霉菌长满了它的全身。
+%%%%
+ Its body is covered in fungus.
+ 它的身体被真菌覆盖。
+%%%%
+ It is covered with lank hair.
+ 它被稀疏的长毛覆盖。
+%%%%
+ It looks diseased.
+ 它看起来患病了。
+%%%%
+ It looks as frightened of you as you are of it.
+ 它看起来和你一样害怕对方。
+%%%%
+ It moves in a series of hideous convulsions.
+ 它以一种可怕的抽搐方式移动。
+%%%%
+ It moves with an unearthly grace.
+ 它以一种超凡的优雅移动。
+%%%%
+ It leaves a glistening oily trail.
+ 它留下一条闪闪发光的油性痕迹。
+%%%%
+ It shimmers before your eyes.
+ 它在你的眼前闪烁不定。
+%%%%
+ It is surrounded by a brilliant glow.
+ 它被一道灿烂的光辉环绕。
+%%%%
+ It radiates an aura of extreme power.
+ 它散发着极端力量的气息。
+%%%%
+ It seems utterly heartbroken.
+ 它似乎彻底心碎了。
+%%%%
+ It seems filled with irrepressible glee.
+ 它似乎充满了无法抑制的欢乐。
+%%%%
+ It constantly shivers and twitches.
+ 它不停地颤抖和抽搐。
+%%%%
+ Blue sparks crawl across its body.
+ 蓝色的火花在它身体上爬行。
+%%%%
+ It seems uncertain.
+ 它似乎犹豫不决。
+%%%%
+ A cloud of flies swarms around it.
+ 一群苍蝇在它周围嗡嗡作响。
+%%%%
+ The air around it ripples with heat.
+ 它周围的空气因高温而扭曲。
+%%%%
+ Crystalline structures grow on everything near it.
+ 靠近它的一切都长出了晶体结构。
+%%%%
+ It appears supremely confident.
+ 它表现出极度的自信。
+%%%%
+ Its skin is covered in a network of cracks.
+ 它的皮肤布满裂纹。
+%%%%
+ Its skin has a disgusting oily sheen.
+ 它的皮肤有着令人恶心的油光。
+%%%%
+ It seems somehow familiar.
+ 它似乎有些眼熟。
+%%%%
+ It is somehow always in shadow.
+ 它不知何故总在阴影之中。
+%%%%
+ It is difficult to look away.
+ 很难将目光从它身上移开。
+%%%%
+ It is constantly speaking in tongues.
+ 它不停地说着听不懂的语言。
+%%%%
+ It babbles unendingly.
+ 它永无止境地喋喋不休。
+%%%%
+ Its body is scourged by damnation.
+ 它的身体被诅咒折磨着。
+%%%%
+ Its body is extensively scarred.
+ 它的身体布满大量疤痕。
+%%%%
+ You find it difficult to look away.
+ 你发觉很难移开视线。
+%%%%
+ Oddly mechanical noises accompany its jarring movements.
+ 奇怪的机械声音伴随着它不协调的动作。
+%%%%
+ Its skin looks unnervingly wrinkled.
+ 它的皮肤看起来令人不安地褶皱。
+%%%%
+ It smells of brimstone.
+ 它散发着硫磺的气味。
+%%%%
+ It is surrounded by a sickening stench.
+ 它被一股令人作呕的恶臭环绕。
+%%%%
+ It smells of rotting flesh.
+ 它闻起来有腐肉的味道。
+%%%%
+ It stinks of death.
+ 它散发着死亡的气息。
+%%%%
+ It stinks of decay.
+ 它散发着腐朽的臭味。
+%%%%
+ It smells delicious!
+ 它闻起来美味极了！
+%%%%
+Beam deals %dd%d damage.
+光束造成%dd%d伤害。
+%%%%
+increase
+增加
+%%%%
+decrease
+减少
+%%%%
+remain unchanged
+保持不变
+%%%%
+amulet
+护身符
+%%%%
+ring
+戒指
+%%%%
+wielding
+持有
+%%%%
+wearing
+穿戴
+%%%%
+If you 
+如果你
+%%%%
+ this 
+这个
+%%%%
+If you were wearing this ring:
+如果你戴着这枚戒指：
+%%%%
+If you switch to wielding this weapon in your main hand:
+如果你切换到主手持有此武器：
+%%%%
+If you switch to 
+如果你切换到
+%%%%
+removed
+移除
+%%%%
+equipped
+装备
+%%%%
+worsen
+变差
+%%%%
+improve
+改善
+%%%%
+slightly 
+轻微地
+%%%%
+Base shield rating: 
+基础盾牌评级: 
+%%%%
+     Encumbrance rating: 
+     负重评级: 
+%%%%
+     Max blocks/turn: 
+     每回合最大格挡: 
+%%%%
+Base armour rating: 
+基础护甲评级: 
+%%%%
+       Encumbrance rating: 
+       负重评级: 
+%%%%
+It can be maximally enchanted to +%s.
+它可以被最大附魔到+%s。
+%%%%
+If you quaff this potion your AC would be %d.
+如果你饮下这瓶药水，你的AC将变为%d。
+%%%%
+(w)ield
+(w)持有
+%%%%
+(u)nwield
+(u)卸下
+%%%%
+(q)uiver
+(q)箭袋
+%%%%
+(w)ear
+(w)穿戴
+%%%%
+(t)ake off
+(t)脱下
+%%%%
+e(v)oke
+e(v)使用
+%%%%
+(r)ead
+(r)阅读
+%%%%
+(p)ut on
+(p)戴上
+%%%%
+(r)emove
+(r)移除
+%%%%
+(q)uaff
+(q)饮用
+%%%%
+(g)et
+(g)拾取
+%%%%
+(d)rop
+(d)丢弃
+%%%%
+(i)nscribe
+(i)刻写
+%%%%
+(=)adjust
+(=)调整
+%%%%
+(s)kill target
+(s)技能目标
+%%%%
+(g)o to
+(g)前往位置
+%%%%
+Select a spell, or 
+选择一个法术，或
+%%%%
+        School%1$s: %2$s
+        学派%2$s
+%%%%
+        Fail: %s
+        失败率: %s
+%%%%
+Power
+威力
+%%%%
+Damage
+伤害
+%%%%
+ (max %s)
+ (最大%s)
+%%%%
+Accuracy
+命中率
+%%%%
+Range
+射程
+%%%%
+Noise
+噪音
+%%%%
+irresistible
+不可抵抗
+%%%%
+draining
+吸取
+%%%%
+electric
+电击
+%%%%
+fragmentation
+碎片
+%%%%
+summon unnamed horrors
+召唤无名恐怖
+%%%%
+anchor you in place
+将你锚定在原地
+%%%%
+slow you
+减速你
+%%%%
+envenom you
+使其中毒
+%%%%
+corrode you
+腐蚀你
+%%%%
+deals up to %d %s damage
+造成至多%d点%s伤害
+%%%%
+ either 
+可能
+%%%%
+ or 
+或
+%%%%
+; 
+; 
+%%%%
+Miscasting this spell causes magic contamination
+施放失败会导致魔法污染
+%%%%
+ and also 
+并可能造成
+%%%%
+.\n
+。\n
+%%%%
+Your battlesphere
+你的战斗球
+%%%%
+ is not activated by any of your spells
+不会被你的任何法术激活
+%%%%
+ fires when you cast 
+会在你施放
+%%%%
+Your servitor
+你的仆从
+%%%%
+ is unable to mimic any of your spells
+无法模仿你的任何法术
+%%%%
+ casts 
+会施放
+%%%%
+Your paragon wields 
+你的典范持有
+%%%%
+Your servitor can be imbued with this spell.\n
+你的仆从可以被赋予此法术。\n
+%%%%
+This inflicts up to 40% magical contamination when cast by you.\n
+施放时会对你造成至多40%%的魔法污染。\n
+%%%%
+You can sustain at most 
+你最多可以维持
+%%%%
+ martyred shade
+ 个殉道暗影
+%%%%
+ creature
+ 个生物
+%%%%
+greatly 
+极大地
+%%%%
+ summoned by this spell.\n
+ 由此法术召唤。\n
+%%%%
+This spell is empowered while you are enkindled.\n
+此法术在燃魂状态下被强化。\n
+%%%%
+Airstrike Dmg
+空袭伤害
+%%%%
+Skill
+技能
+Your stasis prevents you from teleporting.
+你的停滞状态阻止你传送。
+%%%%
+You spin around.
+你原地转了圈。
+%%%%
+You swap places with %s.
+你与%s交换了位置。
+%%%%
+%s goes to deal, but finds you have enough %s cards.
+%s来发牌，但发现你已经有足够的%s。
+%%%%
+It currently has %d cards 
+现在里面有%d张牌 
+%%%%
+Replace your current stack?
+替换当前牌堆？
+%%%%
+You have fewer than five cards, stack them anyway?
+你的牌不足五张，仍然堆叠吗？
+%%%%
+Select two cards to swap them:
+选择两张牌来交换位置：
+%%%%
+There's fewer than three cards, still triple draw?
+牌不足三张，仍然三连抽吗？
+%%%%
+Aiming: %s
+瞄准：%s
+%%%%
+Really abort (and waste the card)?
+确定放弃（浪费这张牌）？
+%%%%
+Keep transforming yourself?
+继续变形吗？
+%%%%
+Keep imbuing your servitor?
+继续灌注仆从吗？
+%%%%
+Have to go through %s. Continue?
+需要经过%s。继续吗？
+%%%%
+Could not pick up %s here; Ignore %s?
+在这里无法拾取%s；忽略%s吗？
+%%%%
+it
+它
+%%%%
+them
+它们
+%%%%
+Really explore while Zot is near?
+佐特就在附近，确定要探索吗？
+%%%%
+If you enter this portal you might not be able to return immediately. Continue?
+进入这个传送门后可能无法立即返回。继续吗？
+%%%%
+If you enter this portal you could be pulled as deep as Abyss:%d and might not be able to return immediately. Continue?
+进入这个传送门后可能会被拉到深渊第%d层，且可能无法立即返回。继续吗？
+%%%%
+Location (%d, %d)
+坐标 (%d, %d)
+%%%%
+Really target yourself?
+确定以自己为目标？
+%%%%
+Are you sure you want to fizzle?
+确定要无效施放？
+%%%%
+This square %s.
+这个格子%s。
+%%%%
+There is a cloud of %s here.
+这里有一团%s。
+%%%%
+Display type: <w>%s</w>\n
+显示类型：<w>%s</w>\n
+%%%%
+Frequently Asked Questions
+常见问题
+%%%%
+Lookup information about:
+查询信息关于：
+%%%%
+You are rather mundane.
+你相当平凡。
+%%%%
+Select to reset item to default ([*] for all): 
+选择将物品重置为默认（[*]重置全部）： 
+%%%%
+Items not yet recognised:
+尚未识别的物品：
+%%%%
+Recognised items. (Select to toggle autopickup)
+已识别物品。（选择来切换自动拾取）
+%%%%
+You recognise all items. (Select to toggle autopickup)
+你已经识别了所有物品。（选择来切换自动拾取）
+%%%%
+(_ for help)
+（_ 帮助）
+%%%%
+Choose a gizmo to assemble.
+选择一个小装置来组装。
+%%%%
+Choose an item to acquire.
+选择一个物品来获取。
+%%%%
+Casting this spell will place you under penance. Really cast?
+施放此法术会使你遭受苦修。确定要施放吗？
+%%%%
+Really cast %s?
+确定要施放%s吗？
+%%%%
+If you %s this item, your spell failure would %s:\n
+如果你%s这件物品，你的法术失败率会%s：\n
+%%%%
+%s by %.1f
+%s%.1f
+%%%%
+If you transformed using this talisman:
+如果你使用此护符进行变形：
+%%%%

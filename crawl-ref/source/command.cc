@@ -462,7 +462,7 @@ static void _handle_FAQ()
         return;
     }
     Menu FAQmenu(MF_SINGLESELECT | MF_ANYPRINTABLE | MF_ALLOW_FORMATTING);
-    MenuEntry *title = new MenuEntry("Frequently Asked Questions");
+    MenuEntry *title = new MenuEntry(T_("Frequently Asked Questions"));
     title->colour = YELLOW;
     FAQmenu.set_title(title);
 
@@ -709,7 +709,7 @@ static void _display_diag()
         webtiles_client;
 #endif
 
-    s += make_stringf("Display type: <w>%s</w>\n", info.type.c_str());
+    s += make_stringf(T_("Display type: <w>%s</w>\n"), info.type.c_str());
     if (!suppress_unix_stuff)
     {
         s += make_stringf("Terminal type (`TERM`): <w>%s</w>\n",

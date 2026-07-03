@@ -188,7 +188,7 @@ bool deviant_route_warning::warn_continue_travel(
         return true;
 
     target = dest;
-    const string prompt = make_stringf("Have to go through %s. Continue?",
+    const string prompt = make_stringf(T_("Have to go through %s. Continue?"),
                                        deviant.describe().c_str());
     // If the user says "Yes, shut up and take me there", we won't ask
     // again for that destination. If the user says "No", we will
@@ -856,9 +856,9 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
             // XX [A] doesn't make sense for items being picked up only because
             // of an =g inscription
             const string prompt =
-                make_stringf("Could not pick up %s here; Ignore %s?",
+                make_stringf(T_("Could not pick up %s here; Ignore %s?"),
                              wishlist.c_str(),
-                             tried_pickup == 1 ? "it" : "them");
+                             tried_pickup == 1 ? T_("it") : T_("them"));
 
             // Make Escape => 'n' and stop run.
             explicit_keymap map;
@@ -3467,7 +3467,7 @@ void start_explore(bool grab_items, bool skip_autorest)
     if (!i_feel_safe(true, true))
         return;
 
-    if (should_fear_zot() && !yesno("Really explore while Zot is near?", false, 'n'))
+    if (should_fear_zot() && !yesno(T_("Really explore while Zot is near?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return;
