@@ -338,6 +338,17 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         glyph.width = bmp->width;
         glyph.renderable = !!bmp->buffer;
 
+        // For double-width characters (CJK, etc.), force advance to
+        // match the monospace grid. Without this, the CJK fallback
+        // font's native advance may differ slightly from 2x the
+        // primary font's m_max_advance. This leads to inconsistent
+        // pixel widths between layout (string_width, called before
+        // first render) and rendering (render_textblock), causing
+        // cumulative column misalignment in tiles mode.
+        int cw = wcwidth(ch);
+        if (cw > 1)
+            glyph.advance = m_max_advance.x * cw;
+
         // For CJK fallback glyphs, use Sarasa's native ascender values.
         // Forcing a uniform ascender caused glyphs to appear at different
         // heights because each CJK character's bitmap has different visual
@@ -505,14 +516,6 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             }
 
             adv.x += glyph.offset;
-
-            // For CJK (double-width) characters, force advance to match
-            // the monospace grid. Without this, the CJK fallback font's
-            // native glyph advance (which may differ slightly from 2x the
-            // primary font's max_advance) causes cumulative column
-            // misalignment proportional to CJK character count.
-            if (char_w > 1)
-                glyph.advance = m_max_advance.x * char_w;
 
             if (glyph.renderable)
             {
