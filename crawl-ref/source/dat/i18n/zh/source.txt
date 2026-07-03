@@ -25119,3 +25119,74 @@ The terrible wounds on %s body vanish.
 %%%%
 A problematic dead thing appears!
 一个有问题的死物出现了！
+You feel nauseous.
+你感到恶心。
+%%%%
+That felt uncannily ineffective.
+那感觉出奇地无效。
+%%%%
+That seemed uncannily ineffective.
+那似乎出奇地无效。
+%%%%
+You feel much better.
+你感觉好多了。
+%%%%
+You feel magically purified.
+你感觉被魔法净化了。
+%%%%
+You feel your magical contamination recede slightly.
+你感觉魔法能量污染略微减轻了。
+%%%%
+You feel briefly invigorated.
+你短暂地感到精力充沛。
+%%%%
+You feel more experienced!
+你感觉更有经验了！
+%%%%
+A flood of memories rushes over you.
+一阵记忆的洪流席卷了你。
+%%%%
+Magic flows through your body to no effect.
+魔法毫无效果地流过你的身体。
+%%%%
+Magic surges through you.
+魔法在你体内奔涌。
+%%%%
+You feel a mild discomfort.
+你感到轻微的不适。
+%%%%
+You're too dead to take root!
+你太死了，无法扎根！
+%%%%
+Really become a tree while standing in a cloud of %s?
+真的要在%s的云雾中变成一棵树吗？
+%%%%
+You feel rather light.
+你感到相当轻盈。
+%%%%
+You see sparks fly.
+你看到火花四溅。
+%%%%
+You feel a surge of fear.
+你感到一阵恐惧。
+%%%%
+You have a feeling of inadequacy.
+你有一种无能的感觉。
+%%%%
+You feel a power fail to suppress your magic.
+你感到一股力量未能压制你的魔法。
+%%%%
+You feel strangely weak.
+你感到出奇地缺乏力量。
+%%%%
+You no longer feel able to launch a frenzied charge at your enemies.
+你不再感觉能够向敌人狂暴冲锋了。
+%%%%
+You lack an exoframe to install that in.
+你缺少可以安装它的外部框架。
+%%%%
+%s is briefly surrounded by a scintillating aura of random colours.
+%s被一阵闪烁的随机色彩光环短暂环绕。
+%%%%
+Your %s briefly %s through it before you manage to get a firm grip on it.
+你的%s在你握紧之前短暂地%s穿过了它。

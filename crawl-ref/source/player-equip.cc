@@ -246,7 +246,7 @@ int count = 0;
 
     case SLOT_GIZMO:
         if (you.species != SP_COGLIN)
-            NO_SLOT("You lack an exoframe to install that in.")
+            NO_SLOT(T_("You lack an exoframe to install that in."))
 
         return 1;
 
@@ -467,7 +467,7 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
 #define NO_EQUIP(x) {if (veto_reason) { *veto_reason = x; }; return 0;}
 
     if (!item_type_is_equipment(item.base_type))
-        NO_EQUIP("That isn't an equippable item.")
+        NO_EQUIP(T_("That isn't an equippable item."))
 
     vector<equipment_slot> slots = get_all_item_slots(item);
 
@@ -526,19 +526,19 @@ bool can_equip_item(const item_def& item, bool include_form, string* veto_reason
             if (you.form == transformation::serpent)
                 return true;
             if (player_size >= SIZE_LARGE)
-                NO_EQUIP("This helmet is too small for your head.")
+                NO_EQUIP(T_("This helmet is too small for your head."))
             else if (player_size <= SIZE_LITTLE)
-                NO_EQUIP("This helmet is too large for your head.")
+                NO_EQUIP(T_("This helmet is too large for your head."))
             else if (species::is_draconian(you.species))
-                NO_EQUIP("You can't wear that with your reptilian head.")
+                NO_EQUIP(T_("You can't wear that with your reptilian head."))
             else if (you.species == SP_OCTOPODE)
-                NO_EQUIP("Your can't wear that!")
+                NO_EQUIP(T_("Your can't wear that!"))
             else if (you.has_mutation(MUT_HORNS, include_form))
-                NO_EQUIP("You can't fit that over your horns.")
+                NO_EQUIP(T_("You can't fit that over your horns."))
             else if (you.has_mutation(MUT_ANTENNAE, include_form))
-                NO_EQUIP("You can't fit that over your antennae.")
+                NO_EQUIP(T_("You can't fit that over your antennae."))
             else if (you.has_mutation(MUT_BEAK, include_form))
-                NO_EQUIP("You can't fit that over your beak.")
+                NO_EQUIP(T_("You can't fit that over your beak."))
         }
     }
     else if (item.base_type == OBJ_WEAPONS)
@@ -1511,7 +1511,7 @@ static void _calc_hp_artefact()
 static void _flight_equip()
 {
     if (you.airborne()) // already aloft
-        mpr("你感到相当轻盈。");
+        mpr(T_("You feel rather light."));
     else
         float_player();
     you.attribute[ATTR_PERM_FLIGHT] = 1;
@@ -1910,10 +1910,10 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
             if (!silenced(you.pos()))
             {
                 mprf(MSGCH_SOUND,
-                        "You hear the crackle of electricity.");
+                        T_("You hear the crackle of electricity."));
             }
             else
-                mpr("你看到火花四溅。");
+                mpr(T_("You see sparks fly."));
             break;
 
         case SPWPN_VENOM:
@@ -1925,7 +1925,7 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
             break;
 
         case SPWPN_DRAINING:
-            mpr("你感知到了不神圣的气息。");
+            mpr(T_("You sense an unholy aura."));
             break;
 
         case SPWPN_SPEED:
@@ -1933,7 +1933,7 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
             break;
 
         case SPWPN_VAMPIRISM:
-            mpr("你感到一阵恐惧。");
+            mpr(T_("You feel a surge of fear."));
             break;
 
         case SPWPN_PAIN:
@@ -1945,7 +1945,7 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
                         apostrophise(item_name).c_str());
             }
             else if (you.skill(SK_NECROMANCY) == 0)
-                mpr("你有一种无能的感觉。");
+                mpr(T_("You have a feeling of inadequacy."));
             else if (you.skill(SK_NECROMANCY) <= 6)
             {
                 mprf(T_("Pain shudders through your %s!"),
@@ -1960,8 +1960,8 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
         }
 
         case SPWPN_CHAOS:
-            mprf("%s is briefly surrounded by a scintillating aura of "
-                    "random colours.", item_name.c_str());
+            mprf(T_("%s is briefly surrounded by a scintillating aura of "
+                    "random colours."), item_name.c_str());
             break;
 
         case SPWPN_PENETRATION:
@@ -1971,8 +1971,8 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
             bool plural = true;
             string hand = you.hand_name(true, &plural);
 
-            mprf("Your %s briefly %s through it before you manage "
-                    "to get a firm grip on it.",
+            mprf(T_("Your %s briefly %s through it before you manage "
+                    "to get a firm grip on it."),
                     hand.c_str(), conjugate_verb("pass", plural).c_str());
             break;
         }
@@ -1984,7 +1984,7 @@ static void _equip_weapon_effect(item_def& item, bool showMsgs, bool unmeld)
 
         case SPWPN_ANTIMAGIC:
             if (you.has_mutation(MUT_HP_CASTING))
-                mpr("你感到一股力量未能压制你的魔法。");
+                mpr(T_("You feel a power fail to suppress your magic."));
             else
             {
                 // Even if your maxmp is 0.
@@ -2292,9 +2292,9 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
 
         case SPARM_ARCHMAGI:
             if (!you.skill(SK_SPELLCASTING))
-                mpr("你感到出奇地缺乏力量。");
+                mpr(T_("You feel strangely weak."));
             else
-                mpr("你感到强大。");
+                mpr(T_("You feel powerful."));
             break;
 
         case SPARM_SPIRIT_SHIELD:
@@ -2322,14 +2322,14 @@ static void _equip_armour_effect(item_def& arm, bool unmeld)
         case SPARM_INFUSION:
             if (you.max_magic_points || you.has_mutation(MUT_HP_CASTING))
             {
-                mprf("You feel magic pooling in your %s.",
+                mprf(T_("You feel magic pooling in your %s."),
                      you.hand_name(true).c_str());
             }
             else
             {
                 bool can_plural = false;
                 const string hands = you.hand_name(true, &can_plural);
-                mprf("Your %s feel%s oddly empty.",
+                mprf(T_("Your %s feel%s oddly empty."),
                      hands.c_str(), can_plural ? "" : "s");
             }
             break;
@@ -2428,7 +2428,7 @@ static void _unequip_armour_effect(item_def& item, bool meld)
         break;
 
     case SPARM_ARCHMAGI:
-        mpr("你感到出奇地麻木。");
+        mpr(T_("You feel strangely numb."));
         break;
 
     case SPARM_SPIRIT_SHIELD:
@@ -2457,7 +2457,7 @@ static void _unequip_armour_effect(item_def& item, bool meld)
 
     case SPARM_RAMPAGING:
         if (!you.rampaging())
-            mpr("你不再感觉能够向敌人狂暴冲锋了。");
+            mpr(T_("You no longer feel able to launch a frenzied charge at your enemies."));
         break;
 
     case SPARM_INFUSION:

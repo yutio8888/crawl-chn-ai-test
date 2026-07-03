@@ -136,7 +136,7 @@ public:
         }
 
         if (ddoor)
-            mpr("你感到恶心。");
+            mpr(T_("You feel nauseous."));
         else if (you.can_potion_heal()
                  || !is_potion
                  || you.duration[DUR_POISONING]
@@ -147,7 +147,7 @@ public:
             canned_msg(MSG_GAIN_HEALTH);
         }
         else
-            mpr("那感觉出奇地无效。");
+            mpr(T_("That felt uncannily ineffective."));
         // need to redraw from yellow to green even if no hp was gained
         if (you.duration[DUR_POISONING])
             you.redraw_hit_points = true;
@@ -206,12 +206,12 @@ public:
     {
         if (you.duration[DUR_DEATHS_DOOR])
         {
-            mpr("你感到恶心。");
+            mpr(T_("You feel nauseous."));
             return false;
         }
         if (!you.can_potion_heal() && is_potion)
         {
-            mpr("那似乎出奇地无效。");
+            mpr(T_("That seemed uncannily ineffective."));
             return false;
         }
 
@@ -222,7 +222,7 @@ public:
         inc_hp(amount);
         if (is_potion)
             print_potion_heal_message();
-        mpr("你感觉好多了。");
+        mpr(T_("You feel much better."));
         return true;
     }
 };
@@ -416,12 +416,12 @@ public:
     bool effect(bool=true, int=40, bool=true) const override
     {
         debuff_player(true);
-        mpr("你感觉被魔法净化了。");
+        mpr(T_("You feel magically purified."));
         if (you.magic_contamination > 0)
         {
             contaminate_player(-1 * random_range(250, 1000));
             if (you.magic_contamination > 0)
-                mpr("你感觉魔法能量污染略微减轻了。");
+                mpr(T_("You feel your magical contamination recede slightly."));
         }
         return true;
     }
@@ -452,7 +452,7 @@ public:
 
         // should be unreachable: nothing blocks intentional confusion. (If
         // this ever changes, consider adding a `can_quaff`)
-        mpr("你短暂地感到精力充沛。");
+        mpr(T_("You feel briefly invigorated."));
         return false;
     }
 };
@@ -562,13 +562,13 @@ public:
         if (you.experience_level < you.get_max_xl())
         {
             const int levels = min(you.get_max_xl(), pow / 40);
-            mpr("你感觉更有经验了！");
+            mpr(T_("You feel more experienced!"));
             // Defer calling level_change() until later in drink() to prevent
             // SIGHUP abuse.
             adjust_level(levels, true);
         }
         else
-            mpr("一阵记忆的洪流席卷了你。");
+            mpr(T_("A flood of memories rushes over you."));
 
         // these are included in default force_more_message
         const int exp = 7500 * you.experience_level * pow / 40;
@@ -626,7 +626,7 @@ public:
                                : POT_MAGIC_MP;
         inc_mp(amount);
         if (you.has_mutation(MUT_HP_CASTING))
-            mpr("魔法毫无效果地流过你的身体。");
+            mpr(T_("Magic flows through your body to no effect."));
         else
         {
             if (is_potion && you.unrand_equipped(UNRAND_KRYIAS))
@@ -637,7 +637,7 @@ public:
             else if (is_potion && you.has_mutation(MUT_DOUBLE_POTION_HEAL))
                 mpr(T_("You savour every drop."));
 
-            mpr("魔法在你体内奔涌。");
+            mpr(T_("Magic surges through you."));
         }
         return true;
     }
@@ -663,7 +663,7 @@ public:
     {
         if (you.is_lifeless_undead())
         {
-            mpr("你感到轻微的不适。");
+            mpr(T_("You feel a mild discomfort."));
             return false;
         }
 
@@ -755,7 +755,7 @@ public:
     {
         if (you.form == transformation::death) // Gozag potion petition
         {
-            mpr("你太死了，无法扎根！");
+            mpr(T_("You're too dead to take root!"));
             return false;
         }
         const int dur = _scale_pot_duration(15 + random2(30) + random2(15), is_potion);
@@ -773,8 +773,8 @@ public:
             if (cloud_damages_over_time(cloud, false)
                 // Tree form is immune to these two.
                 && cloud != CLOUD_MEPHITIC && cloud != CLOUD_POISON
-                && !yesno(make_stringf("Really become a tree while standing in "
-                                       "a cloud of %s?",
+                && !yesno(make_stringf(T_("Really become a tree while standing in "
+                                       "a cloud of %s?"),
                                        cloud_type_name(cloud).c_str()).c_str(),
                           false, 'n'))
             {
