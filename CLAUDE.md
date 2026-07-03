@@ -463,7 +463,7 @@ Before committing translation changes, run the pre-commit CI checks:
 # 0. Check checkpoint is current
 bash .claude/scripts/check_checkpoint.sh
 
-# 1. T_() key coverage + data-driven sources + mprf_p compatibility + %s count parity
+# 1. T_() key coverage + data-driven sources + mprf_p compatibility + format integrity
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
@@ -471,6 +471,10 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py arg-mismatch \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/scan_i18n.py seq-type-mismatch \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/scan_i18n.py format-malformed \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 ```
 
@@ -487,7 +491,7 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
 aggregation scripts that capture all output to `.claude/metrics/verify/`:
 
 ```bash
-bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + anti-patterns + smoke)
+bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + smoke)
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
 bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)
 ```

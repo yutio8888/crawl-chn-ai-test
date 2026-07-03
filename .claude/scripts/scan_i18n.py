@@ -344,6 +344,83 @@ def cmd_arg_mismatch(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: seq-type-mismatch
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_seq_type_mismatch(args):
+    """Detect sequential format specifier type-order mismatches.
+
+    For non-positional format strings, make_stringf uses vsnprintf which
+    consumes arguments sequentially from the stack. If the CN translation
+    swaps %s and %d positions relative to the EN key, argument types won't
+    match what vsnprintf expects → undefined behavior → crash.
+
+    This only applies to entries where NEITHER EN nor CN uses %n$s
+    positional specifiers — those reference arguments by number and are
+    immune to reordering.
+    """
+    entries = parse_source_txt(args.source_txt)
+    if not entries:
+        print("ERROR: Could not parse source.txt")
+        return 1
+
+    findings = []
+    for en_key, cn_val in entries.items():
+        # Skip entries with positional format — those are safe from
+        # sequential reordering (they reference args by position number)
+        if POSFMT_RE.search(en_key) or POSFMT_RE.search(cn_val):
+            continue
+
+        # Skip empty CN translations — T_() falls back to EN key,
+        # so no mismatch can occur at runtime
+        if not cn_val.strip():
+            continue
+
+        # Extract plain specifier sequences from both
+        cleaned_en = re.sub(r'%%', '', en_key)
+        cleaned_cn = re.sub(r'%%', '', cn_val)
+        seq_en = [m.group(0) for m in PLAIN_FMT_RE.finditer(cleaned_en)]
+        seq_cn = [m.group(0) for m in PLAIN_FMT_RE.finditer(cleaned_cn)]
+
+        if seq_en != seq_cn:
+            # Only report type-order mismatches (same count, different order).
+            # Count mismatches are caught by the `arg-mismatch` subcommand.
+            if len(seq_en) == len(seq_cn):
+                findings.append((en_key, cn_val, seq_en, seq_cn))
+
+    if findings:
+        print("=== SEQ-TYPE-MISMATCH — sequential format specifier order "
+              "differs between EN and CN ===")
+        print("  These cause crashes on MinGW (Windows tiles) because "
+              "vsnprintf")
+        print("  consumes arguments in order — swapped %s/%d corrupts "
+              "the stack.")
+        print()
+        for en_key, cn_val, seq_en, seq_cn in sorted(findings):
+            en_short = en_key[:80]
+            cn_short = cn_val[:80]
+            print(f"EN: \"{en_short}\"")
+            print(f"     specifiers: {seq_en}")
+            print(f"CN: \"{cn_short}\"")
+            print(f"     specifiers: {seq_cn}")
+            for i, (e, c) in enumerate(zip(seq_en, seq_cn)):
+                if e != c:
+                    print(f"     MISMATCH at position {i+1}: "
+                          f"EN={e} CN={c}")
+                    break
+            if len(seq_en) != len(seq_cn):
+                print(f"     Count also differs: "
+                      f"EN={len(seq_en)} CN={len(seq_cn)}")
+            print()
+        print(f"Summary: {len(findings)} type-order mismatch(es)")
+        return 1
+    else:
+        print(f"OK: All {len(entries)} non-positional entries have "
+              f"matching format-specifier type sequences.")
+        return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: format-malformed
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -794,6 +871,15 @@ def main():
     p_arg.add_argument("--allow-positional-drop", action="store_true",
                        help="Allow CN to drop positional args (cn_max_pos <= en_max_pos)")
 
+    # seq-type-mismatch
+    p_seqtype = subparsers.add_parser(
+        "seq-type-mismatch",
+        help="Detect sequential format specifier type-order mismatches "
+             "(non-positional %%s/%%d swap -> crash on MinGW)"
+    )
+    p_seqtype.add_argument("--source-txt", required=True,
+                           help="Path to source.txt")
+
     # format-malformed
     p_fmtmal = subparsers.add_parser(
         "format-malformed",
@@ -847,6 +933,8 @@ def main():
         return cmd_mprf_p(args)
     elif args.command == "arg-mismatch":
         return cmd_arg_mismatch(args)
+    elif args.command == "seq-type-mismatch":
+        return cmd_seq_type_mismatch(args)
     elif args.command == "format-malformed":
         return cmd_format_malformed(args)
     elif args.command == "check-gaps":

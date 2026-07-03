@@ -27,8 +27,14 @@ mkdir -p .claude/metrics/verify
     echo ""
     echo "--- %s count parity ---"
     python3 .claude/scripts/scan_i18n.py arg-mismatch \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
+    echo "--- Sequential format type-order (crash risk) ---"
+    python3 .claude/scripts/scan_i18n.py seq-type-mismatch \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
+    echo "--- Mixed positional/plain format (MinGW crash risk) ---"
     python3 .claude/scripts/scan_i18n.py format-malformed \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
     echo ""
     echo "--- Anti-patterns (strict) ---"
