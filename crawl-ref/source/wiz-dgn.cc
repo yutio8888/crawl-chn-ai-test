@@ -253,7 +253,7 @@ dungeon_feature_type wizard_select_feature(bool mimic, bool allow_fprop)
 
                 // Use mpr_comma_separated_list() because the list
                 // might be *LONG*.
-                mpr_comma_separated_list(prefix, matches, " and ", ", ",
+                mpr_comma_separated_list(prefix, matches, T_(" and "), ", ",
                                          MSGCH_DIAGNOSTICS);
                 // TODO: no recursion
                 feat = wizard_select_feature(mimic);

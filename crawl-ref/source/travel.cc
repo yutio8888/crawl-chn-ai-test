@@ -850,8 +850,7 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
             }
 
             string wishlist = comma_separated_fn(to_pickup.begin(), to_pickup.end(),
-                    [] (const item_def* item) { return item->name(DESC_A); },
-                    " and ", ", ");
+                    [] (const item_def* item) { return item->name(DESC_A); });
 
             // XX [A] doesn't make sense for items being picked up only because
             // of an =g inscription

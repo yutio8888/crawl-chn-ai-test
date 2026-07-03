@@ -688,8 +688,7 @@ string exclude_set::get_exclusion_desc()
             desc_str += "s";
         desc_str += ": ";
     }
-    return desc_str + comma_separated_line(desc.begin(), desc.end(),
-                                           " and ", ", ");
+    return desc_str + comma_separated_line(desc.begin(), desc.end());
 }
 
 void marshallExcludes(writer& outf, const exclude_set& excludes)

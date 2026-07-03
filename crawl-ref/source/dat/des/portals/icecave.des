@@ -38,7 +38,14 @@ function ice_cave_portal(e)
             { 5000, 'faint ' },  { 4000, '' },
             { 2500, 'steady ' }, { 1500, 'quick ' },
             { 0, 'loud ' }
-        }
+        },
+        zh_range_msgs = crawl.language() == "zh" and {
+          [5000] = '你听到拱门微弱的融化声。',
+          [4000] = '你听到拱门融化的噼啪声。',
+          [2500] = '你听到拱门持续的噼啪声。',
+          [1500] = '你听到拱门快速的噼啪声。',
+          [0]    = '你听到拱门响亮的噼啪声。',
+        } or nil
     }
 
     dgn.persist.ice_cave_hard = hard_ice_cave_difficulty()

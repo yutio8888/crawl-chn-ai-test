@@ -129,7 +129,7 @@ static string _bless_with_healing(monster* follower)
     if (healing)
     {
         if (balms)
-            blessing += " and ";
+            blessing += T_(" and ");
         blessing += "healing";
     }
     else
@@ -187,7 +187,7 @@ static string _tso_bless_duration(monster* follower)
     {
         blessing += "friendliness";
         if (more_time)
-            blessing += " and ";
+            blessing += T_(" and ");
     }
 
     if (more_time)

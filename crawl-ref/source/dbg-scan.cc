@@ -561,7 +561,7 @@ void debug_mons_scan()
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
     }
 
@@ -583,7 +583,7 @@ void debug_mons_scan()
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
 
         // Don't report on same monster twice.
@@ -598,7 +598,7 @@ void debug_mons_scan()
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
     }
 

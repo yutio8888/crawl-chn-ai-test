@@ -35,7 +35,14 @@ function bailey_portal(e, ptype)
           { 5000, 'faint ' },  { 4000, '' },
           { 2500, 'steady ' }, { 1500, 'quick ' },
           { 0, 'loud ' }
-      }
+      },
+      zh_range_msgs = crawl.language() == "zh" and {
+        [5000] = '你听到吊闸微弱的吱嘎声。',
+        [4000] = '你听到吊闸的吱嘎声。',
+        [2500] = '你听到吊闸持续的吱嘎声。',
+        [1500] = '你听到吊闸急促的吱嘎声。',
+        [0]    = '你听到吊闸响亮的吱嘎声。',
+      } or nil
     }
 
   dgn.persist.bailey_type = "bailey_" .. ptype

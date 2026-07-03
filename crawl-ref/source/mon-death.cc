@@ -1094,7 +1094,7 @@ static void _blorkula_bat_merge_message(monster* blork, int bat_count)
         string msg = bat_count == 1 ? "The bat shimmers"
                                     : "The bats swarm back together";
 
-        msg += " and " + blork->name(DESC_THE)
+        msg += T_(" and ") + blork->name(DESC_THE)
             +  " reappears in a puff of iridescent mist.";
 
         mprf(MSGCH_MONSTER_SPELL, "%s", msg.c_str());

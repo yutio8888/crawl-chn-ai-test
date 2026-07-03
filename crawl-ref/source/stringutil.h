@@ -9,6 +9,7 @@
 #include <set>
 
 #include "config.h"
+#include "i18n.h"
 #include "libutil.h" // always_true
 
 #ifdef CRAWL_HAVE_STRLCPY
@@ -208,7 +209,7 @@ string comma_separated_fn(Z start, Z end, F stringify,
 
 template <typename Z, typename F>
 string comma_separated_fn(Z start, Z end, F stringify,
-                          const string &andc = " and ",
+                          const string &andc = T_(" and "),
                           const string &comma = ", ")
 {
     return comma_separated_fn(start, end, stringify, andc, comma,
@@ -216,7 +217,7 @@ string comma_separated_fn(Z start, Z end, F stringify,
 }
 
 template <typename Z>
-string comma_separated_line(Z start, Z end, const string &andc = " and ",
+string comma_separated_line(Z start, Z end, const string &andc = T_(" and "),
                             const string &comma = ", ")
 {
     return comma_separated_fn(start, end, [] (const string &s) { return s; },

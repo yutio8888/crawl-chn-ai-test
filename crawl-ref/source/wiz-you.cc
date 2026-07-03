@@ -547,7 +547,7 @@ bool wizard_add_mutation()
 
             // Use mpr_comma_separated_list() because the list
             // might be *LONG*.
-            mpr_comma_separated_list(prefix, matches, " and ", ", ",
+            mpr_comma_separated_list(prefix, matches, T_(" and "), ", ",
                                      MSGCH_DIAGNOSTICS);
         }
 
@@ -622,7 +622,7 @@ bool wizard_toggle_bane()
 
             // Use mpr_comma_separated_list() because the list
             // might be *LONG*.
-            mpr_comma_separated_list(prefix, matches, " and ", ", ",
+            mpr_comma_separated_list(prefix, matches, T_(" and "), ", ",
                                      MSGCH_DIAGNOSTICS);
         }
 
@@ -726,7 +726,7 @@ static bool _wizard_enter_duration_name(duration_type &choice)
         prefix += buf;
         prefix += "', possible matches are: ";
 
-        mpr_comma_separated_list(prefix, match_names, " and ", ", ",
+        mpr_comma_separated_list(prefix, match_names, T_(" and "), ", ",
                                  MSGCH_DIAGNOSTICS);
         return false;
     }

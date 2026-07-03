@@ -151,12 +151,22 @@ function TimedMessaging:say_message(cm, dur)
   local noisemaker =
     self.noisemaker and self:range_adjective(cm, self.noisemaker)
 
-  self:proc_ranges(self.ranges, dur,
-                   function (chk)
-                     self:emit_message(nil,
-                                       "You hear the " .. chk[2] .. self.verb
-                                       .. " of " .. noisemaker .. ".")
-                   end)
+  if self.zh_range_msgs then
+    self:proc_ranges(self.ranges, dur,
+                     function (chk)
+                       local msg = self.zh_range_msgs[chk[1]]
+                       if msg then
+                         self:emit_message(nil, msg)
+                       end
+                     end)
+  else
+    self:proc_ranges(self.ranges, dur,
+                     function (chk)
+                       self:emit_message(nil,
+                                         "You hear the " .. chk[2] .. self.verb
+                                         .. " of " .. noisemaker .. ".")
+                     end)
+  end
 
   self:proc_ranges(self.messages, dur,
                    function (chk)
