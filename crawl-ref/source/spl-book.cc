@@ -557,10 +557,15 @@ protected:
 
         const string prefix = make_stringf(T_("Spells %s"), act_str);
         const int pw = strwidth(prefix);
+        // Tiles: +4 for 1-char indent vs 5-char prefix. Console: both use 5.
+#ifdef USE_TILE_LOCAL
+        const int name_pad = max(0, 36 - pw);
+#else
+        const int name_pad = max(0, 32 - pw);
+#endif
         const string header = make_stringf("<w>%s%s%s%s%s",
             prefix.c_str(),
-            // 36 - pw: 32 name-column width + 4 cells for prefix diff.
-            string(max(0, 36 - pw), ' ').c_str(),
+            string(name_pad, ' ').c_str(),
             chop_string(T_("Type"), 26).c_str(),
             you.divine_exegesis ? chop_string("", 9).c_str()
                                 : chop_string(T_("Failure"), 9).c_str(),

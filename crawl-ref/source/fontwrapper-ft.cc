@@ -1004,9 +1004,15 @@ void FTFontWrapper::store(FontBuffer &buf, float &x, float &y,
     GlyphInfo &glyph = get_glyph_info(ch);
     float density_mult = display_density.scale_to_logical();
 
+    // Use grid-based advance for double-width chars so free-form
+    // rendering (menu entries via FontBuffer::add) stays consistent
+    // with string_width() and render_textblock().
+    int cw = wcwidth(ch);
+    int adv = (cw > 1) ? m_max_advance.x * cw : glyph.advance;
+
     if (!glyph.renderable)
     {
-        x += glyph.advance * density_mult;
+        x += adv * density_mult;
         return;
     }
 
@@ -1030,7 +1036,7 @@ void FTFontWrapper::store(FontBuffer &buf, float &x, float &y,
     buf.add_primitive(rect);
 
 
-    x += glyph.advance * density_mult;
+    x += adv * density_mult;
 }
 
 /**
@@ -1049,8 +1055,11 @@ void FTFontWrapper::store(FontBuffer &buf, float &x, float &y,
     GlyphInfo &glyph = get_glyph_info(ch);
     const float density_mult = display_density.scale_to_logical();
 
-    // if the advance is 0, use the max width
-    const int this_width = glyph.advance ? glyph.advance : char_width(false);
+    // Use grid-based advance for double-width chars (consistent with
+    // store(char32_t) and string_width()).
+    int cw = wcwidth(ch);
+    int base_adv = (cw > 1) ? m_max_advance.x * cw : glyph.advance;
+    const int this_width = base_adv ? base_adv : char_width(false);
     const float bg_width = this_width * density_mult;
     const float bg_height = char_height(false) * density_mult;
 
