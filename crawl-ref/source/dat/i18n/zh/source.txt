@@ -30059,3 +30059,12 @@ You are bathed in light that prevents you from turning invisible. Whenever you e
 You can equip two additional rings.
 你可以装备两枚额外的戒指。
 %%%%
+Its wearer cannot be healed by potions.
+其穿戴者无法被药水治疗。
+%%%%
+Potions heal its wearer twice as much.
+药水对其穿戴者的治疗效果翻倍。
+%%%%
+It occasionally leaves clouds of freezing vapour upon striking a foe, and grants immunity to clouds of freezing vapour.
+攻击敌人时偶尔留下冰冻蒸汽云，并赋予对冰冻蒸汽云的免疫。
+%%%%
