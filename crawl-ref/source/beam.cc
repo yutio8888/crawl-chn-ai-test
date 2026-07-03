@@ -3657,7 +3657,7 @@ void bolt::affect_player_enchantment(bool resistible)
             {
                 // the message reflects the level of difficulty resisting.
                 const int margin = you.willpower() - ench_power;
-                mprf("You%s", you.resist_margin_phrase(margin).c_str());
+                mprf(T_("You%s"), you.resist_margin_phrase(margin).c_str());
             }
         }
 
@@ -4185,12 +4185,12 @@ static const vector<pie_effect> pie_effects = {
             {
                 if (you.duration[DUR_FIRE_VULN])
                 {
-                    mpr("You feel your vulnerability to fire will last "
-                        "longer.");
+                    mpr(T_("You feel your vulnerability to fire will last "
+                        "longer."));
                 }
                 else
-                    mpr("Cherry-coloured flames burn away your fire "
-                        "resistance!");
+                    mpr(T_("Cherry-coloured flames burn away your fire "
+                        "resistance!"));
 
                 you.increase_duration(DUR_FIRE_VULN, 15 + random2(11), 50);
             }

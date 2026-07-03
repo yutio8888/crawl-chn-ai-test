@@ -4055,13 +4055,13 @@ void print_god_rejection(god_type which_god)
         const int fee = gozag_service_fee();
         if (you.gold == 0)
         {
-            mprf("The service fee for joining is currently %d gold; you have"
-                 " none.", fee);
+            mprf(T_("The service fee for joining is currently %d gold; you have"
+                 " none."), fee);
         }
         else
         {
-            mprf("The service fee for joining is currently %d gold; you only"
-                 " have %d.", fee, you.gold);
+            mprf(T_("The service fee for joining is currently %d gold; you only"
+                 " have %d."), fee, you.gold);
         }
         return;
     }

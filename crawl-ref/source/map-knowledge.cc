@@ -584,7 +584,7 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
         }
 
         if (!sensed.empty())
-            mpr_comma_separated_list("You sensed ", sensed);
+            mpr_comma_separated_list(T_("You sensed "), sensed);
     }
 
     return did_map;

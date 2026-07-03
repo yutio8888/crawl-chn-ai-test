@@ -108,7 +108,7 @@ static void _CEREBOV_melee_effects(item_def* /*weapon*/, actor* attacker,
         {
             if (you.can_see(*attacker))
             {
-                mprf("The sword of Cerebov burns away %s fire resistance.",
+                mprf(T_("The sword of Cerebov burns away %s fire resistance."),
                      defender->name(DESC_ITS).c_str());
             }
             defender->as_monster()->add_ench(
@@ -565,7 +565,7 @@ static void _DEMON_AXE_world_reacts(item_def */*item*/)
 
     if (!you.beheld_by(closest))
     {
-        mprf("Visions of slaying %s flood into your mind.",
+        mprf(T_("Visions of slaying %s flood into your mind."),
              closest.name(DESC_THE).c_str());
 
         // The monsters (if any) currently mesmerising the player do not include
@@ -773,7 +773,7 @@ static void _PLUTONIUM_SWORD_melee_effects(item_def* weapon,
     {
         if (you.can_see(*attacker))
         {
-            mprf("Mutagenic energy flows through %s!",
+            mprf(T_("Mutagenic energy flows through %s!"),
                  weapon->name(DESC_THE, false, false, false).c_str());
         }
 
@@ -1202,7 +1202,7 @@ static void _CAPTAIN_melee_effects(item_def* /*weapon*/, actor* attacker,
         item_def *wpn = defender->as_monster()->disarm();
         if (wpn)
         {
-            mprf("The captain's cutlass flashes! You lacerate %s!!",
+            mprf(T_("The captain's cutlass flashes! You lacerate %s!!"),
                 defender->name(DESC_THE).c_str());
             mprf("%s %s falls to the floor!",
                 apostrophise(defender->name(DESC_THE)).c_str(),

@@ -4401,7 +4401,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         {
             if (needs_message)
             {
-                mprf("Faint brimstone surges around %s!",
+                mprf(T_("Faint brimstone surges around %s!"),
                     defender_name(true).c_str());
             }
         }

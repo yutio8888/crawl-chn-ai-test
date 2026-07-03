@@ -27991,3 +27991,33 @@ The further away your target is the more your accuracy is reduced.
 目标越远，你的命中率越低。
 %%%%
 
+The exit collapses.
+出口塌陷了。
+%%%%
+You%s
+你%s
+%%%%
+You feel your vulnerability to fire will last longer.
+你感觉你的火焰易伤还会持续更久。
+%%%%
+Cherry-coloured flames burn away your fire resistance!
+樱桃色的火焰烧毁了你的火焰抗性！
+%%%%
+The service fee for joining is currently %d gold; you have none.
+目前加入的服务费是%d金币；你身无分文。
+%%%%
+The service fee for joining is currently %d gold; you only have %d.
+目前加入的服务费是%d金币；你只有%d。
+%%%%
+A nearby %s perishes wretchedly.
+附近的%s悲惨地消亡了。
+%%%%
+You sensed 
+你感应到了
+%%%%
+Error! failed to place monster in tentacle connect change
+错误！触手连接变更中未能放置怪物
+%%%%
+tentacle connect failed! What the heck!  severed status %d
+触手连接失败！怎么回事！切断状态%d
+%%%%

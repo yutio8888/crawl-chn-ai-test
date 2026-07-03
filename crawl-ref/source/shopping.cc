@@ -2056,7 +2056,7 @@ bool ShoppingList::cull_identical_items(const item_def& item, int cost)
         }
         else
         {
-            mprf("Shopping list: removing %s",
+            mprf(T_("Shopping list: removing %s"),
                  describe_thing(thing, DESC_A).c_str());
             to_del.push_back(listed);
         }
@@ -2163,7 +2163,7 @@ void ShoppingList::spells_added_to_library(const vector<spell_type>& spells, boo
         for (auto idx : indices_to_del)
         {
             ASSERT_RANGE(idx, 0, list->size());
-            mprf("Shopping list: removing %s",
+            mprf(T_("Shopping list: removing %s"),
                 describe_thing((*list)[idx], DESC_A).c_str());
         }
     }

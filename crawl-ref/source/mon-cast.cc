@@ -6176,7 +6176,7 @@ static int _mons_cause_fear(monster* mons, bool actual)
             if (!you.can_feel_fear(true))
                 canned_msg(MSG_YOU_UNAFFECTED);
             else if (res_margin > 0)
-                mprf("You%s", you.resist_margin_phrase(res_margin).c_str());
+                mprf(T_("You%s"), you.resist_margin_phrase(res_margin).c_str());
             else if (you.add_fearmonger(mons))
             {
                 retval = 1;
@@ -6251,7 +6251,7 @@ static int _mons_mass_confuse(monster* mons, bool actual)
         {
             const int willpower = you.check_willpower(mons, pow);
             if (willpower > 0)
-                mprf("You%s", you.resist_margin_phrase(willpower).c_str());
+                mprf(T_("You%s"), you.resist_margin_phrase(willpower).c_str());
             else
             {
                 you.confuse(mons, 5 + random2(3));

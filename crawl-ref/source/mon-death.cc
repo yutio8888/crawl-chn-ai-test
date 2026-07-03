@@ -3234,7 +3234,7 @@ item_def* monster_die(monster& mons, killer_type killer,
             else
             {
                 if (mons.props.exists(KIKU_WRETCH_KEY))
-                    mprf("A nearby %s perishes wretchedly.", mons.name(DESC_PLAIN, false).c_str());
+                    mprf(T_("A nearby %s perishes wretchedly."), mons.name(DESC_PLAIN, false).c_str());
                 else if (mons_class_is_fragile(mons.type))
                 {
                     mprf(MSGCH_MONSTER_TIMEOUT, "A nearby %s withers and dies.",

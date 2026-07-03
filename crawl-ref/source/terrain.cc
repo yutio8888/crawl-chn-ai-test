@@ -2705,7 +2705,7 @@ void descent_crumble_stairs()
 
         dungeon_change_base_terrain(*ri, DNGN_FLOOR);
         if (you.see_cell(*ri) && !is_temp_terrain(*ri))
-            mpr("The exit collapses.");
+            mpr(T_("The exit collapses."));
         if (env.map_knowledge(*ri).feat() == original_feat)
         {
             env.map_knowledge(*ri).set_feature(DNGN_FLOOR);

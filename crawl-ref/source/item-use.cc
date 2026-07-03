@@ -1883,7 +1883,7 @@ bool oni_drunken_swing()
         bool success = false;
         if (you.weapon())
         {
-            mprf("You take a swig of the potion and twirl %s.",
+            mprf(T_("You take a swig of the potion and twirl %s."),
                  you.weapon()->name(DESC_YOUR).c_str());
         }
         else
@@ -1999,7 +1999,7 @@ bool drink(item_def* potion)
             || potion->sub_type == POT_MIGHT
             || potion->sub_type == POT_RESISTANCE))
         {
-            mprf("Your mutated metabolism churns, savouring the %s.",
+            mprf(T_("Your mutated metabolism churns, savouring the %s."),
                 potion->name(DESC_QUALNAME).c_str());
         }
 
