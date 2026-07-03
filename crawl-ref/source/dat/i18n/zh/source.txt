@@ -13644,6 +13644,9 @@ Something just walked over your grave. No, really!
 Your %1$s prickle%2$s.
 你的%1$s感到刺痛。
 %%%%
+completely
+完全
+%%%%
  completely
 完全
 %%%%
