@@ -309,7 +309,7 @@ static void _give_player_experience(int experience, killer_type killer,
 
     // Give a message for monsters dying out of sight.
     if (exp_gain > 0 && !was_visible)
-        mpr("你感觉更有经验了。");
+        mpr(T_("You feel more experienced."));
 }
 
 /**
@@ -406,7 +406,7 @@ static void _create_monster_hide(monster_type mtyp, monster_type montype,
     if (you.see_cell(pos) && !silent && !feat_eliminates_items(env.grid(pos)))
     {
         // XXX: tweak for uniques/named monsters, somehow?
-        mprf("%s足够完整可以穿戴。",
+        mprf(T_("%s is intact enough to wear."),
              item.name(DESC_THE).c_str());
     }
 
@@ -431,7 +431,7 @@ static void _create_monster_wand(monster_type mtyp, coord_def pos, bool silent)
 
     if (you.see_cell(pos) && !silent && !feat_eliminates_items(env.grid(pos)))
     {
-        mprf("%s的骨头魔法般地扭曲成了%s。",
+        mprf(T_("%s's bones magically twist into %s."),
              mons_type_name(mtyp, DESC_A).c_str(),
              item.name(DESC_A).c_str());
     }
@@ -933,7 +933,7 @@ static bool _blorkula_bat_split(monster& blorkula, killer_type ktype)
     {
         if (you.can_see(blorkula))
         {
-            mprf("%s试图避开另一次致命一击，但太疲惫了无法变形。",
+            mprf(T_("%s tries to evade another killing blow but is too weary to transform."),
                 blorkula.name(DESC_THE).c_str());
         }
         return false;
@@ -1484,7 +1484,7 @@ static string _derived_undead_message(const monster &mons, monster_type which_z,
     case MONS_ZOMBIE:
         break;
     default:
-        return "一个有问题的死物出现了！";
+        return T_("A problematic dead thing appears!");
     }
 
     const habitat_type habitat = mons_class_habitat(mons.type);
@@ -1631,8 +1631,8 @@ static void _druid_final_boon(const monster* mons)
 
     if (you.can_see(*mons))
     {
-        mprf(MSGCH_MONSTER_SPELL, "With its final breath, %s offers up its power "
-                                  "to the beasts of the wild!",
+        mprf(MSGCH_MONSTER_SPELL, T_("With its final breath, %s offers up its power "
+                                  "to the beasts of the wild!"),
                                   mons->name(DESC_THE).c_str());
     }
 
@@ -1647,7 +1647,7 @@ static void _druid_final_boon(const monster* mons)
         if (beasts[i]->heal(roll_dice(3, mons->get_hit_dice()))
             && you.can_see(*beasts[i]))
         {
-            mprf("%s被治愈了。", beasts[i]->name(DESC_THE).c_str());
+            mprf(T_("%s is healed."), beasts[i]->name(DESC_THE).c_str());
         }
     }
 
@@ -1850,7 +1850,7 @@ static void _cassandra_death_ambush()
     // player off lucky.
     if (spots.empty())
     {
-        mpr("你感觉自己似乎欺骗了命运。");
+        mpr(T_("You feel as though you have cheated fate."));
         return;
     }
 
@@ -1908,9 +1908,9 @@ static void _cassandra_death_ambush()
     }
 
     if (placed > 0)
-        mpr("你感到一场伏击正在逼近……");
+        mpr(T_("You feel an ambush approaching..."));
     else
-        mpr("你感觉自己似乎欺骗了命运。");
+        mpr(T_("You feel as though you have cheated fate."));
 
     // Now seal all stairs on the floor for a moderate duration.
     const int seal_duration = random_range(150, 300);
@@ -2381,13 +2381,13 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         {
             const int bonus = (2 + random2(4)) / 2;
             you.increase_duration(DUR_BERSERK, bonus);
-            mpr("嗜血项链发出了暴力的红光。");
+            mpr(T_("The amulet of bloodlust glows a violent red."));
         }
         else if (you.unrand_equipped(UNRAND_TROG) && coinflip())
         {
             const int bonus = (2 + random2(4)) / 2;
             you.increase_duration(DUR_BERSERK, bonus);
-            mpr("你感受到了你斧头的古老愤怒。");
+            mpr(T_("You feel the ancient rage of your axe."));
         }
     }
 
@@ -2407,7 +2407,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
 
             // Give a message for hitting max stacks
             if (slaying_bonus + 1 == FUGUE_MAX_STACKS)
-                mpr("陨落者的哀嚎达到了狂热的程度！");
+                mpr(T_("The howl of the fallen reaches a fever pitch!"));
         }
     }
 
@@ -2476,7 +2476,7 @@ static void _player_on_kill_effects(monster& mons, killer_type killer,
         }
 
         if (visible_effect)
-            mprf("%s的盟友被治愈了！", mons.name(DESC_ITS).c_str());
+            mprf(T_("%s's allies are healed!"), mons.name(DESC_ITS).c_str());
     }
 
     if (gives_player_xp && you.attribute[ATTR_TEMP_MUTATIONS]
@@ -2677,7 +2677,7 @@ item_def* monster_die(monster& mons, killer_type killer,
             else if (source->is_player())
             {
                 you.duration[DUR_WEAK] = 0;
-                mprf(MSGCH_RECOVERY, "You feel your strength returning.");
+                mprf(MSGCH_RECOVERY, T_("You feel your strength returning."));
             }
 
             silent = true;
@@ -2716,7 +2716,7 @@ item_def* monster_die(monster& mons, killer_type killer,
         // Only blow up if non-dormant
         if (grid_distance(mons.pos(), you.pos()) <= 1)
         {
-            mprf(MSGCH_WARN, "%s散架了，露出了核心！",
+            mprf(MSGCH_WARN, T_("%s falls apart, revealing a core!"),
                  mons.name(DESC_YOUR).c_str());
 
             int old_hd = mons.get_hit_dice();
@@ -2793,7 +2793,7 @@ item_def* monster_die(monster& mons, killer_type killer,
     {
         you.props[SOLAR_EMBER_REVIVAL_KEY].get_int() = you.elapsed_time + random_range(200, 320);
         if (!you.can_see(mons))
-            mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, "你感到你的太阳消失了。");
+            mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, T_("You feel your sun disappear."));
     }
     else if (mons.type == MONS_BATTLESPHERE)
         end_battlesphere(&mons, true);
@@ -2801,7 +2801,7 @@ item_def* monster_die(monster& mons, killer_type killer,
         end_spectral_weapon(&mons, true, true);
     else if (mons.type == MONS_RENDING_BLADE)
     {
-        mprf(MSGCH_DURATION, "Your magic returns to you!");
+        mprf(MSGCH_DURATION, T_("Your magic returns to you!"));
         inc_mp(you.props[RENDING_BLADE_MP_KEY].get_int());
         you.props.erase(RENDING_BLADE_MP_KEY);
     }
@@ -2830,9 +2830,9 @@ item_def* monster_die(monster& mons, killer_type killer,
         {
             if (you.can_see(mons))
             {
-                mprf(MSGCH_WARN, "%s在%s时发出了精神警报。",
+                mprf(MSGCH_WARN, T_("%s sends out a mental alert when %s."),
                     mons.name(DESC_THE).c_str(),
-                    (was_banished || !real_death) ? "消失" : "死亡");
+                    (was_banished || !real_death) ? T_("vanish") : T_("die"));
             }
             else
                 mprf(MSGCH_WARN, "You feel something broadcast a psychic alarm.");
@@ -3023,18 +3023,18 @@ item_def* monster_die(monster& mons, killer_type killer,
                 if (killer == KILL_YOU_CONF
                     && (anon || !invalid_monster_index(killer_index)))
                 {
-                    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, "%s被%s了！",
+                    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, T_("%s is %s!"),
                          mons.name(DESC_THE).c_str(),
-                         exploded   ? "炸毁" :
-                         destroyed  ? "摧毁"
-                                    : "杀死");
+                         exploded   ? T_("blown up") :
+                         destroyed  ? T_("destroyed")
+                                    : T_("killed"));
                 }
                 else
                 {
-                    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, "你%s了%s！",
-                         exploded  ? "炸毁" :
-                         destroyed ? "摧毁"
-                                   : "杀死",
+                    mprf(MSGCH_MONSTER_DAMAGE, MDAM_DEAD, T_("You %s the %s!"),
+                         exploded  ? T_("blow up") :
+                         destroyed ? T_("destroy")
+                                   : T_("kill"),
                          mons.name(DESC_THE).c_str());
                 }
             }
@@ -3051,7 +3051,7 @@ item_def* monster_die(monster& mons, killer_type killer,
                     && !mons.is_unrewarding()
                     && !mons.friendly())
                 {
-                    mpr("那感觉出奇地无收获。");
+                    mpr(T_("That felt strangely unrewarding."));
                 }
             }
 
@@ -3382,7 +3382,7 @@ item_def* monster_die(monster& mons, killer_type killer,
             {
                 if (you.can_see(**mi))
                 {
-                    mprf(MSGCH_MONSTER_TIMEOUT, "%s被抛回了%s原来的现实。",
+                    mprf(MSGCH_MONSTER_TIMEOUT, T_("%s is hurled back to %s original reality."),
                             mi->name(DESC_THE).c_str(), mi->pronoun(PRONOUN_POSSESSIVE).c_str());
                 }
                 monster_die(**mi, KILL_RESET, NON_MONSTER);
@@ -3402,9 +3402,9 @@ item_def* monster_die(monster& mons, killer_type killer,
             && !was_banished)
         {
             if (mons_base_type(mons) == MONS_KRAKEN)
-                mpr("海妖的触须消失了。");
+                mpr(T_("The kraken's tentacles vanish."));
             else if (mons.type == MONS_TENTACLED_STARSPAWN)
-                mpr("星裔的触须枯萎死亡了。");
+                mpr(T_("The star-spawn's tentacles wither and die."));
         }
     }
     else if (mons_is_tentacle_or_tentacle_segment(mons.type)
@@ -3451,7 +3451,7 @@ item_def* monster_die(monster& mons, killer_type killer,
     if (mons.has_ench(ENCH_RIMEBLIGHT) && !was_banished && !mons_reset)
     {
         if (you.can_see(mons))
-            mprf("Plague seeps from the dead %s.", mons.name(DESC_PLAIN).c_str());
+            mprf(T_("Plague seeps from the dead %s."), mons.name(DESC_PLAIN).c_str());
 
         // Potentially infect everyone around the dead monster.
         // (100% chance at range 1, 50% chance at range 2)
@@ -3616,7 +3616,7 @@ item_def* monster_die(monster& mons, killer_type killer,
         {
             if (!you.can_see(mons))
             {
-                mprf("%s已经离开了这个存在位面。",
+                mprf(T_("%s has left this plane of existence."),
                      hepliaklqana_ally_name().c_str());
             }
 
@@ -3677,7 +3677,7 @@ void heal_flayed_effect(actor* act, bool quiet, bool blood_only)
 
         if (you.can_see(*act) && !quiet)
         {
-            mprf("The terrible wounds on %s body vanish.",
+            mprf(T_("The terrible wounds on %s body vanish."),
                  act->name(DESC_ITS).c_str());
         }
 
@@ -3812,9 +3812,9 @@ void mons_check_pool(monster* mons, const coord_def &oldpos,
     // something has fallen into the lava.
     if (you.see_cell(mons->pos()) && (oldpos == mons->pos() || env.grid(oldpos) != grid))
     {
-         mprf("%s掉进了%s！",
+         mprf(T_("%s falls into %s!"),
              mons->name(DESC_THE).c_str(),
-             grid == DNGN_LAVA ? "lava" : "water");
+             grid == DNGN_LAVA ? T_("lava") : T_("water"));
     }
 
     // Even fire resistant monsters perish in lava.

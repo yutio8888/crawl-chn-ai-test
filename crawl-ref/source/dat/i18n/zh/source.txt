@@ -24960,3 +24960,162 @@ You can drink potions again.
 %%%%
 You can read scrolls again.
 你又可以阅读卷轴了。
+%%%%
+A twisting arc of boiling chaos appears!
+一道旋转的沸腾混沌之弧出现了！
+%%%%
+A bone-chilling cold explodes forth, blasting rocks from the ceiling!
+刺骨的寒冷爆发了，从天花板上炸下了岩石！
+%%%%
+%s shatters%s
+%s粉碎了%s
+%%%%
+%1$s shudder%2$s.
+%1$s颤抖了。
+%%%%
+%s's fire resistance is burned away.
+%s的火焰抗性被烧掉了。
+%%%%
+%1$s %2$s blasted with magical radiation%3$s
+%1$s被魔法辐射轰击了%3$s
+%%%%
+%s seems to burn from within%s
+%s似乎从内部燃烧起来%s
+%%%%
+%s is struck by a bolt of lightning%s
+%s被一道闪电击中了%s
+%%%%
+%1$s blue arc%2$s harmlessly ground%3$s.
+%1$s蓝色电弧无害地接地了。
+%%%%
+%s is struck by a surge of electricity%s
+%s被电流涌动击中了%s
+%%%%
+Electricity surges outward!
+电流向外涌出！
+%%%%
+%1$s %2$s no magical effects to unravel.
+%1$s没有魔法效果可以解开。
+%%%%
+%s is already ignited by inner flame!
+%s已经被内焰点燃了！
+%%%%
+%s has infinite will and cannot be affected.
+%s拥有无限的意志，无法被影响。
+%%%%
+Your flame wave dissipates after reaching full strength.
+你的火焰波达到最大强度后消散了。
+%%%%
+A barrage of hail descends around you!
+一阵冰雹炮击在你周围降下！
+%%%%
+%dd%d / collision
+%dd%d / 碰撞
+%%%%
+Electricity arcs towards the lodestone!
+电流向磁铁矿弧去！
+%%%%
+You feel more experienced.
+你感觉更有经验了。
+%%%%
+%s is intact enough to wear.
+%s足够完整可以穿戴。
+%%%%
+%s's bones magically twist into %s.
+%s的骨头魔法般地扭曲成了%s。
+%%%%
+%s tries to evade another killing blow but is too weary to transform.
+%s试图避开另一次致命一击，但太疲惫了无法变形。
+%%%%
+You feel as though you have cheated fate.
+你感觉自己似乎欺骗了命运。
+%%%%
+You feel an ambush approaching...
+你感到一场伏击正在逼近……
+%%%%
+The amulet of bloodlust glows a violent red.
+嗜血项链发出了暴力的红光。
+%%%%
+You feel the ancient rage of your axe.
+你感受到了你斧头的古老愤怒。
+%%%%
+The howl of the fallen reaches a fever pitch!
+陨落者的哀嚎达到了狂热的程度！
+%%%%
+%s's allies are healed!
+%s的盟友被治愈了！
+%%%%
+%s falls apart, revealing a core!
+%s散架了，露出了核心！
+%%%%
+You feel your sun disappear.
+你感到你的太阳消失了。
+%%%%
+%s sends out a mental alert when %s.
+%s在%s时发出了精神警报。
+%%%%
+vanish
+消失
+%%%%
+die
+死亡
+%%%%
+blown up
+炸毁
+%%%%
+destroyed
+摧毁
+%%%%
+killed
+杀死
+%%%%
+%s is %s!
+%s被%s了！
+%%%%
+blow up
+炸毁
+%%%%
+destroy
+摧毁
+%%%%
+kill
+杀死
+%%%%
+You %s the %s!
+你%s了%s！
+%%%%
+That felt strangely unrewarding.
+那感觉出奇地无收获。
+%%%%
+%s is hurled back to %s original reality.
+%s被抛回了%s原来的现实。
+%%%%
+The kraken's tentacles vanish.
+海妖的触须消失了。
+%%%%
+The star-spawn's tentacles wither and die.
+星裔的触须枯萎死亡了。
+%%%%
+%s has left this plane of existence.
+%s已经离开了这个存在位面。
+%%%%
+%s falls into %s!
+%s掉进了%s！
+%%%%
+With its final breath, %s offers up its power to the beasts of the wild!
+%s在最后一息中，将其力量献给了荒野的野兽！
+%%%%
+You feel your strength returning.
+你感到你的力量正在恢复。
+%%%%
+Your magic returns to you!
+你的魔法回到了你的身上！
+%%%%
+Plague seeps from the dead %s.
+瘟疫从死去的%s身上渗出。
+%%%%
+The terrible wounds on %s body vanish.
+%s身上可怕的伤口消失了。
+%%%%
+A problematic dead thing appears!
+一个有问题的死物出现了！

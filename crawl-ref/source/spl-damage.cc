@@ -457,7 +457,7 @@ spret cast_chain_spell(spell_type spell_cast, int pow,
         // Trying to limit message spamming here so we'll only mention
         // the chaos at the start or when it's out of LoS.
         if (first && see_source)
-            mpr("一道旋转的沸腾混沌之弧出现了！");
+            mpr(T_("A twisting arc of boiling chaos appears!"));
         first = false;
 
         if (see_source && !see_targ)
@@ -1184,7 +1184,7 @@ spret cast_permafrost_eruption(actor &caster, int pow, bool fail)
 
 
     const coord_def targ = *random_iterator(maybe_targets);
-    mpr("刺骨的寒冷爆发了，从天花板上炸下了岩石！");
+    mpr(T_("A bone-chilling cold explodes forth, blasting rocks from the ceiling!"));
 
     _fire_permafrost_at(caster, pow, targ, false);
 
@@ -1561,7 +1561,7 @@ spret cast_fragmentation(int pow, const actor *caster,
         const int dam = beam.damage.roll();
         if (you.see_cell(target))
         {
-            mprf("%s粉碎了%s", mon->name(DESC_THE).c_str(),
+            mprf(T_("%s shatters%s"), mon->name(DESC_THE).c_str(),
                  attack_strength_punctuation(dam).c_str());
         }
 
@@ -1681,9 +1681,9 @@ static int _shatter_walls(coord_def where, actor *agent)
     {
         const dungeon_feature_type feat = env.grid(where);
         if (feat_is_door(feat))
-            mpr("一扇门碎裂了！");
+            mpr(T_("A door shatters!"));
         else if (feat == DNGN_GRATE)
-            mpr("一个铁栅栏被撕成了碎片！");
+            mpr(T_("An iron grate is ripped into pieces!"));
     }
 
     noisy(spell_effect_noise(SPELL_SHATTER), where);
@@ -1867,7 +1867,7 @@ void shillelagh(actor *wielder, coord_def where, int pow)
     if (!affected_monsters.empty())
     {
         const string message =
-            make_stringf("%s颤抖了%s。",
+            make_stringf(T_("%1$s shudder%2$s."),
                          affected_monsters.describe().c_str(),
                          affected_monsters.count() == 1? "s" : "");
         if (strwidth(message) < get_number_of_cols() - 2)
@@ -1954,7 +1954,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
             monster* mon = targ->as_monster();
             if (you.can_see(*mon) && !mon->has_ench(ENCH_FIRE_VULN))
             {
-                mprf("%s的火焰抗性被烧掉了。",
+                mprf(T_("%s's fire resistance is burned away."),
                     mon->name(DESC_ITS).c_str());
             }
             mon->add_ench(mon_enchant(ENCH_FIRE_VULN, &agent, dur * BASELINE_DELAY));
@@ -2016,7 +2016,7 @@ static int _irradiate_cell(coord_def where, int pow, const actor &agent)
 
     if (you.see_cell(act->pos()))
     {
-        mprf("%s%s被魔法辐射轰击了%s",
+        mprf_p(T_("%1$s %2$s blasted with magical radiation%3$s"),
              act->name(DESC_THE).c_str(),
              conjugate_verb("are", hitting_player).c_str(),
              attack_strength_punctuation(dam).c_str());
@@ -2254,7 +2254,7 @@ static int _ignite_poison_monsters(coord_def where, int pow, actor *agent)
     flash_tile(where, RED, 0, TILE_BOLT_IGNITE_POISON_TARGET);
     if (you.see_cell(mon->pos()))
     {
-        mprf("%s似乎从内部燃烧起来%s",
+        mprf(T_("%s seems to burn from within%s"),
              mon->name(DESC_THE).c_str(),
              attack_strength_punctuation(damage).c_str());
     }
@@ -2687,7 +2687,7 @@ static int _discharge_monsters(const coord_def &where, int pow,
 
             dprf("%s: static discharge damage: %d",
                 mons->name(DESC_PLAIN, true).c_str(), damage);
-            mprf("%s被一道闪电击中了%s",
+            mprf(T_("%s is struck by a bolt of lightning%s"),
                     mons->name(DESC_THE).c_str(),
                     attack_strength_punctuation(damage).c_str());
             damage = mons_adjust_flavoured(mons, beam, damage);
@@ -2786,7 +2786,7 @@ static void _discharge_message(int dam)
         else
         {
             const bool plural = coinflip();
-            mprf("%s蓝色电弧%s无害地%s接地了。",
+            mprf_p(T_("%1$s blue arc%2$s harmlessly ground%3$s."),
                 plural ? "Some" : "A",
                 plural ? "s" : "",
                 plural ? " themselves" : "s itself");
@@ -2917,7 +2917,7 @@ static void _do_chain_jolt(const actor& agent, vector<coord_def>& targets, dice_
         }
         else
         {
-            mprf("%s被电流涌动击中了%s",
+            mprf(T_("%s is struck by a surge of electricity%s"),
                     mon->name(DESC_THE).c_str(),
                     attack_strength_punctuation(post_resist_dam).c_str());
         }
@@ -2970,7 +2970,7 @@ spret cast_arcjolt(int pow, const actor &agent, bool fail)
     fail_check();
 
     if (agent.is_player())
-        mpr("电流向外涌出！");
+        mpr(T_("Electricity surges outward!"));
     else
     {
         simple_monster_message(*agent.as_monster(),
@@ -3664,7 +3664,7 @@ spret cast_unravelling(coord_def target, int pow, bool fail)
                    || victim->is_monster() && you.can_see(*victim)
                       && !monster_can_be_unravelled(*victim->as_monster())))
     {
-        mprf("%s%s没有魔法效果可以解开。",
+        mprf_p(T_("%1$s %2$s no magical effects to unravel."),
              victim->name(DESC_THE).c_str(),
              victim->conj_verb("have").c_str());
         return spret::abort;
@@ -3707,13 +3707,13 @@ string mons_inner_flame_immune_reason(const monster *mons)
 
     if (mons->has_ench(ENCH_INNER_FLAME))
     {
-        return make_stringf("%s已经被内焰点燃了！",
+        return make_stringf(T_("%s is already ignited by inner flame!"),
                             mons->name(DESC_THE).c_str());
     }
 
     if (mons->willpower() == WILL_INVULN)
     {
-        return make_stringf("%s拥有无限的意志，无法被影响。",
+        return make_stringf(T_("%s has infinite will and cannot be affected."),
                             mons->name(DESC_THE).c_str());
     }
 
@@ -3852,7 +3852,7 @@ void handle_flame_wave(int lvl)
 
     if (lvl >= spell_range(SPELL_FLAME_WAVE, &you))
     {
-        mpr("你的火焰波达到最大强度后消散了。");
+        mpr(T_("Your flame wave dissipates after reaching full strength."));
         stop_channelling_spells(true);
     }
 }
@@ -4331,7 +4331,7 @@ spret cast_hailstorm(int pow, bool fail, bool tracer)
 
     fail_check();
 
-    mpr("一阵冰雹炮击在你周围降下！");
+    mpr(T_("A barrage of hail descends around you!"));
 
     for (radius_iterator ri(you.pos(), range, C_SQUARE, LOS_NO_TRANS, true);
          ri; ++ri)
@@ -4816,7 +4816,7 @@ dice_def default_collision_damage(int pow, bool random)
 
 string describe_collision_dam(dice_def dice)
 {
-    return make_stringf("%dd%d / 碰撞", dice.num, dice.size);
+    return make_stringf(T_("%dd%d / collision"), dice.num, dice.size);
 }
 
 vector<coord_def> get_magnavolt_targets()
@@ -4884,7 +4884,7 @@ spret cast_magnavolt(coord_def target, int pow, bool fail)
     mon->add_ench(mon_enchant(ENCH_MAGNETISED, &you, random_range(5, 8) * BASELINE_DELAY));
 
     // Then zap all magnetized enemies.
-    mpr("电流向磁铁矿弧去！");
+    mpr(T_("Electricity arcs towards the lodestone!"));
     for (unsigned int i = 0; i < targets.size(); ++i)
     {
         bolt volt;
