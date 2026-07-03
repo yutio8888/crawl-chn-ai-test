@@ -1713,7 +1713,7 @@ string get_artefact_base_name(const item_def &item, bool terse)
     string base_name = _base_name(item);
     const char* custom_type = _seekunrandart(item)->type_name;
     if (custom_type)
-        base_name = custom_type;
+        base_name = T_(custom_type);
     if (terse)
     {
         base_name = replace_all(base_name, "executioner's axe", "exec axe");
@@ -1734,7 +1734,7 @@ string get_artefact_name(const item_def &item, bool force_known)
             return item.props[ARTEFACT_NAME_KEY].get_string();
         // other unrands don't use cached names
         if (is_unrandom_artefact(item))
-            return _seekunrandart(item)->name;
+            return T_(_seekunrandart(item)->name);
         return make_artefact_name(item, false);
     }
     // print artefact appearance

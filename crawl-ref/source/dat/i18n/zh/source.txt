@@ -28591,3 +28591,610 @@ swift,
 %%%%
 torment
 折磨
+%%%%
+Axe of Woe
+灾厄之斧
+
+%%%%
+Black Knight's barding
+黑骑士的马铠
+
+%%%%
+Charlatan's Orb
+江湖郎中的法球
+
+%%%%
+Cigotuvi's embrace
+西格图维之拥
+
+%%%%
+Delatra's gloves
+德拉特拉的手套
+
+%%%%
+Elemental Staff
+元素之杖
+
+%%%%
+Hermit's Pendant
+隐士之坠
+
+%%%%
+Kryia's mail coat
+克里娅的链甲衫
+
+%%%%
+Lear's hauberk
+李尔的锁子甲
+
+%%%%
+Lehudib's crystal spear
+勒胡迪布的水晶矛
+
+%%%%
+Lochaber axe
+洛哈伯斧
+
+%%%%
+Mad Mage's Maulers
+疯法师的拳套
+
+%%%%
+Majin-Bo
+魔人棒
+
+%%%%
+Maxwell's etheric cage
+麦克斯韦的以太牢笼
+
+%%%%
+Maxwell's patent armour
+麦克斯韦的专利板甲
+
+%%%%
+Maxwell's thermic engine
+麦克斯韦的热力引擎
+
+%%%%
+Singing Sword
+歌唱之剑
+
+%%%%
+Spriggan's Knife
+小精灵之刃
+
+%%%%
+Storm Queen's Shield
+风暴女王之盾
+
+%%%%
+Throatcutter
+割喉者
+
+%%%%
+Vampire's Tooth
+吸血鬼之牙
+
+%%%%
+Wrath of Trog
+特洛格之怒
+
+%%%%
+amulet of Cekugob
+塞库戈布之护符
+
+%%%%
+amulet of Elemental Vulnerability
+元素易伤护符
+
+%%%%
+amulet of Vitality
+活力护符
+
+%%%%
+amulet of invisibility
+隐身护符
+
+%%%%
+amulet of the Air
+大气护符
+
+%%%%
+amulet of the Four Winds
+四方之风护符
+
+%%%%
+arbalest "Damnation"
+重弩"天谴"
+
+%%%%
+arc blade
+电弧之刃
+
+%%%%
+armour of Talos
+塔耳塔洛斯之甲
+
+%%%%
+autumn katana
+秋日刀
+
+%%%%
+blowgun of the Assassin
+刺客的吹箭
+
+%%%%
+bo
+棒
+
+%%%%
+boots of the spider
+蜘蛛之靴
+
+%%%%
+brooch of Shielding
+护盾胸针
+
+%%%%
+captain's cutlass
+船长的弯刀
+
+%%%%
+cloak of Flash
+闪光斗篷
+
+%%%%
+cloak of Starlight
+星光斗篷
+
+%%%%
+cloak of the Thief
+盗贼斗篷
+
+%%%%
+consecrated labrys
+圣化双刃斧
+
+%%%%
+crown of Dyrovepreva
+迪罗夫普雷瓦之冠
+
+%%%%
+crown of Eternal Torment
+永恒折磨之冠
+
+%%%%
+crown of vainglory
+虚荣之冠
+
+%%%%
+crystal ball of Wucad Mu
+吴卡德·穆的水晶球
+
+%%%%
+cutlass
+弯刀
+
+%%%%
+dagger "Morg"
+匕首"莫尔格"
+
+%%%%
+dagger of Chilly Death
+寒冷死亡之匕首
+
+%%%%
+dark maul
+黑暗战锤
+
+%%%%
+demon blade "Bloodbane"
+恶魔之刃"血祸"
+
+%%%%
+demon blade "Leech"
+恶魔之刃"吸血者"
+
+%%%%
+demon trident "Rift"
+恶魔三叉戟"裂痕"
+
+%%%%
+demon whip "Spellbinder"
+恶魔之鞭"缚法者"
+
+%%%%
+dragonskin cloak
+龙皮斗篷
+
+%%%%
+dreamdust necklace
+梦尘项链
+
+%%%%
+dreamshard necklace
+梦碎项链
+
+%%%%
+eveningstar "Brilliance"
+流星锤"光辉"
+
+%%%%
+faerie dragon scales
+仙灵龙鳞甲
+
+%%%%
+fencer's gloves
+击剑者手套
+
+%%%%
+flamberge
+焰形剑
+
+%%%%
+frozen axe "Frostbite"
+冰封之斧"冻伤"
+
+%%%%
+fungal fisticloak
+真菌拳斗篷
+
+%%%%
+gauntlets of War
+战争护手
+
+%%%%
+giant club "Skullcrusher"
+巨棒"碎颅者"
+
+%%%%
+glaive of Prune
+普鲁恩之刃
+
+%%%%
+glaive of the Guard
+守卫之刃
+
+%%%%
+gloves of the gadgeteer
+机关师手套
+
+%%%%
+great mace "Firestarter"
+大战锤"纵火者"
+
+%%%%
+great mace "Undeadhunter"
+大战锤"亡灵猎人"
+
+%%%%
+greatsling
+巨投石索
+
+%%%%
+greatsling "Punk"
+巨投石索"庞克"
+
+%%%%
+hand cannon "Mule"
+手炮"骡子"
+
+%%%%
+hat of Pondering
+沉思之帽
+
+%%%%
+hat of the Alchemist
+炼金术士之帽
+
+%%%%
+hat of the Bear Spirit
+熊灵之帽
+
+%%%%
+hat of the High Council
+高等议会之帽
+
+%%%%
+heavy crossbow
+重弩
+
+%%%%
+heavy crossbow "Sniper"
+重弩"狙击手"
+
+%%%%
+hood of the Assassin
+刺客兜帽
+
+%%%%
+justicar's regalia
+执法官的礼服
+
+%%%%
+katana
+武士刀
+
+%%%%
+knife
+小刀
+
+%%%%
+knife of Accuracy
+精准之刃
+
+%%%%
+labrys
+双刃斧
+
+%%%%
+lajatang of Order
+秩序双头杖
+
+%%%%
+lance
+长矛
+
+%%%%
+lance "Wyrmbane"
+长矛"屠龙者"
+
+%%%%
+lightning scales
+闪电鳞甲
+
+%%%%
+longbow "Piercer"
+长弓"穿透者"
+
+%%%%
+longbow "Zephyr"
+长弓"西风"
+
+%%%%
+macabre finger necklace
+骇人指骨项链
+
+%%%%
+mace of Variability
+无常巨锤
+
+%%%%
+mask of the Dragon
+龙之面具
+
+%%%%
+maul
+战锤
+
+%%%%
+mithril axe "Arga"
+秘银斧"阿尔加"
+
+%%%%
+moon troll leather armour
+月之巨魔皮甲
+
+%%%%
+morningstar "Eos"
+钉头锤"厄俄斯"
+
+%%%%
+mountain boots
+山岳之靴
+
+%%%%
+necklace of Bloodlust
+嗜血项链
+
+%%%%
+obsidian axe
+黑曜石斧
+
+%%%%
+orange crystal plate armour
+橙晶板甲
+
+%%%%
+orb of Dispater
+迪斯帕特之法球
+
+%%%%
+pair of quick blades
+双快刃
+
+%%%%
+pair of quick blades "Gyre" and "Gimble"
+双快刃"盖尔"与"金布尔"
+
+%%%%
+plutonium sword
+钚剑
+
+%%%%
+ratskin cloak
+鼠皮斗篷
+
+%%%%
+ring of Shadows
+暗影之戒
+
+%%%%
+ring of the Hare
+野兔之戒
+
+%%%%
+ring of the Mage
+法师之戒
+
+%%%%
+ring of the Octopus King
+章鱼王之戒
+
+%%%%
+ring of the Tortoise
+乌龟之戒
+
+%%%%
+robe of Augmentation
+强化之袍
+
+%%%%
+robe of Clouds
+云雾之袍
+
+%%%%
+robe of Folly
+愚者之袍
+
+%%%%
+robe of Misfortune
+厄运之袍
+
+%%%%
+robe of Night
+暗夜之袍
+
+%%%%
+robe of Vines
+藤蔓之袍
+
+%%%%
+salamander hide armour
+火蜥蜴皮甲
+
+%%%%
+scales of the Dragon King
+龙王鳞甲
+
+%%%%
+scarf of invisibility
+隐身围巾
+
+%%%%
+sceptre of Asmodeus
+阿斯摩蒂斯之权杖
+
+%%%%
+sceptre of Torment
+折磨权杖
+
+%%%%
+scimitar of Flaming Death
+烈焰死亡之弯刀
+
+%%%%
+scythe
+镰刀
+
+%%%%
+scythe "Finisher"
+镰刀"终结者"
+
+%%%%
+scythe of Curses
+诅咒之镰
+
+%%%%
+seven-league boots
+七里格靴
+
+%%%%
+shield of Resistance
+抗性之盾
+
+%%%%
+shield of the Gong
+锣盾
+
+%%%%
+shillelagh
+橡木棍
+
+%%%%
+shillelagh "Devastator"
+橡木棍"毁灭者"
+
+%%%%
+skin of Zhor
+佐尔之皮
+
+%%%%
+skull of Zonguldrok
+宗古德洛克之颅
+
+%%%%
+slick slippers
+光滑拖鞋
+
+%%%%
+spear of the Botono
+波托诺之矛
+
+%%%%
+sphere of Battle
+战斗之球
+
+%%%%
+staff of Olgreb
+奥尔格雷布之杖
+
+%%%%
+staff of the Meek
+谦卑者之杖
+
+%%%%
+storm bow
+风暴之弓
+
+%%%%
+sword of Cerebov
+塞雷博夫之剑
+
+%%%%
+sword of Power
+力量之剑
+
+%%%%
+sword of Zonguldrok
+宗古德洛克之剑
+
+%%%%
+sword of the Dread Knight
+恐惧骑士之剑
+
+%%%%
+toga "Victory"
+托加袍"胜利"
+
+%%%%
+tower shield "Bullseye"
+塔盾"靶心"
+
+%%%%
+tower shield of Ignorance
+无知塔盾
+
+%%%%
+trident of the Octopus King
+章鱼王的三叉戟
+
+%%%%
+trishula "Condemnation"
+三叉戟"天罚"
+
+%%%%
+warlock's mirror
+术士之镜
+
+%%%%
+whip "Snakebite"
+鞭子"蛇咬"
+
+%%%%
+woodcutter's axe
+伐木工之斧
+
+%%%%
+zealot's sword
+狂热者之剑
