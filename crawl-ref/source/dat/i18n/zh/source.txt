@@ -20836,18 +20836,24 @@ No target in view!
 ，或
 %%%%
 <%s>I'll put %s outside for you.</%s>
+%%%%
+<%s>I'll put %s outside for you.</%s>\n
 
-<%s>我会将%s放在外面给你。</%s>
+<%s>我会将%s放在外面给你。</%s>\n
 
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>
+%%%%
+<%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
 
-<%s>以%d金币购买%s？%s（%s/N）</%s>
+<%s>以%d金币购买%s？%s（%s/N）</%s>\n
 
 %%%%
 <%s>You don't have enough money.</%s>
+%%%%
+<%s>You don't have enough money.</%s>\n
 
-<%s>你的金币不够。</%s>
+<%s>你的金币不够。</%s>\n
 
 %%%%
 Choose to examine item
@@ -27695,3 +27701,293 @@ Enter next level anyway?
  This would place you under penance!
  这会让你遭受苦修！
 %%%%
+%%%%
+ describe         
+ 描述             
+%%%%
+
+%%%%
+ buy marked items 
+ 购买标记物品    
+%%%%
+
+%%%%
+ exit          
+ 退出           
+%%%%
+
+%%%%
+ items    
+ 物品    
+%%%%
+
+%%%%
+mark item for purchase   
+标记购买物品         
+%%%%
+
+%%%%
+examine item             
+检查物品                 
+%%%%
+
+%%%%
+Choose to examine item  
+选择检查物品        
+%%%%
+
+%%%%
+ buy shopping list
+ 购买购物清单     
+%%%%
+
+%%%%
+ <w>buy</w>|examine items
+ <w>购买</w>|检查物品
+%%%%
+
+%%%%
+ buy|<w>examine</w> items
+ 购买|<w>检查</w>物品
+%%%%
+
+%%%%
+ Invoke -    
+ 祈唤 -      
+%%%%
+
+%%%%
+ on 
+ 对 
+%%%%
+
+%%%%
+, or 
+、或 
+%%%%
+
+%%%%
+:
+：
+%%%%
+
+%%%%
+ (about %d%% of your maximum possible piety)
+（约最大虔诚值的%d%%）
+%%%%
+
+%%%%
+ (unknown)
+（未知）
+%%%%
+
+%%%%
+Damage: %s\n 
+伤害：%s\n 
+%%%%
+
+%%%%
+Deactivating autopickup; reactivate with <w>%s</w>.
+关闭自动拾取；按<w>%s</w>重新开启。
+%%%%
+
+%%%%
+You now have enough gold to 
+你现在有足够的金币来
+%%%%
+
+%%%%
+You stand defiantly in death's doorway!
+你勇敢地站在死亡之门中！
+%%%%
+
+%%%%
+Your stasis prevents you from teleporting.
+你的停滞状态阻止了传送。
+%%%%
+
+%%%%
+[<w>&</w>] All spells  
+[<w>&</w>] 所有法术  
+%%%%
+
+%%%%
+[<w>*/%</w>] Inventory  
+[<w>*/%</w>] 物品栏  
+%%%%
+
+%%%%
+[<w>^</w>] All abilities  
+[<w>^</w>] 所有能力  
+%%%%
+
+%%%%
+releases
+释放
+%%%%
+
+%%%%
+You feel nauseous.
+你感到恶心。
+%%%%
+
+%%%%
+\n%*s: 
+\n%*s：
+%%%%
+
+%%%%
+\n%*s: %s
+\n%*s：%s
+%%%%
+
+%%%%
+\n\n%*s: 
+\n\n%*s：
+%%%%
+
+%%%%
+\n\nIt can be maximally enchanted to +%s.
+\n\n最多可附魔至+%s。
+%%%%
+
+%%%%
+It protects you from 
+它保护你免受
+%%%%
+
+%%%%
+Blades
+利刃
+%%%%
+
+%%%%
+Deck
+卡组
+%%%%
+
+%%%%
+Rod
+魔杖
+%%%%
+
+%%%%
+Other
+其他
+%%%%
+
+%%%%
+Total
+总计
+%%%%
+
+%%%%
+A terrible howling echoes in your mind.
+一阵可怕的嚎叫在你脑海中回响。
+%%%%
+
+%%%%
+Quad Damage is wearing off.
+四倍伤害正在消退。
+%%%%
+
+%%%%
+Vertigo is making it harder to attack, cast, and dodge.
+眩晕使你的攻击、施法和闪避更加困难。
+%%%%
+
+%%%%
+You are about to teleport.
+你即将传送。
+%%%%
+
+%%%%
+You are acrobatic and have increased evasion.
+你身手敏捷，闪避能力提高。
+%%%%
+
+%%%%
+You are agile.
+你身手敏捷。
+%%%%
+
+%%%%
+You are armoured with a cloak of flame.
+你被烈焰斗篷所保护。
+%%%%
+
+%%%%
+You are beckoning forth a horde of dragons.
+你正在召唤一群巨龙。
+%%%%
+
+%%%%
+You are briefly shielded after casting or invoking.
+你施法或祈唤后会短暂获得护盾。
+%%%%
+
+%%%%
+You are disjoining your surroundings.
+你正在与周围环境隔离。
+%%%%
+
+%%%%
+You are liquefying the ground beneath you.
+你正在液化脚下的地面。
+%%%%
+
+%%%%
+You are mighty.
+你力大无穷。
+%%%%
+
+%%%%
+You are parrying attacks and have increased SH.
+你正在格挡攻击，盾牌强度提高。
+%%%%
+
+%%%%
+You are standing in death's doorway.
+你正站在死亡之门中。
+%%%%
+
+%%%%
+You are terrified.
+你惊恐万分。
+%%%%
+
+%%%%
+You are unable to call your canine familiar.
+你无法召唤你的犬类伙伴。
+%%%%
+
+%%%%
+You are unable to create a polar vortex.
+你无法创造极地漩涡。
+%%%%
+
+%%%%
+You are vexed.
+你焦躁不安。
+%%%%
+
+%%%%
+You feel very devious.
+你感到十分狡诈。
+%%%%
+
+%%%%
+You radiate silence.
+你散发出沉默光环。
+%%%%
+
+%%%%
+Your time is quickly running out!
+你的时间快要耗尽了！
+%%%%
+
+%%%%
+The further away your target is the more your accuracy is reduced.
+目标越远，你的命中率越低。
+%%%%
+
