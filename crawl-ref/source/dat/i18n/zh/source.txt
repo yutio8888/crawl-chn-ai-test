@@ -24872,3 +24872,9 @@ and destroy
 %%%%
 pierce
 刺穿
+%%%%
+ amulet
+护身符
+%%%%
+ ring
+戒指

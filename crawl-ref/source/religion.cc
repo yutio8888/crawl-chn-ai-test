@@ -3015,12 +3015,12 @@ void excommunication(bool voluntary, god_type new_god)
 
     if (had_halo)
     {
-        mprf(MSGCH_GOD, old_god, "Your divine halo fades away.");
+        mprf(MSGCH_GOD, old_god, T_("Your divine halo fades away."));
         invalidate_agrid(true);
     }
     if (had_umbra)
     {
-        mprf(MSGCH_GOD, old_god, "Your aura of darkness fades away.");
+        mprf(MSGCH_GOD, old_god, T_("Your aura of darkness fades away."));
         invalidate_agrid(true);
     }
     // You might have lost water walking at a bad time...
@@ -3183,12 +3183,12 @@ void excommunication(bool voluntary, god_type new_god)
         }
         if (you.duration[DUR_QAZLAL_FIRE_RES])
         {
-            mprf(MSGCH_DURATION, "Your resistance to fire fades away.");
+            mprf(MSGCH_DURATION, T_("Your resistance to fire fades away."));
             you.duration[DUR_QAZLAL_FIRE_RES] = 0;
         }
         if (you.duration[DUR_QAZLAL_COLD_RES])
         {
-            mprf(MSGCH_DURATION, "Your resistance to cold fades away.");
+            mprf(MSGCH_DURATION, T_("Your resistance to cold fades away."));
             you.duration[DUR_QAZLAL_COLD_RES] = 0;
         }
         if (you.duration[DUR_QAZLAL_ELEC_RES])

@@ -518,7 +518,7 @@ void debuff_player(bool ignore_resistance)
         if (duration == DUR_TELEPORT)
         {
             len = 0;
-            mprf(MSGCH_DURATION, "You feel strangely stable.");
+            mprf(MSGCH_DURATION, T_("You feel strangely stable."));
             you.props.erase(TELEPORTITIS_SOURCE);
         }
         else if (duration == DUR_PETRIFYING)
@@ -540,7 +540,7 @@ void debuff_player(bool ignore_resistance)
         else if (duration == DUR_FORTRESS_BLAST_TIMER)
         {
             len = 0;
-            mprf(MSGCH_DURATION, "Your fortress blast dissipates harmlessly.");
+            mprf(MSGCH_DURATION, T_("Your fortress blast dissipates harmlessly."));
         }
         else if (len > 1)
         {

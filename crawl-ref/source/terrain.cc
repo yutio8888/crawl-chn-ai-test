@@ -980,7 +980,7 @@ void feat_splash_noise(dungeon_feature_type feat)
     {
     case DNGN_SHALLOW_WATER:
     case DNGN_DEEP_WATER:
-        mprf(MSGCH_SOUND, "You hear a splash.");
+        mprf(MSGCH_SOUND, T_("You hear a splash."));
         return;
 
     case DNGN_LAVA:

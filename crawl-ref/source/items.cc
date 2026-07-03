@@ -2020,7 +2020,7 @@ static void _get_gem(const item_def& it, bool quiet)
          it.name(DESC_THE).c_str(), you.hand_name(true).c_str());
     if (_got_all_gems())
     {
-        mprf("You've found all the gems! Together, they sparkle an otherworldly %s!",
+        mprf(T_("You've found all the gems! Together, they sparkle an otherworldly %s!"),
              getSpeakString("misc_colour").c_str());
     }
     mpr(T_("Press } and ! to see all the gems you have collected."));
@@ -2034,7 +2034,7 @@ static void _get_orb()
 {
     run_animation(ANIMATION_ORB, UA_PICKUP);
 
-    mprf(MSGCH_ORB, "You pick up the Orb of Zot!");
+    mprf(MSGCH_ORB, T_("You pick up the Orb of Zot!"));
 
     if (bezotted())
         mpr(T_("Zot can harm you no longer."));
@@ -2871,7 +2871,7 @@ bool drop_item(int item_dropped, int quant_drop)
         const bool is_wpn = is_weapon(item);
         if (!Options.easy_unequip && !is_wpn)
         {
-            mprf(MSGCH_PROMPT, "You will have to take that off first.");
+            mprf(MSGCH_PROMPT, T_("You will have to take that off first."));
             return false;
         }
 
@@ -3006,7 +3006,7 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
     }
     if (autopickup_remove_count == 1)
     {
-        mprf("Autopickup disabled for %s.",
+        mprf(T_("Autopickup disabled for %s."),
              pluralise(last_touched_item->name(DESC_DBNAME)).c_str());
     }
     else if (autopickup_remove_count > 1)
@@ -5107,7 +5107,7 @@ void maybe_name_weapon(item_def &item, bool silent)
     string full_name = get_weapon_name(item, true);
 
     // TODO: variant messages? (in the database?)
-    mprf("You welcome %s%s into your grasp.", full_name.c_str(),
+    mprf(T_("You welcome %s%s into your grasp."), full_name.c_str(),
          new_name ? "" : " back");
 }
 

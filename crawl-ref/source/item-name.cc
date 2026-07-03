@@ -2107,29 +2107,17 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         }
         else
         {
-            // Structural: ZH uses "护身符"/"戒指" suffix vs EN " amulet"/" ring"
-            const bool zh = Options.language == lang_t::ZH;
             if (jewellery_is_amulet(*this))
             {
-                if (zh)
-                    buff << amulet_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
-                         << amulet_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
-                         << "护身符";
-                else
-                    buff << amulet_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
-                         << amulet_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
-                         << " amulet";
+                buff << amulet_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
+                     << amulet_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
+                     << T_(" amulet");
             }
             else  // i.e., a ring
             {
-                if (zh)
-                    buff << ring_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
-                         << ring_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
-                         << "戒指";
-                else
-                    buff << ring_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
-                         << ring_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
-                         << " ring";
+                buff << ring_secondary_string(subtype_rnd / NDSC_JEWEL_PRI)
+                     << ring_primary_string(subtype_rnd % NDSC_JEWEL_PRI)
+                     << T_(" ring");
             }
         }
         if (cursed() && terse && !dbname && !qualname)
