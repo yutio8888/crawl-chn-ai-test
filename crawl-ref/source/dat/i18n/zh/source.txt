@@ -28068,3 +28068,6 @@ It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助�
 %%%%
  (%s)\n（%s）
  (%s)\n（%s）
+%%%%
+%s%s
+%s%s

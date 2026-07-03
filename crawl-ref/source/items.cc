@@ -1376,7 +1376,7 @@ string origin_desc(const item_def &item)
     if (!place.empty())
     {
         if (Options.language == lang_t::ZH)
-            desc = make_stringf(T_("在%s%s"), place.c_str(), desc.c_str());
+            desc = make_stringf(T_("%s%s"), place.c_str(), desc.c_str());
         else
             desc += place;
     }
