@@ -507,18 +507,12 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             adv.x += glyph.offset;
 
             // For CJK (double-width) characters, force advance to match
-            // the monospace grid and center the glyph in its cell. This
-            // fixes cumulative column misalignment without changing the
-            // CJK font's physical pixel size (which would distort glyph
-            // aspect ratio and cause visual size mismatch).
+            // the monospace grid. Without this, the CJK fallback font's
+            // native glyph advance (which may differ slightly from 2x the
+            // primary font's max_advance) causes cumulative column
+            // misalignment proportional to CJK character count.
             if (char_w > 1)
-            {
-                int cell_w = m_max_advance.x * char_w;
-                int diff = cell_w - glyph.advance;
-                if (diff != 0)
-                    adv.x += diff / 2; // center glyph in cell
-                glyph.advance = cell_w;
-            }
+                glyph.advance = m_max_advance.x * char_w;
 
             if (glyph.renderable)
             {
