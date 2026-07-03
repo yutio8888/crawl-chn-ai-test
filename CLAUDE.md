@@ -118,6 +118,22 @@ Skill("translation-pipeline")
 
 Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (code+translate parallel) → Review (3-way parallel) → Cross-validate → Report.
 
+### Batch Pipeline → `translation-batch-pipeline` workflow
+
+For multiple issues at once (e.g., a batch of playtester feedback), use the B′ batch
+workflow: shared worktree + phase-batched processing. Analyzes all issues in parallel,
+merges same-root-cause groups, builds a unified batch glossary, then executes
+sequentially to avoid source.txt merge conflicts.
+
+```
+Workflow({scriptPath: ".claude/workflows/translation-batch-pipeline.js", args: {issues: [{description: "..."}, ...]}})
+```
+
+Key differences from single-issue pipeline:
+- **Batch Analyze**: parallel analysis → merge same root causes → unified glossary
+- **Execute Sequential**: serial code+translation in shared worktree (no merge conflicts)
+- **Aggregate Report**: per-issue status + overall verdict
+
 ### Code Exploration → `Explore` agent
 
 | Trigger | Example |
