@@ -863,8 +863,8 @@ static string _format_dbrand(string dbrand)
             ASSERT(brand.size() == 2);
             const string &desc = brand[1];
             const int prefix_len = max(MAX_ARTP_NAME_LEN + 1, (int)brand[0].size() + 2);
-            const string pre = padded_str(brand[0] + ":", prefix_len);
-            out.push_back(_format_prop_desc(pre, desc));
+            const string pre = padded_str(T_(brand[0]) + ":", prefix_len);
+            out.push_back(_format_prop_desc(pre, T_(desc)));
         }
     }
     return join_strings(out.begin(), out.end(), "\n");
