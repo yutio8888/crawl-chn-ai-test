@@ -12905,7 +12905,7 @@ Destroyer
 毁灭者
 %%%%
 Devastator
-蹂躏者
+毁灭者
 %%%%
 Ruinous
 破灭者
@@ -28649,7 +28649,7 @@ Maxwell's etheric cage
 
 %%%%
 Maxwell's patent armour
-麦克斯韦的专利板甲
+麦克斯韦的特制板甲
 
 %%%%
 Maxwell's thermic engine
@@ -29037,7 +29037,7 @@ ring of the Tortoise
 
 %%%%
 robe of Augmentation
-强化之袍
+增幅之袍
 
 %%%%
 robe of Clouds
