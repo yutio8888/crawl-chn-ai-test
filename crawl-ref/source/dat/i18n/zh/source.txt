@@ -3541,7 +3541,7 @@ disappears in a puff of smoke
 在一阵烟雾中消失了
 %%%%
 Discarded %d spells due to being uncastable and %d spells due to being disliked by %s.
-因无法施放丢弃了%d个法术，因不被%s喜欢丢弃了%d个法术。
+丢弃了%d个无法施放的法术和%d个%s不喜欢的法术。
 %%%%
 disjunct
 移位
@@ -20846,7 +20846,7 @@ No target in view!
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
 
-<%s>以%d金币购买%s？%s（%s/N）</%s>\n
+<%s>购买物品%s需%d金币？%s（%s/N）</%s>\n
 
 %%%%
 <%s>You don't have enough money.</%s>
