@@ -559,7 +559,8 @@ protected:
         const int pw = strwidth(prefix);
         const string header = make_stringf("<w>%s%s%s%s%s",
             prefix.c_str(),
-            string(max(0, 32 - pw), ' ').c_str(),
+            // 36 - pw: 32 name-column width + 4 cells for prefix diff.
+            string(max(0, 36 - pw), ' ').c_str(),
             chop_string(T_("Type"), 26).c_str(),
             you.divine_exegesis ? chop_string("", 9).c_str()
                                 : chop_string(T_("Failure"), 9).c_str(),

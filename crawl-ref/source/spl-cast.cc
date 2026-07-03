@@ -281,13 +281,15 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
         // Data columns: name(32) power(10) damage(10) range(8) noise(14)
         // Default view: name(32) schools(padded to 58) fail_rate(9) level
         const int tlen = strwidth(titlestring);
+        // 36 - tlen: 32 name-column width + 4 cells to match the
+        // 5-char item hotkey prefix vs the 1-char title indent.
         const string default_header = titlestring
-            + string(32 - tlen, ' ')
+            + string(36 - tlen, ' ')
             + chop_string(T_("Type"), 26)
             + chop_string(T_("Failure"), 9)
             + T_("Level");
         const string toggle_header = titlestring
-            + string(32 - tlen, ' ')
+            + string(36 - tlen, ' ')
             + chop_string(T_("Power"), 10)
             + chop_string(T_("Damage"), 10)
             + chop_string(T_("Range"), 8)
