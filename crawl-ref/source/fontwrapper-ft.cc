@@ -353,20 +353,6 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         glyph.width = bmp->width;
         glyph.renderable = !!bmp->buffer;
 
-        // After proportional CJK calibration, the CJK face may be
-        // slightly larger than the primary font. Clamp the glyph
-        // dimensions to the grid cell bounds to prevent overflow in
-        // TextRegion rendering (item panel, message log).
-        if (use_face == cjk_face)
-        {
-            if (glyph.ascender > m_ascender)
-                glyph.ascender = m_ascender;
-            int cw = wcwidth(ch);
-            int max_w = m_max_advance.x * (cw > 0 ? cw : 1);
-            if (glyph.width > max_w)
-                glyph.width = max_w;
-        }
-
         // For double-width characters from the primary font (e.g.
         // fullwidth punctuation that DejaVu supports), force advance
         // to the grid metric so grid rendering stays aligned.
