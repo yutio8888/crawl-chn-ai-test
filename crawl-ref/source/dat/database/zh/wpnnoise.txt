@@ -1881,21 +1881,6 @@ w:20
 
 你的电鳗贴着你扭动，让你的@skin@感到一阵酥麻。
 %%%%
-fire dragon occultist scales farewell
-
-你听到一声不耐烦的龙吟闷哼在你的脑海中回荡。
-
-鳞甲因炽热的不满而猛烈地隆隆作响。
-%%%%
-fire dragon occultist scales greeting
-
-你感到一道重燃的火焰温柔地注视着你，在身后微微闪烁。
-
-好奇的余烬噼啪作响，渴望着新的引火之物。
-
-w:5
-你感到岁月的重量在你的意识和魔法中缓缓爬行。
-%%%%
 fungus thoughts
 
 你突然感到一阵想要散播孢子的冲动。
@@ -1911,21 +1896,6 @@ fungus thoughts
 你听到脑海深处有一组合唱般的微小低语。
 
 你考虑找一个舒适的黑暗角落安顿下来。
-%%%%
-ice dragon arcanist scales farewell
-
-你几乎听到一声不屑的龙吟闷哼在你的脑海中咆哮。
-
-鳞甲因冰冷的挫败而猛烈地咔嗒作响。
-%%%%
-ice dragon arcanist scales greeting
-
-你感到一抹知悉的嘲讽在身后如回响的霜冻般闪烁。
-
-霜冻的涟漪噼啪作响，渴望着新的受害者。
-
-w:5
-你感到岁月的重量在你的意识和魔法中缓缓爬行。
 %%%%
 zonguldrok farewell
 

@@ -211,22 +211,6 @@ Ignis fountain_blood
 
 喷泉的鲜血在你的存在下短暂地沸腾了。
 %%%%
-Ignis peaceful fountain_blood
-
-@Ignis fountain_blood@
-%%%%
-Nemelex peaceful fountain_blue
-
-你短暂地审视了喷泉的水面，仿佛在阅读一张牌面。它很模糊。
-%%%%
-Nemelex peaceful fountain_sparkling
-
-你尝试在闪亮喷泉的水面上解读神秘图案。它当然不合作。
-%%%%
-Nemelex fountain_blood
-
-你短暂地思考了用血泉来洗牌的可行性。你决定不这样做。
-%%%%
 Trog peaceful fountain_blue
 
 {{
@@ -240,18 +224,9 @@ end
 }}
 
 %%%%
-Trog peaceful fountain_sparkling
-
-你怀疑地瞪着闪亮的喷泉。闪亮意味着魔法。可能是毒药。
-%%%%
 Wu Jian peaceful fountain_blue
 
 你欣赏着喷泉那宁静而自律的流动。
-%%%%
-Wu Jian peaceful fountain_sparkling
-
-你观察着喷泉的水流，它在你的注视下流动得更加自律了。
-
 %%%%
 Jiyva fountain_eyes
 

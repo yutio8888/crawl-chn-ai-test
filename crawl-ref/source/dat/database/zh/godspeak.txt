@@ -1534,25 +1534,6 @@ Xom scenery trap_teleport
 @Xom scenery enter_abyss@
 
 %%%%
-Xom shifts sight and space
-
-w:30
-佐姆将时空折成一只令人眼花缭乱的折纸 [牦牛|牦牛|短尾矮袋鼠|短尾矮袋鼠|鸭子]！
-
-佐姆以炽热的白光充满了局部的空间流形！
-
-佐姆用量子丝线溜溜球把戏迷住了所有人！
-
-佐姆正在教导当地的光子如何飞行。没有任何帮助。
-
-w:1
-佐姆将宇宙折成 @_xom_number_@ 个维度。包括一根香蕉。
-
-佐姆打开一个门户，通往一个大小完全相同、但被 @any_glowing_colour_pattern@ 迅速覆盖的区域。
-
-佐姆放火烧了一处本地风景。短暂地。
-
-%%%%
 Xom slow motion
 
 佐姆觉得在场的人都没有足够放松。
