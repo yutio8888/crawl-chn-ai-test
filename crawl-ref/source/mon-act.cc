@@ -182,7 +182,7 @@ static bool _handle_ru_melee_redirection(monster &mons, monster **new_target)
     if (interference == DO_BLOCK_ATTACK)
     {
         simple_monster_message(mons,
-            " is stunned by your conviction and fails to attack.", false,
+            T_(" is stunned by your conviction and fails to attack."), false,
             MSGCH_GOD);
         return true;
     }
@@ -1595,7 +1595,7 @@ bool handle_throw(monster* mons, bolt & beem, bool teleport, bool check_only, bo
         if (interference == DO_BLOCK_ATTACK)
         {
             simple_monster_message(*mons,
-                                " is stunned by your conviction and fails to attack.", false,
+                                T_(" is stunned by your conviction and fails to attack."), false,
                                 MSGCH_GOD);
             return false;
         }
@@ -2232,7 +2232,7 @@ void handle_monster_move(monster* mons)
         if (x_chance_in_y(3 * gold, 100))
         {
             simple_monster_message(*mons,
-                " is distracted by your dazzling golden aura.");
+                T_(" is distracted by your dazzling golden aura."));
 
             mons->add_ench(
                 mon_enchant(ENCH_DAZED, nullptr,
@@ -2454,7 +2454,7 @@ void monster::struggle_against_net()
                     mpr(T_("Something you can't see is thrashing in a web."));
                 else
                     simple_monster_message(*this,
-                                        " struggles to get unstuck from the web.");
+                                        T_(" struggles to get unstuck from the web."));
             }
             return;
         }

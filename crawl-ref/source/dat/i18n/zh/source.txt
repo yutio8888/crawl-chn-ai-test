@@ -34139,3 +34139,48 @@ deep water
  is surrounded by blessed fire!
 被祝福之火包围了！
 %%%%
+ is already dancing.
+已经开始起舞了。
+%%%%%
+ appears!
+出现了！
+%%%%%
+ conjures a globe of magical energy!
+召唤出了一颗魔法能量球！
+%%%%%
+ disappears.
+消失了。
+%%%%%
+ finishes brewing potions and dispenses them!
+完成了药水酿造并将它们分发出去！
+%%%%%
+ collapses with a clattering noise.
+发出一阵咔嗒声后，倒塌了。
+%%%%%
+ erupts in a fountain of uncontrolled magic!
+爆发出失控的魔法喷泉！
+%%%%%
+ emits a burst of electricity!
+释放出一阵电流！
+%%%%%
+ begins to radiate toxic energy.
+开始辐射出毒素能量。
+%%%%%
+ stops channelling.
+停止了引导。
+%%%%%
+ vaporises and condenses as gold!
+蒸发并凝结成了金币！
+%%%%%
+ vaporises in an electric haze!
+在电雾中蒸发了！
+%%%%%
+ is stunned by your conviction and fails to attack.
+被你的信念震慑，未能发起攻击。
+%%%%%
+ is distracted by your dazzling golden aura.
+被你炫目的金色光环分散了注意力。
+%%%%%
+ struggles to get unstuck from the web.
+挣扎着想要脱离蛛网。
+%%%%%
