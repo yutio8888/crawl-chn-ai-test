@@ -30333,6 +30333,7 @@ hit or gore
 %%%%
 pounce
 猛扑
+%%%%
 bubbling
 冒泡的
 %%%%
