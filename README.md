@@ -1,108 +1,263 @@
+# 龙腾世纪：地下城探险 · 中文版
+
+*Dungeon Crawl Stone Soup (DCSS) — Chinese Localization & CJK Tiles Support*
+
 [![Build Status](https://github.com/crawl/crawl/workflows/Build/badge.svg)](https://github.com/crawl/crawl/actions/)
 
-# Dungeon Crawl Stone Soup
+一个基于 DCSS 0.34.1 的中文汉化分支，提供完整的中文界面翻译与 CJK（中日韩）字符 tiles
+渲染支持。玩家可以用中文畅玩这款经典 roguelike 游戏，在 tiles 模式下正常显示汉字。
 
-Dungeon Crawl Stone Soup is a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshipping deities of great power and caprice. To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.
+> **上游原版 README**：[README.upstream.md](README.upstream.md)
 
-## Contents
+---
 
-1. [How to Play](#how-to-play)
-3. [Community](#community)
-5. [How you can help](#how-you-can-help)
-4. [License and history information](#license-and-history-information)
+## 目录
 
-## How to Play
+1. [功能特性](#功能特性)
+2. [快速开始](#快速开始)
+3. [项目结构](#项目结构)
+4. [翻译进度](#翻译进度)
+5. [技术架构](#技术架构)
+6. [贡献指南](#贡献指南)
+7. [相关资源](#相关资源)
+8. [许可证](#许可证)
 
-For information on how to install the game, please visit [the installation documentation](crawl-ref/INSTALL.md).
+---
 
-If you'd like to dive in immediately, we suggest one of:
+## 功能特性
 
-* Start a game and pick a tutorial (select tutorial in the game menu),
-* Read [quickstart.md](crawl-ref/docs/quickstart.md) (in the [docs/](crawl-ref/docs/) directory), or
-* For the studious, [read Crawl's full manual](crawl-ref/docs/crawl_manual.rst).
+### 中文翻译
 
-There is also an ingame list of frequently asked questions which you can access by typing
-`?Q`.
+- 覆盖 **~30,000+** 条翻译条目（`source.txt`），涵盖游戏界面、战斗日志、怪物名称、
+  技能说明、物品描述、神明对话等
+- 支持 `T_()` 宏系统：C++ 端直接嵌入翻译键，编译期提取与校验
+- 三种翻译通道：
+  - **C++ 字面量** `T_("English text")` — ~93% 覆盖率，可静态扫描
+  - **函数包装器** `skill_name()` / `spell_title()` 等 — 内部自动翻译，调用者无感
+  - **运行时变量** `T_(variable)` — 数据驱动的动态翻译（怪物名、地形名等）
+- 独立的 TextDB 描述数据库：怪物描述、装备说明、神明对话等存储在
+  `dat/descript/zh/` 和 `dat/database/zh/` 中
+- 翻译决策注册表 [`docs/decisions.md`](docs/decisions.md) 确保术语一致性
 
-#### Internet Play
+### CJK Tiles 渲染
 
-You can play Crawl online, competing with other players or watching them. Click "Play Online Now!" on [the Crawl homepage](https://crawl.develz.org/) to find your closest server. You can play in your browser or over SSH.
+- **三层架构**解决 CJK 字符在 tiles 网格中的宽度问题：
+  1. **网格计数层** (`tilereg-text.cc`)：使用 `wcwidth()` 计算每个字符的实际显示宽度，
+     CJK 字符占 2 格，第二格标记为零宽空格 (U+200B)
+  2. **渲染层** (`fontwrapper-ft.cc`)：跳过续格标记，CJK 字符使用 2 倍背景宽度
+  3. **字体回退层**：DejaVu Sans Mono 提供布局度量，Sarasa Mono SC（更纱等宽黑体）
+     作为 CJK 回退字体
+- 支持中英文混排，对齐正确
 
-#### Offline Play
+### 工具链
 
-Both classical ASCII and tiles (GUI) versions of Crawl are available to [download for Linux, Windows and OS X](https://crawl.develz.org/download.htm).
+| 工具 | 用途 |
+|------|------|
+| `i18n_extract.py` | 提取 `T_()` 键 → 校验 source.txt 覆盖率 |
+| `audit_data_i18n.py` | 审计数据驱动的运行时翻译 |
+| `scan_i18n.py` | 多维度扫描：格式字符串、参数匹配、`mprf`→`mprf_p` 兼容性 |
+| `check_consistency.sh` | 跨文件术语一致性检查 |
+| `context_resolve.sh` | 动态术语上下文注入（AI 辅助翻译） |
 
-## Community
+---
 
-* Our official homepage: [crawl.develz.org](https://crawl.develz.org/)
-  * Online webtiles play
-  * Offline downloads
-  * Our community forum: [tavern.dcss.io](https://tavern.dcss.io/)
-* [/r/roguelikes Discord](https://discord.gg/S5F2H32)
-* The [/r/dcss subreddit](https://www.reddit.com/r/dcss/)
-* IRC: #crawl on Libera (or #crawl-dev to chat development)
+## 快速开始
 
-## How you can help
+### 环境要求
 
-If you like the game and you want to help make it better, there are a number
-of ways to do so. For a detailed guide to the crawl workflow, look at
-the [contributor's guide](crawl-ref/docs/develop/contribution-process.md).
+- Linux (WSL2) 或 macOS
+- GCC / Clang (C++17)
+- `make`、`pkg-config`
+- 依赖库：Lua、SQLite、PCRE、SDL2、SDL2_image、Freetype、libpng、zlib
 
-### Reporting bugs
+### 控制台版
 
-At any time, there will be bugs -- finding and reporting them is a great help.
-Many of the online servers host the regularly updated development version. Bugs
-should be reported to [our github issue
-tracker](https://github.com/crawl/crawl/issues). Thoughtful ideas on how to
-improve interface or gameplay are welcome, but it's often best to
-[discuss](#community) changes before opening an issue or pull request.
+```bash
+cd crawl-ref/source
+echo 'language = zh' > init.txt
+make -j8
+./crawl
+```
 
-### Map making
-Crawl creates levels by combining many hand-made (but often randomised) maps,
-known as *vaults*. Making them is fun and easy. It's best to start with simple
-entry vaults: see [simple.des](crawl-ref/source/dat/des/arrival/simple.des) for
-examples. You can also read [the level-design manual](crawl-ref/docs/develop/levels/introduction.txt) for more help.
+### Tiles 版（Windows 交叉编译）
 
-If you're ambitious, you can create new vaults for anywhere in the game. If
-you've made some vaults, you can test them on your own system (no compiling
-needed) and submit them via a github pull request. See the [contributor's guide](crawl-ref/docs/develop/contribution-process.md) for details.
+```bash
+cd crawl-ref/source
+make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+```
 
-### Monster Speech & Item Descriptions
-Monster speech provides a lot of flavour. Just like vaults, varied speech depends
-upon a large set of entries. Speech syntax is effective but unusual, so you may want to read [the formatting guide](crawl-ref/docs/develop/monster_speech.txt).
+输出文件：`crawl-ref/source/crawl.exe`，与 `dat/` 目录一同部署到目标 Windows 环境即可。
 
-Current item descriptions can be read in-game with `?/` or out-of-game
-them in [dat/descript/](crawl-ref/source/dat/descript/). The following conventions should be more or less obeyed:
-* Descriptions ought to contain flavour text, ideally pointing out major weaknesses/strengths.
-* No numbers, please.
-* Citations are okay, but try to stay away from the most generic ones.
+### 必需字体
 
-### Tiles
-We're always open to improvements to existing tiles or variants of often-used
-tiles (eg floor tiles). If you want to give this a shot, please [contact us](#community). In case you drew some tiles of your own, you can simply share
-them with a developer or submit them via a github pull request. See the
-[contributor's guide](crawl-ref/docs/develop/contribution-process.md) for
-details.
+| 字体 | 大小 | 用途 |
+|------|------|------|
+| `DejaVuSans.ttf` | ~720KB | 比例字体 |
+| `DejaVuSansMono.ttf` | ~330KB | 主等宽字体（布局度量来源） |
+| `SarasaMonoSC-Regular.ttf` | ~25MB | CJK 回退字体（需单独获取，放入 `contrib/fonts/`） |
 
-### Patches
-For developers (both existing & aspiring!), you can download/fork the source code and write patches. Bug fixes as well as new features are very much welcome.
+---
 
-For large changes, it's always a good idea to [talk with the dev team](#community) first, to see if any plans already exist and if your suggestion is likely to be accepted.
+## 项目结构
 
-Please be sure to read [docs/develop/coding_conventions.md](crawl-ref/docs/develop/coding_conventions.md) too.
+```
+crawl/                               # 仓库根目录
+├── README.md                        # 本文件
+├── README.upstream.md               # 上游原版 README（归档）
+├── CLAUDE.md                        # AI 辅助开发指引
+├── docs/
+│   └── decisions.md                 # 翻译决策注册表（术语 SSOT）
+├── crawl-ref/
+│   ├── source/
+│   │   ├── *.cc, *.h                # C++ 游戏源码（含 T_() 翻译宏）
+│   │   ├── dat/
+│   │   │   ├── i18n/zh/source.txt   # 主翻译数据库（~30,000 条）
+│   │   │   ├── descript/zh/         # 描述文本数据库
+│   │   │   └── database/zh/         # 文本数据库（神明对话等）
+│   │   ├── contrib/fonts/           # 字体文件
+│   │   └── Makefile                 # 构建配置
+│   └── docs/                        # 上游游戏文档
+├── .claude/
+│   ├── scripts/                     # 翻译工具链脚本
+│   ├── workflows/                   # AI 工作流定义
+│   └── skills/                      # AI 技能定义
+└── .github/                         # CI 配置
+```
 
-## License and history information
+### 分支说明
 
-Crawl is licensed as GPLv2+. See [LICENSE](LICENSE) for the full text.
+| 分支 | 用途 | 基线 |
+|------|------|------|
+| `chn-0.34.1-base` | **活跃开发分支** | `chinese-translation-0.34.1` |
+| `chinese-translation-0.34.1` | 稳定集成目标 | `0.34.1` 稳定标签 |
 
-Crawl is a descendant of Linley's Dungeon Crawl. The final alpha of Linley's Dungeon Crawl (v4.1) was released by Brent Ross in 2005. Since 2006, the Dungeon Crawl Stone Soup team has continued development. [CREDITS.txt](crawl-ref/CREDITS.txt) contains a full list of contributors.
+---
 
-Crawl uses the following open source packages; thanks to their developers:
+## 翻译进度
 
-* The Lua scripting language, for in-game functionality and user macros ([license](crawl-ref/docs/license/lualicense.txt)).
-* The PCRE library, for regular expressions ([license](crawl-ref/docs/license/pcre_license.txt)).
-* The SQLite library, as a database engine ([license](https://www.sqlite.org/copyright.html)).
-* The SDL and SDL_image libraries, for tiles display ([license](crawl-ref/docs/license/lgpl.txt)).
-* The libpng library, for tiles image loading ([license](crawl-ref/docs/license/libpng-LICENSE.txt)).
+| 指标 | 数据 |
+|------|------|
+| source.txt 条目数 | **~30,452** |
+| 涉及 C++ 源文件 | **96+** `.cc` 文件 |
+| T_() 调用点 | **6,000+** |
+| 翻译提交数（稳定分支） | **894+** |
 
-Thank you, and have fun crawling!
+### 覆盖范围
+
+- ✅ 战斗日志消息
+- ✅ 怪物攻击动词（25+）
+- ✅ UI 面板（Q/W/I/E/!/$/^）
+- ✅ 瞄准界面
+- ✅ 物品栏提示
+- ✅ 地形描述
+- ✅ 技能/法术名称
+- ✅ 怪物描述表
+- ✅ 命令帮助文本
+- ✅ 种族难度标签
+- ✅ 未鉴定药水/卷轴命名
+
+---
+
+## 技术架构
+
+### 翻译系统
+
+```
+T_("English text")
+    ↓
+i18n_source_lookup()
+    ↓
+dat/i18n/zh/source.txt  ← 翻译数据库
+    ↓
+返回中文 / 回退英文
+```
+
+所有翻译通过 `T_()` 宏进行，语言选择在翻译数据库层面完成，C++ 代码保持语言无关。
+`Options.language` 仅影响 `T_()` 查找的数据文件，调用方无需添加语言守卫。
+
+### CJK Tiles 渲染
+
+```
+┌─────────────────────────────────────────┐
+│  Layer 1: tilereg-text.cc               │
+│  wcwidth() → CJK=2格, ASCII=1格         │
+│  第2格写入 U+200B (ZWS) 续格标记        │
+├─────────────────────────────────────────┤
+│  Layer 2: fontwrapper-ft.cc             │
+│  render_textblock()                     │
+│  跳过续格标记，CJK 字符 2x 背景宽度      │
+├─────────────────────────────────────────┤
+│  Layer 3: fontwrapper-ft.cc             │
+│  get_glyph_info() / load_glyph()        │
+│  主字体 → CJK 回退字体链                 │
+│  Atlas 单元格加宽以容纳 CJK 字形         │
+└─────────────────────────────────────────┘
+```
+
+### 翻译类型体系
+
+| 类型 | 模式 | 覆盖率 | 可审计性 |
+|------|------|--------|----------|
+| I — C++ 字面量 | `T_("You hit %s.")` | ~93% | 静态扫描 ✅ |
+| II — 函数包装器 | `skill_name(sk)` → 内部 `T_()` | ~5% | 人工审计 |
+| III — 运行时变量 | `T_(endmsg)` 数据驱动 | ~1% | `audit_data_i18n.py` |
+| IV — TextDB | `zh/monsters.txt` 等 | 附加 | 按文件校验 |
+| V — 协议/内部 | 永不翻译 | — | 禁止翻译 ❌ |
+
+---
+
+## 贡献指南
+
+### 翻译贡献
+
+1. 阅读 [`docs/decisions.md`](docs/decisions.md) — 术语决策唯一来源
+2. 修改或新增 `dat/i18n/zh/source.txt` 条目
+3. 如有新增 `T_()` 调用，同步添加对应 `source.txt` 条目
+4. 运行工具链校验：
+
+```bash
+python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+```
+
+### 代码贡献
+
+1. Fork 本仓库
+2. 在 `chn-0.34.1-base` 分支上创建特性分支
+3. 确保 `make -j8` 编译通过
+4. 如涉及 tiles，确保 `make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8` 通过
+5. 提交 PR，commit 信息末尾添加 `Co-Authored-By: Claude <noreply@anthropic.com>`
+
+### 常见反模式（请勿重复）
+
+- ❌ 翻译协议键（JSON key、`.des` 标签、存档标识符必须保持英文）
+- ❌ 对中文调用 `conj_verb()`（产生乱码如 `"抓取s"`）
+- ❌ 修改用作数据库查找键的 `.name` 字段
+- ❌ 在同一格式字符串中混用中英文
+- ❌ 使用 `buf.size()` 做 CJK 对齐（用 `strwidth()` 代替）
+- ❌ 对运行时变量添加 `T_()` 但不添加 `source.txt` 条目
+
+---
+
+## 相关资源
+
+- **上游项目**：[github.com/crawl/crawl](https://github.com/crawl/crawl)
+- **官方主页**：[crawl.develz.org](https://crawl.develz.org/)
+- **在线游玩**：crawl.develz.org 提供 Webtiles 和 SSH 接入
+- **社区论坛**：[tavern.dcss.io](https://tavern.dcss.io/)
+- **Reddit**：[r/dcss](https://www.reddit.com/r/dcss/)
+- **IRC**：Libera 上的 `#crawl`（玩家）、`#crawl-dev`（开发）
+
+---
+
+## 许可证
+
+本项目基于上游 DCSS，采用 **GPLv2+** 许可证。详见 [LICENSE](LICENSE)。
+
+上游项目致谢名单见 [CREDITS.txt](crawl-ref/CREDITS.txt)。
+
+---
+
+*Have fun crawling! 祝探索愉快！🐉*
