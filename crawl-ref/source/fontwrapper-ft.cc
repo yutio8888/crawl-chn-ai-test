@@ -122,32 +122,11 @@ bool FTFontWrapper::configure_font()
 
     if (cjk_face)
     {
+        // Load CJK face at the same pixel size as the primary font.
+        // store() and string_width() use native glyph.advance for tight
+        // CJK spacing; render_textblock() uses grid advance independently.
         int device_w = display_density.logical_to_device(fsize);
         FT_Set_Pixel_Sizes(cjk_face, device_w, device_w);
-
-        // Measure a representative CJK glyph's advance. If it differs
-        // from 2x the primary font's max_advance, proportionally rescale
-        // the CJK face so its native advance matches the grid. This
-        // eliminates the need for per-function advance overrides and
-        // ensures store(), string_width(), and render_textblock() all
-        // agree on per-character advance.
-        //
-        // Using the SAME value for width and height preserves glyph
-        // aspect ratio — unlike the earlier approach that set different
-        // w/h causing stretched/distorted CJK text.
-        FT_UInt idx = FT_Get_Char_Index(cjk_face, 0x6C49); // 汉
-        if (idx)
-        {
-            FT_Load_Glyph(cjk_face, idx, FT_LOAD_DEFAULT);
-            int cjk_adv = cjk_face->glyph->advance.x >> 6;
-            int target = m_max_advance.x * 2;
-            if (cjk_adv > 0 && cjk_adv != target)
-            {
-                float ratio = (float)target / cjk_adv;
-                int new_size = device_w * ratio;
-                FT_Set_Pixel_Sizes(cjk_face, new_size, new_size);
-            }
-        }
     }
 
     charsz = coord_def(1,1);
@@ -681,13 +660,13 @@ unsigned int FTFontWrapper::string_width(const char *text, bool logical)
             char32_t ch;
             utf8towc(&ch, itr);
             GlyphInfo &glyph = get_glyph_info(ch);
-            // For double-width chars, use grid-based advance to stay
-            // consistent with render_textblock(). Native CJK advances
-            // produce tighter spacing in free-form rendering but break
-            // column alignment when string_width is used for menu layout.
-            int cw = wcwidth(ch);
-            width += (cw > 1) ? m_max_advance.x * cw : glyph.advance;
-            adjust = max(0, glyph.width - (cw > 1 ? m_max_advance.x * cw : glyph.advance));
+            // Use native glyph advance for consistency with store().
+            // Both menu titles and data entries use store() for
+            // rendering, so layout (string_width) and rendering
+            // (store) must agree on per-character advance.
+            // render_textblock() uses grid advance independently.
+            width += glyph.advance;
+            adjust = max(0, glyph.width - glyph.advance);
         }
     }
 
@@ -713,10 +692,8 @@ int FTFontWrapper::find_index_before_width(const char *text, int max_str_width)
         char32_t ch;
         utf8towc(&ch, itr);
         GlyphInfo &glyph = get_glyph_info(ch);
-        int cw = wcwidth(ch);
-        int adv = (cw > 1) ? m_max_advance.x * cw : glyph.advance;
-        width += adv;
-        int adjust = max(0, glyph.width - adv);
+        width += glyph.advance;
+        int adjust = max(0, glyph.width - glyph.advance);
         if (width + adjust > max_str_width)
             return itr-text;
     }
