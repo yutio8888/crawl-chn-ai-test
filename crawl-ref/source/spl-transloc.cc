@@ -231,7 +231,8 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         direction_chooser_args args;
         args.restricts = DIR_TARGET;
         args.needs_path = false;
-        args.top_prompt = uppercase_first(verb) + " to where?";
+        args.top_prompt = make_stringf(T_("%s to where?"),
+                                        uppercase_first(T_(verb.c_str())).c_str());
         args.hitfunc = hitfunc;
         args.mode = TARG_NON_ACTOR;
         direction(target, args);

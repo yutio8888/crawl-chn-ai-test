@@ -948,17 +948,17 @@ string airstrike_intensity_display(int empty_space, tileidx_t& tile)
     if (empty_space < 3)
     {
         tile = TILE_BOLT_WEAK_AIR;
-        return "The confined air twists around weakly";
+        return T_("The confined air twists around weakly");
     }
     else if (empty_space < 6)
     {
         tile = TILE_BOLT_MEDIUM_AIR;
-        return "The air twists around";
+        return T_("The air twists around");
     }
     else
     {
         tile = TILE_BOLT_STRONG_AIR;
-        return "The open air twists around violently";
+        return T_("The open air twists around violently");
     }
 }
 

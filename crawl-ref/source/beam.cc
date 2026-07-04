@@ -5387,7 +5387,7 @@ void bolt::knockback_actor(actor *act, int dam)
     // if the caster is dead, we can't get their former position for knockback
     auto caster = agent();
     if (!caster) return;
-    act->knockback(*caster, dist, _collision_damage(origin_spell, ench_power), name);
+    act->knockback(*caster, dist, _collision_damage(origin_spell, ench_power), _beam_display_name(*this));
 }
 
 void bolt::pull_actor(actor *act, int dam)

@@ -941,7 +941,7 @@ string trap_name(trap_type trap)
     COMPILE_CHECK(ARRAYSZ(trap_names) == NUM_TRAPS);
 
     if (trap >= 0 && trap < NUM_TRAPS)
-        return trap_names[trap];
+        return T_(trap_names[trap]);
     return "";
 }
 
@@ -951,13 +951,13 @@ string full_trap_name(trap_type trap)
     switch (trap)
     {
     case TRAP_GOLUBRIA:
-        return basename + " of Golubria";
+        return basename + T_(" of Golubria");
     case TRAP_PLATE:
     case TRAP_WEB:
     case TRAP_SHAFT:
         return basename;
     default:
-        return basename + " trap";
+        return basename + T_(" trap");
     }
 }
 

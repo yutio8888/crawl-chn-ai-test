@@ -937,13 +937,13 @@ gain power from chaos
 %1$s在雨中%2$s。
 %%%%
 %1$s %2$s knocked back by the %3$s.
-%1$s被%3$s击退了。
+%1$s%2$s%3$s击退了。
 %%%%
 %1$s %2$s knocked back by the blast.
-%1$s被爆炸%2$s击退。
+%1$s%2$s爆炸击退了。
 %%%%
 %1$s %2$s knocked back.
-%1$s被击退了。
+%1$s%2$s击退了。
 %%%%
 %1$s %2$s suddenly forward!
 %1$s猛然向前冲去！
@@ -12474,7 +12474,7 @@ completely
 完全
 %%%%
  closely
-险些
+勉强
 %%%%
  barely
 勉强
@@ -15514,7 +15514,7 @@ Plasma Beam
 等离子光束
 %%%%
 Blinkbolt
-闪雷
+闪烁箭
 %%%%
 Vhi's Electric Charge
 维之电荷
@@ -15787,7 +15787,7 @@ Bolt of Devastation
 毁灭之箭
 %%%%
 Spit Poison
-喷吐毒素
+喷毒
 %%%%
 Summon Undead
 召唤亡灵
@@ -16417,7 +16417,7 @@ Mass Regeneration
 群体再生
 %%%%
 Noxious Breath
-毒气吐息
+毒瘴吐息
 %%%%
 Unleash Destruction
 释放毁灭
@@ -16429,7 +16429,7 @@ Combustion Breath
 燃烧吐息
 %%%%
 Nullifying Breath
-湮灭吐息
+消魔吐息
 %%%%
 Steam Breath
 蒸汽吐息
@@ -16438,7 +16438,7 @@ Mud Breath
 泥浆吐息
 %%%%
 Galvanic Breath
-电流吐息
+电击吐息
 %%%%
 Maxwell's Portable Piledriver
 麦克斯韦之便携打桩机
@@ -16747,7 +16747,7 @@ Ring of Flames
 Ring of Flames
 %%%%
 Shaft Self
-Shaft Self
+自我竖井
 %%%%
 Shroud of Golubria
 Shroud of Golubria
@@ -17157,10 +17157,10 @@ deep
 深
 %%%%
 You are covered in even more %sliquid fire!
-你被%sliquid fire覆盖得更严重了！
+你被%s液态火焰覆盖得更严重了！
 %%%%
 You are covered in %sliquid fire! Move or burn!
-你被%sliquid fire覆盖了！移动或被烧！
+你被%s液态火焰覆盖了！移动或被烧！
 %%%%
 You feel very buoyant.
 你感觉非常有浮力。
@@ -29354,7 +29354,7 @@ kneel at
 
 %%%%
 %s %s constricted%s%s
-%s被%s紧紧缠绕%s%s
+%s%s紧紧缠绕%s%s
 
 %%%%
 %s %s flashes viciously!
@@ -29370,7 +29370,7 @@ kneel at
 
 %%%%
 %s %s with %s%s
-%s与%s相撞%s%s
+%s%s了%s%s
 
 %%%%
 %s animating energy erupts into ghostly fire!
@@ -31249,3 +31249,611 @@ which it recharges.
 %%%%
 \nIt deals %s damage.\n
 \n它造成%s点伤害。\n
+被吞没
+%%%%
+%s %s afflicted by dizzying energies!
+%s%s令人眩晕的能量折磨！
+%%%%
+%s %s as negative energy consumes %s%s
+%1$s因负能量吞噬%3$s而%2$s%4$s
+%%%%
+%s %s electrocuted%s
+%s%s电击了%s
+%%%%
+%s %s engulfed in a cloud of dizzying spores!
+%s%s一团眩晕孢子云吞没！
+%%%%
+%s %s engulfed in flames%s
+%s%s火焰吞没%s
+%%%%
+%s %s vitality from %s injuries!
+%s%s了%s伤势中的生命力！
+%%%%
+%s to where?
+%s到哪？
+%%%%
+<lightred>%s%s only, please.</lightred>
+<lightred>请仅输入%s%s。</lightred>
+%%%%
+The air twists around
+空气盘旋着
+%%%%
+The confined air twists around weakly
+周围的空气无力地盘旋着
+%%%%
+The ground beneath %s fractures%s
+%s脚下的地面裂开了%s
+%%%%
+The open air twists around violently
+开阔的空气剧烈地盘旋着
+%%%%
+[Y]es or [N]o
+[Y]是或[N]否
+%%%%
+[Y]es, [N]o, or [A]lways
+[Y]是、[N]否或[A]总是
+%%%%
+Uppercase
+大写
+%%%%
+blast
+冲击
+%%%%
+blink
+传送
+%%%%
+collide
+撞上
+%%%%
+constrict
+紧勒
+%%%%
+envenom
+淬毒
+%%%%
+infuriate
+激怒
+%%%%
+sear
+灼烧
+%%%%
+shock
+电击
+%%%%
+slam
+狠狠
+%%%%
+stop
+停下
+%%%%
+alarm
+警报
+%%%%
+archmage's
+大法师
+%%%%
+devourer's
+吞噬者
+%%%%
+harlequin's
+小丑
+%%%%
+ of Golubria
+格鲁布瑞亚
+%%%%
+passage
+通道
+%%%%
+permanent teleport
+永久传送
+%%%%
+shaft
+竖井
+%%%%
+teleport
+传送
+%%%%
+ trap
+陷阱
+%%%%
+tyrant's
+暴君
+%%%%
+verb|are
+被
+%%%%
+verb|are shoved
+猛退
+%%%%
+verb|hold
+死死守住
+%%%%
+verb|draw
+汲取
+%%%%
+shrivel
+枯萎
+%%%%
+slip
+滑倒
+%%%%
+stumble
+踉跄
+%%%%
+thorns
+荆棘
+%%%%
+spines
+尖刺
+%%%%
+%s %s backwards!
+%s%s向后退去！
+%%%%
+%s %s engulfed in a cloud of soporific spores!
+%s%s一团催眠孢子云吞没！
+%%%%
+%s %s held in place!
+%s%s紧紧束缚在原地！
+%%%%
+%s %s %s ground!
+%s%s了%s阵地！
+%%%%
+%s %s skewered by barbed spikes.
+%s%s倒刺刺穿。
+%%%%
+%s %s struck by %s %s.
+%s%s%s的%s击中。
+%%%%
+%s %s %s%s
+%s%s了%s%s
+%%%%
+%s %s %s!
+%s%s了%s！
+%%%%
+%s and strikes %s%s
+%s落下，击中了%s%s
+%%%%
+Renounce Religion
+放弃信仰
+%%%%
+ fades away.
+逐渐消失了。
+%%%%
+ detonates feebly.
+无力地引爆了。
+%%%%
+%s avoids the killing blow by scattering into a rainbow of bats!
+%s避开了致命一击，化作一群五颜六色的蝙蝠四处飞散！
+%%%%
+<lightred>Restarting spell</lightred>
+<lightred>重新施法</lightred>
+%%%%
+You hear a clap of thunder!
+你听到一声雷鸣！
+%%%%
+You hear an extremely violent squelch.
+你听到一声极其猛烈的挤压声。
+%%%%
+You hear an high-pitched explosion!
+你听到一声尖锐的爆炸！
+%%%%
+You hear an otherworldly crackling!
+你听到一阵非人间的噼啪声！
+%%%%
+You hear an explosion!
+你听到一声爆炸！
+%%%%
+ for a moment.
+，持续了一瞬。
+%%%%
+ glows brighter for a moment.
+短暂地变得更亮了。
+%%%%
+Simple
+简单
+%%%%
+Intermediate
+中等
+%%%%
+Advanced
+高级
+%%%%
+Random
+随机
+%%%%
+Recommended
+推荐
+%%%%%
+Recite
+诵经
+%%%%%
+Divine Shield
+神圣护盾
+%%%%%
+Divine Vigour
+神圣活力
+%%%%%
+Heroism
+英勇气概
+%%%%%
+Finesse
+战斗技巧
+%%%%%
+Berserk
+狂暴
+%%%%%
+Apocalypse
+启示录
+%%%%%
+Sanctuary
+庇护所
+%%%%%
+Divine Exegesis
+神圣释经
+%%%%%
+Heavenly Storm
+天堂风暴
+%%%%%
+Slouch
+懒散步伐
+%%%%%
+Grand Finale
+华丽终曲
+%%%%%
+Idealise
+理想化
+%%%%%
+Imprison
+禁锢
+%%%%%
+Line Pass
+穿行
+%%%%%
+Power Leap
+强力跳跃
+%%%%%
+Serpent's Lash
+蛇之鞭笞
+%%%%%
+Shatter the Chains
+打碎枷锁
+%%%%%
+Temporal Distortion
+时间扭曲
+%%%%%
+Transference
+移转
+%%%%%
+Vessel of Slaughter
+杀戮容器
+%%%%%
+Vitalisation
+活力化
+%%%%%
+Wall Jump
+蹬墙跳
+%%%%%
+Bend Time
+扭曲时间
+%%%%%
+Banish
+放逐
+%%%%%
+Infernal Legion
+地狱军团
+%%%%%
+Sign of Ruin
+毁灭印记
+%%%%%
+Word of Chaos
+混沌之言
+%%%%%
+Fiery Armour
+火焰护甲
+%%%%%
+Foxfire Swarm
+狐火群
+%%%%%
+Heal Wounds
+治愈伤口
+%%%%%
+Recall Apostles
+召回使徒
+%%%%%
+Recall Undead Harvest
+召回亡灵收割
+%%%%%
+Elemental Force
+元素之力
+%%%%%
+Oozemancy
+软泥术
+%%%%%
+Overgrow
+过度生长
+%%%%%
+Potion Petition
+药剂祈求
+%%%%%
+Receive Armour
+接收护甲
+%%%%%
+Receive Weapon
+接收武器
+%%%%%
+Receive Forbidden Knowledge
+接收禁忌知识
+%%%%%
+Call Merchant
+召唤商人
+%%%%%
+Deal Four
+发四张
+%%%%%
+Draw Destruction
+抽毁灭
+%%%%%
+Draw Escape
+抽逃脱
+%%%%%
+Draw Summoning
+抽召唤
+%%%%%
+Draw Stack
+抽牌组
+%%%%%
+Stack Five
+堆五张
+%%%%%
+Triple Draw
+三连抽
+%%%%%
+Hop
+跳跃
+%%%%%
+Cacophony
+杂音
+%%%%%
+Enkindle
+点燃
+%%%%%
+Bat Swarm
+蝙蝠群
+%%%%%
+Evoke Blink
+激发闪烁
+%%%%%
+Evoke Invisibility
+激发隐形
+%%%%%
+Evoke Damnation
+激发诅咒
+%%%%%
+Evoke the Staff of Olgreb
+激发奥尔格雷布之杖
+%%%%%
+End Transformation
+结束变形
+%%%%%
+Forget Spell
+遗忘法术
+%%%%%
+Heal Self
+自愈
+%%%%%
+Recall Ancestor
+召回先祖
+%%%%%
+Golden Breath
+黄金吐息
+%%%%%
+Breathe Poison Gas
+喷吐毒气
+%%%%%
+Breathe Rust
+喷吐铁锈
+%%%%%
+Draw Out Power
+抽取力量
+%%%%%
+Wall of Briars
+荆棘之墙
+%%%%%
+No ability
+无能力
+%%%%%
+Bestial Takedown
+兽性扑倒
+%%%%%
+Watery Grave
+水葬
+%%%%%
+Imprint Weapon
+烙印武器
+%%%%%
+Invent Gizmo
+发明装置
+%%%%%
+Brand Weapon With Distortion
+扭曲烙印武器
+%%%%%
+Brand Weapon With Holy Wrath
+圣怒烙印武器
+%%%%%
+Brand Weapon With Pain
+痛苦烙印武器
+%%%%%
+Brand Self #1
+自我烙印 #1
+%%%%%
+Brand Self #2
+自我烙印 #2
+%%%%%
+Brand Self #3
+自我烙印 #3
+%%%%%
+Curse Item
+诅咒物品
+%%%%%
+Unearth Wretches
+挖掘可怜虫
+%%%%%
+Blood for Blood
+以血还血
+%%%%%
+Channel Magic
+引导魔力
+%%%%%
+Convert to Beogh
+皈依贝奥格
+%%%%%
+Depart the Abyss
+离开深渊
+%%%%%
+Donate Gold
+捐赠金币
+%%%%%
+Duel
+决斗
+%%%%%
+Enter the Abyss
+进入深渊
+%%%%%
+Fathomless Shackles
+深不可测的枷锁
+%%%%%
+Grow Ballistomycete
+生长弩菌
+%%%%%
+Grow Oklob
+生长奥克罗布
+%%%%%
+Imbue Servitor
+灌注仆从
+%%%%%
+Light the Black Torch
+点燃黑火炬
+%%%%%
+Purification
+净化
+%%%%%
+Reject Sacrifices
+拒绝献祭
+%%%%%
+Rising Flame
+升腾之焰
+%%%%%
+Sacrifice Arcana
+献祭奥秘
+%%%%%
+Sacrifice Artifice
+献祭技巧
+%%%%%
+Sacrifice Courage
+献祭勇气
+%%%%%
+Sacrifice Drink
+献祭饮品
+%%%%%
+Sacrifice Durability
+献祭耐久
+%%%%%
+Sacrifice Essence
+献祭精华
+%%%%%
+Sacrifice Experience
+献祭经验
+%%%%%
+Sacrifice Forms
+献祭形态
+%%%%%
+Sacrifice Health
+献祭生命
+%%%%%
+Sacrifice Love
+献祭爱情
+%%%%%
+Sacrifice Nimbleness
+献祭敏捷
+%%%%%
+Sacrifice Purity
+献祭纯净
+%%%%%
+Sacrifice Resistance
+献祭抗性
+%%%%%
+Sacrifice Skill
+献祭技能
+%%%%%
+Sacrifice Stealth
+献祭潜行
+%%%%%
+Sacrifice Words
+献祭言语
+%%%%%
+Sacrifice a Hand
+献祭一只手
+%%%%%
+Sacrifice an Eye
+献祭一只眼
+%%%%%
+Set terrain to build
+设置建造地形
+%%%%%
+Build terrain
+建造地形
+%%%%%
+Clear terrain to floor
+清除地形为地板
+%%%%%
+Slimify
+软泥化
+%%%%%
+Step From Time
+时间步
+%%%%%
+Stomp
+重踏
+%%%%%
+Summon Divine Warrior
+召唤神圣战士
+%%%%%
+Globe of Annihilation
+湮灭之球
+%%%%%
+Disaster Area
+灾难区域
+%%%%%
+Bind Soul
+束缚灵魂
+%%%%%
+Ancestor Identity
+先祖身份
+%%%%%
+Ancestor Life: Battlemage
+先祖生命：战斗法师
+%%%%%
+Ancestor Life: Hexer
+先祖生命：咒术师
+%%%%%
+Ancestor Life: Knight
+先祖生命：骑士
+%%%%%
+Bribe Branch
+贿赂分支
+%%%%%
+Dismiss Apostle
+遣散使徒
+%%%%%
+Dismiss Apostle #1
+遣散使徒 #1
+%%%%%
+Dismiss Apostle #2
+遣散使徒 #2
+%%%%%
+Dismiss Apostle #3
+遣散使徒 #3
+%%%%%
+Recruit Apostle
+招募使徒
+%%%%%

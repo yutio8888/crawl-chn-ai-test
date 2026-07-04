@@ -1003,7 +1003,7 @@ static bool _blorkula_bat_split(monster& blorkula, killer_type ktype)
     if (you.can_see(blorkula))
     {
         mprf(MSGCH_MONSTER_SPELL,
-            "%s avoids the killing blow by scattering into a rainbow of bats!",
+            T_("%s avoids the killing blow by scattering into a rainbow of bats!"),
             blorkula.name(DESC_THE).c_str());
     }
 
@@ -2903,7 +2903,7 @@ item_def* monster_die(monster& mons, killer_type killer,
     {
         if (!silent && !hard_reset && !was_banished)
         {
-            simple_monster_message(mons, " detonates feebly.",
+            simple_monster_message(mons, T_(" detonates feebly."),
                                    false, MSGCH_MONSTER_DAMAGE, MDAM_DEAD);
             silent = true;
         }

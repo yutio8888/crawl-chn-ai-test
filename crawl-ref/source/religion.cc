@@ -3194,13 +3194,13 @@ void excommunication(bool voluntary, god_type new_god)
         if (you.duration[DUR_QAZLAL_ELEC_RES])
         {
             mprf(MSGCH_DURATION,
-                 "Your resistance to electricity fades away.");
+                 T_("Your resistance to electricity fades away."));
             you.duration[DUR_QAZLAL_ELEC_RES] = 0;
         }
         if (you.duration[DUR_QAZLAL_AC])
         {
             mprf(MSGCH_DURATION,
-                 "Your resistance to physical damage fades away.");
+                 T_("Your resistance to physical damage fades away."));
             you.duration[DUR_QAZLAL_AC] = 0;
             you.redraw_armour_class = true;
         }

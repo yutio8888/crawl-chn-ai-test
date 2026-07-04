@@ -118,13 +118,7 @@ string trap_def::name(description_level_type desc) const
 
     string basename = full_trap_name(type);
     if (desc == DESC_A)
-    {
-        string prefix = "a";
-        if (is_vowel(basename[0]))
-            prefix += 'n';
-        prefix += ' ';
-        return prefix + basename;
-    }
+        return article_a(basename) + basename;
     else if (desc == DESC_THE)
         return string("the ") + basename;
     else                        // everything else
