@@ -2133,9 +2133,15 @@ bool simple_monster_message(const monster& mons, const char *event,
             || mons.visible_to(&you)))
     {
         string msg = mons.name(descrip);
+        if (mons.type == MONS_PLAYER_SHADOW)
+            mprf(MSGCH_DIAGNOSTICS, "[SHADOW] simple_monster_msg: desc=%d name='%s' event='%s' possessive=%d",
+                 (int)descrip, msg.c_str(), event, (int)need_possessive);
         if (need_possessive)
             msg = apostrophise(msg);
         msg += event;
+
+        if (mons.type == MONS_PLAYER_SHADOW)
+            mprf(MSGCH_DIAGNOSTICS, "[SHADOW] simple_monster_msg FINAL: '%s'", msg.c_str());
 
         if (channel == MSGCH_PLAIN && mons.wont_attack())
             channel = MSGCH_FRIEND_ACTION;

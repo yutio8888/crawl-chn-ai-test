@@ -2293,6 +2293,9 @@ bolt mons_spell_beam(const monster* mons, spell_type spell_cast, int power,
     beam.origin_spell = real_spell;
     beam.source_id = mons->mid;
     beam.source_name = mons->name(DESC_A, true);
+    if (mons->type == MONS_PLAYER_SHADOW)
+        mprf(MSGCH_DIAGNOSTICS, "[SHADOW] setup_mons_cast: source_name='%s' origin_spell=%d",
+             beam.source_name.c_str(), (int)real_spell);
 
     if (!mons_spell_is_spell(real_spell))
         power = mons_power_for_hd(real_spell, mons->get_hit_dice());
@@ -9152,6 +9155,10 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
         beam_name = pbolt.get_short_name();
 
     msg = replace_all(msg, "@beam@", beam_name);
+
+    if (mons->type == MONS_PLAYER_SHADOW)
+        mprf(MSGCH_DIAGNOSTICS, "[SHADOW] mons_cast_noise: msg='%s' silent=%d unseen=%d noise=%d",
+             msg.c_str(), (int)silent, (int)unseen, noise);
 
     const msg_channel_type chan =
         (unseen              ? MSGCH_SOUND :
