@@ -2852,9 +2852,9 @@ string dithmenos_cannot_shadowslip_reason()
 {
     const monster* shadow = dithmenos_get_player_shadow();
     if (!shadow)
-        return "Your shadow is still firmly attached to your body.";
+        return T_("Your shadow is still firmly attached to your body.");
     else if (!you.can_see(*shadow))
-        return "Your shadow isn't in sight!";
+        return T_("Your shadow isn't in sight!");
     else if (is_feat_dangerous(env.grid(shadow->pos())))
     {
         return make_stringf(T_("It would be unwise to slip onto %s."),
@@ -3117,7 +3117,7 @@ string dithmenos_cannot_marionette_reason()
         }
     }
 
-    return "There isn't a suitable marionette in sight.";
+    return T_("There isn't a suitable marionette in sight.");
 }
 
 spret dithmenos_marionette(monster& target, bool fail)

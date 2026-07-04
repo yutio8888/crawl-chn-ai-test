@@ -623,11 +623,11 @@ static vector<ability_def> &_get_ability_list()
             0, 0, 0, -1, {fail_basis::invo}, abflag::curse },
 
         // Dithmenos
-        { ABIL_DITHMENOS_SHADOWSLIP, "Shadowslip",
+        { ABIL_DITHMENOS_SHADOWSLIP, T_("Shadowslip"),
             4, 60, 4, -1, {fail_basis::invo, 50, 6, 30}, abflag::instant },
-        { ABIL_DITHMENOS_APHOTIC_MARIONETTE, "Aphotic Marionette",
+        { ABIL_DITHMENOS_APHOTIC_MARIONETTE, T_("Aphotic Marionette"),
             5, 0, 3, -1, {fail_basis::invo, 60, 4, 25}, abflag::target },
-        { ABIL_DITHMENOS_PRIMORDIAL_NIGHTFALL, "Primordial Nightfall",
+        { ABIL_DITHMENOS_PRIMORDIAL_NIGHTFALL, T_("Primordial Nightfall"),
             8, 0, 13, -1, {fail_basis::invo, 80, 4, 25}, abflag::none },
 
         // Ru
@@ -1019,7 +1019,7 @@ const string make_cost_description(ability_type ability)
     if (abil.flags & abflag::max_hp_drain
         && (ability != ABIL_EVOKE_TURN_INVISIBLE || _invis_causes_drain()))
     {
-        ret += T_(", Drain");
+        ret += ", " + string(C_("ability cost", "Drain"));
     }
 
     if (abil.flags & abflag::curse)

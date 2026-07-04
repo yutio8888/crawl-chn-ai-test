@@ -740,37 +740,37 @@ bool fill_status_info(int status, status_info& inf)
         if (drain_perc >= 50)
         {
             inf.light_colour = MAGENTA;
-            inf.light_text   = "Drain";
-            inf.short_text   = "extremely drained";
-            inf.long_text    = "Your life force is extremely drained.";
+            inf.light_text   = C_("status", "Drain");
+            inf.short_text   = C_("status", "extremely drained");
+            inf.long_text    = C_("status", "Your life force is extremely drained.");
         }
         else if (drain_perc >= 30)
         {
             inf.light_colour = RED;
-            inf.light_text   = "Drain";
-            inf.short_text   = "very heavily drained";
-            inf.long_text    = "Your life force is very heavily drained.";
+            inf.light_text   = C_("status", "Drain");
+            inf.short_text   = C_("status", "very heavily drained");
+            inf.long_text    = C_("status", "Your life force is very heavily drained.");
         }
         else if (drain_perc >= 20)
         {
             inf.light_colour = LIGHTRED;
-            inf.light_text   = "Drain";
-            inf.short_text   = "heavily drained";
-            inf.long_text    = "Your life force is heavily drained.";
+            inf.light_text   = C_("status", "Drain");
+            inf.short_text   = C_("status", "heavily drained");
+            inf.long_text    = C_("status", "Your life force is heavily drained.");
         }
         else if (drain_perc >= 10)
         {
             inf.light_colour = YELLOW;
-            inf.light_text   = "Drain";
-            inf.short_text   = "drained";
-            inf.long_text    = "Your life force is drained.";
+            inf.light_text   = C_("status", "Drain");
+            inf.short_text   = C_("status", "drained");
+            inf.long_text    = C_("status", "Your life force is drained.");
         }
         else if (you.hp_max_adj_temp)
         {
             inf.light_colour = LIGHTGREY;
-            inf.light_text   = "Drain";
-            inf.short_text   = "lightly drained";
-            inf.long_text    = "Your life force is lightly drained.";
+            inf.light_text   = C_("status", "Drain");
+            inf.short_text   = C_("status", "lightly drained");
+            inf.long_text    = C_("status", "Your life force is lightly drained.");
         }
         break;
 

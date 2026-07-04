@@ -1978,9 +1978,6 @@ gain power from chaos
 , Delay
 ，延迟
 %%%%
-, Drain
-，吸取
-%%%%
 , Exhaustion
 ，力竭
 %%%%
@@ -30450,3 +30447,144 @@ Ability - use which?
 %%%%
 Ability - describe which?
 能力 - 描述哪个？
+%%%%
+Shadowslip
+暗影滑步
+%%%%
+Aphotic Marionette
+无光傀儡
+%%%%
+Primordial Nightfall
+原始夜幕
+%%%%
+Your shadow is still firmly attached to your body.
+你的影子仍然牢牢地附在你身上。
+%%%%
+Your shadow isn't in sight!
+你看不到你的影子！
+%%%%
+There isn't a suitable marionette in sight.
+视野内没有合适的傀儡。
+%%%%
+ is blown up!
+被炸毁了！
+%%%%
+ is destroyed!
+被摧毁了！
+%%%%
+ dies!
+死亡了！
+%%%%
+ turns to dust.
+化为尘土。
+%%%%
+ returns to its hive.
+返回了巢穴。
+%%%%
+ returns to the shadows of the Dungeon.
+回到了地牢的阴影中。
+%%%%
+ fades into mist!
+消散为薄雾！
+%%%%
+ crumbles into dust!
+粉碎化为尘土！
+%%%%
+ collapses into dust.
+崩塌化为尘土。
+%%%%
+ crumbles away.
+碎裂消散。
+%%%%
+ falls limply to the ground.
+无力地倒在地上。
+%%%%
+ melts away.
+融化消失。
+%%%%
+ dissipates.
+消散了。
+%%%%
+ runs out of power.
+耗尽了能量。
+%%%%
+ falls apart.
+散架了。
+%%%%
+ expends the last of its power.
+耗尽了最后的能量。
+%%%%
+disappears in a puff of smoke
+在一阵烟雾中消失了
+%%%%
+dissolves into shadows
+融入阴影之中
+%%%%
+disappears in a burst of colours
+在彩色光芒中消失了
+%%%%
+degenerates into a cloud of primal chaos
+退化为一团原始的混沌
+%%%%
+shimmers and vanishes
+闪烁后消失了
+%%%%
+dissolves into a puddle of slime
+溶解为一滩黏液
+%%%%
+returns to the deep
+回到了深海
+%%%%
+disperses
+消散了
+%%%%
+status|Drain
+削命
+%%%%
+status|extremely drained
+极度削命
+%%%%
+status|very heavily drained
+严重削命
+%%%%
+status|heavily drained
+重度削命
+%%%%
+status|drained
+削命
+%%%%
+status|lightly drained
+轻度削命
+%%%%
+status|Your life force is extremely drained.
+你的生命力被极度削弱了。
+%%%%
+status|Your life force is very heavily drained.
+你的生命力被严重削弱了。
+%%%%
+status|Your life force is heavily drained.
+你的生命力被大幅削弱了。
+%%%%
+status|Your life force is drained.
+你的生命力被削弱了。
+%%%%
+status|Your life force is lightly drained.
+你的生命力被轻度削弱了。
+%%%%
+ability cost|Drain
+削命
+%%%%
+verb|steam
+蒸腾
+%%%%
+verb|sizzle
+嘶嘶作响
+%%%%
+verb|are swarmed by
+被蜂拥包围
+%%%%
+verb|bask
+沐浴其中
+%%%%
+verb|are engulfed
+被吞没

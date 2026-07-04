@@ -1415,11 +1415,35 @@ static void _monster_die_cloud(const monster& mons, bool real_death)
         return;
 
     cloud_type cloud = CLOUD_NONE;
-    string msg = summoned_poof_msg(mons);
-    if (msg.find("smoke") != string::npos)
-        cloud = random_smoke_type();
-    else if (msg.find("chaos") != string::npos)
+
+    // Determine cloud from summon type rather than the (now translated)
+    // poof message content.
+    const int summon_type = mons.get_ench(ENCH_SUMMON).degree;
+
+    // Chaos-related sources → chaos cloud
+    if (summon_type == MON_SUMM_CHAOS
+        || mons.type == MONS_CHAOS_SPAWN
+        || (mons.god == GOD_XOM && one_chance_in(10)))
+    {
         cloud = CLOUD_CHAOS;
+    }
+    // Default smoke cloud for summons whose poof message is the default
+    // "disappears in a puff of smoke" (not overridden by special cases).
+    else if (!mons.is_holy()
+             && !mons_is_slime(mons)
+             && mons.type != MONS_DROWNED_SOUL
+             && !mons.has_ench(ENCH_PHANTOM_MIRROR)
+             && mons.type != MONS_LIVING_SPELL
+             && summon_type != MON_SUMM_BUTTERFLIES
+             && summon_type != MON_SUMM_MULTIPLICITY
+             && summon_type != SPELL_SHADOW_CREATURES
+             && summon_type != MON_SUMM_SCROLL
+             && summon_type != SPELL_SPECTRAL_CLOUD
+             && summon_type != SPELL_CALL_LOST_SOULS
+             && summon_type != SPELL_STICKS_TO_SNAKES)
+    {
+        cloud = random_smoke_type();
+    }
 
     if (cloud != CLOUD_NONE)
         place_cloud(cloud, mons.pos(), 1 + random2(3), &mons);
@@ -3079,9 +3103,9 @@ item_def* monster_die(monster& mons, killer_type killer,
             if (death_message)
             {
                 const char* msg =
-                    exploded  ? " is blown up!" :
-                    destroyed ? " is destroyed!"
-                              : " dies!";
+                    exploded  ? T_(" is blown up!") :
+                    destroyed ? T_(" is destroyed!")
+                              : T_(" dies!");
                 simple_monster_message(mons, msg, false, MSGCH_MONSTER_DAMAGE,
                                        MDAM_DEAD);
             }
@@ -3116,9 +3140,9 @@ item_def* monster_die(monster& mons, killer_type killer,
             if (death_message)
             {
                 const char* msg =
-                    exploded   ? " is blown up!" :
-                    destroyed  ? " is destroyed!"
-                               : " dies!";
+                    exploded   ? T_(" is blown up!") :
+                    destroyed  ? T_(" is destroyed!")
+                               : T_(" dies!");
                 simple_monster_message(mons, msg, false, MSGCH_MONSTER_DAMAGE,
                                         MDAM_DEAD);
             }
@@ -3167,50 +3191,50 @@ item_def* monster_die(monster& mons, killer_type killer,
 
             string msg;
             if (mons.has_ench(ENCH_VAMPIRE_THRALL))
-                msg = " turns to dust.";
+                msg = T_(" turns to dust.");
             else if (mons.was_created_by(MON_SUMM_HIVE))
-                msg = " returns to its hive.";
+                msg = T_(" returns to its hive.");
             // ratskin cloak
             else if (mons_genus(mons.type) == MONS_RAT)
-                msg = " returns to the shadows of the Dungeon.";
+                msg = T_(" returns to the shadows of the Dungeon.");
             // Death Channel / Soul Splinter
             else if (mons.type == MONS_SPECTRAL_THING
                      || mons.type == MONS_SOUL_WISP)
             {
-                msg = " fades into mist!";
+                msg = T_(" fades into mist!");
             }
             // Animate Dead/Infestation
             else if (mons.type == MONS_ZOMBIE
                         || mons.type == MONS_DRAUGR
                         || mons.type == MONS_DEATH_SCARAB)
             {
-                msg = " crumbles into dust!";
+                msg = T_(" crumbles into dust!");
             }
             else if (mons.type == MONS_PILE_OF_DEBRIS)
-                msg = " collapses into dust.";
+                msg = T_(" collapses into dust.");
             else if (mons.type == MONS_PILLAR_OF_SALT
                     || mons.type == MONS_WITHERED_PLANT
                     || mons.type == MONS_BRIAR_PATCH)
             {
-                msg = " crumbles away.";
+                msg = T_(" crumbles away.");
             }
             else if (mons.type == MONS_SNAPLASHER_VINE)
-                msg = " falls limply to the ground.";
+                msg = T_(" falls limply to the ground.");
             else if (mons.type == MONS_HOARFROST_CANNON
                      || mons.type == MONS_BLOCK_OF_ICE
                      || mons.type == MONS_SPLINTERFROST_BARRICADE)
             {
-                msg = " melts away.";
+                msg = T_(" melts away.");
             }
             else if (mons.type == MONS_FIRE_VORTEX
                      || mons.type == MONS_SPATIAL_VORTEX
                      || mons.type == MONS_TWISTER
                      || mons_is_seeker(mons))
             {
-                msg = " dissipates.";
+                msg = T_(" dissipates.");
             }
             else if (mons.type == MONS_CLOCKWORK_BEE)
-                msg = " runs out of power.";
+                msg = T_(" runs out of power.");
             else if (mons.type == MONS_ABOMINATION_SMALL
                      || mons.type == MONS_ABOMINATION_LARGE
                      || mons.type == MONS_CLOCKWORK_BEE_INACTIVE
@@ -3218,10 +3242,10 @@ item_def* monster_die(monster& mons, killer_type killer,
                      || mons.type == MONS_WALKING_ALEMBIC
                      || mons.type == MONS_DIAMOND_SAWBLADE)
             {
-                msg = " falls apart.";
+                msg = T_(" falls apart.");
             }
             else if (mons.type == MONS_PLATINUM_PARAGON)
-                msg = " expends the last of its power.";
+                msg = T_(" expends the last of its power.");
             else if (mons.type == MONS_RENDING_BLADE)
                 msg = T_(" implodes with a snap.");
             else if (mons.type == MONS_ERYTHROSPITE)
@@ -3918,25 +3942,25 @@ string summoned_poof_msg(const monster& mons)
 
     int summon_type = mons.get_ench(ENCH_SUMMON).degree;
 
-    string msg = "disappears in a puff of smoke";
+    string msg = T_("disappears in a puff of smoke");
 
     switch (summon_type)
     {
     case SPELL_SHADOW_CREATURES:
     case MON_SUMM_SCROLL:
-        msg = "dissolves into shadows";
+        msg = T_("dissolves into shadows");
         break;
 
     case MON_SUMM_BUTTERFLIES:
-        msg = "disappears in a burst of colours";
+        msg = T_("disappears in a burst of colours");
         break;
 
     case MON_SUMM_CHAOS:
-        msg = "degenerates into a cloud of primal chaos";
+        msg = T_("degenerates into a cloud of primal chaos");
         break;
 
     case MON_SUMM_MULTIPLICITY:
-        msg = "shimmers and vanishes";
+        msg = T_("shimmers and vanishes");
         break;
 
     case MON_SUMM_WRATH:
@@ -3960,7 +3984,7 @@ string summoned_poof_msg(const monster& mons)
     if (mons.god == GOD_XOM && one_chance_in(10)
         || mons.type == MONS_CHAOS_SPAWN)
     {
-        msg = "degenerates into a cloud of primal chaos";
+        msg = T_("degenerates into a cloud of primal chaos");
     }
 
     if (mons.is_holy()
@@ -3973,17 +3997,17 @@ string summoned_poof_msg(const monster& mons)
     if (mons_is_slime(mons)
         && mons.god == GOD_JIYVA)
     {
-        msg = "dissolves into a puddle of slime";
+        msg = T_("dissolves into a puddle of slime");
     }
 
     if (mons.type == MONS_DROWNED_SOUL)
-        msg = "returns to the deep";
+        msg = T_("returns to the deep");
 
     if (mons.has_ench(ENCH_PHANTOM_MIRROR))
-        msg = "shimmers and vanishes";
+        msg = T_("shimmers and vanishes");
 
     if (mons.type == MONS_LIVING_SPELL)
-        msg = "disperses";
+        msg = T_("disperses");
 
     return msg;
 }
