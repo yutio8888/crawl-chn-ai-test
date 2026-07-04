@@ -1321,8 +1321,8 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
         const monster_frag &frag = frag_f->second;
         effect.damage = frag.damage;
         const bool crystal = frag.damage == frag_damage_type::crystal;
-        effect.name = make_stringf("blast of %s %s", frag.type,
-                                   crystal ? "shards" : "fragments");
+        effect.name = make_stringf(T_("blast of %s %s"), frag.type,
+                                   crystal ? T_("shards") : T_("fragments"));
         effect.colour = frag.colour;
         return true;
     }
@@ -1409,8 +1409,8 @@ static bool _init_frag_grid(frag_effect &effect,
 
     effect.damage = frag.damage;
     const bool crystal = frag.damage == frag_damage_type::crystal;
-    effect.name = make_stringf("blast of %s %s", frag.type,
-                               crystal ? "shards" : "fragments");
+    effect.name = make_stringf(T_("blast of %s %s"), frag.type,
+                               crystal ? T_("shards") : T_("fragments"));
     if (what)
         *what = frag.what;
 
@@ -4136,26 +4136,26 @@ static string _get_jinxsprite_message(const monster& victim)
 
     if (get_mon_shape(victim.type) == MON_SHAPE_SNAKE && coinflip())
     {
-        msg = make_stringf("ties %s tail in a knot.",
+        msg = make_stringf(T_("ties %s tail in a knot."),
                         victim.name(DESC_ITS).c_str());
     }
     else if (mon_shape_is_humanoid(get_mon_shape(victim.type)) && coinflip())
     {
         if (victim.inv[MSLOT_WEAPON] != NON_ITEM && coinflip())
         {
-            return make_stringf("bonks %s with %s %s.",
+            return make_stringf(T_("bonks %s with %s %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 env.item[victim.inv[MSLOT_WEAPON]].name(DESC_PLAIN).c_str());
         }
         else if (one_chance_in(3))
         {
-            return make_stringf("insults %s ancestors.",
+            return make_stringf(T_("insults %s ancestors."),
                                 victim.name(DESC_ITS).c_str());
         }
         else
         {
-            return make_stringf("doodles on %s face.",
+            return make_stringf(T_("doodles on %s face."),
                                 victim.name(DESC_ITS).c_str());
         }
     }
@@ -4164,19 +4164,19 @@ static string _get_jinxsprite_message(const monster& victim)
         switch (random2(2))
         {
             case 0:
-            return make_stringf("makes %s trip over %s own %s.",
+            return make_stringf(T_("makes %s trip over %s own %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 victim.foot_name(true).c_str());
 
             case 1:
-            return make_stringf("smacks %s with %s own %s.",
+            return make_stringf(T_("smacks %s with %s own %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 victim.hand_name(false).c_str());
 
             case 2:
-            return make_stringf("does a pirouette on top of %s.",
+            return make_stringf(T_("does a pirouette on top of %s."),
                                 victim.name(DESC_THE).c_str());
         }
     }

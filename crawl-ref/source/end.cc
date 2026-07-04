@@ -368,7 +368,7 @@ NORETURN void end_game(scorefile_entry &se)
 
     goodbye_msg += hiscore;
 
-    goodbye_msg += make_stringf("\nBest Crawlers - %s\n",
+    goodbye_msg += make_stringf(T_("\nBest Crawlers - %s\n"),
             crawl_state.game_type_name().c_str());
 
 #ifdef USE_TILE_LOCAL
@@ -394,9 +394,9 @@ NORETURN void end_game(scorefile_entry &se)
 
 #ifndef DGAMELAUNCH
 # ifndef __ANDROID__
-    string morgue_dir = make_stringf("\nYou can find your morgue file in the '%s' directory.",
+    string morgue_dir = make_stringf(T_("\nYou can find your morgue file in the '%s' directory."),
 # else
-    string morgue_dir = make_stringf("\nYou can find your morgue file in the \n'%s'\n directory.",
+    string morgue_dir = make_stringf(T_("\nYou can find your morgue file in the \n'%s'\n directory."),
 # endif
             morgue_directory().c_str());
     vbox->add_child(make_shared<Text>(formatted_string::parse_string(morgue_dir)));

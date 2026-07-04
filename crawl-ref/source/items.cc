@@ -1411,7 +1411,7 @@ bool pickup_single_item(int link, int qty)
     if (qty == 0 && item->quantity > 1 && item->base_type != OBJ_GOLD)
     {
         const string prompt
-                = make_stringf("Pick up how many of %s (; or enter for all)? ",
+                = make_stringf(T_("Pick up how many of %s (; or enter for all)? "),
                                item->name(DESC_THE, false,
                                           false, false).c_str());
 

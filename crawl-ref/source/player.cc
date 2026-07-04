@@ -2787,7 +2787,7 @@ static void _gain_and_note_hp_mp()
     const int note_maxmp = get_real_mp(false);
 
     take_note(Note(NOTE_XP_LEVEL_CHANGE, you.experience_level, 0,
-        make_stringf("HP: %d/%d MP: %d/%d",
+        make_stringf(T_("HP: %d/%d MP: %d/%d"),
             min(you.hp, note_maxhp), note_maxhp,
             min(you.magic_points, note_maxmp), note_maxmp)));
 }
@@ -7392,7 +7392,7 @@ bool player::corrode(const actor* /*source*/, const char* corrosion_msg, int amo
 {
     // always increase duration, but...
     increase_duration(DUR_CORROSION, 10 + roll_dice(2, 4), 50,
-                      make_stringf("%s corrodes you!",
+                      make_stringf(T_("%s corrodes you!"),
                                    corrosion_msg).c_str());
 
     // Reduce corrosion amount by 50% if you have resistance.
@@ -8863,8 +8863,8 @@ void player_open_door(coord_def doorpos)
 
         if (!ignore_exclude && is_exclude_root(doorpos))
         {
-            string prompt = make_stringf("This %s%s is marked as excluded! "
-                                         "Open it anyway?", adj, noun);
+            string prompt = make_stringf(T_("This %s%s is marked as excluded! "
+                                         "Open it anyway?"), adj, noun);
 
             if (!yesno(prompt.c_str(), true, 'n', true, false))
             {
@@ -9002,7 +9002,7 @@ void player_close_door(coord_def doorpos)
 
     const char *adj, *noun;
     get_door_description(all_door.size(), &adj, &noun);
-    const string waynoun_str = make_stringf("%sway", noun);
+    const string waynoun_str = make_stringf(T_("%sway"), noun);
     const char *waynoun = waynoun_str.c_str();
 
     if (!door_desc_adj.empty())

@@ -3659,7 +3659,7 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
 
     if (!version.valid())
     {
-        *reason = make_stringf("File is corrupt (found version %d,%d).",
+        *reason = make_stringf(T_("File is corrupt (found version %d,%d)."),
                                 version.major, version.minor);
         return false;
     }
@@ -3669,13 +3669,13 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
         if (version.is_ancient())
         {
             const auto min_supported = save_version::minimum_supported();
-            *reason = make_stringf("This save is from an older version.\n"
+            *reason = make_stringf(T_("This save is from an older version.\n"
                     "\n"
                     CRAWL " %s is not compatible with save files this old. You can:\n"
                     " • continue your game with an older version of " CRAWL "\n"
                     " • delete it and start a new game\n"
                     "\n"
-                    "This save's version: (%d.%d) (must be >= %d.%d)",
+                    "This save's version: (%d.%d) (must be >= %d.%d)"),
                     Version::Short,
                     version.major, version.minor,
                     min_supported.major, min_supported.minor);
@@ -3683,13 +3683,13 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
         else if (version.is_future())
         {
             const auto current = save_version::current();
-            *reason = make_stringf("This save is from a newer version.\n"
+            *reason = make_stringf(T_("This save is from a newer version.\n"
                     "\n"
                     CRAWL " cannot load saves from newer versions. You can:\n"
                     " • continue your game with a newer version of " CRAWL "\n"
                     " • delete it and start a new game\n"
                     "\n"
-                    "This save's version: (%d.%d) (must be <= %d.%d)",
+                    "This save's version: (%d.%d) (must be <= %d.%d)"),
                     version.major, version.minor,
                     current.major, current.minor);
         }

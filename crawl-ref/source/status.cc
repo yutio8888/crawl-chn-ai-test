@@ -558,7 +558,7 @@ bool fill_status_info(int status, status_info& inf)
         if (pbd_str > 0)
         {
             inf.light_colour = LIGHTMAGENTA;
-            inf.light_text   = make_stringf("Regen (%d)", pbd_str);
+            inf.light_text   = make_stringf(T_("Regen (%d)"), pbd_str);
         }
         break;
     }
@@ -570,8 +570,8 @@ bool fill_status_info(int status, status_info& inf)
         {
             const int rh_lvl = you.get_mutation_level(MUT_ROLLPAGE);
             inf.light_colour = rh_lvl < 2 ? LIGHTBLUE : LIGHTMAGENTA;
-            inf.light_text   = make_stringf(rh_lvl < 2 ? "MPRegen (%d)"
-                                                       : "Regen (%d)", rh_pwr);
+            inf.light_text   = make_stringf(rh_lvl < 2 ? T_("MPRegen (%d)")
+                                                       : T_("Regen (%d)"), rh_pwr);
         }
         break;
     }
@@ -646,7 +646,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = WHITE;
             inf.light_text
-               = make_stringf("Lash (%u)",
+               = make_stringf(T_("Lash (%u)"),
                               you.attribute[ATTR_SERPENTS_LASH]);
             inf.short_text = "serpent's lash";
             inf.long_text = "You are moving at supernatural speed.";
@@ -658,7 +658,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = WHITE;
             inf.light_text
-                = make_stringf("Heavenly (%d)",
+                = make_stringf(T_("Heavenly (%d)"),
                                you.props[WU_JIAN_HEAVENLY_STORM_KEY].get_int());
         }
         break;
@@ -668,13 +668,13 @@ bool fill_status_info(int status, status_info& inf)
         int fugue_pow = you.props[FUGUE_KEY].get_int();
         // Hey now / you're a damned star / get your fugue on / go slay
         const char* fugue_star = fugue_pow == FUGUE_MAX_STACKS ? "*" : "";
-        inf.light_text = make_stringf("Fugue (%s%u%s)",
+        inf.light_text = make_stringf(T_("Fugue (%s%u%s)"),
                                       fugue_star, fugue_pow, fugue_star);
     }
     break;
 
     case DUR_WEREFURY:
-        inf.light_text = make_stringf("Slay +%d", you.props[WEREFURY_KEY].get_int());
+        inf.light_text = make_stringf(T_("Slay +%d"), you.props[WEREFURY_KEY].get_int());
     break;
 
     case DUR_DEVIOUS:
@@ -696,7 +696,7 @@ bool fill_status_info(int status, status_info& inf)
             if (stacks > 0)
             {
                 inf.light_colour = LIGHTRED;
-                inf.light_text = make_stringf("Phobia (-%d)", stacks);
+                inf.light_text = make_stringf(T_("Phobia (-%d)"), stacks);
             }
         }
     break;
@@ -728,8 +728,8 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_FLOODED:
         inf.light_text  = "Flooded";
         inf.short_text  = "flooded lungs";
-        inf.long_text   = make_stringf("Your lungs are flooded with %s and you "
-                                       "cannot breathe.",
+        inf.long_text   = make_stringf(T_("Your lungs are flooded with %s and you "
+                                       "cannot breathe."),
                                        you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str());
         break;
 
@@ -812,7 +812,7 @@ bool fill_status_info(int status, status_info& inf)
                                                 : BLUE;
 
             inf.light_text = "Bribe";
-            inf.short_text = make_stringf("bribing [%s]",
+            inf.short_text = make_stringf(T_("bribing [%s]"),
                                            comma_separated_line(places.begin(),
                                                                 places.end(),
                                                                 ", ", ", ")
@@ -828,7 +828,7 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_HORROR:
     {
         const int horror = you.props[HORROR_PENALTY_KEY].get_int();
-        inf.light_text = make_stringf("Horr (%d)", -1 * horror);
+        inf.light_text = make_stringf(T_("Horr (%d)"), -1 * horror);
         if (horror >= HORROR_LVL_OVERWHELMING)
         {
             inf.light_colour = RED;
@@ -1038,8 +1038,8 @@ bool fill_status_info(int status, status_info& inf)
             const int bonus = trickster_bonus();
             if (bonus > 0)
             {
-                inf.short_text = make_stringf("trickster (+%d AC)", bonus);
-                inf.long_text = make_stringf("You are bolstered by spread misfortune (+%d AC)", bonus);
+                inf.short_text = make_stringf(T_("trickster (+%d AC)"), bonus);
+                inf.long_text = make_stringf(T_("You are bolstered by spread misfortune (+%d AC)"), bonus);
             }
         }
         break;
@@ -1066,12 +1066,12 @@ bool fill_status_info(int status, status_info& inf)
         if (!you.duration[DUR_ENKINDLED] && you.has_mutation(MUT_MNEMOPHAGE))
         {
             inf.light_colour = CYAN;
-            inf.light_text = make_stringf("Memories (%d)", you.props[ENKINDLE_CHARGES_KEY].get_int());
+            inf.light_text = make_stringf(T_("Memories (%d)"), you.props[ENKINDLE_CHARGES_KEY].get_int());
         }
         break;
 
     case DUR_ENKINDLED:
-        inf.light_text = make_stringf("Enkindled (%d)", you.props[ENKINDLE_CHARGES_KEY].get_int());
+        inf.light_text = make_stringf(T_("Enkindled (%d)"), you.props[ENKINDLE_CHARGES_KEY].get_int());
         break;
 
     case STATUS_SHROUD:
@@ -1298,7 +1298,7 @@ static void _describe_poison(status_info& inf)
          (pois_perc > 35)   ? (T_("quite"))
                             : (T_("mildly"));
     inf.short_text   = zh ? adj + "中毒" : adj + " poisoned";
-    inf.short_text  += make_stringf(" (%d -> %d)", you.hp, poison_survival());
+    inf.short_text  += make_stringf(T_(" (%d -> %d)"), you.hp, poison_survival());
     inf.long_text    = "You are " + inf.short_text + ".";
 }
 

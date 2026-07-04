@@ -405,7 +405,7 @@ string gem_status()
     }
     const int time_left = gem_time_left(gem);
     const int turns_left = (time_left + 9) / 10; // round up
-    return make_stringf("If you linger in this branch for another %d turns, "
-                        "the power of Zot will shatter your %s gem.\n",
+    return make_stringf(T_("If you linger in this branch for another %d turns, "
+                        "the power of Zot will shatter your %s gem.\n"),
                         turns_left, gem_adj(gem));
 }

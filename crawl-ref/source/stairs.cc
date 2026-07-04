@@ -108,7 +108,7 @@ static string _bezotting_warning(branch_type branch)
         return "";
 
     const int turns = turns_until_zot_in(branch);
-    return make_stringf("You have just %d turns in %s to find a new floor before Zot consumes you.",
+    return make_stringf(T_("You have just %d turns in %s to find a new floor before Zot consumes you."),
                         turns, branches[branch].longname);
 }
 

@@ -1506,7 +1506,7 @@ string damage_rating(const item_def *item, int *rating_value)
     string plusses_desc;
     if (plusses)
     {
-        plusses_desc = make_stringf(" %s %d (%s)",
+        plusses_desc = make_stringf(T_(" %s %d (%s)"),
                                     plusses < 0 ? "-" : "+",
                                     abs(plusses),
                                     slaying && ench ? T_("Ench + Slay") :
@@ -4016,7 +4016,7 @@ command_type describe_item_popup(const item_def &item,
     if (loc.is_valid() && loc != level_id::current())
     {
         // should be off-level stash search only
-        desc += make_stringf("It can be found on %s.\n\n",
+        desc += make_stringf(T_("It can be found on %s.\n\n"),
             loc.describe(true, true).c_str());
     }
 
@@ -4590,9 +4590,9 @@ static string _player_spell_desc(spell_type spell)
     if (!you_can_memorise(spell))
     {
         string str = you.has_spell(spell)
-            ? make_stringf("\nYou cannot cast this spell because %s\n",
+            ? make_stringf(T_("\nYou cannot cast this spell because %s\n"),
                            desc_cannot_memorise_reason(spell).c_str())
-            : make_stringf("\nYou cannot memorise this spell because %s\n",
+            : make_stringf(T_("\nYou cannot memorise this spell because %s\n"),
                            desc_cannot_memorise_reason(spell).c_str());
         description << str;
     }
@@ -4674,7 +4674,7 @@ static void _get_spell_description(const spell_type spell,
         if (spell == SPELL_CONJURE_LIVING_SPELLS)
         {
             const spell_type living_spell = living_spell_type_for(mon_owner->type);
-            description += make_stringf("\n%s creates living %s spells.\n",
+            description += make_stringf(T_("\n%s creates living %s spells.\n"),
                                         uppercase_first(mon_owner->full_name(DESC_A)).c_str(),
                                         spell_title(living_spell));
         }

@@ -799,7 +799,7 @@ static vector<pair<string, string>> _get_fakemuts()
         const string scale_clause = string(species::scale_type(you.species))
                   + " scales are hard";
 
-        string ac_str = make_stringf("Your %s. (AC +%d)", you.species == SP_NAGA
+        string ac_str = make_stringf(T_("Your %s. (AC +%d)"), you.species == SP_NAGA
                                         ? "serpentine skin is tough"
                                         : scale_clause.c_str(),
                                         ac);
@@ -824,8 +824,8 @@ static vector<pair<string, string>> _get_fakemuts()
         const int arms = you.arm_count();
         result.push_back(_annotate_form_based(
             {
-                make_stringf("%d rings", arms),
-                make_stringf("You can wear up to %s rings at the same time.",
+                make_stringf(T_("%d rings"), arms),
+                make_stringf(T_("You can wear up to %s rings at the same time."),
                         number_in_words(arms).c_str())
             }, rings_melded));
     }
@@ -2096,7 +2096,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (you.hp <= 0)
         {
             ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-                 make_stringf("gaining the %s mutation",
+                 make_stringf(T_("gaining the %s mutation"),
                               mutation_name(mutat)).c_str());
         }
     }
@@ -2258,7 +2258,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf("losing the %s mutation", mutation_name(mutat)).c_str());
+             make_stringf(T_("losing the %s mutation"), mutation_name(mutat)).c_str());
     }
 
     return true;

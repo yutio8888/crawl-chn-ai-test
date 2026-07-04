@@ -530,7 +530,7 @@ static void _xom_random_spell(int sever)
 #endif
 
     your_spells(spell, power, false);
-    const string note = make_stringf("cast spell '%s'", spell_title(spell));
+    const string note = make_stringf(T_("cast spell '%s'"), spell_title(spell));
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 }
 
@@ -649,7 +649,7 @@ static void _xom_acquirement(int /*sever*/)
 
     _try_brand_switch(item_index);
 
-    const string note = make_stringf("god gift: %s",
+    const string note = make_stringf(T_("god gift: %s"),
                                      env.item[item_index].name(DESC_PLAIN).c_str());
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 
@@ -1202,7 +1202,7 @@ static void _xom_send_allies(int sever)
     {
         god_speaks(GOD_XOM, _get_xom_speech("multiple summons").c_str());
 
-        const string note = make_stringf("summons %d friend%s",
+        const string note = make_stringf(T_("summons %d friend%s"),
                                          num_actually_summoned,
                                          num_actually_summoned > 1 ? "s" : "");
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
@@ -1231,7 +1231,7 @@ static void _xom_send_one_ally(int sever)
         if (summons->type == MONS_REAPER)
             _do_chaos_upgrade(*summons->weapon(), summons);
 
-        const string note = make_stringf("summons friendly %s",
+        const string note = make_stringf(T_("summons friendly %s"),
                                          summons->name(DESC_PLAIN).c_str());
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
     }
@@ -1288,7 +1288,7 @@ static void _xom_polymorph_monster(monster &mons, bool helpful)
         const string new_name = see_new ? mons.full_name(DESC_PLAIN)
                                         : "something unseen";
 
-        string note = make_stringf("%s polymorph %s -> %s",
+        string note = make_stringf(T_("%s polymorph %s -> %s"),
                                    helpful ? "good" : "bad",
                                    old_name.c_str(), new_name.c_str());
 
@@ -1544,7 +1544,7 @@ static void _xom_lights_up_webs(int /*sever*/)
         god_speaks(GOD_XOM, _get_xom_speech("lights up webs").c_str());
         mprf(T_("%s webs catch fire!"),
      number_in_words(webs_count).c_str());
-        string note = make_stringf("lit up %d webs", webs_count);
+        string note = make_stringf(T_("lit up %d webs"), webs_count);
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
     }
 }
@@ -1665,7 +1665,7 @@ static void _xom_harmless_flora(int /*sever*/)
         else
             mpr(T_("Poisonous toadstools sprout around you!"));
 
-        const string note = make_stringf("made a garden");
+        const string note = make_stringf(T_("made a garden"));
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
     }
     else
@@ -1872,14 +1872,14 @@ static void _xom_door_ring(bool good)
         if (good)
         {
             god_speaks(GOD_XOM, _get_xom_speech("kind door ring").c_str());
-            note = make_stringf("made a ring of doors, pushed %d %s out",
+            note = make_stringf(T_("made a ring of doors, pushed %d %s out"),
                                 total_moved, total_moved != 1 ? "others"
                                                               : "other");
         }
         else
         {
             god_speaks(GOD_XOM, _get_xom_speech("mean door ring").c_str());
-            note = make_stringf("made a ring of doors, pulled %d %s in",
+            note = make_stringf(T_("made a ring of doors, pulled %d %s in"),
                                 total_moved, total_moved != 1 ? "others"
                                                               : "other");
         }
@@ -2024,7 +2024,7 @@ static void _xom_give_mutations(bool good)
 
     const int num_tries = random2(4) + 1;
 
-    const string note = make_stringf("give %smutation%s",
+    const string note = make_stringf(T_("give %smutation%s"),
 #ifdef NOTE_DEBUG_XOM
              good ? "good " : "random ",
 #else
@@ -2144,7 +2144,7 @@ static void _xom_throw_divine_lightning(int /*sever*/)
         }
     }
 
-    string note = make_stringf("divine lightning + %d bolts", spray_count);
+    string note = make_stringf(T_("divine lightning + %d bolts"), spray_count);
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 }
 
@@ -2376,7 +2376,7 @@ static void _xom_change_scenery(int /*sever*/)
     if (fountains_blood > 0)
     {
         string fountains = make_stringf(
-                 "%s fountain%s start%s gushing blood",
+                 T_("%s fountain%s start%s gushing blood"),
                  fountains_blood == 1 ? "a" : "some",
                  fountains_blood == 1 ? ""  : "s",
                  fountains_blood == 1 ? "s" : "");
@@ -2384,7 +2384,7 @@ static void _xom_change_scenery(int /*sever*/)
         if (effects.empty())
             fountains = uppercase_first(fountains);
         effects.push_back(fountains);
-        terse.push_back(make_stringf("%d fountains blood", fountains_blood));
+        terse.push_back(make_stringf(T_("%d fountains blood"), fountains_blood));
     }
 
     if (food_swapped > 0)
@@ -2394,7 +2394,7 @@ static void _xom_change_scenery(int /*sever*/)
         if (effects.empty())
             snacks = uppercase_first(snacks);
         effects.push_back(snacks);
-        terse.push_back(make_stringf("%d snacks swapped", food_swapped));
+        terse.push_back(make_stringf(T_("%d snacks swapped"), food_swapped));
     }
 
     if (trees_polymorphed > 0)
@@ -2403,7 +2403,7 @@ static void _xom_change_scenery(int /*sever*/)
         if (effects.empty())
             trees = uppercase_first(trees);
         effects.push_back(trees);
-        terse.push_back(make_stringf("%d trees warped", trees_polymorphed));
+        terse.push_back(make_stringf(T_("%d trees warped"), trees_polymorphed));
     }
 
     if (!effects.empty())
@@ -2459,17 +2459,17 @@ static void _xom_open_and_close_doors(int /* sever */)
 
     if (doors_open > 0)
     {
-        effects.push_back(make_stringf("%s door%s burst%s open",
+        effects.push_back(make_stringf(T_("%s door%s burst%s open"),
                                        doors_open == 1 ? "A"    :
                                        doors_open == 2 ? "Two"
                                                        : "Several",
                                        doors_open == 1 ? ""  : "s",
                                        doors_open == 1 ? "s" : ""));
-        terse.push_back(make_stringf("%d doors open", doors_open));
+        terse.push_back(make_stringf(T_("%d doors open"), doors_open));
     }
     if (doors_close > 0)
     {
-        string closed = make_stringf("%s%s door%s slam%s shut",
+        string closed = make_stringf(T_("%s%s door%s slam%s shut"),
                  doors_close == 1 ? "a"    :
                  doors_close == 2 ? "two"
                                   : "several",
@@ -2480,7 +2480,7 @@ static void _xom_open_and_close_doors(int /* sever */)
         if (effects.empty())
             closed = uppercase_first(closed);
         effects.push_back(closed);
-        terse.push_back(make_stringf("%d doors close", doors_close));
+        terse.push_back(make_stringf(T_("%d doors close"), doors_close));
     }
     if (!effects.empty())
     {
@@ -2610,7 +2610,7 @@ static void _xom_force_lances(int /* sever */)
 
     if (created > 0)
     {
-        const string note = make_stringf("summons %d living force lance%s",
+        const string note = make_stringf(T_("summons %d living force lance%s"),
                                          created,
                                          created > 1 ? "s" : "");
 
@@ -2688,7 +2688,7 @@ static void _xom_enchant_monster(int sever, bool helpful)
     }
 
     // Take a note.
-    const string note = make_stringf("enchant monster%s (%s, %s)",
+    const string note = make_stringf(T_("enchant monster%s (%s, %s)"),
                                      affected >= 1 ? "s" : "",
                                      helpful ? "good" : "bad",
                                      ench_name.c_str());
@@ -2783,7 +2783,7 @@ static void _xom_hyper_enchant_monster(int sever)
         if (mon)
         {
             targetable.insert(targetable.begin(), mon);
-            string summ = make_stringf("%s pulls itself out of thin air.",
+            string summ = make_stringf(T_("%s pulls itself out of thin air."),
                                         targetable[0]->name(DESC_A, true).c_str());
             god_speaks(GOD_XOM, summ.c_str());
         }
@@ -2822,12 +2822,12 @@ static void _xom_hyper_enchant_monster(int sever)
                 || apply == ENCH_TOXIC_RADIANCE || apply == ENCH_MIRROR_DAMAGE
                 || apply == ENCH_SWIFT)
             {
-                lines += make_stringf("starts %s, ", ench_name.c_str());
+                lines += make_stringf(T_("starts %s, "), ench_name.c_str());
             }
             else if (apply == ENCH_EMPOWERED_SPELLS)
-                lines += make_stringf("has its spells empowered, ");
+                lines += make_stringf(T_("has its spells empowered, "));
             else
-                lines += make_stringf("looks %s, ", ench_name.c_str());
+                lines += make_stringf(T_("looks %s, "), ench_name.c_str());
 
             targetable[0]->add_ench(mon_enchant(apply, nullptr, time));
             buff_count++;
@@ -2849,7 +2849,7 @@ static void _xom_hyper_enchant_monster(int sever)
               targetable[0]->name(DESC_THE, true).c_str(), lines.c_str());
     }
 
-    const string note = make_stringf("buffed friendly %s %d %s",
+    const string note = make_stringf(T_("buffed friendly %s %d %s"),
                                      targetable[0]->name(DESC_PLAIN, true).c_str(),
                                      buff_count, buff_count == 1 ? "time" : "times" );
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
@@ -2896,7 +2896,7 @@ static void _xom_mass_charm(int sever)
         iters++;
     }
 
-    const string note = make_stringf("charmed %d monster%s",
+    const string note = make_stringf(T_("charmed %d monster%s"),
                                      affected,  affected != 1 ? "s" : "");
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
 }
@@ -3863,7 +3863,7 @@ static void _xom_torment(int /*sever*/)
         torment(nullptr, TORMENT_XOM, you.pos());
     }
 
-    const string note = make_stringf("torment%s(%d/%d hp)",
+    const string note = make_stringf(T_("torment%s(%d/%d hp)"),
                                       _xom_feels_nasty() ? " all (player " : " (",
                                       you.hp, you.hp_max);
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
@@ -3969,7 +3969,7 @@ static void _xom_summon_hostiles(int sever)
 
     if (num_summoned > 0)
     {
-        const string note = make_stringf("summons %d hostile %s%s",
+        const string note = make_stringf(T_("summons %d hostile %s%s"),
                                          num_summoned,
                                          shadow_creatures ? "shadow creature"
                                                           : "chaos creature",
@@ -4028,7 +4028,7 @@ static void _xom_send_in_clones(int /*sever*/)
         mon->reset();
     }
 
-    const string note = make_stringf("summoned %d hostile %s + %d friendly %s",
+    const string note = make_stringf(T_("summoned %d hostile %s + %d friendly %s"),
                                      hostiles_summon_count,
                                      hostiles_summon_count == 1 ? "illusion"
                                                                 : "illusions",
@@ -4116,14 +4116,14 @@ static void _xom_brain_drain(int sever)
 
             react = maybe_pick_random_substring(react);
 
-            const string note = make_stringf("drained mp, created monsters");
+            const string note = make_stringf(T_("drained mp, created monsters"));
             mprf(MSGCH_WARN, "%s", react.c_str());
             take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
         }
         else
         {
             mprf(MSGCH_WARN, T_("You feel nearly all of your power leaking away!"));
-            const string note = make_stringf("drained mp");
+            const string note = make_stringf(T_("drained mp"));
             take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
         }
     }
@@ -4215,7 +4215,7 @@ static void _xom_grants_word_of_recall(int /*sever*/)
     mon_enchant chant_timer = mon_enchant(ENCH_WORD_OF_RECALL, targetable[0], duration);
     targetable[0]->add_ench(chant_timer);
 
-    note = make_stringf("made %s speak a word of recall",
+    note = make_stringf(T_("made %s speak a word of recall"),
                         targetable[0]->name(DESC_A, true, false).c_str());
 
     take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
@@ -5373,7 +5373,7 @@ static void _xom_good_teleport(int /*sever*/)
     while (x_chance_in_y(3, 4) || player_in_a_dangerous_place());
 
     // Take a note.
-    const string note = make_stringf("%d-stop teleportation journey%s", count,
+    const string note = make_stringf(T_("%d-stop teleportation journey%s"), count,
 #ifdef NOTE_DEBUG_XOM
              player_in_a_dangerous_place() ? " (dangerous)" :
 #endif
@@ -5402,7 +5402,7 @@ static void _xom_bad_teleport(int /*sever*/)
     while (x_chance_in_y(3, 4) && !player_in_a_dangerous_place());
 
     // Take a note.
-    const string note = make_stringf("%d-stop teleportation journey%s", count,
+    const string note = make_stringf(T_("%d-stop teleportation journey%s"), count,
 #ifdef NOTE_DEBUG_XOM
              badness == 3 ? " (dangerous)" : "");
 #else
