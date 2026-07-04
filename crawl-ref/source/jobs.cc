@@ -102,7 +102,7 @@ job_type get_job_by_name(const char *name)
             return j;
     }
 
-    // Also match against Chinese names regardless of current language setting
+    // deprecated: legacy ZH save compatibility — Chinese name fallback
     // (saved game files may use Chinese names from a previous session)
     for (auto& entry : _job_zh_names())
     {

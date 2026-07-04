@@ -90,16 +90,12 @@ namespace species
     {
         const species_def& def = get_species_def(speci);
         if (spname_type == SPNAME_GENUS && def.genus_name)
-            return def.genus_name;
+            return raw ? def.genus_name : T_(def.genus_name);
         else if (spname_type == SPNAME_ADJ && def.adj_name)
-            return def.adj_name;
-        // Chinese translation lookup (skip for internal lookups)
-        if (!raw && Options.language == lang_t::ZH && spname_type == SPNAME_PLAIN)
-        {
-            const char* zh = get_species_zh_name(speci);
-            if (zh)
-                return zh;
-        }
+            return raw ? def.adj_name : T_(def.adj_name);
+        // Display path: use T_() for i18n translation lookup
+        if (!raw && spname_type == SPNAME_PLAIN)
+            return T_(def.name);
         return def.name;
     }
 
@@ -113,9 +109,10 @@ namespace species
         for (int i = 0; i < NUM_SPECIES; ++i)
         {
             sp = static_cast<species_type>(i);
-            // Match against English name (always), and Chinese name
+            // Match against English name (always)
             if (species == name(sp, SPNAME_PLAIN, true))
                 return sp;
+            // deprecated: legacy ZH save compatibility — Chinese name matching
             const char* zh = get_species_zh_name(sp);
             if (zh && species == zh)
                 return sp;
@@ -140,7 +137,7 @@ namespace species
             const string sp_name = lowercase_string(name(si, SPNAME_PLAIN, true));
 
             string::size_type pos = sp_name.find(spec);
-            // Always check Chinese names for .des/save file compatibility
+            // deprecated: legacy ZH save compatibility — Chinese name fallback
             if (pos == string::npos)
             {
                 const char* zh_name = get_species_zh_name(si);
