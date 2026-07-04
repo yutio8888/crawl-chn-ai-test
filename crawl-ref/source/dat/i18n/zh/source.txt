@@ -24682,37 +24682,37 @@ You can no longer roll toward enemies.
 你无法再向敌人翻滚。
 %%%%
 You can no longer study or cast Air magic.
-你无法再学习或施放Air魔法。
+你无法再学习或施放空气魔法。
 %%%%
 You can no longer study or cast Alchemy magic.
-你无法再学习或施放Alchemy魔法。
+你无法再学习或施放炼金魔法。
 %%%%
 You can no longer study or cast Conjurations magic.
-你无法再学习或施放Conjurations魔法。
+你无法再学习或施放咒法魔法。
 %%%%
 You can no longer study or cast Earth magic.
-你无法再学习或施放Earth魔法。
+你无法再学习或施放大地魔法。
 %%%%
 You can no longer study or cast Fire magic.
-你无法再学习或施放Fire魔法。
+你无法再学习或施放火焰魔法。
 %%%%
 You can no longer study or cast Forgecraft magic.
-你无法再学习或施放Forgecraft魔法。
+你无法再学习或施放锻造魔法。
 %%%%
 You can no longer study or cast Hexes magic.
-你无法再学习或施放Hexes魔法。
+你无法再学习或施放诅咒魔法。
 %%%%
 You can no longer study or cast Ice magic.
-你无法再学习或施放Ice魔法。
+你无法再学习或施放寒冰魔法。
 %%%%
 You can no longer study or cast Necromancy magic.
-你无法再学习或施放Necromancy魔法。
+你无法再学习或施放死灵魔法。
 %%%%
 You can no longer study or cast Summoning magic.
-你无法再学习或施放Summoning魔法。
+你无法再学习或施放召唤魔法。
 %%%%
 You can no longer study or cast Translocations magic.
-你无法再学习或施放Translocations魔法。
+你无法再学习或施放位移魔法。
 %%%%
 You can no longer study or use magical devices.
 你无法再学习或使用魔法装置。
@@ -24751,37 +24751,37 @@ You can once more change form.
 你可以重新变形了。
 %%%%
 You can once more study and cast Air magic.
-你可以重新学习和施放Air魔法。
+你可以重新学习和施放空气魔法。
 %%%%
 You can once more study and cast Alchemy magic.
-你可以重新学习和施放Alchemy魔法。
+你可以重新学习和施放炼金魔法。
 %%%%
 You can once more study and cast Conjurations magic.
-你可以重新学习和施放Conjurations魔法。
+你可以重新学习和施放咒法魔法。
 %%%%
 You can once more study and cast Earth magic.
-你可以重新学习和施放Earth魔法。
+你可以重新学习和施放大地魔法。
 %%%%
 You can once more study and cast Fire magic.
-你可以重新学习和施放Fire魔法。
+你可以重新学习和施放火焰魔法。
 %%%%
 You can once more study and cast Forgecraft magic.
-你可以重新学习和施放Forgecraft魔法。
+你可以重新学习和施放锻造魔法。
 %%%%
 You can once more study and cast Hexes magic.
-你可以重新学习和施放Hexes魔法。
+你可以重新学习和施放诅咒魔法。
 %%%%
 You can once more study and cast Ice magic.
-你可以重新学习和施放Ice魔法。
+你可以重新学习和施放寒冰魔法。
 %%%%
 You can once more study and cast Necromancy magic.
-你可以重新学习和施放Necromancy魔法。
+你可以重新学习和施放死灵魔法。
 %%%%
 You can once more study and cast Summoning magic.
-你可以重新学习和施放Summoning魔法。
+你可以重新学习和施放召唤魔法。
 %%%%
 You can once more study and cast Translocations magic.
-你可以重新学习和施放Translocations魔法。
+你可以重新学习和施放位移魔法。
 %%%%
 You can once more study and use magical devices.
 你可以重新学习和使用魔法装置。
