@@ -34062,3 +34062,51 @@ deep water
  is struck by your quills.
 被你的棘刺击中。
 %%%%
+ attempts to avoid the deathblow, but fails!
+试图躲避致命一击，但失败了！
+%%%%
+ seems to grow more fierce.
+似乎变得更加凶猛。
+%%%%
+ returns to where it belongs.
+回到了它该去的地方。
+%%%%
+ falls apart and the last of its fire goes out.
+崩散开来，最后一丝火焰也熄灭了。
+%%%%
+ vaporises!
+蒸发了！
+%%%%
+ is driven back to you.
+被驱回了你身边。
+%%%%
+ returns to the armoury!
+回到了武器库！
+%%%%
+ turns to gold and falls from the air.
+化为黄金，从空中坠落。
+%%%%
+ briefly glints gold and then vanishes.
+短暂地闪现金光，然后消失了。
+%%%%
+ falls from the air.
+从空中坠落。
+%%%%
+ is incinerated.
+被焚烧殆尽。
+%%%%
+ drowns.
+溺毙了。
+%%%%
+ sinks to the bottom.
+沉到了底部。
+%%%%
+ seems to find hidden reserves of power!
+似乎找到了隐藏的力量储备！
+%%%%
+ likewise turns neutral.
+也随之变为中立。
+%%%%
+ gets angry again!
+又愤怒了起来！
+%%%%
