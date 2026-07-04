@@ -49,7 +49,7 @@ int englaciate(coord_def where, int pow, actor *agent)
         if (!mons)
             canned_msg(MSG_YOU_UNAFFECTED);
         else
-            simple_monster_message(*mons, " is unaffected.");
+            simple_monster_message(*mons, T_(" is unaffected."));
         return 0;
     }
 
@@ -61,7 +61,7 @@ int englaciate(coord_def where, int pow, actor *agent)
         if (!mons)
             canned_msg(MSG_YOU_RESIST);
         else
-            simple_monster_message(*mons, " resists.");
+            simple_monster_message(*mons, T_(" resists."));
         return 0;
     }
 
@@ -103,7 +103,7 @@ bool corona_monster(monster* mons, const actor* source)
     mons->add_ench(mon_enchant(ENCH_CORONA, source));
 
     if (!was_glowing)
-        simple_monster_message(*mons, " is outlined in light.");
+        simple_monster_message(*mons, T_(" is outlined in light."));
     else
         simple_monster_message(*mons, T_(" glows brighter for a moment."));
 
@@ -118,7 +118,7 @@ bool do_slow_monster(monster& mon, const actor* agent, int dur)
     if (mon.add_ench(mon_enchant(ENCH_SLOW, agent, dur)))
     {
         if (!mon.paralysed() && !mon.petrified()
-            && simple_monster_message(mon, " seems to slow down."))
+            && simple_monster_message(mon, T_(" seems to slow down.")))
         {
             return true;
         }
@@ -131,7 +131,7 @@ bool silence_monster(monster& mon, const actor* agent, int dur)
 {
     if (mon.add_ench(mon_enchant(ENCH_MUTE, agent, dur)))
     {
-        simple_monster_message(mon, " loses the ability to speak.");
+        simple_monster_message(mon, T_(" loses the ability to speak."));
         return true;
     }
 
@@ -172,9 +172,9 @@ bool enfeeble_monster(monster &mon, int pow)
     }
 
     if (res_margin > 0)
-        simple_monster_message(mon, " partially resists.");
+        simple_monster_message(mon, T_(" partially resists."));
 
-    return simple_monster_message(mon, " is enfeebled!");
+    return simple_monster_message(mon, T_(" is enfeebled!"));
 }
 
 bool enfeeble_player(actor *source, int pow)
@@ -301,7 +301,7 @@ bool apply_rimeblight(monster& victim, int power, bool quiet)
     victim.props[RIMEBLIGHT_TICKS_KEY] = random_range(0, 2);
 
     if (!quiet)
-        simple_monster_message(victim, " is afflicted with rimeblight.");
+        simple_monster_message(victim, T_(" is afflicted with rimeblight."));
 
     return true;
 }
@@ -668,7 +668,7 @@ spret cast_gloom(const actor *caster, int pow, bool fail, bool tracer)
         if (victim && vulnerable(victim) && _gloom_affect_target(victim, caster, pow))
         {
             if (victim->is_monster())
-                simple_monster_message(*victim->as_monster(), " is enveloped in gloom.");
+                simple_monster_message(*victim->as_monster(), T_(" is enveloped in gloom."));
             // Player already got a message from blind_player
             // XX: Should it be a slightly different message? Show something if resisted?
         }

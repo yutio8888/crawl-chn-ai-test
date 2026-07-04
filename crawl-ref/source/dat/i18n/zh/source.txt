@@ -33930,3 +33930,135 @@ Vampire
 %1$s %2$s the %3$s%4$s
 %1$s挡住了%3$s%4$s
 %%%%%
+ guffaws at your puny god.
+嘲笑你软弱的神祇。
+%%%%%
+ sneers at your recitation.
+对你的吟诵嗤之以鼻。
+%%%%%
+ is dazed by your recitation.
+被你的吟诵震慑了。
+%%%%%
+ is confused by your recitation.
+被你的吟诵迷惑了。
+%%%%%
+ stumbles about in disarray.
+慌乱地踉跄着。
+%%%%%
+ is awed by your recitation.
+被你的吟诵所威压。
+%%%%%
+ is aghast at the heresy of your recitation.
+被你吟诵中的异端邪说惊呆了。
+%%%%%
+ is smitten by the wrath of Zin.
+被辛之怒所重击。
+%%%%%
+ is blasted by the fury of Zin!
+被辛之怒所重创！
+%%%%%
+ is struck blind by the wrath of Zin!
+被辛之怒击瞎了双眼！
+%%%%%
+ is limned with silver light.
+被银光笼罩了。
+%%%%%
+ quails at your recitation.
+被你的吟诵吓退了。
+%%%%%
+ looks feeble and powerless before your recitation.
+在你的吟诵前显得虚弱无力。
+%%%%%
+ is struck mute by the wrath of Zin!
+被辛之怒击哑了！
+%%%%%
+ is driven mad by the wrath of Zin!
+被辛之怒逼疯了！
+%%%%%
+ is left stupefied by the wrath of Zin!
+被辛之怒震慑了！
+%%%%%
+ chaotic flesh sizzles and spatters!
+的混沌之肉滋滋作响，溅出液体！
+%%%%%
+ chaotic flesh bubbles and boils.
+的混沌之肉冒出气泡，沸腾不已。
+%%%%%
+ chaotic flesh runs like molten wax.
+的混沌之肉如熔蜡般流淌。
+%%%%%
+ melts away into a sizzling puddle of chaotic flesh.
+溶化成一滩滋滋作响的混沌血肉。
+%%%%%
+ is turned into a pillar of salt by the wrath of Zin!
+被辛之怒化作了一根盐柱！
+%%%%%
+ is fully restored!
+完全恢复了！
+%%%%%
+ is drained by nostalgia.
+因怀旧而虚弱不堪。
+%%%%%
+ is not worthy to be dueled!
+不配与你决斗！
+%%%%%
+deep water
+深水
+%%%%%
+ is outlined in light.
+被光芒勾勒出轮廓。
+%%%%
+ loses the ability to speak.
+失去了说话的能力。
+%%%%
+ is enfeebled!
+变得虚弱了！
+%%%%
+ is afflicted with rimeblight.
+感染了霜枯病。
+%%%%
+ is enveloped in gloom.
+被阴霾笼罩。
+%%%%
+ is struck blind.
+被致盲了。
+%%%%
+ begins to glow.
+开始发光。
+%%%%
+ glows dangerously bright.
+发出危险的光芒。
+%%%%
+ decays.
+腐烂了。
+%%%%
+ grows two more!
+又长出了两个！
+%%%%
+ is burned by acid!
+被酸液灼伤了！
+%%%%
+ looks very invigorated.
+看起来精力充沛。
+%%%%
+ looks invigorated.
+看起来更有活力了。
+%%%%
+ enters a blood-rage!
+进入了嗜血狂暴！
+%%%%
+ tastes blood and grows stronger!
+尝到鲜血，变得更强了！
+%%%%
+ is burned by your cloak of flames.
+被你的火焰斗篷灼伤了。
+%%%%
+ is very cold.
+感到极寒。
+%%%%
+ is struck by your spines.
+被你的尖刺击中。
+%%%%
+ is struck by your quills.
+被你的棘刺击中。
+%%%%
