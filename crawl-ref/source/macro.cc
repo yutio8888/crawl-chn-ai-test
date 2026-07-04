@@ -986,7 +986,7 @@ static string _keyseq_desc(const keyseq &key)
         if (r.empty())
             r = vtostr(key);
         else
-            r = make_stringf("%s (%s)", vtostr(key).c_str(), r.c_str());
+            r = make_stringf(T_("%s (%s)"), vtostr(key).c_str(), r.c_str());
     }
     return replace_all(r, "<", "<<");
 }
@@ -1179,7 +1179,7 @@ public:
 
     void clear_all()
     {
-        const string clear_prompt = make_stringf("Really clear all %ss?",
+        const string clear_prompt = make_stringf(T_("Really clear all %ss?"),
                 mode_name().c_str());
         if (yesno(clear_prompt.c_str(), true, 'N'))
         {
@@ -1204,14 +1204,14 @@ public:
         const int keycode = key[0];
         string key_str = keycode_is_printable(keycode)
             ? keycode_to_name(keycode, false).c_str()
-            : make_stringf("%s (%s)",
+            : make_stringf(T_("%s (%s)"),
                     vtostr(key).c_str(), keycode_to_name(keycode, false).c_str());
         string action_str = vtostr(mapref[key]);
 
         action_str = replace_all(action_str, "<", "<<");
         key_str = replace_all(key_str, "<", "<<");
 
-        status_msg = make_stringf("Cleared %s '%s' => '%s'.",
+        status_msg = make_stringf(T_("Cleared %s '%s' => '%s'."),
                     mode_name().c_str(),
                     key_str.c_str(),
                  action_str.c_str());
@@ -1282,7 +1282,7 @@ public:
             key.clear();
             set_more(string(""));
             prompt = make_stringf(
-                "Input trigger key to edit or create a %s:",
+                T_("Input trigger key to edit or create a %s:"),
                 parent.mode_name().c_str());
             set_title(new MenuEntry(prompt, MEL_TITLE));
             set_more("<lightgray>([<w>~</w>] to enter by keycode)</lightgray>");
@@ -1291,7 +1291,7 @@ public:
 
         void reset_key_prompt()
         {
-            prompt = make_stringf("Current %s for %s: %s",
+            prompt = make_stringf(T_("Current %s for %s: %s"),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str(),
                         _keyseq_action_desc(action).c_str());
@@ -1354,7 +1354,7 @@ public:
         void edit_action_raw()
         {
             prompt = make_stringf(
-                "<w>%s</w>\nInput (raw) new %s for %s: ",
+                T_("<w>%s</w>\nInput (raw) new %s for %s: "),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
@@ -1377,7 +1377,7 @@ public:
         bool edit_action()
         {
             char buff[1024];
-            const string edit_prompt = make_stringf("<w>%s</w>\nInput new %s for %s:",
+            const string edit_prompt = make_stringf(T_("<w>%s</w>\nInput new %s for %s:"),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
@@ -1398,7 +1398,7 @@ public:
             // issues with backslashes, for example
             if (!new_action.size())
             {
-                set_more(make_stringf("Parsing error in key sequence '%s'", buff));
+                set_more(make_stringf(T_("Parsing error in key sequence '%s'"), buff));
                 return true;
             }
             set_hovered(old_last_hovered);
@@ -1504,7 +1504,7 @@ public:
                 // if the mapping is new, edit immediately
                 if (action.empty())
                 {
-                    prompt = make_stringf("%s %s", prompt.c_str(),
+                    prompt = make_stringf(T_("%s %s"), prompt.c_str(),
                                                     _keyseq_desc(key).c_str());
                     if (edit_action())
                         return false;
@@ -1556,7 +1556,7 @@ public:
                 && (!get_map().count(pop.key) || get_map()[pop.key] != pop.action))
             {
                 macro_add(get_map(), pop.key, pop.action);
-                status_msg = make_stringf("%s %s '%s' => '%s'.",
+                status_msg = make_stringf(T_("%s %s '%s' => '%s'."),
                     existed ? "Redefined" : "Created",
                     mode_name().c_str(),
                     _keyseq_desc(pop.key).c_str(),
@@ -2354,7 +2354,7 @@ string command_to_string(command_type cmd, bool tutorial)
     if (key >= 32 && key < 256)
     {
         if (tutorial && key >= 'A' && key <= 'Z')
-            result = make_stringf("uppercase %c", (char) key);
+            result = make_stringf(T_("uppercase %c"), (char) key);
         else
             result = string(1, (char) key);
     }

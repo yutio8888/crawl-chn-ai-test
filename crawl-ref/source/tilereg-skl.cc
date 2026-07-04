@@ -35,7 +35,7 @@ void SkillRegion::draw_tag()
     const skill_type skill = (skill_type) idx;
     const int apt          = species_apt(skill, you.species);
     string progress = "";
-    string desc = make_stringf("%-14s Skill %4.1f Aptitude %c%d",
+    string desc = make_stringf(T_("%-14s Skill %4.1f Aptitude %c%d"),
                                skill_name(skill),
                                you.skill(skill, 10) / 10.0,
                                apt > 0 ? '+' : ' ',

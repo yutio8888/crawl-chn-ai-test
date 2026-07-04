@@ -714,7 +714,7 @@ static void _apply_flux_contam(monster &m)
     if (old_glow.degree >= 2)
     {
         const int dam = get_form()->get_special_damage().roll();
-        string msg = make_stringf(" shudders as magic cascades through %s%s",
+        string msg = make_stringf(T_(" shudders as magic cascades through %s%s"),
                                   m.pronoun(PRONOUN_OBJECTIVE).c_str(),
                                   attack_strength_punctuation(dam).c_str());
         simple_monster_message(m, msg.c_str());
@@ -5310,8 +5310,8 @@ string mut_aux_attack_desc(mutation_type mut)
     case MUT_DEMONIC_TOUCH:
         return AUX_TOUCH.describe();
     case MUT_REFLEXIVE_HEADBUTT:
-        return make_stringf("\nTrigger chance:  %d%%\n"
-                              "Base damage:     %d\n\n",
+        return make_stringf(T_("\nTrigger chance:  %d%%\n"
+                              "Base damage:     %d\n\n"),
                             _minotaur_headbutt_chance(),
                             AUX_HEADBUTT.get_damage(false));
     case MUT_MAKHLEB_MARK_EXECUTION:
@@ -5323,8 +5323,8 @@ string mut_aux_attack_desc(mutation_type mut)
 
 static string _desc_aux(int chance, int dam)
 {
-    return make_stringf("\nTrigger chance:  %d%%\n"
-                          "Base damage:     %d",
+    return make_stringf(T_("\nTrigger chance:  %d%%\n"
+                          "Base damage:     %d"),
                         chance,
                         dam);
 }

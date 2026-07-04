@@ -538,8 +538,8 @@ static deck_type _choose_deck(const string title = "Draw")
             | MF_ARROWS_SELECT | MF_INIT_HOVER);
     {
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(make_stringf("%s which deck?        "
-                                    "Cards available", title.c_str()),
+            new ToggleableMenuEntry(make_stringf(T_("%s which deck?        "
+                                    "Cards available"), title.c_str()),
                                     "Describe which deck?    "
                                     "Cards available",
                                     MEL_TITLE);

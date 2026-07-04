@@ -168,7 +168,7 @@ void fire_target_behaviour::set_prompt()
 
         if (!targeted())
         {
-            internal_prompt = make_stringf("Non-targeted %s",
+            internal_prompt = make_stringf(T_("Non-targeted %s"),
                 lowercase_first(internal_prompt).c_str());
         }
     }
@@ -229,7 +229,7 @@ vector<string> fire_target_behaviour::get_monster_desc(const monster_info& mi)
             string verb = brand == SPMSL_FRENZY ? "frenzy" : "blind";
 
             string chance_string = immune ? "immune" :
-                                   make_stringf("chance to %s on hit: %d%%",
+                                   make_stringf(T_("chance to %s on hit: %d%%"),
                                                 verb.c_str(), chance);
             descs.emplace_back(chance_string);
         }
@@ -298,7 +298,7 @@ static shared_ptr<quiver::action> _fire_prompt_for_item()
 
     int slot = -1;
     const string title = make_stringf(
-        "<lightgray>Fire%s/use which item?</lightgray>",
+        T_("<lightgray>Fire%s/use which item?</lightgray>"),
         (can_throw ? "/throw" : ""));
     // TODO: the output api here is awkward
     // TODO: it would be nice if items with disabled actions got grayed out

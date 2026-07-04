@@ -46,7 +46,7 @@ void MemoriseRegion::draw_tag()
 
     const spell_type spell = (spell_type) idx;
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    string desc = make_stringf("%s    (%s)    %d/%d spell slot%s",
+    string desc = make_stringf(T_("%s    (%s)    %d/%d spell slot%s"),
                                spell_title(spell),
                                failure.c_str(),
                                spell_levels_required(spell),

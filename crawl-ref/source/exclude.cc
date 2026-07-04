@@ -654,7 +654,7 @@ string exclude_set::get_exclusion_desc()
                         desc.push_back(old_desc);
                     else
                     {
-                        desc.push_back(make_stringf("%d %s",
+                        desc.push_back(make_stringf(T_("%d %s"),
                                        count, pluralise(old_desc).c_str()));
                         count = 1;
                     }
@@ -673,7 +673,7 @@ string exclude_set::get_exclusion_desc()
 
     if (count_other > 0)
     {
-        desc.push_back(make_stringf("%d %sexclusion%s",
+        desc.push_back(make_stringf(T_("%d %sexclusion%s"),
                                     count_other, desc.empty() ? "" : "more ",
                                     count_other > 1 ? "s" : ""));
     }

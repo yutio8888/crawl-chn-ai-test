@@ -601,7 +601,7 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
             if (Options.monster_item_view_coordinates)
             {
                 const coord_def relpos = mi.pos - you.pos();
-                str = make_stringf("(%d, %d) %s", relpos.x, -relpos.y,
+                str = make_stringf(T_("(%d, %d) %s"), relpos.x, -relpos.y,
                                    str.c_str());
             }
 
@@ -1904,7 +1904,7 @@ string cell_items_description(const coord_def& pos)
     if (items.empty())
         return "";
 
-    return make_stringf("<cyan>Item%s here:</cyan> %s.",
+    return make_stringf(T_("<cyan>Item%s here:</cyan> %s."),
                         items.size() > 1 ? "s" : "",
                         item_message(items).c_str());
 }
@@ -3131,7 +3131,7 @@ static string _base_feature_desc(dungeon_feature_type grid, trap_type trap,
         return T_(get_feature_def(grid).name);
     }
     else if (grid == DNGN_ZOT_STATUE && you.zot_orb_monster_known)
-        return make_stringf("statue of %s", mons_type_name(you.zot_orb_monster, DESC_A).c_str());
+        return make_stringf(T_("statue of %s"), mons_type_name(you.zot_orb_monster, DESC_A).c_str());
     else if (!is_valid_feature_type(grid))
         return "";
     else

@@ -48,7 +48,7 @@ formatted_string options_read_status()
         msg += "<lightred>Options file ";
         if (!Options.filename.empty())
         {
-            msg += make_stringf("\"%s\" is not readable",
+            msg += make_stringf(T_("\"%s\" is not readable"),
                                 Options.filename.c_str());
         }
         else

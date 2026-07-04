@@ -55,13 +55,13 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
     }
     else if (throwing())
     {
-        aux_source = make_stringf("Hit by a%s %s thrown by %s",
+        aux_source = make_stringf(T_("Hit by a%s %s thrown by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
     else
     {
-        aux_source = make_stringf("Shot with a%s %s by %s",
+        aux_source = make_stringf(T_("Shot with a%s %s by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
@@ -314,14 +314,14 @@ bool ranged_attack::handle_phase_hit()
 
     if (!defender->is_player() || !you.pending_revival)
     {
-        if (apply_damage_brand(make_stringf("the %s", proj_name.c_str()).c_str()))
+        if (apply_damage_brand(make_stringf(T_("the %s"), proj_name.c_str()).c_str()))
             return false;
 
         if (testbits(weapon->flags, ISFLAG_CHAOTIC) && defender->alive())
         {
             unwind_var<brand_type> save_brand(damage_brand);
             damage_brand = SPWPN_CHAOS;
-            if (apply_damage_brand(make_stringf("the %s", proj_name.c_str()).c_str()))
+            if (apply_damage_brand(make_stringf(T_("the %s"), proj_name.c_str()).c_str()))
                 return false;
         }
 
@@ -618,7 +618,7 @@ bool ranged_attack::apply_missile_brand()
     case SPMSL_FLAME:
         calc_elemental_brand_damage(BEAM_FIRE,
                                     defender->is_icy() ? T_("melt") : T_("burn"),
-                                    make_stringf("the %s", proj_name.c_str()).c_str());
+                                    make_stringf(T_("the %s"), proj_name.c_str()).c_str());
 
         defender->expose_to_element(BEAM_FIRE, 2);
         if (defender->is_player())
@@ -626,7 +626,7 @@ bool ranged_attack::apply_missile_brand()
         break;
     case SPMSL_FROST:
         calc_elemental_brand_damage(BEAM_COLD, T_("freeze"),
-                                    make_stringf("the %s", proj_name.c_str()).c_str());
+                                    make_stringf(T_("the %s"), proj_name.c_str()).c_str());
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
     case SPMSL_POISONED:

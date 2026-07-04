@@ -944,7 +944,7 @@ static string _describe_weapons(const item_def *weapon,
         return offhand->name(DESC_YOUR).c_str();
     if (!offhand)
         return weapon->name(DESC_YOUR).c_str();
-    return make_stringf("%s and %s",
+    return make_stringf(T_("%s and %s"),
                         weapon->name(DESC_YOUR).c_str(),
                         offhand->name(DESC_YOUR).c_str());
 }
@@ -1625,9 +1625,9 @@ bool warn_about_bad_targets(const char* source_name, vector<coord_def> targets,
     bool penance;
     bad_attack(ex_mon, adj, suffix, penance, you.pos());
     const string and_more = bad_targets.size() > 1 ?
-            make_stringf(" (and %zu other bad targets)",
+            make_stringf(T_(" (and %zu other bad targets)"),
                          bad_targets.size() - 1) : "";
-    const string prompt = make_stringf("%s might hit %s%s. %s",
+    const string prompt = make_stringf(T_("%s might hit %s%s. %s"),
                                        source_name,
                                        ex_mon->name(DESC_THE).c_str(),
                                        and_more.c_str(),
