@@ -1544,14 +1544,6 @@ Bestow Arms spell
 
 暂时授予众多附近盟友来自军械库的魔法武器，只要维系它们的灵魂保持完整。
 %%%%
-Bolster spell
-
-增强施法者的物理形态，大幅提高其近战伤害以及对所有元素的抗性。
-%%%%
-Bolt of Antimagic spell
-
-发射一道本体论上矛盾的穿透性反魔法束，汲取受害者的魔力储备。
-%%%%
 Bolt of Flesh spell
 
 发射一道由魔法创造的血肉的穿透性弹幕，在其路径尽头地面上短暂地
@@ -1561,12 +1553,6 @@ Bolt of Light spell
 
 发射一道灼热光芒的穿透射线，可能致盲击中的任何活着的、恶魔的
 或神圣的生物。
-%%%%
-Cage of Brambles spell
-
-使荆棘墙壁在所有附近敌人周围迅速生长成一圈。施法者的盟友可以
-不受阻碍地透过这些荆棘射击投射物，但任何其他人可能会发现移除它们
-相当痛苦。
 %%%%
 Caustic Breath spell
 
@@ -1749,11 +1735,6 @@ Mud Breath spell
 
 <Mud Breath ability>
 %%%%
-Murky Legion spell
-
-召唤若干幽光鬼魅。它们在消失前会发动一次攻击，同时散布魔法污染并
-留下浅水区域。
-%%%%
 Mutagenic Gaze spell
 
 凝视一个目标，暂时对其施加有害的变异。
@@ -1902,10 +1883,6 @@ Sphinx Sisters spell
 Splinterfrost Shell spell
 
 在施法者周围创造一面冰盾，吸收伤害并在破碎时造成寒冷伤害。
-%%%%
-Stampede spell
-
-使施法者向前冲锋，践踏路径上的所有敌人。
 %%%%
 Steam Breath spell
 
