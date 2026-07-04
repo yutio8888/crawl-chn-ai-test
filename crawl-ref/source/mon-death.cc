@@ -1405,7 +1405,7 @@ static void _monster_die_cloud(const monster& mons, bool real_death)
         }
     }
 
-    if (!real_death && !mons.is_abjurable())
+    if (summoned_poof_msg(mons).empty())
         return;
 
     // After this point, we're placing clouds for vanishing summons
