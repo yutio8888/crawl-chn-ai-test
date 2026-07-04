@@ -228,7 +228,7 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 2. 在 `chn-0.34.1-base` 分支上创建特性分支
 3. 确保 `make -j8` 编译通过
 4. 如涉及 tiles，确保 `make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8` 通过
-5. 提交 PR，commit 信息末尾添加 `Co-Authored-By: Claude <noreply@anthropic.com>`
+5. 提交 PR
 
 ### 常见反模式（请勿重复）
 
