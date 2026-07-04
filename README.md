@@ -273,7 +273,7 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 - **字体文件不包含在本 Git 仓库中**（文件大小约 25MB），仅随发布包一同分发。
 - 如需自行获取，请访问 [Sarasa Gothic GitHub](https://github.com/be5invis/Sarasa-Gothic) 下载
   `SarasaMonoSC-Regular.ttf`，放入 `crawl-ref/source/contrib/fonts/` 目录。
-- 该字体的完整许可证文本应随发布包中的字体文件一同提供。
+- 完整版权声明与 OFL 许可证文本见 [`docs/fonts/LICENSE-Sarasa-Gothic.txt`](docs/fonts/LICENSE-Sarasa-Gothic.txt)。
 
 ---
 
