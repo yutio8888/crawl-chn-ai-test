@@ -214,11 +214,9 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
 
     // TODO: probably don't want to end here, but try a fallback font in
     // the calling function.
-    string font_path = datafile_path(MAPLE_FONT, false, true);
+    string font_path = datafile_path(font_name, false, true);
     if (font_path.c_str()[0] == 0)
-        font_path = datafile_path(font_name, false, true);
-    if (font_path.c_str()[0] == 0)
-        end(1, false, "Could not find font");
+        end(1, false, "Could not find font '%s'", font_name);
 
     // Certain versions of freetype have problems reading files on Windows,
     // do that ourselves.
@@ -248,7 +246,11 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     // Load CJK fallback font for Chinese/Japanese/Korean characters.
     // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
     // that exist in neither font.
-    string cjk_path = datafile_path(font_name, false, true); // DejaVu fallback
+    string cjk_path = datafile_path(MAPLE_FONT, false, true);
+    if (cjk_path.c_str()[0] == 0)
+        cjk_path = datafile_path(CJK_FALLBACK_FONT, false, true);
+    if (cjk_path.c_str()[0] == 0)
+        cjk_path = datafile_path(font_name, false, true); // DejaVu last resort
     if (cjk_path.c_str()[0] != 0)
     {
         FILE *fc = fopen_u(cjk_path.c_str(), "rb");
