@@ -2906,20 +2906,12 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        // Structural: ZH uses different counter/plural format
-        if (Options.language == lang_t::ZH)
-            text += make_stringf("\n<w>%s:</w> %d/%d个符文：%s",
-                    command_to_string(CMD_DISPLAY_RUNES).c_str(),
-                    (int)runes.size(), you.obtainable_runes,
-                    comma_separated_line(runes.begin(), runes.end(),
-                                         ", ", ", ").c_str());
-        else
-            text += make_stringf("\n<w>%s:</w> %d/%d rune%s: %s",
-                    command_to_string(CMD_DISPLAY_RUNES).c_str(),
-                    (int)runes.size(), you.obtainable_runes,
-                    you.obtainable_runes == 1 ? "" : "s",
-                    comma_separated_line(runes.begin(), runes.end(),
-                                         ", ", ", ").c_str());
+        text += make_stringf(T_("\n<w>%s:</w> %d/%d rune%s: %s"),
+                command_to_string(CMD_DISPLAY_RUNES).c_str(),
+                (int)runes.size(), you.obtainable_runes,
+                you.obtainable_runes == 1 ? "" : "s",
+                comma_separated_line(runes.begin(), runes.end(),
+                                     ", ", ", ").c_str());
     }
 
     linebreak_string(text, sw);

@@ -30288,3 +30288,48 @@ rising multitudes
 full choir
 齐声合唱
 %%%%
+%%%%
+ select  
+ 选择  
+%%%%
+ page down  
+ 下一页  
+%%%%
+ page up  
+ 上一页  
+%%%%
+Letters toggle    
+字母切换    
+%%%%
+ toggle selected    
+ 切换选中    
+%%%%
+\n<w>%s:</w> %d/%d rune%s: %s
+\n<w>%s:</w> %d/%d个符文：%s
+%%%%
+release spores at
+释放孢子
+%%%%
+tail-slap
+尾击
+%%%%
+trunk-slap
+象鼻拍击
+%%%%
+snap closed at
+猛然咬合
+%%%%
+hit, bite, peck, or gore
+击中、撕咬、啄击或角顶
+%%%%
+release spores
+释放孢子
+%%%%
+snap closed
+猛然咬合
+%%%%
+hit or gore
+击中或角顶
+%%%%
+pounce
+猛扑
