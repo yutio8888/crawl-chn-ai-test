@@ -35047,3 +35047,57 @@ Your servitor could be imbued with this spell if your spell success rate were hi
 %%%%
 # - Recommended character
 # - 推荐角色
+%%%%%
+Doll Editor
+人偶编辑器
+%%%%%
+Esc - Quit
+Esc - 退出
+%%%%%
+  * - Random hints mode character
+  * - 随机提示模式角色
+%%%%%
+That's a silly name!
+这名字太蠢了！
+%%%%%
+No high scores yet...
+暂无高分记录……
+%%%%%
+ (WIZ)
+（巫师）
+%%%%%
+CTRL
+Ctrl
+%%%%%
+SHIFT
+Shift
+%%%%%
+Abil: 
+技能：
+%%%%%
+Build '%s'
+建造"%s"
+%%%%%
+\nExamples:\n
+\n示例：\n
+%%%%%
+  Sigmund v Jessica\n
+  Sigmund 对阵 Jessica\n
+%%%%%
+  99 orc v Royal Jelly\n
+  99只兽人 对阵 皇家果冻\n
+%%%%%
+  20-headed hydra v 10 kobold ; scimitar ego:flaming
+  20头九头蛇 对阵 10只狗头人；弯刀 附魔：烈焰
+%%%%%
+) in view: (%d,%d), see_cell: %s
+) 视野内：(%d,%d)，可见格：%s
+%%%%%
+Stack %s
+牌堆 %s
+%%%%%
+s
+
+%%%%%
+\# - Recommended character
+\# - 推荐角色
