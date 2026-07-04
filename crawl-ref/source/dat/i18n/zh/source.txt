@@ -1978,7 +1978,7 @@ gain power from chaos
 )
 ）
 %%%%
-    * - Random
+    * - Random 
     * - 随机
 %%%%
 * - Random name
@@ -2618,7 +2618,7 @@ abort
 about
 约
 %%%%
- accept (%zu chosen)</lightgrey>
+ accept (%zu chosen)
  确认（已选%zu项）</lightgrey>
 %%%%
 accepted the %s
@@ -2825,7 +2825,7 @@ Are you sure you want to remember your ancestor as %s?
 Armaments
 武装
 %%%%
- armed with
+ armed with 
  装备着
 %%%%
 Armour
@@ -4110,7 +4110,7 @@ ghostly
  gift of slime is revoked.
 的黏泥赠礼被收回了。
 %%%%
- gifted
+ gifted 
 赐予了你
 %%%%
 gizmo
@@ -5332,10 +5332,10 @@ Ouch! That really hurt!
 Outside, the world ends.
 外面，世界终结了。
 %%%%
- page down
+ page down  
  下一页
 %%%%
- page up
+ page up  
  上一页
 %%%%
 Pain
@@ -5430,7 +5430,7 @@ Please finish your current recitation first.
 
 # === Issue X2 P0-2: Missing source.txt entries ===
 %%%%
- Please select your
+ Please select your 
  请选择你的
 %%%%
 Please submit a bug report.
@@ -5946,7 +5946,7 @@ See you next game!
  seems to speed up.
 似乎加速了。
 %%%%
- select
+ select  
  选择
 %%%%
 Select a spell to %s
@@ -7478,7 +7478,7 @@ To do this, you must remove one of the following items:
  toggle between ability selection and description.
  切换能力选择与描述模式。
 %%%%
- toggle selected
+ toggle selected    
  切换选中
 %%%%
  toggle spell headers
@@ -7826,7 +7826,7 @@ Winter
 Wisps of shadow whirl around you...
 暗影的细丝在你周围旋转……
 %%%%
- with
+ with 
 用
 %%%%
 With a burst of heat and light, you rocket upwards!
@@ -10871,8 +10871,8 @@ Your roots penetrate the ground.
 Your search expression is invalid.
 你的搜索表达式无效。
 %%%%
-Your servitor could be imbued with this spell if your spell success rate were higher.\n
-Your servitor could be imbued with this spell if your spell success rate were higher.\n
+Your servitor could be imbued with this spell if your spell success rate were higher.
+
 %%%%
 Your shell of carrion and bone grows thicker.
 你的腐肉与骨骸外壳变得更厚了。
@@ -11175,7 +11175,7 @@ Bought
 
 购买了
 %%%%
- for
+ for 
 
 花了
 %%%%
@@ -11980,7 +11980,7 @@ stealthily
 
  t - %s！
 %%%%
- g - Guard the area.      f - Follow me.
+                   g - Guard the area.      f - Follow me.
 
  g - 守卫此区域。      f - 跟我来。
 %%%%
@@ -12036,7 +12036,7 @@ The monsters
 
 （显示）
 %%%%
- spell hidden
+ spell hidden 
 
  法术隐藏
 %%%%
@@ -12229,7 +12229,7 @@ Throw:
 
 ，以及 
 %%%%
-(while you are blinded and from distance 
+ (while you are blinded and from distance 
 
 （失明且远距时
 %%%%
@@ -12410,10 +12410,10 @@ You feel nearly all of your power leaking away!
  offers you knowledge of 
 赋予你
 %%%%
-a little 
+ a little 
 略微
 %%%%
-extremely 
+ extremely 
 极度
 %%%%
 "You will pay for your transgression, mortal!"
@@ -12473,7 +12473,7 @@ enters the arena
 Last arena monster was dismissed.
 最后一只竞技场怪物已被清除。
 %%%%
- # - Recommended character
+# - Recommended character
  # - 推荐角色
 %%%%
 You continue %s %s.
@@ -15465,7 +15465,7 @@ dominated
 bribed
 被贿赂
 %%%%
-Recommended 
+Recommended
 推荐
 %%%%
 What is your name today? 
@@ -17172,7 +17172,7 @@ It is%s good for stabbing helpless or unaware enemies.
 \n\nIt has a 1/%d chance to be destroyed on impact.
 \n\n它在击中时有1/%d几率损坏。
 %%%%
- the
+the
 
 %%%%
 You briefly feel strange.
@@ -20823,7 +20823,7 @@ No target in view!
  <w>travel</w>|examine|delete
  <w>前往</w>|检视|删除
 %%%%
- buy marked items
+ buy marked items 
  购买标记物品
 %%%%
  buy shopping list
@@ -20835,13 +20835,13 @@ No target in view!
  choose item
  选择物品
 %%%%
- describe
+describe
  描述
 %%%%
  in shopping list
 （在购物清单中）
 %%%%
- on
+on
 第
 %%%%
  put item on shopping list
@@ -22989,7 +22989,7 @@ Range: %s\n
  <lightgrey>(%s failure risk)</lightgrey>
  <lightgrey>（%s失败风险）</lightgrey>
 %%%%
- Invoke -
+ Invoke -    
  祈神 -
 %%%%
 <yellow>You have %1$d gold piece%2$s%3$s.
@@ -23760,8 +23760,8 @@ Note: time per level data comes from an upgraded game and may be incomplete.\n
 注意：每层时间数据来自升级后的游戏存档，可能不完整。\n
 
 %%%%
-%8s: %d daAuts\n
-%8s: %d daAuts\n
+%8s: %d daAuts
+
 
 %%%%
 Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of total XP\n D = Non-vault monster count\n E = Vault monster count\n F = Vault count percentage of total count\n\n
@@ -26520,7 +26520,7 @@ corrode you
 deals up to %d %s damage
 造成至多%d点%s伤害
 %%%%
- either 
+either 
 可能
 %%%%
  or 
@@ -26705,7 +26705,7 @@ NO GOD
 (Boost:
 （增幅：
 %%%%
- (while you are blinded and from distance
+ (while you are blinded and from distance 
 （处于失明状态，距离
 %%%%
 , and
@@ -26714,7 +26714,7 @@ NO GOD
 ;
 、
 %%%%
-  [%c] - %d gold -
+  [%c] - %d gold - 
   [%c] - %d 金币 -
 %%%%
 \n stacked deck:
@@ -26726,10 +26726,10 @@ NO GOD
 A Card
 一张卡牌
 %%%%
- a little
+ a little 
 有点
 %%%%
- and
+and
  和
 %%%%
 At 100% training
@@ -26818,7 +26818,7 @@ Lets you pick
 none (normally
 无（通常为
 %%%%
- offers you knowledge of
+ offers you knowledge of 
 为你提供了
 %%%%
 open
@@ -26827,7 +26827,7 @@ open
 open translucent
 打开的透明
 %%%%
- puts on
+ puts on 
 戴上了
 %%%%
 Randomly select a
@@ -26863,7 +26863,7 @@ Space - Pick
 Stash search prefixes:
 储藏搜索前缀:
 %%%%
- takes off
+ takes off 
 脱下了
 %%%%
 the
@@ -26891,25 +26891,25 @@ Trunk不计入锦标赛，你想要
 unnamed
 未命名的
 %%%%
- unwields
+ unwields 
 收起了
 %%%%
- very
+ very 
 非常
 %%%%
 very greatly
 大幅
 %%%%
- wears
+ wears 
 穿上了
 %%%%
 Which god (%s)?
 选择哪个神（%s）？
 %%%%
- wielding
+wielding
  挥舞着
 %%%%
- wields
+ wields 
 挥舞着
 %%%%
 would
@@ -26975,7 +26975,7 @@ the
 
 此
 %%%%
-very 
+ very 
 非常
 %%%%
  extremely 
@@ -27410,7 +27410,7 @@ huge
 glowing 
 发光
 %%%%
-Random 
+Random
 随机
 %%%%
 Small
@@ -28066,44 +28066,44 @@ tentacle connect failed! What the heck!  severed status %d
 \nYour AC would %s.
 \n你的AC将%s。
 %%%%
-'%s' category.\n'%s'类别。
-'%s' category.\n'%s'类别。
+'%s' category.
+'%s'类别。
 %%%%
-and electrocute %s\n并电击%s
-and electrocute %s\n并电击%s
+and electrocute %s
+并电击%s
 %%%%
-and electrocutes %s\n并电击%s
-and electrocutes %s\n并电击%s
+and electrocutes %s
+并电击%s
 %%%%
-by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
-by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
+by up to %d%% (press '!' for details).
+最多减少%d%%（按'!'查看详情）。
 %%%%
-+ %d (silver)\n+ %d（银）
-+ %d (silver)\n+ %d（银）
++ %d (silver)
++ %d（银）
 %%%%
-%s a shaft!\n%s掉进了竖井！
-%s a shaft!\n%s掉进了竖井！
+%s a shaft!
+%s掉进了竖井！
 %%%%
-with %s\n携带%s
-with %s\n携带%s
+with %s
+携带%s
 %%%%
-It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
-It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
+It is%s good for stabbing helpless or unaware enemies.
+它%s适合偷袭无助或无防备的敌人。
 %%%%
- (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
- (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
+ (about %d%% of your maximum possible piety)
+（约你最大虔诚值的%d%%）
 %%%%
- (next: %s)\n（下一个：%s）
- (next: %s)\n（下一个：%s）
+ (next: %s)
+（下一个：%s）
 %%%%
- (%d in deck)\n（牌组中%d张）
- (%d in deck)\n（牌组中%d张）
+ (%d in deck)
+（牌组中%d张）
 %%%%
- <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
- <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
+ <lightgrey>(%s failure risk)</lightgrey>
+<lightgrey>（%s失败风险）</lightgrey>
 %%%%
- (%s)\n（%s）
- (%s)\n（%s）
+ (%s)
+（%s）
 %%%%
 %s%s
 %s%s
@@ -28178,44 +28178,44 @@ Bane
 祸根
 %%%%
 %%%%
-*Curse\n*诅咒
-*Curse\n*诅咒
+*Curse
+*诅咒
 %%%%
-*Slow\n*缓慢
-*Slow\n*缓慢
+*Slow
+*缓慢
 %%%%
-^Fragile\n^脆弱
-^Fragile\n^脆弱
+^Fragile
+^脆弱
 %%%%
-*Silence\n*沉默
-*Silence\n*沉默
+*Silence
+*沉默
 %%%%
-RegenMP\n回魔
-RegenMP\n回魔
+RegenMP
+回魔
 %%%%
-Hungry\n饥饿
-Hungry\n饥饿
+Hungry
+饥饿
 %%%%
--Cast\n-施法
--Cast\n-施法
+-Cast
+-施法
 %%%%
-*Tele\n*传送
-*Tele\n*传送
+*Tele
+*传送
 %%%%
--Tele\n-传送
--Tele\n-传送
+-Tele
+-传送
 %%%%
-+Blink\n+闪现
-+Blink\n+闪现
++Blink
++闪现
 %%%%
-+Rage\n+狂暴
-+Rage\n+狂暴
++Rage
++狂暴
 %%%%
-*Rage\n*狂暴
-*Rage\n*狂暴
+*Rage
+*狂暴
 %%%%
-rCorr\n防腐蚀
-rCorr\n防腐蚀
+rCorr
+防腐蚀
 %%%%
 *Corrode
 *腐蚀
@@ -29592,7 +29592,7 @@ you hear an explosion!
 you refuse to depend on such disposable conveniences.
 你拒绝依赖这种一次性便利品。
 %%%%
- and
+and
  和
 %%%%
 , and
