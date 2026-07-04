@@ -266,11 +266,11 @@ string describe_rimeblight_damage(int pow, bool terse)
 
     if (terse)
     {
-        return make_stringf("%dd%d/%dd%d", dot_damage.num, dot_damage.size,
+        return make_stringf(T_("%dd%d/%dd%d"), dot_damage.num, dot_damage.size,
                                            shards_damage.num, shards_damage.size);
     }
 
-    return make_stringf("%dd%d (primary target), %dd%d (explosion)",
+    return make_stringf(T_("%dd%d (primary target), %dd%d (explosion)"),
                         dot_damage.num, dot_damage.size,
                         shards_damage.num, shards_damage.size);
 }

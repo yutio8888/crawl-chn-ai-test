@@ -2787,9 +2787,9 @@ void unwield_distortion(bool brand)
 {
     if (have_passive(passive_t::safe_distortion))
     {
-        simple_god_message(make_stringf(" absorbs the residual spatial "
+        simple_god_message(make_stringf(T_(" absorbs the residual spatial "
                            "distortion as you %s your "
-                           "weapon.", brand ? "rebrand" : "unwield").c_str());
+                           "weapon."), brand ? "rebrand" : "unwield").c_str());
         return;
     }
 
@@ -2801,7 +2801,7 @@ void unwield_distortion(bool brand)
     else if (coinflip())
     {
         you.banish(nullptr,
-                   make_stringf("%sing a weapon of distortion",
+                   make_stringf(T_("%sing a weapon of distortion"),
                                 brand ? "rebrand" : "unwield").c_str(),
                    true);
     }

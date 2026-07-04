@@ -220,7 +220,7 @@ void KillMaster::add_kill_info(string &killtext,
         for (const kill_exp &kill : kills)
             killtext += "  " + kill.desc + "\n";
 
-        killtext += make_stringf("%d creature%s vanquished.\n",
+        killtext += make_stringf(T_("%d creature%s vanquished.\n"),
                                  count, count == 1 ? "" : "s");
     }
     lua_pop(clua, 1);

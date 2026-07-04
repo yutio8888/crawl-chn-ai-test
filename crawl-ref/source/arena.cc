@@ -286,7 +286,7 @@ namespace arena
                 {
                     game_ended_with_error(
                         make_stringf(
-                            "Failed to create monster at (%d,%d) env.grid: %s",
+                            T_("Failed to create monster at (%d,%d) env.grid: %s"),
                             loc.x, loc.y, dungeon_feature_name(env.grid(loc))));
                 }
                 list_eq(mon);
@@ -298,7 +298,7 @@ namespace arena
     static void center_print(unsigned sz, string text, int number = -1)
     {
         if (number >= 0)
-            text = make_stringf("(%d) %s", number, text.c_str());
+            text = make_stringf(T_("(%d) %s"), number, text.c_str());
 
         unsigned len = strwidth(text);
         if (len > sz)
@@ -546,7 +546,7 @@ namespace arena
             cgotoxy(1, line++, GOTO_STAT);
             textcolour(BROWN);
             center_print(crawl_view.hudsz.x,
-                         make_stringf("Round %d of %d",
+                         make_stringf(T_("Round %d of %d"),
                                       after_fight ? trials_done
                                                   : trials_done + 1,
                                       total_trials));
@@ -1065,13 +1065,13 @@ namespace arena
         if (trials_done > 0)
         {
             string outcome = make_stringf(
-                "Final score: %s (%d); %s (%d) [%d ties]",
+                T_("Final score: %s (%d); %s (%d) [%d ties]"),
                  faction_a.desc.c_str(), team_a_wins,
                  faction_b.desc.c_str(), trials_done - team_a_wins - ties,
                  ties);
             if (contest_cancelled)
             {
-                outcome += make_stringf("\n(Cancelled after %d trial%s)",
+                outcome += make_stringf(T_("\n(Cancelled after %d trial%s)"),
                     trials_done, trials_done > 1 ? "s" : "");
             }
 
@@ -1120,7 +1120,7 @@ monster_type arena_pick_random_monster(const level_id &place)
     }
 
     game_ended_with_error(
-        make_stringf("No random monsters for place '%s'",
+        make_stringf(T_("No random monsters for place '%s'"),
                      arena::place.describe().c_str()));
 }
 

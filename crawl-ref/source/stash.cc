@@ -573,7 +573,7 @@ ShopInfo::ShopInfo(const shop_struct& shop_)
 
 string ShopInfo::shop_item_name(const item_def &it) const
 {
-    return make_stringf("%s%s (%d gold)",
+    return make_stringf(T_("%s%s (%d gold)"),
                         Stash::stash_item_name(it).c_str(),
                         shop_item_unknown(it) ? " (unknown)" : "",
                         item_price(it, shop));
@@ -1093,7 +1093,7 @@ string StashTracker::stash_search_prompt()
     {
         const string disp = replace_all(lastsearch, "<", "<<");
         opts.push_back(
-            make_stringf("Enter for \"%s\"", disp.c_str()));
+            make_stringf(T_("Enter for \"%s\""), disp.c_str()));
     }
     if (lastsearch != ".")
         opts.emplace_back("? for help");
@@ -1572,7 +1572,7 @@ formatted_string StashSearchMenu::calc_title()
     formatted_string fs;
     fs.textcolour(title->colour);
     string prefixes[] = {
-        make_stringf("%d match%s",
+        make_stringf(T_("%d match%s"),
             num_alt_matches, num_alt_matches == 1 ? "" : "es"),
         make_stringf("%d match%s",
             num_matches, num_matches == 1 ? "" : "es"),
@@ -1592,11 +1592,11 @@ formatted_string StashSearchMenu::calc_title()
     else
     {
         fs += formatted_string::parse_string(make_stringf(
-            "<lightgrey>"
+            T_("<lightgrey>"
             ": <w>%s</w> [toggle: <w>!</w>],"
             " by <w>%s</w> [<w>/</w>],"
             " <w>%s</w> useless & duplicates [<w>=</w>]"
-            "</lightgrey>",
+            "</lightgrey>"),
             menu_action == ACT_EXECUTE ? "travel" : "view  ",
             sort_style, filtered));
     }

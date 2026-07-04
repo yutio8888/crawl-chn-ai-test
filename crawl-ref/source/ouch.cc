@@ -470,7 +470,7 @@ void lose_level()
     calc_mp();
 
     take_note(Note(NOTE_XP_LEVEL_CHANGE, you.experience_level, 0,
-        make_stringf("HP: %d/%d MP: %d/%d",
+        make_stringf(T_("HP: %d/%d MP: %d/%d"),
                 you.hp, you.hp_max, you.magic_points, you.max_magic_points)));
 
     you.redraw_title = true;
@@ -1456,7 +1456,7 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
             // for note taking
             string damage_desc;
             if (!see_source)
-                damage_desc = make_stringf("something (%d)", dam);
+                damage_desc = make_stringf(T_("something (%d)"), dam);
             else
             {
                 damage_desc = scorefile_entry(dam, source,

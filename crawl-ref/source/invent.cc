@@ -503,7 +503,7 @@ string InvMenu::get_select_count_string(int) const
         if (all_sel.empty())
             return "";
 
-        return make_stringf(" %d item%s", (int)all_sel.size(),
+        return make_stringf(T_(" %d item%s"), (int)all_sel.size(),
                                           all_sel.size() > 1 ? "s" : "");
     }
 

@@ -503,7 +503,7 @@ string electric_charge_impossible_reason(bool allow_safe_monsters)
         ++nearby_mons;
         if (get_electric_charge_landing_spot(you, mi->pos(), &fail_reason).origin())
         {
-            example_reason = make_stringf("you can't charge at %s because %s",
+            example_reason = make_stringf(T_("you can't charge at %s because %s"),
                                           mi->name(DESC_THE).c_str(),
                                           fail_reason.c_str());
         }
@@ -642,7 +642,7 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
                 {
                     if (fail_reason)
                     {
-                        *fail_reason = make_stringf("You cannot charge away from %s!",
+                        *fail_reason = make_stringf(T_("You cannot charge away from %s!"),
                                                     beholder->name(DESC_THE, true).c_str());
                     }
 
@@ -654,7 +654,7 @@ coord_def get_electric_charge_landing_spot(const actor& agent, coord_def target,
                 {
                     if (fail_reason)
                     {
-                        *fail_reason = make_stringf("You cannot charge closer to %s!",
+                        *fail_reason = make_stringf(T_("You cannot charge closer to %s!"),
                                                     fearmonger->name(DESC_THE, true).c_str());
                     }
 
@@ -2251,7 +2251,7 @@ spret cast_piledriver(const coord_def& target, int pow, bool fail)
     mons = _get_monster_line(target, true);
     mprf(T_("Space contracts around you and %s and then re-expands violently!"),
             mons.size() == 1 ? mons[0]->name(DESC_THE).c_str()
-                             : make_stringf("%s other creatures",
+                             : make_stringf(T_("%s other creatures"),
                                     number_in_words(mons.size()).c_str()).c_str());
 
     // Animate the player and their victim flying forward together

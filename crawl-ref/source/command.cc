@@ -285,7 +285,7 @@ static void _list_equipment(equipment_slot first_slot, equipment_slot last_slot)
 
         if (slot_is_melded(i))
         {
-            entries.emplace_back(make_stringf("<darkgrey>[%s melded]</darkgrey>", equip_slot_name(i, true)));
+            entries.emplace_back(make_stringf(T_("<darkgrey>[%s melded]</darkgrey>"), equip_slot_name(i, true)));
             continue;
         }
 
@@ -712,10 +712,10 @@ static void _display_diag()
     s += make_stringf(T_("Display type: <w>%s</w>\n"), info.type.c_str());
     if (!suppress_unix_stuff)
     {
-        s += make_stringf("Terminal type (`TERM`): <w>%s</w>\n",
+        s += make_stringf(T_("Terminal type (`TERM`): <w>%s</w>\n"),
                                                         info.term.c_str());
     }
-    s += make_stringf("Terminal colours: %d foreground, %d background\n\n",
+    s += make_stringf(T_("Terminal colours: %d foreground, %d background\n\n"),
         info.fg_colors, info.bg_colors);
 
     if (webtiles_client)
@@ -735,12 +735,12 @@ static void _display_diag()
         // scenarios, I think people shouldn't mess with anything except the
         // first, and that's only for cosmetic purposes, not compat purposes
         s += make_stringf(
-            "\nCurrent terminal options (see the Options Guide for details):\n"
+            T_("\nCurrent terminal options (see the Options Guide for details):\n"
             "    `<w>allow_extended_colours</w>`: %d%s\n"
             "    `<w>bold_brightens_foreground</w>`: %d"
             "        `<w>blink_brightens_background</w>`: %d\n"
             "    `<w>best_effort_brighten_foreground</w>`: %d"
-            "  `<w>best_effort_brighten_background</w>`: %d\n\n",
+            "  `<w>best_effort_brighten_background</w>`: %d\n\n"),
             (int) Options.allow_extended_colours,
             Options.allow_extended_colours ? " (overridden by TERM)" : "",
             (int) Options.bold_brightens_foreground.to_bool(true),

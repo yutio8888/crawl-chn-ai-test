@@ -581,7 +581,7 @@ void trap_def::trigger(actor& triggerer)
         }
         else
         {
-            string msg = make_stringf("%s emits a blaring wail!",
+            string msg = make_stringf(T_("%s emits a blaring wail!"),
                                name(DESC_THE).c_str());
             noisy(40, pos, msg.c_str(), triggerer.mid);
         }
@@ -1027,8 +1027,8 @@ void do_trap_effects()
             if (!one_chance_in(3) || !hostile_teleport_is_possible())
                 break;
 
-            string msg = make_stringf("%s and a teleportation trap "
-                                      "spontaneously manifests!",
+            string msg = make_stringf(T_("%s and a teleportation trap "
+                                      "spontaneously manifests!"),
                                       _malev_msg().c_str());
             if (have_passive(passive_t::avoid_traps))
             {

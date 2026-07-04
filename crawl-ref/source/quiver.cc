@@ -2477,7 +2477,7 @@ namespace quiver
 
             string off_str = T_("off");
             string on_str = T_("on");
-            string mode = make_stringf("%s %s: %s",
+            string mode = make_stringf(T_("%s %s: %s"),
                 menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
                 T_("Focus mode"),
                 focus_mode == Focus::NONE
@@ -2601,7 +2601,7 @@ namespace quiver
             // this key shortcut does still work without arrow selection, but
             // it typically doesn't do much in this menu.
             const string keyhelp =
-                make_stringf(" <lightgrey>(%s to cycle)</lightgrey>",
+                make_stringf(T_(" <lightgrey>(%s to cycle)</lightgrey>"),
                             menu_keyhelp_cmd(CMD_MENU_CYCLE_HEADERS).c_str());
 
             first_item = 0;
@@ -2811,7 +2811,7 @@ namespace quiver
             vector<string> extra_cmds;
 
             if (allow_empty)
-                s += make_stringf(" ([<w>-</w>] %s)", T_("to clear"));
+                s += make_stringf(T_(" ([<w>-</w>] %s)"), T_("to clear"));
             return formatted_string::parse_string(s);
         }
 
@@ -2957,7 +2957,7 @@ namespace quiver
         {
             if (!_quiver_inscription_ok(s->get_item()))
             {
-                const string prompt = make_stringf("Really quiver %s?",
+                const string prompt = make_stringf(T_("Really quiver %s?"),
                     you.inv[s->get_item()].name(DESC_INVENTORY).c_str());
                 if (!yesno(prompt.c_str(), true, 'n'))
                     return false;

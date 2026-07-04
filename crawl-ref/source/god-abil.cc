@@ -5055,7 +5055,7 @@ string ru_sac_text(ability_type sac)
     {
         ASSERT(sacrifice_muts.size() == 1);
         const mutation_type mut = AS_MUT(sacrifice_muts[0]);
-        return make_stringf(" (%s)", mutation_name(mut));
+        return make_stringf(T_(" (%s)"), mutation_name(mut));
     }
 
     // "Tloc/Fire/Ice"
@@ -5065,7 +5065,7 @@ string ru_sac_text(ability_type sac)
                     return _arcane_mutation_to_school_abbr(AS_MUT(mut));
                 }, "/", "/");
 
-    return make_stringf(" (%s)", school_names.c_str());
+    return make_stringf(T_(" (%s)"), school_names.c_str());
 }
 
 static int _ru_get_sac_piety_gain(ability_type sac)
@@ -5998,7 +5998,7 @@ bool hepliaklqana_choose_ancestor_type(int ancestor_choice)
     god_speaks(you.religion, T_("It is so."));
     take_note(Note(NOTE_ANCESTOR_TYPE, 0, 0, ancestor_type_name));
     const string mile_text
-        = make_stringf("remembered their ancestor %s as %s.",
+        = make_stringf(T_("remembered their ancestor %s as %s."),
                        hepliaklqana_ally_name().c_str(),
                        ancestor_type_name.c_str());
     mark_milestone("ancestor.class", mile_text);
@@ -6202,7 +6202,7 @@ spret hepliaklqana_transference(bool fail)
 static void _hepliaklqana_choose_name()
 {
     const string old_name = hepliaklqana_ally_name();
-    string prompt  = make_stringf("Remember %s name as what? ",
+    string prompt  = make_stringf(T_("Remember %s name as what? "),
                                   apostrophise(old_name).c_str());
 
     char buf[18];
@@ -6343,7 +6343,7 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
         if (landing_actor)
         {
             error_ret = make_stringf(
-                "You have no room to wall jump there; %s is in the way.",
+                T_("You have no room to wall jump there; %s is in the way."),
                 landing_actor->observable()
                             ? landing_actor->name(DESC_THE).c_str()
                             : "something you can't see");

@@ -908,7 +908,7 @@ string print_abilities()
     {
         for (unsigned int i = 0; i < talents.size(); ++i)
         {
-            text += make_stringf("%s%s (%s)", i ? ", " : "",
+            text += make_stringf(T_("%s%s (%s)"), i ? ", " : "",
                         ability_name(talents[i].which).c_str(),
                         failure_rate_to_string(talents[i].fail).c_str());
         }
@@ -1528,9 +1528,9 @@ static string _ability_damage_string(ability_type ability)
                                        _yred_hurl_torchlight_power());
         case ABIL_BEOGH_SMITING:
             dam = beogh_smiting_dice(_beogh_smiting_power(false), false);
-            return make_stringf("6 + %dd%d", dam.num, dam.size);
+            return make_stringf(T_("6 + %dd%d"), dam.num, dam.size);
         case ABIL_TSO_CLEANSING_FLAME:
-            return make_stringf("2d%d*", _tso_cleansing_flame_power(false));
+            return make_stringf(T_("2d%d*"), _tso_cleansing_flame_power(false));
         case ABIL_CHEIBRIADOS_SLOUCH:
             return make_stringf(T_("%dd3 / 2 (against normal-speed enemies)"),
                                 slouch_damage_for_speed());
@@ -1547,7 +1547,7 @@ static string _ability_damage_string(ability_type ability)
             break;
         case ABIL_RU_APOCALYPSE:
             // Apocalypse uses 4 dice, 6 dice or 8 dice depending on the effect.
-            return make_stringf("10 + (4-8)d%d", apocalypse_die_size(false));
+            return make_stringf(T_("10 + (4-8)d%d"), apocalypse_die_size(false));
         case ABIL_JIYVA_OOZEMANCY:
             // per turn damage is 2d(3*#walls)
             return "2d(3-24)";
@@ -1588,7 +1588,7 @@ static string _ability_damage_string(ability_type ability)
             return "";
     }
 
-    return make_stringf("%dd%d", dam.num, dam.size);
+    return make_stringf(T_("%dd%d"), dam.num, dam.size);
 }
 
 // XXX: should this be in describe.cc?
@@ -2602,14 +2602,14 @@ static vector<string> _desc_slouch_damage(const monster_info& mi)
     else if (!is_slouchable(mi.pos))
         return vector<string>{make_stringf(T_("not susceptible"))};
     else
-        return vector<string>{make_stringf("damage: %dd3 / 2", slouch_damage(monster_at(mi.pos)))};
+        return vector<string>{make_stringf(T_("damage: %dd3 / 2"), slouch_damage(monster_at(mi.pos)))};
 }
 
 static vector<string> _desc_bind_soul_hp(const monster_info& mi)
 {
     if (!monster_at(mi.pos) || !yred_can_bind_soul(monster_at(mi.pos)))
         return vector<string>{};
-    return vector<string>{make_stringf("hp as a bound soul: ~%d", yred_get_bound_soul_hp(mi.type, true))};
+    return vector<string>{make_stringf(T_("hp as a bound soul: ~%d"), yred_get_bound_soul_hp(mi.type, true))};
 }
 
 static vector<string> _desc_marionette_spells(const monster_info& mi)
@@ -2891,7 +2891,7 @@ bool activate_talent(const talent& tal, dist *target)
         args.mode = TARG_HOSTILE;
         args.range = range;
         args.needs_path = !testbits(abil.flags, abflag::target);
-        args.top_prompt = make_stringf("%s: <w>%s</w>",
+        args.top_prompt = make_stringf(T_("%s: <w>%s</w>"),
             is_targeted ? (T_("Aiming"))
                         : (T_("Activating")),
             ability_name(abil.ability).c_str());
