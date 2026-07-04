@@ -777,9 +777,9 @@ void actor::constriction_damage_defender(actor &defender)
             break;
         }
 
-        mprf("%s %s %s%s%s", attacker_desc.c_str(),
-             force_plural ? "constrict"
-                          : conj_verb("constrict").c_str(),
+        mprf(T_("%s %s %s%s%s"), attacker_desc.c_str(),
+             force_plural ? T_("constrict")
+                          : conj_verb(T_("constrict")).c_str(),
              defender.name(DESC_THE).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
@@ -792,7 +792,7 @@ void actor::constriction_damage_defender(actor &defender)
     {
         mprf(T_("%s %s constricted%s%s"),
              defender.name(DESC_THE).c_str(),
-             defender.conj_verb("are").c_str(),
+             defender.conj_verb(C_("verb", "are")).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
 #else
@@ -954,7 +954,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         {
             mprf(T_("%s %s with %s%s"),
                  name(DESC_THE).c_str(),
-                 conj_verb("collide").c_str(),
+                 conj_verb(T_("collide")).c_str(),
                  other->name(DESC_THE).c_str(),
                  attack_strength_punctuation((dam + damother) / 2).c_str());
             // OK, now do the messaging for protected monsters.
@@ -991,7 +991,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         if (!can_pass_through_feat(env.grid(newpos)))
         {
             mprf(T_("%s %s into %s%s"),
-                 name(DESC_THE).c_str(), conj_verb("slam").c_str(),
+                 name(DESC_THE).c_str(), conj_verb(T_("slam")).c_str(),
                  env.map_knowledge(newpos).known()
                  ? feature_description_at(newpos, false, DESC_THE)
                        .c_str()
@@ -1001,7 +1001,7 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         else
         {
             mprf(T_("%s violently %s moving%s"),
-                 name(DESC_THE).c_str(), conj_verb("stop").c_str(),
+                 name(DESC_THE).c_str(), conj_verb(T_("stop")).c_str(),
                  attack_strength_punctuation(dam).c_str());
         }
 
@@ -1074,7 +1074,7 @@ bool actor::knockback(const actor &cause, int dist, int dmg, string source_name,
         {
             mprf_p(T_("%1$s %2$s knocked back by the %3$s."),
                    name(DESC_THE).c_str(),
-                   conj_verb("are").c_str(),
+                   conj_verb(C_("verb", "are")).c_str(),
                    source_name.c_str());
         }
         else

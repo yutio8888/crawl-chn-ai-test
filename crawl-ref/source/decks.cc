@@ -1498,7 +1498,7 @@ static void _storm_card(int power)
         beam.glyph             = dchar_glyph(DCHAR_FIRED_BURST);
         beam.name              = "electrical discharge";
         beam.aux_source        = "the storm";
-        beam.explode_noise_msg = "You hear a clap of thunder!";
+        beam.explode_noise_msg = T_("You hear a clap of thunder!");
         beam.real_flavour      = beam.flavour;
         beam.colour            = LIGHTCYAN;
         beam.source_id         = MID_PLAYER;

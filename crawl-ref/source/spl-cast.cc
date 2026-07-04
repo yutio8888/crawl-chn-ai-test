@@ -2243,7 +2243,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         const bool useless = spell_is_useless(spell, true, false, true);
         const char *spell_title_color = useless ? "darkgrey" : "w";
         const string verb = channelled_spell_active(spell)
-            ? "<lightred>Restarting spell</lightred>"
+            ? T_("<lightred>Restarting spell</lightred>")
             : is_targeted ? T_("Aiming") : T_("Casting");
         string title = make_stringf("%s: <%s>%s</%s>", verb.c_str(),
                     spell_title_color, spell_title(spell), spell_title_color);

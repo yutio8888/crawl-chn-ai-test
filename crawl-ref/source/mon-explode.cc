@@ -43,7 +43,7 @@ static void _setup_base_explosion(bolt & beam, const monster& origin)
     beam.source       = origin.pos();
     beam.source_name  = origin.base_name(DESC_BASENAME, true);
     beam.target       = origin.pos();
-    beam.explode_noise_msg = "You hear an explosion!";
+    beam.explode_noise_msg = T_("You hear an explosion!");
 
     if (!crawl_state.game_is_arena() && origin.friendly())
     {
@@ -132,7 +132,7 @@ static void _setup_lightning_explosion(bolt & beam, const monster& origin)
     beam.flavour   = BEAM_ELECTRICITY;
     beam.damage    = ball_lightning_damage(origin.get_hit_dice());
     beam.name      = "blast of lightning";
-    beam.explode_noise_msg = "You hear a clap of thunder!";
+    beam.explode_noise_msg = T_("You hear a clap of thunder!");
     beam.colour    = LIGHTCYAN;
     beam.ex_size   = x_chance_in_y(origin.get_hit_dice(), 24) ? 3 : 2;
     if (origin.summoner)
@@ -181,7 +181,7 @@ static void _setup_bennu_explosion(bolt& beam, const monster& origin)
     beam.flavour = BEAM_NEG;
     beam.damage  = _bennu_damage(origin.get_hit_dice());
     beam.name    = "pyre of ghostly fire";
-    beam.explode_noise_msg = "You hear an otherworldly crackling!";
+    beam.explode_noise_msg = T_("You hear an otherworldly crackling!");
     beam.colour  = CYAN;
     beam.ex_size = 2;
 }
@@ -232,7 +232,7 @@ static void _setup_bloated_husk_explosion(bolt & beam, const monster& origin)
     beam.flavour = BEAM_MMISSILE;
     beam.damage  = _bloated_husk_damage(origin.get_hit_dice());
     beam.name    = "blast of putrescent gases";
-    beam.explode_noise_msg = "You hear an high-pitched explosion!";
+    beam.explode_noise_msg = T_("You hear an high-pitched explosion!");
     beam.colour  = GREEN;
     beam.ex_size = 2;
 
@@ -249,7 +249,7 @@ static void _setup_sporangium_explosion(bolt & beam, const monster& origin)
     beam.flavour = BEAM_ACID;
     beam.damage  = _sporangium_damage(0);
     beam.name    = "caustic explosion";
-    beam.explode_noise_msg = "You hear an extremely violent squelch.";
+    beam.explode_noise_msg = T_("You hear an extremely violent squelch.");
     beam.colour  = YELLOW;
     beam.ex_size = 3;
     beam.origin_spell = SPELL_LAUNCH_SPORANGIUM;

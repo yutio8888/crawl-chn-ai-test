@@ -105,7 +105,7 @@ bool corona_monster(monster* mons, const actor* source)
     if (!was_glowing)
         simple_monster_message(*mons, " is outlined in light.");
     else
-        simple_monster_message(*mons, " glows brighter for a moment.");
+        simple_monster_message(*mons, T_(" glows brighter for a moment."));
 
     return true;
 }

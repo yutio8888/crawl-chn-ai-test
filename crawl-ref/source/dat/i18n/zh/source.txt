@@ -937,13 +937,13 @@ gain power from chaos
 %1$s在雨中%2$s。
 %%%%
 %1$s %2$s knocked back by the %3$s.
-%1$s被%3$s击退了。
+%1$s%2$s%3$s击退了。
 %%%%
 %1$s %2$s knocked back by the blast.
-%1$s被爆炸%2$s击退。
+%1$s%2$s爆炸击退了。
 %%%%
 %1$s %2$s knocked back.
-%1$s被击退了。
+%1$s%2$s击退了。
 %%%%
 %1$s %2$s suddenly forward!
 %1$s猛然向前冲去！
@@ -12474,7 +12474,7 @@ completely
 完全
 %%%%
  closely
-险些
+勉强
 %%%%
  barely
 勉强
@@ -17157,10 +17157,10 @@ deep
 深
 %%%%
 You are covered in even more %sliquid fire!
-你被%sliquid fire覆盖得更严重了！
+你被%s液态火焰覆盖得更严重了！
 %%%%
 You are covered in %sliquid fire! Move or burn!
-你被%sliquid fire覆盖了！移动或被烧！
+你被%s液态火焰覆盖了！移动或被烧！
 %%%%
 You feel very buoyant.
 你感觉非常有浮力。
@@ -29354,7 +29354,7 @@ kneel at
 
 %%%%
 %s %s constricted%s%s
-%s被%s紧紧缠绕%s%s
+%s%s紧紧缠绕%s%s
 
 %%%%
 %s %s flashes viciously!
@@ -29370,7 +29370,7 @@ kneel at
 
 %%%%
 %s %s with %s%s
-%s与%s相撞%s%s
+%s%s了%s%s
 
 %%%%
 %s animating energy erupts into ghostly fire!
@@ -30588,3 +30588,201 @@ verb|bask
 %%%%
 verb|are engulfed
 被吞没
+%%%%
+%s %s afflicted by dizzying energies!
+%s%s令人眩晕的能量折磨！
+%%%%
+%s %s as negative energy consumes %s%s
+%1$s因负能量吞噬%3$s而%2$s%4$s
+%%%%
+%s %s electrocuted%s
+%s%s电击了%s
+%%%%
+%s %s engulfed in a cloud of dizzying spores!
+%s%s一团眩晕孢子云吞没！
+%%%%
+%s %s engulfed in flames%s
+%s%s火焰吞没%s
+%%%%
+%s %s vitality from %s injuries!
+%s%s了%s伤势中的生命力！
+%%%%
+%s to where?
+%s到哪？
+%%%%
+<lightred>%s%s only, please.</lightred>
+<lightred>请仅输入%s%s。</lightred>
+%%%%
+The air twists around
+空气盘旋着
+%%%%
+The confined air twists around weakly
+周围的空气无力地盘旋着
+%%%%
+The ground beneath %s fractures%s
+%s脚下的地面裂开了%s
+%%%%
+The open air twists around violently
+开阔的空气剧烈地盘旋着
+%%%%
+[Y]es or [N]o
+[Y]是或[N]否
+%%%%
+[Y]es, [N]o, or [A]lways
+[Y]是、[N]否或[A]总是
+%%%%
+Uppercase
+大写
+%%%%
+blast
+冲击
+%%%%
+blink
+传送
+%%%%
+collide
+撞上
+%%%%
+constrict
+紧勒
+%%%%
+envenom
+淬毒
+%%%%
+infuriate
+激怒
+%%%%
+sear
+灼烧
+%%%%
+shock
+电击
+%%%%
+slam
+狠狠
+%%%%
+stop
+停下
+%%%%
+alarm
+警报
+%%%%
+archmage's
+大法师
+%%%%
+devourer's
+吞噬者
+%%%%
+harlequin's
+小丑
+%%%%
+ of Golubria
+格鲁布瑞亚
+%%%%
+passage
+通道
+%%%%
+permanent teleport
+永久传送
+%%%%
+shaft
+竖井
+%%%%
+teleport
+传送
+%%%%
+ trap
+陷阱
+%%%%
+tyrant's
+暴君
+%%%%
+verb|are
+被
+%%%%
+verb|are shoved
+猛退
+%%%%
+verb|hold
+死死守住
+%%%%
+verb|draw
+汲取
+%%%%
+shrivel
+枯萎
+%%%%
+slip
+滑倒
+%%%%
+stumble
+踉跄
+%%%%
+thorns
+荆棘
+%%%%
+spines
+尖刺
+%%%%
+%s %s backwards!
+%s%s向后退去！
+%%%%
+%s %s engulfed in a cloud of soporific spores!
+%s%s一团催眠孢子云吞没！
+%%%%
+%s %s held in place!
+%s%s紧紧束缚在原地！
+%%%%
+%s %s %s ground!
+%s%s了%s阵地！
+%%%%
+%s %s skewered by barbed spikes.
+%s%s倒刺刺穿。
+%%%%
+%s %s struck by %s %s.
+%s%s%s的%s击中。
+%%%%
+%s %s %s%s
+%s%s了%s%s
+%%%%
+%s %s %s!
+%s%s了%s！
+%%%%
+%s and strikes %s%s
+%s落下，击中了%s%s
+%%%%
+Renounce Religion
+放弃信仰
+%%%%
+ fades away.
+逐渐消失了。
+%%%%
+ detonates feebly.
+无力地引爆了。
+%%%%
+%s avoids the killing blow by scattering into a rainbow of bats!
+%s避开了致命一击，化作一群五颜六色的蝙蝠四处飞散！
+%%%%
+<lightred>Restarting spell</lightred>
+<lightred>重新施法</lightred>
+%%%%
+You hear a clap of thunder!
+你听到一声雷鸣！
+%%%%
+You hear an extremely violent squelch.
+你听到一声极其猛烈的挤压声。
+%%%%
+You hear an high-pitched explosion!
+你听到一声尖锐的爆炸！
+%%%%
+You hear an otherworldly crackling!
+你听到一阵非人间的噼啪声！
+%%%%
+You hear an explosion!
+你听到一声爆炸！
+%%%%
+ for a moment.
+，持续了一瞬。
+%%%%
+ glows brighter for a moment.
+短暂地变得更亮了。

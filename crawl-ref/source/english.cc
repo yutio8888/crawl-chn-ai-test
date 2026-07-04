@@ -392,8 +392,58 @@ static string _number_in_words(unsigned num, unsigned period)
                                   : ""));
 }
 
+static string _chinese_number_in_words(unsigned num)
+{
+    static const char *digits[] =
+    {
+        "零", "一", "二", "三", "四", "五", "六", "七", "八", "九"
+    };
+
+    if (num < 10)
+        return digits[num];
+
+    if (num < 20)
+        return string("十") + (num % 10 ? digits[num % 10] : "");
+
+    if (num < 100)
+    {
+        unsigned tens = num / 10;
+        unsigned ones = num % 10;
+        return string(digits[tens]) + "十" + (ones ? digits[ones] : "");
+    }
+
+    if (num < 1000)
+    {
+        unsigned hundreds = num / 100;
+        unsigned rest = num % 100;
+        string result = string(digits[hundreds]) + "百";
+        if (rest)
+        {
+            if (rest < 10)
+                result += string("零") + digits[rest];
+            else
+                result += _chinese_number_in_words(rest);
+        }
+        return result;
+    }
+
+    // 1000+
+    unsigned thousands = num / 1000;
+    unsigned rest = num % 1000;
+    string result = _chinese_number_in_words(thousands) + "千";
+    if (rest)
+    {
+        if (rest < 100)
+            result += "零";
+        result += _chinese_number_in_words(rest);
+    }
+    return result;
+}
+
 string number_in_words(unsigned num)
 {
+    if (Options.language == lang_t::ZH)
+        return _chinese_number_in_words(num);
     return _number_in_words(num, 0);
 }
 
