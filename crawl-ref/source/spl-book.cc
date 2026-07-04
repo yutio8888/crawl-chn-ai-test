@@ -841,11 +841,9 @@ private:
 
             desc << left;
             desc << chop_string(spell.name, 32);
-            desc << spell.school;
-
-            int so_far = strwidth(desc.str()) - (colour_to_str(colour).length()+2);
-            if (so_far < 58)
-                desc << string(58 - so_far, ' ');
+            // Fixed 26-cell school column matches header's chop_string("Type", 26).
+            // chop_string handles CJK width internally via wcwidth().
+            desc << chop_string(spell.school, 26);
             desc << "</" << colour_to_str(colour) << ">";
 
             if (you.divine_exegesis)
