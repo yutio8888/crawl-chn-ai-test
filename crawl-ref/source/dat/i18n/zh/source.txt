@@ -16936,10 +16936,10 @@ At a training level of %d%%
 在%d%%训练度下
 %%%%
 you %1$sreach %2$d.%3$d in the equivalent of %4$d.%5$d XLs.
-你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
+你%1$s在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
 %%%%
 you %1$sreach %2$d.%3$d in about %4$d.%5$d XLs.
-你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
+你%1$s在%4$d.%5$d个经验等级内达到%2$d.%3$d级。
 %%%%
 \n    Current attack delay: %.1f.
 \n    当前攻击延迟: %.1f。
