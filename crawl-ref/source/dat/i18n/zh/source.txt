@@ -5786,7 +5786,7 @@ Ru
 入
 %%%%
 Ru asks you to %s.
-Ru要求你%s。
+入要求你%s。
 %%%%
 run
 奔跑
@@ -7866,7 +7866,7 @@ Xom
 佐姆
 %%%%
 Xom finds this level too familiar and boring!
-Xom觉得这一层太过熟悉、太过无聊了！
+佐姆觉得这一层太过熟悉、太过无聊了！
 %%%%
 Yes
 是
@@ -9430,7 +9430,7 @@ You feel the power of the Abyss delaying your translocation!
 你感到深渊的力量在延缓你的传送！
 %%%%
 You feel the power of Zot begin to gather its forces!
-你感到Zot的力量开始聚集！
+你感到佐特的力量开始聚集！
 %%%%
 You feel the presence of a powerless spirit.
 你感到一个无力之灵的存在。
@@ -24544,7 +24544,7 @@ You are reanimating the dead.
 你正在复活死者。
 %%%%
 You are reciting Zin's Axioms of Law.
-你正在诵读Zin的法律公理。
+你正在诵读辛的法律公理。
 %%%%
 You are regenerating under the effects of ambrosia.
 你正在仙酿的作用下再生。
