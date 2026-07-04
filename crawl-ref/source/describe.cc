@@ -6115,7 +6115,7 @@ string _monster_habitat_description(const monster_info& mi)
     {
     case HT_AMPHIBIOUS:
     {
-        string verb = (mi.type == MONS_ORC_APOSTLE)
+        const char* verb = (mi.type == MONS_ORC_APOSTLE)
             ? T_("walk on") : T_("travel through");
         return uppercase_first(make_stringf_p(T_("%1$s can %2$s water.\n"),
             mi.pronoun(PRONOUN_SUBJECTIVE), verb));
