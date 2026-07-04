@@ -20587,10 +20587,10 @@ sleepcap
 眠帽
 %%%%
 \n\nit affects your ac (%+d).
-\n\n它影响你的AC(%+d)。
+\n\n它影响你的护甲(%+d)。
 %%%%
 \n\nit affects your shielding (%+d).
-\n\n它影响你的SH(%+d)。
+\n\n它影响你的格挡(%+d)。
 %%%%
 \n\nit affects your evasion (%+d).
 \n\n它影响你的闪避(%+d)。
@@ -29207,22 +29207,16 @@ disrupt
 %%%%
 curses
 诅咒
-%%
-%%
-%%
-%%
-%%
-%%
-%%
-Your spell failure would
+%%%%
+\nYour spell failure would
 你的法术失败率将
-%%
+%%%%
 It is an ancient artefact.
 它是一件远古神器。
-%%
+%%%%
 It cannot be enchanted further.
 它无法被进一步附魔。
-%%
+%%%%
 This ancient artefact cannot be changed by magic or mundane means.
 这件远古神器无法被魔法或凡俗手段改变。
 %%%%

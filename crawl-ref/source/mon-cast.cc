@@ -6103,7 +6103,7 @@ static void _mons_mesmerise(monster& mons)
                                                  : MSGCH_MONSTER_SPELL);
     const bool already_mesmerised = you.beheld_by(mons);
 
-    string targ_msg = !mons_aligned(&mons, &you) ? "you"
+    string targ_msg = !mons_aligned(&mons, &you) ? T_("you")
                 : make_stringf("%s enemies", mons.pronoun(PRONOUN_POSSESSIVE).c_str());
 
     if (!already_mesmerised)
