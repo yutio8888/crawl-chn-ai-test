@@ -341,12 +341,13 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         // to the grid metric so grid rendering stays aligned.
         // For CJK fallback font glyphs, keep the native advance: in
         // free-form rendering (tooltips, menus, item descriptions),
-        // the CJK font's own advance produces correct tight spacing.
-        // render_textblock() computes grid-aligned advance
-        // independently using m_max_advance.x * char_w, so grid
-        // alignment is never affected by this field.
+        // Quantize double-width advance to the monospace grid.
+        // The CJK fallback font's native advance (~20px) differs from
+        // 2 * cell width (32px at 16px). Forcing advance to the grid
+        // value makes string_width/store/render_textblock all agree,
+        // eliminating column misalignment proportional to CJK count.
         int cw = wcwidth(ch);
-        if (cw > 1 && use_face != cjk_face)
+        if (cw > 1)
             glyph.advance = m_max_advance.x * cw;
 
         // For CJK fallback glyphs, use Sarasa's native ascender values.
