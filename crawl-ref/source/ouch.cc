@@ -536,11 +536,11 @@ bool drain_player(int power, bool announce_full, bool ignore_protection, bool qu
         string intensifier = "";
         int perc = 100 * -you.hp_max_adj_temp / get_real_hp(false, false);
         if (perc >= 50)
-            intensifier = "extremely ";
+            intensifier = T_("extremely ");
         else if (perc >= 30)
-            intensifier = "very heavily ";
+            intensifier = T_("very heavily ");
         else if (perc >= 20)
-            intensifier = "heavily ";
+            intensifier = T_("heavily ");
 
         if (!quiet)
             mprf(T_("You feel %sweakened."),
@@ -985,7 +985,7 @@ static void _maybe_medusa_lithotoxin()
         if (x_chance_in_y(get_form()->get_effect_chance(), 100))
             targ->petrify(&you);
         else
-            simple_monster_message(*targ, " resists.");
+            simple_monster_message(*targ, T_(" resists."));
     }
 
     you.duration[DUR_MEDUSA_COOLDOWN] = 1;
@@ -1442,7 +1442,7 @@ void ouch(int dam, kill_method_type death_type, mid_t source, const char *aux,
         // Even if we have low HP messages off, we'll still give a
         // big hit warning (in this case, a hit for half our HPs) -- bwr
         if (dam > 0 && you.hp_max <= dam * 2)
-            mprf(MSGCH_DANGER, "Ouch! That really hurt!");
+            mprf(MSGCH_DANGER, T_("Ouch! That really hurt!"));
 
         if (you.hp > 0 && dam > 0)
         {

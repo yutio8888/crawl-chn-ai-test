@@ -984,7 +984,7 @@ void feat_splash_noise(dungeon_feature_type feat)
         return;
 
     case DNGN_LAVA:
-        mprf(MSGCH_SOUND, "You hear a sizzling splash.");
+        mprf(MSGCH_SOUND, T_("You hear a sizzling splash."));
         return;
 
     default:

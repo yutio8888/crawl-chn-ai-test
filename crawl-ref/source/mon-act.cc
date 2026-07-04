@@ -182,7 +182,7 @@ static bool _handle_ru_melee_redirection(monster &mons, monster **new_target)
     if (interference == DO_BLOCK_ATTACK)
     {
         simple_monster_message(mons,
-            " is stunned by your conviction and fails to attack.", false,
+            T_(" is stunned by your conviction and fails to attack."), false,
             MSGCH_GOD);
         return true;
     }
@@ -215,7 +215,7 @@ static void _melee_attack_player(monster &mons, monster* ru_target)
         // attack that target
         mons.target = ru_target->pos();
         mons.foe = ru_target->mindex();
-        mprf(MSGCH_GOD, "You redirect %s's attack!",
+        mprf(MSGCH_GOD, T_("You redirect %s's attack!"),
              mons.name(DESC_THE).c_str());
         fight_melee(&mons, ru_target);
     }
@@ -1423,7 +1423,7 @@ static void _mons_fire_wand(monster& mons, spell_type mzap, bolt &beem)
     if (!simple_monster_message(mons, T_(" zaps a wand.")))
     {
         if (!silenced(you.pos()))
-            mprf(MSGCH_SOUND, "You hear a zap.");
+            mprf(MSGCH_SOUND, T_("You hear a zap."));
     }
     mons_cast(&mons, beem, mzap, MON_SPELL_EVOKE, false);
     mons.lose_energy(EUT_ITEM);
@@ -1595,13 +1595,13 @@ bool handle_throw(monster* mons, bolt & beem, bool teleport, bool check_only, bo
         if (interference == DO_BLOCK_ATTACK)
         {
             simple_monster_message(*mons,
-                                " is stunned by your conviction and fails to attack.", false,
+                                T_(" is stunned by your conviction and fails to attack."), false,
                                 MSGCH_GOD);
             return false;
         }
         else if (interference == DO_REDIRECT_ATTACK)
         {
-            mprf(MSGCH_GOD, "You redirect %s's attack!",
+            mprf(MSGCH_GOD, T_("You redirect %s's attack!"),
                     mons->name(DESC_THE).c_str());
             int pfound = 0;
             for (radius_iterator ri(you.pos(),
@@ -2232,7 +2232,7 @@ void handle_monster_move(monster* mons)
         if (x_chance_in_y(3 * gold, 100))
         {
             simple_monster_message(*mons,
-                " is distracted by your dazzling golden aura.");
+                T_(" is distracted by your dazzling golden aura."));
 
             mons->add_ench(
                 mon_enchant(ENCH_DAZED, nullptr,
@@ -2454,7 +2454,7 @@ void monster::struggle_against_net()
                     mpr(T_("Something you can't see is thrashing in a web."));
                 else
                     simple_monster_message(*this,
-                                        " struggles to get unstuck from the web.");
+                                        T_(" struggles to get unstuck from the web."));
             }
             return;
         }
@@ -2862,7 +2862,7 @@ static bool _jelly_divide(monster& parent)
     if (!simple_monster_message(parent, T_(" splits in two!"))
         && (player_can_hear(parent.pos()) || player_can_hear(child->pos())))
     {
-        mprf(MSGCH_SOUND, "You hear a squelching noise.");
+        mprf(MSGCH_SOUND, T_("You hear a squelching noise."));
     }
 
     if (crawl_state.game_is_arena())
@@ -3825,7 +3825,7 @@ static bool _monster_move(monster* mons, coord_def& delta)
 
     // TODO: move the below logic out of move code.
     if (one_chance_in(10) && you.can_see(*mons) && mons->berserk())
-        mprf(MSGCH_TALK_VISUAL, "%s rages.", mons->name(DESC_THE).c_str());
+        mprf(MSGCH_TALK_VISUAL, T_("%s rages."), mons->name(DESC_THE).c_str());
     // Look, this is silly.
     if (one_chance_in(5)
         && mons->has_ench(ENCH_FRENZIED)

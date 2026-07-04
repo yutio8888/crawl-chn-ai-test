@@ -615,7 +615,7 @@ static void _abyss_lose_monster(monster& mons)
     // make sure we don't end up with an invalid hep ancestor
     else if (hepliaklqana_ancestor() == mons.mid)
     {
-        simple_monster_message(mons, " is pulled into the Abyss.",
+        simple_monster_message(mons, T_(" is pulled into the Abyss."),
                 false, MSGCH_BANISHMENT);
         remove_companion(&mons);
         you.duration[DUR_ANCESTOR_DELAY] = random_range(50, 150); //~5-15 turns
@@ -658,7 +658,7 @@ static void _place_displaced_monsters()
             // hep messaging is done in _abyss_lose_monster
             if (you.can_see(*mon) && hepliaklqana_ancestor() != mon->mid)
             {
-                simple_monster_message(*mon, " is pulled into the Abyss.",
+                simple_monster_message(*mon, T_(" is pulled into the Abyss."),
                         false, MSGCH_BANISHMENT);
             }
             _abyss_lose_monster(*mon);

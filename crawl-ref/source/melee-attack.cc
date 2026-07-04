@@ -569,7 +569,7 @@ void melee_attack::apply_sign_of_ruin_effects()
                 {
                     defender->as_monster()->add_ench(mon_enchant(ENCH_BLIND, attacker,
                                                     random_range(5, 8) * BASELINE_DELAY));
-                    simple_monster_message(*defender->as_monster(), " is struck blind.");
+                    simple_monster_message(*defender->as_monster(), T_(" is struck blind."));
                 }
                 else
                     blind_player(random_range(5, 8));
@@ -731,9 +731,9 @@ static void _apply_flux_contam(monster &m)
 
     m.add_ench(mon_enchant(ENCH_CONTAM, &you, 0, 1));
     if (!old_glow.degree)
-        simple_monster_message(m, " begins to glow.");
+        simple_monster_message(m, T_(" begins to glow."));
     else
-        simple_monster_message(m, " glows dangerously bright.");
+        simple_monster_message(m, T_(" glows dangerously bright."));
 
     // Deduct player energy for the attack and maybe untransform.
     int& energy = you.props[FLUX_ENERGY_KEY].get_int();
@@ -1099,7 +1099,7 @@ static void _inflict_deathly_blight(monster &m)
     if (m.holiness() & (MH_NATURAL | MH_PLANT))
         worked = m.add_ench(mon_enchant(ENCH_DRAINED, &you, dur, 2)) || worked;
     if (worked && you.can_see(m))
-        simple_monster_message(m, " decays.");
+        simple_monster_message(m, T_(" decays."));
 }
 
 bool melee_attack::handle_phase_damaged()
@@ -3221,7 +3221,7 @@ bool melee_attack::consider_decapitation(int dam)
     if (heads >= limit - 1)
         return false; // don't overshoot the head limit!
 
-    simple_monster_message(*defender->as_monster(), " grows two more!");
+    simple_monster_message(*defender->as_monster(), T_(" grows two more!"));
     defender->as_monster()->num_heads += 2;
 
     if (defender->type == MONS_SLYMDRA)
@@ -3389,7 +3389,7 @@ void melee_attack::attacker_sustain_passive_damage()
     else
     {
         simple_monster_message(*attacker->as_monster(),
-                               " is burned by acid!");
+                               T_(" is burned by acid!"));
     }
     attacker->hurt(defender, dmg, BEAM_ACID,
                    KILLED_BY_ACID);
@@ -4254,10 +4254,10 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
             if (you.can_see(*attacker) || you.can_see(*defender))
             {
-                mprf("%s drains %s %s.",
+                mprf(T_("%s drains %s %s."),
                      attacker->name(DESC_THE).c_str(),
                      defender->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? "magic" : "power");
+                     spell_user ? T_("magic") : T_("power"));
             }
 
             monster* vine = attacker->as_monster();
@@ -4268,8 +4268,8 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                 vine->lose_ench_duration(me, random2(damage_done) + 1);
                 simple_monster_message(*attacker->as_monster(),
                                        spell_user
-                                       ? " looks very invigorated."
-                                       : " looks invigorated.");
+                                       ? T_(" looks very invigorated.")
+                                       : T_(" looks invigorated."));
             }
         }
         break;
@@ -4437,12 +4437,12 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
         {
             mon->del_ench(ENCH_MIGHT, true);
             mon->add_ench(mon_enchant(ENCH_BERSERK, mon, random_range(100, 200)));
-            simple_monster_message(*mon, " enters a blood-rage!");
+            simple_monster_message(*mon, T_(" enters a blood-rage!"));
         }
         else
         {
             mon->add_ench(mon_enchant(ENCH_MIGHT, mon, random_range(100, 200)));
-            simple_monster_message(*mon, " tastes blood and grows stronger!");
+            simple_monster_message(*mon, T_(" tastes blood and grows stronger!"));
         }
         break;
     }
@@ -4494,8 +4494,8 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                     }
                     else
                     {
-                        mprf(MSGCH_DANGER, "You %s!",
-                            initial ? "start to liquefy" : "liquefy further");
+                        mprf(MSGCH_DANGER, T_("You %s!"),
+                            initial ? T_("start to liquefy") : T_("liquefy further"));
                     }
                 }
             }
@@ -4640,7 +4640,7 @@ void melee_attack::do_fiery_armour_burn()
     if (!hurted)
         return;
 
-    simple_monster_message(*mon, " is burned by your cloak of flames.");
+    simple_monster_message(*mon, T_(" is burned by your cloak of flames."));
 
     // ...until now, since we know damage was done.
     mons_adjust_flavoured(mon, beam, post_ac);
@@ -4673,7 +4673,7 @@ void melee_attack::do_passive_freeze()
         if (!hurted)
             return;
 
-        simple_monster_message(*mon, " is very cold.");
+        simple_monster_message(*mon, T_(" is very cold."));
 
         // ...until now, since we know damage was done.
         mons_adjust_flavoured(mon, beam, orig_hurted);
@@ -4748,7 +4748,7 @@ void melee_attack::do_spines()
             if (hurt > 0)
             {
                 simple_monster_message(*attacker->as_monster(),
-                                    " is struck by your spines.");
+                                    T_(" is struck by your spines."));
 
                 attacker->hurt(&you, hurt);
             }
@@ -4761,7 +4761,7 @@ void melee_attack::do_spines()
             if (hurt > 0)
             {
                 simple_monster_message(*attacker->as_monster(),
-                                       " is struck by your quills.");
+                                       T_(" is struck by your quills."));
 
                 attacker->hurt(&you, hurt);
             }
@@ -5060,7 +5060,7 @@ bool melee_attack::do_drag()
     // We should be okay to move, then.
     if (needs_message)
     {
-        mprf("%s drags %s backwards!",
+        mprf(T_("%s drags %s backwards!"),
              attacker->name(DESC_THE).c_str(),
              defender_name(true).c_str());
     }

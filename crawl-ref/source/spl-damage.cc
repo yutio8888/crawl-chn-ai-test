@@ -1962,7 +1962,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
         }
         else
         {
-            mprf(MSGCH_DANGER, "Your fire resistance burns away!");
+            mprf(MSGCH_DANGER, T_("Your fire resistance burns away!"));
             you.duration[DUR_FIRE_VULN] += dur * 3 / 2;
         }
     }
@@ -2067,7 +2067,7 @@ spret cast_irradiate(int powc, actor &caster, bool fail)
     else
     {
         simple_monster_message(*caster.as_monster(),
-                               " erupts in a fountain of uncontrolled magic!");
+                               T_(" erupts in a fountain of uncontrolled magic!"));
     }
 
     bolt beam;
@@ -2327,7 +2327,7 @@ static int _ignite_poison_player(coord_def where, int pow, actor *agent)
     if (damage > 0)
         you.expose_to_element(BEAM_FIRE, 2);
 
-    mprf(MSGCH_RECOVERY, "You are no longer poisoned.");
+    mprf(MSGCH_RECOVERY, T_("You are no longer poisoned."));
     you.duration[DUR_POISONING] = 0;
 
     return damage ? 1 : 0;
@@ -2972,7 +2972,7 @@ spret cast_arcjolt(int pow, const actor &agent, bool fail)
     else
     {
         simple_monster_message(*agent.as_monster(),
-                               " emits a burst of electricity!");
+                               T_(" emits a burst of electricity!"));
     }
 
     auto targets = arcjolt_targets(agent, true);
@@ -3535,7 +3535,7 @@ spret cast_toxic_radiance(actor *agent, int pow, bool fail, bool tracer)
     {
         monster* mon_agent = agent->as_monster();
         simple_monster_message(*mon_agent,
-                               " begins to radiate toxic energy.");
+                               T_(" begins to radiate toxic energy."));
 
         mon_agent->add_ench(mon_enchant(ENCH_TOXIC_RADIANCE, mon_agent,
                                         (4 + random2avg(pow/15, 2)) * BASELINE_DELAY));
@@ -3939,7 +3939,7 @@ bool handle_searing_ray(actor& agent, int turn)
         fire_tracer(agent.as_monster(), tracer, beam);
         if (!mons_should_fire(beam, tracer))
         {
-            simple_monster_message(*agent.as_monster(), " stops channelling.");
+            simple_monster_message(*agent.as_monster(), T_(" stops channelling."));
             agent.as_monster()->del_ench(ENCH_CHANNEL_SEARING_RAY);
             return false;
         }
@@ -4675,10 +4675,10 @@ static void _discharge_maxwells_coupling()
     const coord_def pos = mon->pos();
     const bool goldify = mons_will_goldify(*mon);
     if (goldify)
-        simple_monster_message(*mon, " vaporises and condenses as gold!");
+        simple_monster_message(*mon, T_(" vaporises and condenses as gold!"));
     else
     {
-        simple_monster_message(*mon, " vaporises in an electric haze!");
+        simple_monster_message(*mon, T_(" vaporises in an electric haze!"));
         big_cloud(CLOUD_ELECTRICITY, &you, pos, random_range(4, 8), random_range(8, 12));
     }
 

@@ -210,14 +210,14 @@ static void _THROATCUTTER_melee_effects(item_def* /*weapon*/, actor* attacker,
             case MON_SHAPE_ORB:
             case MON_SHAPE_BLOB:
             case MON_SHAPE_MISC:
-                mprf("%s put%s %s out of %s misery!",
+                mprf(T_("%s put%s %s out of %s misery!"),
                      attacker->name(DESC_THE).c_str(),
                      plural ? "s" : "",
                      mons->name(DESC_THE).c_str(),
                      mons->pronoun(PRONOUN_POSSESSIVE).c_str());
                 break;
             default: // yes, even fungi have heads :)
-                mprf("%s behead%s %s%s!",
+                mprf(T_("%s behead%s %s%s!"),
                      attacker->name(DESC_THE).c_str(),
                      plural ? "s" : "",
                      mons->name(DESC_THE).c_str(),
@@ -307,11 +307,11 @@ static void _SINGING_SWORD_equip(item_def *item, bool *show_msgs, bool /*unmeld*
 
     if (!item->props.exists(SS_WELCOME_KEY))
     {
-        mprf(MSGCH_TALK, "The sword says, \"Hi! I'm the Singing Sword!\"");
+        mprf(MSGCH_TALK, T_("The sword says, \"Hi! I'm the Singing Sword!\""));
         item->props[SS_WELCOME_KEY].get_bool() = true;
     }
     else
-        mprf(MSGCH_TALK, "The Singing Sword hums in delight!");
+        mprf(MSGCH_TALK, T_("The Singing Sword hums in delight!"));
 
     *show_msgs = false;
 }
@@ -650,13 +650,13 @@ static void _WYRMBANE_melee_effects(item_def* weapon, actor* attacker,
         // Including you, if you were a dragonform felid with lives left.
         if (weapon->plus == 18)
         {
-            mprf("<white>The lance glows brightly as it skewers %s. You feel "
-                 "that it has reached its full power.</white>",
+            mprf(T_("<white>The lance glows brightly as it skewers %s. You feel "
+                    "that it has reached its full power.</white>"),
                  name.c_str());
         }
         else
         {
-            mprf("<green>The lance glows as it skewers %s.</green>",
+            mprf(T_("<green>The lance glows as it skewers %s.</green>"),
                  name.c_str());
         }
 
@@ -673,7 +673,7 @@ static void _UNDEADHUNTER_melee_effects(item_def* /*item*/, actor* attacker,
         && !mondied && dam)
     {
         int bonus_dam = random2avg((1 + (dam * 3)), 3);
-        mprf("%s %s blasted by disruptive energy%s",
+        mprf(T_("%s %s blasted by disruptive energy%s"),
               defender->name(DESC_THE).c_str(),
               defender->conj_verb("be").c_str(),
               attack_strength_punctuation(bonus_dam).c_str());
@@ -790,7 +790,7 @@ static void _PLUTONIUM_SWORD_melee_effects(item_def* weapon,
             defender->malmutate(attacker, "the plutonium sword");
         else
         {
-            mpr(random_choose("Your body deforms painfully.",
+            mpr(random_choose(T_("Your body deforms painfully."),
                               "Your limbs ache and wobble like jelly.",
                               "Your body is flooded with magical radiation."));
             contaminate_player(random_range(700, 1350));
@@ -1035,7 +1035,7 @@ static void _FIRESTARTER_melee_effects(item_def* /*weapon*/, actor* attacker,
             && !mondied
             && !defender->as_monster()->has_ench(ENCH_INNER_FLAME))
         {
-            mprf("%s is filled with an inner flame.",
+            mprf(T_("%s is filled with an inner flame."),
                  defender->name(DESC_THE).c_str());
             defender->as_monster()->add_ench(
                 mon_enchant(ENCH_INNER_FLAME, attacker,
@@ -1078,7 +1078,7 @@ static void _CHILLY_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
             && !mondied
             && !defender->as_monster()->has_ench(ENCH_FROZEN))
         {
-            mprf("%s is flash-frozen.",
+            mprf(T_("%s is flash-frozen."),
                  defender->name(DESC_THE).c_str());
             defender->as_monster()->add_ench(
                 mon_enchant(ENCH_FROZEN, attacker,
@@ -1087,7 +1087,7 @@ static void _CHILLY_DEATH_melee_effects(item_def* /*weapon*/, actor* attacker,
         else if (defender->is_player()
             && !you.duration[DUR_FROZEN])
         {
-            mprf(MSGCH_WARN, "You are encased in ice.");
+            mprf(MSGCH_WARN, T_("You are encased in ice."));
             you.increase_duration(DUR_FROZEN, 5 + random2(dam));
         }
     }
@@ -1204,7 +1204,7 @@ static void _CAPTAIN_melee_effects(item_def* /*weapon*/, actor* attacker,
         {
             mprf(T_("The captain's cutlass flashes! You lacerate %s!!"),
                 defender->name(DESC_THE).c_str());
-            mprf("%s %s falls to the floor!",
+            mprf(T_("%s %s falls to the floor!"),
                 apostrophise(defender->name(DESC_THE)).c_str(),
                 wpn->name(DESC_PLAIN).c_str());
             defender->hurt(attacker, 18 + random2(18));
@@ -1665,7 +1665,7 @@ static void _reset_victory_stats(item_def *item)
         item->plus = get_unrand_entry(item->unrand_idx)->plus;
         artefact_set_property(*item, ARTP_SLAYING, bonus_stats);
         artefact_set_property(*item, ARTP_INTELLIGENCE, bonus_stats);
-        mprf(MSGCH_WARN, "%s stops glowing.", item->name(DESC_THE, false, true,
+        mprf(MSGCH_WARN, T_("%s stops glowing."), item->name(DESC_THE, false, true,
                                                          false).c_str());
 
         you.redraw_armour_class = true;
@@ -1705,7 +1705,7 @@ static void _VICTORY_death_effects(item_def *item, monster* mons,
             artefact_set_property(*item, ARTP_SLAYING, bonus_stats);
             artefact_set_property(*item, ARTP_INTELLIGENCE, bonus_stats);
             you.equipment.update();
-            mprf(MSGCH_GOD, GOD_OKAWARU, "%s glows%s.",
+            mprf(MSGCH_GOD, GOD_OKAWARU, T_("%s glows%s."),
                  item->name(DESC_THE, false, true, false).c_str(),
                  bonus_stats == VICTORY_STAT_CAP ? " brightly" : "");
 

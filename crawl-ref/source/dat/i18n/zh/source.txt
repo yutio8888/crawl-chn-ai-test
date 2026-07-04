@@ -1978,7 +1978,7 @@ gain power from chaos
 )
 ）
 %%%%
-    * - Random
+    * - Random 
     * - 随机
 %%%%
 * - Random name
@@ -2618,7 +2618,7 @@ abort
 about
 约
 %%%%
- accept (%zu chosen)</lightgrey>
+ accept (%zu chosen)
  确认（已选%zu项）</lightgrey>
 %%%%
 accepted the %s
@@ -2825,7 +2825,7 @@ Are you sure you want to remember your ancestor as %s?
 Armaments
 武装
 %%%%
- armed with
+ armed with 
  装备着
 %%%%
 Armour
@@ -4110,7 +4110,7 @@ ghostly
  gift of slime is revoked.
 的黏泥赠礼被收回了。
 %%%%
- gifted
+ gifted 
 赐予了你
 %%%%
 gizmo
@@ -5332,10 +5332,10 @@ Ouch! That really hurt!
 Outside, the world ends.
 外面，世界终结了。
 %%%%
- page down
+ page down  
  下一页
 %%%%
- page up
+ page up  
  上一页
 %%%%
 Pain
@@ -5430,7 +5430,7 @@ Please finish your current recitation first.
 
 # === Issue X2 P0-2: Missing source.txt entries ===
 %%%%
- Please select your
+ Please select your 
  请选择你的
 %%%%
 Please submit a bug report.
@@ -5946,7 +5946,7 @@ See you next game!
  seems to speed up.
 似乎加速了。
 %%%%
- select
+ select  
  选择
 %%%%
 Select a spell to %s
@@ -7478,7 +7478,7 @@ To do this, you must remove one of the following items:
  toggle between ability selection and description.
  切换能力选择与描述模式。
 %%%%
- toggle selected
+ toggle selected    
  切换选中
 %%%%
  toggle spell headers
@@ -7826,7 +7826,7 @@ Winter
 Wisps of shadow whirl around you...
 暗影的细丝在你周围旋转……
 %%%%
- with
+ with 
 用
 %%%%
 With a burst of heat and light, you rocket upwards!
@@ -10871,8 +10871,8 @@ Your roots penetrate the ground.
 Your search expression is invalid.
 你的搜索表达式无效。
 %%%%
-Your servitor could be imbued with this spell if your spell success rate were higher.\n
-Your servitor could be imbued with this spell if your spell success rate were higher.\n
+Your servitor could be imbued with this spell if your spell success rate were higher.
+
 %%%%
 Your shell of carrion and bone grows thicker.
 你的腐肉与骨骸外壳变得更厚了。
@@ -11175,7 +11175,7 @@ Bought
 
 购买了
 %%%%
- for
+ for 
 
 花了
 %%%%
@@ -11980,7 +11980,7 @@ stealthily
 
  t - %s！
 %%%%
- g - Guard the area.      f - Follow me.
+                   g - Guard the area.      f - Follow me.
 
  g - 守卫此区域。      f - 跟我来。
 %%%%
@@ -12036,7 +12036,7 @@ The monsters
 
 （显示）
 %%%%
- spell hidden
+ spell hidden 
 
  法术隐藏
 %%%%
@@ -12229,7 +12229,7 @@ Throw:
 
 ，以及 
 %%%%
-(while you are blinded and from distance 
+ (while you are blinded and from distance 
 
 （失明且远距时
 %%%%
@@ -12410,10 +12410,10 @@ You feel nearly all of your power leaking away!
  offers you knowledge of 
 赋予你
 %%%%
-a little 
+ a little 
 略微
 %%%%
-extremely 
+ extremely 
 极度
 %%%%
 "You will pay for your transgression, mortal!"
@@ -12473,7 +12473,7 @@ enters the arena
 Last arena monster was dismissed.
 最后一只竞技场怪物已被清除。
 %%%%
- # - Recommended character
+# - Recommended character
  # - 推荐角色
 %%%%
 You continue %s %s.
@@ -15465,7 +15465,7 @@ dominated
 bribed
 被贿赂
 %%%%
-Recommended 
+Recommended
 推荐
 %%%%
 What is your name today? 
@@ -17172,7 +17172,7 @@ It is%s good for stabbing helpless or unaware enemies.
 \n\nIt has a 1/%d chance to be destroyed on impact.
 \n\n它在击中时有1/%d几率损坏。
 %%%%
- the
+the
 
 %%%%
 You briefly feel strange.
@@ -20823,7 +20823,7 @@ No target in view!
  <w>travel</w>|examine|delete
  <w>前往</w>|检视|删除
 %%%%
- buy marked items
+ buy marked items 
  购买标记物品
 %%%%
  buy shopping list
@@ -20835,13 +20835,13 @@ No target in view!
  choose item
  选择物品
 %%%%
- describe
+describe
  描述
 %%%%
  in shopping list
 （在购物清单中）
 %%%%
- on
+on
 第
 %%%%
  put item on shopping list
@@ -22989,7 +22989,7 @@ Range: %s\n
  <lightgrey>(%s failure risk)</lightgrey>
  <lightgrey>（%s失败风险）</lightgrey>
 %%%%
- Invoke -
+ Invoke -    
  祈神 -
 %%%%
 <yellow>You have %1$d gold piece%2$s%3$s.
@@ -23760,8 +23760,8 @@ Note: time per level data comes from an upgraded game and may be incomplete.\n
 注意：每层时间数据来自升级后的游戏存档，可能不完整。\n
 
 %%%%
-%8s: %d daAuts\n
-%8s: %d daAuts\n
+%8s: %d daAuts
+
 
 %%%%
 Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of total XP\n D = Non-vault monster count\n E = Vault monster count\n F = Vault count percentage of total count\n\n
@@ -26520,7 +26520,7 @@ corrode you
 deals up to %d %s damage
 造成至多%d点%s伤害
 %%%%
- either 
+either 
 可能
 %%%%
  or 
@@ -26705,7 +26705,7 @@ NO GOD
 (Boost:
 （增幅：
 %%%%
- (while you are blinded and from distance
+ (while you are blinded and from distance 
 （处于失明状态，距离
 %%%%
 , and
@@ -26714,7 +26714,7 @@ NO GOD
 ;
 、
 %%%%
-  [%c] - %d gold -
+  [%c] - %d gold - 
   [%c] - %d 金币 -
 %%%%
 \n stacked deck:
@@ -26726,10 +26726,10 @@ NO GOD
 A Card
 一张卡牌
 %%%%
- a little
+ a little 
 有点
 %%%%
- and
+and
  和
 %%%%
 At 100% training
@@ -26818,7 +26818,7 @@ Lets you pick
 none (normally
 无（通常为
 %%%%
- offers you knowledge of
+ offers you knowledge of 
 为你提供了
 %%%%
 open
@@ -26827,7 +26827,7 @@ open
 open translucent
 打开的透明
 %%%%
- puts on
+ puts on 
 戴上了
 %%%%
 Randomly select a
@@ -26863,7 +26863,7 @@ Space - Pick
 Stash search prefixes:
 储藏搜索前缀:
 %%%%
- takes off
+ takes off 
 脱下了
 %%%%
 the
@@ -26891,25 +26891,25 @@ Trunk不计入锦标赛，你想要
 unnamed
 未命名的
 %%%%
- unwields
+ unwields 
 收起了
 %%%%
- very
+ very 
 非常
 %%%%
 very greatly
 大幅
 %%%%
- wears
+ wears 
 穿上了
 %%%%
 Which god (%s)?
 选择哪个神（%s）？
 %%%%
- wielding
+wielding
  挥舞着
 %%%%
- wields
+ wields 
 挥舞着
 %%%%
 would
@@ -26975,7 +26975,7 @@ the
 
 此
 %%%%
-very 
+ very 
 非常
 %%%%
  extremely 
@@ -27410,7 +27410,7 @@ huge
 glowing 
 发光
 %%%%
-Random 
+Random
 随机
 %%%%
 Small
@@ -27746,7 +27746,6 @@ Enter next level anyway?
  This would place you under penance!
  这会让你遭受苦修！
 %%%%
-%%%%
  describe         
  描述             
 %%%%
@@ -28066,44 +28065,44 @@ tentacle connect failed! What the heck!  severed status %d
 \nYour AC would %s.
 \n你的AC将%s。
 %%%%
-'%s' category.\n'%s'类别。
-'%s' category.\n'%s'类别。
+'%s' category.
+'%s'类别。
 %%%%
-and electrocute %s\n并电击%s
-and electrocute %s\n并电击%s
+and electrocute %s
+并电击%s
 %%%%
-and electrocutes %s\n并电击%s
-and electrocutes %s\n并电击%s
+and electrocutes %s
+并电击%s
 %%%%
-by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
-by up to %d%% (press '!' for details).\n最多减少%d%%（按'!'查看详情）。
+by up to %d%% (press '!' for details).
+最多减少%d%%（按'!'查看详情）。
 %%%%
-+ %d (silver)\n+ %d（银）
-+ %d (silver)\n+ %d（银）
++ %d (silver)
++ %d（银）
 %%%%
-%s a shaft!\n%s掉进了竖井！
-%s a shaft!\n%s掉进了竖井！
+%s a shaft!
+%s掉进了竖井！
 %%%%
-with %s\n携带%s
-with %s\n携带%s
+with %s
+携带%s
 %%%%
-It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
-It is%s good for stabbing helpless or unaware enemies.\n它%s适合偷袭无助或无防备的敌人。
+It is%s good for stabbing helpless or unaware enemies.
+它%s适合偷袭无助或无防备的敌人。
 %%%%
- (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
- (about %d%% of your maximum possible piety)\n（约你最大虔诚值的%d%%）
+ (about %d%% of your maximum possible piety)
+（约你最大虔诚值的%d%%）
 %%%%
- (next: %s)\n（下一个：%s）
- (next: %s)\n（下一个：%s）
+ (next: %s)
+（下一个：%s）
 %%%%
- (%d in deck)\n（牌组中%d张）
- (%d in deck)\n（牌组中%d张）
+ (%d in deck)
+（牌组中%d张）
 %%%%
- <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
- <lightgrey>(%s failure risk)</lightgrey>\n<lightgrey>（%s失败风险）</lightgrey>
+ <lightgrey>(%s failure risk)</lightgrey>
+<lightgrey>（%s失败风险）</lightgrey>
 %%%%
- (%s)\n（%s）
- (%s)\n（%s）
+ (%s)
+（%s）
 %%%%
 %s%s
 %s%s
@@ -28177,45 +28176,44 @@ Delay
 Bane
 祸根
 %%%%
+*Curse
+*诅咒
 %%%%
-*Curse\n*诅咒
-*Curse\n*诅咒
+*Slow
+*缓慢
 %%%%
-*Slow\n*缓慢
-*Slow\n*缓慢
+^Fragile
+^脆弱
 %%%%
-^Fragile\n^脆弱
-^Fragile\n^脆弱
+*Silence
+*沉默
 %%%%
-*Silence\n*沉默
-*Silence\n*沉默
+RegenMP
+回魔
 %%%%
-RegenMP\n回魔
-RegenMP\n回魔
+Hungry
+饥饿
 %%%%
-Hungry\n饥饿
-Hungry\n饥饿
+-Cast
+-施法
 %%%%
--Cast\n-施法
--Cast\n-施法
+*Tele
+*传送
 %%%%
-*Tele\n*传送
-*Tele\n*传送
+-Tele
+-传送
 %%%%
--Tele\n-传送
--Tele\n-传送
++Blink
++闪现
 %%%%
-+Blink\n+闪现
-+Blink\n+闪现
++Rage
++狂暴
 %%%%
-+Rage\n+狂暴
-+Rage\n+狂暴
+*Rage
+*狂暴
 %%%%
-*Rage\n*狂暴
-*Rage\n*狂暴
-%%%%
-rCorr\n防腐蚀
-rCorr\n防腐蚀
+rCorr
+防腐蚀
 %%%%
 *Corrode
 *腐蚀
@@ -29592,7 +29590,7 @@ you hear an explosion!
 you refuse to depend on such disposable conveniences.
 你拒绝依赖这种一次性便利品。
 %%%%
- and
+and
  和
 %%%%
 , and
@@ -30113,7 +30111,6 @@ Potions heal its wearer twice as much.
 It occasionally leaves clouds of freezing vapour upon striking a foe, and grants immunity to clouds of freezing vapour.
 攻击敌人时偶尔留下冰冻蒸汽云，并赋予对冰冻蒸汽云的免疫。
 %%%%
-%%%%
 You hear the sound of rushing water.
 你听到了流水声。
 %%%%
@@ -30332,7 +30329,6 @@ rising multitudes
 %%%%
 full choir
 齐声合唱
-%%%%
 %%%%
  select  
  选择  
@@ -33935,3 +33931,261 @@ Jiyva will unlock the Slime Pits vault.
 
 吉瓦将解锁软泥坑宝库。
 
+ guffaws at your puny god.
+嘲笑你软弱的神祇。
+%%%%%
+ sneers at your recitation.
+对你的吟诵嗤之以鼻。
+%%%%%
+ is dazed by your recitation.
+被你的吟诵震慑了。
+%%%%%
+ is confused by your recitation.
+被你的吟诵迷惑了。
+%%%%%
+ stumbles about in disarray.
+慌乱地踉跄着。
+%%%%%
+ is awed by your recitation.
+被你的吟诵所威压。
+%%%%%
+ is aghast at the heresy of your recitation.
+被你吟诵中的异端邪说惊呆了。
+%%%%%
+ is smitten by the wrath of Zin.
+被辛之怒所重击。
+%%%%%
+ is blasted by the fury of Zin!
+被辛之怒所重创！
+%%%%%
+ is struck blind by the wrath of Zin!
+被辛之怒击瞎了双眼！
+%%%%%
+ is limned with silver light.
+被银光笼罩了。
+%%%%%
+ quails at your recitation.
+被你的吟诵吓退了。
+%%%%%
+ looks feeble and powerless before your recitation.
+在你的吟诵前显得虚弱无力。
+%%%%%
+ is struck mute by the wrath of Zin!
+被辛之怒击哑了！
+%%%%%
+ is driven mad by the wrath of Zin!
+被辛之怒逼疯了！
+%%%%%
+ is left stupefied by the wrath of Zin!
+被辛之怒震慑了！
+%%%%%
+ chaotic flesh sizzles and spatters!
+的混沌之肉滋滋作响，溅出液体！
+%%%%%
+ chaotic flesh bubbles and boils.
+的混沌之肉冒出气泡，沸腾不已。
+%%%%%
+ chaotic flesh runs like molten wax.
+的混沌之肉如熔蜡般流淌。
+%%%%%
+ melts away into a sizzling puddle of chaotic flesh.
+溶化成一滩滋滋作响的混沌血肉。
+%%%%%
+ is turned into a pillar of salt by the wrath of Zin!
+被辛之怒化作了一根盐柱！
+%%%%%
+ is fully restored!
+完全恢复了！
+%%%%%
+ is drained by nostalgia.
+因怀旧而虚弱不堪。
+%%%%%
+ is not worthy to be dueled!
+不配与你决斗！
+%%%%%
+deep water
+深水
+%%%%%
+ is outlined in light.
+被光芒勾勒出轮廓。
+%%%%
+ loses the ability to speak.
+失去了说话的能力。
+%%%%
+ is enfeebled!
+变得虚弱了！
+%%%%
+ is afflicted with rimeblight.
+感染了霜枯病。
+%%%%
+ is enveloped in gloom.
+被阴霾笼罩。
+%%%%
+ is struck blind.
+被致盲了。
+%%%%
+ begins to glow.
+开始发光。
+%%%%
+ glows dangerously bright.
+发出危险的光芒。
+%%%%
+ decays.
+腐烂了。
+%%%%
+ grows two more!
+又长出了两个！
+%%%%
+ is burned by acid!
+被酸液灼伤了！
+%%%%
+ looks very invigorated.
+看起来精力充沛。
+%%%%
+ looks invigorated.
+看起来更有活力了。
+%%%%
+ enters a blood-rage!
+进入了嗜血狂暴！
+%%%%
+ tastes blood and grows stronger!
+尝到鲜血，变得更强了！
+%%%%
+ is burned by your cloak of flames.
+被你的火焰斗篷灼伤了。
+%%%%
+ is very cold.
+感到极寒。
+%%%%
+ is struck by your spines.
+被你的尖刺击中。
+%%%%
+ is struck by your quills.
+被你的棘刺击中。
+%%%%
+ attempts to avoid the deathblow, but fails!
+试图躲避致命一击，但失败了！
+%%%%
+ seems to grow more fierce.
+似乎变得更加凶猛。
+%%%%
+ returns to where it belongs.
+回到了它该去的地方。
+%%%%
+ falls apart and the last of its fire goes out.
+崩散开来，最后一丝火焰也熄灭了。
+%%%%
+ vaporises!
+蒸发了！
+%%%%
+ is driven back to you.
+被驱回了你身边。
+%%%%
+ returns to the armoury!
+回到了武器库！
+%%%%
+ turns to gold and falls from the air.
+化为黄金，从空中坠落。
+%%%%
+ briefly glints gold and then vanishes.
+短暂地闪现金光，然后消失了。
+%%%%
+ falls from the air.
+从空中坠落。
+%%%%
+ is incinerated.
+被焚烧殆尽。
+%%%%
+ drowns.
+溺毙了。
+%%%%
+ sinks to the bottom.
+沉到了底部。
+%%%%
+ seems to find hidden reserves of power!
+似乎找到了隐藏的力量储备！
+%%%%
+ likewise turns neutral.
+也随之变为中立。
+%%%%
+ gets angry again!
+又愤怒了起来！
+%%%%
+ is being constricted!
+正被缠绕着！
+%%%%
+ cannot move out of your way! (Use ctrl+direction or * direction to deconstruct it instead.)
+无法从你的路上移开！（使用Ctrl+方向键或*方向键来将其拆解。）
+%%%%
+ cannot move out of your way!
+无法从你的路上移开！
+%%%%
+ is pulled into the Abyss.
+被拖入了深渊。
+%%%%
+ turns to flee the light!
+转身逃离了圣光！
+%%%%
+ shudders and is absorbed by its neighbour.
+颤抖着被相邻的同类吸收了。
+%%%%
+ is touched by paradox!
+被悖论所触碰！
+%%%%
+ resists.
+抵抗了。
+%%%%
+ blocks 
+挡住了
+%%%%
+.
+。
+%%%%
+ is surrounded by blessed fire!
+被祝福之火包围了！
+%%%%
+ is already dancing.
+已经开始起舞了。
+%%%%%
+ appears!
+出现了！
+%%%%%
+ conjures a globe of magical energy!
+召唤出了一颗魔法能量球！
+%%%%%
+ disappears.
+消失了。
+%%%%%
+ finishes brewing potions and dispenses them!
+完成了药水酿造并将它们分发出去！
+%%%%%
+ collapses with a clattering noise.
+发出一阵咔嗒声后，倒塌了。
+%%%%%
+ erupts in a fountain of uncontrolled magic!
+爆发出失控的魔法喷泉！
+%%%%%
+ emits a burst of electricity!
+释放出一阵电流！
+%%%%%
+ begins to radiate toxic energy.
+开始辐射出毒素能量。
+%%%%%
+ stops channelling.
+停止了引导。
+%%%%%
+ vaporises and condenses as gold!
+蒸发并凝结成了金币！
+%%%%%
+ vaporises in an electric haze!
+在电雾中蒸发了！
+%%%%%
+ is stunned by your conviction and fails to attack.
+被你的信念震慑，未能发起攻击。
+%%%%%
+ is distracted by your dazzling golden aura.
+被你炫目的金色光环分散了注意力。
+%%%%%
+ struggles to get unstuck from the web.
+挣扎着想要脱离蛛网。
+%%%%%

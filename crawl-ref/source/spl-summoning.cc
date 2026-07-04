@@ -889,7 +889,7 @@ static bool _check_tukima_validity(const actor *target)
         if (mons_class_is_animated_weapon(target->type))
         {
             simple_monster_message(*(monster*)target,
-                                   " is already dancing.");
+                                   T_(" is already dancing."));
         }
         else
         {
@@ -1784,7 +1784,7 @@ void init_servitor(monster* servitor, actor* caster, int pow)
              caster->pronoun(PRONOUN_POSSESSIVE).c_str());
     }
     else
-        simple_monster_message(*servitor, " appears!");
+        simple_monster_message(*servitor, T_(" appears!"));
 
     int shortest_range = LOS_RADIUS + 1;
     for (const mon_spell_slot &slot : servitor->spells)
@@ -1926,10 +1926,10 @@ spret cast_battlesphere(actor* agent, int pow, bool fail)
                 if (you.can_see(*agent) && you.can_see(*battlesphere))
                 {
                     simple_monster_message(*agent->as_monster(),
-                                           " conjures a globe of magical energy!");
+                                           T_(" conjures a globe of magical energy!"));
                 }
                 else if (you.can_see(*battlesphere))
-                    simple_monster_message(*battlesphere, " appears!");
+                    simple_monster_message(*battlesphere, T_(" appears!"));
 
                 if (agent->is_monster())
                     battlesphere->set_band_leader(*(agent->as_monster()));
@@ -1973,7 +1973,7 @@ void end_battlesphere(monster* mons, bool killed)
                 mpr(T_("You feel your bond with your battlesphere wane."));
         }
         else if (you.can_see(*mons))
-            simple_monster_message(*mons, " dissipates.");
+            simple_monster_message(*mons, T_(" dissipates."));
 
         place_cloud(CLOUD_MAGIC_TRAIL, mons->pos(), 3 + random2(3), mons);
 
@@ -2324,7 +2324,7 @@ void end_spectral_weapon(monster* mons, bool killed, bool quiet)
         item->props.erase(SPECTRAL_WEAPON_KEY);
 
     if (!quiet && you.can_see(*mons))
-        simple_monster_message(*mons, " disappears.");
+        simple_monster_message(*mons, T_(" disappears."));
 
     if (!killed)
         monster_die(*mons, KILL_RESET, NON_MONSTER);
@@ -4370,7 +4370,7 @@ static bool _do_monster_potion(monster& mons, monster& alembic)
 
 void alembic_brew_potion(monster& mons)
 {
-    simple_monster_message(mons, " finishes brewing potions and dispenses them!",
+    simple_monster_message(mons, T_(" finishes brewing potions and dispenses them!"),
                             false, MSGCH_MONSTER_SPELL);
 
     if (mons.friendly() && you.see_cell_no_trans(mons.pos()))
@@ -4395,7 +4395,7 @@ void alembic_brew_potion(monster& mons)
         }
     }
 
-    simple_monster_message(mons, " collapses with a clattering noise.", false,
+    simple_monster_message(mons, T_(" collapses with a clattering noise."), false,
                            MSGCH_MONSTER_DAMAGE, MDAM_DEAD);
     monster_die(mons, KILL_RESET, NON_MONSTER);
 }

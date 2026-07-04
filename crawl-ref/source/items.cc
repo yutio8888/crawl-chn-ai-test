@@ -4569,7 +4569,7 @@ static void _rune_from_specs(const char* _specs, item_def &item)
                 line.clear();
             }
         }
-        mprf(MSGCH_PROMPT, "Which rune (ESC to exit)? ");
+        mprf(MSGCH_PROMPT, T_("Which rune (ESC to exit)? "));
 
         int keyin = toalower(get_ch());
 

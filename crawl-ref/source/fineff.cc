@@ -1147,10 +1147,10 @@ void trj_spawn_fineff::fire()
     if (trj)
     {
         const string monnam = trj->name(DESC_THE);
-        mprf("%s shudders%s.", monnam.c_str(),
-             spawned >= 5 ? " alarmingly" :
-             spawned >= 3 ? " violently" :
-             spawned > 1 ? " vigorously" : "");
+        mprf(T_("%s shudders%s."), monnam.c_str(),
+             spawned >= 5 ? T_(" alarmingly") :
+             spawned >= 3 ? T_(" violently") :
+             spawned > 1 ? T_(" vigorously") : "");
 
         if (spawned == 1)
             mprf(T_("%s spits out another jelly."), monnam.c_str());
@@ -1241,7 +1241,7 @@ void starcursed_merge_fineff::fire()
         if (mergee && mergee->alive() && mergee->type == MONS_STARCURSED_MASS)
         {
             simple_monster_message(*mon,
-                    " shudders and is absorbed by its neighbour.");
+                    T_(" shudders and is absorbed by its neighbour."));
             _do_merge_masses(mon, mergee);
             return;
         }
