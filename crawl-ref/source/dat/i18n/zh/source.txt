@@ -34185,7 +34185,442 @@ deep water
 挣扎着想要脱离蛛网。
 %%%%%
 %%%%%
-Jiyva will unlock the Slime Pits vault.
+如果你的法术成功率更高，你的仆从就可以被赋予这个法术。\n
 
-吉瓦将解锁软泥坑宝库。
+%%%%
+# Issue 45 Phase 3: dbg-maps.cc batch (2026-07-05)
+%%%%
+User requested cancel
+用户请求取消
+%%%%
+Examining random maps at %s
+正在检查%s的随机地图
+%%%%
+Generating dungeon map stats
+正在生成地城地图统计
 
+%%%%
+# Issue 45 Phase 3: art-func.h batch (2026-07-05)
+%%%%
+%s put%s %s out of %s misery!
+%1$s将%3$s从%4$s的痛苦中解脱了出来！
+%%%%
+%s behead%s %s%s!
+%1$s斩首了%3$s%4$s！
+%%%%
+%s %s blasted by disruptive energy%s
+%1$s被干扰能量轰击了%3$s！
+%%%%%
+You can only abyss_teleport() inside the Abyss.
+你只能在深渊内使用 abyss_teleport()。
+%%%%%
+Running Jiyva off-level sacrifice.
+正在执行吉瓦离层祭品处理。
+%%%%%
+%s %s%s
+%1$s%2$s%3$s
+%%%%%
+s are
+
+%%%%%
+ is
+
+%%%%%
+dealt
+造成了
+%%%%%
+drawn
+抽到了
+%%%%%
+Unknown species: %s
+未知种族：%s
+%%%%%
+Unknown job: %s
+未知职业：%s
+%%%%%
+unknown item: %s
+未知物品：%s
+%%%%
+Cast which spell? 
+施放哪个法术？
+%%%%%
+Cannot find that spell.
+找不到该法术。
+%%%%
+Memorise which spell? 
+记忆哪个法术？
+%%%%%
+Spell is monster-only - unpredictable behaviour may result.
+该法术仅供怪物使用——可能导致不可预测的行为。
+%%%%%
+Super healing.
+超级治疗。
+%%%%%
+Healing.
+治疗。
+%%%%%
+Piety needs to be between 0 and %d.
+虔诚度必须在 0 到 %d 之间。
+%%%%%
+Ru piety can't be greater than %d.
+鲁的虔诚度不能超过 %d。
+%%%%%
+Interest must be between 0 and 255.
+兴趣值必须在 0 到 255 之间。
+%%%%%
+Set piety to %d, interest to %d.
+虔诚度设为 %d，兴趣值设为 %d。
+%%%%%
+Setting piety to %d.
+虔诚度设为 %d。
+%%%%
+Enter new gold value (current = %d, Enter for %d): 
+输入新金币值（当前 = %d，回车设为 %d）：
+%%%%%
+You now have %d gold piece%s.
+你现在有 %d 枚金币。
+%%%%%
+You are not religious!
+你没有信仰！
+%%%%%
+Current progress to next sacrifice: %d  Progress needed: %d
+当前献祭进度：%d  需要进度：%d
+%%%%
+Enter new piety value (current = %d, Enter for 0): 
+输入新虔诚度值（当前 = %d，回车视为 0）：
+%%%%%
+That skill doesn't seem to exist.
+该技能似乎不存在。
+%%%%%
+That skill was removed.
+该技能已被移除。
+%%%%%
+Exercising...
+正在训练……
+%%%%%
+Can't change a useless skill.
+无法修改无用的技能。
+%%%%%
+%s %s to skill level %.1f.
+%1$s%2$s技能等级至 %.1f。
+%%%%%
+Ignoring mut resistance to apply mutation.
+忽略突变抗性以强制应用突变。
+%%%%%
+No matching mutation names.
+没有匹配的突变名称。
+%%%%%
+Found #%d: %s ("%s")
+找到第 %d 个：%s（"%s"）
+%%%%%
+No matching bane names.
+没有匹配的克星名称。
+%%%%
+Enter values for X, Y, Z (space separated) or return: 
+输入 X、Y、Z 的值（以空格分隔）或按回车：
+%%%%
+Enter values for Str, Int, Dex (space separated): 
+输入力量、智力、敏捷的值（以空格分隔）：
+%%%%%
+Setting attributes (Str, Int, Dex) to: %i, %i, %i
+将属性（力量、智力、敏捷）设为：%i、%i、%i
+%%%%
+Edit which duration (name)? 
+编辑哪个状态（名称）？
+%%%%%
+No durations matching '%s'.
+没有匹配"%s"的状态。
+%%%%%
+Can't set duration directly to 0, setting it to 1 instead.
+无法直接将状态设为 0，已改为设为 1。
+%%%%
+Enter new experience level: 
+输入新经验等级：
+%%%%%
+Experience level set to %d.
+经验等级已设为 %d。
+%%%%%
+Nothing happens.
+什么都没有发生。
+%%%%%
+X-ray vision %s.
+透视视野%s。
+%%%%%
+You allow the flow of time to resume.
+你让时间重新开始流动。
+%%%%%
+You bring the flow of time to a stop.
+你让时间停止了流动。
+%%%%%
+That god doesn't seem to exist!
+该神祇似乎不存在！
+%%%%%
+You suffer the terrible wrath of No God.
+你遭受了"无神"的恐怖愤怒。
+%%%%%
+%s is not feeling wrathful today.
+%s今天没有发怒的心情。
+%%%%%
+You are not under penance.
+你并未处于苦修状态。
+%%%%%
+Transformation failed.
+变形失败。
+%%%%%
+Not even in wizmode may divine creatures worship a god!
+即使是调试模式，神圣生物也不能信仰神祇！
+%%%%%
+You already have no god!
+你已经没有信仰了！
+%%%%%
+You already worship that god!
+你已经信仰该神祇了！
+%%%%%
+(Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
+（紧张度从指定神祇的视角检查其召唤物；使用"No God"可忽略此检查。）
+%%%%%
+%s tension value: %d
+%s的紧张度值：%d
+%%%%%
+Zot clock should be between 0 and %d
+佐特时钟必须在 0 到 %d 之间
+%%%%%
+ magic
+魔法
+%%%%%
+%s shudders%s.
+%1$s%2$s颤抖了。
+%%%%%
+ alarmingly
+惊人地
+%%%%%
+ violently
+剧烈地
+%%%%%
+ vigorously
+猛烈地
+%%%%%
+%s trance deepens.
+%s的恍惚状态加深了。
+%%%%%
+%s is mesmerised by %s!
+%1$s被%2$s迷住了！
+%%%%%
+s its
+
+%%%%%
+ their
+
+%%%%%
+%s is unaffected.
+%s未受影响。
+%%%%%
+%s unleashes a %s howl, %s
+%1$s发出了%2$s的嚎叫，%3$s
+%%%%%
+terrible
+可怕的
+%%%%
+extremely 
+极度
+%%%%
+very heavily 
+非常
+%%%%
+heavily 
+颇为
+%%%%
+Which rune (ESC to exit)? 
+选择哪个符文（按 ESC 退出）？
+%%%%%
+%8s: %d daAuts\n
+%8s：%d daAut\n
+%%%%%
+You hear a zap.
+你听到一声噼啪响。
+%%%%%
+You hear a squelching noise.
+你听到一阵咕唧声。
+%%%%%
+%s rages.
+%s陷入了狂暴！
+%%%%%
+You hear a sizzling splash.
+你听到一阵嘶嘶的溅水声。
+%%%%%
+Can't go down from the bottom of a branch.
+无法从分支底层继续下行。
+%%%%%
+Bug in determining level exit.
+判定楼层出口时发生 bug。
+%%%%%
+Creating %sstairs.
+正在创建%s楼梯。
+%%%%
+Create what kind of feature mimic? 
+创建哪种地形伪装？
+%%%%
+Create which feature? 
+创建哪种地形？
+%%%%%
+Set fprops "%s" at (%d,%d)
+在 (%2$d,%3$d) 设置地形属性"%1$s"
+%%%%%
+Mapping level.
+正在绘制楼层地图。
+%%%%%
+You can only make a %s on a floor square.
+你只能在地板格子上创建%s。
+%%%%%
+Created %s.
+已创建%s。
+%%%%%
+NOTE: Shaft traps aren't valid on this level.
+注意：此楼层不能设置竖井陷阱。
+%%%%%
+Insufficient floor-space for new Wal-Mart.
+没有足够的地板空间来建造新商店。
+%%%%%
+Done.
+完成。
+%%%%%
+Can't find map named '%s'.
+找不到名为"%s"的地图。
+%%%%%
+%s decides where it goes, can't place where you are.
+%s会自行决定位置，不能放置在你所在之处。
+%%%%%
+Successfully placed %s.
+已成功放置%s。
+%%%%%
+Failed to place %s; last builder error: %s
+放置%s失败；最后的建造错误：%s
+%%%%
+Enter map name: 
+输入地图名称：
+%%%%
+Enter map name (prefix it with * for local placement): 
+输入地图名称（前缀加 * 进行本地放置）：
+%%%%%
+Explore took %d turns.
+自动探索花费了 %d 回合。
+%%%%%
+Level stack:
+楼层堆栈：
+%%%%%
+Known levels:
+已知楼层：
+%%%%%
+%-10s : %s
+%-10s : %s
+%%%%%
+Regenerating level.
+正在重新生成楼层。
+%%%%%
+All vaults are now eligible for [re]use.
+所有地牢现在都可以[重新]使用。
+%%%%%
+Setting Abyss speed to %i.
+将深渊速度设为 %i。
+%%%%%
+ guffaws at your puny god.
+对你的渺小神祇发出狂笑。
+%%%%%
+%s warns you to remove %s.
+%1$s警告你取下%2$s。
+%%%%%
+env.igrid(%d,%d) = %d
+env.igrid(%d,%d) = %d
+%%%%%
+Held by monster #%d: %s at (%d,%d)
+被怪物 #%d：%s 于 (%d,%d) 持有
+%%%%%
+Additionally, it isn't alive.
+此外，它并非活物。
+%%%%%
+Floating monster: %s at (%d,%d), midx = %d
+浮空怪物：%s 于 (%d,%d)，midx = %d
+%%%%%
+Also at (%d, %d): %s, midx = %d
+同样位于 (%d, %d)：%s，midx = %d
+%%%%%
+Other monster thinks it's holding the item, too.
+另一只怪物也认为自己持有着该物品。
+%%%%%
+Other monster isn't holding it, though.
+不过另一只怪物并未持有它。
+%%%%%
+%s not in any vaults.
+%s不在任何地牢中。
+%%%%%
+flux bauble
+通量球
+%%%%%
+Results written into 'xom_debug.stat'.
+结果已写入"xom_debug.stat"。
+%%%%%
+For just a moment, %s begins to look like %s, then it explodes!
+%1$s短暂地变成了%2$s的模样，然后爆炸了！
+%%%%%
+You feel something broadcast a psychic alarm.
+你感到某个东西发出了精神警报。
+%%%%%
+A wave of disorienting energy ripples outward as you feel the reach of Zot diminish.
+一阵令人迷惑的能量波向外扩散，你感到佐特的影响减弱了。
+%%%%%
+[Hit ESC to exit interpreter.]
+[按 ESC 退出解释器。]
+%%%%%
+error calling __echo (%s)
+调用 __echo 出错（%s）
+%%%%%
+# - Recommended character
+# - 推荐角色
+%%%%%
+Jiyva will unlock the Slime Pits vault.\n
+吉瓦将解锁史莱姆坑的地牢。\n
+%%%%%
+Mipmap Setup: Failed to load OpenGL version.
+Mipmap 设置：无法加载 OpenGL 版本。
+%%%%%
+Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed.
+Mipmap 设置：已禁用，因 SDL_GL_LoadLibrary 失败。
+%%%%%
+Mipmap Setup: Failed to load glGenerateMipmap function.
+Mipmap 设置：无法加载 glGenerateMipmap 函数。
+%%%%%
+Mipmap Setup: success, loaded with OpenGL version: %s
+Mipmap 设置：成功，已加载 OpenGL 版本：%s
+%%%%%
+Mipmap Setup: skipped, not supported in this build configuration.
+Mipmap 设置：已跳过，此构建配置不支持。
+%%%%%
+Writing '%s' into save.
+正在将"%s"写入存档。
+%%%%%
+Reading tile_names[%d] = %s
+正在读取 tile_names[%d] = %s
+%%%%%
+Index out of bounds: idx = %d - 1, size(tile_names) = %d
+索引越界：idx = %d - 1，size(tile_names) = %d
+%%%%%
+tilename %s (index %d) not found
+图块名称 %s（索引 %d）未找到
+%%%%%
+tilename %s (index %d) resolves to tile %d
+图块名称 %s（索引 %d）解析为图块 %d
+%%%%%
+Your thirst for blood prevents you from unwielding your weapon!
+你对鲜血的渴望使你无法收起武器！
+%%%%%
+It would be unfitting for someone so glorious to remove their crown in front of an audience.
+如此荣耀之人在观众面前取下王冠实在不妥。
+%%%%
+Which monster by name? 
+按名称搜索哪个怪物？
+%%%%%
+Currently generating level.
+当前正在生成楼层。
+%%%%%
+Vault being placed: %s
+正在放置的地牢：%s
