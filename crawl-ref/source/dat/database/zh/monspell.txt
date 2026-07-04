@@ -563,6 +563,10 @@ VISUAL:@The_monster@恳切地举起手臂。
 ########################################################################
 # 个别怪物
 ########################################################################
+angel cast targeted
+
+@The_monster@呼唤@possessive_God@的愤怒，将其施加到@target@身上。
+%%%%
 brain worm cast
 
 @The_monster@鼓鼓的脑袋在悸动。
@@ -1336,6 +1340,10 @@ Vanquished Vanguard Nergalle cast
 @The_monster@呼唤道："@orc name@、@orc name@、@orc name@——到我这里来！"
 
 @The_monster@哭喊道："幽灵们！为你们亲手建造的家园而战！"
+%%%%
+Confuse sphinx marauder cast
+
+@The_monster@用奇异的语言吼出一个[晦涩的|令人困惑的]谜语。
 %%%%
 Vex sphinx marauder cast
 

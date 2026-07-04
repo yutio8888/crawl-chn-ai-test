@@ -1488,7 +1488,7 @@ Xom scenery altar_xom
 
 "只是一个小小的改进……"
 
-@Xom scenery generic@
+@Xom scenery@
 
 %%%%
 Xom scenery cache_of_baked_goods
@@ -1512,7 +1512,7 @@ Xom scenery cache_of_meat
 %%%%
 Xom scenery closed_door
 
-@Xom scenery generic@
+@Xom scenery@
 
 %%%%
 Xom scenery enter_abyss
@@ -1526,7 +1526,7 @@ Xom scenery enter_abyss
 %%%%
 Xom scenery open_door
 
-@Xom scenery generic@
+@Xom scenery@
 
 %%%%
 Xom scenery trap_teleport

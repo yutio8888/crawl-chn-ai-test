@@ -328,23 +328,43 @@ do_spells() {
 # ============================================================
 
 # Keywords provided by C++ runtime — never defined in any .txt file
+# See mon-util.cc:do_mon_str_replacements() for the canonical list.
 RUNTIME_KEYWORDS=(
     # God/skills
     "random_god" "random_god_chaotic" "random_god_evil" "random_god_good"
     "random_skill" "random_skill_magic" "random_skill_mundane"
     # Player
-    "player_genus" "player_species" "player_death" "player_doom"
-    "player_name" "branch_name"
-    # Body parts
-    "feet" "hands" "hand" "head" "hand_conj"
+    "player" "Player" "player_genus" "player_species"
+    "player_death" "player_doom" "player_name" "player_only"
+    "a_player_genus" "player_genus_plural" "player_name_possessive"
+    "branch_name"
+    # Body parts — lowercase and capitalized variants (do_mon_str_replacements)
+    "arm" "arms" "Arm" "Arms"
+    "feet" "foot" "Feet" "Foot"
+    "hand" "hands" "Hand" "Hands"
+    "head" "hand_conj"
     # Items
     "your_item" "Your_item" "your_hands" "your_weapon"
-    # Monster
+    # Monster speech substitutions (do_mon_str_replacements)
+    "monster" "a_monster" "A_monster" "Monster" "A_Monster"
     "the_monster" "The_monster" "the_monster_possessive"
     "The_monster_possessive" "possessive" "killer_name"
-    "short_monster_name_"
+    "says" "short_monster_name_"
+    # something/a_something/the_something variants
+    "something" "a_something" "Something" "A_something"
+    "the_something" "The_something"
+    "the_something_possessive" "The_something_possessive"
+    # Foe references (do_mon_str_replacements)
+    "foe" "Foe" "foe_possessive" "foe_name" "foe_species"
+    "foe_genus" "Foe_genus" "foe_genus_plural"
+    "foe_god" "Foe_god" "to_foe" "at_foe"
+    # Pronouns (do_mon_str_replacements)
+    "subjective" "Subjective" "reflexive" "objective"
     # Features
-    "the_feature" "The_feature" "staircase"
+    "the_feature" "The_feature" "feature" "surface" "staircase"
+    # God/demon speech
+    "a_God" "A_God" "my_God" "My_God" "god_is" "God_is"
+    "Possessive" "Possessive_God" "possessive_God"
     # RANDGEN
     "RANDGEN"
     # Books
@@ -355,8 +375,8 @@ RUNTIME_KEYWORDS=(
     "random_body_part_any_plural" "random_body_part_any_singular"
     "random_body_part_external_plural" "random_body_part_external_singular"
     "random_body_part_internal_plural" "random_body_part_internal_singular"
-    # Misc runtime
-    "sparkling_message"
+    # Species insults
+    "species_insult_adj1" "species_insult_adj2" "species_insult_noun"
 )
 
 is_runtime_keyword() {
