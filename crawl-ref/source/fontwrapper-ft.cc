@@ -30,7 +30,7 @@
 #define MISSING_CHAR 0xbf
 // CJK fallback font — loaded alongside the primary font to provide glyphs
 // for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
-#define CJK_FALLBACK_FONT "contrib/fonts/SarasaMonoSC-Regular.ttf"
+#define MAPLE_FONT "contrib/fonts/MapleMono-NF-CN-Regular.ttf"
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -109,7 +109,16 @@ bool FTFontWrapper::configure_font()
     // Get maximum advance and other global metrics
     FT_Size_Metrics metrics = face->size->metrics;
     m_max_advance   = coord_def(0,0);
-    m_max_advance.x = metrics.max_advance >> 6;
+    // Use Latin half-width advance as grid cell, not max_advance.
+    // For CJK fonts, max_advance = full-width (2em), but the cell
+    // must be the Latin monospace advance so CJK fills 2 cells.
+    int latin_adv = 0;
+    for (char c = 0x20; c < 0x7f; ++c)
+    {
+        if (FT_Load_Char(face, c, FT_LOAD_DEFAULT) == 0)
+            latin_adv = max(latin_adv, (int)(face->glyph->advance.x >> 6));
+    }
+    m_max_advance.x = latin_adv ? latin_adv : (metrics.max_advance >> 6);
     m_max_advance.y = (metrics.ascender-metrics.descender)>>6;
     m_ascender      = (metrics.ascender>>6);
     // if you're looking for realistic glyph sizes use m_max_advance
@@ -205,9 +214,11 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
 
     // TODO: probably don't want to end here, but try a fallback font in
     // the calling function.
-    string font_path = datafile_path(font_name, false, true);
+    string font_path = datafile_path(MAPLE_FONT, false, true);
     if (font_path.c_str()[0] == 0)
-        end(1, false, "Could not find font '%s'", font_name);
+        font_path = datafile_path(font_name, false, true);
+    if (font_path.c_str()[0] == 0)
+        end(1, false, "Could not find font");
 
     // Certain versions of freetype have problems reading files on Windows,
     // do that ourselves.
@@ -237,7 +248,7 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     // Load CJK fallback font for Chinese/Japanese/Korean characters.
     // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
     // that exist in neither font.
-    string cjk_path = datafile_path(CJK_FALLBACK_FONT, false, true);
+    string cjk_path = datafile_path(font_name, false, true); // DejaVu fallback
     if (cjk_path.c_str()[0] != 0)
     {
         FILE *fc = fopen_u(cjk_path.c_str(), "rb");
