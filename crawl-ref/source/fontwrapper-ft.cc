@@ -122,16 +122,33 @@ bool FTFontWrapper::configure_font()
 
     if (cjk_face)
     {
-        // Load CJK face at the same pixel size as the primary font.
-        // store() and string_width() use native glyph.advance for tight
-        // CJK spacing; render_textblock() uses grid advance independently.
         int device_w = display_density.logical_to_device(fsize);
         FT_Set_Pixel_Sizes(cjk_face, device_w, device_w);
+
+        // Proportionally rescale the CJK face so its native advance
+        // matches the monospace grid (m_max_advance.x * 2). Using the
+        // SAME value for width and height preserves glyph aspect ratio.
+        // This eliminates the root cause of all advance mismatches
+        // between cell-based layout (strwidth) and pixel rendering.
+        FT_UInt idx = FT_Get_Char_Index(cjk_face, 0x6C49); // 汉
+        if (idx)
+        {
+            FT_Load_Glyph(cjk_face, idx, FT_LOAD_DEFAULT);
+            int cjk_adv = cjk_face->glyph->advance.x >> 6;
+            int target = m_max_advance.x * 2;
+            if (cjk_adv > 0 && cjk_adv != target)
+            {
+                float ratio = (float)target / cjk_adv;
+                int new_size = device_w * ratio;
+                FT_Set_Pixel_Sizes(cjk_face, new_size, new_size);
+            }
+        }
     }
 
-    charsz = coord_def(1,1);
     // Grow character size to power of 2.
-    // CJK glyphs can be up to 2x the base advance, so use 2x width.
+    // CJK glyphs occupy up to m_max_advance.x * 2 pixels wide.
+    // The while-double loop ensures atlas cells are power-of-2 sized.
+    charsz = coord_def(1,1);
     while (charsz.x <= m_max_advance.x * 2)
         charsz.x *= 2;
     while (charsz.y <= m_max_advance.y)
