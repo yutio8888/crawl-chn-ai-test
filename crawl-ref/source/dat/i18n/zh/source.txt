@@ -33930,3 +33930,8 @@ Vampire
 %1$s %2$s the %3$s%4$s
 %1$s挡住了%3$s%4$s
 %%%%%
+%%%%%
+Jiyva will unlock the Slime Pits vault.
+
+吉瓦将解锁软泥坑宝库。
+
