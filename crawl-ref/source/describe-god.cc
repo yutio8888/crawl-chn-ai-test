@@ -808,7 +808,7 @@ static formatted_string _describe_god_powers(god_type which_god)
                                                  : T_("occasionally");
         }
 
-        desc.cprintf("%s%s守护你的生命。\n",
+        desc.cprintf(T_("%s%s protects your life.\n"),
                 uppercase_first(god_name(which_god)).c_str(),
                 how);
     }
@@ -824,9 +824,9 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(DARKGREY);
 
         if (piety >= piety_breakpoint(5))
-            desc.cprintf("兽人经常认出你是贝奥格的选民。\n");
+            desc.cprintf(T_("Orcs frequently recognise you as Beogh's chosen one.\n"));
         else
-            desc.cprintf("兽人有时认出你是他们的一员。\n");
+            desc.cprintf(T_("Orcs sometimes recognise you as one of them.\n"));
     }
     break;
 
@@ -840,7 +840,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             (piety >= piety_breakpoint(1)) ? T_("sometimes") :
                                              T_("occasionally");
 
-        desc.cprintf("%s%s保护你免受混沌伤害。\n",
+        desc.cprintf(T_("%s%s protects you from harm by chaos.\n"),
                 uppercase_first(god_name(which_god)).c_str(), how);
 
         how =
@@ -848,7 +848,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             (piety >= piety_breakpoint(3)) ? T_("sometimes") :
             (piety >= piety_breakpoint(1)) ? T_("occasionally") :
                                              T_("rarely");
-        desc.cprintf("%s%s保护你免受地狱伤害。\n",
+        desc.cprintf(T_("%s%s protects you from hellish harm.\n"),
                 uppercase_first(god_name(which_god)).c_str(), how);
         break;
     }
@@ -857,7 +857,7 @@ static formatted_string _describe_god_powers(god_type which_god)
     {
         have_any = true;
         // TSO section: all format strings have different ARG positions between EN/ZH
-        desc.cprintf("%s阻止你偷袭毫无防备的敌人。\n",
+        desc.cprintf(T_("%s prevents you from sneaking up on the defenceless.\n"),
                 uppercase_first(god_name(which_god)).c_str());
 
         const int halo_size = you_worship(which_god) ? you.halo_radius() : -1;
@@ -888,14 +888,14 @@ static formatted_string _describe_god_powers(god_type which_god)
 
     case GOD_JIYVA:
         have_any = true;
-        desc.cprintf("果冻是和平的，会吃掉地上的物品。\n");
-        desc.cprintf("吉瓦阻止你伤害果冻。\n");
+        desc.cprintf(T_("Jellies are peaceful and will eat items on the floor.\n"));
+        desc.cprintf(T_("Jiyva prevents you from harming jellies.\n"));
 
         if (have_passive(passive_t::jelly_regen))
             desc.textcolour(god_colour(which_god));
         else
             desc.textcolour(DARKGREY);
-        desc.cprintf("你的生命和魔力恢复速度%s加快。\n",
+        desc.cprintf(T_("Your life and magic regeneration are%s increased.\n"),
                      piety >= piety_breakpoint(5)
                         ? (T_("very greatly "))
                         : piety >= piety_breakpoint(3)
@@ -909,14 +909,14 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(god_colour(which_god));
         else
             desc.textcolour(DARKGREY);
-        desc.cprintf("%s%s减缓移动。\n",
+        desc.cprintf(T_("%s%s slows your movement.\n"),
                 uppercase_first(god_name(which_god)).c_str(),
                 piety >= piety_breakpoint(5)
                     ? (T_("greatly "))
                     : piety >= piety_breakpoint(2)
                     ? ""
                     : (T_("slightly ")));
-        desc.cprintf("%s提升你的属性。(+%d)\n",
+        desc.cprintf(T_("%s boosts your attributes. (+%d)\n"),
                 uppercase_first(god_name(which_god)).c_str(),
                 chei_stat_boost(piety));
         break;
@@ -928,19 +928,19 @@ static formatted_string _describe_god_powers(god_type which_god)
             const char* offer = numoffers == 1
                                ? spell_title(*you.vehumet_gifts.begin())
                                : (T_("some of Vehumet's most lethal spells"));
-            desc.cprintf("你可以记忆%s。\n", offer);
+            desc.cprintf(T_("You can memorise %s.\n"), offer);
         }
         else if (!you.has_mutation(MUT_INNATE_CASTER))
         {
             desc.textcolour(DARKGREY);
-            desc.cprintf("你可以记忆一些维胡梅特的法术。\n");
+            desc.cprintf(T_("You can memorise some of Vehumet's spells.\n"));
         }
         break;
 
     case GOD_YREDELEMNUL:
         // TODO: Vary the text depending on the size of the umbra.
-        desc.cprintf("你被本影环绕。\n"
-                     "在你的本影中死去的敌人可能会被复活为亡灵仆从。\n");
+        desc.cprintf(T_("You are surrounded by an umbra.\n"
+                     "Enemies who die within your umbra may be risen as undead servants.\n"));
         break;
 
     case GOD_HEPLIAKLQANA:
@@ -953,7 +953,7 @@ static formatted_string _describe_god_powers(god_type which_god)
         // correctly in webtiles. (It works fine locally regardless.)
         // Feature request: not this.
         desc.textcolour(textcol);
-        desc.cprintf("你的生命精华减少了。(-10%% 生命值)\n");
+        desc.cprintf(T_("Your life essence is reduced. (-10%% HP)\n"));
     }
         break;
 
@@ -998,17 +998,17 @@ static formatted_string _describe_god_powers(god_type which_god)
         {
             desc.textcolour(god_colour(which_god));
             if (you.has_mutation(MUT_MAKHLEB_DESTRUCTION_GEH))
-                desc.cprintf("你的毁灭被火焚地狱之力增强。\n");
+                desc.cprintf(T_("Your destruction is augmented by the fires of Gehenna.\n"));
             else if (you.has_mutation(MUT_MAKHLEB_DESTRUCTION_COC))
-                desc.cprintf("你的毁灭被冰狱之力增强。\n");
+                desc.cprintf(T_("Your destruction is augmented by the ice of Cocytus.\n"));
             else if (you.has_mutation(MUT_MAKHLEB_DESTRUCTION_TAR))
-                desc.cprintf("你的毁灭被悲叹地狱之力增强。\n");
+                desc.cprintf(T_("Your destruction is augmented by the lamentations of Tartarus.\n"));
             else if (you.has_mutation(MUT_MAKHLEB_DESTRUCTION_DIS))
-                desc.cprintf("你的毁灭被铁城之力增强。\n");
+                desc.cprintf(T_("Your destruction is augmented by the Iron City of Dis.\n"));
             else
             {
                 desc.textcolour(DARKGREY);
-                desc.cprintf("你的毁灭将被四大地狱之一增强。\n");
+                desc.cprintf(T_("Your destruction will be augmented by one of the four Hells.\n"));
             }
 
             continue;
@@ -1018,7 +1018,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             && !makhleb_mark_name().empty())
         {
                 desc.textcolour(god_colour(which_god));
-                desc.cprintf("你被烙印了%s。\n", makhleb_mark_name().c_str());
+                desc.cprintf(T_("You are marked with %s.\n"), makhleb_mark_name().c_str());
                 continue;
         }
 
@@ -1037,7 +1037,7 @@ static formatted_string _describe_god_powers(god_type which_god)
         const int desc_len = strwidth(buf);
 
         string abil_cost = "(" + make_cost_description(power.abil) + ")";
-        if (abil_cost == "(None)" || abil_cost == "（无）")
+        if (abil_cost == "(" + string(T_("None")) + ")")
             abil_cost = "";
 
         desc.cprintf("%s%*s%s\n", buf.c_str(), 80 - desc_len - (int)strwidth(abil_cost),
@@ -1045,7 +1045,7 @@ static formatted_string _describe_god_powers(god_type which_god)
     }
 
     if (!have_any)
-        desc.cprintf("无。\n");
+        desc.cprintf("%s\n", T_("None."));
 
     // Show Jiyva's opening of the Slime Pits at the bottom of the list
     // We want this to stay green permanently once the player hits 6*
@@ -1387,7 +1387,7 @@ bool describe_god_with_join(god_type which_god)
 
 #ifdef USE_TILE_WEB
         tiles.json_open_object();
-        string prompt = abandon_prompt + (yesno_only ? " 请输入 [Y]是 或 [n]否。" : "");
+        string prompt = abandon_prompt + (yesno_only ? T_(" Enter [Y]es or [n]o.") : "");
         tiles.json_write_string("prompt", prompt);
         tiles.json_write_int("pane", desc_sw->current());
         tiles.ui_state_change("describe-god", 0);

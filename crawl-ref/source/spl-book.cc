@@ -587,8 +587,6 @@ private:
         ostringstream desc;
 
         // line 1
-        const bool zh = Options.language == lang_t::ZH;
-
         if (you.divine_exegesis)
         {
             desc << make_stringf(
@@ -618,8 +616,7 @@ private:
                 max_size -= 19;
             const bool search_overflow =
                             static_cast<int>(search_text.size()) > max_size;
-            desc << make_stringf(zh ? "匹配: <w>%.*s%s</w>"
-                                   : "Matches: <w>%.*s%s</w>",
+            desc << make_stringf(T_("Matches: <w>%.*s%s</w>"),
                             search_overflow ? max_size - 2 : max_size,
                             replace_all(search_text, "<", "<<").c_str(),
                             search_overflow ? ".." : "");
@@ -628,29 +625,22 @@ private:
         desc << "\n";
 
         const string act =
-            zh ? (default_action == action::memorise ? "记忆"
-                   : default_action == action::imbue ? "赋予" : "施放")
-               : (default_action == action::memorise ? "Memorise"
-                   : default_action == action::imbue ? "Imbue" : "Cast");
+            default_action == action::memorise ? T_("Memorise")
+            : default_action == action::imbue ? T_("Imbue")
+            : T_("Cast");
         // line 2
         desc << menu_keyhelp_cmd(CMD_MENU_RIGHT) << " ";
         desc << ( current_action == action::cast
-                    ? (zh ? "<w>施放</w>|描述|隐藏|显示"
-                          : "<w>Cast</w>|Describe|Hide|Show")
+                    ? T_("<w>Cast</w>|Describe|Hide|Show")
                  : current_action == action::memorise
-                    ? (zh ? "<w>记忆</w>|描述|隐藏|显示"
-                          : "<w>Memorise</w>|Describe|Hide|Show")
+                    ? T_("<w>Memorise</w>|Describe|Hide|Show")
                  : current_action == action::imbue
-                    ? (zh ? "<w>赋予</w>|描述|隐藏|显示"
-                          : "<w>Imbue</w>|Describe|Hide|Show")
+                    ? T_("<w>Imbue</w>|Describe|Hide|Show")
                  : current_action == action::describe
-                    ? (zh ? act + "|<w>描述</w>|隐藏|显示"
-                          : act + "|<w>Describe</w>|Hide|Show")
+                    ? act + "|" + T_("<w>Describe</w>|Hide|Show")
                  : current_action == action::hide
-                    ? (zh ? act + "|描述|<w>隐藏</w>|显示"
-                          : act + "|Describe|<w>Hide</w>|Show")
-                 : (zh ? act + "|描述|隐藏|<w>显示</w>"
-                       : act + "|Describe|Hide|<w>Show</w>"));
+                    ? act + "|" + T_("Describe|<w>Hide</w>|Show")
+                 : act + "|" + T_("Describe|Hide|<w>Show</w>"));
         desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH)
              << (T_(" search"))
              << (T_("   [<w>?</w>] help"));

@@ -31857,3 +31857,87 @@ Dismiss Apostle #3
 Recruit Apostle
 招募使徒
 %%%%%
+%s%s protects your life.\n
+%s%s守护你的生命。
+%%%%%
+Orcs frequently recognise you as Beogh's chosen one.\n
+兽人经常认出你是贝奥格的选民。
+%%%%%
+Orcs sometimes recognise you as one of them.\n
+兽人有时认出你是他们的一员。
+%%%%%
+%s%s protects you from harm by chaos.\n
+%s%s保护你免受混沌伤害。
+%%%%%
+%s%s protects you from hellish harm.\n
+%s%s保护你免受地狱伤害。
+%%%%%
+%s prevents you from sneaking up on the defenceless.\n
+%s阻止你偷袭毫无防备的敌人。
+%%%%%
+Jellies are peaceful and will eat items on the floor.\n
+果冻是和平的，会吃掉地上的物品。
+%%%%%
+Jiyva prevents you from harming jellies.\n
+吉瓦阻止你伤害果冻。
+%%%%%
+Your life and magic regeneration are%s increased.\n
+你的生命和魔力恢复速度%s加快。
+%%%%%
+%s%s slows your movement.\n
+%s%s减缓移动。
+%%%%%
+%s boosts your attributes. (+%d)\n
+%s提升你的属性。(+%d)
+%%%%%
+You can memorise %s.\n
+你可以记忆%s。
+%%%%%
+You can memorise some of Vehumet's spells.\n
+你可以记忆一些维胡梅特的法术。
+%%%%%
+You are surrounded by an umbra.\nEnemies who die within your umbra may be risen as undead servants.\n
+你被本影环绕。\n在你的本影中死去的敌人可能会被复活为亡灵仆从。
+%%%%%
+Your life essence is reduced. (-10%% HP)\n
+你的生命精华减少了。(-10%% 生命值)
+%%%%%
+Your destruction is augmented by the fires of Gehenna.\n
+你的毁灭被火焚地狱之力增强。
+%%%%%
+Your destruction is augmented by the ice of Cocytus.\n
+你的毁灭被冰狱之力增强。
+%%%%%
+Your destruction is augmented by the lamentations of Tartarus.\n
+你的毁灭被悲叹地狱之力增强。
+%%%%%
+Your destruction is augmented by the Iron City of Dis.\n
+你的毁灭被铁城之力增强。
+%%%%%
+Your destruction will be augmented by one of the four Hells.\n
+你的毁灭将被四大地狱之一增强。
+%%%%%
+You are marked with %s.\n
+你被烙印了%s。
+%%%%%
+None.
+无。
+%%%%%
+ Enter [Y]es or [n]o.
+ 请输入 [Y]是 或 [n]否。
+%%%%%
+Memorise
+记忆
+%%%%%
+Imbue
+赋予
+%%%%%
+<w>Describe</w>|Hide|Show
+<w>描述</w>|隐藏|显示
+%%%%%
+Describe|<w>Hide</w>|Show
+描述|<w>隐藏</w>|显示
+%%%%%
+Describe|Hide|<w>Show</w>
+描述|隐藏|<w>显示</w>
+%%%%%

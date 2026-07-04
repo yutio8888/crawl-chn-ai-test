@@ -585,7 +585,7 @@ void melee_attack::do_ooze_flood()
         && defender->alive()
         && coinflip())
     {
-        defender->floodify(attacker, random_range(30, 70), "软泥");
+        defender->floodify(attacker, random_range(30, 70), T_("ooze"));
     }
 }
 
@@ -1854,8 +1854,8 @@ bool melee_attack::attack()
     {
         saved_gyre_name = get_artefact_name(*weapon);
         const bool gimble = effective_attack_number % 2;
-        set_artefact_name(*mutable_wpn, gimble ? "迅捷之刃 \"Gimble\""
-                                                  : "迅捷之刃 \"Gyre\"");
+        set_artefact_name(*mutable_wpn, make_stringf("%s \"%s\"",
+                T_("quick blade"), gimble ? "Gimble" : "Gyre"));
     }
 
     // Restore gyre's name before we return. We cannot use an unwind_var here
@@ -2081,8 +2081,10 @@ class AuxConstrict: public AuxAttackType
 {
 public:
     AuxConstrict()
-    : AuxAttackType(0, 100, "抓取") { };
+    : AuxAttackType(0, 100, "constrict") { };
     bool xl_based_chance() const override { return false; }
+
+    string get_name() const override { return T_("constrict"); }
 
     bool is_usable() const override
     {
@@ -2097,7 +2099,7 @@ class AuxKick: public AuxAttackType
 {
 public:
     AuxKick()
-    : AuxAttackType(5, 100, "踢") { };
+    : AuxAttackType(5, 100, "kick") { };
 
     int get_damage(bool /*random*/) const override
     {
@@ -2124,14 +2126,14 @@ public:
             return T_("claw");
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
             return T_("pierce");
-        return name;
+        return T_("kick");
     }
 
     string get_name() const override
     {
         if (you.get_mutation_level(MUT_TENTACLE_SPIKE))
             return T_("tentacle spike");
-        return name;
+        return T_("kick");
     }
 
     bool is_usable() const override
@@ -2146,7 +2148,9 @@ class AuxHeadbutt: public AuxAttackType
 {
 public:
     AuxHeadbutt()
-    : AuxAttackType(5, 67, "头撞") { };
+    : AuxAttackType(5, 67, "headbutt") { };
+
+    string get_name() const override { return T_("headbutt"); }
 
     int get_damage(bool /*random*/) const override
     {
@@ -2163,7 +2167,9 @@ class AuxPeck: public AuxAttackType
 {
 public:
     AuxPeck()
-    : AuxAttackType(6, 67, "啄") { };
+    : AuxAttackType(6, 67, "peck") { };
+
+    string get_name() const override { return T_("peck"); }
 
     bool is_usable() const override
     {
