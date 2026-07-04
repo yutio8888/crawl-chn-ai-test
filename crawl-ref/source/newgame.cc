@@ -1620,7 +1620,7 @@ void job_group::attach(const newgame_def& ng, const newgame_def& defaults,
 void species_group::attach(const newgame_def& ng, const newgame_def& defaults,
                        UINewGameMenu* ng_menu, menu_letter &letter)
 {
-    ng_menu->_add_group_title(name, position);
+    ng_menu->_add_group_title(T_(name), position);
 
     coord_def pos(position);
 
@@ -1833,8 +1833,8 @@ static void _construct_weapon_menu(const newgame_def& ng,
     {
         string text = "Tab - ";
 
-        text += defweapon == WPN_RANDOM  ? "Random" :
-                defweapon == WPN_VIABLE  ? "Recommended" :
+        text += defweapon == WPN_RANDOM  ? T_("Random") :
+                defweapon == WPN_VIABLE  ? T_("Recommended") :
                 defweapon == WPN_UNARMED ? "unarmed" :
                 weapon_base_name(defweapon);
 

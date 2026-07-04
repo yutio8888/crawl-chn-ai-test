@@ -15514,7 +15514,7 @@ Plasma Beam
 等离子光束
 %%%%
 Blinkbolt
-闪雷
+闪烁箭
 %%%%
 Vhi's Electric Charge
 维之电荷
@@ -15787,7 +15787,7 @@ Bolt of Devastation
 毁灭之箭
 %%%%
 Spit Poison
-喷吐毒素
+喷毒
 %%%%
 Summon Undead
 召唤亡灵
@@ -16417,7 +16417,7 @@ Mass Regeneration
 群体再生
 %%%%
 Noxious Breath
-毒气吐息
+毒瘴吐息
 %%%%
 Unleash Destruction
 释放毁灭
@@ -16429,7 +16429,7 @@ Combustion Breath
 燃烧吐息
 %%%%
 Nullifying Breath
-湮灭吐息
+消魔吐息
 %%%%
 Steam Breath
 蒸汽吐息
@@ -16438,7 +16438,7 @@ Mud Breath
 泥浆吐息
 %%%%
 Galvanic Breath
-电流吐息
+电击吐息
 %%%%
 Maxwell's Portable Piledriver
 麦克斯韦之便携打桩机
@@ -16747,7 +16747,7 @@ Ring of Flames
 Ring of Flames
 %%%%
 Shaft Self
-Shaft Self
+自我竖井
 %%%%
 Shroud of Golubria
 Shroud of Golubria
@@ -30786,3 +30786,412 @@ You hear an explosion!
 %%%%
  glows brighter for a moment.
 短暂地变得更亮了。
+%%%%
+Simple
+简单
+%%%%
+Intermediate
+中等
+%%%%
+Advanced
+高级
+%%%%
+Random
+随机
+%%%%
+Recommended
+推荐
+%%%%%
+Recite
+诵经
+%%%%%
+Divine Shield
+神圣护盾
+%%%%%
+Divine Vigour
+神圣活力
+%%%%%
+Heroism
+英勇气概
+%%%%%
+Finesse
+战斗技巧
+%%%%%
+Berserk
+狂暴
+%%%%%
+Apocalypse
+启示录
+%%%%%
+Sanctuary
+庇护所
+%%%%%
+Divine Exegesis
+神圣释经
+%%%%%
+Heavenly Storm
+天堂风暴
+%%%%%
+Slouch
+懒散步伐
+%%%%%
+Grand Finale
+华丽终曲
+%%%%%
+Idealise
+理想化
+%%%%%
+Imprison
+禁锢
+%%%%%
+Line Pass
+穿行
+%%%%%
+Power Leap
+强力跳跃
+%%%%%
+Serpent's Lash
+蛇之鞭笞
+%%%%%
+Shatter the Chains
+打碎枷锁
+%%%%%
+Temporal Distortion
+时间扭曲
+%%%%%
+Transference
+移转
+%%%%%
+Vessel of Slaughter
+杀戮容器
+%%%%%
+Vitalisation
+活力化
+%%%%%
+Wall Jump
+蹬墙跳
+%%%%%
+Bend Time
+扭曲时间
+%%%%%
+Banish
+放逐
+%%%%%
+Infernal Legion
+地狱军团
+%%%%%
+Sign of Ruin
+毁灭印记
+%%%%%
+Word of Chaos
+混沌之言
+%%%%%
+Fiery Armour
+火焰护甲
+%%%%%
+Foxfire Swarm
+狐火群
+%%%%%
+Heal Wounds
+治愈伤口
+%%%%%
+Recall Apostles
+召回使徒
+%%%%%
+Recall Undead Harvest
+召回亡灵收割
+%%%%%
+Elemental Force
+元素之力
+%%%%%
+Oozemancy
+软泥术
+%%%%%
+Overgrow
+过度生长
+%%%%%
+Potion Petition
+药剂祈求
+%%%%%
+Receive Armour
+接收护甲
+%%%%%
+Receive Weapon
+接收武器
+%%%%%
+Receive Forbidden Knowledge
+接收禁忌知识
+%%%%%
+Call Merchant
+召唤商人
+%%%%%
+Deal Four
+发四张
+%%%%%
+Draw Destruction
+抽毁灭
+%%%%%
+Draw Escape
+抽逃脱
+%%%%%
+Draw Summoning
+抽召唤
+%%%%%
+Draw Stack
+抽牌组
+%%%%%
+Stack Five
+堆五张
+%%%%%
+Triple Draw
+三连抽
+%%%%%
+Hop
+跳跃
+%%%%%
+Cacophony
+杂音
+%%%%%
+Enkindle
+点燃
+%%%%%
+Bat Swarm
+蝙蝠群
+%%%%%
+Evoke Blink
+激发闪烁
+%%%%%
+Evoke Invisibility
+激发隐形
+%%%%%
+Evoke Damnation
+激发诅咒
+%%%%%
+Evoke the Staff of Olgreb
+激发奥尔格雷布之杖
+%%%%%
+End Transformation
+结束变形
+%%%%%
+Forget Spell
+遗忘法术
+%%%%%
+Heal Self
+自愈
+%%%%%
+Recall Ancestor
+召回先祖
+%%%%%
+Golden Breath
+黄金吐息
+%%%%%
+Breathe Poison Gas
+喷吐毒气
+%%%%%
+Breathe Rust
+喷吐铁锈
+%%%%%
+Draw Out Power
+抽取力量
+%%%%%
+Wall of Briars
+荆棘之墙
+%%%%%
+No ability
+无能力
+%%%%%
+Bestial Takedown
+兽性扑倒
+%%%%%
+Watery Grave
+水葬
+%%%%%
+Imprint Weapon
+烙印武器
+%%%%%
+Invent Gizmo
+发明装置
+%%%%%
+Brand Weapon With Distortion
+扭曲烙印武器
+%%%%%
+Brand Weapon With Holy Wrath
+圣怒烙印武器
+%%%%%
+Brand Weapon With Pain
+痛苦烙印武器
+%%%%%
+Brand Self #1
+自我烙印 #1
+%%%%%
+Brand Self #2
+自我烙印 #2
+%%%%%
+Brand Self #3
+自我烙印 #3
+%%%%%
+Curse Item
+诅咒物品
+%%%%%
+Unearth Wretches
+挖掘可怜虫
+%%%%%
+Blood for Blood
+以血还血
+%%%%%
+Channel Magic
+引导魔力
+%%%%%
+Convert to Beogh
+皈依贝奥格
+%%%%%
+Depart the Abyss
+离开深渊
+%%%%%
+Donate Gold
+捐赠金币
+%%%%%
+Duel
+决斗
+%%%%%
+Enter the Abyss
+进入深渊
+%%%%%
+Fathomless Shackles
+深不可测的枷锁
+%%%%%
+Grow Ballistomycete
+生长弩菌
+%%%%%
+Grow Oklob
+生长奥克罗布
+%%%%%
+Imbue Servitor
+灌注仆从
+%%%%%
+Light the Black Torch
+点燃黑火炬
+%%%%%
+Purification
+净化
+%%%%%
+Reject Sacrifices
+拒绝献祭
+%%%%%
+Rising Flame
+升腾之焰
+%%%%%
+Sacrifice Arcana
+献祭奥秘
+%%%%%
+Sacrifice Artifice
+献祭技巧
+%%%%%
+Sacrifice Courage
+献祭勇气
+%%%%%
+Sacrifice Drink
+献祭饮品
+%%%%%
+Sacrifice Durability
+献祭耐久
+%%%%%
+Sacrifice Essence
+献祭精华
+%%%%%
+Sacrifice Experience
+献祭经验
+%%%%%
+Sacrifice Forms
+献祭形态
+%%%%%
+Sacrifice Health
+献祭生命
+%%%%%
+Sacrifice Love
+献祭爱情
+%%%%%
+Sacrifice Nimbleness
+献祭敏捷
+%%%%%
+Sacrifice Purity
+献祭纯净
+%%%%%
+Sacrifice Resistance
+献祭抗性
+%%%%%
+Sacrifice Skill
+献祭技能
+%%%%%
+Sacrifice Stealth
+献祭潜行
+%%%%%
+Sacrifice Words
+献祭言语
+%%%%%
+Sacrifice a Hand
+献祭一只手
+%%%%%
+Sacrifice an Eye
+献祭一只眼
+%%%%%
+Set terrain to build
+设置建造地形
+%%%%%
+Build terrain
+建造地形
+%%%%%
+Clear terrain to floor
+清除地形为地板
+%%%%%
+Slimify
+软泥化
+%%%%%
+Step From Time
+时间步
+%%%%%
+Stomp
+重踏
+%%%%%
+Summon Divine Warrior
+召唤神圣战士
+%%%%%
+Globe of Annihilation
+湮灭之球
+%%%%%
+Disaster Area
+灾难区域
+%%%%%
+Bind Soul
+束缚灵魂
+%%%%%
+Ancestor Identity
+先祖身份
+%%%%%
+Ancestor Life: Battlemage
+先祖生命：战斗法师
+%%%%%
+Ancestor Life: Hexer
+先祖生命：咒术师
+%%%%%
+Ancestor Life: Knight
+先祖生命：骑士
+%%%%%
+Bribe Branch
+贿赂分支
+%%%%%
+Dismiss Apostle
+遣散使徒
+%%%%%
+Dismiss Apostle #1
+遣散使徒 #1
+%%%%%
+Dismiss Apostle #2
+遣散使徒 #2
+%%%%%
+Dismiss Apostle #3
+遣散使徒 #3
+%%%%%
+Recruit Apostle
+招募使徒
+%%%%%
