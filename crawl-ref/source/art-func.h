@@ -143,7 +143,7 @@ static void _CONDEMNATION_melee_effects(item_def* /*weapon*/, actor* attacker,
     const int dur = random_range(40, 80);
     const bool was_guilty = mons->has_ench(ENCH_ANGUISH);
     if (mons->add_ench(mon_enchant(ENCH_ANGUISH, attacker, dur)) && !was_guilty)
-        simple_monster_message(*mons, " is haunted by guilt!");
+        simple_monster_message(*mons, T_(" is haunted by guilt!"));
 }
 
 ////////////////////////////////////////////////////
@@ -1307,7 +1307,7 @@ static void _LEECH_melee_effects(item_def* /*item*/, actor* attacker,
         && mondied && x_chance_in_y(dam, 729))
     {
         simple_monster_message(*(defender->as_monster()),
-                               " liquefies into a cloud of blood!");
+                               T_(" liquefies into a cloud of blood!"));
         blood_spray(defender->pos(), defender->type, 50);
     }
 }

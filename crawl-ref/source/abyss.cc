@@ -2394,9 +2394,9 @@ void abyss_maybe_spawn_xp_exit()
     big_cloud(CLOUD_TLOC_ENERGY, &you, you.pos(), 3 + random2(3), 3, 3);
     redraw_screen(); // before the force-more
     update_screen();
-    mprf_p(MSGCH_BANISHMENT,
-           T_("The substance of the Abyss twists violently,"
-           " and a gateway leading %1$s appears!"), stairs ? "down" : "out");
+    const char* str = stairs ? T_("The substance of the Abyss twists violently, and a gateway leading down appears!")
+    : T_("The substance of the Abyss twists violently, and a gateway leading out appears!");
+    mprf(MSGCH_BANISHMENT, "%s", str);
 
     you.props[ABYSS_STAIR_XP_KEY] = EXIT_XP_COST;
     you.props[ABYSS_SPAWNED_XP_EXIT_KEY] = true;

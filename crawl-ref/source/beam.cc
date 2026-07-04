@@ -6623,7 +6623,7 @@ mon_resist_type bolt::apply_enchantment_to_monster(monster* mon)
                                          random_range(20, 30) * BASELINE_DELAY)))
         {
             if (simple_monster_message(*mon,
-                                       " grows more vulnerable to poison."))
+                                       T_(" grows more vulnerable to poison.")))
             {
                 obvious_effect = true;
             }

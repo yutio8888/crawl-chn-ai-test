@@ -5786,7 +5786,7 @@ Ru
 入
 %%%%
 Ru asks you to %s.
-入要求你%s。
+Ru要求你%s。
 %%%%
 run
 奔跑
@@ -7866,7 +7866,7 @@ Xom
 佐姆
 %%%%
 Xom finds this level too familiar and boring!
-佐姆觉得这一层太过熟悉、太过无聊了！
+Xom觉得这一层太过熟悉、太过无聊了！
 %%%%
 Yes
 是
@@ -9430,7 +9430,7 @@ You feel the power of the Abyss delaying your translocation!
 你感到深渊的力量在延缓你的传送！
 %%%%
 You feel the power of Zot begin to gather its forces!
-你感到佐特的力量开始聚集！
+你感到Zot的力量开始聚集！
 %%%%
 You feel the presence of a powerless spirit.
 你感到一个无力之灵的存在。
@@ -24544,7 +24544,7 @@ You are reanimating the dead.
 你正在复活死者。
 %%%%
 You are reciting Zin's Axioms of Law.
-你正在诵读辛的法律公理。
+你正在诵读Zin的法律公理。
 %%%%
 You are regenerating under the effects of ambrosia.
 你正在仙酿的作用下再生。
@@ -30587,4 +30587,665 @@ verb|bask
 沐浴其中
 %%%%
 verb|are engulfed
-被吞没
+%%%%
+ (level %d/%d)
+ (等级 %d/%d)
+
+%%%%
+ However, this will not work until the sealing runes wear off.
+ 然而，这要等到封印符文消退后才会生效。
+
+%%%%
+ You feel drowsy...
+ 你感到昏昏欲睡……
+
+%%%%
+ allies begin to heal rapidly.
+ 的盟友开始快速自愈。
+
+%%%%
+ begins deflecting missiles!
+ 开始偏转飞弹！
+
+%%%%
+ begins to accept %s allies' injuries.
+ 开始承受%s盟友的伤势。
+
+%%%%
+ begins winding a clockwork bee!
+ 开始给发条蜜蜂上弦！
+
+%%%%
+ binds the souls of nearby monsters.
+ 束缚了附近怪物的灵魂。
+
+%%%%
+ blinks into view!
+ 闪现在视野中！
+
+%%%%
+ channels a blast of cleansing flame!
+ 引导了一波净化之焰！
+
+%%%%
+ chants %s song.
+ 吟唱了%s之歌。
+
+%%%%
+ curls into a ball and begins rolling!
+ 蜷缩成球开始滚动！
+
+%%%%
+ currently targeted by 
+ 当前被锁定的目标：
+
+%%%%
+ currently targeted by:\n
+ 当前被锁定的目标：\n
+
+%%%%
+ currently targeting 
+ 当前正在锁定 
+
+%%%%
+ disapproves of the use of such an item.
+ 不赞成使用这种物品。
+
+%%%%
+ flickers and crackles with electricity
+ 闪烁着噼啪作响的电光
+
+%%%%
+ flies swiftly and unpredictably
+ 快速而不可预测地飞行
+
+%%%%
+ frowns upon the use of this spell.\n
+ 皱眉反对使用这个法术。\n
+
+%%%%
+ grows more vulnerable to poison.
+ 对毒素变得更加脆弱。
+
+%%%%
+ hide, which can be used as armour.\n
+ 皮革，可用于制作护甲。\n
+
+%%%%
+ if you have enough runes
+ 如果你有足够的符文
+
+%%%%
+ incapable of using stairs
+ 无法使用楼梯
+
+%%%%
+ incapable of using stairs.\n
+ 无法使用楼梯。\n
+
+%%%%
+ is compelled to serve!
+ 被迫服从！
+
+%%%%
+ is covered in dense fur and muscle
+ 覆盖着浓密的皮毛和肌肉
+
+%%%%
+ is covered with eyes and tentacles
+ 布满眼睛和触手
+
+%%%%
+ is drained!
+ 被吸取了生命力！
+
+%%%%
+ is healed.
+ 被治愈了。
+
+%%%%
+ is smitten.
+ 被重击了。
+
+%%%%
+ launches a sporangium.
+ 发射了一颗孢子囊。
+
+%%%%
+ liquefies into a cloud of blood!
+ 液化成一团血雾！
+
+%%%%
+ mind is gnawed upon.
+ 的心智受到了侵蚀。
+
+%%%%
+ mind is heavily gnawed upon.
+ 的心智受到了严重侵蚀。
+
+%%%%
+ movement is quickened by the wind!
+ 的移动被风加快了！
+
+%%%%
+ potion.
+ 药水。
+
+%%%%
+ powers are not affected by the Invocations skill.
+ 的力量不受祈神技能影响。
+
+%%%%
+ radiates an aura of cold.
+ 散发出寒冷的光环。
+
+%%%%
+ radiates an aura of fear!
+ 散发出恐惧的光环！
+
+%%%%
+ scroll.
+ 卷轴。
+
+%%%%
+ seems unusually buggy.
+ 似乎有点异常。
+
+%%%%
+ shimmers and seems to become two!
+ 闪烁了一下，似乎变成了两个！
+
+%%%%
+ sings a water chant to call the tide!
+ 吟唱水之圣歌，召唤潮汐！
+
+%%%%
+ slain, it may be possible to recover 
+ 被杀后，或许可以回收
+
+%%%%
+ sports a set of venomous tails
+ 长着一套剧毒的尾巴
+
+%%%%
+ squirts a massive cloud of ink into the water!
+ 在水中喷出一大团墨汁！
+
+%%%%
+ strongly dislikes when you train this skill.
+ 强烈反对你训练这项技能。
+
+%%%%
+ stumbles on the uneven ground.
+ 在崎岖的地面上绊倒了。
+
+%%%%
+ supports the use of this spell.\n
+ 赞成使用这个法术。\n
+
+%%%%
+ surroundings become eerily quiet.
+ 周围变得诡异地寂静。
+
+%%%%
+ will immediately vanish, yielding 
+ 会立即消失，产生
+
+%%%%
+ will inflict a necromantic curse on %s foe when destroyed.\n
+ 被摧毁时会对%s敌人施加死灵诅咒。\n
+
+%%%%
+ will inflict a powerful necromantic curse on %s foe when destroyed.\n
+ 被摧毁时会对%s敌人施加强大的死灵诅咒。\n
+
+%%%%
+ wounds begin to rapidly close.
+ 的伤口开始快速愈合。
+
+%%%%
+ yields 
+ 产生 
+
+%%%%
+%s activates a sealing rune.
+%s激活了一道封印符文。
+
+%%%%
+%s are an unusual item
+%s是一种不寻常的物品
+
+%%%%
+%s arms its allies with %s.
+%s用%s武装了它的盟友。
+
+%%%%
+%s attempts to bespell %s!
+%s试图对%s施下咒术！
+
+%%%%
+%s bane
+%s克星
+
+%%%%
+%s draws you further into %s thrall.
+%s将你进一步拉入%s的奴役。
+
+%%%%
+%s goes into a battle-frenzy!
+%s进入了战斗狂热状态！
+
+%%%%
+%s has an unusual item: %s
+%s拥有一件不寻常的物品：%s
+
+%%%%
+%s have an unusual item: %s
+%s拥有一件不寻常的物品：%s
+
+%%%%
+%s is an unusual item.
+%s是一件不寻常的物品。
+
+%%%%
+%s picks up the pace!
+%s加快了步伐！
+
+%%%%
+, this device is rendered temporarily inert. 
+，此装置暂时失效。
+
+%%%%
+A cloud of 
+一团
+
+%%%%
+A stacked deck
+一副堆叠的牌组
+
+%%%%
+Additional devices of the same type 
+同类型的额外装置
+
+%%%%
+An illusion of %s
+%s的幻象
+
+%%%%
+As motes of dream dust float from an unseen source, %s falls asleep.
+随着梦尘从无形之源飘落，%s陷入了沉睡。
+
+%%%%
+As the sheep sparkle%s and sway%s, %s falls asleep.
+绵羊闪烁着%s摇摆着%s，%s陷入了沉睡。
+
+%%%%
+Chance to defeat your Will: %d%%%s\n
+击破你意志的几率：%d%%%s\n
+
+%%%%
+Cur
+当前
+
+%%%%
+Damage: 
+伤害：
+
+%%%%
+Eggstreme
+究极蛋
+
+%%%%
+Failed to place prism at (%d, %d)
+无法在(%d, %d)放置棱镜
+
+%%%%
+How on earth did you manage to pick this up?
+你到底是怎么捡起这东西的？
+
+%%%%
+If angered 
+若被激怒，
+
+%%%%
+If you drink this now, you will no longer be 
+如果你现在喝下它，你将不再是
+
+%%%%
+Increasing your evocations skill will 
+提升魔力释放技能将
+
+%%%%
+It is 
+它是
+
+%%%%
+It is a juvenile, no longer larval but below its mature strength.
+它是幼体，已不再是一个幼虫，但尚未达到成年力量。
+
+%%%%
+It is a primal beast, the most powerful of its kind.
+它是一头原始巨兽，同类中最强大的存在。
+
+%%%%
+It is an elder, stronger than mature beasts.
+它是一位长老，比成年野兽更强。
+
+%%%%
+It is larval and weak, freshly emerged from its mother's pouch.
+它是幼虫，虚弱不堪，刚刚从母兽袋中出来。
+
+%%%%
+It is mature, stronger than a juvenile but weaker than its elders.
+它是成年体，比幼体强，但不及长老。
+
+%%%%
+It is of an unusually buggy age.
+它的年龄异常奇怪。
+
+%%%%
+It looks just like you...spooky!\n
+它看起来就像你……好诡异！\n
+
+%%%%
+Killing 
+杀死
+
+%%%%
+Max
+最大
+
+%%%%
+Min
+最小
+
+%%%%
+Motes of dream dust float from an unseen source.%s
+梦尘从无形之源飘落。%s
+
+%%%%
+Projectile damage: 
+飞弹伤害：
+
+%%%%
+The 
+
+
+%%%%
+The apparition of 
+
+
+%%%%
+The dream sheep attempt%s to lull %s to sleep.
+梦羊尝试%s催眠%s。
+
+%%%%
+The substance of the Abyss twists violently, and a gateway leading down appears!
+深渊的物质剧烈扭曲，一道通向深处的传送门出现了！
+
+%%%%
+The substance of the Abyss twists violently, and a gateway leading out appears!
+深渊的物质剧烈扭曲，一道通向外界的传送门出现了！
+
+%%%%
+You hear %s.
+你听到了%s。
+
+%%%%
+Zin's power protects your fellow warrior from evil magic!
+辛的力量保护你的武士同伴免受邪恶魔法的伤害！
+
+%%%%
+\nA suitable weapon or spell can reach past it.
+\n合适的武器或法术可以越过它攻击。
+
+%%%%
+\nDamage: 
+\n伤害：
+
+%%%%
+\nIf struck, it will crumble away soon after.\n
+\n若被击中，它很快就会崩碎消散。\n
+
+%%%%
+\nIf struck, it will die soon after.\n
+\n若被击中，它很快就会死去。\n
+
+%%%%
+\nIt can be dug through.
+\n可以挖掘穿它。
+
+%%%%
+\nIt deals %s fire damage.\n
+\n它造成%s点火焰伤害。\n
+
+%%%%
+\nIt has a curse placed upon it.
+\n它被施加了诅咒。
+
+%%%%
+\nIt has a curse which improves the following skills:\n
+\n它有一个诅咒，可以提升以下技能：\n
+
+%%%%
+\nIt is an ancient artefact.
+\n它是一件远古神器。
+
+%%%%
+\nIt is quickly crumbling away.\n
+\n它正在快速崩碎消散。\n
+
+%%%%
+\nIt is quickly melting away.\n
+\n它正在快速融化消散。\n
+
+%%%%
+\nIt is quickly withering away.\n
+\n它正在快速枯萎消散。\n
+
+%%%%
+\nMenu/colouring prefixes: 
+\n菜单/着色前缀：
+
+%%%%
+\nMutations Suppressed: 
+\n突变被抑制：
+
+%%%%
+\nNoise: 
+\n噪音：
+
+%%%%
+\nPray here with <w>%s</w> to learn more.\n
+\n在此用<w>%s</w>祈祷以了解更多。\n
+
+%%%%
+\nRange : 
+\n范围：
+
+%%%%
+\nSome spells can be cast through it.
+\n一些法术可以穿透它施放。
+
+%%%%
+\nThis bane usually lasts a %s time.\n
+\n此克星通常持续%s时间。\n
+
+%%%%
+\nThis monster has been 
+\n这个怪物已被
+
+%%%%
+\nYou are here.
+\n你在这里。
+
+%%%%
+\nYou have harvested enough death to cast this spell %d time. (Maximum of %d.)
+\n你已收割了足够的死亡能量，可以施放此法术%d次。（最多%d次。）
+
+%%%%
+\nYou have harvested enough death to cast this spell %d times. (Maximum of %d.)
+\n你已收割了足够的死亡能量，可以施放此法术%d次。（最多%d次。）
+
+%%%%
+a haunting
+一曲幽魂
+
+%%%%
+a haunting song
+一曲幽魂之歌
+
+%%%%
+a luring song
+一曲诱惑之歌
+
+%%%%
+adept
+熟手
+
+%%%%
+almost instantly
+几乎瞬间
+
+%%%%
+amateur
+业余
+
+%%%%
+an eerie melody
+一曲诡异的旋律
+
+%%%%
+can be combined with it to improve the rate at 
+可以与其结合以提升
+
+%%%%
+close
+关闭
+
+%%%%
+common
+常见
+
+%%%%
+conj
+咒法
+
+%%%%
+created by magic and is temporary. 
+由魔法创造，是临时性的。
+
+%%%%
+enter
+进入
+
+%%%%
+giant
+巨型
+
+%%%%
+improve the rate at which it recharges.
+提升其重新充能的速率。
+
+%%%%
+its luring
+其诱惑
+
+%%%%
+journeyman
+熟练工
+
+%%%%
+legendary
+传奇
+
+%%%%
+master
+大师
+
+%%%%
+medium
+中等
+
+%%%%
+moderate length of
+中等时长
+
+%%%%
+normally 
+通常
+
+%%%%
+novice
+新手
+
+%%%%
+only slightly.
+仅轻微地。
+
+%%%%
+poison
+毒素
+
+%%%%
+quickly
+快速地
+
+%%%%
+rare
+稀有
+
+%%%%
+s breath smoulders ominously
+的气息阴燃着不祥
+
+%%%%
+short length of
+短时长
+
+%%%%
+temporarily summoned to this location. 
+被临时召唤到此地。
+
+%%%%
+tiny
+极小
+
+%%%%
+uncommon
+罕见
+
+%%%%
+very common
+非常常见
+
+%%%%
+very long
+非常长
+
+%%%%
+very rare
+非常稀有
+
+%%%%
+very small
+非常小
+
+%%%%
+veteran
+老手
+
+%%%%
+weakling
+弱者
+
+%%%%
+which it recharges.
+其充能的速率。
+
+%%%%
+\n\nWith your current SH, it has a %d%% chance to reflect attacks against your willpower and other normally unblockable effects.
+\n\n根据你当前的SH，它有%d%%的几率反射针对你意志力和其他通常无法格挡效果的攻击。
+%%%%
+\nIt deals %s damage.\n
+\n它造成%s点伤害。\n

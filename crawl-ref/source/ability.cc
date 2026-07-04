@@ -3097,7 +3097,7 @@ static spret _siphon_essence(bool fail)
         damage += dam;
         if (damage && mon->observable())
         {
-            simple_monster_message(*mon, " convulses!");
+            simple_monster_message(*mon, T_(" convulses!"));
             behaviour_event(mon, ME_ANNOY);
             seen = true;
         }
