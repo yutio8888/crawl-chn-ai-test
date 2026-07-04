@@ -31,6 +31,7 @@
 // CJK fallback font — loaded alongside the primary font to provide glyphs
 // for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
 #define MAPLE_FONT "contrib/fonts/MapleMono-NF-CN-Regular.ttf"
+#define CJK_FALLBACK_FONT "contrib/fonts/SarasaMonoSC-Regular.ttf"
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -360,7 +361,9 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         // value makes string_width/store/render_textblock all agree,
         // eliminating column misalignment proportional to CJK count.
         int cw = wcwidth(ch);
-        if (cw > 1)
+        // Only quantize fallback font glyphs. Primary font CJK
+        // (e.g. Maple Mono) already has correct 2:1 native advance.
+        if (cw > 1 && use_face == cjk_face)
             glyph.advance = m_max_advance.x * cw;
 
         // For CJK fallback glyphs, use Sarasa's native ascender values.
