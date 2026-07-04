@@ -591,6 +591,7 @@ xom.h.o \
 xp-evoker-data.h.o \
 xp-tracking-type.h.o \
 zap-type.h.o \
+zh-scroll-appearance.o \
 
 ALL_OBJECTS = $(OBJECTS) $(TEST_OBJECTS) $(TILES_OBJECTS) $(GLTILES_OBJECTS) \
 $(WEBTILES_OBJECTS) $(YACC_OBJECTS) $(TILEDEFOBJS) $(HEADER_OBJECTS) \

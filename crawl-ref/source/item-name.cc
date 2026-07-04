@@ -58,6 +58,7 @@
 #include "unicode.h"
 #include "unwind.h"
 #include "viewgeom.h"
+#include "zh-scroll-appearance.h"
 #include "zot.h" // gem_clock_active
 #include "database.h"
 
@@ -2006,9 +2007,9 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 
             static const char *potion_qualifiers[] =
             {
-                "",  "bubbling ", "fuming ", "fizzy ", "viscous ", "lumpy ",
-                "smoky ", "glowing ", "sedimented ", "metallic ", "murky ",
-                "gluggy ", "oily ", "slimy ", "emulsified ",
+                "", "bubbling", "fuming", "fizzy", "viscous", "lumpy",
+                "smoky", "glowing", "sedimented", "metallic", "murky",
+                "gluggy", "oily", "slimy", "emulsified",
             };
             COMPILE_CHECK(ARRAYSZ(potion_qualifiers) == PDQ_NQUALS);
 
@@ -2025,17 +2026,26 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
             COMPILE_CHECK(ARRAYSZ(potion_colours) == PDC_NCOLOURS);
 
             const char *qualifier =
-                (pqual < 0 || pqual >= PDQ_NQUALS) ? "bug-filled "
+                (pqual < 0 || pqual >= PDQ_NQUALS) ? "bug-filled"
                                     : potion_qualifiers[pqual];
 
             const char *clr =  (pcolour < 0 || pcolour >= PDC_NCOLOURS) ?
                                    "bogus" : potion_colours[pcolour];
 
+            const char *t_qual = T_(qualifier);
+            const char *t_clr   = T_(clr);
+
             // Structural: ZH "药水" suffix vs EN " potion"
+            // EN keys have no trailing spaces; add them explicitly here.
             if (Options.language == lang_t::ZH)
-                buff << qualifier << clr << "药水";
+                buff << t_qual << t_clr << T_("potion");
             else
-                buff << qualifier << clr << " potion";
+            {
+                buff << t_qual;
+                if (qualifier[0] != '\0')
+                    buff << ' ';
+                buff << t_clr << ' ' << T_("potion");
+            }
         }
         break;
 
@@ -2046,19 +2056,28 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
 #endif
 
     case OBJ_SCROLLS:
-        // Structural: ZH scroll naming uses prefix "标有X的卷轴"/"X卷轴"
+        // Structural: ZH scroll naming uses physical appearance descriptors.
         if (Options.language == lang_t::ZH)
         {
             if (basename)
             {
-                buff << "卷轴";
+                buff << T_("scroll");
                 break;
             }
 
             if (identified)
-                buff << scroll_type_name(item_typ) << "卷轴";
+                buff << scroll_type_name(item_typ) << T_("scroll");
             else
-                buff << "标有" << make_name(subtype_rnd, MNAME_SCROLL) << "的卷轴";
+            {
+                // Derive binding/seal indices from the existing make_name seed.
+                const int binding = (subtype_rnd >> 4) % NDSC_SCROLL_BINDING;
+                const int seal    = (subtype_rnd >> 12) % NDSC_SCROLL_SEAL;
+
+                buff << scroll_binding_zh[binding];
+                if (seal != SSE_NONE)
+                    buff << scroll_seal_zh[seal];
+                buff << "的" << T_("scroll");
+            }
         }
         else
         {
