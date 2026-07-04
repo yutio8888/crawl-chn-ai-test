@@ -2106,37 +2106,6 @@ string mon_attack_name(attack_type attack, bool with_object)
 #endif
         "hit, bite, peck, or gore", // AT_CHERUB
     };
-    static const char *attack_types_zh[] =
-    {
-        "击中",
-        "咬",
-        "刺",
-
-        "释放孢子",
-
-        "触碰",
-        "吞噬",
-        "爪击",
-        "啄",
-        "头撞",
-        "拳击",
-        "踢",
-        "触手拍击",
-        "尾击",
-        "角顶",
-        "缠绕",
-        "践踏",
-        "象鼻拍击",
-#if TAG_MAJOR_VERSION == 34
-        "猛然咬合",
-        "泼溅",
-#endif
-        "扑向",
-#if TAG_MAJOR_VERSION == 34
-        "刺",
-#endif
-        "击中、撕咬、啄击或角顶",
-    };
     static const char *attack_types_en_end[] =
     {
 #if TAG_MAJOR_VERSION == 34
@@ -2145,29 +2114,7 @@ string mon_attack_name(attack_type attack, bool with_object)
         "hit", // AT_WEAP_ONLY,
         "hit or gore", // AT_RANDOM
     };
-    static const char *attack_types_zh_end[] =
-    {
-#if TAG_MAJOR_VERSION == 34
-        "击中", // AT_SHOOT
-#endif
-        "击中", // AT_WEAP_ONLY,
-        "击中或角顶", // AT_RANDOM
-    };
 
-    if (Options.language == lang_t::ZH)
-    {
-        const int idx = attack - AT_FIRST_ATTACK;
-        const int main_count = (int)ARRAYSZ(attack_types_zh);
-        ASSERT(idx < main_count + (int)ARRAYSZ(attack_types_zh_end));
-        const string verb = idx < main_count
-            ? attack_types_zh[idx]
-            : attack_types_zh_end[idx - main_count];
-        if (with_object)
-            return verb;
-        else
-            return replace_all(replace_all(verb, "向", ""), "扑向", "猛扑");
-    }
-    else
     {
         const int verb_index = attack - AT_FIRST_ATTACK;
         static vector<string> merged_en;
@@ -2180,10 +2127,13 @@ string mon_attack_name(attack_type attack, bool with_object)
         }
         ASSERT(verb_index < (int)merged_en.size());
         if (with_object)
-            return merged_en[verb_index];
+            return T_(merged_en[verb_index].c_str());
         else
-            return replace_all(replace_all(merged_en[verb_index], " at", ""),
-                                                               " on", "");
+        {
+            const string stripped = replace_all(
+                replace_all(merged_en[verb_index], " at", ""), " on", "");
+            return T_(stripped.c_str());
+        }
     }
 
     }

@@ -1394,19 +1394,18 @@ string Menu::get_keyhelp(bool scrollable) const
     if (!scrollable && !is_set(MF_MULTISELECT))
         return "";
 
-    const bool zh = Options.language == lang_t::ZH;
     string navigation = "<lightgrey>";
     if (is_set(MF_ARROWS_SELECT))
-        navigation += menu_keyhelp_select_keys() + (zh ? " 选择  " : " select  ");
+        navigation += menu_keyhelp_select_keys() + T_(" select  ");
 
     if (scrollable)
     {
         navigation +=
-            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + (zh ? " 下一页  " : " page down  ")
-            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + (zh ? " 上一页  " : " page up  ");
+            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + T_(" page down  ")
+            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + T_(" page up  ");
     }
     if (!is_set(MF_MULTISELECT))
-        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + (zh ? " 退出" : " exit");
+        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + T_(" exit");
     navigation += "</lightgrey>";
     if (is_set(MF_MULTISELECT))
     {
@@ -1415,19 +1414,18 @@ string Menu::get_keyhelp(bool scrollable) const
         // selection
         const auto chosen_count = selected_entries().size();
         navigation += string("\n<lightgrey>")
-                + (zh ? "字母切换    " : "Letters toggle    ");
+                + T_("Letters toggle    ");
         if (is_set(MF_ARROWS_SELECT))
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_TOGGLE_SELECTED)
-                + (zh ? " 切换选中    " : " toggle selected    ");
+                + T_(" toggle selected    ");
         }
         if (chosen_count)
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_ACCEPT_SELECTION)
                 + make_stringf(
-                    zh ? " 确认（已选%zu项）</lightgrey>"
-                       : " accept (%zu chosen)</lightgrey>",
-                chosen_count);
+                    T_(" accept (%zu chosen)"),
+                    chosen_count) + "</lightgrey>";
         }
     }
     // XX this is present on non-scrolling multiselect keyhelps mostly for
