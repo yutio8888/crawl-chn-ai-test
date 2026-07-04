@@ -122,13 +122,32 @@ bool FTFontWrapper::configure_font()
 
     if (cjk_face)
     {
-        // Load CJK face at the same pixel size as the primary font.
-        // CJK glyph advance is forced to the monospace grid + centering
-        // is applied in render_textblock() — pixel-size calibration here
-        // would distort the glyph aspect ratio and make CJK text appear
-        // visually too large/small relative to the primary font.
         int device_w = display_density.logical_to_device(fsize);
         FT_Set_Pixel_Sizes(cjk_face, device_w, device_w);
+
+        // Measure a representative CJK glyph's advance. If it differs
+        // from 2x the primary font's max_advance, proportionally rescale
+        // the CJK face so its native advance matches the grid. This
+        // eliminates the need for per-function advance overrides and
+        // ensures store(), string_width(), and render_textblock() all
+        // agree on per-character advance.
+        //
+        // Using the SAME value for width and height preserves glyph
+        // aspect ratio — unlike the earlier approach that set different
+        // w/h causing stretched/distorted CJK text.
+        FT_UInt idx = FT_Get_Char_Index(cjk_face, 0x6C49); // 汉
+        if (idx)
+        {
+            FT_Load_Glyph(cjk_face, idx, FT_LOAD_DEFAULT);
+            int cjk_adv = cjk_face->glyph->advance.x >> 6;
+            int target = m_max_advance.x * 2;
+            if (cjk_adv > 0 && cjk_adv != target)
+            {
+                float ratio = (float)target / cjk_adv;
+                int new_size = device_w * ratio;
+                FT_Set_Pixel_Sizes(cjk_face, new_size, new_size);
+            }
+        }
     }
 
     charsz = coord_def(1,1);
