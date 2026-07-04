@@ -425,6 +425,10 @@ cp contrib/fonts/SarasaMonoSC-Regular.ttf /mnt/d/crawl-game/contrib/fonts/
    `T_(variable)` is invisible to `i18n_extract.py`; always run
    `audit_data_i18n.py` after changes to data-driven files
    (`duration-data.h`, `dat/mons/*.yaml`, `feature-data.h`, `.lua`)
+9. **NEVER assemble UI text by concatenating bare English fragments** —
+   `desc += " (if damage dealt)"`, `text << "Looks like "`, etc. produce
+   untranslatable text. Use `T_()` with complete sentences or make_stringf
+   templates. Run `scan_string_concat.py` to detect existing violations.
 
 ## Translation Decision Registry
 
@@ -492,10 +496,38 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
 aggregation scripts that capture all output to `.claude/metrics/verify/`:
 
 ```bash
-bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + smoke)
+bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + string-concat + smoke)
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
 bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)
 ```
+
+### String Concatenation Scanner (`scan_string_concat.py`)
+
+Tree-sitter-based scanner that detects bare (untranslated) string literals
+embedded in concatenation, stream insertion, `.append()`, and compile-time
+adjacent-string expressions — patterns that regex-based tools cannot reliably
+see.
+
+```bash
+# Full scan (non-blocking, graceful degradation if tree-sitter missing)
+python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ --skip-low
+
+# Specific files only
+python3 .claude/scripts/scan_string_concat.py \
+    --files hiscores.cc,hints.cc --skip-low
+
+# CI enforce mode (exit 2 if tree-sitter unavailable)
+python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \
+    --require-parser --skip-low --format json --json-output report.json
+
+# Audit mode (include T_()-wrapped literals too)
+python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ --all
+```
+
+Detection rules: `+=` compound assignment, `.append()` calls, `<<` stream
+insertion, `+` runtime concatenation, and compile-time adjacent strings.
+Risk scoring combines variable name, prose content, file/function context,
+and CJK presence. Requires `pip3 install tree-sitter tree-sitter-cpp`.
 
 Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`
 
