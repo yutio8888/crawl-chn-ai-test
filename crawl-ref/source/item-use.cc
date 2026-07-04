@@ -1490,7 +1490,7 @@ bool handle_chain_removal(vector<item_def*>& to_remove, bool interactive)
         {
             if ((int)chain_remove.size() < chain_remove_num)
             {
-                mprf(MSGCH_PROMPT, "A cursed item is preventing you from removing %s.",
+                mprf(MSGCH_PROMPT, T_("A cursed item is preventing you from removing %s."),
                         item.name(DESC_INVENTORY).c_str());
                 return false;
             }
@@ -1618,7 +1618,7 @@ bool can_unequip_item(item_def& item, bool silent)
     {
         if (!silent)
         {
-            mprf(MSGCH_PROMPT, "%s is melded into your body!",
+            mprf(MSGCH_PROMPT, T_("%s is melded into your body!"),
                                item.name(DESC_YOUR).c_str());
         }
         return false;
@@ -1628,7 +1628,7 @@ bool can_unequip_item(item_def& item, bool silent)
     {
         if (!silent)
         {
-            mprf(MSGCH_PROMPT, "%s is stuck to your body!",
+            mprf(MSGCH_PROMPT, T_("%s is stuck to your body!"),
                                 item.name(DESC_YOUR).c_str());
         }
         return false;
@@ -1638,8 +1638,7 @@ bool can_unequip_item(item_def& item, bool silent)
     {
         if (!silent)
         {
-            mprf(MSGCH_PROMPT, "Your thirst for blood prevents you from unwielding "
-                               "your weapon!");
+            mprf(MSGCH_PROMPT, T_("Your thirst for blood prevents you from unwielding your weapon!"));
         }
         return false;
     }
@@ -1648,8 +1647,7 @@ bool can_unequip_item(item_def& item, bool silent)
     {
         if (!silent)
         {
-            mprf(MSGCH_PROMPT, "It would be unfitting for someone so glorious to "
-                               "remove their crown in front of an audience.");
+            mprf(MSGCH_PROMPT, T_("It would be unfitting for someone so glorious to remove their crown in front of an audience."));
         }
         return false;
     }

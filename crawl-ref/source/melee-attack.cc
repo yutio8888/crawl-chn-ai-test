@@ -4254,10 +4254,10 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
             if (you.can_see(*attacker) || you.can_see(*defender))
             {
-                mprf("%s drains %s %s.",
+                mprf(T_("%s drains %s %s."),
                      attacker->name(DESC_THE).c_str(),
                      defender->pronoun(PRONOUN_POSSESSIVE).c_str(),
-                     spell_user ? "magic" : "power");
+                     spell_user ? T_("magic") : T_("power"));
             }
 
             monster* vine = attacker->as_monster();
@@ -4494,8 +4494,8 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                     }
                     else
                     {
-                        mprf(MSGCH_DANGER, "You %s!",
-                            initial ? "start to liquefy" : "liquefy further");
+                        mprf(MSGCH_DANGER, T_("You %s!"),
+                            initial ? T_("start to liquefy") : T_("liquefy further"));
                     }
                 }
             }
@@ -5060,7 +5060,7 @@ bool melee_attack::do_drag()
     // We should be okay to move, then.
     if (needs_message)
     {
-        mprf("%s drags %s backwards!",
+        mprf(T_("%s drags %s backwards!"),
              attacker->name(DESC_THE).c_str(),
              defender_name(true).c_str());
     }

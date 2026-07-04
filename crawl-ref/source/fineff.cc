@@ -1147,10 +1147,10 @@ void trj_spawn_fineff::fire()
     if (trj)
     {
         const string monnam = trj->name(DESC_THE);
-        mprf("%s shudders%s.", monnam.c_str(),
-             spawned >= 5 ? " alarmingly" :
-             spawned >= 3 ? " violently" :
-             spawned > 1 ? " vigorously" : "");
+        mprf(T_("%s shudders%s."), monnam.c_str(),
+             spawned >= 5 ? T_(" alarmingly") :
+             spawned >= 3 ? T_(" violently") :
+             spawned > 1 ? T_(" vigorously") : "");
 
         if (spawned == 1)
             mprf(T_("%s spits out another jelly."), monnam.c_str());

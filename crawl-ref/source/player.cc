@@ -9084,7 +9084,7 @@ void player_close_door(coord_def doorpos)
             }
             else
             {
-                mprf(MSGCH_SOUND, "You slam the %s%s shut with a bang%s!",
+                mprf(MSGCH_SOUND, T_("You slam the %s%s shut with a bang%s!"),
                                   adj, noun, items_msg);
             }
 
@@ -9097,7 +9097,7 @@ void player_close_door(coord_def doorpos)
             mprf(MSGCH_SOUND, door_close_creak.c_str(), adj, noun);
         else
         {
-            mprf(MSGCH_SOUND, "As you close the %s%s%s, it creaks loudly!",
+            mprf(MSGCH_SOUND, T_("As you close the %s%s%s, it creaks loudly!"),
                               adj, noun, items_msg);
         }
 

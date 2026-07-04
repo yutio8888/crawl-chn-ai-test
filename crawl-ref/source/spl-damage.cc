@@ -1962,7 +1962,7 @@ spret cast_scorch(const actor& agent, int pow, bool fail)
         }
         else
         {
-            mprf(MSGCH_DANGER, "Your fire resistance burns away!");
+            mprf(MSGCH_DANGER, T_("Your fire resistance burns away!"));
             you.duration[DUR_FIRE_VULN] += dur * 3 / 2;
         }
     }
@@ -2327,7 +2327,7 @@ static int _ignite_poison_player(coord_def where, int pow, actor *agent)
     if (damage > 0)
         you.expose_to_element(BEAM_FIRE, 2);
 
-    mprf(MSGCH_RECOVERY, "You are no longer poisoned.");
+    mprf(MSGCH_RECOVERY, T_("You are no longer poisoned."));
     you.duration[DUR_POISONING] = 0;
 
     return damage ? 1 : 0;
