@@ -1717,10 +1717,9 @@ static void _protean_explosion(monster* mons)
 
     if (you.can_see(*mons))
     {
-        mprf(MSGCH_MONSTER_WARNING, "For just a moment, %s begins to "
-                                    "look like %s, then it explodes!",
-                                    mons->name(DESC_THE).c_str(),
-                                    mons_type_name(target, DESC_A).c_str());
+        mprf(MSGCH_MONSTER_WARNING, T_("For just a moment, %s begins to look like %s, then it explodes!"),
+             mons->name(DESC_THE).c_str(),
+             mons_type_name(target, DESC_A).c_str());
     }
 
     // Determine number of children based on the HD of what we roll.

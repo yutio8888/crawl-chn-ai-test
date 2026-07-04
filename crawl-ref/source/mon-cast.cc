@@ -6075,9 +6075,9 @@ static void _mesmerise_los(monster& agent, int power, bool check_hearing)
             if (you.can_see(*mons))
             {
                 if (mons->has_ench(ENCH_DAZED))
-                    mprf("%s trance deepens.", mons->name(DESC_ITS).c_str());
+                    mprf(T_("%s trance deepens."), mons->name(DESC_ITS).c_str());
                 else
-                    mprf("%s is mesmerised by %s!", mons->name(DESC_THE).c_str(), agent.name(DESC_THE).c_str());
+                    mprf(T_("%s is mesmerised by %s!"), mons->name(DESC_THE).c_str(), agent.name(DESC_THE).c_str());
             }
 
             if (!mons->has_ench(ENCH_DAZED))
@@ -6860,7 +6860,7 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
         {
             mprf(chan,
                  T_("Motes of dream dust float from an unseen source."));
-            mprf("%s is unaffected.", foe_name.c_str());
+            mprf(T_("%s is unaffected."), foe_name.c_str());
             return;
         }
 
@@ -6885,7 +6885,7 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
          T_("The dream sheep attempt%s to lull %s to sleep."),
          pluralize,
          foe_name.c_str());
-    mprf("%s is unaffected.", foe_name.c_str());
+    mprf(T_("%s is unaffected."), foe_name.c_str());
 }
 
 static void _dream_sheep_sleep(monster& mons, actor& foe)
@@ -9394,9 +9394,9 @@ static void _oblivion_howl(monster &mon)
                             make_stringf("but you%s",
                                          you.resist_margin_phrase(willpower).c_str()) :
                             "and it begins to echo in your mind!";
-    mprf("%s unleashes a %s howl, %s",
+    mprf(T_("%s unleashes a %s howl, %s"),
          mon.name(DESC_THE).c_str(),
-         silenced(mon.pos()) ? "silent" : "terrible",
+         silenced(mon.pos()) ? T_("silent") : T_("terrible"),
          effect.c_str());
     noisy(spell_effect_noise(SPELL_OBLIVION_HOWL), mon.pos(), mon.mid);
     if (willpower <= 0)
