@@ -1038,14 +1038,8 @@ string monster_info::_core_name() const
         if (Options.language == lang_t::ZH)
         {
             if (const char* zh = zh_monster_name(s))
-            {
-                if (type == MONS_PLAYER_SHADOW)
-                    mprf(MSGCH_DIAGNOSTICS, "[SHADOW] _core_name: en='%s' zh='%s'", s.c_str(), zh);
                 s = zh;
-            }
         }
-        else if (type == MONS_PLAYER_SHADOW)
-            mprf(MSGCH_DIAGNOSTICS, "[SHADOW] _core_name: en='%s' (lang not ZH)", s.c_str());
 
         if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER
             && Options.language != lang_t::ZH)
@@ -1151,19 +1145,12 @@ string monster_info::_apply_adjusted_description(description_level_type desc,
     // (no articles) for all others.
     if (Options.language == lang_t::ZH)
     {
-        string result;
         if (desc == DESC_ITS)
-            result = apply_description(desc, s);
-        else if (desc == DESC_YOUR
-                 || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
-            result = apply_description(DESC_YOUR, s);
-        else
-            result = apply_description(DESC_PLAIN, s);
-
-        if (type == MONS_PLAYER_SHADOW)
-            mprf(MSGCH_DIAGNOSTICS, "[SHADOW] _apply_adj_desc: desc=%d att=%d in='%s' out='%s'",
-                 (int)desc, (int)attitude, s.c_str(), result.c_str());
-        return result;
+            return apply_description(desc, s);
+        if (desc == DESC_YOUR
+            || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
+            return apply_description(DESC_YOUR, s);
+        return apply_description(DESC_PLAIN, s);
     }
 
     if (desc == DESC_ITS)
