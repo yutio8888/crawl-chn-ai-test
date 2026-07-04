@@ -5,8 +5,8 @@ support for DCSS.
 
 | Branch | Role | Based on |
 |--------|------|----------|
-| `chn-0.34.1-base` | **Active dev branch** | `chinese-translation-0.34.1` |
-| `chinese-translation-0.34.1` | Stable integration target | `0.34.1` stable tag |
+| `chn-0.34.1-base` | **Active dev branch** | `0.34.1` stable tag (clean rebuild) |
+| `chinese-translation-0.34.1` | Legacy branch (retained for reference) | `0.34.1` stable tag → polluted by master merge |
 | `worktree-cjk-tiles-fix` | CJK tiles original dev | `master` |
 
 ## ⚠️ Worktree Branch Discipline
@@ -18,7 +18,7 @@ repository's index and working tree, leading to false "staged changes".
 
 **Correct procedure after committing in a worktree:**
 1. `cd ~/projects/crawl` (the main repository)
-2. `git checkout <target-branch>` (e.g. `chinese-translation-0.34.1` or `chn-0.34.1-base`)
+2. `git checkout <target-branch>` (e.g. `chn-0.34.1-base`)
 3. `git merge <worktree-branch>` (or `git reset --hard <worktree-branch>` for fast-forward)
 4. Resolve any conflicts in the main repository
 5. `git reset --hard HEAD` to sync index and working tree
@@ -373,13 +373,14 @@ Identifiers that must remain English regardless of language setting:
 ## Current Branch Status
 
 ### `chn-0.34.1-base` (active dev, current)
-Based on `chinese-translation-0.34.1`. Active translation work happens here.
-Cherry-picked commits land on `chinese-translation-0.34.1` after verification.
+Clean rebuild from `0.34.1` stable tag. Active translation work happens here.
+Commits are cherry-picked from worktree branches into this branch.
 
-### `chinese-translation-0.34.1` (stable integration)
-Based on `0.34.1` stable tag. Merged 96 translation commits from
-`worktree-cjk-tiles-fix`. ~1635+ Chinese strings across ~96 .cc files.
-18 merge conflicts resolved. Both WSL console and Windows tiles compile.
+### `chinese-translation-0.34.1` (legacy, retained for reference)
+Originally based on `0.34.1` stable tag, then merged `worktree-cjk-tiles-fix`
+(based on `master`), bringing in 558 master gameplay commits. ~1635+ Chinese
+strings across ~96 .cc files. Both WSL console and Windows tiles compile.
+**Superseded by `chn-0.34.1-base`** — do not use for new work.
 
 ### `worktree-cjk-tiles-fix` (original development, master-based)
 Based on `master` via `chinese-translation`. Contains the original
@@ -506,8 +507,7 @@ Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`
    active dev branch (`chn-0.34.1-base`). If compilation fails, diagnose and fix
    before committing — never commit code that breaks the build.
 2. **Prefer cherry-pick over merge**: When moving individual commits between
-   branches (e.g. from a worktree branch to `chn-0.34.1-base`, or from
-   `chn-0.34.1-base` to `chinese-translation-0.34.1`), use `git cherry-pick`
+   branches (e.g. from a worktree branch to `chn-0.34.1-base`), use `git cherry-pick`
    rather than `git merge`. Cherry-pick keeps history linear, makes each commit's
    intent clear, and allows reverting individual changes without affecting
    unrelated work.
@@ -552,7 +552,7 @@ chaos and merge conflicts:
 ```
 
 **Never cherry-pick agent commits directly to `chn-0.34.1-base`.** Always go
-through a consolidation worktree first. This keeps the main branch clean if
+through a consolidation worktree first. This keeps the dev branch clean if
 the agent changes need rework.
 
 #### source.txt Merge Conflicts
