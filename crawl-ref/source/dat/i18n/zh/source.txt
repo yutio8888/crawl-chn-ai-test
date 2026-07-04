@@ -15822,6 +15822,9 @@ Summon Mushrooms
 Spit Acid
 喷吐酸液
 %%%%
+Cause Fear
+恐惧术
+%%%%
 Caustic Breath
 腐蚀吐息
 %%%%
