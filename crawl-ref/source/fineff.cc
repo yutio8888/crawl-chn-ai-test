@@ -1241,7 +1241,7 @@ void starcursed_merge_fineff::fire()
         if (mergee && mergee->alive() && mergee->type == MONS_STARCURSED_MASS)
         {
             simple_monster_message(*mon,
-                    " shudders and is absorbed by its neighbour.");
+                    T_(" shudders and is absorbed by its neighbour."));
             _do_merge_masses(mon, mergee);
             return;
         }

@@ -3624,7 +3624,7 @@ void maybe_apply_bane_to_monster(monster& mons)
         && mons_has_attacks(mons)
         && one_chance_in(7))
     {
-        simple_monster_message(mons, " is touched by paradox!");
+        simple_monster_message(mons, T_(" is touched by paradox!"));
         mons.add_ench(mon_enchant(ENCH_PARADOX_TOUCHED, nullptr, INFINITE_DURATION));
     }
 

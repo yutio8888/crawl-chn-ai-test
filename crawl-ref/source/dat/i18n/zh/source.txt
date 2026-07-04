@@ -27746,7 +27746,6 @@ Enter next level anyway?
  This would place you under penance!
  这会让你遭受苦修！
 %%%%
-%%%%
  describe         
  描述             
 %%%%
@@ -28176,7 +28175,6 @@ Delay
 %%%%
 Bane
 祸根
-%%%%
 %%%%
 *Curse
 *诅咒
@@ -30113,7 +30111,6 @@ Potions heal its wearer twice as much.
 It occasionally leaves clouds of freezing vapour upon striking a foe, and grants immunity to clouds of freezing vapour.
 攻击敌人时偶尔留下冰冻蒸汽云，并赋予对冰冻蒸汽云的免疫。
 %%%%
-%%%%
 You hear the sound of rushing water.
 你听到了流水声。
 %%%%
@@ -30332,7 +30329,6 @@ rising multitudes
 %%%%
 full choir
 齐声合唱
-%%%%
 %%%%
  select  
  选择  
@@ -34109,4 +34105,37 @@ deep water
 %%%%
  gets angry again!
 又愤怒了起来！
+%%%%
+ is being constricted!
+正被缠绕着！
+%%%%
+ cannot move out of your way! (Use ctrl+direction or * direction to deconstruct it instead.)
+无法从你的路上移开！（使用Ctrl+方向键或*方向键来将其拆解。）
+%%%%
+ cannot move out of your way!
+无法从你的路上移开！
+%%%%
+ is pulled into the Abyss.
+被拖入了深渊。
+%%%%
+ turns to flee the light!
+转身逃离了圣光！
+%%%%
+ shudders and is absorbed by its neighbour.
+颤抖着被相邻的同类吸收了。
+%%%%
+ is touched by paradox!
+被悖论所触碰！
+%%%%
+ resists.
+抵抗了。
+%%%%
+ blocks 
+挡住了
+%%%%
+.
+。
+%%%%
+ is surrounded by blessed fire!
+被祝福之火包围了！
 %%%%

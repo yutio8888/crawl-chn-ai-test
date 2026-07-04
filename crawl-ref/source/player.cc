@@ -205,8 +205,8 @@ bool check_moveto_trap(const coord_def& p, const string &move_verb,
 
     if (trap->type == TRAP_ZOT && !trap->is_safe() && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
-        string msg = "Do you really want to %s into the Zot trap?";
-        string prompt = make_stringf(msg.c_str(), move_verb.c_str());
+        string msg = T_("Do you really want to %s into the Zot trap?");
+        string prompt = make_stringf(msg.c_str(), T_(move_verb.c_str()));
 
         if (prompted)
             *prompted = true;
@@ -268,8 +268,7 @@ static bool _check_moveto_binding_sigil(coord_def p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += "Are you sure you want to " + move_verb
-                + " onto a binding sigil?";
+        prompt += make_stringf(T_("Are you sure you want to %s onto a binding sigil?"), move_verb.c_str());
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -305,8 +304,7 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += "Are you sure you want to " + move_verb
-                + " into a toxic bog?";
+        prompt += make_stringf(T_("Are you sure you want to %s into a toxic bog?"), move_verb.c_str());
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -460,7 +458,7 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
     if (mons->is_constricted())
     {
         if (!quiet)
-            simple_monster_message(*mons, " is being constricted!");
+            simple_monster_message(*mons, T_(" is being constricted!"));
         return false;
     }
 
@@ -472,11 +470,11 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
         {
             if (is_valid_tempering_target(*mons, you))
             {
-                simple_monster_message(*mons, " cannot move out of your way! "
-                    "(Use ctrl+direction or * direction to deconstruct it instead.)");
+                simple_monster_message(*mons, T_(" cannot move out of your way! "
+                    "(Use ctrl+direction or * direction to deconstruct it instead.)"));
             }
             else
-                simple_monster_message(*mons, " cannot move out of your way!");
+                simple_monster_message(*mons, T_(" cannot move out of your way!"));
         }
         return false;
     }
@@ -4659,12 +4657,12 @@ void handle_player_poison(int delay)
     if (dmg > 6)
     {
         channel = MSGCH_DANGER;
-        adj = "extremely ";
+        adj = T_("extremely ");
     }
     else if (dmg > 2)
     {
         channel = MSGCH_WARN;
-        adj = "very ";
+        adj = T_("very ");
     }
 
     if (do_dmg && dmg > 0)

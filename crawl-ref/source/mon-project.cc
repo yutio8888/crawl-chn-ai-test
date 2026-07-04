@@ -630,8 +630,8 @@ move_again:
                     mprf(T_("You block %s."), mon.name(DESC_THE, true).c_str());
                 else
                 {
-                    simple_monster_message(*mons, (" blocks "
-                        + mon.name(DESC_THE, true) + ".").c_str());
+                    string msg = T_(" blocks ") + mon.name(DESC_THE, true) + T_(".");
+                    simple_monster_message(*mons, msg.c_str());
                 }
                 victim->shield_block_succeeded(&mon);
                 _iood_stop(mon);
