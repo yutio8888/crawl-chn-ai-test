@@ -1154,7 +1154,8 @@ string monster_info::_apply_adjusted_description(description_level_type desc,
         string result;
         if (desc == DESC_ITS)
             result = apply_description(desc, s);
-        else if (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A))
+        else if (desc == DESC_YOUR
+                 || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
             result = apply_description(DESC_YOUR, s);
         else
             result = apply_description(DESC_PLAIN, s);
