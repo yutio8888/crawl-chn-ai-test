@@ -931,9 +931,9 @@ bool zin_recite_to_single_monster(const coord_def& where)
     if (mon->can_speak() && one_chance_in(5))
     {
         if (check < -10)
-            simple_monster_message(*mon, " guffaws at your puny god.");
+            simple_monster_message(*mon, T_(" guffaws at your puny god."));
         else if (check < -5)
-            simple_monster_message(*mon, " sneers at your recitation.");
+            simple_monster_message(*mon, T_(" sneers at your recitation."));
     }
 
     if (check <= 0)
@@ -1085,7 +1085,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
 
     case zin_eff::daze:
         mon->daze(degree + random2avg(spellpower / 10, 2));
-        simple_monster_message(*mon, " is dazed by your recitation.");
+        simple_monster_message(*mon, T_(" is dazed by your recitation."));
         affected = true;
         break;
 
@@ -1095,9 +1095,9 @@ bool zin_recite_to_single_monster(const coord_def& where)
                              (degree + random2(spellpower)) * BASELINE_DELAY)))
         {
             if (prayertype == RECITE_HERETIC)
-                simple_monster_message(*mon, " is confused by your recitation.");
+                simple_monster_message(*mon, T_(" is confused by your recitation."));
             else
-                simple_monster_message(*mon, " stumbles about in disarray.");
+                simple_monster_message(*mon, T_(" stumbles about in disarray."));
             affected = true;
         }
         break;
@@ -1107,17 +1107,17 @@ bool zin_recite_to_single_monster(const coord_def& where)
                           (degree + random2(spellpower)) * BASELINE_DELAY)))
         {
             simple_monster_message(*mon,
-                minor ? " is awed by your recitation."
-                      : " is aghast at the heresy of your recitation.");
+                minor ? T_(" is awed by your recitation.")
+                      : T_(" is aghast at the heresy of your recitation."));
             affected = true;
         }
         break;
 
     case zin_eff::smite:
         if (minor)
-            simple_monster_message(*mon, " is smitten by the wrath of Zin.");
+            simple_monster_message(*mon, T_(" is smitten by the wrath of Zin."));
         else
-            simple_monster_message(*mon, " is blasted by the fury of Zin!");
+            simple_monster_message(*mon, T_(" is blasted by the fury of Zin!"));
         // XXX: This duplicates code in cast_smiting().
         mon->hurt(&you, 7 + (random2(spellpower) * 33 / 191));
         if (mon->alive())
@@ -1128,7 +1128,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
     case zin_eff::blind:
         if (mon->add_ench(mon_enchant(ENCH_BLIND, &you, INFINITE_DURATION)))
         {
-            simple_monster_message(*mon, " is struck blind by the wrath of Zin!");
+            simple_monster_message(*mon, T_(" is struck blind by the wrath of Zin!"));
             affected = true;
         }
         break;
@@ -1137,7 +1137,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
         if (mon->add_ench(mon_enchant(ENCH_SILVER_CORONA, &you,
                           (degree + random2(spellpower)) * BASELINE_DELAY)))
         {
-            simple_monster_message(*mon, " is limned with silver light.");
+            simple_monster_message(*mon, T_(" is limned with silver light."));
             affected = true;
         }
         break;
@@ -1148,8 +1148,8 @@ bool zin_recite_to_single_monster(const coord_def& where)
                           (degree + random2(spellpower)) * BASELINE_DELAY)))
         {
             simple_monster_message(*mon,
-                minor ? " quails at your recitation."
-                      : " looks feeble and powerless before your recitation.");
+                minor ? T_(" quails at your recitation.")
+                      : T_(" looks feeble and powerless before your recitation."));
             affected = true;
         }
         break;
@@ -1157,7 +1157,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
     case zin_eff::mute:
         if (mon->add_ench(mon_enchant(ENCH_MUTE, &you, INFINITE_DURATION)))
         {
-            simple_monster_message(*mon, " is struck mute by the wrath of Zin!");
+            simple_monster_message(*mon, T_(" is struck mute by the wrath of Zin!"));
             affected = true;
         }
         break;
@@ -1165,7 +1165,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
     case zin_eff::mad:
         if (mon->add_ench(mon_enchant(ENCH_MAD, &you, INFINITE_DURATION)))
         {
-            simple_monster_message(*mon, " is driven mad by the wrath of Zin!");
+            simple_monster_message(*mon, T_(" is driven mad by the wrath of Zin!"));
             affected = true;
         }
         break;
@@ -1173,7 +1173,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
     case zin_eff::dumb:
         if (mon->add_ench(mon_enchant(ENCH_DUMB, &you, INFINITE_DURATION)))
         {
-            simple_monster_message(*mon, " is left stupefied by the wrath of Zin!");
+            simple_monster_message(*mon, T_(" is left stupefied by the wrath of Zin!"));
             affected = true;
         }
         break;
@@ -1194,9 +1194,9 @@ bool zin_recite_to_single_monster(const coord_def& where)
                 if (mon->alive())
                 {
                     simple_monster_message(*mon,
-                      (damage < 25) ? " chaotic flesh sizzles and spatters!" :
-                      (damage < 50) ? " chaotic flesh bubbles and boils."
-                                    : " chaotic flesh runs like molten wax.",
+                      (damage < 25) ? T_(" chaotic flesh sizzles and spatters!") :
+                      (damage < 50) ? T_(" chaotic flesh bubbles and boils.")
+                                    : T_(" chaotic flesh runs like molten wax."),
                       true);
 
                     print_wounds(*mon);
@@ -1206,7 +1206,7 @@ bool zin_recite_to_single_monster(const coord_def& where)
                 else
                 {
                     simple_monster_message(*mon,
-                        " melts away into a sizzling puddle of chaotic flesh.");
+                        T_(" melts away into a sizzling puddle of chaotic flesh."));
                     monster_die(*mon, KILL_YOU, NON_MONSTER);
                 }
             }
@@ -1246,7 +1246,7 @@ static void _zin_saltify(monster* mon)
     const monster_type pillar_type = mons_species(mons_base_type(*mon));
     const int hd = mon->get_hit_dice();
 
-    simple_monster_message(*mon, " is turned into a pillar of salt by the wrath of Zin!");
+    simple_monster_message(*mon, T_(" is turned into a pillar of salt by the wrath of Zin!"));
 
     // If the monster leaves a corpse when it dies, destroy the corpse.
     item_def* corpse = monster_die(*mon, KILL_YOU, NON_MONSTER);
@@ -6041,9 +6041,9 @@ spret hepliaklqana_idealise(bool fail)
     if (ancestor->heal(healing))
     {
         if (ancestor->hit_points == ancestor->max_hit_points)
-            simple_monster_message(*ancestor, " is fully restored!");
+            simple_monster_message(*ancestor, T_(" is fully restored!"));
         else
-            simple_monster_message(*ancestor, " is healed somewhat.");
+            simple_monster_message(*ancestor, T_(" is healed somewhat."));
     }
 
     const int dur = random_range(50, 80)
@@ -6095,7 +6095,7 @@ static void _transfer_drain_nearby(coord_def destination)
             = random_range(1 + you.skill_rdiv(SK_INVOCATIONS, 1, 27),
                            2 + you.skill_rdiv(SK_INVOCATIONS, 4, 27));
         if (mon->add_ench(mon_enchant(ENCH_DRAINED, &you, dur, degree)))
-            simple_monster_message(*mon, " is drained by nostalgia.");
+            simple_monster_message(*mon, T_(" is drained by nostalgia."));
     }
 }
 
@@ -6533,7 +6533,7 @@ spret okawaru_duel(const coord_def& target, bool fail)
 
     if (mons_threat_level(*mons) < MTHRT_TOUGH)
     {
-        simple_monster_message(*mons, " is not worthy to be dueled!");
+        simple_monster_message(*mons, T_(" is not worthy to be dueled!"));
         return spret::abort;
     }
 
