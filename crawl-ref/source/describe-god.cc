@@ -1055,7 +1055,7 @@ static formatted_string _describe_god_powers(god_type which_god)
             desc.textcolour(god_colour(which_god));
         else
             desc.textcolour(DARKGREY);
-        desc.cprintf("吉瓦将解锁软泥坑宝库。\n");
+        desc.cprintf(T_("Jiyva will unlock the Slime Pits vault.\n"));
     }
 
     return desc;
