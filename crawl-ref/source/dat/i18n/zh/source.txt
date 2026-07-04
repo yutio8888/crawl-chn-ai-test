@@ -20,9 +20,60 @@
 # Entry 1: _describe_favour — penance messages
 
 %%%%
+Corona
+光晕
+%%%%
+Dispersal
+驱散
+%%%%
+Enfeeble
+衰弱
+%%%%
+Flash Freeze
+急冻
+%%%%
+Fortress Blast
+堡垒冲击
+%%%%
+Freezing Gust
+冰冻狂风
+%%%%
 Godly wrath is upon you!
 神怒降临于你！
 
+%%%%
+Iceblast
+冰爆
+%%%%
+Kinetic Grapnel
+动力抓钩
+%%%%
+Magic Dart
+魔法飞弹
+%%%%
+Orb of Electricity
+电光球
+%%%%
+Polymorph
+变形术
+%%%%
+Shadow Turret
+暗影炮塔
+%%%%
+Slug Dart
+弹丸飞镖
+%%%%
+Sticky Flame
+黏着火焰
+%%%%
+Throw Flame
+投掷火焰
+%%%%
+Throw Frost
+投掷冰霜
+%%%%
+Vampiric Draining
+吸血术
 %%%%
 You've transgressed heavily! Be penitent!
 你犯下了严重的罪过！忏悔吧！
@@ -17766,7 +17817,7 @@ jagged bones
 锯齿骨头
 %%%%
 kinetic grapnel
-动态抓钩
+动力抓钩
 %%%%
 lance of force
 力之长矛
