@@ -34624,3 +34624,426 @@ Currently generating level.
 %%%%%
 Vault being placed: %s
 正在放置的地牢：%s
+
+%%%%
+# Issue 45 Phase 3: dbg-util.cc batch (2026-07-05)
+%%%%
+Subvaults: %s
+子地库：%s
+%%%%
+Level build method = %s, level layout type  = %s, absdepth0 = %d
+关卡构建方法 = %s，关卡布局类型 = %s，绝对深度0 = %d
+%%%%
+Level vaults:
+关卡地库：
+%%%%
+    %s
+    %s
+%%%%
+This save was not generated on a build that stores logs.
+此存档并非由存储日志的构建版本生成。
+%%%%
+No builder logs are saved for %s.
+%s 没有保存构建日志。
+%%%%
+    item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d
+    物品 #%d：基础：%d；子类：%d；加值：%d；加值2：%d；特殊：%d
+%%%%
+    x: %d; y: %d; link: %d
+    坐标：%d, %d；链接：%d
+%%%%
+Diagnostic messages are available only in debug builds.
+诊断信息仅在调试构建版本中可用。
+%%%%
+Toggle which debug class (ESC to exit)? 
+切换调试类别（按ESC退出）？
+%%%%
+%s messages will be %s.
+%s 消息：%s
+
+%%%%
+# Issue 45 Phase 3: player.cc batch (2026-07-05)
+%%%%
+Do you really want to %s into the Zot trap?
+你确定要%s佐特陷阱吗？
+%%%%
+onto
+上
+%%%%
+into
+入
+%%%%
+Are you sure you want to %s onto a binding sigil?
+你确定要%s到束缚符文上吗？
+%%%%
+Are you sure you want to %s into a toxic bog?
+你确定要%s进入毒沼吗？
+%%%%
+very 
+非常
+%%%%
+wielding %s
+持握着%s
+%%%%
+artefacts
+神器
+%%%%
+You slam the %s%s shut with a bang%s!
+你用%s%s猛地关上门，砰的一声%s！
+%%%%
+As you close the %s%s%s, it creaks loudly!
+当你关上%s%s%s时，它发出了响亮的吱嘎声！
+
+%%%%
+# Issue 45 Phase 3: melee-attack.cc batch (2026-07-05)
+%%%%
+%s drains %s %s.
+%s吸取了%s的%s。
+%%%%
+You %s!
+你%s！
+%%%%
+start to liquefy
+开始液化
+%%%%
+liquefy further
+进一步液化
+%%%%
+%s drags %s backwards!
+%s将%s向后拖拽！
+
+%%%%
+# Issue 45 Phase 3: wiz-fsim.cc batch (2026-07-05)
+%%%%
+Wielding: 
+持有武器：
+%%%%
+Enter monster name (or MONS spec): 
+输入怪物名称（或MONS标识）：
+%%%%
+Failed to create monster.
+创建怪物失败。
+%%%%
+Could not put monster adjacent to player.
+无法将怪物放置在玩家旁边。
+%%%%
+Fighting %s with %s\n
+与%s战斗，使用%s\n
+%%%%
+%8s%s
+%8s%s
+%%%%
+Attack: 
+攻击：
+%%%%
+Defend: 
+防御：
+%%%%
+Cancelling simulation.\n
+取消模拟。\n
+%%%%
+%s %d, %s %d: %d
+%s %d，%s %d：%d
+%%%%
+(A)ttack or (D)efence?
+攻击(A)还是防御(D)？
+%%%%
+Aborting sim on %s
+中止对%s的模拟
+
+%%%%
+# Issue 45 Phase 3: wiz-item.cc batch (2026-07-05)
+%%%%
+Enter name of item (or ITEM spec): 
+输入物品名称（或ITEM标识）：
+%%%%
+Could not allocate item.
+无法分配物品。
+%%%%
+No such monster.
+没有此怪物。
+%%%%
+That monster doesn't leave corpses.
+该怪物不会留下尸体。
+%%%%
+You can't make a draconian corpse by its background.
+无法根据其背景创建龙人尸体。
+%%%%
+Failed to create corpse.
+创建尸体失败。
+%%%%
+No such item.
+没有此物品。
+%%%%
+You can't tweak the randart properties of an equipped item.
+无法调整已装备物品的随机神器属性。
+%%%%
+Toggling %s to %s.
+将%s切换为%s。
+%%%%
+%s was %d.
+%s原为%d。
+%%%%
+Value for %s must be non-negative
+%s的值必须为非负数
+%%%%
+%s was %s.
+%s原为%s。
+%%%%
+No such ego as: %s
+没有此ego：%s
+%%%%
+Ego '%s' is invalid for %s.
+ego '%s'对%s无效。
+%%%%
+You can't set this flag on a non-artefact.
+无法对非神器设置此标志。
+%%%%
+Make book fixed [t]heme or fixed [l]evel? 
+创建固定主题(t)还是固定等级(l)的法术书？
+%%%%
+Real value: %d (known: %d)
+实际价值：%d（已知：%d）
+%%%%
+Value: %d
+价值：%d
+%%%%
+That item is already an unrandom artefact.
+该物品已经是非随机神器。
+%%%%
+That item cannot be turned into an artefact.
+该物品无法转化为神器。
+%%%%
+Fake item as gift from which god (ENTER to leave alone): 
+伪造为哪位神祇的赐礼（回车跳过）：
+%%%%
+No such god, leaving item origin alone.
+没有此神祇，保持物品来源不变。
+%%%%
+God gift of %s.
+%s的赐礼。
+%%%%
+Failed to turn book into randart.
+将法术书转化为随机神器失败。
+%%%%
+Failed to turn item into randart.
+将物品转化为随机神器失败。
+%%%%
+You feel a rush of knowledge.
+你感到一股知识涌入脑海。
+%%%%
+You feel a rush of antiknowledge.
+你感到一股反知识涌入脑海。
+%%%%
+Item stacks (by location and top item):
+物品堆叠（按位置和顶部物品）：
+%%%%
+(%2d,%2d): %s%s
+(%2d,%2d)：%s%s
+%%%%
+Floor items (stacks only show top item):
+地面物品（堆叠仅显示顶部物品）：
+%%%%
+%3d at (%2d,%2d): %s%s
+%3d 位于 (%2d,%2d)：%s%s
+%%%%
+Too many items on level.
+关卡中物品过多。
+%%%%
+Stopping early due to keyboard input.
+因键盘输入提前停止。
+%%%%
+Acquirement failed, stopping early.
+获取失败，提前停止。
+%%%%
+%d%% done.
+已完成 %d%%。
+%%%%
+No items generated.
+未生成物品。
+%%%%
+Results written into acquirement_stats.txt.
+结果已写入 acquirement_stats.txt。
+%%%%
+Results written into 'randart_stats.txt'.
+结果已写入 'randart_stats.txt'。
+%%%%
+Generate stats for: [a] acquirement [b] randart properties
+生成统计：[a] 获取 [b] 随机神器属性
+%%%%
+Unknown card.
+未知卡牌。
+%%%%
+Evokers recharged.
+召唤器已充能。
+%%%%
+Unobtained all runes and the Orb of Zot.
+已取消获得所有符文和佐特宝珠。
+
+%%%%
+# Issue 45 Phase 3: wiz-mon.cc batch (2026-07-05)
+%%%%
+Enter monster name (or MONS spec) (? for help): 
+输入怪物名称（或MONS标识）（? 获取帮助）：
+%%%%
+%d monsters, %d total exp value (%d non-uniq)
+%d 个怪物，总计 %d 经验值（%d 非独特）
+%%%%
+%d monsters, %d total exp value (%d non-uniq, %d adjusted)
+%d 个怪物，总计 %d 经验值（%d 非独特，%d 调整后）
+%%%%
+Which monster?
+哪个怪物？
+%%%%
+Detected %i monster%s.
+检测到%i个怪物。
+%%%%
+Dismissed %i monster%s.
+遣散了%i个怪物。
+%%%%
+Make the monster (S)hout or (T)alk? 
+让怪物喊叫(S)还是说话(T)？
+%%%%
+The monster is invisible and likely won't speak.
+怪物处于隐形状态，很可能不会说话。
+%%%%
+The monster is silenced and likely won't say anything.
+怪物处于沉默状态，很可能不会出声。
+%%%%
+== Done ==
+== 完成 ==
+%%%%
+Apply blessing of the (S)hining One? 
+施加光辉者(S)的祝福？
+%%%%
+%s won't bless this monster for you!
+%s不会为你祝福此怪物！
+%%%%
+That type of monster can't use any items.
+该类型的怪物无法使用任何物品。
+%%%%
+Can't give equipped items to a monster.
+无法将已装备的物品给予怪物。
+%%%%
+You can't give that type of item to a monster.
+无法将该类型的物品给予怪物。
+%%%%
+Error: monster failed to take item.
+错误：怪物接收物品失败。
+%%%%
+Cannot move out of bounds.
+无法移动到边界外。
+%%%%
+Already doing a move command.
+已在执行移动命令。
+%%%%
+You can't move yourself into the arena.
+无法将自己移动到竞技场中。
+%%%%
+Monster is already summoned.
+怪物已被召唤。
+%%%%
+No such spell.
+没有此法术。
+%%%%
+Monster is now summoned.
+怪物现已召唤。
+%%%%
+Invalid monster type.
+无效的怪物类型。
+%%%%
+Old type and new type are the same, not polymorphing.
+旧类型与新类型相同，不进行变形。
+%%%%
+Target species must be different from current species.
+目标种族必须与当前种族不同。
+%%%%
+Trying harder
+加大尝试力度
+%%%%
+Polymorph failed.
+变形失败。
+%%%%
+Monster turned into something other than the desired type.
+怪物变成了非预期的类型。
+%%%%
+Choose a destination!
+选择目的地！
+%%%%
+Attempting to calculate a path from (%d, %d) to (%d, %d)...
+正在计算从 (%d, %d) 到 (%d, %d) 的路径……
+%%%%
+Here's the shortest path: 
+以下是最短路径：
+%%%%
+-> path length: %u
+-> 路径长度：%u
+%%%%
+And here are the needed waypoints: 
+以下是所需路径点：
+%%%%
+-> #waypoints: %u
+-> 路径点数量：%u
+%%%%
+Can't make already dead target miscast.
+无法让已死亡的目标施法失误。
+%%%%
+Miscast which school or spell, by name? 
+按名称指定哪个学派或法术施法失误？
+%%%%
+No matching spell or spell school.
+没有匹配的法术或法术学派。
+%%%%
+Ambiguous: can be spell '%s' or school '%s'.
+歧义：可能是法术'%s'或学派'%s'。
+%%%%
+Spell '%s' has no disciplines.
+法术'%s'没有关联学科。
+%%%%
+Miscasting spell %s.
+施法失误：法术%s。
+%%%%
+Miscasting school %s.
+施法失误：学派%s。
+%%%%
+Enter fail: 
+输入失误率：
+%%%%
+Enter level, fail: 
+输入等级、失误率：
+%%%%
+Can only enter spell level for schools, not spells.
+只能为学派输入法术等级，不能为法术输入。
+%%%%
+Spell level can be at most 9.
+法术等级最高为9。
+%%%%
+Key pressed, interrupting miscast testing.
+按下按键，中断施法失误测试。
+%%%%
+(C)reate, create (T)emporary, or (L)oad bones file?
+创建(C)、临时创建(T)还是加载(L)骨骸文件？
+
+%%%%
+# Issue 45 Phase 3: describe.cc batch (2026-07-05)
+%%%%
+ extremely
+极其
+%%%%
+\nYour spell failure would 
+\n你的法术失败率将
+%%%%
+\n\nMesmerism radius: %d (max %d)
+\n\n催眠半径：%d（最大%d）
+%%%%
+exit
+离开
+%%%%
+Your servitor could be imbued with this spell if your spell success rate were higher.\n
+如果你的法术成功率更高，你的仆从就可以被赋予这个法术。\n
+
+%%%%
+
+%%%%
+# - Recommended character
+# - 推荐角色

@@ -210,14 +210,14 @@ static void _THROATCUTTER_melee_effects(item_def* /*weapon*/, actor* attacker,
             case MON_SHAPE_ORB:
             case MON_SHAPE_BLOB:
             case MON_SHAPE_MISC:
-                mprf(T_("%s put%s %s out of %s misery!"),
+                mprf_p(T_("%s put%s %s out of %s misery!"),
                      attacker->name(DESC_THE).c_str(),
                      plural ? "s" : "",
                      mons->name(DESC_THE).c_str(),
                      mons->pronoun(PRONOUN_POSSESSIVE).c_str());
                 break;
             default: // yes, even fungi have heads :)
-                mprf(T_("%s behead%s %s%s!"),
+                mprf_p(T_("%s behead%s %s%s!"),
                      attacker->name(DESC_THE).c_str(),
                      plural ? "s" : "",
                      mons->name(DESC_THE).c_str(),
@@ -673,7 +673,7 @@ static void _UNDEADHUNTER_melee_effects(item_def* /*item*/, actor* attacker,
         && !mondied && dam)
     {
         int bonus_dam = random2avg((1 + (dam * 3)), 3);
-        mprf(T_("%s %s blasted by disruptive energy%s"),
+        mprf_p(T_("%s %s blasted by disruptive energy%s"),
               defender->name(DESC_THE).c_str(),
               defender->conj_verb("be").c_str(),
               attack_strength_punctuation(bonus_dam).c_str());
