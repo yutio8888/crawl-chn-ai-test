@@ -361,9 +361,11 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
         // value makes string_width/store/render_textblock all agree,
         // eliminating column misalignment proportional to CJK count.
         int cw = wcwidth(ch);
-        // Only quantize fallback font glyphs. Primary font CJK
-        // (e.g. Maple Mono) already has correct 2:1 native advance.
-        if (cw > 1 && use_face == cjk_face)
+        // Quantize all double-width advance to the grid cell.
+        // Even well-designed fonts (Sarasa Fixed) can have sub-pixel
+        // rounding differences at certain FreeType pixel sizes.
+        // Forcing exact 2*cell advance guarantees zero cumulative drift.
+        if (cw > 1)
             glyph.advance = m_max_advance.x * cw;
 
         // For CJK fallback glyphs, use Sarasa's native ascender values.
