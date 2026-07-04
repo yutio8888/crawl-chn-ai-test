@@ -1830,6 +1830,8 @@ void dithmenos_shadow_spell(spell_type spell)
     int spell_hd = div_rand_round((you.experience_level + spell_difficulty(spell) * 4) * 2, 7);
     mon->props[DITH_SHADOW_SPELLPOWER_KEY] = spell_hd;
 
+    mprf(MSGCH_DIAGNOSTICS, "[SHADOW] dithmenos_shadow_spell: mon->name(DESC_THE)='%s' mon->name(DESC_A)='%s' spell=%d",
+         mon->name(DESC_THE).c_str(), mon->name(DESC_A).c_str(), (int)shadow_spell);
     bolt beam;
     setup_mons_cast(mon, beam, shadow_spell);
     beam.target = aim;

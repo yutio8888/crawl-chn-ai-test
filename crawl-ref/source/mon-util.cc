@@ -4383,22 +4383,11 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
              && !crawl_state.game_is_arena()
              && you.can_see(mons))
     {
-        nocap = DESC_PLAIN;
-        cap   = DESC_PLAIN;
-
-        msg = replace_all(msg, "@the_something@", "your @the_something@");
-        msg = replace_all(msg, "@The_something@", "Your @the_something@");
-        msg = replace_all(msg, "@the_monster@",   "your @the_monster@");
-        msg = replace_all(msg, "@The_monster@",   "Your @the_monster@");
-
-        msg = replace_all(msg, "@the_something_possessive@",
-                          "your @the_something_possessive@");
-        msg = replace_all(msg, "@The_something_possessive@",
-                          "Your @the_something_possessive@");
-        msg = replace_all(msg, "@the_monster_possessive@",
-                          "your @the_monster_possessive@");
-        msg = replace_all(msg, "@The_monster_possessive@",
-                          "Your @the_monster_possessive@");
+        // Use DESC_YOUR so that apply_description() handles the
+        // "your"/"你的" prefix correctly for both EN and ZH locales,
+        // instead of hardcoding English "your "/"Your " strings.
+        nocap = DESC_YOUR;
+        cap   = DESC_YOUR;
     }
 
     // XXX: Shouldn't be able to see 'fake' monsters
@@ -4434,9 +4423,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     something[0] = toupper_safe(something[0]);
     msg = replace_all(msg, "@Something@",   something);
     msg = replace_all(msg, "@A_something@", mons.name(DESC_A));
-    msg = replace_all(msg, "@The_something@", mons.name(cap));
+    msg = replace_all(msg, "@The_something@", uppercase_first(mons.name(cap)));
     msg = replace_all(msg, "@The_something_possessive@",
-                      apostrophise(mons.name(cap)));
+                      uppercase_first(apostrophise(mons.name(cap))));
 
     // Player name.
     msg = replace_all(msg, "@player_name@", you.your_name);
@@ -4453,9 +4442,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     plain[0] = toupper_safe(plain[0]);
     msg = replace_all(msg, "@Monster@",     plain);
     msg = replace_all(msg, "@A_monster@",   mons.name(DESC_A));
-    msg = replace_all(msg, "@The_monster@", mons.name(cap));
+    msg = replace_all(msg, "@The_monster@", uppercase_first(mons.name(cap)));
     msg = replace_all(msg, "@The_monster_possessive@",
-                      apostrophise(mons.name(cap)));
+                      uppercase_first(apostrophise(mons.name(cap))));
 
     string subj_or_poss;
 
