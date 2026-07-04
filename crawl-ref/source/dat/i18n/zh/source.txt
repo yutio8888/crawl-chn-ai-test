@@ -32788,10 +32788,10 @@ frost giant
 霜巨人
 %%%%%
 fulminant prism
-电光棱镜
+爆裂棱镜
 %%%%%
 fulminating prism
-电光棱镜
+爆裂棱镜
 %%%%%
 fungus
 真菌
