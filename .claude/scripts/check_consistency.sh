@@ -54,13 +54,40 @@ check_entity() {
 }
 
 check_english_residual() {
-    # Check if English name still appears in ZH paths (indicates untranslated)
+    # Check if English name still appears in ZH translation text (not keys/identifiers).
+    # Only searches zh/ directories and flags lines that contain both the English name
+    # AND CJK characters — i.e. Chinese translation text with residual English.
+    # Lines without CJK chars are English DB keys/identifiers (Type IV protocol) — correct.
     local label="$1" en_name="$2" zh_name="$3"
     echo "--- $label (expected: $zh_name) ---"
-    local found
-    found=$(grep -rn "$en_name" "$SOURCEDIR" "${GREP_SCOPE[@]}" 2>/dev/null | grep -vE "$EXCLUDE_PATTERN" | grep -v '/en/' || true)
+    local found=""
+
+    # Only search ZH translation directories, not source code or non-ZH languages
+    local zh_dirs=(
+        "$SOURCEDIR/dat/i18n/zh"
+        "$SOURCEDIR/dat/descript/zh"
+        "$SOURCEDIR/dat/database/zh"
+    )
+
+    for dir in "${zh_dirs[@]}"; do
+        if [ ! -d "$dir" ]; then continue; fi
+        local dir_found
+        dir_found=$(grep -rn "$en_name" "$dir" --include='*.txt' 2>/dev/null || true)
+        if [ -n "$dir_found" ]; then
+            # Only flag lines that contain CJK characters (actual Chinese display text).
+            # English-only lines are DB lookup keys, Lua identifiers, or translation
+            # source keys — these MUST remain in English (Type IV/V protocol).
+            local filtered
+            filtered=$(echo "$dir_found" | grep -P '[\x{2E80}-\x{9FFF}\x{3400}-\x{4DBF}\x{F900}-\x{FAFF}]' || true)
+            if [ -n "$filtered" ]; then
+                found="${found}${found:+
+}${filtered}"
+            fi
+        fi
+    done
+
     if [ -n "$found" ]; then
-        echo "  ⚠️  English name '$en_name' still found in non-EN paths:"
+        echo "  ⚠️  English name '$en_name' found in ZH translation text:"
         echo "$found" | while IFS= read -r line; do
             echo "     $line"
         done
