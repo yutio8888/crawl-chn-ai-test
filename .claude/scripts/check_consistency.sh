@@ -393,112 +393,143 @@ do_database() {
 
     local zh_dir="$SOURCEDIR/dat/database/zh"
     local en_dir="$SOURCEDIR/dat/database"
-    local issues=0
 
     if [ ! -d "$zh_dir" ]; then
         echo "  ❌ ZH database directory not found: $zh_dir"
         return 1
     fi
 
-    # Pre-build full EN key index (all keys across all EN database files)
-    local en_keys_all
-    en_keys_all=$(mktemp)
-    for en_file in "$en_dir"/*.txt; do
-        [ -f "$en_file" ] || continue
-        awk '!/^%%%%$/ && !/^$/ && !/^ / && !/^#/ {
-            line=$0
-            gsub(/^ +| +$/, "", line)
-            if (match(line, /@[^@]+@/)) {
-                key=substr(line, 1, RSTART-1)
-                gsub(/^ +| +$/, "", key)
-                if (key != "") print key
-            } else {
-                if (line !~ /^w:[0-9]/ && line !~ /^{{/ && line !~ /^if / && line !~ /^else/ && line !~ /^end$/)
-                    print line
-            }
-        }' "$en_file" >> "$en_keys_all"
-    done
-    local en_keys_sorted
-    en_keys_sorted=$(sort -u "$en_keys_all" 2>/dev/null || true)
-    rm -f "$en_keys_all"
+    python3 << 'PYEOF'
+import os, sys, re
 
-    for zh_file in "$zh_dir"/*.txt; do
-        local basename
-        basename=$(basename "$zh_file")
-        local en_file="$en_dir/$basename"
+zh_dir = os.environ.get("ZH_DIR", "")
+en_dir = os.environ.get("EN_DIR", "")
+if not zh_dir:
+    # Fallback: compute relative to script location
+    zh_dir = "crawl-ref/source/dat/database/zh"
+    en_dir = "crawl-ref/source/dat/database"
 
-        # Extract all @keyword@ references from ZH file (exclude comment lines)
-        local zh_refs
-        zh_refs=$(grep -v '^#' "$zh_file" | grep -oP '@[a-zA-Z_][a-zA-Z_0-9 ]*@' | \
-                  sed 's/^@//;s/@$//' | sort -u || true)
+# Runtime keywords from C++ do_mon_str_replacements() and other runtime sources
+RUNTIME_KEYWORDS = {
+    "random_god", "random_god_chaotic", "random_god_evil", "random_god_good",
+    "random_skill", "random_skill_magic", "random_skill_mundane",
+    "player", "Player", "player_genus", "player_species",
+    "player_death", "player_doom", "player_name", "player_only",
+    "a_player_genus", "player_genus_plural", "player_name_possessive", "branch_name",
+    "arm", "arms", "Arm", "Arms", "feet", "foot", "Feet", "Foot",
+    "hand", "hands", "Hand", "Hands", "head", "hand_conj",
+    "your_item", "Your_item", "your_hands", "your_weapon",
+    "monster", "a_monster", "A_monster", "Monster", "A_Monster",
+    "the_monster", "The_monster", "the_monster_possessive",
+    "The_monster_possessive", "possessive", "killer_name", "says", "short_monster_name_",
+    "something", "a_something", "Something", "A_something",
+    "the_something", "The_something", "the_something_possessive", "The_something_possessive",
+    "foe", "Foe", "foe_possessive", "foe_name", "foe_species",
+    "foe_genus", "Foe_genus", "foe_genus_plural", "foe_god", "Foe_god", "to_foe", "at_foe",
+    "subjective", "Subjective", "reflexive", "objective",
+    "the_feature", "The_feature", "feature", "surface", "staircase",
+    "a_God", "A_God", "my_God", "My_God", "god_is", "God_is",
+    "Possessive", "Possessive_God", "possessive_God",
+    "RANDGEN", "_subject_", "_the_subject_", "level", "book_name", "book_noun",
+    "ancestor name", "any orc name", "bland name",
+    "random_body_part_any_plural", "random_body_part_any_singular",
+    "random_body_part_external_plural", "random_body_part_external_singular",
+    "random_body_part_internal_plural", "random_body_part_internal_singular",
+    "species_insult_adj1", "species_insult_adj2", "species_insult_noun",
+    "sparkling_message", "killer_name", "player_name", "branch_name",
+    # mon-cast.cc spell cast messages
+    "target", "beam", "at",
+    # shout.cc weapon references
+    "The_weapon", "Your_weapon", "the_weapon", "player_god",
+    # artefact.cc god name references
+    "xom_name", "god_name", "god_name_possessive",
+    # stringutil.cc
+    "CAPS",
+}
 
-        # Build ZH key index and EN same-file key index
-        local zh_keys en_same_keys
-        zh_keys=$(awk '!/^%%%%$/ && !/^$/ && !/^ / && !/^#/ {
-            line=$0; gsub(/^ +| +$/, "", line)
-            if (match(line, /@[^@]+@/)) {
-                key=substr(line, 1, RSTART-1); gsub(/^ +| +$/, "", key)
-                if (key != "") print key
-            } else {
-                if (line !~ /^w:[0-9]/ && line !~ /^{{/ && line !~ /^if / && line !~ /^else/ && line !~ /^end$/)
-                    print line
-            }
-        }' "$zh_file" | sort -u || true)
+def extract_keys(filepath):
+    """Extract entry keys from a database .txt file."""
+    keys = set()
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                line = line.rstrip('\n')
+                if line == '%%%%' or line == '' or line.startswith(' ') or line.startswith('#'):
+                    continue
+                stripped = line.strip()
+                m = re.search(r'@[^@]+@', stripped)
+                if m:
+                    key = stripped[:m.start()].strip()
+                    if key:
+                        keys.add(key)
+                else:
+                    if not re.match(r'^(w:\d+|\{\{|if |else|end$)', stripped):
+                        keys.add(stripped)
+    except FileNotFoundError:
+        pass
+    return keys
 
-        if [ -f "$en_file" ]; then
-            en_same_keys=$(awk '!/^%%%%$/ && !/^$/ && !/^ / && !/^#/ {
-                line=$0; gsub(/^ +| +$/, "", line)
-                if (match(line, /@[^@]+@/)) {
-                    key=substr(line, 1, RSTART-1); gsub(/^ +| +$/, "", key)
-                    if (key != "") print key
-                } else {
-                    if (line !~ /^w:[0-9]/ && line !~ /^{{/ && line !~ /^if / && line !~ /^else/ && line !~ /^end$/)
-                        print line
-                }
-            }' "$en_file" | sort -u || true)
-        else
-            en_same_keys=""
-        fi
+def extract_refs(filepath):
+    """Extract @keyword@ references from a file (exclude comment lines)."""
+    refs = set()
+    try:
+        with open(filepath, 'r') as f:
+            for line in f:
+                if line.lstrip().startswith('#'):
+                    continue
+                for m in re.finditer(r'@[a-zA-Z_][a-zA-Z_0-9 ]*@', line):
+                    refs.add(m.group(0)[1:-1])
+    except FileNotFoundError:
+        pass
+    return refs
 
-        local file_issues=0
-        for ref in $zh_refs; do
-            # Skip runtime keywords
-            if is_runtime_keyword "$ref"; then
-                continue
-            fi
+# Build full EN key index
+print("Building EN key index...", file=sys.stderr)
+en_all_keys = set()
+for fname in sorted(os.listdir(en_dir)):
+    if not fname.endswith('.txt'):
+        continue
+    en_all_keys.update(extract_keys(os.path.join(en_dir, fname)))
+print(f"  {len(en_all_keys)} keys indexed from EN database", file=sys.stderr)
 
-            # Check 1: defined in ZH same file?
-            if echo "$zh_keys" | grep -qFx "$ref"; then
-                continue
-            fi
+total_issues = 0
 
-            # Check 2: defined in EN same file?
-            if [ -n "$en_same_keys" ] && echo "$en_same_keys" | grep -qFx "$ref"; then
-                continue
-            fi
+# Check each ZH file
+for fname in sorted(os.listdir(zh_dir)):
+    if not fname.endswith('.txt'):
+        continue
+    zh_path = os.path.join(zh_dir, fname)
+    en_path = os.path.join(en_dir, fname)
 
-            # Check 3: defined in any EN database file?
-            if echo "$en_keys_sorted" | grep -qFx "$ref"; then
-                continue
-            fi
+    zh_refs = extract_refs(zh_path)
+    zh_keys = extract_keys(zh_path)
+    en_keys = extract_keys(en_path) if os.path.exists(en_path) else set()
 
-            # Not found anywhere
-            if [ "$file_issues" -eq 0 ]; then
-                echo "  ❌ $basename:"
-            fi
-            echo "     @$ref@ — not defined in ZH, EN same file, or any EN database"
-            file_issues=$((file_issues + 1))
-            issues=$((issues + 1))
-            violations_found=true
-        done
-    done
+    unresolved = []
+    for ref in sorted(zh_refs):
+        if ref in RUNTIME_KEYWORDS:
+            continue
+        if ref in zh_keys:
+            continue
+        if ref in en_keys:
+            continue
+        if ref in en_all_keys:
+            continue
+        unresolved.append(ref)
 
-    if [ "$issues" -eq 0 ]; then
-        echo "  ✅ All @keyword@ references have matching definitions"
-    else
-        echo ""
-        echo "  ⚠️  $issues unresolved @keyword@ reference(s)"
-    fi
+    if unresolved:
+        print(f"  ❌ {fname}:")
+        for ref in unresolved:
+            print(f"     @{ref}@ — not defined in ZH, EN same file, or any EN database")
+        total_issues += len(unresolved)
+
+if total_issues == 0:
+    print("  ✅ All @keyword@ references have matching definitions")
+else:
+    print(f"\n  ⚠️  {total_issues} unresolved @keyword@ reference(s)")
+
+print("", file=sys.stderr)
+PYEOF
 
     echo ""
     echo "=== Database @keyword@ check complete ==="
