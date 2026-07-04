@@ -33,7 +33,8 @@ from collections import OrderedDict
 
 # Call-like patterns that we scan for — message output + UI construction
 MPR_CALL_RE = re.compile(
-    r'\b(?:mprf|mprf_nojoin|mprf_p|mpr|cprintf|formatted_string|make_stringf)\s*\(')
+    r'\b(?:mprf|mprf_nojoin|mprf_p|mpr|cprintf|formatted_string|make_stringf'
+    r'|simple_monster_message)\s*\(')
 
 # Severity grading: which function was matched
 def _severity(line: str) -> str:
@@ -45,6 +46,7 @@ def _severity(line: str) -> str:
     if re.search(r'\bcprintf\s*\(', line):     return 'UI'
     if re.search(r'\bformatted_string\s*\(', line): return 'UI'
     if re.search(r'\bmake_stringf\s*\(', line):    return 'STR'
+    if re.search(r'\bsimple_monster_message\s*\(', line): return 'SMM'
     return 'MSG'
 
 # Check if a line has T_() or C_() wrapping
@@ -115,6 +117,166 @@ def has_alpha(s: str) -> bool:
     return bool(re.search(r'[A-Za-z]', s))
 
 
+def has_word(s: str) -> bool:
+    """Check if string contains at least one English word (2+ consecutive letters)."""
+    return bool(re.search(r'[A-Za-z]{2,}', s))
+
+
+def is_format_only(s: str) -> bool:
+    """Check if a stripped string is purely format specifiers (no English words).
+
+    Returns True if the string has only format specifiers, whitespace,
+    punctuation, and numbers — but no actual English words.
+    """
+    if not s:
+        return True
+    return not has_word(s)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Preprocessor / comment block tracking
+# ══════════════════════════════════════════════════════════════════════════════
+
+# Regex for #if/#ifdef/#ifndef/#else/#elif/#endif lines
+PP_IF_RE = re.compile(r'^\s*#\s*if(?:\s|$)')
+PP_IFDEF_RE = re.compile(r'^\s*#\s*ifdef\s+(\w+)')
+PP_IFNDEF_RE = re.compile(r'^\s*#\s*ifndef\s+(\w+)')
+PP_ENDIF_RE = re.compile(r'^\s*#\s*endif')
+PP_ELSE_RE = re.compile(r'^\s*#\s*else(?:\s|$)')
+PP_ELIF_RE = re.compile(r'^\s*#\s*elif(?:\s|$)')
+
+
+def build_debug_ranges(lines):
+    """Build a set of line numbers (1-based) that are inside #ifdef DEBUG blocks.
+
+    Handles nested #if blocks correctly using a depth counter.
+    Lines inside #if 0 ... #endif are also collected (as debug_ranges).
+    """
+    debug_lines = set()
+    debug_stack = []  # stack of (start_line, depth_at_entry)
+
+    for i, line in enumerate(lines):
+        lineno = i + 1
+
+        # Check #ifdef DEBUG_*
+        m_def = PP_IFDEF_RE.match(line)
+        if m_def and m_def.group(1).startswith('DEBUG'):
+            debug_stack.append((lineno, len(debug_stack)))
+            continue
+
+        # Check #if 0
+        m_if0 = re.match(r'^\s*#\s*if\s+0\b', line)
+        if m_if0:
+            debug_stack.append((lineno, len(debug_stack)))
+            continue
+
+        # Nested #if/#ifdef/#ifndef inside debug block
+        if debug_stack:
+            if PP_IF_RE.match(line) or PP_IFDEF_RE.match(line) or PP_IFNDEF_RE.match(line):
+                debug_stack.append((lineno, len(debug_stack)))
+                continue
+
+        # #else/#elif inside debug block
+        if debug_stack:
+            if PP_ELSE_RE.match(line) or PP_ELIF_RE.match(line):
+                continue  # stay in debug block
+
+        # #endif
+        m_endif = PP_ENDIF_RE.match(line)
+        if m_endif and debug_stack:
+            debug_stack.pop()
+
+    # Now mark all lines from each debug block start to its matching #endif
+    # Re-scan to find the actual ranges
+    current_debug_depth = 0
+    debug_start = None
+
+    for i, line in enumerate(lines):
+        lineno = i + 1
+
+        m_def = PP_IFDEF_RE.match(line)
+        m_if0 = re.match(r'^\s*#\s*if\s+0\b', line)
+
+        if (m_def and m_def.group(1).startswith('DEBUG')) or m_if0:
+            if current_debug_depth == 0:
+                debug_start = lineno
+            current_debug_depth += 1
+            continue
+
+        if PP_IF_RE.match(line) or PP_IFDEF_RE.match(line) or PP_IFNDEF_RE.match(line):
+            if current_debug_depth > 0:
+                current_debug_depth += 1
+            continue
+
+        m_endif = PP_ENDIF_RE.match(line)
+        if m_endif and current_debug_depth > 0:
+            current_debug_depth -= 1
+            if current_debug_depth == 0 and debug_start is not None:
+                for ln in range(debug_start, lineno + 1):
+                    debug_lines.add(ln)
+                debug_start = None
+
+    return debug_lines
+
+
+def build_comment_ranges(lines):
+    """Build a set of line numbers (1-based) that are inside /* ... */ block comments.
+
+    Also returns lines that start with // (single-line comments).
+    """
+    comment_lines = set()
+    in_block = False
+
+    for i, line in enumerate(lines):
+        lineno = i + 1
+        stripped = line.lstrip()
+
+        # Check for single-line comment
+        if stripped.startswith('//'):
+            comment_lines.add(lineno)
+            # But check if it contains a block comment toggle
+            # (unlikely in practice, but handle it)
+            continue
+
+        if in_block:
+            comment_lines.add(lineno)
+            if '*/' in line:
+                in_block = False
+            continue
+
+        # Check for block comment start
+        pos = line.find('/*')
+        if pos >= 0:
+            # Check if there's a closing */ on the same line
+            end_pos = line.find('*/', pos + 2)
+            if end_pos >= 0:
+                # Single-line block comment — skip just this line
+                comment_lines.add(lineno)
+            else:
+                in_block = True
+                comment_lines.add(lineno)
+
+    return comment_lines
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Allowlist
+# ══════════════════════════════════════════════════════════════════════════════
+
+def load_allowlist(filepath: str) -> set:
+    """Load allowlist entries from a JSON file.
+
+    Format: [{"file": "mon-act.cc", "line": 1426, "reason": "MSGCH_SOUND, not player-visible"},
+              {"file": "mon-death.cc", "line": 254, "reason": "internal error diagnostic"}]
+    """
+    if not filepath or not os.path.exists(filepath):
+        return set()
+    import json
+    with open(filepath, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return {(entry['file'], entry['line']) for entry in data}
+
+
 # ══════════════════════════════════════════════════════════════════════════════
 # source.txt parser (shared with i18n_extract.py)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -162,9 +324,15 @@ def parse_source_txt(filepath: str) -> OrderedDict:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def cmd_missing_t(args):
-    """Find untranslated calls across mprf/mpr/cprintf/formatted_string/make_stringf."""
+    """Find untranslated calls across mprf/mpr/cprintf/formatted_string/make_stringf/simple_monster_message."""
     source_dir = args.source_dir
-    findings = []  # (rel_path, lineno, display, severity)
+    strict = getattr(args, 'strict', False)
+    show_filtered = getattr(args, 'show_filtered', False)
+    allowlist_file = getattr(args, 'allowlist', None)
+    allowlist = load_allowlist(allowlist_file)
+
+    findings = []       # (rel_path, lineno, display, severity) — candidates
+    filtered = []       # (rel_path, lineno, display, severity, reason) — filtered out
     files_scanned = 0
 
     for dirpath, dirnames, filenames in os.walk(source_dir):
@@ -174,61 +342,141 @@ def cmd_missing_t(args):
                 continue
             filepath = os.path.join(dirpath, fn)
             files_scanned += 1
+            rel_path = os.path.relpath(filepath, source_dir)
 
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
 
+            debug_lines = build_debug_ranges(lines)
+            comment_lines = build_comment_ranges(lines)
+
             for lineno, line in enumerate(lines, 1):
+                # Pre-filter: skip preprocessor directives
                 if SKIP_PP_RE.match(line):
                     continue
+
+                # Skip diagnostic/error channels
                 if SKIP_CHANNEL_RE.search(line):
                     continue
+
+                # Skip lines inside /* ... */ block comments or // comments
+                if lineno in comment_lines:
+                    continue
+
+                # Skip lines inside #ifdef DEBUG or #if 0 blocks
+                if not strict and lineno in debug_lines:
+                    # Still check MPR_CALL_RE to report as filtered in --show-filtered
+                    if show_filtered and MPR_CALL_RE.search(line):
+                        if not HAS_T_RE.search(line):
+                            stripped = strip_cpp_string_literal(line)
+                            if stripped and has_alpha(stripped):
+                                filtered.append((rel_path, lineno, stripped[:80],
+                                                _severity(line), 'debug-block'))
+                    continue
+
+                # Main check
                 if not MPR_CALL_RE.search(line):
                     continue
                 if HAS_T_RE.search(line):
                     continue
+
                 stripped = strip_cpp_string_literal(line)
                 if not stripped or not has_alpha(stripped):
                     continue
-                display = stripped[:80]
-                rel_path = os.path.relpath(filepath, source_dir)
+
+                # Allowlist check
+                if (rel_path, lineno) in allowlist:
+                    if show_filtered:
+                        filtered.append((rel_path, lineno, stripped[:80],
+                                        _severity(line), 'allowlisted'))
+                    continue
+
+                # Format-only filter
                 sev = _severity(line)
+                if is_format_only(stripped):
+                    if show_filtered:
+                        filtered.append((rel_path, lineno, stripped[:80],
+                                        sev, 'format-only'))
+                    continue
+
+                display = stripped[:80]
                 findings.append((rel_path, lineno, display, sev))
 
-    # Output
+    # ── Output ──
+
+    # Per-category stats
+    def cat_stats(lst):
+        return {
+            'MSG': sum(1 for _, _, _, s, *_ in lst if s == 'MSG'),
+            'UI': sum(1 for _, _, _, s, *_ in lst if s == 'UI'),
+            'STR': sum(1 for _, _, _, s, *_ in lst if s == 'STR'),
+            'SMM': sum(1 for _, _, _, s, *_ in lst if s == 'SMM'),
+        }
+
+    cand_stats = cat_stats(findings)
+    total_cand = len(findings)
+    total_filt = len(filtered)
+
+    # Filtered breakdown by reason
+    filt_by_reason = {}
+    for item in filtered:
+        reason = item[4]
+        filt_by_reason[reason] = filt_by_reason.get(reason, 0) + 1
+
+    # Candidate output
     if findings:
-        print("=== Untranslated calls — missing T_() wrapper ===")
+        print("=== Untranslated calls — candidates (need T_()) ===")
         print()
         for fpath, lineno, msg, sev in findings:
             print(f"[{sev}] {fpath}:{lineno}  \"{msg}\"")
         print()
-        # Per-file summary with severity breakdown
-        file_stats = {}  # filepath -> {severity: count}
+
+    # Filtered output (if --show-filtered)
+    if show_filtered and filtered:
+        print("=== Filtered out ===")
+        print()
+        for fpath, lineno, msg, sev, reason in filtered:
+            print(f"[{sev}][{reason}] {fpath}:{lineno}  \"{msg}\"")
+        print()
+
+    # Summary
+    print(f"--- scan_i18n.py missing-t ---")
+    print(f"Files scanned: {files_scanned}")
+    print()
+    for cat in ('MSG', 'UI', 'STR', 'SMM'):
+        print(f"  {cat}: {cand_stats[cat]} candidates")
+    print()
+    if not strict:
+        print(f"  (debug/#if0 blocks excluded; use --strict to include)")
+    if filt_by_reason:
+        print(f"  Filtered: {total_filt}")
+        for reason, count in sorted(filt_by_reason.items()):
+            print(f"    {reason}: {count}")
+    if allowlist:
+        print(f"  Allowlisted: {len(allowlist)} entries loaded")
+    print()
+
+    if total_cand == 0 and total_filt == 0:
+        print("OK: No untranslated calls found.")
+        return 0
+    elif total_cand == 0:
+        print("OK: No candidates — all findings are filtered or allowlisted.")
+        return 0
+    else:
+        # Per-file summary
+        file_stats = {}
         for fpath, _, _, sev in findings:
             if fpath not in file_stats:
                 file_stats[fpath] = {}
             file_stats[fpath][sev] = file_stats[fpath].get(sev, 0) + 1
-        total = len(findings)
-        total_msg = sum(1 for _, _, _, s in findings if s == 'MSG')
-        total_ui = sum(1 for _, _, _, s in findings if s == 'UI')
-        total_str = sum(1 for _, _, _, s in findings if s == 'STR')
-        print(f"Summary: {total} untranslated calls across "
-              f"{len(file_stats)} files")
-        print(f"  MSG (mprf/mpr): {total_msg}")
-        print(f"  UI  (cprintf/formatted_string): {total_ui}")
-        print(f"  STR (make_stringf): {total_str}")
-        print()
-        print("Per-file breakdown:")
+        print("Per-file candidate breakdown:")
         for fpath in sorted(file_stats, key=lambda x: -sum(file_stats[x].values())):
             parts = []
-            for sev in ('MSG', 'UI', 'STR'):
+            for sev in ('MSG', 'UI', 'STR', 'SMM'):
                 if sev in file_stats[fpath]:
                     parts.append(f"{sev}:{file_stats[fpath][sev]}")
             print(f"  {fpath}: {', '.join(parts)}")
         return 1
-    else:
-        print("OK: No untranslated calls found.")
-        return 0
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -851,6 +1099,12 @@ def main():
         help="Find mprf/mpr calls without T_() wrapping"
     )
     p_missing.add_argument("source_dir", help="Root of C++ source tree")
+    p_missing.add_argument("--strict", action="store_true",
+                          help="Include debug/#if0 blocks (no preprocessor filtering)")
+    p_missing.add_argument("--show-filtered", action="store_true",
+                          help="Show filtered-out items with reason")
+    p_missing.add_argument("--allowlist",
+                          help="Path to allowlist JSON file")
 
     # mprf-p
     p_mprfp = subparsers.add_parser(
