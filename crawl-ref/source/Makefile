@@ -402,7 +402,6 @@ ifndef TILES
 ifdef NEED_LIBW32C
 OBJECTS += libw32c.o
 else
-OBJECTS += zh-scroll-appearance.o
 OBJECTS += libunix.o
 endif
 endif
