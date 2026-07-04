@@ -1030,7 +1030,7 @@ void anguish_fineff::fire()
         return;
 
     const string punct = attack_strength_punctuation(damage);
-    const string msg = make_stringf(" is wracked by anguish%s", punct.c_str());
+    const string msg = make_stringf(T_(" is wracked by anguish%s"), punct.c_str());
     simple_monster_message(*monster_by_mid(att), msg.c_str());
     attack->hurt(monster_by_mid(MID_YOU_FAULTLESS), damage);
 }

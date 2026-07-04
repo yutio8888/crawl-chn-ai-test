@@ -117,7 +117,7 @@ void monster_drop_things(monster* mons,
                 && you.see_cell(mons->pos())
                 && x_chance_in_y(env.item[item].quantity, 100))
             {
-                string msg = make_stringf("%s dazzles you with the glint of coin.",
+                string msg = make_stringf(T_("%s dazzles you with the glint of coin."),
                     god_name(GOD_GOZAG).c_str());
                 mprf(MSGCH_GOD, GOD_GOZAG, "%s", msg.c_str());
                 blind_player(10 + random2(8), ETC_GOLD);

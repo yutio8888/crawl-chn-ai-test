@@ -3485,7 +3485,7 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
     if (mon.type == MONS_GERYON)
     {
         simple_monster_message(mon,
-            make_stringf(" discards %s horn.",
+            make_stringf(T_(" discards %s horn."),
                          mon.pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
         monster_drop_things(&mon, false, item_is_horn_of_geryon);
     }
@@ -5747,7 +5747,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
             if (announce && you.can_see(*target))
             {
                 simple_god_message(
-                            make_stringf(" protects %s plant from harm.",
+                            make_stringf(T_(" protects %s plant from harm."),
                                 agent->is_player() ? "your" : "a").c_str(),
                             false, GOD_FEDHAS);
             }
@@ -5825,7 +5825,7 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
     {
         if (announce_important)
         {
-            string msg = make_stringf("The Sanctuary denies your attempt to harm %s.",
+            string msg = make_stringf(T_("The Sanctuary denies your attempt to harm %s."),
                                         target->name(DESC_THE).c_str());
             god_speaks(GOD_ZIN, msg.c_str());
         }
@@ -5837,7 +5837,7 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
     {
         if (announce_important && you.see_cell(target->pos()))
         {
-            string msg = make_stringf("The Sanctuary protects %s from harm.",
+            string msg = make_stringf(T_("The Sanctuary protects %s from harm."),
                                         target->name(DESC_THE).c_str());
             god_speaks(GOD_ZIN, msg.c_str());
         }

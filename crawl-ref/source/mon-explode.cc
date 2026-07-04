@@ -367,7 +367,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
                     apostrophise(mons->name(DESC_THE)) + " " +
                     effect + ".";
         if (type == MONS_BENNU)
-            boom_msg = make_stringf("%s blazes out!", mons->full_name(DESC_THE).c_str());
+            boom_msg = make_stringf(T_("%s blazes out!"), mons->full_name(DESC_THE).c_str());
     }
     else if (mons->has_ench(ENCH_INNER_FLAME))
     {

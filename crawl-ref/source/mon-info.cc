@@ -1559,7 +1559,7 @@ vector<string> monster_info::attributes() const
         const int num_memories = props.exists(NOBODY_MEMORIES_KEY)
                                     ? props[NOBODY_MEMORIES_KEY].get_vector().size()
                                     : NOBODY_MAX_MEMORIES;
-        v.push_back(make_stringf("%d %s left", num_memories,
+        v.push_back(make_stringf(T_("%d %s left"), num_memories,
                                                num_memories == 1 ? "memory" : "memories"));
     }
 

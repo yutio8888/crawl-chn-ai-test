@@ -1606,12 +1606,12 @@ string ghost_brand_name(brand_type brand, monster_type mtype)
     {
         // n.b. heavy only works if it is adjectival
         if (brand_prefers_adj.count(brand))
-            return make_stringf("%s weapon", brand_type_adj(brand));
+            return make_stringf(T_("%s weapon"), brand_type_adj(brand));
         else
-            return make_stringf("weapon of %s", brand_type_name(brand, false));
+            return make_stringf(T_("weapon of %s"), brand_type_name(brand, false));
     }
     else
-        return make_stringf("%s touch", brand_type_adj(brand));
+        return make_stringf(T_("%s touch"), brand_type_adj(brand));
 }
 
 string ego_type_string(const item_def &item, bool terse)
@@ -1700,7 +1700,7 @@ string weapon_brand_desc(const char *body, const item_def &weap,
     else if (brand == SPWPN_NORMAL)
     {
         if (get_equip_desc(weap))
-            return make_stringf("enchanted %s", body);
+            return make_stringf(T_("enchanted %s"), body);
         else
             return body;
     }
@@ -1708,7 +1708,7 @@ string weapon_brand_desc(const char *body, const item_def &weap,
     else if (Options.language == lang_t::ZH)
         return make_stringf("%s之%s", brand_name.c_str(), body);
     else
-        return make_stringf("%s of %s", body, brand_name.c_str());
+        return make_stringf(T_("%s of %s"), body, brand_name.c_str());
 }
 
 /**
@@ -2632,8 +2632,8 @@ string RuneMenu::get_title()
                runes_in_pack() < you.obtainable_runes ? "green" :
                                                    "lightgreen";
 
-    return make_stringf("<white>Runes of Zot (</white>"
-                        "<%s>%d</%s><white> collected) & Orbs of Power</white>",
+    return make_stringf(T_("<white>Runes of Zot (</white>"
+                        "<%s>%d</%s><white> collected) & Orbs of Power</white>"),
                         col, runes_in_pack(), col);
 }
 
@@ -2641,9 +2641,9 @@ string RuneMenu::gem_title()
 {
     const int found = gems_found();
     const int lost = gems_lost();
-    string gem_title = make_stringf("<white>Gems (%d collected", found);
+    string gem_title = make_stringf(T_("<white>Gems (%d collected"), found);
     if (Options.more_gem_info && lost < found)
-        gem_title += make_stringf(", %d intact", found - lost);
+        gem_title += make_stringf(T_(", %d intact"), found - lost);
     // don't explicitly mention that your gems are all broken otherwise - sad!
 
     return gem_title + ")</white>";

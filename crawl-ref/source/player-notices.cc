@@ -378,7 +378,7 @@ static string _abyss_monster_creation_message(const monster* mon)
         { " materialises.", 45 },
         { " emerges from chaos.", 13 },
         { " emerges from the beyond.", 26 },
-        { make_stringf(" assembles %s!",
+        { make_stringf(T_(" assembles %s!"),
                        mon->pronoun(PRONOUN_REFLEXIVE).c_str()), 33 },
         { " erupts from nowhere.", 9 },
         { " bursts from nowhere.", 18 },
@@ -388,7 +388,7 @@ static string _abyss_monster_creation_message(const monster* mon)
         { " coalesces out of seething chaos.", 10 },
         { " punctures the fabric of time!", 2 },
         { " punctures the fabric of the universe.", 7 },
-        { make_stringf(" manifests%s!",
+        { make_stringf(T_(" manifests%s!"),
                        silenced(you.pos()) ? "" : " with a bang"), 3 },
 
 
@@ -693,7 +693,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && !(mons->flags & MF_KNOWN_SHIFTER)
         && have_passive(passive_t::warn_shapeshifter))
     {
-        string msg = make_stringf(" warns you: %s is a foul%s shapeshifter.",
+        string msg = make_stringf(T_(" warns you: %s is a foul%s shapeshifter."),
                                     uppercase_first(mons->name(DESC_THE)).c_str(),
                                     mons->has_ench(ENCH_GLOWING_SHAPESHIFTER) ? " glowing" : "");
         simple_god_message(msg.c_str());

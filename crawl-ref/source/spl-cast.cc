@@ -1765,7 +1765,7 @@ static vector<string> _desc_intoxicate_chance(const monster_info& mi,
     if (get_resist(mi.resists(), MR_RES_POISON) >= 1)
         conf_pct =  conf_pct / 3;
 
-    return vector<string>{make_stringf("chance to confuse: %d%%", conf_pct)};
+    return vector<string>{make_stringf(T_("chance to confuse: %d%%"), conf_pct)};
 }
 
 static vector<string> _desc_englaciate_chance(const monster_info& mi,
@@ -1795,7 +1795,7 @@ static vector<string> _desc_englaciate_chance(const monster_info& mi,
     else
         fail_pct = 100;
 
-    return vector<string>{make_stringf("chance to slow: %d%%", 100 - fail_pct)};
+    return vector<string>{make_stringf(T_("chance to slow: %d%%"), 100 - fail_pct)};
 }
 
 static vector<string> _desc_gloom_chance(const monster_info& mi, int pow)
@@ -1809,7 +1809,7 @@ static vector<string> _desc_gloom_chance(const monster_info& mi, int pow)
 static vector<string> _desc_airstrike_bonus(const monster_info& mi)
 {
     const int empty_spaces = airstrike_space_around(mi.pos, false);
-    return vector<string>{make_stringf("empty space bonus: %d/8", empty_spaces)};
+    return vector<string>{make_stringf(T_("empty space bonus: %d/8"), empty_spaces)};
 }
 
 static vector<string> _desc_mercury_weak_chance(const monster_info& mi)
@@ -1817,13 +1817,13 @@ static vector<string> _desc_mercury_weak_chance(const monster_info& mi)
     if (mi.is(MB_NO_ATTACKS))
         return vector<string>{};
 
-    return vector<string>{make_stringf("chance to weaken: %d%%",
+    return vector<string>{make_stringf(T_("chance to weaken: %d%%"),
                             get_mercury_weaken_chance(mi.hd))};
 }
 
 static vector<string> _desc_warp_space_chance(int pow)
 {
-    return vector<string>{make_stringf("chance to blink: %d%%",
+    return vector<string>{make_stringf(T_("chance to blink: %d%%"),
                             get_warp_space_chance(pow))};
 }
 
@@ -1835,7 +1835,7 @@ static vector<string> _desc_meph_chance(const monster_info& mi)
     int pct_chance = 2;
     if (mi.hd < MEPH_HD_CAP)
         pct_chance = 100 - (100 * mi.hd / MEPH_HD_CAP);
-    return vector<string>{make_stringf("chance to affect: %d%%", pct_chance)};
+    return vector<string>{make_stringf(T_("chance to affect: %d%%"), pct_chance)};
 }
 
 static vector<string> _desc_hailstorm_hit_chance(const monster_info& mi, int pow)
@@ -1902,7 +1902,7 @@ static vector<string> _desc_dispersal_chance(const monster_info& mi, int pow)
         return vector<string>{"will blink"};
 
     const int success = hex_success_chance(wl, pow, 100);
-    return vector<string>{make_stringf("chance to teleport: %d%%", success)};
+    return vector<string>{make_stringf(T_("chance to teleport: %d%%"), success)};
 }
 
 static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
@@ -1989,7 +1989,7 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
     }
 
     const int success = hex_success_chance(wl, pow, 100);
-    descs.push_back(make_stringf("chance to affect: %d%%", success));
+    descs.push_back(make_stringf(T_("chance to affect: %d%%"), success));
 
     return descs;
 }
@@ -2255,7 +2255,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
 
         if (spell == SPELL_GRAVE_CLAW)
         {
-            title += make_stringf("<lightgrey> (%d/%d uses available)</lightgrey>",
+            title += make_stringf(T_("<lightgrey> (%d/%d uses available)</lightgrey>"),
                                   you.props[GRAVE_CLAW_CHARGES_KEY].get_int(),
                                   GRAVE_CLAW_MAX_CHARGES);
         }

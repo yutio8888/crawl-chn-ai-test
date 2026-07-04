@@ -1465,7 +1465,7 @@ static void _mons_indicate_level_exit(const monster* mon)
     {
         command_type dir = feat_stair_direction(feat);
         simple_monster_message(*mon,
-            make_stringf(" %s the %s.",
+            make_stringf(T_(" %s the %s."),
                 dir == CMD_GO_UPSTAIRS     ? "goes up" :
                 dir == CMD_GO_DOWNSTAIRS   ? "goes down"
                                            : "takes",
@@ -1475,7 +1475,7 @@ static void _mons_indicate_level_exit(const monster* mon)
     else if (is_shaft)
     {
         simple_monster_message(*mon,
-            make_stringf(" %s the shaft.",
+            make_stringf(T_(" %s the shaft."),
                 mon->airborne() ? "goes down"
                                 : "jumps into").c_str());
 
@@ -1498,7 +1498,7 @@ void make_mons_leave_level(monster* mon)
             if (you.can_see(*mon))
             {
                 simple_monster_message(*mon,
-                    make_stringf(" donates %s equipment to the cause.",
+                    make_stringf(T_(" donates %s equipment to the cause."),
                         mon->pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
             }
             monster_drop_things(mon);

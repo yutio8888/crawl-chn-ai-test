@@ -381,7 +381,7 @@ static string _range_string(const spell_type &spell, const monster_info *mon_own
                     && grid_distance(you.pos(), mon_owner->pos) <= range
                     && grid_distance(you.pos(), mon_owner->pos) >= minrange;
     const char *range_col = in_range ? "lightred" : "lightgray";
-    return make_stringf("(<%s>%d%s</%s>)", range_col, range,
+    return make_stringf(T_("(<%s>%d%s</%s>)"), range_col, range,
                                            minrange > 0 ? "*" : "",
                                            range_col);
 }
@@ -499,9 +499,9 @@ static string _describe_living_spells(const monster_info &mon_owner)
     const spell_type spell = living_spell_type_for(mon_owner.type);
     const int n = living_spell_count(spell, false);
     const string base_desc = _effect_string(spell, &mon_owner);
-    const string desc = base_desc[0] == '(' ? base_desc : make_stringf("(%s)",
+    const string desc = base_desc[0] == '(' ? base_desc : make_stringf(T_("(%s)"),
             base_desc.c_str());
-    return make_stringf("%dx%s", n, desc.c_str());
+    return make_stringf(T_("%dx%s"), n, desc.c_str());
 }
 
 
@@ -532,12 +532,12 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         if (you.immune_to_hex(spell))
             return "(immune)";
 
-        const string hex_str = make_stringf("%d%%", hex_chance(spell, mon_owner, is_wand));
+        const string hex_str = make_stringf(T_("%d%%"), hex_chance(spell, mon_owner, is_wand));
 
         const dice_def dam = _spell_damage(spell, hd, pow);
         if (!dam.size || !dam.num)
-            return make_stringf("(%s)", hex_str.c_str());
-        return make_stringf("(%s,%dd%d)", hex_str.c_str(), dam.num, dam.size);
+            return make_stringf(T_("(%s)"), hex_str.c_str());
+        return make_stringf(T_("(%s,%dd%d)"), hex_str.c_str(), dam.num, dam.size);
     }
 
     if (spell == SPELL_SMITING)
@@ -547,14 +547,14 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         return "4-8*"; // >_>
 
     if (spell == SPELL_ANTIMAGIC_GAZE)
-        return make_stringf("0-%d MP", pow / 8); // >_> >_>
+        return make_stringf(T_("0-%d MP"), pow / 8); // >_> >_>
 
     if (spell == SPELL_WIND_BLAST)
-        return make_stringf("2d%d*", default_collision_damage(pow, false).size);
+        return make_stringf(T_("2d%d*"), default_collision_damage(pow, false).size);
 
     if (spell == SPELL_FORCE_LANCE)
     {
-        return make_stringf("%dd%d(+%dd%d)",
+        return make_stringf(T_("%dd%d(+%dd%d)"),
             _spell_damage(spell, hd, pow).num,
             _spell_damage(spell, hd, pow).size,
             default_collision_damage(pow, false).num,
@@ -563,7 +563,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
 
     if (spell == SPELL_HOARFROST_BULLET)
     {
-        return make_stringf("3d(%d/%d)",
+        return make_stringf(T_("3d(%d/%d)"),
             zap_damage(ZAP_HOARFROST_BULLET, pow, true, false).size,
             zap_damage(ZAP_HOARFROST_BULLET_FINALE, pow, true, false).size);
     }
@@ -573,15 +573,15 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         return "";
 
     if (spell == SPELL_AIRSTRIKE)
-        return make_stringf("%dd%d+(2/space)", dam.num, dam.size);
+        return make_stringf(T_("%dd%d+(2/space)"), dam.num, dam.size);
     if (spell == SPELL_SLEETSTRIKE)
-        return make_stringf("%dd%d+(3/space)", dam.num, dam.size);
+        return make_stringf(T_("%dd%d+(3/space)"), dam.num, dam.size);
     if (spell == SPELL_RESONANCE_STRIKE)
         return describe_resonance_strike_dam(dam);
 
     if (spell == SPELL_BOLT_OF_DRAINING && mon_owner->type == MONS_LAUGHING_SKULL)
     {
-        return make_stringf("%dd(%d-%d)", dam.num, dam.size,
+        return make_stringf(T_("%dd(%d-%d)"), dam.num, dam.size,
                                           dam.size * 2);
     }
 
@@ -600,7 +600,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
     const char* suffix = spell == SPELL_LRD ? "*"
                        : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? "/turn"
                        : "";
-    return make_stringf("(%s%dd%d%s)", mult.c_str(), dam.num, dam.size, suffix);
+    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, suffix);
 }
 
 /**

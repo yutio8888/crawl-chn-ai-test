@@ -1383,7 +1383,7 @@ static string _skill_target_desc(skill_type skill, int scaled_target,
     }
     if (you.wizard)
     {
-        description += make_stringf("\n    (%d xp, %d skp)",
+        description += make_stringf(T_("\n    (%d xp, %d skp)"),
                                     diffs.experience, diffs.skill_points);
     }
     return description;
@@ -3376,7 +3376,7 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
             // it's just special case after special case with these descs
             const string how = feat == DNGN_ENTER_HELL
                 ? (stair_dir == CMD_GO_UPSTAIRS ? "to Hell" : "Hell")
-                : make_stringf("through %s", desc_the.c_str());
+                : make_stringf(T_("through %s"), desc_the.c_str());
             long_desc += make_stringf(
                     T_("\nWhile standing here, you can %s %s "
                     "with the <w>%s</w> key%s."),
@@ -4748,7 +4748,7 @@ static void _get_spell_description(const spell_type spell,
             string wiz_info;
 #ifdef WIZARD
             if (you.wizard)
-                wiz_info += make_stringf(" (pow %d)", _mon_hex_pow(spell, mon_owner, is_wand));
+                wiz_info += make_stringf(T_(" (pow %d)"), _mon_hex_pow(spell, mon_owner, is_wand));
 #endif
             description += you.immune_to_hex(spell)
                 ? make_stringf(T_("You cannot be affected by this "
@@ -5245,7 +5245,7 @@ static string _brand_damage_string(const monster_info &mi, brand_type brand,
             brand_dam = 4;
             break;
         case SPWPN_SUNDERING:
-            return make_stringf(" + %d per 4 attacks", dam * 3 / 2);
+            return make_stringf(T_(" + %d per 4 attacks"), dam * 3 / 2);
         case SPWPN_VENOM:
         case SPWPN_ANTIMAGIC:
         case SPWPN_CHAOS:
@@ -5374,15 +5374,15 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
     desc += uppercase_first(_flavour_base_desc(flavour));
     if (flav_dam && attack.flavour != AF_PURE_FIRE)
     {
-        desc += make_stringf(" (max %d%s)",
+        desc += make_stringf(T_(" (max %d%s)"),
                                 flav_dam,
                                 attk_mult > 1 ? " each" : "");
     }
     else if (flavour == AF_DRAIN)
-        desc += make_stringf(" (max %d damage)", real_dam / 2);
+        desc += make_stringf(T_(" (max %d damage)"), real_dam / 2);
     else if (flavour == AF_CRUSH)
     {
-        desc += make_stringf(" (%d-%d dam)", attack.damage,
+        desc += make_stringf(T_(" (%d-%d dam)"), attack.damage,
                                 attack.damage*2);
     }
 

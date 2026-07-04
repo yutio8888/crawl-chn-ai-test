@@ -331,7 +331,7 @@ vector<string> LookupType::get_desc_keys(string regex) const
         {
             if ((get_spell_disciplines(i) & school) && is_player_book_spell(i))
             {
-                string str = lowercase_string(make_stringf("%s spell", spell_english_name(i)));
+                string str = lowercase_string(make_stringf(T_("%s spell"), spell_english_name(i)));
                 key_matches.push_back(str);
             }
         }
@@ -397,7 +397,7 @@ static vector<string> _get_card_keys()
     {
         card_type card = static_cast<card_type>(i);
         if (!card_is_removed(card))
-            names.push_back(make_stringf("%s card", card_name(card)));
+            names.push_back(make_stringf(T_("%s card"), card_name(card)));
     }
     return names;
 }
@@ -575,7 +575,7 @@ static void _recap_spell_keys(vector<string> &keys)
         // first, strip " spell"
         const string key_name = keys[i].substr(0, keys[i].length() - 6);
         // then get the real name
-        keys[i] = make_stringf("%s spell",
+        keys[i] = make_stringf(T_("%s spell"),
                                spell_title(spell_by_name(key_name)));
     }
 }
@@ -591,7 +591,7 @@ static void _recap_ability_keys(vector<string> &keys)
     {
         strip_suffix(key, "ability");
         // get the real name
-        key = make_stringf("%s ability", ability_name(ability_by_name(key)).c_str());
+        key = make_stringf(T_("%s ability"), ability_name(ability_by_name(key)).c_str());
     }
 }
 
@@ -859,7 +859,7 @@ string LookupType::prompt_string() const
     const size_t symbol_pos = prompt_str.find(tolower_safe(symbol));
     ASSERT(symbol_pos != string::npos);
 
-    prompt_str.replace(symbol_pos, 1, make_stringf("(%c)", toupper_safe(symbol)));
+    prompt_str.replace(symbol_pos, 1, make_stringf(T_("(%c)"), toupper_safe(symbol)));
     return prompt_str;
 }
 
@@ -1203,7 +1203,7 @@ static int _describe_item(const string &key, const string &suffix,
         const int unrand_idx = extant_unrandart_by_exact_name(item_name);
         if (!unrand_idx)
         {
-            ui::error(make_stringf("Unable to get item '%s' by name", key.c_str()));
+            ui::error(make_stringf(T_("Unable to get item '%s' by name"), key.c_str()));
             return 0;
         }
         _make_item_fake_unrandart(item, unrand_idx);
@@ -1245,8 +1245,8 @@ static string _branch_transit_runes(branch_type br)
     string desc;
     const bool exit = br == BRANCH_VAULTS;
     const int num_runes = br == BRANCH_ZOT ? ZOT_ENTRY_RUNES : 1;
-    return make_stringf("\n\nThis branch can only be %sed while carrying at "
-                        "least %d rune%s of Zot.",
+    return make_stringf(T_("\n\nThis branch can only be %sed while carrying at "
+                        "least %d rune%s of Zot."),
                         exit ? "exit" : "enter",
                         num_runes, num_runes > 1 ? "s" : "");
 }
@@ -1259,12 +1259,12 @@ static string _branch_depth(branch_type br)
     // Abyss depth is explained in the description.
     if (br == BRANCH_ABYSS)
     {
-        desc = make_stringf("\n(If you entered the Abyss now, you could be "
-                            "pulled as deep as Abyss:%d.)", abyss_default_depth(true));
+        desc = make_stringf(T_("\n(If you entered the Abyss now, you could be "
+                            "pulled as deep as Abyss:%d.)"), abyss_default_depth(true));
     }
     if (depth > 1 && br != BRANCH_ABYSS)
     {
-        desc = make_stringf("\n\nThis %s is %d levels deep.",
+        desc = make_stringf(T_("\n\nThis %s is %d levels deep."),
                             br == BRANCH_ZIGGURAT ? "portal"
                                                   : "branch",
                             depth);
@@ -1289,10 +1289,10 @@ static string _branch_location(branch_type br)
             if (branches[parent].numlevels == 1)
                 desc += "in ";
             else
-                desc += make_stringf("on level %d of ", min);
+                desc += make_stringf(T_("on level %d of "), min);
         }
         else
-            desc += make_stringf("between levels %d and %d of ", min, max);
+            desc += make_stringf(T_("between levels %d and %d of "), min, max);
         desc += branches[parent].longname;
         desc += ".";
     }
@@ -1312,7 +1312,7 @@ static string _branch_subbranches(branch_type br)
     // Lair's random branches are explained in the description.
     if (!subbranch_names.empty() && br != BRANCH_LAIR)
     {
-        desc += make_stringf("\n\nThis branch contains the entrance%s to %s.",
+        desc += make_stringf(T_("\n\nThis branch contains the entrance%s to %s."),
                              subbranch_names.size() > 1 ? "s" : "",
                              comma_separated_line(begin(subbranch_names),
                                                   end(subbranch_names)).c_str());
@@ -1360,7 +1360,7 @@ static int _describe_mutation(const string &key, const string &suffix,
                                                       false);
     if (mutation == NUM_MUTATIONS) // oops! someone messed up!
     {
-        ui::error(make_stringf("Unable to get '%s' by name", key.c_str()));
+        ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
         return 0;
     }
     describe_mutation(mutation);
@@ -1374,7 +1374,7 @@ static int _describe_bane(const string &key, const string &suffix,
     const bane_type bane = bane_from_name(bane_name.c_str());
     if (bane == NUM_BANES)
     {
-        ui::error(make_stringf("Unable to get '%s' by name", key.c_str()));
+        ui::error(make_stringf(T_("Unable to get '%s' by name"), key.c_str()));
         return 0;
     }
     describe_bane(bane);
@@ -1467,13 +1467,13 @@ static string _prompt_for_regex(const LookupType &lookup_type, string &err)
 {
     const string type = lowercase_string(lookup_type.type);
     const string extra = lookup_type.supports_glyph_lookup() ?
-        make_stringf(" Enter a single letter to list %s displayed by that"
-                     " symbol.", pluralise(type).c_str())
+        make_stringf(T_(" Enter a single letter to list %s displayed by that"
+                     " symbol."), pluralise(type).c_str())
         : lookup_type.type == "spell" ? " Preface with '@' to search by school."
         : "";
     const string prompt = make_stringf(
-         "Describe %s; partial names and regexps are fine.%s\n"
-         "Describe what? ",
+         T_("Describe %s; partial names and regexps are fine.%s\n"
+         "Describe what? "),
          article_a(type).c_str(), extra.c_str());
 
     char buf[80];
@@ -1524,7 +1524,7 @@ static string _keylist_invalid_reason(const vector<string> &key_list,
     {
         if (by_symbol)
             return "No " + plur_type + " with symbol '" + regex + "'.";
-        return make_stringf("No matching %s for search string '%s'.",
+        return make_stringf(T_("No matching %s for search string '%s'."),
             plur_type.c_str(), regex.c_str());
     }
 

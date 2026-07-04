@@ -728,7 +728,7 @@ static bool _ely_heal_monster(monster* mons, killer_type killer, int i)
 
     dprf("new hp: %d", mons->hit_points);
 
-    const string msg = make_stringf("%s heals %s%s",
+    const string msg = make_stringf(T_("%s heals %s%s"),
              god_name(god, false).c_str(),
              mons->name(DESC_THE).c_str(),
              mons->hit_points * 2 <= mons->max_hit_points ? "." : "!");
@@ -4097,7 +4097,7 @@ void hogs_to_humans()
     string final_msg;
     if (any > 0 && you.num_turns > 0)
     {
-        final_msg = make_stringf("No longer under Kirke's spell, the %s %s %s!",
+        final_msg = make_stringf(T_("No longer under Kirke's spell, the %s %s %s!"),
                                  any > 1 ? "hogs return to their"
                                          : "hog returns to its",
                                  any == human ? "human" : "original",

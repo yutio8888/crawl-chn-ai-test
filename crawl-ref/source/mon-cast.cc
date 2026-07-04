@@ -6104,7 +6104,7 @@ static void _mons_mesmerise(monster& mons)
     const bool already_mesmerised = you.beheld_by(mons);
 
     string targ_msg = !mons_aligned(&mons, &you) ? T_("you")
-                : make_stringf("%s enemies", mons.pronoun(PRONOUN_POSSESSIVE).c_str());
+                : make_stringf(T_("%s enemies"), mons.pronoun(PRONOUN_POSSESSIVE).c_str());
 
     if (!already_mesmerised)
     {
@@ -6727,12 +6727,12 @@ static string _describe_nearby_constructs(const monster &caster, coord_def pos)
 
     const string name = nearby_constructs.back()->name(DESC_THE);
     if (nearby_constructs.size() == 1)
-        return make_stringf(" and %s", name.c_str());
+        return make_stringf(T_(" and %s"), name.c_str());
 
     for (auto act : nearby_constructs)
         if (act->name(DESC_THE) != name)
-            return " and the adjacent constructs";
-    return make_stringf(" and %s", pluralise_monster(name).c_str());
+            return T_(" and the adjacent constructs");
+    return make_stringf(T_(" and %s"), pluralise_monster(name).c_str());
 }
 
 /// Cast Resonance Strike, blasting the caster's target with smitey damage.
@@ -7453,7 +7453,7 @@ static bool _cast_dominate_undead(const monster& caster, int pow, bool check_onl
                 canned_msg(MSG_YOU_RESIST);
             else
             {
-                const string msg = make_stringf("lash out against %s attempt to control you!",
+                const string msg = make_stringf(T_("lash out against %s attempt to control you!"),
                                                 caster.name(DESC_ITS).c_str());
                 you.vex(&caster, random_range(3, 5), caster.name(DESC_A).c_str(), msg);
             }
@@ -9308,9 +9308,9 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
     if (thrower_seen || throwee_seen)
     {
         const string destination = you.can_see(*foe) ?
-                                   make_stringf("at %s",
+                                   make_stringf(T_("at %s"),
                                                 foe->name(DESC_THE).c_str()) :
-                                   "out of sight";
+                                   T_("out of sight");
 
         // ZH: Chinese has no articles — this branches on DESC_PLAIN vs DESC_THE
         // to select the appropriate monster name format. Not a translation
@@ -9344,7 +9344,7 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
 
     throwee.move_to(chosen_dest, MV_DEFAULT, true);
 
-    const string killed_by = make_stringf("Hit by %s thrown by %s",
+    const string killed_by = make_stringf(T_("Hit by %s thrown by %s"),
                                           throwee.name(DESC_A, true).c_str(),
                                           thrower.name(DESC_PLAIN, true).c_str());
     const int dam = foe->apply_ac(random2(thrower.get_hit_dice() * 2));
@@ -9391,9 +9391,9 @@ static void _oblivion_howl(monster &mon)
     const int pow = mons_spellpower(mon, SPELL_OBLIVION_HOWL);
     const int willpower = you.check_willpower(&mon, pow);
     const string effect = willpower > 0 ?
-                            make_stringf("but you%s",
+                            make_stringf(T_("but you%s"),
                                          you.resist_margin_phrase(willpower).c_str()) :
-                            "and it begins to echo in your mind!";
+                            T_("and it begins to echo in your mind!");
     mprf(T_("%s unleashes a %s howl, %s"),
          mon.name(DESC_THE).c_str(),
          silenced(mon.pos()) ? T_("silent") : T_("terrible"),

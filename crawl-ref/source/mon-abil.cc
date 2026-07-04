@@ -1072,8 +1072,8 @@ static bool _slymdra_try_merge(monster* mons)
         {
             flash_tile(mons->pos(), LIGHTGREEN);
             const int gained_heads = new_heads - old_heads;
-            const string head_msg = gained_heads == 1 ? "sprouts a new head"
-                                                      : make_stringf("sprouts %d new heads", gained_heads);
+            const string head_msg = gained_heads == 1 ? T_("sprouts a new head")
+                                                      : make_stringf(T_("sprouts %d new heads"), gained_heads);
             if (did_merge > 1)
             {
                 mprf(T_("%s absorbs %d nearby slime creatures and %s."),
@@ -1480,7 +1480,7 @@ bool pyrrhic_recollection(monster& nobody)
                 nobody.name(DESC_THE).c_str(),
                 comma_separated_line(spell_names.begin(), spell_names.end()).c_str(),
                 was_injured ? " to re-knit themselves" : "");
-        string speech = make_stringf("\"We remember... %s...\"",
+        string speech = make_stringf(T_("\"We remember... %s...\""),
                             getSpeakString("nobody_recollection " + recollection.key).c_str());
         mons_speaks_msg(&nobody, speech, MSGCH_TALK);
     }
