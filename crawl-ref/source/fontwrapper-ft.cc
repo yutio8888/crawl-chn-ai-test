@@ -30,8 +30,6 @@
 #define MISSING_CHAR 0xbf
 // CJK fallback font — loaded alongside the primary font to provide glyphs
 // for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
-#define MAPLE_FONT "contrib/fonts/MapleMono-NF-CN-Regular.ttf"
-#define CJK_FALLBACK_FONT "contrib/fonts/SarasaMonoSC-Regular.ttf"
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -247,11 +245,7 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     // Load CJK fallback font for Chinese/Japanese/Korean characters.
     // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
     // that exist in neither font.
-    string cjk_path = datafile_path(MAPLE_FONT, false, true);
-    if (cjk_path.c_str()[0] == 0)
-        cjk_path = datafile_path(CJK_FALLBACK_FONT, false, true);
-    if (cjk_path.c_str()[0] == 0)
-        cjk_path = datafile_path(font_name, false, true); // DejaVu last resort
+    string cjk_path = datafile_path(font_name, false, true); // primary as fallback
     if (cjk_path.c_str()[0] != 0)
     {
         FILE *fc = fopen_u(cjk_path.c_str(), "rb");
@@ -291,13 +285,13 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
         fprintf(stderr, "WARNING: CJK fallback font not found or failed to load.\n"
                         "  Expected at: %s\n"
                         "  CJK characters will render as placeholder blocks.\n"
-                        "  Download SarasaMonoSC-Regular.ttf and place it in\n"
+                        "  Set tile_font_crt_file in init.txt or place a compatible font in\n"
                         "  contrib/fonts/ for proper CJK rendering.\n",
                         cjk_path.c_str()[0] ? cjk_path.c_str()
                                             : "(not found in search path)");
         mprf(MSGCH_ERROR,
-            "CJK fallback font not found: download SarasaMonoSC-Regular.ttf"
-            " to contrib/fonts/ for proper CJK rendering.");
+            "CJK fallback font not found. Set tile_font_crt_file in init.txt"
+            " to a CJK-capable font for proper rendering.");
     }
 
     return configure_font();
