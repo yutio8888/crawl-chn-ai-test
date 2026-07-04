@@ -2857,7 +2857,7 @@ item_def* monster_die(monster& mons, killer_type killer,
                     (was_banished || !real_death) ? T_("vanish") : T_("die"));
             }
             else
-                mprf(MSGCH_WARN, "You feel something broadcast a psychic alarm.");
+                mprf(MSGCH_WARN, T_("You feel something broadcast a psychic alarm."));
 
             activate_tesseracts();
         }
@@ -3383,7 +3383,7 @@ item_def* monster_die(monster& mons, killer_type killer,
     {
         you.props.erase(TESSERACT_SPAWN_COUNTER_KEY);
 
-        mprf(MSGCH_ORB, "A wave of disorienting energy ripples outward as you feel the reach of Zot diminish.");
+        mprf(MSGCH_ORB, T_("A wave of disorienting energy ripples outward as you feel the reach of Zot diminish."));
         mark_milestone("tesseract.kill", "destroyed the tesseracts.");
 
         draw_ring_animation(mons.pos(), LOS_RADIUS, MAGENTA, BLUE, true, 5);

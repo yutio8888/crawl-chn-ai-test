@@ -21,8 +21,6 @@
   {"file": "dgn-shoals.cc", "line": 1111, "reason": "DEBUG_HEIGHTMAP diagnostic"},
   {"file": "god-passive.cc", "line": 2351, "reason": "color-only format string — no English text to translate"},
   {"file": "message.cc", "line": 1659, "reason": "color-only format wrapper — translatable content in variables"},
-  {"file": "mon-death.cc", "line": 2861, "reason": "MSGCH_WARN internal — orb-related diagnostic"},
-  {"file": "mon-death.cc", "line": 3387, "reason": "MSGCH_ORB internal diagnostic"},
   {"file": "items.cc", "line": 216, "reason": "MSGCH_WARN — Too many items on level, removing some — non-gameplay system message"},
   {"file": "travel.cc", "line": 954, "reason": "MSGCH_WARN — travel failure diagnostic, partial C string concat"}
 ]
