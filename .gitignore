@@ -12,6 +12,9 @@
 .opencode/
 .mcp.json
 
+# CJK fonts — not in repo, distributed in release packages only
+crawl-ref/source/contrib/fonts/SarasaMonoSC-Regular.ttf
+
 # Game data
 saves/
 

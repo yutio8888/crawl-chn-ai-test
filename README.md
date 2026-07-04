@@ -94,7 +94,7 @@ make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 |------|------|------|
 | `DejaVuSans.ttf` | ~720KB | 比例字体 |
 | `DejaVuSansMono.ttf` | ~330KB | 主等宽字体（布局度量来源） |
-| `SarasaMonoSC-Regular.ttf` | ~25MB | CJK 回退字体（需单独获取，放入 `contrib/fonts/`） |
+| `SarasaMonoSC-Regular.ttf` | ~25MB | CJK 回退字体（**不包含在仓库中**，随发布包分发，详见[字体版权](#字体版权)） |
 
 ---
 
@@ -257,6 +257,23 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 本项目基于上游 DCSS，采用 **GPLv2+** 许可证。详见 [LICENSE](LICENSE)。
 
 上游项目致谢名单见 [CREDITS.txt](crawl-ref/CREDITS.txt)。
+
+### 字体版权
+
+本项目使用以下字体：
+
+| 字体 | 许可证 | 说明 |
+|------|--------|------|
+| **DejaVu Sans** / **DejaVu Sans Mono** | [Bitstream Vera](crawl-ref/docs/license/lgpl.txt) + 公共领域 | 主字体，由上游 DCSS 提供 |
+| **Sarasa Mono SC**（更纱等宽黑体） | [SIL Open Font License 1.1](https://openfontlicense.org/) | CJK 回退字体，版权归原作者及贡献者所有 |
+
+**关于 Sarasa Mono SC：**
+
+- 该字体基于 SIL OFL 1.1 发布，允许免费使用、复制、嵌入、修改和再分发。
+- **字体文件不包含在本 Git 仓库中**（文件大小约 25MB），仅随发布包一同分发。
+- 如需自行获取，请访问 [Sarasa Gothic GitHub](https://github.com/be5invis/Sarasa-Gothic) 下载
+  `SarasaMonoSC-Regular.ttf`，放入 `crawl-ref/source/contrib/fonts/` 目录。
+- 该字体的完整许可证文本应随发布包中的字体文件一同提供。
 
 ---
 
