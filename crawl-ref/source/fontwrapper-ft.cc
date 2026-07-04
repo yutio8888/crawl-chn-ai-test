@@ -540,11 +540,11 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             }
 
             i++;
-            // Use grid-based advance derived from primary font metrics.
-            // This keeps grid alignment consistent with addstr_aux()'s
-            // wcwidth()-based cell counting, independently of whether
-            // the glyph was sourced from the primary or CJK fallback face.
-            adv.x += m_max_advance.x * char_w - glyph.offset;
+            // Use native glyph advance, consistent with store() and
+            // string_width(). All three rendering paths (grid, free-form,
+            // layout) now agree on per-character advance, eliminating
+            // cumulative pixel drift between columns.
+            adv.x += glyph.advance - glyph.offset;
 
             // See if we need to flush prematurely.
             if (n_subst == MAX_GLYPHS - 1)
