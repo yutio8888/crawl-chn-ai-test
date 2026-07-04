@@ -563,7 +563,7 @@ protected:
 #else
         const int name_pad = max(0, 32 - pw);
 #endif
-        const string header = make_stringf("<w>%s%s%s%s%s",
+        const string header = make_stringf("%s%s%s%s%s",
             prefix.c_str(),
             string(name_pad, ' ').c_str(),
             chop_string(T_("Type"), 26).c_str(),
