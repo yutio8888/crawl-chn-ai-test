@@ -449,7 +449,7 @@ UIHiscoresMenu::UIHiscoresMenu()
     }
     else
     {
-        auto placeholder = formatted_string("No high scores yet...", DARKGRAY);
+        auto placeholder = formatted_string(T_("No high scores yet..."), DARKGRAY);
         m_root->add_child(make_shared<Text>(placeholder));
         initial_focus = this;
     }

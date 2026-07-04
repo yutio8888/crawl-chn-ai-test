@@ -1478,10 +1478,10 @@ static void _choose_arena_teams(newgame_def& choice,
     teams_input->set_text(default_arena_teams);
     vbox->add_child(teams_input);
     formatted_string prompt;
-    prompt.cprintf("\nExamples:\n");
-    prompt.cprintf("  Sigmund v Jessica\n");
-    prompt.cprintf("  99 orc v Royal Jelly\n");
-    prompt.cprintf("  20-headed hydra v 10 kobold ; scimitar ego:flaming");
+    prompt.cprintf(T_("\nExamples:\n"));
+    prompt.cprintf(T_("  Sigmund v Jessica\n"));
+    prompt.cprintf(T_("  99 orc v Royal Jelly\n"));
+    prompt.cprintf(T_("  20-headed hydra v 10 kobold ; scimitar ego:flaming"));
     vbox->add_child(make_shared<Text>(std::move(prompt)));
 
     auto popup = make_shared<ui::Popup>(std::move(vbox));

@@ -1477,7 +1477,7 @@ namespace quiver
             formatted_string qdesc;
 
             qdesc.textcolour(Options.status_caption_colour);
-            qdesc.cprintf("Abil: ");
+            qdesc.cprintf(T_("Abil: "));
 
             qdesc.textcolour(quiver_color());
             string abil_name = ability_name(ability);
@@ -1486,7 +1486,7 @@ namespace quiver
             if (ability == ABIL_WIZ_BUILD_TERRAIN
                 && last_feat != DNGN_UNSEEN)
             {
-                qdesc.cprintf("Build '%s'", dungeon_feature_name(
+                qdesc.cprintf(T_("Build '%s'"), dungeon_feature_name(
                     static_cast<dungeon_feature_type>(last_feat)));
             }
             else

@@ -240,7 +240,7 @@ void pick_hints(newgame_def& choice)
     sub_items->linked_menus[0] = main_items;
 
     {
-        auto label = make_shared<Text>(formatted_string("Esc - Quit", BROWN));
+        auto label = make_shared<Text>(formatted_string(T_("Esc - Quit"), BROWN));
         auto btn = make_shared<MenuButton>();
         btn->set_child(std::move(label));
         btn->hotkey = CK_ESCAPE;
@@ -248,7 +248,7 @@ void pick_hints(newgame_def& choice)
         sub_items->add_button(btn, 0, 0);
     }
     {
-        auto label = make_shared<Text>(formatted_string("  * - Random hints mode character", BROWN));
+        auto label = make_shared<Text>(formatted_string(T_("  * - Random hints mode character"), BROWN));
         auto btn = make_shared<MenuButton>();
         btn->set_child(std::move(label));
         btn->hotkey = '*';

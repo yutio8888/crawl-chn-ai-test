@@ -535,7 +535,7 @@ static void _construct_save_games_menu(shared_ptr<OuterMenu>& container,
         if (wiz)
         {
             const COLOURS wiz_bg = chars.at(i).save_loadable ? LIGHTMAGENTA : RED;
-            auto wiz_text = formatted_string(" (WIZ)", wiz_bg);
+            auto wiz_text = formatted_string(T_(" (WIZ)"), wiz_bg);
             hbox->add_child(make_shared<Text>(wiz_text));
         }
 

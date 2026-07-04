@@ -388,7 +388,7 @@ void DollEditRegion::run()
 
     auto vbox = make_shared<Box>(Widget::VERT);
     vbox->set_cross_alignment(Widget::CENTER);
-    auto title = make_shared<Text>(formatted_string("Doll Editor", YELLOW));
+    auto title = make_shared<Text>(formatted_string(T_("Doll Editor"), YELLOW));
     title->set_margin_for_sdl(0, 0, 20, 0);
     vbox->add_child(std::move(title));
     vbox->add_child(doll_ui);

@@ -250,7 +250,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         fs.cprintf("%s (", mon->name(DESC_PLAIN, true).c_str());
         monster_info mi(mon);
         fs.add_glyph(get_mons_glyph(mi));
-        fs.cprintf(") in view: (%d,%d), see_cell: %s",
+        fs.cprintf(T_(") in view: (%d,%d), see_cell: %s"),
                    mon->pos().x, mon->pos().y,
                    you.see_cell(mon->pos())? "yes" : "no");
         formatted_mpr(fs, MSGCH_WARN);

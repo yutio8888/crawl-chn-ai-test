@@ -651,7 +651,7 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
         btn->highlight_colour = STARTUP_HIGHLIGHT_CONTROL;
 
         auto err = make_shared<Text>(
-                formatted_string("That's a silly name!", LIGHTRED));
+                formatted_string(T_("That's a silly name!"), LIGHTRED));
         err->set_margin_for_sdl(0, 0, 0, 10);
         auto box = make_shared<Box>(Box::HORZ);
         box->set_cross_alignment(Widget::CENTER);
