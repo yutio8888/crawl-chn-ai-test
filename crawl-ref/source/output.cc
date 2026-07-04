@@ -18,7 +18,8 @@
 #include "colour.h"
 #include "database.h"
 #include "describe.h"
-#ifndef USE_TILE_LOCAL
+#ifdef USE_TILE_LOCAL
+#include "tilereg-stat.h"
 #endif
 #include "english.h"
 #include "env.h"
@@ -1233,9 +1234,10 @@ static void _print_stats_qv(int y)
 
 struct status_light
 {
-    status_light(int c, string t) : colour(c), text(t) {}
+    status_light(int c, string t, int s = -1) : colour(c), text(t), status(s) {}
     colour_t colour;
     string text;
+    int status;
 };
 
 static void _add_status_light_to_out(int i, vector<status_light>& out)
@@ -1244,7 +1246,7 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
 
     if (fill_status_info(i, inf) && !inf.light_text.empty())
     {
-        status_light sl(inf.light_colour, inf.light_text);
+        status_light sl(inf.light_colour, inf.light_text, i);
         out.push_back(sl);
     }
 }
@@ -1328,6 +1330,10 @@ static void _print_status_lights(int y)
     }
     last_number_of_lights = lights.size();
 
+#ifdef USE_TILE_LOCAL
+    clear_status_hitboxes();
+#endif
+
     size_t line_cur = y;
     const size_t line_end = crawl_view.hudsz.y+1;
 
@@ -1353,6 +1359,16 @@ static void _print_status_lights(int y)
 
         if (end_x <= crawl_view.hudsz.x)
         {
+#ifdef USE_TILE_LOCAL
+            if (i_light < lights.size())
+            {
+                const int status_x = wherex() - crawl_view.hudp.x;
+                const int status_w = strwidth(lights[i_light].text);
+                record_status_hitbox(lights[i_light].status,
+                                     status_x, status_x + status_w - 1,
+                                     (int)line_cur - 1);
+            }
+#endif
             textcolour(lights[i_light].colour);
             NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
             if (end_x < crawl_view.hudsz.x)
