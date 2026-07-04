@@ -28,6 +28,7 @@
 #include "unwind.h"
 #include "xom.h"
 #include "database.h"
+#include "positional_format.h"
 
 ranged_attack::ranged_attack(actor *attk, actor *defn,
                              const item_def *wpn,
@@ -171,14 +172,14 @@ void ranged_attack::handle_phase_blocked()
         {
             if (defender_shield && shield_reflects(*defender_shield))
             {
-                punctuation = " with " + defender->pronoun(PRONOUN_POSSESSIVE)
+                punctuation = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
                               + " " + defender_shield->name(DESC_PLAIN).c_str();
             }
             else
-                punctuation = " with an invisible shield";
+                punctuation = T_(" with an invisible shield");
         }
 
-        punctuation += make_stringf("... and %s it back!",
+        punctuation += make_stringf_p(T_("... and %1$s it back!"),
                                     defender->conj_verb("reflect").c_str());
     }
     else
@@ -186,7 +187,7 @@ void ranged_attack::handle_phase_blocked()
 
     if (needs_message)
     {
-        mprf("%s %s the %s%s",
+        mprf_p(T_("%1$s %2$s the %3$s%4$s"),
              defender_name(false).c_str(),
              defender->conj_verb("block").c_str(),
              proj_name.c_str(),

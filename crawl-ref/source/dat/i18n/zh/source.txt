@@ -33870,3 +33870,12 @@ Sludge Elf
 Vampire
 吸血鬼
 %%%%%
+ with an invisible shield
+用隐形的盾牌
+%%%%%
+... and %1$s it back!
+...并反射了回去！
+%%%%%
+%1$s %2$s the %3$s%4$s
+%1$s挡住了%3$s%4$s
+%%%%%
