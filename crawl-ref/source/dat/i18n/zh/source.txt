@@ -30438,3 +30438,15 @@ amethyst
 %%%%
 sapphire
 蓝宝石色
+%%%%
+You hear a loud clanging noise!
+你听到一声响亮的铿锵声！
+%%%%
+It is %s.
+那是%s。
+%%%%
+Ability - use which?
+能力 - 使用哪个？
+%%%%
+Ability - describe which?
+能力 - 描述哪个？

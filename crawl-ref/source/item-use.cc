@@ -3047,7 +3047,7 @@ bool read(item_def* scroll, dist *target)
         break;
 
     case SCR_NOISE:
-        noisy(25, you.pos(), "You hear a loud clanging noise!");
+        noisy(25, you.pos(), T_("You hear a loud clanging noise!"));
         break;
 
     case SCR_SUMMONING:
@@ -3248,8 +3248,7 @@ bool read(item_def* scroll, dist *target)
         && which_scroll != SCR_AMNESIA
         && which_scroll != SCR_ACQUIREMENT)
     {
-        mprf(T_("It %s %s."),
-             scroll->quantity < prev_quantity ? T_("was") : T_("is"),
+        mprf(scroll->quantity < prev_quantity ? T_("It was %s.") : T_("It is %s."),
              article_a(scroll_name).c_str());
     }
 

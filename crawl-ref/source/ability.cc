@@ -4195,20 +4195,26 @@ int choose_ability_menu(const vector<talent>& talents)
     // Build column headers aligned with data columns:
     // name(32) | cost(32) | failure(12)
     {
-        const string prefix = T_("Ability - describe what?");
-        const int pw = strwidth(prefix);
-        const string header = prefix
-            + string(max(0, 32 - pw), ' ')
+        const string use_prefix = T_("Ability - use which?");
+        const string desc_prefix = T_("Ability - describe which?");
+        const int use_pw = strwidth(use_prefix);
+        const int desc_pw = strwidth(desc_prefix);
+        const string use_header = use_prefix
+            + string(max(0, 32 - use_pw), ' ')
+            + chop_string(T_("Cost"), 32)
+            + chop_string(T_("Failure"), 12);
+        const string desc_header = desc_prefix
+            + string(max(0, 32 - desc_pw), ' ')
             + chop_string(T_("Cost"), 32)
             + chop_string(T_("Failure"), 12);
 #ifdef USE_TILE_LOCAL
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(header, header, MEL_ITEM);
+            new ToggleableMenuEntry(use_header, desc_header, MEL_ITEM);
         me->colour = BLUE;
         abil_menu.set_title(me, true, true);
 #else
         abil_menu.set_title(
-            new ToggleableMenuEntry(header, header, MEL_TITLE),
+            new ToggleableMenuEntry(use_header, desc_header, MEL_TITLE),
             true, true);
 #endif
     }
