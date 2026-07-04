@@ -33837,3 +33837,39 @@ White Draconian
 Yellow Draconian
 黄龙人
 %%%%%
+Centaur
+半人马
+%%%%%
+Deep Dwarf
+深矮人
+%%%%%
+Ghoul
+食尸鬼
+%%%%%
+Halfling
+半身人
+%%%%%
+High Elf
+高等精灵
+%%%%%
+Hill Orc
+丘陵兽人
+%%%%%
+Lava Orc
+熔岩兽人
+%%%%%
+Mayflytaur
+蜉蝣半人马
+%%%%%
+Meteoran
+流星人
+%%%%%
+Mottled Draconian
+斑驳龙人
+%%%%%
+Sludge Elf
+污泥精灵
+%%%%%
+Vampire
+吸血鬼
+%%%%%
