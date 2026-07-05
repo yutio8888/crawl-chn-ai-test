@@ -35106,3 +35106,613 @@ s
 %%%%%
 \# - Recommended character
 \# - 推荐角色
+
+%%%%%
+ <lightgrey>(%s)</lightgrey>
+ <lightgrey>（%s）</lightgrey>
+
+%%%%%
+ (%d -> %d)
+ （%d -> %d）
+
+%%%%%
+ (you have %d gold)
+ （你有%d金币）
+
+%%%%%
+ and %s
+ 和%s
+
+%%%%%
+ and the adjacent constructs
+ 和相邻的构装体
+
+%%%%%
+ is wracked by anguish%s
+ 被痛苦折磨%s
+
+%%%%%
+ prevents a mutation which would have shattered %s.
+ 阻止了一次本会将%s击碎的突变。
+
+%%%%%
+%d %s left
+剩余%d %s
+
+%%%%%
+%d MP    %s    (%s)
+%d 法力    %s（%s）
+
+%%%%%
+%d altar%s
+%d座祭坛
+
+%%%%%
+%d rings
+%d枚戒指
+
+%%%%%
+%d shop%s/portal%s
+%d处商店/传送门
+
+%%%%%
+%d%%
+%d%%
+
+%%%%%
+%d-%d/arc
+%d-%d/弧
+
+%%%%%
+%dd%d
+%dd%d
+
+%%%%%
+%dd%d(+%dd%d)
+%dd%d（+%dd%d）
+
+%%%%%
+%dd%d+(2/space)
+%dd%d+（2/空间）
+
+%%%%%
+%dd%d+(3/space)
+%dd%d+（3/空间）
+
+%%%%%
+%dd%d/%dd%d
+%dd%d/%dd%d
+
+%%%%%
+%dd(%d+%d*)
+%dd（%d+%d*）
+
+%%%%%
+%dd(%d-%d)
+%dd（%d-%d）
+
+%%%%%
+%dx
+%dx
+
+%%%%%
+%dx%s
+%d x %s
+
+%%%%%
+%s %s '%s' => '%s'.
+%s%s '%s' => '%s'。
+
+%%%%%
+%s %swizard%s
+%s %s法师%s
+
+%%%%%
+%s (%s)
+%s（%s）
+
+%%%%%
+%s blazes out!
+%s迸发而出！
+
+%%%%%
+%s charge
+%s充能
+
+%%%%%
+%s disliked all level %d spells
+%s不喜欢所有%d级法术
+
+%%%%%
+%s enemies
+%s敌人
+
+%%%%%
+%s fountain%s start%s gushing blood
+喷泉开始涌出鲜血
+
+%%%%%
+%s mutation
+%s突变
+
+%%%%%
+%s polymorph %s -> %s
+变形（%s）：%s -> %s
+
+%%%%%
+%s shop name:%s%s greed:%d gozag
+%s商店名称：%s%s 贪婪度：%d 哥萨戈
+
+%%%%%
+%s touch
+%s之触
+
+%%%%%
+%s weapon
+%s武器
+
+%%%%%
+%s%dd%d
+%s%dd%d
+
+%%%%%
+%s%s (%s)
+%s%s（%s）
+
+%%%%%
+%s%s of %s
+%s之%s%s
+
+%%%%%
+%s.out
+%s.out
+
+%%%%%
+%s: <w>%s</w>
+%s：<w>%s</w>
+
+%%%%%
+%swizard%s
+%s法师%s
+
+%%%%%
+(%d, %d) %s
+（%d，%d）%s
+
+%%%%%
+(%s%dd%d%s)
+（%s%dd%d%s）
+
+%%%%%
+(%s)
+（%s）
+
+%%%%%
+(%s,%dd%d)
+（%s，%dd%d）
+
+%%%%%
+(<%s>%d%s</%s>)
+（<%s>%d%s</%s>）
+
+%%%%%
+, %d intact
+，%d颗完好
+
+%%%%%
+0-%d MP
+0-%d 法力
+
+%%%%%
+10 + (4-8)d%d
+10 +（4-8）d%d
+
+%%%%%
+2d%d*
+2d%d*
+
+%%%%%
+3d(%d/%d)
+3d（%d/%d）
+
+%%%%%
+6 + %dd%d
+6 + %dd%d
+
+%%%%%
+<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>
+<%s>%d%%</%s><darkgrey>（%d%%）</darkgrey>
+
+%%%%%
+</bg:%s>\n
+</bg:%s>\n
+
+%%%%%
+<bg:%s>
+<bg:%s>
+
+%%%%%
+<cyan>Item%s here:</cyan> %s.
+<cyan>这里的物品%s：</cyan>%s。
+
+%%%%%
+<darkgrey>[%s melded]</darkgrey>
+<darkgrey>[%s已融入]</darkgrey>
+
+%%%%%
+<darkgrey>[%s]</darkgrey> XL %d
+<darkgrey>[%s]</darkgrey> 等级 %d
+
+%%%%%
+<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>
+<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>
+
+%%%%%
+<lightgrey> (%d/%d uses available)</lightgrey>
+<lightgrey>（可用次数：%d/%d）</lightgrey>
+
+%%%%%
+<lightgrey>%s</lightgrey>
+<lightgrey>%s</lightgrey>
+
+%%%%%
+<lightmagenta>%s [%.1f]</lightmagenta>
+<lightmagenta>%s [%.1f]</lightmagenta>
+
+%%%%%
+<w>%s</w>\nInput (raw) new %s for %s: 
+<w>%s</w>\n为%3$s输入（原始）新%2$s：
+
+%%%%%
+<w>%s</w>\nInput new %s for %s:
+<w>%s</w>\n为%3$s输入新%2$s：
+
+%%%%%
+<white>Gems (%d collected
+<white>宝石（已收集%d
+
+%%%%%
+<white>[enter]</white>: %s
+<white>[回车]</white>：%s
+
+%%%%%
+Bane of %s
+%s之灾
+
+%%%%%
+Cleared %s '%s' => '%s'.
+已清除%s'%s' => '%s'。
+
+%%%%%
+Could not create fixed level randart spellbook: %s
+无法创建固定等级随机神器法术书：%s
+
+%%%%%
+Current %s for %s: %s
+%2$s的当前%1$s：%3$s
+
+%%%%%
+Enkindled (%d)
+点燃（%d）
+
+%%%%%
+Fugue (%s%u%s)
+赋格（%s%u%s）
+
+%%%%%
+HP: %d/%d MP: %d/%d
+生命：%d/%d 法力：%d/%d
+
+%%%%%
+Heavenly (%d)
+天赐（%d）
+
+%%%%%
+Hit by %s thrown by %s
+被%2$s投掷的%1$s击中
+
+%%%%%
+Hit by a%s %s thrown by %s
+被%3$s投掷的%2$s击中
+
+%%%%%
+Horr (%d)
+恐惧（%d）
+
+%%%%%
+Input trigger key to edit or create a %s:
+输入触发键以编辑或创建%s：
+
+%%%%%
+Lash (%u)
+鞭击（%u）
+
+%%%%%
+MPRegen (%d)
+魔力再生（%d）
+
+%%%%%
+Memories (%d)
+记忆（%d）
+
+%%%%%
+No level %d spells can be cast by you
+没有你可施放的%d级法术
+
+%%%%%
+No level %d spells?!?!?!
+没有%d级法术？！？！？！
+
+%%%%%
+Parsing error in key sequence '%s'
+按键序列'%s'解析错误
+
+%%%%%
+Phobia (-%d)
+恐惧症（-%d）
+
+%%%%%
+Pick up how many of %s (; or enter for all)? 
+拾取多少%s（按;或回车全取）？
+
+%%%%%
+Really clear all %ss?
+确认清除所有%s？
+
+%%%%%
+Regen (%d)
+再生（%d）
+
+%%%%%
+Remember %s name as what? 
+将%s的名字记为什么？
+
+%%%%%
+Shopping list: remove %s? (Y/n)
+购物清单：移除%s？（Y/n）
+
+%%%%%
+Shot with a%s %s by %s
+被%3$s用%2$s射中
+
+%%%%%
+Slay +%d
+杀戮+%d
+
+%%%%%
+Terminal colours: %d foreground, %d background\n\n
+终端颜色：%d前景色，%d背景色\n\n
+
+%%%%%
+Terminal type (`TERM`): <w>%s</w>\n
+终端类型（`TERM`）：<w>%s</w>\n
+
+%%%%%
+You are bolstered by spread misfortune (+%d AC)
+散布的厄运强化了你（AC +%d）
+
+%%%%%
+You can wear up to %s rings at the same time.
+你可以同时佩戴最多%s枚戒指。
+
+%%%%%
+You have no room to wall jump there; %s is in the way.
+那里没有空间进行蹬墙跳；%s挡住了。
+
+%%%%%
+Your %s. (AC +%d)
+你的%s。（AC +%d）
+
+%%%%%
+Your skill with %s, %s, and %s is reduced.
+你对%1$s、%2$s和%3$s的掌握被削弱了。
+
+%%%%%
+[L-Click] %s
+[左键] %s
+
+%%%%%
+and it begins to echo in your mind!
+它在你的脑海中开始回响！
+
+%%%%%
+at %s
+在%s处
+
+%%%%%
+blast of %s %s
+%1$s%2$s冲击
+
+%%%%%
+bonks %s with %s %s.
+用%2$s%3$s敲了%1$s。
+
+%%%%%
+bribing [%s]
+贿赂中[%s]
+
+%%%%%
+but you%s
+但你%s
+
+%%%%%
+cast spell '%s'
+施放了法术'%s'
+
+%%%%%
+chance to affect: %d%%
+影响几率：%d%%
+
+%%%%%
+chance to blink: %d%%
+瞬移几率：%d%%
+
+%%%%%
+chance to confuse: %d%%
+困惑几率：%d%%
+
+%%%%%
+chance to slow: %d%%
+减速几率：%d%%
+
+%%%%%
+chance to teleport: %d%%
+传送几率：%d%%
+
+%%%%%
+chance to weaken: %d%%
+衰弱几率：%d%%
+
+%%%%%
+damage: %dd3 / 2
+伤害：%dd3 / 2
+
+%%%%%
+death random %d
+死亡 随机%d
+
+%%%%%
+divine lightning + %d bolts
+神圣闪电 + %d道
+
+%%%%%
+does a pirouette on top of %s.
+在%s头顶做了个单脚旋转。
+
+%%%%%
+doodles on %s face.
+在%s脸上涂鸦。
+
+%%%%%
+empty space bonus: %d/8
+空旷空间加成：%d/8
+
+%%%%%
+enchanted %s
+附魔%s
+
+%%%%%
+finished random %d
+完成 随机%d
+
+%%%%%
+gaining the %s mutation
+获得%s突变
+
+%%%%%
+give %smutation%s
+给予%s突变%s
+
+%%%%%
+god gift: %s
+神赐礼物：%s
+
+%%%%%
+hp as a bound soul: ~%d
+缚魂生命值：~%d
+
+%%%%%
+insults %s ancestors.
+辱骂了%s的祖先。
+
+%%%%%
+lash out against %s attempt to control you!
+反抗%s控制你的企图！
+
+%%%%%
+lit up %d webs
+点燃了%d张蛛网
+
+%%%%%
+losing the %s mutation
+失去%s突变
+
+%%%%%
+made a garden
+创造了一个花园
+
+%%%%%
+made a ring of doors, pulled %d %s in
+创造了一圈门，把%d个%s拉了进来
+
+%%%%%
+made a ring of doors, pushed %d %s out
+创造了一圈门，把%d个%s推了出去
+
+%%%%%
+makes %s trip over %s own %s.
+让%1$s被%2$s%3$s绊倒了。
+
+%%%%%
+out of sight
+视线之外
+
+%%%%%
+scenery %s
+场景%s
+
+%%%%%
+shards
+碎片
+
+%%%%%
+smacks %s with %s own %s.
+用%2$s%3$s扇了%1$s。
+
+%%%%%
+something (%d)
+某物（%d）
+
+%%%%%
+sprouts %d new heads
+长出了%d个新头
+
+%%%%%
+sprouts a new head
+长出了一个新头
+
+%%%%%
+statue of %s
+%s雕像
+
+%%%%%
+summons %d friend%s
+召唤了%d名友方
+
+%%%%%
+summons friendly %s
+召唤了友善的%s
+
+%%%%%
+the %s
+%s
+
+%%%%%
+ties %s tail in a knot.
+把%s的尾巴打了个结。
+
+%%%%%
+trickster (+%d AC)
+欺诈者（AC +%d）
+
+%%%%%
+uppercase %c
+大写%c
+
+%%%%%
+weapon of %s
+%s之武器
+
+%%%%%
+ blesses %s with %s.
+ 赐予了%1$s%2$s的祝福。
+
+%%%%%
+"%s" is not readable
+「%s」无法读取
+
+%%%%%
+"We remember... %s..."
+「我们记得……%s……」
+
+%%%%%
