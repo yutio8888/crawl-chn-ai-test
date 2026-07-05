@@ -568,7 +568,7 @@ void hints_death_screen()
             }
         }
 
-        print_hint(make_stringf(T_("death random %d"), hint));
+        print_hint(make_stringf("death random %d", hint));
     }
     mprf(MSGCH_TUTORIAL, "%s", untag_tiles_console(text).c_str());
     more();
@@ -595,7 +595,7 @@ void hints_finished()
     else if (Hints.hints_stashes)
         print_hint("finished stashes");
     else
-        print_hint(make_stringf(T_("finished random %d"), random2(4)));
+        print_hint(make_stringf("finished random %d", random2(4)));
     more();
 
     Hints.hints_events.init(false);

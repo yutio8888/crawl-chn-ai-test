@@ -6780,7 +6780,7 @@ static bool _spell_charged(monster *mons)
         if (!you.can_see(*mons))
             return false;
         string msg =
-            getSpeakString(make_stringf(T_("%s charge"),
+            getSpeakString(make_stringf("%s charge",
                                         mons->name(DESC_PLAIN, true).c_str())
                            .c_str());
         if (!msg.empty())

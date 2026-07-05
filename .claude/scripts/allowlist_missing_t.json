@@ -1683,5 +1683,35 @@
     "file": "god-abil.cc",
     "line": 3587,
     "reason": "Vault spec protocol data: shop keywords must remain English"
+  },
+  {
+    "file": "hints.cc",
+    "line": 571,
+    "reason": "Hint DB lookup key: print_hint() calls getHintString()"
+  },
+  {
+    "file": "hints.cc",
+    "line": 598,
+    "reason": "Hint DB lookup key: print_hint() calls getHintString()"
+  },
+  {
+    "file": "files.cc",
+    "line": 2837,
+    "reason": "Filesystem filename: backup suffix \u2014 protocol data"
+  },
+  {
+    "file": "errors.cc",
+    "line": 66,
+    "reason": "Filesystem filename: .out extension \u2014 protocol data"
+  },
+  {
+    "file": "main.cc",
+    "line": 2374,
+    "reason": "OS shell command: /usr/bin/open \u2014 system protocol"
+  },
+  {
+    "file": "mon-cast.cc",
+    "line": 6783,
+    "reason": "Speech DB key: getSpeakString() lookup"
   }
 ]
