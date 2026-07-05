@@ -9772,8 +9772,8 @@ You hear a splash.
 You hear a splashing noise.
 你听到了水花溅起的声音。
 %%%%
-You hear a%s slurping noise.
-你听到一声%s啜饮声。
+You hear a slurping noise.
+你听到一声啜饮声。
 %%%%
 You hear Kikubaaqudgha cackling.
 你听到库巴库德加咯咯地笑。

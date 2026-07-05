@@ -2914,8 +2914,10 @@ static bool _monster_eat_item(monster* mons)
 
         if (eaten && !shown_msg && player_can_hear(mons->pos()))
         {
-            mprf(MSGCH_SOUND, T_("You hear a%s slurping noise."),
-                 you.see_cell(mons->pos()) ? "" : " distant");
+            if (you.see_cell(mons->pos()))
+                mprf(MSGCH_SOUND, "%s", T_("You hear a slurping noise."));
+            else
+                mprf(MSGCH_SOUND, "%s", T_("You hear a distant slurping noise."));
             shown_msg = true;
         }
 
@@ -3543,8 +3545,10 @@ static void _jelly_grows(monster& mons)
 {
     if (player_can_hear(mons.pos()))
     {
-        mprf(MSGCH_SOUND, T_("You hear a%s slurping noise."),
-             you.see_cell(mons.pos()) ? "" : " distant");
+        if (you.see_cell(mons.pos()))
+            mprf(MSGCH_SOUND, "%s", T_("You hear a slurping noise."));
+        else
+            mprf(MSGCH_SOUND, "%s", T_("You hear a distant slurping noise."));
     }
 
     const int avg_hp = mons_avg_hp(mons.type);
