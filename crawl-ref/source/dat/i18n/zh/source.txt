@@ -36193,3 +36193,15 @@ Terminal colours: %d foreground, %d background\n\n
 through %s
 穿过%s
 %%%%%
+Brand which weapon?
+给哪件武器铭刻？
+%%%%%
+Enchant which weapon?
+给哪件武器附魔？
+%%%%%
+Enchant which item?
+给哪件物品附魔？
+%%%%%
+Identify which item? (\\ to view known items)
+鉴定哪件物品？（按 \\ 查看已知物品）
+%%%%%

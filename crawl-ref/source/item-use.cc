@@ -2262,8 +2262,8 @@ static item_def* _scroll_choose_weapon(bool alreadyknown, const string &pre_msg,
     const bool branding = scroll == SCR_BRAND_WEAPON;
 
     item_def* target = _choose_target_item_for_scroll(alreadyknown, _enchant_selector(scroll),
-                                                      branding ? "Brand which weapon?"
-                                                               : "Enchant which weapon?");
+                                                      branding ? T_("Brand which weapon?")
+                                                               : T_("Enchant which weapon?"));
     if (!target)
         return target;
 
@@ -2375,7 +2375,7 @@ static bool _identify(bool alreadyknown, const string &pre_msg)
     if (!itemp)
     {
         itemp = _choose_target_item_for_scroll(alreadyknown, OSEL_UNIDENT,
-            "Identify which item? (\\ to view known items)");
+            T_("Identify which item? (\\ to view known items)"));
     }
 
     if (!itemp)
@@ -2502,7 +2502,7 @@ static bool _handle_enchant_armour(bool alreadyknown, const string &pre_msg)
     if (!target)
     {
         target = _choose_target_item_for_scroll(alreadyknown,
-            OSEL_ENCHANTABLE_ARMOUR, "Enchant which item?");
+            OSEL_ENCHANTABLE_ARMOUR, T_("Enchant which item?"));
     }
 
     if (!target)
