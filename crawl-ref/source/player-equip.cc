@@ -2526,23 +2526,26 @@ static void _handle_regen_item_equip(const item_def& item)
     bool plural = (eq_slot == SLOT_BOOTS || eq_slot == SLOT_GLOVES);
     string item_name = is_artefact(item) ? get_artefact_name(item)
                                          : eq_slot == SLOT_AMULET
-                                         ? "amulet"
+                                         ? T_("amulet")
                                          : lowercase_string(equip_slot_name(eq_slot, true));
 
 #if TAG_MAJOR_VERSION == 34
     if (regen_hp && !regen_mp && you.get_mutation_level(MUT_NO_REGENERATION))
     {
-        mprf(T_("The %s feel%s cold and inert."), item_name.c_str(),
-             plural ? "" : "s");
+        if (plural)
+            mprf(T_("The %s feel cold and inert."), item_name.c_str());
+        else
+            mprf(T_("The %s feels cold and inert."), item_name.c_str());
         return;
     }
 #endif
     if (regen_mp && !regen_hp && !player_regenerates_mp()
         && !item.is_type(OBJ_JEWELLERY, AMU_CHEMISTRY))
     {
-        mprf(T_("The %s feel%s cold and inert."), item_name.c_str(),
-             plural ? "" : "s");
-
+        if (plural)
+            mprf(T_("The %s feel cold and inert."), item_name.c_str());
+        else
+            mprf(T_("The %s feels cold and inert."), item_name.c_str());
         return;
     }
 
@@ -2551,17 +2554,46 @@ static void _handle_regen_item_equip(const item_def& item)
 
     if (!low_mp && !low_hp)
     {
-        mprf(T_("The %s throb%s to your%s body."), item_name.c_str(),
-             plural ? " as they attune themselves" : "s as it attunes itself",
-             regen_hp ? " uninjured" : "");
+        if (regen_hp)
+        {
+            if (plural)
+                mprf(T_("The %s throb as they attune themselves to your"
+                        " uninjured body."), item_name.c_str());
+            else
+                mprf(T_("The %s throbs as it attunes itself to your"
+                        " uninjured body."), item_name.c_str());
+        }
+        else
+        {
+            if (plural)
+                mprf(T_("The %s throb as they attune themselves to your"
+                        " body."), item_name.c_str());
+            else
+                mprf(T_("The %s throbs as it attunes itself to your"
+                        " body."), item_name.c_str());
+        }
         you.equipment.get_entry_for(item).attuned = true;
         return;
     }
 
-    mprf(T_("The %s cannot attune %s to your%s body."), item_name.c_str(),
-         plural ? "themselves" : "itself", low_hp ? " injured" : " exhausted");
-
-    return;
+    if (low_hp)
+    {
+        if (plural)
+            mprf(T_("The %s cannot attune themselves to your injured"
+                    " body."), item_name.c_str());
+        else
+            mprf(T_("The %s cannot attune itself to your injured"
+                    " body."), item_name.c_str());
+    }
+    else
+    {
+        if (plural)
+            mprf(T_("The %s cannot attune themselves to your exhausted"
+                    " body."), item_name.c_str());
+        else
+            mprf(T_("The %s cannot attune itself to your exhausted"
+                    " body."), item_name.c_str());
+    }
 }
 
 bool acrobat_boost_active()

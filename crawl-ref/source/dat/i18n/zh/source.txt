@@ -6641,11 +6641,23 @@ The %s arcs out of your line of sight!
 The %s bounces off of thin air!
 %s从空气中弹开了！
 %%%%
-The %s cannot attune %s to your%s body.
-%s无法与你的%s身体%s调谐。
+The %s cannot attune itself to your exhausted body.
+%s无法与你力竭的身体调谐。
 %%%%
-The %s feel%s cold and inert.
-%s摸起来%s冰冷且迟钝。
+The %s cannot attune itself to your injured body.
+%s无法与你受伤的身体调谐。
+%%%%
+The %s cannot attune themselves to your exhausted body.
+%s无法与你力竭的身体调谐。
+%%%%
+The %s cannot attune themselves to your injured body.
+%s无法与你受伤的身体调谐。
+%%%%
+The %s feel cold and inert.
+%s摸起来冰冷且迟钝。
+%%%%
+The %s feels cold and inert.
+%s摸起来冰冷且迟钝。
 %%%%
 The %s grounds out.
 %s接地消失了。
@@ -6674,8 +6686,17 @@ The %s suddenly appears!
 
 # L899: simple
 %%%%
-The %s throb%s to your%s body.
-%s随着你的%s身体%s搏动。
+The %s throb as they attune themselves to your body.
+%s搏动着与你的身体完成调谐。
+%%%%
+The %s throb as they attune themselves to your uninjured body.
+%s搏动着与你的身体完成调谐。
+%%%%
+The %s throbs as it attunes itself to your body.
+%s搏动着与你的身体完成调谐。
+%%%%
+The %s throbs as it attunes itself to your uninjured body.
+%s搏动着与你的身体完成调谐。
 %%%%
 The %s%s flies open with a bang!
 %s%s砰地一声飞开了！
