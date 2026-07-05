@@ -13,6 +13,7 @@
 #include "religion.h"
 #include "stringutil.h"
 #include "view.h"
+#include "positional_format.h"
 
 static bool _blessing_balms(monster* mon)
 {
@@ -156,7 +157,7 @@ static void _display_god_blessing(monster* follower, god_type god,
     string whom = you.can_see(*follower) ? follower->name(DESC_THE)
     : "a follower";
 
-    simple_god_message(make_stringf(T_(" blesses %s with %s."),
+    simple_god_message(make_stringf_p(T_(" blesses %s with %s."),
                                     whom.c_str(), blessing.c_str()).c_str(),
                        god);
 }

@@ -2772,7 +2772,7 @@ void melee_attack::player_announce_aux_hit(unarmed_attack_type atk)
     // T_() fragment handles prefix language
     {
         string prefix = atk == UNAT_MEDUSA_STINGER ? T_("Your tendrils") : T_("You");
-        mprf(T_("%s %s %s%s%s"),
+        mprf_p(T_("%s %s %s%s%s"),
              prefix.c_str(),
              aux_verb.c_str(),
              defender->name(DESC_THE).c_str(),
@@ -3425,7 +3425,7 @@ string melee_attack::staff_message(stave_type staff, int dam) const
             defender->conj_verb(C_("verb", "are")).c_str(),
                             attack_strength_punctuation(dam).c_str());
     case STAFF_COLD:
-        return make_stringf(
+        return make_stringf_p(
                 T_("%s %s %s%s"),
                 attacker->name(DESC_THE).c_str(),
                 attacker->conj_verb(T_("freeze")).c_str(),
@@ -3439,14 +3439,14 @@ string melee_attack::staff_message(stave_type staff, int dam) const
                          attack_strength_punctuation(dam).c_str());;
 
     case STAFF_FIRE:
-        return make_stringf(
+        return make_stringf_p(
                     T_("%s %s %s%s"),
                     attacker->name(DESC_THE).c_str(),
                     attacker->conj_verb(T_("burn")).c_str(),
                     defender->name(DESC_THE).c_str(),
                     attack_strength_punctuation(dam).c_str());
     case STAFF_ALCHEMY:
-        return make_stringf(
+        return make_stringf_p(
                 T_("%s %s %s%s"),
                 attacker->name(DESC_THE).c_str(),
                 attacker->conj_verb(T_("envenom")).c_str(),
@@ -3462,7 +3462,7 @@ string melee_attack::staff_message(stave_type staff, int dam) const
                 attack_strength_punctuation(dam).c_str());
 
     case STAFF_CONJURATION:
-        return make_stringf(
+        return make_stringf_p(
                     T_("%s %s %s%s"),
                     attacker->name(DESC_THE).c_str(),
                     attacker->conj_verb(T_("blast")).c_str(),
@@ -3985,7 +3985,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message && base_damage)
         {
-            mprf(T_("%s %s %s%s"),
+            mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
                  attacker->conj_verb(T_("freeze")).c_str(),
                  defender_name(true).c_str(),
@@ -4006,7 +4006,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message && base_damage)
         {
-            mprf(T_("%s %s %s%s"),
+            mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
                  attacker->conj_verb(T_("shock")).c_str(),
                  defender_name(true).c_str(),
@@ -4209,7 +4209,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message && special_damage)
         {
-            mprf(T_("%s %s %s%s"),
+            mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
                  attacker->conj_verb(T_("sear")).c_str(),
                  defender_name(true).c_str(),
@@ -4227,7 +4227,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
         if (needs_message && special_damage)
         {
-            mprf(T_("%s %s %s%s"),
+            mprf_p(T_("%s %s %s%s"),
                  atk_name(DESC_THE).c_str(),
                  attacker->conj_verb(T_("sear")).c_str(),
                  defender_name(true).c_str(),
@@ -4368,7 +4368,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
 
             if (needs_message)
             {
-                mprf(T_("%s %s %s%s"),
+                mprf_p(T_("%s %s %s%s"),
                     atk_name(DESC_THE).c_str(),
                     attacker->conj_verb(T_("drown")).c_str(),
                     defender_name(true).c_str(),

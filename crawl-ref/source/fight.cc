@@ -58,6 +58,7 @@
 #include "traps.h"
 #include "travel.h"
 #include "database.h"
+#include "positional_format.h"
 
 /**
  * What are the odds of an HD-checking confusion effect (e.g. Confusing Touch,
@@ -1548,7 +1549,7 @@ bool stop_attack_prompt(targeter &hitfunc, const char* verb,
             mon_name = "yourself and " + mon_name;
     }
 
-    const string prompt = make_stringf(
+    const string prompt = make_stringf_p(
              T_("Really %s%s %s%s?%s"),
              verb,
              defender_ok ? (T_(" near")) : "",

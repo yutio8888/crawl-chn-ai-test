@@ -1321,7 +1321,7 @@ static bool _init_frag_monster(frag_effect &effect, const monster &mon)
         const monster_frag &frag = frag_f->second;
         effect.damage = frag.damage;
         const bool crystal = frag.damage == frag_damage_type::crystal;
-        effect.name = make_stringf(T_("blast of %s %s"), frag.type,
+        effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
                                    crystal ? T_("shards") : T_("fragments"));
         effect.colour = frag.colour;
         return true;
@@ -1409,7 +1409,7 @@ static bool _init_frag_grid(frag_effect &effect,
 
     effect.damage = frag.damage;
     const bool crystal = frag.damage == frag_damage_type::crystal;
-    effect.name = make_stringf(T_("blast of %s %s"), frag.type,
+    effect.name = make_stringf_p(T_("blast of %s %s"), frag.type,
                                crystal ? T_("shards") : T_("fragments"));
     if (what)
         *what = frag.what;
@@ -4143,7 +4143,7 @@ static string _get_jinxsprite_message(const monster& victim)
     {
         if (victim.inv[MSLOT_WEAPON] != NON_ITEM && coinflip())
         {
-            return make_stringf(T_("bonks %s with %s %s."),
+            return make_stringf_p(T_("bonks %s with %s %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 env.item[victim.inv[MSLOT_WEAPON]].name(DESC_PLAIN).c_str());
@@ -4164,13 +4164,13 @@ static string _get_jinxsprite_message(const monster& victim)
         switch (random2(2))
         {
             case 0:
-            return make_stringf(T_("makes %s trip over %s own %s."),
+            return make_stringf_p(T_("makes %s trip over %s own %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 victim.foot_name(true).c_str());
 
             case 1:
-            return make_stringf(T_("smacks %s with %s own %s."),
+            return make_stringf_p(T_("smacks %s with %s own %s."),
                                 victim.name(DESC_THE).c_str(),
                                 victim.pronoun(PRONOUN_POSSESSIVE).c_str(),
                                 victim.hand_name(false).c_str());

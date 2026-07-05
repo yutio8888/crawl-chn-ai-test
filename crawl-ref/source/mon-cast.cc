@@ -89,6 +89,7 @@
 #include "view.h"
 #include "viewchar.h"
 #include "xom.h"
+#include "positional_format.h"
 
 static bool _valid_mon_spells[NUM_SPELLS];
 
@@ -6077,7 +6078,7 @@ static void _mesmerise_los(monster& agent, int power, bool check_hearing)
                 if (mons->has_ench(ENCH_DAZED))
                     mprf(T_("%s trance deepens."), mons->name(DESC_ITS).c_str());
                 else
-                    mprf(T_("%s is mesmerised by %s!"), mons->name(DESC_THE).c_str(), agent.name(DESC_THE).c_str());
+                    mprf_p(T_("%s is mesmerised by %s!"), mons->name(DESC_THE).c_str(), agent.name(DESC_THE).c_str());
             }
 
             if (!mons->has_ench(ENCH_DAZED))
@@ -9344,7 +9345,7 @@ static void _throw_ally_to(const monster &thrower, monster &throwee,
 
     throwee.move_to(chosen_dest, MV_DEFAULT, true);
 
-    const string killed_by = make_stringf(T_("Hit by %s thrown by %s"),
+    const string killed_by = make_stringf_p(T_("Hit by %s thrown by %s"),
                                           throwee.name(DESC_A, true).c_str(),
                                           thrower.name(DESC_PLAIN, true).c_str());
     const int dam = foe->apply_ac(random2(thrower.get_hit_dice() * 2));
@@ -9394,7 +9395,7 @@ static void _oblivion_howl(monster &mon)
                             make_stringf(T_("but you%s"),
                                          you.resist_margin_phrase(willpower).c_str()) :
                             T_("and it begins to echo in your mind!");
-    mprf(T_("%s unleashes a %s howl, %s"),
+    mprf_p(T_("%s unleashes a %s howl, %s"),
          mon.name(DESC_THE).c_str(),
          silenced(mon.pos()) ? T_("silent") : T_("terrible"),
          effect.c_str());

@@ -56,6 +56,7 @@
 #include "syscalls.h"
 #include "unicode.h"
 #include "version.h"
+#include "positional_format.h"
 
 typedef deque<int> keybuf;
 typedef map<keyseq,keyseq> macromap;
@@ -1291,7 +1292,7 @@ public:
 
         void reset_key_prompt()
         {
-            prompt = make_stringf(T_("Current %s for %s: %s"),
+            prompt = make_stringf_p(T_("Current %s for %s: %s"),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str(),
                         _keyseq_action_desc(action).c_str());

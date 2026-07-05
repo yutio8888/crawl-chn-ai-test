@@ -50,6 +50,7 @@
 #include "tag-version.h"
 #include "transform.h"
 #include "xom.h"
+#include "positional_format.h"
 
 /*
  **************************************************
@@ -1406,7 +1407,7 @@ void attack::calc_elemental_brand_damage(beam_type flavour,
 
     if (needs_message && special_damage > 0 && verb)
     {
-        special_damage_message = make_stringf(
+        special_damage_message = make_stringf_p(
             T_("%s %s %s%s%s"),
             what ? what : atk_name(DESC_THE).c_str(),
             verb,

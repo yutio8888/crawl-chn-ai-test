@@ -744,7 +744,7 @@ static void _player_shoot(ranged_attack_beam &pbolt)
     }
 
     // Create message.
-    mprf(T_("You %s %s%s."),
+    mprf_p(T_("You %s %s%s."),
           is_thrown ? T_("throw") : T_("shoot"),
           pbolt.atk.projectile_name().c_str(),
           you.current_vision == 0 ? T_(" into the darkness") : "");

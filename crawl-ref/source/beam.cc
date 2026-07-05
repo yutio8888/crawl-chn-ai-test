@@ -6123,7 +6123,7 @@ bool enchant_monster_invisible(monster* mon, const string &how)
         // Can't use simple_monster_message(*) here, since it checks
         // for visibility of the monster (and it's now invisible).
         // - bwr
-        mprf(T_("%s %s%s"),
+        mprf_p(T_("%s %s%s"),
              monster_name.c_str(),
              how.c_str(),
              is_visible ? T_(" for a moment.")

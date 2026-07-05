@@ -54,6 +54,7 @@
 #include "ui.h"
 #include "viewchar.h"
 #include "view.h"
+#include "positional_format.h"
 
 
 typedef vector<string> (*keys_by_glyph)(char32_t showchar);
@@ -1312,7 +1313,7 @@ static string _branch_subbranches(branch_type br)
     // Lair's random branches are explained in the description.
     if (!subbranch_names.empty() && br != BRANCH_LAIR)
     {
-        desc += make_stringf(T_("\n\nThis branch contains the entrance%s to %s."),
+        desc += make_stringf_p(T_("\n\nThis branch contains the entrance%s to %s."),
                              subbranch_names.size() > 1 ? "s" : "",
                              comma_separated_line(begin(subbranch_names),
                                                   end(subbranch_names)).c_str());
@@ -1524,7 +1525,7 @@ static string _keylist_invalid_reason(const vector<string> &key_list,
     {
         if (by_symbol)
             return "No " + plur_type + " with symbol '" + regex + "'.";
-        return make_stringf(T_("No matching %s for search string '%s'."),
+        return make_stringf_p(T_("No matching %s for search string '%s'."),
             plur_type.c_str(), regex.c_str());
     }
 

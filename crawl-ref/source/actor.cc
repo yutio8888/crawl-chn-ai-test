@@ -777,7 +777,7 @@ void actor::constriction_damage_defender(actor &defender)
             break;
         }
 
-        mprf(T_("%s %s %s%s%s"), attacker_desc.c_str(),
+        mprf_p(T_("%s %s %s%s%s"), attacker_desc.c_str(),
              force_plural ? T_("constrict")
                           : conj_verb(T_("constrict")).c_str(),
              defender.name(DESC_THE).c_str(),

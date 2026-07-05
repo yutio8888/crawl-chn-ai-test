@@ -3117,7 +3117,7 @@ void level_change(bool skip_attribute_increase)
                         const int newapt = species_apt(sk, you.species);
                         if (oldapt != newapt)
                         {
-                            mprf(MSGCH_INTRINSIC_GAIN, T_("You learn %s %s%s."),
+                            mprf_p(MSGCH_INTRINSIC_GAIN, T_("You learn %s %s%s."),
                                  skill_name(sk),
                                  abs(oldapt - newapt) > 1 ? "much " : "",
                                  oldapt > newapt ? "slower" : "quicker");
