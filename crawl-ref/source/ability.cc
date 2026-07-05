@@ -903,7 +903,7 @@ string print_abilities()
     const vector<talent> talents = your_talents();
 
     if (talents.empty())
-        text += "no special abilities";
+        text += T_("no special abilities");
     else
     {
         for (unsigned int i = 0; i < talents.size(); ++i)
@@ -1095,87 +1095,87 @@ static const string _detailed_cost_description(ability_type ability)
     ostringstream ret;
 
     bool have_cost = false;
-    ret << "This ability costs: ";
+    ret << T_("This ability costs: ");
 
     if (abil.get_mp_cost())
     {
         have_cost = true;
-        ret << "\nMP     : ";
+        ret << "\n" << T_("MP     : ");
         ret << abil.get_mp_cost();
     }
     if (abil.get_hp_cost())
     {
         have_cost = true;
-        ret << "\nHP     : ";
+        ret << "\n" << T_("HP     : ");
         ret << abil.get_hp_cost();
     }
 
     if (abil.piety_cost)
     {
         have_cost = true;
-        ret << "\nPiety  : ";
+        ret << "\n" << T_("Piety  : ");
         ret << abil.piety_pips() << abil.piety_desc();
     }
 
     if (abil.flags & abflag::gold)
     {
         have_cost = true;
-        ret << "\nGold   : ";
+        ret << "\n" << T_("Gold   : ");
         int gold_amount = get_gold_cost(ability);
         if (gold_amount)
             ret << gold_amount;
         else if (ability == ABIL_GOZAG_POTION_PETITION)
-            ret << "free";
+            ret << T_("free");
         else
-            ret << "variable";
+            ret << T_("variable");
     }
 
     if (abil.flags & abflag::curse)
     {
         have_cost = true;
-        ret << "\nOne cursed item";
+        ret << "\n" << T_("One cursed item");
     }
 
     if (abil.flags & abflag::torchlight)
     {
         have_cost = true;
-        ret << "\nTorchlight";
+        ret << "\n" << T_("Torchlight");
     }
     if (!have_cost)
-        ret << "nothing.";
+        ret << T_("nothing.");
 
     if (abil.flags & abflag::breath)
-        ret << "\nYou must catch your breath between uses of this ability.";
+        ret << "\n" << T_("You must catch your breath between uses of this ability.");
 
     if (abil.flags & abflag::delay)
-        ret << "\nThis ability takes some time before being effective.";
+        ret << "\n" << T_("This ability takes some time before being effective.");
 
     if (abil.flags & abflag::injury)
-        ret << "\nUsing this ability will hurt you for a large fraction of your current HP.";
+        ret << "\n" << T_("Using this ability will hurt you for a large fraction of your current HP.");
 
     if (abil.flags & abflag::torment)
-        ret << "\nUsing this ability invokes torment.";
+        ret << "\n" << T_("Using this ability invokes torment.");
 
     if (abil.flags & abflag::exhaustion)
-        ret << "\nThis ability causes exhaustion, and cannot be used when exhausted.";
+        ret << "\n" << T_("This ability causes exhaustion, and cannot be used when exhausted.");
 
     if (abil.flags & abflag::instant)
-        ret << "\nThis ability is instantaneous.";
+        ret << "\n" << T_("This ability is instantaneous.");
 
     if (abil.flags & abflag::conf_ok)
-        ret << "\nYou can use this ability even if confused.";
+        ret << "\n" << T_("You can use this ability even if confused.");
 
     if (abil.flags & abflag::max_hp_drain
         && (ability != ABIL_EVOKE_TURN_INVISIBLE || _invis_causes_drain()))
     {
-        ret << "\nThis ability will temporarily drain your maximum health when used";
+        ret << "\n" << T_("This ability will temporarily drain your maximum health when used");
         if (ability == ABIL_EVOKE_TURN_INVISIBLE)
-            ret << ", even unsuccessfully";
-        ret << ".";
+            ret << T_(", even unsuccessfully");
+        ret << T_(".");
     }
 
     if (abil.flags & abflag::drac_charges)
-        ret << "\nGaining experience will replenish charges of this ability.";
+        ret << "\n" << T_("Gaining experience will replenish charges of this ability.");
 
 #if TAG_MAJOR_VERSION == 34
     if (abil.ability == ABIL_HEAL_WOUNDS)
@@ -1424,10 +1424,11 @@ static string _curse_desc()
     if (curses.empty())
         return "";
 
-    return "\nIf you bind an item with this curse Ashenzari will enhance "
-           "the following skills:\n"
+    return T_("\nIf you bind an item with this curse Ashenzari will enhance "
+              "the following skills:\n")
            + comma_separated_fn(curses.begin(), curses.end(), desc_curse_skills,
-                                ".\n", ".\n") + ".";
+                                T_(".\n"), T_(".\n")) + ".";
+
 }
 
 static string _desc_sac_mut(const CrawlStoreValue &mut_store)
@@ -1438,10 +1439,10 @@ static string _desc_sac_mut(const CrawlStoreValue &mut_store)
 static string _sacrifice_desc(const ability_type ability)
 {
     const string boilerplate =
-        "\nIf you make this sacrifice, your powers granted by Ru "
-        "will become stronger in proportion to the value of the "
-        "sacrifice, and you may gain new powers as well.\n\n"
-        "Sacrifices cannot be taken back.\n";
+        T_("\nIf you make this sacrifice, your powers granted by Ru "
+           "will become stronger in proportion to the value of the "
+           "sacrifice, and you may gain new powers as well.\n\n"
+           "Sacrifices cannot be taken back.\n");
     const string piety_info = ru_sacrifice_description(ability);
     const string desc = boilerplate + piety_info;
 
@@ -1454,10 +1455,10 @@ static string _sacrifice_desc(const ability_type ability)
 
     ASSERT(you.props.exists(sac_vec_key));
     const CrawlVector &sacrifice_muts = you.props[sac_vec_key].get_vector();
-    return "\nAfter this sacrifice, you will find that "
+    return T_("\nAfter this sacrifice, you will find that ")
             + comma_separated_fn(sacrifice_muts.begin(), sacrifice_muts.end(),
                                  _desc_sac_mut)
-            + ".\n" + desc;
+            + T_(".\n") + desc;
 }
 
 static string _nemelex_desc(ability_type ability)
@@ -1465,8 +1466,8 @@ static string _nemelex_desc(ability_type ability)
     ostringstream desc;
     deck_type deck = ability_deck(ability);
 
-    desc << "Draw a card from " << (deck == DECK_STACK ? "your " : "the ");
-    desc << deck_name(deck) << "; " << lowercase_first(deck_description(deck));
+    desc << T_("Draw a card from ") << (deck == DECK_STACK ? T_("your ") : T_("the "));
+    desc << deck_name(deck) << T_("; ") << lowercase_first(deck_description(deck));
 
     return desc.str();
 }
@@ -3819,8 +3820,8 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
     }
 
     case ABIL_LUGONU_BLESS_WEAPON:
-        simple_god_message(" will brand one of your weapons with the "
-                           "corruption of the Abyss.");
+        simple_god_message(T_(" will brand one of your weapons with the "
+                               "corruption of the Abyss."));
         // included in default force_more_message
         if (!bless_weapon(GOD_LUGONU, SPWPN_DISTORTION, MAGENTA))
             return spret::abort;
@@ -3906,7 +3907,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         fail_check();
         const item_def* const weapon = you.weapon();
         const string msg = weapon ? weapon->name(DESC_YOUR)
-                                  : ("your " + you.hand_name(true));
+                                  : (T_("your ") + you.hand_name(true));
         mprf(MSGCH_DURATION, T_("A thick mucus forms on %s."), msg.c_str());
         you.increase_duration(DUR_SLIMIFY,
                               random2avg(you.piety() / 4, 2) + 3, 100);

@@ -585,8 +585,8 @@ bool fill_status_info(int status, status_info& inf)
         string skills = manual_skill_names();
         if (!skills.empty())
         {
-            inf.short_text = "studying " + manual_skill_names(true);
-            inf.long_text = "You are studying " + skills + ".";
+            inf.short_text = T_("studying ") + manual_skill_names(true);
+            inf.long_text = T_("You are studying ") + skills + T_(".");
         }
         break;
     }
@@ -817,10 +817,10 @@ bool fill_status_info(int status, status_info& inf)
                                                                 places.end(),
                                                                 ", ", ", ")
                                                                 .c_str());
-            inf.long_text = "You are bribing "
+            inf.long_text = T_("You are bribing ")
                              + comma_separated_line(places.begin(),
                                                     places.end())
-                             + ".";
+                             + T_(".");
         }
         break;
     }
@@ -1017,9 +1017,9 @@ bool fill_status_info(int status, status_info& inf)
 
     case DUR_FORTRESS_BLAST_TIMER:
         inf.light_colour = WHITE;
-        inf.light_text = "Blast" + string(max(0, (40 - you.duration[DUR_FORTRESS_BLAST_TIMER]) / 10), '.');
-        inf.short_text = "fortress blast";
-        inf.long_text = "Preparing a Fortress Blast.";
+        inf.light_text = T_("Blast") + string(max(0, (40 - you.duration[DUR_FORTRESS_BLAST_TIMER]) / 10), '.');
+        inf.short_text = T_("fortress blast");
+        inf.long_text = T_("Preparing a Fortress Blast.");
         break;
 
     case DUR_TELEPORT:
@@ -1290,16 +1290,16 @@ static void _describe_poison(status_info& inf)
                                   : ((you.hp - max(0, poison_survival())) * 100 / you.hp);
     inf.light_colour = (player_res_poison(false) >= 3
                         ? DARKGREY : _bad_ench_colour(pois_perc, 35, 100));
-    inf.light_text   = "Pois";
+    inf.light_text   = T_("Pois");
     const bool zh = Options.language == lang_t::ZH;
     const string adj =
          (pois_perc >= 100) ? (T_("lethally")) :
          (pois_perc > 65)   ? (T_("seriously")) :
          (pois_perc > 35)   ? (T_("quite"))
                             : (T_("mildly"));
-    inf.short_text   = zh ? adj + "中毒" : adj + " poisoned";
+    inf.short_text   = zh ? adj + "中毒" : adj + T_(" poisoned");
     inf.short_text  += make_stringf(T_(" (%d -> %d)"), you.hp, poison_survival());
-    inf.long_text    = "You are " + inf.short_text + ".";
+    inf.long_text    = T_("You are ") + inf.short_text + T_(".");
 }
 
 static void _describe_speed(status_info& inf)
@@ -1401,9 +1401,9 @@ static void _describe_invisible(status_info& inf)
     if (you.backlit())
     {
         inf.light_colour = DARKGREY;
-        inf.short_text += " (but backlit and visible)";
+        inf.short_text += T_(" (but backlit and visible)");
     }
-    inf.long_text = "You are " + inf.short_text + ".";
+    inf.long_text = T_("You are ") + inf.short_text + T_(".");
     _mark_expiring(inf, dur_expiring(DUR_INVIS));
 }
 
@@ -1432,12 +1432,12 @@ static void _describe_channelled_spell(status_info& inf)
         // player's turn, which mostly happens in webtiles. Great!
         case SPELL_FLAME_WAVE:
             inf.light_colour = WHITE;
-            inf.light_text   = "Wave" + string(max(turns - 1, 0), '+');
+            inf.light_text   = T_("Wave") + string(max(turns - 1, 0), '+');
             break;
 
         case SPELL_SEARING_RAY:
             inf.light_colour = WHITE;
-            inf.light_text   = "Ray" + string(max(turns - 1, 0), '+');
+            inf.light_text   = T_("Ray") + string(max(turns - 1, 0), '+');
             break;
 
         case SPELL_MAXWELLS_COUPLING:
@@ -1447,7 +1447,7 @@ static void _describe_channelled_spell(status_info& inf)
 
         case SPELL_CLOCKWORK_BEE:
             inf.light_colour = CYAN;
-            inf.light_text = "Winding" + string(max(turns - 1, 0), '.');
+            inf.light_text = T_("Winding") + string(max(turns - 1, 0), '.');
             break;
 
         default:

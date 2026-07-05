@@ -1798,9 +1798,9 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
     if (count == 1)
     {
         if (!mi.is(MB_NAME_THE))
-            desc = (is_vowel(monpane_desc[0]) ? "an " : "a ") + desc;
+            desc = (is_vowel(monpane_desc[0]) ? T_("an ") : T_("a ")) + desc;
         else if (adj || !mi.is(MB_NAME_UNQUALIFIED))
-            desc = "the " + desc;
+            desc = T_("the ") + desc;
     }
 
     desc += monpane_desc;
@@ -1818,9 +1818,9 @@ string mpr_monster_list(bool past)
     string msg = "";
     if (mons.empty())
     {
-        msg  = "There ";
-        msg += (past ? "were" : "are");
-        msg += " no monsters in sight!";
+        msg  = T_("There ");
+        msg += (past ? T_("were") : T_("are"));
+        msg += T_(" no monsters in sight!");
 
         return msg;
     }
@@ -1841,8 +1841,8 @@ string mpr_monster_list(bool past)
     describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
 
     msg = T_("You ");
-    msg += (past ? "could" : "can");
-    msg += " see ";
+    msg += (past ? T_("could") : T_("can"));
+    msg += T_(" see ");
 
     if (describe.size() == 1)
         msg += describe[0];
@@ -2747,7 +2747,7 @@ static string _rampage_passive_string()
     const int rampage = you.rampaging();
     if (rampage)
     {
-        desc += you.has_mutation(MUT_ROLLPAGE) ? "roll" : "rampage";
+        desc += you.has_mutation(MUT_ROLLPAGE) ? T_("roll") : T_("rampage");
 
         const bool infinite = you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS);
         const char *inf = Options.char_set == CSET_ASCII ? "+inf"

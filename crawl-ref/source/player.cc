@@ -323,18 +323,18 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += "Are you sure you want to " + move_verb;
+        prompt += T_("Are you sure you want to ") + move_verb;
 
         if (!you.airborne())
-            prompt += " into ";
+            prompt += T_(" into ");
         else
-            prompt += " over ";
+            prompt += T_(" over ");
 
-        prompt += env.grid(p) == DNGN_DEEP_WATER ? "deep water" : "lava";
+        prompt += env.grid(p) == DNGN_DEEP_WATER ? T_("deep water") : T_("lava");
 
         prompt += need_expiration_warning(DUR_FLIGHT, p)
-            ? " while you are losing your buoyancy?"
-            : " while your transformation is expiring?";
+            ? T_(" while you are losing your buoyancy?")
+            : T_(" while your transformation is expiring?");
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -3166,8 +3166,8 @@ void level_change(bool skip_attribute_increase)
                             if (you.experience_level == level)
                             {
                                 mprf(MSGCH_MUTATION, T_("As your demonic ancestry asserts itself, you feel your body warp and mutate."));
-                                mark_milestone("monstrous", "discovered their "
-                                               "monstrous ancestry!");
+                                mark_milestone("monstrous", T_("discovered their "
+                                                      "monstrous ancestry!"));
                                 take_note(Note(NOTE_MESSAGE, 0, 0,
                                      "Discovered your monstrous ancestry."));
                             }
@@ -5271,9 +5271,11 @@ bool invis_allowed(bool quiet, string *fail_reason, bool temp)
             success = true;
         else
         {
-            msg = "Your " + comma_separated_line(sources.begin(), sources.end())
-                  + " glow" + (sources.size() == 1 ? "s" : "")
-                  + " too brightly for you to become invisible.";
+            msg = sources.size() == 1
+                  ? make_stringf(T_("Your %s glows too brightly for you to become invisible."),
+                                 comma_separated_line(sources.begin(), sources.end()).c_str())
+                  : make_stringf(T_("Your %s glow too brightly for you to become invisible."),
+                                 comma_separated_line(sources.begin(), sources.end()).c_str());
             success = false;
         }
     }
@@ -5758,7 +5760,7 @@ bool player_save_info::operator<(const player_save_info& rhs) const
 string player_save_info::really_short_desc() const
 {
     ostringstream desc;
-    desc << name << " the " << species_name << ' ' << class_name;
+    desc << name << T_(" the ") << species_name << ' ' << class_name;
 
     return desc.str();
 }
@@ -5778,9 +5780,9 @@ string player_save_info::short_desc(bool use_qualifier) const
                          species_name.c_str(), class_name.c_str());
 
     if (religion == GOD_JIYVA)
-        desc << " of " << god_name << " " << jiyva_second_name;
+        desc << T_(" of ") << god_name << " " << jiyva_second_name;
     else if (religion != GOD_NO_GOD)
-        desc << " of " << god_name;
+        desc << T_(" of ") << god_name;
 
 #ifdef WIZARD
     if (wizard)
@@ -7169,8 +7171,8 @@ string player::no_tele_reason(bool blinking, bool temp) const
             return "Long-range teleportation is disallowed in Dungeon Sprint.";
         else if (player_in_branch(BRANCH_GAUNTLET))
         {
-            return "A magic seal in the Gauntlet prevents long-range "
-                "teleports.";
+            return T_("A magic seal in the Gauntlet prevents long-range "
+                      "teleports.");
         }
     }
 
@@ -9197,7 +9199,7 @@ string player::hands_act(const string &plural_verb,
                          const string &object) const
 {
     const bool space = !object.empty() && !_is_end_punct(object[0]);
-    return "Your " + hands_verb(plural_verb) + (space ? " " : "") + object;
+    return T_("Your ") + hands_verb(plural_verb) + (space ? " " : "") + object;
 }
 
 int player::inaccuracy() const
