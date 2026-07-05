@@ -230,6 +230,9 @@ def parse_source_txt(filepath: str) -> OrderedDict:
         if key is None:
             # First non-empty, non-comment line is the key
             if stripped:
+                # Unescape \# → # (source.txt uses \# to prevent comment parsing)
+                if stripped.startswith('\\#'):
+                    stripped = '#' + stripped[2:]
                 # Key is stored lowercase (matching TextDB _parse_text_db behavior)
                 key = stripped.lower()
         else:

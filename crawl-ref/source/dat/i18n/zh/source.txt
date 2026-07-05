@@ -35716,3 +35716,480 @@ weapon of %s
 「我们记得……%s……」
 
 %%%%%
+ %d item%s
+%d件物品%s
+%%%%%
+ %s %d (%s)
+%s%d（%s）
+%%%%%
+ %s the %s.
+%s了%s。
+%%%%%
+ %s the shaft.
+%s了竖井。
+%%%%%
+ (%d intact)
+（%d枚完好）
+%%%%%
+ (%d-%d dam)
+（%d-%d伤害）
+%%%%%
+ (%sshapeshifter)
+（%s变形者）
+%%%%%
+ ([<w>-</w>] %s)
+（[<w>-</w>] %s）
+%%%%%
+ (and %zu other bad targets)
+（及%zu个其他不良目标）
+%%%%%
+ (max %d damage)
+（最高%d伤害）
+%%%%%
+ (max %d%s)
+（最高%d%s）
+%%%%%
+ (pow %d)
+（威力%d）
+%%%%%
+ + %d per 4 attacks
+每4次攻击+%d
+%%%%%
+ <lightgrey>(%s to cycle)</lightgrey>
+ <lightgrey>（按%s切换）</lightgrey>
+%%%%%
+ [<yellow>%c</yellow>] 
+[<yellow>%c</yellow>]
+%%%%%
+ [depth %d]
+[深度%d]
+%%%%%
+ assembles %s!
+组装了%s！
+%%%%%
+ discards %s horn.
+丢弃了%s的角。
+%%%%%
+ donates %s equipment to the cause.
+将%s装备捐献给了事业。
+%%%%%
+ manifests%s!
+显现%s！
+%%%%%
+ protects %s plant from harm.
+保护了%s的植物免受伤害。
+%%%%%
+ shudders as magic cascades through %s%s
+震颤着，魔力涌过%s%s
+%%%%%
+ warns you: %s is a foul%s shapeshifter.
+警告你：%s是邪恶%s的变形者。
+%%%%%
+%-14s Skill %4.1f Aptitude %c%d
+%-14s 技能 %4.1f 资质 %c%d
+%%%%%
+%8d %s the %s %s (level %d
+%8d %s，%s%s（等级%d
+%%%%%
+%8d %s the %s (level %d
+%8d %s，%s（等级%d
+%%%%%
+%d %sexclusion%s
+%d个%s排除区%s
+%%%%%
+%d (base %d)
+%d（基础%d）
+%%%%%
+%d creature%s vanquished.\n
+已消灭%d只生物%s。\n
+%%%%%
+%d doors close
+%d扇门关闭
+%%%%%
+%d doors open
+%d扇门打开
+%%%%%
+%d fountains blood
+%d座喷泉喷血
+%%%%%
+%d match%s
+%d个匹配项%s
+%%%%%
+%d skills
+%d项技能
+%%%%%
+%d snacks swapped
+%d份零食被调换
+%%%%%
+%d trees warped
+%d棵树被扭曲
+%%%%%
+%d%% <darkgrey>(%d%%)</darkgrey>
+%d%% <darkgrey>（%d%%）</darkgrey>
+%%%%%
+%d-stop teleportation journey%s
+%d站的传送之旅%s
+%%%%%
+%dd%d (primary target), %dd%d (explosion)
+%dd%d（主目标），%dd%d（爆炸）
+%%%%%
+%dd%d%s
+%dd%d%s
+%%%%%
+%dx %s%s
+%d倍%s%s
+%%%%%
+%s    (%s)    %d/%d spell slot%s
+%s    （%s）    %d/%d法术位%s
+%%%%%
+%s %s: %s
+%s %s：%s
+%%%%%
+%s (up to %d damage)
+%s（最高%d伤害）
+%%%%%
+%s ability
+%s能力
+%%%%%
+%s corrodes you!
+%s腐蚀了你！
+%%%%%
+%s dazzles you with the glint of coin.
+%s用金币的光芒炫惑了你。
+%%%%%
+%s door%s burst%s open
+%s%s扇门猛然打开%s
+%%%%%
+%s emits a blaring wail!
+%s发出了刺耳的哀嚎！
+%%%%%
+%s heals %s%s
+%s治愈了%s%s
+%%%%%
+%s might hit %s%s. %s
+%s可能击中%s%s。%s
+%%%%%
+%s monstatus
+%s怪物状态
+%%%%%
+%s other creatures
+%s个其他生物
+%%%%%
+%s pulls itself out of thin air.
+%s从空气中凝聚成形。
+%%%%%
+%s%s (%d gold)
+%s%s（%d金币）
+%%%%%
+%s%s door%s slam%s shut
+%s%s%s扇门猛然关闭%s
+%%%%%
+%s-v%d.%d.backup
+%s-v%d.%d.backup
+%%%%%
+%sing a weapon of distortion
+%s扭曲武器
+%%%%%
+%sway
+%s
+%%%%%
+'%s' badness %d outside 10-50 range.\n
+'%s'的恶劣度%d超出10-50范围。\n
+%%%%%
+'%s' is not bad, but has badness!\n
+'%s'并非恶劣事件，却设置了恶劣度！\n
+%%%%%
+(%+d apt)
+（%+d资质）
+%%%%%
+(%c)
+（%c）
+%%%%%
+(%d) %s
+（%d）%s
+%%%%%
+... %s %d gem%s
+……%s %d枚宝石%s
+%%%%%
+... %s %d rune%s
+……%s %d枚符文%s
+%%%%%
+... %s by %s
+……被%s%s
+%%%%%
+... wielding %s
+……手持%s
+%%%%%
+/usr/bin/open -R '%s'
+/usr/bin/open -R '%s'
+%%%%%
+<lightgray> (%s to select)</lightgray>
+<lightgray>（按%s选择）</lightgray>
+%%%%%
+<lightgray>Fire%s/use which item?</lightgray>
+<lightgray>发射%s/使用哪件物品？</lightgray>
+%%%%%
+<lightgrey>%s </lightgrey>
+<lightgrey>%s</lightgrey>
+%%%%%
+<red>%s</red>
+<red>%s</red>
+%%%%%
+<span class=\\\"fg%d bg%d\\\">
+<span class=\\\"fg%d bg%d\\\">
+%%%%%
+Began as a%s %s %s
+初始为一名%s%s%s
+%%%%%
+Crash caused by signal #%d: %s
+崩溃由信号#%d引起：%s
+%%%%%
+Duplicate name '%s'!\n
+重复名称'%s'！\n
+%%%%%
+Engulfed by %s%s %s
+被%s%s%s吞噬
+%%%%%
+Enter a skill target for %s: 
+为%s输入技能目标：
+%%%%%
+Enter for "%s"
+按回车搜索"%s"
+%%%%%
+Failed to create monster at (%d,%d) env.grid: %s
+在（%d,%d）处创建怪物失败，地形格：%s
+%%%%%
+File is corrupt (found version %d,%d).
+文件已损坏（发现版本%d,%d）。
+%%%%%
+Final score: %s (%d); %s (%d) [%d ties]
+最终得分：%s（%d）；%s（%d）[%d次平局]
+%%%%%
+It can be found on %s.\n\n
+可在%s找到。\n\n
+%%%%%
+Killed %s
+死于%s
+%%%%%
+Killed %s%s
+死于%s%s
+%%%%%
+Killed by their own %s
+被自身的%s所杀
+%%%%%
+Killed by triggering %s
+因触发%s而死亡
+%%%%%
+Missing version history before: %s
+缺少%s之前的版本历史
+%%%%%
+No action for '%s'!\n
+'%s'没有关联动作！\n
+%%%%%
+No longer under Kirke's spell, the %s %s %s!
+不再受喀耳刻的法术影响，%s%s%s！
+%%%%%
+No matching %s for search string '%s'.
+没有匹配搜索字符串'%2$s'的%1$s。
+%%%%%
+No random monsters for place '%s'
+没有可用于'%s'的随机怪物
+%%%%%
+No version history (current version is %s)
+无版本历史（当前版本为%s）
+%%%%%
+Non-targeted %s
+非瞄准%s
+%%%%%
+Really quiver %s?
+确定将%s设为箭袋物品？
+%%%%%
+Round %d of %d
+第%d回合，共%d回合
+%%%%%
+The Sanctuary denies your attempt to harm %s.
+圣域阻止了你伤害%s的企图。
+%%%%%
+The Sanctuary protects %s from harm.
+圣域保护了%s免受伤害。
+%%%%%
+The game lasted %s (%d turns).
+游戏持续了%s（%d回合）。
+%%%%%
+Unable to get '%s' by name
+无法按名称获取'%s'
+%%%%%
+Unable to get item '%s' by name
+无法按名称获取物品'%s'
+%%%%%
+Unknown OpenGL error %d
+未知的OpenGL错误%d
+%%%%%
+Upgraded the game from %s to %s
+游戏已从%s升级到%s
+%%%%%
+Warning, next level annotated: <yellow>%s</yellow>
+警告，下一层标注为：<yellow>%s</yellow>
+%%%%%
+Was %s of %s%s
+曾是%s%s之%s
+%%%%%
+Was a %sPlaything of Xom.
+曾是Xom的%s玩物。
+%%%%%
+Xom event %d has no associated data!\n
+Xom事件%d没有关联数据！\n
+%%%%%
+You cannot charge away from %s!
+你无法从%s处冲锋离开！
+%%%%%
+You cannot charge closer to %s!
+你无法向%s冲锋靠近！
+%%%%%
+You have just %d turns in %s to find a new floor before Zot consumes you.
+你只有%d回合在%s中找到新楼层，否则Zot将吞噬你。
+%%%%%
+[<w>%s</w>|<w>Space</w>]
+[<w>%s</w>|<w>空格</w>]
+%%%%%
+\n    (%d xp, %d skp)
+\n    （%d经验，%d技能点）
+%%%%%
+\n%s creates living %s spells.\n
+\n%s创造活体%s法术。\n
+%%%%%
+\n(Cancelled after %d trial%s)
+\n（在%d次试验%s后取消）
+%%%%%
+\nBest Crawlers - %s\n
+\n最佳爬行者 - %s\n
+%%%%%
+\nYou can find your morgue file in the '%s' directory.
+\n你可以在'%s'目录中找到你的停尸文件。
+%%%%%
+\nYou can find your morgue file in the \n'%s'\n directory.
+\n你可以在\n'%s'\n目录中找到你的停尸文件。
+%%%%%
+\nYou cannot cast this spell because %s\n
+\n你无法施放此法术，因为%s\n
+%%%%%
+\nYou cannot memorise this spell because %s\n
+\n你无法记忆此法术，因为%s\n
+%%%%%
+\n\nThis %s is %d levels deep.
+\n\n此%s有%d层深。
+%%%%%
+\n\nThis branch contains the entrance%s to %s.
+\n\n此分支包含通往%2$s的入口%1$s。
+%%%%%
+between levels %d and %d of 
+在第%d层到第%d层之间的
+%%%%%
+buffed friendly %s %d %s
+强化了友方%s %d %s
+%%%%%
+by %.1f.
+%.1f。
+%%%%%
+chance to %s on hit: %d%%
+命中时%s的几率：%d%%
+%%%%%
+charmed %d monster%s
+魅惑了%d只怪物%s
+%%%%%
+drained mp
+吸取了魔法
+%%%%%
+drained mp, created monsters
+吸取了魔法，创造了怪物
+%%%%%
+enchant monster%s (%s, %s)
+附魔怪物%s（%s，%s）
+%%%%%
+has its spells empowered, 
+法术被强化，
+%%%%%
+illegal inventory cmd '%d'
+非法的物品栏命令'%d'
+%%%%%
+left a ziggurat at level %d.
+在第%d层离开了通灵塔。
+%%%%%
+looks %s, 
+看起来%s，
+%%%%%
+lost the %s gem!
+丢失了%s宝石！
+%%%%%
+made %s speak a word of recall
+让%s念出了召回之词
+%%%%%
+mapping estimate: %d%%\nexploration estimate: %d%%\n
+地图估算：%d%%\n探索估算：%d%%\n
+%%%%%
+on level %d of 
+在第%d层的
+%%%%%
+shafted_in_%s
+shafted_in_%s
+%%%%%
+starts %s, 
+开始%s，
+%%%%%
+summoned %d hostile %s + %d friendly %s
+召唤了%d只敌对%s，%d只友方%s
+%%%%%
+summons %d hostile %s%s
+召唤了%d只敌对%s%s
+%%%%%
+summons %d living force lance%s
+召唤了%d根活体力量长枪%s
+%%%%%
+the %s of %s
+%2$s之%1$s
+%%%%%
+torment%s(%d/%d hp)
+折磨%s（%d/%d生命）
+%%%%%
+you can't charge at %s because %s
+你无法冲向%s，因为%s
+%%%%%
+ <lightgrey>(%s)</lightgrey>
+ <lightgrey>（%s）</lightgrey>
+%%%%%
+<w>%s</w>\nInput (raw) new %s for %s: 
+<w>%s</w>\n输入新的（原始）%s，按键%s：
+%%%%%
+<w>%s</w>\nInput new %s for %s:
+<w>%s</w>\n输入新的%s，按键%s：
+%%%%%
+</bg:%s>\n
+</bg:%s>\n
+%%%%%
+Terminal type (`TERM`): <w>%s</w>\n
+终端类型（`TERM`）：<w>%s</w>\n
+%%%%%
+Terminal colours: %d foreground, %d background\n\n
+终端颜色：%d前景色，%d背景色\n\n
+%%%%%
+%s by 
+%s，来自
+%%%%%
+%d %s
+%d个%s
+%%%%%
+ is %s!
+%s！
+%%%%%
+<span class=\\"fg%d bg%d\\">
+<span class=\\"fg%d bg%d\\">
+%%%%%
+%s spell
+%s法术
+%%%%%
+%s card
+%s卡牌
+%%%%%
+through %s
+穿过%s
+%%%%%
