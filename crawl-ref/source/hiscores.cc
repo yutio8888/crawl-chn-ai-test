@@ -2044,12 +2044,12 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     // Please excuse the following bit of mess in the name of flavour ;)
     if (verbose)
     {
-        desc = make_stringf("%8d %s the %s (level %d",
+        desc = make_stringf(T_("%8d %s the %s (level %d"),
                   points, name.c_str(), title.c_str(), lvl);
     }
     else
     {
-        desc = make_stringf("%8d %s the %s %s (level %d",
+        desc = make_stringf(T_("%8d %s the %s %s (level %d"),
                   points, name.c_str(),
                   _species_name(race).c_str(),
                   _job_name(job), lvl);

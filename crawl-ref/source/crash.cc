@@ -290,7 +290,7 @@ string crash_signal_info()
 
     if (name == nullptr)
         name = "INVALID";
-    return make_stringf("Crash caused by signal #%d: %s", _crash_signal, name);
+    return make_stringf(T_("Crash caused by signal #%d: %s"), _crash_signal, name);
 #else
     return "";
 #endif

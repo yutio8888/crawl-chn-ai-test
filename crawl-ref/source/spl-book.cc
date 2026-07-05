@@ -842,7 +842,7 @@ private:
             {
                 const int enkindled_fail = failure_rate_to_int(raw_spell_fail(spell.spell, true));
 
-                const string fail_string = make_stringf("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>",
+                const string fail_string = make_stringf(T_("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>"),
                                                             colour_to_str(spell.fail_rate_colour).c_str(),
                                                             failure_rate_to_int(spell.raw_fail),
                                                             colour_to_str(spell.fail_rate_colour).c_str(),

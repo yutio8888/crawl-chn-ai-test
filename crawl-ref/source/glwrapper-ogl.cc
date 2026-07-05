@@ -74,7 +74,7 @@ namespace opengl
         case GL_STACK_OVERFLOW:
             return "GL_STACK_OVERFLOW";
         default:
-            return make_stringf("Unknown OpenGL error %d", e);
+            return make_stringf(T_("Unknown OpenGL error %d"), e);
         }
     }
 

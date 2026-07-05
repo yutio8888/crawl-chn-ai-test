@@ -719,7 +719,7 @@ void SkillMenuSwitch::update()
 
     const vector<int> hotkeys = get_hotkeys();
     ASSERT(hotkeys.size());
-    string text = make_stringf(" [<yellow>%c</yellow>] ", hotkeys[0]);
+    string text = make_stringf(T_(" [<yellow>%c</yellow>] "), hotkeys[0]);
     for (auto it = m_states.begin(); it != m_states.end(); ++it)
     {
         if (it != m_states.begin())

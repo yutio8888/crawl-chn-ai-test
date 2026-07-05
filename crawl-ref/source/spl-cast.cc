@@ -311,7 +311,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE);
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE_REVERSE);
 
-    string more_str = make_stringf("<lightgrey>%s</lightgrey>",
+    string more_str = make_stringf(T_("<lightgrey>%s</lightgrey>"),
         make_stringf(T_("Select a spell to %s"), real_action.c_str()).c_str());
     string help_desc = make_stringf("   [<w>?</w>] %s    ",
                                     T_("help"));
@@ -2249,7 +2249,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
                     spell_title_color, spell_title(spell), spell_title_color);
         if (actual_spell)
         {
-            title += make_stringf(" <lightgrey>(%s)</lightgrey>",
+            title += make_stringf(T_(" <lightgrey>(%s)</lightgrey>"),
                 _spell_failure_rate_description(spell).c_str());
         }
 
@@ -3060,12 +3060,12 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 
     if (enkindled)
     {
-        return make_stringf("<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>",
+        return make_stringf(T_("<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>"),
                                 colour.c_str(), enkindled_fail, colour.c_str());
     }
     else
     {
-        return make_stringf("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>",
+        return make_stringf(T_("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>"),
             colour.c_str(), normal_fail, colour.c_str(), enkindled_fail);
     }
 }
@@ -3213,7 +3213,7 @@ string spell_max_damage_string(spell_type spell)
         // Fortress Blast's damage scales with AC, not spellpower, and thus
         // exceeds the normal spellpower cap.
         dice_def dmg = zap_damage(ZAP_FORTRESS_BLAST, 200, false);
-        return make_stringf("%dd%d", dmg.num, dmg.size);
+        return make_stringf(T_("%dd%d"), dmg.num, dmg.size);
     }
     default:
         break;
@@ -3240,7 +3240,7 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
         case SPELL_DISCHARGE:
         {
             const int max = discharge_max_damage(pow);
-            return make_stringf("%d-%d/arc", FLAT_DISCHARGE_ARC_DAMAGE, max);
+            return make_stringf(T_("%d-%d/arc"), FLAT_DISCHARGE_ARC_DAMAGE, max);
         }
         case SPELL_AIRSTRIKE:
             return describe_player_airstrike_dam(base_airstrike_damage(pow));
@@ -3259,7 +3259,7 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             dice_def shot_dam = hoarfrost_cannonade_damage(pow, false);
             dice_def finale_dam = hoarfrost_cannonade_damage(pow, true);
 
-            return make_stringf("%dd%d/%dd%d",
+            return make_stringf(T_("%dd%d/%dd%d"),
                 shot_dam.num, shot_dam.size, finale_dam.num, finale_dam.size);
         }
         case SPELL_RENDING_BLADE:
@@ -3268,9 +3268,9 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             dice_def dmg = rending_blade_damage(pow, false);
             const int bonus = dmg_mp.size - dmg.size;
             if (bonus > 0)
-                return make_stringf("%dd(%d+%d*)", dmg.num, dmg.size, bonus);
+                return make_stringf(T_("%dd(%d+%d*)"), dmg.num, dmg.size, bonus);
             else
-                return make_stringf("%dd%d", dmg.num, dmg.size);
+                return make_stringf(T_("%dd%d"), dmg.num, dmg.size);
         }
         default:
             break;
@@ -3290,11 +3290,11 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             mult = "3x";
             break;
         case SPELL_TREMORSTONE:
-            mult = make_stringf("%dx", tremorstone_count(pow));
+            mult = make_stringf(T_("%dx"), tremorstone_count(pow));
         default:
             break;
     }
-    const string dam_str = make_stringf("%s%dd%d", mult.c_str(), dam.num,
+    const string dam_str = make_stringf(T_("%s%dd%d"), mult.c_str(), dam.num,
             dam.size);
 
     if (spell == SPELL_ISKENDERUNS_MYSTIC_BLAST)

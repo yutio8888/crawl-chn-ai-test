@@ -59,7 +59,7 @@ string userdef_annotate_item(const char *s, const item_def *item)
     lua_stack_cleaner cleaner(clua);
     clua_push_item(clua, const_cast<item_def*>(item));
     if (!clua.callfn(s, 1, 1) && !clua.error.empty())
-        ui::error(make_stringf("Lua error: %s", clua.error.c_str()));
+        ui::error(make_stringf(T_("Lua error: %s"), clua.error.c_str()));
     string ann;
     if (lua_isstring(clua, -1))
         ann = luaL_checkstring(clua, -1);
@@ -1574,7 +1574,7 @@ formatted_string StashSearchMenu::calc_title()
     string prefixes[] = {
         make_stringf(T_("%d match%s"),
             num_alt_matches, num_alt_matches == 1 ? "" : "es"),
-        make_stringf("%d match%s",
+        make_stringf(T_("%d match%s"),
             num_matches, num_matches == 1 ? "" : "es"),
     };
     const bool f = num_matches != num_alt_matches;

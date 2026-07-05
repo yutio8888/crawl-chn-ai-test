@@ -915,7 +915,7 @@ bool is_valid_shaft_level(bool respect_brflags)
 
 static bool& _shafted_in(const Branch &branch)
 {
-    return you.props[make_stringf("shafted_in_%s", branch.abbrevname)].get_bool();
+    return you.props[make_stringf(T_("shafted_in_%s"), branch.abbrevname)].get_bool();
 }
 
 /// Mark the player as having been shafted in the current branch.

@@ -214,7 +214,7 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
 
         if (enter_defaults)
         {
-            pop.set_more(make_stringf("<white>[enter]</white>: %s",
+            pop.set_more(make_stringf(T_("<white>[enter]</white>: %s"),
                 default_answer == 'Y' ? yes_str
                 : default_answer == 'N' ? no_str
                 : (ask_always && default_answer == 'A') ? always_str

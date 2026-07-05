@@ -670,7 +670,7 @@ static int _color_name_width(int c)
 static string _palette_with_bg(int bg)
 {
     const string bg_name = colour_to_str(bg);
-    string s = make_stringf("<bg:%s>", bg_name.c_str());
+    string s = make_stringf(T_("<bg:%s>"), bg_name.c_str());
     // always show 16 foreground colors even with compat options on -- they may
     // still be distinguished with bold.
     for (int fg = 0; fg < NUM_TERM_COLOURS; fg++)
@@ -683,7 +683,7 @@ static string _palette_with_bg(int bg)
                     fg_name.c_str(),
                     fg == 7 ? "\n" : "");
     }
-    s += make_stringf("</bg:%s>\n", bg_name.c_str());
+    s += make_stringf(T_("</bg:%s>\n"), bg_name.c_str());
     return s;
 }
 

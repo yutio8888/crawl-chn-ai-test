@@ -243,7 +243,7 @@ struct message_line
         {
             if (!text.empty())
             {
-                text += make_stringf("<lightgrey>%s </lightgrey>",
+                text += make_stringf(T_("<lightgrey>%s </lightgrey>"),
                                      needs_semicolon ? ";" : "");
             }
             text += msg.with_repeats();

@@ -69,7 +69,7 @@ static string _annotation_exclusion_warning(level_id next_level_id)
         && is_connected_branch(next_level_id))
     {
         crawl_state.level_annotation_shown = true;
-        return make_stringf("Warning, next level annotated: <yellow>%s</yellow>",
+        return make_stringf(T_("Warning, next level annotated: <yellow>%s</yellow>"),
                             get_level_annotation(next_level_id).c_str());
     }
 
@@ -285,7 +285,7 @@ void leaving_level_now(dungeon_feature_type stair_used)
     {
         if (you.depth == 27)
             _complete_zig();
-        mark_milestone("zig.exit", make_stringf("left a ziggurat at level %d.",
+        mark_milestone("zig.exit", make_stringf(T_("left a ziggurat at level %d."),
                        you.depth));
     }
 

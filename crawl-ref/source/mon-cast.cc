@@ -6780,7 +6780,7 @@ static bool _spell_charged(monster *mons)
         if (!you.can_see(*mons))
             return false;
         string msg =
-            getSpeakString(make_stringf("%s charge",
+            getSpeakString(make_stringf(T_("%s charge"),
                                         mons->name(DESC_PLAIN, true).c_str())
                            .c_str());
         if (!msg.empty())
@@ -8787,7 +8787,7 @@ static void _speech_keys(vector<string>& key_list,
 
     if (wizard)
     {
-        key_list.push_back(make_stringf("%s %swizard%s",
+        key_list.push_back(make_stringf(T_("%s %swizard%s"),
                                spell_name.c_str(),
                                mon_shape_is_humanoid(shape) ? ""
                                                             : "non-humanoid ",
@@ -8832,7 +8832,7 @@ static void _speech_keys(vector<string>& key_list,
     // Last, generic wizard, priest or magical.
     if (wizard)
     {
-        key_list.push_back(make_stringf("%swizard%s",
+        key_list.push_back(make_stringf(T_("%swizard%s"),
                                mon_shape_is_humanoid(shape) ? ""
                                                             : "non-humanoid ",
                                cast_str.c_str()));

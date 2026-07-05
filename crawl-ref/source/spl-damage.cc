@@ -1025,7 +1025,7 @@ dice_def base_airstrike_damage(int pow, bool random)
 
 string describe_player_airstrike_dam(dice_def dice)
 {
-    return make_stringf("%dd(%d-%d)", dice.num, dice.size,
+    return make_stringf(T_("%dd(%d-%d)"), dice.num, dice.size,
                         dice.size + MAX_AIRSTRIKE_BONUS);
 }
 

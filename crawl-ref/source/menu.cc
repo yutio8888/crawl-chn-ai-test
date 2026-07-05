@@ -1379,7 +1379,7 @@ string menu_keyhelp_cmd(command_type cmd)
     else if (cmd == CMD_MENU_TOGGLE_SELECTED)
     {
         // TODO: fix once space is not hardcoded
-        return make_stringf("[<w>%s</w>|<w>Space</w>]", _command_to_string(cmd).c_str());
+        return make_stringf(T_("[<w>%s</w>|<w>Space</w>]"), _command_to_string(cmd).c_str());
     }
     else
         return _keyhelp_format_key(_command_to_string(cmd));

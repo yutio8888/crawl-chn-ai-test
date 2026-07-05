@@ -450,7 +450,7 @@ bool swap_check(monster* mons, coord_def &loc, bool quiet)
         if (!quiet)
         {
             simple_monster_message(*mons,
-                make_stringf(" is %s!", held_status(mons)).c_str());
+                make_stringf(T_(" is %s!"), held_status(mons)).c_str());
         }
         return false;
     }
@@ -4354,7 +4354,7 @@ string describe_contamination(bool verbose)
 
     const int dmg = contam_max_damage();
     if (dmg > 0)
-        msg = make_stringf("%s (up to %d damage)", msg.c_str(), dmg);
+        msg = make_stringf(T_("%s (up to %d damage)"), msg.c_str(), dmg);
 
     return msg;
 }

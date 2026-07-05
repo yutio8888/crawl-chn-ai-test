@@ -2261,7 +2261,7 @@ static void _xom_place_decor()
     {
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1,
                        "scenery: changed the scenery"), true);
-        const string key = make_stringf("scenery %s", dungeon_feature_name(decor));
+        const string key = make_stringf(T_("scenery %s"), dungeon_feature_name(decor));
         god_speaks(GOD_XOM, _get_xom_speech(key).c_str());
     }
 }
@@ -5551,12 +5551,12 @@ void validate_xom_events()
         const xom_event *event = map_find(xom_events, event_type);
         if (!event)
         {
-            fails += make_stringf("Xom event %d has no associated data!\n", i);
+            fails += make_stringf(T_("Xom event %d has no associated data!\n"), i);
             continue;
         }
 
         if (action_names.count(event->name))
-            fails += make_stringf("Duplicate name '%s'!\n", event->name);
+            fails += make_stringf(T_("Duplicate name '%s'!\n"), event->name);
         action_names.insert(event->name);
 
         if (_action_is_bad(event_type))
@@ -5564,18 +5564,18 @@ void validate_xom_events()
             if ((event->badness_10x < 10 || event->badness_10x > 50)
                 && event->badness_10x != -1) // implies it's special-cased
             {
-                fails += make_stringf("'%s' badness %d outside 10-50 range.\n",
+                fails += make_stringf(T_("'%s' badness %d outside 10-50 range.\n"),
                                       event->name, event->badness_10x);
             }
         }
         else if (event->badness_10x)
         {
-            fails += make_stringf("'%s' is not bad, but has badness!\n",
+            fails += make_stringf(T_("'%s' is not bad, but has badness!\n"),
                                   event->name);
         }
 
         if (event_type != XOM_DID_NOTHING && !event->action)
-            fails += make_stringf("No action for '%s'!\n", event->name);
+            fails += make_stringf(T_("No action for '%s'!\n"), event->name);
     }
 
     dump_test_fails(fails, "xom-data");
@@ -5603,7 +5603,7 @@ static string _list_exploration_estimate()
     mapped /= 10;
     explored /= 10;
 
-    return make_stringf("mapping estimate: %d%%\nexploration estimate: %d%%\n",
+    return make_stringf(T_("mapping estimate: %d%%\nexploration estimate: %d%%\n"),
                         mapped, explored);
 }
 

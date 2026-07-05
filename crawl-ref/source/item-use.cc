@@ -619,7 +619,7 @@ void UseItemMenu::update_sections()
     for (; i < static_cast<int>(items.size()); i++)
         if (items[i]->level == MEL_ITEM)
             items[i]->set_enabled(!is_inventory);
-    const string cycle_hint = make_stringf("<lightgray> (%s to select)</lightgray>",
+    const string cycle_hint = make_stringf(T_("<lightgray> (%s to select)</lightgray>"),
             menu_keyhelp_cmd(CMD_MENU_CYCLE_HEADERS).c_str());
 
     // a `,` will trigger quick activation, rather than cycle headers

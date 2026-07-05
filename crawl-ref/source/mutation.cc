@@ -1013,7 +1013,7 @@ static bool _has_transient_muts()
 
 static bool _fakemut_has_description(string fakemut_name)
 {
-    const string key = make_stringf("%s mutation", fakemut_name.c_str());
+    const string key = make_stringf(T_("%s mutation"), fakemut_name.c_str());
     string lookup = getLongDescription(key);
 
     return !lookup.empty();
@@ -1127,7 +1127,7 @@ private:
                     chop_string(mut_desc, crawl_view.termsz.x - 15, false);
 #endif
 
-                    const string desc = make_stringf("<darkgrey>[%s]</darkgrey> XL %d",
+                    const string desc = make_stringf(T_("<darkgrey>[%s]</darkgrey> XL %d"),
                                                         mut_desc.c_str(),
                                                         mut.xp_level);
                     MenuEntry* me = new MenuEntry(desc, MEL_ITEM, MUT_ENTRY_MUTATION, hotkey);
@@ -1143,7 +1143,7 @@ private:
 
         for (bane_type &bane : banes)
         {
-            const string desc = make_stringf("<lightmagenta>%s [%.1f]</lightmagenta>",
+            const string desc = make_stringf(T_("<lightmagenta>%s [%.1f]</lightmagenta>"),
                 bane_desc(bane).c_str(), (float)xl_to_remove_bane(bane) / 10.0f);
 
             MenuEntry* me = new MenuEntry(desc, MEL_ITEM, MUT_ENTRY_BANE, hotkey);
@@ -1196,7 +1196,7 @@ private:
                 describe_info inf;
                 inf.title = uppercase_first(*mut).c_str();
 
-                const string key = make_stringf("%s mutation", mut->c_str());
+                const string key = make_stringf(T_("%s mutation"), mut->c_str());
                 string lookup = getLongDescription(key);
                 hint_replace_cmds(lookup);
                 inf.body << lookup;
@@ -1525,7 +1525,7 @@ static bool _ashenzari_blocks(mutation_type mutat)
     if (!cursed_item)
         return false;
 
-    const string msg = make_stringf(" prevents a mutation which would have shattered %s.",
+    const string msg = make_stringf(T_(" prevents a mutation which would have shattered %s."),
                                     cursed_item->name(DESC_YOUR).c_str());
     simple_god_message(msg.c_str());
     return true;
@@ -2448,7 +2448,7 @@ bool delete_temp_mutation()
 string get_mutation_desc(mutation_type mut)
 {
     const char* const name = mutation_name(mut);
-    const string key = make_stringf("%s mutation", name);
+    const string key = make_stringf(T_("%s mutation"), name);
     string lookup = getLongDescription(key);
     hint_replace_cmds(lookup);
 
@@ -3369,7 +3369,7 @@ const string bane_name(bane_type bane, bool dbkey)
         return lowercase(short_name);
     }
     else
-        return make_stringf("Bane of %s", short_name.c_str());
+        return make_stringf(T_("Bane of %s"), short_name.c_str());
 }
 
 int bane_base_duration(bane_type bane)
@@ -3382,7 +3382,7 @@ const string bane_desc(bane_type bane)
     if (bane == BANE_DILETTANTE && you.banes[bane])
     {
         CrawlVector& vec = you.props[DILETTANTE_SKILL_KEY].get_vector();
-        return make_stringf("Your skill with %s, %s, and %s is reduced.",
+        return make_stringf(T_("Your skill with %s, %s, and %s is reduced."),
                     skill_name(static_cast<skill_type>(vec[0].get_int())),
                     skill_name(static_cast<skill_type>(vec[1].get_int())),
                     skill_name(static_cast<skill_type>(vec[2].get_int())));

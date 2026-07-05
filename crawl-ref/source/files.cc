@@ -2834,7 +2834,7 @@ static string _old_bones_filename(string ghost_filename, const save_version &v)
     if (ends_with(ghost_filename, ".backup"))
         return ghost_filename; // already an old bones file
 
-    string new_filename = make_stringf("%s-v%d.%d.backup", ghost_filename.c_str(),
+    string new_filename = make_stringf(T_("%s-v%d.%d.backup"), ghost_filename.c_str(),
                                         v.major, v.minor);
     return new_filename;
 }

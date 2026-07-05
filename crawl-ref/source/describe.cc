@@ -2416,7 +2416,7 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
         description += make_stringf_p(T_("\n\nYour current strength and Armour skill "
                        "slows attacks with missile weapons (like %s) "), you.weapon()->name(DESC_YOUR));
         if (aevp >= DELAY_SCALE)
-            description += make_stringf("by %.1f.", aevp / (10.0f * DELAY_SCALE));
+            description += make_stringf(T_("by %.1f."), aevp / (10.0f * DELAY_SCALE));
         else
             description += T_("only slightly.");
     }
@@ -3964,7 +3964,7 @@ static bool _do_action(item_def &item, const command_type action)
         evoke_item(you.inv[slot]);
         break;
     default:
-        ui::error(make_stringf("illegal inventory cmd '%d'", action));
+        ui::error(make_stringf(T_("illegal inventory cmd '%d'"), action));
     }
     return false;
 }
@@ -4267,7 +4267,7 @@ static string _player_spell_stats(const spell_type spell)
     else if (spell_can_be_enkindled(spell) && you.has_mutation(MUT_MNEMOPHAGE)
              && !you.duration[DUR_ENKINDLED])
     {
-        failure = make_stringf("%d%% <darkgrey>(%d%%)</darkgrey>",
+        failure = make_stringf(T_("%d%% <darkgrey>(%d%%)</darkgrey>"),
                                     failure_rate_to_int(raw_spell_fail(spell)),
                                     failure_rate_to_int(raw_spell_fail(spell, true)));
     }
@@ -5435,7 +5435,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
                                     weapon_descriptor.c_str());
     if (attk_mult > 1)
     {
-        attk_desc = make_stringf("%dx %s%s", attk_mult, attk_name.c_str(),
+        attk_desc = make_stringf(T_("%dx %s%s"), attk_mult, attk_name.c_str(),
                                     weapon_descriptor.c_str());
     }
     di.attack_descriptions.emplace_back(attk_desc);
@@ -5489,7 +5489,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
 
     string dam_str;
     if (dam != real_dam)
-        dam_str = make_stringf("%d (base %d)", real_dam, dam);
+        dam_str = make_stringf(T_("%d (base %d)"), real_dam, dam);
     else
         dam_str = make_stringf("%d", dam);
 
@@ -6838,14 +6838,14 @@ static string _desc_foxfire_dam(const monster_info &mi)
 {
     bolt beam;
     zappy(ZAP_FOXFIRE, mi.hd, mi.attitude != ATT_FRIENDLY, beam);
-    return make_stringf("%dd%d", beam.damage.num, beam.damage.size);
+    return make_stringf(T_("%dd%d"), beam.damage.num, beam.damage.size);
 }
 
 static string _desc_shooting_star_dam(const monster_info &mi)
 {
     bolt beam;
     zappy(ZAP_SHOOTING_STAR, mi.hd, mi.attitude != ATT_FRIENDLY, beam);
-    return make_stringf("%dd%d", beam.damage.num, beam.damage.size);
+    return make_stringf(T_("%dd%d"), beam.damage.num, beam.damage.size);
 }
 
 // Fetches the monster's database description and reads it into inf.
@@ -7186,7 +7186,7 @@ static formatted_string _get_monster_status_descriptions(const monster_info& mi)
     ostringstream out;
     for (string& tag : descriptors)
     {
-        const string key = make_stringf("%s monstatus", tag.c_str());
+        const string key = make_stringf(T_("%s monstatus"), tag.c_str());
         string lookup = getLongDescription(key);
         if (lookup.empty())
             continue;
@@ -7618,9 +7618,9 @@ static void _maybe_note_form_dice(vector<vector<string>>& items,
 
     vector<string> labels;
     labels.push_back(label);
-    labels.push_back(make_stringf("%dd%d%s", data[0].num, data[0].size, suffix.c_str()));
-    labels.push_back(make_stringf("%dd%d%s", data[1].num, data[1].size, suffix.c_str()));
-    labels.push_back(make_stringf("%dd%d%s", data[2].num, data[2].size, suffix.c_str()));
+    labels.push_back(make_stringf(T_("%dd%d%s"), data[0].num, data[0].size, suffix.c_str()));
+    labels.push_back(make_stringf(T_("%dd%d%s"), data[1].num, data[1].size, suffix.c_str()));
+    labels.push_back(make_stringf(T_("%dd%d%s"), data[2].num, data[2].size, suffix.c_str()));
 
     items.push_back(labels);
 }
@@ -7719,7 +7719,7 @@ static string _describe_talisman_form(transformation form_type)
 
     const int shapeshifting = you.skill(SK_SHAPESHIFTING, 10);
     const string skill_string = make_stringf("%d.%d", shapeshifting / 10, shapeshifting % 10);
-    const string cur_skill = (shapeshifting < 10*form->min_skill ? make_stringf("<red>%s</red>", skill_string.c_str())
+    const string cur_skill = (shapeshifting < 10*form->min_skill ? make_stringf(T_("<red>%s</red>"), skill_string.c_str())
                              : (shapeshifting >= 10*form->max_skill ? make_stringf("[%d]", form->max_skill)
                              : skill_string));
     items.push_back({T_("Skill"), to_string(skill[0]), to_string(skill[1]), cur_skill});

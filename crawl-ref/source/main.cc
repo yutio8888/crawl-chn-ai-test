@@ -2371,7 +2371,7 @@ void process_command(command_type cmd, command_type prev_cmd)
     case CMD_REVEAL_OPTIONS:
         // TODO: implement for other OSs
         // TODO: add a way of triggering this from the main menu
-        system(make_stringf("/usr/bin/open -R '%s'",
+        system(make_stringf(T_("/usr/bin/open -R '%s'"),
                                             Options.filename.c_str()).c_str());
         break;
 #endif
