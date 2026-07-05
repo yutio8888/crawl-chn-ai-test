@@ -1638,5 +1638,15 @@
     "file": "util/monster/monster-main.cc",
     "line": 969,
     "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7558,
+    "reason": "color tag argument to make_stringf, not user-visible text"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7564,
+    "reason": "color tag argument to make_stringf, not user-visible text"
   }
 ]
