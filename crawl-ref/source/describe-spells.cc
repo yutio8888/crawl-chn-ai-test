@@ -795,7 +795,7 @@ static void _write_book(const spellbook_contents &book,
 
 #if TAG_MAJOR_VERSION == 34
         string schools = (source_item && source_item->base_type == OBJ_RODS) ?
-                "魔力释放" : _spell_schools(spell);
+                T_("magic release") : _spell_schools(spell);
 #else
         string schools = _spell_schools(spell);
 #endif

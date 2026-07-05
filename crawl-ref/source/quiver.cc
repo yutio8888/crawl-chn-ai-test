@@ -1185,7 +1185,7 @@ namespace quiver
             if (channelled_spell_active(spell))
                 qdesc.cprintf(T_("Continue: "));
             else
-                qdesc.cprintf("施放: ");
+                qdesc.cprintf(T_("Cast: "));
 
             qdesc.textcolour(quiver_color());
 
@@ -2681,8 +2681,8 @@ namespace quiver
         bool _choose_from_inv()
         {
             int slot = prompt_invent_item(allow_empty
-                                            ? "要设置哪个物品为快捷动作？（- 清除）"
-                                            : "要设置哪个物品为快捷动作？",
+                                            ? T_("Set which item as quick action? (- to clear)")
+                                            : T_("Set which item as quick action?"),
                                           menu_type::invlist, OSEL_QUIVER_ACTION,
                                           OPER_QUIVER, invprompt_flag::hide_known, '-');
 
@@ -2789,7 +2789,7 @@ namespace quiver
             else if (key == '&' && any_spells)
             {
                 const int skey = list_spells(false, false, false, false,
-                                                    "快捷施放");
+                                                    T_("Quick cast"));
                 if (skey == 0)
                     return true;
                 if (isalpha(skey))

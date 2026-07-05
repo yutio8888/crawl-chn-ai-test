@@ -1,6 +1,6 @@
 ---
-updated: 2026-07-02T22:00:00+08:00
-last_commit: 5c252f00a1
+updated: 2026-07-05T15:00:00+08:00
+last_commit: b77a14a718
 session_id: b34cf734-660f-441b-aee1-094015fbe006
 ---
 
@@ -19,6 +19,15 @@ session_id: b34cf734-660f-441b-aee1-094015fbe006
 ---
 
 ## 一、当前决策栈（最近优先）
+
+### D-20260705-014: 怪物名称术语表建立 + 100% 覆盖率达成
+
+- **决策**: 22 个高频词根术语决策写入 `docs/decisions.md` (D-A-007 ~ D-A-028)，后扩展至 25 条 (D-A-029 ~ D-A-031)
+- **状态**: `approved` — 已合入 chn-0.34.1-base (b77a14a718)
+- **成果**: 怪物名覆盖率 668/668 (100%)；修正 4 处术语不一致；发现 audit_data_i18n.py 分隔符解析 bug（%%%% vs %%%%%）
+- **新增决策**: draconian→龙人, deep elf→精灵, dragon→龙, drake→幼龙, jelly→果冻怪, goblin/hobgoblin→地精/大地精, giant 三模式规则 等
+- **术语修正**: Summon Drakes 召唤小龙→召唤幼龙, hobgoblin 大哥布林→大地精, Royal Jelly 皇家史莱姆→果冻王, martyred shade 殉道残影→殉道暗影
+- **约束**: jelly≠slime（果冻怪≠史莱姆），四类无定形怪物各保留独立中文术语
 
 ### D-20260701-013: Issue 32 并发分析 — 6 Agent 3 轮计划
 - **决策**: 剩余 ~79 分支分为 6 Agent、3 轮并发执行，按共享数据依赖分组
