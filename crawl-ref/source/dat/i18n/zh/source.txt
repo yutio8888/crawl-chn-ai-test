@@ -15520,7 +15520,7 @@ Randomly recommend a %1$s based on your current %2$s choices.
 根据你当前的%2$s选择，随机推荐一个%1$s。
 %%%%
 Randomly cycle recommended species/job combos until you accept one.
-随机切换推荐的种族/职业组合，直到你接受其中一个。
+随机切换推荐组合，直到你接受其中一个。
 %%%%
 Randomly cycle character combos until you accept one.
 随机切换角色组合，直到你接受其中一个。
