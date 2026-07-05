@@ -36238,3 +36238,205 @@ Enchant which item?
 Identify which item? (\\ to view known items)
 鉴定哪件物品？（按 \\ 查看已知物品）
 %%%%%
+%%%%
+Xom revived you
+Xom复活了你
+%%%%
+Magic: 
+魔力：
+%%%%
+Reached 
+达到了
+%%%%
+ max health
+ 最大生命值
+%%%%
+ max magic points
+ 最大魔力值
+%%%%
+Reached XP level 
+达到经验等级
+%%%%
+Learned a level 
+学会了一个等级
+%%%%
+Became a worshipper of 
+成为了
+%%%%
+Fell from the grace of 
+失去了
+%%%%
+Was placed under penance by 
+被
+%%%%
+Was forgiven by 
+被
+%%%%
+Received a gift from 
+收到了来自
+%%%%
+Reached skill level 
+技能达到等级
+%%%%
+Reduced skill 
+技能降低至
+%%%%
+Encountered 
+遭遇了
+%%%%
+ (ally) was 
+（盟友）被
+%%%%
+ changed into 
+变成了
+%%%%
+ piety under 
+的虔诚信徒，虔诚度
+%%%%
+Gained mutation: 
+获得突变：
+%%%%
+Lost mutation: 
+失去突变：
+%%%%
+Mutation became permanent: 
+突变变为永久：
+%%%%
+Gained bane: 
+获得灾祸：
+%%%%
+Lost bane: 
+失去灾祸：
+%%%%
+ was a mimic.
+是一个拟态怪。
+%%%%
+XOM: 
+XOM：
+%%%%
+Paralysed by 
+被
+%%%%
+Vexed by 
+被
+%%%%
+Anointed 
+任命
+%%%%
+ as your apostle
+为你的使徒
+%%%%
+Your ally 
+你的盟友
+%%%%
+Offered knowledge of 
+向你展示了
+%%%%
+ by Vehumet.
+的知识。
+%%%%
+Remembered your ancestor 
+回忆起你的先祖
+%%%%
+Touched by the power of Zot (MHP 
+被佐特之力触碰（最大生命值
+%%%%
+Saved by the dreamshard amulet
+被梦境碎片护身符拯救
+%%%%
+Lost the 
+在佐特之力下丢失了
+%%%%
+ gem through the power of Zot.
+宝石。
+%%%%
+Gained a life (
+获得了一条命（
+%%%%
+Lost a life (
+失去了一条命（
+%%%%
+Fled from a divine trial
+从神圣试炼中逃脱
+%%%%
+Branded self with the 
+用
+%%%%
+Activated a boundless tesseract
+激活了一个无边超立方体
+%%%%
+ the pandemonium lord
+这位潘德莫尼姆领主
+%%%%
+ (seed may be affected by game upgrades)
+（种子可能受游戏升级影响）
+%%%%
+Game is non-seeded.
+游戏非预置种子。
+%%%%
+Version history for your current game:
+当前游戏的版本历史：
+%%%%
+<w>Features</w>
+<w>功能特性</w>
+%%%%
+For earlier changes, see changelog.txt in the docs/ directory.
+更早的改动请参阅 docs/ 目录下的 changelog.txt。
+%%%%
+For a list of changes, see changelog.txt in the docs/ directory.
+改动列表请参阅 docs/ 目录下的 changelog.txt。
+%%%%
+No answer found in the FAQ! Please submit a bug report!
+FAQ中未找到答案！请提交错误报告！
+%%%%
+Q: 
+问：
+%%%%
+The webtiles client will display 16 colors.
+网页版客户端将显示16种颜色。
+%%%%
+Your terminal is in <red>compatibility mode</red> and may not display full colours.
+你的终端处于<red>兼容模式</red>，可能无法显示全部颜色。
+%%%%
+For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).
+如需完整的16色模式，请尝试设置更好的TERM值，例如`xterm-256color`（大多数终端）或`putty-256color`（PuTTY）。
+%%%%
+ (overridden by TERM)
+（被TERM覆盖）
+%%%%
+Foreground palette:
+前景色调色板：
+%%%%
+Palette with menu highlight:
+带菜单高亮的调色板：
+%%%%
+Full palette:
+完整调色板：
+%%%%
+%%%%
+ as 
+作为
+%%%%
+ death
+的死亡
+%%%%
+ died
+死了
+%%%%
+ in 
+中
+%%%%
+ life 
+条命
+%%%%
+ lives 
+条命
+%%%%
+ spell: 
+法术：
+%%%%
+ to level 
+到等级
+%%%%
+remaining)
+剩余）

@@ -100,23 +100,24 @@ static string _get_version_features()
         {
             result += seed_description();
             if (Version::history_size() > 1)
-                result += " (seed may be affected by game upgrades)";
+                result += T_(" (seed may be affected by game upgrades)");
         }
         else
-            result += "Game is non-seeded.";
+            result += T_("Game is non-seeded.");
         result += "\n\n";
     }
     if (Version::history_size() > 1)
     {
-        result += "Version history for your current game:\n";
+        result += T_("Version history for your current game:");
+        result += "\n";
         result += Version::history();
         result += "\n\n";
     }
 
     result += "Report bugs to: <w>" CRAWL_BUG_REPORT "</w>\n\n";
 
-    result += "<w>Features</w>\n"
-                 "--------\n";
+    result += T_("<w>Features</w>");
+    result += "\n--------\n";
 
     for (const char *feature : features)
     {
@@ -200,13 +201,11 @@ static string _get_version_changes()
     {
         result.erase(1+result.find_last_not_of('\n'));
         result += "\n\n";
-        result += "For earlier changes, see changelog.txt "
-                  "in the docs/ directory.";
+        result += T_("For earlier changes, see changelog.txt in the docs/ directory.");
     }
     else
     {
-        result += "For a list of changes, see changelog.txt in the docs/ "
-                  "directory.";
+        result += T_("For a list of changes, see changelog.txt in the docs/ directory.");
     }
 
     return result;
@@ -490,10 +489,9 @@ static void _handle_FAQ()
             string answer = getFAQ_Answer(key);
             if (answer.empty())
             {
-                answer = "No answer found in the FAQ! Please submit a "
-                         "bug report!";
+                answer = T_("No answer found in the FAQ! Please submit a bug report!");
             }
-            answer = "Q: " + getFAQ_Question(key) + "\n" + answer;
+            answer = T_("Q: ") + getFAQ_Question(key) + "\n" + answer;
             show_description(answer);
         }
     }
@@ -719,17 +717,20 @@ static void _display_diag()
         info.fg_colors, info.bg_colors);
 
     if (webtiles_client)
-        s+= "The webtiles client will display 16 colors.\n\n";
+        s += T_("The webtiles client will display 16 colors.");
+        s += "\n\n";
 
     // TODO: should any of this be shown ever in webtiles?
     if (!suppress_unix_stuff && (info.fg_colors < 16
             || info.bg_colors < 16
             || info.term == "xterm")) // hack for putty. Maybe should set a compat flag in the lib?
     {
-        s += "Your terminal is in <red>compatibility mode</red> and may not display full colours.\n";
+        s += T_("Your terminal is in <red>compatibility mode</red> and may not display full colours.");
+        s += "\n";
         // hint for the putty users:
         if (info.term == "xterm")
-            s += "For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).\n";
+            s += T_("For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).");
+            s += "\n";
 
         // XX is there really value in showing all of these? In 2021 in 99% of
         // scenarios, I think people shouldn't mess with anything except the
@@ -742,7 +743,7 @@ static void _display_diag()
             "    `<w>best_effort_brighten_foreground</w>`: %d"
             "  `<w>best_effort_brighten_background</w>`: %d\n\n"),
             (int) Options.allow_extended_colours,
-            Options.allow_extended_colours ? " (overridden by TERM)" : "",
+            Options.allow_extended_colours ? T_(" (overridden by TERM)") : "",
             (int) Options.bold_brightens_foreground.to_bool(true),
             (int) Options.blink_brightens_background,
             (int) Options.best_effort_brighten_foreground,
@@ -767,7 +768,8 @@ static void _display_diag()
 
 #ifndef USE_TILE_LOCAL
     // no need to show this twice on local tiles
-    s += "Foreground palette:\n";
+    s += T_("Foreground palette:");
+    s += "\n";
 
     // XX should black on black -> blue be explained?
     s += _palette_with_bg(BLACK);
@@ -778,12 +780,16 @@ static void _display_diag()
     {
         // webtiles and local tiles uses their own hover implementations,
         // ANSI color is irrelevant
-        s += "\nPalette with menu highlight:\n";
+        s += "\n";
+        s += T_("Palette with menu highlight:");
+        s += "\n";
         s += _palette_with_bg(default_hover_colour());
     }
 #endif
 
-    s += "\nFull palette:\n";
+    s += "\n";
+    s += T_("Full palette:");
+    s += "\n";
     const int bgs_to_show = webtiles_client ? NUM_TERM_COLOURS : info.bg_colors;
     for (int bg = 0; bg < bgs_to_show; bg++)
         s += _palette_with_bg(bg);
