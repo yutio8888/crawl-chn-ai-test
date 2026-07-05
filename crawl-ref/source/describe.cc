@@ -1116,13 +1116,13 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
-    description << "One of the many lords of Pandemonium, " << name << " has ";
+    description << T_("One of the many lords of Pandemonium, ") << name << T_(" has ");
 
     description << article_a(HRANDOM_ELEMENT(body_types, 2));
     // ETC_RANDOM is also possible, handled later
     if (colour >= 0 && colour < NUM_TERM_COLOURS)
         description << " " << colour_to_str(colour, true);
-    description << " body ";
+    description << T_(" body ");
 
     if (flying)
     {
@@ -1130,7 +1130,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
         description << " ";
     }
 
-    description << "and ";
+    description << T_("and ");
     description << HRANDOM_ELEMENT(head_names, 1) << ".";
 
     if (!hash_with_seed(5, seed, 4) && you.can_smell()) // 20%
@@ -1140,7 +1140,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
         description << HRANDOM_ELEMENT(misc_descs, 6);
 
     if (colour == ETC_RANDOM)
-        description << " It changes colour whenever you look at it.";
+        description << T_(" It changes colour whenever you look at it.");
 
     return description.str();
 }
@@ -1194,13 +1194,13 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
     if (facets.size() == 0)
         return "";
 
-    return "It" + comma_separated_fn(begin(facets), end(facets),
+    return T_("It") + comma_separated_fn(begin(facets), end(facets),
                       [] (const CrawlStoreValue &sv) -> string {
                           const int facet = sv.get_int();
                           ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
                           return facet_descs[facet];
-                      }, ", and it", ", it")
-           + ".";
+                      }, T_(", and it"), T_(", it"))
+           + T_(".");
 
 }
 
@@ -1664,7 +1664,7 @@ static void _append_weapon_stats(string &description, const item_def &item)
         {
             string ego_key = _weapon_ego_key(SPWPN_CHAOS);
             string ego_desc = getEgoString(ego_key);
-            description += _format_prop_desc("\nChaotic:   ", ego_desc);
+            description += _format_prop_desc(T_("\nChaotic:   "), ego_desc);
         }
 
         // XX spacing following brand and dbrand for randarts/unrands is a bit
@@ -2319,7 +2319,7 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             // the other effects of encumbrance.
             else if (evp)
             {
-                description += "       Evasion: "
+                description += T_("       Evasion: ")
                             + to_string(evp / 30);
             }
         }
@@ -2883,12 +2883,12 @@ string get_item_description(const item_def &item,
         if (item.sub_type == MISC_ZIGGURAT && you.zigs_completed)
         {
             const int zigs = you.zigs_completed;
-            description << "\n\nIt is surrounded by a "
-                        << (zigs >= 27 ? "blinding " : // just plain silly
-                            zigs >=  9 ? "dazzling " :
-                            zigs >=  3 ? "bright " :
-                                         "gentle ")
-                        << "glow.";
+            description << T_("\n\nIt is surrounded by a ")
+                        << (zigs >= 27 ? T_("blinding ") : // just plain silly
+                            zigs >=  9 ? T_("dazzling ") :
+                            zigs >=  3 ? T_("bright ") :
+                                         T_("gentle "))
+                        << T_("glow.");
         }
 
         if (verbose)
@@ -3367,7 +3367,7 @@ void get_feature_desc(const coord_def &pos, describe_info &inf, bool include_ext
             long_desc += make_stringf(
                     T_("\nWhile standing here, you can %senter %s "
                     "with the <w>%s</w> key; it will vanish after you do so."),
-                    feat == DNGN_ENTER_TROVE ? "try to " : "",
+                    feat == DNGN_ENTER_TROVE ? T_("try to ") : "",
                     desc_the.c_str(),
                     _esc_cmd_to_str(stair_dir).c_str());
         }
@@ -4765,7 +4765,7 @@ static void _get_spell_description(const spell_type spell,
 
     const string quote = getQuoteString(string(spell_english_name(spell)) + " spell");
     if (!quote.empty())
-        description += "_________________\n\n<darkgrey>" + quote + "</darkgrey>";
+        description += T_("_________________\n\n<darkgrey>") + quote + T_("</darkgrey>");
 }
 
 /**
@@ -5376,7 +5376,7 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
     {
         desc += make_stringf(T_(" (max %d%s)"),
                                 flav_dam,
-                                attk_mult > 1 ? " each" : "");
+                                attk_mult > 1 ? T_(" each") : "");
     }
     else if (flavour == AF_DRAIN)
         desc += make_stringf(T_(" (max %d damage)"), real_dam / 2);
@@ -5392,7 +5392,7 @@ static void _add_attack_flavour_desc(string& desc, attack_flavour flavour,
         && !flavour_has_mobility(attack.flavour)
         && !(attack.flavour == AF_REACH_CLEAVE_UGLY))
     {
-        desc += " (if damage dealt)";
+        desc += T_(" (if damage dealt)");
     }
 
     if (flavour_has_reach(attack.flavour))
@@ -5494,7 +5494,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
         dam_str = make_stringf("%d", dam);
 
     if (attack.flavour == AF_PURE_FIRE)
-        dam_str += " fire";
+        dam_str += T_(" fire");
 
     string brand_str;
     if (wpn)
@@ -5515,7 +5515,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
 
     string final_dam_str = make_stringf("%s%s%s", dam_str.c_str(),
                                         brand_str.c_str(),
-                                        attk_mult > 1 ? " each" : "");
+                                        attk_mult > 1 ? T_(" each") : "");
     di.damage_descriptions.emplace_back(final_dam_str);
     di.damage_width = max(di.damage_width, final_dam_str.size());
 
@@ -5921,7 +5921,7 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
             if (it != hand_names.end())
                 result << it->second;
             else
-                result << "your " << hand_en;
+                result << T_("your ") << hand_en;
         }
         else
             result << weapon->name(DESC_YOUR, false, false, false);
@@ -6964,10 +6964,10 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         break;
 
     case MONS_PROGRAM_BUG:
-        inf.body << "If this monster is a \"program bug\", then it's "
+        inf.body << T_("If this monster is a \"program bug\", then it's "
                 "recommended that you save your game and reload. Please report "
                 "monsters who masquerade as program bugs or run around the "
-                "dungeon without a proper description to the authorities.\n";
+                "dungeon without a proper description to the authorities.\n");
         break;
 
     default:
@@ -7485,9 +7485,9 @@ string get_ghost_description(const monster_info &mi, bool concise)
     }
 #endif
 
-    gstr << mi.mname << " the "
+    gstr << mi.mname << T_(" the ")
          << title
-         << ", " << _xl_rank_name(mi.i_ghost.xl_rank) << " ";
+         << T_(", ") << _xl_rank_name(mi.i_ghost.xl_rank) << " ";
 
     if (concise)
     {
@@ -7503,7 +7503,7 @@ string get_ghost_description(const monster_info &mi, bool concise)
 
     if (mi.i_ghost.religion != GOD_NO_GOD)
     {
-        gstr << " of "
+        gstr << T_(" of ")
              << god_name(mi.i_ghost.religion);
     }
 
@@ -7812,7 +7812,7 @@ static string _describe_talisman_form(transformation form_type)
     description << "<white>" << lines[3].to_colour_string() << "<lightgrey>\n";
 
     if (form->holiness)
-        description << "\nClass: " << uppercase_first(holiness_description(form->holiness));
+        description << T_("\nClass: ") << uppercase_first(holiness_description(form->holiness));
 
     // Now add various one-off bits of (generally non-scaling) data after that
     TablePrinter pr(4, 80);
@@ -7888,7 +7888,7 @@ static string _describe_talisman_form(transformation form_type)
     // Melding info
     string meld_desc = form->melding_description(true);
     if (!meld_desc.empty())
-        description << "\nMelds: " << meld_desc << "\n";
+        description << T_("\nMelds: ") << meld_desc << "\n";
 
     // Mutation suppression info
     vector<string> changes;
