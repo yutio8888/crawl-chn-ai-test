@@ -652,7 +652,7 @@ bool monster_polymorph(monster* mons, monster_type targetc,
         else
             verb = "evaporates and reforms as ";
 
-        mprf(T_("%s %s%s!"), old_name_the.c_str(), verb.c_str(), obj.c_str());
+        mprf_p(T_("%s %s%s!"), old_name_the.c_str(), verb.c_str(), obj.c_str());
     }
     else if (can_see)
         mprf(T_("%s appears out of thin air!"), mons->name(DESC_A).c_str());

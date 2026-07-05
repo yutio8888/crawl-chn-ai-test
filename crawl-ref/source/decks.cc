@@ -1518,7 +1518,7 @@ static void _storm_card(int power)
         vector<string> thunder_adjectives = { T_("mighty"),
                                               T_("violent"),
                                               T_("cataclysmic") };
-        mprf(T_("You %s %s%s peal%s of thunder!"),
+        mprf_p(T_("You %s %s%s peal%s of thunder!"),
               heard ? T_("hear") : T_("feel"),
               targets.size() > 1 ? "" : T_("a "),
               thunder_adjectives[power_level].c_str(),

@@ -459,7 +459,7 @@ void wizard_set_skill_level(skill_type skill)
 
     redraw_skill(skill);
 
-    mprf(T_("%s %s to skill level %.1f."), (old_amount < amount ? "Increased" :
+    mprf_p(T_("%s %s to skill level %.1f."), (old_amount < amount ? "Increased" :
                                       old_amount > amount ? "Lowered"
                                                           : "Reset"),
          skill_name(skill), amount);

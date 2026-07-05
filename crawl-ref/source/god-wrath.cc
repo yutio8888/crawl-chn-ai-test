@@ -61,6 +61,7 @@
 #include "transform.h"
 #include "view.h"
 #include "xom.h"
+#include "positional_format.h"
 
 static void _god_smites_you(god_type god, const char *message = nullptr,
                             kill_method_type death_type = NUM_KILLBY);
@@ -116,7 +117,7 @@ static string _god_wrath_name(god_type god)
     const bool use_full_name = god == GOD_FEDHAS      // fedhas is very formal.
                                || god == GOD_WU_JIAN; // apparently.
 
-    return make_stringf(T_("the %s of %s"),
+    return make_stringf_p(T_("the %s of %s"),
                         _god_wrath_adjectives[god],
                         god_name(god, use_full_name).c_str());
 }

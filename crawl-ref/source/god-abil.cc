@@ -2779,7 +2779,7 @@ void beogh_ally_healing()
         mon->heal(value);
     }
 
-    mprf(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
+    mprf_p(T_("%s %s%sinvigorated by your bravery."), heal_list.size() == 1 ? heal_list[0]->name(DESC_THE).c_str()
                                    : T_("Your followers are"),
              heal_list.size() == 1 ? T_("is ") : "",
              healing_done > 25 ? T_(" greatly ") : "");
@@ -3618,7 +3618,7 @@ static void _gozag_place_shop(int index)
     const gender_type gender = random_choose(GENDER_FEMALE, GENDER_MALE,
                                              GENDER_NEUTRAL);
 
-    mprf(T_("%s invites you to visit %s %s%s%s."), shop->shop_name.c_str(),
+    mprf_p(T_("%s invites you to visit %s %s%s%s."), shop->shop_name.c_str(),
                     decline_pronoun(gender, PRONOUN_POSSESSIVE),
                     shop_type_name(shop->type).c_str(),
                     !shop->shop_suffix_name.empty() ? " " : "",

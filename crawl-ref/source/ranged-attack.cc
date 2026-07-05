@@ -55,13 +55,13 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
     }
     else if (throwing())
     {
-        aux_source = make_stringf(T_("Hit by a%s %s thrown by %s"),
+        aux_source = make_stringf_p(T_("Hit by a%s %s thrown by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
     else
     {
-        aux_source = make_stringf(T_("Shot with a%s %s by %s"),
+        aux_source = make_stringf_p(T_("Shot with a%s %s by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
@@ -301,7 +301,7 @@ bool ranged_attack::handle_phase_hit()
         {
             if (needs_message)
             {
-                mprf(T_("The %s %s %s%s but does no damage."),
+                mprf_p(T_("The %s %s %s%s but does no damage."),
                     proj_name.c_str(),
                     attack_verb.c_str(),
                     defender->name(DESC_THE).c_str(),
@@ -801,7 +801,7 @@ void ranged_attack::announce_hit()
     if (!needs_message)
         return;
 
-    mprf(T_("The %s %s %s%s%s%s"),
+    mprf_p(T_("The %s %s %s%s%s%s"),
          proj_name.c_str(),
          attack_verb.c_str(),
          defender_name(false).c_str(),

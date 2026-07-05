@@ -51,6 +51,7 @@
 #include "unicode.h"
 #include "view.h"
 #include "xom.h"
+#include "positional_format.h"
 
 using namespace ui;
 
@@ -3382,7 +3383,7 @@ const string bane_desc(bane_type bane)
     if (bane == BANE_DILETTANTE && you.banes[bane])
     {
         CrawlVector& vec = you.props[DILETTANTE_SKILL_KEY].get_vector();
-        return make_stringf(T_("Your skill with %s, %s, and %s is reduced."),
+        return make_stringf_p(T_("Your skill with %s, %s, and %s is reduced."),
                     skill_name(static_cast<skill_type>(vec[0].get_int())),
                     skill_name(static_cast<skill_type>(vec[1].get_int())),
                     skill_name(static_cast<skill_type>(vec[2].get_int())));
