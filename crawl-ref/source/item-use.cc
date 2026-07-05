@@ -2474,8 +2474,8 @@ bool enchant_armour(item_def &arm, bool quiet)
     {
         const bool plural = armour_is_hide(arm)
                             && arm.sub_type != ARM_TROLL_LEATHER_ARMOUR;
-        string glow = conjugate_verb("glow", plural);
-        const char* dur = is_enchantable_armour(arm) ? "moment" : "while";
+        string glow = conjugate_verb(T_("glow"), plural);
+        const char* dur = is_enchantable_armour(arm) ? T_("moment") : T_("while");
         mprf(T_("%s %s green for a %s."), name.c_str(), glow.c_str(), dur);
     }
 

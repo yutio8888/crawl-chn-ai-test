@@ -1078,7 +1078,7 @@ gain power from chaos
 %s%s进入了战斗狂热状态！
 %%%%
 %s %s green for a %s.
-%s%s发出绿色的光芒，持续了%s。
+%s%s绿色的光芒，持续了%s。
 %%%%
 %s %s pick up the pace!
 %s%s加快了步伐！
@@ -4118,6 +4118,9 @@ gizmo
 %%%%
 glowing
 发光
+%%%%
+glow
+散发出
 %%%%
  glows brighter.
  变得更亮了。
