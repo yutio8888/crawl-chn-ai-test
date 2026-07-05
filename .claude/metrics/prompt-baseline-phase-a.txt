@@ -1,5 +1,0 @@
-  167 .claude/agents/crawl-coder.md
-   91 .claude/agents/translation-reviewer.md
-  218 .claude/agents/zh-code-reviewer.md
-  266 .claude/agents/zh-translator.md
-  742 total

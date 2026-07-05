@@ -3,10 +3,15 @@
 .vscode/
 .vs
 
-# Claude Code
+# Claude Code (agent/skill/workflow orchestration — local only)
+.claude/agents/
+.claude/skills/
+.claude/workflows/
 .claude/worktrees/
-.claude/metrics/
+.claude/ORCHESTRATION_STATE.md
+**/.claude/metrics/
 .claude/scripts/__pycache__/
+CLAUDE.md
 
 # External tool configs
 .opencode/
