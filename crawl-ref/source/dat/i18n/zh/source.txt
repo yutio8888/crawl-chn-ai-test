@@ -3952,6 +3952,9 @@ Fire
 Fixed Theme
 Fixed Theme
 %%%%
+flail
+连枷
+%%%%
 flame
 火焰
 %%%%
@@ -7606,6 +7609,9 @@ unable to breathe
 %%%%
 unable to drink
 无法饮用药水
+%%%%
+unarmed
+空手
 %%%%
 Unemployed
 无业
@@ -22241,6 +22247,9 @@ Bksp - 返回角色菜单
 %%%%
 Lets you return back to Character choice menu
 返回角色选择菜单
+%%%%
+Select your old weapon
+选择你之前的武器
 %%%%
 Empty
 空

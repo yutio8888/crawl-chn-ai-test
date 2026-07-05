@@ -1733,9 +1733,9 @@ static void _construct_weapon_menu(const newgame_def& ng,
             choices.emplace_back(SK_UNARMED_COMBAT,
                         species::has_claws(ng.species)
     ? (T_("Claws"))
-    : "unarmed");
+    : T_("unarmed"));
         } else {
-            string text = weapon_base_name(wpn_type);
+            string text = T_(weapon_base_name(wpn_type));
             item_def dummy;
             dummy.base_type = OBJ_WEAPONS;
             dummy.sub_type = wpn_type;
@@ -1835,11 +1835,11 @@ static void _construct_weapon_menu(const newgame_def& ng,
 
         text += defweapon == WPN_RANDOM  ? T_("Random") :
                 defweapon == WPN_VIABLE  ? T_("Recommended") :
-                defweapon == WPN_UNARMED ? "unarmed" :
-                weapon_base_name(defweapon);
+                defweapon == WPN_UNARMED ? T_("unarmed") :
+                T_(weapon_base_name(defweapon));
 
         _add_menu_sub_item(sub_items, 1, 2, text,
-                "Select your old weapon", '\t', M_DEFAULT_CHOICE);
+                T_("Select your old weapon"), '\t', M_DEFAULT_CHOICE);
     }
 }
 
