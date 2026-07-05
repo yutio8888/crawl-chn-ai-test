@@ -1406,7 +1406,7 @@ protected:
                 text, '+', id, desc);
 
         _add_choice_menu_option(0, 1,
-                "# - " + T_("Recommended character"),
+                make_stringf("# - %s", T_("Recommended character")),
                 '#', M_VIABLE_CHAR,
                 T_("Randomly cycle recommended species/job combos until you accept one."));
 
