@@ -1648,5 +1648,40 @@
     "file": "describe.cc",
     "line": 7564,
     "reason": "color tag argument to make_stringf, not user-visible text"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7189,
+    "reason": "DB lookup key: TextDB monstatus descriptor \u2014 must remain English"
+  },
+  {
+    "file": "traps.cc",
+    "line": 918,
+    "reason": "you.props internal state key: shafted_in \u2014 must remain English"
+  },
+  {
+    "file": "xom.cc",
+    "line": 2264,
+    "reason": "Xom speech DB key: scenery \u2014 must remain English for getSpeakString lookup"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 1016,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 1199,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 2451,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "god-abil.cc",
+    "line": 3587,
+    "reason": "Vault spec protocol data: shop keywords must remain English"
   }
 ]

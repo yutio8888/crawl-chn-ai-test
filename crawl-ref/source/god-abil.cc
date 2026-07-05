@@ -3584,7 +3584,7 @@ static string _gozag_shop_spec(int index)
         suffix = " suffix:" + suffix;
 
     // Protocol data — must always be English (vault spec keywords)
-    return make_stringf(T_("%s shop name:%s%s greed:%d gozag"),
+    return make_stringf("%s shop name:%s%s greed:%d gozag",
                         shoptype_to_str(type),
                         replace_all(name, " ", "_").c_str(),
                         suffix.c_str(),

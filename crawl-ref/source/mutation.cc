@@ -1013,7 +1013,7 @@ static bool _has_transient_muts()
 
 static bool _fakemut_has_description(string fakemut_name)
 {
-    const string key = make_stringf(T_("%s mutation"), fakemut_name.c_str());
+    const string key = make_stringf("%s mutation", fakemut_name.c_str());
     string lookup = getLongDescription(key);
 
     return !lookup.empty();
@@ -1196,7 +1196,7 @@ private:
                 describe_info inf;
                 inf.title = uppercase_first(*mut).c_str();
 
-                const string key = make_stringf(T_("%s mutation"), mut->c_str());
+                const string key = make_stringf("%s mutation", mut->c_str());
                 string lookup = getLongDescription(key);
                 hint_replace_cmds(lookup);
                 inf.body << lookup;
@@ -2448,7 +2448,7 @@ bool delete_temp_mutation()
 string get_mutation_desc(mutation_type mut)
 {
     const char* const name = mutation_name(mut);
-    const string key = make_stringf(T_("%s mutation"), name);
+    const string key = make_stringf("%s mutation", name);
     string lookup = getLongDescription(key);
     hint_replace_cmds(lookup);
 

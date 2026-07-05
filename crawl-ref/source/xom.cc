@@ -2261,7 +2261,7 @@ static void _xom_place_decor()
     {
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1,
                        "scenery: changed the scenery"), true);
-        const string key = make_stringf(T_("scenery %s"), dungeon_feature_name(decor));
+        const string key = make_stringf("scenery %s", dungeon_feature_name(decor));
         god_speaks(GOD_XOM, _get_xom_speech(key).c_str());
     }
 }

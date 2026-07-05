@@ -7186,7 +7186,7 @@ static formatted_string _get_monster_status_descriptions(const monster_info& mi)
     ostringstream out;
     for (string& tag : descriptors)
     {
-        const string key = make_stringf(T_("%s monstatus"), tag.c_str());
+        const string key = make_stringf("%s monstatus", tag.c_str());
         string lookup = getLongDescription(key);
         if (lookup.empty())
             continue;
