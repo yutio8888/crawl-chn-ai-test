@@ -5309,7 +5309,7 @@ Once activated
 一旦激活
 %%%%
 One of the Royal Jelly's fragments survives.
-皇家史莱姆的一块碎片存活了下来。
+果冻王的一块碎片存活了下来。
 %%%%
 Oops! There was something there already!
 哎呀！那里已经有东西了！
@@ -6860,7 +6860,7 @@ The dungeon's light returns to normal.
 地下城的光线恢复了正常。
 %%%%
 The dying Royal Jelly spits out %s more jellies.
-垂死的皇家果冻又吐出了%s只果冻。
+垂死的果冻王又吐出了%s只果冻。
 %%%%
 the Earth
 大地
@@ -15889,7 +15889,7 @@ Miasma Breath
 瘴气吐息
 %%%%
 Summon Drakes
-召唤小龙
+召唤幼龙
 %%%%
 Blink Other
 闪烁他人
@@ -20791,7 +20791,7 @@ Re-activating wizard mode.
 重新激活巫师模式。
 %%%%
 Royal Jelly
-皇家史莱姆
+果冻王
 %%%%
 Stlth+
 潜行+
@@ -32964,7 +32964,7 @@ hippogriff
 鹰头马
 %%%%%
 hobgoblin
-大哥布林
+大地精
 %%%%%
 hog
 猪
@@ -35123,7 +35123,7 @@ Build '%s'
   Sigmund 对阵 Jessica\n
 %%%%%
   99 orc v Royal Jelly\n
-  99只兽人 对阵 皇家果冻\n
+  99只兽人 对阵 果冻王\n
 %%%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
   20头九头蛇 对阵 10只狗头人；弯刀 附魔：烈焰
@@ -36449,3 +36449,24 @@ Less
 More
 更多
 %%%%%
+%%%%
+shadow puppet
+暗影傀儡
+%%%%
+shadow prism
+暗影棱镜
+%%%%
+martyred shade
+殉道暗影
+%%%%
+rending blade
+撕裂之刃
+%%%%
+platinum paragon
+白金典范
+%%%%
+hellfire mortar
+地狱火迫击炮
+%%%%
+battlemage
+战斗法师

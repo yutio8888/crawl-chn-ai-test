@@ -135,6 +135,339 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-A-007 — draconian → 龙人
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 龙人
+- **Rejected**: 龙裔 (over-specifies bloodline)
+- **Rationale**: 龙人 captures the half-dragon, half-humanoid nature. Color prefixes follow simple modifier pattern (黑龙人, 绿龙人). Standard convention for dragonborn-style races in Chinese fantasy.
+- **Examples**: black draconian → 黑龙人, draconian annihilator → 龙人湮灭者, draconian stormcaller → 龙人风暴召唤者
+
+---
+
+### D-A-008 — deep elf → 精灵
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 精灵 (不加"深"前缀)
+- **Rejected**: 深精灵 (Chinese fantasy convention: 精灵 already implies subterranean elves; DCSS has no surface elf to distinguish from)
+- **Rationale**: DCSS has no generic "elf" monster — only "deep elf X" subtypes, so "精灵" unambiguously means "deep elf" in monster context. Player species "High Elf → 高等精灵" also uses 精灵, mirroring the English relationship. The "deep" spatial connotation is sacrificed for natural Chinese readability.
+- **Examples**: deep elf annihilator → 精灵湮灭者, deep elf blademaster → 精灵剑圣, deep elf high priest → 精灵大祭司
+
+---
+
+### D-A-009 — orc → 兽人
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 兽人
+- **Rejected**: 半兽人 (orcs are a distinct race, not half-human)
+- **Rationale**: Standard convention from Warcraft/LoTR translations. All entries consistent.
+- **Examples**: orc knight → 兽人骑士, orc warlord → 兽人军阀, orc apostle → 兽人使徒
+- **Known issue**: "orc wizard" and "orc sorcerer" both resolve to 兽人巫师. Monitor for player confusion; if necessary, differentiate as 兽人巫师 (wizard) / 兽人术士 (sorcerer).
+
+---
+
+### D-A-010 — merfolk → 鱼人
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 鱼人
+- **Rejected**: 人鱼 (美人鱼 — too mermaid-associated, gendered)
+- **Rationale**: 鱼人 captures the fish-human hybrid nature. Murloc-style naming fits DCSS's merfolk design.
+- **Examples**: merfolk aquamancer → 鱼人水法师, merfolk impaler → 鱼人穿刺者, merfolk siren → 鱼人塞壬
+
+---
+
+### D-A-011 — spriggan → 小精灵
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 小精灵
+- **Rejected**: 树精 (too plant-specific), 妖精 (too generic)
+- **Rationale**: 小精灵 captures the small, fairy-like nature. Differentiated from 精灵 (deep elf) by the diminutive 小. In gameplay these two creature types never appear in similar contexts, so the partial term overlap is not a practical issue.
+- **Examples**: spriggan air mage → 小精灵气法师, spriggan berserker → 小精灵狂战士, spriggan rider → 小精灵骑手
+
+---
+
+### D-A-012 — naga → 纳迦
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 纳迦
+- **Rejected**: 蛇人 (loses mythological specificity), 娜迦 (娜 is feminine — naga are gender-neutral)
+- **Rationale**: 纳迦 is the standard Chinese transliteration from Hindu/Buddhist mythology. Consistent across all entries including nagaraja → 纳迦王.
+- **Examples**: naga mage → 纳迦法师, naga sharpshooter → 纳迦神射手, nagaraja → 纳迦王
+
+---
+
+### D-A-013 — demonspawn → 恶魔裔
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 恶魔裔
+- **Rejected**: 魔裔 (ambiguous — could mean 魔鬼后裔), 恶魔后裔 (too long)
+- **Rationale**: 裔 suffix precisely denotes bloodline/lineage, matching -spawn semantics.
+- **Examples**: demonspawn blood saint → 恶魔裔血圣, demonspawn corrupter → 恶魔裔腐蚀者, demonspawn warmonger → 恶魔裔战争贩子
+
+---
+
+### D-A-014 — tengu → 天狗
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 天狗
+- **Rejected**: 天狗人 (unnecessary), 鸟人 (derogatory)
+- **Rationale**: 天狗 is the direct Chinese term for tengu — a well-known yokai in East Asian folklore. No qualifiers needed.
+- **Examples**: tengu conjurer → 天狗咒法师, tengu reaver → 天狗掠夺者, tengu warrior → 天狗战士
+
+---
+
+### D-A-015 — dragon → 龙
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 龙 (element/type prefix: X龙)
+- **Rejected**: (none — 龙 is the only viable option)
+- **Rationale**: Universal Chinese term. Element/modifier precedes: 酸龙, 骨龙, 火龙, 金龙, 冰龙, 铁龙. Special: komodo dragon → 科摩多龙 (transliteration, not 巨蜥).
+- **Examples**: acid dragon → 酸龙, golden dragon → 金龙, storm dragon → 风暴龙
+- **See also**: D-A-016 (drake → 幼龙)
+
+---
+
+### D-A-016 — drake → 幼龙
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 幼龙
+- **Rejected**: 小龙 (too informal/ambiguous — was previously used in "Summon Drakes → 召唤小龙", now unified to 幼龙), 龙兽 (reads as "dragon-beast"), 雏龙 (avian, hatchling-specific)
+- **Rationale**: 幼龙 distinguishes smaller/younger drakes from adult dragons (龙). This is the key structural distinction: the Chinese dragon taxonomy uses 幼龙 vs 龙. **Pre-existing inconsistency fixed**: "Summon Drakes" changed from 召唤小龙 to 召唤幼龙.
+- **Examples**: drake → 幼龙, rime drake → 霜幼龙, death drake → 死亡幼龙, wind drake → 风幼龙
+
+---
+
+### D-A-017 — imp → 小恶魔
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 小恶魔
+- **Rejected**: 小鬼 (too folkloric/goblin), 魔童 (implies child-demon, not low-rank)
+- **Rationale**: 小 captures both diminutive size and low-tier rank. 恶魔 establishes demonic nature. Color/modifier precedes the full compound: 蔚蓝小恶魔, 暗影小恶魔.
+- **Examples**: crimson imp → 深红小恶魔, shadow imp → 暗影小恶魔, white imp → 白色小恶魔
+
+---
+
+### D-A-018 — golem → 魔像
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 魔像
+- **Rejected**: 石魔像 (too specific), 构造体 (too sci-fi), 魔偶 (too puppet-like)
+- **Rationale**: 魔像 is the established RPG convention (Diablo, Warcraft). Works for all materials.
+- **Examples**: golem → 魔像, iron golem → 铁魔像, toenail golem → 趾甲魔像
+
+---
+
+### D-A-019 — lich → 巫妖
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 巫妖
+- **Rejected**: 亡灵巫师 (loses the specific lich concept), 尸巫 (too narrow)
+- **Rationale**: Standard D&D/Warcraft convention. 巫 (sorcery) + 妖 (unnatural being).
+- **Examples**: lich → 巫妖, ancient lich → 远古巫妖, dread lich → 恐怖巫妖
+
+---
+
+### D-A-020 — horror → 恐怖
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 恐怖 (modifier + 恐怖 for subtypes)
+- **Rejected**: 惊骇体 (unnecessary 体 suffix), 梦魇 (too dream/nightmare-specific)
+- **Rationale**: 恐怖 is treated as a monster type like 元素. Modifier precedes: 潜伏恐怖, 无形恐怖. Though 恐怖 is adjective-primary in Chinese, DCSS horrors always appear with a prefix qualifier, so standalone usage is essentially theoretical. The compounds read naturally as "[qualifier] + horror-type".
+- **Examples**: lurking horror → 潜伏恐怖, unseen horror → 无形恐怖, thrashing horror → 鞭笞恐怖
+
+---
+
+### D-A-021 — elemental → 元素
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 元素 (element type prefix: X元素)
+- **Rejected**: 元素体 (unnecessary 体), 精灵 (collision with elf)
+- **Rationale**: Standard term. Element type prefixed: 气元素, 地元素, 火元素.
+- **Examples**: air elemental → 气元素, fire elemental → 火元素, quicksilver elemental → 水银元素
+
+---
+
+### D-A-022 — ironbound → 铁缚
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 铁缚 (prefix, followed by class name)
+- **Rejected**: 铁链 (too literal chains), 缚铁 (verb-object, unusual as modifier), 铁枷 (punishment device)
+- **Rationale**: 铁缚 captures "bound/encased in iron." The 缚 evokes the dwarven ironforge aesthetic with grimdark undertones.
+- **Examples**: ironbound beastmaster → 铁缚驯兽师, ironbound thunderhulk → 铁缚雷躯, ironbound frostheart → 铁缚霜心
+
+---
+
+### D-A-023 — death (prefix) → 死亡
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 死亡
+- **Rejected**: 死 (too short, parsing ambiguity), 亡 (too literary, ambiguous standalone)
+- **Rationale**: 死亡 is the standard undead-monster prefix. Note: standalone "death" as a spell school is translated differently (亡语), but in monster name prefixes, always use 死亡.
+- **Examples**: death cob → 死亡天鹅, death knight → 死亡骑士, deathcap → 死亡菌
+
+---
+
+### D-A-024 — hell (prefix) → 地狱
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 地狱
+- **Rejected**: 炼狱 (purgatory — different concept), 魔 (too broad)
+- **Rationale**: 地狱 maps directly to Hell as location/domain. Used as prefix for Hells-branch monsters. Differentiated from 恶魔 (demon race) and 亡灵 (undead).
+- **Examples**: hell hound → 地狱犬, hell knight → 地狱骑士, hell lord → 地狱领主
+
+---
+
+### D-A-025 — iron (prefix) → 铁
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 铁 (single character prefix)
+- **Rejected**: 钢铁 (too modern/industrial)
+- **Rationale**: Standard elemental prefix across all monster types: 铁龙, 铁魔像, 铁元素, 铁巨人, 铁小恶魔, 铁巨魔. Single-character integrates cleanly with all roots.
+- **Examples**: iron dragon → 铁龙, iron elemental → 铁元素, iron troll → 铁巨魔
+
+---
+
+### D-A-026 — sensed monster → 感知怪物
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 感知怪物 (difficulty + 感知怪物 for subtypes)
+- **Rejected**: 侦测怪物 (too military/radar), 灵知怪物 (too esoteric)
+- **Rationale**: These are Ashenzari-detection placeholders — monsters revealed through walls before the player can see them. 感知 captures extrasensory detection. Base form: 感知到的怪物 (with 的). Subtypes drop 的 for compound compatibility: 简单感知怪物, 友善感知怪物.
+- **Examples**: sensed monster → 感知到的怪物, easy sensed monster → 简单感知怪物, nasty sensed monster → 危险感知怪物
+
+---
+
+### D-A-027 — ogre → 食人魔
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 食人魔
+- **Rejected**: 巨人 (collision with giant), 巨怪 (too close to troll)
+- **Rationale**: Standard Warcraft/D&D convention. Distinct from 巨魔 (troll) and 巨人 (giant). Modifier-before-root: 双头食人魔.
+- **Examples**: ogre → 食人魔, ogre mage → 食人魔法师, two-headed ogre → 双头食人魔
+
+---
+
+### D-A-028 — troll → 巨魔
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Monster name terminology batch
+- **Choice**: 巨魔
+- **Rejected**: 穴居巨魔 (unnecessary regional specificity)
+- **Rationale**: Standard Warcraft convention. Consistent subtypes: 铁巨魔, 月巨魔. "Deep troll" → 深渊巨魔 uses 深渊 rather than 深 because 深渊巨魔 is an established convention for abyssal trolls in Chinese fantasy.
+- **Examples**: troll → 巨魔, iron troll → 铁巨魔, moon troll → 月巨魔, deep troll → 深渊巨魔
+
+---
+
+### D-A-029 — jelly → 果冻怪
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Terminology consistency audit
+- **Choice**: 果冻怪 (azure jelly→天蓝果冻怪, star jelly→星之果冻, Royal Jelly→果冻王)
+- **Rejected**: 史莱姆 (collision with slime creature→史莱姆 — jelly and slime are distinct DCSS monster types)
+- **Rationale**: DCSS has four distinct amorphous monster families: jelly (果冻怪/果冻), slime (史莱姆/黏液), ooze (软泥), blob (凝胶团/酸液团). Translating jelly as 史莱姆 would lose the gameplay distinction between jelly-type and slime-type monsters. Royal Jelly→果冻王 keeps the boss in the 果冻 family while conveying its status as the jelly king.
+- **Examples**: jelly → 果冻怪, azure jelly → 天蓝果冻怪, star jelly → 星之果冻
+
+---
+
+### D-A-030 — goblin / hobgoblin → 地精 / 大地精
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Terminology consistency audit
+- **Choice**: 地精 (goblin), 大地精 (hobgoblin)
+- **Rejected**: 大哥布林 (hobgoblin — previously in source.txt, inconsistent with goblin→地精)
+- **Rationale**: 地精 is the standard D&D/Pathfinder convention. hobgoblin→大地精 follows the 大+base pattern for "greater" variants. Unified hobgoblin from 大哥布林 to 大地精.
+- **Examples**: goblin → 地精, hobgoblin → 大地精
+
+---
+
+### D-A-031 — giant naming pattern (three sub-rules)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-05
+- **Source**: Terminology consistency audit
+- **Choice**: Three distinct patterns:
+  - Standalone "giant" → **巨型**
+  - "giant <animal/creature>" → **巨X** (prefix 巨)
+  - "<element/type> giant" → **X巨人** (suffix 巨人)
+- **Rejected**: Uniform 巨人 for all (doesn't match natural Chinese: 巨蛙 is more natural than 巨人蛙)
+- **Rationale**: Chinese distinguishes between "a giant version of X" (巨X: 巨蛙, 巨蜥, 巨蟑螂) and "a giant made of X" (X巨人: 火巨人, 霜巨人, 石巨人). This mirrors English word order distinction.
+- **Examples**: 
+  - Standalone: giant → 巨型
+  - Animal prefix: giant frog → 巨蛙, giant lizard → 巨蜥, giant cockroach → 巨蟑螂
+  - Elemental suffix: fire giant → 火巨人, frost giant → 霜巨人, stone giant → 石巨人, cactus giant → 仙人掌巨人
+
+---
+
 ## Type-B: Rule Rulings (style/grammar/formatting conventions)
 
 ---
