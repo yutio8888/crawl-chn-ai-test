@@ -36440,3 +36440,12 @@ Full palette:
 %%%%
 remaining)
 剩余）
+Unnamed gizmo
+无名装置
+%%%%%
+Less
+更少
+%%%%%
+More
+更多
+%%%%%

@@ -320,7 +320,7 @@ string item_def::name(description_level_type descrip, bool terse, bool ident,
         && !qualname
         && is_artefact(*this) && cursed())
     {
-        buff << " (curse)";
+        buff << (T_(" (curse)"));
     }
 
     return buff.str();
@@ -2299,7 +2299,7 @@ string item_def::name_aux(description_level_type desc, bool terse, bool ident,
         if (props.exists(ARTEFACT_NAME_KEY))
             buff << props[ARTEFACT_NAME_KEY].get_string();
         else
-            buff << "Unnamed gizmo";
+            buff << (T_("Unnamed gizmo"));
     }
     break;
 
@@ -2497,7 +2497,7 @@ static string _gem_parenthetical(gem_type gem)
     if (left < lim)
         text += make_stringf("/%d", (lim + 9) / 10);
     else
-        text += " turns"; // XXX: ?
+        text += T_(" turns"); // XXX: ?
     return text + " until shattered)";
 }
 
@@ -2660,7 +2660,7 @@ void RuneMenu::set_footer()
 #endif
             "]: %s", show_gems ? "Show Runes" : "Show Gems");
     if (!Options.more_gem_info && can_show_more_gems())
-        more_text += make_stringf("\n[<w>-</w>]: %s", more_gems ? "Less" : "More");
+        more_text += make_stringf("\n[<w>-</w>]: %s", more_gems ? T_("Less") : T_("More"));
     set_more(more_text);
 }
 
