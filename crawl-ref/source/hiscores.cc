@@ -1403,7 +1403,7 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             {
                 auxkilldata = env.item[mons->inv[MSLOT_WEAPON]].name(DESC_A);
                 if (mons->has_ench(ENCH_ARMED))
-                    auxkilldata += " (from an undying armoury)";
+                    auxkilldata += T_(" (from an undying armoury)");
             }
         }
 
@@ -1418,24 +1418,24 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             death_source_name = mons->full_name(desc);
 
         if (mons_is_player_shadow(*mons))
-            death_source_name = "their own shadow"; // heh
+            death_source_name = T_("their own shadow"); // heh
 
         if (mons->mid == MID_YOU_FAULTLESS)
-            death_source_name = "themself";
+            death_source_name = T_("themself");
 
         if (mons->mid == MID_ANON_FRIEND)
-            death_source_name = "an ally";
+            death_source_name = T_("an ally");
 
         if (mons->has_ench(ENCH_SHAPESHIFTER))
-            death_source_name += " (shapeshifter)";
+            death_source_name += T_(" (shapeshifter)");
         else if (mons->has_ench(ENCH_GLOWING_SHAPESHIFTER))
-            death_source_name += " (glowing shapeshifter)";
+            death_source_name += T_(" (glowing shapeshifter)");
 
         if (mons->type == MONS_PANDEMONIUM_LORD)
-            death_source_name += " the pandemonium lord";
+            death_source_name += T_(" the pandemonium lord");
 
         if (mons->has_ench(ENCH_PHANTOM_MIRROR))
-            death_source_name += " (illusionary)";
+            death_source_name += T_(" (illusionary)");
 
         if (mons_is_unique(mons->type))
             death_source_flags.insert("unique");
@@ -1857,10 +1857,10 @@ const char *scorefile_entry::damage_verb() const
 {
     // GDL: here's an example of using final_hp. Verbiage could be better.
     // bwr: changed "blasted" since this is for melee
-    return (final_hp > -6)  ? "Slain"   :
-           (final_hp > -14) ? "Mangled" :
-           (final_hp > -22) ? "Demolished"
-                            : "Annihilated";
+    return (final_hp > -6)  ? T_("Slain")   :
+           (final_hp > -14) ? T_("Mangled") :
+           (final_hp > -22) ? T_("Demolished")
+                            : T_("Annihilated");
 }
 
 string scorefile_entry::death_source_desc() const
@@ -2009,11 +2009,11 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
         if (Options.more_gem_info || semiverbose)
         {
             if (gems_intact == 1 && gems_found == 1)
-                desc += " (intact)";
+                desc += T_(" (intact)");
             else if (gems_intact == 2 && gems_found == 2)
-                desc += " (both intact)";
+                desc += T_(" (both intact)");
             else if (gems_intact == gems_found)
-                desc += " (all intact)";
+                desc += T_(" (all intact)");
             else
                 desc += make_stringf(T_(" (%d intact)"), gems_intact);
         }
@@ -2057,15 +2057,15 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     if (final_max_max_hp > 0)  // as the other two may be negative
     {
-        desc += make_stringf(", %d/%d", final_hp, final_max_hp);
+        desc += make_stringf(T_(", %d/%d"), final_hp, final_max_hp);
 
         if (final_max_hp < final_max_max_hp)
-            desc += make_stringf(" (%d)", final_max_max_hp);
+            desc += make_stringf(T_(" (%d)"), final_max_max_hp);
 
-        desc += " HPs";
+        desc += T_(" HPs");
     }
 
-    desc += wiz_mode ? ") *WIZ*" : explore_mode ? ") *EXPLORE*" : ")";
+    desc += wiz_mode ? T_(") *WIZ*") : explore_mode ? T_(") *EXPLORE*") : T_(")");
     desc += _hiscore_newline_string();
 
     if (verbose)
@@ -2149,7 +2149,7 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
     place += " " + prep_branch_level_name(level_id(branch, dlvl));
 
     if (!mapdesc.empty())
-        place += make_stringf(" (%s)", mapdesc.c_str());
+        place += make_stringf(T_(" (%s)"), mapdesc.c_str());
 
     if (verbose && death_time
         && !_hiscore_same_day(birth_time, death_time))
