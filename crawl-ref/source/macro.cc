@@ -40,6 +40,7 @@
 
 #include "cio.h"
 #include "command.h"
+#include "database.h"
 #include "files.h"
 #include "initfile.h"
 #include "libutil.h"
@@ -55,6 +56,7 @@
 #include "syscalls.h"
 #include "unicode.h"
 #include "version.h"
+#include "positional_format.h"
 
 typedef deque<int> keybuf;
 typedef map<keyseq,keyseq> macromap;
@@ -354,7 +356,7 @@ static int _name_to_keycode(string s)
         return CK_HOME;
     else if (lower == "end")
         return CK_END;
-    else if (lower == "clear")
+    else if (lower == "清除" || lower == "clear") // "清除" is a Chinese alias for user macro input
         return CK_CLEAR;
     else if (lower == "pgup")
         return CK_PGUP;
@@ -985,7 +987,7 @@ static string _keyseq_desc(const keyseq &key)
         if (r.empty())
             r = vtostr(key);
         else
-            r = make_stringf("%s (%s)", vtostr(key).c_str(), r.c_str());
+            r = make_stringf(T_("%s (%s)"), vtostr(key).c_str(), r.c_str());
     }
     return replace_all(r, "<", "<<");
 }
@@ -1044,7 +1046,10 @@ public:
         // TODO: this seems like somehow it should involve ui::Switcher, but I
         // have no idea how to use that class with a Menu
         clear();
-        add_entry(new MenuEntry("Create/edit " + mode_name() + " from key", '~',
+        add_entry(new MenuEntry(
+            (T_("Create/edit "))
+                + mode_name()
+                + (T_(" from key")), '~',
             [this](const MenuEntry &)
                 {
                     edit_mapping(keyseq());
@@ -1052,7 +1057,9 @@ public:
                 }));
         if (get_map().size())
         {
-            MenuEntry *clear_entry = new MenuEntry("Clear all " + mode_name() + "s", '-',
+            MenuEntry *clear_entry = new MenuEntry(
+                (T_("Clear all "))
+                    + mode_name() + "s", '-',
                 [this](const MenuEntry &)
                     {
                         status_msg = "";
@@ -1066,7 +1073,9 @@ public:
             clear_entry->add_hotkey(CK_NUMPAD_SUBTRACT2);
 
             add_entry(clear_entry);
-            add_entry(new MenuEntry("Current " + mode_name() + "s", MEL_SUBTITLE));
+            add_entry(new MenuEntry(
+                (T_("Current "))
+                    + mode_name() + "s", MEL_SUBTITLE));
             for (auto &mapping : get_map())
             {
                 // TODO: indicate if macro is from rc file somehow?
@@ -1171,7 +1180,7 @@ public:
 
     void clear_all()
     {
-        const string clear_prompt = make_stringf("Really clear all %ss?",
+        const string clear_prompt = make_stringf(T_("Really clear all %ss?"),
                 mode_name().c_str());
         if (yesno(clear_prompt.c_str(), true, 'N'))
         {
@@ -1196,14 +1205,14 @@ public:
         const int keycode = key[0];
         string key_str = keycode_is_printable(keycode)
             ? keycode_to_name(keycode, false).c_str()
-            : make_stringf("%s (%s)",
+            : make_stringf(T_("%s (%s)"),
                     vtostr(key).c_str(), keycode_to_name(keycode, false).c_str());
         string action_str = vtostr(mapref[key]);
 
         action_str = replace_all(action_str, "<", "<<");
         key_str = replace_all(key_str, "<", "<<");
 
-        status_msg = make_stringf("Cleared %s '%s' => '%s'.",
+        status_msg = make_stringf(T_("Cleared %s '%s' => '%s'."),
                     mode_name().c_str(),
                     key_str.c_str(),
                  action_str.c_str());
@@ -1274,7 +1283,7 @@ public:
             key.clear();
             set_more(string(""));
             prompt = make_stringf(
-                "Input trigger key to edit or create a %s:",
+                T_("Input trigger key to edit or create a %s:"),
                 parent.mode_name().c_str());
             set_title(new MenuEntry(prompt, MEL_TITLE));
             set_more("<lightgray>([<w>~</w>] to enter by keycode)</lightgray>");
@@ -1283,7 +1292,7 @@ public:
 
         void reset_key_prompt()
         {
-            prompt = make_stringf("Current %s for %s: %s",
+            prompt = make_stringf_p(T_("Current %s for %s: %s"),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str(),
                         _keyseq_action_desc(action).c_str());
@@ -1299,14 +1308,17 @@ public:
             reset_key_prompt();
             set_more(string(""));
 
-            add_entry(new MenuEntry("redefine", 'r',
+            add_entry(new MenuEntry(
+                T_("redefine"), 'r',
                 [this](const MenuEntry &)
                 {
                     set_more("");
                     return !edit_action();
                 }));
 
-            add_entry(new MenuEntry("redefine with raw key entry", 'R',
+            add_entry(new MenuEntry(
+                T_("redefine with raw key entry"),
+                'R',
                 [this](const MenuEntry &)
                 {
                     set_more("");
@@ -1316,7 +1328,8 @@ public:
 
             if (!action.empty())
             {
-                add_entry(new MenuEntry("clear", 'c',
+                add_entry(new MenuEntry(
+                    T_("clear"), 'c',
                     [this](const MenuEntry &)
                     {
                         //weirdly MSVC requires the use of `this->` here
@@ -1325,7 +1338,8 @@ public:
                     }));
             }
 
-            add_entry(new MenuEntry("abort", 'a',
+            add_entry(new MenuEntry(
+                T_("abort"), 'a',
                 [this](const MenuEntry &)
                 {
                     abort = true;
@@ -1341,7 +1355,7 @@ public:
         void edit_action_raw()
         {
             prompt = make_stringf(
-                "<w>%s</w>\nInput (raw) new %s for %s: ",
+                T_("<w>%s</w>\nInput (raw) new %s for %s: "),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
@@ -1364,7 +1378,7 @@ public:
         bool edit_action()
         {
             char buff[1024];
-            const string edit_prompt = make_stringf("<w>%s</w>\nInput new %s for %s:",
+            const string edit_prompt = make_stringf(T_("<w>%s</w>\nInput new %s for %s:"),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
@@ -1385,7 +1399,7 @@ public:
             // issues with backslashes, for example
             if (!new_action.size())
             {
-                set_more(make_stringf("Parsing error in key sequence '%s'", buff));
+                set_more(make_stringf(T_("Parsing error in key sequence '%s'"), buff));
                 return true;
             }
             set_hovered(old_last_hovered);
@@ -1491,7 +1505,7 @@ public:
                 // if the mapping is new, edit immediately
                 if (action.empty())
                 {
-                    prompt = make_stringf("%s %s", prompt.c_str(),
+                    prompt = make_stringf(T_("%s %s"), prompt.c_str(),
                                                     _keyseq_desc(key).c_str());
                     if (edit_action())
                         return false;
@@ -1543,7 +1557,7 @@ public:
                 && (!get_map().count(pop.key) || get_map()[pop.key] != pop.action))
             {
                 macro_add(get_map(), pop.key, pop.action);
-                status_msg = make_stringf("%s %s '%s' => '%s'.",
+                status_msg = make_stringf(T_("%s %s '%s' => '%s'."),
                     existed ? "Redefined" : "Created",
                     mode_name().c_str(),
                     _keyseq_desc(pop.key).c_str(),
@@ -2341,7 +2355,7 @@ string command_to_string(command_type cmd, bool tutorial)
     if (key >= 32 && key < 256)
     {
         if (tutorial && key >= 'A' && key <= 'Z')
-            result = make_stringf("uppercase %c", (char) key);
+            result = make_stringf(T_("uppercase %c"), (char) key);
         else
             result = string(1, (char) key);
     }

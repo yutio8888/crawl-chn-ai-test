@@ -1,7 +1,9 @@
 #include "AppHdr.h"
 #include <map>
 
+#include "database.h"
 #include "mpr.h"
+#include "options.h"
 #include "species.h"
 
 #include "branch.h"
@@ -46,13 +48,54 @@ namespace species
      * @returns the requested name, which will just be plain if no adjective
      *          or genus is defined.
      */
-    string name(species_type speci, name_type spname_type)
+    static const char* get_species_zh_name(species_type speci)
+    {
+        static const map<species_type, const char*> zh_names = {
+            { SP_HUMAN, "人类" }, { SP_HIGH_ELF, "高等精灵" },
+            { SP_DEEP_ELF, "精灵" }, { SP_SLUDGE_ELF, "污泥精灵" },
+            { SP_HALFLING, "半身人" },
+            { SP_HILL_ORC, "丘陵兽人" }, { SP_KOBOLD, "狗头人" },
+            { SP_MUMMY, "木乃伊" }, { SP_NAGA, "纳迦" },
+            { SP_TROLL, "巨魔" }, { SP_MINOTAUR, "牛头人" },
+            { SP_SPRIGGAN, "小精灵" }, { SP_CENTAUR, "半人马" },
+            { SP_DEMIGOD, "半神" }, { SP_DEMONSPAWN, "恶魔裔" },
+            { SP_GHOUL, "食尸鬼" }, { SP_TENGU, "天狗" },
+            { SP_MERFOLK, "鱼人" }, { SP_VAMPIRE, "吸血鬼" },
+            { SP_FELID, "猫人" }, { SP_OCTOPODE, "章鱼人" },
+            { SP_GARGOYLE, "石像鬼" }, { SP_FORMICID, "蚁人" },
+            { SP_VINE_STALKER, "藤蔓行者" }, { SP_BARACHI, "蛙人" },
+            { SP_GNOLL, "豺狼人" }, { SP_COGLIN, "齿轮地精" },
+            { SP_DEEP_DWARF, "深矮人" }, { SP_MOUNTAIN_DWARF, "山矮人" },
+            { SP_POLTERGEIST, "吵闹鬼" },
+            { SP_REVENANT, "归来者" }, { SP_DJINNI, "灯神" },
+            { SP_LAVA_ORC, "熔岩兽人" }, { SP_METEORAN, "流星人" },
+            { SP_ONI, "鬼" }, { SP_MAYFLYTAUR, "蜉蝣半人马" },
+            { SP_ARMATAUR, "甲马人" },
+            { SP_RED_DRACONIAN, "红龙人" },
+            { SP_BASE_DRACONIAN, "龙人" },
+            { SP_WHITE_DRACONIAN, "白龙人" },
+            { SP_GREEN_DRACONIAN, "绿龙人" },
+            { SP_YELLOW_DRACONIAN, "黄龙人" },
+            { SP_GREY_DRACONIAN, "灰龙人" },
+            { SP_BLACK_DRACONIAN, "黑龙人" },
+            { SP_PURPLE_DRACONIAN, "紫龙人" },
+            { SP_MOTTLED_DRACONIAN, "斑驳龙人" },
+            { SP_PALE_DRACONIAN, "苍白龙人" },
+        };
+        auto it = zh_names.find(speci);
+        return it != zh_names.end() ? it->second : nullptr;
+    }
+
+    string name(species_type speci, name_type spname_type, bool raw)
     {
         const species_def& def = get_species_def(speci);
         if (spname_type == SPNAME_GENUS && def.genus_name)
-            return def.genus_name;
+            return raw ? def.genus_name : T_(def.genus_name);
         else if (spname_type == SPNAME_ADJ && def.adj_name)
-            return def.adj_name;
+            return raw ? def.adj_name : T_(def.adj_name);
+        // Display path: use T_() for i18n translation lookup
+        if (!raw && spname_type == SPNAME_PLAIN)
+            return T_(def.name);
         return def.name;
     }
 
@@ -66,7 +109,12 @@ namespace species
         for (int i = 0; i < NUM_SPECIES; ++i)
         {
             sp = static_cast<species_type>(i);
-            if (species == name(sp))
+            // Match against English name (always)
+            if (species == name(sp, SPNAME_PLAIN, true))
+                return sp;
+            // deprecated: legacy ZH save compatibility — Chinese name matching
+            const char* zh = get_species_zh_name(sp);
+            if (zh && species == zh)
                 return sp;
         }
 
@@ -86,9 +134,19 @@ namespace species
         for (int i = 0; i < NUM_SPECIES; ++i)
         {
             const species_type si = static_cast<species_type>(i);
-            const string sp_name = lowercase_string(name(si));
+            const string sp_name = lowercase_string(name(si, SPNAME_PLAIN, true));
 
             string::size_type pos = sp_name.find(spec);
+            // deprecated: legacy ZH save compatibility — Chinese name fallback
+            if (pos == string::npos)
+            {
+                const char* zh_name = get_species_zh_name(si);
+                if (zh_name)
+                {
+                    const string sp_name_zh = lowercase_string(zh_name);
+                    pos = sp_name_zh.find(spec);
+                }
+            }
             if (pos != string::npos)
             {
                 if (is_removed(si))
@@ -415,7 +473,7 @@ namespace species
     string prayer_action(species_type species)
     {
       auto action = get_species_def(species).altar_action;
-      return action ? action : "kneel at";
+      return action ? T_(action) : T_("kneel at");
     }
 
     static const string shout_verbs[] = {"shout", "yell", "scream"};
@@ -465,22 +523,31 @@ namespace species
         // Aside from direct uses, some flavor stuff checks the strings
         // here. TODO: should some of these be species flags a la hair?
         // Also, some skin mutations should have a way of overriding these perhaps
+        const bool zh = Options.language == lang_t::ZH;
         if (is_draconian(species) || species == SP_NAGA)
-            return adj ? "scaled" : "scales";
+            return zh ? (adj ? "鳞片的" : "鳞片")
+                      : (adj ? "scaled" : "scales");
         else if (species == SP_TENGU)
-            return adj ? "feathered" : "feathers";
+            return zh ? (adj ? "羽毛的" : "羽毛")
+                      : (adj ? "feathered" : "feathers");
         else if (species == SP_FELID)
-            return adj ? "furry" : "fur";
+            return zh ? (adj ? "毛茸茸的" : "毛皮")
+                      : (adj ? "furry" : "fur");
         else if (species == SP_MUMMY)
-            return adj ? "bandage-wrapped" : "bandages";
+            return zh ? (adj ? "绷带包裹的" : "绷带")
+                      : (adj ? "bandage-wrapped" : "bandages");
         else if (species == SP_GARGOYLE)
-            return adj ? "stony" : "stone";
+            return zh ? (adj ? "石质的" : "石头")
+                      : (adj ? "stony" : "stone");
         else if (species == SP_POLTERGEIST)
-            return adj ? "ectoplasmic" : "ectoplasm";
+            return zh ? (adj ? "灵质的" : "灵质")
+                      : (adj ? "ectoplasmic" : "ectoplasm");
         else if (species == SP_REVENANT)
-            return adj ? "bony" : "bones";
+            return zh ? (adj ? "骨质的" : "骨头")
+                      : (adj ? "bony" : "bones");
         else
-            return adj ? "fleshy" : "skin";
+            return zh ? (adj ? "皮肤的" : "皮肤")
+                      : (adj ? "fleshy" : "skin");
     }
 
     string arm_name(species_type species)
@@ -755,7 +822,7 @@ void change_species_to(species_type sp)
     vector<item_def*> to_remove = you.equipment.get_forced_removal_list();
     for (item_def* item : to_remove)
     {
-        mprf("%s falls away.", item->name(DESC_YOUR).c_str());
+        mprf(T_("%s falls away."), item->name(DESC_YOUR).c_str());
         you.equipment.remove(*item);
     }
     you.equipment.update();

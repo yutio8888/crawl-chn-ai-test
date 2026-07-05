@@ -17,6 +17,7 @@
 #include "artefact.h"
 #include "colour.h"
 #include "command.h"
+#include "database.h"
 #include "describe.h"
 #include "env.h"
 #include "evoke.h"
@@ -26,6 +27,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "item-use.h"
+#include "positional_format.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "known-items.h"
@@ -325,7 +327,7 @@ void InvMenu::set_preselect(const vector<SelItem> *pre)
 
 string slot_description()
 {
-    return make_stringf("%d/%d gear slots", inv_count(INVENT_GEAR), MAX_GEAR);
+    return make_stringf(T_("%d/%d gear slots"), inv_count(INVENT_GEAR), MAX_GEAR);
 }
 
 void InvMenu::set_title(const string &s)
@@ -335,17 +337,17 @@ void InvMenu::set_title(const string &s)
         string str;
         switch (cur_osel)
         {
-            case 0: str = "Gear: " + slot_description(); break;
-            case 1: str = "Potions: "; break;
-            case 2: str = "Scrolls: "; break;
-            case 3: str = "Evocable Items: "; break;
+            case 0: str = T_("Gear: ") + slot_description(); break;
+            case 1: str = T_("Potions: "); break;
+            case 2: str = T_("Scrolls: "); break;
+            case 3: str = T_("Evocable Items: "); break;
         }
-        str += "    (Left/Right to switch category)";
+        str += T_("    (Left/Right to switch category)");
         set_title(new InvTitle(this, str, title_annotate));
         return;
     }
 
-    set_title(new InvTitle(this, s.empty() ? "Inventory: " + slot_description()
+    set_title(new InvTitle(this, s.empty() ? T_("Inventory: ") + slot_description()
                                            : s,
                            title_annotate));
 }
@@ -501,7 +503,7 @@ string InvMenu::get_select_count_string(int) const
         if (all_sel.empty())
             return "";
 
-        return make_stringf(" %d item%s", (int)all_sel.size(),
+        return make_stringf(T_(" %d item%s"), (int)all_sel.size(),
                                           all_sel.size() > 1 ? "s" : "");
     }
 
@@ -557,7 +559,7 @@ static bool _has_temp_unwearable_armour()
  * the given selector and don't find any?
  *
  * @param selector      The given type of object_selector.
- * @return              A message such as "You aren't carrying any weapons."
+ * @return              A message such as T_("You aren't carrying any weapons.")
  *                      "Your armour is currently melded into you.", etc.
  */
 string no_selectables_message(int item_selector)
@@ -565,70 +567,70 @@ string no_selectables_message(int item_selector)
     switch (item_selector)
     {
     case OSEL_ANY:
-        return "You aren't carrying anything.";
+        return T_("You aren't carrying anything.");
     case OSEL_WIELD:
     case OBJ_WEAPONS:
-        return "You aren't carrying any weapons.";
+        return T_("You aren't carrying any weapons.");
     case OSEL_BLESSABLE_WEAPON:
-        return "You aren't carrying any weapons that can be blessed.";
+        return T_("You aren't carrying any weapons that can be blessed.");
     case OBJ_ARMOUR:
     {
         if (_has_temp_unwearable_armour())
-            return "You aren't carrying any currently wearable armour.";
+            return T_("You aren't carrying any currently wearable armour.");
         else
-            return "You aren't carrying any wearable armour.";
+            return T_("You aren't carrying any wearable armour.");
     }
     case OSEL_UNIDENT:
-        return "You don't currently have any unidentified items.";
+        return T_("You don't currently have any unidentified items.");
     case OSEL_ENCHANTABLE_ARMOUR:
-        return "You aren't carrying any armour which can be enchanted further.";
+        return T_("You aren't carrying any armour which can be enchanted further.");
     case OBJ_CORPSES:
-        return "You don't have any corpses.";
+        return T_("You don't have any corpses.");
     case OBJ_POTIONS:
-        return "You aren't carrying any potions.";
+        return T_("You aren't carrying any potions.");
     case OBJ_SCROLLS:
-        return "You aren't carrying any scrolls.";
+        return T_("You aren't carrying any scrolls.");
     case OBJ_BOOKS:
-        return "You don't have any books.";
+        return T_("You don't have any books.");
     case OBJ_WANDS:
-        return "You aren't carrying any wands.";
+        return T_("You aren't carrying any wands.");
     case OBJ_JEWELLERY:
-        return "You aren't carrying any pieces of jewellery.";
+        return T_("You aren't carrying any pieces of jewellery.");
     case OSEL_AMULET:
-        return "You aren't carrying any amulets.";
+        return T_("You aren't carrying any amulets.");
     case OSEL_JEWELLERY_OR_TALISMAN:
-        return "You aren't carrying any jewellery or talismans.";
+        return T_("You aren't carrying any jewellery or talismans.");
     case OSEL_LAUNCHING:
-        return "You aren't carrying any items that might be thrown or fired.";
+        return T_("You aren't carrying any items that might be thrown or fired.");
     case OSEL_EVOKABLE:
         if (you.get_mutation_level(MUT_NO_ARTIFICE)) // iffy
-            return "You cannot evoke magical items.";
-        return "You aren't carrying any items that you can evoke.";
+            return T_("You cannot evoke magical items.");
+        return T_("You aren't carrying any items that you can evoke.");
     case OSEL_CURSED_WORN:
-        return "None of your equipped items are cursed.";
+        return T_("None of your equipped items are cursed.");
     case OSEL_WORN_ARMOUR:
-        return "You aren't wearing any pieces of armour.";
+        return T_("You aren't wearing any pieces of armour.");
     case OSEL_WORN_JEWELLERY_OR_TALISMAN:
-        return "You aren't wearing any rings, amulets, or talismans.";
+        return T_("You aren't wearing any rings, amulets, or talismans.");
     case OSEL_WORN_EQUIPABLE:
-        return "You aren't wearing anything.";
+        return T_("You aren't wearing anything.");
     case OSEL_EQUIPABLE:
-        return "You aren't carrying anything that can be equipped.";
+        return T_("You aren't carrying anything that can be equipped.");
     case OSEL_BRANDABLE_WEAPON:
-        return "You aren't carrying any weapons that can be branded.";
+        return T_("You aren't carrying any weapons that can be branded.");
     case OSEL_ENCHANTABLE_WEAPON:
-        return "You aren't carrying any weapons that can be enchanted.";
+        return T_("You aren't carrying any weapons that can be enchanted.");
     case OSEL_ARTEFACT_WEAPON:
-        return "You aren't carrying any artefact melee weapons.";
+        return T_("You aren't carrying any artefact melee weapons.");
     case OSEL_CURSABLE:
-        return "You aren't wearing any cursable items.";
+        return T_("You aren't wearing any cursable items.");
     case OSEL_UNCURSED_WORN_RINGS:
-        return "You aren't wearing any uncursed rings.";
+        return T_("You aren't wearing any uncursed rings.");
     case OSEL_QUIVER_ACTION:
-        return "You don't have any quiverable items.";
+        return T_("You don't have any quiverable items.");
     }
 
-    return "You aren't carrying any such object.";
+    return T_("You aren't carrying any such object.");
 }
 
 void InvMenu::load_inv_items(int item_selector, int excluded_slot,
@@ -991,11 +993,11 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
     {
         // Mention the class selection shortcuts.
         if (is_set(MF_SECONDARY_SCROLL))
-            select_all = "go to first";
+            select_all = T_("Jump to first");
         else if (is_set(MF_MULTISELECT))
-            select_all = "select all";
+            select_all = T_("Select all");
         else
-            select_all = "select first";
+            select_all = T_("Select first");
     }
 
     for (int obj = 0; obj < NUM_OBJECT_CLASSES; ++obj)
@@ -1017,10 +1019,15 @@ menu_letter InvMenu::load_items(const vector<const item_def*> &mitems,
                 const string str = "Magical Staves ";
                 subtitle += string(strwidth(str) - strwidth(subtitle),
                                    ' ');
-                subtitle += "("+select_all+" with <w>";
-                for (char gly : glyphs)
-                    subtitle += gly;
-                subtitle += "</w><blue>)";
+                {
+                    string glyph_str;
+                    for (char gly : glyphs)
+                        glyph_str += gly;
+                    string markup = "<w>" + glyph_str + "</w><blue>";
+                    subtitle += make_stringf_p(T_("(%1$s with %2$s)"),
+                                               select_all.c_str(),
+                                               markup.c_str());
+                }
             }
         }
         add_entry(new MenuEntry(subtitle, MEL_SUBTITLE));
@@ -1155,47 +1162,62 @@ const char *item_class_name(int type, bool terse)
 {
     if (terse)
     {
+        // Terse names are used for internal matching (e.g. .des file parsing)
+        // and must remain in English. Display names use the else branch below.
         switch (type)
         {
+        case OBJ_WEAPONS:    return "weapon";
+        case OBJ_MISSILES:   return "missile";
+        case OBJ_ARMOUR:     return "armour";
+        case OBJ_WANDS:      return "wand";
+        case OBJ_SCROLLS:    return "scroll";
+        case OBJ_JEWELLERY:  return "jewellery";
+        case OBJ_POTIONS:    return "potion";
+        case OBJ_BOOKS:      return "book";
         case OBJ_STAVES:     return "magical staff";
+        case OBJ_ORBS:       return "orb";
         case OBJ_MISCELLANY: return "misc";
-        default:             return base_type_string((object_class_type) type);
+        case OBJ_CORPSES:    return "corpse";
+        case OBJ_GOLD:       return "gold";
+        case OBJ_RUNES:      return "rune";
+        case OBJ_GEMS:       return "gem";
+        case OBJ_TALISMANS:  return "talisman";
+        case OBJ_GIZMOS:     return "gizmo";
+        case OBJ_BAUBLES:    return "bauble";
+        default:             return "";
         }
     }
     else
     {
         switch (type)
         {
-        case OBJ_GOLD:       return "Gold";
-        case OBJ_WEAPONS:    return "Hand Weapons";
-        case OBJ_MISSILES:   return "Missiles";
-        case OBJ_ARMOUR:     return "Armour";
-        case OBJ_WANDS:      return "Wands";
-#if TAG_MAJOR_VERSION == 34
-        case OBJ_FOOD:       return "Comestibles";
-#endif
-        case OBJ_SCROLLS:    return "Scrolls";
-        case OBJ_JEWELLERY:  return "Jewellery";
-        case OBJ_POTIONS:    return "Potions";
-        case OBJ_BOOKS:      return "Books";
-        case OBJ_STAVES:     return "Magical Staves";
-#if TAG_MAJOR_VERSION == 34
-        case OBJ_RODS:       return "Rods";
-#endif
-        case OBJ_ORBS:       return "Orbs of Power";
-        case OBJ_MISCELLANY: return "Miscellaneous";
-        case OBJ_CORPSES:    return "Carrion";
-        case OBJ_RUNES:      return "Runes of Zot";
-        case OBJ_GEMS:       return "Ancient Gems";
-        case OBJ_TALISMANS:  return "Talismans";
-        case OBJ_GIZMOS:     return "Gizmo";
-        case OBJ_BAUBLES:    return "Baubles";
+        case OBJ_GOLD:       return T_("gold");
+        case OBJ_WEAPONS:    return T_("weapon");
+        case OBJ_MISSILES:   return T_("throwable");
+        case OBJ_ARMOUR:     return T_("armour");
+        case OBJ_WANDS:      return T_("wand");
+        case OBJ_SCROLLS:    return T_("scroll");
+        case OBJ_JEWELLERY:  return T_("jewellery");
+        case OBJ_POTIONS:    return T_("potion");
+        case OBJ_BOOKS:      return T_("book");
+        case OBJ_STAVES:     return T_("magical staff");
+        case OBJ_ORBS:       return T_("orb");
+        case OBJ_MISCELLANY: return T_("misc");
+        case OBJ_CORPSES:    return T_("corpse");
+        case OBJ_RUNES:      return T_("rune");
+        case OBJ_GEMS:       return T_("gem");
+        case OBJ_TALISMANS:  return T_("talisman");
+        case OBJ_GIZMOS:     return T_("gizmo");
+        case OBJ_BAUBLES:    return T_("bauble");
         }
     }
     return "";
 }
 
-const char* equip_slot_name(equipment_slot type, bool terse)
+// Always returns the English slot name, regardless of language setting.
+// Used by equip_slot_by_name() and other programmatic slot name lookups
+// where the return value is compared against English string constants.
+const char* equip_slot_name_en(equipment_slot type, bool terse)
 {
     switch (type)
     {
@@ -1214,6 +1236,11 @@ const char* equip_slot_name(equipment_slot type, bool terse)
     case SLOT_HAUNTED_AUX: return "Armour";
     default:               return "";
     }
+}
+
+const char* equip_slot_name(equipment_slot type, bool terse)
+{
+    return T_(equip_slot_name_en(type, terse));
 }
 
 vector<SelItem> select_items(const vector<const item_def*> &items,
@@ -1489,7 +1516,7 @@ void display_inventory()
 
 static string _drop_menu_titlefn(const Menu*, const string &)
 {
-    return "Drop what? (Left/Right to switch category) " + slot_description() + " (_ for help)";
+    return T_("Drop what? (Left/Right to switch category) ") + slot_description() + T_(" (_ for help)");
 }
 
 /**
@@ -1617,19 +1644,19 @@ bool maybe_warn_about_removing(const item_def& item)
         return true;
 
     if (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_STAVES)
-        prompt += "Really unwield ";
+        prompt += T_("Really unwield ");
     else if (item.base_type == OBJ_ARMOUR)
-        prompt += "Really take off ";
+        prompt += T_("Really take off");
     else
-        prompt += "Really remove ";
+        prompt += T_("Really remove ");
 
     // now ask
     if (item.cursed())
-        prompt += "and destroy ";
+        prompt += T_("and destroy ");
     prompt += item.name(DESC_INVENTORY);
     prompt += "?";
     if (penance)
-        prompt += " This could place you under penance!";
+        prompt += T_(" This could place you under penance!");
     return yesno(prompt.c_str(), false, 'n');
 }
 
@@ -1640,7 +1667,7 @@ static string _operation_verb(operation_types oper)
     case OPER_WIELD:          return "wield";
     case OPER_QUAFF:          return "quaff";
     case OPER_DROP:           return "drop";
-    case OPER_TAKEOFF:        return "take off";
+    case OPER_TAKEOFF:        return T_("take off");
     case OPER_WEAR:           return "wear";
     case OPER_PUTON:          return "put on";
     case OPER_REMOVE:         return "remove";
@@ -1831,7 +1858,9 @@ int prompt_invent_item(const char *prompt,
         }
 
         if (need_prompt)
-            mprf(MSGCH_PROMPT, "%s (<w>?</w> for menu, <w>Esc</w> to quit)", prompt);
+            mprf(MSGCH_PROMPT,
+                 T_("%s (<w>?</w> for menu, <w>Esc</w> to quit)"),
+                 prompt);
         else
             flush_prev_message();
 
@@ -1945,9 +1974,9 @@ int prompt_invent_item(const char *prompt,
                 ret = letter_to_index(keyin);
 
             if (must_exist && !you.inv[ret].defined())
-                mpr("You don't have any such object.");
+                mpr(T_("You don't have any such object."));
             else if (must_exist && !item_is_selected(you.inv[ret], type_expect))
-                mpr("That's the wrong kind of item!");
+                mpr(T_("That's the wrong kind of item!"));
             else if (!do_warning || check_warning_inscriptions(you.inv[ret], oper))
                 break;
         }

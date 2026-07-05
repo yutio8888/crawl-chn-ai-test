@@ -98,11 +98,9 @@ void surge_power(const int enhanced)
                                 (enhanced ==  2) ? "strong" :
                                 (enhanced  >  2) ? "huge"
                                                  : "";
-        mprf("You feel %s %s",
-             !modifier.length() ? "a"
-                                : article_a(modifier).c_str(),
-             (enhanced < 0) ? "numb sensation."
-                            : "surge of power!");
+        mprf(T_("You feel %s %s"),
+             !modifier.length() ? T_("a") : T_(article_a(modifier).c_str()),
+             (enhanced < 0) ? T_("numb sensation.") : T_("surge of power!"));
     }
 }
 
@@ -111,9 +109,10 @@ void surge_power_wand(const int mp_cost)
     if (mp_cost)
     {
         const bool slight = mp_cost < 3;
-        mprf("You feel a %ssurge of power%s",
-             slight ? "slight " : "",
-             slight ? "."      : "!");
+        if (slight)
+            mpr(T_("You feel a slight surge of power."));
+        else
+            mpr(T_("You feel a surge of power!"));
     }
 }
 
@@ -270,18 +269,40 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     if (toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
         toggle_with_I = false;
 
-    const string real_action = viewing ? "describe" : action;
+    const string real_action = viewing ? T_("describe") : (action.empty() ? T_("cast") : action);
 
     SpellMenu spell_menu;
     const string titlestring = make_stringf("%-25.25s",
-            make_stringf("Your spells (%s)", real_action.c_str()).c_str());
+            make_stringf(T_("Your spells (%s)"),
+                         real_action.c_str()).c_str());
 
     {
+        // Build column headers aligned with data columns.
+        // Data columns: name(32) power(10) damage(10) range(8) noise(14)
+        // Default view: name(32) schools(padded to 58) fail_rate(9) level
+        const int tlen = strwidth(titlestring);
+        // Pad to 32 (name column width). In tiles mode, add 4 extra
+        // cells to compensate for the 1-char title indent vs 5-char
+        // item hotkey prefix. Console mode uses 5-char indent for both.
+#ifdef USE_TILE_LOCAL
+        const int name_pad = 36 - tlen;
+#else
+        const int name_pad = 32 - tlen;
+#endif
+        const string default_header = titlestring
+            + string(name_pad, ' ')
+            + chop_string(T_("Type"), 26)
+            + chop_string(T_("Failure"), 9)
+            + T_("Level");
+        const string toggle_header = titlestring
+            + string(name_pad, ' ')
+            + chop_string(T_("Power"), 10)
+            + chop_string(T_("Damage"), 10)
+            + chop_string(T_("Range"), 8)
+            + chop_string(T_("Noise"), 14);
+
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(
-                titlestring + "           Type                      Failure  Level  ",
-                titlestring + "           Power     Damage    Range   Noise         ",
-                MEL_TITLE);
+            new ToggleableMenuEntry(default_header, toggle_header, MEL_TITLE);
         spell_menu.set_title(me, true, true);
     }
     spell_menu.set_highlighter(nullptr);
@@ -290,9 +311,10 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE);
     spell_menu.add_toggle_from_command(CMD_MENU_CYCLE_MODE_REVERSE);
 
-    string more_str = make_stringf("<lightgrey>Select a spell to %s</lightgrey>",
-        real_action.c_str());
-    string help_desc = make_stringf("   [<w>?</w>] help    ");
+    string more_str = make_stringf(T_("<lightgrey>%s</lightgrey>"),
+        make_stringf(T_("Select a spell to %s"), real_action.c_str()).c_str());
+    string help_desc = make_stringf("   [<w>?</w>] %s    ",
+                                    T_("help"));
     string toggle_desc = menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE);
     if (toggle_with_I)
     {
@@ -300,7 +322,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
         spell_menu.add_toggle_key('I');
         toggle_desc += "/[<w>I</w>]";
     }
-    toggle_desc += " toggle spell headers";
+    toggle_desc += T_(" toggle spell headers");
     more_str = pad_more_with_esc(more_str + help_desc + toggle_desc);
     spell_menu.set_more(formatted_string::parse_string(more_str));
     // TODO: should allow toggling between execute and examine
@@ -721,7 +743,9 @@ bool can_cast_spells(bool quiet)
     if (you.duration[DUR_NO_CAST])
     {
         if (!quiet)
-            mpr("You are unable to access your magic!");
+        {
+            mpr(T_("You are unable to access your magic!"));
+        }
         return false;
     }
 
@@ -729,7 +753,9 @@ bool can_cast_spells(bool quiet)
     if (you.no_cast())
     {
         if (!quiet)
-            mpr("Something interferes with your magic!");
+        {
+            mpr(T_("Something interferes with your magic!"));
+        }
         return false;
     }
 
@@ -743,7 +769,9 @@ bool can_cast_spells(bool quiet)
     if (you.confused())
     {
         if (!quiet)
-            mpr("You're too confused to cast spells.");
+        {
+            mpr(T_("You're too confused to cast spells."));
+        }
         return false;
     }
 
@@ -751,7 +779,8 @@ bool can_cast_spells(bool quiet)
     {
         if (!quiet)
         {
-            mprf("You cannot cast spells while %s!", player_silenced_reason());
+            mprf(T_("You cannot cast spells while %s!"),
+                     player_silenced_reason());
             // included in default force_more_message
         }
         return false;
@@ -795,15 +824,19 @@ static void _handle_energy_orb(int cost, spret cast_result)
         int drain = !targs.empty() ? random_range(1, 3) + targs.size() / 2 : 0;
 
         if (targs.empty())
-            mpr("Magical energy flows into your mind!");
+        {
+            mpr(T_("Magical energy flows into your mind!"));
+        }
         else
-            mprf("Magical energy flows from %s into your mind!",
-                 describe_monsters_condensed(targs).c_str());
+        {
+            mprf(T_("Magical energy flows from %s into your mind!"),
+                     describe_monsters_condensed(targs).c_str());
+        }
         inc_mp(cost + drain);
     }
     else
     {
-        mpr("Magical energy flows into your mind!");
+        mpr(T_("Magical energy flows into your mind!"));
         inc_mp(cost, true);
     }
     did_god_conduct(DID_WIZARDLY_ITEM, 10);
@@ -936,15 +969,17 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
                 if (you.last_cast_spell == SPELL_NO_SPELL
                     || !Options.enable_recast_spell)
                 {
-                    mprf(MSGCH_PROMPT, "Cast which spell? (? or * to list) ");
+                    mprf(MSGCH_PROMPT,
+                         T_("Cast which spell? (? or * to list) "));
                 }
                 else
                 {
-                    mprf(MSGCH_PROMPT, "Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>",
-                                       spell_title(you.last_cast_spell),
-                                       _spell_failure_rate_description(you.last_cast_spell).c_str());
-                    mprf(MSGCH_PROMPT, "Confirm with . or Enter, or press "
-                                       "? or * to list all spells.");
+                    mprf(MSGCH_PROMPT,
+                         T_("Casting: <w>%s</w> <lightgrey>(%s)</lightgrey>"),
+                         spell_title(you.last_cast_spell),
+                         _spell_failure_rate_description(you.last_cast_spell).c_str());
+                    mprf(MSGCH_PROMPT,
+                         T_("Confirm with . or Enter, or press ? or * to list all spells."));
                 }
 
                 keyin = numpad_to_regular(get_ch());
@@ -986,7 +1021,7 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         }
         else if (!isaalpha(keyin))
         {
-            mpr("You don't know that spell.");
+            mpr(T_("You don't know that spell."));
             crawl_state.zero_turns_taken();
             return spret::abort;
         }
@@ -996,7 +1031,7 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
 
     if (spell == SPELL_NO_SPELL)
     {
-        mpr("You don't know that spell.");
+        mpr(T_("You don't know that spell."));
         crawl_state.zero_turns_taken();
         return spret::abort;
     }
@@ -1014,8 +1049,7 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
     {
         // Abort if there are no hostiles within range, but flash the range
         // markers for a short while.
-        mpr("You can't see any susceptible monsters within range! "
-            "(Use <w>Z</w> to cast anyway.)");
+        mpr(T_("You can't see any susceptible monsters within range! (Use <w>Z</w> to cast anyway.)"));
 
         if ((Options.use_animations & UA_RANGE) && Options.darken_beyond_range)
         {
@@ -1031,8 +1065,8 @@ spret cast_a_spell(bool check_range, spell_type spell, dist *_target,
         && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
         // None currently dock just piety, right?
-        if (!yesno("Casting this spell will place you under penance. "
-                   "Really cast?", true, 'n'))
+        if (!yesno(T_("Casting this spell will place you under penance. "
+                   "Really cast?"), true, 'n'))
         {
             canned_msg(MSG_OK);
             crawl_state.zero_turns_taken();
@@ -1137,7 +1171,8 @@ static void _spellcasting_side_effects(spell_type spell, god_type god,
     {
         if (you.duration[DUR_SAP_MAGIC] && !fake_spell)
         {
-            mprf(MSGCH_WARN, "You lose access to your magic!");
+            mprf(MSGCH_WARN,
+                 T_("You lose access to your magic!"));
             you.increase_duration(DUR_NO_CAST, 3 + random2(3));
         }
 
@@ -1152,20 +1187,18 @@ static void _try_monster_cast(spell_type spell, int /*powc*/,
 {
     if (monster_at(you.pos()))
     {
-        mpr("Couldn't try casting monster spell because you're "
-            "on top of a monster.");
+        mpr(T_("Couldn't try casting monster spell because you're on top of a monster."));
         return;
     }
 
     monster* mon = get_free_monster();
     if (!mon)
     {
-        mpr("Couldn't try casting monster spell because there is "
-            "no empty monster slot.");
+        mpr(T_("Couldn't try casting monster spell because there is no empty monster slot."));
         return;
     }
 
-    mpr("Invalid player spell, attempting to cast it as monster spell.");
+    mpr(T_("Invalid player spell, attempting to cast it as monster spell."));
 
     mon->mname      = "Dummy Monster";
     mon->type       = MONS_HUMAN;
@@ -1235,7 +1268,7 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
             if (!action.matches(name))
                 continue;
 
-            string prompt = "Really cast " + string(name) + "?";
+            string prompt = make_stringf(T_("Really cast %s?"), name);
             if (!yesno(prompt.c_str(), false, 'n'))
             {
                 canned_msg(MSG_OK);
@@ -1254,18 +1287,17 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
     {
         if (failure_rate_to_int(raw_spell_fail(spell)) == 100)
         {
-            mprf(MSGCH_WARN, "It is impossible to cast this spell "
-                    "(100%% risk of failure)!");
+            mprf(MSGCH_WARN,
+                 T_("It is impossible to cast this spell (100%% risk of failure)!"));
             return true;
         }
 
-        string prompt = make_stringf("The spell is %s to miscast "
-                                     "(%s risk of failure)%s",
-                                     fail_severity_adjs[severity],
+        string prompt = make_stringf(T_("The spell is %s to miscast (%s risk of failure)%s"),
+                                     T_(fail_severity_adjs[severity]),
                                      failure_rate.c_str(),
-                                     severity > 1 ? "!" : ".");
+                                     severity > 1 ? T_("!") : T_("."));
 
-        prompt = make_stringf("%s Continue anyway?", prompt.c_str());
+        prompt = make_stringf(T_("%s Continue anyway?"), prompt.c_str());
         if (!yesno(prompt.c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);
@@ -1733,7 +1765,7 @@ static vector<string> _desc_intoxicate_chance(const monster_info& mi,
     if (get_resist(mi.resists(), MR_RES_POISON) >= 1)
         conf_pct =  conf_pct / 3;
 
-    return vector<string>{make_stringf("chance to confuse: %d%%", conf_pct)};
+    return vector<string>{make_stringf(T_("chance to confuse: %d%%"), conf_pct)};
 }
 
 static vector<string> _desc_englaciate_chance(const monster_info& mi,
@@ -1763,21 +1795,21 @@ static vector<string> _desc_englaciate_chance(const monster_info& mi,
     else
         fail_pct = 100;
 
-    return vector<string>{make_stringf("chance to slow: %d%%", 100 - fail_pct)};
+    return vector<string>{make_stringf(T_("chance to slow: %d%%"), 100 - fail_pct)};
 }
 
 static vector<string> _desc_gloom_chance(const monster_info& mi, int pow)
 {
     if (mons_res_blind(mi.type))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
-    return vector<string>{make_stringf("chance to blind: %d%%", gloom_success_chance(pow, mi.hd))};
+    return vector<string>{make_stringf(T_("chance to blind: %d%%"), gloom_success_chance(pow, mi.hd))};
 }
 
 static vector<string> _desc_airstrike_bonus(const monster_info& mi)
 {
     const int empty_spaces = airstrike_space_around(mi.pos, false);
-    return vector<string>{make_stringf("empty space bonus: %d/8", empty_spaces)};
+    return vector<string>{make_stringf(T_("empty space bonus: %d/8"), empty_spaces)};
 }
 
 static vector<string> _desc_mercury_weak_chance(const monster_info& mi)
@@ -1785,13 +1817,13 @@ static vector<string> _desc_mercury_weak_chance(const monster_info& mi)
     if (mi.is(MB_NO_ATTACKS))
         return vector<string>{};
 
-    return vector<string>{make_stringf("chance to weaken: %d%%",
+    return vector<string>{make_stringf(T_("chance to weaken: %d%%"),
                             get_mercury_weaken_chance(mi.hd))};
 }
 
 static vector<string> _desc_warp_space_chance(int pow)
 {
-    return vector<string>{make_stringf("chance to blink: %d%%",
+    return vector<string>{make_stringf(T_("chance to blink: %d%%"),
                             get_warp_space_chance(pow))};
 }
 
@@ -1803,7 +1835,7 @@ static vector<string> _desc_meph_chance(const monster_info& mi)
     int pct_chance = 2;
     if (mi.hd < MEPH_HD_CAP)
         pct_chance = 100 - (100 * mi.hd / MEPH_HD_CAP);
-    return vector<string>{make_stringf("chance to affect: %d%%", pct_chance)};
+    return vector<string>{make_stringf(T_("chance to affect: %d%%"), pct_chance)};
 }
 
 static vector<string> _desc_hailstorm_hit_chance(const monster_info& mi, int pow)
@@ -1870,7 +1902,7 @@ static vector<string> _desc_dispersal_chance(const monster_info& mi, int pow)
         return vector<string>{"will blink"};
 
     const int success = hex_success_chance(wl, pow, 100);
-    return vector<string>{make_stringf("chance to teleport: %d%%", success)};
+    return vector<string>{make_stringf(T_("chance to teleport: %d%%"), success)};
 }
 
 static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
@@ -1891,11 +1923,11 @@ static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
     if (wl != WILL_INVULN)
     {
         const int success = hex_success_chance(wl, pow, 100);
-        all_effects.push_back(make_stringf("chance to daze and blind: %d%%", success));
+        all_effects.push_back(make_stringf(T_("chance to daze and blind: %d%%"), success));
     }
 
     if (all_effects.empty())
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     return all_effects;
 }
@@ -1957,7 +1989,7 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
     }
 
     const int success = hex_success_chance(wl, pow, 100);
-    descs.push_back(make_stringf("chance to affect: %d%%", success));
+    descs.push_back(make_stringf(T_("chance to affect: %d%%"), success));
 
     return descs;
 }
@@ -2211,19 +2243,19 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         const bool useless = spell_is_useless(spell, true, false, true);
         const char *spell_title_color = useless ? "darkgrey" : "w";
         const string verb = channelled_spell_active(spell)
-            ? "<lightred>Restarting spell</lightred>"
-            : is_targeted ? "Aiming" : "Casting";
+            ? T_("<lightred>Restarting spell</lightred>")
+            : is_targeted ? T_("Aiming") : T_("Casting");
         string title = make_stringf("%s: <%s>%s</%s>", verb.c_str(),
                     spell_title_color, spell_title(spell), spell_title_color);
         if (actual_spell)
         {
-            title += make_stringf(" <lightgrey>(%s)</lightgrey>",
+            title += make_stringf(T_(" <lightgrey>(%s)</lightgrey>"),
                 _spell_failure_rate_description(spell).c_str());
         }
 
         if (spell == SPELL_GRAVE_CLAW)
         {
-            title += make_stringf("<lightgrey> (%d/%d uses available)</lightgrey>",
+            title += make_stringf(T_("<lightgrey> (%d/%d uses available)</lightgrey>"),
                                   you.props[GRAVE_CLAW_CHARGES_KEY].get_int(),
                                   GRAVE_CLAW_MAX_CHARGES);
         }
@@ -2270,7 +2302,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         if (testbits(flags, spflag::not_self) && target->isMe())
         {
             if (spell == SPELL_TELEPORT_OTHER)
-                mpr("Sorry, this spell works on others only.");
+                mpr(T_("Sorry, this spell works on others only."));
             else
                 canned_msg(MSG_UNTHINKING_ACT);
 
@@ -2402,7 +2434,8 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
     {
         if (actual_spell)
         {
-            mprf("You miscast %s.", spell_title(spell));
+            mprf(T_("You miscast %s."),
+                 spell_title(spell));
             flush_input_buffer(FLUSH_ON_FAILURE);
             learned_something_new(HINT_SPELL_MISCAST);
             miscast_effect(spell, fail);
@@ -2426,11 +2459,13 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
 
         if (is_valid_spell(spell))
         {
-            mprf(MSGCH_ERROR, "Spell '%s' is not a player castable spell.",
+            mprf(MSGCH_ERROR,
+                 T_("Spell '%s' is not a player castable spell."),
                  spell_title(spell));
         }
         else
-            mprf(MSGCH_ERROR, "Invalid spell!");
+            mprf(MSGCH_ERROR,
+                 T_("Invalid spell!"));
 
         return spret::abort;
     }
@@ -2848,7 +2883,8 @@ static spret _do_cast(spell_type spell, int powc, const dist& spd,
     default:
         if (spell_removed(spell))
         {
-            mprf("Sorry, the spell '%s' is gone!", spell_title(spell));
+            mprf(T_("Sorry, the spell '%s' is gone!"),
+                 spell_title(spell));
             return spret::abort;
         }
         break;
@@ -2963,12 +2999,12 @@ int fail_severity(spell_type spell)
 
 const char *fail_severity_adjs[] =
 {
-    "safe",
-    "mildly dangerous",
-    "dangerous",
-    "quite dangerous",
-    "extremely dangerous",
-    "astonishingly dangerous",
+    T_("safe"),
+    T_("mildly dangerous"),
+    T_("dangerous"),
+    T_("quite dangerous"),
+    T_("extremely dangerous"),
+    T_("astonishingly dangerous"),
 };
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
 
@@ -3024,12 +3060,12 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 
     if (enkindled)
     {
-        return make_stringf("<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>",
+        return make_stringf(T_("<lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>"),
                                 colour.c_str(), enkindled_fail, colour.c_str());
     }
     else
     {
-        return make_stringf("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>",
+        return make_stringf(T_("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>"),
             colour.c_str(), normal_fail, colour.c_str(), enkindled_fail);
     }
 }
@@ -3037,11 +3073,11 @@ string spell_failure_rate_string(spell_type spell, bool terse)
 static string _spell_failure_rate_description(spell_type spell)
 {
     const string failure = failure_rate_to_string(raw_spell_fail(spell));
-    const char *severity_adj = fail_severity_adjs[fail_severity(spell)];
+    const char *severity_adj = T_(fail_severity_adjs[fail_severity(spell)]);
     const string colour = colour_to_str(failure_rate_colour(spell));
     const char *col = colour.c_str();
 
-    return make_stringf("<%s>%s</%s>; <%s>%s</%s> risk of failure",
+    return make_stringf(T_("<%s>%s</%s>; <%s>%s</%s> risk of failure"),
             col, severity_adj, col, col, failure.c_str(), col);
 }
 
@@ -3058,8 +3094,8 @@ string spell_noise_string(spell_type spell, int chop_wiz_display_width)
 
     const char* noise_descriptions[] =
     {
-        "Silent", "Almost silent", "Quiet", "A bit loud", "Loud", "Very loud",
-        "Extremely loud", "Deafening"
+        T_("Silent"), T_("Almost silent"), T_("Quiet"), T_("A bit loud"),
+        T_("Loud"), T_("Very loud"), T_("Extremely loud"), T_("Deafening")
     };
 
     const int breakpoints[] = { 1, 2, 4, 8, 15, 20, 30 };
@@ -3177,7 +3213,7 @@ string spell_max_damage_string(spell_type spell)
         // Fortress Blast's damage scales with AC, not spellpower, and thus
         // exceeds the normal spellpower cap.
         dice_def dmg = zap_damage(ZAP_FORTRESS_BLAST, 200, false);
-        return make_stringf("%dd%d", dmg.num, dmg.size);
+        return make_stringf(T_("%dd%d"), dmg.num, dmg.size);
     }
     default:
         break;
@@ -3204,7 +3240,7 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
         case SPELL_DISCHARGE:
         {
             const int max = discharge_max_damage(pow);
-            return make_stringf("%d-%d/arc", FLAT_DISCHARGE_ARC_DAMAGE, max);
+            return make_stringf(T_("%d-%d/arc"), FLAT_DISCHARGE_ARC_DAMAGE, max);
         }
         case SPELL_AIRSTRIKE:
             return describe_player_airstrike_dam(base_airstrike_damage(pow));
@@ -3223,7 +3259,7 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             dice_def shot_dam = hoarfrost_cannonade_damage(pow, false);
             dice_def finale_dam = hoarfrost_cannonade_damage(pow, true);
 
-            return make_stringf("%dd%d/%dd%d",
+            return make_stringf(T_("%dd%d/%dd%d"),
                 shot_dam.num, shot_dam.size, finale_dam.num, finale_dam.size);
         }
         case SPELL_RENDING_BLADE:
@@ -3232,9 +3268,9 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             dice_def dmg = rending_blade_damage(pow, false);
             const int bonus = dmg_mp.size - dmg.size;
             if (bonus > 0)
-                return make_stringf("%dd(%d+%d*)", dmg.num, dmg.size, bonus);
+                return make_stringf(T_("%dd(%d+%d*)"), dmg.num, dmg.size, bonus);
             else
-                return make_stringf("%dd%d", dmg.num, dmg.size);
+                return make_stringf(T_("%dd%d"), dmg.num, dmg.size);
         }
         default:
             break;
@@ -3254,11 +3290,11 @@ string spell_damage_string(spell_type spell, bool evoked, int pow, bool terse)
             mult = "3x";
             break;
         case SPELL_TREMORSTONE:
-            mult = make_stringf("%dx", tremorstone_count(pow));
+            mult = make_stringf(T_("%dx"), tremorstone_count(pow));
         default:
             break;
     }
-    const string dam_str = make_stringf("%s%dd%d", mult.c_str(), dam.num,
+    const string dam_str = make_stringf(T_("%s%dd%d"), mult.c_str(), dam.num,
             dam.size);
 
     if (spell == SPELL_ISKENDERUNS_MYSTIC_BLAST)
@@ -3396,7 +3432,7 @@ void do_demonic_magic(int pow, int rank)
     if (rank < 1)
         return;
 
-    mpr("Malevolent energies surge around you.");
+    mpr(T_("Malevolent energies surge around you."));
 
     for (radius_iterator ri(you.pos(), rank, C_SQUARE, LOS_NO_TRANS, true); ri; ++ri)
     {
@@ -3427,7 +3463,7 @@ void start_channelling_spell(spell_type spell, string reminder_msg, bool do_effe
 
     if (!reminder_msg.empty())
     {
-        string msg = "(Press <w>%</w> to " + reminder_msg + ".)";
+        string msg = make_stringf(T_("(Press <w>%%</w> to %s.)"), reminder_msg.c_str());
         insert_commands(msg, { CMD_WAIT });
         mpr(msg);
     }
@@ -3461,7 +3497,7 @@ void handle_channelled_spell()
     if ((spell == SPELL_FLAME_WAVE || spell == SPELL_SEARING_RAY)
         && turn > 1 && !enough_mp(1, true))
     {
-        mprf("Without enough magic to sustain it, your %s dissipates.",
+        mprf(T_("Without enough magic to sustain it, your %s dissipates."),
              spell_title(spell));
         stop_channelling_spells(true);
         return;
@@ -3486,7 +3522,7 @@ void handle_channelled_spell()
             return;
 
         default:
-            mprf(MSGCH_WARN, "Attempting to channel buggy spell: %s", spell_title(spell));
+            mprf(MSGCH_WARN, T_("Attempting to channel buggy spell: %s"), spell_title(spell));
     }
 }
 
@@ -3503,19 +3539,19 @@ void stop_channelling_spells(bool quiet)
     switch (spell)
     {
         case SPELL_FLAME_WAVE:
-            mpr("You stop channelling waves of flame.");
+            mpr(T_("You stop channelling waves of flame."));
             break;
 
         case SPELL_SEARING_RAY:
-            mpr("You stop channelling your searing ray.");
+            mpr(T_("You stop channelling your searing ray."));
             break;
 
         case SPELL_MAXWELLS_COUPLING:
-            mpr("The insufficient charge dissipates harmlessly.");
+            mpr(T_("The insufficient charge dissipates harmlessly."));
             break;
 
         case SPELL_CLOCKWORK_BEE:
-            mpr("You stop assembling your clockwork bee.");
+            mpr(T_("You stop assembling your clockwork bee."));
             break;
 
         default:
@@ -3535,7 +3571,8 @@ bool warn_about_contam_cost(int max_contam)
     const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE) ? 2 : 1;
 
     if (you.magic_contamination + (max_contam * mul) >= 1000)
-        return !yesno("Casting this now could dangerously contaminate you. Continue?", true, 'n');
+        return !yesno(T_("Casting now could cause dangerous contamination. Continue?"),
+                      true, 'n');
 
     return false;
 }

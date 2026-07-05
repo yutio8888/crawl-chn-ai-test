@@ -17,11 +17,11 @@ Makhleb lastname
 %%%%
 Sif Muna lastname
 
-学识之主席夫·穆纳
+学识之主西芙·穆娜
 %%%%
 Trog lastname
 
-狂怒者特洛戈
+狂怒者特洛格
 %%%%
 Elyvilon lastname
 
@@ -33,7 +33,7 @@ Lugonu lastname
 %%%%
 Beogh lastname
 
-强盗比欧弗
+牧者比欧弗
 %%%%
 Fedhas lastname
 
@@ -53,7 +53,7 @@ Dithmenos lastname
 %%%%
 Nemelex Xobeh lastname
 
-杂耍者尼姆雷斯・索布
+杂耍者尼姆雷斯·索布
 %%%%
 Gozag lastname
 

@@ -36,6 +36,7 @@
 #include "travel.h"
 #include "unicode.h"
 #include "zot.h"
+#include "database.h"
 
 enum annotation_menu_commands
 {
@@ -161,7 +162,7 @@ static string coloured_branch(branch_type br)
     if (br < 0 || br >= NUM_BRANCHES)
         return "<lightred>Buggy buglands</lightred>";
 
-    return make_stringf("<yellow>%s</yellow>", branches[br].shortname);
+    return make_stringf("<yellow>%s</yellow>", T_(branches[br].shortname));
 }
 
 static string shoptype_to_string(shop_type s)
@@ -422,7 +423,7 @@ static string _get_unseen_branches()
                 disp += (num_printed_branches % 4) == 0
                         ? "\n"
                         // Each branch entry takes up 20 spaces
-                        : string(20 + 21 - strlen(buffer), ' ');
+                        : string(20 + 21 - strwidth(string(buffer)), ' ');
             }
             else
             {
@@ -454,7 +455,7 @@ static string _get_unseen_branches()
                     disp += (num_printed_branches % 4) == 0
                             ? "\n"
                             // Each branch entry takes up 20 spaces
-                            : string(20 + 21 - strlen(buffer), ' ');
+                            : string(20 + 21 - strwidth(string(buffer)), ' ');
                 }
 
             }
@@ -756,13 +757,13 @@ static void _process_command(const char keypress)
                 do_interlevel_travel();
             }
             else
-                mpr("Sorry, you haven't seen any altar yet.");
+                mpr(T_("Sorry, you haven't seen any altar yet."));
             return;
         case '$':
             if (!shops_present.empty())
                 StashTrack.search_stashes("shop");
             else
-                mpr("Sorry, you haven't seen any shop yet.");
+                mpr(T_("Sorry, you haven't seen any shop yet."));
             return;
         case '!':
             do_annotate();
@@ -850,7 +851,7 @@ static void _update_tracked_feature_annot(dungeon_feature_type feat,
     const level_id li = level_id::current();
     const char *feat_key = _get_tracked_feature_key(feat);
     const int new_num = env.properties[feat_key];
-    const char *feat_desc = get_feature_def(feat).name;
+    const char *feat_desc = T_(get_feature_def(feat).name);
     const string new_string = make_stringf("%d %s%s", new_num, feat_desc,
                                            new_num == 1 ? "" : "s");
     const string old_string = make_stringf("%d %s%s", old_num, feat_desc,
@@ -943,7 +944,7 @@ static void _update_unique_annotation(level_id level)
 
     for (const auto &annot : auto_unique_annotations)
         if (annot.first.find(',') != string::npos)
-            sep = "; ";
+            sep = T_("; ");
 
     for (const auto &annot : auto_unique_annotations)
     {
@@ -1165,7 +1166,7 @@ static void _show_dungeon_overview(vector<branch_type> brs)
         }
         line += make_stringf("(%c) %-14s ",
                              branches[br].travel_shortcut,
-                             branches[br].shortname);
+                             T_(branches[br].shortname));
         ++linec;
     }
     if (!line.empty())
@@ -1182,7 +1183,7 @@ static int _prompt_annotate_branch(level_id lid)
         if (is_known_branch_id(it->id))
             brs.push_back(it->id);
 
-    mprf(MSGCH_PROMPT, "Annotate which branch? (. - %s, ? - help, ! - show branch list)",
+    mprf(MSGCH_PROMPT, T_("Annotate which branch? (. - %s, ? - help, ! - show branch list)"),
         lid.describe(false, true).c_str());
 
     while (true)
@@ -1244,13 +1245,13 @@ void do_annotate()
         case ID_UP:
             // level_id() is the error value of find_up_level(lid)
             if (find_up_level(lid) == level_id())
-                mpr("There is no level above you.");
+                mpr(T_("There is no level above you."));
             else
                 annotate_level(find_up_level(lid));
             return;
         case ID_DOWN:
             if (find_down_level(lid) == lid)
-                mpr("There is no level below you in this branch.");
+                mpr(T_("There is no level below you in this branch."));
             else
                 annotate_level(find_down_level(lid));
             return;
@@ -1266,8 +1267,8 @@ void do_annotate()
     else
     {
         clear_messages();
-        const string prompt = make_stringf ("What level of %s? ",
-                    branches[branch].longname);
+        const string prompt = make_stringf (T_("What level of %s? "),
+                    T_(branches[branch].longname));
         depth = prompt_for_int(prompt.c_str(), true);
     }
     if (depth > 0 && depth <= max_depth)
@@ -1276,7 +1277,7 @@ void do_annotate()
         annotate_level(level_id(br, depth));
     }
     else
-        mpr("That's not a valid depth.");
+        mpr(T_("That's not a valid depth."));
     }
 }
 
@@ -1285,12 +1286,12 @@ void annotate_level(level_id li)
     const string old = get_level_annotation(li, true, true);
     if (!old.empty())
     {
-        mprf(MSGCH_PROMPT, "Current level annotation: <lightgrey>%s</lightgrey>",
+        mprf(MSGCH_PROMPT,
+             T_("Current level annotation: <lightgrey>%s</lightgrey>"),
              old.c_str());
     }
 
-    const string prompt = "New annotation for " + li.describe()
-                          + " (include '!' for warning): ";
+    const string prompt = make_stringf(T_("Add new annotation for %s (include '!' for warning): "), li.describe().c_str());
 
     char buf[77];
     if (msgwin_get_line_autohist(prompt, buf, sizeof(buf), old))
@@ -1301,7 +1302,7 @@ void annotate_level(level_id li)
         level_annotations[li] = string(buf);
     else
     {
-        mpr("Cleared annotation.");
+        mpr(T_("Cleared annotation."));
         level_annotations.erase(li);
     }
 }

@@ -373,4 +373,92 @@ white imp
 Polyphemus
 
 # 这也适用于其他被友方包围的怪物。
-SOUND:@The_monster@喊道：“进攻，我的宠物！进攻！”
+SOUND:@The_monster@喊道：”进攻，我的宠物！进攻！”
+%%%%
+__CAW seen
+
+SOUND:@The_monster@呱呱叫着。
+%%%%
+__CAW unseen
+
+SOUND:你听到一声响亮的呱呱叫声。
+%%%%
+__LAUGH seen
+
+SOUND:@The_monster@疯狂地笑着。
+%%%%
+__LAUGH unseen
+
+SOUND:你听到了疯狂的笑声。
+%%%%
+####################################
+# 玩家斯芬克斯谜语
+####################################
+%%%%
+_riddle_adj_
+
+一个令人困惑的
+
+一个绝妙的
+
+w:20
+一个聪明的
+
+一个令人费解的
+
+w:20
+一个巧妙的
+
+一个不可能的
+
+一个精巧的
+
+一个高超的
+
+一个让人绞尽脑汁的
+
+一个错综复杂的
+
+一个令人烦恼的
+
+%%%%
+_riddle_fail_acknowledged_
+
+，但@subjective@毫不在意。
+
+，但@subjective@不为所动。
+
+，但@subjective@嗤之以鼻。
+%%%%
+_riddle_fail_general_
+
+，但@subjective@无视了你。
+
+，但@subjective@没听明白。
+
+，但@subjective@假装没注意到。
+
+，但@subjective@无视了你。
+
+w:40
+@_riddle_fail_acknowledged_@
+%%%%
+_riddle_prefix_
+
+你向@the_monster@提出了@_riddle_adj_@谜语
+
+你向@the_monster@问了一个@_riddle_adj_@谜语
+
+你用一个@_riddle_adj_@谜语挑战@the_monster@
+%%%%
+Sphinx riddle success
+
+@_riddle_prefix_@。
+%%%%
+Sphinx riddle failure
+
+@_riddle_prefix_@@_riddle_fail_general_@
+%%%%
+Sphinx riddle failure acknowledged
+
+@_riddle_prefix_@@_riddle_fail_acknowledged_@

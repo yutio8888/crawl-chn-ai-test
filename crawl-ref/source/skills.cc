@@ -29,6 +29,7 @@
 #include "libutil.h"
 #include "message.h"
 #include "notes.h"
+#include "options.h"
 #include "output.h"
 #include "random.h"
 #include "religion.h"
@@ -142,6 +143,7 @@ struct species_skill_aptitude
 };
 
 #include "aptitudes.h"
+#include "database.h"
 
 // Traditionally, Spellcasting and In/Evocations formed the exceptions here:
 // Spellcasting skill was more expensive with about 130%, the other two got
@@ -329,22 +331,48 @@ static void _change_skill_level(skill_type exsk, int n)
     // are you drained/crosstrained/ash'd in the relevant skill?
     const bool specify_base = you.skill(exsk, 1) != you.skill(exsk, 1, true);
     if (you.skills[exsk] == MAX_SKILL_LEVEL)
-        mprf(MSGCH_INTRINSIC_GAIN, "You have mastered %s!", skill_name(exsk));
+        mprf(MSGCH_INTRINSIC_GAIN, T_("You have mastered %s!"), skill_name(exsk));
     else if (abs(n) == 1 && you.num_turns)
     {
-        mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s to level %d!",
-             specify_base ? "base " : "",
-             skill_name(exsk), (n > 0) ? "increases" : "decreases",
-             you.skills[exsk]);
+        if (specify_base)
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill increases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill decreases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+        }
+        else
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill increases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill decreases to level %d!"),
+                     skill_name(exsk), you.skills[exsk]);
+        }
     }
     else if (you.num_turns)
     {
-        mprf(MSGCH_INTRINSIC_GAIN, "Your %s%s skill %s %d levels and is now "
-             "at level %d!",
-             specify_base ? "base " : "",
-             skill_name(exsk),
-             (n > 0) ? "gained" : "lost",
-             abs(n), you.skills[exsk]);
+        if (specify_base)
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill gained %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your base %s skill lost %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+        }
+        else
+        {
+            if (n > 0)
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill gained %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+            else
+                mprf(MSGCH_INTRINSIC_GAIN, T_("Your %s skill lost %d levels and is now at level %d!"),
+                     skill_name(exsk), abs(n), you.skills[exsk]);
+        }
     }
 
     if (you.skills[exsk] == n && n > 0)
@@ -798,7 +826,7 @@ bool check_selected_skills()
         if (!you.received_noskill_warning)
         {
             you.received_noskill_warning = true;
-            mpr("You cannot train any new skills!");
+            mpr(T_("You cannot train any new skills!"));
         }
         // It's possible to have no selectable skills, if they are all
         // untrainable or level 27, so we don't assert.
@@ -821,7 +849,7 @@ bool check_selected_skills()
         return false;
     }
 
-    mpr("You need to enable at least one skill for training.");
+    mpr(T_("You need to enable at least one skill for training."));
     // Training will be fixed up on load if this ASSERT triggers.
     ASSERT(!you.has_mutation(MUT_DISTRIBUTED_TRAINING));
     more();
@@ -1392,8 +1420,12 @@ bool check_training_target(skill_type sk)
             set_magic_training(TRAINING_DISABLED);
         else
             you.train_alt[sk] = you.train[sk] = TRAINING_DISABLED;
-        mprf("%sraining target %d.%d for %s reached!",
-            base ? "Base t" : "T", targ / 10, targ % 10, skill_name(sk));
+        if (base)
+            mprf(T_("Base training target %d.%d for %s reached!"),
+                 targ / 10, targ % 10, skill_name(sk));
+        else
+            mprf(T_("Training target %d.%d for %s reached!"),
+                 targ / 10, targ % 10, skill_name(sk));
         return true;
     }
     return false;
@@ -1573,7 +1605,7 @@ static int _train(skill_type exsk, int &max_exp, bool simu, bool check_targets)
         you.skill_manual_points[exsk] -= bonus;
         if (!you.skill_manual_points[exsk] && !simu && !crawl_state.simulating_xp_gain)
         {
-            mprf("You have finished your manual of %s and %stoss it away.",
+            mprf(T_("You have finished your manual of %s and %stoss it away."),
                  skill_name(exsk),
                  exsk == SK_THROWING ? "skilfully " : "");
         }
@@ -1836,19 +1868,19 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
 {
     if (target > 270) // if target is above 270, reject with an error
     {
-        mpr("Your training target must be 27 or below!");
+        mpr(T_("Your training target must be 27 or below!"));
         return false;
     }
     const int ranged_target = min(max((int) target, 0), 270);
     if (announce && ranged_target != (int) training_targets[sk])
     {
         if (you.has_mutation(MUT_DISTRIBUTED_TRAINING))
-            mpr("You can't set training targets!");
+            mpr(T_("You can't set training targets!"));
         else if (ranged_target == 0)
-            mprf("Clearing the skill training target for %s.", skill_name(sk));
+            mprf(T_("Clearing the skill training target for %s."), skill_name(sk));
         else
         {
-            mprf("Setting a skill training target for %s at %d.%d.", skill_name(sk),
+            mprf(T_("Setting a skill training target for %s at %d.%d."), skill_name(sk),
                                     ranged_target / 10, ranged_target % 10);
         }
     }
@@ -1861,10 +1893,62 @@ bool player::set_training_target(const skill_type sk, const int target, bool ann
     return true;
 }
 
+static const char *_skill_english_name(skill_type sk)
+{
+    switch (sk)
+    {
+    case SK_FIGHTING:       return "Fighting";
+    case SK_SHORT_BLADES:   return "Short Blades";
+    case SK_LONG_BLADES:    return "Long Blades";
+    case SK_AXES:           return "Axes";
+    case SK_MACES_FLAILS:   return "Maces & Flails";
+    case SK_POLEARMS:       return "Polearms";
+    case SK_STAVES:         return "Staves";
+#if TAG_MAJOR_VERSION == 34
+    case SK_SLINGS:         return "Slings";
+#endif
+    case SK_RANGED_WEAPONS: return "Ranged Weapons";
+#if TAG_MAJOR_VERSION == 34
+    case SK_CROSSBOWS:      return "Crossbows";
+#endif
+    case SK_THROWING:       return "Throwing";
+    case SK_ARMOUR:         return "Armour";
+    case SK_DODGING:        return "Dodging";
+    case SK_STEALTH:        return "Stealth";
+#if TAG_MAJOR_VERSION == 34
+    case SK_STABBING:       return "Stabbing";
+#endif
+    case SK_SHIELDS:        return "Shields";
+#if TAG_MAJOR_VERSION == 34
+    case SK_TRAPS:          return "Traps";
+#endif
+    case SK_UNARMED_COMBAT: return "Unarmed Combat";
+    case SK_SPELLCASTING:   return "Spellcasting";
+    case SK_CONJURATIONS:   return "Conjurations";
+    case SK_HEXES:          return "Hexes";
+#if TAG_MAJOR_VERSION == 34
+    case SK_CHARMS:         return "Charms";
+#endif
+    case SK_SUMMONINGS:     return "Summonings";
+    case SK_NECROMANCY:     return "Necromancy";
+    case SK_TRANSLOCATIONS: return "Translocations";
+    case SK_FORGECRAFT:     return "Forgecraft";
+    case SK_FIRE_MAGIC:     return "Fire Magic";
+    case SK_ICE_MAGIC:      return "Ice Magic";
+    case SK_AIR_MAGIC:      return "Air Magic";
+    case SK_EARTH_MAGIC:    return "Earth Magic";
+    case SK_ALCHEMY:        return "Alchemy";
+    case SK_INVOCATIONS:    return "Invocations";
+    case SK_EVOCATIONS:     return "Evocations";
+    case SK_SHAPESHIFTING:  return "Shapeshifting";
+    default:                return "";
+    }
+}
+
 const char *skill_name(skill_type which_skill)
 {
     ASSERT(which_skill < NUM_SKILLS);
-    return skill_titles[which_skill][0];
+    return T_(_skill_english_name(which_skill));
 }
 
 const char * skill_abbr(skill_type which_skill)
@@ -1882,9 +1966,16 @@ const char * skill_abbr(skill_type which_skill)
  */
 skill_type str_to_skill(const string &skill)
 {
+    const string lskill = lowercase_string(skill);
     for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
-        if (lowercase_string(skill) == lowercase_string(skill_titles[sk][0]))
+    {
+        if (lskill == lowercase_string(skill_titles[sk][0])
+            || lskill == lowercase_string(_skill_english_name(sk))
+            || lskill == lowercase_string(skill_name(sk)))
+        {
             return sk;
+        }
+    }
 
     return SK_NONE;
 }
@@ -2014,6 +2105,10 @@ string special_conduct_title(skill_type best_skill, uint8_t skill_rank)
  * @param conducts      Whether or not to check "special" conduct titles
  * @return              An appropriate and/or humorous title.
  */
+
+// Chinese skill title translations are now handled by T_() in skill_title_by_rank().
+// See line ~2385: result = T_(result.c_str());
+
 string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
                            species_type species, int dex, int str, int intel,
                            god_type god, int piety, bool conducts)
@@ -2284,6 +2379,11 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
             result = skill_titles[best_skill][skill_rank];
     }
 
+    // Translate title before placeholder replacement
+    // so that template titles like "@Adj@ Blade" use a single key.
+    if (!result.empty())
+        result = T_(result.c_str());
+
     const map<string, string> replacements =
     {
         { "Adj", species::name(species, species::SPNAME_ADJ) },
@@ -2309,9 +2409,9 @@ string player_title(bool the)
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
     const string article = !the ? ""
-                                : title == "Petite Mort" ? "La "
-                                : title == "Who Hides the Stars" ? ", "
-                                : "the ";
+                                 : title == "Petite Mort" ? C_("title article", "La ")
+                                 : title == "Who Hides the Stars" ? C_("title article", ", ")
+                                 : C_("title article", "the ");
     return article + title;
 }
 

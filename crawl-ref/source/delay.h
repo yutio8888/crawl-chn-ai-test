@@ -8,12 +8,14 @@
 #include <vector>
 
 #include "activity-interrupt-type.h"
+#include "database.h"
 #include "command-type.h"
 #include "enum.h"
 #include "equipment-slot.h"
 #include "item-prop-enum.h"
 #include "mpr.h"
 #include "operation-types.h"
+#include "options.h"
 #include "seen-context-type.h"
 #include "transformation.h"
 
@@ -129,7 +131,7 @@ class Delay
      */
     virtual void finish()
     {
-        mpr("You finish doing something buggy.");
+        mpr(T_("You finish doing something buggy."));
     }
 protected:
     bool started = false;
@@ -239,7 +241,7 @@ class EquipOnDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue %s %s.",
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue %s %s."),
              get_verb(), equip.name(DESC_YOUR).c_str());
     }
 
@@ -275,7 +277,7 @@ class EquipOffDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue %s %s.",
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue %s %s."),
              get_verb(), equip.name(DESC_YOUR).c_str());
     }
 
@@ -308,7 +310,7 @@ class MemoriseDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue memorising.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue memorising."));
     }
 
     void finish() override;
@@ -334,7 +336,7 @@ class PasswallDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue meditating on the rock.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue meditating on the rock."));
     }
 
     void finish() override;
@@ -616,7 +618,7 @@ class ShaftSelfDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue digging a shaft.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue digging a shaft."));
     }
 
     void finish() override;
@@ -669,7 +671,7 @@ class ImbueDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue imbuing your servitor.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue imbuing your servitor."));
     }
 
     void finish() override;
@@ -694,7 +696,7 @@ class ImprintDelay : public Delay
 
     void tick() override
     {
-        mprf(MSGCH_MULTITURN_ACTION, "You continue imprinting.");
+        mprf(MSGCH_MULTITURN_ACTION, T_("You continue imprinting."));
     }
 
     void finish() override;

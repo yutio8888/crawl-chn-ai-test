@@ -16,6 +16,7 @@
 #include "artefact.h"
 #include "art-enum.h"
 #include "branch.h" // gem_time_limit
+#include "database.h"
 #include "describe.h"
 #include "english.h" // number_in_words
 #include "equipment-slot.h"
@@ -28,6 +29,7 @@
 #include "libutil.h" // map_find
 #include "message.h"
 #include "notes.h"
+#include "options.h"
 #include "orb-type.h"
 #include "potion-type.h"
 #include "random.h"
@@ -2041,7 +2043,7 @@ const char* staff_type_name(stave_type s)
     if (s == NUM_STAVES)
         return "bugginess"; // used for known items
     ASSERT_RANGE(s, 0, NUM_STAVES);
-    return Staff_prop[Staff_index[s]].name;
+    return T_(Staff_prop[Staff_index[s]].name);
 }
 
 skill_type staff_skill(stave_type s)
@@ -2177,8 +2179,10 @@ bool is_slowed_by_armour(const item_def *item)
 
 const char *missile_name(missile_type ammo)
 {
-    return ammo < 0 || ammo >= NUM_MISSILES ? "eggplant"
-           : Missile_prop[ Missile_index[ammo] ].name;
+    if (ammo < 0 || ammo >= NUM_MISSILES)
+        return "eggplant";
+    const char* en = Missile_prop[ Missile_index[ammo] ].name;
+    return T_(en);
 }
 
 // Returns the name of the projectiles launched by a given item, or the item
@@ -2189,27 +2193,27 @@ string launched_projectile_name(const item_def &item)
         return missile_name(static_cast<missile_type>(item.sub_type));
 
     if (is_unrandom_artefact(item, UNRAND_DAMNATION))
-        return "damnation bolt";
+        return T_("damnation bolt");
 
     switch (item.sub_type)
     {
         case WPN_SLING:
-            return "sling bullet";
+            return T_("sling bullet");
 
         case WPN_SHORTBOW:
         case WPN_ORCBOW:
         case WPN_LONGBOW:
-            return "arrow";
+            return T_("arrow");
 
         case WPN_ARBALEST:
         case WPN_TRIPLE_CROSSBOW:
-            return "bolt";
+            return T_("bolt");
 
         case WPN_HAND_CANNON:
-            return "slug";
+            return T_("slug");
 
         default:
-            return "eggplant";
+            return T_("eggplant");
     }
 }
 
@@ -3164,28 +3168,28 @@ string talisman_type_name(int type)
 {
     switch (type)
     {
-    case TALISMAN_QUILL:    return "quill talisman";
-    case TALISMAN_INKWELL:  return "inkwell talisman";
-    case TALISMAN_PROTEAN:  return "protean talisman";
-    case TALISMAN_RIMEHORN: return "rimehorn talisman";
-    case TALISMAN_SPIDER:   return "spider talisman";
-    case TALISMAN_AQUA:     return "wellspring talisman";
-    case TALISMAN_SCARAB:   return "scarab talisman";
-    case TALISMAN_MEDUSA:   return "medusa talisman";
-    case TALISMAN_SPORE:    return "spore talisman";
-    case TALISMAN_MAW:      return "maw talisman";
-    case TALISMAN_SERPENT:  return "serpent talisman";
-    case TALISMAN_EEL:      return "eel talisman";
-    case TALISMAN_BLADE:    return "blade talisman";
-    case TALISMAN_WEREWOLF: return "lupine talisman";
-    case TALISMAN_FORTRESS: return "fortress talisman";
-    case TALISMAN_STATUE:   return "granite talisman";
-    case TALISMAN_HIVE:     return "hive talisman";
-    case TALISMAN_DRAGON:   return "dragon-coil talisman";
-    case TALISMAN_SPHINX:   return "riddle talisman";
-    case TALISMAN_VAMPIRE:  return "sanguine talisman";
-    case TALISMAN_DEATH:    return "talisman of death";
-    case TALISMAN_STORM:    return "storm talisman";
+    case TALISMAN_QUILL:    return T_("quill talisman");
+    case TALISMAN_INKWELL:  return T_("inkwell talisman");
+    case TALISMAN_PROTEAN:  return T_("protean talisman");
+    case TALISMAN_RIMEHORN: return T_("rimehorn talisman");
+    case TALISMAN_SPIDER:   return T_("spider talisman");
+    case TALISMAN_AQUA:     return T_("wellspring talisman");
+    case TALISMAN_SCARAB:   return T_("scarab talisman");
+    case TALISMAN_MEDUSA:   return T_("medusa talisman");
+    case TALISMAN_SPORE:    return T_("spore talisman");
+    case TALISMAN_MAW:      return T_("maw talisman");
+    case TALISMAN_SERPENT:  return T_("serpent talisman");
+    case TALISMAN_EEL:      return T_("eel talisman");
+    case TALISMAN_BLADE:    return T_("blade talisman");
+    case TALISMAN_WEREWOLF: return T_("lupine talisman");
+    case TALISMAN_FORTRESS: return T_("fortress talisman");
+    case TALISMAN_STATUE:   return T_("granite talisman");
+    case TALISMAN_HIVE:     return T_("hive talisman");
+    case TALISMAN_DRAGON:   return T_("dragon-coil talisman");
+    case TALISMAN_SPHINX:   return T_("riddle talisman");
+    case TALISMAN_VAMPIRE:  return T_("sanguine talisman");
+    case TALISMAN_DEATH:    return T_("talisman of death");
+    case TALISMAN_STORM:    return T_("storm talisman");
     default:
         return "buggy talisman";
     }
@@ -3252,13 +3256,13 @@ string item_base_name(object_class_type type, int sub_type)
     switch (type)
     {
     case OBJ_WEAPONS:
-        return Weapon_prop[Weapon_index[sub_type]].name;
+        return T_(Weapon_prop[Weapon_index[sub_type]].name);
     case OBJ_MISSILES:
-        return Missile_prop[Missile_index[sub_type]].name;
+        return T_(Missile_prop[Missile_index[sub_type]].name);
     case OBJ_ARMOUR:
-        return Armour_prop[Armour_index[sub_type]].name;
+        return T_(Armour_prop[Armour_index[sub_type]].name);
     case OBJ_JEWELLERY:
-        return jewellery_is_amulet(sub_type) ? "amulet" : "ring";
+        return T_(jewellery_is_amulet(sub_type) ? "amulet" : "ring");
     case OBJ_TALISMANS:
         return talisman_type_name(sub_type);
     default:
@@ -3334,10 +3338,14 @@ void seen_item(item_def &item)
                 && you.inv[i].sub_type == item.sub_type)
             {
                 held = &you.inv[i];
-                mprf("You learned that %s %s actually %s.",
-                        held->name(DESC_YOUR).c_str(),
-                        held->quantity > 1 ? "are" : "is",
-                        held->name(DESC_A, false, true).c_str());
+                if (held->quantity > 1)
+                    mprf(T_("You learned that %s are actually %s."),
+                            held->name(DESC_YOUR).c_str(),
+                            held->name(DESC_A, false, true).c_str());
+                else
+                    mprf(T_("You learned that %s is actually %s."),
+                            held->name(DESC_YOUR).c_str(),
+                            held->name(DESC_A, false, true).c_str());
                 break;
             }
         }

@@ -27,6 +27,7 @@
 #include "mapdef.h" // item_spec
 #include "mon-util.h"
 #include "mpr.h"
+#include "database.h"
 #include "output.h"
 #include "player.h"
 #include "player-equip.h"
@@ -153,7 +154,7 @@ static int l_item_do_remove(lua_State *ls)
 {
     if (you.turn_is_over)
     {
-        mpr("Turn is over");
+        mpr(T_("Turn is over"));
         return 0;
     }
 
@@ -161,13 +162,13 @@ static int l_item_do_remove(lua_State *ls)
 
     if (!item || !in_inventory(*item))
     {
-        mpr("Bad item");
+        mpr(T_("Bad item"));
         return 0;
     }
 
     if (!item_is_equipped(*item))
     {
-        mpr("Item is not equipped");
+        mpr(T_("Item is not equipped"));
         return 0;
     }
 
@@ -536,7 +537,19 @@ IDEF(equip_type)
     equipment_slot eq = get_item_slot(*item);
 
     if (eq != SLOT_UNUSED)
-        lua_pushstring(ls, lowercase_string(equip_slot_name(eq)).c_str());
+    {
+        // equip_slot_name() returns Chinese in ZH mode, but Lua scripts
+        // compare against English slot name strings.
+        const string slot_name = equip_slot_name(eq);
+        static const map<string, string> equip_slot_en = {
+            {"武器", "weapon"}, {"披风", "cloak"}, {"头盔", "helmet"},
+            {"手套", "gloves"}, {"靴子", "boots"}, {"副手", "offhand"},
+            {"身体护甲", "body armour"}, {"护甲", "armour"}, {"战甲", "barding"},
+            {"戒指", "ring"}, {"护身符", "amulet"}, {"小装置", "gizmo"},
+        };
+        const string* en = map_find(equip_slot_en, slot_name);
+        lua_pushstring(ls, lowercase_string(en ? *en : slot_name).c_str());
+    }
     else
         lua_pushnil(ls);
     return 1;
@@ -848,7 +861,7 @@ IDEF(artprops)
         int value = artefact_property(*item, (artefact_prop_type)i);
         if (value)
         {
-            lua_pushstring(ls, artp_name((artefact_prop_type)i));
+            lua_pushstring(ls, artp_raw_name((artefact_prop_type)i));
             lua_pushinteger(ls, value);
             lua_settable(ls, -3);
         }

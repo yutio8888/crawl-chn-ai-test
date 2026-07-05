@@ -165,7 +165,7 @@ Xom banishment
 
 “你在你的小世界里变得太舒服了，凡人！”
 
-佐姆把你扔入地狱！
+佐姆把你扔入深渊！
 
 当佐姆疯狂的笑声在你耳边响起时，世界似乎在旋转。
 %%%%
@@ -324,7 +324,7 @@ Xom fake destruction
 佐姆展示了毁灭性的力量。
 
 w:1
-“让一切在地狱之火中终结吧！”
+“让一切在深渊之火中终结吧！”
 %%%%
 Xom accidental homicide
 
@@ -534,7 +534,7 @@ Beogh penance
 %%%%
 Beogh welcome
 
-比欧弗说：把不信教者淹死在血海里！
+比欧弗说：向世界展示做一名兽人意味着什么！
 %%%%
 Cheibriados penance
 
@@ -650,7 +650,7 @@ Makhleb welcome
 %%%%
 Nemelex Xobeh welcome
 
-尼姆雷斯・索布说：一切尽在卡牌中！
+尼姆雷斯·索布说：一切尽在卡牌中！
 %%%%
 Okawaru penance
 
@@ -722,11 +722,11 @@ Ru death
 %%%%
 Sif Muna penance
 
-席夫·穆纳说：去寻求更多知识和智慧。
+西芙·穆娜说：去寻求更多知识和智慧。
 %%%%
 Sif Muna welcome
 
-席夫·穆纳低语道：我知晓很多秘密……
+西芙·穆娜低语道：我知晓很多秘密……
 %%%%
 the Shining One penance
 
@@ -738,11 +738,11 @@ the Shining One welcome
 %%%%
 Trog penance
 
-特洛戈暴怒：杀光他们！
+特洛格暴怒：杀光他们！
 %%%%
 Trog welcome
 
-特洛戈说：杀光他们！
+特洛格说：杀光他们！
 %%%%
 Uskayaw welcome
 
@@ -762,7 +762,7 @@ Uskayaw death corpse nonliving
 %%%%
 Vehumet welcome
 
-维胡梅特说：让一切在地狱之火中终结吧！
+维胡梅特说：让一切在深渊之火中终结吧！
 %%%%
 Wu Jian welcome
 
@@ -915,3 +915,782 @@ w:3
 
 w:3
 佐特的力量控制了你，你化成了一团黑雾。
+
+%%%%
+Beogh apostle challenge
+
+小心，有一个挑战者前来与你战斗了。证明你对我的虔诚！将我所有的孩子团结在同一面旗帜下！
+
+是时候了，探索者，在战斗中考验你的勇气。证明你是个真正的兽人！加入你真正的同胞！
+
+# 莎士比亚 / 托尔金
+把你的勇气拧到最紧，迎接挑战。为生存而战！在那场伟大的战争中，所有人都将是兽人！
+
+%%%%
+Makhleb executioner chatter
+
+w:40
+"杀。杀。杀！"
+
+"更多。更多。更多！"
+
+"再来！再来！再来！"
+
+"屠杀。他们。全部！"
+
+w:1
+"献上你的鲜血，凡人！"
+
+"马科列布等待着你！"
+
+"你的痛苦就是我的力量！"
+
+%%%%
+Xom amulet slot
+
+@Your_item@ 脉动着！
+
+@Your_item@ 闪耀出 @any_glowing_colour@，然后恢复原状。
+
+@Your_item@ 短暂地飞起，盘旋在你的 @head@ 上方！
+
+%%%%
+Xom animal skin
+
+@your_item@ 上的毛以惊人的速度长长，然后缩回正常。
+
+%%%%
+Xom bandages
+
+你短暂地被自己的绷带缠住了。
+
+%%%%
+Xom bazaar trip
+
+佐姆把你卷进了一个不可思议的折扣领域！
+
+佐姆将你投入……一场购物盛宴？
+
+佐姆为你提供你所需要的一切（以取悦佐姆）。
+
+w:5
+佐姆为你提供你所需要的一切（依佐姆那无懈可击的神圣判断）。
+
+佐姆一时兴起，决定带你观光。
+
+w:1
+佐姆送你进入了一个充满无底折扣的领域。每一个都令人沉醉。
+
+佐姆喊道："购物时间！"
+
+w:5
+佐姆对当地经济产生了浓厚兴趣。
+
+%%%%
+Xom boots slot
+
+@Your_item@ 变得巨大，然后缩小回来！
+
+%%%%
+Xom chaos vex
+
+佐姆召唤出一场血腥的号角！
+
+佐姆将你敌人的体内注满了纯粹的混沌！
+
+佐姆煽起了一场狂喜的死亡之舞！
+
+%%%%
+Xom cloak slot
+
+@Your_item@ 在无形的风中翻飞。
+
+@Your_item@ 短暂地缠住了你的 @head@！
+
+@Your_item@ 短暂地被 @any_glowing_colour_pattern@ 覆盖了！
+
+%%%%
+Xom divine lightning
+
+这片区域充满了神圣的闪电！
+
+佐姆投掷出闪电的冲击波！
+
+"预备，瞄准，开火！"
+
+%%%%
+Xom dragon armour
+
+@your_item@ 上的鳞片短暂地扭动了一下。
+
+%%%%
+Xom drinkless confusion
+
+"好好摔跤，我的宠物！"
+
+佐姆的力量短暂地触动了你的身心。
+
+%%%%
+Xom ears
+
+你的耳朵疯狂地扇动着。
+
+你的耳朵在扭动。
+
+[烟|蒸汽] 短暂地从你的耳朵里喷出！
+
+%%%%
+Xom eyes
+
+一只单片眼镜短暂地出现在你的一只眼睛上。
+
+一只眼罩短暂地遮住了你的一只眼睛。
+
+一束 @any_colour@ 光短暂地从你的双眼中射出！
+
+%%%%
+Xom fake shatter
+
+w:30
+"哗——垮！"
+
+"让混沌之力摧毁一切！"
+
+佐姆重塑了大地。
+
+w:1
+佐姆向副本的墙壁揭示了那伟大的毁灭真理！
+
+佐姆朝副本的结构眨了眨眼。
+
+佐姆专注于数万码外一颗遥远的石英晶体——副本隆隆作响。
+
+%%%%
+Xom fast forward
+
+佐姆加快了战斗的速度。
+
+佐姆要求更快的节奏。
+
+"快点快点！"
+
+%%%%
+Xom feature blood
+
+@Xom feature shallow water@
+
+@The_feature@ 短暂地凝固了。
+
+%%%%
+Xom feature deep water
+
+@Xom feature shallow water@
+
+在旁边，你瞥见有什么东西在 @the_feature@ 中潜伏着。
+
+%%%%
+Xom feature dry
+
+水短暂地从 @the_feature@ 中喷出。
+
+闪着光的水短暂地从 @the_feature@ 中喷出。
+
+血短暂地从 @the_feature@ 中喷出。
+
+灰尘从 @the_feature@ 上扬起了。
+
+%%%%
+Xom feature eyes
+
+@The_feature@ 好奇地看着你。
+
+@The_feature@ 看穿了你。
+
+%%%%
+Xom feature lava
+
+@The_feature@ 喷出了火花！
+
+@The_feature@ 短暂地固化了。
+
+%%%%
+Xom feature metal wall
+
+电流的卷须在 @the_feature@ 上爬行。
+
+@The_feature@ 短暂地显得锈蚀了。
+
+%%%%
+Xom feature shallow water
+
+@The_feature@ 短暂地冒泡了。
+
+@The_feature@ 短暂地旋转了。
+
+@The_feature@ 短暂地发光了。
+
+@The_feature@ 短暂地发出 @any_glowing_colour@ 光芒。
+
+@The_feature@ 短暂地闪烁着 @any_colour@。
+
+@The_feature@ 短暂地被 @any_colour_pattern@ 覆盖了。
+
+@The_feature@ 短暂地被 @any_glowing_colour_pattern@ 覆盖了。
+
+@The_feature@ 短暂地呈现出玻璃般的透明。
+
+%%%%
+Xom feature statuelike
+
+@The_feature@ 转过身来瞪着你。
+
+@The_feature@ 转过身来盯着你看。
+
+@The_feature@ 转过身去，背对着你。
+
+@The_feature@ 原地旋转着。
+
+%%%%
+Xom feature stone arch
+
+@The_feature@ 的另一侧短暂地显示出一片阳光明媚的草地。
+
+@The_feature@ 的另一侧短暂地显示出一片死气沉沉的荒地。
+
+@The_feature@ 的另一侧短暂地显示出奇怪的 @glowing_adj@ 身影。
+
+@The_feature@ 的另一侧短暂地显示出奇异 @glowing_adj@ 的建筑。
+
+@The_feature@ 的另一侧短暂地显示出一面被 @any_colour_pattern@ 覆盖的半透明墙壁。
+
+@The_feature@ 的另一侧短暂地显示出一个充满闪烁 @any_glowing_colour@ 球体的洞穴。
+
+@The_feature@ 微弱地回响着，仿佛来自另一边。
+
+w:1
+@The_feature@ 提供了一个诱人的门，通往一个被 @any_glowing_colour_pattern@ 覆盖的世界。
+
+%%%%
+Xom feature translucent wall
+
+黯淡的身影在 @the_feature@ 中游动。
+
+微弱的 @any_colour@ 火焰在 @the_feature@ 上爬行。
+
+@The_feature@ 被 @any_colour_pattern@ 短暂地覆盖了。
+
+@The_feature@ 被 @any_glowing_colour_pattern@ 短暂地覆盖了。
+
+@The_feature@ 被 @any_graffiti@ 短暂地覆盖了。
+
+%%%%
+Xom feature tree
+
+@The_feature@ 向你弯下腰来。
+
+@The_feature@ 弯向了远离你的方向。
+
+@The_feature@ 在原地摇摆着。
+
+%%%%
+Xom floor bandages
+
+@Xom bandages@
+
+你被自己的绷带绊倒了。
+
+%%%%
+Xom floor inventory plural
+
+@Xom inventory plural@
+
+@your_item@ 中的一件从你的背包里掉了出来，然后立刻跳了回去！
+
+@Your_item@ 从你的背包里掉了出来，然后立刻跳了回去！
+
+%%%%
+Xom floor inventory singular
+
+@Xom inventory singular@
+
+@Your_item@ 从你的背包里掉了出来，然后立刻跳了回去！
+
+%%%%
+Xom flora ring
+
+佐姆炫耀着一把绿色拇指。
+
+佐姆在这个充满死亡的副本传播着生命。
+
+佐姆煽动邻近的地板霉菌进行一场戏剧性的进化。
+
+"活了！活了！"
+
+w:5
+佐姆宣告你的环是任何常绿园艺师的最佳选择。
+
+佐姆向你周围的活物输送了些许可疑的营养物。
+
+佐姆赠送给你一株活生生的风滚草。
+
+w:1
+佐姆将你的一件 @your_item@ 嫁接到了一株特别活泼的玫瑰上，就在你的背包里。
+
+%%%%
+Xom force lance fleet
+
+佐姆投下了一支力量营！
+
+佐姆召唤了一支力量骑兵队！
+
+佐姆点燃了力量烟花！
+
+w:1
+佐姆发射了整整一火车的弹幕！
+
+佐姆的躁狂多动症创造了一支完整的能量方阵！
+
+佐姆抓了一把爆米花，并发起了一场力量闪电战。你付钱。
+
+"哇！哇！哇！哇！哇！"
+
+%%%%
+Xom gizmo slot
+
+@Your_item@ 晃动了一下！
+
+@Your_item@ 漏出了 @rainbow_colour@ 的烟雾！
+
+%%%%
+Xom gloves slot
+
+@Your_item@ 短暂地长出了 @_xom_number_@ 根额外的手指！
+
+%%%%
+Xom good hyper enchant monster
+
+"见证一位真正的 [英雄|冠军] 崛起！"
+
+佐姆要求在战斗中获得崇高的荣耀！
+
+佐姆的力量极其短暂地触及了你周围的环境。
+
+你听到了佐姆那如叔伯般慈祥的咯咯笑声。
+
+%%%%
+Xom grant voiceless word of recall
+
+佐姆要求一场戏剧性的对话！
+
+佐姆赐予了无声者一个可怕的声音。
+
+%%%%
+Xom grant word of recall
+
+佐姆觉得这个寒酸的小聚会需要更多的客人。
+
+佐姆发出了极其令人不安的邀请函。
+
+%%%%
+Xom hair
+
+你的眉毛短暂地感到极其浓密。
+
+你的眉毛在扭动。
+
+你短暂地长出了一大把八字胡和络腮胡。
+
+%%%%
+Xom helmet slot
+
+@Your_item@ 跳到空中，短暂地旋转，然后落回你的 @head@ 上！
+
+%%%%
+Xom impromptu dance
+
+你即兴跳了一段 @dance_name@。
+
+你即兴做了一个 @acrobatic_move_name@。
+
+你不由自主地碰了 @_xom_number_@ 次脚跟。
+
+你不由自主地跺了 @_xom_number_@ 次 @feet@。
+
+%%%%
+Xom inventory plural
+
+@your_item@ 中的一件短暂地发光了。
+
+@your_item@ 中的一件短暂地发出 @any_glowing_colour@ 光芒。
+
+@your_item@ 中的一件短暂地振动了。
+
+@your_item@ 中的一件短暂地闪烁了 @any_colour@。
+
+@your_item@ 中的一件短暂地闪烁了 @any_colour_pattern@。
+
+@your_item@ 中的一件短暂地闪烁了 @any_glowing_colour_pattern@。
+
+@your_item@ 中的一件短暂地获得了奇怪的颜色。
+
+@your_item@ 中的一件短暂地失去了颜色。
+
+@your_item@ 中的一件短暂地浮起了。
+
+%%%%
+Xom inventory singular
+
+@Your_item@ 短暂地发光了。
+
+@Your_item@ 短暂地发出 @any_glowing_colour@ 光芒。
+
+@Your_item@ 短暂地振动了。
+
+@Your_item@ 短暂地闪烁了 @any_colour@。
+
+%%%%
+Xom kind door ring
+
+围绕着你的一小片区域似乎获得了一种奇怪而安全的稳固性。
+
+佐姆创建了一个安全的冒险者围栏。
+
+"想来点私人空间吗，凡人？"
+
+%%%%
+Xom leather armour
+
+@Your_item@ 短暂地长出了毛皮，然后恢复原状。
+
+%%%%
+Xom lights up webs
+
+佐姆[欢快地|乐呵呵地]摧毁了当地的蛛形纲艺术品。
+
+佐姆的光芒[轻拂着|扫过]你的周围环境。
+
+w:1
+@Xom fake destruction@
+
+%%%%
+Xom mass charm
+
+佐姆准备发起混沌十字军！
+
+佐姆抓住了一把傀儡线。
+
+"想要更多朋友吗，我的孩子？"
+
+w:5
+佐姆指挥了一场群众快闪。
+
+佐姆表示大家应该努力相处。或者至少一起打你。
+
+佐姆打了一个响指——又一根傀儡线就位。
+
+佐姆提出了一个提议。无法拒绝。
+
+%%%%
+Xom mean door ring
+
+佐姆升起并拉进了一个临时[战争贩子|决斗者]的竞技场。
+
+佐姆把你锁住，作为一件展览品来研究。
+
+w:5
+佐姆又建造了一个 @player_genus@ 宠物动物园。
+
+%%%%
+Xom metal armour
+
+@Your_item@ 短暂地显得生锈了。
+
+%%%%
+Xom mouth
+
+你的嘴巴短暂地完全消失了。
+
+你的嘴巴短暂地咧到了整个脸上。
+
+你短暂地又长出了一张嘴。
+
+[烟|蒸汽] 短暂地从你的嘴里涌出！
+
+%%%%
+Xom multiple summons
+
+"服侍这位凡人吧，我的孩子们！"
+
+佐姆赐予了你一些临时的援助。
+
+佐姆短暂地打开了一扇门。
+
+%%%%
+Xom offhand slot
+
+@Your_item@ 旋转了！
+
+@Your_item@ 短暂地闪烁了 @any_glowing_colour@！
+
+%%%%
+Xom one eye
+
+一只单片眼镜短暂地出现在你的眼睛上。
+
+一只眼罩短暂地遮住了你的眼睛。
+
+一束 @any_colour@ 光短暂地从你的眼中射出！
+
+%%%%
+Xom pause
+
+佐姆停下了一切，来细细品味这一时刻。
+
+佐姆踩住了时间，持续了一会儿。
+
+w:1
+佐姆为这个楼层准备好了独奏的观众！
+
+%%%%
+Xom random body part plural
+
+你的 @random_body_part_internal_plural@ 短暂地飘出了你的身体，然后又融合回去了！
+
+你的 @random_body_part_external_plural@ 短暂地跳离了你的身体，然后又重新附着了！
+
+%%%%
+Xom random body part singular
+
+你的 @random_body_part_internal_singular@ 短暂地飘出了你的身体，然后又融合回去了！
+
+你的 @random_body_part_external_singular@ 短暂地跳离了你的身体，然后又重新附着了！
+
+%%%%
+Xom ring slot
+
+@Your_item@ 抽搐了一下！
+
+@Your_item@ 短暂地暗淡了，然后又明亮了起来！
+
+@Your_item@ 短暂地明亮了，然后又暗淡了下去！
+
+%%%%
+Xom robe
+
+你短暂地被 @your_item@ 缠住了。
+
+%%%%
+Xom scenery altar_xom
+
+佐姆对你的环境做了一些个性化的点缀。
+
+"那里，这样看起来好看多了。"
+
+"只是一个小小的改进……"
+
+@Xom scenery@
+
+%%%%
+Xom scenery cache_of_baked_goods
+
+佐姆提供了一些新鲜出炉的点心。
+
+%%%%
+Xom scenery cache_of_fruit
+
+佐姆不小心掉了一些点心。
+
+佐姆准备了任何地方能找到的最优质的水果品种，然后掉了它们。
+
+%%%%
+Xom scenery cache_of_meat
+
+佐姆[给你提供了|给你拿来了]一些点心。
+
+佐姆准备了一场盛宴，原料是你在副本中留下的那条杀戮之痕。
+
+%%%%
+Xom scenery closed_door
+
+@Xom scenery@
+
+%%%%
+Xom scenery enter_abyss
+
+佐姆建议来一个令人耳目一新的节奏变化。
+
+佐姆在现实中撕开了几个小洞。
+
+佐姆把空间弯成了结。
+
+%%%%
+Xom scenery open_door
+
+@Xom scenery@
+
+%%%%
+Xom scenery trap_teleport
+
+@Xom scenery enter_abyss@
+
+%%%%
+Xom slow motion
+
+佐姆觉得在场的人都没有足够放松。
+
+佐姆把时间弯成了结。
+
+"别那么着急！"
+
+%%%%
+Xom tail
+
+你的尾巴短暂地缩回到了你的身体里。
+
+你的尾巴短暂地长到了一个不可思议的长度。
+
+你短暂地又长出了一条尾巴。
+
+%%%%
+Xom torment all
+
+佐姆折磨了所有活着的东西！
+
+佐姆散布了折磨与黑暗！
+
+佐姆释放了痛苦的浪潮！
+
+佐姆那恶意的注意力短暂地转向了你的处境。
+
+佐姆[欢快地|幸灾乐祸地][收割了痛苦|探索了你的生理极限]。
+
+w:5
+佐姆短暂地被你的生存意志逗乐了。
+
+%%%%
+Xom unarmed one hand
+
+一根精致的手杖短暂地出现在你的 @hand@ 中。
+
+你不由自主地朝空中打了一拳。
+
+%%%%
+Xom unarmed two hands
+
+@Xom unarmed one hand@
+
+两根精致的手杖短暂地出现在你的 @hands@ 中。
+
+你不由自主地拍了 @_xom_number_@ 次 @hands@。
+
+%%%%
+Xom underfoot airborne general
+
+@The_feature@ 仿佛从你的脚下消失了！
+
+@The_feature@ 仿佛向你猛冲过来！
+
+%%%%
+Xom underfoot airborne water
+
+@Xom underfoot airborne general@
+
+一个不可察觉的精灵流入了你身下的 @the_feature@。
+
+%%%%
+Xom underfoot general
+
+@The_feature@ 在你的脚下短暂地移动了。
+
+一个不可察觉的精灵轻拂过你身旁的 @the_feature@。
+
+%%%%
+Xom underfoot water
+
+@The_feature@ 短暂地从你身边退开了。
+
+一个不可察觉的精灵在你身旁的 @the_feature@ 中激起了涟漪。
+
+%%%%
+Xom wave of despair
+
+佐姆在一瞬间复述了一个恐怖故事。
+
+w:2
+佐姆愉快地回忆起了多个副本文明的崩溃。
+
+%%%%
+acrobatic_move_name
+
+@hand@ 倒立
+
+侧手翻
+
+脚尖旋转
+
+翻筋斗
+
+%%%%
+dance_name
+
+芭蕾
+
+恰恰
+
+凡丹戈
+
+吉格
+
+华尔兹
+
+探戈
+
+萨尔萨
+
+波尔卡
+
+加洛普
+
+康康
+
+%%%%
+_xom_number_
+
+一
+
+两
+
+三
+
+四
+
+w:5
+五
+
+六
+
+w:2
+七
+
+w:1
+八
+
+%%%%
+Xom send in the clones
+
+佐姆觉得应该有更多的你去分享给副本。
+
+佐姆温柔地将一面镜子砸在你的[@random_body_part_external_singular@|@random_body_part_external_plural@]上。
+
+"增多吧，出发吧！"
+%%%%
+Xom brain drain
+
+w:20
+佐姆短暂地转移了你大部分的法力。
+
+w:20
+佐姆向你揭示了魔法那伟大而恐怖的秘密之一。
+
+w:20
+佐姆好奇地将能量从你的身体中导出了。

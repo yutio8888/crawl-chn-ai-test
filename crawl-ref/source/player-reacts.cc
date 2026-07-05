@@ -67,6 +67,7 @@
 #include "mon-util.h"
 #include "mutation.h"
 #include "nearby-danger.h"
+#include "options.h"
 #include "ouch.h"
 #include "player.h"
 #include "player-stats.h"
@@ -166,9 +167,9 @@ static bool _decrement_a_duration(duration_type dur, int delay,
             if (you.duration[dur] <= 0)
                 you.duration[dur] = 1;
             if (need_expiration_warning(dur))
-                mprf(MSGCH_DANGER, "Careful! %s", expmsg);
+                mprf(MSGCH_DANGER, T_("Careful! %s"), T_(expmsg));
             else
-                mprf(chan, "%s", expmsg);
+                mprf(chan, "%s", T_(expmsg));
         }
     }
 
@@ -176,7 +177,7 @@ static bool _decrement_a_duration(duration_type dur, int delay,
     {
         you.duration[dur] = 0;
         if (endmsg && *endmsg != '\0')
-            mprf(chan, "%s", endmsg);
+            mprf(chan, "%s", T_(endmsg));
         return true;
     }
 
@@ -197,9 +198,10 @@ static void _decrement_petrification(int delay)
                                             "flesh" :
                                             get_form()->flesh_equivalent;
 
-        mprf(MSGCH_DURATION, "You turn to %s%s.",
+        mprf(MSGCH_DURATION, T_("You turn to %s%s."),
              flesh_equiv.c_str(),
-             you.paralysed() ? "" : " and can act again");
+             you.paralysed() ? "" :
+                 T_(" and can act again"));
     }
 
     if (you.duration[DUR_PETRIFYING])
@@ -212,7 +214,7 @@ static void _decrement_petrification(int delay)
             you.fully_petrify();
         }
         else if (dur < 15 && old_dur >= 15)
-            mpr("Your limbs are stiffening.");
+            mpr(T_("Your limbs are stiffening."));
     }
 }
 
@@ -238,7 +240,7 @@ static void _decrement_attraction(int delay)
 
     attract_monsters(delay);
     if (_decrement_a_duration(DUR_ATTRACTIVE, delay))
-        mpr("You feel less attractive to monsters.");
+        mpr(T_("You feel less attractive to monsters."));
 }
 
 static void _decrement_paralysis(int delay)
@@ -253,7 +255,7 @@ static void _decrement_paralysis(int delay)
 
     you.give_stun_immunity(random_range(1, 3));
 
-    mprf(MSGCH_DURATION, "You can act again.");
+    mprf(MSGCH_DURATION, T_("You can act again."));
     you.redraw_armour_class = true;
     you.redraw_evasion = true;
 }
@@ -270,7 +272,7 @@ static void _maybe_melt_armour()
     if (you.props.exists(MELT_ARMOUR_KEY))
     {
         you.props.erase(MELT_ARMOUR_KEY);
-        mprf(MSGCH_DURATION, "The heat melts your icy armour.");
+        mprf(MSGCH_DURATION, T_("The heat melts your icy armour."));
     }
 }
 
@@ -381,11 +383,11 @@ static void _update_cowardice()
         return;
 
     if (horror_level >= HORROR_LVL_OVERWHELMING)
-        mpr("Monsters! Monsters everywhere! You have to get out of here!");
+        mpr(T_("Monsters! Monsters everywhere! You have to get out of here!"));
     else if (horror_level >= HORROR_LVL_EXTREME)
-        mpr("You reel with horror at the sight of these foes!");
+        mpr(T_("You reel with horror at the sight of these foes!"));
     else
-        mpr("You feel a twist of horror at the sight of this foe.");
+        mpr(T_("You feel a twist of horror at the sight of this foe."));
 }
 
 static void _update_claustrophobia()
@@ -521,9 +523,9 @@ void player_reacts_to_monsters()
         && you.is_constricted())
     {
         if (you.constricted_type == CONSTRICT_ROOTS)
-            mprf("The roots around you sink back into the ground.");
+            mprf(T_("The roots around you sink back into the ground."));
         else if (you.constricted_type == CONSTRICT_BVC)
-            mprf("The zombie hands holding you return to the earth.");
+            mprf(T_("The zombie hands holding you return to the earth."));
 
         you.stop_being_constricted(true);
     }
@@ -564,7 +566,7 @@ void player_reacts_to_monsters()
         && !there_are_monsters_nearby(true, true, false))
     {
         if (_decrement_a_duration(DUR_STARDUST_COOLDOWN, you.time_taken))
-            mprf(MSGCH_DURATION, "Your orb has finished recharging its magic.");
+            mprf(MSGCH_DURATION, T_("Your orb has finished recharging its magic."));
     }
 
 
@@ -610,7 +612,7 @@ static bool _check_recite()
         || you.petrified()
         || you.berserk())
     {
-        mprf(MSGCH_DURATION, "Your recitation is interrupted.");
+        mprf(MSGCH_DURATION, T_("Your recitation is interrupted."));
         you.duration[DUR_RECITE] = 0;
         you.set_duration(DUR_RECITE_COOLDOWN, 1 + random2(10) + random2(30));
         return false;
@@ -650,7 +652,7 @@ static void _handle_recitation(int step)
             if (!closure.empty())
                 speech << ' ' << closure;
         }
-        mprf(MSGCH_DURATION, "You finish reciting %s", speech.str().c_str());
+        mprf(MSGCH_DURATION, T_("You finish reciting %s"), speech.str().c_str());
         you.set_duration(DUR_RECITE_COOLDOWN, 1 + random2(10) + random2(30));
     }
 }
@@ -664,7 +666,7 @@ static void _try_to_respawn_ancestor()
     if (!ancestor)
         return;
 
-    mprf("%s emerges from the mists of memory!",
+    mprf(T_("%s emerges from the mists of memory!"),
          ancestor->name(DESC_YOUR).c_str());
     add_companion(ancestor);
     place_cloud(CLOUD_MIST, ancestor->pos(), random_range(1,2), ancestor); // ;)
@@ -689,7 +691,7 @@ static void _decrement_transform_duration(int delay)
         you.props.erase(EMERGENCY_FLIGHT_KEY);
     }
     if (_decrement_a_duration(DUR_TRANSFORMATION, delay, nullptr, random2(3),
-                                "Your transformation is almost over."))
+                                T_("Your transformation is almost over.")))
     {
         return_to_default_form();
     }
@@ -721,7 +723,7 @@ static void _handle_trickster_decay(int delay)
     if (stacks <= 0)
     {
         you.props.erase(TRICKSTER_POW_KEY);
-        mprf(MSGCH_DURATION, "You feel your existence waver again.");
+        mprf(MSGCH_DURATION, T_("You feel your existence waver again."));
     }
 
     if (reduction > 0)
@@ -759,10 +761,10 @@ static void _decrement_durations()
 
     const bool melted = you.props.exists(MELT_ARMOUR_KEY);
     if (_decrement_a_duration(DUR_ICY_ARMOUR, delay,
-                              "Your icy armour evaporates.",
+                              T_("Your icy armour evaporates."),
                               melted ? 0 : coinflip(),
                               melted ? nullptr
-                              : "Your icy armour starts to melt."))
+                              : T_("Your icy armour starts to melt.")))
     {
         if (you.props.exists(ICY_ARMOUR_KEY))
             you.props.erase(ICY_ARMOUR_KEY);
@@ -781,8 +783,8 @@ static void _decrement_durations()
     if (you.attribute[ATTR_SWIFTNESS] >= 0)
     {
         if (_decrement_a_duration(DUR_SWIFTNESS, delay,
-                                  "You feel sluggish.", coinflip(),
-                                  "You start to feel a little slower."))
+                                  T_("You feel sluggish."), coinflip(),
+                                  T_("You start to feel a little slower.")))
         {
             // Start anti-swiftness.
             you.duration[DUR_SWIFTNESS] = you.attribute[ATTR_SWIFTNESS];
@@ -792,8 +794,8 @@ static void _decrement_durations()
     else
     {
         if (_decrement_a_duration(DUR_SWIFTNESS, delay,
-                                  "You no longer feel sluggish.", coinflip(),
-                                  "You start to feel a little faster."))
+                                  T_("You no longer feel sluggish."), coinflip(),
+                                  T_("You start to feel a little faster.")))
         {
             you.attribute[ATTR_SWIFTNESS] = 0;
         }
@@ -842,7 +844,7 @@ static void _decrement_durations()
     {
         polar_vortex_damage(&you, min(delay, you.duration[DUR_VORTEX]));
         if (_decrement_a_duration(DUR_VORTEX, delay,
-                                  "The winds around you start to calm down."))
+                                  T_("The winds around you start to calm down.")))
         {
             you.duration[DUR_VORTEX_COOLDOWN] = random_range(35, 45);
         }
@@ -852,7 +854,7 @@ static void _decrement_durations()
     {
         if (you.pos() != you.props[FORTRESS_BLAST_POS_KEY].get_coord())
         {
-            mprf(MSGCH_DURATION, "Your fortress blast dissipates harmlessly.");
+            mprf(MSGCH_DURATION, T_("Your fortress blast dissipates harmlessly."));
             you.duration[DUR_FORTRESS_BLAST_TIMER] = 0;
         }
         else
@@ -871,7 +873,7 @@ static void _decrement_durations()
         if (!you.permanent_flight())
         {
             if (_decrement_a_duration(DUR_FLIGHT, delay, nullptr, random2(6),
-                                      "You are starting to lose your buoyancy."))
+                                      T_("You are starting to lose your buoyancy.")))
             {
                 land_player();
             }
@@ -903,13 +905,13 @@ static void _decrement_durations()
     }
 
     if (_decrement_a_duration(DUR_CLOUD_TRAIL, delay,
-            "Your trail of clouds dissipates."))
+            T_("Your trail of clouds dissipates.")))
     {
         you.props.erase(XOM_CLOUD_TRAIL_TYPE_KEY);
     }
 
     _decrement_a_duration(DUR_DETONATION_CATALYST, delay,
-        "Your catalyst becomes inert.");
+        T_("Your catalyst becomes inert."));
 
     if (you.duration[DUR_FLOODED])
     {
@@ -918,13 +920,13 @@ static void _decrement_durations()
             you.duration[DUR_FLOODED] = 0;
         else if (_decrement_a_duration(DUR_FLOODED, delay))
         {
-            mprf(MSGCH_RECOVERY, "You finish coughing all the %s out of your lungs.",
+            mprf(MSGCH_RECOVERY, T_("You finish coughing all the %s out of your lungs."),
                  you.props[WATER_HOLD_SUBSTANCE_KEY].get_string().c_str());
             you.duration[DUR_FLOODED_IMMUNITY] = you.time_taken + 1;
         }
         else
         {
-            mprf(MSGCH_WARN, "Your lungs strain for air.");
+            mprf(MSGCH_WARN, T_("Your lungs strain for air."));
             const int dmg = roll_dice(2, 5);
             ouch(div_rand_round(dmg * delay, BASELINE_DELAY), KILLED_BY_WATER,
                                                 you.props[WATER_HOLDER_KEY].get_int());
@@ -984,9 +986,10 @@ static void _decrement_durations()
     if (!you.cannot_act()
         && !you.confused())
     {
-        extract_barbs(
-            make_stringf("You %s the barbed spikes from your body.",
-                you.berserk() ? "rip and tear" : "carefully extract").c_str());
+        const string barbs_msg = make_stringf(
+            T_("You %s the barbed spikes from your body."),
+            T_(you.berserk() ? "rip and tear" : "carefully extract"));
+        extract_barbs(barbs_msg.c_str());
     }
 
     if (you.wearing_jewellery(AMU_WILDSHAPE))
@@ -1043,12 +1046,11 @@ static void _decrement_durations()
         }
         if (!found)
         {
-            mprf(MSGCH_DURATION, "As the last of your armour is driven back to "
-                  "you, your cacophony ends.");
+            mprf(MSGCH_DURATION, T_("As the last of your armour is driven back to you, your cacophony ends."));
             you.duration[DUR_CACOPHONY] = 0;
         }
         else if (_decrement_a_duration(DUR_CACOPHONY, delay,
-                "Your cacophony subsides and your armour settles down once more."))
+                T_("Your cacophony subsides and your armour settles down once more.")))
         {
             for (monster_iterator mi; mi; ++mi)
                 if (mi->was_created_by(MON_SUMM_CACOPHONY))
@@ -1063,7 +1065,7 @@ static void _decrement_durations()
 
     if (you.duration[DUR_CELEBRANT_COOLDOWN] && you.hp == you.hp_max)
     {
-        mprf(MSGCH_DURATION, "You are ready to perform a blood rite again.");
+        mprf(MSGCH_DURATION, T_("You are ready to perform a blood rite again."));
         you.duration[DUR_CELEBRANT_COOLDOWN] = 0;
     }
 
@@ -1072,20 +1074,20 @@ static void _decrement_durations()
         // Don't print it the message if the mutation is lost
         // before the cooldown wears off.
         if (you.get_mutation_level(MUT_TIME_WARPED_BLOOD))
-            mprf(MSGCH_DURATION, "Your time-warped blood is ready to ripple again.");
+            mprf(MSGCH_DURATION, T_("Your time-warped blood is ready to ripple again."));
 
         you.duration[DUR_TIME_WARPED_BLOOD_COOLDOWN] = 0;
     }
 
     if (you.duration[DUR_HIVE_COOLDOWN] && you.hp == you.hp_max)
     {
-        mprf(MSGCH_DURATION, "The buzzing within you returns to its normal rhythm.");
+        mprf(MSGCH_DURATION, T_("The buzzing within you returns to its normal rhythm."));
         you.duration[DUR_HIVE_COOLDOWN] = 0;
     }
 
     if (you.duration[DUR_MEDUSA_COOLDOWN] && you.hp == you.hp_max)
     {
-        mprf(MSGCH_DURATION, "You feel your defenses recover.");
+        mprf(MSGCH_DURATION, T_("You feel your defenses recover."));
         you.duration[DUR_MEDUSA_COOLDOWN] = 0;
     }
 
@@ -1094,7 +1096,7 @@ static void _decrement_durations()
 
     if (you.duration[DUR_EELJOLT_COOLDOWN] && you.hp == you.hp_max)
     {
-        mprf(MSGCH_DURATION, "Your %s have fully recharged.", you.hand_name(true).c_str());
+        mprf(MSGCH_DURATION, T_("Your %s have fully recharged."), you.hand_name(true).c_str());
         you.duration[DUR_EELJOLT_COOLDOWN] = 0;
     }
 
@@ -1179,19 +1181,21 @@ static void _maybe_attune_regen_items()
 
     if (gained_regen || gained_mana_regen)
     {
-        msgs.emplace_back(make_stringf("regenerate%s more quickly",
-                gained_regen && gained_mana_regen ? " health and magic"
-                : (gained_regen ? "" : " magic")));
+        const char* regen_type = gained_regen && gained_mana_regen
+            ? T_(" health and magic")
+            : (gained_regen ? "" : T_(" magic"));
+        msgs.emplace_back(make_stringf(
+            T_("regenerate%s more quickly"), regen_type));
     }
     if (gained_chemistry)
-        msgs.emplace_back("extract magic from the potions you drink");
+        msgs.emplace_back(T_("extract magic from the potions you drink"));
 
     plural = plural || eq_list.size() > 1;
     string eq_str = comma_separated_line(eq_list.begin(), eq_list.end());
     string msg_str = comma_separated_line(msgs.begin(), msgs.end());
-    mprf("Your %s attune%s to your body, and you begin to %s.",
-         eq_str.c_str(), plural ? " themselves" : "s itself",
-         msg_str.c_str());
+    const char* verb_form = plural ? "attune themselves" : "attunes itself";
+    mprf_p(T_("Your %1$s attune%2$s to your body, and you begin to %3$s."),
+           eq_str.c_str(), verb_form, msg_str.c_str());
 }
 
 // cjo: Handles player hp and mp regeneration. If the counter
@@ -1260,7 +1264,7 @@ static void _handle_fugue(int delay)
     {
         // Keep the spam down
         if (you.props[FUGUE_KEY].get_int() < 3 || one_chance_in(5))
-            mpr("The wailing of tortured souls fills the air!");
+            mpr(T_("The wailing of tortured souls fills the air!"));
         noisy(spell_effect_noise(SPELL_FUGUE_OF_THE_FALLEN), you.pos());
     }
 }

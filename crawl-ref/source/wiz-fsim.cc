@@ -43,6 +43,7 @@
 #include "unwind.h"
 #include "version.h"
 #include "wiz-you.h"
+#include "database.h"
 
 #ifdef WIZARD
 
@@ -110,7 +111,8 @@ static string _equipped_weapon_name(bool show_prefix)
     if (iweap)
     {
         if (show_prefix)
-            return "Wielding: " + iweap->name(DESC_PLAIN);
+            return (T_("Wielding: "))
+                   + iweap->name(DESC_PLAIN);
         else
             return iweap->name(DESC_PLAIN);
     }
@@ -298,7 +300,7 @@ static monster* _init_fsim()
         if (mtype == MONS_PROGRAM_BUG)
         {
             char specs[100];
-            mprf(MSGCH_PROMPT, "Enter monster name (or MONS spec): ");
+            mprf(MSGCH_PROMPT, T_("Enter monster name (or MONS spec): "));
             if (cancellable_get_line_autohist(specs, sizeof specs) || !*specs)
             {
                 canned_msg(MSG_OK);
@@ -318,7 +320,7 @@ static monster* _init_fsim()
         mon = create_monster(temp);
         if (!mon)
         {
-            mpr("Failed to create monster.");
+            mpr(T_("Failed to create monster."));
             return nullptr;
         }
     }
@@ -336,7 +338,7 @@ static monster* _init_fsim()
     if (!adjacent(mon->pos(), you.pos()))
     {
         monster_die(*mon, KILL_RESET, NON_MONSTER);
-        mpr("Could not put monster adjacent to player.");
+        mpr(T_("Could not put monster adjacent to player."));
         return 0;
     }
 
@@ -528,15 +530,15 @@ void wizard_quick_fsim()
     if (!mon)
         return;
 
-    mprf("Fighting %s with %s\n", mon->name(DESC_PLAIN, true).c_str(), _equipped_weapon_name(false).c_str());
+    mprf(T_("Fighting %s with %s\n"), mon->name(DESC_PLAIN, true).c_str(), _equipped_weapon_name(false).c_str());
 
     const int iter_limit = Options.fsim_rounds;
     fight_data fdata = _get_fight_data(*mon, iter_limit, false);
-    mprf("%8s%s", "", fdata.header(false).c_str());
-    mpr(fdata.summary("Attack: ", false));
+    mprf(T_("%8s%s"), "", fdata.header(false).c_str());
+    mpr(fdata.summary(T_("Attack: "), false));
 
     fdata = _get_fight_data(*mon, iter_limit, true);
-    mpr(fdata.summary("Defend: ", false));
+    mpr(fdata.summary(T_("Defend: "), false));
 
     _uninit_fsim(mon);
     return;
@@ -649,7 +651,7 @@ static void _fsim_simple_scale(FILE * o, monster* mon, bool defense)
         // kill the loop if the user hits escape
         if (kbhit() && getch_ck() == 27)
         {
-            mpr("Cancelling simulation.\n");
+            mpr(T_("Cancelling simulation.\n"));
             fprintf(o, "Simulation cancelled!\n\n");
             break;
         }
@@ -706,7 +708,7 @@ static void _fsim_double_scale(FILE * o, monster* mon, bool defense)
             set_skill_level(sky, y);
             fight_data fdata = _get_fight_data(*mon, iter_limit, defense);
             fight_damage_stats &fstats = defense ? fdata.monster : fdata.player;
-            mprf("%s %d, %s %d: %d", skill_name(skx), x, skill_name(sky), y,
+            mprf(T_("%s %d, %s %d: %d"), skill_name(skx), x, skill_name(sky), y,
                  int(fstats.av_eff_dam));
             fprintf(o,Options.fsim_csv ? "%.1f\t" : "%5.1f", fstats.av_eff_dam);
             fflush(o);
@@ -714,7 +716,7 @@ static void _fsim_double_scale(FILE * o, monster* mon, bool defense)
             // kill the loop if the user hits escape
             if (kbhit() && getch_ck() == 27)
             {
-                mpr("Cancelling simulation.\n");
+                mpr(T_("Cancelling simulation.\n"));
                 fprintf(o, "\nSimulation cancelled!\n\n");
                 return;
             }
@@ -750,7 +752,7 @@ void wizard_fight_sim(bool double_scale)
     }
     else
     {
-        mprf(MSGCH_PROMPT, "(A)ttack or (D)efence?");
+        mprf(MSGCH_PROMPT, T_("(A)ttack or (D)efence?"));
 
         switch (toalower(getch_ck()))
         {
@@ -804,7 +806,7 @@ void wizard_fight_sim(bool double_scale)
             }
             else
             {
-                mprf("Aborting sim on %s", kit.c_str());
+                mprf(T_("Aborting sim on %s"), kit.c_str());
                 if (!error.empty())
                     mpr(error);
                 break;
@@ -821,7 +823,7 @@ void wizard_fight_sim(bool double_scale)
         set_xl(xl, false);
 
     _uninit_fsim(mon);
-    mpr("Done.");
+    mpr(T_("Done."));
 }
 
 #endif

@@ -6,6 +6,7 @@
 #pragma once
 
 #include <list>
+#include "i18n.h"
 #include <vector>
 
 using std::vector;

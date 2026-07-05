@@ -139,6 +139,10 @@ ifdef FORCE_SSE
 CFOTHERS += -mfpmath=sse -msse2
 endif
 
+# Tell GCC/MinGW to treat source files as UTF-8 and produce UTF-8 string
+# literals. Needed for Chinese (and other non-ASCII) translations.
+CFOTHERS += -finput-charset=UTF-8 -fexec-charset=UTF-8
+
 CFWARN :=
 CFWARN_L := -Wall -Wformat-security -Wundef
 
@@ -254,6 +258,9 @@ ifdef msys
 	SOUND = YesPlease
 	DEFINES_L += -DWINMM_PLAY_SOUNDS -D__USE_MINGW_ANSI_STDIO
 	EXTRA_LIBS += -lwinmm
+	# Increase stack size from Windows default 1MB to 8MB
+	# to avoid stack overflow during .des file parsing with alloca
+	LDFLAGS += -Wl,--stack,8388608
 	ifdef TILES
 		EXTRA_LIBS += -lmingw32 -lgdi32 -lwinmm -limm32 -lole32 -loleaut32 -lversion contrib/install/$(ARCH)/lib/libSDL2main.a -mwindows
 		BUILD_FREETYPE = YesPlease

@@ -10,6 +10,7 @@
 #include "wizard.h"
 
 #include "abyss.h" // banished
+#include "database.h"
 #include "acquire.h"
 #include "cio.h" // cursor_control
 #include "clua.h"
@@ -63,7 +64,7 @@ static void _do_wizard_command(int wiz_command)
         if (player_in_branch(BRANCH_ABYSS))
             wizard_set_abyss();
         else
-            mpr("You can only abyss_teleport() inside the Abyss.");
+            mpr(T_("You can only abyss_teleport() inside the Abyss."));
         break;
 
     case 'b': wizard_blink(); break;
@@ -106,7 +107,7 @@ static void _do_wizard_command(int wiz_command)
 
     // case 'j': break;
     case 'J':
-        mpr("Running Jiyva off-level sacrifice.");
+        mpr(T_("Running Jiyva off-level sacrifice."));
         jiyva_eat_offlevel_items();
         break;
     // case CONTROL('J'): break;
@@ -195,7 +196,7 @@ static void _do_wizard_command(int wiz_command)
     case '_': wizard_join_religion(); break;
 
     case '=':
-        mprf("Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d",
+        mprf(T_("Cost level: %d  Total experience: %d  Next cost level: %d Skill cost: %d"),
               you.skill_cost_level, you.total_experience,
               skill_cost_needed(you.skill_cost_level + 1),
               calc_skill_cost(you.skill_cost_level));
@@ -207,12 +208,12 @@ static void _do_wizard_command(int wiz_command)
 
     case ']':
         if (!wizard_add_mutation())
-            mpr("Failure to give mutation.");
+            mpr(T_("Failure to give mutation."));
         break;
 
     case '}':
         if (!wizard_toggle_bane())
-            mpr("Failure to toggle bane.");
+            mpr(T_("Failure to toggle bane."));
         break;
 
     case '\\': debug_make_shop(); break;
@@ -282,7 +283,7 @@ void handle_wizard_command()
 
     if (you.suppress_wizard)
     {
-        mprf(MSGCH_WARN, "Re-activating wizard mode.");
+        mprf(MSGCH_WARN, T_("Re-activating wizard mode."));
         you.wizard = true;
         you.suppress_wizard = false;
 #ifdef USE_TILE_LOCAL
@@ -299,11 +300,11 @@ void handle_wizard_command()
     }
     else if (!you.wizard)
     {
-        mprf(MSGCH_WARN, "WARNING: ABOUT TO ENTER WIZARD MODE!");
+        mprf(MSGCH_WARN, T_("WARNING: ABOUT TO ENTER WIZARD MODE!"));
 
 #ifndef SCORE_WIZARD_CHARACTERS
         if (!you.explore)
-            mprf(MSGCH_WARN, "If you continue, your game will not be scored!");
+            mprf(MSGCH_WARN, T_("If you continue, your game will not be scored!"));
 #endif
 
         if (!confirm_prompt("wiz", "Do you really want to enter wizard mode?"))
@@ -336,7 +337,7 @@ void handle_wizard_command()
     }
 
     {
-        mprf(MSGCH_PROMPT, "Enter Wizard Command (? - help): ");
+        mprf(MSGCH_PROMPT, T_("Enter Wizard Command (? - help): "));
         cursor_control con(true);
         wiz_command = getchm();
         if (wiz_command == '*')
@@ -386,12 +387,12 @@ void enter_explore_mode()
         handle_wizard_command();
     else if (!you.explore)
     {
-        mprf(MSGCH_WARN, "WARNING: ABOUT TO ENTER EXPLORE MODE!");
-        mpr("In explore mode, death is optional.");
-        mpr("Once you set a character to explore mode, you can't switch back.");
+        mprf(MSGCH_WARN, T_("WARNING: ABOUT TO ENTER EXPLORE MODE!"));
+        mpr(T_("In explore mode, death is optional."));
+        mpr(T_("Once you set a character to explore mode, you can't switch back."));
 
 #ifndef SCORE_WIZARD_CHARACTERS
-        mprf(MSGCH_WARN, "If you continue, your game will not be scored!");
+        mprf(MSGCH_WARN, T_("If you continue, your game will not be scored!"));
 #endif
 
         if (!confirm_prompt("explore", "Do you really want to enter explore mode?"))

@@ -28,12 +28,14 @@
 #include "macro.h"
 #include "message.h"
 #include "mon-death.h"
+#include "options.h"
 #include "mon-gear.h"
 #include "mon-pathfind.h"
 #include "mon-place.h"
 #include "mon-speak.h"
 #include "mon-util.h"
 #include "notes.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "spl-other.h"
@@ -77,7 +79,7 @@ void remove_bound_soul_companion()
             mons = &entry.second.mons.mons;
         if (mons->type == MONS_BOUND_SOUL)
         {
-            mprf("%s is freed.", mons->name(DESC_THE, true).c_str());
+            mprf(T_("%s is freed."), mons->name(DESC_THE, true).c_str());
             remove_companion(mons);
             return;
         }
@@ -153,7 +155,7 @@ bool recall_offlevel_ally(mid_t mid)
     // The monster is now on this level
     remove_monster_from_transit(comp->level, mid);
     comp->level = level_id::current();
-    simple_monster_message(*mons, " is recalled.");
+    simple_monster_message(*mons, T_(" is recalled."));
 
     // Now that the monster is onlevel, we can safely apply traps to it.
     mons->trigger_movement_effects(MV_TRANSLOCATION);
@@ -206,7 +208,7 @@ void wizard_list_companions()
 {
     if (companion_list.size() == 0)
     {
-        mpr("You have no companions.");
+        mpr(T_("You have no companions."));
         return;
     }
 
@@ -309,8 +311,8 @@ void fixup_bad_priest_monster(monster &mons)
 {
     if (!maybe_bad_priest_monster(mons))
         return;
-    mprf(MSGCH_ERROR, "Removing corrupted ex-follower from level: %s.",
-                                            mons.full_name(DESC_PLAIN).c_str());
+    mprf(MSGCH_ERROR, T_("Removing corrupted ex-follower from level: %s."),
+         mons.full_name(DESC_PLAIN).c_str());
     monster_die(mons, KILL_RESET, -1, true);
 }
 #endif
@@ -354,7 +356,7 @@ static void _remove_offlevel_companion(mid_t mid)
 
 void beogh_do_ostracism()
 {
-    mprf(MSGCH_GOD, "Beogh sends your followers elsewhere.");
+    mprf(MSGCH_GOD, T_("Beogh sends your followers elsewhere."));
     for (unsigned int i = FIRST_RECRUITED_APOSTLE; i < apostles.size(); ++i)
     {
         if (apostles[i].state == STATE_ALIVE)
@@ -586,8 +588,8 @@ bool maybe_generate_apostle_challenge()
 
 void flee_apostle_challenge()
 {
-    mprf(MSGCH_GOD, "Beogh is disappointed with your cowardice.");
-    mprf(MSGCH_GOD, "\"Reflect upon your actions, mortal!\"");
+    mprf(MSGCH_GOD, T_("Beogh is disappointed with your cowardice."));
+    mprf(MSGCH_GOD, T_("\"Reflect upon your actions, mortal!\""));
     dock_piety(0, 15, true);
 
     // Remove the apostle (and its band)
@@ -640,13 +642,14 @@ void win_apostle_challenge(monster& apostle)
     // exist yet for the player, and thus trying to get its hotkey will be wrong
     you.duration[DUR_BEOGH_CAN_RECRUIT] = random_range(30, 45) * BASELINE_DELAY;
 
-    string msg = make_stringf("Beogh will allow you to induct %s into your service.",
-                              apostle.name(DESC_THE, true).c_str());
+    string msg;
+    msg = make_stringf(T_("Beogh will allow you to induct %s into your service."),
+                       apostle.name(DESC_THE, true).c_str());
 
     // Remind the player how to do this, if they don't already have an apostle
     if (get_num_apostles() == 0)
     {
-        msg += make_stringf(" (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)",
+        msg += make_stringf(T_(" (press <w>%c</w> on the <w>%s</w>bility menu to recruit an apostle)"),
                             get_talent(ABIL_BEOGH_RECRUIT_APOSTLE).hotkey,
                             command_to_string(CMD_USE_ABILITY).c_str());
     }
@@ -659,7 +662,7 @@ void win_apostle_challenge(monster& apostle)
         if (mi->is_band_follower_of(apostle))
         {
             place_cloud(CLOUD_TLOC_ENERGY, mi->pos(), 1 + random2(3), *mi);
-            simple_monster_message(**mi, " is recalled by Beogh.");
+            simple_monster_message(**mi, T_(" is recalled by Beogh."));
             monster_die(**mi, KILL_RESET, -1, true);
         }
     }
@@ -670,7 +673,7 @@ void end_beogh_recruit_window()
     monster* apostle = monster_by_mid(apostles[0].apostle.mons.mid);
     if (apostle && !mons_is_god_gift(*apostle))
     {
-        simple_monster_message(*apostle, " is recalled by the power of Beogh.");
+        simple_monster_message(*apostle, T_(" is recalled by the power of Beogh."));
         place_cloud(CLOUD_TLOC_ENERGY, apostle->pos(), 1 + random2(3), apostle);
         monster_die(*apostle, KILL_RESET, -1, true);
     }
@@ -679,7 +682,7 @@ void end_beogh_recruit_window()
 string get_apostle_name(int slot, bool with_title)
 {
     if (slot > static_cast<int>(apostles.size()) - 1)
-        return "Buggy Apostle";
+        return T_("Buggy Apostle");
 
     const monster& apostle = apostles[slot].apostle.mons;
     string name = apostle.name(DESC_PLAIN, true);
@@ -702,20 +705,29 @@ void beogh_recruit_apostle()
         if (!you.can_see(*real))
         {
             if (try_recall(real->mid))
-                msg += "Beogh recalls " + real->name(DESC_THE, true) + " to your side and ";
+            {
+                msg += make_stringf(T_("Beogh recalls %s to your side and "), real->name(DESC_THE, true).c_str());
+            }
         }
     }
     // Apostle died before we could recruit them
     else
     {
         real = apostles[0].restore();
-        msg += "Beogh breathes life back into " + real->name(DESC_THE, true) + " and ";
+        msg += make_stringf(T_("Beogh breathes life back into %s and "), real->name(DESC_THE, true).c_str());
     }
 
     if (msg.length() > 0)
-        msg += "you anoint " + real->pronoun(PRONOUN_OBJECTIVE) + " with ash and charcoal and welcome " + real->pronoun(PRONOUN_OBJECTIVE) + " as a companion.";
+    {
+        msg += make_stringf_p(T_("you anoint %1$s with ash and charcoal and welcome %1$s as a companion."),
+            real->pronoun(PRONOUN_OBJECTIVE).c_str());
+    }
     else
-        msg += "You anoint " + real->name(DESC_THE, true) + " with ash and charcoal and welcome " + real->pronoun(PRONOUN_OBJECTIVE) + " as a companion.";
+    {
+        msg += make_stringf_p(T_("You anoint %1$s with ash and charcoal and welcome %2$s as a companion."),
+            real->name(DESC_THE, true).c_str(),
+            real->pronoun(PRONOUN_OBJECTIVE).c_str());
+    }
 
     mpr(msg.c_str());
 
@@ -772,13 +784,14 @@ void beogh_dismiss_apostle(int slot)
     ASSERT(slot > 0 && slot < 4);
 
     const string name = apostles[slot].apostle.mons.name(DESC_THE, true);
-    if (!yesno(make_stringf("Really dismiss %s?", name.c_str()).c_str(), false, 'n'))
+    if (!yesno(make_stringf(T_("Really dismiss %s?"),
+                                name.c_str()).c_str(), false, 'n'))
     {
         canned_msg(MSG_OK);
         return;
     }
 
-    mprf("You release %s from your service.", name.c_str());
+    mprf(T_("You release %s from your service."), name.c_str());
 
     // Remove our follower monster (if they are elsewhere, use an excursion to
     // remove them immediately.)
@@ -923,7 +936,7 @@ void beogh_swear_vengeance(const monster& apostle)
     }
 
     if (new_targets)
-        mprf(MSGCH_DURATION, "You swear to avenge %s death!", apostle.name(DESC_ITS, true).c_str());
+        mprf(MSGCH_DURATION, T_("You swear to avenge %s death!"), apostle.name(DESC_ITS, true).c_str());
 
     apostle_data& a = _get_saved_apostle(apostle);
     a.state = STATE_DEAD;
@@ -960,7 +973,7 @@ void beogh_progress_vengeance()
     you.duration[DUR_BEOGH_SEEKING_VENGEANCE] -= 1;
     if (you.duration[DUR_BEOGH_SEEKING_VENGEANCE] == 0)
     {
-        mprf(MSGCH_DURATION, "You feel as though your fallen companions have been avenged.");
+        mprf(MSGCH_DURATION, T_("You feel as though your fallen companions have been avenged."));
 
         // This cleanup should usually be unnecessary, since we are only supposed
         // to end when we've killed EVERY marked target, but slime creature
@@ -1041,8 +1054,7 @@ void beogh_resurrect_followers(bool end_ostracism_only)
                 if (coinflip())
                     apostle->add_ench(ENCH_WRETCHED);
 
-                simple_monster_message(*apostle,
-                                " has fought their way back out of the Abyss!");
+                simple_monster_message(*apostle, T_(" has fought their way back out of the Abyss!"));
                 mons_speaks_msg(apostle,
                     getSpeakString("orc_apostle_unbanished"), MSGCH_TALK);
             }
@@ -1052,7 +1064,7 @@ void beogh_resurrect_followers(bool end_ostracism_only)
     // The rest of the bookkeeping only applies to real resurrections
     if (end_ostracism_only)
     {
-        mprf(MSGCH_GOD, "Your apostles return to your side.");
+        mprf(MSGCH_GOD, T_("Your apostles return to your side."));
         return;
     }
 
@@ -1068,8 +1080,8 @@ void beogh_resurrect_followers(bool end_ostracism_only)
 
     if (!revived_names.empty())
     {
-        mpr_comma_separated_list("Beogh breathes life back into ", revived_names,
-                                " and ", ", ", MSGCH_GOD);
+        mpr_comma_separated_list(T_("Beogh breathes life back into "), revived_names,
+                                T_(" and "), T_(", "), MSGCH_GOD);
     }
 
     you.props.erase(BEOGH_RES_PIETY_GAINED_KEY);
@@ -1125,11 +1137,11 @@ string apostle_short_description(int slot)
     string status;
 
     if (slot == 0)
-        status = "<green>**Available to recruit**</green>";
+        status = T_("<green>**Available to recruit**</green>");
     else if (!beogh_apostle_is_alive(slot))
-        status = "<lightred>**DEAD**</lightred>";
+        status = T_("<lightred>**DEAD**</lightred>");
     else if (apostle_d.state == STATE_BANISHED)
-        status = "<magenta>**BANISHED**</magenta>";
+        status = T_("<magenta>**BANISHED**</magenta>");
 
     // Make title line
     string str = make_stringf("%s (<%s>%s</%s>)     %s\n",
@@ -1140,7 +1152,7 @@ string apostle_short_description(int slot)
         status.c_str());
 
     // Stat line
-    str += make_stringf("HP: %d    AC: %d    Damage:%d (w/weapon)\n",
+    str += make_stringf(T_("HP: %d    AC: %d    Damage:%d (w/weapon)\n"),
         apostle.max_hit_points, apostle.armour_class(),
         _calc_attack_damage(apostle));
 

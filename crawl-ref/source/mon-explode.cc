@@ -10,6 +10,7 @@
 #include "beam.h"
 #include "cloud.h"
 #include "coordit.h"
+#include "database.h"
 #include "dungeon-char-type.h"
 #include "english.h"
 #include "env.h"
@@ -42,7 +43,7 @@ static void _setup_base_explosion(bolt & beam, const monster& origin)
     beam.source       = origin.pos();
     beam.source_name  = origin.base_name(DESC_BASENAME, true);
     beam.target       = origin.pos();
-    beam.explode_noise_msg = "You hear an explosion!";
+    beam.explode_noise_msg = T_("You hear an explosion!");
 
     if (!crawl_state.game_is_arena() && origin.friendly())
     {
@@ -131,7 +132,7 @@ static void _setup_lightning_explosion(bolt & beam, const monster& origin)
     beam.flavour   = BEAM_ELECTRICITY;
     beam.damage    = ball_lightning_damage(origin.get_hit_dice());
     beam.name      = "blast of lightning";
-    beam.explode_noise_msg = "You hear a clap of thunder!";
+    beam.explode_noise_msg = T_("You hear a clap of thunder!");
     beam.colour    = LIGHTCYAN;
     beam.ex_size   = x_chance_in_y(origin.get_hit_dice(), 24) ? 3 : 2;
     if (origin.summoner)
@@ -180,7 +181,7 @@ static void _setup_bennu_explosion(bolt& beam, const monster& origin)
     beam.flavour = BEAM_NEG;
     beam.damage  = _bennu_damage(origin.get_hit_dice());
     beam.name    = "pyre of ghostly fire";
-    beam.explode_noise_msg = "You hear an otherworldly crackling!";
+    beam.explode_noise_msg = T_("You hear an otherworldly crackling!");
     beam.colour  = CYAN;
     beam.ex_size = 2;
 }
@@ -231,7 +232,7 @@ static void _setup_bloated_husk_explosion(bolt & beam, const monster& origin)
     beam.flavour = BEAM_MMISSILE;
     beam.damage  = _bloated_husk_damage(origin.get_hit_dice());
     beam.name    = "blast of putrescent gases";
-    beam.explode_noise_msg = "You hear an high-pitched explosion!";
+    beam.explode_noise_msg = T_("You hear an high-pitched explosion!");
     beam.colour  = GREEN;
     beam.ex_size = 2;
 
@@ -248,7 +249,7 @@ static void _setup_sporangium_explosion(bolt & beam, const monster& origin)
     beam.flavour = BEAM_ACID;
     beam.damage  = _sporangium_damage(0);
     beam.name    = "caustic explosion";
-    beam.explode_noise_msg = "You hear an extremely violent squelch.";
+    beam.explode_noise_msg = T_("You hear an extremely violent squelch.");
     beam.colour  = YELLOW;
     beam.ex_size = 3;
     beam.origin_spell = SPELL_LAUNCH_SPORANGIUM;
@@ -345,7 +346,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     bolt beam;
     const monster_type type = mons->type;
     string sanct_msg = "";
-    string boom_msg = make_stringf("%s explodes!", mons->full_name(DESC_THE).c_str());
+    string boom_msg = make_stringf(T_("%s explodes!"), mons->full_name(DESC_THE).c_str());
     actor* agent = nullptr;
     bool inner_flame = false;
 
@@ -366,7 +367,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
                     apostrophise(mons->name(DESC_THE)) + " " +
                     effect + ".";
         if (type == MONS_BENNU)
-            boom_msg = make_stringf("%s blazes out!", mons->full_name(DESC_THE).c_str());
+            boom_msg = make_stringf(T_("%s blazes out!"), mons->full_name(DESC_THE).c_str());
     }
     else if (mons->has_ench(ENCH_INNER_FLAME))
     {
@@ -394,7 +395,7 @@ bool explode_monster(monster* mons, killer_type killer, bool pet_kill)
     {
         _setup_haemoclasm_explosion(beam, *mons);
         mons->flags |= MF_EXPLODE_KILL;
-        boom_msg = make_stringf("%s shudders for a moment, then explodes violently!",
+        boom_msg = make_stringf(T_("%s shudders for a moment, then explodes violently!"),
                                 mons->name(DESC_THE).c_str());
     }
 

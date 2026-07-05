@@ -1,0 +1,15 @@
+%%%%
+You cannot shoot with your %s while %s.
+你在%2$s时无法用你的%1$s射击。
+
+%%%%
+You offer a %sprayer to %s.
+你向%2$s献上了%1$s祈祷。
+
+%%%%
+%s blocks the %s with %s %s... and reflects it back!
+%1$s用%3$s%4$s格挡了%2$s……并将其反射了回去！
+
+%%%%
+The %s passes through %s.
+%s穿透了%s。

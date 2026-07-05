@@ -1,0 +1,11 @@
+%%%%
+%s %s yanked forward by the %s.
+%s被%s向前猛拉。
+
+%%%%
+%s blocks the %s with %s %s... and reflects it back!
+%1$s用%3$s%4$s格挡了%2$s……并将其反射了回去！
+
+%%%%
+The %s passes through %s.
+%s穿透了%s。

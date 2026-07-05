@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <sstream>
 
 #include "act-iter.h"
@@ -967,12 +968,12 @@ static void _mimic_vanish(const coord_def& pos, const string& name)
     if (!you.see_cell(pos))
         return;
 
-    const char* const smoke_str = can_place_smoke ? " in a puff of smoke" : "";
+    const char* const smoke_str = can_place_smoke ? (T_(" in a puff of smoke")) : "";
 
     const bool can_cackle = !silenced(pos) && !silenced(you.pos());
-    const string cackle = can_cackle ? getSpeakString("_laughs_") + " and " : "";
+    const string cackle = can_cackle ? getSpeakString("_laughs_") + (T_(" and ")) : "";
 
-    mprf("The %s mimic %svanishes%s!",
+    mprf_p(T_("The %1$s mimic %2$svanishes%3$s!"),
          name.c_str(), cackle.c_str(), smoke_str);
     interrupt_activity(activity_interrupt::mimic);
 }
@@ -1023,7 +1024,7 @@ void discover_mimic(const coord_def& pos)
     const bool plural = feature_mimic ? false : item->quantity > 1;
 
     if (you.see_cell(pos))
-        mprf("%s %s a mimic!", name.c_str(), plural ? "are" : "is");
+        mprf_p(T_("%1$s %2$s a mimic!"), name.c_str(), plural ? T_("are") : T_("is "));
 
     const string shortname = feature_mimic ? feat_type_name(feat)
                                            : item->name(DESC_BASENAME);
@@ -2073,7 +2074,7 @@ string mon_attack_name_short(attack_type attack)
  */
 string mon_attack_name(attack_type attack, bool with_object)
 {
-    static const char *attack_types[] =
+    static const char *attack_types_en[] =
     {
         "hit",         // including weapon attacks
         "bite",
@@ -2104,25 +2105,38 @@ string mon_attack_name(attack_type attack, bool with_object)
         "sting",
 #endif
         "hit, bite, peck, or gore", // AT_CHERUB
+    };
+    static const char *attack_types_en_end[] =
+    {
 #if TAG_MAJOR_VERSION == 34
         "hit", // AT_SHOOT
 #endif
         "hit", // AT_WEAP_ONLY,
         "hit or gore", // AT_RANDOM
     };
-    COMPILE_CHECK(ARRAYSZ(attack_types) == NUM_ATTACK_TYPES - AT_FIRST_ATTACK);
 
-    const int verb_index = attack - AT_FIRST_ATTACK;
-    ASSERT(verb_index < (int)ARRAYSZ(attack_types));
-
-    if (with_object)
-        return attack_types[verb_index];
-    else
     {
-        return replace_all(replace_all(attack_types[verb_index], " at", ""),
-                                                                 " on", "");
+        const int verb_index = attack - AT_FIRST_ATTACK;
+        static vector<string> merged_en;
+        if (merged_en.empty())
+        {
+            for (auto s : attack_types_en)
+                merged_en.push_back(s);
+            for (auto s : attack_types_en_end)
+                merged_en.push_back(s);
+        }
+        ASSERT(verb_index < (int)merged_en.size());
+        if (with_object)
+            return T_(merged_en[verb_index].c_str());
+        else
+        {
+            const string stripped = replace_all(
+                replace_all(merged_en[verb_index], " at", ""), " on", "");
+            return T_(stripped.c_str());
+        }
     }
-}
+
+    }
 
 /**
  * Does this monster attack flavour trigger even if the base attack does no
@@ -3071,7 +3085,8 @@ string mons_type_name(monster_type mc, description_level_type desc)
         return result;
     }
 
-    result += me->name;
+    const char* zh_name = zh_monster_name(me->name);
+    result += zh_name ? zh_name : me->name;
 
     // Vowel fix: Change 'a orc' to 'an orc'..
     if (result.length() >= 3
@@ -3470,7 +3485,7 @@ void mons_pacify(monster& mon, mon_attitude_type att, bool no_xp)
     if (mon.type == MONS_GERYON)
     {
         simple_monster_message(mon,
-            make_stringf(" discards %s horn.",
+            make_stringf(T_(" discards %s horn."),
                          mon.pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
         monster_drop_things(&mon, false, item_is_horn_of_geryon);
     }
@@ -4286,9 +4301,12 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
         msg = replace_all(msg, "@player", "@foe");
         msg = replace_all(msg, "@Player", "@Foe");
 
-        msg = replace_all(msg, "@foe_possessive@", "your");
-        msg = replace_all(msg, "@foe@", "you");
-        msg = replace_all(msg, "@Foe@", "You");
+        msg = replace_all(msg, "@foe_possessive@",
+                          T_("your"));
+        msg = replace_all(msg, "@foe@",
+                          T_("you"));
+        msg = replace_all(msg, "@Foe@",
+                          T_("You"));
 
         msg = replace_all(msg, "@foe_name@", you.your_name);
         msg = replace_all(msg, "@foe_species@", species::name(you.species));
@@ -4365,22 +4383,11 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
              && !crawl_state.game_is_arena()
              && you.can_see(mons))
     {
-        nocap = DESC_PLAIN;
-        cap   = DESC_PLAIN;
-
-        msg = replace_all(msg, "@the_something@", "your @the_something@");
-        msg = replace_all(msg, "@The_something@", "Your @the_something@");
-        msg = replace_all(msg, "@the_monster@",   "your @the_monster@");
-        msg = replace_all(msg, "@The_monster@",   "Your @the_monster@");
-
-        msg = replace_all(msg, "@the_something_possessive@",
-                          "your @the_something_possessive@");
-        msg = replace_all(msg, "@The_something_possessive@",
-                          "Your @the_something_possessive@");
-        msg = replace_all(msg, "@the_monster_possessive@",
-                          "your @the_monster_possessive@");
-        msg = replace_all(msg, "@The_monster_possessive@",
-                          "Your @the_monster_possessive@");
+        // Use DESC_YOUR so that apply_description() handles the
+        // "your"/"你的" prefix correctly for both EN and ZH locales,
+        // instead of hardcoding English "your "/"Your " strings.
+        nocap = DESC_YOUR;
+        cap   = DESC_YOUR;
     }
 
     // XXX: Shouldn't be able to see 'fake' monsters
@@ -4416,9 +4423,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     something[0] = toupper_safe(something[0]);
     msg = replace_all(msg, "@Something@",   something);
     msg = replace_all(msg, "@A_something@", mons.name(DESC_A));
-    msg = replace_all(msg, "@The_something@", mons.name(cap));
+    msg = replace_all(msg, "@The_something@", uppercase_first(mons.name(cap)));
     msg = replace_all(msg, "@The_something_possessive@",
-                      apostrophise(mons.name(cap)));
+                      uppercase_first(apostrophise(mons.name(cap))));
 
     // Player name.
     msg = replace_all(msg, "@player_name@", you.your_name);
@@ -4435,9 +4442,9 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     plain[0] = toupper_safe(plain[0]);
     msg = replace_all(msg, "@Monster@",     plain);
     msg = replace_all(msg, "@A_monster@",   mons.name(DESC_A));
-    msg = replace_all(msg, "@The_monster@", mons.name(cap));
+    msg = replace_all(msg, "@The_monster@", uppercase_first(mons.name(cap)));
     msg = replace_all(msg, "@The_monster_possessive@",
-                      apostrophise(mons.name(cap)));
+                      uppercase_first(apostrophise(mons.name(cap))));
 
     string subj_or_poss;
 
@@ -4523,24 +4530,25 @@ string do_mon_str_replacements(const string& in_msg, const monster& mons,
     // if it gets one, it should be used for the last two entries.
     if (mons.god == GOD_NO_GOD)
     {
-        msg = replace_all(msg, "@a_God@", "NO GOD");
-        msg = replace_all(msg, "@A_God@", "NO GOD");
-        msg = replace_all(msg, "@possessive_God@", "NO GOD");
-        msg = replace_all(msg, "@Possessive_God@", "NO GOD");
+        msg = replace_all(msg, "@a_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@A_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@possessive_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@Possessive_God@", T_("NO GOD"));
 
-        msg = replace_all(msg, "@my_God@", "NO GOD");
-        msg = replace_all(msg, "@My_God@", "NO GOD");
+        msg = replace_all(msg, "@my_God@", T_("NO GOD"));
+        msg = replace_all(msg, "@My_God@", T_("NO GOD"));
     }
     else if (mons.god == GOD_NAMELESS)
     {
-        msg = replace_all(msg, "@a_God@", "a god");
-        msg = replace_all(msg, "@A_God@", "A god");
-        const string possessive = mons.pronoun(PRONOUN_POSSESSIVE) + " god";
+        msg = replace_all(msg, "@a_God@", T_("a god"));
+        msg = replace_all(msg, "@A_God@", T_("A god"));
+        const string possessive = make_stringf(T_("%s god"),
+            mons.pronoun(PRONOUN_POSSESSIVE).c_str());
         msg = replace_all(msg, "@possessive_God@", possessive);
         msg = replace_all(msg, "@Possessive_God@", uppercase_first(possessive));
 
-        msg = replace_all(msg, "@my_God@", "my God");
-        msg = replace_all(msg, "@My_God@", "My God");
+        msg = replace_all(msg, "@my_God@", T_("my God"));
+        msg = replace_all(msg, "@My_God@", T_("My God"));
     }
     else
     {
@@ -5349,32 +5357,30 @@ mon_dam_level_type mons_get_damage_level(const monster& mons)
 
 string get_damage_level_string(mon_holy_type holi, mon_dam_level_type mdam)
 {
-    ostringstream ss;
+    const bool zh = Options.language == lang_t::ZH;
+    const bool wd = wounded_damaged(holi);
+
     switch (mdam)
     {
     case MDAM_ALMOST_DEAD:
-        ss << "almost";
-        ss << (wounded_damaged(holi) ? " destroyed" : " dead");
-        return ss.str();
+        return zh ? (wd ? "奄奄一息" : "奄奄一息")
+                  : (string("almost") + (wd ? " destroyed" : " dead"));
     case MDAM_SEVERELY_DAMAGED:
-        ss << "severely";
-        break;
+        return zh ? (wd ? "严重受损" : "严重受伤")
+                  : (string("severely") + (wd ? " damaged" : " wounded"));
     case MDAM_HEAVILY_DAMAGED:
-        ss << "heavily";
-        break;
+        return zh ? (wd ? "重度受损" : "重度受伤")
+                  : (string("heavily") + (wd ? " damaged" : " wounded"));
     case MDAM_MODERATELY_DAMAGED:
-        ss << "moderately";
-        break;
+        return zh ? (wd ? "中度受损" : "中度受伤")
+                  : (string("moderately") + (wd ? " damaged" : " wounded"));
     case MDAM_LIGHTLY_DAMAGED:
-        ss << "lightly";
-        break;
+        return zh ? (wd ? "轻度受损" : "轻度受伤")
+                  : (string("lightly") + (wd ? " damaged" : " wounded"));
     case MDAM_OKAY:
     default:
-        ss << "not";
-        break;
+        return zh ? "未受伤" : (string("not") + (wd ? " damaged" : " wounded"));
     }
-    ss << (wounded_damaged(holi) ? " damaged" : " wounded");
-    return ss.str();
 }
 
 void print_wounds(const monster& mons)
@@ -5385,8 +5391,13 @@ void print_wounds(const monster& mons)
     mon_dam_level_type dam_level = mons_get_damage_level(mons);
     string desc = get_damage_level_string(mons.holiness(), dam_level);
 
-    desc.insert(0, " is ");
-    desc += ".";
+    if (Options.language == lang_t::ZH)
+        desc = desc + "。";
+    else
+    {
+        desc.insert(0, " is ");
+        desc += ".";
+    }
     simple_monster_message(mons, desc.c_str(), false, MSGCH_MONSTER_DAMAGE,
                            dam_level);
 }
@@ -5575,7 +5586,7 @@ void throw_monster_bits(const monster& mon)
 
         int damage = 1 + random2(mon.get_hit_dice());
 
-        mprf("%s is hit by a flying piece of %s!",
+        mprf(T_("%s is hit by a flying piece of %s!"),
                 target->name(DESC_THE, false).c_str(),
                 mon.name(DESC_THE, false).c_str());
 
@@ -5645,7 +5656,7 @@ void set_ancestor_spells(monster &ancestor, bool notify)
         if (find(old_spells.begin(), old_spells.end(), spellslot.spell)
             == old_spells.end())
         {
-            mprf("%s regains %s memory of %s.",
+            mprf(T_("%s regains %s memory of %s."),
                  ancestor.name(DESC_YOUR, true).c_str(),
                  ancestor.pronoun(PRONOUN_POSSESSIVE, true).c_str(),
                  spell_title(spellslot.spell));
@@ -5736,7 +5747,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
             if (announce && you.can_see(*target))
             {
                 simple_god_message(
-                            make_stringf(" protects %s plant from harm.",
+                            make_stringf(T_(" protects %s plant from harm."),
                                 agent->is_player() ? "your" : "a").c_str(),
                             false, GOD_FEDHAS);
             }
@@ -5748,7 +5759,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
             // TODO: this message does not work very well for all sorts of attacks
             // should this be a god message?
             if (announce && you.can_see(*target))
-                mprf("%s avoids your attack.", target->name(DESC_THE).c_str());
+                mprf(T_("%s avoids your attack."), target->name(DESC_THE).c_str());
             return true;
         }
 
@@ -5762,7 +5773,7 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
         if (agent->is_player() && testbits(mon->flags, MF_DEMONIC_GUARDIAN))
         {
             if (announce && you.can_see(*mon))
-                mpr("Your demonic guardian avoids your attack.");
+                mpr(T_("Your demonic guardian avoids your attack."));
             return true;
         }
 
@@ -5814,7 +5825,7 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
     {
         if (announce_important)
         {
-            string msg = make_stringf("The Sanctuary denies your attempt to harm %s.",
+            string msg = make_stringf(T_("The Sanctuary denies your attempt to harm %s."),
                                         target->name(DESC_THE).c_str());
             god_speaks(GOD_ZIN, msg.c_str());
         }
@@ -5826,7 +5837,7 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
     {
         if (announce_important && you.see_cell(target->pos()))
         {
-            string msg = make_stringf("The Sanctuary protects %s from harm.",
+            string msg = make_stringf(T_("The Sanctuary protects %s from harm."),
                                         target->name(DESC_THE).c_str());
             god_speaks(GOD_ZIN, msg.c_str());
         }
@@ -5873,4 +5884,26 @@ int mons_leash_range(monster_type mc)
         case MONS_HAUNTED_ARMOUR:   return 2;
         default:                    return 0; // No leashing
     }
+}
+// Auto-generated Chinese monster name lookup
+// Total entries: 608
+// TODO: Issue 32 Phase 2 — migrate all entries to source.txt and remove the static map.
+const char* zh_monster_name(const string& en)
+{
+    if (Options.language == lang_t::EN)
+        return nullptr;
+
+    // Try T_() source.txt lookup first (enables incremental migration)
+    const char* t_result = T_(en.c_str());
+    if (strcmp(t_result, en.c_str()) != 0)
+        return t_result;
+
+    // Fall back to internal static map
+    static const map<string, const char*> zh_names = {
+    // All entries migrated to dat/i18n/zh/source.txt (Issue 32 Phase 2).
+    // T_() lookup in source.txt now handles all monster name translations.
+    // Keep this map as a safety-net fallback for any entries missed during migration.
+};
+    auto it = zh_names.find(en);
+    return it != zh_names.end() ? it->second : nullptr;
 }

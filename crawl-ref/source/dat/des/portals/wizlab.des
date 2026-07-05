@@ -113,19 +113,20 @@ function wizlab_portal (e, crystalise)
 
     local messager =
       timed_msg {
-           initmsg = { "You hear the crackle of arcane power.",
-                       "There is an entrance to a wizard's laboratory on "
+           initmsg = { crawl.t_("You hear the crackle of arcane power."),
+                       crawl.t_("There is an entrance to a wizard's laboratory on "
                        .. "this level! Hurry and find it before the "
-                       .. "portal closes forever!" },
-        finalmsg = "The crackle of the magical portal is almost imperceptible now.",
+                       .. "portal closes forever!") },
+        finalmsg = crawl.t_("The crackle of the magical portal is almost imperceptible now."),
 
         verb = 'crackle',
-        noisemaker = 'magical portal'
+        noisemaker = 'magical portal',
+        range_msg_fmt = crawl.t_("You hear the {prefix}crackle of magical portal.")
     }
 
     e.lua_marker('O',
       timed_marker {
-        disappear = "The flow of magic halts.",
+        disappear = crawl.t_("The flow of magic halts."),
         entity = 'portal',
         turns = timeout_turns,
         single_timed = true,
@@ -373,10 +374,10 @@ function wizlab_wucad_msgfn(data, triggerable, triggerer, marker, ev)
     crawl.mpr("There is a faint scream of pain from a crouched figure. This too fades quickly.", "talk_visual")
     data.trig = true
   elseif data.spot == 6 then
-    crawl.mpr("Grey monks gather around the fountain. They do not speak, nor look at each other.", "talk_visual")
+    crawl.mpr(crawl.t_("Grey monks gather around the fountain. They do not speak, nor look at each other."), "talk_visual")
     data.trig = true
   elseif data.spot == 7 then
-    crawl.mpr("A figure sits in silent meditation. It spots you, gestures wildly, and disappears.", "talk_visual")
+    crawl.mpr(crawl.t_("A figure sits in silent meditation. It spots you, gestures wildly, and disappears."), "talk_visual")
     data.trig = true
   end
 end

@@ -57,6 +57,7 @@
 #ifdef USE_TILE
  #include "travel.h"
 #endif
+#include "database.h"
 #include "ui.h"
 #include "unicode.h"
 #include "unwind.h"
@@ -1300,13 +1301,12 @@ formatted_string pad_more_with(formatted_string s,
     if (min_width <= 0)
         return s;
     // Needs to be done as a parsed formatted_string so that columns are
-    // counted correctly.
-    const auto lines = split_string("\n", s.tostring(), false, true);
-    const int last_len = static_cast<int>(lines.back().size());
-    const int pad_size = static_cast<int>(pad.tostring().size());
-    if (last_len < (min_width - pad_size))
+    // counted correctly (with strwidth for CJK characters).
+    const int last_display_width = s.width();
+    const int pad_display_width = static_cast<int>(pad.width());
+    if (last_display_width < (min_width - pad_display_width))
     {
-        s += string(min_width - (last_len + pad_size), ' ');
+        s += string(min_width - (last_display_width + pad_display_width), ' ');
         s += pad;
     }
     return s;
@@ -1360,7 +1360,8 @@ static string _command_to_string(command_type cmd)
 // standardized formatting for this
 string pad_more_with_esc(const string &s)
 {
-    return pad_more_with(s, menu_keyhelp_cmd(CMD_MENU_EXIT) + " exit");
+    return pad_more_with(s, menu_keyhelp_cmd(CMD_MENU_EXIT)
+        + (T_(" exit")));
 }
 
 string menu_keyhelp_cmd(command_type cmd)
@@ -1378,7 +1379,7 @@ string menu_keyhelp_cmd(command_type cmd)
     else if (cmd == CMD_MENU_TOGGLE_SELECTED)
     {
         // TODO: fix once space is not hardcoded
-        return make_stringf("[<w>%s</w>|<w>Space</w>]", _command_to_string(cmd).c_str());
+        return make_stringf(T_("[<w>%s</w>|<w>Space</w>]"), _command_to_string(cmd).c_str());
     }
     else
         return _keyhelp_format_key(_command_to_string(cmd));
@@ -1395,16 +1396,16 @@ string Menu::get_keyhelp(bool scrollable) const
 
     string navigation = "<lightgrey>";
     if (is_set(MF_ARROWS_SELECT))
-        navigation += menu_keyhelp_select_keys() + " select  ";
+        navigation += menu_keyhelp_select_keys() + T_(" select  ");
 
     if (scrollable)
     {
         navigation +=
-            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + " page down  "
-            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + " page up  ";
+            menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + T_(" page down  ")
+            + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + T_(" page up  ");
     }
     if (!is_set(MF_MULTISELECT))
-        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + " exit";
+        navigation += menu_keyhelp_cmd(CMD_MENU_EXIT) + T_(" exit");
     navigation += "</lightgrey>";
     if (is_set(MF_MULTISELECT))
     {
@@ -1412,21 +1413,19 @@ string Menu::get_keyhelp(bool scrollable) const
         // XX this may not work perfectly with the way InvMenu handles
         // selection
         const auto chosen_count = selected_entries().size();
-        navigation +=
-                "\n<lightgrey>"
-                "Letters toggle    ";
+        navigation += string("\n<lightgrey>")
+                + T_("Letters toggle    ");
         if (is_set(MF_ARROWS_SELECT))
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_TOGGLE_SELECTED)
-                + " toggle selected    ";
+                + T_(" toggle selected    ");
         }
         if (chosen_count)
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_ACCEPT_SELECTION)
                 + make_stringf(
-                    " accept (%zu chosen)"
-                    "</lightgrey>",
-                chosen_count);
+                    T_(" accept (%zu chosen)"),
+                    chosen_count) + "</lightgrey>";
         }
     }
     // XX this is present on non-scrolling multiselect keyhelps mostly for
@@ -1810,7 +1809,7 @@ bool Menu::process_command(command_type cmd)
             char linebuf[80] = "";
 
             const bool validline = title_prompt(linebuf, sizeof linebuf,
-                                                "Select what (regex)?");
+                T_("Select what (regex)?"));
 
             // XX what is the use case for this exiting, should this set lastch
             ret = (validline && linebuf[0]) ? filter_with_regex(linebuf) : true;
@@ -2877,7 +2876,15 @@ void Menu::update_title()
 
     if (m_indent_title)
     {
+        // Items have a 5-char hotkey prefix (" a - ") or 5-space indent.
+        // In console mode, this prefix is rendered inline and shifts item
+        // columns right by 5 cells relative to the title. Match the indent
+        // width so title labels align with item data columns.
+#ifdef USE_TILE_LOCAL
         formatted_string indented(" ");
+#else
+        formatted_string indented("     ");
+#endif
         indented += fs;
         fs = indented;
     }

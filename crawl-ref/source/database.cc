@@ -6,8 +6,10 @@
 #include "AppHdr.h"
 
 #include "database.h"
+#include "i18n.h"
 
 #include <cstdlib>
+#include <deque>
 #include <fcntl.h>
 #include <sys/stat.h>
 #include <sys/types.h>
@@ -62,7 +64,7 @@ public:
 
 // Convenience functions for (read-only) access to generic
 // berkeley DB databases.
-static void _store_text_db(const string &in, DBM *db);
+static void _store_text_db(const string &in, DBM *db, bool trim_keys = true);
 
 static string _query_database(TextDB &db, string key, bool canonicalise_key,
                               bool run_lua, bool untranslated = false);
@@ -152,6 +154,10 @@ static TextDB AllDBs[] =
     TextDB("egos", "descript/",
           { "egos.txt",     // weapon/armour/missile egos
             }),
+
+    TextDB("source", "i18n/",
+          { "source.txt",   // C++ source string i18n (T_() macro)
+            }),
 };
 
 static TextDB& DescriptionDB = AllDBs[0];
@@ -165,6 +171,7 @@ static TextDB& HelpDB        = AllDBs[7];
 static TextDB& FAQDB         = AllDBs[8];
 static TextDB& HintsDB       = AllDBs[9];
 static TextDB& EgosDB        = AllDBs[10];
+static TextDB& SourceDB      = AllDBs[11];
 
 static string _db_cache_path(string db, const char *lang)
 {
@@ -189,6 +196,35 @@ TextDB::TextDB(TextDB *parent)
       _input_files(parent->_input_files), // FIXME: pointless copy
       _db(nullptr), timestamp(""), _parent(parent), translation(nullptr)
 {
+    // For language-specific child DBs, scan the directory for all .txt
+    // files. This allows translation data to be split across multiple
+    // files (e.g. source.txt + spells.txt + monsters.txt) so that
+    // parallel agent work doesn't cause append-only merge conflicts.
+    // source.txt is sorted first so domain-specific files can override
+    // entries when keys are intentionally moved.
+    if (Options.lang_name && *Options.lang_name)
+    {
+        // Resolve through datafile_path: _directory is a relative path
+        // like "i18n/zh/" but actual files live under "dat/i18n/zh/".
+        string test_path = datafile_path(_directory + "source.txt", false);
+        if (!test_path.empty())
+        {
+            string dir = get_parent_directory(test_path);
+            vector<string> found = get_dir_files_ext(dir, "txt");
+            if (!found.empty())
+            {
+                // Ensure source.txt is always first
+                vector<string> ordered;
+                for (const string &f : found)
+                    if (f == "source.txt")
+                        ordered.push_back(f);
+                for (const string &f : found)
+                    if (f != "source.txt")
+                        ordered.push_back(f);
+                _input_files = ordered;
+            }
+        }
+    }
 }
 
 bool TextDB::open_db()
@@ -287,14 +323,14 @@ void TextDB::_regenerate_db()
 #if defined(DEBUG_DIAGNOSTICS) && !(defined(TARGET_COMPILER_VC) && defined(USE_TILE))
         printf("Regenerating db: %s [%s]\n", _db_name, Options.lang_name);
 #endif
-        mprf(MSGCH_PLAIN, "Regenerating db: %s [%s]", _db_name, Options.lang_name);
+        mprf(MSGCH_PLAIN, T_("Regenerating db: %s [%s]"), _db_name, Options.lang_name);
     }
     else
     {
 #if defined(DEBUG_DIAGNOSTICS) && !(defined(TARGET_COMPILER_VC) && defined(USE_TILE))
         printf("Regenerating db: %s\n", _db_name);
 #endif
-        mprf(MSGCH_PLAIN, "Regenerating db: %s", _db_name);
+        mprf(MSGCH_PLAIN, T_("Regenerating db: %s"), _db_name);
     }
 
     string db_path = _db_cache_path(_db_name, lang());
@@ -325,7 +361,8 @@ void TextDB::_regenerate_db()
         {
             snprintf(buf, sizeof(buf), ":%" PRId64, (int64_t)mtime);
             ts += buf;
-            _store_text_db(full_input_path, _db);
+            bool is_source = (string(_db_name) == "source");
+            _store_text_db(full_input_path, _db, !is_source);
         }
     }
     _add_entry(_db, "TIMESTAMP", ts);
@@ -344,6 +381,7 @@ void databaseSystemInit()
 {
     for (unsigned int i = 0; i < NUM_DB; i++)
         AllDBs[i].init();
+    i18n_cache_clear();
 }
 
 void databaseSystemShutdown()
@@ -509,7 +547,7 @@ static void _add_entry(DBM *db, const string &k, string &v)
         end(1, true, "Error storing %s", k.c_str());
 }
 
-static void _parse_text_db(LineInput &inf, DBM *db)
+static void _parse_text_db(LineInput &inf, DBM *db, bool trim_keys = true)
 {
     string key;
     string value;
@@ -538,7 +576,7 @@ static void _parse_text_db(LineInput &inf, DBM *db)
         if (key.empty())
         {
             key = line;
-            trim_string(key);
+            if (trim_keys) trim_string(key);
             lowercase(key);
         }
         else
@@ -552,13 +590,13 @@ static void _parse_text_db(LineInput &inf, DBM *db)
         _add_entry(db, key, value);
 }
 
-static void _store_text_db(const string &in, DBM *db)
+static void _store_text_db(const string &in, DBM *db, bool trim_keys)
 {
     UTF8FileLineInput inf(in.c_str());
     if (inf.error())
         end(1, true, "Unable to open input file: %s", in.c_str());
 
-    _parse_text_db(inf, db);
+    _parse_text_db(inf, db, trim_keys);
 }
 
 static string _chooseStrByWeight(const string &entry, int fixed_weight = -1)
@@ -942,3 +980,133 @@ string getEgoString(const string &key)
 {
     return unwrap_desc(_query_database(EgosDB, key, true, true));
 }
+
+// i18n_escape_key(): normalize C++ runtime strings to source.txt key format.
+//
+// C++ string literals like "text\n" compile escape sequences to control chars:
+//   \n → 0x0A   \r → 0x0D   \t → 0x09
+// source.txt stores keys as single lines with literal backslash-escapes.
+// This function converts actual control chars back to their escape notation
+// so lookup keys match source.txt storage format.
+//
+// \\ (backslash) MUST be escaped first: it is the escape introducer in
+// source.txt. Without it, "path\name" (literal backslash) and
+// "path<0x0A>ame" would both normalize to "path\name" — a collision.
+// With \\ → \\\\ first, they become "path\\name" and "path\name".
+//
+// \" (quote) is NOT escaped: source.txt keys are bare lines without
+// outer quote delimiters, so " is a regular character.
+//
+// Extraction scripts MUST use identical logic when writing keys to source.txt.
+static string i18n_escape_key(const string &raw)
+{
+    string s = raw;
+    s = replace_all(s, "\\", "\\\\");  // 1st: backslash first — escape introducer
+    s = replace_all(s, "\r", "\\r");
+    s = replace_all(s, "\n", "\\n");
+    s = replace_all(s, "\t", "\\t");
+    return s;
+}
+
+// i18n_unescape_value(): convert source.txt escape notation back to runtime chars.
+//
+// Mirrors i18n_escape_key() in reverse. Uses single-pass left-to-right scan
+// (NOT sequential replace_all) because the same ambiguity that cpp_unescape
+// faces in Python exists here: "\\n" could mean backslash+n (\\ + n) or
+// backslash+newline (\ + \n). Only a single-pass scanner can disambiguate.
+//
+// Unknown escapes (e.g. \% ) keep the character after backslash as-is.
+static string i18n_unescape_value(const string &s)
+{
+    string out;
+    out.reserve(s.size());
+    for (size_t i = 0; i < s.size(); )
+    {
+        if (s[i] == '\\' && i + 1 < s.size())
+        {
+            switch (s[i + 1])
+            {
+            case '\\': out += '\\'; break;
+            case 'n':  out += '\n'; break;
+            case 'r':  out += '\r'; break;
+            case 't':  out += '\t'; break;
+            default:   out += s[i + 1]; break; // unknown: keep char
+            }
+            i += 2;
+        }
+        else
+            out += s[i++];
+    }
+    return out;
+}
+
+// i18n_source_lookup(): T_()/C_() backend — i18n lookup for C++ source strings.
+// Queries the 12th TextDB instance (SourceDB) in dat/i18n/<lang>/source.txt.
+// When ctx is non-null, uses composite key "ctx|en" for context disambiguation.
+// Falls back to "en" (without context), then to the English key itself.
+//
+// String lifetime: deque guarantees push_back never invalidates references
+// to existing elements. index stores const char* pointers into storage strings,
+// which remain valid for the entire program lifetime.
+
+static map<string, const char*> i18n_index;
+static deque<string> i18n_storage;
+
+void i18n_cache_clear()
+{
+    i18n_index.clear();
+    i18n_storage.clear();
+}
+
+const char* i18n_source_lookup(const char* ctx, const char* en)
+{
+    if (Options.language == lang_t::EN || !en || !en[0])
+        return en;
+
+    string lookup_key = (ctx && ctx[0])
+        ? make_stringf("%s|%s", ctx, en)
+        : string(en);
+    lookup_key = i18n_escape_key(lookup_key);
+    string en_key = i18n_escape_key(en);
+
+    auto it = i18n_index.find(lookup_key);
+    if (it != i18n_index.end())
+        return it->second;    // pointer into deque — guaranteed stable
+
+    // Try context-qualified key first (if applicable)
+    string zh;
+    if (ctx && ctx[0])
+        zh = _query_database(SourceDB, lookup_key, true, false);
+
+    // Fall back to unqualified key
+    if (zh.empty())
+        zh = _query_database(SourceDB, en_key, true, false);
+
+    // Final fallback: return English original.
+    // Only DB-retrieved values go through unescape (source.txt values use
+    // escape notation like \n for newlines). The EN fallback string is
+    // already a C++ runtime value with actual control characters.
+    // _parse_text_db appends \n (0x0A) to every stored value — strip only
+    // that trailing artifact. Do NOT strip leading/trailing spaces: they
+    // are semantically significant for fragment concatenation in message
+    // assembly (e.g. T_(" wielding ") returns " 挥舞着 " with spaces).
+    if (!zh.empty())
+    {
+        while (!zh.empty() && (zh.back() == '\n' || zh.back() == '\r'))
+            zh.pop_back();
+        zh = i18n_unescape_value(zh);
+    }
+    else
+        zh = en;
+
+    // Store permanently in deque. deque::push_back never invalidates
+    // references to existing elements, so the returned const char* is
+    // as stable as a string literal pointer.
+    i18n_storage.push_back(zh);
+    const char* ptr = i18n_storage.back().c_str();
+    i18n_index[lookup_key] = ptr;
+    return ptr;
+}
+
+// T_() — inline in i18n.h calls i18n_source_lookup(nullptr, en)
+// C_() — inline in i18n.h calls i18n_source_lookup(ctx, en)

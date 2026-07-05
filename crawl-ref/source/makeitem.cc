@@ -12,6 +12,7 @@
 #include "acquire.h"
 #include "art-enum.h" // unrand -> magic staff silliness
 #include "artefact.h"
+#include "database.h"
 #include "colour.h"
 #include "describe.h"
 #include "dungeon.h"
@@ -2349,7 +2350,7 @@ void lucky_upgrade_item(item_def& item)
         // Messaging is really weird if we don't do this, and it seems a
         // relatively unimportant freebie.
         identify_item(item);
-        mprf("<cyan>Lucky! %s was actually %s</cyan>!", old_name.c_str(), item.name(DESC_THE).c_str());
+        mprf(T_("<cyan>Lucky! %s was actually %s</cyan>!"), old_name.c_str(), item.name(DESC_THE).c_str());
     }
 }
 
@@ -2389,7 +2390,7 @@ void makeitem_tests()
     int i, level;
     item_def item;
 
-    mpr("Running generate_weapon_item tests.");
+    mpr(T_("Running generate_weapon_item tests."));
     for (i = 0; i < 10000; ++i)
     {
         item.clear();
@@ -2414,7 +2415,7 @@ void makeitem_tests()
                               level);
     }
 
-    mpr("Running generate_armour_item tests.");
+    mpr(T_("Running generate_armour_item tests."));
     for (i = 0; i < 10000; ++i)
     {
         item.clear();
@@ -2434,7 +2435,7 @@ void makeitem_tests()
                               type,
                               level);
     }
-    mpr("Running acquirement tests.");
+    mpr(T_("Running acquirement tests."));
     // note: without char customization this won't exercise all acquirement
     // code. But this at least gives a baseline.
     for (i = 0; i < 500; ++i)

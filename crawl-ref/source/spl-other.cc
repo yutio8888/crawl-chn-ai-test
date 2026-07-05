@@ -27,17 +27,18 @@
 #include "terrain.h"
 #include "timed-effects.h"
 #include "view.h"
+#include "database.h"
 
 spret cast_sublimation_of_blood(int pow, bool fail)
 {
     bool success = false;
 
     if (you.duration[DUR_DEATHS_DOOR])
-        mpr("You can't draw power from your own body while in death's door.");
+        mpr(T_("You can't draw power from your own body while in death's door."));
     else if (!you.has_blood())
-        mpr("Your body is bloodless.");
+        mpr(T_("Your body is bloodless."));
     else if (!enough_hp(2, true))
-        mpr("Your attempt to draw power from your own body fails.");
+        mpr(T_("Your attempt to draw power from your own body fails."));
     else
     {
         // Take at most 90% of currhp.
@@ -59,9 +60,9 @@ spret cast_sublimation_of_blood(int pow, bool fail)
                 break;
         }
         if (success)
-            mpr("You draw magical energy from your own body!");
+            mpr(T_("You draw magical energy from your own body!"));
         else
-            mpr("Your attempt to draw power from your own body fails.");
+            mpr(T_("Your attempt to draw power from your own body fails."));
     }
 
     return success ? spret::success : spret::abort;
@@ -70,7 +71,7 @@ spret cast_sublimation_of_blood(int pow, bool fail)
 spret cast_death_channel(int pow, god_type god, bool fail)
 {
     fail_check();
-    mpr("Malign forces permeate your being, awaiting release.");
+    mpr(T_("Malign forces permeate your being, awaiting release."));
 
     you.increase_duration(DUR_DEATH_CHANNEL,
                           30 + random2(1 + div_rand_round(2 * pow, 3)), 200);
@@ -105,9 +106,9 @@ spret cast_animate_dead(int pow, bool fail)
     fail_check();
 
     if (_dismiss_dead())
-        mpr("You dismiss your zombies and call upon the dead to rise afresh.");
+        mpr(T_("You dismiss your zombies and call upon the dead to rise afresh."));
     else
-        mpr("You call upon the dead to rise.");
+        mpr(T_("You call upon the dead to rise."));
 
     you.increase_duration(DUR_ANIMATE_DEAD, 20 + random2(1 + pow), 100);
     you.props[ANIMATE_DEAD_POWER_KEY] = pow;
@@ -152,7 +153,7 @@ void do_player_recall(recall_t type)
     }
 
     if (!did_recall)
-        mpr("Nothing appears to have answered your call.");
+        mpr(T_("Nothing appears to have answered your call."));
 }
 
 // Remind a recalled ally (or one skipped due to proximity) not to run
@@ -199,7 +200,7 @@ bool try_recall(mid_t mid)
         return false;
     }
     recall_orders(mons);
-    simple_monster_message(*mons, " is recalled.");
+    simple_monster_message(*mons, T_(" is recalled."));
     mons->finalise_movement();
     // mons may have been killed, shafted, etc,
     // but they were still recalled!
@@ -304,32 +305,32 @@ bool passwall_path::is_valid(string *fail_msg) const
     if (delta.zero())
     {
         if (fail_msg)
-            *fail_msg = "Please select a wall.";
+            *fail_msg = T_("Please select a wall.");
         return false;
     }
     if (actual_walls() == 0)
     {
         if (fail_msg)
-            *fail_msg = "There is no adjacent passable wall in that direction.";
+            *fail_msg = T_("There is no adjacent passable wall in that direction.");
         return false;
     }
     if (!dest_found)
     {
         if (fail_msg)
-            *fail_msg = "This rock feels extremely deep.";
+            *fail_msg = T_("This rock feels extremely deep.");
         return false;
     }
     if (!in_bounds(actual_dest))
     {
         if (fail_msg)
-            *fail_msg = "You sense an overwhelming volume of rock.";
+            *fail_msg = T_("You sense an overwhelming volume of rock.");
         return false;
     }
     const monster *mon = monster_at(actual_dest);
     if (cell_is_solid(actual_dest) || (mon && mon->is_stationary()))
     {
         if (fail_msg)
-            *fail_msg = "Something is blocking your path through the rock.";
+            *fail_msg = T_("Something is blocking your path through the rock.");
         return false;
     }
     return true;
@@ -356,9 +357,9 @@ bool passwall_path::check_moveto() const
 
     string terrain_msg;
     if (env.grid(actual_dest) == DNGN_DEEP_WATER)
-        terrain_msg = "You sense a deep body of water on the other side of the rock.";
+        terrain_msg = T_("You sense a deep body of water on the other side of the rock.");
     else if (env.grid(actual_dest) == DNGN_LAVA)
-        terrain_msg = "You sense an intense heat on the other side of the rock.";
+        terrain_msg = T_("You sense an intense heat on the other side of the rock.");
 
     // Pre-confirm exclusions in unseen squares as well as the actual dest
     // even if seen, so that this doesn't leak information.
@@ -447,7 +448,7 @@ static int _intoxicate_monsters(coord_def where, int pow, bool tracer)
     if (!tracer && x_chance_in_y(40 + div_rand_round(pow, 3), 100))
     {
         mons->add_ench(mon_enchant(ENCH_CONFUSION, &you));
-        simple_monster_message(*mons, " looks rather confused.");
+        simple_monster_message(*mons, T_(" looks rather confused."));
         return 1;
     }
     // Just count affectable monsters for the tracer
@@ -466,7 +467,7 @@ spret cast_intoxicate(int pow, bool fail, bool tracer)
     }
 
     fail_check();
-    mpr("You attempt to intoxicate your foes!");
+    mpr(T_("You attempt to intoxicate your foes!"));
 
     const int count = apply_area_visible([pow] (coord_def where) {
         return _intoxicate_monsters(where, pow, false);
@@ -474,7 +475,7 @@ spret cast_intoxicate(int pow, bool fail, bool tracer)
 
     if (count > 0)
     {
-        mprf(MSGCH_WARN, "The world spins around you!");
+        mprf(MSGCH_WARN, "%s", T_("The world spins around you!"));
         you.increase_duration(DUR_VERTIGO, 4 + count + random2(count + 1));
         you.redraw_evasion = true;
     }
@@ -523,7 +524,7 @@ spret cast_sigil_of_binding(int pow, bool fail, bool tracer)
     fail_check();
     if (!success)
     {
-        mpr("There was nowhere nearby to inscribe sigils!");
+        mpr(T_("There was nowhere nearby to inscribe sigils!"));
         return spret::success;
     }
 
@@ -574,9 +575,9 @@ spret cast_sigil_of_binding(int pow, bool fail, bool tracer)
     }
 
     if (!sigil_pos_d1.empty() && !sigil_pos_d2.empty())
-        mpr("You inscribe a pair of binding sigils.");
+        mpr(T_("You inscribe a pair of binding sigils."));
     else
-        mpr("You inscribe a binding sigil.");
+        mpr(T_("You inscribe a binding sigil."));
 
     return spret::success;
 }
@@ -586,10 +587,10 @@ void trigger_binding_sigil(actor& actor)
     if (actor.is_binding_sigil_immune())
     {
         if (actor.is_player())
-            mpr("You slip past the binding sigil.");
+            mpr(T_("You slip past the binding sigil."));
         else
         {
-            mprf("%s cannot be bound by the sigil due to %s high momentum!",
+            mprf(T_("%s cannot be bound by the sigil due to %s high momentum!"),
                 actor.name(DESC_THE).c_str(), actor.pronoun(PRONOUN_POSSESSIVE).c_str());
         }
         return;
@@ -597,7 +598,7 @@ void trigger_binding_sigil(actor& actor)
 
     if (actor.is_player())
     {
-        mprf(MSGCH_WARN, "You move over the binding sigil and are bound in place!");
+        mprf(MSGCH_WARN, "%s", T_("You move over the binding sigil and are bound in place!"));
         you.increase_duration(DUR_NO_MOMENTUM, random_range(3, 6));
         revert_terrain_change(you.pos(), TERRAIN_CHANGE_BINDING_SIGIL);
         return;
@@ -613,7 +614,7 @@ void trigger_binding_sigil(actor& actor)
     if (m->add_ench(mon_enchant(ENCH_BOUND, &you, dur)))
     {
         simple_monster_message(*m,
-            " moves over the binding sigil and is bound in place!",
+            T_(" moves over the binding sigil and is bound in place!"),
             false, MSGCH_FRIEND_SPELL);
 
         // The enemy will gain swift for twice as long as it was bound
@@ -662,7 +663,7 @@ spret cast_spike_launcher(int pow, bool fail)
     you.props.erase(SPIKE_LAUNCHER_TIMER);
     you.props[SPIKE_LAUNCHER_POWER] = pow;
 
-    mpr("You shape a spike launcher from a nearby wall.");
+    mpr(T_("You shape a spike launcher from a nearby wall."));
 
     return spret::success;
 }
@@ -732,8 +733,8 @@ void handle_spike_launcher(int delay)
     // Check if we've gotten too far away from our launcher
     if (!you.see_cell_no_trans(pos) || grid_distance(you.pos(), pos) > 3)
     {
-        mpr("Your spike launcher falls apart as you grow too distant to "
-            "maintain it.");
+        mpr(T_("Your spike launcher falls apart as you grow too distant to "
+            "maintain it."));
         revert_terrain_change(pos, TERRAIN_CHANGE_SPIKE_LAUNCHER);
         you.duration[DUR_SPIKE_LAUNCHER_ACTIVE] = 0;
         return;
@@ -782,7 +783,7 @@ void end_spike_launcher()
 
         if (marker->change_type == TERRAIN_CHANGE_SPIKE_LAUNCHER)
         {
-            mpr("Your spike launcher falls apart.");
+            mpr(T_("Your spike launcher falls apart."));
             revert_terrain_change(marker->pos, TERRAIN_CHANGE_SPIKE_LAUNCHER);
             return;
         }

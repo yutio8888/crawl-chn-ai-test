@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "dbg-util.h"
 
 #include "artefact.h"
@@ -29,7 +30,7 @@ monster_type debug_prompt_for_monster()
 {
     char specs[1024];
 
-    mprf(MSGCH_PROMPT, "Which monster by name? ");
+    mprf(MSGCH_PROMPT, T_("Which monster by name? "));
     if (!cancellable_get_line_autohist(specs, sizeof specs))
     {
         if (specs[0] == '\0')
@@ -80,16 +81,16 @@ void debug_dump_levgen()
 
     if (crawl_state.generating_level)
     {
-        mpr("Currently generating level.");
+        mpr(T_("Currently generating level."));
         method = env.level_build_method;
         type   = comma_separated_line(env.level_layout_types.begin(),
                                       env.level_layout_types.end(), ", ");
 
         if (!env.placing_vault.empty())
-            mprf("Vault being placed: %s", env.placing_vault.c_str());
+            mprf(T_("Vault being placed: %s"), env.placing_vault.c_str());
         if (!env.new_subvault_names.empty())
         {
-            mprf("Subvaults: %s", comma_separated_line(
+            mprf(T_("Subvaults: %s"), comma_separated_line(
                  env.new_subvault_names.begin(), env.new_subvault_names.end(),
                  ", ").c_str());
         }
@@ -107,15 +108,15 @@ void debug_dump_levgen()
             type = props[LAYOUT_TYPE_KEY].get_string();
     }
 
-    mprf("Level build method = %s, level layout type  = %s, absdepth0 = %d",
+    mprf(T_("Level build method = %s, level layout type  = %s, absdepth0 = %d"),
          method.c_str(), type.c_str(), env.absdepth0);
 
     if (!env.level_vaults.empty())
     {
-        mpr("Level vaults:");
+        mpr(T_("Level vaults:"));
         auto vaults = level_vault_names(true);
         for (auto &vname : vaults)
-            mprf("    %s", vname.c_str());
+            mprf(T_("    %s"), vname.c_str());
     }
     mpr("");
 }
@@ -124,7 +125,7 @@ void debug_show_builder_logs()
 {
     if (!you.props.exists(DEBUG_BUILDER_LOGS_KEY))
     {
-        mpr("This save was not generated on a build that stores logs.");
+        mpr(T_("This save was not generated on a build that stores logs."));
         return;
     }
     const string cur_level = level_id::current().describe();
@@ -132,7 +133,7 @@ void debug_show_builder_logs()
     if (!log_table.exists(cur_level)
         || log_table[cur_level].get_string().size() == 0)
     {
-        mprf("No builder logs are saved for %s.", cur_level.c_str());
+        mprf(T_("No builder logs are saved for %s."), cur_level.c_str());
         return;
     }
     string props_text = log_table[cur_level].get_string();
@@ -404,14 +405,14 @@ void debug_dump_item(const char *name, int num, const item_def &item,
     mprf(chan, "%s", msg.c_str());
     mprf(chan, "%s", name);
 
-    mprf("    item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d",
+    mprf(T_("    item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d"),
          num, item.base_type, item.sub_type,
          item.plus, item.plus2, item.special);
 
-    mprf("    quant: %d; ident: 0x%08" PRIx32"; ident_type: %d",
+    mprf(T_("    quant: %d; ident: 0x%08" PRIx32"; ident_type: %d"),
          item.quantity, item.flags, type_is_identified(item));
 
-    mprf("    x: %d; y: %d; link: %d", item.pos.x, item.pos.y, item.link);
+    mprf(T_("    x: %d; y: %d; link: %d"), item.pos.x, item.pos.y, item.link);
 
 #ifdef DEBUG_FATAL
     if (!crawl_state.game_crashed)
@@ -525,7 +526,7 @@ void debuglog(const char *format, ...)
 #ifndef DEBUG_DIAGNOSTICS
 void wizard_toggle_dprf()
 {
-    mpr("Diagnostic messages are available only in debug builds.");
+    mpr(T_("Diagnostic messages are available only in debug builds."));
 }
 #else
 // Be sure to change enum diag_type in mpr.h to match.
@@ -567,7 +568,7 @@ void wizard_toggle_dprf()
                 line.clear();
             }
         }
-        mprf(MSGCH_PROMPT, "Toggle which debug class (ESC to exit)? ");
+        mprf(MSGCH_PROMPT, T_("Toggle which debug class (ESC to exit)? ");
 
         int keyin = toalower(get_ch());
 
@@ -583,7 +584,7 @@ void wizard_toggle_dprf()
 
         int diag = keyin - '0';
         Options.quiet_debug_messages.set(diag, !Options.quiet_debug_messages[diag]);
-        mprf("%s messages will be %s.", diag_names[diag],
+        mprf(T_("%s messages will be %s."), diag_names[diag],
              Options.quiet_debug_messages[diag] ? "suppressed" : "printed");
         return;
     }

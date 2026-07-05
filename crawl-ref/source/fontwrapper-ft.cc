@@ -28,6 +28,8 @@
 #define GLYPHS_PER_ROWCOL 16
 // char to use if we can't find it in the font (upside-down question mark)
 #define MISSING_CHAR 0xbf
+// CJK fallback font — loaded alongside the primary font to provide glyphs
+// for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -69,6 +71,8 @@ FTFontWrapper::FTFontWrapper() :
     m_max_height(0),
     ttf(nullptr),
     face(nullptr),
+    cjk_face(nullptr),
+    cjk_ttf(nullptr),
     pixels(nullptr),
     fsize(0)
 {
@@ -82,7 +86,10 @@ FTFontWrapper::~FTFontWrapper()
     delete m_buf;
     if (face)
         FT_Done_Face(face);
+    if (cjk_face)
+        FT_Done_Face(cjk_face);
     delete[] ttf;
+    delete[] cjk_ttf;
 }
 
 /**
@@ -101,7 +108,16 @@ bool FTFontWrapper::configure_font()
     // Get maximum advance and other global metrics
     FT_Size_Metrics metrics = face->size->metrics;
     m_max_advance   = coord_def(0,0);
-    m_max_advance.x = metrics.max_advance >> 6;
+    // Use Latin half-width advance as grid cell, not max_advance.
+    // For CJK fonts, max_advance = full-width (2em), but the cell
+    // must be the Latin monospace advance so CJK fills 2 cells.
+    int latin_adv = 0;
+    for (char c = 0x20; c < 0x7f; ++c)
+    {
+        if (FT_Load_Char(face, c, FT_LOAD_DEFAULT) == 0)
+            latin_adv = max(latin_adv, (int)(face->glyph->advance.x >> 6));
+    }
+    m_max_advance.x = latin_adv ? latin_adv : (metrics.max_advance >> 6);
     m_max_advance.y = (metrics.ascender-metrics.descender)>>6;
     m_ascender      = (metrics.ascender>>6);
     // if you're looking for realistic glyph sizes use m_max_advance
@@ -112,9 +128,19 @@ bool FTFontWrapper::configure_font()
     m_max_height    = (face->bbox.yMax >> 6) - (face->bbox.yMin >> 6);
     m_min_offset    = 0;
 
+    if (cjk_face)
+    {
+        // Load CJK face at the same pixel size as the primary font.
+        // store() and string_width() use native glyph.advance for tight
+        // CJK spacing; render_textblock() uses grid advance independently.
+        int device_w = display_density.logical_to_device(fsize);
+        FT_Set_Pixel_Sizes(cjk_face, device_w, device_w);
+    }
+
     charsz = coord_def(1,1);
-    // Grow character size to power of 2
-    while (charsz.x <= m_max_advance.x)
+    // Grow character size to power of 2.
+    // CJK glyphs can be up to 2x the base advance, so use 2x width.
+    while (charsz.x <= m_max_advance.x * 2)
         charsz.x *= 2;
     while (charsz.y <= m_max_advance.y)
         charsz.y *= 2;
@@ -216,6 +242,58 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     m_atlas_lru.clear();
     m_atlas_lru.reserve(MAX_GLYPHS);
 
+    // Load CJK fallback font for Chinese/Japanese/Korean characters.
+    // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
+    // that exist in neither font.
+    string cjk_path = datafile_path(font_name, false, true); // primary as fallback
+    if (cjk_path.c_str()[0] != 0)
+    {
+        FILE *fc = fopen_u(cjk_path.c_str(), "rb");
+        if (fc)
+        {
+            unsigned long cjk_size = file_size(fc);
+            cjk_ttf = new FT_Byte[cjk_size];
+            if (fread(cjk_ttf, 1, cjk_size, fc) == cjk_size)
+            {
+                FT_Error cjk_err = FT_New_Memory_Face(library, cjk_ttf,
+                                        cjk_size, 0, &cjk_face);
+                if (!cjk_err)
+                {
+                    // Pixel size will be set in configure_font() after
+                    // m_max_advance is available for CJK advance calibration.
+                }
+                else
+                {
+                    delete[] cjk_ttf;
+                    cjk_ttf = nullptr;
+                    cjk_face = nullptr;
+                }
+            }
+            else
+            {
+                delete[] cjk_ttf;
+                cjk_ttf = nullptr;
+            }
+            fclose(fc);
+        }
+    }
+
+    // Warn if CJK fallback font could not be loaded — Chinese, Japanese, and
+    // Korean characters will display as placeholder blocks.
+    if (!cjk_face)
+    {
+        fprintf(stderr, "WARNING: CJK fallback font not found or failed to load.\n"
+                        "  Expected at: %s\n"
+                        "  CJK characters will render as placeholder blocks.\n"
+                        "  Set tile_font_crt_file in init.txt or place a compatible font in\n"
+                        "  contrib/fonts/ for proper CJK rendering.\n",
+                        cjk_path.c_str()[0] ? cjk_path.c_str()
+                                            : "(not found in search path)");
+        mprf(MSGCH_ERROR,
+            "CJK fallback font not found. Set tile_font_crt_file in init.txt"
+            " to a CJK-capable font for proper rendering.");
+    }
+
     return configure_font();
 }
 
@@ -240,20 +318,57 @@ FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
     if (!glyph.valid)
     {
         FT_Int glyph_index = FT_Get_Char_Index(face, ch);
+        FT_Face use_face = face;
+
+        // Try CJK fallback font if the primary font lacks this glyph
+        if (!glyph_index && cjk_face)
+        {
+            glyph_index = FT_Get_Char_Index(cjk_face, ch);
+            if (glyph_index)
+                use_face = cjk_face;
+        }
+
         if (!glyph_index)
-            glyph_index = FT_Get_Char_Index(face, MISSING_CHAR);
+            glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
+
         // need to use FT_LOAD_RENDER, otherwise glyph->bitmap isn't loaded
-        FT_Error error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER |
+        FT_Error error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
                 (Options.tile_font_ft_light ? FT_LOAD_TARGET_LIGHT : 0));
         ASSERT(!error);
-        FT_Bitmap *bmp = &face->glyph->bitmap;
+        FT_Bitmap *bmp = &use_face->glyph->bitmap;
         ASSERT(bmp);
 
-        glyph.offset = face->glyph->bitmap_left;
-        glyph.advance = face->glyph->advance.x >> 6;
-        glyph.ascender = face->glyph->bitmap_top;
+        glyph.offset = use_face->glyph->bitmap_left;
+        glyph.advance = use_face->glyph->advance.x >> 6;
+        glyph.ascender = use_face->glyph->bitmap_top;
         glyph.width = bmp->width;
         glyph.renderable = !!bmp->buffer;
+
+        // For double-width characters from the primary font (e.g.
+        // fullwidth punctuation that DejaVu supports), force advance
+        // to the grid metric so grid rendering stays aligned.
+        // For CJK fallback font glyphs, keep the native advance: in
+        // free-form rendering (tooltips, menus, item descriptions),
+        // Quantize double-width advance to the monospace grid.
+        // The CJK fallback font's native advance (~20px) differs from
+        // 2 * cell width (32px at 16px). Forcing advance to the grid
+        // value makes string_width/store/render_textblock all agree,
+        // eliminating column misalignment proportional to CJK count.
+        int cw = wcwidth(ch);
+        // Quantize all double-width advance to the grid cell.
+        // Even well-designed fonts (Sarasa Fixed) can have sub-pixel
+        // rounding differences at certain FreeType pixel sizes.
+        // Forcing exact 2*cell advance guarantees zero cumulative drift.
+        if (cw > 1)
+            glyph.advance = m_max_advance.x * cw;
+
+        // For CJK fallback glyphs, use Sarasa's native ascender values.
+        // Forcing a uniform ascender caused glyphs to appear at different
+        // heights because each CJK character's bitmap has different visual
+        // content within the same glyph cell (e.g. "一" vs "龘").
+        // Sarasa Mono SC is designed to be baseline-compatible at the same
+        // point size, so native ascenders give consistent results.
+
         glyph.valid = true;
     }
     return glyph;
@@ -264,15 +379,24 @@ void FTFontWrapper::load_glyph(unsigned int c, char32_t uchar)
     // get on with rendering the new glyph
     FT_Error error;
     FT_Int glyph_index = FT_Get_Char_Index(face, uchar);
+    FT_Face use_face = face;
+
+    // Try CJK fallback font if the primary font lacks this glyph
+    if (!glyph_index && cjk_face)
+    {
+        glyph_index = FT_Get_Char_Index(cjk_face, uchar);
+        if (glyph_index)
+            use_face = cjk_face;
+    }
 
     if (!glyph_index)
-        glyph_index = FT_Get_Char_Index(face, MISSING_CHAR);
+        glyph_index = FT_Get_Char_Index(use_face, MISSING_CHAR);
 
-    error = FT_Load_Glyph(face, glyph_index, FT_LOAD_RENDER |
+    error = FT_Load_Glyph(use_face, glyph_index, FT_LOAD_RENDER |
         (Options.tile_font_ft_light ? FT_LOAD_TARGET_LIGHT : 0));
     ASSERT(!error);
 
-    FT_Bitmap *bmp = &face->glyph->bitmap;
+    FT_Bitmap *bmp = &use_face->glyph->bitmap;
     ASSERT(bmp);
 
     // Was int prior to freetype 2.5.4, then became unsigned.
@@ -373,14 +497,29 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
     {
         for (unsigned int x = 0; x < width; x++)
         {
-            GlyphInfo &glyph = get_glyph_info(chars[i]);
+            char32_t ch = chars[i];
+
+            // Skip CJK continuation markers (ZERO WIDTH SPACE) inserted
+            // by TextRegion::addstr_aux for double-width characters.
+            if (ch == 0x200B)
+            {
+                i++;
+                continue;
+            }
+
+            GlyphInfo &glyph = get_glyph_info(ch);
             uint8_t col_bg = colours[i] >> 4;
             uint8_t col_fg = colours[i] & 0xF;
+
+            int char_w = wcwidth(ch);
+            if (char_w <= 0)
+                char_w = 1; // combining/control chars: treat as width 1
 
             if (col_bg != 0)
             {
                 GLWPrim rect(adv.x, adv.y,
-                             adv.x + m_max_advance.x, adv.y + m_max_advance.y);
+                             adv.x + m_max_advance.x * char_w,
+                             adv.y + m_max_advance.y);
                 // Leave tex coords at their default 0.0f
                 VColour col(term_colours[col_bg].r,
                             term_colours[col_bg].g,
@@ -393,7 +532,7 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
 
             if (glyph.renderable)
             {
-                unsigned int c = map_unicode(chars[i]);
+                unsigned int c = map_unicode(ch);
                 int this_width = glyph.width;
 
                 float tex_x = (float)(c % GLYPHS_PER_ROWCOL) / (float)GLYPHS_PER_ROWCOL;
@@ -414,6 +553,10 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
             }
 
             i++;
+            // Use native glyph advance, consistent with store() and
+            // string_width(). All three rendering paths (grid, free-form,
+            // layout) now agree on per-character advance, eliminating
+            // cumulative pixel drift between columns.
             adv.x += glyph.advance - glyph.offset;
 
             // See if we need to flush prematurely.
@@ -530,6 +673,11 @@ unsigned int FTFontWrapper::string_width(const char *text, bool logical)
             char32_t ch;
             utf8towc(&ch, itr);
             GlyphInfo &glyph = get_glyph_info(ch);
+            // Use native glyph advance for consistency with store().
+            // Both menu titles and data entries use store() for
+            // rendering, so layout (string_width) and rendering
+            // (store) must agree on per-character advance.
+            // render_textblock() uses grid advance independently.
             width += glyph.advance;
             adjust = max(0, glyph.width - glyph.advance);
         }

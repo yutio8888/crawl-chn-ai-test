@@ -13,6 +13,7 @@
 
 #include "act-iter.h"
 #include "areas.h"
+#include "options.h"
 #include "attack.h"
 #include "branch.h"
 #include "cloud.h"
@@ -57,6 +58,7 @@
 #include "travel.h"
 #include "viewchar.h"
 #include "view.h"
+#include "database.h"
 
 static bool _revert_terrain_to(coord_def pos, dungeon_feature_type feat);
 
@@ -833,11 +835,11 @@ void get_door_description(int door_size, const char** adjective, const char** no
 {
     const char* descriptions[] =
     {
-        "miniscule " , "buggy door",
-        ""           , "door",
-        "large "     , "door",
-        ""           , "gate",
-        "huge "      , "gate",
+        T_("miniscule ") , T_("buggy door"),
+        ""               , T_("door"),
+        T_("large ")     , T_("door"),
+        ""               , T_("gate"),
+        T_("huge ")      , T_("gate"),
     };
 
     int max_idx = static_cast<int>(ARRAYSZ(descriptions) - 2);
@@ -937,7 +939,7 @@ void slime_wall_damage(actor* act, int delay)
     if (dam > 0 && you.see_cell_no_trans(act->pos()))
     {
         const char *verb = act->is_icy() ? "melt" : "burn";
-        mprf((walls > 1) ? "The walls %s %s!" : "The wall %ss %s!",
+        mprf((walls > 1) ? T_("The walls %s %s!") : T_("The wall %ss %s!"),
               verb, act->name(DESC_THE).c_str());
         act->hurt(&you, dam, BEAM_ACID);
         if (act->alive())
@@ -978,11 +980,11 @@ void feat_splash_noise(dungeon_feature_type feat)
     {
     case DNGN_SHALLOW_WATER:
     case DNGN_DEEP_WATER:
-        mprf(MSGCH_SOUND, "You hear a splash.");
+        mprf(MSGCH_SOUND, T_("You hear a splash."));
         return;
 
     case DNGN_LAVA:
-        mprf(MSGCH_SOUND, "You hear a sizzling splash.");
+        mprf(MSGCH_SOUND, T_("You hear a sizzling splash."));
         return;
 
     default:
@@ -1788,10 +1790,9 @@ void fall_into_a_pool(dungeon_feature_type terrain)
         return;
     }
 
-    mprf("You fall into the %s!",
-         (terrain == DNGN_LAVA)       ? "lava" :
-         (terrain == DNGN_DEEP_WATER) ? "water"
-                                      : "programming rift");
+    mprf(T_("You fall into the %s!"),
+         T_(terrain == DNGN_LAVA ? "lava" :
+            terrain == DNGN_DEEP_WATER ? "water" : "programming rift"));
     // included in default force_more_message
     enable_emergency_flight();
 }
@@ -1898,11 +1899,11 @@ string stair_climb_verb(dungeon_feature_type feat)
     ASSERT(feat_stair_direction(feat) != CMD_NO_CMD);
 
     if (feat_is_staircase(feat))
-        return "climb";
+        return "climb stairs";
     else if (feat_is_escape_hatch(feat))
-        return "use";
+        return "use stairs";
     else
-        return "pass through";
+        return "pass through gate";
 }
 
 /** Find the feature with this name.
@@ -2618,9 +2619,9 @@ void ice_wall_damage(monster &mons, int delay)
     beam.flavour = BEAM_COLD;
     beam.thrower = KILL_YOU;
     int dam = mons_adjust_flavoured(&mons, beam, orig_dam);
-    mprf("The wall freezes %s%s%s",
+    mprf(T_("The wall freezes %s%s%s"),
          you.can_see(mons) ? mons.name(DESC_THE).c_str() : "something",
-         dam ? "" : " but does no damage",
+         dam ? "" : T_(" but does no damage"),
          attack_strength_punctuation(dam).c_str());
 
     if (dam > 0)
@@ -2661,9 +2662,9 @@ void frigid_walls_damage(int delay)
         beam.flavour = BEAM_COLD;
         beam.thrower = KILL_YOU;
         int dam = mons_adjust_flavoured(*mi, beam, orig_dam);
-        mprf("The frigid air chills %s%s%s",
+        mprf(T_("The frigid air chills %s%s%s"),
             you.can_see(**mi) ? mi->name(DESC_THE).c_str() : "something",
-            dam ? "" : " but does no damage",
+            dam ? "" : T_(" but does no damage"),
             attack_strength_punctuation(dam).c_str());
 
         if (dam > 0)
@@ -2704,7 +2705,7 @@ void descent_crumble_stairs()
 
         dungeon_change_base_terrain(*ri, DNGN_FLOOR);
         if (you.see_cell(*ri) && !is_temp_terrain(*ri))
-            mpr("The exit collapses.");
+            mpr(T_("The exit collapses."));
         if (env.map_knowledge(*ri).feat() == original_feat)
         {
             env.map_knowledge(*ri).set_feature(DNGN_FLOOR);

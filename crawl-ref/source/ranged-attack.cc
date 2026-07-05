@@ -27,6 +27,8 @@
 #include "traps.h"
 #include "unwind.h"
 #include "xom.h"
+#include "database.h"
+#include "positional_format.h"
 
 ranged_attack::ranged_attack(actor *attk, actor *defn,
                              const item_def *wpn,
@@ -53,13 +55,13 @@ ranged_attack::ranged_attack(actor *attk, actor *defn,
     }
     else if (throwing())
     {
-        aux_source = make_stringf("Hit by a%s %s thrown by %s",
+        aux_source = make_stringf_p(T_("Hit by a%s %s thrown by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
     else
     {
-        aux_source = make_stringf("Shot with a%s %s by %s",
+        aux_source = make_stringf_p(T_("Shot with a%s %s by %s"),
                  (is_vowel(proj_name[0]) ? "n" : ""), proj_name.c_str(),
                  attacker->name(DESC_A).c_str());
     }
@@ -170,14 +172,14 @@ void ranged_attack::handle_phase_blocked()
         {
             if (defender_shield && shield_reflects(*defender_shield))
             {
-                punctuation = " with " + defender->pronoun(PRONOUN_POSSESSIVE)
+                punctuation = T_(" with ") + defender->pronoun(PRONOUN_POSSESSIVE)
                               + " " + defender_shield->name(DESC_PLAIN).c_str();
             }
             else
-                punctuation = " with an invisible shield";
+                punctuation = T_(" with an invisible shield");
         }
 
-        punctuation += make_stringf("... and %s it back!",
+        punctuation += make_stringf_p(T_("... and %1$s it back!"),
                                     defender->conj_verb("reflect").c_str());
     }
     else
@@ -185,7 +187,7 @@ void ranged_attack::handle_phase_blocked()
 
     if (needs_message)
     {
-        mprf("%s %s the %s%s",
+        mprf_p(T_("%1$s %2$s the %3$s%4$s"),
              defender_name(false).c_str(),
              defender->conj_verb("block").c_str(),
              proj_name.c_str(),
@@ -208,7 +210,7 @@ void ranged_attack::handle_phase_dodged()
     if (ev_margin > -defender->missile_repulsion())
     {
         if (needs_message && defender_visible)
-            mprf("The %s is repelled.", proj_name.c_str());
+            mprf(T_("The %s is repelled."), proj_name.c_str());
 
         if (defender->is_player())
             count_action(CACT_DODGE, DODGE_REPEL);
@@ -221,7 +223,7 @@ void ranged_attack::handle_phase_dodged()
 
     if (needs_message)
     {
-        mprf("The %s%s misses %s.",
+        mprf(T_("The %s%s misses %s."),
              proj_name.c_str(),
              evasion_margin_adverb().c_str(),
              defender_name(false).c_str());
@@ -243,7 +245,7 @@ static bool _jelly_eat_missile(const string& proj_name, int damage_done)
         && !you.duration[DUR_DEATHS_DOOR]
         && !one_chance_in(3))
     {
-        mprf("Your attached jelly eats the %s!", proj_name.c_str());
+        mprf(T_("Your attached jelly eats the %s!"), proj_name.c_str());
         inc_hp(1 + random2(damage_done));
         canned_msg(MSG_GAIN_HEALTH);
         return true;
@@ -299,11 +301,11 @@ bool ranged_attack::handle_phase_hit()
         {
             if (needs_message)
             {
-                mprf("The %s %s %s%s but does no damage.",
+                mprf_p(T_("The %s %s %s%s but does no damage."),
                     proj_name.c_str(),
                     attack_verb.c_str(),
                     defender->name(DESC_THE).c_str(),
-                    mulch_bonus() ? " and shatters," : "");
+                    mulch_bonus() ? T_(" and shatters,") : "");
             }
         }
 
@@ -312,14 +314,14 @@ bool ranged_attack::handle_phase_hit()
 
     if (!defender->is_player() || !you.pending_revival)
     {
-        if (apply_damage_brand(make_stringf("the %s", proj_name.c_str()).c_str()))
+        if (apply_damage_brand(make_stringf(T_("the %s"), proj_name.c_str()).c_str()))
             return false;
 
         if (testbits(weapon->flags, ISFLAG_CHAOTIC) && defender->alive())
         {
             unwind_var<brand_type> save_brand(damage_brand);
             damage_brand = SPWPN_CHAOS;
-            if (apply_damage_brand(make_stringf("the %s", proj_name.c_str()).c_str()))
+            if (apply_damage_brand(make_stringf(T_("the %s"), proj_name.c_str()).c_str()))
                 return false;
         }
 
@@ -527,7 +529,7 @@ bool ranged_attack::dart_check(special_missile_type type)
             if (defender->is_monster())
             {
                 simple_monster_message(*defender->as_monster(),
-                                       " is unaffected.");
+                                       T_(" is unaffected."));
             }
             else
                 canned_msg(MSG_YOU_UNAFFECTED);
@@ -564,7 +566,7 @@ bool ranged_attack::dart_check(special_missile_type type)
         if (needs_message)
         {
             if (defender->is_monster())
-                simple_monster_message(*defender->as_monster(), " resists.");
+                simple_monster_message(*defender->as_monster(), T_(" resists."));
             else
                 canned_msg(MSG_YOU_RESIST);
         }
@@ -615,16 +617,16 @@ bool ranged_attack::apply_missile_brand()
         break;
     case SPMSL_FLAME:
         calc_elemental_brand_damage(BEAM_FIRE,
-                                    defender->is_icy() ? "melt" : "burn",
-                                    make_stringf("the %s", proj_name.c_str()).c_str());
+                                    defender->is_icy() ? T_("melt") : T_("burn"),
+                                    make_stringf(T_("the %s"), proj_name.c_str()).c_str());
 
         defender->expose_to_element(BEAM_FIRE, 2);
         if (defender->is_player())
             maybe_melt_player_enchantments(BEAM_FIRE, special_damage);
         break;
     case SPMSL_FROST:
-        calc_elemental_brand_damage(BEAM_COLD, "freeze",
-                                    make_stringf("the %s", proj_name.c_str()).c_str());
+        calc_elemental_brand_damage(BEAM_COLD, T_("freeze"),
+                                    make_stringf(T_("the %s"), proj_name.c_str()).c_str());
         defender->expose_to_element(BEAM_COLD, 2, attacker);
         break;
     case SPMSL_POISONED:
@@ -691,13 +693,13 @@ bool ranged_attack::apply_missile_brand()
             if (defender->is_player())
                 canned_msg(MSG_STRANGE_STASIS);
             else
-                simple_monster_message(*defender->as_monster(), " is unaffected.");
+                simple_monster_message(*defender->as_monster(), T_(" is unaffected."));
             break;
         }
 
         if (defender->is_player())
         {
-            mprf(MSGCH_WARN, "You become untethered in space!");
+            mprf(MSGCH_WARN, T_("You become untethered in space!"));
             you.duration[DUR_BLINKITIS] = random_range(30, 40);
             you.props[BLINKITIS_SOURCE_KEY] = attacker->name(DESC_A, true);
             you.props[BLINKITIS_AUX_KEY] = proj_name;
@@ -707,7 +709,7 @@ bool ranged_attack::apply_missile_brand()
             monster* dmon = defender->as_monster();
             if (!dmon->has_ench(ENCH_BLINKITIS))
             {
-                simple_monster_message(*dmon, " becomes untethered in space!");
+                simple_monster_message(*dmon, T_(" becomes untethered in space!"));
                 dmon->add_ench(mon_enchant(ENCH_BLINKITIS, attacker,
                                            random_range(3, 4) * BASELINE_DELAY));
                 // Trigger immediately once so that monster can't make an attack
@@ -791,7 +793,7 @@ bool ranged_attack::player_good_stab()
 
 void ranged_attack::set_attack_verb(int/* damage*/)
 {
-    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? "pierces through" : "hits";
+    attack_verb = !mulch_bonus() && is_penetrating_attack(*weapon) ? T_("pierces through") : T_("hits");
 }
 
 void ranged_attack::announce_hit()
@@ -799,11 +801,11 @@ void ranged_attack::announce_hit()
     if (!needs_message)
         return;
 
-    mprf("The %s %s %s%s%s%s",
+    mprf_p(T_("The %s %s %s%s%s%s"),
          proj_name.c_str(),
          attack_verb.c_str(),
          defender_name(false).c_str(),
-         mulch_bonus() ? " and shatters for extra damage" : "",
+         mulch_bonus() ? (T_(" and shatters for extra damage")) : "",
          debug_damage_number().c_str(),
          attack_strength_punctuation(damage_done).c_str());
 }

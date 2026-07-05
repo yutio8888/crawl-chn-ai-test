@@ -9,6 +9,7 @@
 
 #include "cloud.h"
 #include "coord.h"
+#include "database.h"
 #include "coordit.h"
 #include "delay.h"
 #include "env.h"
@@ -58,7 +59,7 @@ bool monster::blink_to(const coord_def& dest, bool quiet, bool jump)
     if (dest == pos())
         return false;
 
-    const string verb = (jump ? mons_genus(type) == MONS_FROG ? "hop" : "leap" : "blink");
+    const string verb = (jump ? mons_genus(type) == MONS_FROG ? T_("hop") : T_("leap") : T_("blink"));
 
     if (is_constricted())
     {
@@ -217,12 +218,12 @@ void monster_teleport(monster* mons, bool instan, bool silent, bool away_from_pl
         if (mons->del_ench(ENCH_TP))
         {
             if (!silent)
-                simple_monster_message(*mons, " seems more stable.");
+                simple_monster_message(*mons, T_(" seems more stable."));
         }
         else
         {
             if (!silent)
-                simple_monster_message(*mons, " looks slightly unstable.");
+                simple_monster_message(*mons, T_(" looks slightly unstable."));
 
             mons->add_ench(mon_enchant(ENCH_TP, agent, random_range(20, 30)));
         }
@@ -239,13 +240,13 @@ void monster_teleport(monster* mons, bool instan, bool silent, bool away_from_pl
         if (!away_from_player
             || !_monster_random_space(mons, newpos, !mons->wont_attack(), false))
         {
-            simple_monster_message(*mons, " flickers for a moment.");
+            simple_monster_message(*mons, T_(" flickers for a moment."));
             return;
         }
     }
 
     if (!silent)
-        simple_monster_message(*mons, " disappears!");
+        simple_monster_message(*mons, T_(" disappears!"));
 
     const coord_def oldplace = mons->pos();
 
@@ -255,9 +256,9 @@ void monster_teleport(monster* mons, bool instan, bool silent, bool away_from_pl
     if (!silent && you.can_see(*mons))
     {
         if (was_seen)
-            simple_monster_message(*mons, " reappears nearby!");
+            simple_monster_message(*mons, T_(" reappears nearby!"));
         else
-            mprf("%s appears out of thin air!", mons->name(DESC_A).c_str());
+            mprf(T_("%s appears out of thin air!"), mons->name(DESC_A).c_str());
     }
 
     // Leave a purple cloud.

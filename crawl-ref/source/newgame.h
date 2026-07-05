@@ -34,10 +34,11 @@ string newgame_random_name();
  */
 struct job_group
 {
-    const char* name;   ///< Name of the group.
+    const char* name;   ///< Name of the group (Chinese).
     coord_def position; ///< Relative coordinates of the title.
     int width;          ///< Column width.
     vector<job_type> jobs; ///< List of jobs in the group.
+    const char* name_en; ///< Name of the group (English).
 
     /// A method to attach the group to a freeform.
     void attach(const newgame_def& ng, const newgame_def& defaults,

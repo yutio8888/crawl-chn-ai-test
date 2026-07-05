@@ -52,6 +52,16 @@ string lowercase_string(const string &s)
         // ascii, which breaks many things.)
         if (isaalpha(tp[0]))
             res.append(1, toalower(tp[0]));
+        else if (c >= 0x2E80 && c <= 0x9FFF)
+            // CJK and related scripts have no case — preserve original
+            // bytes. iswupper/iswlower may return incorrect values for
+            // these ranges on MinGW/msvcrt, so check Unicode ranges
+            // directly rather than relying on isw*.
+            res.append(tp, len);
+        else if (c > 0x7F && !iswupper(c) && !iswlower(c))
+            // Other characters without case (symbols, etc.): skip towlower
+            // to avoid potential corruption on MinGW/msvcrt.
+            res.append(tp, len);
         else
             res.append(buf, wctoutf8(buf, towlower(c)));
     }

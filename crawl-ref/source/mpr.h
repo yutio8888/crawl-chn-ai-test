@@ -112,6 +112,11 @@ void mpr(const formatted_string &) = delete;
 void mprf(msg_channel_type channel, int param, PRINTF(2, ));
 void mprf(msg_channel_type channel, PRINTF(1, ));
 void mprf(PRINTF(0, ));
+
+// mprf_p — like mprf but uses vmake_stringf_p for %%n$s positional support
+void mprf_p(msg_channel_type channel, int param, PRINTF(2, ));
+void mprf_p(msg_channel_type channel, PRINTF(1, ));
+void mprf_p(PRINTF(0, ));
 void mprf_nojoin(msg_channel_type channel, PRINTF(1,));
 void mprf_nojoin(PRINTF(0,));
 

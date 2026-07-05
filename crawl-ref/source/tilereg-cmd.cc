@@ -95,7 +95,7 @@ bool CommandRegion::update_tip_text(string& tip)
         return false;
 
     const command_type cmd = (command_type) m_items[item_idx].idx;
-    tip = make_stringf("[L-Click] %s",
+    tip = make_stringf(T_("[L-Click] %s"),
                        get_command_description(cmd, true).c_str());
 
     if (command_to_key(cmd) != '\0')

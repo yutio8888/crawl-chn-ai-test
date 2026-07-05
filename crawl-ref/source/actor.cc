@@ -10,6 +10,7 @@
 #include "art-enum.h"
 #include "attack.h"
 #include "chardump.h"
+#include "database.h"
 #include "delay.h"
 #include "directn.h"
 #include "env.h"
@@ -466,17 +467,17 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         // blinking or similar
         if (!escape_verb.empty())
         {
-            mprf("%s %s free of %s!",
+            mprf(T_("%s %s free of %s!"),
                  constrictee->name(DESC_THE).c_str(), escape_verb.c_str(),
                  lowercase(attacker_desc).c_str());
         }
         else
         {
-            mprf("%s %s %s grip on %s.",
+            mprf(T_("%s %s %s grip on %s."),
                 attacker_desc.c_str(),
                 force_plural ? verb.c_str()
                             : conj_verb(verb).c_str(),
-                force_plural ? "their" : pronoun(PRONOUN_POSSESSIVE).c_str(),
+                force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
                 constrictee->name(DESC_THE).c_str());
         }
     }
@@ -776,9 +777,9 @@ void actor::constriction_damage_defender(actor &defender)
             break;
         }
 
-        mprf("%s %s %s%s%s", attacker_desc.c_str(),
-             force_plural ? "constrict"
-                          : conj_verb("constrict").c_str(),
+        mprf_p(T_("%s %s %s%s%s"), attacker_desc.c_str(),
+             force_plural ? T_("constrict")
+                          : conj_verb(T_("constrict")).c_str(),
              defender.name(DESC_THE).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
@@ -789,9 +790,9 @@ void actor::constriction_damage_defender(actor &defender)
     }
     else if (you.can_see(defender) || defender.is_player())
     {
-        mprf("%s %s constricted%s%s",
+        mprf(T_("%s %s constricted%s%s"),
              defender.name(DESC_THE).c_str(),
-             defender.conj_verb("are").c_str(),
+             defender.conj_verb(C_("verb", "are")).c_str(),
 #ifdef DEBUG_DIAGNOSTICS
              make_stringf(" for %d", damage).c_str(),
 #else
@@ -906,23 +907,22 @@ string actor::describe_props() const
 string actor::resist_margin_phrase(int margin) const
 {
     if (willpower() == WILL_INVULN)
-        return " " + conj_verb("are") + " unaffected.";
+        return T_(" are unaffected.");
 
-    static const string resist_messages[][2] =
+    static const string resist_phrases[] =
     {
-      { " barely %s.",                  "resist" },
-      { " %s to resist.",               "struggle" },
-      { " %s with significant effort.", "resist" },
-      { " %s with some effort.",        "resist" },
-      { " easily %s.",                  "resist" },
-      { " %s with almost no effort.",   "resist" },
+        T_(" barely resist."),
+        T_(" struggle to resist."),
+        T_(" resist with significant effort."),
+        T_(" resist with some effort."),
+        T_(" easily resist."),
+        T_(" resist with almost no effort."),
     };
 
-    const int index = max(0, min((int)ARRAYSZ(resist_messages) - 1,
+    const int index = max(0, min((int)ARRAYSZ(resist_phrases) - 1,
                                  ((margin + 45) / 15)));
 
-    return make_stringf(resist_messages[index][0].c_str(),
-                        conj_verb(resist_messages[index][1]).c_str());
+    return resist_phrases[index];
 }
 
 void actor::collide(coord_def newpos, const actor *agent, int damage)
@@ -952,9 +952,9 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
         const int damother = other->apply_ac(damage);
         if (you.can_see(*this) || you.can_see(*other))
         {
-            mprf("%s %s with %s%s",
+            mprf(T_("%s %s with %s%s"),
                  name(DESC_THE).c_str(),
-                 conj_verb("collide").c_str(),
+                 conj_verb(T_("collide")).c_str(),
                  other->name(DESC_THE).c_str(),
                  attack_strength_punctuation((dam + damother) / 2).c_str());
             // OK, now do the messaging for protected monsters.
@@ -990,18 +990,18 @@ void actor::collide(coord_def newpos, const actor *agent, int damage)
     {
         if (!can_pass_through_feat(env.grid(newpos)))
         {
-            mprf("%s %s into %s%s",
-                 name(DESC_THE).c_str(), conj_verb("slam").c_str(),
+            mprf(T_("%s %s into %s%s"),
+                 name(DESC_THE).c_str(), conj_verb(T_("slam")).c_str(),
                  env.map_knowledge(newpos).known()
                  ? feature_description_at(newpos, false, DESC_THE)
                        .c_str()
-                 : "something",
+                 : T_("something"),
                  attack_strength_punctuation(dam).c_str());
         }
         else
         {
-            mprf("%s violently %s moving%s",
-                 name(DESC_THE).c_str(), conj_verb("stop").c_str(),
+            mprf(T_("%s violently %s moving%s"),
+                 name(DESC_THE).c_str(), conj_verb(T_("stop")).c_str(),
                  attack_strength_punctuation(dam).c_str());
         }
 
@@ -1070,11 +1070,19 @@ bool actor::knockback(const actor &cause, int dist, int dmg, string source_name,
 
     if (you.can_see(*this))
     {
-        mprf("%s %s knocked back%s%s.",
-             name(DESC_THE).c_str(),
-             conj_verb("are").c_str(),
-             !source_name.empty() ? " by the " : "",
-             source_name.c_str());
+        if (!source_name.empty())
+        {
+            mprf_p(T_("%1$s %2$s knocked back by the %3$s."),
+                   name(DESC_THE).c_str(),
+                   conj_verb(C_("verb", "are")).c_str(),
+                   source_name.c_str());
+        }
+        else
+        {
+            mprf_p(T_("%1$s %2$s knocked back."),
+                   name(DESC_THE).c_str(),
+                   conj_verb("are").c_str());
+        }
     }
 
     if (dmg > 0 && pos() != newpos)
@@ -1129,9 +1137,11 @@ bool actor::stumble_away_from(coord_def targ, string src)
     }
 
     if (is_player() && !src.empty())
-        mprf("%s sends you backwards.", uppercase_first(src).c_str());
+        mprf(T_("%s sends you backwards."),
+             uppercase_first(src).c_str());
     else if (you.can_see(*this) && !src.empty())
-        mprf("%s is knocked back by %s.", name(DESC_THE).c_str(), src.c_str());
+        mprf(T_("%s is knocked back by %s."),
+             name(DESC_THE).c_str(), src.c_str());
 
     move_to(newpos);
 

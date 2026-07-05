@@ -102,6 +102,7 @@
 #include "view.h"
 #include "xom.h"
 #include "zot.h"
+#include "database.h"
 
 #ifdef __ANDROID__
 #include <android/log.h>
@@ -538,7 +539,7 @@ void validate_basedirs()
         else // true -- found a complete data directory
         {
             if (!found)
-                mprf(MSGCH_PLAIN, "Data directory '%s' found.", d.c_str());
+                mprf(MSGCH_PLAIN, T_("Data directory '%s' found."), d.c_str());
             found = true;
         }
     }
@@ -1294,16 +1295,16 @@ static void _grab_followers_and_expire_summons()
         // Summons won't follow and will time out.
         if (non_stair_using_summons > 0)
         {
-            mprf("Your summoned %s left behind.",
-                 non_stair_using_allies > 1 ? "allies are" : "ally is");
+            mprf(T_("Your summoned %s left behind."),
+                 non_stair_using_allies > 1 ? T_("allies are") : T_("ally is"));
         }
         else
         {
             const bool all_dead = non_stair_using_undead == non_stair_using_allies;
             // Permanent undead are left behind but stay.
-            mprf("Your mindless puppet%s behind%s.",
-                 non_stair_using_allies > 1 ? "s stay" : " stays",
-                 all_dead ? " to rot" : "");
+            mprf(T_("Your mindless puppet%s behind%s."),
+                 non_stair_using_allies > 1 ? T_("s stay") : T_(" stays"),
+                 all_dead ? T_(" to rot") : "");
         }
     }
 
@@ -2342,7 +2343,8 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
         && !get_level_annotation().empty()
         && !crawl_state.level_annotation_shown)
     {
-        mprf(MSGCH_PLAIN, YELLOW, "Level annotation: %s",
+        mprf(MSGCH_PLAIN, YELLOW,
+             T_("Level annotation: %s"),
              get_level_annotation().c_str());
     }
 
@@ -2464,14 +2466,14 @@ bool load_level(dungeon_feature_type stair_taken, load_mode_type load_mode,
                 if (coinflip()
                     && slide_feature_over(you.pos()))
                 {
-                    mprf("%s slides away from you right after you %s it!",
-                         stair_str.c_str(), verb.c_str());
+                    mprf(T_("%s slides away from you right after you %s it!"),
+                         stair_str.c_str(), T_(verb.c_str()));
                 }
 
                 if (coinflip())
                 {
                     // Stairs stop fleeing from you now you actually caught one.
-                    mprf("%s settles down.", stair_str.c_str());
+                    mprf(T_("%s settles down."), stair_str.c_str());
                     you.duration[DUR_REPEL_STAIRS_MOVE]  = 0;
                     you.duration[DUR_REPEL_STAIRS_CLIMB] = 0;
                 }
@@ -2638,7 +2640,7 @@ void save_game(bool leave_game, const char *farewellmsg)
     {
         if (!dump_char(you.your_name, true))
         {
-            mpr("Char dump unsuccessful! Sorry about that.");
+            mpr(T_("Char dump unsuccessful! Sorry about that."));
             if (!crawl_state.seen_hups)
                 more();
         }
@@ -3657,7 +3659,7 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
 
     if (!version.valid())
     {
-        *reason = make_stringf("File is corrupt (found version %d,%d).",
+        *reason = make_stringf(T_("File is corrupt (found version %d,%d)."),
                                 version.major, version.minor);
         return false;
     }
@@ -3667,13 +3669,13 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
         if (version.is_ancient())
         {
             const auto min_supported = save_version::minimum_supported();
-            *reason = make_stringf("This save is from an older version.\n"
+            *reason = make_stringf(T_("This save is from an older version.\n"
                     "\n"
                     CRAWL " %s is not compatible with save files this old. You can:\n"
                     " • continue your game with an older version of " CRAWL "\n"
                     " • delete it and start a new game\n"
                     "\n"
-                    "This save's version: (%d.%d) (must be >= %d.%d)",
+                    "This save's version: (%d.%d) (must be >= %d.%d)"),
                     Version::Short,
                     version.major, version.minor,
                     min_supported.major, min_supported.minor);
@@ -3681,13 +3683,13 @@ static bool _tagged_chunk_version_compatible(reader &inf, string* reason)
         else if (version.is_future())
         {
             const auto current = save_version::current();
-            *reason = make_stringf("This save is from a newer version.\n"
+            *reason = make_stringf(T_("This save is from a newer version.\n"
                     "\n"
                     CRAWL " cannot load saves from newer versions. You can:\n"
                     " • continue your game with a newer version of " CRAWL "\n"
                     " • delete it and start a new game\n"
                     "\n"
-                    "This save's version: (%d.%d) (must be <= %d.%d)",
+                    "This save's version: (%d.%d) (must be <= %d.%d)"),
                     version.major, version.minor,
                     current.major, current.minor);
         }

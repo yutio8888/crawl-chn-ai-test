@@ -28,6 +28,7 @@
 #include "terrain.h"
 #include "traps.h"
 #include "travel.h"
+#include "database.h"
 
 /// Bitmasks for area properties that center on actors
 enum class areaprop
@@ -351,7 +352,7 @@ void decrease_sanctuary_radius()
 
     if (you.running && is_sanctuary(you.pos()))
     {
-        mprf(MSGCH_DURATION, "The sanctuary starts shrinking.");
+        mprf(MSGCH_DURATION, "%s", T_("The sanctuary starts shrinking."));
         stop_running();
     }
 
@@ -370,7 +371,7 @@ void decrease_sanctuary_radius()
         // XX why doesn't this update env.sanctuary_pos to -1,-1?
         _remove_sanctuary_property(env.sanctuary_pos);
         if (you.see_cell(env.sanctuary_pos))
-            mprf(MSGCH_DURATION, "The sanctuary disappears.");
+            mprf(MSGCH_DURATION, "%s", T_("The sanctuary disappears."));
     }
 }
 
@@ -468,22 +469,22 @@ void create_sanctuary(const coord_def& center, int time)
     // Messaging.
     if (cloud_count == 1)
     {
-        mprf(MSGCH_GOD, "By Zin's power, the foul cloud within the sanctuary "
-                        "is swept away.");
+        mprf(MSGCH_GOD, "%s", T_("By Zin's power, the foul cloud within the sanctuary "
+                        "is swept away."));
     }
     else if (cloud_count > 1)
     {
-        mprf(MSGCH_GOD, "By Zin's power, all foul fumes within the sanctuary "
-                        "are swept away.");
+        mprf(MSGCH_GOD, "%s", T_("By Zin's power, all foul fumes within the sanctuary "
+                        "are swept away."));
     }
 
     if (blood_count > 0)
-        mprf(MSGCH_GOD, "By Zin's power, all blood is cleared from the sanctuary.");
+        mprf(MSGCH_GOD, "%s", T_("By Zin's power, all blood is cleared from the sanctuary."));
 
     if (scare_count == 1 && seen_mon != nullptr)
-        simple_monster_message(*seen_mon, " turns to flee the light!");
+        simple_monster_message(*seen_mon, T_(" turns to flee the light!"));
     else if (scare_count > 0)
-        mpr("The monsters scatter in all directions!");
+        mpr(T_("The monsters scatter in all directions!"));
 }
 
 // Range calculation for spells whose radius shrinks over time with remaining

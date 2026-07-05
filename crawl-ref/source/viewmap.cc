@@ -14,6 +14,7 @@
 #include "command.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dgn-overview.h"
 #include "directn.h"
 #include "env.h"
@@ -1045,7 +1046,7 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
             // completely wipe out map
             _forget_map(true);
             env.map_forgotten.reset(old);
-            mpr("Level map wiped.");
+            mpr(T_("Level map wiped."));
             break;
         }
 #endif
@@ -1058,7 +1059,7 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
             MapKnowledge *old = new MapKnowledge(env.map_knowledge);
             _forget_map();
             env.map_forgotten.reset(old);
-            mpr("Level map cleared.");
+            mpr(T_("Level map cleared."));
         }
         break;
 
@@ -1067,10 +1068,10 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         {
             _unforget_map();
             env.map_forgotten.reset();
-            mpr("Remembered map restored.");
+            mpr(T_("Remembered map restored."));
         }
         else
-            mpr("No remembered map.");
+            mpr(T_("No remembered map."));
         break;
 
     case CMD_MAP_ADD_WAYPOINT:
@@ -1328,7 +1329,7 @@ map_control_state process_map_command(command_type cmd, const map_control_state&
         state.excursion->go_to(state.lpos.id);
 
         if (!is_map_persistent())
-            mpr("You can't annotate this level.");
+            mpr(T_("You can't annotate this level."));
         else
         {
 #ifdef USE_TILE_WEB

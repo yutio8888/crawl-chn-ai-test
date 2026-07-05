@@ -56,6 +56,7 @@
 #include "notes.h"
 #include "options.h"
 #include "orb.h"
+#include "positional_format.h"
 #include "output.h"
 #include "place.h"
 #include "player-equip.h"
@@ -903,7 +904,8 @@ string item_message(vector<const item_def *> const &items)
     for (const item_def *it : items)
         colour_names.push_back(menu_colour_item_name(*it, DESC_A));
 
-    return join_strings(colour_names.begin(), colour_names.end(), "; ");
+    return join_strings(colour_names.begin(), colour_names.end(),
+                    T_("; "));
 }
 
 void item_check()
@@ -923,21 +925,22 @@ void item_check()
     {
         const item_def& it(*items[0]);
         string name = menu_colour_item_name(it, DESC_A);
-        strm << "You see here " << name << '.' << endl;
+        strm << (T_("You see here "))
+             << name << (T_(".")) << endl;
         return;
     }
 
     string desc_string = item_message(items);
     // Stack summary case
     if (static_cast<int>(items.size()) >= Options.item_stack_summary_minimum)
-        mprf_nojoin(MSGCH_FLOOR_ITEMS, "Items here: %s.", desc_string.c_str());
+        mprf_nojoin(MSGCH_FLOOR_ITEMS, T_("Items here: %s."), desc_string.c_str());
     else if (items.size() <= msgwin_lines() - 1)
     {
-        mpr_nojoin(MSGCH_FLOOR_ITEMS, "Things that are here:");
+        mpr_nojoin(MSGCH_FLOOR_ITEMS, T_("Things that are here:"));
         mprf_nocap("%s", desc_string.c_str());
     }
     else
-        strm << "There are many items here." << endl;
+        strm << (T_("There are many items here.")) << endl;
 
     if (items.size() > 2 && crawl_state.game_is_hints_tutorial())
     {
@@ -1052,10 +1055,10 @@ void pickup_menu(int item_link)
     auto items = const_item_list_on_square(item_link);
     ASSERT(items.size());
 
-    string prompt = "Pick up what? " + slot_description() + " (_ for help)";
+    string prompt = T_("Pick up what? ") + slot_description() + T_(" (_ for help)");
 
     if (items.size() == 1 && items[0]->quantity > 1)
-        prompt = "Select pick up quantity by entering a number, then select the item";
+        prompt = T_("Select pick up quantity by entering a number, then select the item");
     vector<SelItem> selected = select_items(items, prompt.c_str(), false,
                                             menu_type::pickup);
     if (selected.empty())
@@ -1170,7 +1173,9 @@ void origin_acquired(item_def &item, int agent)
 
 static string _milestone_collectible(const item_def &item)
 {
-    return string("found ") + item.name(DESC_A) + ".";
+    return string(T_("found "))
+           + item.name(DESC_A)
+           + (T_("."));
 }
 
 void milestone_check(const item_def &item)
@@ -1254,6 +1259,8 @@ bool origin_describable(const item_def &item)
 
 static string _article_it(const item_def &/*item*/)
 {
+    if (Options.language == lang_t::ZH)
+        return "它";
     // "it" is always correct, since gloves and boots also come in pairs.
     return "it";
 }
@@ -1310,7 +1317,7 @@ string origin_desc(const item_def &item)
         return "";
 
     if (_origin_is_original_equip(item))
-        return "Original Equipment";
+        return T_("Original Equipment");
 
     string desc;
     if (item.orig_monnum)
@@ -1321,51 +1328,58 @@ string origin_desc(const item_def &item)
             switch (iorig)
             {
             case IT_SRC_SHOP:
-                desc += "You bought " + _article_it(item) + " in a shop ";
+                desc += (T_("You bought ") + _article_it(item) + " in a shop ");
                 break;
             case IT_SRC_START:
-                desc += "Buggy Original Equipment: ";
+                desc += T_("Buggy Original Equipment: ");
                 break;
             case AQ_SCROLL:
-                desc += "You acquired " + _article_it(item) + " ";
+                desc += (T_("You acquired ") + _article_it(item) + " ");
                 break;
             case AQ_INVENTED:
-                desc += "You invented it yourself ";
+                desc += T_("You invented it yourself ");
                 break;
 #if TAG_MAJOR_VERSION == 34
             case AQ_CARD_GENIE:
-                desc += "You drew the Genie ";
+                desc += T_("You drew the Genie ");
                 break;
 #endif
             case AQ_WIZMODE:
-                desc += "Your wizardly powers created "+ _article_it(item)+ " ";
+                desc += (T_("Your wizardly powers created ")+ _article_it(item)+ " ");
                 break;
             default:
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
                 {
                     desc += god_name(static_cast<god_type>(iorig))
-                        + " gifted " + _article_it(item) + " to you ";
+                        + (T_(" gifted ") + _article_it(item) + " to you ");
                 }
                 else
                 {
                     // Bug really.
-                    desc += "You stumbled upon " + _article_it(item) + " ";
+                    desc += (T_("You stumbled upon ") + _article_it(item) + " ");
                 }
                 break;
             }
         }
         else if (item.orig_monnum == MONS_DANCING_WEAPON)
-            desc += "You subdued it ";
+            desc += T_("You subdued it ");
         else
         {
-            desc += "You took " + _article_it(item) + " off "
+            desc += (T_("You took ") + _article_it(item) + " off ")
                     + _origin_monster_name(item) + " ";
         }
     }
     else
-        desc += "You found " + _article_it(item) + " ";
+        desc += (T_("You found ") + _article_it(item) + " ");
 
-    desc += _origin_place_desc(item);
+    string place = _origin_place_desc(item);
+    if (!place.empty())
+    {
+        if (Options.language == lang_t::ZH)
+            desc = make_stringf(T_("%s%s"), place.c_str(), desc.c_str());
+        else
+            desc += place;
+    }
     return desc;
 }
 
@@ -1384,11 +1398,11 @@ bool pickup_single_item(int link, int qty)
     item_def* item = &env.item[link];
     if (item_is_stationary(env.item[link]))
     {
-        mpr("You can't pick that up.");
+        mpr(T_("You can't pick that up."));
         return false;
     }
     if (item->base_type == OBJ_GOLD && !qty && !i_feel_safe()
-        && !yesno("Are you sure you want to pick up this pile of gold now?",
+        && !yesno(T_("Are you sure you want to pick up this pile of gold now?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -1397,7 +1411,7 @@ bool pickup_single_item(int link, int qty)
     if (qty == 0 && item->quantity > 1 && item->base_type != OBJ_GOLD)
     {
         const string prompt
-                = make_stringf("Pick up how many of %s (; or enter for all)? ",
+                = make_stringf(T_("Pick up how many of %s (; or enter for all)? "),
                                item->name(DESC_THE, false,
                                           false, false).c_str());
 
@@ -1428,7 +1442,7 @@ bool pickup_single_item(int link, int qty)
 
     if (!pickup_succ)
     {
-        mpr("You can't carry that many items.");
+        mpr(T_("You can't carry that many items."));
         learned_something_new(HINT_FULL_INVENTORY);
         return false;
     }
@@ -1463,7 +1477,7 @@ void pickup(bool partial_quantity)
     you.last_pickup.clear();
 
     if (o == NON_ITEM)
-        mpr("There are no items here.");
+        mpr(T_("There are no items here."));
     else if (num_items == 1) // just one movable item?
     {
         // Get the link to the movable item in the pile.
@@ -1482,9 +1496,9 @@ void pickup(bool partial_quantity)
     {
         int next;
         if (num_items == 0)
-            mpr("There are no objects that can be picked up here.");
+            mpr(T_("There are no objects that can be picked up here."));
         else
-            mpr("There are several objects here.");
+            mpr(T_("There are several objects here."));
         string pickup_warning;
         bool any_selectable = false;
         while (o != NON_ITEM)
@@ -1743,11 +1757,10 @@ void get_gold(const item_def& item, int quant, bool quiet)
     if (!quiet)
     {
         const string gain = quant != you.gold
-                            ? make_stringf(" (gained %d)", quant)
+                            ? make_stringf(T_(" (gained %d)"), quant)
                             : "";
 
-        mprf("You now have %d gold piece%s%s.",
-             you.gold, you.gold != 1 ? "s" : "", gain.c_str());
+        mprf_p(T_("You now have %1$d gold piece%2$s."), you.gold, gain.c_str());
         learned_something_new(HINT_SEEN_GOLD);
     }
 }
@@ -1765,7 +1778,7 @@ static bool _put_item_in_inv(item_def& it, int quant_got, bool quiet, bool& put_
     if (item_is_stationary(it))
     {
         if (!quiet)
-            mpr("You can't pick that up.");
+            mpr(T_("You can't pick that up."));
         // Fake a successful pickup (return 1), so we can continue to
         // pick up anything else that might be on this square.
         return true;
@@ -1848,14 +1861,14 @@ static void _get_book(item_def& it)
     {
         if (you.has_mutation(MUT_INNATE_CASTER))
         {
-            mprf("%s burns to shimmering ash in your grasp.",
+            mprf(T_("%s burns to shimmering ash in your grasp."),
                  it.name(DESC_THE).c_str());
             return;
         }
-        mprf("You pick up %s and begin reading...", it.name(DESC_A).c_str());
+        mprf(T_("You pick up the %s and begin to read..."), it.name(DESC_A).c_str());
 
         if (!library_add_spells(spells_in_book(it)))
-            mpr("Unfortunately, you learned nothing new or useful.");
+            mpr(T_("Unfortunately, you learned nothing new or useful."));
 
         taken_new_item(it.base_type);
 
@@ -1868,22 +1881,24 @@ static void _get_book(item_def& it)
 
     if (is_useless_skill(sk))
     {
-        mprf("You pick up %s. Unfortunately, it's quite useless to you.",
+        mprf(T_("You pick up %s. Unfortunately, it's quite useless to you."),
              it.name(DESC_A).c_str());
         return;
     }
 
     if (you.skills[sk] >= MAX_SKILL_LEVEL)
     {
-        mprf("You pick up %s, but it has nothing more to teach you.",
+        mprf(T_("You pick up %s, but it has nothing more to teach you."),
              it.name(DESC_A).c_str());
         return;
     }
 
     if (you.skill_manual_points[sk])
-        mprf("You pick up another %s and continue studying.", it.name(DESC_PLAIN).c_str());
+        mprf(T_("You pick up another %s and continue studying."),
+             it.name(DESC_PLAIN).c_str());
     else
-        mprf("You pick up %s and begin studying.", it.name(DESC_A).c_str());
+        mprf(T_("You pick up %s and begin studying."),
+             it.name(DESC_A).c_str());
     you.skill_manual_points[sk] += it.skill_points;
     you.skills_to_show.insert(sk);
 }
@@ -1934,29 +1949,29 @@ static void _get_rune(const item_def& it, bool quiet)
     if (!quiet)
     {
         flash_view_delay(UA_PICKUP, rune_colour(it.sub_type), 300);
-        mprf("You pick up the %s rune and feel its power.",
+        mprf(T_("You pick up the %s rune and feel its power."),
              rune_type_name(it.sub_type));
         int nrunes = runes_in_pack();
         if (nrunes >= you.obtainable_runes)
-            mpr("You have collected all the runes! Now go and win!");
+            mpr(T_("You have collected all the runes! Now go and win!"));
         else if (nrunes == ZOT_ENTRY_RUNES)
         {
             // might be inappropriate in new Sprints, please change it then
-            mprf("%d runes! That's enough to enter the realm of Zot.",
+            mprf(T_("%d runes! That's enough to enter the realm of Zot."),
                  nrunes);
         }
         else if (nrunes > 1)
         {
             if (player_in_branch(BRANCH_PANDEMONIUM) && _got_all_pan_runes())
-                mpr("You've emptied out Pandemonium! Nothing left here but demons.");
-            mprf("You now have %d runes.", nrunes);
+                mpr(T_("You've emptied out Pandemonium! Nothing left here but demons."));
+            mprf(T_("You now have %d runes."), nrunes);
         }
 
-        mpr("Press } to see all the runes you have collected.");
+        mpr(T_("Press } to see all the runes you have collected."));
     }
 
     if (it.sub_type == RUNE_ABYSSAL)
-        mpr("You feel the abyssal rune guiding you out of this place.");
+        mpr(T_("You feel the abyssal rune guiding you out of this place."));
 }
 
 static bool _is_disabled_gem(gem_type gem)
@@ -2001,14 +2016,14 @@ static void _get_gem(const item_def& it, bool quiet)
 
     flash_view_delay(UA_PICKUP, it.gem_colour(), 300);
     // XXX: consider customizing this message per-gem
-    mprf("You pick up %s and feel its impossibly delicate weight in your %s.",
+    mprf(T_("You pick up %s and feel its impossibly delicate weight in your %s."),
          it.name(DESC_THE).c_str(), you.hand_name(true).c_str());
     if (_got_all_gems())
     {
-        mprf("You've found all the gems! Together, they sparkle an otherworldly %s!",
+        mprf(T_("You've found all the gems! Together, they sparkle an otherworldly %s!"),
              getSpeakString("misc_colour").c_str());
     }
-    mpr("Press } and ! to see all the gems you have collected.");
+    mpr(T_("Press } and ! to see all the gems you have collected."));
     print_gem_warnings(it.sub_type, 0);
 }
 
@@ -2019,10 +2034,10 @@ static void _get_orb()
 {
     run_animation(ANIMATION_ORB, UA_PICKUP);
 
-    mprf(MSGCH_ORB, "You pick up the Orb of Zot!");
+    mprf(MSGCH_ORB, T_("You pick up the Orb of Zot!"));
 
     if (bezotted())
-        mpr("Zot can harm you no longer.");
+        mpr(T_("Zot can harm you no longer."));
 
     env.orb_pos = you.pos(); // can be wrong in wizmode
     orb_pickup_noise(you.pos(), 30);
@@ -2085,11 +2100,11 @@ static bool _merge_stackable_item_into_inv(const item_def &it, int quant_got,
 #endif
             string prefix = you.inv[inv_slot].slot != old_slot
                             ? make_stringf("%c -> ", old_slot) : "";
-            mprf_nocap("%s%s (gained %d)",
+            mprf_nocap("%s%s %s",
                         prefix.c_str(),
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        quant_got);
+                        make_stringf(T_("(gained %d)"), quant_got).c_str());
         }
         return true;
     }
@@ -2113,7 +2128,7 @@ static bool _merge_evokers(const item_def &it, int &inv_slot, bool quiet)
         {
             if (!quiet)
             {
-                mprf("%s cannot be improved any further.",
+                mprf(T_("%s cannot be improved any further."),
                      you.inv[inv_slot].name(DESC_YOUR).c_str());
             }
             return true;
@@ -2167,10 +2182,14 @@ static bool _merge_wand_charges(const item_def &it, int &inv_slot, bool quiet)
 #ifdef USE_SOUND
             parse_sound(PICKUP_SOUND);
 #endif
-            mprf_nocap("%s (gained %d charge%s)",
+            const string charge_msg = make_stringf_p(
+                T_("(gained %1$d charge%2$s)"),
+                it.charges,
+                it.charges == 1 ? "" : "s");
+            mprf_nocap("%s %s",
                         menu_colour_item_name(you.inv[inv_slot],
                                                     DESC_INVENTORY).c_str(),
-                        it.charges, it.charges == 1 ? "" : "s");
+                        charge_msg.c_str());
         }
 
         return true;
@@ -2654,7 +2673,8 @@ bool move_item_to_grid(int *const obj, const coord_def& p, bool silent)
     }
 
     if (p == you.pos() && _id_floor_item(item))
-        mprf("You see here %s.", item.name(DESC_A).c_str());
+        mprf(T_("You see here %s."),
+             item.name(DESC_A).c_str());
 
     return true;
 }
@@ -2844,14 +2864,14 @@ bool drop_item(int item_dropped, int quant_drop)
     {
         if (item.base_type == OBJ_GIZMOS)
         {
-            mpr("That is permanently installed in your exoskeleton.");
+            mpr(T_("That is permanently installed in your exoskeleton."));
             return false;
         }
 
         const bool is_wpn = is_weapon(item);
         if (!Options.easy_unequip && !is_wpn)
         {
-            mprf(MSGCH_PROMPT, "You will have to take that off first.");
+            mprf(MSGCH_PROMPT, T_("You will have to take that off first."));
             return false;
         }
 
@@ -2878,11 +2898,11 @@ bool drop_item(int item_dropped, int quant_drop)
 
     if (copy_item_to_grid(item, you.pos(), quant_drop, true, true) == NON_ITEM)
     {
-        mpr("Too many items on this level, not dropping the item.");
+        mpr(T_("Too many items on this level, not dropping the item."));
         return false;
     }
 
-    mprf("You drop %s.", quant_name(item, quant_drop, DESC_A).c_str());
+    mprf(T_("You drop %s."), quant_name(item, quant_drop, DESC_A).c_str());
 
     // If you drop an item in as a merfolk, it is below the water line and
     // makes no noise falling.
@@ -2912,7 +2932,7 @@ void drop_last()
     }
 
     if (items_to_drop.empty())
-        mpr("No item to drop.");
+        mpr(T_("No item to drop."));
     else
     {
         you.last_pickup.clear();
@@ -2986,11 +3006,11 @@ static void _maybe_disable_autopickup_for_dropped_items(vector<SelItem> &items)
     }
     if (autopickup_remove_count == 1)
     {
-        mprf("Autopickup disabled for %s.",
+        mprf(T_("Autopickup disabled for %s."),
              pluralise(last_touched_item->name(DESC_DBNAME)).c_str());
     }
     else if (autopickup_remove_count > 1)
-        mprf("Autopickup disabled for %d items.", autopickup_remove_count);
+        mprf(T_("Autopickup disabled for %d items."), autopickup_remove_count);
 }
 
 /**
@@ -4545,11 +4565,11 @@ static void _rune_from_specs(const char* _specs, item_def &item)
             line += make_stringf("[%c] %-10s ", i + 'a', rune_type_name(i));
             if (i % 5 == 4 || i == NUM_RUNE_TYPES - 1)
             {
-                mprf(MSGCH_PROMPT, "%s", line.c_str());
+                mprf(T_("%s"), line.c_str());
                 line.clear();
             }
         }
-        mprf(MSGCH_PROMPT, "Which rune (ESC to exit)? ");
+        mprf(MSGCH_PROMPT, T_("Which rune (ESC to exit)? "));
 
         int keyin = toalower(get_ch());
 
@@ -4756,7 +4776,7 @@ bool get_item_by_name(item_def *item, const char* specs,
                 item->skill = skill;
             else
             {
-                mpr("Sorry, no books on that skill today.");
+                mpr(T_("Sorry, no books on that skill today."));
                 item->skill = SK_FIGHTING; // Was probably that anyway.
             }
             item->skill_points = random_range(2000, 3000);
@@ -4768,7 +4788,7 @@ bool get_item_by_name(item_def *item, const char* specs,
             if (buf[0] != '\0')
             {
                 if (!_book_from_spell(buf, *item))
-                    mpr("That parchment doesn't seem to exist.");
+                    mpr(T_("That parchment doesn't seem to exist."));
             }
         }
         else if (type_wanted == BOOK_RANDART_THEME)
@@ -4991,7 +5011,7 @@ static void _identify_last_item(item_def &item)
     const string class_name = item.base_type == OBJ_JEWELLERY ?
                                     item_base_name(item) :
                                     item_class_name(item.base_type, true);
-    mprf("You have identified the last %s.", class_name.c_str());
+    mprf(T_("You have identified the last %s."), class_name.c_str());
 
     if (in_inventory(item))
     {
@@ -5087,7 +5107,7 @@ void maybe_name_weapon(item_def &item, bool silent)
     string full_name = get_weapon_name(item, true);
 
     // TODO: variant messages? (in the database?)
-    mprf("You welcome %s%s into your grasp.", full_name.c_str(),
+    mprf(T_("You welcome %s%s into your grasp."), full_name.c_str(),
          new_name ? "" : " back");
 }
 
@@ -5096,7 +5116,7 @@ void say_farewell_to_weapon(const item_def &item)
     string name = get_weapon_name(item, false);
 
     // TODO: variant messages? (in the database?)
-    mprf("You whisper farewell to %s.", name.c_str());
+    mprf(T_("You whisper farewell to %s."), name.c_str());
 }
 
 // Returns whether an additional copy of a given item in the player's inventory

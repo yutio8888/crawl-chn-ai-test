@@ -687,7 +687,7 @@ void TextItem::_wrap_text()
     max_cols = max_cols / m_unit_width_pixels;
     max_lines = max_lines / m_unit_height_pixels;
 #endif
-    if (max_cols == 0 || max_lines == 0)
+    if (max_cols <= 0 || max_lines <= 0)
     {
         // escape and set render text to nothing
         m_render_text = "";

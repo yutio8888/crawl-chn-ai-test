@@ -1,0 +1,668 @@
+%%%%
+ablaze with memories monstatus
+
+这个生物暂时获得了施放特定法术的能力。
+一旦受到足够伤害，它将再次失去这些能力。
+%%%%
+about to teleport monstatus
+
+短暂延迟后，这个生物将被传送到当前楼层的其他地方。
+%%%%
+afflicted by rimeblight monstatus
+
+这个生物每回合受到无视AC的寒冷伤害，有时会爆发出寒冰冲击，伤害附近的盟友。
+当它死亡时，可能会将霜疫传播给其他附近的盟友。
+
+自然、恶魔或神圣生物在生命值降到低点时会被立即杀死，并被冰霜之柱取代。
+%%%%
+ally target monstatus
+
+这个生物正被你的一个或多个盟友锁定为目标。
+%%%%
+anguished monstatus
+
+当这个生物造成伤害时，它将受到等同于其所造成伤害量的伤害。
+%%%%
+asleep monstatus
+
+这个生物无法移动、行动、格挡或闪避。任何敌对行为都会唤醒它，
+但对它的近战攻击（即使是来自其他怪物的）会造成更高的伤害。
+
+[[high-tier stab monstatus]]
+%%%%
+berserk monstatus
+
+这个生物的生命值提升50%，近战攻击伤害提升50%，移动和行动速度提升50%。
+除了移动和攻击之外，它们无法执行任何其他动作。
+
+当狂暴消退后，它们将被减速，并在短时间内无法再次狂暴。
+%%%%
+blind monstatus
+
+这个生物无法正常视物。其命中率大幅降低，无法进行借机攻击，
+施放的法术有时可能会瞄准错误的位置。
+
+它也可能会踉跄而行，最终失去对目标的追踪，尤其是智力低下的生物。
+
+[[low-tier stab monstatus]]
+%%%%
+bound in place monstatus
+
+这个生物无法依靠自身力量移动，但仍可以使用传送或被他者强行位移。
+%%%%
+called by a tesseract monstatus
+
+这个怪物是从平行现实召唤而来的。击杀它不会获得经验值，
+但当超立方体被摧毁后，它会被立即送回原来的现实。
+%%%%
+catching its breath monstatus
+
+这个生物最近使用过吐息能力，短时间内无法再次使用。
+%%%%
+catching his breath monstatus
+
+[[catching its breath monstatus]]
+%%%%
+catching her breath monstatus
+
+[[catching its breath monstatus]]
+%%%%
+catching their breath monstatus
+
+[[catching its breath monstatus]]
+%%%%
+chanting recall monstatus
+
+这个生物正在吟唱召回之词。这会在短暂延迟后将楼层中其他地方的
+有智力的盟友召唤到施法者附近，但可以被大多数阻止施法的效果打断。
+%%%%
+charmed monstatus
+
+这个生物被魅惑了，会短暂地为你的目标而战。如果你以任何方式试图伤害它，
+效果会立即消失。
+%%%%
+concentrated venom monstatus
+
+这个生物的天然毒液被强化了，使其通过攻击或吐息武器施加的毒素
+有概率减速和窒息易受影响的目標。
+%%%%
+confused monstatus
+
+这个生物无法格挡或使用法术和能力，会随机踉跄而行，攻击撞到的任何东西——
+无论是友方、敌方，有时甚至是它们自己。
+
+[[low-tier stab monstatus]]
+%%%%
+contaminated monstatus
+
+这个生物已被变形能量污染，每当第三次被施加此类能量时将受到显著伤害。
+%%%%
+constricted by roots monstatus
+
+这个生物正被树根缠绕，降低了它们的闪避并每回合造成一些伤害。
+也可能阻止它们移动，但每次尝试移动都有概率完全打破此效果。
+%%%%
+constricted by zombie hands monstatus
+
+这个生物正被从地底深处伸出的死尸之手缠绕，降低了它们的闪避并每回合
+造成一些伤害。也可能阻止它们移动，但每次尝试移动都有概率完全打破此效果。
+%%%%
+control wrested from you monstatus
+
+这个原本友好的生物被其他生物魅惑了，加入了对方阵营。
+如果你杀死魅惑的来源，它会恢复神智。
+%%%%
+corroded monstatus
+
+这个生物的AC降低了8点。
+%%%%
+covered in liquid flames monstatus
+
+这个生物被粘性火焰覆盖，每回合受到无视AC的火焰伤害。
+移动会甩掉火焰，使其更快熄灭；踏入水中则会完全熄灭火焰。
+%%%%
+covered in magnetic dust monstatus
+
+这个生物无法闪避攻击或隐身。如果它死亡，会留下一团磁化碎片云。
+
+每次施放磁暴时，会向这个生物自动射出一道闪电束。
+%%%%
+covered in terrible wounds monstatus
+
+这个生物被剥皮幽灵施加了幻觉伤口。这些伤口会随着时间流逝消失，
+或者在剥皮幽灵被摧毁时消失。
+%%%%
+covering ground quickly monstatus
+
+这个生物的移动速度略微加快。
+%%%%
+covering ground slowly monstatus
+
+这个生物陷入液化地面中，移动速度减慢，其25%的近战攻击会失手。
+%%%%
+crumbling away monstatus
+
+这个生物将在几回合后自动被摧毁。
+%%%%
+cursed with the promise of agony monstatus
+
+这个生物被诅咒了，在诅咒来源的下一次近战攻击命中后将失去其当前生命值的一半。
+%%%%
+damage-immune at range monstatus
+
+这个生物不会受到任何非相邻来源的伤害（包括云雾，如果其创造者不在相邻位置）。
+%%%%
+dazed monstatus
+
+这个生物暂时无法行动，但任何敌对行为将使其立即恢复神智。
+%%%%
+diminished spells monstatus
+
+这个生物的法术威力降低——造成的伤害更少，更难以克服目标的意志力，
+并在其他方面偶尔变弱。
+%%%%
+dormant monstatus
+
+[[asleep monstatus]]
+%%%%
+doubled in vigour monstatus
+
+这个怪物的当前和最大生命值暂时翻倍。
+%%%%
+empowered by the touch of Beogh monstatus
+
+这个生物被贝奥格赋予了强大的力量来挑战你。它们的近战和远程攻击伤害
+提升33%，生命值增加，施法更频繁。它们还能追踪你，无论你逃到当前楼层
+的任何地方。
+
+一旦挑战结束，它们将失去这些加成。
+%%%%
+encased in ice monstatus
+
+这个生物被瞬间冻结，其移动速度在短时间内大幅降低。
+%%%%
+entangled in a net monstatus
+
+这个生物被网缠住了，大大降低了闪避能力并阻止其格挡。
+任何移动或攻击的尝试都会转而挣扎于网中，最终可能摧毁网。
+施法不受影响。
+
+[[low-tier stab monstatus]]
+%%%%
+entangled in a web monstatus
+
+这个生物被蜘蛛网缠住了，大大降低了闪避能力并阻止其格挡。
+任何移动或攻击的尝试都会转而挣扎于网中，最终可能摧毁网。
+施法不受影响。
+
+[[low-tier stab monstatus]]
+%%%%
+exposed monstatus
+
+这个生物受到所有非攻击来源的伤害增加（毒素除外），非攻击投射物
+对其更精准，其意志力也略微降低。
+%%%%
+extremely poisoned monstatus
+
+这个生物每回合受到毒素伤害，且无法被进一步中毒。
+%%%%
+fast monstatus
+
+这个生物的行动和移动速度提升50%。
+%%%%
+feeble figment monstatus
+
+这个生物只是另一个生物的脆弱复制体。其生命值减少66%，攻击伤害减少33%，
+法术威力显著减弱。
+%%%%
+flame-wreathed monstatus
+
+这个生物被伊格尼斯的火焰强化了。其近战攻击造成额外火焰伤害，移动速度提升33%，
+AC和火焰抗性提高。
+%%%%
+fleeing monstatus
+
+这个生物因恐惧而逃跑，每回合都会尝试远离恐惧来源。除移动外，
+它只能施放认为有助于逃跑的法术，比如闪烁。
+
+如果被直接伤害或被地形逼入绝境，它会回头再次战斗。
+%%%%
+fragile as glass monstatus
+
+这个生物受到的所有来源伤害增加50%。
+%%%%
+frenzied and wild monstatus
+
+这个生物近战攻击伤害提升50%，移动和攻击速度提升50%。它无法施法，
+每回合会优先攻击最近的生物，无论对方是友方还是敌方。
+%%%%
+fully charged monstatus
+
+这个生物已积攒了施法所需的全部能量。
+%%%%
+grapneled monstatus
+
+这个生物被动能抓钩击中了。来自抓钩来源的下一次近战攻击将必定命中
+并造成略微增加的伤害。
+%%%%
+heavily contaminated monstatus
+
+[[contaminated monstatus]]
+%%%%
+heavily drained monstatus
+
+这个生物被严重削弱，其近战攻击命中率降低，法术和特殊攻击属性威力降低，
+并且更容易受到许多状态效果的影响。
+%%%%
+idealised monstatus
+
+这个生物闪耀着完美自我的光辉。其近战攻击伤害提升100%，拥有额外的AC，
+施法威力大幅增强。
+%%%%
+incited by Gozag monstatus
+
+这个生物因戈扎格·伊姆·萨戈兹之怒而被激发至极高的速度。
+它们的加速或狂暴状态是永久的，不会随时间或通过刻意的魔法干预而消退。
+%%%%
+indifferent monstatus
+
+这个生物既不敌对也不友好，如果碰到任何生物，无论对方的立场如何都可能攻击。
+%%%%
+infested monstatus
+
+这个生物被一只死亡圣甲虫寄生，虫将在其死后从尸体中钻出。
+%%%%
+inner flame monstatus
+
+每当这个生物受到伤害时，其身下会短暂出现一团火焰云。
+当它死亡时，会爆发出猛烈的火焰爆炸，伤害附近的一切并留下更多火焰云。
+
+巨型生物死亡时会引发更大的爆炸。
+%%%%
+inspiring fear monstatus
+
+你当前对这个生物感到极度恐惧，无法故意靠近它，你对其33%的近战攻击会失败。
+
+如果你失去这个生物的视野，此效果会消失。
+%%%%
+interlaced with chaos monstatus
+
+这个生物的近战攻击可能会造成随机元素的额外伤害，或引发各种不可抵抗的状态效果。
+%%%%
+lashing out in frustration monstatus
+
+这个生物被魔法激怒了，每回合被迫攻击一个随机的相邻位置，而不是执行其他动作。
+它更可能攻击有生物的位置而非空格，但会同样毫不犹豫地攻击自己的盟友和敌人。
+%%%%
+lightly drained monstatus
+
+这个生物被轻度削弱，其近战攻击命中率略有下降，法术和特殊攻击属性威力有所降低，
+并且稍微更容易受到许多状态效果的影响。
+%%%%
+lost in madness monstatus
+
+这个生物被泽恩的力量逼疯了。它将再也不会使用法术或能力，会随机踉跄而行，
+攻击撞到的任何东西——无论是友方、敌方，有时甚至是它们自己。
+%%%%
+magic disrupted monstatus
+
+这个生物的法术和魔法能力已被打断，使用时有概率失败。
+失败概率取决于此效果的剩余持续时间。
+%%%%
+magic-sapped monstatus
+
+这个生物的魔法通道被污染了。每当它施放法术时，其魔法会被严重打断，
+使其后续施放的法术很可能失败。
+%%%%
+marked with the sign of ruin monstatus
+
+这个生物被诅咒为注定的衰败与毁灭。每当其受到近战攻击伤害时，
+将被严重削弱，并且被减速、虚弱或致盲。
+%%%%
+mesmerising monstatus
+
+这个生物已经迷惑了你，使你无法自愿地远离它。
+
+如果你失去这个生物的视野，此效果会消失。
+%%%%
+minion monstatus
+
+这个生物是由魔法创造的，一旦其创造者死亡就会消失。
+%%%%
+missing a shadow monstatus
+
+这个生物的影子被夺走了，它再也无法受到无光傀儡的影响。
+%%%%
+misshapen and mutated monstatus
+
+这个生物的AC降低了8点，其命中率、法术威力、武器特效伤害和意志力均中度降低。
+%%%%
+more vulnerable to fire monstatus
+
+这个生物的火焰抗性降低了一级。
+%%%%
+more vulnerable to poison monstatus
+
+这个生物的毒素抗性降低了一级。
+%%%%
+mute monstatus
+
+这个生物被泽恩的力量永久地沉默了。这将阻止该生物发出的一切噪音，
+包括大多数生物施法所需的发声。
+%%%%
+not watching you monstatus
+
+这个生物被其他事物短暂地分散了注意力。
+
+[[low-tier stab monstatus]]
+%%%%
+paralysed monstatus
+
+这个生物无法移动、行动、格挡或闪避攻击。
+
+[[high-tier stab monstatus]]
+%%%%
+paralysed with fear monstatus
+
+[[paralysed monstatus]]
+%%%%
+partially charged monstatus
+
+这个生物已积攒了施放法术或激活能力所需的部分能量。
+%%%%
+peaceful monstatus
+
+这个生物永远不会攻击你，可能会攻击对你敌对的生物，但既不会跟随你，
+也不会服从任何直接指令。
+%%%%
+petrifying slowly monstatus
+
+这个生物很快就会完全石化。其移动和行动速度减慢50%，几乎无法闪避攻击，
+但也受到33%的伤害减免。
+
+[[low-tier stab monstatus]]
+%%%%
+petrified monstatus
+
+这个生物无法移动、行动、格挡或闪避攻击。由于变成了石头，它受到的伤害
+减少50%，免疫负能量和毒素，但变得容易被瓦解伤害。
+
+[[high-tier stab monstatus]]
+%%%%
+poisoned monstatus
+
+这个生物每回合受到毒素伤害。
+%%%%
+radiating silence monstatus
+
+这个生物被一圈不自然的沉默力场环绕，力场内消除所有噪音，
+阻止许多生物（包括你）阅读卷轴、施法或祈求神助所需的发声。
+
+如果此效果是由法术引起的，力场范围会随时间缩小。
+%%%%
+radiating toxic energy monstatus
+
+这个生物闪耀着奥尔格雷布之毒辐射的光芒，将在数回合内持续对视野中的所有
+敌人造成毒素伤害。
+%%%%
+ready to become your apostle monstatus
+
+这个生物在光荣的战斗中被击败，可以通过能力菜单招募为你的使徒。
+%%%%
+ready to howl monstatus
+
+这个生物尚未对你施加湮灭嚎叫，可能会尝试这样做。
+%%%%
+ready to sunder monstatus
+
+这个生物的崩裂武器已完全充能，其下一次攻击将更加精准、造成大幅增加的伤害、
+并且劈砍范围扩大。如果它移动了，此效果将消失。
+%%%%
+reflecting blocked projectiles monstatus
+
+这个生物将任何被格挡的投射物反射回其原始来源。
+%%%%
+reflecting injuries monstatus
+
+每当这个生物受到伤害时，它会将伤害量的三分之二反射回造成伤害的来源。
+%%%%
+regenerating monstatus
+
+这个生物以与其最大生命值成比例的大幅提高的速度恢复生命值。
+%%%%
+repelling missiles monstatus
+
+这个生物在闪避投射物（无论是物理还是魔法）时拥有+15 EV。
+%%%%
+retreating monstatus
+
+这个生物被命令向指定方向撤退，在获得新指示或行进足够距离之前，
+它不会攻击或回到你身边。
+%%%%
+rolling monstatus
+
+这个生物蜷成了一个球，移动速度和近战伤害提升100%，
+直到下一次攻击某物（或无法移动为止）。
+%%%%
+sharing its pain monstatus
+
+这个生物将所受伤害的一部分分摊给附近的盟友，离它越近的盟友承受越多。
+%%%%
+sharing his pain monstatus
+
+[[sharing its pain monstatus]]
+%%%%
+sharing her pain monstatus
+
+[[sharing its pain monstatus]]
+%%%%
+sharing their pain monstatus
+
+[[sharing its pain monstatus]]
+%%%%
+sheltered from injuries monstatus
+
+这个生物受到的一半伤害被转移到保护它的盟友身上。
+%%%%
+sick monstatus
+
+这个生物生病了，无法自然恢复生命值。
+%%%%
+silenced monstatus
+
+这个生物被一片不自然的沉默力场吞没了，阻止其发出任何噪音，
+包括大多数生物施法所需的发声。
+%%%%
+skewered by barbs monstatus
+
+这个生物在移动时都会受到少量伤害。
+%%%%
+slightly transparent monstatus
+
+这个生物通常是隐形的，但你的魔法视力让你仍然可以看到它。
+这对你没有任何影响，但你的盟友可能无法像你一样看到它。
+%%%%
+slow monstatus
+
+这个生物以正常速度的66%移动和行动。
+%%%%
+softly glowing monstatus
+
+这个生物被光环勾勒出来，更容易被击中，如果是隐形状态也会暴露出来。
+%%%%
+soul bound monstatus
+
+这个生物的灵魂被束缚在寒冰中。当它死亡时，一个其原形态的拟像将从其
+所在位置升起。
+%%%%
+soul-gripped monstatus
+
+这个生物的灵魂将在死后被迫为你服务，但如果它超出你的视线范围
+超过短暂的一瞬，你将失去对它的掌控。
+%%%%
+soul-splintered monstatus
+
+这个生物的一部分灵魂被提取成了灵魂光球，在光球重新与它结合之前，
+无法再次使用此法术。
+%%%%
+spells empowered monstatus
+
+这个生物的法术被增强了，施法频率也会增加。
+%%%%
+spells diminished monstatus
+
+这个生物的法术威力显著减弱。
+%%%%
+stilling the winds monstatus
+
+这个生物正在阻止当前楼层产生任何云雾。
+%%%%
+stampeding monstatus
+
+这个生物正以惊人的速度朝单一方向移动。任何被撞到的敌人将被向后推开，
+受到50%额外伤害且命中率提升。
+%%%%
+strong monstatus
+
+这个生物的近战攻击伤害提升50%。
+%%%%
+strong-willed monstatus
+
+这个生物的意志力提升了2档。
+%%%%
+stupefied monstatus
+
+这个生物被泽恩的力量震慑而无法行动。
+
+[[high-tier stab monstatus]]
+%%%%
+surrounded by a freezing vortex monstatus
+
+这个生物是毁灭性极地漩涡的中心。
+%%%%
+surrounded by acidic fog monstatus
+
+这个生物周围环绕着一圈酸性雾气云。
+%%%%
+surrounded by chaotic energy monstatus
+
+这个生物周围环绕着一圈沸腾的混沌云。
+%%%%
+surrounded by flames monstatus
+
+这个生物周围环绕着一圈火焰云。
+%%%%
+surrounded by fog monstatus
+
+这个生物周围环绕着一圈紫色烟雾。
+%%%%
+surrounded by foul miasma monstatus
+
+这个生物周围环绕着一圈恶臭瘴气。
+%%%%
+surrounded by freezing clouds monstatus
+
+这个生物周围环绕着一圈冰冻云。
+%%%%
+surrounded by mutagenic energy monstatus
+
+这个生物周围环绕着一圈变异雾气。
+%%%%
+surrounded by negative energy monstatus
+
+这个生物周围环绕着一圈极度痛苦的负能量云。
+%%%%
+surrounded by restless winds monstatus
+
+这个生物最近施放了极地漩涡，短时间内无法再次施放。
+%%%%
+surrounded by thunder monstatus
+
+这个生物周围环绕着一圈雷电云。
+%%%%
+target of orcish vengeance monstatus
+
+这个生物参与了杀害你的一位使徒。击败所有兽人复仇目标将显著加快
+贝奥格复活你使徒的时间。
+%%%%
+targeted by your dimensional bullseye monstatus
+
+每当你对另一个生物进行远程攻击时，投射物的一个副本将在其飞行结束时
+被传送到这个生物身上。
+%%%%
+tempered monstatus
+
+这个生物的近战攻击伤害提升25%，命中率略微提高，法术和能力被轻度增强。
+%%%%
+touched by paradox monstatus
+
+这个生物在空间中失去了锚定，使其能够将多重攻击作为天生能力使用。
+每当它这样做时，有33%的概率也会闪烁到附近随机位置。
+%%%%
+unable to see you monstatus
+
+这个生物因为你隐身而看不到你。它对你的命中率大幅降低，无法进行借机攻击，
+施放的法术有时可能会瞄准错误的位置。
+
+它也可能会踉跄而行，最终失去对你的追踪，尤其是智力低下的生物。
+
+[[low-tier stab monstatus]]
+%%%%
+unable to translocate monstatus
+
+这个生物无法闪烁或传送。
+%%%%
+unaffected by silence monstatus
+
+尽管被不自然的沉默力场吞没，这个生物的魔法不需要发声，因此不受影响。
+%%%%
+unrewarding monstatus
+
+这个生物在被杀死时不提供经验值或虔诚值。
+%%%%
+untethered in space monstatus
+
+每回合，这个生物会向远离你的方向闪烁一小段距离，并受到少量伤害。
+%%%%
+unusually agile monstatus
+
+这个生物的闪避略微提升。
+%%%%
+unusually resistant monstatus
+
+这个生物对火焰、寒冷、毒素、电击和腐蚀的抗性都提升了一级。
+%%%%
+very poisoned monstatus
+
+这个生物中毒了，每回合将受到伤害。
+%%%%
+unable to breathe monstatus
+
+这个生物无法呼吸，不能施法或祈求神助。每回合还会受到少量窒息伤害。
+%%%%
+weak monstatus
+
+这个生物的近战攻击伤害降低33%。
+%%%%
+weak-willed monstatus
+
+这个生物的意志力降低了一半。
+%%%%
+winding a clockwork bee monstatus
+
+这个生物正在准备发射一只发条蜜蜂，必须专注于这个任务数回合。
+大多数阻止该生物施法的效果也会中断这个进程。
+%%%%
+withering away monstatus
+
+这个生物将在几回合后死亡。
+%%%%
+low-tier stab monstatus
+
+<blue>你对该生物进行的近战攻击有概率（与你的潜行和武器技能成正比）使其措手不及，
+造成额外伤害，使用短剑时效果尤佳。</blue>
+%%%%
+high-tier stab monstatus
+
+<blue>你对该生物进行的近战攻击将造成大幅增加的伤害，使用短剑时效果尤佳。</blue>
+%%%%

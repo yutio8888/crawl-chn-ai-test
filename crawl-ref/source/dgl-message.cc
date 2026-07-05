@@ -86,7 +86,7 @@ static void _read_each_message()
 
             if (say_got_msg)
             {
-                mprf(MSGCH_DGL_MESSAGE, "Your messages:");
+                mprf(MSGCH_DGL_MESSAGE, T_("Your messages:"));
                 say_got_msg = false;
             }
 
@@ -125,7 +125,7 @@ void read_messages()
 static void _announce_messages()
 {
     // XXX: We could do a NetHack-like mail daemon here at some point.
-    mprf(MSGCH_DGL_MESSAGE, "Beep! Your pager goes off! Use _ to check your messages.");
+    mprf(MSGCH_DGL_MESSAGE, T_("Beep! Your pager goes off! Use _ to check your messages."));
 }
 
 void check_messages()

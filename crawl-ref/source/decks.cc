@@ -44,6 +44,7 @@
 #include "mutation.h"
 #include "notes.h"
 #include "output.h"
+#include "options.h"
 #include "prompt.h"
 #include "random.h"
 #include "religion.h"
@@ -149,36 +150,36 @@ const char* card_name(card_type card)
 {
     switch (card)
     {
-    case CARD_VELOCITY:        return "Velocity";
-    case CARD_EXILE:           return "Exile";
-    case CARD_ELIXIR:          return "the Elixir";
-    case CARD_TOMB:            return "the Tomb";
-    case CARD_WILD_MAGIC:      return "Wild Magic";
-    case CARD_ELEMENTS:        return "the Elements";
-    case CARD_SUMMON_DEMON:    return "the Pentagram";
-    case CARD_SUMMON_WEAPON:   return "the Dance";
-    case CARD_SUMMON_BEE:      return "the Swarm";
-    case CARD_RANGERS:         return "the Rangers";
-    case CARD_VITRIOL:         return "Vitriol";
-    case CARD_CLOUD:           return "the Cloud";
-    case CARD_STORM:           return "the Storm";
-    case CARD_PAIN:            return "Pain";
-    case CARD_TORMENT:         return "Torment";
-    case CARD_WRATH:           return "Wrath";
-    case CARD_WRAITH:          return "the Wraith";
-    case CARD_SWINE:           return "the Swine";
-    case CARD_ORB:             return "the Orb";
-    case CARD_ILLUSION:        return "the Illusion";
-    case CARD_DEGEN:           return "Degeneration";
+    case CARD_VELOCITY:        return T_("Velocity");
+    case CARD_EXILE:           return T_("Exile");
+    case CARD_ELIXIR:          return T_("the Elixir");
+    case CARD_TOMB:            return T_("the Tomb");
+    case CARD_WILD_MAGIC:      return T_("Wild Magic");
+    case CARD_ELEMENTS:        return T_("the Elements");
+    case CARD_SUMMON_DEMON:    return T_("the Pentagram");
+    case CARD_SUMMON_WEAPON:   return T_("the Dance");
+    case CARD_SUMMON_BEE:      return T_("the Swarm");
+    case CARD_RANGERS:         return T_("the Rangers");
+    case CARD_VITRIOL:         return T_("Vitriol");
+    case CARD_CLOUD:           return T_("the Cloud");
+    case CARD_STORM:           return T_("the Storm");
+    case CARD_PAIN:            return T_("Pain");
+    case CARD_TORMENT:         return T_("Torment");
+    case CARD_WRATH:           return T_("Wrath");
+    case CARD_WRAITH:          return T_("the Wraith");
+    case CARD_SWINE:           return T_("the Swine");
+    case CARD_ORB:             return T_("the Orb");
+    case CARD_ILLUSION:        return T_("the Illusion");
+    case CARD_DEGEN:           return T_("Degeneration");
 
 #if TAG_MAJOR_VERSION == 34
     case CARD_FAMINE_REMOVED:
     case CARD_SHAFT_REMOVED:
     case CARD_STAIRS_REMOVED:
 #endif
-    case NUM_CARDS:            return "a buggy card";
+    case NUM_CARDS:            return T_("a buggy card");
     }
-    return "a very buggy card";
+    return T_("a very buggy card");
 }
 
 bool card_is_removed(card_type card)
@@ -318,7 +319,7 @@ bool gift_cards()
             deck_names.push_back(deck_data ? deck_data->name : "bugginess");
         }
         mprf(MSGCH_GOD, you.religion,
-             "%s goes to deal, but finds you have enough %s cards.",
+             T_("%s goes to deal, but finds you have enough %s cards."),
              god_name(you.religion).c_str(),
              join_strings(deck_names.begin(), deck_names.end(), " and ").c_str());
     }
@@ -343,8 +344,8 @@ string deck_summary()
         const string name = deck_data ? deck_data->name : "bugginess";
         if (cards)
         {
-            stats.push_back(make_stringf("%d %s card%s", cards,
-               name.c_str(), cards == 1 ? "" : "s"));
+            stats.push_back(make_stringf(T_("%d %s card%s"), cards,
+               name.c_str(), cards == 1 ? T_("") : T_("s")));
         }
     }
     return comma_separated_line(stats.begin(), stats.end());
@@ -492,13 +493,13 @@ string deck_description(deck_type deck)
         desc << "\n";
 
         if (cards > 1)
-            desc << make_stringf("It currently has %d cards ", cards);
+            desc << make_stringf(T_("It currently has %d cards "), cards);
         else if (cards == 1)
             desc << "It currently has 1 card ";
         else
             desc << "It is currently empty ";
 
-        desc << make_stringf("and can contain up to %d cards.",
+        desc << make_stringf(T_("and can contain up to %d cards."),
                              all_decks[deck].deck_max);
         desc << "\n";
     }
@@ -537,8 +538,8 @@ static deck_type _choose_deck(const string title = "Draw")
             | MF_ARROWS_SELECT | MF_INIT_HOVER);
     {
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry(make_stringf("%s which deck?        "
-                                    "Cards available", title.c_str()),
+            new ToggleableMenuEntry(make_stringf(T_("%s which deck?        "
+                                    "Cards available"), title.c_str()),
                                     "Describe which deck?    "
                                     "Cards available",
                                     MEL_TITLE);
@@ -613,7 +614,7 @@ static void _evoke_deck(deck_type deck, bool dealt = false)
 {
     ASSERT(deck_cards(deck) > 0);
 
-    mprf("You %s a card...", dealt ? "deal" : "draw");
+    mprf(T_("You %s a card..."), dealt ? T_("deal") : T_("draw"));
 
     if (deck == DECK_STACK)
     {
@@ -637,7 +638,7 @@ bool deck_draw(deck_type deck)
 {
     if (!deck_cards(deck))
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return false;
     }
 
@@ -658,7 +659,7 @@ spret deck_stack(bool fail)
     for (int i = FIRST_PLAYER_DECK; i <= LAST_PLAYER_DECK; ++i)
         total_cards += deck_cards((deck_type) i);
 
-    if (deck_cards(DECK_STACK) && !yesno("Replace your current stack?",
+    if (deck_cards(DECK_STACK) && !yesno(T_("Replace your current stack?"),
                                           false, 0))
     {
         canned_msg(MSG_OK);
@@ -667,12 +668,12 @@ spret deck_stack(bool fail)
 
     if (!total_cards)
     {
-        mpr("You are out of cards!");
+        mpr(T_("You are out of cards!"));
         return spret::abort;
     }
 
-    if (total_cards < 5 && !yesno("You have fewer than five cards, "
-                                  "stack them anyway?", false, 0))
+    if (total_cards < 5 && !yesno(T_("You have fewer than five cards, "
+                                  "stack them anyway?"), false, 0))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -842,7 +843,7 @@ bool stack_five(int to_stack)
     }
 
     StackFiveMenu menu(stack);
-    MenuEntry *const title = new MenuEntry("Select two cards to swap them:", MEL_TITLE);
+    MenuEntry *const title = new MenuEntry(T_("Select two cards to swap them:"), MEL_TITLE);
     menu.set_title(title);
     for (unsigned int i = 0; i < stack.size(); i++)
     {
@@ -879,7 +880,7 @@ spret deck_deal(bool fail)
 
     if (!num_cards)
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return spret::abort;
     }
 
@@ -911,12 +912,12 @@ spret deck_triple_draw(bool fail)
 
     if (!num_cards)
     {
-        mpr("That deck is empty!");
+        mpr(T_("That deck is empty!"));
         return spret::abort;
     }
 
-    if (num_cards < 3 && !yesno("There's fewer than three cards, "
-                                "still triple draw?", false, 0))
+    if (num_cards < 3 && !yesno(T_("There's fewer than three cards, "
+                                "still triple draw?"), false, 0))
     {
         canned_msg(MSG_OK);
         return spret::abort;
@@ -927,7 +928,7 @@ spret deck_triple_draw(bool fail)
     if (num_cards == 1)
     {
         // Only one card to draw, so just draw it.
-        mpr("There's only one card left!");
+        mpr(T_("There's only one card left!"));
         _evoke_deck(choice);
         return spret::success;
     }
@@ -956,7 +957,7 @@ bool draw_three()
     {
         if (need_prompt_redraw)
         {
-            mpr("You draw... (choose one card, ? for their descriptions)");
+            mpr(T_("You draw... (choose one card, ? for their descriptions)"));
             for (int i = 0; i < draws.size(); ++i)
             {
                 msg::streams(MSGCH_PROMPT)
@@ -997,7 +998,7 @@ void draw_from_deck_of_punishment(bool deal)
 {
     card_type card = _random_card(DECK_OF_PUNISHMENT);
 
-    mprf("You %s a card...", deal ? "deal" : "draw");
+    mprf(T_("You %s a card..."), deal ? T_("deal") : T_("draw"));
     card_effect(card, deal, true);
 }
 
@@ -1055,7 +1056,7 @@ static void _velocity_card(int power)
                   }
 
                   if (did_haste)
-                      simple_monster_message(mon, " seems to speed up.");
+                      simple_monster_message(mon, T_(" seems to speed up."));
               }
               return affected;
           })
@@ -1104,10 +1105,10 @@ static void _damaging_card(card_type card, int power,
                            bool dealt = false)
 {
     const int power_level = _get_power_level(power);
-    const char *participle = dealt ? "dealt" : "drawn";
+    const char *participle = dealt ? T_("dealt") : T_("drawn");
 
     bool done_prompt = false;
-    string prompt = make_stringf("You have %s %s.", participle,
+    string prompt = make_stringf(T_("You have %s %s."), participle,
                                  card_name(card));
 
     dist target;
@@ -1123,7 +1124,7 @@ static void _damaging_card(card_type card, int power,
         {
             done_prompt = true;
             mpr(prompt);
-            mpr("You radiate a wave of entropy!");
+            mpr(T_("You radiate a wave of entropy!"));
             apply_visible_monsters([](monster& mons)
             {
                 return !mons.wont_attack()
@@ -1142,7 +1143,7 @@ static void _damaging_card(card_type card, int power,
     case CARD_PAIN:
         if (power_level == 2)
         {
-            mpr("You reveal a symbol of torment!");
+            mpr(T_("You reveal a symbol of torment!"));
             torment(&you, TORMENT_CARD_PAIN, you.pos());
         }
 
@@ -1162,12 +1163,12 @@ static void _damaging_card(card_type card, int power,
         args.top_prompt = prompt;
 
     // Confirm aborts as they waste the card.
-    prompt = make_stringf("Aiming: %s", card_name(card));
+    prompt = make_stringf(T_("Aiming: %s"), card_name(card));
     while (!(spell_direction(target, beam, &args)
             && player_tracer(ZAP_SEARING_RAY, power/6, beam)))
     {
         if (crawl_state.seen_hups
-            || yesno("Really abort (and waste the card)?", false, 0))
+            || yesno(T_("Really abort (and waste the card)?"), false, 0))
         {
             canned_msg(MSG_OK);
             return;
@@ -1194,7 +1195,7 @@ static void _elixir_card(int power)
     int power_level = _get_power_level(power);
 
     you.set_duration(DUR_ELIXIR, 1 + 3 * power_level + random2(3));
-    mpr("You begin rapidly regenerating health and magic.");
+    mpr(T_("You begin rapidly regenerating health and magic."));
 }
 
 // Special case for *your* god, maybe?
@@ -1209,7 +1210,7 @@ static void _godly_wrath()
             return; // Stop once we find a god willing to punish the player.
     }
 
-    mpr("You somehow manage to escape divine attention...");
+    mpr(T_("You somehow manage to escape divine attention..."));
 }
 
 static void _summon_demon_card(int power)
@@ -1246,13 +1247,13 @@ static void _summon_demon_card(int power)
                                   you.pos(), MHITYOU, MG_AUTOFOE)
                         .set_summoned(&you, 0, summ_dur(5 - power_level))))
     {
-        mpr("You see a puff of smoke.");
+        mpr(T_("You see a puff of smoke."));
     }
     else if (hostile
              && mons_class_flag(dct, M_INVIS)
              && !you.can_see_invisible())
     {
-        mpr("You sense the presence of something unfriendly.");
+        mpr(T_("You sense the presence of something unfriendly."));
     }
 
     _friendly(dct2, 5 - power_level);
@@ -1292,7 +1293,7 @@ static void _summon_dancing_weapon(int power)
 
     if (!mon)
     {
-        mpr("You see a puff of smoke.");
+        mpr(T_("You see a puff of smoke."));
         return;
     }
 
@@ -1444,7 +1445,7 @@ static void _cloud_card(int power)
 
     if (something_happened)
     {
-        mpr("Clouds appear around your foes!");
+        mpr(T_("Clouds appear around your foes!"));
 
         // Make the player not be immediately affected by clouds that may have
         // been created beneath them until they act again.
@@ -1497,7 +1498,7 @@ static void _storm_card(int power)
         beam.glyph             = dchar_glyph(DCHAR_FIRED_BURST);
         beam.name              = "electrical discharge";
         beam.aux_source        = "the storm";
-        beam.explode_noise_msg = "You hear a clap of thunder!";
+        beam.explode_noise_msg = T_("You hear a clap of thunder!");
         beam.real_flavour      = beam.flavour;
         beam.colour            = LIGHTCYAN;
         beam.source_id         = MID_PLAYER;
@@ -1514,14 +1515,14 @@ static void _storm_card(int power)
     // Thunder comes after the animation runs.
     if (targets.size() > 0)
     {
-        vector<string> thunder_adjectives = { "mighty",
-                                              "violent",
-                                              "cataclysmic" };
-        mprf("You %s %s%s peal%s of thunder!",
-              heard ? "hear" : "feel",
-              targets.size() > 1 ? "" : "a ",
+        vector<string> thunder_adjectives = { T_("mighty"),
+                                              T_("violent"),
+                                              T_("cataclysmic") };
+        mprf_p(T_("You %s %s%s peal%s of thunder!"),
+              heard ? T_("hear") : T_("feel"),
+              targets.size() > 1 ? "" : T_("a "),
               thunder_adjectives[power_level].c_str(),
-              targets.size() > 1 ? "s" : "");
+              targets.size() > 1 ? T_("s") : "");
     }
 }
 
@@ -1568,7 +1569,7 @@ static void _degeneration_card(int power)
                {
                    mons.daze(2 + 3 * power_level);
                    simple_monster_message(mons,
-                                          " is dazed by the mutagenic energy.");
+                                          T_(" is dazed by the mutagenic energy."));
                }
                return true;
            }))
@@ -1618,7 +1619,7 @@ static void _wild_magic_card(int power)
         for (int i = 0; i < num_affected; ++i)
             mp += random2(5);
 
-        mpr("You feel a surge of magic.");
+        mpr(T_("You feel a surge of magic."));
         if (mp && you.magic_points < you.max_magic_points)
         {
             inc_mp(mp);
@@ -1659,7 +1660,7 @@ void card_effect(card_type which_card,
                  bool dealt,
                  bool punishment, bool tell_card)
 {
-    const char *participle = dealt ? "dealt" : "drawn";
+    const char *participle = dealt ? T_("dealt") : T_("drawn");
     const int power = _card_power(punishment);
 
     dprf("Card power: %d", power);
@@ -1672,7 +1673,7 @@ void card_effect(card_type which_card,
             && which_card != CARD_PAIN
             && which_card != CARD_ORB)
         {
-            mprf("You have %s %s.", participle, card_name(which_card));
+            mprf(T_("You have %s %s."), participle, card_name(which_card));
         }
     }
 
@@ -1709,7 +1710,7 @@ void card_effect(card_type which_card,
         if (transform(roll_dice(10, 10), transformation::pig, true))
             you.transform_uncancellable = true;
         else
-            mpr("You feel a momentary urge to oink.");
+            mpr(T_("You feel a momentary urge to oink."));
         break;
 
 #if TAG_MAJOR_VERSION == 34
@@ -1719,7 +1720,7 @@ void card_effect(card_type which_card,
 #endif
     case NUM_CARDS:
         // The compiler will complain if any card remains unhandled.
-        mprf("You have %s a buggy card!", participle);
+        mprf(T_("You have %s a buggy card!"), participle);
         break;
     }
 }

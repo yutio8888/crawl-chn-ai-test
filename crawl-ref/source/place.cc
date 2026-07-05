@@ -8,7 +8,9 @@
 #include "place.h"
 
 #include "branch.h"
+#include "database.h"
 #include "libutil.h"
+#include "options.h"
 #include "player.h"
 
 // Prepositional form of branch level name. For example, "in the
@@ -18,8 +20,12 @@ string prep_branch_level_name(level_id id)
     string place = id.describe(true, true);
     if (!place.empty() && place != "Pandemonium")
         place[0] = tolower_safe(place[0]);
-    return place.find("level") == 0 ? "on " + place
-                                    : "in " + place;
+
+    if (Options.language == lang_t::ZH)
+        return T_("在") + place;
+
+    return place.find("level") == 0 ? T_("on ") + place
+                                    : T_("in ") + place;
 }
 
 bool single_level_branch(branch_type branch)

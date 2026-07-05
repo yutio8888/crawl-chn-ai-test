@@ -8,6 +8,7 @@
 #include "describe-spells.h"
 
 #include "colour.h"
+#include "database.h"
 #include "delay.h"
 #include "describe.h"
 #include "english.h"
@@ -20,6 +21,8 @@
 #include "mon-cast.h"
 #include "mon-explode.h" // ball_lightning_damage
 #include "mon-project.h" // iood_damage
+#include "options.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "shopping.h"
 #include "spl-book.h"
@@ -83,12 +86,12 @@ static const char* _abil_type_vuln_core(bool silencable, bool antimagicable)
     // No one gets confused by the rare spells that are hit by silence
     // but not antimagic, AFAIK. Let's keep it simple.
     if (!antimagicable)
-        return "silence";
+        return T_("silence");
     if (silencable)
-        return "silence and antimagic";
+        return T_("silence and antimagic");
     // Explicitly clarify about spells that are hit by antimagic but
     // NOT silence, since those confuse players nonstop.
-    return "antimagic (but not silence)";
+    return T_("antimagic (but not silence)");
 }
 
 /**
@@ -107,7 +110,7 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
     const bool antimagicable = type == MON_SPELL_WIZARD
                                || type == MON_SPELL_MAGICAL;
     ASSERT(silencable || antimagicable);
-    return make_stringf(", which are affected by %s",
+    return make_stringf(T_(", vulnerable to %s"),
                         _abil_type_vuln_core(silencable, antimagicable));
 }
 
@@ -123,27 +126,24 @@ static string _ability_type_vulnerabilities(mon_spell_slot_flag type)
 static string _booktype_header(mon_spell_slot_flag type, bool pronoun_plural)
 {
     if (type == MON_SPELL_EVOKE)
-    {
-        return make_stringf("%s the following wand spells:",
-                            conjugate_verb("possess", pronoun_plural).c_str());
-    }
+        return T_("possess the following wand spells:");
 
     const string vulnerabilities = _ability_type_vulnerabilities(type);
 
     if (type == MON_SPELL_WIZARD)
     {
-        return make_stringf("%s mastered %s%s:",
-                            conjugate_verb("have", pronoun_plural).c_str(),
-                            "the following spells",
-                            vulnerabilities.c_str());
+        return make_stringf_p(T_("%1$s mastered %2$s%3$s:"),
+                              conjugate_verb("have", pronoun_plural).c_str(),
+                              "the following spells",
+                              vulnerabilities.c_str());
     }
 
     const string descriptor = _ability_type_descriptor(type);
 
-    return make_stringf("%s the following %s abilities%s:",
-                        conjugate_verb("possess", pronoun_plural).c_str(),
-                        descriptor.c_str(),
-                        vulnerabilities.c_str());
+    return make_stringf_p(T_("%1$s the following %2$s abilities%3$s:"),
+                          conjugate_verb("possess", pronoun_plural).c_str(),
+                          T_(descriptor.c_str()),
+                          vulnerabilities.c_str());
 }
 
 /**
@@ -166,7 +166,8 @@ static void _monster_spellbooks(const monster_info &mi,
 
     spellbook_contents output_book;
 
-    output_book.label += make_stringf("\n%s %s",
+    output_book.label += make_stringf(
+        T_("\n%s %s"),
         uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)).c_str(),
         _booktype_header(type, mi.pronoun_plurality()).c_str());
 
@@ -205,7 +206,8 @@ static void _monster_wand_spellbook(const monster_info &mi,
 
     spellbook_contents book;
 
-    book.label += make_stringf("\n%s %s",
+    book.label += make_stringf(
+        T_("\n%s %s"),
         uppercase_first(mi.pronoun(PRONOUN_SUBJECTIVE)).c_str(),
         _booktype_header(MON_SPELL_EVOKE, mi.pronoun_plurality()).c_str());
 
@@ -330,7 +332,7 @@ static string _spell_schools(spell_type spell)
             continue;
 
         if (!schools.empty())
-            schools += "/";
+            schools += T_("/");
         schools += spelltype_long_name(school_flag);
     }
 
@@ -379,7 +381,7 @@ static string _range_string(const spell_type &spell, const monster_info *mon_own
                     && grid_distance(you.pos(), mon_owner->pos) <= range
                     && grid_distance(you.pos(), mon_owner->pos) >= minrange;
     const char *range_col = in_range ? "lightred" : "lightgray";
-    return make_stringf("(<%s>%d%s</%s>)", range_col, range,
+    return make_stringf(T_("(<%s>%d%s</%s>)"), range_col, range,
                                            minrange > 0 ? "*" : "",
                                            range_col);
 }
@@ -497,9 +499,9 @@ static string _describe_living_spells(const monster_info &mon_owner)
     const spell_type spell = living_spell_type_for(mon_owner.type);
     const int n = living_spell_count(spell, false);
     const string base_desc = _effect_string(spell, &mon_owner);
-    const string desc = base_desc[0] == '(' ? base_desc : make_stringf("(%s)",
+    const string desc = base_desc[0] == '(' ? base_desc : make_stringf(T_("(%s)"),
             base_desc.c_str());
-    return make_stringf("%dx%s", n, desc.c_str());
+    return make_stringf(T_("%dx%s"), n, desc.c_str());
 }
 
 
@@ -530,12 +532,12 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         if (you.immune_to_hex(spell))
             return "(immune)";
 
-        const string hex_str = make_stringf("%d%%", hex_chance(spell, mon_owner, is_wand));
+        const string hex_str = make_stringf(T_("%d%%"), hex_chance(spell, mon_owner, is_wand));
 
         const dice_def dam = _spell_damage(spell, hd, pow);
         if (!dam.size || !dam.num)
-            return make_stringf("(%s)", hex_str.c_str());
-        return make_stringf("(%s,%dd%d)", hex_str.c_str(), dam.num, dam.size);
+            return make_stringf(T_("(%s)"), hex_str.c_str());
+        return make_stringf(T_("(%s,%dd%d)"), hex_str.c_str(), dam.num, dam.size);
     }
 
     if (spell == SPELL_SMITING)
@@ -545,14 +547,14 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         return "4-8*"; // >_>
 
     if (spell == SPELL_ANTIMAGIC_GAZE)
-        return make_stringf("0-%d MP", pow / 8); // >_> >_>
+        return make_stringf(T_("0-%d MP"), pow / 8); // >_> >_>
 
     if (spell == SPELL_WIND_BLAST)
-        return make_stringf("2d%d*", default_collision_damage(pow, false).size);
+        return make_stringf(T_("2d%d*"), default_collision_damage(pow, false).size);
 
     if (spell == SPELL_FORCE_LANCE)
     {
-        return make_stringf("%dd%d(+%dd%d)",
+        return make_stringf(T_("%dd%d(+%dd%d)"),
             _spell_damage(spell, hd, pow).num,
             _spell_damage(spell, hd, pow).size,
             default_collision_damage(pow, false).num,
@@ -561,7 +563,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
 
     if (spell == SPELL_HOARFROST_BULLET)
     {
-        return make_stringf("3d(%d/%d)",
+        return make_stringf(T_("3d(%d/%d)"),
             zap_damage(ZAP_HOARFROST_BULLET, pow, true, false).size,
             zap_damage(ZAP_HOARFROST_BULLET_FINALE, pow, true, false).size);
     }
@@ -571,15 +573,15 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
         return "";
 
     if (spell == SPELL_AIRSTRIKE)
-        return make_stringf("%dd%d+(2/space)", dam.num, dam.size);
+        return make_stringf(T_("%dd%d+(2/space)"), dam.num, dam.size);
     if (spell == SPELL_SLEETSTRIKE)
-        return make_stringf("%dd%d+(3/space)", dam.num, dam.size);
+        return make_stringf(T_("%dd%d+(3/space)"), dam.num, dam.size);
     if (spell == SPELL_RESONANCE_STRIKE)
         return describe_resonance_strike_dam(dam);
 
     if (spell == SPELL_BOLT_OF_DRAINING && mon_owner->type == MONS_LAUGHING_SKULL)
     {
-        return make_stringf("%dd(%d-%d)", dam.num, dam.size,
+        return make_stringf(T_("%dd(%d-%d)"), dam.num, dam.size,
                                           dam.size * 2);
     }
 
@@ -598,7 +600,7 @@ static string _effect_string(spell_type spell, const monster_info *mon_owner,
     const char* suffix = spell == SPELL_LRD ? "*"
                        : spell == SPELL_PYRE_ARROW || spell == SPELL_STICKY_FLAME ? "/turn"
                        : "";
-    return make_stringf("(%s%dd%d%s)", mult.c_str(), dam.num, dam.size, suffix);
+    return make_stringf(T_("(%s%dd%d%s)"), mult.c_str(), dam.num, dam.size, suffix);
 }
 
 /**
@@ -626,10 +628,13 @@ static void _describe_book(const spellbook_contents &book,
     // only display header for book spells
     if (source_item)
     {
-        description.cprintf(
-            "\n Spells                              Type                    Level");
+        // Column headers: spell name (variable), school, difficulty, known
+        description.cprintf("%s",
+            ("\n " + chop_string(T_("Spells"), 33)
+                  + chop_string(T_("Type"), 28)
+                  + chop_string(T_("Level"), 12)).c_str());
         if (crawl_state.need_save)
-            description.cprintf("       Known");
+            description.cprintf("%s", chop_string(T_("Known"), 12).c_str());
     }
     description.cprintf("\n");
 
@@ -704,14 +709,14 @@ static void _describe_book(const spellbook_contents &book,
 
         string schools =
 #if TAG_MAJOR_VERSION == 34
-            source_item->base_type == OBJ_RODS ? "Evocations"
+            source_item->base_type == OBJ_RODS ? T_("Evocations")
                                                :
 #endif
                          _spell_schools(spell);
 
         string known = "";
         if (!mon_owner && crawl_state.need_save)
-            known = you.spell_library[spell] ? "         yes" : "          no";
+            known = you.spell_library[spell] ? chop_string(T_("yes"), 12) : chop_string(T_("no"), 12);
 
         description.cprintf("%s%d%s\n",
                             chop_string(schools, 28).c_str(),
@@ -790,7 +795,7 @@ static void _write_book(const spellbook_contents &book,
 
 #if TAG_MAJOR_VERSION == 34
         string schools = (source_item && source_item->base_type == OBJ_RODS) ?
-                "Evocations" : _spell_schools(spell);
+                T_("magic release") : _spell_schools(spell);
 #else
         string schools = _spell_schools(spell);
 #endif

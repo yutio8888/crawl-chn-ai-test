@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "notes.h"
 
 #include <iomanip>
@@ -183,7 +184,7 @@ static bool _is_noteworthy(const Note& note)
             break;
 
         default:
-            mpr("Buggy note passed: unknown note type");
+            mpr(T_("Buggy note passed: unknown note type"));
             // Return now, rather than give a "Buggy note passed" message
             // for each note of the matching type in the note list.
             return true;
@@ -213,140 +214,142 @@ string Note::describe(bool when, bool where, bool what) const
         case NOTE_HP_CHANGE:
             // [ds] Shortened HP change note from "Had X hitpoints" to
             // accommodate the cause for the loss of hitpoints.
-            result << "HP: " << first << "/" << second
+            result << T_("HP: ") << first << "/" << second
                    << " [" << name << "]";
             break;
         case NOTE_XOM_REVIVAL:
-            result << "Xom revived you";
+            result << T_("Xom revived you");
             break;
         case NOTE_MP_CHANGE:
-            result << "Magic: " << first << "/" << second;
+            result << T_("Magic: ") << first << "/" << second;
             break;
         case NOTE_MAXHP_CHANGE:
-            result << "Reached " << first << " max health";
+            result << T_("Reached ") << first << T_(" max health");
             break;
         case NOTE_MAXMP_CHANGE:
-            result << "Reached " << first << " max magic points";
+            result << T_("Reached ") << first << T_(" max magic points");
             break;
         case NOTE_XP_LEVEL_CHANGE:
-            result << "Reached XP level " << first << ". " << name;
+            result << T_("Reached XP level ") << first << ". " << name;
             break;
         case NOTE_DUNGEON_LEVEL_CHANGE:
             if (!desc.empty())
                 result << desc;
             else
-                result << "Entered "
+                result << T_("Entered ")
                        << place.describe(true, true);
             break;
         case NOTE_LEARN_SPELL:
-            result << "Learned a level "
+            result << T_("Learned a level ")
                    << spell_difficulty(static_cast<spell_type>(first))
-                   << " spell: "
+                   << T_(" spell: ")
                    << spell_title(static_cast<spell_type>(first));
             break;
         case NOTE_GET_GOD:
-            result << "Became a worshipper of "
+            result << T_("Became a worshipper of ")
                    << god_name(static_cast<god_type>(first), true);
             break;
         case NOTE_LOSE_GOD:
-            result << "Fell from the grace of "
+            result << T_("Fell from the grace of ")
                    << god_name(static_cast<god_type>(first));
             break;
         case NOTE_PENANCE:
-            result << "Was placed under penance by "
+            result << T_("Was placed under penance by ")
                    << god_name(static_cast<god_type>(first));
             break;
         case NOTE_MOLLIFY_GOD:
-            result << "Was forgiven by "
+            result << T_("Was forgiven by ")
                    << god_name(static_cast<god_type>(first));
             break;
         case NOTE_GOD_GIFT:
-            result << "Received a gift from "
+            result << T_("Received a gift from ")
                    << god_name(static_cast<god_type>(first));
             if (!name.empty())
                 result << " (" << name << ")";
             break;
         case NOTE_ID_ITEM:
-            result << "Identified " << name;
+            result << T_("Identified ") << name;
             if (!desc.empty())
                 result << " (" << desc << ")";
             break;
         case NOTE_GET_ITEM:
-            result << "Got " << name;
+            result << T_("Got ") << name;
             if (first != 0) // gems
             {
                 const int turns = (first + 9) / 10;
-                result << " with " << turns << " turn"
-                       << (first == 1 ? "" : "s") << " to spare";
+                result << T_(" with ") << turns
+                       << (first == 1 ? T_(" turn") : T_(" turns"))
+                       << T_(" to spare");
             }
             break;
         case NOTE_ACQUIRE_ITEM:
-            result << "Acquired " << name;
+            result << T_("Acquired ") << name;
             break;
         case NOTE_BUY_ITEM:
-            result << "Bought " << name << " for " << first << " gold piece"
-                   << (first == 1 ? "" : "s");
+            result << T_("Bought ") << name << T_(" for ") << first << " "
+                   << (first == 1 ? T_("gold piece") : T_("gold pieces"));
             break;
         case NOTE_DONATE_MONEY:
-            result << "Donated " << first << " gold piece"
-                   << (first == 1 ? "" : "s") << " to Zin";
+            result << T_("Donated ") << first << " "
+                   << (first == 1 ? T_("gold piece") : T_("gold pieces"))
+                   << T_(" to Zin");
             break;
         case NOTE_GAIN_SKILL:
-            result << "Reached skill level " << second
-                   << " in " << skill_name(static_cast<skill_type>(first));
+            result << T_("Reached skill level ") << second
+                   << T_(" in ") << skill_name(static_cast<skill_type>(first));
             break;
         case NOTE_LOSE_SKILL:
-            result << "Reduced skill "
+            result << T_("Reduced skill ")
                    << skill_name(static_cast<skill_type>(first))
-                   << " to level " << second;
+                   << T_(" to level ") << second;
             break;
         case NOTE_SEEN_MONSTER:
-            result << "Encountered " << name;
+            result << T_("Encountered ") << name;
             break;
         case NOTE_DEFEAT_MONSTER:
             if (second)
-                result << name << " (ally) was " << desc;
+                result << name << T_(" (ally) was ") << desc;
             else
                 result << uppercase_first(desc) << " " << name;
             break;
         case NOTE_POLY_MONSTER:
-            result << name << " changed into " << desc;
+            result << name << T_(" changed into ") << desc;
             break;
         case NOTE_PIETY_RANK:
-            result << "Reached "
+            result << T_("Reached ")
                    << string(second, '*')
-                   << " piety under "
+                   << T_(" piety under ")
                    << god_name(static_cast<god_type>(first));
             break;
         case NOTE_GET_MUTATION:
-            result << "Gained mutation: "
+            result << T_("Gained mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
                 result << " [" << name << "]";
             break;
         case NOTE_LOSE_MUTATION:
-            result << "Lost mutation: "
+            result << T_("Lost mutation: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 3 ? 3 : second+1);
             if (!name.empty())
                 result << " [" << name << "]";
             break;
         case NOTE_PERM_MUTATION:
-            result << "Mutation became permanent: "
+            result << T_("Mutation became permanent: ")
                    << mutation_desc(static_cast<mutation_type>(first),
                                     second == 0 ? 1 : second);
             if (!name.empty())
                 result << " [" << name << "]";
             break;
         case NOTE_GET_BANE:
-            result << "Gained bane: "
+            result << T_("Gained bane: ")
                    << bane_name(static_cast<bane_type>(first));
             if (!name.empty())
                 result << " [" << name << "]";
             break;
         case NOTE_LOSE_BANE:
-            result << "Lost bane: "
+            result << T_("Lost bane: ")
                    << bane_name(static_cast<bane_type>(first));
             break;
         case NOTE_DEATH:
@@ -359,13 +362,13 @@ string Note::describe(bool when, bool where, bool what) const
             result << name;
             break;
         case NOTE_SEEN_FEAT:
-            result << "Found " << name;
+            result << T_("Found ") << name;
             break;
         case NOTE_FEAT_MIMIC:
-            result << name <<" was a mimic.";
+            result << name << T_(" was a mimic.");
             break;
         case NOTE_XOM_EFFECT:
-            result << "XOM: " << name;
+            result << T_("XOM: ") << name;
 #if defined(DEBUG_XOM) || defined(NOTE_DEBUG_XOM)
             // If debugging, also take note of piety and tension.
             result << " (piety: " << first;
@@ -377,66 +380,66 @@ string Note::describe(bool when, bool where, bool what) const
         case NOTE_PARALYSIS:
         {
             const float turns = first / 10.0;
-            result << "Paralysed by " << name << " for " << setprecision(2) << turns << " turns";
+            result << T_("Paralysed by ") << name << T_(" for ") << setprecision(2) << turns << T_(" turns");
         }
             break;
         case NOTE_VEXED:
-            result << "Vexed by " << name << " for " << first << " turns";
+            result << T_("Vexed by ") << name << T_(" for ") << first << T_(" turns");
             break;
         case NOTE_RECRUITED_APOSTLE:
-            result << "Anointed " << name << " the " << desc << " as your apostle";
+            result << T_("Anointed ") << name << T_(" the ") << desc << T_(" as your apostle");
             break;
         case NOTE_ALLY_DEATH:
-            result << "Your ally " << name << " died";
+            result << T_("Your ally ") << name << T_(" died");
             break;
         case NOTE_OFFERED_SPELL:
-            result << "Offered knowledge of "
+            result << T_("Offered knowledge of ")
                    << spell_title(static_cast<spell_type>(first))
-                   << " by Vehumet.";
+                   << T_(" by Vehumet.");
             break;
         case NOTE_ANCESTOR_TYPE:
-            result << "Remembered your ancestor " << hepliaklqana_ally_name()
-                   << " as " << name;
+            result << T_("Remembered your ancestor ") << hepliaklqana_ally_name()
+                   << T_(" as ") << name;
             break;
 #if TAG_MAJOR_VERSION == 34
         case NOTE_ANCESTOR_SPECIALIZATION:
-            result << "Remembered your ancestor " << hepliaklqana_ally_name()
+            result << T_("Remembered your ancestor ") << hepliaklqana_ally_name()
                    << " " << name;
             break;
         case NOTE_ANCESTOR_DEATH:
-            result << "Remembered your ancestor "
+            result << T_("Remembered your ancestor ")
                    << apostrophise(hepliaklqana_ally_name())
-                   << " " << name << " death";
+                   << " " << name << T_(" death");
             break;
 #endif
           case NOTE_FOUND_UNRAND:
-            result << "Found " << name;
+            result << T_("Found ") << name;
             break;
         case NOTE_ZOT_TOUCHED:
-            result << "Touched by the power of Zot (MHP " << first << " -> " << second << ")";
+            result << T_("Touched by the power of Zot (MHP ") << first << " -> " << second << ")";
             break;
         case NOTE_DREAMSHARD:
-            result << "Saved by the dreamshard amulet";
+            result << T_("Saved by the dreamshard amulet");
             break;
         case NOTE_GEM_LOST:
-            result << "Lost the "
+            result << T_("Lost the ")
                    << gem_adj(static_cast<gem_type>(first))
-                   << " gem through the power of Zot.";
+                   << T_(" gem through the power of Zot.");
             break;
         case NOTE_GAIN_LIFE:
-            result << "Gained a life (" << first << (first == 1 ? " life " : " lives ") << "remaining)";
+            result << T_("Gained a life (") << first << (first == 1 ? T_(" life ") : T_(" lives ")) << T_("remaining)");
             break;
         case NOTE_LOSE_LIFE:
-            result << "Lost a life ("   << first << (first == 1 ? " life " : " lives ") << "remaining)";
+            result << T_("Lost a life (") << first << (first == 1 ? T_(" life ") : T_(" lives ")) << T_("remaining)");
             break;
         case NOTE_FLED_CHALLENGE:
-            result << "Fled from a divine trial";
+            result << T_("Fled from a divine trial");
             break;
         case NOTE_INFERNAL_MARK:
-            result << "Branded self with the " << name;
+            result << T_("Branded self with the ") << name;
             break;
         case NOTE_TESSERACT_ACTIVATED:
-            result << "Activated a boundless tesseract";
+            result << T_("Activated a boundless tesseract");
             break;
         default:
             result << "Buggy note description: unknown note type";
@@ -447,7 +450,7 @@ string Note::describe(bool when, bool where, bool what) const
     if (type == NOTE_SEEN_MONSTER || type == NOTE_DEFEAT_MONSTER)
     {
         if (what && first == MONS_PANDEMONIUM_LORD)
-            result << " the pandemonium lord";
+            result << T_(" the pandemonium lord");
     }
     return result.str();
 }

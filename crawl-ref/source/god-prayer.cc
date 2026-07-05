@@ -19,6 +19,7 @@
 #include "message.h"
 #include "notes.h"
 #include "prompt.h"
+#include "options.h"
 #include "religion.h"
 #include "shopping.h"
 #include "state.h"
@@ -61,9 +62,11 @@ static bool _prompt_ecu_worship(const vector<god_type> &gods)
                                                   god_name_list.end(), " or ");
     // This should be a proper menu, but I absolutely cannot be bothered with
     // webtiles menu code.
-    mprf(MSGCH_PROMPT, "This altar belongs to %s, but you can't tell which.\n"
-         "Press the corresponding letter to learn more about a god, "
-         "or press enter to convert or escape to cancel.", god_names.c_str());
+    mprf(MSGCH_PROMPT, "%s",
+         make_stringf(T_("This altar belongs to %s, but you can't tell which.\n"
+                         "Press the corresponding letter to learn more about a god, "
+                         "or press enter to convert or escape to cancel."),
+                      god_names.c_str()).c_str());
     while (true) {
         flush_prev_message();
         int ch = getch_ck();
@@ -96,9 +99,9 @@ static bool _pray_ecumenical_altar()
         return false;
     }
     if (!you_worship(GOD_NO_GOD)
-        && !yesno(make_stringf("Really abandon %s for an unknown god?",
+        && !yesno(make_stringf(T_("Really abandon %s for an unknown god?"),
                                god_name(you.religion).c_str()).c_str(),
-                               false, 'n'))
+                  false, 'n'))
     {
         canned_msg(MSG_OK);
         return false;
@@ -118,7 +121,7 @@ static bool _pray_ecumenical_altar()
             return true;
         }
 
-        mprf(MSGCH_GOD, "%s accepts your prayer!",
+        mprf(MSGCH_GOD, T_("%s accepts your prayer!"),
                         god_name(altar_god).c_str());
         if (you_worship(altar_god))
             return true;
@@ -149,7 +152,7 @@ void try_god_conversion(god_type god)
 
     if (you.has_mutation(MUT_FORLORN))
     {
-        mpr("A being of your status worships no god.");
+        mpr(T_("A being of your status worships no god."));
         return;
     }
 
@@ -170,9 +173,10 @@ void try_god_conversion(god_type god)
     else
     {
         // Already worshipping this god - just print a message.
-        mprf(MSGCH_GOD, "You offer a %sprayer to %s.",
-             you.cannot_speak() ? "silent " : "",
-             god_name(god).c_str());
+        // Chinese word order: god name before prayer qualifier
+        mprf_p(MSGCH_GOD, T_("You offer a %sprayer to %s."),
+               you.cannot_speak() ? T_("silent ") : "",
+               god_name(god).c_str());
     }
 }
 
@@ -200,7 +204,7 @@ int zin_tithe(const item_def& item, int quant, bool converting)
         }
         taken = tithe;
         you.attribute[ATTR_DONATIONS] += tithe;
-        mprf("You pay a tithe of %d gold.", tithe);
+        mprf(T_("You pay a tithe of %d gold."), tithe);
 
         if (item.tithe_state == TS_NO_PIETY) // seen before worshipping Zin
         {

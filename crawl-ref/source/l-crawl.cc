@@ -41,6 +41,7 @@
 #include "version.h"
 #include "view.h"
 #include "worley.h"
+#include "i18n.h"
 
 #ifdef TARGET_OS_WINDOWS
 # include "windows.h"
@@ -1499,6 +1500,9 @@ static int crawl_bane_desc(lua_State *ls)
     return 1;
 }
 
+static int crawl_language(lua_State *ls);
+static int crawl_t_(lua_State *ls);
+
 static const struct luaL_Reg crawl_clib[] =
 {
     { "mpr",                crawl_mpr },
@@ -1573,8 +1577,38 @@ static const struct luaL_Reg crawl_clib[] =
     { "hints_type",         crawl_hints_type },
     { "bane_name",          crawl_bane_name },
     { "bane_description",   crawl_bane_desc },
+    { "language",           crawl_language },
+    { "t_",                 crawl_t_ },
     { nullptr, nullptr },
 };
+
+/*** Get the current UI language.
+ * @within crawl
+ * @treturn string "zh" or "en"
+ * @function language
+ */
+static int crawl_language(lua_State *ls)
+{
+    lua_pushstring(ls, Options.language == lang_t::ZH ? "zh" : "en");
+    return 1;
+}
+
+/*** Look up a Chinese translation for an English string.
+ * Uses the same i18n database as the C++ T_() macro.
+ * Falls back to the English key if no translation found.
+ * @within crawl
+ * @tparam string en English string to translate
+ * @treturn string translated string (or original if not found)
+ * @function t_
+ */
+static int crawl_t_(lua_State *ls)
+{
+    const char *en = luaL_checkstring(ls, 1);
+    if (!en)
+        return 0;
+    lua_pushstring(ls, i18n_source_lookup(nullptr, en));
+    return 1;
+}
 
 void cluaopen_crawl(lua_State *ls)
 {

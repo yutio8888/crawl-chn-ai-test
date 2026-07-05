@@ -24,7 +24,7 @@ namespace species
         SPNAME_ADJ
     };
 
-    string name(species_type speci, name_type spname = SPNAME_PLAIN);
+    string name(species_type speci, name_type spname = SPNAME_PLAIN, bool raw = false);
     const char *get_abbrev(species_type which_species);
     species_type from_abbrev(const char *abbrev);
     species_type from_str(const string &species);

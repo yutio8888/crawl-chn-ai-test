@@ -12,6 +12,7 @@
 #include <cwctype>
 #include <string>
 
+#include "options.h"
 #include "stringutil.h"
 
 const char * const standard_plural_qualifiers[] =
@@ -30,6 +31,10 @@ bool is_vowel(const char32_t chr)
 string pluralise(const string &name, const char * const qualifiers[],
                  const char * const no_qualifier[])
 {
+    // Chinese has no grammatical plural — names stay unchanged.
+    if (Options.language == lang_t::ZH)
+        return name;
+
     string::size_type pos;
 
     if (qualifiers)
@@ -198,6 +203,10 @@ string apostrophise(const string &name)
     if (name.empty())
         return name;
 
+    // Chinese has no possessive 's — use 的 instead.
+    if (Options.language == lang_t::ZH)
+        return name + "的";
+
     if (name == "you" || name == "You")
         return name + "r";
 
@@ -243,6 +252,10 @@ string apostrophise(const string &name)
  */
 string conjugate_verb(const string &verb, bool plural)
 {
+    // Chinese has no verb conjugation — return verb unchanged.
+    if (Options.language == lang_t::ZH)
+        return verb;
+
     if (!verb.empty() && verb[0] == '!')
         return verb.substr(1);
 
@@ -283,11 +296,23 @@ static const char * const _pronoun_declension[][NUM_PRONOUN_CASES] =
     { "they", "their", "themself", "them" }, // neutral
 };
 
+static const char * const _pronoun_declension_zh[][NUM_PRONOUN_CASES] =
+{
+    // subj  poss    refl        obj
+    { "它",  "它的",  "它自己",   "它"  }, // neuter
+    { "他",  "他的",  "他自己",   "他"  }, // masculine
+    { "她",  "她的",  "她自己",   "她"  }, // feminine
+    { "你",  "你的",  "你自己",   "你"  }, // 2nd person
+    { "它们", "它们的", "它们自己", "它们" }, // neutral
+};
+
 const char *decline_pronoun(gender_type gender, pronoun_type variant)
 {
     COMPILE_CHECK(ARRAYSZ(_pronoun_declension) == NUM_GENDERS);
     ASSERT_RANGE(gender, 0, NUM_GENDERS);
     ASSERT_RANGE(variant, 0, NUM_PRONOUN_CASES);
+    if (Options.language == lang_t::ZH)
+        return _pronoun_declension_zh[gender][variant];
     return _pronoun_declension[gender][variant];
 }
 
@@ -367,8 +392,58 @@ static string _number_in_words(unsigned num, unsigned period)
                                   : ""));
 }
 
+static string _chinese_number_in_words(unsigned num)
+{
+    static const char *digits[] =
+    {
+        "零", "一", "二", "三", "四", "五", "六", "七", "八", "九"
+    };
+
+    if (num < 10)
+        return digits[num];
+
+    if (num < 20)
+        return string("十") + (num % 10 ? digits[num % 10] : "");
+
+    if (num < 100)
+    {
+        unsigned tens = num / 10;
+        unsigned ones = num % 10;
+        return string(digits[tens]) + "十" + (ones ? digits[ones] : "");
+    }
+
+    if (num < 1000)
+    {
+        unsigned hundreds = num / 100;
+        unsigned rest = num % 100;
+        string result = string(digits[hundreds]) + "百";
+        if (rest)
+        {
+            if (rest < 10)
+                result += string("零") + digits[rest];
+            else
+                result += _chinese_number_in_words(rest);
+        }
+        return result;
+    }
+
+    // 1000+
+    unsigned thousands = num / 1000;
+    unsigned rest = num % 1000;
+    string result = _chinese_number_in_words(thousands) + "千";
+    if (rest)
+    {
+        if (rest < 100)
+            result += "零";
+        result += _chinese_number_in_words(rest);
+    }
+    return result;
+}
+
 string number_in_words(unsigned num)
 {
+    if (Options.language == lang_t::ZH)
+        return _chinese_number_in_words(num);
     return _number_in_words(num, 0);
 }
 
@@ -380,6 +455,9 @@ static string _number_to_string(unsigned number, bool in_words)
 // Naively prefix A/an to a noun.
 string article_a(const string &name, bool lowercase)
 {
+    if (Options.language == lang_t::ZH)
+        return name;  // Chinese has no articles
+
     if (!name.length())
         return name;
 
@@ -409,6 +487,19 @@ string article_a(const string &name, bool lowercase)
 string apply_description(description_level_type desc, const string &name,
                          int quantity, bool in_words)
 {
+    if (Options.language == lang_t::ZH)
+    {
+        switch (desc)
+        {
+        case DESC_YOUR:
+            return "你的" + name;
+        case DESC_PLAIN:
+        default:
+            // Chinese has no articles — return name as-is
+            return name;
+        }
+    }
+
     switch (desc)
     {
     case DESC_THE:
@@ -427,6 +518,10 @@ string apply_description(description_level_type desc, const string &name,
 string thing_do_grammar(description_level_type dtype, string desc,
                         bool ignore_case)
 {
+    // Chinese has no articles — return description as-is.
+    if (Options.language == lang_t::ZH)
+        return desc;
+
     // Avoid double articles.
     if (starts_with(desc, "the ") || starts_with(desc, "The ")
         || starts_with(desc, "a ") || starts_with(desc, "A ")

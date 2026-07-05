@@ -24,6 +24,7 @@
 #include "stringutil.h"
 #include "tag-version.h"
 #include "transform.h"
+#include "database.h"
 
 static int _stat_modifier(stat_type stat, bool innate_only);
 
@@ -77,10 +78,9 @@ bool attribute_increase()
 
     const int statgain = you.has_mutation(MUT_DIVINE_ATTRS) ? 4 : 2;
 
-    const string stat_gain_message = make_stringf("Your experience leads to a%s "
-                                                  "increase in your attributes!",
-                                                  (statgain > 2) ?
-                                                  " dramatic" : "n");
+    const string stat_gain_message = (statgain > 2)
+        ? T_("Your experience leads to a dramatic increase in your attributes!")
+        : T_("Your experience leads to an increase in your attributes!");
     crawl_state.stat_gain_prompt = true;
     mprf(MSGCH_INTRINSIC_GAIN, "%s", stat_gain_message.c_str());
     learned_something_new(HINT_CHOOSE_STAT);
@@ -88,14 +88,12 @@ bool attribute_increase()
         || innate_stat(STAT_INT) != you.intel()
         || innate_stat(STAT_DEX) != you.dex())
     {
-        mprf(MSGCH_PROMPT, "Your base attributes are Str %d, Int %d, Dex %d.",
+        mprf(MSGCH_PROMPT, T_("Your base attributes are Str %d, Int %d, Dex %d."),
              innate_stat(STAT_STR),
              innate_stat(STAT_INT),
              innate_stat(STAT_DEX));
     }
-    mprf(MSGCH_PROMPT, need_caps
-        ? "Increase (S)trength, (I)ntelligence, or (D)exterity? "
-        : "Increase (s)trength, (i)ntelligence, or (d)exterity? ");
+    mprf(MSGCH_PROMPT, T_("Increase (s)trength, (i)ntelligence, or (d)exterity? "));
     mouse_control mc(MOUSE_MODE_PROMPT);
 
     bool tried_lua = false;
@@ -152,7 +150,7 @@ bool attribute_increase()
         case 's':
         case 'i':
         case 'd':
-            mprf(MSGCH_PROMPT, "Uppercase letters only, please.");
+            mprf(MSGCH_PROMPT, T_("Uppercase letters only, please."));
             break;
         }
     }
@@ -160,14 +158,14 @@ bool attribute_increase()
 
 static const char* descs[NUM_STATS][NUM_STAT_DESCS] =
 {
-    { "strength", "weakened", "weaker", "stronger" },
-    { "intelligence", "dopey", "stupid", "clever" },
-    { "dexterity", "clumsy", "clumsy", "agile" }
+    { T_("strength"), T_("weakened"), T_("weaker"), T_("stronger") },
+    { T_("intelligence"), T_("dopey"), T_("stupid"), T_("clever") },
+    { T_("dexterity"), T_("clumsy"), T_("clumsy"), T_("agile") }
 };
 
 const char* stat_desc(stat_type stat, stat_desc_type desc)
 {
-    return descs[stat][desc];
+    return T_(descs[stat][desc]);
 }
 
 void modify_stat(stat_type which_stat, int amount, bool suppress_msg)
@@ -184,7 +182,7 @@ void modify_stat(stat_type which_stat, int amount, bool suppress_msg)
     if (!suppress_msg)
     {
         mprf((amount > 0) ? MSGCH_INTRINSIC_GAIN : MSGCH_WARN,
-             "You feel %s.",
+             T_("You feel %s."),
              stat_desc(which_stat, (amount > 0) ? SD_INCREASE : SD_DECREASE));
     }
 
@@ -207,7 +205,7 @@ void notify_stat_change(stat_type which_stat, int amount, bool suppress_msg)
     if (!suppress_msg)
     {
         mprf((amount > 0) ? MSGCH_INTRINSIC_GAIN : MSGCH_WARN,
-             "You feel %s.",
+             T_("You feel %s."),
              stat_desc(which_stat, (amount > 0) ? SD_INCREASE : SD_DECREASE));
     }
 
@@ -407,14 +405,13 @@ static void _handle_stat_change(stat_type stat)
     if (val <= 0 && !was_zero)
     {
         // Notify the player and make the penalty explicit.
-        mprf(MSGCH_WARN, "You have lost all your %s. It will be difficult to act "
-                         "quickly in this state!", stat_desc(stat, SD_NAME));
+        mprf(MSGCH_WARN, T_("You have lost all your %s. It will be difficult to act quickly in this state!"), stat_desc(stat, SD_NAME));
 
         you.attribute[ATTR_STAT_ZERO] |= 1 << (int)stat;
     }
     else if (was_zero && val > 0)
     {
-        mprf(MSGCH_RECOVERY, "You have recovered your %s.", stat_desc(stat, SD_NAME));
+        mprf(MSGCH_RECOVERY, T_("You have recovered your %s."), stat_desc(stat, SD_NAME));
         you.attribute[ATTR_STAT_ZERO] &= ~(1 << (int)stat);
     }
 

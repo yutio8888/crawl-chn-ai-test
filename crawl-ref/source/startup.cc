@@ -421,22 +421,24 @@ struct game_modes_menu_item
 static const vector<game_modes_menu_item> entries =
 {
     {GAME_TYPE_NORMAL, "Dungeon Crawl",
-        "Dungeon Crawl: The main game: full of monsters, items, "
-        "gods and danger!" },
+        "Dungeon Crawl: The main game mode: full of monsters, items, "
+        "gods, and danger!" },
     {GAME_TYPE_CUSTOM_SEED, "Choose Game Seed",
-        "Play with a chosen custom dungeon seed." },
+        "Play using a chosen dungeon seed." },
     {GAME_TYPE_TUTORIAL, "Tutorial for Dungeon Crawl",
         "Tutorial that covers the basics of Dungeon Crawl survival." },
     {GAME_TYPE_HINTS, "Hints Mode for Dungeon Crawl",
-        "A mostly normal game that provides more advanced hints "
+        "A mostly normal game mode that provides more advanced hints "
         "than the tutorial."},
     {GAME_TYPE_DESCENT, "Dungeon Descent",
-        "Mode with a branching, one-way path through the Dungeon." },
+        "A game mode consisting of a branching, one-way path through "
+        "the dungeon." },
     {GAME_TYPE_SPRINT, "Dungeon Sprint",
-        "Hard, fixed single level game mode." },
-    {GAME_TYPE_INSTRUCTIONS, "Instructions", "Help menu." },
+        "A difficult, fixed, single-floor game mode." },
+    {GAME_TYPE_INSTRUCTIONS, "Instructions",
+        "Help menu." },
     {GAME_TYPE_ARENA, "The Arena",
-        "Pit computer controlled teams versus each other!" },
+        "Let computer-controlled teams battle it out!" },
     {GAME_TYPE_HIGH_SCORES, "High Scores",
         "View the high score list." },
 };
@@ -461,7 +463,9 @@ static void _construct_game_modes_menu(shared_ptr<OuterMenu>& container)
         hbox->add_child(label);
 #endif
 
-        label->set_text(formatted_string(entry.label, WHITE));
+        label->set_text(formatted_string(
+            T_(entry.label),
+            WHITE));
 
         auto btn = make_shared<MenuButton>();
 #ifdef USE_TILE_LOCAL
@@ -471,7 +475,7 @@ static void _construct_game_modes_menu(shared_ptr<OuterMenu>& container)
         btn->set_child(std::move(label));
 #endif
         btn->id = entry.id;
-        btn->description = entry.description;
+        btn->description = T_(entry.description);
         btn->highlight_colour = LIGHTGREY;
         container->add_button(std::move(btn), 0, i);
     }
@@ -479,7 +483,8 @@ static void _construct_game_modes_menu(shared_ptr<OuterMenu>& container)
 
 static shared_ptr<MenuButton> _make_newgame_button(int num_chars)
 {
-    auto label = make_shared<Text>(formatted_string("New Game", WHITE));
+    auto label = make_shared<Text>(formatted_string(
+    T_("New Game"), WHITE));
 
 #ifdef USE_TILE_LOCAL
     auto hbox = make_shared<Box>(Box::HORZ);
@@ -530,7 +535,7 @@ static void _construct_save_games_menu(shared_ptr<OuterMenu>& container,
         if (wiz)
         {
             const COLOURS wiz_bg = chars.at(i).save_loadable ? LIGHTMAGENTA : RED;
-            auto wiz_text = formatted_string(" (WIZ)", wiz_bg);
+            auto wiz_text = formatted_string(T_(" (WIZ)"), wiz_bg);
             hbox->add_child(make_shared<Text>(wiz_text));
         }
 
@@ -594,7 +599,8 @@ public:
         auto grid = make_shared<Grid>();
         grid->set_margin_for_crt(0, 0, 1, 0);
 
-        auto name_prompt = make_shared<Text>("Enter your name:");
+        auto name_prompt = make_shared<Text>(
+    T_("Enter your name:"));
         name_prompt->set_margin_for_crt(0, 1, 1, 0);
         name_prompt->set_margin_for_sdl(0, 0, 10, 0);
 
@@ -610,7 +616,8 @@ public:
 
         descriptions = make_shared<Switcher>();
 
-        auto mode_prompt = make_shared<Text>("Choices:");
+        auto mode_prompt = make_shared<Text>(
+    T_("Select:"));
         mode_prompt->set_margin_for_crt(0, 1, 1, 0);
         mode_prompt->set_margin_for_sdl(0, 0, 10, 0);
         game_modes_menu = make_shared<OuterMenu>(true, 1, entries.size());
@@ -631,7 +638,8 @@ public:
         save_games_menu = make_shared<OuterMenu>(num_saves > 1, 1, num_saves + 1);
         if (num_saves > 0)
         {
-            auto save_prompt = make_shared<Text>("Saved games:");
+            auto save_prompt = make_shared<Text>(
+    T_("Saved games:"));
             save_prompt->set_margin_for_crt(0, 1, 1, 0);
             save_prompt->set_margin_for_sdl(0, 0, 10, 0);
             save_games_menu->set_margin_for_sdl(0, 0, 10, 10);
@@ -688,18 +696,18 @@ public:
         {
             auto save = _find_save(chars, defaults.name);
             instructions_text +=
-                    "<white>[tab]</white> quick-load last game: "
+                    (T_("<white>[tab]</white> quick-load last game: "))
                     + chars[save].really_short_desc() + "\n";
         }
         else if (_game_defined(defaults))
         {
             instructions_text +=
-                    "<white>[tab]</white> quick-start last combo: "
+                    (T_("<white>[tab]</white> quick-start last combo: "))
                     + (defaults.name.size() ? (defaults.name + " the ") : "")
                     + newgame_char_description(defaults) + "\n";
         }
         instructions_text +=
-            "<white>[ctrl-p]</white> view rc file information and log";
+            (T_("<white>[ctrl-p]</white> view rc file information and log"));
         if (recent_error_messages())
             instructions_text += " (<red>Errors during initialization!</red>)";
 

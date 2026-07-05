@@ -82,10 +82,10 @@ void TextRegion::addstr(const char *buffer)
             c = 0;
             newline = true;
         }
-        // TODO: use wcwidth() to handle widths!=1:
-        // *  2 for CJK chars -- add a zero-width blank?
-        // *  0 for combining characters -- would need extra support
-        // * -1 for non-printable stuff -- assert or ignore
+        // CJK double-width characters are handled in addstr_aux() via
+        // wcwidth() — they take 2 grid cells with a ZWSP continuation
+        // marker in the second cell.
+        // TODO: combining characters (wcwidth==0) would need extra support
         buf2[j] = c;
         j++;
 
@@ -116,12 +116,30 @@ void TextRegion::addstr_aux(const char32_t *buffer, int len)
 
     ASSERT(y < my);
 
-    for (int i = 0; i < len && x + i < mx; i++)
+    for (int i = 0; i < len && x < mx; i++)
     {
-        cbuf[adrs+x+i] = buffer[i];
-        abuf[adrs+x+i] = text_col;
+        int cw = wcwidth(buffer[i]);
+        if (cw < 0)
+            cw = 1; // control chars: treat as width 1
+
+        // Can't fit this character on the line
+        if (x + cw > mx)
+            break;
+
+        cbuf[adrs + x] = buffer[i];
+        abuf[adrs + x] = text_col;
+
+        // For double-width CJK characters, mark the second cell
+        // with ZERO WIDTH SPACE so render_textblock skips it.
+        if (cw == 2)
+        {
+            cbuf[adrs + x + 1] = 0x200B;
+            abuf[adrs + x + 1] = text_col;
+        }
+
+        x += cw;
     }
-    print_x += len;
+    print_x = x + cx_ofs;
 }
 
 void TextRegion::clear_to_end_of_line()

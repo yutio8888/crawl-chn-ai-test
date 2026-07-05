@@ -75,6 +75,7 @@
 #include "traps.h"
 #include "unicode.h"
 #include "view.h"
+#include "database.h"
 
 #define PHIAL_RANGE 5
 
@@ -85,7 +86,7 @@ static bool _evoke_horn_of_geryon()
 
     bool created = false;
 
-    mprf(MSGCH_SOUND, "You produce a hideous howling noise!");
+    mprf(MSGCH_SOUND, T_("You produce a hideous howling noise!"));
     noisy(15, you.pos()); // same as hell effect noise
     did_god_conduct(DID_EVIL, 3);
     int num = 1;
@@ -111,7 +112,7 @@ static bool _evoke_horn_of_geryon()
             created = true;
     }
     if (!created)
-        mpr("Nothing answers your call.");
+        mpr(T_("Nothing answers your call."));
     return true;
 }
 
@@ -186,7 +187,7 @@ void zap_wand(int slot, dist *_target)
     item_def& wand = you.inv[item_slot];
     if (wand.base_type != OBJ_WANDS)
     {
-        mpr("You can't zap that!");
+        mpr(T_("You can't zap that!"));
         return;
     }
 
@@ -229,7 +230,7 @@ void zap_wand(int slot, dist *_target)
         || you.unrand_equipped(UNRAND_GADGETEER))
         && x_chance_in_y(3, 10))
     {
-        mpr("You conserve a charge of your wand.");
+        mpr(T_("You conserve a charge of your wand."));
     }
     else
         wand.charges--;
@@ -238,7 +239,7 @@ void zap_wand(int slot, dist *_target)
     {
         ASSERT(in_inventory(wand));
 
-        mpr("The now-empty wand crumbles to dust.");
+        mpr(T_("The now-empty wand crumbles to dust."));
         dec_inv_item_quantity(wand.link, 1);
     }
 
@@ -256,7 +257,7 @@ string manual_skill_names(bool short_text)
             skills.insert(sk);
 
     if (short_text && skills.size() > 1)
-        return make_stringf("%d skills", static_cast<int>(skills.size()));
+        return make_stringf(T_("%d skills"), static_cast<int>(skills.size()));
     else
         return skill_names(skills);
 }
@@ -268,7 +269,7 @@ static bool _box_of_beasts()
     if (!player_summon_check(MONS_MUTANT_BEAST))
         return false;
 
-    mpr("You open the lid...");
+    mpr(T_("You open the lid..."));
 
     // two rolls to reduce std deviation - +-6 so can get < max even at 27 sk
     int rnd_factor = random2(7);
@@ -288,12 +289,14 @@ static bool _box_of_beasts()
     if (!mons)
     {
         // Failed to create monster for some reason
-        mpr("...but nothing happens.");
+        mpr(T_("...but nothing happens."));
         return true;
     }
 
-    mprf("...and %s %s out!",
-         mons->name(DESC_A).c_str(), mons->airborne() ? "flies" : "leaps");
+    // T_() handles language-dependent verb fragments (flies/飞 vs leaps/跳)
+    const char* verb = mons->airborne() ? T_("flies") : T_("leaps");
+    mprf(T_("...and %s %s out!"),
+         mons->name(DESC_A).c_str(), verb);
     did_god_conduct(DID_CHAOS, random_range(5,10));
 
     return true;
@@ -392,21 +395,25 @@ static bool _sack_of_spiders()
     if (!player_summon_check(MONS_REDBACK))
         return false;
 
-    mpr("You reach into the sack...");
+    mpr(T_("You reach into the sack..."));
 
     const bool made_mons = _spill_out_spiders();
     if (made_mons)
-        mpr("...and things crawl out!");
+    {
+        mpr(T_("...and things crawl out!"));
+    }
 
     const bool webbed = _place_webs();
     if (!made_mons && !webbed)
     {
-        mpr("...but nothing happens.");
+        mpr(T_("...but nothing happens."));
         return true;
     }
 
     if (!made_mons)
-        mpr("...but only cobwebs fall out.");
+    {
+        mpr(T_("...but only cobwebs fall out."));
+    }
     return true;
 }
 
@@ -417,7 +424,7 @@ static bool _make_zig(item_def &zig)
         || player_in_branch(BRANCH_ARENA)
         || is_temp_terrain(you.pos()))
     {
-        mpr("You can't place a gateway to a ziggurat here.");
+        mpr(T_("You can't place a gateway to a ziggurat here."));
         return false;
     }
     for (int lev = 1; lev <= brdepth[BRANCH_ZIGGURAT]; lev++)
@@ -425,7 +432,7 @@ static bool _make_zig(item_def &zig)
         if (is_level_on_stack(level_id(BRANCH_ZIGGURAT, lev))
             || you.where_are_you == BRANCH_ZIGGURAT)
         {
-            mpr("Finish your current ziggurat first!");
+            mpr(T_("Finish your current ziggurat first!"));
             return false;
         }
     }
@@ -433,7 +440,7 @@ static bool _make_zig(item_def &zig)
     ASSERT(in_inventory(zig));
     dec_inv_item_quantity(zig.link, 1);
     dungeon_terrain_changed(you.pos(), DNGN_ENTER_ZIGGURAT);
-    mpr("You set the figurine down, and a mystic portal to a ziggurat forms.");
+    mpr(T_("You set the figurine down, and a mystic portal to a ziggurat forms."));
     return true;
 }
 
@@ -501,9 +508,13 @@ void wind_blast(actor* agent, int pow, coord_def target)
     {
         // Nemelex card only.
         if (pow > 120)
-            mpr("A mighty gale blasts forth from the card!");
+        {
+            mpr(T_("A mighty gale blasts forth from the card!"));
+        }
         else
-            mpr("A fierce wind blows from the card.");
+        {
+            mpr(T_("A fierce wind blows from the card."));
+        }
     }
 
     noisy(8, agent->pos());
@@ -648,9 +659,9 @@ static spret _phantom_mirror(dist *target)
     if (!victim || !you.can_see(*victim))
     {
         if (beam.target == you.pos())
-            mpr("You can't use the mirror on yourself.");
+            mpr(T_("You can't use the mirror on yourself."));
         else
-            mpr("You can't see anything there to clone.");
+            mpr(T_("You can't see anything there to clone."));
         return spret::abort;
     }
 
@@ -659,7 +670,7 @@ static spret _phantom_mirror(dist *target)
     if (!actor_is_illusion_cloneable(victim)
         && !victim->has_ench(ENCH_PHANTOM_MIRROR))
     {
-        mpr("The mirror can't reflect that.");
+        mpr(T_("The mirror can't reflect that."));
         return spret::abort;
     }
 
@@ -705,7 +716,7 @@ static spret _phantom_mirror(dist *target)
     // mirrored copy will not properly count as summoned for some purposes.
     mon->flags &= ~(MF_HARD_RESET | MF_NO_REWARD);
 
-    mprf("You reflect %s with the mirror!",
+    mprf(T_("You reflect %s with the mirror!"),
          victim->name(DESC_THE).c_str());
 
     return spret::success;
@@ -843,7 +854,7 @@ static spret _tremorstone()
         return act && _valid_tremorstone_target(*act->as_monster());
     };
     if ((!see_target
-        && !yesno("You can't see anything, release a tremorstone anyway?",
+        && !yesno(T_("You can't see anything, release a tremorstone anyway?"),
                  true, 'n'))
         || stop_attack_prompt(hitfunc, "release a tremorstone", vulnerable))
     {
@@ -860,7 +871,7 @@ static spret _tremorstone()
     beam.ex_size = 2;
     beam.target = center;
 
-    mpr("The tremorstone explodes into fragments!");
+    mpr(T_("The tremorstone explodes into fragments!"));
 
     const int num_explosions = tremorstone_count(power);
     for (int i = 0; i < num_explosions; i++)
@@ -914,7 +925,7 @@ static spret _condenser()
     }
 
     if (!see_targets
-        && !yesno("You can't see anything. Try to condense clouds anyway?",
+        && !yesno(T_("You can't see anything. Try to condense clouds anyway?"),
                   true, 'n'))
     {
         canned_msg(MSG_OK);
@@ -952,7 +963,7 @@ static spret _condenser()
     }
 
     if (did_something)
-        mpr("Clouds condense from the air!");
+        mprf(MSGCH_PLAIN, T_("Clouds condense from the air!"));
 
     return spret::success;
 }
@@ -1063,7 +1074,7 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
     if (temp && is_xp_evoker(*item) && evoker_charges(item->sub_type) <= 0)
     {
         // DESC_THE prints "The tin of tremorstones (inert) is presently inert."
-        return make_stringf("The %s is presently inert.",
+        return make_stringf(T_("The %s is presently inert."),
                                             item->name(DESC_DBNAME).c_str());
     }
 
@@ -1102,8 +1113,8 @@ bool evoke_item(item_def& item, dist *preselect)
         if (!check_transform_into(transformation::flux, false))
             return false;
 
-        mprf("You crush the flux bauble in your %s and feel its energy "
-            "flooding your body.", you.hand_name(false).c_str());
+        mprf(T_("You crush the flux bauble in your %s and feel its energy flooding your body."),
+            you.hand_name(false).c_str());
         ASSERT(in_inventory(item));
         dec_inv_item_quantity(item.link, 1);
         transform(0, transformation::flux, true);
@@ -1158,7 +1169,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 return false;
             expend_xp_evoker(item.sub_type);
             if (!evoker_charges(item.sub_type))
-                mpr("The box is emptied!");
+                mpr(T_("The box is emptied!"));
             practise_evoking(1);
             break;
 
@@ -1167,7 +1178,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 return false;
             expend_xp_evoker(item.sub_type);
             if (!evoker_charges(item.sub_type))
-                mpr("The sack is emptied!");
+                mpr(T_("The sack is emptied!"));
             practise_evoking(1);
             break;
 
@@ -1177,14 +1188,14 @@ bool evoke_item(item_def& item, dist *preselect)
                 practise_evoking(1);
                 expend_xp_evoker(item.sub_type);
                 if (!evoker_charges(item.sub_type))
-                    mpr("The lightning rod overheats!");
+                    mpr(T_("The lightning rod overheats!"));
             }
             else
                 return false;
             break;
 
         case MISC_QUAD_DAMAGE:
-            mpr("QUAD DAMAGE!");
+            mpr(T_("QUAD DAMAGE!"));
             you.duration[DUR_QUAD_DAMAGE] = 30 * BASELINE_DELAY;
             ASSERT(in_inventory(item));
             dec_inv_item_quantity(item.link, 1);
@@ -1201,7 +1212,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The mirror clouds!");
+                        mpr(T_("The mirror clouds!"));
                     // deliberate fall-through
                 case spret::fail:
                     practise_evoking(1);
@@ -1224,7 +1235,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The tin is emptied!");
+                        mpr(T_("The tin is emptied!"));
                 case spret::fail:
                     practise_evoking(1);
                     break;
@@ -1241,7 +1252,7 @@ bool evoke_item(item_def& item, dist *preselect)
                 case spret::success:
                     expend_xp_evoker(item.sub_type);
                     if (!evoker_charges(item.sub_type))
-                        mpr("The condenser dries out!");
+                        mpr(T_("The condenser dries out!"));
                 case spret::fail:
                     practise_evoking(1);
                     break;

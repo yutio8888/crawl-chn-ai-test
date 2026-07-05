@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "mpr.h"
 #include "player.h"
 
@@ -29,8 +30,8 @@ void player::add_beholder(monster& mon, bool forced, int dur)
         beholders.push_back(mon.mid);
         if (!forced)
         {
-            mprf(MSGCH_WARN, "You are mesmerised by %s!",
-                             mon.name(DESC_THE).c_str());
+            mprf_p(MSGCH_WARN, T_("You are mesmerised by %1$s!"),
+                               mon.name(DESC_THE).c_str());
         }
     }
     else
@@ -120,7 +121,7 @@ static void _removed_beholder_msg(const monster *mons)
 
     if (is_sanctuary(you.pos()) && !mons_is_fleeing(mon))
     {
-        string msg = make_stringf("The Sanctuary denies %s grip on your mind.",
+        string msg = make_stringf(T_("The Sanctuary denies %s grip on your mind."),
                                   mons->name(DESC_ITS).c_str());
         god_speaks(GOD_ZIN, msg.c_str());
         return;
@@ -131,17 +132,17 @@ static void _removed_beholder_msg(const monster *mons)
         if (silenced(you.pos()) || silenced(mon.pos()))
         {
             if (you.can_see(mon))
-                mprf("You can no longer hear %s singing!", mon.name(DESC_ITS).c_str());
+                mprf_p(T_("You can no longer hear %1$s singing!"), mon.name(DESC_ITS).c_str());
             else
-                mpr("The silence clears your mind.");
+                mpr(T_("The silence clears your mind."));
         }
         else
-            mprf("%s stops singing.", mon.name(DESC_THE).c_str());
+            mprf_p(T_("%1$s stops singing."), mon.name(DESC_THE).c_str());
     }
     else
     {
-        mprf("%s loses %s grip on your mind.", mon.name(DESC_THE).c_str(),
-                                               mon.pronoun(PRONOUN_POSSESSIVE).c_str());
+        mprf_p(T_("%1$s loses %2$s grip on your mind."), mon.name(DESC_THE).c_str(),
+                                                         mon.pronoun(PRONOUN_POSSESSIVE).c_str());
     }
 }
 
@@ -201,7 +202,7 @@ void player::_removed_beholder(bool quiet)
         duration[DUR_MESMERISED] = 0;
         you.duration[DUR_MESMERISE_IMMUNE] = random_range(21, 40);
         if (!quiet)
-            mprf(MSGCH_DURATION, "You are no longer mesmerised.");
+            mprf(MSGCH_DURATION, "%s", T_("You are no longer mesmerised."));
     }
 }
 

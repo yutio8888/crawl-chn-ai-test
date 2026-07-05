@@ -80,15 +80,15 @@ agile mutation
 %%%%
 weak mutation
 
-你的肌肉变得异常虚弱。这个变异每升一级会减2点力量。
+你的肌肉变得异常虚弱。这个变异每升一级会减3点力量。
 %%%%
 dopey mutation
 
-你的心智变得异常愚钝。这个变异每升一级会减2点智力。
+你的心智变得异常愚钝。这个变异每升一级会减3点智力。
 %%%%
 clumsy mutation
 
-你的反应变得异常笨拙。这个变异每升一级会减2点敏捷。
+你的反应变得异常笨拙。这个变异每升一级会减3点敏捷。
 %%%%
 high mp mutation
 
@@ -338,11 +338,6 @@ screaming mutation
 你的喊叫声也都比平时更大。这个变异达到第二级，你将更难克制那股冲动，
 你的喊叫声也会更大。
 %%%%
-deterioration mutation
-
-当受伤时，有时你的身体会恶化，暂时降低你的属性。
-这个变异达到第二级，这种情况会发生得更频繁。
-%%%%
 no potion heal mutation
 
 你的系统会抗拒饮用的灵丹妙药，削弱了各种治疗药水的效果。
@@ -485,7 +480,7 @@ spit poison mutation
 %%%%
 in touch with death mutation
 
-你的死灵法术变得更为强大。这个变异达到第二级，就会增强你的死灵术的法力。
+你的死灵法术变得更为强大。这个变异达到第二级，就会增强你的死灵术的法术威力。
 %%%%
 acrobatic mutation
 
@@ -521,12 +516,6 @@ extra vitality mutation
 你的身体结构与大多数物种不同，这让你略难被杀死。
 这个变异每升一级，你的生命值上限就会增加4点。
 %%%%
-strong legs mutation
-
-你的腿又大又壮，可以通过<input>$cmd[CMD_USE_ABILITY]</input>进行跳跃，
-尽管可能不会完美落到目标地点。这个变异达到第二级，你就能跳得更远。
-每当你跳跃后，都需要休息一会儿，然后才能再跳。
-%%%%
 forlorn mutation
 
 你不能、不会、也永远无法皈依任何神。
@@ -538,10 +527,6 @@ nightstalker mutation
 +LOS mutation
 
 你生来就向着光，增加了你能看到和被看到的距离。
-%%%%
-petrification resistance mutation
-
-你免疫石化。
 %%%%
 cold-blooded mutation
 
@@ -580,11 +565,6 @@ nimble swimmer mutation
 你在水中游泳或在水面上飞行时能融入波浪，潜行获得加成。
 这个变异达到第二级，还会提升你在水中或水上的闪避能力和移动速度。
 %%%%
-vampiric mutation
-
-你受到吸血鬼诅咒，在虚假的生命和无血无肉的死亡之间挣扎。
-你可以通过<input>$cmd[CMD_USE_ABILITY]</input>放血或再一次充血。
-%%%%
 divine attributes mutation
 
 当你与其他物种相比，无论是在数值还是在发育程度的掌控上，
@@ -618,12 +598,6 @@ no regeneration mutation
 某些神圣祈祷能力可以短暂赋予你自愈的能力。
 作为补偿，你可以通过<input>$cmd[CMD_USE_ABILITY]</input> 键治疗自己，
 但代价是要永久地失去一些魔力。
-%%%%
-strong nose mutation
-
-你有着一个敏锐的鼻子，它熟悉地牢里的气息，从而可以找出宝藏藏在哪里。
-当你探索地牢时，附近的那些无法直接看到的物品，
-如果它没有被探索过，其位置会标出标记。
 %%%%
 # ------ 吉瓦的变异 ------
 gelatinous body mutation
@@ -692,11 +666,6 @@ drunken brawling mutation
 inability to drink after injury mutation
 
 当你受伤时，你有可能暂时无法饮用药水。
-这个变异每升一级，几率就会增加1％。
-%%%%
-inability to read after injury mutation
-
-当你受伤时，你有可能暂时无法阅读卷轴。
 这个变异每升一级，几率就会增加1％。
 %%%%
 missing a hand mutation
@@ -818,3 +787,468 @@ no translocations magic mutation
 
 你的移位技能等级为0，你也无法训练它。
 %%%%
+%%%%
+Cocytus destruction mutation
+
+你的释放毁灭能力被冰狱强化。你能够投掷寒冰束而不是火焰，
+你的寒冷束将受害者冻结成固体，减慢其移动。
+%%%%
+Dis destruction mutation
+
+你的释放毁灭能力被铁城强化。你能够投掷腐蚀性酸液束和金属碎片束
+而不是负能量。
+%%%%
+East Wind's embodiment mutation
+
+每当你狂暴冲锋时，你恢复一小部分最大魔力，并释放一阵刺骨寒风，
+使2格内的所有敌人暴露，增加他们从非攻击来源受到的伤害35%，
+以及他们被这些来源命中或影响的概率。
+
+此外，施放法术不会导致你停止践踏。
+%%%%
+Gehenna destruction mutation
+
+你的释放毁灭能力被火焚地狱强化。你能够投掷岩浆束而不是寒冷，
+你的火焰束可以剥离受害者的火焰抗性。
+%%%%
+Mark of Annihilation mutation
+
+你的地狱仆从能力被替换为湮灭之球，允许你投掷缓慢移动的强烈毁灭力球体，
+它们会以你特征性的毁灭能量引爆为巨大的爆炸。
+
+（你的湮灭之球释放{{
+    if you.get_base_mutation_level("Dis destruction") == 1 then
+        return "酸液或金属碎片"
+    elseif you.get_base_mutation_level("Cocytus destruction") == 1 then
+        return "寒冷或冰霜"
+    elseif you.get_base_mutation_level("Tartarus destruction") == 1 then
+        return "负能量或毁灭"
+    elseif you.get_base_mutation_level("Gehenna destruction") == 1 then
+        return "火焰或熔岩"
+    else
+        return "地狱能量"
+    end
+}}。）
+%%%%
+Mark of Atrocity mutation
+
+你的释放毁灭在连续使用不中断时会变得更加强大，伤害和生命消耗都会增加。
+连续使用第四次时，你将自动向随机目标释放一阵狂野的额外弩箭齐射，
+并重置此加成。
+%%%%
+Mark of Carnage mutation
+
+你的地狱仆从现在被召唤到随机敌人旁边而不是你附近。当它们出现时，
+它们会以你特征性的毁灭能量爆发出现（不会伤害你或其他盟友）。
+
+（你的仆从释放{{
+    if you.get_base_mutation_level("Dis destruction") == 1 then
+        return "酸液或金属碎片"
+    elseif you.get_base_mutation_level("Cocytus destruction") == 1 then
+        return "寒冷或冰霜"
+    elseif you.get_base_mutation_level("Tartarus destruction") == 1 then
+        return "负能量或毁灭"
+    elseif you.get_base_mutation_level("Gehenna destruction") == 1 then
+        return "火焰或熔岩"
+    else
+        return "地狱能量"
+    end
+}}的爆发。）
+%%%%
+Mark of Execution mutation
+
+一个谋杀之恶魔化身潜伏在你的灵魂中。每当你用近战击杀一个敌人时，
+有很小概率它会醒来并显现为包围你的镰刀刀锋漩涡。这些刀锋会在你
+攻击时一起攻击，并在你成功闪避敌人攻击时反击。
+
+你获得向敌人快速狂暴冲锋的能力。
+%%%%
+Mark of Haemoclasm mutation
+
+当你击杀敌人时，它们有很小概率爆炸为一阵猛烈的血雨，对相邻的敌人造成
+与受害者最大生命值成比例的伤害。
+
+死于这种爆炸的敌人自身也总是会爆炸。
+%%%%
+Mark of the Celebrant mutation
+
+每当你的生命值降至最大生命值的50%以下时，你进行一次地狱仪式，
+向附近的敌人释放一阵血箭齐射。你将为每个有效目标至少射出一支箭，
+但如果目标较少可能射出额外的箭。祈神技能提高这些箭的伤害，
+马赫勒布总会为被此效果击杀的敌人赐予你治疗。
+%%%%
+Mark of the Fanatic mutation
+
+赋予你杀戮化身能力，允许你在短时间内变身为一个强大的恶魔化身，
+大幅提升攻击和防御，代价是之后被拖入血肉熔炉并被迫为自由而战。
+%%%%
+Mark of the Legion mutation
+
+你的地狱仆从能力被替换为地狱军团，允许你随时间召唤一小支恶魔军队。
+虽然个体存活短暂，但只要状态持续，它们的数量无穷无尽，
+并且永远不会对你敌对。
+
+你也可以通过你召唤的盟友释放马赫勒布的毁灭而不伤害它们。
+%%%%
+Mark of the Tyrant mutation
+
+你的地狱仆从持续时间更长，在非常高的祈神技能下你甚至可以
+召唤更强大的仆从（以额外的虔诚值为代价）。当你杀死敌人时，
+一个随机仆从可能获得以下之一：加速、强壮、再生或聪慧。
+%%%%
+North Wind's embodiment mutation
+
+你在践踏期间迅速恢复所受伤害的最多70%。恢复速度随你的最大生命值提高。
+%%%%
+South Wind's embodiment mutation
+
+你在狂暴冲锋期间潜行提高50%，每当你成功偷袭一个敌人时，
+你的下一次狂暴冲锋移动变为瞬间。
+%%%%
+Tartarus destruction mutation
+
+你的释放毁灭能力被悲叹地狱强化。你能够投掷毁灭束而不是闪电，
+它会降低受害者的意志力，且你的负能量束更加强大。
+%%%%
+West Wind's embodiment mutation
+
+每当你手持远程武器向敌人狂暴冲锋时，你还会射出一发射击，
+造成更高的伤害。你的下一次普通攻击会变为同时对多个敌人射击。
+%%%%
+accursed mutation
+
+你的诅咒本质使得驱散你身上的恶毒能量更加困难，
+降低了你能从厄运和灾祸中恢复的速度。
+%%%%
+airstrike attack mutation
+
+每当你近战攻击一个敌人时，风会扭曲并攻击他们，造成额外伤害，
+其伤害随他们相邻的空白空间数量增加。
+%%%%
+armoured shell mutation
+
+你的皮肤上长出了坚硬的保护壳层，提高你的护甲等级。
+%%%%
+artefact enchanting mutation
+
+你可以使用卷轴为一些神器物品附魔，尽管这比附魔普通物品更困难。
+%%%%
+blade parry mutation
+
+每当你用近战攻击命中时，你的武器会短暂地磁化附近的金属，
+提高你格挡下一次指向你的攻击的概率。
+%%%%
+bloodcurse mutation
+
+你的血液充满了恶毒的诅咒，在受到近战攻击时有概率感染攻击者。
+%%%%
+booming voice mutation
+
+当你在敌对怪物的视线范围内阅读卷轴时，你的声音会以惊人的音量响起。
+%%%%
+claustrophobia bane
+
+你患上了幽闭恐惧症，当被墙壁包围时你的杀戮值下降。
+%%%%
+contaminating mutation
+
+你的身体不断散发着微弱的变形能量，在你攻击时可能污染敌人。
+%%%%
+contamination susceptible mutation
+
+你更容易受到魔法污染的影响，使其更快积累。
+%%%%
+devouring maw mutation
+
+一个贪婪的嘴在你身上形成，使你能够吞噬尸体来迅速恢复生命值。
+%%%%
+dilettante bane
+
+你对学习有抗拒，降低了你获得经验值的速率。
+%%%%
+eel punch mutation
+
+你的手臂像电鳗一样扭动，在近战攻击时有概率释放电流。
+%%%%
+eeljolt mutation
+
+每当你在近战中被击中时，你手臂中的电鳗会有概率向攻击者释放电流。
+%%%%
+efficient magic mutation
+
+你更有效率地引导魔法能量，略微降低施法的魔力消耗。
+%%%%
+efficient metabolism mutation
+
+你的新陈代谢异常高效，随时间提供缓慢的食物消耗降低。
+%%%%
+electrospasm bane
+
+每当你在近战中被击中时，有小概率会不受控制地释放一阵电击，
+伤害周围的一切——包括你自己。
+%%%%
+ephemeral shield mutation
+
+你用魔法能量编织出一个临时的护盾，持续数回合，吸收少量伤害。
+%%%%
+feed off suffering mutation
+
+附近敌人的痛苦使你充满活力，在它们的生命值降低时提供
+少量生命值恢复。
+%%%%
+formless mutation
+
+你的身体呈现出一种更易变的形态，更难被攻击击中，
+但不能穿戴身体护甲。
+%%%%
+foul shadow mutation
+
+你的影子散发出一种令人作呕的存在，对太靠近的敌人造成微弱的负能量伤害。
+%%%%
+freeze response mutation
+
+每当你在近战中被击中时，你的身体本能地用一阵寒冷能量做出反应，
+对攻击者造成微弱的冰冻伤害。
+%%%%
+frigid aura mutation
+
+你散发着一种刺骨的寒冷，对相邻的敌人造成微弱的冰冻伤害。
+%%%%
+frog-like legs mutation
+
+你的腿变成了适合跳跃的青蛙般的附肢，使你能够跳向敌人。
+%%%%
+growling stomach mutation
+
+你的消化系统变得异常不宽容，导致你以更快的速度消耗食物。
+%%%%
+heatstroke bane
+
+你的身体难以调节温度，在炎热环境中战斗时你会周期性地受到
+过热伤害。
+%%%%
+hex mastery mutation
+
+你天生擅长诅咒魔法，提高诅咒法术的成功率。
+%%%%
+hive swarm mutation
+
+你体内栖息着一群防御性昆虫，当你受到严重伤害时会蜂拥而出
+攻击附近的敌人。
+%%%%
+hunted bane
+
+命运已经诅咒你，导致更多独特命名的敌人出现在你的旅程中。
+%%%%
+hypnotic gaze mutation
+
+你的凝视具有催眠性，可能会使直接近战攻击你的敌人困惑。
+%%%%
+initially attractive mutation
+
+当第一次看到某只怪物时，它可能会被魔法拉向你。可能惊醒沉睡的怪物，虽然它们不一定能发现你的位置。
+%%%%
+insubstantial mutation
+
+你的身体部分由空灵物质构成，允许你有概率躲闪穿过攻击。
+%%%%
+inviolate magic mutation
+
+你的魔法本质更抗拒被驱散，使你的法术更难被反制。
+%%%%
+iron-fused scales mutation
+
+你的一些鳞片已经融合了铁，提高你的护甲等级和对某些物理伤害的抗性。
+%%%%
+lethargy bane
+
+一种慢性昏睡困扰着你，在你静止不动时周期性地导致你打瞌睡。
+%%%%
+lithotoxin mutation
+
+你的血液中含有石毒素，当你受到严重伤害时会在你周围释放石化云雾。
+%%%%
+lucky mutation
+
+你有一种不可思议的直觉，能发现别人可能当作凡品忽略的物品的隐藏属性。偶尔会发现看似普通的物品其实是神器。
+%%%%
+maw attack mutation
+
+你的吞噬之口有一个辅助近战攻击，有机会咬住敌人。
+%%%%
+meek mutation
+
+你的性格胆小，不太擅长战斗，略微降低你的近战伤害。
+%%%%
+mnemnophage mutation
+
+你以记忆为食，有时在杀死敌人时消耗它们的经验来稍微
+更快地恢复你的能力。
+%%%%
+mortality bane
+
+你对死亡更加敏感，受到来自亡灵和死灵术来源的额外伤害。
+%%%%
+multiplicity bane
+
+你周围的空间不稳定，在受到伤害时有小概率创造一个短暂的
+你自己的有害复制品。
+%%%%
+no forgecraft magic mutation
+
+你的思维无法理解锻造术魔法的原理，阻止你学习或施放锻造术法术。
+%%%%
+no rings mutation
+
+你的手指无法佩戴戒指，阻止你装备任何戒指。
+%%%%
+off-hand wielding mutation
+
+你发展了用副手持有额外武器的能力，允许你双持。
+%%%%
+ooze flood mutation
+
+当你受到严重伤害时，你会周期性地分泌出大量软泥，
+对踩入其中的敌人造成酸性伤害。
+%%%%
+paradox bane
+
+时间在你周围偶尔会自我纠缠，导致你周期性地受到微小伤害
+并被短距离传送。
+%%%%
+poor constitution mutation
+
+受到伤害时，你的攻击可能在短时间内被削弱。
+%%%%
+potion fungus mutation
+
+你的皮肤上长出了产生药水效果的真菌，周期性地在你周围产生
+一个小型的随机药水云雾。
+%%%%
+protean grace mutation
+
+{{ num = math.min(7, you.num_noninnate_mutations()) }}
+每项非先天突变为你提供 +1 闪避和 +1 杀戮加成（最多 +{{ num }}）。
+你当前获得 +{{ num }} 闪避和 +{{ num }} 杀戮加成。
+%%%%
+reckless mutation
+
+你的盾牌强度减半，但使用双手近战武器时伤害 +15%。
+%%%%
+renounce potions mutation
+
+你已经发誓放弃使用药水，阻止你饮用任何药水。
+%%%%
+renounce scrolls mutation
+
+你已经发誓放弃使用卷轴，阻止你阅读任何卷轴。
+%%%%
+riddle compulsion mutation
+
+你对谜语有一种无法控制的痴迷，有时在遇到新敌人时
+无法控制地向他们提出谜语。
+%%%%
+runic magic mutation
+
+你的魔法携带符文能量，在施放法术时提供小概率赋予你
+暂时的有益状态效果。
+%%%%
+slime shroud mutation
+
+你的身体被一层薄薄的保护性软泥覆盖，偶尔吸收一次近战攻击。
+%%%%
+slow wielding mutation
+
+你操纵武器的速度较慢，降低你的攻击速度。
+%%%%
+snow-blindness bane
+
+你在寒冷环境中视力下降，降低你的命中率。
+%%%%
+spark swarm mutation
+
+你体内充满了小型电火花，在受到近战伤害时会周期性地释放。
+%%%%
+spatial entanglement mutation
+
+当你施展移位法术时，有一定几率在传送后将另一只怪物拉到你的新位置。
+%%%%
+spellclaws mutation
+
+你的手指变长成爪子，能够通过近战攻击引导接触法术。
+%%%%
+spiteful blood mutation
+
+你的血液充满怨恨，在受到伤害时会向攻击者泼溅，
+造成少量不可抵抗的伤害。
+%%%%
+sporulate mutation
+
+在你身上生长的真菌周期性地释放出孢子，
+当允许生长时会在你身后留下伤害性的蘑菇。
+%%%%
+stampede mutation
+
+你获得践踏能力，允许你向敌人野蛮冲锋并践踏他们。
+%%%%
+steam response mutation
+
+被火焰弹射物击中时，有一定几率扩散出蒸汽云雾。
+%%%%
+stinger hair mutation
+
+你的身体长出有毒的刺毛，在受到近战攻击时伤害攻击者。
+%%%%
+stone body mutation
+
+你的皮肤已经部分变成石头，大幅提高护甲等级但降低你的敏捷。
+%%%%
+stumbling bane
+
+一种永久的笨拙困扰着你，有时在你移动时导致你绊倒并浪费一个回合。
+%%%%
+succour bane
+
+神对你的祈祷回应较差，降低你获得的虔诚值。
+%%%%
+time-warped blood mutation
+
+时间在你的血管中流动异常，在你受到伤害时周期性地赋予你
+或附近的盟友暂时的加速。
+%%%%
+treasure sense mutation
+
+你能够感觉到附近珍贵物品的存在，偶尔在你的地图上揭示它们的位置。
+%%%%
+trickster mutation
+
+你擅长诡计，提高你的潜行和偷袭伤害。
+%%%%
+vampire fangs mutation
+
+你长出了吸血鬼般的尖牙，允许你从活着的敌人身上吸取生命。
+%%%%
+warding bane
+
+你的天生魔法防御力较弱，稍微降低你的意志力。
+%%%%
+warmup strikes mutation
+
+你的攻击逐渐增强，在连续攻击同一目标时造成越来越多的伤害。
+%%%%
+water reaching mutation
+
+每当你攻击时，附近的水体会伸出并淹向你的敌人。
+%%%%
+water splatter mutation
+
+每当你攻击时，水会朝你的敌人泼溅，产生湿滑的地面。
+%%%%
+werefury mutation
+
+每当你击杀一个敌人时，你有概率进入短暂的狼人狂暴状态。
+%%%%
+werehowl mutation
+
+当你在狼形态下连续击杀足够多的敌人时，你会自动释放出凶猛的嚎叫，
+使附近的敌人恐惧。

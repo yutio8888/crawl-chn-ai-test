@@ -1,11 +1,8 @@
 #include "AppHdr.h"
-
+#include "database.h"
 #ifdef USE_TILE_LOCAL
-
 #include "tilereg-dgn.h"
-
 #include <algorithm> // any_of
-
 #include "cio.h"
 #include "cloud.h"
 #include "command.h"
@@ -45,7 +42,6 @@
 #include "travel.h"
 #include "viewgeom.h"
 #include "viewchar.h"
-
 static VColour _flash_colours[NUM_TERM_COLOURS] =
 {
     VColour(  0,   0,   0,   0), // BLACK (transparent)
@@ -65,14 +61,12 @@ static VColour _flash_colours[NUM_TERM_COLOURS] =
     VColour(150, 150,   0, 100), // YELLOW
     VColour(255, 255, 255, 100), // WHITE
 };
-
 /* Copy a VColour but change the alpha */
 static VColour _alpha_flash_colour(int index, int alpha)
 {
     const VColour source = _flash_colours[index];
     return VColour(source.r, source.g, source.b, alpha);
 }
-
 DungeonRegion::DungeonRegion(const TileRegionInit &init) :
     TileRegion(init),
     m_cx_to_gx(0),
@@ -85,43 +79,33 @@ DungeonRegion::DungeonRegion(const TileRegionInit &init) :
         m_cursor[i] = NO_CURSOR;
     config_glyph_font();
 }
-
 DungeonRegion::~DungeonRegion()
 {
 }
-
 void DungeonRegion::load_dungeon(const crawl_view_buffer &vbuf,
                                  const coord_def &gc_at_vbuf_centre)
 {
     m_dirty = true;
-
     m_cx_to_gx = gc_at_vbuf_centre.x - mx / 2;
     m_cy_to_gy = gc_at_vbuf_centre.y - my / 2;
-
     m_vbuf = vbuf;
-
     for (int y = 0; y < m_vbuf.size().y; ++y)
         for (int x = 0; x < m_vbuf.size().x; ++x)
         {
             coord_def gc(x + m_cx_to_gx, y + m_cy_to_gy);
-
             if (map_bounds(gc))
                 pack_cell_overlays(coord_def(x, y), m_vbuf);
         }
-
     place_cursor(CURSOR_TUTORIAL, m_cursor[CURSOR_TUTORIAL]);
 }
-
 void DungeonRegion::pack_cursor(cursor_type type, unsigned int tile)
 {
     const coord_def &gc = m_cursor[type];
     if (gc == NO_CURSOR || !on_screen(gc))
         return;
-
     const coord_def ep(gc.x - m_cx_to_gx, gc.y - m_cy_to_gy);
     m_buf_dngn.add_icons_tile(tile, ep.x, ep.y);
 }
-
 // XX code duplication
 static unsigned _get_highlight(int col)
 {
@@ -137,7 +121,6 @@ static unsigned _get_highlight(int col)
            (col & COLFLAG_REVERSE)          ? unsigned{CHATTR_REVERSE}
                                             : unsigned{CHATTR_NORMAL};
 }
-
 void DungeonRegion::pack_glyph_at(screen_cell_t *vbuf_cell, int vx, int vy)
 {
     // need to do some footwork to decode glyph colours
@@ -148,7 +131,6 @@ void DungeonRegion::pack_glyph_at(screen_cell_t *vbuf_cell, int vx, int vy)
     const int real_y = vy * dy + sy + oy;
     int tiles_bg = CHATTR_NORMAL;
     int tiles_fg = fg;
-
     switch (bg & CHATTR_ATTRMASK)
     {
         case CHATTR_REVERSE:
@@ -187,21 +169,17 @@ void DungeonRegion::pack_glyph_at(screen_cell_t *vbuf_cell, int vx, int vy)
             term_colours[tiles_fg], term_colours[tiles_bg], real_x, real_y);
     }
 }
-
 void DungeonRegion::pack_buffers()
 {
     m_buf_dngn.clear();
     m_buf_flash.clear();
     const bool pack_tiles = Options.tile_display_mode != "glyphs";
     const bool pack_glyphs = Options.tile_display_mode != "tiles";
-
     if (m_vbuf.empty())
         return;
-
     coord_def m_vbuf_sz = m_vbuf.size();
     ASSERT(m_vbuf_sz.x == crawl_view.viewsz.x);
     ASSERT(m_vbuf_sz.y == crawl_view.viewsz.y);
-
     screen_cell_t *vbuf_cell = m_vbuf;
     for (int y = 0; y < crawl_view.viewsz.y; ++y)
         for (int x = 0; x < crawl_view.viewsz.x; ++x)
@@ -210,7 +188,6 @@ void DungeonRegion::pack_buffers()
                 m_buf_dngn.add(vbuf_cell->tile, x, y);
             if (pack_glyphs)
                 pack_glyph_at(vbuf_cell, x, y);
-
             const int fcol = vbuf_cell->flash_colour;
             const int falpha = vbuf_cell->flash_alpha;
             if (fcol)
@@ -219,17 +196,14 @@ void DungeonRegion::pack_buffers()
                                 falpha ? _alpha_flash_colour(fcol, falpha)
                                        : _flash_colours[fcol]);
             }
-
             vbuf_cell++;
         }
-
     // TODO: these cursors are a bit thick for glyphs mode
     pack_cursor(CURSOR_TUTORIAL, TILEI_TUTORIAL_CURSOR);
     const bool mouse_curs_vis = you.see_cell(m_cursor[CURSOR_MOUSE]);
     pack_cursor(CURSOR_MOUSE, mouse_curs_vis ? TILEI_CURSOR : TILEI_CURSOR2);
     pack_cursor(CURSOR_MAP, TILEI_CURSOR);
 }
-
 // #define DEBUG_TILES_REDRAW
 void DungeonRegion::render()
 {
@@ -241,7 +215,6 @@ void DungeonRegion::render()
         pack_buffers();
         m_dirty = false;
     }
-
     set_transform();
     glmanager->set_scissor(0, 0, tile_iw, tile_ih);
     if (Options.tile_display_mode == "tiles")
@@ -252,18 +225,13 @@ void DungeonRegion::render()
         m_buf_dngn.draw_glyphs();
         set_transform();
     }
-
     // even glyph mode needs the icon layer: it is used for cursors.
     m_buf_dngn.draw_icons();
     if (Options.tile_display_mode != "glyphs")
         draw_minibars();
-
     m_buf_flash.draw();
-
     glmanager->reset_scissor();
-
     unordered_set<coord_def> tag_coords;
-
     for (int t = TAG_MAX - 1; t >= 0; t--)
     {
         for (const TextTag &tag : m_tags[t])
@@ -276,22 +244,18 @@ void DungeonRegion::render()
             if (tag_coords.count(tag.gc))
                 continue;
             tag_coords.insert(tag.gc);
-
             coord_def pc;
             to_screen_coords(tag.gc, &pc);
             // center this coord, which is at the top left of gc's cell
             pc.x += dx / 2;
-
             const auto text = formatted_string(tag.tag.c_str(), WHITE);
             m_tag_font->render_hover_string(pc.x, pc.y, text);
         }
-
         //XXX: Why hide unique monster tags when showing e'x'amine tags?
         if (tag_coords.size())
             break;
     }
 }
-
 /**
  * Draws miniature health and magic points bars on top of the player tile.
  *
@@ -311,12 +275,9 @@ void DungeonRegion::draw_minibars()
         // The bars are two pixels high each.
         const float bar_height = 0.0625;
         float healthbar_offset = 0.875;
-
         ShapeBuffer buff;
-
         if (!you.on_current_level || !on_screen(you.pos()))
             return;
-
         // FIXME: to_screen_coords could be made into two versions: one
         // that gives coords by pixel (the current one), one that gives
         // them by grid.
@@ -324,15 +285,12 @@ void DungeonRegion::draw_minibars()
         to_screen_coords(you.pos(), &player_on_screen);
         player_on_screen.x = (player_on_screen.x-sx)/dx;
         player_on_screen.y = (player_on_screen.y-sy)/dy;
-
         if (Options.tile_show_minimagicbar && you.max_magic_points > 0)
         {
             static const VColour magic(0, 114, 159, 207);      // lightblue
             static const VColour magic_spent(0, 0, 0, 255);  // black
-
             const float magic_divider = (float) you.magic_points
                                         / (float) you.max_magic_points;
-
             buff.add(player_on_screen.x,
                      player_on_screen.y + healthbar_offset + bar_height,
                      player_on_screen.x + magic_divider,
@@ -346,24 +304,19 @@ void DungeonRegion::draw_minibars()
         }
         else
             healthbar_offset += bar_height;
-
         if (Options.tile_show_minihealthbar)
         {
             const float min_hp = max(0, you.hp);
             const float health_divider = min_hp / (float) you.hp_max;
-
             const int hp_percent = (you.hp * 100) / you.hp_max;
-
             int hp_colour = GREEN;
             for (const auto &entry : Options.hp_colour)
                 if (hp_percent <= entry.first)
                     hp_colour = entry.second;
-
             static const VColour healthy(   0, 255, 0, 255); // green
             static const VColour damaged( 255, 255, 0, 255); // yellow
             static const VColour wounded( 150,   0, 0, 255); // darkred
             static const VColour hp_spent(255,   0, 0, 255); // red
-
             buff.add(player_on_screen.x,
                      player_on_screen.y + healthbar_offset,
                      player_on_screen.x + health_divider,
@@ -371,23 +324,19 @@ void DungeonRegion::draw_minibars()
                      hp_colour == RED    ? wounded :
                      hp_colour == YELLOW ? damaged
                                          : healthy);
-
             buff.add(player_on_screen.x + health_divider,
                      player_on_screen.y + healthbar_offset,
                      player_on_screen.x + 1,
                      player_on_screen.y + healthbar_offset + bar_height,
                      hp_spent);
         }
-
         buff.draw();
     }
 }
-
 void DungeonRegion::clear()
 {
     m_vbuf.clear();
 }
-
 void DungeonRegion::config_glyph_font()
 {
     if (dx != m_font_dx || dy != m_font_dy)
@@ -406,46 +355,37 @@ void DungeonRegion::config_glyph_font()
         else
             m_buf_dngn.get_glyph_font()->resize(dy * 3 /4); // somewhat heuristic
         // XX this will break if mode can be changed in-game, need to reset dx
-
         m_font_dx = dx;
         m_font_dy = dy;
     }
 }
-
 void DungeonRegion::on_resize()
 {
     // TODO enne
 }
-
 void DungeonRegion::recalculate()
 {
     // needs to happen before superclass recalculate, and therefore can't
     // happen in on_resize
     config_glyph_font();
-
     Region::recalculate();
 }
-
 bool DungeonRegion::inside(int x, int y)
 {
     return x >= 0 && y >= 0 && x <= tile_iw && y <= tile_ih;
 }
-
 static bool _handle_distant_monster(monster* mon, unsigned char mod)
 {
     const bool shift = (mod & TILES_MOD_SHIFT);
     const bool ctrl  = (mod & TILES_MOD_CTRL);
     const bool alt   = (shift && ctrl || (mod & TILES_MOD_ALT));
-
     // TODO: is see_cell_no_trans too strong?
     if (!mon || mon->friendly() || !you.see_cell_no_trans(mon->pos()))
         return false;
-
     // TODO: unify code with tooltip construction?
     const item_def* weapon = you.weapon();
     const bool primary_ranged = weapon && is_range_weapon(*weapon);
     const int melee_dist = weapon ? weapon_reach(*weapon) : 1;
-
     if (!ctrl && !shift && !alt
         && (primary_ranged || (mon->pos() - you.pos()).rdist() <= melee_dist))
     {
@@ -454,7 +394,6 @@ static bool _handle_distant_monster(monster* mon, unsigned char mod)
         quiver::get_primary_action()->trigger(t);
         return true;
     }
-
     if (!ctrl && shift && quiver::get_secondary_action()->is_valid())
     {
         dist t;
@@ -494,44 +433,34 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
     {
         return 0;
     }
-
     int cx;
     int cy;
-
     bool on_map = mouse_pos(event.px, event.py, cx, cy);
-
     const coord_def gc(cx + m_cx_to_gx, cy + m_cy_to_gy);
     tiles.place_cursor(CURSOR_MOUSE, gc);
-
     if (event.event == wm_mouse_event::MOVE)
     {
         string desc = get_cell_mouseover_tag(gc);
         // Suppress floor description
         if (desc == "floor")
             desc = "";
-
         if (you.see_cell(gc))
         {
             if (cloud_struct* cloud = cloud_at(gc))
             {
                 string terrain_desc = desc;
                 desc = cloud->cloud_name(true);
-
                 if (!terrain_desc.empty())
                     desc += "\n" + terrain_desc;
             }
         }
-
         if (!desc.empty())
             tiles.add_text_tag(TAG_CELL_DESC, desc, gc);
     }
-
     if (mouse_control::current_mode() == MOUSE_MODE_NORMAL)
         return 0;
-
     if (!on_map)
         return 0;
-
     if (mouse_control::current_mode() == MOUSE_MODE_TARGET
         || mouse_control::current_mode() == MOUSE_MODE_TARGET_PATH
         || mouse_control::current_mode() == MOUSE_MODE_TARGET_DIR)
@@ -544,15 +473,11 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
             m_last_clicked_grid = m_cursor[CURSOR_MOUSE];
             return CK_MOUSE_CLICK;
         }
-
         return 0;
     }
-
     if (event.event != wm_mouse_event::PRESS)
         return 0;
-
     m_last_clicked_grid = m_cursor[CURSOR_MOUSE];
-
     if (you.pos() == gc)
     {
         switch (event.button)
@@ -580,7 +505,6 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
                 }
                 else
                 {
-
                     // pick up menu
                     // More than a single item -> open menu right away.
                     if (count_movable_items(o) > 1)
@@ -594,7 +518,6 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
                     return encode_command_as_key(CMD_PICKUP);
                 }
             }
-
             const dungeon_feature_type feat = env.grid(gc);
             const command_type cmd = feat_stair_direction(feat);
             switch (cmd)
@@ -621,7 +544,6 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
         default:
             return 0;
         }
-
     }
     // else not on player...
     if (event.button == wm_mouse_event::RIGHT)
@@ -634,13 +556,10 @@ int DungeonRegion::handle_mouse(wm_mouse_event &event)
         else
             return 0;
     }
-
     if (event.button != wm_mouse_event::LEFT)
         return 0;
-
     return tile_click_cell(gc, event.mod);
 }
-
 int tile_click_cell(const coord_def &gc, unsigned char mod)
 {
     monster* mon = monster_at(gc);
@@ -649,51 +568,40 @@ int tile_click_cell(const coord_def &gc, unsigned char mod)
         if (_handle_distant_monster(mon, mod))
             return CK_MOUSE_CMD;
     }
-
     if ((mod & (TILES_MOD_CTRL | TILES_MOD_SHIFT)) && adjacent(you.pos(), gc))
     {
         const command_type cmd = click_travel(gc, mod & TILES_MOD_CTRL,
                                               mod & TILES_MOD_SHIFT);
         if (cmd != CMD_NO_CMD)
             process_command(cmd);
-
         return CK_MOUSE_CMD;
     }
-
     // Don't move if we've tried to fire/cast/evoke when there's nothing
     // available.
     if (mod & (TILES_MOD_SHIFT | TILES_MOD_CTRL | TILES_MOD_ALT))
         return CK_MOUSE_CMD;
-
     dprf("click_travel");
     const command_type cmd = click_travel(gc, false, false);
     if (cmd != CMD_NO_CMD)
         process_command(cmd);
-
     return CK_MOUSE_CMD;
 }
-
 void DungeonRegion::to_screen_coords(const coord_def &gc, coord_def *pc) const
 {
     int cx = gc.x - m_cx_to_gx;
     int cy = gc.y - m_cy_to_gy;
-
     pc->x = sx + ox + cx * dx;
     pc->y = sy + oy + cy * dy;
 }
-
 bool DungeonRegion::on_screen(const coord_def &gc) const
 {
     int x = gc.x - m_cx_to_gx;
     int y = gc.y - m_cy_to_gy;
-
     return x >= 0 && x < mx && y >= 0 && y < my;
 }
-
 void DungeonRegion::place_cursor(cursor_type type, const coord_def &gc)
 {
     coord_def result = gc;
-
     // If we're only looking for a direction, put the mouse
     // cursor next to the player to let them know that their
     // spell/wand will only go one square.
@@ -701,10 +609,8 @@ void DungeonRegion::place_cursor(cursor_type type, const coord_def &gc)
         && type == CURSOR_MOUSE && gc != NO_CURSOR)
     {
         coord_def delta = gc - you.pos();
-
         int ax = abs(delta.x);
         int ay = abs(delta.y);
-
         result = you.pos();
         if (1000 * ay < 414 * ax)
             result += (delta.x > 0) ? coord_def(1, 0) : coord_def(-1, 0);
@@ -715,7 +621,6 @@ void DungeonRegion::place_cursor(cursor_type type, const coord_def &gc)
         else if (delta.x < 0)
             result += (delta.y > 0) ? coord_def(-1, 1) : coord_def(-1, -1);
     }
-
     if (m_cursor[type] != result)
     {
         m_dirty = true;
@@ -724,41 +629,32 @@ void DungeonRegion::place_cursor(cursor_type type, const coord_def &gc)
             m_last_clicked_grid = coord_def();
     }
 }
-
 bool DungeonRegion::update_tip_text(string &tip)
 {
     // TODO enne - it would be really nice to use the tutorial
     // descriptions here for features, monsters, etc...
     // Unfortunately, that would require quite a bit of rewriting
     // and some parsing of formatting to get that to work.
-
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND)
         return false;
-
     if (m_cursor[CURSOR_MOUSE] == NO_CURSOR)
         return false;
     const coord_def gc = m_cursor[CURSOR_MOUSE];
     if (!map_bounds(gc) || !crawl_view.in_viewport_g(gc))
         return false;
-
     bool ret = (tile_dungeon_tip(gc, tip));
-
 #ifdef WIZARD
     if (you.wizard)
     {
         if (!tip.empty())
             tip += "\n\n";
-
         if (you.see_cell(gc))
         {
             const coord_def ep = grid2show(gc);
-
             tip += make_stringf("GC(%d, %d) EP(%d, %d)\n",
                                 gc.x, gc.y, ep.x, ep.y);
-
             if (env.heightmap)
                 tip += make_stringf("HEIGHT(%d)\n", dgn_height_at(gc));
-
             tip += "\n";
             tip += tile_debug_string(tile_env.bk_fg(gc), tile_env.bk_bg(gc),
                                      ' ');
@@ -771,7 +667,6 @@ bool DungeonRegion::update_tip_text(string &tip)
                 tip += make_stringf("HEIGHT(%d)\n", dgn_height_at(gc));
             tip += "\n";
         }
-
         const int map_index = env.level_map_ids(gc);
         if (map_index != INVALID_MAP_INDEX)
         {
@@ -783,31 +678,23 @@ bool DungeonRegion::update_tip_text(string &tip)
                                  br.x, br.y,
                                  vp.size.x, vp.size.y);
         }
-
         {
             terrain_property_t props = env.pgrid(gc);
             vector<string> str;
-
             // Not a complete list at the moment, but focusing on those which
             // are not otherwise visible in game (such as Sanctuary or bloody).
             if (props & FPROP_NO_TELE_INTO)
                 str.push_back("no_tele_into");
-
             if (props & FPROP_NO_CLOUD_GEN)
                 str.push_back("no_cloud_gen");
-
             if (props & FPROP_NO_TIDE)
                 str.push_back("no_tide");
-
             if (props & FPROP_NO_JIYVA)
                 str.push_back("no_jiyva");
-
             if (props & FPROP_SEEN_OR_NOEXP)
                 str.push_back("seen_or_noexp");
-
             if (props & FPROP_NO_AUTOMAP)
                 str.push_back("no_automap");
-
             if (!str.empty())
             {
                 tip += "FProps: ";
@@ -815,9 +702,7 @@ bool DungeonRegion::update_tip_text(string &tip)
                 tip += "\n\n";
             }
         }
-
         tip += tile_debug_string(tile_env.bk_fg(gc), tile_env.bk_bg(gc), 'B');
-
         if (!m_vbuf.empty())
         {
             const screen_cell_t *vbuf = m_vbuf;
@@ -825,7 +710,6 @@ bool DungeonRegion::update_tip_text(string &tip)
             const screen_cell_t &cell = vbuf[crawl_view.viewsz.x * vc.y + vc.x];
             tip += tile_debug_string(cell.tile.fg, cell.tile.bg, 'V');
         }
-
         tip += make_stringf("\nFLV: floor: %d (%s) (%d)"
                             "\n     wall:  %d (%s) (%d)"
                             "\n     feat:  %d (%s) (%d)"
@@ -840,21 +724,17 @@ bool DungeonRegion::update_tip_text(string &tip)
                             tile_dngn_name(tile_env.flv(gc).feat),
                             tile_env.flv(gc).feat_idx,
                             tile_env.flv(gc).special);
-
         ret = true;
     }
 #endif
-
     return ret;
 }
-
 static void _add_tip(string &tip, string text)
 {
     if (!tip.empty())
         tip += "\n";
     tip += text;
 }
-
 bool tile_dungeon_tip(const coord_def &gc, string &tip)
 {
     // TODO: these are not formatted very nicely
@@ -863,11 +743,9 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
     const bool primary_is_secondary = primary_ranged &&
         quiver::get_primary_action() == quiver::get_secondary_action();
     const int melee_dist = you.weapon() ? weapon_reach(*you.weapon()) : 1;
-
     vector<command_type> cmd;
     tip = "";
     bool has_monster = false;
-
     // Left-click first.
     if (gc == you.pos())
     {
@@ -904,7 +782,6 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
                     _add_tip(tip, "[L-Click] Attack"); // show weapon?
                 else
                     _add_tip(tip, "[L-Click] Move towards");
-
                 if (quiver::get_secondary_action()->is_valid())
                 {
                     // this doesn't show the CMD_PRIMARY_ATTACK key
@@ -954,7 +831,6 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
         }
         // all other solid features prevent l-click actions
     }
-
     // These apply both on the same square as the player's and elsewhere.
     if (!has_monster)
     {
@@ -967,7 +843,6 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
                 cmd.push_back(CMD_PICKUP);
             }
         }
-
         const dungeon_feature_type feat = env.map_knowledge(gc).feat();
         const command_type dir = feat_stair_direction(feat);
         if (dir != CMD_NO_CMD)
@@ -984,12 +859,10 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
                 tip += "enter gate";
             else
                 tip += "use stairs";
-
             tip += " (%)";
             cmd.push_back(dir);
         }
     }
-
     // Right-click.
     if (gc == you.pos())
     {
@@ -1023,11 +896,9 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
             // pick up menu
             // this is already added by the code above
         }
-
         // Character overview.
         _add_tip(tip, "[R-Click] Overview (%)");
         cmd.push_back(CMD_RESISTS_SCREEN);
-
         // Religion.
         if (!you_worship(GOD_NO_GOD))
         {
@@ -1040,20 +911,15 @@ bool tile_dungeon_tip(const coord_def &gc, string &tip)
     {
         _add_tip(tip, "[R-Click] Describe");
     }
-
     if (!tip.empty())
         insert_commands(tip, cmd, false);
-
     return true;
 }
-
 bool DungeonRegion::update_alt_text(string &alt)
 {
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND)
         return false;
-
     const coord_def &gc = m_cursor[CURSOR_MOUSE];
-
     if (gc == NO_CURSOR)
         return false;
     if (!map_bounds(gc))
@@ -1062,7 +928,6 @@ bool DungeonRegion::update_alt_text(string &alt)
         return false;
     if (m_last_clicked_grid == gc)
         return false;
-
     describe_info inf;
     dungeon_feature_type feat = env.map_knowledge(gc).feat();
     if (you.see_cell(gc))
@@ -1076,31 +941,25 @@ bool DungeonRegion::update_alt_text(string &alt)
         if (!stash.empty())
             inf.body << "\n" << stash;
     }
-
     alt = process_description(inf);
-
     // Suppress floor description
-    if (alt == "Floor.")
+    if (alt == (T_("Floor.")))
     {
         alt.clear();
         return false;
     }
     return true;
 }
-
 void DungeonRegion::clear_text_tags(text_tag_type type)
 {
     m_tags[type].clear();
 }
-
 void DungeonRegion::add_text_tag(text_tag_type type, const string &tag,
                                  const coord_def &gc)
 {
     TextTag t;
     t.tag = tag;
     t.gc  = gc;
-
     m_tags[type].push_back(t);
 }
-
 #endif

@@ -1,0 +1,26 @@
+# Test fixture: positional gap detection
+# Each entry label describes expected behavior (OK or GAP)
+
+%%%%
+OK: all positions 1-4 used (no silent)
+%1$s用%3$s%4$s格挡了%2$s……并将其反射了回去！
+
+%%%%
+OK: positions 1-2 display + 3 as %.0s silent
+%1$s被%2$s向前猛拉%3$.0s。
+
+%%%%
+GAP: positions 1,2,4,5 used, missing 3
+%1$s%2$s了%4$s%5$.0s。
+
+%%%%
+GAP: positions 1,3 used, missing 2
+%1$s被%3$s向前猛拉。
+
+%%%%
+OK: no positional specifiers at all
+%s穿透了%s。
+
+%%%%
+OK: single positional display + %.0s silent consume
+%1$s了%2$.0s。

@@ -14,6 +14,7 @@
 #include "mpr.h"
 #include "canned-message-type.h"
 #include "enum.h"
+#include "i18n.h"
 #include "player.h"
 
 using std::vector;
@@ -51,7 +52,7 @@ void formatted_mpr(const formatted_string& fs,
 // mpr() an arbitrarily long list of strings
 void mpr_comma_separated_list(const string &prefix,
                               const vector<string> &list,
-                              const string &andc = ", and ",
+                              const string &andc = T_(", and "),
                               const string &comma = ", ",
                               const msg_channel_type channel = MSGCH_PLAIN,
                               const int param = 0);

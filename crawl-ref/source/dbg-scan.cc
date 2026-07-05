@@ -16,6 +16,7 @@
 #include "chardump.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dbg-util.h"
 #include "dungeon.h"
 #include "end.h"
@@ -129,7 +130,7 @@ void debug_item_scan()
             }
             else
             {
-                mprf("env.igrid(%d,%d) = %d",
+                mprf(T_("env.igrid(%d,%d) = %d"),
                      env.item[i].pos.x, env.item[i].pos.y, env.igrid(env.item[i].pos));
             }
 
@@ -141,7 +142,7 @@ void debug_item_scan()
                 {
                     if (ii->index() == i)
                     {
-                        mprf("Held by monster #%d: %s at (%d,%d)",
+                        mprf(T_("Held by monster #%d: %s at (%d,%d)"),
                              j, mons.name(DESC_A, true).c_str(),
                              mons.pos().x, mons.pos().y);
                     }
@@ -300,7 +301,7 @@ void debug_mons_scan()
                      x, y, m->name(DESC_PLAIN, true).c_str(),
                      m->pos().x, m->pos().y);
                 if (!m->alive())
-                    mprf(MSGCH_WARN, "Additionally, it isn't alive.");
+                    mprf(MSGCH_WARN, "%s", T_("Additionally, it isn't alive."));
                 warned = true;
             }
             else if (!m->alive())
@@ -349,7 +350,7 @@ void debug_mons_scan()
             is_floating[i] = true;
 
             _announce_level_prob(warned);
-            mprf(MSGCH_WARN, "Floating monster: %s at (%d,%d), midx = %d",
+            mprf(MSGCH_WARN, T_("Floating monster: %s at (%d,%d), midx = %d"),
                  m->full_name(DESC_PLAIN).c_str(),
                  pos.x, pos.y, i);
             warned = true;
@@ -366,13 +367,13 @@ void debug_mons_scan()
                 string full = m2->full_name(DESC_PLAIN);
                 if (m2->alive())
                 {
-                    mprf(MSGCH_WARN, "Also at (%d, %d): %s, midx = %d",
+                    mprf(MSGCH_WARN, T_("Also at (%d, %d): %s, midx = %d"),
                          pos.x, pos.y, full.c_str(), j);
                 }
                 else if (m2->type != MONS_NO_MONSTER)
                 {
-                    mprf(MSGCH_WARN, "Dead mon also at (%d, %d): %s,"
-                                     "midx = %d",
+                    mprf(MSGCH_WARN, T_("Dead mon also at (%d, %d): %s,"
+                                     "midx = %d"),
                          pos.x, pos.y, full.c_str(), j);
                 }
             }
@@ -411,8 +412,8 @@ void debug_mons_scan()
             {
                 _announce_level_prob(warned);
                 warned = true;
-                mprf(MSGCH_WARN, "Monster %s (%d, %d) holding invalid item in "
-                                 "slot %d (midx = %d)",
+                mprf(MSGCH_WARN, T_("Monster %s (%d, %d) holding invalid item in "
+                                 "slot %d (midx = %d)"),
                      m->full_name(DESC_PLAIN).c_str(),
                      pos.x, pos.y, j, i);
                 continue;
@@ -437,9 +438,9 @@ void debug_mons_scan()
             {
                 _announce_level_prob(warned);
                 warned = true;
-                mprf(MSGCH_WARN, "Monster %s (%d, %d) [midx = %d] holding "
+                mprf(MSGCH_WARN, T_("Monster %s (%d, %d) [midx = %d] holding "
                                  "item %s, but item thinks it's held by "
-                                 "monster %s (%d, %d) [midx = %d]",
+                                 "monster %s (%d, %d) [midx = %d]"),
                      m->full_name(DESC_PLAIN).c_str(),
                      m->pos().x, m->pos().y, i,
                      item.name(DESC_PLAIN).c_str(),
@@ -451,13 +452,13 @@ void debug_mons_scan()
                 {
                     if (holder->inv[k] == idx)
                     {
-                        mprf(MSGCH_WARN, "Other monster thinks it's holding the item, too.");
+                        mprf(MSGCH_WARN, "%s", T_("Other monster thinks it's holding the item, too."));
                         found = true;
                         break;
                     }
                 }
                 if (!found)
-                    mprf(MSGCH_WARN, "Other monster isn't holding it, though.");
+                    mprf(MSGCH_WARN, "%s", T_("Other monster isn't holding it, though."));
             } // if (holder != m)
         } // for (int j = 0; j < NUM_MONSTER_SLOTS; j++)
 
@@ -556,11 +557,11 @@ void debug_mons_scan()
                                   mon->pos().x, mon->pos().y);
 
         if (vaults.empty())
-            mprf(MSGCH_WARN, "%s not in any vaults.", str.c_str());
+            mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
     }
 
@@ -578,11 +579,11 @@ void debug_mons_scan()
         vector<string> vaults = _in_vaults(pos);
 
         if (vaults.empty())
-            mprf(MSGCH_WARN, "%s not in any vaults.", str.c_str());
+            mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
 
         // Don't report on same monster twice.
@@ -593,11 +594,11 @@ void debug_mons_scan()
         vaults = _in_vaults(mon->pos());
 
         if (vaults.empty())
-            mprf(MSGCH_WARN, "%s not in any vaults.", str.c_str());
+            mprf(MSGCH_WARN, T_("%s not in any vaults."), str.c_str());
         else
         {
             mpr_comma_separated_list(str + " in vault(s) ", vaults,
-                                     " and ", ", ", MSGCH_WARN);
+                                     T_(" and "), ", ", MSGCH_WARN);
         }
     }
 

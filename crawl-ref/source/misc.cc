@@ -38,21 +38,21 @@ void transpose_with_monster(monster* mon_to_swap)
 
     if (you.stasis())
     {
-        mpr("Your stasis prevents you from teleporting.");
+        mpr(T_("Your stasis prevents you from teleporting."));
         return;
     }
 
     // Be nice: no swapping into uninhabitable environments.
     if (!you.is_habitable(newpos) || !mon.is_habitable(you.pos()))
     {
-        mpr("You spin around.");
+        mpr(T_("You spin around."));
         return;
     }
 
     const caught_type mon_caught = mon.caught_by();
     const caught_type you_caught = you.caught_by();
 
-    mprf("You swap places with %s.", mon.name(DESC_THE).c_str());
+    mprf(T_("You swap places with %s."), mon.name(DESC_THE).c_str());
 
     // Must remove nets first (with no drop) so that we don't clone nets during
     // this swap.
@@ -139,7 +139,7 @@ string counted_monster_list::describe(description_level_type desc) const
         if (i != list.begin())
         {
             ++i;
-            out += (i == list.end() ? " and " : ", ");
+            out += (i == list.end() ? T_(" and ") : ", ");
         }
         else
             ++i;

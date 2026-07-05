@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <map>
 #include <cstdio>
 #include <cstdlib>
 #include <cstring>
@@ -37,6 +38,7 @@
 #include "message.h"
 #include "mon-place.h"
 #include "notes.h"
+#include "options.h"
 #include "output.h"
 #include "player-stats.h"
 #include "religion.h"
@@ -49,6 +51,7 @@
 #include "unicode.h"
 #include "view.h"
 #include "xom.h"
+#include "positional_format.h"
 
 using namespace ui;
 
@@ -645,24 +648,24 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (!species::is_draconian(you.species)
             || you.species == SP_BASE_DRACONIAN) // ugh
         {
-            result.push_back({ "golden breath", _formmut("You can breathe a blast of fire, cold, and poison.")});
+            result.push_back({ "golden breath", _formmut(T_("You can breathe a blast of fire, cold, and poison."))});
         }
         else if (species::draconian_breath(you.species) != ABIL_NON_ABILITY)
-            result.push_back({ "", _formmut("Your breath weapon is enhanced in this form.")});
+            result.push_back({ "", _formmut(T_("Your breath weapon is enhanced in this form."))});
     }
 
     // form-based flying can't be stopped, so don't print amphibiousness
     if (form->player_can_fly())
-        result.push_back({"flying", _formmut("You are flying.")});
+        result.push_back({"flying", _formmut(T_("You are flying."))});
     // n.b. this could cause issues for non-dragon giant forms if they exist
     else if (form->player_can_swim() && !species::can_swim(you.species))
-        result.push_back({"amphibious", _formmut("You are amphibious.")});
+        result.push_back({"amphibious", _formmut(T_("You are amphibious."))});
 
     const int hp_mod = form->mult_hp(10);
     if (hp_mod > 10)
     {
         result.push_back({"boosted hp",
-                            _formmut(make_stringf("Your maximum health is %sincreased.",
+                            _formmut(make_stringf(T_("Your maximum health is %sincreased."),
                                                     hp_mod < 13 ? "" : "greatly "))});
     } // see badmuts section below for max health reduction
 
@@ -672,13 +675,13 @@ static vector<pair<string,string>> _get_form_fakemuts()
     if (hp_mod < 10)
     {
         result.push_back({"reduced hp",
-                            _badmut(make_stringf("Your maximum health is decreased%s.",
+                            _badmut(make_stringf(T_("Your maximum health is decreased%s."),
                                 form->underskilled() ? ", since you lack skill for your form"
                                 : ""))});
     }
 
     if (!form->can_cast)
-        result.push_back({"no casting", _badmut("You cannot cast spells.")});
+        result.push_back({"no casting", _badmut(T_("You cannot cast spells."))});
 
     vector<pair<string,string>> form_badmuts = form->get_bad_fakemuts();
     for (const auto &p : form_badmuts)
@@ -696,7 +699,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         else
         {
             result.push_back({"cold-blooded",
-                _badmut("You are cold-blooded and may be slowed by cold attacks.")});
+                _badmut(T_("You are cold-blooded and may be slowed by cold attacks."))});
         }
     }
 
@@ -707,7 +710,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
         if (penalty_percent < 0)
         {
             result.push_back({"blade armour",
-                    _badmut(make_stringf("Your body armour is %s at protecting you.",
+                    _badmut(make_stringf(T_("Your body armour is %s at protecting you."),
                           penalty_percent <=  -45 ? "much less effective"
                         : penalty_percent <   -20 ? "less effective"
                                                   : "slightly less effective"
@@ -718,7 +721,7 @@ static vector<pair<string,string>> _get_form_fakemuts()
     if (!form->can_wield() && !you.has_mutation(MUT_NO_GRASPING))
     {
         // same as MUT_NO_GRASPING
-        result.push_back({"", _badmut("You are incapable of wielding weapons or throwing items.")});
+        result.push_back({"", _badmut(T_("You are incapable of wielding weapons or throwing items."))});
     }
 
     // XX say something about AC? Best would be to compare it to AC without
@@ -752,16 +755,16 @@ static vector<pair<string, string>> _get_fakemuts()
     {
         result.push_back({"walk on water",
                     have_passive(passive_t::water_walk)
-                        ? _formmut("You can walk on water.")
-                        : _formmut("You can walk on water until reaching land.")});
+                        ? _formmut(T_("You can walk on water."))
+                        : _formmut(T_("You can walk on water until reaching land."))});
     }
 
     if (you.props.exists(ORCIFICATION_LEVEL_KEY))
     {
         result.push_back({"",
                     you.props[ORCIFICATION_LEVEL_KEY].get_int() == 1
-                        ? _formmut("Your facial features look somewhat orcish.")
-                        : _formmut("Your facial features are unmistakably orcish.")});
+                        ? _formmut(T_("Your facial features look somewhat orcish."))
+                        : _formmut(T_("Your facial features are unmistakably orcish."))});
     }
 
     if (have_passive(passive_t::frail)
@@ -797,7 +800,7 @@ static vector<pair<string, string>> _get_fakemuts()
         const string scale_clause = string(species::scale_type(you.species))
                   + " scales are hard";
 
-        string ac_str = make_stringf("Your %s. (AC +%d)", you.species == SP_NAGA
+        string ac_str = make_stringf(T_("Your %s. (AC +%d)"), you.species == SP_NAGA
                                         ? "serpentine skin is tough"
                                         : scale_clause.c_str(),
                                         ac);
@@ -812,7 +815,7 @@ static vector<pair<string, string>> _get_fakemuts()
     // amphibiousness.
     if (species::can_swim(you.species) && !you.has_innate_mutation(MUT_MERTAIL))
     {
-        result.push_back(_annotate_form_based({"amphibious", "You are amphibious."},
+        result.push_back(_annotate_form_based({"amphibious", T_("You are amphibious.")},
                                               !form_can_swim()));
     }
 
@@ -822,8 +825,8 @@ static vector<pair<string, string>> _get_fakemuts()
         const int arms = you.arm_count();
         result.push_back(_annotate_form_based(
             {
-                make_stringf("%d rings", arms),
-                make_stringf("You can wear up to %s rings at the same time.",
+                make_stringf(T_("%d rings"), arms),
+                make_stringf(T_("You can wear up to %s rings at the same time."),
                         number_in_words(arms).c_str())
             }, rings_melded));
     }
@@ -843,17 +846,17 @@ static vector<pair<string, string>> _get_fakemuts()
     {
     case SIZE_LITTLE:
         armour_mut = {"unfitting armour",
-                      _innatemut("You are too small for most types of armour.")};
+                      _innatemut(T_("You are too small for most types of armour."))};
         weapon_mut = {"no large weapons",
-                      _innatemut("You are very small and have problems with some larger weapons.")};
+                      _innatemut(T_("You are very small and have problems with some larger weapons."))};
         break;
     case SIZE_SMALL:
         weapon_mut = {"no large weapons",
-                      _innatemut("You are small and have problems with some larger weapons.")};
+                      _innatemut(T_("You are small and have problems with some larger weapons."))};
         break;
     case SIZE_LARGE:
         armour_mut = {"unfitting armour",
-                      _innatemut("You are too large for most types of armour.")};
+                      _innatemut(T_("You are too large for most types of armour."))};
         break;
     default: // no giant species
         break;
@@ -863,7 +866,7 @@ static vector<pair<string, string>> _get_fakemuts()
     if (species::is_draconian(you.species))
     {
         armour_mut = {"unfitting armour",
-                      _innatemut("You cannot fit into any form of body armour or wear helmets.")};
+                      _innatemut(T_("You cannot fit into any form of body armour or wear helmets."))};
     }
     if (!weapon_mut.first.empty() && !you.has_mutation(MUT_NO_GRASPING))
         result.push_back(weapon_mut);
@@ -929,7 +932,12 @@ static vector<string> _get_mutations_descs(bool terse)
     {
         const string& mut = terse ? p.first : p.second;
         if (!mut.empty() && mut != "--transformation--")
-            result.push_back(mut);
+        {
+            if (terse)
+                result.push_back(T_(mut.c_str()));
+            else
+                result.push_back(mut);
+        }
     }
 
     for (mutation_type mut : _get_ordered_mutations())
@@ -947,7 +955,7 @@ string terse_mutation_list()
     const vector<string> mutations = _get_mutations_descs(true);
 
     if (mutations.empty())
-        return "no striking features";
+        return T_("no striking features");
     else
     {
         return comma_separated_line(mutations.begin(), mutations.end(),
@@ -969,14 +977,14 @@ string describe_mutations(bool drop_title)
     if (!drop_title)
     {
         result += "<white>";
-        result += "Innate Abilities, Weirdness & Mutations";
+        result += T_("Innate Abilities, Weirdness & Mutations");
         result += "</white>\n\n";
     }
 
     const vector<string> mutations = _get_mutations_descs(false);
 
     if (mutations.empty())
-        result += "You are rather mundane.\n";
+        result += T_("You are rather mundane.\n");
     else
         result += join_strings(mutations.begin(), mutations.end(), "\n");
 
@@ -1036,8 +1044,9 @@ public:
           banes(_get_active_banes())
     {
         set_highlighter(nullptr);
-        set_title(new MenuEntry("Innate Abilities, Weirdness & Mutations",
-                                MEL_TITLE));
+        set_title(new MenuEntry(
+            T_("Innate Abilities, Weirdness & Mutations"),
+            MEL_TITLE));
         menu_action = ACT_EXAMINE;
         update_muts();
         update_more();
@@ -1119,7 +1128,7 @@ private:
                     chop_string(mut_desc, crawl_view.termsz.x - 15, false);
 #endif
 
-                    const string desc = make_stringf("<darkgrey>[%s]</darkgrey> XL %d",
+                    const string desc = make_stringf(T_("<darkgrey>[%s]</darkgrey> XL %d"),
                                                         mut_desc.c_str(),
                                                         mut.xp_level);
                     MenuEntry* me = new MenuEntry(desc, MEL_ITEM, MUT_ENTRY_MUTATION, hotkey);
@@ -1135,7 +1144,7 @@ private:
 
         for (bane_type &bane : banes)
         {
-            const string desc = make_stringf("<lightmagenta>%s [%.1f]</lightmagenta>",
+            const string desc = make_stringf(T_("<lightmagenta>%s [%.1f]</lightmagenta>"),
                 bane_desc(bane).c_str(), (float)xl_to_remove_bane(bane) / 10.0f);
 
             MenuEntry* me = new MenuEntry(desc, MEL_ITEM, MUT_ENTRY_BANE, hotkey);
@@ -1146,7 +1155,7 @@ private:
 
         if (items.empty())
         {
-            add_entry(new MenuEntry("You are rather mundane.",
+            add_entry(new MenuEntry(T_("You are rather mundane."),
                                     MEL_ITEM, 1, 0));
         }
     }
@@ -1379,7 +1388,7 @@ static void _maybe_remove_equipment(mutation_type mut)
     {
         if (mut == MUT_MISSING_HAND)
         {
-            mprf("You can no longer %s %s!",
+            mprf(T_("You can no longer %s %s!"),
                     item->base_type == OBJ_JEWELLERY ? "wear" : "hold",
                     item->name(DESC_YOUR).c_str());
         }
@@ -1387,13 +1396,13 @@ static void _maybe_remove_equipment(mutation_type mut)
         {
             if (item_is_melded(*item))
             {
-                mprf("%s is forced from your body%s!",
+                mprf(T_("%s is forcibly removed from your body%s!"),
                         item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
             else
             {
-                mprf("%s falls away%s!", item->name(DESC_YOUR).c_str(),
+                mprf(T_("%s%s falls off!"), item->name(DESC_YOUR).c_str(),
                         item->cursed() ? ", shattering the curse!" : "");
             }
 
@@ -1517,7 +1526,7 @@ static bool _ashenzari_blocks(mutation_type mutat)
     if (!cursed_item)
         return false;
 
-    const string msg = make_stringf(" prevents a mutation which would have shattered %s.",
+    const string msg = make_stringf(T_(" prevents a mutation which would have shattered %s."),
                                     cursed_item->name(DESC_YOUR).c_str());
     simple_god_message(msg.c_str());
     return true;
@@ -1836,7 +1845,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (!god_gift && _resist_mutation(mutclass, beneficial))
         {
             if (failMsg)
-                mprf(MSGCH_MUTATION, "You feel odd for a moment.");
+                mprf(MSGCH_MUTATION, T_("You briefly feel strange."));
             return false;
         }
 
@@ -1859,7 +1868,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 return false;
             // fallthrough to normal mut
         case MUTCLASS_NORMAL:
-            mprf(MSGCH_MUTATION, "Your body decomposes!");
+            mprf(MSGCH_MUTATION, T_("Your body is rotting!"));
             drain_player(30, false, true, true);
             return true;
         case MUTCLASS_INNATE:
@@ -1918,7 +1927,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                     you.attribute[ATTR_TEMP_MUT_KILLS] = 0;
             }
             you.mutation[mutat]--;
-            mprf(MSGCH_MUTATION, "Your %s mutation feels more permanent.",
+            mprf(MSGCH_MUTATION, T_("Your %s mutation feels more permanent."),
                                   mutation_name(mutat));
             take_note(Note(NOTE_PERM_MUTATION, mutat,
                     you.get_base_mutation_level(mutat), reason.c_str()));
@@ -1970,7 +1979,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         {
         case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
         case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-            mprf(MSGCH_MUTATION, "You feel %s.", _stat_mut_desc(mutat, true));
+            mprf(MSGCH_MUTATION, T_("You feel %s."), _stat_mut_desc(mutat, true));
             gain_msg = false;
             break;
 
@@ -1978,7 +1987,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
             {
                 const string arms = pluralise(species::arm_name(you.species));
                 mprf(MSGCH_MUTATION, "%s",
-                     replace_all(mdef.gain[cur_base_level - 1], "arms",
+                     replace_all(T_(mdef.gain[cur_base_level - 1]), "arms",
                                  arms).c_str());
                 gain_msg = false;
             }
@@ -1991,7 +2000,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
                 // it into account.
                 const string hands = pluralise(you.hand_name(false));
                 mprf(MSGCH_MUTATION, "%s",
-                     replace_all(mdef.gain[cur_base_level - 1], "hands",
+                     replace_all(T_(mdef.gain[cur_base_level - 1]), "hands",
                                  hands).c_str());
                 gain_msg = false;
             }
@@ -2015,7 +2024,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         notify_stat_change();
 
         if (gain_msg)
-            mprf(MSGCH_MUTATION, "%s", mdef.gain[cur_base_level - 1]);
+            mprf(MSGCH_MUTATION, "%s", T_(mdef.gain[cur_base_level - 1]));
 
         // Do post-mutation effects.
         switch (mutat)
@@ -2088,7 +2097,7 @@ bool mutate(mutation_type which_mutation, const string &reason, bool failMsg,
         if (you.hp <= 0)
         {
             ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-                 make_stringf("gaining the %s mutation",
+                 make_stringf(T_("gaining the %s mutation"),
                               mutation_name(mutat)).c_str());
         }
     }
@@ -2172,7 +2181,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     {
     case MUT_STRONG: case MUT_AGILE:  case MUT_CLEVER:
     case MUT_WEAK:   case MUT_CLUMSY: case MUT_DOPEY:
-        mprf(MSGCH_MUTATION, "You feel %s.", _stat_mut_desc(mutat, false));
+        mprf(MSGCH_MUTATION, T_("You feel %s."), _stat_mut_desc(mutat, false));
         lose_msg = false;
         break;
 
@@ -2228,7 +2237,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     you.equipment.update();
 
     if (lose_msg)
-        mprf(MSGCH_MUTATION, "%s", mdef.lose[you.mutation[mutat]]);
+        mprf(MSGCH_MUTATION, "%s", T_(mdef.lose[you.mutation[mutat]]));
 
     // Do post-mutation effects.
     if (mutat == MUT_FRAIL || mutat == MUT_ROBUST
@@ -2250,7 +2259,7 @@ bool _delete_single_mutation_level(mutation_type mutat,
     if (you.hp <= 0)
     {
         ouch(0, KILLED_BY_FRAILTY, MID_NOBODY,
-             make_stringf("losing the %s mutation", mutation_name(mutat)).c_str());
+             make_stringf(T_("losing the %s mutation"), mutation_name(mutat)).c_str());
     }
 
     return true;
@@ -2338,7 +2347,7 @@ bool delete_mutation(mutation_type which_mutation, const string &reason,
                     || coinflip()))
             {
                 if (failMsg)
-                    mprf(MSGCH_MUTATION, "You feel rather odd for a moment.");
+                    mprf(MSGCH_MUTATION, T_("You briefly feel rather strange."));
                 return false;
             }
         }
@@ -2419,7 +2428,7 @@ bool delete_temp_mutation()
         // games.
         if (mutat == NUM_MUTATIONS)
         {
-            mprf(MSGCH_ERROR, "Found no temp mutations, clearing.");
+            mprf(MSGCH_ERROR, T_("No temporary mutations found; clearing."));
             you.attribute[ATTR_TEMP_MUTATIONS] = 0;
             return false;
         }
@@ -2505,16 +2514,19 @@ string get_mutation_tags(mutation_type mut)
     return make_stringf("[%s]", comma_separated_line(tags.begin(), tags.end(), ", ").c_str());
 }
 
+
 const char* mutation_name(mutation_type mut, bool allow_category)
 {
+    const char* en;
     if (allow_category && mut >= CATEGORY_MUTATIONS && mut < MUT_NON_MUTATION)
-        return _get_category_mutation_def(mut).short_desc;
-
+        en = _get_category_mutation_def(mut).short_desc;
     // note -- this can produce crashes if fed invalid mutations, e.g. if allow_category is false and mut is a category mutation
-    if (!_is_valid_mutation(mut))
+    else if (!_is_valid_mutation(mut))
         return nullptr;
+    else
+        en = _get_mutation_def(mut).short_desc;
 
-    return _get_mutation_def(mut).short_desc;
+    return T_(en);
 }
 
 const char* category_mutation_name(mutation_type mut)
@@ -2574,6 +2586,22 @@ mutation_type mutation_from_name(string name, bool allow_category, vector<mutati
             break;
         }
 
+        // Also match against English short_desc for .des file compatibility
+        if (_is_valid_mutation(mut))
+        {
+            const char *en_name = _get_mutation_def(mut).short_desc;
+            if (en_name && spec == lowercase_string(en_name))
+            {
+                mutat = mut;
+                break;
+            }
+            if (partial_matches && en_name
+                && strstr(lowercase_string(en_name).c_str(), spec.c_str()))
+            {
+                partial_matches->push_back(mut);
+            }
+        }
+
         if (partial_matches && strstr(mut_name.c_str(), spec.c_str()))
             partial_matches->push_back(mut);
     }
@@ -2613,6 +2641,7 @@ int mutation_max_levels(mutation_type mut)
 /// Return a string describing the mutation.
 /// If colour is true, also add the colour annotation.
 /// Not to be confused with get_mutation_desc().
+
 string mutation_desc(mutation_type mut, int level, bool colour,
         bool is_sacrifice)
 {
@@ -2630,50 +2659,60 @@ string mutation_desc(mutation_type mut, int level, bool colour,
 
     const mutation_def& mdef = _get_mutation_def(mut);
 
+    // Helper to append dynamic value with Chinese base string support
+    auto _get_base = [](const char* en) -> string {
+        return T_(en);
+    };
+
     if (mut == MUT_ICEMAIL)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << player_icemail_armour_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_icemail_armour_class() << ")";
         result = ostr.str();
     }
     else if (mut == MUT_CONDENSATION_SHIELD)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << player_condensation_shield_class() << ")";
+        ostr << _get_base(mdef.have[0]) << player_condensation_shield_class() << ")";
         result = ostr.str();
     }
     else if (mut == MUT_SANGUINE_ARMOUR)
     {
         ostringstream ostr;
-        ostr << mdef.have[level - 1] << sanguine_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[level - 1]) << sanguine_armour_bonus() / 100 << ")";
         result = ostr.str();
     }
     else if (mut == MUT_STONE_BODY)
     {
         ostringstream ostr;
-        ostr << mdef.have[0] << stone_body_armour_bonus() / 100 << ")";
+        ostr << _get_base(mdef.have[0]) << stone_body_armour_bonus() / 100 << ")";
         result = ostr.str();
     }
     else if (mut == MUT_PROTEAN_GRACE)
     {
         ostringstream ostr;
         int num = protean_grace_amount();
-        ostr << mdef.have[0] << num << " EV, Slay +" << num << ")";
+        ostr << _get_base(mdef.have[0]) << num << (T_(" EV, Slay +")) << num << ")";
         result = ostr.str();
     }
     else if (mut == MUT_MP_WANDS && you.has_mutation(MUT_HP_CASTING))
-        result = "You expend health (3 HP) to strengthen your wands.";
+        result = T_("You expend health (3 HP) to strengthen your wands.");
     else if (!ignore_player && mut == MUT_TENTACLE_ARMS)
     {
         const string num_tentacles = number_in_words(you.has_tentacles(false));
         result = make_stringf(
-            "You have tentacles for arms and can constrict up to %s enemies at once.",
+            T_("You have tentacles for arms and can constrict up to %s enemies at once."),
             num_tentacles.c_str());
     }
     else if (!ignore_player && you.has_innate_mutation(MUT_PAWS) && mut == MUT_CLAWS)
-        result = "You have sharp claws."; // XX ugly override
+        result = T_("You have sharp claws."); // XX ugly override
     else if (result.empty() && level > 0)
         result = mdef.have[level - 1];
+
+    // Translate for Chinese mode — must happen before formatting wrappers
+    // because colour/parens/brackets are added below.
+    if (!result.empty())
+        result = T_(result.c_str());
 
     if (!ignore_player && !active)
         result = "(" + result + ")";
@@ -2728,7 +2767,7 @@ static string _future_mutation_description(mutation_type mut_type, int levels)
     // If we have a custom message defined for this future mutation, use it.
     const char* const* future_desc = _get_mutation_def(mut_type).will_gain;
     if (future_desc[levels - 1] != NULL)
-        return string(future_desc[levels - 1]);
+        return string(T_(future_desc[levels - 1]));
 
     // Otherwise do some simple string replacements to cover common cases.
     mut_desc = replace_all(mut_desc, " can ", " will be able to ");
@@ -3075,7 +3114,7 @@ bool temp_mutation_wanes()
 
     const int num_remove = min(starting_tmuts, random_range(2, 3));
 
-    mprf(MSGCH_DURATION, "You feel the corruption within you wane %s.",
+    mprf(MSGCH_DURATION, T_("You feel the corruptions in your body subside %s."),
         (num_remove >= starting_tmuts ? "completely" : "somewhat"));
 
     for (int i = 0; i < num_remove; ++i)
@@ -3206,7 +3245,7 @@ void check_demonic_guardian()
         // no more guardians for mutlevel+1 to mutlevel+20 turns
         you.duration[DUR_DEMONIC_GUARDIAN] = 10*(mutlevel + random2(20));
 
-        mpr("A demonic guardian appears!");
+        mpr(T_("A demonic guardian appears!"));
     }
 }
 
@@ -3331,7 +3370,7 @@ const string bane_name(bane_type bane, bool dbkey)
         return lowercase(short_name);
     }
     else
-        return make_stringf("Bane of %s", short_name.c_str());
+        return make_stringf(T_("Bane of %s"), short_name.c_str());
 }
 
 int bane_base_duration(bane_type bane)
@@ -3344,7 +3383,7 @@ const string bane_desc(bane_type bane)
     if (bane == BANE_DILETTANTE && you.banes[bane])
     {
         CrawlVector& vec = you.props[DILETTANTE_SKILL_KEY].get_vector();
-        return make_stringf("Your skill with %s, %s, and %s is reduced.",
+        return make_stringf_p(T_("Your skill with %s, %s, and %s is reduced."),
                     skill_name(static_cast<skill_type>(vec[0].get_int())),
                     skill_name(static_cast<skill_type>(vec[1].get_int())),
                     skill_name(static_cast<skill_type>(vec[2].get_int())));
@@ -3475,7 +3514,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
         if (candidates.empty())
         {
-            mprf("You are already as afflicted as possible.");
+            mprf(T_("You have been tormented as much as possible."));
             return false;
         }
 
@@ -3487,9 +3526,9 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
     duration = duration * mult / 100;
 
     if (you.banes[bane] == 0)
-        mprf(MSGCH_WARN, "You are stricken with the %s.", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, T_("%s torments you."), bane_name(bane).c_str());
     else
-        mprf(MSGCH_WARN, "Your %s grows stronger.", bane_name(bane).c_str());
+        mprf(MSGCH_WARN, T_("Your %s grows stronger."), bane_name(bane).c_str());
 
     you.banes[bane] += duration;
 
@@ -3504,7 +3543,7 @@ bool add_bane(bane_type bane, string reason, int duration, int mult)
 
 void remove_bane(bane_type bane)
 {
-    mprf(MSGCH_RECOVERY, "The %s upon you is lifted.", bane_name(bane).c_str());
+    mprf(MSGCH_RECOVERY, T_("%s is lifted from you."), bane_name(bane).c_str());
     you.banes[bane] = 0;
 
     if (bane == BANE_MORTALITY)
@@ -3586,7 +3625,7 @@ void maybe_apply_bane_to_monster(monster& mons)
         && mons_has_attacks(mons)
         && one_chance_in(7))
     {
-        simple_monster_message(mons, " is touched by paradox!");
+        simple_monster_message(mons, T_(" is touched by paradox!"));
         mons.add_ench(mon_enchant(ENCH_PARADOX_TOUCHED, nullptr, INFINITE_DURATION));
     }
 

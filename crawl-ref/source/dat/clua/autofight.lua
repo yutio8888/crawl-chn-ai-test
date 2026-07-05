@@ -190,12 +190,12 @@ end
 local function move_towards(dx, dy)
   local move = choose_move_towards(0, 0, dx, dy, can_move_now)
   if move == nil then
-    crawl.mpr("Failed to move towards target.")
+    crawl.mpr(crawl.t_("Failed to move towards target."))
   elseif you.status("immotile") then
     if AUTOFIGHT_WAIT then
       crawl.do_commands({"CMD_WAIT"})
     else
-      crawl.mpr("Failed to move towards target because you cannot move.")
+      crawl.mpr(crawl.t_("Failed to move towards target because you cannot move."))
     end
   else
       crawl.do_commands({delta_to_cmd(move[1],move[2])})
@@ -414,10 +414,10 @@ end
 function autofight_check_preconditions(check_caught)
   local caught = you.caught()
   if af_hp_is_low() then
-    crawl.mpr("You are too injured to fight recklessly!")
+    crawl.mpr(crawl.t_("You are too injured to fight recklessly!"))
     return false
   elseif you.confused() then
-    crawl.mpr("You are too confused!")
+    crawl.mpr(crawl.t_("You are too confused!"))
     return false
   elseif caught and check_caught and not AUTOFIGHT_CAUGHT then
     crawl.mpr("You are " .. caught .. "!")
@@ -441,7 +441,7 @@ function attack(allow_movement, check_caught)
     if AUTOFIGHT_WAIT and not allow_movement then
       crawl.do_commands({"CMD_WAIT"})
     else
-      crawl.mpr("No target in view!")
+      crawl.mpr(crawl.t_("No target in view!"))
     end
   elseif info.attack_type == AF_FIRE then
     attack_fire(x,y)
@@ -450,7 +450,7 @@ function attack(allow_movement, check_caught)
   elseif info.attack_type == AF_REACHING then
     attack_reach(x,y)
   elseif info.attack_type == AF_FAILS then
-    crawl.mpr("No reachable target in view!")
+    crawl.mpr(crawl.t_("No reachable target in view!"))
   elseif allow_movement then
     if not AUTOFIGHT_PROMPT_RANGE or you.quiver_valid(0) or crawl.weapon_check() then
       move_towards(x,y)
@@ -458,7 +458,7 @@ function attack(allow_movement, check_caught)
   elseif AUTOFIGHT_WAIT then
     crawl.do_commands({"CMD_WAIT"})
   else
-    crawl.mpr("No target in range!")
+    crawl.mpr(crawl.t_("No target in range!"))
   end
 end
 
@@ -501,7 +501,7 @@ function hit_magic()
   if you.spell_table()[AUTOMAGIC_SPELL_SLOT] then
     mag_attack(true)
   else
-    crawl.mpr("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!")
+    crawl.mpr(crawl.t_("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!"))
   end
 end
 
@@ -509,13 +509,13 @@ function hit_magic_nomove()
   if you.spell_table()[AUTOMAGIC_SPELL_SLOT] then
     mag_attack(false)
   else
-    crawl.mpr("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!")
+    crawl.mpr(crawl.t_("No spell in slot " .. AUTOMAGIC_SPELL_SLOT .. "!"))
   end
 end
 
 function toggle_autothrow()
   AUTOFIGHT_THROW = not AUTOFIGHT_THROW
-  crawl.mpr(AUTOFIGHT_THROW and "Enabling autothrow." or "Disabling autothrow.")
+  crawl.mpr(crawl.t_(AUTOFIGHT_THROW and "Enabling autothrow." or "Disabling autothrow."))
 end
 
 chk_lua_option.autofight_stop = set_stop_level

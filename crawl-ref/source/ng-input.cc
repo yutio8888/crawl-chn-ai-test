@@ -4,6 +4,7 @@
 
 #include <cwctype>
 
+#include "database.h"
 #include "end.h"
 #include "format.h"
 #include "item-name.h" // make_name
@@ -16,9 +17,10 @@
 // Eventually, this should be something more grand. {dlb}
 formatted_string opening_screen()
 {
-    string msg =
-    "<yellow>Hello, welcome to " CRAWL " " + string(Version::Long) + "!</yellow>\n"
-    "<brown>" CRAWL_COPYRIGHT;
+    string msg = make_stringf(
+        T_("<yellow>Hello, welcome to " CRAWL " %s!</yellow>\n"
+           "<brown>" CRAWL_COPYRIGHT),
+        Version::Long);
 
     return formatted_string::parse_string(msg);
 }
@@ -46,7 +48,7 @@ formatted_string options_read_status()
         msg += "<lightred>Options file ";
         if (!Options.filename.empty())
         {
-            msg += make_stringf("\"%s\" is not readable",
+            msg += make_stringf(T_("\"%s\" is not readable"),
                                 Options.filename.c_str());
         }
         else

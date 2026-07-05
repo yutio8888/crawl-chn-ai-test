@@ -16,8 +16,10 @@
 #include "areas.h"
 #include "branch.h"
 #include "colour.h"
+#include "database.h"
 #include "describe.h"
-#ifndef USE_TILE_LOCAL
+#ifdef USE_TILE_LOCAL
+#include "tilereg-stat.h"
 #endif
 #include "english.h"
 #include "env.h"
@@ -70,10 +72,13 @@ static string _level_description_string_hud()
     const PlaceInfo& place = you.get_place_info();
     string short_name = branches[place.branch].shortname;
 
+    short_name = T_(short_name.c_str());
+
     if (brdepth[place.branch] > 1)
         short_name += make_stringf(":%d", you.depth);
-    // Indefinite articles
-    else if (place.branch != BRANCH_PANDEMONIUM
+    // EN only: indefinite articles
+    else if (Options.language != lang_t::ZH
+             && place.branch != BRANCH_PANDEMONIUM
              && place.branch != BRANCH_DESOLATION
              && place.branch != BRANCH_ARENA
              && !is_connected_branch(place.branch))
@@ -338,10 +343,10 @@ static void _cprintf_touchui(const char *format, ...)
             cprintf("%2s", buf.c_str());
             break;
         case TOUCH_T_XL:
-            cprintf("XL Next");
+            cprintf(T_("XL Next"));
             break;
         case TOUCH_T_PLACE:
-            cprintf("Place");
+            cprintf(T_("Place"));
             break;
         case TOUCH_V_PLACE:
             parts = split_string(":", _level_description_string_hud());
@@ -351,7 +356,7 @@ static void _cprintf_touchui(const char *format, ...)
                 cprintf("%s:%s", parts[0].substr(0,8-parts[1].size()).c_str(), parts[1].c_str());
             break;
         case TOUCH_T_NOISE:
-            cprintf("Noise");
+            cprintf(T_("Noise"));
             break;
         case TOUCH_T_TIME:
             buf = buf.substr(0, buf.size()-1);
@@ -714,7 +719,7 @@ static void _print_stats_equip(int x, int y)
     for (int i = SLOT_FIRST_STANDARD; i < NUM_EQUIP_SLOTS; ++i)
         total_slots += you.equipment.num_slots[i];
 
-    cprintf(total_slots > 8 ? "Eq: " : "Equip: ");
+    cprintf(total_slots > 8 ? "Eq: " : T_("Eq: "));
     textcolour(LIGHTGREY);
     for (equipment_slot slot : slot_order)
     {
@@ -764,7 +769,7 @@ static void _print_stats_noise(int x, int y)
     bool silence = silenced(you.pos());
     int level = silence ? 0 : you.get_noise_perception(true);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Noise: ");
+    CPRINTF("%s", T_("Noise: "));
     colour_t noisecolour;
 
     // This is calibrated roughly so that in an open-ish area:
@@ -817,7 +822,7 @@ static void _print_stats_noise(int x, int y)
 
         // This needs to be one extra wide in case silence happens
         // immediately after super-loud (magenta) noise
-        CPRINTF("Silenced  ");
+        CPRINTF("%s", T_("Sil"));
         Noise_Bar.reset(); // so it doesn't display a change bar after silence ends
     }
     else
@@ -859,7 +864,7 @@ static void _print_stats_gold(int x, int y)
     if (!_is_using_small_layout())
     {
         CGOTOXY(x, y, GOTO_STAT);
-        CPRINTF("Gold:");
+        CPRINTF("%s", T_("Gold:"));
         CGOTOXY(x+6, y, GOTO_STAT);
     }
     else
@@ -903,7 +908,7 @@ static void _print_stats_mp(int x, int y)
     }
 
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "MP: " : "Magic:  ");
+    CPRINTF(player_drained() ? T_("MP: ") : T_("MP:  "));
     textcolour(mp_colour);
     CPRINTF("%d", you.magic_points);
     if (!boosted)
@@ -969,7 +974,7 @@ static void _print_stats_hp(int x, int y)
     // Health: xxx/yyy (zzz)
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF(player_drained() ? "HP: " : "Health: ");
+    CPRINTF(player_drained() ? T_("HP: ") : T_("HP:  "));
     textcolour(hp_colour);
     CPRINTF("%d", you.hp);
     if (!boosted)
@@ -1229,9 +1234,10 @@ static void _print_stats_qv(int y)
 
 struct status_light
 {
-    status_light(int c, string t) : colour(c), text(t) {}
+    status_light(int c, string t, int s = -1) : colour(c), text(t), status(s) {}
     colour_t colour;
     string text;
+    int status;
 };
 
 static void _add_status_light_to_out(int i, vector<status_light>& out)
@@ -1240,7 +1246,7 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
 
     if (fill_status_info(i, inf) && !inf.light_text.empty())
     {
-        status_light sl(inf.light_colour, inf.light_text);
+        status_light sl(inf.light_colour, inf.light_text, i);
         out.push_back(sl);
     }
 }
@@ -1324,6 +1330,10 @@ static void _print_status_lights(int y)
     }
     last_number_of_lights = lights.size();
 
+#ifdef USE_TILE_LOCAL
+    clear_status_hitboxes();
+#endif
+
     size_t line_cur = y;
     const size_t line_end = crawl_view.hudsz.y+1;
 
@@ -1349,6 +1359,16 @@ static void _print_status_lights(int y)
 
         if (end_x <= crawl_view.hudsz.x)
         {
+#ifdef USE_TILE_LOCAL
+            if (i_light < lights.size())
+            {
+                const int status_x = wherex() - crawl_view.hudp.x;
+                const int status_w = strwidth(lights[i_light].text);
+                record_status_hitbox(lights[i_light].status,
+                                     status_x, status_x + status_w - 1,
+                                     (int)line_cur - 1);
+            }
+#endif
             textcolour(lights[i_light].colour);
             NOWRAP_EOL_CPRINTF("%s", lights[i_light].text.c_str());
             if (end_x < crawl_view.hudsz.x)
@@ -1448,7 +1468,7 @@ static void _redraw_title()
     else if (you.suppress_wizard && !small_layout)
         _draw_wizmode_flag("EX-WIZARD");
     else if (you.explore && !small_layout)
-        _draw_wizmode_flag("EXPLORE");
+        _draw_wizmode_flag(T_("Explore"));
 #ifdef DGL_SIMPLE_MESSAGING
     update_message_status();
 #endif
@@ -1582,7 +1602,7 @@ void print_stats()
     {
         CGOTOXY(1, 8 - rows_hidden, GOTO_STAT);
         textcolour(Options.status_caption_colour);
-        CPRINTF("XL: ");
+        CPRINTF("%s", T_("XL: "));
         if (_is_using_small_layout())
             CGOTOXY(5, 8, GOTO_STAT);
         textcolour(HUD_VALUE_COLOUR);
@@ -1593,7 +1613,7 @@ void print_stats()
         {
             textcolour(Options.status_caption_colour);
             if (!_is_using_small_layout())
-                CPRINTF("Next: ");
+                CPRINTF("%s", T_("Next: "));
             else
                 CGOTOXY(14, 8, GOTO_STAT);
             textcolour(HUD_VALUE_COLOUR);
@@ -1634,7 +1654,7 @@ void print_stats_level()
 
     CGOTOXY(19, ypos, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Place: ");
+    CPRINTF("%s", T_("Place: "));
 
     if (_is_using_small_layout())
         CGOTOXY(26, ypos, GOTO_STAT);
@@ -1670,18 +1690,18 @@ void draw_border()
     int dex_pos = sh_pos;
 
     // "Health:" and "Magic:" printed elsewhere
-    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("AC:");
-    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("EV:");
-    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("SH:");
+    CGOTOXY(1, ac_pos, GOTO_STAT); CPRINTF("%s", T_("AC:"));
+    CGOTOXY(1, ev_pos, GOTO_STAT); CPRINTF("%s", T_("EV:"));
+    CGOTOXY(1, sh_pos, GOTO_STAT); CPRINTF("%s", T_("SH:"));
 
-    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("Str:");
-    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("Int:");
-    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("Dex:");
+    CGOTOXY(19, str_pos, GOTO_STAT); CPRINTF("%s", T_("Str:"));
+    CGOTOXY(19, int_pos, GOTO_STAT); CPRINTF("%s", T_("Int:"));
+    CGOTOXY(19, dex_pos, GOTO_STAT); CPRINTF("%s", T_("Dex:"));
 
     // "XL:" and "Place:" printed elsewhere
     // "Noise:" printed elsewhere
     CGOTOXY(19, ac_pos + 4, GOTO_STAT);
-    CPRINTF(Options.show_game_time ? "Time:" : "Turn:");
+    CPRINTF("%s", Options.show_game_time ? T_("Time:") : T_("Turns:"));
 }
 
 #ifndef USE_TILE_LOCAL
@@ -1689,7 +1709,7 @@ void smallterm_warning()
 {
     CGOTOXY(1,1, GOTO_CRT);
     clrscr();
-    CPRINTF("Your terminal window is too small; please resize to at least %d,%d", MIN_COLS, MIN_LINES);
+    CPRINTF(T_("Your terminal window is too small; please resize to at least %d,%d."), MIN_COLS, MIN_LINES);
 }
 #endif
 
@@ -1778,9 +1798,9 @@ static string _get_monster_name(const monster_info& mi, int count, bool fullname
     if (count == 1)
     {
         if (!mi.is(MB_NAME_THE))
-            desc = (is_vowel(monpane_desc[0]) ? "an " : "a ") + desc;
+            desc = (is_vowel(monpane_desc[0]) ? T_("an ") : T_("a ")) + desc;
         else if (adj || !mi.is(MB_NAME_UNQUALIFIED))
-            desc = "the " + desc;
+            desc = T_("the ") + desc;
     }
 
     desc += monpane_desc;
@@ -1798,9 +1818,9 @@ string mpr_monster_list(bool past)
     string msg = "";
     if (mons.empty())
     {
-        msg  = "There ";
-        msg += (past ? "were" : "are");
-        msg += " no monsters in sight!";
+        msg  = T_("There ");
+        msg += (past ? T_("were") : T_("are"));
+        msg += T_(" no monsters in sight!");
 
         return msg;
     }
@@ -1820,9 +1840,9 @@ string mpr_monster_list(bool past)
 
     describe.push_back(_get_monster_name(mons[mons.size()-1], count, true).c_str());
 
-    msg = "You ";
-    msg += (past ? "could" : "can");
-    msg += " see ";
+    msg = T_("You ");
+    msg += (past ? T_("could") : T_("can"));
+    msg += T_(" see ");
 
     if (describe.size() == 1)
         msg += describe[0];
@@ -2012,6 +2032,22 @@ int equip_slot_by_name(const char *s)
         }
     }
 
+    // Protocol: Lua callers pass English slot names (e.g. "weapon").
+    // equip_slot_name() returns Chinese in ZH mode, so use
+    // equip_slot_name_en() for invariant matching regardless of language.
+    if (Options.language == lang_t::ZH)
+    {
+        for (int i = SLOT_FIRST_STANDARD; i <= SLOT_LAST_STANDARD; ++i)
+        {
+            const equipment_slot slot = static_cast<equipment_slot>(i);
+            if (!strcasecmp(s, equip_slot_name_en(slot, true)) ||
+                !strcasecmp(s, equip_slot_name_en(slot, false)))
+            {
+                return i;
+            }
+        }
+    }
+
     return -1;
 }
 
@@ -2059,7 +2095,7 @@ static string _stealth_bar(int label_length, int sw)
     string bar;
     //no colouring
     bar += _determine_colour_string(0, 5);
-    bar += chop_string("Stlth", label_length);
+    bar += chop_string(T_("Stlth"), label_length);
 
     const int unadjusted_pips = stealth_pips();
     const int bar_len = 10;
@@ -2097,7 +2133,7 @@ static void _append_overview_screen_item(column_composer& cols,
                     "<w>%c</w> - <%s>%s%s</%s>",
                     equip_char,
                     colname.c_str(),
-                    melded ? "melded " : "",
+                    melded ? (T_("melded ")) : "",
                     chop_string(item.name(DESC_PLAIN, true),
                             melded ? sw - 32 : sw - 25, false).c_str(),
                     colname.c_str());
@@ -2135,16 +2171,19 @@ static void _print_overview_screen_equip(column_composer& cols,
                 if (slot == SLOT_WEAPON && i == 0)
                     str = "  - " + you.unarmed_attack_name();
                 else if (slot_melded)
-                    str = "<darkgrey>(" + slot_name_lwr + " unavailable)</darkgrey>";
+                    str = make_stringf(T_("<darkgrey>(%s unusable)</darkgrey>"),
+                                      slot_name_lwr.c_str());
                 else
-                    str = "<darkgrey>(no " + slot_name_lwr + ")</darkgrey>";
+                    str = make_stringf(T_("<darkgrey>(no %s)</darkgrey>"),
+                                      slot_name_lwr.c_str());
 
                 cols.add_formatted(1, str, false);
                 continue;
             }
             else if (equipped[i].is_overflow)
             {
-                str = "  <darkgrey>[" + slot_name_lwr + " occupied]</darkgrey>";
+                str = make_stringf(T_("  <darkgrey>[%s occupied]</darkgrey>"),
+                      slot_name_lwr.c_str());
                 cols.add_formatted(1, str, false);
                 continue;
             }
@@ -2172,7 +2211,7 @@ static string _overview_screen_title(int sw)
                                       get_job_name(you.char_class));
 
     handle_real_time();
-    string time_turns = make_stringf(" Turns: %d, Time: ", you.num_turns)
+    string time_turns = make_stringf(T_(" Turns: %d, Time: "), you.num_turns)
                       + make_time_string(you.real_time(), true);
 
     const int char_width = strwidth(species_job);
@@ -2308,9 +2347,9 @@ static vector<formatted_string> _get_overview_stats()
 
     entry.textcolour(HUD_CAPTION_COLOUR);
     if (player_drained())
-        entry.cprintf("HP:   ");
+        entry.cprintf(T_("HP:   "));
     else
-        entry.cprintf("Health: ");
+        entry.cprintf(T_("HP:   "));
 
     if (_boosted_hp())
         entry.textcolour(LIGHTBLUE);
@@ -2328,9 +2367,9 @@ static vector<formatted_string> _get_overview_stats()
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
         if (player_drained())
-            entry.cprintf("MP:   ");
+            entry.cprintf(T_("MP:   "));
         else
-            entry.cprintf("Magic:  ");
+            entry.cprintf(T_("MP:   "));
 
         if (_boosted_mp())
             entry.textcolour(LIGHTBLUE);
@@ -2352,9 +2391,9 @@ static vector<formatted_string> _get_overview_stats()
 
     entry.textcolour(HUD_CAPTION_COLOUR);
     if (player_drained())
-        entry.cprintf("Gold: ");
+        entry.cprintf(T_("Gold: "));
     else
-        entry.cprintf("Gold:   ");
+        entry.cprintf(T_("Gold:   "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2364,7 +2403,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("AC: ");
+    entry.cprintf(T_("AC: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ac_mod()));
 
@@ -2374,7 +2413,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("EV: ");
+    entry.cprintf(T_("EV: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_ev_mod()));
 
@@ -2384,7 +2423,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("SH: ");
+    entry.cprintf(T_("SH: "));
 
     entry.textcolour(_colour_from_stat_mod(you.temp_sh_mod()));
 
@@ -2394,7 +2433,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Str: ");
+    entry.cprintf(T_("Str: "));
 
     entry.textcolour(_get_stat_colour(STAT_STR));
 
@@ -2404,7 +2443,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Int: ");
+    entry.cprintf(T_("Int: "));
 
     entry.textcolour(_get_stat_colour(STAT_INT));
 
@@ -2414,7 +2453,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("Dex: ");
+    entry.cprintf(T_("Dex: "));
 
     entry.textcolour(_get_stat_colour(STAT_DEX));
 
@@ -2424,7 +2463,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("XL:     ");
+    entry.cprintf(T_("Level:     "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
     entry.cprintf("%d", you.experience_level);
@@ -2432,7 +2471,7 @@ static vector<formatted_string> _get_overview_stats()
     if (you.experience_level < you.get_max_xl())
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   Next: ");
+        entry.cprintf(T_("   Next: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d%%", get_exp_progress());
@@ -2442,7 +2481,7 @@ static vector<formatted_string> _get_overview_stats()
     entry.clear();
 
     entry.textcolour(HUD_CAPTION_COLOUR);
-    entry.cprintf("God:    ");
+    entry.cprintf(T_("God:    "));
 
     entry.textcolour(HUD_VALUE_COLOUR);
 
@@ -2459,10 +2498,10 @@ static vector<formatted_string> _get_overview_stats()
     if (!you.has_mutation(MUT_INNATE_CASTER))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("Spells: ");
+        entry.cprintf(T_("Spells: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
-        entry.cprintf("%d/%d levels left",
+        entry.cprintf(T_("%d/%d levels remaining"),
                       player_spell_levels(), player_total_spell_levels());
 
         cols.add_formatted(3, entry.to_colour_string(), false);
@@ -2472,13 +2511,13 @@ static vector<formatted_string> _get_overview_stats()
     if (you.has_mutation(MUT_MULTILIVED))
     {
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("Lives:  ");
+        entry.cprintf(T_("Lives:  "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.lives);
 
         entry.textcolour(HUD_CAPTION_COLOUR);
-        entry.cprintf("   Deaths: ");
+        entry.cprintf(T_("   Deaths: "));
 
         entry.textcolour(HUD_VALUE_COLOUR);
         entry.cprintf("%d", you.deaths);
@@ -2572,49 +2611,48 @@ static vector<formatted_string> _get_overview_resistances(
     // First column, resist name is up to 8 chars
     int cwidth = 8;
     string out;
-
     const int rfire = player_res_fire(false);
-    out += _resist_composer("rFire", cwidth, rfire, 3, MR_RES_FIRE) + "\n";
+    out += _resist_composer(T_("rFire"), cwidth, rfire, 3, MR_RES_FIRE) + "\n";
 
     const int rcold = player_res_cold(false);
-    out += _resist_composer("rCold", cwidth, rcold, 3, MR_RES_COLD) + "\n";
+    out += _resist_composer(T_("rCold"), cwidth, rcold, 3, MR_RES_COLD) + "\n";
 
     const int rlife = player_prot_life(false);
-    out += _resist_composer("rNeg", cwidth, rlife, 3, MR_RES_NEG) + "\n";
+    out += _resist_composer(T_("rNeg"), cwidth, rlife, 3, MR_RES_NEG) + "\n";
 
     const int rpois = player_res_poison(false);
-    out += _resist_composer("rPois", cwidth, rpois, 1, MR_RES_POISON) + "\n";
+    out += _resist_composer(T_("rPois"), cwidth, rpois, 1, MR_RES_POISON) + "\n";
 
     const int relec = player_res_electricity(false);
-    out += _resist_composer("rElec", cwidth, relec, 1, MR_RES_ELEC) + "\n";
+    out += _resist_composer(T_("rElec"), cwidth, relec, 1, MR_RES_ELEC) + "\n";
 
     const int rcorr = player_res_corrosion(false);
-    out += _resist_composer("rCorr", cwidth, rcorr, 1, MR_RES_CORR) + "\n";
+    out += _resist_composer(T_("rCorr"), cwidth, rcorr, 1, MR_RES_CORR) + "\n";
 
     const int sinv = you.can_see_invisible();
-    out += _resist_composer("SInv", cwidth, sinv) + "\n";
+    out += _resist_composer(T_("SInv"), cwidth, sinv) + "\n";
 
     const int rmagi = player_willpower() / WL_PIP;
-    out += _resist_composer("Will", cwidth, rmagi, MAX_WILL_PIPS) + "\n";
+    out += _resist_composer(T_("Will"), cwidth, rmagi, MAX_WILL_PIPS) + "\n";
 
     out += _stealth_bar(cwidth, 20) + "\n";
 
     const int regen = player_regen(); // round up
-    out += chop_string("HPRegen", cwidth);
-    out += make_stringf("%d.%02d/turn\n", regen/100, regen%100);
+    out += chop_string(T_("HPRegen"), cwidth);
+    out += make_stringf(T_("%d.%02d/turn\n"), regen/100, regen%100);
 
     if (!you.has_mutation(MUT_HP_CASTING))
     {
-        out += chop_string("MPRegen", cwidth);
+        out += chop_string(T_("MPRegen"), cwidth);
 #if TAG_MAJOR_VERSION == 34
         const bool etheric = you.unrand_equipped(UNRAND_ETHERIC_CAGE);
         const int mp_regen = player_mp_regen() //round up
                             + (etheric ? 50 : 0); // on average
-        out += make_stringf("%d.%02d/turn%s\n", mp_regen / 100, mp_regen % 100,
+        out += make_stringf(T_("%d.%02d/turn%s\n"), mp_regen / 100, mp_regen % 100,
                             etheric ? "*" : "");
 #else
         const int mp_regen = player_mp_regen(); // round up
-        out += make_stringf("%d.%02d/turn\n", mp_regen / 100, mp_regen % 100);
+        out += make_stringf(T_("%d.%02d/turn\n"), mp_regen / 100, mp_regen % 100);
 #endif
     }
 
@@ -2709,7 +2747,7 @@ static string _rampage_passive_string()
     const int rampage = you.rampaging();
     if (rampage)
     {
-        desc += you.has_mutation(MUT_ROLLPAGE) ? "roll" : "rampage";
+        desc += you.has_mutation(MUT_ROLLPAGE) ? T_("roll") : T_("rampage");
 
         const bool infinite = you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS);
         const char *inf = Options.char_set == CSET_ASCII ? "+inf"
@@ -2727,29 +2765,29 @@ static string _extra_passive_effects()
 
     // Fo don't need a reminder that they can't teleport
     if (!you.stasis() && you.no_tele(false, false))
-        passives.emplace_back("no teleportation");
+        passives.emplace_back(T_("no teleportation"));
 
     if (you.no_cast())
-        passives.emplace_back("no spellcasting");
+        passives.emplace_back(T_("no spellcasting"));
 
     if (you.inaccuracy())
     {
         passives.emplace_back(
-            make_stringf("inaccuracy (-%d)", you.inaccuracy_penalty()).c_str());
+            make_stringf(T_("inaccuracy (-%d)"), you.inaccuracy_penalty()).c_str());
     }
 
     const int anger = you.angry();
     if (anger && !you.stasis() && !you.clarity() && !you.is_lifeless_undead())
     {
         passives.emplace_back(
-            make_stringf("random rage (%d%%)", anger).c_str());
+            make_stringf(T_("random rage (%d%%)"), anger).c_str());
     }
 
     const int corrode = you.scan_artefacts(ARTP_CORRODE);
     if (corrode)
     {
         passives.emplace_back(
-            make_stringf("corrode self (%d%%)",
+            make_stringf(T_("corrode self (%d%%)"),
                          corrosion_chance(corrode)).c_str());
     }
 
@@ -2757,54 +2795,54 @@ static string _extra_passive_effects()
     if (you.scan_artefacts(ARTP_SLOW))
     {
         passives.emplace_back(
-            make_stringf("slow self (%d%%)", slow).c_str());
+            make_stringf(T_("slow self (%d%%)"), slow).c_str());
     }
 
     const int harm = you.extra_harm();
     if (harm)
     {
         passives.emplace_back(
-            make_stringf("harm (+%d%% outgoing, +%d%% incoming)",
+            make_stringf(T_("harm (+%d%% outgoing, +%d%% incoming)"),
                          outgoing_harm_amount(harm),
                          incoming_harm_amount(harm)).c_str());
     }
 
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_MAYHEM))
-        passives.emplace_back("mayhem");
+        passives.emplace_back(T_("mayhem"));
 
     if (you.missile_repulsion())
-        passives.emplace_back("repel missiles");
+        passives.emplace_back(T_("repel missiles"));
 
     if (you.reflection())
-        passives.emplace_back("reflection");
+        passives.emplace_back(T_("reflection"));
 
     if (player_acrobatic())
-        passives.emplace_back("acrobat");
+        passives.emplace_back(T_("acrobat"));
 
     if (you.clarity())
-        passives.emplace_back("clarity");
+        passives.emplace_back(T_("clarity"));
 
     if (you.rmut_from_item()
         || you.get_mutation_level(MUT_MUTATION_RESISTANCE) == 3)
     {
-        passives.emplace_back("resist mutation");
+        passives.emplace_back(T_("resist mutation"));
     }
 
     if (you.spirit_shield())
-        passives.emplace_back("guardian spirit");
+        passives.emplace_back(T_("guardian spirit"));
 
     if (you.rampaging())
         passives.emplace_back(_rampage_passive_string().c_str());
 
     if (you.faith())
-        passives.emplace_back("faith");
+        passives.emplace_back(T_("faith"));
 
     const int wizardry = player_wizardry();
     if (wizardry)
-        passives.emplace_back(make_stringf("wizardry (x%d)", wizardry));
+        passives.emplace_back(make_stringf(T_("wizardry (x%d)"), wizardry));
 
     if (you.archmagi())
-        passives.emplace_back("archmagi");
+        passives.emplace_back(T_("archmagi"));
 
     if (you.wearing_ego(OBJ_ARMOUR, SPARM_ENERGY))
     {
@@ -2812,21 +2850,21 @@ static string _extra_passive_effects()
         if (channel)
         {
             passives.emplace_back(
-                make_stringf("channel magic (%d%%)", channel).c_str());
+                make_stringf(T_("channel magic (%d%%)"), channel).c_str());
         }
     }
 
     if (you.infusion_amount())
     {
         passives.emplace_back(
-            make_stringf("infuse magic (%d %s)",
+            make_stringf(T_("infuse magic (%d %s)"),
                          you.infusion_amount(),
                          you.has_mutation(MUT_HP_CASTING) ? "HP"
                                                           : "MP").c_str());
     }
 
     if (passives.empty())
-        return "no passive effects";
+        return T_("no passive effects");
     else
         return comma_separated_line(passives.begin(), passives.end(),
                                     ", ", ", ");
@@ -2855,15 +2893,15 @@ static string _status_mut_rune_list(int sw)
     int move_cost = (player_speed() * player_movement_speed()) / 10;
     if (move_cost != 10)
     {
-        const char *help = (move_cost <   8) ? "very quick" :
-                           (move_cost <  10) ? "quick" :
-                           (move_cost <  13) ? "slow"
-                                             : "very slow";
+        const char *help = T_((move_cost <   8) ? "very quick"
+                             : (move_cost <  10) ? "quick"
+                             : (move_cost <  13) ? "slow"
+                             : "very slow");
         status.emplace_back(help);
     }
 
     if (status.empty())
-        text += "no status effects";
+        text += T_("no status effects");
     else
         text += comma_separated_line(status.begin(), status.end(), ", ", ", ");
     text += "\n";
@@ -2875,7 +2913,7 @@ static string _status_mut_rune_list(int sw)
 
     // print the Orb
     if (player_has_orb())
-        text += "\n<w>0:</w> Orb of Zot";
+        text += T_("\n<w>0:</w> Orb of Zot");
 
     // print runes
     vector<string> runes;
@@ -2884,12 +2922,12 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        text += make_stringf("\n<w>%s:</w> %d/%d rune%s: %s",
-                    command_to_string(CMD_DISPLAY_RUNES).c_str(),
-                    (int)runes.size(), you.obtainable_runes,
-                    you.obtainable_runes == 1 ? "" : "s",
-                    comma_separated_line(runes.begin(), runes.end(),
-                                         ", ", ", ").c_str());
+        text += make_stringf(T_("\n<w>%s:</w> %d/%d rune%s: %s"),
+                command_to_string(CMD_DISPLAY_RUNES).c_str(),
+                (int)runes.size(), you.obtainable_runes,
+                you.obtainable_runes == 1 ? "" : "s",
+                comma_separated_line(runes.begin(), runes.end(),
+                                     ", ", ", ").c_str());
     }
 
     linebreak_string(text, sw);

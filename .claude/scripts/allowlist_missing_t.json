@@ -1,0 +1,1717 @@
+[
+  {
+    "file": "items.cc",
+    "line": 4465,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4470,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4479,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4481,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4483,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4489,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "items.cc",
+    "line": 4494,
+    "reason": "MSGCH_DIAGNOSTICS through variable \u2014 item validation integrity check"
+  },
+  {
+    "file": "mon-pathfind.cc",
+    "line": 107,
+    "reason": "AI pathfinding debug trace"
+  },
+  {
+    "file": "mon-pathfind.cc",
+    "line": 193,
+    "reason": "AI pathfinding debug trace"
+  },
+  {
+    "file": "mon-tentacle.cc",
+    "line": 295,
+    "reason": "tentacle placement internal diagnostic"
+  },
+  {
+    "file": "mon-tentacle.cc",
+    "line": 676,
+    "reason": "tentacle chain corruption diagnostic"
+  },
+  {
+    "file": "mon-tentacle.cc",
+    "line": 901,
+    "reason": "tentacle pathing diagnostic"
+  },
+  {
+    "file": "mon-cast.cc",
+    "line": 4094,
+    "reason": "wizard-mode dummy spell message"
+  },
+  {
+    "file": "mon-death.cc",
+    "line": 254,
+    "reason": "exp calculation error diagnostic"
+  },
+  {
+    "file": "ctest.cc",
+    "line": 65,
+    "reason": "test infrastructure"
+  },
+  {
+    "file": "ctest.cc",
+    "line": 75,
+    "reason": "test infrastructure"
+  },
+  {
+    "file": "melee-attack.cc",
+    "line": 3388,
+    "reason": "code token for hands_act() \u2014 not user-visible directly"
+  },
+  {
+    "file": "player-equip.cc",
+    "line": 1932,
+    "reason": "code token for hands_act() \u2014 not user-visible directly"
+  },
+  {
+    "file": "spl-summoning.cc",
+    "line": 1413,
+    "reason": "summon_horrible_things \u2014 internal spell name for database lookup"
+  },
+  {
+    "file": "dgn-shoals.cc",
+    "line": 1111,
+    "reason": "DEBUG_HEIGHTMAP diagnostic"
+  },
+  {
+    "file": "god-passive.cc",
+    "line": 2351,
+    "reason": "color-only format string \u2014 no English text to translate"
+  },
+  {
+    "file": "message.cc",
+    "line": 1659,
+    "reason": "color-only format wrapper \u2014 translatable content in variables"
+  },
+  {
+    "file": "items.cc",
+    "line": 216,
+    "reason": "MSGCH_WARN \u2014 Too many items on level, removing some \u2014 non-gameplay system message"
+  },
+  {
+    "file": "travel.cc",
+    "line": 954,
+    "reason": "MSGCH_WARN \u2014 travel failure diagnostic, partial C string concat"
+  },
+  {
+    "file": "clua.cc",
+    "line": 316,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "clua.cc",
+    "line": 324,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "clua.cc",
+    "line": 1050,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "clua.cc",
+    "line": 1344,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "cluautil.h",
+    "line": 188,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dbg-asrt.cc",
+    "line": 511,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 157,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 160,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 169,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 176,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 186,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 191,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dbg-util.cc",
+    "line": 464,
+    "reason": "E-class: debug utility"
+  },
+  {
+    "file": "dgn-layouts.cc",
+    "line": 434,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-layouts.cc",
+    "line": 1058,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-layouts.cc",
+    "line": 1109,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-layouts.cc",
+    "line": 1165,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-overview.cc",
+    "line": 125,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-overview.cc",
+    "line": 165,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-overview.cc",
+    "line": 255,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dgn-overview.cc",
+    "line": 344,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dlua.cc",
+    "line": 64,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dungeon.cc",
+    "line": 1455,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dungeon.cc",
+    "line": 2421,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dungeon.cc",
+    "line": 2461,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "dungeon.cc",
+    "line": 3526,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 36,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 40,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 92,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 102,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 114,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 125,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 148,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 150,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 152,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 163,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 166,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 168,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 220,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.cc",
+    "line": 237,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.h",
+    "line": 110,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.h",
+    "line": 514,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "game-options.h",
+    "line": 532,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1238,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1244,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1250,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1256,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1262,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1268,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1274,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1280,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1286,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1292,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1305,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1330,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "ghost.cc",
+    "line": 1345,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "item-prop.cc",
+    "line": 3471,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "item-prop.cc",
+    "line": 3554,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "item-prop.cc",
+    "line": 3559,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "l-crawl.cc",
+    "line": 1764,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-crawl.cc",
+    "line": 1817,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-debug.cc",
+    "line": 260,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-debug.cc",
+    "line": 386,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-debug.cc",
+    "line": 432,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgn.cc",
+    "line": 182,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgn.cc",
+    "line": 363,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgn.cc",
+    "line": 384,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgn.cc",
+    "line": 588,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgn.cc",
+    "line": 973,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgnmon.cc",
+    "line": 118,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-dgnmon.cc",
+    "line": 130,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-file.cc",
+    "line": 138,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-item.cc",
+    "line": 1704,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-item.cc",
+    "line": 1724,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-item.cc",
+    "line": 1741,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-item.cc",
+    "line": 1764,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-mons.cc",
+    "line": 362,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-mons.cc",
+    "line": 386,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-mons.cc",
+    "line": 448,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-mons.cc",
+    "line": 473,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-wiz.cc",
+    "line": 33,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 61,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 922,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1155,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1193,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1211,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1733,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1763,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1775,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1813,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "l-you.cc",
+    "line": 1827,
+    "reason": "E-class: Lua binding internal/validation"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 165,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 182,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 803,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 968,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 1005,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2442,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2484,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2758,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2819,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2951,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2958,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 2967,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3539,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3580,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3583,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3763,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3770,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3781,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3828,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3837,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3845,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3852,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3882,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3891,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 3907,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4035,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4074,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4090,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4105,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4225,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4232,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4280,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4299,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 4335,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5170,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5193,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5199,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5236,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5255,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5330,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5381,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5401,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5409,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5416,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5424,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5447,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5473,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5484,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5501,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5510,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5529,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5555,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5574,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5597,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5609,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5683,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5712,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5717,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5732,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5745,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5859,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5867,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 5881,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6037,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6177,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6228,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6231,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6282,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapdef.cc",
+    "line": 6332,
+    "reason": "E-class: vault spec parsing error for designers"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 172,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 386,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 408,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 425,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 496,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 617,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 674,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 729,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 774,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 853,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 939,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mapmark.cc",
+    "line": 992,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-gear.cc",
+    "line": 1373,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "mon-gear.cc",
+    "line": 1374,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 3084,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 4980,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 4990,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 4992,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 4994,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5001,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5003,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5006,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5009,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5011,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5013,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5016,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5018,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5024,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5027,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5036,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5044,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5049,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5093,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5106,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5113,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5124,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5143,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5154,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "mon-util.cc",
+    "line": 5162,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "monster.cc",
+    "line": 2100,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "ng-init.cc",
+    "line": 140,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "ng-init.cc",
+    "line": 197,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "ng-init.cc",
+    "line": 223,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "religion.cc",
+    "line": 4140,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "skills.cc",
+    "line": 2724,
+    "reason": "D-class: internal key/ID/tag"
+  },
+  {
+    "file": "stringutil.h",
+    "line": 279,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "stringutil.h",
+    "line": 283,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "stringutil.h",
+    "line": 291,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "stringutil.h",
+    "line": 295,
+    "reason": "E-class: internal validation/diagnostic"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 654,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 657,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 665,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 667,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 675,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-dgn.cc",
+    "line": 713,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-doll.cc",
+    "line": 231,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-doll.cc",
+    "line": 242,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-doll.cc",
+    "line": 283,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "tilereg-doll.cc",
+    "line": 285,
+    "reason": "E-class: tiles debug/tooltip"
+  },
+  {
+    "file": "wiz-fsim.cc",
+    "line": 60,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-item.cc",
+    "line": 184,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-mon.cc",
+    "line": 365,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-you.cc",
+    "line": 440,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-you.cc",
+    "line": 546,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-you.cc",
+    "line": 621,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "wiz-you.cc",
+    "line": 1093,
+    "reason": "E-class: wizard mode"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1456,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1707,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1724,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1741,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1758,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1775,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1792,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1803,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1820,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1844,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1854,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1878,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1895,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1912,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1929,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1940,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1951,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1962,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1973,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 1996,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2025,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2042,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2065,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2088,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2099,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2110,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2121,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2137,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2176,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2187,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2197,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2208,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2224,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2235,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2246,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "prebuilt/levcomp.tab.cc",
+    "line": 2257,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1456,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1707,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1724,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1741,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1758,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1775,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1792,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1803,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1820,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1844,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1854,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1878,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1895,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1912,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1929,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1940,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1951,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1962,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1973,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 1996,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2025,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2042,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2065,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2088,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2099,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2110,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2121,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2137,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2176,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2187,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2197,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2208,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2224,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2235,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2246,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/levcomp.tab.cc",
+    "line": 2257,
+    "reason": "D-class: generated parser command \u2014 internal ID"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 62,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 250,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 271,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 278,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 499,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "util/monster/monster-main.cc",
+    "line": 969,
+    "reason": "E-class: monster data tool utility"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7558,
+    "reason": "color tag argument to make_stringf, not user-visible text"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7564,
+    "reason": "color tag argument to make_stringf, not user-visible text"
+  },
+  {
+    "file": "describe.cc",
+    "line": 7189,
+    "reason": "DB lookup key: TextDB monstatus descriptor \u2014 must remain English"
+  },
+  {
+    "file": "traps.cc",
+    "line": 918,
+    "reason": "you.props internal state key: shafted_in \u2014 must remain English"
+  },
+  {
+    "file": "xom.cc",
+    "line": 2264,
+    "reason": "Xom speech DB key: scenery \u2014 must remain English for getSpeakString lookup"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 1016,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 1199,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "mutation.cc",
+    "line": 2451,
+    "reason": "TextDB lookup key: mutation descriptor \u2014 must remain English"
+  },
+  {
+    "file": "god-abil.cc",
+    "line": 3587,
+    "reason": "Vault spec protocol data: shop keywords must remain English"
+  },
+  {
+    "file": "hints.cc",
+    "line": 571,
+    "reason": "Hint DB lookup key: print_hint() calls getHintString()"
+  },
+  {
+    "file": "hints.cc",
+    "line": 598,
+    "reason": "Hint DB lookup key: print_hint() calls getHintString()"
+  },
+  {
+    "file": "files.cc",
+    "line": 2837,
+    "reason": "Filesystem filename: backup suffix \u2014 protocol data"
+  },
+  {
+    "file": "errors.cc",
+    "line": 66,
+    "reason": "Filesystem filename: .out extension \u2014 protocol data"
+  },
+  {
+    "file": "main.cc",
+    "line": 2374,
+    "reason": "OS shell command: /usr/bin/open \u2014 system protocol"
+  },
+  {
+    "file": "mon-cast.cc",
+    "line": 6783,
+    "reason": "Speech DB key: getSpeakString() lookup"
+  }
+]

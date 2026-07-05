@@ -39,6 +39,7 @@
 #include "transform.h"
 #include "traps.h"
 #include "viewgeom.h"
+#include "database.h"
 
 int player::mindex() const
 {
@@ -386,10 +387,10 @@ string player::name(description_level_type dt, bool, bool) const
         return "";
     case DESC_A: case DESC_THE:
     default:
-        return "you";
+        return T_("you");
     case DESC_YOUR:
     case DESC_ITS:
-        return "your";
+        return T_("your");
     }
 }
 
@@ -567,7 +568,7 @@ string player::arm_name(bool plural, bool *can_plural) const
     else
         adj = species::skin_name(species, true);
 
-    if (adj != "fleshy")
+    if (adj != "fleshy" && adj != "皮肤的")
         str = adj + " " + str;
 
     if (plural)
@@ -585,15 +586,18 @@ string player::arm_name(bool plural, bool *can_plural) const
  */
 string player::unarmed_attack_name(string default_name) const
 {
+    if (default_name.empty())
+        default_name = T_("Nothing wielded");
+
     if (has_usable_claws(true))
     {
         if (you.has_mutation(MUT_FANGS))
-            default_name = "Teeth and claws";
+            default_name = T_("Teeth and claws");
         else
-            default_name = "Claws";
+            default_name = T_("Claws");
     }
     else if (has_usable_tentacles(true))
-        default_name = "Tentacles";
+        default_name = T_("Tentacles");
 
     return get_form()->get_uc_attack_name(default_name);
 }
@@ -608,7 +612,7 @@ bool player::fumbles_attack()
     {
         if (x_chance_in_y(3, 8))
         {
-            mpr("Your unstable footing causes you to fumble your attack.");
+            mpr(T_("Your unstable footing causes you to fumble your attack."));
             did_fumble = true;
         }
         if (floundering())
@@ -670,25 +674,25 @@ bool player::go_berserk(bool intentional, bool potion)
     if (crawl_state.game_is_hints())
         Hints.hints_berserk_counter++;
 
-    mpr("A red film seems to cover your vision as you go berserk!");
+    mpr(T_("A red film seems to cover your vision as you go berserk!"));
 
     if (you.duration[DUR_FINESSE] > 0)
     {
         you.duration[DUR_FINESSE] = 0; // Totally incompatible.
-        mpr("Your finesse ends abruptly.");
+        mpr(T_("Your finesse ends abruptly."));
     }
 
     if (you.duration[DUR_AFRAID] > 0)
     {
         you.clear_fearmongers();
         you.duration[DUR_AFRAID] = 0; // Too angry to be scared.
-        mpr("Your anger overwhelms your terror!");
+        mpr(T_("Your anger overwhelms your terror!"));
     }
 
     if (!_god_prevents_berserk_haste(intentional))
-        mpr("You feel yourself moving faster!");
+        mpr(T_("You feel yourself moving faster!"));
 
-    mpr("You feel mighty!");
+    mpr(T_("You feel mighty!"));
 
     int dur = (20 + random2avg(19,2)) / 2;
     if (potion && you.has_mutation(MUT_EFFICIENT_METABOLISM))

@@ -1,7 +1,28 @@
 .cquery_cache/
 .DS_Store
 .vscode/
+.idea/
 .vs
+
+# Claude Code (agent/skill/workflow orchestration — local only)
+.claude/agents/
+.claude/skills/
+.claude/workflows/
+.claude/worktrees/
+.claude/ORCHESTRATION_STATE.md
+**/.claude/metrics/
+.claude/scripts/__pycache__/
+CLAUDE.md
+
+# External tool configs
+.opencode/
+.mcp.json
+
+# CJK fonts — not in repo, distributed in release packages only
+crawl-ref/source/contrib/fonts/SarasaMonoSC-Regular.ttf
+
+# Game data
+saves/
 
 *.sublime-workspace
 *.sublime-project

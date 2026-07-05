@@ -19,6 +19,7 @@
 #include "branch.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dbg-maps.h"
 #include "dungeon.h"
 #include "end.h"
@@ -195,7 +196,7 @@ static bool _resolve_map_lua(map_def &map)
         // per-iteration seed.
         string seed_inf = "";
         if (msg::uses_stderr(MSGCH_ERROR))
-            seed_inf = make_stringf(" in seed %" PRIu64, crawl_state.seed);
+            seed_inf = make_stringf(T_(" in seed %" PRIu64), crawl_state.seed);
         mprf(MSGCH_ERROR, "Fatal lua error%s: %s", seed_inf.c_str(),
              err.c_str());
         // If we're using stderr, we don't have a morgue, so any dlua stack
@@ -1499,18 +1500,22 @@ static void _parse_maps(const string &s)
     printf("Regenerating des: %s\n", s.c_str());
 #endif
     // won't be seen by the user unless they look for it
-    mprf(MSGCH_PLAIN, "Regenerating des: %s", s.c_str());
+    mprf(MSGCH_PLAIN, T_("Regenerating des: %s"), s.c_str());
 
     time_t mtime = file_modtime(dat);
     _reset_map_parser();
 
     extern int yyparse();
     extern FILE *yyin;
+    extern void yyrestart(FILE *);
+    extern int yylex_destroy();
     yyin = dat;
 
     const size_t file_start = vdefs.size();
+    yyrestart(yyin);
     yyparse();
     fclose(dat);
+    yylex_destroy();
 
     global_preludes.push_back(lc_global_prelude);
 
@@ -1598,7 +1603,7 @@ void run_map_local_preludes()
                 string seed_inf = "";
                 if (msg::uses_stderr(MSGCH_ERROR))
                 {
-                    seed_inf = make_stringf(" in seed %" PRIu64,
+                    seed_inf = make_stringf(T_(" in seed %" PRIu64),
                                             crawl_state.seed);
                 }
                 mprf(MSGCH_ERROR, "Lua error (map %s)%s: %s",

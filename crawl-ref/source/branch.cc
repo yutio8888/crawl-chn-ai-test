@@ -3,6 +3,7 @@
 #include "branch.h"
 #include "branch-data.h"
 
+#include "database.h"
 #include "item-name.h"
 #include "player.h"
 #include "state.h"
@@ -360,10 +361,10 @@ string branch_rune_desc(branch_type br, bool remaining_only)
 
     if (!rune_names.empty())
     {
-        desc = make_stringf("This branch contains the %s rune%s of Zot.",
+        desc = make_stringf(T_("This branch contains the %s rune%s of Zot."),
                             comma_separated_line(begin(rune_names),
                                                  end(rune_names)).c_str(),
-                            rune_names.size() > 1 ? "s" : "");
+                            rune_names.size() > 1 ? T_("s") : T_(""));
     }
 
     return desc;

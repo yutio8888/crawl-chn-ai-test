@@ -70,29 +70,9 @@ unseen Airstrike cast
 
 你听到刮风的声音。
 %%%%
-unseen Animate Dead cast real
-
-你听到@something@在呼唤死者。
-%%%%
-Animate Dead cast real
-
-@The_monster@一边吟诵，一边向周围区域做着手势。
-
-@The_monster@一边吟诵，一边张开@arms@。
-%%%%
-Animate Dead cast gestures
-
-@The_monster@向周围区域做着手势。
-
-@The_monster@张开@arms@。
-%%%%
 Battlecry cast
 
 @The_monster@咆哮着发出战吼！
-%%%%
-Hunting Call cast
-
-@The_monster@发出狩猎呼唤！
 %%%%
 Blinkbolt cast
 
@@ -123,10 +103,6 @@ Cantrip cast
 Creeping Frost cast
 
 @The_monster@激起墙壁中刺骨的寒意。
-%%%%
-Goad Beasts cast
-
-@The_monster@煽动着附近的野兽。
 %%%%
 Call Down Lightning cast
 
@@ -185,10 +161,6 @@ unseen Holy Flames cast
 Word of Recall cast
 
 @The_monster@开始吟诵召回之语！
-%%%%
-Call Lost Soul cast
-
-@The_monster@召唤出不安分的灵魂！
 %%%%
 Major Destruction cast
 
@@ -269,7 +241,7 @@ __NONE
 %%%%
 Spit Acid cast
 
-@The_monster@喷吐的酸液@at@ @target@。
+@The_monster@朝@target@喷吐酸液。
 %%%%
 unseen Spit Acid cast
 
@@ -277,7 +249,7 @@ unseen Spit Acid cast
 %%%%
 Acid Splash cast
 
-@The_monster@喷吐的酸液@at@ @target@。
+@The_monster@朝@target@喷吐酸液。
 %%%%
 unseen Acid Splash cast
 
@@ -297,7 +269,7 @@ unseen Cold Breath cast
 %%%%
 Cold Breath cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 unseen Chilling Breath cast
 
@@ -305,28 +277,28 @@ unseen Chilling Breath cast
 %%%%
 Chilling Breath cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 # 龙人鬼魂吐息
 Bolt of Draining natural cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 Lightning Bolt natural cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 Steam Ball natural cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 Quicksilver Bolt natural cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 Poisonous Cloud natural cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 unseen Fire Breath cast
 
@@ -334,7 +306,7 @@ unseen Fire Breath cast
 %%%%
 Fire Breath cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 unseen Searing Breath cast
 
@@ -342,7 +314,7 @@ unseen Searing Breath cast
 %%%%
 Searing Breath cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%%
 Electrical Bolt cast
 
@@ -350,11 +322,11 @@ Electrical Bolt cast
 %%%%%
 Spit Lava cast
 
-@The_monster@喷吐的熔岩@at@ @target@。
+@The_monster@朝@target@喷出熔岩。
 %%%%
 Spit Poison cast
 
-@The_monster@喷吐的毒液@at@ @target@。
+@The_monster@朝@target@喷出毒液。
 %%%%
 unseen Spit Poison cast
 
@@ -364,21 +336,9 @@ Freeze cast
 
 @The_monster@冰冻@target@。
 %%%%
-Sticky Flame Splash cast
-
-@The_monster@喷吐的粘性火焰@at@ @target@。
-%%%%
-unseen Sticky Flame Splash cast
-
-你听到喷吐的声音。
-%%%%
 Petrifying Cloud cast
 
-@The_monster@吐息的一团石化尘@at@ @target@。
-%%%%
-Frenzy cast
-
-@The_monster@气愤地抽搐着。
+@The_monster@朝@target@吐出一团石化尘。
 %%%%
 Volley of Thorns cast
 
@@ -418,9 +378,9 @@ Cantrip Dissolution cast
 
 @The_monster@对着一个不在场神咯咯叫。
 
-@The_monster@悲伤地摇晃着。
+@The_monster@悲伤地颤动着。
 
-@The_monster@无目的地晃动着。
+@The_monster@无目的地摇晃着。
 
 @The_monster@说：“与我的悲伤融为一体！”
 
@@ -563,6 +523,10 @@ VISUAL:@The_monster@恳切地举起手臂。
 ########################################################################
 # 个别怪物
 ########################################################################
+angel cast targeted
+
+@The_monster@呼唤@possessive_God@的愤怒，将其施加到@target@身上。
+%%%%
 brain worm cast
 
 @The_monster@鼓鼓的脑袋在悸动。
@@ -674,10 +638,6 @@ Sleep satyr cast
 
 @The_monster@用笛子演奏出一段催眠的旋律！
 %%%%
-Sleep dream sheep cast
-
-@The_monster@突然生成了大量梦尘！
-%%%%
 Metal Splinters war gargoyle cast
 
 @The_monster@射出的@beam@ @at@ @target@。
@@ -689,10 +649,6 @@ Splinterspray cast
 Crystallising Shot crystal guardian cast
 
 @The_monster@射出的水晶箭@at@ @target@。
-%%%%
-Blink Other statue cast
-
-@The_monster@施展的一个法术@at@ @target@。
 %%%%
 Stone Arrow gargoyle cast
 
@@ -804,25 +760,13 @@ unseen Warning Cry seraph cast
 
 你听到一声响亮的警戒叫号！
 %%%%
-Battlecry seraph cast
-
-@The_monster@吟唱了一首有力的圣歌！
-%%%%
 Throw Icicle shard shrike cast
 
-@The_monster@喷吐的一块冰碎片@at@ @target@。
+@The_monster@朝@target@喷出冰碎片。
 %%%%
 Lightning Bolt electric golem cast
 
 @The_monster@掷出的一束@beam@ @at@ @target@。
-%%%%
-unseen Warning Cry demonic crawler cast
-
-你听到可怕的尖叫声！
-%%%%
-Warning Cry demonic crawler cast
-
-@The_monster@尖叫着以示警戒！
 %%%%
 unseen Warning Cry howler monkey cast
 
@@ -842,11 +786,7 @@ Warning Cry vault sentinel cast
 %%%%
 Fireball hell hog cast
 
-@The_monster@吐息的@beam@ @at@ @target@。
-%%%%
-Throw Barbs peacekeeper cast
-
-@The_monster@掷出的一束@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 Woodweal cast
 
@@ -872,20 +812,13 @@ burial acolyte cast
 
 @The_monster@[低沉单调地唱|吟诵]着一首挽歌。
 %%%%
-########################################################################
-# 怪物的种族和属的消息
-########################################################################
-angel cast targeted
-
-@The_monster@呼唤@possessive_God@的愤怒，将其施加到@target@身上。
-%%%%
 crab cast targeted
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 dragon cast targeted
 
-@The_monster@吐息的@beam@ @at@ @target@。
+@The_monster@朝@target@吐出@beam@。
 %%%%
 dragon cast
 
@@ -947,14 +880,6 @@ unseen Bolt of Fire ophan cast
 
 有什么东西掌控着火的净化力量！
 %%%%
-Shock shock serpent cast
-
-@The_monster@释放出一股细小的卷须状的电流。
-%%%%
-Static Discharge shock serpent cast
-
-@The_monster@发出电的噼啪声！
-%%%%
 Corrupting Pulse wretched star cast
 
 @The_monster@搏动着怪异的光！
@@ -1003,7 +928,7 @@ Might Other priest cast
 %%%%
 Malign Offering priest cast
 
-@The_monster@进行黑暗祈祷时，做出指向动作@at@ @target@。
+@The_monster@进行黑暗祈祷，指向@target@。
 %%%%
 Blink magical cast
 
@@ -1057,7 +982,7 @@ wizard cast targeted
 
 @The_monster@在吟诵时，做出的手势@at@ @target@。
 
-@The_monster@在咕哝着一些奇怪的话时，做出的指向动作@at@ @target@。
+@The_monster@咕哝着奇怪的话，指向@target@。
 
 @The_monster@施展的一个法术@at@ @target@。
 %%%%
@@ -1088,3 +1013,321 @@ beam catchall cast
 
 @The_monster@掷出的@beam@ @at@ @target@。
 %%%%
+Acid Ball nascent plasmodium cast
+
+@The_monster@朝@target@喷射出酸液。
+%%%%
+Airstrike blizzard demon cast
+
+@The_monster@以冰冷的强度猛烈攻击。
+
+@The_monster@以冻结的闪电般的手势比划着。
+
+@The_monster@以扭曲的圆圈挥舞着@possessive@的@arms@。
+%%%%
+Antimagic Gaze Norris cast
+
+@the_monster_possessive@波浪之下某种神圣之物突然凝视着@target@。
+
+@The_monster_possessive@的双眼闪烁着光芒，以来自彼岸的幻象压倒了@target@。
+%%%%
+Awaken Flesh kobold fleshcrafter cast
+
+@The_monster@咯咯笑着，比划着手势。
+
+@The_monster@吟诵着，扭动着身躯。
+%%%%
+Beckoning Gale chonchon cast
+
+@The_monster@一边吟诵，一边朝@target@拍打着@possessive@的翅膀。
+
+w:5
+@The_monster@一边旋转飞舞，一边朝@target@发出尖啸。
+%%%%
+Beckoning Gale hippogriff cast
+
+@The_monster@朝@target@拍打着@possessive@的翅膀。
+%%%%
+Bolt of Flesh kobold fleshcrafter cast
+
+@The_monster@朝@target@编织出一股血肉之波。
+%%%%
+Call Lost Souls cast
+
+@The_monster@召唤出不安的灵魂！
+%%%%
+Divine Armament cast
+
+@The_monster@恳求@My_God@赐予他们一件武器。
+%%%%
+Dominate Undead vampire bloodprince cast
+
+@The_monster@施加了@possessive@权威的全部重量。
+
+@The_monster@迫使死者服从。
+
+@The_monster@低语道："跪下。"
+%%%%
+Doomsaying Cassandra cast
+
+@The_monster@说："我已经看见了你的未来，@player_name@！回头吧，别等到被迫亲眼见证！"
+%%%%
+Electrical Bolt shock serpent cast
+
+@The_monster@释放出一道电光触须。
+%%%%
+Flashing Balestra undying armoury cast
+
+一件武器从@the_monster@身上跃出，朝@target@猛刺而去！
+%%%%
+Force Lance polterguardian cast
+
+@The_monster@将意志聚焦于@target@。
+%%%%
+Grasping Roots cast
+
+@The_monster@触及大地深处的根须。
+%%%%
+Grasping Roots natural cast
+
+@The_monster@将根须延伸到@target@身下！
+%%%%
+Grave Claw vampire bloodprince cast
+
+@The_monster@伸出了@possessive@的手。
+
+@The_monster@打了一个响指。
+%%%%
+Hellfire Court cast
+
+@The_monster@召唤出@possessive@的仆从。
+%%%%
+Hellfire Mortar Wiglaf cast
+
+VISUAL:@The_monster@将@possessive@的武器砸向地面。
+
+@The_monster@朝@foe@喊道："尝尝大山的血！"
+
+@The_monster@朝@foe@咆哮道："让老子给你看看什么才叫真正的炮！"
+%%%%
+Hellfire Mortar cast
+
+@The_monster@朝@target@轰出一股岩浆洪流。
+%%%%
+Hoarfrost Bullet cast
+
+@The_monster@发射出一阵冰晶碎片齐射。
+%%%%
+Hoarfrost Bullet cast finale
+
+@The_monster@伴随着一声刺耳的轰鸣，将最后一发@reflexive@朝@target@发射出去。
+%%%%
+Hurl Torchlight cast
+
+@The_monster@举起了黑色的火炬。
+%%%%
+Injury Mirror screaming refraction cast
+
+@The_monster@闪耀着悲哀的痛苦。
+
+@The_monster@在光辉的剧痛中摇晃着@possessive@的椎骨。
+%%%%
+Landbreaker natural cast
+
+@The_monster@以@possessive@的脚步震裂了大地。
+%%%%
+Launch Bomblet cast
+
+@The_monster@发射了一枚炸弹。
+%%%%
+Lee's Rapid Deconstruction screaming refraction cast
+
+@the_monster@的一道回声闪烁着，朝@target@绝望地哀嚎。
+%%%%
+Manifold Assault natural cast
+
+@The_monster@似乎同时存在于许多地方。
+%%%%
+March of Sorrows bone dragon cast
+
+@The_monster@朝@target@吐出[集体的绝望|无尽的悲伤]。
+%%%%
+Paralysis guardian sphinx cast
+
+@The_monster@低语出一个[令人呆滞的|令人惊愕的]神秘谜语。
+%%%%
+Phantom Blitz cast
+
+@The_monster@编织出一个幻影图像，朝@target@发射而去。
+%%%%
+Primal Wave Norris cast
+
+@The_monster@请求超越生命之外的某种存在来援助@target@。
+
+@The_monster@冷静地召唤出死亡彼岸的某种存在的愤怒，降临于@target@。
+
+@The_monster@向宇宙祈祷，愿和平降临于@target@。
+%%%%
+Ravenous Swarm vampire bloodprince cast
+
+@The_monster@展开了@possessive@的翅膀。
+
+@The_monster@张开了@possessive@的双臂。
+%%%%
+Rebounding Blaze thermic dynamo cast
+
+一股狂野的火焰漩涡从@the_monster@身上射出，直奔@target@而去。
+
+@The_monster@过度充能@reflexive@，将多余的热量朝@target@释放。
+%%%%
+Rebounding Chill thermic dynamo cast
+
+一股狂野的寒冰漩涡从@the_monster@身上射出，直奔@target@而去。
+
+@The_monster@被寒冰充溢，将多余的冷气朝@target@排出。
+%%%%
+Seismic Stomp cast
+
+@The_monster@跺着@possessive@沉重的脚。
+%%%%
+Shadow Shot cast
+
+@The_monster@朝@target@射击。
+%%%%
+Siphon Essence cast
+
+@The_monster@将附近的灵魂吸入@reflexive@！
+%%%%
+Smiting guardian sphinx cast
+
+@The_monster@朝@target@咕哝出一个古老的诅咒。
+%%%%
+Sojourning Bolt cast
+
+@The_monster@朝@target@吐出一道时空裂隙。
+%%%%
+Sticks to Snakes cast
+
+@The_monster@扔下两根树枝，它们随即扭动着活了过来！
+%%%%
+Summon Mortal Champion fravashi cast
+
+@The_monster@召唤出其冠军斗士。
+%%%%
+Throw Bolas cast
+
+@The_monster@朝@target@投掷出流星索。
+%%%%
+Vanquished Vanguard Nergalle cast
+
+@The_monster@呼唤道："@orc name@、@orc name@、@orc name@——到我这里来！"
+
+@The_monster@哭喊道："幽灵们！为你们亲手建造的家园而战！"
+%%%%
+Confuse sphinx marauder cast
+
+@The_monster@用奇异的语言吼出一个[晦涩的|令人困惑的]谜语。
+%%%%
+Vex sphinx marauder cast
+
+@The_monster@用神秘的语言尖啸出一个[不可能的|荒谬的|老套的]谜语。
+%%%%
+Vhi's Electrolunge cast
+
+@The_monster@伴随着一声电流噼啪向前冲锋。
+%%%%
+Warning Cry hippogriff cast
+
+@The_monster@发出一声警告的尖啸！
+%%%%
+_unseen_breath_cast_
+
+你听到一声咆哮。
+%%%%
+_unseen_spit_cast_
+
+你听到一声吐口水的声音。
+%%%%
+bes kemwar cast
+
+@The_monster@扭动着，而@target@体内的什么东西也随之扭动。
+%%%%
+blizzard demon cast
+
+@The_monster@以忧郁的恶意噼啪作响。
+
+@The_monster@以悲哀的怨恨咆哮着。
+%%%%
+bolt of flesh zykzyl cast
+
+@The_monster@将@reflexive@的一块朝@target@投掷而去。
+%%%%
+clockroach cast
+
+@The_monster@从它的沙漏中朝@target@喷射沙子。
+%%%%
+cognitogaunt cast
+
+@The_monster@剧烈地闪烁着光芒。
+%%%%
+enfeeble zykzyl cast
+
+@The_monster@满溢着怨恨。
+%%%%
+eye of draining cast
+
+@The_monster@得意地笑着，凝视着@target@。
+%%%%
+malmutate zykzyl cast
+
+@The_monster@沸腾着对@foe_possessive@形态的嫉妒。
+%%%%
+orb of entropy cast
+
+w:20
+@The_monster@[脉动着|振颤着]。
+
+@The_monster@啃咬着世界。
+
+@The_monster@蚕食着现实。
+
+存在本身在@the_monster@周围衰败。
+%%%%
+orb of winter cast
+
+@The_monster@闪烁着寒霜。
+
+@The_monster@如暴风雪般旋转着。
+
+w:30
+@The_monster@发出[冰蓝色的光|苍白的光芒|蓝宝石般的光]。
+%%%%
+ostracise cast
+
+@The_monster@冻结了你的灵魂。
+%%%%
+raven cast
+
+@The_monster@凝视着@foe_possessive@的灵魂。
+%%%%
+scrub nettle cast targeted
+
+@The_monster@朝@target@发射出毒刺。
+%%%%
+silent blizzard demon cast
+
+@The_monster@以冰冷的强度猛烈攻击。
+
+@The_monster@以冻结的闪电般的手势比划着。
+%%%%
+undertaker cast targeted
+
+@The_monster@朝@target@伸出手。
+%%%%
+unseen Phantom Blitz cast
+
+@The_something@编织出一个幻影图像并向外投出！
+%%%%
+unseen thermic dynamo cast
+
+你听到一声剧烈的旋转声。

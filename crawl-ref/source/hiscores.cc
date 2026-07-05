@@ -449,7 +449,7 @@ UIHiscoresMenu::UIHiscoresMenu()
     }
     else
     {
-        auto placeholder = formatted_string("No high scores yet...", DARKGRAY);
+        auto placeholder = formatted_string(T_("No high scores yet..."), DARKGRAY);
         m_root->add_child(make_shared<Text>(placeholder));
         initial_focus = this;
     }
@@ -1403,7 +1403,7 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             {
                 auxkilldata = env.item[mons->inv[MSLOT_WEAPON]].name(DESC_A);
                 if (mons->has_ench(ENCH_ARMED))
-                    auxkilldata += " (from an undying armoury)";
+                    auxkilldata += T_(" (from an undying armoury)");
             }
         }
 
@@ -1418,24 +1418,24 @@ void scorefile_entry::init_death_cause(int dam, mid_t dsrc,
             death_source_name = mons->full_name(desc);
 
         if (mons_is_player_shadow(*mons))
-            death_source_name = "their own shadow"; // heh
+            death_source_name = T_("their own shadow"); // heh
 
         if (mons->mid == MID_YOU_FAULTLESS)
-            death_source_name = "themself";
+            death_source_name = T_("themself");
 
         if (mons->mid == MID_ANON_FRIEND)
-            death_source_name = "an ally";
+            death_source_name = T_("an ally");
 
         if (mons->has_ench(ENCH_SHAPESHIFTER))
-            death_source_name += " (shapeshifter)";
+            death_source_name += T_(" (shapeshifter)");
         else if (mons->has_ench(ENCH_GLOWING_SHAPESHIFTER))
-            death_source_name += " (glowing shapeshifter)";
+            death_source_name += T_(" (glowing shapeshifter)");
 
         if (mons->type == MONS_PANDEMONIUM_LORD)
-            death_source_name += " the pandemonium lord";
+            death_source_name += T_(" the pandemonium lord");
 
         if (mons->has_ench(ENCH_PHANTOM_MIRROR))
-            death_source_name += " (illusionary)";
+            death_source_name += T_(" (illusionary)");
 
         if (mons_is_unique(mons->type))
             death_source_flags.insert("unique");
@@ -1844,7 +1844,7 @@ string scorefile_entry::game_time(death_desc_verbosity verbosity) const
 
     if (verbosity == DDV_VERBOSE)
     {
-        line += make_stringf("The game lasted %s (%d turns).",
+        line += make_stringf(T_("The game lasted %s (%d turns)."),
                              make_time_string(real_time).c_str(), num_turns);
 
         line += _hiscore_newline_string();
@@ -1857,10 +1857,10 @@ const char *scorefile_entry::damage_verb() const
 {
     // GDL: here's an example of using final_hp. Verbiage could be better.
     // bwr: changed "blasted" since this is for melee
-    return (final_hp > -6)  ? "Slain"   :
-           (final_hp > -14) ? "Mangled" :
-           (final_hp > -22) ? "Demolished"
-                            : "Annihilated";
+    return (final_hp > -6)  ? T_("Slain")   :
+           (final_hp > -14) ? T_("Mangled") :
+           (final_hp > -22) ? T_("Demolished")
+                            : T_("Annihilated");
 }
 
 string scorefile_entry::death_source_desc() const
@@ -1991,7 +1991,7 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
     if (num_runes >= 1)
     {
         desc += _hiscore_newline_string();
-        desc += make_stringf("... %s %d rune%s",
+        desc += make_stringf(T_("... %s %d rune%s"),
                              extra ? "and" : "with",
                              num_runes,
                              (num_runes > 1) ? "s" : "");
@@ -2000,7 +2000,7 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
     if (gems_found >= 1)
     {
         desc += _hiscore_newline_string();
-        desc += make_stringf("... %s %d gem%s",
+        desc += make_stringf(T_("... %s %d gem%s"),
                              extra ? "and" : "with",
                              gems_found,
                              (gems_found > 1) ? "s" : "");
@@ -2009,13 +2009,13 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
         if (Options.more_gem_info || semiverbose)
         {
             if (gems_intact == 1 && gems_found == 1)
-                desc += " (intact)";
+                desc += T_(" (intact)");
             else if (gems_intact == 2 && gems_found == 2)
-                desc += " (both intact)";
+                desc += T_(" (both intact)");
             else if (gems_intact == gems_found)
-                desc += " (all intact)";
+                desc += T_(" (all intact)");
             else
-                desc += make_stringf(" (%d intact)", gems_intact);
+                desc += make_stringf(T_(" (%d intact)"), gems_intact);
         }
     }
     if (!semiverbose
@@ -2044,12 +2044,12 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     // Please excuse the following bit of mess in the name of flavour ;)
     if (verbose)
     {
-        desc = make_stringf("%8d %s the %s (level %d",
+        desc = make_stringf(T_("%8d %s the %s (level %d"),
                   points, name.c_str(), title.c_str(), lvl);
     }
     else
     {
-        desc = make_stringf("%8d %s the %s %s (level %d",
+        desc = make_stringf(T_("%8d %s the %s %s (level %d"),
                   points, name.c_str(),
                   _species_name(race).c_str(),
                   _job_name(job), lvl);
@@ -2057,21 +2057,21 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
 
     if (final_max_max_hp > 0)  // as the other two may be negative
     {
-        desc += make_stringf(", %d/%d", final_hp, final_max_hp);
+        desc += make_stringf(T_(", %d/%d"), final_hp, final_max_hp);
 
         if (final_max_hp < final_max_max_hp)
-            desc += make_stringf(" (%d)", final_max_max_hp);
+            desc += make_stringf(T_(" (%d)"), final_max_max_hp);
 
-        desc += " HPs";
+        desc += T_(" HPs");
     }
 
-    desc += wiz_mode ? ") *WIZ*" : explore_mode ? ") *EXPLORE*" : ")";
+    desc += wiz_mode ? T_(") *WIZ*") : explore_mode ? T_(") *EXPLORE*") : T_(")");
     desc += _hiscore_newline_string();
 
     if (verbose)
     {
         string srace = _species_name(race);
-        desc += make_stringf("Began as a%s %s %s",
+        desc += make_stringf(T_("Began as a%s %s %s"),
                  is_vowel(srace[0]) ? "n" : "",
                  srace.c_str(),
                  _job_name(job));
@@ -2090,7 +2090,7 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
         {
             if (god == GOD_XOM)
             {
-                desc += make_stringf("Was a %sPlaything of Xom.",
+                desc += make_stringf(T_("Was a %sPlaything of Xom."),
                                     (lvl >= 20) ? "Favourite " : "");
 
                 desc += _hiscore_newline_string();
@@ -2099,7 +2099,7 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
             {
                 // Not exactly the same as the religion screen, but
                 // good enough to fill this slot for now.
-                desc += make_stringf("Was %s of %s%s",
+                desc += make_stringf(T_("Was %s of %s%s"),
                              (piety >= piety_breakpoint(5)) ? "the Champion" :
                              (piety >= piety_breakpoint(4)) ? "a High Priest" :
                              (piety >= piety_breakpoint(3)) ? "an Elder" :
@@ -2149,7 +2149,7 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
     place += " " + prep_branch_level_name(level_id(branch, dlvl));
 
     if (!mapdesc.empty())
-        place += make_stringf(" (%s)", mapdesc.c_str());
+        place += make_stringf(T_(" (%s)"), mapdesc.c_str());
 
     if (verbose && death_time
         && !_hiscore_same_day(birth_time, death_time))
@@ -2265,7 +2265,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                         + "]";
         else
         {
-            desc += make_stringf("Engulfed by %s%s %s",
+            desc += make_stringf(T_("Engulfed by %s%s %s"),
                 death_source_name.empty() ? "a" :
                   death_source_name == "you" ? "their own" :
                   apostrophise(death_source_name).c_str(),
@@ -2279,7 +2279,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (oneline || semiverbose)
         {
             // keeping this short to leave room for the deep elf spellcasters:
-            desc += make_stringf("%s by ",
+            desc += make_stringf(T_("%s by "),
                       _range_type_verb(auxkilldata.c_str()));
             desc += (death_source_name == "you") ? "themself"
                                                  : death_source_desc();
@@ -2308,13 +2308,13 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             if (death_source_name == "you")
             {
                 needs_damage = true;
-                desc += make_stringf("Killed by their own %s",
+                desc += make_stringf(T_("Killed by their own %s"),
                          auxkilldata.substr(3).c_str());
             }
             else
             {
                 needs_called_by_monster_line = true;
-                desc += make_stringf("Killed %s",
+                desc += make_stringf(T_("Killed %s"),
                           auxkilldata.c_str());
             }
         }
@@ -2344,8 +2344,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             desc += "lava";
         else
         {
-            if (starts_with(species::skin_name(
-                        static_cast<species_type>(race)), "bandage"))
+            if (race == SP_MUMMY)
             {
                 desc += "Turned to ash by lava";
             }
@@ -2359,8 +2358,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc = "fell apart";
-            else if (starts_with(species::skin_name(
-                        static_cast<species_type>(race)), "bandage"))
+            else if (race == SP_MUMMY)
             {
                 desc = "Soaked and fell apart";
             }
@@ -2406,7 +2404,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             desc += auxkilldata.c_str();
         else
         {
-            desc += make_stringf("Killed by triggering %s",
+            desc += make_stringf(T_("Killed by triggering %s"),
                                  auxkilldata.c_str());
         }
         needs_damage = true;
@@ -2513,7 +2511,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             else
             {
                 // A lot of sources for this case... some have "by" already.
-                desc += make_stringf("Killed %s%s",
+                desc += make_stringf(T_("Killed %s%s"),
                           (auxkilldata.find("by ") != 0) ? "by " : "",
                           auxkilldata.c_str());
             }
@@ -2860,7 +2858,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 if (!semiverbose)
                 {
-                    desc += make_stringf("... wielding %s",
+                    desc += make_stringf(T_("... wielding %s"),
                              auxkilldata.c_str());
                     needs_damage = true;
                     desc += _hiscore_newline_string();
@@ -2888,7 +2886,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             }
             else if (needs_called_by_monster_line)
             {
-                desc += make_stringf("... %s by %s",
+                desc += make_stringf(T_("... %s by %s"),
                          death_type == KILLED_BY_COLLISION ? "after being knocked back" :
                          auxkilldata == "by angry trees"   ? "awakened" :
                          auxkilldata == "by Freeze"        ? "generated"

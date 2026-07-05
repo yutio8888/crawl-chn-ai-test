@@ -66,7 +66,7 @@ void Version::record(string prev)
             {
                 you.props[VERSION_HISTORY_PROP].get_vector().push_back(
                     CrawlStoreValue(make_stringf(
-                            "Missing version history before: %s",
+                            T_("Missing version history before: %s"),
                             prev.c_str())));
             }
         }
@@ -80,7 +80,7 @@ void Version::record(string prev)
     {
         you.props[VERSION_HISTORY_PROP].get_vector().push_back(
                                                     CrawlStoreValue(Long));
-        const string note = make_stringf("Upgraded the game from %s to %s",
+        const string note = make_stringf(T_("Upgraded the game from %s to %s"),
                                          prev.c_str(), Long);
         take_note(Note(NOTE_MESSAGE, 0, 0, note));
     }
@@ -97,7 +97,7 @@ size_t Version::history_size()
 string Version::history()
 {
     if (history_size() == 0)
-        return make_stringf("No version history (current version is %s)", Long);
+        return make_stringf(T_("No version history (current version is %s)"), Long);
 
     string result;
     for (auto v : you.props[VERSION_HISTORY_PROP].get_vector())

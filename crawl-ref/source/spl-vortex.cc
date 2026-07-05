@@ -29,6 +29,7 @@
 #include "target.h"
 #include "terrain.h"
 #include "transform.h"
+#include "database.h"
 
 static bool _airtight(coord_def c)
 {
@@ -129,7 +130,7 @@ spret cast_polar_vortex(int powc, bool fail, bool no_prompt)
 
     fail_check();
 
-    mprf("A great freezing vortex %s.",
+    mprf(T_("A great freezing vortex %s."),
          (you.airborne() || get_form()->forbids_flight()) ?
          "appears around you" : "appears and lifts you up");
 
@@ -315,7 +316,7 @@ void polar_vortex_damage(actor *caster, int dur)
             {
                 destroy_wall(*dam_i);
                 if (you.see_cell(*dam_i))
-                    mpr("A tree falls to the furious winds!");
+                    mpr(T_("A tree falls to the furious winds!"));
             }
 
             if (!winds.has_wind(*dam_i))
@@ -363,7 +364,7 @@ void polar_vortex_damage(actor *caster, int dur)
                     {
                         bool standing = !you.airborne();
                         if (standing)
-                            mpr("The freezing vortex lifts you up.");
+                            mpr(T_("The freezing vortex lifts you up."));
                         you.duration[DUR_FLIGHT]
                             = max(you.duration[DUR_FLIGHT], 20);
                         if (standing)
@@ -468,9 +469,9 @@ void polar_vortex_damage(actor *caster, int dur)
             && !need_expiration_warning(old_player_pos)
             && need_expiration_warning(new_player_pos))
         {
-            mprf(MSGCH_DANGER, "Careful! You are now flying above %s.",
-                 feature_description_at(new_player_pos, false, DESC_PLAIN)
-                     .c_str());
+            mprf_p(MSGCH_DANGER, T_("Careful! You are now flying above %1$s."),
+                   feature_description_at(new_player_pos, false, DESC_PLAIN)
+                       .c_str());
         }
     }
 

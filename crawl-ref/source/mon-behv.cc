@@ -24,6 +24,7 @@
 #include "macro.h"
 #include "message.h"
 #include "mon-act.h"
+#include "options.h"
 #include "mon-abil.h"
 #include "mon-death.h"
 #include "mon-movetarget.h"
@@ -782,7 +783,7 @@ void handle_behaviour(monster* mon)
                 if (mon->is_travelling() && mon->travel_target != MTRAV_PATROL)
                 {
 #ifdef DEBUG_PATHFIND
-                    mpr("It's been too long! Stop travelling.");
+                    mpr(T_("It's been too long! Stop travelling."));
 #endif
                     mon->travel_path.clear();
                     mon->travel_target = MTRAV_NONE;
@@ -1118,7 +1119,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
 
             if (you.can_see(*mon))
             {
-                mprf("%s attack snaps %s out of %s fear.",
+                mprf_p(T_("%1$s attack snaps %2$s out of %3$s fear."),
                         src ? src->name(DESC_ITS).c_str() : "the",
                         mon->name(DESC_THE).c_str(),
                         mon->pronoun(PRONOUN_POSSESSIVE).c_str());
@@ -1181,7 +1182,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             {
                 if (you.can_see(*mon))
                 {
-                    mprf("%s snaps out of %s daze.",
+                    mprf(T_("%s snaps out of %s daze."),
                             mon->name(DESC_THE).c_str(),
                             mon->pronoun(PRONOUN_POSSESSIVE).c_str());
                 }
@@ -1459,12 +1460,12 @@ static void _mons_indicate_level_exit(const monster* mon)
     const bool is_shaft = (get_trap_type(mon->pos()) == TRAP_SHAFT);
 
     if (feat_is_gate(feat))
-        simple_monster_message(*mon, " passes through the gate.");
+        simple_monster_message(*mon, T_(" passes through the gate."));
     else if (feat_is_travelable_stair(feat))
     {
         command_type dir = feat_stair_direction(feat);
         simple_monster_message(*mon,
-            make_stringf(" %s the %s.",
+            make_stringf(T_(" %s the %s."),
                 dir == CMD_GO_UPSTAIRS     ? "goes up" :
                 dir == CMD_GO_DOWNSTAIRS   ? "goes down"
                                            : "takes",
@@ -1474,12 +1475,12 @@ static void _mons_indicate_level_exit(const monster* mon)
     else if (is_shaft)
     {
         simple_monster_message(*mon,
-            make_stringf(" %s the shaft.",
+            make_stringf(T_(" %s the shaft."),
                 mon->airborne() ? "goes down"
                                 : "jumps into").c_str());
 
         // Shafts are one-time-use.
-        mpr("The shaft crumbles and collapses.");
+        mpr(T_("The shaft crumbles and collapses."));
         maybe_destroy_shaft(mon->pos());
     }
 }
@@ -1497,7 +1498,7 @@ void make_mons_leave_level(monster* mon)
             if (you.can_see(*mon))
             {
                 simple_monster_message(*mon,
-                    make_stringf(" donates %s equipment to the cause.",
+                    make_stringf(T_(" donates %s equipment to the cause."),
                         mon->pronoun(PRONOUN_POSSESSIVE).c_str()).c_str());
             }
             monster_drop_things(mon);

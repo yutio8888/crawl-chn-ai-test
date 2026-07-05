@@ -12,6 +12,7 @@
 #include "env.h"
 #include "files.h"
 #include "glwrapper.h"
+#include "i18n.h"
 #include "libutil.h"
 #include "map-knowledge.h"
 #include "menu.h"
@@ -464,7 +465,7 @@ FontWrapper* TilesFramework::load_font(const char *font_file, int font_size,
             // TODO: this never happens because load_font will die on a missing
             // font file. This setup needs to be smoothed out, but also maybe
             // MONOSPACE_FONT needs to be validated first.
-            mprf(MSGCH_ERROR, "Couldn't find font '%s', falling back on '%s'",
+            mprf(MSGCH_ERROR, T_("Couldn't find font '%s', falling back on '%s'"),
                                             font_file, MONOSPACED_FONT);
             return load_font(MONOSPACED_FONT, 12, false);
         }
@@ -1042,7 +1043,7 @@ void TilesFramework::zoom_dungeon(bool in)
     do_layout(); // recalculate the viewport setup
     redraw_screen(false);
     if (current_scale != orig)
-        mprf(MSGCH_PROMPT, "Zooming to %.2f", (float) current_scale);
+        mprf(MSGCH_PROMPT, T_("Zooming to %.2f"), (float) current_scale);
     update_screen();
 #endif
 }

@@ -12,6 +12,7 @@
 #endif
 
 #include "dbg-util.h"
+#include "options.h"
 #include "delay.h"
 #include "directn.h"
 #include "hints.h"
@@ -24,6 +25,7 @@
 #include "religion.h"
 #include "showsymb.h"
 #include "unwind.h"
+#include "database.h"
 
 game_state::game_state()
     : game_crashed(false), crash_debug_scans_safe(true),
@@ -248,7 +250,7 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
         fs.cprintf("%s (", mon->name(DESC_PLAIN, true).c_str());
         monster_info mi(mon);
         fs.add_glyph(get_mons_glyph(mi));
-        fs.cprintf(") in view: (%d,%d), see_cell: %s",
+        fs.cprintf(T_(") in view: (%d,%d), see_cell: %s"),
                    mon->pos().x, mon->pos().y,
                    you.see_cell(mon->pos())? "yes" : "no");
         formatted_mpr(fs, MSGCH_WARN);
@@ -262,9 +264,9 @@ bool interrupt_cmd_repeat(activity_interrupt ai,
     if (crawl_state.repeat_cmd == CMD_WAIT)
     {
         if (ai == activity_interrupt::full_mp)
-            crawl_state.cancel_cmd_repeat("Magic restored.");
+            crawl_state.cancel_cmd_repeat(T_("Magic restored."));
         else if (ai == activity_interrupt::full_hp)
-            crawl_state.cancel_cmd_repeat("HP restored");
+            crawl_state.cancel_cmd_repeat(T_("HP restored"));
         else
             crawl_state.cancel_cmd_repeat("Command repetition interrupted.");
 

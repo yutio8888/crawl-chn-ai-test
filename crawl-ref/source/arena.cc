@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "arena.h"
+#include "database.h"
 
 #include <stdexcept>
 
@@ -285,7 +286,7 @@ namespace arena
                 {
                     game_ended_with_error(
                         make_stringf(
-                            "Failed to create monster at (%d,%d) env.grid: %s",
+                            T_("Failed to create monster at (%d,%d) env.grid: %s"),
                             loc.x, loc.y, dungeon_feature_name(env.grid(loc))));
                 }
                 list_eq(mon);
@@ -297,7 +298,7 @@ namespace arena
     static void center_print(unsigned sz, string text, int number = -1)
     {
         if (number >= 0)
-            text = make_stringf("(%d) %s", number, text.c_str());
+            text = make_stringf(T_("(%d) %s"), number, text.c_str());
 
         unsigned len = strwidth(text);
         if (len > sz)
@@ -545,7 +546,7 @@ namespace arena
             cgotoxy(1, line++, GOTO_STAT);
             textcolour(BROWN);
             center_print(crawl_view.hudsz.x,
-                         make_stringf("Round %d of %d",
+                         make_stringf(T_("Round %d of %d"),
                                       after_fight ? trials_done
                                                   : trials_done + 1,
                                       total_trials));
@@ -834,7 +835,7 @@ namespace arena
             while (fight_is_on() && !contest_cancelled)
             {
 #ifdef ARENA_VERBOSE
-                mprf("---- Turn #%d ----", turns);
+                mprf(T_("---- Turn #%d ----"), turns);
 #endif
 
                 if (crawl_state.terminal_resized)
@@ -865,7 +866,7 @@ namespace arena
 
         if (contest_cancelled)
         {
-            mpr("Cancelling contest at user request");
+            mpr(T_("Cancelling contest at user request"));
             clear_messages();
             return;
         }
@@ -1064,17 +1065,17 @@ namespace arena
         if (trials_done > 0)
         {
             string outcome = make_stringf(
-                "Final score: %s (%d); %s (%d) [%d ties]",
+                T_("Final score: %s (%d); %s (%d) [%d ties]"),
                  faction_a.desc.c_str(), team_a_wins,
                  faction_b.desc.c_str(), trials_done - team_a_wins - ties,
                  ties);
             if (contest_cancelled)
             {
-                outcome += make_stringf("\n(Cancelled after %d trial%s)",
+                outcome += make_stringf(T_("\n(Cancelled after %d trial%s)"),
                     trials_done, trials_done > 1 ? "s" : "");
             }
 
-            mpr("---- Contest finished ----\n" + outcome);
+            mpr(T_("---- Contest finished ----\n") + outcome);
             if (!skipped_arena_ui)
             {
                 ui::message(outcome, "Arena results:",
@@ -1119,7 +1120,7 @@ monster_type arena_pick_random_monster(const level_id &place)
     }
 
     game_ended_with_error(
-        make_stringf("No random monsters for place '%s'",
+        make_stringf(T_("No random monsters for place '%s'"),
                      arena::place.describe().c_str()));
 }
 
@@ -1198,11 +1199,11 @@ void arena_placed_monster(monster* mons)
     const bool summoned = mons->is_summoned();
 
 #ifdef ARENA_VERBOSE
-    mprf("%s %s!",
+    mprf(T_("%s %s!"),
          mons->full_name(DESC_A).c_str(),
-         arena::is_respawning                ? "respawns" :
-         (summoned && ! arena::real_summons) ? "is summoned"
-                                             : "enters the arena");
+         arena::is_respawning                ? T_("respawns") :
+         (summoned && ! arena::real_summons) ? T_("is summoned")
+                                             : T_("enters the arena"));
 #endif
 
     for (mon_inv_iterator ii(*mons); ii; ++ii)
@@ -1275,7 +1276,7 @@ void arena_monster_died(monster* mons, killer_type killer,
              && arena::faction_b.active_members <= 0)
     {
         if (mons->flags & MF_HARD_RESET && !MON_KILL(killer))
-            mpr("Last arena monster was dismissed.");
+            mpr(T_("Last arena monster was dismissed."));
         // If all monsters are dead, and the last one to die is a giant
         // spore or ball lightning, then that monster's faction is the
         // winner, since self-destruction is their purpose. But if a
@@ -1477,10 +1478,10 @@ static void _choose_arena_teams(newgame_def& choice,
     teams_input->set_text(default_arena_teams);
     vbox->add_child(teams_input);
     formatted_string prompt;
-    prompt.cprintf("\nExamples:\n");
-    prompt.cprintf("  Sigmund v Jessica\n");
-    prompt.cprintf("  99 orc v Royal Jelly\n");
-    prompt.cprintf("  20-headed hydra v 10 kobold ; scimitar ego:flaming");
+    prompt.cprintf(T_("\nExamples:\n"));
+    prompt.cprintf(T_("  Sigmund v Jessica\n"));
+    prompt.cprintf(T_("  99 orc v Royal Jelly\n"));
+    prompt.cprintf(T_("  20-headed hydra v 10 kobold ; scimitar ego:flaming"));
     vbox->add_child(make_shared<Text>(std::move(prompt)));
 
     auto popup = make_shared<ui::Popup>(std::move(vbox));

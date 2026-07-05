@@ -97,7 +97,7 @@ void surge_power_wand(const int mp_cost);
 
 int list_spells(bool toggle_with_I = true, bool transient = false,
                 bool viewing = false, bool allow_preselect = true,
-                const string &title = "cast");
+                const string &title = "");
 int raw_spell_fail(spell_type spell, bool enkindled = false);
 int calc_spell_power(spell_type spell);
 

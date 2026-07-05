@@ -10,6 +10,7 @@
 #include "act-iter.h"
 #include "attitude-change.h"
 #include "coordit.h"
+#include "database.h"
 #include "decks.h"
 #include "dungeon.h"
 #include "god-companions.h" // hepliaklqana_ancestor
@@ -210,7 +211,7 @@ void apply_daction_to_mons(monster* mon, daction_type act, bool local,
             if (you_worship(GOD_HEPLIAKLQANA) && piety_rank() >= 1)
                 break;
 
-            simple_monster_message(*mon, " returns to the mists of memory.");
+            simple_monster_message(*mon, T_(" returns to the mists of memory."));
             monster_die(*mon, KILL_RESET, NON_MONSTER);
             break;
 
@@ -241,7 +242,7 @@ void apply_daction_to_mons(monster* mon, daction_type act, bool local,
 
         case DACT_PIKEL_MINIONS:
         {
-            simple_monster_message(*mon, " departs this earthly plane.");
+            simple_monster_message(*mon, T_(" departs this earthly plane."));
             if (!in_transit)
                 place_cloud(CLOUD_BLACK_SMOKE, mon->pos(), random_range(3, 5), nullptr);
 
@@ -308,16 +309,16 @@ static void _pikel_band_message()
     {
         if (you.get_mutation_level(MUT_NO_LOVE))
         {
-            const char *substr = visible_minions > 1 ? "minions" : "minion";
-            mprf("Pikel's spell is broken, but his former %s can only feel hate"
-                 " for you!", substr);
+            const char *substr = visible_minions > 1 ? T_("minions") : T_("minion");
+            mprf(T_("Pikel's spell is broken, but his former %s can only feel hate"
+                 " for you!"), substr);
         }
         else
         {
             const char *substr = visible_minions > 1
-                ? "minions thank you for their"
-                : "minion thanks you for its";
-            mprf("With Pikel's spell broken, his former %s freedom.", substr);
+                ? T_("minions thank you for their")
+                : T_("minion thanks you for its");
+            mprf(T_("With Pikel's spell broken, his former %s freedom."), substr);
         }
     }
 }
@@ -492,7 +493,7 @@ static void _daction_hog_to_human(monster *mon, bool in_transit)
     behaviour_event(mon, ME_EVAL);
 
     if (could_see && !can_see)
-        mpr("The hog vanishes!");
+        mpr(T_("The hog vanishes!"));
     else if (!could_see && can_see)
-        mprf("%s appears from out of thin air!", mon->name(DESC_A).c_str());
+        mprf(T_("%s appears from out of thin air!"), mon->name(DESC_A).c_str());
 }

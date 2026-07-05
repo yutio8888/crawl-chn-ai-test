@@ -1,0 +1,369 @@
+%%%%
+acid (acid) weapon ego
+
+它可以向受害者泼溅酸液（2d4伤害，腐蚀效果）。
+%%%%
+antimagic (antimagic) weapon ego
+
+它可以减少你的魔法能量，并干扰它所击中生物的咒语和魔法能力。
+天生能力和神赐能力不受影响。
+%%%%
+chaos (chaos) weapon ego
+
+它的每次攻击都会产生不同的随机效果。
+%%%%
+concussion (concuss) weapon ego
+
+它可以将击中的目标向后推开，并短暂地眩晕它们。如果目标被推到坚固的地形上，
+它们将额外受到穿透护甲伤害的三分之一。
+%%%%
+distortion (distort) weapon ego
+
+它扭曲并扰乱周围的空间，可能会使击中的目标闪烁、放逐或受到额外伤害。
+卸下它时可能会将你传送到敌人身边或放逐到深渊。
+%%%%
+devious (devious) weapon ego
+
+它有更高的概率对脆弱的目标发动偷袭攻击，并在每次成功偷袭时暂时提升
+使用者的闪避和杀戮值。
+%%%%
+draining (drain) weapon ego
+
+它有时会吸取活着的受害者（1/2概率）。这会造成穿透护甲伤害的四分之一
+以及2-4点额外伤害，同时轻微削弱它们。
+%%%%
+electrocution (elec) weapon ego
+
+它有时会电击受害者（1/4概率，8-20伤害）。
+%%%%
+entangling (entangle) weapon ego
+
+它有时会用藤蔓束缚被攻击的目标（1/2概率，2-4伤害）。
+%%%%
+flaming (flame) weapon ego
+
+它可以灼烧受害者，造成穿透护甲伤害的额外四分之一伤害。
+%%%%
+flaming (flame) weapon ego blade
+
+它可以灼烧受害者，造成穿透护甲伤害的额外四分之一伤害。
+巨大的火焰刀刃也是九头蛇猎人的标配武器。
+%%%%
+freezing (freeze) weapon ego
+
+它可以冻结受害者，造成穿透护甲伤害的额外四分之一伤害。
+还可能减速冷血生物。
+%%%%
+foul flame (foul flame) weapon ego
+
+它被注入了邪焰，对神圣生物造成额外四分之三伤害，对亡灵和恶魔造成额外
+四分之一伤害，对其他所有生物造成额外一半伤害，只要伤害穿透护甲。
+神圣生物和善良之神的信徒无法使用此武器。
+%%%%
+heavy (heavy) weapon ego
+
+它可以造成远超寻常的伤害，但攻击速度大大降低。
+%%%%
+heavy (heavy) weapon ego ranged
+
+从它发射的任何弹药都会造成远超寻常的伤害，但攻击速度大大降低。
+%%%%
+holy wrath (holy) weapon ego
+
+它受到了辉光之神的祝福，对亡灵和恶魔造成穿透护甲伤害的额外四分之三伤害。
+亡灵和恶魔无法使用此武器。
+%%%%
+pain (pain) weapon ego
+
+它对活着的生物造成与其死灵术技能成比例的额外伤害。{{
+    if you.god() == "Trog" then
+        return "特洛格阻止你释放此效果。";
+    end
+}}{{
+    if you.is_useless_skill("necromancy") then
+        return "你无法学习死灵术，因此无法发挥这把武器的全部力量。";
+    end
+}}
+%%%%
+penetration (penet) weapon ego
+
+从它发射的任何弹药在击中目标后会继续飞行，可能会穿透路径上的所有目标，
+直到飞出视野。
+%%%%
+protection (protect) weapon ego
+
+它在攻击后为你提供临时防护（+7 AC）。
+%%%%
+reaping (reap) weapon ego
+
+任何被它伤害的活着的、神圣的或恶魔类的敌人，在死亡时可能会被暂时复活为
+友好的幽灵，造成的伤害越多，概率越高。
+%%%%
+rebuke (rebuke) weapon ego
+
+如果使用者的上一个动作是近战攻击，它会为穿戴者提供护盾（+10 SH），
+并将格挡的近战攻击转向附近的其他敌人。
+%%%%
+spectralising (spect) weapon ego
+
+当你用它攻击时，这把武器的灵魂会跃出并发动第二次稍弱的攻击。
+灵魂会与你分担其所受伤害的一部分。
+%%%%
+speed (speed) weapon ego
+
+使用它的攻击速度显著加快。
+%%%%
+sundering (sunder) weapon ego
+
+在你连续攻击多次后，它的下一次攻击将造成大幅增加的伤害，
+并可以劈砍到额外一格的远处目标。
+%%%%
+valour (valour) weapon ego
+
+当使用者的生命值不低于最大生命值的80%时，它在击中敌人时会发射一道能量束。
+卸下它时会短暂削弱使用者。
+%%%%
+vampirism (vamp) weapon ego
+
+它在伤害活着的生物时，偶尔会为你恢复伤害量的一部分生命值。
+%%%%
+venom (venom) weapon ego
+
+它会使受害者中毒。
+%%%%
+air (Air) armour ego
+
+它可以增强你的空气魔法。
+%%%%
+archery (Archery) armour ego
+
+对于远程战斗来说，它的负重仅为正常值的三分之一。
+%%%%
+attunement (Attunement) armour ego
+
+当与魔法杖一同穿戴时，它会使该法杖的主要增强效果加倍，
+并使使用它进行的近战攻击恢复少量魔力。
+%%%%
+cold resistance (rC+) armour ego
+
+它可以保护你免受寒冷伤害。
+%%%%
+command (Command) armour ego
+
+它根据你的护甲技能比例提升你的召唤法术的威力和成功率。
+%%%%
+corrosion resistance (rCorr) armour ego
+
+它可以保护你免受酸液和腐蚀的影响。
+%%%%
+death (Death) armour ego
+
+它可以增强你的死灵术法术并提高其成功率，但会为其他魔法施加生命值消耗。
+%%%%
+dexterity (Dex+3) armour ego
+
+它可以提升你的敏捷（敏捷 +3）。
+%%%%
+earth (Earth) armour ego
+
+它可以增强你的大地魔法。
+%%%%
+energy (Energy) armour ego
+
+它可能会返还施法消耗的魔力，但会降低法术成功率。
+它总是返还因施法失败而消耗的魔力。法术返还概率随你的激活技能技能提升。
+%%%%
+fire (Fire) armour ego
+
+它可以增强你的火焰魔法。
+%%%%
+fire resistance (rF+) armour ego
+
+它可以保护你免受火焰伤害。
+%%%%
+flying (Fly) armour ego
+
+它可以赋予你飞行能力。
+%%%%
+glass (Glass) armour ego
+
+当你伤害敌人时，它可能会使敌人玻璃化，使它们更容易受到后续伤害。
+你的激活技能技能会提高玻璃化的概率和持续时间。
+%%%%
+guile (Guile) armour ego
+
+它同时削弱你的意志力以及你所施放诅咒的每个目标的意志力，
+后者随你的激活技能技能而增强。
+%%%%
+harm (Harm) armour ego
+
+它会增加你造成和受到的伤害。
+%%%%
+hurling (Hurl) armour ego
+
+它可以提高你使用投掷武器（如石头和标枪）的准确度和伤害（杀戮 +4）。
+%%%%
+ice (Ice) armour ego
+
+它可以增强你的寒冰魔法。
+%%%%
+infusion (Infuse) armour ego
+
+它用你的一小部分魔法来增强你的每次近战攻击。
+%%%%
+intelligence (Int+3) armour ego
+
+它可以提升你的智力（智力 +3）。
+%%%%
+invisibility (+Inv) armour ego
+
+激活后，它可以赋予你暂时的隐身能力，但也会消耗你的最大生命值。
+%%%%
+light (Light) armour ego
+
+它使你周围环绕着发光的光环，揭示隐形的生物，增加对光环内除你之外
+所有生物的命中率，并降低你的潜行能力。
+%%%%
+mayhem (Mayhem) armour ego
+
+它使目睹你击杀的生物陷入狂乱，以巨大的力量和速度攻击附近的一切。
+%%%%
+mesmerism (Mesmerism) armour ego
+
+当你在近战中被击中时，它会短暂地使所有附近的敌人晕眩，
+之后需要通过静止不动来重新充能。其持续时间、范围和充能速度
+随你的激活技能技能提升。
+%%%%
+parrying (Parrying) armour ego
+
+如果你的上一个动作是近战攻击，它会为你提供护盾。如果你的副手拿着的
+是除武器以外的物品，护盾效果将减半。
+%%%%
+poison resistance (rPois) armour ego
+
+它可以保护你免受毒素伤害。
+%%%%
+ponderousness (Ponderous) armour ego
+
+它非常笨重，会减慢你的移动速度。
+%%%%
+positive energy (rN+) armour ego
+
+它可以保护你免受负能量的影响。
+%%%%
+protection (AC+3) armour ego
+
+它可以保护你免受大多数伤害来源（AC +3）。
+%%%%
+pyromania (Pyromania) armour ego
+
+它可以增强你的火焰魔法，并可能在你以攻击之外的任何方式击杀敌人时
+在你周围释放火焰爆发。爆炸概率和伤害都随激活技能技能提升，
+每回合最多触发一次。
+%%%%
+rampaging (Rampage) armour ego
+
+它使你在向敌人移动时可以多走一步，如果这导致了攻击，
+会短暂地眩晕它们。
+%%%%
+reflection (Reflect) armour ego
+
+它可以反射被格挡的远程攻击。
+%%%%
+repulsion (Repulsion) armour ego
+
+它帮助你躲避魔法和非魔法投射物（EV +15）。
+%%%%
+resistance (rC+ rF+) armour ego
+
+它可以保护你免受火焰和寒冷的伤害。
+%%%%
+resonance (Resonance) armour ego
+
+它可以提高你的锻造法术的成功率，并根据你的锻造技能比例增强
+你的近战攻击。
+%%%%
+see invisible (SInv) armour ego
+
+它可以让你看见隐形的物体。
+%%%%
+shadows (Shadows) armour ego
+
+它减少你被看到的距离以及你能看到的距离。
+%%%%
+sniping (Snipe) armour ego
+
+它对失去行动能力的目标使用远程和投掷武器时，伤害增加50%。
+失去行动能力的目标包括：睡眠、麻痹、石化、困惑或被网住的目标。
+%%%%
+spirit shield (Spirit) armour ego
+
+它使受到的伤害在你的生命值和魔力储备之间分摊。
+%%%%
+stardust (Stardust) armour ego
+
+在每场战斗中，当你第一次消耗魔力使用法术或能力时，它会召唤一阵流星雨，
+只有当你魔力恢复且不再有敌人时才能重新充能。你的激活技能技能会增加
+流星的数量和伤害，消耗的魔力会进一步增加伤害。
+%%%%
+stealth (Stlth+) armour ego
+
+它可以增强你的潜行能力。
+%%%%
+strength (Str+3) armour ego
+
+它可以提升你的力量（力量 +3）。
+%%%%
+the Archmagi (Archmagi) armour ego
+
+它可以增强你法术的威力。
+%%%%
+willpower (Will+) armour ego
+
+它可以提升你的意志力，帮助抵御某些魔法效果。
+%%%%
+wrath (*Rage) armour ego
+
+它在你的近战攻击时有概率使你进入狂暴状态（20%概率）。
+%%%%
+atropa-tipped (atropa) missile ego
+
+它的尖端涂有一种能导致失明和短暂困惑的物质。
+
+成功施加效果的概率随你的投掷和潜行技能提升。
+%%%%
+chaos (chaos) missile ego
+
+投掷时，它会产生随机效果。
+%%%%
+curare-tipped (curare) missile ego
+
+它的尖端涂有一种能导致窒息的物质，造成直接伤害，同时使被击中的目标
+中毒和减速。
+
+它在命中时被摧毁的概率是其他飞镖的两倍。
+%%%%
+datura-tipped (datura) missile ego
+
+它的尖端涂有一种能使被击中者陷入盲目狂乱的物质，使其不分敌友地攻击。
+
+成功施加效果的概率随你的投掷和潜行技能提升。
+%%%%
+disjunction (disjunct) missile ego
+
+它使被击中的目标暂时在空间中失去锚定，连续数回合向远离你的方向闪烁，
+每次闪烁时受到少量伤害。
+%%%%
+dispersal (disperse) missile ego
+
+它使被击中的目标进行闪烁，且倾向于向远离你的方向闪烁。
+%%%%
+poisoned (poison) missile ego
+
+它涂有毒药。
+%%%%
+silver (silver) missile ego
+
+它比普通弹药造成更高的伤害，并对混乱和魔法变形生物造成大幅增加的伤害。
+它还会根据变异程度对变异生物造成额外伤害。
+%%%%

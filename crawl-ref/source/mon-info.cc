@@ -52,6 +52,7 @@
 #include "tilepick.h"
 #endif
 #include "traps.h"
+#include "database.h"
 
 #define SPELL_HD_KEY "spell_hd"
 #define NIGHTVISION_KEY "nightvision"
@@ -809,7 +810,7 @@ monster_info::monster_info(const monster* m, int milev)
     {
         const actor * const constrictor = actor_by_mid(m->constricted_by);
         ASSERT(constrictor);
-        constrictor_name = "constricted by "
+        constrictor_name = T_("constricted by ")
                            + constrictor->name(_article_for(constrictor),
                                                true);
     }
@@ -823,7 +824,7 @@ monster_info::monster_info(const monster* m, int milev)
 
             if (constrictee && constrictee->constricted_type == CONSTRICT_MELEE)
             {
-                constricting_name.push_back("constricting "
+                constricting_name.push_back(T_("constricting ")
                                             + constrictee->name(
                                                   _article_for(constrictee),
                                                   true));
@@ -1033,50 +1034,68 @@ string monster_info::_core_name() const
                                                "enormous ", "titanic "};
         s = get_monster_data(nametype)->name;
 
-        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER)
+        // Chinese name lookup for the base monster name
+        if (Options.language == lang_t::ZH)
+        {
+            if (const char* zh = zh_monster_name(s))
+                s = zh;
+        }
+
+        if (mons_is_draconian_job(type) && base_type != MONS_NO_MONSTER
+            && Options.language != lang_t::ZH)
+        {
             s = draconian_colour_name(base_type) + " " + s;
+        }
+
+        if (Options.language != lang_t::ZH)
+        {
+            switch (type)
+            {
+            case MONS_SLIME_CREATURE:
+                ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
+                s = slime_sizes[slime_size] + s;
+                break;
+            case MONS_UGLY_THING:
+            case MONS_VERY_UGLY_THING:
+                s = ugly_thing_colour_name(_colour) + " " + s;
+                break;
+
+            case MONS_DANCING_WEAPON:
+            case MONS_SPECTRAL_WEAPON:
+                if (inv[MSLOT_WEAPON])
+                {
+                    const item_def& item = *inv[MSLOT_WEAPON];
+                    s = "dancing " + item.name(DESC_PLAIN);
+                }
+                break;
+
+            case MONS_ARMOUR_ECHO:
+                if (inv[MSLOT_ARMOUR])
+                {
+                    const item_def& item = *inv[MSLOT_ARMOUR];
+                    s = "echoed " + item.name(DESC_PLAIN);
+                }
+                break;
+
+            case MONS_HAUNTED_ARMOUR:
+                if (inv[MSLOT_ARMOUR])
+                {
+                    const item_def& item = *inv[MSLOT_ARMOUR];
+                    s = "haunted " + item.name(DESC_QUALNAME);
+                }
+                break;
+            }
+        }
 
         switch (type)
         {
-        case MONS_SLIME_CREATURE:
-            ASSERT((size_t) slime_size < ARRAYSZ(slime_sizes));
-            s = slime_sizes[slime_size] + s;
-            break;
-        case MONS_UGLY_THING:
-        case MONS_VERY_UGLY_THING:
-            s = ugly_thing_colour_name(_colour) + " " + s;
-            break;
-
-        case MONS_DANCING_WEAPON:
-        case MONS_SPECTRAL_WEAPON:
-            if (inv[MSLOT_WEAPON])
-            {
-                const item_def& item = *inv[MSLOT_WEAPON];
-                s = "dancing " + item.name(DESC_PLAIN);
-            }
-            break;
-
-        case MONS_ARMOUR_ECHO:
-            if (inv[MSLOT_ARMOUR])
-            {
-                const item_def& item = *inv[MSLOT_ARMOUR];
-                s = "echoed " + item.name(DESC_PLAIN);
-            }
-            break;
-
-        case MONS_HAUNTED_ARMOUR:
-            if (inv[MSLOT_ARMOUR])
-            {
-                const item_def& item = *inv[MSLOT_ARMOUR];
-                s = "haunted " + item.name(DESC_QUALNAME);
-            }
-            break;
-
         case MONS_PLAYER_GHOST:
-            s = apostrophise(mname) + " ghost";
+            s = apostrophise(mname)
+                + (T_(" ghost"));
             break;
         case MONS_PLAYER_ILLUSION:
-            s = apostrophise(mname) + " illusion";
+            s = apostrophise(mname)
+                + (T_(" illusion"));
             break;
         case MONS_PANDEMONIUM_LORD:
             s = mname;
@@ -1120,6 +1139,20 @@ string monster_info::_core_name() const
 string monster_info::_apply_adjusted_description(description_level_type desc,
                                                  const string& s) const
 {
+    // ZH: Chinese has no articles — this is a UI display rule, not a
+    // translation branch. DESC_THE/DESC_A are remapped because Chinese
+    // grammar uses 你的 (yours) for friendly monsters and bare nouns
+    // (no articles) for all others.
+    if (Options.language == lang_t::ZH)
+    {
+        if (desc == DESC_ITS)
+            return apply_description(desc, s);
+        if (desc == DESC_YOUR
+            || (attitude == ATT_FRIENDLY && (desc == DESC_THE || desc == DESC_A)))
+            return apply_description(DESC_YOUR, s);
+        return apply_description(DESC_PLAIN, s);
+    }
+
     if (desc == DESC_ITS)
         desc = DESC_THE;
 
@@ -1145,25 +1178,25 @@ string monster_info::common_name(description_level_type desc) const
     ostringstream ss;
 
     if (props.exists(HELPLESS_KEY))
-        ss << "helpless ";
+        ss << (T_("helpless "));
 
     if (type == MONS_SPECTRAL_THING && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << "spectral ";
+        ss << (T_("spectral "));
 
     if (type == MONS_BOUND_SOUL && !is(MB_NAME_ZOMBIE) && !nocore)
-        ss << "bound ";
+        ss << (T_("bound "));
 
     if (is(MB_SPECTRALISED))
-        ss << "ghostly ";
+        ss << (T_("ghostly "));
 
     if (is(MB_VAMPIRE_THRALL))
-        ss << "vampire ";
+        ss << (T_("vampire "));
 
     if (type == MONS_SENSED && !mons_is_sensed(base_type))
-        ss << "sensed ";
+        ss << (T_("sensed "));
 
     if (type == MONS_BALLISTOMYCETE)
-        ss << (is_active ? "active " : "");
+        ss << (is_active ? (T_("active ")) : "");
 
     if (has_hydra_multi_attack()
         && type != MONS_SENSED
@@ -1175,7 +1208,7 @@ string monster_info::common_name(description_level_type desc) const
         else
             ss << std::to_string(num_heads);
 
-        ss << "-headed ";
+        ss << (T_("-headed "));
     }
 
     if (type == MONS_MUTANT_BEAST && !is(MB_NAME_REPLACE))
@@ -1196,31 +1229,31 @@ string monster_info::common_name(description_level_type desc) const
     {
     case MONS_ZOMBIE:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "zombie";
+            ss << (nocore ? "" : " ") << T_("zombie");
         break;
     case MONS_DRAUGR:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "draugr";
+            ss << (nocore ? "" : " ") << T_("draugr");
         break;
     case MONS_SIMULACRUM:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << "simulacrum";
+            ss << (nocore ? "" : " ") << T_("simulacrum");
         break;
     case MONS_SPECTRAL_THING:
         if (nocore)
-            ss << "spectre";
+            ss << T_("spectre");
         break;
     case MONS_BOUND_SOUL:
         if (nocore)
-            ss << "bound soul";
+            ss << T_("bound soul");
         break;
     case MONS_PILLAR_OF_SALT:
         if (base_type != type)
-            ss << (nocore ? "" : " ") << "shaped pillar of salt";
+            ss << (nocore ? "" : " ") << T_("shaped pillar of salt");
         break;
     case MONS_BLOCK_OF_ICE:
         if (base_type != type)
-            ss << (nocore ? "" : " ") << "shaped block of ice";
+            ss << (nocore ? "" : " ") << T_("shaped block of ice");
         break;
     default:
         break;
@@ -1513,7 +1546,9 @@ vector<string> monster_info::attributes() const
                 continue;
 
             // TODO: just use `do_mon_str_replacements`?
-            v.push_back(replace_all(name.long_singular,
+            const char* zh_long = C_("flag long", name.long_singular.c_str());
+            const string long_str = zh_long;
+            v.push_back(replace_all(long_str,
                                     "@possessive@",
                                     pronoun(PRONOUN_POSSESSIVE)));
         }
@@ -1524,7 +1559,7 @@ vector<string> monster_info::attributes() const
         const int num_memories = props.exists(NOBODY_MEMORIES_KEY)
                                     ? props[NOBODY_MEMORIES_KEY].get_vector().size()
                                     : NOBODY_MAX_MEMORIES;
-        v.push_back(make_stringf("%d %s left", num_memories,
+        v.push_back(make_stringf(T_("%d %s left"), num_memories,
                                                num_memories == 1 ? "memory" : "memories"));
     }
 
@@ -1668,30 +1703,38 @@ string monster_info::speed_description() const
         return "";
 
     ostringstream result;
-    result << "Speed: " << speed * 10 << "%";
+    result << (T_("Speed: "))
+           << speed * 10 << "%";
 
     vector<string> unusuals;
 
-    _add_energy_desc(menergy.attack, "attack", speed, unusuals);
-    _add_energy_desc(menergy.missile, "shoot", speed, unusuals);
-    _add_energy_desc(menergy.move, "travel", speed, unusuals);
+    _add_energy_desc(menergy.attack,
+        T_("attack"), speed, unusuals);
+    _add_energy_desc(menergy.missile,
+        T_("shoot"), speed, unusuals);
+    _add_energy_desc(menergy.move,
+        T_("travel"), speed, unusuals);
     if (menergy.swim != menergy.move)
-        _add_energy_desc(menergy.swim, "swim", speed, unusuals);
+        _add_energy_desc(menergy.swim,
+            T_("swim"), speed, unusuals);
     // If we ever add a non-magical monster with fast/slow abilities,
     // we'll need to update this.
-    _add_energy_desc(menergy.spell, is_priest() ? "pray" : "magic",
+    _add_energy_desc(menergy.spell,
+                     is_priest()
+                         ? (T_("pray"))
+                         : (T_("magic")),
                      speed, unusuals);
 
     if (!unusuals.empty())
         result << " (" << join_strings(unusuals.begin(), unusuals.end(), ", ") << ")";
 
     if (type == MONS_SIXFIRHY || type == MONS_JIANGSHI)
-        result << " (but often pauses)";
+        result << (T_(" (but often pauses)"));
     else if (travel_delay_diff)
     {
         const bool slow = travel_delay_diff > 0;
-        const string diff_desc = slow ? "slower" : "faster";
-        result << " (normally travels " << diff_desc << " than you)";
+        result << (slow ? T_(" (normally travels slower than you)")
+                        : T_(" (normally travels faster than you)"));
         // It would be interesting to qualify this with 'on land',
         // if appropriate, but sort of annoying to get player swim speed.
     }
@@ -2041,11 +2084,12 @@ static string _condition_string(int num, int count,
                                 const monster_info_flag_name& name)
 {
     const string& word = (1 == num) ? name.short_singular : name.plural;
+    const char* zh = C_("flag short", word.c_str());
 
     if (count == num)
-        return word;
+        return zh;
     else
-        return make_stringf("%d %s", num, word.c_str());
+        return make_stringf("%d %s", num, zh);
 }
 
 void mons_conditions_string(string& desc, const vector<monster_info>& mi,
@@ -2197,7 +2241,9 @@ string description_for_ench(enchant_type type)
 
     for (auto& name : monster_info_flag_names)
         if (name.flag == *flag)
-            return name.long_singular;
+        {
+            return C_("flag long", name.long_singular.c_str());
+        }
 
     return "";
 }

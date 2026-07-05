@@ -13,6 +13,7 @@
 #include "cloud.h"
 #include "coord.h"
 #include "coordit.h"
+#include "database.h"
 #include "dgn-overview.h"
 #include "english.h"
 #include "env.h"
@@ -119,7 +120,7 @@ void add_auto_excludes()
     if (mons.empty())
         return;
 
-    mprf(MSGCH_WARN, "Marking area around %s as unsafe for travelling.",
+    mprf(MSGCH_WARN, T_("Marking area around %s as unsafe for travelling."),
             describe_monsters_condensed(mons).c_str());
     learned_something_new(HINT_AUTO_EXCLUSION);
 }
@@ -653,7 +654,7 @@ string exclude_set::get_exclusion_desc()
                         desc.push_back(old_desc);
                     else
                     {
-                        desc.push_back(make_stringf("%d %s",
+                        desc.push_back(make_stringf(T_("%d %s"),
                                        count, pluralise(old_desc).c_str()));
                         count = 1;
                     }
@@ -672,7 +673,7 @@ string exclude_set::get_exclusion_desc()
 
     if (count_other > 0)
     {
-        desc.push_back(make_stringf("%d %sexclusion%s",
+        desc.push_back(make_stringf(T_("%d %sexclusion%s"),
                                     count_other, desc.empty() ? "" : "more ",
                                     count_other > 1 ? "s" : ""));
     }
@@ -687,8 +688,7 @@ string exclude_set::get_exclusion_desc()
             desc_str += "s";
         desc_str += ": ";
     }
-    return desc_str + comma_separated_line(desc.begin(), desc.end(),
-                                           " and ", ", ");
+    return desc_str + comma_separated_line(desc.begin(), desc.end());
 }
 
 void marshallExcludes(writer& outf, const exclude_set& excludes)

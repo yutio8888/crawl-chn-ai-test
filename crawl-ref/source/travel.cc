@@ -36,8 +36,10 @@
 #include "god-abil.h"
 #include "god-passive.h"
 #include "hints.h"
+#include "i18n.h"
 #include "item-name.h"
 #include "item-prop.h"
+#include "positional_format.h"
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "libutil.h"
@@ -66,6 +68,7 @@
 #include "unwind.h"
 #include "view.h"
 #include "zot.h"
+#include "database.h"
 
 #define AUTO_REST_STATUS_POS "autorest_status_pos"
 
@@ -185,7 +188,7 @@ bool deviant_route_warning::warn_continue_travel(
         return true;
 
     target = dest;
-    const string prompt = make_stringf("Have to go through %s. Continue?",
+    const string prompt = make_stringf(T_("Have to go through %s. Continue?"),
                                        deviant.describe().c_str());
     // If the user says "Yes, shut up and take me there", we won't ask
     // again for that destination. If the user says "No", we will
@@ -331,11 +334,11 @@ bool feat_is_traversable(dungeon_feature_type feat, bool try_fallback)
 
 static const char *_run_mode_name(int runmode)
 {
-    return runmode == RMODE_TRAVEL         ? "travel" :
-           runmode == RMODE_INTERLEVEL     ? "intertravel" :
-           runmode == RMODE_EXPLORE        ? "explore" :
-           runmode == RMODE_EXPLORE_GREEDY ? "explore_greedy" :
-           runmode > 0                     ? "run"
+    return runmode == RMODE_TRAVEL         ? (T_("travel")) :
+           runmode == RMODE_INTERLEVEL     ? (T_("intertravel")) :
+           runmode == RMODE_EXPLORE        ? (T_("explore")) :
+           runmode == RMODE_EXPLORE_GREEDY ? (T_("explore_greedy")) :
+           runmode > 0                     ? (T_("run"))
                                            : "";
 }
 
@@ -385,9 +388,9 @@ static pair<bool, string> _feat_is_blocking_door_strict(
     {
         string barrier;
         if (feat_is_runed(grid))
-            return {true, "unopened runed door"};
+            return {true, T_("unopened runed door")};
         else
-            return {true, "unopened door"};
+            return {true, T_("unopened door")};
     }
     return {true, ""};
 }
@@ -772,7 +775,7 @@ static void _explore_find_target_square()
         const bool unknown_trans = _level_has_unknown_transporters();
         if (!estatus && !unknown_trans)
         {
-            mpr("Done exploring.");
+            mpr(T_("Done exploring."));
             learned_something_new(HINT_DONE_EXPLORE);
         }
         else
@@ -781,33 +784,35 @@ static void _explore_find_target_square()
             vector<const char *> inacc;
             string inacc_desc = "";
 
+
             if (runed_door_pause)
-                reasons.push_back("unopened runed door");
+                reasons.push_back(T_("unopened runed door"));
 
             if (unknown_trans)
-                reasons.push_back("unvisited transporter");
+                reasons.push_back(T_("unvisited transporter"));
 
             if (closed_door_pause)
-                reasons.push_back("unopened door");
+                reasons.push_back(T_("unopened door"));
 
             if (estatus & EST_GREED_UNFULFILLED)
-                inacc.push_back("items");
+                inacc.push_back(T_("items"));
             // A runed door already implies an unexplored place.
             if (!runed_door_pause && !closed_door_pause &&
                 estatus & EST_PARTLY_EXPLORED)
             {
-                inacc.push_back("places");
+                inacc.push_back(T_("places"));
             }
 
             if (!inacc.empty())
             {
-                inacc_desc = make_stringf("can't reach some %s",
+                inacc_desc = make_stringf(T_("can't reach some %s"),
                                  comma_separated_line(inacc.begin(),
-                                                      inacc.end()).c_str());
+                                     inacc.end(), T_(", ")).c_str());
                 reasons.push_back(inacc_desc.c_str());
             }
-            mprf("Partly explored, %s.",
-                 comma_separated_line(reasons.begin(), reasons.end()).c_str());
+            mprf(T_("Partly explored, %s."),
+                 comma_separated_line(reasons.begin(), reasons.end(),
+                     T_(" and ")).c_str());
         }
         stop_running();
     }
@@ -845,15 +850,14 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
             }
 
             string wishlist = comma_separated_fn(to_pickup.begin(), to_pickup.end(),
-                    [] (const item_def* item) { return item->name(DESC_A); },
-                    " and ", ", ");
+                    [] (const item_def* item) { return item->name(DESC_A); });
 
             // XX [A] doesn't make sense for items being picked up only because
             // of an =g inscription
             const string prompt =
-                make_stringf("Could not pick up %s here; Ignore %s?",
+                make_stringf(T_("Could not pick up %s here; Ignore %s?"),
                              wishlist.c_str(),
-                             tried_pickup == 1 ? "it" : "them");
+                             tried_pickup == 1 ? T_("it") : T_("them"));
 
             // Make Escape => 'n' and stop run.
             explicit_keymap map;
@@ -887,7 +891,7 @@ void explore_pickup_event(int did_pickup, int tried_pickup)
 
                     if (!ap_disabled.empty())
                     {
-                        mprf("Autopickup disabled for %s.",
+                        mprf(T_("Autopickup disabled for %s."),
                              comma_separated_line(ap_disabled.begin(),
                                                   ap_disabled.end()).c_str());
                     }
@@ -1061,7 +1065,8 @@ command_type travel()
 
     if (Options.travel_key_stop && kbhit())
     {
-        mprf("Key pressed, stopping %s.", you.running.runmode_name().c_str());
+        mprf(T_("Key pressed, stopping %s."),
+             you.running.runmode_name().c_str());
         stop_running();
         return CMD_NO_CMD;
     }
@@ -1069,7 +1074,7 @@ command_type travel()
     // Excluded squares are only safe if marking stairs, i.e. another level.
     if (is_excluded(you.pos()) && !is_stair_exclusion(you.pos()))
     {
-        mprf("You're in a travel-excluded area, stopping %s.",
+        mprf(T_("You're in a travel-excluded area, stopping %s."),
              you.running.runmode_name().c_str());
         stop_running();
         return CMD_NO_CMD;
@@ -2304,11 +2309,11 @@ public:
         // in the prompt itself
         // XX convert this to keyhints in a more?
         if (travel_mode == Mode::altars)
-            segs.emplace_back("_ - list branches");
+            segs.emplace_back(T_("_ - list branches"));
         else if (travel_mode == Mode::waypoints)
-            segs.emplace_back("* - list branches");
+            segs.emplace_back(T_("* - list branches"));
         else if (mode_allowed(Mode::waypoints))
-            segs.emplace_back("* - list waypoints");
+            segs.emplace_back(T_("* - list waypoints"));
 
         if (has_default_target())
         {
@@ -2319,7 +2324,7 @@ public:
         }
 
         if (!(prompt_flags & TPF_SHOW_ALL_BRANCHES))
-            segs.emplace_back("? - help");
+            segs.emplace_back(T_("? - help"));
 
         string shortcuts;
         if (!segs.empty())
@@ -2329,7 +2334,7 @@ public:
                                               ", ", ", ");
             shortcuts += ") ";
         }
-        set_title(make_stringf("Where to? %s", shortcuts.c_str()));
+        set_title(make_stringf(T_("Where to? %s"), shortcuts.c_str()));
     }
 
     bool seen_altars() const
@@ -2441,7 +2446,7 @@ public:
         {
             for (const branch_type &br : prompt_branches)
             {
-                MenuEntry *br_entry = new MenuEntry(branches[br].shortname,
+                MenuEntry *br_entry = new MenuEntry(T_(branches[br].shortname),
                     branches[br].travel_shortcut,
                     [this,&br](const MenuEntry&)
                     {
@@ -2819,9 +2824,9 @@ static level_pos _prompt_travel_depth(const level_id &id, bool remember_targ)
     while (true)
     {
         msgwin_clear_temporary();
-        mprf(MSGCH_PROMPT, "What level of %s? "
-             "(default %s, ? - help) ",
-             branches[target.id.branch].longname,
+        mprf(MSGCH_PROMPT, T_("What level of %s? "
+             "(default %s, ? - help) "),
+             T_(branches[target.id.branch].longname),
              _get_trans_travel_dest(target, true).c_str());
 
         char buf[100];
@@ -2920,12 +2925,12 @@ static void _start_translevel_travel()
         if (level_target.pos.x == -1 &&
             level_target.id.depth == branches[level_target.id.branch].numlevels)
         {
-            mpr("You're already at the bottom of this branch!");
+            mpr(T_("You're already at the bottom of this branch!"));
             return;
         }
         else if (level_target.pos.x == -1 || level_target.pos == you.pos())
         {
-            mpr("You're already here!");
+            mpr(T_("You're already here!"));
             return;
         }
     }
@@ -2958,15 +2963,15 @@ void start_translevel_travel(const level_pos &pos)
     if (!can_travel_to(pos.id))
     {
         if (!can_travel_interlevel())
-            mpr("Sorry, you can't auto-travel out of here.");
+            mpr(T_("Sorry, you can't auto-travel out of here."));
         else
-            mpr("Sorry, I don't know how to get there.");
+            mpr(T_("Sorry, I don't know how to get there."));
         return;
     }
 
     if (pos.is_valid() && !in_bounds(pos.pos))
     {
-        mpr("Sorry, I don't know how to get there.");
+        mpr(T_("Sorry, I don't know how to get there."));
         return;
     }
 
@@ -2995,7 +3000,7 @@ void start_translevel_travel(const level_pos &pos)
         {
             if (!_loadlev_populate_stair_distances(pos))
             {
-                mpr("Level memory is imperfect, aborting.");
+                mpr(T_("Level memory is imperfect, aborting."));
                 return ;
             }
         }
@@ -3398,7 +3403,7 @@ static bool _find_transtravel_square(const level_pos &target, bool verbose)
         return false;
     if (maybe_traversable)
     {
-        mpr("Sorry, I don't know how to get there.");
+        mpr(T_("Sorry, I don't know how to get there."));
         return false;
     }
 
@@ -3406,7 +3411,7 @@ static bool _find_transtravel_square(const level_pos &target, bool verbose)
     coord_def closest_alt = _find_closest_adj(target.pos);
     if (closest_alt.origin())
     {
-        mpr("Sorry, I don't know how to traverse that place.");
+        mpr(T_("Sorry, I don't know how to traverse that place."));
         return false;
     }
 
@@ -3461,7 +3466,7 @@ void start_explore(bool grab_items, bool skip_autorest)
     if (!i_feel_safe(true, true))
         return;
 
-    if (should_fear_zot() && !yesno("Really explore while Zot is near?", false, 'n'))
+    if (should_fear_zot() && !yesno(T_("Really explore while Zot is near?"), false, 'n'))
     {
         canned_msg(MSG_OK);
         return;
@@ -3481,7 +3486,7 @@ void start_explore(bool grab_items, bool skip_autorest)
 void do_explore_cmd(bool skip_autorest)
 {
     if (you.berserk())
-        mpr("Calm down first, please.");
+        mpr(T_("Calm down first, please."));
     else                        // Start exploring
         start_explore(Options.explore_greedy, skip_autorest);
 }
@@ -3543,7 +3548,7 @@ level_id level_id::get_next_level_id(const coord_def &pos)
 
 string level_id::describe(bool long_name, bool with_number) const
 {
-    string result = (long_name ? branches[branch].longname
+    string result = (long_name ? T_(branches[branch].longname)
                                : branches[branch].abbrevname);
 
     if (with_number && brdepth[branch] != 1)
@@ -3553,7 +3558,7 @@ string level_id::describe(bool long_name, bool with_number) const
             // decapitalise 'the'
             if (starts_with(result, "The"))
                 result[0] = 't';
-            result = make_stringf("Level %d of %s",
+            result = make_stringf_p(T_("Level %d of %s"),
                       depth, result.c_str());
         }
         else if (depth)
@@ -4347,9 +4352,9 @@ void TravelCache::delete_waypoint()
     while (get_waypoint_count())
     {
         clear_messages();
-        mpr("Existing waypoints:");
+        mpr(T_("Existing waypoints:"));
         list_waypoints();
-        mprf(MSGCH_PROMPT, "Delete which waypoint? (* - delete all, Esc - exit) ");
+        mprf(MSGCH_PROMPT, T_("Delete which waypoint? (* - delete all, Esc - exit) "));
 
         int key = getchm();
         if (key >= '0' && key <= '9')
@@ -4375,7 +4380,7 @@ void TravelCache::delete_waypoint()
     }
 
     clear_messages();
-    mpr("All waypoints deleted. Have a nice day!");
+    mpr(T_("All waypoints deleted. Have a nice day!"));
 }
 
 void TravelCache::add_waypoint(int x, int y)
@@ -4385,15 +4390,15 @@ void TravelCache::add_waypoint(int x, int y)
     const bool waypoints_exist = get_waypoint_count();
     if (waypoints_exist)
     {
-        mpr("Existing waypoints:");
+        mpr(T_("Existing waypoints:"));
         list_waypoints();
     }
 
     if (you.where_are_you == BRANCH_ABYSS)
-        mprf(MSGCH_PROMPT, "Waypoints on this level may disappear at any time.");
+        mprf(MSGCH_PROMPT, T_("Waypoints on this level may disappear at any time."));
     else if (!is_connected_branch(you.where_are_you))
-        mprf(MSGCH_PROMPT, "Waypoints will disappear once you leave this level.");
-    mprf(MSGCH_PROMPT, "Assign waypoint to what number? (0-9%s) ",
+        mprf(MSGCH_PROMPT, T_("Waypoints will disappear once you leave this level."));
+    mprf(MSGCH_PROMPT, T_("Assign waypoint to what number? (0-9%s) "),
          waypoints_exist? ", D - delete waypoint" : "");
 
     int keyin = toalower(get_ch());
@@ -4437,15 +4442,15 @@ void TravelCache::set_waypoint(int waynum, int x, int y)
     if (overwrite)
     {
         if (lid == old_lid) // same level
-            mprf("Waypoint %d re-assigned to %s.", waynum, new_dest.c_str());
+            mprf(T_("Waypoint %d re-assigned to %s."), waynum, new_dest.c_str());
         else
         {
-            mprf("Waypoint %d re-assigned from %s to %s.",
+            mprf(T_("Waypoint %d re-assigned from %s to %s."),
                  waynum, old_dest.c_str(), new_dest.c_str());
         }
     }
     else
-        mprf("Waypoint %d assigned to %s.", waynum, new_dest.c_str());
+        mprf(T_("Waypoint %d assigned to %s."), waynum, new_dest.c_str());
 
     update_waypoints();
 }
@@ -4716,7 +4721,7 @@ bool runrest::run_should_stop() const
     {
 #ifndef USE_TILE_LOCAL
         // XXX: Remove this once exclusions are visible.
-        mprf(MSGCH_WARN, "Stopped running for exclusion.");
+        mprf(MSGCH_WARN, T_("Stopped running for exclusion."));
 #endif
         return true;
     }
@@ -4814,13 +4819,14 @@ string runrest::runmode_name() const
     {
     case RMODE_EXPLORE:
     case RMODE_EXPLORE_GREEDY:
-        return "explore";
+        return T_("explore");
     case RMODE_INTERLEVEL:
     case RMODE_TRAVEL:
-        return "travel";
+        return T_("travel");
     default:
         if (runmode > 0)
-            return pos.origin()? "rest" : "run";
+            return pos.origin() ? (T_("rest"))
+                                : (T_("run"));
         return "";
     }
 }
@@ -4903,19 +4909,19 @@ void explore_discoveries::found_feature(const coord_def &pos,
     else if (feat_is_stair(feat) && ES_stair)
     {
         const named_thing<int> stair(cleaned_feature_description(pos), 1);
-        add_stair(stair);
+        add_stair(stair, feat);
         es_flags |= ES_STAIR;
     }
     else if (_feat_is_branchlike(feat) && ES_branch)
     {
         const named_thing<int> stair(cleaned_feature_description(pos), 1);
-        add_stair(stair);
+        add_stair(stair, feat);
         es_flags |= ES_BRANCH;
     }
     else if (feat_is_portal(feat) && ES_portal)
     {
         const named_thing<int> portal(cleaned_feature_description(pos), 1);
-        add_stair(portal);
+        add_stair(portal, feat);
         es_flags |= ES_PORTAL;
     }
     else if (feat_is_runed(feat))
@@ -5003,16 +5009,27 @@ void explore_discoveries::found_feature(const coord_def &pos,
 }
 
 void explore_discoveries::add_stair(
-    const explore_discoveries::named_thing<int> &stair)
+    const explore_discoveries::named_thing<int> &stair,
+    dungeon_feature_type feat)
 {
-    if (merge_feature(stairs, stair) || merge_feature(portals, stair))
-        return;
+    // Use feat type (language-independent) instead of translated name to
+    // distinguish stairs from portals (stairs contain "stair" in English
+    // names, but Chinese translated names like "向下通往的石梯" do not).
+    const bool is_actual_stair = feat_is_stair(feat)
+                                 || feat_is_branch_entrance(feat);
 
-    // Hackadelic
-    if (stair.name.find("stair") != string::npos)
+    if (is_actual_stair)
+    {
+        if (merge_feature(stairs, stair))
+            return;
         stairs.push_back(stair);
+    }
     else
+    {
+        if (merge_feature(portals, stair))
+            return;
         portals.push_back(stair);
+    }
 }
 
 void explore_discoveries::add_item(const item_def &i)
@@ -5117,15 +5134,15 @@ template <class C> void explore_discoveries::say_any(
 
     if (has_duplicates(coll.begin(), coll.end()))
     {
-        mprf("Found %s %s.", number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
         return;
     }
 
-    const auto message = "Found " +
-                           comma_separated_line(coll.begin(), coll.end()) + ".";
+    const auto message = make_stringf(T_("Found %s."),
+                           comma_separated_line(coll.begin(), coll.end()).c_str());
 
     if (formatted_string::parse_string(message).width() >= get_number_of_cols())
-        mprf("Found %s %s.", number_in_words(size).c_str(), category);
+        mprf(T_("Found %s %s."), number_in_words(size).c_str(), category);
     else
         mpr(message);
 }
@@ -5143,7 +5160,7 @@ vector<string> explore_discoveries::apply_quantities(
     for (const named_thing<int> &nt : v)
     {
         if (nt.thing == 1)
-            things.push_back(article_a(nt.name));
+            things.push_back(make_stringf_p(T_("a %1$s"), nt.name.c_str()));
         else
         {
             things.push_back(number_in_words(nt.thing)
@@ -5162,7 +5179,7 @@ bool explore_discoveries::stop_explore() const
         mpr(msg);
 
     for (const string &marked : marked_feats)
-        mprf("Found %s", marked.c_str());
+        mprf(T_("Found %s"), marked.c_str());
 
     if (!es_flags)
         return marker_stop;
@@ -5188,12 +5205,12 @@ void do_interlevel_travel()
     {
         if (you.running.pos == you.pos())
         {
-            mpr("You're already here!");
+            mpr(T_("You're already here!"));
             return;
         }
         else if (!you.running.pos.x || !you.running.pos.y)
         {
-            mpr("Sorry, you can't auto-travel out of here.");
+            mpr(T_("Sorry, you can't auto-travel out of here."));
             return;
         }
 

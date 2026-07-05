@@ -21,6 +21,7 @@
 #include "mon-place.h"
 #include "nearby-danger.h"
 #include "terrain.h"
+#include "database.h"
 
 const int MAX_KRAKEN_TENTACLE_DIST = 12;
 const int MAX_ACTIVE_KRAKEN_TENTACLES = 4;
@@ -257,7 +258,7 @@ static void _establish_connection(monster* tentacle,
         if (!last_mon)
         {
             // Should be something there, what to do if there isn't?
-            mpr("Error! failed to place monster in tentacle connect change");
+            mpr(T_("Error! failed to place monster in tentacle connect change"));
             break;
         }
 
@@ -876,7 +877,7 @@ void move_solo_tentacle(monster* tentacle)
     {
         if (you.can_see(*tentacle))
         {
-            mprf("The vine drags %s backwards!",
+            mprf(T_("The vine drags %s backwards!"),
                     constrictee->name(DESC_THE).c_str());
         }
         constrictee->move_to(shift_pos);
@@ -895,7 +896,7 @@ void move_solo_tentacle(monster* tentacle)
     {
         // This should really never fail for demonic tentacles (they don't
         // have the whole shifting base problem). -cao
-        mprf("tentacle connect failed! What the heck!  severed status %d",
+        mprf(T_("tentacle connect failed! What the heck!  severed status %d"),
              tentacle->has_ench(ENCH_SEVERED));
         mprf("pathed to %d %d from %d %d mid %d count %d", new_pos.x, new_pos.y,
              old_pos.x, old_pos.y, tentacle->mid, visited_count);
@@ -1061,7 +1062,7 @@ void move_child_tentacles(monster* mons)
         {
             if (you.can_see(*tentacle))
             {
-                mprf("The tentacle pulls %s backwards!",
+                mprf(T_("The tentacle pulls %s backwards!"),
                      constrictee->name(DESC_THE).c_str());
             }
             constrictee->move_to(old_pos);
@@ -1223,16 +1224,16 @@ void mons_create_tentacles(monster* head)
     if (mons_base_type(*head) == MONS_KRAKEN)
     {
         if (visible_count == 1)
-            mpr("A tentacle reaches out from the kraken!");
+            mpr(T_("A tentacle reaches out from the kraken!"));
         else if (visible_count > 1)
-            mpr("Tentacles reach out from the kraken!");
+            mpr(T_("Tentacles reach out from the kraken!"));
     }
     else if (head->type == MONS_TENTACLED_STARSPAWN)
     {
         if (visible_count == 1)
-            mpr("A tentacle flies out from the starspawn's body!");
+            mpr(T_("A tentacle flies out from the starspawn's body!"));
         else if (visible_count > 1)
-            mpr("Tentacles burst from the starspawn's body!");
+            mpr(T_("Tentacles burst from the starspawn's body!"));
     }
     return;
 }

@@ -162,7 +162,7 @@ int unmangle_direction_keys(int keyin, KeymapContext keymap,
         if (_check_numpad(keyin, '*', keymap))
         {
             unwind_cursor saved(1, crawl_view.msgsz.y, GOTO_MSG);
-            cprintf("CTRL");
+            cprintf(T_("CTRL"));
             webtiles_send_more_text("CTRL");
 
             keyin = getchm(keymap);
@@ -173,7 +173,7 @@ int unmangle_direction_keys(int keyin, KeymapContext keymap,
         else if (_check_numpad(keyin, '/', keymap))
         {
             unwind_cursor saved(1, crawl_view.msgsz.y, GOTO_MSG);
-            cprintf("SHIFT");
+            cprintf(T_("SHIFT"));
             webtiles_send_more_text("SHIFT");
 
             keyin = getchm(keymap);

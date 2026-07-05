@@ -38,6 +38,7 @@
 #include "mon-gear.h"
 #include "mon-pick.h"
 #include "mon-poly.h"
+#include "options.h"
 #include "mon-tentacle.h"
 #include "player-notices.h"
 #include "random.h"
@@ -58,6 +59,7 @@
 #include "travel.h"
 #include "unwind.h"
 #include "view.h"
+#include "database.h"
 
 band_type active_monster_band = BAND_NO_BAND;
 
@@ -1325,7 +1327,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     {
         mon->patrol_point = mon->pos();
 #ifdef DEBUG_PATHFIND
-        mprf("Monster %s is patrolling around (%d, %d).",
+        mprf(T_("Monster %s is patrolling around (%d, %d)."),
              mon->name(DESC_PLAIN).c_str(), mon->pos().x, mon->pos().y);
 #endif
     }
@@ -1510,7 +1512,7 @@ static monster* _place_monster_aux(const mgen_data &mg, const monster *leader,
     // A rare case of a debug message NOT showing in the debug mode.
     if (mons_class_flag(mon->type, M_UNFINISHED))
     {
-        mprf(MSGCH_WARN, "Warning: monster '%s' is not yet fully coded.",
+        mprf(MSGCH_WARN, T_("Warning: monster '%s' is not yet fully coded."),
              mon->name(DESC_PLAIN, true).c_str());
     }
 #endif
@@ -3120,7 +3122,7 @@ void check_lovelessness(monster &mons)
     mons.attitude = ATT_HOSTILE;
     mons.del_ench(ENCH_CHARM);
     behaviour_event(&mons, ME_ALERT, &you);
-    mprf("%s feels only hate for you!", mons.name(DESC_THE).c_str());
+    mprf(T_("%s feels only hate for you!"), mons.name(DESC_THE).c_str());
 }
 
 /**
@@ -3202,7 +3204,7 @@ monster* create_monster(mgen_data mg, bool fail_msg)
             fail_msg = false;
 
         if (!summd && fail_msg && you.see_cell(mg.pos))
-            mpr("You see a puff of smoke.");
+            mpr(T_("You see a puff of smoke."));
     }
 
     return summd;

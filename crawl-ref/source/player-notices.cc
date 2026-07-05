@@ -18,6 +18,8 @@
 #include "env.h"
 #include "items.h"
 #include "hints.h"
+#include "options.h"
+#include "positional_format.h"
 #include "god-conduct.h"
 #include "god-passive.h"
 #include "god-wrath.h"
@@ -75,7 +77,7 @@ static bool _check_monster_alert(const monster& mon)
         // And if it wasn't a monster that would get an encounter warning due to
         // being a summon, make sure to say something.
         if (mon.is_summoned())
-            mprf(MSGCH_MONSTER_WARNING, "%s comes into view.", mon.name(DESC_A).c_str());
+            mprf(MSGCH_MONSTER_WARNING, T_("%s has entered your field of view."), mon.name(DESC_A).c_str());
 
         more(true);
         return true;
@@ -239,29 +241,28 @@ static void _monster_headsup(const vector<monster*> &monsters,
 
         ++listed;
 
-        string monname;
-        if (monsters.size() == 1)
-            monname = mon->pronoun(PRONOUN_SUBJECTIVE);
-        else if (mon->type == MONS_DANCING_WEAPON)
-            monname = "There";
-        else if (single.count(mon))
-            monname = mon->full_name(DESC_THE);
-        else
-            monname = mon->full_name(DESC_A);
-        out << uppercase_first(monname) << " ";
-
-        if (monsters.size() == 1)
-            out << conjugate_verb("are", mon->pronoun_plurality());
-        else
-            out << "is";
-
-        if (mon->type != MONS_DANCING_WEAPON)
-            out << " ";
-
         mons_equip_desc_level_type level = mon->type == MONS_DANCING_WEAPON ? DESC_WEAPON
                                                 : monsters.size() > 1 ? DESC_NOTEWORTHY
                                                                       : DESC_NOTEWORTHY_AND_WEAPON;
-        out << get_monster_equipment_desc(mi, level, DESC_NONE) << ".";
+
+        // Build subject+verb prefix (EN only; ZH drops this via positional params)
+        string subject_verb;
+        if (monsters.size() == 1)
+            subject_verb = uppercase_first(mon->pronoun(PRONOUN_SUBJECTIVE))
+                           + " " + conjugate_verb("are", mon->pronoun_plurality());
+        else if (mon->type == MONS_DANCING_WEAPON)
+            subject_verb = "There is";
+        else if (single.count(mon))
+            subject_verb = uppercase_first(mon->full_name(DESC_THE)) + " is";
+        else
+            subject_verb = uppercase_first(mon->full_name(DESC_A)) + " is";
+
+        string equip = get_monster_equipment_desc(mi, level, DESC_NONE);
+
+        out << make_stringf_p(C_("monster equip",
+                                 "%1$s %2$s."),
+                              subject_verb.c_str(),
+                              equip.c_str());
     }
 }
 
@@ -313,6 +314,8 @@ static void _count_monster_types(const vector<monster*> &monsters,
 
 static string _describe_monsters_from_species(const vector<details> &species)
 {
+    const string and_sep = Options.language == lang_t::ZH ? " 和 " : " and ";
+    const string comma_sep = Options.language == lang_t::ZH ? "、" : ", ";
     return comma_separated_fn(species.begin(), species.end(),
         [] (const details &det)
         {
@@ -342,7 +345,7 @@ static string _describe_monsters_from_species(const vector<details> &species)
             else if (det.count > 1)
                 name = " "+pluralise(det.name);
             return apply_description(DESC_A, name, det.count);
-        });
+        }, and_sep, comma_sep);
 }
 
 /**
@@ -375,7 +378,7 @@ static string _abyss_monster_creation_message(const monster* mon)
         { " materialises.", 45 },
         { " emerges from chaos.", 13 },
         { " emerges from the beyond.", 26 },
-        { make_stringf(" assembles %s!",
+        { make_stringf(T_(" assembles %s!"),
                        mon->pronoun(PRONOUN_REFLEXIVE).c_str()), 33 },
         { " erupts from nowhere.", 9 },
         { " bursts from nowhere.", 18 },
@@ -385,7 +388,7 @@ static string _abyss_monster_creation_message(const monster* mon)
         { " coalesces out of seething chaos.", 10 },
         { " punctures the fabric of time!", 2 },
         { " punctures the fabric of the universe.", 7 },
-        { make_stringf(" manifests%s!",
+        { make_stringf(T_(" manifests%s!"),
                        silenced(you.pos()) ? "" : " with a bang"), 3 },
 
 
@@ -434,13 +437,15 @@ static void _handle_encounter_messages(const vector<monster*> monsters,
     }
     else if (sc == SC_ORBRUN)
     {
-        out << _describe_monsters_from_species(species).c_str() << " appear";
-        if (monsters.size() == 1)
-            out << "s";
-        out << " in pursuit of the Orb! ";
+        const char* orbrun_fmt = monsters.size() == 1
+            ? T_("%s appears in pursuit of the Orb! ")
+            : T_("%s appear in pursuit of the Orb! ");
+        out << make_stringf(orbrun_fmt,
+                            _describe_monsters_from_species(species).c_str());
     }
     else
-        out << "You encounter " << _describe_monsters_from_species(species) << ".";
+        out << (T_("You encounter "))
+            << _describe_monsters_from_species(species) << "。";
 
     _monster_headsup(monsters, single, out);
 
@@ -619,7 +624,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
         }
         else if (mons->flags & MF_KNOWN_SHIFTER)
         {
-            name += make_stringf(" (%sshapeshifter)",
+            name += make_stringf(T_(" (%sshapeshifter)"),
                 mons->has_ench(ENCH_GLOWING_SHAPESHIFTER) ? "glowing " : "");
         }
         take_note(Note(NOTE_SEEN_MONSTER, mons->type, 0, name));
@@ -637,7 +642,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
             wyrmbane = offhand_wpn;
 
         if (wyrmbane && mons->dragon_level() > wyrmbane->plus)
-            mpr("<green>Wyrmbane glows as a worthy foe approaches.</green>");
+            mpr(T_("<green>Wyrmbane glows as a worthy foe approaches.</green>"));
     }
 
     // attempt any god conversions on first sight
@@ -679,7 +684,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && coinflip()
         && mons->get_experience_level() >= random2(you.experience_level))
     {
-        mprf(MSGCH_GOD, GOD_GOZAG, "Gozag incites %s against you.",
+        mprf(MSGCH_GOD, GOD_GOZAG, T_("Gozag incites %s against you."),
                 mons->name(DESC_THE).c_str());
         gozag_incite(mons);
     }
@@ -688,7 +693,7 @@ void seen_monster(monster* mons, bool do_encounter_message)
         && !(mons->flags & MF_KNOWN_SHIFTER)
         && have_passive(passive_t::warn_shapeshifter))
     {
-        string msg = make_stringf(" warns you: %s is a foul%s shapeshifter.",
+        string msg = make_stringf(T_(" warns you: %s is a foul%s shapeshifter."),
                                     uppercase_first(mons->name(DESC_THE)).c_str(),
                                     mons->has_ench(ENCH_GLOWING_SHAPESHIFTER) ? " glowing" : "");
         simple_god_message(msg.c_str());

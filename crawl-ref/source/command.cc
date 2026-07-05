@@ -86,8 +86,8 @@ static const char *features[] =
 
 static string _get_version_information()
 {
-    string result = string("This is <w>" CRAWL " ") + Version::Long
-        + " (" CRAWL_BUILD_NAME ")</w>";
+    string result = make_stringf(T_("This is <w>%s %s (%s)</w>"),
+        CRAWL, Version::Long, CRAWL_BUILD_NAME);
     return result;
 }
 
@@ -100,23 +100,23 @@ static string _get_version_features()
         {
             result += seed_description();
             if (Version::history_size() > 1)
-                result += " (seed may be affected by game upgrades)";
+                result += T_(" (seed may be affected by game upgrades)");
         }
         else
-            result += "Game is non-seeded.";
+            result += T_("Game is non-seeded.");
         result += "\n\n";
     }
     if (Version::history_size() > 1)
     {
-        result += "Version history for your current game:\n";
+        result += T_("Version history for your current game:\n");
         result += Version::history();
         result += "\n\n";
     }
 
-    result += "Report bugs to: <w>" CRAWL_BUG_REPORT "</w>\n\n";
+    result += make_stringf(T_("Report bugs to: <w>%s</w>\n\n"), CRAWL_BUG_REPORT);
 
-    result += "<w>Features</w>\n"
-                 "--------\n";
+    result += T_("<w>Features</w>\n"
+                 "--------\n");
 
     for (const char *feature : features)
     {
@@ -200,13 +200,13 @@ static string _get_version_changes()
     {
         result.erase(1+result.find_last_not_of('\n'));
         result += "\n\n";
-        result += "For earlier changes, see changelog.txt "
-                  "in the docs/ directory.";
+        result += T_("For earlier changes, see changelog.txt "
+                     "in the docs/ directory.");
     }
     else
     {
-        result += "For a list of changes, see changelog.txt in the docs/ "
-                  "directory.";
+        result += T_("For a list of changes, see changelog.txt in the docs/ "
+                     "directory.");
     }
 
     return result;
@@ -285,7 +285,7 @@ static void _list_equipment(equipment_slot first_slot, equipment_slot last_slot)
 
         if (slot_is_melded(i))
         {
-            entries.emplace_back(make_stringf("<darkgrey>[%s melded]</darkgrey>", equip_slot_name(i, true)));
+            entries.emplace_back(make_stringf(T_("<darkgrey>[%s melded]</darkgrey>"), equip_slot_name(i, true)));
             continue;
         }
 
@@ -305,15 +305,15 @@ static void _list_equipment(equipment_slot first_slot, equipment_slot last_slot)
 
             if (num >= (int)items.size())
             {
-                estr << "<lightgrey>(nothing)</lightgrey>";
+                estr << T_("<lightgrey>(nothing)</lightgrey>");
                 entries.emplace_back(estr.str());
                 continue;
             }
 
             if (items[num].is_overflow)
-                estr << "<darkgrey>(occupied)</darkgrey>";
+                estr << T_("<darkgrey>(occupied)</darkgrey>");
             else if (items[num].melded)
-                estr << "<darkgrey>(unavailable)</darkgrey>";
+                estr << T_("<darkgrey>(unavailable)</darkgrey>");
             else
             {
                 const item_def& item = items[num].get_item();
@@ -458,11 +458,11 @@ static void _handle_FAQ()
     vector<string> question_keys = getAllFAQKeys();
     if (question_keys.empty())
     {
-        mpr("No questions found in FAQ! Please submit a bug report!");
+        mpr(T_("No questions found in FAQ! Please submit a bug report!"));
         return;
     }
     Menu FAQmenu(MF_SINGLESELECT | MF_ANYPRINTABLE | MF_ALLOW_FORMATTING);
-    MenuEntry *title = new MenuEntry("Frequently Asked Questions");
+    MenuEntry *title = new MenuEntry(T_("Frequently Asked Questions"));
     title->colour = YELLOW;
     FAQmenu.set_title(title);
 
@@ -490,10 +490,10 @@ static void _handle_FAQ()
             string answer = getFAQ_Answer(key);
             if (answer.empty())
             {
-                answer = "No answer found in the FAQ! Please submit a "
-                         "bug report!";
+                answer = T_("No answer found in the FAQ! Please submit a "
+                            "bug report!");
             }
-            answer = "Q: " + getFAQ_Question(key) + "\n" + answer;
+            answer = make_stringf(T_("Q: %s\n%s"), getFAQ_Question(key).c_str(), answer.c_str());
             show_description(answer);
         }
     }
@@ -551,12 +551,12 @@ void show_levelmap_help()
 void show_targeting_help()
 {
     column_composer cols(2, 40);
-    cols.add_formatted(0, targeting_help_1, true);
+    cols.add_formatted(0, T_(targeting_help_1), true);
 #ifdef WIZARD
     if (you.wizard)
         cols.add_formatted(0, targeting_help_wiz, true);
 #endif
-    cols.add_formatted(1, targeting_help_2, true);
+    cols.add_formatted(1, T_(targeting_help_2), true);
     show_keyhelp_menu(cols.formatted_lines());
 }
 void show_interlevel_travel_branch_help()
@@ -670,7 +670,7 @@ static int _color_name_width(int c)
 static string _palette_with_bg(int bg)
 {
     const string bg_name = colour_to_str(bg);
-    string s = make_stringf("<bg:%s>", bg_name.c_str());
+    string s = make_stringf(T_("<bg:%s>"), bg_name.c_str());
     // always show 16 foreground colors even with compat options on -- they may
     // still be distinguished with bold.
     for (int fg = 0; fg < NUM_TERM_COLOURS; fg++)
@@ -683,7 +683,7 @@ static string _palette_with_bg(int bg)
                     fg_name.c_str(),
                     fg == 7 ? "\n" : "");
     }
-    s += make_stringf("</bg:%s>\n", bg_name.c_str());
+    s += make_stringf(T_("</bg:%s>\n"), bg_name.c_str());
     return s;
 }
 
@@ -709,13 +709,13 @@ static void _display_diag()
         webtiles_client;
 #endif
 
-    s += make_stringf("Display type: <w>%s</w>\n", info.type.c_str());
+    s += make_stringf(T_("Display type: <w>%s</w>\n"), info.type.c_str());
     if (!suppress_unix_stuff)
     {
-        s += make_stringf("Terminal type (`TERM`): <w>%s</w>\n",
+        s += make_stringf(T_("Terminal type (`TERM`): <w>%s</w>\n"),
                                                         info.term.c_str());
     }
-    s += make_stringf("Terminal colours: %d foreground, %d background\n\n",
+    s += make_stringf(T_("Terminal colours: %d foreground, %d background\n\n"),
         info.fg_colors, info.bg_colors);
 
     if (webtiles_client)
@@ -735,12 +735,12 @@ static void _display_diag()
         // scenarios, I think people shouldn't mess with anything except the
         // first, and that's only for cosmetic purposes, not compat purposes
         s += make_stringf(
-            "\nCurrent terminal options (see the Options Guide for details):\n"
+            T_("\nCurrent terminal options (see the Options Guide for details):\n"
             "    `<w>allow_extended_colours</w>`: %d%s\n"
             "    `<w>bold_brightens_foreground</w>`: %d"
             "        `<w>blink_brightens_background</w>`: %d\n"
             "    `<w>best_effort_brighten_foreground</w>`: %d"
-            "  `<w>best_effort_brighten_background</w>`: %d\n\n",
+            "  `<w>best_effort_brighten_background</w>`: %d\n\n"),
             (int) Options.allow_extended_colours,
             Options.allow_extended_colours ? " (overridden by TERM)" : "",
             (int) Options.bold_brightens_foreground.to_bool(true),
@@ -798,88 +798,91 @@ static void _add_formatted_help_menu(column_composer &cols)
 {
     cols.add_formatted(
         0,
-        "<h>Dungeon Crawl Help\n"
-        "\n"
-        "Press one of the following keys to\n"
-        "obtain more information on a certain\n"
-        "aspect of Dungeon Crawl.\n"
+        T_("<h>Dungeon Crawl Help\n"
+           "\n"
+           "Press one of the following keys to\n"
+           "obtain more information on a certain\n"
+           "aspect of Dungeon Crawl.\n"
 
-        "<w>?</w>: List of commands\n"
-        "<w>^</w>: Quickstart Guide");
+           "<w>?</w>: List of commands\n"
+           "<w>^</w>: Quickstart Guide"));
     if (!crawl_state.game_started)
     {
         cols.add_formatted(0,
-            "<darkgrey>:: Browse character notes</darkgrey>\n"
-            "<darkgrey>#: Browse character dump</darkgrey>", false);
+            T_("<darkgrey>:: Browse character notes</darkgrey>\n"
+               "<darkgrey>#: Browse character dump</darkgrey>"), false);
     }
     else
     {
         cols.add_formatted(0,
-            "<w>:</w>: Browse character notes\n"
-            "<w>#</w>: Browse character dump", false);
+            T_("<w>:</w>: Browse character notes\n"
+               "<w>#</w>: Browse character dump"), false);
     }
+    // NOTE: #ifdef inside T_() creates build-config-dependent keys.
+    // Restructure before adding source.txt entries.
     cols.add_formatted(0,
-        "<w>~</w>: Macros help\n"
-        "<w>&</w>: Options help\n"
-        "<w>%</w>: Table of aptitudes\n"
-        "<w>/</w>: Lookup description\n"
-        "<w>Q</w>: FAQ\n"
+        T_("<w>~</w>: Macros help\n"
+           "<w>&</w>: Options help\n"
+           "<w>%</w>: Table of aptitudes\n"
+           "<w>/</w>: Lookup description\n"
+           "<w>Q</w>: FAQ\n"
 #ifdef USE_TILE_LOCAL
-        "<w>T</w>: Tiles key help\n"
+           "<w>T</w>: Tiles key help\n"
 #endif
-        "<w>V</w>: Version information\n"
-        "<w>!</w>: Display diagnostics\n"
-        "<w>Home</w>: This screen\n"
+           "<w>V</w>: Version information\n"
+           "<w>!</w>: Display diagnostics\n"
+           "<w>Home</w>: This screen\n"
 #ifdef __ANDROID__
-        // XX is this the bet place for this? It should at least be duplicated
-        // in `??`.
-        "\n"
-        "<h>Android Controls\n"
-        "\n"
-        "<w>Back key</w>: Alias for escape\n"
-        "<w>Volume keys</w>: Zoom dungeon & map\n"
-        "Long press for right click.\n"
-        "Touch with two fingers for scrolling.\n"
-        "Toggle keyboard icon controls the\n"
-        "virtual keyboard visibility.\n"
+           // XX is this the bet place for this? It should at least be duplicated
+           // in `??`.
+           "\n"
+           "<h>Android Controls\n"
+           "\n"
+           "<w>Back key</w>: Alias for escape\n"
+           "<w>Volume keys</w>: Zoom dungeon & map\n"
+           "Long press for right click.\n"
+           "Touch with two fingers for scrolling.\n"
+           "Toggle keyboard icon controls the\n"
+           "virtual keyboard visibility.\n"
 #endif
-        , false);
+        ),
+        false);
 
     // TODO: generate this from the manual somehow
     cols.add_formatted(
         1,
-        "<h>Manual Contents\n\n"
-        "<w>*</w>       Table of contents\n"
-        "<w>A</w>.      Overview\n"
-        "<w>B</w>.      Starting Screen\n"
-        "<w>C</w>.      Attributes and Stats\n"
-        "<w>D</w>.      Exploring the Dungeon\n"
-        "<w>E</w>.      Experience and Skills\n"
-        "<w>F</w>.      Monsters\n"
-        "<w>G</w>.      Items\n"
-        "<w>H</w>.      Spellcasting\n"
-        "<w>I</w>.      Targeting\n"
-        "<w>J</w>.      Religion\n"
-        "<w>K</w>.      Mutations\n"
-        "<w>L</w>.      Licence, Contact, History\n"
-        "<w>M</w>.      Macros, Options, Performance\n"
-        "<w>N</w>.      Philosophy\n"
-        "<w>1</w>.      List of Character Species\n"
-        "<w>2</w>.      List of Character Backgrounds\n"
-        "<w>3</w>.      List of Skills\n"
-        "<w>4</w>.      List of Keys and Commands\n"
-        "<w>5</w>.      Inscriptions\n"
-        "<w>6</w>.      Dungeon sprint modes\n");
+        T_("<h>Manual Contents\n\n"
+           "<w>*</w>       Table of contents\n"
+           "<w>A</w>.      Overview\n"
+           "<w>B</w>.      Starting Screen\n"
+           "<w>C</w>.      Attributes and Stats\n"
+           "<w>D</w>.      Exploring the Dungeon\n"
+           "<w>E</w>.      Experience and Skills\n"
+           "<w>F</w>.      Monsters\n"
+           "<w>G</w>.      Items\n"
+           "<w>H</w>.      Spellcasting\n"
+           "<w>I</w>.      Targeting\n"
+           "<w>J</w>.      Religion\n"
+           "<w>K</w>.      Mutations\n"
+           "<w>L</w>.      Licence, Contact, History\n"
+           "<w>M</w>.      Macros, Options, Performance\n"
+           "<w>N</w>.      Philosophy\n"
+           "<w>1</w>.      List of Character Species\n"
+           "<w>2</w>.      List of Character Backgrounds\n"
+           "<w>3</w>.      List of Skills\n"
+           "<w>4</w>.      List of Keys and Commands\n"
+           "<w>5</w>.      Inscriptions\n"
+           "<w>6</w>.      Dungeon sprint modes\n"));
 }
 
 static void _add_formatted_keyhelp(column_composer &cols)
 {
     cols.add_formatted(
             0,
-            "<h>Movement:\n"
-            "To move in a direction or to attack, \n"
-            "use the numpad (try Numlock off and \n"
-            "on) or vi keys:\n");
+            T_("<h>Movement:\n"
+               "To move in a direction or to attack, \n"
+               "use the numpad (try Numlock off and \n"
+               "on) or vi keys:\n"));
 
     _add_insert_commands(cols, 0, "                 <w>7 8 9      % % %",
                          { CMD_MOVE_UP_LEFT, CMD_MOVE_UP, CMD_MOVE_UP_RIGHT });
@@ -900,15 +903,15 @@ static void _add_formatted_keyhelp(column_composer &cols)
     _add_command(cols, 0, CMD_REST, "rest and long wait; stops when", 2);
     cols.add_formatted(
             0,
-            "    Health or Magic become full or\n"
-            "    something is detected. If Health\n"
-            "    and Magic are already full, stops\n"
-            "    when 100 turns over (<w>numpad-5</w>)\n",
+            T_("    Health or Magic become full or\n"
+               "    something is detected. If Health\n"
+               "    and Magic are already full, stops\n"
+               "    when 100 turns over (<w>numpad-5</w>)\n"),
             false);
 
     cols.add_formatted(
             0,
-            "<h>Extended Movement:\n");
+            T_("<h>Extended Movement:\n"));
 
     _add_command(cols, 0, CMD_EXPLORE, "auto-explore");
     _add_command(cols, 0, CMD_INTERLEVEL_TRAVEL, "interlevel travel");
@@ -917,27 +920,27 @@ static void _add_formatted_keyhelp(column_composer &cols)
 
     cols.add_formatted(
             0,
-            "<w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n"
-            "<w>* Dir.</w>, <w>Ctrl-Dir.</w> : attack without move \n",
+            T_("<w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n"
+               "<w>* Dir.</w>, <w>Ctrl-Dir.</w> : attack without move \n"),
             false);
 
     cols.add_formatted(
             0,
-            "<h>Autofight:\n"
-            "<w>Tab</w>          : attack nearest monster,\n"
-            "               moving if necessary\n"
-            "<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n"
-            "               if targeted, aims at\n"
-            "               nearest monster\n");
+            T_("<h>Autofight:\n"
+               "<w>Tab</w>          : attack nearest monster,\n"
+               "               moving if necessary\n"
+               "<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n"
+               "               if targeted, aims at\n"
+               "               nearest monster\n"));
 
     cols.add_formatted(
             0,
-            "<h>Item types (and common commands)\n");
+            T_("<h>Item types (and common commands)\n"));
 
     _add_insert_commands(cols, 0, "<cyan>)</cyan> : hand weapons (<w>%</w>ield)",
                          { CMD_WIELD_WEAPON });
-    _add_insert_commands(cols, 0, "<brown>(</brown> : missiles (<w>%</w>uiver, "
-                                  "<w>%</w>ire, <w>%</w>/<w>%</w> cycle)",
+    _add_insert_commands(cols, 0, T_("<brown>(</brown> : missiles (<w>%</w>uiver, "
+                                     "<w>%</w>ire, <w>%</w>/<w>%</w> cycle)"),
                          { CMD_QUIVER_ITEM, CMD_FIRE, CMD_CYCLE_QUIVER_FORWARD,
                            CMD_CYCLE_QUIVER_BACKWARD });
     _add_insert_commands(cols, 0, "<cyan>[</cyan> : armour (<w>%</w>ear and <w>%</w>ake off)",
@@ -958,12 +961,12 @@ static void _add_formatted_keyhelp(column_composer &cols)
     string item_types = "<lightcyan>";
     item_types += stringize_glyph(get_item_symbol(SHOW_ITEM_BOOK));
     item_types +=
-        "</lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
-        "    pick up to add to library)";
+        T_("</lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
+           "    pick up to add to library)");
     _add_insert_commands(cols, 0, item_types,
                          { CMD_MEMORISE_SPELL, CMD_CAST_SPELL,
                            CMD_FORCE_CAST_SPELL });
-    _add_insert_commands(cols, 0, "<brown>|</brown> : staves (<w>%</w>ield)",
+    _add_insert_commands(cols, 0, T_("<brown>|</brown> : staves (<w>%</w>ield)"),
                          { CMD_WIELD_WEAPON});
     _add_insert_commands(cols, 0, "<lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)",
                          { CMD_EVOKE });
@@ -972,8 +975,8 @@ static void _add_formatted_keyhelp(column_composer &cols)
 
     cols.add_formatted(
             0,
-            "<lightmagenta>0</lightmagenta> : the Orb of Zot\n"
-            "    Carry it to the surface and win!\n",
+            T_("<lightmagenta>0</lightmagenta> : the Orb of Zot\n"
+               "    Carry it to the surface and win!\n"),
             false);
 
     cols.add_formatted(
@@ -1105,37 +1108,49 @@ static void _add_formatted_keyhelp(column_composer &cols)
     _add_command(cols, 1, CMD_INSCRIBE_ITEM, "inscribe item", 2);
     _add_command(cols, 1, CMD_FIRE, "Fire the currently quivered action", 2);
     _add_command(cols, 1, CMD_FIRE_ITEM_NO_QUIVER, "select an item and Fire it", 2);
-    _add_command(cols, 1, CMD_QUIVER_ITEM, "select action to be Quivered", 2);
-    _add_command(cols, 1, CMD_SWAP_QUIVER_RECENT, "swap between most recent quiver actions", 2);
-    _add_command(cols, 1, CMD_QUAFF, "Quaff a potion", 2);
-    _add_command(cols, 1, CMD_READ, "Read a scroll", 2);
-    _add_command(cols, 1, CMD_WIELD_WEAPON, "Wield an item (<w>-</w> for none)", 2);
-    _add_command(cols, 1, CMD_WEAPON_SWAP, "wield item a, or switch to b", 2);
+    _add_command(cols, 1, CMD_QUIVER_ITEM,
+        T_("select action to be Quivered"), 2);
+    _add_command(cols, 1, CMD_SWAP_QUIVER_RECENT,
+        T_("swap to recently quivered action"), 2);
+    _add_command(cols, 1, CMD_QUAFF,
+        T_("quaff a potion"), 2);
+    _add_command(cols, 1, CMD_READ,
+        T_("read a scroll"), 2);
+    _add_command(cols, 1, CMD_WIELD_WEAPON,
+        T_("wield a weapon (<w>-</w> to unwield)"), 2);
+    _add_command(cols, 1, CMD_WEAPON_SWAP,
+        T_("wield weapon a, or switch to b"), 2);
 
-    _add_insert_commands(cols, 1, "    (use <w>%</w> to assign slots)",
+    _add_insert_commands(cols, 1,
+        T_("    (use <w>%</w> to adjust inventory letters)"),
                          { CMD_ADJUST_INVENTORY });
 
-    _add_command(cols, 1, CMD_PRIMARY_ATTACK, "attack with wielded item", 2);
-    _add_command(cols, 1, CMD_EVOKE, "eVoke wand and miscellaneous item", 2);
+    _add_command(cols, 1, CMD_PRIMARY_ATTACK,
+        T_("attack with wielded item"), 2);
+    _add_command(cols, 1, CMD_EVOKE,
+        T_("evoke wands and miscellaneous items"), 2);
 
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Equip or Unequip an item",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Equip or Unequip an item"),
                          { CMD_EQUIP, CMD_UNEQUIP });
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Wear or Take off armour",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Wear or Take off armour"),
                          { CMD_WEAR_ARMOUR, CMD_REMOVE_ARMOUR });
-    _add_insert_commands(cols, 1, "<w>%</w>/<w>%</w> : Put on or Remove jewellery",
+    _add_insert_commands(cols, 1,
+        T_("<w>%</w>/<w>%</w> : Put on or Remove jewellery"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
 
     cols.add_formatted(
             1,
             "<h>Additional help:\n");
 
-    string text =
+    string text = T_(
             "Many commands have context sensitive "
             "help, among them <w>%</w>, <w>%</w>, <w>%</w> (or any "
             "form of targeting), <w>%</w>, and <w>%</w>.\n"
             "You can read descriptions of your "
             "current spells (<w>%</w>), skills (<w>%?</w>) and "
-            "abilities (<w>%!</w>).";
+            "abilities (<w>%!</w>).");
     insert_commands(text, { CMD_DISPLAY_MAP, CMD_LOOK_AROUND, CMD_FIRE,
                             CMD_SEARCH_STASHES, CMD_INTERLEVEL_TRAVEL,
                             CMD_DISPLAY_SPELLS, CMD_DISPLAY_SKILLS,
@@ -1153,10 +1168,10 @@ static void _add_formatted_hints_help(column_composer &cols)
     // First column.
     cols.add_formatted(
             0,
-            "<h>Movement:\n"
-            "To move in a direction or to attack, \n"
-            "use the numpad (try Numlock off and \n"
-            "on) or vi keys:\n",
+            T_("<h>Movement:\n"
+               "To move in a direction or to attack, \n"
+               "use the numpad (try Numlock off and \n"
+               "on) or vi keys:\n"),
             false);
 
     _add_insert_commands(cols, 0, "                 <w>7 8 9      % % %",
@@ -1185,32 +1200,30 @@ static void _add_formatted_hints_help(column_composer &cols)
     _add_command(cols, 0, CMD_REST, "rest and long wait; stops when", 2);
     cols.add_formatted(
             0,
-            "    Health or Magic become full or\n"
-            "    something is detected. If Health\n"
-            "    and Magic are already full, stops\n"
-            "    when 100 turns over (<w>numpad-5</w>)\n",
+            T_("    Health or Magic become full or\n"
+               "    something is detected. If Health\n"
+               "    and Magic are already full, stops\n"
+               "    when 100 turns over (<w>numpad-5</w>)\n"),
             false);
 
     cols.add_formatted(
             0,
-            "\n<h>Attacking monsters\n"
-            "Walking into a monster will attack it\n"
-            "with the wielded weapon or barehanded.",
+            T_("\n<h>Attacking monsters\nWalking into a monster will attack it\nwith your wielded weapon, or unarmed."),
             false);
 
     cols.add_formatted(
             0,
-            "\n<h>Ranged combat and magic\n",
+            T_("\n<h>Ranged combat and magic\n"),
             false);
 
     _add_insert_commands(cols, 0, "<w>%</w> to throw/fire missiles",
                          { CMD_FIRE });
-    _add_insert_commands(cols, 0, "<w>%</w>/<w>%</w> to cast spells "
-                                  "(<w>%?/%</w> lists spells)",
+    _add_insert_commands(cols, 0, T_("<w>%</w>/<w>%</w> to cast spells "
+                                     "(<w>%?/%</w> lists spells)"),
                          { CMD_CAST_SPELL, CMD_FORCE_CAST_SPELL, CMD_CAST_SPELL,
                            CMD_DISPLAY_SPELLS });
-    _add_command(cols, 0, CMD_MEMORISE_SPELL, "Memorise spells and view spell\n"
-                                              "    library (get books to add to it)", 2);
+    _add_command(cols, 0, CMD_MEMORISE_SPELL, T_("Memorise spells and view spell\n"
+                                                 "    library (get books to add to it)"), 2);
 
     // Second column.
     cols.add_formatted(
@@ -1218,50 +1231,50 @@ static void _add_formatted_hints_help(column_composer &cols)
             false);
 
     _add_insert_commands(cols, 1,
-                         "<console><cyan>)</cyan> : </console>"
-                         "hand weapons (<w>%</w>ield)",
+                         T_("<console><cyan>)</cyan> : </console>"
+                            "hand weapons (<w>%</w>ield)"),
                          { CMD_WIELD_WEAPON });
     _add_insert_commands(cols, 1,
-                         "<console><brown>(</brown> : </console>"
-                         "missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)",
+                         T_("<console><brown>(</brown> : </console>"
+                            "missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)"),
                          { CMD_QUIVER_ITEM, CMD_FIRE, CMD_CYCLE_QUIVER_FORWARD,
                            CMD_CYCLE_QUIVER_BACKWARD });
     _add_insert_commands(cols, 1,
-                         "<console><cyan>[</cyan> : </console>"
-                         "armour (<w>%</w>ear and <w>%</w>ake off)",
+                         T_("<console><cyan>[</cyan> : </console>"
+                            "armour (<w>%</w>ear and <w>%</w>ake off)"),
                          { CMD_WEAR_ARMOUR, CMD_REMOVE_ARMOUR });
     _add_insert_commands(cols, 1,
-                         "<console><w>?</w> : </console>"
-                         "scrolls (<w>%</w>ead)",
+                         T_("<console><w>?</w> : </console>"
+                            "scrolls (<w>%</w>ead)"),
                          { CMD_READ });
     _add_insert_commands(cols, 1,
-                         "<console><magenta>!</magenta> : </console>"
-                         "potions (<w>%</w>uaff)",
+                         T_("<console><magenta>!</magenta> : </console>"
+                            "potions (<w>%</w>uaff)"),
                          { CMD_QUAFF });
     _add_insert_commands(cols, 1,
-                         "<console><blue>=</blue> : </console>"
-                         "rings (<w>%</w>ut on and <w>%</w>emove)",
+                         T_("<console><blue>=</blue> : </console>"
+                            "rings (<w>%</w>ut on and <w>%</w>emove)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
     _add_insert_commands(cols, 1,
-                         "<console><red>\"</red> : </console>"
-                         "amulets (<w>%</w>ut on and <w>%</w>emove)",
+                         T_("<console><red>\"</red> : </console>"
+                            "amulets (<w>%</w>ut on and <w>%</w>emove)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
     _add_insert_commands(cols, 1,
-                         "<console><lightred>percent</lightred> : </console>"
-                         "talismans (e<w>%</w>oke)",
+                         T_("<console><lightred>percent</lightred> : </console>"
+                            "talismans (e<w>%</w>oke)"),
                          { CMD_EVOKE });
     _add_insert_commands(cols, 1,
-                         "<console><lightgrey>/</lightgrey> : </console>"
-                         "wands (e<w>%</w>oke)",
+                         T_("<console><lightgrey>/</lightgrey> : </console>"
+                            "wands (e<w>%</w>oke)"),
                          { CMD_EVOKE });
 
     string item_types =
                   "<console><lightcyan>";
     item_types += stringize_glyph(get_item_symbol(SHOW_ITEM_BOOK));
     item_types +=
-        "</lightcyan> : </console>"
-        "books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
-        "    pick up to add to spell library)";
+        T_("</lightcyan> : </console>"
+           "books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
+           "    pick up to add to spell library)");
     _add_insert_commands(cols, 1, item_types,
                          { CMD_MEMORISE_SPELL, CMD_CAST_SPELL,
                            CMD_FORCE_CAST_SPELL });
@@ -1270,8 +1283,8 @@ static void _add_formatted_hints_help(column_composer &cols)
                   "<console><brown>";
     item_types += stringize_glyph(get_item_symbol(SHOW_ITEM_STAFF));
     item_types +=
-        "</brown> : </console>"
-        "staves (<w>%</w>ield)";
+        T_("</brown> : </console>"
+           "staves (<w>%</w>ield)");
     _add_insert_commands(cols, 1, item_types,
                          { CMD_WIELD_WEAPON });
 
@@ -1295,11 +1308,11 @@ static void _add_formatted_hints_help(column_composer &cols)
 
     cols.add_formatted(
             1,
-            "\n<h>Targeting\n"
-            "<w>Enter</w> or <w>.</w> or <w>Del</w> : confirm target\n"
-            "<w>+</w> and <w>-</w> : cycle between targets\n"
-            "<w>f</w> or <w>p</w> : shoot at previous target\n"
-            "         if still alive and in sight\n",
+            T_("\n<h>Targeting\n"
+               "<w>Enter</w> or <w>.</w> or <w>Del</w> : confirm target\n"
+               "<w>+</w> and <w>-</w> : cycle between targets\n"
+               "<w>f</w> or <w>p</w> : shoot at previous target\n"
+               "         if still alive and in sight\n"),
             false);
 }
 
@@ -1360,7 +1373,7 @@ static int _get_help_section(int section, formatted_string &header_out, formatte
 
     string header = headers.count(page) ? ": "+headers[page] : "";
     header_out = formatted_string::parse_string(
-                    "<yellow>Dungeon Crawl Help"+header+"</yellow>");
+                    make_stringf(T_("<yellow>Dungeon Crawl Help%s</yellow>"), header.c_str()));
     scroll_out = 0;
     switch (section)
     {

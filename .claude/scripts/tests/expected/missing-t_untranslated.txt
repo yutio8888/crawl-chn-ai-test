@@ -1,0 +1,18 @@
+=== Untranslated calls — missing T_() wrapper ===
+
+[UI] ui_sample.cc:4  "CTRL"
+[UI] ui_sample.cc:5  "Abil: "
+[UI] ui_sample.cc:6  "Press %s to continue"
+[STR] ui_sample.cc:7  "Level %d"
+[MSG] untranslated_sample.cc:4  "%s %s healed."
+[MSG] untranslated_sample.cc:5  "You resist."
+[MSG] untranslated_sample.cc:6  "The %s hits %s."
+
+Summary: 7 untranslated calls across 2 files
+  MSG (mprf/mpr): 3
+  UI  (cprintf/formatted_string): 3
+  STR (make_stringf): 1
+
+Per-file breakdown:
+  ui_sample.cc: UI:3, STR:1
+  untranslated_sample.cc: MSG:3

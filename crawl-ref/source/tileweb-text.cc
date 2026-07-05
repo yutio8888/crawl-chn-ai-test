@@ -139,7 +139,7 @@ void WebTextArea::send(bool force)
             {
                 if (last_col != -1)
                     html += "</span>";
-                html += make_stringf("<span class=\\\"fg%d bg%d\\\">",
+                html += make_stringf(T_("<span class=\\\"fg%d bg%d\\\">"),
                                      col & 0xf, (col >> 4) & 0xf);
                 last_col = col;
             }

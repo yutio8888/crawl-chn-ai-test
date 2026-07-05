@@ -95,7 +95,7 @@ void boris_covet_orb(monster* boris)
         return;
 
     if (boris->observable())
-        simple_monster_message(*boris, " is empowered by the presence of the orb!");
+        simple_monster_message(*boris, T_(" is empowered by the presence of the orb!"));
 
     boris->add_ench(mon_enchant(ENCH_HASTE, boris, INFINITE_DURATION));
     boris->add_ench(mon_enchant(ENCH_EMPOWERED_SPELLS, boris, INFINITE_DURATION));
@@ -269,11 +269,11 @@ static monster* _do_split(monster* thing, const coord_def & target, bool quiet =
     {
         if (thing->type == MONS_SLYMDRA)
         {
-            mprf("%s separates from %s.", new_slime->name(DESC_A).c_str(),
+            mprf(T_("%s separates from %s."), new_slime->name(DESC_A).c_str(),
                                           thing->name(DESC_A).c_str());
         }
         else
-            mprf("%s splits.", thing->name(DESC_A).c_str());
+            mprf(T_("%s splits."), thing->name(DESC_A).c_str());
     }
 
     // Inflict the new slime with any enchantments on the parent.
@@ -380,13 +380,13 @@ static void _do_merge_slimes(monster* initial_slime, monster* merge_to)
         if (you.can_see(*merge_to))
         {
             // cases 1 and 2
-            mprf("Two slime creatures merge to form %s.",
+            mprf(T_("Two slime creatures merge to form %s."),
                  merge_to->name(DESC_A).c_str());
         }
         else
         {
             // case 3
-            mprf("Something merges into %s, and it vanishes!",
+            mprf(T_("Something merges into %s, and it vanishes!"),
                  old_name.c_str());
         }
 
@@ -395,7 +395,7 @@ static void _do_merge_slimes(monster* initial_slime, monster* merge_to)
     else if (you.can_see(*initial_slime))
     {
         // case 4
-        mprf("%s merges with something you can't see.",
+        mprf(T_("%s merges with something you can't see."),
              initial_slime->name(DESC_A).c_str());
     }
     // case 5 (no-op)
@@ -633,12 +633,12 @@ bool slymdra_polymorph(monster& slymdra, poly_power_type power)
     {
         if (count == 1)
         {
-            mprf("A slime creature is ejected from %s body as it begins to warp and change.",
+            mprf(T_("A slime creature is ejected from %s body as it begins to warp and change."),
                  slymdra.name(DESC_ITS).c_str());
         }
         else
         {
-            mprf("%d slime creatures are ejected from %s body as it begins to warp and change.",
+            mprf(T_("%d slime creatures are ejected from %s body as it begins to warp and change."),
                  count, slymdra.name(DESC_ITS).c_str());
         }
     }
@@ -864,13 +864,13 @@ bool lost_soul_revive(monster& mons, killer_type killer)
         {
             if (!was_alive)
             {
-                mprf("%s sacrifices itself to reknit %s!",
+                mprf(T_("%s sacrifices itself to reknit %s!"),
                      mi->name(DESC_THE).c_str(),
                      revivee_name.c_str());
             }
             else
             {
-                mprf("%s assumes the form of %s%s!",
+                mprf(T_("%s assumes the form of %s%s!"),
                      mi->name(DESC_THE).c_str(),
                      revivee_name.c_str(),
                      (mi->is_summoned() ? " and becomes anchored to this"
@@ -913,12 +913,12 @@ void treant_release_fauna(monster& mons)
     {
         if (fauna_t == MONS_RAVEN)
         {
-            mprf("Jet-black ravens fly out from beneath %s foliage!",
+            mprf(T_("Jet-black ravens fly out from beneath %s foliage!"),
                  mons.name(DESC_ITS).c_str());
         }
         else
         {
-            mprf("Angry insects surge out from beneath %s foliage!",
+            mprf(T_("Angry insects surge out from beneath %s foliage!"),
                 mons.name(DESC_ITS).c_str());
         }
     }
@@ -994,18 +994,18 @@ void seismosaurus_egg_hatch(monster* mons)
 
     if (hatch.duration  == 4)
     {
-        simple_monster_message(*mons, " cracks slightly.");
+        simple_monster_message(*mons, T_(" cracks slightly."));
         mons->number = 1;
     }
     else if (hatch.duration  == 2)
     {
-        simple_monster_message(*mons, " shakes eagerly.");
+        simple_monster_message(*mons, T_(" shakes eagerly."));
         mons->number = 2;
     }
     // Hatching time!
     else if (hatch.duration  == 0)
     {
-        simple_monster_message(*mons, " hatches with a roar like a landslide!",
+        simple_monster_message(*mons, T_(" hatches with a roar like a landslide!"),
                                 false, MSGCH_MONSTER_SPELL);
 
         const int old_hd = mons->get_experience_level();
@@ -1072,16 +1072,16 @@ static bool _slymdra_try_merge(monster* mons)
         {
             flash_tile(mons->pos(), LIGHTGREEN);
             const int gained_heads = new_heads - old_heads;
-            const string head_msg = gained_heads == 1 ? "sprouts a new head"
-                                                      : make_stringf("sprouts %d new heads", gained_heads);
+            const string head_msg = gained_heads == 1 ? T_("sprouts a new head")
+                                                      : make_stringf(T_("sprouts %d new heads"), gained_heads);
             if (did_merge > 1)
             {
-                mprf("%s absorbs %d nearby slime creatures and %s.",
+                mprf(T_("%s absorbs %d nearby slime creatures and %s."),
                         mons->name(DESC_THE).c_str(), did_merge, head_msg.c_str());
             }
             else
             {
-                mprf("%s absorbs a nearby slime creature and %s.",
+                mprf(T_("%s absorbs a nearby slime creature and %s."),
                         mons->name(DESC_THE).c_str(), head_msg.c_str());
             }
         }
@@ -1290,7 +1290,7 @@ bool mon_special_ability(monster* mons)
 
         if (mons->move_to(spot, MV_DELIBERATE | MV_TRANSLOCATION, true))
         {
-            simple_monster_message(*mons, " flows with the water.");
+            simple_monster_message(*mons, T_(" flows with the water."));
             mons->finalise_movement();
             used = true;
         }
@@ -1314,7 +1314,7 @@ bool mon_special_ability(monster* mons)
         if (target.origin() || !mons->move_to(target, MV_DELIBERATE | MV_TRANSLOCATION, true))
             break;
 
-        simple_monster_message(*mons, " flows through the trees.");
+        simple_monster_message(*mons, T_(" flows through the trees."));
         mons->finalise_movement();
         used = true;
     }
@@ -1476,11 +1476,11 @@ bool pyrrhic_recollection(monster& nobody)
 
     if (can_see)
     {
-        mprf(MSGCH_MONSTER_SPELL, "%s ignites a memory of %s%s.",
+        mprf(MSGCH_MONSTER_SPELL, T_("%s ignites a memory of %s%s."),
                 nobody.name(DESC_THE).c_str(),
                 comma_separated_line(spell_names.begin(), spell_names.end()).c_str(),
                 was_injured ? " to re-knit themselves" : "");
-        string speech = make_stringf("\"We remember... %s...\"",
+        string speech = make_stringf(T_("\"We remember... %s...\""),
                             getSpeakString("nobody_recollection " + recollection.key).c_str());
         mons_speaks_msg(&nobody, speech, MSGCH_TALK);
     }
@@ -1546,7 +1546,7 @@ void solar_ember_blast()
 
     if (!ember->has_ench(ENCH_SPELL_CHARGED))
     {
-        simple_monster_message(*ember, " glows brighter.");
+        simple_monster_message(*ember, T_(" glows brighter."));
         ember->add_ench(mon_enchant(ENCH_SPELL_CHARGED, ember, random_range(70, 90)));
         you.did_trigger(DID_SOLAR_EMBER);
         return;
@@ -1561,7 +1561,7 @@ void solar_ember_blast()
     if (targs.empty())
         return;
 
-    simple_monster_message(*ember, " blazes with a fierce heat.", false, MSGCH_FRIEND_SPELL);
+    simple_monster_message(*ember, T_(" blazes with a fierce heat."), false, MSGCH_FRIEND_SPELL);
 
     bolt beam;
     beam.flavour = BEAM_FIRE;
@@ -1573,7 +1573,7 @@ void solar_ember_blast()
 
         flash_tile(mon->pos(), RED, 0);
         const int damage_done = mons_adjust_flavoured(mon, beam, mon->apply_ac(dmg.roll()));
-        mprf("The solar flare engulfs %s%s.", mon->name(DESC_THE).c_str(),
+        mprf(T_("The solar flare engulfs %s%s."), mon->name(DESC_THE).c_str(),
                 damage_done ? "" : " but does no damage");
         mon->hurt(ember, damage_done, BEAM_FIRE);
     }
@@ -1636,7 +1636,7 @@ void activate_tesseracts()
 
         if (!did_activate)
         {
-            mprf(MSGCH_WARN, "You feel the power of Zot begin to gather its forces!");
+            mprf(MSGCH_WARN, T_("You feel the power of Zot begin to gather its forces!"));
             take_note(Note(NOTE_TESSERACT_ACTIVATED));
             mark_milestone("tesseract.activate", "activated a tesseract");
             // Tracked on the player instead of the monster so status lookup is quicker.

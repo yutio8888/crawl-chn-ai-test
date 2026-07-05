@@ -151,6 +151,8 @@ protected:
 
     FT_Byte *ttf;
     FT_Face face;
+    FT_Face cjk_face;          // fallback CJK font face
+    FT_Byte *cjk_ttf;          // CJK font data (must survive until cjk_face is freed)
     unsigned char *pixels;
     unsigned int fsize;
 };

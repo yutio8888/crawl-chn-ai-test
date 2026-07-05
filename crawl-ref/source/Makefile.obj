@@ -183,6 +183,7 @@ outer-menu.o \
 output.o \
 package.o \
 pattern.o \
+positional_format.o \
 pcg.o \
 perlin.o \
 piety-info.o \
@@ -269,7 +270,8 @@ worley.o \
 xom.o \
 tilepick.o \
 tileview.o \
-zot.o
+zot.o \
+zh-scroll-appearance.o
 
 TILES_OBJECTS = \
 tiledoll.o \
@@ -324,7 +326,8 @@ catch2-tests/test_tags.o \
 catch2-tests/test_tilecell.o \
 catch2-tests/test_ui.o \
 catch2-tests/test_viewmap.o \
-catch2-tests/test_spl-util.o
+catch2-tests/test_spl-util.o \
+catch2-tests/test_positional_format.o
 
 WEBTILES_OBJECTS = \
 tileweb.o \

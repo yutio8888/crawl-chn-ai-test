@@ -22,17 +22,18 @@ function ice_cave_portal(e)
     local timeout_turns = crawl.random_range(600, 800)
 
     local messager = timed_msg {
-        initmsg = { "You feel a wave of frost pass over you.",
-                    "There is an entrance to an ice cave on this level. "
-                    .. "Hurry and find it before the portal melts!" },
-        finalmsg = "The crackling of melting ice is subsiding rapidly.",
+        initmsg = { crawl.t_("You feel a wave of frost pass over you."),
+                    crawl.t_("There is an entrance to an ice cave on this level. "
+                    .. "Hurry and find it before the portal melts!") },
+        finalmsg = crawl.t_("The crackling of melting ice is subsiding rapidly."),
         verb = 'crackling',
         noisemaker = 'melting archway',
         ranges = {
             { 5000, 'faint ' },  { 4000, '' },
             { 2500, 'steady ' }, { 1500, 'quick ' },
             { 0, 'loud ' }
-        }
+        },
+        range_msg_fmt = crawl.t_("You hear the {prefix}crackling of melting archway.")
     }
 
     dgn.persist.ice_cave_hard = hard_ice_cave_difficulty()
@@ -45,7 +46,7 @@ function ice_cave_portal(e)
 
     e.lua_marker('O',
         timed_marker {
-          disappear = "The archway melts and disappears.",
+          disappear = crawl.t_("The archway melts and disappears."),
           entity = 'archway',
           turns = timeout_turns,
           single_timed = true,

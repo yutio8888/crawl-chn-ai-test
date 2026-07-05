@@ -5,6 +5,7 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "stash.h"
 
 #include <algorithm>
@@ -58,7 +59,7 @@ string userdef_annotate_item(const char *s, const item_def *item)
     lua_stack_cleaner cleaner(clua);
     clua_push_item(clua, const_cast<item_def*>(item));
     if (!clua.callfn(s, 1, 1) && !clua.error.empty())
-        ui::error(make_stringf("Lua error: %s", clua.error.c_str()));
+        ui::error(make_stringf(T_("Lua error: %s"), clua.error.c_str()));
     string ann;
     if (lua_isstring(clua, -1))
         ann = luaL_checkstring(clua, -1);
@@ -572,7 +573,7 @@ ShopInfo::ShopInfo(const shop_struct& shop_)
 
 string ShopInfo::shop_item_name(const item_def &it) const
 {
-    return make_stringf("%s%s (%d gold)",
+    return make_stringf(T_("%s%s (%d gold)"),
                         Stash::stash_item_name(it).c_str(),
                         shop_item_unknown(it) ? " (unknown)" : "",
                         item_price(it, shop));
@@ -1092,7 +1093,7 @@ string StashTracker::stash_search_prompt()
     {
         const string disp = replace_all(lastsearch, "<", "<<");
         opts.push_back(
-            make_stringf("Enter for \"%s\"", disp.c_str()));
+            make_stringf(T_("Enter for \"%s\""), disp.c_str()));
     }
     if (lastsearch != ".")
         opts.emplace_back("? for help");
@@ -1103,7 +1104,7 @@ string StashTracker::stash_search_prompt()
     if (!prompt_qual.empty())
         prompt_qual = " [" + prompt_qual + "]";
 
-    return make_stringf("Search for what%s? ", prompt_qual.c_str());
+    return make_stringf(T_("Search for what%s? "), prompt_qual.c_str());
 }
 
 void StashTracker::remove_shop(const level_pos &pos)
@@ -1408,7 +1409,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (!search->valid() && csearch != "*")
     {
-        mprf(MSGCH_PLAIN, "Your search expression is invalid.");
+        mprf(MSGCH_PLAIN, T_("Your search expression is invalid."));
         return ;
     }
 
@@ -1423,7 +1424,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (results.empty())
     {
-        mprf(MSGCH_PLAIN, "Can't find anything matching that.");
+        mprf(MSGCH_PLAIN, T_("Can't find anything matching that."));
         return;
     }
 
@@ -1432,7 +1433,7 @@ void StashTracker::search_stashes(string search_term)
 
     if (dedup_results.size() > SEARCH_SPAM_THRESHOLD)
     {
-        mprf(MSGCH_PLAIN, "Too many matches; use a more specific search.");
+        mprf(MSGCH_PLAIN, T_("Too many matches; use a more specific search."));
         return;
     }
 
@@ -1571,9 +1572,9 @@ formatted_string StashSearchMenu::calc_title()
     formatted_string fs;
     fs.textcolour(title->colour);
     string prefixes[] = {
-        make_stringf("%d match%s",
+        make_stringf(T_("%d match%s"),
             num_alt_matches, num_alt_matches == 1 ? "" : "es"),
-        make_stringf("%d match%s",
+        make_stringf(T_("%d match%s"),
             num_matches, num_matches == 1 ? "" : "es"),
     };
     const bool f = num_matches != num_alt_matches;
@@ -1591,11 +1592,11 @@ formatted_string StashSearchMenu::calc_title()
     else
     {
         fs += formatted_string::parse_string(make_stringf(
-            "<lightgrey>"
+            T_("<lightgrey>"
             ": <w>%s</w> [toggle: <w>!</w>],"
             " by <w>%s</w> [<w>/</w>],"
             " <w>%s</w> useless & duplicates [<w>=</w>]"
-            "</lightgrey>",
+            "</lightgrey>"),
             menu_action == ACT_EXECUTE ? "travel" : "view  ",
             sort_style, filtered));
     }

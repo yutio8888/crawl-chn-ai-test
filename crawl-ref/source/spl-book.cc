@@ -345,9 +345,15 @@ static spell_list _get_spell_list(bool just_check = false,
         if (!just_check)
         {
             if (you.has_mutation(MUT_INNATE_CASTER))
-                mprf(MSGCH_PROMPT, "You need no library to learn spells.");
+            {
+                mprf(MSGCH_PROMPT,
+                     T_("You need no library to learn spells."));
+            }
             else
-                mprf(MSGCH_PROMPT, "Your library has no spells.");
+            {
+                mprf(MSGCH_PROMPT,
+                     T_("Your library has no spells."));
+            }
         }
         return mem_spells;
     }
@@ -405,7 +411,7 @@ static spell_list _get_spell_list(bool just_check = false,
     if (num_memable || num_low_levels > 0 || num_low_xl > 0)
         unavail_reason = "";
     else if (num_known == total)
-        unavail_reason = "You already know all available spells.";
+        unavail_reason = T_("You already know all available spells.");
     else if (num_restricted == total || num_restricted + num_known == total)
     {
         unavail_reason = "You cannot currently memorise any of the available "
@@ -415,7 +421,7 @@ static spell_list _get_spell_list(bool just_check = false,
     else if (num_misc == total || (num_known + num_misc) == total
              || num_misc + num_known + num_restricted == total)
     {
-        unavail_reason = "You cannot memorise any of the available spells.";
+        unavail_reason = T_("You cannot memorise any of the available spells.");
     }
     else
     {
@@ -446,10 +452,10 @@ bool library_add_spells(vector<spell_type> spells, bool quiet)
     {
         vector<string> spellnames(new_spells.size());
         transform(new_spells.begin(), new_spells.end(), spellnames.begin(), spell_title);
-        mprf("You add the spell%s %s to your library.",
-             spellnames.size() > 1 ? "s" : "",
-             comma_separated_line(spellnames.begin(),
-                                  spellnames.end()).c_str());
+        mprf_p(T_("You add the spell%1$s %2$s to your library."),
+               spellnames.size() > 1 ? "s" : "",
+               comma_separated_line(spellnames.begin(),
+                                    spellnames.end()).c_str());
     }
     return !new_spells.empty();
 }
@@ -536,15 +542,35 @@ public:
 protected:
     virtual formatted_string calc_title() override
     {
-        return formatted_string::parse_string(
-                    make_stringf("<w>Spells %s                   Type                      %sLevel",
-                        current_action == action::cast ? "(Cast)    "
-                        : current_action == action::memorise ? "(Memorise)"
-                        : current_action == action::describe ? "(Describe)"
-                        : current_action == action::hide ? "(Hide)    "
-                        : current_action == action::imbue ? "(Imbue)   "
-                        : "(Show)    ",
-                        you.divine_exegesis ? "         " : "Failure  "));
+        const char* act_str =
+            current_action == action::cast
+                ? (T_("(Cast)    "))
+            : current_action == action::memorise
+                ? (T_("(Memorise)"))
+            : current_action == action::describe
+                ? (T_("(Describe)"))
+            : current_action == action::hide
+                ? (T_("(Hide)    "))
+            : current_action == action::imbue
+                ? (T_("(Imbue)   "))
+            : (T_("(Show)    "));
+
+        const string prefix = make_stringf(T_("Spells %s"), act_str);
+        const int pw = strwidth(prefix);
+        // Tiles: +4 for 1-char indent vs 5-char prefix. Console: both use 5.
+#ifdef USE_TILE_LOCAL
+        const int name_pad = max(0, 36 - pw);
+#else
+        const int name_pad = max(0, 32 - pw);
+#endif
+        const string header = make_stringf("%s%s%s%s%s",
+            prefix.c_str(),
+            string(name_pad, ' ').c_str(),
+            chop_string(T_("Type"), 26).c_str(),
+            you.divine_exegesis ? chop_string("", 9).c_str()
+                                : chop_string(T_("Failure"), 9).c_str(),
+            T_("Level"));
+        return formatted_string::parse_string(header);
     }
 
 private:
@@ -564,7 +590,7 @@ private:
         if (you.divine_exegesis)
         {
             desc << make_stringf(
-                "<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>",
+                T_("<lightgreen>Casting with Divine Exegesis: %d MP available</lightgreen>"),
                 you.magic_points);
         }
         else
@@ -575,7 +601,9 @@ private:
         {
             desc << std::right << std::setw(5)
                  << hidden_count
-                 << (hidden_count > 1 ? " spells hidden" : " spell hidden ")
+                 << (hidden_count > 1
+                     ? (T_(" spells hidden"))
+                     : (T_(" spell hidden ")))
                  << "   ";
         }
         else
@@ -588,7 +616,7 @@ private:
                 max_size -= 19;
             const bool search_overflow =
                             static_cast<int>(search_text.size()) > max_size;
-            desc << make_stringf("Matches: <w>%.*s%s</w>",
+            desc << make_stringf(T_("Matches: <w>%.*s%s</w>"),
                             search_overflow ? max_size - 2 : max_size,
                             replace_all(search_text, "<", "<<").c_str(),
                             search_overflow ? ".." : "");
@@ -596,26 +624,30 @@ private:
 
         desc << "\n";
 
-        const string act = default_action == action::memorise ? "Memorise"
-                           : default_action == action::imbue ? "Imbue" : "Cast";
+        const string act =
+            default_action == action::memorise ? T_("Memorise")
+            : default_action == action::imbue ? T_("Imbue")
+            : T_("Cast");
         // line 2
         desc << menu_keyhelp_cmd(CMD_MENU_RIGHT) << " ";
         desc << ( current_action == action::cast
-                            ? "<w>Cast</w>|Describe|Hide|Show"
+                    ? T_("<w>Cast</w>|Describe|Hide|Show")
                  : current_action == action::memorise
-                            ? "<w>Memorise</w>|Describe|Hide|Show"
+                    ? T_("<w>Memorise</w>|Describe|Hide|Show")
                  : current_action == action::imbue
-                            ? "<w>Imbue</w>|Describe|Hide|Show"
+                    ? T_("<w>Imbue</w>|Describe|Hide|Show")
                  : current_action == action::describe
-                            ? act + "|<w>Describe</w>|Hide|Show"
+                    ? act + "|" + T_("<w>Describe</w>|Hide|Show")
                  : current_action == action::hide
-                            ? act + "|Describe|<w>Hide</w>|Show"
-                 : act + "|Describe|Hide|<w>Show</w>");
-        desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH) << " search"
-                "   [<w>?</w>] help"; // XX hardcoded for this menu
+                    ? act + "|" + T_("Describe|<w>Hide</w>|Show")
+                 : act + "|" + T_("Describe|Hide|<w>Show</w>"));
+        desc << "   " << menu_keyhelp_cmd(CMD_MENU_SEARCH)
+             << (T_(" search"))
+             << (T_("   [<w>?</w>] help"));
 
         if (search_text.size())
-            return pad_more_with(desc.str(), "[<w>Esc</w>] clear"); // esc is hardcoded for this case
+            return pad_more_with(desc.str(),
+                T_("[<w>Esc</w>] clear"));
         else
             return pad_more_with_esc(desc.str());
     }
@@ -701,7 +733,7 @@ private:
         {
             char linebuf[80] = "";
             const bool validline = title_prompt(linebuf, sizeof linebuf,
-                                                "Search for what? (regex) ");
+                                                T_("Search for what? (regex) "));
             string old_search = search_text;
             if (validline)
                 search_text = linebuf;
@@ -799,11 +831,9 @@ private:
 
             desc << left;
             desc << chop_string(spell.name, 32);
-            desc << spell.school;
-
-            int so_far = strwidth(desc.str()) - (colour_to_str(colour).length()+2);
-            if (so_far < 58)
-                desc << string(58 - so_far, ' ');
+            // Fixed 26-cell school column matches header's chop_string("Type", 26).
+            // chop_string handles CJK width internally via wcwidth().
+            desc << chop_string(spell.school, 26);
             desc << "</" << colour_to_str(colour) << ">";
 
             if (you.divine_exegesis)
@@ -812,7 +842,7 @@ private:
             {
                 const int enkindled_fail = failure_rate_to_int(raw_spell_fail(spell.spell, true));
 
-                const string fail_string = make_stringf("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>",
+                const string fail_string = make_stringf(T_("<%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>"),
                                                             colour_to_str(spell.fail_rate_colour).c_str(),
                                                             failure_rate_to_int(spell.raw_fail),
                                                             colour_to_str(spell.fail_rate_colour).c_str(),
@@ -856,7 +886,8 @@ public:
         : Menu(MF_SINGLESELECT | MF_ALLOW_FORMATTING
                 | MF_ARROWS_SELECT | MF_INIT_HOVER | MF_SHOW_EMPTY
                 // To have the ctrl-f menu show up in webtiles
-                | MF_ALLOW_FILTER, "spell"),
+                | MF_ALLOW_FILTER,
+                T_("spell")),
         current_action(_default_action),
         default_action(_default_action),
         spells(list),
@@ -869,17 +900,19 @@ public:
         if (you.divine_exegesis)
         {
             spell_levels_str = make_stringf(
-                "<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>",
+                T_("<lightgreen>Select a spell to cast with Divine Exegesis: %d MP available</lightgreen>"),
                 you.magic_points);
         }
         else if (default_action == action::imbue)
-            spell_levels_str = "<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>";
+            spell_levels_str = T_("<lightgreen>Select a spell to imbue your Spellspark Servitor with:</lightgreen>");
         else
         {
-            spell_levels_str = make_stringf("<lightgreen>%d spell level%s"
-                        "</lightgreen>", player_spell_levels(),
-                        (player_spell_levels() > 1 || player_spell_levels() == 0)
-                                                    ? "s left" : " left ");
+            if (player_spell_levels() > 1 || player_spell_levels() == 0)
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell levels left</lightgreen>"),
+                                                player_spell_levels());
+            else
+                spell_levels_str = make_stringf(T_("<lightgreen>%d spell level left </lightgreen>"),
+                                                player_spell_levels());
             if (player_spell_levels() < 9)
                 spell_levels_str += " ";
         }
@@ -1015,7 +1048,8 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 {
     if (spell_removed(specspell))
     {
-        mprf("Sorry, the spell '%s' is gone!", spell_title(specspell));
+        mprf(T_("Sorry, the spell '%s' is gone!"),
+             spell_title(specspell));
         return false;
     }
 
@@ -1033,31 +1067,31 @@ static bool _learn_spell_checks(spell_type specspell, bool wizard = false)
 
     if (you.has_spell(specspell))
     {
-        mpr("You already know that spell!");
+        mpr(T_("You already know that spell!"));
         return false;
     }
 
     if (you.spell_no >= MAX_KNOWN_SPELLS)
     {
-        mpr("Your mind is already too full of spells!");
+        mpr(T_("Your mind is already too full of spells!"));
         return false;
     }
 
     if (you.experience_level < spell_difficulty(specspell) && !wizard)
     {
-        mpr("You're too inexperienced to learn that spell!");
+        mpr(T_("You're too inexperienced to learn that spell!"));
         return false;
     }
 
     if (player_spell_levels() < spell_levels_required(specspell) && !wizard)
     {
-        mpr("You can't memorise that many levels of magic yet!");
+        mpr(T_("You can't memorise that many levels of magic yet!"));
         return false;
     }
 
     if (!wizard && !_spell_available_to_memorize(specspell))
     {
-        mpr("You haven't found that spell!");
+        mpr(T_("You haven't found that spell!"));
         return false;
     }
 
@@ -1084,12 +1118,16 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
         const int severity = fail_severity(specspell);
 
         if (raw_spell_fail(specspell) >= 100 && !vehumet_is_offering(specspell))
-            mprf(MSGCH_WARN, "This spell is impossible to cast!");
+        {
+            mprf(MSGCH_WARN,
+                 T_("This spell is impossible to cast!"));
+        }
         else if (severity > 0)
         {
-            mprf(MSGCH_WARN, "This spell is %s to cast%s",
-                             fail_severity_adjs[severity],
-                             severity > 1 ? "!" : ".");
+            mprf(MSGCH_WARN,
+                 T_("This spell is %s to cast%s"),
+                 T_(fail_severity_adjs[severity]),
+                 severity > 1 ? "!" : ".");
         }
     }
 
@@ -1101,7 +1139,7 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
     if (interactive)
     {
         const string prompt = make_stringf(
-                 "Memorise %s, consuming %d spell level%s and leaving %d?%s%s",
+                 T_("Memorise %s, consuming %d spell level%s and leaving %d?%s%s"),
                  spell_title(specspell), spell_levels_required(specspell),
                  spell_levels_required(specspell) != 1 ? "s" : "",
                  player_spell_levels() - spell_levels_required(specspell),
@@ -1164,7 +1202,7 @@ spret divine_exegesis(bool fail)
     spell_list spells(_get_spell_list(true, true));
     if (spells.empty())
     {
-        mpr("You don't know of any spells!");
+        mpr(T_("You don't know of any spells!"));
         return spret::abort;
     }
 
@@ -1207,7 +1245,7 @@ spret imbue_servitor()
     spell_list spells(_get_player_servitor_spells());
     if (spells.empty())
     {
-        mpr("You don't know any spells that your servitor could cast!");
+        mpr(T_("You don't know any spells that your servitor could cast!"));
         return spret::abort;
     }
 

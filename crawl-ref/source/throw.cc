@@ -52,6 +52,7 @@
 #include "traps.h"
 #include "viewchar.h"
 #include "view.h"
+#include "database.h"
 
 static shared_ptr<quiver::action> _fire_prompt_for_item();
 static int  _get_dart_chance(const int hd);
@@ -167,7 +168,7 @@ void fire_target_behaviour::set_prompt()
 
         if (!targeted())
         {
-            internal_prompt = make_stringf("Non-targeted %s",
+            internal_prompt = make_stringf(T_("Non-targeted %s"),
                 lowercase_first(internal_prompt).c_str());
         }
     }
@@ -228,7 +229,7 @@ vector<string> fire_target_behaviour::get_monster_desc(const monster_info& mi)
             string verb = brand == SPMSL_FRENZY ? "frenzy" : "blind";
 
             string chance_string = immune ? "immune" :
-                                   make_stringf("chance to %s on hit: %d%%",
+                                   make_stringf(T_("chance to %s on hit: %d%%"),
                                                 verb.c_str(), chance);
             descs.emplace_back(chance_string);
         }
@@ -287,7 +288,7 @@ static shared_ptr<quiver::action> _fire_prompt_for_item()
         // possibly they should get a similar message? They all do print a
         // more specific message if you try to use them, and some have a
         // prompt or the like (e.g. scroll of fear).
-        mpr("You have nothing you can fire or use right now.");
+        mpr(T_("You have nothing you can fire or use right now."));
         return make_shared<quiver::action>(); // hack: prevent "Ok, then."
     }
 
@@ -297,7 +298,7 @@ static shared_ptr<quiver::action> _fire_prompt_for_item()
 
     int slot = -1;
     const string title = make_stringf(
-        "<lightgray>Fire%s/use which item?</lightgray>",
+        T_("<lightgray>Fire%s/use which item?</lightgray>"),
         (can_throw ? "/throw" : ""));
     // TODO: the output api here is awkward
     // TODO: it would be nice if items with disabled actions got grayed out
@@ -329,7 +330,7 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         if (!weapon || !is_range_weapon(*weapon))
         {
             if (!silent)
-                mprf("You cannot throw/fire anything while %s.", held_status());
+                mprf(T_("You cannot throw/fire anything while %s."), held_status());
             return true;
         }
         else
@@ -339,8 +340,8 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
         {
             if (!silent)
             {
-                mprf("You cannot shoot with your %s while %s.",
-                     weapon->name(DESC_BASENAME).c_str(), held_status());
+                mprf_p(T_("You cannot shoot with your %s while %s."),
+                       weapon->name(DESC_BASENAME).c_str(), held_status());
             }
             return true;
         }
@@ -743,10 +744,10 @@ static void _player_shoot(ranged_attack_beam &pbolt)
     }
 
     // Create message.
-    mprf("You %s %s%s.",
-          is_thrown ? "throw" : "shoot" ,
-          article_a(pbolt.atk.projectile_name()).c_str(),
-          you.current_vision == 0 ? " into the darkness" : "");
+    mprf_p(T_("You %s %s%s."),
+          is_thrown ? T_("throw") : T_("shoot"),
+          pbolt.atk.projectile_name().c_str(),
+          you.current_vision == 0 ? T_(" into the darkness") : "");
 
     pbolt.beam.set_is_tracer(false);
 
@@ -833,11 +834,12 @@ bool mons_throw(monster* mons, ranged_attack_beam& ratk, bool teleport, bool was
     const bool thrown = is_throwable(mons, weapon);
     if (mons->observable())
     {
-        mpr(make_stringf("%s%s %s %s.",
-                         mons->name(DESC_THE).c_str(),
-                         teleport ? " magically" : "",
-                         thrown ? "throws" : "shoots",
-                         article_a(ratk.atk.projectile_name()).c_str()).c_str());
+        const string proj = ratk.atk.projectile_name();
+        mprf(T_("%s%s %s %s."),
+             mons->name(DESC_THE).c_str(),
+             teleport ? T_(" magically") : "",
+             thrown ? T_("throws") : T_("shoots"),
+             proj.c_str());
     }
 
     _throw_noise(mons, weapon);
