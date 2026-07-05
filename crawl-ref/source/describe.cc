@@ -1116,13 +1116,13 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
-    description << T_("One of the many lords of Pandemonium, ") << name << T_(" has ");
+    description << "One of the many lords of Pandemonium, " << name << " has ";
 
     description << article_a(HRANDOM_ELEMENT(body_types, 2));
     // ETC_RANDOM is also possible, handled later
     if (colour >= 0 && colour < NUM_TERM_COLOURS)
         description << " " << colour_to_str(colour, true);
-    description << T_(" body ");
+    description << " body ";
 
     if (flying)
     {
@@ -1130,7 +1130,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
         description << " ";
     }
 
-    description << T_("and ");
+    description << "and ";
     description << HRANDOM_ELEMENT(head_names, 1) << ".";
 
     if (!hash_with_seed(5, seed, 4) && you.can_smell()) // 20%
@@ -1194,13 +1194,13 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
     if (facets.size() == 0)
         return "";
 
-    return T_("It") + comma_separated_fn(begin(facets), end(facets),
+    return "It" + comma_separated_fn(begin(facets), end(facets),
                       [] (const CrawlStoreValue &sv) -> string {
                           const int facet = sv.get_int();
                           ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
                           return facet_descs[facet];
-                      }, T_(", and it"), T_(", it"))
-           + T_(".");
+                      }, ", and it", ", it")
+           + ".";
 
 }
 
@@ -2784,8 +2784,8 @@ string get_item_description(const item_def &item,
                     description << (T_("This item has been removed.\n"));
                 else if (item.is_identified())
                 {
-                    description << "[ERROR: no desc for item name '" << db_name
-                                << "']. Perhaps this item has been removed?\n";
+                    description << make_stringf(T_("[ERROR: no desc for item name '%s']. Perhaps this item has been removed?\n"),
+                                                db_name.c_str());
                 }
                 else
                 {
@@ -2883,7 +2883,7 @@ string get_item_description(const item_def &item,
         if (item.sub_type == MISC_ZIGGURAT && you.zigs_completed)
         {
             const int zigs = you.zigs_completed;
-            description << T_("\n\nIt is surrounded by a ")
+            description << "\n\n" << T_("It is surrounded by a ")
                         << (zigs >= 27 ? T_("blinding ") : // just plain silly
                             zigs >=  9 ? T_("dazzling ") :
                             zigs >=  3 ? T_("bright ") :
@@ -3178,7 +3178,7 @@ static vector<extra_feature_desc> _get_feature_extra_descs(const coord_def &pos)
     if (const auto cloud = env.map_knowledge(pos).cloudinfo())
     {
         ret.push_back({
-            "A cloud of " + cloud_type_name(cloud->type) + ".",
+            make_stringf(T_("A cloud of %s."), cloud_type_name(cloud->type).c_str()),
             get_cloud_desc(cloud->type, false),
             tile_def(tileidx_cloud(*cloud)),
         });
@@ -3203,7 +3203,7 @@ static string _feat_action_desc(const vector<command_type>& actions,
         [feat] (command_type cmd)
         {
             if (cmd == CMD_GO_DOWNSTAIRS && feat_is_altar(feat))
-                return string("(>)pray");
+                return string(T_("(>)pray"));
             else if (cmd == CMD_GO_DOWNSTAIRS &&
                 (feat == DNGN_ENTER_SHOP
                     || feat_is_portal(feat)
@@ -3211,14 +3211,14 @@ static string _feat_action_desc(const vector<command_type>& actions,
                     || feat == DNGN_TRANSPORTER))
             {
                 // XX disable for portals without item? The command still works.
-                return string("(>)enter");
+                return string(T_("(>)enter"));
             }
             else if (cmd == CMD_GO_UPSTAIRS && feat_is_gate(feat))
-                return string("(<)exit");
+                return string(T_("(<)exit"));
             else
                 return act_str.at(cmd);
         },
-        ", or ") + ".";
+        T_(", or ")) + ".";
 }
 
 static vector<command_type> _allowed_feat_actions(const coord_def &pos)
@@ -3815,10 +3815,10 @@ static string _actions_desc(const vector<command_type>& actions)
                                     if (cmd == CMD_QUAFF) // assumes quaff appears first
                                         push_quiver = true;
                                     else if (push_quiver && cmd == CMD_QUIVER_ITEM)
-                                        return string("qui(v)er");
+                                        return string(T_("qui(v)er"));
                                     return act_str.at(cmd);
                                 },
-                                ", or ") + ".";
+                                T_(", or ")) + ".";
 }
 
 // Take a key and a list of commands and return the command from the list
@@ -4765,7 +4765,7 @@ static void _get_spell_description(const spell_type spell,
 
     const string quote = getQuoteString(string(spell_english_name(spell)) + " spell");
     if (!quote.empty())
-        description += T_("_________________\n\n<darkgrey>") + quote + T_("</darkgrey>");
+        description += "_________________\n\n<darkgrey>" + quote + "</darkgrey>";
 }
 
 /**
@@ -6591,7 +6591,7 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural) << " "
+                   << conjugate_verb(T_("are"), plural) << " "
                    << comma_separated_line(resist_descriptions.begin(),
                                            resist_descriptions.end(),
                                            T_("; and "), T_("; "))
@@ -6611,9 +6611,9 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural) << " susceptible to "
+                   << conjugate_verb(T_("are"), plural) << T_(" susceptible to ")
                    << comma_separated_line(suscept.begin(), suscept.end())
-                   << ".\n";
+                   << T_(".\n");
         }
     }
 
@@ -6624,8 +6624,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural)
-                   << " vulnerable to silver and hated by Zin.\n";
+                   << conjugate_verb(T_("are"), plural)
+                   << T_(" vulnerable to silver and hated by Zin.\n");
         }
     }
 
@@ -6644,8 +6644,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                    << "是冷血动物，可能被寒冷攻击减速。\n";
         else
             result << uppercase_first(pronoun)
-                   << " " << conjugate_verb("are", plural)
-                   << " cold-blooded and may be slowed by cold attacks.\n";
+                   << " " << conjugate_verb(T_("are"), plural)
+                   << T_(" cold-blooded and may be slowed by cold attacks.\n");
     }
 
     if (mi.can_see_invisible())
@@ -6670,8 +6670,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         else
         {
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("inflict", plural)
-                   << " 1d5 acid damage when struck in melee.\n";
+                   << conjugate_verb(T_("inflict"), plural)
+                   << T_(" 1d5 acid damage when struck in melee.\n");
         }
     }
 
@@ -6683,8 +6683,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                    << "是无实体的，免疫缠绕。\n";
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural)
-                   << " insubstantial and immune to ensnarement.\n";
+                   << conjugate_verb(T_("are"), plural)
+                   << T_(" insubstantial and immune to ensnarement.\n");
     }
     else if (mons_class_flag(mi.type, M_AMORPHOUS))
     {
@@ -6693,8 +6693,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                    << "是无定形的，免疫缠绕。\n";
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("are", plural)
-                   << " amorphous and immune to ensnarement.\n";
+                   << conjugate_verb(T_("are"), plural)
+                   << T_(" amorphous and immune to ensnarement.\n");
     }
 
     // XXX: could mention "immune to dazzling" here, but that's spammy, since
@@ -6709,8 +6709,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
             result << uppercase_first(pronoun) << "隐形时移动速度更快。\n";
         else
             result << uppercase_first(pronoun) << " "
-                   << conjugate_verb("cover", plural)
-                   << " ground more quickly when invisible.\n";
+                   << conjugate_verb(T_("cover"), plural)
+                   << T_(" ground more quickly when invisible.\n");
     }
 
     if (mi.type == MONS_ROYAL_JELLY)
@@ -6723,10 +6723,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         }
         else
         {
-            result << "It will release varied jellies when damaged or killed,"
+            result << T_("It will release varied jellies when damaged or killed,"
                 " with the number of jellies proportional to the amount of"
-                " damage.\n";
-            result << "It will release all of its jellies when polymorphed.\n";
+                " damage.\n");
+            result << T_("It will release all of its jellies when polymorphed.\n");
         }
     }
 
@@ -6796,8 +6796,8 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
                 result << "尽管外表" << mi.pronoun(PRONOUN_POSSESSIVE)
                        << "，但它能开门。\n";
             else
-                result << "Despite " << mi.pronoun(PRONOUN_POSSESSIVE)
-                       << " appearance, " << pronoun << " can open doors.\n";
+                result << T_("Despite ") << mi.pronoun(PRONOUN_POSSESSIVE)
+                       << T_(" appearance, ") << pronoun << T_(" can open doors.\n");
         }
     }
     else if (mons_class_flag(mi.type, M_CRASH_DOORS))
@@ -6965,9 +6965,9 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 
     case MONS_PROGRAM_BUG:
         inf.body << T_("If this monster is a \"program bug\", then it's "
-                "recommended that you save your game and reload. Please report "
-                "monsters who masquerade as program bugs or run around the "
-                "dungeon without a proper description to the authorities.\n");
+               "recommended that you save your game and reload. Please report "
+               "monsters who masquerade as program bugs or run around the "
+               "dungeon without a proper description to the authorities.\n");
         break;
 
     default:
@@ -7485,9 +7485,9 @@ string get_ghost_description(const monster_info &mi, bool concise)
     }
 #endif
 
-    gstr << mi.mname << T_(" the ")
+    gstr << mi.mname << " the "
          << title
-         << T_(", ") << _xl_rank_name(mi.i_ghost.xl_rank) << " ";
+         << ", " << _xl_rank_name(mi.i_ghost.xl_rank) << " ";
 
     if (concise)
     {
@@ -7503,7 +7503,7 @@ string get_ghost_description(const monster_info &mi, bool concise)
 
     if (mi.i_ghost.religion != GOD_NO_GOD)
     {
-        gstr << T_(" of ")
+        gstr << " of "
              << god_name(mi.i_ghost.religion);
     }
 
