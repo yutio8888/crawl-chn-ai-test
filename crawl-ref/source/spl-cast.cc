@@ -269,7 +269,7 @@ int list_spells(bool toggle_with_I, bool transient, bool viewing,
     if (toggle_with_I && get_spell_by_letter('I') != SPELL_NO_SPELL)
         toggle_with_I = false;
 
-    const string real_action = viewing ? T_("describe") : action;
+    const string real_action = viewing ? T_("describe") : (action.empty() ? T_("cast") : action);
 
     SpellMenu spell_menu;
     const string titlestring = make_stringf("%-25.25s",

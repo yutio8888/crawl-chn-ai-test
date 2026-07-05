@@ -36449,3 +36449,24 @@ Less
 More
 更多
 %%%%%
+Cast: 
+施放：
+%%%%
+Set which item as quick action? (- to clear)
+要设置哪个物品为快捷动作？（- 清除）
+%%%%
+Set which item as quick action?
+要设置哪个物品为快捷动作？
+%%%%
+Quick cast
+快捷施放
+%%%%
+Forget
+遗忘
+%%%%
+cast
+施放
+%%%%
+magic release
+魔力释放
+%%%%

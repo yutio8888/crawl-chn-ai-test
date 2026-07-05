@@ -356,7 +356,7 @@ static int _name_to_keycode(string s)
         return CK_HOME;
     else if (lower == "end")
         return CK_END;
-    else if (lower == "清除" || lower == "clear")
+    else if (lower == "清除" || lower == "clear") // "清除" is a Chinese alias for user macro input
         return CK_CLEAR;
     else if (lower == "pgup")
         return CK_PGUP;
