@@ -9,7 +9,11 @@
 
 
 # External tool configs
-.opencode/
+# .opencode/agents/         — project-specific translator/coder/reviewer (track)
+# .opencode/skills/         — project-specific skills (track)
+# .opencode/workflows/      — project-specific workflows (track)
+# .claude/agents/learnings/ — project experience (track when content exists)
+# Transient/personal items handled by .opencode/.gitignore (node_modules, package*.json, etc.)
 .mcp.json
 
 # CJK fonts — not in repo, distributed in release packages only
