@@ -171,13 +171,13 @@ int xom_favour_rank()
 }
 
 static const char* xom_moods[] = {
-    T_("a very special plaything of Xom."),
-    T_("a special plaything of Xom."),
-    T_("a plaything of Xom."),
-    T_("a toy of Xom."),
-    T_("a favourite toy of Xom."),
-    T_("a beloved toy of Xom."),
-    T_("Xom's teddy bear.")
+    "a very special plaything of Xom.",
+    "a special plaything of Xom.",
+    "a plaything of Xom.",
+    "a toy of Xom.",
+    "a favourite toy of Xom.",
+    "a beloved toy of Xom.",
+    "Xom's teddy bear."
 };
 
 static const char *describe_xom_mood()
@@ -185,7 +185,7 @@ static const char *describe_xom_mood()
     const int mood = xom_favour_rank();
     ASSERT(mood >= 0);
     ASSERT((size_t) mood < ARRAYSZ(xom_moods));
-    return xom_moods[mood];
+    return T_(xom_moods[mood]);
 }
 
 const string describe_xom_favour()
@@ -5120,7 +5120,7 @@ void xom_take_action(xom_event_type action, int sever)
         // If we didn't reroll at least mention the new favour
         // now that it's not "BORING thing" anymore.
         const string new_xom_favour = describe_xom_favour();
-        const string msg = "You are now " + new_xom_favour;
+        const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
         god_speaks(you.religion, msg.c_str());
     }
 }
