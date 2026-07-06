@@ -30664,6 +30664,7 @@ verb|bask
 沐浴其中
 %%%%
 verb|are engulfed
+被吞没
 %%%%
  (level %d/%d)
  (等级 %d/%d)
@@ -36493,4 +36494,76 @@ magic release
 %%%%
 \n\nYour current strength and Armour skill slows attacks with missile weapons (like %s) 
 \n\n你的力量和护甲技能减缓了投射武器（如%s）的攻击速度，减幅
+%%%%
+Your line of fire to %s is blocked by %s.
+你对%s的射击线被%s阻挡了。
+%%%%
+Xom is interested.
+佐姆感到好奇。
+%%%%
+Xom is mildly amused.
+佐姆觉得有点好玩。
+%%%%
+Xom is amused.
+佐姆觉得好玩。
+%%%%
+Xom is highly amused!
+佐姆非常开心！
+%%%%
+Xom thinks this is hilarious!
+佐姆觉得这太好笑了！
+%%%%
+Xom roars with laughter!
+佐姆狂笑不止！
+%%%%
+Xom is very interested.
+佐姆非常感兴趣。
+%%%%
+Xom is extremely interested.
+佐姆极度感兴趣。
+%%%%
+Xom is intrigued!
+佐姆被勾起了兴趣！
+%%%%
+Xom is very intrigued!
+佐姆兴致盎然！
+%%%%
+Xom is fascinated!
+佐姆着迷了！
+%%%%
+a very special plaything of Xom.
+佐姆最特别的玩物。
+%%%%
+a special plaything of Xom.
+佐姆特别的玩物。
+%%%%
+a plaything of Xom.
+佐姆的玩物。
+%%%%
+a toy of Xom.
+佐姆的玩具。
+%%%%
+a favourite toy of Xom.
+佐姆心爱的玩具。
+%%%%
+a beloved toy of Xom.
+佐姆挚爱的玩具。
+%%%%
+Xom's teddy bear.
+佐姆的泰迪熊。
+%%%%
+a very buggy toy of Xom.
+佐姆有严重bug的玩具。
+%%%%
+a BORING thing.
+一个无聊的东西。
+%%%%
+You are now %s
+你现在是%s
+%%%%
+at your feet
+在你的脚下
+%%%%
+before you
+在你面前
 %%%%

@@ -171,13 +171,13 @@ int xom_favour_rank()
 }
 
 static const char* xom_moods[] = {
-    "a very special plaything of Xom.",
-    "a special plaything of Xom.",
-    "a plaything of Xom.",
-    "a toy of Xom.",
-    "a favourite toy of Xom.",
-    "a beloved toy of Xom.",
-    "Xom's teddy bear."
+    T_("a very special plaything of Xom."),
+    T_("a special plaything of Xom."),
+    T_("a plaything of Xom."),
+    T_("a toy of Xom."),
+    T_("a favourite toy of Xom."),
+    T_("a beloved toy of Xom."),
+    T_("Xom's teddy bear.")
 };
 
 static const char *describe_xom_mood()
@@ -192,9 +192,9 @@ const string describe_xom_favour()
 {
     string favour;
     if (!you_worship(GOD_XOM))
-        favour = "a very buggy toy of Xom.";
+        favour = T_("a very buggy toy of Xom.");
     else if (you.gift_timeout < 1)
-        favour = "a BORING thing.";
+        favour = T_("a BORING thing.");
     else
         favour = describe_xom_mood();
 
@@ -295,12 +295,12 @@ static void _xom_is_stimulated(int maxinterestingness,
     if (was_stimulated || force_message)
     {
         god_speaks(GOD_XOM,
-                   ((interestingness > 160) ? message_array[5] :
-                    (interestingness >  80) ? message_array[4] :
-                    (interestingness >  60) ? message_array[3] :
-                    (interestingness >  40) ? message_array[2] :
-                    (interestingness >  20) ? message_array[1]
-                                            : message_array[0]));
+                   T_(((interestingness > 160) ? message_array[5] :
+                       (interestingness >  80) ? message_array[4] :
+                       (interestingness >  60) ? message_array[3] :
+                       (interestingness >  40) ? message_array[2] :
+                       (interestingness >  20) ? message_array[1]
+                                               : message_array[0])));
         //updating piety status line
         you.redraw_title = true;
     }
@@ -373,7 +373,7 @@ void xom_tick()
         new_xom_favour = describe_xom_favour();
         if (old_xom_favour != new_xom_favour)
         {
-            const string msg = "You are now " + new_xom_favour;
+            const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
             god_speaks(you.religion, msg.c_str());
         }
 
@@ -5107,7 +5107,7 @@ void xom_take_action(xom_event_type action, int sever)
         const string new_xom_favour = describe_xom_favour();
         if (was_bored || old_xom_favour != new_xom_favour)
         {
-            const string msg = "You are now " + new_xom_favour;
+            const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
             god_speaks(you.religion, msg.c_str());
         }
 #ifdef NOTE_DEBUG_XOM
