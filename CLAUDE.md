@@ -19,12 +19,17 @@ repository's index and working tree, leading to false "staged changes".
 **Correct procedure after committing in a worktree:**
 1. `cd ~/projects/crawl` (the main repository)
 2. `git checkout <target-branch>` (e.g. `chn-0.34.1-base`)
-3. `git merge <worktree-branch>` (or `git reset --hard <worktree-branch>` for fast-forward)
-4. Resolve any conflicts in the main repository
-5. `git reset --hard HEAD` to sync index and working tree
+3. **Run merge review gate**: `bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch>`
+   - See "Worktree Merge Review" below — this classifies the cumulative diff
+     and decides whether full review is required before merging.
+4. `git merge <worktree-branch>` (or `git reset --hard <worktree-branch>` for fast-forward)
+5. Resolve any conflicts in the main repository
+6. `git reset --hard HEAD` to sync index and working tree
 
-This ensures the main repository's index and working tree stay in sync with
-the branch reference, avoiding the stale-index problem caused by `update-ref`.
+This ensures the main repository's index and working tree stay in sync with the
+branch reference, avoiding the stale-index problem caused by `update-ref`.
+The review gate (step 3) catches high-risk C++/T_() changes before they reach
+`chn-0.34.1-base`.
 
 
 ## Agent Auto-Routing
@@ -152,56 +157,79 @@ operations, quick questions) → handle inline. Multi-step complex tasks that sp
 categories → break into steps, dispatch each step to the right agent.
 
 
-## Pre-Commit Code Review (MANDATORY)
+## Code Review Strategy: Risk-Tiered, Merge-Time Gated
 
-**Before any `git commit` that touches `crawl-ref/source/`, you MUST run code
-review. This is non-negotiable — the same way you must compile before committing.**
+**Review happens at worktree merge time, not at every commit.** Per-commit review
+on every translation micro-edit is too costly; instead, classify the cumulative
+worktree diff and apply the right level of scrutiny before merging into
+`chn-0.34.1-base`.
 
-### Scope
+### Risk Classification
 
-Trigger when the staged diff includes any of:
-- `crawl-ref/source/*.cc`, `*.h` — C++ source
-- `crawl-ref/source/dat/i18n/zh/*.txt` — T_() translation data
-- `crawl-ref/source/dat/descript/zh/*.txt` — description database
-- `crawl-ref/source/dat/database/zh/*.txt` — TextDB entries
+Use `classify_review.sh` to categorize a diff:
 
-Skip for: merge commits, `.claude/` only, `~/projects/issues/` only, or `CLAUDE.md` only.
+| Level | Trigger | Treatment |
+|-------|---------|-----------|
+| 🟢 **GREEN** | No `crawl-ref/source/` changes | No review — just merge |
+| 🟡 **YELLOW** | Only `crawl-ref/source/dat/{i18n,descript,database}/zh/*.txt` | Run `post-coder.sh` (automated scan); merge if clean |
+| 🔴 **RED** | Any `crawl-ref/source/*.cc` or `*.h` change, or other `crawl-ref/source/` | Full `zh-code-reviewer` agent 5-layer review |
 
-### Workflow
+```bash
+# Classify staged diff (per-commit quick check, advisory)
+bash .claude/scripts/classify_review.sh
 
+# Classify a worktree→target range (use at merge time)
+bash .claude/scripts/classify_review.sh <target>..<worktree>
+
+# JSON output for tooling
+bash .claude/scripts/classify_review.sh <range> --json
 ```
-0.5 bash .claude/scripts/check_checkpoint.sh
-    → If stale (exit 2/3), update ORCHESTRATION_STATE.md first
-1. git diff --cached                    # Get staged changes
-2. Agent(zh-code-reviewer,              # Spawn code review
-     prompt="review the staged diff for this commit:
-              $(git diff --cached)")
-3. Wait for verdict
-4. Record review metrics (see Review Metrics Logging below)
+
+### Worktree Merge Review (the actual gate)
+
+**Run this in the MAIN repo before merging a worktree branch:**
+
+```bash
+cd ~/projects/crawl
+git checkout chn-0.34.1-base
+bash .claude/scripts/review_at_merge.sh <worktree-branch> chn-0.34.1-base
 ```
 
-### Verdict Action
+The script:
+1. Computes the cumulative diff range `<target>..<worktree-branch>`
+2. Classifies via `classify_review.sh`
+3. **GREEN** → prints merge command, exit 0
+4. **YELLOW** → auto-runs `post-coder.sh`, prints log path, exit 0/1 based on results
+5. **RED** → prints the exact `Agent(zh-code-reviewer, ...)` prompt to dispatch,
+   exits 2. After receiving the verdict and fixing blockers, re-run this script.
 
-| Verdict | Action |
-|---------|--------|
-| **Go** | Proceed with `git commit` |
-| **Conditional Go** | Fix 🟡 issues if quick (<2 min), otherwise note them and proceed |
-| **No-Go** | Fix 🔴 blockers → `make -j8` verify → re-review → repeat from step 1 |
+### Per-Commit Review (Optional, Advisory)
+
+During worktree development, you can still run `classify_review.sh` on staged
+changes to get an early warning. **This is advisory only — the actual gate is
+at merge time.** No need to dispatch the full `zh-code-reviewer` agent for
+every micro-commit; defer that work to the merge point.
+
+If a single commit is large enough to warrant full review on its own (e.g., a
+risky T_() migration, a refactor of an enemy attack table), you may invoke
+`zh-code-reviewer` directly on `git diff --cached` — but treat this as an
+exception, not the default.
 
 ### Review Metrics Logging
 
-After each code review (step 4 in the workflow), record the results to establish
-a quality baseline for future optimization validation:
+After each code review (RED path: post-merge verdict, or per-commit exception),
+record the results to establish a quality baseline for future optimization
+validation:
 
 ```bash
 bash .claude/scripts/record_review.sh '{
   "date": "'"$(date -Iseconds)"'",
   "agent_type": "zh-code-reviewer",
-  "task_summary": "Pre-commit review of <summary>",
+  "task_summary": "Worktree merge review of <worktree-branch>",
   "findings": {"blocker": N, "needs_fix": N, "suggestion": N},
   "fix_iterations": N,
   "verdict": "Go|Conditional Go|No-Go",
-  "trigger": "pre-commit",
+  "trigger": "merge-time",
   "session_id": "<from ORCHESTRATION_STATE.md>"
 }'
 ```
