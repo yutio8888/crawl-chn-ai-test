@@ -1,0 +1,502 @@
+#include "AppHdr.h"
+
+#include "test_zh_helpers.h"
+
+#include <algorithm>
+#include <cstring>
+#include <regex>
+#include <string>
+#include <vector>
+
+// =============================================================================
+// Unicode helpers — scan_strings here are std::string stored as UTF-8 bytes.
+// We decode them with a small forward iterator so we can ask per-codepoint
+// questions (CJK, PUA, emoji, ...)
+// =============================================================================
+
+namespace {
+
+// Decode one UTF-8 codepoint starting at `s[i]`; return the codepoint in `cp`
+// and the number of bytes consumed in `len`. On an invalid byte sequence we
+// return U+FFFD with len==1 so that rule_garbled_utf8 can flag it.
+void decode_cp(const std::string& s, size_t i, char32_t& cp, size_t& len)
+{
+    // Fast path: ASCII
+    const unsigned char b0 = static_cast<unsigned char>(s[i]);
+    if (b0 < 0x80)
+    {
+        cp  = b0;
+        len = 1;
+        return;
+    }
+
+    // Determine expected length and initial payload bits.
+    unsigned need;
+    char32_t val;
+    if      ((b0 & 0xE0) == 0xC0) { need = 1; val = b0 & 0x1F; }
+    else if ((b0 & 0xF0) == 0xE0) { need = 2; val = b0 & 0x0F; }
+    else if ((b0 & 0xF8) == 0xF0) { need = 3; val = b0 & 0x07; }
+    else
+    {
+        // 0xF8..0xFF or 0xC0/0xC1 — illegal lead byte.
+        cp  = 0xFFFD;
+        len = 1;
+        return;
+    }
+
+    if (i + need >= s.size())
+    {
+        // truncated sequence
+        cp  = 0xFFFD;
+        len = 1;
+        return;
+    }
+
+    for (unsigned k = 1; k <= need; ++k)
+    {
+        const unsigned char bn = static_cast<unsigned char>(s[i + k]);
+        if ((bn & 0xC0) != 0x80)
+        {
+            // bad continuation.
+            cp  = 0xFFFD;
+            len = 1;
+            return;
+        }
+        val = (val << 6) | (bn & 0x3F);
+    }
+
+    // Reject overlong encodings, surrogate halves, and codepoints above the
+    // Unicode ceiling (0x10FFFF). The latter catches 0xF5..0xFF lead bytes,
+    // which my decoder would otherwise naively assemble into illegal values
+    // such as 0x140000 — plan §2.3 GARBLED_UTF8 relies on this.
+    const char32_t min_cp[4] = { 0, 0x80, 0x800, 0x10000 };
+    if (val < min_cp[need] || val > 0x10FFFF
+        || (val >= 0xD800 && val <= 0xDFFF))
+    {
+        cp  = 0xFFFD;
+        len = 1;
+        return;
+    }
+
+    cp  = val;
+    len = 1 + need;
+}
+
+// Produce a small bounded copy of `s` (used to populate ZhIssue::sample); we
+// truncate to ~120 bytes in a UTF-8-safe way (cut on a codepoint boundary).
+std::string sample_of(const std::string& s)
+{
+    const size_t max = 120;
+    if (s.size() <= max)
+        return s;
+
+    // Walk the prefix, stopping before we would exceed `max` bytes.
+    size_t i = 0;
+    char32_t cp; size_t len;
+    while (i < max)
+    {
+        decode_cp(s, i, cp, len);
+        if (i + len > max)
+            break;
+        i += len;
+    }
+    return s.substr(0, i);
+}
+
+} // anonymous namespace
+
+bool iscjk(char32_t cp)
+{
+    // Common CJK ranges that appear in zh translations.
+    // Hiragana / Katakana are listed but should never legitimately appear in zh,
+    // so we still count them as "wide" — that lets MIXED_CN_EN catch a stray
+    // Japanese glyph mixed in by mistake.
+    return (cp >= 0x3000 && cp <= 0x303F)   // CJK punctuation
+        || (cp >= 0x3400 && cp <= 0x4DBF)   // CJK Ext A
+        || (cp >= 0x4D40 && cp <= 0x4DFF)   // CJK Ext A (overlap)
+        || (cp >= 0x4E00 && cp <= 0x9FFF)   // CJK Unified Ideographs
+        || (cp >= 0xAC00 && cp <= 0xD7AF)   // Hangul Syllables
+        || (cp >= 0xF900 && cp <= 0xFAFF)   // CJK Compat Ideographs
+        || (cp >= 0xFF00 && cp <= 0xFFEF)   // Fullwidth forms
+        || (cp >= 0x20000 && cp <= 0x2FFFF) // SMP CJK
+        || (cp >= 0x3040 && cp <= 0x309F)   // Hiragana
+        || (cp >= 0x30A0 && cp <= 0x30FF);  // Katakana
+}
+
+bool is_invisible_or_pua(char32_t cp)
+{
+    return cp == 0x200B                       // Zero Width Space (CJK tiles marker also leaks here)
+        || cp == 0xFEFF                       // BOM / ZWNBSP
+        || cp == 0x00A0                       // NBSP
+        || (cp >= 0x200C && cp <= 0x200F)     // ZWNJ / ZWJ / direction marks
+        || (cp >= 0x2028 && cp <= 0x202F)     // line/paragraph separators & friends
+        || (cp >= 0x2060 && cp <= 0x206F)     // word joiner / invisibles
+        || (cp >= 0xE000 && cp <= 0xF8FF)     // Private Use Area
+        || (cp >= 0xF0000 && cp <= 0xFFFFD)   // Supplementary PUA-A
+        || (cp >= 0x100000 && cp <= 0x10FFFD);// Supplementary PUA-B
+}
+
+// =============================================================================
+// Individual rule implementations.
+// =============================================================================
+
+bool rule_untranslated(const std::string& text, const std::string& key)
+{
+    // 1) Comparison is by string contents (not pointer). i18n_source_lookup
+    //    (database.cc:1061) returns a deque-stored c_str() on ZH-mode miss,
+    //    not the caller's pointer — B2.
+    // 2) Only fire when the key actually contains ASCII letters (a pure-digit
+    //    or empty key cannot meaningfully be flagged "untranslated").
+    if (text != key)
+        return false;
+    bool has_letter = false;
+    for (char c : key)
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        {
+            has_letter = true;
+            break;
+        }
+    return has_letter;
+}
+
+bool rule_mixed_cn_en(const std::string& text)
+{
+    // Fire when text contains a CJK ideograph AND >=3 consecutive ASCII
+    // Latin letters that aren't whitelisted as an allowed embedded technical
+    // term (resistances, abbreviation tags, the names of gods/skills/species
+    // which are intentionally kept in English — see plan v2 §2.3 row 2).
+    //
+    // The whitelist itself is loaded/managed in the catch2 enumerators
+    // (M2 milestone); here we implement the structural detection.
+
+    bool has_cjk = false;
+    size_t i = 0;
+    char32_t cp; size_t len;
+    while (i < text.size())
+    {
+        decode_cp(text, i, cp, len);
+        if (iscjk(cp))
+            has_cjk = true;
+        i += len;
+    }
+    if (!has_cjk)
+        return false;
+
+    // For each maximal run of ASCII letters, check whether it's whitelisted.
+    // The whitelist lives in catch2-tests/zh_runtime_allowlist_enum.txt plus
+    // a hardcoded minimal set in source. We replicate a generous built-in
+    // whitelist here so the helper is self-contained and testable in M1.
+
+    static const std::vector<std::string> builtin = {
+        // Resistance / stat tags
+        "rF","rC","rElec","rPois","rN","MR","rCorr","rWater","rNeg","rMut","rTorment","rHellfire",
+        "AC","EV","SH","Str","Dex","Int","XL","HP","MP","SLA","SInv","Slay",
+        // God names (canonical, kept in English by policy)
+        "Trog","Okawaru","Sif","Muna","Kikubaaqudgha","Dithmenos","Makhleb","Vehumet",
+        "Zin","Shining","Trog","Cheibriados","Lugonu","Nemelex","Xom","Yredelemnul",
+        "Beogh","Jiyva","Fedhas","Elyvilon","The","Ru","Uskayaw","Hepliaklqana","Wu",
+        "Ignis","Qazlal","Gozag","Ehur","Elyvilon","Ashenzari","Iashol","Saoieme",
+        // Common English embedded terms (acronyms, dungeon names)
+        "Dungeon","Lair","Shoals","Snake","Spider","Tomb","Vaults","Hell","Abyss","Zot",
+        "Slime","Orc","Elf","Crypt","Pan","Bligit","Dis","Gehenna","Cocytus","Tartarus",
+        // Tech prefixes used in items
+        "Tele","Rage","Highlight",
+    };
+
+    i = 0;
+    while (i < text.size())
+    {
+        char c = text[i];
+        if ((c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+        {
+            // capture maximal ASCII-letter run
+            size_t j = i + 1;
+            while (j < text.size())
+            {
+                char d = text[j];
+                if (!((d >= 'A' && d <= 'Z') || (d >= 'a' && d <= 'z')))
+                    break;
+                ++j;
+            }
+            size_t run_len = j - i;
+            std::string token = text.substr(i, run_len);
+            bool whitelisted = false;
+            if (run_len < 3)
+                whitelisted = true;            // 1-2 letter tokens (rF, AC, ...)
+            else
+            {
+                // case-insensitive whitelist lookup
+                std::string lower = token;
+                std::transform(lower.begin(), lower.end(), lower.begin(),
+                               [](unsigned char ch){ return std::tolower(ch); });
+                for (const std::string& w : builtin)
+                {
+                    std::string wl = w;
+                    std::transform(wl.begin(), wl.end(), wl.begin(),
+                                   [](unsigned char ch){ return std::tolower(ch); });
+                    if (wl == lower)
+                    {
+                        whitelisted = true;
+                        break;
+                    }
+                }
+            }
+            if (!whitelisted)
+                return true;
+            i = j;
+        }
+        else
+        {
+            ++i;
+        }
+    }
+    return false;
+}
+
+bool rule_format_broken(const std::string& text, const std::string& key)
+{
+    // The plan defines 4 sub-rules; we implement them here as regex scans plus
+    // an argument-count comparison (only performed when `key` is non-empty,
+    // so this rule is also callable from Layer 2 snapshots).
+
+    // a) Stray English verb conjugation: a 2+ CJK run followed by ASCII 's' / 'x'
+    //    not followed by a word char. This is the "conj_verb(...) produces
+    //    garbled const string" error noted in CLAUDE.md anti-pattern #2.
+    try
+    {
+        // e.g. "抓取s is bad" matches.
+        static const std::regex conj_re("[\\xE4-\\xE9][\\x80-\\xBF]{2}[sx](?![A-Za-z0-9])");
+        if (std::regex_search(text, conj_re))
+            return true;
+    }
+    catch (...) { /* ignore regex engine quirks */ }
+
+    // b) Lone trailing %s that produces garbled runtime substitution.
+    //    We accept "%s" only when embedded with surrounding context or
+    //    followed by another format char; a bare "%s$" at end-of-string is
+    //    flagged.
+    if (text.size() >= 2 && text.find("%s") == text.size() - 2)
+    {
+        // "%s" alone at the very end, with nothing else guaranteed — that's
+        // suspicious in a translated string.
+        return true;
+    }
+
+    // c) mprf-p incompatibility — MinGW vsnprintf does not support %n$s.
+    if (text.find('%') != std::string::npos)
+    {
+        // Match %<digits>$
+        try
+        {
+            static const std::regex pos_re("%[0-9]+\\$");
+            if (std::regex_search(text, pos_re))
+                return true;
+        }
+        catch (...) { /* ignore */ }
+    }
+
+    // d) %s / %d count mismatch between the (English) key and translated text.
+    //    This is the same logic as scan_i18n.py arg-mismatch mode, adapted to
+    //    runtime comparison. We do a per-format-specifier count comparison;
+    //    asterisk / %*d etc. are ignored.
+    if (!key.empty())
+    {
+        auto count_specs = [](const std::string& s) -> int
+        {
+            int n = 0;
+            for (size_t k = 0; k + 1 < s.size(); ++k)
+            {
+                if (s[k] == '%')
+                {
+                    char nxt = s[k + 1];
+                    if (nxt == '%')
+                    {
+                        ++k; // consume the %%
+                        continue;
+                    }
+                    // skip width / precision / flags
+                    size_t j = k + 1;
+                    while (j < s.size())
+                    {
+                        char c = s[j];
+                        if ((c >= '0' && c <= '9') || c == '-' || c == '+'
+                            || c == ' ' || c == '#' || c == '.' || c == '*')
+                        {
+                            ++j;
+                            continue;
+                        }
+                        break;
+                    }
+                    if (j < s.size())
+                    {
+                        char conv = s[j];
+                        if (conv == 's' || conv == 'd' || conv == 'u'
+                            || conv == 'i' || conv == 'l' || conv == 'f'
+                            || conv == 'g' || conv == 'x' || conv == 'X'
+                            || conv == 'c' || conv == 'p')
+                            ++n;
+                    }
+                    k = j;
+                }
+            }
+            return n;
+        };
+        if (count_specs(text) != count_specs(key))
+            return true;
+    }
+    return false;
+}
+
+bool rule_garbled_utf8(const std::string& text)
+{
+    // Walk the buffer decoding; illegal lead bytes / truncated sequences /
+    // overlongs / surrogate halves all surface as U+FFFD via decode_cp.
+    size_t i = 0;
+    char32_t cp; size_t len;
+    while (i < text.size())
+    {
+        decode_cp(text, i, cp, len);
+        if (cp == 0xFFFD)
+            return true;
+        // Also reject any control char other than the well-behaved
+        // whitespace set {tab, newline, carriage-return}.
+        if (cp < 0x20 && cp != '\t' && cp != '\n')
+            return true;
+        i += len;
+    }
+    return false;
+}
+
+bool rule_whitespace(const std::string& text)
+{
+    // \r is unambiguously anomalous (source.txt Windows CRLF remnant).
+    if (text.find('\r') != std::string::npos)
+        return true;
+    // Double space.
+    if (text.find("  ") != std::string::npos)
+    {
+        // Allow leading indent of two-space bullets like "  - foo": if the
+        // double space is followed by a dash, ignore.
+        size_t pos = text.find("  ");
+        while (pos != std::string::npos)
+        {
+            if (pos + 2 >= text.size() || text[pos + 2] != '-')
+                return true;
+            pos = text.find("  ", pos + 1);
+        }
+    }
+    // Leading / trailing ASCII space — but allow legitimate bullet indent
+    // patterns like "  - foo" or "  * foo" (plan §2.3 row 6 only forbids
+    // accidental editorial whitespace, not intentional markdown bullets).
+    if (!text.empty())
+    {
+        if (text.front() == ' ')
+        {
+            size_t p = 0;
+            while (p < text.size() && text[p] == ' ')
+                ++p;
+            char first_real = (p < text.size() ? text[p] : '\0');
+            if (first_real != '-' && first_real != '*')
+                return true;
+        }
+        if (!text.empty() && text.back() == ' ')
+            return true;
+    }
+    return false;
+}
+
+bool rule_invisible_char(const std::string& text)
+{
+    size_t i = 0;
+    char32_t cp; size_t len;
+    while (i < text.size())
+    {
+        decode_cp(text, i, cp, len);
+        if (is_invisible_or_pua(cp))
+            return true;
+        i += len;
+    }
+    return false;
+}
+
+bool rule_punct_style(const std::string& text)
+{
+    // We walk the string as a sequence of codepoints (with their byte
+    // positions), so adjacency queries are O(1) by index into that vector.
+    std::vector<char32_t> cps;
+    std::vector<size_t>   byte_starts;
+    size_t i = 0;
+    char32_t cp; size_t len;
+    while (i < text.size())
+    {
+        decode_cp(text, i, cp, len);
+        cps.push_back(cp);
+        byte_starts.push_back(i);
+        i += len;
+    }
+
+    static const std::string bad = "(),.:;";
+    for (size_t k = 0; k < cps.size(); ++k)
+    {
+        char32_t cp = cps[k];
+        char c = static_cast<char>(cp);
+        if (cp >= 0x80)               // not ASCII
+            continue;
+        if (bad.find(c) == std::string::npos)
+            continue;
+        bool prev_cjk = (k > 0) ? iscjk(cps[k - 1]) : false;
+        bool next_cjk = (k + 1 < cps.size()) ? iscjk(cps[k + 1]) : false;
+        if (prev_cjk || next_cjk)
+            return true;
+        // Whole-string degenerate case: a mostly-Chinese fragment that
+        // happens to use a single ASCII punct and nothing but ASCII letters
+        // elsewhere. We check this only when no per-adjacency match fired.
+    }
+    return false;
+}
+
+// =============================================================================
+// Aggregating entry point.
+// =============================================================================
+
+std::vector<ZhIssue> scan_translation(const char* translated,
+                                      const std::string& key,
+                                      const std::string& source_tag)
+{
+    std::string text(translated ? translated : "");
+    return scan_text(text, key, source_tag);
+}
+
+std::vector<ZhIssue> scan_text(const std::string& text,
+                               const std::string& key,
+                               const std::string& source_tag)
+{
+    std::vector<ZhIssue> issues;
+
+    auto add = [&](ZhIssue::Kind k, const std::string& sample)
+    {
+        ZhIssue iss;
+        iss.kind   = k;
+        iss.source  = source_tag;
+        iss.key     = key;
+        iss.sample  = sample_of(sample);
+        issues.push_back(iss);
+    };
+
+    if (!key.empty() && rule_untranslated(text, key))
+        add(ZhIssue::UNTRANSLATED, text);
+    if (rule_mixed_cn_en(text))
+        add(ZhIssue::MIXED_CN_EN, text);
+    if (rule_format_broken(text, key))
+        add(ZhIssue::FORMAT_BROKEN, text);
+    if (rule_garbled_utf8(text))
+        add(ZhIssue::GARBLED_UTF8, text);
+    if (rule_whitespace(text))
+        add(ZhIssue::WHITESPACE_ANOMALY, text);
+    if (rule_invisible_char(text))
+        add(ZhIssue::INVISIBLE_CHAR, text);
+    if (rule_punct_style(text))
+        add(ZhIssue::PUNCT_STYLE, text);
+
+    return issues;
+}
