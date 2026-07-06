@@ -29302,8 +29302,20 @@ It is an ancient artefact.
 It cannot be enchanted further.
 它无法被进一步附魔。
 %%%%
-This ancient artefact cannot be changed by magic or mundane means.
-这件远古神器无法被魔法或凡俗手段改变。
+\nEnchanting this artefact any further is beyond even your skills.
+\n进一步附魔这件神器超出了你的技能范畴。
+%%%%
+\nThis ancient artefact cannot be changed by magic or mundane means.
+\n这件远古神器无法被魔法或凡俗手段改变。
+%%%%
+\nChaotic:   
+\n混沌：   
+%%%%
+\nClass: 
+\n类别：
+%%%%
+\nMelds: 
+\n融合：
 %%%%
 are sucked
 被吸入
