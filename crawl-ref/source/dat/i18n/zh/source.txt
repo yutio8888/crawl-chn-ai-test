@@ -30678,6 +30678,9 @@ verb|bask
 verb|are engulfed
 被吞没
 %%%%
+verb|fire
+发射
+%%%%
  (level %d/%d)
  (等级 %d/%d)
 

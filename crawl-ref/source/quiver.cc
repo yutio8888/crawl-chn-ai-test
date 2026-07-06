@@ -379,7 +379,7 @@ namespace quiver
 
         string quiver_verb() const override
         {
-            return T_("fire");
+            return C_("verb", "fire");
         }
 
         formatted_string quiver_description(bool short_desc=false) const override
