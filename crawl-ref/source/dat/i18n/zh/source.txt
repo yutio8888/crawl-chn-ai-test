@@ -36491,3 +36491,6 @@ cast
 magic release
 魔力释放
 %%%%
+\n\nYour current strength and Armour skill slows attacks with missile weapons (like %s) 
+\n\n你当前的力量和护甲技能减缓了使用投射武器（如%s）的攻击速度，
+%%%%
