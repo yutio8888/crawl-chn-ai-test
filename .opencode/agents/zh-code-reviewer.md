@@ -2,7 +2,7 @@
 name: zh-code-reviewer
 description: Dedicated code review agent for DCSS Chinese translation — reviews C++ source changes, T_() migrations, TextDB operations, and i18n data files. Checks protocol/display separation, translation completeness, consistency, database integrity, and compilation.
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: deepseek/deepseek-v4-pro
 hidden: true
 permission:
   edit: deny

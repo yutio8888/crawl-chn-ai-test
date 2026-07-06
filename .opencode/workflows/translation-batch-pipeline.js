@@ -1,0 +1,459 @@
+export const meta = {
+  name: 'translation-batch-pipeline',
+  description: '批量翻译修复流程（B′）：共享 worktree + 阶段批处理。Analyze 归并同根因 → Execute 串行落盘 → 批量审核。',
+  phases: [
+    { title: 'Batch Analyze', detail: '并行分析所有 issue → 归并同根因 → 建立批次术语表' },
+    { title: 'Batch Plan', detail: '基于合并后的问题集制定统一修复方案' },
+    { title: 'Review Plan', detail: '方案审核闸门（最多3轮修订）' },
+    { title: 'Execute Sequential', detail: '串行落盘：逐项执行代码修改+翻译，避免 source.txt 合并冲突' },
+    { title: 'Batch Review', detail: '三方并行审核所有变更' },
+    { title: 'Cross-validate', detail: '全量校验脚本 + 遗漏检测' },
+    { title: 'Report', detail: '汇总报告：逐 issue 状态 + 整体判决' },
+  ],
+}
+
+const ISSUES = args?.issues || [{ description: args?.description || '未提供问题描述' }]
+log('批量处理 ' + ISSUES.length + ' 个问题')
+
+// ── Schemas (reused from single-issue pipeline) ─────────
+
+const ANALYSIS_SCHEMA = {
+  type: 'object',
+  properties: {
+    category: { type: 'string', enum: ['missing_t', 'wrong_translation', 'protocol_leak', 'textdb_missing', 'format_error', 'type_ii_wrapper', 'other'] },
+    summary: { type: 'string' },
+    rootCause: { type: 'string' },
+    affectedFiles: { type: 'array', items: { type: 'string' } },
+    translationType: { type: 'string', enum: ['I', 'II', 'III', 'IV', 'V'] },
+    severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+  },
+  required: ['category', 'summary', 'rootCause', 'affectedFiles', 'translationType'],
+}
+
+const MERGED_PLAN_SCHEMA = {
+  type: 'object',
+  properties: {
+    approach: { type: 'string' },
+    mergedGroups: { type: 'array', items: { type: 'object', properties: {
+      rootCause: { type: 'string' },
+      issueIndices: { type: 'array', items: { type: 'number' } },
+      codeChanges: { type: 'array', items: { type: 'object', properties: {
+        file: { type: 'string' }, change: { type: 'string' }, reason: { type: 'string' },
+      } } },
+      translationsNeeded: { type: 'array', items: { type: 'object', properties: {
+        english: { type: 'string' }, context: { type: 'string' },
+      } } },
+    } } },
+    risks: { type: 'array', items: { type: 'string' } },
+    batchGlossary: { type: 'array', items: { type: 'object', properties: {
+      term: { type: 'string' }, translation: { type: 'string' }, rationale: { type: 'string' },
+    } } },
+  },
+  required: ['approach', 'mergedGroups', 'batchGlossary'],
+}
+
+const REVIEW_PLAN_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['approved', 'changes_requested', 'rejected'] },
+    issues: { type: 'array', items: { type: 'object', properties: {
+      severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+      description: { type: 'string' }, suggestion: { type: 'string' },
+    } } },
+  },
+  required: ['verdict', 'issues'],
+}
+
+const EXEC_ITEM_SCHEMA = {
+  type: 'object',
+  properties: {
+    groupIndex: { type: 'number' },
+    code: { type: 'object', properties: {
+      filesModified: { type: 'array', items: { type: 'string' } },
+      compileStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
+      summary: { type: 'string' },
+    } },
+    translation: { type: 'object', properties: {
+      entriesAdded: { type: 'number' }, entriesModified: { type: 'number' },
+    } },
+  },
+}
+
+const BATCH_REVIEW_SCHEMA = {
+  type: 'object',
+  properties: {
+    verdict: { type: 'string', enum: ['Go', 'Conditional Go', 'No-Go'] },
+    blockers: { type: 'number' }, needsFix: { type: 'number' }, suggestions: { type: 'number' },
+    summary: { type: 'string' },
+  },
+  required: ['verdict', 'blockers', 'needsFix', 'suggestions'],
+}
+
+const CROSS_VALIDATE_SCHEMA = {
+  type: 'object',
+  properties: {
+    passed: { type: 'boolean' },
+    missedItems: { type: 'array', items: { type: 'string' } },
+    sideEffects: { type: 'array', items: { type: 'string' } },
+  },
+  required: ['passed'],
+}
+
+// ── Phase 1: Batch Analyze ─────────────────────────────
+
+phase('Batch Analyze')
+
+// Step 1a: Parallel analysis of all issues
+log('并行分析 ' + ISSUES.length + ' 个问题...')
+const analyses = await parallel(
+  ISSUES.map((issue, i) => () =>
+    agent(
+      'Analyze this DCSS Chinese translation issue.\n' +
+      '\nIssue #' + (i + 1) + ': ' + (issue.description || '未提供描述') +
+      (issue.issueFile ? '\nTracking file: ' + issue.issueFile : '') +
+      '\n\nSteps:\n' +
+      '1. grep the codebase for the reported English text\n' +
+      '2. Read surrounding code to understand display context\n' +
+      '3. Classify: Type I (missing T_()), II (wrapper), III (runtime var), IV (TextDB), V (protocol)\n' +
+      '4. Determine severity and affected files\n' +
+      '\nBe precise about file paths and root cause — this feeds into batch merging.',
+      { label: 'analyze-' + (i + 1), schema: ANALYSIS_SCHEMA }
+    )
+  )
+)
+
+const validAnalyses = analyses.filter(Boolean)
+log('分析完成: ' + validAnalyses.length + '/' + ISSUES.length + ' 成功')
+
+if (validAnalyses.length === 0) {
+  log('FAIL: All analyses failed')
+  return { error: 'all_analyses_failed' }
+}
+
+// Step 1b: Merge same-root-cause issues (plain JS dedup)
+const groups = []
+const used = new Set()
+
+for (let i = 0; i < validAnalyses.length; i++) {
+  if (used.has(i)) continue
+  const group = { rootCause: validAnalyses[i].rootCause, category: validAnalyses[i].category, indices: [i] }
+  used.add(i)
+
+  // Find same root cause + same category
+  for (let j = i + 1; j < validAnalyses.length; j++) {
+    if (used.has(j)) continue
+    if (validAnalyses[j].rootCause === group.rootCause && validAnalyses[j].category === group.category) {
+      group.indices.push(j)
+      used.add(j)
+    }
+  }
+  groups.push(group)
+}
+
+log('归并: ' + validAnalyses.length + ' 个问题 → ' + groups.length + ' 个独立根因组')
+for (const g of groups) {
+  if (g.indices.length > 1) {
+    log('  合并组: ' + g.rootCause.substring(0, 60) + '... (' + g.indices.length + ' issues)')
+  }
+}
+
+// Step 1c: Build batch glossary for unified terminology
+const glossary = await agent(
+  'Build a batch terminology glossary for these translation issues.\n' +
+  '\nMerged groups:\n' + JSON.stringify(groups.map(g => ({
+    rootCause: g.rootCause,
+    category: g.category,
+    issueCount: g.indices.length,
+    analyses: g.indices.map(i => ({
+      summary: validAnalyses[i].summary,
+      files: validAnalyses[i].affectedFiles,
+      type: validAnalyses[i].translationType,
+    })),
+  }))) +
+  '\n\nFor each entity name (god, monster, spell, skill, item) mentioned in the issues:\n' +
+  '1. Check docs/decisions.md and docs/glossary.md for existing rulings\n' +
+  '2. If a term appears across multiple issues, establish a SINGLE consistent translation\n' +
+  '3. Output: term → translation → rationale (cite glossary/decisions source)\n' +
+  '\nThis glossary will guide ALL translations in this batch to ensure consistency.',
+  { label: 'build-glossary', schema: {
+    type: 'object',
+    properties: {
+      terms: { type: 'array', items: { type: 'object', properties: {
+        english: { type: 'string' }, chinese: { type: 'string' }, rationale: { type: 'string' },
+      } } },
+    },
+    required: ['terms'],
+  }}
+)
+
+if (glossary?.terms?.length) {
+  log('批次术语表: ' + glossary.terms.length + ' 条')
+}
+
+// ── Phase 2: Batch Plan ────────────────────────────────
+
+phase('Batch Plan')
+
+let plan = await agent(
+  'Create a unified fix plan for this batch of translation issues.\n' +
+  '\nMerged groups (' + groups.length + '):\n' + JSON.stringify(groups.map(g => ({
+    rootCause: g.rootCause,
+    category: g.category,
+    issueIndices: g.indices,
+    details: g.indices.map(i => validAnalyses[i].summary),
+  }))) +
+  '\nBatch glossary:\n' + JSON.stringify(glossary?.terms || []) +
+  '\n\nFor EACH merged group, specify:\n' +
+  '- codeChanges: files to modify, what to change, why\n' +
+  '- translationsNeeded: English text + context for each entry\n' +
+  '\nCRITICAL: Use the batch glossary for ALL terminology. Consistency across groups is mandatory.\n' +
+  'Follow CLAUDE.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.\n' +
+  'For Type III: add source.txt entries with T_(variable). For Type V: text should stay English.',
+  { label: 'batch-plan', schema: MERGED_PLAN_SCHEMA }
+)
+
+if (!plan) {
+  log('FAIL: Batch plan failed')
+  return { error: 'batch_plan_failed', analyses: validAnalyses, groups }
+}
+
+log('方案: ' + plan.approach)
+log('合并组: ' + plan.mergedGroups.length + ' | 术语: ' + (plan.batchGlossary?.length || 0) + ' | 风险: ' + (plan.risks?.length || 0))
+
+// ── Phase 3: Review Plan (gate) ────────────────────────
+
+phase('Review Plan')
+let planReview = await agent(
+  'Review this batch fix plan. Be a skeptical gatekeeper.\n' +
+  '\nPlan: ' + JSON.stringify(plan) + '\n' +
+  'Analyses: ' + JSON.stringify(validAnalyses) + '\n' +
+  '\nCheck:\n' +
+  '1. Are ALL issues covered by the merged groups?\n' +
+  '2. Is the batch glossary consistent with docs/glossary.md?\n' +
+  '3. Any groups that should be merged further?\n' +
+  '4. Format string risks? Convention violations?\n' +
+  '5. Can all items execute sequentially without file conflicts?\n' +
+  '\nVerdict: approved | changes_requested | rejected',
+  { label: 'review-plan', schema: REVIEW_PLAN_SCHEMA }
+)
+
+if (!planReview) {
+  log('FAIL: Plan review failed')
+  return { error: 'plan_review_failed' }
+}
+
+let planIterations = 0
+while (planReview.verdict !== 'approved' && planIterations < 3) {
+  planIterations++
+  log('方案审核: ' + planReview.verdict + ' (第 ' + planIterations + '/3 轮)')
+
+  if (planReview.verdict === 'rejected') {
+    log('FAIL: 方案被否决')
+    return { error: 'plan_rejected', planReview }
+  }
+
+  plan = await agent(
+    'Revise the batch plan. Address ALL review issues.\n' +
+    'Review issues: ' + JSON.stringify(planReview.issues) + '\n' +
+    'Current plan: ' + JSON.stringify(plan),
+    { label: 'revise-plan-r' + planIterations, schema: MERGED_PLAN_SCHEMA }
+  )
+  if (!plan) { log('FAIL: Plan revision failed'); return { error: 'plan_revision_failed' } }
+
+  planReview = await agent(
+    'Re-review. Were ALL previous issues addressed?\n' +
+    'Previous issues: ' + JSON.stringify(planReview.issues) + '\n' +
+    'Revised plan: ' + JSON.stringify(plan),
+    { label: 'rereview-plan-r' + planIterations, schema: REVIEW_PLAN_SCHEMA }
+  )
+  if (!planReview) { log('FAIL: Re-review failed'); return { error: 'plan_rereview_failed' } }
+}
+
+if (planReview.verdict !== 'approved') {
+  log('FAIL: 方案未通过')
+  return { error: 'plan_not_approved', planIterations }
+}
+log('方案通过 ✅ (' + planIterations + ' 轮修订)')
+
+// ── Phase 4: Execute Sequential ────────────────────────
+
+phase('Execute Sequential')
+
+const execResults = []
+for (let g = 0; g < plan.mergedGroups.length; g++) {
+  const grp = plan.mergedGroups[g]
+  log('执行组 ' + (g + 1) + '/' + plan.mergedGroups.length + ': ' + grp.rootCause.substring(0, 50) + '...')
+
+  // Step 1: Code changes (crawl-coder)
+  const codeResult = await agent(
+    'Implement code changes for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
+    '\nRoot cause: ' + grp.rootCause + '\n' +
+    'Code changes: ' + JSON.stringify(grp.codeChanges) + '\n' +
+    'Type: ' + (validAnalyses[grp.issueIndices[0]]?.translationType || '?') + '\n' +
+    '\nBatch glossary (USE THESE EXACT TRANSLATIONS):\n' + JSON.stringify(plan.batchGlossary) +
+    '\n\nSteps:\n' +
+    '1. Make each code change as specified\n' +
+    '2. Run make -j4 to verify compilation\n' +
+    '3. If compilation fails, fix and recompile\n' +
+    '4. Run: bash .claude/scripts/post-coder.sh\n' +
+    '\nCRITICAL: Use mprf_p for positional %s. No .c_str() on const char*. No protocol translation.',
+    { agentType: 'crawl-coder', label: 'code-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.code }
+  )
+
+  // Step 2: Translation (zh-translator) — sequential, same worktree
+  const transResult = await agent(
+    'Add Chinese translations for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
+    '\nTranslations needed: ' + JSON.stringify(grp.translationsNeeded) + '\n' +
+    '\nBATCH GLOSSARY — YOU MUST USE THESE EXACT TRANSLATIONS:\n' + JSON.stringify(plan.batchGlossary) +
+    '\n\nSteps:\n' +
+    '1. Read docs/decisions.md and docs/glossary.md\n' +
+    '2. For EACH entry, grep source.txt first to avoid duplicates\n' +
+    '3. Add entries to crawl-ref/source/dat/i18n/zh/source.txt\n' +
+    '4. For TextDB: add to correct zh/*.txt with English key\n' +
+    '5. Run: bash .claude/scripts/post-translator.sh\n' +
+    '\nCRITICAL: Batch glossary translations are AUTHORITATIVE for this batch. Do not deviate.',
+    { agentType: 'zh-translator', label: 'trans-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.translation }
+  )
+
+  execResults.push({
+    groupIndex: g,
+    code: codeResult,
+    translation: transResult,
+  })
+
+  const codeOk = codeResult && codeResult.compileStatus === 'pass'
+  if (codeOk) log('  G' + (g + 1) + ' 代码: ✅ | ' + (codeResult?.summary || ''))
+  else log('  G' + (g + 1) + ' 代码: ⚠️ ' + (codeResult?.compileStatus || 'skipped'))
+
+  if (transResult) log('  G' + (g + 1) + ' 翻译: +' + transResult.entriesAdded + ' added, ' + (transResult.entriesModified || 0) + ' modified')
+}
+
+log('执行完成: ' + execResults.length + ' 组全部处理')
+
+// ── Phase 5: Batch Review ──────────────────────────────
+
+phase('Batch Review')
+
+const reviews = await parallel([
+  () => agent(
+    'Review ALL code changes from this batch.\n' +
+    'Run: bash .claude/scripts/post-reviewer.sh\n' +
+    'Review the diff: protocol/display, T_() correctness, compilation, DB integrity, EN mode.\n' +
+    'Output verdict with blocker/needs-fix/suggestion counts.',
+    { agentType: 'zh-code-reviewer', label: 'code-review', schema: BATCH_REVIEW_SCHEMA }
+  ),
+  () => agent(
+    'Review ALL translation quality from this batch.\n' +
+    'Run: bash .claude/scripts/post-reviewer.sh\n' +
+    'Review: semantic accuracy, no fabrication, natural Chinese, precision, terminology.\n' +
+    'Cross-reference against batch glossary and docs/glossary.md.\n' +
+    'Output verdict with P0/P1 counts.',
+    { agentType: 'translation-reviewer', label: 'trans-review', schema: BATCH_REVIEW_SCHEMA }
+  ),
+  () => agent(
+    'Verify terminology consistency across the ENTIRE batch.\n' +
+    'Run: bash .claude/scripts/check_consistency.sh --rulings\n' +
+    'Run: bash .claude/scripts/check_consistency.sh --gods\n' +
+    'Check: does every translated term match the batch glossary?\n' +
+    'Report violations: term → used → should be (per glossary).',
+    { label: 'terminology', schema: {
+      type: 'object',
+      properties: {
+        violations: { type: 'array', items: { type: 'object', properties: {
+          term: { type: 'string' }, used: { type: 'string' }, shouldBe: { type: 'string' },
+        } } },
+        passed: { type: 'boolean' },
+      },
+      required: ['violations', 'passed'],
+    }}
+  ),
+])
+
+const [codeReview, transReview, termCheck] = reviews
+
+log([
+  codeReview ? 'Code:' + codeReview.verdict + ' B' + codeReview.blockers + 'F' + codeReview.needsFix : 'Code:N/A',
+  transReview ? 'Trans:' + transReview.verdict + ' P0:' + transReview.p0Issues : 'Trans:N/A',
+  termCheck ? 'Terms:' + (termCheck.passed ? 'OK' : 'FAIL+' + termCheck.violations.length) : 'Terms:N/A',
+].join(' | '))
+
+const hasBlockers = (codeReview?.blockers > 0) || (transReview?.p0Issues > 0)
+
+// ── Phase 6: Cross-validate ────────────────────────────
+
+phase('Cross-validate')
+
+const crossValidation = await agent(
+  'Adversarial cross-validation on the ENTIRE batch.\n' +
+  '\nBatch: ' + ISSUES.length + ' issues → ' + groups.length + ' groups → ' + execResults.length + ' executed\n' +
+  'Code review: ' + (codeReview?.verdict || '?') + ' B' + (codeReview?.blockers || 0) + '\n' +
+  'Trans review: ' + (transReview?.verdict || '?') + ' P0:' + (transReview?.p0Issues || 0) + '\n' +
+  '\nRun ALL verification scripts:\n' +
+  '  python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
+  '  python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
+  '  python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
+  '  python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
+  '\nCheck: missed edge cases? side effects? same pattern elsewhere? EN mode ok? format strings ok? DB keys ok?\n' +
+  'Also check: any glossary term used inconsistently across groups? Any duplicate source.txt keys from serial appends?',
+  { label: 'cross-validate', schema: CROSS_VALIDATE_SCHEMA }
+)
+
+if (crossValidation) {
+  log('交叉验证: ' + (crossValidation.passed ? 'PASS' : 'ISSUES FOUND'))
+  if (crossValidation.missedItems?.length) log('遗漏: ' + crossValidation.missedItems.join('; '))
+  if (crossValidation.sideEffects?.length) log('副作用: ' + crossValidation.sideEffects.join('; '))
+}
+
+// ── Phase 7: Aggregate Report ──────────────────────────
+
+phase('Report')
+
+const finalVerdict = hasBlockers ? 'NO-GO' :
+  ((codeReview?.needsFix > 0 || transReview?.p1Issues > 0 || crossValidation?.passed === false) ? 'CONDITIONAL GO' : 'GO')
+
+// Per-issue status
+const issueStatus = validAnalyses.map((a, i) => {
+  const grpIdx = groups.findIndex(g => g.indices.includes(i))
+  return '  Issue #' + (i + 1) + ': ' + a.category + ' | Type ' + a.translationType + ' | Group ' + (grpIdx + 1) + ' | ' + a.summary.substring(0, 60)
+}).join('\n')
+
+await agent(
+  'Generate the batch pipeline report as clean markdown.\n' +
+  '\n## Batch Summary\n' +
+  'Issues: ' + ISSUES.length + ' → Merged to ' + groups.length + ' root cause groups\n' +
+  'Glossary: ' + (glossary?.terms?.length || 0) + ' terms\n' +
+  '\n## Per-Issue Status\n' + issueStatus + '\n' +
+  '\n## Plan\n' + (plan?.approach || 'N/A') + '\n' +
+  'Groups: ' + (plan?.mergedGroups?.length || 0) + ' | Risks: ' + (plan?.risks?.join('; ') || 'none') + '\n' +
+  'Plan rounds: ' + planIterations + '\n' +
+  '\n## Execution (sequential, same worktree)\n' +
+  execResults.map(r => '  G' + (r.groupIndex + 1) + ': code=' + (r.code?.compileStatus || '?') + ' trans=+' + (r.translation?.entriesAdded || 0)).join('\n') + '\n' +
+  '\n## Reviews\n' +
+  'Code: ' + (codeReview?.verdict || '?') + ' B:' + (codeReview?.blockers || 0) + ' F:' + (codeReview?.needsFix || 0) + ' S:' + (codeReview?.suggestions || 0) + '\n' +
+  'Trans: ' + (transReview?.verdict || '?') + ' P0:' + (transReview?.p0Issues || 0) + ' P1:' + (transReview?.p1Issues || 0) + '\n' +
+  'Terms: ' + (termCheck?.passed ? 'PASS' : 'FAIL') + ' (' + (termCheck?.violations?.length || 0) + ' violations)\n' +
+  '\n## Cross-Validation\n' +
+  (crossValidation?.passed ? 'PASS' : 'ISSUES') + '\n' +
+  'Missed: ' + (crossValidation?.missedItems?.join('; ') || 'none') + '\n' +
+  'Side effects: ' + (crossValidation?.sideEffects?.join('; ') || 'none') + '\n' +
+  '\n## Verdict: ' + finalVerdict + '\n' +
+  (!hasBlockers ? 'Merge: git checkout chn-0.34.1-base && git merge <worktree-branch>' : 'Resolve blockers, re-run pipeline.') + '\n' +
+  '\nFormat as structured markdown with sections: Summary, Per-Issue Status, Batch Glossary, Changes, Reviews, Cross-Validation, Verdict.',
+  { label: 'report' }
+)
+
+return {
+  analyses: validAnalyses,
+  groups,
+  glossary,
+  plan,
+  planReview,
+  planIterations,
+  execResults,
+  codeReview,
+  transReview,
+  termCheck,
+  crossValidation,
+  verdict: finalVerdict,
+  hasBlockers,
+}
