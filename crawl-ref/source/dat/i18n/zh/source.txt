@@ -36669,3 +36669,73 @@ Despite
 [ERROR: no desc for item name '%s']. Perhaps this item has been removed?\n
 [错误：物品名称'%s'无描述]。可能该物品已被移除？\n
 %%%%
+
+This ability costs: 
+此能力消耗：
+%%%%
+MP     : 
+法力值：
+%%%%
+HP     : 
+生命值：
+%%%%
+Piety  : 
+虔诚度：
+%%%%
+Gold   : 
+金币：
+%%%%
+free
+免费
+%%%%
+variable
+可变
+%%%%
+One cursed item
+一件诅咒装备
+%%%%
+Torchlight
+火炬之光
+%%%%
+nothing.
+无消耗
+%%%%
+You must catch your breath between uses of this ability.
+此能力使用后需要喘息时间。
+%%%%
+This ability takes some time before being effective.
+此能力需要一定时间才能生效。
+%%%%
+Using this ability will hurt you for a large fraction of your current HP.
+使用此能力将消耗你当前生命值的大部分。
+%%%%
+Using this ability invokes torment.
+使用此能力会引发折磨效果。
+%%%%
+This ability causes exhaustion, and cannot be used when exhausted.
+此能力会导致力竭，力竭时无法使用。
+%%%%
+This ability is instantaneous.
+此能力为瞬间生效。
+%%%%
+You can use this ability even if confused.
+混乱状态下也可使用此能力。
+%%%%
+This ability will temporarily drain your maximum health when used
+使用此能力将暂时汲取你的最大生命值
+%%%%
+, even unsuccessfully
+，即使未成功
+%%%%
+Gaining experience will replenish charges of this ability.
+获得经验值将补充此能力的充能次数。
+%%%%
+\nAfter this sacrifice, you will find that 
+\n献祭之后，你将发现
+%%%%
+Draw a card from 
+从
+%%%%
+no special abilities
+无特殊能力
+%%%%
