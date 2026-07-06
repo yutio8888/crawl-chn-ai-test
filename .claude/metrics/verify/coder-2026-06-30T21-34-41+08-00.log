@@ -1,0 +1,362 @@
+=== post-coder.sh @ 2026-06-30T21-34-41+08-00 ===
+
+--- T_() key coverage ---
+MISSING: 256 keys in source code but not in crawl-ref/source/dat/i18n/zh/source.txt
+
+  crawl-ref/source/shout.cc:485:                    g - Guard the area.      f - Follow me.
+  crawl-ref/source/newgame.cc:1454:     * - Random 
+  crawl-ref/source/god-abil.cc:3357:   [%c] - %d gold - 
+  crawl-ref/source/describe.cc:5966:  (while you are blinded and from distance 
+  crawl-ref/source/newgame.cc:1219:  Please select your 
+  crawl-ref/source/religion.cc:2598:  a little 
+  crawl-ref/source/directn.cc:3363:  and 
+  crawl-ref/source/directn.cc:3351:  armed with 
+  crawl-ref/source/teleport.cc:249:  disappears!
+  crawl-ref/source/religion.cc:2602:  extremely 
+  crawl-ref/source/teleport.cc:243:  flickers for a moment.
+  crawl-ref/source/items.cc:1351:  gifted 
+  crawl-ref/source/teleport.cc:226:  looks slightly unstable.
+  crawl-ref/source/religion.cc:1835:  offers you knowledge of 
+  crawl-ref/source/monster.cc:812:  puts on 
+  crawl-ref/source/teleport.cc:259:  reappears nearby!
+  crawl-ref/source/teleport.cc:221:  seems more stable.
+  crawl-ref/source/spl-book.cc:602:  spell hidden 
+  crawl-ref/source/files.cc:1306:  stays
+  crawl-ref/source/monster.cc:888:  takes off 
+  crawl-ref/source/newgame.cc:185:  the 
+  crawl-ref/source/files.cc:1307:  to rot
+  crawl-ref/source/monster.cc:843:  unwields 
+  crawl-ref/source/religion.cc:2601:  very 
+  crawl-ref/source/monster.cc:803:  wears 
+  crawl-ref/source/directn.cc:3355:  wielding 
+  crawl-ref/source/monster.cc:721:  wields 
+  crawl-ref/source/melee-attack.cc:3646:  with 
+  crawl-ref/source/religion.cc:2618: "You will pay for your transgression, mortal!"
+  crawl-ref/source/newgame.cc:1436: # - Recommended character
+  crawl-ref/source/describe.cc:5830: % to hit with your 
+  crawl-ref/source/beam.cc:2334: %1$s %2$s healed.
+  crawl-ref/source/beam.cc:2348: %1$s %2$s life force from %3$s%4$s
+  crawl-ref/source/prompt.cc:119: %s (Confirm with "%s".) 
+  crawl-ref/source/beam.cc:5609: %s blocks the %s with %s %s... and reflects it back!
+  crawl-ref/source/spl-damage.cc:4464: %s festers in the toxic bog%s
+  crawl-ref/source/files.cc:2476: %s settles down.
+  crawl-ref/source/files.cc:2469: %s slides away from you right after you %s it!
+  crawl-ref/source/ability.cc:948: (Boost: 
+  crawl-ref/source/spl-book.cc:547: (Cast)    
+  crawl-ref/source/spl-book.cc:553: (Hide)    
+  crawl-ref/source/spl-book.cc:555: (Imbue)   
+  crawl-ref/source/spl-book.cc:556: (Show)    
+  crawl-ref/source/directn.cc:3616: , 
+  crawl-ref/source/describe.cc:5855: , and 
+  crawl-ref/source/arena.cc:1078: ---- Contest finished ----\n
+  crawl-ref/source/arena.cc:838: ---- Turn #%d ----
+  crawl-ref/source/mon-info.cc:1207: -headed 
+  crawl-ref/source/items.cc:907: ; 
+  crawl-ref/source/item-use.cc:1194: </w> or 
+  crawl-ref/source/startup.cc:710: <white>[tab]</white> quick-load last game: 
+  crawl-ref/source/startup.cc:716: <white>[tab]</white> quick-start last combo: 
+  crawl-ref/source/ability.cc:1052: A Card 
+  crawl-ref/source/dgn-overview.cc:1301: Add new annotation for %s (include '!' for warning): 
+  crawl-ref/source/adjust.cc:140: Adjust to which letter? 
+  crawl-ref/source/adjust.cc:193: Adjust which ability? 
+  crawl-ref/source/adjust.cc:113: Adjust which spell? 
+  crawl-ref/source/wiz-mon.cc:852: And here are the needed waypoints: 
+  crawl-ref/source/wiz-mon.cc:553: Apply blessing of the (S)hining One? 
+  crawl-ref/source/travel.cc:4402: Assign waypoint to what number? (0-9%s) 
+  crawl-ref/source/describe.cc:1351: At 100% training 
+  crawl-ref/source/describe.cc:1358: At a training level of %d%% 
+  crawl-ref/source/describe.cc:1354: At current training (%d%%) 
+  crawl-ref/source/wiz-fsim.cc:538: Attack: 
+  crawl-ref/source/l-item.cc:165: Bad item
+  crawl-ref/source/god-companions.cc:1083: Beogh breathes life back into 
+  crawl-ref/source/god-companions.cc:717: Beogh breathes life back into %s and 
+  crawl-ref/source/god-companions.cc:709: Beogh recalls %s to your side and 
+  crawl-ref/source/skill-menu.cc:1520: Bonus from skill manuals is in <lightred>red</lightred>. 
+  crawl-ref/source/l-you.cc:1867: Can't change to invalid xl %d
+  crawl-ref/source/arena.cc:869: Cancelling contest at user request
+  crawl-ref/source/wiz-you.cc:144: Cast which spell? 
+  crawl-ref/source/spl-cast.cc:965: Cast which spell? (? or * to list) 
+  crawl-ref/source/chardump.cc:1959: Char dumped successfully.
+  crawl-ref/source/chardump.cc:1961: Char dumped to '%s'.
+  crawl-ref/source/describe.cc:2887: Charges: 
+  crawl-ref/source/macro.cc:1060: Clear all 
+  crawl-ref/source/quiver.cc:1193: Continue: 
+  crawl-ref/source/tilesdl.cc:467: Couldn't find font '%s', falling back on '%s'
+  crawl-ref/source/wiz-dgn.cc:201: Create what kind of feature mimic? 
+  crawl-ref/source/wiz-dgn.cc:203: Create which feature? 
+  crawl-ref/source/macro.cc:1049: Create/edit 
+  crawl-ref/source/macro.cc:1076: Current 
+  crawl-ref/source/files.cc:542: Data directory '%s' found.
+  crawl-ref/source/wiz-fsim.cc:541: Defend: 
+  crawl-ref/source/travel.cc:4358: Delete which waypoint? (* - delete all, Esc - exit) 
+  crawl-ref/source/wiz-you.cc:692: Edit which duration (name)? 
+  crawl-ref/source/i18n.h:5: English
+  crawl-ref/source/wizard.cc:340: Enter Wizard Command (? - help): 
+  crawl-ref/source/main.cc:3038: Enter command to be repeated: 
+  crawl-ref/source/wiz-mon.cc:939: Enter fail: 
+  crawl-ref/source/wiz-mon.cc:941: Enter level, fail: 
+  crawl-ref/source/wiz-dgn.cc:677: Enter map name (prefix it with * for local placement): 
+  crawl-ref/source/wiz-dgn.cc:676: Enter map name: 
+  crawl-ref/source/wiz-mon.cc:57: Enter monster name (or MONS spec) (? for help): 
+  crawl-ref/source/wiz-fsim.cc:303: Enter monster name (or MONS spec): 
+  crawl-ref/source/wiz-item.cc:79: Enter name of item (or ITEM spec): 
+  crawl-ref/source/wiz-you.cc:873: Enter new experience level: 
+  crawl-ref/source/wiz-you.cc:356: Enter new gold value (current = %d, Enter for %d): 
+  crawl-ref/source/wiz-you.cc:389: Enter new piety value (current = %d, Enter for 0): 
+  crawl-ref/source/wiz-you.cc:664: Enter values for Str, Int, Dex (space separated): 
+  crawl-ref/source/wiz-you.cc:652: Enter values for X, Y, Z (space separated) or return: 
+  crawl-ref/source/chardump.cc:1965: Error opening file '%s'
+  crawl-ref/source/status.cc:167: Expiring: 
+  crawl-ref/source/describe.cc:6430: Explosion damage: 
+  crawl-ref/source/wiz-item.cc:605: Fake item as gift from which god (ENTER to leave alone): 
+  crawl-ref/source/spl-damage.cc:5075: Flasks of reagents rain from above!
+  crawl-ref/source/output.cc:2361: HP:   
+  crawl-ref/source/wiz-mon.cc:842: Here's the shortest path: 
+  crawl-ref/source/player-stats.cc:99: Increase (s)trength, (i)ntelligence, or (d)exterity? 
+  crawl-ref/source/tags.cc:8355: Index out of bounds: idx = %d - 1, size(tile_names) = %d
+  crawl-ref/source/describe.cc:4971: It has black scales. 
+  crawl-ref/source/describe.cc:4973: It has green scales. 
+  crawl-ref/source/describe.cc:4977: It has grey scales. 
+  crawl-ref/source/describe.cc:4978: It has pale scales. 
+  crawl-ref/source/describe.cc:4974: It has purple scales. 
+  crawl-ref/source/describe.cc:4975: It has red scales. 
+  crawl-ref/source/describe.cc:4976: It has white scales. 
+  crawl-ref/source/describe.cc:4972: It has yellow scales. 
+  crawl-ref/source/l-item.cc:171: Item is not equipped
+  crawl-ref/source/arena.cc:1279: Last arena monster was dismissed.
+  crawl-ref/source/newgame.cc:1472: Lets you change your 
+  crawl-ref/source/newgame.cc:1479: Lets you pick 
+  crawl-ref/source/output.cc:2381: MP:   
+  crawl-ref/source/wiz-item.cc:441: Make book fixed [t]heme or fixed [l]evel? 
+  crawl-ref/source/wiz-mon.cc:504: Make the monster (S)hout or (T)alk? 
+  crawl-ref/source/wiz-you.cc:174: Memorise which spell? 
+  crawl-ref/source/glwrapper-ogl.cc:187: Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed.
+  crawl-ref/source/glwrapper-ogl.cc:157: Mipmap Setup: Failed to load OpenGL version.
+  crawl-ref/source/glwrapper-ogl.cc:197: Mipmap Setup: Failed to load glGenerateMipmap function.
+  crawl-ref/source/glwrapper-ogl.cc:206: Mipmap Setup: skipped, not supported in this build configuration.
+  crawl-ref/source/glwrapper-ogl.cc:202: Mipmap Setup: success, loaded with OpenGL version: %s
+  crawl-ref/source/wiz-mon.cc:890: Miscast which school or spell, by name? 
+  crawl-ref/source/initfile.cc:3486: Options warning: `sound` will have no effect on this build.
+  crawl-ref/source/newgame.cc:1456: Randomly select a 
+  crawl-ref/source/tags.cc:8314: Reading tile_names[%d] = %s
+  crawl-ref/source/ability.cc:1044: Sacrifice 
+  crawl-ref/source/spl-book.cc:740: Search for what? (regex) 
+  crawl-ref/source/newgame.cc:868: Seed: 
+  crawl-ref/source/menu.cc:1815: Select what (regex)?
+  crawl-ref/source/initfile.cc:3579: Setting crawl_dir to `%s`.
+  crawl-ref/source/describe.cc:6805: Shooting star damage: 
+  crawl-ref/source/skill-menu.cc:594: Skills enhanced by 
+  crawl-ref/source/skill-menu.cc:610: Skills reduced by 
+  crawl-ref/source/newgame.cc:1470: Space - Change 
+  crawl-ref/source/newgame.cc:1477: Space - Pick 
+  crawl-ref/source/mon-info.cc:1706: Speed: 
+  crawl-ref/source/describe.cc:3072: Stash search prefixes: 
+  crawl-ref/source/target-compass.cc:75: Targeting interrupted by HUP signal.
+  crawl-ref/source/god-wrath.cc:1694: The monsters
+  crawl-ref/source/beam.cc:2188: The silver sears 
+  crawl-ref/source/skill-menu.cc:1517: The species aptitude is in <white>white</white>. 
+  crawl-ref/source/directn.cc:2969: There is 
+  crawl-ref/source/directn.cc:2979: There is an entrance to 
+  crawl-ref/source/describe.cc:2625: This 
+  crawl-ref/source/describe.cc:4641: This spell has no description. Casting it may therefore be unwise. 
+  crawl-ref/source/describe.cc:4589: This spell would have no effect right now because 
+  crawl-ref/source/describe.cc:5595: Throw: 
+  crawl-ref/source/dbg-util.cc:571: Toggle which debug class (ESC to exit)? 
+  crawl-ref/source/newgame.cc:438: Trunk doesn't count for the tournament, you want 
+  crawl-ref/source/l-item.cc:157: Turn is over
+  crawl-ref/source/ability.cc:1703: Use which ability? (? or * to list) 
+  crawl-ref/source/target-compass.cc:61: Which direction?
+  crawl-ref/source/religion.cc:4338: Which god (%s)? 
+  crawl-ref/source/dbg-util.cc:33: Which monster by name? 
+  crawl-ref/source/wiz-fsim.cc:114: Wielding: 
+  crawl-ref/source/tags.cc:7147: Writing '%s' into save.
+  crawl-ref/source/items.cc:1334: You acquired 
+  crawl-ref/source/fearmonger.cc:151: You are no longer terrified.
+  crawl-ref/source/fearmonger.cc:29: You are terrified of %s!
+  crawl-ref/source/items.cc:1328: You bought 
+  crawl-ref/source/tilereg-skl.cc:65: You can't change your training allocations!
+  crawl-ref/source/item-use.cc:1262: You can't shoot while berserk! Really wield 
+  crawl-ref/source/player-notices.cc:459: You encounter 
+  crawl-ref/source/items.cc:1370: You found 
+  crawl-ref/source/describe.cc:6528: You have 
+  crawl-ref/source/main.cc:1906: You have %1$d gold piece%2$s.
+  crawl-ref/source/main.cc:1770: You need %d%% to reach level %d.
+  crawl-ref/source/items.cc:927: You see here 
+  crawl-ref/source/items.cc:1356: You stumbled upon 
+  crawl-ref/source/items.cc:1365: You took 
+  crawl-ref/source/player-equip.cc:1198: Your %1$s meld%2$s into your body.
+  crawl-ref/source/player-equip.cc:1317: Your %1$s unmeld%2$s from your body.
+  crawl-ref/source/files.cc:1305: Your mindless puppet%s behind%s.
+  crawl-ref/source/traps.cc:469: Your strength is siphoned away as %1$s grow%2$s stronger!
+  crawl-ref/source/files.cc:1298: Your summoned %s left behind.
+  crawl-ref/source/items.cc:1345: Your wizardly powers created 
+  crawl-ref/source/tilesdl.cc:1045: Zooming to %.2f
+  crawl-ref/source/luaterp.cc:116: [Hit ESC to exit interpreter.]
+  crawl-ref/source/describe-god.cc:745: \n stacked deck: 
+  crawl-ref/source/describe-god.cc:1243: \nFavour - 
+  crawl-ref/source/describe-god.cc:1231: \nTitle - 
+  crawl-ref/source/melee-attack.cc:1166: a chunk of 
+  crawl-ref/source/religion.cc:3234: abandoned 
+  crawl-ref/source/describe.cc:5934: about 
+  crawl-ref/source/mon-info.cc:1195: active 
+  crawl-ref/source/files.cc:1299: allies are
+  crawl-ref/source/files.cc:1299: ally is
+  crawl-ref/source/fight.cc:1024: attack 
+  crawl-ref/source/religion.cc:4177: became a worshipper of 
+  crawl-ref/source/mon-info.cc:1183: bound 
+  crawl-ref/source/directn.cc:3267: broken 
+  crawl-ref/source/directn.cc:3269: broken translucent 
+  crawl-ref/source/directn.cc:3597: carrying 
+  crawl-ref/source/item-name.cc:1615: chaotic 
+  crawl-ref/source/directn.cc:3271: closed 
+  crawl-ref/source/directn.cc:3255: closed translucent 
+  crawl-ref/source/quiver.cc:403: confused 
+  crawl-ref/source/i18n.h:6: ctx|en
+  crawl-ref/source/item-name.cc:1612: cursed 
+  crawl-ref/source/arena.cc:1206: enters the arena
+  crawl-ref/source/luaterp.cc:128: error calling __echo (%s)
+  crawl-ref/source/fight.cc:1451: fire at 
+  crawl-ref/source/directn.cc:3457: fire blocked by 
+  crawl-ref/source/mon-info.cc:1186: ghostly 
+  crawl-ref/source/describe-god.cc:1057: greatly 
+  crawl-ref/source/melee-attack.cc:1165: half of 
+  crawl-ref/source/mon-info.cc:1177: helpless 
+  crawl-ref/source/describe.cc:6601: immune to 
+  crawl-ref/source/xom.cc:2844: is healed, 
+  crawl-ref/source/arena.cc:1205: is summoned
+  crawl-ref/source/item-name.cc:217: its 
+  crawl-ref/source/describe-god.cc:712: long
+  crawl-ref/source/output.cc:2147: melded 
+  crawl-ref/source/religion.cc:923: mollified 
+  crawl-ref/source/god-passive.cc:828: more 
+  crawl-ref/source/fight.cc:1395: neutral 
+  crawl-ref/source/fight.cc:1404: non-hostile 
+  crawl-ref/source/describe.cc:6069: none (normally 
+  crawl-ref/source/directn.cc:3253: open 
+  crawl-ref/source/directn.cc:3257: open translucent 
+  crawl-ref/source/god-conduct.cc:712: potent 
+  crawl-ref/source/god-passive.cc:2126: repeatedly 
+  crawl-ref/source/item-name.cc:1617: replica 
+  crawl-ref/source/describe.cc:6614: resistant to 
+  crawl-ref/source/arena.cc:1204: respawns
+  crawl-ref/source/directn.cc:3259: runed 
+  crawl-ref/source/directn.cc:3261: runed translucent 
+  crawl-ref/source/files.cc:1306: s stay
+  crawl-ref/source/directn.cc:3263: sealed 
+  crawl-ref/source/directn.cc:3265: sealed translucent 
+  crawl-ref/source/mon-info.cc:1192: sensed 
+  crawl-ref/source/god-prayer.cc:178: silent 
+  crawl-ref/source/describe-god.cc:1073: slightly 
+  crawl-ref/source/mon-info.cc:1180: spectral 
+  crawl-ref/source/melee-attack.cc:3688: stealthily 
+  crawl-ref/source/item-name.cc:213: the 
+  crawl-ref/source/tags.cc:8366: tilename %s (index %d) not found
+  crawl-ref/source/tags.cc:8372: tilename %s (index %d) resolves to tile %d
+  crawl-ref/source/newgame.cc:189: unnamed 
+  crawl-ref/source/god-conduct.cc:713: unsullied 
+  crawl-ref/source/mon-info.cc:1189: vampire 
+  crawl-ref/source/describe-god.cc:1055: very greatly 
+  crawl-ref/source/describe.cc:6608: very resistant to 
+  crawl-ref/source/describe.cc:1362: would 
+  crawl-ref/source/item-name.cc:215: your 
+
+Total: 3557 unique keys, 256 missing (92.8% coverage)
+
+--- mprf_p compatibility ---
+=== Positional format in source.txt but code doesn't use _p variant ===
+
+spl-goditem.cc:110  T_("%1$s %2$s")
+  source.txt has %n$s: "%2$s%1$s..." → needs mprf_p or make_stringf_p
+
+spl-goditem.cc:110  T_("%1$s %2$s %3$s!")
+  source.txt has %n$s: "%1$s召唤了%3$s！..." → needs mprf_p or make_stringf_p
+
+spl-goditem.cc:110  T_("you cannot pacify this monster while %1$s %2$s %3$s!")
+  source.txt has %n$s: "你不能在怪物%1$s%3$s时安抚它！..." → needs mprf_p or make_stringf_p
+
+Summary: 3 violations
+
+--- %s count parity ---
+=== ARG-MISMATCH — format specifier count differs between EN key and CN translation ===
+
+EN: "%1$s %2$s a powerful frost blast!" (2 args)
+CN: "%1$s释放了一股强大的冰霜冲击！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s a word of immense power!" (2 args)
+CN: "%1$s说出了一句强大的话语！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s knocked back." (2 args)
+CN: "%1$s被击退了。" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s suddenly forward!" (2 args)
+CN: "%1$s猛然向前冲去！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s." (2 args)
+CN: "%1$s抽搐了一下。" (1 args) ← MISMATCH
+
+EN: "%1$s attack snaps %2$s out of %3$s fear." (3 args)
+CN: "%1$s的攻击将%2$s从恐惧中惊醒。" (2 args) ← MISMATCH
+
+EN: "%1$s continues winding %2$s clockwork bee...." (2 args)
+CN: "%1$s继续给发条蜜蜂上弦……" (1 args) ← MISMATCH
+
+EN: "%1$s fails to defend %2$s." (2 args)
+CN: "%1$s未能防守。" (1 args) ← MISMATCH
+
+EN: "%1$s steals %2$d gold piece%3$s!" (3 args)
+CN: "%1$s偷走了%2$d枚金币！" (2 args) ← MISMATCH
+
+EN: "%1$s stops winding %2$s clockwork bee." (2 args)
+CN: "%1$s停止了给发条蜜蜂上弦。" (1 args) ← MISMATCH
+
+EN: "%1$s vibrate%2$s crazily for a second." (2 args)
+CN: "%1$s疯狂振动了一秒。" (1 args) ← MISMATCH
+
+EN: "%s loses %s in your eye%s." (3 args)
+CN: "%s在你的眼中%s失去了自我。" (2 args) ← MISMATCH
+
+EN: "%s slice%s through the folds of space itself!" (2 args)
+CN: "%s切穿了空间本身的褶皱！" (1 args) ← MISMATCH
+
+EN: "...but somehow remain%1$s in the same place." (1 args)
+CN: "……但却停留在了原地。" (0 args) ← MISMATCH
+
+EN: "you %1$s into a shaft and fall %2$d level%3$s!" (3 args)
+CN: "你%1$s入竖井，掉了%2$d层！" (2 args) ← MISMATCH
+
+EN: "you anoint %1$s with ash and charcoal and welcome %2$s as a companion." (2 args)
+CN: "你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s" (1 args) ← MISMATCH
+
+EN: "you have %d gold piece%s." (2 args)
+CN: "你持有%d枚金币。" (1 args) ← MISMATCH
+
+EN: "you now have %1$d gold piece%2$s." (2 args)
+CN: "你还有%1$d枚金币。" (1 args) ← MISMATCH
+
+EN: "your %s meld%s into your body." (2 args)
+CN: "你的%s融入了你的身体。" (1 args) ← MISMATCH
+
+EN: "your %s unmeld%s from your body." (2 args)
+CN: "你的%s从你的身体中分离。" (1 args) ← MISMATCH
+
+EN: "your strength is siphoned away as %s grow%s stronger!" (2 args)
+CN: "你的力量被吸走，%s变得更加强大！" (1 args) ← MISMATCH
+
+Summary: 21 mismatches
+
+--- Anti-patterns (strict) ---
+OK: No anti-patterns found.
+
+--- Smoke test (ZH mode) ---
+=== Crawl Smoke Test (ZH mode, startup output only) ===
+
+--- Protocol leaks ---
+  ✓ No protocol leaks
+--- English residue ---
+  ✓ No English residue in core UI
+--- Crashes ---
+  ✓ No crashes
+
+✓ Smoke test passed (startup output clean)
+
+=== post-coder.sh complete ===

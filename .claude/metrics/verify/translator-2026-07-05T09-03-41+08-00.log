@@ -1,0 +1,32 @@
+=== post-translator.sh @ 2026-07-05T09-03-41+08-00 ===
+
+--- Term validation (rejected names from decisions.md) ---
+OK: No rejected terms from 3 active decisions found.
+
+--- Format integrity (%%%% parity) ---
+=== Mode 3: Format integrity check ===
+
+  ❌ decorlines.txt: %%%% count mismatch (EN: 133, ZH: 132)
+  ❌ godspeak.txt: %%%% count mismatch (EN: 193, ZH: 194)
+  ❌ monspeak.txt: %%%% count mismatch (EN: 735, ZH: 731)
+  ❌ monspell.txt: %%%% count mismatch (EN: 263, ZH: 261)
+  ⚠️  4 file(s) with %%%% mismatch
+
+=== Format check complete ===
+
+❌ Consistency violations found (strict mode).
+
+--- Database @keyword@ integrity ---
+=== Mode 5: Database @keyword@ integrity check ===
+
+Building EN key index...
+  10293 keys indexed from EN database
+
+  ❌ monspeak.txt:
+     @_Jory_rare_@ — not defined in ZH, EN same file, or any EN database
+
+  ⚠️  1 unresolved @keyword@ reference(s)
+
+=== Database @keyword@ check complete ===
+
+=== post-translator.sh complete ===

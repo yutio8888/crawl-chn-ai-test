@@ -1,0 +1,409 @@
+=== post-translator.sh @ 2026-07-01T19-09-33+08-00 ===
+
+--- Term validation (rejected names from decisions.md) ---
+OK: No rejected terms from 3 active decisions found.
+
+--- Format integrity (%%%% parity) ---
+=== Mode 3: Format integrity check ===
+
+  ❌ decorlines.txt: %%%% count mismatch (EN: 133, ZH: 138)
+  ❌ godspeak.txt: %%%% count mismatch (EN: 193, ZH: 195)
+  ❌ miscname.txt: %%%% count mismatch (EN: 11, ZH: 12)
+  ❌ monspeak.txt: %%%% count mismatch (EN: 735, ZH: 731)
+  ❌ monspell.txt: %%%% count mismatch (EN: 263, ZH: 288)
+  ❌ wpnnoise.txt: %%%% count mismatch (EN: 65, ZH: 69)
+  ⚠️  6 file(s) with %%%% mismatch
+
+=== Format check complete ===
+
+❌ Consistency violations found (strict mode).
+
+--- Database @keyword@ integrity ---
+=== Mode 5: Database @keyword@ integrity check ===
+
+  ❌ decorlines.txt:
+     @Gozag@ — not defined in ZH, EN same file, or any EN database
+     @peaceful@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blue@ — not defined in ZH, EN same file, or any EN database
+     @Ignis@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blood@ — not defined in ZH, EN same file, or any EN database
+     @Qazlal@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blue@ — not defined in ZH, EN same file, or any EN database
+     @Yredelemnul@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blue@ — not defined in ZH, EN same file, or any EN database
+     @any_colour@ — not defined in ZH, EN same file, or any EN database
+     @any_graffiti@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @carnivore@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @carnivore@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blood@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @fountain_eyes@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @peaceful@ — not defined in ZH, EN same file, or any EN database
+     @fountain_blue@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @inediate@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @inediate@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @inediate@ — not defined in ZH, EN same file, or any EN database
+     @meat@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @meat@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @oni@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @oni@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @short@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @short@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @short@ — not defined in ZH, EN same file, or any EN database
+     @meat@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @stone@ — not defined in ZH, EN same file, or any EN database
+     @baked@ — not defined in ZH, EN same file, or any EN database
+     @goods@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @stone@ — not defined in ZH, EN same file, or any EN database
+     @fruit@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+     @stone@ — not defined in ZH, EN same file, or any EN database
+     @meat@ — not defined in ZH, EN same file, or any EN database
+     @cache@ — not defined in ZH, EN same file, or any EN database
+  ❌ godspeak.txt:
+     @Jiyva@ — not defined in ZH, EN same file, or any EN database
+     @death@ — not defined in ZH, EN same file, or any EN database
+     @corpse@ — not defined in ZH, EN same file, or any EN database
+     @Kikubaaqudgha@ — not defined in ZH, EN same file, or any EN database
+     @death@ — not defined in ZH, EN same file, or any EN database
+     @corpse@ — not defined in ZH, EN same file, or any EN database
+     @Uskayaw@ — not defined in ZH, EN same file, or any EN database
+     @death@ — not defined in ZH, EN same file, or any EN database
+     @corpse@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @bandages@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @fake@ — not defined in ZH, EN same file, or any EN database
+     @destruction@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @feature@ — not defined in ZH, EN same file, or any EN database
+     @shallow@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @good@ — not defined in ZH, EN same file, or any EN database
+     @enchant@ — not defined in ZH, EN same file, or any EN database
+     @monster@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @good@ — not defined in ZH, EN same file, or any EN database
+     @monster@ — not defined in ZH, EN same file, or any EN database
+     @polymorph@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @inventory@ — not defined in ZH, EN same file, or any EN database
+     @plural@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @inventory@ — not defined in ZH, EN same file, or any EN database
+     @singular@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @life@ — not defined in ZH, EN same file, or any EN database
+     @saving@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @potion@ — not defined in ZH, EN same file, or any EN database
+     @effect@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @scenery@ — not defined in ZH, EN same file, or any EN database
+     @enter_abyss@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @scenery@ — not defined in ZH, EN same file, or any EN database
+     @generic@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @unarmed@ — not defined in ZH, EN same file, or any EN database
+     @one@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @underfoot@ — not defined in ZH, EN same file, or any EN database
+     @airborne@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @welcome@ — not defined in ZH, EN same file, or any EN database
+     @Yredelemnul@ — not defined in ZH, EN same file, or any EN database
+     @death@ — not defined in ZH, EN same file, or any EN database
+     @corpse@ — not defined in ZH, EN same file, or any EN database
+     @_important_subject_@ — not defined in ZH, EN same file, or any EN database
+     @any_colour@ — not defined in ZH, EN same file, or any EN database
+     @any_colour_pattern@ — not defined in ZH, EN same file, or any EN database
+     @any_glowing_colour@ — not defined in ZH, EN same file, or any EN database
+     @any_glowing_colour_pattern@ — not defined in ZH, EN same file, or any EN database
+     @any_graffiti@ — not defined in ZH, EN same file, or any EN database
+     @glowing_adj@ — not defined in ZH, EN same file, or any EN database
+  ❌ graffiti.txt:
+     @ancestor@ — not defined in ZH, EN same file, or any EN database
+     @name@ — not defined in ZH, EN same file, or any EN database
+     @any@ — not defined in ZH, EN same file, or any EN database
+     @name@ — not defined in ZH, EN same file, or any EN database
+     @any_colour@ — not defined in ZH, EN same file, or any EN database
+     @any_colour_pattern@ — not defined in ZH, EN same file, or any EN database
+     @any_glowing_colour_pattern@ — not defined in ZH, EN same file, or any EN database
+     @bland@ — not defined in ZH, EN same file, or any EN database
+     @name@ — not defined in ZH, EN same file, or any EN database
+  ❌ insult.txt:
+     @insult@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @adj1@ — not defined in ZH, EN same file, or any EN database
+     @insult@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @adj2@ — not defined in ZH, EN same file, or any EN database
+     @insult@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @noun@ — not defined in ZH, EN same file, or any EN database
+     @insult@ — not defined in ZH, EN same file, or any EN database
+     @adj2@ — not defined in ZH, EN same file, or any EN database
+     @species_insult_adj1@ — not defined in ZH, EN same file, or any EN database
+     @species_insult_adj2@ — not defined in ZH, EN same file, or any EN database
+     @species_insult_noun@ — not defined in ZH, EN same file, or any EN database
+  ❌ miscast.txt:
+     @any_colour@ — not defined in ZH, EN same file, or any EN database
+     @any_colour_pattern@ — not defined in ZH, EN same file, or any EN database
+     @any_glowing_colour@ — not defined in ZH, EN same file, or any EN database
+  ❌ monflee.txt:
+     @monster@ — not defined in ZH, EN same file, or any EN database
+  ❌ monspeak.txt:
+     @Bennu@ — not defined in ZH, EN same file, or any EN database
+     @killed@ — not defined in ZH, EN same file, or any EN database
+     @Bennu@ — not defined in ZH, EN same file, or any EN database
+     @permanently@ — not defined in ZH, EN same file, or any EN database
+     @killed@ — not defined in ZH, EN same file, or any EN database
+     @Blorkula@ — not defined in ZH, EN same file, or any EN database
+     @orcula@ — not defined in ZH, EN same file, or any EN database
+     @timeout@ — not defined in ZH, EN same file, or any EN database
+     @Foe_genus@ — not defined in ZH, EN same file, or any EN database
+     @Foe_god@ — not defined in ZH, EN same file, or any EN database
+     @killed@ — not defined in ZH, EN same file, or any EN database
+     @permanently@ — not defined in ZH, EN same file, or any EN database
+     @killed@ — not defined in ZH, EN same file, or any EN database
+     @Subjective@ — not defined in ZH, EN same file, or any EN database
+     @_Jory_rare_@ — not defined in ZH, EN same file, or any EN database
+     @_Saint@ — not defined in ZH, EN same file, or any EN database
+     @Roka@ — not defined in ZH, EN same file, or any EN database
+     @generic_@ — not defined in ZH, EN same file, or any EN database
+     @_Saint@ — not defined in ZH, EN same file, or any EN database
+     @Roka@ — not defined in ZH, EN same file, or any EN database
+     @rival_@ — not defined in ZH, EN same file, or any EN database
+     @at_foe@ — not defined in ZH, EN same file, or any EN database
+     @brain@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @confused@ — not defined in ZH, EN same file, or any EN database
+     @winged@ — not defined in ZH, EN same file, or any EN database
+     @insect@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @friendly@ — not defined in ZH, EN same file, or any EN database
+     @humanoid@ — not defined in ZH, EN same file, or any EN database
+     @default@ — not defined in ZH, EN same file, or any EN database
+     @friendly@ — not defined in ZH, EN same file, or any EN database
+     @related@ — not defined in ZH, EN same file, or any EN database
+     @humanoid@ — not defined in ZH, EN same file, or any EN database
+     @foe@ — not defined in ZH, EN same file, or any EN database
+     @foe_genus@ — not defined in ZH, EN same file, or any EN database
+     @foe_god@ — not defined in ZH, EN same file, or any EN database
+     @foe_name@ — not defined in ZH, EN same file, or any EN database
+     @friendly@ — not defined in ZH, EN same file, or any EN database
+     @imp_taunt@ — not defined in ZH, EN same file, or any EN database
+     @laughing@ — not defined in ZH, EN same file, or any EN database
+     @misc_colour@ — not defined in ZH, EN same file, or any EN database
+     @my_God@ — not defined in ZH, EN same file, or any EN database
+     @objective@ — not defined in ZH, EN same file, or any EN database
+     @name@ — not defined in ZH, EN same file, or any EN database
+     @player_genus_plural@ — not defined in ZH, EN same file, or any EN database
+     @player_only@ — not defined in ZH, EN same file, or any EN database
+     @possessive_God@ — not defined in ZH, EN same file, or any EN database
+     @protean@ — not defined in ZH, EN same file, or any EN database
+     @progenitor@ — not defined in ZH, EN same file, or any EN database
+     @reflexive@ — not defined in ZH, EN same file, or any EN database
+     @related@ — not defined in ZH, EN same file, or any EN database
+     @Saint@ — not defined in ZH, EN same file, or any EN database
+     @Roka@ — not defined in ZH, EN same file, or any EN database
+     @related@ — not defined in ZH, EN same file, or any EN database
+     @beogh@ — not defined in ZH, EN same file, or any EN database
+     @subjective@ — not defined in ZH, EN same file, or any EN database
+     @surface@ — not defined in ZH, EN same file, or any EN database
+     @to_foe@ — not defined in ZH, EN same file, or any EN database
+  ❌ monspell.txt:
+     @Major@ — not defined in ZH, EN same file, or any EN database
+     @Destruction@ — not defined in ZH, EN same file, or any EN database
+     @cast@ — not defined in ZH, EN same file, or any EN database
+     @My_God@ — not defined in ZH, EN same file, or any EN database
+     @The_something@ — not defined in ZH, EN same file, or any EN database
+     @a_God@ — not defined in ZH, EN same file, or any EN database
+     @arms@ — not defined in ZH, EN same file, or any EN database
+     @at@ — not defined in ZH, EN same file, or any EN database
+     @beam@ — not defined in ZH, EN same file, or any EN database
+     @dragon@ — not defined in ZH, EN same file, or any EN database
+     @cast@ — not defined in ZH, EN same file, or any EN database
+     @targeted@ — not defined in ZH, EN same file, or any EN database
+     @floating@ — not defined in ZH, EN same file, or any EN database
+     @eye@ — not defined in ZH, EN same file, or any EN database
+     @cast@ — not defined in ZH, EN same file, or any EN database
+     @floating@ — not defined in ZH, EN same file, or any EN database
+     @eye@ — not defined in ZH, EN same file, or any EN database
+     @cast@ — not defined in ZH, EN same file, or any EN database
+     @targeted@ — not defined in ZH, EN same file, or any EN database
+     @foe@ — not defined in ZH, EN same file, or any EN database
+     @foe_possessive@ — not defined in ZH, EN same file, or any EN database
+     @name@ — not defined in ZH, EN same file, or any EN database
+     @player_only@ — not defined in ZH, EN same file, or any EN database
+     @possessive_God@ — not defined in ZH, EN same file, or any EN database
+     @reflexive@ — not defined in ZH, EN same file, or any EN database
+     @something@ — not defined in ZH, EN same file, or any EN database
+     @sphinx@ — not defined in ZH, EN same file, or any EN database
+     @cast@ — not defined in ZH, EN same file, or any EN database
+     @target@ — not defined in ZH, EN same file, or any EN database
+  ❌ rand_all.txt:
+     @_anger_quality_@ — not defined in ZH, EN same file, or any EN database
+     @_conflict_name_@ — not defined in ZH, EN same file, or any EN database
+     @_valour_name_@ — not defined in ZH, EN same file, or any EN database
+  ❌ rand_wpn.txt:
+     @_xom_esteem_@ — not defined in ZH, EN same file, or any EN database
+  ❌ randbook.txt:
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @owner@ — not defined in ZH, EN same file, or any EN database
+     @_armour_animal_@ — not defined in ZH, EN same file, or any EN database
+     @_critter_name_@ — not defined in ZH, EN same file, or any EN database
+     @_destiny_name_@ — not defined in ZH, EN same file, or any EN database
+     @_difficult@ — not defined in ZH, EN same file, or any EN database
+     @owner_@ — not defined in ZH, EN same file, or any EN database
+     @_jewellery_animal_@ — not defined in ZH, EN same file, or any EN database
+     @_magic_name_@ — not defined in ZH, EN same file, or any EN database
+     @_number_or_qualifier_@ — not defined in ZH, EN same file, or any EN database
+     @_philosophy_or_science_@ — not defined in ZH, EN same file, or any EN database
+     @_place_name_@ — not defined in ZH, EN same file, or any EN database
+     @_plant_name_@ — not defined in ZH, EN same file, or any EN database
+     @_power_name_@ — not defined in ZH, EN same file, or any EN database
+     @_profession_name_@ — not defined in ZH, EN same file, or any EN database
+     @_substance_name_@ — not defined in ZH, EN same file, or any EN database
+     @_thing_names_@ — not defined in ZH, EN same file, or any EN database
+     @_wacky_armour_name_@ — not defined in ZH, EN same file, or any EN database
+     @_weapon_animal_@ — not defined in ZH, EN same file, or any EN database
+  ❌ randname.txt:
+     @Okawaru@ — not defined in ZH, EN same file, or any EN database
+     @Xom@ — not defined in ZH, EN same file, or any EN database
+     @_adjective_@ — not defined in ZH, EN same file, or any EN database
+     @_amulet@ — not defined in ZH, EN same file, or any EN database
+     @material_@ — not defined in ZH, EN same file, or any EN database
+     @_anger_quality_@ — not defined in ZH, EN same file, or any EN database
+     @_armour_animal_@ — not defined in ZH, EN same file, or any EN database
+     @_armour_name_shielding_@ — not defined in ZH, EN same file, or any EN database
+     @_armour_property_name_@ — not defined in ZH, EN same file, or any EN database
+     @_balance_or_order_@ — not defined in ZH, EN same file, or any EN database
+     @_battle_or_war_@ — not defined in ZH, EN same file, or any EN database
+     @_catastrophe_name_@ — not defined in ZH, EN same file, or any EN database
+     @_celestial_bodies_@ — not defined in ZH, EN same file, or any EN database
+     @_chaos_name_@ — not defined in ZH, EN same file, or any EN database
+     @_critter_name_@ — not defined in ZH, EN same file, or any EN database
+     @_destiny_name_@ — not defined in ZH, EN same file, or any EN database
+     @_discomfort_and_inaction_@ — not defined in ZH, EN same file, or any EN database
+     @_discomfort_weapon_@ — not defined in ZH, EN same file, or any EN database
+     @_diviner_name_@ — not defined in ZH, EN same file, or any EN database
+     @_economics_or_politics_@ — not defined in ZH, EN same file, or any EN database
+     @_evil_being_@ — not defined in ZH, EN same file, or any EN database
+     @_evil_stuff_@ — not defined in ZH, EN same file, or any EN database
+     @_flower_name_@ — not defined in ZH, EN same file, or any EN database
+     @_fruit_name_@ — not defined in ZH, EN same file, or any EN database
+     @_game_name_@ — not defined in ZH, EN same file, or any EN database
+     @_good_or_divine_@ — not defined in ZH, EN same file, or any EN database
+     @_instrument_name_@ — not defined in ZH, EN same file, or any EN database
+     @_item_name_@ — not defined in ZH, EN same file, or any EN database
+     @_jewellery@ — not defined in ZH, EN same file, or any EN database
+     @appearance_@ — not defined in ZH, EN same file, or any EN database
+     @_jewellery_animal_@ — not defined in ZH, EN same file, or any EN database
+     @_jewellery_special_name_@ — not defined in ZH, EN same file, or any EN database
+     @_justice_name_@ — not defined in ZH, EN same file, or any EN database
+     @_magic_name_@ — not defined in ZH, EN same file, or any EN database
+     @_monster_name_@ — not defined in ZH, EN same file, or any EN database
+     @_number_or_qualifier_@ — not defined in ZH, EN same file, or any EN database
+     @_other_armour_name_@ — not defined in ZH, EN same file, or any EN database
+     @_people_name_@ — not defined in ZH, EN same file, or any EN database
+     @_philosophy_name_@ — not defined in ZH, EN same file, or any EN database
+     @_philosophy_or_science_@ — not defined in ZH, EN same file, or any EN database
+     @_place_name_@ — not defined in ZH, EN same file, or any EN database
+     @_plain_armour_name_@ — not defined in ZH, EN same file, or any EN database
+     @_plain_weapon_name_@ — not defined in ZH, EN same file, or any EN database
+     @_plant_name_@ — not defined in ZH, EN same file, or any EN database
+     @_politics_name_armour_@ — not defined in ZH, EN same file, or any EN database
+     @_power_name_@ — not defined in ZH, EN same file, or any EN database
+     @_power_or_anger_@ — not defined in ZH, EN same file, or any EN database
+     @_profession_name_@ — not defined in ZH, EN same file, or any EN database
+     @_ring@ — not defined in ZH, EN same file, or any EN database
+     @material_@ — not defined in ZH, EN same file, or any EN database
+     @_science_name_@ — not defined in ZH, EN same file, or any EN database
+     @_sky_or_light_@ — not defined in ZH, EN same file, or any EN database
+     @_strategy_name_@ — not defined in ZH, EN same file, or any EN database
+     @_strategy_or_justice_@ — not defined in ZH, EN same file, or any EN database
+     @_substance_name_@ — not defined in ZH, EN same file, or any EN database
+     @_suspicion_name_@ — not defined in ZH, EN same file, or any EN database
+     @_suspicion_no_conflict_name_@ — not defined in ZH, EN same file, or any EN database
+     @_thing_names_@ — not defined in ZH, EN same file, or any EN database
+     @_time_name_@ — not defined in ZH, EN same file, or any EN database
+     @_valour_name_@ — not defined in ZH, EN same file, or any EN database
+     @_verbing_@ — not defined in ZH, EN same file, or any EN database
+     @_vice_name_@ — not defined in ZH, EN same file, or any EN database
+     @_virtue_name_@ — not defined in ZH, EN same file, or any EN database
+     @_virtue_or_vice_@ — not defined in ZH, EN same file, or any EN database
+     @_wacky_armour_name_@ — not defined in ZH, EN same file, or any EN database
+     @_weapon_animal_@ — not defined in ZH, EN same file, or any EN database
+     @_weather_name_@ — not defined in ZH, EN same file, or any EN database
+     @_xom_esteem_@ — not defined in ZH, EN same file, or any EN database
+     @appearance@ — not defined in ZH, EN same file, or any EN database
+     @death_or_doom@ — not defined in ZH, EN same file, or any EN database
+     @divine_esteem@ — not defined in ZH, EN same file, or any EN database
+     @general@ — not defined in ZH, EN same file, or any EN database
+     @appearance@ — not defined in ZH, EN same file, or any EN database
+     @god_name@ — not defined in ZH, EN same file, or any EN database
+     @god_name_possessive@ — not defined in ZH, EN same file, or any EN database
+     @player_name_possessive@ — not defined in ZH, EN same file, or any EN database
+     @xom_name@ — not defined in ZH, EN same file, or any EN database
+  ❌ shout.txt:
+     @demon_taunt@ — not defined in ZH, EN same file, or any EN database
+     @imp_taunt@ — not defined in ZH, EN same file, or any EN database
+     @player@ — not defined in ZH, EN same file, or any EN database
+     @ghost@ — not defined in ZH, EN same file, or any EN database
+     @subjective@ — not defined in ZH, EN same file, or any EN database
+  ❌ wpnnoise.txt:
+     @CAPS@ — not defined in ZH, EN same file, or any EN database
+     @The_weapon@ — not defined in ZH, EN same file, or any EN database
+     @Your_weapon@ — not defined in ZH, EN same file, or any EN database
+     @a_player_genus@ — not defined in ZH, EN same file, or any EN database
+     @player_genus_plural@ — not defined in ZH, EN same file, or any EN database
+     @player_god@ — not defined in ZH, EN same file, or any EN database
+     @the_weapon@ — not defined in ZH, EN same file, or any EN database
+
+  ⚠️  364 unresolved @keyword@ reference(s)
+
+=== Database @keyword@ check complete ===
+
+❌ Consistency violations found (strict mode).
+
+=== post-translator.sh complete ===

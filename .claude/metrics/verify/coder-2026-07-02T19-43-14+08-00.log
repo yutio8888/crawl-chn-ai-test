@@ -1,0 +1,430 @@
+=== post-coder.sh @ 2026-07-02T19-43-14+08-00 ===
+
+--- T_() key coverage ---
+MISSING: 279 keys in source code but not in crawl-ref/source/dat/i18n/zh/source.txt
+
+  crawl-ref/source/dbg-util.cc:119:     %s
+  crawl-ref/source/dbg-util.cc:408:     item #%d:  base: %d; sub: %d; plus: %d; plus2: %d; special: %d
+  crawl-ref/source/dbg-util.cc:415:     x: %d; y: %d; link: %d
+  crawl-ref/source/shopping.cc:1027:  (unknown)
+  crawl-ref/source/shopping.cc:1019:  <%s>%c %c </%s><%s>%4d gold   %s%s</%s>
+  crawl-ref/source/shopping.cc:1182:  <w>buy</w>|examine items
+  crawl-ref/source/shopping.cc:2363:  <w>travel</w>|examine|delete
+  crawl-ref/source/shopping.cc:1177:  buy marked items 
+  crawl-ref/source/shopping.cc:1176:  buy shopping list
+  crawl-ref/source/shopping.cc:1183:  buy|<w>examine</w> items
+  crawl-ref/source/shopping.cc:2379:  choose item
+  crawl-ref/source/attack.cc:734:  completely
+  crawl-ref/source/shopping.cc:1175:  describe         
+  crawl-ref/source/shopping.cc:1184:  exit          
+  crawl-ref/source/describe.cc:1756:  extremely
+  crawl-ref/source/shopping.cc:1277:  in shopping list
+  crawl-ref/source/shopping.cc:2373:  items    
+  crawl-ref/source/player-reacts.cc:1186:  magic
+  crawl-ref/source/shopping.cc:2725:  on 
+  crawl-ref/source/shopping.cc:1196:  put item on shopping list
+  crawl-ref/source/shopping.cc:2366:  travel|<w>examine</w>|delete
+  crawl-ref/source/shopping.cc:2369:  travel|examine|<w>delete</w>
+  crawl-ref/source/spl-cast.cc:1290: !
+  crawl-ref/source/newgame.cc:1409: # - Recommended character
+  crawl-ref/source/wiz-dgn.cc:806: %-10s : %s
+  crawl-ref/source/wiz-item.cc:697: %3d at (%2d,%2d): %s%s
+  crawl-ref/source/wiz-fsim.cc:537: %8s%s
+  crawl-ref/source/wiz-mon.cc:230: %d monsters, %d total exp value (%d non-uniq)
+  crawl-ref/source/wiz-mon.cc:235: %d monsters, %d total exp value (%d non-uniq, %d adjusted)
+  crawl-ref/source/wiz-item.cc:877: %d%% done.
+  crawl-ref/source/wiz-fsim.cc:711: %s %d, %s %d: %d
+  crawl-ref/source/actor.cc:993: %s %s into %s%s
+  crawl-ref/source/wiz-you.cc:462: %s %s to skill level %.1f.
+  crawl-ref/source/spl-cast.cc:1292: %s Continue anyway?
+  crawl-ref/source/wiz-dgn.cc:613: %s decides where it goes, can't place where you are.
+  crawl-ref/source/god-abil.cc:5922: %s explodes violently into a cloud of jellies%s
+  crawl-ref/source/god-abil.cc:5927: %s explodes violently%s
+  crawl-ref/source/mon-explode.cc:349: %s explodes!
+  crawl-ref/source/shopping.cc:1806: %s is already on the shopping list.
+  crawl-ref/source/wiz-you.cc:960: %s is not feeling wrathful today.
+  crawl-ref/source/shopping.cc:1876: %s isn't on shopping list, can't delete it.
+  crawl-ref/source/dbg-util.cc:587: %s messages will be %s.
+  crawl-ref/source/dbg-scan.cc:560: %s not in any vaults.
+  crawl-ref/source/mon-explode.cc:398: %s shudders for a moment, then explodes violently!
+  crawl-ref/source/wiz-you.cc:1052: %s tension value: %d
+  crawl-ref/source/actor.cc:1003: %s violently %s moving%s
+  crawl-ref/source/wiz-item.cc:281: %s was %d.
+  crawl-ref/source/wiz-item.cc:305: %s was %s.
+  crawl-ref/source/wiz-mon.cc:566: %s won't bless this monster for you!
+  crawl-ref/source/wiz-item.cc:682: (%2d,%2d): %s%s
+  crawl-ref/source/wiz-fsim.cc:755: (A)ttack or (D)efence?
+  crawl-ref/source/wiz-mon.cc:1017: (C)reate, create (T)emporary, or (L)oad bones file?
+  crawl-ref/source/wiz-you.cc:1049: (Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
+  crawl-ref/source/shopping.cc:2321: , or 
+  crawl-ref/source/wiz-mon.cc:856: -> #waypoints: %u
+  crawl-ref/source/wiz-mon.cc:846: -> path length: %u
+  crawl-ref/source/shopping.cc:1203: <%s>I'll put %s outside for you.</%s>\n
+  crawl-ref/source/shopping.cc:1275: <%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
+  crawl-ref/source/shopping.cc:1266: <%s>You don't have enough money.</%s>\n
+  crawl-ref/source/wiz-mon.cc:548: == Done ==
+  crawl-ref/source/wiz-fsim.cc:809: Aborting sim on %s
+  crawl-ref/source/wiz-item.cc:824: Acquirement failed, stopping early.
+  crawl-ref/source/dbg-scan.cc:304: Additionally, it isn't alive.
+  crawl-ref/source/wiz-dgn.cc:869: All vaults are now eligible for [re]use.
+  crawl-ref/source/wiz-mon.cc:670: Already doing a move command.
+  crawl-ref/source/dbg-scan.cc:370: Also at (%d, %d): %s, midx = %d
+  crawl-ref/source/wiz-mon.cc:916: Ambiguous: can be spell '%s' or school '%s'.
+  crawl-ref/source/wiz-mon.cc:852: And here are the needed waypoints: 
+  crawl-ref/source/wiz-mon.cc:553: Apply blessing of the (S)hining One? 
+  crawl-ref/source/wiz-fsim.cc:538: Attack: 
+  crawl-ref/source/wiz-mon.cc:829: Attempting to calculate a path from (%d, %d) to (%d, %d)...
+  crawl-ref/source/wiz-dgn.cc:80: Bug in determining level exit.
+  crawl-ref/source/wiz-mon.cc:967: Can only enter spell level for schools, not spells.
+  crawl-ref/source/wiz-you.cc:434: Can't change a useless skill.
+  crawl-ref/source/wiz-dgn.cc:563: Can't find map named '%s'.
+  crawl-ref/source/wiz-mon.cc:588: Can't give equipped items to a monster.
+  crawl-ref/source/wiz-dgn.cc:64: Can't go down from the bottom of a branch.
+  crawl-ref/source/wiz-mon.cc:885: Can't make already dead target miscast.
+  crawl-ref/source/wiz-you.cc:767: Can't set duration directly to 0, setting it to 1 instead.
+  crawl-ref/source/wiz-fsim.cc:654: Cancelling simulation.\n
+  crawl-ref/source/wiz-you.cc:159: Cannot find that spell.
+  crawl-ref/source/wiz-mon.cc:662: Cannot move out of bounds.
+  crawl-ref/source/wiz-you.cc:144: Cast which spell? 
+  crawl-ref/source/wiz-mon.cc:812: Choose a destination!
+  crawl-ref/source/shopping.cc:2356: Choose to examine item  
+  crawl-ref/source/wiz-item.cc:116: Could not allocate item.
+  crawl-ref/source/wiz-fsim.cc:341: Could not put monster adjacent to player.
+  crawl-ref/source/wiz-dgn.cc:201: Create what kind of feature mimic? 
+  crawl-ref/source/wiz-dgn.cc:203: Create which feature? 
+  crawl-ref/source/wiz-dgn.cc:499: Created %s.
+  crawl-ref/source/wiz-dgn.cc:92: Creating %sstairs.
+  crawl-ref/source/wiz-you.cc:384: Current progress to next sacrifice: %d  Progress needed: %d
+  crawl-ref/source/dbg-util.cc:84: Currently generating level.
+  crawl-ref/source/wiz-fsim.cc:541: Defend: 
+  crawl-ref/source/wiz-mon.cc:473: Detected %i monster%s.
+  crawl-ref/source/dbg-util.cc:529: Diagnostic messages are available only in debug builds.
+  crawl-ref/source/wiz-mon.cc:496: Dismissed %i monster%s.
+  crawl-ref/source/wiz-dgn.cc:533: Done.
+  crawl-ref/source/wiz-you.cc:692: Edit which duration (name)? 
+  crawl-ref/source/wiz-item.cc:325: Ego '%s' is invalid for %s.
+  crawl-ref/source/wiz-mon.cc:939: Enter fail: 
+  crawl-ref/source/wiz-mon.cc:941: Enter level, fail: 
+  crawl-ref/source/wiz-dgn.cc:677: Enter map name (prefix it with * for local placement): 
+  crawl-ref/source/wiz-dgn.cc:676: Enter map name: 
+  crawl-ref/source/wiz-mon.cc:57: Enter monster name (or MONS spec) (? for help): 
+  crawl-ref/source/wiz-fsim.cc:303: Enter monster name (or MONS spec): 
+  crawl-ref/source/wiz-item.cc:79: Enter name of item (or ITEM spec): 
+  crawl-ref/source/wiz-you.cc:873: Enter new experience level: 
+  crawl-ref/source/wiz-you.cc:356: Enter new gold value (current = %d, Enter for %d): 
+  crawl-ref/source/wiz-you.cc:389: Enter new piety value (current = %d, Enter for 0): 
+  crawl-ref/source/wiz-you.cc:664: Enter values for Str, Int, Dex (space separated): 
+  crawl-ref/source/wiz-you.cc:652: Enter values for X, Y, Z (space separated) or return: 
+  crawl-ref/source/wiz-mon.cc:607: Error: monster failed to take item.
+  crawl-ref/source/wiz-item.cc:1432: Evokers recharged.
+  crawl-ref/source/dbg-maps.cc:328: Examining random maps at %s
+  crawl-ref/source/wiz-you.cc:411: Exercising...
+  crawl-ref/source/wiz-you.cc:889: Experience level set to %d.
+  crawl-ref/source/wiz-dgn.cc:768: Explore took %d turns.
+  crawl-ref/source/wiz-item.cc:177: Failed to create corpse.
+  crawl-ref/source/wiz-fsim.cc:323: Failed to create monster.
+  crawl-ref/source/wiz-dgn.cc:664: Failed to place %s; last builder error: %s
+  crawl-ref/source/wiz-item.cc:623: Failed to turn book into randart.
+  crawl-ref/source/wiz-item.cc:629: Failed to turn item into randart.
+  crawl-ref/source/wiz-item.cc:605: Fake item as gift from which god (ENTER to leave alone): 
+  crawl-ref/source/wiz-fsim.cc:533: Fighting %s with %s\n
+  crawl-ref/source/dbg-scan.cc:353: Floating monster: %s at (%d,%d), midx = %d
+  crawl-ref/source/wiz-item.cc:689: Floor items (stacks only show top item):
+  crawl-ref/source/wiz-you.cc:558: Found #%d: %s ("%s")
+  crawl-ref/source/wiz-item.cc:1337: Generate stats for: [a] acquirement [b] randart properties
+  crawl-ref/source/dbg-maps.cc:541: Generating dungeon map stats
+  crawl-ref/source/wiz-item.cc:614: God gift of %s.
+  crawl-ref/source/wiz-you.cc:270: Healing.
+  crawl-ref/source/dbg-scan.cc:145: Held by monster #%d: %s at (%d,%d)
+  crawl-ref/source/wiz-mon.cc:842: Here's the shortest path: 
+  crawl-ref/source/wiz-you.cc:511: Ignoring mut resistance to apply mutation.
+  crawl-ref/source/tags.cc:8355: Index out of bounds: idx = %d - 1, size(tile_names) = %d
+  crawl-ref/source/wiz-dgn.cc:514: Insufficient floor-space for new Wal-Mart.
+  crawl-ref/source/wiz-you.cc:324: Interest must be between 0 and 255.
+  crawl-ref/source/wiz-mon.cc:762: Invalid monster type.
+  crawl-ref/source/wiz-item.cc:677: Item stacks (by location and top item):
+  crawl-ref/source/wiz-mon.cc:997: Key pressed, interrupting miscast testing.
+  crawl-ref/source/wiz-dgn.cc:788: Known levels:
+  crawl-ref/source/dbg-util.cc:111: Level build method = %s, level layout type  = %s, absdepth0 = %d
+  crawl-ref/source/wiz-dgn.cc:775: Level stack:
+  crawl-ref/source/dbg-util.cc:116: Level vaults:
+  crawl-ref/source/wiz-item.cc:441: Make book fixed [t]heme or fixed [l]evel? 
+  crawl-ref/source/wiz-mon.cc:504: Make the monster (S)hout or (T)alk? 
+  crawl-ref/source/wiz-dgn.cc:453: Mapping level.
+  crawl-ref/source/wiz-you.cc:174: Memorise which spell? 
+  crawl-ref/source/glwrapper-ogl.cc:188: Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed.
+  crawl-ref/source/glwrapper-ogl.cc:158: Mipmap Setup: Failed to load OpenGL version.
+  crawl-ref/source/glwrapper-ogl.cc:198: Mipmap Setup: Failed to load glGenerateMipmap function.
+  crawl-ref/source/glwrapper-ogl.cc:207: Mipmap Setup: skipped, not supported in this build configuration.
+  crawl-ref/source/glwrapper-ogl.cc:203: Mipmap Setup: success, loaded with OpenGL version: %s
+  crawl-ref/source/wiz-mon.cc:890: Miscast which school or spell, by name? 
+  crawl-ref/source/wiz-mon.cc:936: Miscasting school %s.
+  crawl-ref/source/wiz-mon.cc:934: Miscasting spell %s.
+  crawl-ref/source/wiz-mon.cc:698: Monster is already summoned.
+  crawl-ref/source/wiz-mon.cc:746: Monster is now summoned.
+  crawl-ref/source/wiz-mon.cc:804: Monster turned into something other than the desired type.
+  crawl-ref/source/wiz-dgn.cc:505: NOTE: Shaft traps aren't valid on this level.
+  crawl-ref/source/dbg-util.cc:136: No builder logs are saved for %s.
+  crawl-ref/source/wiz-you.cc:720: No durations matching '%s'.
+  crawl-ref/source/wiz-item.cc:885: No items generated.
+  crawl-ref/source/wiz-you.cc:609: No matching bane names.
+  crawl-ref/source/wiz-you.cc:534: No matching mutation names.
+  crawl-ref/source/wiz-mon.cc:911: No matching spell or spell school.
+  crawl-ref/source/wiz-item.cc:320: No such ego as: %s
+  crawl-ref/source/wiz-item.cc:611: No such god, leaving item origin alone.
+  crawl-ref/source/wiz-item.cc:209: No such item.
+  crawl-ref/source/wiz-item.cc:149: No such monster.
+  crawl-ref/source/wiz-mon.cc:740: No such spell.
+  crawl-ref/source/wiz-you.cc:1024: Not even in wizmode may divine creatures worship a god!
+  crawl-ref/source/wiz-you.cc:923: Nothing happens.
+  crawl-ref/source/wiz-mon.cc:768: Old type and new type are the same, not polymorphing.
+  crawl-ref/source/dbg-scan.cc:461: Other monster isn't holding it, though.
+  crawl-ref/source/dbg-scan.cc:455: Other monster thinks it's holding the item, too.
+  crawl-ref/source/wiz-you.cc:286: Piety needs to be between 0 and %d.
+  crawl-ref/source/wiz-mon.cc:802: Polymorph failed.
+  crawl-ref/source/tags.cc:8314: Reading tile_names[%d] = %s
+  crawl-ref/source/wiz-item.cc:465: Real value: %d (known: %d)
+  crawl-ref/source/wiz-dgn.cc:811: Regenerating level.
+  crawl-ref/source/wiz-item.cc:1331: Results written into 'randart_stats.txt'.
+  crawl-ref/source/xom.cc:5753: Results written into 'xom_debug.stat'.
+  crawl-ref/source/wiz-item.cc:1111: Results written into acquirement_stats.txt.
+  crawl-ref/source/wiz-you.cc:291: Ru piety can't be greater than %d.
+  crawl-ref/source/wizard.cc:110: Running Jiyva off-level sacrifice.
+  crawl-ref/source/wiz-dgn.cc:231: Set fprops "%s" at (%d,%d)
+  crawl-ref/source/wiz-you.cc:326: Set piety to %d, interest to %d.
+  crawl-ref/source/wiz-dgn.cc:883: Setting Abyss speed to %i.
+  crawl-ref/source/wiz-you.cc:677: Setting attributes (Str, Int, Dex) to: %i, %i, %i
+  crawl-ref/source/wiz-you.cc:345: Setting piety to %d.
+  crawl-ref/source/wiz-mon.cc:928: Spell '%s' has no disciplines.
+  crawl-ref/source/wiz-you.cc:196: Spell is monster-only - unpredictable behaviour may result.
+  crawl-ref/source/wiz-mon.cc:979: Spell level can be at most 9.
+  crawl-ref/source/wiz-item.cc:815: Stopping early due to keyboard input.
+  crawl-ref/source/dbg-util.cc:93: Subvaults: %s
+  crawl-ref/source/wiz-dgn.cc:654: Successfully placed %s.
+  crawl-ref/source/wiz-you.cc:205: Super healing.
+  crawl-ref/source/wiz-mon.cc:774: Target species must be different from current species.
+  crawl-ref/source/wiz-you.cc:954: That god doesn't seem to exist!
+  crawl-ref/source/wiz-item.cc:580: That item cannot be turned into an artefact.
+  crawl-ref/source/wiz-item.cc:574: That item is already an unrandom artefact.
+  crawl-ref/source/wiz-item.cc:155: That monster doesn't leave corpses.
+  crawl-ref/source/wiz-you.cc:406: That skill doesn't seem to exist.
+  crawl-ref/source/wiz-you.cc:408: That skill was removed.
+  crawl-ref/source/wiz-mon.cc:574: That type of monster can't use any items.
+  crawl-ref/source/wiz-mon.cc:529: The monster is invisible and likely won't speak.
+  crawl-ref/source/wiz-mon.cc:537: The monster is silenced and likely won't say anything.
+  crawl-ref/source/spl-damage.cc:3677: The unravelling is likely to hit you. Continue anyway?
+  crawl-ref/source/dbg-util.cc:128: This save was not generated on a build that stores logs.
+  crawl-ref/source/shopping.cc:1279: This will use your shop voucher.
+  crawl-ref/source/dbg-util.cc:571: Toggle which debug class (ESC to exit)? 
+  crawl-ref/source/wiz-item.cc:273: Toggling %s to %s.
+  crawl-ref/source/wiz-item.cc:760: Too many items on level.
+  crawl-ref/source/wiz-you.cc:1017: Transformation failed.
+  crawl-ref/source/wiz-mon.cc:790: Trying harder
+  crawl-ref/source/wiz-item.cc:1357: Unknown card.
+  crawl-ref/source/wiz-dump.cc:499: Unknown job: %s
+  crawl-ref/source/wiz-dump.cc:493: Unknown species: %s
+  crawl-ref/source/wiz-item.cc:1442: Unobtained all runes and the Orb of Zot.
+  crawl-ref/source/dbg-maps.cc:94: User requested cancel
+  crawl-ref/source/wiz-item.cc:286: Value for %s must be non-negative
+  crawl-ref/source/wiz-item.cc:467: Value: %d
+  crawl-ref/source/dbg-util.cc:90: Vault being placed: %s
+  crawl-ref/source/dbg-util.cc:33: Which monster by name? 
+  crawl-ref/source/wiz-mon.cc:275: Which monster?
+  crawl-ref/source/wiz-fsim.cc:114: Wielding: 
+  crawl-ref/source/tags.cc:7147: Writing '%s' into save.
+  crawl-ref/source/wiz-you.cc:929: X-ray vision %s.
+  crawl-ref/source/wiz-you.cc:941: You allow the flow of time to resume.
+  crawl-ref/source/wiz-you.cc:1033: You already have no god!
+  crawl-ref/source/wiz-you.cc:1038: You already worship that god!
+  crawl-ref/source/wiz-you.cc:378: You are not religious!
+  crawl-ref/source/wiz-you.cc:976: You are not under penance.
+  crawl-ref/source/wiz-you.cc:946: You bring the flow of time to a stop.
+  crawl-ref/source/wizard.cc:67: You can only abyss_teleport() inside the Abyss.
+  crawl-ref/source/wiz-dgn.cc:475: You can only make a %s on a floor square.
+  crawl-ref/source/wiz-mon.cc:596: You can't give that type of item to a monster.
+  crawl-ref/source/wiz-item.cc:161: You can't make a draconian corpse by its background.
+  crawl-ref/source/wiz-mon.cc:682: You can't move yourself into the arena.
+  crawl-ref/source/wiz-item.cc:406: You can't set this flag on a non-artefact.
+  crawl-ref/source/wiz-item.cc:235: You can't tweak the randart properties of an equipped item.
+  crawl-ref/source/wiz-item.cc:659: You feel a rush of antiknowledge.
+  crawl-ref/source/wiz-item.cc:642: You feel a rush of knowledge.
+  crawl-ref/source/wiz-you.cc:371: You now have %d gold piece%s.
+  crawl-ref/source/shopping.cc:2320: You now have enough gold to 
+  crawl-ref/source/wiz-you.cc:956: You suffer the terrible wrath of No God.
+  crawl-ref/source/duration-data.h:727: Your vision returns to normal.
+  crawl-ref/source/wiz-you.cc:1101: Zot clock should be between 0 and %d
+  crawl-ref/source/luaterp.cc:116: [Hit ESC to exit interpreter.]
+  crawl-ref/source/shopping.cc:1190: \n[<w>/</w>] sort (%s)%s  %s
+  crawl-ref/source/beam.cc:7941: beam
+  crawl-ref/source/mon-info.cc:1247: bound soul
+  crawl-ref/source/shopping.cc:2311: buy
+  crawl-ref/source/mon-info.cc:1235: draugr
+  crawl-ref/source/dbg-scan.cc:133: env.igrid(%d,%d) = %d
+  crawl-ref/source/luaterp.cc:128: error calling __echo (%s)
+  crawl-ref/source/shopping.cc:1189: examine item             
+  crawl-ref/source/spl-summoning.cc:2245: explosive
+  crawl-ref/source/teleport.cc:62: hop
+  crawl-ref/source/shopping.cc:1205: it
+  crawl-ref/source/shopping.cc:2501: item
+  crawl-ref/source/teleport.cc:62: leap
+  crawl-ref/source/shopping.cc:1188: mark item for purchase   
+  crawl-ref/source/mon-cast.cc:9048: past
+  crawl-ref/source/spl-summoning.cc:2245: shadowy
+  crawl-ref/source/mon-info.cc:1255: shaped block of ice
+  crawl-ref/source/mon-info.cc:1251: shaped pillar of salt
+  crawl-ref/source/mon-info.cc:1239: simulacrum
+  crawl-ref/source/shopping.cc:1207: some of them
+  crawl-ref/source/mon-info.cc:1243: spectre
+  crawl-ref/source/shopping.cc:1206: them
+  crawl-ref/source/mon-cast.cc:8981: thin air
+  crawl-ref/source/shopping.cc:2729: this level
+  crawl-ref/source/tags.cc:8366: tilename %s (index %d) not found
+  crawl-ref/source/tags.cc:8372: tilename %s (index %d) resolves to tile %d
+  crawl-ref/source/wiz-dump.cc:557: unknown item: %s
+  crawl-ref/source/mon-info.cc:1231: zombie
+
+Total: 4553 unique keys, 279 missing (93.9% coverage)
+
+--- mprf_p compatibility ---
+=== Positional format in source.txt but code doesn't use _p variant ===
+
+describe.cc:1370  T_("you %1$sreach %2$d.%3$d in the equivalent of %4$d.%5$d xls.")
+  source.txt has %n$s: "你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。..." → needs mprf_p or make_stringf_p
+
+describe.cc:1378  T_("you %1$sreach %2$d.%3$d in about %4$d.%5$d xls.")
+  source.txt has %n$s: "你%1$s将在%4$d.%5$d个经验等级内达到%2$d.%3$d级。..." → needs mprf_p or make_stringf_p
+
+items.cc:2186  T_("(gained %1$d charge%2$s)")
+  source.txt has %n$s: "（获得了%1$d次充能）..." → needs mprf_p or make_stringf_p
+
+mon-act.cc:3687  T_("%1$s attacks as %2$s pursue you!")
+  source.txt has %n$s: "在%1$s追击你时发动攻击！..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_("%1$s %2$s")
+  source.txt has %n$s: "%2$s%1$s..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_("%1$s %2$s.")
+  source.txt has %n$s: "%1$s抽搐了一下。..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_(" shakes off the sticky flame as %1$s %2$s.")
+  source.txt has %n$s: "随着%1$s的移动，抖掉了身上的黏性火焰。..." → needs mprf_p or make_stringf_p
+
+Summary: 7 violations
+
+--- %s count parity ---
+=== ARG-MISMATCH — format specifier count differs between EN key and CN translation ===
+
+EN: " is no longer sharing %1$s pain." (1 args)
+CN: "不再分担痛苦。" (0 args) ← MISMATCH
+
+EN: " seems to regain %1$s courage." (1 args)
+CN: "似乎重拾了勇气。" (0 args) ← MISMATCH
+
+EN: " seems to return to %1$s normal shape." (1 args)
+CN: "似乎恢复了正常形态。" (0 args) ← MISMATCH
+
+EN: " shakes off the sticky flame as %1$s %2$s." (2 args)
+CN: "随着%1$s的移动，抖掉了身上的黏性火焰。" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s a powerful frost blast!" (2 args)
+CN: "%1$s释放了一股强大的冰霜冲击！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s a word of immense power!" (2 args)
+CN: "%1$s说出了一句强大的话语！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s knocked back." (2 args)
+CN: "%1$s被击退了。" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s suddenly forward!" (2 args)
+CN: "%1$s猛然向前冲去！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s." (2 args)
+CN: "%1$s抽搐了一下。" (1 args) ← MISMATCH
+
+EN: "%1$s attack snaps %2$s out of %3$s fear." (3 args)
+CN: "%1$s的攻击将%2$s从恐惧中惊醒。" (2 args) ← MISMATCH
+
+EN: "%1$s attacks as %2$s pursue you!" (2 args)
+CN: "在%1$s追击你时发动攻击！" (1 args) ← MISMATCH
+
+EN: "%1$s continues winding %2$s clockwork bee...." (2 args)
+CN: "%1$s继续给发条蜜蜂上弦……" (1 args) ← MISMATCH
+
+EN: "%1$s fails to defend %2$s." (2 args)
+CN: "%1$s未能防守。" (1 args) ← MISMATCH
+
+EN: "%1$s feeds on the fading %2$s of %3$s!" (3 args)
+CN: "你从%1$s的衰减%2$s中汲取了力量。" (2 args) ← MISMATCH
+
+EN: "%1$s is freed from %2$s curse." (2 args)
+CN: "%1$s从其诅咒中解脱了。" (1 args) ← MISMATCH
+
+EN: "%1$s loses %2$s in your eye%3$s." (3 args)
+CN: "%1$s在你的眼中%2$s失去了自我。" (2 args) ← MISMATCH
+
+EN: "%1$s slice%2$s through the folds of space itself!" (2 args)
+CN: "%1$s切穿了空间本身的褶皱！" (1 args) ← MISMATCH
+
+EN: "%1$s steals %2$d gold piece%3$s!" (3 args)
+CN: "%1$s偷走了%2$d枚金币！" (2 args) ← MISMATCH
+
+EN: "%1$s stops winding %2$s clockwork bee." (2 args)
+CN: "%1$s停止了给发条蜜蜂上弦。" (1 args) ← MISMATCH
+
+EN: "%1$s turns %2$s attention back to you." (2 args)
+CN: "%1$s将注意力转回你身上。" (1 args) ← MISMATCH
+
+EN: "%1$s vibrate%2$s crazily for a second." (2 args)
+CN: "%1$s疯狂振动了一秒。" (1 args) ← MISMATCH
+
+EN: "(gained %1$d charge%2$s)" (2 args)
+CN: "（获得了%1$d次充能）" (1 args) ← MISMATCH
+
+EN: "beam hit monster|the %1$s %2$s %3$s%4$s%5$s%6$s" (6 args)
+CN: "%1$s%2$s了%3$s%4$s%5$s。" (5 args) ← MISMATCH
+
+EN: "beam hit player|the %1$s %2$s %3$s%4$s%5$s%6$s" (6 args)
+CN: "%1$s%2$s了%3$s%4$s%5$s！" (5 args) ← MISMATCH
+
+EN: "you %1$s into a shaft and fall %2$d level%3$s!" (3 args)
+CN: "你%1$s入竖井，掉了%2$d层！" (2 args) ← MISMATCH
+
+EN: "you anoint %1$s with ash and charcoal and welcome %2$s as a companion." (2 args)
+CN: "你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s" (1 args) ← MISMATCH
+
+EN: "you have %1$d gold piece%2$s." (2 args)
+CN: "你持有%1$d枚金币。" (1 args) ← MISMATCH
+
+EN: "you now have %1$d gold piece%2$s." (2 args)
+CN: "你还有%1$d枚金币。" (1 args) ← MISMATCH
+
+EN: "your %1$s meld%2$s into your body." (2 args)
+CN: "你的%1$s融入了你的身体。" (1 args) ← MISMATCH
+
+EN: "your %1$s prickle%2$s." (2 args)
+CN: "你的%1$s感到刺痛。" (1 args) ← MISMATCH
+
+EN: "your %1$s unmeld%2$s from your body." (2 args)
+CN: "你的%1$s从你的身体中分离。" (1 args) ← MISMATCH
+
+EN: "your strength is siphoned away as %1$s grow%2$s stronger!" (2 args)
+CN: "你的力量被吸走，%1$s变得更加强大！" (1 args) ← MISMATCH
+
+Summary: 32 mismatches
+
+--- Anti-patterns (strict) ---
+OK: No anti-patterns found.
+
+--- Smoke test (ZH mode) ---
+=== Crawl Smoke Test (ZH mode, startup output only) ===
+
+--- Protocol leaks ---
+  ✓ No protocol leaks
+--- English residue ---
+  ✓ No English residue in core UI
+--- Crashes ---
+  ✓ No crashes
+
+✓ Smoke test passed (startup output clean)
+
+=== post-coder.sh complete ===

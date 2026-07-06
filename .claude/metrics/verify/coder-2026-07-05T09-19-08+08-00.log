@@ -1,0 +1,1936 @@
+=== post-coder.sh @ 2026-07-05T09-19-08+08-00 ===
+
+--- T_() key coverage ---
+MISSING: 1 keys in source code but not in crawl-ref/source/dat/i18n/zh/source.txt
+
+  crawl-ref/source/decks.cc:348: 
+
+Total: 6391 unique keys, 1 missing (100.0% coverage)
+
+--- Data-driven i18n coverage (monsters, durations, features) ---
+
+--- Monster name translation coverage ---
+Total monster YAML names: 667
+  Covered (source.txt): 172
+  Covered (zh_map only): 0
+  Covered total: 172 (25%)
+  MISSING (no translation): 495
+  Missing entries:
+    - cerulean imp
+    - sixfirhy
+    - deep elf pyromancer
+    - dread lich
+    - ghoul
+    - Ignacio
+    - knight
+    - gargoyle
+    - cyclops
+    - Gloorx Vloq
+    - Grunn
+    - demigod
+    - lindwurm
+    - Saint Roka
+    - blizzard demon
+    ... and 480 more
+
+--- Duration string translation coverage ---
+Total duration sentence strings: 219
+  Covered (source.txt): 218
+  MISSING: 1
+  Missing entries:
+    - If you drink this now, you
+                            ///< will no longer be swift/mighty/on fire.
+
+--- Feature name translation coverage ---
+Total feature description strings: 157
+  Covered (source.txt): 155
+  MISSING: 2
+    - passage of Golubria
+    - passage of golubria
+
+=== audit_data_i18n.py complete (exit 1) ===
+
+--- mprf_p compatibility ---
+=== Positional format in source.txt but code doesn't use _p variant ===
+
+actor.cc:780  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+attack.cc:1410  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+beam.cc:6126  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+chardump.cc:203  T_("game seed: %1$" priu64 "%2$s")
+  source.txt has %n$s: "游戏种子：%1$" PRIu64 "%2$s..." → needs mprf_p or make_stringf_p
+
+decks.cc:1521  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+describe.cc:1371  T_("you %1$sreach %2$d.%3$d in the equivalent of %4$d.%5$d xls.")
+  source.txt has %n$s: "你%1$s在%4$d.%5$d个经验等级内达到%2$d.%3$d级。..." → needs mprf_p or make_stringf_p
+
+describe.cc:1379  T_("you %1$sreach %2$d.%3$d in about %4$d.%5$d xls.")
+  source.txt has %n$s: "你%1$s在%4$d.%5$d个经验等级内达到%2$d.%3$d级。..." → needs mprf_p or make_stringf_p
+
+fight.cc:1552  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+fineff.cc:1150  T_("%s shudders%s.")
+  source.txt has %n$s: "%1$s%2$s颤抖了。..." → needs mprf_p or make_stringf_p
+
+god-abil.cc:2782  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+god-abil.cc:3621  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+god-blessing.cc:159  T_(" blesses %s with %s.")
+  source.txt has %n$s: " 赐予了%1$s%2$s的祝福。..." → needs mprf_p or make_stringf_p
+
+god-wrath.cc:119  T_("the %s of %s")
+  source.txt has %n$s: "%2$s之%1$s..." → needs mprf_p or make_stringf_p
+
+items.cc:2186  T_("(gained %1$d charge%2$s)")
+  source.txt has %n$s: "（获得了%1$d次充能）..." → needs mprf_p or make_stringf_p
+
+lookup-help.cc:1315  T_("\n\nthis branch contains the entrance%s to %s.")
+  source.txt has %n$s: "\n\n此分支包含通往%2$s的入口%1$s。..." → needs mprf_p or make_stringf_p
+
+lookup-help.cc:1527  T_("no matching %s for search string '%s'.")
+  source.txt has %n$s: "没有匹配搜索字符串'%2$s'的%1$s。..." → needs mprf_p or make_stringf_p
+
+macro.cc:1294  T_("current %s for %s: %s")
+  source.txt has %n$s: "%2$s的当前%1$s：%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:2775  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3429  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3443  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3450  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3458  T_("%s %s as negative energy consumes %s%s")
+  source.txt has %n$s: "%1$s因负能量吞噬%3$s而%2$s%4$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3466  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:3988  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:4009  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:4212  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:4230  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+melee-attack.cc:4371  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+mon-act.cc:3687  T_("%1$s attacks as %2$s pursue you!")
+  source.txt has %n$s: "在%1$s追击你时发动攻击！..." → needs mprf_p or make_stringf_p
+
+mon-cast.cc:6080  T_("%s is mesmerised by %s!")
+  source.txt has %n$s: "%1$s被%2$s迷住了！..." → needs mprf_p or make_stringf_p
+
+mon-cast.cc:9347  T_("hit by %s thrown by %s")
+  source.txt has %n$s: "被%2$s投掷的%1$s击中..." → needs mprf_p or make_stringf_p
+
+mon-cast.cc:9397  T_("%s unleashes a %s howl, %s")
+  source.txt has %n$s: "%1$s发出了%2$s的嚎叫，%3$s..." → needs mprf_p or make_stringf_p
+
+mon-death.cc:1720  T_("for just a moment, %s begins to look like %s, then it explodes!")
+  source.txt has %n$s: "%1$s短暂地变成了%2$s的模样，然后爆炸了！..." → needs mprf_p or make_stringf_p
+
+mon-poly.cc:655  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_("%1$s %2$s")
+  source.txt has %n$s: "%2$s%1$s..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_("%1$s %2$s.")
+  source.txt has %n$s: "%1$s抽搐了一下。..." → needs mprf_p or make_stringf_p
+
+monster.cc:5582  T_(" shakes off the sticky flame as %1$s %2$s.")
+  source.txt has %n$s: "随着%1$s的移动，抖掉了身上的黏性火焰。..." → needs mprf_p or make_stringf_p
+
+mutation.cc:3385  T_("your skill with %s, %s, and %s is reduced.")
+  source.txt has %n$s: "你对%1$s、%2$s和%3$s的掌握被削弱了。..." → needs mprf_p or make_stringf_p
+
+player.cc:3120  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+ranged-attack.cc:58  T_("hit by a%s %s thrown by %s")
+  source.txt has %n$s: "被%3$s投掷的%2$s击中..." → needs mprf_p or make_stringf_p
+
+ranged-attack.cc:64  T_("shot with a%s %s by %s")
+  source.txt has %n$s: "被%3$s用%2$s射中..." → needs mprf_p or make_stringf_p
+
+ranged-attack.cc:304  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+ranged-attack.cc:804  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+religion.cc:3438  T_("%s warns you to remove %s.")
+  source.txt has %n$s: "%1$s警告你取下%2$s。..." → needs mprf_p or make_stringf_p
+
+spl-damage.cc:1324  T_("blast of %s %s")
+  source.txt has %n$s: "%1$s%2$s冲击..." → needs mprf_p or make_stringf_p
+
+spl-damage.cc:1412  T_("blast of %s %s")
+  source.txt has %n$s: "%1$s%2$s冲击..." → needs mprf_p or make_stringf_p
+
+spl-damage.cc:4146  T_("bonks %s with %s %s.")
+  source.txt has %n$s: "用%2$s%3$s敲了%1$s。..." → needs mprf_p or make_stringf_p
+
+spl-damage.cc:4167  T_("makes %s trip over %s own %s.")
+  source.txt has %n$s: "让%1$s被%2$s%3$s绊倒了。..." → needs mprf_p or make_stringf_p
+
+spl-damage.cc:4173  T_("smacks %s with %s own %s.")
+  source.txt has %n$s: "用%2$s%3$s扇了%1$s。..." → needs mprf_p or make_stringf_p
+
+spl-selfench.cc:152  T_("forget %1$s, freeing %2$d spell level%3$s for a total of %4$d?%5$s")
+  source.txt has %n$s: "遗忘%1$s，释放%2$d个法术等级（总计%4$d）？%5$s..." → needs mprf_p or make_stringf_p
+
+throw.cc:747  T_("%s %s%s")
+  source.txt has %n$s: "%1$s%2$s%3$s..." → needs mprf_p or make_stringf_p
+
+wiz-you.cc:462  T_("%s %s to skill level %.1f.")
+  source.txt has %n$s: "%1$s%2$s技能等级至 %.1f。..." → needs mprf_p or make_stringf_p
+
+Summary: 52 violations
+
+--- %s count parity ---
+=== ARG-MISMATCH — format specifier count differs between EN key and CN translation ===
+
+EN: " is no longer sharing %1$s pain." (1 args)
+CN: "不再分担痛苦。" (0 args) ← MISMATCH
+
+EN: " seems to regain %1$s courage." (1 args)
+CN: "似乎重拾了勇气。" (0 args) ← MISMATCH
+
+EN: " seems to return to %1$s normal shape." (1 args)
+CN: "似乎恢复了正常形态。" (0 args) ← MISMATCH
+
+EN: " shakes off the sticky flame as %1$s %2$s." (2 args)
+CN: "随着%1$s的移动，抖掉了身上的黏性火焰。" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s a powerful frost blast!" (2 args)
+CN: "%1$s释放了一股强大的冰霜冲击！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s a word of immense power!" (2 args)
+CN: "%1$s说出了一句强大的话语！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s no magical effects to unravel." (2 args)
+CN: "%1$s没有魔法效果可以解开。" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s suddenly forward!" (2 args)
+CN: "%1$s猛然向前冲去！" (1 args) ← MISMATCH
+
+EN: "%1$s %2$s." (2 args)
+CN: "%1$s抽搐了一下。" (1 args) ← MISMATCH
+
+EN: "%1$s %3$s an %2$s energy prism!" (3 args)
+CN: "%1$s创造了一个%2$s能量棱镜！" (2 args) ← MISMATCH
+
+EN: "%1$s attack snaps %2$s out of %3$s fear." (3 args)
+CN: "%1$s的攻击将%2$s从恐惧中惊醒。" (2 args) ← MISMATCH
+
+EN: "%1$s attacks as %2$s pursue you!" (2 args)
+CN: "在%1$s追击你时发动攻击！" (1 args) ← MISMATCH
+
+EN: "%1$s blue arc%2$s harmlessly ground%3$s." (3 args)
+CN: "%1$s蓝色电弧无害地接地了。" (1 args) ← MISMATCH
+
+EN: "%1$s continues winding %2$s clockwork bee...." (2 args)
+CN: "%1$s继续给发条蜜蜂上弦……" (1 args) ← MISMATCH
+
+EN: "%1$s fails to defend %2$s." (2 args)
+CN: "%1$s未能防守。" (1 args) ← MISMATCH
+
+EN: "%1$s feeds on the fading %2$s of %3$s!" (3 args)
+CN: "你从%1$s的衰减%2$s中汲取了力量。" (2 args) ← MISMATCH
+
+EN: "%1$s is freed from %2$s curse." (2 args)
+CN: "%1$s从其诅咒中解脱了。" (1 args) ← MISMATCH
+
+EN: "%1$s loses %2$s grip on your mind." (2 args)
+CN: "%1$s对你精神的控制力减弱了。" (1 args) ← MISMATCH
+
+EN: "%1$s loses %2$s in your eye%3$s." (3 args)
+CN: "%1$s在你的眼中%2$s失去了自我。" (2 args) ← MISMATCH
+
+EN: "%1$s returns to %2$s original shape as %3$s %4$s." (4 args)
+CN: "%1$s在死亡时变回了原来的形态。" (1 args) ← MISMATCH
+
+EN: "%1$s shudder%2$s." (2 args)
+CN: "%1$s颤抖了。" (1 args) ← MISMATCH
+
+EN: "%1$s slice%2$s through the folds of space itself!" (2 args)
+CN: "%1$s切穿了空间本身的褶皱！" (1 args) ← MISMATCH
+
+EN: "%1$s steals %2$d gold piece%3$s!" (3 args)
+CN: "%1$s偷走了%2$d枚金币！" (2 args) ← MISMATCH
+
+EN: "%1$s stops winding %2$s clockwork bee." (2 args)
+CN: "%1$s停止了给发条蜜蜂上弦。" (1 args) ← MISMATCH
+
+EN: "%1$s turns %2$s attention back to you." (2 args)
+CN: "%1$s将注意力转回你身上。" (1 args) ← MISMATCH
+
+EN: "%1$s vibrate%2$s crazily for a second." (2 args)
+CN: "%1$s疯狂振动了一秒。" (1 args) ← MISMATCH
+
+EN: "%8s: %d daauts" (1 args)
+CN: "" (0 args) ← MISMATCH
+
+EN: "%d altar%s" (2 args)
+CN: "%d座祭坛" (1 args) ← MISMATCH
+
+EN: "%d shop%s/portal%s" (3 args)
+CN: "%d处商店/传送门" (1 args) ← MISMATCH
+
+EN: "%s %s an %s energy prism!" (3 args)
+CN: "%s创造了一个%s能量棱镜！" (2 args) ← MISMATCH
+
+EN: "%s fountain%s start%s gushing blood" (3 args)
+CN: "喷泉开始涌出鲜血" (0 args) ← MISMATCH
+
+EN: "(gained %1$d charge%2$s)" (2 args)
+CN: "（获得了%1$d次充能）" (1 args) ← MISMATCH
+
+EN: "... and %1$s it back!" (1 args)
+CN: "...并反射了回去！" (0 args) ← MISMATCH
+
+EN: "<%s>i'll put %s outside for you.</%s>" (3 args)
+CN: "" (0 args) ← MISMATCH
+
+EN: "<%s>purchase items%s for %d gold? %s (%s/n)</%s>" (6 args)
+CN: "" (0 args) ← MISMATCH
+
+EN: "<%s>you don't have enough money.</%s>" (2 args)
+CN: "" (0 args) ← MISMATCH
+
+EN: "\n<w>%s:</w> %d/%d rune%s: %s" (5 args)
+CN: "\n<w>%s:</w> %d/%d个符文：%s" (4 args) ← MISMATCH
+
+EN: "beam hit monster|the %1$s %2$s %3$s%4$s%5$s%6$s" (6 args)
+CN: "%1$s%2$s了%3$s%4$s%5$s。" (5 args) ← MISMATCH
+
+EN: "beam hit player|the %1$s %2$s %3$s%4$s%5$s%6$s" (6 args)
+CN: "%1$s%2$s了%3$s%4$s%5$s！" (5 args) ← MISMATCH
+
+EN: "detected %i monster%s." (1 args)
+CN: "检测到%i个怪物。" (0 args) ← MISMATCH
+
+EN: "dismissed %i monster%s." (1 args)
+CN: "遣散了%i个怪物。" (0 args) ← MISMATCH
+
+EN: "summons %d friend%s" (2 args)
+CN: "召唤了%d名友方" (1 args) ← MISMATCH
+
+EN: "you %1$s into a shaft and fall %2$d level%3$s!" (3 args)
+CN: "你%1$s入竖井，掉了%2$d层！" (2 args) ← MISMATCH
+
+EN: "you %1$salso visited: " (1 args)
+CN: "你还访问了：" (0 args) ← MISMATCH
+
+EN: "you anoint %1$s with ash and charcoal and welcome %2$s as a companion." (2 args)
+CN: "你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s" (1 args) ← MISMATCH
+
+EN: "you have %1$d gold piece%2$s." (2 args)
+CN: "你持有%1$d枚金币。" (1 args) ← MISMATCH
+
+EN: "you now have %1$d gold piece%2$s." (2 args)
+CN: "你还有%1$d枚金币。" (1 args) ← MISMATCH
+
+EN: "you now have %d gold piece%s." (2 args)
+CN: "你现在有 %d 枚金币。" (1 args) ← MISMATCH
+
+EN: "your %1$s %2$s a mass of colorful fungus." (2 args)
+CN: "你的%1$s变成了一团彩色的菌菇。" (1 args) ← MISMATCH
+
+EN: "your %1$s %2$s melded." (2 args)
+CN: "你的%1$s融化了。" (1 args) ← MISMATCH
+
+EN: "your %1$s meld%2$s into your body." (2 args)
+CN: "你的%1$s融入了你的身体。" (1 args) ← MISMATCH
+
+EN: "your %1$s prickle%2$s." (2 args)
+CN: "你的%1$s感到刺痛。" (1 args) ← MISMATCH
+
+EN: "your %1$s turn%2$s into%3$s wriggling electric eel%4$s!" (4 args)
+CN: "你的%1$s变成了一条扭动的电鳗！" (1 args) ← MISMATCH
+
+EN: "your %1$s unmeld%2$s from your body." (2 args)
+CN: "你的%1$s从你的身体中分离。" (1 args) ← MISMATCH
+
+EN: "your strength is siphoned away as %1$s grow%2$s stronger!" (2 args)
+CN: "你的力量被吸走，%1$s变得更加强大！" (1 args) ← MISMATCH
+
+Summary: 55 mismatches
+
+--- Sequential format type-order (crash risk) ---
+OK: All 11122 non-positional entries have matching format-specifier type sequences.
+
+--- Mixed positional/plain format (MinGW crash risk) ---
+OK: All 11122 entries have consistent format specifier types (no mixed positional/plain).
+
+--- Anti-patterns (strict) ---
+=== Anti-patterns detected (STRICT) ===
+
+  🔴 [English article in CN text] dat/i18n/zh/source.txt:34877
+     "a" near CJK
+     生成统计：[a] 获取 [b] 随机神器属性
+
+Summary: 1 finding(s) (1 🔴 strict, 0 🟡 lenient)
+
+--- String concatenation blind spots (tree-sitter AST) ---
+=== String concatenation: COMPOUND_ASSIGN (+=) ===
+
+  [HIGH] ability.cc:906  text += "no special abilities"
+  [HIGH] acquire.cc:1620  help += "<lightgrey>%s%s  %s %s</lightgrey>"
+  [HIGH] acquire.cc:1622  help += " <w>assemble</w>|examine gizmo"
+  [HIGH] acquire.cc:1623  help += " assemble|<w>examine</w> gizmo"
+  [HIGH] acquire.cc:1625  help += "select gizmo to assemble"
+  [HIGH] acquire.cc:1626  help += "examine gizmo"
+  [HIGH] acquire.cc:1633  help += "<lightgrey>%s%s  %s %s</lightgrey>"
+  [HIGH] acquire.cc:1635  help += " <w>acquire</w>|examine items"
+  [HIGH] acquire.cc:1636  help += " acquire|<w>examine</w> items"
+  [HIGH] acquire.cc:1638  help += "select item for acquirement"
+  [HIGH] acquire.cc:1639  help += "examine item"
+  [HIGH] artefact.cc:195  name += "divine_esteem"
+  [HIGH] branch.cc:337  desc += "noisy: sounds don't travel as far here."
+  [HIGH] branch.cc:339  desc += "unnaturally silent: sounds travel farther here."
+  [HIGH] chardump.cc:228  text += " character file.\n\n"
+  [HIGH] chardump.cc:748  text += "Lua dump error: "
+  [HIGH] chardump.cc:781  text += "Message History\n\n"
+  [HIGH] chardump.cc:883  text += " demanding penance.\n"
+  [HIGH] chardump.cc:960  text += "Inventory:\n\n"
+  [HIGH] chardump.cc:999  text += "   Skills:\n"
+  [HIGH] chardump.cc:1312  text += "Levels and vault maps discovered:\n"
+  [HIGH] chardump.cc:1320  text += "DLua errors:\n"
+  [HIGH] chardump.cc:1636  text += " || total\n"
+  [HIGH] command.cc:103  result += " (seed may be affected by game upgrades)"
+  [HIGH] command.cc:111  result += "Version history for your current game:\n"
+  [HIGH] command.cc:116  result += "Report bugs to: <w>"
+  [HIGH] command.cc:203  result += "For earlier changes, see changelog.txt "
+  [HIGH] command.cc:204  result += "in the docs/ directory."
+  [HIGH] command.cc:208  result += "For a list of changes, see changelog.txt in the docs/ "
+  [HIGH] command.cc:722  s += "The webtiles client will display 16 colors.\n\n"
+  [HIGH] command.cc:729  s += "Your terminal is in <red>compatibility mode</red> and may not display full colou"
+  [HIGH] command.cc:732  s += "For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xte"
+  [HIGH] command.cc:745  s += " (overridden by TERM)"
+  [HIGH] command.cc:755  s += "These two blocks should have the same background:"
+  [HIGH] command.cc:756  s += "    <bg:darkgrey><darkgrey>Block 1</darkgrey></bg:darkgrey>"
+  [HIGH] command.cc:757  s += "    <bg:darkgrey>Block 2</bg:darkgrey>\n"
+  [HIGH] command.cc:758  s += "The following two spans should have continuous shading between 1 and 2:\n"
+  [HIGH] command.cc:759  s += "    <bg:darkgrey><darkgrey>1          2</darkgrey></bg:darkgrey>\n"
+  [HIGH] command.cc:760  s += "    <bg:darkgrey><darkgrey>1               2</darkgrey></bg:darkgrey>\n"
+  [HIGH] command.cc:766  s += "Option `bold_brightens_foreground`: force\n\n"
+  [HIGH] command.cc:786  s += "\nFull palette:\n"
+  [HIGH] command.cc:961  item_types += "</lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
+  [HIGH] command.cc:962  item_types += "    pick up to add to library)"
+  [HIGH] command.cc:1272  item_types += "</lightcyan> : </console>"
+  [HIGH] command.cc:1273  item_types += "books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n"
+  [HIGH] command.cc:1274  item_types += "    pick up to add to spell library)"
+  [HIGH] command.cc:1283  item_types += "</brown> : </console>"
+  [HIGH] command.cc:1284  item_types += "staves (<w>%</w>ield)"
+  [HIGH] decks.cc:372  output += "It is found in decks of "
+  [HIGH] decks.cc:375  output += ", or in Nemelex Xobeh's deck of punishment"
+  [HIGH] decks.cc:380  output += "It is only found in Nemelex Xobeh's deck of "
+  [HIGH] decks.cc:381  output += "punishment."
+  [HIGH] decks.cc:384  output += "It is normally not part of any deck."
+  [HIGH] describe-god.cc:631  desc += " extra"
+  [HIGH] describe-spells.cc:691  description += "%c - %s%s%s%s%s"
+  [HIGH] describe.cc:1658  description += "\n%s%s"
+  [HIGH] describe.cc:1667  description += "\nChaotic:   "
+  [HIGH] describe.cc:2322  description += "       Evasion: "
+  [HIGH] describe.cc:3370  long_desc += "try to "
+  [HIGH] describe.cc:3419  long_desc += "tree burning"
+  [HIGH] describe.cc:3421  long_desc += "mangrove burning"
+  [HIGH] describe.cc:3423  long_desc += "demonic tree burning"
+  [HIGH] describe.cc:4253  description += "s"
+  [HIGH] describe.cc:5379  desc += " each"
+  [HIGH] describe.cc:5395  desc += " (if damage dealt)"
+  [HIGH] dgn-overview.cc:250  disp += "                    <white>Dungeon Overview and Level Annotations</white>\n"
+  [HIGH] dgn-overview.cc:255  disp += "\nThe Realm of Zot is guarded by %s.\n"
+  [HIGH] directn.cc:535  title += "Items"
+  [HIGH] directn.cc:541  title += "Features"
+  [HIGH] directn.cc:545  title += "<lightgray> (select to examine)</lightgray>"
+  [HIGH] directn.cc:552  title += "<lightgray> (select to "
+  [HIGH] directn.cc:554  title += " to examine)</lightgray>"
+  [HIGH] fight.cc:994  prompt += " This could place you under penance!"
+  [HIGH] hints.cc:333  text += "<lightred>ERROR: unterminated $cmd</lightred>"
+  [HIGH] hints.cc:353  text += "<lightred>ERROR: unterminated <input></lightred>"
+  [HIGH] hints.cc:374  text += "<lightred>ERROR: unterminated $item</lightred>"
+  [HIGH] hints.cc:679  text += "\nAlso, berserking might help you not to lose so much "
+  [HIGH] hints.cc:680  text += "health in the first place. To use your abilities "
+  [HIGH] hints.cc:681  text += "press <w>a</w>."
+  [HIGH] hints.cc:865  text += "monster is "
+  [HIGH] hints.cc:866  text += ". You can learn about any monster by hovering your mouse over it,"
+  [HIGH] hints.cc:867  text += " and read its description by <w>right-clicking</w> on it."
+  [HIGH] hints.cc:873  text += " is a monster, usually depicted by a letter. Some typical "
+  [HIGH] hints.cc:874  text += "early monsters look like <brown>r</brown>, <green>l</green>, "
+  [HIGH] hints.cc:875  text += "<brown>K</brown> or <lightgrey>g</lightgrey>. "
+  [HIGH] hints.cc:878  text += "Your console settings allowing, you'll always see a "
+  [HIGH] hints.cc:879  text += "list of monsters somewhere on the screen.\n"
+  [HIGH] hints.cc:881  text += "You can gain information about it by pressing <w>x</w> and "
+  [HIGH] hints.cc:882  text += "moving the cursor over the monster, and read the monster "
+  [HIGH] hints.cc:883  text += "description by then pressing <w>v</w>. "
+  [HIGH] hints.cc:886  text += "\nTo attack this monster with your wielded weapon, just move "
+  [HIGH] hints.cc:887  text += "into it. "
+  [HIGH] hints.cc:891  text += "Note that as long as there's a non-friendly monster in view you "
+  [HIGH] hints.cc:892  text += "won't be able to automatically move to distant squares, to avoid "
+  [HIGH] hints.cc:893  text += "death by misclicking."
+  [HIGH] hints.cc:909  text += "First <w>w</w>ield it, then follow the instructions."
+  [HIGH] hints.cc:910  text += "<tiles>\nAs a short-cut you can also <w>right-click</w> on your "
+  [HIGH] hints.cc:911  text += "shortbow to read its description, and <w>left-click</w> to wield "
+  [HIGH] hints.cc:912  text += "it.</tiles>"
+  [HIGH] hints.cc:916  text += "<tiles>Clicking with your <w>right mouse button</w> on your "
+  [HIGH] hints.cc:917  text += "shortbow will also let you read its description.</tiles>"
+  [HIGH] hints.cc:980  text += "HINT_SEEN_PORTAL_2"
+  [HIGH] hints.cc:1908  result += "%ap"
+  [HIGH] hints.cc:1917  result += "</w> fires at the same target again."
+  [HIGH] hints.cc:1939  m += "\n\nA spell that isn't <darkgray>grayed out</darkgray> or "
+  [HIGH] hints.cc:1940  m += "<lightred>forbidden</lightred> can be "
+  [HIGH] hints.cc:1941  m += "memorised right away by selecting it at this menu."
+  [HIGH] hints.cc:1945  m += "\n\nYou cannot memorise any "
+  [HIGH] hints.cc:1946  m += "more "
+  [HIGH] hints.cc:1947  m += "spells right now. This will change as you grow in levels and "
+  [HIGH] hints.cc:1948  m += "Spellcasting proficiency. "
+  [HIGH] hints.cc:1953  m += "\n\nTo use magic, "
+  [HIGH] hints.cc:1962  m += "you can press <w>%</w> and choose a spell, e.g. <w>a</w> (check "
+  [HIGH] hints.cc:1963  m += "with <w>?</w>). For attack spells you'll "
+  [HIGH] hints.cc:1987  str += "first <w>%</w>ield it"
+  [HIGH] hints.cc:1991  str += "first <w>%</w>ear it"
+  [HIGH] hints.cc:1995  str += "first <w>%</w>ut it on"
+  [HIGH] hints.cc:1999  str += "<r>(BUG! this item shouldn't give an ability)</r>"
+  [HIGH] hints.cc:2002  str += ", then "
+  [HIGH] hints.cc:2004  str += "enter the ability menu with <w>%</w>, and then "
+  [HIGH] hints.cc:2005  str += "choose the corresponding ability. Note that such an attempt of "
+  [HIGH] hints.cc:2006  str += "activation, especially by the untrained, is likely to fail."
+  [HIGH] hints.cc:2022  result += "</w> for"
+  [HIGH] hints.cc:2027  result += "select "
+  [HIGH] hints.cc:2029  result += "these"
+  [HIGH] hints.cc:2029  result += "this"
+  [HIGH] hints.cc:2032  result += "s"
+  [HIGH] hints.cc:2033  result += ". You'll "
+  [HIGH] hiscores.cc:1131  score_version += "-sprint.1"
+  [HIGH] hiscores.cc:1406  auxkilldata += " (from an undying armoury)"
+  [HIGH] hiscores.cc:1430  death_source_name += " (shapeshifter)"
+  [HIGH] hiscores.cc:1432  death_source_name += " (glowing shapeshifter)"
+  [HIGH] hiscores.cc:1435  death_source_name += " the pandemonium lord"
+  [HIGH] hiscores.cc:1438  death_source_name += " (illusionary)"
+  [HIGH] hiscores.cc:1995  desc += "and"
+  [HIGH] hiscores.cc:1995  desc += "with"
+  [HIGH] hiscores.cc:1997  desc += "s"
+  [HIGH] hiscores.cc:2004  desc += "and"
+  [HIGH] hiscores.cc:2004  desc += "with"
+  [HIGH] hiscores.cc:2006  desc += "s"
+  [HIGH] hiscores.cc:2012  desc += " (intact)"
+  [HIGH] hiscores.cc:2014  desc += " (both intact)"
+  [HIGH] hiscores.cc:2016  desc += " (all intact)"
+  [HIGH] hiscores.cc:2025  desc += " on "
+  [HIGH] hiscores.cc:2065  desc += " HPs"
+  [HIGH] hiscores.cc:2068  desc += ") *WIZ*"
+  [HIGH] hiscores.cc:2068  desc += ") *EXPLORE*"
+  [HIGH] hiscores.cc:2075  desc += "n"
+  [HIGH] hiscores.cc:2080  desc += " on "
+  [HIGH] hiscores.cc:2094  desc += "Favourite "
+  [HIGH] hiscores.cc:2103  desc += "the Champion"
+  [HIGH] hiscores.cc:2104  desc += "a High Priest"
+  [HIGH] hiscores.cc:2105  desc += "an Elder"
+  [HIGH] hiscores.cc:2106  desc += "a Priest"
+  [HIGH] hiscores.cc:2107  desc += "a Believer"
+  [HIGH] hiscores.cc:2108  desc += "a Follower"
+  [HIGH] hiscores.cc:2109  desc += "an Initiate"
+  [HIGH] hiscores.cc:2111  desc += " (penitent)."
+  [HIGH] hiscores.cc:2157  place += " on "
+  [HIGH] hiscores.cc:2195  desc += "slain by "
+  [HIGH] hiscores.cc:2199  desc += " by "
+  [HIGH] hiscores.cc:2210  desc += " headbutt"
+  [HIGH] hiscores.cc:2212  desc += "Headbutted by "
+  [HIGH] hiscores.cc:2218  desc += "squashed by "
+  [HIGH] hiscores.cc:2220  desc += "Rolled over by "
+  [HIGH] hiscores.cc:2226  desc += " spines"
+  [HIGH] hiscores.cc:2228  desc += "Impaled on "
+  [HIGH] hiscores.cc:2228  desc += " spines"
+  [HIGH] hiscores.cc:2236  desc += "Succumbed to poison"
+  [HIGH] hiscores.cc:2238  desc += "poisoned by "
+  [HIGH] hiscores.cc:2240  desc += "poison"
+  [HIGH] hiscores.cc:2247  desc += "Succumbed to "
+  [HIGH] hiscores.cc:2251  desc += "Succumbed to "
+  [HIGH] hiscores.cc:2251  desc += "you"
+  [HIGH] hiscores.cc:2252  desc += "their own"
+  [HIGH] hiscores.cc:2253  desc += "poison"
+  [HIGH] hiscores.cc:2261  desc += "cloud of "
+  [HIGH] hiscores.cc:2263  desc += "cloud of "
+  [HIGH] hiscores.cc:2264  desc += "you"
+  [HIGH] hiscores.cc:2264  desc += "self"
+  [HIGH] hiscores.cc:2269  desc += "a"
+  [HIGH] hiscores.cc:2270  desc += "you"
+  [HIGH] hiscores.cc:2270  desc += "their own"
+  [HIGH] hiscores.cc:2272  desc += " cloud of"
+  [HIGH] hiscores.cc:2284  desc += "you"
+  [HIGH] hiscores.cc:2284  desc += "themself"
+  [HIGH] hiscores.cc:2326  desc += "Killed by "
+  [HIGH] hiscores.cc:2328  desc += "Killed from afar by "
+  [HIGH] hiscores.cc:2331  desc += "themself"
+  [HIGH] hiscores.cc:2344  desc += "lava"
+  [HIGH] hiscores.cc:2349  desc += "Turned to ash by lava"
+  [HIGH] hiscores.cc:2352  desc += "Took a swim in molten lava"
+  [HIGH] hiscores.cc:2372  desc += "drowned by "
+  [HIGH] hiscores.cc:2372  desc += "Drowned by "
+  [HIGH] hiscores.cc:2377  desc += "drowned"
+  [HIGH] hiscores.cc:2377  desc += "Drowned"
+  [HIGH] hiscores.cc:2383  desc += "stupidity"
+  [HIGH] hiscores.cc:2388  desc += "Forgot to exist"
+  [HIGH] hiscores.cc:2391  desc += "Forgot to breathe"
+  [HIGH] hiscores.cc:2395  desc += "collapsed"
+  [HIGH] hiscores.cc:2395  desc += "Collapsed under their own weight"
+  [HIGH] hiscores.cc:2399  desc += "clumsiness"
+  [HIGH] hiscores.cc:2399  desc += "Slipped on a banana peel"
+  [HIGH] hiscores.cc:2415  desc += "left"
+  [HIGH] hiscores.cc:2419  desc += "Got out of the dungeon"
+  [HIGH] hiscores.cc:2421  desc += "Safely got out of the dungeon"
+  [HIGH] hiscores.cc:2423  desc += "Got out of the dungeon alive"
+  [HIGH] hiscores.cc:2428  desc += "escaped"
+  [HIGH] hiscores.cc:2428  desc += "Escaped with the Orb"
+  [HIGH] hiscores.cc:2434  desc += "quit"
+  [HIGH] hiscores.cc:2434  desc += "Quit the game"
+  [HIGH] hiscores.cc:2438  desc += "wizmode"
+  [HIGH] hiscores.cc:2438  desc += "Entered wizard mode"
+  [HIGH] hiscores.cc:2442  desc += "exploremode"
+  [HIGH] hiscores.cc:2442  desc += "Entered explore mode"
+  [HIGH] hiscores.cc:2447  desc += "drained"
+  [HIGH] hiscores.cc:2450  desc += "Drained of all life"
+  [HIGH] hiscores.cc:2453  desc += " by "
+  [HIGH] hiscores.cc:2459  desc += " by "
+  [HIGH] hiscores.cc:2464  desc += "starvation"
+  [HIGH] hiscores.cc:2464  desc += "Starved to death"
+  [HIGH] hiscores.cc:2468  desc += "frozen"
+  [HIGH] hiscores.cc:2468  desc += "Frozen to death"
+  [HIGH] hiscores.cc:2470  desc += " by "
+  [HIGH] hiscores.cc:2476  desc += "burnt"
+  [HIGH] hiscores.cc:2479  desc += "Incinerated by "
+  [HIGH] hiscores.cc:2485  desc += "Burnt to a crisp"
+  [HIGH] hiscores.cc:2492  desc += "disjoined"
+  [HIGH] hiscores.cc:2495  desc += "Disjoined by "
+  [HIGH] hiscores.cc:2506  desc += "wild magic"
+  [HIGH] hiscores.cc:2506  desc += "Killed by wild magic"
+  [HIGH] hiscores.cc:2515  desc += "by "
+  [HIGH] hiscores.cc:2515  desc += "by "
+  [HIGH] hiscores.cc:2525  desc += "xom"
+  [HIGH] hiscores.cc:2527  desc += "Killed for Xom's enjoyment"
+  [HIGH] hiscores.cc:2528  desc += "Killed by "
+  [HIGH] hiscores.cc:2533  desc += "rotting"
+  [HIGH] hiscores.cc:2533  desc += "Rotted away"
+  [HIGH] hiscores.cc:2542  desc += "shot self"
+  [HIGH] hiscores.cc:2545  desc += "Killed themself with "
+  [HIGH] hiscores.cc:2547  desc += "bad targeting"
+  [HIGH] hiscores.cc:2549  desc += "a badly aimed "
+  [HIGH] hiscores.cc:2557  desc += "reflected bolt"
+  [HIGH] hiscores.cc:2560  desc += "Killed by a reflected "
+  [HIGH] hiscores.cc:2562  desc += "bolt"
+  [HIGH] hiscores.cc:2570  desc += "... reflected by "
+  [HIGH] hiscores.cc:2579  desc += "bounced beam"
+  [HIGH] hiscores.cc:2582  desc += "Killed themself with a bounced "
+  [HIGH] hiscores.cc:2584  desc += "beam"
+  [HIGH] hiscores.cc:2593  desc += "suicidal targeting"
+  [HIGH] hiscores.cc:2596  desc += "Shot themself with "
+  [HIGH] hiscores.cc:2598  desc += "a beam"
+  [HIGH] hiscores.cc:2609  desc += "death explosion"
+  [HIGH] hiscores.cc:2615  desc += "Killed by an exploding "
+  [HIGH] hiscores.cc:2617  desc += "monster"
+  [HIGH] hiscores.cc:2625  desc += "smitten by Shining One"
+  [HIGH] hiscores.cc:2625  desc += "Smitten by the Shining One"
+  [HIGH] hiscores.cc:2630  desc += "smitten by Beogh"
+  [HIGH] hiscores.cc:2630  desc += "Smitten by Beogh"
+  [HIGH] hiscores.cc:2635  desc += "petrified"
+  [HIGH] hiscores.cc:2635  desc += "Turned to stone"
+  [HIGH] hiscores.cc:2642  desc += "Slain by "
+  [HIGH] hiscores.cc:2644  desc += "\n             ... wielded by "
+  [HIGH] hiscores.cc:2649  desc += "a death curse"
+  [HIGH] hiscores.cc:2650  desc += " death curse"
+  [HIGH] hiscores.cc:2654  desc += "Slain by "
+  [HIGH] hiscores.cc:2655  desc += "'s death curse"
+  [HIGH] hiscores.cc:2663  desc += "Killed by "
+  [HIGH] hiscores.cc:2665  desc += "died"
+  [HIGH] hiscores.cc:2665  desc += "Died"
+  [HIGH] hiscores.cc:2670  desc += "fell downstairs"
+  [HIGH] hiscores.cc:2670  desc += "Fell down a flight of stairs"
+  [HIGH] hiscores.cc:2675  desc += "fell through a gate"
+  [HIGH] hiscores.cc:2675  desc += "Fell down through a gate"
+  [HIGH] hiscores.cc:2681  desc += "acid"
+  [HIGH] hiscores.cc:2684  desc += "Splashed by "
+  [HIGH] hiscores.cc:2686  desc += " acid"
+  [HIGH] hiscores.cc:2689  desc += "Splashed with acid"
+  [HIGH] hiscores.cc:2694  desc += "asphyx"
+  [HIGH] hiscores.cc:2694  desc += "Asphyxiated"
+  [HIGH] hiscores.cc:2699  desc += "divine wrath"
+  [HIGH] hiscores.cc:2702  desc += "Killed by "
+  [HIGH] hiscores.cc:2704  desc += "divine wrath"
+  [HIGH] hiscores.cc:2712  desc += "an "
+  [HIGH] hiscores.cc:2712  desc += "a "
+  [HIGH] hiscores.cc:2725  desc += "disintegration"
+  [HIGH] hiscores.cc:2729  desc += "Blew themself up"
+  [HIGH] hiscores.cc:2731  desc += "Blown up by "
+  [HIGH] hiscores.cc:2739  desc += "mirror damage"
+  [HIGH] hiscores.cc:2739  desc += "Killed by mirror damage"
+  [HIGH] hiscores.cc:2744  desc += "frailty"
+  [HIGH] hiscores.cc:2744  desc += "Became unviable by "
+  [HIGH] hiscores.cc:2748  desc += "barbs"
+  [HIGH] hiscores.cc:2748  desc += "Succumbed to barbed spike wounds"
+  [HIGH] hiscores.cc:2753  desc += " throw"
+  [HIGH] hiscores.cc:2755  desc += "Thrown by "
+  [HIGH] hiscores.cc:2761  desc += " collision"
+  [HIGH] hiscores.cc:2764  desc += "Collided with "
+  [HIGH] hiscores.cc:2771  desc += "Zot"
+  [HIGH] hiscores.cc:2771  desc += "Tarried too long and was consumed by Zot"
+  [HIGH] hiscores.cc:2776  desc += "constriction"
+  [HIGH] hiscores.cc:2778  desc += "Constricted to death by "
+  [HIGH] hiscores.cc:2783  desc += "program bug"
+  [HIGH] hiscores.cc:2783  desc += "Nibbled to death by software bugs"
+  [HIGH] hiscores.cc:2802  desc += "... caused by "
+  [HIGH] hiscores.cc:2873  desc += "damnation"
+  [HIGH] hiscores.cc:2873  desc += "... with "
+  [HIGH] hiscores.cc:2874  desc += "creeping frost"
+  [HIGH] hiscores.cc:2874  desc += "... by "
+  [HIGH] hiscores.cc:2875  desc += "... with an "
+  [HIGH] hiscores.cc:2876  desc += "... with a "
+  [HIGH] hiscores.cc:2890  desc += "after being knocked back"
+  [HIGH] hiscores.cc:2891  desc += "by angry trees"
+  [HIGH] hiscores.cc:2891  desc += "awakened"
+  [HIGH] hiscores.cc:2892  desc += "by Freeze"
+  [HIGH] hiscores.cc:2892  desc += "generated"
+  [HIGH] hiscores.cc:2893  desc += "invoked"
+  [HIGH] hiscores.cc:2928  desc += "... while paralysed"
+  [HIGH] hiscores.cc:2930  desc += " by "
+  [HIGH] hiscores.cc:2936  desc += "... while petrified"
+  [HIGH] hiscores.cc:2938  desc += " by "
+  [HIGH] hiscores.cc:2944  desc += "... while put to sleep"
+  [HIGH] hiscores.cc:2946  desc += " by "
+  [HIGH] hiscores.cc:2950  desc += "... while vexed"
+  [HIGH] hiscores.cc:2952  desc += " by "
+  [HIGH] invent.cc:1781  prompt += " while about to teleport"
+  [HIGH] invent.cc:1784  prompt += " You'd be excommunicated if you did!"
+  [HIGH] invent.cc:1786  prompt += " This could place you under penance!"
+  [HIGH] item-name.cc:2500  text += " turns"
+  [HIGH] item-name.cc:2541  text += " rune of Zot"
+  [HIGH] item-name.cc:2663  more_text += "Less"
+  [HIGH] item-name.cc:2663  more_text += "More"
+  [HIGH] item-use.cc:440  text += " (cancels current teleport)"
+  [HIGH] item-use.cc:641  text += "<lightgray> (%s to %s)</lightgray>"
+  [HIGH] kills.cc:478  name += " zombie"
+  [HIGH] kills.cc:481  name += " draugr"
+  [HIGH] kills.cc:484  name += " simulacrum"
+  [HIGH] lookup-help.cc:268  prompt += "(CTRL-S to sort by monster toughness)"
+  [HIGH] lookup-help.cc:270  prompt += "(CTRL-S to sort by name)"
+  [HIGH] mon-death.cc:1098  msg += " reappears in a puff of iridescent mist."
+  [HIGH] movement.cc:130  prompt += " Continue?"
+  [HIGH] movement.cc:303  prompt += "Are you sure you want to "
+  [HIGH] movement.cc:305  prompt += " while confused and next to "
+  [HIGH] movement.cc:310  prompt += " while you are losing your buoyancy"
+  [HIGH] movement.cc:311  prompt += " while your transformation is expiring"
+  [HIGH] movement.cc:323  prompt += " This could place you under penance!"
+  [HIGH] newgame.cc:1838  text += "unarmed"
+  [HIGH] newgame.cc:2223  text += "Tab - "
+  [HIGH] ng-input.cc:35  msg += "<lightgrey>Options read from ""
+  [HIGH] ng-input.cc:44  msg += "".</lightgrey>"
+  [HIGH] ng-input.cc:48  msg += "<lightred>Options file "
+  [HIGH] ng-input.cc:55  msg += "not found"
+  [HIGH] ng-input.cc:56  msg += "; using defaults.</lightred>"
+  [HIGH] output.cc:1822  msg += "were"
+  [HIGH] output.cc:1822  msg += "are"
+  [HIGH] output.cc:1823  msg += " no monsters in sight!"
+  [HIGH] output.cc:1844  msg += "could"
+  [HIGH] output.cc:1844  msg += "can"
+  [HIGH] output.cc:1845  msg += " see "
+  [HIGH] output.cc:2750  desc += "roll"
+  [HIGH] output.cc:2750  desc += "rampage"
+  [HIGH] output.cc:2928  text += "s"
+  [HIGH] player-act.cc:472  singular += "eel "
+  [HIGH] player-notices.cc:628  name += "glowing "
+  [HIGH] player.cc:326  prompt += "Are you sure you want to "
+  [HIGH] player.cc:329  prompt += " into "
+  [HIGH] player.cc:331  prompt += " over "
+  [HIGH] player.cc:333  prompt += "deep water"
+  [HIGH] player.cc:333  prompt += "lava"
+  [HIGH] player.cc:336  prompt += " while you are losing your buoyancy?"
+  [HIGH] player.cc:337  prompt += " while your transformation is expiring?"
+  [HIGH] potion.cc:854  msg += " while resistant to mutation?"
+  [HIGH] potion.cc:858  msg += " Zin will disapprove."
+  [HIGH] randbook.cc:740  name += "book_name"
+  [HIGH] religion.cc:1614  prompt += "and "
+  [HIGH] skill-menu.cc:325  text += " %d"
+  [HIGH] skill-menu.cc:334  text += "<lightred>+4</lightred>"
+  [HIGH] skill-menu.cc:735  text += " %s  "
+  [HIGH] skills.cc:2724  text += " %c Level %.*f%s %s\n"
+  [HIGH] stash.cc:1588  fs += ": only useless items found; press <w>=</w> to show."
+  [HIGH] status.cc:1404  short_text += " (but backlit and visible)"
+  [MED ] artefact.cc:1680  result += "of Bugginess"
+  [MED ] artefact.cc:1692  result += " of "
+  [MED ] beam.cc:7971  verb += "at "
+  [MED ] beam.cc:7974  verb += "in "
+  [MED ] beam.cc:7974  verb += " direction"
+  [MED ] beam.cc:7979  verb += "towards "
+  [MED ] chardump.cc:215  type += " DCSS"
+  [MED ] chardump.cc:1106  spell_line += "%d"
+  [MED ] chardump.cc:1178  spell_line += "%d"
+  [MED ] chardump.cc:1265  result += "Total"
+  [MED ] chardump.cc:1920  stash_file_name += ".lst"
+  [MED ] chardump.cc:1923  file_name += ".txt"
+  [MED ] clua.cc:1344  trace += "%s, function %s, line %d\n"
+  [MED ] command.cc:106  result += "Game is non-seeded."
+  [MED ] command.cc:118  result += "<w>Features</w>\n"
+  [MED ] command.cc:209  result += "directory."
+  [MED ] decks.cc:821  status += "Drawn so far: "
+  [MED ] describe.cc:1690  handname += "-pair"
+  [MED ] describe.cc:5497  dam_str += " fire"
+  [MED ] describe.cc:6342  sym += "x"
+  [MED ] describe.cc:6993  symbol_suffix += "_suffix"
+  [MED ] dgn-layouts.cc:434  level_build_method += " octa_room [oblique %d, %s]"
+  [MED ] dgn-overview.cc:283  disp += " (press <white>G</white> to reach them and "
+  [MED ] dgn-overview.cc:284  disp += "<white>?/b</white> for more information)"
+  [MED ] dgn-overview.cc:487  disp += " (press <white>_</white> to reach them and "
+  [MED ] dgn-overview.cc:488  disp += "<white>?/g</white> for information about gods)"
+  [MED ] dgn-overview.cc:593  disp += " (press <white>$</white> to reach them - yellow denotes antique shop)"
+  [MED ] directn.cc:3014  messageLookup += "fruit cache"
+  [MED ] directn.cc:3016  messageLookup += "meat cache"
+  [MED ] directn.cc:3018  messageLookup += "baked goods cache"
+  [MED ] english.cc:423  result += "零"
+  [MED ] english.cc:437  result += "零"
+  [MED ] exclude.cc:564  desc += " (detected)"
+  [MED ] fight.cc:1376  adj += "盟友"
+  [MED ] files.cc:1963  status += "a lair branch"
+  [MED ] files.cc:1967  status += "another lair branch"
+  [MED ] format.cc:398  st += "<bg:"
+  [MED ] god-blessing.cc:194  blessing += "more time in this world"
+  [MED ] god-prayer.cc:41  result += "exalted by your worship"
+  [MED ] god-prayer.cc:42  result += "extremely pleased with you"
+  [MED ] god-prayer.cc:43  result += "greatly pleased with you"
+  [MED ] god-prayer.cc:44  result += "most pleased with you"
+  [MED ] god-prayer.cc:46  result += "aware of your devotion"
+  [MED ] hints.cc:1913  result += "%f"
+  [MED ] items.cc:1331  desc += " in a shop "
+  [MED ] items.cc:1354  desc += " to you "
+  [MED ] items.cc:1368  desc += " off "
+  [MED ] kills.cc:514  name += " (shapeshifter)"
+  [MED ] known-items.cc:139  navigation += " page down  "
+  [MED ] known-items.cc:140  navigation += " page up  "
+  [MED ] known-items.cc:142  navigation += "[<w>-</w>] recognised  "
+  [MED ] known-items.cc:143  navigation += " exit"
+  [MED ] known-items.cc:156  navigation += " page down  "
+  [MED ] known-items.cc:157  navigation += " page up  "
+  [MED ] known-items.cc:163  navigation += "Letters toggle autopickup  "
+  [MED ] known-items.cc:167  navigation += " toggle selected  "
+  [MED ] known-items.cc:173  navigation += "[<w>-</w>] unrecognised"
+  [MED ] l-dgn.cc:1041  error += "No such dungeon feature as '"
+  [MED ] l-dgn.cc:1051  error += "No such colour as '"
+  [MED ] l-dgn.cc:1056  error += "Can't set floor colour to black."
+  [MED ] l-dgn.cc:1088  error += "' is not a valid halo tile. It has "
+  [MED ] l-dgn.cc:1090  error += " variations, but needs exactly 9."
+  [MED ] lang-fake.cc:384  out += "　"
+  [MED ] lookup-help.cc:1290  desc += "in "
+  [MED ] lookup-help.cc:1316  desc += "s"
+  [MED ] macro.cc:1880  prefix += "Alt-"
+  [MED ] macro.cc:1901  prefix += "Shift-"
+  [MED ] macro.cc:1911  prefix += "Shift-"
+  [MED ] message.cc:751  more_str += "to continue. You can later reread messages with "
+  [MED ] mon-death.cc:4212  key += "invisible_"
+  [MED ] mon-death.cc:4215  key += "distance_"
+  [MED ] mon-death.cc:4222  key += "bytwin_"
+  [MED ] mon-util.cc:3064  result += "random monster"
+  [MED ] mon-util.cc:3067  result += "random draconian"
+  [MED ] mon-util.cc:3070  result += "random base draconian"
+  [MED ] mon-util.cc:3073  result += "random nonbase draconian"
+  [MED ] mon-util.cc:3076  result += "wandering monster"
+  [MED ] mon-util.cc:3084  result += "invalid monster_type %d"
+  [MED ] mon-util.cc:4012  result += "be"
+  [MED ] movement.cc:304  prompt += "stumble around"
+  [MED ] movement.cc:304  prompt += "swing wildly"
+  [MED ] movement.cc:309  prompt += "lava"
+  [MED ] movement.cc:309  prompt += "deep water"
+  [MED ] mutation.cc:1171  extra += "<darkgrey>[]</darkgrey>: Gained at a future XL.\n"
+  [MED ] ouch.cc:1219  key_extended += " corpse"
+  [MED ] ouch.cc:1221  key_extended += " undead"
+  [MED ] ouch.cc:1223  key_extended += " nonliving"
+  [MED ] player.cc:8844  door_open_prompt += " (y/N)"
+  [MED ] stash.cc:99  text += " {autopickup}"
+  [MED ] stash.cc:1600  fs += "travel"
+  [MED ] stash.cc:1600  fs += "view  "
+
+=== String concatenation: STREAM_INSERT (<<) ===
+
+  [HIGH] ability.cc:1098  ret << "This ability costs: "
+  [HIGH] ability.cc:1103  ret << "\nMP     : "
+  [HIGH] ability.cc:1109  ret << "\nHP     : "
+  [HIGH] ability.cc:1116  ret << "\nPiety  : "
+  [HIGH] ability.cc:1123  ret << "\nGold   : "
+  [HIGH] ability.cc:1128  ret << "free"
+  [HIGH] ability.cc:1130  ret << "variable"
+  [HIGH] ability.cc:1136  ret << "\nOne cursed item"
+  [HIGH] ability.cc:1142  ret << "\nTorchlight"
+  [HIGH] ability.cc:1145  ret << "nothing."
+  [HIGH] ability.cc:1148  ret << "\nYou must catch your breath between uses of this ability."
+  [HIGH] ability.cc:1151  ret << "\nThis ability takes some time before being effective."
+  [HIGH] ability.cc:1154  ret << "\nUsing this ability will hurt you for a large fraction of your current HP."
+  [HIGH] ability.cc:1157  ret << "\nUsing this ability invokes torment."
+  [HIGH] ability.cc:1160  ret << "\nThis ability causes exhaustion, and cannot be used when exhausted."
+  [HIGH] ability.cc:1163  ret << "\nThis ability is instantaneous."
+  [HIGH] ability.cc:1166  ret << "\nYou can use this ability even if confused."
+  [HIGH] ability.cc:1171  ret << "\nThis ability will temporarily drain your maximum health when used"
+  [HIGH] ability.cc:1173  ret << ", even unsuccessfully"
+  [HIGH] ability.cc:1178  ret << "\nGaining experience will replenish charges of this ability."
+  [HIGH] ability.cc:1468  desc << "your "
+  [HIGH] ability.cc:1468  desc << "the "
+  [HIGH] ability.cc:1468  desc << "Draw a card from "
+  [HIGH] decks.cc:486  desc << "A deck of magical cards, "
+  [HIGH] decks.cc:498  desc << "It currently has 1 card "
+  [HIGH] decks.cc:500  desc << "It is currently empty "
+  [HIGH] describe.cc:1119  description << " has "
+  [HIGH] describe.cc:1119  description << "One of the many lords of Pandemonium, "
+  [HIGH] describe.cc:1125  description << " body "
+  [HIGH] describe.cc:1133  description << "and "
+  [HIGH] describe.cc:1143  description << " It changes colour whenever you look at it."
+  [HIGH] describe.cc:2787  description << "[ERROR: no desc for item name '"
+  [HIGH] describe.cc:2788  description << "']. Perhaps this item has been removed?\n"
+  [HIGH] describe.cc:2886  description << "\n\nIt is surrounded by a "
+  [HIGH] describe.cc:2887  description << "blinding "
+  [HIGH] describe.cc:2888  description << "dazzling "
+  [HIGH] describe.cc:2889  description << "bright "
+  [HIGH] describe.cc:2890  description << "gentle "
+  [HIGH] describe.cc:2891  description << "glow."
+  [HIGH] describe.cc:5924  result << "your "
+  [HIGH] describe.cc:6398  result << "d"
+  [HIGH] describe.cc:6594  result << "are"
+  [HIGH] describe.cc:6607  result << "易受"
+  [HIGH] describe.cc:6609  result << "影响。\n"
+  [HIGH] describe.cc:6614  result << " susceptible to "
+  [HIGH] describe.cc:6614  result << "are"
+  [HIGH] describe.cc:6623  result << "易受银器伤害，并被吉恩憎恨。\n"
+  [HIGH] describe.cc:6627  result << "are"
+  [HIGH] describe.cc:6628  result << " vulnerable to silver and hated by Zin.\n"
+  [HIGH] describe.cc:6644  result << "是冷血动物，可能被寒冷攻击减速。\n"
+  [HIGH] describe.cc:6647  result << "are"
+  [HIGH] describe.cc:6648  result << " cold-blooded and may be slowed by cold attacks.\n"
+  [HIGH] describe.cc:6668  result << "近战攻击时会额外造成1d5点酸伤害。\n"
+  [HIGH] describe.cc:6673  result << "inflict"
+  [HIGH] describe.cc:6674  result << " 1d5 acid damage when struck in melee.\n"
+  [HIGH] describe.cc:6683  result << "是无实体的，免疫缠绕。\n"
+  [HIGH] describe.cc:6686  result << "are"
+  [HIGH] describe.cc:6687  result << " insubstantial and immune to ensnarement.\n"
+  [HIGH] describe.cc:6693  result << "是无定形的，免疫缠绕。\n"
+  [HIGH] describe.cc:6696  result << "are"
+  [HIGH] describe.cc:6697  result << " amorphous and immune to ensnarement.\n"
+  [HIGH] describe.cc:6709  result << "隐形时移动速度更快。\n"
+  [HIGH] describe.cc:6712  result << "cover"
+  [HIGH] describe.cc:6713  result << " ground more quickly when invisible.\n"
+  [HIGH] describe.cc:6720  result << "受伤或死亡时会释放多种史莱姆，"
+  [HIGH] describe.cc:6721  result << "数量与受到的伤害成正比。\n"
+  [HIGH] describe.cc:6722  result << "被变形时会释放所有史莱姆。\n"
+  [HIGH] describe.cc:6726  result << "It will release varied jellies when damaged or killed,"
+  [HIGH] describe.cc:6727  result << " with the number of jellies proportional to the amount of"
+  [HIGH] describe.cc:6728  result << " damage.\n"
+  [HIGH] describe.cc:6729  result << "It will release all of its jellies when polymorphed.\n"
+  [HIGH] describe.cc:6737  result << "d"
+  [HIGH] describe.cc:6767  result << " (Recite power:"
+  [HIGH] describe.cc:6768  result << ", Hit dice:"
+  [HIGH] describe.cc:6779  result << "d"
+  [HIGH] describe.cc:6796  result << "尽管外表"
+  [HIGH] describe.cc:6797  result << "，但它能开门。\n"
+  [HIGH] describe.cc:6799  result << "Despite "
+  [HIGH] describe.cc:6800  result << " can open doors.\n"
+  [HIGH] describe.cc:6800  result << " appearance, "
+  [HIGH] describe.cc:6967  body << "If this monster is a "program bug", then it's "
+  [HIGH] describe.cc:6968  body << "recommended that you save your game and reload. Please report "
+  [HIGH] describe.cc:6969  body << "monsters who masquerade as program bugs or run around the "
+  [HIGH] describe.cc:6970  body << "dungeon without a proper description to the authorities.\n"
+  [HIGH] describe.cc:7488  gstr << " the "
+  [HIGH] describe.cc:7506  gstr << " of "
+  [HIGH] describe.cc:7815  description << "\nClass: "
+  [HIGH] describe.cc:7891  description << "\nMelds: "
+  [HIGH] directn.cc:686  desc << " (not visited)"
+  [HIGH] hints.cc:1504  text << " just excommunicated you "
+  [HIGH] hints.cc:1504  text << "Uh-oh, "
+  [HIGH] hints.cc:1505  text << "for running out of piety (your divine favour went "
+  [HIGH] hints.cc:1506  text << "to nothing). Maybe you repeatedly violated the "
+  [HIGH] hints.cc:1507  text << "religious rules, or maybe you failed to please your "
+  [HIGH] hints.cc:1508  text << "deity often enough, or some combination of the two. "
+  [HIGH] hints.cc:1509  text << "If you can find an altar dedicated to "
+  [HIGH] hints.cc:1514  text << "Should you decide that abandoning "
+  [HIGH] hints.cc:1515  text << "wasn't such a smart move after all, and you'd like to "
+  [HIGH] hints.cc:1516  text << "return to your old faith, you'll have to find an "
+  [HIGH] hints.cc:1517  text << " where"
+  [HIGH] hints.cc:1517  text << "altar dedicated to "
+  [HIGH] hints.cc:1519  text << " you can re-convert, and all will be well."
+  [HIGH] hints.cc:1523  text << "Otherwise, you'll have to weather this god's "
+  [HIGH] hints.cc:1524  text << "displeasure until their divine wrath is spent."
+  [HIGH] hints.cc:1535  text << "Fortunately, it seems that "
+  [HIGH] hints.cc:1536  text << " didn't mind your converting to "
+  [HIGH] hints.cc:1540  text << "You even kept some of your piety! "
+  [HIGH] hints.cc:1542  text << "Note that this kind of alliance only exists "
+  [HIGH] hints.cc:1543  text << "between the three good gods, so don't expect this "
+  [HIGH] hints.cc:1544  text << "to be the norm."
+  [HIGH] hints.cc:1548  text << "Fortunately, it seems that "
+  [HIGH] hints.cc:1549  text << " didn't mind your converting to "
+  [HIGH] hints.cc:1550  text << " is one of "
+  [HIGH] hints.cc:1550  text << ". That's because "
+  [HIGH] hints.cc:1551  text << "the good gods who generally are rather forgiving "
+  [HIGH] hints.cc:1552  text << "about change of faith - unless you switch over to "
+  [HIGH] hints.cc:1553  text << "the path of evil, in which case their retribution "
+  [HIGH] hints.cc:1554  text << "can be nasty indeed!"
+  [HIGH] hints.cc:1558  text << " didn't "
+  [HIGH] hints.cc:1558  text << "Looks like "
+  [HIGH] hints.cc:1559  text << "appreciate your converting to "
+  [HIGH] hints.cc:1560  text << "! But really, changing from one of the good gods "
+  [HIGH] hints.cc:1561  text << "to an evil one, what did you expect!? For any god "
+  [HIGH] hints.cc:1562  text << "not on the opposing side of the faith, "
+  [HIGH] hints.cc:1563  text << " would have been much more "
+  [HIGH] hints.cc:1564  text << "forgiving. "
+  [HIGH] hints.cc:1571  text << " didn't appreciate "
+  [HIGH] hints.cc:1571  text << "Looks like "
+  [HIGH] hints.cc:1572  text << "! (Actually, "
+  [HIGH] hints.cc:1572  text << "your converting to "
+  [HIGH] hints.cc:1573  text << "only the three good gods will usually be forgiving "
+  [HIGH] hints.cc:1574  text << "about this kind of faithlessness.) "
+  [HIGH] hints.cc:1581  text << "Unfortunately, while converting back would appease "
+  [HIGH] hints.cc:1582  text << ", it would annoy "
+  [HIGH] hints.cc:1583  text << ", so you're stuck with having to suffer the wrath of "
+  [HIGH] hints.cc:1584  text << "one god or another."
+  [HIGH] hints.cc:1765  text << " are good things to check."
+  [HIGH] hints.cc:2073  ostr << "When wielded, some weapons (such as this one) "
+  [HIGH] hints.cc:2074  ostr << "offer certain abilities you can activate. "
+  [HIGH] hints.cc:2081  ostr << "\nThis weapon offers its wearer protection from "
+  [HIGH] hints.cc:2082  ostr << "certain damage sources. For an overview of your "
+  [HIGH] hints.cc:2083  ostr << "resistances (among other things) press <w>%</w>"
+  [HIGH] hints.cc:2085  ostr << " or click on your avatar with the <w>right mouse "
+  [HIGH] hints.cc:2098  ostr << "You can wield this weapon with <w>%</w>, or use "
+  [HIGH] hints.cc:2099  ostr << "<w>%</w> to switch between the weapons in slot "
+  [HIGH] hints.cc:2100  ostr << "a and b. (Use <w>%i</w> to adjust item slots.)"
+  [HIGH] hints.cc:2121  ostr << "\nHowever, you've been training in <w>"
+  [HIGH] hints.cc:2123  ostr << "</w> for a while, so maybe you should "
+  [HIGH] hints.cc:2124  ostr << "continue training that rather than <w>"
+  [HIGH] hints.cc:2126  ostr << "</w>. (Press <w>%</w> to see the skill "
+  [HIGH] hints.cc:2127  ostr << "management screen for the actual numbers.)"
+  [HIGH] hints.cc:2136  ostr << "To attack a monster, "
+  [HIGH] hints.cc:2146  ostr << "To attack a monster, you can simply walk into it."
+  [HIGH] hints.cc:2156  ostr << " can be <w>%</w>ired without the use of a launcher. "
+  [HIGH] hints.cc:2169  ostr << "Because of your horns you cannot wear helmets. "
+  [HIGH] hints.cc:2170  ostr << "(Press <w>%</w> to see a list of your mutations and "
+  [HIGH] hints.cc:2177  ostr << "Only nagas and armataurs can wear barding."
+  [HIGH] hints.cc:2197  ostr << "\nNote that body armour with a high encumbrance "
+  [HIGH] hints.cc:2198  ostr << "rating may hinder your ability to cast spells. Light "
+  [HIGH] hints.cc:2199  ostr << "armour such as robes and leather armour will be "
+  [HIGH] hints.cc:2200  ostr << "generally safe for any aspiring spellcaster."
+  [HIGH] hints.cc:2205  ostr << "\nNote that shields will hinder your ability to "
+  [HIGH] hints.cc:2206  ostr << "cast spells, until you've gained enough Shields "
+  [HIGH] hints.cc:2207  ostr << "skill to remove the penalty."
+  [HIGH] hints.cc:2212  ostr << "\nNote that many ranged weapons are two handed and so "
+  [HIGH] hints.cc:2213  ostr << "cannot be used with an offhand item."
+  [HIGH] hints.cc:2220  ostr << "\n\nWeapons and armour that have unusual descriptions "
+  [HIGH] hints.cc:2221  ostr << "like this are much more likely to be of higher "
+  [HIGH] hints.cc:2222  ostr << "enchantment or have special properties, good or bad."
+  [HIGH] hints.cc:2228  ostr << "\n\nThis armour offers its wearer protection from "
+  [HIGH] hints.cc:2229  ostr << "certain sources. For an overview of your"
+  [HIGH] hints.cc:2230  ostr << " resistances (among other things) press <w>%</w>"
+  [HIGH] hints.cc:2232  ostr << " or click on your avatar with the <w>right mouse "
+  [HIGH] hints.cc:2240  ostr << "\n\nWhen worn, some types of armour (such as "
+  [HIGH] hints.cc:2241  ostr << "this one) offer certain <w>%</w>bilities you can "
+  [HIGH] hints.cc:2251  ostr << "The magic within can be unleashed by evoking "
+  [HIGH] hints.cc:2276  ostr << "Press <w>%</w> to read this scroll"
+  [HIGH] hints.cc:2314  ostr << "\n\nWhen worn, some types of jewellery (such as this "
+  [HIGH] hints.cc:2315  ostr << "one) offer certain <w>%</w>bilities you can activate. "
+  [HIGH] hints.cc:2323  ostr << "Press <w>%</w> to quaff this potion"
+  [HIGH] hints.cc:2335  ostr << "A manual can greatly help you in training a skill. "
+  [HIGH] hints.cc:2336  ostr << "After you pick one up, the skill in question will be "
+  [HIGH] hints.cc:2337  ostr << "trained more efficiently and will level up faster "
+  [HIGH] hints.cc:2338  ostr << "until you exhaust the manual's contents."
+  [HIGH] hints.cc:2343  ostr << "\nYou can pick up a spellbook to add its spells to "
+  [HIGH] hints.cc:2344  ostr << "your spell library. (View your spell library with "
+  [HIGH] hints.cc:2353  ostr << "Skeletons and corpses can be used as components for "
+  [HIGH] hints.cc:2354  ostr << "certain necromantic spells. Apart from that, they are "
+  [HIGH] hints.cc:2359  ostr << "This staff can enhance your spellcasting, making spells "
+  [HIGH] hints.cc:2360  ostr << "of its related spell school more powerful."
+  [HIGH] hints.cc:2379  ostr << " frowns upon the use of magic, this staff will be "
+  [HIGH] hints.cc:2380  ostr << "of little use to you and you might just as well "
+  [HIGH] hints.cc:2388  ostr << "Miscellaneous items sometimes harbour magical powers "
+  [HIGH] hints.cc:2389  ostr << "that can be harnessed by e<w>%</w>oking the item."
+  [HIGH] hints.cc:2465  ostr << "These nasty constructions can cause a range of "
+  [HIGH] hints.cc:2466  ostr << "unpleasant effects. You won't be able to avoid "
+  [HIGH] hints.cc:2467  ostr << "tripping traps by flying over them; their magic "
+  [HIGH] hints.cc:2468  ostr << "construction will cause them to be triggered anyway."
+  [HIGH] hints.cc:2473  ostr << "The dungeon contains a number of natural obstacles such "
+  [HIGH] hints.cc:2474  ostr << "as shafts, which lead one to three levels down. Once you "
+  [HIGH] hints.cc:2475  ostr << "know the shaft is there, you can safely step over it.\n"
+  [HIGH] hints.cc:2476  ostr << "If you want to jump down there, use <w>></w> to do so. "
+  [HIGH] hints.cc:2477  ostr << "Be warned that getting back here might be difficult."
+  [HIGH] hints.cc:2482  ostr << "Some areas of the dungeon, such as the Spider Nest, may "
+  [HIGH] hints.cc:2483  ostr << "be strewn with giant webs that may ensnare you for a short "
+  [HIGH] hints.cc:2484  ostr << "time. Insects, oozes and incorporeal entities can navigate "
+  [HIGH] hints.cc:2492  ostr << "You can enter the next (deeper) level by following them "
+  [HIGH] hints.cc:2493  ostr << "down (<w>></w>). To get back to this level again, "
+  [HIGH] hints.cc:2494  ostr << "press <w><<</w> while standing on the upstairs."
+  [HIGH] hints.cc:2502  ostr << "\n\nYou have not yet passed through this particular "
+  [HIGH] hints.cc:2510  ostr << "These stairs lead out of the dungeon. Following them "
+  [HIGH] hints.cc:2511  ostr << "will end the game. The only way to win is to "
+  [HIGH] hints.cc:2512  ostr << "transport the fabled Orb of Zot outside."
+  [HIGH] hints.cc:2518  ostr << "You can enter the previous (shallower) level by "
+  [HIGH] hints.cc:2519  ostr << "following these up (<w><<</w>). This is ideal for "
+  [HIGH] hints.cc:2520  ostr << "retreating or finding a safe resting spot, since the "
+  [HIGH] hints.cc:2521  ostr << "previous level will have less monsters, and monsters "
+  [HIGH] hints.cc:2522  ostr << "on this level can't follow you up unless they're "
+  [HIGH] hints.cc:2523  ostr << "standing right next to you. To get back to this "
+  [HIGH] hints.cc:2524  ostr << "level again, press <w>></w> while standing on the "
+  [HIGH] hints.cc:2532  ostr << "\n\nYou have not yet passed through this "
+  [HIGH] hints.cc:2533  ostr << "particular set of stairs. "
+  [HIGH] hints.cc:2540  ostr << "Escape hatches can be used to quickly leave a level with "
+  [HIGH] hints.cc:2541  ostr << "<w><<</w> and <w>></w>, respectively. Note that you will "
+  [HIGH] hints.cc:2542  ostr << "usually be unable to return right away."
+  [HIGH] hints.cc:2558  ostr << "\nTo avoid accidentally opening a door you'd rather "
+  [HIGH] hints.cc:2559  ostr << "remain closed during travel or autoexplore, you can "
+  [HIGH] hints.cc:2560  ostr << "mark it with an exclusion from the map view "
+  [HIGH] hints.cc:2561  ostr << "(<w>X</w>) with <w>ee</w> while your cursor is on the "
+  [HIGH] hints.cc:2562  ostr << "grid in question. Such an exclusion will prevent "
+  [HIGH] hints.cc:2563  ostr << "autotravel from ever entering that grid until you "
+  [HIGH] hints.cc:2564  ostr << "remove the exclusion with another press of <w>Xe</w>."
+  [HIGH] hints.cc:2576  ostr << "This is your chance to join a religion! In "
+  [HIGH] hints.cc:2577  ostr << "general, the gods will help their followers, "
+  [HIGH] hints.cc:2578  ostr << "bestowing powers of all sorts upon them, but many "
+  [HIGH] hints.cc:2579  ostr << "of them demand a life of dedication, constant "
+  [HIGH] hints.cc:2580  ostr << "tributes or entertainment in return.\n"
+  [HIGH] hints.cc:2583  ostr << "This particular altar is so ancient that you "
+  [HIGH] hints.cc:2584  ostr << "cannot make out which god it is dedicated to! "
+  [HIGH] hints.cc:2585  ostr << "Converting here by pressing <w>></w> while "
+  [HIGH] hints.cc:2586  ostr << "standing on the altar will enter you into service "
+  [HIGH] hints.cc:2587  ostr << "of a random god, who will grant you some "
+  [HIGH] hints.cc:2588  ostr << "additional piety in thanks."
+  [HIGH] hints.cc:2592  ostr << "You can get information about <w>"
+  [HIGH] hints.cc:2594  ostr << "</w> by pressing <w>></w> while standing on the "
+  [HIGH] hints.cc:2595  ostr << "altar. Before taking up the responding faith "
+  [HIGH] hints.cc:2596  ostr << "you'll be asked for confirmation."
+  [HIGH] hints.cc:2606  ostr << "This particular altar is so ancient that you cannot "
+  [HIGH] hints.cc:2607  ostr << "make out which god it is dedicated to, and "
+  [HIGH] hints.cc:2609  ostr << " probably won't like it if you switch allegiance. If "
+  [HIGH] hints.cc:2610  ostr << "you want to take the risk, you can convert here by "
+  [HIGH] hints.cc:2611  ostr << "pressing <w>></w> while standing on the altar. Doing "
+  [HIGH] hints.cc:2612  ostr << "so will enter you into service of a random god, who "
+  [HIGH] hints.cc:2613  ostr << "will grant you some additional piety in thanks."
+  [HIGH] hints.cc:2618  ostr << " probably won't like it if you switch allegiance, "
+  [HIGH] hints.cc:2619  ostr << "but having a look won't hurt: to get information "
+  [HIGH] hints.cc:2622  ostr << "</w>, press <w>></w> while standing on the "
+  [HIGH] hints.cc:2623  ostr << "altar. Before taking up the responding faith (and "
+  [HIGH] hints.cc:2624  ostr << "abandoning your current one!) you'll be asked for "
+  [HIGH] hints.cc:2626  ostr << "\nTo see your current standing with "
+  [HIGH] hints.cc:2640  ostr << "An entryway into one of the many dungeon side branches in "
+  [HIGH] hints.cc:2643  ostr << "Beware, sometimes these can be deadly!"
+  [HIGH] hints.cc:2673  ostr << "probably dangerous, and you should stay out of it if you "
+  [HIGH] hints.cc:2678  ostr << "currently harmless, but that could change at some point. "
+  [HIGH] hints.cc:2679  ostr << "Check the overview screen (<w>%</w>) to view your "
+  [HIGH] hints.cc:2687  ostr << " is opaque. If two or more opaque clouds are between "
+  [HIGH] hints.cc:2688  ostr << "you and a square, you won't be able to see anything in that "
+  [HIGH] hints.cc:2708  ostr << "Did you think you were the only adventurer in the dungeon? "
+  [HIGH] hints.cc:2709  ostr << "Well, you thought wrong! These unique adversaries often "
+  [HIGH] hints.cc:2710  ostr << "possess skills that normal monsters wouldn't, so be "
+  [HIGH] hints.cc:2716  ostr << "The ghost of a deceased adventurer, it would like nothing "
+  [HIGH] hints.cc:2717  ostr << "better than to send you the same way.\n\n"
+  [HIGH] hints.cc:2725  ostr << "This monster appears to be really dangerous!\n"
+  [HIGH] hints.cc:2730  ostr << "This monster appears to be quite dangerous.\n"
+  [HIGH] hints.cc:2737  ostr << "A berserking monster is bloodthirsty and fighting madly. "
+  [HIGH] hints.cc:2738  ostr << "Such a blood rage makes it particularly dangerous!\n\n"
+  [HIGH] hints.cc:2745  ostr << "Friendly monsters will follow you around and attempt to aid "
+  [HIGH] hints.cc:2746  ostr << "you in battle. You can order nearby allies by <w>t</w>alking "
+  [HIGH] hints.cc:2751  ostr << "\n\nHowever, it is only <w>temporarily</w> friendly, "
+  [HIGH] hints.cc:2752  ostr << "and will become dangerous again when this friendliness "
+  [HIGH] hints.cc:2760  ostr << "You can easily mark its square as dangerous to avoid "
+  [HIGH] hints.cc:2761  ostr << "accidentally entering into its field of view when using "
+  [HIGH] hints.cc:2762  ostr << "auto-explore or auto-travel. To do so, enter targeting "
+  [HIGH] hints.cc:2763  ostr << "mode with <w>x</w> and then press <w>e</w> when your "
+  [HIGH] hints.cc:2764  ostr << "cursor is hovering over the monster's grid. Doing so will "
+  [HIGH] hints.cc:2765  ostr << "mark this grid and all surrounding ones within a radius "
+  [HIGH] hints.cc:2766  ostr << "of 8 as "excluded" ones that explore or travel modes "
+  [HIGH] hints.cc:2771  ostr << "This might be a good time to run away"
+  [HIGH] hints.cc:2774  ostr << " or apply your Berserk <w>a</w>bility"
+  [HIGH] hints.cc:2780  ostr << "Apparently it has not noticed you - yet. Note that you do "
+  [HIGH] hints.cc:2781  ostr << "not have to engage every monster you meet. Sometimes, "
+  [HIGH] hints.cc:2782  ostr << "discretion is the better part of valour."
+  [HIGH] hints.cc:2787  ostr << "Apparently it has been distracted by something. You could "
+  [HIGH] hints.cc:2788  ostr << "use this opportunity to sneak up on this monster - or to "
+  [HIGH] hints.cc:2794  ostr << "\nThis monster doesn't appear to have any resistances or "
+  [HIGH] hints.cc:2795  ostr << "susceptibilities. It cannot fly and is of average speed. "
+  [HIGH] hints.cc:2796  ostr << "Examining other, possibly more high-level monsters can give "
+  [HIGH] hints.cc:2797  ostr << "important clues as to how to deal with them."
+  [HIGH] item-name.cc:200  buff << "the "
+  [HIGH] item-name.cc:251  buff << "an "
+  [HIGH] item-name.cc:251  buff << "a "
+  [HIGH] item-name.cc:323  buff << " (curse)"
+  [HIGH] item-name.cc:1857  buff << "之"
+  [HIGH] item-name.cc:1859  buff << " of "
+  [HIGH] item-name.cc:1879  buff << "pair of "
+  [HIGH] item-name.cc:1959  buff << "魔杖"
+  [HIGH] item-name.cc:1961  buff << "wand of "
+  [HIGH] item-name.cc:1970  buff << "魔杖"
+  [HIGH] item-name.cc:1976  buff << " wand"
+  [HIGH] item-name.cc:1999  buff << "药水"
+  [HIGH] item-name.cc:2001  buff << "potion of "
+  [HIGH] item-name.cc:2079  buff << "的"
+  [HIGH] item-name.cc:2084  buff << "scroll"
+  [HIGH] item-name.cc:2091  buff << "of "
+  [HIGH] item-name.cc:2093  buff << "labelled "
+  [HIGH] item-name.cc:2182  buff << "manual"
+  [HIGH] item-name.cc:2182  buff << "book"
+  [HIGH] item-name.cc:2203  buff << "法杖"
+  [HIGH] item-name.cc:2205  buff << " staff"
+  [HIGH] item-name.cc:2226  buff << "法杖"
+  [HIGH] item-name.cc:2228  buff << "staff of "
+  [HIGH] item-name.cc:2292  buff << " of "
+  [HIGH] item-name.cc:2302  buff << "Unnamed gizmo"
+  [HIGH] item-name.cc:2321  buff << "bad item (cl:"
+  [HIGH] item-name.cc:2322  buff << ",pl:"
+  [HIGH] item-name.cc:2322  buff << ",ty:"
+  [HIGH] item-name.cc:2323  buff << ",sp:"
+  [HIGH] item-name.cc:2323  buff << ",pl2:"
+  [HIGH] item-name.cc:2324  buff << ",qu:"
+  [HIGH] main.cc:771  notestr << "）开始了寻找宝珠的征程。"
+  [HIGH] main.cc:776  notestr << " began the quest for the Orb."
+  [HIGH] mon-info.cc:1221  ss << " beast"
+  [HIGH] mon-info.cc:1267  ss << " shaped shifter"
+  [HIGH] notes.cc:217  result << "HP: "
+  [HIGH] notes.cc:221  result << "Xom revived you"
+  [HIGH] notes.cc:224  result << "Magic: "
+  [HIGH] notes.cc:227  result << " max health"
+  [HIGH] notes.cc:227  result << "Reached "
+  [HIGH] notes.cc:230  result << " max magic points"
+  [HIGH] notes.cc:230  result << "Reached "
+  [HIGH] notes.cc:233  result << "Reached XP level "
+  [HIGH] notes.cc:239  result << "Entered "
+  [HIGH] notes.cc:243  result << "Learned a level "
+  [HIGH] notes.cc:245  result << " spell: "
+  [HIGH] notes.cc:249  result << "Became a worshipper of "
+  [HIGH] notes.cc:253  result << "Fell from the grace of "
+  [HIGH] notes.cc:257  result << "Was placed under penance by "
+  [HIGH] notes.cc:261  result << "Was forgiven by "
+  [HIGH] notes.cc:265  result << "Received a gift from "
+  [HIGH] notes.cc:298  result << "Reached skill level "
+  [HIGH] notes.cc:299  result << " in "
+  [HIGH] notes.cc:302  result << "Reduced skill "
+  [HIGH] notes.cc:304  result << " to level "
+  [HIGH] notes.cc:307  result << "Encountered "
+  [HIGH] notes.cc:311  result << " (ally) was "
+  [HIGH] notes.cc:316  result << " changed into "
+  [HIGH] notes.cc:319  result << "Reached "
+  [HIGH] notes.cc:321  result << " piety under "
+  [HIGH] notes.cc:325  result << "Gained mutation: "
+  [HIGH] notes.cc:332  result << "Lost mutation: "
+  [HIGH] notes.cc:339  result << "Mutation became permanent: "
+  [HIGH] notes.cc:346  result << "Gained bane: "
+  [HIGH] notes.cc:352  result << "Lost bane: "
+  [HIGH] notes.cc:368  result << " was a mimic."
+  [HIGH] notes.cc:371  result << "XOM: "
+  [HIGH] notes.cc:383  result << " turns"
+  [HIGH] notes.cc:383  result << " for "
+  [HIGH] notes.cc:383  result << "Paralysed by "
+  [HIGH] notes.cc:387  result << " turns"
+  [HIGH] notes.cc:387  result << " for "
+  [HIGH] notes.cc:387  result << "Vexed by "
+  [HIGH] notes.cc:390  result << " as your apostle"
+  [HIGH] notes.cc:390  result << " the "
+  [HIGH] notes.cc:390  result << "Anointed "
+  [HIGH] notes.cc:393  result << " died"
+  [HIGH] notes.cc:393  result << "Your ally "
+  [HIGH] notes.cc:396  result << "Offered knowledge of "
+  [HIGH] notes.cc:398  result << " by Vehumet."
+  [HIGH] notes.cc:401  result << "Remembered your ancestor "
+  [HIGH] notes.cc:402  result << " as "
+  [HIGH] notes.cc:416  result << "Found "
+  [HIGH] notes.cc:419  result << "Touched by the power of Zot (MHP "
+  [HIGH] notes.cc:422  result << "Saved by the dreamshard amulet"
+  [HIGH] notes.cc:425  result << "Lost the "
+  [HIGH] notes.cc:427  result << " gem through the power of Zot."
+  [HIGH] notes.cc:430  result << "remaining)"
+  [HIGH] notes.cc:430  result << " life "
+  [HIGH] notes.cc:430  result << " lives "
+  [HIGH] notes.cc:430  result << "Gained a life ("
+  [HIGH] notes.cc:433  result << "remaining)"
+  [HIGH] notes.cc:433  result << " life "
+  [HIGH] notes.cc:433  result << " lives "
+  [HIGH] notes.cc:433  result << "Lost a life ("
+  [HIGH] notes.cc:436  result << "Fled from a divine trial"
+  [HIGH] notes.cc:439  result << "Branded self with the "
+  [HIGH] notes.cc:442  result << "Activated a boundless tesseract"
+  [HIGH] notes.cc:445  result << "Buggy note description: unknown note type"
+  [HIGH] notes.cc:453  result << " the pandemonium lord"
+  [HIGH] player.cc:5761  desc << " the "
+  [HIGH] player.cc:5781  desc << " of "
+  [HIGH] player.cc:5783  desc << " of "
+  [HIGH] spl-cast.cc:178  desc << "N/A"
+  [MED ] command.cc:308  estr << "<lightgrey>(nothing)</lightgrey>"
+  [MED ] command.cc:314  estr << "<darkgrey>(occupied)</darkgrey>"
+  [MED ] command.cc:316  estr << "<darkgrey>(unavailable)</darkgrey>"
+  [MED ] describe.cc:6589  result << "。\n"
+  [MED ] describe.cc:7067  body << "\nIf "
+  [MED ] directn.cc:1954  out << "<cyan>Here:</cyan> "
+  [MED ] directn.cc:1964  out << "<cyan>Here:</cyan> "
+  [MED ] directn.cc:1973  out << "\n(Right-click to examine)"
+  [MED ] hints.cc:2086  ostr << "button</w>"
+  [MED ] hints.cc:2141  ostr << "press <w>%</w>. You'll "
+  [MED ] hints.cc:2171  ostr << "innate abilities.)"
+  [MED ] hints.cc:2233  ostr << "button</w>"
+  [MED ] hints.cc:2242  ostr << "activate. "
+  [MED ] hints.cc:2300  ostr << "\n\nThis "
+  [MED ] hints.cc:2301  ostr << "ring"
+  [MED ] hints.cc:2301  ostr << "amulet"
+  [MED ] hints.cc:2355  ostr << "largely useless."
+  [MED ] hints.cc:2377  ostr << "\n\nSeeing how "
+  [MED ] hints.cc:2381  ostr << "<w>%</w>rop it now."
+  [MED ] hints.cc:2485  ostr << "the webs safely."
+  [MED ] hints.cc:2503  ostr << "set of stairs. "
+  [MED ] hints.cc:2525  ostr << "downstairs."
+  [MED ] hints.cc:2620  ostr << "on <w>"
+  [MED ] hints.cc:2625  ostr << "confirmation."
+  [MED ] hints.cc:2628  ostr << " press <w>^</w>"
+  [MED ] hints.cc:2641  ostr << "Crawl. "
+  [MED ] hints.cc:2661  ostr << "The "
+  [MED ] hints.cc:2664  ostr << "are "
+  [MED ] hints.cc:2666  ostr << "is "
+  [MED ] hints.cc:2670  ostr << "harmless. "
+  [MED ] hints.cc:2674  ostr << "can. "
+  [MED ] hints.cc:2680  ostr << "resistances."
+  [MED ] hints.cc:2686  ostr << "\nThis cloud"
+  [MED ] hints.cc:2686  ostr << "It"
+  [MED ] hints.cc:2689  ostr << "square."
+  [MED ] hints.cc:2711  ostr << "careful.\n\n"
+  [MED ] hints.cc:2747  ostr << "to them."
+  [MED ] hints.cc:2753  ostr << "wears off."
+  [MED ] hints.cc:2767  ostr << "won't enter."
+  [MED ] hints.cc:2789  ostr << "sneak away."
+  [MED ] initfile.cc:5265  cout << "No matching ghosts for "
+  [MED ] initfile.cc:5311  cout << "No matching ghosts for '"
+  [MED ] initfile.cc:5324  cout << "Too many ghosts! Capping merge at "
+  [MED ] initfile.cc:5334  cout << "Writing empty bones file"
+  [MED ] main.cc:447  ? << "）。</yellow>"
+  [MED ] main.cc:773  notestr << " the "
+  [MED ] main.cc:799  notestr << "HP: "
+  [MED ] main.cc:800  notestr << " MP: "
+  [MED ] main.cc:1810  ? << "You are forever immune to Zot's power."
+  [MED ] main.cc:1812  ? << "You have unlimited time to explore this branch."
+  [MED ] mon-info.cc:1493  out << " (fellow slime)"
+  [MED ] mon-speak.cc:798  ? << "__NEXT used by shape-based speech string for monster '"
+  [MED ] player-notices.cc:448  out << "。"
+  [MED ] shout.cc:200  ? << "You hear something buggy!"
+  [MED ] shout.cc:208  ? << "No shout entry for default shout type '"
+  [MED ] shout.cc:211  ? << "You hear something buggy!"
+  [MED ] shout.cc:217  ? << "__NONE returned as shout for non-silent monster '"
+  [MED ] shout.cc:219  ? << "You hear something buggy!"
+  [MED ] stash.cc:1748  matchtitle << "[right here] "
+  [MED ] stash.cc:1756  matchtitle << " further duplicate"
+  [MED ] stash.cc:1757  matchtitle << "s"
+  [MED ] stash.cc:1762  matchtitle << " in "
+  [MED ] stash.cc:1763  matchtitle << "s"
+  [MED ] stash.cc:1763  matchtitle << " pile"
+
+=== String concatenation: RUNTIME_CONCAT (+) ===
+
+  [HIGH] ability.cc:1427  (return) + "\nIf you bind an item with this curse Ashenzari will enhance "
+  [HIGH] ability.cc:1457  (return) + "\nAfter this sacrifice, you will find that "
+  [HIGH] ability.cc:1604  name + " ability"
+  [HIGH] ability.cc:1655  name + " ability"
+  [HIGH] ability.cc:3909  ? + "your "
+  [HIGH] command.cc:89  ? + "This is <w>"
+  [HIGH] command.cc:1373  ? + "<yellow>Dungeon Crawl Help"
+  [HIGH] database.cc:918  help + "Error! The help for ""
+  [HIGH] database.cc:918  help + "" is missing!"
+  [HIGH] decks.cc:412  name + " card"
+  [HIGH] describe-god.cc:267  ? + "ing"
+  [HIGH] describe-god.cc:268  ? + "er"
+  [HIGH] describe-god.cc:545  ? + " wrath"
+  [HIGH] describe-god.cc:604  ? + " extra"
+  [HIGH] describe-god.cc:695  ? + " powers"
+  [HIGH] describe-god.cc:1036  buf + "You can "
+  [HIGH] describe-spells.cc:854  (return) + "Spells: "
+  [HIGH] describe.cc:1197  (return) + "It"
+  [HIGH] describe.cc:1202  (return) + ", and it"
+  [HIGH] describe.cc:1202  (return) + ", it"
+  [HIGH] describe.cc:1791  ego_key + " ranged"
+  [HIGH] describe.cc:1797  ego_key + " blade"
+  [HIGH] describe.cc:2356  ego_prefix + "'Of "
+  [HIGH] describe.cc:4658  ? + " spell"
+  [HIGH] describe.cc:4766  ? + " spell"
+  [HIGH] describe.cc:7556  ? + "f%s%s"
+  [HIGH] dgn-overview.cc:672  (return) + "\n<green>Annotations:</green> (press <white>!</white> to add a new annotation)\n"
+  [HIGH] directn.cc:543  title + "Visible "
+  [HIGH] directn.cc:549  title_secondary + "<lightgray> (select to examine, "
+  [HIGH] directn.cc:551  title_secondary + " to "
+  [HIGH] directn.cc:551  title_secondary + ")</lightgray>"
+  [HIGH] english.cc:495  (return) + "你的"
+  [HIGH] fight.cc:1457  verb + "向"
+  [HIGH] fight.cc:1457  verb + "的方向"
+  [HIGH] god-abil.cc:5595  message + " doubts "
+  [HIGH] god-abil.cc:5596  message + " magic when faced with ultimate truth!"
+  [HIGH] god-abil.cc:6309  error_ret + "You cannot wall jump against "
+  [HIGH] hiscores.cc:102  ? + "milestones"
+  [HIGH] hiscores.cc:102  ? + "logfile"
+  [HIGH] invent.cc:1026  ? + "</w><blue>"
+  [HIGH] item-name.cc:1493  (return) + "手册"
+  [HIGH] item-name.cc:1508  (return) + "羊皮纸"
+  [HIGH] item-name.cc:1568  (return) + "之书"
+  [HIGH] item-name.cc:1926  ego_str + " of "
+  [HIGH] item-name.cc:1930  ego_str + "之"
+  [HIGH] item-name.cc:2649  (return) + ")</white>"
+  [HIGH] kills.cc:487  name + "spectral "
+  [HIGH] l-spells.cc:327  ? + "Invalid spell: "
+  [HIGH] l-spells.cc:351  ? + "Invalid spell: "
+  [HIGH] lookup-help.cc:199  (return) + "Serpent of Hell ("
+  [HIGH] lookup-help.cc:1003  ? + "This entry is an exact match for '"
+  [HIGH] lookup-help.cc:1004  ? + "'. To see non-exact matches, press space."
+  [HIGH] main.cc:666  ? + "the following spells memorised: "
+  [HIGH] main.cc:689  ? + "the following spell memorised: "
+  [HIGH] main.cc:697  ? + "the following spells available to memorise: "
+  [HIGH] main.cc:711  ? + "携带"
+  [HIGH] main.cc:711  ? + "出发了。"
+  [HIGH] makeitem.cc:58  ? + "Failed to create item '"
+  [HIGH] mon-death.cc:1611  msg + "A "
+  [HIGH] mon-death.cc:1611  msg + " mist starts to gather..."
+  [HIGH] mon-death.cc:1614  fail_msg + " mist gathers momentarily, then fades."
+  [HIGH] mon-death.cc:1968  ? + " spirit is torn from "
+  [HIGH] mon-death.cc:1970  ? + " spirit is momentarily torn from "
+  [HIGH] mon-death.cc:2216  ? + " shape twists and changes as "
+  [HIGH] mon-death.cc:2729  ? + " simulacrum begins to move."
+  [HIGH] mon-info.cc:1068  s + "dancing "
+  [HIGH] mon-info.cc:1076  s + "echoed "
+  [HIGH] mon-info.cc:1084  s + "haunted "
+  [HIGH] mon-info.cc:1314  ? + " the "
+  [HIGH] mon-info.cc:1577  (return) + "are"
+  [HIGH] notes.cc:495  ? + "entered "
+  [HIGH] notes.cc:505  ? + "reached "
+  [HIGH] ouch.cc:1257  msg + " appreciates "
+  [HIGH] ouch.cc:1258  msg + " killing of a heretic priest."
+  [HIGH] ouch.cc:1262  msg + " appreciates "
+  [HIGH] ouch.cc:1263  msg + " killing of an apostate."
+  [HIGH] output.cc:1801  desc + "an "
+  [HIGH] output.cc:1801  desc + "a "
+  [HIGH] output.cc:1803  desc + "the "
+  [HIGH] player-equip.cc:2218  ? + "A voice whispers, ""
+  [HIGH] player-notices.cc:330  ? + " title"
+  [HIGH] player.cc:5274  msg + "Your "
+  [HIGH] player.cc:5275  msg + " glow"
+  [HIGH] player.cc:5275  msg + "s"
+  [HIGH] player.cc:5276  msg + " too brightly for you to become invisible."
+  [HIGH] randbook.cc:464  lookup + " owner"
+  [HIGH] randbook.cc:749  lookup + " adj"
+  [HIGH] religion.cc:1758  gender_name + "name"
+  [HIGH] religion.cc:1759  ? + "ancestor"
+  [HIGH] religion.cc:2181  (return) + "Jiyva "
+  [HIGH] religion.cc:2181  (return) + " the Shapeless"
+  [HIGH] religion.cc:2189  en_short + " lastname"
+  [HIGH] religion.cc:2687  ? + "became the Champion of "
+  [HIGH] shopping.cc:1069  ? + "! What would you "
+  [HIGH] skill-menu.cc:582  ? + " power"
+  [HIGH] skills.cc:2394  ? + "er"
+  [HIGH] spl-damage.cc:3471  msg + "@foe@"
+  [HIGH] spl-damage.cc:3472  msg + "@is@"
+  [HIGH] spl-damage.cc:3472  msg + "be"
+  [HIGH] status.cc:588  short_text + "studying "
+  [HIGH] status.cc:589  long_text + "You are studying "
+  [HIGH] status.cc:820  long_text + "You are bribing "
+  [HIGH] status.cc:1020  light_text + "Blast"
+  [HIGH] status.cc:1300  adj + "中毒"
+  [HIGH] status.cc:1300  adj + " poisoned"
+  [HIGH] status.cc:1302  long_text + "You are "
+  [HIGH] status.cc:1406  long_text + "You are "
+  [HIGH] status.cc:1435  light_text + "Wave"
+  [HIGH] status.cc:1440  light_text + "Ray"
+  [HIGH] status.cc:1450  light_text + "Winding"
+  [MED ] ability.cc:1428  (return) + "the following skills:\n"
+  [MED ] abyss.cc:430  ? + "was cast into the Abyss!"
+  [MED ] art-func.h:1141  ? + "A voice whispers, ""
+  [MED ] art-func.h:1804  ? + "A voice whispers, ""
+  [MED ] art-func.h:1815  ? + "A voice whispers, ""
+  [MED ] artefact.cc:184  ? + "@player_name@"
+  [MED ] artefact.cc:185  ? + "killer_name"
+  [MED ] artefact.cc:187  ? + "@player_name_possessive@ "
+  [MED ] artefact.cc:188  ? + "death_or_doom"
+  [MED ] artefact.cc:2075  (return) + "of Ashenzari"
+  [MED ] attitude-change.cc:163  ? + "beogh_converted_orc_"
+  [MED ] beam.cc:1300  ? + "Your line of fire to "
+  [MED ] command.cc:174  ? + "Stone Soup "
+  [MED ] command.cc:496  answer + "Q: "
+  [MED ] ctest.cc:237  ? + "No scripts found matching "
+  [MED ] decks.cc:558  ? + "between deck selection and description."
+  [MED ] decks.cc:610  (return) + "The deck of cards "
+  [MED ] decks.cc:764  ? + "between deck selection and description."
+  [MED ] decks.cc:770  ? + "between deck selection and description."
+  [MED ] decks.cc:824  ? + "Press '<w>!</w>' or '<w>?</w>' to toggle "
+  [MED ] decks.cc:825  ? + "between deck selection and description."
+  [MED ] decks.cc:1741  (return) + "deck of "
+  [MED ] describe.cc:1535  ? + ") weapon ego"
+  [MED ] describe.cc:1711  compound + "e"
+  [MED ] describe.cc:1711  compound + "d"
+  [MED ] describe.cc:1711  compound + "ed"
+  [MED ] describe.cc:2152  ? + ") missile ego"
+  [MED ] describe.cc:2229  ? + ") armour ego"
+  [MED ] describe.cc:3107  cl_name + " cloud"
+  [MED ] describe.cc:3181  ? + "A cloud of "
+  [MED ] describe.cc:3206  (return) + "(>)pray"
+  [MED ] describe.cc:3214  (return) + "(>)enter"
+  [MED ] describe.cc:3217  (return) + "(<)exit"
+  [MED ] describe.cc:3221  (return) + ", or "
+  [MED ] describe.cc:3818  (return) + "qui(v)er"
+  [MED ] describe.cc:3821  (return) + ", or "
+  [MED ] describe.cc:6856  ? + " title"
+  [MED ] describe.cc:6884  symbol + "cap-"
+  [MED ] describe.cc:6889  ? + "_prefix"
+  [MED ] describe.cc:6892  ? + "_suffix"
+  [MED ] describe.cc:6996  ? + "_examine"
+  [MED ] dgn-overview.cc:673  (return) + "\n<green>Annotations:</green>\n"
+  [MED ] directn.cc:489  (return) + " (here)"
+  [MED ] directn.cc:3046  ? + " peaceful "
+  [MED ] directn.cc:3052  ? + "default peaceful "
+  [MED ] directn.cc:3055  ? + "default "
+  [MED ] directn.cc:3073  ? + "your "
+  [MED ] directn.cc:3077  ? + "your "
+  [MED ] dungeon.cc:4773  ? + "Failed to connect exits for: "
+  [MED ] dungeon.cc:4783  ? + "Post-place hook failed for: "
+  [MED ] english.cc:208  (return) + "的"
+  [MED ] english.cc:406  (return) + "十"
+  [MED ] english.cc:412  (return) + "十"
+  [MED ] english.cc:419  ? + "百"
+  [MED ] english.cc:433  ? + "千"
+  [MED ] english.cc:506  (return) + "the "
+  [MED ] english.cc:511  (return) + "your "
+  [MED ] exclude.cc:543  desc + " cloud"
+  [MED ] exclude.cc:573  desc + " cloud"
+  [MED ] fight.cc:1446  adj + "the "
+  [MED ] fight.cc:1462  verb + "fire in "
+  [MED ] fight.cc:1462  verb + " direction"
+  [MED ] fight.cc:1548  mon_name + "yourself and "
+  [MED ] files.cc:2718  (return) + "bones."
+  [MED ] files.cc:2718  (return) + "store."
+  [MED ] files.cc:2981  ? + "Bones file is buggy: "
+  [MED ] files.cc:3215  ? + "There is an existing game for name '"
+  [MED ] files.cc:3216  ? + "' from an incompatible version of Crawl ("
+  [MED ] files.cc:3218  ? + "Unless you reinstall that version, you can't load it.\n"
+  [MED ] files.cc:3219  ? + "Do you want to DELETE that game and start a new one?"
+  [MED ] files.cc:3234  ? + " is from an incompatible version and can't be loaded."
+  [MED ] files.cc:3242  ? + " game saved under the name '"
+  [MED ] files.cc:3243  ? + "do you want to load that instead?"
+  [MED ] files.cc:3251  ? + "Please use a different name to start a new "
+  [MED ] files.cc:3261  ? + "This game comes from a previous release of Crawl ("
+  [MED ] files.cc:3262  ? + ").\n\nIf you load it now,"
+  [MED ] files.cc:3263  ? + " you won't be able to go back. Continue?"
+  [MED ] god-abil.cc:2327  ? + " of "
+  [MED ] god-abil.cc:3202  ? + " marionette"
+  [MED ] god-abil.cc:3584  suffix + " suffix:"
+  [MED ] hiscores.cc:348  ? + ".txt"
+  [MED ] initfile.cc:1954  name + "scroll of "
+  [MED ] initfile.cc:1975  name + "scroll of "
+  [MED ] initfile.cc:5203  ? + "Couldn't write to bones file "
+  [MED ] invent.cc:1777  ? + "Really "
+  [MED ] item-name.cc:1569  (return) + "book of "
+  [MED ] item-name.cc:2485  (return) + ", shattered)"
+  [MED ] item-name.cc:2501  (return) + " until shattered)"
+  [MED ] items.cc:2827  ? + "Are you sure you want to drop "
+  [MED ] items.cc:2830  ? + "You won't be able to retrieve "
+  [MED ] known-items.cc:151  navigation + " select  "
+  [MED ] known-items.cc:223  name + "unknown "
+  [MED ] l-crawl.cc:468  ? + "Not a (supported) targeted command: "
+  [MED ] l-dgn.cc:764  error + "Can't set floor to "
+  [MED ] l-dgn.cc:1006  ? + "set_border_fill_type cannot be the feature '"
+  [MED ] l-dgn.cc:1023  ? + "unknown feature '"
+  [MED ] l-moninf.cc:431  ? + "no such holiness: '"
+  [MED ] l-moninf.cc:514  ? + "no such moninf flag: '"
+  [MED ] l-you.cc:1027  ? + "Invalid ability: "
+  [MED ] macro.cc:1153  ? + "Arrows/[<w>enter</w>] to select, [<w>bksp</w>] to clear selected, [<w>?</w>] for"
+  [MED ] macro.cc:1177  ? + "Editing <w>"
+  [MED ] macro.cc:1788  (return) + "' is not a valid macro or keymap context (macros += %s)"
+  [MED ] macro.cc:1887  (return) + "Space"
+  [MED ] macro.cc:1918  (return) + "Backspace"
+  [MED ] macro.cc:1919  (return) + "Tab"
+  [MED ] macro.cc:1923  (return) + "Enter"
+  [MED ] macro.cc:1924  (return) + "Del"
+  [MED ] macro.cc:1925  (return) + "Up"
+  [MED ] macro.cc:1926  (return) + "Down"
+  [MED ] macro.cc:1927  (return) + "Left"
+  [MED ] macro.cc:1928  (return) + "Right"
+  [MED ] macro.cc:1929  (return) + "Ins"
+  [MED ] macro.cc:1930  (return) + "Home"
+  [MED ] macro.cc:1931  (return) + "End"
+  [MED ] macro.cc:1932  (return) + "Clear"
+  [MED ] macro.cc:1933  (return) + "PgUp"
+  [MED ] macro.cc:1934  (return) + "PgDn"
+  [MED ] macro.cc:1936  (return) + "Shift-Tab"
+  [MED ] macro.cc:1937  (return) + "Tab"
+  [MED ] macro.cc:1938  (return) + "Shift-Tab"
+  [MED ] macro.cc:1939  (return) + "Shift-Enter"
+  [MED ] macro.cc:1940  (return) + "Enter"
+  [MED ] macro.cc:1941  (return) + "Shift-Enter"
+  [MED ] macro.cc:1942  (return) + "Shift-Backspace"
+  [MED ] macro.cc:1943  (return) + "Backspace"
+  [MED ] macro.cc:1944  (return) + "Shift-Backspace"
+  [MED ] macro.cc:1945  (return) + "Shift-Esc"
+  [MED ] macro.cc:1946  (return) + "Esc"
+  [MED ] macro.cc:1947  (return) + "Shift-Esc"
+  [MED ] macro.cc:1948  (return) + "Shift-Del"
+  [MED ] macro.cc:1949  (return) + "Del"
+  [MED ] macro.cc:1950  (return) + "Shift-Del"
+  [MED ] macro.cc:1951  (return) + "Shift-Space"
+  [MED ] macro.cc:1952  (return) + "Space"
+  [MED ] macro.cc:1953  (return) + "Shift-Space"
+  [MED ] macro.cc:1954  (return) + "F0"
+  [MED ] macro.cc:1955  (return) + "F1"
+  [MED ] macro.cc:1956  (return) + "F2"
+  [MED ] macro.cc:1957  (return) + "F3"
+  [MED ] macro.cc:1958  (return) + "F4"
+  [MED ] macro.cc:1959  (return) + "F5"
+  [MED ] macro.cc:1960  (return) + "F6"
+  [MED ] macro.cc:1961  (return) + "F7"
+  [MED ] macro.cc:1962  (return) + "F8"
+  [MED ] macro.cc:1963  (return) + "F9"
+  [MED ] macro.cc:2004  (return) + "enter"
+  [MED ] main.cc:674  ? + " set off with "
+  [MED ] main.cc:712  ? + " set off with "
+  [MED ] main.cc:738  ? + "welcome_spam"
+  [MED ] main.cc:759  ? + " welcome"
+  [MED ] mapdef.cc:765  (return) + "Invalid weight specifier in ""
+  [MED ] mapdef.cc:795  (return) + "Invalid weight specifier in ""
+  [MED ] melee-attack.cc:2252  (return) + "off-hand "
+  [MED ] message.cc:2173  ? + "Sifu "
+  [MED ] mon-act.cc:1113  ? + " sinks back into the magma."
+  [MED ] mon-death.cc:607  ? + " the ghost of "
+  [MED ] mon-death.cc:684  ? + " protects "
+  [MED ] mon-death.cc:684  ? + " from harm!"
+  [MED ] mon-death.cc:986  ? + "manifested out of "
+  [MED ] mon-death.cc:1614  fail_msg + "A "
+  [MED ] mon-death.cc:1774  ? + "spawned from "
+  [MED ] mon-death.cc:1969  ? + " body!"
+  [MED ] mon-death.cc:1971  ? + " body, then fades!"
+  [MED ] mon-death.cc:2218  ? + "die"
+  [MED ] mon-death.cc:2729  ? + "Your "
+  [MED ] mon-death.cc:4207  ? + "_dies_"
+  [MED ] mon-project.cc:362  name + "wavering "
+  [MED ] mon-project.cc:403  name + "annihilating "
+  [MED ] mon-util.cc:3132  ? + "orc apostle "
+  [MED ] mon-util.cc:3132  ? + " name"
+  [MED ] mon-util.cc:5395  desc + "。"
+  [MED ] movement.cc:185  ? + " will break if you move. Continue?"
+  [MED ] newgame.cc:1455  ? + "  Tab - "
+  [MED ] ouch.cc:1215  ? + " death"
+  [MED ] ouch.cc:1272  ? + " crowns "
+  [MED ] ouch.cc:1273  ? + " victorious!"
+  [MED ] ouch.cc:1630  ? + "morgue-"
+  [MED ] player-equip.cc:2212  ? + "zonguldrok hat "
+  [MED ] player-notices.cc:252  subject_verb + "are"
+  [MED ] player-notices.cc:256  subject_verb + " is"
+  [MED ] player-notices.cc:258  subject_verb + " is"
+  [MED ] player.cc:9200  (return) + "Your "
+  [MED ] randbook.cc:453  ? + "book_noun"
+  [MED ] randbook.cc:453  ? + " of "
+  [MED ] randbook.cc:454  ? + "Xom_book_title"
+  [MED ] randbook.cc:458  ? + " level book"
+  [MED ] randbook.cc:785  bookname + "the "
+  [MED ] randbook.cc:849  lookup + " owner"
+  [MED ] religion.cc:4106  ? + "default "
+  [MED ] shopping.cc:1069  ? + "Welcome to "
+  [MED ] shopping.cc:1070  ? + "like to do?"
+  [MED ] spl-cast.cc:859  ? + "A voice whispers, ""
+  [MED ] spl-summoning.cc:751  non_actor_summoner + "the rage of "
+  [MED ] spl-transloc.cc:631  ? + " is immovably fixed in your path."
+  [MED ] stairs.cc:682  ? + "fell down a shaft to "
+  [MED ] stash.cc:342  (return) + " (skeletalised by now)"
+  [MED ] stash.cc:343  (return) + " (gone by now)"
+  [MED ] stash.cc:1736  ? + "Results elsewhere"
+  [MED ] tags.cc:8722  ? + "Bones file has an invalid ghost count ("
+  [MED ] target.cc:696  ? + "You can't transfer your ancestor with "
+  [MED ] target.cc:801  ? + " has no magical effects to "
+  [MED ] target.cc:808  ? + "You cannot do harm to "
+  [MED ] target.cc:1991  ? + " cannot be affected by "
+  [MED ] traps.cc:123  (return) + "the "
+
+=== String concatenation: COMPILE_TIME (adjacent) ===
+
+  [HIGH] ability.cc:1427  (return) adjacent "\nIf you bind an item with this curse Ashenzari will enhance the following skill"
+  [HIGH] ability.cc:1441  boilerplate adjacent "\nIf you make this sacrifice, your powers granted by Ru will become stronger in "
+  [HIGH] ability.cc:3822  (arg) adjacent " will brand one of your weapons with the corruption of the Abyss."
+  [HIGH] command.cc:89  (arg) adjacent "This is <w> "
+  [HIGH] command.cc:203  result adjacent "For earlier changes, see changelog.txt in the docs/ directory."
+  [HIGH] command.cc:208  result adjacent "For a list of changes, see changelog.txt in the docs/ directory."
+  [HIGH] command.cc:374  (init) adjacent "<h>Examine surroundings ('<w>x</w><h>' in main):\n<w>Esc</w> : cancel (also <w>S"
+  [HIGH] command.cc:414  (init) adjacent "<h>Targeting (zap wands, cast spells, etc.):\nMost keys from examine surrounding"
+  [HIGH] command.cc:493  answer adjacent "No answer found in the FAQ! Please submit a bug report!"
+  [HIGH] command.cc:755  s adjacent "These two blocks should have the same background:    <bg:darkgrey><darkgrey>Bloc"
+  [HIGH] command.cc:801  (arg) adjacent "<h>Dungeon Crawl Help\n\nPress one of the following keys to\nobtain more informa"
+  [HIGH] command.cc:812  (arg) adjacent "<darkgrey>:: Browse character notes</darkgrey>\n<darkgrey>#: Browse character du"
+  [HIGH] command.cc:818  (arg) adjacent "<w>:</w>: Browse character notes\n<w>#</w>: Browse character dump"
+  [HIGH] command.cc:822  (arg) adjacent "<w>~</w>: Macros help\n<w>&</w>: Options help\n<w>%</w>: Table of aptitudes\n<w>"
+  [HIGH] command.cc:830  (arg) adjacent "<w>V</w>: Version information\n<w>!</w>: Display diagnostics\n<w>Home</w>: This "
+  [HIGH] command.cc:851  (arg) adjacent "<h>Manual Contents\n\n<w>*</w>       Table of contents\n<w>A</w>.      Overview\"
+  [HIGH] command.cc:879  (arg) adjacent "<h>Movement:\nTo move in a direction or to attack, \nuse the numpad (try Numlock"
+  [HIGH] command.cc:903  (arg) adjacent "    Health or Magic become full or\n    something is detected. If Health\n    an"
+  [HIGH] command.cc:920  (arg) adjacent "<w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n<w>* Dir.</w>, <w>Ctrl-Dir.</w> : a"
+  [HIGH] command.cc:926  (arg) adjacent "<h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               mov"
+  [HIGH] command.cc:939  (arg) adjacent "<brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle"
+  [HIGH] command.cc:961  item_types adjacent "</lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to a"
+  [HIGH] command.cc:975  (arg) adjacent "<lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and"
+  [HIGH] command.cc:1145  text adjacent "Many commands have context sensitive help, among them <w>%</w>, <w>%</w>, <w>%</"
+  [HIGH] command.cc:1168  (arg) adjacent "<h>Movement:\nTo move in a direction or to attack, \nuse the numpad (try Numlock"
+  [HIGH] command.cc:1200  (arg) adjacent "    Health or Magic become full or\n    something is detected. If Health\n    an"
+  [HIGH] command.cc:1218  (arg) adjacent "<w>%</w>/<w>%</w> to cast spells (<w>%?/%</w> lists spells)"
+  [HIGH] command.cc:1222  (arg) adjacent "Memorise spells and view spell\n    library (get books to add to it)"
+  [HIGH] command.cc:1231  (arg) adjacent "<console><cyan>)</cyan> : </console>hand weapons (<w>%</w>ield)"
+  [HIGH] command.cc:1235  (arg) adjacent "<console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%"
+  [HIGH] command.cc:1240  (arg) adjacent "<console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)"
+  [HIGH] command.cc:1244  (arg) adjacent "<console><w>?</w> : </console>scrolls (<w>%</w>ead)"
+  [HIGH] command.cc:1248  (arg) adjacent "<console><magenta>!</magenta> : </console>potions (<w>%</w>uaff)"
+  [HIGH] command.cc:1252  (arg) adjacent "<console><blue>=</blue> : </console>rings (<w>%</w>ut on and <w>%</w>emove)"
+  [HIGH] command.cc:1256  (arg) adjacent "<console><red>"</red> : </console>amulets (<w>%</w>ut on and <w>%</w>emove)"
+  [HIGH] command.cc:1260  (arg) adjacent "<console><lightred>percent</lightred> : </console>talismans (e<w>%</w>oke)"
+  [HIGH] command.cc:1264  (arg) adjacent "<console><lightgrey>/</lightgrey> : </console>wands (e<w>%</w>oke)"
+  [HIGH] command.cc:1272  item_types adjacent "</lightcyan> : </console>books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pi"
+  [HIGH] command.cc:1283  item_types adjacent "</brown> : </console>staves (<w>%</w>ield)"
+  [HIGH] command.cc:1308  (arg) adjacent "\n<h>Targeting\n<w>Enter</w> or <w>.</w> or <w>Del</w> : confirm target\n<w>+</w"
+  [HIGH] decks.cc:380  output adjacent "It is only found in Nemelex Xobeh's deck of punishment."
+  [HIGH] describe.cc:6720  ? adjacent "受伤或死亡时会释放多种史莱姆，数量与受到的伤害成正比。\n"
+  [HIGH] describe.cc:6726  ? adjacent "It will release varied jellies when damaged or killed, with the number of jellie"
+  [HIGH] describe.cc:6967  ? adjacent "If this monster is a "program bug", then it's recommended that you save your gam"
+  [HIGH] god-abil.cc:2423  (arg) adjacent " Ashenzari will withdraw the offered vision and curse!"
+  [HIGH] god-abil.cc:6494  (arg) adjacent " says: The storm will not cease as long as you keep fighting, disciple!"
+  [HIGH] hints.cc:174  prompt adjacent "<white>Welcome!</white>\n\n<cyan>You can be:</cyan>"
+  [HIGH] hints.cc:666  text adjacent "Remember to rest between fights and to enter unexplored terrain with full health"
+  [HIGH] hints.cc:679  text adjacent "\nAlso, berserking might help you not to lose so much health in the first place."
+  [HIGH] hints.cc:866  text adjacent ". You can learn about any monster by hovering your mouse over it, and read its d"
+  [HIGH] hints.cc:873  text adjacent " is a monster, usually depicted by a letter. Some typical early monsters look li"
+  [HIGH] hints.cc:878  text adjacent "Your console settings allowing, you'll always see a list of monsters somewhere o"
+  [HIGH] hints.cc:881  text adjacent "You can gain information about it by pressing <w>x</w> and moving the cursor ove"
+  [HIGH] hints.cc:886  text adjacent "\nTo attack this monster with your wielded weapon, just move into it. "
+  [HIGH] hints.cc:891  text adjacent "Note that as long as there's a non-friendly monster in view you won't be able to"
+  [HIGH] hints.cc:900  text adjacent "However, as a hunter you will want to deal with it using your bow. If you have a"
+  [HIGH] hints.cc:909  text adjacent "First <w>w</w>ield it, then follow the instructions.<tiles>\nAs a short-cut you "
+  [HIGH] hints.cc:916  text adjacent "<tiles>Clicking with your <w>right mouse button</w> on your shortbow will also l"
+  [HIGH] hints.cc:925  text adjacent "However, as a conjurer you will want to deal with it using magic. If you look at"
+  [HIGH] hints.cc:1504  ? adjacent " just excommunicated you for running out of piety (your divine favour went to no"
+  [HIGH] hints.cc:1515  ? adjacent "wasn't such a smart move after all, and you'd like to return to your old faith, "
+  [HIGH] hints.cc:1523  ? adjacent "Otherwise, you'll have to weather this god's displeasure until their divine wrat"
+  [HIGH] hints.cc:1542  ? adjacent "Note that this kind of alliance only exists between the three good gods, so don'"
+  [HIGH] hints.cc:1550  ? adjacent " is one of the good gods who generally are rather forgiving about change of fait"
+  [HIGH] hints.cc:1558  ? adjacent " didn't appreciate your converting to "
+  [HIGH] hints.cc:1560  ? adjacent "! But really, changing from one of the good gods to an evil one, what did you ex"
+  [HIGH] hints.cc:1563  ? adjacent " would have been much more forgiving. "
+  [HIGH] hints.cc:1571  ? adjacent " didn't appreciate your converting to "
+  [HIGH] hints.cc:1572  ? adjacent "! (Actually, only the three good gods will usually be forgiving about this kind "
+  [HIGH] hints.cc:1583  ? adjacent ", so you're stuck with having to suffer the wrath of one god or another."
+  [HIGH] hints.cc:1804  broken adjacent "This screen shows your character's set of talents. You can gain new abilities vi"
+  [HIGH] hints.cc:1898  result adjacent "then be taken to target mode with the nearest monster or previous target already"
+  [HIGH] hints.cc:1930  m adjacent "This screen shows the spells in your spell library. From here you can memorise s"
+  [HIGH] hints.cc:1939  m adjacent "\n\nA spell that isn't <darkgray>grayed out</darkgray> or <lightred>forbidden</l"
+  [HIGH] hints.cc:1947  m adjacent "spells right now. This will change as you grow in levels and Spellcasting profic"
+  [HIGH] hints.cc:1962  m adjacent "you can press <w>%</w> and choose a spell, e.g. <w>a</w> (check with <w>?</w>). "
+  [HIGH] hints.cc:2004  str adjacent "enter the ability menu with <w>%</w>, and then choose the corresponding ability."
+  [HIGH] hints.cc:2073  ? adjacent "When wielded, some weapons (such as this one) offer certain abilities you can ac"
+  [HIGH] hints.cc:2081  ? adjacent "\nThis weapon offers its wearer protection from certain damage sources. For an o"
+  [HIGH] hints.cc:2098  ? adjacent "You can wield this weapon with <w>%</w>, or use <w>%</w> to switch between the w"
+  [HIGH] hints.cc:2123  ? adjacent "</w> for a while, so maybe you should continue training that rather than <w>"
+  [HIGH] hints.cc:2126  ? adjacent "</w>. (Press <w>%</w> to see the skill management screen for the actual numbers."
+  [HIGH] hints.cc:2169  ? adjacent "Because of your horns you cannot wear helmets. (Press <w>%</w> to see a list of "
+  [HIGH] hints.cc:2182  ? adjacent "You can wear pieces of armour with <w>%</w> and take them off again with <w>%</w"
+  [HIGH] hints.cc:2197  ? adjacent "\nNote that body armour with a high encumbrance rating may hinder your ability t"
+  [HIGH] hints.cc:2205  ? adjacent "\nNote that shields will hinder your ability to cast spells, until you've gained"
+  [HIGH] hints.cc:2212  ? adjacent "\nNote that many ranged weapons are two handed and so cannot be used with an off"
+  [HIGH] hints.cc:2228  ? adjacent "\n\nThis armour offers its wearer protection from certain sources. For an overvi"
+  [HIGH] hints.cc:2240  ? adjacent "\n\nWhen worn, some types of armour (such as this one) offer certain <w>%</w>bil"
+  [HIGH] hints.cc:2251  ? adjacent "The magic within can be unleashed by evoking (<w>%</w>) it."
+  [HIGH] hints.cc:2278  ? adjacent "or simply click on it with your <w>left mouse button</w>."
+  [HIGH] hints.cc:2288  ? adjacent "Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, though in Tiles, either "
+  [HIGH] hints.cc:2302  ? adjacent " offers its wearer protection from certain sources. For an overview of your resi"
+  [HIGH] hints.cc:2314  ? adjacent "\n\nWhen worn, some types of jewellery (such as this one) offer certain <w>%</w>"
+  [HIGH] hints.cc:2325  ? adjacent "or simply click on it with your <w>left mouse button</w>."
+  [HIGH] hints.cc:2335  ? adjacent "A manual can greatly help you in training a skill. After you pick one up, the sk"
+  [HIGH] hints.cc:2343  ? adjacent "\nYou can pick up a spellbook to add its spells to your spell library. (View you"
+  [HIGH] hints.cc:2353  ? adjacent "Skeletons and corpses can be used as components for certain necromantic spells. "
+  [HIGH] hints.cc:2359  ? adjacent "This staff can enhance your spellcasting, making spells of its related spell sch"
+  [HIGH] hints.cc:2364  ? adjacent "It also offers its wielder protection from certain sources. For an overview of y"
+  [HIGH] hints.cc:2379  ? adjacent " frowns upon the use of magic, this staff will be of little use to you and you m"
+  [HIGH] hints.cc:2388  ? adjacent "Miscellaneous items sometimes harbour magical powers that can be harnessed by e<"
+  [HIGH] hints.cc:2465  ? adjacent "These nasty constructions can cause a range of unpleasant effects. You won't be "
+  [HIGH] hints.cc:2473  ? adjacent "The dungeon contains a number of natural obstacles such as shafts, which lead on"
+  [HIGH] hints.cc:2482  ? adjacent "Some areas of the dungeon, such as the Spider Nest, may be strewn with giant web"
+  [HIGH] hints.cc:2492  ? adjacent "You can enter the next (deeper) level by following them down (<w>></w>). To get "
+  [HIGH] hints.cc:2502  ? adjacent "\n\nYou have not yet passed through this particular set of stairs. "
+  [HIGH] hints.cc:2510  ? adjacent "These stairs lead out of the dungeon. Following them will end the game. The only"
+  [HIGH] hints.cc:2518  ? adjacent "You can enter the previous (shallower) level by following these up (<w><<</w>). "
+  [HIGH] hints.cc:2532  ? adjacent "\n\nYou have not yet passed through this particular set of stairs. "
+  [HIGH] hints.cc:2540  ? adjacent "Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>,"
+  [HIGH] hints.cc:2558  ? adjacent "\nTo avoid accidentally opening a door you'd rather remain closed during travel "
+  [HIGH] hints.cc:2576  ? adjacent "This is your chance to join a religion! In general, the gods will help their fol"
+  [HIGH] hints.cc:2583  ? adjacent "This particular altar is so ancient that you cannot make out which god it is ded"
+  [HIGH] hints.cc:2594  ? adjacent "</w> by pressing <w>></w> while standing on the altar. Before taking up the resp"
+  [HIGH] hints.cc:2606  ? adjacent "This particular altar is so ancient that you cannot make out which god it is ded"
+  [HIGH] hints.cc:2609  ? adjacent " probably won't like it if you switch allegiance. If you want to take the risk, "
+  [HIGH] hints.cc:2618  ? adjacent " probably won't like it if you switch allegiance, but having a look won't hurt: "
+  [HIGH] hints.cc:2622  ? adjacent "</w>, press <w>></w> while standing on the altar. Before taking up the respondin"
+  [HIGH] hints.cc:2640  ? adjacent "An entryway into one of the many dungeon side branches in Crawl. "
+  [HIGH] hints.cc:2673  ? adjacent "probably dangerous, and you should stay out of it if you can. "
+  [HIGH] hints.cc:2678  ? adjacent "currently harmless, but that could change at some point. Check the overview scre"
+  [HIGH] hints.cc:2687  ? adjacent " is opaque. If two or more opaque clouds are between you and a square, you won't"
+  [HIGH] hints.cc:2708  ? adjacent "Did you think you were the only adventurer in the dungeon? Well, you thought wro"
+  [HIGH] hints.cc:2716  ? adjacent "The ghost of a deceased adventurer, it would like nothing better than to send yo"
+  [HIGH] hints.cc:2737  ? adjacent "A berserking monster is bloodthirsty and fighting madly. Such a blood rage makes"
+  [HIGH] hints.cc:2745  ? adjacent "Friendly monsters will follow you around and attempt to aid you in battle. You c"
+  [HIGH] hints.cc:2751  ? adjacent "\n\nHowever, it is only <w>temporarily</w> friendly, and will become dangerous a"
+  [HIGH] hints.cc:2760  ? adjacent "You can easily mark its square as dangerous to avoid accidentally entering into "
+  [HIGH] hints.cc:2780  ? adjacent "Apparently it has not noticed you - yet. Note that you do not have to engage eve"
+  [HIGH] hints.cc:2787  ? adjacent "Apparently it has been distracted by something. You could use this opportunity t"
+  [HIGH] hints.cc:2794  ? adjacent "\nThis monster doesn't appear to have any resistances or susceptibilities. It ca"
+  [HIGH] item-name.cc:2562  text adjacent "<darkgrey>The Orb of Zot (the Realm of Zot)</darkgrey>"
+  [HIGH] item-name.cc:2657  (arg) adjacent "[<w>!</w>/<w>^</w>|<w>Right-click</w>"
+  [HIGH] main.cc:1498  (arg) adjacent "A rune of Zot still resides in this realm, and once you leave you can never retu"
+  [HIGH] main.cc:1638  (arg) adjacent "You cannot leave the Vaults without holding a Rune of Zot, and the runes within "
+  [HIGH] mapdef.cc:3781  (arg) adjacent "Need a positive spell frequency;got '%s' in '%s'"
+  [HIGH] mon-death.cc:1196  (arg) adjacent "With an infernal shudder, the power ruling this place vanishes!"
+  [HIGH] mon-death.cc:1201  (arg) adjacent "With an infernal noise, the power ruling this place vanishes!"
+  [HIGH] player.cc:3169  (arg) adjacent "discovered their monstrous ancestry!"
+  [HIGH] player.cc:7172  (return) adjacent "A magic seal in the Gauntlet prevents long-range teleports."
+  [HIGH] religion.cc:309  god_powers adjacent "Ashenzari warns you of distant threats and treasures.\nAshenzari shows you where"
+  [HIGH] religion.cc:4078  (arg) adjacent " says: You must forswear the aid of any and all before you are fit to worship."
+  [HIGH] religion.cc:4083  (arg) adjacent " says: How dare you approach in such a loathsome form!"
+  [HIGH] shopping.cc:1069  (arg) adjacent "! What would you like to do?"
+  [HIGH] skill-menu.cc:1636  t adjacent "You have gained great experience. Select the skills to train."
+  [HIGH] spl-book.cc:417  unavail_reason adjacent "You cannot currently memorise any of the available spells because you cannot use"
+  [HIGH] spl-book.cc:428  unavail_reason adjacent "You can't memorise any new spells for an unknown reason; please file a bug repor"
+  [HIGH] spl-cast.cc:2348  (arg) adjacent " does not allow the disloyal to dabble in death!"
+  [HIGH] spl-cast.cc:2365  (arg) adjacent " does not allow the disloyal to dabble in destruction!"
+  [HIGH] spl-damage.cc:714  mons_vis_msg adjacent " drains the heat from the surrounding environment!"
+  [HIGH] spl-damage.cc:729  global_msg adjacent "Something draws the life force from your surroundings."
+  [HIGH] spl-util.cc:863  (arg) adjacent "(You may use Imbue Servitor from the <w>%s</w>bility menu to change which spell "
+  [HIGH] spl-util.cc:870  (arg) adjacent "(You may use Imprint Weapon from the <w>%s</w>bility menu to change which weapon"
+  [HIGH] spl-util.cc:1456  (arg) adjacent "spell_type2skill: called with unmapped spell school %u (name '%s')"
+  [HIGH] spl-util.cc:1887  (return) adjacent "the dungeon can only cope with one malign gateway at a time."
+  [HIGH] spl-util.cc:1943  (return) adjacent "a magic seal in the Gauntlet prevents this spell from working."
+  [HIGH] spl-util.cc:2076  (return) adjacent "you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability"
+  [HIGH] stash.cc:1587  (arg) adjacent "<lightgrey>: only useless items found; press <w>=</w> to show.                  "
+  [HIGH] xom.cc:2982  message adjacent "Your stasis prevents you from being hasted, but everything else in sight speeds "
+  [HIGH] xom.cc:3000  message adjacent "Your stasis prevents you from being slowed, but everything else in sight slows d"
+  [HIGH] xom.cc:3019  message adjacent "Your stasis prevents you from being paralysed, but everything else in sight stop"
+  [MED ] arena.cc:470  (arg) adjacent "Expected arena monster spec "xxx v yyy", but got "%s""
+  [MED ] arena.cc:789  (arg) adjacent "Dismissing non-respawner %s to make room for respawner whose side has 0 active m"
+  [MED ] arena.cc:798  (arg) adjacent "Teleporting respawner %s to make room for other respawner whose side has 0 activ"
+  [MED ] art-func.h:1556  (arg) adjacent "The crystal ball is unable to connect with your magical essence."
+  [MED ] art-func.h:1571  (arg) adjacent "You no longer feel ready to stride towards your foes."
+  [MED ] art-func.h:1598  (arg) adjacent "The gloves are unable to connect with your magical essence."
+  [MED ] branch-data.h:218  (init) adjacent "Welcome to the Realm of Zot!\nYou feel the power of the Orb interfering with tra"
+  [MED ] branch-data.h:248  (init) adjacent "You enter the halls of Pandemonium!\nTo return, you must find a gate leading bac"
+  [MED ] clua.cc:177  (arg) adjacent "-- %s %s persistent clua file\n-- WARNING: This file is entirely auto-generated."
+  [MED ] command.cc:118  result adjacent "<w>Features</w>\n--------\n"
+  [MED ] dbg-asrt.cc:110  (arg) adjacent "Abyssal state:\n    major_coord = (%d,%d)\n    seed = 0x%\n    depth = %\n    ph"
+  [MED ] dbg-asrt.cc:161  (arg) adjacent "Position: %s, god: %s (%d), turn_is_over: %d, banished: %d\n"
+  [MED ] dbg-asrt.cc:200  (arg) adjacent "Name            | can_currently_train | train | training | level | points | prog"
+  [MED ] dbg-asrt.cc:326  (arg) adjacent "    slot #%d: otherwise valid item '%s' has invalid quantity %d\n"
+  [MED ] dbg-asrt.cc:550  (arg) adjacent "Seed: %, deterministic pregen: %d\n"
+  [MED ] dbg-asrt.cc:625  (arg) adjacent "\n\nWe crashed! This is likely due to a bug in .\nPlease submit a bug report to:"
+  [MED ] decks.cc:543  (init) adjacent "Describe which deck?    Cards available"
+  [MED ] decks.cc:557  (arg) adjacent " toggle between deck selection and description."
+  [MED ] decks.cc:744  (init) adjacent "Draw which deck?        Cards available"
+  [MED ] decks.cc:746  (init) adjacent "Describe which deck?    Cards available"
+  [MED ] decks.cc:763  (arg) adjacent " toggle between deck selection and description."
+  [MED ] decks.cc:769  (arg) adjacent " toggle between deck selection and description."
+  [MED ] decks.cc:824  (arg) adjacent "Press '<w>!</w>' or '<w>?</w>' to toggle between deck selection and description."
+  [MED ] decks.cc:857  (arg) adjacent "<lightgrey>Press <w>?</w> for the card descriptions or <w>Enter</w> to accept."
+  [MED ] dgn-overview.cc:283  disp adjacent " (press <white>G</white> to reach them and <white>?/b</white> for more informati"
+  [MED ] dgn-overview.cc:487  disp adjacent " (press <white>_</white> to reach them and <white>?/g</white> for information ab"
+  [MED ] dungeon.cc:683  (arg) adjacent "Removing references to unused map #%d) '%s' (%d,%d) (%d,%d)"
+  [MED ] dungeon.cc:4556  (arg) adjacent "Failed to load map %s in dgn_safe_place_map, reloading all maps"
+  [MED ] dungeon.cc:6177  (arg) adjacent "Shop type %d: original greed = %d, factor = %d, discount = %d%%."
+  [MED ] files.cc:613  (arg) adjacent "%s "%s" does not exist and I can't create it.\n"
+  [MED ] files.cc:3217  (arg) adjacent ").\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE"
+  [MED ] files.cc:3242  (arg) adjacent "';\ndo you want to load that instead?"
+  [MED ] files.cc:3262  (arg) adjacent ").\n\nIf you load it now, you won't be able to go back. Continue?"
+  [MED ] files.cc:3358  (arg) adjacent "There exists a save by that name but it appears to be invalid.\nDo you want to d"
+  [MED ] god-conduct.cc:956  (init) adjacent "you hurt your foes; however, effects that cause damage over time do not interest"
+  [MED ] god-wrath.cc:221  (arg) adjacent " sends the divine host to punish you for your evil ways!"
+  [MED ] initfile.cc:347  (arg) adjacent "No translations for language '%s'.\nLanguages with at least partial translation:"
+  [MED ] initfile.cc:906  (arg) adjacent "minimap, inventory, command, spell, ability, monster"
+  [MED ] initfile.cc:4193  (arg) adjacent "Autoinscribe string must have exactly one colon: %s\n"
+  [MED ] initfile.cc:5019  (arg) adjacent "Usage: crawl --edit-save <name> <command>, where <command> may be:\n  ls        "
+  [MED ] initfile.cc:5345  (arg) adjacent "Usage: crawl --bones <command> ARGS, where <command> may be:\n  ls <file> [<name"
+  [MED ] initfile.cc:5415  (arg) adjacent "Bones file '%s' is from the future (%d.%d), this instance of crawl needs %d.%d.\"
+  [MED ] initfile.cc:5732  (arg) adjacent "Option '%s' is invalid; options must be prefixed with -\n\n"
+  [MED ] item-use.cc:3365  (return) adjacent "you lack the shapeshifting skill to coax this talisman into a stable form."
+  [MED ] items.cc:2045  (arg) adjacent "Now all you have to do is get back out of the dungeon!"
+  [MED ] known-items.cc:143  navigation adjacent " exit</lightgrey>"
+  [MED ] known-items.cc:162  navigation adjacent "\n<lightgrey>Letters toggle autopickup  "
+  [MED ] known-items.cc:173  navigation adjacent "[<w>-</w>] unrecognised</lightgrey>"
+  [MED ] l-crawl.cc:1892  (arg) adjacent "crawl.setfenv: Second argument must be an environment table"
+  [MED ] l-debug.cc:432  (arg) adjacent "seed: %, generator states: "
+  [MED ] l-dgn.cc:588  (arg) adjacent "Not enough points to test connectedness (need at least %d)"
+  [MED ] l-dgn.cc:1215  (arg) adjacent "spread_rate must be between -1 and 100,inclusive"
+  [MED ] l-dgn.cc:1285  (arg) adjacent "spread_rate must be between -1 and 100,inclusive"
+  [MED ] l-dgnbld.cc:878  (arg) adjacent "make_diamond arguments too large: (%d, %d, %d) on map size (%d, %d)"
+  [MED ] l-dgnbld.cc:940  (arg) adjacent "make_box arguments too large: (%d, %d) on map size (%d, %d)"
+  [MED ] l-dgnbld.cc:966  (arg) adjacent "make_box_doors arguments too large: (%d, %d) on map size (%d, %d)"
+  [MED ] l-dgnmon.cc:118  (arg) adjacent "mon #%d: Can't use a place with no natural monsters as a monster place."
+  [MED ] l-dgnmon.cc:130  (arg) adjacent "mon #%d: can't use random monster in list specifying random monsters"
+  [MED ] l-mons.cc:362  (arg) adjacent "Don't know how to set monster property of the given value type for property '%s'"
+  [MED ] macro.cc:796  (arg) adjacent "# %s %s macro file\n# WARNING: This file is entirely auto-generated.\n\n# Key Ma"
+  [MED ] macro.cc:1152  (arg) adjacent "\nArrows/[<w>enter</w>] to select, [<w>bksp</w>] to clear selected, [<w>?</w>] f"
+  [MED ] macro.cc:1474  (arg) adjacent "[<w>?</w>] Keycode help. Quick reference: 8: [<w>bksp</w>], 9: [<w>tab</w>], 13:"
+  [MED ] macro.cc:2193  (arg) adjacent "key_to_command(): command '%s' (%d:%d) wrong for desired context %d"
+  [MED ] main.cc:1141  (arg) adjacent "Key pressed, interrupting command repetition."
+  [MED ] main.cc:1158  (arg) adjacent "Cannot control self, cancelling command repetition."
+  [MED ] mapdef.cc:2406  (arg) adjacent "Map was built for a different version of Crawl (%s) (map: %d.%d us: %d.%d)"
+  [MED ] mapdef.cc:2763  (arg) adjacent "Temple ('%s') has %u altars and a 'temple_overflow_generic_' tag, but does not m"
+  [MED ] mapdef.cc:2819  (arg) adjacent "Map '%s' has no DEPTH, no PLACE and no selectable tag in '%s'"
+  [MED ] mapdef.cc:2984  (arg) adjacent "Map '%s' has no (possible) exits; use TAGS: no_exits if this is intentional"
+  [MED ] mapdef.cc:3164  (arg) adjacent "Aligning floating vault with %u points vs %u reference points"
+  [MED ] mapdef.cc:3907  (arg) adjacent "More items than monster item slots for '%s'."
+  [MED ] mapdef.cc:5416  (arg) adjacent "Item brand can only be set with the 'ego:' tag."
+  [MED ] mapdef.cc:5697  error adjacent "An ego can only be applied to a weapon, missile or armour."
+  [MED ] message.cc:751  more_str adjacent "to continue. You can later reread messages with Ctrl-P."
+  [MED ] mon-abil.cc:876  (arg) adjacent " and becomes anchored to this world"
+  [MED ] mon-cast.cc:5477  (arg) adjacent " protects your fellow warrior from evil magic!"
+  [MED ] mon-cast.cc:7991  (arg) adjacent "ERROR: %s can't cast malign gateway, but is casting anyway! Counted %d gateways."
+  [MED ] mon-util.cc:3564  (arg) adjacent "tracer: foes %d (pow: %d), friends %d (pow: %d), foe_ratio: %d"
+  [MED ] mutation-data.h:1347  (init) adjacent "You feel space start to knot itself around you."
+  [MED ] prebuilt/levcomp.tab.cc:1844  (arg) adjacent "lua_marker("%s", function ()   return %s end)"
+  [MED ] spl-miscast.cc:349  (arg) adjacent " protects you from your miscast necromantic spell!"
+  [MED ] spl-transloc.cc:1569  (arg) adjacent "The Orb lets out a furious burst of light and becomes a dead weight against your"
+  [MED ] state.cc:475  (arg) adjacent "mouse_enabled: %d, waiting_for_command: %d, terminal_resized: %d\n"
+  [MED ] state.cc:478  (arg) adjacent "io_inited: %d, need_save: %d, saving_game: %d, updating_scores: %d:\n"
+  [MED ] state.cc:481  (arg) adjacent "seen_hups: %d, map_stat_gen: %d, type: %d, arena_suspended: %d\n"
+  [MED ] state.cc:486  (arg) adjacent "Last resize was % seconds ago.\n"
+  [MED ] target.cc:801  (arg) adjacent " has no magical effects to unravel."
+  [MED ] target.cc:1095  (arg) adjacent "You can't place harmful clouds in a sanctuary."
+  [MED ] target.cc:1991  (arg) adjacent " cannot be affected by poisonous vapours."
+  [MED ] travel.cc:1094  (arg) adjacent "You appear to be waiting for the end of something which may never occur. Examine"
+  [MED ] version.cc:46  (init) adjacent "Compiled with \nBuild platform: \nPlatform: \nCFLAGS: \nLDFLAGS: \n"
+
+Summary:
+  COMPOUND_ASSIGN: 472 findings (HIGH=381, MED=91, LOW=0)
+  STREAM_INSERT: 466 findings (HIGH=402, MED=64, LOW=0)
+  RUNTIME_CONCAT: 314 findings (HIGH=110, MED=204, LOW=0)
+  COMPILE_TIME: 253 findings (HIGH=162, MED=91, LOW=0)
+  TOTAL: 1505 findings across 105 files
+
+--- Smoke test (ZH mode) ---
+=== Crawl Smoke Test (ZH mode, startup output only) ===
+
+--- Protocol leaks ---
+  ✓ No protocol leaks
+--- English residue ---
+  ✓ No English residue in core UI
+--- Crashes ---
+  ✓ No crashes
+
+✓ Smoke test passed (startup output clean)
+
+=== post-coder.sh complete ===

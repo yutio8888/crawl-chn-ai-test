@@ -1,0 +1,75 @@
+=== post-coder.sh @ 2026-06-30T01-11-09+08-00 ===
+
+--- T_() key coverage ---
+MISSING: 15 keys in source code but not in crawl-ref/source/dat/i18n/zh/source.txt
+
+  crawl-ref/source/religion.cc:2618: "You will pay for your transgression, mortal!"
+  crawl-ref/source/newgame.cc:1436: # - Recommended character
+  crawl-ref/source/beam.cc:5610: %s blocks the %s with %s %s... and reflects it back!
+  crawl-ref/source/i18n.h:5: English
+  crawl-ref/source/spl-damage.cc:1918: Flames lash %s%s.
+  crawl-ref/source/player-stats.cc:99: Increase (s)trength, (i)ntelligence, or (d)exterity? 
+  crawl-ref/source/spl-damage.cc:4881: Magnetic shrapnel attaches itself to %s.
+  crawl-ref/source/spl-damage.cc:3771: Poisonous fumes billow around %s!
+  crawl-ref/source/spl-damage.cc:3773: Poisonous fumes billow in the air!
+  crawl-ref/source/menu.cc:1815: Select what (regex)?
+  crawl-ref/source/god-wrath.cc:1694: The monsters
+  crawl-ref/source/ability.cc:1703: Use which ability? (? or * to list) 
+  crawl-ref/source/i18n.h:6: ctx|en
+  crawl-ref/source/describe-god.cc:712: long
+  crawl-ref/source/god-prayer.cc:178: silent 
+
+Total: 2403 unique keys, 15 missing (99.4% coverage)
+
+--- mprf_p compatibility ---
+OK: All 16 positional-format entries use a _p variant correctly.
+
+--- %s count parity ---
+=== ARG-MISMATCH — format specifier count differs between EN key and CN translation ===
+
+EN: "%s continues winding %s clockwork bee...." (2 args)
+CN: "%s继续给发条蜜蜂上弦……
+# Extracted by extract_ternaries.py
+# Review entries marked with ⚠" (1 args) ← MISMATCH
+
+EN: "%s loses %s in your eye%s." (3 args)
+CN: "%s在你的眼中%s失去了自我。" (2 args) ← MISMATCH
+
+EN: "%s stops winding %s clockwork bee." (2 args)
+CN: "%s停止了给发条蜜蜂上弦。
+
+# L1817: simple" (1 args) ← MISMATCH
+
+EN: "you anoint %1$s with ash and charcoal and welcome %1$s as a companion." (1 args)
+CN: "你用灰烬和炭为其涂油，欢迎其成为同伴。%.0s" (0 args) ← MISMATCH
+
+EN: "you anoint %1$s with ash and charcoal and welcome %2$s as a companion." (2 args)
+CN: "你用灰烬和炭为%1$s涂油，欢迎其成为同伴。%2$.0s" (1 args) ← MISMATCH
+
+EN: "you have %d gold piece%s." (2 args)
+CN: "你持有%d枚金币。" (1 args) ← MISMATCH
+
+EN: "your %s meld%s into your body." (2 args)
+CN: "你的%s融入了你的身体。" (1 args) ← MISMATCH
+
+EN: "your %s unmeld%s from your body." (2 args)
+CN: "你的%s从你的身体中分离。" (1 args) ← MISMATCH
+
+Summary: 8 mismatches
+
+--- Anti-patterns (strict) ---
+OK: No anti-patterns found.
+
+--- Smoke test (ZH mode) ---
+=== Crawl Smoke Test (ZH mode) ===
+
+--- Protocol leaks ---
+  ✓ No protocol leaks
+--- English residue ---
+  ✓ No English residue in core UI
+--- Crashes ---
+  ✓ No crashes
+
+✓ Smoke test passed
+
+=== post-coder.sh complete ===
