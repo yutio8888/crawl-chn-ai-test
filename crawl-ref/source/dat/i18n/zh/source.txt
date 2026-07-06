@@ -31258,7 +31258,7 @@ novice
 
 %%%%
 only slightly.
-仅轻微地。
+极小。
 
 %%%%
 poison
@@ -36492,5 +36492,5 @@ magic release
 魔力释放
 %%%%
 \n\nYour current strength and Armour skill slows attacks with missile weapons (like %s) 
-\n\n你当前的力量和护甲技能减缓了使用投射武器（如%s）的攻击速度，
+\n\n你的力量和护甲技能减缓了投射武器（如%s）的攻击速度，减幅
 %%%%
