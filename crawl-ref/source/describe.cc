@@ -742,10 +742,11 @@ static const int MAX_ARTP_NAME_LEN = 10;
 
 static string _padded_artp_name(artefact_prop_type prop, int val)
 {
-    // XX it would be nice to use a dynamic pad, but annoyingly, the constant
-    // is used separately for egos.
-    return make_stringf("%-*s", MAX_ARTP_NAME_LEN + 1,
-        (_randart_prop_abbrev(prop, val) + ":").c_str());
+    // Use strwidth() for display-width-based padding. CJK chars
+    // are 1 codepoint but 2 display columns; byte-based %-*s
+    // under-counts, causing property descriptions to misalign.
+    const string name = _randart_prop_abbrev(prop, val) + ":";
+    return chop_string(name, MAX_ARTP_NAME_LEN + 1);
 }
 
 void desc_randart_props(const item_def &item, vector<string> &lines)
@@ -825,8 +826,8 @@ static string _desc_randart_jewel(const item_def &item)
         // DBRANDS in weird ways
         return string(desc);
     }
-    return _format_prop_desc(make_stringf("%-*s", MAX_ARTP_NAME_LEN + 1,
-                              (string(type) + ":").c_str()), desc);
+    return _format_prop_desc(chop_string(string(type) + ":",
+                                         MAX_ARTP_NAME_LEN + 1), desc);
 }
 
 static string _randart_descrip(const item_def &item)
@@ -862,8 +863,10 @@ static string _format_dbrand(string dbrand)
         {
             ASSERT(brand.size() == 2);
             const string &desc = brand[1];
-            const int prefix_len = max(MAX_ARTP_NAME_LEN + 1, (int)brand[0].size() + 2);
-            const string pre = padded_str(string(T_(brand[0].c_str())) + ":", prefix_len);
+            // Use chop_string (strwidth-based) for display-width padding.
+            // byte/codepoint-based padding under-counts CJK (1 byte ≠ 2 cols).
+            const string name = string(T_(brand[0].c_str())) + ":";
+            const string pre = chop_string(name, MAX_ARTP_NAME_LEN + 1);
             out.push_back(_format_prop_desc(pre, T_(desc.c_str())));
         }
     }
@@ -1642,12 +1645,9 @@ static void _append_weapon_stats(string &description, const item_def &item)
     {
         const brand_type brand = get_weapon_brand(item);
         string brand_name = uppercase_first(brand_type_name(brand, true));
-        // Hack to match artefact prop formatting.
-
-        string fmt_name = make_stringf("\n\n%-*s",
-                                        MAX_ARTP_NAME_LEN + 1,
-                                        (brand_name + ":").c_str());
-
+        // strwidth-based padding for CJK display width consistency.
+        string fmt_name = "\n\n" + chop_string(brand_name + ":",
+                                                MAX_ARTP_NAME_LEN + 1);
         description += _format_prop_desc(fmt_name, brand_desc);
     }
     if (is_unrandom_artefact(item))
@@ -2346,12 +2346,13 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             // 'cloak of invisiblity', it's 'the cloak of the Snail (+Inv, ...)'
             const char* colon = Options.language == lang_t::ZH ? "：" : ": ";
             string name = string(armour_ego_name(item, true)) + colon;
-            ego_prefix = make_stringf("%-*s", MAX_ARTP_NAME_LEN + 1, name.c_str());
+            ego_prefix = chop_string(name, MAX_ARTP_NAME_LEN + 1);
         }
         else
         {
             if (Options.language == lang_t::ZH)
-                ego_prefix = string(armour_ego_name(item, false)) + "：";
+                ego_prefix = chop_string(string(armour_ego_name(item, false)) + "：",
+                                         MAX_ARTP_NAME_LEN + 1);
             else
                 ego_prefix = "'Of " + string(armour_ego_name(item, false)) + "': ";
         }
