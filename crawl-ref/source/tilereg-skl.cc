@@ -1,4 +1,5 @@
 #include "AppHdr.h"
+#include "unicode.h"
 #include "database.h"
 #ifdef USE_TILE_LOCAL
 #include "tilereg-skl.h"
@@ -35,8 +36,8 @@ void SkillRegion::draw_tag()
     const skill_type skill = (skill_type) idx;
     const int apt          = species_apt(skill, you.species);
     string progress = "";
-    string desc = make_stringf(T_("%-14s Skill %4.1f Aptitude %c%d"),
-                               skill_name(skill),
+    string desc = make_stringf(T_("%s Skill %4.1f Aptitude %c%d"),
+                               chop_string(skill_name(skill), 14).c_str(),
                                you.skill(skill, 10) / 10.0,
                                apt > 0 ? '+' : ' ',
                                apt);

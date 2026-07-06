@@ -1297,7 +1297,7 @@ bool describe_god_with_join(god_type which_god)
         // We assume that a player who has enough gold such that
         // the join fee plus accumulated gold overflows knows what this menu
         // does.
-        if (text.width() + service_fee.length() + 9 <= MIN_COLS)
+        if (text.width() + strwidth(service_fee) + 9 <= MIN_COLS)
             text += T_(" religion");
         if (!service_fee.empty())
             text += service_fee;

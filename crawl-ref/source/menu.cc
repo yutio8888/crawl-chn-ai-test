@@ -2107,7 +2107,7 @@ string Menu::get_select_count_string(int) const
         ret = f_selitem(&sel);
     // count is shown in footer now
 
-    return ret + string(max(12 - (int)ret.size(), 0), ' ');
+    return ret + string(max(12 - strwidth(ret), 0), ' ');
 }
 
 vector<MenuEntry*> Menu::selected_entries() const

@@ -76,6 +76,7 @@
 #include "state.h"
 #include "state.h"
 #include "stringutil.h"
+#include "unicode.h"
 #include "tag-version.h"
 #include "terrain.h"
 #include "throw.h"
@@ -4562,7 +4563,7 @@ static void _rune_from_specs(const char* _specs, item_def &item)
         string line;
         for (int i = 0; i < NUM_RUNE_TYPES; i++)
         {
-            line += make_stringf("[%c] %-10s ", i + 'a', rune_type_name(i));
+            line += make_stringf("[%c] ", i + 'a') + chop_string(rune_type_name(i), 10) + " ";
             if (i % 5 == 4 || i == NUM_RUNE_TYPES - 1)
             {
                 mprf(T_("%s"), line.c_str());

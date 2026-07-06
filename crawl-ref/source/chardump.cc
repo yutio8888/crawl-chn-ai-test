@@ -1630,7 +1630,7 @@ static void _sdump_action_counts(dump_params &par)
     if (max_lt)
         max_lt++;
 
-    par.text += make_stringf("%-26s", T_("Action"));
+    par.text += chop_string(T_("Action"), 26);
     for (int lt = 0; lt < max_lt; lt++)
         par.text += make_stringf(" | %2d-%2d", lt * 3 + 1, lt * 3 + 3);
     par.text += " || total\n" + string(27, '-');
@@ -1730,7 +1730,7 @@ static void _sdump_skill_gains(dump_params &par)
 
     for (skill_type skill : skill_order)
     {
-        par.text += make_stringf("%-14s |", skill_name(skill));
+        par.text += chop_string(skill_name(skill), 14) + " |";
         const XlToSkillLevelMap &gains = skill_gains[skill];
         for (xl = 1; xl <= max_xl; xl++)
         {

@@ -4299,7 +4299,7 @@ void TravelCache::list_waypoints() const
     {
         if (wdescs[i].size() == 0)
             continue;
-        line += make_stringf("(%d) %-9s", i, wdescs[i].c_str());
+        line += make_stringf("(%d) ", i) + chop_string(wdescs[i], 9);
         if (!(++count % 5))
         {
             mpr(line);

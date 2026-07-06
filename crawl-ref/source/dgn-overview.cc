@@ -1164,9 +1164,8 @@ static void _show_dungeon_overview(vector<branch_type> brs)
             mpr(line);
             line = "";
         }
-        line += make_stringf("(%c) %-14s ",
-                             branches[br].travel_shortcut,
-                             T_(branches[br].shortname));
+        line += make_stringf("(%c) ", branches[br].travel_shortcut)
+                + chop_string(T_(branches[br].shortname), 14) + " ";
         ++linec;
     }
     if (!line.empty())

@@ -351,9 +351,13 @@ static void _cprintf_touchui(const char *format, ...)
         case TOUCH_V_PLACE:
             parts = split_string(":", _level_description_string_hud());
             if (parts.size() == 1)
-                cprintf("%-9s", parts[0].substr(0,9).c_str());
+                cprintf("%s", chop_string(parts[0], 9).c_str());
             else
-                cprintf("%s:%s", parts[0].substr(0,8-parts[1].size()).c_str(), parts[1].c_str());
+            {
+                int name_w = max(1, 9 - strwidth(parts[1]) - 1);
+                cprintf("%s:%s", chop_string(parts[0], name_w).c_str(),
+                        parts[1].c_str());
+            }
             break;
         case TOUCH_T_NOISE:
             cprintf(T_("Noise"));
