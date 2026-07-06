@@ -19,6 +19,7 @@
 #include "scroller.h"
 #include "state.h"
 #include "stringutil.h"
+#include "unicode.h"
 #ifdef USE_TILE
 #include "rltiles/tiledef-gui.h"
 #endif
@@ -447,7 +448,7 @@ void PromptMenu::update_columns()
     }
     int max_width = 0;
     for (MenuEntry *item : items)
-        max_width = max(max_width, static_cast<int>(_prompt_text(*item).size()));
+        max_width = max(max_width, strwidth(_prompt_text(*item)));
     // the + 2 here is to allow at least 2 spaces between cols.
     // currently no limit on columns, maybe it shouldn't be more than 6 or so?
     columns = max(1, max_line_width / (max_width + 2));
@@ -471,9 +472,8 @@ void PromptMenu::build_prompt_menu()
 
         line.textcolour(item_colour(item));
         // TODO: support MF_ALLOW_FORMATTING
-        line.cprintf("%-*s",
-            col_width,
-            _prompt_text(*item).c_str()); // _prompt_text handles the hotkey
+        line.cprintf("%s",
+            chop_string(_prompt_text(*item), col_width).c_str());
 
         c++;
         if (c >= columns || item->level != MEL_ITEM)

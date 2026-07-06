@@ -2565,7 +2565,7 @@ static string _describe_gizmo(const item_def &item)
     if (item.brand)
     {
         const string name = string(gizmo_effect_name(item.brand)) + ":";
-        const string fname = make_stringf("%-*s", MAX_ARTP_NAME_LEN + 1, name.c_str());
+        const string fname = chop_string(name, MAX_ARTP_NAME_LEN + 1);
         string desc;
         switch (item.brand)
         {
@@ -5440,7 +5440,7 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
                                     weapon_descriptor.c_str());
     }
     di.attack_descriptions.emplace_back(attk_desc);
-    di.attk_desc_width = max(di.attk_desc_width, attk_desc.length());
+    di.attk_desc_width = max(di.attk_desc_width, (size_t)strwidth(attk_desc));
 
     // Part 2: The "Max Damage" column
     // Display the max damage from the attack (including any weapon)
@@ -5567,7 +5567,7 @@ static void _attacks_table_row_throwing(const monster_info &mi,
         throw_str += pluralise(quiv->name(DESC_PLAIN, false, false,
                                           true, false));
     di.attack_descriptions.emplace_back(throw_str);
-    di.attk_desc_width = max(di.attk_desc_width, throw_str.size());
+    di.attk_desc_width = max(di.attk_desc_width, (size_t)strwidth(throw_str));
 
     string dam_desc = "0";
     string bonus_desc = "";
