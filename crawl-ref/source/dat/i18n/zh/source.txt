@@ -36204,3 +36204,93 @@ your spells (<w>%?</w>)
 a cloud of scalding steam
 一股灼热蒸汽云
 %%%%
+acidic fog
+酸雾
+%%%%
+alcoholic mist
+酒雾
+%%%%
+bats
+蝙蝠群
+%%%%
+black smoke
+黑烟
+%%%%
+blessed fire
+圣火
+%%%%
+blue smoke
+蓝烟
+%%%%
+dark miasma
+暗黑瘴气
+%%%%
+excruciating misery
+极度痛苦
+%%%%
+a forest fire
+一场森林大火
+%%%%
+foul pestilence
+恶臭瘟疫
+%%%%
+freezing vapour
+冰冻蒸汽
+%%%%
+freezing vapours
+冰冻蒸汽
+%%%%
+golden dust
+金粉
+%%%%
+grey smoke
+灰烟
+%%%%
+magical condensation
+魔法凝结
+%%%%
+mutagenic fog
+致变雾气
+%%%%
+purple smoke
+紫烟
+%%%%
+rain
+雨水
+%%%%
+the rain
+雨中
+%%%%
+rust
+锈蚀
+%%%%
+salt
+盐粒
+%%%%
+spectral mist
+幽灵雾气
+%%%%
+spreading flames
+蔓延火焰
+%%%%
+thick gloom
+浓厚幽暗
+%%%%
+thin mist
+薄雾
+%%%%
+translocational energy
+传送能量
+%%%%
+a thunderstorm
+雷暴
+%%%%
+volatile sparks
+不稳定火花
+%%%%
+whirling frost
+旋转冰霜
+%%%%
+wisps of flame
+火焰飘带
+%%%%
