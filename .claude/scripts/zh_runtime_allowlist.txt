@@ -1,0 +1,102 @@
+# zh_runtime_allowlist.txt — Manual maintenance whitelist for MIXED_CN_EN rule.
+#
+# Format: one English token per line (case-insensitive). Each token is a
+# Latin-script proper noun / abbreviation allowed to appear embedded in
+# Chinese translated text without triggering the
+# MIXED_CN_EN rule (plan v2 §2.3 row 2; rule predicates live in
+# catch2-tests/test_zh_helpers.cc:rule_mixed_cn_en).
+#
+# This is the manual portion. The auto-generated enum English-name portion
+# lives in zh_runtime_allowlist_enum.txt; at runtime the helpers' built-in
+# whitelist (in test_zh_helpers.cc) collates a generous default set that
+# covers resistance/stat tags, canonical god names, dungeon/branch names,
+# and tech prefixes (Tele, Rage, Highlight, ...).
+#
+# Add new entries below when a false positive shows up in a Layer 1 run.
+# Each row should be a single English run (no surrounding whitespace); any
+# token ≥3 chars long that legitimately appears mid-Chinese translation
+# ("你获得了 +1 Slay 增益") belongs here.
+
+# Resistance / stat abbreviations (auto-builtin covers these but the file
+# is kept for human-readable documentation).
+rF
+rC
+rElec
+rPois
+rN
+rNeg
+rMut
+rTorment
+rHellfire
+rWater
+rCorr
+MR
+AC
+EV
+SH
+XL
+HP
+MP
+SLA
+SLAY
+SInv
+Slay
+Str
+Dex
+Int
+
+# God names (auto-builtin covers these).
+Trog
+Okawaru
+Sif
+Muna
+Kikubaaqudgha
+Dithmenos
+Makhleb
+Vehumet
+Shining
+Cheibriados
+Lugonu
+Nemelex
+Xom
+Yredelemnul
+Beogh
+Jiyva
+Fedhas
+Elyvilon
+The
+Ru
+Uskayaw
+Hepliaklqana
+Wu
+Ignis
+Qazlal
+Gozag
+Ashenzari
+Iashol
+
+# Dungeon / branch names (auto-builtin covers these).
+Dungeon
+Lair
+Shoals
+Snake
+Spider
+Tomb
+Vaults
+Hell
+Abyss
+Zot
+Slime
+Orc
+Elf
+Crypt
+Pan
+Dis
+Gehenna
+Cocytus
+Tartarus
+
+# Tech prefixes in item / brand names.
+Tele
+Rage
+Highlight

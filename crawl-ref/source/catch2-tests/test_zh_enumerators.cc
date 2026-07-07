@@ -500,3 +500,130 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     WARN("zh enumerator summary: durations -> " << issues.size() << " issues");
     REQUIRE(true);
 }
+
+namespace {
+
+// Parse a `%%%%`-separated Crawl database/descript file and emit one (key,
+// value) pair per section. The key is the first non-`#`-comment, non-blank
+// line; the value is everything until the next `%%%%` separator.
+//
+// Returns false on file-open failure (caller typically decides whether to
+// skip or fail the test). Lines that look like Lua template blocks (`{...}`,
+// `w:N` weight markers, `<input>...</input>` blocks) are kept verbatim — we
+// want scan_text to see them.
+bool parse_db_file(const std::string& path, std::vector<std::pair<std::string,std::string>>& out)
+{
+    std::ifstream f(path);
+    if (!f)
+        return false;
+    std::string line;
+    std::string cur_key, cur_value;
+    bool collecting_value = false;
+    bool have_block = false;
+    while (std::getline(f, line))
+    {
+        // Strip CRLF just in case (defensive — file is checked in via git).
+        if (!line.empty() && line.back() == '\r')
+            line.pop_back();
+        if (line == "%%%%")
+        {
+            if (have_block && !cur_key.empty())
+                out.push_back(std::make_pair(cur_key, cur_value));
+            cur_key.clear();
+            cur_value.clear();
+            collecting_value = false;
+            have_block = false;
+            continue;
+        }
+        if (!collecting_value && !line.empty() && line[0] != '#')
+        {
+            cur_key = line;
+            collecting_value = true;
+            have_block = true;
+            continue;
+        }
+        if (collecting_value)
+        {
+            if (!cur_value.empty())
+                cur_value += '\n';
+            cur_value += line;
+        }
+    }
+    if (have_block && !cur_key.empty())
+        out.push_back(std::make_pair(cur_key, cur_value));
+    return true;
+}
+
+} // anonymous namespace
+
+// =============================================================================
+// Enumerator 1a — godspeak. Parses dat/database/zh/godspeak.txt for keys
+// (line `<god_en> <event>` after each %%%%), then looks up the value via
+// getMiscString(key) and scans it. Plan v2 §2.4 (#1a, Q6-corrected: key
+// separator is space, not colon).
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: godspeak (Trog general effect, etc.)",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    std::vector<std::pair<std::string, std::string>> blocks;
+    if (!parse_db_file("dat/database/zh/godspeak.txt", blocks))
+    {
+        WARN("godsspeak.txt missing, skipping godspeak enumerator");
+        REQUIRE(true);
+        return;
+    }
+    for (auto& kv : blocks)
+    {
+        const std::string& key = kv.first;
+        const std::string val = getMiscString(key);
+        if (val.empty())
+            continue;
+        scan_one(val.c_str(), key, "godspeak.txt", issues);
+    }
+    WARN("zh enumerator summary: godspeak -> " << issues.size() << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 14 — tutorial/hints/commands text. Each file lives in
+// dat/descript/zh/, uses %%%% separators, and stores Chinese values keyed by
+// English short prompts. We parse + scan the value side. Plan v2 §2.4 (#14).
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: tutorial/hints/commands text",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    const char* files[] = {
+        "dat/descript/zh/tutorial.txt",
+        "dat/descript/zh/hints.txt",
+        "dat/descript/zh/commands.txt",
+    };
+    for (const char* path : files)
+    {
+        std::vector<std::pair<std::string, std::string>> blocks;
+        if (!parse_db_file(path, blocks))
+        {
+            WARN(path << " missing, skipping");
+            continue;
+        }
+        for (auto& kv : blocks)
+        {
+            const std::string& key = kv.first;
+            // The descript DB query path is getLongDescription(key).
+            const std::string val = getLongDescription(key);
+            if (!val.empty())
+                scan_one(val.c_str(), key, path, issues);
+            else
+                // Fall back to scanning the file's raw value side; this lets
+                // us catch MIXED_CN_EN/PUNCT_STYLE/etc. in the file even
+                // when the runtime DB hasn't picked up the entry yet.
+                scan_one(kv.second.c_str(), key, path, issues);
+        }
+    }
+    WARN("zh enumerator summary: tutorial/hints/commands -> "
+         << issues.size() << " issues");
+    REQUIRE(true);
+}
