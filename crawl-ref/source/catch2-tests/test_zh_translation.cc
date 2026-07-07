@@ -27,21 +27,33 @@
 // =============================================================================
 
 TEST_CASE_METHOD(ZhTranslationFixture,
-                 "zh: fixture smoke — T_(\"You hit %s.\") returns Chinese",
+                 "zh: fixture smoke — T_(\"You attack %s.\") returns Chinese",
                  "[zh-translation][zh-helpers]")
 {
-    const char* key = "You hit %s.";
+    // Plan v2 §7 M1 acceptance: prove the fixture actually flips the language
+    // so dat/i18n/zh/source.txt is consulted. Picking the "You attack %s."
+    // key (verified to be translated to "你攻击了%s。" in source.txt) rather
+    // than "You hit %s." because the latter is not present in source.txt; the
+    // fixture's job here is to demonstrate a known-translated key actually
+    // round-trips through lookup and returns Chinese bytes.
+    const char* key = "You attack %s.";
     const char* tr  = T_(key);
     // Plan acceptance: NOT equal to the English key (string compare).
     INFO("T_(\"" << key << "\") returned: \"" << (tr ? tr : "(null)") << "\"");
     REQUIRE(tr != nullptr);
     REQUIRE(std::strcmp(tr, key) != 0);
-    // And it must contain at least one CJK character — wrap the || inside
-    // parentheses because Catch2 decomposes the expression by operator
-    // template trickery.
-    const std::string trs(tr);
-    const bool contains_cjk = rule_mixed_cn_en(trs) || rule_mixed_cn_en(trs + "击");
-    REQUIRE(contains_cjk);
+    // And it must contain at least one non-ASCII byte — calling T_() ought
+    // to return a Chinese translation (which is UTF-8 multi-byte for any
+    // ideograph). A purely-ASCII return would mean the lookup fell back to
+    // English again (e.g. options not actually toggled).
+    bool has_non_ascii = false;
+    for (char c : std::string(tr))
+        if (static_cast<unsigned char>(c) >= 0x80)
+        {
+            has_non_ascii = true;
+            break;
+        }
+    REQUIRE(has_non_ascii);
 }
 
 // -----------------------------------------------------------------------------

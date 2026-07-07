@@ -2,8 +2,11 @@
 
 #include "test_zh_fixture.h"
 
+#include <unistd.h>         // getcwd
+
 #include "database.h"      // databaseSystemInit, i18n_cache_clear
-#include "options.h"       // Options, lang_t
+#include "initfile.h"       // SysEnv (system_environment)
+#include "options.h"        // Options, lang_t
 
 // `Options.lang_name` is `const char*` (options.h:836); the existing code
 // stores pointers into the lang_data table (which has program lifetime) or
@@ -11,6 +14,24 @@
 // storage duration), so it's safe even if not enumerated in the lang table.
 namespace {
 constexpr const char* ZH_LANG_NAME = "zh";
+
+// Returns true iff the catch2 binary is being run from inside a CWD that
+// contains `descript/`, i.e. crawl-ref/source/. We set SysEnv.crawl_dir to
+// that absolute path so datafile_path()'s _get_base_dirs() returns a
+// non-empty list, which databaseSystemInit() requires to actually load
+// the TextDB layers (dat/descript/features.txt, dat/i18n/zh/source.txt, ...).
+bool ensure_crawl_dir_set()
+{
+    if (!SysEnv.crawl_dir.empty())
+        return true;
+
+    char buf[4096];
+    if (!getcwd(buf, sizeof(buf)))
+        return false;
+
+    SysEnv.crawl_dir = buf;
+    return true;
+}
 }
 
 ZhTranslationFixture::ZhTranslationFixture()
@@ -29,11 +50,15 @@ ZhTranslationFixture::ZhTranslationFixture()
     Options.lang_name = ZH_LANG_NAME;
 
     // Catch2's main (test_main.cc + fake-main.hpp) skips crawl_init_data()
-    // (startup.cc), so the TextDB layers are never opened. databaseSystemInit()
-    // opens all AllDBs[] entries lazily and reads source.txt via
-    // datafile_path() (dat/ resolved relative to crawl-ref/source CWD).
-    // Without this call, _query_database always returns an empty string,
-    // so T_() falls back to the English key and every enumerator mis-fires.
+    // (startup.cc), so SysEnv and the TextDB layers are never opened.
+    // - Without SysEnv.crawl_dir, _get_base_dirs() (files.cc:411) returns
+    //   an empty list, and datafile_path() aborts with "Cannot find data
+    //   file 'descript/features.txt' anywhere."
+    // - Without databaseSystemInit(), the TextDB layers are never opened,
+    //   so _query_database always returns "" and T_() falls back to the
+    //   English key.
+    // Both conditions need fixing for Chinese to actually return Chinese.
+    ensure_crawl_dir_set();
     databaseSystemInit();
     i18n_cache_clear();
 }
