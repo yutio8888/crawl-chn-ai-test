@@ -1,0 +1,218 @@
+# A bot to verify zh-translation of UI panels, item descriptions, god
+# speeches, and combat messages by exercising all the code paths that
+# the M1+M2 Catch2 enumerators and M3 dlua smoke test cannot reach.
+#
+# Usage:
+#   cd crawl-ref/source && make -j4
+#   util/fake_pty ./crawl -seed 1 -no-save -name test -wizard -no-throttle \
+#       -rc test/stress/zh_ui_check.rc \
+#       -extra-opt-first 'language=zh' 2>/tmp/zh-l3.stderr 1>/tmp/zh-l3.stdout
+#
+# Output: FRAME_MARKER lines on stderr (see plan v2 §3.4 / §4) that the
+# M5 aggregator (.claude/scripts/zh_runtime_check.py) parses.
+
+name = zh_ui_check
+species = mu
+background = ck
+weapon = mace
+restart_after_game = false
+show_more = false
+autofight_stop = 0
+
+Lua{
+bot_start = true
+step = 0
+last_turn = 0
+
+local eol = string.char(13)
+local esc = string.char(27)
+
+local function emit(case_id, text)
+    if text == nil then text = "<nil>" end
+    local one_line = tostring(text):gsub("\r\n", "\\n"):gsub("\n", "\\n")
+    crawl.stderr("FRAME_MARKER: " .. case_id .. " | " .. one_line .. eol)
+end
+
+local function flush_and_capture(n)
+    crawl.flush_input()
+    crawl.redraw_screen()
+    return crawl.messages(n) or ""
+end
+
+-- Phase 0: first turn → wizard setup.
+local function phase_setup()
+    -- Confirm wizard mode dialog.
+    crawl.sendkeys("&yes" .. eol .. esc)
+
+    -- Disable interruptions + freeze monsters during UI experiment.
+    crawl.sendkeys("&" .. string.char(20)
+        .. "debug.disable('save_checkpoints')" .. eol
+        .. "debug.disable('confirmations')" .. eol
+        .. "debug.disable('death')" .. eol
+        .. "debug.disable('mon_act')" .. eol
+        .. esc)
+
+    -- Set all stats to 27, HP/MP to 72 for safety.
+    crawl.sendkeys("&A27" .. eol)
+    crawl.sendkeys("&l27" .. eol)
+    crawl.sendkeys("&@72 72 72" .. eol)
+
+    -- Train basic weapon skill so items are usable.
+    crawl.sendkeys("&tc16" .. eol .. esc)   -- Fighting
+    crawl.sendkeys("&td16" .. eol .. esc)   -- Maces & Flails
+
+    -- Clear religion so god messages captured later are fresh.
+    crawl.sendkeys("&Y" .. esc)
+
+    emit("phase", "setup complete")
+    step = 1
+end
+
+-- Phase 1: item ego display names (use case A, original plan v2 §3.3).
+-- Creates weapon + brand pairs via &o[ and captures the pickup message
+-- which contains the runtime-assembled (T_()-wrapped) item name.
+local test_pairs = {
+    { "demon whip",        "chaos"        },
+    { "demon blade",       "holy wrath"   },
+    { "quick blade",       "flaming"      },
+    { "eveningstar",       "freezing"     },
+    { "trident",           "speed"        },
+    { "war axe",           "vampirism"    },
+    { "bow",               "flame"        },
+    { "boots",             "running"      },
+    { "scale mail",        "fire resistance" },
+    { "cloak",             "stealth"      },
+}
+local pair_index = 1
+
+local function phase_items()
+    if pair_index > #test_pairs then
+        emit("phase", "items complete")
+        step = 2
+        pair_index = 1
+        return
+    end
+
+    local p = test_pairs[pair_index]
+    local brand_line = p[2] or ""
+    crawl.sendkeys("g&o[" .. p[1] .. eol .. brand_line .. eol)
+    local msgs = flush_and_capture(10)
+
+    local case_id = "item:" .. p[1] .. ":" .. p[2]
+    emit(case_id, msgs)
+
+    pair_index = pair_index + 1
+end
+
+-- Phase 2: god speech (use case B).
+-- Sets god via &G, then pushes piety via &p to trigger gift/speech.
+local phase2_gods = { "Trog", "Okawaru", "Xom", "Sif Muna" }
+local god_index = 1
+
+local function phase_gods()
+    if god_index > #phase2_gods then
+        emit("phase", "gods complete")
+        step = 3
+        return
+    end
+
+    local god = phase2_gods[god_index]
+
+    -- Clear prior, set new god.
+    crawl.sendkeys("&Y" .. esc)
+    crawl.sendkeys("&G" .. eol .. god .. eol)
+    flush_and_capture(5)
+
+    -- Push piety 3x to try to cross a gift/speech threshold.
+    for _ = 1, 3 do
+        crawl.sendkeys("&p" .. eol)
+    end
+
+    -- Switch religion back to clear the gifting state for next god.
+    -- &Y dismisses the god entirely. The clear message buffer now
+    -- contains the "join" + "piety" + "gift?" messages.
+    local msgs = flush_and_capture(20)
+    emit("god:" .. god, msgs)
+
+    god_index = god_index + 1
+end
+
+-- Phase 3: combat messages (use case C).
+-- Spawns a kobold at position (2,3) and fights it by walking into it,
+-- then captures the combat mprf output.
+local combat_step = 0
+
+local function phase_combat()
+    if combat_step >= 6 then
+        emit("phase", "combat complete")
+        step = 4
+        return
+    end
+
+    if combat_step == 0 then
+        -- Spawn kobold, re-enable monster actions, gear up.
+        crawl.sendkeys("&" .. string.char(20)
+            .. "debug.disable('mon_act', false)" .. eol .. esc)
+        dgn.dismiss_monsters()
+        dgn.create_monster(2, 3, "kobold")
+        flush_and_capture(5)
+        combat_step = 1
+        return
+    end
+
+    -- Move/attack: walk south-east (key 'j') toward the kobold.
+    crawl.sendkeys("j")
+    local msgs = flush_and_capture(15)
+    emit("combat:" .. combat_step, msgs)
+    combat_step = combat_step + 1
+end
+
+-- Phase 4: UI panel text (partial — one panel for verification).
+-- Opens the religion panel (^) and captures the displayed text.
+-- Full 12-panel scan (plan v2 §4.4) is a future enhancement; this
+-- phase verifies that the RC bot can navigate and capture panel
+-- display text via crawl.messages.
+local function phase_panel()
+    crawl.sendkeys("^" .. esc)   -- religion panel → dismiss
+    local msgs = flush_and_capture(10)
+    emit("panel:religion", msgs)
+
+    crawl.sendkeys("%" .. esc)   -- character overview
+    msgs = flush_and_capture(20)
+    emit("panel:character", msgs)
+
+    crawl.sendkeys("I" .. esc .. esc)  -- inventory (list, then exit twice)
+    msgs = flush_and_capture(20)
+    emit("panel:inventory", msgs)
+
+    emit("phase", "panels complete")
+    step = 5
+end
+
+-- Phase 5: done → quit.
+local function phase_done()
+    crawl.sendkeys(string.char(19))  -- Ctrl-S = save+quit
+    emit("phase", "done")
+    step = 99
+end
+
+-- ready() is called once per turn.
+function ready()
+    if you.turns() == 0 and bot_start then
+        bot_start = false
+        crawl.enable_more(false)
+        crawl.set_sendkeys_errors(true)
+        phase_setup()
+        return
+    end
+
+    if step == 1 then phase_items()
+    elseif step == 2 then phase_gods()
+    elseif step == 3 then phase_combat()
+    elseif step == 4 then phase_panel()
+    elseif step == 5 then phase_done()
+    end
+
+    last_turn = you.turns()
+end
+}
