@@ -265,4 +265,41 @@
 
 ---
 
-*最后更新：2026-06-30 | 来源：docs/decisions.md + issues/12/glossary_and_style.md + zh-translator.md*
+<!-- domain:species -->
+## 十二、种族/物种名称
+
+| EN | ZH | 裁决 | 复合格式 |
+|----|----|------|---------|
+| deep elf | 精灵 | [D-A-008] | 精灵 + 职业（精灵剑圣、精灵湮灭者） |
+| spriggan | 小精灵 | [D-A-011] | 小精灵 + 职业（小精灵气法师、小精灵狂战士） |
+| naga / nagaraja | 纳迦 / 纳迦王 | [D-A-012] | 纳迦 + 职业（纳迦法师、纳迦神射手） |
+| draconian | 龙人 | [D-A-007] | 颜色 + 龙人（黑龙人、绿龙人） |
+| orc | 兽人 | — | 兽人 + 职业（兽人骑士、兽人大祭司） |
+| tengu | 天狗 | — | 天狗 + 职业（天狗咒术师） |
+| merfolk | 人鱼 | — | 人鱼 + 职业（人鱼水法师） |
+| centaur | 半人马 | — | 半人马 + 职业 |
+| yaktaur | 牦牛人马 | — | 牦牛人马 + 职业 |
+| goblin | 地精 | — | 地精 + 职业 |
+| kobold | 狗头人 | — | 狗头人 + 职业 |
+| troll | 巨魔 | — | 巨魔 + 职业 |
+| ogre | 食人魔 | — | 食人魔 + 职业 |
+| gnoll | 豺狼人 | — | 豺狼人 + 职业 |
+| vampire | 吸血鬼 | — | 吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师） |
+| mummy | 木乃伊 | — | 木乃伊 + 职业 |
+| ghoul | 食尸鬼 | — | 食尸鬼 + 职业 |
+| demonspawn | 恶魔后裔 | — | 恶魔后裔 + 职业 |
+| minotaur | 牛头人 | — | — |
+| felid | 猫人 | — | — |
+| octopode | 章鱼人 | — | — |
+| gargoyle | 石像鬼 | — | — |
+| formicid | 蚁人 | — | — |
+| barachi | 蛙人 | — | — |
+| vine stalker | 藤蔓行者 | — | — |
+| armataur | 甲龙兽人 | — | — |
+| faun | 牧神 | — | — |
+
+**复合命名规则**：`[种族基词] + [职业/角色名]`，不使用斜杠、破折号或空格分隔。
+
+---
+
+*最后更新：2026-07-07 | 来源：docs/decisions.md + issues/12/glossary_and_style.md + zh-translator.md*
