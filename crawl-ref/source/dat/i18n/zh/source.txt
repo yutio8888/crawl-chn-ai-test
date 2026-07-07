@@ -1,3 +1,4 @@
+%%%%
     ! - Random character
     ! - 随机角色
 %%%%
@@ -34470,11 +34471,11 @@ Stack %s
 
 %%%%
 <w>%s</w>\nInput (raw) new %s for %s: 
-<w>%s</w>\n为%3$s输入（原始）新%2$s：
+<w>%1$s</w>\n为%3$s输入（原始）新%2$s：
 
 %%%%
 <w>%s</w>\nInput new %s for %s:
-<w>%s</w>\n为%3$s输入新%2$s：
+<w>%1$s</w>\n为%3$s输入新%2$s：
 
 %%%%
 <white>Gems (%d collected
@@ -36196,4 +36197,7 @@ your religious standing (<w>%</w>)
 %%%%
 your set of mutations (<w>%</w>)
 你的变异集（<w>%</w>）
+%%%%
+your spells (<w>%?</w>)
+你的法术（<w>%?</w>）
 %%%%

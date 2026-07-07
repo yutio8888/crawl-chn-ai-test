@@ -1354,7 +1354,7 @@ public:
         /// except enter and esc
         void edit_action_raw()
         {
-            prompt = make_stringf(
+            prompt = make_stringf_p(
                 T_("<w>%s</w>\nInput (raw) new %s for %s: "),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
@@ -1378,7 +1378,7 @@ public:
         bool edit_action()
         {
             char buff[1024];
-            const string edit_prompt = make_stringf(T_("<w>%s</w>\nInput new %s for %s:"),
+            const string edit_prompt = make_stringf_p(T_("<w>%s</w>\nInput new %s for %s:"),
                         prompt.c_str(),
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
