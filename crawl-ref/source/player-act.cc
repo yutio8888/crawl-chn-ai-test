@@ -472,9 +472,9 @@ string player::base_hand_name(bool plural, bool temp, bool *can_plural) const
         singular += "eel ";
     singular += _hand_name_singular(temp);
     if (plural && *can_plural)
-        return pluralise(singular);
+        return C_("hand", pluralise(singular).c_str());
 
-    return singular;
+    return C_("hand", singular.c_str());
 }
 
 /**

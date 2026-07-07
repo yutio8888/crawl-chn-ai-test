@@ -9167,7 +9167,7 @@ string player::hands_verb(const string &plural_verb) const
 {
     bool plural;
     const string hand = hand_name(true, &plural);
-    return hand + " " + conjugate_verb(plural_verb, plural);
+    return hand + " " + conjugate_verb(T_(plural_verb.c_str()), plural);
 }
 
 // Is this a character that would not normally have a preceding space when

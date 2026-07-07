@@ -36722,4 +36722,68 @@ the Shining One's cleansing flame
 %%%%
 cleansing flame
 净化之焰
+# Phase 2b: Native hand/verb naming — player-act.cc + player.cc (2026-07-07)
+# C_("hand", X) entries for base_hand_name() body parts
+# T_() verb entries for hands_verb() verb translation
+
+%%%%  
+hand|hand
+手
+%%%%  
+hand|hands
+双手
+%%%%  
+hand|paw
+爪
+%%%%  
+hand|paws
+双爪
+%%%%  
+hand|claw
+利爪
+%%%%  
+hand|claws
+双利爪
+%%%%  
+hand|tentacle
+触手
+%%%%  
+hand|tentacles
+触手
+%%%%  
+hand|fist
+拳头
+%%%%  
+hand|fists
+双拳
+%%%%  
+hand|eel hand
+鳗鱼手
+%%%%  
+hand|eel hands
+鳗鱼手
+%%%%  
+hand|grasper
+钳手
+%%%%  
+hand|graspers
+双钳手
+%%%%  
+hand|tendril
+触须
+%%%%  
+hand|tendrils
+触须
+%%%%  
+tingle
+发麻
+%%%%  
+glow
+发亮
+%%%%  
+smoulder
+冒烟
+%%%%  
+gain
+获得
 %%%%
