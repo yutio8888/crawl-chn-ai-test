@@ -3059,7 +3059,7 @@ static void _mons_open_door(monster& mons, const coord_def &pos)
         update_screen();
 
         // XXX: should use custom verbs
-        string open_str = broken ? "breaks down the " : "opens the ";
+        string open_str = broken ? T_("breaks down the ") : T_("opens the ");
         open_str += adj;
         open_str += noun;
         open_str += ".";

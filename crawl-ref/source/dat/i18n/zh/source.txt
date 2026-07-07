@@ -36306,3 +36306,9 @@ Your corrosive artefact
 The trap's stomach acid
 陷阱的胃酸
 %%%%
+breaks down the 
+撞破了
+%%%%
+opens the 
+打开了
+%%%%
