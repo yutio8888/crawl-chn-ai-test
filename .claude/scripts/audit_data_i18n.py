@@ -98,7 +98,7 @@ def check_duration_strings(source_dir: str, source_txt: str):
     sentences = set(re.findall(r'"([A-Z][^"]{3,}?[.!?])"', content))
 
     src_entries = parse_source_txt(source_txt)
-    missing = sorted(sentences - set(src_entries.keys()))
+    missing = sorted(s for s in sentences if s.lower() not in src_entries)
 
     print(f"\n--- Duration string translation coverage ---")
     print(f"Total duration sentence strings: {len(sentences)}")
