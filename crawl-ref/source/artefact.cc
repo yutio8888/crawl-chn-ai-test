@@ -26,6 +26,7 @@
 #include "items.h"
 #include "libutil.h"
 #include "makeitem.h"
+#include "options.h"
 #include "random.h"
 #include "religion.h"
 #include "shout.h"
@@ -1656,8 +1657,6 @@ string make_artefact_name(const item_def &item, bool appearance)
 
     if (_pick_db_name(item))
     {
-        result += base_name + " ";
-
         int tries = 100;
         string name;
         do
@@ -1677,9 +1676,19 @@ string make_artefact_name(const item_def &item, bool appearance)
         while (--tries > 0 && strwidth(name) > 25);
 
         if (name.empty()) // still nothing found?
-            result += "of Bugginess";
-        else
+            name = "of Bugginess";
+
+        if (Options.language == lang_t::ZH)
+        {
             result += name;
+            result += base_name;
+        }
+        else
+        {
+            result += base_name;
+            result += " ";
+            result += name;
+        }
     }
     else
     {
@@ -2072,7 +2081,13 @@ static string _ashenzari_artefact_name(item_def &item)
 
     item.orig_monnum = old_orig;
 
-    return _base_name(item) + " " + (name.empty() ? "of Ashenzari" : name);
+    if (Options.language == lang_t::ZH)
+    {
+        const string mod = name.empty() ? "of Ashenzari" : name;
+        return mod + _base_name(item);
+    }
+    else
+        return _base_name(item) + " " + (name.empty() ? "of Ashenzari" : name);
 }
 
 void make_ashenzari_randart(item_def &item)
