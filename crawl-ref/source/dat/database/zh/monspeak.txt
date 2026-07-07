@@ -2591,6 +2591,11 @@ VISUAL:@The_monster@ 用口型说着一个字："死。"
 
 @The_monster@ 踏前一步。安静地。致命地。
 %%%%
+_Jory_rare_
+
+@The_monster@ 说："我的妻子抛弃了我，但我已经报了仇。"
+
+%%%%
 ############ Urug ### 半盲的独眼兽人
 Urug
 
@@ -5397,6 +5402,51 @@ _crazy_yiuf_wordlist2_
 
 
 嘶嘶泡
+%%%%
+# Nemelex's deck of destruction
+_deck_of_destruction_line_
+
+@The_monster@抽到了堕落。"有太多方法可以变异了！"
+
+@The_monster@抽到了宝珠。"毁灭之球可疼了！"
+
+@The_monster@抽到了痛苦。"死灵术可疼了！"
+
+@The_monster@抽到了风暴。"到处都是雷与电！"
+
+@The_monster@抽到了硫酸。"强酸可疼了！"
+
+@The_monster@抽到了狂野魔法。"魔法出错的方式有千千万！"
+%%%%
+# Nemelex's deck of escape
+_deck_of_escape_line_
+
+@The_monster@抽到了云雾。"敌人别想呼吸新鲜空气！"
+
+@The_monster@抽到了灵药。"回血又回魔？哇呼！"
+
+@The_monster@抽到了放逐。"深渊可是个可怕的地方！"
+
+@The_monster@抽到了坟墓。"我可不想被封在没窗户的地方！"
+
+# Kenny Rogers, "The Gambler"
+
+@The_monster@抽到了速度。"知道何时该走，知道何时该跑。"
+%%%%
+# Nemelex's deck of summoning
+_deck_of_summoning_line_
+
+@The_monster@抽到了剑舞。"希望武器的准头不错！"
+
+@The_monster@抽到了元素。"到处都是元素兽！"
+
+@The_monster@抽到了幻象。"我现在有个分身了！"
+
+@The_monster@抽到了五芒星。"希望恶魔友善点！"
+
+@The_monster@抽到了游侠。"会射箭的新朋友！"
+
+@The_monster@抽到了虫群。"到处都是蜜蜂！"
 %%%%
 _deck_of_destruction_line_
 

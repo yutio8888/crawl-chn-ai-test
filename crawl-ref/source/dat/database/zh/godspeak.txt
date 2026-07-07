@@ -992,15 +992,6 @@ Xom boots slot
 @Your_item@ 变得巨大，然后缩小回来！
 
 %%%%
-Xom chaos vex
-
-佐姆召唤出一场血腥的号角！
-
-佐姆将你敌人的体内注满了纯粹的混沌！
-
-佐姆煽起了一场狂喜的死亡之舞！
-
-%%%%
 Xom cloak slot
 
 @Your_item@ 在无形的风中翻飞。

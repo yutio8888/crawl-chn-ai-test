@@ -580,6 +580,8 @@ obsidian statue cast
 @The_monster@'的眼睛短暂地闪动光芒。
 %%%%
 # 斯芬克斯无法做手势或是指点。
+
+%%%%
 sphinx cast
 
 @The_monster@咕哝着一些奇怪的话。
@@ -1331,3 +1333,5 @@ unseen Phantom Blitz cast
 unseen thermic dynamo cast
 
 你听到一声剧烈的旋转声。
+%%%%
+######################################################

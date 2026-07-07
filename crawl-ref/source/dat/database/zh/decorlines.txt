@@ -240,6 +240,11 @@ Jiyva peaceful fountain_blue
 你停下来欣赏着喷泉边缘慢慢生长的黏液。
 
 %%%%
+Jiyva peaceful fountain_blue
+
+你停下来欣赏着喷泉边缘慢慢生长的闪闪发光的黏液。
+
+%%%%
 Kikubaaqudgha peaceful dry_fountain
 
 你沉思着那一天——当整个世界都将与这座喷泉共享同样的命运。
@@ -348,7 +353,7 @@ Vehumet fountain_blood
 你感知到了沉睡在这座喷泉中的强大破坏力。
 
 %%%%
-%%%%
+# XXX: miniscule chance of normal Xom fountain messages?
 Xom fountain_blue
 
 无害的蝴蝶鱼从喷泉中注视着你。
@@ -359,6 +364,7 @@ w:1
 w:1
 有那么一个可怕的瞬间，你发誓佐姆在这座喷泉里召唤了一只克拉肯。
 
+%%%%
 Xom fountain_blood
 
 无害的吸血蝴蝶鱼从喷泉中瞪着你。
