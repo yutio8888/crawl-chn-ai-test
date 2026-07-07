@@ -529,13 +529,17 @@ baseline: 745 issues (725 Catch2 + 0 Lua + 20 Bot).
 ```
 1. make -j8                                   # Console build passes (0 errors)
 2. make -j8 TILES=y                          # Tiles build passes (if touching tiles code)
-3. make catch2-tests -j4                      # Catch2 translation tests pass (87 cases, 0 failures)
-4. grep to confirm target functions          # No missed guards
-5. git diff self-review                      # Only intended lines changed
-6. EN mode: launch and confirm no crash      # Required for Phase 0-1
-7. EN mode: play 10 min                      # Required for Phase 2+
-8. audit_data_i18n.py check                  # Data-driven source coverage
-9. bash .claude/scripts/post_zh_runtime.sh fast  # Runtime regression check (if baseline exists)
+3. grep to confirm target functions          # No missed guards
+4. git diff self-review                      # Only intended lines changed
+5. EN mode: launch and confirm no crash      # Required for Phase 0-1
+6. EN mode: play 10 min                      # Required for Phase 2+
+7. audit_data_i18n.py check                  # Data-driven source coverage
+```
+
+**On-request only** (user must explicitly ask):
+```
+make catch2-tests -j4                          # Layer 1: 16 enumerators, ~minute build
+bash .claude/scripts/post_zh_runtime.sh full   # Layers 1-3 + aggregation, ~minutes
 ```
 
 ### Translation Toolchain
@@ -570,8 +574,9 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
 # Then include $CONTEXT in the agent prompt to reduce context bloat.
 ```
 
-**Aggregated verification**: Instead of running individual checks, use the post-agent
-aggregation scripts that capture all output to `.claude/metrics/verify/`:
+**Aggregated verification**: After code changes, use these scripts to run checks.
+Default is fast (seconds); `--full` / `post_zh_runtime.sh` only when explicitly requested
+(they trigger compilation and test execution).
 
 ```bash
 bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + string-concat + smoke)
