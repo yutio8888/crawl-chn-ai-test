@@ -14652,8 +14652,8 @@ Inferno
 # Phase 3: describe-god.cc T_() migration (Agent A4)
 
 %%%%
-You radiate a%s aura of righteousness, making those within it easier to hit.
-你散发出%s正义光环，其中的敌人更容易被击中。
+You radiate a%s aura of righteousness, making those within it easier to hit.\n
+你散发出%s正义光环，其中的敌人更容易被击中。\n
 %%%%
 %s%s protects you from negative energy.
 %s%s保护你免受负能量伤害。
