@@ -1295,6 +1295,92 @@ def cmd_species_consistency(args):
         return 0
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: source-txt-integrity
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_source_txt_integrity(args):
+    """Check source.txt for duplicate keys, self-conflicts, empty entries."""
+    entries_raw = OrderedDict()
+    duplicates = []
+    self_conflicts = []
+    empty_value = []
+
+    with open(args.source_txt, 'r', encoding='utf-8') as f:
+        content = f.read()
+
+    order = 0
+    for block in re.split(r'^%%%%\n', content, flags=re.MULTILINE)[1:]:
+        block = block.strip()
+        parts = block.split('\n\n', 1)
+        if len(parts) == 2:
+            key = parts[0].strip()
+            value = parts[1].rstrip('\n').strip()
+        elif '\n' in block:
+            lines = block.split('\n', 1)
+            key = lines[0].strip()
+            value = lines[1].rstrip('\n').strip() if len(lines) > 1 else ''
+        else:
+            continue
+
+        key_lower = key.lower()
+        order += 1
+
+        if not value:
+            empty_value.append(key)
+
+        if key_lower in entries_raw:
+            existing_val = entries_raw[key_lower][0][0]
+            if value != existing_val:
+                self_conflicts.append((key, existing_val, value, order))
+            else:
+                duplicates.append((key, value, order))
+        else:
+            entries_raw[key_lower] = [(value, order)]
+
+    exit_code = 0
+
+    if self_conflicts:
+        print("=== SELF-CONFLICT — same key with DIFFERENT values ===")
+        for key, v1, v2, order in sorted(self_conflicts)[:30]:
+            print(f'  "{key}"')
+            print(f'    Existing: "{v1[:80]}"')
+            print(f'    Conflict: "{v2[:80]}" (appearance #{order})')
+        if len(self_conflicts) > 30:
+            print(f'  ... and {len(self_conflicts) - 30} more')
+        print(f'  → {len(self_conflicts)} self-conflict(s) — BLOCKER')
+        print()
+        exit_code = 1
+
+    if duplicates:
+        print("=== DUPLICATE-KEYS — same key with same value ===")
+        for key, value, order in sorted(duplicates)[:20]:
+            print(f'  "{key}" (appearance #{order})')
+        if len(duplicates) > 20:
+            print(f'  ... and {len(duplicates) - 20} more')
+        print(f'  → {len(duplicates)} duplicate(s)')
+        print()
+        exit_code = 1
+
+    if empty_value:
+        untranslated = [k for k in empty_value
+                        if k not in entries_raw
+                        or entries_raw.get(k.lower()) and entries_raw[k.lower()][0][0] == k]
+        if untranslated:
+            print(f"=== EMPTY-TRANSLATION — {len(untranslated)} keys with no "
+                  f"Chinese value ===")
+            for key in sorted(untranslated)[:15]:
+                print(f'  "{key}"')
+            if len(untranslated) > 15:
+                print(f'  ... and {len(untranslated) - 15} more')
+            print()
+
+    if exit_code == 0:
+        print(f"OK: No duplicate keys or self-conflicts in "
+              f"{len(entries_raw)} unique entries.")
+    return exit_code
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="T_() world translation blind-spot scanner"
@@ -1395,6 +1481,14 @@ def main():
     p_sc.add_argument("--source-txt", required=True,
                       help="Path to source.txt")
 
+    # source-txt-integrity
+    p_sti = subparsers.add_parser(
+        "source-txt-integrity",
+        help="Check source.txt for duplicate keys and self-conflicts"
+    )
+    p_sti.add_argument("--source-txt", required=True,
+                       help="Path to source.txt")
+
     args = parser.parse_args()
 
     if args.command == "missing-t":
@@ -1417,6 +1511,8 @@ def main():
         return cmd_anti_patterns(args)
     elif args.command == "species-consistency":
         return cmd_species_consistency(args)
+    elif args.command == "source-txt-integrity":
+        return cmd_source_txt_integrity(args)
     else:
         parser.print_help()
         return 1

@@ -13,6 +13,10 @@ mkdir -p .claude/metrics/verify
 {
     echo "=== post-coder.sh @ ${TS} ==="
     echo ""
+    echo "--- source.txt integrity (dedup + self-conflicts) ---"
+    python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
     echo "--- T_() key coverage ---"
     python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
@@ -32,6 +36,15 @@ mkdir -p .claude/metrics/verify
     echo "--- Anti-patterns (strict) ---"
     python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ \
         --strict 2>&1 || true
+    echo ""
+    echo "--- Species term consistency ---"
+    python3 .claude/scripts/scan_i18n.py species-consistency \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
+    echo "--- Term validation (rejected names from decisions.md) ---"
+    python3 .claude/scripts/scan_i18n.py validate-terms \
+        --glossary docs/decisions.md \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
     echo ""
     echo "--- String concatenation blind spots (tree-sitter AST) ---"
     python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \

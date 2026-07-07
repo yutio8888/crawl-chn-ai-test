@@ -27,12 +27,11 @@ def parse_source_txt(filepath: str) -> dict:
         # Some entries have blank-line (\n\n) key/value separator, some don't
         parts = entry.split('\n\n', 1)
         if len(parts) == 2:
-            entries[parts[0].strip()] = parts[1].rstrip('\n').strip()
+            entries[parts[0].strip().lower()] = parts[1].rstrip('\n').strip()
         elif len(parts) == 1 and '\n' in parts[0]:
-            # Single newline separator: key\nvalue or key\nvalue\n%%%%
             lines = parts[0].rstrip('\n').split('\n', 1)
             if len(lines) == 2:
-                entries[lines[0].strip()] = lines[1].strip()
+                entries[lines[0].strip().lower()] = lines[1].strip()
     return entries
 
 
@@ -55,7 +54,6 @@ def check_monster_names(source_dir: str, source_txt: str):
 
     # Parse source.txt
     src_entries = parse_source_txt(source_txt)
-    src_entries_lower = {k.lower(): True for k in src_entries}
 
     # Parse zh_monster_name() static map from mon-util.cc
     mon_util_cc = os.path.join(source_dir, 'mon-util.cc')
@@ -73,7 +71,7 @@ def check_monster_names(source_dir: str, source_txt: str):
 
     for name in yaml_names:
         found = False
-        if name in src_entries or name.lower() in src_entries_lower:
+        if name.lower() in src_entries:
             covered_by_src.add(name)
             found = True
         if name in zh_map:

@@ -653,6 +653,37 @@ The WSL environment has limited CPU and memory. To avoid system instability:
 3. **No background compile storms**: If one agent is already compiling, other
    agents must wait for it to finish before starting their own compilation.
 
+### Source.txt Append-Safe Protocol (MANDATORY)
+
+Before adding ANY entry to `dat/i18n/zh/source.txt`:
+
+1. **Grep-first**: Verify the EN key does not already exist:
+   ```bash
+   grep -nF "§KEY§" crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+   If the key exists, skip — translation is already covered.
+
+2. **Glossary lookup**: Check `docs/decisions.md` for term rulings:
+   ```bash
+   grep -A3 "Choice:" docs/decisions.md | grep -i "§word§"
+   ```
+   Use decisions.md-approved terms (god names, species names, skill names).
+
+3. **Post-add self-check**: Verify no duplicates or self-conflicts:
+   ```bash
+   python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+       --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+
+4. **Case discipline**: Copy EN keys verbatim from the C++ `T_("...")` literal.
+   Do NOT alter case. The runtime handles case-insensitive lookup; the
+   source.txt key must match the C++ literal for `i18n_extract.py` to
+   cross-reference successfully.
+
+5. **Never re-add all**: When processing enumerated entities (monsters, spells,
+   etc.), diff against existing keys before writing. Never blindly append
+   all enumerated names.
+
 ### Multi-Agent Parallel Development Pattern
 
 When distributing work across multiple agents, follow this pattern to avoid
@@ -662,11 +693,15 @@ chaos and merge conflicts:
 1. SPAN: Launch N agents simultaneously, each with `isolation: worktree`
          Each agent works on different files (no overlap)
 2. WAIT:  All agents complete and commit in their own worktrees
-3. CONSOLIDATE: Create a `consolidate-*` worktree from chn-0.34.1-base
+3. PREFLIGHT: Run overlap check before consolidation:
+              bash .claude/scripts/pre_consolidation_check.sh \
+                  chn-0.34.1-base <wt1> <wt2> ...
+4. CONSOLIDATE: Create a `consolidate-*` worktree from chn-0.34.1-base
                 Cherry-pick ALL agent commits into it
                 Resolve source.txt conflicts (see below)
-4. VERIFY: make -j4 in the consolidate worktree, fix any compilation errors
-5. MERGE:   Fast-forward merge consolidate worktree into chn-0.34.1-base
+5. VERIFY: Run `.claude/scripts/post-coder.sh` in consolidate worktree;
+           make -j4; fix any compilation errors
+6. MERGE:   Fast-forward merge consolidate worktree into chn-0.34.1-base
 ```
 
 **Never cherry-pick agent commits directly to `chn-0.34.1-base`.** Always go
@@ -696,6 +731,7 @@ When reviewing agent output, check for these common errors:
 | `mprf` with positional params | `mprf(T_("%1$s..."), ...)` | Use `mprf_p` — MinGW vsnprintf doesn't support `%n$s` |
 | Untranslated inline args | `T_("You %s %s."), verb, "... the rest"` | Wrap ALL text fragments: `T_(", but do no damage")` |
 | Duplicate source.txt keys | Agent adds key that already exists | Agent must `grep` source.txt before adding |
+| Mass duplicate re-add | Appending all enumerated names without checking | Diff against existing keys before writing |
 | `git add -A` in main repo | Stages worktrees, cache files | Only `git add` specific source files |
 
 ## Issue Tracking

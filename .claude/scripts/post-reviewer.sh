@@ -15,6 +15,10 @@ mkdir -p .claude/metrics/verify
     echo ""
     bash .claude/scripts/check_consistency.sh --all --strict 2>&1 || true
     echo ""
+    echo "--- Source.txt integrity ---"
+    python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
     echo "--- Term validation (rejected names from decisions.md) ---"
     python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
