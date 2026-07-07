@@ -1275,18 +1275,24 @@ def cmd_source_txt_integrity(args):
         content = f.read()
 
     order = 0
+    # Use rstrip('\n') only (not strip()) — runtime trim_keys=false for source.txt,
+    # so leading/trailing spaces are semantically significant in keys.
     for block in re.split(r'^%%%%\n', content, flags=re.MULTILINE)[1:]:
-        block = block.strip()
-        parts = block.split('\n\n', 1)
-        if len(parts) == 2:
-            key = parts[0].strip()
-            value = parts[1].rstrip('\n').strip()
-        elif '\n' in block:
-            lines = block.split('\n', 1)
-            key = lines[0].strip()
-            value = lines[1].rstrip('\n').strip() if len(lines) > 1 else ''
-        else:
+        if not block:
             continue
+        block_rstrip = block.rstrip('\n')
+        # Key is first non-empty line
+        block_lines = block_rstrip.split('\n')
+        key_idx = None
+        for i, bline in enumerate(block_lines):
+            if bline:
+                key_idx = i
+                break
+        if key_idx is None:
+            continue
+        key = block_lines[key_idx].rstrip('\n').rstrip('\r')
+        # Value is everything after the key line
+        value = '\n'.join(block_lines[key_idx + 1:]).rstrip('\n')
 
         key_lower = key.lower()
         order += 1
