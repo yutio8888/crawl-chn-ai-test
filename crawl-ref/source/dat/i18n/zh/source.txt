@@ -36720,8 +36720,7 @@ golden flame
 the Shining One's cleansing flame
 光辉者的净化之火
 %%%%
-cleansing flame
-净化之焰
+%%%%
 # Phase 2b: Native hand/verb naming — player-act.cc + player.cc (2026-07-07)
 # C_("hand", X) entries for base_hand_name() body parts
 # T_() verb entries for hands_verb() verb translation
