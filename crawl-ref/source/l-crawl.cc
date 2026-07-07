@@ -1919,6 +1919,14 @@ static const struct luaL_Reg crawl_dlib[] =
 { "seen_hups", crawl_seen_hups },
 { "setfenv", crawl_setfenv },
 
+// zh-runtime Layer 2 tests: expose i18n + message-capture helpers
+// that are normally clua-only to the dlua VM so the -test runner
+// can verify T_() returns Chinese and capture mprf messages.
+{ "stderr",             crawl_stderr },
+{ "t_",                 crawl_t_ },
+{ "language",           crawl_language },
+{ "messages",           crawl_messages },
+
 { nullptr, nullptr }
 };
 

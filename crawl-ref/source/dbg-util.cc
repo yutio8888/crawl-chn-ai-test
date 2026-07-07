@@ -568,7 +568,7 @@ void wizard_toggle_dprf()
                 line.clear();
             }
         }
-        mprf(MSGCH_PROMPT, T_("Toggle which debug class (ESC to exit)? ");
+        mprf(MSGCH_PROMPT, T_("Toggle which debug class (ESC to exit)? "));
 
         int keyin = toalower(get_ch());
 

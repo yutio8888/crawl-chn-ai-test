@@ -79,7 +79,7 @@ static bool _do_build_level()
 {
     clear_messages();
     mprf(T_("On %s; %d g, %d fail, %u err%s, %u uniq, "
-         "%d try, %d (%.2f%%) vetos",
+         "%d try, %d (%.2f%%) vetos"),
          level_id::current().describe().c_str(), levels_tried, levels_failed,
          (unsigned int)errors.size(), last_error.empty() ? ""
          : (" (" + last_error + ")").c_str(), (unsigned int) use_count.size(),
@@ -91,7 +91,7 @@ static bool _do_build_level()
     msg::suppress mx;
     if (kbhit() && key_is_escape(getch_ck()))
     {
-        mprf(MSGCH_WARN, T_("User requested cancel");
+        mprf(MSGCH_WARN, T_("User requested cancel"));
         return false;
     }
 
@@ -244,7 +244,7 @@ bool mapstat_build_levels()
     {
         clear_messages();
         mprf(T_("On %d of %d; %d g, %d fail, %u err%s, %u uniq, "
-             "%d try, %d (%.2f%%) vetoes",
+             "%d try, %d (%.2f%%) vetoes"),
              i, SysEnv.map_gen_iters, levels_tried, levels_failed,
              (unsigned int)errors.size(),
              last_error.empty() ? "" : (" (" + last_error + ")").c_str(),
@@ -538,7 +538,7 @@ void mapstat_generate_stats()
     _dungeon_places();
 
     clear_messages();
-    mpr(T_("Generating dungeon map stats");
+    mpr(T_("Generating dungeon map stats"));
     printf("Generating map stats for %d iteration(s) of %d level(s) over "
            "%d branch(es).\n", SysEnv.map_gen_iters,
            (int) generated_levels.size(), branch_count);
