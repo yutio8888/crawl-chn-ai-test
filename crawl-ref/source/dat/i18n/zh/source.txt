@@ -5031,8 +5031,8 @@ melt
  melts!
 融化了！
 %%%%
-Memorise %s, consuming %d spell level%s and leaving %d?%s%s
-记忆%s，消耗%d法术等级%s，剩余%d？%s%s
+Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s
+记忆%1$s，消耗%2$d个法术等级，剩余%4$d个法位？%6$s
 %%%%
  memory burns away to nothing.
 记忆燃烧殆尽。
@@ -7445,7 +7445,7 @@ This spell doesn't need a beam path.
 这个法术不需要弹道路径。
 %%%%
 This spell is %s to cast%s
-这个法术%s施放%s
+施放这个法术%s%s
 %%%%
 This spell is impossible to cast!
 这个法术不可能被施放！

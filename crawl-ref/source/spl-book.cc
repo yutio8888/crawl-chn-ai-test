@@ -30,6 +30,7 @@
 #include "libutil.h"
 #include "message.h"
 #include "output.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "random-pick.h"
 #include "religion.h"
@@ -1138,8 +1139,8 @@ bool learn_spell(spell_type specspell, bool wizard, bool interactive)
 
     if (interactive)
     {
-        const string prompt = make_stringf(
-                 T_("Memorise %s, consuming %d spell level%s and leaving %d?%s%s"),
+        const string prompt = make_stringf_p(
+                 T_("Memorise %1$s, consuming %2$d spell level%3$s and leaving %4$d?%5$s%6$s"),
                  spell_title(specspell), spell_levels_required(specspell),
                  spell_levels_required(specspell) != 1 ? "s" : "",
                  player_spell_levels() - spell_levels_required(specspell),
