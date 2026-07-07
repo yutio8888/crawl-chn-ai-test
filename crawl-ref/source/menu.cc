@@ -1611,7 +1611,7 @@ bool Menu::filter_with_regex(const char *re)
     for (unsigned int i = 0; i < items.size(); ++i)
     {
         if (items[i]->level == MEL_ITEM
-            && tpat.matches(items[i]->get_text()))
+            && tpat.matches(items[i]->get_filter_text()))
         {
             select_index(i);
             if (flags & MF_SINGLESELECT)

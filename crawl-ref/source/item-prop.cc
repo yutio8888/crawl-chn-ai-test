@@ -3275,6 +3275,61 @@ const char* weapon_base_name(weapon_type subtype)
     return Weapon_prop[Weapon_index[subtype]].name;
 }
 
+const char* missile_base_name(missile_type subtype)
+{
+    return Missile_prop[Missile_index[subtype]].name;
+}
+
+const char* armour_base_name(armour_type subtype)
+{
+    return Armour_prop[Armour_index[subtype]].name;
+}
+
+string item_english_name(const item_def &item)
+{
+    switch (item.base_type)
+    {
+    case OBJ_WEAPONS:
+        return weapon_base_name((weapon_type)item.sub_type);
+    case OBJ_MISSILES:
+        return missile_base_name((missile_type)item.sub_type);
+    case OBJ_ARMOUR:
+        return armour_base_name((armour_type)item.sub_type);
+    case OBJ_JEWELLERY:
+        return jewellery_is_amulet(item.sub_type) ? "amulet" : "ring";
+    case OBJ_TALISMANS:
+        return "talisman";
+    case OBJ_WANDS:
+        return "wand";
+    case OBJ_SCROLLS:
+        return "scroll";
+    case OBJ_POTIONS:
+        return "potion";
+    case OBJ_BOOKS:
+        return "book";
+    case OBJ_STAVES:
+        return "magical staff";
+    case OBJ_GOLD:
+        return "gold";
+    case OBJ_CORPSES:
+        return "corpse";
+    case OBJ_ORBS:
+        return "orb";
+    case OBJ_RUNES:
+        return "rune";
+    case OBJ_GEMS:
+        return "gem";
+    case OBJ_GIZMOS:
+        return "gizmo";
+    case OBJ_BAUBLES:
+        return "bauble";
+    case OBJ_MISCELLANY:
+        return "misc";
+    default:
+        return "";
+    }
+}
+
 void remove_whitespace(string &str)
 {
     str.erase(remove_if(str.begin(), str.end(),

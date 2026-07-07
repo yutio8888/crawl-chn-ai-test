@@ -178,7 +178,8 @@ void InvEntry::select(int qty)
 
 string InvEntry::get_filter_text() const
 {
-    return item_prefix(*item, false) + " " + get_text();
+    return item_prefix(*item, false) + " " + get_text()
+           + " " + item_english_name(*item);
 }
 
 string InvEntry::_get_text_preface() const

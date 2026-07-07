@@ -379,7 +379,8 @@ vector<stash_search_result> Stash::matches_search(
     {
         const string s   = stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = prefix + " " + ann + " " + s;
+        string haystack = prefix + " " + ann + " " + s
+                         + " " + item_english_name(item);
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
@@ -644,7 +645,8 @@ vector<stash_search_result> ShopInfo::matches_search(
                                                  &item);
 
         string text = prefix + " " + ann + " " + sname + " {" + shoptitle + "}"
-                      + shop_item_desc(item);
+                      + shop_item_desc(item)
+                      + " " + item_english_name(item);
         if (search.matches(text))
         {
             stash_search_result res;
@@ -1254,7 +1256,7 @@ static vector<stash_search_result> _inventory_search(const base_pattern &search)
 
         const string s   = Stash::stash_item_name(item);
         const string ann = stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
-        string haystack = ann + " " + s;
+        string haystack = ann + " " + s + " " + item_english_name(item);
         if (is_dumpable_artefact(item))
             haystack += " " + chardump_desc(item);
         if (search.matches(haystack))
