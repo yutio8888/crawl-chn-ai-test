@@ -1,0 +1,23 @@
+=== post-translator.sh @ 2026-07-07T18-52-03+08-00 ===
+
+--- Term validation (rejected names from decisions.md) ---
+OK: No rejected terms from 5 active decisions found.
+
+--- Format integrity (%%%% parity) ---
+=== Mode 3: Format integrity check ===
+
+  ✅ All ZH database files have matching %%%% counts
+
+=== Format check complete ===
+
+--- Database @keyword@ integrity ---
+=== Mode 5: Database @keyword@ integrity check ===
+
+Building EN key index...
+  10293 keys indexed from EN database
+
+  ✅ All @keyword@ references have matching definitions
+
+=== Database @keyword@ check complete ===
+
+=== post-translator.sh complete ===

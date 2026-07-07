@@ -5001,9 +5001,6 @@ Maledictions
 Malevolent energies surge around you.
 恶意能量在你周围涌动。
 %%%%
-manual
-手动
-%%%%
 Marked for pickup.
 已标记拾取。
 %%%%
@@ -36473,7 +36470,6 @@ Welcome to %s! What would you like to do?
 skill_mode|manual
 手动
 %%%%
-%%%%  
 jewelled 
 镶嵌的
 %%%%  
