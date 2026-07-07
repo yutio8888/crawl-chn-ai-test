@@ -569,8 +569,12 @@ def cmd_arg_mismatch(args):
          match (swapped %s/%d causes crash on MinGW vsnprintf)
       3. Mixed positional/plain — CN value must not mix %n$s with plain %s/%d
          (MinGW vsnprintf falls back to system impl which ignores positional)
-      4. Positional gaps — positional specifiers must be contiguous 1..N
-      5. Positional type mismatch — same %N$ must have same type in EN and CN
+      4. Positional type mismatch — same %N$ must have same type in EN and CN
+
+    Note: positional gaps (e.g. %1$s...%3$s without %2$s) are NOT checked —
+    vmake_stringf_p explicitly supports dropped positions via uintptr_t
+    consumption (positional_format.cc:182-206). This is the intended pattern
+    for verb conjugation suffixes (%2$s = "s") dropped in Chinese.
     """
     entries = parse_source_txt(args.source_txt)
     if not entries:
@@ -610,22 +614,7 @@ def cmd_arg_mismatch(args):
         if plain_matches:
             mixed_findings.append((en_key, cn_val))
 
-    # ── 4. Positional gaps ──
-    gap_findings = []
-    for en_key, cn_val in entries.items():
-        if not POSFMT_RE.search(cn_val) and not SILENT_RE.search(cn_val):
-            continue
-        disp = set(int(m.group(1)) for m in POSFMT_RE.finditer(cn_val))
-        silent = set(int(m.group(1)) for m in SILENT_RE.finditer(cn_val))
-        all_pos = disp | silent
-        if not all_pos:
-            continue
-        expected = set(range(1, max(all_pos) + 1))
-        missing = expected - all_pos
-        if missing:
-            gap_findings.append((en_key, cn_val, sorted(all_pos), sorted(missing)))
-
-    # ── 5. Positional type mismatch ──
+    # ── 4. Positional type mismatch ──
     pos_type_findings = []
     for en_key, cn_val in entries.items():
         en_pos = POSFMT_RE.search(en_key)
@@ -661,11 +650,10 @@ def cmd_arg_mismatch(args):
 
     # ── Output ──
     total_findings = len(count_findings) + len(seq_findings) + \
-                     len(mixed_findings) + len(gap_findings) + \
-                     len(pos_type_findings)
+                     len(mixed_findings) + len(pos_type_findings)
     if total_findings == 0:
         print(f"OK: All {len(entries)} entries pass format validation "
-              f"(count, type-order, mixed, gaps, pos-type).")
+              f"(count, type-order, mixed, pos-type).")
         return 0
 
     if count_findings:
@@ -705,17 +693,6 @@ def cmd_arg_mismatch(args):
             print(f"CN: \"{cn_val[:80]}\" <- MALFORMED")
             print()
         print(f"  → {len(mixed_findings)} malformed entry/entries")
-        print()
-
-    if gap_findings:
-        print("=== POSITIONAL-GAPS — missing position numbers "
-              "in CN translations ===")
-        for en_key, cn_val, found, missing in gap_findings:
-            print(f"  EN: \"{en_key}\"")
-            print(f"  CN: \"{cn_val[:100]}\"")
-            print(f"  found: {found}  missing: {missing}")
-            print()
-        print(f"  → {len(gap_findings)} gap(s)")
         print()
 
     if pos_type_findings:
@@ -864,7 +841,13 @@ def cmd_format_malformed(args):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def cmd_check_gaps(args):
-    """Detect gaps in positional format numbering in CN translations."""
+    """Detect gaps in positional format numbering in CN translations.
+
+    NOTE: vmake_stringf_p explicitly supports sparsely-numbered positional
+    specs (positional_format.cc:182-206) — unused positions are consumed via
+    uintptr_t. Most gaps are safe verb conjugation drops. The unified
+    arg-mismatch command intentionally skips this check.
+    """
     entries = parse_source_txt(args.source_txt)
     if not entries:
         print("ERROR: Could not parse source.txt")
