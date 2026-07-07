@@ -2684,7 +2684,7 @@ bool gain_piety(int original_gain, int denominator, bool should_scale_piety)
         if (you.raw_piety >= piety_breakpoint(5)
             && you.piety_max[you.religion] < piety_breakpoint(5))
         {
-            mark_milestone("god.maxpiety", "became the Champion of "
+            mark_milestone("god.maxpiety", T_("became the Champion of ")
                            + string(_god_name_en(you.religion)) + ".");
         }
         you.piety_max[you.religion] = you.raw_piety;
@@ -4075,13 +4075,13 @@ void print_god_rejection(god_type which_god)
     {
         if (which_god == GOD_OKAWARU)
         {
-            simple_god_message(" says: You must forswear the aid of any and all "
-                               "before you are fit to worship.", false, which_god);
+            simple_god_message(T_(" says: You must forswear the aid of any and all "
+                                "before you are fit to worship."), false, which_god);
         }
         else
         {
-            simple_god_message(" says: How dare you approach in such a loathsome "
-                               "form!", false, which_god);
+            simple_god_message(T_(" says: How dare you approach in such a loathsome "
+                                "form!"), false, which_god);
         }
         return;
     }

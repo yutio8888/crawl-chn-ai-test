@@ -2420,8 +2420,8 @@ bool ashenzari_uncurse_item()
     if (!yesno(make_stringf(T_("Really remove and destroy %s?%s"),
                             item.name(DESC_THE).c_str(),
                             you.props.exists(AVAILABLE_CURSE_KEY) ?
-                                " Ashenzari will withdraw the offered vision "
-                                "and curse!"
+                                T_(" Ashenzari will withdraw the offered vision "
+                                   "and curse!")
                                 : "").c_str(),
                             false, 'n'))
     {
@@ -5592,8 +5592,8 @@ static int _apply_apocalypse(coord_def where)
         case 0:
             if (mons->antimagic_susceptible())
             {
-                message = " doubts " + mons->pronoun(PRONOUN_POSSESSIVE)
-                          + " magic when faced with ultimate truth!";
+            message = T_(" doubts ") + mons->pronoun(PRONOUN_POSSESSIVE)
+                      + T_(" magic when faced with ultimate truth!");
                 enchantment = ENCH_ANTIMAGIC;
                 duration = 500 + random2(200);
                 num_dice = 4;
@@ -6306,7 +6306,7 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
     {
         if (!feat_can_wall_jump_against(env.grid(target)))
         {
-            error_ret = string("You cannot wall jump against ") +
+            error_ret = string(T_("You cannot wall jump against ")) +
                 feature_description_at(target, false, DESC_THE) + ".";
         }
         else
@@ -6491,8 +6491,8 @@ spret wu_jian_wall_jump_ability()
 void wu_jian_heavenly_storm()
 {
     mprf(MSGCH_GOD, T_("The air is filled with shimmering golden clouds!"));
-    wu_jian_sifu_message(" says: The storm will not cease as long as you "
-                         "keep fighting, disciple!");
+    wu_jian_sifu_message(T_(" says: The storm will not cease as long as you "
+                            "keep fighting, disciple!"));
 
     for (radius_iterator ai(you.pos(), 2, C_SQUARE, LOS_SOLID); ai; ++ai)
         place_cloud(CLOUD_GOLD_DUST, *ai, 5 + random2(5), &you);

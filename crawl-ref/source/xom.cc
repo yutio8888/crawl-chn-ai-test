@@ -2979,8 +2979,8 @@ static void _xom_time_control(int sever)
         xomline = "fast forward";
         if (you.stasis())
         {
-            message = "Your stasis prevents you from being hasted,"
-                      " but everything else in sight speeds up!";
+            message = T_("Your stasis prevents you from being hasted,"
+                         " but everything else in sight speeds up!");
             note = "hasted everything in sight";
         }
         else
@@ -2997,8 +2997,8 @@ static void _xom_time_control(int sever)
         xomline = "slow motion";
         if (you.stasis())
         {
-            message = "Your stasis prevents you from being slowed,"
-                      " but everything else in sight slows down!";
+            message = T_("Your stasis prevents you from being slowed,"
+                         " but everything else in sight slows down!");
             note = "slowed everything in sight";
             bad = false;
         }
@@ -3016,8 +3016,8 @@ static void _xom_time_control(int sever)
         xomline = "pause";
         if (you.stasis())
         {
-            message = "Your stasis prevents you from being paralysed,"
-                      " but everything else in sight stops moving!";
+            message = T_("Your stasis prevents you from being paralysed,"
+                         " but everything else in sight stops moving!");
             note = "paralysed everything in sight";
             bad = false;
         }

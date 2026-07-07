@@ -127,7 +127,7 @@ static bool _cancel_barbed_move()
         && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
         std::string prompt = "The barbs in your skin will harm you if you move.";
-        prompt += " Continue?";
+        prompt += T_(" Continue?");
         if (!yesno(prompt.c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);
@@ -300,15 +300,15 @@ bool cancel_confused_move(bool stationary)
     if (dangerous != DNGN_FLOOR || bad_mons)
     {
         string prompt = "";
-        prompt += "Are you sure you want to ";
-        prompt += !stationary ? "stumble around" : "swing wildly";
-        prompt += " while confused and next to ";
+        prompt += T_("Are you sure you want to ");
+        prompt += T_(!stationary ? "stumble around" : "swing wildly");
+        prompt += T_(" while confused and next to ");
 
         if (dangerous != DNGN_FLOOR)
         {
             prompt += (dangerous == DNGN_LAVA ? "lava" : "deep water");
-            prompt += flight ? " while you are losing your buoyancy"
-                             : " while your transformation is expiring";
+            prompt += flight ? T_(" while you are losing your buoyancy")
+                             : T_(" while your transformation is expiring");
         }
         else
         {
@@ -320,7 +320,7 @@ bool cancel_confused_move(bool stationary)
         prompt += "?";
 
         if (penance)
-            prompt += " This could place you under penance!";
+            prompt += T_(" This could place you under penance!");
 
         if (!crawl_state.disables[DIS_CONFIRMATIONS]
             && !yesno(prompt.c_str(), false, 'n'))

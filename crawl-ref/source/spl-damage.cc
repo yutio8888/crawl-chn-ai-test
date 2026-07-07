@@ -711,8 +711,8 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
         case SPELL_OZOCUBUS_REFRIGERATION:
             player_msg = "The heat is drained from your surroundings.";
             global_msg = "Something drains the heat from around you.";
-            mons_vis_msg = " drains the heat from the surrounding"
-                           " environment!";
+            mons_vis_msg = T_(" drains the heat from the surrounding"
+                            " environment!");
             mons_invis_msg = "The ambient heat is drained!";
             prompt_verb = "refrigerate";
             vulnerable = [](const actor *caster, const actor *act) {
@@ -726,8 +726,8 @@ static spret _cast_los_attack_spell(spell_type spell, int pow,
 
         case SPELL_DRAIN_LIFE:
             player_msg = "You draw life from your surroundings.";
-            global_msg = "Something draws the life force from your"
-                         " surroundings.";
+            global_msg = T_("Something draws the life force from your"
+                            " surroundings.");
             mons_vis_msg = " draws from the surrounding life force!";
             mons_invis_msg = "The surrounding life force dissipates!";
             prompt_verb = "drain life";

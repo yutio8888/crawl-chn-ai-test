@@ -663,7 +663,7 @@ static void _djinn_announce_spells()
 {
     const string equip_str =_get_equip_str();
     const string spell_str = you.spell_no ?
-                                "the following spells memorised: " + _wanderer_spell_str() :
+                                T_("the following spells memorised: ") + _wanderer_spell_str() :
                                 "";
     if (spell_str.empty() && equip_str.empty())
         return;
@@ -686,7 +686,7 @@ static void _wanderer_note_equipment()
     // Wanderers start with at most 1 spell memorised.
     const string spell_str =
         !you.spell_no ? "" :
-        eq_spacer + "the following spell memorised: "
+        eq_spacer + T_("the following spell memorised: ")
         + _wanderer_spell_str();
 
     const string spell_spacer = spell_str.empty() && equip_str.empty() ? "" : "; and ";
@@ -694,7 +694,7 @@ static void _wanderer_note_equipment()
     auto const library = get_sorted_spell_list(true, true);
     const string library_str =
         !library.size() ? "" :
-        spell_spacer + "the following spells available to memorise: "
+        spell_spacer + T_("the following spells available to memorise: ")
         + comma_separated_fn(library.begin(), library.end(),
                              [] (const spell_type spell) -> string
                              {

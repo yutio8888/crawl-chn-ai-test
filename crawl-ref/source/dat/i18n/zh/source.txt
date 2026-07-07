@@ -36786,3 +36786,108 @@ smoulder
 gain
 获得
 %%%%
+%%%%
+It is found in decks of 
+PLACEHOLDER
+%%%%
+, or in Nemelex Xobeh's deck of punishment
+PLACEHOLDER
+%%%%
+It is only found in Nemelex Xobeh's deck of punishment.
+PLACEHOLDER
+%%%%
+It is normally not part of any deck.
+PLACEHOLDER
+%%%%
+A deck of magical cards, 
+PLACEHOLDER
+%%%%
+It currently has 1 card 
+PLACEHOLDER
+%%%%
+It is currently empty 
+PLACEHOLDER
+%%%%
+stumble around
+PLACEHOLDER
+%%%%
+swing wildly
+PLACEHOLDER
+%%%%
+ while confused and next to 
+PLACEHOLDER
+%%%%
+ while you are losing your buoyancy
+PLACEHOLDER
+%%%%
+ while your transformation is expiring
+PLACEHOLDER
+%%%%
+ Continue?
+PLACEHOLDER
+%%%%
+ appreciates 
+PLACEHOLDER
+%%%%
+ killing of a heretic priest.
+PLACEHOLDER
+%%%%
+ killing of an apostate.
+PLACEHOLDER
+%%%%
+Your stasis prevents you from being hasted, but everything else in sight speeds up!
+PLACEHOLDER
+%%%%
+Your stasis prevents you from being slowed, but everything else in sight slows down!
+PLACEHOLDER
+%%%%
+Your stasis prevents you from being paralysed, but everything else in sight stops moving!
+PLACEHOLDER
+%%%%
+ Ashenzari will withdraw the offered vision and curse!
+PLACEHOLDER
+%%%%
+ doubts 
+PLACEHOLDER
+%%%%
+ magic when faced with ultimate truth!
+PLACEHOLDER
+%%%%
+You cannot wall jump against 
+PLACEHOLDER
+%%%%
+ says: The storm will not cease as long as you keep fighting, disciple!
+PLACEHOLDER
+%%%%
+the following spells memorised: 
+PLACEHOLDER
+%%%%
+the following spell memorised: 
+PLACEHOLDER
+%%%%
+the following spells available to memorise: 
+PLACEHOLDER
+%%%%
+ reappears in a puff of iridescent mist.
+PLACEHOLDER
+%%%%
+With an infernal shudder, the power ruling this place vanishes!
+PLACEHOLDER
+%%%%
+With an infernal noise, the power ruling this place vanishes!
+PLACEHOLDER
+%%%%
+ does not allow the disloyal to dabble in death!
+PLACEHOLDER
+%%%%
+ does not allow the disloyal to dabble in destruction!
+PLACEHOLDER
+%%%%
+ drains the heat from the surrounding environment!
+PLACEHOLDER
+%%%%
+Something draws the life force from your surroundings.
+PLACEHOLDER
+%%%%
+became the Champion of 
+PLACEHOLDER

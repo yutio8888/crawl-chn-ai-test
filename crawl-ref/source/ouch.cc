@@ -1254,13 +1254,13 @@ static void _god_death_messages(kill_method_type death_type,
             string msg;
             if (you.religion == GOD_BEOGH)
             {
-                msg = " appreciates " + killer->name(DESC_ITS)
-                        + " killing of a heretic priest.";
+                msg = T_(" appreciates ") + killer->name(DESC_ITS)
+                        + T_(" killing of a heretic priest.");
             }
             else
             {
-                msg = " appreciates " + killer->name(DESC_ITS)
-                        + " killing of an apostate.";
+                msg = T_(" appreciates ") + killer->name(DESC_ITS)
+                        + T_(" killing of an apostate.");
             }
             simple_god_message(msg.c_str(), false, GOD_BEOGH);
         }

@@ -1095,7 +1095,7 @@ static void _blorkula_bat_merge_message(monster* blork, int bat_count)
                                     : "The bats swarm back together";
 
         msg += T_(" and ") + blork->name(DESC_THE)
-            +  " reappears in a puff of iridescent mist.";
+            +  T_(" reappears in a puff of iridescent mist.");
 
         mprf(MSGCH_MONSTER_SPELL, "%s", msg.c_str());
     }
@@ -1193,13 +1193,13 @@ static void _jiyva_died()
 
     if (silenced(you.pos()))
     {
-        god_speaks(GOD_JIYVA, "With an infernal shudder, the power ruling "
-                   "this place vanishes!");
+        god_speaks(GOD_JIYVA, T_("With an infernal shudder, the power ruling "
+                   "this place vanishes!"));
     }
     else
     {
-        god_speaks(GOD_JIYVA, "With an infernal noise, the power ruling this "
-                   "place vanishes!");
+        god_speaks(GOD_JIYVA, T_("With an infernal noise, the power ruling this "
+                   "place vanishes!"));
     }
 }
 

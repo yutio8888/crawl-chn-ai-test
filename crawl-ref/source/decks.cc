@@ -369,19 +369,19 @@ string which_decks(card_type card)
 
     if (!decks.empty())
     {
-        output += "It is found in decks of "
+        output += T_("It is found in decks of ")
                +  comma_separated_line(decks.begin(), decks.end());
         if (punishment)
-            output += ", or in Nemelex Xobeh's deck of punishment";
+            output += T_(", or in Nemelex Xobeh's deck of punishment");
         output += ".";
     }
     else if (punishment)
     {
-        output += "It is only found in Nemelex Xobeh's deck of "
-                  "punishment.";
+        output += T_("It is only found in Nemelex Xobeh's deck of "
+                      "punishment.");
     }
     else
-        output += "It is normally not part of any deck.";
+        output += T_("It is normally not part of any deck.");
 
     return output;
 }
@@ -483,7 +483,7 @@ string deck_description(deck_type deck)
 {
     ostringstream desc;
 
-    desc << "A deck of magical cards, ";
+    desc << T_("A deck of magical cards, ");
     desc << deck_flavour(deck) << "\n\n";
     desc << deck_contents(deck) << "\n";
 
@@ -495,9 +495,9 @@ string deck_description(deck_type deck)
         if (cards > 1)
             desc << make_stringf(T_("It currently has %d cards "), cards);
         else if (cards == 1)
-            desc << "It currently has 1 card ";
+            desc << T_("It currently has 1 card ");
         else
-            desc << "It is currently empty ";
+            desc << T_("It is currently empty ");
 
         desc << make_stringf(T_("and can contain up to %d cards."),
                              all_decks[deck].deck_max);
