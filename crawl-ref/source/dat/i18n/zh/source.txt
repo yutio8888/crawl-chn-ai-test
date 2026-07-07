@@ -36294,3 +36294,15 @@ whirling frost
 wisps of flame
 火焰飘带
 %%%%
+the acid
+酸液
+%%%%
+the rust
+锈蚀
+%%%%
+Your corrosive artefact
+你的腐蚀性神器
+%%%%
+The trap's stomach acid
+陷阱的胃酸
+%%%%

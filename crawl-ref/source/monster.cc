@@ -4197,7 +4197,7 @@ bool monster::corrode(const actor* source, const char* corrosion_msg, int amount
     if (you.see_cell(pos()))
     {
         if (!has_ench(ENCH_CORROSION))
-            mprf(T_("%s corrodes %s!"), corrosion_msg, name(DESC_THE).c_str());
+            mprf(T_("%s corrodes %s!"), T_(corrosion_msg), name(DESC_THE).c_str());
         else
             mprf(T_("%s seems to be corroded for longer."), name(DESC_THE).c_str());
     }

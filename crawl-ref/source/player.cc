@@ -7395,7 +7395,7 @@ bool player::corrode(const actor* /*source*/, const char* corrosion_msg, int amo
     // always increase duration, but...
     increase_duration(DUR_CORROSION, 10 + roll_dice(2, 4), 50,
                       make_stringf(T_("%s corrodes you!"),
-                                   corrosion_msg).c_str());
+                                   T_(corrosion_msg)).c_str());
 
     // Reduce corrosion amount by 50% if you have resistance.
     if (res_corr())
