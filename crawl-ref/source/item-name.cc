@@ -935,7 +935,7 @@ static const char* wand_secondary_string(uint32_t s)
         "encrusted ", "runed ", "sharpened "
     };
     COMPILE_CHECK(ARRAYSZ(secondary_strings) == NDSC_WAND_SEC);
-    return secondary_strings[s % NDSC_WAND_SEC];
+    return T_(secondary_strings[s % NDSC_WAND_SEC]);
 }
 
 static const char* wand_primary_string(uint32_t p)
@@ -945,7 +945,7 @@ static const char* wand_primary_string(uint32_t p)
         "bronze", "ivory", "glass", "lead", "fluorescent"
     };
     COMPILE_CHECK(ARRAYSZ(primary_strings) == NDSC_WAND_PRI);
-    return primary_strings[p % NDSC_WAND_PRI];
+    return T_(primary_strings[p % NDSC_WAND_PRI]);
 }
 
 const char* potion_type_name(int potiontype)
@@ -1181,7 +1181,7 @@ static const char* ring_secondary_string(uint32_t s)
         "knobbly "
     };
     COMPILE_CHECK(ARRAYSZ(secondary_strings) == NDSC_JEWEL_SEC);
-    return secondary_strings[s % NDSC_JEWEL_SEC];
+    return T_(secondary_strings[s % NDSC_JEWEL_SEC]);
 }
 
 static const char* ring_primary_string(uint32_t p)
@@ -1194,7 +1194,7 @@ static const char* ring_primary_string(uint32_t p)
         "moonstone"
     };
     COMPILE_CHECK(ARRAYSZ(primary_strings) == NDSC_JEWEL_PRI);
-    return primary_strings[p % NDSC_JEWEL_PRI];
+    return T_(primary_strings[p % NDSC_JEWEL_PRI]);
 }
 
 static const char* amulet_secondary_string(uint32_t s)
@@ -1205,7 +1205,7 @@ static const char* amulet_secondary_string(uint32_t s)
         "lumpy "
     };
     COMPILE_CHECK(ARRAYSZ(secondary_strings) == NDSC_JEWEL_SEC);
-    return secondary_strings[s % NDSC_JEWEL_SEC];
+    return T_(secondary_strings[s % NDSC_JEWEL_SEC]);
 }
 
 static const char* amulet_primary_string(uint32_t p)
@@ -1218,7 +1218,7 @@ static const char* amulet_primary_string(uint32_t p)
         "soapstone", "lapis lazuli", "filigree", "beryl"
     };
     COMPILE_CHECK(ARRAYSZ(primary_strings) == NDSC_JEWEL_PRI);
-    return primary_strings[p % NDSC_JEWEL_PRI];
+    return T_(primary_strings[p % NDSC_JEWEL_PRI]);
 }
 
 const char* rune_type_name(short p)
@@ -1417,7 +1417,7 @@ static const char* staff_secondary_string(uint32_t s)
         "twisted ", "thick ", "long ", "short ",
     };
     COMPILE_CHECK(NDSC_STAVE_SEC == ARRAYSZ(secondary_strings));
-    return secondary_strings[s % ARRAYSZ(secondary_strings)];
+    return T_(secondary_strings[s % ARRAYSZ(secondary_strings)]);
 }
 
 static const char* staff_primary_string(uint32_t p)
@@ -1426,7 +1426,7 @@ static const char* staff_primary_string(uint32_t p)
         "glowing ", "jewelled ", "runed ", "smoking "
     };
     COMPILE_CHECK(NDSC_STAVE_PRI == ARRAYSZ(primary_strings));
-    return primary_strings[p % ARRAYSZ(primary_strings)];
+    return T_(primary_strings[p % ARRAYSZ(primary_strings)]);
 }
 
 const char *base_type_string(const item_def &item)
@@ -1668,9 +1668,9 @@ static string _cosmetic_text(const item_def &weap)
     switch (desc)
     {
         case ISFLAG_RUNED:
-            return "runed ";
+            return T_("runed ");
         case ISFLAG_GLOWING:
-            return "glowing ";
+            return T_("glowing ");
         default:
             return "";
     }
