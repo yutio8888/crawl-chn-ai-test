@@ -3644,8 +3644,8 @@ void bolt::affect_player_enchantment(bool resistible)
             if (mon && !mon->observable())
             {
                 mprf(T_("Something tries to affect you, but you %s."),
-                     you.willpower() == WILL_INVULN ? "are unaffected"
-                                                   : "resist");
+                     you.willpower() == WILL_INVULN ? T_("are unaffected")
+                                                    : T_("resist"));
                 need_msg = false;
             }
         }

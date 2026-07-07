@@ -36336,3 +36336,9 @@ sparse dust
 white fluffiness
 白色绒毛
 %%%%
+are unaffected
+不受影响
+%%%%
+resist
+抵抗了
+%%%%
