@@ -34,9 +34,19 @@
 #include "job-type.h"        // job_type, NUM_JOBS
 #include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
 
+// batch4 (deferred #3/#4 enumerators): items + weapon/armour brands/egos.
+#include "item-prop.h"        // item_base_name
+#include "item-prop-enum.h"   // brand_type, special_armour_type, NUM_* bounds
+#include "item-name.h"        // brand_type_name(_en), special_armour_type_name(_en)
+#include "items.h"            // all_item_subtypes
+#include "object-class-type.h" // object_class_type + OBJ_* + NUM_OBJECT_CLASSES
+#include "options.h"          // Options.language / lang_name for EN-toggle
+#include "lang-t.h"           // lang_t::EN / lang_t::ZH
+
 #include <cstdio>
 #include <cstring>
 #include <fstream>
+#include <map>
 #include <string>
 #include <vector>
 
@@ -625,5 +635,171 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     }
     WARN("zh enumerator summary: tutorial/hints/commands -> "
          << issues.size() << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 4a — weapon brands. brand_type_name(brand, terse) is the Type II
+// wrapper: returns T_(weapon_brands_verbose[brand]). brand_type_name_en is the
+// English baseline (item-name.h:137) — these expose parallel lookup so we can
+// compare the translated (T_-wrapped) display against the English key directly,
+// priceless since the underlying arrays are static in item-name.cc.
+//
+// Iterate brand_type SPWPN_NORMAL..NUM_REAL_SPECIAL_WEAPONS-1 (skipping the
+// -1 SPWPN_FORBID_BRAND); SPWPN_NORMAL==0 is the "no brand" sentinel and
+// yields the empty/"plain" string — we still scan it but expect few issues.
+// Both terse=false (verbose) and terse=true forms are scanned so ID strings and
+// inventory display strings are both covered. Plan v2 §2.4 (#4, N1-adopted:
+// pure enum iteration, no item_def construction required for weapon brands).
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: weapon brands",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    for (int bi = SPWPN_NORMAL; bi < NUM_REAL_SPECIAL_WEAPONS; ++bi)
+    {
+        const brand_type b = static_cast<brand_type>(bi);
+        for (int ti = 0; ti <= 1; ++ti)
+        {
+            const bool terse = (ti == 1);
+            const char* en = brand_type_name_en(b, terse);
+            if (!en || !en[0])
+                continue;
+            const char* tr = brand_type_name(b, terse);
+            scan_one(tr ? tr : "", en, "source.txt", issues);
+        }
+    }
+    WARN("zh enumerator summary: weapon_brands -> " << issues.size()
+                                                    << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 4b — armour egos. special_armour_type_name(ego, terse) is the
+// Type II wrapper for armour ego display names (e.g. "running", "fire
+// resistance"). The catch2 build is already on T_()-wrapped output here;
+// special_armour_type_name_en (item-name.h:141) provides the canonical English
+// baseline, so we can detect UNTRANSLATED directly without constructing an
+// item_def. Iterate SPARM_NORMAL..NUM_REAL_SPECIAL_ARMOURS-1 covering every
+// real armour ego; both terse=false and terse=true forms are scanned. Plan v2
+// §2.4 (#4, N1-adopted: avoids the item_def requirement of armour_ego_name).
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: armour egos",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    for (int ei = SPARM_NORMAL; ei < NUM_REAL_SPECIAL_ARMOURS; ++ei)
+    {
+        const special_armour_type e = static_cast<special_armour_type>(ei);
+        for (int ti = 0; ti <= 1; ++ti)
+        {
+            const bool terse = (ti == 1);
+            const char* en = special_armour_type_name_en(e, terse);
+            if (!en || !en[0])
+                continue;
+            const char* tr = special_armour_type_name(e, terse);
+            scan_one(tr ? tr : "", en, "source.txt", issues);
+        }
+    }
+    WARN("zh enumerator summary: armour_egos -> " << issues.size()
+                                                  << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 3 — item base names. item_base_name(type, sub_type)
+// (item-prop.h:260) is the T_()-wrapped "long-form" name for items: e.g.
+// "scroll of fear", "sword", "ring of protection from fire". Unlike
+// brand_type_name / special_armour_type_name, there is no _en variant exposed,
+// so we use an EN-toggle baseline technique:
+//
+//   1. Toggle Options.language = EN (i18n_source_lookup short-circuits to
+//      `en` without caching, so this leaves the ZH cache untouched) and
+//      capture English names for every (base, sub_type) candidate.
+//   2. Restore Options.language = ZH (i18n_cache_clear not needed; EN-mode
+//      T_() does not write the cache).
+//   3. For each candidate, call item_base_name again — now T_() looks up ZH
+//      translations — and scan against the captured English key.
+//
+// Iterate major user-visible item classes via all_item_subtypes(base)
+// (items.h:248). Skips OBJ_GOLD / OBJ_CORPSES / OBJ_RUNES (state-based names
+// or pseudo-items) and tag-gated OBJ_FOOD / OBJ_RODS which are kept only under
+// TAG_MAJOR_VERSION==34. Plan v2 §2.4 (#3): full enumeration of stable item
+// base names across weapon, missile, armour, wand, scroll, jewellery,
+// potion, book, staff, orb, miscellany classes.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: item base names",
+                 "[zh-translation]")
+{
+    static const object_class_type kClasses[] = {
+        OBJ_WEAPONS, OBJ_MISSILES, OBJ_ARMOUR, OBJ_WANDS,
+        OBJ_SCROLLS, OBJ_JEWELLERY, OBJ_POTIONS, OBJ_BOOKS,
+        OBJ_STAVES, OBJ_ORBS, OBJ_MISCELLANY,
+    };
+
+    // Build candidate (base, sub_type) pairs first so the two language-mode
+    // passes iterate in the same order and keys line up exactly.
+    std::vector<std::pair<int, int>> candidates;
+    for (object_class_type bc : kClasses)
+    {
+        for (int sub : all_item_subtypes(bc))
+            candidates.emplace_back(static_cast<int>(bc), sub);
+    }
+    if (candidates.empty())
+    {
+        WARN("zh enumerator summary: item_base_names -> 0 issues (no candidates)");
+        REQUIRE(true);
+        return;
+    }
+
+    // Snapshot fixture language, flip to EN, capture English baselines.
+    const lang_t prev_lang = Options.language;
+    const char* prev_lang_name = Options.lang_name ? Options.lang_name : "";
+    Options.language = lang_t::EN;
+    Options.lang_name = "en";
+
+    std::map<std::pair<int,int>, std::string> en_names;
+    for (const auto& c : candidates)
+    {
+        const auto base = static_cast<object_class_type>(c.first);
+        const std::string en = item_base_name(base, c.second);
+        if (!en.empty())
+            en_names[c] = en;
+    }
+
+    // Back to ZH. We deliberately do NOT i18n_cache_clear(): EN-mode T_()
+    // short-circuits via `database.cc:1063-1064` and writes nothing, so the
+    // ZH cache still holds any previously cached zh translations.
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+
+    std::vector<ZhIssue> issues;
+    for (const auto& c : candidates)
+    {
+        auto it = en_names.find(c);
+        if (it == en_names.end())
+            continue; // No English name to compare against (uninteresting).
+        const std::string en = it->second;
+        if (en.empty())
+            continue;
+        const auto base = static_cast<object_class_type>(c.first);
+        const std::string zh = item_base_name(base, c.second);
+        if (zh.empty())
+            continue;
+        // Tag each issue with the source.txt domain even though the name
+        // itself comes from T_(key) lookup — this lets M5 aggregator route
+        // regressions to source.txt vs an item-specific db file cleanly.
+        scan_one(zh.c_str(), en, "source.txt", issues);
+    }
+
+    // Restore the fixture language for any subsequent test case in the run.
+    Options.language = prev_lang;
+    Options.lang_name = prev_lang_name;
+
+    WARN("zh enumerator summary: item_base_names -> " << issues.size()
+                                                      << " issues");
     REQUIRE(true);
 }
