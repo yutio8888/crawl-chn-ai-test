@@ -1,0 +1,22 @@
+# Minimal RC bot smoke test — verifies the Lua{} bot framework works.
+name = zh_smoke
+species = mu
+background = ck
+weapon = mace
+restart_after_game = false
+show_more = false
+
+Lua{
+local eol = string.char(13)
+local esc = string.char(27)
+local done = false
+
+function ready()
+    if done then return end
+    done = true
+    crawl.sendkeys("&yes" .. eol .. esc)
+    local tr = crawl.t_("You attack %s.")
+    crawl.stderr("FRAME_MARKER: probe | t_=" .. tr .. eol)
+    crawl.sendkeys(string.char(19)) -- Ctrl-S = save+quit
+end
+}
