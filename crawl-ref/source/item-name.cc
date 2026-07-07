@@ -1489,12 +1489,12 @@ string sub_type_string(const item_def &item, bool known)
             if (Options.language == lang_t::ZH)
             {
                 if (!known)
-                    return "手册";
-                return string(skill_name(static_cast<skill_type>(item.plus))) + "手册";
+                    return T_("manual");
+                return string(skill_name(static_cast<skill_type>(item.plus))) + T_("manual");
             }
             if (!known)
-                return "manual";
-            string bookname = "manual of ";
+                return T_("manual");
+            string bookname = string(T_("manual")) + " of ";
             bookname += skill_name(static_cast<skill_type>(item.plus));
             return bookname;
             }
@@ -1504,60 +1504,60 @@ string sub_type_string(const item_def &item, bool known)
             if (Options.language == lang_t::ZH)
             {
                 if (item.plus == 0 || !known)
-                    return "羊皮纸";
-                return string(spell_title(static_cast<spell_type>(item.plus))) + "羊皮纸";
+                    return T_("parchment");
+                return string(spell_title(static_cast<spell_type>(item.plus))) + T_("parchment");
             }
             if (item.plus == 0 || !known)
-                return "parchment";
-            string parchmentname = "parchment of ";
+                return T_("parchment");
+            string parchmentname = string(T_("parchment")) + " of ";
             parchmentname += spell_title(static_cast<spell_type>(item.plus));
             return parchmentname;
             }
         case BOOK_NECRONOMICON:
-            return "Necronomicon";
+            return T_("Necronomicon");
         case BOOK_GRAND_GRIMOIRE:
-            return "Grand Grimoire";
+            return T_("Grand Grimoire");
 #if TAG_MAJOR_VERSION == 34
         case BOOK_BUGGY_DESTRUCTION:
             return "tome of obsoleteness";
 #endif
         case BOOK_EVERBURNING:
             // Aus. English apparently follows the US spelling, not UK.
-            return "Everburning Encyclopedia";
+            return T_("Everburning Encyclopedia");
 #if TAG_MAJOR_VERSION == 34
         case BOOK_OZOCUBU:
             return "Ozocubu's Autobiography";
 #endif
         case BOOK_MAXWELL:
-            return "Maxwell's Memoranda";
+            return T_("Maxwell's Memoranda");
         case BOOK_YOUNG_POISONERS:
-            return "Young Poisoner's Handbook";
+            return T_("Young Poisoner's Handbook");
         case BOOK_FEN:
-            return "Fen Folio";
+            return T_("Fen Folio");
 #if TAG_MAJOR_VERSION == 34
         case BOOK_NEARBY:
             return "Inescapable Atlas";
 #endif
         case BOOK_THERE_AND_BACK:
-            return "There-And-Back Book";
+            return T_("There-And-Back Book");
         case BOOK_BIOGRAPHIES_II:
-            return "Great Wizards, Vol. II";
+            return T_("Great Wizards, Vol. II");
         case BOOK_BIOGRAPHIES_VII:
-            return "Great Wizards, Vol. VII";
+            return T_("Great Wizards, Vol. VII");
         case BOOK_TRISMEGISTUS:
-            return "Trismegistus Codex";
+            return T_("Trismegistus Codex");
         case BOOK_UNRESTRAINED:
-            return "the Unrestrained Analects";
+            return T_("the Unrestrained Analects");
         case BOOK_SIEGECRAFT:
-            return "Compendium of Siegecraft";
+            return T_("Compendium of Siegecraft");
         case BOOK_CONDUCTIVITY:
-            return "Codex of Conductivity";
+            return T_("Codex of Conductivity");
         case BOOK_CONSTRUCTION:
-            return "Handbook of Applied Construction";
+            return T_("Handbook of Applied Construction");
         case BOOK_TRAPS:
-            return "Treatise on Traps";
+            return T_("Treatise on Traps");
         case BOOK_SWAMP_SOJOURN:
-            return "My Sojourn through Swampland";
+            return T_("My Sojourn through Swampland");
 #if TAG_MAJOR_VERSION == 34
         case BOOK_AKASHIC_RECORD:
             return "Akashic Record";
@@ -1565,8 +1565,8 @@ string sub_type_string(const item_def &item, bool known)
         default:
             // Structural: ZH "X之书" vs EN "book of X"
             if (Options.language == lang_t::ZH)
-                return string(_book_type_name(sub_type)) + "之书";
-            return string("book of ") + _book_type_name(sub_type);
+                return string(T_(_book_type_name(sub_type))) + T_("之书");
+            return string(T_("book of ")) + T_(_book_type_name(sub_type));
         }
     }
 #if TAG_MAJOR_VERSION == 34

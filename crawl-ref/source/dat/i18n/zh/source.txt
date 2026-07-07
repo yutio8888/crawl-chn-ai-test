@@ -36395,4 +36395,81 @@ Piercing cold boils outward!
 %%%%
 A wave of flame ripples out!
 一道火焰波浪向外扩散！
+Necronomicon
+死灵书
+%%%%
+Grand Grimoire
+宏大的魔典
+%%%%
+Everburning Encyclopedia
+永燃百科全书
+%%%%
+Maxwell's Memoranda
+麦克斯韦备忘集
+%%%%
+Young Poisoner's Handbook
+年轻下毒者手册
+%%%%
+Fen Folio
+沼泽对开本
+%%%%
+There-And-Back Book
+往返之书
+%%%%
+Great Wizards, Vol. II
+伟大巫师，卷二
+%%%%
+Great Wizards, Vol. VII
+伟大巫师，卷七
+%%%%
+Trismegistus Codex
+三重伟大抄本
+%%%%
+the Unrestrained Analects
+无拘论集
+%%%%
+Compendium of Siegecraft
+攻城术纲要
+%%%%
+Codex of Conductivity
+导电性抄本
+%%%%
+Handbook of Applied Construction
+应用建筑手册
+%%%%
+Treatise on Traps
+陷阱论
+%%%%
+My Sojourn through Swampland
+我的沼泽之旅
+%%%%
+之书
+之书
+%%%%
+book of 
+之书
+%%%%
+manual
+手册
+%%%%
+parchment
+羊皮纸
+%%%%
+Shoppe
+商店
+%%%%
+Boutique
+精品店
+%%%%
+Emporium
+商场
+%%%%
+Shop
+店铺
+%%%%
+Welcome to %s! What would you like to do?
+欢迎光临%s！想买点什么？
+%%%%
+skill_mode|manual
+手动
 %%%%

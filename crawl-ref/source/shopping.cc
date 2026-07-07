@@ -1066,8 +1066,8 @@ ShopMenu::ShopMenu(shop_struct& _shop, const level_pos& _pos, bool _can_purchase
     bought_indices = {};
     update_help();
 
-    set_title("Welcome to " + shop_name(shop) + "! What would you "
-              "like to do?");
+    set_title(make_stringf(T_("Welcome to %s! What would you like to do?"),
+              shop_name(shop).c_str()));
 }
 
 void ShopMenu::init_entries()
@@ -1655,7 +1655,7 @@ static const char *_shop_type_suffix(shop_type type, const coord_def &where)
     {
         "Shoppe", "Boutique", "Emporium", "Shop"
     };
-    return suffixnames[(where.x + where.y) % ARRAYSZ(suffixnames)];
+    return T_(suffixnames[(where.x + where.y) % ARRAYSZ(suffixnames)]);
 }
 
 string shop_name(const shop_struct& shop)

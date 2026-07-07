@@ -649,7 +649,7 @@ string SkillMenuSwitch::get_name(skill_menu_state state)
     switch (state)
     {
     case SKM_MODE_AUTO:      return T_("auto");
-    case SKM_MODE_MANUAL:    return T_("manual");
+    case SKM_MODE_MANUAL:    return C_("skill_mode", "manual");
     case SKM_DO_PRACTISE:    return T_("train");
     case SKM_DO_FOCUS:       return T_("focus");
     case SKM_SHOW_DEFAULT:   return T_("useful");
