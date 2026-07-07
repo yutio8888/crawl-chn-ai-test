@@ -1,4 +1,4 @@
-name = zh_test
+name = zh_ui_check
 species = mu
 background = ck
 weapon = mace
@@ -9,7 +9,6 @@ Lua{
 local eol  = string.char(13)
 local esc  = string.char(27)
 local action = 0
-local pending_capture = nil
 
 local function emit(case_id, text)
     if text == nil then text = "<nil>" end
@@ -20,61 +19,57 @@ end
 function ready()
     action = action + 1
 
-    if pending_capture then
-        local tag = pending_capture
-        pending_capture = nil
-        local msgs = crawl.messages(20) or ""
-        emit(tag, msgs)
-    end
-
     if action == 1 then
         crawl.enable_more(false)
         crawl.set_sendkeys_errors(true)
         crawl.sendkeys("&yes" .. eol .. esc)
     elseif action == 2 then
-        emit("probe", "t_=" .. crawl.t_("You attack %s.")
-                       .. " lang=" .. crawl.language())
+        emit("probe", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
         crawl.sendkeys(".")
-    elseif action == 3 then
-        -- 1 weapon (only &o) — one is safe)
-        crawl.sendkeys("&o)demon whip" .. eol .. "chaos" .. eol)
-        pending_capture = "item:chaos_demon_whip"
+    elseif action == 3 then crawl.sendkeys("&o)demon whip" .. eol .. "chaos" .. eol)
     elseif action == 4 then
-        -- Wait + capture triggers at top of this action
         crawl.sendkeys(".")
     elseif action == 5 then
-        -- 1 armour (g&o[ — different class filter, safe)
-        crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
-        pending_capture = "item:running_boots"
-    elseif action == 6 then
+        -- Capture messages from item creation (dedicated ready() for safety)
+        local msgs = crawl.messages(20) or ""
+        emit("item:chaos_demon_whip", msgs)
         crawl.sendkeys(".")
+    elseif action == 6 then crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
     elseif action == 7 then
-        -- God
-        crawl.sendkeys("&G" .. eol .. "Trog" .. eol)
-    elseif action == 8 then
         crawl.sendkeys(".")
-        pending_capture = "god:Trog"
-    elseif action == 9 then
-        -- Panels
-        crawl.sendkeys("^" .. esc)
-        pending_capture = "panel:religion"
+    elseif action == 8 then
+        local msgs = crawl.messages(20) or ""
+        emit("item:running_boots", msgs)
+        crawl.sendkeys(".")
+    elseif action == 9 then crawl.sendkeys("&G" .. eol .. "Trog" .. eol)
     elseif action == 10 then
-        crawl.sendkeys("%" .. esc .. ".")
-        pending_capture = "panel:character"
+        crawl.sendkeys(".")
     elseif action == 11 then
-        crawl.sendkeys("I" .. esc .. esc .. ".")
-        pending_capture = "panel:inventory"
-    elseif action == 12 then
-        crawl.sendkeys("m" .. esc .. ".")
-        pending_capture = "panel:skills"
-    elseif action == 13 then
-        crawl.sendkeys("a" .. esc .. ".")
-        pending_capture = "panel:abilities"
-    elseif action == 14 then
-        crawl.sendkeys("O" .. esc .. ".")
-        pending_capture = "panel:overview"
-    elseif action == 15 then
-        emit("phase", "done")
+        local msgs = crawl.messages(20) or ""
+        emit("god:Trog", msgs)
+        crawl.sendkeys(".")
+    elseif action == 12 then crawl.sendkeys("^" .. esc)
+    elseif action == 13 then emit("panel:religion", "opened")
+        crawl.sendkeys(".")
+    elseif action == 14 then crawl.sendkeys("%" .. esc)
+    elseif action == 15 then emit("panel:character", "opened")
+        crawl.sendkeys(".")
+    elseif action == 16 then crawl.sendkeys("I" .. esc .. esc)
+    elseif action == 17 then emit("panel:inventory", "opened")
+        crawl.sendkeys(".")
+    elseif action == 18 then crawl.sendkeys("m" .. esc)
+    elseif action == 19 then emit("panel:skills", "opened")
+        crawl.sendkeys(".")
+    elseif action == 20 then crawl.sendkeys("a" .. esc)
+    elseif action == 21 then emit("panel:abilities", "opened")
+        crawl.sendkeys(".")
+    elseif action == 22 then crawl.sendkeys("O" .. esc)
+    elseif action == 23 then emit("panel:overview", "opened")
+        crawl.sendkeys(".")
+    elseif action == 24 then crawl.sendkeys(string.char(16) .. esc)
+    elseif action == 25 then emit("panel:messages", "opened")
+        crawl.sendkeys(".")
+    elseif action == 26 then emit("phase", "done")
         crawl.sendkeys(string.char(19))
     end
 end
