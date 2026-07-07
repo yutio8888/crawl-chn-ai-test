@@ -55,6 +55,7 @@ def check_monster_names(source_dir: str, source_txt: str):
 
     # Parse source.txt
     src_entries = parse_source_txt(source_txt)
+    src_entries_lower = {k.lower(): True for k in src_entries}
 
     # Parse zh_monster_name() static map from mon-util.cc
     mon_util_cc = os.path.join(source_dir, 'mon-util.cc')
@@ -72,7 +73,7 @@ def check_monster_names(source_dir: str, source_txt: str):
 
     for name in yaml_names:
         found = False
-        if name in src_entries:
+        if name in src_entries or name.lower() in src_entries_lower:
             covered_by_src.add(name)
             found = True
         if name in zh_map:
