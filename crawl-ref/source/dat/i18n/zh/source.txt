@@ -3139,7 +3139,7 @@ Bug
 未知
 %%%%
 Buggy Apostle
-有Bug的使徒
+故障使徒
 %%%%
 Buggy note passed: unknown note type
 错误提示：未知的笔记类型

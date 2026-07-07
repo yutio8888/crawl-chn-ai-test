@@ -1396,8 +1396,12 @@ string ability_name(ability_type ability, bool dbname)
                 return "Brand Self";
             else
             {
-                return make_stringf(T_("Accept %s"),
-                                    mutation_name(makhleb_ability_to_mutation(ability)));
+                const char* mname = mutation_name(
+                                    makhleb_ability_to_mutation(ability));
+                if (mname)
+                    return make_stringf(T_("Accept %s"), mname);
+                else
+                    return T_("Brand Self");
             }
 
         default:
