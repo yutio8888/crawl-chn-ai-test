@@ -973,10 +973,10 @@ gain power from chaos
 %1$s%2$s拟态怪！
 %%%%
 %1$s %2$s a powerful frost blast!
-%1$s释放了一股强大的冰霜冲击！
+%1$s%2$.0s释放了一股强大的冰霜冲击！
 %%%%
 %1$s %2$s a Word of immense power!
-%1$s说出了一句强大的话语！
+%1$s%2$.0s说出了一句强大的话语！
 %%%%
 %1$s %2$s frozen%3$s
 %1$s%2$s被冻结了%3$s
@@ -997,7 +997,7 @@ gain power from chaos
 %1$s%2$s击退了。
 %%%%
 %1$s %2$s suddenly forward!
-%1$s猛然向前冲去！
+%1$s%2$.0s猛然向前冲去！
 %%%%
 %1$s %2$s the poison around %3$s!
 %1$s引爆了%3$s周围的毒素！
@@ -1006,10 +1006,10 @@ gain power from chaos
 %1$s%7$s%2$s%3$s了%4$s%5$s%6$s%8$s
 %%%%
 %1$s %2$s.
-%1$s抽搐了一下。
+%1$s%2$.0s抽搐了一下。
 %%%%
 %1$s attack snaps %2$s out of %3$s fear.
-%1$s的攻击将%2$s从恐惧中惊醒。
+%1$s的攻击将%2$s从%3$s恐惧中惊醒。
 %%%%
 %1$s can %2$s water.\n
 %1$s能在%2$s中行动。\n
@@ -1018,10 +1018,10 @@ gain power from chaos
 %1$s能在岩浆中行动。\n
 %%%%
 %1$s continues winding %2$s clockwork bee....
-%1$s继续给发条蜜蜂上弦……
+%1$s继续给%2$s发条蜜蜂上弦……
 %%%%
 %1$s fails to defend %2$s.
-%1$s未能防守。
+%1$s未能防守%2$s。
 %%%%
 %1$s loses %2$s in your eye%3$s.
 %1$s在你的眼中%2$s失去了自我。
@@ -12686,7 +12686,7 @@ View the high score list.
 查看最高分数列表。
 %%%%
  shakes off the sticky flame as %1$s %2$s.
-随着%1$s的移动，抖掉了身上的黏性火焰。
+随着%1$s的移动%2$.0s，抖掉了身上的黏性火焰。
 %%%%
  shares %s spectral weapon's damage!
 分担了%s幽魂武器的伤害！
@@ -13289,7 +13289,7 @@ A malevolent force fills %s...
 一股邪恶力量充满了%s……
 %%%%
 %1$s attacks as %2$s pursue you!
-在%1$s追击你时发动攻击！
+%1$s%2$.0s在追击你时发动攻击！
 %%%%
 %1$s feeds on the fading %2$s of %3$s!
 你从%1$s的衰减%2$s中汲取了力量。
@@ -15448,7 +15448,7 @@ dies
 死亡
 %%%%
  seems to regain %1$s courage.
-似乎重拾了勇气。
+似乎重拾了%1$s的勇气。
 %%%%
 %s is no longer %s.
 %s不再%s。
@@ -15472,7 +15472,7 @@ no longer
 不再被贿赂。
 %%%%
  seems to return to %1$s normal shape.
-似乎恢复了正常形态。
+似乎恢复了%1$s正常形态。
 %%%%
 %1$s finishes expelling the %2$s from %3$s %4$s.
 %1$s将%2$s从%4$s中排出。
@@ -15484,7 +15484,7 @@ no longer
 %1$s将注意力转回你身上。
 %%%%
  is no longer sharing %1$s pain.
-不再分担痛苦。
+不再分担%1$s痛苦。
 %%%%
 charmed
 被魅惑
@@ -22555,7 +22555,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 %s被一道闪电击中了%s
 %%%%
 %1$s blue arc%2$s harmlessly ground%3$s.
-%1$s蓝色电弧无害地接地了。
+%1$s蓝色电弧%2$.0s无害地%3$.0s接地了。
 %%%%
 %s is struck by a surge of electricity%s
 %s被电流涌动击中了%s
@@ -22564,7 +22564,7 @@ Electricity surges outward!
 电流向外涌出！
 %%%%
 %1$s %2$s no magical effects to unravel.
-%1$s没有魔法效果可以解开。
+%1$s%2$.0s没有魔法效果可以解开。
 %%%%
 %s is already ignited by inner flame!
 %s已经被内焰点燃了！
@@ -23294,7 +23294,7 @@ equip|<w>unequip</w>
 装备|<w>卸下</w>  
 %%%%
 take off weapon
-卸下武器
+卸下
 %%%%
 You don't have anything to inscribe.
 你没有任何需要刻写的东西。
@@ -29433,7 +29433,7 @@ kneel at
 
 %%%%
 %1$s %3$s an %2$s energy prism!
-%1$s创造了一个%2$s能量棱镜！
+%1$s%3$.0s创造了一个%2$s能量棱镜！
 
 %%%%
 %d %s card%s
@@ -36742,3 +36742,44 @@ Draw a card from
 no special abilities
 无特殊能力
 %%%%
+weapons
+武器
+%%%%
+armour
+护甲
+%%%%
+scrolls
+卷轴
+%%%%
+potions
+药水
+%%%%
+books
+书籍
+%%%%
+staves
+法杖
+%%%%
+miscellany
+杂项
+%%%%
+talismans
+护符
+%%%%
+corpses
+尸体
+%%%%
+gems
+宝石
+%%%%
+baubles
+小饰品
+%%%%
+Which item class (ESC to exit)?
+请选择物品类别（ESC退出）？
+%%%%
+What type of %s? 
+什么类型的%s？
+%%%%
+("all" for all) 
+（输入 "all" 可列出所有）

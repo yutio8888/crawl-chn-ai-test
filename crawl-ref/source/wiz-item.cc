@@ -95,14 +95,14 @@ void wizard_create_spec_object_by_name()
 
 void wizard_create_spec_object()
 {
-    string title = "Which item class (ESC to exit)?";
+    string title = T_("Which item class (ESC to exit)?");
     vector<WizardEntry> options =
     {
-        {')', "weapons"}, {'(', "missiles"}, {'[', "armour"}, {'/', "wands"},
-        {'?', "scrolls"}, {'=', "jewellery"}, {'!', "potions"}, {':', "books"},
-        {'|', "staves"}, {'}', "miscellany"}, {'%', "talismans"},
-        {'X', "corpses"}, {'$', "gold"}, {'G', "gems"}, {'B', "baubles"},
-        {'0', "the Orb"}
+        {')', T_("weapons")}, {'(', T_("missiles")}, {'[', T_("armour")}, {'/', T_("wands")},
+        {'?', T_("scrolls")}, {'=', T_("jewellery")}, {'!', T_("potions")}, {':', T_("books")},
+        {'|', T_("staves")}, {'}', T_("miscellany")}, {'%', T_("talismans")},
+        {'X', T_("corpses")}, {'$', T_("gold")}, {'G', T_("gems")}, {'B', T_("baubles")},
+        {'0', T_("the Orb")}
     };
     auto menu = WizardMenu(title, options);
     object_class_type class_wanted = item_class_by_sym(menu.run());
@@ -181,10 +181,10 @@ void wizard_create_spec_object()
     else
     {
         char specs[80];
-        string prompt = make_stringf("What type of %s? ",
+        string prompt = make_stringf(T_("What type of %s? "),
                                      base_type_string(class_wanted));
         if (class_wanted == OBJ_BOOKS)
-            prompt += "(\"all\" for all) ";
+            prompt += T_("(\"all\" for all) ");
         msgwin_get_line_autohist(prompt, specs, sizeof(specs));
 
         string temp = specs;

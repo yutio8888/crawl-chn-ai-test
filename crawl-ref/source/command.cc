@@ -937,25 +937,25 @@ static void _add_formatted_keyhelp(column_composer &cols)
             0,
             T_("<h>Item types (and common commands)\n"));
 
-    _add_insert_commands(cols, 0, "<cyan>)</cyan> : hand weapons (<w>%</w>ield)",
+    _add_insert_commands(cols, 0, T_("<cyan>)</cyan> : hand weapons (<w>%</w>ield)"),
                          { CMD_WIELD_WEAPON });
     _add_insert_commands(cols, 0, T_("<brown>(</brown> : missiles (<w>%</w>uiver, "
                                      "<w>%</w>ire, <w>%</w>/<w>%</w> cycle)"),
                          { CMD_QUIVER_ITEM, CMD_FIRE, CMD_CYCLE_QUIVER_FORWARD,
                            CMD_CYCLE_QUIVER_BACKWARD });
-    _add_insert_commands(cols, 0, "<cyan>[</cyan> : armour (<w>%</w>ear and <w>%</w>ake off)",
+    _add_insert_commands(cols, 0, T_("<cyan>[</cyan> : armour (<w>%</w>ear and <w>%</w>ake off)"),
                          { CMD_WEAR_ARMOUR, CMD_REMOVE_ARMOUR });
-    _add_insert_commands(cols, 0, "<w>?</w> : scrolls (<w>%</w>ead)",
+    _add_insert_commands(cols, 0, T_("<w>?</w> : scrolls (<w>%</w>ead)"),
                          { CMD_READ });
-    _add_insert_commands(cols, 0, "<magenta>!</magenta> : potions (<w>%</w>uaff)",
+    _add_insert_commands(cols, 0, T_("<magenta>!</magenta> : potions (<w>%</w>uaff)"),
                          { CMD_QUAFF });
-    _add_insert_commands(cols, 0, "<blue>=</blue> : rings (<w>%</w>ut on and <w>%</w>emove)",
+    _add_insert_commands(cols, 0, T_("<blue>=</blue> : rings (<w>%</w>ut on and <w>%</w>emove)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
-    _add_insert_commands(cols, 0, "<red>\"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)",
+    _add_insert_commands(cols, 0, T_("<red>\"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
-    _add_insert_commands(cols, 0, "<lightred>percent</lightred> : talismans (e<w>%</w>oke)",
+    _add_insert_commands(cols, 0, T_("<lightred>percent</lightred> : talismans (e<w>%</w>oke)"),
                          { CMD_WEAR_JEWELLERY, CMD_REMOVE_JEWELLERY });
-    _add_insert_commands(cols, 0, "<lightgrey>/</lightgrey> : wands (e<w>%</w>oke)",
+    _add_insert_commands(cols, 0, T_("<lightgrey>/</lightgrey> : wands (e<w>%</w>oke)"),
                          { CMD_EVOKE });
 
     string item_types = "<lightcyan>";
@@ -968,9 +968,9 @@ static void _add_formatted_keyhelp(column_composer &cols)
                            CMD_FORCE_CAST_SPELL });
     _add_insert_commands(cols, 0, T_("<brown>|</brown> : staves (<w>%</w>ield)"),
                          { CMD_WIELD_WEAPON});
-    _add_insert_commands(cols, 0, "<lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)",
+    _add_insert_commands(cols, 0, T_("<lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)"),
                          { CMD_EVOKE });
-    _add_insert_commands(cols, 0, "<yellow>$</yellow> : gold (<w>%</w> counts gold)",
+    _add_insert_commands(cols, 0, T_("<yellow>$</yellow> : gold (<w>%</w> counts gold)"),
                          { CMD_LIST_GOLD });
 
     cols.add_formatted(
