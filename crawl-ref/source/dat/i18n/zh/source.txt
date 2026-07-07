@@ -16744,7 +16744,7 @@ Demonic Horde
 恶魔大军
 %%%%
 Draconian Breath
-龙人吐息
+龙裔吐息
 %%%%
 Ephemeral Infusion
 短暂灌注
@@ -18369,7 +18369,7 @@ mutation resistance
 变异抗性
 %%%%
 naga tail
-蛇人尾巴
+纳迦尾巴
 %%%%
 negative energy resistance
 负能量抗性
@@ -28724,7 +28724,7 @@ Singing Sword
 
 %%%%
 Spriggan's Knife
-斯普里甘之刃
+小精灵之刃
 
 %%%%
 Storm Queen's Shield
@@ -32580,55 +32580,55 @@ deep dwarf scion
 深矮人后裔
 %%%%%
 deep elf annihilator
-暗精灵湮灭者
+精灵湮灭者
 %%%%%
 deep elf archer
-暗精灵弓箭手
+精灵弓箭手
 %%%%%
 deep elf blademaster
-暗精灵剑圣
+精灵剑圣
 %%%%%
 deep elf conjurer
-暗精灵咒法师
+精灵咒法师
 %%%%%
 deep elf death mage
-暗精灵死亡法师
+精灵死亡法师
 %%%%%
 deep elf demonologist
-暗精灵恶魔学家
+精灵恶魔学家
 %%%%%
 deep elf elementalist
-暗精灵元素师
+精灵元素师
 %%%%%
 deep elf fighter
-暗精灵战士
+精灵战士
 %%%%%
 deep elf high priest
-暗精灵大祭司
+精灵大祭司
 %%%%%
 deep elf knight
-暗精灵骑士
+精灵骑士
 %%%%%
 deep elf master archer
-暗精灵神射手
+精灵神射手
 %%%%%
 deep elf priest
-暗精灵祭司
+精灵祭司
 %%%%%
 deep elf pyromancer
-暗精灵烈焰法师
+精灵烈焰法师
 %%%%%
 deep elf soldier
-暗精灵士兵
+精灵士兵
 %%%%%
 deep elf sorcerer
-暗精灵巫师
+精灵巫师
 %%%%%
 deep elf summoner
-暗精灵召唤师
+精灵召唤师
 %%%%%
 deep elf zephyrmancer
-暗精灵和风法师
+精灵和风法师
 %%%%%
 deep troll
 深渊巨魔
@@ -33588,28 +33588,28 @@ spirit wolf
 灵魂之狼
 %%%%%
 spriggan
-斯普里甘
+小精灵
 %%%%%
 spriggan air mage
-斯普里甘气法师
+小精灵气法师
 %%%%%
 spriggan assassin
-斯普里甘刺客
+小精灵刺客
 %%%%%
 spriggan berserker
-斯普里甘狂战士
+小精灵狂战士
 %%%%%
 spriggan defender
-斯普里甘防御者
+小精灵防御者
 %%%%%
 spriggan druid
-斯普里甘德鲁伊
+小精灵德鲁伊
 %%%%%
 spriggan enchanter
-斯普里甘附魔师
+小精灵附魔师
 %%%%%
 spriggan rider
-斯普里甘骑手
+小精灵骑手
 %%%%%
 star jelly
 星之果冻
@@ -33840,7 +33840,7 @@ Coglin
 齿轮地精
 %%%%%
 Deep Elf
-暗精灵
+精灵
 %%%%%
 Demigod
 半神
@@ -38463,7 +38463,7 @@ Mangled
 被肢解
 %%%%
 Only nagas and armataurs can wear barding.
-只有蛇人和龙龟可以穿戴马甲。
+只有纳迦和龙龟可以穿戴马甲。
 %%%%
 Pois
 中毒
