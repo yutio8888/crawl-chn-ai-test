@@ -5843,7 +5843,7 @@ Ru
 入
 %%%%
 Ru asks you to %s.
-Ru要求你%s。
+入要求你%s。
 %%%%
 run
 奔跑
@@ -7947,7 +7947,7 @@ Xom
 佐姆
 %%%%
 Xom finds this level too familiar and boring!
-Xom觉得这一层太过熟悉、太过无聊了！
+佐姆觉得这一层太过熟悉、太过无聊了！
 %%%%
 Yes
 是
@@ -9511,7 +9511,7 @@ You feel the power of the Abyss delaying your translocation!
 你感到深渊的力量在延缓你的传送！
 %%%%
 You feel the power of Zot begin to gather its forces!
-你感到Zot的力量开始聚集！
+你感到佐特的力量开始聚集！
 %%%%
 You feel the presence of a powerless spirit.
 你感到一个无力之灵的存在。
@@ -24627,7 +24627,7 @@ You are reanimating the dead.
 你正在复活死者。
 %%%%
 You are reciting Zin's Axioms of Law.
-你正在诵读Zin的法律公理。
+你正在诵读辛的法律公理。
 %%%%
 You are regenerating under the effects of ambrosia.
 你正在仙酿的作用下再生。
@@ -36080,10 +36080,10 @@ Was %s of %s%s
 曾是%s%s之%s
 %%%%%
 Was a %sPlaything of Xom.
-曾是Xom的%s玩物。
+曾是佐姆的%s玩物。
 %%%%%
 Xom event %d has no associated data!\n
-Xom事件%d没有关联数据！\n
+佐姆事件%d没有关联数据！\n
 %%%%%
 You cannot charge away from %s!
 你无法从%s处冲锋离开！
@@ -36092,7 +36092,7 @@ You cannot charge closer to %s!
 你无法向%s冲锋靠近！
 %%%%%
 You have just %d turns in %s to find a new floor before Zot consumes you.
-你只有%d回合在%s中找到新楼层，否则Zot将吞噬你。
+你只有%d回合在%s中找到新楼层，否则佐特将吞噬你。
 %%%%%
 [<w>%s</w>|<w>Space</w>]
 [<w>%s</w>|<w>空格</w>]
@@ -36252,7 +36252,7 @@ Identify which item? (\\ to view known items)
 %%%%%
 %%%%
 Xom revived you
-Xom复活了你
+佐姆复活了你
 %%%%
 Magic: 
 魔力：
@@ -36788,3 +36788,1473 @@ obsolescence
 %%%%
 obsoleteness
 已淘汰
+
+# Phase P4b: monster YAML name translations (489 entries)
+%%%%
+Aizul
+艾祖尔
+%%%%
+Antaeus
+安泰俄斯
+%%%%
+Arachne
+阿拉克尼
+%%%%
+Asmodeus
+阿斯蒙蒂斯
+%%%%
+Asterion
+阿斯忒里翁
+%%%%
+Azrael
+阿兹瑞尔
+%%%%
+Bai Suzhen
+白素贞
+%%%%
+Blorkula the orcula
+兽人布洛库拉
+%%%%
+Boris
+鲍里斯
+%%%%
+Brimstone Fiend
+硫磺恶鬼
+%%%%
+Cassandra
+卡珊德拉
+%%%%
+Cerebov
+赛里鲍夫
+%%%%
+Chuck
+查克
+%%%%
+Crazy Yiuf
+疯伊乌夫
+%%%%
+Dispater
+迪斯帕特
+%%%%
+Donald
+唐纳德
+%%%%
+Dowan
+多万
+%%%%
+Duvessa
+杜维莎
+%%%%
+Edmund
+埃德蒙
+%%%%
+Ereshkigal
+埃列什基伽勒
+%%%%
+Erica
+艾丽卡
+%%%%
+Erolcha
+艾洛查
+%%%%
+Eustachio
+尤斯塔奇奥
+%%%%
+Fannar
+凡纳尔
+%%%%
+Frances
+弗朗西斯
+%%%%
+Frederick
+弗雷德里克
+%%%%
+Gastronok
+加斯特罗诺克
+%%%%
+Geryon
+革律翁
+%%%%
+Gloorx Vloq
+格洛克斯·弗洛克
+%%%%
+Grinder
+格林德
+%%%%
+Grum
+格鲁姆
+%%%%
+Grunn
+格伦
+%%%%
+Harold
+哈罗德
+%%%%
+Ignacio
+伊格纳西奥
+%%%%
+Ijyb
+伊吉布
+%%%%
+Ilsuiw
+伊尔苏伊
+%%%%
+Jeremiah
+杰里迈亚
+%%%%
+Jessica
+杰西卡
+%%%%
+Jorgrun
+乔格伦
+%%%%
+Jory
+乔里
+%%%%
+Joseph
+约瑟夫
+%%%%
+Josephina
+约瑟芬娜
+%%%%
+Josephine
+约瑟芬
+%%%%
+Khufu
+胡夫
+%%%%
+Kirke
+喀耳刻
+%%%%
+Lodul
+洛杜尔
+%%%%
+Lom Lobon
+洛姆·洛本
+%%%%
+Louise
+路易丝
+%%%%
+Maggie
+玛吉
+%%%%
+Mara
+玛拉
+%%%%
+Margery
+玛杰里
+%%%%
+Maurice
+莫里斯
+%%%%
+Menkaure
+门卡乌拉
+%%%%
+Mennas
+门纳斯
+%%%%
+Mlioglotl
+姆利奥格洛特尔
+%%%%
+Mnoleg
+姆诺莱格
+%%%%
+Murray
+默里
+%%%%
+Natasha
+娜塔莎
+%%%%
+Nellie
+内莉
+%%%%
+Nergalle
+涅尔盖尔
+%%%%
+Nessos
+涅索斯
+%%%%
+Nikola
+尼古拉
+%%%%
+Norris
+诺里斯
+%%%%
+Parghit
+帕尔吉特
+%%%%
+Pargi
+帕尔吉
+%%%%
+Pikel
+皮克尔
+%%%%
+Polyphemus
+波吕斐摩斯
+%%%%
+Prince Ribbit
+王子蛙
+%%%%
+Robin
+罗宾
+%%%%
+Roxanne
+罗克珊
+%%%%
+Rupert
+鲁伯特
+%%%%
+Saint Roka
+圣罗卡
+%%%%
+Sigmund
+西格蒙德
+%%%%
+Snorg
+斯诺格
+%%%%
+Sojobo
+僧正坊
+%%%%
+Sonja
+索尼娅
+%%%%
+Sprozz
+斯普罗兹
+%%%%
+Terence
+特伦斯
+%%%%
+Tiamat
+提亚马特
+%%%%
+Tzitzimitl
+齐齐米特尔
+%%%%
+Urug
+乌鲁格
+%%%%
+Vashnia
+瓦什尼亚
+%%%%
+Vv
+维维
+%%%%
+Wiglaf
+威格拉夫
+%%%%
+Xak'krixis
+扎克·克里西斯
+%%%%
+Xtahua
+斯塔华
+%%%%
+Zenata
+泽纳塔
+%%%%
+acid blob
+酸液史莱姆
+%%%%
+acid dragon
+酸液龙
+%%%%
+adder
+蝰蛇
+%%%%
+air elemental
+风元素
+%%%%
+alligator
+短吻鳄
+%%%%
+alligator snapping turtle
+鳄龟
+%%%%
+anaconda
+森蚺
+%%%%
+ancestor
+先祖
+%%%%
+ancient champion
+古代冠军
+%%%%
+ancient lich
+远古巫妖
+%%%%
+angel
+天使
+%%%%
+apis
+圣甲牛
+%%%%
+arcanist
+秘术师
+%%%%
+armataur
+甲龙兽人
+%%%%
+azure jelly
+天蓝果冻
+%%%%
+ball lightning
+球状闪电
+%%%%
+ball python
+球蟒
+%%%%
+ballistomycete
+投菇
+%%%%
+ballistomycete spore
+投菇孢子
+%%%%
+balrug
+巴洛炎魔
+%%%%
+barachi
+蛙人
+%%%%
+basilisk
+石化蜥蜴
+%%%%
+bat
+蝙蝠
+%%%%
+battlesphere
+战斗球体
+%%%%
+bear
+熊
+%%%%
+bennu
+贝努鸟
+%%%%
+black bear
+黑熊
+%%%%
+black draconian
+黑龙人
+%%%%
+black mamba
+黑曼巴蛇
+%%%%
+blink frog
+闪烁蛙
+%%%%
+blizzard demon
+暴风雪恶魔
+%%%%
+block of ice
+冰块
+%%%%
+bog body
+沼泽尸
+%%%%
+boggart
+博格特
+%%%%
+bombardier beetle
+投弹甲虫
+%%%%
+bone dragon
+龙骨
+%%%%
+boulder
+巨石
+%%%%
+boulder beetle
+滚石甲虫
+%%%%
+brain worm
+脑虫
+%%%%
+briar patch
+荆棘丛
+%%%%
+bullfrog
+牛蛙
+%%%%
+bunyip
+邦伊普
+%%%%
+bush
+灌木
+%%%%
+butterfly
+蝴蝶
+%%%%
+cacodemon
+混沌魔
+%%%%
+cactus giant
+仙人掌巨人
+%%%%
+cane toad
+蔗蟾
+%%%%
+catoblepas
+卡托布莱帕斯
+%%%%
+caustic shrike
+腐蚀伯劳
+%%%%
+centaur
+半人马
+%%%%
+centaur warrior
+半人马战士
+%%%%
+cerulean imp
+蓝小恶魔
+%%%%
+chaos spawn
+混沌孽物
+%%%%
+cherub
+智天使
+%%%%
+chonchon
+琼琼鸟
+%%%%
+clockroach
+发条蟑螂
+%%%%
+clockwork bee
+发条蜜蜂
+%%%%
+crimson imp
+红小恶魔
+%%%%
+crocodile
+鳄鱼
+%%%%
+crystal guardian
+水晶守卫
+%%%%
+curse skull
+诅咒颅骨
+%%%%
+cyclops
+独眼巨人
+%%%%
+daeva
+圣灵
+%%%%
+dart slug
+飞镖蛞蝓
+%%%%
+death cob
+死亡蛇
+%%%%
+death drake
+死亡龙兽
+%%%%
+death knight
+死亡骑士
+%%%%
+death yak
+死亡氂牛
+%%%%
+deathcap
+死亡帽菇
+%%%%
+deep elf annihilator
+暗精灵歼灭者
+%%%%
+deep elf archer
+暗精灵弓箭手
+%%%%
+deep elf blademaster
+暗精灵剑圣
+%%%%
+deep elf death mage
+暗精灵死亡法师
+%%%%
+deep elf demonologist
+暗精灵恶魔学家
+%%%%
+deep elf elementalist
+暗精灵元素师
+%%%%
+deep elf high priest
+暗精灵高阶祭司
+%%%%
+deep elf knight
+暗精灵骑士
+%%%%
+deep elf master archer
+暗精灵神射手
+%%%%
+deep elf pyromancer
+暗精灵火法师
+%%%%
+deep elf sorcerer
+暗精灵术士
+%%%%
+deep elf zephyrmancer
+暗精灵风语者
+%%%%
+deep troll
+深巨魔
+%%%%
+deep troll earth mage
+深巨魔土法师
+%%%%
+deep troll shaman
+深巨魔萨满
+%%%%
+demigod
+半神
+%%%%
+demonic plant
+恶魔植物
+%%%%
+demonspawn
+恶魔后裔
+%%%%
+demonspawn blood saint
+恶魔后裔血圣
+%%%%
+demonspawn corrupter
+恶魔后裔腐化者
+%%%%
+demonspawn soul scholar
+恶魔后裔灵魂学者
+%%%%
+demonspawn warmonger
+恶魔后裔战争贩子
+%%%%
+diamond obelisk
+钻石方尖碑
+%%%%
+dire elephant
+凶暴象
+%%%%
+djinni
+巨灵
+%%%%
+dormant clockwork bee
+休眠发条蜜蜂
+%%%%
+draconian
+龙人
+%%%%
+draconian annihilator
+龙人歼灭者
+%%%%
+draconian knight
+龙人骑士
+%%%%
+draconian monk
+龙人武僧
+%%%%
+draconian scorcher
+龙人灼烧者
+%%%%
+draconian shifter
+龙人变形者
+%%%%
+draconian stormcaller
+龙人唤雷者
+%%%%
+dragon
+龙
+%%%%
+drake
+龙兽
+%%%%
+dread lich
+恐惧巫妖
+%%%%
+dream sheep
+梦羊
+%%%%
+drowned soul
+溺水之魂
+%%%%
+dryad
+树精
+%%%%
+dwarf
+矮人
+%%%%
+earth elemental
+土元素
+%%%%
+easy sensed monster
+易感知怪物
+%%%%
+electric eel
+电鳗
+%%%%
+electric golem
+电魔像
+%%%%
+eleionoma
+沼泽精灵
+%%%%
+elemental
+元素
+%%%%
+elephant
+大象
+%%%%
+elephant slug
+巨蛞蝓
+%%%%
+elf
+精灵
+%%%%
+emperor scorpion
+帝王蝎
+%%%%
+endoplasm
+内质
+%%%%
+entropy weaver
+熵织者
+%%%%
+ettin
+双头巨人
+%%%%
+eye of devastation
+毁灭之眼
+%%%%
+eye of draining
+汲取之眼
+%%%%
+faun
+牧神
+%%%%
+felid
+猫人
+%%%%
+fire bat
+火蝙蝠
+%%%%
+fire dragon
+火龙
+%%%%
+fire elemental
+火元素
+%%%%
+fire giant
+火巨人
+%%%%
+fire vortex
+火焰漩涡
+%%%%
+flayed ghost
+剥皮鬼魂
+%%%%
+floating eye
+漂浮之眼
+%%%%
+formicid
+蚁人
+%%%%
+formless jellyfish
+无形水母
+%%%%
+freezing wraith
+冰冻幽魂
+%%%%
+friendly sensed monster
+友好感知怪物
+%%%%
+frilled lizard
+伞蜥
+%%%%
+frost giant
+冰霜巨人
+%%%%
+fulminant prism
+雷光棱镜
+%%%%
+fungus
+真菌
+%%%%
+gargoyle
+石像鬼
+%%%%
+ghost moth
+鬼蛾
+%%%%
+ghoul
+食尸鬼
+%%%%
+giant frog
+巨蛙
+%%%%
+giant lizard
+巨蜥
+%%%%
+globe of annihilation
+湮灭球体
+%%%%
+glowing orange brain
+发光橙脑
+%%%%
+glowing shapeshifter
+发光变形者
+%%%%
+gnoll
+豺狼人
+%%%%
+gnoll bouda
+豺狼人布达
+%%%%
+gnoll sergeant
+豺狼人军士
+%%%%
+goblin
+地精
+%%%%
+golden dragon
+金龙
+%%%%
+golden eye
+黄金之眼
+%%%%
+golem
+魔像
+%%%%
+goliath frog
+歌利亚蛙
+%%%%
+great orb of eyes
+巨眼之球
+%%%%
+green death
+绿死
+%%%%
+green draconian
+绿龙人
+%%%%
+grey draconian
+灰龙人
+%%%%
+guardian mummy
+守卫木乃伊
+%%%%
+guardian serpent
+守卫巨蛇
+%%%%
+guardian sphinx
+守卫斯芬克斯
+%%%%
+halazid warlock
+哈拉兹术士
+%%%%
+hell hog
+地狱野猪
+%%%%
+hell hound
+地狱猎犬
+%%%%
+hell knight
+地狱骑士
+%%%%
+hell lord
+地狱领主
+%%%%
+hell rat
+地狱鼠
+%%%%
+hellion
+地狱魔
+%%%%
+hellwing
+地狱蝠
+%%%%
+hippogriff
+骏鹰
+%%%%
+hobgoblin
+大地精
+%%%%
+hog
+野猪
+%%%%
+holy swine
+圣猪
+%%%%
+hornet
+大黄蜂
+%%%%
+hound
+猎犬
+%%%%
+human
+人类
+%%%%
+hydra
+九头蛇
+%%%%
+ice devil
+冰魔
+%%%%
+ice dragon
+冰龙
+%%%%
+ice statue
+冰雕像
+%%%%
+iguana
+鬣蜥
+%%%%
+imperial myrmidon
+帝国武士
+%%%%
+iron dragon
+铁龙
+%%%%
+iron elemental
+铁元素
+%%%%
+iron giant
+铁巨人
+%%%%
+iron golem
+铁魔像
+%%%%
+iron imp
+铁小恶魔
+%%%%
+iron troll
+铁巨魔
+%%%%
+ironbound beastmaster
+铁缚兽王
+%%%%
+ironbound convoker
+铁缚召唤师
+%%%%
+ironbound frostheart
+铁缚霜心
+%%%%
+ironbound mechanist
+铁缚机械师
+%%%%
+ironbound preserver
+铁缚守护者
+%%%%
+ironbound thunderhulk
+铁缚雷兽
+%%%%
+jackal
+胡狼
+%%%%
+jelly
+果冻
+%%%%
+jiangshi
+僵尸
+%%%%
+juggernaut
+主宰者
+%%%%
+jumping spider
+跳蛛
+%%%%
+killer bee
+杀人蜂
+%%%%
+knight
+骑士
+%%%%
+kobold
+狗头人
+%%%%
+komodo dragon
+科莫多龙
+%%%%
+kraken
+克拉肯
+%%%%
+laughing skull
+笑颅
+%%%%
+lemure
+劣魔
+%%%%
+lich
+巫妖
+%%%%
+lightning spire
+闪电尖塔
+%%%%
+lindwurm
+林德蠕龙
+%%%%
+lost soul
+迷失之魂
+%%%%
+lurking horror
+潜伏恐惧
+%%%%
+malarious merfolk avatar
+疟疾人鱼化身
+%%%%
+manticore
+蝎尾狮
+%%%%
+merfolk
+人鱼
+%%%%
+merfolk aquamancer
+人鱼水法师
+%%%%
+merfolk avatar
+人鱼化身
+%%%%
+merfolk impaler
+人鱼穿刺者
+%%%%
+merfolk javelineer
+人鱼投矛手
+%%%%
+merfolk siren
+人鱼塞壬
+%%%%
+meteoran
+陨星人
+%%%%
+minotaur
+牛头人
+%%%%
+molten gargoyle
+熔岩石像鬼
+%%%%
+moon troll
+月巨魔
+%%%%
+moth
+飞蛾
+%%%%
+moth of wrath
+愤怒飞蛾
+%%%%
+mummy
+木乃伊
+%%%%
+mummy priest
+木乃伊祭司
+%%%%
+naga
+蛇人
+%%%%
+naga mage
+蛇人法师
+%%%%
+naga ritualist
+蛇人祭祀
+%%%%
+naga sharpshooter
+蛇人神射手
+%%%%
+naga warrior
+蛇人战士
+%%%%
+nagaraja
+蛇人王
+%%%%
+nameless horror
+无名恐惧
+%%%%
+nasty sensed monster
+恶意感知怪物
+%%%%
+necromancer
+死灵法师
+%%%%
+necrophage
+噬尸者
+%%%%
+nekomata
+猫又
+%%%%
+obsidian bat
+黑曜石蝙蝠
+%%%%
+obsidian statue
+黑曜石雕像
+%%%%
+occultist
+神秘学者
+%%%%
+octopode
+章鱼人
+%%%%
+ogre
+食人魔
+%%%%
+ogre mage
+食人魔法师
+%%%%
+oklob plant
+欧克洛布植物
+%%%%
+oklob sapling
+欧克洛布树苗
+%%%%
+ophan
+奥凡
+%%%%
+orange crystal statue
+橙色水晶雕像
+%%%%
+orange demon
+橙恶魔
+%%%%
+orb of destruction
+毁灭之球
+%%%%
+orb of entropy
+熵之球
+%%%%
+orb of fire
+火焰之球
+%%%%
+orb of winter
+凛冬之球
+%%%%
+orb spider
+球蛛
+%%%%
+orc
+兽人
+%%%%
+orc apostle
+兽人使徒
+%%%%
+orc high priest
+兽人大祭司
+%%%%
+orc knight
+兽人骑士
+%%%%
+orc priest
+兽人祭司
+%%%%
+orc sorcerer
+兽人术士
+%%%%
+orc warlord
+兽人督军
+%%%%
+orc warrior
+兽人战士
+%%%%
+orc wizard
+兽人巫师
+%%%%
+pale draconian
+白龙人
+%%%%
+pearl dragon
+珍珠龙
+%%%%
+phalanx beetle
+方阵甲虫
+%%%%
+phantasmal warrior
+幻影战士
+%%%%
+phantom
+幻影
+%%%%
+pharaoh ant
+法老蚁
+%%%%
+plant
+植物
+%%%%
+player
+玩家
+%%%%
+player ghost
+玩家鬼魂
+%%%%
+player illusion
+玩家幻象
+%%%%
+polar bear
+北极熊
+%%%%
+poltergeist
+骚灵
+%%%%
+profane servitor
+渎神仆从
+%%%%
+program bug
+程序虫
+%%%%
+purple draconian
+紫龙人
+%%%%
+queen bee
+蜂后
+%%%%
+quicksilver dragon
+水银龙
+%%%%
+quicksilver elemental
+水银元素
+%%%%
+quokka
+短尾矮袋鼠
+%%%%
+radroach
+辐射蟑螂
+%%%%
+rakshasa
+罗刹
+%%%%
+rat
+老鼠
+%%%%
+raven
+渡鸦
+%%%%
+reaper
+收割者
+%%%%
+red devil
+红魔鬼
+%%%%
+red draconian
+红龙人
+%%%%
+redback
+红背蜘蛛
+%%%%
+revenant
+亡魂
+%%%%
+ribbon worm
+纽虫
+%%%%
+rime drake
+霜龙兽
+%%%%
+river rat
+河鼠
+%%%%
+rock fish
+石鱼
+%%%%
+rockslime
+岩石史莱姆
+%%%%
+royal mummy
+皇家木乃伊
+%%%%
+rust devil
+锈蚀魔鬼
+%%%%
+salamander
+沙罗曼蛇
+%%%%
+salamander mystic
+沙罗曼蛇神秘者
+%%%%
+salamander tyrant
+沙罗曼蛇暴君
+%%%%
+satyr
+萨提尔
+%%%%
+scorpion
+蝎子
+%%%%
+sea snake
+海蛇
+%%%%
+sensed monster
+感知怪物
+%%%%
+seraph
+炽天使
+%%%%
+servant of whispers
+低语仆从
+%%%%
+shadow
+暗影
+%%%%
+shadow dragon
+暗影龙
+%%%%
+shadow imp
+暗影小恶魔
+%%%%
+shadow wraith
+暗影幽魂
+%%%%
+shambling mangrove
+蹒跚红树
+%%%%
+shapeshifter
+变形者
+%%%%
+shard shrike
+碎片伯劳
+%%%%
+shining eye
+闪光之眼
+%%%%
+shock serpent
+电击蛇
+%%%%
+sickly merfolk siren
+病弱人鱼塞壬
+%%%%
+sixfirhy
+西克斯菲尔希
+%%%%
+slime creature
+史莱姆生物
+%%%%
+smoke demon
+烟雾恶魔
+%%%%
+snapping turtle
+鳄龟
+%%%%
+soul eater
+噬魂者
+%%%%
+soul wisp
+魂灵
+%%%%
+spark wasp
+火花黄蜂
+%%%%
+spatial maelstrom
+空间漩涡
+%%%%
+spatial vortex
+空间涡流
+%%%%
+spectator
+旁观者
+%%%%
+spectral thing
+灵体
+%%%%
+spectral weapon
+灵体武器
+%%%%
+spellspark servitor
+法术火花仆从
+%%%%
+sphinx
+斯芬克斯
+%%%%
+spriggan
+斯普里甘
+%%%%
+spriggan air mage
+斯普里甘风法师
+%%%%
+spriggan berserker
+斯普里甘狂战士
+%%%%
+spriggan defender
+斯普里甘守卫者
+%%%%
+spriggan druid
+斯普里甘德鲁伊
+%%%%
+spriggan rider
+斯普里甘骑手
+%%%%
+star jelly
+星辰果冻
+%%%%
+statue
+雕像
+%%%%
+steam dragon
+蒸汽龙
+%%%%
+stone giant
+石巨人
+%%%%
+storm dragon
+风暴龙
+%%%%
+sun demon
+日魔
+%%%%
+swamp dragon
+沼泽龙
+%%%%
+swamp drake
+沼泽龙兽
+%%%%
+swamp worm
+沼泽蠕虫
+%%%%
+tarantella
+塔兰泰拉
+%%%%
+tengu
+天狗
+%%%%
+tengu conjurer
+天狗咒术师
+%%%%
+tengu reaver
+天狗掠袭者
+%%%%
+tengu warrior
+天狗战士
+%%%%
+test blob
+测试史莱姆
+%%%%
+test spawner
+测试生成器
+%%%%
+test statue
+测试雕像
+%%%%
+thorn hunter
+荆棘猎手
+%%%%
+thrashing horror
+鞭挞恐惧
+%%%%
+titan
+泰坦
+%%%%
+toadstool
+毒菌
+%%%%
+toenail golem
+趾甲魔像
+%%%%
+tormentor
+折磨者
+%%%%
+torpor snail
+迟缓蜗牛
+%%%%
+tough sensed monster
+坚强感知怪物
+%%%%
+training dummy
+训练假人
+%%%%
+trivial sensed monster
+弱小感知怪物
+%%%%
+troll
+巨魔
+%%%%
+twister
+旋风怪
+%%%%
+two-headed ogre
+双头食人魔
+%%%%
+tyrant leech
+暴君水蛭
+%%%%
+ufetubus
+乌费图布斯
+%%%%
+ugly thing
+丑陋之物
+%%%%
+unseen horror
+无形恐怖
+%%%%
+vampire bat
+吸血蝙蝠
+%%%%
+vault guard
+宝库守卫
+%%%%
+vault sentinel
+宝库哨兵
+%%%%
+vault warden
+宝库典狱长
+%%%%
+very ugly thing
+极丑之物
+%%%%
+vine stalker
+藤蔓行者
+%%%%
+wandering mushroom
+游荡蘑菇
+%%%%
+war gargoyle
+战像鬼
+%%%%
+warg
+座狼
+%%%%
+water elemental
+水元素
+%%%%
+water moccasin
+水腹蛇
+%%%%
+water nymph
+水仙女
+%%%%
+weeping skull
+泣颅
+%%%%
+white draconian
+白龙人
+%%%%
+white imp
+白小恶魔
+%%%%
+wight
+尸妖
+%%%%
+wind drake
+风龙兽
+%%%%
+withered plant
+枯萎植物
+%%%%
+wolf
+狼
+%%%%
+wolf spider
+狼蛛
+%%%%
+worldbinder
+界缚者
+%%%%
+wraith
+幽魂
+%%%%
+wyvern
+双足飞龙
+%%%%
+yak
+氂牛
+%%%%
+yaktaur
+牦牛人马
+%%%%
+yaktaur captain
+牦牛人马队长
+%%%%
+yellow draconian
+黄龙人
+%%%%
+ynoxinul
+伊诺辛努尔
+%%%%

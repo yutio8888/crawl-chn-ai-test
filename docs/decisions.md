@@ -813,3 +813,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |
 | D-C-004 | Portal .des | ~40 messages | active — all ✅ |
+| D-C-005 | Monster YAML names | 489 entries → 100% coverage | active ✅ |
