@@ -2409,9 +2409,10 @@ string player_title(bool the)
     const string title =
             skill_title_by_rank(best, get_skill_rank(you.skills[best]));
     const string article = !the ? ""
-                                 : title == "Petite Mort" ? C_("title article", "La ")
-                                 : title == "Who Hides the Stars" ? C_("title article", ", ")
-                                 : C_("title article", "the ");
+        : Options.language == lang_t::ZH ? ""
+        : title == "Petite Mort" ? C_("title article", "La ")
+        : title == "Who Hides the Stars" ? C_("title article", ", ")
+        : C_("title article", "the ");
     return article + title;
 }
 

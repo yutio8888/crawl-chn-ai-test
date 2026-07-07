@@ -1075,26 +1075,11 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
 
     // Try context-qualified key first (if applicable)
     string zh;
-    bool ctx_found = false;
     if (ctx && ctx[0])
-    {
         zh = _query_database(SourceDB, lookup_key, true, false);
-        // If zh is empty, distinguish "key not found" from "found with
-        // empty value". A C_() entry with empty value means the
-        // translator intentionally wants nothing (e.g. suppressing
-        // "the " article in Chinese player titles). Do NOT fall back
-        // to the bare EN key when the context-qualified key exists.
-        if (zh.empty() && SourceDB.translation)
-        {
-            string lk = lookup_key;
-            lowercase(lk);
-            datum d = _database_fetch(SourceDB.translation->get(), lk);
-            ctx_found = (d.dsize > 0);
-        }
-    }
 
-    // Fall back to unqualified key — only if context-qualified was not found
-    if (zh.empty() && !ctx_found)
+    // Fall back to unqualified key
+    if (zh.empty())
         zh = _query_database(SourceDB, en_key, true, false);
 
     // Final fallback: return English original.
@@ -1111,7 +1096,7 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
             zh.pop_back();
         zh = i18n_unescape_value(zh);
     }
-    else if (!ctx_found)
+    else
         zh = en;
 
     // Store permanently in deque. deque::push_back never invalidates
