@@ -526,7 +526,13 @@ def cmd_mprf_p(args):
                     if en_key not in line.lower():
                         continue
                     # Found a match — check if it uses mprf_p
-                    if not POSITIONAL_CALL_RE.search(line):
+                    # Also check previous 2 lines for multi-line _p calls
+                    pos_call = POSITIONAL_CALL_RE.search(line)
+                    if not pos_call and lineno > 1:
+                        pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 2])
+                    if not pos_call and lineno > 2:
+                        pos_call = POSITIONAL_CALL_RE.search(lines[lineno - 3])
+                    if not pos_call:
                         findings.append((filepath, lineno, en_key, cn_val[:60]))
 
     if findings:

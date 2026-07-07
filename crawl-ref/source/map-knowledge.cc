@@ -11,6 +11,7 @@
 #include "level-state-type.h"
 #include "message.h"
 #include "notes.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "stringutil.h"
 #include "terrain.h"
@@ -572,14 +573,14 @@ bool magic_mapping(int map_radius, int proportion, bool suppress_msg,
 
         if (num_altars > 0)
         {
-            sensed.push_back(make_stringf(T_("%d altar%s"), num_altars,
+            sensed.push_back(make_stringf_p(T_("%d altar%s"), num_altars,
                                           num_altars > 1 ? "s" : ""));
         }
 
         if (num_shops_portals > 0)
         {
             const char* plur = num_shops_portals > 1 ? "s" : "";
-            sensed.push_back(make_stringf(T_("%d shop%s/portal%s"),
+            sensed.push_back(make_stringf_p(T_("%d shop%s/portal%s"),
                                           num_shops_portals, plur, plur));
         }
 

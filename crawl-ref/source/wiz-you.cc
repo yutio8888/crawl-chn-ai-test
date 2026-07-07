@@ -368,7 +368,7 @@ void wizard_set_gold()
     else
         you.set_gold(max(atoi(buf), 0));
 
-    mprf(T_("You now have %d gold piece%s."), you.gold, you.gold != 1 ? "s" : "");
+    mprf_p(T_("You now have %d gold piece%s."), you.gold, you.gold != 1 ? "s" : "");
 }
 
 void wizard_set_piety()

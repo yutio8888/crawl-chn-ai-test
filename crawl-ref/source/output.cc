@@ -40,6 +40,7 @@
 #include "mutation.h"
 #include "notes.h"
 #include "ouch.h"
+#include "positional_format.h"
 #include "player-equip.h"
 #include "player-stats.h"
 #include "prompt.h"
@@ -2926,7 +2927,7 @@ static string _status_mut_rune_list(int sw)
             runes.emplace_back(rune_type_name(i));
     if (!runes.empty())
     {
-        text += make_stringf(T_("\n<w>%s:</w> %d/%d rune%s: %s"),
+        text += make_stringf_p(T_("\n<w>%s:</w> %d/%d rune%s: %s"),
                 command_to_string(CMD_DISPLAY_RUNES).c_str(),
                 (int)runes.size(), you.obtainable_runes,
                 you.obtainable_runes == 1 ? "" : "s",
