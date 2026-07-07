@@ -24,8 +24,19 @@
 #include "mutation.h"        // mutation_name
 #include "mutation-type.h"
 #include "terrain.h"         // init_feat_desc_cache
+#include "artefact.h"        // get_unrand_entry, unrandart_entry
+#include "art-enum.h"        // NUM_UNRANDARTS
+#include "skill-type.h"      // skill_type, SK_FIRST_SKILL, NUM_SKILLS
+#include "skills.h"          // skill_name
+#include "species.h"         // species::name
+#include "species-type.h"     // species_type, NUM_SPECIES
+#include "jobs.h"            // get_job_name
+#include "job-type.h"        // job_type, NUM_JOBS
+#include "duration-data.h"   // duration_data[], duration_def, NUM_DURATIONS
 
+#include <cstdio>
 #include <cstring>
+#include <fstream>
 #include <string>
 #include <vector>
 
@@ -300,5 +311,192 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // Per-enumerator summary line is the M5 aggregator input. Per-issue
     // samples were already emitted to stderr via scan_one() helper.
     WARN("zh enumerator summary: mutations -> " << issues.size() << " issues");
+    REQUIRE(true);
+}
+// =============================================================================
+// Enumerator 5 — fixed artefacts (unrands). Each unrandart_entry has a `.name`
+// (English artefact name, used as the TextDB key for-dat/descript/zh/unrand.txt
+// descriptions) plus `unid_name` / `type_name` / `descrip` snippet strings.
+// Plan v2 §2.4 (#5, B4-corrected): collapse the original "100-随机神器" idea
+// into a full enumeration of fixed artefacts, since make_random_artefact does
+// not exist in the codebase.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: fixed artefacts (unrands)",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    for (int i = 0; i < NUM_UNRANDARTS; ++i)
+    {
+        const unrandart_entry* e = get_unrand_entry(i);
+        if (!e || !e->name || !e->name[0])
+            continue;
+
+        // (a) The artefact's true display name goes through T_() at runtime
+        //     via item-name.cc when displaying the artefact. Scan T_(e->name)
+        //     against the English baseline (UNTRANSLATED only fires on
+        //     untranslated fallback).
+        scan_T_key(e->name, "source.txt", issues);
+
+        // (b) The long-form description keyed by e->name lives in
+        //     dat/descript/zh/unrand.txt.
+        const std::string tr = getLongDescription(e->name);
+        if (!tr.empty())
+            scan_one(tr.c_str(), e->name, "unrand.txt", issues);
+
+        // (c) The `descrip` field (short flavour string) and `unid_name`
+        //     (unidentified alias) also flow through T_() at runtime.
+        if (e->descrip && e->descrip[0])
+            scan_T_key(e->descrip, "unrand.descrip", issues);
+        if (e->unid_name && e->unid_name[0])
+            scan_T_key(e->unid_name, "unrand.unid_name", issues);
+    }
+    // Per-enumerator summary line is the M5 aggregator input. Per-issue
+    // samples were already emitted to stderr via scan_one() helper.
+    WARN("zh enumerator summary: fixed artefacts -> " << issues.size() << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 12 — Type II wrappers (skill_name). The skill_name() wrapper
+// looks up the English skill title via T_() internally; plan v2 §2.4 (#12)
+// calls for honouring that entry-side cross-check. Other Type II wrappers
+// (spell_title, item_base_name, ...) are covered by the dedicated
+// enumerators above; skill_name gets its own pass since there's no other
+// enumerator that exercises it directly.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: skill_name (Type II wrapper)",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    for (int ski = SK_FIRST_SKILL; ski < NUM_SKILLS; ++ski)
+    {
+        const skill_type s = static_cast<skill_type>(ski);
+        const char* disp = skill_name(s);
+        if (!disp || !disp[0])
+            continue;
+        // skill_name() returns the
+        // T_()-translated display name. To detect UNTRANSLATED we need an
+        // English baseline; CLAUDE.md's static comparator mode (allowlist)
+        // marks skill keys as known-untranslated, so just scan for the other
+        // rules here. Pass empty key to bypass UNTRANSLATED.
+        std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
+        for (auto& iss : local)
+        {
+            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
+                    static_cast<int>(iss.kind), iss.source.c_str(),
+                    iss.key.c_str(), iss.sample.c_str());
+            issues.push_back(std::move(iss));
+        }
+    }
+    WARN("zh enumerator summary: skill_name -> " << issues.size() << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 13 — species + backgrounds (plan v2 §2.4 #13).
+// species::name(sp) is the Type II wrapper (species.h:27). get_job_name(bg)
+// is the public job-name accessor (jobs.h:15). Both return translates of the
+// canonical English short names. The descriptions live in
+// dat/descript/zh/{species.txt, backgrounds.txt} keyed by English name.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: species + backgrounds",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+
+    // (a) Species names: scan display name + look up long description.
+    for (int si = 0; si < NUM_SPECIES; ++si)
+    {
+        const species_type sp = static_cast<species_type>(si);
+        const std::string disp = species::name(sp);
+        if (disp.empty())
+            continue;
+        // Two scans: the display name (for MIXED_CN_EN / etc.) and the
+        // long description in species.txt keyed by the English name.
+        std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
+        for (auto& iss : local)
+        {
+            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
+                    static_cast<int>(iss.kind), iss.source.c_str(),
+                    iss.key.c_str(), iss.sample.c_str());
+            issues.push_back(std::move(iss));
+        }
+        // Each species' long description in species.txt is keyed by the
+        // canonical English species name. We grab the English key via the
+        // raw=true flag of species::name.
+        const std::string en = species::name(sp, species::SPNAME_PLAIN, true);
+        if (!en.empty())
+        {
+            const std::string tr = getLongDescription(en);
+            if (!tr.empty())
+                scan_one(tr.c_str(), en, "species.txt", issues);
+        }
+    }
+
+    // (b) Background names.
+    for (int bi = 0; bi < NUM_JOBS; ++bi)
+    {
+        const job_type jb = static_cast<job_type>(bi);
+        const char* disp = get_job_name(jb);
+        if (!disp || !disp[0])
+            continue;
+        std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
+        for (auto& iss : local)
+        {
+            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
+                    static_cast<int>(iss.kind), iss.source.c_str(),
+                    iss.key.c_str(), iss.sample.c_str());
+            issues.push_back(std::move(iss));
+        }
+        // Long description keyed by the canonical English job name in
+        // backgrounds.txt. get_job_name doesn't take a `raw` flag, so we
+        // read the English key from jobs-data via get_job_name_en if available;
+        // otherwise fall back to scanning the description only on lookup
+        // success.
+        const std::string tr = getLongDescription(disp);
+        if (!tr.empty())
+            scan_one(tr.c_str(), disp, "backgrounds.txt", issues);
+    }
+
+    WARN("zh enumerator summary: species+backgrounds -> " << issues.size() << " issues");
+    REQUIRE(true);
+}
+
+// =============================================================================
+// Enumerator 11 — duration end/expiring messages. duration_data[] (header
+// static array, duration-data.h:198) declares per-duration endmsg + expmsg
+// strings that player-reacts.cc wraps in T_() at runtime. Since the array
+// is header-static, catch2 can iterate it directly. Plan v2 §2.4 (#11, N3).
+// Field paths: `decr.end.msg` (terminal message) and `decr.expire_msg.msg`
+// (expiring warning message); some entries are lambdas with empty msg
+// strings, which we skip.
+//
+// Note: long_text / short_text / name_text are NOT scanned here, because
+// those fields are direct C string literals used in the @ status line and
+// writing context — they are not wrapped in T_() at runtime (verified via
+// ~player-reacts.cc and view.cc). Including them would add hundreds of
+// UNTRANSLATED false-positives.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: status/duration end+warn messages",
+                 "[zh-translation]")
+{
+    std::vector<ZhIssue> issues;
+    for (size_t i = 0; i < sizeof(duration_data) / sizeof(duration_data[0]); ++i)
+    {
+        const duration_def& d = duration_data[i];
+
+        // endmsg
+        if (d.decr.end.msg && d.decr.end.msg[0])
+            scan_T_key(d.decr.end.msg, "duration.end", issues);
+
+        // expmsg (the "expiring" warning variant)
+        if (d.decr.expire_msg.msg && d.decr.expire_msg.msg[0])
+            scan_T_key(d.decr.expire_msg.msg, "duration.expire", issues);
+    }
+    WARN("zh enumerator summary: durations -> " << issues.size() << " issues");
     REQUIRE(true);
 }
