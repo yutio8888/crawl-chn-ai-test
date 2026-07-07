@@ -48,6 +48,22 @@ mkdir -p .claude/metrics/verify
     echo "--- Smoke test (ZH mode) ---"
     bash .claude/scripts/smoke_test.sh 2>&1 || true
     echo ""
+
+    # ---- Full runtime test hook (plan v2 §5.3) ----
+    # Triggered by: bash post-coder.sh --full
+    # Runs the Catch2 enumerators, dlua smoke test, and RC bot
+    # (builds happen within post_zh_runtime.sh). This adds several
+    # minutes to the verification cycle, so it is off by default;
+    # merge-time review and CI gates should use --full.
+    if [[ "${1:-}" == "--full" ]] || [[ "${2:-}" == "--full" ]]; then
+        echo "--- Layer 1-3 runtime tests (--full) ---"
+        bash .claude/scripts/post_zh_runtime.sh full 2>&1 || true
+        echo ""
+        echo "--- Runtime baseline check ---"
+        bash .claude/scripts/post_zh_runtime.sh fast 2>&1 || true
+    fi
+
+    echo ""
     echo "=== post-coder.sh complete ==="
 } > "$OUT" 2>&1
 

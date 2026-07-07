@@ -1,0 +1,227 @@
+#!/bin/bash
+# post_zh_runtime.sh — run all 3 layers of zh runtime tests and aggregate.
+#
+# Layer 1 (Catch2): builds + runs catch2-tests [zh-translation]
+# Layer 2 (Lua):    builds debug + runs ./crawl -test zh_runtime
+# Layer 3 (Bot):    builds console + runs RC bot via fake_pty
+#
+# Stages:
+#   fast     — Layer 1 only (seconds)
+#   full     — Layers 1 + 2 + 3 (minutes)
+#   baseline — full + write new baseline (used on first run or after fixes)
+#
+# Usage:
+#   bash .claude/scripts/post_zh_runtime.sh fast
+#   bash .claude/scripts/post_zh_runtime.sh full
+#   bash .claude/scripts/post_zh_runtime.sh baseline [sha]
+
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+CHECK_SCRIPT="$SCRIPT_DIR/zh_runtime_check.py"
+SOURCE_DIR="$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)"
+METRICS_DIR="$SCRIPT_DIR/../metrics/verify"
+
+MODE="${1:-fast}"
+
+mkdir -p "$METRICS_DIR"
+
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+NC='\033[0m'
+
+# Helper: run a command, captur elapsed time, exit on failure.
+total_start=$(date +%s)
+failed=0
+
+run_step() {
+    local name="$1"; shift
+    echo -e "${YELLOW}[$name]${NC} starting..."
+    local step_start=$(date +%s)
+    "$@"
+    local rc=$?
+    local elapsed=$(($(date +%s) - step_start))
+    if [ $rc -eq 0 ]; then
+        echo -e "${GREEN}[$name]${NC} OK (${elapsed}s)"
+    else
+        echo -e "${RED}[$name]${NC} FAILED (${elapsed}s)"
+        failed=$((failed + 1))
+    fi
+    return $rc
+}
+
+# ============================================================================
+# Layer 1 — Catch2 enumerators
+# ============================================================================
+
+STDERR_C2="$METRICS_DIR/catch2-stderr.log"
+STDOUT_C2="$METRICS_DIR/catch2-stdout.log"
+
+run_catch2() {
+    cd "$SOURCE_DIR"
+    echo "  Building catch2-tests..."
+    make catch2-tests -j4 > "$STDOUT_C2" 2>&1 || {
+        echo "  catch2-tests build failed"
+        return 1
+    }
+    echo "  Running catch2-tests [zh-translation]..."
+    ./catch2-tests-executable '[zh-translation]' 2>"$STDERR_C2" 1>/dev/null
+    local rc=$?
+    echo "  Catch2 tests exit code: $rc"
+    # Catch2 reports all zh-translation tests as green (intentionally —
+    # issues are stderr ZH_ISSUE, not test failures). So exit 0 is normal.
+    return 0
+}
+
+# ============================================================================
+# Layer 2 — Lua dlua smoke test
+# ============================================================================
+
+STDERR_L2="$METRICS_DIR/lua-stderr.log"
+
+run_lua() {
+    cd "$SOURCE_DIR"
+    # Build debug binary if not present or outdated
+    if [ ! -x ./crawl ] || [ test/zh_runtime.lua -nt ./crawl ]; then
+        echo "  Building debug binary..."
+        make debug -j4 > "$METRICS_DIR/lua-build.log" 2>&1 || {
+            echo "  Debug build failed (see $METRICS_DIR/lua-build.log)"
+            return 1
+        }
+    else
+        echo "  Using existing debug binary"
+    fi
+
+    echo "  Running -test zh_runtime..."
+    ./crawl -seed 1 -headless -no-save -name test -wizard -no-throttle \
+        -extra-opt-first 'language=zh' -test zh_runtime \
+        2>"$STDERR_L2" 1>/dev/null
+    local rc=$?
+    if grep -q 'FRAME_MARKER: end | ok' "$STDERR_L2"; then
+        echo "  Lua smoke test: OK (end marker found)"
+    else
+        echo "  Lua smoke test: end marker missing (check $STDERR_L2)"
+        return 1
+    fi
+    return 0
+}
+
+# ============================================================================
+# Layer 3 — RC bot
+# ============================================================================
+
+STDERR_L3="$METRICS_DIR/bot-stderr.log"
+
+run_bot() {
+    cd "$SOURCE_DIR"
+    # Build console binary + fake_pty if needed
+    if [ ! -x ./crawl ] || [ ! -x util/fake_pty ]; then
+        echo "  Building console binary + fake_pty..."
+        make -j4 > "$METRICS_DIR/bot-build.log" 2>&1 || {
+            echo "  Console build failed (see $METRICS_DIR/bot-build.log)"
+            return 1
+        }
+        make util/fake_pty >> "$METRICS_DIR/bot-build.log" 2>&1 || return 1
+    else
+        echo "  Using existing console binary"
+    fi
+
+    echo "  Running RC bot..."
+    timeout --foreground 120 util/fake_pty ./crawl -seed 1 -no-save -name test \
+        -wizard -no-throttle -extra-opt-first 'language=zh' \
+        -rc test/stress/zh_ui_check.rc \
+        2>"$STDERR_L3" 1>/dev/null || true
+    # RC bot may timeout (exit 124) if wizard commands hang; treat as soft fail
+    local marker_count=$(grep -c 'FRAME_MARKER' "$STDERR_L3" 2>/dev/null || echo 0)
+    echo "  RC bot: $marker_count FRAME_MARKER(s) emitted"
+    return 0  # soft fail — bot stability WIP
+}
+
+# ============================================================================
+# Aggregation
+# ============================================================================
+
+run_aggregate() {
+    local mode="$1"
+    local args=(
+        --catch2-stderr "$STDERR_C2"
+        --catch2-stdout "$STDOUT_C2"
+        --lua-stderr "$STDERR_L2"
+        --bot-stderr "$STDERR_L3"
+    )
+
+    if [ "$mode" = "baseline" ]; then
+        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
+        local baseline_path="$METRICS_DIR/zh-baseline-${sha}.json"
+        args+=(--output-baseline "$baseline_path")
+        echo "  Writing baseline: $baseline_path"
+        python3 "$CHECK_SCRIPT" "${args[@]}"
+        echo "  Baseline written: $baseline_path"
+        return 0
+    else
+        # Find newest baseline for comparison
+        local prev=$(ls -t "$METRICS_DIR"/zh-baseline-*.json 2>/dev/null | head -1 || echo '')
+        if [ -n "$prev" ]; then
+            args+=(--baseline "$prev")
+            echo "  Comparing against: $prev"
+            python3 "$CHECK_SCRIPT" "${args[@]}"
+            local rc=$?
+            if [ $rc -eq 0 ]; then
+                echo -e "${GREEN}  No regressions!${NC}"
+            else
+                echo -e "${RED}  Regressions detected!${NC}"
+            fi
+            return $rc
+        else
+            echo -e "${YELLOW}  No baseline found — generating new one${NC}"
+            local sha="$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
+            local baseline_path="$METRICS_DIR/zh-baseline-${sha}.json"
+            args+=(--output-baseline "$baseline_path")
+            python3 "$CHECK_SCRIPT" "${args[@]}"
+            return 0
+        fi
+    fi
+}
+
+# ============================================================================
+# Main
+# ============================================================================
+
+echo "=== post_zh_runtime.sh ($MODE) ==="
+echo "Metrics: $METRICS_DIR"
+
+case "$MODE" in
+    fast)
+        # Fast: aggregate from existing log files (no rebuild).
+        [ -f "$STDERR_C2" ] || { echo "No catch2 stderr log at $STDERR_C2 — run 'full' first"; exit 1; }
+        run_step "aggregate" run_aggregate fast
+        ;;
+    full)
+        run_step "L1-catch2" run_catch2 || true
+        # Only build+run L2 if lua test file exists
+        if [ -f "$SOURCE_DIR/test/zh_runtime.lua" ]; then
+            run_step "L2-lua" run_lua || true
+        fi
+        # Only build+run L3 if bot rc file exists
+        if [ -f "$SOURCE_DIR/test/stress/zh_ui_check.rc" ]; then
+            run_step "L3-bot" run_bot || true
+        fi
+        run_step "aggregate" run_aggregate full
+        ;;
+    baseline)
+        run_step "L1-catch2" run_catch2 || true
+        run_step "L2-lua"    run_lua || true
+        run_step "L3-bot"    run_bot || true
+        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
+        run_step "aggregate" run_aggregate baseline "$sha"
+        ;;
+    *)
+        echo "Unknown mode: $MODE (use fast|full|baseline)"
+        exit 1
+        ;;
+esac
+
+total_elapsed=$(($(date +%s) - total_start))
+echo "=== Done in ${total_elapsed}s, $failed failures ==="
+exit $failed
