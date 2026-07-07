@@ -1,7 +1,7 @@
 %%%%
 welcome
 
-<white>欢迎你来到Dungeon Crawl的游戏世界！</white>
+<white>欢迎你来到地牢爬行者的游戏世界！</white>
 
 你的任务是扮演<w>{{ return you.race() }} {{ return you.class() }}</w>
 角色深入地城深处，找到传说中的佐特之球并带着它返回地面。不过，在刚开始玩的时候，
@@ -14,14 +14,14 @@ welcome
   <white>$cmd[CMD_LOOK_AROUND]</white>  — 调查附近的某个物体
 
 提示模式可以帮助你进行游戏而不用阅读游戏说明。如果你还没有玩过教程关卡，
-建议你先尝试通过教程关。当然，如果你想对这个游戏有深入的了解，你可以在docs/
-directory
-文件夹中阅读以下文档以获取更加详细的游戏资料（所有这些资料在游戏内也能阅读）：
+建议你先尝试通过教程关。当然，如果你想对这个游戏有深入的了解，你可以在文档
+目录
+中阅读以下文档以获取更加详细的游戏资料（所有这些资料在游戏内也能阅读）：
   <lightblue>quickstart.txt</lightblue>     — 简短的游戏入门说明。
   <lightblue>crawl_manual.txt</lightblue>   — 包括种族、魔法、
 技能等等的详细说明。
   <lightblue>options_guide.txt</lightblue>  — 游戏设置详解。
-Crawl的界面有很多地方是可以让玩家自由设置的。
+地牢爬行者的界面有很多地方是可以让玩家自由设置的。
 
 祝你游戏愉快！
 %%%%
@@ -59,8 +59,8 @@ death random 2
 
 在打完一场战斗后要记得休息，而且最好是在一片已经被清扫完毕的区域。
 游戏中搜索和休息是同时进行的。要搜索一回合，按下 <input>s</input>，
-<input>.</input>， <input>delete</input> 或 <input>小键盘5</input>。按下
-<input>5</input> 或 <input>shift+小键盘5</input> <tiles>，或
+<input>.</input>， <input>退格</input> 或 <input>小键盘5</input>。按下
+<input>5</input> 或 <input>Shift+小键盘5</input> <tiles>，或
 <input>点击属性区域</input></tiles> 会让你休息更长时间（你会停下来休息100回合，
 或是直到完全恢复为止）。
 %%%%
@@ -85,14 +85,14 @@ finished explored
 你可以使用自动探索机能 (<input>$cmd[CMD_EXPLORE]</input>) 来非常方便地探索地城。
 游戏会将你自动移动至有物品的地方以便你拾取你感兴趣的东西。 <tiles>
 
-你也可以在小地图上按下<input>Ctrl</input> + <input>鼠标左键</input> 来自动探索。
+你也可以在小地图上按下<input>Ctrl键</input> + <input>鼠标左键</input> 来自动探索。
  </tiles>
 %%%%
 finished travel
 
 你可以很方便地在各个楼层间旅行：按下 <input>$cmd[CMD_INTERLEVEL_TRAVEL]</input>
 或 <input>G</input> 然后输入目的地便可。如果你的旅行被打断了，再按下
-<input>$cmd[CMD_INTERLEVEL_TRAVEL] Enter</input> 或 <input>G Enter</input>
+<input>$cmd[CMD_INTERLEVEL_TRAVEL] 回车</input> 或 <input>G 回车</input>
 就可以继续。
 %%%%
 finished stashes
@@ -107,7 +107,7 @@ finished random 0
 游戏自动会对你的当前角色进行冒险记录。按下
 <input>$cmd[CMD_DISPLAY_COMMANDS]:</input> 来查阅记录。你可以按下
 <input>$cmd[CMD_MAKE_NOTE]</input> 输入你想记录的信息。一旦你的角色死亡，在
-<w>morgue/</w> 文件夹中会保留两个资料文档，其中那个 .txt
+<w>存档/</w> 目录中会保留两个资料文档，其中那个文本
 格式的文件就是该角色的游戏记录。在游戏中你可以按下
 <input>$cmd[CMD_CHARACTER_DUMP]</input> 来输出一个缓存记录。
 %%%%
@@ -120,14 +120,14 @@ finished random 1
 %%%%
 finished random 2
 
-游戏界面的很多元素都可以自由设定。 <w>docs</w> 文件夹下的
+游戏界面的很多元素都可以自由设定。 <w>文档</w> 目录下的
 <w>options_guide.txt</w> 文件介绍了详细的设定方法。你可以通过修改
-<w>init.txt</w> 或 <w>.crawlrc</w>文件来更改设置。
+<w>init.txt</w> 或 <w>.crawlrc</w> 文件来更改设置。
 如果找不到这两个文件中的任何一个，游戏就会弹出提示。
 %%%%
 finished random 3
 
-你可以通过IRC（因特网中继聊天）与其他Crawl玩家进行交流：请移步Libera
+你可以通过IRC（因特网中继聊天）与其他地牢爬行者玩家进行交流：请移步Libera
 (<w>irc.libera.chat</w>) 上的<w>#crawl</w> 频道。
 %%%%
 dissection reminder
@@ -146,7 +146,7 @@ HINT_SEEN_FIRST_OBJECT
 一些物品通常会自动被拾取。 <tiles>（图像模式中这类物品周围会有一个绿色的边框。）
 </tiles>
 
-当拾取进包包之后你可以再次用<tiles><input>Shift</input> +
+当拾取进包包之后你可以再次用<tiles><input>Shift键</input> +
 <input>鼠标左键点击</w >组合键来丢弃这个物品。
 你还可以在一个物品上按<input>鼠标右键</input></tiles><console><input>d键
 </w>来丢弃这个物品。你还可以打开背包界面（<input>i</input>）
@@ -274,7 +274,7 @@ HINT_DONE_EXPLORE
 
 嘿，你已经完成探索这个楼层的所有部分了！你可以从楼层地图
 （<w>$cmd[CMD_DISPLAY_MAP]</w>）按 <w>></w> 搜索楼梯。
-光标将跳转到最近的楼梯，按 <w>.</w> 或 <w>Enter</w> 你的角色也可以移动到那里。
+光标将跳转到最近的楼梯，按 <w>.</w> 或 <w>回车</w> 你的角色也可以移动到那里。
 每次进入新楼层，你都会看到新的地图部分。
 %%%%
 HINT_FLEEING_MONSTER
@@ -389,7 +389,7 @@ HINT_MAP_VIEW
 在探索一个楼层时，定位可能会变得困难。按
 <w>$cmd[CMD_DISPLAY_MAP]</w> 来调出楼层地图。输入 <w>?</w> 显示
 楼层地图命令列表。最重要的是，将光标移动到一个点并按 <w>.</w>
-或 <w>Enter</w> 让你的角色移动到那里。
+或 <w>回车</w> 让你的角色移动到那里。
 %%%%
 HINT_MISCAST_ARMOUR
 
@@ -441,7 +441,7 @@ HINT_MULTI_PICKUP
 
 这里有很多物品。你从一个菜单中选择要捡起的东西：
 按 <w>$cmd[CMD_PICKUP]</w><localtiles> 或 <w>点击</w> 角色人偶</localtiles>
-来进入捡取菜单。要离开菜单，用 <w>Enter</w> 确认你的选择。
+来进入捡取菜单。要离开菜单，用 <w>回车</w> 确认你的选择。
 %%%%
 HINT_NEED_HEALING
 
@@ -640,7 +640,7 @@ HINT_SEEN_ZERO_EXP_MON
 %%%%
 HINT_SHIFT_RUN
 
-按住 <w>Shift</w> 键并移动，可以向一个方向快速奔跑直到遇到有趣的东西！
+按住 <w>Shift键</w> 并移动，可以向一个方向快速奔跑直到遇到有趣的东西！
 这对穿越长走廊或你想尽快穿过已清理区域时非常有用。
 %%%%
 HINT_SKILL_RAISE

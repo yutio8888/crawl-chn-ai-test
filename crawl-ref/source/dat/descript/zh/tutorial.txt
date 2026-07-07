@@ -9,7 +9,7 @@ tutorial death
 
 你死了……
 
-在Crawl中，死亡是一个令人悲伤却又常见的事情。
+在地牢爬行者中，死亡是一个令人悲伤却又常见的事情。
 注意，通常情况下你可以做一些事情来活下去，
 比如使用某些物品、逃跑、在战斗之间休息，或是干脆回避战斗。
 继续努力，最终你会成功的！
@@ -31,7 +31,7 @@ tutorial1 go_on
 tutorial1 diagonal
 
 :nowrap
-斜向移动的话，可以通过<input>数字键盘</input>（试着打开/关闭Numlock）<localtiles>，</localtiles> <console>或</console><input>vi键位</input><console>.</console><localtiles>，或是<input>鼠标</input>。</localtiles>
+斜向移动的话，可以通过<input>数字键盘</input>（试着打开/关闭NumLock键）<localtiles>，</localtiles> <console>或</console><input>vi键位</input><console>.</console><localtiles>，或是<input>鼠标</input>。</localtiles>
 
   数字键盘：  <w>7 8 9</w>        vi键位：<w>   $cmd[CMD_MOVE_UP_LEFT] $cmd[CMD_MOVE_UP] $cmd[CMD_MOVE_UP_RIGHT]</w><localtiles>    鼠标：     <w>点击</w>地面</localtiles>
                \|/                     \|/
@@ -41,8 +41,8 @@ tutorial1 diagonal
 %%%%
 tutorial1 shiftmove
 
-想要快速穿过通道，可以按下<input>Shift</input>
-+<input>数字键盘</input>（试着打开/关闭Numlock）或<input>vi键位</input>。
+想要快速穿过通道，可以按下<input>Shift键</input>
++<input>数字键盘</input>（试着打开/关闭NumLock键）或<input>vi键位</input>。
 %%%%
 tutorial1 downstairs
 
@@ -57,8 +57,8 @@ tutorial1 levelmap
 也可以<input>左击</input>移至那里。
 </localtiles><webtiles>你可以</webtiles><nomouse>按下
 <input>$cmd[CMD_DISPLAY_MAP]</input>查看整个地图，移动光标浏览整个楼层。
-你也可以按下<input>.</input>或<input>Enter</input>前往光标位置。
-按下<input>Escape</input>返回正常游戏。</nomouse>
+你也可以按下<input>.</input>或<input>回车</input>前往光标位置。
+按下<input>Esc键</input>返回正常游戏。</nomouse>
 %%%%
 tutorial1 autoexplore
 
@@ -81,7 +81,7 @@ tutorial1 autoexplore_announce
 如果要直接前往楼梯，可以<localtiles><input>点击</input> 它们；
 或是</localtiles>点击<input>$cmd[CMD_DISPLAY_MAP]</input>以查看地图概览，
 然后<input><<</input>将光标移动到最近楼梯，
-键入<input>Enter</input>开始前往。
+键入<input>回车</input>开始前往。
 %%%%
 tutorial1 tutorial_end
 
@@ -127,7 +127,7 @@ tutorial1 exit
                   /|\                         /|\
                  <w>1 2 3</w>                       <w>$cmd[CMD_MOVE_DOWN_LEFT] $cmd[CMD_MOVE_DOWN] $cmd[CMD_MOVE_DOWN_RIGHT]</w>
 
-  <input>Shift + 方向</input>让你在该方向上移动数个格子。<localtiles>
+  <input>Shift键 + 方向键</input>让你在该方向上移动数个格子。<localtiles>
   你也可以通过<input>点击</input><w>小地图</w>的某个地方进行移动。</localtiles>
 
 <yellow>楼梯</yellow>
@@ -140,7 +140,7 @@ tutorial1 exit
 
 <yellow>移动</yellow><localtiles>
   鼠标点击<w>小地图</w></localtiles><nomouse>
-  <input>$cmd[CMD_DISPLAY_MAP]</input>进入本楼层地图，按<input>Enter</input></nomouse>进行移动
+  <input>$cmd[CMD_DISPLAY_MAP]</input>进入本楼层地图，按<input>回车</input></nomouse>进行移动
   <input>$cmd[CMD_EXPLORE]</input> 自动探索
 %%%%
 ##############################################
@@ -206,10 +206,10 @@ tutorial2 boomerangs
 tutorial2 throwing
 
 要朝一个怪物投掷回旋镖，可以通过<input>$cmd[CMD_FIRE]</input><localtiles>
-或在物品栏中<input>点击</input>它们panel</localtiles>。
+或在物品栏面板中<input>点击</input>它们</localtiles>。
 要射向被自动瞄准的怪物，按<input>$cmd[CMD_TARGET_SELECT]</input>
-或<input>Enter</input>。你也可以跳过这个，
-按<input>shift-tab</input>或<input>p</input>，向最近的怪物射击。
+或<input>回车</input>。你也可以跳过这个，
+按<input>Shift+Tab</input>或<input>p</input>，向最近的怪物射击。
 %%%%
 tutorial2 wield_bow
 
@@ -223,7 +223,7 @@ tutorial2 firing
 通过按<input>$cmd[CMD_PRIMARY_ATTACK]</input><localtiles>或<input>鼠标点击</input>
 </localtiles>。在瞄准时，你可以按<input>$cmd[CMD_TARGET_CYCLE_FORWARD]</input>选择其他目标。
 这只蠕虫在熔岩后面无法对你造成任何威胁，但是那个假人可以射击你，因此先搞定它。
-同样，按<input>$cmd[CMD_TARGET_SELECT]</input>或<input>Enter</input>确定你选择的目标。
+同样，按<input>$cmd[CMD_TARGET_SELECT]</input>或<input>回车</input>确定你选择的目标。
 %%%%
 tutorial2 travel_reminder
 
@@ -256,9 +256,9 @@ tutorial2 exit
   <input>$cmd[CMD_LOOK_AROUND]$cmd[CMD_TARGET_DESCRIBE]</input> 查看详细描述</nomouse>
   <input>$cmd[CMD_PRIMARY_ATTACK]</input> 用所持武器射击
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_SELECT]</input> 向一个被瞄准的怪物射出弹药
-  <input>shift-tab</input>, <input>p</input> 向一个最近的怪物发射弹药
+  <input>Shift+Tab</input>, <input>p</input> 向一个最近的怪物发射弹药
   <input>$cmd[CMD_FIRE]$cmd[CMD_TARGET_CYCLE_FORWARD]</input> 瞄准另一个怪物<localtiles>
-  你还可以通过<input>点击</input>它来发射飞弹，然后用<input>Enter</input>确认目标。</localtiles>
+  你还可以通过<input>点击</input>它来发射飞弹，然后用<input>回车</input>确认目标。</localtiles>
 
 <yellow>休息</yellow>
   <input>$cmd[CMD_WAIT]</input>  等待并休息一回合
@@ -371,7 +371,7 @@ tutorial3 drop
 
 如果你追随了一个神，这个护身符会非常强大，但现在，它是没用的。
 你要是想扔下它的话，可以用<input>$cmd[CMD_DROP]</input><localtiles>
-或在物品栏中<input>Shift-左键点击</input>它</localtiles>。
+或在物品栏中<input>Shift键+左键</input>点击它</localtiles>。
 %%%%
 tutorial3 gold
 
@@ -387,7 +387,7 @@ tutorial3 enter_shop
 要进入这家商店，请按<input>$cmd[CMD_GO_UPSTAIRS]</input><localtiles>
 或<input>点击</input>你的角色</localtiles>。
 要购买物品，请按它们对应的字母键选中它，
-按<input>Enter</input>并按<input>y</input>es确定。
+按<input>回车</input>并按<input>y</input>确认。
 你可以按<input>!</input>切换到描述模式。
 %%%%
 tutorial3 autoexplore_reminder
@@ -464,7 +464,7 @@ tutorial4 spellcasting
 按<input>$cmd[CMD_CAST_SPELL]?</input>获得你的法术列表。
 魔法如同弹药，会显示在弹药槽，
 你可以用<input>$cmd[CMD_QUIVER_ITEM]</input>查看预备的法术。
-使用<input>$cmd[CMD_FIRE]</input>或<input>shift-tab</input>投射当前预备的法术。
+使用<input>$cmd[CMD_FIRE]</input>或<input>Shift+Tab</input>投射当前预备的法术。
 
 一旦你的魔力用尽了，撤退后可以通过<input>$cmd[CMD_REST]</input><localtiles>
 或<input>点击</input>命令栏中的休息图标进行休息和回复</localtiles>。
@@ -481,7 +481,7 @@ tutorial4 undead
 #            虽然不确定是否有任何坏处，但鼠标界面提示很好。
 与绝大多数怪物不同，丧尸和骷髅无法恢复健康。
 <localtiles>你可以尝试重施最后用的那个法术，
-通过对着那个怪物按<input>Ctrl+左键</input>。</localtiles>
+通过对着那个怪物按<input>Ctrl键+左键</input>。</localtiles>
 %%%%
 tutorial4 spell_success
 
@@ -598,12 +598,12 @@ tutorial5 altar
 如果你在信仰界面按<input>!</input><localtiles>
 或<input>右键</input></localtiles>你还可以看到更详细的描述。
 
-输入大写的<input>J</input>或<input>Enter</input>确认你的选择。
+输入大写的<input>J</input>或<input>回车</input>确认你的选择。
 %%%%
 tutorial5 religion
 
 通过<input>$cmd[CMD_DISPLAY_RELIGION]</input><localtiles>
-（或通过在命令栏中<w>信仰按钮</w>，或通过<input>Shift-右击</input>玩家贴图）
+（或通过在命令栏中<w>信仰按钮</w>，或通过<input>Shift键+右击</input>玩家贴图）
 </localtiles>来查看你的信仰状态。和以前一样，按<input>!</input><localtiles>
 或<input>右击</input></localtiles>可以调出你的神的更详细的描述。
 %%%%
@@ -657,7 +657,7 @@ tutorial5 exit
 tutorial4 spellquivering
 法术像弹药一样显示在箭袋槽中，因此你可以使用
 <input>$cmd[CMD_QUIVER_ITEM]</input> 来准备箭袋中的法术。使用
-<input>$cmd[CMD_FIRE]</input> 或 <input>shift-tab</input> 来发射当前
+<input>$cmd[CMD_FIRE]</input> 或 <input>Shift+Tab</input> 来发射当前
 箭袋中的法术。
 
 一旦魔力耗尽，撤退并用 <input>$cmd[CMD_REST]</input><localtiles> 或

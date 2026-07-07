@@ -116,14 +116,14 @@ CMD_SHOW_CHARACTER_DUMP
 %%%%
 CMD_SHOW_CHARACTER_DUMP verbose
 
-将角色的详细信息丢入到morgue目录中的文件“ 玩家名.txt”，
+将角色的详细信息丢入到存档目录中的文件“ 玩家名.txt”，
 并在游戏中显示该文件。它包含主要数据、装备、魔法、技能、笔记等等。
 
 丢弃角色的进度
 %%%%
 CMD_CHARACTER_DUMP verbose
 
-将角色的详细信息丢入到morgue目录中的文件“ 玩家名.txt”，
+将角色的详细信息丢入到存档目录中的文件“ 玩家名.txt”，
 以便你在闲暇时仔细阅读。它包含主要数据、装备、魔法、技能、笔记等等。
 %%%%
 CMD_AUTOFIGHT
