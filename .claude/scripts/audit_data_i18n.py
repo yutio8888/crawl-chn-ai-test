@@ -15,24 +15,10 @@ import os
 import sys
 from collections import OrderedDict
 
+# Use shared parser for consistency with scan_i18n.py
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import parse_source_txt
 
-def parse_source_txt(filepath: str) -> dict:
-    entries = {}
-    if not os.path.exists(filepath):
-        return entries
-    with open(filepath, 'r', encoding='utf-8') as f:
-        content = f.read()
-    for entry in re.split(r'^%%%%\n', content, flags=re.MULTILINE)[1:]:
-        entry = entry.strip()
-        # Some entries have blank-line (\n\n) key/value separator, some don't
-        parts = entry.split('\n\n', 1)
-        if len(parts) == 2:
-            entries[parts[0].strip().lower()] = parts[1].rstrip('\n').strip()
-        elif len(parts) == 1 and '\n' in parts[0]:
-            lines = parts[0].rstrip('\n').split('\n', 1)
-            if len(lines) == 2:
-                entries[lines[0].strip().lower()] = lines[1].strip()
-    return entries
 
 
 def check_monster_names(source_dir: str, source_txt: str):

@@ -26,6 +26,9 @@ import re
 import sys
 from collections import OrderedDict
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import parse_source_txt
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Utilities
@@ -285,44 +288,6 @@ def load_allowlist(filepath: str) -> set:
 # ══════════════════════════════════════════════════════════════════════════════
 # source.txt parser (shared with i18n_extract.py)
 # ══════════════════════════════════════════════════════════════════════════════
-
-def parse_source_txt(filepath: str) -> OrderedDict:
-    """Parse source.txt and return OrderedDict of key -> translation."""
-    entries = OrderedDict()
-    if not os.path.exists(filepath):
-        return entries
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    key = None
-    value_lines = []
-    in_entry = False
-
-    for line in lines:
-        stripped = line.rstrip("\n").rstrip("\r")
-        if stripped.startswith("#") and key is None:
-            continue
-        if stripped.startswith("%%%%"):
-            if key is not None:
-                entries[key] = "\n".join(value_lines).rstrip()
-            key = None
-            value_lines = []
-            in_entry = True
-            continue
-        if not in_entry:
-            continue
-        if key is None:
-            if stripped:
-                key = stripped.lower()
-        else:
-            value_lines.append(stripped)
-
-    if key is not None:
-        entries[key] = "\n".join(value_lines).rstrip()
-
-    return entries
-
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: missing-t

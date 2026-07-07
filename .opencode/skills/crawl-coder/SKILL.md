@@ -264,6 +264,32 @@ resolution debugging.
 | 8 | Lua condition string T_()'d | `race == "木乃伊"` always false | `grep -rn 'T_.*==.*"' ` in Lua |
 | 9 | `buf.size()` for CJK alignment | Bytes ≠ display width | Use `strwidth()` instead |
 | 10 | Static init T_() only (no call-site T_()) | Returns EN at runtime | `i18n_extract.py validate` |
+| 11 | Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys before writing |
+
+## Source.txt Integrity Protocol (REQUIRED before commit)
+
+Every modification to `dat/i18n/zh/source.txt` MUST pass these checks:
+
+1. **Grep-first**: For each EN key to add, verify it doesn't already exist:
+   ```bash
+   grep -nF "KEY" crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+
+2. **Glossary lookup**: Check `docs/decisions.md` for pre-approved term rulings:
+   ```bash
+   grep -A3 "Choice:" docs/decisions.md | grep -i "term"
+   ```
+
+3. **Post-add verify**: No duplicates or self-conflicts introduced:
+   ```bash
+   python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+       --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+
+4. **Case discipline**: Copy EN keys verbatim from C++ `T_("...")` literal.
+
+5. **Never blind-add**: When processing enumerated entities (monsters/spells),
+   always diff against existing keys — never blindly append all names.
 
 ## File Quick Reference
 
