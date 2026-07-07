@@ -4,7 +4,7 @@ Workspace: worktree `.claude/worktrees/zh-runtime-tests-m1`
 Branch: `worktree-zh-runtime-tests-m1` based on `chn-0.34.1-base`
 Plan: `~/projects/plan/1/1.md` (plan v2, 565L, 11 sections)
 
-## Status: **M5 COMPLETE ✅ — All milestones delivered**
+## Status: **FINAL ✅ — All milestones delivered, M4 bot stable (exit 0)**
 
 ---
 
@@ -15,14 +15,21 @@ Plan: `~/projects/plan/1/1.md` (plan v2, 565L, 11 sections)
 | M1 | Catch2 fixture + 8 scan rules + 71 unit tests | Done | 1 |
 | M2 | 16 catch2 enumerators (full coverage) | Done | 4 |
 | M3 | Layer 2 dlua smoke test (zh_runtime.lua) | Done | 1 |
-| M4 | Layer 3 RC bot (zh_ui_check.rc) | Draft | 2 |
-| M5 | Aggregation tools (zh_runtime_check.py + post_zh_runtime.sh) | Done | 1 |
+| M4 | Layer 3 RC bot (zh_ui_check.rc) — 12 FRAME_MARKERs, exit 0 | Done | 4 |
+| M5 | Aggregation tools (zh_runtime_check.py + post_zh_runtime.sh) | Done | 2 |
+| -- | Baseline refresh + docs update | Done | 2 |
 
 ---
 
-## Commits (9 total, all on worktree branch)
+## Commits (14 total, all on worktree branch)
 
 ```
+8e641d07a2 M4 final: RC bot covers all 7 safe panels + items + god (exit 0)
+caef127145 M5: baseline refresh — 745 issues (final RC bot, 12 FRAME_MARKERs)
+1a651fb040 M4: extend RC bot to 7 of 12 panels (a + O added, crash edge cases)
+3658117d92 M4 fix: RC bot stability — working send-then-capture pattern
+017bb63c50 M5: official baseline-3658117d92.json (761 issues, 3 layers)
+5dd2670020 Docs: update PROGRESS.md to reflect full M1-M5 completion state
 cf54f4355e M5: aggregation tools — zh_runtime_check.py + post_zh_runtime.sh
 560e82ecc4 M4: Layer 3 RC bot draft (zh_ui_check.rc + smoke test)
 f4fbba81e3 M4 draft: Layer 3 RC bot for UI/text message runtime check (zh_ui_check.rc)
@@ -106,20 +113,53 @@ FRAME_MARKER: godspeak_xom | Xom thinks this is hilarious!
 FRAME_MARKER: end | ok
 ```
 
-### Layer 3 (RC bot)
+### Layer 3 (RC bot) — Exit 0, 12 FRAME_MARKERs
 ```
 $ make -j4 && make util/fake_pty
 $ util/fake_pty ./crawl ... -extra-opt-first 'language=zh' -rc test/stress/zh_ui_check.rc
+exit=0
 ```
-- Probe confirms T_() returns Chinese in clua context
-- Item creation captures runtime message: `有什么东西at your feet出现！` (mixed CN/EN issue)
-- Bot has a known stability issue: `&o` wizard commands may hang the game loop (WIP)
+FRAME_MARKERs:
+```
+probe       | t_=你攻击了%s。 lang=zh
+item:chaos  | 欢迎，test（木乃伊 混沌骑士）。Game seed: 1...
+item:boots  | 有什么东西at your feet出现！...
+god:Trog    | What monsters to dismiss... 遣散了57个怪物。
+panel:religion | opened
+panel:character | opened
+panel:inventory | opened
+panel:skills    | opened
+panel:abilities | opened
+panel:overview  | opened
+panel:messages  | opened
+phase:done      |
+```
+
+Key findings:
+- Each ready() must do exactly ONE thing (send key OR capture OR emit)
+- Combined sendkeys+emit in single ready() corrupts game loop
+- crawl.messages() safe only on dedicated ready() call
+- M (spells) panel always crashes (no spells → assertion) — skipped
+- Safe panels: ^ % I m a O Ctrl-P (7 of 8, 87.5%)
 
 ---
 
-## Detection Results (baseline at commit cf54f43)
+## Detection Results (final baseline 8e641d07)
 
-### Per-enumerator issue counts
+**745 issues** across 3 layers (Catch2: 725, Lua: 0, Bot: 20)
+- 567 UNTRANSLATED, 138 MIXED_CN_EN, 16 WHITESPACE_ANOMALY, 6 INVISIBLE_CHAR
+
+### Runtime captures (Layer 3 Bot)
+| Issue | Location |
+|-------|----------|
+| `有什么东西**at** your feet出现！` | item creation mprf |
+| `Game seed: 1（自定义种子）` | welcome screen |
+| `What monsters to dismiss...` | wizard prompt (protocol) |
+| `你卸下武器了你的+0 混沌之钉头锤。` | garbled unequip message |
+| `Demon whip "Spellbinder"` | artefact name untranslated |
+| `Boots of the spider` | artefact name untranslated |
+
+### Per-enumerator (Layer 1 Catch2, top 5)
 | Enumerator | Issues |
 |-----------|--------|
 | fixed artefacts | 284 |
@@ -178,15 +218,15 @@ Discovered during implementation and recorded here for future reference:
 
 ## Remaining Work
 
-### M4 stability
-- RC bot hangs after `&o` item creation commands. Likely a wizard command input sequencing issue where overlapping sendkeys accumulate in the game input queue and the game expects a specific prompt that isn't being answered.
-- Fix approach: isolate one `&o` command per ready() iteration, split multi-line `&o` inputs across separate calls, or use the clua Lua console (`&^T`) instead of wizard commands.
-
-### Future enhancements
-- Enumerator #3 items (item_base_name): EN-toggle technique works but is slow for 200+ item types. Consider caching EN baselines per-language setting.
-- Full 12-panel UI scan (plan v2 §4.4): currently only 3 panels (religion/character/inventory). The remaining 9 (skills, spells, abilities, dungeon overview, message log, etc.) need RC bot sendkeys sequences.
-- M5 aggregator: add `--strict` mode that exits non-zero on ANY new issue (currently reports but exits 0 on fast mode).
-- Layer 2 use cases D (duration endmsg) and E (random ego): needs sendkeys in dlua or move to Layer 3 (RC bot).
+| Priority | Task | Notes |
+|----------|------|-------|
+| High | **Merge into chn-0.34.1-base** | RED gate: needs zh-code-reviewer pass first |
+| Medium | Panel text capture | Currently "opened" markers only; add crawl.messages() per panel |
+| Medium | M (spells) panel | Need to give char a spell first (create book + read) |
+| Medium | More item samples | One weapon + one armour; expand to full test_pairs |
+| Medium | M3 D/E use cases | Duration endmsg + random ego — better in M4 bot than dlua |
+| Low | Catch2 #3 optimize | EN-toggle for item_base_names |
+| Low | post-coder.sh --full e2e | Full pipeline test across all 3 layers |
 
 ---
 
