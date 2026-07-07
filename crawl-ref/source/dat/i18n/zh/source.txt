@@ -1009,7 +1009,7 @@ gain power from chaos
 %1$s%2$.0s抽搐了一下。
 %%%%
 %1$s attack snaps %2$s out of %3$s fear.
-%1$s的攻击将%2$s从%3$s恐惧中惊醒。
+%1$s的攻击将%2$s从恐惧中惊醒%3$.0s。
 %%%%
 %1$s can %2$s water.\n
 %1$s能在%2$s中行动。\n
@@ -1018,25 +1018,25 @@ gain power from chaos
 %1$s能在岩浆中行动。\n
 %%%%
 %1$s continues winding %2$s clockwork bee....
-%1$s继续给%2$s发条蜜蜂上弦……
+%1$s继续给发条蜜蜂上弦%2$.0s……
 %%%%
 %1$s fails to defend %2$s.
 %1$s未能防守%2$s。
 %%%%
 %1$s loses %2$s in your eye%3$s.
-%1$s在你的眼中%2$s失去了自我。
+%1$s在你的眼中%2$s失去了自我%3$.0s。
 %%%%
 %1$s slice%2$s through the folds of space itself!
-%1$s切穿了空间本身的褶皱！
+%1$s%2$.0s切穿了空间本身的褶皱！
 %%%%
 %1$s steals %2$d gold piece%3$s!
-%1$s偷走了%2$d枚金币！
+%1$s偷走了%2$d枚金币%3$.0s！
 %%%%
 %1$s stops winding %2$s clockwork bee.
-%1$s停止了给发条蜜蜂上弦。
+%1$s停止了给发条蜜蜂上弦%2$.0s。
 %%%%
 %1$s vibrate%2$s crazily for a second.
-%1$s疯狂振动了一秒。
+%1$s%2$.0s疯狂振动了一秒。
 %%%%
 %1$s wind%2$s %3$s clockwork bee back up and it locks its sights upon %4$s!
 %1$s重绕了%3$s的发条蜜蜂，将其锁定在%4$s身上！
@@ -1063,7 +1063,7 @@ gain power from chaos
 %s%s召唤了一个被%s毁灭魔法灌注的仆从！
 %%%%
 %s %s an %s energy prism!
-%s创造了一个%s能量棱镜！
+%1$s%3$.0s创造了一个%2$s能量棱镜！
 %%%%
 %s %s discharges%s, shocking %s%s
 %s%s释放出%s电流，电击了%s%s
@@ -7965,7 +7965,7 @@ You %1$s %2$s%3$s%4$s%5$s%6$s%7$s
 你%3$s%1$s了%2$s%4$s%5$s%6$s%7$s
 %%%%
 You %1$s into a shaft and fall %2$d level%3$s!
-你%1$s入竖井，掉了%2$d层！
+你%1$s入竖井，掉了%2$d层%3$.0s！
 %%%%
 you %1$sreach %2$d.%3$d in %4$s %5$d.%6$d XLs.
 %1$s你将在%5$d.%6$d个经验等级内达到%2$d.%3$d级%4$.0s。
@@ -9666,7 +9666,7 @@ You grasp %s shadow with your own and put on a performance!
 你用自己的影子抓住%s的影子，开始表演！
 %%%%
 You have %1$d gold piece%2$s.
-你持有%1$d枚金币。
+你持有%1$d枚金币%2$.0s。
 %%%%
 You have %s %s.
 你已经%s了%s。
@@ -9956,7 +9956,7 @@ You no longer feel sluggish.
 你不再感觉迟缓。
 %%%%
 You now have %1$d gold piece%2$s.
-你还有%1$d枚金币。
+你还有%1$d枚金币%2$.0s。
 %%%%
 You now have %d runes.
 你现在有%d个符文。
@@ -10441,10 +10441,10 @@ Your %1$s attune%2$s to your body, and you begin to %3$s.
 %1$s适应了你的身体，你开始%3$s。
 %%%%
 Your %1$s meld%2$s into your body.
-你的%1$s融入了你的身体。
+你的%1$s融入了你的身体%2$.0s。
 %%%%
 Your %1$s unmeld%2$s from your body.
-你的%1$s从你的身体中分离。
+你的%1$s从你的身体中分离%2$.0s。
 %%%%
 Your %s blocks %s... and reflects it back!
 你的%s挡住了%s……并将其反弹了回去！
@@ -10937,7 +10937,7 @@ Your storm instantly dissipates.
 你的风暴立刻消散了。
 %%%%
 Your strength is siphoned away as %1$s grow%2$s stronger!
-你的力量被吸走，%1$s变得更加强大！
+你的力量被吸走，%1$s变得更加强大%2$.0s！
 %%%%
 Your strength is siphoned away, and your attacks feel weak!
 你的力量被吸走了，你感到攻击变得虚弱！
@@ -12549,7 +12549,7 @@ Something just walked over your grave. No, really!
 有东西刚从你的坟墓上走过。不，是真的！
 %%%%
 Your %1$s prickle%2$s.
-你的%1$s感到刺痛。
+你的%1$s感到刺痛%2$.0s。
 %%%%
 completely
 完全
@@ -12608,7 +12608,7 @@ found
 找到了
 %%%%
 (gained %1$d charge%2$s)
-（获得了%1$d次充能）
+（获得了%1$d次充能%2$.0s）
 %%%%
 The dungeon shudders... but nothing happens?
 地牢震动了一下……但什么都没有发生？
@@ -13292,7 +13292,7 @@ A malevolent force fills %s...
 %1$s%2$.0s在追击你时发动攻击！
 %%%%
 %1$s feeds on the fading %2$s of %3$s!
-你从%1$s的衰减%2$s中汲取了力量。
+你从%1$s的衰减%2$s中汲取了力量%3$.0s。
 %%%%
 You have one spell level left.
 你还剩一个法术等级。
@@ -15406,10 +15406,10 @@ will-reducing
 意志削弱
 %%%%
 beam hit player|The %1$s %2$s %3$s%4$s%5$s%6$s
-%1$s%2$s了%3$s%4$s%5$s！
+%1$s%2$s了%3$s%4$s%5$s%6$s
 %%%%
 beam hit monster|The %1$s %2$s %3$s%4$s%5$s%6$s
-%1$s%2$s了%3$s%4$s%5$s。
+%1$s%2$s了%3$s%4$s%5$s%6$s
 %%%%
  with %s
 （%s）
@@ -15448,7 +15448,7 @@ dies
 死亡
 %%%%
  seems to regain %1$s courage.
-似乎重拾了%1$s的勇气。
+似乎重拾了勇气%1$.0s。
 %%%%
 %s is no longer %s.
 %s不再%s。
@@ -15472,19 +15472,19 @@ no longer
 不再被贿赂。
 %%%%
  seems to return to %1$s normal shape.
-似乎恢复了%1$s正常形态。
+似乎恢复了正常形态%1$.0s。
 %%%%
 %1$s finishes expelling the %2$s from %3$s %4$s.
 %1$s将%2$s从%4$s中排出。
 %%%%
 %1$s is freed from %2$s curse.
-%1$s从其诅咒中解脱了。
+%1$s从其诅咒中解脱了%2$.0s。
 %%%%
 %1$s turns %2$s attention back to you.
-%1$s将注意力转回你身上。
+%1$s将%2$s注意力转回你身上。
 %%%%
  is no longer sharing %1$s pain.
-不再分担%1$s痛苦。
+不再分担痛苦%1$.0s。
 %%%%
 charmed
 被魅惑
@@ -20917,6 +20917,7 @@ on
 ，或
 %%%%
 <%s>I'll put %s outside for you.</%s>
+<%s>我会将%s放在外面给你。</%s>
 %%%%
 <%s>I'll put %s outside for you.</%s>\n
 
@@ -20924,6 +20925,7 @@ on
 
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>
+<%s>购买物品%s需%d金币？%s（%s/N）</%s>
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
 
@@ -20931,6 +20933,7 @@ on
 
 %%%%
 <%s>You don't have enough money.</%s>
+<%s>你的金币不够。</%s>
 %%%%
 <%s>You don't have enough money.</%s>\n
 
@@ -22228,7 +22231,7 @@ Look
 %s：%s
 %%%%
 %1$s returns to %2$s original shape as %3$s %4$s.
-%1$s在死亡时变回了原来的形态。
+%1$s在死亡时变回了原来的形态%2$.0s%3$.0s%4$.0s。
 %%%%
 + - Recommended random choice
 + - 推荐随机选择
@@ -22540,7 +22543,7 @@ A bone-chilling cold explodes forth, blasting rocks from the ceiling!
 %s粉碎了%s
 %%%%
 %1$s shudder%2$s.
-%1$s颤抖了。
+%1$s颤抖了%2$.0s。
 %%%%
 %s's fire resistance is burned away.
 %s的火焰抗性被烧掉了。
@@ -23530,7 +23533,7 @@ Your equipment is almost entirely melded
 
 %%%%
 Your %1$s %2$s melded.
-你的%1$s融化了。
+你的%1$s融化了%2$.0s。
 
 %%%%
 Your transformation has ended.
@@ -23674,7 +23677,7 @@ You %1$s %2$s for %3$s.
 
 %%%%
 Your %1$s turn%2$s into%3$s wriggling electric eel%4$s!
-你的%1$s变成了一条扭动的电鳗！
+你的%1$s变成了一条扭动的电鳗%2$.0s%3$.0s%4$.0s！
 
 %%%%
 Your %1$s revert%2$s to %3$s normal form.
@@ -23694,7 +23697,7 @@ Your mycelia shrivel away.
 
 %%%%
 Your %1$s %2$s a mass of colorful fungus.
-你的%1$s变成了一团彩色的菌菇。
+你的%1$s变成了一团彩色的菌菇%2$.0s。
 
 %%%%
 You cannot mock death while in death's door.
@@ -23762,7 +23765,7 @@ visited
 
 %%%%
 You %1$salso visited: 
-你还访问了：
+你还访问了%1$.0s：
 
 %%%%
 You %1$sspent %2$d %3$s at shops.\n
@@ -23794,6 +23797,7 @@ Note: time per level data comes from an upgraded game and may be incomplete.\n
 
 %%%%
 %8s: %d daAuts
+%8s：%d daAut
 
 
 %%%%
@@ -24031,7 +24035,7 @@ their
 %1$s怒视着%2$s！
 %%%%
 %1$s loses %2$s grip on your mind.
-%1$s对你精神的控制力减弱了。
+%1$s对你精神的控制力减弱了%2$.0s。
 %%%%
 %1$s shimmers and splits apart.
 %1$s闪烁着分裂开来。
@@ -30391,7 +30395,7 @@ Letters toggle
  切换选中    
 %%%%
 \n<w>%s:</w> %d/%d rune%s: %s
-\n<w>%s:</w> %d/%d个符文：%s
+\n<w>%1$s:</w> %2$d/%3$d个符文%4$.0s：%5$s
 %%%%
 release spores at
 释放孢子
@@ -33970,7 +33974,7 @@ Vampire
 用隐形的盾牌
 %%%%%
 ... and %1$s it back!
-...并反射了回去！
+...并反射了回去%1$.0s！
 %%%%%
 %1$s %2$s the %3$s%4$s
 %1$s挡住了%3$s%4$s
@@ -34332,7 +34336,7 @@ Enter new gold value (current = %d, Enter for %d):
 输入新金币值（当前 = %d，回车设为 %d）：
 %%%%%
 You now have %d gold piece%s.
-你现在有 %d 枚金币。
+你现在有 %1$d 枚金币%2$.0s。
 %%%%%
 You are not religious!
 你没有信仰！
@@ -34950,10 +34954,10 @@ Which monster?
 哪个怪物？
 %%%%
 Detected %i monster%s.
-检测到%i个怪物。
+检测到%1$d个怪物%2$.0s。
 %%%%
 Dismissed %i monster%s.
-遣散了%i个怪物。
+遣散了%1$d个怪物%2$.0s。
 %%%%
 Make the monster (S)hout or (T)alk? 
 让怪物喊叫(S)还是说话(T)？
@@ -35194,7 +35198,7 @@ s
 
 %%%%%
 %d altar%s
-%d座祭坛
+%1$d座祭坛%2$.0s
 
 %%%%%
 %d rings
@@ -35202,7 +35206,7 @@ s
 
 %%%%%
 %d shop%s/portal%s
-%d处商店/传送门
+%1$d处商店%2$.0s/传送门%3$.0s
 
 %%%%%
 %d%%
@@ -35278,7 +35282,7 @@ s
 
 %%%%%
 %s fountain%s start%s gushing blood
-喷泉开始涌出鲜血
+%1$.0s喷泉%2$.0s开始%3$.0s涌出鲜血
 
 %%%%%
 %s mutation
@@ -35726,7 +35730,7 @@ statue of %s
 
 %%%%%
 summons %d friend%s
-召唤了%d名友方
+召唤了%1$d名友方%2$.0s
 
 %%%%%
 summons friendly %s

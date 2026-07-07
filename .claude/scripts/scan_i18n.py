@@ -59,7 +59,7 @@ POSFMT_RE = re.compile(r'%(\d+)\$(?:[sdxcunfFeEgG]|l[du])')
 SILENT_RE = re.compile(r'%(\d+)\$\.0s')
 
 # Plain format specifiers: %s, %d, %c, %x, %ld, %lu
-PLAIN_FMT_RE = re.compile(r'%(?:l[du]|[sdcxlufeEgG])')
+PLAIN_FMT_RE = re.compile(r'%(?:l[du]|[sdcxlufeEgGi])')
 
 # Detect if a line uses a positional-format-aware function
 POSITIONAL_CALL_RE = re.compile(
@@ -94,6 +94,8 @@ def count_format_args(s: str) -> int:
     cleaned = re.sub(r'%%', '', s)
     positional = set()
     for m in POSFMT_RE.finditer(cleaned):
+        positional.add(int(m.group(1)))
+    for m in SILENT_RE.finditer(cleaned):
         positional.add(int(m.group(1)))
     if positional:
         return max(positional)
