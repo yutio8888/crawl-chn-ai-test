@@ -36201,3 +36201,6 @@ your set of mutations (<w>%</w>)
 your spells (<w>%?</w>)
 你的法术（<w>%?</w>）
 %%%%
+a cloud of scalding steam
+一股灼热蒸汽云
+%%%%
