@@ -36342,3 +36342,57 @@ are unaffected
 resist
 抵抗了
 %%%%
+can see invisible
+能看见隐形
+%%%%
+will become unable to see you
+将无法看见你
+%%%%
+cannot see invisible
+无法看见隐形
+%%%%
+skewers
+刺穿
+%%%%
+envelops
+笼罩
+%%%%
+passes through
+穿过
+%%%%
+The fireball explodes!
+火球爆炸了！
+%%%%
+The orb of electricity explodes!
+电球爆炸了！
+%%%%
+The ghostly flame explodes!
+鬼火爆炸了！
+%%%%
+The mass of ice explodes!
+冰块爆炸了！
+%%%%
+The sphere of damnation explodes!
+诅咒之球爆炸了！
+%%%%
+The ball of acid explodes!
+酸球爆炸了！
+%%%%
+The cloud of blastmotes explodes!
+爆尘云爆炸了！
+%%%%
+The gout of umbral fire explodes!
+暗影之火爆发了！
+%%%%
+The enchantments explode!
+附魔爆炸了！
+%%%%
+A raging storm of fire appears!
+狂暴的火焰风暴出现了！
+%%%%
+Piercing cold boils outward!
+刺骨的寒气向外翻腾！
+%%%%
+A wave of flame ripples out!
+一道火焰波浪向外扩散！
+%%%%

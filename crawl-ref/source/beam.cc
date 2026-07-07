@@ -4313,7 +4313,7 @@ void bolt::affect_player()
                                    : (T_("hits"));
             const string beam_name = _beam_display_name(*this);
             mprf(T_("The %s %s %s!"),
-                 beam_name.c_str(), hit_verb.c_str(),
+                 beam_name.c_str(), T_(hit_verb.c_str()),
                  you.hp > 0 ? T_("you") : T_("your lifeless body"));
         }
 
@@ -4371,7 +4371,7 @@ void bolt::affect_player()
             : T_(" but does no damage");
         mprf_p(C_("beam hit player",
                   "The %1$s %2$s %3$s%4$s%5$s%6$s"),
-               beam_name.c_str(), hit_verb.c_str(),
+               beam_name.c_str(), T_(hit_verb.c_str()),
                body,
                chaos_prefix.c_str(),
                no_damage,
@@ -5612,7 +5612,7 @@ void bolt::affect_monster(monster* mon)
             if (you.see_cell(mon->pos()))
             {
                 mprf(T_("The %s %s %s."),
-                     _beam_display_name(*this).c_str(), hit_verb.c_str(),
+                     _beam_display_name(*this).c_str(), T_(hit_verb.c_str()),
                      mon->name(DESC_THE).c_str());
             }
             else if (heard && !hit_noise_msg.empty())
@@ -5755,7 +5755,7 @@ void bolt::affect_monster(monster* mon)
             const char* no_damage = postac ? "" : T_(" but does no damage");
             mprf_p(C_("beam hit monster",
                       "The %1$s %2$s %3$s%4$s%5$s%6$s"),
-                   beam_name.c_str(), hit_verb.c_str(),
+                   beam_name.c_str(), T_(hit_verb.c_str()),
                    mon->name(DESC_THE).c_str(),
                    chaos_prefix.c_str(),
                    no_damage,
@@ -6934,7 +6934,7 @@ void bolt::refine_for_explosion(const string& explode_msg)
         heard = player_can_hear(target);
         // Check for see/hear/no msg.
         if (you.see_cell(target) || target == you.pos())
-            mpr(seeMsg);
+            mpr(T_(seeMsg.c_str()));
         else
         {
             if (!heard)

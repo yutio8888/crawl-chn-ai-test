@@ -3301,13 +3301,13 @@ static vector<string> _desc_see_invis(const monster_info& mi)
 {
     vector<string> r;
     if (mi.can_see_invisible())
-        r.push_back("can see invisible");
+        r.push_back(T_("can see invisible"));
     else if (!mi.is(MB_CANT_SEE_YOU))
     {
         if (!you.backlit())
-            r.push_back("will become unable to see you");
+            r.push_back(T_("will become unable to see you"));
         else
-            r.push_back("cannot see invisible");
+            r.push_back(T_("cannot see invisible"));
     }
     return r;
 }
