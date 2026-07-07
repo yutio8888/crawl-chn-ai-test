@@ -36788,106 +36788,106 @@ gain
 %%%%
 %%%%
 It is found in decks of 
-PLACEHOLDER
+出现于以下牌组：
 %%%%
 , or in Nemelex Xobeh's deck of punishment
-PLACEHOLDER
+，或奈米勒·佐柏的惩罚牌组
 %%%%
 It is only found in Nemelex Xobeh's deck of punishment.
-PLACEHOLDER
+仅出现于奈米勒·佐柏的惩罚牌组。
 %%%%
 It is normally not part of any deck.
-PLACEHOLDER
+通常不属于任何牌组。
 %%%%
 A deck of magical cards, 
-PLACEHOLDER
+一副魔法卡牌，
 %%%%
 It currently has 1 card 
-PLACEHOLDER
+当前有1张牌，
 %%%%
 It is currently empty 
-PLACEHOLDER
+当前为空。
 %%%%
 stumble around
-PLACEHOLDER
+跌跌撞撞
 %%%%
 swing wildly
-PLACEHOLDER
+胡乱挥舞
 %%%%
  while confused and next to 
-PLACEHOLDER
+，混乱中旁边就是
 %%%%
  while you are losing your buoyancy
-PLACEHOLDER
+，浮力正在消失
 %%%%
  while your transformation is expiring
-PLACEHOLDER
+，变身即将结束
 %%%%
  Continue?
-PLACEHOLDER
+继续吗？
 %%%%
  appreciates 
-PLACEHOLDER
+对你的
 %%%%
  killing of a heretic priest.
-PLACEHOLDER
+杀死异端祭司的行为表示赞许。
 %%%%
  killing of an apostate.
-PLACEHOLDER
+杀死叛教者的行为表示赞许。
 %%%%
 Your stasis prevents you from being hasted, but everything else in sight speeds up!
-PLACEHOLDER
+静止状态阻止了你被加速，但你视野中的一切都在加速！
 %%%%
 Your stasis prevents you from being slowed, but everything else in sight slows down!
-PLACEHOLDER
+静止状态阻止了你被减速，但你视野中的一切都在减速！
 %%%%
 Your stasis prevents you from being paralysed, but everything else in sight stops moving!
-PLACEHOLDER
+静止状态阻止了你被麻痹，但你视野中的一切都在停止移动！
 %%%%
  Ashenzari will withdraw the offered vision and curse!
-PLACEHOLDER
+阿申扎里将收回赐予的视野并施加诅咒！
 %%%%
  doubts 
-PLACEHOLDER
+质疑
 %%%%
  magic when faced with ultimate truth!
-PLACEHOLDER
+的魔法在终极真相面前毫无意义！
 %%%%
 You cannot wall jump against 
-PLACEHOLDER
+你无法蹬墙跳越
 %%%%
  says: The storm will not cease as long as you keep fighting, disciple!
-PLACEHOLDER
+说：只要你继续战斗，风暴就不会停止，门徒！
 %%%%
 the following spells memorised: 
-PLACEHOLDER
+已记忆以下法术：
 %%%%
 the following spell memorised: 
-PLACEHOLDER
+已记忆以下法术：
 %%%%
 the following spells available to memorise: 
-PLACEHOLDER
+可记忆以下法术：
 %%%%
  reappears in a puff of iridescent mist.
-PLACEHOLDER
+在一团虹彩迷雾中重新出现。
 %%%%
 With an infernal shudder, the power ruling this place vanishes!
-PLACEHOLDER
+随着一阵地狱般的震动，统治此地的力量消失了！
 %%%%
 With an infernal noise, the power ruling this place vanishes!
-PLACEHOLDER
+随着一阵地狱般的轰鸣，统治此地的力量消失了！
 %%%%
  does not allow the disloyal to dabble in death!
-PLACEHOLDER
+不允许不忠者涉足死亡领域！
 %%%%
  does not allow the disloyal to dabble in destruction!
-PLACEHOLDER
+不允许不忠者涉足毁灭领域！
 %%%%
  drains the heat from the surrounding environment!
-PLACEHOLDER
+从周围环境中吸走了热量！
 %%%%
 Something draws the life force from your surroundings.
-PLACEHOLDER
+有什么东西从你周围吸取了生命力。
 %%%%
 became the Champion of 
-PLACEHOLDER
+成为了
