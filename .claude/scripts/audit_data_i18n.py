@@ -149,6 +149,73 @@ def check_feature_names(source_dir: str, source_txt: str):
     return 0 if not missing else 1
 
 
+def check_cloud_names(source_dir: str, source_txt: str):
+    """Check cloud.cc static array terse/verbose names against source.txt."""
+    cloud_cc = os.path.join(source_dir, 'cloud.cc')
+    if not os.path.exists(cloud_cc):
+        return 1
+
+    with open(cloud_cc, 'r') as f:
+        content = f.read()
+
+    # Extract terse + verbose names from cloud_data array
+    # Pattern: { "terse", "verbose", // comment
+    names = set()
+    for m in re.finditer(r'\{\s*"([^"]+)",\s*(?:"([^"]+)"|nullptr)', content):
+        terse = m.group(1)
+        verbose = m.group(2)
+        names.add(terse)
+        if verbose:
+            names.add(verbose)
+
+    src_entries = parse_source_txt(source_txt)
+    missing = sorted(n for n in names if n.lower() not in src_entries
+                     and n not in ('?', 'ink'))  # skip debug/empty entries
+
+    print(f"\n--- Cloud name translation coverage ---")
+    print(f"Total cloud terse+verbose names: {len(names)}")
+    print(f"  Covered (source.txt): {len(names) - len(missing)}")
+    print(f"  MISSING: {len(missing)}")
+    if missing:
+        for m in missing[:10]:
+            print(f"    - {m}")
+        if len(missing) > 10:
+            print(f"    ... and {len(missing) - 10} more")
+
+    return 0 if not missing else 1
+
+
+def check_corrosion_sources(source_dir: str, source_txt: str):
+    """Check corrosion source strings against source.txt."""
+    src_entries = parse_source_txt(source_txt)
+    sources = set()
+    missing = []
+
+    # Scan for you.corrode(..., "SOURCE", ...) and act->corrode(..., "SOURCE", ...)
+    for fn in ['beam.cc', 'cloud.cc', 'ouch.cc', 'traps.cc', 'god-wrath.cc']:
+        fpath = os.path.join(source_dir, fn)
+        if not os.path.exists(fpath):
+            continue
+        with open(fpath, 'r') as f:
+            content = f.read()
+        for m in re.finditer(r'corrode\([^,)]*,\s*"([^"]+)"', content):
+            sources.add(m.group(1))
+
+    for s in sorted(sources):
+        if s.lower() not in src_entries:
+            missing.append(s)
+
+    print(f"\n--- Corrosion source coverage ---")
+    print(f"Total corrosion sources: {len(sources)}")
+    print(f"  Covered: {len(sources) - len(missing)}")
+    print(f"  MISSING: {len(missing)}")
+    if missing:
+        for m in missing:
+            print(f"    - \"{m}\"")
+
+    return 0 if not missing else 1
+
+
 def main():
     if len(sys.argv) < 3:
         print("Usage: audit_data_i18n.py <source_dir> --source-txt <source.txt>")
@@ -165,6 +232,8 @@ def main():
     rc |= check_monster_names(source_dir, source_txt)
     rc |= check_duration_strings(source_dir, source_txt)
     rc |= check_feature_names(source_dir, source_txt)
+    rc |= check_cloud_names(source_dir, source_txt)
+    rc |= check_corrosion_sources(source_dir, source_txt)
 
     print(f"\n=== audit_data_i18n.py complete (exit {rc}) ===")
     return rc

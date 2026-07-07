@@ -36312,3 +36312,27 @@ breaks down the
 opens the 
 打开了
 %%%%
+blastmotes
+爆尘
+%%%%
+embers
+余烬
+%%%%
+faint pestilence
+微弱瘟疫
+%%%%
+magnetised fragments
+磁化碎片
+%%%%
+smouldering embers
+阴燃余烬
+%%%%
+sparks
+火花
+%%%%
+sparse dust
+稀疏尘埃
+%%%%
+white fluffiness
+白色绒毛
+%%%%
