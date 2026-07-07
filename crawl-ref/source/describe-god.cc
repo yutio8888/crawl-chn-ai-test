@@ -923,6 +923,7 @@ static formatted_string _describe_god_powers(god_type which_god)
 
     case GOD_VEHUMET:
         have_any = true;
+        desc.cprintf(T_("You regain magical power by killing enemies.\n"));
         if (const int numoffers = you.vehumet_gifts.size())
         {
             const char* offer = numoffers == 1

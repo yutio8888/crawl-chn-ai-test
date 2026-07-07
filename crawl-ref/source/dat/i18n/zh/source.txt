@@ -36786,3 +36786,6 @@ smoulder
 gain
 获得
 %%%%
+You regain magical power by killing enemies.\n
+你通过击杀敌人恢复魔力。\n
+%%%%
