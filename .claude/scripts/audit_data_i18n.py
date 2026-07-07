@@ -94,6 +94,11 @@ def check_duration_strings(source_dir: str, source_txt: str):
     with open(dur_h, 'r') as f:
         content = f.read()
 
+    # Strip C++ comment lines to avoid matching example text in /// comments
+    content = re.sub(r'^[ \t]*//.*$', '', content, flags=re.MULTILINE)
+    # Also strip /* */ block comments that span lines
+    content = re.sub(r'/\*.*?\*/', '', content, flags=re.DOTALL)
+
     # Extract sentence-like strings (capital letter start, punctuation end)
     sentences = set(re.findall(r'"([A-Z][^"]{3,}?[.!?])"', content))
 
@@ -129,7 +134,7 @@ def check_feature_names(source_dir: str, source_txt: str):
     feat_names = {f for f in feat_names if ' ' in f and len(f) > 10}
 
     src_entries = parse_source_txt(source_txt)
-    missing = sorted(feat_names - set(src_entries.keys()))
+    missing = sorted(f for f in feat_names if f.lower() not in src_entries)
 
     print(f"\n--- Feature name translation coverage ---")
     print(f"Total feature description strings: {len(feat_names)}")
