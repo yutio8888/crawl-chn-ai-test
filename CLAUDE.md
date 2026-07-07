@@ -428,6 +428,8 @@ Major categories: game log messages, monster attack verbs (25+), UI panels (Q/W/
 
 ## Testing
 
+### Manual testing
+
 ```bash
 # Console
 cd crawl-ref/source && make -j8 && ./crawl
@@ -440,52 +442,100 @@ cp -r dat/* /mnt/d/crawl-game/dat/
 cp contrib/fonts/SarasaMonoSC-Regular.ttf /mnt/d/crawl-game/contrib/fonts/
 ```
 
-## Known Anti-Patterns (DO NOT REPEAT)
+### Automated Translation Regression Tests (three-layer pipeline)
 
-1. **NEVER translate protocol keys** — JSON keys, `.des` tags, file format identifiers must remain English
-2. **NEVER call `conj_verb()` on Chinese strings** — produces garbled output like `"抓取s"`
-3. **NEVER change `.name` fields used as DB lookup keys** — use `zh_ability_map` for display names instead
-4. **NEVER mix CN/EN in the same format string** — produces mixed-language output; use `T_()` on ALL text fragments
-5. **NEVER assume argument order is the same in both languages** — Chinese grammar often swaps subject/object positions
-6. **NEVER change `god_name()` return value for DB lookups** — use `_god_name_en()` for database keys
-7. **NEVER use `buf.size()` for CJK alignment** — use `strwidth()` for display-width-aware padding
-8. **NEVER add `T_()` to a runtime variable without a source.txt entry** —
-   `T_(variable)` is invisible to `i18n_extract.py`; always run
-   `audit_data_i18n.py` after changes to data-driven files
-   (`duration-data.h`, `dat/mons/*.yaml`, `feature-data.h`, `.lua`)
-9. **NEVER assemble UI text by concatenating bare English fragments** —
-   `desc += " (if damage dealt)"`, `text << "Looks like "`, etc. produce
-   untranslatable text. Use `T_()` with complete sentences or make_stringf
-   templates. Run `scan_string_concat.py` to detect existing violations.
+Built per `~/projects/plan/1/1.md` (plan v2). All three layers output parseable
+markers (`ZH_ISSUE` / `FRAME_MARKER`) on stderr/stout consumed by the M5
+aggregator.
 
-## Translation Decision Registry
+#### Layer 1 — Catch2 Unit Tests (static text scanning)
 
-Before translating any entity name (god, monster, spell, item, skill):
-1. Read `docs/decisions.md` — the Single Source of Truth for naming decisions
-2. If the entity already appears in DECISIONS.md, follow the existing ruling
-3. If you make a NEW naming decision, record it in DECISIONS.md
+Builds and runs 16 enumerators that iterate every translatable entity (gods,
+abilities, spells, monsters, features, clouds, mutations, artefacts, skills,
+species, backgrounds, durations, godspeak, tutorial/hints/commands, weapon
+brands, armour egos, item base names). Each enumerator runs 8 scan rules
+(UNTRANSLATED, MIXED_CN_EN, FORMAT_BROKEN, GARBLED_UTF8, WHITESPACE_ANOMALY,
+INVISIBLE_CHAR, PUNCT_STYLE, EMPTY_DB) on the T_()-wrapped output.
 
-Before submitting any review touching entity names:
-  bash .claude/scripts/check_consistency.sh
+```bash
+cd crawl-ref/source && make catch2-tests -j4
+./catch2-tests-executable '[zh-translation]' 2>/tmp/catch2-zh.log 1>/dev/null
+```
 
-### Pre-session Checklist
+87 test cases, ~9384 assertions. Issues emitted as:
+`ZH_ISSUE: <kind> | <source> | <key> | <sample>`
 
-1. Read `~/projects/issues/INDEX.md` → understand issue landscape
-2. Read `docs/decisions.md` → know existing rulings
-3. Check checkpoint: `bash .claude/scripts/check_checkpoint.sh`
-   → If it warns (exit 2/3), update `.claude/ORCHESTRATION_STATE.md` before starting new work
-4. If modifying files under `crawl-ref/source/`, run `check_consistency.sh --rulings`
+#### Layer 2 — dlua Smoke Test (runtime message capture)
+
+Verifies that `-extra-opt-first language=zh` loads the i18n TextDB before
+`databaseSystemInit()` and that `crawl.t_()` returns Chinese at runtime.
+Captures level-up messages and `crawl.god_speaks` output via
+`crawl.messages()` (exposed to dlua via `crawl_dlib` in `l-crawl.cc`).
+
+```bash
+cd crawl-ref/source && make debug -j4       # FULLDEBUG required for -test
+./crawl -seed 1 -headless -no-save -name test -wizard -no-throttle \
+    -extra-opt-first 'language=zh' -test zh_runtime 2>/tmp/zh-l2.log 1>/dev/null
+```
+
+Output: `FRAME_MARKER: <id> | <content>`
+
+#### Layer 3 — RC Bot (clua, interactive UI)
+
+Uses `crawl.sendkeys` to open wizard commands (`&o`, `&G`, `&p`, `&Y`) and
+UI panels (`^`, `%`, `I`, `m`, `a`, `O`, `Ctrl-P`). Captures game messages
+via `crawl.messages()`.
+
+**Critical**: each `ready()` must send ≥1 key; use "." (wait) as no-op.
+Do NOT call `crawl.flush_input()`/`crawl.redraw_screen()` after `&o` commands.
+Never combine sendkeys+emit in one `ready()` — split across two iterations.
+Skip `M` (spells panel) — crashes when character has no spells.
+
+```bash
+cd crawl-ref/source && make -j4 && make util/fake_pty
+util/fake_pty ./crawl -seed 1 -no-save -name test -wizard -no-throttle \
+    -extra-opt-first 'language=zh' -rc test/stress/zh_ui_check.rc \
+    2>/tmp/zh-l3.log 1>/dev/null
+```
+
+Output: `FRAME_MARKER: <id> | <content>` (12 markers: probe, items×2, god, 7 panels, done).
+
+#### M5 — Aggregation & Baseline
+
+| Tool | Purpose |
+|------|---------|
+| `zh_runtime_check.py` | Python port of all 8 C++ scan rules; parses ZH_ISSUE + FRAME_MARKER; generates baseline-<sha>.json; compares against previous baseline (reports regressions + fixes) |
+| `post_zh_runtime.sh` | Orchestrates all 3 layers in 3 modes: `fast` (aggregate existing logs), `full` (build+run all layers+aggregate), `baseline` (full + write baseline) |
+| `post-coder.sh --full` | Hook at the end of existing post-coder.sh; triggers `post_zh_runtime.sh full` + `fast` for regression check |
+
+```bash
+# Full pipeline
+bash .claude/scripts/post_zh_runtime.sh full
+bash .claude/scripts/post-coder.sh --full
+
+# Regression check against baseline
+python3 .claude/scripts/zh_runtime_check.py \
+    --catch2-stderr /tmp/catch2-zh.log \
+    --lua-stderr /tmp/zh-l2.log \
+    --bot-stderr /tmp/zh-l3.log \
+    --baseline .claude/metrics/verify/zh-baseline-<sha>.json
+```
+
+Baselines live in `.claude/metrics/verify/zh-baseline-<sha>.json`. Current
+baseline: 745 issues (725 Catch2 + 0 Lua + 20 Bot).
 
 ### Verification Checklist (Per Commit)
 
 ```
 1. make -j8                                   # Console build passes (0 errors)
 2. make -j8 TILES=y                          # Tiles build passes (if touching tiles code)
-3. grep to confirm target functions          # No missed guards
-4. git diff self-review                      # Only intended lines changed
-5. EN mode: launch and confirm no crash      # Required for Phase 0-1
-6. EN mode: play 10 min                      # Required for Phase 2+
-7. audit_data_i18n.py check                  # Data-driven source coverage
+3. make catch2-tests -j4                      # Catch2 translation tests pass (87 cases, 0 failures)
+4. grep to confirm target functions          # No missed guards
+5. git diff self-review                      # Only intended lines changed
+6. EN mode: launch and confirm no crash      # Required for Phase 0-1
+7. EN mode: play 10 min                      # Required for Phase 2+
+8. audit_data_i18n.py check                  # Data-driven source coverage
+9. bash .claude/scripts/post_zh_runtime.sh fast  # Runtime regression check (if baseline exists)
 ```
 
 ### Translation Toolchain
@@ -525,8 +575,11 @@ aggregation scripts that capture all output to `.claude/metrics/verify/`:
 
 ```bash
 bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + string-concat + smoke)
+bash .claude/scripts/post-coder.sh --full # Same as above + catch2 (L1) + dlua (L2) + RC bot (L3) + aggregation
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
 bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)
+bash .claude/scripts/post_zh_runtime.sh fast  # Runtime regression check from existing logs (seconds)
+bash .claude/scripts/post_zh_runtime.sh full  # Build + run all 3 layers + aggregate (minutes)
 ```
 
 ### String Concatenation Scanner (`scan_string_concat.py`)
