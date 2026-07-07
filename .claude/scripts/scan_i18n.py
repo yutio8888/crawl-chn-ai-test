@@ -58,6 +58,9 @@ POSFMT_RE = re.compile(r'%(\d+)\$(?:[sdxcunfFeEgG]|l[du])')
 # Detect silent positional consumption: %2$.0s (Issue 29 pattern)
 SILENT_RE = re.compile(r'%(\d+)\$\.0s')
 
+# Extract (position, type_char) from positional specifiers: %1$s → (1, 's')
+POSFMT_TYPE_RE = re.compile(r'%(\d+)\$([sdxcunfFeEgG.%]|l[du]|PRI\w+)')
+
 # Plain format specifiers: %s, %d, %c, %x, %ld, %lu
 PLAIN_FMT_RE = re.compile(r'%(?:l[du]|[sdcxlufeEgGi])')
 
@@ -558,45 +561,177 @@ def cmd_mprf_p(args):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def cmd_arg_mismatch(args):
-    """Check %s count parity between EN keys and CN translations."""
+    """Comprehensive format specifier validation.
+
+    Checks:
+      1. Count parity — %s/%d count between EN key and CN translation
+      2. Sequential type-order — for non-positional entries, type sequence must
+         match (swapped %s/%d causes crash on MinGW vsnprintf)
+      3. Mixed positional/plain — CN value must not mix %n$s with plain %s/%d
+         (MinGW vsnprintf falls back to system impl which ignores positional)
+      4. Positional gaps — positional specifiers must be contiguous 1..N
+      5. Positional type mismatch — same %N$ must have same type in EN and CN
+    """
     entries = parse_source_txt(args.source_txt)
     if not entries:
         print("ERROR: Could not parse source.txt")
         return 1
 
-    allow_drop = getattr(args, 'allow_positional_drop', False)
-    findings = []
+    # ── 1. Count parity ──
+    count_findings = []
     for en_key, cn_val in entries.items():
         en_count = count_format_args(en_key)
         cn_count = count_format_args(cn_val)
-        if allow_drop:
-            en_has_pos = bool(POSFMT_RE.search(en_key))
-            cn_has_pos = bool(POSFMT_RE.search(cn_val))
-            if en_has_pos and cn_has_pos:
-                en_max = max(int(m.group(1)) for m in POSFMT_RE.finditer(en_key))
-                cn_max = max(int(m.group(1)) for m in POSFMT_RE.finditer(cn_val))
-                if cn_max > en_max:  # CN cannot reference undefined EN position
-                    findings.append((en_key, cn_val, en_count, cn_count))
-                continue  # both positional and cn_max <= en_max → allow drop
         if en_count != cn_count:
-            findings.append((en_key, cn_val, en_count, cn_count))
+            count_findings.append((en_key, cn_val, en_count, cn_count))
 
-    if findings:
+    # ── 2. Sequential type-order (non-positional only) ──
+    seq_findings = []
+    for en_key, cn_val in entries.items():
+        if POSFMT_RE.search(en_key) or POSFMT_RE.search(cn_val):
+            continue
+        if not cn_val.strip():
+            continue
+        cleaned_en = re.sub(r'%%', '', en_key)
+        cleaned_cn = re.sub(r'%%', '', cn_val)
+        seq_en = [m.group(0) for m in PLAIN_FMT_RE.finditer(cleaned_en)]
+        seq_cn = [m.group(0) for m in PLAIN_FMT_RE.finditer(cleaned_cn)]
+        if seq_en != seq_cn and len(seq_en) == len(seq_cn):
+            seq_findings.append((en_key, cn_val, seq_en, seq_cn))
+
+    # ── 3. Mixed positional/plain in CN ──
+    mixed_findings = []
+    for en_key, cn_val in entries.items():
+        if not POSFMT_RE.search(cn_val):
+            continue
+        cleaned = re.sub(r'%%', '', cn_val)
+        plain_matches = [m for m in PLAIN_FMT_RE.finditer(cleaned)
+                         if not POSFMT_RE.match(m.group(0))]
+        if plain_matches:
+            mixed_findings.append((en_key, cn_val))
+
+    # ── 4. Positional gaps ──
+    gap_findings = []
+    for en_key, cn_val in entries.items():
+        if not POSFMT_RE.search(cn_val) and not SILENT_RE.search(cn_val):
+            continue
+        disp = set(int(m.group(1)) for m in POSFMT_RE.finditer(cn_val))
+        silent = set(int(m.group(1)) for m in SILENT_RE.finditer(cn_val))
+        all_pos = disp | silent
+        if not all_pos:
+            continue
+        expected = set(range(1, max(all_pos) + 1))
+        missing = expected - all_pos
+        if missing:
+            gap_findings.append((en_key, cn_val, sorted(all_pos), sorted(missing)))
+
+    # ── 5. Positional type mismatch ──
+    pos_type_findings = []
+    for en_key, cn_val in entries.items():
+        en_pos = POSFMT_RE.search(en_key)
+        cn_pos = POSFMT_RE.search(cn_val)
+        if not en_pos or not cn_pos:
+            continue
+        # Build {position: type} dicts
+        def _pos_types(s):
+            result = {}
+            for m in POSFMT_TYPE_RE.finditer(s):
+                pos = int(m.group(1))
+                typ = m.group(2)
+                # Normalise: l[du] → l, PRIu64 → l, any PRI* → l
+                if typ.startswith('l') or typ.startswith('PRI'):
+                    typ = 'l'
+                # Normalise . → s (%.0s is a valid format for consuming strings)
+                if typ == '.':
+                    typ = 's'
+                # Only store first occurrence per position
+                if pos not in result:
+                    result[pos] = typ
+            return result
+        en_types = _pos_types(en_key)
+        cn_types = _pos_types(cn_val)
+        mismatches = []
+        for pos in sorted(set(en_types.keys()) | set(cn_types.keys())):
+            et = en_types.get(pos)
+            ct = cn_types.get(pos)
+            if et and ct and et != ct:
+                mismatches.append((pos, et, ct))
+        if mismatches:
+            pos_type_findings.append((en_key, cn_val, mismatches))
+
+    # ── Output ──
+    total_findings = len(count_findings) + len(seq_findings) + \
+                     len(mixed_findings) + len(gap_findings) + \
+                     len(pos_type_findings)
+    if total_findings == 0:
+        print(f"OK: All {len(entries)} entries pass format validation "
+              f"(count, type-order, mixed, gaps, pos-type).")
+        return 0
+
+    if count_findings:
         print("=== ARG-MISMATCH — format specifier count differs "
               "between EN key and CN translation ===")
-        print()
-        for en_key, cn_val, en_n, cn_n in sorted(findings):
-            en_short = en_key[:80]
-            cn_short = cn_val[:80]
-            print(f"EN: \"{en_short}\" ({en_n} args)")
-            print(f"CN: \"{cn_short}\" ({cn_n} args) ← MISMATCH")
+        for en_key, cn_val, en_n, cn_n in sorted(count_findings):
+            print(f"EN: \"{en_key[:80]}\" ({en_n} args)")
+            print(f"CN: \"{cn_val[:80]}\" ({cn_n} args) ← MISMATCH")
             print()
-        print(f"Summary: {len(findings)} mismatches")
-        return 1
-    else:
-        print(f"OK: All {len(entries)} entries have matching "
-              f"format-specifier counts.")
-        return 0
+        print(f"  → {len(count_findings)} count-mismatch(es)")
+        print()
+
+    if seq_findings:
+        print("=== SEQ-TYPE-MISMATCH — sequential format specifier order "
+              "differs (crash risk on MinGW) ===")
+        for en_key, cn_val, seq_en, seq_cn in sorted(seq_findings):
+            print(f"EN: \"{en_key[:80]}\"")
+            print(f"     specifiers: {seq_en}")
+            print(f"CN: \"{cn_val[:80]}\"")
+            print(f"     specifiers: {seq_cn}")
+            for i, (e, c) in enumerate(zip(seq_en, seq_cn)):
+                if e != c:
+                    print(f"     MISMATCH at position {i+1}: "
+                          f"EN={e} CN={c}")
+                    break
+            print()
+        print(f"  → {len(seq_findings)} type-order mismatch(es)")
+        print()
+
+    if mixed_findings:
+        print("=== FORMAT-MALFORMED — mixed positional and non-positional "
+              "format specifiers in CN ===")
+        print("  These cause literal '%2$s' on Windows tiles (MinGW "
+              "vsnprintf)")
+        for en_key, cn_val in sorted(mixed_findings):
+            print(f"EN: \"{en_key[:80]}\"")
+            print(f"CN: \"{cn_val[:80]}\" <- MALFORMED")
+            print()
+        print(f"  → {len(mixed_findings)} malformed entry/entries")
+        print()
+
+    if gap_findings:
+        print("=== POSITIONAL-GAPS — missing position numbers "
+              "in CN translations ===")
+        for en_key, cn_val, found, missing in gap_findings:
+            print(f"  EN: \"{en_key}\"")
+            print(f"  CN: \"{cn_val[:100]}\"")
+            print(f"  found: {found}  missing: {missing}")
+            print()
+        print(f"  → {len(gap_findings)} gap(s)")
+        print()
+
+    if pos_type_findings:
+        print("=== POS-TYPE-MISMATCH — same position, different type "
+              "between EN and CN ===")
+        for en_key, cn_val, mismatches in sorted(pos_type_findings):
+            print(f"EN: \"{en_key[:80]}\"")
+            print(f"CN: \"{cn_val[:80]}\"")
+            for pos, et, ct in mismatches:
+                print(f"     %{pos}$: EN={et} CN={ct} ← MISMATCH")
+            print()
+        print(f"  → {len(pos_type_findings)} POS-type mismatch(es)")
+        print()
+
+    print(f"Total: {total_findings} format validation finding(s).")
+    return 1
 
 
 # ══════════════════════════════════════════════════════════════════════════════

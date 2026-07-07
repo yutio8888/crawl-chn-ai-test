@@ -1,4 +1,4 @@
-=== Untranslated calls — missing T_() wrapper ===
+=== Untranslated calls — candidates (need T_()) ===
 
 [UI] ui_sample.cc:4  "CTRL"
 [UI] ui_sample.cc:5  "Abil: "
@@ -8,11 +8,16 @@
 [MSG] untranslated_sample.cc:5  "You resist."
 [MSG] untranslated_sample.cc:6  "The %s hits %s."
 
-Summary: 7 untranslated calls across 2 files
-  MSG (mprf/mpr): 3
-  UI  (cprintf/formatted_string): 3
-  STR (make_stringf): 1
+--- scan_i18n.py missing-t ---
+Files scanned: 3
 
-Per-file breakdown:
+  MSG: 3 candidates
+  UI: 3 candidates
+  STR: 1 candidates
+  SMM: 0 candidates
+
+  (debug/#if0 blocks excluded; use --strict to include)
+
+Per-file candidate breakdown:
   ui_sample.cc: UI:3, STR:1
   untranslated_sample.cc: MSG:3
