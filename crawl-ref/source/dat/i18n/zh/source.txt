@@ -3051,7 +3051,7 @@ bite
 咬
 %%%%
 Blasting
-Blasting
+轰击术
 %%%%
  blasts you with cleansing flame!
  用净化之焰轰击你！
@@ -3399,10 +3399,10 @@ continue winding your bee
 继续减缓你的移动速度。
 %%%%
 Contraptions
-Contraptions
+机关装置
 %%%%
 Control
-Control
+控制
 %%%%
  core flares to life once more.
  的核心再次亮起。
@@ -3435,7 +3435,7 @@ Couldn't try casting monster spell because there is
 无法尝试施放怪物法术，因为没有空的怪物槽位。
 %%%%
 Couldn't try casting monster spell because there is no empty monster slot.
-Couldn't try casting monster spell because there is no empty monster slot.
+无法尝试施放怪物法术：没有空的怪物槽位。
 %%%%
 Couldn't try casting monster spell because you're
 无法尝试施放怪物法术，因为你在一个怪物上面。
@@ -3465,7 +3465,7 @@ Crippled
  滚走时碎裂了。
 %%%%
 Cryoformation
-Cryoformation
+冰霜变形
 %%%%
 curare
 箭毒
@@ -3504,7 +3504,7 @@ dancing weapon
 舞动武器
 %%%%
 Dangerous Friends
-Dangerous Friends
+危险伙伴
 %%%%
  dark mirror aura disappears.
 暗镜光环消失了。
@@ -3725,7 +3725,7 @@ drowns
 # L3826: simple
 %%%%
 Duality
-Duality
+二元性
 %%%%
  eats the door!
  吃掉了门！
@@ -3801,7 +3801,7 @@ Enter your name:
 进入了戈卢布里亚之通道。
 %%%%
 Envenomations
-Envenomations
+淬毒术
 %%%%
 equip
 装备
@@ -3950,7 +3950,7 @@ Fire
 。
 %%%%
 Fixed Theme
-Fixed Theme
+固定主题
 %%%%
 flail
 连枷
@@ -4396,7 +4396,7 @@ Invalid spell!
 无效的法术！
 %%%%
 Iron
-Iron
+铁
 %%%%
 is bathed in translocational energy
 沐浴在位移能量中
@@ -4999,7 +4999,7 @@ Makhleb
 马科列布
 %%%%
 Maladies
-Maladies
+疫病
 %%%%
 Maledictions
 诅咒
@@ -5053,7 +5053,7 @@ metal staircase leading down
 向下通往的金属楼梯
 %%%%
 Metalworking
-Metalworking
+金属工艺
 %%%%
 miasma
 瘴气
@@ -5819,7 +5819,7 @@ rFire
  彻底清除你体内的混沌之力！
 %%%%
 Rime
-Rime
+霜华
 %%%%
 ring
 戒指
@@ -5900,7 +5900,7 @@ Saving game... please wait.
  说道：凡人，受罪吧！
 %%%%
  says: You must forswear the aid of any and all before you are fit to worship.
- says: You must forswear the aid of any and all before you are fit to worship.
+说道：你必须弃绝一切援助，然后才配进行崇拜。
 %%%%
 Scorching
 灼热
@@ -6908,7 +6908,7 @@ The forest fire spreads!
 森林大火蔓延了！
 %%%%
 the Fortress
-the Fortress
+堡垒
 %%%%
 The freezing vortex lifts you up.
 冰封漩涡把你抬了起来。
@@ -6926,7 +6926,7 @@ The grappling hook guides your attack.
 抓钩引导了你的攻击。
 %%%%
 the Grave
-the Grave
+坟墓
 %%%%
 The ground quivers slightly.
 地面微微颤抖。
@@ -6956,7 +6956,7 @@ The hog vanishes!
 猪消失了！
 %%%%
 the Hunter
-the Hunter
+猎手
 %%%%
 The ice freezes you terribly!
 寒冰严重地冻结了你！
@@ -7812,7 +7812,7 @@ Why would you want to repeat a run command?
 你为什么要重复执行奔跑命令？
 %%%%
 Wicked Creation
-Wicked Creation
+邪恶造物
 %%%%
 wield
 持握
@@ -7842,7 +7842,7 @@ Will
 不会接受你的崇拜，只要你还使用
 %%%%
  will now unseal the treasures of the Slime Pits.
- will now unseal the treasures of the Slime Pits.
+即将开启黏液坑的宝藏。
 %%%%
  will take longer to evaluate your readiness.
  需要更长时间来评估你的准备程度。
@@ -9713,7 +9713,7 @@ You have lingered too long. Zot senses you. Dive deeper or flee this branch befo
 你逗留太久了。佐特感知到了你。在遭受苦难之前潜得更深或逃离这个分支吧！
 %%%%
 You have lost all your %s. It will be difficult to act quickly in this state!
-You have lost all your %s. It will be difficult to act quickly in this state!
+你失去了所有%s。在这种状态下难以快速行动！
 %%%%
 You have lost your religion!
 你失去了信仰！
@@ -15859,7 +15859,7 @@ Steam Ball
 蒸汽球
 %%%%
 Summon Ufetubus
-Summon Ufetubus
+召唤乌菲图布斯
 %%%%
 Summon Sin Beast
 召唤罪兽
@@ -16093,7 +16093,7 @@ Volley of Thorns
 荆棘齐射
 %%%%
 Wall of Brambles
-Wall of Brambles
+荆棘之墙
 %%%%
 Waterstrike
 水击
@@ -16699,283 +16699,283 @@ Landbreaker
 裂地
 %%%%
 Aura of Abjuration
-Aura of Abjuration
+驱逐灵气
 %%%%
 Bolt of Inaccuracy
-Bolt of Inaccuracy
+偏差箭矢
 %%%%
 Chant Fire Storm
-Chant Fire Storm
+咏唱火焰风暴
 %%%%
 Cigotuvi's Degeneration
-Cigotuvi's Degeneration
+西格图维之退化
 %%%%
 Cigotuvi's Embrace
-Cigotuvi's Embrace
+西格图维之拥抱
 %%%%
 Controlled Blink
-Controlled Blink
+受控闪烁
 %%%%
 Control Teleport
-Control Teleport
+传送控制
 %%%%
 Control Undead
-Control Undead
+亡灵控制
 %%%%
 Control Winds
-Control Winds
+控风术
 %%%%
 Corrupt Body
-Corrupt Body
+腐化躯体
 %%%%
 Cure Poison
-Cure Poison
+解毒术
 %%%%
 Darkness
-Darkness
+黑暗术
 %%%%
 Old Deflect Missiles
-Old Deflect Missiles
+旧版偏转飞弹
 %%%%
 Delayed Fireball
-Delayed Fireball
+延迟火球
 %%%%
 Demonic Horde
-Demonic Horde
+恶魔大军
 %%%%
 Draconian Breath
-Draconian Breath
+龙裔吐息
 %%%%
 Ephemeral Infusion
-Ephemeral Infusion
+短暂灌注
 %%%%
 Evaporate
-Evaporate
+蒸发术
 %%%%
 Explosive Bolt
-Explosive Bolt
+爆裂弩矢
 %%%%
 Rakshasa Summon
-Rakshasa Summon
+召唤罗刹
 %%%%
 Fire Brand
-Fire Brand
+火焰烙印
 %%%%
 Flight
-Flight
+飞行术
 %%%%
 Forceful Dismissal
-Forceful Dismissal
+强制驱逐
 %%%%
 Freezing Aura
-Freezing Aura
+冰封灵气
 %%%%
 Frenzy
-Frenzy
+狂乱术
 %%%%
 Fulsome Distillation
-Fulsome Distillation
+精华蒸馏
 %%%%
 Grand Avatar
-Grand Avatar
+大化身
 %%%%
 Haste Plants
-Haste Plants
+加速植物
 %%%%
 Holy Light
-Holy Light
+圣光术
 %%%%
 Hunting Cry
-Hunting Cry
+狩猎战吼
 %%%%
 Localized Ignite Poison
-Localized Ignite Poison
+局部引爆毒素
 %%%%
 Insulation
-Insulation
+绝缘术
 %%%%
 Infusion
-Infusion
+灌注术
 %%%%
 Summon Iron Elementals
-Summon Iron Elementals
+召唤铁元素
 %%%%
 Lethal Infusion
-Lethal Infusion
+致命灌注
 %%%%
 Melee
 近战
 %%%%
 Mislead
-Mislead
+误导术
 %%%%
 Phase Shift
-Phase Shift
+相位变换
 %%%%
 Poison Weapon
-Poison Weapon
+淬毒武器
 %%%%
 Random Bolt
-Random Bolt
+随机箭矢
 %%%%
 Rearrange the Pieces
-Rearrange the Pieces
+重新布局
 %%%%
 Recall
-Recall
+召回术
 %%%%
 Regeneration
 快速再生
 %%%%
 Ring of Flames
-Ring of Flames
+烈焰之环
 %%%%
 Shaft Self
 自我竖井
 %%%%
 Shroud of Golubria
-Shroud of Golubria
+戈卢布里亚之幕
 %%%%
 Silver Blast
-Silver Blast
+白银冲击
 %%%%
 Singularity
-Singularity
+奇点术
 %%%%
 Song of Shielding
-Song of Shielding
+护盾之歌
 %%%%
 Spectral Weapon
-Spectral Weapon
+灵体武器
 %%%%
 Stoneskin
-Stoneskin
+石肤术
 %%%%
 Summon Butterflies
-Summon Butterflies
+召唤蝴蝶
 %%%%
 Summon Elemental
-Summon Elemental
+召唤元素
 %%%%
 Summon Rakshasa
-Summon Rakshasa
+召唤罗刹
 %%%%
 Summon Twister
-Summon Twister
+召唤旋风
 %%%%
 Sunray
-Sunray
+阳光射线
 %%%%
 Sure Blade
-Sure Blade
+精准之刃
 %%%%
 Vampire Summon
-Vampire Summon
+召唤吸血鬼
 %%%%
 Warp Weapon
-Warp Weapon
+扭曲武器
 %%%%
 Weave Shadows
-Weave Shadows
+编织暗影
 %%%%
 Striking
-Striking
+打击术
 %%%%
 Resurrect
-Resurrect
+复活术
 %%%%
 Holy word
-Holy word
+圣言术
 %%%%
 Miasma cloud
-Miasma cloud
+瘴气云
 %%%%
 Poison cloud
-Poison cloud
+毒气云
 %%%%
 Fire cloud
-Fire cloud
+火云
 %%%%
 Steam cloud
-Steam cloud
+蒸汽云
 %%%%
 Homunculus
-Homunculus
+人造人
 %%%%
 Old serpent of hell breath
-Old serpent of hell breath
+地狱古蛇吐息
 %%%%
 Scattershot
-Scattershot
+散射术
 %%%%
 Summon swarm
-Summon swarm
+召唤虫群
 %%%%
 Cloud Cone
-Cloud Cone
+云雾锥
 %%%%
 Ring of Thunder
-Ring of Thunder
+雷霆之环
 %%%%
 Twisted Resurrection
-Twisted Resurrection
+扭曲复活
 %%%%
 Random Effects
-Random Effects
+随机效果
 %%%%
 Hydra Form
-Hydra Form
+九头蛇变形
 %%%%
 Goad Beasts
-Goad Beasts
+激怒野兽
 %%%%
 Teleport Self
-Teleport Self
+自我传送
 %%%%
 Tomb of Doroklohe
-Tomb of Doroklohe
+多洛克洛之墓
 %%%%
 Excruciating Wounds
-Excruciating Wounds
+剧痛之伤
 %%%%
 Conjure Flame
-Conjure Flame
+召唤火焰
 %%%%
 Corpse Rot
-Corpse Rot
+尸体腐烂
 %%%%
 Flame Tongue
-Flame Tongue
+火焰之舌
 %%%%
 Beastly Appendage
-Beastly Appendage
+野兽肢体
 %%%%
 Spider Form
-Spider Form
+蜘蛛变形
 %%%%
 Ice Form
-Ice Form
+寒冰变形
 %%%%
 Blade Hands
-Blade Hands
+利刃之手
 %%%%
 Statue Form
-Statue Form
+石像变形
 %%%%
 Storm Form
-Storm Form
+风暴变形
 %%%%
 Dragon Form
-Dragon Form
+巨龙变形
 %%%%
 Necromutation
-Necromutation
+亡灵变形
 %%%%
 Awaken Earth
-Awaken Earth
+唤醒大地
 %%%%
 Animate Skeleton
-Animate Skeleton
+召唤骷髅
 %%%%
 throws
 投掷
@@ -17005,7 +17005,7 @@ The frigid air chills %s%s%s
 寒冷空气冻伤了%s%s%s
 %%%%
 Drain Magic
-Drain Magic
+汲取魔力
 %%%%
 # describe.cc weapon description i18n — _your_skill_desc / _skill_target_desc (2026-07-02)
 
@@ -23894,7 +23894,7 @@ Your spell library contained the following spells:\n\n
 
 %%%%
 N/A
-N/A
+无
 
 %%%%
 Unusable
@@ -26556,7 +26556,7 @@ either
 或
 %%%%
 ; 
-; 
+； 
 %%%%
 Miscasting this spell causes magic contamination
 施放失败会导致魔法污染
