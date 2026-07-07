@@ -1225,6 +1225,76 @@ def cmd_anti_patterns(args):
         print("OK: No anti-patterns found.")
         return 0
 
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: species-consistency
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_species_consistency(args):
+    """Check species/race term consistency between base and compound entries.
+
+    For example, if "orc" → "兽人", then "orc warrior" should use the same
+    base root "兽人" as "兽人战士", not a different transliteration.
+    """
+    entries = parse_source_txt(args.source_txt)
+    if not entries:
+        print("ERROR: Could not parse source.txt")
+        return 1
+
+    # Build a mapping of English prefix → Chinese base translation
+    # by identifying base entries (single-token species names)
+    base_translations = {}
+
+    # Key species prefixes — ordered by specificity (longest first)
+    species_prefixes = [
+        'deep elf', 'hill orc', 'deep dwarf', 'mountain dwarf',
+        'vine stalker', 'demonspawn',
+        'spriggan', 'draconian', 'merfolk', 'centaur', 'yaktaur',
+        'armataur', 'minotaur', 'gargoyle', 'formicid', 'barachi',
+        'octopode', 'goblin', 'kobold', 'vampire', 'mummy',
+        'naga', 'tengu', 'ghoul', 'faun', 'felid', 'djinn',
+        'orc', 'ogre', 'troll', 'gnoll',
+    ]
+
+    # Extract base term translations from source.txt
+    for prefix in species_prefixes:
+        v = entries.get(prefix)
+        if v and v != prefix:
+            base_translations[prefix] = v.split('\n')[0].strip()
+
+    # Check compound consistency
+    findings = []
+    for en_key, cn_val in entries.items():
+        en_lower = en_key.lower()
+        for prefix in sorted(base_translations.keys(), key=len, reverse=True):
+            pfx = prefix + ' '
+            if en_lower.startswith(pfx) and en_key != prefix:
+                expected_root = base_translations[prefix]
+                cn_first = cn_val.split('\n')[0].strip()
+                # Check that the CN compound starts with the same base term
+                if not cn_first.startswith(expected_root):
+                    findings.append((
+                        prefix, en_key, expected_root, cn_first[:60]
+                    ))
+                break  # only check longest matching prefix
+
+    if findings:
+        print("=== SPECIES-CONSISTENCY — compound term mismatch ===")
+        print("  Compound translations should use the same base term as")
+        print("  the standalone species name.")
+        print()
+        for prefix, en_key, expected, actual in sorted(findings):
+            print(f"  {prefix} → {expected}")
+            print(f"    {en_key} → {actual}")
+            print()
+        print(f"  → {len(findings)} inconsistency/ies")
+        return 1
+    else:
+        print(f"OK: All compound entries consistent with {len(base_translations)} "
+              f"base species terms.")
+        return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="T_() world translation blind-spot scanner"
@@ -1317,6 +1387,14 @@ def main():
     p_ap.add_argument("--strict", action="store_true",
                       help="Only strict (zero-FP) rules")
 
+    # species-consistency
+    p_sc = subparsers.add_parser(
+        "species-consistency",
+        help="Check species/race base term consistency in compound "
+             "translations (e.g. orc→兽人, orc warrior→兽人战士)")
+    p_sc.add_argument("--source-txt", required=True,
+                      help="Path to source.txt")
+
     args = parser.parse_args()
 
     if args.command == "missing-t":
@@ -1337,6 +1415,8 @@ def main():
         return cmd_validate_terms(args)
     elif args.command == "anti-patterns":
         return cmd_anti_patterns(args)
+    elif args.command == "species-consistency":
+        return cmd_species_consistency(args)
     else:
         parser.print_help()
         return 1

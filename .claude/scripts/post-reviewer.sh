@@ -24,6 +24,10 @@ mkdir -p .claude/metrics/verify
     python3 .claude/scripts/cross_file_terms.py \
         crawl-ref/source/dat/i18n/zh/ 2>&1 || true
     echo ""
+    echo "--- Species term consistency ---"
+    python3 .claude/scripts/scan_i18n.py species-consistency \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
+    echo ""
     echo "--- Anti-patterns (strict + lenient) ---"
     python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ 2>&1 || true
     echo ""
