@@ -1152,6 +1152,14 @@ def cmd_anti_patterns(args):
                         pre2 = line[max(0, m.start()-2):m.start()]
                         if has_cjk(pre2):
                             continue
+                    # Skip if bracketed (e.g. [a], [b]) — keyboard shortcuts;
+                    # or slash-enclosed (e.g. /a/, /b/) — mode indicators.
+                    pre_char = line[m.start()-1] if m.start() > 0 else ''
+                    post_char = line[m.end()] if m.end() < len(line) else ''
+                    if pre_char == '[' and post_char == ']':
+                        continue
+                    if pre_char == '/' and post_char == '/':
+                        continue
                     # Skip if XML/HTML tags nearby (e.g. <w>a</w>) —
                     # these are UI markup, not prose.
                     near_tag = line[max(0, m.start()-10):m.end()+10]

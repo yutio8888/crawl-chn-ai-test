@@ -38258,3 +38258,410 @@ yellow draconian
 ynoxinul
 伊诺辛努尔
 %%%%
+ (%d)
+（%d）
+%%%%
+ (all intact)
+（全部完好）
+%%%%
+ (both intact)
+（两者完好）
+%%%%
+ (but backlit and visible)
+（但背光可见）
+%%%%
+ (glowing shapeshifter)
+（发光变形者）
+%%%%
+ (illusionary)
+（幻影）
+%%%%
+ (intact)
+（完好）
+%%%%
+ (shapeshifter)
+（变形者）
+%%%%
+ HPs
+ HP
+%%%%
+ are good things to check.
+是值得查看的好东西。
+%%%%
+ can be <w>%</w>ired without the use of a launcher. 
+可以不需要发射器就<w>%</w>发射。
+%%%%
+ didn't mind your converting to 
+并不介意你改信
+%%%%
+ into 
+到
+%%%%
+ no monsters in sight!
+没有任何怪物！
+%%%%
+ of 
+的
+%%%%
+ or apply your Berserk <w>a</w>bility
+或使用你的狂暴<w>a</w>能力
+%%%%
+ over 
+过
+%%%%
+ poisoned
+中毒
+%%%%
+ see 
+看到
+%%%%
+ where
+，在那里
+%%%%
+ while you are losing your buoyancy?
+当你正在失去浮力时？
+%%%%
+ while your transformation is expiring?
+当你的变形即将结束时？
+%%%%
+ you can re-convert, and all will be well.
+你可以重新改信，一切都会好起来。
+%%%%
+%s Skill %4.1f Aptitude %c%d
+%s技能 %4.1f 天赋 %c%d
+%%%%
+) *EXPLORE*
+）*EXPLORE*
+%%%%
+) *WIZ*
+）*WIZ*
+%%%%
+, %d/%d
+，%d/%d
+%%%%
+, it would annoy 
+，但这会惹恼
+%%%%
+, then 
+，然后
+%%%%
+. 
+。
+%%%%
+. That's because 
+。那是因为
+%%%%
+. You'll 
+。你将
+%%%%
+<%s>I'll put %s outside for you.</%s>\n
+<%s>我会把%s放在外面给你。</%s>\n
+%%%%
+<%s>You don't have enough money.</%s>\n
+<%s>你没有足够的钱。</%s>\n
+%%%%
+</w> fires at the same target again.
+</w>再次向同一目标射击。
+%%%%
+</w> for
+</w>以
+%%%%
+<blue>=</blue> : rings (<w>%</w>ut on and <w>%</w>emove)
+<blue>=</blue>：戒指（<w>%</w>戴上和<w>%</w>取下）
+%%%%
+<brown>|</brown> : staves (<w>%</w>ield)
+<brown>|</brown>：法杖（<w>%</w>装备）
+%%%%
+<cyan>)</cyan> : hand weapons (<w>%</w>ield)
+<cyan>)</cyan>：手持武器（<w>%</w>装备）
+%%%%
+<cyan>[</cyan> : armour (<w>%</w>ear and <w>%</w>ake off)
+<cyan>[</cyan>：护甲（<w>%</w>穿上和<w>%</w>脱下）
+%%%%
+<darkgrey>(occupied)</darkgrey>
+<darkgrey>（已占用）</darkgrey>
+%%%%
+<darkgrey>(unavailable)</darkgrey>
+<darkgrey>（不可用）</darkgrey>
+%%%%
+<h>Extended Movement:\n
+<h>扩展移动\n
+%%%%
+<h>Item types (and common commands)\n
+<h>物品类型（及常用命令）\n
+%%%%
+<lightgreen>}</lightgreen> : miscellaneous items (e<w>%</w>oke)
+<lightgreen>}</lightgreen>：杂项物品（<w>%</w>唤醒）
+%%%%
+<lightgrey>(nothing)</lightgrey>
+<lightgrey>（无）</lightgrey>
+%%%%
+<lightgrey>/</lightgrey> : wands (e<w>%</w>oke)
+<lightgrey>/</lightgrey>：魔杖（<w>%</w>唤醒）
+%%%%
+<lightred>percent</lightred> : talismans (e<w>%</w>oke)
+<lightred>percent</lightred>：护符（<w>%</w>唤醒）
+%%%%
+<magenta>!</magenta> : potions (<w>%</w>uaff)
+<magenta>!</magenta>：药水（<w>%</w>喝下）
+%%%%
+<r>(BUG! this item shouldn't give an ability)</r>
+<r>（BUG！这个物品不应赋予能力）</r>
+%%%%
+<red>"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)
+<red>"</red>：护符（<w>%</w>戴上和<w>%</w>取下）
+%%%%
+<w>?</w> : scrolls (<w>%</w>ead)
+<w>?</w>：卷轴（<w>%</w>阅读）
+%%%%
+<w>left mouse click</w> on the monster.\n\n
+在怪物上<w>左键点击</w>。\n\n
+%%%%
+<yellow>$</yellow> : gold (<w>%</w> counts gold)
+<yellow>$</yellow>：金币（<w>%</w>数金币）
+%%%%
+<yellow>Dungeon Crawl Help%s</yellow>
+<yellow>地下城 Crawl 帮助%s</yellow>
+%%%%
+Alt key
+Alt键
+%%%%
+An altar to 
+的祭坛
+%%%%
+Annihilated
+被歼灭
+%%%%
+Are you sure you want to 
+你确定要
+%%%%
+Beware, sometimes these can be deadly!
+小心，有时这些可能是致命的！
+%%%%
+Branch stairs
+分支楼梯
+%%%%
+Cast: 
+施放：
+%%%%
+Ctrl + Shift keys
+Ctrl+Shift键
+%%%%
+Demolished
+被粉碎
+%%%%
+Escape hatch
+逃生口
+%%%%
+Fortunately, it seems that 
+幸运的是，似乎
+%%%%
+Looks like 
+看起来
+%%%%
+Mangled
+被肢解
+%%%%
+Only nagas and armataurs can wear barding.
+只有纳迦和龙龟可以穿戴马甲。
+%%%%
+Pois
+中毒
+%%%%
+Portal
+传送门
+%%%%
+Preparing a Fortress Blast.
+正在准备堡垒爆破。
+%%%%
+Q: %s\n%s
+问：%s\n%s
+%%%%
+Ray
+射线
+%%%%
+Report bugs to: <w>%s</w>\n\n
+报告 Bug 至：<w>%s</w>\n\n
+%%%%
+Should you decide that abandoning 
+如果你决定放弃
+%%%%
+Slain
+被击杀
+%%%%
+Stairs
+楼梯
+%%%%
+That 
+那个
+%%%%
+There 
+周围
+%%%%
+This is <w>%s %s (%s)</w>
+这是<w>%s %s (%s)</w>
+%%%%
+This might be a good time to run away
+这可能是逃跑的好时机
+%%%%
+This monster appears to be quite dangerous.\n
+这个怪物看起来相当危险。\n
+%%%%
+This monster appears to be really dangerous!\n
+这个怪物看起来非常危险！\n
+%%%%
+To attack a monster, 
+要攻击怪物，
+%%%%
+To attack a monster, you can simply walk into it.
+要攻击怪物，你只需走进它。
+%%%%
+To do this, 
+为此，
+%%%%
+To do this, press <w>%</w> to fire, then 
+为此，按<w>%</w>射击，然后
+%%%%
+To fire a ranged weapon using the keyboard, 
+要使用键盘发射远程武器，
+%%%%
+Uh-oh, 
+哎呀，
+%%%%
+Unfortunately, while converting back would appease 
+不幸的是，虽然重新改信可以安抚
+%%%%
+Unnamed gizmo
+未命名的小装置
+%%%%
+Version history for your current game:\n
+当前游戏的版本历史：\n
+%%%%
+Wave
+波
+%%%%
+Winding
+上弦
+%%%%
+You are bribing 
+你正在贿赂：
+%%%%
+You are studying 
+你正在学习：
+%%%%
+You can get information about <w>
+你可以获取关于<w>的信息
+%%%%
+You even kept some of your piety! 
+你甚至保留了一些虔诚度！
+%%%%
+You hit %s.
+你击中了%s。
+%%%%
+Your %s glow too brightly for you to become invisible.
+你的%s发出太强的光芒，你无法隐身。
+%%%%
+Your %s glows too brightly for you to become invisible.
+你的%s发出太强的光芒，你无法隐身。
+%%%%
+\n<h>Ranged combat and magic\n
+\n<h>远程战斗与魔法\n
+%%%%
+\nHowever, you've been training in <w>
+\n然而，你一直在训练<w>
+%%%%
+\nThis cloud
+\n这团云
+%%%%
+\n\nSeeing how 
+\n\n看到
+%%%%
+\n\nThis 
+\n\n这个
+%%%%
+\n\nTo use magic, 
+\n\n要使用魔法，
+%%%%
+\n\nWeapons and armour that have unusual descriptions 
+\n\n拥有不寻常描述的武器和护甲
+%%%%
+\n\nYou cannot memorise any 
+\n\n你无法记忆任何
+%%%%
+an 
+
+%%%%
+an ally
+一个盟友
+%%%%
+are 
+是
+%%%%
+can
+能
+%%%%
+could
+曾能
+%%%%
+enchantment or have special properties, good or bad.
+附魔等级或有特殊属性，无论好坏。
+%%%%
+first <w>%</w>ear it
+先<w>%</w>穿上它
+%%%%
+first <w>%</w>ield it
+先<w>%</w>装备它
+%%%%
+first <w>%</w>ut it on
+先<w>%</w>戴上它
+%%%%
+harmless. 
+无害的。
+%%%%
+like this are much more likely to be of higher 
+很可能具有更高的
+%%%%
+monster is 
+怪物是
+%%%%
+press <w>%</w>. You'll 
+按<w>%</w>。你将
+%%%%
+select 
+选择
+%%%%
+studying 
+学习中：
+%%%%
+the character overview screen (<w>%</w>)
+角色概览屏幕（<w>%</w>）
+%%%%
+the dungeon overview screen (<w>%</w>)
+地下城概览屏幕（<w>%</w>）
+%%%%
+the message history (<w>%</w>)
+消息历史（<w>%</w>）
+%%%%
+their own shadow
+自己的影子
+%%%%
+themself
+自己
+%%%%
+these
+这些
+%%%%
+were
+
+%%%%
+your <w>%</w>bilities
+你的<w>%</w>能力
+%%%%
+your religious standing (<w>%</w>)
+你的宗教立场（<w>%</w>）
+%%%%
+your set of mutations (<w>%</w>)
+你的变异集（<w>%</w>）
+%%%%
+your spells (<w>%?</w>)
+你的法术（<w>%?</w>）
