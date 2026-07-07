@@ -219,12 +219,12 @@ static void _tso_summon_warriors()
 
     if (success)
     {
-        simple_god_message(" sends the divine host to punish you for your evil "
-                           "ways!", false, GOD_SHINING_ONE);
+        simple_god_message(T_(" sends the divine host to punish you for your evil ways!"),
+                           false, GOD_SHINING_ONE);
     }
     else
     {
-        simple_god_message(" divine host fails to appear.",
+        simple_god_message(T_(" divine host fails to appear."),
                            true, GOD_SHINING_ONE);
     }
 }
@@ -234,7 +234,7 @@ static void _tso_summon_warriors()
  */
 static void _tso_shouts()
 {
-    simple_god_message(" booms out: Take the path of righteousness! REPENT!",
+    simple_god_message(T_(" booms out: Take the path of righteousness! REPENT!"),
                        false, GOD_SHINING_ONE);
     noisy(25, you.pos()); // same as scroll of noise
 }

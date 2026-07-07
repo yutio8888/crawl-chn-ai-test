@@ -140,7 +140,7 @@ static const char *_god_blessing_description(god_type god)
     switch (god)
     {
     case GOD_SHINING_ONE:
-        return "blessed by the Shining One";
+        return T_("blessed by the Shining One");
     case GOD_LUGONU:
         return "corrupted by Lugonu";
     case GOD_KIKUBAAQUDGHA:

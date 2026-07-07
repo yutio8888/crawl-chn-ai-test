@@ -115,7 +115,7 @@ static string _bless_with_healing(monster* follower)
     {
         balms = _blessing_balms(follower);
         if (balms)
-            blessing = "divine balms";
+            blessing = T_("divine balms");
         else
             dprf("Couldn't apply balms.");
     }
@@ -131,7 +131,7 @@ static string _bless_with_healing(monster* follower)
     {
         if (balms)
             blessing += T_(" and ");
-        blessing += "healing";
+        blessing += T_("healing");
     }
     else
         dprf("Couldn't heal monster.");
@@ -186,13 +186,13 @@ static string _tso_bless_duration(monster* follower)
     string blessing = "";
     if (friendliness)
     {
-        blessing += "friendliness";
+        blessing += T_("friendliness");
         if (more_time)
             blessing += T_(" and ");
     }
 
     if (more_time)
-        blessing += "more time in this world";
+        blessing += T_("more time in this world");
 
     return blessing;
 }

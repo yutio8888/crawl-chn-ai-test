@@ -1280,8 +1280,8 @@ void setup_cleansing_flame_beam(bolt &beam, int pow,
     beam.name         = "golden flame";
     beam.colour       = YELLOW;
     beam.aux_source   = (caster == cleansing_flame_source::tso)
-                        ? "the Shining One's cleansing flame"
-                        : "cleansing flame";
+                        ? T_("the Shining One's cleansing flame")
+                        : T_("cleansing flame");
     beam.ex_size      = 2;
     beam.is_explosion = true;
 

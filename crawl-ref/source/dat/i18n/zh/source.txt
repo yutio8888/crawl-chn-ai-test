@@ -36677,3 +36677,49 @@ good
 bad
 有害
 %%%%
+ sends the divine host to punish you for your evil ways!
+派出了天界大军来惩罚你的邪恶行径！
+
+%%%%
+ divine host fails to appear.
+天界大军未能出现。
+
+%%%%
+ booms out: Take the path of righteousness! REPENT!
+怒吼道：走上正义之路！忏悔吧！
+
+%%%%
+friendliness
+友善
+
+%%%%
+more time in this world
+在这个世界上更多时间
+
+%%%%
+divine balms
+神之恩膏
+
+%%%%
+blessed by the Shining One
+光辉者所祝福
+
+%%%%
+smitten by Shining One
+被光辉者惩罚
+
+%%%%
+Smitten by the Shining One
+被光辉者惩罚
+
+%%%%
+golden flame
+金色火焰
+
+%%%%
+the Shining One's cleansing flame
+光辉者的净化之火
+%%%%
+cleansing flame
+净化之焰
+%%%%

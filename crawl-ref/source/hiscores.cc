@@ -2622,7 +2622,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_TSO_SMITING:
-        desc += terse? "smitten by Shining One" : "Smitten by the Shining One";
+        desc += terse? T_("smitten by Shining One") : T_("Smitten by the Shining One");
         needs_damage = true;
         break;
 
