@@ -29302,8 +29302,20 @@ It is an ancient artefact.
 It cannot be enchanted further.
 它无法被进一步附魔。
 %%%%
-This ancient artefact cannot be changed by magic or mundane means.
-这件远古神器无法被魔法或凡俗手段改变。
+\nEnchanting this artefact any further is beyond even your skills.
+\n进一步附魔这件神器超出了你的技能范畴。
+%%%%
+\nThis ancient artefact cannot be changed by magic or mundane means.
+\n这件远古神器无法被魔法或凡俗手段改变。
+%%%%
+\nChaotic:   
+\n混沌：   
+%%%%
+\nClass: 
+\n类别：
+%%%%
+\nMelds: 
+\n融合：
 %%%%
 are sucked
 被吸入
@@ -30664,6 +30676,10 @@ verb|bask
 沐浴其中
 %%%%
 verb|are engulfed
+被吞没
+%%%%
+verb|fire
+发射
 %%%%
  (level %d/%d)
  (等级 %d/%d)
@@ -31258,7 +31274,7 @@ novice
 
 %%%%
 only slightly.
-仅轻微地。
+极小。
 
 %%%%
 poison
@@ -36490,4 +36506,239 @@ cast
 %%%%
 magic release
 魔力释放
+%%%%
+\n\nYour current strength and Armour skill slows attacks with missile weapons (like %s) 
+\n\n你的力量和护甲技能减缓了投射武器（如%s）的攻击速度，减幅
+%%%%
+Your line of fire to %s is blocked by %s.
+你对%s的射击线被%s阻挡了。
+%%%%
+Xom is interested.
+佐姆感到好奇。
+%%%%
+Xom is mildly amused.
+佐姆觉得有点好玩。
+%%%%
+Xom is amused.
+佐姆觉得好玩。
+%%%%
+Xom is highly amused!
+佐姆非常开心！
+%%%%
+Xom thinks this is hilarious!
+佐姆觉得这太好笑了！
+%%%%
+Xom roars with laughter!
+佐姆狂笑不止！
+%%%%
+Xom is very interested.
+佐姆非常感兴趣。
+%%%%
+Xom is extremely interested.
+佐姆极度感兴趣。
+%%%%
+Xom is intrigued!
+佐姆被勾起了兴趣！
+%%%%
+Xom is very intrigued!
+佐姆兴致盎然！
+%%%%
+Xom is fascinated!
+佐姆着迷了！
+%%%%
+a very special plaything of Xom.
+佐姆最特别的玩物。
+%%%%
+a special plaything of Xom.
+佐姆特别的玩物。
+%%%%
+a plaything of Xom.
+佐姆的玩物。
+%%%%
+a toy of Xom.
+佐姆的玩具。
+%%%%
+a favourite toy of Xom.
+佐姆心爱的玩具。
+%%%%
+a beloved toy of Xom.
+佐姆挚爱的玩具。
+%%%%
+Xom's teddy bear.
+佐姆的泰迪熊。
+%%%%
+a very buggy toy of Xom.
+佐姆有严重bug的玩具。
+%%%%
+a BORING thing.
+一个无聊的东西。
+%%%%
+You are now %s
+你现在是%s
+%%%%
+at your feet
+在你的脚下
+%%%%
+before you
+在你面前
+%%%%
+It is surrounded by a 
+它被
+%%%%
+blinding 
+耀眼
+%%%%
+dazzling 
+炫目
+%%%%
+bright 
+明亮
+%%%%
+gentle 
+柔和
+%%%%
+glow.
+的光芒所笼罩。
+%%%%
+A cloud of %s.
+一团%s。
+%%%%
+(>)pray
+(>)祈祷
+%%%%
+(>)enter
+(>)进入
+%%%%
+(<)exit
+(<)退出
+%%%%
+try to 
+尝试
+%%%%
+qui(v)er
+(v)装备
+%%%%
+ each
+每次
+%%%%
+ (if damage dealt)
+（若造成伤害）
+%%%%
+ fire
+火焰
+%%%%
+ susceptible to 
+易受
+%%%%
+ vulnerable to silver and hated by Zin.\n
+易受银器伤害，并被吉恩憎恨。\n
+%%%%
+ cold-blooded and may be slowed by cold attacks.\n
+是冷血动物，可能被寒冷攻击减速。\n
+%%%%
+inflict
+造成
+%%%%
+ 1d5 acid damage when struck in melee.\n
+1d5点酸伤害（近战被击中时）\n
+%%%%
+ insubstantial and immune to ensnarement.\n
+是无实体的，免疫缠绕。\n
+%%%%
+ amorphous and immune to ensnarement.\n
+是无定形的，免疫缠绕。\n
+%%%%
+cover
+移动
+%%%%
+ ground more quickly when invisible.\n
+地面移动速度更快（隐形时）\n
+%%%%
+It will release all of its jellies when polymorphed.\n
+被变形时会释放所有史莱姆。\n
+%%%%
+Despite 
+尽管
+%%%%
+ appearance, 
+的外表，
+%%%%
+ It changes colour whenever you look at it.
+它会在你注视时变色。
+%%%%
+       Evasion: 
+      闪避：
+%%%%
+[ERROR: no desc for item name '%s']. Perhaps this item has been removed?\n
+[错误：物品名称'%s'无描述]。可能该物品已被移除？\n
+%%%%
+
+This ability costs: 
+此能力消耗：
+%%%%
+MP     : 
+法力值：
+%%%%
+HP     : 
+生命值：
+%%%%
+Piety  : 
+虔诚度：
+%%%%
+Gold   : 
+金币：
+%%%%
+free
+免费
+%%%%
+variable
+可变
+%%%%
+One cursed item
+一件诅咒装备
+%%%%
+Torchlight
+火炬之光
+%%%%
+nothing.
+无消耗
+%%%%
+You must catch your breath between uses of this ability.
+此能力使用后需要喘息时间。
+%%%%
+This ability takes some time before being effective.
+此能力需要一定时间才能生效。
+%%%%
+Using this ability will hurt you for a large fraction of your current HP.
+使用此能力将消耗你当前生命值的大部分。
+%%%%
+Using this ability invokes torment.
+使用此能力会引发折磨效果。
+%%%%
+This ability causes exhaustion, and cannot be used when exhausted.
+此能力会导致力竭，力竭时无法使用。
+%%%%
+This ability is instantaneous.
+此能力为瞬间生效。
+%%%%
+You can use this ability even if confused.
+混乱状态下也可使用此能力。
+%%%%
+This ability will temporarily drain your maximum health when used
+使用此能力将暂时汲取你的最大生命值
+%%%%
+, even unsuccessfully
+，即使未成功
+%%%%
+Gaining experience will replenish charges of this ability.
+获得经验值将补充此能力的充能次数。
+%%%%
+\nAfter this sacrifice, you will find that 
+\n献祭之后，你将发现
+%%%%
+Draw a card from 
+从
+%%%%
+no special abilities
+无特殊能力
 %%%%

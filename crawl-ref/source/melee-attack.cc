@@ -932,14 +932,14 @@ bool melee_attack::handle_phase_hit()
             // ZH: "<atk><verb>了<def>，但没有造成伤害。"
             {
                 const bool is_player = attacker->is_player();
-                const char* verb = is_player
-                    ? attack_verb.c_str()
-                    : attacker->conj_verb(mons_attack_verb()).c_str();
+                const string verb = is_player
+                    ? attack_verb
+                    : attacker->conj_verb(mons_attack_verb());
                 mprf(T_(is_player
                         ? "%s %s %s but do no damage."
                         : "%s %s %s but does no damage."),
                      attacker->name(DESC_THE).c_str(),
-                     verb,
+                     verb.c_str(),
                      defender_name(true).c_str());
             }
         }
@@ -3702,13 +3702,15 @@ void melee_attack::announce_hit()
                 stealth = T_("stealthily "); // ZH: "潜行地" (no trailing space)
             }
 
+            const string verb = attacker->conj_verb(mons_attack_verb());
+
             if (Options.language == lang_t::ZH && attk_type == AT_SPORE)
             {
                 // Chinese: attacker 向 defender verb
                 mprf_p(T_("%1$s向%4$s%3$s%5$s%6$s%7$s%8$s"),
                        atk_name(DESC_THE).c_str(),
                        stealth.c_str(),
-                       attacker->conj_verb(mons_attack_verb()).c_str(),
+                       verb.c_str(),
                        defender_name(true).c_str(),
                        charge_desc().c_str(),
                        debug_damage_number().c_str(),
@@ -3720,7 +3722,7 @@ void melee_attack::announce_hit()
                 mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"),
                        atk_name(DESC_THE).c_str(),
                        stealth.c_str(),
-                       attacker->conj_verb(mons_attack_verb()).c_str(),
+                       verb.c_str(),
                        defender_name(true).c_str(),
                        charge_desc().c_str(),
                        debug_damage_number().c_str(),

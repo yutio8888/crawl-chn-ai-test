@@ -1297,8 +1297,8 @@ void bolt::do_fire()
                         feature_description_at(pos(), false, DESC_A) :
                         monster_at(pos())->name(DESC_A);
 
-            tracer->blocked("Your line of fire to " + blockee
-                            + " is blocked by " + blocker + ".");
+            tracer->blocked(make_stringf(T_("Your line of fire to %s is blocked by %s."),
+                            blockee.c_str(), blocker.c_str()));
             finish_beam();
             return;
         }

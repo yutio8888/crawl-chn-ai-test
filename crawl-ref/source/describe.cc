@@ -2415,7 +2415,7 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
         // TODO: why doesn't this show shield effect? Reconcile with
         // _display_attack_delay
         description += make_stringf_p(T_("\n\nYour current strength and Armour skill "
-                       "slows attacks with missile weapons (like %s) "), you.weapon()->name(DESC_YOUR));
+                        "slows attacks with missile weapons (like %s) "), you.weapon()->name(DESC_YOUR).c_str());
         if (aevp >= DELAY_SCALE)
             description += make_stringf(T_("by %.1f."), aevp / (10.0f * DELAY_SCALE));
         else

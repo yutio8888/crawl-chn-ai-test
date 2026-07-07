@@ -185,16 +185,16 @@ static const char *describe_xom_mood()
     const int mood = xom_favour_rank();
     ASSERT(mood >= 0);
     ASSERT((size_t) mood < ARRAYSZ(xom_moods));
-    return xom_moods[mood];
+    return T_(xom_moods[mood]);
 }
 
 const string describe_xom_favour()
 {
     string favour;
     if (!you_worship(GOD_XOM))
-        favour = "a very buggy toy of Xom.";
+        favour = T_("a very buggy toy of Xom.");
     else if (you.gift_timeout < 1)
-        favour = "a BORING thing.";
+        favour = T_("a BORING thing.");
     else
         favour = describe_xom_mood();
 
@@ -295,12 +295,12 @@ static void _xom_is_stimulated(int maxinterestingness,
     if (was_stimulated || force_message)
     {
         god_speaks(GOD_XOM,
-                   ((interestingness > 160) ? message_array[5] :
-                    (interestingness >  80) ? message_array[4] :
-                    (interestingness >  60) ? message_array[3] :
-                    (interestingness >  40) ? message_array[2] :
-                    (interestingness >  20) ? message_array[1]
-                                            : message_array[0]));
+                   T_(((interestingness > 160) ? message_array[5] :
+                       (interestingness >  80) ? message_array[4] :
+                       (interestingness >  60) ? message_array[3] :
+                       (interestingness >  40) ? message_array[2] :
+                       (interestingness >  20) ? message_array[1]
+                                               : message_array[0])));
         //updating piety status line
         you.redraw_title = true;
     }
@@ -373,7 +373,7 @@ void xom_tick()
         new_xom_favour = describe_xom_favour();
         if (old_xom_favour != new_xom_favour)
         {
-            const string msg = "You are now " + new_xom_favour;
+            const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
             god_speaks(you.religion, msg.c_str());
         }
 
@@ -5107,7 +5107,7 @@ void xom_take_action(xom_event_type action, int sever)
         const string new_xom_favour = describe_xom_favour();
         if (was_bored || old_xom_favour != new_xom_favour)
         {
-            const string msg = "You are now " + new_xom_favour;
+            const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
             god_speaks(you.religion, msg.c_str());
         }
 #ifdef NOTE_DEBUG_XOM
@@ -5120,7 +5120,7 @@ void xom_take_action(xom_event_type action, int sever)
         // If we didn't reroll at least mention the new favour
         // now that it's not "BORING thing" anymore.
         const string new_xom_favour = describe_xom_favour();
-        const string msg = "You are now " + new_xom_favour;
+        const string msg = make_stringf(T_("You are now %s"), new_xom_favour.c_str());
         god_speaks(you.religion, msg.c_str());
     }
 }

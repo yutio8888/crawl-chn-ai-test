@@ -1765,7 +1765,7 @@ void cloud_struct::announce_actor_engulfed(const actor *act,
         mprf_p(T_("%1$s %2$s %3$s."),
              act->name(DESC_THE).c_str(),
              act->conj_verb(C_("verb", "are swarmed by")).c_str(),
-             cloud_name().c_str());
+             T_(cloud_name().c_str()));
     }
     else
     {
@@ -1773,7 +1773,7 @@ void cloud_struct::announce_actor_engulfed(const actor *act,
              act->name(DESC_THE).c_str(),
              beneficial ? act->conj_verb(C_("verb", "bask")).c_str()
                         : act->conj_verb(C_("verb", "are engulfed")).c_str(),
-             cloud_name().c_str());
+             T_(cloud_name().c_str()));
         return;
     }
 

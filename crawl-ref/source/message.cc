@@ -1979,7 +1979,7 @@ void canned_msg(canned_message_type which_message)
     {
         case MSG_SOMETHING_APPEARS:
             mprf(T_("Something appears %s!"),
-                 player_has_feet() ? "at your feet" : "before you");
+                 player_has_feet() ? T_("at your feet") : T_("before you"));
             break;
         case MSG_NOTHING_HAPPENS:
             mpr(T_("Nothing appears to happen."));
