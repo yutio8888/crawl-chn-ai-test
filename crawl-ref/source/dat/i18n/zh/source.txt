@@ -26385,7 +26385,7 @@ It can be maximally enchanted to +%s.
 它可以被最大附魔到+%s。
 %%%%
 If you quaff this potion your AC would be %d.
-如果你饮下这瓶药水，你的AC将变为%d。
+如果你饮下这瓶药水，你的护甲将变为%d。
 %%%%
 (w)ield
 (w)持有
@@ -27786,7 +27786,7 @@ tentacle connect failed! What the heck!  severed status %d
 属于
 %%%%
 \nYour AC would %s.
-\n你的AC将%s。
+\n你的护甲将%s。
 %%%%
 '%s' category.
 '%s'类别。
@@ -36659,3 +36659,21 @@ gnarled
 smoking 
 冒烟的
 %%%%  
+you use unclean or chaotic magic or items
+你使用不净或混乱的魔法或物品
+%%%%
+you polymorph monsters
+你将怪物变形
+%%%%
+you deliberately mutate or transform yourself
+你故意变异或转化自己
+%%%%
+you use evil magic or items
+你使用邪恶魔法或物品
+%%%%
+good
+有益
+%%%%
+bad
+有害
+%%%%

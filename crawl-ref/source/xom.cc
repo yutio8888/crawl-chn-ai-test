@@ -1289,7 +1289,7 @@ static void _xom_polymorph_monster(monster &mons, bool helpful)
                                         : "something unseen";
 
         string note = make_stringf(T_("%s polymorph %s -> %s"),
-                                   helpful ? "good" : "bad",
+                                     T_(helpful ? "good" : "bad"),
                                    old_name.c_str(), new_name.c_str());
 
 #ifdef NOTE_DEBUG_XOM
