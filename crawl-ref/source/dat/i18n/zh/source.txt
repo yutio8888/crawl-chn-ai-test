@@ -1,4 +1,3 @@
-%%%%
     ! - Random character
     ! - 随机角色
 %%%%
@@ -3600,9 +3599,6 @@ disjunct
 Dismiss
 遣散
 %%%%
-dispersal
-驱散
-%%%%
 disperse
 驱
 %%%%
@@ -4305,9 +4301,6 @@ Huh?
 %%%%
 Ice
 寒冰
-%%%%
-iceblast
-冰爆
 %%%%
 identify
 鉴定
@@ -5472,9 +5465,6 @@ Poisonous toadstools sprout around you!
 poke
 
 戳
-%%%%
-polymorph
-变形
 %%%%
 positive energy
 正能量
@@ -14673,9 +14663,6 @@ You radiate a%s aura of righteousness, making those within it easier to hit.
 %s wrath lasts for a relatively %s duration.
 %s的愤怒持续时间相对较%s。
 %%%%
-Flail
-链枷
-%%%%
 Shield
 盾牌
 %%%%
@@ -16744,7 +16731,7 @@ Demonic Horde
 恶魔大军
 %%%%
 Draconian Breath
-龙裔吐息
+龙人吐息
 %%%%
 Ephemeral Infusion
 短暂灌注
@@ -17705,9 +17692,6 @@ bolt of dispelling energy
 fireball
 火球
 %%%%
-magic dart
-魔法飞弹
-%%%%
 crystal spear
 水晶矛
 %%%%
@@ -17725,9 +17709,6 @@ salvo of icicles
 %%%%
 salvo of frigid ice
 极寒冰锥齐射
-%%%%
-orb of electricity
-电光球
 %%%%
 ball of acid
 酸液球
@@ -17761,15 +17742,6 @@ splash of poison
 %%%%
 sting
 刺痛
-%%%%
-sticky flame
-黏着火焰
-%%%%
-throw flame
-投掷火焰
-%%%%
-throw frost
-投掷冰霜
 %%%%
 zap
 电击
@@ -17831,12 +17803,6 @@ crushing gravity
 explosive embers
 爆炸余烬
 %%%%
-flash freeze
-急冻
-%%%%
-freezing gust
-冰冻狂风
-%%%%
 gout of destruction
 毁灭喷涌
 %%%%
@@ -17845,9 +17811,6 @@ hail
 %%%%
 jagged bones
 锯齿骨头
-%%%%
-kinetic grapnel
-动力抓钩
 %%%%
 lance of force
 力之长矛
@@ -17888,9 +17851,6 @@ shadowy lightning
 shockwave
 冲击波
 %%%%
-slug dart
-弹丸飞镖
-%%%%
 surge of chaos
 混沌涌动
 %%%%
@@ -17914,9 +17874,6 @@ fragment of death
 %%%%
 swarm of vampire bats
 吸血蝙蝠群
-%%%%
-fortress blast
-堡垒冲击
 %%%%
 grasping water
 缠绕之水
@@ -17965,9 +17922,6 @@ devastation
 %%%%
 vigour-doubling
 活力倍增
-%%%%
-enfeeble
-衰弱
 %%%%
 magic web
 魔法网
@@ -18031,9 +17985,6 @@ unravelled magic
 %%%%
 unravelling
 解析
-%%%%
-vampiric draining
-吸血
 %%%%
 vexing
 恼怒
@@ -20204,9 +20155,6 @@ very drained
 magic-sapped
 魔力枯竭
 %%%%
-corona
-光晕
-%%%%
 coronas
 光晕
 %%%%
@@ -20917,11 +20865,13 @@ on
 ，或
 %%%%
 <%s>I'll put %s outside for you.</%s>
+
 %%%%
 <%s>我会将%s放在外面给你。</%s>\n
 
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>
+
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
 
@@ -20929,6 +20879,7 @@ on
 
 %%%%
 <%s>You don't have enough money.</%s>
+
 %%%%
 <%s>你的金币不够。</%s>\n
 
@@ -21094,9 +21045,6 @@ The sentinel's mark upon you fades away.
 %%%%
 The sign of ruin upon you fades.
 你身上的毁灭印记消退了。
-%%%%
-
-
 %%%%
 You are no longer berserk.
 你不再狂暴了。
@@ -21532,9 +21480,6 @@ seismosaurus egg
 %%%%
 shadow demon
 暗影恶魔
-%%%%
-shadow turret
-暗影炮塔
 %%%%
 shadowghast
 暗影食尸鬼
@@ -23267,9 +23212,6 @@ Remove which piece of jewellery?
 %%%%
 Unequip which item?
 卸下哪个物品？
-%%%%
-Unarmed
-徒手
 %%%%
  (current attack)
 （当前攻击方式）
@@ -26726,16 +26668,8 @@ If you transformed using this talisman:
 % to hit with your
 % 命中，使用你的
 %%%%
- terribly
-极其
-NO GOD
-无神
-%%%%
 (Boost:
 （增幅：
-%%%%
- (while you are blinded and from distance 
-（处于失明状态，距离
 %%%%
 , and
 和
@@ -26754,12 +26688,6 @@ NO GOD
 %%%%
 A Card
 一张卡牌
-%%%%
- a little 
-有点
-%%%%
-and
- 和
 %%%%
 At 100% training
 以100%训练率
@@ -26781,11 +26709,6 @@ broken translucent
 %%%%
 Charges:
 充能:
-%%%%
-describe
-描述
-
-# L288: simple
 %%%%
 Explosion damage:
 爆炸伤害:
@@ -26847,17 +26770,11 @@ Lets you pick
 none (normally
 无（通常为
 %%%%
- offers you knowledge of 
-为你提供了
-%%%%
 open
 打开的
 %%%%
 open translucent
 打开的透明
-%%%%
- puts on 
-戴上了
 %%%%
 Randomly select a
 随机选择一个
@@ -26892,13 +26809,6 @@ Space - Pick
 Stash search prefixes:
 储藏搜索前缀:
 %%%%
- takes off 
-脱下了
-%%%%
-the
-
-此
-%%%%
 There is an entrance to
 这里有一个通向
 %%%%
@@ -26920,26 +26830,11 @@ Trunk不计入锦标赛，你想要
 unnamed
 未命名的
 %%%%
- unwields 
-收起了
-%%%%
- very 
-非常
-%%%%
 very greatly
 大幅
 %%%%
- wears 
-穿上了
-%%%%
 Which god (%s)?
 选择哪个神（%s）？
-%%%%
-wielding
- 挥舞着
-%%%%
- wields 
-挥舞着
 %%%%
 would
 如果进行训练，
@@ -27004,15 +26899,6 @@ the
 
 此
 %%%%
- very 
-非常
-%%%%
- extremely 
-极其
-%%%%
-on
-开启
-%%%%
  the 
 
 # X3 B2: hardcoded Chinese mprf() → T_() — mutation.cc
@@ -27023,14 +26909,8 @@ Large
 on 
 在
 %%%%
- a little 
-有点
-%%%%
  ring
 戒指
-%%%%
-Conjuration
-咒法
 %%%%
 MP: 
 魔: 
@@ -27043,11 +26923,6 @@ HP:
 %%%%
 Next: 
 下级: 
-%%%%
- terribly
-极其
-NO GOD
-无神
 %%%%
 (gained %d)
 
@@ -27062,17 +26937,11 @@ Sacrifice
 Got 
 获得了
 %%%%
- with 
-用
-%%%%
 Acquired 
 获得了
 %%%%
 Bought 
 购买了
-%%%%
- for 
-花了
 %%%%
 Donated 
 捐献了
@@ -27085,9 +26954,6 @@ You acquired
 %%%%
 Your wizardly powers created 
 你的巫师力量创造了
-%%%%
- gifted 
-赐予了你
 %%%%
 You stumbled upon 
 你偶然发现了
@@ -27149,10 +27015,6 @@ closed
 
 关闭的 
 %%%%
- armed with 
-
- 装备着 
-%%%%
 carrying 
 
 携带着 
@@ -27160,18 +27022,6 @@ carrying
 , 
 
 、
-%%%%
-                   g - Guard the area.      f - Follow me.
-
-                   g - 守卫此区域。      f - 跟我来。
-%%%%
-  [%c] - %d gold - 
-
-  [%c] - %d金币 - 
-%%%%
- spell hidden 
-
- 法术隐藏 
 %%%%
 %s (Confirm with "%s".) 
 
@@ -27409,20 +27259,11 @@ your
 
 你的
 %%%%
- Please select your 
-请选择你的
-%%%%
-    * - Random 
-    * - 随机
-%%%%
 mollified 
 安抚了
 %%%%
 abandoned 
 背弃了
-%%%%
- (while you are blinded and from distance 
-（失明且远距时
 %%%%
 Assign waypoint to what number? (0-9%s) 
 将路径点分配给哪个编号？（0-9%s） 
@@ -27439,14 +27280,8 @@ huge
 glowing 
 发光
 %%%%
-Random
-随机
-%%%%
 Small
 小
-%%%%
-# - Recommended character
-# - 推荐角色
 %%%%
  amulet
 护身符
@@ -27522,9 +27357,6 @@ sock
 %%%%
 bludgeon
 锤击
-%%%%
-shatter
-粉碎
 %%%%
 splatter
 砸烂
@@ -27778,286 +27610,150 @@ Enter next level anyway?
  describe         
  描述             
 %%%%
-
-%%%%
- buy marked items 
- 购买标记物品    
-%%%%
-
-%%%%
  exit          
  退出           
-%%%%
-
 %%%%
  items    
  物品    
 %%%%
-
-%%%%
 mark item for purchase   
 标记购买物品         
-%%%%
-
 %%%%
 examine item             
 检查物品                 
 %%%%
-
-%%%%
 Choose to examine item  
 选择检查物品        
-%%%%
-
-%%%%
- buy shopping list
- 购买购物清单     
-%%%%
-
-%%%%
- <w>buy</w>|examine items
- <w>购买</w>|检查物品
-%%%%
-
-%%%%
- buy|<w>examine</w> items
- 购买|<w>检查</w>物品
-%%%%
-
-%%%%
- Invoke -    
- 祈唤 -      
-%%%%
-
 %%%%
  on 
  对 
 %%%%
-
-%%%%
 , or 
 、或 
-%%%%
-
 %%%%
 :
 ：
 %%%%
-
-%%%%
- (about %d%% of your maximum possible piety)
-（约最大虔诚值的%d%%）
-%%%%
-
-%%%%
  (unknown)
 （未知）
-%%%%
-
 %%%%
 Damage: %s\n 
 伤害：%s\n 
 %%%%
-
-%%%%
 Deactivating autopickup; reactivate with <w>%s</w>.
 关闭自动拾取；按<w>%s</w>重新开启。
-%%%%
-
 %%%%
 You now have enough gold to 
 你现在有足够的金币来
 %%%%
-
-%%%%
-
-%%%%
-Your stasis prevents you from teleporting.
-你的停滞状态阻止了传送。
-%%%%
-
-%%%%
 [<w>&</w>] All spells  
 [<w>&</w>] 所有法术  
-%%%%
-
 %%%%
 [<w>*/%</w>] Inventory  
 [<w>*/%</w>] 物品栏  
 %%%%
-
-%%%%
 [<w>^</w>] All abilities  
 [<w>^</w>] 所有能力  
-%%%%
-
 %%%%
 releases
 释放
 %%%%
-
-%%%%
-
-%%%%
 \n%*s: 
 \n%*s：
-%%%%
-
 %%%%
 \n%*s: %s
 \n%*s：%s
 %%%%
-
-%%%%
 \n\n%*s: 
 \n\n%*s：
-%%%%
-
 %%%%
 \n\nIt can be maximally enchanted to +%s.
 \n\n最多可附魔至+%s。
 %%%%
-
-%%%%
 It protects you from 
 它保护你免受
-%%%%
-
 %%%%
 Blades
 利刃
 %%%%
-
-%%%%
 Deck
 卡组
-%%%%
-
 %%%%
 Rod
 魔杖
 %%%%
-
-%%%%
 Other
 其他
-%%%%
-
 %%%%
 Total
 总计
 %%%%
-
-%%%%
 A terrible howling echoes in your mind.
 一阵可怕的嚎叫在你脑海中回响。
-%%%%
-
 %%%%
 Quad Damage is wearing off.
 四倍伤害正在消退。
 %%%%
-
-%%%%
 Vertigo is making it harder to attack, cast, and dodge.
 眩晕使你的攻击、施法和闪避更加困难。
-%%%%
-
 %%%%
 You are about to teleport.
 你即将传送。
 %%%%
-
-%%%%
 You are acrobatic and have increased evasion.
 你身手敏捷，闪避能力提高。
-%%%%
-
 %%%%
 You are agile.
 你身手敏捷。
 %%%%
-
-%%%%
 You are armoured with a cloak of flame.
 你被烈焰斗篷所保护。
-%%%%
-
 %%%%
 You are beckoning forth a horde of dragons.
 你正在召唤一群巨龙。
 %%%%
-
-%%%%
 You are briefly shielded after casting or invoking.
 你施法或祈唤后会短暂获得护盾。
-%%%%
-
 %%%%
 You are disjoining your surroundings.
 你正在与周围环境隔离。
 %%%%
-
-%%%%
 You are liquefying the ground beneath you.
 你正在液化脚下的地面。
-%%%%
-
 %%%%
 You are mighty.
 你力大无穷。
 %%%%
-
-%%%%
 You are parrying attacks and have increased SH.
 你正在格挡攻击，盾牌强度提高。
-%%%%
-
 %%%%
 You are standing in death's doorway.
 你正站在死亡之门中。
 %%%%
-
-%%%%
 You are terrified.
 你惊恐万分。
-%%%%
-
 %%%%
 You are unable to call your canine familiar.
 你无法召唤你的犬类伙伴。
 %%%%
-
-%%%%
 You are unable to create a polar vortex.
 你无法创造极地漩涡。
-%%%%
-
 %%%%
 You are vexed.
 你焦躁不安。
 %%%%
-
-%%%%
 You feel very devious.
 你感到十分狡诈。
-%%%%
-
 %%%%
 You radiate silence.
 你散发出沉默光环。
 %%%%
-
-%%%%
 Your time is quickly running out!
 你的时间快要耗尽了！
-%%%%
-
 %%%%
 The further away your target is the more your accuracy is reduced.
 目标越远，你的命中率越低。
 %%%%
-
 The exit collapses.
 出口塌陷了。
 %%%%
@@ -28118,21 +27814,6 @@ with %s
 It is%s good for stabbing helpless or unaware enemies.
 它%s适合偷袭无助或无防备的敌人。
 %%%%
- (about %d%% of your maximum possible piety)
-（约你最大虔诚值的%d%%）
-%%%%
- (next: %s)
-（下一个：%s）
-%%%%
- (%d in deck)
-（牌组中%d张）
-%%%%
- <lightgrey>(%s failure risk)</lightgrey>
-<lightgrey>（%s失败风险）</lightgrey>
-%%%%
- (%s)
-（%s）
-%%%%
 %s%s
 %s%s
 %%%%
@@ -28147,15 +27828,6 @@ HP
 %%%%
 MP
 魔力
-%%%%
-Harm
-伤害
-%%%%
-Rampage
-狂暴
-%%%%
-Archmagi
-大法师
 %%%%
 Clar
 清明
@@ -28205,18 +27877,6 @@ Delay
 Bane
 祸根
 %%%%
-*Curse
-*诅咒
-%%%%
-*Slow
-*缓慢
-%%%%
-^Fragile
-^脆弱
-%%%%
-*Silence
-*沉默
-%%%%
 RegenMP
 回魔
 %%%%
@@ -28237,12 +27897,6 @@ Hungry
 %%%%
 +Rage
 +狂暴
-%%%%
-*Rage
-*狂暴
-%%%%
-rCorr
-防腐蚀
 %%%%
 *Corrode
 *腐蚀
@@ -28268,26 +27922,14 @@ rCorr
 *Victory
 胜利
 %%%%
-+Blink
-+闪现
-%%%%
 +Damnation
 +天谴
-%%%%
--Cast
--施法
-%%%%
--Tele
--传送
 %%%%
 Acc+∞
 命中+∞
 %%%%
 Aegis
 庇护
-%%%%
-Air
-风
 %%%%
 Alch
 炼金
@@ -28303,9 +27945,6 @@ Brand
 %%%%
 Brill Will-∞
 聪慧 意志-∞
-%%%%
-Chemistry
-炼金
 %%%%
 Conj
 咒法
@@ -28324,9 +27963,6 @@ Dissipate
 %%%%
 Dragonpray
 龙祈
-%%%%
-Faith
-信仰
 %%%%
 Flames, rFlCloud
 烈焰，火云抗
@@ -28364,17 +28000,11 @@ Inspire Amulet+
 Invo=14 Evo=0
 祈唤=14 唤术=0
 %%%%
-Light
-光耀
-%%%%
 MP+9
 魔力+9
 %%%%
 Majesty Ring++
 威严 戒指++
-%%%%
-Mayhem
-屠戮
 %%%%
 Mindtap
 汲魔
@@ -28403,14 +28033,8 @@ Rampage+∞
 Reaping Hat+
 收割 帽子+
 %%%%
-RegenMP
-回魔
-%%%%
 RegenMP+
 回魔+
-%%%%
-Repulsion
-排斥
 %%%%
 RevGuard
 反转卫士
@@ -28418,14 +28042,8 @@ RevGuard
 Ring+
 戒指+
 %%%%
-Shadows
-暗影
-%%%%
 Shroompunch Gloves+
 菇拳 手套+
-%%%%
-SpellMotor
-法术引擎
 %%%%
 Summ
 召唤
@@ -28433,14 +28051,8 @@ Summ
 Tloc
 传送
 %%%%
-Umbra
-暗影
-%%%%
 Valiant
 英勇
-%%%%
-Wildshape
-野性
 %%%%
 Wiz-
 法术-
@@ -28457,12 +28069,6 @@ Zealotry,
 anguish,
 痛苦，
 %%%%
-archery
-弓术
-%%%%
-attunement
-协调
-%%%%
 backblast,
 后爆，
 %%%%
@@ -28472,9 +28078,6 @@ chaos arc
 chaos,
 混沌，
 %%%%
-command
-指挥
-%%%%
 coup de grace
 致命一击
 %%%%
@@ -28483,9 +28086,6 @@ curare,
 %%%%
 curses,
 诅咒，
-%%%%
-death
-亡语
 %%%%
 deathbane,
 死灵克星，
@@ -28505,14 +28105,8 @@ discharge,
 disrupt,
 扰乱，
 %%%%
-earth
-地
-%%%%
 ele,
 元素，
-%%%%
-energy
-能量
 %%%%
 evervamp,
 永恒吸血，
@@ -28520,17 +28114,8 @@ evervamp,
 execute
 处决
 %%%%
-fire
-火
-%%%%
 flash freeze,
 瞬间冻结，
-%%%%
-flight
-飞行
-%%%%
-freeze
-冻结
 %%%%
 freeze, rev,
 冻结，反转，
@@ -28538,41 +28123,17 @@ freeze, rev,
 freezing cloud,
 冰云，
 %%%%
-glass
-玻璃
-%%%%
-guile
-狡诈
-%%%%
-holy
-圣光
-%%%%
-ice
-冰
-%%%%
 immolate, rFlCloud
 自燃，火云抗
 %%%%
-infusion
-注入
-%%%%
-invisibility
-隐身
-%%%%
 knockback,
 击退，
-%%%%
-manifold assault
-多重打击
 %%%%
 meekguard
 护卫
 %%%%
 megavamp
 超级吸血
-%%%%
-mesmerism
-催眠
 %%%%
 mutate,
 突变，
@@ -28582,15 +28143,6 @@ omnireflect
 %%%%
 orb Charlatan
 欺诈宝珠
-%%%%
-pain
-苦痛
-%%%%
-parrying
-格挡
-%%%%
-pyromania
-纵火
 %%%%
 rPois∞
 毒免∞
@@ -28607,15 +28159,6 @@ reach-cleave
 reach-cleave, Poleaxe
 远距劈砍，长柄斧加
 %%%%
-regeneration
-再生
-%%%%
-resonance
-共鸣
-%%%%
-sInv
-看隐
-%%%%
 shock,
 冲击，
 %%%%
@@ -28628,9 +28171,6 @@ slay drac,
 slick, slippery,
 滑溜，滑溜，
 %%%%
-sonic wave
-音波
-%%%%
 spectral,
 幻影，
 %%%%
@@ -28640,9 +28180,6 @@ spellvamp,
 stab,
 偷袭，
 %%%%
-stardust
-星尘
-%%%%
 steadfast,
 坚定，
 %%%%
@@ -28651,9 +28188,6 @@ sticky flame,
 %%%%
 swift,
 迅捷，
-%%%%
-torment
-折磨
 %%%%
 Axe of Woe
 灾厄之斧
@@ -28665,10 +28199,6 @@ Black Knight's barding
 %%%%
 Charlatan's Orb
 江湖郎中的法球
-
-%%%%
-Cigotuvi's embrace
-西格图维之拥
 
 %%%%
 Delatra's gloves
@@ -28689,10 +28219,6 @@ Kryia's mail coat
 %%%%
 Lear's hauberk
 李尔的锁子甲
-
-%%%%
-Lehudib's crystal spear
-勒胡迪布的水晶矛
 
 %%%%
 Lochaber axe
@@ -29268,9 +28794,6 @@ Zealotry
 mutate
 突变
 %%%%
-demonic
-恶魔
-%%%%
 rev
 反转
 %%%%
@@ -29291,9 +28814,6 @@ curses
 %%%%
 \nYour spell failure would
 你的法术失败率将
-%%%%
-It is an ancient artefact.
-它是一件远古神器。
 %%%%
 It cannot be enchanted further.
 它无法被进一步附魔。
@@ -29347,6 +28867,7 @@ Your followers are
 你的追随者们
 %%%%
 is 
+
 %%%%
  greatly 
 极其
@@ -29382,11 +28903,13 @@ feel
 感受到
 %%%%
 a 
+
 %%%%
  prematurely
 过早地
 %%%%
 are
+
 %%%%
  wildly
 疯狂地
@@ -29631,22 +29154,9 @@ you hear an explosion!
 you refuse to depend on such disposable conveniences.
 你拒绝依赖这种一次性便利品。
 %%%%
-and
- 和
-%%%%
-, and
-，和
-
-%%%%
 # Category C: DBRAND/DESCRIP entries — unrand artefact descriptions (2026-07-04)
 # Phase 2: name-only bodies + Phase 3: none names + Phase 4: none bodies
 
-%%%%
-Sonic Wave
-音波
-%%%%
-Chaos Arc
-混沌弧光
 %%%%
 Radiate
 辐射
@@ -29654,50 +29164,17 @@ Radiate
 Envenom
 淬毒
 %%%%
-Megavamp
-巨力吸血
-%%%%
-Curses
-诅咒
-%%%%
 Hellfire
 地狱火
 %%%%
 Evervamp
 永续吸血
 %%%%
-Execute
-处决
-%%%%
-Spectral
-灵体
-%%%%
-Damnation
-天谴
-%%%%
-Decimate
-屠戮
-%%%%
-Ele
-元素
-%%%%
 Slay Drac
 屠龙
 %%%%
-Mutate
-突变
-%%%%
 Deathbane
 亡灵克星
-%%%%
-Curare
-箭毒
-%%%%
-Disarm
-缴械
-%%%%
-Penet
-穿透
 %%%%
 Bear
 熊灵
@@ -29720,35 +29197,17 @@ Will-∞
 rCloud
 免疫云雾
 %%%%
-Swift
-迅捷
-%%%%
 Avatar's Aegis
 神使之盾
 %%%%
 Discharge
 放电
 %%%%
-Disrupt
-干扰
-%%%%
-Silver
-白银
-%%%%
 Immolate
 献祭
 %%%%
 Spellvamp
 法术吸血
-%%%%
-Omnireflect
-全反射
-%%%%
-Rev
-加速
-%%%%
-Reach+
-长触及+
 %%%%
 Destructive
 毁灭
@@ -29765,17 +29224,8 @@ Infuse+∞
 VampMP
 吸魔
 %%%%
-Coup de Grace
-致命一击
-%%%%
-Meekguard
-弱者护佑
-%%%%
 Steadfast
 稳固
-%%%%
-Reach-Cleave
-长触及-横扫
 %%%%
 Invo=14
 祈唤=14
@@ -29789,9 +29239,6 @@ Slick
 Slippery
 滑步
 %%%%
-Knockback
-击退
-%%%%
 Backblast
 后坐力
 %%%%
@@ -29803,9 +29250,6 @@ Inspire
 %%%%
 Amulet+
 护符+
-%%%%
-Reaping
-收割
 %%%%
 Hat+
 头盔+
@@ -30314,14 +29758,8 @@ You hear the {prefix}crackle of magical portal.
 You hear the {prefix} of funeral chant.
 你听到了葬礼仪式{prefix}。
 %%%%
-slow
-缓慢
-%%%%
 brisk
 快速
-%%%%
-quick
-急促
 %%%%
 rapid
 急速
@@ -30332,20 +29770,11 @@ faint
 steady
 持续
 %%%%
-loud
-响亮
-%%%%
-quiet
-安静
-%%%%
 ear-piercing
 刺耳
 %%%%
 thunderous
 雷鸣般
-%%%%
-deafening
-震耳欲聋
 %%%%
 stately
 庄严
@@ -30371,20 +29800,8 @@ rising multitudes
 full choir
 齐声合唱
 %%%%
- select  
- 选择  
-%%%%
- page down  
- 下一页  
-%%%%
- page up  
- 上一页  
-%%%%
 Letters toggle    
 字母切换    
-%%%%
- toggle selected    
- 切换选中    
 %%%%
 \n<w>%s:</w> %d/%d rune%s: %s
 \n<w>%s:</w> %d/%d个符文：%s
@@ -30509,9 +29926,6 @@ coppery
 golden
 金色
 %%%%
-dark
-深色
-%%%%
 puce
 暗红色
 %%%%
@@ -30587,9 +30001,6 @@ There isn't a suitable marionette in sight.
  melts away.
 融化消失。
 %%%%
- dissipates.
-消散了。
-%%%%
  runs out of power.
 耗尽了能量。
 %%%%
@@ -30598,30 +30009,6 @@ There isn't a suitable marionette in sight.
 %%%%
  expends the last of its power.
 耗尽了最后的能量。
-%%%%
-disappears in a puff of smoke
-在一阵烟雾中消失了
-%%%%
-dissolves into shadows
-融入阴影之中
-%%%%
-disappears in a burst of colours
-在彩色光芒中消失了
-%%%%
-degenerates into a cloud of primal chaos
-退化为一团原始的混沌
-%%%%
-shimmers and vanishes
-闪烁后消失了
-%%%%
-dissolves into a puddle of slime
-溶解为一滩黏液
-%%%%
-returns to the deep
-回到了深海
-%%%%
-disperses
-消散了
 %%%%
 status|Drain
 削命
@@ -31057,10 +30444,6 @@ Projectile damage:
 飞弹伤害：
 
 %%%%
-The 
-
-
-%%%%
 The apparition of 
 
 
@@ -31189,10 +30572,6 @@ a luring song
 一曲诱惑之歌
 
 %%%%
-adept
-熟手
-
-%%%%
 almost instantly
 几乎瞬间
 
@@ -31217,20 +30596,12 @@ common
 常见
 
 %%%%
-conj
-咒法
-
-%%%%
 created by magic and is temporary. 
 由魔法创造，是临时性的。
 
 %%%%
 enter
 进入
-
-%%%%
-giant
-巨型
 
 %%%%
 improve the rate at which it recharges.
@@ -31253,10 +30624,6 @@ master
 大师
 
 %%%%
-medium
-中等
-
-%%%%
 moderate length of
 中等时长
 
@@ -31271,10 +30638,6 @@ novice
 %%%%
 only slightly.
 极小。
-
-%%%%
-poison
-毒素
 
 %%%%
 quickly
@@ -31315,10 +30678,6 @@ very long
 %%%%
 very rare
 非常稀有
-
-%%%%
-very small
-非常小
 
 %%%%
 veteran
@@ -31388,26 +30747,14 @@ Uppercase
 blast
 冲击
 %%%%
-blink
-传送
-%%%%
 collide
 撞上
-%%%%
-constrict
-紧勒
-%%%%
-envenom
-淬毒
 %%%%
 infuriate
 激怒
 %%%%
 sear
 灼烧
-%%%%
-shock
-电击
 %%%%
 slam
 狠狠
@@ -31529,9 +30876,6 @@ You hear an high-pitched explosion!
 You hear an otherworldly crackling!
 你听到一阵非人间的噼啪声！
 %%%%
-You hear an explosion!
-你听到一声爆炸！
-%%%%
  for a moment.
 ，持续了一瞬。
 %%%%
@@ -31547,2510 +30891,2242 @@ Intermediate
 Advanced
 高级
 %%%%
-Random
-随机
-%%%%
-Recommended
-推荐
-%%%%%
 Recite
 诵经
-%%%%%
+%%%%
 Divine Shield
 神圣护盾
-%%%%%
+%%%%
 Divine Vigour
 神圣活力
-%%%%%
+%%%%
 Heroism
 英勇气概
-%%%%%
+%%%%
 Finesse
 战斗技巧
-%%%%%
-Berserk
-狂暴
-%%%%%
+%%%%
 Apocalypse
 启示录
-%%%%%
+%%%%
 Sanctuary
 庇护所
-%%%%%
+%%%%
 Divine Exegesis
 神圣释经
-%%%%%
+%%%%
 Heavenly Storm
 天堂风暴
-%%%%%
+%%%%
 Slouch
 懒散步伐
-%%%%%
+%%%%
 Grand Finale
 华丽终曲
-%%%%%
+%%%%
 Idealise
 理想化
-%%%%%
+%%%%
 Imprison
 禁锢
-%%%%%
+%%%%
 Line Pass
 穿行
-%%%%%
+%%%%
 Power Leap
 强力跳跃
-%%%%%
+%%%%
 Serpent's Lash
 蛇之鞭笞
-%%%%%
+%%%%
 Shatter the Chains
 打碎枷锁
-%%%%%
+%%%%
 Temporal Distortion
 时间扭曲
-%%%%%
+%%%%
 Transference
 移转
-%%%%%
+%%%%
 Vessel of Slaughter
 杀戮容器
-%%%%%
+%%%%
 Vitalisation
 活力化
-%%%%%
+%%%%
 Wall Jump
 蹬墙跳
-%%%%%
+%%%%
 Bend Time
 扭曲时间
-%%%%%
+%%%%
 Banish
 放逐
-%%%%%
+%%%%
 Infernal Legion
 地狱军团
-%%%%%
-Sign of Ruin
-毁灭印记
-%%%%%
-Word of Chaos
-混沌之言
-%%%%%
+%%%%
 Fiery Armour
 火焰护甲
-%%%%%
+%%%%
 Foxfire Swarm
 狐火群
-%%%%%
-Heal Wounds
-治愈伤口
-%%%%%
+%%%%
 Recall Apostles
 召回使徒
-%%%%%
+%%%%
 Recall Undead Harvest
 召回亡灵收割
-%%%%%
+%%%%
 Elemental Force
 元素之力
-%%%%%
+%%%%
 Oozemancy
 软泥术
-%%%%%
+%%%%
 Overgrow
 过度生长
-%%%%%
+%%%%
 Potion Petition
 药剂祈求
-%%%%%
+%%%%
 Receive Armour
 接收护甲
-%%%%%
+%%%%
 Receive Weapon
 接收武器
-%%%%%
+%%%%
 Receive Forbidden Knowledge
 接收禁忌知识
-%%%%%
+%%%%
 Call Merchant
 召唤商人
-%%%%%
+%%%%
 Deal Four
 发四张
-%%%%%
+%%%%
 Draw Destruction
 抽毁灭
-%%%%%
+%%%%
 Draw Escape
 抽逃脱
-%%%%%
+%%%%
 Draw Summoning
 抽召唤
-%%%%%
+%%%%
 Draw Stack
 抽牌组
-%%%%%
+%%%%
 Stack Five
 堆五张
-%%%%%
+%%%%
 Triple Draw
 三连抽
-%%%%%
-Hop
-跳跃
-%%%%%
+%%%%
 Cacophony
 杂音
-%%%%%
+%%%%
 Enkindle
 点燃
-%%%%%
+%%%%
 Bat Swarm
 蝙蝠群
-%%%%%
+%%%%
 Evoke Blink
 激发闪烁
-%%%%%
+%%%%
 Evoke Invisibility
 激发隐形
-%%%%%
+%%%%
 Evoke Damnation
 激发诅咒
-%%%%%
+%%%%
 Evoke the Staff of Olgreb
 激发奥尔格雷布之杖
-%%%%%
+%%%%
 End Transformation
 结束变形
-%%%%%
+%%%%
 Forget Spell
 遗忘法术
-%%%%%
+%%%%
 Heal Self
 自愈
-%%%%%
+%%%%
 Recall Ancestor
 召回先祖
-%%%%%
-Golden Breath
-黄金吐息
-%%%%%
+%%%%
 Breathe Poison Gas
 喷吐毒气
-%%%%%
+%%%%
 Breathe Rust
 喷吐铁锈
-%%%%%
+%%%%
 Draw Out Power
 抽取力量
-%%%%%
+%%%%
 Wall of Briars
 荆棘之墙
-%%%%%
+%%%%
 No ability
 无能力
-%%%%%
+%%%%
 Bestial Takedown
 兽性扑倒
-%%%%%
+%%%%
 Watery Grave
 水葬
-%%%%%
+%%%%
 Imprint Weapon
 烙印武器
-%%%%%
+%%%%
 Invent Gizmo
 发明装置
-%%%%%
+%%%%
 Brand Weapon With Distortion
 扭曲烙印武器
-%%%%%
+%%%%
 Brand Weapon With Holy Wrath
 圣怒烙印武器
-%%%%%
+%%%%
 Brand Weapon With Pain
 痛苦烙印武器
-%%%%%
+%%%%
 Brand Self #1
 自我烙印 #1
-%%%%%
+%%%%
 Brand Self #2
 自我烙印 #2
-%%%%%
+%%%%
 Brand Self #3
 自我烙印 #3
-%%%%%
+%%%%
 Curse Item
 诅咒物品
-%%%%%
+%%%%
 Unearth Wretches
 挖掘可怜虫
-%%%%%
+%%%%
 Blood for Blood
 以血还血
-%%%%%
+%%%%
 Channel Magic
 引导魔力
-%%%%%
+%%%%
 Convert to Beogh
 皈依贝奥格
-%%%%%
-Depart the Abyss
-离开深渊
-%%%%%
+%%%%
 Donate Gold
 捐赠金币
-%%%%%
+%%%%
 Duel
 决斗
-%%%%%
+%%%%
 Enter the Abyss
 进入深渊
-%%%%%
+%%%%
 Fathomless Shackles
 深不可测的枷锁
-%%%%%
+%%%%
 Grow Ballistomycete
 生长弩菌
-%%%%%
+%%%%
 Grow Oklob
 生长奥克罗布
-%%%%%
+%%%%
 Imbue Servitor
 灌注仆从
-%%%%%
+%%%%
 Light the Black Torch
 点燃黑火炬
-%%%%%
+%%%%
 Purification
 净化
-%%%%%
+%%%%
 Reject Sacrifices
 拒绝献祭
-%%%%%
+%%%%
 Rising Flame
 升腾之焰
-%%%%%
+%%%%
 Sacrifice Arcana
 献祭奥秘
-%%%%%
+%%%%
 Sacrifice Artifice
 献祭技巧
-%%%%%
+%%%%
 Sacrifice Courage
 献祭勇气
-%%%%%
+%%%%
 Sacrifice Drink
 献祭饮品
-%%%%%
+%%%%
 Sacrifice Durability
 献祭耐久
-%%%%%
+%%%%
 Sacrifice Essence
 献祭精华
-%%%%%
+%%%%
 Sacrifice Experience
 献祭经验
-%%%%%
+%%%%
 Sacrifice Forms
 献祭形态
-%%%%%
+%%%%
 Sacrifice Health
 献祭生命
-%%%%%
+%%%%
 Sacrifice Love
 献祭爱情
-%%%%%
+%%%%
 Sacrifice Nimbleness
 献祭敏捷
-%%%%%
+%%%%
 Sacrifice Purity
 献祭纯净
-%%%%%
+%%%%
 Sacrifice Resistance
 献祭抗性
-%%%%%
+%%%%
 Sacrifice Skill
 献祭技能
-%%%%%
+%%%%
 Sacrifice Stealth
 献祭潜行
-%%%%%
+%%%%
 Sacrifice Words
 献祭言语
-%%%%%
+%%%%
 Sacrifice a Hand
 献祭一只手
-%%%%%
+%%%%
 Sacrifice an Eye
 献祭一只眼
-%%%%%
+%%%%
 Set terrain to build
 设置建造地形
-%%%%%
+%%%%
 Build terrain
 建造地形
-%%%%%
+%%%%
 Clear terrain to floor
 清除地形为地板
-%%%%%
+%%%%
 Slimify
 软泥化
-%%%%%
+%%%%
 Step From Time
 时间步
-%%%%%
-Stomp
-重踏
-%%%%%
+%%%%
 Summon Divine Warrior
 召唤神圣战士
-%%%%%
+%%%%
 Globe of Annihilation
 湮灭之球
-%%%%%
+%%%%
 Disaster Area
 灾难区域
-%%%%%
+%%%%
 Bind Soul
 束缚灵魂
-%%%%%
+%%%%
 Ancestor Identity
 先祖身份
-%%%%%
+%%%%
 Ancestor Life: Battlemage
 先祖生命：战斗法师
-%%%%%
+%%%%
 Ancestor Life: Hexer
 先祖生命：咒术师
-%%%%%
+%%%%
 Ancestor Life: Knight
 先祖生命：骑士
-%%%%%
+%%%%
 Bribe Branch
 贿赂分支
-%%%%%
+%%%%
 Dismiss Apostle
 遣散使徒
-%%%%%
+%%%%
 Dismiss Apostle #1
 遣散使徒 #1
-%%%%%
+%%%%
 Dismiss Apostle #2
 遣散使徒 #2
-%%%%%
+%%%%
 Dismiss Apostle #3
 遣散使徒 #3
-%%%%%
+%%%%
 Recruit Apostle
 招募使徒
-%%%%%
+%%%%
 %s%s protects your life.\n
 %s%s守护你的生命。
-%%%%%
+%%%%
 Orcs frequently recognise you as Beogh's chosen one.\n
 兽人经常认出你是贝奥格的选民。
-%%%%%
+%%%%
 Orcs sometimes recognise you as one of them.\n
 兽人有时认出你是他们的一员。
-%%%%%
+%%%%
 %s%s protects you from harm by chaos.\n
 %s%s保护你免受混沌伤害。
-%%%%%
+%%%%
 %s%s protects you from hellish harm.\n
 %s%s保护你免受地狱伤害。
-%%%%%
+%%%%
 %s prevents you from sneaking up on the defenceless.\n
 %s阻止你偷袭毫无防备的敌人。
-%%%%%
+%%%%
 Jellies are peaceful and will eat items on the floor.\n
 果冻是和平的，会吃掉地上的物品。
-%%%%%
+%%%%
 Jiyva prevents you from harming jellies.\n
 吉瓦阻止你伤害果冻。
-%%%%%
+%%%%
 Your life and magic regeneration are%s increased.\n
 你的生命和魔力恢复速度%s加快。
-%%%%%
+%%%%
 %s%s slows your movement.\n
 %s%s减缓移动。
-%%%%%
+%%%%
 %s boosts your attributes. (+%d)\n
 %s提升你的属性。(+%d)
-%%%%%
+%%%%
 You can memorise %s.\n
 你可以记忆%s。
-%%%%%
+%%%%
 You can memorise some of Vehumet's spells.\n
 你可以记忆一些维胡梅特的法术。
-%%%%%
+%%%%
 You are surrounded by an umbra.\nEnemies who die within your umbra may be risen as undead servants.\n
 你被本影环绕。\n在你的本影中死去的敌人可能会被复活为亡灵仆从。
-%%%%%
+%%%%
 Your life essence is reduced. (-10%% HP)\n
 你的生命精华减少了。(-10%% 生命值)
-%%%%%
+%%%%
 Your destruction is augmented by the fires of Gehenna.\n
 你的毁灭被火焚地狱之力增强。
-%%%%%
+%%%%
 Your destruction is augmented by the ice of Cocytus.\n
 你的毁灭被冰狱之力增强。
-%%%%%
+%%%%
 Your destruction is augmented by the lamentations of Tartarus.\n
 你的毁灭被悲叹地狱之力增强。
-%%%%%
+%%%%
 Your destruction is augmented by the Iron City of Dis.\n
 你的毁灭被铁城之力增强。
-%%%%%
+%%%%
 Your destruction will be augmented by one of the four Hells.\n
 你的毁灭将被四大地狱之一增强。
-%%%%%
+%%%%
 You are marked with %s.\n
 你被烙印了%s。
-%%%%%
+%%%%
 None.
 无。
-%%%%%
+%%%%
  Enter [Y]es or [n]o.
  请输入 [Y]是 或 [n]否。
-%%%%%
+%%%%
 Memorise
 记忆
-%%%%%
+%%%%
 Imbue
 赋予
-%%%%%
+%%%%
 <w>Describe</w>|Hide|Show
 <w>描述</w>|隐藏|显示
-%%%%%
+%%%%
 Describe|<w>Hide</w>|Show
 描述|<w>隐藏</w>|显示
-%%%%%
+%%%%
 Describe|Hide|<w>Show</w>
 描述|隐藏|<w>显示</w>
-%%%%%
+%%%%
 Aizul
 艾祖尔
-%%%%%
+%%%%
 Antaeus
 安泰俄斯
-%%%%%
-Antique Champion
-古代冠军
-%%%%%
+%%%%
 Arachne
 阿拉克涅
-%%%%%
+%%%%
 Asmodeus
 阿斯摩蒂斯
-%%%%%
+%%%%
 Asterion
 阿斯忒里翁
-%%%%%
+%%%%
 Azrael
 阿兹瑞尔
-%%%%%
+%%%%
 Bai Suzhen
 白素贞
-%%%%%
+%%%%
 Blorkula the orcula
 兽人布洛库拉
-%%%%%
+%%%%
 Boris
 鲍里斯
-%%%%%
+%%%%
 Brimstone Fiend
 硫磺恶魔
-%%%%%
+%%%%
 Cassandra
 卡珊德拉
-%%%%%
+%%%%
 Cerebov
 塞雷波夫
-%%%%%
+%%%%
 Chuck
 查克
-%%%%%
+%%%%
 Crazy Yiuf
 疯狂的尤夫
-%%%%%
-Crystal Echidna
-水晶厄喀德那
-%%%%%
+%%%%
 Dispater
 迪斯帕特
-%%%%%
+%%%%
 Donald
 唐纳德
-%%%%%
+%%%%
 Dowan
 多万
-%%%%%
+%%%%
 Duvessa
 杜维莎
-%%%%%
+%%%%
 Edmund
 埃德蒙
-%%%%%
+%%%%
 Ereshkigal
 埃列什基伽勒
-%%%%%
+%%%%
 Erica
 艾丽卡
-%%%%%
+%%%%
 Erolcha
 伊罗查
-%%%%%
+%%%%
 Eustachio
 尤斯塔奇奥
-%%%%%
+%%%%
 Fannar
 凡纳尔
-%%%%%
+%%%%
 Frances
 弗朗西斯
-%%%%%
+%%%%
 Frederick
 弗雷德里克
-%%%%%
+%%%%
 Gastronok
 加斯特罗诺克
-%%%%%
+%%%%
 Geryon
 格律翁
-%%%%%
+%%%%
 Gloorx Vloq
 格洛克斯·弗洛克
-%%%%%
+%%%%
 Grinder
 格林德
-%%%%%
+%%%%
 Grum
 格拉姆
-%%%%%
+%%%%
 Grunn
 格伦
-%%%%%
+%%%%
 Harold
 哈罗德
-%%%%%
+%%%%
 Ignacio
 伊格纳西奥
-%%%%%
+%%%%
 Ijyb
 艾吉布
-%%%%%
+%%%%
 Ilsuiw
 伊尔苏伊
-%%%%%
+%%%%
 Jeremiah
 耶利米
-%%%%%
+%%%%
 Jessica
 杰西卡
-%%%%%
+%%%%
 Jiangshi
 僵尸
-%%%%%
+%%%%
 Jorgrun
 约格伦
-%%%%%
+%%%%
 Jory
 乔里
-%%%%%
+%%%%
 Joseph
 约瑟夫
-%%%%%
+%%%%
 Josephina
 约瑟菲娜
-%%%%%
+%%%%
 Josephine
 约瑟芬
-%%%%%
+%%%%
 Khufu
 胡夫
-%%%%%
+%%%%
 Kirke
 喀耳刻
-%%%%%
+%%%%
 Lodul
 洛杜尔
-%%%%%
+%%%%
 Lom Lobon
 洛姆·洛邦
-%%%%%
+%%%%
 Louise
 路易丝
-%%%%%
+%%%%
 Maggie
 玛吉
-%%%%%
+%%%%
 Mara
 玛拉
-%%%%%
+%%%%
 Margery
 玛杰丽
-%%%%%
+%%%%
 Maud
 莫德
-%%%%%
+%%%%
 Maurice
 莫里斯
-%%%%%
+%%%%
 Menkaure
 门卡拉
-%%%%%
+%%%%
 Mennas
 门纳斯
-%%%%%
+%%%%
 Mlioglotl
 姆利奥格洛特尔
-%%%%%
+%%%%
 Mnoleg
 姆诺雷格
-%%%%%
+%%%%
 Murray
 默里
-%%%%%
+%%%%
 Natasha
 娜塔莎
-%%%%%
+%%%%
 Nellie
 内莉
-%%%%%
+%%%%
 Nergalle
 内尔加勒
-%%%%%
+%%%%
 Nessos
 涅索斯
-%%%%%
+%%%%
 Nikola
 尼古拉
-%%%%%
+%%%%
 Norris
 诺里斯
-%%%%%
+%%%%
 Parghit
 帕吉特
-%%%%%
+%%%%
 Pargi
 帕尔吉
-%%%%%
+%%%%
 Pikel
 皮克尔
-%%%%%
+%%%%
 Polyphemus
 波吕斐摩斯
-%%%%%
+%%%%
 Prince Ribbit
 蛙王子
-%%%%%
+%%%%
 Robin
 罗宾
-%%%%%
+%%%%
 Roka
 罗卡
-%%%%%
+%%%%
 Roxanne
 罗克珊
-%%%%%
+%%%%
 Rupert
 鲁珀特
-%%%%%
+%%%%
 Saint Roka
 圣罗卡
-%%%%%
+%%%%
 Sigmund
 西格蒙德
-%%%%%
+%%%%
 Snorg
 斯诺格
-%%%%%
+%%%%
 Sojobo
 索乔波
-%%%%%
+%%%%
 Sonja
 索尼娅
-%%%%%
+%%%%
 Sprozz
 斯普罗兹
-%%%%%
+%%%%
 Terence
 特伦斯
-%%%%%
+%%%%
 Tiamat
 提亚马特
-%%%%%
+%%%%
 Tzitzimitl
 齐齐米特尔
-%%%%%
+%%%%
 Urug
 乌鲁格
-%%%%%
+%%%%
 Vashnia
 瓦什妮亚
-%%%%%
+%%%%
 Vv
 芙芙
-%%%%%
+%%%%
 Wiglaf
 威格拉夫
-%%%%%
+%%%%
 Xak'krixis
 扎克里西斯
-%%%%%
+%%%%
 Xtahua
 扎塔瓦
-%%%%%
+%%%%
 Zenata
 泽娜塔
-%%%%%
+%%%%
 Zenkiba
 禅木场
-%%%%%
+%%%%
 acid blob
 酸液团
-%%%%%
+%%%%
 acid dragon
 酸龙
-%%%%%
+%%%%
 adder
 蝰蛇
-%%%%%
+%%%%
 agate snail
 玛瑙蜗牛
-%%%%%
+%%%%
 air elemental
 气元素
-%%%%%
+%%%%
 alligator
 短吻鳄
-%%%%%
+%%%%
 alligator snapping turtle
 鳄龟
-%%%%%
+%%%%
 anaconda
 水蟒
-%%%%%
+%%%%
 ancestor
 先祖
-%%%%%
+%%%%
 ancestor champion
 先祖冠军
-%%%%%
+%%%%
 ancient bear
 远古熊
-%%%%%
+%%%%
 ancient champion
 远古冠军
-%%%%%
+%%%%
 ancient lich
 远古巫妖
-%%%%%
+%%%%
 angel
 天使
-%%%%%
+%%%%
 apis
 阿匹斯
-%%%%%
+%%%%
 arcanist
 奥术师
-%%%%%
+%%%%
 armataur
 甲马人
-%%%%%
+%%%%
 azure jelly
 天蓝果冻怪
-%%%%%
+%%%%
 baby alligator
 幼鳄
-%%%%%
+%%%%
 ball lightning
 球形闪电
-%%%%%
+%%%%
 ball python
 球蟒
-%%%%%
+%%%%
 ballistomycete
 孢子炮菌
-%%%%%
+%%%%
 ballistomycete spore
 孢子炮菌孢子
-%%%%%
+%%%%
 balrug
 巴鲁格
-%%%%%
+%%%%
 barachi
 蛙人
-%%%%%
+%%%%
 basilisk
 石化蜥蜴
-%%%%%
+%%%%
 bat
 蝙蝠
-%%%%%
+%%%%
 battlesphere
 战斗法球
-%%%%%
-bear
-熊
-%%%%%
+%%%%
 beetle
 甲虫
-%%%%%
+%%%%
 bennu
 贝努鸟
-%%%%%
+%%%%
 big fish
 大鱼
-%%%%%
+%%%%
 black bear
 黑熊
-%%%%%
+%%%%
 black draconian
 黑龙人
-%%%%%
+%%%%
 black mamba
 黑曼巴蛇
-%%%%%
+%%%%
 blink frog
 闪烁蛙
-%%%%%
+%%%%
 blizzard demon
 暴雪恶魔
-%%%%%
+%%%%
 block of ice
 冰块
-%%%%%
+%%%%
 blue devil
 蓝魔鬼
-%%%%%
+%%%%
 bog body
 沼泽之躯
-%%%%%
+%%%%
 boggart
 博加特
-%%%%%
+%%%%
 bombardier beetle
 投弹甲虫
-%%%%%
+%%%%
 bone dragon
 骨龙
-%%%%%
+%%%%
 boring beetle
 钻地甲虫
-%%%%%
+%%%%
 boulder
 巨石
-%%%%%
+%%%%
 boulder beetle
 巨砾甲虫
-%%%%%
+%%%%
 brain worm
 脑虫
-%%%%%
+%%%%
 briar patch
 荆棘丛
-%%%%%
-brimstone fiend
-硫磺恶魔
-%%%%%
+%%%%
 brown ooze
 棕色软泥
-%%%%%
+%%%%
 bullfrog
 牛蛙
-%%%%%
+%%%%
 bultungin
 布尔通金
-%%%%%
+%%%%
 bunyip
 本耶普
-%%%%%
+%%%%
 bush
 灌木
-%%%%%
+%%%%
 butterfly
 蝴蝶
-%%%%%
+%%%%
 cacodemon
 恶灵
-%%%%%
+%%%%
 cactus giant
 仙人掌巨人
-%%%%%
+%%%%
 cane toad
 甘蔗蟾蜍
-%%%%%
+%%%%
 catoblepas
 卡托布勒帕斯
-%%%%%
+%%%%
 caustic shrike
 腐蚀伯劳
-%%%%%
+%%%%
 centaur
 半人马
-%%%%%
+%%%%
 centaur warrior
 半人马战士
-%%%%%
+%%%%
 cerulean imp
 蔚蓝小恶魔
-%%%%%
+%%%%
 chaos butterfly
 混沌蝴蝶
-%%%%%
+%%%%
 chaos spawn
 混沌之子
-%%%%%
+%%%%
 cherub
 智天使
-%%%%%
+%%%%
 chimera
 奇美拉
-%%%%%
+%%%%
 chonchon
 春春鸟
-%%%%%
+%%%%
 clay golem
 黏土魔像
-%%%%%
+%%%%
 clockroach
 发条蟑螂
-%%%%%
+%%%%
 clockwork bee
 发条蜂
-%%%%%
+%%%%
 coglin
 齿轮地精
-%%%%%
+%%%%
 crimson imp
 深红小恶魔
-%%%%%
+%%%%
 crocodile
 鳄鱼
-%%%%%
+%%%%
 crystal guardian
 水晶守护者
-%%%%%
+%%%%
 curse skull
 诅咒颅骨
-%%%%%
+%%%%
 cyclops
 独眼巨人
-%%%%%
+%%%%
 daeva
 德瓦
-%%%%%
+%%%%
 dart slug
 飞镖蛞蝓
-%%%%%
+%%%%
 death cob
 死亡天鹅
-%%%%%
+%%%%
 death drake
 死亡幼龙
-%%%%%
-death knight
-死亡骑士
-%%%%%
+%%%%
 death ooze
 死亡软泥
-%%%%%
+%%%%
 death yak
 死亡牦牛
-%%%%%
+%%%%
 deathcap
 死亡菌
-%%%%%
+%%%%
 deep dwarf
 深矮人
-%%%%%
+%%%%
 deep dwarf artificer
 深矮人工匠
-%%%%%
+%%%%
 deep dwarf berserker
 深矮人狂战士
-%%%%%
+%%%%
 deep dwarf necromancer
 深矮人死灵法师
-%%%%%
+%%%%
 deep dwarf scion
 深矮人后裔
-%%%%%
+%%%%
 deep elf annihilator
 精灵湮灭者
-%%%%%
+%%%%
 deep elf archer
 精灵弓箭手
-%%%%%
+%%%%
 deep elf blademaster
 精灵剑圣
-%%%%%
+%%%%
 deep elf conjurer
 精灵咒法师
-%%%%%
+%%%%
 deep elf death mage
 精灵死亡法师
-%%%%%
+%%%%
 deep elf demonologist
 精灵恶魔学家
-%%%%%
+%%%%
 deep elf elementalist
 精灵元素师
-%%%%%
+%%%%
 deep elf fighter
 精灵战士
-%%%%%
+%%%%
 deep elf high priest
 精灵大祭司
-%%%%%
+%%%%
 deep elf knight
 精灵骑士
-%%%%%
+%%%%
 deep elf master archer
 精灵神射手
-%%%%%
+%%%%
 deep elf priest
 精灵祭司
-%%%%%
+%%%%
 deep elf pyromancer
 精灵烈焰法师
-%%%%%
+%%%%
 deep elf soldier
 精灵士兵
-%%%%%
+%%%%
 deep elf sorcerer
 精灵巫师
-%%%%%
+%%%%
 deep elf summoner
 精灵召唤师
-%%%%%
+%%%%
 deep elf zephyrmancer
 精灵和风法师
-%%%%%
+%%%%
 deep troll
 深渊巨魔
-%%%%%
+%%%%
 deep troll earth mage
 深渊巨魔地法师
-%%%%%
+%%%%
 deep troll shaman
 深渊巨魔萨满
-%%%%%
+%%%%
 demigod
 半神
-%%%%%
+%%%%
 demonic plant
 恶魔植物
-%%%%%
+%%%%
 demonspawn
 恶魔裔
-%%%%%
+%%%%
 demonspawn blood saint
 恶魔裔血圣
-%%%%%
+%%%%
 demonspawn corrupter
 恶魔裔腐蚀者
-%%%%%
+%%%%
 demonspawn soul scholar
 恶魔裔灵魂学者
-%%%%%
+%%%%
 demonspawn warmonger
 恶魔裔战争贩子
-%%%%%
+%%%%
 diamond obelisk
 钻石方尖碑
-%%%%%
+%%%%
 dire elephant
 恐象
-%%%%%
+%%%%
 djinni
 灯神
-%%%%%
+%%%%
 dormant clockwork bee
 休眠发条蜂
-%%%%%
+%%%%
 draconian
 龙人
-%%%%%
+%%%%
 draconian annihilator
 龙人湮灭者
-%%%%%
+%%%%
 draconian knight
 龙人骑士
-%%%%%
+%%%%
 draconian monk
 龙人武僧
-%%%%%
+%%%%
 draconian scorcher
 龙人灼烧者
-%%%%%
+%%%%
 draconian shifter
 龙人变形者
-%%%%%
+%%%%
 draconian stormcaller
 龙人风暴召唤者
-%%%%%
+%%%%
 draconian zealot
 龙人狂热者
-%%%%%
+%%%%
 dragon
 龙
-%%%%%
+%%%%
 drake
 幼龙
-%%%%%
+%%%%
 dread lich
 恐怖巫妖
-%%%%%
+%%%%
 dream sheep
 梦之羊
-%%%%%
+%%%%
 drowned soul
 溺水之魂
-%%%%%
+%%%%
 dryad
 树精
-%%%%%
+%%%%
 dwarf
 矮人
-%%%%%
+%%%%
 earth elemental
 地元素
-%%%%%
+%%%%
 easy sensed monster
 简单感知怪物
-%%%%%
+%%%%
 electric eel
 电鳗
-%%%%%
+%%%%
 electric golem
 电击魔像
-%%%%%
+%%%%
 electroferric vortex
 电磁漩涡
-%%%%%
+%%%%
 eleionoma
 水泽仙女
-%%%%%
+%%%%
 elemental
 元素
-%%%%%
+%%%%
 elementalist
 元素师
-%%%%%
+%%%%
 elephant
 大象
-%%%%%
+%%%%
 elephant slug
 大象蛞蝓
-%%%%%
+%%%%
 elf
 精灵
-%%%%%
+%%%%
 emperor scorpion
 帝王蝎
-%%%%%
+%%%%
 endoplasm
 内质怪
-%%%%%
-enchantress
-附魔女妖
-%%%%%
+%%%%
 entropy weaver
 熵之编织者
-%%%%%
+%%%%
 ettin
 双头巨人
-%%%%%
-executioner
-处刑者
-%%%%%
+%%%%
 eye of devastation
 毁灭之眼
-%%%%%
+%%%%
 eye of draining
 吸取之眼
-%%%%%
+%%%%
 faun
 半羊人
-%%%%%
+%%%%
 felid
 猫人
-%%%%%
+%%%%
 fire bat
 火焰蝙蝠
-%%%%%
-fire dragon
-火龙
-%%%%%
+%%%%
 fire elemental
 火元素
-%%%%%
+%%%%
 fire giant
 火巨人
-%%%%%
+%%%%
 fire vortex
 火焰漩涡
-%%%%%
+%%%%
 flayed ghost
 剥皮幽灵
-%%%%%
+%%%%
 floating eye
 浮空之眼
-%%%%%
+%%%%
 flying skull
 飞行颅骨
-%%%%%
+%%%%
 formicid
 蚁人
-%%%%%
+%%%%
 formicid drone
 蚁人工蜂
-%%%%%
+%%%%
 formicid venom mage
 蚁人毒液法师
-%%%%%
+%%%%
 formless jellyfish
 无形水母
-%%%%%
+%%%%
 freezing wraith
 冰冻幽灵
-%%%%%
+%%%%
 friendly sensed monster
 友善感知怪物
-%%%%%
+%%%%
 frilled lizard
 褶边蜥蜴
-%%%%%
+%%%%
 frost giant
 霜巨人
-%%%%%
-fulminant prism
-爆裂棱镜
-%%%%%
+%%%%
 fulminating prism
 爆裂棱镜
-%%%%%
+%%%%
 fungus
 真菌
-%%%%%
+%%%%
 gargoyle
 石像鬼
-%%%%%
+%%%%
 gelid demonspawn
 冰寒恶魔裔
-%%%%%
+%%%%
 ghost moth
 幽灵蛾
-%%%%%
+%%%%
 ghoul
 食尸鬼
-%%%%%
+%%%%
 giant centipede
 巨蜈蚣
-%%%%%
+%%%%
 giant cockroach
 巨蟑螂
-%%%%%
+%%%%
 giant eyeball
 巨眼
-%%%%%
+%%%%
 giant frog
 巨蛙
-%%%%%
+%%%%
 giant goldfish
 巨金鱼
-%%%%%
+%%%%
 giant lizard
 巨蜥
-%%%%%
+%%%%
 giant mite
 巨螨
-%%%%%
+%%%%
 giant slug
 巨蛞蝓
-%%%%%
-globe of annihilation
-湮灭之球
-%%%%%
+%%%%
 glowing orange brain
 发光的橙色大脑
-%%%%%
+%%%%
 glowing shapeshifter
 发光变形怪
-%%%%%
+%%%%
 gnoll
 豺狼人
-%%%%%
+%%%%
 gnoll bouda
 豺狼人布达
-%%%%%
+%%%%
 gnoll sergeant
 豺狼人军士
-%%%%%
+%%%%
 goblin
 地精
-%%%%%
+%%%%
 golden dragon
 金龙
-%%%%%
+%%%%
 golden eye
 金色之眼
-%%%%%
+%%%%
 golem
 魔像
-%%%%%
+%%%%
 goliath frog
 歌利亚蛙
-%%%%%
+%%%%
 great orb of eyes
 巨眼之球
-%%%%%
+%%%%
 greater mummy
 大型木乃伊
-%%%%%
-green death
-绿色死神
-%%%%%
+%%%%
 green draconian
 绿龙人
-%%%%%
+%%%%
 grey draconian
 灰龙人
-%%%%%
+%%%%
 grey rat
 灰鼠
-%%%%%
+%%%%
 griffon
 狮鹫
-%%%%%
+%%%%
 grizzly bear
 灰熊
-%%%%%
+%%%%
 guardian mummy
 守护木乃伊
-%%%%%
+%%%%
 guardian serpent
 守护蛇
-%%%%%
+%%%%
 guardian sphinx
 守护斯芬克斯
-%%%%%
+%%%%
 halazid warlock
 哈拉兹德术士
-%%%%%
+%%%%
 hell hog
 地狱猪
-%%%%%
+%%%%
 hell hound
 地狱犬
-%%%%%
-hell knight
-地狱骑士
-%%%%%
+%%%%
 hell lord
 地狱领主
-%%%%%
+%%%%
 hell rat
 地狱鼠
-%%%%%
-hell sentinel
-地狱哨兵
-%%%%%
+%%%%
 hellion
 地狱骑兵
-%%%%%
+%%%%
 hellwing
 地狱之翼
-%%%%%
+%%%%
 hepliaklqana ancestor
 赫普利亚克纳先祖
-%%%%%
+%%%%
 hill giant
 山丘巨人
-%%%%%
+%%%%
 hippogriff
 鹰头马
-%%%%%
+%%%%
 hobgoblin
 大地精
-%%%%%
+%%%%
 hog
 猪
-%%%%%
+%%%%
 holy swine
 圣猪
-%%%%%
+%%%%
 hornet
 大黄蜂
-%%%%%
+%%%%
 hound
 猎犬
-%%%%%
-human
-人类
-%%%%%
+%%%%
 hungry ghost
 饥饿幽灵
-%%%%%
+%%%%
 hydra
 九头蛇
-%%%%%
+%%%%
 hyperactive ballistomycete
 过度活跃的孢子炮菌
-%%%%%
+%%%%
 ice devil
 冰魔
-%%%%%
-ice dragon
-冰龙
-%%%%%
-ice fiend
-冰霜恶魔
-%%%%%
+%%%%
 ice statue
 冰雕像
-%%%%%
+%%%%
 iguana
 鬣蜥
-%%%%%
+%%%%
 imperial myrmidon
 帝国勇士
-%%%%%
+%%%%
 infernal demonspawn
 炼狱恶魔裔
-%%%%%
+%%%%
 insubstantial wisp
 虚无之息
-%%%%%
-iron dragon
-铁龙
-%%%%%
+%%%%
 iron elemental
 铁元素
-%%%%%
+%%%%
 iron giant
 铁巨人
-%%%%%
-iron golem
-铁魔像
-%%%%%
+%%%%
 iron imp
 铁小恶魔
-%%%%%
-iron troll
-铁巨魔
-%%%%%
+%%%%
 ironbound beastmaster
 铁缚驯兽师
-%%%%%
+%%%%
 ironbound convoker
 铁缚召唤者
-%%%%%
+%%%%
 ironbound frostheart
 铁缚霜心
-%%%%%
+%%%%
 ironbound mechanist
 铁缚机械师
-%%%%%
+%%%%
 ironbound preserver
 铁缚保护者
-%%%%%
+%%%%
 ironbound thunderhulk
 铁缚雷躯
-%%%%%
+%%%%
 jackal
 豺狼
-%%%%%
-jelly
-果冻怪
-%%%%%
+%%%%
 jellyfish
 水母
-%%%%%
-jiangshi
-僵尸
-%%%%%
+%%%%
 juggernaut
 巨像
-%%%%%
+%%%%
 jumping spider
 跳跃蜘蛛
-%%%%%
+%%%%
 killer bee
 杀人蜂
-%%%%%
-knight
-骑士
-%%%%%
+%%%%
 kobold
 狗头人
-%%%%%
+%%%%
 komodo dragon
 科摩多龙
-%%%%%
-kraken
-海妖
-%%%%%
+%%%%
 large simulacrum
 大型拟像
-%%%%%
+%%%%
 large skeleton
 大型骷髅
-%%%%%
+%%%%
 large zombie
 大型僵尸
-%%%%%
-laughing skull
-笑颅骨
-%%%%%
+%%%%
 lava fish
 熔岩鱼
-%%%%%
+%%%%
 lava worm
 熔岩虫
-%%%%%
+%%%%
 lemure
 劣魔
-%%%%%
-lernaean hydra
-勒拿九头蛇
-%%%%%
+%%%%
 lich
 巫妖
-%%%%%
+%%%%
 lightning spire
 闪电尖塔
-%%%%%
+%%%%
 lindwurm
 蛇龙
-%%%%%
+%%%%
 lorocyproca
 洛罗西普罗卡
-%%%%%
+%%%%
 lost soul
 迷失之魂
-%%%%%
+%%%%
 lurking horror
 潜伏恐怖
-%%%%%
+%%%%
 malarious merfolk avatar
 疟疾的鱼人化身
-%%%%%
+%%%%
 manticore
 蝎尾狮
-%%%%%
+%%%%
 mara fake
 玛拉分身
-%%%%%
+%%%%
 merfolk
 鱼人
-%%%%%
+%%%%
 merfolk aquamancer
 鱼人水法师
-%%%%%
+%%%%
 merfolk avatar
 鱼人化身
-%%%%%
+%%%%
 merfolk impaler
 鱼人穿刺者
-%%%%%
+%%%%
 merfolk javelineer
 鱼人标枪手
-%%%%%
+%%%%
 merfolk siren
 鱼人塞壬
-%%%%%
+%%%%
 merged slime creature
 融合史莱姆
-%%%%%
+%%%%
 meteoran
 流星人
-%%%%%
+%%%%
 minotaur
 牛头人
-%%%%%
+%%%%
 molten gargoyle
 熔岩石像鬼
-%%%%%
+%%%%
 monstrous demonspawn
 怪物恶魔裔
-%%%%%
+%%%%
 moon troll
 月巨魔
-%%%%%
+%%%%
 moth
 飞蛾
-%%%%%
+%%%%
 moth of suppression
 压制飞蛾
-%%%%%
+%%%%
 moth of wrath
 愤怒飞蛾
-%%%%%
+%%%%
 mottled draconian
 斑驳龙人
-%%%%%
+%%%%
 mummy
 木乃伊
-%%%%%
+%%%%
 mummy priest
 木乃伊祭司
-%%%%%
+%%%%
 naga
 纳迦
-%%%%%
+%%%%
 naga mage
 纳迦法师
-%%%%%
+%%%%
 naga ritualist
 纳迦仪式师
-%%%%%
+%%%%
 naga sharpshooter
 纳迦神射手
-%%%%%
+%%%%
 naga warrior
 纳迦战士
-%%%%%
+%%%%
 nagaraja
 纳迦王
-%%%%%
+%%%%
 nameless horror
 无名恐怖
-%%%%%
+%%%%
 nasty sensed monster
 危险感知怪物
-%%%%%
-necromancer
-死灵法师
-%%%%%
+%%%%
 necrophage
 食尸者
-%%%%%
+%%%%
 nekomata
 猫又
-%%%%%
+%%%%
 nequoxec
 涅克索克
-%%%%%
+%%%%
 obsidian bat
 黑曜石蝙蝠
-%%%%%
+%%%%
 obsidian statue
 黑曜石雕像
-%%%%%
+%%%%
 occultist
 神秘学者
-%%%%%
+%%%%
 octopode
 章鱼人
-%%%%%
+%%%%
 octopode crusher
 章鱼人粉碎者
-%%%%%
+%%%%
 ogre
 食人魔
-%%%%%
+%%%%
 ogre mage
 食人魔法师
-%%%%%
+%%%%
 oklob plant
 奥克罗布植物
-%%%%%
+%%%%
 oklob sapling
 奥克罗布树苗
-%%%%%
+%%%%
 ophan
 奥法
-%%%%%
+%%%%
 orange crystal statue
 橙色水晶雕像
-%%%%%
+%%%%
 orange demon
 橙色恶魔
-%%%%%
-orb of destruction
-毁灭之球
-%%%%%
+%%%%
 orb of entropy
 熵之球
-%%%%%
+%%%%
 orb of fire
 火焰之球
-%%%%%
+%%%%
 orb of winter
 寒冬之球
-%%%%%
+%%%%
 orb spider
 宝珠蜘蛛
-%%%%%
+%%%%
 orc
 兽人
-%%%%%
+%%%%
 orc apostle
 兽人使徒
-%%%%%
+%%%%
 orc high priest
 兽人大祭司
-%%%%%
+%%%%
 orc knight
 兽人骑士
-%%%%%
+%%%%
 orc priest
 兽人祭司
-%%%%%
+%%%%
 orc sorcerer
 兽人巫师
-%%%%%
+%%%%
 orc warlord
 兽人军阀
-%%%%%
+%%%%
 orc warrior
 兽人战士
-%%%%%
+%%%%
 orc wizard
 兽人巫师
-%%%%%
+%%%%
 pale draconian
 苍白龙人
-%%%%%
-pearl dragon
-珍珠龙
-%%%%%
+%%%%
 phalanx beetle
 方阵甲虫
-%%%%%
+%%%%
 phantasmal warrior
 幻影战士
-%%%%%
+%%%%
 phantom
 幻影
-%%%%%
+%%%%
 pharaoh ant
 法老蚁
-%%%%%
-plant
-植物
-%%%%%
+%%%%
 player
 玩家
-%%%%%
+%%%%
 player ghost
 玩家幽灵
-%%%%%
+%%%%
 player illusion
 玩家幻象
-%%%%%
+%%%%
 polar bear
 北极熊
-%%%%%
+%%%%
 poltergeist
 吵闹鬼
-%%%%%
+%%%%
 porcupine
 豪猪
-%%%%%
+%%%%
 profane servitor
 亵渎侍者
-%%%%%
+%%%%
 program bug
 程序错误
-%%%%%
+%%%%
 pulsating lump
 脉动的肉块
-%%%%%
+%%%%
 purple draconian
 紫龙人
-%%%%%
+%%%%
 putrid demonspawn
 腐烂恶魔裔
-%%%%%
+%%%%
 queen ant
 蚁后
-%%%%%
+%%%%
 queen bee
 蜂后
-%%%%%
+%%%%
 quicksilver dragon
 水银龙
-%%%%%
+%%%%
 quicksilver elemental
 水银元素
-%%%%%
+%%%%
 quokka
 短尾矮袋鼠
-%%%%%
+%%%%
 radroach
 辐射蟑螂
-%%%%%
+%%%%
 rakshasa
 罗刹
-%%%%%
+%%%%
 rakshasa fake
 罗刹分身
-%%%%%
+%%%%
 rat
 老鼠
-%%%%%
+%%%%
 raven
 渡鸦
-%%%%%
+%%%%
 reaper
 收割者
-%%%%%
+%%%%
 red devil
 红魔鬼
-%%%%%
+%%%%
 red draconian
 红龙人
-%%%%%
+%%%%
 redback
 赤背蜘蛛
-%%%%%
+%%%%
 revenant
 归来者
-%%%%%
+%%%%
 ribbon worm
 带状虫
-%%%%%
+%%%%
 rime drake
 霜幼龙
-%%%%%
+%%%%
 river rat
 河鼠
-%%%%%
+%%%%
 roaming sludgefish
 游荡泥鱼
-%%%%%
+%%%%
 rock fish
 石鱼
-%%%%%
+%%%%
 rock troll
 岩石巨魔
-%%%%%
+%%%%
 rock worm
 岩虫
-%%%%%
-rockslime
-岩石史莱姆
-%%%%%
+%%%%
 rotting devil
 腐烂魔鬼
-%%%%%
-royal mummy
-皇家木乃伊
-%%%%%
+%%%%
 rust devil
 锈蚀魔鬼
-%%%%%
+%%%%
 salamander
 沙罗曼蛇
-%%%%%
+%%%%
 salamander firebrand
 沙罗曼蛇火焰使
-%%%%%
+%%%%
 salamander mystic
 沙罗曼蛇秘法师
-%%%%%
+%%%%
 salamander stormcaller
 沙罗曼蛇风暴召唤者
-%%%%%
+%%%%
 salamander tyrant
 沙罗曼蛇暴君
-%%%%%
+%%%%
 satyr
 萨堤尔
-%%%%%
+%%%%
 scorpion
 蝎子
-%%%%%
+%%%%
 sea snake
 海蛇
-%%%%%
+%%%%
 sensed monster
 感知到的怪物
-%%%%%
+%%%%
 seraph
 炽天使
-%%%%%
+%%%%
 servant of whispers
 低语之仆
-%%%%%
+%%%%
 shadow
 暗影
-%%%%%
+%%%%
 shadow dragon
 暗影龙
-%%%%%
+%%%%
 shadow fiend
 暗影恶魔
-%%%%%
+%%%%
 shadow imp
 暗影小恶魔
-%%%%%
+%%%%
 shadow wraith
 暗影幽灵
-%%%%%
+%%%%
 shambling mangrove
 蹒跚红树
-%%%%%
-shapeshifter
-变形怪
-%%%%%
+%%%%
 shard shrike
 碎片伯劳
-%%%%%
+%%%%
 shark
 鲨鱼
-%%%%%
+%%%%
 shedu
 舍杜
-%%%%%
+%%%%
 sheep
 羊
-%%%%%
+%%%%
 shining eye
 闪耀之眼
-%%%%%
+%%%%
 shock serpent
 电击蛇
-%%%%%
+%%%%
 sickly merfolk siren
 病弱的鱼人塞壬
-%%%%%
+%%%%
 silver star
 银色之星
-%%%%%
+%%%%
 sixfirhy
 六翼魔
-%%%%%
+%%%%
 slave
 奴隶
-%%%%%
-slime creature
-史莱姆
-%%%%%
+%%%%
 small simulacrum
 小型拟像
-%%%%%
+%%%%
 small skeleton
 小型骷髅
-%%%%%
+%%%%
 small zombie
 小型僵尸
-%%%%%
+%%%%
 smoke demon
 烟雾恶魔
-%%%%%
+%%%%
 snapping turtle
 鳄龟
-%%%%%
+%%%%
 soldier ant
 兵蚁
-%%%%%
+%%%%
 soul eater
 噬魂者
-%%%%%
+%%%%
 soul wisp
 灵魂之息
-%%%%%
+%%%%
 spark wasp
 火花蜂
-%%%%%
-spatial maelstrom
-空间漩涡
-%%%%%
+%%%%
 spatial vortex
 空间漩涡
-%%%%%
+%%%%
 spectator
 旁观者
-%%%%%
+%%%%
 spectral thing
 幽灵之物
-%%%%%
-spectral weapon
-幽灵武器
-%%%%%
-spellspark servitor
-法术火花侍者
-%%%%%
+%%%%
 sphinx
 斯芬克斯
-%%%%%
+%%%%
 spiny worm
 刺虫
-%%%%%
+%%%%
 spirit wolf
 灵魂之狼
-%%%%%
+%%%%
 spriggan
 小精灵
-%%%%%
+%%%%
 spriggan air mage
 小精灵气法师
-%%%%%
+%%%%
 spriggan assassin
 小精灵刺客
-%%%%%
+%%%%
 spriggan berserker
 小精灵狂战士
-%%%%%
+%%%%
 spriggan defender
 小精灵防御者
-%%%%%
+%%%%
 spriggan druid
 小精灵德鲁伊
-%%%%%
+%%%%
 spriggan enchanter
 小精灵附魔师
-%%%%%
+%%%%
 spriggan rider
 小精灵骑手
-%%%%%
+%%%%
 star jelly
 星之果冻
-%%%%%
+%%%%
 statue
 雕像
-%%%%%
+%%%%
 steam dragon
 蒸汽龙
-%%%%%
+%%%%
 stone giant
 石巨人
-%%%%%
+%%%%
 stone golem
 石魔像
-%%%%%
-storm dragon
-风暴龙
-%%%%%
+%%%%
 sun demon
 太阳恶魔
-%%%%%
-swamp dragon
-沼泽龙
-%%%%%
+%%%%
 swamp drake
 沼泽幼龙
-%%%%%
+%%%%
 swamp worm
 沼泽虫
-%%%%%
+%%%%
 tarantella
 塔兰图拉毒蛛
-%%%%%
+%%%%
 tengu
 天狗
-%%%%%
+%%%%
 tengu conjurer
 天狗咒法师
-%%%%%
+%%%%
 tengu reaver
 天狗掠夺者
-%%%%%
+%%%%
 tengu warrior
 天狗战士
-%%%%%
+%%%%
 test blob
 测试团块
-%%%%%
+%%%%
 test spawner
 测试生成器
-%%%%%
+%%%%
 test statue
 测试雕像
-%%%%%
+%%%%
 thorn hunter
 荆棘猎手
-%%%%%
+%%%%
 thorn lotus
 荆棘莲花
-%%%%%
+%%%%
 thrashing horror
 鞭笞恐怖
-%%%%%
+%%%%
 titan
 泰坦
-%%%%%
+%%%%
 toadstool
 毒蘑菇
-%%%%%
+%%%%
 toenail golem
 趾甲魔像
-%%%%%
+%%%%
 tormentor
 折磨者
-%%%%%
+%%%%
 torpor snail
 休眠蜗牛
-%%%%%
+%%%%
 torturous demonspawn
 折磨恶魔裔
-%%%%%
+%%%%
 tough sensed monster
 困难感知怪物
-%%%%%
+%%%%
 training dummy
 训练假人
-%%%%%
+%%%%
 trapdoor spider
 陷门蜘蛛
-%%%%%
+%%%%
 trivial sensed monster
 微弱感知怪物
-%%%%%
+%%%%
 troll
 巨魔
-%%%%%
-twister
-旋风
-%%%%%
+%%%%
 two-headed ogre
 双头食人魔
-%%%%%
+%%%%
 tyrant leech
 暴君水蛭
-%%%%%
+%%%%
 ufetubus
 乌菲特布斯
-%%%%%
+%%%%
 ugly thing
 丑陋之物
-%%%%%
+%%%%
 unseen horror
 无形恐怖
-%%%%%
+%%%%
 vampire bat
 吸血蝙蝠
-%%%%%
+%%%%
 vapour
 蒸汽
-%%%%%
+%%%%
 vault guard
 宝库守卫
-%%%%%
+%%%%
 vault sentinel
 宝库哨兵
-%%%%%
+%%%%
 vault warden
 宝库看守
-%%%%%
+%%%%
 very ugly thing
 极丑之物
-%%%%%
+%%%%
 vine stalker
 藤蔓行者
-%%%%%
+%%%%
 wandering mushroom
 游走蘑菇
-%%%%%
+%%%%
 war gargoyle
 战斗石像鬼
-%%%%%
+%%%%
 warg
 座狼
-%%%%%
+%%%%
 wasp
 黄蜂
-%%%%%
+%%%%
 water elemental
 水元素
-%%%%%
+%%%%
 water moccasin
 水蝮蛇
-%%%%%
+%%%%
 water nymph
 水仙女
-%%%%%
+%%%%
 weeping skull
 哭泣颅骨
-%%%%%
+%%%%
 white draconian
 白龙人
-%%%%%
+%%%%
 white imp
 白色小恶魔
-%%%%%
+%%%%
 wight
 尸妖
-%%%%%
+%%%%
 wind drake
 风幼龙
-%%%%%
+%%%%
 withered plant
 枯萎植物
-%%%%%
+%%%%
 wizard
 巫师
-%%%%%
+%%%%
 wolf
 狼
-%%%%%
+%%%%
 wolf spider
 狼蛛
-%%%%%
+%%%%
 worker ant
 工蚁
-%%%%%
-worldbinder
-缚世者
-%%%%%
+%%%%
 worm
 蠕虫
-%%%%%
+%%%%
 wraith
 幽灵
-%%%%%
+%%%%
 wyvern
 飞龙
-%%%%%
+%%%%
 yak
 牦牛
-%%%%%
+%%%%
 yaktaur
 牦牛人
-%%%%%
+%%%%
 yaktaur captain
 牦牛人头领
-%%%%%
+%%%%
 yellow draconian
 黄龙人
-%%%%%
+%%%%
 ynoxinul
 伊诺辛努
-%%%%%
-Armataur
-甲马人
-%%%%%
-Barachi
-蛙人
-%%%%%
-Draconian
-龙人
-%%%%%
-Black Draconian
-黑龙人
-%%%%%
-Coglin
-齿轮地精
-%%%%%
+%%%%
 Deep Elf
 精灵
-%%%%%
-Demigod
-半神
-%%%%%
-Demonspawn
-恶魔裔
-%%%%%
-Djinni
-灯神
-%%%%%
-Felid
-猫人
-%%%%%
-Formicid
-蚁人
-%%%%%
-Gargoyle
-石像鬼
-%%%%%
-Gnoll
-豺狼人
-%%%%%
-Green Draconian
-绿龙人
-%%%%%
-Grey Draconian
-灰龙人
-%%%%%
-Kobold
-狗头人
-%%%%%
-Merfolk
-鱼人
-%%%%%
-Minotaur
-牛头人
-%%%%%
+%%%%
 Mountain Dwarf
 山矮人
-%%%%%
-Mummy
-木乃伊
-%%%%%
-Naga
-纳迦
-%%%%%
-Octopode
-章鱼人
-%%%%%
-Oni
-鬼
-%%%%%
-Pale Draconian
-苍白龙人
-%%%%%
-Poltergeist
-吵闹鬼
-%%%%%
-Purple Draconian
-紫龙人
-%%%%%
-Red Draconian
-红龙人
-%%%%%
-Revenant
-归来者
-%%%%%
-Spriggan
-小精灵
-%%%%%
-Tengu
-天狗
-%%%%%
-Troll
-巨魔
-%%%%%
-Vine Stalker
-藤蔓行者
-%%%%%
-White Draconian
-白龙人
-%%%%%
-Yellow Draconian
-黄龙人
-%%%%%
-Centaur
-半人马
-%%%%%
-Deep Dwarf
-深矮人
-%%%%%
-Ghoul
-食尸鬼
-%%%%%
-Halfling
-半身人
-%%%%%
+%%%%
 High Elf
 高等精灵
-%%%%%
+%%%%
 Hill Orc
 丘陵兽人
-%%%%%
+%%%%
 Lava Orc
 熔岩兽人
-%%%%%
+%%%%
 Mayflytaur
 蜉蝣半人马
-%%%%%
-Meteoran
-流星人
-%%%%%
-Mottled Draconian
-斑驳龙人
-%%%%%
+%%%%
 Sludge Elf
 污泥精灵
-%%%%%
-Vampire
-吸血鬼
-%%%%%
+%%%%
  with an invisible shield
 用隐形的盾牌
-%%%%%
+%%%%
 ... and %1$s it back!
 ...并反射了回去！
-%%%%%
+%%%%
 %1$s %2$s the %3$s%4$s
 %1$s挡住了%3$s%4$s
-%%%%%
-%%%%%
+%%%%
 Jiyva will unlock the Slime Pits vault.
 
 吉瓦将解锁软泥坑宝库。
 
  guffaws at your puny god.
 嘲笑你软弱的神祇。
-%%%%%
+%%%%
  sneers at your recitation.
 对你的吟诵嗤之以鼻。
-%%%%%
+%%%%
  is dazed by your recitation.
 被你的吟诵震慑了。
-%%%%%
+%%%%
  is confused by your recitation.
 被你的吟诵迷惑了。
-%%%%%
+%%%%
  stumbles about in disarray.
 慌乱地踉跄着。
-%%%%%
+%%%%
  is awed by your recitation.
 被你的吟诵所威压。
-%%%%%
+%%%%
  is aghast at the heresy of your recitation.
 被你吟诵中的异端邪说惊呆了。
-%%%%%
+%%%%
  is smitten by the wrath of Zin.
 被辛之怒所重击。
-%%%%%
+%%%%
  is blasted by the fury of Zin!
 被辛之怒所重创！
-%%%%%
+%%%%
  is struck blind by the wrath of Zin!
 被辛之怒击瞎了双眼！
-%%%%%
+%%%%
  is limned with silver light.
 被银光笼罩了。
-%%%%%
+%%%%
  quails at your recitation.
 被你的吟诵吓退了。
-%%%%%
+%%%%
  looks feeble and powerless before your recitation.
 在你的吟诵前显得虚弱无力。
-%%%%%
+%%%%
  is struck mute by the wrath of Zin!
 被辛之怒击哑了！
-%%%%%
+%%%%
  is driven mad by the wrath of Zin!
 被辛之怒逼疯了！
-%%%%%
+%%%%
  is left stupefied by the wrath of Zin!
 被辛之怒震慑了！
-%%%%%
+%%%%
  chaotic flesh sizzles and spatters!
 的混沌之肉滋滋作响，溅出液体！
-%%%%%
+%%%%
  chaotic flesh bubbles and boils.
 的混沌之肉冒出气泡，沸腾不已。
-%%%%%
+%%%%
  chaotic flesh runs like molten wax.
 的混沌之肉如熔蜡般流淌。
-%%%%%
+%%%%
  melts away into a sizzling puddle of chaotic flesh.
 溶化成一滩滋滋作响的混沌血肉。
-%%%%%
+%%%%
  is turned into a pillar of salt by the wrath of Zin!
 被辛之怒化作了一根盐柱！
-%%%%%
+%%%%
  is fully restored!
 完全恢复了！
-%%%%%
+%%%%
  is drained by nostalgia.
 因怀旧而虚弱不堪。
-%%%%%
+%%%%
  is not worthy to be dueled!
 不配与你决斗！
-%%%%%
+%%%%
 deep water
 深水
-%%%%%
+%%%%
  is outlined in light.
 被光芒勾勒出轮廓。
 %%%%
@@ -34177,68 +33253,62 @@ deep water
  is touched by paradox!
 被悖论所触碰！
 %%%%
- resists.
-抵抗了。
-%%%%
  blocks 
 挡住了
-%%%%
-.
-。
 %%%%
  is surrounded by blessed fire!
 被祝福之火包围了！
 %%%%
  is already dancing.
 已经开始起舞了。
-%%%%%
+%%%%
  appears!
 出现了！
-%%%%%
+%%%%
  conjures a globe of magical energy!
 召唤出了一颗魔法能量球！
-%%%%%
+%%%%
  disappears.
 消失了。
-%%%%%
+%%%%
  finishes brewing potions and dispenses them!
 完成了药水酿造并将它们分发出去！
-%%%%%
+%%%%
  collapses with a clattering noise.
 发出一阵咔嗒声后，倒塌了。
-%%%%%
+%%%%
  erupts in a fountain of uncontrolled magic!
 爆发出失控的魔法喷泉！
-%%%%%
+%%%%
  emits a burst of electricity!
 释放出一阵电流！
-%%%%%
+%%%%
  begins to radiate toxic energy.
 开始辐射出毒素能量。
-%%%%%
+%%%%
  stops channelling.
 停止了引导。
-%%%%%
+%%%%
  vaporises and condenses as gold!
 蒸发并凝结成了金币！
-%%%%%
+%%%%
  vaporises in an electric haze!
 在电雾中蒸发了！
-%%%%%
+%%%%
  is stunned by your conviction and fails to attack.
 被你的信念震慑，未能发起攻击。
-%%%%%
+%%%%
  is distracted by your dazzling golden aura.
 被你炫目的金色光环分散了注意力。
-%%%%%
+%%%%
  struggles to get unstuck from the web.
 挣扎着想要脱离蛛网。
-%%%%%
-%%%%%
+%%%%
 如果你的法术成功率更高，你的仆从就可以被赋予这个法术。\n
 
 %%%%
 # Issue 45 Phase 3: dbg-maps.cc batch (2026-07-05)
+
 %%%%
 User requested cancel
 用户请求取消
@@ -34251,6 +33321,7 @@ Generating dungeon map stats
 
 %%%%
 # Issue 45 Phase 3: art-func.h batch (2026-07-05)
+
 %%%%
 %s put%s %s out of %s misery!
 %1$s将%3$s从%4$s的痛苦中解脱了出来！
@@ -34260,109 +33331,109 @@ Generating dungeon map stats
 %%%%
 %s %s blasted by disruptive energy%s
 %1$s被干扰能量轰击了%3$s！
-%%%%%
+%%%%
 You can only abyss_teleport() inside the Abyss.
 你只能在深渊内使用 abyss_teleport()。
-%%%%%
+%%%%
 Running Jiyva off-level sacrifice.
 正在执行吉瓦离层祭品处理。
-%%%%%
+%%%%
 %s %s%s
 %1$s%2$s%3$s
-%%%%%
+%%%%
 s are
 
-%%%%%
+%%%%
  is
 
-%%%%%
+%%%%
 dealt
 造成了
-%%%%%
+%%%%
 drawn
 抽到了
-%%%%%
+%%%%
 Unknown species: %s
 未知种族：%s
-%%%%%
+%%%%
 Unknown job: %s
 未知职业：%s
-%%%%%
+%%%%
 unknown item: %s
 未知物品：%s
 %%%%
 Cast which spell? 
 施放哪个法术？
-%%%%%
+%%%%
 Cannot find that spell.
 找不到该法术。
 %%%%
 Memorise which spell? 
 记忆哪个法术？
-%%%%%
+%%%%
 Spell is monster-only - unpredictable behaviour may result.
 该法术仅供怪物使用——可能导致不可预测的行为。
-%%%%%
+%%%%
 Super healing.
 超级治疗。
-%%%%%
+%%%%
 Healing.
 治疗。
-%%%%%
+%%%%
 Piety needs to be between 0 and %d.
 虔诚度必须在 0 到 %d 之间。
-%%%%%
+%%%%
 Ru piety can't be greater than %d.
 鲁的虔诚度不能超过 %d。
-%%%%%
+%%%%
 Interest must be between 0 and 255.
 兴趣值必须在 0 到 255 之间。
-%%%%%
+%%%%
 Set piety to %d, interest to %d.
 虔诚度设为 %d，兴趣值设为 %d。
-%%%%%
+%%%%
 Setting piety to %d.
 虔诚度设为 %d。
 %%%%
 Enter new gold value (current = %d, Enter for %d): 
 输入新金币值（当前 = %d，回车设为 %d）：
-%%%%%
+%%%%
 You now have %d gold piece%s.
 你现在有 %d 枚金币。
-%%%%%
+%%%%
 You are not religious!
 你没有信仰！
-%%%%%
+%%%%
 Current progress to next sacrifice: %d  Progress needed: %d
 当前献祭进度：%d  需要进度：%d
 %%%%
 Enter new piety value (current = %d, Enter for 0): 
 输入新虔诚度值（当前 = %d，回车视为 0）：
-%%%%%
+%%%%
 That skill doesn't seem to exist.
 该技能似乎不存在。
-%%%%%
+%%%%
 That skill was removed.
 该技能已被移除。
-%%%%%
+%%%%
 Exercising...
 正在训练……
-%%%%%
+%%%%
 Can't change a useless skill.
 无法修改无用的技能。
-%%%%%
+%%%%
 %s %s to skill level %.1f.
 %1$s%2$s技能等级至 %.1f。
-%%%%%
+%%%%
 Ignoring mut resistance to apply mutation.
 忽略突变抗性以强制应用突变。
-%%%%%
+%%%%
 No matching mutation names.
 没有匹配的突变名称。
-%%%%%
+%%%%
 Found #%d: %s ("%s")
 找到第 %d 个：%s（"%s"）
-%%%%%
+%%%%
 No matching bane names.
 没有匹配的克星名称。
 %%%%
@@ -34371,103 +33442,103 @@ Enter values for X, Y, Z (space separated) or return:
 %%%%
 Enter values for Str, Int, Dex (space separated): 
 输入力量、智力、敏捷的值（以空格分隔）：
-%%%%%
+%%%%
 Setting attributes (Str, Int, Dex) to: %i, %i, %i
 将属性（力量、智力、敏捷）设为：%i、%i、%i
 %%%%
 Edit which duration (name)? 
 编辑哪个状态（名称）？
-%%%%%
+%%%%
 No durations matching '%s'.
 没有匹配"%s"的状态。
-%%%%%
+%%%%
 Can't set duration directly to 0, setting it to 1 instead.
 无法直接将状态设为 0，已改为设为 1。
 %%%%
 Enter new experience level: 
 输入新经验等级：
-%%%%%
+%%%%
 Experience level set to %d.
 经验等级已设为 %d。
-%%%%%
+%%%%
 Nothing happens.
 什么都没有发生。
-%%%%%
+%%%%
 X-ray vision %s.
 透视视野%s。
-%%%%%
+%%%%
 You allow the flow of time to resume.
 你让时间重新开始流动。
-%%%%%
+%%%%
 You bring the flow of time to a stop.
 你让时间停止了流动。
-%%%%%
+%%%%
 That god doesn't seem to exist!
 该神祇似乎不存在！
-%%%%%
+%%%%
 You suffer the terrible wrath of No God.
 你遭受了"无神"的恐怖愤怒。
-%%%%%
+%%%%
 %s is not feeling wrathful today.
 %s今天没有发怒的心情。
-%%%%%
+%%%%
 You are not under penance.
 你并未处于苦修状态。
-%%%%%
+%%%%
 Transformation failed.
 变形失败。
-%%%%%
+%%%%
 Not even in wizmode may divine creatures worship a god!
 即使是调试模式，神圣生物也不能信仰神祇！
-%%%%%
+%%%%
 You already have no god!
 你已经没有信仰了！
-%%%%%
+%%%%
 You already worship that god!
 你已经信仰该神祇了！
-%%%%%
+%%%%
 (Tension uses a given god's perspective to check on their summons; use 'No God' to ignore this.)
 （紧张度从指定神祇的视角检查其召唤物；使用"No God"可忽略此检查。）
-%%%%%
+%%%%
 %s tension value: %d
 %s的紧张度值：%d
-%%%%%
+%%%%
 Zot clock should be between 0 and %d
 佐特时钟必须在 0 到 %d 之间
-%%%%%
+%%%%
  magic
 魔法
-%%%%%
+%%%%
 %s shudders%s.
 %1$s%2$s颤抖了。
-%%%%%
+%%%%
  alarmingly
 惊人地
-%%%%%
+%%%%
  violently
 剧烈地
-%%%%%
+%%%%
  vigorously
 猛烈地
-%%%%%
+%%%%
 %s trance deepens.
 %s的恍惚状态加深了。
-%%%%%
+%%%%
 %s is mesmerised by %s!
 %1$s被%2$s迷住了！
-%%%%%
+%%%%
 s its
 
-%%%%%
+%%%%
  their
 
-%%%%%
+%%%%
 %s is unaffected.
 %s未受影响。
-%%%%%
+%%%%
 %s unleashes a %s howl, %s
 %1$s发出了%2$s的嚎叫，%3$s
-%%%%%
+%%%%
 terrible
 可怕的
 %%%%
@@ -34482,28 +33553,28 @@ heavily
 %%%%
 Which rune (ESC to exit)? 
 选择哪个符文（按 ESC 退出）？
-%%%%%
+%%%%
 %8s: %d daAuts\n
 %8s：%d daAut\n
-%%%%%
+%%%%
 You hear a zap.
 你听到一声噼啪响。
-%%%%%
+%%%%
 You hear a squelching noise.
 你听到一阵咕唧声。
-%%%%%
+%%%%
 %s rages.
 %s陷入了狂暴！
-%%%%%
+%%%%
 You hear a sizzling splash.
 你听到一阵嘶嘶的溅水声。
-%%%%%
+%%%%
 Can't go down from the bottom of a branch.
 无法从分支底层继续下行。
-%%%%%
+%%%%
 Bug in determining level exit.
 判定楼层出口时发生 bug。
-%%%%%
+%%%%
 Creating %sstairs.
 正在创建%s楼梯。
 %%%%
@@ -34512,37 +33583,37 @@ Create what kind of feature mimic?
 %%%%
 Create which feature? 
 创建哪种地形？
-%%%%%
+%%%%
 Set fprops "%s" at (%d,%d)
 在 (%2$d,%3$d) 设置地形属性"%1$s"
-%%%%%
+%%%%
 Mapping level.
 正在绘制楼层地图。
-%%%%%
+%%%%
 You can only make a %s on a floor square.
 你只能在地板格子上创建%s。
-%%%%%
+%%%%
 Created %s.
 已创建%s。
-%%%%%
+%%%%
 NOTE: Shaft traps aren't valid on this level.
 注意：此楼层不能设置竖井陷阱。
-%%%%%
+%%%%
 Insufficient floor-space for new Wal-Mart.
 没有足够的地板空间来建造新商店。
-%%%%%
+%%%%
 Done.
 完成。
-%%%%%
+%%%%
 Can't find map named '%s'.
 找不到名为"%s"的地图。
-%%%%%
+%%%%
 %s decides where it goes, can't place where you are.
 %s会自行决定位置，不能放置在你所在之处。
-%%%%%
+%%%%
 Successfully placed %s.
 已成功放置%s。
-%%%%%
+%%%%
 Failed to place %s; last builder error: %s
 放置%s失败；最后的建造错误：%s
 %%%%
@@ -34551,132 +33622,130 @@ Enter map name:
 %%%%
 Enter map name (prefix it with * for local placement): 
 输入地图名称（前缀加 * 进行本地放置）：
-%%%%%
+%%%%
 Explore took %d turns.
 自动探索花费了 %d 回合。
-%%%%%
+%%%%
 Level stack:
 楼层堆栈：
-%%%%%
+%%%%
 Known levels:
 已知楼层：
-%%%%%
+%%%%
 %-10s : %s
 %-10s : %s
-%%%%%
+%%%%
 Regenerating level.
 正在重新生成楼层。
-%%%%%
+%%%%
 All vaults are now eligible for [re]use.
 所有地牢现在都可以[重新]使用。
-%%%%%
+%%%%
 Setting Abyss speed to %i.
 将深渊速度设为 %i。
-%%%%%
+%%%%
  guffaws at your puny god.
 对你的渺小神祇发出狂笑。
-%%%%%
+%%%%
 %s warns you to remove %s.
 %1$s警告你取下%2$s。
-%%%%%
+%%%%
 env.igrid(%d,%d) = %d
 env.igrid(%d,%d) = %d
-%%%%%
+%%%%
 Held by monster #%d: %s at (%d,%d)
 被怪物 #%d：%s 于 (%d,%d) 持有
-%%%%%
+%%%%
 Additionally, it isn't alive.
 此外，它并非活物。
-%%%%%
+%%%%
 Floating monster: %s at (%d,%d), midx = %d
 浮空怪物：%s 于 (%d,%d)，midx = %d
-%%%%%
+%%%%
 Also at (%d, %d): %s, midx = %d
 同样位于 (%d, %d)：%s，midx = %d
-%%%%%
+%%%%
 Other monster thinks it's holding the item, too.
 另一只怪物也认为自己持有着该物品。
-%%%%%
+%%%%
 Other monster isn't holding it, though.
 不过另一只怪物并未持有它。
-%%%%%
+%%%%
 %s not in any vaults.
 %s不在任何地牢中。
-%%%%%
+%%%%
 flux bauble
 通量球
-%%%%%
+%%%%
 Results written into 'xom_debug.stat'.
 结果已写入"xom_debug.stat"。
-%%%%%
+%%%%
 For just a moment, %s begins to look like %s, then it explodes!
 %1$s短暂地变成了%2$s的模样，然后爆炸了！
-%%%%%
+%%%%
 You feel something broadcast a psychic alarm.
 你感到某个东西发出了精神警报。
-%%%%%
+%%%%
 A wave of disorienting energy ripples outward as you feel the reach of Zot diminish.
 一阵令人迷惑的能量波向外扩散，你感到佐特的影响减弱了。
-%%%%%
+%%%%
 [Hit ESC to exit interpreter.]
 [按 ESC 退出解释器。]
-%%%%%
+%%%%
 error calling __echo (%s)
 调用 __echo 出错（%s）
-%%%%%
-# - Recommended character
-# - 推荐角色
-%%%%%
+%%%%
 Jiyva will unlock the Slime Pits vault.\n
 吉瓦将解锁史莱姆坑的地牢。\n
-%%%%%
+%%%%
 Mipmap Setup: Failed to load OpenGL version.
 Mipmap 设置：无法加载 OpenGL 版本。
-%%%%%
+%%%%
 Mipmap Setup: Disabled because SDL_GL_LoadLibrary failed.
 Mipmap 设置：已禁用，因 SDL_GL_LoadLibrary 失败。
-%%%%%
+%%%%
 Mipmap Setup: Failed to load glGenerateMipmap function.
 Mipmap 设置：无法加载 glGenerateMipmap 函数。
-%%%%%
+%%%%
 Mipmap Setup: success, loaded with OpenGL version: %s
 Mipmap 设置：成功，已加载 OpenGL 版本：%s
-%%%%%
+%%%%
 Mipmap Setup: skipped, not supported in this build configuration.
 Mipmap 设置：已跳过，此构建配置不支持。
-%%%%%
+%%%%
 Writing '%s' into save.
 正在将"%s"写入存档。
-%%%%%
+%%%%
 Reading tile_names[%d] = %s
 正在读取 tile_names[%d] = %s
-%%%%%
+%%%%
 Index out of bounds: idx = %d - 1, size(tile_names) = %d
 索引越界：idx = %d - 1，size(tile_names) = %d
-%%%%%
+%%%%
 tilename %s (index %d) not found
 图块名称 %s（索引 %d）未找到
-%%%%%
+%%%%
 tilename %s (index %d) resolves to tile %d
 图块名称 %s（索引 %d）解析为图块 %d
-%%%%%
+%%%%
 Your thirst for blood prevents you from unwielding your weapon!
 你对鲜血的渴望使你无法收起武器！
-%%%%%
+%%%%
 It would be unfitting for someone so glorious to remove their crown in front of an audience.
 如此荣耀之人在观众面前取下王冠实在不妥。
 %%%%
 Which monster by name? 
 按名称搜索哪个怪物？
-%%%%%
+%%%%
 Currently generating level.
 当前正在生成楼层。
-%%%%%
+%%%%
 Vault being placed: %s
 正在放置的地牢：%s
 
 %%%%
 # Issue 45 Phase 3: dbg-util.cc batch (2026-07-05)
+
 %%%%
 Subvaults: %s
 子地库：%s
@@ -34713,6 +33782,7 @@ Toggle which debug class (ESC to exit)?
 
 %%%%
 # Issue 45 Phase 3: player.cc batch (2026-07-05)
+
 %%%%
 Do you really want to %s into the Zot trap?
 你确定要%s佐特陷阱吗？
@@ -34746,6 +33816,7 @@ As you close the %s%s%s, it creaks loudly!
 
 %%%%
 # Issue 45 Phase 3: melee-attack.cc batch (2026-07-05)
+
 %%%%
 %s drains %s %s.
 %s吸取了%s的%s。
@@ -34764,6 +33835,7 @@ liquefy further
 
 %%%%
 # Issue 45 Phase 3: wiz-fsim.cc batch (2026-07-05)
+
 %%%%
 Wielding: 
 持有武器：
@@ -34803,6 +33875,7 @@ Aborting sim on %s
 
 %%%%
 # Issue 45 Phase 3: wiz-item.cc batch (2026-07-05)
+
 %%%%
 Enter name of item (or ITEM spec): 
 输入物品名称（或ITEM标识）：
@@ -34932,6 +34005,7 @@ Unobtained all runes and the Orb of Zot.
 
 %%%%
 # Issue 45 Phase 3: wiz-mon.cc batch (2026-07-05)
+
 %%%%
 Enter monster name (or MONS spec) (? for help): 
 输入怪物名称（或MONS标识）（? 获取帮助）：
@@ -35076,6 +34150,7 @@ Key pressed, interrupting miscast testing.
 
 %%%%
 # Issue 45 Phase 3: describe.cc batch (2026-07-05)
+
 %%%%
  extremely
 极其
@@ -35093,1163 +34168,1133 @@ Your servitor could be imbued with this spell if your spell success rate were hi
 如果你的法术成功率更高，你的仆从就可以被赋予这个法术。\n
 
 %%%%
-
-%%%%
-# - Recommended character
-# - 推荐角色
-%%%%%
 Doll Editor
 人偶编辑器
-%%%%%
-Esc - Quit
-Esc - 退出
-%%%%%
+%%%%
   * - Random hints mode character
   * - 随机提示模式角色
-%%%%%
+%%%%
 That's a silly name!
 这名字太蠢了！
-%%%%%
+%%%%
 No high scores yet...
 暂无高分记录……
-%%%%%
+%%%%
  (WIZ)
 （巫师）
-%%%%%
+%%%%
 CTRL
 Ctrl
-%%%%%
+%%%%
 SHIFT
 Shift
-%%%%%
+%%%%
 Abil: 
 技能：
-%%%%%
+%%%%
 Build '%s'
 建造"%s"
-%%%%%
+%%%%
 \nExamples:\n
 \n示例：\n
-%%%%%
+%%%%
   Sigmund v Jessica\n
   Sigmund 对阵 Jessica\n
-%%%%%
+%%%%
   99 orc v Royal Jelly\n
   99只兽人 对阵 果冻王\n
-%%%%%
+%%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
   20头九头蛇 对阵 10只狗头人；弯刀 附魔：烈焰
-%%%%%
+%%%%
 ) in view: (%d,%d), see_cell: %s
 ) 视野内：(%d,%d)，可见格：%s
-%%%%%
+%%%%
 Stack %s
 牌堆 %s
-%%%%%
-s
-
-%%%%%
+%%%%
 \# - Recommended character
 \# - 推荐角色
 
-%%%%%
+%%%%
  <lightgrey>(%s)</lightgrey>
  <lightgrey>（%s）</lightgrey>
 
-%%%%%
+%%%%
  (%d -> %d)
  （%d -> %d）
 
-%%%%%
+%%%%
  (you have %d gold)
  （你有%d金币）
 
-%%%%%
+%%%%
  and %s
  和%s
 
-%%%%%
+%%%%
  and the adjacent constructs
  和相邻的构装体
 
-%%%%%
+%%%%
  is wracked by anguish%s
  被痛苦折磨%s
 
-%%%%%
+%%%%
  prevents a mutation which would have shattered %s.
  阻止了一次本会将%s击碎的突变。
 
-%%%%%
+%%%%
 %d %s left
 剩余%d %s
 
-%%%%%
+%%%%
 %d MP    %s    (%s)
 %d 法力    %s（%s）
 
-%%%%%
+%%%%
 %d altar%s
 %d座祭坛
 
-%%%%%
+%%%%
 %d rings
 %d枚戒指
 
-%%%%%
+%%%%
 %d shop%s/portal%s
 %d处商店/传送门
 
-%%%%%
+%%%%
 %d%%
 %d%%
 
-%%%%%
+%%%%
 %d-%d/arc
 %d-%d/弧
 
-%%%%%
+%%%%
 %dd%d
 %dd%d
 
-%%%%%
+%%%%
 %dd%d(+%dd%d)
 %dd%d（+%dd%d）
 
-%%%%%
+%%%%
 %dd%d+(2/space)
 %dd%d+（2/空间）
 
-%%%%%
+%%%%
 %dd%d+(3/space)
 %dd%d+（3/空间）
 
-%%%%%
+%%%%
 %dd%d/%dd%d
 %dd%d/%dd%d
 
-%%%%%
+%%%%
 %dd(%d+%d*)
 %dd（%d+%d*）
 
-%%%%%
+%%%%
 %dd(%d-%d)
 %dd（%d-%d）
 
-%%%%%
+%%%%
 %dx
 %dx
 
-%%%%%
+%%%%
 %dx%s
 %d x %s
 
-%%%%%
+%%%%
 %s %s '%s' => '%s'.
 %s%s '%s' => '%s'。
 
-%%%%%
+%%%%
 %s %swizard%s
 %s %s法师%s
 
-%%%%%
+%%%%
 %s (%s)
 %s（%s）
 
-%%%%%
+%%%%
 %s blazes out!
 %s迸发而出！
 
-%%%%%
+%%%%
 %s charge
 %s充能
 
-%%%%%
+%%%%
 %s disliked all level %d spells
 %s不喜欢所有%d级法术
 
-%%%%%
+%%%%
 %s enemies
 %s敌人
 
-%%%%%
+%%%%
 %s fountain%s start%s gushing blood
 喷泉开始涌出鲜血
 
-%%%%%
+%%%%
 %s mutation
 %s突变
 
-%%%%%
+%%%%
 %s polymorph %s -> %s
 变形（%s）：%s -> %s
 
-%%%%%
+%%%%
 %s shop name:%s%s greed:%d gozag
 %s商店名称：%s%s 贪婪度：%d 哥萨戈
 
-%%%%%
+%%%%
 %s touch
 %s之触
 
-%%%%%
+%%%%
 %s weapon
 %s武器
 
-%%%%%
+%%%%
 %s%dd%d
 %s%dd%d
 
-%%%%%
+%%%%
 %s%s (%s)
 %s%s（%s）
 
-%%%%%
+%%%%
 %s%s of %s
 %s之%s%s
 
-%%%%%
+%%%%
 %s.out
 %s.out
 
-%%%%%
+%%%%
 %s: <w>%s</w>
 %s：<w>%s</w>
 
-%%%%%
+%%%%
 %swizard%s
 %s法师%s
 
-%%%%%
+%%%%
 (%d, %d) %s
 （%d，%d）%s
 
-%%%%%
+%%%%
 (%s%dd%d%s)
 （%s%dd%d%s）
 
-%%%%%
+%%%%
 (%s)
 （%s）
 
-%%%%%
+%%%%
 (%s,%dd%d)
 （%s，%dd%d）
 
-%%%%%
+%%%%
 (<%s>%d%s</%s>)
 （<%s>%d%s</%s>）
 
-%%%%%
+%%%%
 , %d intact
 ，%d颗完好
 
-%%%%%
+%%%%
 0-%d MP
 0-%d 法力
 
-%%%%%
+%%%%
 10 + (4-8)d%d
 10 +（4-8）d%d
 
-%%%%%
+%%%%
 2d%d*
 2d%d*
 
-%%%%%
+%%%%
 3d(%d/%d)
 3d（%d/%d）
 
-%%%%%
+%%%%
 6 + %dd%d
 6 + %dd%d
 
-%%%%%
+%%%%
 <%s>%d%%</%s><darkgrey> (%d%%)</darkgrey>
 <%s>%d%%</%s><darkgrey>（%d%%）</darkgrey>
 
-%%%%%
+%%%%
 </bg:%s>\n
 </bg:%s>\n
 
-%%%%%
+%%%%
 <bg:%s>
 <bg:%s>
 
-%%%%%
+%%%%
 <cyan>Item%s here:</cyan> %s.
 <cyan>这里的物品%s：</cyan>%s。
 
-%%%%%
+%%%%
 <darkgrey>[%s melded]</darkgrey>
 <darkgrey>[%s已融入]</darkgrey>
 
-%%%%%
+%%%%
 <darkgrey>[%s]</darkgrey> XL %d
 <darkgrey>[%s]</darkgrey> 等级 %d
 
-%%%%%
+%%%%
 <lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>
 <lightcyan>*</lightcyan><%s>%d%%</%s><lightcyan>*</lightcyan>
 
-%%%%%
+%%%%
 <lightgrey> (%d/%d uses available)</lightgrey>
 <lightgrey>（可用次数：%d/%d）</lightgrey>
 
-%%%%%
+%%%%
 <lightgrey>%s</lightgrey>
 <lightgrey>%s</lightgrey>
 
-%%%%%
+%%%%
 <lightmagenta>%s [%.1f]</lightmagenta>
 <lightmagenta>%s [%.1f]</lightmagenta>
 
-%%%%%
+%%%%
 <w>%s</w>\nInput (raw) new %s for %s: 
 <w>%s</w>\n为%3$s输入（原始）新%2$s：
 
-%%%%%
+%%%%
 <w>%s</w>\nInput new %s for %s:
 <w>%s</w>\n为%3$s输入新%2$s：
 
-%%%%%
+%%%%
 <white>Gems (%d collected
 <white>宝石（已收集%d
 
-%%%%%
+%%%%
 <white>[enter]</white>: %s
 <white>[回车]</white>：%s
 
-%%%%%
+%%%%
 Bane of %s
 %s之灾
 
-%%%%%
+%%%%
 Cleared %s '%s' => '%s'.
 已清除%s'%s' => '%s'。
 
-%%%%%
+%%%%
 Could not create fixed level randart spellbook: %s
 无法创建固定等级随机神器法术书：%s
 
-%%%%%
+%%%%
 Current %s for %s: %s
 %2$s的当前%1$s：%3$s
 
-%%%%%
+%%%%
 Enkindled (%d)
 点燃（%d）
 
-%%%%%
+%%%%
 Fugue (%s%u%s)
 赋格（%s%u%s）
 
-%%%%%
+%%%%
 HP: %d/%d MP: %d/%d
 生命：%d/%d 法力：%d/%d
 
-%%%%%
+%%%%
 Heavenly (%d)
 天赐（%d）
 
-%%%%%
+%%%%
 Hit by %s thrown by %s
 被%2$s投掷的%1$s击中
 
-%%%%%
+%%%%
 Hit by a%s %s thrown by %s
 被%3$s投掷的%2$s击中
 
-%%%%%
+%%%%
 Horr (%d)
 恐惧（%d）
 
-%%%%%
+%%%%
 Input trigger key to edit or create a %s:
 输入触发键以编辑或创建%s：
 
-%%%%%
+%%%%
 Lash (%u)
 鞭击（%u）
 
-%%%%%
+%%%%
 MPRegen (%d)
 魔力再生（%d）
 
-%%%%%
+%%%%
 Memories (%d)
 记忆（%d）
 
-%%%%%
+%%%%
 No level %d spells can be cast by you
 没有你可施放的%d级法术
 
-%%%%%
+%%%%
 No level %d spells?!?!?!
 没有%d级法术？！？！？！
 
-%%%%%
+%%%%
 Parsing error in key sequence '%s'
 按键序列'%s'解析错误
 
-%%%%%
+%%%%
 Phobia (-%d)
 恐惧症（-%d）
 
-%%%%%
+%%%%
 Pick up how many of %s (; or enter for all)? 
 拾取多少%s（按;或回车全取）？
 
-%%%%%
+%%%%
 Really clear all %ss?
 确认清除所有%s？
 
-%%%%%
+%%%%
 Regen (%d)
 再生（%d）
 
-%%%%%
+%%%%
 Remember %s name as what? 
 将%s的名字记为什么？
 
-%%%%%
+%%%%
 Shopping list: remove %s? (Y/n)
 购物清单：移除%s？（Y/n）
 
-%%%%%
+%%%%
 Shot with a%s %s by %s
 被%3$s用%2$s射中
 
-%%%%%
+%%%%
 Slay +%d
 杀戮+%d
 
-%%%%%
+%%%%
 Terminal colours: %d foreground, %d background\n\n
 终端颜色：%d前景色，%d背景色\n\n
 
-%%%%%
+%%%%
 Terminal type (`TERM`): <w>%s</w>\n
 终端类型（`TERM`）：<w>%s</w>\n
 
-%%%%%
+%%%%
 You are bolstered by spread misfortune (+%d AC)
 散布的厄运强化了你（AC +%d）
 
-%%%%%
+%%%%
 You can wear up to %s rings at the same time.
 你可以同时佩戴最多%s枚戒指。
 
-%%%%%
+%%%%
 You have no room to wall jump there; %s is in the way.
 那里没有空间进行蹬墙跳；%s挡住了。
 
-%%%%%
+%%%%
 Your %s. (AC +%d)
 你的%s。（AC +%d）
 
-%%%%%
+%%%%
 Your skill with %s, %s, and %s is reduced.
 你对%1$s、%2$s和%3$s的掌握被削弱了。
 
-%%%%%
+%%%%
 [L-Click] %s
 [左键] %s
 
-%%%%%
+%%%%
 and it begins to echo in your mind!
 它在你的脑海中开始回响！
 
-%%%%%
+%%%%
 at %s
 在%s处
 
-%%%%%
+%%%%
 blast of %s %s
 %1$s%2$s冲击
 
-%%%%%
+%%%%
 bonks %s with %s %s.
 用%2$s%3$s敲了%1$s。
 
-%%%%%
+%%%%
 bribing [%s]
 贿赂中[%s]
 
-%%%%%
+%%%%
 but you%s
 但你%s
 
-%%%%%
+%%%%
 cast spell '%s'
 施放了法术'%s'
 
-%%%%%
+%%%%
 chance to affect: %d%%
 影响几率：%d%%
 
-%%%%%
+%%%%
 chance to blink: %d%%
 瞬移几率：%d%%
 
-%%%%%
+%%%%
 chance to confuse: %d%%
 困惑几率：%d%%
 
-%%%%%
+%%%%
 chance to slow: %d%%
 减速几率：%d%%
 
-%%%%%
+%%%%
 chance to teleport: %d%%
 传送几率：%d%%
 
-%%%%%
+%%%%
 chance to weaken: %d%%
 衰弱几率：%d%%
 
-%%%%%
+%%%%
 damage: %dd3 / 2
 伤害：%dd3 / 2
 
-%%%%%
+%%%%
 death random %d
 死亡 随机%d
 
-%%%%%
+%%%%
 divine lightning + %d bolts
 神圣闪电 + %d道
 
-%%%%%
+%%%%
 does a pirouette on top of %s.
 在%s头顶做了个单脚旋转。
 
-%%%%%
+%%%%
 doodles on %s face.
 在%s脸上涂鸦。
 
-%%%%%
+%%%%
 empty space bonus: %d/8
 空旷空间加成：%d/8
 
-%%%%%
+%%%%
 enchanted %s
 附魔%s
 
-%%%%%
+%%%%
 finished random %d
 完成 随机%d
 
-%%%%%
+%%%%
 gaining the %s mutation
 获得%s突变
 
-%%%%%
+%%%%
 give %smutation%s
 给予%s突变%s
 
-%%%%%
+%%%%
 god gift: %s
 神赐礼物：%s
 
-%%%%%
+%%%%
 hp as a bound soul: ~%d
 缚魂生命值：~%d
 
-%%%%%
+%%%%
 insults %s ancestors.
 辱骂了%s的祖先。
 
-%%%%%
+%%%%
 lash out against %s attempt to control you!
 反抗%s控制你的企图！
 
-%%%%%
+%%%%
 lit up %d webs
 点燃了%d张蛛网
 
-%%%%%
+%%%%
 losing the %s mutation
 失去%s突变
 
-%%%%%
+%%%%
 made a garden
 创造了一个花园
 
-%%%%%
+%%%%
 made a ring of doors, pulled %d %s in
 创造了一圈门，把%d个%s拉了进来
 
-%%%%%
+%%%%
 made a ring of doors, pushed %d %s out
 创造了一圈门，把%d个%s推了出去
 
-%%%%%
+%%%%
 makes %s trip over %s own %s.
 让%1$s被%2$s%3$s绊倒了。
 
-%%%%%
+%%%%
 out of sight
 视线之外
 
-%%%%%
+%%%%
 scenery %s
 场景%s
 
-%%%%%
+%%%%
 shards
 碎片
 
-%%%%%
+%%%%
 smacks %s with %s own %s.
 用%2$s%3$s扇了%1$s。
 
-%%%%%
+%%%%
 something (%d)
 某物（%d）
 
-%%%%%
+%%%%
 sprouts %d new heads
 长出了%d个新头
 
-%%%%%
+%%%%
 sprouts a new head
 长出了一个新头
 
-%%%%%
+%%%%
 statue of %s
 %s雕像
 
-%%%%%
+%%%%
 summons %d friend%s
 召唤了%d名友方
 
-%%%%%
+%%%%
 summons friendly %s
 召唤了友善的%s
 
-%%%%%
+%%%%
 the %s
 %s
 
-%%%%%
+%%%%
 ties %s tail in a knot.
 把%s的尾巴打了个结。
 
-%%%%%
+%%%%
 trickster (+%d AC)
 欺诈者（AC +%d）
 
-%%%%%
+%%%%
 uppercase %c
 大写%c
 
-%%%%%
+%%%%
 weapon of %s
 %s之武器
 
-%%%%%
+%%%%
  blesses %s with %s.
  赐予了%1$s%2$s的祝福。
 
-%%%%%
+%%%%
 "%s" is not readable
 「%s」无法读取
 
-%%%%%
+%%%%
 "We remember... %s..."
 「我们记得……%s……」
 
-%%%%%
+%%%%
  %d item%s
 %d件物品%s
-%%%%%
+%%%%
  %s %d (%s)
 %s%d（%s）
-%%%%%
+%%%%
  %s the %s.
 %s了%s。
-%%%%%
+%%%%
  %s the shaft.
 %s了竖井。
-%%%%%
+%%%%
  (%d intact)
 （%d枚完好）
-%%%%%
+%%%%
  (%d-%d dam)
 （%d-%d伤害）
-%%%%%
+%%%%
  (%sshapeshifter)
 （%s变形者）
-%%%%%
+%%%%
  ([<w>-</w>] %s)
 （[<w>-</w>] %s）
-%%%%%
+%%%%
  (and %zu other bad targets)
 （及%zu个其他不良目标）
-%%%%%
+%%%%
  (max %d damage)
 （最高%d伤害）
-%%%%%
+%%%%
  (max %d%s)
 （最高%d%s）
-%%%%%
+%%%%
  (pow %d)
 （威力%d）
-%%%%%
+%%%%
  + %d per 4 attacks
 每4次攻击+%d
-%%%%%
+%%%%
  <lightgrey>(%s to cycle)</lightgrey>
  <lightgrey>（按%s切换）</lightgrey>
-%%%%%
+%%%%
  [<yellow>%c</yellow>] 
 [<yellow>%c</yellow>]
-%%%%%
+%%%%
  [depth %d]
 [深度%d]
-%%%%%
+%%%%
  assembles %s!
 组装了%s！
-%%%%%
+%%%%
  discards %s horn.
 丢弃了%s的角。
-%%%%%
+%%%%
  donates %s equipment to the cause.
 将%s装备捐献给了事业。
-%%%%%
+%%%%
  manifests%s!
 显现%s！
-%%%%%
+%%%%
  protects %s plant from harm.
 保护了%s的植物免受伤害。
-%%%%%
+%%%%
  shudders as magic cascades through %s%s
 震颤着，魔力涌过%s%s
-%%%%%
+%%%%
  warns you: %s is a foul%s shapeshifter.
 警告你：%s是邪恶%s的变形者。
-%%%%%
+%%%%
 %-14s Skill %4.1f Aptitude %c%d
 %-14s 技能 %4.1f 资质 %c%d
-%%%%%
+%%%%
 %8d %s the %s %s (level %d
 %8d %s，%s%s（等级%d
-%%%%%
+%%%%
 %8d %s the %s (level %d
 %8d %s，%s（等级%d
-%%%%%
+%%%%
 %d %sexclusion%s
 %d个%s排除区%s
-%%%%%
+%%%%
 %d (base %d)
 %d（基础%d）
-%%%%%
+%%%%
 %d creature%s vanquished.\n
 已消灭%d只生物%s。\n
-%%%%%
+%%%%
 %d doors close
 %d扇门关闭
-%%%%%
+%%%%
 %d doors open
 %d扇门打开
-%%%%%
+%%%%
 %d fountains blood
 %d座喷泉喷血
-%%%%%
+%%%%
 %d match%s
 %d个匹配项%s
-%%%%%
+%%%%
 %d skills
 %d项技能
-%%%%%
+%%%%
 %d snacks swapped
 %d份零食被调换
-%%%%%
+%%%%
 %d trees warped
 %d棵树被扭曲
-%%%%%
+%%%%
 %d%% <darkgrey>(%d%%)</darkgrey>
 %d%% <darkgrey>（%d%%）</darkgrey>
-%%%%%
+%%%%
 %d-stop teleportation journey%s
 %d站的传送之旅%s
-%%%%%
+%%%%
 %dd%d (primary target), %dd%d (explosion)
 %dd%d（主目标），%dd%d（爆炸）
-%%%%%
+%%%%
 %dd%d%s
 %dd%d%s
-%%%%%
+%%%%
 %dx %s%s
 %d倍%s%s
-%%%%%
+%%%%
 %s    (%s)    %d/%d spell slot%s
 %s    （%s）    %d/%d法术位%s
-%%%%%
+%%%%
 %s %s: %s
 %s %s：%s
-%%%%%
+%%%%
 %s (up to %d damage)
 %s（最高%d伤害）
-%%%%%
+%%%%
 %s ability
 %s能力
-%%%%%
+%%%%
 %s corrodes you!
 %s腐蚀了你！
-%%%%%
+%%%%
 %s dazzles you with the glint of coin.
 %s用金币的光芒炫惑了你。
-%%%%%
+%%%%
 %s door%s burst%s open
 %s%s扇门猛然打开%s
-%%%%%
+%%%%
 %s emits a blaring wail!
 %s发出了刺耳的哀嚎！
-%%%%%
+%%%%
 %s heals %s%s
 %s治愈了%s%s
-%%%%%
+%%%%
 %s might hit %s%s. %s
 %s可能击中%s%s。%s
-%%%%%
+%%%%
 %s monstatus
 %s怪物状态
-%%%%%
+%%%%
 %s other creatures
 %s个其他生物
-%%%%%
+%%%%
 %s pulls itself out of thin air.
 %s从空气中凝聚成形。
-%%%%%
+%%%%
 %s%s (%d gold)
 %s%s（%d金币）
-%%%%%
+%%%%
 %s%s door%s slam%s shut
 %s%s%s扇门猛然关闭%s
-%%%%%
+%%%%
 %s-v%d.%d.backup
 %s-v%d.%d.backup
-%%%%%
+%%%%
 %sing a weapon of distortion
 %s扭曲武器
-%%%%%
+%%%%
 %sway
 %s
-%%%%%
+%%%%
 '%s' badness %d outside 10-50 range.\n
 '%s'的恶劣度%d超出10-50范围。\n
-%%%%%
+%%%%
 '%s' is not bad, but has badness!\n
 '%s'并非恶劣事件，却设置了恶劣度！\n
-%%%%%
+%%%%
 (%+d apt)
 （%+d资质）
-%%%%%
+%%%%
 (%c)
 （%c）
-%%%%%
+%%%%
 (%d) %s
 （%d）%s
-%%%%%
+%%%%
 ... %s %d gem%s
 ……%s %d枚宝石%s
-%%%%%
+%%%%
 ... %s %d rune%s
 ……%s %d枚符文%s
-%%%%%
+%%%%
 ... %s by %s
 ……被%s%s
-%%%%%
+%%%%
 ... wielding %s
 ……手持%s
-%%%%%
+%%%%
 /usr/bin/open -R '%s'
 /usr/bin/open -R '%s'
-%%%%%
+%%%%
 <lightgray> (%s to select)</lightgray>
 <lightgray>（按%s选择）</lightgray>
-%%%%%
+%%%%
 <lightgray>Fire%s/use which item?</lightgray>
 <lightgray>发射%s/使用哪件物品？</lightgray>
-%%%%%
+%%%%
 <lightgrey>%s </lightgrey>
 <lightgrey>%s</lightgrey>
-%%%%%
+%%%%
 <red>%s</red>
 <red>%s</red>
-%%%%%
+%%%%
 <span class=\\\"fg%d bg%d\\\">
 <span class=\\\"fg%d bg%d\\\">
-%%%%%
+%%%%
 Began as a%s %s %s
 初始为一名%s%s%s
-%%%%%
+%%%%
 Crash caused by signal #%d: %s
 崩溃由信号#%d引起：%s
-%%%%%
+%%%%
 Duplicate name '%s'!\n
 重复名称'%s'！\n
-%%%%%
+%%%%
 Engulfed by %s%s %s
 被%s%s%s吞噬
-%%%%%
+%%%%
 Enter a skill target for %s: 
 为%s输入技能目标：
-%%%%%
+%%%%
 Enter for "%s"
 按回车搜索"%s"
-%%%%%
+%%%%
 Failed to create monster at (%d,%d) env.grid: %s
 在（%d,%d）处创建怪物失败，地形格：%s
-%%%%%
+%%%%
 File is corrupt (found version %d,%d).
 文件已损坏（发现版本%d,%d）。
-%%%%%
+%%%%
 Final score: %s (%d); %s (%d) [%d ties]
 最终得分：%s（%d）；%s（%d）[%d次平局]
-%%%%%
+%%%%
 It can be found on %s.\n\n
 可在%s找到。\n\n
-%%%%%
+%%%%
 Killed %s
 死于%s
-%%%%%
+%%%%
 Killed %s%s
 死于%s%s
-%%%%%
+%%%%
 Killed by their own %s
 被自身的%s所杀
-%%%%%
+%%%%
 Killed by triggering %s
 因触发%s而死亡
-%%%%%
+%%%%
 Missing version history before: %s
 缺少%s之前的版本历史
-%%%%%
+%%%%
 No action for '%s'!\n
 '%s'没有关联动作！\n
-%%%%%
+%%%%
 No longer under Kirke's spell, the %s %s %s!
 不再受喀耳刻的法术影响，%s%s%s！
-%%%%%
+%%%%
 No matching %s for search string '%s'.
 没有匹配搜索字符串'%2$s'的%1$s。
-%%%%%
+%%%%
 No random monsters for place '%s'
 没有可用于'%s'的随机怪物
-%%%%%
+%%%%
 No version history (current version is %s)
 无版本历史（当前版本为%s）
-%%%%%
+%%%%
 Non-targeted %s
 非瞄准%s
-%%%%%
+%%%%
 Really quiver %s?
 确定将%s设为箭袋物品？
-%%%%%
+%%%%
 Round %d of %d
 第%d回合，共%d回合
-%%%%%
+%%%%
 The Sanctuary denies your attempt to harm %s.
 圣域阻止了你伤害%s的企图。
-%%%%%
+%%%%
 The Sanctuary protects %s from harm.
 圣域保护了%s免受伤害。
-%%%%%
+%%%%
 The game lasted %s (%d turns).
 游戏持续了%s（%d回合）。
-%%%%%
+%%%%
 Unable to get '%s' by name
 无法按名称获取'%s'
-%%%%%
+%%%%
 Unable to get item '%s' by name
 无法按名称获取物品'%s'
-%%%%%
+%%%%
 Unknown OpenGL error %d
 未知的OpenGL错误%d
-%%%%%
+%%%%
 Upgraded the game from %s to %s
 游戏已从%s升级到%s
-%%%%%
+%%%%
 Warning, next level annotated: <yellow>%s</yellow>
 警告，下一层标注为：<yellow>%s</yellow>
-%%%%%
+%%%%
 Was %s of %s%s
 曾是%s%s之%s
-%%%%%
+%%%%
 Was a %sPlaything of Xom.
 曾是佐姆的%s玩物。
-%%%%%
+%%%%
 Xom event %d has no associated data!\n
 佐姆事件%d没有关联数据！\n
-%%%%%
+%%%%
 You cannot charge away from %s!
 你无法从%s处冲锋离开！
-%%%%%
+%%%%
 You cannot charge closer to %s!
 你无法向%s冲锋靠近！
-%%%%%
+%%%%
 You have just %d turns in %s to find a new floor before Zot consumes you.
 你只有%d回合在%s中找到新楼层，否则佐特将吞噬你。
-%%%%%
+%%%%
 [<w>%s</w>|<w>Space</w>]
 [<w>%s</w>|<w>空格</w>]
-%%%%%
+%%%%
 \n    (%d xp, %d skp)
 \n    （%d经验，%d技能点）
-%%%%%
+%%%%
 \n%s creates living %s spells.\n
 \n%s创造活体%s法术。\n
-%%%%%
+%%%%
 \n(Cancelled after %d trial%s)
 \n（在%d次试验%s后取消）
-%%%%%
+%%%%
 \nBest Crawlers - %s\n
 \n最佳爬行者 - %s\n
-%%%%%
+%%%%
 \nYou can find your morgue file in the '%s' directory.
 \n你可以在'%s'目录中找到你的停尸文件。
-%%%%%
+%%%%
 \nYou can find your morgue file in the \n'%s'\n directory.
 \n你可以在\n'%s'\n目录中找到你的停尸文件。
-%%%%%
+%%%%
 \nYou cannot cast this spell because %s\n
 \n你无法施放此法术，因为%s\n
-%%%%%
+%%%%
 \nYou cannot memorise this spell because %s\n
 \n你无法记忆此法术，因为%s\n
-%%%%%
+%%%%
 \n\nThis %s is %d levels deep.
 \n\n此%s有%d层深。
-%%%%%
+%%%%
 \n\nThis branch contains the entrance%s to %s.
 \n\n此分支包含通往%2$s的入口%1$s。
-%%%%%
+%%%%
 between levels %d and %d of 
 在第%d层到第%d层之间的
-%%%%%
+%%%%
 buffed friendly %s %d %s
 强化了友方%s %d %s
-%%%%%
+%%%%
 by %.1f.
 %.1f。
-%%%%%
+%%%%
 chance to %s on hit: %d%%
 命中时%s的几率：%d%%
-%%%%%
+%%%%
 charmed %d monster%s
 魅惑了%d只怪物%s
-%%%%%
+%%%%
 drained mp
 吸取了魔法
-%%%%%
+%%%%
 drained mp, created monsters
 吸取了魔法，创造了怪物
-%%%%%
+%%%%
 enchant monster%s (%s, %s)
 附魔怪物%s（%s，%s）
-%%%%%
+%%%%
 has its spells empowered, 
 法术被强化，
-%%%%%
+%%%%
 illegal inventory cmd '%d'
 非法的物品栏命令'%d'
-%%%%%
+%%%%
 left a ziggurat at level %d.
 在第%d层离开了通灵塔。
-%%%%%
+%%%%
 looks %s, 
 看起来%s，
-%%%%%
+%%%%
 lost the %s gem!
 丢失了%s宝石！
-%%%%%
+%%%%
 made %s speak a word of recall
 让%s念出了召回之词
-%%%%%
+%%%%
 mapping estimate: %d%%\nexploration estimate: %d%%\n
 地图估算：%d%%\n探索估算：%d%%\n
-%%%%%
+%%%%
 on level %d of 
 在第%d层的
-%%%%%
+%%%%
 shafted_in_%s
 shafted_in_%s
-%%%%%
+%%%%
 starts %s, 
 开始%s，
-%%%%%
+%%%%
 summoned %d hostile %s + %d friendly %s
 召唤了%d只敌对%s，%d只友方%s
-%%%%%
+%%%%
 summons %d hostile %s%s
 召唤了%d只敌对%s%s
-%%%%%
+%%%%
 summons %d living force lance%s
 召唤了%d根活体力量长枪%s
-%%%%%
+%%%%
 the %s of %s
 %2$s之%1$s
-%%%%%
+%%%%
 torment%s(%d/%d hp)
 折磨%s（%d/%d生命）
-%%%%%
+%%%%
 you can't charge at %s because %s
 你无法冲向%s，因为%s
-%%%%%
- <lightgrey>(%s)</lightgrey>
- <lightgrey>（%s）</lightgrey>
-%%%%%
-<w>%s</w>\nInput (raw) new %s for %s: 
-<w>%s</w>\n输入新的（原始）%s，按键%s：
-%%%%%
-<w>%s</w>\nInput new %s for %s:
-<w>%s</w>\n输入新的%s，按键%s：
-%%%%%
-</bg:%s>\n
-</bg:%s>\n
-%%%%%
-Terminal type (`TERM`): <w>%s</w>\n
-终端类型（`TERM`）：<w>%s</w>\n
-%%%%%
-Terminal colours: %d foreground, %d background\n\n
-终端颜色：%d前景色，%d背景色\n\n
-%%%%%
+%%%%
 %s by 
 %s，来自
-%%%%%
+%%%%
 %d %s
 %d个%s
-%%%%%
+%%%%
  is %s!
 %s！
-%%%%%
+%%%%
 <span class=\\"fg%d bg%d\\">
 <span class=\\"fg%d bg%d\\">
-%%%%%
+%%%%
 %s spell
 %s法术
-%%%%%
+%%%%
 %s card
 %s卡牌
-%%%%%
+%%%%
 through %s
 穿过%s
-%%%%%
+%%%%
 Brand which weapon?
 给哪件武器铭刻？
-%%%%%
+%%%%
 Enchant which weapon?
 给哪件武器附魔？
-%%%%%
+%%%%
 Enchant which item?
 给哪件物品附魔？
-%%%%%
+%%%%
 Identify which item? (\\ to view known items)
 鉴定哪件物品？（按 \\ 查看已知物品）
-%%%%%
 %%%%
 Xom revived you
 佐姆复活了你
@@ -36271,9 +35316,6 @@ Reached XP level
 %%%%
 Learned a level 
 学会了一个等级
-%%%%
-Became a worshipper of 
-成为了
 %%%%
 Fell from the grace of 
 失去了
@@ -36425,7 +35467,6 @@ Palette with menu highlight:
 Full palette:
 完整调色板：
 %%%%
-%%%%
  as 
 作为
 %%%%
@@ -36454,36 +35495,9 @@ remaining)
 剩余）
 Unnamed gizmo
 无名装置
-%%%%%
-Less
-更少
-%%%%%
-More
-更多
-%%%%%
-%%%%
-shadow puppet
-暗影傀儡
-%%%%
-shadow prism
-暗影棱镜
 %%%%
 martyred shade
 殉道暗影
-%%%%
-rending blade
-撕裂之刃
-%%%%
-platinum paragon
-白金典范
-%%%%
-hellfire mortar
-地狱火迫击炮
-%%%%
-battlemage
-战斗法师
-Cast: 
-施放：
 %%%%
 Set which item as quick action? (- to clear)
 要设置哪个物品为快捷动作？（- 清除）
@@ -36496,9 +35510,6 @@ Quick cast
 %%%%
 Forget
 遗忘
-%%%%
-cast
-施放
 %%%%
 magic release
 魔力释放
@@ -36668,7 +35679,6 @@ Despite
 [ERROR: no desc for item name '%s']. Perhaps this item has been removed?\n
 [错误：物品名称'%s'无描述]。可能该物品已被移除？\n
 %%%%
-
 This ability costs: 
 此能力消耗：
 %%%%
@@ -36738,12 +35748,6 @@ Draw a card from
 no special abilities
 无特殊能力
 %%%%
-weapons
-武器
-%%%%
-armour
-护甲
-%%%%
 scrolls
 卷轴
 %%%%
@@ -36752,9 +35756,6 @@ potions
 %%%%
 books
 书籍
-%%%%
-staves
-法杖
 %%%%
 miscellany
 杂项
@@ -36790,1473 +35791,6 @@ obsoleteness
 已淘汰
 
 # Phase P4b: monster YAML name translations (489 entries)
-%%%%
-Aizul
-艾祖尔
-%%%%
-Antaeus
-安泰俄斯
-%%%%
-Arachne
-阿拉克尼
-%%%%
-Asmodeus
-阿斯蒙蒂斯
-%%%%
-Asterion
-阿斯忒里翁
-%%%%
-Azrael
-阿兹瑞尔
-%%%%
-Bai Suzhen
-白素贞
-%%%%
-Blorkula the orcula
-兽人布洛库拉
-%%%%
-Boris
-鲍里斯
-%%%%
-Brimstone Fiend
-硫磺恶鬼
-%%%%
-Cassandra
-卡珊德拉
-%%%%
-Cerebov
-赛里鲍夫
-%%%%
-Chuck
-查克
-%%%%
-Crazy Yiuf
-疯伊乌夫
-%%%%
-Dispater
-迪斯帕特
-%%%%
-Donald
-唐纳德
-%%%%
-Dowan
-多万
-%%%%
-Duvessa
-杜维莎
-%%%%
-Edmund
-埃德蒙
-%%%%
-Ereshkigal
-埃列什基伽勒
-%%%%
-Erica
-艾丽卡
-%%%%
-Erolcha
-艾洛查
-%%%%
-Eustachio
-尤斯塔奇奥
-%%%%
-Fannar
-凡纳尔
-%%%%
-Frances
-弗朗西斯
-%%%%
-Frederick
-弗雷德里克
-%%%%
-Gastronok
-加斯特罗诺克
-%%%%
-Geryon
-革律翁
-%%%%
-Gloorx Vloq
-格洛克斯·弗洛克
-%%%%
-Grinder
-格林德
-%%%%
-Grum
-格鲁姆
-%%%%
-Grunn
-格伦
-%%%%
-Harold
-哈罗德
-%%%%
-Ignacio
-伊格纳西奥
-%%%%
-Ijyb
-伊吉布
-%%%%
-Ilsuiw
-伊尔苏伊
-%%%%
-Jeremiah
-杰里迈亚
-%%%%
-Jessica
-杰西卡
-%%%%
-Jorgrun
-乔格伦
-%%%%
-Jory
-乔里
-%%%%
-Joseph
-约瑟夫
-%%%%
-Josephina
-约瑟芬娜
-%%%%
-Josephine
-约瑟芬
-%%%%
-Khufu
-胡夫
-%%%%
-Kirke
-喀耳刻
-%%%%
-Lodul
-洛杜尔
-%%%%
-Lom Lobon
-洛姆·洛本
-%%%%
-Louise
-路易丝
-%%%%
-Maggie
-玛吉
-%%%%
-Mara
-玛拉
-%%%%
-Margery
-玛杰里
-%%%%
-Maurice
-莫里斯
-%%%%
-Menkaure
-门卡乌拉
-%%%%
-Mennas
-门纳斯
-%%%%
-Mlioglotl
-姆利奥格洛特尔
-%%%%
-Mnoleg
-姆诺莱格
-%%%%
-Murray
-默里
-%%%%
-Natasha
-娜塔莎
-%%%%
-Nellie
-内莉
-%%%%
-Nergalle
-涅尔盖尔
-%%%%
-Nessos
-涅索斯
-%%%%
-Nikola
-尼古拉
-%%%%
-Norris
-诺里斯
-%%%%
-Parghit
-帕尔吉特
-%%%%
-Pargi
-帕尔吉
-%%%%
-Pikel
-皮克尔
-%%%%
-Polyphemus
-波吕斐摩斯
-%%%%
-Prince Ribbit
-王子蛙
-%%%%
-Robin
-罗宾
-%%%%
-Roxanne
-罗克珊
-%%%%
-Rupert
-鲁伯特
-%%%%
-Saint Roka
-圣罗卡
-%%%%
-Sigmund
-西格蒙德
-%%%%
-Snorg
-斯诺格
-%%%%
-Sojobo
-僧正坊
-%%%%
-Sonja
-索尼娅
-%%%%
-Sprozz
-斯普罗兹
-%%%%
-Terence
-特伦斯
-%%%%
-Tiamat
-提亚马特
-%%%%
-Tzitzimitl
-齐齐米特尔
-%%%%
-Urug
-乌鲁格
-%%%%
-Vashnia
-瓦什尼亚
-%%%%
-Vv
-维维
-%%%%
-Wiglaf
-威格拉夫
-%%%%
-Xak'krixis
-扎克·克里西斯
-%%%%
-Xtahua
-斯塔华
-%%%%
-Zenata
-泽纳塔
-%%%%
-acid blob
-酸液史莱姆
-%%%%
-acid dragon
-酸液龙
-%%%%
-adder
-蝰蛇
-%%%%
-air elemental
-风元素
-%%%%
-alligator
-短吻鳄
-%%%%
-alligator snapping turtle
-鳄龟
-%%%%
-anaconda
-森蚺
-%%%%
-ancestor
-先祖
-%%%%
-ancient champion
-古代冠军
-%%%%
-ancient lich
-远古巫妖
-%%%%
-angel
-天使
-%%%%
-apis
-圣甲牛
-%%%%
-arcanist
-秘术师
-%%%%
-armataur
-甲龙兽人
-%%%%
-azure jelly
-天蓝果冻
-%%%%
-ball lightning
-球状闪电
-%%%%
-ball python
-球蟒
-%%%%
-ballistomycete
-投菇
-%%%%
-ballistomycete spore
-投菇孢子
-%%%%
-balrug
-巴洛炎魔
-%%%%
-barachi
-蛙人
-%%%%
-basilisk
-石化蜥蜴
-%%%%
-bat
-蝙蝠
-%%%%
-battlesphere
-战斗球体
-%%%%
-bear
-熊
-%%%%
-bennu
-贝努鸟
-%%%%
-black bear
-黑熊
-%%%%
-black draconian
-黑龙人
-%%%%
-black mamba
-黑曼巴蛇
-%%%%
-blink frog
-闪烁蛙
-%%%%
-blizzard demon
-暴风雪恶魔
-%%%%
-block of ice
-冰块
-%%%%
-bog body
-沼泽尸
-%%%%
-boggart
-博格特
-%%%%
-bombardier beetle
-投弹甲虫
-%%%%
-bone dragon
-龙骨
-%%%%
-boulder
-巨石
-%%%%
-boulder beetle
-滚石甲虫
-%%%%
-brain worm
-脑虫
-%%%%
-briar patch
-荆棘丛
-%%%%
-bullfrog
-牛蛙
-%%%%
-bunyip
-邦伊普
-%%%%
-bush
-灌木
-%%%%
-butterfly
-蝴蝶
-%%%%
-cacodemon
-混沌魔
-%%%%
-cactus giant
-仙人掌巨人
-%%%%
-cane toad
-蔗蟾
-%%%%
-catoblepas
-卡托布莱帕斯
-%%%%
-caustic shrike
-腐蚀伯劳
-%%%%
-centaur
-半人马
-%%%%
-centaur warrior
-半人马战士
-%%%%
-cerulean imp
-蓝小恶魔
-%%%%
-chaos spawn
-混沌孽物
-%%%%
-cherub
-智天使
-%%%%
-chonchon
-琼琼鸟
-%%%%
-clockroach
-发条蟑螂
-%%%%
-clockwork bee
-发条蜜蜂
-%%%%
-crimson imp
-红小恶魔
-%%%%
-crocodile
-鳄鱼
-%%%%
-crystal guardian
-水晶守卫
-%%%%
-curse skull
-诅咒颅骨
-%%%%
-cyclops
-独眼巨人
-%%%%
-daeva
-圣灵
-%%%%
-dart slug
-飞镖蛞蝓
-%%%%
-death cob
-死亡蛇
-%%%%
-death drake
-死亡龙兽
-%%%%
-death knight
-死亡骑士
-%%%%
-death yak
-死亡氂牛
-%%%%
-deathcap
-死亡帽菇
-%%%%
-deep elf annihilator
-暗精灵歼灭者
-%%%%
-deep elf archer
-暗精灵弓箭手
-%%%%
-deep elf blademaster
-暗精灵剑圣
-%%%%
-deep elf death mage
-暗精灵死亡法师
-%%%%
-deep elf demonologist
-暗精灵恶魔学家
-%%%%
-deep elf elementalist
-暗精灵元素师
-%%%%
-deep elf high priest
-暗精灵高阶祭司
-%%%%
-deep elf knight
-暗精灵骑士
-%%%%
-deep elf master archer
-暗精灵神射手
-%%%%
-deep elf pyromancer
-暗精灵火法师
-%%%%
-deep elf sorcerer
-暗精灵术士
-%%%%
-deep elf zephyrmancer
-暗精灵风语者
-%%%%
-deep troll
-深巨魔
-%%%%
-deep troll earth mage
-深巨魔土法师
-%%%%
-deep troll shaman
-深巨魔萨满
-%%%%
-demigod
-半神
-%%%%
-demonic plant
-恶魔植物
-%%%%
-demonspawn
-恶魔后裔
-%%%%
-demonspawn blood saint
-恶魔后裔血圣
-%%%%
-demonspawn corrupter
-恶魔后裔腐化者
-%%%%
-demonspawn soul scholar
-恶魔后裔灵魂学者
-%%%%
-demonspawn warmonger
-恶魔后裔战争贩子
-%%%%
-diamond obelisk
-钻石方尖碑
-%%%%
-dire elephant
-凶暴象
-%%%%
-djinni
-巨灵
-%%%%
-dormant clockwork bee
-休眠发条蜜蜂
-%%%%
-draconian
-龙人
-%%%%
-draconian annihilator
-龙人歼灭者
-%%%%
-draconian knight
-龙人骑士
-%%%%
-draconian monk
-龙人武僧
-%%%%
-draconian scorcher
-龙人灼烧者
-%%%%
-draconian shifter
-龙人变形者
-%%%%
-draconian stormcaller
-龙人唤雷者
-%%%%
-dragon
-龙
-%%%%
-drake
-龙兽
-%%%%
-dread lich
-恐惧巫妖
-%%%%
-dream sheep
-梦羊
-%%%%
-drowned soul
-溺水之魂
-%%%%
-dryad
-树精
-%%%%
-dwarf
-矮人
-%%%%
-earth elemental
-土元素
-%%%%
-easy sensed monster
-易感知怪物
-%%%%
-electric eel
-电鳗
-%%%%
-electric golem
-电魔像
-%%%%
-eleionoma
-沼泽精灵
-%%%%
-elemental
-元素
-%%%%
-elephant
-大象
-%%%%
-elephant slug
-巨蛞蝓
-%%%%
-elf
-精灵
-%%%%
-emperor scorpion
-帝王蝎
-%%%%
-endoplasm
-内质
-%%%%
-entropy weaver
-熵织者
-%%%%
-ettin
-双头巨人
-%%%%
-eye of devastation
-毁灭之眼
-%%%%
-eye of draining
-汲取之眼
-%%%%
-faun
-牧神
-%%%%
-felid
-猫人
-%%%%
-fire bat
-火蝙蝠
-%%%%
-fire dragon
-火龙
-%%%%
-fire elemental
-火元素
-%%%%
-fire giant
-火巨人
-%%%%
-fire vortex
-火焰漩涡
-%%%%
-flayed ghost
-剥皮鬼魂
-%%%%
-floating eye
-漂浮之眼
-%%%%
-formicid
-蚁人
-%%%%
-formless jellyfish
-无形水母
-%%%%
-freezing wraith
-冰冻幽魂
-%%%%
-friendly sensed monster
-友好感知怪物
-%%%%
-frilled lizard
-伞蜥
-%%%%
-frost giant
-冰霜巨人
-%%%%
-fulminant prism
-雷光棱镜
-%%%%
-fungus
-真菌
-%%%%
-gargoyle
-石像鬼
-%%%%
-ghost moth
-鬼蛾
-%%%%
-ghoul
-食尸鬼
-%%%%
-giant frog
-巨蛙
-%%%%
-giant lizard
-巨蜥
-%%%%
-globe of annihilation
-湮灭球体
-%%%%
-glowing orange brain
-发光橙脑
-%%%%
-glowing shapeshifter
-发光变形者
-%%%%
-gnoll
-豺狼人
-%%%%
-gnoll bouda
-豺狼人布达
-%%%%
-gnoll sergeant
-豺狼人军士
-%%%%
-goblin
-地精
-%%%%
-golden dragon
-金龙
-%%%%
-golden eye
-黄金之眼
-%%%%
-golem
-魔像
-%%%%
-goliath frog
-歌利亚蛙
-%%%%
-great orb of eyes
-巨眼之球
-%%%%
-green death
-绿死
-%%%%
-green draconian
-绿龙人
-%%%%
-grey draconian
-灰龙人
-%%%%
-guardian mummy
-守卫木乃伊
-%%%%
-guardian serpent
-守卫巨蛇
-%%%%
-guardian sphinx
-守卫斯芬克斯
-%%%%
-halazid warlock
-哈拉兹术士
-%%%%
-hell hog
-地狱野猪
-%%%%
-hell hound
-地狱猎犬
-%%%%
-hell knight
-地狱骑士
-%%%%
-hell lord
-地狱领主
-%%%%
-hell rat
-地狱鼠
-%%%%
-hellion
-地狱魔
-%%%%
-hellwing
-地狱蝠
-%%%%
-hippogriff
-骏鹰
-%%%%
-hobgoblin
-大地精
-%%%%
-hog
-野猪
-%%%%
-holy swine
-圣猪
-%%%%
-hornet
-大黄蜂
-%%%%
-hound
-猎犬
-%%%%
-human
-人类
-%%%%
-hydra
-九头蛇
-%%%%
-ice devil
-冰魔
-%%%%
-ice dragon
-冰龙
-%%%%
-ice statue
-冰雕像
-%%%%
-iguana
-鬣蜥
-%%%%
-imperial myrmidon
-帝国武士
-%%%%
-iron dragon
-铁龙
-%%%%
-iron elemental
-铁元素
-%%%%
-iron giant
-铁巨人
-%%%%
-iron golem
-铁魔像
-%%%%
-iron imp
-铁小恶魔
-%%%%
-iron troll
-铁巨魔
-%%%%
-ironbound beastmaster
-铁缚兽王
-%%%%
-ironbound convoker
-铁缚召唤师
-%%%%
-ironbound frostheart
-铁缚霜心
-%%%%
-ironbound mechanist
-铁缚机械师
-%%%%
-ironbound preserver
-铁缚守护者
-%%%%
-ironbound thunderhulk
-铁缚雷兽
-%%%%
-jackal
-胡狼
-%%%%
-jelly
-果冻
-%%%%
-jiangshi
-僵尸
-%%%%
-juggernaut
-主宰者
-%%%%
-jumping spider
-跳蛛
-%%%%
-killer bee
-杀人蜂
-%%%%
-knight
-骑士
-%%%%
-kobold
-狗头人
-%%%%
-komodo dragon
-科莫多龙
-%%%%
-kraken
-克拉肯
-%%%%
-laughing skull
-笑颅
-%%%%
-lemure
-劣魔
-%%%%
-lich
-巫妖
-%%%%
-lightning spire
-闪电尖塔
-%%%%
-lindwurm
-林德蠕龙
-%%%%
-lost soul
-迷失之魂
-%%%%
-lurking horror
-潜伏恐惧
-%%%%
-malarious merfolk avatar
-疟疾人鱼化身
-%%%%
-manticore
-蝎尾狮
-%%%%
-merfolk
-人鱼
-%%%%
-merfolk aquamancer
-人鱼水法师
-%%%%
-merfolk avatar
-人鱼化身
-%%%%
-merfolk impaler
-人鱼穿刺者
-%%%%
-merfolk javelineer
-人鱼投矛手
-%%%%
-merfolk siren
-人鱼塞壬
-%%%%
-meteoran
-陨星人
-%%%%
-minotaur
-牛头人
-%%%%
-molten gargoyle
-熔岩石像鬼
-%%%%
-moon troll
-月巨魔
-%%%%
-moth
-飞蛾
-%%%%
-moth of wrath
-愤怒飞蛾
-%%%%
-mummy
-木乃伊
-%%%%
-mummy priest
-木乃伊祭司
-%%%%
-naga
-蛇人
-%%%%
-naga mage
-蛇人法师
-%%%%
-naga ritualist
-蛇人祭祀
-%%%%
-naga sharpshooter
-蛇人神射手
-%%%%
-naga warrior
-蛇人战士
-%%%%
-nagaraja
-蛇人王
-%%%%
-nameless horror
-无名恐惧
-%%%%
-nasty sensed monster
-恶意感知怪物
-%%%%
-necromancer
-死灵法师
-%%%%
-necrophage
-噬尸者
-%%%%
-nekomata
-猫又
-%%%%
-obsidian bat
-黑曜石蝙蝠
-%%%%
-obsidian statue
-黑曜石雕像
-%%%%
-occultist
-神秘学者
-%%%%
-octopode
-章鱼人
-%%%%
-ogre
-食人魔
-%%%%
-ogre mage
-食人魔法师
-%%%%
-oklob plant
-欧克洛布植物
-%%%%
-oklob sapling
-欧克洛布树苗
-%%%%
-ophan
-奥凡
-%%%%
-orange crystal statue
-橙色水晶雕像
-%%%%
-orange demon
-橙恶魔
-%%%%
-orb of destruction
-毁灭之球
-%%%%
-orb of entropy
-熵之球
-%%%%
-orb of fire
-火焰之球
-%%%%
-orb of winter
-凛冬之球
-%%%%
-orb spider
-球蛛
-%%%%
-orc
-兽人
-%%%%
-orc apostle
-兽人使徒
-%%%%
-orc high priest
-兽人大祭司
-%%%%
-orc knight
-兽人骑士
-%%%%
-orc priest
-兽人祭司
-%%%%
-orc sorcerer
-兽人术士
-%%%%
-orc warlord
-兽人督军
-%%%%
-orc warrior
-兽人战士
-%%%%
-orc wizard
-兽人巫师
-%%%%
-pale draconian
-白龙人
-%%%%
-pearl dragon
-珍珠龙
-%%%%
-phalanx beetle
-方阵甲虫
-%%%%
-phantasmal warrior
-幻影战士
-%%%%
-phantom
-幻影
-%%%%
-pharaoh ant
-法老蚁
-%%%%
-plant
-植物
-%%%%
-player
-玩家
-%%%%
-player ghost
-玩家鬼魂
-%%%%
-player illusion
-玩家幻象
-%%%%
-polar bear
-北极熊
-%%%%
-poltergeist
-骚灵
-%%%%
-profane servitor
-渎神仆从
-%%%%
-program bug
-程序虫
-%%%%
-purple draconian
-紫龙人
-%%%%
-queen bee
-蜂后
-%%%%
-quicksilver dragon
-水银龙
-%%%%
-quicksilver elemental
-水银元素
-%%%%
-quokka
-短尾矮袋鼠
-%%%%
-radroach
-辐射蟑螂
-%%%%
-rakshasa
-罗刹
-%%%%
-rat
-老鼠
-%%%%
-raven
-渡鸦
-%%%%
-reaper
-收割者
-%%%%
-red devil
-红魔鬼
-%%%%
-red draconian
-红龙人
-%%%%
-redback
-红背蜘蛛
-%%%%
-revenant
-亡魂
-%%%%
-ribbon worm
-纽虫
-%%%%
-rime drake
-霜龙兽
-%%%%
-river rat
-河鼠
-%%%%
-rock fish
-石鱼
-%%%%
-rockslime
-岩石史莱姆
-%%%%
-royal mummy
-皇家木乃伊
-%%%%
-rust devil
-锈蚀魔鬼
-%%%%
-salamander
-沙罗曼蛇
-%%%%
-salamander mystic
-沙罗曼蛇神秘者
-%%%%
-salamander tyrant
-沙罗曼蛇暴君
-%%%%
-satyr
-萨提尔
-%%%%
-scorpion
-蝎子
-%%%%
-sea snake
-海蛇
-%%%%
-sensed monster
-感知怪物
-%%%%
-seraph
-炽天使
-%%%%
-servant of whispers
-低语仆从
-%%%%
-shadow
-暗影
-%%%%
-shadow dragon
-暗影龙
-%%%%
-shadow imp
-暗影小恶魔
-%%%%
-shadow wraith
-暗影幽魂
-%%%%
-shambling mangrove
-蹒跚红树
-%%%%
-shapeshifter
-变形者
-%%%%
-shard shrike
-碎片伯劳
-%%%%
-shining eye
-闪光之眼
-%%%%
-shock serpent
-电击蛇
-%%%%
-sickly merfolk siren
-病弱人鱼塞壬
-%%%%
-sixfirhy
-西克斯菲尔希
-%%%%
-slime creature
-史莱姆生物
-%%%%
-smoke demon
-烟雾恶魔
-%%%%
-snapping turtle
-鳄龟
-%%%%
-soul eater
-噬魂者
-%%%%
-soul wisp
-魂灵
-%%%%
-spark wasp
-火花黄蜂
-%%%%
-spatial maelstrom
-空间漩涡
-%%%%
-spatial vortex
-空间涡流
-%%%%
-spectator
-旁观者
-%%%%
-spectral thing
-灵体
-%%%%
-spectral weapon
-灵体武器
-%%%%
-spellspark servitor
-法术火花仆从
-%%%%
-sphinx
-斯芬克斯
-%%%%
-spriggan
-斯普里甘
-%%%%
-spriggan air mage
-斯普里甘风法师
-%%%%
-spriggan berserker
-斯普里甘狂战士
-%%%%
-spriggan defender
-斯普里甘守卫者
-%%%%
-spriggan druid
-斯普里甘德鲁伊
-%%%%
-spriggan rider
-斯普里甘骑手
-%%%%
-star jelly
-星辰果冻
-%%%%
-statue
-雕像
-%%%%
-steam dragon
-蒸汽龙
-%%%%
-stone giant
-石巨人
-%%%%
-storm dragon
-风暴龙
-%%%%
-sun demon
-日魔
-%%%%
-swamp dragon
-沼泽龙
-%%%%
-swamp drake
-沼泽龙兽
-%%%%
-swamp worm
-沼泽蠕虫
-%%%%
-tarantella
-塔兰泰拉
-%%%%
-tengu
-天狗
-%%%%
-tengu conjurer
-天狗咒术师
-%%%%
-tengu reaver
-天狗掠袭者
-%%%%
-tengu warrior
-天狗战士
-%%%%
-test blob
-测试史莱姆
-%%%%
-test spawner
-测试生成器
-%%%%
-test statue
-测试雕像
-%%%%
-thorn hunter
-荆棘猎手
-%%%%
-thrashing horror
-鞭挞恐惧
-%%%%
-titan
-泰坦
-%%%%
-toadstool
-毒菌
-%%%%
-toenail golem
-趾甲魔像
-%%%%
-tormentor
-折磨者
-%%%%
-torpor snail
-迟缓蜗牛
-%%%%
-tough sensed monster
-坚强感知怪物
-%%%%
-training dummy
-训练假人
-%%%%
-trivial sensed monster
-弱小感知怪物
-%%%%
-troll
-巨魔
-%%%%
-twister
-旋风怪
-%%%%
-two-headed ogre
-双头食人魔
-%%%%
-tyrant leech
-暴君水蛭
-%%%%
-ufetubus
-乌费图布斯
-%%%%
-ugly thing
-丑陋之物
-%%%%
-unseen horror
-无形恐怖
-%%%%
-vampire bat
-吸血蝙蝠
-%%%%
-vault guard
-宝库守卫
-%%%%
-vault sentinel
-宝库哨兵
-%%%%
-vault warden
-宝库典狱长
-%%%%
-very ugly thing
-极丑之物
-%%%%
-vine stalker
-藤蔓行者
-%%%%
-wandering mushroom
-游荡蘑菇
-%%%%
-war gargoyle
-战像鬼
-%%%%
-warg
-座狼
-%%%%
-water elemental
-水元素
-%%%%
-water moccasin
-水腹蛇
-%%%%
-water nymph
-水仙女
-%%%%
-weeping skull
-泣颅
-%%%%
-white draconian
-白龙人
-%%%%
-white imp
-白小恶魔
-%%%%
-wight
-尸妖
-%%%%
-wind drake
-风龙兽
-%%%%
-withered plant
-枯萎植物
-%%%%
-wolf
-狼
-%%%%
-wolf spider
-狼蛛
-%%%%
-worldbinder
-界缚者
-%%%%
-wraith
-幽魂
-%%%%
-wyvern
-双足飞龙
-%%%%
-yak
-氂牛
-%%%%
-yaktaur
-牦牛人马
-%%%%
-yaktaur captain
-牦牛人马队长
-%%%%
-yellow draconian
-黄龙人
-%%%%
-ynoxinul
-伊诺辛努尔
 %%%%
  (%d)
 （%d）
@@ -38663,5 +36197,3 @@ your religious standing (<w>%</w>)
 your set of mutations (<w>%</w>)
 你的变异集（<w>%</w>）
 %%%%
-your spells (<w>%?</w>)
-你的法术（<w>%?</w>）
