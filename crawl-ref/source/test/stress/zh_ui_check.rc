@@ -1,16 +1,4 @@
-# Layer 3 RC bot — zh text runtime check (plan v2 §4).
-#
-# Captures item ego names, god messages, and UI panel text via clua's
-# crawl.sendkeys + crawl.messages. Each ready() iteration must send
-# at least 1 key for the game loop to advance (uses "." as no-op).
-#
-# Run:
-#   make -j4 && make util/fake_pty
-#   util/fake_pty ./crawl -seed 1 -no-save -name test -wizard -no-throttle \
-#       -extra-opt-first 'language=zh' -rc test/stress/zh_ui_check.rc \
-#       2>/tmp/zh-l3.stderr 1>/tmp/zh-l3.stdout
-
-name = zh_ui_check
+name = zh_test
 species = mu
 background = ck
 weapon = mace
@@ -18,8 +6,8 @@ restart_after_game = false
 show_more = false
 
 Lua{
-local eol = string.char(13)
-local esc = string.char(27)
+local eol  = string.char(13)
+local esc  = string.char(27)
 local action = 0
 local pending_capture = nil
 
@@ -29,20 +17,13 @@ local function emit(case_id, text)
     crawl.stderr("FRAME_MARKER: " .. case_id .. " | " .. one_line .. eol)
 end
 
-local function capture(n)
-    crawl.flush_input()
-    crawl.redraw_screen()
-    return crawl.messages(n) or ""
-end
-
 function ready()
     action = action + 1
 
-    -- Capture messages from previous iteration's sendkeys
     if pending_capture then
         local tag = pending_capture
         pending_capture = nil
-        local msgs = capture(15)
+        local msgs = crawl.messages(20) or ""
         emit(tag, msgs)
     end
 
@@ -51,38 +32,44 @@ function ready()
         crawl.set_sendkeys_errors(true)
         crawl.sendkeys("&yes" .. eol .. esc)
     elseif action == 2 then
-        crawl.sendkeys("&Y" .. esc)  -- clear religion
-    elseif action == 3 then
-        -- i18n probe: verify T_() returns Chinese in clua context
         emit("probe", "t_=" .. crawl.t_("You attack %s.")
                        .. " lang=" .. crawl.language())
         crawl.sendkeys(".")
-    elseif action == 4 then
-        -- Create demon whip via &o) (weapon class filter)
+    elseif action == 3 then
+        -- 1 weapon (only &o) — one is safe)
         crawl.sendkeys("&o)demon whip" .. eol .. "chaos" .. eol)
         pending_capture = "item:chaos_demon_whip"
+    elseif action == 4 then
+        -- Wait + capture triggers at top of this action
+        crawl.sendkeys(".")
     elseif action == 5 then
-        -- Create boots of running
-        crawl.sendkeys("&o" .. eol .. "boots" .. eol .. "running" .. eol)
+        -- 1 armour (g&o[ — different class filter, safe)
+        crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
         pending_capture = "item:running_boots"
     elseif action == 6 then
-        -- God: Trog + piety
-        crawl.sendkeys("&G" .. eol .. "Trog" .. eol)
-        crawl.sendkeys("&p" .. eol)
-        crawl.sendkeys("&p" .. eol)
-        pending_capture = "god:Trog"
+        crawl.sendkeys(".")
     elseif action == 7 then
-        -- Religion panel (^)
+        -- God
+        crawl.sendkeys("&G" .. eol .. "Trog" .. eol)
+    elseif action == 8 then
+        crawl.sendkeys(".")
+        pending_capture = "god:Trog"
+    elseif action == 9 then
+        -- Panels
         crawl.sendkeys("^" .. esc)
         pending_capture = "panel:religion"
-    elseif action == 8 then
-        -- Character overview (%)
-        crawl.sendkeys("%" .. esc)
+    elseif action == 10 then
+        crawl.sendkeys("%" .. esc .. ".")
         pending_capture = "panel:character"
-    elseif action == 9 then
-        -- Done, quit
+    elseif action == 11 then
+        crawl.sendkeys("I" .. esc .. esc .. ".")
+        pending_capture = "panel:inventory"
+    elseif action == 12 then
+        crawl.sendkeys("m" .. esc .. ".")
+        pending_capture = "panel:skills"
+    elseif action == 13 then
         emit("phase", "done")
-        crawl.sendkeys(string.char(19))  -- Ctrl-S quit
+        crawl.sendkeys(string.char(19))
     end
 end
 }
