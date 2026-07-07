@@ -4691,7 +4691,7 @@ bool get_item_by_name(item_def *item, const char* specs,
                         make_item_unrandart(*item, index);
                         if (create_for_real)
                         {
-                            mprf("%s (%s)", entry->name,
+                            mprf("%s (%s)", T_(entry->name),
                                  debug_art_val_str(*item).c_str());
                         }
                         return true;

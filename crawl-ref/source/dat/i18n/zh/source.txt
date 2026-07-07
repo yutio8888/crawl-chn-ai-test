@@ -36779,3 +36779,12 @@ What type of %s?
 %%%%
 ("all" for all) 
 （输入 "all" 可列出所有）
+%%%%
+obsolete
+已淘汰
+%%%%
+obsolescence
+已淘汰
+%%%%
+obsoleteness
+已淘汰

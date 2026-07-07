@@ -358,9 +358,9 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
     {
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_FLAME:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_FROST:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
 #endif
     case SPMSL_POISONED:
         return t == MBN_NAME ? T_("poisoned") : T_("poison");
@@ -368,27 +368,27 @@ const char* missile_brand_name(const item_def &item, mbn_type t)
         return t == MBN_NAME ? T_("curare-tipped") : T_("curare");
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_EXPLODING:
-        return "obsolete";
+        return T_("obsolete");
     case SPMSL_STEEL:
-        return "obsolete";
+        return T_("obsolete");
     case SPMSL_RETURNING:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_PENETRATION:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
 #endif
     case SPMSL_SILVER:
         return T_("silver");
 #if TAG_MAJOR_VERSION == 34
     case SPMSL_PARALYSIS:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_SLOW:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_SLEEP:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_CONFUSION:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
     case SPMSL_SICKNESS:
-        return t == MBN_TERSE ? "obsolete" : "obsolescence";
+        return t == MBN_TERSE ? T_("obsolete") : T_("obsolescence");
 #endif
     case SPMSL_FRENZY:
         return t == MBN_NAME ? T_("datura-tipped") : T_("datura");
@@ -674,7 +674,7 @@ const char* special_armour_type_name(special_armour_type ego, bool terse)
 {
 #if TAG_MAJOR_VERSION == 34
     if (ego == SPARM_RUNNING || ego == SPARM_JUMPING || ego == SPARM_CLOUD_IMMUNE)
-        return terse ? "obsolete" : "obsolescence";
+        return terse ? T_("obsolete") : T_("obsolescence");
 #endif
     if (ego == SPARM_NORMAL)
         return "";
@@ -1027,8 +1027,8 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         switch (static_cast<jewellery_type>(jeweltype))
         {
 #if TAG_MAJOR_VERSION == 34
-        case RING_REGENERATION:          return "obsoleteness";
-        case RING_ATTENTION:             return "obsoleteness";
+        case RING_REGENERATION:          return T_("obsoleteness");
+        case RING_ATTENTION:             return T_("obsoleteness");
 #endif
         case RING_PROTECTION:            return T_("protection");
         case RING_PROTECTION_FROM_FIRE:  return T_("protection from fire");
@@ -1040,7 +1040,7 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_EVASION:               return T_("evasion");
         case RING_STEALTH:               return T_("stealth");
 #if TAG_MAJOR_VERSION == 34
-        case RING_SUSTAIN_ATTRIBUTES:    return "obsoleteness";
+        case RING_SUSTAIN_ATTRIBUTES:    return T_("obsoleteness");
 #endif
         case RING_STRENGTH:              return T_("strength");
         case RING_DEXTERITY:             return T_("dexterity");
@@ -1051,20 +1051,20 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_POSITIVE_ENERGY:       return T_("positive energy");
         case RING_WILLPOWER:             return T_("willpower");
 #if TAG_MAJOR_VERSION == 34
-        case RING_FIRE:                  return "obsoleteness";
-        case RING_ICE:                   return "obsoleteness";
-        case RING_TELEPORTATION:         return "obsoleteness";
-        case RING_TELEPORT_CONTROL:      return "obsoleteness";
+        case RING_FIRE:                  return T_("obsoleteness");
+        case RING_ICE:                   return T_("obsoleteness");
+        case RING_TELEPORTATION:         return T_("obsoleteness");
+        case RING_TELEPORT_CONTROL:      return T_("obsoleteness");
 #endif
         case AMU_MANA_REGENERATION:      return T_("magic regeneration");
         case AMU_ACROBAT:                return T_("the acrobat");
 #if TAG_MAJOR_VERSION == 34
-        case AMU_RAGE:                   return "obsoleteness";
-        case AMU_THE_GOURMAND:           return "obsoleteness";
-        case AMU_HARM:                   return "obsoleteness";
-        case AMU_CONSERVATION:           return "obsoleteness";
-        case AMU_CONTROLLED_FLIGHT:      return "obsoleteness";
-        case AMU_INACCURACY:             return "obsoleteness";
+        case AMU_RAGE:                   return T_("obsoleteness");
+        case AMU_THE_GOURMAND:           return T_("obsoleteness");
+        case AMU_HARM:                   return T_("obsoleteness");
+        case AMU_CONSERVATION:           return T_("obsoleteness");
+        case AMU_CONTROLLED_FLIGHT:      return T_("obsoleteness");
+        case AMU_INACCURACY:             return T_("obsoleteness");
 #endif
         case AMU_GUARDIAN_SPIRIT:        return T_("guardian spirit");
         case AMU_FAITH:                  return T_("faith");
@@ -1082,8 +1082,8 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         switch (static_cast<jewellery_type>(jeweltype))
         {
 #if TAG_MAJOR_VERSION == 34
-        case RING_REGENERATION:          return "obsolete";
-        case RING_ATTENTION:             return "obsolete";
+        case RING_REGENERATION:          return T_("obsolete");
+        case RING_ATTENTION:             return T_("obsolete");
 #endif
         case RING_PROTECTION:            return T_("AC");
         case RING_PROTECTION_FROM_FIRE:  return T_("rF+");
@@ -1095,7 +1095,7 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_EVASION:               return T_("EV");
         case RING_STEALTH:               return T_("Stlth+");
 #if TAG_MAJOR_VERSION == 34
-        case RING_SUSTAIN_ATTRIBUTES:    return "obsolete";
+        case RING_SUSTAIN_ATTRIBUTES:    return T_("obsolete");
 #endif
         case RING_STRENGTH:              return T_("Str");
         case RING_DEXTERITY:             return T_("Dex");
@@ -1106,20 +1106,20 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case RING_POSITIVE_ENERGY:       return T_("rN+");
         case RING_WILLPOWER:             return T_("Will+");
 #if TAG_MAJOR_VERSION == 34
-        case RING_FIRE:                  return "obsolete";
-        case RING_ICE:                   return "obsolete";
-        case RING_TELEPORTATION:         return "obsolete";
-        case RING_TELEPORT_CONTROL:      return "obsolete";
+        case RING_FIRE:                  return T_("obsolete");
+        case RING_ICE:                   return T_("obsolete");
+        case RING_TELEPORTATION:         return T_("obsolete");
+        case RING_TELEPORT_CONTROL:      return T_("obsolete");
 #endif
         case AMU_MANA_REGENERATION:      return T_("RegenMP");
         case AMU_ACROBAT:                return T_("Acrobat");
 #if TAG_MAJOR_VERSION == 34
-        case AMU_RAGE:                   return "obsolete";
-        case AMU_THE_GOURMAND:           return "obsolete";
-        case AMU_HARM:                   return "obsolete";
-        case AMU_CONSERVATION:           return "obsolete";
-        case AMU_CONTROLLED_FLIGHT:      return "obsolete";
-        case AMU_INACCURACY:             return "obsolete";
+        case AMU_RAGE:                   return T_("obsolete");
+        case AMU_THE_GOURMAND:           return T_("obsolete");
+        case AMU_HARM:                   return T_("obsolete");
+        case AMU_CONSERVATION:           return T_("obsolete");
+        case AMU_CONTROLLED_FLIGHT:      return T_("obsolete");
+        case AMU_INACCURACY:             return T_("obsolete");
 #endif
         case AMU_GUARDIAN_SPIRIT:        return T_("Spirit");
         case AMU_FAITH:                  return T_("Faith");
