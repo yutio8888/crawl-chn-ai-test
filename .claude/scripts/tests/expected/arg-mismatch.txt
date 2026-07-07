@@ -1,7 +1,1 @@
-=== ARG-MISMATCH — format specifier count differs between EN key and CN translation ===
-EN: "%s %s yanked forward by the %s." (3 args)
-CN: "%s被%s向前猛拉。" (2 args) ← MISMATCH
-
-  → 1 count-mismatch(es)
-
-Total: 1 format validation finding(s).
+OK: All 3 entries pass format validation (count, type-order, mixed, pos-type).

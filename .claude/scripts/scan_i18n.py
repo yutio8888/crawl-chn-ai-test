@@ -582,11 +582,15 @@ def cmd_arg_mismatch(args):
         return 1
 
     # ── 1. Count parity ──
+    # CN can safely have FEWER format args than EN — vsnprintf (standard)
+    # and vmake_stringf_p (positional) both ignore extra args beyond what
+    # the format string references. Only CN > EN is dangerous: the CN
+    # expects args that were never passed → undefined behavior → crash.
     count_findings = []
     for en_key, cn_val in entries.items():
         en_count = count_format_args(en_key)
         cn_count = count_format_args(cn_val)
-        if en_count != cn_count:
+        if cn_count > en_count:
             count_findings.append((en_key, cn_val, en_count, cn_count))
 
     # ── 2. Sequential type-order (non-positional only) ──

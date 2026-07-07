@@ -470,7 +470,7 @@ void wizard_detect_creatures()
 #endif
         count++;
     }
-    mprf_p(T_("Detected %i monster%s."), count, count == 1 ? "" : "s");
+    mprf(T_("Detected %i monster%s."), count, count == 1 ? "" : "s");
 }
 
 // Dismisses all monsters on the level or all monsters that match a user
@@ -493,7 +493,7 @@ void wizard_dismiss_all_monsters(bool force_all)
     }
 
     int count = dismiss_monsters(buf);
-    mprf_p(T_("Dismissed %i monster%s."), count, count == 1 ? "" : "s");
+    mprf(T_("Dismissed %i monster%s."), count, count == 1 ? "" : "s");
     // If it was turned off turn autopickup back on if all monsters went away.
     if (!*buf)
         autotoggle_autopickup(false);

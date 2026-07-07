@@ -53,7 +53,6 @@
 #include "nearby-danger.h"
 #include "notes.h"
 #include "output.h"
-#include "positional_format.h"
 #include "place.h"
 #include "player-stats.h"
 #include "potion.h"
@@ -1203,7 +1202,7 @@ static void _xom_send_allies(int sever)
     {
         god_speaks(GOD_XOM, _get_xom_speech("multiple summons").c_str());
 
-        const string note = make_stringf_p(T_("summons %d friend%s"),
+        const string note = make_stringf(T_("summons %d friend%s"),
                                          num_actually_summoned,
                                          num_actually_summoned > 1 ? "s" : "");
         take_note(Note(NOTE_XOM_EFFECT, you.raw_piety, -1, note), true);
