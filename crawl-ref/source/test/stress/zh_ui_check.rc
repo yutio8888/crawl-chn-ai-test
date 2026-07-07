@@ -68,6 +68,12 @@ function ready()
         crawl.sendkeys("m" .. esc .. ".")
         pending_capture = "panel:skills"
     elseif action == 13 then
+        crawl.sendkeys("a" .. esc .. ".")
+        pending_capture = "panel:abilities"
+    elseif action == 14 then
+        crawl.sendkeys("O" .. esc .. ".")
+        pending_capture = "panel:overview"
+    elseif action == 15 then
         emit("phase", "done")
         crawl.sendkeys(string.char(19))
     end
