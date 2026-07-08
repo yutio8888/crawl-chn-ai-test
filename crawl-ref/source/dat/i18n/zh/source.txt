@@ -20,7 +20,226 @@
 # Entry 1: _describe_favour — penance messages
 
 %%%%
+carved rock wall
+雕刻岩壁
+%%%%
+broken wreckage
+破碎的残骸
+%%%%
+broken pillar
+断裂的柱子
+%%%%
+black wall
+黑色墙壁
+%%%%
+bedevilled crystal wall
+受诅咒的水晶墙
+%%%%
+autumnal tree
+秋树
+%%%%
+Ashen ground
+灰烬地面
+%%%%
+ash-covered pillar
+灰烬覆盖的柱子
+%%%%
+archival metal wall
+档案金属墙
+%%%%
+adventurer's gravestone
+冒险者的墓碑
+%%%%
+a statue of an imp
+一座小恶魔雕像
+%%%%
+a statue of an archer
+一座弓箭手雕像
+%%%%
+a statue of a tengu
+一座天狗雕像
+%%%%
+a statue of a princess
+一座公主雕像
+%%%%
+a statue of a hydra
+一座九头蛇雕像
+%%%%
+a statue of a dwarf
+一座矮人雕像
+%%%%
+a statue of a dreadful foe
+一座可怕敌人的雕像
+%%%%
+a statue of a chess piece
+一座棋子雕像
+%%%%
+a polished mirror
+一面抛光的镜子
+%%%%
+a gravestone
+一个墓碑
+%%%%
+a glacial archway
+一个冰川拱门
+%%%%
+a dead tree
+一棵枯树
+%%%%
 Corona
+weirdly glowing ball
+怪异发光球
+%%%%
+wall of white crystal
+白色水晶墙
+%%%%
+wall of orange crystal
+橙色水晶墙
+%%%%
+wall of crystal
+水晶墙
+%%%%
+Viscous fluid
+粘稠液体
+%%%%
+unnaturally hard bloodstone wall
+异常坚硬的血石墙
+%%%%
+tree of woe
+悲哀之树
+%%%%
+thin membrane
+薄膜
+%%%%
+The dimension's edge
+维度边缘
+%%%%
+tempered metal wall
+淬火金属墙
+%%%%
+strange statue
+奇怪的雕像
+%%%%
+strange rock wall
+奇怪的岩壁
+%%%%
+statue of a hideous four-limbed creature
+四足可憎生物的雕像
+%%%%
+spawn point
+出生点
+%%%%
+soul conduit
+灵魂导管
+%%%%
+Some ice crusted shallow water
+冰封的浅水
+%%%%
+Some ice crusted deep water
+冰封的深水
+%%%%
+sinewy wall
+腱质墙壁
+%%%%
+silver wall
+银色墙壁
+%%%%
+sealed sarcophagus
+密封的石棺
+%%%%
+sarcophagus
+石棺
+%%%%
+rune-carved stone wall
+符文雕刻的石墙
+%%%%
+rune-carved clear stone wall
+符文雕刻的透明石墙
+%%%%
+ruined idol
+毁坏的神像
+%%%%
+rough-hewn floor
+粗凿地面
+%%%%
+rock-blocked tunnel
+岩石堵塞的隧道
+%%%%
+pulsating floor
+脉动的地面
+%%%%
+otherworldly statue
+异界雕像
+%%%%
+one-way staircase leading up
+通往楼上的单向楼梯
+%%%%
+one-way staircase leading down
+通往楼下的单向楼梯
+%%%%
+metal staircase leading up
+通往楼上的金属楼梯
+%%%%
+merfolk statue
+鱼人雕像
+%%%%
+large window
+大窗户
+%%%%
+iron statue
+铁雕像
+%%%%
+ice-covered stone wall
+覆冰石墙
+%%%%
+ice-covered rock wall
+覆冰岩壁
+%%%%
+ice covered rock wall
+覆冰岩壁
+%%%%
+ice choked empty arch of ancient stone
+被冰封堵的古老石拱门
+%%%%
+highly decorated stone wall
+装饰精美的石墙
+%%%%
+heavily etched metal wall
+深刻蚀纹的金属墙
+%%%%
+heavily etched crystal wall
+深刻蚀纹的水晶墙
+%%%%
+gravestone
+墓碑
+%%%%
+granite statue wielding a mighty axe
+手持巨斧的花岗岩雕像
+%%%%
+granite statue wielding a fearsome trident
+手持可怕三叉戟的花岗岩雕像
+%%%%
+Frost-covered floor
+霜冻覆盖的地面
+%%%%
+flower patch
+花丛
+%%%%
+defaced carved stone wall
+被毁容的雕刻石墙
+%%%%
+dead tree
+枯树
+%%%%
+dead mangrove
+枯死的红树林
+%%%%
+damp floor
+潮湿的地面
+%%%%
+crumbled stone wall
+崩塌的石墙
+%%%%
 光晕
 %%%%
 Dispersal

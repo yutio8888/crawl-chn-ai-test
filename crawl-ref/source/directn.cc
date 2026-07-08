@@ -3168,7 +3168,7 @@ string raw_feature_description(const coord_def &where)
     {
         const auto &renames = lv->map.feat_renames;
         if (const string *rename = map_find(renames, feat))
-            return *rename;
+            return T_(rename->c_str());
     }
 
     return _base_feature_desc(feat, get_trap_type(where));
