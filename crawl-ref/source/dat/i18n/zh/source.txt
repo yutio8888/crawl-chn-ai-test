@@ -22456,6 +22456,36 @@ something's
 not susceptible
 不受影响
 %%%%
+already infected
+已感染
+%%%%
+stationary
+固定不动
+%%%%
+will blink
+会闪现
+%%%%
+infinite will
+意志无限
+%%%%
+will change colour
+会改变颜色
+%%%%
+will change shape
+会改变形态
+%%%%
+will probably split
+很可能会分裂
+%%%%
+will become %s
+会变成%s
+%%%%
+immune to roots
+免疫扎根
+%%%%
+unstickable
+无法被黏附
+%%%%
 chance to blind: %d%%
 致盲几率：%d%%
 %%%%
@@ -29420,11 +29450,11 @@ the %s is presently inert.
 
 %%%%
 the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
-梦境羊抖了抖%s羊毛，梦境尘埃闪烁，但毫无效果。
+梦境羊抖了抖羊毛，梦境尘埃闪烁，但毫无效果。
 
 %%%%
 the dream sheep shake%s wool and sparkle%s.
-梦境羊抖了抖%s羊毛，闪闪发光%s。
+梦境羊抖了抖羊毛，闪闪发光。
 
 %%%%
 the sanctuary denies %s grip on your mind.
@@ -30718,7 +30748,7 @@ As motes of dream dust float from an unseen source, %s falls asleep.
 
 %%%%
 As the sheep sparkle%s and sway%s, %s falls asleep.
-绵羊闪烁着%s摇摆着%s，%s陷入了沉睡。
+绵羊闪烁着摇摆着，%s陷入了沉睡。
 
 %%%%
 Chance to defeat your Will: %d%%%s\n
@@ -30814,7 +30844,7 @@ The apparition of
 
 %%%%
 The dream sheep attempt%s to lull %s to sleep.
-梦羊尝试%s催眠%s。
+梦羊尝试催眠%s。
 
 %%%%
 The substance of the Abyss twists violently, and a gateway leading down appears!
@@ -35036,6 +35066,14 @@ chance to teleport: %d%%
 %%%%
 chance to weaken: %d%%
 衰弱几率：%d%%
+
+%%%%
+will inflict weakness
+会施加虚弱
+
+%%%%
+will diminish spells
+会削弱法术
 
 %%%%
 damage: %dd3 / 2

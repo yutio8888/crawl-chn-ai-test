@@ -1758,7 +1758,7 @@ static vector<string> _desc_intoxicate_chance(const monster_info& mi,
                                               targeter* hitfunc, int pow)
 {
     if (hitfunc && !hitfunc->affects_monster(mi))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     int conf_pct = 40 + pow / 3;
 
@@ -1772,7 +1772,7 @@ static vector<string> _desc_englaciate_chance(const monster_info& mi,
                                               targeter* hitfunc, int pow)
 {
     if (hitfunc && !hitfunc->affects_monster(mi))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     const int outcomes = pow * pow * pow;
     const int target   = 3 * mi.hd - 2;
@@ -1830,7 +1830,7 @@ static vector<string> _desc_warp_space_chance(int pow)
 static vector<string> _desc_meph_chance(const monster_info& mi)
 {
     if (get_resist(mi.resists(), MR_RES_POISON) >= 1 || mi.is(MB_CLARITY))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     int pct_chance = 2;
     if (mi.hd < MEPH_HD_CAP)
@@ -1866,7 +1866,8 @@ static vector<string> _desc_electric_charge_hit_chance(const monster_info& mi)
     return desc;
 }
 
-static vector<string> _desc_insubstantial(const monster_info& mi, string desc)
+static vector<string> _desc_insubstantial(const monster_info& mi,
+                                          const string &desc)
 {
     if (mons_class_flag(mi.type, M_INSUBSTANTIAL))
         return vector<string>{desc};
@@ -1877,7 +1878,7 @@ static vector<string> _desc_insubstantial(const monster_info& mi, string desc)
 static vector<string> _desc_vampiric_draining_valid(const monster_info& mi)
 {
     if (mi.mb.get(MB_CANT_DRAIN))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     return vector<string>{};
 }
@@ -1885,9 +1886,9 @@ static vector<string> _desc_vampiric_draining_valid(const monster_info& mi)
 static vector<string> _desc_rimeblight_valid(const monster_info& mi)
 {
     if (mi.is(MB_RIMEBLIGHT))
-        return vector<string>{"already infected"};
+        return vector<string>{T_("already infected")};
     else if (mons_class_is_peripheral(mi.type))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     return vector<string>{};
 }
@@ -1896,10 +1897,10 @@ static vector<string> _desc_dispersal_chance(const monster_info& mi, int pow)
 {
     const int wl = mi.willpower();
     if (mons_class_is_stationary(mi.type))
-        return vector<string>{"stationary"};
+        return vector<string>{T_("stationary")};
 
     if (wl == WILL_INVULN)
-        return vector<string>{"will blink"};
+        return vector<string>{T_("will blink")};
 
     const int success = hex_success_chance(wl, pow, 100);
     return vector<string>{make_stringf(T_("chance to teleport: %d%%"), success)};
@@ -1907,19 +1908,13 @@ static vector<string> _desc_dispersal_chance(const monster_info& mi, int pow)
 
 static vector<string> _desc_enfeeble_chance(const monster_info& mi, int pow)
 {
-    vector<string> base_effects;
     vector<string> all_effects;
     const int wl = mi.willpower();
 
     if (!mi.is(MB_NO_ATTACKS))
-        base_effects.push_back("inflict weakness");
+        all_effects.push_back(T_("will inflict weakness"));
     if (mi.antimagic_susceptible())
-        base_effects.push_back("diminish spells");
-    if (!base_effects.empty())
-    {
-        all_effects.push_back("will " +
-            comma_separated_line(base_effects.begin(), base_effects.end()));
-    }
+        all_effects.push_back(T_("will diminish spells"));
     if (wl != WILL_INVULN)
     {
         const int success = hex_success_chance(wl, pow, 100);
@@ -1961,9 +1956,9 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
     targeter_beam* beam_hitf = dynamic_cast<targeter_beam*>(hitfunc);
     int wl = mi.willpower();
     if (wl == WILL_INVULN)
-        return vector<string>{"infinite will"};
+        return vector<string>{T_("infinite will")};
     if (hitfunc && !hitfunc->affects_monster(mi))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
     wl = apply_willpower_bypass(you, wl);
     vector<string> descs;
     if (beam_hitf && beam_hitf->beam.flavour == BEAM_POLYMORPH)
@@ -1971,21 +1966,21 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
         // Polymorph has a special effect on ugly things and shapeshifters that
         // does not require passing an WL check.
         if (mi.type == MONS_UGLY_THING || mi.type == MONS_VERY_UGLY_THING)
-            return vector<string>{"will change colour"};
+            return vector<string>{T_("will change colour")};
         if (mi.is(MB_SHAPESHIFTER))
-            return vector<string>{"will change shape"};
+            return vector<string>{T_("will change shape")};
         if (mi.type == MONS_SLIME_CREATURE && mi.slime_size > 1)
-            descs.push_back("will probably split");
+            descs.push_back(T_("will probably split"));
 
         // list out the normal poly set
         if (!mi.props.exists(POLY_SET_KEY))
-            return vector<string>{"not susceptible"};
+            return vector<string>{T_("not susceptible")};
         const CrawlVector &set = mi.props[POLY_SET_KEY].get_vector();
         if (set.size() <= 0)
-            return vector<string>{"not susceptible"};
-        descs.push_back("will become "
-                        + comma_separated_fn(set.begin(), set.end(),
-                                             _mon_threat_string, ", or "));
+            return vector<string>{T_("not susceptible")};
+        descs.push_back(make_stringf(T_("will become %s"),
+                        comma_separated_fn(set.begin(), set.end(),
+                                           _mon_threat_string, ", or ").c_str()));
     }
 
     const int success = hex_success_chance(wl, pow, 100);
@@ -1997,7 +1992,7 @@ vector<string> desc_wl_success_chance(const monster_info& mi, int pow,
 static vector<string> _desc_beckoning_valid(const monster_info& mi)
 {
     if (!can_beckon(mi))
-        return vector<string>{"not susceptible"};
+        return vector<string>{T_("not susceptible")};
 
     return vector<string>{};
 }
@@ -2091,9 +2086,11 @@ desc_filter targeter_addl_desc(spell_type spell, int powc, spell_flags flags,
         case SPELL_ELECTRIC_CHARGE:
             return bind(_desc_electric_charge_hit_chance, placeholders::_1);
         case SPELL_FASTROOT:
-            return bind(_desc_insubstantial, placeholders::_1, "immune to roots");
+            return bind(_desc_insubstantial, placeholders::_1,
+                        T_("immune to roots"));
         case SPELL_STICKY_FLAME:
-            return bind(_desc_insubstantial, placeholders::_1, "unstickable");
+            return bind(_desc_insubstantial, placeholders::_1,
+                        T_("unstickable"));
         case SPELL_PLASMA_BEAM:
             return bind(_desc_plasma_hit_chance, placeholders::_1, powc);
         case SPELL_MERCURY_ARROW:
