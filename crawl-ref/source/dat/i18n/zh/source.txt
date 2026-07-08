@@ -5841,7 +5841,7 @@ quivering %s
 提高了你属性的支撑
 %%%%
 rampage
-狂暴
+冲锋
 %%%%
 random
 随机
@@ -18971,7 +18971,7 @@ The North Wind lets you shrug off injuries taken while stampeding.
 北风让你能够无视奔踏时受到的伤害。
 %%%%
 The South Wind quickens your rampage movements after stabbing.
-南风在刺击后加速你的狂暴移动。
+南风在刺击后加速你的冲锋移动。
 %%%%
 The West Wind empowers your ranged attacks as you Rampage.
 西风在你狂暴时增强你的远程攻击。
@@ -32913,7 +32913,7 @@ orb of winter
 寒冬之球
 %%%%
 orb spider
-宝珠蜘蛛
+魔球蛛
 %%%%
 orc
 兽人

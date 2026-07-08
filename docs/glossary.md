@@ -85,6 +85,7 @@
 | Might | 强效 | +10% 伤害 |
 | Haste | 加速 | 行动速度 +50% |
 | Berserk | 狂暴 | 近战加成但结束后减速 |
+| Rampage | 冲锋 | 攻击时自动向敌人移动一步 |
 | Teleport | 传送 | 位移效果 |
 | Invisibility | 隐形 | 不可被看见 |
 | Confusing Touch | 混乱之触 | 接触混乱效果 |
