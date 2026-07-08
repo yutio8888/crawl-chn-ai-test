@@ -203,6 +203,8 @@ bool rule_mixed_cn_en(const std::string& text)
          "Tele","Rage","Highlight",
          // DCSS command/wizard codes in tutorial/hints templates
          "CMD","EVOKE","READ","QUAFF","tiles","white","TODO","you","god",
+         // Filename extensions embedded in Chinese text
+         "txt",
      };
 
     i = 0;
@@ -448,6 +450,32 @@ bool rule_punct_style(const std::string& text)
             continue;
         bool prev_cjk = (k > 0) ? iscjk(cps[k - 1]) : false;
         bool next_cjk = (k + 1 < cps.size()) ? iscjk(cps[k + 1]) : false;
+        if (c == '.' && prev_cjk)
+        {
+            // Filename extension heuristic: CJK + '.' + 1-6 ASCII letters.
+            // e.g. 玩家名.txt — the extension is not a punctuation issue.
+            size_t ext_start = k + 1;
+            size_t ext_len = 0;
+            while (ext_start + ext_len < cps.size() && ext_len < 6)
+            {
+                char32_t ec = cps[ext_start + ext_len];
+                if ((ec >= 'a' && ec <= 'z') || (ec >= 'A' && ec <= 'Z'))
+                    ++ext_len;
+                else
+                    break;
+            }
+            if (ext_len >= 1)
+            {
+                // extension ends at non-letter or string end
+                size_t ext_end = ext_start + ext_len;
+                if (ext_end >= cps.size()
+                    || !((cps[ext_end] >= 'a' && cps[ext_end] <= 'z')
+                      || (cps[ext_end] >= 'A' && cps[ext_end] <= 'Z')))
+                {
+                    continue;
+                }
+            }
+        }
         if (prev_cjk || next_cjk)
             return true;
         // Whole-string degenerate case: a mostly-Chinese fragment that

@@ -124,6 +124,7 @@ _BUILTIN_WHITELIST = {
     'dungeon', 'lair', 'shoals', 'snake', 'spider', 'tomb', 'vaults', 'hell', 'abyss', 'zot',
     'slime', 'orc', 'elf', 'crypt', 'pan', 'bligit', 'dis', 'gehenna', 'cocytus', 'tartarus',
     'tele', 'rage', 'highlight',
+    'txt',
 }
 
 
@@ -235,10 +236,27 @@ def rule_punct_style(text: str) -> bool:
     for k, cp in enumerate(cps):
         if cp >= 0x80:
             continue
-        if chr(cp) not in bad:
+        ch = chr(cp)
+        if ch not in bad:
             continue
         prev_cjk = (k > 0) and iscjk(cps[k - 1])
         next_cjk = (k + 1 < len(cps)) and iscjk(cps[k + 1])
+        if ch == '.' and prev_cjk:
+            # Filename extension heuristic: CJK + '.' + 1-6 ASCII letters
+            ext_start = k + 1
+            ext_len = 0
+            while ext_start + ext_len < len(cps) and ext_len < 6:
+                ec = cps[ext_start + ext_len]
+                if ec < 0x80 and chr(ec).isalpha():
+                    ext_len += 1
+                else:
+                    break
+            if ext_len >= 1:
+                ext_end = ext_start + ext_len
+                if (ext_end >= len(cps)
+                    or cps[ext_end] >= 0x80
+                    or not chr(cps[ext_end]).isalpha()):
+                    continue
         if prev_cjk or next_cjk:
             return True
     return False
