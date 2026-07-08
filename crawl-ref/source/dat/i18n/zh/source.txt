@@ -1561,6 +1561,9 @@ gain power from chaos
 %s of %s
 %s之%s
 %%%%
+barrage of energy
+能量齐射
+%%%%
 %s oozes corrosive slime.
 %s渗出腐蚀性的粘液。
 %%%%

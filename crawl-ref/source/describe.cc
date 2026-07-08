@@ -5097,7 +5097,7 @@ static string _flavour_base_desc(attack_flavour flavour)
         { AF_DRAIN,             "drain life" },
         { AF_VAMPIRIC,          "drain health from the living" },
         { AF_DRAIN_SPEED,       "drain speed" },
-        // AF_ANTIMAGIC removed (not in 0.34.1)
+        { AF_ANTIMAGIC,         "antimagic" },
         { AF_SCARAB,            "drain speed and health" },
         { AF_ELEC,              "electric damage" },
         { AF_FIRE,              "fire damage" },
