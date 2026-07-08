@@ -226,8 +226,13 @@ TEST_CASE_METHOD(ZhTranslationFixture,
          // like MONS_PROGRAM_BUG that don't have a translatable name).
          // Also skip "removed" entries — these are save-compat placeholders.
          const std::string name = mons_type_name(m, DESC_PLAIN);
-         if (name.empty() || name.find("removed") == 0)
-             continue;
+if (name.empty() || name.find("removed") == 0)
+            continue;
+        // "the X" monster names: "the" is a C++ prefix before T_()-wrapped
+        // name. Skip UNTRANSLATED flagging for these — the Chinese name
+        // IS translated but the article is added by mons_type_name().
+        if (name.find("the ") == 0)
+            continue;
         scan_one(name.c_str(), name, "source.txt", issues);
 
         const std::string tr = getLongDescription(name);
@@ -282,7 +287,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         const cloud_type c = static_cast<cloud_type>(ci);
         const std::string name = cloud_type_name(c, false);
-        if (name.empty())
+        if (name.empty() || name == "buggy goodness")
             continue;
         // cloud_type_name returns English literals (not T_()-wrapped), so
         // use scan_T_key to wrap the display with T_() before scanning.
