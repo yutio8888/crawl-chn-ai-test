@@ -2215,10 +2215,8 @@ static void _special_corpse_messaging(monster &mons)
         // something else.
         if (!(mons.flags & MF_KNOWN_SHIFTER))
         {
-            const string message = " shape twists and changes as "
-                + mons.pronoun(PRONOUN_SUBJECTIVE) + " "
-                + conjugate_verb("die", mons.pronoun_plurality()) + ".";
-            simple_monster_message(mons, message.c_str(), true);
+            simple_monster_message(mons,
+                                   T_(" dies, twisting and changing shape."));
         }
 
         return;

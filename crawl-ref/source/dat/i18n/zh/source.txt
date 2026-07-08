@@ -22226,6 +22226,9 @@ Look
 %1$s returns to %2$s original shape as %3$s %4$s.
 %1$s在死亡时变回了原来的形态。
 %%%%
+ dies, twisting and changing shape.
+死去时身形扭曲变幻。
+%%%%
 + - Recommended random choice
 + - 推荐随机选择
 %%%%
