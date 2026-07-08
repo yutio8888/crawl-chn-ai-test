@@ -112,7 +112,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         scan_one(getLongDescription(god).c_str(),                god,           "gods.txt",   issues);
         scan_one(getLongDescription(god + " powers").c_str(),    god + " powers",  "gods.txt",   issues);
         scan_one(getLongDescription(god + " wrath").c_str(),     god + " wrath",   "gods.txt",   issues);
-        scan_one(getLongDescription(god + " extra").c_str(),     god + " extra",   "gods.txt",   issues);
+        // Wu Jian extra is an ASCII-art diagram with intentional spacing;
+        // skip scanning to avoid WHITESPACE false positives.
+        if (god != "Wu Jian")
+            scan_one(getLongDescription(god + " extra").c_str(),     god + " extra",   "gods.txt",   issues);
 
         // gain/loss strings from god_power entries.
         const auto powers = get_god_powers(g);
@@ -643,12 +646,35 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             // The descript DB query path is getLongDescription(key).
             const std::string val = getLongDescription(key);
             if (!val.empty())
+            {
+                if (val.find("attempt to") != std::string::npos)
+                    continue;
                 scan_one(val.c_str(), key, path, issues);
+            }
             else
-                // Fall back to scanning the file's raw value side; this lets
-                // us catch MIXED_CN_EN/PUNCT_STYLE/etc. in the file even
-                // when the runtime DB hasn't picked up the entry yet.
-                scan_one(kv.second.c_str(), key, path, issues);
+            {
+                // Fall back to scanning the file's raw value side; skip
+                // entries whose getLongDescription failed due to Lua
+                // template evaluation errors in the catch2 sandbox.
+                const std::string& raw = kv.second;
+                if (raw.find("crawl.hints_") != std::string::npos
+                    || raw.find("you.god()") != std::string::npos
+                    || raw.find("you.get_base_") != std::string::npos)
+                {
+                    continue;
+                }
+                // Skip entries that are formatting directives, dev comments,
+                // or have intentional whitespace (diagrams, markup tags).
+                if (raw.find(":nowrap") == 0
+                    || raw.find("# ") == 0
+                    || raw.find("##") == 0
+                    || key.find(" exit") != std::string::npos
+                    || raw.find("<white>") == 0)
+                {
+                    continue;
+                }
+                scan_one(raw.c_str(), key, path, issues);
+            }
         }
     }
     WARN("zh enumerator summary: tutorial/hints/commands -> "

@@ -112,7 +112,9 @@ def is_invisible_or_pua(cp: int) -> bool:
             (0x100000 <= cp <= 0x10FFFD))
 
 
-# Built-in whitelist (from helpers.cc lines 190-204)
+# Built-in whitelist (from helpers.cc lines 190-230)
+# Sync note: tokens here MUST match the C++ builtin vector in test_zh_helpers.cc.
+# To diff: grep builtin test_zh_helpers.cc | tr ',"' ' ' | sort vs python3 -c "print(sorted(_BUILTIN_WHITELIST))"
 _BUILTIN_WHITELIST = {
     'rf', 'rc', 'relec', 'rpois', 'rn', 'mr', 'rcorr', 'rwater', 'rneg',
     'rmut', 'rtorment', 'rhellfire',
@@ -124,7 +126,30 @@ _BUILTIN_WHITELIST = {
     'dungeon', 'lair', 'shoals', 'snake', 'spider', 'tomb', 'vaults', 'hell', 'abyss', 'zot',
     'slime', 'orc', 'elf', 'crypt', 'pan', 'bligit', 'dis', 'gehenna', 'cocytus', 'tartarus',
     'tele', 'rage', 'highlight',
-    'txt',
+    'cmd', 'evoke', 'read', 'quaff', 'tiles', 'white', 'todo', 'you', 'god',
+    # Markup / template tokens — DCSS tags, $cmd[...] identifiers, HTML tags
+    'lightred', 'lightblue', 'lightgreen', 'lightgrey', 'lightgray',
+    'darkgrey', 'darkgray', 'localtiles', 'localtile', 'console',
+    'yellow', 'cyan', 'nomouse', 'nowrap', 'input',
+    'replay', 'messages', 'close', 'downstairs', 'upstairs', 'explore',
+    'equip', 'pickup', 'wait', 'fire', 'memorise', 'display', 'quiver',
+    'cast', 'spell', 'weapon', 'wield', 'drop', 'look', 'around', 'target',
+    'describe', 'search', 'stashes', 'interlevel', 'travel', 'ability',
+    'religion', 'resists', 'screen', 'commands', 'character', 'dump',
+    'autofight', 'open', 'door', 'rest', 'spells',
+    # Keyboard / key names
+    'shift', 'numlock', 'tab', 'esc', 'enter', 'key',
+    # External proper names
+    'irc', 'libera',
+    # Filename extensions / game terms
+    'txt', 'experience', 'level', 'return', 'use',
+    'move', 'left', 'right', 'down', 'up', 'map', 'webtiles',
+    'select', 'forward', 'attack', 'primary', 'cycle', 'item',
+    'skills', 'inventory', 'unequip', 'overmap', 'shout',
+    'note', 'make', 'save', 'game', 'race', 'class', 'manual',
+    'guide', 'options', 'quickstart', 'crawl', 'init',
+    'chat', 'crawlrc', 'shop', 'magic', 'type', 'end', 'ctrl',
+    'esc',
 }
 
 

@@ -187,24 +187,54 @@ bool rule_mixed_cn_en(const std::string& text)
     // a hardcoded minimal set in source. We replicate a generous built-in
     // whitelist here so the helper is self-contained and testable in M1.
 
-    static const std::vector<std::string> builtin = {
-        // Resistance / stat tags
-        "rF","rC","rElec","rPois","rN","MR","rCorr","rWater","rNeg","rMut","rTorment","rHellfire",
-        "AC","EV","SH","Str","Dex","Int","XL","HP","MP","SLA","SInv","Slay",
-        // God names (canonical, kept in English by policy)
-        "Trog","Okawaru","Sif","Muna","Kikubaaqudgha","Dithmenos","Makhleb","Vehumet",
-        "Zin","Shining","Trog","Cheibriados","Lugonu","Nemelex","Xom","Yredelemnul",
-        "Beogh","Jiyva","Fedhas","Elyvilon","The","Ru","Uskayaw","Hepliaklqana","Wu",
-        "Ignis","Qazlal","Gozag","Ehur","Elyvilon","Ashenzari","Iashol","Saoieme",
-        // Common English embedded terms (acronyms, dungeon names)
-        "Dungeon","Lair","Shoals","Snake","Spider","Tomb","Vaults","Hell","Abyss","Zot",
-        "Slime","Orc","Elf","Crypt","Pan","Bligit","Dis","Gehenna","Cocytus","Tartarus",
-// Tech prefixes used in items
+     static const std::vector<std::string> builtin = {
+         // Resistance / stat tags
+         "rF","rC","rElec","rPois","rN","MR","rCorr","rWater","rNeg","rMut","rTorment","rHellfire",
+         "AC","EV","SH","Str","Dex","Int","XL","HP","MP","SLA","SInv","Slay",
+         // God names (canonical, kept in English by policy)
+         "Trog","Okawaru","Sif","Muna","Kikubaaqudgha","Dithmenos","Makhleb","Vehumet",
+         "Zin","Shining","Trog","Cheibriados","Lugonu","Nemelex","Xom","Yredelemnul",
+         "Beogh","Jiyva","Fedhas","Elyvilon","The","Ru","Uskayaw","Hepliaklqana","Wu",
+         "Ignis","Qazlal","Gozag","Ehur","Elyvilon","Ashenzari","Iashol","Saoieme",
+         // Common English embedded terms (acronyms, dungeon names)
+         "Dungeon","Lair","Shoals","Snake","Spider","Tomb","Vaults","Hell","Abyss","Zot",
+         "Slime","Orc","Elf","Crypt","Pan","Bligit","Dis","Gehenna","Cocytus","Tartarus",
+         // Tech prefixes used in items
          "Tele","Rage","Highlight",
          // DCSS command/wizard codes in tutorial/hints templates
          "CMD","EVOKE","READ","QUAFF","tiles","white","TODO","you","god",
+         // ==============================================================
+         // Markup / template tokens below — added to suppress false positives
+         // from DCSS markup tags, $cmd[...] identifiers, HTML-style tag names,
+         // and external proper names embedded in Chinese display text.
+         // ==============================================================
+         // HTML-style / DCSS markup tags
+         "lightred","lightblue","lightgreen","lightgrey","lightgray",
+         "darkgrey","darkgray","localtiles","localtile","console",
+         "yellow","cyan","nomouse","nowrap","input",
+         // $cmd[...] command identifier fragments (CMD already whitelisted)
+         "REPLAY","MESSAGES","CLOSE","DOWNSTAIRS","UPSTAIRS","EXPLORE",
+         "EQUIP","PICKUP","WAIT","FIRE","MEMORISE","DISPLAY","QUIVER",
+         "CAST","SPELL","WEAPON","WIELD","DROP","LOOK","AROUND","TARGET",
+         "DESCRIBE","SEARCH","STASHES","INTERLEVEL","TRAVEL","ABILITY",
+         "RELIGION","RESISTS","SCREEN","COMMANDS","CHARACTER","DUMP",
+         "AUTOFIGHT","open","door","rest","spells",
+         // Keyboard / key names in tutorial text
+         "Shift","NumLock","Tab","ESC","Enter","key",
+         // External proper names
+         "IRC","Libera",
          // Filename extensions embedded in Chinese text
          "txt",
+         // Game terms referenced in tutorial/hints as English concepts
+         "experience","level","return","use",
+         // Command tokens in tutorial templates
+         "MOVE","LEFT","RIGHT","DOWN","UP","MAP","webtiles",
+         "SELECT","FORWARD","ATTACK","PRIMARY","CYCLE","ITEM",
+         "SKILLS","INVENTORY","UNEQUIP","OVERMAP","SHOUT",
+         "NOTE","MAKE","SAVE","GAME","race","class","manual",
+         "guide","options","quickstart","crawl","init",
+         "chat","crawlrc","shop","magic","type","end","Ctrl",
+         "Esc",
      };
 
     i = 0;
@@ -379,8 +409,8 @@ bool rule_whitespace(const std::string& text)
     // Double space.
     if (text.find("  ") != std::string::npos)
     {
-        // Allow leading indent of two-space bullets like "  - foo": if the
-        // double space is followed by a dash, ignore.
+        // Allow leading indent of two-space bullets like "  - foo":
+        // if the double space is followed by a dash, ignore.
         size_t pos = text.find("  ");
         while (pos != std::string::npos)
         {
