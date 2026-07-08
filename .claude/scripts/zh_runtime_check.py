@@ -330,9 +330,14 @@ def parse_frame_markers(path: str, layer_name: str) -> List[dict]:
             case_id = m.group(1).strip()
             content = m.group(2).strip()
 
-            # Skip meta markers
-            if case_id in ('end', 'skipped', 'error', 'setup', 'phase'):
-                # setup probes have language info but we skip scanning
+            # Skip meta markers and wizard debug output (not translatable content).
+            # - probe: diagnostic metadata (t_=... lang=...)
+            # - item:*: wizard create-item output (art val, boots, demon whip)
+            # - god:*: wizard god-join output (debug prompts)
+            # - end/skipped/error/setup/phase: lifecycle markers
+            if case_id in ('end', 'skipped', 'error', 'setup', 'phase', 'probe'):
+                continue
+            if case_id.startswith('item:') or case_id.startswith('god:'):
                 continue
 
             # Unescape literal \n in the content
@@ -344,14 +349,6 @@ def parse_frame_markers(path: str, layer_name: str) -> List[dict]:
                 iss['layer'] = layer_name
                 iss['case_id'] = case_id
             issues.extend(found)
-
-            # Also check raw content for issues (pre-unescape)
-            raw_found = scan_text(content, key=case_id, source_tag=f'{layer_name}_raw')
-            for iss in raw_found:
-                if iss not in found:
-                    iss['layer'] = layer_name
-                    iss['case_id'] = case_id
-                    issues.append(iss)
 
     return issues
 
