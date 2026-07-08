@@ -745,12 +745,14 @@ public:
             textcolour(channel_to_colour(MSGCH_PROMPT));
             if (crawl_state.game_is_hints())
             {
-                string more_str = "--more-- Press Space ";
+                const char* more_str;
                 if (is_tiles())
-                    more_str += "or click ";
-                more_str += "to continue. You can later reread messages with "
-                            "Ctrl-P.";
-                cprintf(more_str.c_str());
+                    more_str = T_("--more-- Press Space or click to continue."
+                                 " You can later reread messages with Ctrl-P.");
+                else
+                    more_str = T_("--more-- Press Space to continue."
+                                 " You can later reread messages with Ctrl-P.");
+                cprintf(more_str);
             }
             else
                 cprintf(T_("--more--"));

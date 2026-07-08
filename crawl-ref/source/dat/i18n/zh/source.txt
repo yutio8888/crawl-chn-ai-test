@@ -36972,3 +36972,61 @@ a magic seal in the Gauntlet prevents this spell from working.
 %%%%
 you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability)
 你必须先在典范上印刻一把武器！（使用印刻武器能力）
+
+%%%%
+One of the many lords of Pandemonium, 
+One of the many lords of Pandemonium, 
+%%%%
+, and it
+, and it
+%%%%
+, it
+, it
+%%%%
+: 
+: 
+%%%%
+'Of %s': 
+'Of %s': 
+%%%%
+<lightgrey>Options read from "%s".</lightgrey>
+<lightgrey>Options read from "%s".</lightgrey>
+%%%%
+<lightred>Options file %s; using defaults.</lightred>
+<lightred>Options file %s; using defaults.</lightred>
+%%%%
+not found
+not found
+%%%%
+ in a shop 
+ in a shop 
+%%%%
+ to you 
+ to you 
+%%%%
+Are you sure you want to drop %s into %s? You won't be able to retrieve %s.
+Are you sure you want to drop %s into %s? You won't be able to retrieve %s.
+%%%%
+Bones file is buggy: %s\n%s
+Bones file is buggy: %s\n%s
+%%%%
+There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?
+There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?
+%%%%
+%s is from an incompatible version and can't be loaded.
+%s is from an incompatible version and can't be loaded.
+%%%%
+Tab - 
+Tab - 
+%%%%
+You have gained great experience. Select the skills to train.
+You have gained great experience. Select the skills to train.
+%%%%
+--more-- Press Space or click to continue. You can later reread messages with Ctrl-P.
+--more-- Press Space or click to continue. You can later reread messages with Ctrl-P.
+%%%%
+--more-- Press Space to continue. You can later reread messages with Ctrl-P.
+--more-- Press Space to continue. You can later reread messages with Ctrl-P.
+%%%%
+Now all you have to do is get back out of the dungeon!
+Now all you have to do is get back out of the dungeon!

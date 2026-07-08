@@ -32,28 +32,27 @@ formatted_string options_read_status()
 
     if (!f.error())
     {
-        msg += "<lightgrey>Options read from \"";
 #ifdef DGAMELAUNCH
         // For dgl installs, show only the last segment of the .crawlrc
         // file name so that we don't leak details of the directory
         // structure to (untrusted) users.
-        msg += Options.basefilename;
+        msg += make_stringf(T_("<lightgrey>Options read from \"%s\".</lightgrey>"),
+                            Options.basefilename.c_str());
 #else
-        msg += Options.filename;
+        msg += make_stringf(T_("<lightgrey>Options read from \"%s\".</lightgrey>"),
+                            Options.filename.c_str());
 #endif
-        msg += "\".</lightgrey>";
     }
     else
     {
-        msg += "<lightred>Options file ";
+        string err_detail;
         if (!Options.filename.empty())
-        {
-            msg += make_stringf(T_("\"%s\" is not readable"),
-                                Options.filename.c_str());
-        }
+            err_detail = make_stringf(T_("\"%s\" is not readable"),
+                                      Options.filename.c_str());
         else
-            msg += "not found";
-        msg += "; using defaults.</lightred>";
+            err_detail = T_("not found");
+        msg += make_stringf(T_("<lightred>Options file %s; using defaults.</lightred>"),
+                            err_detail.c_str());
     }
 
     msg += "\n";

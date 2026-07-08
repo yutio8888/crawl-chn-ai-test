@@ -1633,8 +1633,8 @@ void SkillMenu::set_title()
     string t;
     if (is_set(SKMF_EXPERIENCE))
     {
-        t = "You have gained great experience. "
-            "Select the skills to train.";
+        t = T_("You have gained great experience. "
+            "Select the skills to train.");
     }
 
     m_title->set_text(t);

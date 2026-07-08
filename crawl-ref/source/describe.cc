@@ -1119,7 +1119,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
-    description << "One of the many lords of Pandemonium, " << name << " has ";
+    description << T_("One of the many lords of Pandemonium, ") << name << " has ";
 
     description << article_a(HRANDOM_ELEMENT(body_types, 2));
     // ETC_RANDOM is also possible, handled later
@@ -1202,8 +1202,8 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
                           const int facet = sv.get_int();
                           ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
                           return facet_descs[facet];
-                      }, ", and it", ", it")
-           + ".";
+                      }, T_(", and it"), T_(", it"))
+            + ".";
 
 }
 
@@ -2344,17 +2344,14 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
             // Make this match the formatting in _randart_descrip,
             // since instead of the item being named something like
             // 'cloak of invisiblity', it's 'the cloak of the Snail (+Inv, ...)'
-            const char* colon = Options.language == lang_t::ZH ? "：" : ": ";
-            string name = string(armour_ego_name(item, true)) + colon;
+            string name = string(armour_ego_name(item, true)) + T_(": ");
             ego_prefix = chop_string(name, MAX_ARTP_NAME_LEN + 1);
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                ego_prefix = chop_string(string(armour_ego_name(item, false)) + "：",
-                                         MAX_ARTP_NAME_LEN + 1);
-            else
-                ego_prefix = "'Of " + string(armour_ego_name(item, false)) + "': ";
+            ego_prefix = chop_string(
+                make_stringf(T_("'Of %s': "), armour_ego_name(item, false)),
+                MAX_ARTP_NAME_LEN + 1);
         }
 
         string ego_key = _armour_ego_key(ego);

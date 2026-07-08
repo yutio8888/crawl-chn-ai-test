@@ -2220,7 +2220,7 @@ static void _construct_gamemode_map_menu(const mapref_vector& maps,
         && defaults.type == GAME_TYPE_SPRINT && _char_defined(defaults))
     {
         text.clear();
-        text += "Tab - ";
+        text += T_("Tab - ");
         text += defaults.map;
         _add_menu_sub_item(sub_items, 1, 1, text,
                 "Select your previous sprint map and character", '\t',

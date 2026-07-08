@@ -1329,7 +1329,7 @@ string origin_desc(const item_def &item)
             switch (iorig)
             {
             case IT_SRC_SHOP:
-                desc += (T_("You bought ") + _article_it(item) + " in a shop ");
+                desc += (T_("You bought ") + _article_it(item) + T_(" in a shop "));
                 break;
             case IT_SRC_START:
                 desc += T_("Buggy Original Equipment: ");
@@ -1352,7 +1352,7 @@ string origin_desc(const item_def &item)
                 if (iorig > GOD_NO_GOD && iorig < NUM_GODS)
                 {
                     desc += god_name(static_cast<god_type>(iorig))
-                        + (T_(" gifted ") + _article_it(item) + " to you ");
+                        + (T_(" gifted ") + _article_it(item) + T_(" to you "));
                 }
                 else
                 {
@@ -2043,8 +2043,8 @@ static void _get_orb()
     env.orb_pos = you.pos(); // can be wrong in wizmode
     orb_pickup_noise(you.pos(), 30);
 
-    start_orb_run(CHAPTER_ESCAPING, "Now all you have to do is get back out "
-                                    "of the dungeon!");
+    start_orb_run(CHAPTER_ESCAPING, T_("Now all you have to do is get back out "
+                                    "of the dungeon!"));
 
 #if TAG_MAJOR_VERSION == 34
     if (you.species == SP_METEORAN)
@@ -2825,11 +2825,11 @@ static bool _check_dangerous_drop(const item_def & item)
     if (!feat_eliminates_items(env.grid(you.pos())))
         return true;
 
-    string prompt = "Are you sure you want to drop " + item.name(DESC_THE)
-                  + " into "
-                  + feature_description_at(you.pos(), false, DESC_A) + "? "
-                  + "You won't be able to retrieve "
-                  + (item.quantity == 1 ? "it." : "them.");
+    string prompt = make_stringf(
+            T_("Are you sure you want to drop %s into %s? You won't be able to retrieve %s."),
+            item.name(DESC_THE).c_str(),
+            feature_description_at(you.pos(), false, DESC_A).c_str(),
+            item.quantity == 1 ? T_("it") : T_("them"));
 
     // don't interrupt delays; this might do something strange to macros
     // that trigger it, but the main way drops interact with delays is

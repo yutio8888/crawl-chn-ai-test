@@ -2978,7 +2978,7 @@ vector<ghost_demon> load_bones_file(string ghost_filename, bool backup)
     string err_msg;
     if (!debug_check_ghosts(result, err_msg))
     {
-        string error = "Bones file is buggy: " + ghost_filename + "\n" + err_msg;;
+        string error = make_stringf(T_("Bones file is buggy: %s\n%s"), ghost_filename.c_str(), err_msg.c_str());
         throw corrupted_save(error, version);
     }
 
@@ -3212,13 +3212,11 @@ static bool _restore_game(const string& filename)
     {
         // Note: if we are here, the save info was properly read, it would
         // raise an exception otherwise.
-        if (yesno(("There is an existing game for name '" + save_info.name +
-                   "' from an incompatible version of Crawl ("
-                   + save_info.prev_save_version + ").\n"
-                   "Unless you reinstall that version, you can't load it.\n"
-                   "Do you want to DELETE that game and start a new one?"
-                  ).c_str(),
-                  true, 'n'))
+        if (yesno(make_stringf(
+                    T_("There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?"),
+                    save_info.name.c_str(),
+                    save_info.prev_save_version.c_str()).c_str(),
+                   true, 'n'))
         {
             you.save->unlink();
             you.save = 0;
@@ -3230,8 +3228,8 @@ static bool _restore_game(const string& filename)
         delete you.save;
         you.save = 0;
         game_ended(game_exit::abort,
-                save_info.name
-                + " is from an incompatible version and can't be loaded.");
+                make_stringf(T_("%s is from an incompatible version and can't be loaded."),
+                            save_info.name.c_str()));
     }
 
     if (!crawl_state.bypassed_startup_menu
