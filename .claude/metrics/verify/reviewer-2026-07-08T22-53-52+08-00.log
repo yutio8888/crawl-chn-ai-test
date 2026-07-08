@@ -1,0 +1,265 @@
+=== post-reviewer.sh @ 2026-07-08T22-53-52+08-00 ===
+
+=== Mode 1: Ruling consistency check ===
+
+--- Sif Muna (correct: 西芙·穆娜) ---
+  ✅ '席夫·穆纳' not found
+--- Trog (correct: 特洛格) ---
+  ✅ '特洛戈' not found
+--- Kikubaaqudgha (correct: 奇库巴库哈) ---
+  ✅ '奇库巴库加' not found
+--- conj_verb with Chinese strings (should be none) ---
+  ✅ No conj_verb calls with Chinese strings detected
+  ℹ️  All conj_verb calls (verify manually): 76 occurrences
+     crawl-ref/source/beam.cc:2337:                                      ai->conj_verb("are").c_str());
+     crawl-ref/source/beam.cc:2352:               agent.conj_verb("draw").c_str(),
+     crawl-ref/source/beam.cc:5434:               act->conj_verb("are").c_str(),
+     crawl-ref/source/cloud.cc:1400:             act->conj_verb("take").c_str(),
+     crawl-ref/source/cloud.cc:1760:            act->conj_verb(silenced(act->pos())?
+     crawl-ref/source/cloud.cc:1767:             act->conj_verb(C_("verb", "are swarmed by")).c_str(),
+     crawl-ref/source/cloud.cc:1774:             beneficial ? act->conj_verb(C_("verb", "bask")).c_str()
+     crawl-ref/source/cloud.cc:1775:                        : act->conj_verb(C_("verb", "are engulfed")).c_str(),
+     crawl-ref/source/fineff.cc:1390:                     act->conj_verb("are").c_str());
+     crawl-ref/source/mon-cast.cc:5858:                              target->conj_verb("are").c_str(),
+     crawl-ref/source/actor.cc:479:                            : conj_verb(verb).c_str(),
+     crawl-ref/source/actor.cc:782:                          : conj_verb(T_("constrict")).c_str(),
+     crawl-ref/source/actor.cc:795:             defender.conj_verb(C_("verb", "are")).c_str(),
+     crawl-ref/source/actor.cc:957:                 conj_verb(T_("collide")).c_str(),
+     crawl-ref/source/actor.cc:994:                 name(DESC_THE).c_str(), conj_verb(T_("slam")).c_str(),
+     crawl-ref/source/actor.cc:1004:                 name(DESC_THE).c_str(), conj_verb(T_("stop")).c_str(),
+     crawl-ref/source/actor.cc:1077:                   conj_verb(C_("verb", "are")).c_str(),
+     crawl-ref/source/actor.cc:1084:                   conj_verb("are").c_str());
+     crawl-ref/source/spl-damage.cc:2478:           agent->conj_verb("ignite").c_str(),
+     crawl-ref/source/spl-damage.cc:3472:                    "@is@", foe->conj_verb("be"))
+     crawl-ref/source/spl-damage.cc:3667:             victim->conj_verb("have").c_str());
+     crawl-ref/source/spl-damage.cc:4031:               caster->conj_verb("conjure").c_str());
+     crawl-ref/source/spl-damage.cc:4485:             act->conj_verb("take").c_str(),
+     crawl-ref/source/attack.cc:673:               attacker->conj_verb("drain").c_str(),
+     crawl-ref/source/monster.h:339:    string conj_verb(const string &verb) const override;
+     crawl-ref/source/actor.h:123:    virtual string conj_verb(const string &verb) const = 0;
+     crawl-ref/source/player.h:754:    string conj_verb(const string &verb) const override;
+     crawl-ref/source/ranged-attack.cc:183:                                    defender->conj_verb("reflect").c_str());
+     crawl-ref/source/ranged-attack.cc:192:             defender->conj_verb("block").c_str(),
+     crawl-ref/source/spl-goditem.cc:1078:             attacker->conj_verb("speak").c_str());
+     crawl-ref/source/player-act.cc:402:string player::conj_verb(const string &verb) const
+     crawl-ref/source/spl-summoning.cc:404:               caster->conj_verb("summon").c_str(),
+     crawl-ref/source/spl-summoning.cc:1783:             caster->conj_verb("forge").c_str(),
+     crawl-ref/source/spl-summoning.cc:2214:                       victim->conj_verb("twitch").c_str());
+     crawl-ref/source/spl-summoning.cc:2245:                   caster->conj_verb("conjure").c_str());
+     crawl-ref/source/spl-summoning.cc:3122:               agent.conj_verb("summon").c_str(),
+     crawl-ref/source/monster.cc:2220:string monster::conj_verb(const string &verb) const
+     crawl-ref/source/melee-attack.cc:340:        // conj_verb() handles the conjugation. Use the result
+     crawl-ref/source/melee-attack.cc:342:        const string block_verb = defender->conj_verb("block");
+     crawl-ref/source/melee-attack.cc:937:                    : attacker->conj_verb(mons_attack_verb());
+     crawl-ref/source/melee-attack.cc:3340:                   attacker->conj_verb(verb).c_str(),
+     crawl-ref/source/melee-attack.cc:3360:               attacker->conj_verb(verb).c_str(),
+     crawl-ref/source/melee-attack.cc:3425:            defender->conj_verb(C_("verb", "are")).c_str(),
+     crawl-ref/source/melee-attack.cc:3431:                attacker->conj_verb(T_("freeze")).c_str(),
+     crawl-ref/source/melee-attack.cc:3445:                    attacker->conj_verb(T_("burn")).c_str(),
+     crawl-ref/source/melee-attack.cc:3452:                attacker->conj_verb(T_("envenom")).c_str(),
+     crawl-ref/source/melee-attack.cc:3460:                defender->conj_verb(T_("shrivel")).c_str(),
+     crawl-ref/source/melee-attack.cc:3468:                    attacker->conj_verb(T_("blast")).c_str(),
+     crawl-ref/source/melee-attack.cc:3705:            const string verb = attacker->conj_verb(mons_attack_verb());
+     crawl-ref/source/melee-attack.cc:3972:                 defender->conj_verb(C_("verb", "are")).c_str(),
+     crawl-ref/source/melee-attack.cc:3992:                 attacker->conj_verb(T_("freeze")).c_str(),
+     crawl-ref/source/melee-attack.cc:4013:                 attacker->conj_verb(T_("shock")).c_str(),
+     crawl-ref/source/melee-attack.cc:4045:                         attacker->conj_verb(C_("verb", "draw")).c_str(),
+     crawl-ref/source/melee-attack.cc:4078:                     defender->conj_verb(C_("verb", "are")).c_str());
+     crawl-ref/source/melee-attack.cc:4088:                     defender->conj_verb(C_("verb", "are")).c_str());
+     crawl-ref/source/melee-attack.cc:4111:                     defender->conj_verb(C_("verb", "are")).c_str());
+     crawl-ref/source/melee-attack.cc:4189:                 attacker->conj_verb(T_("infuriate")).c_str(),
+     crawl-ref/source/melee-attack.cc:4216:                 attacker->conj_verb(T_("sear")).c_str(),
+     crawl-ref/source/melee-attack.cc:4234:                 attacker->conj_verb(T_("sear")).c_str(),
+     crawl-ref/source/melee-attack.cc:4338:                    attacker->conj_verb(T_("burn")).c_str(),
+     crawl-ref/source/melee-attack.cc:4375:                    attacker->conj_verb(T_("drown")).c_str(),
+     crawl-ref/source/melee-attack.cc:4463:                     defender->conj_verb(C_("verb", "are")).c_str());
+     crawl-ref/source/melee-attack.cc:4795:                     attacker->conj_verb(C_("verb", "are")).c_str(),
+     crawl-ref/source/melee-attack.cc:4991:                     defender->conj_verb(C_("verb", "are")).c_str());
+     crawl-ref/source/melee-attack.cc:4997:                     defender->conj_verb(C_("verb", "hold")).c_str(),
+     crawl-ref/source/melee-attack.cc:5014:             defender->conj_verb(verb).c_str());
+     crawl-ref/source/spl-transloc.cc:1924:           beckoned.conj_verb("hurl").c_str());
+     crawl-ref/source/teleport.cc:73:        string message = " " + conj_verb(verb) + "!";
+     crawl-ref/source/catch2-tests/test_zh_helpers.cc:297:    //    not followed by a word char. This is the "conj_verb(...) produces
+     crawl-ref/source/art-func.h:272:             attacker->conj_verb("envenom").c_str(),
+     crawl-ref/source/art-func.h:627:            defender->conj_verb("convulse").c_str(),
+     crawl-ref/source/art-func.h:678:              defender->conj_verb("be").c_str(),
+     crawl-ref/source/art-func.h:831:             attacker->conj_verb(verb).c_str(),
+     crawl-ref/source/art-func.h:937:         attacker->conj_verb(verb).c_str(),
+     crawl-ref/source/art-func.h:1353:            attacker->conj_verb("freeze").c_str(),
+     crawl-ref/source/art-func.h:1773:            defender->conj_verb("convulse").c_str(),
+
+=== Rulings check complete ===
+
+=== Mode 2a: God name full consistency ===
+
+--- Zin (expected: 辛) ---
+  ⚠️  English name 'Zin' found in ZH translation text:
+     crawl-ref/source/dat/database/zh/help.txt:131:你也可以按照神的名字搜索祭坛：<w>Zin</w>。
+--- The Shining One (expected: 光辉者) ---
+  ✅ 'The Shining One' fully translated to '光辉者'
+--- Kikubaaqudgha (expected: 奇库巴库哈) ---
+  ✅ 'Kikubaaqudgha' fully translated to '奇库巴库哈'
+--- Yredelemnul (expected: 伊莱德莱姆努尔) ---
+  ✅ 'Yredelemnul' fully translated to '伊莱德莱姆努尔'
+--- Xom (expected: 佐姆) ---
+  ✅ 'Xom' fully translated to '佐姆'
+--- Vehumet (expected: 维胡梅特) ---
+  ✅ 'Vehumet' fully translated to '维胡梅特'
+--- Okawaru (expected: 奥卡瓦鲁) ---
+  ✅ 'Okawaru' fully translated to '奥卡瓦鲁'
+--- Makhleb (expected: 马科列布) ---
+  ✅ 'Makhleb' fully translated to '马科列布'
+--- Sif Muna (expected: 西芙·穆娜) ---
+  ✅ 'Sif Muna' fully translated to '西芙·穆娜'
+--- Trog (expected: 特洛格) ---
+  ✅ 'Trog' fully translated to '特洛格'
+--- Nemelex Xobeh (expected: 尼姆雷斯·索布) ---
+  ✅ 'Nemelex Xobeh' fully translated to '尼姆雷斯·索布'
+--- Elyvilon (expected: 艾利维隆) ---
+  ✅ 'Elyvilon' fully translated to '艾利维隆'
+--- Lugonu (expected: 卢格努) ---
+  ✅ 'Lugonu' fully translated to '卢格努'
+--- Beogh (expected: 比欧弗) ---
+  ✅ 'Beogh' fully translated to '比欧弗'
+--- Jiyva (expected: 吉瓦) ---
+  ✅ 'Jiyva' fully translated to '吉瓦'
+--- Fedhas (expected: 费德哈) ---
+  ✅ 'Fedhas' fully translated to '费德哈'
+--- Cheibriados (expected: 切布理亚多) ---
+  ✅ 'Cheibriados' fully translated to '切布理亚多'
+--- Ashenzari (expected: 艾申扎利) ---
+  ⚠️  English name 'Ashenzari' found in ZH translation text:
+     crawl-ref/source/dat/database/zh/randname.txt:11:# 在关键词"Ashenzari"下。文件末尾还有用于
+--- Dithmenos (expected: 迪斯姆诺) ---
+  ✅ 'Dithmenos' fully translated to '迪斯姆诺'
+--- Gozag (expected: 哥萨戈) ---
+  ✅ 'Gozag' fully translated to '哥萨戈'
+--- Qazlal (expected: 卡兹拉尔) ---
+  ✅ 'Qazlal' fully translated to '卡兹拉尔'
+--- Ru (expected: 入) ---
+  ⚠️  English name 'Ru' found in ZH translation text:
+     crawl-ref/source/dat/descript/zh/quotes.txt:3240:    -Rush，《树》。1978年。
+--- Pakellas (expected: 帕克拉斯) ---
+  ✅ 'Pakellas' fully translated to '帕克拉斯'
+--- Uskayaw (expected: 乌斯卡亚) ---
+  ✅ 'Uskayaw' fully translated to '乌斯卡亚'
+--- Hepliaklqana (expected: 惠普利亚卡纳) ---
+  ✅ 'Hepliaklqana' fully translated to '惠普利亚卡纳'
+--- Ignis (expected: 曳焰) ---
+  ✅ 'Ignis' fully translated to '曳焰'
+--- Wu Jian (expected: 无间门派) ---
+  ✅ 'Wu Jian' fully translated to '无间门派'
+--- Zot (expected: 佐特) ---
+  ⚠️  English name 'Zot' found in ZH translation text:
+     crawl-ref/source/dat/descript/zh/monsters.txt:2938:you.branch() == "Tomb" or you.branch() == "Zot" then return "世纪";
+
+=== Gods check complete ===
+
+=== Mode 2b: Skill school name full consistency ===
+
+--- Conjurations (expected: 咒法系) ---
+  ✅ 'Conjurations' fully translated to '咒法系'
+--- Summonings (expected: 召唤系) ---
+  ✅ 'Summonings' fully translated to '召唤系'
+--- Necromancy (expected: 死灵系) ---
+  ✅ 'Necromancy' fully translated to '死灵系'
+--- Transmutations (expected: 变化系) ---
+  ✅ 'Transmutations' fully translated to '变化系'
+--- Fire Magic (expected: 火焰魔法) ---
+  ✅ 'Fire Magic' fully translated to '火焰魔法'
+--- Ice Magic (expected: 寒冰魔法) ---
+  ✅ 'Ice Magic' fully translated to '寒冰魔法'
+--- Air Magic (expected: 风魔法) ---
+  ✅ 'Air Magic' fully translated to '风魔法'
+--- Earth Magic (expected: 大地魔法) ---
+  ✅ 'Earth Magic' fully translated to '大地魔法'
+--- Poison Magic (expected: 毒素魔法) ---
+  ✅ 'Poison Magic' fully translated to '毒素魔法'
+--- Hexes (expected: 咒术系) ---
+  ✅ 'Hexes' fully translated to '咒术系'
+--- Charms (expected: 附魔系) ---
+  ✅ 'Charms' fully translated to '附魔系'
+--- Summoning (expected: 召唤系) ---
+  ✅ 'Summoning' fully translated to '召唤系'
+--- Translocation (expected: 传送系) ---
+  ✅ 'Translocation' fully translated to '传送系'
+--- Alchemy (expected: 炼金系) ---
+  ✅ 'Alchemy' fully translated to '炼金系'
+
+=== Skills check complete ===
+
+=== Mode 3: Format integrity check ===
+
+  ✅ All ZH database files have matching %%%% counts
+
+=== Format check complete ===
+
+=== Mode 4: Spell key consistency check ===
+
+--- Duplicate keys ---
+  ✅ No duplicate keys
+--- Orphan keys (ZH only) ---
+  ✅ No orphan keys
+--- Missing keys (EN only) ---
+  ✅ No missing keys
+
+  ✅ Spell keys fully consistent with EN
+
+=== Spells check complete ===
+
+=== Mode 5: Database @keyword@ integrity check ===
+
+Building EN key index...
+  10293 keys indexed from EN database
+
+  ✅ All @keyword@ references have matching definitions
+
+=== Database @keyword@ check complete ===
+
+❌ Consistency violations found (strict mode).
+
+--- Source.txt integrity ---
+=== SELF-CONFLICT — same key with DIFFERENT values ===
+  "deafening"
+    Existing: "震耳欲聋"
+    Conflict: "震耳欲聋的" (appearance #9512)
+  "loud"
+    Existing: "响亮"
+    Conflict: "响亮的" (appearance #9510)
+  "quiet"
+    Existing: "安静"
+    Conflict: "轻柔的" (appearance #9511)
+  → 3 self-conflict(s) — BLOCKER
+
+=== EMPTY-TRANSLATION — 28 keys with no Chinese value ===
+  "# --- End of scattered keys ---"
+  "# Entry 1: _describe_favour — godname-embedding favour titles"
+  "# Entry 1: _describe_favour — penance messages"
+  "# Entry 2: _describe_god_wrath_causes — multi-line wrath format strings"
+  "# Entry 4: Gozag service fee — random_choose fee descriptions"
+  "# Issue 34: 83 missing keys with exact whitespace (2026-07-01)"
+  "# Issue 45 Phase 3: art-func.h batch (2026-07-05)"
+  "# Issue 45 Phase 3: dbg-maps.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: dbg-util.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: describe.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: melee-attack.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: player.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: wiz-fsim.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: wiz-item.cc batch (2026-07-05)"
+  "# Issue 45 Phase 3: wiz-mon.cc batch (2026-07-05)"
+  ... and 13 more
+
+
+--- Term validation (rejected names from decisions.md) ---
+OK: No rejected terms from 5 active decisions found.
+
+--- Cross-file term consistency ---
+OK: No cross-file issues across 1 file(s).
+
+--- Species term consistency ---
+OK: All compound entries consistent with 30 base species terms.
+
+--- Anti-patterns (strict + lenient) ---
+OK: No anti-patterns found.
+
+=== post-reviewer.sh complete ===

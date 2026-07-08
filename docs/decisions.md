@@ -468,6 +468,24 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-A-032 — cane toad → 海蟾蜍
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-08
+- **Source**: Translation quality review — "cane toad → 甘蔗蟾蜍" analysis
+- **Choice**: 海蟾蜍
+- **Rejected**: 甘蔗蟾蜍 (literal translation of "cane toad", secondary alias in Chinese — less recognizable to players)
+- **Rationale**: 海蟾蜍 (marine toad) is the standard Chinese common name for *Rhinella marina / Bufo marinus*, the real-world species that the monster is based on. Chinese Wikipedia lists 甘蔗蟾蜍 as a secondary alias. The project convention is to use the most widely recognized Chinese common name for real-world-based creatures, matching the approach for 牛蛙 (bullfrog) and 巨蛙 (giant frog).
+- **Examples**: cane toad → 海蟾蜍
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+  - `dat/descript/zh/monsters.txt` ✅
+- **Tracking issue**: (none — direct fix)
+- **Resolved**: 2026-07-08
+
+---
+
 ## Type-B: Rule Rulings (style/grammar/formatting conventions)
 
 ---
@@ -798,6 +816,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-004 | Nemelex Xobeh · | U+00B7 | active — all ✅ |
 | D-A-005 | Vehumet | 维胡梅特 | active — all ✅ |
 | D-A-006 | The Shining One | 光辉者 | active — all ✅ |
+| D-A-032 | cane toad | 海蟾蜍 | active ✅ |
 | D-B-001 | Brand genitive | 之 | active |
 | D-B-002 | List separators | 、+ 和 | active |
 | D-B-003 | article_a | skip in ZH | active |
