@@ -36893,82 +36893,82 @@ became the Champion of
 成为了
 %%%%
  <w>assemble</w>|examine gizmo
-PLACEHOLDER
+ <w>组装</w>|检视小装置
 %%%%
  assemble|<w>examine</w> gizmo
-PLACEHOLDER
+ 组装|<w>检视</w>小装置
 %%%%
 select gizmo to assemble
-PLACEHOLDER
+选择要组装的小装置
 %%%%
 examine gizmo
-PLACEHOLDER
+检视小装置
 %%%%
  <w>acquire</w>|examine items
-PLACEHOLDER
+ <w>获取</w>|检视物品
 %%%%
  acquire|<w>examine</w> items
-PLACEHOLDER
+ 获取|<w>检视</w>物品
 %%%%
 select item for acquirement
-PLACEHOLDER
+选择要获取的物品
 %%%%
 This branch is noisy: sounds don't travel as far here.
-PLACEHOLDER
+嘈杂：声音在此处传播得更近。
 %%%%
 This branch is unnaturally silent: sounds travel farther here.
-PLACEHOLDER
+异常安静：声音在此处传播得更远。
 %%%%
 Error! The help for "%s" is missing!
-PLACEHOLDER
+错误！缺少"%s"的帮助信息！
 %%%%
 <lightgray> (select to examine)</lightgray>
-PLACEHOLDER
+<lightgray>（选择以检视）</lightgray>
 %%%%
 <lightgray> (select to examine, %s to %s)</lightgray>
-PLACEHOLDER
+<lightgray>（选择以检视、%s以%s）</lightgray>
 %%%%
 <lightgray> (select to %1$s, %2$s to examine)</lightgray>
-PLACEHOLDER
+<lightgray>（选择以%1$s、%2$s以检视）</lightgray>
 %%%%
  while about to teleport
-PLACEHOLDER
+，即将传送
 %%%%
  You'd be excommunicated if you did!
-PLACEHOLDER
+如果你这样做将被逐出教会！
 %%%%
  (cancels current teleport)
-PLACEHOLDER
+（取消当前传送）
 %%%%
 Serpent of Hell (%s)
-PLACEHOLDER
+地狱蛇（%s）
 %%%%
 (CTRL-S to sort by monster toughness)
-PLACEHOLDER
+（CTRL-S 按怪物强度排序）
 %%%%
 (CTRL-S to sort by name)
-PLACEHOLDER
+（CTRL-S 按名称排序）
 %%%%
 This entry is an exact match for '%s'. To see non-exact matches, press space.
-PLACEHOLDER
+此条目与'%s'完全匹配。按空格查看非精确匹配。
 %%%%
  while resistant to mutation?
-PLACEHOLDER
+，你对抗突变吗？
 %%%%
  Zin will disapprove.
-PLACEHOLDER
+ 吉恩不会认可的。
 %%%%
 You cannot currently memorise any of the available spells because you cannot use those schools of magic.
-PLACEHOLDER
+你目前无法记忆任何可用法术，因为你无法使用魔法。
 %%%%
 You can't memorise any new spells for an unknown reason; please file a bug report.
-PLACEHOLDER
+你因未知原因无法记忆任何新法术；请提交错误报告。
 %%%%
 the dungeon can only cope with one malign gateway at a time.
-PLACEHOLDER
+地牢一次只能维持一个邪恶之门。
 %%%%
 a magic seal in the Gauntlet prevents this spell from working.
-PLACEHOLDER
+角斗场中的魔法封印阻止了此法术生效。
 %%%%
 you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability)
-PLACEHOLDER
+你必须先在典范上印刻一把武器！（使用印刻武器能力）
