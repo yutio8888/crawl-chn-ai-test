@@ -56,9 +56,12 @@ static bool _mon_needs_auto_exclude(const monster* mon, bool sleepy = false)
 // Check whether a given monster is listed in the auto_exclude option.
 static bool _need_auto_exclude(const monster* mon, bool sleepy = false)
 {
-    // This only works if the name is lowercased.
-    string name = mon->name(DESC_BASENAME, mon->is_stationary()
-                                           && testbits(mon->flags, MF_SEEN));
+    // Use English name for pattern matching — mon->name() returns Chinese
+    // in ZH mode, which would never match the English option patterns.
+    const monsterentry *me = get_monster_data(mon->type);
+    if (!me)
+        return false;
+    string name = me->name;
     lowercase(name);
 
     for (const text_pattern &pat : Options.auto_exclude)
