@@ -3734,7 +3734,7 @@ void monster_cleanup(monster* mons)
 
     if (mons->has_ench(ENCH_AWAKEN_FOREST))
     {
-        forest_message(mons->pos(), "The forest abruptly stops moving.");
+        forest_message(mons->pos(), T_("The forest abruptly stops moving."));
         env.forest_awoken_until = 0;
     }
 

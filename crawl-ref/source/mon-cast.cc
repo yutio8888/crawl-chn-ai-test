@@ -8245,7 +8245,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
         env.forest_is_hostile = !mons->friendly();
 
         // You may be unable to see the monster, but notice an affected tree.
-        forest_message(mons->pos(), "The forest starts to sway and rumble!");
+        forest_message(mons->pos(), T_("The forest starts to sway and rumble!"));
         return;
 
     case SPELL_SUMMON_DRAGON:

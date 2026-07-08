@@ -2461,6 +2461,15 @@ A flurry of magic pours from %s injured body!
 A forested plane collides here with a resounding crunch!
 一个森林遍布的位面在这里碰撞，发出了响亮的嘎吱声！
 %%%%
+A root barely touches @foe@ from below
+一条根须从下方轻轻擦过@foe@
+%%%%
+A root lunges up near @foe@
+一条根须从@foe@附近猛地钻出
+%%%%
+A root smacks @foe@ from below
+一条根须从下方抽打@foe@
+%%%%
 A forgotten god smites @The_monster@
 一位被遗忘的神祇重击了@The_monster@
 %%%%
@@ -2487,6 +2496,15 @@ A giggling sprite jumps out, %s
 %%%%
 A great freezing vortex %s.
 一股巨大的冰封漩涡%s。
+%%%%
+@foe@ @is@ hit by a branch
+@foe@被树枝击中
+%%%%
+@foe@ @is@ scraped by a branch
+@foe@被树枝擦过
+%%%%
+@foe@ @is@ waved at by a branch
+树枝朝@foe@挥了挥
 %%%%
 A hum of electricity fills the air.
 一阵电流的嗡鸣充满了空气。
@@ -2586,6 +2604,15 @@ A traitor %s dares to challenge your wrath!
 %%%%
 A tree falls to the furious winds!
 一棵树在狂风中倒下了！
+%%%%
+A tree reaches out and hits @foe@
+一棵树伸出枝条击中@foe@
+%%%%
+A tree reaches out and scrapes @foe@
+一棵树伸出枝条擦过@foe@
+%%%%
+A tree reaches out but misses @foe@
+一棵树伸出枝条，但没有击中@foe@
 %%%%
 a very buggy card
 非常有 bug 的卡牌
@@ -2971,6 +2998,9 @@ Bearserk
 %%%%
 Beasts
 野兽
+%%%%
+Branches wave dangerously above you.
+枝条在你头顶危险地挥舞着。
 %%%%
 becomes %s,
 变得%s，
@@ -6889,17 +6919,32 @@ The flames covering %s go out.
 The flow of time bends around you.
 时间的流动在你周围弯曲了。
 %%%%
+The forest abruptly stops moving.
+森林突然停止了移动。
+%%%%
 The forest calms down.
 森林平静下来了。
 %%%%
 The forest fire spreads!
 森林大火蔓延了！
 %%%%
+The forest starts to sway and rumble!
+森林开始摇晃并隆隆作响！
+%%%%
 the Fortress
 堡垒
 %%%%
+The trees move their gnarly branches around.
+树木扭动着粗糙多节的枝条。
+%%%%
 The freezing vortex lifts you up.
 冰封漩涡把你抬了起来。
+%%%%
+Tree limbs sway around you.
+树枝在你周围摇摆。
+%%%%
+Trunks creak and shift.
+树干嘎吱作响，挪动起来。
 %%%%
 The frozen ramparts melt away as you move.
 冰冻壁垒在你移动时融化了。
@@ -9409,6 +9454,9 @@ You feel resistant to fire.
 %%%%
 You feel resistant to poison.
 你感到对毒素有抵抗力。
+%%%%
+You feel roots moving beneath the ground.
+你感觉到地下有根须在蠕动。
 %%%%
 You feel resolute.
 你感到意志坚定。

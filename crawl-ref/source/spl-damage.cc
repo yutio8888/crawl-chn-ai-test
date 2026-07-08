@@ -3421,11 +3421,11 @@ void forest_damage(const actor *mon)
     if (one_chance_in(4))
     {
         forest_message(pos, random_choose(
-            "The trees move their gnarly branches around.",
-            "You feel roots moving beneath the ground.",
-            "Branches wave dangerously above you.",
-            "Trunks creak and shift.",
-            "Tree limbs sway around you."), MSGCH_TALK_VISUAL);
+            T_("The trees move their gnarly branches around."),
+            T_("You feel roots moving beneath the ground."),
+            T_("Branches wave dangerously above you."),
+            T_("Trunks creak and shift."),
+            T_("Tree limbs sway around you.")), MSGCH_TALK_VISUAL);
     }
 
     for (radius_iterator ri(pos, LOS_NO_TRANS); ri; ++ri)
@@ -3443,26 +3443,26 @@ void forest_damage(const actor *mon)
                 if (!apply_chunked_AC(1, foe->evasion(false, mon)))
                 {
                     msg = random_choose(
-                            "@foe@ @is@ waved at by a branch",
-                            "A tree reaches out but misses @foe@",
-                            "A root lunges up near @foe@");
+                            T_("@foe@ @is@ waved at by a branch"),
+                            T_("A tree reaches out but misses @foe@"),
+                            T_("A root lunges up near @foe@"));
                 }
                 else if (!(dmg = foe->apply_ac(hd + random2(hd), hd * 2 - 1,
                                                ac_type::proportional)))
                 {
                     msg = random_choose(
-                            "@foe@ @is@ scraped by a branch",
-                            "A tree reaches out and scrapes @foe@",
-                            "A root barely touches @foe@ from below");
+                            T_("@foe@ @is@ scraped by a branch"),
+                            T_("A tree reaches out and scrapes @foe@"),
+                            T_("A root barely touches @foe@ from below"));
                     if (foe->is_monster())
                         behaviour_event(foe->as_monster(), ME_WHACK);
                 }
                 else
                 {
                     msg = random_choose(
-                        "@foe@ @is@ hit by a branch",
-                        "A tree reaches out and hits @foe@",
-                        "A root smacks @foe@ from below");
+                        T_("@foe@ @is@ hit by a branch"),
+                        T_("A tree reaches out and hits @foe@"),
+                        T_("A root smacks @foe@ from below"));
                     if (foe->is_monster())
                         behaviour_event(foe->as_monster(), ME_WHACK);
                 }
