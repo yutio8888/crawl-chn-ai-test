@@ -7022,7 +7022,7 @@ The lightning grounds out.
 闪电接地消失了。
 %%%%
 The lightning rod overheats!
-避雷针过热了！
+雷击杖过热了！
 %%%%
 The liquid fire burns you%s!
 液态火焰灼烧着你%s！
@@ -14497,7 +14497,7 @@ Unspoiled
 
 %%%%
 Lightning Rod
-避雷针
+雷击杖
 
 %%%%
 @Adj@ Disaster

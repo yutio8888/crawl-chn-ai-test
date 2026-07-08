@@ -662,6 +662,21 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-006 — lightning rod → 雷击杖
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-08
+- **Source**: Translation quality review — "避雷针" analysis
+- **Choice**: 雷击杖
+- **Rejected**: 避雷针 (contradicts item's offensive function — 避 = avoid/protect, but the item shoots lightning at enemies), 引雷针 (better semantics but 针 still misrepresents rod)
+- **Rationale**: 雷击 (lightning strike) accurately describes the item's offensive function. 杖 (rod/staff) matches the physical form better than 针 (needle). Consistent with how other rod-like items are named in Chinese.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+- **Tracking issue**: (none — direct fix)
+- **Resolved**: 2026-07-08
+
+---
 
 ---
 
@@ -833,3 +848,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-003 | Item base names | ~200 items | active — all ✅ |
 | D-C-004 | Portal .des | ~40 messages | active — all ✅ |
 | D-C-005 | Monster YAML names | 489 entries → 100% coverage | active ✅ |
+| D-C-006 | Lightning Rod | 雷击杖 | active ✅ |
