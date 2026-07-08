@@ -1,6 +1,6 @@
 # M panel smoke test — Deep Elf Conjurer starts with Magic Dart memorised,
-# so the M (spells) panel is safe to open. Verifies the panel doesn't crash.
-# (M panel crashes on any character without memorised spells — assertion failure.)
+# so the M (spells) panel is safe to open. Verifies the panel doesn't crash
+# and captures runtime spell text from mprf.
 name = zh_m_panel
 species = de
 background = cj
@@ -11,19 +11,38 @@ show_more = false
 Lua{
 local eol = string.char(13)
 local esc = string.char(27)
-local done = false
+local action = 0
+
+local function emit(case_id, text)
+    if text == nil then text = "<nil>" end
+    local one_line = tostring(text):gsub("\r\n", "\\n"):gsub("\n", "\\n")
+    crawl.stderr("FRAME_MARKER: " .. case_id .. " | " .. one_line .. eol)
+end
 
 function ready()
-    if done then return end
-    done = true
-    crawl.sendkeys("&yes" .. eol .. esc)
-    local tr = crawl.t_("You attack %s.")
-    crawl.stderr("FRAME_MARKER: probe | t_=" .. tr .. eol)
+    action = action + 1
 
-    -- M panel: DE Cj has spells memorised by default
-    crawl.sendkeys("M" .. esc)
-    crawl.stderr("FRAME_MARKER: panel:spells | opened" .. eol)
+    if action == 1 then
+        crawl.enable_more(false)
+        crawl.set_sendkeys_errors(true)
+        crawl.sendkeys("&yes" .. eol .. esc)
+    elseif action == 2 then
+        emit("probe", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
+        crawl.sendkeys(".")
 
-    crawl.sendkeys(string.char(19)) -- quit
+    elseif action == 3 then
+        crawl.sendkeys("M" .. esc)
+    elseif action == 4 then
+        -- Capture messages + emit
+        local msgs = crawl.messages(20) or ""
+        emit("panel:spells", msgs)
+        crawl.sendkeys(".")
+
+    elseif action == 5 then
+        emit("phase", "done")
+        crawl.sendkeys(".")  -- advance before quit
+    elseif action == 6 then
+        crawl.sendkeys(string.char(19))
+    end
 end
 }

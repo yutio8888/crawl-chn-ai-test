@@ -220,13 +220,27 @@ Discovered during implementation and recorded here for future reference:
 
 | Priority | Task | Notes |
 |----------|------|-------|
-| High | **Merge into chn-0.34.1-base** | RED gate: needs zh-code-reviewer pass first |
-| Medium | Panel text capture | Currently "opened" markers only; add crawl.messages() per panel |
-| Medium | M (spells) panel | Need to give char a spell first (create book + read) |
-| Medium | More item samples | One weapon + one armour; expand to full test_pairs |
-| Medium | M3 D/E use cases | Duration endmsg + random ego — better in M4 bot than dlua |
-| Low | Catch2 #3 optimize | EN-toggle for item_base_names |
+| Medium | Panel text capture | Currently "opened" markers on most panels; items+god use crawl.messages() |
+| Low | More item samples | One weapon + one armour; multiple same-class &o commands crash |
 | Low | post-coder.sh --full e2e | Full pipeline test across all 3 layers |
+
+## RC Bot Known Crash Edge Cases
+
+| Pattern | Status | Root Cause |
+|---------|--------|-----------|
+| Second `&o)` / `&o(` | Crash | Wizard command state accumulation |
+| Second `g&o[` | Hang | Inventory overflow or auto-pickup conflict |
+| `&!` (wizard memorise spell) | Hang | `cancellable_get_line` reads terminal, not sendkeys buffer |
+| `M` (spells) panel without spells | Crash | Assertion failure in spell menu |
+| `M` (spells) panel with memorised spells | ✅ OK | DE Conjurer smoke test (zh_ui_smoke.rc), exit 0 |
+
+## M (Spells) Panel Solution
+
+`M` panel works when character has at least one memorised spell. Deep Elf Conjurer
+(`species = de, background = cj`) starts with Magic Dart, making `M` safe. Verified
+by `zh_ui_smoke.rc` (exit 0, captures spell text via crawl.messages). `&!` wizard
+command cannot memorise spells at runtime — it reads terminal input directly
+(`cancellable_get_line`), bypassing `crawl.sendkeys` buffer.
 
 ---
 
