@@ -199,9 +199,11 @@ bool rule_mixed_cn_en(const std::string& text)
         // Common English embedded terms (acronyms, dungeon names)
         "Dungeon","Lair","Shoals","Snake","Spider","Tomb","Vaults","Hell","Abyss","Zot",
         "Slime","Orc","Elf","Crypt","Pan","Bligit","Dis","Gehenna","Cocytus","Tartarus",
-        // Tech prefixes used in items
-        "Tele","Rage","Highlight",
-    };
+// Tech prefixes used in items
+         "Tele","Rage","Highlight",
+         // DCSS command/wizard codes in tutorial/hints templates
+         "CMD","EVOKE","READ","QUAFF","tiles","white","TODO","you","god",
+     };
 
     i = 0;
     while (i < text.size())

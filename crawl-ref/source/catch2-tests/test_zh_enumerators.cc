@@ -222,11 +222,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     for (int mi = 0; mi < NUM_MONSTERS; ++mi)
     {
         const monster_type m = static_cast<monster_type>(mi);
-        // No SENTINEL enum; skip ones whose name resolves to "" (e.g. enums
-        // like MONS_PROGRAM_BUG that don't have a translatable name).
-        const std::string name = mons_type_name(m, DESC_PLAIN);
-        if (name.empty())
-            continue;
+// No SENTINEL enum; skip ones whose name resolves to "" (e.g. enums
+         // like MONS_PROGRAM_BUG that don't have a translatable name).
+         // Also skip "removed" entries — these are save-compat placeholders.
+         const std::string name = mons_type_name(m, DESC_PLAIN);
+         if (name.empty() || name.find("removed") == 0)
+             continue;
         scan_one(name.c_str(), name, "source.txt", issues);
 
         const std::string tr = getLongDescription(name);
