@@ -7829,8 +7829,8 @@ Welcome to %s!
 What are your orders?
 你的命令是什么？
 %%%%
-What level of %s? (default %s, ? - help)
-哪个层级的%s？（默认为%s，? - 帮助）
+What level of %s? (default %s, ? - help) 
+哪个层级的%s？（默认为%s，? - 帮助） 
 %%%%
 Which rune (ESC to exit)?
 哪个符文（按ESC退出）？
@@ -12121,9 +12121,8 @@ The monsters
 # --- End of scattered keys ---
 
 %%%%
-What level of %s?
-
-%s的哪一层？
+What level of %s? 
+%s的哪一层？ 
 %%%%
 Sorry, you're not good enough to have a special ability.
 抱歉，你的能力还不足以拥有特殊能力。
