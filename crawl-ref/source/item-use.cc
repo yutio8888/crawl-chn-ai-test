@@ -437,7 +437,7 @@ static void _note_tele_cancel(MenuEntry* entry)
         && ie->item->is_identified()
         && you.duration[DUR_TELEPORT])
     {
-        ie->text += " (cancels current teleport)";
+        ie->text += T_(" (cancels current teleport)");
     }
 }
 

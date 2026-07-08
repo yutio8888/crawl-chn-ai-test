@@ -542,16 +542,16 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
         }
         title = "Visible " + title;
         if (examine_only)
-            title += "<lightgray> (select to examine)</lightgray>";
+            title += T_("<lightgray> (select to examine)</lightgray>");
         else
         {
             title_secondary = title
-                + "<lightgray> (select to examine, "
-                + menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE)
-                + " to " + selectverb + ")</lightgray>";
-            title += "<lightgray> (select to " + selectverb + ", "
-                + menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE)
-                + " to examine)</lightgray>";
+                + make_stringf(T_("<lightgray> (select to examine, %s to %s)</lightgray>"),
+                               menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
+                               selectverb.c_str());
+            title += make_stringf(T_("<lightgray> (select to %1$s, %2$s to examine)</lightgray>"),
+                                  selectverb.c_str(),
+                                  menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str());
         }
     }
 

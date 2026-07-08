@@ -1779,12 +1779,12 @@ bool check_warning_inscriptions(const item_def& item,
         prompt += (in_inventory(item) ? item.name(DESC_INVENTORY)
                                       : item.name(DESC_A));
         if (needs_notele_warning(item, oper))
-            prompt += " while about to teleport";
+            prompt += T_(" while about to teleport");
         prompt += "?";
         if (god_despises_item(item, you.religion))
-            prompt += " You'd be excommunicated if you did!";
+            prompt += T_(" You'd be excommunicated if you did!");
         else if (penance)
-            prompt += " This could place you under penance!";
+            prompt += T_(" This could place you under penance!");
         return yesno(prompt.c_str(), false, 'n');
     }
 

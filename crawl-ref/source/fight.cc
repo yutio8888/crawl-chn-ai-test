@@ -992,7 +992,7 @@ bool wielded_weapon_check(string attack_verb)
                            : (T_("attack")),
         wpn_desc.c_str());
     if (penance)
-        prompt += " This could place you under penance!";
+        prompt += T_(" This could place you under penance!");
 
     const bool result = yesno(prompt.c_str(), true, 'n');
 

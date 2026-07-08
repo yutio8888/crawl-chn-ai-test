@@ -1619,11 +1619,11 @@ string AcquireMenu::get_keyhelp(bool) const
         //[Esc/R-Click] exit
         "<lightgrey>%s%s  %s %s</lightgrey>",
         menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
-        menu_action == ACT_EXECUTE ? " <w>assemble</w>|examine gizmo" :
-                                     " assemble|<w>examine</w> gizmo",
+        menu_action == ACT_EXECUTE ? T_(" <w>assemble</w>|examine gizmo") :
+                                     T_(" assemble|<w>examine</w> gizmo"),
         hyphenated_hotkey_letters(item_count(), 'a').c_str(),
-        menu_action == ACT_EXECUTE ? "select gizmo to assemble"
-                                   : "examine gizmo");
+        menu_action == ACT_EXECUTE ? T_("select gizmo to assemble")
+                                   : T_("examine gizmo"));
     }
     else
     {
@@ -1632,11 +1632,11 @@ string AcquireMenu::get_keyhelp(bool) const
             //[Esc/R-Click] exit
             "<lightgrey>%s%s  %s %s</lightgrey>",
             menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
-            menu_action == ACT_EXECUTE ? " <w>acquire</w>|examine items" :
-                                        " acquire|<w>examine</w> items",
+            menu_action == ACT_EXECUTE ? T_(" <w>acquire</w>|examine items") :
+                                        T_(" acquire|<w>examine</w> items"),
             hyphenated_hotkey_letters(item_count(), 'a').c_str(),
-            menu_action == ACT_EXECUTE ? "select item for acquirement"
-                                    : "examine item");
+            menu_action == ACT_EXECUTE ? T_("select item for acquirement")
+                                    : T_("examine item"));
     }
     return pad_more_with_esc(help);
 }

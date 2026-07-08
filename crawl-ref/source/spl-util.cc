@@ -1884,8 +1884,8 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     case SPELL_MALIGN_GATEWAY:
         if (temp && !can_cast_malign_gateway())
         {
-            return "the dungeon can only cope with one malign gateway"
-                    " at a time.";
+            return T_("the dungeon can only cope with one malign gateway"
+                      " at a time.");
         }
         if (temp && cast_malign_gateway(&you, 0, false, true)
                     == spret::abort)
@@ -1940,8 +1940,8 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     case SPELL_GOLUBRIAS_PASSAGE:
         if (temp && player_in_branch(BRANCH_GAUNTLET))
         {
-            return "a magic seal in the Gauntlet prevents this spell "
-                   "from working.";
+            return T_("a magic seal in the Gauntlet prevents this spell "
+                      "from working.");
         }
         break;
 
@@ -2073,8 +2073,8 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         {
             if (!you.props.exists(PARAGON_WEAPON_KEY))
             {
-                return "you must imprint a weapon on your paragon first! "
-                       "(Use the Imprint Weapon ability)";
+                return T_("you must imprint a weapon on your paragon first! "
+                          "(Use the Imprint Weapon ability)");
             }
 
             monster* paragon = find_player_paragon();

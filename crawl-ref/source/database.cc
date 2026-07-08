@@ -915,7 +915,7 @@ string getHelpString(const string &topic)
 {
     string help = _query_database(HelpDB, topic, false, true);
     if (help.empty())
-        help = "Error! The help for \"" + topic + "\" is missing!";
+        help = make_stringf(T_("Error! The help for \"%s\" is missing!"), topic.c_str());
     return help;
 }
 

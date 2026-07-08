@@ -36891,3 +36891,84 @@ Something draws the life force from your surroundings.
 %%%%
 became the Champion of 
 成为了
+%%%%
+ <w>assemble</w>|examine gizmo
+PLACEHOLDER
+%%%%
+ assemble|<w>examine</w> gizmo
+PLACEHOLDER
+%%%%
+select gizmo to assemble
+PLACEHOLDER
+%%%%
+examine gizmo
+PLACEHOLDER
+%%%%
+ <w>acquire</w>|examine items
+PLACEHOLDER
+%%%%
+ acquire|<w>examine</w> items
+PLACEHOLDER
+%%%%
+select item for acquirement
+PLACEHOLDER
+%%%%
+This branch is noisy: sounds don't travel as far here.
+PLACEHOLDER
+%%%%
+This branch is unnaturally silent: sounds travel farther here.
+PLACEHOLDER
+%%%%
+Error! The help for "%s" is missing!
+PLACEHOLDER
+%%%%
+<lightgray> (select to examine)</lightgray>
+PLACEHOLDER
+%%%%
+<lightgray> (select to examine, %s to %s)</lightgray>
+PLACEHOLDER
+%%%%
+<lightgray> (select to %1$s, %2$s to examine)</lightgray>
+PLACEHOLDER
+%%%%
+ while about to teleport
+PLACEHOLDER
+%%%%
+ You'd be excommunicated if you did!
+PLACEHOLDER
+%%%%
+ (cancels current teleport)
+PLACEHOLDER
+%%%%
+Serpent of Hell (%s)
+PLACEHOLDER
+%%%%
+(CTRL-S to sort by monster toughness)
+PLACEHOLDER
+%%%%
+(CTRL-S to sort by name)
+PLACEHOLDER
+%%%%
+This entry is an exact match for '%s'. To see non-exact matches, press space.
+PLACEHOLDER
+%%%%
+ while resistant to mutation?
+PLACEHOLDER
+%%%%
+ Zin will disapprove.
+PLACEHOLDER
+%%%%
+You cannot currently memorise any of the available spells because you cannot use those schools of magic.
+PLACEHOLDER
+%%%%
+You can't memorise any new spells for an unknown reason; please file a bug report.
+PLACEHOLDER
+%%%%
+the dungeon can only cope with one malign gateway at a time.
+PLACEHOLDER
+%%%%
+a magic seal in the Gauntlet prevents this spell from working.
+PLACEHOLDER
+%%%%
+you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability)
+PLACEHOLDER

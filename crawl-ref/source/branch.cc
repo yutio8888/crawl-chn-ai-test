@@ -332,11 +332,10 @@ string branch_noise_desc(branch_type br)
     const int noise = ambient_noise(br);
     if (noise != 0)
     {
-        desc = "This branch is ";
         if (noise > 0)
-            desc += "noisy: sounds don't travel as far here.";
+            desc = T_("This branch is noisy: sounds don't travel as far here.");
         else
-            desc += "unnaturally silent: sounds travel farther here.";
+            desc = T_("This branch is unnaturally silent: sounds travel farther here.");
     }
 
     return desc;

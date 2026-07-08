@@ -851,11 +851,11 @@ public:
             return false;
 
         string msg = "Really drink that potion of mutation";
-        msg += you.rmut_from_item() ? " while resistant to mutation?" : "?";
+        msg += you.rmut_from_item() ? T_(" while resistant to mutation?") : "?";
         const bool zin_check = you_worship(GOD_ZIN)
                             && !have_passive(passive_t::cleanse_mut_potions);
         if (zin_check)
-            msg += " Zin will disapprove.";
+            msg += T_(" Zin will disapprove.");
         if (was_known && (zin_check || you.rmut_from_item())
                       && !yesno(msg.c_str(), false, 'n'))
         {

@@ -415,9 +415,9 @@ static spell_list _get_spell_list(bool just_check = false,
         unavail_reason = T_("You already know all available spells.");
     else if (num_restricted == total || num_restricted + num_known == total)
     {
-        unavail_reason = "You cannot currently memorise any of the available "
-                         "spells because you cannot use those schools of "
-                         "magic.";
+        unavail_reason = T_("You cannot currently memorise any of the available "
+                            "spells because you cannot use those schools of "
+                            "magic.");
     }
     else if (num_misc == total || (num_known + num_misc) == total
              || num_misc + num_known + num_restricted == total)
@@ -426,8 +426,8 @@ static spell_list _get_spell_list(bool just_check = false,
     }
     else
     {
-        unavail_reason = "You can't memorise any new spells for an unknown "
-                         "reason; please file a bug report.";
+        unavail_reason = T_("You can't memorise any new spells for an unknown "
+                            "reason; please file a bug report.");
     }
 
     if (!just_check && *unavail_reason)

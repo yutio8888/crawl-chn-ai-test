@@ -197,7 +197,7 @@ static bool _is_soh(string name)
 static string _soh_name(monster_type m_type)
 {
     branch_type b = serpent_of_hell_branch(m_type);
-    return string("Serpent of Hell (") + branches[b].longname + ")";
+    return make_stringf(T_("Serpent of Hell (%s)"), branches[b].longname);
 }
 
 static monster_type _mon_by_name(string name)
@@ -266,9 +266,9 @@ namespace
             if (toggleable_sort)
             {
                 if (sort_alpha)
-                    prompt += "(CTRL-S to sort by monster toughness)";
+                    prompt += T_("(CTRL-S to sort by monster toughness)");
                 else
-                    prompt += "(CTRL-S to sort by name)";
+                    prompt += T_("(CTRL-S to sort by name)");
             }
             set_title(new MenuEntry(prompt, MEL_TITLE));
         }
@@ -1001,8 +1001,7 @@ string LookupType::key_to_menu_str(const string &key) const
 int LookupType::describe(const string &key, bool exact_match) const
 {
     const string footer
-        = exact_match ? "This entry is an exact match for '" + key
-        + "'. To see non-exact matches, press space."
+        = exact_match ? make_stringf(T_("This entry is an exact match for '%s'. To see non-exact matches, press space."), key.c_str())
         : "";
     return describer(key, suffix(), footer);
 }
