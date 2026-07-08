@@ -2244,7 +2244,7 @@ static void _prompt_gamemode_map(newgame_def& ng, newgame_def& ng_choice,
     welcome.cprintf("%s\n", _welcome(ng).c_str());
     if (Options.seed_from_rc)
         welcome.cprintf(
-        T_("Custom seed: %" PRIu64 "\n"),
+        "%s%" PRIu64 "\n", T_("Custom seed: "),
         Options.seed_from_rc);
 
     welcome.textcolour(CYAN);

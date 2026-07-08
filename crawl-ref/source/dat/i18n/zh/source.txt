@@ -15510,8 +15510,8 @@ Randomly cycle recommended species/job combos until you accept one.
 Randomly cycle character combos until you accept one.
 随机切换角色组合，直到你接受其中一个。
 %%%%
-Custom seed: %lu\n
-自定义种子: %lu\n
+Custom seed: 
+自定义种子：
 %%%%
 Threat
 威胁
@@ -23439,10 +23439,6 @@ If you stay in this area without exploring new floors, Zot will find you after %
 %%%%
  (%d times)
 （%d次）
-
-%%%%
-Game seed: %1$" PRIu64 "%2$s
-游戏种子：%1$" PRIu64 "%2$s
 
 %%%%
  %s version %s
@@ -37037,3 +37033,11 @@ ink
 %%%%
 Jump
 跳跃
+
+%%%%
+Game seed: %s%s
+游戏种子：%s%s
+
+%%%%
+ in seed 
+ 种子

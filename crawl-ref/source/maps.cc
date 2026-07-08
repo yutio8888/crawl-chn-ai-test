@@ -196,7 +196,7 @@ static bool _resolve_map_lua(map_def &map)
         // per-iteration seed.
         string seed_inf = "";
         if (msg::uses_stderr(MSGCH_ERROR))
-            seed_inf = make_stringf(T_(" in seed %" PRIu64), crawl_state.seed);
+            seed_inf = make_stringf("%s%" PRIu64, T_(" in seed "), crawl_state.seed);
         mprf(MSGCH_ERROR, "Fatal lua error%s: %s", seed_inf.c_str(),
              err.c_str());
         // If we're using stderr, we don't have a morgue, so any dlua stack
@@ -1603,8 +1603,8 @@ void run_map_local_preludes()
                 string seed_inf = "";
                 if (msg::uses_stderr(MSGCH_ERROR))
                 {
-                    seed_inf = make_stringf(T_(" in seed %" PRIu64),
-                                            crawl_state.seed);
+                    seed_inf = make_stringf("%s%" PRIu64,
+                                            T_(" in seed "), crawl_state.seed);
                 }
                 mprf(MSGCH_ERROR, "Lua error (map %s)%s: %s",
                      vdef.name.c_str(), seed_inf.c_str(), err.c_str());

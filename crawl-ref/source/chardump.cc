@@ -199,11 +199,11 @@ bool dump_char(const string &fname, bool quiet, bool full_id,
 
 string seed_description()
 {
-    return make_stringf_p(
-        T_("Game seed: %1$" PRIu64 "%2$s"), crawl_state.seed,
-            crawl_state.type == GAME_TYPE_CUSTOM_SEED
-            ? T_(" (custom seed)")
-            : you.deterministic_levelgen ? "" : T_(" (classic levelgen)"));
+    const string seed_str = make_stringf("%" PRIu64, crawl_state.seed);
+    return make_stringf(T_("Game seed: %s%s"), seed_str.c_str(),
+        crawl_state.type == GAME_TYPE_CUSTOM_SEED
+        ? T_(" (custom seed)")
+        : you.deterministic_levelgen ? "" : T_(" (classic levelgen)"));
 }
 
 static void _sdump_header(dump_params &par)
