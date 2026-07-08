@@ -951,7 +951,7 @@ int SkillMenu::read_skill_target(skill_type sk)
         if (input > 270)
         {
             // 27.0 is the maximum target
-            set_help("<lightred>Your training target must be 27 or below!</lightred>");
+            set_help(T_("<lightred>Your training target must be 27 or below!</lightred>"));
             return -1;
         }
         else
@@ -1034,7 +1034,7 @@ bool SkillMenu::do_skill_enabled_check()
         // Shouldn't happen, but crash rather than locking the player in the
         // menu. Training will be fixed up on load.
         ASSERT(!you.has_mutation(MUT_DISTRIBUTED_TRAINING));
-        set_help("<lightred>You need to enable at least one skill.</lightred>");
+        set_help(T_("<lightred>You need to enable at least one skill.</lightred>"));
         // It can be confusing if the only trainable skills are hidden. Turn on
         // SKM_SHOW_ALL if so.
         if (get_state(SKM_SHOW) == SKM_SHOW_DEFAULT)

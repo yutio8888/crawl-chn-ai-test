@@ -9985,6 +9985,9 @@ You need the rest of your tentacles for walking.
 You need to be standing on open floor to call a merchant.
 你需要站在开阔地面才能召唤商人。
 %%%%
+<lightred>You need to enable at least one skill.</lightred>
+<lightred>你需要至少启用一个技能。</lightred>
+%%%%
 You need to enable at least one skill for training.
 你需要至少启用一个技能进行训练。
 %%%%
@@ -11042,6 +11045,9 @@ Your toxic radiance grows in intensity.
 %%%%
 Your trail of clouds dissipates.
 你的云迹消散了。
+%%%%
+<lightred>Your training target must be 27 or below!</lightred>
+<lightred>你的训练目标必须在27或以下！</lightred>
 %%%%
 Your training target must be 27 or below!
 你的训练目标必须在27或以下！
