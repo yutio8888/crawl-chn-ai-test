@@ -5,7 +5,11 @@ ae   := autopickup_exceptions
 
 # Items currently not affecting you or (in some cases) not usable
 menu += darkgrey:(melded)
+# CN: (melded) display
+menu += darkgrey:（融合）
 menu += darkgrey:(inert)
+# CN: (inert) display
+menu += darkgrey:（惰性）
 
 # Bad items
 menu += lightred:.*bad_item.*
@@ -18,30 +22,52 @@ menu += $forbidden:.*forbidden.*
 
 # Handle cursed and equipped items early to override other colour settings.
 menu += lightred:.*equipped.* cursed
+# CN: equipped + cursed
+menu += lightred:装备.*诅咒
 menu += red: (a|the) cursed
+# CN: cursed (no articles in Chinese)
+menu += red:诅咒
 menu += lightgreen:.*equipped.*
+# CN: equipped
+menu += lightgreen:装备.*
 
 # Important game items
 #
 menu += lightmagenta:rune of Zot
+# CN: Zot rune
+menu += lightmagenta:佐特符文
 menu += lightmagenta:.*orb.*Zot
+# CN: Orb of Zot
+menu += lightmagenta:佐特.*(球|珠)
 
 # Artefacts
 #
 menu += lightcyan:unrand.*artefact
+# CN: unrandart
+menu += lightcyan:随机.*神器
 
 menu += white:.*artefact.*
+# CN: artefact
+menu += white:神器
 
 #menu += white:.*identified.*artefact.*
 #menu += lightblue:.*unidentified.*artefact.*
 
 # Possible egos
 menu += lightblue:^unidentified .*weapon.*(runed|glowing)
+# CN: unidentified weapon with runed/glowing
+menu += lightblue:未鉴定.*武器.*(符文|发光)
 menu += lightblue:^unidentified .*armour.*(runed|glowing|embroidered|shiny|dyed)
+# CN: unidentified armour with appearance
+menu += lightblue:未鉴定.*(护甲|铠甲).*(符文|发光|绣花|闪亮|染色)
 
 # Enchanté
 menu += green:enchanted
+# CN: enchanted
+menu += green:附魔
 menu += green:staff of
+# CN: staff of X (Chinese naming pattern: X之杖)
+menu += green:之杖
 menu += green:ego
 
 # Emergency items
@@ -59,6 +85,8 @@ menu += lightcyan:evoker.*
 
 # Defaults for normal items
 menu += lightblue:unidentified.*(potion|scroll|wand|jewellery|magical staff)
+# CN: unidentified item types
+menu += lightblue:未鉴定.*(药水|卷轴|魔杖|珠宝|法杖)
 
 
 # Colouring of autoinscribed god gifts
@@ -73,3 +101,5 @@ menu_colour += inventory:white:\w \*\s
 
 # Not really menu.
 menu_colour += notes:white:Reached XP level
+# CN: XP level reached
+menu_colour += notes:white:达到经验等级

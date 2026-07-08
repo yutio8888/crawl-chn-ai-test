@@ -7,87 +7,229 @@ msc := message_colour
 # Really important messages
 #
 msc += $danger:drains you
+# CN: $danger:drains you
+msc += $danger:吸取|抽干
 msc += $danger:feel (heavily|very heavily|extremely) drained
+# CN: $danger:drained
+msc += $danger:感觉.*(抽干|虚弱|疲惫)
 msc += $danger:strangely .*stable
+# CN: $danger:strangely stable
+msc += $danger:奇怪.*稳定
 msc += $danger:curare-tipped.*hits you
+# CN: $danger:curare-tipped hits you
+msc += $danger:箭毒.*击中
 msc += $danger:Space warps( horribly)? around you
+# CN: $danger:Space warps
+msc += $danger:空间.*扭曲
 msc += $danger:sense of stasis
+# CN: $danger:stasis
+msc += $danger:停滞感
 msc += $danger:clumsily bash
+# CN: $danger:clumsily bash
+msc += $danger:笨拙.*撞击
 msc += $danger:goes berserk!
+# CN: $danger:berserk
+msc += $danger:狂暴
 msc += $danger:The blast of calcifying dust hits you
+# CN: $danger:calcifying dust
+msc += $danger:石化粉尘.*击中
 msc += $danger:you are engulfed in calcifying dust
+# CN: $danger:calcifying dust engulf
+msc += $danger:陷入.*石化粉尘
 msc += $danger:is moving more slowly
+# CN: $danger:slow movement
+msc += $danger:移动.*缓慢
 msc += $danger:You turn into a( bat| filthy swine| sentient fungus)
+# CN: $danger:polymorph into harmless
+msc += $danger:变成了(蝙蝠|猪|真菌)
 msc += $danger:You turn into a( tree| lump of jelly|n insubstantial wisp)
+# CN: $danger:polymorph into harmless2
+msc += $danger:变成了(树|果冻|幽灵|气体)
 # Don't recolour acquirement messages along with messages about invisible monsters.
 msc += lightgrey:Something appears (at your feet|before you)
+# CN: $lightgrey:acquirement appearance
+msc += lightgrey:出现.*(脚边|面前|脚下)
 msc += $danger:^Something .* you
+# CN: $danger:something attacks
+msc += $danger:.*东西.*你|.*怪物.*你
 msc += $danger:you block its attack
+# CN: $danger:block attack
+msc += $danger:格挡.*攻击
 msc += $danger:constricts you
+# CN: $danger:constriction
+msc += $danger:紧缠|缠绕
 msc += $danger:you convulse
+# CN: $danger:convulse
+msc += $danger:抽搐
 msc += $danger:You feel a build-up of mutagenic energy
+# CN: $danger:mutagenic build-up
+msc += $danger:诱变.*积聚|诱变.*能量
 msc += $danger:place you under penance
+# CN: $danger:penance
+msc += $danger:赎罪
 msc += $danger:cause instant excommunication
+# CN: $danger:excommunication
+msc += $danger:逐出教会
 msc += $danger:corrodes you
+# CN: $danger:corrosion
+msc += $danger:腐蚀
 msc += $danger:Your body becomes as fragile as glass
+# CN: $danger:fragile as glass
+msc += $danger:身体.*玻璃|脆弱.*玻璃
 msc += lightmagenta:malevolent force fills
+# CN: $lightmagenta:malevolent force
+msc += lightmagenta:邪恶力量充满
 
 # Less urgent, but still significant messages
 #
 msc += $warning:feel drained
+# CN: $warning:drained
+msc += $warning:被.*抽干|感觉.*虚弱
 msc += $warning:solemn chanting
+# CN: $warning:funeral chanting
+msc += $warning:仪式.*吟唱
 msc += $warning:hear.*funeral chant
+# CN: $warning:funeral chant
+msc += $warning:葬礼.*吟唱
 msc += $warning:funeral rites reach a fever pitch
+# CN: $warning:funeral rites fever pitch
+msc += $warning:葬礼.*高潮
 msc += $warning:distant snort
+# CN: $warning:distant snort
+msc += $warning:远处.*鼻息
 msc += $warning:beating.*drum
+# CN: $warning:drum beats
+msc += $warning:鼓声
 msc += $warning:drumbeats cease
+# CN: $warning:drumbeats cease
+msc += $warning:鼓声.*停
 msc += $warning:floor suddenly vibrates
+# CN: $warning:floor vibrates
+msc += $warning:地面.*震动
 msc += $warning:a sudden draft
+# CN: $warning:sudden draft
+msc += $warning:突然.*风
 msc += $warning:coins.*counted
+# CN: $warning:coins counted
+msc += $warning:金币.*数
 msc += $warning:tolling.*bell
+# CN: $warning:bell tolls
+msc += $warning:钟声
 msc += $warning:notes of the bell
+# CN: $warning:bell notes
+msc += $warning:钟.*音符|钟声
 msc += $warning:roar of battle
+# CN: $warning:battle roar
+msc += $warning:战斗的怒吼
 msc += $warning:creaking.*portcullis
+# CN: $warning:portcullis creaks
+msc += $warning:吊闸.*吱嘎
 msc += $warning:portcullis has been lowered
+# CN: $warning:portcullis lowered
+msc += $warning:吊闸.*放下
 msc += $warning:wave of frost
+# CN: $warning:frost wave
+msc += $warning:寒霜掠过
 msc += $warning:crackling.*melting
+# CN: $warning:melting crackles
+msc += $warning:融化.*噼啪
 msc += $warning:hiss.*sand
+# CN: $warning:sand hissing
+msc += $warning:沙.*嘶嘶
 msc += $warning:sound.*rushing water
+# CN: $warning:rushing water
+msc += $warning:流水声|水声
 msc += $warning:rusting.*drain
+# CN: $warning:rusting drain
+msc += $warning:下水道.*锈蚀
 msc += $warning:drain falling apart
+# CN: $warning:drain falling apart
+msc += $warning:下水道.*倒塌
 msc += $warning:heat about you
+# CN: $warning:oppressive heat
+msc += $warning:灼热.*包围
 msc += $warning:falling.*rocks
+# CN: $warning:falling rocks
+msc += $warning:岩石.*崩塌|落石
 msc += $warning:rumble.*avalanche of rocks
+# CN: $warning:rock avalanche rumble
+msc += $warning:岩石.*轰隆|崩塌.*轰隆
 msc += $warning:crackle.*arcane power
+# CN: $warning:arcane crackle
+msc += $warning:奥术.*噼啪
 msc += $warning:crackle.*magical portal
+# CN: $warning:magical portal crackle
+msc += $warning:传送门.*噼啪
 msc += $warning:distant wind
+# CN: $warning:distant wind
+msc += $warning:远处.*风
 msc += $warning:whistling.*wind
+# CN: $warning:wind whistling
+msc += $warning:风.*呼啸
 msc += $warning:rapidly growing quiet
+# CN: $warning:growing quiet
+msc += $warning:逐渐.*安静
 msc += $warning:slides
+# CN: $warning:slides
+msc += $warning:滑落|滑坡
 msc += $warning:settles down
+# CN: $warning:settles down
+msc += $warning:平息|落定
 
 msc += lightcyan:LOW MAGIC WARNING
+# CN: $lightcyan:low magic warning
+msc += lightcyan:魔法.*不足|法力.*低
 msc += $warning:no longer ripe
+# CN: $warning:no longer ripe
+msc += $warning:不再.*成熟
 msc += $warning:This .* contains the .* runes? of Zot
+# CN: $warning:rune of Zot location
+msc += $warning:.*包含.*佐特.*符文|.*符文.*佐特
 msc += $warning:guards? the .* runes? of Zot
+# CN: $warning:guards Zot rune
+msc += $warning:守卫.*佐特.*符文
 msc += $warning:rune of Zot may be found here
+# CN: $warning:rune of Zot location
+msc += $warning:佐特符文.*找到|符文.*佐特.*此处
 msc += $warning:Beware. you cannot shaft yourself on this level
+# CN: $warning:no shaft
+msc += $warning:不能.*竖井|无法.*竖井
 
 # Unimportant messages and combat clutter
 #
 msc += $boring:You start (resting|waiting)
+# CN: $boring:resting/waiting
+msc += $boring:开始(休息|等待)
 msc += $boring:Unknown command
+# CN: $boring:unknown command
+msc += $boring:未知命令
 msc += $boring:blood churns to no real effect
+# CN: $boring:blood churns
+msc += $boring:血液.*翻腾
 #
 msc += $boring:plain:miss(es)? (the|you|it)
+# CN: $boring:miss
+msc += $boring:没有击中|没击中|未击中
 msc += $boring:but (do no|doesn't do any) damage
+# CN: $boring:no damage
+msc += $boring:没有.*伤害|未造成.*伤害
 msc += $boring:waved at by a branch
+# CN: $boring:waved at
+msc += $boring:向.*挥舞
 msc += $boring:lunges up near
+# CN: $boring:lunges
+msc += $boring:猛冲.*靠近
 msc += $boring:is recalled by Beogh
+# CN: $boring:recalled by Beogh
+msc += $boring:被比欧弗召回
 
 # Ignore Uskayaw *** and **** power loss messages by default; they're spammy.
 msc += mute:Uskayaw will no longer force your foes to helplessly watch your dance\.
+# CN: $mute:Uskayaw dance
+msc += mute:乌斯卡亚不再.*敌人.*无助.*舞
 msc += mute:Uskayaw will no longer force your foes to share their pain\.
+# CN: $mute:Uskayaw pain sharing
+msc += mute:乌斯卡亚不再.*敌人.*分享.*痛苦
 
 ## Messages so important to require a --more--
 
