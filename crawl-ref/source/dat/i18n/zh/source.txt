@@ -36975,58 +36975,58 @@ you must imprint a weapon on your paragon first! (Use the Imprint Weapon ability
 
 %%%%
 One of the many lords of Pandemonium, 
-One of the many lords of Pandemonium, 
+潘神之域的众多领主之一，
 %%%%
 , and it
-, and it
+，且它
 %%%%
 , it
-, it
+，它
 %%%%
 : 
-: 
+：
 %%%%
 'Of %s': 
-'Of %s': 
+%s之
 %%%%
 <lightgrey>Options read from "%s".</lightgrey>
-<lightgrey>Options read from "%s".</lightgrey>
+<lightgrey>选项读取自"%s"。</lightgrey>
 %%%%
 <lightred>Options file %s; using defaults.</lightred>
-<lightred>Options file %s; using defaults.</lightred>
+<lightred>选项文件%s；使用默认设置。</lightred>
 %%%%
 not found
-not found
+未找到
 %%%%
  in a shop 
- in a shop 
+在商店中
 %%%%
  to you 
- to you 
+给你
 %%%%
 Are you sure you want to drop %s into %s? You won't be able to retrieve %s.
-Are you sure you want to drop %s into %s? You won't be able to retrieve %s.
+确定要将%s丢入%s吗？你将无法取回%s。
 %%%%
 Bones file is buggy: %s\n%s
-Bones file is buggy: %s\n%s
+残骸文件有错误：%s\n%s
 %%%%
 There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?
-There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?
+名为'%s'的存档来自不兼容的Crawl版本（%s），除非你重新安装该版本，否则无法加载。\n是否要删除该存档并开始新游戏？
 %%%%
 %s is from an incompatible version and can't be loaded.
-%s is from an incompatible version and can't be loaded.
+%s来自不兼容的版本，无法加载。
 %%%%
 Tab - 
 Tab - 
 %%%%
 You have gained great experience. Select the skills to train.
-You have gained great experience. Select the skills to train.
+你获得了大量经验。选择要训练的技能。
 %%%%
 --more-- Press Space or click to continue. You can later reread messages with Ctrl-P.
---more-- Press Space or click to continue. You can later reread messages with Ctrl-P.
+--更多--  （按空格或点击继续。之后可以按Ctrl-P重读消息）
 %%%%
 --more-- Press Space to continue. You can later reread messages with Ctrl-P.
---more-- Press Space to continue. You can later reread messages with Ctrl-P.
+--更多--  （按空格继续。之后可以按Ctrl-P重读消息）
 %%%%
 Now all you have to do is get back out of the dungeon!
-Now all you have to do is get back out of the dungeon!
+现在你只需要活着离开地牢就行了！
