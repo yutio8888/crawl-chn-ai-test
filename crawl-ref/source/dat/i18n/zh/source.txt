@@ -37030,3 +37030,6 @@ You have gained great experience. Select the skills to train.
 %%%%
 Now all you have to do is get back out of the dungeon!
 现在你只需要活着离开地牢就行了！
+%%%%
+ink
+墨汁
