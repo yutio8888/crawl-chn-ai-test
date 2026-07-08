@@ -638,19 +638,19 @@ bool monster_polymorph(monster* mons, monster_type targetc,
     {
         string verb = "";
         string obj = can_see ? mons_type_name(targetc, DESC_A)
-                             : "something you cannot see";
+                             : T_("something you cannot see");
 
         if (oldc == MONS_OGRE && targetc == MONS_TWO_HEADED_OGRE)
         {
-            verb = "grows a second head";
+            verb = T_("grows a second head");
             obj = "";
         }
         else if (mons->is_shapeshifter())
-            verb = "changes into ";
+            verb = T_("changes into ");
         else if (_jiyva_slime_target(targetc))
-            verb = "quivers uncontrollably and liquefies into ";
+            verb = T_("quivers uncontrollably and liquefies into ");
         else
-            verb = "evaporates and reforms as ";
+            verb = T_("evaporates and reforms as ");
 
         mprf_p(T_("%s %s%s!"), old_name_the.c_str(), verb.c_str(), obj.c_str());
     }

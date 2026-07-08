@@ -11999,6 +11999,21 @@ Zooming to %.2f
 
 %s%s%s！
 %%%%
+changes into 
+变成了 
+%%%%
+evaporates and reforms as 
+蒸发并重新凝聚成 
+%%%%
+grows a second head
+长出了第二个头
+%%%%
+quivers uncontrollably and liquefies into 
+剧烈颤抖并液化成 
+%%%%
+something you cannot see
+一个看不见的东西
+%%%%
 # teleport.cc (5 keys)
 
 %%%%
