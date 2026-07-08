@@ -410,6 +410,11 @@ static datum _database_fetch(DBM *database, const string &key)
     return result;
 }
 
+static bool _database_has_entry(const datum &result)
+{
+    return result.dptr != nullptr;
+}
+
 static vector<string> _database_find_keys(DBM *database,
                                           const string &regex,
                                           bool ignore_case,
@@ -674,10 +679,10 @@ static string _getWeightedString(TextDB &db, const string &key,
 
     if (db.translation)
         result = _database_fetch(db.translation->get(), canonical_key);
-    if (result.dsize <= 0)
+    if (!_database_has_entry(result))
         result = _database_fetch(db.get(), canonical_key);
 
-    if (result.dsize <= 0)
+    if (!_database_has_entry(result))
     {
         // Try ignoring the suffix.
         canonical_key = key;
@@ -686,10 +691,10 @@ static string _getWeightedString(TextDB &db, const string &key,
         // Query the DB.
         if (db.translation)
             result = _database_fetch(db.translation->get(), canonical_key);
-        if (result.dsize <= 0)
+        if (!_database_has_entry(result))
             result = _database_fetch(db.get(), canonical_key);
 
-        if (result.dsize <= 0)
+        if (!_database_has_entry(result))
             return "";
     }
 
@@ -788,13 +793,15 @@ static string _query_database(TextDB &db, string key, bool canonicalise_key,
 
     if (db.translation && !untranslated)
         result = _database_fetch(db.translation->get(), key);
-    if (result.dsize <= 0)
+    if (!_database_has_entry(result))
         result = _database_fetch(db.get(), key);
 
-    if (result.dsize <= 0)
+    if (!_database_has_entry(result))
         return "";
 
     string str((const char *)result.dptr, result.dsize);
+    if (str.empty())
+        return "";
 
     // <foo> is an alias to key foo
     if (str[0] == '<' && str[str.size() - 2] == '>'
@@ -1075,12 +1082,26 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
 
     // Try context-qualified key first (if applicable)
     string zh;
-    if (ctx && ctx[0])
-        zh = _query_database(SourceDB, lookup_key, true, false);
+    bool have_translation = false;
+    if (SourceDB.translation)
+    {
+        auto fetch_translation = [&](const string &key)
+        {
+            datum result = _database_fetch(SourceDB.translation->get(), key);
+            if (!_database_has_entry(result))
+                return false;
+            zh.assign((const char *)result.dptr, result.dsize);
+            return true;
+        };
 
-    // Fall back to unqualified key
-    if (zh.empty())
-        zh = _query_database(SourceDB, en_key, true, false);
+        if (ctx && ctx[0])
+            have_translation = fetch_translation(lookup_key);
+
+        // Fall back to unqualified key only when the qualified key is missing,
+        // not when it is explicitly present with an empty translation.
+        if (!have_translation)
+            have_translation = fetch_translation(en_key);
+    }
 
     // Final fallback: return English original.
     // Only DB-retrieved values go through unescape (source.txt values use
@@ -1090,7 +1111,7 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     // that trailing artifact. Do NOT strip leading/trailing spaces: they
     // are semantically significant for fragment concatenation in message
     // assembly (e.g. T_(" wielding ") returns " 挥舞着 " with spaces).
-    if (!zh.empty())
+    if (have_translation)
     {
         while (!zh.empty() && (zh.back() == '\n' || zh.back() == '\r'))
             zh.pop_back();
