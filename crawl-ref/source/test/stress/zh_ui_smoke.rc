@@ -1,8 +1,10 @@
-# Minimal RC bot smoke test — verifies the Lua{} bot framework works.
-name = zh_smoke
-species = mu
-background = ck
-weapon = mace
+# M panel smoke test — Deep Elf Conjurer starts with Magic Dart memorised,
+# so the M (spells) panel is safe to open. Verifies the panel doesn't crash.
+# (M panel crashes on any character without memorised spells — assertion failure.)
+name = zh_m_panel
+species = de
+background = cj
+weapon = short sword
 restart_after_game = false
 show_more = false
 
@@ -17,6 +19,11 @@ function ready()
     crawl.sendkeys("&yes" .. eol .. esc)
     local tr = crawl.t_("You attack %s.")
     crawl.stderr("FRAME_MARKER: probe | t_=" .. tr .. eol)
-    crawl.sendkeys(string.char(19)) -- Ctrl-S = save+quit
+
+    -- M panel: DE Cj has spells memorised by default
+    crawl.sendkeys("M" .. esc)
+    crawl.stderr("FRAME_MARKER: panel:spells | opened" .. eol)
+
+    crawl.sendkeys(string.char(19)) -- quit
 end
 }
