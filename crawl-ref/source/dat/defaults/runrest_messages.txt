@@ -4,77 +4,171 @@ ignore := runrest_ignore_message
 ignore += Jiyva gurgles merrily
 ignore += god:Divide and consume
 ignore += You hear.*splatter
+# Chinese translation compatibility
+ignore += 你听到了.*溅落
 
 ignore += You feel.*sick
+# Chinese translation compatibility
+ignore += (你感到不适|你感觉.*不适|你想家了)
 ignore += standing in the rain
+# Chinese translation compatibility
+ignore += 在雨中
 ignore += A.*toadstool withers and dies
+# Chinese translation compatibility
+ignore += 枯萎而死
 ignore += toadstools? grows
 ignore += You walk carefully through the
 ignore += The winds around you calm down.
+# Chinese translation compatibility
+ignore += 风平静下来了
 ignore += wailing of tortured souls fills the air!
+# Chinese translation compatibility
+ignore += 哀嚎.*空气
 ignore += your flames die down
 ignore += You feel your existence waver again
+# Chinese translation compatibility
+ignore += 存在再次动摇
 
 stop += You feel you are being watched
+# Chinese translation compatibility
+stop += 你感觉.*被.*注视
 stop += [Ss]omething.* misses you.
+# Chinese translation compatibility
+stop += 没有击中你
 stop += from outside your range of vision
+# Chinese translation compatibility
+stop += 视野之外.*出现
 stop += emerges from the mists of memory
+# Chinese translation compatibility
+stop += .*从记忆之雾中浮现
 
 stop += You feel space start to destabilise
+# Chinese translation compatibility
+stop += 空间开始变得不稳定
 
 # Traps and doors
 stop += A malevolent force
+# Chinese translation compatibility
+stop += 邪恶力量充满了
 stop += A sentinel's mark forms upon you\.
+# Chinese translation compatibility
+stop += 哨兵印记.*形成
 stop += it creaks loudly
+# Chinese translation compatibility
+stop += 响亮的吱嘎声
 stop += flies open with a bang
+# Chinese translation compatibility
+stop += 砰地一声飞开
 
 ## Zot is coming!
 stop += You have lingered too long
+# Chinese translation compatibility
+stop += 逗留太久
 stop += Zot draws nearer
+# Chinese translation compatibility
+stop += 佐特正在逼近
 stop += Zot has nearly found you
+# Chinese translation compatibility
+stop += 佐特已几乎找到你
 stop += Zot already knows
+# Chinese translation compatibility
+stop += 佐特已经.*了解
 stop += Zot's attention fixes on you
+# Chinese translation compatibility
+stop += 佐特的注意力.*锁定你
 stop += Zot's power touches on you
+# Chinese translation compatibility
+stop += 佐特的力量触及了你
 
 # Announcements of timed portal vaults:
 stop += interdimensional caravan
+# Chinese translation compatibility
+stop += 跨次元商队
 stop += distant snort
+# Chinese translation compatibility
+stop += 远处.*鼻息
 stop += roar of battle
+# Chinese translation compatibility
+stop += 战斗的怒吼
 stop += wave of frost
+# Chinese translation compatibility
+stop += 寒霜掠过
 stop += hiss of flowing sand
+# Chinese translation compatibility
+stop += 流沙的嘶嘶声
 stop += sound of rushing water
+# Chinese translation compatibility
+stop += 流水声
 stop += oppressive heat about you
+# Chinese translation compatibility
+stop += 灼热包围着你
 stop += crackle of arcane power
+# Chinese translation compatibility
+stop += 奥术能量的噼啪声
 stop += hear a distant wind
+# Chinese translation compatibility
+stop += 远处的风声
 
 stop += You now have enough gold to
+# Chinese translation compatibility
+stop += 有足够的金币来
 
 # Enchantments
 #
 ignore += of your corpse armour falls away.
+# Chinese translation compatibility
+ignore += 尸体(盔)?甲脱落
 stop += ^Careful!
+# Chinese translation compatibility
+stop += ^小心！
 
 # Transformation endings.
 # Badforms (and tree) excluded since we might be resting those off
 ignore += transformation is almost over\.
+# Chinese translation compatibility
+ignore += 变形即将结束
 ignore += transformation has ended\.
+# Chinese translation compatibility
+ignore += 变形结束了
 ignore += reverts? to (its|their) normal proportions\.
+# Chinese translation compatibility
+ignore += 恢复到了.*正常
 ignore += revert to a slightly less stony form\.
 ignore += revert to your normal fleshy form\.
+# Chinese translation compatibility
+ignore += 恢复到.*肉体形态
 ignore += warm up again\.
 ignore += feel yourself come back to life\.
+# Chinese translation compatibility
+ignore += 重新活过来
 ignore += feel your undeath return to normal\.
 ignore += (talons|horns|tentacle spike) disappear
+# Chinese translation compatibility
+ignore += (利爪.*消失|触手尖刺消失了)
 ignore += feel less shadowy\.
+# Chinese translation compatibility
+ignore += 不那么阴暗
 ignore += you emerge from the shadows\.
+# Chinese translation compatibility
+ignore += 从阴影中显现
 
 # Uskayaw -- ignore all Uskayaw power gain/loss messages since they happen constantly
 #
 ignore += .*stomp with the beat.*
+# Chinese translation compatibility
+ignore += .*随节拍跺脚.*
 ignore += .*pass through a line of other dancers.*
+# Chinese translation compatibility
+ignore += .*穿过.*舞者.*队列.*
 ignore += .*force your foes to helplessly watch your dance\.
+# Chinese translation compatibility
+ignore += .*敌人.*无助地观看.*舞.*
 ignore += .*force your foes to share their pain\.
+# Chinese translation compatibility
+ignore += .*敌人.*分享.*痛苦.*
 ignore += .*merge with and destroy a victim.*
+# Chinese translation compatibility
+ignore += .*与.*融合.*摧毁.*
 
 ignore += talk:
 ignore += talk_visual:
@@ -86,3 +180,6 @@ ignore += monster_timeout:
 ignore += decor_flavour:
 stop += god:
 stop += tutorial:
+
+# Magic draining (Chinese translation)
+stop += 你感觉力量在流失

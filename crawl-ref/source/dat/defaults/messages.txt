@@ -92,135 +92,317 @@ msc += mute:Uskayaw will no longer force your foes to share their pain\.
 ## Messages so important to require a --more--
 
 force_more_message += You have reached level
+# Chinese translation compatibility
+force_more_message += 你已达到
 force_more_message += Your scales start
+# Chinese translation compatibility
+force_more_message += 你的鳞片
 force_more_message += You (fall|are sucked) into a shaft
+# Chinese translation compatibility
+force_more_message += (掉进|被吸).*竖井
 force_more_message += You fall into the water!
+# Chinese translation compatibility
+force_more_message += 掉进了水
 force_more_message += You fall into the lava!
+# Chinese translation compatibility
+force_more_message += 掉进了熔岩
 force_more_message += You focus on prolonging your flight
+# Chinese translation compatibility
+force_more_message += 延长飞行
 force_more_message += Marking area around .* as unsafe
+# Chinese translation compatibility
+force_more_message += 标记.*为旅行不安全
 force_more_message += breaks free of your control
+# Chinese translation compatibility
+force_more_message += 挣脱.*掌控
 force_more_message += doesn't seem very happy
+# Chinese translation compatibility
+force_more_message += 似乎不太高兴
 force_more_message += You rejoin the land of the living
+# Chinese translation compatibility
+force_more_message += 回到了生者的国度
 force_more_message += You cannot cast spells when silenced
+# Chinese translation compatibility
+force_more_message += 无法施法
 force_more_message += This is a scroll of acquirement
+# Chinese translation compatibility
+force_more_message += 获取卷轴
 force_more_message += create your gizmo
+# Chinese translation compatibility
+force_more_message += 创造.*小装置
 force_more_message += malevolent force fills
+# Chinese translation compatibility
+force_more_message += 邪恶力量充满了
 force_more_message += malevolence running through your instability
+# Chinese translation compatibility
+force_more_message += 恶意.*不稳定中流淌
 force_more_message += You feel space start to destabilise
+# Chinese translation compatibility
+force_more_message += 空间开始变得不稳定
 
 ## Zot is coming!
 force_more_message += You have lingered too long
+# Chinese translation compatibility
+force_more_message += 逗留太久了
 force_more_message += Zot draws nearer
+# Chinese translation compatibility
+force_more_message += 佐特正在逼近
 force_more_message += Zot has nearly found you
+# Chinese translation compatibility
+force_more_message += 佐特已几乎找到你
 force_more_message += Zot already knows
+# Chinese translation compatibility
+force_more_message += 佐特已经.*了解
 force_more_message += Zot's attention fixes on you
+# Chinese translation compatibility
+force_more_message += 佐特的注意力.*锁定你
 force_more_message += Zot's power touches on you
+# Chinese translation compatibility
+force_more_message += 佐特的力量触及了你
 force_more_message += You feel the power of Zot begin to gather
+# Chinese translation compatibility
+force_more_message += 佐特的力量开始聚集
 
 ## Reduce chance of draining because flight or form runs out:
 force_more_message += ^Careful!
+# Chinese translation compatibility
+force_more_message += ^小心！
 
 # Announcements of timed portal vaults:
 force_more_message += interdimensional caravan
+# Chinese translation compatibility
+force_more_message += 跨次元商队
 force_more_message += solemn chanting
+# Chinese translation compatibility
+force_more_message += 仪式.*吟唱
 force_more_message += distant snort
+# Chinese translation compatibility
+force_more_message += 远处.*鼻息
 force_more_message += roar of battle
+# Chinese translation compatibility
+force_more_message += 战斗的怒吼
 force_more_message += wave of frost
+# Chinese translation compatibility
+force_more_message += 寒霜掠过
 force_more_message += hiss of flowing sand
+# Chinese translation compatibility
+force_more_message += 流沙的嘶嘶声
 force_more_message += sound of rushing water
+# Chinese translation compatibility
+force_more_message += 流水声
 force_more_message += oppressive heat about you
+# Chinese translation compatibility
+force_more_message += 灼热包围着你
 force_more_message += crackle of arcane power
+# Chinese translation compatibility
+force_more_message += 奥术能量的噼啪声
 force_more_message += hear a distant wind
+# Chinese translation compatibility
+force_more_message += 远处的风声
 force_more_message += Beware! This is a limited time offer
+# Chinese translation compatibility
+force_more_message += 限时优惠
 
 # Religion
 force_more_message += press .* to convert to Beogh
+# Chinese translation compatibility
+force_more_message += 皈依比欧弗
 force_more_message += welcomes you( back)?!
+# Chinese translation compatibility
+force_more_message += 欢迎你
 force_more_message += You have lost your religion
+# Chinese translation compatibility
+force_more_message += 失去了信仰
 
 # Dangerous weapons
 force_more_message += is wielding.*distortion
+# Chinese translation compatibility
+force_more_message += 扭曲武器
 # dancing weapons require special handling...
 force_more_message += there is a.*distortion
+# Chinese translation compatibility
+force_more_message += 扭曲.*出现
 force_more_message += of distortion comes into view
+# Chinese translation compatibility
+force_more_message += 扭曲.*出现
 force_more_message += encounter a dancing.* distortion
+# Chinese translation compatibility
+force_more_message += 舞动.*扭曲
 
 # Banishment
 force_more_message += You are cast into the Abyss
+# Chinese translation compatibility
+force_more_message += 被投入了深渊
 force_more_message += You are cast deeper into the Abyss
+# Chinese translation compatibility
+force_more_message += 被投入了深渊的更深处
 force_more_message += The Abyss bends around you
+# Chinese translation compatibility
+force_more_message += 深渊在你周围扭曲
 
 # Petrification
 force_more_message += You are slowing down
+# Chinese translation compatibility
+force_more_message += 正在减速
 
 # Sleep
 force_more_message += You fall asleep
+# Chinese translation compatibility
+force_more_message += 睡着了
 
 # Banes
 force_more_message += befalls you\.
+# Chinese translation compatibility
+force_more_message += 厄运降临
 force_more_message += upon you is lifted
+# Chinese translation compatibility
+force_more_message += 被.*解除
 
 # Abyss exits and rune
 force_more_message += Found a gateway leading out of the Abyss
+# Chinese translation compatibility
+force_more_message += 通往深渊之外的传送门
 force_more_message += a gateway leading .* appears
+# Chinese translation compatibility
+force_more_message += 传送门出现了
 force_more_message += You detect the abyssal rune
+# Chinese translation compatibility
+force_more_message += 探测到了深渊符文
 force_more_message += the detected abyssal rune vanishes
+# Chinese translation compatibility
+force_more_message += 探测到的.*符文消失
 force_more_message += Found .* abyssal rune of Zot
+# Chinese translation compatibility
+force_more_message += 佐特.*符文
 
 # Water nymph stair temp-drowning - people seem to miss these...
 force_more_message += watery aura .* (staircase|hatch)
+# Chinese translation compatibility
+force_more_message += 水灵光环.*(楼梯|舱口)
 
 # Generally exciting things that are somewhat automated
 force_more_message += You pick up the .* rune and feel its power
+# Chinese translation compatibility
+force_more_message += 捡起了.*符文.*力量
 force_more_message += You pick up the .* gem and feel its .* weight
+# Chinese translation compatibility
+force_more_message += 捡起了.*宝石.*轻盈
 
 # Rune unlock
 force_more_message += The lock glows eerily
+# Chinese translation compatibility
+force_more_message += 锁.*诡异的光芒
 force_more_message += Heavy smoke blows from the lock
+# Chinese translation compatibility
+force_more_message += 烟.*锁.*喷出
 force_more_message += The gate opens wide
+# Chinese translation compatibility
+force_more_message += 大门完全打开
 force_more_message += With a soft hiss the gate opens wide
+# Chinese translation compatibility
+force_more_message += 轻柔的嘶嘶声.*大门.*打开
 
 # Rune lock
 force_more_message += The door slams shut behind you
+# Chinese translation compatibility
+force_more_message += 门.*砰地关上
 
 # Gems
 force_more_message += Zot will shatter your .* gem
+# Chinese translation compatibility
+force_more_message += 佐特.*粉碎.*宝石
 force_more_message += Zot senses .* your .* gem
+# Chinese translation compatibility
+force_more_message += 佐特.*感知.*宝石
 
 # God gifts
 force_more_message += grants you (a gift|throwing weapons|a weapon)
+# Chinese translation compatibility
+force_more_message += 赐予了你.*(礼物|武器|投掷武器)
 force_more_message += offers you (knowledge of|a choice of)
+# Chinese translation compatibility
+force_more_message += 赋予你.*知识|让你挑选
 force_more_message += will grant you a choice
+# Chinese translation compatibility
+force_more_message += 让你.*挑选
 force_more_message += believes you are ready to make a new sacrifice
+# Chinese translation compatibility
+force_more_message += 准备好进行新的献祭
 force_more_message += may now remember your ancestor
+# Chinese translation compatibility
+force_more_message += 回忆起先祖
 force_more_message += deals you some cards
+# Chinese translation compatibility
+force_more_message += 发给了你.*牌
 force_more_message += deal. but finds you have enough
+# Chinese translation compatibility
+force_more_message += 你已经有足够的
 force_more_message += partake of a vision and a curse
+# Chinese translation compatibility
+force_more_message += 幻象与诅咒
 force_more_message += allow you to induct
+# Chinese translation compatibility
+force_more_message += 将.*纳入麾下
 force_more_message += will allow you to brand your body
+# Chinese translation compatibility
+force_more_message += 允许.*烙印.*印记
 
 force_more_message += Beogh speaks to you:
+# Chinese translation compatibility
+force_more_message += 比欧弗.*对你说
 
 # Xom doing things you really shouldn't miss
 force_more_message += is forced to slowly start .* word of recall
+# Chinese translation compatibility
+force_more_message += 被迫.*开始.*召回术
 
 # Crucible exit notification
 force_more_message += Makhleb acknowledges your contrition
+# Chinese translation compatibility
+force_more_message += 认可了你的忏悔
 
 # Show passwall message while still in the starting position
 force_more_message += You finish merging with the rock
+# Chinese translation compatibility
+force_more_message += 完成了与岩石的融合
 
 # Pause before showing a menu that hides the message
 force_more_message += You bow before the missionary of Beogh
+# Chinese translation compatibility
+force_more_message += 在.*传教士面前鞠躬
 force_more_message += You .* the altar of
+# Chinese translation compatibility
+force_more_message += 了.*祭坛
 force_more_message += will bless one of your weapons
+# Chinese translation compatibility
+force_more_message += 祝福.*武器
 force_more_message += will bloody your weapon with pain
+# Chinese translation compatibility
+force_more_message += 武器加持痛苦
 force_more_message += will brand one of your weapons
+# Chinese translation compatibility
+force_more_message += 用扭曲腐蚀.*武器|武器加持
 force_more_message += It is a scroll of amnesia
+# Chinese translation compatibility
+force_more_message += 遗忘卷轴
 force_more_message += It is a scroll of brand weapon
+# Chinese translation compatibility
+force_more_message += 武器烙印卷轴
 force_more_message += It is a scroll of enchant armour
+# Chinese translation compatibility
+force_more_message += 附魔护甲卷轴
 force_more_message += It is a scroll of enchant weapon
+# Chinese translation compatibility
+force_more_message += 附魔武器卷轴
 force_more_message += It is a scroll of identify
+# Chinese translation compatibility
+force_more_message += 鉴定卷轴
 force_more_message += You feel more experienced
+# Chinese translation compatibility
+force_more_message += 更有经验了
 force_more_message += A flood of memories washes over you
+# Chinese translation compatibility
+force_more_message += 记忆.*洪流.*席卷
 force_more_message += There's only one card left
+# Chinese translation compatibility
+force_more_message += 只剩下一张牌
