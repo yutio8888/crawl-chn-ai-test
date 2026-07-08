@@ -1184,7 +1184,7 @@
       "kind_name": "MIXED_CN_EN",
       "source": "bot",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\nGame seed: 1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\n游戏种子：1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+0 混沌之钉",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
@@ -1193,7 +1193,7 @@
       "kind_name": "WHITESPACE_ANOMALY",
       "source": "bot",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\nGame seed: 1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\n游戏种子：1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+0 混沌之钉",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
@@ -1202,7 +1202,7 @@
       "kind_name": "PUNCT_STYLE",
       "source": "bot",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\nGame seed: 1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\n游戏种子：1（自定义种子）;\n按?查看命令列表和其他信息。\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\n输入巫师命令（? - 帮助）：\n你感到一股知识涌入脑海。\n你卸下了你的+0 混沌之钉",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
@@ -1211,7 +1211,7 @@
       "kind_name": "MIXED_CN_EN",
       "source": "bot_raw",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\\nGame seed: 1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\\n游戏种子：1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你卸下了你的+",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
@@ -1220,7 +1220,7 @@
       "kind_name": "WHITESPACE_ANOMALY",
       "source": "bot_raw",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\\nGame seed: 1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\\n游戏种子：1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你卸下了你的+",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
@@ -1229,7 +1229,7 @@
       "kind_name": "PUNCT_STYLE",
       "source": "bot_raw",
       "key": "item:chaos_demon_whip",
-      "sample": "欢迎，test（木乃伊 混沌骑士）。\\nGame seed: 1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你",
+      "sample": "欢迎，test（木乃伊 混沌骑士）。\\n游戏种子：1（自定义种子）;\\n按?查看命令列表和其他信息。\\n发现了通往地牢外的阶梯, 向下通往的石梯 以及逃生舱口。\\n输入巫师命令（? - 帮助）：\\n你感到一股知识涌入脑海。\\n你卸下了你的+",
       "layer": "bot",
       "case_id": "item:chaos_demon_whip"
     },
