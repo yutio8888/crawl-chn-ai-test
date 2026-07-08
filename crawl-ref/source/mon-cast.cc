@@ -9974,5 +9974,5 @@ static ai_action::goodness _monster_spell_goodness(monster* mon, mon_spell_slot 
 
 static string _god_name(god_type god)
 {
-    return god_has_name(god) ? god_name(god) : "Something";
+    return god_has_name(god) ? god_name(god) : T_("Something");
 }

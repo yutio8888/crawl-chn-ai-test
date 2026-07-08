@@ -2051,13 +2051,13 @@ string mon_attack_name_short(attack_type attack)
 {
     switch (attack)
     {
-    case AT_SPORE:         return "spore";
-    case AT_TENTACLE_SLAP: return "tentacle";
-    case AT_TAIL_SLAP:     return "tail";
-    case AT_TRUNK_SLAP:    return "trunk";
-    case AT_POUNCE:        return "pounce";
+    case AT_SPORE:         return T_("spore");
+    case AT_TENTACLE_SLAP: return T_("tentacle");
+    case AT_TAIL_SLAP:     return T_("tail");
+    case AT_TRUNK_SLAP:    return T_("trunk");
+    case AT_POUNCE:        return T_("pounce");
     case AT_CHERUB:
-    case AT_RANDOM:        return "hit"; // eh
+    case AT_RANDOM:        return T_("hit"); // eh
     default:
         return mon_attack_name(attack, false);
     }

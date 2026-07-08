@@ -1780,7 +1780,7 @@ void init_servitor(monster* servitor, actor* caster, int pow)
     {
         mprf(T_("%s %s a servant imbued with %s destructive magic!"),
              caster->name(DESC_THE).c_str(),
-             caster->conj_verb("forge").c_str(),
+             T_("forge"),
              caster->pronoun(PRONOUN_POSSESSIVE).c_str());
     }
     else

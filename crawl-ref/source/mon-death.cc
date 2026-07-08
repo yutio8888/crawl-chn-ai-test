@@ -1516,26 +1516,26 @@ static string _derived_undead_message(const monster &mons, monster_type which_z,
     const habitat_type habitat = mons_class_habitat(mons.type);
     const habitat_type swimming_habitats = (habitat_type)(HT_WATER | HT_LAVA);
     if ((habitat & swimming_habitats) == habitat)
-        return "The dead are swimming!";
+        return T_("The dead are swimming!");
 
     if (mons_class_flag(mons.type, M_FLIES))
-        return "The dead are flying!";
+        return T_("The dead are flying!");
 
     const auto shape = get_mon_shape(mons);
     if (shape == MON_SHAPE_SNAKE || shape == MON_SHAPE_SNAIL)
-        return "The dead are slithering!";
+        return T_("The dead are slithering!");
     if (shape == MON_SHAPE_ARACHNID || shape == MON_SHAPE_CENTIPEDE)
-        return "The dead are crawling!"; // to say nothing of creeping
+        return T_("The dead are crawling!"); // to say nothing of creeping
 
     const monster_type genus = mons_genus(mons.type);
     // XXX: Prince Ribbit is in his human shape after he dies.
     if ((genus == MONS_FROG && mons.type != MONS_PRINCE_RIBBIT)
          || genus == MONS_QUOKKA)
     {
-        return "The dead are hopping!";
+        return T_("The dead are hopping!");
     }
 
-    return "The dead are walking!"; // a classic for sure
+    return T_("The dead are walking!"); // a classic for sure
 }
 
 /**
@@ -1605,15 +1605,15 @@ static void _make_derived_undead(monster* mons, bool quiet,
     if (god == GOD_KIKUBAAQUDGHA || spell == SPELL_BIND_SOULS)
         mg.extra_flags |= (MF_NO_REWARD | MF_HARD_RESET);
 
-    const string mist = which_z == MONS_SIMULACRUM ? "freezing" :
-                            god == GOD_YREDELEMNUL ? "black"
-                                                   : "glowing";
+    const string mist = which_z == MONS_SIMULACRUM ? T_("freezing") :
+                            god == GOD_YREDELEMNUL ? T_("black")
+                                                   : T_("glowing");
 
     if (msg.empty())
-        msg = "A " + mist + " mist starts to gather...";
+        msg = make_stringf(T_("A %s mist starts to gather..."), mist.c_str());
 
     if (fail_msg.empty())
-        fail_msg = "A " + mist + " mist gathers momentarily, then fades.";
+        fail_msg = make_stringf(T_("A %s mist gathers momentarily, then fades."), mist.c_str());
 
     if (mons->mons_species() == MONS_HYDRA || mons->type == MONS_SLYMDRA)
     {
@@ -1637,7 +1637,7 @@ static void _make_derived_undead(monster* mons, bool quiet,
     }
 
     const string message = quiet ? "" :
-                           god == GOD_KIKUBAAQUDGHA ? "Kikubaaqudgha cackles." :
+                           god == GOD_KIKUBAAQUDGHA ? T_("Kikubaaqudgha cackles.") :
                            _derived_undead_message(*mons, which_z, msg);
     schedule_make_derived_undead_fineff(mons->pos(), mg,
             mons->get_experience_level(), agent_name, message);

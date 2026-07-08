@@ -20,7 +20,51 @@
 # Entry 1: _describe_favour — penance messages
 
 %%%%
+A %s mist gathers momentarily, then fades.
+%s雾气短暂聚集，然后消散了。
+%%%%
+A %s mist starts to gather...
+%s雾气开始聚集……
+%%%%
 carved rock wall
+forge
+锻造
+%%%%
+雕刻岩壁
+%%%%
+The dead are walking!
+死者正在行走！
+%%%%
+The dead are hopping!
+死者正在跳跃！
+%%%%
+The dead are crawling!
+死者正在匍匐前进！
+%%%%
+The dead are slithering!
+死者正在爬行！
+%%%%
+The dead are flying!
+死者正在飞行！
+%%%%
+The dead are swimming!
+死者正在游动！
+%%%%
+Kikubaaqudgha cackles.
+奇库巴库哈嘎嘎笑了一声。
+%%%%
+weakly hits
+轻轻击中了
+%%%%
+trunk
+象鼻
+%%%%
+tail
+尾巴
+%%%%
+spore
+孢子
+%%%%
 雕刻岩壁
 %%%%
 broken wreckage
@@ -2184,6 +2228,12 @@ barrage of energy
 %%%%
 (Slaying mortal victims (and occasionally demons) will eventually satisfy Makhleb and create an exit.)
 (屠杀凡人受害者（有时甚至是恶魔）将最终满足马赫勒布并创造一个出口。）
+%%%%
+(You may use Imbue Servitor from the <w>%s</w>bility menu to change which spell your servitor casts.)
+(你可以在<w>%s</w>能力菜单中使用灌能仆从来更改仆从施放的法术。)
+%%%%
+(You may use Imprint Weapon from the <w>%s</w>bility menu to change which weapon your Paragon wields.)
+(你可以在<w>%s</w>能力菜单中使用铭印武器来更改化身的武器。)
 %%%%
     (use <w>%</w> to adjust inventory letters)
     （使用 <w>%</w> 分配物品栏字母）

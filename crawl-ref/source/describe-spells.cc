@@ -671,7 +671,7 @@ static void _describe_book(const spellbook_contents &book,
                                           ? "<lightmagenta>*</lightmagenta>" : ""
                                         : "";
 
-        const int effect_len = effect_str.length();
+        const int effect_len = strwidth(effect_str);
         const int range_len = range_str.empty() ? 0 : 3;
         const int effect_range_space = effect_len && range_len ? 1 : 0;
         const int chop_len = 32 - effect_len - range_len - effect_range_space

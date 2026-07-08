@@ -361,7 +361,7 @@ static void _iood_hit_setup(monster& orb, bolt& beam)
     if (dist < 3)
         beam.name = "wavering " + beam.name;
     if (dist < 2)
-        beam.hit_verb = "weakly hits";
+        beam.hit_verb = T_("weakly hits");
     beam.ex_size = 1;
     beam.loudness = 7;
 }

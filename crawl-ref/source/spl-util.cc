@@ -860,15 +860,15 @@ bool add_spell_to_memory(spell_type spell)
     if (spell == SPELL_SPELLSPARK_SERVITOR)
     {
         mprf(MSGCH_TUTORIAL,
-             "(You may use Imbue Servitor from the <w>%s</w>bility menu to change "
-             "which spell your servitor casts.)",
+             T_("(You may use Imbue Servitor from the <w>%s</w>bility menu to change "
+                "which spell your servitor casts.)"),
                 command_to_string(CMD_USE_ABILITY).c_str());
     }
     else if (spell == SPELL_PLATINUM_PARAGON)
     {
         mprf(MSGCH_TUTORIAL,
-             "(You may use Imprint Weapon from the <w>%s</w>bility menu to change "
-             "which weapon your Paragon wields.)",
+             T_("(You may use Imprint Weapon from the <w>%s</w>bility menu to change "
+                "which weapon your Paragon wields.)"),
                 command_to_string(CMD_USE_ABILITY).c_str());
     }
     // Give a free charge upon learning this spell for the first time, so the
