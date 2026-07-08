@@ -2570,7 +2570,7 @@ static void _xom_harmless_knockback(coord_def p)
     if (mon)
     {
         const int dist = random_range(2, 3);
-        mon->knockback(you, dist, 0, "hand of Xom");
+        mon->knockback(you, dist, 0, T_("hand of Xom"));
         behaviour_event(mon, ME_ALERT, &you);
     }
 }

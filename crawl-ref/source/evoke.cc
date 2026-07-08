@@ -526,7 +526,7 @@ void wind_blast(actor* agent, int pow, coord_def target)
         {
             const int push = _gale_push_dist(agent, act, pow);
             act->knockback(*agent, push, default_collision_damage(pow, true).roll(),
-                           "gust of wind");
+                           T_("gust of wind"));
         }
     }
 

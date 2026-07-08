@@ -6509,6 +6509,9 @@ sucker-punch
 Suddenly you stand beside yourself.
 突然你站在了自己身旁。
 %%%%
+sudden gust
+突然的阵风
+%%%%
  suffers a backlash!
  遭受了反噬！
 %%%%
@@ -6739,6 +6742,9 @@ The abyssal rune of Zot can be found at this depth.
 %%%%
 the acrobat
 闪避强化
+%%%%
+the ceiling
+天花板
 %%%%
 The air becomes perfectly still.
 空气变得完全静止。
@@ -14239,6 +14245,9 @@ Hand of Fortune
 命运之手
 
 %%%%
+hand of Xom
+Xom之手
+%%%%
 Sinner
 罪人
 
@@ -20044,6 +20053,9 @@ vortex
 vortices
 涡流
 %%%%
+gust of wind
+阵风
+%%%%
 gusty
 阵风
 %%%%
@@ -22659,6 +22671,9 @@ killed
 %%%%
 %s is %s!
 %s被%s了！
+%%%%
+blow
+冲击
 %%%%
 blow up
 炸毁

@@ -1120,7 +1120,7 @@ static bool _butterfly_knockback(coord_def p)
         return false;
 
     const int dist = random_range(2, 4);
-    if (!mon->knockback(you, dist, 0, "sudden gust"))
+    if (!mon->knockback(you, dist, 0, T_("sudden gust")))
         return false;
 
     behaviour_event(mon, ME_ALERT, &you);

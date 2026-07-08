@@ -1052,7 +1052,7 @@ static void _FORCE_LANCE_melee_effects(item_def* /*weapon*/, actor* attacker,
     // max power on a !!! hit (ie 36+ damage), but try to make some damage
     // quite likely to beat AC on any collision.
     const int collide_damage = 7 + roll_dice(3, div_rand_round(min(36, dam), 4));
-    defender->knockback(*attacker, 1, collide_damage, "blow");
+    defender->knockback(*attacker, 1, collide_damage, T_("blow"));
 }
 
 ///////////////////////////////////////////////////
