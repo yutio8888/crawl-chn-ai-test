@@ -988,13 +988,13 @@ gain power from chaos
 %1$s在雨中%2$s。
 %%%%
 %1$s %2$s knocked back by the %3$s.
-%1$s%2$s%3$s击退了。
+%1$s被%3$s击退了%2$.0s。
 %%%%
 %1$s %2$s knocked back by the blast.
-%1$s%2$s爆炸击退了。
+%1$s被爆炸击退了%2$.0s。
 %%%%
 %1$s %2$s knocked back.
-%1$s%2$s击退了。
+%1$s被击退了%2$.0s。
 %%%%
 %1$s %2$s suddenly forward!
 %1$s%2$.0s猛然向前冲去！
@@ -7271,6 +7271,9 @@ The walls %s %s!
 The walls around you are covered in ice.
 你周围的墙壁被冰覆盖了。
 %%%%
+The walls and floor vibrate strangely for a moment.
+墙壁和地板诡异地振动了片刻。
+%%%%
 The walls disappear%s!
 墙壁%s消失了！
 %%%%
@@ -8960,7 +8963,7 @@ You condense your magic into a crackling blade!
 你将魔力凝结成噼啪作响的利刃！
 %%%%
 You conjure a globe of magical energy.
-你召唤了一个魔法能量球。
+你召唤了一个战斗法球。
 %%%%
 You conjure up an array of volatile reagents!
 你召唤出一组不稳定试剂！
@@ -9577,7 +9580,7 @@ You feel your anger nearly subside.
 你感到你的愤怒几乎消退了。
 %%%%
 You feel your bond with your battlesphere wane.
-你感到与战斗球体的联结减弱了。
+你感到与战斗法球的联结减弱了。
 %%%%
 You feel your defenses recover.
 你感觉你的防御恢复了。
@@ -9860,7 +9863,7 @@ You hold the Black Torch high and begin your conquest of %s in Yredelemnul's nam
 你高举起黑火炬，开始了对%s的征服，以伊雷德勒姆努之名！
 %%%%
 You imbue your battlesphere with extra charge.
-你为你的战斗球体注入了额外的充能。
+你为你的战斗法球注入了额外的充能。
 %%%%
 You imbue your familiar with magical energy and its fangs glint viciously.
 你为你的使魔注入了魔法能量，它的獠牙闪烁着光芒
@@ -10121,7 +10124,7 @@ You really shouldn't be using an unclean item like this.
 你真的不应该这样使用不洁物品。
 %%%%
 You recall your battlesphere and imbue it with extra charge.
-你召回了你的战斗球体，并为它注入了额外的充能。
+你召回了你的战斗法球，并为它注入了额外的充能。
 %%%%
 You reconstitute your solar ember.
 你重新凝聚了你的微型太阳。
@@ -10602,10 +10605,10 @@ Your base attributes are Str %d, Int %d, Dex %d.
 你的基础属性是力量%d，智力%d，敏捷%d。
 %%%%
 Your battlesphere expends the last of its energy and dissipates.
-你的战斗球体耗尽了最后的能量，消散了。
+你的战斗法球耗尽了最后的能量，消散了。
 %%%%
 Your battlesphere wavers and loses cohesion.
-你的战斗球体不稳定地闪动着，失去了凝聚力。
+你的战斗法球不稳定地闪动着，失去了凝聚力。
 %%%%
 Your bee can only target hostiles.
 你的蜜蜂只能瞄准敌对目标。
@@ -22172,6 +22175,9 @@ translucent unnaturally hard rock wall
 transporter landing site
 传送台着陆点
 %%%%
+transporter
+传送器
+%%%%
 travel trail
 旅行步迹
 %%%%
@@ -26549,7 +26555,7 @@ Miscasting this spell causes magic contamination
 并可能造成
 %%%%
 Your battlesphere
-你的战斗球
+你的战斗法球
 %%%%
  is not activated by any of your spells
 不会被你的任何法术激活
@@ -27300,6 +27306,18 @@ vampire
 your 
 
 你的
+%%%%
+you can only summon one forest at a time.
+你一次只能召唤一片森林。
+%%%%
+you need more open space to create a gateway.
+你需要更多空旷空间来创造一道传送门。
+%%%%
+you need more open space to fit a forest.
+你需要更多空旷空间来容纳一片森林。
+%%%%
+necromancy does not work on golden corpses.
+死灵法术无法作用于黄金尸体。
 %%%%
 mollified 
 安抚了
@@ -33353,7 +33371,7 @@ deep water
 出现了！
 %%%%
  conjures a globe of magical energy!
-召唤出了一颗魔法能量球！
+召唤出了一颗战斗法球！
 %%%%
  disappears.
 消失了。

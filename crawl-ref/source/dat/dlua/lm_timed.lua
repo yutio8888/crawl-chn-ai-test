@@ -92,7 +92,7 @@ function TimedMarker:timeout(marker, verbose)
       crawl.mpr( util.expand_entity(self.props.entity, self.props.disappear) or
                  dgn.feature_desc_at(x, y, "The") .. " disappears!")
     else
-      crawl.mpr("The walls and floor vibrate strangely for a moment.")
+      crawl.mpr(crawl.t_("The walls and floor vibrate strangely for a moment."))
     end
   end
 

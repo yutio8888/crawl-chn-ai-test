@@ -59,6 +59,7 @@
 #include "mutation.h"
 #include "nearby-danger.h"
 #include "notes.h"
+#include "options.h"
 #include "religion.h"
 #include "shout.h"
 #include "spl-damage.h"
@@ -1369,7 +1370,8 @@ static void _print_summon_poof_message(const monster& mons, bool corpse = false)
 
     if (corpse && mons_class_can_leave_corpse(mons_species(mons.type)))
     {
-        prefix = " corpse ";
+        prefix = Options.language == lang_t::ZH ? T_("corpse")
+                                                : " " + string(T_("corpse")) + " ";
         need_possessive = true;
     }
 

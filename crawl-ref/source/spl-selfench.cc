@@ -115,7 +115,7 @@ spret cast_swiftness(int power, bool fail)
     fail_check();
 
     you.set_duration(DUR_SWIFTNESS, 12 + random2(power)/2, 30,
-                     "You feel quick.");
+                     T_("You feel quick."));
     you.attribute[ATTR_SWIFTNESS] = you.duration[DUR_SWIFTNESS];
 
     return spret::success;

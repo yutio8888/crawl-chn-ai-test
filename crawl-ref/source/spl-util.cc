@@ -1890,15 +1890,15 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         if (temp && cast_malign_gateway(&you, 0, false, true)
                     == spret::abort)
         {
-            return "you need more open space to create a gateway.";
+            return T_("you need more open space to create a gateway.");
         }
         break;
 
     case SPELL_SUMMON_FOREST:
         if (temp && you.duration[DUR_FORESTED])
-            return "you can only summon one forest at a time.";
+            return T_("you can only summon one forest at a time.");
         if (temp && cast_summon_forest(&you, 0, false, true) == spret::abort)
-            return "you need more open space to fit a forest.";
+            return T_("you need more open space to fit a forest.");
         break;
 
     case SPELL_PASSWALL:
@@ -1916,7 +1916,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
 
     case SPELL_ANIMATE_DEAD:
         if (have_passive(passive_t::goldify_corpses))
-            return "necromancy does not work on golden corpses.";
+            return T_("necromancy does not work on golden corpses.");
         if (have_passive(passive_t::reaping))
             return "you are already reaping souls!";
         break;
