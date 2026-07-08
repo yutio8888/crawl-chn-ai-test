@@ -31,7 +31,7 @@ function bazaar_portal()
       finalmsg = crawl.t_("You hear the last, dying notes of the bell."),
       verb = 'tolling',
       noisemaker = 'bell',
-      range_msg_fmt = crawl.t_("You hear the {prefix}tolling of bell.")
+      range_msg_fmt = crawl.t_("You hear the {prefix}tolling of the {distance} {noisemaker}.")
     }
   local blow = 200 + 30*(40 - you.absdepth()) + crawl.random2(200)
   local bhigh = blow + crawl.random2(blow) + 100

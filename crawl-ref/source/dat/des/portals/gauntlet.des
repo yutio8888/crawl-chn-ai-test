@@ -23,7 +23,7 @@ function gauntlet_portal(e)
         { 5000, 'faint ' },  { 4000, '' }, { 2500, 'loud ' },
         { 1500, 'thunderous ' }, { 0, 'deafening ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}beating of drum.")
+      range_msg_fmt = crawl.t_("You hear the {prefix}beating of the {distance} {noisemaker}.")
     }
 
     e.lua_marker('O',

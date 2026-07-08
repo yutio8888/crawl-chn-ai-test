@@ -30,7 +30,7 @@ function bailey_portal(e, ptype)
           { 2500, 'steady ' }, { 1500, 'quick ' },
           { 0, 'loud ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}creaking of portcullis.")
+      range_msg_fmt = crawl.t_("You hear the {prefix}creaking of the {distance} {noisemaker}.")
     }
 
   dgn.persist.bailey_type = "bailey_" .. ptype

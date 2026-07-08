@@ -121,7 +121,7 @@ function wizlab_portal (e, crystalise)
 
         verb = 'crackle',
         noisemaker = 'magical portal',
-        range_msg_fmt = crawl.t_("You hear the {prefix}crackle of magical portal.")
+        range_msg_fmt = crawl.t_("You hear the {prefix}crackle of the {distance} {noisemaker}.")
     }
 
     e.lua_marker('O',

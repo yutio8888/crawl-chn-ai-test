@@ -29722,35 +29722,35 @@ You've discovered
 entered
 进入了
 %%%%
-You hear the {prefix}rusting of drain.
-你听到下水道{prefix}的锈蚀声。
+You hear the {prefix}rusting of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的锈蚀声。
 %%%%
-You hear the {prefix}hiss of avalanche of sand.
-你听到流沙{prefix}的嘶嘶声。
+You hear the {prefix}hiss of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的嘶嘶声。
 %%%%
-You hear the {prefix}creaking of portcullis.
-你听到吊闸{prefix}的吱嘎声。
+You hear the {prefix}creaking of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的吱嘎声。
 %%%%
-You hear the {prefix}crackling of melting archway.
-你听到拱门{prefix}的噼啪声。
+You hear the {prefix}crackling of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的噼啪声。
 %%%%
-You hear the {prefix}rumble of avalanche of rocks.
-你听到岩石{prefix}的轰隆声。
+You hear the {prefix}rumble of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的轰隆声。
 %%%%
-You hear the {prefix}whistling of wind.
-你听到风{prefix}的呼啸声。
+You hear the {prefix}whistling of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的呼啸声。
 %%%%
-You hear the {prefix}beating of drum.
-你听到了{prefix}鼓声。
+You hear the {prefix}beating of the {distance} {noisemaker}.
+你听到了{distance}{noisemaker}{prefix}鼓声。
 %%%%
-You hear the {prefix}tolling of bell.
-你听到了{prefix}钟声。
+You hear the {prefix}tolling of the {distance} {noisemaker}.
+你听到了{distance}{noisemaker}{prefix}钟声。
 %%%%
-You hear the {prefix}crackle of magical portal.
-你听到魔法传送门{prefix}的噼啪声。
+You hear the {prefix}crackle of the {distance} {noisemaker}.
+你听到{distance}{noisemaker}{prefix}的噼啪声。
 %%%%
-You hear the {prefix} of funeral chant.
-你听到了葬礼仪式{prefix}。
+You hear the {prefix} of the {distance} {noisemaker}.
+你听到了{distance}{noisemaker}。
 %%%%
 brisk
 快速
@@ -29793,6 +29793,51 @@ rising multitudes
 %%%%
 full choir
 齐声合唱
+%%%%
+loud
+响亮的
+%%%%
+quiet
+轻柔的
+%%%%
+deafening
+震耳欲聋的
+%%%%
+nearby
+附近的
+%%%%
+very nearby
+极近的
+%%%%
+distant
+远处的
+%%%%
+very distant
+遥远的
+%%%%
+avalanche of sand
+流沙的雪崩
+%%%%
+portcullis
+吊闸
+%%%%
+melting archway
+融化的拱门
+%%%%
+avalanche of rocks
+岩石的崩塌
+%%%%
+wind
+风
+%%%%
+drum
+鼓
+%%%%
+bell
+钟
+%%%%
+funeral chant
+葬礼吟唱
 %%%%
 Letters toggle    
 字母切换    

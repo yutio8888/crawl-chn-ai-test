@@ -6,6 +6,21 @@
 TimedMessaging = { CLASS = "TimedMessaging" }
 TimedMessaging.__index = TimedMessaging
 
+local function translate_key(s)
+    local result = crawl.t_(s)
+    if result == s then
+        -- Lookup failed; try without trailing whitespace
+        local trimmed = s:match("^(.-)%s+$")
+        if trimmed then
+            local trimmed_result = crawl.t_(trimmed)
+            if trimmed_result ~= trimmed then
+                return trimmed_result
+            end
+        end
+    end
+    return result
+end
+
 function TimedMessaging:new(m, nocheck)
   m = m or { }
   setmetatable(m, self)
@@ -151,21 +166,31 @@ function TimedMessaging:say_message(cm, dur)
   local noisemaker =
     self.noisemaker and self:range_adjective(cm, self.noisemaker)
 
+  -- Extract pure distance adjective (strip $F entity placeholder)
+  local raw_adj = self.noisemaker and self:choose_range_adjective(self:player_distance(cm))
+  local distance_adj
+  if raw_adj and string.find(raw_adj, '$F') then
+      distance_adj = raw_adj:gsub('$F%s*', ''):match("^(.-)%s*$")
+  else
+      distance_adj = raw_adj or ""
+  end
+
   if self.range_msg_fmt then
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                       local msg = self.range_msg_fmt
-                         :gsub("{prefix}", crawl.t_(chk[2]))
-                         :gsub("{verb}", crawl.t_(self.verb))
-                         :gsub("{noisemaker}", crawl.t_(self.noisemaker))
-                       self:emit_message(nil, msg)
+                        local msg = self.range_msg_fmt
+                          :gsub("{prefix}", translate_key(chk[2]))
+                          :gsub("{verb}", translate_key(self.verb))
+                          :gsub("{noisemaker}", translate_key(self.noisemaker))
+                          :gsub("{distance}", translate_key(distance_adj))
+                        self:emit_message(nil, msg)
                      end)
   else
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                       self:emit_message(nil,
-                                         "You hear the " .. chk[2] .. self.verb
-                                         .. " of " .. noisemaker .. ".")
+                        self:emit_message(nil,
+                                          "You hear the " .. chk[2] .. self.verb
+                                          .. " of " .. noisemaker .. ".")
                      end)
   end
 

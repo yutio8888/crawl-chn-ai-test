@@ -68,7 +68,7 @@ function necropolis_portal_entry(e)
             { 3250, 'gathering chorus' }, { 2250, 'rising multitudes' },
             { 0, 'full choir' }
         },
-        range_msg_fmt = crawl.t_("You hear the {prefix} of funeral chant.")
+        range_msg_fmt = crawl.t_("You hear the {distance} {noisemaker} {prefix}.")
     }
     dgn.persist.necropolis_difficulty = necropolis_difficulty()
 

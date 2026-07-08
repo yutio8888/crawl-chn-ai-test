@@ -32,7 +32,7 @@ function ossuary_portal(e)
         { 2500, 'brisk ' }, { 1500, 'quick ' },
         { 0, 'rapid ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}hiss of avalanche of sand.")
+      range_msg_fmt = crawl.t_("You hear the {prefix}hiss of the {distance} {noisemaker}.")
     }
 
   e.lua_marker('O',

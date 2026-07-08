@@ -62,7 +62,7 @@ function volcano_portal (e)
           { 2500, 'brisk ' }, { 1500, 'quick ' },
           { 0, 'rapid ' }
         },
-        range_msg_fmt = crawl.t_("You hear the {prefix}rumble of avalanche of rocks.")
+        range_msg_fmt = crawl.t_("You hear the {prefix}rumble of the {distance} {noisemaker}.")
       }
 
     e.lua_marker('O',

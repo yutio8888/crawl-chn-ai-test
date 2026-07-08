@@ -32,7 +32,7 @@ function desolation_portal(e)
             { 2500, '' }, { 1500, 'loud ' },
             { 0, 'ear-piercing ' }
         },
-        range_msg_fmt = crawl.t_("You hear the {prefix}whistling of wind.")
+        range_msg_fmt = crawl.t_("You hear the {prefix}whistling of the {distance} {noisemaker}.")
     }
 
     e.lua_marker('O',

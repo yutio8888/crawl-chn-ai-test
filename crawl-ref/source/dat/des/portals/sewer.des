@@ -38,7 +38,7 @@ function sewer_portal(e)
         { 2500, 'brisk ' }, { 1500, 'quick ' },
         { 0, 'rapid ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}rusting of drain.")
+      range_msg_fmt = crawl.t_("You hear the {prefix}rusting of the {distance} {noisemaker}.")
     }
 
   e.lua_marker('O',
