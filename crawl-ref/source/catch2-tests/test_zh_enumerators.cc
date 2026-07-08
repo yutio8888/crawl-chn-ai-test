@@ -284,8 +284,10 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         const std::string name = cloud_type_name(c, false);
         if (name.empty())
             continue;
+        // cloud_type_name returns English literals (not T_()-wrapped), so
+        // use scan_T_key to wrap the display with T_() before scanning.
         const std::string key = name + " cloud";
-        scan_one(name.c_str(), name, "source.txt", issues);
+        scan_T_key(name.c_str(), "source.txt", issues);
         const std::string tr = getLongDescription(key);
         if (!tr.empty())
             scan_one(tr.c_str(), key, "clouds.txt", issues);
@@ -341,6 +343,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     {
         const unrandart_entry* e = get_unrand_entry(i);
         if (!e || !e->name || !e->name[0])
+            continue;
+        // Skip the dummy unrand entry (index 0 is "DUMMY UNRANDART 1").
+        if (string(e->name).find("DUMMY") != string::npos)
             continue;
 
         // (a) The artefact's true display name goes through T_() at runtime
