@@ -4244,9 +4244,15 @@ Fire
 %%%%
  first
  第一
-%%%%
+%%%%%
  first.
 。
+%%%%%
+Space - Pick %s first
+空格 - 先选择%s
+%%%%%
+Lets you pick %s first.
+允许你先选择%s。
 %%%%
 Fixed Theme
 固定主题

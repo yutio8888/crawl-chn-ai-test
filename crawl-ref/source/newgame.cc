@@ -1341,7 +1341,12 @@ protected:
         text += item_name;
         label->set_text(formatted_string(text, fg));
 
-        string desc = unwrap_desc(getGameStartDescription(item_name));
+        // Use English name as DB key; item_name may be translated in ZH mode.
+        string db_key = m_choice_type == C_SPECIES
+                            ? species::name(static_cast<species_type>(id),
+                                            species::SPNAME_PLAIN, true)
+                            : get_job_name_en(static_cast<job_type>(id));
+        string desc = unwrap_desc(getGameStartDescription(db_key));
         trim_string(desc);
 
         auto btn = make_shared<MenuButton>();
@@ -1441,10 +1446,10 @@ protected:
         }
         else
         {
-            text = (T_("Space - Pick "))
-                   + other_choice_name + (T_(" first"));
-            desc = (T_("Lets you pick "))
-                   + other_choice_name + (T_(" first."));
+            text = make_stringf(T_("Space - Pick %s first"),
+                                other_choice_name.c_str());
+            desc = make_stringf(T_("Lets you pick %s first."),
+                                other_choice_name.c_str());
         }
         _add_choice_menu_option(1, 2,
                 text, ' ', M_ABORT, desc);

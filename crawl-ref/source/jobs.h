@@ -13,6 +13,7 @@ using std::vector;
 const char *get_job_abbrev(job_type which_job);
 job_type get_job_by_abbrev(const char *abbrev);
 const char *get_job_name(job_type which_job);
+const char *get_job_name_en(job_type which_job);
 job_type get_job_by_name(const char *name);
 bool job_recommends_species(job_type job, species_type species);
 vector<species_type> job_recommended_species(job_type job);

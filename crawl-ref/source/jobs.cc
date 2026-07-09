@@ -88,6 +88,14 @@ const char *get_job_name(job_type which_job)
     return T_(_job_def(which_job).name);
 }
 
+const char *get_job_name_en(job_type which_job)
+{
+    if (which_job == JOB_UNKNOWN)
+        return "Unemployed";
+
+    return _job_def(which_job).name;
+}
+
 job_type get_job_by_name(const char *name)
 {
     job_type job = JOB_UNKNOWN;
