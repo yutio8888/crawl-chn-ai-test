@@ -146,6 +146,42 @@ vector<ability_type> deck_ability = {
     ABIL_NEMELEX_DRAW_STACK
 };
 
+const char* card_name_en(card_type card)
+{
+    switch (card)
+    {
+    case CARD_VELOCITY:        return "Velocity";
+    case CARD_EXILE:           return "Exile";
+    case CARD_ELIXIR:          return "the Elixir";
+    case CARD_TOMB:            return "the Tomb";
+    case CARD_WILD_MAGIC:      return "Wild Magic";
+    case CARD_ELEMENTS:        return "the Elements";
+    case CARD_SUMMON_DEMON:    return "the Pentagram";
+    case CARD_SUMMON_WEAPON:   return "the Dance";
+    case CARD_SUMMON_BEE:      return "the Swarm";
+    case CARD_RANGERS:         return "the Rangers";
+    case CARD_VITRIOL:         return "Vitriol";
+    case CARD_CLOUD:           return "the Cloud";
+    case CARD_STORM:           return "the Storm";
+    case CARD_PAIN:            return "Pain";
+    case CARD_TORMENT:         return "Torment";
+    case CARD_WRATH:           return "Wrath";
+    case CARD_WRAITH:          return "the Wraith";
+    case CARD_SWINE:           return "the Swine";
+    case CARD_ORB:             return "the Orb";
+    case CARD_ILLUSION:        return "the Illusion";
+    case CARD_DEGEN:           return "Degeneration";
+
+#if TAG_MAJOR_VERSION == 34
+    case CARD_FAMINE_REMOVED:
+    case CARD_SHAFT_REMOVED:
+    case CARD_STAIRS_REMOVED:
+#endif
+    case NUM_CARDS:            return "a buggy card";
+    }
+    return "a very buggy card";
+}
+
 const char* card_name(card_type card)
 {
     switch (card)
@@ -202,6 +238,17 @@ card_type name_to_card(string name)
     for (int i = 0; i < NUM_CARDS; i++)
     {
         if (card_name(static_cast<card_type>(i)) == name)
+            return static_cast<card_type>(i);
+        if (string(card_name_en(static_cast<card_type>(i))) == name)
+            return static_cast<card_type>(i);
+    }
+    // In Chinese mode, the recapped help key may include a Chinese suffix
+    // (e.g. "卡牌") that breaks suffix-stripping byte alignment. Try
+    // substring matching so that "疾速卡牌" can match "疾速".
+    for (int i = 0; i < NUM_CARDS; i++)
+    {
+        const string cn = card_name(static_cast<card_type>(i));
+        if (!cn.empty() && name.find(cn) != string::npos)
             return static_cast<card_type>(i);
     }
     return NUM_CARDS;

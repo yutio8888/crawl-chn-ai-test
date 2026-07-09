@@ -1824,7 +1824,24 @@ dungeon_feature_type feat_by_desc(string desc)
         return DNGN_DRY_FOUNTAIN;
 #endif
 
-    return lookup(feat_desc_cache, desc, DNGN_UNSEEN);
+    dungeon_feature_type feat = lookup(feat_desc_cache, desc, DNGN_UNSEEN);
+    if (feat != DNGN_UNSEEN)
+        return feat;
+
+    // Fall back to raw English name lookup. When language is not English,
+    // the cache is built with T_() descriptions which may not match the
+    // English TextDB keys used by help lookup filters.
+    for (int i = 0; i < NUM_FEATURES; i++)
+    {
+        const dungeon_feature_type f = static_cast<dungeon_feature_type>(i);
+        if (!is_valid_feature_type(f))
+            continue;
+        const string raw = lowercase_string(get_feature_def(f).name);
+        if (!raw.empty() && desc.find(raw) != string::npos)
+            return f;
+    }
+
+    return DNGN_UNSEEN;
 }
 
 // If active is true, the player is just stepping onto the feature, with the

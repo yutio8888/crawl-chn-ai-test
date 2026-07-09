@@ -59,6 +59,7 @@ enum card_type
 };
 
 const char* card_name(card_type card);
+const char* card_name_en(card_type card);
 card_type name_to_card(string name);
 const string deck_contents(deck_type deck);
 int deck_cards(deck_type deck);

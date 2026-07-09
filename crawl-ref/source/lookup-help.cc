@@ -398,7 +398,7 @@ static vector<string> _get_card_keys()
     {
         card_type card = static_cast<card_type>(i);
         if (!card_is_removed(card))
-            names.push_back(make_stringf(T_("%s card"), card_name(card)));
+            names.push_back(string(card_name_en(card)) + " card");
     }
     return names;
 }
@@ -414,7 +414,7 @@ static vector<string> _get_god_keys()
         // XXX: currently disabled.
         if (which_god != GOD_PAKELLAS)
 #endif
-        names.push_back(god_name(which_god));
+        names.push_back(_god_name_en(which_god));
     }
 
     return names;
@@ -732,7 +732,9 @@ static MenuEntry* _feature_menu_gen(char letter, const string &str, string &key)
  */
 static MenuEntry* _god_menu_gen(char /*letter*/, const string &/*str*/, string &key)
 {
-    return new GodMenuEntry(str_to_god(key));
+    GodMenuEntry* me = new GodMenuEntry(str_to_god(key));
+    me->data = &key;
+    return me;
 }
 
 /**
@@ -756,6 +758,9 @@ static MenuEntry* _card_menu_gen(char letter, const string &str, string &key)
 {
     MenuEntry* me = _simple_menu_gen(letter, str, key);
     me->add_tile(tile_def(TILEG_NEMELEX_CARD));
+    const card_type c = name_to_card(str);
+    if (c != NUM_CARDS)
+        me->text = card_name(c);
     return me;
 }
 
@@ -1114,7 +1119,9 @@ static int _describe_spell(const string &key, const string &suffix,
                              string /*footer*/)
 {
     const string spell_name = key.substr(0, key.size() - suffix.size());
-    const spell_type spell = spell_by_name(spell_name, true);
+    spell_type spell = spell_by_name(spell_name, true);
+    if (spell == SPELL_NO_SPELL)
+        spell = spell_by_name(key, true);
     ASSERT(spell != SPELL_NO_SPELL);
     describe_spell(spell);
     return 0;
@@ -1133,7 +1140,9 @@ static int _describe_ability(const string &key, const string &suffix,
                              string /*footer*/)
 {
     const string abil_name = key.substr(0, key.size() - suffix.size());
-    const ability_type abil = ability_by_name(abil_name.c_str());
+    ability_type abil = ability_by_name(abil_name.c_str());
+    if (abil == ABIL_NON_ABILITY)
+        abil = ability_by_name(key.c_str());
     describe_ability(abil);
     return 0;
 }
@@ -1150,7 +1159,9 @@ static int _describe_card(const string &key, const string &suffix,
                            string footer)
 {
     const string card_name = key.substr(0, key.size() - suffix.size());
-    const card_type card = name_to_card(card_name);
+    card_type card = name_to_card(card_name);
+    if (card == NUM_CARDS)
+        card = name_to_card(key);
     ASSERT(card != NUM_CARDS);
 #ifdef USE_TILE
     tile_def tile = tile_def(TILEG_NEMELEX_CARD);

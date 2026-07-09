@@ -891,6 +891,22 @@ ability_type ability_by_name(const string &key)
         const string name = lowercase_string(ability_name(abil.ability, true));
         if (name == lowercase_string(key))
             return abil.ability;
+        if (lowercase_string(key).find(name) != string::npos)
+            return abil.ability;
+    }
+
+    // In Chinese mode, also try display names (T_() wrapped) so that
+    // recapped help keys with Chinese suffixes can be matched.
+    for (const auto &abil : _get_ability_list())
+    {
+        if (abil.ability == ABIL_NON_ABILITY)
+            continue;
+
+        const string name = lowercase_string(ability_name(abil.ability, false));
+        if (name == lowercase_string(key))
+            return abil.ability;
+        if (lowercase_string(key).find(name) != string::npos)
+            return abil.ability;
     }
 
     return ABIL_NON_ABILITY;
