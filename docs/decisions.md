@@ -955,6 +955,40 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-039 — Felid → 猫 (玩家种族名)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: 种族名称翻译分析 — Felid 是四足猫，非人形
+- **Choice**: 猫（去掉"人"后缀）
+- **Rejected**: 猫人（错误暗示人形），猫妖（不必要的修饰）
+- **Rationale**: Felid 在游戏中是被描述为智力猫科动物的四足生物，不是猫形类人种族。"猫"简洁准确，符合游戏内设定。Cat → 猫（genus），Feline → 猫科（adj）。
+- **Affected files**:
+  - `species.cc` ✅ (zh_names map)
+  - `dat/i18n/zh/source.txt` ✅ (Felid, Cat, Feline 条目)
+- **Tracking issue**: (none — direct fix)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-A-040 — Octopode → 章鱼 (玩家种族名)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: 种族名称翻译分析 — Octopode 是触手软体生物，非人形
+- **Choice**: 章鱼（去掉"人"后缀）
+- **Rejected**: 章鱼人（错误暗示人形），章鱼怪（不必要的贬义）
+- **Rationale**: Octopode 在游戏中是不可穿戴靴子/手套/斗篷的触手状软体生物，不是章鱼形类人种族。"章鱼"简洁准确。Octopus → 章鱼（genus），Octopoid → 章鱼形（adj）。
+- **Affected files**:
+  - `species.cc` ✅ (zh_names map)
+  - `dat/i18n/zh/source.txt` ✅ (Octopode, Octopus, Octopoid 条目)
+- **Tracking issue**: (none — direct fix)
+- **Resolved**: 2026-07-09
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -990,3 +1024,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-004 | Portal .des | ~40 messages | active — all ✅ |
 | D-C-005 | Monster YAML names | 489 entries → 100% coverage | active ✅ |
 | D-C-006 | Lightning Rod | 雷击杖 | active ✅ |
+| D-A-039 | Felid (player species) | 猫 | active ✅ |
+| D-A-040 | Octopode (player species) | 章鱼 | active ✅ |

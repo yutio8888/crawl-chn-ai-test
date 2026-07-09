@@ -61,7 +61,7 @@ namespace species
             { SP_DEMIGOD, "半神" }, { SP_DEMONSPAWN, "恶魔裔" },
             { SP_GHOUL, "食尸鬼" }, { SP_TENGU, "天狗" },
             { SP_MERFOLK, "鱼人" }, { SP_VAMPIRE, "吸血鬼" },
-            { SP_FELID, "猫人" }, { SP_OCTOPODE, "章鱼人" },
+            { SP_FELID, "猫" }, { SP_OCTOPODE, "章鱼" },
             { SP_GARGOYLE, "石像鬼" }, { SP_FORMICID, "蚁人" },
             { SP_VINE_STALKER, "藤蔓行者" }, { SP_BARACHI, "蛙人" },
             { SP_GNOLL, "豺狼人" }, { SP_COGLIN, "齿轮地精" },
