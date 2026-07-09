@@ -1027,13 +1027,15 @@ SizeReq Text::_get_preferred_size(Direction dim, int prosp_width)
 #else
     if (!dim)
     {
-        int w = 0, line_w = 0;
-        for (auto const& ch : m_text.tostring())
+        int w = 0;
+        const string& text = m_text.tostring();
+        size_t start = 0, end;
+        while ((end = text.find('\n', start)) != string::npos)
         {
-            w = ch == '\n' ? max(w, line_w) : w;
-            line_w = ch == '\n' ? 0 : line_w+1;
+            w = max(w, strwidth(text.substr(start, end - start)));
+            start = end + 1;
         }
-        w = max(w, line_w);
+        w = max(w, strwidth(text.substr(start)));
 
         // XXX: should be width of '..', unless string itself is shorter than '..'
         static constexpr int min_ellipsized_width = 0;
