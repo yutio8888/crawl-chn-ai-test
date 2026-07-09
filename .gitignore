@@ -17,8 +17,8 @@
 # Transient/personal items handled by .opencode/.gitignore (node_modules, package*.json, etc.)
 .mcp.json
 
-# CJK fonts — not in repo, distributed in release packages only
-crawl-ref/source/contrib/fonts/SarasaMonoSC-Regular.ttf
+# CJK fonts submodule — used locally, not tracked in main repo
+crawl-ref/source/contrib/fonts
 
 # Game data
 saves/
