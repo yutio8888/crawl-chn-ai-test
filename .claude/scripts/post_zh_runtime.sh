@@ -22,6 +22,7 @@ CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
 SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)}"
 METRICS_DIR="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
 BOT_MIN_MARKERS="${ZH_RUNTIME_BOT_MIN_MARKERS:-5}"
+HELP_BOT_MIN_MARKERS="${ZH_RUNTIME_HELP_BOT_MIN_MARKERS:-12}"
 
 MODE="${1:-fast}"
 
@@ -225,8 +226,8 @@ run_help_bot() {
         echo "  Help RC bot: completion marker missing"
         return 1
     fi
-    if [ "$marker_count" -lt "$BOT_MIN_MARKERS" ]; then
-        echo "  Help RC bot: marker count below threshold ($marker_count < $BOT_MIN_MARKERS)"
+    if [ "$marker_count" -lt "$HELP_BOT_MIN_MARKERS" ]; then
+        echo "  Help RC bot: marker count below threshold ($marker_count < $HELP_BOT_MIN_MARKERS)"
         return 1
     fi
     if [ "$timeout_rc" -ne 0 ] && [ "$timeout_rc" -ne 124 ]; then

@@ -573,11 +573,14 @@ static void _recap_spell_keys(vector<string> &keys)
 {
     for (unsigned int i = 0, size = keys.size(); i < size; i++)
     {
-        // first, strip " spell"
-        const string key_name = keys[i].substr(0, keys[i].length() - 6);
+        // Strip " spell" suffix safely (UTF-8 aware).
+        // strip_suffix checks ends_with before erasing, so it never cuts
+        // a multibyte character — unlike the old .substr(0, len-6) which
+        // blindly chops 6 bytes regardless of content.
+        strip_suffix(keys[i], "spell");
         // then get the real name
         keys[i] = make_stringf(T_("%s spell"),
-                               spell_title(spell_by_name(key_name)));
+                               spell_title(spell_by_name(keys[i])));
     }
 }
 
