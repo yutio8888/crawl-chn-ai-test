@@ -27,10 +27,10 @@ A %s mist starts to gather...
 %s雾气开始聚集……
 %%%%
 carved rock wall
+雕刻岩壁
+%%%%
 forge
 锻造
-%%%%
-雕刻岩壁
 %%%%
 The dead are walking!
 死者正在行走！
@@ -8290,6 +8290,12 @@ You %s %s from behind!
 You %s %s%s peal%s of thunder!
 你%s了%s%s雷声%s
 %%%%
+You %s a %s peal of thunder!
+你%s到一声%s的雷鸣！
+%%%%
+You %s %s peals of thunder!
+你%s到阵阵%s的雷鸣！
+%%%%
 You %s %s%s.
 你%s%s%s。
 %%%%
@@ -11930,7 +11936,6 @@ spectral
 %%%%
 vampire
 吸血鬼
-吸血
 %%%%
 sensed
 
@@ -27539,10 +27544,6 @@ The species aptitude is in <white>white</white>.
 
 种族资质以<white>白色</white>显示。
 %%%%
-What level of %s? 
-
-%s的哪一层？
-%%%%
 You can't shoot while berserk! Really wield 
 
 狂暴中无法射击！确定持握
@@ -27640,8 +27641,7 @@ unsullied
 圣洁的
 %%%%
 vampire 
-
-吸血
+吸血鬼
 %%%%
 your 
 
@@ -29355,8 +29355,12 @@ kneel at
 %1$s%3$.0s创造了一个%2$s能量棱镜！
 
 %%%%
-%d %s card%s
-%d张%s牌%s
+%d %s card
+%d张%s牌
+
+%%%%
+%d %s cards
+%d张%s牌
 
 %%%%
 %s %s %s grip on %s.
@@ -29505,6 +29509,14 @@ the dream sheep ruffle%s wool and motes of dream dust sparkle, to no effect.
 %%%%
 the dream sheep shake%s wool and sparkle%s.
 梦境羊抖了抖羊毛，闪闪发光。
+
+%%%%
+The dream sheep shakes its wool and sparkles.
+梦羊抖动着自己的羊毛，闪闪发亮。
+
+%%%%
+The dream sheep shake their wool and sparkle.
+梦羊们抖动着自己的羊毛，闪闪发亮。
 
 %%%%
 the sanctuary denies %s grip on your mind.
@@ -32516,7 +32528,7 @@ faun
 半羊人
 %%%%
 felid
-猫人
+猫
 %%%%
 fire bat
 火焰蝙蝠
@@ -32927,10 +32939,10 @@ occultist
 神秘学者
 %%%%
 octopode
-章鱼人
+章鱼
 %%%%
 octopode crusher
-章鱼人粉碎者
+章鱼粉碎者
 %%%%
 ogre
 食人魔
@@ -36847,6 +36859,7 @@ Piercing cold boils outward!
 %%%%
 A wave of flame ripples out!
 一道火焰波浪向外扩散！
+%%%%
 Necronomicon
 死灵书
 %%%%
@@ -37534,10 +37547,6 @@ Deep Dwarf
 深矮人
 
 %%%%
-Deep Elf
-精灵
-
-%%%%
 Demigod
 半神
 
@@ -37614,24 +37623,8 @@ Halfling
 半身人
 
 %%%%
-High Elf
-高等精灵
-
-%%%%
-Hill Orc
-丘陵兽人
-
-%%%%
 Kobold
 狗头人
-
-%%%%
-Lava Orc
-熔岩兽人
-
-%%%%
-Mayflytaur
-蜉蝣半人马
 
 %%%%
 Merfolk
@@ -37668,10 +37661,6 @@ Poltergeist
 %%%%
 Revenant
 归来者
-
-%%%%
-Sludge Elf
-污泥精灵
 
 %%%%
 Spriggan

@@ -344,8 +344,16 @@ string deck_summary()
         const string name = deck_data ? deck_data->name : "bugginess";
         if (cards)
         {
-            stats.push_back(make_stringf(T_("%d %s card%s"), cards,
-               name.c_str(), cards == 1 ? T_("") : T_("s")));
+            if (cards == 1)
+            {
+                stats.push_back(make_stringf(T_("%d %s card"), cards,
+                                             name.c_str()));
+            }
+            else
+            {
+                stats.push_back(make_stringf(T_("%d %s cards"), cards,
+                                             name.c_str()));
+            }
         }
     }
     return comma_separated_line(stats.begin(), stats.end());
@@ -1518,11 +1526,18 @@ static void _storm_card(int power)
         vector<string> thunder_adjectives = { T_("mighty"),
                                               T_("violent"),
                                               T_("cataclysmic") };
-        mprf_p(T_("You %s %s%s peal%s of thunder!"),
-              heard ? T_("hear") : T_("feel"),
-              targets.size() > 1 ? "" : T_("a "),
-              thunder_adjectives[power_level].c_str(),
-              targets.size() > 1 ? T_("s") : "");
+        if (targets.size() > 1)
+        {
+            mprf(T_("You %s %s peals of thunder!"),
+                 heard ? T_("hear") : T_("feel"),
+                 thunder_adjectives[power_level].c_str());
+        }
+        else
+        {
+            mprf(T_("You %s a %s peal of thunder!"),
+                 heard ? T_("hear") : T_("feel"),
+                 thunder_adjectives[power_level].c_str());
+        }
     }
 }
 

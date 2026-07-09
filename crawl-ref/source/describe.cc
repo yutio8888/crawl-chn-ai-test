@@ -768,7 +768,7 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
         {
             lines.push_back(make_stringf(T_("%sIt %s%s your willpower."),
                      _padded_artp_name(ARTP_WILLPOWER, stval).c_str(),
-                     (stval < -1 || stval > 1) ? T_("greatly ") : T_(""),
+                     (stval < -1 || stval > 1) ? T_("greatly ") : "",
                      (stval < 0) ? T_("decreases") : T_("increases")));
             continue;
         }
@@ -776,7 +776,7 @@ void desc_randart_props(const item_def &item, vector<string> &lines)
         {
             lines.push_back(make_stringf_p(T_("%1$sIt makes you %2$s%3$s stealthy."),
                      _padded_artp_name(ARTP_STEALTH, stval).c_str(),
-                     (stval < -1 || stval > 1) ? T_("much ") : T_(""),
+                     (stval < -1 || stval > 1) ? T_("much ") : "",
                      (stval < 0) ? T_("less") : T_("more")));
             continue;
         }
@@ -2284,7 +2284,7 @@ static string _describe_armour(const item_def &item, bool verbose, bool monster)
         {
             const int evp = -property(item, PARM_EVASION);
             const char* cumber_desc = evp < 100 ? T_("slightly ") :
-                                      evp > 100 ? T_("greatly ") : T_("");
+                                      evp > 100 ? T_("greatly ") : "";
             description += make_stringf(
                 T_("It is cumbersome to wear, and %simpedes the evasion, "
                 "spellcasting ability, and attack speed of the wearer. "
@@ -4483,7 +4483,7 @@ static string _miscast_damage_string(spell_type spell)
                                                          T_(" or ")).c_str()));
     }
 
-    return (descs.size() > 1 ? T_("either ") : T_(""))
+    return (descs.size() > 1 ? T_("either ") : "")
          + comma_separated_line(descs.begin(), descs.end(), T_(" or "), T_("; "));
 }
 
@@ -4568,7 +4568,7 @@ static string _player_spell_desc(spell_type spell)
         description << T_("You can sustain at most ") + number_in_words(limit)
                     // Attempt to clarify that flayed ghosts are NOT included in the cap
                     << (spell == SPELL_MARTYRS_KNELL ? T_(" martyred shade") : T_(" creature"))
-                    << (limit > 1 ? T_("s") : T_(""))
+                    << (limit > 1 ? T_("s") : "")
                     << T_(" summoned by this spell.\n");
     }
 

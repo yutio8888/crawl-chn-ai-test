@@ -1296,20 +1296,19 @@ def cmd_source_txt_integrity(args):
         # Value is everything after the key line
         value = '\n'.join(block_lines[key_idx + 1:]).rstrip('\n')
 
-        key_lower = key.lower()
         order += 1
 
         if not value:
             empty_value.append(key)
 
-        if key_lower in entries_raw:
-            existing_val = entries_raw[key_lower][0][0]
+        if key in entries_raw:
+            existing_val = entries_raw[key][0][0]
             if value != existing_val:
                 self_conflicts.append((key, existing_val, value, order))
             else:
                 duplicates.append((key, value, order))
         else:
-            entries_raw[key_lower] = [(value, order)]
+            entries_raw[key] = [(value, order)]
 
     exit_code = 0
 
@@ -1338,7 +1337,7 @@ def cmd_source_txt_integrity(args):
     if empty_value:
         untranslated = [k for k in empty_value
                         if k not in entries_raw
-                        or entries_raw.get(k.lower()) and entries_raw[k.lower()][0][0] == k]
+                        or entries_raw.get(k) and entries_raw[k][0][0] == k]
         if untranslated:
             print(f"=== EMPTY-TRANSLATION — {len(untranslated)} keys with no "
                   f"Chinese value ===")

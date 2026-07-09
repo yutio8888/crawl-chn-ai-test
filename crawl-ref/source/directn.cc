@@ -549,9 +549,9 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
                 + make_stringf(T_("<lightgray> (select to examine, %s to %s)</lightgray>"),
                                menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str(),
                                selectverb.c_str());
-            title += make_stringf(T_("<lightgray> (select to %1$s, %2$s to examine)</lightgray>"),
-                                  selectverb.c_str(),
-                                  menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str());
+            title += make_stringf_p(T_("<lightgray> (select to %1$s, %2$s to examine)</lightgray>"),
+                                    selectverb.c_str(),
+                                    menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE).c_str());
         }
     }
 

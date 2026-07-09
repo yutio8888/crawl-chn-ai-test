@@ -6824,9 +6824,14 @@ static void _sheep_message(int num_sheep, int sleep_pow, bool seen, actor& foe)
         message = "The dream sheep are wreathed in dream dust.";
     else if (sleep_pow >= MIN_DREAM_SUCCESS_POWER)
     {
-        message = make_stringf(T_("The dream sheep shake%s wool and sparkle%s."),
-                               num_sheep == 1 ? T_("s its") : T_(" their"),
-                               num_sheep == 1 ? T_("s") : T_(""));
+        if (num_sheep == 1)
+        {
+            message = T_("The dream sheep shakes its wool and sparkles.");
+        }
+        else
+        {
+            message = T_("The dream sheep shake their wool and sparkle.");
+        }
     }
     else // if sleep fails
     {
