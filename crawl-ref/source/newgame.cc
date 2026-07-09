@@ -1218,7 +1218,6 @@ public:
         descriptions->set_margin_for_crt(1, 0);
         descriptions->set_margin_for_sdl(0, 0, 15, 0);
         descriptions->current() = -1;
-        descriptions->shrink_h = true;
         m_vbox->add_child(descriptions);
 
         if (m_choice_type == C_JOB)
