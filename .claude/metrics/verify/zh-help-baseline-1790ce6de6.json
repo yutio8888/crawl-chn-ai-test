@@ -1,0 +1,105 @@
+{
+  "layer_help": {
+    "status_map": {
+      "god": "ok",
+      "branch": "ok",
+      "cloud": "ok",
+      "card": "ok",
+      "skill": "ok",
+      "passive": "ok",
+      "status": "ok",
+      "monster": "ok",
+      "spell": "ok",
+      "ability": "ok",
+      "feature": "ok",
+      "item": "ok",
+      "mutation": "ok",
+      "bane": "ok",
+      "spell_school": "ok"
+    },
+    "non_ok": {},
+    "non_ok_count": 0,
+    "total_types": 15,
+    "samples": [
+      {
+        "type": "god",
+        "status": "ok",
+        "sample": "欢迎，help_test（木乃伊 混沌骑士）。 游戏种�"
+      },
+      {
+        "type": "branch",
+        "status": "ok",
+        "sample": "欢迎，help_test（木乃伊 混沌骑士）。 游戏种�"
+      },
+      {
+        "type": "cloud",
+        "status": "ok",
+        "sample": "欢迎，help_test（木乃伊 混沌骑士）。 游戏种�"
+      },
+      {
+        "type": "card",
+        "status": "ok",
+        "sample": "欢迎，help_test（木乃伊 混沌骑士）。 游戏种�"
+      },
+      {
+        "type": "skill",
+        "status": "ok",
+        "sample": "游戏种子：1（自定义种子）; 按?查看命令列�"
+      },
+      {
+        "type": "passive",
+        "status": "ok",
+        "sample": "按?查看命令列表和其他信息。 发现了通往地�"
+      },
+      {
+        "type": "status",
+        "status": "ok",
+        "sample": "发现了通往地牢外的阶梯, 向下通往的石梯 以"
+      },
+      {
+        "type": "monster",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "spell",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "ability",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "feature",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "item",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "mutation",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "bane",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "spell_school",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      }
+    ],
+    "catch2_issues": 5,
+    "catch2_by_kind": {
+      "MIXED_CN_EN": 5
+    }
+  }
+}
