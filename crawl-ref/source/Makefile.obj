@@ -331,7 +331,8 @@ catch2-tests/test_positional_format.o \
 catch2-tests/test_zh_fixture.o \
 catch2-tests/test_zh_helpers.o \
 catch2-tests/test_zh_translation.o \
-catch2-tests/test_zh_enumerators.o
+catch2-tests/test_zh_enumerators.o \
+catch2-tests/test_zh_help.o
 
 WEBTILES_OBJECTS = \
 tileweb.o \

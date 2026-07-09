@@ -167,6 +167,108 @@ run_bot() {
 }
 
 # ============================================================================
+# Help system (Issue 52) — L1 [zh-help] catch2 + L3 zh_help.rc bot
+# ============================================================================
+
+STDERR_HELP_C2="$METRICS_DIR/help-catch2-stderr.log"
+STDOUT_HELP_C2="$METRICS_DIR/help-catch2-stdout.log"
+STDERR_HELP_BOT="$METRICS_DIR/help-bot-stderr.log"
+
+run_help_catch2() {
+    cd "$SOURCE_DIR"
+    echo "  Building catch2-tests..."
+    make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+        > "$STDOUT_HELP_C2" 2>&1 || {
+        echo "  catch2-tests build failed (see $STDOUT_HELP_C2)"
+        return 1
+    }
+    echo "  Running catch2-tests [zh-help]..."
+    local rc=0
+    ./catch2-tests-executable '[zh-help]' 2>"$STDERR_HELP_C2" 1>>"$STDOUT_HELP_C2" || rc=$?
+    echo "  Catch2 [zh-help] exit code: $rc"
+    # Unlike [zh-translation] (issues via stderr, always green), [zh-help]
+    # assertions are real pass/fail — a non-zero exit is a genuine failure.
+    if [ $rc -ne 0 ]; then
+        echo "  Catch2 [zh-help] reported failing assertions"
+        return 1
+    fi
+    return 0
+}
+
+run_help_bot() {
+    cd "$SOURCE_DIR"
+    if [ ! -x ./crawl ] || [ ! -x util/fake_pty ]; then
+        echo "  Building console binary + fake_pty..."
+        make -j4 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
+            echo "  Console build failed (see $METRICS_DIR/help-bot-build.log)"
+            return 1
+        }
+        make util/fake_pty >> "$METRICS_DIR/help-bot-build.log" 2>&1 || return 1
+    else
+        echo "  Using existing console binary"
+    fi
+
+    echo "  Running help RC bot (zh_help.rc)..."
+    local timeout_rc=0
+    timeout --foreground 180 util/fake_pty ./crawl -seed 1 -no-save \
+        -name help_test -wizard -no-throttle \
+        -extra-opt-first 'language=zh' \
+        -rc test/stress/zh_help.rc \
+        2>"$STDERR_HELP_BOT" 1>/dev/null || timeout_rc=$?
+    local marker_count=$(grep -c 'FRAME_MARKER: help:' "$STDERR_HELP_BOT" 2>/dev/null || echo 0)
+    echo "  Help RC bot: $marker_count help FRAME_MARKER(s) emitted"
+    if ! grep -q 'FRAME_MARKER: help:probe:' "$STDERR_HELP_BOT"; then
+        echo "  Help RC bot: probe marker missing"
+        return 1
+    fi
+    if ! grep -q 'FRAME_MARKER: help:phase:done' "$STDERR_HELP_BOT"; then
+        echo "  Help RC bot: completion marker missing"
+        return 1
+    fi
+    if [ "$marker_count" -lt "$BOT_MIN_MARKERS" ]; then
+        echo "  Help RC bot: marker count below threshold ($marker_count < $BOT_MIN_MARKERS)"
+        return 1
+    fi
+    if [ "$timeout_rc" -ne 0 ] && [ "$timeout_rc" -ne 124 ]; then
+        echo "  Help RC bot exited with $timeout_rc"
+        return 1
+    fi
+    return 0
+}
+
+run_help_aggregate() {
+    local args=(
+        --mode help
+        --catch2-stderr "$STDERR_HELP_C2"
+        --bot-stderr "$STDERR_HELP_BOT"
+    )
+    if [ "${1:-}" = "baseline" ]; then
+        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
+        local baseline_path="$METRICS_DIR/zh-help-baseline-${sha}.json"
+        args+=(--output-baseline "$baseline_path")
+        echo "  Writing help baseline: $baseline_path"
+        python3 "$CHECK_SCRIPT" "${args[@]}"
+        return 0
+    fi
+    local prev=$(ls -t "$METRICS_DIR"/zh-help-baseline-*.json 2>/dev/null | head -1 || echo '')
+    if [ -n "$prev" ]; then
+        args+=(--baseline "$prev")
+        echo "  Comparing against: $prev"
+        python3 "$CHECK_SCRIPT" "${args[@]}"
+        local rc=$?
+        if [ $rc -eq 0 ]; then
+            echo -e "${GREEN}  No help regressions!${NC}"
+        else
+            echo -e "${RED}  Help regressions detected!${NC}"
+        fi
+        return $rc
+    fi
+    echo -e "${YELLOW}  No help baseline found — summary only${NC}"
+    python3 "$CHECK_SCRIPT" "${args[@]}"
+    return $?
+}
+
+# ============================================================================
 # Aggregation
 # ============================================================================
 
@@ -241,11 +343,44 @@ case "$MODE" in
         run_step "L1-catch2" run_catch2 || true
         run_step "L2-lua"    run_lua || true
         run_step "L3-bot"    run_bot || true
-        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
+        sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
         run_step "aggregate" run_aggregate baseline "$sha"
         ;;
+    help-full)
+        # Issue 52: help-system L1 [zh-help] + L3 zh_help.rc + help aggregation.
+        if [ ! -f "$SOURCE_DIR/catch2-tests/test_zh_help.cc" ]; then
+            echo -e "${YELLOW}test_zh_help.cc missing — skipping help L1${NC}"
+        else
+            run_step "help-L1-catch2" run_help_catch2 || true
+        fi
+        if [ ! -f "$SOURCE_DIR/test/stress/zh_help.rc" ]; then
+            echo -e "${YELLOW}zh_help.rc missing — skipping help L3${NC}"
+        else
+            run_step "help-L3-bot" run_help_bot || true
+        fi
+        run_step "help-aggregate" run_help_aggregate
+        ;;
+    help-fast)
+        # Aggregate existing help logs only (no build).
+        if [ ! -f "$STDERR_HELP_BOT" ] && [ ! -f "$STDERR_HELP_C2" ]; then
+            echo "No help logs found — run 'help-full' first"
+            exit 1
+        fi
+        run_step "help-aggregate" run_help_aggregate
+        ;;
+    help-baseline)
+        # Issue 52: full help run + write a committable help baseline.
+        if [ -f "$SOURCE_DIR/catch2-tests/test_zh_help.cc" ]; then
+            run_step "help-L1-catch2" run_help_catch2 || true
+        fi
+        if [ -f "$SOURCE_DIR/test/stress/zh_help.rc" ]; then
+            run_step "help-L3-bot" run_help_bot || true
+        fi
+        sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
+        run_step "help-aggregate" run_help_aggregate baseline "$sha"
+        ;;
     *)
-        echo "Unknown mode: $MODE (use fast|full|baseline)"
+        echo "Unknown mode: $MODE (use fast|full|baseline|help-full|help-fast|help-baseline)"
         exit 1
         ;;
 esac

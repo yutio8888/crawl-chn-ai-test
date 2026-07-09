@@ -397,6 +397,121 @@ def parse_frame_markers(path: str, layer_name: str) -> List[dict]:
 
 
 # ============================================================================
+# Help-mode parser (--mode help)
+#
+# Parses ONLY `FRAME_MARKER: help:<type>:<status> | <sample>` lines emitted by
+# test/stress/zh_help.rc. Does NOT run the 8 translation-quality scan rules on
+# these status markers — the sample is diagnostic only. Builds a {type: status}
+# map where <status> in {ok, empty, error}.
+# ============================================================================
+
+def parse_help_markers(path: str) -> Tuple[Dict[str, str], List[dict]]:
+    """Parse `help:<type>:<status> | <sample>` markers from an RC-bot log.
+
+    Returns (status_map, samples) where status_map is {type: status} and
+    samples is a list of {type, status, sample} dicts (last-wins on dup type).
+    """
+    status_map: Dict[str, str] = {}
+    samples: List[dict] = []
+    if not path or not os.path.exists(path):
+        return status_map, samples
+    with open(path, 'r', encoding='utf-8', errors='replace') as f:
+        for line in f:
+            m = re.match(r'FRAME_MARKER:\s*(.+?)\s*\|\s*(.*)', line)
+            if not m:
+                continue
+            case_id = m.group(1).strip()
+            sample = m.group(2).strip()
+            # Only route help: markers here; everything else is ignored in
+            # help mode.
+            if not case_id.startswith('help:'):
+                continue
+            parts = case_id.split(':')
+            # Expect exactly help:<type>:<status>
+            if len(parts) != 3 or parts[0] != 'help':
+                continue
+            htype = parts[1].strip()
+            status = parts[2].strip()
+            # probe/phase are lifecycle markers (help:probe:ok / help:phase:done),
+            # not help types — exclude them from the status map.
+            if htype in ('probe', 'phase'):
+                continue
+            if status not in ('ok', 'empty', 'error'):
+                # Unknown status token — treat as error for safety.
+                status = 'error'
+            status_map[htype] = status
+            samples.append({'type': htype, 'status': status,
+                            'sample': sample[:120]})
+    return status_map, samples
+
+
+def build_help_baseline(catch2_stderr: str, bot_stderr: str) -> dict:
+    """Build a help-mode baseline section from catch2 + RC-bot logs.
+
+    The catch2 log is parsed for `[zh-help]` ZH_ISSUE markers (reusing the
+    generic ZH_ISSUE parser); the bot log is parsed for help: status markers.
+    """
+    c2_kinds, c2_issues = parse_catch2_stderr(catch2_stderr)
+    status_map, samples = parse_help_markers(bot_stderr)
+
+    non_ok = {t: s for t, s in status_map.items() if s != 'ok'}
+
+    return {
+        'layer_help': {
+            'status_map': status_map,
+            'non_ok': non_ok,
+            'non_ok_count': len(non_ok),
+            'total_types': len(status_map),
+            'samples': samples,
+            'catch2_issues': len(c2_issues),
+            'catch2_by_kind': dict(c2_kinds),
+        },
+    }
+
+
+def compare_help_baselines(current: dict, previous: dict) -> dict:
+    """Diff current vs previous `layer_help` sections.
+
+    Regression rules:
+      - a type transitioning ok -> empty/error
+      - a NEW error/empty type not present in the baseline
+    Fix rule:
+      - a type transitioning error/empty -> ok
+    """
+    cur = current.get('layer_help', {})
+    prev = previous.get('layer_help', {})
+    cur_map = cur.get('status_map', {})
+    prev_map = prev.get('status_map', {})
+
+    regressions = []
+    fixes = []
+
+    for htype, cur_status in cur_map.items():
+        prev_status = prev_map.get(htype)
+        if prev_status is None:
+            # New type: regression only if non-ok.
+            if cur_status != 'ok':
+                regressions.append({'type': htype, 'from': '(new)',
+                                    'to': cur_status})
+        else:
+            if prev_status == 'ok' and cur_status != 'ok':
+                regressions.append({'type': htype, 'from': prev_status,
+                                    'to': cur_status})
+            elif prev_status != 'ok' and cur_status == 'ok':
+                fixes.append({'type': htype, 'from': prev_status,
+                              'to': cur_status})
+
+    return {
+        'regressions': len(regressions),
+        'fixes': len(fixes),
+        'regression_list': regressions,
+        'fix_list': fixes,
+        'curr_status_map': cur_map,
+        'prev_status_map': prev_map,
+    }
+
+
+# ============================================================================
 # Baseline management
 # ============================================================================
 
@@ -484,6 +599,81 @@ def compare_baselines(current: dict, previous: dict) -> dict:
 # Main
 # ============================================================================
 
+def _main_help(args) -> int:
+    """Help-system aggregation mode (--mode help).
+
+    Builds a `layer_help` section from the catch2 [zh-help] log and the RC-bot
+    zh_help.rc log. Supports --output-baseline / --baseline the same way as
+    default mode, writing/reading a separate `layer_help` key so it never
+    clobbers the layer1/2/3 default baseline.
+    """
+    current = build_help_baseline(
+        args.catch2_stderr or '',
+        args.bot_stderr or '',
+    )
+    help_section = current['layer_help']
+
+    if args.output_baseline:
+        # If an existing baseline is present at the path, merge the layer_help
+        # key into it rather than clobbering default layers.
+        merged = {}
+        if os.path.exists(args.output_baseline):
+            try:
+                with open(args.output_baseline, 'r') as f:
+                    merged = json.load(f)
+            except (ValueError, OSError):
+                merged = {}
+        merged['layer_help'] = help_section
+        with open(args.output_baseline, 'w') as f:
+            json.dump(merged, f, indent=2, ensure_ascii=False, default=str)
+        print(f'Help baseline written: {args.output_baseline}')
+        print(f'  Types seen:   {help_section["total_types"]}')
+        print(f'  Non-ok types: {help_section["non_ok_count"]}')
+        return 0
+
+    if args.baseline:
+        if not os.path.exists(args.baseline):
+            print(f'ERROR: baseline file not found: {args.baseline}',
+                  file=sys.stderr)
+            return 2
+        with open(args.baseline, 'r') as f:
+            previous = json.load(f)
+
+        report = compare_help_baselines(current, previous)
+
+        if args.json:
+            print(json.dumps(report, indent=2, ensure_ascii=False,
+                             default=str))
+        else:
+            print('Help regression report:')
+            print(f'  Types seen:   {help_section["total_types"]}')
+            print(f'  Non-ok types: {help_section["non_ok_count"]}')
+            print(f'  Regressions:  {report["regressions"]}')
+            print(f'  Fixes:        {report["fixes"]}')
+            if report['regressions'] > 0:
+                print('\nRegressions:')
+                for r in report['regression_list']:
+                    print(f'  {r["type"]}: {r["from"]} -> {r["to"]}')
+            if report['fixes'] > 0:
+                print('\nFixes:')
+                for r in report['fix_list']:
+                    print(f'  {r["type"]}: {r["from"]} -> {r["to"]}')
+
+        return 0 if report['regressions'] == 0 else 1
+
+    # No baseline — just print a status summary.
+    print('Help summary (no comparison baseline):')
+    print(f'  Types seen:   {help_section["total_types"]}')
+    print(f'  Non-ok types: {help_section["non_ok_count"]}')
+    if help_section['non_ok']:
+        for htype, status in sorted(help_section['non_ok'].items()):
+            print(f'    {htype}: {status}')
+    print(f'  Catch2 [zh-help] issues: {help_section["catch2_issues"]}')
+    # In summary mode, a non-ok status is informational but we surface it as a
+    # non-zero exit so CI notices even on first (baseline-less) run.
+    return 0 if help_section['non_ok_count'] == 0 else 1
+
+
 def main():
     parser = argparse.ArgumentParser(description='zh-runtime check — aggregate i18n scan results')
     parser.add_argument('--catch2-stderr', help='stderr from catch2-tests [zh-translation]')
@@ -493,7 +683,13 @@ def main():
     parser.add_argument('--baseline', help='previous baseline JSON to compare against')
     parser.add_argument('--output-baseline', help='write new baseline to this path')
     parser.add_argument('--json', action='store_true', help='output JSON')
+    parser.add_argument('--mode', choices=('default', 'help'), default='default',
+                        help='aggregation mode: default (3-layer i18n scan) '
+                             'or help (help-system status markers)')
     args = parser.parse_args()
+
+    if args.mode == 'help':
+        return _main_help(args)
 
     current = build_baseline(
         args.catch2_stderr or '',

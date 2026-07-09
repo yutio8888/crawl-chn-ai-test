@@ -1,0 +1,70 @@
+name = zh_help
+species = mu
+background = ck
+weapon = mace
+restart_after_game = false
+show_more = false
+
+# Issue 52 - help-system (?/ lookup) L3 RC bot.
+#
+# Drives the ?/ lookup menu for all 14 help types plus a spell-school stage.
+# For each type it opens the lookup menu, selects the first item ('a') to view
+# its description, then backs out. Emits one status marker per type:
+#
+#   FRAME_MARKER: help:<type>:<status> | <sample>
+#
+# where <status> is one of {ok, empty, error} and <sample> is a best-effort
+# snippet of recent game messages (<=60 bytes). NOTE (Issue 52 C1): the
+# aggregator regex (zh_runtime_check.py) requires the '|' before the sample;
+# colons appear ONLY inside the case-id field help:<type>:<status>.
+#
+# KEY L3 MECHANIC (verified empirically): a menu opened via crawl.sendkeys()
+# consumes input and PREVENTS ready() from firing until the menu fully closes.
+# The ENTIRE navigation for a type (open, select first item, escape out) MUST
+# be queued in ONE sendkeys() batch. ready() then fires once control returns to
+# the map; that iteration captures messages + emits the marker for the PREVIOUS
+# type, then fires the next type's batch.
+#
+# ESCAPE DEPTH (verified empirically): different lookup types nest their
+# description/list/menu at different depths (god unwinds in 2 escapes, branch
+# needs 3+). A single fixed count leaves some menus open and the next batch's
+# "?/" is swallowed, hanging the bot. We send FOUR trailing escapes per stage;
+# extra escapes on the map are harmless no-ops.
+#
+# PITFALLS (CLAUDE.md L3 rules): each ready() sends >=1 key ("." no-op wait);
+# never combine sendkeys + emit for the SAME type in one ready() (the emit for
+# type N happens in the ready() AFTER type N's batch); crawl.messages(N)
+# reflects the message log (not the description panel), so the sample is
+# diagnostic only and the status is driven by navigation success.
+
+Lua{
+local eol=string.char(13)
+local esc=string.char(27)
+local ESC4=esc..esc..esc..esc
+local action=0
+local done_sent=false
+local stages={ {t="god",keys="?/g".."a"..ESC4},{t="branch",keys="?/b".."a"..ESC4},{t="cloud",keys="?/l".."a"..ESC4},{t="card",keys="?/c".."a"..ESC4},{t="skill",keys="?/k".."a"..ESC4},{t="passive",keys="?/p".."a"..ESC4},{t="status",keys="?/t".."a"..ESC4},{t="monster",keys="?/m"..eol.."a"..ESC4},{t="spell",keys="?/s"..eol.."a"..ESC4},{t="ability",keys="?/a"..eol.."a"..ESC4},{t="feature",keys="?/f"..eol.."a"..ESC4},{t="item",keys="?/i"..eol.."a"..ESC4},{t="mutation",keys="?/u"..eol.."a"..ESC4},{t="bane",keys="?/n"..eol.."a"..ESC4},{t="spell_school",keys="?/s".."@Fire"..eol..ESC4}, }
+local pending=nil
+local function sample_of(text)
+    if text == nil then text = "" end
+    local one = tostring(text):gsub("\r\n", " "):gsub("\n", " ")
+    if #one > 60 then one = one:sub(1, 60) end
+    return one
+end
+local function emit(h,s,x) crawl.stderr("FRAME_MARKER: help:"..h..":"..s.." | "..sample_of(x)..eol) end
+function ready()
+    action=action+1
+    if action==1 then crawl.enable_more(false); crawl.set_sendkeys_errors(true); crawl.sendkeys("."); return
+    elseif action==2 then emit("probe","ok","lang="..crawl.language()); crawl.sendkeys("."); return end
+    if pending then
+        local m=crawl.messages(10) or ""
+        local status="ok"
+        if m==nil or m=="" then status="empty" end
+        emit(pending,status,m)
+        pending=nil
+    end
+    local idx=action-2
+    if idx<=#stages then pending=stages[idx].t; crawl.sendkeys(stages[idx].keys); return end
+    if not done_sent then emit("phase","done","x"); crawl.sendkeys(string.char(19)); done_sent=true end
+end
+}
