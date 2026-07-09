@@ -1087,11 +1087,13 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     {
         auto fetch_translation = [&](const string &key)
         {
-            datum result = _database_fetch(SourceDB.translation->get(), key);
+            string canon_key = key;
+            lowercase(canon_key);
+            datum result = _database_fetch(SourceDB.translation->get(), canon_key);
             if (!_database_has_entry(result))
                 return false;
             zh.assign((const char *)result.dptr, result.dsize);
-            return true;
+            return !zh.empty();
         };
 
         if (ctx && ctx[0])

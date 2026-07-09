@@ -47,6 +47,7 @@
 #include "mon-tentacle.h"
 #include "nearby-danger.h"
 #include "output.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "showsymb.h"

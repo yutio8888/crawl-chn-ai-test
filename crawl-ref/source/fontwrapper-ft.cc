@@ -30,6 +30,14 @@
 #define MISSING_CHAR 0xbf
 // CJK fallback font — loaded alongside the primary font to provide glyphs
 // for Chinese/Japanese/Korean characters that DejaVu Sans Mono lacks.
+static const char* CJK_CANDIDATES[] = {
+    "contrib/fonts/SarasaMonoSC-Regular.ttf",
+    "contrib/fonts/SarasaFixedSC-Regular.ttf",
+    "contrib/fonts/MapleMono-NF-CN-Regular.ttf",
+    "dat/tiles/SarasaMonoSC-Regular.ttf",
+    "dat/tiles/SarasaFixedSC-Regular.ttf",
+    "dat/tiles/MapleMono-NF-CN-Regular.ttf",
+};
 
 #if 0
 # define dprintf(...) debuglog(__VA_ARGS__)
@@ -245,7 +253,15 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     // Load CJK fallback font for Chinese/Japanese/Korean characters.
     // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
     // that exist in neither font.
-    string cjk_path = datafile_path(font_name, false, true); // primary as fallback
+    string cjk_path;
+    for (const char* candidate : CJK_CANDIDATES)
+    {
+        cjk_path = datafile_path(candidate, false, true);
+        if (cjk_path.c_str()[0] != 0)
+            break;
+    }
+    if (cjk_path.c_str()[0] == 0)
+        cjk_path = datafile_path(font_name, false, true);
     if (cjk_path.c_str()[0] != 0)
     {
         FILE *fc = fopen_u(cjk_path.c_str(), "rb");
