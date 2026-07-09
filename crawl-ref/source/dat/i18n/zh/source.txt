@@ -6366,7 +6366,7 @@ silver
  沉回了岩浆中。
 %%%%
 skeleton
-骸骨
+骷髅
 %%%%
 Skeletons, inanimate yet cursed, drop down from the ceiling.
 一些被诅咒的无生命骷髅从天花板上掉落下来。
@@ -28986,7 +28986,7 @@ orange crystal plate armour
 
 %%%%
 orb of Dispater
-迪斯帕特之法球
+迪斯帕特之球
 
 %%%%
 pair of quick blades
@@ -32552,7 +32552,7 @@ formless jellyfish
 无形水母
 %%%%
 freezing wraith
-冰冻幽灵
+冰冻幽魂
 %%%%
 friendly sensed monster
 友善感知怪物
@@ -33158,7 +33158,7 @@ shadow imp
 暗影小恶魔
 %%%%
 shadow wraith
-暗影幽灵
+暗影幽魂
 %%%%
 shambling mangrove
 蹒跚红树
@@ -33443,7 +33443,7 @@ worm
 蠕虫
 %%%%
 wraith
-幽灵
+幽魂
 %%%%
 wyvern
 飞龙

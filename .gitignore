@@ -3,9 +3,10 @@
 .vscode/
 .vs
 
-# Claude Code (transient/generated — local only)
+# Claude Code / OpenCode (transient/generated — local only)
 .claude/worktrees/
 .claude/scripts/__pycache__/
+.claude/metrics/verify/
 
 
 # External tool configs

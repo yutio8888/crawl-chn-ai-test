@@ -558,6 +558,68 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-A-037 — skeleton → 骷髅 (基名统一)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review (P2)
+- **Choice**: Unify all skeleton forms to 骷髅
+  - `skeleton → 骷髅` (from 骸骨)
+  - `large skeleton → 大型骷髅` (no change)
+  - `small skeleton → 小型骷髅` (no change)
+- **Rejected**: 骸骨 (formal/anatomical, less common in gaming); mixed 骸骨/骷髅 (inconsistent)
+- **Rationale**: 骷髅 is the standard term for skeleton monsters in Chinese gaming culture. 骸骨 (skeletal remains/bones) is more anatomical and less idiomatic for a hostile creature. The compound forms already use 骷髅; unifying the base form eliminates the inconsistency.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-A-038 — wraith → 幽魂 (统一，区分 ghost)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review (P2)
+- **Choice**: All wraith forms → 幽魂
+  - `wraith → 幽魂` (from 幽灵)
+  - `the Wraith → 幽魂` (no change)
+  - `freezing wraith → 冰冻幽魂` (from 冰冻幽灵)
+  - `shadow wraith → 暗影幽魂` (from 暗影幽灵)
+- **Rejected**: 幽灵 (overlaps with ghost/spectre, losing wraith's distinct identity)
+- **Rationale**: 幽魂 (wraith/restless spirit) in Chinese gaming commonly denotes ethereal, life-draining undead — distinct from 幽灵 (ghost, more general). Using 幽魂 for wraiths preserves the undead subtype distinction and matches the unique monster `the Wraith` which already used 幽魂.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-B-012 — `X之球` as canonical orb naming pattern
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review (P2)
+- **Choice**: Canonical monster orb naming pattern: `X之球`
+  - `Orb of Destruction → 毁灭之球` (no change)
+  - `great orb of eyes → 巨眼之球` (no change)
+  - `orb of entropy → 熵之球` (no change)
+  - `orb of fire → 火焰之球` (no change)
+  - `orb of winter → 寒冬之球` (no change)
+  - `orb of Dispater → 迪斯帕特之球` (from 迪斯帕特之法球)
+  - `Orb of Electricity → 电光球` (kept — short punchy spell name, not a monster entity)
+  - `Orb of Zot → 佐特宝珠` (kept — unique key game object, not a monster)
+- **Rejected**: `X法球` (arcane orb, reads as a spell school rather than monster); mixed patterns (inconsistent genus-species feel)
+- **Rationale**: `X之球` is the dominant pattern (6 of 8 cases). Standardizing eliminates the exception without affecting the two justified outliers (Orb of Zot as a unique game object, Orb of Electricity as a spell name).
+- **Scope**: All monster orbs (entity names, not spell names)
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
 ## Type-B: Rule Rulings (style/grammar/formatting conventions)
 
 ---
@@ -907,7 +969,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-033 | polter- root | 骚灵系 | active ✅ |
 | D-A-034 | cacodemon | 恶灵恶魔 | active ✅ |
 | D-A-035 | fiend | 邪魔（统一） | active ✅ |
-| D-A-036 | vampire | 吸血鬼 | active ✅ |
+| D-A-036 | vampire | 吸血鬼（基名统一） | active ✅ |
+| D-A-037 | skeleton | 骷髅（基名统一） | active ✅ |
+| D-A-038 | wraith | 幽魂（统一） | active ✅ |
+| D-B-012 | Orb naming | X之球（标准模式） | active ✅ |
 | D-B-001 | Brand genitive | 之 | active |
 | D-B-002 | List separators | 、+ 和 | active |
 | D-B-003 | article_a | skip in ZH | active |
