@@ -65,6 +65,10 @@ public:
     virtual unsigned int string_height(const char *text, bool logical=true) const = 0;
     virtual unsigned int string_height(const formatted_string &str, bool logical=true) const = 0;
 
+    // Whether the primary face itself contains common CJK glyphs.
+    // Layout code can use this to compensate for CJK font metrics.
+    virtual bool is_cjk_primary() const { return false; }
+
     // Try to split this string to fit in w x h pixel area.
     virtual formatted_string split(const formatted_string &str,
                                    unsigned int max_width,

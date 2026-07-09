@@ -75,6 +75,7 @@ public:
     virtual unsigned int string_width(const formatted_string &str, bool logical=true) override;
     virtual unsigned int string_height(const char *text, bool logical=true) const override;
     virtual unsigned int string_height(const formatted_string &str, bool logical=true) const override;
+    virtual bool is_cjk_primary() const override;
 
     // Try to split this string to fit in w x h pixel area.
     virtual formatted_string split(const formatted_string &str,

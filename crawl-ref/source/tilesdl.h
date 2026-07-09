@@ -206,6 +206,8 @@ public:
     bool is_fullscreen() { return m_fullscreen; }
 
     bool fonts_initialized();
+    bool is_cjk_primary_font() const;
+    int layout_tab_margin() const;
 
     FontWrapper* get_crt_font() const { return m_crt_font; }
     FontWrapper* get_msg_font() const { return m_msg_font; }
@@ -304,11 +306,12 @@ protected:
     int m_map_pixels;
 
     void do_layout();
-    int calc_tab_lines(const int num_elements);
-    void place_tab(int idx);
+    int calc_tab_lines(const int num_elements) const;
+    int calc_min_tab_lines(int idx) const;
+    bool place_tab(int idx);
     void autosize_minimap();
     void place_minimap();
-    void resize_inventory();
+    void resize_inventory(int max_extra_lines = INT_MAX);
 
     ImageManager *m_image;
 

@@ -404,10 +404,39 @@ bool TabbedRegion::update_alt_text(string &alt)
     return get_tab_region(active_tab())->update_alt_text(alt);
 }
 
+static string _english_plural(const string &singular)
+{
+    if (singular.empty())
+        return singular;
+
+    // e.g. ability -> abilities
+    if (ends_with(singular, "y") && singular.length() > 1
+        && !is_vowel(singular[singular.length() - 2]))
+    {
+        return singular.substr(0, singular.length() - 1) + "ies";
+    }
+
+    // e.g. class -> classes, box -> boxes, torch -> torches
+    if (ends_with(singular, "s") || ends_with(singular, "x")
+        || ends_with(singular, "ch") || ends_with(singular, "sh")
+        || ends_with(singular, "o"))
+    {
+        return singular + "es";
+    }
+
+    // Regular plural
+    return singular + "s";
+}
+
 int TabbedRegion::find_tab(string tab_name) const
 {
     lowercase(tab_name);
-    string pluralised_name = pluralise(tab_name);
+    // In Chinese mode pluralise() returns the input unchanged because Chinese
+    // has no grammatical plural, but tab region names are still English plurals
+    // ("Commands", "Spells", "Abilities", ...). Use an English plural here.
+    string pluralised_name = Options.language == lang_t::ZH
+                             ? _english_plural(tab_name)
+                             : pluralise(tab_name);
     for (int i = 0, size = m_tabs.size(); i < size; ++i)
     {
         string reg_name = lowercase_string(m_tabs[i].reg->name());

@@ -481,6 +481,18 @@ FontWrapper* TilesFramework::load_font(const char *font_file, int font_size,
 
     return font;
 }
+
+bool TilesFramework::is_cjk_primary_font() const
+{
+    return (m_stat_font && m_stat_font->is_cjk_primary())
+        || (m_lbl_font && m_lbl_font->is_cjk_primary());
+}
+
+int TilesFramework::layout_tab_margin() const
+{
+    return is_cjk_primary_font() ? min(m_tab_margin, 12) : m_tab_margin;
+}
+
 void TilesFramework::load_dungeon(const crawl_view_buffer &vbuf,
                                   const coord_def &gc)
 {
@@ -800,6 +812,7 @@ static const int min_stat_height = 13;
 static const int min_inv_height  = 4;
 static const int max_inv_height  = 8;
 static const int max_mon_height  = 3;
+static const int min_cjk_sidebar_cols = 14;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -891,6 +904,10 @@ void TilesFramework::do_layout()
             sidebar_pw = m_region_tab->grid_width_to_pixels(7) - 10;
         while (sidebar_pw < sidebar_min_pw)
             sidebar_pw += m_region_tab->grid_width_to_pixels(1);
+        if (is_cjk_primary_font())
+            sidebar_pw = max(sidebar_pw,
+                             m_region_tab->grid_width_to_pixels(min_cjk_sidebar_cols)
+                                 + m_region_tab->ox * 2);
 
         // Locations in pixels. stat_x_divider is the dividing vertical line
         // between dungeon view on the left and status area on the right.
@@ -979,7 +996,8 @@ void TilesFramework::do_layout()
 
         // place tabs (covering the map view)
         m_region_tab->set_small_layout(true, m_windowsz);
-        m_region_tab->resize_to_fit(m_stat_x_divider+m_region_tab->ox*2, message_y_divider-m_tab_margin);
+        m_region_tab->resize_to_fit(m_stat_x_divider + m_region_tab->ox * 2,
+                                    message_y_divider - layout_tab_margin());
 
         // place tabs waay to the right (all offsets will be negative)
         m_region_tab->place(m_windowsz.x-m_region_tab->ox, 0);
@@ -1095,16 +1113,48 @@ void TilesFramework::place_minimap()
     m_statcol_top = m_region_map->ey;
 }
 
-int TilesFramework::calc_tab_lines(const int num_elements)
+int TilesFramework::calc_tab_lines(const int num_elements) const
 {
     // Integer division rounded up
     return (num_elements - 1) / m_region_tab->mx + 1;
 }
 
-void TilesFramework::place_tab(int idx)
+int TilesFramework::calc_min_tab_lines(int idx) const
 {
     if (idx == -1)
-        return;
+        return 0;
+
+    if (idx == TAB_SPELL)
+    {
+        if (you.spell_no == 0)
+            return 0;
+        return calc_tab_lines(you.spell_no);
+    }
+    if (idx == TAB_ABILITY)
+    {
+        unsigned int talents = your_talents().size();
+        if (talents == 0)
+            return 0;
+        return calc_tab_lines(talents);
+    }
+    if (idx == TAB_MONSTER)
+        return 1; // min_ln is always 1, max_ln is max_mon_height
+    if (idx == TAB_COMMAND)
+        return calc_tab_lines(m_region_cmd->n_common_commands);
+    if (idx == TAB_COMMAND2)
+        return calc_tab_lines(m_region_cmd_meta->n_common_commands);
+    if (idx == TAB_NAVIGATION)
+        return calc_tab_lines(m_region_cmd_map->n_common_commands);
+    if (idx == TAB_SKILL)
+        return calc_tab_lines(NUM_SKILLS);
+
+    return 1;
+}
+
+bool TilesFramework::place_tab(int idx)
+{
+    if (idx == -1)
+        return false;
 
     int min_ln = 1, max_ln = 1;
     if (idx == TAB_SPELL)
@@ -1112,7 +1162,7 @@ void TilesFramework::place_tab(int idx)
         if (you.spell_no == 0)
         {
             m_region_tab->enable_tab(TAB_SPELL);
-            return;
+            return false;
         }
         max_ln = calc_tab_lines(you.spell_no);
     }
@@ -1122,7 +1172,7 @@ void TilesFramework::place_tab(int idx)
         if (talents == 0)
         {
             m_region_tab->enable_tab(TAB_ABILITY);
-            return;
+            return false;
         }
         max_ln = calc_tab_lines(talents);
     }
@@ -1137,7 +1187,8 @@ void TilesFramework::place_tab(int idx)
     else if (idx == TAB_SKILL)
         min_ln = max_ln = calc_tab_lines(NUM_SKILLS);
 
-    int lines = min(max_ln, (m_statcol_bottom - m_statcol_top - m_tab_margin)
+    const int tab_margin = layout_tab_margin();
+    int lines = min(max_ln, (m_statcol_bottom - m_statcol_top - tab_margin)
                             / m_region_tab->dy);
     if (lines >= min_ln)
     {
@@ -1151,16 +1202,21 @@ void TilesFramework::place_tab(int idx)
         region_tab->place(m_stat_col, m_statcol_bottom
                                      - lines * m_region_tab->dy);
         region_tab->resize(m_region_tab->mx, lines);
-        m_statcol_bottom = region_tab->sy - m_tab_margin;
+        m_statcol_bottom = region_tab->sy - tab_margin;
+        return true;
     }
     else
+    {
         m_region_tab->enable_tab(idx);
+        return false;
+    }
 }
 
-void TilesFramework::resize_inventory()
+void TilesFramework::resize_inventory(int max_extra_lines)
 {
     int lines = min(max_inv_height - min_inv_height,
                     (m_statcol_bottom - m_statcol_top) / m_region_tab->dy);
+    lines = min(lines, max_extra_lines);
 
     int prev_size = m_region_tab->wy;
 
@@ -1210,6 +1266,7 @@ void TilesFramework::layout_statcol()
     }
     else
     {
+        const int tab_margin = layout_tab_margin();
         m_region_stat->resize(m_region_stat->mx, min_stat_height);
 
         m_statcol_top = m_region_stat->ey;
@@ -1222,24 +1279,49 @@ void TilesFramework::layout_statcol()
         // region extends ~1/2-tile beyond window (rendered area touches right edge)
         m_region_tab->resize(m_region_tab->mx+1, min_inv_height);
         m_region_tab->place(m_stat_col, m_windowsz.y - m_region_tab->wy);
-        m_statcol_bottom = m_region_tab->sy - m_tab_margin;
+        m_statcol_bottom = m_region_tab->sy - tab_margin;
 
         m_region_stat->resize(m_region_stat->mx, min_stat_height);
-        m_statcol_top += m_region_stat->dy;
+        if (is_cjk_primary_font())
+            m_statcol_top += map_stat_margin;
+        else
+            m_statcol_top += m_region_stat->dy;
         bool resized_inventory = false;
 
+        // For CJK primary fonts, reserve enough vertical space for the tabs
+        // listed in tile_layout_priority so that place_tab() does not get
+        // squeezed out by an over-expanded inventory region.
+        int reserve_tab_lines = 0;
+        if (is_cjk_primary_font())
+        {
+            for (const string &str : Options.tile_layout_priority)
+            {
+                if (str == "inventory" || str == "minimap" || str == "map"
+                    || str == "gold_turn" || str == "gold_turns")
+                {
+                    continue;
+                }
+                reserve_tab_lines += calc_min_tab_lines(m_region_tab->find_tab(str));
+            }
+        }
         for (const string &str : Options.tile_layout_priority)
         {
             if (str == "inventory")
             {
-                resize_inventory();
+                int available_lines = (m_statcol_bottom - m_statcol_top - tab_margin)
+                                      / m_region_tab->dy;
+                int max_extra = max(0, available_lines - reserve_tab_lines);
+                resize_inventory(max_extra);
                 resized_inventory = true;
             }
             else if (str == "minimap" || str == "map")
             {
                 if (!resized_inventory)
                 {
-                    resize_inventory();
+                    int available_lines = (m_statcol_bottom - m_statcol_top - tab_margin)
+                                          / m_region_tab->dy;
+                    int max_extra = max(0, available_lines - reserve_tab_lines);
+                    resize_inventory(max_extra);
                     resized_inventory = true;
                 }
                 place_minimap();

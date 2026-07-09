@@ -319,6 +319,17 @@ bool FTFontWrapper::resize(unsigned int size)
     return configure_font();
 }
 
+bool FTFontWrapper::is_cjk_primary() const
+{
+    if (!face)
+        return false;
+
+    // A common unified ideograph is a reliable signal that the primary face
+    // itself is CJK-capable (e.g. Maple Mono, Sarasa SC), not just Latin-only
+    // with a separate fallback.
+    return FT_Get_Char_Index(face, 0x4E00) != 0;
+}
+
 FTFontWrapper::GlyphInfo& FTFontWrapper::get_glyph_info(char32_t ch)
 {
     // cache glyph info in a single large buffer by unicode codepoint
