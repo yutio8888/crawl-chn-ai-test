@@ -1,13 +1,14 @@
 #!/bin/bash
 # check_consistency.sh — Cross-file translation consistency checker
 #
-# Six modes:
+# Seven modes:
 #   --rulings   : Check decisions.md rejected names don't persist (default)
 #   --gods      : Verify all 28 god names are translated in ZH paths
 #   --skills    : Verify all 14 skill school names are translated in ZH paths
 #   --format    : Check %%%% separator count parity between EN and ZH database files
 #   --spells    : Verify spell key consistency (duplicates, orphans, missing)
 #   --database  : Verify @keyword@ reference integrity in database/zh/
+#   --monster-ssot : Enforce source.txt as unique-monster name SSOT
 #
 # Usage:
 #   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh
@@ -69,22 +70,45 @@ check_english_residual() {
         "$SOURCEDIR/dat/database/zh"
     )
 
-    for dir in "${zh_dirs[@]}"; do
-        if [ ! -d "$dir" ]; then continue; fi
-        local dir_found
-        dir_found=$(grep -rn "$en_name" "$dir" --include='*.txt' 2>/dev/null || true)
-        if [ -n "$dir_found" ]; then
-            # Only flag lines that contain CJK characters (actual Chinese display text).
-            # English-only lines are DB lookup keys, Lua identifiers, or translation
-            # source keys — these MUST remain in English (Type IV/V protocol).
-            local filtered
-            filtered=$(echo "$dir_found" | grep -P '[\x{2E80}-\x{9FFF}\x{3400}-\x{4DBF}\x{F900}-\x{FAFF}]' || true)
-            if [ -n "$filtered" ]; then
-                found="${found}${found:+
-}${filtered}"
-            fi
-        fi
-    done
+    local filtered
+    filtered=$(EN_NAME="$en_name" python3 - "${zh_dirs[@]}" <<'PY'
+import os
+import re
+import sys
+
+en_name = os.environ["EN_NAME"]
+dirs = sys.argv[1:]
+
+# Match the whole English name, not substrings like Ru in Rush.
+pattern = re.compile(r'(?<![A-Za-z])' + re.escape(en_name) + r'(?![A-Za-z])')
+cjk = re.compile(r'[\u2E80-\u9FFF\u3400-\u4DBF\uF900-\uFAFF]')
+
+for root in dirs:
+    if not os.path.isdir(root):
+        continue
+    for dirpath, _, filenames in os.walk(root):
+        for filename in filenames:
+            if not filename.endswith(".txt"):
+                continue
+            path = os.path.join(dirpath, filename)
+            with open(path, "r", encoding="utf-8") as f:
+                for lineno, line in enumerate(f, 1):
+                    if not cjk.search(line):
+                        continue
+                    stripped = line.strip()
+                    if not pattern.search(line):
+                        continue
+                    # Skip comments and embedded code/identifiers in ZH textdb files.
+                    if stripped.startswith("#"):
+                        continue
+                    if any(token in line for token in ('{{', '}}', 'you.', '== "', 'return "', 'return ')):
+                        continue
+                    print(f"{path}:{lineno}:{line.rstrip()}")
+PY
+)
+    if [ -n "$filtered" ]; then
+        found="$filtered"
+    fi
 
     if [ -n "$found" ]; then
         echo "  ⚠️  English name '$en_name' found in ZH translation text:"
@@ -536,6 +560,26 @@ PYEOF
 }
 
 # ============================================================
+# Mode 6: Monster name SSOT
+# ============================================================
+
+do_monster_ssot() {
+    echo "=== Mode 6: Monster name SSOT ==="
+    echo ""
+
+    if python3 .claude/scripts/monster_name_ssot.py \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    then
+        echo "  ✅ source.txt is authoritative for unique monster names"
+    else
+        violations_found=true
+    fi
+
+    echo ""
+    echo "=== Monster name SSOT check complete ==="
+}
+
+# ============================================================
 # Main — parse mode and --strict flag
 # ============================================================
 
@@ -545,10 +589,10 @@ STRICT_MODE=false
 while [ $# -gt 0 ]; do
     case "$1" in
         --strict) STRICT_MODE=true; shift ;;
-        --rulings|--gods|--skills|--format|--spells|--database|--all)
+        --rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--all)
             MODE="$1"; shift ;;
         *)
-            echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--all] [--strict]"
+            echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--all] [--strict]"
             echo ""
             echo "  --rulings   Check rejected translations from decisions.md (default)"
             echo "  --gods      Verify all 28 god names translated in ZH paths"
@@ -556,6 +600,7 @@ while [ $# -gt 0 ]; do
             echo "  --format    Check %%%% separator count parity"
             echo "  --spells    Verify spell key consistency (duplicates, orphans, missing)"
             echo "  --database  Verify @keyword@ reference integrity in database/zh/"
+            echo "  --monster-ssot  Enforce source.txt as unique-monster name SSOT"
             echo "  --all       Run all modes"
             echo "  --strict    Exit with non-zero code when violations are found"
             echo "              (default: always exit 0 for backward compatibility)"
@@ -583,6 +628,9 @@ case "$MODE" in
     --database)
         do_database
         ;;
+    --monster-ssot)
+        do_monster_ssot
+        ;;
     --all)
         do_rulings
         echo ""
@@ -595,6 +643,8 @@ case "$MODE" in
         do_spells
         echo ""
         do_database
+        echo ""
+        do_monster_ssot
         ;;
 esac
 

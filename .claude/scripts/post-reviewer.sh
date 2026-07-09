@@ -41,6 +41,9 @@ run_check() {
     run_check "Cross-file term consistency" \
         python3 .claude/scripts/cross_file_terms.py \
         crawl-ref/source/dat/i18n/zh/
+    run_check "Monster name SSOT" \
+        python3 .claude/scripts/monster_name_ssot.py \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Species term consistency" \
         python3 .claude/scripts/scan_i18n.py species-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

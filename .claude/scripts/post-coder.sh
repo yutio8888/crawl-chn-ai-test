@@ -45,6 +45,9 @@ run_check() {
     run_check "Data-driven i18n coverage (monsters, durations, features)" blocking \
         python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Monster name SSOT (source.txt authority)" blocking \
+        python3 .claude/scripts/monster_name_ssot.py \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "mprf_p compatibility" blocking \
         python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

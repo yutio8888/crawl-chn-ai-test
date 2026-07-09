@@ -87,16 +87,13 @@ STDERR_L2="$METRICS_DIR/lua-stderr.log"
 
 run_lua() {
     cd "$SOURCE_DIR"
-    # Build debug binary if not present or outdated
-    if [ ! -x ./crawl ] || [ test/zh_runtime.lua -nt ./crawl ]; then
-        echo "  Building debug binary..."
-        make debug -j4 > "$METRICS_DIR/lua-build.log" 2>&1 || {
-            echo "  Debug build failed (see $METRICS_DIR/lua-build.log)"
-            return 1
-        }
-    else
-        echo "  Using existing debug binary"
-    fi
+    # Always rebuild debug here: L3 may leave ./crawl as a non-debug binary,
+    # and timestamp-only reuse causes flaky "-test" failures on subsequent runs.
+    echo "  Building debug binary..."
+    make debug -j4 > "$METRICS_DIR/lua-build.log" 2>&1 || {
+        echo "  Debug build failed (see $METRICS_DIR/lua-build.log)"
+        return 1
+    }
 
     echo "  Running -test zh_runtime..."
     ./crawl -seed 1 -headless -no-save -name test -wizard -no-throttle \
@@ -151,7 +148,7 @@ run_bot() {
         echo "  RC bot: probe marker missing"
         return 1
     fi
-    if ! grep -q 'FRAME_MARKER: phase:done |' "$STDERR_L3"; then
+    if ! grep -qE 'FRAME_MARKER: phase:done \||FRAME_MARKER: phase \| done' "$STDERR_L3"; then
         echo "  RC bot: completion marker missing"
         return 1
     fi

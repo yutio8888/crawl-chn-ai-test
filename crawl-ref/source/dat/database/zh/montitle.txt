@@ -9,11 +9,11 @@ Agnes title
 %%%%
 Aizul title
 
-疏忽的守卫艾祖
+疏忽的守卫艾祖尔
 %%%%
 Amaemon title
 
-恶魔投毒者亚麦依蒙
+恶魔投毒者亚麦蒙
 %%%%
 Antaeus title
 
@@ -21,11 +21,11 @@ Antaeus title
 %%%%
 Arachne title
 
-编织者阿拉克尼
+编织者阿拉克涅
 %%%%
 Asmodeus title
 
-阿斯蒙蒂斯，欣嫩谷的王子
+阿斯摩蒂斯，欣嫩谷的王子
 %%%%
 Asterion title
 
@@ -33,7 +33,7 @@ Asterion title
 %%%%
 Azrael title
 
-无边烈焰亚兹拉尔
+无边烈焰阿兹瑞尔
 %%%%
 Bai Suzhen title
 
@@ -45,7 +45,7 @@ Boris title
 %%%%
 Cerebov title
 
-赛里鲍夫，火与钢之恶魔领主
+塞雷波夫，火与钢之恶魔领主
 %%%%
 Chuck title
 
@@ -53,7 +53,7 @@ Chuck title
 %%%%
 Crazy Yiuf title
 
-开悟者疯狂的伊夫
+开悟者疯狂的尤夫
 %%%%
 Dispater title
 
@@ -73,7 +73,7 @@ Dowan title
 %%%%
 Duvessa title
 
-多维莎，多万的妹妹
+杜维莎，多万的妹妹
 %%%%
 Edmund title
 
@@ -85,23 +85,23 @@ Ereshkigal title
 %%%%
 Erica title
 
-暴躁的埃里卡
+暴躁的艾丽卡
 %%%%
 Erolcha title
 
-狡猾的厄洛卡
+狡猾的伊罗查
 %%%%
 Eustachio title
 
-奇伟的埃乌斯塔乔
+奇伟的尤斯塔奇奥
 %%%%
 Fannar title
 
-冷酷的范纳尔
+冷酷的凡纳尔
 %%%%
 Frances title
 
-弗朗西丝，魔窟的女公爵
+弗朗西斯，魔窟的女公爵
 %%%%
 Frederick title
 
@@ -109,23 +109,23 @@ Frederick title
 %%%%
 Gastronok title
 
-沉思的加斯特罗克
+沉思的加斯特罗诺克
 %%%%
 Geryon title
 
-吉里昂，地狱的守门人
+格律翁，地狱的守门人
 %%%%
 Gloorx Vloq title
 
-克罗克斯·弗拉克，暗之恶魔领主
+格洛克斯·弗洛克，暗之恶魔领主
 %%%%
 Grum title
 
-猎手格鲁姆
+猎手格拉姆
 %%%%
 Grunn title
 
-被惩罚的格鲁
+被惩罚的格伦
 %%%%
 Harold title
 
@@ -133,15 +133,15 @@ Harold title
 %%%%
 Ignacio title
 
-伊格纳西欧，剧痛大师
+伊格纳西奥，剧痛大师
 %%%%
 Ilsuiw title
 
-伊尔斯，潮汐女巫
+伊尔苏伊，潮汐女巫
 %%%%
 Ijyb title
 
-爱钻研的伊吉布
+爱钻研的艾吉布
 %%%%
 Jessica title
 
@@ -165,7 +165,7 @@ Joseph title
 %%%%
 Josephina title
 
-冰巫妖约瑟芬娜
+冰巫妖约瑟菲娜
 %%%%
 Josephine title
 
@@ -209,19 +209,19 @@ Maurice title
 %%%%
 Menkaure title
 
-孟卡拉，尘土王子
+门卡拉，尘土王子
 %%%%
 Mennas title
 
-梅纳斯，辛的代言人
+门纳斯，辛的代言人
 %%%%
 Mlioglotl title
 
-姆利格洛特，无形的恐怖
+姆利奥格洛特尔，无形的恐怖
 %%%%
 Mnoleg title
 
-姆诺莱格，混沌之恶魔领主
+姆诺雷格，混沌之恶魔领主
 %%%%
 Murray title
 
@@ -237,11 +237,11 @@ Nellie title
 %%%%
 Nergalle title
 
-缚魂者内尔伽莉
+缚魂者内尔加勒
 %%%%
 Nessos title
 
-精英半人马内萨斯
+精英半人马涅索斯
 %%%%
 Nikola title
 
@@ -257,7 +257,7 @@ Parghit title
 %%%%
 Pargi title
 
-柔弱的帕吉
+柔弱的帕尔吉
 %%%%
 Pikel title
 
@@ -289,11 +289,11 @@ Sigmund title
 %%%%
 Snorg title
 
-饕餮的史诺格
+饕餮的斯诺格
 %%%%
 Sojobo title
 
-僧正坊，天狗女王
+索乔波，天狗女王
 %%%%
 Sonja title
 
@@ -301,15 +301,15 @@ Sonja title
 %%%%
 Terence title
 
-老练的泰伦斯
+老练的特伦斯
 %%%%
 Tiamat title
 
-提亚玛特，龙神的化身
+提亚马特，龙神的化身
 %%%%
 Urug title
 
-兽人弩炮尤鲁格
+兽人弩炮乌鲁格
 %%%%
 Vashnia title
 
@@ -317,15 +317,15 @@ Vashnia title
 %%%%
 Vv title
 
-流亡的薇薇
+流亡的芙芙
 %%%%
 Xtahua title
 
-古老的西泰华
+古老的扎塔瓦
 %%%%
 Zenata title
 
-塞奈达，西泽的追寻者
+泽娜塔，西泽的追寻者
 %%%%
 %%%%
 Cassandra title
@@ -334,7 +334,7 @@ Cassandra title
 %%%%
 Nobody title
 
-無名者，未被哀悼者的怨恨
+无名氏，未被哀悼者的怨恨
 %%%%
 Sprozz title
 
@@ -342,7 +342,7 @@ Sprozz title
 %%%%
 Wiglaf title
 
-炮手矮人维格拉夫
+炮手矮人威格拉夫
 %%%%
 Xak'krixis title
 

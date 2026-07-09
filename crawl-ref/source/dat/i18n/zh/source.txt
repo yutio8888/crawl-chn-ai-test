@@ -14526,7 +14526,25 @@ Hand of Fortune
 
 %%%%
 hand of Xom
-Xom之手
+佐姆之手
+%%%%
+your hands
+你的双手
+%%%%
+your claws
+你的爪子
+%%%%
+your tentacles
+你的触手
+%%%%
+your paws
+你的爪子
+%%%%
+your talons
+你的利爪
+%%%%
+your hooves
+你的蹄子
 %%%%
 Sinner
 罪人
