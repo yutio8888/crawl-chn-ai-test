@@ -18,9 +18,10 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-CHECK_SCRIPT="$SCRIPT_DIR/zh_runtime_check.py"
-SOURCE_DIR="$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)"
-METRICS_DIR="$SCRIPT_DIR/../metrics/verify"
+CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
+SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)}"
+METRICS_DIR="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
+BOT_MIN_MARKERS="${ZH_RUNTIME_BOT_MIN_MARKERS:-5}"
 
 MODE="${1:-fast}"
 
@@ -39,8 +40,12 @@ run_step() {
     local name="$1"; shift
     echo -e "${YELLOW}[$name]${NC} starting..."
     local step_start=$(date +%s)
-    "$@"
-    local rc=$?
+    local rc=0
+    if "$@"; then
+        rc=0
+    else
+        rc=$?
+    fi
     local elapsed=$(($(date +%s) - step_start))
     if [ $rc -eq 0 ]; then
         echo -e "${GREEN}[$name]${NC} OK (${elapsed}s)"
@@ -98,12 +103,19 @@ run_lua() {
         -extra-opt-first 'language=zh' -test zh_runtime \
         2>"$STDERR_L2" 1>/dev/null
     local rc=$?
-    if grep -q 'FRAME_MARKER: end | ok' "$STDERR_L2"; then
-        echo "  Lua smoke test: OK (end marker found)"
-    else
+    if [ $rc -ne 0 ]; then
+        echo "  Lua smoke test exited with $rc"
+        return 1
+    fi
+    if ! grep -q 'FRAME_MARKER: setup |' "$STDERR_L2"; then
+        echo "  Lua smoke test: setup marker missing (check $STDERR_L2)"
+        return 1
+    fi
+    if ! grep -q 'FRAME_MARKER: end | ok' "$STDERR_L2"; then
         echo "  Lua smoke test: end marker missing (check $STDERR_L2)"
         return 1
     fi
+    echo "  Lua smoke test: OK (setup/end markers found)"
     return 0
 }
 
@@ -128,14 +140,33 @@ run_bot() {
     fi
 
     echo "  Running RC bot..."
+    local timeout_rc=0
     timeout --foreground 120 util/fake_pty ./crawl -seed 1 -no-save -name test \
         -wizard -no-throttle -extra-opt-first 'language=zh' \
         -rc test/stress/zh_ui_check.rc \
-        2>"$STDERR_L3" 1>/dev/null || true
-    # RC bot may timeout (exit 124) if wizard commands hang; treat as soft fail
+        2>"$STDERR_L3" 1>/dev/null || timeout_rc=$?
     local marker_count=$(grep -c 'FRAME_MARKER' "$STDERR_L3" 2>/dev/null || echo 0)
     echo "  RC bot: $marker_count FRAME_MARKER(s) emitted"
-    return 0  # soft fail — bot stability WIP
+    if ! grep -q 'FRAME_MARKER: probe |' "$STDERR_L3"; then
+        echo "  RC bot: probe marker missing"
+        return 1
+    fi
+    if ! grep -q 'FRAME_MARKER: phase:done |' "$STDERR_L3"; then
+        echo "  RC bot: completion marker missing"
+        return 1
+    fi
+    if [ "$marker_count" -lt "$BOT_MIN_MARKERS" ]; then
+        echo "  RC bot: marker count below threshold ($marker_count < $BOT_MIN_MARKERS)"
+        return 1
+    fi
+    if [ "$timeout_rc" -ne 0 ] && [ "$timeout_rc" -ne 124 ]; then
+        echo "  RC bot exited with $timeout_rc"
+        return 1
+    fi
+    if [ "$timeout_rc" -eq 124 ]; then
+        echo "  RC bot timed out after emitting required markers"
+    fi
+    return 0
 }
 
 # ============================================================================

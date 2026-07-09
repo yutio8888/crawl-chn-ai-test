@@ -505,8 +505,8 @@ Output: `FRAME_MARKER: <id> | <content>` (12 markers: probe, items×2, god, 7 pa
 | Tool | Purpose |
 |------|---------|
 | `zh_runtime_check.py` | Python port of all 8 C++ scan rules; parses ZH_ISSUE + FRAME_MARKER; generates baseline-<sha>.json; compares against previous baseline (reports regressions + fixes) |
-| `post_zh_runtime.sh` | Orchestrates all 3 layers in 3 modes: `fast` (aggregate existing logs), `full` (build+run all layers+aggregate), `baseline` (full + write baseline) |
-| `post-coder.sh --full` | Hook at the end of existing post-coder.sh; triggers `post_zh_runtime.sh full` + `fast` for regression check |
+| `post_zh_runtime.sh` | Orchestrates all 3 layers in 3 modes: `fast` (aggregate existing logs), `full` (build+run all layers+aggregate), `baseline` (full + write baseline); returns non-zero on missing markers, runtime regressions, or baseline comparison failures |
+| `post-coder.sh --full` | Hook at the end of existing post-coder.sh; runs the static blocking gate first, then triggers `post_zh_runtime.sh full` + `fast` for regression check |
 
 ```bash
 # Full pipeline
@@ -521,8 +521,9 @@ python3 .claude/scripts/zh_runtime_check.py \
     --baseline .claude/metrics/verify/zh-baseline-<sha>.json
 ```
 
-Baselines live in `.claude/metrics/verify/zh-baseline-<sha>.json`. Current
-baseline: 745 issues (725 Catch2 + 0 Lua + 20 Bot).
+Baselines live in `.claude/metrics/verify/zh-baseline-<sha>.json`.
+Treat the newest committed baseline file as canonical; do not rely on a
+hard-coded issue count in documentation.
 
 ### Verification Checklist (Per Commit)
 
@@ -575,17 +576,25 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
 ```
 
 **Aggregated verification**: After code changes, use these scripts to run checks.
+`post-coder.sh`, `post-translator.sh`, and `post-reviewer.sh` are blocking gates:
+they return non-zero when blocking checks fail and are suitable for CI.
+Within `post-coder.sh`, `scan_string_concat.py` and `smoke_test.sh` are currently
+warning-only, so they surface in the report without blocking the gate.
 Default is fast (seconds); `--full` / `post_zh_runtime.sh` only when explicitly requested
-(they trigger compilation and test execution).
+(they trigger compilation and runtime test execution).
 
 ```bash
-bash .claude/scripts/post-coder.sh       # After code changes (T_() + mprf-p + arg-mismatch + seq-type-mismatch + format-malformed + anti-patterns + string-concat + smoke)
+bash .claude/scripts/post-coder.sh       # After code changes (blocking static gate; string-concat + smoke are warning-only)
 bash .claude/scripts/post-coder.sh --full # Same as above + catch2 (L1) + dlua (L2) + RC bot (L3) + aggregation
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
 bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)
 bash .claude/scripts/post_zh_runtime.sh fast  # Runtime regression check from existing logs (seconds)
 bash .claude/scripts/post_zh_runtime.sh full  # Build + run all 3 layers + aggregate (minutes)
 ```
+
+**CI integration**: `.github/workflows/ci.yml` now includes two dedicated jobs:
+`ZH Tooling Tests` runs `.claude/scripts/tests/run_all.sh`, and `ZH Static Checks`
+runs `bash .claude/scripts/post-coder.sh`.
 
 ### String Concatenation Scanner (`scan_string_concat.py`)
 

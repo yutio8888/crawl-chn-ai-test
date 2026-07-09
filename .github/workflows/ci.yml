@@ -9,6 +9,48 @@ on:
 
 permissions: {}
 jobs:
+  zh_tooling_tests:
+    permissions:
+      contents: read
+
+    name: ZH Tooling Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+      - name: Install tooling test dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tree-sitter tree-sitter-cpp pyyaml
+      - name: Run tooling tests
+        run: bash .claude/scripts/tests/run_all.sh
+
+  zh_static_checks:
+    permissions:
+      contents: read
+
+    name: ZH Static Checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+      - name: Install static check dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install tree-sitter tree-sitter-cpp pyyaml
+      - name: Run Chinese localization static gate
+        run: bash .claude/scripts/post-coder.sh
+
   linting:
     permissions:
       contents: read #  to fetch code (actions/checkout)

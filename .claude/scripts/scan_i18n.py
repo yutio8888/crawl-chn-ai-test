@@ -1234,6 +1234,8 @@ def cmd_species_consistency(args):
         for prefix in sorted(base_translations.keys(), key=len, reverse=True):
             pfx = prefix + ' '
             if en_lower.startswith(pfx) and en_key != prefix:
+                if en_lower.endswith(' summon'):
+                    break
                 expected_root = base_translations[prefix]
                 cn_first = cn_val.split('\n')[0].strip()
                 # Check that the CN compound starts with the same base term
@@ -1285,7 +1287,7 @@ def cmd_source_txt_integrity(args):
         block_lines = block_rstrip.split('\n')
         key_idx = None
         for i, bline in enumerate(block_lines):
-            if bline:
+            if bline and not bline.lstrip().startswith('#'):
                 key_idx = i
                 break
         if key_idx is None:

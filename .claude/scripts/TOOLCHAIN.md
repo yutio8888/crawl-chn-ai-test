@@ -169,12 +169,13 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
 ### 聚合验证脚本（推荐使用，替代单独运行）
 
 ```bash
-bash .claude/scripts/post-coder.sh       # 代码修改后: T_() + 数据驱动 + mprf-p + arg-mismatch + anti-patterns + smoke
-bash .claude/scripts/post-translator.sh  # 翻译后: validate-terms + format + @keyword@
-bash .claude/scripts/post-reviewer.sh    # 审查后: all consistency + cross-file terms + anti-patterns(lenient)
+bash .claude/scripts/post-coder.sh       # 代码修改后: 阻断 gate；string-concat / smoke 为 warning-only
+bash .claude/scripts/post-translator.sh  # 翻译后: 阻断 gate；validate-terms + format + @keyword@
+bash .claude/scripts/post-reviewer.sh    # 审查后: 阻断 gate；all consistency + cross-file terms
 ```
 
 所有输出写入 `.claude/metrics/verify/<agent>-<timestamp>.log`，编排者直接读取原始日志。
+这三个脚本在存在 blocking failure 时都会以非零退出，适合本地 gate 和 CI 直接复用。
 
 ### split_source.py — source.txt 条目拆分
 
@@ -204,6 +205,7 @@ bash .claude/scripts/post-translator.sh
 
 ```bash
 bash .claude/scripts/post-coder.sh
+bash .claude/scripts/post-coder.sh --full   # 需要显式触发 L1-L3 运行时链路时使用
 ```
 
 ### 提交前审查
@@ -231,6 +233,7 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 
 ```bash
 bash .claude/scripts/check_checkpoint.sh && \
+bash .claude/scripts/tests/run_all.sh && \
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
@@ -256,6 +259,11 @@ cd crawl-ref/source && make -j4
 | `check_consistency.sh` | 所有模式 `--strict` | 1（有违规） |
 | `check_consistency.sh` | 所有模式（无 --strict） | 0（向后兼容） |
 | `cross_file_terms.py` | — | 1（有跨文件问题） |
+| `post-coder.sh` | 默认 | 1（有 blocking failure），0（仅 warning 或全通过） |
+| `post-coder.sh` | `--full` | 1（静态 gate 或 L1-L3 / baseline 聚合失败） |
+| `post-translator.sh` | 默认 | 1（有 blocking failure） |
+| `post-reviewer.sh` | 默认 | 1（有 blocking failure） |
+| `post_zh_runtime.sh` | `fast`, `full`, `baseline` | 1+（任一层或聚合失败，含 marker/baseline 回归） |
 | `smoke_test.sh` | — | 0（始终，警告不阻断） |
 | `check_checkpoint.sh` | — | 0=当前, 2=建议更新, 3=强烈建议 |
 | `record_review.sh` | — | 1（无效 JSON） |

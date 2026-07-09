@@ -9,34 +9,49 @@ set -euo pipefail
 TS=$(date -Iseconds | tr : -)
 OUT=".claude/metrics/verify/reviewer-${TS}.log"
 mkdir -p .claude/metrics/verify
+FAILURES=0
+
+run_check() {
+    local title="$1"
+    shift
+
+    echo "--- ${title} ---"
+    if "$@" 2>&1; then
+        echo "RESULT: PASS"
+    else
+        local rc=$?
+        echo "RESULT: FAIL (exit ${rc})"
+        FAILURES=$((FAILURES + 1))
+    fi
+    echo ""
+}
 
 {
     echo "=== post-reviewer.sh @ ${TS} ==="
     echo ""
-    bash .claude/scripts/check_consistency.sh --all --strict 2>&1 || true
-    echo ""
-    echo "--- Source.txt integrity ---"
-    python3 .claude/scripts/scan_i18n.py source-txt-integrity \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
-    echo ""
-    echo "--- Term validation (rejected names from decisions.md) ---"
-    python3 .claude/scripts/scan_i18n.py validate-terms \
+    run_check "Database consistency (--all --strict)" \
+        bash .claude/scripts/check_consistency.sh --all --strict
+    run_check "Source.txt integrity" \
+        python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Term validation (rejected names from decisions.md)" \
+        python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
-    echo ""
-    echo "--- Cross-file term consistency ---"
-    python3 .claude/scripts/cross_file_terms.py \
-        crawl-ref/source/dat/i18n/zh/ 2>&1 || true
-    echo ""
-    echo "--- Species term consistency ---"
-    python3 .claude/scripts/scan_i18n.py species-consistency \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt 2>&1 || true
-    echo ""
-    echo "--- Anti-patterns (strict + lenient) ---"
-    python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ 2>&1 || true
-    echo ""
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Cross-file term consistency" \
+        python3 .claude/scripts/cross_file_terms.py \
+        crawl-ref/source/dat/i18n/zh/
+    run_check "Species term consistency" \
+        python3 .claude/scripts/scan_i18n.py species-consistency \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Anti-patterns (strict + lenient)" \
+        python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/
+    echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-reviewer.sh complete ==="
 } > "$OUT" 2>&1
 
 echo "Verification report: $OUT"
+if [ "$FAILURES" -gt 0 ]; then
+    exit 1
+fi
 exit 0
