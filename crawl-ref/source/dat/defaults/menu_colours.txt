@@ -44,7 +44,7 @@ menu += lightmagenta:佐特.*(球|珠)
 #
 menu += lightcyan:unrand.*artefact
 # CN: unrandart
-menu += lightcyan:随机.*神器
+menu += lightcyan:非随机.*神器
 
 menu += white:.*artefact.*
 # CN: artefact
