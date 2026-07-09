@@ -9,21 +9,25 @@ runrest_ignore_monster += ^butterfly$:1
 runrest_ignore_monster += ^蝴蝶$:1
 runrest_ignore_monster += ^wandering mushroom$:1
 # CN: wandering mushroom monster name
-runrest_ignore_monster += ^游荡蘑菇$:1
+runrest_ignore_monster += ^游走蘑菇$:1
 delay_safe_poison = 80:100
 
 note_items    += acquirement, of Zot
 # CN: acquirement item / Zot rune
 note_items    += 获取, 佐特
 note_messages += Your scales start
+# CN: transformation start
+note_messages += 鳞片
 note_messages += protects you from harm
 # CN: harm protection message
 note_messages += 保护你免受.*伤害
 note_messages += You (fall|are sucked) into a shaft
+# CN: shaft fall
+note_messages += (掉进|被吸).*竖井
 note_monsters += orb of fire, orb of winter, orb of entropy
 note_monsters += ancient lich, dread lich, Sigmund
 # CN: note_monsters Chinese names
-note_monsters += 火焰之球, 凛冬之球, 熵之球
+note_monsters += 火焰之球, 寒冬之球, 熵之球
 note_monsters += 远古巫妖, 恐怖巫妖, 西格蒙德
 
 monster_item_view_features += stair, trap, runelight
