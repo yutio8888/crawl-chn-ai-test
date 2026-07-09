@@ -223,6 +223,46 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 Pick whichever matches the tool that actually generated the change. The repo
 history is mixed; both forms are acceptable.
 
+## Default init.txt Configuration
+
+`crawl-ref/source/init.txt` (gitignored — user-local config) must contain:
+
+```ini
+language = zh
+# Unified Maple Mono NF CN for all tile fonts
+tile_font_crt_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_msg_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_stat_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_tip_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_lbl_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+```
+
+This file must be copied alongside `crawl.exe` and data files on every deployment.
+
+## Windows Tiles Deployment
+
+```bash
+# Cross-compile
+make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+
+# Deploy to D: drive (adjust target path as needed)
+TARGET=/mnt/d/crawl-game
+cp -f crawl.exe "$TARGET/"
+cp -f dat/i18n/zh/source.txt "$TARGET/dat/i18n/zh/"
+cp -f dat/descript/zh/species.txt "$TARGET/dat/descript/zh/"
+cp -f dat/descript/zh/backgrounds.txt "$TARGET/dat/descript/zh/"
+cp -f init.txt "$TARGET/"
+```
+
+Key files to always deploy:
+| File | Purpose |
+|------|---------|
+| `crawl.exe` | Cross-compiled Windows tiles binary |
+| `dat/i18n/zh/source.txt` | T_() string translations |
+| `dat/descript/zh/species.txt` | Species descriptions |
+| `dat/descript/zh/backgrounds.txt` | Background descriptions |
+| `init.txt` | Language + font configuration |
+
 ## Pointer to CLAUDE.md (for shared knowledge)
 
 The following topics are documented in `CLAUDE.md` and **not duplicated here**

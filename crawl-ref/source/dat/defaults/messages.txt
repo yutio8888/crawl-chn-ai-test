@@ -241,16 +241,12 @@ force_more_message += Your scales start
 force_more_message += 你的鳞片
 force_more_message += You (fall|are sucked) into a shaft
 # Chinese translation compatibility
-force_more_message += (掉进|被吸).*竖井
+force_more_message += 你.*入竖井，掉了.*层
 force_more_message += You fall into the water!
 # Chinese translation compatibility
-force_more_message += 掉进了水
+force_more_message += 陷入了齐腰深的水中
 force_more_message += You fall into the lava!
-# Chinese translation compatibility
-force_more_message += 掉进了熔岩
 force_more_message += You focus on prolonging your flight
-# Chinese translation compatibility
-force_more_message += 延长飞行
 force_more_message += Marking area around .* as unsafe
 # Chinese translation compatibility
 force_more_message += 标记.*为旅行不安全
@@ -258,8 +254,6 @@ force_more_message += breaks free of your control
 # Chinese translation compatibility
 force_more_message += 挣脱.*掌控
 force_more_message += doesn't seem very happy
-# Chinese translation compatibility
-force_more_message += 似乎不太高兴
 force_more_message += You rejoin the land of the living
 # Chinese translation compatibility
 force_more_message += 回到了生者的国度
@@ -342,8 +336,6 @@ force_more_message += hear a distant wind
 # Chinese translation compatibility
 force_more_message += 远处的风声
 force_more_message += Beware! This is a limited time offer
-# Chinese translation compatibility
-force_more_message += 限时优惠
 
 # Religion
 force_more_message += press .* to convert to Beogh
@@ -359,17 +351,11 @@ force_more_message += 失去了信仰
 # Dangerous weapons
 force_more_message += is wielding.*distortion
 # Chinese translation compatibility
-force_more_message += 扭曲武器
+force_more_message += .*扭曲武器$
 # dancing weapons require special handling...
 force_more_message += there is a.*distortion
-# Chinese translation compatibility
-force_more_message += 扭曲.*出现
 force_more_message += of distortion comes into view
-# Chinese translation compatibility
-force_more_message += 扭曲.*出现
 force_more_message += encounter a dancing.* distortion
-# Chinese translation compatibility
-force_more_message += 舞动.*扭曲
 
 # Banishment
 force_more_message += You are cast into the Abyss
@@ -420,7 +406,7 @@ force_more_message += 佐特.*符文
 # Water nymph stair temp-drowning - people seem to miss these...
 force_more_message += watery aura .* (staircase|hatch)
 # Chinese translation compatibility
-force_more_message += 水灵光环.*(楼梯|舱口)
+force_more_message += 水灵光环.*笼罩了
 
 # Generally exciting things that are somewhat automated
 force_more_message += You pick up the .* rune and feel its power
@@ -428,7 +414,7 @@ force_more_message += You pick up the .* rune and feel its power
 force_more_message += 捡起了.*符文.*力量
 force_more_message += You pick up the .* gem and feel its .* weight
 # Chinese translation compatibility
-force_more_message += 捡起了.*宝石.*轻盈
+force_more_message += 捡起了.*并感受到.*轻盈
 
 # Rune unlock
 force_more_message += The lock glows eerily
@@ -463,7 +449,7 @@ force_more_message += grants you (a gift|throwing weapons|a weapon)
 force_more_message += 赐予了你.*(礼物|武器|投掷武器)
 force_more_message += offers you (knowledge of|a choice of)
 # Chinese translation compatibility
-force_more_message += 赋予你.*知识|让你挑选
+force_more_message += 赐予你.*知识|让你从.*中挑选
 force_more_message += will grant you a choice
 # Chinese translation compatibility
 force_more_message += 让你.*挑选
@@ -490,8 +476,6 @@ force_more_message += will allow you to brand your body
 force_more_message += 允许.*烙印.*印记
 
 force_more_message += Beogh speaks to you:
-# Chinese translation compatibility
-force_more_message += 比欧弗.*对你说
 
 # Xom doing things you really shouldn't miss
 force_more_message += is forced to slowly start .* word of recall
@@ -514,16 +498,16 @@ force_more_message += You bow before the missionary of Beogh
 force_more_message += 在.*传教士面前鞠躬
 force_more_message += You .* the altar of
 # Chinese translation compatibility
-force_more_message += 了.*祭坛
+force_more_message += 你.*了.*的祭坛
 force_more_message += will bless one of your weapons
 # Chinese translation compatibility
-force_more_message += 祝福.*武器
+force_more_message += 为你的武器加持|祝福你的武器
 force_more_message += will bloody your weapon with pain
 # Chinese translation compatibility
-force_more_message += 武器加持痛苦
+force_more_message += 为你的武器加持痛苦
 force_more_message += will brand one of your weapons
 # Chinese translation compatibility
-force_more_message += 用扭曲腐蚀.*武器|武器加持
+force_more_message += 用扭曲腐蚀你的武器
 force_more_message += It is a scroll of amnesia
 # Chinese translation compatibility
 force_more_message += 遗忘卷轴
