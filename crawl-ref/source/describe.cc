@@ -5906,19 +5906,26 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
         result << (T_(" with "));
         if (weapon == nullptr)
         {
-            // Translate common hand names via T_()
+            // Match against the English plural form returned by
+            // hand_name(true) — in ZH mode hand_name may return
+            // Chinese (C_ translation) or singular English (fallback),
+            // neither of which will match, so we handle that in the else.
             static const map<string, string> hand_names = {
-                { "hand",     T_("your hand") },
-                { "claw",     T_("your claw") },
-                { "tentacle", T_("your tentacle") },
-                { "paw",      T_("your paw") },
-                { "talon",    T_("your talon") },
-                { "hoof",     T_("your hoof") },
+                { "hands",     T_("your hands") },
+                { "claws",     T_("your claws") },
+                { "tentacles", T_("your tentacles") },
+                { "paws",      T_("your paws") },
+                { "talons",    T_("your talons") },
+                { "hooves",    T_("your hooves") },
             };
             const string hand_en = you.hand_name(true);
             auto it = hand_names.find(hand_en);
             if (it != hand_names.end())
                 result << it->second;
+            else if (Options.language == lang_t::ZH)
+                // hand_name returned Chinese body part (C_ translation)
+                // or English singular — no "your" needed in Chinese.
+                result << hand_en;
             else
                 result << T_("your ") << hand_en;
         }
