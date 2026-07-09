@@ -486,6 +486,78 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-A-033 — polter- root unification → 骚灵系
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review
+- **Choice**: Unify `polter-` root under 骚灵
+  - `poltergeist → 骚灵`
+  - `polterguardian → 骚灵护卫` (no change needed)
+- **Rejected**: 吵闹鬼 (too literal, "noisy ghost" misses restless-spirit connotation); 喧灵系 (viable alternative, but 骚灵 is more established in Chinese gaming)
+- **Rationale**: 骚灵 (restless spirit) is the standard Chinese fantasy translation for "poltergeist" — matches the German root "poltern" (to rumble/make noise). 吵闹鬼 is too literal and loses the ethereal quality. Unifying under 骚灵 makes `polterguardian` predictable from `poltergeist`.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅ (`poltergeist`)
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-A-034 — cacodemon → 恶灵恶魔
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review
+- **Choice**: 恶灵恶魔
+- **Rejected**: 恶灵 (loses demon classification — 混入幽灵系); 恶灵魔 (unnecessary shortening)
+- **Rationale**: Preserves both the "evil spirit" (恶灵) character of the original and the demon classification (恶魔). All other demon-type monsters use 恶魔 as their base classifier; `cacodemon` should not be an exception. 恶灵恶魔 keeps the unique flavor while maintaining terminological consistency.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-A-035 — fiend → 邪魔 (统一)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review
+- **Choice**: All fiends → 邪魔
+  - `Ice Fiend → 冰霜邪魔`
+  - `Brimstone Fiend → 硫磺邪魔`
+  - `shadow fiend → 暗影邪魔`
+- **Rejected**: 恶魔 (overlaps with demon classification, losing the distinct fiend identity); mixed 邪魔/恶魔 (inconsistent)
+- **Rationale**: 邪魔 conveys a more malevolent/sinister connotation than the relatively neutral 恶魔 — appropriate for fiend-type creatures. The project distinguishes between demon, fiend, and devil as three separate creature families; using distinct classifiers preserves this distinction in Chinese.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅ (Ice Fiend, Brimstone Fiend, shadow fiend)
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
+### D-A-036 — vampire → 吸血鬼 (基名统一)
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-09
+- **Source**: Issue 49 monster name terminology review
+- **Choice**: Base monster name `vampire → 吸血鬼`, compounds follow 吸血鬼 pattern
+  - `vampire (monster) → 吸血鬼`
+  - `vampire bat → 吸血鬼蝙蝠`
+  - Existing: vampire knight/mage/bloodprince → 吸血鬼骑士/法师/血王子 (no change)
+- **Rejected**: 吸血 (base form reads as verb/adjective "bloodsucking" rather than noun "vampire"; inconsistent with all compound forms)
+- **Rationale**: The base monster name `vampire` is a noun (the creature), not an adjective. Using 吸血 for the base form creates a noun/adjective inconsistency with all compound forms (吸血鬼骑士, 吸血鬼法师) where 吸血鬼 is the noun prefix. Vampire bat is also a creature name, so follows the same pattern.
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅
+- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Resolved**: 2026-07-09
+
+---
+
 ## Type-B: Rule Rulings (style/grammar/formatting conventions)
 
 ---
@@ -832,6 +904,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-005 | Vehumet | 维胡梅特 | active — all ✅ |
 | D-A-006 | The Shining One | 光辉者 | active — all ✅ |
 | D-A-032 | cane toad | 海蟾蜍 | active ✅ |
+| D-A-033 | polter- root | 骚灵系 | active ✅ |
+| D-A-034 | cacodemon | 恶灵恶魔 | active ✅ |
+| D-A-035 | fiend | 邪魔（统一） | active ✅ |
+| D-A-036 | vampire | 吸血鬼 | active ✅ |
 | D-B-001 | Brand genitive | 之 | active |
 | D-B-002 | List separators | 、+ 和 | active |
 | D-B-003 | article_a | skip in ZH | active |

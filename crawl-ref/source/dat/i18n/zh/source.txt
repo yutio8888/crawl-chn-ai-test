@@ -11929,7 +11929,7 @@ spectral
 幻影
 %%%%
 vampire
-
+吸血鬼
 吸血
 %%%%
 sensed
@@ -31817,7 +31817,7 @@ Boris
 鲍里斯
 %%%%
 Brimstone Fiend
-硫磺恶魔
+硫磺邪魔
 %%%%
 Cassandra
 卡珊德拉
@@ -32222,7 +32222,7 @@ butterfly
 蝴蝶
 %%%%
 cacodemon
-恶灵
+恶灵恶魔
 %%%%
 cactus giant
 仙人掌巨人
@@ -33020,7 +33020,7 @@ polar bear
 北极熊
 %%%%
 poltergeist
-吵闹鬼
+骚灵
 %%%%
 porcupine
 豪猪
@@ -33152,7 +33152,7 @@ shadow dragon
 暗影龙
 %%%%
 shadow fiend
-暗影恶魔
+暗影邪魔
 %%%%
 shadow imp
 暗影小恶魔
@@ -33368,7 +33368,7 @@ unseen horror
 无形恐怖
 %%%%
 vampire bat
-吸血蝙蝠
+吸血鬼蝙蝠
 %%%%
 vapour
 蒸汽
