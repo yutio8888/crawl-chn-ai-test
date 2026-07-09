@@ -679,10 +679,12 @@ static string _getWeightedString(TextDB &db, const string &key,
 
     if (db.translation)
         result = _database_fetch(db.translation->get(), canonical_key);
-    if (!_database_has_entry(result))
+    // _database_has_entry returns true even for zero-length (dsize == 0)
+    // entries — treat those as not found so we fall back to the base DB.
+    if (!_database_has_entry(result) || result.dsize == 0)
         result = _database_fetch(db.get(), canonical_key);
 
-    if (!_database_has_entry(result))
+    if (!_database_has_entry(result) || result.dsize == 0)
     {
         // Try ignoring the suffix.
         canonical_key = key;
@@ -691,15 +693,17 @@ static string _getWeightedString(TextDB &db, const string &key,
         // Query the DB.
         if (db.translation)
             result = _database_fetch(db.translation->get(), canonical_key);
-        if (!_database_has_entry(result))
+        if (!_database_has_entry(result) || result.dsize == 0)
             result = _database_fetch(db.get(), canonical_key);
 
-        if (!_database_has_entry(result))
+        if (!_database_has_entry(result) || result.dsize == 0)
             return "";
     }
 
     // Cons up a (C++) string to return. The caller must release it.
     string str = string((const char *)result.dptr, result.dsize);
+    if (str.empty())
+        return "";
 
     return _chooseStrByWeight(str, fixed_weight);
 }
