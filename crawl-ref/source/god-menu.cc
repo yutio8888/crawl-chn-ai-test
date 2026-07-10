@@ -23,8 +23,11 @@ GodMenuEntry::GodMenuEntry(god_type god_, bool long_name) :
         hotkeys.push_back('1');
     else
     {
-        hotkeys.push_back(text.at(0));
-        hotkeys.push_back(toalower(text.at(0)));
+        // Use the first letter of the English short name as the hotkey,
+        // so that Chinese (CJK) display names don't break keyboard shortcuts.
+        const char key_char = _god_name_en(god)[0];
+        hotkeys.push_back(key_char);
+        hotkeys.push_back(toalower(key_char));
     }
     int c = god_message_altar_colour(god);
     colour_text = colour_to_str(c);
