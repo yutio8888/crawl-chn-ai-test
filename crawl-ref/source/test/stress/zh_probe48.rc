@@ -1,0 +1,53 @@
+name = zh_probe48
+species = mu
+background = ck
+weapon = mace
+restart_after_game = false
+show_more = false
+
+Lua{
+local eol  = string.char(13)
+local esc  = string.char(27)
+local action = 0
+
+local function emit(case_id, text)
+    if text == nil then text = "<nil>" end
+    local one_line = tostring(text):gsub("\r\n", "\\n"):gsub("\n", "\\n")
+    crawl.stderr("FRAME_MARKER: " .. case_id .. " | " .. one_line .. eol)
+end
+
+function ready()
+    action = action + 1
+
+    if action == 1 then
+        crawl.enable_more(false)
+        crawl.set_sendkeys_errors(true)
+        crawl.sendkeys("&yes" .. eol .. esc)
+    elseif action == 2 then
+        emit("probe", "lang=" .. crawl.language())
+        -- Path 1: unidentified unrand appearance name (unid_name path)
+        crawl.sendkeys("&o)singing sword" .. eol .. esc)
+    elseif action == 3 then
+        crawl.sendkeys(".")
+    elseif action == 4 then
+        local msgs = crawl.messages(30) or ""
+        emit("path1:unid_appearance_msg", msgs)
+        crawl.sendkeys(".")
+    elseif action == 5 then
+        -- Path 3: create the Enchantress (Sorceress Queen) and read its name
+        crawl.sendkeys("&Menchantress" .. eol)
+    elseif action == 6 then
+        crawl.sendkeys(".")
+    elseif action == 7 then
+        local msgs = crawl.messages(30) or ""
+        emit("path3:enchantress_msg", msgs)
+        crawl.sendkeys(".")
+    elseif action == 8 then
+        emit("phase:done", "done")
+        crawl.sendkeys(esc)
+        crawl.sendkeys("&Q" .. eol .. "yes" .. eol)
+    else
+        crawl.sendkeys(esc)
+    end
+end
+}
