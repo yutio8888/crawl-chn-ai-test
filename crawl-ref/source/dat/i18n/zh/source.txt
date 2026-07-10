@@ -24152,7 +24152,7 @@ You %1$svisited the chambers of the Necropolis %2$d time
 
 %%%%
 You %1$s%2$s %3$d ziggurat
-你%2$s了%3$d座ziggurat
+你%2$s了%3$d座金字塔
 
 %%%%
 completed
