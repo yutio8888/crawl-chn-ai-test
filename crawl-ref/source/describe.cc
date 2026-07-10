@@ -3663,13 +3663,16 @@ bool describe_feature_wide(const coord_def& pos, bool do_actions)
 void describe_feature_type(dungeon_feature_type feat)
 {
     describe_info inf;
+    // Display title: use locale-aware (T_()'d) feature description.
     string name = feature_description(feat, NUM_TRAPS, "", DESC_A,
                                       NUM_BRANCHES);
     string title = uppercase_first(name);
     if (!ends_with(title, ".") && !ends_with(title, "!") && !ends_with(title, "?"))
         title += ".";
     inf.title = title;
-    inf.body << getLongDescription(name);
+    // DB lookup: use raw English name so TextDB keys match (same pattern as
+    // card_name_en / cloud_type_name_en / Monster _mons_desc_key fix).
+    inf.body << getLongDescription(get_feature_def(feat).name);
 #ifdef USE_TILE
     const tileidx_t idx = tileidx_feature_base(feat);
     tile_def tile = tile_def(idx);
