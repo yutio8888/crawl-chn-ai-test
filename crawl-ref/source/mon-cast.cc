@@ -8783,9 +8783,9 @@ static void _speech_keys(vector<string>& key_list,
 
     // No "the Serpent of Hell". (Its genus doesn't start with "the ", but
     // just in case that changes...)
-    string mon_type = remove_prepended_the(mons_type_name(mons->type, DESC_PLAIN));
-    string spe_type = remove_prepended_the(mons_type_name(mons_species(mons->type), DESC_PLAIN));
-    string gen_type = remove_prepended_the(mons_type_name(mons_genus(mons->type), DESC_PLAIN));
+    string mon_type = remove_prepended_the(mons_type_name(mons->type, DESC_DBNAME));
+    string spe_type = remove_prepended_the(mons_type_name(mons_species(mons->type), DESC_DBNAME));
+    string gen_type = remove_prepended_the(mons_type_name(mons_genus(mons->type), DESC_DBNAME));
 
     key_list.push_back(spell_name + " " + mon_type + cast_str);
     key_list.push_back(spell_name + " " + spe_type + cast_str);
@@ -8793,7 +8793,7 @@ static void _speech_keys(vector<string>& key_list,
 
     if (wizard)
     {
-        key_list.push_back(make_stringf(T_("%s %swizard%s"),
+        key_list.push_back(make_stringf("%s %swizard%s",
                                spell_name.c_str(),
                                mon_shape_is_humanoid(shape) ? ""
                                                             : "non-humanoid ",
@@ -8838,7 +8838,7 @@ static void _speech_keys(vector<string>& key_list,
     // Last, generic wizard, priest or magical.
     if (wizard)
     {
-        key_list.push_back(make_stringf(T_("%swizard%s"),
+        key_list.push_back(make_stringf("%swizard%s",
                                mon_shape_is_humanoid(shape) ? ""
                                                             : "non-humanoid ",
                                cast_str.c_str()));
