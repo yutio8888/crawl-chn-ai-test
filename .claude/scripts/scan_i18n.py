@@ -1277,14 +1277,14 @@ def cmd_monster_compound_consistency(args):
         print("ERROR: Could not parse source.txt")
         return 1
 
-    rules = [
+    token_rules = [
         {
-            "en_base": "fiend",
+            "rule_id": "fiend",
             "zh_token": "邪魔",
             "match": lambda key: key.endswith(" fiend"),
         },
         {
-            "en_base": "vampire",
+            "rule_id": "vampire",
             "zh_token": "吸血鬼",
             "match": lambda key: (
                 key == "vampire"
@@ -1293,41 +1293,68 @@ def cmd_monster_compound_consistency(args):
             ),
         },
         {
-            "en_base": "skeleton",
+            "rule_id": "skeleton",
             "zh_token": "骷髅",
             "match": lambda key: key == "skeleton" or key.endswith(" skeleton"),
         },
         {
-            "en_base": "wraith",
+            "rule_id": "wraith",
             "zh_token": "幽魂",
             "match": lambda key: key == "wraith" or key.endswith(" wraith"),
         },
     ]
 
+    exact_rules = {
+        # D-A-026 — sensed monster naming family
+        "sensed monster": "感知到的怪物",
+        "trivial sensed monster": "微弱感知怪物",
+        "easy sensed monster": "简单感知怪物",
+        "tough sensed monster": "困难感知怪物",
+        "nasty sensed monster": "危险感知怪物",
+        "friendly sensed monster": "友善感知怪物",
+        # D-B-012 — monster orb naming pattern (entity names only)
+        "great orb of eyes": "巨眼之球",
+        "orb of entropy": "熵之球",
+        "orb of fire": "火焰之球",
+        "orb of winter": "寒冬之球",
+        "orb of Dispater": "迪斯帕特之球",
+    }
+
     findings = []
     for en_key, cn_val in entries.items():
         cn_first = cn_val.split('\n')[0].strip()
-        for rule in rules:
+        for rule in token_rules:
             if rule["match"](en_key):
                 if rule["zh_token"] not in cn_first:
                     findings.append((
-                        rule["en_base"], rule["zh_token"], en_key, cn_first
+                        "token", rule["rule_id"], rule["zh_token"], en_key, cn_first
                     ))
                 break
 
+        if en_key in exact_rules and cn_first != exact_rules[en_key]:
+            findings.append((
+                "exact", en_key, exact_rules[en_key], en_key, cn_first
+            ))
+
     if findings:
         print("=== MONSTER-COMPOUND-CONSISTENCY — base term mismatch ===")
-        print("  Monster compounds should reuse the established base-term")
-        print("  translation from docs/decisions.md.")
+        print("  Monster naming families should follow the established")
+        print("  rulings from docs/decisions.md.")
         print()
-        for en_base, zh_token, en_key, cn_first in sorted(findings):
-            print(f"  {en_base} → {zh_token}")
+        for kind, rule_id, expected, en_key, cn_first in sorted(findings):
+            if kind == "token":
+                print(f"  {rule_id} → contains {expected}")
+            else:
+                print(f"  {rule_id} → exactly {expected}")
             print(f"    {en_key} → {cn_first}")
             print()
         print(f"  → {len(findings)} inconsistency/ies")
         return 1
 
-    print(f"OK: All monitored monster compounds follow {len(rules)} base-term rulings.")
+    print(
+        "OK: All monitored monster naming families follow "
+        f"{len(token_rules)} token rulings and {len(exact_rules)} exact rulings."
+    )
     return 0
 
 
