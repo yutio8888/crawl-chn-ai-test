@@ -7,9 +7,11 @@ show_more = false
 
 # Issue 52 - help-system (?/ lookup) L3 RC bot.
 #
-# Drives the ?/ lookup menu for all 14 help types plus a spell-school stage.
-# For each type it opens the lookup menu, selects the first item ('a') to view
-# its description, then backs out. Emits one status marker per type:
+# Drives the ?/ lookup menu for all 14 help types + spell_school + 7 text-search
+# stages (22 total). The 7 text stages use actual search terms (e.g. "rat" for
+# monster, "dagger" for item) to trigger the description display, covering the
+# full search→match→describe path that the empty-search stages skip.
+# Emits one status marker per stage:
 #
 #   FRAME_MARKER: help:<type>:<status> | <sample>
 #
@@ -43,7 +45,7 @@ local esc=string.char(27)
 local ESC4=esc..esc..esc..esc
 local action=0
 local done_sent=false
-local stages={ {t="god",keys="?/g".."a"..ESC4},{t="branch",keys="?/b".."a"..ESC4},{t="cloud",keys="?/l".."a"..ESC4},{t="card",keys="?/c".."a"..ESC4},{t="skill",keys="?/k".."a"..ESC4},{t="passive",keys="?/p".."a"..ESC4},{t="status",keys="?/t".."a"..ESC4},{t="monster",keys="?/m"..eol.."a"..ESC4},{t="spell",keys="?/s"..eol.."a"..ESC4},{t="ability",keys="?/a"..eol.."a"..ESC4},{t="feature",keys="?/f"..eol.."a"..ESC4},{t="item",keys="?/i"..eol.."a"..ESC4},{t="mutation",keys="?/u"..eol.."a"..ESC4},{t="bane",keys="?/n"..eol.."a"..ESC4},{t="spell_school",keys="?/s".."@Fire"..eol.."a"..ESC4},{t="text:spell",keys="?/s".."火球"..eol.."a"..ESC4},{t="text:ability",keys="?/a".."狂暴"..eol.."a"..ESC4},{t="text:mutation",keys="?/u".."利爪"..eol.."a"..ESC4},{t="text:feature",keys="?/f".."wall"..eol.."a"..ESC4},{t="text:bane",keys="?/n".."lethargy"..eol.."a"..ESC4}, }
+local stages={ {t="god",keys="?/g".."a"..ESC4},{t="branch",keys="?/b".."a"..ESC4},{t="cloud",keys="?/l".."a"..ESC4},{t="card",keys="?/c".."a"..ESC4},{t="skill",keys="?/k".."a"..ESC4},{t="passive",keys="?/p".."a"..ESC4},{t="status",keys="?/t".."a"..ESC4},{t="monster",keys="?/m"..eol.."a"..ESC4},{t="spell",keys="?/s"..eol.."a"..ESC4},{t="ability",keys="?/a"..eol.."a"..ESC4},{t="feature",keys="?/f"..eol.."a"..ESC4},{t="item",keys="?/i"..eol.."a"..ESC4},{t="mutation",keys="?/u"..eol.."a"..ESC4},{t="bane",keys="?/n"..eol.."a"..ESC4},{t="spell_school",keys="?/s".."@Fire"..eol.."a"..ESC4},{t="text:spell",keys="?/s".."火球"..eol.."a"..ESC4},{t="text:ability",keys="?/a".."狂暴"..eol.."a"..ESC4},{t="text:mutation",keys="?/u".."利爪"..eol.."a"..ESC4},{t="text:feature",keys="?/f".."wall"..eol.."a"..ESC4},{t="text:bane",keys="?/n".."lethargy"..eol.."a"..ESC4},{t="text:monster",keys="?/m".."rat"..eol.."a"..ESC4},{t="text:item",keys="?/i".."dagger"..eol.."a"..ESC4}, }
 local pending=nil
 local function sample_of(text)
     if text == nil then text = "" end
