@@ -3833,7 +3833,7 @@ Decay
 腐朽
 %%%%
 decaying skeleton
-腐烂的骸骨
+腐烂的骷髅
 %%%%
 Decks of power:\n
 力量牌组：\n
@@ -10473,7 +10473,7 @@ You savour every drop.
 你细细品味每一滴。
 %%%%
 You scatter into a swarm of vampire bats!
-你四散化为了一群吸血蝙蝠！
+你四散化为了一群吸血鬼蝙蝠！
 %%%%
 You see a ghostly outline there, and the spell fizzles.
 你看到那里有一个鬼影轮廓，法术失败了。
@@ -18252,7 +18252,7 @@ fragment of death
 死亡碎片
 %%%%
 swarm of vampire bats
-吸血蝙蝠群
+吸血鬼蝙蝠群
 %%%%
 grasping water
 缠绕之水

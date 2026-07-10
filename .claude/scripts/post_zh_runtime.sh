@@ -88,10 +88,15 @@ STDERR_L2="$METRICS_DIR/lua-stderr.log"
 
 run_lua() {
     cd "$SOURCE_DIR"
-    # Always rebuild debug here: L3 may leave ./crawl as a non-debug binary,
-    # and timestamp-only reuse causes flaky "-test" failures on subsequent runs.
+    echo "  Building DB cache..."
+    make builddb > "$METRICS_DIR/lua-build.log" 2>&1 || {
+        echo "  builddb failed (see $METRICS_DIR/lua-build.log)"
+        return 1
+    }
+    # Rebuild debug after builddb: the builddb target relinks ./crawl as a
+    # regular binary, which cannot execute `-test`.
     echo "  Building debug binary..."
-    make debug -j4 > "$METRICS_DIR/lua-build.log" 2>&1 || {
+    make debug -j4 >> "$METRICS_DIR/lua-build.log" 2>&1 || {
         echo "  Debug build failed (see $METRICS_DIR/lua-build.log)"
         return 1
     }
@@ -139,7 +144,7 @@ run_bot() {
 
     echo "  Running RC bot..."
     local timeout_rc=0
-    timeout --foreground 120 util/fake_pty ./crawl -seed 1 -no-save -name test \
+    TERM="${TERM:-xterm}" timeout --foreground 120 util/fake_pty ./crawl -seed 1 -no-save -name test \
         -wizard -no-throttle -extra-opt-first 'language=zh' \
         -rc test/stress/zh_ui_check.rc \
         2>"$STDERR_L3" 1>/dev/null || timeout_rc=$?
@@ -211,7 +216,7 @@ run_help_bot() {
 
     echo "  Running help RC bot (zh_help.rc)..."
     local timeout_rc=0
-    timeout --foreground 180 util/fake_pty ./crawl -seed 1 -no-save \
+    TERM="${TERM:-xterm}" timeout --foreground 180 util/fake_pty ./crawl -seed 1 -no-save \
         -name help_test -wizard -no-throttle \
         -extra-opt-first 'language=zh' \
         -rc test/stress/zh_help.rc \

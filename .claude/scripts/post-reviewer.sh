@@ -47,6 +47,9 @@ run_check() {
     run_check "Species term consistency" \
         python3 .claude/scripts/scan_i18n.py species-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Monster compound consistency" \
+        python3 .claude/scripts/scan_i18n.py monster-compound-consistency \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Anti-patterns (strict + lenient)" \
         python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/
     echo "Summary: ${FAILURES} blocking failure(s)"

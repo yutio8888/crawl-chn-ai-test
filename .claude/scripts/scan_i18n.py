@@ -1263,6 +1263,75 @@ def cmd_species_consistency(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: monster-compound-consistency
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_monster_compound_consistency(args):
+    """Check monster compound translations against established base-term rulings.
+
+    This codifies monster-name rulings from docs/decisions.md so derived
+    entries in source.txt keep using the same Chinese base term.
+    """
+    entries = parse_source_txt(args.source_txt)
+    if not entries:
+        print("ERROR: Could not parse source.txt")
+        return 1
+
+    rules = [
+        {
+            "en_base": "fiend",
+            "zh_token": "邪魔",
+            "match": lambda key: key.endswith(" fiend"),
+        },
+        {
+            "en_base": "vampire",
+            "zh_token": "吸血鬼",
+            "match": lambda key: (
+                key == "vampire"
+                or "vampire bat" in key
+                or key.startswith("swarm of vampire bat")
+            ),
+        },
+        {
+            "en_base": "skeleton",
+            "zh_token": "骷髅",
+            "match": lambda key: key == "skeleton" or key.endswith(" skeleton"),
+        },
+        {
+            "en_base": "wraith",
+            "zh_token": "幽魂",
+            "match": lambda key: key == "wraith" or key.endswith(" wraith"),
+        },
+    ]
+
+    findings = []
+    for en_key, cn_val in entries.items():
+        cn_first = cn_val.split('\n')[0].strip()
+        for rule in rules:
+            if rule["match"](en_key):
+                if rule["zh_token"] not in cn_first:
+                    findings.append((
+                        rule["en_base"], rule["zh_token"], en_key, cn_first
+                    ))
+                break
+
+    if findings:
+        print("=== MONSTER-COMPOUND-CONSISTENCY — base term mismatch ===")
+        print("  Monster compounds should reuse the established base-term")
+        print("  translation from docs/decisions.md.")
+        print()
+        for en_base, zh_token, en_key, cn_first in sorted(findings):
+            print(f"  {en_base} → {zh_token}")
+            print(f"    {en_key} → {cn_first}")
+            print()
+        print(f"  → {len(findings)} inconsistency/ies")
+        return 1
+
+    print(f"OK: All monitored monster compounds follow {len(rules)} base-term rulings.")
+    return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: source-txt-integrity
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1453,6 +1522,14 @@ def main():
     p_sc.add_argument("--source-txt", required=True,
                       help="Path to source.txt")
 
+    # monster-compound-consistency
+    p_mc = subparsers.add_parser(
+        "monster-compound-consistency",
+        help="Check monster compound/base-term consistency in source.txt "
+             "(e.g. vampire→吸血鬼, vampire bat→吸血鬼蝙蝠)")
+    p_mc.add_argument("--source-txt", required=True,
+                      help="Path to source.txt")
+
     # source-txt-integrity
     p_sti = subparsers.add_parser(
         "source-txt-integrity",
@@ -1483,6 +1560,8 @@ def main():
         return cmd_anti_patterns(args)
     elif args.command == "species-consistency":
         return cmd_species_consistency(args)
+    elif args.command == "monster-compound-consistency":
+        return cmd_monster_compound_consistency(args)
     elif args.command == "source-txt-integrity":
         return cmd_source_txt_integrity(args)
     else:
