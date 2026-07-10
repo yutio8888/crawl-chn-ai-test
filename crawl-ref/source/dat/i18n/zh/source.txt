@@ -12629,7 +12629,7 @@ Shooting star damage:
 %%%%
 long
 
-长
+较久
 %%%%
 \n stacked deck: 
 
@@ -31073,7 +31073,7 @@ Zin's power protects your fellow warrior from evil magic!
 
 %%%%
 \nThis bane usually lasts a %s time.\n
-\n此克星通常持续%s。\n
+\n此灾祸通常持续%s。\n
 
 %%%%
 \nThis monster has been 

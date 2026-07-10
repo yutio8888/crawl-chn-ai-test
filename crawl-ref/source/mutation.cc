@@ -2448,8 +2448,11 @@ bool delete_temp_mutation()
 /// Not to be confused with mutation_desc().
 string get_mutation_desc(mutation_type mut)
 {
-    const char* const name = mutation_name(mut);
-    const string key = make_stringf("%s mutation", name);
+    // Use raw English short_desc for the TextDB key. mutation_name()
+    // returns T_()'d Chinese name which does not match the English
+    // keys in dat/descript/zh/mutations.txt.
+    const char* const en_name = _get_mutation_def(mut).short_desc;
+    const string key = make_stringf("%s mutation", en_name);
     string lookup = getLongDescription(key);
     hint_replace_cmds(lookup);
 
