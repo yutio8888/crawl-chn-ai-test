@@ -31073,7 +31073,7 @@ Zin's power protects your fellow warrior from evil magic!
 
 %%%%
 \nThis bane usually lasts a %s time.\n
-\n此克星通常持续%s时间。\n
+\n此克星通常持续%s。\n
 
 %%%%
 \nThis monster has been 
@@ -37756,3 +37756,84 @@ Vampire
 %%%%
 Vine Stalker
 藤蔓行者
+%%%%
+Lethargy
+倦怠
+%%%%
+You cover ground slowly.
+你的移动速度降低。
+%%%%
+Heatstroke
+中暑
+%%%%
+You often become slowed when damaged by fire.
+受到火焰伤害时经常会减速。
+%%%%
+Snow-blindness
+雪盲
+%%%%
+You often become weak and blind when damaged by cold.
+受到寒冷伤害时经常会虚弱和致盲。
+%%%%
+Electrospasm
+电击痉挛
+%%%%
+You often become unable to move when damaged by electricity.
+受到电击伤害时经常会无法移动。
+%%%%
+Claustrophobia
+幽闭恐惧
+%%%%
+Your slaying and spellpower are decreased in confined spaces.
+在狭窄空间中，你的杀伤力和法术强度降低。
+%%%%
+Stumbling
+踉跄
+%%%%
+Your evasion is greatly reduced on turns you move or wait in place.
+你移动或等待时，闪避值大幅降低。
+%%%%
+Succour
+援敌
+%%%%
+You heal other nearby enemies whenever you kill a monster.
+你击杀怪物时会治疗附近其他敌人。
+%%%%
+Multiplicity
+多重分身
+%%%%
+Enemies in your sight sometimes split into clones of themselves.
+你视野中的敌人有时会分裂出克隆体。
+%%%%
+the Dilettante
+半吊子
+%%%%
+You are less proficient with several skills.
+你对数项技能的熟练度降低。
+%%%%
+Paradox
+悖论
+%%%%
+Enemies you spot sometimes become touched by paradox.
+你发现的敌人有时会受到悖论影响。
+%%%%
+Warding
+结界
+%%%%
+Enemies you encounter may be immune to damage from range.
+你遇到的敌人可能免疫远程伤害。
+%%%%
+the Hunted
+被猎者
+%%%%
+When enemies are summoned, they will appear beside you instead.
+召唤敌人时，它们会出现在你身边。
+%%%%
+Mortality
+必死
+%%%%
+When alone and injured, reapers sometimes come to claim you.
+独自一人且受伤时，收割者有时会来索命。
+%%%%
+the Shapeless
+无形者

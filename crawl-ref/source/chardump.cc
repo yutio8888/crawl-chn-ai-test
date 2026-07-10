@@ -8,6 +8,7 @@
 #include "chardump.h"
 
 #include "database.h"
+#include "i18n.h"
 
 #include <string>
 #include <cctype>
@@ -365,7 +366,7 @@ static void _sdump_visits(dump_params &par)
         const PlaceInfo place_info = you.get_place_info(br);
         if (!place_info.num_visits)
             continue;
-        string name = branches[br].shortname;
+        string name = T_(branches[br].shortname);
         if (place_info.num_visits > 1)
             name += make_stringf(T_(" (%d times)"), place_info.num_visits);
         misc_portals.push_back(name);

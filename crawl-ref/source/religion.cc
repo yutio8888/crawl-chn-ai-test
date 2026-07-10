@@ -2173,14 +2173,11 @@ const char* _god_name_en(god_type which_god)
 
 string god_name(god_type which_god, bool long_name)
 {
-    // Jiyva special case: always return English for protocol safety.
-    // Callers needing Chinese display should use T_(god_name(...)).
-    if (which_god == GOD_JIYVA)
-    {
-        if (long_name)
-            return string("Jiyva ") + you.jiyva_second_name + " the Shapeless";
-        return "Jiyva";
-    }
+    // Jiyva long name (dynamic second_name) — wrap static parts in T_().
+    if (which_god == GOD_JIYVA && long_name)
+        return make_stringf("%s %s %s", T_("Jiyva"),
+                            you.jiyva_second_name.c_str(),
+                            T_("the Shapeless"));
 
     if (long_name)
     {

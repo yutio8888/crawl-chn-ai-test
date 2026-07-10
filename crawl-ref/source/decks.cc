@@ -463,7 +463,7 @@ static void _describe_cards(CrawlVector& cards)
             continue;
         seen[card] = true;
 
-        string name = card_name(card);
+        string name = card_name_en(card);
         string desc = getLongDescription(name + " card");
         if (desc.empty())
             desc = "No description found.\n";

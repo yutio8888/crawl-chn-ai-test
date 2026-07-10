@@ -52,6 +52,7 @@
 #include "mon-death.h"
 #include "mon-gear.h"
 #include "mon-pathfind.h"
+#include "i18n.h"
 #include "mon-pick.h"
 #include "mon-place.h"
 #include "mon-project.h"
@@ -6554,7 +6555,7 @@ static void _branch_summon_helper(monster* mons, spell_type spell_cast)
         {
             msg  = replace_all(msg, "@The_monster@", mons->name(DESC_THE));
             msg += " ";
-            msg += branches[summon_list[which_branch].origin].longname;
+            msg += T_(branches[summon_list[which_branch].origin].longname);
             msg += "!";
             mprf(mons->wont_attack() ? MSGCH_FRIEND_ENCHANT
                                      : MSGCH_MONSTER_ENCHANT,

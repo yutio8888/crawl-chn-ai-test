@@ -18,6 +18,7 @@
 #include "dungeon.h"
 #include "english.h"
 #include "god-conduct.h"
+#include "i18n.h"
 #include "god-passive.h"
 #include "level-state-type.h"
 #include "libutil.h" // testbits
@@ -1614,7 +1615,7 @@ bool is_harmless_cloud(cloud_type type)
            && type != CLOUD_VORTEX;
 }
 
-string cloud_type_name(cloud_type type, bool terse)
+string cloud_type_name_en(cloud_type type, bool terse)
 {
     if (type <= CLOUD_NONE || type >= NUM_CLOUD_TYPES)
         return "buggy goodness";
@@ -1623,6 +1624,11 @@ string cloud_type_name(cloud_type type, bool terse)
     if (terse || clouds[type].verbose_name == nullptr)
         return clouds[type].terse_name;
     return clouds[type].verbose_name;
+}
+
+string cloud_type_name(cloud_type type, bool terse)
+{
+    return T_(cloud_type_name_en(type, terse).c_str());
 }
 
 cloud_type cloud_name_to_type(const string &name)
@@ -1635,8 +1641,16 @@ cloud_type cloud_name_to_type(const string &name)
         return CLOUD_DEBUGGING;
 
     for (int i = CLOUD_NONE; i < CLOUD_RANDOM; i++)
-        if (cloud_type_name(static_cast<cloud_type>(i)) == lower_name)
-            return static_cast<cloud_type>(i);
+    {
+        const cloud_type ct = static_cast<cloud_type>(i);
+        // Match against both Chinese (T_()) and English names, following
+        // the card_name()/card_name_en() dual-match pattern.
+        if (cloud_type_name(ct) == lower_name
+            || cloud_type_name_en(ct) == lower_name)
+        {
+            return ct;
+        }
+    }
 
     return CLOUD_NONE;
 }

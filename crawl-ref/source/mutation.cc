@@ -3370,7 +3370,7 @@ const string bane_name(bane_type bane, bool dbkey)
         return lowercase(short_name);
     }
     else
-        return make_stringf(T_("Bane of %s"), short_name.c_str());
+        return make_stringf(T_("Bane of %s"), T_(short_name.c_str()));
 }
 
 int bane_base_duration(bane_type bane)
@@ -3389,7 +3389,7 @@ const string bane_desc(bane_type bane)
                     skill_name(static_cast<skill_type>(vec[2].get_int())));
     }
 
-    return bane_data[bane_index[bane]].description;
+    return T_(bane_data[bane_index[bane]].description);
 }
 
 /*

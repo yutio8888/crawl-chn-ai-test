@@ -3101,9 +3101,9 @@ string get_cloud_desc(cloud_type cloud, bool include_title)
 {
     if (cloud == CLOUD_NONE)
         return "";
-    const string cl_name_en = cloud_type_name(cloud);
+    const string cl_name_en = cloud_type_name_en(cloud);
     const string cl_desc = getLongDescription(cl_name_en + " cloud");
-    const string cl_name = T_(cl_name_en.c_str());
+    const string cl_name = cloud_type_name(cloud);
 
     string ret;
     if (include_title)

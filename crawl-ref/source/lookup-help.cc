@@ -443,7 +443,7 @@ static vector<string> _get_cloud_keys()
     {
         const cloud_type cloud = static_cast<cloud_type>(i);
         if (!cloud_is_removed(cloud))
-            names.push_back(cloud_type_name(cloud) + " cloud");
+            names.push_back(cloud_type_name_en(cloud) + " cloud");
     }
 
     return names;
@@ -847,6 +847,9 @@ static MenuEntry* _mut_menu_gen(char letter, const string &str, string &key)
     const mutation_type mut = mutation_from_name(str, false);
     if (mut == NUM_MUTATIONS)
         return me;
+
+    // Override display text with T_()'d Chinese name (Issue 51 pattern).
+    me->text = mutation_name(mut);
 
     const tileidx_t tile = get_mutation_tile(mut);
     if (tile)

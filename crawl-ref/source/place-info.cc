@@ -3,6 +3,7 @@
 #include "place-info.h"
 
 #include "branch.h"
+#include "i18n.h"
 #include "player.h"
 
 PlaceInfo::PlaceInfo()
@@ -42,7 +43,7 @@ void PlaceInfo::assert_validity() const
 
 const string PlaceInfo::short_name() const
 {
-    return branches[branch].shortname;
+    return T_(branches[branch].shortname);
 }
 
 const PlaceInfo &PlaceInfo::operator += (const PlaceInfo &other)
