@@ -474,3 +474,34 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // Function call doesn't crash (regardless of cache state)
     SUCCEED("item_name_list_for_zh_regex called without crash");
 }
+
+// Verify get_mutation_desc uses English DB key under ZH (Issue 53 followup).
+// The old code used mutation_name() (T_()'d Chinese) to build the TextDB
+// key "硬化表皮 mutation", but TextDB keys are English ("tough skin
+// mutation"). The fix uses raw English short_desc for the DB key.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: mutation descriptions load under ZH",
+                 "[zh-help][mutation-desc]")
+{
+    // MUT_CLAWS → short_desc "claws" → key "claws mutation" → zh desc
+    {
+        const string desc = get_mutation_desc(MUT_CLAWS);
+        INFO("MUT_CLAWS desc: " << desc);
+        CHECK_FALSE(desc.empty());
+    }
+    // Spot-check: at least 10 mutations have non-empty descriptions
+    {
+        int non_empty = 0;
+        for (int mi = 0; mi < NUM_MUTATIONS && non_empty < 10; ++mi)
+        {
+            const mutation_type m = static_cast<mutation_type>(mi);
+            const char* nm = mutation_name(m, false);
+            if (!nm || !nm[0])
+                continue;
+            const string d = get_mutation_desc(m);
+            if (!d.empty() && !rule_garbled_utf8(d))
+                ++non_empty;
+        }
+        CHECK(non_empty >= 10);
+    }
+}
