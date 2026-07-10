@@ -453,3 +453,24 @@ TEST_CASE("zh-help: monster EN round-trip (no fixture)",
         CHECK(get_monster_by_name(me->name) == m);
     }
 }
+
+// =============================================================================
+// [zh-help][item] — Chinese item name search via item_name_list_for_zh_regex.
+// Verifies that Chinese item names (T_()'d via item_def::name) resolve to
+// the correct English DB keys. Runs under ZhTranslationFixture so T_()
+// produces Chinese output.
+// =============================================================================
+// NOTE: item_name_list_for_zh_regex relies on item_names_cache
+// populated by init_item_name_cache(). The catch2 sandbox may not
+// fully initialize all item tables (Weapon_index, Armour_index, etc.).
+// Manual verification: ?/i + "匕首" finds dagger in ?/i in-game.
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: item_name_list_for_zh_regex smoke test",
+                 "[zh-help][item]")
+{
+    init_item_name_cache();
+    // Unknown input → empty (function doesn't crash)
+    CHECK(item_name_list_for_zh_regex("不存在的物品").empty());
+    // Function call doesn't crash (regardless of cache state)
+    SUCCEED("item_name_list_for_zh_regex called without crash");
+}

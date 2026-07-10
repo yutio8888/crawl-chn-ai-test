@@ -938,6 +938,12 @@ vector<string> LookupType::matching_keys(string regex) const
     else
         key_list = get_desc_keys(regex);
 
+    // Chinese name fallback for items: the DB key/body search only
+    // matches English keys and description bodies. For Chinese item
+    // names, search through T_()'d names via item_def::name().
+    if (key_list.empty() && type == "item")
+        key_list = item_name_list_for_zh_regex(regex);
+
     if (recap != nullptr)
         (*recap)(key_list);
 

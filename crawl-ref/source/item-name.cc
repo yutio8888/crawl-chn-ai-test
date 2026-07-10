@@ -39,6 +39,7 @@
 #include "notes.h"
 #include "options.h"
 #include "orb-type.h"
+#include "pattern.h"
 #include "player.h"
 #include "positional_format.h"
 #include "potion.h"
@@ -4096,6 +4097,39 @@ item_kind item_kind_by_name(const string &name)
 vector<string> item_name_list_for_glyph(char32_t glyph)
 {
     return lookup(item_names_by_glyph_cache, glyph, {});
+}
+
+vector<string> item_name_list_for_zh_regex(const string &regex)
+{
+    vector<string> matches;
+
+    // Ensure the cache is populated (idempotent). Must be called
+    // before iterating item_names_cache, and within the same language
+    // context as the call site for correct T_() results.
+    if (item_names_cache.empty())
+        init_item_name_cache();
+
+    text_pattern tpat(regex, true);
+
+    for (const auto &entry : item_names_cache)
+    {
+        const string &en_key = entry.first;
+        const item_kind &kind = entry.second;
+
+        item_def item;
+        item.base_type = static_cast<object_class_type>(kind.base_type);
+        item.sub_type  = kind.sub_type;
+        item.plus      = kind.plus;
+        item.plus2     = kind.plus2;
+
+        string zh_name = item.name(DESC_DBNAME, true, true);
+        lowercase(zh_name);
+
+        if (!zh_name.empty() && tpat.matches(zh_name))
+            matches.push_back(en_key);
+    }
+
+    return matches;
 }
 
 bool is_named_corpse(const item_def &corpse)
