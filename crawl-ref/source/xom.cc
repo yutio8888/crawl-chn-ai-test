@@ -44,6 +44,7 @@
 #include "mon-cast.h"
 #include "mon-clone.h"
 #include "mon-death.h"
+#include "mon-info.h"
 #include "mon-pick.h"
 #include "mon-place.h"
 #include "mon-poly.h"
@@ -1252,7 +1253,7 @@ static void _xom_polymorph_monster(monster &mons, bool helpful)
                        : _get_xom_speech("bad monster polymorph").c_str());
 
     const bool see_old = you.can_see(mons);
-    const string old_name = see_old ? mons.full_name(DESC_PLAIN)
+    const string old_name = see_old ? monster_info(&mons, MILEV_NAME).title_name()
                                     : "something unseen";
 
     if (one_chance_in(8)
@@ -1285,7 +1286,7 @@ static void _xom_polymorph_monster(monster &mons, bool helpful)
 
     if (see_old || see_new)
     {
-        const string new_name = see_new ? mons.full_name(DESC_PLAIN)
+        const string new_name = see_new ? monster_info(&mons, MILEV_NAME).title_name()
                                         : "something unseen";
 
         string note = make_stringf(T_("%s polymorph %s -> %s"),

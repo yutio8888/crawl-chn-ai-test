@@ -312,7 +312,7 @@ void fixup_bad_priest_monster(monster &mons)
     if (!maybe_bad_priest_monster(mons))
         return;
     mprf(MSGCH_ERROR, T_("Removing corrupted ex-follower from level: %s."),
-         mons.full_name(DESC_PLAIN).c_str());
+         monster_info(&mons, MILEV_NAME).title_name().c_str());
     monster_die(mons, KILL_RESET, -1, true);
 }
 #endif

@@ -860,6 +860,20 @@ LUAFN(moninf_get_name)
     return 1;
 }
 
+/*** The monster's display title.
+ * Returns the player-facing display name used by hover cards and combat logs.
+ * @treturn string
+ * @see name
+ * @function title_name
+ */
+LUAFN(moninf_get_title_name)
+{
+    MONINF(ls, 1, mi);
+    string s = mi->title_name();
+    lua_pushstring(ls, s.c_str());
+    return 1;
+}
+
 /*
  * The x,y coordinates of the monster that summoned this monster, in player
  * centered coordinates. If the monster was not summoned by another monster
@@ -921,6 +935,7 @@ static const struct luaL_Reg moninf_lib[] =
     MIREG(desc),
     MIREG(status),
     MIREG(name),
+    MIREG(title_name),
     MIREG(speed_description),
     MIREG(spells),
     MIREG(res_poison),

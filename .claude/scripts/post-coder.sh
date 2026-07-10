@@ -66,6 +66,14 @@ run_check() {
     run_check "Monster DB-key consistency" blocking \
         python3 .claude/scripts/scan_i18n.py monster-dbkey-consistency \
         crawl-ref/source/
+    run_check "Monster name assembly" blocking \
+        python3 .claude/scripts/scan_i18n.py monster-name-assembly \
+        crawl-ref/source/mon-info.cc
+    run_check "Monster title display" blocking \
+        python3 .claude/scripts/scan_i18n.py monster-title-display \
+        crawl-ref/source/directn.cc crawl-ref/source/tileweb.cc \
+        crawl-ref/source/xom.cc crawl-ref/source/god-companions.cc \
+        crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Term validation (rejected names from decisions.md)" blocking \
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \

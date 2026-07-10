@@ -42,6 +42,7 @@ local function check_monster_name(mspec, monster_name_checks,
                 function (mons, desc)
                   return mons.mfull_name(desc)
                 end)
+    return mons
   end
 
   local function check_monster_corpse_names(name_checks)
@@ -56,10 +57,11 @@ local function check_monster_name(mspec, monster_name_checks,
                 end)
   end
 
-  check_monster_names(monster_name_checks)
+  local mons = check_monster_names(monster_name_checks)
   if corpse_name_checks then
     check_monster_corpse_names(corpse_name_checks)
   end
+  return mons
 end
 
 local function check_names(list)
@@ -99,5 +101,13 @@ local name_checks = {
     { "a", "a gnoll corpse of gnoll lieutenant" } },
 }
 check_names(name_checks)
+
+local vv = check_monster_name("Vv", "芙芙")
+test.eq(vv.title_name(), "流亡的芙芙", "Vv title_name")
+
+local mi = monster.get_monster_at(place.x, place.y)
+assert(mi, "Could not get monster.info for Vv")
+test.eq(mi.name(), "芙芙", "Vv monster.info name")
+test.eq(mi.title_name(), "流亡的芙芙", "Vv monster.info title_name")
 
 dgn.dismiss_monsters()

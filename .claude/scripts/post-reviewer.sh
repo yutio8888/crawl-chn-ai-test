@@ -53,6 +53,14 @@ run_check() {
     run_check "Monster DB-key consistency" \
         python3 .claude/scripts/scan_i18n.py monster-dbkey-consistency \
         crawl-ref/source/
+    run_check "Monster name assembly" \
+        python3 .claude/scripts/scan_i18n.py monster-name-assembly \
+        crawl-ref/source/mon-info.cc
+    run_check "Monster title display" \
+        python3 .claude/scripts/scan_i18n.py monster-title-display \
+        crawl-ref/source/directn.cc crawl-ref/source/tileweb.cc \
+        crawl-ref/source/xom.cc crawl-ref/source/god-companions.cc \
+        crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Anti-patterns (strict + lenient)" \
         python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/
     echo "Summary: ${FAILURES} blocking failure(s)"

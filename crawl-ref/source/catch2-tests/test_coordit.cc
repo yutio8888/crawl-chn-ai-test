@@ -7,6 +7,14 @@
 
 #include "coordit.h"
 
+static void require_coords_match(const vector<coord_def> &actual,
+                                 const vector<coord_def> &expected)
+{
+    REQUIRE(actual.size() == expected.size());
+    for (size_t i = 0; i < expected.size(); ++i)
+        REQUIRE(actual[i] == expected[i]);
+}
+
 TEST_CASE("rectangle_iterator", "[single-file]")
 {
     SECTION("Generates w*h unique points from top left, bottom right pair")
@@ -82,7 +90,7 @@ TEST_CASE("orth_adjacent_iterator", "[single-file]")
             coord_def(50, 49),
         };
 
-        REQUIRE(adjacent == expected);
+        require_coords_match(adjacent, expected);
     }
 
     SECTION("Includes the centre if specified")
@@ -102,7 +110,7 @@ TEST_CASE("orth_adjacent_iterator", "[single-file]")
             coord_def(50, 49),
         };
 
-        REQUIRE(adjacent == expected);
+        require_coords_match(adjacent, expected);
     }
 }
 
@@ -128,7 +136,7 @@ TEST_CASE("adjacent_iterator", "[single-file]")
             coord_def(50, 49),
         };
 
-        REQUIRE(adjacent == expected);
+        require_coords_match(adjacent, expected);
     }
 
     SECTION("Includes the centre if specified")
@@ -152,7 +160,7 @@ TEST_CASE("adjacent_iterator", "[single-file]")
             coord_def(50, 49),
         };
 
-        REQUIRE(adjacent == expected);
+        require_coords_match(adjacent, expected);
     }
 }
 
@@ -178,7 +186,7 @@ TEST_CASE("distance_iterator", "[single-file]")
             coord_def(51, 51),
         };
 
-        REQUIRE(points == expected);
+        require_coords_match(points, expected);
     }
 
     SECTION("Includes the centre if specified")
@@ -202,6 +210,6 @@ TEST_CASE("distance_iterator", "[single-file]")
             coord_def(51, 51),
         };
 
-        REQUIRE(points == expected);
+        require_coords_match(points, expected);
     }
 }

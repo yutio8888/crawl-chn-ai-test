@@ -401,6 +401,7 @@ struct monster_info : public monster_info_base
     }
 
     string db_name() const;
+    string title_name() const;
     bool has_proper_name() const;
     string pluralised_name(bool fullname = true) const;
     string common_name(description_level_type desc = DESC_PLAIN) const;

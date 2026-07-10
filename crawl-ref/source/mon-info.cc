@@ -980,6 +980,26 @@ static string _mutant_beast_tier_name(short xl_tier)
 {
     if (xl_tier < 0 || xl_tier >= NUM_BEAST_TIERS)
         return "buggy";
+
+    if (Options.language == lang_t::ZH)
+    {
+        switch (xl_tier)
+        {
+        case BT_LARVAL:
+            return T_("mutant beast tier: larval");
+        case BT_JUVENILE:
+            return T_("mutant beast tier: juvenile");
+        case BT_MATURE:
+            return T_("mutant beast tier: mature");
+        case BT_ELDER:
+            return T_("mutant beast tier: elder");
+        case BT_PRIMAL:
+            return T_("mutant beast tier: primal");
+        default:
+            break;
+        }
+    }
+
     return mutant_beast_tier_names[xl_tier];
 }
 
@@ -993,6 +1013,28 @@ static string _mutant_beast_facet(int facet)
 {
     if (facet < 0 || facet >= NUM_BEAST_FACETS)
         return "buggy";
+
+    if (Options.language == lang_t::ZH)
+    {
+        switch (facet)
+        {
+        case BF_STING:
+            return T_("mutant beast facet: sting");
+        case BF_BAT:
+            return T_("mutant beast facet: bat");
+        case BF_FIRE:
+            return T_("mutant beast facet: fire");
+        case BF_WEIRD:
+            return T_("mutant beast facet: weird");
+        case BF_SHOCK:
+            return T_("mutant beast facet: shock");
+        case BF_OX:
+            return T_("mutant beast facet: ox");
+        default:
+            break;
+        }
+    }
+
     return mutant_beast_facet_names[facet];
 }
 
@@ -1006,6 +1048,12 @@ string monster_info::db_name() const
         return get_monster_data(base_type)->name;
 
     return get_monster_data(type)->name;
+}
+
+string monster_info::title_name() const
+{
+    const string title = getMiscString(db_name() + " title");
+    return title.empty() ? full_name(DESC_PLAIN) : title;
 }
 
 string monster_info::_core_name() const
@@ -1215,10 +1263,16 @@ string monster_info::common_name(description_level_type desc) const
     {
         const int xl = props[MUTANT_BEAST_TIER].get_short();
         const int tier = mutant_beast_tier(xl);
-        ss << _mutant_beast_tier_name(tier) << " ";
+        ss << _mutant_beast_tier_name(tier);
+        if (Options.language != lang_t::ZH)
+            ss << " ";
         for (auto facet : props[MUTANT_BEAST_FACETS].get_vector())
             ss << _mutant_beast_facet(facet.get_int()); // no space between
-        ss << " beast";
+        if (Options.language != lang_t::ZH)
+            ss << " ";
+        ss << (Options.language == lang_t::ZH
+               ? T_("monster suffix: mutant beast")
+               : "beast");
     }
 
     if (!nocore)
@@ -1264,7 +1318,13 @@ string monster_info::common_name(description_level_type desc) const
         // If momentarily in original form, don't display "shaped
         // shifter".
         if (mons_genus(type) != MONS_SHAPESHIFTER)
-            ss << " shaped shifter";
+        {
+            if (Options.language != lang_t::ZH)
+                ss << " ";
+            ss << (Options.language == lang_t::ZH
+                   ? T_("monster suffix: shaped shifter")
+                   : "shaped shifter");
+        }
     }
 
     string s;
@@ -1311,7 +1371,7 @@ string monster_info::full_name(description_level_type desc) const
 
     if (has_proper_name())
     {
-        string s = mname + " the " + common_name();
+        string s = mname + T_(" the ") + common_name();
         if (desc == DESC_ITS)
             s = apostrophise(s);
         return s;
@@ -1458,7 +1518,7 @@ void monster_info::to_string(int count, string& desc, int& desc_colour,
     ostringstream out;
     monster_list_colour_type colour_type = NUM_MLC;
 
-    string full = count == 1 ? full_name() : pluralised_name(fullname);
+    string full = count == 1 ? title_name() : pluralised_name(fullname);
 
     if (adj && starts_with(full, "the "))
         full.erase(0, 4);

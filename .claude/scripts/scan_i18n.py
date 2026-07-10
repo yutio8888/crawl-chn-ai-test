@@ -1373,6 +1373,8 @@ def cmd_monster_dbkey_consistency(args):
         re.compile(r'mons_type_name\([^;\n]*DESC_PLAIN\)[^;\n]*cast_str'),
         re.compile(r'make_stringf\(T_\("%s %swizard%s"\)'),
         re.compile(r'make_stringf\(T_\("%swizard%s"\)'),
+        re.compile(r'db_name\s*=\s*mi\.full_name\(DESC_PLAIN\);'),
+        re.compile(r'getMiscString\(mi\.common_name\(DESC_DBNAME\)\s*\+\s*" title"\)'),
     ]
 
     findings = []
@@ -1405,6 +1407,123 @@ def cmd_monster_dbkey_consistency(args):
         return 1
 
     print("OK: Monster speech/database lookups use DB names, not display names.")
+    return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: monster-name-assembly
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_monster_name_assembly(args):
+    """Check monster display-name assembly for SSOT-bypassing raw literals."""
+    checks = [
+        (
+            re.compile(r'mname\s*\+\s*" the "\s*\+\s*common_name\('),
+            'Named monster full names should use T_(" the ") '
+            'so Chinese article handling stays centralized in source.txt.',
+        ),
+        (
+            re.compile(r'<<\s*" beast";'),
+            'Mutant beast display names should use the contextual '
+            'monster suffix key from source.txt.',
+        ),
+        (
+            re.compile(r'<<\s*" shaped shifter";'),
+            'Shapeshifter disguise suffixes should use the contextual '
+            'monster suffix key from source.txt.',
+        ),
+        (
+            re.compile(r'count\s*==\s*1\s*\?\s*full_name\(\)\s*:\s*pluralised_name'),
+            'Single-monster primary labels should prefer title_name() so '
+            'title-backed uniques stay consistent with hover, map, and panels.',
+        ),
+    ]
+
+    findings = []
+    try:
+        with open(args.source_file, 'r', encoding='utf-8') as f:
+            for lineno, line in enumerate(f, 1):
+                for pat, message in checks:
+                    if pat.search(line):
+                        findings.append((lineno, line.strip(), message))
+                        break
+    except OSError as e:
+        print(f"ERROR: Could not read {args.source_file}: {e}")
+        return 1
+
+    if findings:
+        print("=== MONSTER-NAME-ASSEMBLY — raw name fragment bypasses SSOT ===")
+        print("  Monster display-name assembly should pull locale-sensitive")
+        print("  glue/suffix fragments from source.txt, not hardcoded literals.")
+        print()
+        for lineno, line, message in findings:
+            print(f"  {args.source_file}:{lineno}")
+            print(f"    {line}")
+            print(f"    {message}")
+            print()
+        print(f"  → {len(findings)} violation(s)")
+        return 1
+
+    print("OK: Monster display-name assembly uses SSOT-backed glue/suffix keys.")
+    return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: monster-title-display
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_monster_title_display(args):
+    """Check map/hover primary monster labels prefer title-aware names."""
+    checks = [
+        (
+            re.compile(r'desc\s*=\s*monster_at\(gc\)->full_name\(DESC_PLAIN\);'),
+            'Mouseover labels should prefer title_name() so title-backed '
+            'uniques match other UI entry points.',
+        ),
+        (
+            re.compile(r'json_write_string\("name",\s*m->full_name\(\)\);'),
+            'Tile/web map labels should prefer title_name() so title-backed '
+            'uniques match hover and description panels.',
+        ),
+        (
+            re.compile(r'const string (old_name|new_name) = see_(old|new) \? mons\.full_name\(DESC_PLAIN\)'),
+            'Player-visible history notes should prefer title_name() so '
+            'visible monster names match hover, map, and panel labels.',
+        ),
+        (
+            re.compile(r'full_name\(DESC_PLAIN\)\.c_str\(\)'),
+            'Player-visible error/report messages should prefer title_name() '
+            'unless the call site is strictly debug-only or intentionally uses a logic key.',
+        ),
+    ]
+
+    findings = []
+    for path in args.source_files:
+        try:
+            with open(path, 'r', encoding='utf-8') as f:
+                for lineno, line in enumerate(f, 1):
+                    for pat, message in checks:
+                        if pat.search(line):
+                            findings.append((path, lineno, line.strip(), message))
+                            break
+        except OSError as e:
+            print(f"ERROR: Could not read {path}: {e}")
+            return 1
+
+    if findings:
+        print("=== MONSTER-TITLE-DISPLAY — primary label bypasses title-aware name ===")
+        print("  Monster hover/map primary labels should use title_name()")
+        print("  instead of raw full_name() when a montitle entry exists.")
+        print()
+        for path, lineno, line, message in findings:
+            print(f"  {path}:{lineno}")
+            print(f"    {line}")
+            print(f"    {message}")
+            print()
+        print(f"  → {len(findings)} violation(s)")
+        return 1
+
+    print("OK: Monster hover/map primary labels use title-aware names.")
     return 0
 
 
@@ -1613,6 +1732,19 @@ def main():
         help="Check monster speech DB lookups use DESC_DBNAME, not DESC_PLAIN")
     p_mdc.add_argument("source_dir", help="Root of C++ source tree")
 
+    # monster-name-assembly
+    p_mna = subparsers.add_parser(
+        "monster-name-assembly",
+        help="Check monster display-name assembly uses source.txt-backed glue/suffix keys")
+    p_mna.add_argument("source_file", help="Monster naming implementation file")
+
+    # monster-title-display
+    p_mtd = subparsers.add_parser(
+        "monster-title-display",
+        help="Check hover/map monster labels use title-aware primary names")
+    p_mtd.add_argument("source_files", nargs="+",
+                       help="Source files implementing hover/map monster labels")
+
     # source-txt-integrity
     p_sti = subparsers.add_parser(
         "source-txt-integrity",
@@ -1647,6 +1779,10 @@ def main():
         return cmd_monster_compound_consistency(args)
     elif args.command == "monster-dbkey-consistency":
         return cmd_monster_dbkey_consistency(args)
+    elif args.command == "monster-name-assembly":
+        return cmd_monster_name_assembly(args)
+    elif args.command == "monster-title-display":
+        return cmd_monster_title_display(args)
     elif args.command == "source-txt-integrity":
         return cmd_source_txt_integrity(args)
     else:

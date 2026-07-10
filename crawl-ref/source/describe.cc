@@ -6859,7 +6859,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
                          bool &has_stat_desc, bool mark_spells)
 {
     if (inf.title.empty())
-        inf.title = getMiscString(mi.common_name(DESC_DBNAME) + " title");
+        inf.title = getMiscString(mi.db_name() + " title");
     if (inf.title.empty())
         inf.title = uppercase_first(mi.full_name(DESC_A)) + ".";
 
@@ -6867,10 +6867,8 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 
     if (mi.props.exists(DBNAME_KEY))
         db_name = mi.props[DBNAME_KEY].get_string();
-    else if (mi.mname.empty())
-        db_name = mi.db_name();
     else
-        db_name = mi.full_name(DESC_PLAIN);
+        db_name = mi.db_name();
 
     if (mons_species(mi.type) == MONS_SERPENT_OF_HELL)
         db_name += " " + serpent_of_hell_flavour(mi.type);

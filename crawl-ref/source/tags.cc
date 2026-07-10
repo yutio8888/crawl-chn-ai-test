@@ -8120,7 +8120,8 @@ void unmarshallMonster(reader &th, monster& m)
     if (m.type == MONS_ORC_APOSTLE && m.damage_friendly > m.damage_total)
     {
         mprf(MSGCH_ERROR, "apostle \"%s\" had incorrect damage tracking: %d > %d",
-            m.full_name(DESC_PLAIN).c_str(), m.damage_friendly, m.damage_total);
+            monster_info(&m, MILEV_NAME).title_name().c_str(),
+            m.damage_friendly, m.damage_total);
         m.damage_total = m.damage_friendly = 0;
     }
 
@@ -8208,7 +8209,8 @@ static void _tag_read_level_monsters(reader &th)
             if (dup_m && dup_m->alive())
             {
                 mprf(MSGCH_ERROR, "elsewhere companion has duplicate mid %d: %s",
-                    dup_m->mid, dup_m->full_name(DESC_PLAIN).c_str());
+                    dup_m->mid,
+                    monster_info(dup_m, MILEV_NAME).title_name().c_str());
                 env.mid_cache[dup_m->mid] = dup_m->mindex();
             }
             continue;

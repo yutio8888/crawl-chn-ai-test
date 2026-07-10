@@ -2261,7 +2261,7 @@ void handle_monster_dies_lua(monster& mons, killer_type killer)
         {
             mprf(MSGCH_ERROR,
                  "Lua death function for monster '%s' didn't load: %s",
-                 mons.full_name(DESC_PLAIN).c_str(),
+                 monster_info(&mons, MILEV_NAME).title_name().c_str(),
                  dlua.error.c_str());
         }
     }

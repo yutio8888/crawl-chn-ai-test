@@ -2755,7 +2755,10 @@ string get_cell_mouseover_tag(const coord_def &gc)
             desc = unseen_desc;
     }
     else if (monster_at(gc) && you.can_see(*monster_at(gc)))
-            desc = monster_at(gc)->full_name(DESC_PLAIN);
+    {
+        monster_info mi(monster_at(gc), MILEV_NAME);
+        desc = mi.title_name();
+    }
     else if (you.visible_igrd(gc) != NON_ITEM)
     {
         if (env.item[you.visible_igrd(gc)].defined())

@@ -14,6 +14,7 @@
 #include "mon-act.h"
 #include "mon-behv.h"
 #include "mon-death.h"
+#include "mon-info.h"
 #include "mon-pick.h"
 #include "mon-speak.h"
 #include "monster.h"
@@ -67,6 +68,12 @@ MDEF(base_name)
 MDEF(full_name)
 {
     PLUARET(string, mons->full_name(DESC_PLAIN).c_str());
+}
+
+MDEF(title_name)
+{
+    monster_info mi(mons, MILEV_NAME);
+    PLUARET(string, mi.title_name().c_str());
 }
 
 MDEF(db_name)
@@ -527,6 +534,7 @@ static MonsAccessor mons_attrs[] =
     { "name",           l_mons_name      },
     { "base_name",      l_mons_base_name },
     { "full_name",      l_mons_full_name },
+    { "title_name",     l_mons_title_name },
     { "db_name",        l_mons_db_name   },
     { "type_name",      l_mons_type_name },
     { "entry_name",     l_mons_entry_name },

@@ -21797,6 +21797,45 @@ mountainshell
 mutant beast
 变异野兽
 %%%%
+mutant beast tier: larval
+幼虫
+%%%%
+mutant beast tier: juvenile
+幼体
+%%%%
+mutant beast tier: mature
+成年
+%%%%
+mutant beast tier: elder
+长老
+%%%%
+mutant beast tier: primal
+原始
+%%%%
+mutant beast facet: sting
+刺针
+%%%%
+mutant beast facet: bat
+蝙蝠
+%%%%
+mutant beast facet: fire
+火焰
+%%%%
+mutant beast facet: weird
+怪异
+%%%%
+mutant beast facet: shock
+电击
+%%%%
+mutant beast facet: ox
+牛
+%%%%
+monster suffix: mutant beast
+变异兽
+%%%%
+monster suffix: shaped shifter
+拟形变形怪
+%%%%
 nargun
 纳尔根
 %%%%
