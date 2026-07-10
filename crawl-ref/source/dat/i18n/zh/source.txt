@@ -11120,7 +11120,7 @@ Your maw growls hungrily at the sight of %s.
 你的吞噬之口在看到%s时饥饿地咆哮起来。
 %%%%
 Your maximum health is %sincreased.
-你的最大生命值%sincreased。
+你的最大生命值%s增加了。
 %%%%
 Your maximum health is decreased%s.
 你的最大生命值降低了%s。
@@ -11246,7 +11246,7 @@ Your skin stops tingling.
 你的皮肤不再发麻。
 %%%%
 Your slime covering ruptures, deflecting the attack, %s attack away%s
-你的软泥覆盖层在偏转攻击时破裂，%s attack away%s
+你的软泥覆盖层破裂，偏转并弹开了%s攻击%s
 %%%%
 Your spectral weapon shares its damage with you!
 你的幽魂武器与你分担了伤害！
