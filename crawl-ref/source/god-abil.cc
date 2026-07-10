@@ -3199,7 +3199,7 @@ spret dithmenos_marionette(monster& target, bool fail)
     mprf(T_("%s shadow slips away and your performance ends."), target.name(DESC_ITS).c_str());
 
     // Let the monster complain about what you did to them, in their own way.
-    string msg = getSpeakString(target.name(DESC_PLAIN) + " marionette");
+    string msg = getSpeakString(target.name(DESC_DBNAME) + " marionette");
     if (!msg.empty() && (mons_is_unique(target.type) || one_chance_in(4)))
         mons_speaks_msg(&target, msg, MSGCH_TALK);
 

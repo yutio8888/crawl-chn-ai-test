@@ -654,14 +654,14 @@ bool mons_speaks(monster* mons)
         // old speech?
         if (!mons->mname.empty() && mons->can_speak() && msg.empty())
         {
-            msg = _get_speak_string(prefixes, mons->name(DESC_PLAIN),
+            msg = _get_speak_string(prefixes, mons->name(DESC_DBNAME),
                                     mons, no_player, no_foe, no_foe_name,
                                     no_god, unseen);
         }
 
         if (msg.empty())
         {
-            msg = _get_speak_string(prefixes, mons->base_name(DESC_PLAIN),
+            msg = _get_speak_string(prefixes, mons->base_name(DESC_DBNAME),
                                     mons, no_player, no_foe, no_foe_name,
                                     no_god, unseen);
         }
@@ -672,7 +672,7 @@ bool mons_speaks(monster* mons)
         && mons_genus(mons->type) != mons->type)
     {
         msg = _get_speak_string(prefixes,
-                       mons_type_name(mons_genus(mons->type), DESC_PLAIN),
+                       mons_type_name(mons_genus(mons->type), DESC_DBNAME),
                        mons, no_player, no_foe, no_foe_name, no_god,
                        unseen);
     }

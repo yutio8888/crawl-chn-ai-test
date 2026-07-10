@@ -1359,6 +1359,52 @@ def cmd_monster_compound_consistency(args):
 
 
 # ══════════════════════════════════════════════════════════════════════════════
+# Subcommand: monster-dbkey-consistency
+# ══════════════════════════════════════════════════════════════════════════════
+
+def cmd_monster_dbkey_consistency(args):
+    """Check that monster speech DB lookups use DB names, not display names."""
+    patterns = [
+        re.compile(r'getSpeakString\([^;\n]*name\(DESC_PLAIN'),
+        re.compile(r'_get_speak_string\([^;\n]*name\(DESC_PLAIN'),
+        re.compile(r'_get_speak_string\([^;\n]*base_name\(DESC_PLAIN'),
+        re.compile(r'_get_speak_string\([^;\n]*mons_type_name\([^;\n]*DESC_PLAIN'),
+    ]
+
+    findings = []
+    for root, dirnames, filenames in os.walk(args.source_dir):
+        prune_dirs(dirnames)
+        for fn in filenames:
+            if not fn.endswith(('.cc', '.h')):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                with open(path, 'r', encoding='utf-8') as f:
+                    for lineno, line in enumerate(f, 1):
+                        for pat in patterns:
+                            if pat.search(line):
+                                findings.append((path, lineno, line.strip()))
+                                break
+            except OSError:
+                continue
+
+    if findings:
+        print("=== MONSTER-DBKEY-CONSISTENCY — display name used for DB key ===")
+        print("  Monster speech/database lookups should use DESC_DBNAME so")
+        print("  translated display names do not leak into English DB keys.")
+        print()
+        for path, lineno, line in findings:
+            print(f"  {os.path.relpath(path)}:{lineno}")
+            print(f"    {line}")
+        print()
+        print(f"  → {len(findings)} violation(s)")
+        return 1
+
+    print("OK: Monster speech/database lookups use DB names, not display names.")
+    return 0
+
+
+# ══════════════════════════════════════════════════════════════════════════════
 # Subcommand: source-txt-integrity
 # ══════════════════════════════════════════════════════════════════════════════
 
@@ -1557,6 +1603,12 @@ def main():
     p_mc.add_argument("--source-txt", required=True,
                       help="Path to source.txt")
 
+    # monster-dbkey-consistency
+    p_mdc = subparsers.add_parser(
+        "monster-dbkey-consistency",
+        help="Check monster speech DB lookups use DESC_DBNAME, not DESC_PLAIN")
+    p_mdc.add_argument("source_dir", help="Root of C++ source tree")
+
     # source-txt-integrity
     p_sti = subparsers.add_parser(
         "source-txt-integrity",
@@ -1589,6 +1641,8 @@ def main():
         return cmd_species_consistency(args)
     elif args.command == "monster-compound-consistency":
         return cmd_monster_compound_consistency(args)
+    elif args.command == "monster-dbkey-consistency":
+        return cmd_monster_dbkey_consistency(args)
     elif args.command == "source-txt-integrity":
         return cmd_source_txt_integrity(args)
     else:

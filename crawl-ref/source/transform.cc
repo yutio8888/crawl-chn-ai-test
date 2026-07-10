@@ -2543,7 +2543,7 @@ void sphinx_check_riddle()
     {
         // Check if a monster would have a specific reaction first, to skip
         // messages about them ignoring you.
-        string mon_msg = getSpeakString(best_mon->name(DESC_PLAIN) + " riddle");
+        string mon_msg = getSpeakString(best_mon->name(DESC_DBNAME) + " riddle");
 
         string msg = getShoutString(mon_msg.empty() ? "Sphinx riddle failure"
                                                     : "Sphinx riddle failure acknowledged");

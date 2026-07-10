@@ -6782,7 +6782,7 @@ static bool _spell_charged(monster *mons)
             return false;
         string msg =
             getSpeakString(make_stringf("%s charge",
-                                        mons->name(DESC_PLAIN, true).c_str())
+                                        mons->name(DESC_DBNAME, true).c_str())
                            .c_str());
         if (!msg.empty())
         {
@@ -8174,7 +8174,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     case SPELL_BLINK_OTHER:
     {
         // Allow the caster to comment on moving the foe.
-        string msg = getSpeakString(mons->name(DESC_PLAIN) + " blink_other");
+        string msg = getSpeakString(mons->name(DESC_DBNAME) + " blink_other");
         if (!msg.empty() && msg != "__NONE")
         {
             mons_speaks_msg(mons, msg, MSGCH_TALK,
@@ -8186,7 +8186,7 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
     case SPELL_BLINK_OTHER_CLOSE:
     {
         // Allow the caster to comment on moving the foe.
-        string msg = getSpeakString(mons->name(DESC_PLAIN)
+        string msg = getSpeakString(mons->name(DESC_DBNAME)
                                     + " blink_other_close");
         if (!msg.empty() && msg != "__NONE")
         {

@@ -1284,7 +1284,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             break;
         }
 
-        msg = getSpeakString(mon->name(DESC_PLAIN) + " flee");
+        msg = getSpeakString(mon->name(DESC_DBNAME) + " flee");
 
         // Assume monsters know where to run from, even if player is
         // invisible.
@@ -1319,7 +1319,7 @@ void behaviour_event(monster* mon, mon_event_type event, const actor *src,
             }
             else if (!mon->is_child_tentacle())
             {
-                msg = getSpeakString(mon->name(DESC_PLAIN) + " cornered");
+                msg = getSpeakString(mon->name(DESC_DBNAME) + " cornered");
                 if (msg.empty())
                     msg = "PLAIN:Cornered, @the_monster@ turns to fight!";
             }

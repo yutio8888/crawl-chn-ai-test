@@ -63,6 +63,9 @@ run_check() {
     run_check "Monster compound consistency" blocking \
         python3 .claude/scripts/scan_i18n.py monster-compound-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Monster DB-key consistency" blocking \
+        python3 .claude/scripts/scan_i18n.py monster-dbkey-consistency \
+        crawl-ref/source/
     run_check "Term validation (rejected names from decisions.md)" blocking \
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
