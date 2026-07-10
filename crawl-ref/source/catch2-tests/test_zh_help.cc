@@ -413,3 +413,43 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     // are emitted for the aggregator. Just require the pass completed.
     REQUIRE(true);
 }
+
+// =============================================================================
+// [zh-help][monster] — SEPARATE plain TEST_CASE (NO fixture, EN mode).
+// get_monster_by_name matches English only (Mon_Name_Cache is English-only),
+// so the round-trip must run in EN mode. The help system uses raw DB names
+// (me->name) as internal keys; this test verifies that every monster's DB
+// name resolves back to the correct enum.
+// =============================================================================
+TEST_CASE("zh-help: monster EN round-trip (no fixture)",
+          "[zh-help][monster]")
+{
+    REQUIRE(Options.language == lang_t::EN);
+    init_monsters();
+    init_mon_name_cache();
+
+    for (monster_type m = MONS_0; m < NUM_MONSTERS; ++m)
+    {
+        if (m == MONS_PROGRAM_BUG)
+            continue;
+        const monsterentry *me = get_monster_data(m);
+        if (!me || !me->name || !me->name[0])
+            continue;
+        if (me->mc != static_cast<int>(m)) // non-primary entry (duplicate name)
+            continue;
+        // SOH variants are resolved via _is_soh / _soh_type in
+        // lookup-help.cc, not via get_monster_by_name (init_mon_name_cache
+        // skips them). Skip them here.
+        if (mons_species(m) == MONS_SERPENT_OF_HELL)
+            continue;
+        // init_mon_name_cache skips MONS_BAI_SUZHEN_DRAGON (shares
+        // "Bai Suzhen" name with MONS_BAI_SUZHEN); skip it in the test.
+        if (m == MONS_BAI_SUZHEN_DRAGON)
+            continue;
+        if (getLongDescription(me->name).empty())
+            continue;
+
+        INFO("monster round-trip: " << me->name);
+        CHECK(get_monster_by_name(me->name) == m);
+    }
+}

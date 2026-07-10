@@ -643,7 +643,8 @@ static MenuEntry* _monster_menu_gen(char letter, const string &str,
     // Create and store fake monsters, so the menu code will
     // have something valid to refer to.
     monster_type m_type = _mon_by_name(str);
-    const string name = _is_soh(str) ? _soh_name(m_type) : str;
+    const string name = _is_soh(str) ? _soh_name(m_type)
+                                      : mons_type_name(m_type, DESC_PLAIN);
 
     monster_type base_type = MONS_NO_MONSTER;
     // HACK: Set an arbitrary humanoid monster as base type.
@@ -908,8 +909,12 @@ vector<string> LookupType::matching_keys(string regex) const
 
 static string _mons_desc_key(monster_type type)
 {
-    // No "the Royal Jelly".
-    string name = remove_prepended_the(mons_type_name(type, DESC_PLAIN));
+    // Use raw English DB name (me->name) so the key survives a
+    // round-trip through _describe_monster -> _mon_by_name, which
+    // only matches English entries in Mon_Name_Cache. No
+    // remove_prepended_the needed — raw DB names never have "the".
+    const monsterentry *me = get_monster_data(type);
+    const string name = (me && me->name) ? string(me->name) : "program bug";
     if (mons_species(type) == MONS_SERPENT_OF_HELL)
         return name + " " + serpent_of_hell_flavour(type);
     return name;
@@ -1397,7 +1402,7 @@ static int _describe_bane(const string &key, const string &suffix,
 
 /// All types of ?/ queries the player can enter.
 static const vector<LookupType> lookup_types = {
-    LookupType('M', "monster", _recap_mon_keys, _monster_filter,
+    LookupType('M', "monster", nullptr, _monster_filter,
                _get_monster_keys, nullptr, nullptr,
                _describe_monster, lookup_type::toggleable_sort),
     LookupType('S', "spell", _recap_spell_keys, _spell_filter,
