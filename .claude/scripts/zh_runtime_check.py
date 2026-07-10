@@ -427,11 +427,13 @@ def parse_help_markers(path: str) -> Tuple[Dict[str, str], List[dict]]:
             if not case_id.startswith('help:'):
                 continue
             parts = case_id.split(':')
-            # Expect exactly help:<type>:<status>
-            if len(parts) != 3 or parts[0] != 'help':
+            # Accept help:<type>:<status> (3 parts) and
+            # help:<prefix>:<subtype>:<status> (4+ parts, e.g. help:text:spell:ok).
+            # status is always the last segment; type is everything in between.
+            if len(parts) < 3 or parts[0] != 'help':
                 continue
-            htype = parts[1].strip()
-            status = parts[2].strip()
+            htype = ':'.join(parts[1:-1]).strip()
+            status = parts[-1].strip()
             # probe/phase are lifecycle markers (help:probe:ok / help:phase:done),
             # not help types — exclude them from the status map.
             if htype in ('probe', 'phase'):

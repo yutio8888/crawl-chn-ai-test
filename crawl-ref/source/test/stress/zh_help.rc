@@ -43,7 +43,7 @@ local esc=string.char(27)
 local ESC4=esc..esc..esc..esc
 local action=0
 local done_sent=false
-local stages={ {t="god",keys="?/g".."a"..ESC4},{t="branch",keys="?/b".."a"..ESC4},{t="cloud",keys="?/l".."a"..ESC4},{t="card",keys="?/c".."a"..ESC4},{t="skill",keys="?/k".."a"..ESC4},{t="passive",keys="?/p".."a"..ESC4},{t="status",keys="?/t".."a"..ESC4},{t="monster",keys="?/m"..eol.."a"..ESC4},{t="spell",keys="?/s"..eol.."a"..ESC4},{t="ability",keys="?/a"..eol.."a"..ESC4},{t="feature",keys="?/f"..eol.."a"..ESC4},{t="item",keys="?/i"..eol.."a"..ESC4},{t="mutation",keys="?/u"..eol.."a"..ESC4},{t="bane",keys="?/n"..eol.."a"..ESC4},{t="spell_school",keys="?/s".."@Fire"..eol.."a"..ESC4}, }
+local stages={ {t="god",keys="?/g".."a"..ESC4},{t="branch",keys="?/b".."a"..ESC4},{t="cloud",keys="?/l".."a"..ESC4},{t="card",keys="?/c".."a"..ESC4},{t="skill",keys="?/k".."a"..ESC4},{t="passive",keys="?/p".."a"..ESC4},{t="status",keys="?/t".."a"..ESC4},{t="monster",keys="?/m"..eol.."a"..ESC4},{t="spell",keys="?/s"..eol.."a"..ESC4},{t="ability",keys="?/a"..eol.."a"..ESC4},{t="feature",keys="?/f"..eol.."a"..ESC4},{t="item",keys="?/i"..eol.."a"..ESC4},{t="mutation",keys="?/u"..eol.."a"..ESC4},{t="bane",keys="?/n"..eol.."a"..ESC4},{t="spell_school",keys="?/s".."@Fire"..eol.."a"..ESC4},{t="text:spell",keys="?/s".."火球"..eol.."a"..ESC4},{t="text:ability",keys="?/a".."狂暴"..eol.."a"..ESC4},{t="text:mutation",keys="?/u".."利爪"..eol.."a"..ESC4},{t="text:feature",keys="?/f".."wall"..eol.."a"..ESC4},{t="text:bane",keys="?/n".."lethargy"..eol.."a"..ESC4}, }
 local pending=nil
 local function sample_of(text)
     if text == nil then text = "" end

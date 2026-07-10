@@ -15,11 +15,16 @@
       "item": "ok",
       "mutation": "ok",
       "bane": "ok",
-      "spell_school": "ok"
+      "spell_school": "ok",
+      "text:spell": "ok",
+      "text:ability": "ok",
+      "text:mutation": "ok",
+      "text:feature": "ok",
+      "text:bane": "ok"
     },
     "non_ok": {},
     "non_ok_count": 0,
-    "total_types": 15,
+    "total_types": 20,
     "samples": [
       {
         "type": "god",
@@ -93,6 +98,31 @@
       },
       {
         "type": "spell_school",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "text:spell",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "text:ability",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "text:mutation",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "text:feature",
+        "status": "ok",
+        "sample": "未知命令。 未知命令。 未知命令。 未知命令"
+      },
+      {
+        "type": "text:bane",
         "status": "ok",
         "sample": "未知命令。 未知命令。 未知命令。 未知命令"
       }
