@@ -37837,3 +37837,18 @@ When alone and injured, reapers sometimes come to claim you.
 %%%%
 the Shapeless
 无形者
+%%%%
+random rage
+随机狂暴
+%%%%
+acrobat
+特技闪避
+%%%%
+roll
+翻滚
+%%%%
+channel magic
+魔力引导
+%%%%
+infuse magic
+魔力灌注

@@ -514,9 +514,28 @@ static bool _ability_filter(string key, string /*body*/)
     return !string_matches_ability_name(key);
 }
 
+// Forward declaration: defined later in this file.
+static MenuEntry* _simple_menu_gen(char letter, const string &str,
+                                   string &key);
+
 static bool _status_filter(string key, string /*body*/)
 {
     return !strip_suffix(lowercase(key), " status");
+}
+
+// Override display text with T_()'d Chinese name (Issue 51 pattern).
+// The DB key is "<name> status"; extract <name> and T_()-wrap it
+// so the menu entry shows the translated name.
+static MenuEntry* _status_menu_gen(char letter, const string &str,
+                                   string &key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+
+    string name = lowercase(key);
+    if (strip_suffix(name, " status"))
+        me->text = T_(name.c_str());
+
+    return me;
 }
 
 static bool _mutation_filter(string key, string /*body*/)
@@ -539,6 +558,21 @@ static bool _bane_filter(string key, string /*body*/)
 static bool _passive_filter(string key, string /*body*/)
 {
     return !strip_suffix(lowercase(key), " passive");
+}
+
+// Override display text with T_()'d Chinese name (Issue 51 pattern).
+// The DB key is "<name> passive"; extract <name> and T_()-wrap it
+// so the menu entry shows the translated name.
+static MenuEntry* _passive_menu_gen(char letter, const string &str,
+                                    string &key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+
+    string name = lowercase(key);
+    if (strip_suffix(name, " passive"))
+        me->text = T_(name.c_str());
+
+    return me;
 }
 
 static void _recap_mon_keys(vector<string> &keys)
@@ -1436,10 +1470,10 @@ static const vector<LookupType> lookup_types = {
                nullptr, _get_cloud_keys, _cloud_menu_gen,
                _describe_cloud, lookup_type::db_suffix),
     LookupType('P', "passive", nullptr, _passive_filter,
-               nullptr, nullptr, _simple_menu_gen,
+               nullptr, nullptr, _passive_menu_gen,
                _describe_generic, lookup_type::db_suffix),
     LookupType('T', "status", nullptr, _status_filter,
-               nullptr, nullptr, _simple_menu_gen,
+               nullptr, nullptr, _status_menu_gen,
                _describe_generic, lookup_type::db_suffix),
     LookupType('U', "mutation", nullptr, _mutation_filter,
                nullptr, nullptr, _mut_menu_gen,
