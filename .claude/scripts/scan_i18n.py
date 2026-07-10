@@ -1369,6 +1369,7 @@ def cmd_monster_dbkey_consistency(args):
         re.compile(r'_get_speak_string\([^;\n]*name\(DESC_PLAIN'),
         re.compile(r'_get_speak_string\([^;\n]*base_name\(DESC_PLAIN'),
         re.compile(r'_get_speak_string\([^;\n]*mons_type_name\([^;\n]*DESC_PLAIN'),
+        re.compile(r'return\s+mons_type_name\(mons\.type,\s*DESC_PLAIN\);'),
     ]
 
     findings = []
