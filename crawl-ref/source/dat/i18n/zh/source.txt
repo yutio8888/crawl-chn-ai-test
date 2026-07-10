@@ -21767,6 +21767,18 @@ lava snake
 living spell
 活体法术
 %%%%
+living banishment spell
+活体放逐术
+%%%%
+living crystal spell
+活体水晶术
+%%%%
+living paralysis spell
+活体麻痹术
+%%%%
+living smiting commandment
+活体神罚律令
+%%%%
 mana viper
 魔力毒蛇
 %%%%

@@ -1106,16 +1106,16 @@ string monster_info::_core_name() const
                 switch (spells[0].spell)
                 {
                 case SPELL_BANISHMENT:
-                    s = "living banishment spell";
+                    s = T_("living banishment spell");
                     break;
                 case SPELL_LEHUDIBS_CRYSTAL_SPEAR:
-                    s = "living crystal spell";
+                    s = T_("living crystal spell");
                     break;
                 case SPELL_SMITING:
-                    s = "living smiting commandment";
+                    s = T_("living smiting commandment");
                     break;
                 case SPELL_PARALYSE:
-                    s = "living paralysis spell";
+                    s = T_("living paralysis spell");
                     break;
                 default:
                     break;
