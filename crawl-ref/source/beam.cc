@@ -7963,20 +7963,24 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
             victims.add(*target.mon, target.adj, target.suffix, target.penance);
 
         string mon_name = victims.describe();
-        string verb = "fire ";
+        string verb;
         if (tracer.bad_attack_targets.size() == 1)
         {
-            const monster* mon = tracer.bad_attack_targets[0].mon;
-            if (beam.target == mon->pos() && spell != SPELL_STARBURST)
-                verb += "at ";
+            if (beam.target == tracer.bad_attack_targets[0].mon->pos()
+                && spell != SPELL_STARBURST)
+            {
+                verb = make_stringf(T_("fire at %s"), mon_name.c_str());
+                mon_name = "";
+            }
             else
             {
-                verb += "in " + apostrophise(mon_name) + " direction";
+                verb = make_stringf(T_("fire in %s direction"),
+                                    mon_name.c_str());
                 mon_name = "";
             }
         }
         else
-            verb += "towards ";
+            verb = "fire towards ";
         const bool penance = victims.penance();
 
         const string prompt = make_stringf(T_("Really %s%s%s?%s"),

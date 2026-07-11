@@ -26725,6 +26725,14 @@ fire at
 
 向……射击
 %%%%
+fire at %s
+
+向%s射击
+%%%%
+fire in %s direction
+
+向%s的方向
+%%%%
 ghostly 
 
 鬼魅
