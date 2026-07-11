@@ -26,3 +26,18 @@ Buy items\n
 Line 1\nLine 2\nLine 3\n
 第一行\n第二行\n第三行\n
 %%%%
+# This is a comment block — should not produce false positives
+
+%%%%
+Mixed \\n escaped with real \n at end\n
+混合\\n转义加真实\n结尾\n
+%%%%
+All three: \n\t\r in one entry\n
+三种：\n\t\r 在同一项\n
+%%%%
+Doubled backslash \\ before real \n
+双反斜杠\在真实\n前
+%%%%
+%s\nwith\tmixed\rcontrols\n
+%s\n混合\t控制\r符\n
+%%%%

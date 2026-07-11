@@ -38,7 +38,7 @@ def count_controls(s: str) -> dict:
         if s[i] == '\\' and i + 1 < len(s):
             nxt = s[i + 1]
             if nxt == '\\':
-                i += 2  # escaped backslash — skip, not a control char introducer
+                i += 2
                 continue
             elif nxt in 'ntr':
                 counts[nxt] += 1
@@ -46,6 +46,29 @@ def count_controls(s: str) -> dict:
                 continue
         i += 1
     return counts
+
+
+def load_exempt_lines(path: str) -> set:
+    """Load exempted line numbers from a file.
+
+    Format: <line_no>  # <optional reason>
+    Lines starting with # and empty lines are ignored.
+    """
+    exempted = set()
+    try:
+        with open(path, 'r', encoding='utf-8') as f:
+            for line in f:
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                try:
+                    num_str = line.split()[0].lstrip('L')
+                    exempted.add(int(num_str))
+                except (ValueError, IndexError):
+                    pass
+    except FileNotFoundError:
+        pass
+    return exempted
 
 
 def parse_source_txt(path: str) -> list:
@@ -75,8 +98,10 @@ def parse_source_txt(path: str) -> list:
 
 
 def check_parity(source_txt_path: str, strict_n: bool = True,
-                 strict_tr: bool = False) -> int:
+                 strict_tr: bool = False, exempt_lines: set = None) -> int:
     """Run control-character parity check. Returns exit code."""
+    if exempt_lines is None:
+        exempt_lines = set()
     entries = parse_source_txt(source_txt_path)
 
     n_mismatches = []
@@ -85,6 +110,9 @@ def check_parity(source_txt_path: str, strict_n: bool = True,
     empty_zh = []
 
     for en, zh, line_no in entries:
+        if line_no in exempt_lines:
+            continue
+
         en_counts = count_controls(en)
         zh_counts = count_controls(zh)
 
@@ -161,12 +189,27 @@ def main():
                         help='Make \\n mismatches blocking (default: already blocking)')
     parser.add_argument('--strict-all', action='store_true',
                         help='Make \\t and \\r mismatches blocking too')
+    parser.add_argument('--exempt-lines',
+                        help='File with exempted EN key line numbers '
+                             '(one per line, optional # comments)')
     args = parser.parse_args()
+
+    exempt_lines = set()
+    if args.exempt_lines:
+        exempt_lines = load_exempt_lines(args.exempt_lines)
+    else:
+        # Default: look for exemptions file next to source.txt
+        import os
+        default_exempt = os.path.join(
+            os.path.dirname(os.path.abspath(__file__)),
+            'source-control-parity-exemptions.txt')
+        exempt_lines = load_exempt_lines(default_exempt)
 
     rc = check_parity(
         args.source_txt,
-        strict_n=True,  # \n is always blocking
-        strict_tr=args.strict_all  # \t/\r blocking only with --strict-all
+        strict_n=True,
+        strict_tr=args.strict_all,
+        exempt_lines=exempt_lines
     )
     sys.exit(rc)
 

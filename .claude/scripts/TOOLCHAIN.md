@@ -1,6 +1,6 @@
 # 翻译工具链使用说明
 
-项目 `.claude/scripts/` 下有 14 个脚本覆盖翻译质量保障的完整链路。所有脚本从仓库根目录运行。
+项目 `.claude/scripts/` 下有多个脚本覆盖翻译质量保障的完整链路。所有脚本从仓库根目录运行。
 
 ## 架构概览
 
@@ -8,14 +8,15 @@
 Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
                                     ↓
                   ┌──────────────────────────────────────────┐
-                  │  scan_i18n.py (6 子命令)                  │
-                  │  i18n_extract.py (4 子命令)               │
-                  │  audit_data_i18n.py (数据驱动覆盖)        │
-                  │  check_consistency.sh (7 模式)             │
-                  │  cross_file_terms.py                      │
-                  │  smoke_test.sh                            │
-                  │  check_checkpoint.sh                      │
-                  │  record_review.sh                         │
+                   │  scan_i18n.py (10 子命令)                 │
+                   │  i18n_extract.py (4 子命令)               │
+                   │  audit_data_i18n.py (数据驱动覆盖)        │
+                   │  source_control_parity.py (控制符奇偶)    │
+                   │  check_consistency.sh (7 模式)             │
+                   │  cross_file_terms.py                      │
+                   │  smoke_test.sh                            │
+                   │  check_checkpoint.sh                      │
+                   │  record_review.sh                         │
                   └──────────────────────────────────────────┘
 ```
 
@@ -32,6 +33,7 @@ Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
 | **术语验证（decisions.md）** | `python3 .claude/scripts/scan_i18n.py validate-terms --glossary docs/decisions.md --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **反模式检测** | `python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ --strict` |
 | **跨文件术语一致性** | `python3 .claude/scripts/cross_file_terms.py crawl-ref/source/dat/i18n/zh/` |
+| **控制符奇偶检查** | `python3 .claude/scripts/source_control_parity.py --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **语言依赖参数** | `python3 .claude/scripts/scan_i18n.py lang-args crawl-ref/source/` |
 | **数据库完整性** | `bash .claude/scripts/check_consistency.sh --all --strict` |
 | **运行时冒烟测试** | `bash .claude/scripts/smoke_test.sh` |
@@ -65,7 +67,7 @@ python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查�
 
 ### scan_i18n.py — T_() 世界盲区扫描
 
-替代旧的 `scan_untranslated.sh`。6 个子命令：
+替代旧的 `scan_untranslated.sh`。10 个子命令：
 
 ```bash
 # missing-t: 未翻译的 mprf/mpr 调用
@@ -149,6 +151,47 @@ python3 .claude/scripts/cross_file_terms.py crawl-ref/source/dat/i18n/zh/ \
 
 ```bash
 bash .claude/scripts/smoke_test.sh
+```
+
+### source_control_parity.py — 控制符奇偶检查
+
+检查 source.txt 中英文 key 中的字面控制字符（`\n`、`\t`、`\r`）数量是否与中文翻译保持一致。
+`\n` 缺失会导致 Tiles 渲染器中出现过长的行并被截断。
+
+```bash
+# \n 不匹配 → 阻断（退出码 1）；\t/\r 不匹配 → 警告（退出码 0）
+python3 .claude/scripts/source_control_parity.py \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+
+# 使 \t 和 \r 也变为阻断
+python3 .claude/scripts/source_control_parity.py \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt --strict-all
+```
+
+**豁免机制**：由于中文句式重组导致合法 `\n` 数量不同的条目，可通过独立豁免文件排除。
+默认读取脚本同目录下的 `source-control-parity-exemptions.txt`，格式为每行一个 EN key 行号：
+
+```text
+L2619   # Attack monsters: 3→2 \n — CN 单行合并
+L24199  # Table legend: 13→10 \n — CJK 宽度软换行移除
+```
+
+也可通过 `--exempt-lines <file>` 指定自定义豁免文件。
+
+**正确解析**：正确处理 `\\` 转义（`\\n` 不计为控制字符），区分字面 `\n` 与转义序列。
+**跳过空条目**：空中文译文会被标记为缺失所有控制字符。
+
+已接入所有三个 `post-*.sh` 聚合脚本（均为阻断 gate）。
+
+```bash
+# 带自定义豁免文件的完整检查
+python3 .claude/scripts/source_control_parity.py \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+    --exempt-lines source-control-parity-exemptions.txt
+
+# 严格模式：所有控制字符均为阻断
+python3 .claude/scripts/source_control_parity.py \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt --strict-all
 ```
 
 ### scan_varargs_string.py — 可变参数 std::string UB 扫描（Issue #42 类）
@@ -283,6 +326,8 @@ cd crawl-ref/source && make -j4
 | `check_consistency.sh` | 所有模式 `--strict` | 1（有违规） |
 | `check_consistency.sh` | 所有模式（无 --strict） | 0（向后兼容） |
 | `cross_file_terms.py` | — | 1（有跨文件问题） |
+| `source_control_parity.py` | — | 1（有 `\n` 不匹配），0（仅 `\t`/`\r` 警告或全通过） |
+| `source_control_parity.py` | `--strict-all` | 1（有任何控制符不匹配） |
 | `post-coder.sh` | 默认 | 1（有 blocking failure），0（仅 warning 或全通过） |
 | `post-coder.sh` | `--full` | 1（静态 gate 或 L1-L3 / baseline 聚合失败） |
 | `post-translator.sh` | 默认 | 1（有 blocking failure） |

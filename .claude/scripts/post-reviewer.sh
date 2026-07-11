@@ -31,6 +31,9 @@ run_check() {
     echo ""
     run_check "Database consistency (--all --strict)" \
         bash .claude/scripts/check_consistency.sh --all --strict
+    run_check "Source.txt control-character parity (\n)" \
+        python3 .claude/scripts/source_control_parity.py \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Source.txt integrity" \
         python3 .claude/scripts/scan_i18n.py source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

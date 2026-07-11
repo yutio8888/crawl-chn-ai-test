@@ -2620,8 +2620,7 @@ barrage of energy
 \n<h>攻击怪物\n走向怪物会用你装备的武器或空手攻击它。
 %%%%
 \n<w>0:</w> Orb of Zot
-
-<w>0:</w> 佐特宝珠
+\n<w>0:</w> 佐特宝珠
 %%%%
 \nFavour - 
 \n神眷 -
@@ -2630,8 +2629,7 @@ barrage of energy
 \n等级: %d
 %%%%
 \nTo read a description, press the key listed above. (AdB) indicates damage (the sum of A B-sided dice), (x%%) indicates the chance to defeat your Will, and (y) indicates the spell range
-
-要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
+\n要阅读描述，请按上方列出的按键。(AdB) 表示伤害（A个B面骰子之和），(x%%) 表示穿透意志的几率，(y) 表示法术射程
 # Extracted by extract_ternaries.py
 # Review entries marked with ⚠️ARG-DIFF before merging
 #
@@ -12632,7 +12630,6 @@ long
 较久
 %%%%
 \n stacked deck: 
-
 \n 堆叠牌组：
 %%%%
 very greatly 
@@ -12640,7 +12637,6 @@ very greatly
 极大程度地
 %%%%
 \nTitle - 
-
 \n称号 - 
 %%%%
 There is an entrance to 
@@ -21247,24 +21243,17 @@ on
 ，或
 %%%%
 <%s>I'll put %s outside for you.</%s>
-
-%%%%
-<%s>我会将%s放在外面给你。</%s>\n
-
+<%s>我会将%s放在外面给你。</%s>
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>
-
+<%s>购买物品%s需%d金币？%s（%s/N）</%s>
 %%%%
 <%s>Purchase items%s for %d gold? %s (%s/N)</%s>\n
-
 <%s>购买物品%s需%d金币？%s（%s/N）</%s>\n
 
 %%%%
 <%s>You don't have enough money.</%s>
-
-%%%%
-<%s>你的金币不够。</%s>\n
-
+<%s>你的金币不够。</%s>
 %%%%
 Choose to examine item
 选择检视物品
@@ -33835,9 +33824,6 @@ deep water
 %%%%
  struggles to get unstuck from the web.
 挣扎着想要脱离蛛网。
-%%%%
-如果你的法术成功率更高，你的仆从就可以被赋予这个法术。\n
-
 %%%%
 # Issue 45 Phase 3: dbg-maps.cc batch (2026-07-05)
 
