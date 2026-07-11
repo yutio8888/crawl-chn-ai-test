@@ -206,7 +206,7 @@ and let the orchestrator read the raw output.
 
 After completing modifications, run:
 ```bash
-bash .claude/scripts/post-coder.sh
+bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 This aggregates: T_() key coverage, mprf_p compatibility, %s count parity,
@@ -245,7 +245,7 @@ filter, or interpret script output. The orchestrator reads the raw log directly.
 ### Knowledge Reference (read, understand, apply — scripts do the checking)
 
 The following rules guide code quality. **Understand and follow them**, but
-mechanical verification is handled by `post-coder.sh`:
+mechanical verification is handled by `verify_zh.sh --profile code`:
 - `const char*` return values do NOT get `.c_str()` — `skill_name(sk)` not `skill_name(sk).c_str()`
 - Positional params use `mprf_p` not `mprf` — MinGW vsnprintf doesn't support `%n$s`
 - `grep -F` dedup before appending to source.txt
@@ -266,7 +266,7 @@ Break modifications into independent logical units. After each unit:
    Don't fall into a patch loop — backtrack and consider a different approach.
 4. **If modifications span more than 3 files**: consider narrowing scope or splitting the task.
 
-Run `post-coder.sh` only after ALL units are complete.
+Run `bash .claude/scripts/verify_zh.sh --profile code` only after ALL units are complete.
 
 ---
 

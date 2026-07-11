@@ -120,7 +120,7 @@ All translated strings fall into one of five types. Verify classification is cor
 
 1. **Run all automated scripts first.** Report raw output path — do not summarize.
    ```bash
-   bash .claude/scripts/post-reviewer.sh
+   bash .claude/scripts/verify_zh.sh --profile review
    ```
 2. **For each finding**, classify:
    - P0 (functional/visibility impact) — must block commit

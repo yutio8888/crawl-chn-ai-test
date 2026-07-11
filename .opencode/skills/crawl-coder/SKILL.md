@@ -45,7 +45,7 @@ Follow the standard T_() migration pattern:
 1. Replace Options.language == lang_t::ZH ? \"中文\" : \"English\" with T_(\"English\")
 2. Add corresponding entries to crawl-ref/source/dat/i18n/zh/source.txt
 3. Run make -j4 to verify compilation
-4. Run bash .claude/scripts/post-coder.sh for verification")
+4. Run bash .claude/scripts/verify_zh.sh --profile code for verification")
 ```
 
 ### Template 2: Mixed CN/EN Output Fix
@@ -58,7 +58,7 @@ Root cause investigation pattern:
 2. Check if there's a descriptor system (DESC_YOUR, DESC_THE) that should be used
 3. Check if T_() is missing on any fragment
 4. Verify the fix with make -j4
-5. Run post-coder.sh verification")
+5. Run verify_zh.sh --profile code verification")
 ```
 
 ### Template 3: ZH Guard Removal
@@ -69,7 +69,7 @@ Task(subagent_type="crawl-coder", description="Remove ZH guards",
 Pattern: Replace 'condition ? zh_string : en_string' with T_(\"en_string\").
 For Lua vaults: replace crawl.language() == 'zh' with crawl.t_(\"English\").
 Add all new keys to source.txt. Compile and verify.
-Run post-coder.sh after completion.")
+Run verify_zh.sh --profile code after completion.")
 ```
 
 ### Template 4: New zh-* System Creation
@@ -97,7 +97,7 @@ Priority order:
 3. C_(ctx, key) — when same English word needs different Chinese translations
 4. Drop unused positional args — when CN doesn't need a verb position
 Rules: mprf_p (not mprf) for %n$s, never mix %1$s with bare %s,
-conj_verb on Chinese is banned. Run post-coder.sh to verify.")
+conj_verb on Chinese is banned. Run verify_zh.sh --profile code to verify.")
 ```
 
 ## Key Patterns (Synthesized from Recent Commits)
@@ -311,4 +311,4 @@ Task(subagent_type="crawl-coder", description="<3-5 word summary>",
   prompt="<full task with file paths and requirements>")
 ```
 
-The agent uses `make -j4` (not -j8), and runs `post-coder.sh` before reporting completion.
+The agent uses `make -j4` (not -j8), and runs `verify_zh.sh --profile code` before reporting completion.

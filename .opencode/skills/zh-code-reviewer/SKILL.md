@@ -6,7 +6,7 @@ description: 5-layer systematic code review of DCSS Chinese translation changes.
 Review the specified Chinese translation code changes using the 5-layer framework defined in `.opencode/agents/zh-code-reviewer.md`.
 
 Start with automated checks:
-1. Run `bash .claude/scripts/post-reviewer.sh` and report the raw log path
+1. Run `bash .claude/scripts/verify_zh.sh --profile review` and report the raw log path
 2. Do NOT summarize, filter, or interpret script output — the orchestrator reads raw logs directly
 
 Then manually verify each finding against actual source code. Classify as:

@@ -38,7 +38,7 @@ the results — your role is to execute the verification, not to interpret it.
 ### Pre-Review Scripts (mandatory — run before forming any opinion)
 
 ```bash
-bash .claude/scripts/post-reviewer.sh
+bash .claude/scripts/verify_zh.sh --profile review
 ```
 
 This aggregates: all consistency checks (rulings, gods, skills, format, spells,

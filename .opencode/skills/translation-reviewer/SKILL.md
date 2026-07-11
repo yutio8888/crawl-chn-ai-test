@@ -6,7 +6,7 @@ description: 5-layer systematic review of DCSS Chinese translation commits. Prot
 Review the specified Chinese translation changes using the 15-point framework defined in `.opencode/agents/translation-reviewer.md`.
 
 Start with automated checks:
-1. Run `bash .claude/scripts/post-reviewer.sh` and report the raw log path
+1. Run `bash .claude/scripts/verify_zh.sh --profile review` and report the raw log path
 2. Do NOT summarize, filter, or interpret script output — the orchestrator reads raw logs directly
 
 Then manually verify each finding against actual source code. Classify as:

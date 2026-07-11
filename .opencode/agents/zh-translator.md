@@ -194,7 +194,7 @@ python3 .claude/scripts/scan_i18n.py source-txt-integrity \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 
 # Full translation quality check
-bash .claude/scripts/post-translator.sh
+bash .claude/scripts/verify_zh.sh --profile translation
 ```
 This aggregates: term validation (rejected names from decisions.md), format
 integrity (%%%% parity), and database @keyword@ integrity. Output goes to
@@ -208,7 +208,7 @@ filter, or interpret script output. The orchestrator reads the raw log directly.
 ### Knowledge Reference (read, understand, apply — but scripts do the checking)
 
 The following rules guide your translation quality. Read and apply them, but
-the mechanical verification is handled by `post-translator.sh`:
+the mechanical verification is handled by `verify_zh.sh --profile translation`:
 - God names: use `docs/glossary.md` canonical forms (西芙·穆娜, not 席夫·穆纳)
 - Format strings: %s count must match EN key
 - @keyword@, w:N weights, VISUAL:/SOUND: prefixes: preserve exactly
@@ -228,7 +228,7 @@ When given a translation task:
 6. Identify the speaker (if dialogue) and apply the correct voice profile
 7. Translate using glossary terminology
 8. **NEVER blindly append all enumerated names** — always diff against existing keys
-9. Run `bash .claude/scripts/post-translator.sh` and report the log path
+9. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path
 10. Run source.txt integrity check:
     ```bash
     python3 .claude/scripts/scan_i18n.py source-txt-integrity \

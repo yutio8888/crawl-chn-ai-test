@@ -330,7 +330,7 @@ Watch especially for:
 already returns `const char*` so it needs no wrapping.
 
 **Enforced gate:** `.claude/scripts/scan_varargs_string.py` (tree-sitter AST)
-is wired into `post-coder.sh` as **blocking**. Run it after any C++ edit
+is wired into `post-coder.sh` (and `verify_zh.sh --profile code`) as **blocking**. Run it after any C++ edit
 touching these calls:
 
 ```bash
@@ -342,6 +342,45 @@ HIGH rules (`STRING_CTOR` / `CONCAT` / `TERNARY`) block; `CALL_NO_CSTR` is a
 WARN — verify the callee returns `const char*` (safe) vs `std::string` (needs
 `.c_str()`). Full write-up: `CLAUDE.md` "Variadic-String UB Scanner" +
 `.claude/scripts/TOOLCHAIN.md`.
+
+## Simplified Verification: `verify_zh.sh --profile`
+
+**Agents should NOT run a dozen individual scripts.** A single command replaces
+the three post-* scripts:
+
+| Change type | Command |
+|------------|---------|
+| Translation / data files | `bash .claude/scripts/verify_zh.sh --profile translation` |
+| C++ / i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
+| Pre-merge review | `bash .claude/scripts/verify_zh.sh --profile review` |
+| CI gate | `bash .claude/scripts/verify_zh.sh --profile ci` |
+
+**Agent post-task template:**
+```
+翻译 source.txt：
+1. 修改
+2. bash .claude/scripts/verify_zh.sh --profile translation
+3. 若失败，只修复报告中列出的条目
+4. 报告命令、退出码、失败项数
+```
+
+```
+C++ i18n 改动：
+1. 修改
+2. bash .claude/scripts/verify_zh.sh --profile code
+3. 必要时编译目标
+4. 报告命令、退出码、失败项数
+```
+
+**Hard rule for translator agents:**
+```
+将 \n、\t、\r、%%%%、%N$s、<tag>、@keyword@ 视为不可翻译 token。
+输出前必须逐字保留；不得为了中文自然性删除它们。
+```
+
+The report (written to `.claude/metrics/verify/`) aggregates results from
+`core-static` checks (always blocking) plus domain-specific checks per profile.
+All three `post-*.sh` scripts remain available as backward-compatible aliases.
 
 ## Pointer to CLAUDE.md (for shared knowledge)
 
