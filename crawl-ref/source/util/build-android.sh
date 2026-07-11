@@ -83,7 +83,11 @@ make ANDROID="$ANDROID_VER" TILES=y android -j8
 # 3. Build native code + APK with gradle
 echo "=== [3/4] Building APK with gradle (variant=$VARIANT) ==="
 cd "$WT_SOURCE/android-project"
-gradle --no-daemon ":app:assemble${VARIANT^}"
+# Generate gradle wrapper if missing (e.g. after clean worktree sync)
+if [ ! -x gradlew ]; then
+    gradle wrapper --gradle-version 8.13
+fi
+./gradlew --no-daemon ":app:assemble${VARIANT^}"
 
 # 4. Locate and report APK
 APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
