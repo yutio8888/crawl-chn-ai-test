@@ -1,4 +1,4 @@
-source-control-parity: 15 issue(s) found
+source-control-parity: 14 issue(s) found
 
   [ERROR] Count mismatch — \n (newline) (5):
     L8: EN has 1, ZH has 0
@@ -13,28 +13,25 @@ source-control-parity: 15 issue(s) found
     L44: EN has 2, ZH has 1
       EN: Trailing \n mismatch — ZH has \n but EN does not
       ZH: 尾随\\n不匹配 — 中文有\\n英文没有\n
-    L47: EN has 3, ZH has 1
+    L47: EN has 3, ZH has 2
       EN: Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
-      ZH: 顺序\t\n\t不匹配
+      ZH: 顺序\n\t\n
 
-  [ERROR] Trailing \n missing (3):
+  [ERROR] Trailing \n missing (2):
     L8: trailing \\n — EN ends with \\n, ZH does not
       EN: Orcs frequently recognise you as Beogh's chosen one.\n
       ZH: 兽人经常认出你是贝奥格的选民。
     L11: trailing \\n — EN ends with \\n, ZH does not
       EN: You are surrounded by an umbra.\nEnemies who die within your umbra may be risen....
       ZH: 你被本影环绕。\n在你的本影中死去的敌人可能会被复活。
-    L47: trailing \\n — EN ends with \\n, ZH does not
-      EN: Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
-      ZH: 顺序\t\n\t不匹配
 
   [WARN] Count mismatch — \t (tab) (2):
     L17: EN has 1, ZH has 0
       EN: value%s\tvalue
       ZH: 值%s值
-    L47: EN has 3, ZH has 2
+    L47: EN has 3, ZH has 1
       EN: Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
-      ZH: 顺序\t\n\t不匹配
+      ZH: 顺序\n\t\n
 
   [ERROR] Sequence order mismatch (5):
     L8: sequence mismatch — EN: n, ZH: (none)
@@ -49,8 +46,8 @@ source-control-parity: 15 issue(s) found
     L44: sequence mismatch — EN: nn, ZH: n
       EN: Trailing \n mismatch — ZH has \n but EN does not
       ZH: 尾随\\n不匹配 — 中文有\\n英文没有\n
-    L47: sequence mismatch — EN: tntntn, ZH: tnt
+    L47: sequence mismatch — EN: tntntn, ZH: ntn
       EN: Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
-      ZH: 顺序\t\n\t不匹配
+      ZH: 顺序\n\t\n
 
 Fix: add the missing \n to the Chinese translation lines above.

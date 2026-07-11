@@ -21,41 +21,21 @@ import re
 import sys
 from collections import defaultdict
 
-# Import parse_decisions from sibling script
+# Import parse_decisions from sibling script, parse_entries from i18n_shared
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from scan_i18n import parse_decisions
+from i18n_shared import parse_entries
 
 
 def parse_source_txt(filepath: str) -> dict:
-    """Parse a source.txt-style %%%%-separated file, return {key: value}."""
+    """Parse a source.txt-style %%%%-separated file, return {key: value}.
+
+    Thin wrapper around i18n_shared.parse_entries() using raw-case keys
+    for cross-file comparison (case-preserving).
+    """
     entries = {}
-    if not os.path.exists(filepath):
-        return entries
-    with open(filepath, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    key = None
-    value_lines = []
-    in_entry = False
-    for line in lines:
-        stripped = line.rstrip('\n').rstrip('\r')
-        if stripped.startswith('#') and key is None:
-            continue
-        if stripped.startswith('%%%%'):
-            if key is not None:
-                entries[key] = '\n'.join(value_lines).rstrip()
-            key = None
-            value_lines = []
-            in_entry = True
-            continue
-        if not in_entry:
-            continue
-        if key is None:
-            if stripped:
-                key = stripped
-        else:
-            value_lines.append(stripped)
-    if key is not None:
-        entries[key] = '\n'.join(value_lines).rstrip()
+    for entry in parse_entries(filepath, lowercase_keys=False):
+        entries[entry.key] = entry.value
     return entries
 
 

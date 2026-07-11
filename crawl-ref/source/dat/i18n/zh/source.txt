@@ -31218,7 +31218,6 @@ which it recharges.
 %%%%
 \nIt deals %s damage.\n
 \n它造成%s点伤害。\n
-被吞没
 %%%%
 %s %s afflicted by dizzying energies!
 %s%s令人眩晕的能量折磨！

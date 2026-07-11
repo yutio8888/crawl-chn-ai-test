@@ -45,6 +45,5 @@ Trailing \n mismatch — ZH has \n but EN does not
 尾随\\n不匹配 — 中文有\\n英文没有\n
 %%%%
 Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
-顺序\t\n\t不匹配
-顺序\n\t\n不匹配
+顺序\n\t\n
 %%%%

@@ -31,7 +31,12 @@ Exit codes:
 """
 
 import argparse
+import os
 import sys
+
+# Use unified parser from i18n_shared
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import parse_entries
 
 
 def count_controls(s: str) -> dict:
@@ -128,37 +133,13 @@ def load_exempt_lines(path: str) -> set:
     return exempted
 
 
-def parse_source_txt(path: str) -> list:
-    """Parse source.txt into a list of (en_key, zh_value, line_no) tuples."""
-    entries = []
-    with open(path, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-
-    sep_indices = [i for i, line in enumerate(lines) if line.strip() == '%%%%']
-    sep_indices.append(len(lines))
-
-    for idx in range(len(sep_indices) - 1):
-        start = sep_indices[idx] + 1
-        end = sep_indices[idx + 1]
-        block = [l.rstrip('\n') for l in lines[start:end]]
-        if not block:
-            continue
-
-        en_key = block[0] if block else ''
-        zh_value = block[1] if len(block) > 1 else ''
-        line_no = start + 1
-        entries.append((en_key, zh_value, line_no))
-
-    return entries
-
-
 def check_parity(source_txt_path: str, strict_n: bool = True,
                  strict_tr: bool = False, exempt_lines: set = None,
                  semantic: bool = False) -> int:
     """Run control-character parity check. Returns exit code."""
     if exempt_lines is None:
         exempt_lines = set()
-    entries = parse_source_txt(source_txt_path)
+    entries = parse_entries(source_txt_path, lowercase_keys=False)
 
     n_mismatches = []
     t_mismatches = []
@@ -166,17 +147,18 @@ def check_parity(source_txt_path: str, strict_n: bool = True,
     trailing_mismatches = []
     seq_mismatches = []
 
-    for en, zh, line_no in entries:
-        if line_no in exempt_lines:
+    for entry in entries:
+        if entry.key_line in exempt_lines:
             continue
 
-        en_counts = count_controls(en)
-        zh_counts = count_controls(zh)
+        en_counts = count_controls(entry.key)
+        zh_counts = count_controls(entry.value)
+        line_no = entry.key_line
 
-        if not zh.strip():
+        if not entry.value.strip():
             for c in 'ntr':
                 if en_counts[c] > 0:
-                    record = (line_no, en, zh, en_counts[c], 0)
+                    record = (line_no, entry.key, entry.value, en_counts[c], 0)
                     if c == 'n':
                         n_mismatches.append(record)
                     elif c == 't':
@@ -185,11 +167,11 @@ def check_parity(source_txt_path: str, strict_n: bool = True,
                         r_mismatches.append(record)
             continue
 
-        # ── Count parity (always) ──
         for c in 'ntr':
             diff = en_counts[c] - zh_counts[c]
             if diff != 0:
-                record = (line_no, en, zh, en_counts[c], zh_counts[c])
+                record = (line_no, entry.key, entry.value,
+                          en_counts[c], zh_counts[c])
                 if c == 'n':
                     n_mismatches.append(record)
                 elif c == 't':
@@ -197,22 +179,19 @@ def check_parity(source_txt_path: str, strict_n: bool = True,
                 else:
                     r_mismatches.append(record)
 
-        # ── Trailing semantics (always) ──
-        # If EN key ends with \\n, ZH value must also end with \\n.
-        # This prevents display issues where missing trailing newline
-        # causes text to visually merge with subsequent content.
         for c in 'ntr':
-            if ends_with_control(en, c) and not ends_with_control(zh, c):
+            if ends_with_control(entry.key, c) and not ends_with_control(entry.value, c):
                 trailing_mismatches.append(
-                    (line_no, en, zh, c, ends_with_control(en, c),
-                     ends_with_control(zh, c)))
+                    (line_no, entry.key, entry.value, c,
+                     ends_with_control(entry.key, c),
+                     ends_with_control(entry.value, c)))
 
-        # ── Sequence order (--semantic only) ──
         if semantic:
-            en_seq = extract_control_sequence(en)
-            zh_seq = extract_control_sequence(zh)
+            en_seq = extract_control_sequence(entry.key)
+            zh_seq = extract_control_sequence(entry.value)
             if en_seq != zh_seq:
-                seq_mismatches.append((line_no, en, zh, en_seq, zh_seq))
+                seq_mismatches.append(
+                    (line_no, entry.key, entry.value, en_seq, zh_seq))
 
     # ── Print results ──
     total_issues = (len(n_mismatches) + len(t_mismatches) +
