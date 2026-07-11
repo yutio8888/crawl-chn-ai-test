@@ -906,8 +906,9 @@ void TilesFramework::do_layout()
             sidebar_pw += m_region_tab->grid_width_to_pixels(1);
         if (is_cjk_primary_font())
             sidebar_pw = max(sidebar_pw,
-                             m_region_tab->grid_width_to_pixels(min_cjk_sidebar_cols)
-                                 + m_region_tab->ox * 2);
+                             m_region_tab->grid_width_to_pixels(
+                                 min_cjk_sidebar_cols + 1)
+                                 + m_region_tab->ox);
 
         // Locations in pixels. stat_x_divider is the dividing vertical line
         // between dungeon view on the left and status area on the right.
