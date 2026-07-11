@@ -8,3 +8,13 @@ coverage.info
 debug_tiles.log
 init.txt
 .idea/
+
+# Build cache
+.cflags
+.android-cflags
+.android-cxxflags
+.contrib-libs
+compile_commands.json
+
+# clangd LSP cache
+.cache/
