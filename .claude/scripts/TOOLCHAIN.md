@@ -151,6 +151,30 @@ python3 .claude/scripts/cross_file_terms.py crawl-ref/source/dat/i18n/zh/ \
 bash .claude/scripts/smoke_test.sh
 ```
 
+### scan_varargs_string.py — 可变参数 std::string UB 扫描（Issue #42 类）
+
+基于 tree-sitter 的 AST 扫描器，检测把 `std::string`（而非 `const char*`）作为
+`%s` 实参传给 printf 风格可变参数函数（`make_stringf`/`mprf`/`mprf_p`/`die` 等）。
+这是未定义行为：`va_arg(ap, const char*)` 读取 `std::string` 对象前 8 字节（SSO
+缓冲/data 指针）当作 `char*` → 运行时乱码/控制字符。编译器 `-Wformat` 对类临时对象
+不可靠，故需此静态门禁。
+
+```bash
+# 阻断扫描（仅 HIGH）— 已接入 post-coder.sh
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/
+
+# 含建议级 WARN（裸函数调用实参，需人工确认返回类型）
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --include-warn
+
+# 指定文件 / JSON / CI 强制
+python3 .claude/scripts/scan_varargs_string.py --files prompt.cc,describe.cc
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json --require-parser
+```
+
+规则：`STRING_CTOR`/`CONCAT`/`TERNARY` 为 **HIGH（阻断）**，`CALL_NO_CSTR` 为
+**WARN**。修复：先构造 `std::string` 局部变量再传 `.c_str()`；三元 `cond ? string(a) : ""`
+会把两个分支都提升为 `std::string`。依赖 `pip3 install tree-sitter tree-sitter-cpp`。
+
 ### 编排者工具
 
 ```bash
