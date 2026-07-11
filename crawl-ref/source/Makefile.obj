@@ -328,6 +328,7 @@ catch2-tests/test_ui.o \
 catch2-tests/test_viewmap.o \
 catch2-tests/test_spl-util.o \
 catch2-tests/test_positional_format.o \
+catch2-tests/test_zh_bilingual_search.o \
 catch2-tests/test_zh_fixture.o \
 catch2-tests/test_zh_helpers.o \
 catch2-tests/test_zh_translation.o \

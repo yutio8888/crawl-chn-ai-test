@@ -26,6 +26,7 @@
 #include "items.h"
 #include "item-status-flag-type.h"
 #include "item-use.h"
+#include "lang-en-guard.h"
 #include "libutil.h" // map_find
 #include "message.h"
 #include "notes.h"
@@ -3287,47 +3288,16 @@ const char* armour_base_name(armour_type subtype)
 
 string item_english_name(const item_def &item)
 {
-    switch (item.base_type)
-    {
-    case OBJ_WEAPONS:
-        return weapon_base_name((weapon_type)item.sub_type);
-    case OBJ_MISSILES:
-        return missile_base_name((missile_type)item.sub_type);
-    case OBJ_ARMOUR:
-        return armour_base_name((armour_type)item.sub_type);
-    case OBJ_JEWELLERY:
-        return jewellery_is_amulet(item.sub_type) ? "amulet" : "ring";
-    case OBJ_TALISMANS:
-        return "talisman";
-    case OBJ_WANDS:
-        return "wand";
-    case OBJ_SCROLLS:
-        return "scroll";
-    case OBJ_POTIONS:
-        return "potion";
-    case OBJ_BOOKS:
-        return "book";
-    case OBJ_STAVES:
-        return "magical staff";
-    case OBJ_GOLD:
-        return "gold";
-    case OBJ_CORPSES:
-        return "corpse";
-    case OBJ_ORBS:
-        return "orb";
-    case OBJ_RUNES:
-        return "rune";
-    case OBJ_GEMS:
-        return "gem";
-    case OBJ_GIZMOS:
-        return "gizmo";
-    case OBJ_BAUBLES:
-        return "bauble";
-    case OBJ_MISCELLANY:
-        return "misc";
-    default:
-        return "";
-    }
+    // Force English language so that item.name(DESC_PLAIN) returns the
+    // full English name (e.g. "potion of heal wounds", "scroll of blinking",
+    // "ring of protection", "broad axe" ...) instead of only the base
+    // category string. Respects the item's own identification state — does
+    // NOT force-identify. Under EN mode the swap is skipped (no-op).
+    //
+    // Returns std::string for concatenation purposes only — never passed to
+    // printf-style %s (cf. Issue #42 varargs-UB rule).
+    ScopedLangEn en;
+    return item.name(DESC_PLAIN);
 }
 
 void remove_whitespace(string &str)

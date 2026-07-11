@@ -8,6 +8,8 @@
 #include "database.h"
 #include "stash.h"
 
+#include "lang-en-guard.h"
+
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -396,12 +398,23 @@ vector<stash_search_result> Stash::matches_search(
 
     if (feat != DNGN_FLOOR)
     {
-        const string fdesc = feature_description();
-        if (!fdesc.empty() && search.matches(prefix + " " + fdesc))
+        const string fdesc = feature_description(); // Chinese display name
+        // Build search haystack from the Chinese display name plus an
+        // English version (for bilingual matching). Under EN mode the
+        // guard is a no-op and fdesc_en equals fdesc.
+        string haystack = prefix + " " + fdesc;
+        if (Options.language == lang_t::ZH)
+        {
+            ScopedLangEn en;
+            const string fdesc_en = ::feature_description(feat, trap);
+            if (!fdesc_en.empty() && fdesc_en != fdesc)
+                haystack += " " + fdesc_en;
+        }
+        if (!fdesc.empty() && search.matches(haystack))
         {
             stash_search_result res;
             res.match_type = MATCH_FEATURE;
-            res.match = fdesc;
+            res.match = fdesc;       // display stays Chinese
             res.primary_sort = fdesc;
             res.feat = feat;
             res.trap = trap;
