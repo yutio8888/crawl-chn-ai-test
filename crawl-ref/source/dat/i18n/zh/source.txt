@@ -4178,7 +4178,7 @@ Guard this area!
 守卫这个区域！
 %%%%
 guardian spirit
-守护之魂
+精神护盾
 %%%%
 haloed
 被光环笼罩
@@ -6723,7 +6723,7 @@ The abyssal rune of Zot can be found at this depth.
 佐特的深渊符文可能在这个深度找到。
 %%%%
 the acrobat
-闪避强化
+杂技
 %%%%
 the ceiling
 天花板
@@ -13121,7 +13121,7 @@ Spry
 矫捷者
 %%%%
 Acrobat
-特技闪避
+杂技
 %%%%
 Intangible
 无形无影
@@ -18084,7 +18084,7 @@ acidic bite
 酸蚀咬击
 %%%%
 acrobatic
-特技
+杂技
 %%%%
 antennae
 触角
@@ -37829,4 +37829,19 @@ status|weakened
 %%%%
 status|wreathed by umbra
 暗影缠绕
+%%%%
+regeneration
+再生
+%%%%
+Faith
+信仰
+%%%%
+Wildshape
+变形
+%%%%
+Chemistry
+炼金
+%%%%
+acrobat
+杂技
 %%%%
