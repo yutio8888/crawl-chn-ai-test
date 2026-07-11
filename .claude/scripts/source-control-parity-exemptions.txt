@@ -1,5 +1,5 @@
 # source-control-parity exemptions
 # Format: <line_no>  # <reason>
 # Line numbers refer to the EN key line in source.txt
-L2619   # Attack monsters: 3→2 \n — "with your wielded weapon" merged into single CN line
-L24196  # Table legend: 13→10 \n — soft newline removal for CJK display width
+L2361   # Attack monsters: 3→2 \n — "with your wielded weapon" merged into single CN line
+L23311  # Table legend: 13→10 \n — soft newline removal for CJK display width

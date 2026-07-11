@@ -1306,7 +1306,7 @@ static species_type _str_to_species(const string &str)
         ret = SP_UNKNOWN;
 
     if (ret == SP_UNKNOWN)
-        mprf(MSGCH_ERROR, "Unknown species choice: %s\n", str.c_str());
+        mprf(MSGCH_ERROR, T_("Unknown species choice: %s\n"), str.c_str());
 
     return ret;
 }
@@ -1341,7 +1341,7 @@ job_type str_to_job(const string &str)
         job = JOB_UNKNOWN;
 
     if (job == JOB_UNKNOWN)
-        mprf(MSGCH_ERROR, "Unknown background choice: %s\n", str.c_str());
+        mprf(MSGCH_ERROR, T_("Unknown background choice: %s\n"), str.c_str());
 
     return job;
 }
@@ -3597,7 +3597,7 @@ static void _bindkey(string field)
         || end_bracket == string::npos
         || start_bracket > end_bracket)
     {
-        mprf(MSGCH_ERROR, "Bad bindkey bracketing in '%s'",
+        mprf(MSGCH_ERROR, T_("Bad bindkey bracketing in '%s'"),
              field.c_str());
         return;
     }
@@ -3619,7 +3619,7 @@ static void _bindkey(string field)
 
     if (wchars.size() == 0)
     {
-        mprf(MSGCH_ERROR, "No key in bindkey directive '%s'",
+        mprf(MSGCH_ERROR, T_("No key in bindkey directive '%s'"),
              field.c_str());
         return;
     }
@@ -3631,7 +3631,7 @@ static void _bindkey(string field)
         keyseq ks = parse_keyseq(key_str);
         if (ks.size() != 1)
         {
-            mprf(MSGCH_ERROR, "Invalid keyseq '%s' in bindkey directive '%s'",
+            mprf(MSGCH_ERROR, T_("Invalid keyseq '%s' in bindkey directive '%s'"),
                 key_str.c_str(), field.c_str());
         }
         key = ks[0];
@@ -3644,7 +3644,7 @@ static void _bindkey(string field)
         key = read_key_code(key_str);
         if (key == CK_NO_KEY)
         {
-            mprf(MSGCH_ERROR, "Invalid key '%s' in bindkey directive '%s'",
+            mprf(MSGCH_ERROR, T_("Invalid key '%s' in bindkey directive '%s'"),
                  key_str.c_str(), field.c_str());
             return;
         }
@@ -3653,7 +3653,7 @@ static void _bindkey(string field)
     const size_t start_name = field.find_first_not_of(' ', end_bracket + 1);
     if (start_name == string::npos)
     {
-        mprf(MSGCH_ERROR, "No command name for bindkey directive '%s'",
+        mprf(MSGCH_ERROR, T_("No command name for bindkey directive '%s'"),
              field.c_str());
         return;
     }
@@ -3662,7 +3662,7 @@ static void _bindkey(string field)
     const command_type cmd  = name_to_command(name);
     if (cmd == CMD_NO_CMD)
     {
-        mprf(MSGCH_ERROR, "No command named '%s'", name.c_str());
+        mprf(MSGCH_ERROR, T_("No command named '%s'"), name.c_str());
         return;
     }
 
@@ -4675,7 +4675,7 @@ void base_game_options::report_error(const char* format, ...)
     string error = vmake_stringf(format, args);
     va_end(args);
 
-    mprf(MSGCH_ERROR, "Options error: %s (%s:%d)", error.c_str(),
+    mprf(MSGCH_ERROR, T_("Options error: %s (%s:%d)"), error.c_str(),
          basefilename.c_str(), line_num);
 }
 
