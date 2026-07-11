@@ -1311,7 +1311,7 @@ Summon Horrible Things spell
 %%%%
 Summon Hydra spell
 
-召唤一只多头的九头蛇来在短时间内与施法者并肩战斗。
+召唤一只多头蛇来在短时间内与施法者并肩战斗。
 法术威力决定着头的数量。
 %%%%
 Summon Ice Beast spell

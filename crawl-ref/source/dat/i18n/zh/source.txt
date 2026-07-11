@@ -101,7 +101,7 @@ a statue of a princess
 一座公主雕像
 %%%%
 a statue of a hydra
-一座九头蛇雕像
+一座多头蛇雕像
 %%%%
 a statue of a dwarf
 一座矮人雕像
@@ -15608,7 +15608,7 @@ Leda's Liquefaction
 勒达之液化
 %%%%
 Summon Hydra
-召唤九头蛇
+召唤多头蛇
 %%%%
 Mesmerise
 迷惑
@@ -16514,7 +16514,7 @@ Random Effects
 随机效果
 %%%%
 Hydra Form
-九头蛇变形
+多头蛇变形
 %%%%
 Goad Beasts
 激怒野兽
@@ -20785,7 +20785,7 @@ Killer Klown
 杀手小丑
 %%%%
 Lernaean hydra
-勒拿九头蛇
+勒拿多头蛇
 %%%%
 Nobody
 无名氏
@@ -31478,7 +31478,7 @@ hungry ghost
 饥饿幽灵
 %%%%
 hydra
-九头蛇
+多头蛇
 %%%%
 hyperactive ballistomycete
 过度活跃的孢子炮菌
@@ -33377,7 +33377,7 @@ Build '%s'
   99只兽人 对阵 果冻王\n
 %%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
-  20头九头蛇 对阵 10只狗头人；弯刀 附魔：烈焰
+  多头蛇（20头） 对阵 10只狗头人；弯刀 附魔：烈焰
 %%%%
 ) in view: (%d,%d), see_cell: %s
 ) 视野内：(%d,%d)，可见格：%s

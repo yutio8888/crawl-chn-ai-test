@@ -308,7 +308,7 @@ wiz-monster
 如<w>kobold</w>或<w>Yiuf</w>。
 
 可以按照n<w>-headed</w>
-<w>hydra</w>的格式指定九头蛇的头的数量（最多20个头）：
+<w>hydra</w>的格式指定多头蛇的头的数量（最多20个头）：
 
 <w>four-headed hydra</w>
 

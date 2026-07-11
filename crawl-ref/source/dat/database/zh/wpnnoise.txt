@@ -832,7 +832,7 @@ _rare_speaking_no_tension_
 
 @The_weapon@说：“把我带到魔窟！马上！！！”
 
-@The_weapon@讲述着九头蛇头部数量倍增的有趣故事。
+@The_weapon@讲述着多头蛇头部数量倍增的有趣故事。
 
 @The_weapon@说：“有时人们说我是个了不起的混蛋。”
 
