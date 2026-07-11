@@ -1,0 +1,28 @@
+%%%%
+%s%s protects your life.\n
+%s%s守护你的生命。\n
+%%%%
+Hello world
+你好世界
+%%%%
+Orcs frequently recognise you as Beogh's chosen one.\n
+兽人经常认出你是贝奥格的选民。
+%%%%
+You are surrounded by an umbra.\nEnemies who die within your umbra may be risen.\n
+你被本影环绕。\n在你的本影中死去的敌人可能会被复活。
+%%%%
+%s\t%s\t%s
+%s\t%s\t%s
+%%%%
+value%s\tvalue
+值%s值
+%%%%
+C:\\path\\to\\file\n
+C:\路径\到\文件\n
+%%%%
+Buy items\n
+
+%%%%
+Line 1\nLine 2\nLine 3\n
+第一行\n第二行\n第三行\n
+%%%%

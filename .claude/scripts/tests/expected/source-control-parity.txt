@@ -1,0 +1,19 @@
+source-control-parity: 4 control-character mismatch(es) found
+
+  [ERROR] Missing \n (newline) (3):
+    L8: EN has 1, ZH has 0
+      EN: Orcs frequently recognise you as Beogh's chosen one.\n
+      ZH: 兽人经常认出你是贝奥格的选民。
+    L11: EN has 2, ZH has 1
+      EN: You are surrounded by an umbra.\nEnemies who die within your umbra may be risen....
+      ZH: 你被本影环绕。\n在你的本影中死去的敌人可能会被复活。
+    L23: EN has 1, ZH has 0
+      EN: Buy items\n
+      ZH: (空译文)
+
+  [WARN] Missing \t (tab) (1):
+    L17: EN has 1, ZH has 0
+      EN: value%s\tvalue
+      ZH: 值%s值
+
+Fix: add the missing \n to the Chinese translation lines above.

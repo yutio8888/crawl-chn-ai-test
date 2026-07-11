@@ -39,6 +39,9 @@ run_check() {
     run_check "source.txt integrity (dedup + self-conflicts)" blocking \
         python3 .claude/scripts/scan_i18n.py source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "source.txt control-character parity (\n)" blocking \
+        python3 .claude/scripts/source_control_parity.py \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "T_() key coverage" blocking \
         python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
