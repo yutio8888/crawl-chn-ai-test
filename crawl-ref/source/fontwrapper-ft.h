@@ -13,6 +13,11 @@
 
 using std::vector;
 
+// maximum number of unique glyphs that can be rendered with this font at once
+#define MAX_GLYPHS 256
+// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 <= MAX_GLYPHS
+#define GLYPHS_PER_ROWCOL 16
+
 struct HiDPIState;
 extern HiDPIState display_density;
 
@@ -130,6 +135,15 @@ protected:
 
     // count of glyph loads in the current text block
     int n_subst;
+
+    // pin bitmap: prevents eviction of atlas slots used within a single
+    // render batch (render_string / render_tooltip / render_hover_string).
+    // Protects against font atlas LRU eviction corrupting glyphs that have
+    // already been recorded in FontBuffer vertex data.
+    bool m_pinned[MAX_GLYPHS];
+
+    // clear all pin marks — call at the start of each widget render batch
+    void clear_pins();
 
     // cached value of the maximum advance from m_advance
     coord_def m_max_advance;

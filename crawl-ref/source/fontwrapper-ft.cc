@@ -22,10 +22,6 @@
 #include "unicode.h"
 #include "unwind.h"
 
-// maximum number of unique glyphs that can be rendered with this font at once; e.g. 4096, 256, 36
-#define MAX_GLYPHS 256
-// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 <= MAX_GLYPHS; e.g. 64, 16, 6
-#define GLYPHS_PER_ROWCOL 16
 // char to use if we can't find it in the font (upside-down question mark)
 #define MISSING_CHAR 0xbf
 // CJK fallback font — loaded alongside the primary font to provide glyphs
@@ -85,6 +81,7 @@ FTFontWrapper::FTFontWrapper() :
     fsize(0)
 {
     m_buf = GLShapeBuffer::create(true, true);
+    memset(m_pinned, 0, sizeof(m_pinned));
 }
 
 FTFontWrapper::~FTFontWrapper()
@@ -98,6 +95,11 @@ FTFontWrapper::~FTFontWrapper()
         FT_Done_Face(cjk_face);
     delete[] ttf;
     delete[] cjk_ttf;
+}
+
+void FTFontWrapper::clear_pins()
+{
+    memset(m_pinned, 0, sizeof(m_pinned));
 }
 
 /**
@@ -205,6 +207,7 @@ bool FTFontWrapper::configure_font()
     // precache common chars
     for (int i = 0x20; i < 0x7f; i++)
         map_unicode(i);
+    clear_pins();
     return true;
 }
 
@@ -489,7 +492,26 @@ unsigned int FTFontWrapper::map_unicode(char32_t uchar)
     if (c == MAX_GLYPHS) // not found: need to load into atlas
     {
         bool atlas_full = m_atlas_lru.size() == MAX_GLYPHS-1;
-        c = atlas_full ? m_atlas_lru[0] : m_atlas_lru.size()+1;
+        if (atlas_full)
+        {
+            // Scan LRU list (oldest first) for a slot NOT pinned in the
+            // current render batch. Pinned slots have glyphs whose vertex
+            // data is already in a FontBuffer that hasn't been drawn yet;
+            // evicting them would display wrong text (Issue 54).
+            unsigned int evict = MAX_GLYPHS;
+            for (unsigned int slot : m_atlas_lru)
+                if (!m_pinned[slot])
+                {
+                    evict = slot;
+                    break;
+                }
+            // Fallback: all slots pinned — evict oldest anyway (same as
+            // the original bug, but extremely rare: >255 unique glyphs
+            // in a single batch, all distinct from previous batches).
+            c = evict != MAX_GLYPHS ? evict : m_atlas_lru[0];
+        }
+        else
+            c = m_atlas_lru.size()+1;
         m_atlas[c].uchar = uchar;
         load_glyph(c, uchar);
         n_subst++;
@@ -499,6 +521,7 @@ unsigned int FTFontWrapper::map_unicode(char32_t uchar)
     if (it != m_atlas_lru.end())
         m_atlas_lru.erase(it);
     m_atlas_lru.push_back(c);
+    m_pinned[c] = true;
 
     return c;
 }
@@ -878,6 +901,7 @@ void FTFontWrapper::render_tooltip(unsigned int px, unsigned int py,
 void FTFontWrapper::render_string(unsigned int px, unsigned int py,
                                   const formatted_string &text)
 {
+    clear_pins();
     glmanager->reset_transform();
     FontBuffer m_font_buf(this);
     m_font_buf.add(text, px, py);
