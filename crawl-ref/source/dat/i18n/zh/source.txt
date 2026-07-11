@@ -7058,6 +7058,21 @@ The roots around you sink back into the ground.
 The roots grab %s!
 树根抓住了%s！
 %%%%
+The roots erupt in riotous growth!
+根须疯狂地爆发式生长！
+%%%%
+The grasping roots
+纠缠的根须
+%%%%
+The roots
+根须
+%%%%
+The zombie hands
+僵尸之手
+%%%%
+The vines
+藤蔓
+%%%%
 The sack is emptied!
 袋子被清空了！
 %%%%
@@ -23309,7 +23324,7 @@ Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of tot
 表格说明：\n A = 非宝库经验值\n B = 宝库经验值\n C = 宝库经验值占总经验值的百分比\n D = 非宝库怪物数量\n E = 宝库怪物数量\n F = 宝库数量占总数的百分比\n\n
 %%%%
 Table legend:\n A = Kills in this place as a percentage of kills in the entire game.\n B = Kills by you in this place as a percentage of kills by you in\n     the entire game.\n C = Kills by friends in this place as a percentage of kills by\n     friends in the entire game.\n D = Other kills in this place as a percentage of other kills in the\n     entire game.\n E = Experience gained in this place as a percentage of experience\n     gained in the entire game.\n F = Experience gained in this place divided by the number of levels of\n     this place that you have seen.\n\n
-表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的百分比。\n E = 此地点的经验值占整个游戏经验值的百分比。\n F = 此地点的经验值除以你所探索过的此地点层数。\n\n
+表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
 %%%%
 Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
 表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
@@ -35397,6 +35412,9 @@ The ball of acid explodes!
 The cloud of blastmotes explodes!
 爆尘云爆炸了！
 %%%%
+The flask of dizzying concoctions shatters into a vile cloud!
+装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！
+%%%%
 The gout of umbral fire explodes!
 暗影之火爆发了！
 %%%%
@@ -35411,6 +35429,21 @@ Piercing cold boils outward!
 %%%%
 A wave of flame ripples out!
 一道火焰波浪向外扩散！
+%%%%
+The shards fragment into shrapnel!
+碎片裂成了弹片！
+%%%%
+The flickering shadows explode!
+闪烁的阴影爆炸了！
+%%%%
+The antimagic surges outward!
+反魔法力量向外涌出！
+%%%%
+The beam explodes into a cloud of software bugs!
+光束爆炸成一团软件错误！
+%%%%
+You hear the sound of one hand!
+你听到一只手发出的声音！
 %%%%
 Necronomicon
 死灵书

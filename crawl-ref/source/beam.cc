@@ -6913,8 +6913,8 @@ void bolt::refine_for_explosion(const string& explode_msg)
         }
         else
         {
-            seeMsg  = "The beam explodes into a cloud of software bugs!";
-            hearMsg = "You hear the sound of one hand!";
+            seeMsg  = T_("The beam explodes into a cloud of software bugs!");
+            hearMsg = T_("You hear the sound of one hand!");
         }
     }
 

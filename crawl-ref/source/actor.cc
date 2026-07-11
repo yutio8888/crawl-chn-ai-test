@@ -452,11 +452,11 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         bool force_plural = true;
 
         if (ctype == CONSTRICT_BVC)
-            attacker_desc = "The zombie hands";
+            attacker_desc = T_("The zombie hands");
         else if (ctype == CONSTRICT_ROOTS)
-            attacker_desc = "The roots";
+            attacker_desc = T_("The roots");
         else if (ctype == CONSTRICT_ENTANGLE)
-            attacker_desc = "The vines";
+            attacker_desc = T_("The vines");
         else
         {
             force_plural = false;
@@ -760,13 +760,13 @@ void actor::constriction_damage_defender(actor &defender)
         switch (typ)
         {
         case CONSTRICT_BVC:
-            attacker_desc = "The zombie hands";
+            attacker_desc = T_("The zombie hands");
             break;
         case CONSTRICT_ROOTS:
-            attacker_desc = "The grasping roots";
+            attacker_desc = T_("The grasping roots");
             break;
         case CONSTRICT_ENTANGLE:
-            attacker_desc = "The vines";
+            attacker_desc = T_("The vines");
             break;
         default:
             force_plural = false;
