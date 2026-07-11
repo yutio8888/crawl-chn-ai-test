@@ -136,42 +136,41 @@ protected:
             if (scrollable)
             {
                 navigation +=
-                    menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + " page down  "
-                    + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + " page up  ";
+                    menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + T_(" page down  ")
+                    + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + T_(" page up  ");
             }
-            navigation += "[<w>-</w>] recognised  "
-                            + menu_keyhelp_cmd(CMD_MENU_EXIT) + " exit"
-                            "</lightgrey>";
+            navigation += string("[<w>-</w>] ") + T_("recognised  ")
+                            + menu_keyhelp_cmd(CMD_MENU_EXIT) + T_(" exit")
+                            + "</lightgrey>";
         }
         else
         {
             // very similar to the MF_MULTISELECT case for regular Menus, but
             // various differences require an override
             navigation = "<lightgrey>" + menu_keyhelp_select_keys()
-                         + " select  ";
+                         + T_(" select  ");
 
             if (scrollable)
             {
                 navigation +=
-                    menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + " page down  "
-                    + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + " page up  ";
+                    menu_keyhelp_cmd(CMD_MENU_PAGE_DOWN) + T_(" page down  ")
+                    + menu_keyhelp_cmd(CMD_MENU_PAGE_UP) + T_(" page up  ");
             }
             navigation += "</lightgrey>";
             navigation = pad_more_with_esc(navigation);
             navigation +=
-                    "\n<lightgrey>"
-                    "Letters toggle autopickup  ";
+                    "\n<lightgrey>";
+            navigation += T_("Letters toggle autopickup  ");
             if (is_set(MF_ARROWS_SELECT))
             {
                 navigation += menu_keyhelp_cmd(CMD_MENU_TOGGLE_SELECTED)
-                    + " toggle selected  ";
+                    + T_(" toggle selected  ");
             }
 
             if (!all_items_known)
             {
                 navigation +=
-                    "[<w>-</w>] unrecognised"
-                    "</lightgrey>";
+                    string("[<w>-</w>] ") + T_("unrecognised") + "</lightgrey>";
             }
         }
 
@@ -202,26 +201,26 @@ public:
             name = "removed food";
 #endif
         else if (item->is_type(OBJ_BOOKS, BOOK_MANUAL))
-            name = "manuals";
+            name = T_("manuals");
         else if (item->is_type(OBJ_BOOKS, 0))
-            name = "spellbooks";
+            name = T_("spellbooks");
         else if (item->is_type(OBJ_JEWELLERY, NUM_RINGS))
-            name = "unknown rings";
+            name = T_("unknown rings");
         else if (item->is_type(OBJ_JEWELLERY, NUM_JEWELLERY))
-            name = "unknown amulets";
+            name = T_("unknown amulets");
         else if (item->base_type == OBJ_GOLD)
         {
             name = lowercase_string(item_class_name(item->base_type));
             name = pluralise(name);
         }
         else if (item->base_type == OBJ_RUNES)
-            name = "runes";
+            name = T_("runes");
         else if (item->base_type == OBJ_GEMS)
-            name = "gems";
+            name = T_("gems");
         else if (item->sub_type == get_max_subtype(item->base_type))
         {
-            name = "unknown "
-                   + lowercase_string(item_class_name(item->base_type));
+            name = make_stringf(T_("unknown %s"),
+                       lowercase_string(item_class_name(item->base_type)).c_str());
         }
         else if (item->base_type == OBJ_JEWELLERY
                  || item->base_type == OBJ_WANDS)
@@ -528,7 +527,7 @@ void check_item_knowledge(bool unknown_items)
     ml = menu.load_items(items_baubles, known_item_mangle, ml, false);
     if (!items_other.empty())
     {
-        menu.add_entry(new MenuEntry("Other Items", MEL_SUBTITLE));
+        menu.add_entry(new MenuEntry(T_("Other Items"), MEL_SUBTITLE));
         ml = menu.load_items_seq(items_other, known_item_mangle, ml);
     }
 

@@ -36195,3 +36195,36 @@ Unknown background choice: %s\n
 %%%%
 Unknown species choice: %s\n
 未知种族选择：%s\n
+%%%%
+manuals
+技能手册
+%%%%
+Other Items
+其他物品
+%%%%
+recognised  
+已识别  
+%%%%
+runes
+符文
+%%%%
+spellbooks
+法术书
+%%%%
+unrecognised
+未识别
+%%%%
+unknown rings
+未识别戒指
+%%%%
+unknown amulets
+未识别护身符
+%%%%
+unknown %s
+未识别%s
+%%%%
+Letters toggle autopickup  
+字母切换自动拾取  
+%%%%
+ toggle selected  
+ 切换选中  
