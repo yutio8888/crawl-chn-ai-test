@@ -36150,9 +36150,7 @@ Describe which?
 请选择：
 %%%%
 Unknown background choice: %s\n
-
 未知职业选择：%s\n
 %%%%
 Unknown species choice: %s\n
-
 未知种族选择：%s\n
