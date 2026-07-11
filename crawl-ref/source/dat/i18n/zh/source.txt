@@ -29066,31 +29066,31 @@ entered
 进入了
 %%%%
 You hear the {prefix}rusting of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的锈蚀声。
+你听到{distance}{noisemaker}发出{prefix}的锈蚀声。
 %%%%
 You hear the {prefix}hiss of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的嘶嘶声。
+你听到{distance}{noisemaker}发出{prefix}的嘶嘶声。
 %%%%
 You hear the {prefix}creaking of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的吱嘎声。
+你听到{distance}{noisemaker}发出{prefix}的吱嘎声。
 %%%%
 You hear the {prefix}crackling of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的噼啪声。
+你听到{distance}{noisemaker}发出{prefix}的噼啪声。
 %%%%
 You hear the {prefix}rumble of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的轰隆声。
+你听到{distance}{noisemaker}发出{prefix}的轰隆声。
 %%%%
 You hear the {prefix}whistling of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的呼啸声。
+你听到{distance}{noisemaker}发出{prefix}的呼啸声。
 %%%%
 You hear the {prefix}beating of the {distance} {noisemaker}.
-你听到了{distance}{noisemaker}{prefix}鼓声。
+你听到{distance}{noisemaker}发出{prefix}的敲击声。
 %%%%
 You hear the {prefix}tolling of the {distance} {noisemaker}.
-你听到了{distance}{noisemaker}{prefix}钟声。
+你听到{distance}{noisemaker}发出{prefix}的鸣响。
 %%%%
 You hear the {prefix}crackle of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的噼啪声。
+你听到{distance}{noisemaker}发出{prefix}的噼啪声。
 %%%%
 You hear the {prefix} of the {distance} {noisemaker}.
 你听到了{distance}{noisemaker}。
