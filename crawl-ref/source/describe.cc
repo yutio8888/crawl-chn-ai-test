@@ -4042,6 +4042,13 @@ command_type describe_item_popup(const item_def &item,
     if (fixup_desc)
         fixup_desc(desc);
 
+#ifdef USE_TILE_LOCAL
+    // Pre-wrap at 80 Latin-char width so FTFontWrapper::split() never
+    // encounters a space-less CJK run wider than the popup, which would
+    // trigger truncation (split() only breaks at spaces).
+    linebreak_string(desc, 80);
+#endif
+
     formatted_string fs_desc = formatted_string::parse_string(desc);
 
     spellset spells = item_spellset(item);
@@ -4136,7 +4143,12 @@ command_type describe_item_popup(const item_def &item,
 
             show_spell_success = !show_spell_success;
             if (show_spell_success)
+            {
+#ifdef USE_TILE_LOCAL
+                linebreak_string(spell_success, 80);
+#endif
                 text->set_text(formatted_string::parse_string(spell_success));
+            }
             else
                 text->set_text(fs_desc.trim());
 #ifdef USE_TILE_WEB
