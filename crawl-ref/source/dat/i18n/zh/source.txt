@@ -36185,6 +36185,60 @@ Unknown background choice: %s\n
 Unknown species choice: %s\n
 未知种族选择：%s\n
 %%%%
+\n<green>Portals:</green>\n
+\n<green>传送门：</green>\n
+%%%%
+\n<green>Annotations:</green> (press <white>!</white> to add a new annotation)\n
+\n<green>注释：</green>（按<white>!</white>添加新注释）\n
+%%%%
+\n<green>Annotations:</green>\n
+\n<green>注释：</green>\n
+%%%%
+Visible monsters, items and features
+可见的怪物、物品与地形
+%%%%
+Visible monsters and items
+可见的怪物与物品
+%%%%
+Visible monsters and features
+可见的怪物与地形
+%%%%
+Visible items and features
+可见的物品与地形
+%%%%
+Visible monsters
+可见的怪物
+%%%%
+Visible items
+可见的物品
+%%%%
+Visible features
+可见的地形
+%%%%
+Monsters
+怪物
+%%%%
+Items
+物品
+%%%%
+Features
+地形
+%%%%
+ (not visited)
+（未访问）
+%%%%
+%d match
+%d个匹配项
+%%%%
+%d matches
+%d个匹配项
+%%%%
+<lightgrey>: only useless items found; press <w>=</w> to show.                    </lightgrey>
+<lightgrey>：只找到无用物品；按<w>=</w>显示。</lightgrey>
+%%%%
+view
+查看
+%%%%
 Bad boolean: %s (should be true or false)
 错误的布尔值：%s（应为 true 或 false）
 %%%%

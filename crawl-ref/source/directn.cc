@@ -527,21 +527,20 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
 
     if (title.empty())
     {
-        if (!list_mons.empty())
-            title  = "Monsters";
-        if (!list_items.empty())
-        {
-            if (!title.empty())
-                title += "/";
-            title += "Items";
-        }
-        if (!list_features.empty())
-        {
-            if (!title.empty())
-                title += "/";
-            title += "Features";
-        }
-        title = "Visible " + title;
+        if (!list_mons.empty() && !list_items.empty() && !list_features.empty())
+            title = T_("Visible monsters, items and features");
+        else if (!list_mons.empty() && !list_items.empty())
+            title = T_("Visible monsters and items");
+        else if (!list_mons.empty() && !list_features.empty())
+            title = T_("Visible monsters and features");
+        else if (!list_items.empty() && !list_features.empty())
+            title = T_("Visible items and features");
+        else if (!list_mons.empty())
+            title = T_("Visible monsters");
+        else if (!list_items.empty())
+            title = T_("Visible items");
+        else if (!list_features.empty())
+            title = T_("Visible features");
         if (examine_only)
             title += T_("<lightgray> (select to examine)</lightgray>");
         else
@@ -577,7 +576,7 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
     // Build menu entries for monsters.
     if (!list_mons.empty())
     {
-        desc_menu.add_entry(new MenuEntry("Monsters", MEL_SUBTITLE));
+        desc_menu.add_entry(new MenuEntry(T_("Monsters"), MEL_SUBTITLE));
         for (const monster_info &mi : list_mons)
         {
             // List monsters in the form
@@ -645,7 +644,7 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
         const menu_sort_condition *cond = desc_menu.find_menu_sort_condition();
         desc_menu.sort_menu(all_items, cond);
 
-        desc_menu.add_entry(new MenuEntry("Items", MEL_SUBTITLE));
+        desc_menu.add_entry(new MenuEntry(T_("Items"), MEL_SUBTITLE));
         for (InvEntry *me : all_items)
         {
 #ifndef USE_TILE_LOCAL
@@ -664,7 +663,7 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
 
     if (!list_features.empty())
     {
-        desc_menu.add_entry(new MenuEntry("Features", MEL_SUBTITLE));
+        desc_menu.add_entry(new MenuEntry(T_("Features"), MEL_SUBTITLE));
         for (const coord_def &c : list_features)
         {
             ostringstream desc;
@@ -684,7 +683,7 @@ static coord_def _full_describe_menu(vector<monster_info> const &list_mons,
 
             desc << feature_description_at(c, false, DESC_A);
             if (is_unknown_stair(c) || is_unknown_transporter(c))
-                desc << " (not visited)";
+                desc << T_(" (not visited)");
             FeatureMenuEntry *me = new FeatureMenuEntry(desc.str(), c, hotkey);
             me->tag        = "description";
             // Hack to make features selectable.

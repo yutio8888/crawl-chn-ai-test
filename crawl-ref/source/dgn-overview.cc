@@ -647,7 +647,7 @@ static string _get_portals()
     string disp;
 
     if (!portals_present.empty())
-        disp += "\n<green>Portals:</green>\n";
+        disp += T_("\n<green>Portals:</green>\n");
     disp += _portals_description_string();
 
     return disp;
@@ -670,8 +670,8 @@ static string _get_notes(bool display)
         return disp;
 
     if (display)
-        return "\n<green>Annotations:</green> (press <white>!</white> to add a new annotation)\n" + disp;
-    return "\n<green>Annotations:</green>\n" + disp;
+        return T_("\n<green>Annotations:</green> (press <white>!</white> to add a new annotation)\n") + disp;
+    return T_("\n<green>Annotations:</green>\n") + disp;
 }
 
 static void _unnotice_portal(const level_pos &pos)

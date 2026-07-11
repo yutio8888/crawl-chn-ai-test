@@ -1574,10 +1574,10 @@ formatted_string StashSearchMenu::calc_title()
     formatted_string fs;
     fs.textcolour(title->colour);
     string prefixes[] = {
-        make_stringf(T_("%d match%s"),
-            num_alt_matches, num_alt_matches == 1 ? "" : "es"),
-        make_stringf(T_("%d match%s"),
-            num_matches, num_matches == 1 ? "" : "es"),
+        make_stringf(T_(num_alt_matches == 1 ? "%d match" : "%d matches"),
+            num_alt_matches),
+        make_stringf(T_(num_matches == 1 ? "%d match" : "%d matches"),
+            num_matches),
     };
     const bool f = num_matches != num_alt_matches;
     fs.cprintf(prefixes[f]);
@@ -1585,11 +1585,11 @@ formatted_string StashSearchMenu::calc_title()
     {
         // TODO: it might be better to just force filtered=false in the
         // display loop if only useless items are found.
-        fs += formatted_string::parse_string(
+        fs += formatted_string::parse_string(T_(
             "<lightgrey>"
             ": only useless items found; press <w>=</w> to show."
             "                    "
-            "</lightgrey>");
+            "</lightgrey>"));
     }
     else
     {
@@ -1599,7 +1599,7 @@ formatted_string StashSearchMenu::calc_title()
             " by <w>%s</w> [<w>/</w>],"
             " <w>%s</w> useless & duplicates [<w>=</w>]"
             "</lightgrey>"),
-            menu_action == ACT_EXECUTE ? "travel" : "view  ",
+            menu_action == ACT_EXECUTE ? T_("travel") : T_("view"),
             sort_style, filtered));
     }
     fs.cprintf(string(max(0, strwidth(prefixes[!f])-strwidth(prefixes[f])),
