@@ -1418,7 +1418,7 @@ string Menu::get_keyhelp(bool scrollable) const
         if (is_set(MF_ARROWS_SELECT))
         {
             navigation += menu_keyhelp_cmd(CMD_MENU_TOGGLE_SELECTED)
-                + T_(" toggle selected    ");
+                + T_("  toggle selected  ");
         }
         if (chosen_count)
         {
