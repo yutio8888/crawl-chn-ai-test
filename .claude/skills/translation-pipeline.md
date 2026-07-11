@@ -40,17 +40,18 @@ description: 翻译问题完整修复管道 — 玩家反馈 → 结构化收集
 
 ## 启动修复 Workflow
 
-信息收集完毕后，进入 worktree 并启动 workflow：
+信息收集完毕后，使用 worktree 隔离并启动 workflow：
 
 ```
-EnterWorktree → Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {issueFile: "<path>", description: "<description>"}})
+Task(subagent_type="general", description="Analyze issue",
+  prompt="Analyze this DCSS Chinese translation issue to find the root cause...")
 ```
 
-Workflow 将自动执行：分析 → 方案 → 方案审核 → 代码修改+翻译（并行）→ 三方审核 → 交叉验证 → 报告。
+Workflow 阶段：分析 → 方案 → 方案审核 → 代码修改+翻译（并行）→ 三方审核 → 交叉验证 → 报告。
 
 ## 结果汇报
 
-Workflow 完成后，向用户报告：
+完成后向用户报告：
 - 修改了哪些文件
 - 翻译了什么内容（EN → ZH）
 - 审核结论（Go / Conditional Go / No-Go）

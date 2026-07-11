@@ -159,6 +159,44 @@ user changes. Do not run destructive commands such as `git reset --hard` or
 recursive deletion unless the user explicitly requested them and approval is
 granted.
 
+## Worktree Placement Policy (CONVENTION — self-enforced)
+
+OpenCode hard-enforces this via `.opencode/plugin/enforce-worktree-path.js`.
+**That plugin does NOT run under Codex**, so in Codex you must self-discipline.
+
+Rules (identical to `AGENTS.md`):
+
+- Create every worktree inside `.worktrees/` at the repo root, relative path:
+
+  ```bash
+  git worktree add .worktrees/<name> <branch>
+  ```
+
+- No absolute paths, no `~`, no `../` escaping the repo.
+- Never use the deprecated `.claude/worktrees/` (now empty).
+- `git config --global worktree.useRelativePaths true` is already set.
+
+## Branch Naming (ownership signal)
+
+To keep Codex and OpenCode work distinguishable at merge time:
+
+- Codex-authored branches: `codex/<topic>`
+- OpenCode-authored branches: `<topic>` or `consolidate-*`
+
+See `docs/dual-agent-workflow.md` for the full division of labor and the
+Codex ⇄ OpenCode handoff protocol.
+
+## Cross-Tool State (IMPORTANT)
+
+OpenCode keeps persistent memory that **Codex cannot read**. Any handoff to or
+from OpenCode MUST go through on-disk files both tools can see:
+
+- `.claude/ORCHESTRATION_STATE.md` — active plan / ownership
+- `~/projects/issues/<N>/` — issue tracking
+
+If you need OpenCode to act on something, write it to one of these — do not
+assume it will be seen otherwise.
+
 ## Commit Discipline
 
 When Codex creates commits for this repository, include:

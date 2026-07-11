@@ -40,7 +40,7 @@ and compilation/build fixes.
 ### Template 1: T_() Guard Addition
 
 ```
-Agent(subagent_type="crawl-coder", description="Add T_() guards to <file>",
+Task(subagent_type="crawl-coder", description="Add T_() guards",
   prompt="Add T_() wrapping to untranslated strings in <file>.
 Follow the standard T_() migration pattern:
 1. Replace Options.language == lang_t::ZH ? \"中文\" : \"English\" with T_(\"English\")
@@ -52,7 +52,7 @@ Follow the standard T_() migration pattern:
 ### Template 2: Mixed CN/EN Output Fix
 
 ```
-Agent(subagent_type="crawl-coder", description="Fix mixed CN/EN output in <scope>",
+Task(subagent_type="crawl-coder", description="Fix mixed CN/EN output",
   prompt="Fix mixed Chinese-English output in <location>.
 Root cause investigation pattern:
 1. Trace the full string composition path — identify where EN is hardcoded
@@ -65,7 +65,7 @@ Root cause investigation pattern:
 ### Template 3: ZH Guard Removal
 
 ```
-Agent(subagent_type="crawl-coder", description="Remove ZH guards from <files>",
+Task(subagent_type="crawl-coder", description="Remove ZH guards",
   prompt="Remove all Options.language / crawl.language() guards from <files>.
 Pattern: Replace 'condition ? zh_string : en_string' with T_(\"en_string\").
 For Lua vaults: replace crawl.language() == 'zh' with crawl.t_(\"English\").
@@ -76,7 +76,7 @@ Run post-coder.sh after completion.")
 ### Template 4: New zh-* System Creation
 
 ```
-Agent(subagent_type="crawl-coder", description="Create zh-* system for <feature>",
+Task(subagent_type="crawl-coder", description="Create zh-* system",
   prompt="Create a new Chinese text system for <feature>.
 Design constraints:
 - New zh-<name>.h/.cc files isolate all Chinese strings
@@ -90,7 +90,7 @@ Design constraints:
 ### Template 5: ARG-DIFF Fix
 
 ```
-Agent(subagent_type="crawl-coder", description="Fix ARG-DIFF in <scope>",
+Task(subagent_type="crawl-coder", description="Fix ARG-DIFF",
   prompt="Fix argument mismatch between EN/ZH format strings in <file>.
 Priority order:
 1. Positional params (mprf_p + %n$s) — when argument order differs
@@ -265,6 +265,32 @@ resolution debugging.
 | 8 | Lua condition string T_()'d | `race == "木乃伊"` always false | `grep -rn 'T_.*==.*"' ` in Lua |
 | 9 | `buf.size()` for CJK alignment | Bytes ≠ display width | Use `strwidth()` instead |
 | 10 | Static init T_() only (no call-site T_()) | Returns EN at runtime | `i18n_extract.py validate` |
+| 11 | Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys before writing |
+
+## Source.txt Integrity Protocol (REQUIRED before commit)
+
+Every modification to `dat/i18n/zh/source.txt` MUST pass these checks:
+
+1. **Grep-first**: For each EN key to add, verify it doesn't already exist:
+   ```bash
+   grep -nF "KEY" crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+
+2. **Glossary lookup**: Check `docs/decisions.md` for pre-approved term rulings:
+   ```bash
+   grep -A3 "Choice:" docs/decisions.md | grep -i "term"
+   ```
+
+3. **Post-add verify**: No duplicates or self-conflicts introduced:
+   ```bash
+   python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+       --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+
+4. **Case discipline**: Copy EN keys verbatim from C++ `T_("...")` literal.
+
+5. **Never blind-add**: When processing enumerated entities (monsters/spells),
+   always diff against existing keys — never blindly append all names.
 
 ## File Quick Reference
 
@@ -280,13 +306,10 @@ resolution debugging.
 
 ## Agent Invocation
 
-For the orchestrator (CLAUDE.md auto-routing):
-
 ```
 # Standard dispatch
-Agent(subagent_type="crawl-coder", description="<3-5 word summary>",
+Task(subagent_type="crawl-coder", description="<3-5 word summary>",
   prompt="<full task with file paths and requirements>")
 ```
 
-The agent inherits the session model, uses `make -j4` (not -j8), and runs
-`post-coder.sh` before reporting completion.
+The agent uses `make -j4` (not -j8), and runs `post-coder.sh` before reporting completion.

@@ -63,6 +63,13 @@ that reads like native game dialogue — not translated text.
 - File paths, function names, variable names
 - Database lookup keys
 
+### NEVER do:
+- **Blindly append all enumerated names** — when processing a batch of entities
+  (monsters, spells, abilities), always `grep -F` source.txt for each key first.
+  Re-adding existing keys with different translations silently overwrites
+  approved terms from `docs/decisions.md`.
+- **Add entries with key == value** (no actual translation — must provide Chinese text)
+
 ## Terminology
 
 The authoritative Single Source of Truth for terminology is `docs/glossary.md`.
@@ -178,6 +185,11 @@ judge the raw output.
 
 After completing translations, run:
 ```bash
+# Verify no duplicates or self-conflicts introduced
+python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+
+# Full translation quality check
 bash .claude/scripts/post-translator.sh
 ```
 This aggregates: term validation (rejected names from decisions.md), format
@@ -204,10 +216,20 @@ When given a translation task:
 1. Read the EN source text carefully
 2. Read `docs/glossary.md` for the relevant domain sections
 3. Consult `docs/decisions.md` for any existing rulings on the entities involved
-4. Identify the text type (dialogue/description/decorative/name-fragment)
-5. Identify the speaker (if dialogue) and apply the correct voice profile
-6. Translate using glossary terminology
-7. Run `bash .claude/scripts/post-translator.sh` and report the log path
+4. **Grep source.txt for EACH target key** — skip if translation already exists:
+   ```bash
+   grep -nF "KEY" crawl-ref/source/dat/i18n/zh/source.txt
+   ```
+5. Identify the text type (dialogue/description/decorative/name-fragment)
+6. Identify the speaker (if dialogue) and apply the correct voice profile
+7. Translate using glossary terminology
+8. **NEVER blindly append all enumerated names** — always diff against existing keys
+9. Run `bash .claude/scripts/post-translator.sh` and report the log path
+10. Run source.txt integrity check:
+    ```bash
+    python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    ```
 
 When translating many entries at once, organize output with:
 ```

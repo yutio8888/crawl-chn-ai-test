@@ -206,6 +206,53 @@ task(subagent_type="explore", description="Find <target>", prompt="<search task>
 - Simple git ops, quick questions, planning → handle inline.
 - Multi-step complex tasks spanning categories → break into steps, dispatch each.
 
+## Worktree Placement Policy (ENFORCED)
+
+**All git worktrees MUST be created inside `.worktrees/` at the repo root, using
+a relative path:**
+
+```bash
+git worktree add .worktrees/<name> <branch>
+```
+
+Rules:
+- Path MUST start with `.worktrees/` (repo-internal).
+- MUST be relative — no absolute paths, no `~`, no `../` escaping the repo.
+- `git config --global worktree.useRelativePaths true` is already set.
+
+This is **hard-enforced** by the auto-loaded plugin
+`.opencode/plugin/enforce-worktree-path.js`, which intercepts `bash` tool calls
+and blocks any `git worktree add` whose target is not a compliant
+`.worktrees/<name>` relative path. Non-compliant commands raise an error and do
+not execute. Do not attempt to bypass it (e.g. `cd` elsewhere then add) — keep
+worktrees inside the repo so cleanup, relative paths, and WSL access stay
+consistent.
+
+Legacy `.claude/worktrees/` is deprecated and now empty; do not create new
+worktrees there.
+
+## Codex Collaboration (when to hand off)
+
+This repo is worked by two AI engines. See `docs/dual-agent-workflow.md` for the
+full matrix. Quick guidance for OpenCode sessions:
+
+**Keep in OpenCode** (our strengths): batch `T_()` / `%%%%` translation, routine
+C++ `T_()` migration, Makefile fixes, multi-issue batch pipelines, script-verifiable
+patterned work, anything parallelizable across subagents.
+
+**Suggest handing to Codex** (deep single-thread reasoning): CJK render /
+char-width / advance / font-fallback bugs, hidden crashes / UB / call-chain root
+cause, large architectural refactor design. When a task clearly fits this
+profile, tell the user "this is a good Codex task" rather than grinding on it
+with flash-tier reasoning.
+
+**Handoff is via disk, not memory.** Codex CANNOT read OpenCode's persistent
+memory (`system/handoff.md`). To hand work to Codex, write the plan / branch /
+commit range to `.claude/ORCHESTRATION_STATE.md` or `~/projects/issues/<N>/`.
+
+**Branch ownership:** Codex uses `codex/<topic>`; OpenCode uses `<topic>` or
+`consolidate-*`. Both commit with `Co-Authored-By: opencode`.
+
 ## Commit Message Convention
 
 All commits MUST end with one of:

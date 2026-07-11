@@ -176,6 +176,9 @@ All translated strings fall into one of five types.
 8. **NEVER add `T_()` to a runtime variable without a source.txt entry** —
    `T_(variable)` is invisible to `i18n_extract.py`. Always run
    `audit_data_i18n.py` after changes to data-driven files.
+9. **NEVER blindly append all enumerated names to source.txt** —
+   always `grep -F` for each key first. Mass duplicate re-add silently
+   overwrites existing translations with different (potentially wrong) terms.
 
 ---
 
@@ -209,7 +212,11 @@ and anti-patterns (--strict). Output written to `.claude/metrics/verify/coder-<t
 ### Pre-Commit CI Checks
 
 ```bash
-# T_() key coverage + data-driven sources + mprf_p compatibility + %s count parity
+# 0. Check source.txt integrity — no duplicates or self-conflicts
+python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+
+# 1. T_() key coverage + data-driven sources + mprf_p compatibility + format integrity
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
@@ -217,6 +224,13 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 python3 .claude/scripts/scan_i18n.py arg-mismatch \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+
+# 2. Term consistency and validation
+python3 .claude/scripts/scan_i18n.py species-consistency \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
+python3 .claude/scripts/scan_i18n.py validate-terms \
+    --glossary docs/decisions.md \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 ```
 
@@ -261,6 +275,7 @@ Run `post-coder.sh` only after ALL units are complete.
 | `mprf` with positional params | `mprf(T_("%1$s..."), ...)` | Use `mprf_p` — MinGW vsnprintf doesn't support `%n$s` |
 | Untranslated inline args | `T_("You %s %s."), verb, "... the rest"` | Wrap ALL text fragments: `T_(", but do no damage")` |
 | Duplicate source.txt keys | Agent adds key that already exists | `grep -F` source.txt before adding |
+| Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys; never blind-append |
 | `git add -A` in main repo | Stages worktrees, cache files | Only `git add` specific source files |
 
 ---
