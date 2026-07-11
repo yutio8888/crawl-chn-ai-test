@@ -37666,3 +37666,27 @@ Exit help lookup
 %%%%
 Describe which? 
 请选择：
+%%%%
+                    <white>Dungeon Overview and Level Annotations</white>\n
+                    <white>地城总览与楼层注释</white>\n
+%%%%
+\nThe Realm of Zot is guarded by %s.\n
+\n佐特领域由%s守卫。\n
+%%%%
+\n<green>Branches:</green>
+\n<green>分支：</green>
+%%%%
+ (press <white>G</white> to reach them and <white>?/b</white> for more information)
+（按<white>G</white>前往，按<white>?/b</white>查看更多信息）
+%%%%
+\n<green>Altars:</green>
+\n<green>祭坛：</green>
+%%%%
+ (press <white>_</white> to reach them and <white>?/g</white> for information about gods)
+（按<white>_</white>前往，按<white>?/g</white>查看神祇信息）
+%%%%
+\n<green>Shops:</green>
+\n<green>商店：</green>
+%%%%
+ (press <white>$</white> to reach them - yellow denotes antique shop)
+（按<white>$</white>前往；黄色表示古董商店）

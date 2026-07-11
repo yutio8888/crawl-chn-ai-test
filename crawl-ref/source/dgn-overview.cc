@@ -247,12 +247,13 @@ string overview_description_string(bool display)
 {
     string disp;
 
-    disp += "                    <white>Dungeon Overview and Level Annotations</white>\n" ;
+    disp += T_("                    <white>Dungeon Overview and Level Annotations</white>\n");
     disp += _get_branches(display);
     if (you.zot_orb_monster_known)
     {
         string mon_name = pluralise(mons_type_name(you.zot_orb_monster, DESC_DBNAME));
-        disp += make_stringf("\nThe Realm of Zot is guarded by %s.\n", mon_name.c_str());
+        disp += make_stringf(T_("\nThe Realm of Zot is guarded by %s.\n"),
+                             mon_name.c_str());
     }
     disp += _get_altars(display);
     disp += _get_shops(display);
@@ -277,11 +278,11 @@ static string _get_seen_branches(bool display)
 {
     string disp;
 
-    disp += "\n<green>Branches:</green>";
+    disp += T_("\n<green>Branches:</green>");
     if (display)
     {
-        disp += " (press <white>G</white> to reach them and "
-                "<white>?/b</white> for more information)";
+        disp += T_(" (press <white>G</white> to reach them and "
+                   "<white>?/b</white> for more information)");
     }
     disp += "\n";
 
@@ -481,11 +482,11 @@ static string _get_altars(bool display)
 
     string disp;
 
-    disp += "\n<green>Altars:</green>";
+    disp += T_("\n<green>Altars:</green>");
     if (display)
     {
-        disp += " (press <white>_</white> to reach them and "
-                "<white>?/g</white> for information about gods)";
+        disp += T_(" (press <white>_</white> to reach them and "
+                   "<white>?/g</white> for information about gods)");
     }
     disp += "\n";
     disp += _print_altars_for_gods(temple_god_list(), true, display);
@@ -588,9 +589,9 @@ static string _get_shops(bool display)
 
     if (!shops_present.empty())
     {
-        disp +="\n<green>Shops:</green>";
+        disp += T_("\n<green>Shops:</green>");
         if (display)
-            disp += " (press <white>$</white> to reach them - yellow denotes antique shop)";
+            disp += T_(" (press <white>$</white> to reach them - yellow denotes antique shop)");
         disp += "\n";
     }
     last_id.depth = 10000;
