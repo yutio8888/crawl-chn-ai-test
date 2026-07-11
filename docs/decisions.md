@@ -989,6 +989,119 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-B-013 — 物品命名结构模式（所有类别）
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: Item naming design review (docs/design-item-naming.md)
+- **Choice**: 全物品类别中文命名结构规则如下：
+
+| 类别 | EN 模式 | ZH 模式 | 示例 |
+|------|---------|---------|------|
+| 武器品牌(adj类) | `brand_adj + body` | `adj + body` | 烈焰之剑、疾速匕首 |
+| 武器品牌(非adj) | `body of brand` | `brand之body` | 防护之剑、电击之杖 |
+| 护甲附魔 | `body of ego` | `ego之body` | 火焰抗性之袍、潜行之斗篷 |
+| 弹药品牌(postfix) | `body of brand` | `brand之body` | 剧毒之飞镖 |
+| 药水 | `potion of effect` | `effect药水` | 治疗药水、加速药水 |
+| 魔杖 | `wand of effect` | `effect魔杖` | 火焰魔杖、麻痹魔杖 |
+| 法杖 | `staff of type` | `type法杖` | 火焰法杖、塑能法杖 |
+| 卷轴 | `scroll of effect` | `effect卷轴` | 鉴定卷轴、传送卷轴 |
+| 书籍 | `book of type` | `type之书` | 火焰之书、召唤之书 |
+| 手册 | `manual of skill` | `skill手册` | 长剑手册、火焰魔法手册 |
+| 珠宝 | `ring/amulet of effect` | `effect戒指/项链` | 防护戒指、再生项链 |
+| 神器 | `basename of name` | `name之basename` | 赛瑞博之剑、特洛格之怒 |
+| 随机神器 | `basename of X` | `Xbasename` | 闪电之剑、毁灭之棍 |
+
+- **Rejected**: 珠宝目前暂不加"之"（原因：部分效果名已含"之"→"守护之灵之戒指"需额外处理；待后续统一）
+- **Rationale**: 统一的结构模式便于玩家理解和记忆，也为新条目翻译提供明确指引
+- **Scope**: 所有 `item-name.cc` 和 `artefact.cc` 中的 ZH 命名逻辑
+- **Tracking issue**: docs/design-item-naming.md
+
+---
+
+### D-B-014 — 物品基础名翻译风格
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: Item naming design review
+- **Choice**: 物品基础名遵循以下翻译风格：
+  1. **材料/类型 + 甲/盾/匕/剑/斧/锤/杖**：皮甲、板甲、小圆盾、长剑、战斧、钉头锤、法杖
+  2. **种族/神性 + 之 + 武器类型**：恶魔之刃、善灵之刃、神圣之鞭
+  3. **龙鳞甲**：X龙鳞甲（火龙鳞甲、冰龙鳞甲、金龙鳞甲）
+  4. **Pair of** / **复数**：中文跳过，直接用单数基础名
+  5. **品牌/附魔名**：统一二字或四字格式（烈焰、寒霜、神圣惩戒、火焰抗性）
+- **Rejected**: 
+  - 英文直译如"pair of boots→靴子的一对"（不符合中文习惯）
+  - 混合使用"的"和"之"（统一用"之"）
+- **Rationale**: 中文命名应简洁自然，符合游戏内物品显示区域的长度限制。二字品牌名利于在有限空间显示。龙鳞甲统一命名帮助玩家快速识别护甲类型
+- **Scope**: `item-name.cc` 中所有 `T_()` 基础名字典条目
+
+---
+
+### D-B-015 — Demon/Sacred/Eudemon 前缀统一
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: Item naming design review
+- **Choice**: 
+  - `demon` 在物品名中 → `恶魔`（demon blade→恶魔之刃, demon whip→恶魔之鞭, demon trident→恶魔三叉戟）
+  - `eudemon` → `善灵`（eudemon blade→善灵之刃）
+  - `sacred` → `神圣`（sacred scourge→神圣之鞭）
+- **Rejected**: `demon→魔`（太短，且与怪物名"恶魔"不一致）
+- **Rationale**: 保持与怪物分类命名一致（demon→恶魔已在 D-A-034 中确定）。prefix+之+base 格式适用于"附魔武器"命名模式
+- **Scope**: `source.txt` 中的武器基础名条目，以及所有引用这些前缀的描述文件
+
+---
+
+### D-B-016 — 武器品牌翻译词典（全表）
+
+- **Type**: B — Rule ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: Item naming design review (consolidation of zh_weapon_brands_*)
+- **Choice**: 以下为武器品牌的完整中文翻译对照表（verbose/terse/adj 三形式）：
+
+| EN (verbose) | EN (terse) | EN (adj) | ZH (names) | ZH (adj) | 注 |
+|-------------|-----------|---------|------------|---------|----|
+| flaming | flame | flaming | 烈焰 | 烈焰 | — |
+| freezing | freeze | freezing | 寒霜 | 寒霜 | — |
+| holy wrath | holy | holy | 神圣惩戒 | 圣光 | — |
+| electrocution | elec | electric | 电击 | 雷电 | — |
+| venom | venom | venomous | 剧毒 | 剧毒 | — |
+| protection | protect | protective | 防护 | 防护 | adj=name |
+| draining | drain | draining | 吸血 | 生命吸取 | — |
+| speed | fast | fast | 疾速 | 疾速 | — |
+| heavy | heavy | heavy | 沉重 | 沉重 | adj=name |
+| vampirism | vamp | vampiric | 吸血(vampirism) | 吸血 | — |
+| pain | pain | painful | 痛苦 | 痛苦 | — |
+| antimagic | antimagic | antimagic | 禁魔 | 禁魔 | adj=name |
+| distortion | distort | distorting | 扭曲 | 扭曲 | — |
+| chaos | chaos | chaotic | 混沌 | 混沌 | — |
+| penetration | penet | penetrating | 穿透 | 穿透 | — |
+| reaping | reap | reaping | 收割 | 收割 | — |
+| spectralising | spect | spectral | 幽魂 | 幽魂 | — |
+| rebuke | rebuke | rebuking | 斥责 | 斥责 | — |
+| valour | valour | valourous | 勇武 | 勇武 | — |
+| entangling | entangle | entangling | 缠绕 | 缠绕 | — |
+| sundering | sunder | sundering | 碎裂 | 碎裂 | — |
+| concussion | concuss | concussing | 震荡 | 震荡 | — |
+| devious | devious | devious | 狡诈 | 狡诈 | adj=name |
+| acid | acid | acidic | 酸蚀 | 酸蚀 | — |
+| confusion | confuse | confusing | 迷惑 | 迷惑 | v34+ |
+| weakness | weak | weakening | 弱化 | 弱化 | v34+ |
+| vulnerability | vuln | will-reducing | 意志削弱 | 意志削弱 | v34+ |
+| foul flame | foul flame | foul flame | 秽焰 | 秽焰 | v34+ |
+
+- **Rejected**: 英文 terse 形式直接音译（"flame→弗莱姆"），保持全部意译
+- **Rationale**: 统一 adj 和 name 形式，除部分特殊项外尽量一致。draining 和 vampirism 的中文区分："吸血"(draining, 每次吸少量) vs "吸血(vampirism)"(不死生物吸血)
+- **Scope**: `source.txt` 中的 `weapon_brands_verbose[]` / `weapon_brands_terse[]` / `weapon_brands_adj[]` 对应 T_() 条目
+- **Note**: 所有品牌名翻译统一通过 source.txt 中的 T_() 条目管理，无重复数据
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -1018,6 +1131,10 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-009 | @keyword@ integrity | must resolve at runtime | active |
 | D-B-010 | EN change → ZH review | flag on version drift | active |
 | D-B-011 | Tool function language guard | must guard return values | active |
+| D-B-013 | Item naming structural patterns | ZH patterns for all categories | active |
+| D-B-014 | Item base name translation style | 类+型, 种族之刃, X龙鳞甲 | active |
+| D-B-015 | Demon/Sacred/Eudemon prefix | 恶魔/善灵/神圣 | active |
+| D-B-016 | Weapon brand dictionary | full ZH table (29 brands) | active |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |
