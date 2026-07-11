@@ -9,6 +9,9 @@
 .claude/scripts/__pycache__/
 .claude/metrics/verify/
 
+# opencode-goal-plugin persisted state
+.opencode/goals/
+
 
 # External tool configs
 # .opencode/agents/         — project-specific translator/coder/reviewer (track)
