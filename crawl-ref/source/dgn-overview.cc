@@ -852,11 +852,11 @@ static void _update_tracked_feature_annot(dungeon_feature_type feat,
     const level_id li = level_id::current();
     const char *feat_key = _get_tracked_feature_key(feat);
     const int new_num = env.properties[feat_key];
-    const char *feat_desc = T_(get_feature_def(feat).name);
-    const string new_string = make_stringf("%d %s%s", new_num, feat_desc,
-                                           new_num == 1 ? "" : "s");
-    const string old_string = make_stringf("%d %s%s", old_num, feat_desc,
-                                           old_num == 1 ? "" : "s");
+    const string feat_desc = T_(get_feature_def(feat).name);
+    const string new_string = make_stringf(
+        T_(new_num == 1 ? "%d %s" : "%d %ss"), new_num, feat_desc.c_str());
+    const string old_string = make_stringf(
+        T_(old_num == 1 ? "%d %s" : "%d %ss"), old_num, feat_desc.c_str());
 
     //TODO: regexes
     if (old_num > 0 && new_num > 0)

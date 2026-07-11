@@ -35779,6 +35779,9 @@ you can't charge at %s because %s
 %d %s
 %d个%s
 %%%%
+%d %ss
+%d个%s
+%%%%
  is %s!
 %s！
 %%%%
