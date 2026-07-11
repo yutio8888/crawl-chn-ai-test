@@ -286,7 +286,7 @@ tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
 Fonts must be deployed to `dat/tiles/` (not `contrib/fonts/`).
 This file must be copied alongside `crawl.exe` and data files on every deployment.
 
-## Build Workflow: Dual Worktree + ccache
+## Build Workflow: Multi Worktree + ccache
 
 See `docs/build-workflow.md` for full documentation.
 
@@ -296,6 +296,7 @@ Console and tiles builds use **separate worktrees** to keep `.o` files isolated:
 |----------|--------|--------------|
 | **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
 | `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
+| `.worktrees/android-tiles` | Android APK | `bash crawl-ref/source/util/build-android.sh` |
 
 When `ccache` is installed, the project Makefile automatically wraps `GCC` and
 `GXX` with it; no `CC`/`CXX` or `PATH` override is required.
@@ -315,6 +316,23 @@ cp -r dat/* "$TARGET/dat/"
 cp -f contrib/fonts/*.ttf "$TARGET/dat/tiles/"
 cp -f init.txt "$TARGET/"
 ```
+
+## Android Deployment
+
+```bash
+# Use deploy-android.sh (recommended — syncs android-tiles worktree, builds, deploys)
+bash .claude/scripts/deploy-android.sh [target_dir] [--release]
+
+# Or manually (from android-tiles worktree):
+cd .worktrees/android-tiles/crawl-ref/source
+make ANDROID=$(date +%Y%m%d) TILES=y android -j8
+cd android-project
+ANDROID_SDK_ROOT=$HOME/Android gradle :app:assembleBuildTest
+# APK at: app/build/outputs/apk/buildTest/app-buildTest-unsigned.apk
+```
+
+Android build requires Android SDK + NDK (see `crawl-ref/docs/develop/android.txt`).
+Default variant is `buildTest` (arm64-v8a only); use `--release` for all ABIs.
 
 Key files to always deploy:
 | File | Purpose |
