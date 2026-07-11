@@ -812,6 +812,112 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-007 — Spell name revision: Bolt 系列去多余"之"
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: spell naming rules batch review (Bolt series)
+- **Choice**: 6 Bolt系列法术去掉非必要的"之"——属性/材质修饰语前置，符合规则 §6.3:
+  - Bolt of Devastation: 毁灭之箭 → 毁灭箭
+  - Bolt of Draining: 吸取之箭 → 吸取箭
+  - Bolt of Flesh: 血肉之箭 → 血肉箭
+  - Bolt of Light: 光之箭 → 光箭
+  - Doom Bolt: 厄运之箭 → 厄运箭
+  - Sojourning Bolt: 旅居之箭 → 旅居箭
+- **Rejected**: 保留原译（违反§6.3 "of不机械译成之"原则）
+- **Rationale**: 系列基准词根为"箭"（火焰箭/寒冰箭/岩浆箭），其余成员应保持同构。"毁灭""吸取""血肉"等为属性修饰而非专名领属，不应使用"之"
+- **Scope**: `dat/i18n/zh/source.txt` Bolt系列条目，`docs/glossary.md` Section 十三
+- **Affected decisions**: D-C-002 (非重叠，不冲突)
+
+---
+
+### D-C-008 — Spell name revision: Cloud 重名拆分
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: spell naming rules batch review (Cloud系列)
+- **Choice**: 2对重名Cloud法术拆分:
+  - Noxious Cloud: 毒云 → 毒瘴云（消除与Poisonous Cloud重名，与Noxious Breath毒瘴吐息词根一致）
+  - Mephitic Cloud: 瘴气云 → 迷瘴云（消除与Miasma Cloud重名；"迷"指困惑/nausea效果）
+- **Rejected**: 保留两对重名（违反§5.4 不同英文法术不得同中文名）
+- **Rationale**: Poisonous Cloud保留"毒云"为L6玩家法术；Noxious Cloud改为"毒瘴云"匹配其毒瘴属性。Miasma Cloud保留"瘴气云"；Mephitic Cloud改为"迷瘴云"突出其迷惑效果
+- **Scope**: `dat/i18n/zh/source.txt` Cloud条目
+
+---
+
+### D-C-009 — Spell name revision: Call 系列统一"呼唤"
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: spell naming rules batch review (Call系列)
+- **Choice**: 5个Call法术统一为"呼唤"词根（与既有的Dragon's Call→"龙之呼唤"对齐）:
+  - Call Imp: 召唤小恶魔 → 呼唤小恶魔
+  - Call Canine Familiar: 召唤犬类使魔 → 呼唤犬类使魔
+  - Call Tide: 召唤潮汐 → 呼唤潮汐
+  - Call Lost Souls: 召唤迷失灵魂 → 呼唤迷失灵魂
+  - Call of Chaos: 混沌召唤 → 混沌呼唤
+- **Rejected**: 保留"召唤"译法（混淆Call与Summon的英文原意差异）
+- **Rationale**: Call不同于Summon——Call是"呼唤/召唤某一实体前来"，Summon是"召唤创造实体"。英文系列内部及Dragon's Call已用"呼唤"；统一后可清晰区分两个词根
+- **Scope**: `dat/i18n/zh/source.txt` Call系列条目
+- **Note**: Call Down Damnation 不在本系列内——该法术是Down + Damnation，"降下天谴"不涉及呼唤
+
+---
+
+### D-C-010 — Spell name revision: 杂项
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: spell naming rules batch review
+- **Choice**: 11项杂项修正:
+  - Pyre Arrow: 火葬之箭 → 烈火箭（"火葬"文化联想误导）
+  - Searing Breath: 灼热之息 → 灼热吐息（Breath系列词根统一）
+  - Call Down Damnation: 降下诅咒 → 降下天谴（L9法术强度匹配）
+  - Brothers in Arms: 战友召唤 → 战友（原译多余"召唤"）
+  - Vanquished Vanguard: 被征服的先锋 → 败军先锋（生硬直译）
+  - Summon Minor Demon: 召唤小恶魔 → 召唤次级恶魔（消除与Call Imp重名）
+  - Eringya's Noxious Bog: 埃林吉亚之有毒沼泽 → 埃林吉亚之毒沼（去冗余）
+  - Eringya's Surprising Crocodile: 埃林吉亚之惊喜鳄鱼 → 埃林吉亚之意外鳄鱼（"惊喜"含正面色彩）
+  - Regenerate Other: 治愈他人 → 再生他人（消除与Heal Other重名）
+  - Discord: 混乱 → 纷乱（消除与Confuse重名）
+  - Anguish: 痛苦 → 哀痛（消除与Pain重名）
+- **Scope**: `dat/i18n/zh/source.txt`, `docs/glossary.md`
+
+---
+
+### D-C-011 — Spell name revision: 新增缺失法术
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: source.txt missing entries identified during batch review
+- **Choice**: 新增12条缺失的source.txt条目:
+  - Fireball: 火球, Haste: 加速, Sting: 毒刺, Silence: 沉默,
+  - Sign of Ruin: 毁灭征兆, Foxfire: 狐火, Agony: 剧痛,
+  - Golden Breath: 金龙吐息, Condensation Shield: 凝结之盾,
+  - See Invisible: 侦测隐形, Throw: 投掷, Vortex: 漩涡
+- **Scope**: `dat/i18n/zh/source.txt`
+
+---
+
+### D-C-012 — Spell name revision: 元素召唤统一
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-12
+- **Source**: spell naming rules batch review — 元素系列
+- **Choice**: 3个元素召唤法术名称统一为短元素名，与实体名称匹配:
+  - Summon Air Elementals: 召唤空气元素 → 召唤气元素
+  - Summon Fire Elementals: 召唤火焰元素 → 召唤火元素
+  - Summon Earth Elementals: 召唤大地元素 → 召唤地元素
+- **Rejected**: 保留长格式（与其他元素"水元素/铁元素"格式不一致）
+- **Rationale**: 实体名（air elemental→气元素, fire elemental→火元素, earth elemental→地元素）使用单字前缀+元素，法术名应复用。Water/Iron已为"水元素/铁元素"，Air/Fire/Earth不应使用"空气/火焰/大地"长格式
+- **Scope**: `dat/i18n/zh/source.txt`, `docs/glossary.md`
+- **Note**: Mesmerise审阅后保留"催眠"——该术语已用于全部12处status文本（mesmerised/descriptions等），单改法术名会制造分裂。目前Mesmerise系L2诅咒系法术，效果为禁止目标远离施法者而非使其睡眠；"催眠"确有误导，但需作为跨领域术语统一处理（涉及C++ status键和全部source.txt引用）
+
 ---
 
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
@@ -1143,3 +1249,9 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-006 | Lightning Rod | 雷击杖 | active ✅ |
 | D-A-039 | Felid (player species) | 猫 | active ✅ |
 | D-A-040 | Octopode (player species) | 章鱼 | active ✅ |
+| D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
+| D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
+| D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |
+| D-C-010 | Spell name revision — 杂项 | 11 fixes | active |
+| D-C-011 | Spell name revision — 新增缺失法术 | 12 new entries | active |
+| D-C-012 | Spell name revision — 元素召唤统一 | 3 fixes | active |

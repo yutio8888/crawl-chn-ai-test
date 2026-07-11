@@ -387,7 +387,7 @@
 | Summon Demon | 召唤恶魔 | ✅ |
 | Summon Dragon | 召唤巨龙 | ✅ |
 | Summon Drakes | 召唤幼龙 | ✅ |
-| Summon Earth Elementals | 召唤土元素 | 📝 |
+| Summon Earth Elementals | 召唤地元素 | 📝 |
 | Summon Elemental | 召唤元素 | ✅ |
 | Summon Emperor Scorpions | 召唤帝蝎 | ✅ |
 | Summon Executioners | 召唤行刑者 | ✅ |
@@ -661,7 +661,7 @@
 | Drain Life | 吸取生命 | ✅ |
 | Drain Magic | 汲取魔力 | ✅ |
 | Dream Dust | 梦尘 | ✅ |
-| Enfeeble | 虚弱术 | 📝 |
+| Enfeeble | 衰弱 | ✅ |
 | Ensnare | 束缚 | ✅ |
 | Ensorcelled Hibernation | 冬眠 | ✅ |
 | Entropic Weave | 熵之编织 | ✅ |
@@ -904,7 +904,7 @@
 | Woodweal | 木质愈合 | ✅ |
 | nonexistent spell | 不存在的法术 | ✅ |
 
-**汇总**：511 法术，✅ 保留 468，📝 修订 31，🆕 新增 12。
+**汇总**：511 法术，✅ 保留 469，📝 修订 30，🆕 新增 12。
 
 ---
 
