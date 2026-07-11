@@ -62,7 +62,8 @@ bool read_bool(const string &field, bool def_value)
     if (result.is_bool())
         return bool(result);
 
-    Options.report_error("Bad boolean: %s (should be true or false)", field.c_str());
+    Options.report_error(T_("Bad boolean: %s (should be true or false)"),
+                         field.c_str());
     return def_value;
 }
 

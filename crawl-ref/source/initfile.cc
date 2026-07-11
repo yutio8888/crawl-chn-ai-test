@@ -344,8 +344,8 @@ const vector<GameOption*> game_options::build_options_list()
             {
                 if (!set_lang(language_option.c_str()))
                 {
-                    report_error("No translations for language '%s'.\n"
-                                 "Languages with at least partial translation: %s",
+                    report_error(T_("No translations for language '%s'.\n"
+                                    "Languages with at least partial translation: %s"),
                                  language_option.c_str(),
                                  _supported_language_listing().c_str());
                 }
@@ -386,7 +386,8 @@ const vector<GameOption*> game_options::build_options_list()
                     // if the directory exists but is incomplete / can't be
                     // initialized for some reason, the above call will call
                     // end().
-                    report_error("Can't find crawl_dir: '%s'", crawl_dir_option.c_str());
+                    report_error(T_("Can't find crawl_dir: '%s'"),
+                                 crawl_dir_option.c_str());
                     crawl_dir_option = "";
                     return;
                 }
@@ -1379,14 +1380,15 @@ void game_options::update_enemy_hp_colour()
         const int col = str_to_colour(colour_list[i]);
         if (col < 0)
         {
-            report_error("Bad enemy_hp_colour: %s\n", colour_list[i].c_str());
+            report_error(T_("Bad enemy_hp_colour: %s\n"),
+                         colour_list[i].c_str());
             continue;
         }
         enemy_hp_colour[i] = col;
     }
     if (colour_list.size() > enemy_hp_colour.size())
     {
-        report_error("Extraneous enemy hp color values ignored in '%s'",
+        report_error(T_("Extraneous enemy hp color values ignored in '%s'"),
             enemy_hp_colour_option.c_str());
     }
 }
@@ -1429,7 +1431,7 @@ void game_options::set_activity_interrupt(
         string delay_name =
             _correct_spelling(interrupt.substr(interrupt_prefix.length()));
         if (!activity_interrupts.count(delay_name))
-            return report_error("Unknown delay: %s\n", delay_name.c_str());
+            return report_error(T_("Unknown delay: %s\n"), delay_name.c_str());
 
         FixedBitVector<NUM_ACTIVITY_INTERRUPTS> &refints =
             activity_interrupts[delay_name];
@@ -1441,7 +1443,7 @@ void game_options::set_activity_interrupt(
     activity_interrupt ai = get_activity_interrupt(interrupt);
     if (ai == activity_interrupt::COUNT)
     {
-        return report_error("Delay interrupt name \"%s\" not recognised.\n",
+        return report_error(T_("Delay interrupt name \"%s\" not recognised.\n"),
                             interrupt.c_str());
     }
 

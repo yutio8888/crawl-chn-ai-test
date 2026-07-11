@@ -36184,3 +36184,24 @@ Unknown background choice: %s\n
 %%%%
 Unknown species choice: %s\n
 未知种族选择：%s\n
+%%%%
+Bad boolean: %s (should be true or false)
+错误的布尔值：%s（应为 true 或 false）
+%%%%
+No translations for language '%s'.\nLanguages with at least partial translation: %s
+没有语言“%s”的译文。\n至少有部分译文的语言：%s
+%%%%
+Can't find crawl_dir: '%s'
+找不到 crawl_dir：“%s”
+%%%%
+Bad enemy_hp_colour: %s\n
+错误的 enemy_hp_colour：%s\n
+%%%%
+Extraneous enemy hp color values ignored in '%s'
+“%s”中多余的敌人生命值颜色已被忽略
+%%%%
+Unknown delay: %s\n
+未知的延迟：%s\n
+%%%%
+Delay interrupt name "%s" not recognised.\n
+未识别的延迟中断名称“%s”。\n
