@@ -6094,6 +6094,12 @@ silver
  sinks back into the magma.
  沉回了岩浆中。
 %%%%
+%1$s sinks back into the magma.
+%1$s沉回了岩浆中。
+%%%%
+%1$s collides with %2$s and sinks back into the magma.
+%1$s撞上了%2$s，沉回了岩浆中。
+%%%%
 skeleton
 骷髅
 %%%%
@@ -7145,6 +7151,15 @@ The zombie hands
 The vines
 藤蔓
 %%%%
+the roots'
+树根
+%%%%
+the zombie hands'
+僵尸之手
+%%%%
+the vines'
+藤蔓
+%%%%
 The sack is emptied!
 袋子被清空了！
 %%%%
@@ -7536,8 +7551,152 @@ To do this, you must remove one of the following items:
  toggle between ability selection and description.
  切换能力选择与描述模式。
 %%%%
- toggle selected    
- 切换选中
+  toggle selected  
+  切换选中  
+%%%%
+you cannot use spells of this school.
+你无法使用这个学派的法术。
+%%%%
+you cannot coerce anything to answer your summons.
+你无法强迫任何东西响应你的召唤。
+%%%%
+you cannot coerce anything to obey you.
+你无法强迫任何东西服从你。
+%%%%
+you can't cast spells right now.
+你现在无法施放法术。
+%%%%
+your stasis prevents you from teleporting.
+你的停滞状态阻止了你传送。
+%%%%
+you are still too unstable to blink.
+你的状态仍不稳定，无法闪烁。
+%%%%
+your stasis precludes magical swiftness.
+你的停滞状态排除了魔法迅捷。
+%%%%
+this spell is already in effect.
+此法术已在生效中。
+%%%%
+you're already travelling as fast as you can.
+你已经以最快速度移动了。
+%%%%
+you can't move.
+你无法移动。
+%%%%
+this spell is useless without hands.
+没有手的话，这个法术毫无用处。
+%%%%
+you need to wait for the ground to become solid again.
+你需要等待地面重新变硬。
+%%%%
+you cannot be healed further.
+你无法被进一步治疗。
+%%%%
+you lack the resilience to cast this spell.
+你缺乏施放此法术的韧性。
+%%%%
+you're too dead.
+你已经死透了。
+%%%%
+you are already standing in death's doorway.
+你已经站在死亡的门槛上。
+%%%%
+you are still too close to death's doorway.
+你离死亡的门槛还是太近了。
+%%%%
+your ring of flames would instantly melt the ice.
+你的火焰之环会瞬间融化冰层。
+%%%%
+you have no blood to sublime.
+你没有血液可以升华。
+%%%%
+you need to wait for the winds to calm down.
+你需要等待风势平息。
+%%%%
+you aren't next to any passable walls.
+你旁边没有任何可穿过的墙壁。
+%%%%
+you're being held away from the wall.
+你被阻挡着远离墙壁。
+%%%%
+you are already reaping souls!
+你已经在收割灵魂了！
+%%%%
+you are already channelling the dead.
+你已经在引导死者了。
+%%%%
+the air is too still for clouds to form.
+空气太过静止，无法形成云雾。
+%%%%
+you cannot issue another dragon's call so soon.
+你无法这么快再次发出龙之召唤。
+%%%%
+you cannot sustain more frozen ramparts right now.
+你现在无法维持更多的冰霜壁垒。
+%%%%
+you cannot sustain more bogs right now.
+你现在无法维持更多的毒沼泽。
+%%%%
+you cannot wear body armour.
+你无法穿着身体护甲。
+%%%%
+you have no body armour to summon the spirit of.
+你没有身体护甲来召唤其灵体。
+%%%%
+you cannot redirect your momentum while unable to move.
+你无法移动时无法重新定向你的动量。
+%%%%
+your stasis prevents you from launching yourself.
+你的停滞状态阻止了你发射自己。
+%%%%
+you cannot launch yourself while unable to move.
+你无法移动时无法发射自己。
+%%%%
+you cannot see anything nearby that you can launch.
+你看不到附近任何可以发射的目标。
+%%%%
+there is no room nearby to place a sigil.
+附近没有空间可以放置符文。
+%%%%
+your canine familiar is too injured to answer your call.
+你的犬类伙伴伤势过重，无法响应你的召唤。
+%%%%
+local gravity is still too unstable to reorient.
+局部重力仍然太不稳定，无法重新定向。
+%%%%
+you are already unleashing a barrage of alchemical concoctions!
+你已经在释放一连串炼金药剂了！
+%%%%
+you must wait for your last cast of this to end!
+你必须等待上一次施放结束！
+%%%%
+you cannot see far enough to hit anything with this spell.
+你看得不够远，无法用此法术击中任何目标。
+%%%%
+you must harvest more living souls to recharge this spell.
+你必须收割更多活人的灵魂来为这个法术充能。
+%%%%
+there are no nearby walls to construct a spike launcher in.
+附近没有墙壁可以构建尖刺发射器。
+%%%%
+there is no room to construct a sawblade.
+没有空间可以构建锯刃。
+%%%%
+you cannot be moved right now.
+你现在无法被移动。
+%%%%
+a crocodile could not survive beneath you.
+鳄鱼无法在你下方存活。
+%%%%
+your pet crocodile is still here.
+你的宠物鳄鱼还在。
+%%%%
+your paragon is already deployed, but not yet charged.
+你的典范已经部署，但尚未充能。
+%%%%
+you are already charging a Fortress Blast.
+你已经在为堡垒爆破充能了。
 %%%%
  toggle spell headers
  切换表头
@@ -11108,6 +11267,114 @@ Zot's power touches on you...
 %%%%
 |Statuses
 |状态
+%%%%
+Breath
+吐息
+%%%%
+Constr
+束缚
+%%%%
+Aug
+增强
+%%%%
+Fire++
+强火焰
+%%%%
+Fire+
+火焰+
+%%%%
+Flooded
+淹水
+%%%%
+Drain
+虚弱
+%%%%
+Bribe
+贿赂
+%%%%
+Cloud
+云雾
+%%%%
+Orb
+宝珠
+%%%%
+Orb?
+宝珠？
+%%%%
+-Clouds
+无云
+%%%%
+Dog
+犬灵
+%%%%
+-Scroll
+禁卷轴
+%%%%
+rF0
+无火抗
+%%%%
+-GClaw
+禁墓爪
+%%%%
+Destr
+毁灭
+%%%%
+Pact
+契约
+%%%%
+Escape!
+逃离！
+%%%%
+!Tele!
+敌传送！
+%%%%
+Shroud
+护罩
+%%%%
+Ostracised
+被排斥
+%%%%
+Tesseract
+超立方体
+%%%%
+Sunder
+碎裂
+%%%%
+Missing
+缺失
+%%%%
+Rev
+暖机
+%%%%
+Rev+
+暖机+
+%%%%
+Rev*
+暖机*
+%%%%
+Regen Will++
+强再生意志
+%%%%
+-Regen
+禁再生
+%%%%
+Fast+Slow
+速+缓
+%%%%
+Slow
+缓慢
+%%%%
+Fast
+快速
+%%%%
+Water
+水域
+%%%%
+Lava
+熔岩
+%%%%
+Invis
+隐形
 %%%%
 powerful
 强大的
@@ -15314,6 +15581,9 @@ improve
 %%%%
  by up to %d%% (press '!' for details).
 ，最多%d%%（按'!'查看详情）。
+%%%%
+Apport
+传送
 %%%%
 Apportation
 隔空取物
@@ -21314,6 +21584,9 @@ spider
 splinterfrost barricade
 碎冰壁垒
 %%%%
+splinters
+木刺
+%%%%
 starcursed mass
 受星诅咒的聚合体
 %%%%
@@ -21706,6 +21979,9 @@ mechanical trap
 %%%%
 metal statue
 金属雕像
+%%%%
+metal splinters
+金属碎刺
 %%%%
 metal wall
 金属墙
@@ -23124,7 +23400,7 @@ Noise:
 噪音: 
 %%%%
 Sil
-沉默  
+沉默
 %%%%
 Gold:
 金币:
@@ -36385,4 +36661,22 @@ Letters toggle autopickup
 字母切换自动拾取  
 %%%%
  toggle selected  
- 切换选中  
+  切换选中  
+%%%%
+Smite
+打击
+%%%%
+Fragment what (e.g. wall or brittle monster)?
+要粉碎什么（例如墙壁或脆弱的怪物）？
+%%%%
+Necr
+死灵
+%%%%
+Frge
+锻造
+%%%%
+Erth
+大地
+%%%%
+Rndm
+随机
