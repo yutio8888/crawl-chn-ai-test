@@ -916,7 +916,7 @@ void bolt::burn_wall_effect()
 
     if (have_passive(passive_t::shoot_through_plants))
     {
-        emit_message("Fedhas protects the tree from harm.");
+        emit_message(T_("Fedhas protects the tree from harm."));
         finish_beam();
         return;
     }
@@ -924,14 +924,14 @@ void bolt::burn_wall_effect()
     if (you.see_cell(pos()))
     {
         if (feat == DNGN_TREE)
-            emit_message("The tree burns like a torch!");
+            emit_message(T_("The tree burns like a torch!"));
         else if (feat == DNGN_MANGROVE)
-            emit_message("The mangrove smoulders and burns.");
+            emit_message(T_("The mangrove smoulders and burns."));
         else if (feat == DNGN_DEMONIC_TREE)
-            emit_message("The demonic tree burns, releasing chaotic energy.");
+            emit_message(T_("The demonic tree burns, releasing chaotic energy."));
     }
     else if (you.can_smell())
-        emit_message("You smell burning wood.");
+        emit_message(T_("You smell burning wood."));
 
     // If the tree we're destroying is temporary, immediately revert
     // terrain changes on this tile rather than permanently changing it.
