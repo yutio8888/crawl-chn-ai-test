@@ -170,7 +170,7 @@ string attacked_monster_list::describe() const
     // No "your the Royal Jelly" nor "the the Royal Jelly".
     string mon_name = remove_prepended_the(m_victims.describe(DESC_PLAIN));
     const char* prefix = "";
-    if (!starts_with(m_adj, "your"))
+    if (Options.language != lang_t::ZH && !starts_with(m_adj, "your"))
         prefix = "the ";
     return prefix + m_adj + mon_name;
 }
