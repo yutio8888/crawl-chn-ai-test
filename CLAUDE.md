@@ -273,12 +273,16 @@ make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 
 ### Deploy to Windows (after cross-compile)
 ```bash
-cp crawl-ref/source/crawl.exe ~/outputs/crawl-test/crawl.exe
-cp crawl-ref/source/crawl.exe /mnt/d/crawl-game/crawl.exe
-cp -r crawl-ref/source/dat/* /mnt/d/crawl-game/dat/
-cp crawl-ref/source/contrib/fonts/SarasaMonoSC-Regular.ttf /mnt/d/crawl-game/contrib/fonts/
+# One-step: cross-compile + copy + clear DB cache
+bash .claude/scripts/deploy.sh
+# Or specify custom target:
+bash .claude/scripts/deploy.sh /mnt/d/crawl-game
 ```
-Note: the game must be closed before copying to `D:\crawl-game\` (file in use error otherwise).
+Note: the game must be closed before copying (file in use error otherwise).
+
+The script automatically clears `saves/db/` to force BerkeleyDB cache
+regeneration — this ensures text file changes (zh/*.txt) take effect
+even when only the C++ binary was modified.
 
 ### Required Fonts
 - `contrib/fonts/DejaVuSans.ttf` (~720KB) — proportional font
