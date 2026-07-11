@@ -1197,7 +1197,8 @@ static int _describe_spell(const string &key, const string &suffix,
                              string /*footer*/)
 {
     string spell_name = key;
-    strip_suffix(spell_name, suffix);
+    if (!strip_suffix(spell_name, suffix))
+        spell_name = key.substr(0, key.size() - suffix.size());
     spell_type spell = spell_by_name(spell_name, true);
     if (spell == SPELL_NO_SPELL)
         spell = spell_by_name(key, true);
@@ -1210,7 +1211,8 @@ static int _describe_skill(const string &key, const string &suffix,
                              string /*footer*/)
 {
     string skill_name = key;
-    strip_suffix(skill_name, suffix);
+    if (!strip_suffix(skill_name, suffix))
+        skill_name = key.substr(0, key.size() - suffix.size());
     const skill_type skill = skill_from_name(skill_name.c_str());
     describe_skill(skill);
     return 0;
@@ -1220,7 +1222,8 @@ static int _describe_ability(const string &key, const string &suffix,
                              string /*footer*/)
 {
     string abil_name = key;
-    strip_suffix(abil_name, suffix);
+    if (!strip_suffix(abil_name, suffix))
+        abil_name = key.substr(0, key.size() - suffix.size());
     ability_type abil = ability_by_name(abil_name.c_str());
     if (abil == ABIL_NON_ABILITY)
         abil = ability_by_name(key.c_str());
@@ -1240,7 +1243,8 @@ static int _describe_card(const string &key, const string &suffix,
                            string footer)
 {
     string card_name = key;
-    strip_suffix(card_name, suffix);
+    if (!strip_suffix(card_name, suffix))
+        card_name = key.substr(0, key.size() - suffix.size());
     card_type card = name_to_card(card_name);
     if (card == NUM_CARDS)
         card = name_to_card(key);
@@ -1265,7 +1269,8 @@ static int _describe_cloud(const string &key, const string &suffix,
                            string footer)
 {
     string cloud_name = key;
-    strip_suffix(cloud_name, suffix);
+    if (!strip_suffix(cloud_name, suffix))
+        cloud_name = key.substr(0, key.size() - suffix.size());
     const cloud_type cloud = cloud_name_to_type(cloud_name);
     ASSERT(cloud != NUM_CLOUD_TYPES);
 #ifdef USE_TILE
@@ -1291,7 +1296,8 @@ static int _describe_item(const string &key, const string &suffix,
                            string /*footer*/)
 {
     string item_name = key;
-    strip_suffix(item_name, suffix);
+    if (!strip_suffix(item_name, suffix))
+        item_name = key.substr(0, key.size() - suffix.size());
     item_def item;
     if (!get_item_by_exact_name(item, item_name.c_str()))
     {
@@ -1311,7 +1317,8 @@ static int _describe_feature(const string &key, const string &suffix,
                              string /*footer*/)
 {
     string feat_name = key;
-    strip_suffix(feat_name, suffix);
+    if (!strip_suffix(feat_name, suffix))
+        feat_name = key.substr(0, key.size() - suffix.size());
     const dungeon_feature_type feat = feat_by_desc(feat_name);
     describe_feature_type(feat);
     return 0;
@@ -1429,7 +1436,8 @@ static int _describe_branch(const string &key, const string &suffix,
                             string footer)
 {
     string branch_name = key;
-    strip_suffix(branch_name, suffix);
+    if (!strip_suffix(branch_name, suffix))
+        branch_name = key.substr(0, key.size() - suffix.size());
     const branch_type branch = branch_by_shortname(branch_name);
     ASSERT(branch != NUM_BRANCHES);
 
@@ -1453,7 +1461,8 @@ static int _describe_mutation(const string &key, const string &suffix,
                               string /*footer*/)
 {
     string mutation_name = key;
-    strip_suffix(mutation_name, suffix);
+    if (!strip_suffix(mutation_name, suffix))
+        mutation_name = key.substr(0, key.size() - suffix.size());
     const mutation_type mutation = mutation_from_name(mutation_name.c_str(),
                                                       false);
     if (mutation == NUM_MUTATIONS) // oops! someone messed up!
@@ -1469,7 +1478,8 @@ static int _describe_bane(const string &key, const string &suffix,
                               string /*footer*/)
 {
     string bane_name = key;
-    strip_suffix(bane_name, suffix);
+    if (!strip_suffix(bane_name, suffix))
+        bane_name = key.substr(0, key.size() - suffix.size());
     const bane_type bane = bane_from_name(bane_name.c_str());
     if (bane == NUM_BANES)
     {
