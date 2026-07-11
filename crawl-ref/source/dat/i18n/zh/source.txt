@@ -4242,13 +4242,13 @@ Fire
 %%%%
  first
  第一
-%%%%%
+%%%%
  first.
 。
-%%%%%
+%%%%
 Space - Pick %s first
 空格 - 先选择%s
-%%%%%
+%%%%
 Lets you pick %s first.
 允许你先选择%s。
 %%%%
@@ -37541,7 +37541,7 @@ Bones file is buggy: %s\n%s
 残骸文件有错误：%s\n%s
 %%%%
 There is an existing game for name '%s' from an incompatible version of Crawl (%s).\nUnless you reinstall that version, you can't load it.\nDo you want to DELETE that game and start a new one?
-名为'%s'的存档来自不兼容的Crawl版本（%s），除非你重新安装该版本，否则无法加载。\n是否要删除该存档并开始新游戏？
+名为'%s'的存档来自不兼容的Crawl版本（%s）。\n除非你重新安装该版本，否则无法加载。\n是否要删除该存档并开始新游戏？
 %%%%
 %s is from an incompatible version and can't be loaded.
 %s来自不兼容的版本，无法加载。
