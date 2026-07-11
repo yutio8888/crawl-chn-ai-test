@@ -3921,6 +3921,9 @@ Fedhas
 Fedhas booms out: Become one with the cycle of life!
 费德哈斯轰鸣道：与生命的循环合为一体！
 %%%%
+Fedhas protects the tree from harm.
+费德哈斯保护了这棵树。
+%%%%
 fellow slime
 同行黏液
 %%%%
@@ -5809,6 +5812,66 @@ run
 rune of Zot
 佐特符文
 %%%%
+rune_name|iron
+钢铁
+%%%%
+rune_name|obsidian
+黑曜
+%%%%
+rune_name|icy
+冰霜
+%%%%
+rune_name|bone
+骸骨
+%%%%
+rune_name|slimy
+黏液
+%%%%
+rune_name|silver
+白银
+%%%%
+rune_name|serpentine
+蛇纹
+%%%%
+rune_name|elven
+精灵
+%%%%
+rune_name|golden
+黄金
+%%%%
+rune_name|decaying
+腐朽
+%%%%
+rune_name|barnacled
+藤壶
+%%%%
+rune_name|gossamer
+蛛丝
+%%%%
+rune_name|mossy
+苔藓
+%%%%
+rune_name|demonic
+恶魔
+%%%%
+rune_name|abyssal
+深渊
+%%%%
+rune_name|glowing
+辉光
+%%%%
+rune_name|magical
+魔法
+%%%%
+rune_name|fiery
+烈焰
+%%%%
+rune_name|dark
+暗黑
+%%%%
+rune_name|buggy
+异常
+%%%%
 runed
 刻有符文的
 %%%%
@@ -6746,6 +6809,9 @@ the Dance
 The demon of the infinite void smiles upon you.
 无限虚空的恶魔对你微笑。
 %%%%
+The demonic tree burns, releasing chaotic energy.
+恶魔之树燃烧着，释放出混沌能量。
+%%%%
 the denizens of %s
 %s的居民
 %%%%
@@ -6847,6 +6913,9 @@ The forest starts to sway and rumble!
 %%%%
 the Fortress
 堡垒
+%%%%
+The tree burns like a torch!
+这棵树像火炬一样燃烧！
 %%%%
 The trees move their gnarly branches around.
 树木扭动着粗糙多节的枝条。
@@ -6955,6 +7024,9 @@ The magic binding %s to this plane unravels!
 %%%%
 The malign portal rejects you as you step towards it.
 恶意的传送门在你靠近时拒绝了你。
+%%%%
+The mangrove smoulders and burns.
+红树林树木闷烧起来。
 %%%%
 The mercury splashes!
 水银四溅了！
@@ -10160,6 +10232,9 @@ You slide down the stairs, covered in regenerating slime.
 %%%%
 You slip free of the bolas.
 你从流星索中滑脱了。
+%%%%
+You smell burning wood.
+你闻到了木头燃烧的气味。
 %%%%
 You smell decay.
 你闻到了腐朽的气味。
