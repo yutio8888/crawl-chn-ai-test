@@ -1,0 +1,17 @@
+{
+  "layer1_catch2": {
+    "total_issues": 0,
+    "by_kind": {},
+    "by_enumerator": {}
+  },
+  "layer2_lua": {
+    "total_issues": 0,
+    "by_kind": {}
+  },
+  "layer3_bot": {
+    "total_issues": 0,
+    "by_kind": {}
+  },
+  "grand_total": 0,
+  "all_issues": []
+}

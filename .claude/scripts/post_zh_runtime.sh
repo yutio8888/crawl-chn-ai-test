@@ -18,9 +18,14 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
 SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)}"
 METRICS_DIR="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
+# Version-controlled baselines (fixed paths, not sha-tagged)
+BASELINES_DIR="${ZH_RUNTIME_BASELINES_DIR:-$REPO_ROOT/test/baselines}"
+ZH_BASELINE="$BASELINES_DIR/zh/zh-baseline.json"
+ZH_HELP_BASELINE="$BASELINES_DIR/zh-help/zh-help-baseline.json"
 BOT_MIN_MARKERS="${ZH_RUNTIME_BOT_MIN_MARKERS:-5}"
 HELP_BOT_MIN_MARKERS="${ZH_RUNTIME_HELP_BOT_MIN_MARKERS:-12}"
 
@@ -249,17 +254,14 @@ run_help_aggregate() {
         --bot-stderr "$STDERR_HELP_BOT"
     )
     if [ "${1:-}" = "baseline" ]; then
-        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
-        local baseline_path="$METRICS_DIR/zh-help-baseline-${sha}.json"
-        args+=(--output-baseline "$baseline_path")
-        echo "  Writing help baseline: $baseline_path"
+        args+=(--output-baseline "$ZH_HELP_BASELINE")
+        echo "  Writing help baseline: $ZH_HELP_BASELINE"
         python3 "$CHECK_SCRIPT" "${args[@]}"
         return 0
     fi
-    local prev=$(ls -t "$METRICS_DIR"/zh-help-baseline-*.json 2>/dev/null | head -1 || echo '')
-    if [ -n "$prev" ]; then
-        args+=(--baseline "$prev")
-        echo "  Comparing against: $prev"
+    if [ -f "$ZH_HELP_BASELINE" ]; then
+        args+=(--baseline "$ZH_HELP_BASELINE")
+        echo "  Comparing against: $ZH_HELP_BASELINE"
         python3 "$CHECK_SCRIPT" "${args[@]}"
         local rc=$?
         if [ $rc -eq 0 ]; then
@@ -269,9 +271,10 @@ run_help_aggregate() {
         fi
         return $rc
     fi
-    echo -e "${YELLOW}  No help baseline found — summary only${NC}"
+    echo -e "${YELLOW}  No help baseline at $ZH_HELP_BASELINE — generating seed baseline${NC}"
+    args+=(--output-baseline "$ZH_HELP_BASELINE")
     python3 "$CHECK_SCRIPT" "${args[@]}"
-    return $?
+    return 0
 }
 
 # ============================================================================
@@ -288,19 +291,15 @@ run_aggregate() {
     )
 
     if [ "$mode" = "baseline" ]; then
-        local sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
-        local baseline_path="$METRICS_DIR/zh-baseline-${sha}.json"
-        args+=(--output-baseline "$baseline_path")
-        echo "  Writing baseline: $baseline_path"
+        args+=(--output-baseline "$ZH_BASELINE")
+        echo "  Writing baseline: $ZH_BASELINE"
         python3 "$CHECK_SCRIPT" "${args[@]}"
-        echo "  Baseline written: $baseline_path"
+        echo "  Baseline written: $ZH_BASELINE"
         return 0
     else
-        # Find newest baseline for comparison
-        local prev=$(ls -t "$METRICS_DIR"/zh-baseline-*.json 2>/dev/null | head -1 || echo '')
-        if [ -n "$prev" ]; then
-            args+=(--baseline "$prev")
-            echo "  Comparing against: $prev"
+        if [ -f "$ZH_BASELINE" ]; then
+            args+=(--baseline "$ZH_BASELINE")
+            echo "  Comparing against: $ZH_BASELINE"
             python3 "$CHECK_SCRIPT" "${args[@]}"
             local rc=$?
             if [ $rc -eq 0 ]; then
@@ -310,10 +309,8 @@ run_aggregate() {
             fi
             return $rc
         else
-            echo -e "${YELLOW}  No baseline found — generating new one${NC}"
-            local sha="$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')"
-            local baseline_path="$METRICS_DIR/zh-baseline-${sha}.json"
-            args+=(--output-baseline "$baseline_path")
+            echo -e "${YELLOW}  No baseline at $ZH_BASELINE — generating seed baseline${NC}"
+            args+=(--output-baseline "$ZH_BASELINE")
             python3 "$CHECK_SCRIPT" "${args[@]}"
             return 0
         fi
@@ -349,8 +346,7 @@ case "$MODE" in
         run_step "L1-catch2" run_catch2 || true
         run_step "L2-lua"    run_lua || true
         run_step "L3-bot"    run_bot || true
-        sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
-        run_step "aggregate" run_aggregate baseline "$sha"
+        run_step "aggregate" run_aggregate baseline
         ;;
     help-full)
         # Issue 52: help-system L1 [zh-help] + L3 zh_help.rc + help aggregation.
@@ -382,8 +378,7 @@ case "$MODE" in
         if [ -f "$SOURCE_DIR/test/stress/zh_help.rc" ]; then
             run_step "help-L3-bot" run_help_bot || true
         fi
-        sha="${2:-$(cd "$SOURCE_DIR/../.." && git rev-parse --short HEAD 2>/dev/null || echo 'unknown')}"
-        run_step "help-aggregate" run_help_aggregate baseline "$sha"
+        run_step "help-aggregate" run_help_aggregate baseline
         ;;
     *)
         echo "Unknown mode: $MODE (use fast|full|baseline|help-full|help-fast|help-baseline)"
