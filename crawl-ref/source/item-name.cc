@@ -569,65 +569,6 @@ static const set<brand_type> brand_prefers_adj =
  * @param bool              Whether to use a terse or verbose name.
  * @return                  The name of the given brand.
  */
-static const char *zh_weapon_brands_terse[] =
-{
-    "", "烈焰", "寒霜", "圣光", "雷电",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "剧毒", "防护", "吸血", "疾速", "沉重",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "生命吸取", "痛苦", "禁魔", "扭曲",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "混沌",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "穿透", "收割", "幽魂", "斥责", "勇武",
-    "缠绕", "碎裂", "震荡", "狡诈",
-    "", "酸蚀",
-#if TAG_MAJOR_VERSION > 34
-    "迷惑",
-#endif
-    "弱化",
-    "脆弱",
-    "秽焰",
-    "",
-};
-
-static const char *zh_weapon_brands_adj[] =
-{
-    "", "烈焰", "寒霜", "圣光", "雷电",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "剧毒", "防护", "生命吸取", "疾速", "沉重",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "吸血", "痛苦", "禁魔", "扭曲",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "混沌",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "穿透", "收割", "幽魂", "斥责", "勇武",
-    "缠绕", "碎裂", "震荡", "狡诈",
-    "", "酸蚀",
-#if TAG_MAJOR_VERSION > 34
-    "迷惑",
-#endif
-    "弱化",
-    "意志削弱",
-    "秽焰",
-    "",
-};
 
 const char* brand_type_name(brand_type brand, bool terse)
 {
