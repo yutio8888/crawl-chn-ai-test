@@ -325,6 +325,11 @@ echo "=== post_zh_runtime.sh ($MODE) ==="
 echo "Metrics: $METRICS_DIR"
 
 case "$MODE" in
+    catch2)
+        # Lightweight: build catch2-tests + run [zh-translation] + compare baseline.
+        run_step "L1-catch2" run_catch2 || true
+        run_step "aggregate" run_aggregate catch2
+        ;;
     fast)
         # Fast: aggregate from existing log files (no rebuild).
         [ -f "$STDERR_C2" ] || { echo "No catch2 stderr log at $STDERR_C2 — run 'full' first"; exit 1; }
