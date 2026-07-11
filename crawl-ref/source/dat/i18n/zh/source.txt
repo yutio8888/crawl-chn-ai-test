@@ -11408,6 +11408,14 @@ Desolation
 
 荒原
 %%%%
+Necropolis
+
+死灵城
+%%%%
+Crucible
+
+血肉熔炉
+%%%%
 the Dungeon
 
 地牢
@@ -11479,6 +11487,78 @@ the Depths
 the Abyss
 
 深渊
+%%%%
+a ziggurat
+
+通天塔
+%%%%
+a bazaar
+
+集市
+%%%%
+a treasure trove
+
+宝藏库
+%%%%
+a sewer
+
+下水道
+%%%%
+an ossuary
+
+骨堂
+%%%%
+a bailey
+
+堡垒
+%%%%
+an ice cave
+
+冰窟
+%%%%
+a volcano
+
+火山
+%%%%
+a wizard's laboratory
+
+巫师实验室
+%%%%
+the Desolation of Salt
+
+盐之荒原
+%%%%
+a Gauntlet
+
+竞技长廊
+%%%%
+the Arena
+
+竞技场
+%%%%
+the Crucible of Flesh
+
+血肉熔炉
+%%%%
+the Necropolis
+
+死灵城
+%%%%
+a Labyrinth
+
+迷宫
+%%%%
+\n\nThe entrance to this branch can be found in %s.
+
+\n\n此分支的入口位于%1$s。
+%%%%
+\n\nThe entrance to this branch can be found on level %d of %s.
+
+\n\n此分支的入口位于%2$s的第%1$d层。
+%%%%
+\n\nThe entrance to this branch can be found between levels %d and %d of %s.
+
+\n\n此分支的入口位于%3$s的第%1$d层到第%2$d层之间。
 %%%%
 Welcome to Hell!
 Please enjoy your stay.
@@ -35121,6 +35201,9 @@ Pois
 %%%%
 Portal
 传送门
+%%%%
+branch
+分支
 %%%%
 Preparing a Fortress Blast.
 正在准备堡垒爆破。
