@@ -27,7 +27,7 @@ import sys
 from collections import OrderedDict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import parse_source_txt
+from i18n_shared import parse_entries, parse_source_txt
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1538,32 +1538,16 @@ def cmd_source_txt_integrity(args):
     self_conflicts = []
     empty_value = []
 
-    with open(args.source_txt, 'r', encoding='utf-8') as f:
-        content = f.read()
+    # Use unified parser with case-sensitive keys (matching legacy behavior;
+    # TODO: switch to lowercase_keys=True to match C++ GDBM runtime after
+    # resolving 9 self-conflicts + 40 duplicates from case collisions)
+    parsed = parse_entries(args.source_txt, lowercase_keys=False, unescape_hash=True)
 
-    order = 0
-    # Use rstrip('\n') only (not strip()) — runtime trim_keys=false for source.txt,
-    # so leading/trailing spaces are semantically significant in keys.
-    for block in re.split(r'^%%%%\n', content, flags=re.MULTILINE)[1:]:
-        if not block:
-            continue
-        block_rstrip = block.rstrip('\n')
-        # Key is first non-empty line
-        block_lines = block_rstrip.split('\n')
-        key_idx = None
-        for i, bline in enumerate(block_lines):
-            if bline and not bline.lstrip().startswith('#'):
-                key_idx = i
-                break
-        if key_idx is None:
-            continue
-        key = block_lines[key_idx].rstrip('\n').rstrip('\r')
-        # Value is everything after the key line
-        value = '\n'.join(block_lines[key_idx + 1:]).rstrip('\n')
+    for order, entry in enumerate(parsed, start=1):
+        key = entry.key
+        value = entry.value
 
-        order += 1
-
-        if not value:
+        if entry.is_empty:
             empty_value.append(key)
 
         if key in entries_raw:

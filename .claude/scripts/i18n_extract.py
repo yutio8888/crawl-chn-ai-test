@@ -30,6 +30,9 @@ import re
 import sys
 from collections import OrderedDict
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import parse_source_txt
+
 
 # ══════════════════════════════════════════════════════════════════════════════
 # Escape specification — MUST mirror i18n_escape_key() in database.cc
@@ -196,52 +199,6 @@ def _offset_to_lineno(offsets: list, pos: int) -> int:
     """Convert byte offset to 1-based line number."""
     idx = bisect.bisect_right(offsets, pos) - 1
     return idx + 1  # 1-based
-
-
-def parse_source_txt(filepath: str) -> OrderedDict:
-    """Parse source.txt and return OrderedDict of key -> translation.
-
-    Handles both simple keys and context-qualified keys (ctx|en).
-    """
-    entries = OrderedDict()
-    if not os.path.exists(filepath):
-        return entries
-
-    with open(filepath, "r", encoding="utf-8") as f:
-        lines = f.readlines()
-
-    key = None
-    value_lines = []
-    in_entry = False
-
-    for line in lines:
-        stripped = line.rstrip("\n").rstrip("\r")
-        if stripped.startswith("#") and key is None:
-            continue
-        if stripped.startswith("%%%%"):
-            if key is not None:
-                entries[key] = "\n".join(value_lines).rstrip()
-            key = None
-            value_lines = []
-            in_entry = True
-            continue
-        if not in_entry:
-            continue
-        if key is None:
-            # First non-empty, non-comment line is the key
-            if stripped:
-                # Unescape \# → # (source.txt uses \# to prevent comment parsing)
-                if stripped.startswith('\\#'):
-                    stripped = '#' + stripped[2:]
-                # Key is stored lowercase (matching TextDB _parse_text_db behavior)
-                key = stripped.lower()
-        else:
-            value_lines.append(stripped)
-
-    if key is not None:
-        entries[key] = "\n".join(value_lines).rstrip()
-
-    return entries
 
 
 def scan_source_dir(root: str) -> list:

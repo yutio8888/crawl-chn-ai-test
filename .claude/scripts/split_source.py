@@ -18,38 +18,8 @@ import os
 import re
 import sys
 
-
-def parse_entries(filepath: str) -> list:
-    """Parse source.txt, return list of (key, value, start_line) tuples."""
-    entries = []
-    if not os.path.exists(filepath):
-        return entries
-    with open(filepath, 'r', encoding='utf-8') as f:
-        lines = f.readlines()
-    key = None
-    value_lines = []
-    in_entry = False
-    for i, line in enumerate(lines):
-        stripped = line.rstrip('\n').rstrip('\r')
-        if stripped.startswith('#'):
-            continue
-        if stripped.startswith('%%%%'):
-            if key is not None:
-                entries.append((key, '\n'.join(value_lines).rstrip(), i))
-            key = None
-            value_lines = []
-            in_entry = True
-            continue
-        if not in_entry:
-            continue
-        if key is None:
-            if stripped:
-                key = stripped
-        else:
-            value_lines.append(stripped)
-    if key is not None:
-        entries.append((key, '\n'.join(value_lines).rstrip(), len(lines)))
-    return entries
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import parse_entries
 
 
 def main():
@@ -67,14 +37,15 @@ def main():
     args = parser.parse_args()
 
     pattern = re.compile(args.pattern, re.IGNORECASE)
-    entries = parse_entries(args.source_txt)
+    entries = parse_entries(args.source_txt, lowercase_keys=False)
     if not entries:
         print(f"ERROR: No entries found in {args.source_txt}")
         return 1
 
     matched = []
     unmatched = []
-    for key, value, _ in entries:
+    for entry in entries:
+        key, value = entry.key, entry.value
         if pattern.search(key):
             matched.append((key, value))
         else:
