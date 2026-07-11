@@ -13255,7 +13255,7 @@ Spry
 矫捷者
 %%%%
 Acrobat
-杂技演员
+特技闪避
 %%%%
 Intangible
 无形无影
@@ -15207,7 +15207,7 @@ Fly
 飞行
 %%%%
 Glass
-玻璃化
+玻璃
 %%%%
 Guile
 狡诈
@@ -16761,7 +16761,7 @@ Sonic wave
 音波
 %%%%
 Roll
-滚动
+翻滚
 %%%%
 Hurl Sludge
 投掷污泥
@@ -28430,10 +28430,6 @@ Dragonpray
 %%%%
 Flames, rFlCloud
 烈焰，火云抗
-%%%%
-Forge
-锻造
-%%%%
 Fury
 狂怒
 %%%%
@@ -30275,16 +30271,6 @@ rising multitudes
 %%%%
 full choir
 齐声合唱
-%%%%
-loud
-响亮的
-%%%%
-quiet
-轻柔的
-%%%%
-deafening
-震耳欲聋的
-%%%%
 nearby
 附近的
 %%%%
@@ -31630,7 +31616,7 @@ Blood for Blood
 以血还血
 %%%%
 Channel Magic
-引导魔力
+魔力引导
 %%%%
 Convert to Beogh
 皈依贝奥格
@@ -37032,10 +37018,6 @@ encrusted
 %%%%
 sharpened 
 磨利的
-%%%%
-iron
-铁
-%%%%
 brass
 黄铜
 %%%%
@@ -37053,10 +37035,6 @@ bronze
 %%%%
 ivory
 象牙
-%%%%
-glass
-玻璃
-%%%%
 lead
 铅
 %%%%
@@ -37589,158 +37567,6 @@ Octopus
 Octopoid
 章鱼形
 
-%%%%
-Armataur
-甲马人
-
-%%%%
-Barachi
-蛙人
-
-%%%%
-Coglin
-齿轮地精
-
-%%%%
-Deep Dwarf
-深矮人
-
-%%%%
-Demigod
-半神
-
-%%%%
-Demonspawn
-恶魔裔
-
-%%%%
-Djinni
-灯神
-
-%%%%
-Draconian
-龙人
-
-%%%%
-Black Draconian
-黑龙人
-
-%%%%
-Green Draconian
-绿龙人
-
-%%%%
-Grey Draconian
-灰龙人
-
-%%%%
-Mottled Draconian
-斑驳龙人
-
-%%%%
-Pale Draconian
-苍白龙人
-
-%%%%
-Purple Draconian
-紫龙人
-
-%%%%
-Red Draconian
-红龙人
-
-%%%%
-White Draconian
-白龙人
-
-%%%%
-Yellow Draconian
-黄龙人
-
-%%%%
-Felid
-猫
-
-%%%%
-Formicid
-蚁人
-
-%%%%
-Gargoyle
-石像鬼
-
-%%%%
-Ghoul
-食尸鬼
-
-%%%%
-Gnoll
-豺狼人
-
-%%%%
-Halfling
-半身人
-
-%%%%
-Kobold
-狗头人
-
-%%%%
-Merfolk
-鱼人
-
-%%%%
-Meteoran
-流星人
-
-%%%%
-Minotaur
-牛头人
-
-%%%%
-Mummy
-木乃伊
-
-%%%%
-Naga
-纳迦
-
-%%%%
-Octopode
-章鱼
-
-%%%%
-Oni
-鬼
-
-%%%%
-Poltergeist
-吵闹鬼
-
-%%%%
-Revenant
-归来者
-
-%%%%
-Spriggan
-小精灵
-
-%%%%
-Tengu
-天狗
-
-%%%%
-Troll
-巨魔
-
-%%%%
-Vampire
-吸血鬼
-
-%%%%
-Vine Stalker
-藤蔓行者
-%%%%
 Lethargy
 倦怠
 %%%%
@@ -37791,10 +37617,6 @@ the Dilettante
 %%%%
 You are less proficient with several skills.
 你对数项技能的熟练度降低。
-%%%%
-Paradox
-悖论
-%%%%
 Enemies you spot sometimes become touched by paradox.
 你发现的敌人有时会受到悖论影响。
 %%%%
@@ -37821,16 +37643,6 @@ the Shapeless
 %%%%
 random rage
 随机狂暴
-%%%%
-acrobat
-特技闪避
-%%%%
-roll
-翻滚
-%%%%
-channel magic
-魔力引导
-%%%%
 infuse magic
 魔力灌注
 %%%%
