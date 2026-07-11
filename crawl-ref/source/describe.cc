@@ -5519,7 +5519,8 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
                                         brand_str.c_str(),
                                         attk_mult > 1 ? T_(" each") : "");
     di.damage_descriptions.emplace_back(final_dam_str);
-    di.damage_width = max(di.damage_width, final_dam_str.size());
+    di.damage_width = max(di.damage_width,
+                          (size_t)strwidth(final_dam_str));
 
     // Part 3: The "Bonus" column
     // Describe any additional effects from a monster's attack flavour
@@ -5549,7 +5550,8 @@ static void _attacks_table_row(const monster_info &mi, mon_attack_desc_info &di,
         bonus_desc += (T_("Poison"));
 
     di.bonus_descriptions.emplace_back(bonus_desc);
-    di.bonus_width = max(di.bonus_width, bonus_desc.size());
+    di.bonus_width = max(di.bonus_width,
+                         (size_t)strwidth(bonus_desc));
 }
 
 // Get all the info required to form an attacks table row for the monster's
@@ -5624,8 +5626,10 @@ static void _attacks_table_row_throwing(const monster_info &mi,
 
     di.damage_descriptions.emplace_back(dam_desc);
     di.bonus_descriptions.emplace_back(bonus_desc);
-    di.damage_width = max(di.damage_width, dam_desc.size());
-    di.bonus_width = max(di.bonus_width, bonus_desc.size());
+    di.damage_width = max(di.damage_width,
+                          (size_t)strwidth(dam_desc));
+    di.bonus_width = max(di.bonus_width,
+                         (size_t)strwidth(bonus_desc));
 }
 
 // Build the table of attacks, for real
@@ -5646,16 +5650,18 @@ static void _build_table_of_attacks(mon_attack_desc_info &di,
     // Note: columns are separated by (a minimum of) 2 spaces
 
     // First, the table header
-    result << padded_str(di.plural ? T_("Attacks") : T_("Attack"),
-                         di.attk_desc_width + 2)
-           << padded_str(T_("Max Damage"),
-                         di.damage_width + 2);
+    // Use display-width-aware padding.  padded_str() counts code points,
+    // which makes a CJK header occupy fewer logical columns than its data.
+    result << chop_string(di.plural ? T_("Attacks") : T_("Attack"),
+                          di.attk_desc_width + 2)
+           << chop_string(T_("Max Damage"),
+                          di.damage_width + 2);
     if (di.has_any_flavour)
     {
-        result << padded_str(di.flavour_without_dam
-                                 ? (T_("Bonus"))
-                                 : (T_("After Damaging Hits")),
-                             di.bonus_width);
+        result << chop_string(di.flavour_without_dam
+                                  ? (T_("Bonus"))
+                                  : (T_("After Damaging Hits")),
+                              di.bonus_width);
     }
     result << "\n";
 

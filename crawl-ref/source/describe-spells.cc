@@ -674,7 +674,14 @@ static void _describe_book(const spellbook_contents &book,
         const int effect_len = strwidth(effect_str);
         const int range_len = range_str.empty() ? 0 : 3;
         const int effect_range_space = effect_len && range_len ? 1 : 0;
-        const int chop_len = 32 - effect_len - range_len - effect_range_space
+        // Monster spellbooks are rendered as two columns.  The historical
+        // 32-column budget leaves no room for the popup's horizontal margins
+        // once CJK spell names consume two display columns per character;
+        // the generic tile text wrapper then breaks the second column in the
+        // middle of its range (e.g. moving "(7)" to the next line).  Keep a
+        // small safety margin for the two-column layout.
+        const int column_width = doublecolumn ? 30 : 32;
+        const int chop_len = column_width - effect_len - range_len - effect_range_space
                                 - (dith_marker.length() > 0 ? 1 : 0);
 
         if (effect_len && !testbits(get_spell_flags(spell), spflag::WL_check))
@@ -687,13 +694,30 @@ static void _describe_book(const spellbook_contents &book,
             // looks nicer than Lehudib's Crystal S
             spell_name = "Crystal Spear";
         }
-        description += formatted_string::parse_string(
-                make_stringf("%c - %s%s%s%s%s", spell_letter,
-                             dith_marker.c_str(),
-                             chop_string(spell_name, chop_len).c_str(),
-                             effect_str.c_str(),
-                             effect_range_space ? " " : "",
-                             range_str.c_str()));
+        // Keep the name and effect adjacent.  Padding the name itself makes
+        // short CJK names look widely separated from their effect, and the
+        // resulting first-column width can differ between rows, shifting the
+        // start of the second column (so b and d no longer align).
+        const string compact_name = chop_string(spell_name, max(chop_len, 0),
+                                                false);
+        formatted_string spell_entry = formatted_string::parse_string(
+            make_stringf("%c - %s%s%s%s%s", spell_letter,
+                         dith_marker.c_str(), compact_name.c_str(),
+                         effect_str.c_str(),
+                         effect_range_space ? " " : "",
+                         range_str.c_str()));
+
+        if (doublecolumn && first_line_element)
+        {
+            // Pad the complete first cell to a fixed display width so every
+            // second-column entry starts at the same x position.  Use the
+            // parsed text width because range_str may contain colour tags.
+            const int target_width = column_width + 4;
+            const int padding = target_width - strwidth(spell_entry.tostring());
+            if (padding > 0)
+                spell_entry += string(padding, ' ');
+        }
+        description += spell_entry;
 
         // only display type & level for book spells
         if (doublecolumn)
