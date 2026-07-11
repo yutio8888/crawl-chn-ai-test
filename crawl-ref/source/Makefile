@@ -554,6 +554,12 @@ WINDRES := $(CROSSHOST)-windres
 
 endif
 
+# Auto-wrap compilers with ccache for transparent caching
+ifneq ($(shell which ccache 2>/dev/null),)
+  GCC := ccache $(GCC)
+  GXX := ccache $(GXX)
+endif
+
 ifdef USE_ICC
 # If you have a Core 2 processor, this _really_ makes things fly:
 #CFOPTIMIZE := -O2 -parallel -xT

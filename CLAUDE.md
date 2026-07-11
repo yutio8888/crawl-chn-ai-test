@@ -22,9 +22,9 @@ repository's index and working tree, leading to false "staged changes".
 3. **Run merge review gate**: `bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch>`
    - See "Worktree Merge Review" below — this classifies the cumulative diff
      and decides whether full review is required before merging.
-4. `git merge <worktree-branch>` (or `git reset --hard <worktree-branch>` for fast-forward)
+4. `git merge --ff-only <worktree-branch>` (use an explicit non-FF merge only when intended)
 5. Resolve any conflicts in the main repository
-6. `git reset --hard HEAD` to sync index and working tree
+6. Verify `git status`; never use `reset --hard` as routine synchronization
 
 This ensures the main repository's index and working tree stay in sync with the
 branch reference, avoiding the stale-index problem caused by `update-ref`.
@@ -121,7 +121,7 @@ Skill("translation-pipeline")
 # → Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {...}})
 ```
 
-Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (code+translate parallel) → Review (3-way parallel) → Cross-validate → Report.
+Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (translator owns translation assets, then coder edits code) → Review (3-way parallel) → Cross-validate → Report.
 
 ### Batch Pipeline → `translation-batch-pipeline` workflow
 
@@ -170,9 +170,9 @@ Use `classify_review.sh` to categorize a diff:
 
 | Level | Trigger | Treatment |
 |-------|---------|-----------|
-| 🟢 **GREEN** | No `crawl-ref/source/` changes | No review — just merge |
-| 🟡 **YELLOW** | Only `crawl-ref/source/dat/{i18n,descript,database}/zh/*.txt` | Run `post-coder.sh` (automated scan); merge if clean |
-| 🔴 **RED** | Any `crawl-ref/source/*.cc` or `*.h` change, or other `crawl-ref/source/` | Full `zh-code-reviewer` agent 5-layer review |
+| 🟢 **GREEN** | Low-risk files outside source and workflow policy | No review — just merge |
+| 🟡 **YELLOW** | Only `crawl-ref/source/dat/{i18n,descript,database}/zh/*.txt` | Run `verify_zh.sh --profile translation`; merge if clean |
+| 🔴 **RED** | Source code/other source files, workflow policy, verification or build/deploy scripts, core workflow docs | Full reviewer pass plus a head-bound recorded verdict |
 
 ```bash
 # Classify staged diff (per-commit quick check, advisory)
@@ -199,9 +199,10 @@ The script:
 1. Computes the cumulative diff range `<target>..<worktree-branch>`
 2. Classifies via `classify_review.sh`
 3. **GREEN** → prints merge command, exit 0
-4. **YELLOW** → auto-runs `post-coder.sh`, prints log path, exit 0/1 based on results
-5. **RED** → prints the exact `Agent(zh-code-reviewer, ...)` prompt to dispatch,
-   exits 2. After receiving the verdict and fixing blockers, re-run this script.
+4. **YELLOW** → runs `verify_zh.sh --profile translation`, exit 0/1
+5. **RED** → exits 2 until a reviewer returns Go/Conditional Go. Record that
+   result with `--record-verdict go|conditional-go`; the record is bound to the
+   target head, worktree head, and binary diff hash. Any later change invalidates it.
 
 ### Per-Commit Review (Optional, Advisory)
 
@@ -247,33 +248,60 @@ Co-Authored-By: Claude <noreply@anthropic.com>
 
 ## Build Requirements & Commands
 
-**Important**: Always compile with `-j8` (8 parallel jobs). The WSL environment has
-limited resources; using more than 8 cores may cause system instability.
+**Important**: Use at most 8 parallel jobs. The WSL environment has limited
+resources; unbounded `-j$(nproc)` may cause system instability.
 
-### WSL Console Build (for debugging)
+**Full build docs**: `docs/build-workflow.md`
+
+### Architecture: Dual Worktree + ccache
+
+Console and tiles builds use separate worktrees to isolate `.o` files:
+
+| Worktree | Build target | Command |
+|----------|-------------|---------|
+| **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
+| `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
+
+When `ccache` is installed, the project Makefile automatically wraps `GCC` and
+`GXX` with it and caches objects across builds with similar flags.
+
+### WSL Console Build (main worktree)
 ```bash
 cd crawl-ref/source
+bash util/build-console.sh
+# or manually:
 echo 'language = zh' > init.txt
 make -j8
-# Output: crawl-ref/source/crawl
+# Output: crawl (in source dir)
 ```
 
-### Windows Tiles Cross-Compile (for tiles testing)
+### Windows Tiles Cross-Compile (mingw-tiles worktree)
+The worktree is **detached** and must be synced to the main worktree's
+current HEAD before building. The helper script does this automatically:
+
 ```bash
 cd crawl-ref/source
+bash util/build-tiles.sh
+# or manually:
+cd /home/yutio888/projects/crawl
+MAIN_HEAD=$(git rev-parse HEAD)
+cd .worktrees/mingw-tiles
+test -z "$(git status --porcelain --untracked-files=all)" || {
+  echo "refusing destructive sync: build worktree is dirty" >&2; exit 1;
+}
+git reset --hard "$MAIN_HEAD"
+cd crawl-ref/source
 make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
-# Output: crawl-ref/source/crawl.exe
+# Output: crawl.exe (in worktree's source dir)
 ```
 
-### Output Paths
-- WSL console binary: `crawl-ref/source/crawl`
-- Windows tiles binary: `~/outputs/crawl-test/crawl.exe` (copy from `crawl-ref/source/crawl.exe` after build)
-- Windows game directory: `D:\crawl-game\` (copy exe + dat/ + contrib/fonts/)
-- Font files at runtime: `contrib/fonts/DejaVuSans.ttf`, `DejaVuSansMono.ttf`, `SarasaMonoSC-Regular.ttf`
+This reset is permitted only in the dedicated detached build worktree after
+the clean-tree check. `build-tiles.sh` and `deploy.sh` enforce the same guard.
+Never use this reset pattern to synchronize the main development worktree.
 
 ### Deploy to Windows (after cross-compile)
 ```bash
-# One-step: cross-compile + copy + clear DB cache
+# One-step: sync worktree + cross-compile + copy + clear DB cache
 bash .claude/scripts/deploy.sh
 # Or specify custom target:
 bash .claude/scripts/deploy.sh /mnt/d/crawl-game
@@ -288,11 +316,15 @@ even when only the C++ binary was modified.
 - `contrib/fonts/DejaVuSans.ttf` (~720KB) — proportional font
 - `contrib/fonts/DejaVuSansMono.ttf` (~330KB) — primary monospace font (layout metrics)
 - `contrib/fonts/SarasaMonoSC-Regular.ttf` (~25MB) — CJK fallback font (must obtain separately)
+- `contrib/fonts/MapleMono-NF-CN-Regular.ttf` — unified CJK tile font (see init.txt)
 
 ### Prebuilt Contrib Libraries
 Cross-compilation requires prebuilt MinGW libraries at:
 `crawl-ref/source/contrib/install/x86_64-w64-mingw32/lib/`
 (SDL2, SDL2-image, freetype, libpng, zlib, lua, sqlite, pcre)
+
+Different compilers use different `$(ARCH)` paths, so console vs tiles contribs
+are naturally isolated (e.g. `x86_64-linux-gnu/` vs `x86_64-w64-mingw32/`).
 
 ## CJK Tiles Support Architecture
 
