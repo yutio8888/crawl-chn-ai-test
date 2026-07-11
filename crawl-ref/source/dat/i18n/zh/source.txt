@@ -284,7 +284,7 @@ Dispersal
 驱散
 %%%%
 Enfeeble
-衰弱
+虚弱术
 %%%%
 Flash Freeze
 急冻
@@ -11362,7 +11362,7 @@ Fast+Slow
 速+缓
 %%%%
 Slow
-缓慢
+减速
 %%%%
 Fast
 快速
@@ -15829,7 +15829,7 @@ Lee's Rapid Deconstruction
 李之快速解构
 %%%%
 Sandblast
-沙暴
+沙爆
 %%%%
 Sculpt Simulacrum
 塑造拟像
@@ -15958,13 +15958,13 @@ Haste Other
 加速他人
 %%%%
 Summon Earth Elementals
-召唤大地元素
+召唤土元素
 %%%%
 Summon Air Elementals
-召唤空气元素
+召唤气元素
 %%%%
 Summon Fire Elementals
-召唤火焰元素
+召唤火元素
 %%%%
 Sleep
 睡眠
@@ -16036,7 +16036,7 @@ Summon Hydra
 召唤多头蛇
 %%%%
 Mesmerise
-迷惑
+催眠
 %%%%
 Hellfire Court
 地狱火法庭
