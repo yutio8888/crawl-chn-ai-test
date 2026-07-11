@@ -212,6 +212,20 @@ python3 .claude/scripts/source_control_parity.py \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt --strict-all
 ```
 
+### scan_translation_length.py — 翻译段落长度风险扫描
+
+按 Unicode East Asian Width 估算中文译文的显示列数，逐段检查显式 `\\n`
+之间的文本。默认 `>=48` 列报告警告，`>=56` 列报告高风险；这是提示性
+扫描，不是阻断 gate，因为实际宽度还取决于字体、窗口和 UI 控件。
+
+```bash
+python3 .claude/scripts/scan_translation_length.py \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+```
+
+需要将高风险作为 CI 失败时，可追加 `--fail-on-risk`；建议先人工筛选后
+添加 `\\n`，不要直接把所有报告项机械换行。
+
 ### scan_varargs_string.py — 可变参数 std::string UB 扫描（Issue #42 类）
 
 基于 tree-sitter 的 AST 扫描器，检测把 `std::string`（而非 `const char*`）作为
