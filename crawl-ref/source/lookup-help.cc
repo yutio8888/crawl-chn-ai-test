@@ -115,8 +115,8 @@ public:
      */
     bool no_search() const { return simple_key_fetch != nullptr; }
 
-    /// The localized display name for this lookup type.
-    const string& name() const { return display_name; }
+    /// Returns the locale-appropriate display name: Chinese in ZH, English otherwise.
+    string name() const { return (Options.language == lang_t::ZH) ? display_name : type; }
 
     bool find_description(string &response) const;
     int describe(const string &key, bool exact_match = false) const;
@@ -267,7 +267,7 @@ namespace
 
         void set_prompt()
         {
-            string prompt = "Describe which? ";
+            string prompt = T_("Describe which? ");
 
             if (toggleable_sort)
             {
@@ -483,7 +483,7 @@ static bool _monster_filter(string key, string /*body*/)
 
 static bool _spell_filter(string key, string /*body*/)
 {
-    if (!strip_suffix(key, "spell"))
+    if (!strip_suffix(key, " spell"))
         return true;
 
     spell_type spell = spell_by_name(key);
@@ -514,7 +514,7 @@ static bool _ability_filter(string key, string /*body*/)
 {
     lowercase(key);
 
-    if (!strip_suffix(key, "ability"))
+    if (!strip_suffix(key, " ability"))
         return true;
 
     return !string_matches_ability_name(key);
@@ -617,7 +617,7 @@ static void _recap_spell_keys(vector<string> &keys)
         // strip_suffix checks ends_with before erasing, so it never cuts
         // a multibyte character — unlike the old .substr(0, len-6) which
         // blindly chops 6 bytes regardless of content.
-        strip_suffix(keys[i], "spell");
+        strip_suffix(keys[i], " spell");
         // then get the real name
         keys[i] = make_stringf(T_("%s spell"),
                                spell_title(spell_by_name(keys[i])));
@@ -633,7 +633,7 @@ static void _recap_ability_keys(vector<string> &keys)
 {
     for (auto &key : keys)
     {
-        strip_suffix(key, "ability");
+        strip_suffix(key, " ability");
         // get the real name
         key = make_stringf(T_("%s ability"), ability_name(ability_by_name(key)).c_str());
     }
@@ -1566,13 +1566,13 @@ char lookup_help_type_shortcut(lookup_help_type lht)
  */
 static string _prompt_for_regex(const LookupType &lookup_type, string &err)
 {
-    const string type_name = lookup_type.display_name;
+    const string type_name = lookup_type.name();
     const string extra = lookup_type.supports_glyph_lookup() ?
-        make_stringf(T_(" Enter a single letter to list %s displayed by that"
+        make_stringf_p(T_(" Enter a single letter to list %s displayed by that"
                      " symbol."), type_name.c_str())
         : lookup_type.type == "spell" ? T_("Preface with '@' to search by school.")
         : "";
-    const string prompt = make_stringf(
+    const string prompt = make_stringf_p(
          T_("Describe %s; partial names and regexps are fine.%s\n"
          "Describe what? "),
          type_name.c_str(), extra.c_str());
@@ -1681,7 +1681,7 @@ bool LookupType::find_description(string &response) const
     vector<string> key_list = matching_keys(regex);
 
     const bool by_symbol = supports_glyph_lookup() && regex.size() == 1;
-    response = _keylist_invalid_reason(key_list, display_name,
+    response = _keylist_invalid_reason(key_list, name(),
                                        regex, by_symbol);
     if (!response.empty())
         return true;

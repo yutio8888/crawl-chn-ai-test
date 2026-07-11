@@ -2530,7 +2530,7 @@ barrage of energy
 <lightgrey>
 %%%%
 <yellow>You have %d gold%s</yellow>\n<lightgrey>
-<yellow>你拥有 %d 枚金币%s</yellow>
+<yellow>你拥有 %d 枚金币%s</yellow>\n<lightgrey>
 <lightgrey>
 %%%%
 > New
@@ -4080,7 +4080,7 @@ Enter - Begin!
 回车 - 开始！
 %%%%
 Enter 0 for a random seed. [Tab]/[Shift-Tab] to cycle input focus.\n
-输入0获取随机种子。[Tab]/[Shift-Tab] 切换输入焦点。
+输入0获取随机种子。[Tab]/[Shift-Tab] 切换输入焦点。\n
 
 # Extracted by extract_ternaries.py
 # Review entries marked with ⚠️ARG-DIFF before merging
@@ -21031,7 +21031,7 @@ sleepcap
 \n\n玻璃化几率：%d%%（最大%d%%）
 %%%%
 \n\nexplosion chance: %d%% (max %d%%)\nexplosion damage: %dd%d (max %dd%d)\n
-\n\n爆炸几率：%d%%（最大%d%%）\n爆炸伤害：%dd%d（最大%dd%d）
+\n\n爆炸几率：%d%%（最大%d%%）\n爆炸伤害：%dd%d（最大%dd%d）\n
 %%%%
 \n\nbase shooting star damage: %dd%d (max %dd%d) + 25%% per mp spent\nshooting stars conjured: 1 + 1 per visible enemy, up to %d (%d at max skill)
 \n\n基础流星伤害：%dd%d（最大%dd%d）+每消耗1MP增加25%%\n召唤流星：1 + 每个可见敌人增加1，最多%d（满技能时%d）
@@ -21067,7 +21067,7 @@ you subdued it
 很
 %%%%
 %s%s protects you from negative energy.\n
-%s%s保护你免受负能量伤害。
+%s%s保护你免受负能量伤害。\n
 %%%%
 *Rage
 *狂怒
@@ -29288,7 +29288,7 @@ curses
 诅咒
 %%%%
 \nYour spell failure would
-你的法术失败率将
+\n你的法术失败率将
 %%%%
 It cannot be enchanted further.
 它无法被进一步附魔。
@@ -31793,67 +31793,67 @@ Recruit Apostle
 招募使徒
 %%%%
 %s%s protects your life.\n
-%s%s守护你的生命。
+%s%s守护你的生命。\n
 %%%%
 Orcs frequently recognise you as Beogh's chosen one.\n
-兽人经常认出你是贝奥格的选民。
+兽人经常认出你是贝奥格的选民。\n
 %%%%
 Orcs sometimes recognise you as one of them.\n
-兽人有时认出你是他们的一员。
+兽人有时认出你是他们的一员。\n
 %%%%
 %s%s protects you from harm by chaos.\n
-%s%s保护你免受混沌伤害。
+%s%s保护你免受混沌伤害。\n
 %%%%
 %s%s protects you from hellish harm.\n
-%s%s保护你免受地狱伤害。
+%s%s保护你免受地狱伤害。\n
 %%%%
 %s prevents you from sneaking up on the defenceless.\n
-%s阻止你偷袭毫无防备的敌人。
+%s阻止你偷袭毫无防备的敌人。\n
 %%%%
 Jellies are peaceful and will eat items on the floor.\n
-果冻是和平的，会吃掉地上的物品。
+果冻是和平的，会吃掉地上的物品。\n
 %%%%
 Jiyva prevents you from harming jellies.\n
-吉瓦阻止你伤害果冻。
+吉瓦阻止你伤害果冻。\n
 %%%%
 Your life and magic regeneration are%s increased.\n
-你的生命和魔力恢复速度%s加快。
+你的生命和魔力恢复速度%s加快。\n
 %%%%
 %s%s slows your movement.\n
-%s%s减缓移动。
+%s%s减缓移动。\n
 %%%%
 %s boosts your attributes. (+%d)\n
-%s提升你的属性。(+%d)
+%s提升你的属性。(+%d)\n
 %%%%
 You can memorise %s.\n
-你可以记忆%s。
+你可以记忆%s。\n
 %%%%
 You can memorise some of Vehumet's spells.\n
-你可以记忆一些维胡梅特的法术。
+你可以记忆一些维胡梅特的法术。\n
 %%%%
 You are surrounded by an umbra.\nEnemies who die within your umbra may be risen as undead servants.\n
-你被本影环绕。\n在你的本影中死去的敌人可能会被复活为亡灵仆从。
+你被本影环绕。\n在你的本影中死去的敌人可能会被复活为亡灵仆从。\n
 %%%%
 Your life essence is reduced. (-10%% HP)\n
-你的生命精华减少了。(-10%% 生命值)
+你的生命精华减少了。(-10%% 生命值)\n
 %%%%
 Your destruction is augmented by the fires of Gehenna.\n
-你的毁灭被火焚地狱之力增强。
+你的毁灭被火焚地狱之力增强。\n
 %%%%
 Your destruction is augmented by the ice of Cocytus.\n
-你的毁灭被冰狱之力增强。
+你的毁灭被冰狱之力增强。\n
 %%%%
 Your destruction is augmented by the lamentations of Tartarus.\n
-你的毁灭被悲叹地狱之力增强。
+你的毁灭被悲叹地狱之力增强。\n
 %%%%
 Your destruction is augmented by the Iron City of Dis.\n
-你的毁灭被铁城之力增强。
+你的毁灭被铁城之力增强。\n
 %%%%
 Your destruction will be augmented by one of the four Hells.\n
-你的毁灭将被四大地狱之一增强。
+你的毁灭将被四大地狱之一增强。\n
 %%%%
 You are marked with %s.\n
-你被烙印了%s。
+你被烙印了%s。\n
 %%%%
 None.
 无。
@@ -37870,3 +37870,6 @@ Back to game menu
 %%%%
 Exit help lookup
 退出帮助查询
+%%%%
+Describe which? 
+请选择：
