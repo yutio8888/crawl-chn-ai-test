@@ -36,12 +36,12 @@ android {
         }
     }
     compileOptions {
-        sourceCompatibility JavaVersion.VERSION_21
-        targetCompatibility JavaVersion.VERSION_21
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
     }
     externalNativeBuild {
         ndkBuild {
-            ndkVersion = "28.2.13676358"
+            ndkVersion = "21.3.6528147"
             path file('../jni/Android.mk')
         }
     }
