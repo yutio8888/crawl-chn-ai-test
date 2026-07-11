@@ -277,27 +277,28 @@ history is mixed; both forms are acceptable.
 ```ini
 language = zh
 # Unified Maple Mono NF CN for all tile fonts
-tile_font_crt_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_msg_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_stat_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_tip_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_lbl_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_tip_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
 ```
 
+Fonts must be deployed to `dat/tiles/` (not `contrib/fonts/`).
 This file must be copied alongside `crawl.exe` and data files on every deployment.
 
 ## Windows Tiles Deployment
 
 ```bash
-# Cross-compile
-make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+# Use deploy.sh (recommended — handles full dat tree + fonts + init.txt + DB cache clear)
+bash .claude/scripts/deploy.sh [target_dir]
 
-# Deploy to D: drive (adjust target path as needed)
-TARGET=/mnt/d/crawl-game
+# Or manually:
+make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+TARGET=/mnt/d/crawl-release
 cp -f crawl.exe "$TARGET/"
-cp -f dat/i18n/zh/source.txt "$TARGET/dat/i18n/zh/"
-cp -f dat/descript/zh/species.txt "$TARGET/dat/descript/zh/"
-cp -f dat/descript/zh/backgrounds.txt "$TARGET/dat/descript/zh/"
+cp -r dat/* "$TARGET/dat/"
+cp -f contrib/fonts/*.ttf "$TARGET/dat/tiles/"
 cp -f init.txt "$TARGET/"
 ```
 
@@ -305,9 +306,8 @@ Key files to always deploy:
 | File | Purpose |
 |------|---------|
 | `crawl.exe` | Cross-compiled Windows tiles binary |
-| `dat/i18n/zh/source.txt` | T_() string translations |
-| `dat/descript/zh/species.txt` | Species descriptions |
-| `dat/descript/zh/backgrounds.txt` | Background descriptions |
+| `dat/` | Full data directory (descriptions, tiles, database, etc.) |
+| `dat/tiles/*.ttf` | Font files (Maple Mono for CJK, DejaVu Sans as fallback) |
 | `init.txt` | Language + font configuration |
 
 ## Critical C++ Anti-Pattern: std::string in variadic `%s` (Issue #42 UB)

@@ -155,7 +155,7 @@
 | weapon | 武器 |
 | armour | 护甲 |
 | ring | 戒指 |
-| amulet | 护身符 |
+| amulet | 项链 |
 | scroll | 卷轴 |
 | potion | 药水 |
 | wand | 魔杖 |

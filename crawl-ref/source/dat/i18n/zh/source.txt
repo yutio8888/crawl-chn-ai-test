@@ -2737,10 +2737,10 @@ amnesia
 遗忘
 %%%%
 amulet
-护身符
+项链
 %%%%
 amulet of
-护身符
+项链
 %%%%
 An aura of fear fills the air!
 一股恐惧的气息充满了空气！
@@ -8440,7 +8440,7 @@ You are wreathed by an umbra.
 你被暗影环绕着。
 %%%%
 You aren't carrying any amulets.
-你没有携带任何护身符。
+你没有携带任何项链。
 %%%%
 You aren't carrying any armour which can be enchanted further.
 你没有携带任何可以进一步附魔的护甲。
@@ -8506,7 +8506,7 @@ You aren't wearing any pieces of armour.
 你没有穿戴任何护甲。
 %%%%
 You aren't wearing any rings, amulets, or talismans.
-你没有穿戴任何戒指、护身符或护符。
+你没有穿戴任何戒指、项链或护符。
 %%%%
 You aren't wearing any uncursed rings.
 你没有穿戴任何未被诅咒的戒指。
@@ -8884,7 +8884,7 @@ You can't walk through walls!
 你不能穿墙！
 %%%%
 You can't wear amulets.
-你无法佩戴护身符。
+你无法佩戴项链。
 %%%%
 You can't wear any headgear with your large antennae!
 你的大触角让你无法穿戴任何头盔！
@@ -10677,7 +10677,7 @@ Your aim is not that steady anymore.
 你的瞄准不再那么稳定。
 %%%%
 Your amulet flashes!
-你的护身符闪烁了一下！
+你的项链闪烁了一下！
 %%%%
 Your anger overwhelms your terror!
 你的愤怒压倒了恐惧！
@@ -19122,7 +19122,7 @@ You cannot drink.
 你无法饮用。
 %%%%
 You cannot equip rings or amulets.
-你无法佩戴戒指或护身符。
+你无法佩戴戒指或项链。
 %%%%
 You cannot study or cast Air magic.
 你无法学习或施放空气魔法。
@@ -27260,7 +27260,7 @@ Small
 小
 %%%%
  amulet
-护身符
+项链
 %%%%
 This could place you under penance!
 这可能会让你受到神罚！
@@ -27967,7 +27967,7 @@ Infuse+∞ VampMP
 注入+∞ 吸魔
 %%%%
 Inspire Amulet+
-激励 护符+
+激励 项链+
 %%%%
 Invo=14 Evo=0
 祈唤=14 唤术=0
@@ -28222,22 +28222,22 @@ Wrath of Trog
 特洛格之怒
 %%%%
 amulet of Cekugob
-塞库戈布之护符
+塞库戈布之项链
 %%%%
 amulet of Elemental Vulnerability
-元素易伤护符
+元素易伤项链
 %%%%
 amulet of Vitality
-活力护符
+活力项链
 %%%%
 amulet of invisibility
-隐身护符
+隐身项链
 %%%%
 amulet of the Air
-大气护符
+大气项链
 %%%%
 amulet of the Four Winds
-四方之风护符
+四方之风项链
 %%%%
 arbalest "Damnation"
 重弩"天谴"
@@ -29017,7 +29017,7 @@ Inspire
 激励
 %%%%
 Amulet+
-护符+
+项链+
 %%%%
 Hat+
 头盔+
@@ -29335,7 +29335,7 @@ When you summon or create an ally, it gains Regeneration.
 当你召唤或创造一个盟友时，它获得再生能力。
 %%%%
 You can equip an additional amulet.
-你可以装备一枚额外的护符。
+你可以装备一枚额外的项链。
 %%%%
 When you kill an enemy with your weapon, its spirit may be forced to fight for you.
 当你以武器杀死敌人时，其灵魂可能被迫为你而战。
@@ -34859,7 +34859,7 @@ Touched by the power of Zot (MHP
 被佐特之力触碰（最大生命值
 %%%%
 Saved by the dreamshard amulet
-被梦境碎片护身符拯救
+被梦境碎片项链拯救
 %%%%
 Lost the 
 在佐特之力下丢失了
@@ -35416,7 +35416,7 @@ obsoleteness
 <r>（BUG！这个物品不应赋予能力）</r>
 %%%%
 <red>"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)
-<red>"</red>：护符（<w>%</w>戴上和<w>%</w>取下）
+<red>"</red>：项链（<w>%</w>戴上和<w>%</w>取下）
 %%%%
 <w>?</w> : scrolls (<w>%</w>ead)
 <w>?</w>：卷轴（<w>%</w>阅读）
@@ -36652,7 +36652,7 @@ unknown rings
 未识别戒指
 %%%%
 unknown amulets
-未识别护身符
+未识别项链
 %%%%
 unknown %s
 未识别%s

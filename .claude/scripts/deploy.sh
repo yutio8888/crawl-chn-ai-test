@@ -8,7 +8,7 @@
 #
 # Steps:
 #   1. Cross-compile Windows tiles binary
-#   2. Copy crawl.exe, dat/, contrib/fonts/ to target
+#   2. Copy crawl.exe, dat/, init.txt, dat/tiles/*.ttf to target
 #   3. Clear saves/db/ cache so BerkeleyDB regenerates from updated text files
 
 set -euo pipefail
@@ -22,19 +22,23 @@ echo "=== Deploying to $TARGET ==="
 # 1. Cross-compile
 echo "[1/4] Cross-compiling Windows tiles..."
 cd "$SOURCE_DIR"
-make CROSSHOST=x86_64-w64-mingw32 TILES=y -j4
+make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 
 # 2. Copy binary
 echo "[2/4] Copying crawl.exe..."
 mkdir -p "$TARGET"
 cp crawl.exe "$TARGET/"
 
-# 3. Copy data + fonts
+# 3. Copy data + fonts + init.txt
 echo "[3/4] Copying data files..."
 mkdir -p "$TARGET/dat"
 cp -r dat/* "$TARGET/dat/"
-mkdir -p "$TARGET/contrib/fonts"
-cp contrib/fonts/*.ttf "$TARGET/contrib/fonts/" 2>/dev/null || true
+cp init.txt "$TARGET/"
+
+# Fonts are deployed to dat/tiles/ (standard DCSS location)
+# init.txt references dat/tiles/*.ttf directly
+mkdir -p "$TARGET/dat/tiles"
+cp contrib/fonts/*.ttf "$TARGET/dat/tiles/" 2>/dev/null || true
 
 # 4. Clear DB cache to force regeneration from updated text files.
 #    BerkeleyDB caches text file content in saves/db/*.db; if only the

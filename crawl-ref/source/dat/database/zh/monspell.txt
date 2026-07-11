@@ -318,7 +318,7 @@ Searing Breath cast
 %%%%%
 Electrical Bolt cast
 
-@The_monster@射出的一道@beam@ @at@ @target@！
+@The_monster@射出的一道@beam@@at@@target@！
 %%%%%
 Spit Lava cast
 
@@ -642,11 +642,11 @@ Sleep satyr cast
 %%%%
 Metal Splinters war gargoyle cast
 
-@The_monster@射出的@beam@ @at@ @target@。
+@The_monster@射出的@beam@@at@@target@。
 %%%%
 Splinterspray cast
 
-@The_monster@掷出的一小串@beam@ @at@ @target@。
+@The_monster@掷出的一小串@beam@@at@@target@。
 %%%%
 Crystallising Shot crystal guardian cast
 
@@ -654,7 +654,7 @@ Crystallising Shot crystal guardian cast
 %%%%
 Stone Arrow gargoyle cast
 
-@The_monster@掷出的一束@beam@ @at@ @target@。
+@The_monster@掷出的一束@beam@@at@@target@。
 %%%%
 Bolt of Magma molten gargoyle cast
 
@@ -768,7 +768,7 @@ Throw Icicle shard shrike cast
 %%%%
 Lightning Bolt electric golem cast
 
-@The_monster@掷出的一束@beam@ @at@ @target@。
+@The_monster@掷出的一束@beam@@at@@target@。
 %%%%
 unseen Warning Cry howler monkey cast
 
@@ -1013,7 +1013,7 @@ magical cast
 ######################################################
 beam catchall cast
 
-@The_monster@掷出的@beam@ @at@ @target@。
+@The_monster@掷出的@beam@@at@@target@。
 %%%%
 Acid Ball nascent plasmodium cast
 

@@ -6568,16 +6568,17 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
 
         
         string str;
+        string pronoun_upper = uppercase_first(pronoun);
         if (!mons_class_is_animated_weapon(mi.type))
         {
             if (plural)
                 str = make_stringf(T_("%s have an unusual item: %s"),
-                                   uppercase_first(pronoun),
+                                   pronoun_upper.c_str(),
                                    comma_separated_line(unusual_items.begin(),
                                                         unusual_items.end()).c_str());
             else
                 str = make_stringf(T_("%s has an unusual item: %s"),
-                                   uppercase_first(pronoun),
+                                   pronoun_upper.c_str(),
                                    comma_separated_line(unusual_items.begin(),
                                                         unusual_items.end()).c_str());
         }
@@ -6585,10 +6586,10 @@ static string _monster_stat_description(const monster_info& mi, bool mark_spells
         {
             if (plural)
                 str = make_stringf(T_("%s are an unusual item"),
-                                   uppercase_first(pronoun));
+                                   pronoun_upper.c_str());
             else
                 str = make_stringf(T_("%s is an unusual item."),
-                                   uppercase_first(pronoun));
+                                   pronoun_upper.c_str());
         }
         result << str;
     }

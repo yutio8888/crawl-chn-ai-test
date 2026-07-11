@@ -1101,16 +1101,21 @@ static void _handle_hellfire_mortar(monster& mortar)
             {
                 if (you.can_see(mortar))
                 {
-                    string barrier, collides = " collides with ", _and = " and";
-                    if (actor_at(new_pos))
-                        barrier = actor_at(new_pos)->name(DESC_THE);
-                    else if (cell_is_solid(new_pos))
-                        barrier = article_a(feat_type_name(env.grid(new_pos)));
-                    else
-                        collides = _and = "";
+                    if (actor_at(new_pos) || cell_is_solid(new_pos))
+                    {
+                        string barrier;
+                        if (actor_at(new_pos))
+                            barrier = actor_at(new_pos)->name(DESC_THE);
+                        else
+                            barrier = article_a(feat_type_name(env.grid(new_pos)));
 
-                    mpr(mortar.name(DESC_THE) + collides + barrier + _and +
-                        " sinks back into the magma.");
+                        mprf_p(T_("%1$s collides with %2$s and sinks back into the magma."),
+                               mortar.name(DESC_THE).c_str(),
+                               barrier.c_str());
+                    }
+                    else
+                        mprf_p(T_("%1$s sinks back into the magma."),
+                               mortar.name(DESC_THE).c_str());
                 }
 
                 monster_die(mortar, KILL_NON_ACTOR, NON_MONSTER, true);

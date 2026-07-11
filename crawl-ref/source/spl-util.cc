@@ -1078,11 +1078,11 @@ const char *get_spell_target_prompt(spell_type which_spell)
     switch (which_spell)
     {
     case SPELL_APPORTATION:
-        return "Apport";
+        return T_("Apport");
     case SPELL_SMITING:
-        return "Smite";
+        return T_("Smite");
     case SPELL_LRD:
-        return "Fragment what (e.g. wall or brittle monster)?";
+        return T_("Fragment what (e.g. wall or brittle monster)?");
     default:
         return nullptr;
     }
@@ -1375,31 +1375,31 @@ const char* spelltype_short_name(spschool which_spelltype)
     switch (which_spelltype)
     {
     case spschool::conjuration:
-        return "Conj";
+        return T_("Conj");
     case spschool::hexes:
-        return "Hex";
+        return T_("Hex");
     case spschool::fire:
-        return "Fire";
+        return T_("Fire");
     case spschool::ice:
-        return "Ice";
+        return T_("Ice");
     case spschool::necromancy:
-        return "Necr";
+        return T_("Necr");
     case spschool::summoning:
-        return "Summ";
+        return T_("Summ");
     case spschool::forgecraft:
-        return "Frge";
+        return T_("Frge");
     case spschool::translocation:
-        return "Tloc";
+        return T_("Tloc");
     case spschool::alchemy:
-        return "Alch";
+        return T_("Alch");
     case spschool::earth:
-        return "Erth";
+        return T_("Erth");
     case spschool::air:
-        return "Air";
+        return T_("Air");
     case spschool::random:
-        return "Rndm";
+        return T_("Rndm");
     default:
-        return "Bug";
+        return T_("Bug");
     }
 }
 
@@ -1708,14 +1708,13 @@ string casting_uselessness_reason(spell_type spell, bool temp)
 
     // Check for banned schools (Currently just Ru sacrifices)
     if (cannot_use_schools(get_spell_disciplines(spell)))
-        return "you cannot use spells of this school.";
-
+        return T_("you cannot use spells of this school.");
     // TODO: these checks were in separate places, but is this already covered
     // by cannot_use_schools?
     if (get_spell_disciplines(spell) & spschool::summoning
         && you.allies_forbidden())
     {
-        return "you cannot coerce anything to answer your summons.";
+        return T_("you cannot coerce anything to answer your summons.");
     }
 
     // other ally spells not affected by the school checks
@@ -1738,7 +1737,7 @@ string casting_uselessness_reason(spell_type spell, bool temp)
     case SPELL_FORGE_LIGHTNING_SPIRE:
     case SPELL_AWAKEN_ARMOUR:
         if (you.allies_forbidden())
-            return "you cannot coerce anything to obey you.";
+            return T_("you cannot coerce anything to obey you.");
         break;
     default:
         break;
@@ -1792,8 +1791,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     // prevent all of this logic during excursions / levelgen. This function
     // does get called during character creation, so allow it to run for !temp.
     if (temp && (!in_bounds(you.pos()) || !you.on_current_level))
-        return "you can't cast spells right now.";
-
+        return T_("you can't cast spells right now.");
     if (!skip_casting_checks)
     {
         string c_check = casting_uselessness_reason(spell, temp);
@@ -1810,74 +1808,71 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         // XXX: this is a little redundant with you_no_tele_reason()
         // but trying to sort out temp and so on is a mess
         if (you.stasis())
-            return "your stasis prevents you from teleporting.";
-
+            return T_("your stasis prevents you from teleporting.");
         // Distinct from no_tele - can still be forcibly blinked.
         if (temp && you.duration[DUR_BLINK_COOLDOWN])
-            return "you are still too unstable to blink.";
-
+            return T_("you are still too unstable to blink.");
         if (temp && you.no_tele(true))
             return lowercase_first(you.no_tele_reason(true));
         break;
 
     case SPELL_SWIFTNESS:
         if (you.stasis())
-            return "your stasis precludes magical swiftness.";
-
+            return T_("your stasis precludes magical swiftness.");
         if (temp)
         {
             if (you.duration[DUR_SWIFTNESS])
-                return "this spell is already in effect.";
+                return T_("this spell is already in effect.");
             if (player_movement_speed(false) <= FASTEST_PLAYER_MOVE_SPEED)
-                return "you're already travelling as fast as you can.";
+                return T_("you're already travelling as fast as you can.");
             if (you.cannot_move())
-                return "you can't move.";
+                return T_("you can't move.");
         }
         break;
 
     case SPELL_DIMENSIONAL_BULLSEYE:
         if (you.has_mutation(MUT_NO_GRASPING))
-            return "this spell is useless without hands.";
+            return T_("this spell is useless without hands.");
         break;
     case SPELL_LEDAS_LIQUEFACTION:
         if (temp && you.duration[DUR_LIQUEFYING])
-            return "you need to wait for the ground to become solid again.";
+            return T_("you need to wait for the ground to become solid again.");
         break;
 
     case SPELL_BORGNJORS_REVIVIFICATION:
         if (temp && you.hp == you.hp_max)
-            return "you cannot be healed further.";
+            return T_("you cannot be healed further.");
         if (temp && you.hp_max < 21)
-            return "you lack the resilience to cast this spell.";
+            return T_("you lack the resilience to cast this spell.");
         // Prohibited to all undead.
         if (you.undead_state(temp))
-            return "you're too dead.";
+            return T_("you're too dead.");
         break;
     case SPELL_DEATHS_DOOR:
         if (temp && you.duration[DUR_DEATHS_DOOR])
-            return "you are already standing in death's doorway.";
+            return T_("you are already standing in death's doorway.");
         if (temp && you.duration[DUR_DEATHS_DOOR_COOLDOWN])
-            return "you are still too close to death's doorway.";
+            return T_("you are still too close to death's doorway.");
         // Prohibited to all undead.
         if (you.undead_state(temp))
-            return "you're too dead.";
+            return T_("you're too dead.");
         break;
 
     case SPELL_OZOCUBUS_ARMOUR:
         if (temp && you.unrand_equipped(UNRAND_SALAMANDER))
-            return "your ring of flames would instantly melt the ice.";
+            return T_("your ring of flames would instantly melt the ice.");
         break;
 
     case SPELL_SUBLIMATION_OF_BLOOD:
         if (!you.has_blood(temp))
-            return "you have no blood to sublime.";
+            return T_("you have no blood to sublime.");
         break;
 
     case SPELL_POLAR_VORTEX:
         if (temp && (you.duration[DUR_VORTEX]
                      || you.duration[DUR_VORTEX_COOLDOWN]))
         {
-            return "you need to wait for the winds to calm down.";
+            return T_("you need to wait for the winds to calm down.");
         }
         break;
 
@@ -1907,25 +1902,25 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         if (!temp)
             break;
         if (you.cannot_move())
-            return "you can't move.";
+            return T_("you can't move.");
         if (!passwall_simplified_check(you))
-            return "you aren't next to any passable walls.";
+            return T_("you aren't next to any passable walls.");
         if (you.is_constricted())
-            return "you're being held away from the wall.";
+            return T_("you're being held away from the wall.");
         break;
 
     case SPELL_ANIMATE_DEAD:
         if (have_passive(passive_t::goldify_corpses))
             return T_("necromancy does not work on golden corpses.");
         if (have_passive(passive_t::reaping))
-            return "you are already reaping souls!";
+            return T_("you are already reaping souls!");
         break;
 
     case SPELL_DEATH_CHANNEL:
         if (temp && you.duration[DUR_DEATH_CHANNEL])
-            return "you are already channelling the dead.";
+            return T_("you are already channelling the dead.");
         if (have_passive(passive_t::reaping))
-            return "you are already reaping souls!";
+            return T_("you are already reaping souls!");
         break;
 
     case SPELL_PUTREFACTION:
@@ -1934,7 +1929,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
     case SPELL_FREEZING_CLOUD:
     case SPELL_MEPHITIC_CLOUD:
         if (temp && env.level_state & LSTATE_STILL_WINDS)
-            return "the air is too still for clouds to form.";
+            return T_("the air is too still for clouds to form.");
         break;
 
     case SPELL_GOLUBRIAS_PASSAGE:
@@ -1949,43 +1944,43 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         if (temp && (you.duration[DUR_DRAGON_CALL]
                      || you.duration[DUR_DRAGON_CALL_COOLDOWN]))
         {
-            return "you cannot issue another dragon's call so soon.";
+            return T_("you cannot issue another dragon's call so soon.");
         }
         break;
 
     case SPELL_FROZEN_RAMPARTS:
         if (temp && you.duration[DUR_FROZEN_RAMPARTS])
-            return "you cannot sustain more frozen ramparts right now.";
+            return T_("you cannot sustain more frozen ramparts right now.");
         break;
 
     case SPELL_NOXIOUS_BOG:
         if (temp && you.duration[DUR_NOXIOUS_BOG])
-            return "you cannot sustain more bogs right now.";
+            return T_("you cannot sustain more bogs right now.");
         break;
 
     case SPELL_AWAKEN_ARMOUR:
         if (!you_can_wear(SLOT_BODY_ARMOUR, temp))
-            return "you cannot wear body armour.";
+            return T_("you cannot wear body armour.");
         if (temp && !you.body_armour())
-            return "you have no body armour to summon the spirit of.";
+            return T_("you have no body armour to summon the spirit of.");
         break;
 
     case SPELL_MOMENTUM_STRIKE:
         if (temp && you.cannot_move())
-            return "you cannot redirect your momentum while unable to move.";
+            return T_("you cannot redirect your momentum while unable to move.");
         break;
 
     case SPELL_PILEDRIVER:
         if (you.stasis())
-            return "your stasis prevents you from launching yourself.";
+            return T_("your stasis prevents you from launching yourself.");
         if (temp)
         {
             if (you.cannot_move())
-                return "you cannot launch yourself while unable to move.";
+                return T_("you cannot launch yourself while unable to move.");
             if (you.no_tele(true))
                 return lowercase_first(you.no_tele_reason(true));
             if (!piledriver_target_exists())
-                return "you cannot see anything nearby that you can launch.";
+                return T_("you cannot see anything nearby that you can launch.");
         }
         break;
 
@@ -1993,7 +1988,7 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
         // XXX: this is a little redundant with you_no_tele_reason()
         // but trying to sort out temp and so on is a mess
         if (you.stasis())
-            return "your stasis prevents you from teleporting.";
+            return T_("your stasis prevents you from teleporting.");
         if (temp)
         {
             if (you.no_tele(true))
@@ -2006,37 +2001,37 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
 
     case SPELL_SIGIL_OF_BINDING:
         if (temp && cast_sigil_of_binding(0, false, true) == spret::abort)
-            return "there is no room nearby to place a sigil.";
+            return T_("there is no room nearby to place a sigil.");
         break;
 
     case SPELL_CALL_CANINE_FAMILIAR:
         if (temp && you.duration[DUR_CANINE_FAMILIAR_DEAD])
-            return "your canine familiar is too injured to answer your call.";
+            return T_("your canine familiar is too injured to answer your call.");
         break;
 
     case SPELL_GELLS_GAVOTTE:
         if (temp && you.duration[DUR_GAVOTTE_COOLDOWN])
-            return "local gravity is still too unstable to reorient.";
+            return T_("local gravity is still too unstable to reorient.");
         break;
 
     case SPELL_FULSOME_FUSILLADE:
         if (temp && you.duration[DUR_FUSILLADE])
-            return "you are already unleashing a barrage of alchemical concoctions!";
+            return T_("you are already unleashing a barrage of alchemical concoctions!");
         break;
 
     case SPELL_HELLFIRE_MORTAR:
         if (temp && you.duration[DUR_HELLFIRE_MORTAR_COOLDOWN])
-            return "you must wait for your last cast of this to end!";
+            return T_("you must wait for your last cast of this to end!");
         break;
 
     case SPELL_STARBURST:
         if (temp && you.current_vision == 0)
-            return "you cannot see far enough to hit anything with this spell.";
+            return T_("you cannot see far enough to hit anything with this spell.");
         break;
 
     case SPELL_GRAVE_CLAW:
         if (temp && you.props[GRAVE_CLAW_CHARGES_KEY].get_int() == 0)
-            return "you must harvest more living souls to recharge this spell.";
+            return T_("you must harvest more living souls to recharge this spell.");
         break;
 
     case SPELL_SPIKE_LAUNCHER:
@@ -2048,23 +2043,23 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
             if (feat_is_wall(env.grid(*ai)))
                 return "";
 
-        return "there are no nearby walls to construct a spike launcher in.";
+        return T_("there are no nearby walls to construct a spike launcher in.");
     }
 
     case SPELL_DIAMOND_SAWBLADES:
         if (temp && diamond_sawblade_spots(false).empty())
-            return "there is no room to construct a sawblade.";
+            return T_("there is no room to construct a sawblade.");
         break;
 
     case SPELL_SURPRISING_CROCODILE:
         if (temp)
         {
             if (you.is_stationary())
-                return "you cannot be moved right now.";
+                return T_("you cannot be moved right now.");
             else if (!monster_habitable_grid(MONS_CROCODILE, you.pos()))
-                return "a crocodile could not survive beneath you.";
+                return T_("a crocodile could not survive beneath you.");
             else if (count_summons(&you, SPELL_SURPRISING_CROCODILE))
-                return "your pet crocodile is still here.";
+                return T_("your pet crocodile is still here.");
         }
         break;
 
@@ -2079,13 +2074,13 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
 
             monster* paragon = find_player_paragon();
             if (paragon && paragon_charge_level(*paragon) == 0)
-                return "your paragon is already deployed, but not yet charged.";
+                return T_("your paragon is already deployed, but not yet charged.");
         }
         break;
 
     case SPELL_FORTRESS_BLAST:
         if (temp && you.duration[DUR_FORTRESS_BLAST_TIMER])
-            return "you are already charging a Fortress Blast.";
+            return T_("you are already charging a Fortress Blast.");
         break;
 
     default:
@@ -2096,7 +2091,6 @@ string spell_uselessness_reason(spell_type spell, bool temp, bool prevent,
 }
 
 /**
- * Determines what colour a spell should be highlighted with.
  *
  * @param spell           The type of spell to be coloured.
  * @param default_colour   Colour to be used if the spell is unremarkable.
