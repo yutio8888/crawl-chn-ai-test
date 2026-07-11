@@ -30968,8 +30968,8 @@ Projectile damage:
 飞弹伤害：
 
 %%%%
-The apparition of 
-幽灵 
+The apparition of %s
+%s的幽灵
 %%%%
 The dream sheep attempt%s to lull %s to sleep.
 梦羊尝试催眠%s。

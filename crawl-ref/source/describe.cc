@@ -6931,7 +6931,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
     }
 
     case MONS_PLAYER_GHOST:
-        inf.body << T_("The apparition of ") << get_ghost_description(mi) << ".\n";
+        inf.body << make_stringf(T_("The apparition of %s"), get_ghost_description(mi).c_str()) << ".\n";
         if (mi.props.exists(MIRRORED_GHOST_KEY))
             inf.body << T_("It looks just like you...spooky!\n");
         break;
