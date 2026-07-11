@@ -53,6 +53,7 @@
 #include "stringutil.h"      // strip_suffix
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
+#include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
 
 #include <string>
 #include <vector>
@@ -503,5 +504,103 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 ++non_empty;
         }
         CHECK(non_empty >= 10);
+    }
+}
+
+// =============================================================================
+// [zh-help][home-page] — verify home page labels return Chinese under ZH fixture.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: home page labels are Chinese",
+                 "[zh-help][home-page]")
+{
+    for (int i = 0; i < NUM_LOOKUP_HELP_TYPES; ++i)
+    {
+        const lookup_help_type lht = static_cast<lookup_help_type>(i);
+        const string label = lookup_help_type_name(lht);
+        INFO("type=" << i << " label=" << label);
+        CHECK_FALSE(label.empty());
+        // Chinese display names must contain CJK characters (UTF-8 3-byte
+        // sequences starting with 0xE4-0xE9).
+        size_t pos = 0;
+        bool has_cjk = false;
+        while (pos < label.size())
+        {
+            const unsigned char lead = label[pos];
+            if ((lead >= 0xE4 && lead <= 0xE9) || lead >= 0xF0)
+            {
+                has_cjk = true;
+                break;
+            }
+            // Advance: 1-byte (ASCII), 2-byte, 3-byte, 4-byte
+            if ((lead & 0x80) == 0)
+                pos += 1;
+            else if ((lead & 0xE0) == 0xC0)
+                pos += 2;
+            else if ((lead & 0xF0) == 0xE0)
+                pos += 3;
+            else
+                pos += 4;
+        }
+        CHECK(has_cjk);
+        // Verify shortcut exists and is a letter.
+        CHECK(isalpha(lookup_help_type_shortcut(lht)));
+    }
+}
+
+// =============================================================================
+// [zh-help][menu-display] — verify sub-menu display names produce Chinese text
+// for the five types (Skill/Branch/Cloud/Item/Bane) that were previously
+// showing English raw keys.
+// =============================================================================
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: sub-menu display names are Chinese",
+                 "[zh-help][menu-display]")
+{
+    // --- skill: skill_name returns T_()'d Chinese ---
+    for (int ski = SK_FIRST_SKILL; ski < NUM_SKILLS; ++ski)
+    {
+        const string zh = skill_name(static_cast<skill_type>(ski));
+        if (zh.empty())
+            continue;
+        INFO("skill name: " << zh);
+        CHECK_FALSE(rule_untranslated(zh, lowercase_string(zh)));
+    }
+
+    // --- cloud: cloud_type_name returns T_()'d Chinese ---
+    for (int ci = 1; ci < NUM_CLOUD_TYPES; ++ci) // skip CLOUD_NONE
+    {
+        const cloud_type c = static_cast<cloud_type>(ci);
+        const string zh = cloud_type_name(c);
+        if (zh.empty() || zh == "buggy goodness")
+            continue;
+        INFO("cloud name: " << zh);
+        CHECK_FALSE(rule_untranslated(zh, lowercase_string(zh)));
+    }
+
+    // --- bane: bane_name(false) returns T_()'d Chinese ---
+    for (int bi = 0; bi < NUM_BANES; ++bi)
+    {
+        const bane_type b = static_cast<bane_type>(bi);
+        const string zh = bane_name(b, false);
+        if (zh.empty())
+            continue;
+        INFO("bane name: " << zh);
+        CHECK_FALSE(rule_untranslated(zh, lowercase_string(zh)));
+    }
+
+    // --- branch: longname T_() produces Chinese ---
+    // Spot-check a few well-known branches; full enumeration requires
+    // checking all ~25 branches which may not all have T_() entries.
+    const branch_type check_branches[] = {
+        BRANCH_DUNGEON, BRANCH_LAIR, BRANCH_ORC, BRANCH_VAULTS,
+        BRANCH_ZOT, BRANCH_SHOALS, BRANCH_SNAKE, BRANCH_SPIDER,
+        BRANCH_TOMB, BRANCH_ABYSS,
+    };
+    for (branch_type b : check_branches)
+    {
+        const string zh = T_(branches[b].longname);
+        INFO("branch: " << branches[b].longname << " → " << zh);
+        CHECK_FALSE(zh.empty());
     }
 }

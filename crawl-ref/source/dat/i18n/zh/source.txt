@@ -27092,7 +27092,7 @@ Frequently Asked Questions
 常见问题
 %%%%
 Lookup information about:
-查询信息关于：
+查询以下信息：
 %%%%
 You are rather mundane.
 你相当平凡。
@@ -37852,3 +37852,21 @@ channel magic
 %%%%
 infuse magic
 魔力灌注
+%%%%
+Describe %s; partial names and regexps are fine.%s\nDescribe what? 
+查询%1$s：支持部分名称及正则表达式。%2$s\n查询内容：
+%%%%
+ Enter a single letter to list %s displayed by that symbol.
+ 输入单个字母可列出对应符号的%1$s。
+%%%%
+Preface with '@' to search by school.
+前缀'@'可按学派搜索。
+%%%%
+No %s with symbol '%s'.
+没有图标'%2$s'的%1$s。
+%%%%
+Back to game menu
+返回游戏菜单
+%%%%
+Exit help lookup
+退出帮助查询

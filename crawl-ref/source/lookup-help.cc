@@ -15,6 +15,7 @@
 #include "branch.h"
 #include "cio.h"
 #include "colour.h"
+#include "options.h"
 #include "cloud.h"
 #include "database.h"
 #include "dbg-util.h"
@@ -81,12 +82,12 @@ DEF_BITFIELD(lookup_type_flags, lookup_type);
 class LookupType
 {
 public:
-    LookupType(char _symbol, string _type, db_keys_recap _recap,
+    LookupType(char _symbol, string _type, string _display_name, db_keys_recap _recap,
                db_find_filter _filter_forbid, keys_by_glyph _glyph_fetch,
                simple_key_list _simple_key_fetch,
                menu_entry_generator _menu_gen, key_describer _describer,
                lookup_type_flags _flags)
-    : symbol(_symbol), type(_type), filter_forbid(_filter_forbid),
+    : symbol(_symbol), type(_type), display_name(_display_name), filter_forbid(_filter_forbid),
       flags(_flags),
       simple_key_fetch(_simple_key_fetch), glyph_fetch(_glyph_fetch),
       recap(_recap), menu_gen(_menu_gen), describer(_describer)
@@ -114,6 +115,9 @@ public:
      */
     bool no_search() const { return simple_key_fetch != nullptr; }
 
+    /// The localized display name for this lookup type.
+    const string& name() const { return display_name; }
+
     bool find_description(string &response) const;
     int describe(const string &key, bool exact_match = false) const;
 
@@ -122,6 +126,8 @@ public:
     char symbol;
     /// A description of the lookup type (e.g. "monster"). case insensitive
     string type;
+    /// The localized display name for this lookup type (e.g. "怪物").
+    string display_name;
     /// a function returning 'true' if the search result corresponding to
     /// the corresponding search should be filtered out of the results
     db_find_filter filter_forbid;
@@ -739,6 +745,7 @@ static MenuEntry* _item_menu_gen(char letter, const string &str, string &key)
     else
         get_item_by_name(&item, key.c_str(), kind.base_type);
     item_colour(item);
+    me->text = item.name(DESC_PLAIN, true);
     tileidx_t idx = tileidx_item(item);
     tileidx_t base_item = tileidx_known_base_item(idx);
     if (base_item)
@@ -827,6 +834,7 @@ static MenuEntry* _skill_menu_gen(char letter, const string &str, string &key)
 
     const skill_type skill = str_to_skill_safe(str);
     me->add_tile(tile_def(tileidx_skill(skill, TRAINING_ENABLED)));
+    me->text = skill_name(skill);
 
     return me;
 }
@@ -842,6 +850,7 @@ static MenuEntry* _branch_menu_gen(char letter, const string &str, string &key)
     int hotkey = branches[branch].travel_shortcut;
     me->hotkeys = {hotkey, tolower_safe(hotkey)};
     me->add_tile(tile_def(tileidx_branch(branch)));
+    me->text = T_(branches[branch].longname);
 
     return me;
 }
@@ -856,6 +865,7 @@ static MenuEntry* _cloud_menu_gen(char letter, const string &str, string &key)
     const string cloud_name = lowercase_string(str);
     const cloud_type cloud = cloud_name_to_type(cloud_name);
     ASSERT(cloud != NUM_CLOUD_TYPES);
+    me->text = cloud_type_name(cloud);
 
     cloud_struct fake_cloud;
     fake_cloud.type = cloud;
@@ -888,6 +898,23 @@ static MenuEntry* _mut_menu_gen(char letter, const string &str, string &key)
     const tileidx_t tile = get_mutation_tile(mut);
     if (tile)
         me->add_tile(tile_def(tile + mutation_max_levels(mut) - 1));
+
+    return me;
+}
+
+/**
+ * Generate a ?/N menu entry. (ref. _mut_menu_gen).
+ */
+static MenuEntry* _bane_menu_gen(char letter, const string &str, string &key)
+{
+    MenuEntry* me = _simple_menu_gen(letter, str, key);
+
+    const bane_type bane = bane_from_name(str.c_str());
+    if (bane == NUM_BANES)
+        return me;
+
+    // Override display text with T_()'d Chinese name (Issue 51 pattern).
+    me->text = bane_name(bane, false);
 
     return me;
 }
@@ -1169,7 +1196,8 @@ static int _describe_monster(const string &key, const string &suffix,
 static int _describe_spell(const string &key, const string &suffix,
                              string /*footer*/)
 {
-    const string spell_name = key.substr(0, key.size() - suffix.size());
+    string spell_name = key;
+    strip_suffix(spell_name, suffix);
     spell_type spell = spell_by_name(spell_name, true);
     if (spell == SPELL_NO_SPELL)
         spell = spell_by_name(key, true);
@@ -1181,7 +1209,8 @@ static int _describe_spell(const string &key, const string &suffix,
 static int _describe_skill(const string &key, const string &suffix,
                              string /*footer*/)
 {
-    const string skill_name = key.substr(0, key.size() - suffix.size());
+    string skill_name = key;
+    strip_suffix(skill_name, suffix);
     const skill_type skill = skill_from_name(skill_name.c_str());
     describe_skill(skill);
     return 0;
@@ -1190,7 +1219,8 @@ static int _describe_skill(const string &key, const string &suffix,
 static int _describe_ability(const string &key, const string &suffix,
                              string /*footer*/)
 {
-    const string abil_name = key.substr(0, key.size() - suffix.size());
+    string abil_name = key;
+    strip_suffix(abil_name, suffix);
     ability_type abil = ability_by_name(abil_name.c_str());
     if (abil == ABIL_NON_ABILITY)
         abil = ability_by_name(key.c_str());
@@ -1209,7 +1239,8 @@ static int _describe_ability(const string &key, const string &suffix,
 static int _describe_card(const string &key, const string &suffix,
                            string footer)
 {
-    const string card_name = key.substr(0, key.size() - suffix.size());
+    string card_name = key;
+    strip_suffix(card_name, suffix);
     card_type card = name_to_card(card_name);
     if (card == NUM_CARDS)
         card = name_to_card(key);
@@ -1233,7 +1264,8 @@ static int _describe_card(const string &key, const string &suffix,
 static int _describe_cloud(const string &key, const string &suffix,
                            string footer)
 {
-    const string cloud_name = key.substr(0, key.size() - suffix.size());
+    string cloud_name = key;
+    strip_suffix(cloud_name, suffix);
     const cloud_type cloud = cloud_name_to_type(cloud_name);
     ASSERT(cloud != NUM_CLOUD_TYPES);
 #ifdef USE_TILE
@@ -1258,7 +1290,8 @@ static int _describe_cloud(const string &key, const string &suffix,
 static int _describe_item(const string &key, const string &suffix,
                            string /*footer*/)
 {
-    const string item_name = key.substr(0, key.size() - suffix.size());
+    string item_name = key;
+    strip_suffix(item_name, suffix);
     item_def item;
     if (!get_item_by_exact_name(item, item_name.c_str()))
     {
@@ -1277,7 +1310,8 @@ static int _describe_item(const string &key, const string &suffix,
 static int _describe_feature(const string &key, const string &suffix,
                              string /*footer*/)
 {
-    const string feat_name = key.substr(0, key.size() - suffix.size());
+    string feat_name = key;
+    strip_suffix(feat_name, suffix);
     const dungeon_feature_type feat = feat_by_desc(feat_name);
     describe_feature_type(feat);
     return 0;
@@ -1394,7 +1428,8 @@ static string _branch_subbranches(branch_type br)
 static int _describe_branch(const string &key, const string &suffix,
                             string footer)
 {
-    const string branch_name = key.substr(0, key.size() - suffix.size());
+    string branch_name = key;
+    strip_suffix(branch_name, suffix);
     const branch_type branch = branch_by_shortname(branch_name);
     ASSERT(branch != NUM_BRANCHES);
 
@@ -1417,7 +1452,8 @@ static int _describe_branch(const string &key, const string &suffix,
 static int _describe_mutation(const string &key, const string &suffix,
                               string /*footer*/)
 {
-    const string mutation_name = key.substr(0, key.size() - suffix.size());
+    string mutation_name = key;
+    strip_suffix(mutation_name, suffix);
     const mutation_type mutation = mutation_from_name(mutation_name.c_str(),
                                                       false);
     if (mutation == NUM_MUTATIONS) // oops! someone messed up!
@@ -1432,7 +1468,8 @@ static int _describe_mutation(const string &key, const string &suffix,
 static int _describe_bane(const string &key, const string &suffix,
                               string /*footer*/)
 {
-    const string bane_name = key.substr(0, key.size() - suffix.size());
+    string bane_name = key;
+    strip_suffix(bane_name, suffix);
     const bane_type bane = bane_from_name(bane_name.c_str());
     if (bane == NUM_BANES)
     {
@@ -1445,47 +1482,47 @@ static int _describe_bane(const string &key, const string &suffix,
 
 /// All types of ?/ queries the player can enter.
 static const vector<LookupType> lookup_types = {
-    LookupType('M', "monster", nullptr, _monster_filter,
+    LookupType('M', "monster", "怪物", nullptr, _monster_filter,
                _get_monster_keys, nullptr, nullptr,
                _describe_monster, lookup_type::toggleable_sort),
-    LookupType('S', "spell", _recap_spell_keys, _spell_filter,
+    LookupType('S', "spell", "法术", _recap_spell_keys, _spell_filter,
                nullptr, nullptr, _spell_menu_gen,
                _describe_spell, lookup_type::db_suffix),
-    LookupType('K', "skill", nullptr, nullptr,
+    LookupType('K', "skill", "技能", nullptr, nullptr,
                nullptr, _get_skill_keys, _skill_menu_gen,
                _describe_skill, lookup_type::none),
-    LookupType('A', "ability", _recap_ability_keys, _ability_filter,
+    LookupType('A', "ability", "能力", _recap_ability_keys, _ability_filter,
                nullptr, nullptr, _ability_menu_gen,
                _describe_ability, lookup_type::db_suffix),
-    LookupType('C', "card", nullptr, nullptr,
+    LookupType('C', "card", "卡牌", nullptr, nullptr,
                nullptr, _get_card_keys, _card_menu_gen,
                _describe_card, lookup_type::db_suffix),
-    LookupType('I', "item", _recap_item_keys, _item_filter,
+    LookupType('I', "item", "物品", _recap_item_keys, _item_filter,
                item_name_list_for_glyph, nullptr, _item_menu_gen,
                _describe_item, lookup_type::none),
-    LookupType('F', "feature", _recap_feat_keys, _feature_filter,
+    LookupType('F', "feature", "地形", _recap_feat_keys, _feature_filter,
                nullptr, nullptr, _feature_menu_gen,
                _describe_feature, lookup_type::none),
-    LookupType('G', "god", nullptr, nullptr,
+    LookupType('G', "god", "神祇", nullptr, nullptr,
                nullptr, _get_god_keys, _god_menu_gen,
                _describe_god, lookup_type::none),
-    LookupType('B', "branch", nullptr, nullptr,
+    LookupType('B', "branch", "分支", nullptr, nullptr,
                nullptr, _get_branch_keys, _branch_menu_gen,
                _describe_branch, lookup_type::disable_sort),
-    LookupType('L', "cloud", nullptr, nullptr,
+    LookupType('L', "cloud", "云雾", nullptr, nullptr,
                nullptr, _get_cloud_keys, _cloud_menu_gen,
                _describe_cloud, lookup_type::db_suffix),
-    LookupType('P', "passive", nullptr, _passive_filter,
+    LookupType('P', "passive", "被动能力", nullptr, _passive_filter,
                nullptr, nullptr, _passive_menu_gen,
                _describe_generic, lookup_type::db_suffix),
-    LookupType('T', "status", nullptr, _status_filter,
+    LookupType('T', "status", "状态", nullptr, _status_filter,
                nullptr, nullptr, _status_menu_gen,
                _describe_generic, lookup_type::db_suffix),
-    LookupType('U', "mutation", nullptr, _mutation_filter,
+    LookupType('U', "mutation", "突变", nullptr, _mutation_filter,
                nullptr, nullptr, _mut_menu_gen,
                _describe_mutation, lookup_type::db_suffix),
-    LookupType('N', "bane", nullptr, _bane_filter,
-               nullptr, nullptr, _simple_menu_gen,
+    LookupType('N', "bane", "灾祸", nullptr, _bane_filter,
+               nullptr, nullptr, _bane_menu_gen,
                _describe_bane, lookup_type::db_suffix),
 };
 
@@ -1503,10 +1540,12 @@ static map<char, const LookupType*> _build_lookup_type_map()
 static const map<char, const LookupType*> _lookup_types_by_symbol
     = _build_lookup_type_map();
 
-/// Return the display name (lowercase) for the given lookup type.
+/// Return the display name (localized in ZH mode) for the given lookup type.
 string lookup_help_type_name(lookup_help_type lht)
 {
     ASSERT(lht >= 0 && lht < NUM_LOOKUP_HELP_TYPES);
+    if (Options.language == lang_t::ZH)
+        return lookup_types[lht].display_name;
     return lookup_types[lht].type;
 }
 
@@ -1527,16 +1566,16 @@ char lookup_help_type_shortcut(lookup_help_type lht)
  */
 static string _prompt_for_regex(const LookupType &lookup_type, string &err)
 {
-    const string type = lowercase_string(lookup_type.type);
+    const string type_name = lookup_type.display_name;
     const string extra = lookup_type.supports_glyph_lookup() ?
         make_stringf(T_(" Enter a single letter to list %s displayed by that"
-                     " symbol."), pluralise(type).c_str())
-        : lookup_type.type == "spell" ? " Preface with '@' to search by school."
+                     " symbol."), type_name.c_str())
+        : lookup_type.type == "spell" ? T_("Preface with '@' to search by school.")
         : "";
     const string prompt = make_stringf(
          T_("Describe %s; partial names and regexps are fine.%s\n"
          "Describe what? "),
-         article_a(type).c_str(), extra.c_str());
+         type_name.c_str(), extra.c_str());
 
     char buf[80];
     if (msgwin_get_line(prompt, buf, sizeof(buf)) || buf[0] == '\0')
@@ -1576,18 +1615,17 @@ static bool _exact_lookup_match(const LookupType &lookup_type,
  *                      or the empty string if the list is valid.
  */
 static string _keylist_invalid_reason(const vector<string> &key_list,
-                                      const string &type,
+                                      const string &type_name,
                                       const string &regex,
                                       bool by_symbol)
 {
-    const string plur_type = pluralise(type);
-
     if (key_list.empty())
     {
         if (by_symbol)
-            return "No " + plur_type + " with symbol '" + regex + "'.";
+            return make_stringf_p(T_("No %s with symbol '%s'."),
+                                  type_name.c_str(), regex.c_str());
         return make_stringf_p(T_("No matching %s for search string '%s'."),
-            plur_type.c_str(), regex.c_str());
+            type_name.c_str(), regex.c_str());
     }
 
     // we're good!
@@ -1643,7 +1681,7 @@ bool LookupType::find_description(string &response) const
     vector<string> key_list = matching_keys(regex);
 
     const bool by_symbol = supports_glyph_lookup() && regex.size() == 1;
-    response = _keylist_invalid_reason(key_list, lowercase_string(type),
+    response = _keylist_invalid_reason(key_list, display_name,
                                        regex, by_symbol);
     if (!response.empty())
         return true;
@@ -1671,7 +1709,9 @@ public:
     {
     public:
         LookupHelpMenuEntry(lookup_help_type lht)
-        : MenuEntry(uppercase_first(lookup_help_type_name(lht)),
+        : MenuEntry(make_stringf("(%c) %s",
+                    toupper_safe(lookup_help_type_shortcut(lht)),
+                    lookup_help_type_name(lht).c_str()),
                     MEL_ITEM, 1, tolower(lookup_help_type_shortcut(lht))),
           typ(lht)
         {
@@ -1705,8 +1745,8 @@ public:
         clear();
         // XX `?/esc` doesn't go back to the main help menu, possibly should
         const string back = back_cmd == CMD_GAME_MENU
-                                ? "Back to game menu"
-                                : "Exit help lookup";
+                                ? T_("Back to game menu")
+                                : T_("Exit help lookup");
         auto back_button = new MenuEntry(back, MEL_ITEM, 1, CK_ESCAPE);
         if (back_cmd != CMD_NO_CMD)
             back_button->add_tile(tileidx_command(back_cmd));
