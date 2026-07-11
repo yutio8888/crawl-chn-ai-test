@@ -4332,7 +4332,7 @@ Follow me!
  原谅了你无意中的混乱行为，下不为例。
 %%%%
  forgives your inadvertent evil act, just this once.
-
+ 原谅了你无意中的邪恶行为，下不为例。
 %%%%
  forgives your inadvertent holy act, just this once.
  原谅了你无意中的神圣行为，下不为例。
@@ -11232,7 +11232,7 @@ Your search expression is invalid.
 你的搜索表达式无效。
 %%%%
 Your servitor could be imbued with this spell if your spell success rate were higher.
-
+如果你的法术成功率更高，你的仆从就可以被赋予这个法术。
 %%%%
 Your shell of carrion and bone grows thicker.
 你的腐肉与骨骸外壳变得更厚了。
@@ -27047,6 +27047,9 @@ Keep imbuing your servitor?
 Have to go through %s. Continue?
 需要经过%s。继续吗？
 %%%%
+Could not %s, %s.
+无法%s：%s。
+%%%%
 Could not pick up %s here; Ignore %s?
 在这里无法拾取%s；忽略%s吗？
 %%%%
@@ -30966,8 +30969,7 @@ Projectile damage:
 
 %%%%
 The apparition of 
-
-
+幽灵 
 %%%%
 The dream sheep attempt%s to lull %s to sleep.
 梦羊尝试催眠%s。
@@ -37744,9 +37746,6 @@ Vine Stalker
 %%%%
 Lethargy
 倦怠
-%%%%
-You cover ground slowly.
-你的移动速度降低。
 %%%%
 Heatstroke
 中暑

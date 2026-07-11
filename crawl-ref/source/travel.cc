@@ -951,8 +951,9 @@ static void _find_travel_pos(const coord_def& youpos, int *move_x, int *move_y)
         *move_y = 0;
         if (!barrier.second.empty())
         {
-            mpr("Could not " + you.running.runmode_name() + ", "
-                + barrier.second + ".");
+            mprf(T_("Could not %s, %s."),
+                 you.running.runmode_name().c_str(),
+                 barrier.second.c_str());
         }
         return;
     }

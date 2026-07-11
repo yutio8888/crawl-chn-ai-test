@@ -214,7 +214,7 @@ static int _cull_items()
 
     // XXX: Not the prettiest of messages, but the player
     // deserves to know whenever this kicks in. -- bwr
-    mprf(MSGCH_WARN, "Too many items on level, removing some.");
+    mprf(MSGCH_WARN, "%s", T_("Too many items on level, removing some."));
 
     // Rules:
     //  1. Don't cleanup anything nearby the player
