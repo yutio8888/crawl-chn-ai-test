@@ -36,8 +36,15 @@ All three: \n\t\r in one entry\n
 三种：\n\t\r 在同一项\n
 %%%%
 Doubled backslash \\ before real \n
-双反斜杠\在真实\n前
+双反斜杠\前真实\n
 %%%%
 %s\nwith\tmixed\rcontrols\n
 %s\n混合\t控制\r符\n
+%%%%
+Trailing \n mismatch — ZH has \n but EN does not
+尾随\\n不匹配 — 中文有\\n英文没有\n
+%%%%
+Sequence order mismatch: EN \t\n\t vs ZH \n\t\n
+顺序\t\n\t不匹配
+顺序\n\t\n不匹配
 %%%%
