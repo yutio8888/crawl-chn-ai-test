@@ -84,18 +84,25 @@ def extract_control_sequence(s: str) -> str:
 def ends_with_control(s: str, c: str) -> bool:
     """Check if string ends with a literal control char \\c (e.g. \\n, \\t).
 
-    Handles trailing escaped backslashes correctly.
+    Returns True only when the trailing \\c is a bona fide control character,
+    not an escaped backslash sequence (\\\\c is an escaped backslash followed
+    by literal 'c', not a control char).
+
+    Uses consecutive-backslash counting: an even number of backslashes before
+    \\c means \\c is a real control; an odd count means the \\ is itself
+    escaped and the 'c' is a literal character.
     """
     if len(s) < 2:
         return False
-    # Check trailing two chars: must be 0x5C ('\\') + control char
-    if s.endswith(c):
-        # Must be exactly \\ followed by control char, not \\\\ + c
-        # The last two chars are \\ + c
-        last_two = s[-2:]
-        if last_two[0] == '\\' and last_two[1] == c:
-            return True
-    return False
+    if s[-2] != '\\' or s[-1] != c:
+        return False
+    # Count consecutive backslashes preceding the final \c
+    count = 0
+    i = len(s) - 3
+    while i >= 0 and s[i] == '\\':
+        count += 1
+        i -= 1
+    return count % 2 == 0
 
 
 def load_exempt_lines(path: str) -> set:

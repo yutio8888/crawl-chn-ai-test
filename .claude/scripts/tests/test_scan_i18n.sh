@@ -62,6 +62,12 @@ python3 "$SCRIPT_DIR/../source_control_parity.py" --source-txt "$FIXTURES/source
 assert_output "source-control-parity: detects missing \\n and \\t" \
     /tmp/actual_scp.txt "$EXPECTED/source-control-parity.txt"
 
+# ── source-control-parity --semantic ──
+echo "--- source-control-parity --semantic ---"
+python3 "$SCRIPT_DIR/../source_control_parity.py" --source-txt "$FIXTURES/source-control-parity/source.txt" --semantic > /tmp/actual_scp_sem.txt 2>&1 || true
+assert_output "source-control-parity: detects sequence order mismatch" \
+    /tmp/actual_scp_sem.txt "$EXPECTED/source-control-parity-semantic.txt"
+
 # ── lang-args ──
 echo "--- lang-args ---"
 python3 "$SCAN_I18N" lang-args "$FIXTURES/lang-args/" > /tmp/actual_lang.txt 2>&1 || true
