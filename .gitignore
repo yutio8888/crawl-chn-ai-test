@@ -5,6 +5,7 @@
 
 # Claude Code / OpenCode (transient/generated — local only)
 .claude/worktrees/
+.worktrees/
 .claude/scripts/__pycache__/
 .claude/metrics/verify/
 
