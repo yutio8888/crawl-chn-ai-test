@@ -78,6 +78,9 @@ run_check() {
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" blocking \
+        python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
+        --format text
     run_check "String concatenation blind spots (tree-sitter AST)" warning \
         python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \
         --skip-low --format text

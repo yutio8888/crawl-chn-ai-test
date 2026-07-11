@@ -626,6 +626,40 @@ and CJK presence. Requires `pip3 install tree-sitter tree-sitter-cpp`.
 
 Full toolchain documentation: `.claude/scripts/TOOLCHAIN.md`
 
+### Variadic-String UB Scanner (`scan_varargs_string.py`)
+
+Tree-sitter-based scanner for the **Issue #42 class of undefined behavior**:
+passing a `std::string` object (not `const char*`) as a `%s` argument to a
+printf-style variadic function (`make_stringf`, `mprf`, `mprf_p`, `die`, ...).
+
+**Why it's UB:** these are C variadic functions. `va_arg(ap, const char*)`
+reads the first 8 bytes of the `std::string` object — its SSO buffer / data
+pointer — and interprets them as a `char*`. Result: garbage / random control
+characters at runtime. The compiler's `-Wformat` does **not** reliably catch
+this when the argument is a non-trivial class temporary, so this static gate is
+required. (First seen: `describe.cc` water-travel prompt; recurred at
+`prompt.cc` yesno prompt "请仅输入%s%s。" and three `describe.cc` monster
+descriptions.)
+
+```bash
+# Blocking scan (HIGH only) — wired into post-coder.sh
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/
+
+# Include advisory WARN (bare function-call args — verify return type is const char*)
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --include-warn
+
+# Specific files / JSON / CI enforce
+python3 .claude/scripts/scan_varargs_string.py --files prompt.cc,describe.cc
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json --require-parser
+```
+
+Rules: `STRING_CTOR` / `CONCAT` / `TERNARY` are **HIGH (blocking)** — definite
+`std::string` temporaries in a `%s` slot. `CALL_NO_CSTR` is **WARN** — a bare
+function call; verify the callee returns `const char*` (safe) vs `std::string`
+(needs `.c_str()`). **Fix:** build a `std::string` local first, then pass
+`.c_str()`; for ternaries, remember `cond ? string(a) : ""` promotes BOTH
+branches to `std::string`. Requires `pip3 install tree-sitter tree-sitter-cpp`.
+
 ## Agent Commit Discipline
 
 **Before committing** any Agent-authored changes to crawl-ref:
@@ -737,6 +771,7 @@ When reviewing agent output, check for these common errors:
 | Mistake | Example | Fix |
 |---------|---------|-----|
 | `.c_str()` on `const char*` | `skill_name(sk).c_str()` | Remove `.c_str()` — `skill_name()` returns `const char*` |
+| **`std::string` in variadic `%s`** | `make_stringf(T_("%s"), string(x)+" ")` **(UB, Issue #42)** | Pass `const char*`: build a `string` var first, then `.c_str()`. Watch ternaries — `cond ? string(a) : ""` promotes BOTH branches to `std::string` |
 | `mprf` with positional params | `mprf(T_("%1$s..."), ...)` | Use `mprf_p` — MinGW vsnprintf doesn't support `%n$s` |
 | Untranslated inline args | `T_("You %s %s."), verb, "... the rest"` | Wrap ALL text fragments: `T_(", but do no damage")` |
 | Duplicate source.txt keys | Agent adds key that already exists | Agent must `grep` source.txt before adding |

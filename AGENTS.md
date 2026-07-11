@@ -22,7 +22,7 @@ This repo carries two parallel config trees from a Claude Code → OpenCode migr
 | `.opencode/skills/<name>/SKILL.md` | 4 skills (one file per skill in its own directory) | OpenCode loads `<name>/SKILL.md` |
 | `.opencode/workflows/*.js` | 2 workflow scripts | Run via `bash` — OpenCode has no `Workflow` tool |
 | `.opencode/opencode.json` | Project-level config | Set `explore.model = deepseek/deepseek-v4-flash` |
-| `.claude/scripts/*.sh,*.py` | 27 project tool scripts (post-coder, post-translator, classify_review, etc.) | OpenCode loads via `bash` — paths still work |
+| `.claude/scripts/*.sh,*.py` | 28 project tool scripts (post-coder, post-translator, classify_review, scan_varargs_string, etc.) | OpenCode loads via `bash` — paths still work |
 | `.claude/workflows/*.js` | Duplicate of `.opencode/workflows/` | Safe to keep as redundancy; can be deleted if not returning to Claude Code |
 | `.claude/agents/`, `.claude/skills/` | Claude Code-format legacy files (use `model: inherit`, `tools: Read, Write,...`) | **Not loaded by OpenCode** (syntax/structure incompatible) — safe to delete |
 | `.claude/ORCHESTRATION_STATE.md`, `.claude/analysis/`, `.claude/metrics/`, `.claude/worktrees/` | Project state, analysis, metrics, worktree bookkeeping | OpenCode reads as files (no special loading) |
@@ -262,6 +262,39 @@ Key files to always deploy:
 | `dat/descript/zh/species.txt` | Species descriptions |
 | `dat/descript/zh/backgrounds.txt` | Background descriptions |
 | `init.txt` | Language + font configuration |
+
+## Critical C++ Anti-Pattern: std::string in variadic `%s` (Issue #42 UB)
+
+**NEVER pass a `std::string` (or a `std::string`-producing expression) as a
+`%s` argument to a printf-style variadic function** (`make_stringf`, `mprf`,
+`mprf_p`, `die`, `cprintf`, ...). These are C variadic functions:
+`va_arg(ap, const char*)` reads the first 8 bytes of the `std::string` object
+(its SSO buffer / data pointer) as a `char*` → **runtime garbage / control
+characters**. `-Wformat` does NOT reliably catch this for class temporaries.
+
+Watch especially for:
+- Ternaries: `cond ? string(a) + " " : ""` promotes **BOTH** branches to
+  `std::string` (the bug that produced the garbled "请仅输入%s%s。" prompt).
+- Runtime concatenation: `make_stringf("%s", a + b)`.
+- Function calls returning `std::string`: `make_stringf("%s", foo())` where
+  `foo()` returns `std::string`.
+
+**Fix:** build a `std::string` local first, then pass `.c_str()`; `T_()`
+already returns `const char*` so it needs no wrapping.
+
+**Enforced gate:** `.claude/scripts/scan_varargs_string.py` (tree-sitter AST)
+is wired into `post-coder.sh` as **blocking**. Run it after any C++ edit
+touching these calls:
+
+```bash
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/          # HIGH only (blocking)
+python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --include-warn  # + advisory
+```
+
+HIGH rules (`STRING_CTOR` / `CONCAT` / `TERNARY`) block; `CALL_NO_CSTR` is a
+WARN — verify the callee returns `const char*` (safe) vs `std::string` (needs
+`.c_str()`). Full write-up: `CLAUDE.md` "Variadic-String UB Scanner" +
+`.claude/scripts/TOOLCHAIN.md`.
 
 ## Pointer to CLAUDE.md (for shared knowledge)
 

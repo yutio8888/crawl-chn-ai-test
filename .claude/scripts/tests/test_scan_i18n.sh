@@ -62,6 +62,12 @@ python3 "$SCAN_I18N" lang-args "$FIXTURES/lang-args/" > /tmp/actual_lang.txt 2>&
 assert_output "lang-args: finds language-dependent args" \
     /tmp/actual_lang.txt "$EXPECTED/lang-args.txt"
 
+# ── varargs-string (Issue #42 UB) ──
+echo "--- varargs-string ---"
+python3 "$SCRIPT_DIR/../scan_varargs_string.py" "$FIXTURES/varargs-string/" --include-warn > /tmp/actual_varargs.txt 2>&1 || true
+assert_output "varargs-string: detects std::string in %s slot (HIGH), ignores int arithmetic" \
+    /tmp/actual_varargs.txt "$EXPECTED/varargs-string.txt"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 if [ "$FAIL" -gt 0 ]; then
