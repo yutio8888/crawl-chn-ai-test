@@ -36680,3 +36680,1153 @@ Erth
 %%%%
 Rndm
 随机
+%%%%
+status| (but backlit and visible)
+
+%%%%
+status| Gem (*)
+
+%%%%
+status| poisoned
+
+%%%%
+status|!Tele!
+
+%%%%
+status|-Bbolt
+
+%%%%
+status|-Berserk
+
+%%%%
+status|-Blink
+
+%%%%
+status|-Bloodrite
+
+%%%%
+status|-Breath
+
+%%%%
+status|-Cast
+
+%%%%
+status|-Clouds
+
+%%%%
+status|-DDoor
+
+%%%%
+status|-Dog
+
+%%%%
+status|-Dragoncall
+
+%%%%
+status|-GClaw
+
+%%%%
+status|-Gavotte
+
+%%%%
+status|-Hellfire
+
+%%%%
+status|-Hop
+
+%%%%
+status|-Jolt
+
+%%%%
+status|-Lithotox
+
+%%%%
+status|-Mesm
+
+%%%%
+status|-Move
+
+%%%%
+status|-Potion
+
+%%%%
+status|-Recite
+
+%%%%
+status|-Regen
+
+%%%%
+status|-Scroll
+
+%%%%
+status|-Siphon
+
+%%%%
+status|-Star
+-星
+%%%%
+status|-Swarm
+
+%%%%
+status|-Swift
+
+%%%%
+status|-Tele
+
+%%%%
+status|-Vortex
+
+%%%%
+status|-Word
+
+%%%%
+status|Agi
+
+%%%%
+status|Ambros
+
+%%%%
+status|Aqua
+
+%%%%
+status|Attr
+
+%%%%
+status|Aug
+
+%%%%
+status|Barbs
+尖刺
+%%%%
+status|Bat
+
+%%%%
+status|Bat Swarm
+
+%%%%
+status|Bearserk
+
+%%%%
+status|Beogh
+
+%%%%
+status|Berserk
+
+%%%%
+status|Blade
+
+%%%%
+status|Blast
+
+%%%%
+status|Blind
+
+%%%%
+status|Blood
+
+%%%%
+status|Bog
+
+%%%%
+status|Breath
+吐息
+%%%%
+status|Bribe
+
+%%%%
+status|Brill
+
+%%%%
+status|Bullseye
+
+%%%%
+status|Cacophony
+
+%%%%
+status|Catalyst
+
+%%%%
+status|Channel
+
+%%%%
+status|Cleave
+
+%%%%
+status|Cloud
+
+%%%%
+status|Conf
+
+%%%%
+status|Constr
+
+%%%%
+status|Contam
+
+%%%%
+status|Corona
+
+%%%%
+status|Corr
+
+%%%%
+status|Corr (%d)
+
+%%%%
+status|Crab
+
+%%%%
+status|Crippled
+
+%%%%
+status|DChan
+
+%%%%
+status|DDoor
+
+%%%%
+status|Death
+
+%%%%
+status|Destr
+
+%%%%
+status|Devious
+
+%%%%
+status|Dig
+
+%%%%
+status|Dim
+
+%%%%
+status|Disjoin
+
+%%%%
+status|Dog
+
+%%%%
+status|Dragon
+
+%%%%
+status|Dragoncall
+
+%%%%
+status|Duel
+
+%%%%
+status|Eel
+
+%%%%
+status|Elixir
+
+%%%%
+status|Engorged
+
+%%%%
+status|Enkindled
+
+%%%%
+status|Enkindled (%d)
+
+%%%%
+status|Escape!
+
+%%%%
+status|Execution
+
+%%%%
+status|Exh
+
+%%%%
+status|Fast
+
+%%%%
+status|Fast+Slow
+
+%%%%
+status|Fear
+
+%%%%
+status|Finesse
+
+%%%%
+status|Fire
+
+%%%%
+status|Fire+
+
+%%%%
+status|Fire++
+
+%%%%
+status|Flay
+
+%%%%
+status|Flay (%d)
+
+%%%%
+status|Flooded
+
+%%%%
+status|Flux
+
+%%%%
+status|Fly
+
+%%%%
+status|Forest
+森林
+%%%%
+status|Fragile
+
+%%%%
+status|Frozen
+
+%%%%
+status|Fugue
+
+%%%%
+status|Fugue (%s%u%s)
+
+%%%%
+status|Fungus
+
+%%%%
+status|Fusillade
+
+%%%%
+status|Gem (%d)
+
+%%%%
+status|Heavenly (%d)
+
+%%%%
+status|Held
+
+%%%%
+status|Hero
+
+%%%%
+status|Hive
+
+%%%%
+status|Horr
+
+%%%%
+status|Horr (%d)
+
+%%%%
+status|Horror overwhelms you!
+
+%%%%
+status|Howl
+
+%%%%
+status|Invis
+
+%%%%
+status|Jelly
+
+%%%%
+status|Jinx
+
+%%%%
+status|Lash (%u)
+
+%%%%
+status|Lava
+
+%%%%
+status|Legion
+
+%%%%
+status|Liquid
+
+%%%%
+status|MPRegen (%d)
+
+%%%%
+status|Mark
+
+%%%%
+status|Maw
+
+%%%%
+status|Medusa
+
+%%%%
+status|Memories (%d)
+
+%%%%
+status|Mesm
+
+%%%%
+status|Might
+
+%%%%
+status|Missing
+缺失
+%%%%
+status|Missing status description.
+
+%%%%
+status|Nightfall
+
+%%%%
+status|Ooze
+
+%%%%
+status|OozeRegen
+
+%%%%
+status|Orb
+
+%%%%
+status|Orb?
+
+%%%%
+status|Ostracised
+被排斥
+%%%%
+status|Pact
+
+%%%%
+status|Para
+
+%%%%
+status|Peek
+
+%%%%
+status|Petr
+
+%%%%
+status|Phobia (-%d)
+
+%%%%
+status|Pig
+
+%%%%
+status|Pois
+
+%%%%
+status|Pray
+
+%%%%
+status|Protected
+
+%%%%
+status|Quad
+
+%%%%
+status|Quill
+
+%%%%
+status|Ramparts
+
+%%%%
+status|Ray
+
+%%%%
+status|Reap
+
+%%%%
+status|Recite
+
+%%%%
+status|Regen (%d)
+
+%%%%
+status|Regen Will++
+
+%%%%
+status|Resist
+
+%%%%
+status|Rev
+
+%%%%
+status|Rev*
+
+%%%%
+status|Rev+
+
+%%%%
+status|Rise
+
+%%%%
+status|Ruin
+
+%%%%
+status|Sap
+
+%%%%
+status|Scarab
+
+%%%%
+status|Scroll
+
+%%%%
+status|Serpent
+
+%%%%
+status|Shackles
+
+%%%%
+status|Shield (%d)
+
+%%%%
+status|Shroud
+护罩
+%%%%
+status|Sick
+
+%%%%
+status|Sil
+
+%%%%
+status|Slaughter
+
+%%%%
+status|Slay
+
+%%%%
+status|Slay +%d
+
+%%%%
+status|Slime
+
+%%%%
+status|Slow
+
+%%%%
+status|SlowM
+
+%%%%
+status|Sphinx
+
+%%%%
+status|Spider
+
+%%%%
+status|Spore
+
+%%%%
+status|Statue
+
+%%%%
+status|Stealth
+
+%%%%
+status|Stone
+
+%%%%
+status|Storm
+
+%%%%
+status|Sunder
+碎裂
+%%%%
+status|Swift
+
+%%%%
+status|Tele
+
+%%%%
+status|Tesseract
+超立方体
+%%%%
+status|Torch
+
+%%%%
+status|Torch (%d)
+
+%%%%
+status|Touch
+
+%%%%
+status|Toxic
+
+%%%%
+status|Tree
+
+%%%%
+status|Unstable
+
+%%%%
+status|Vainglory
+
+%%%%
+status|Vampire
+
+%%%%
+status|Vertigo
+
+%%%%
+status|Vexed
+
+%%%%
+status|Vit
+
+%%%%
+status|Vortex
+
+%%%%
+status|Water
+
+%%%%
+status|Wave
+
+%%%%
+status|Weak
+
+%%%%
+status|Werewolf
+
+%%%%
+status|Will+
+
+%%%%
+status|Will/2
+
+%%%%
+status|Winding
+
+%%%%
+status|Wisp
+
+%%%%
+status|Yak
+
+%%%%
+status|You are about to teleport to other enemies.
+
+%%%%
+status|You are engaged in single combat.
+
+%%%%
+status|You are extremely horrified!
+
+%%%%
+status|You are flying.
+
+%%%%
+status|You are horrified!
+
+%%%%
+status|You are moving at supernatural speed.
+
+%%%%
+status|You are regenerating.
+
+%%%%
+status|You are silenced.
+
+%%%%
+status|You are slowed.
+
+%%%%
+status|You are under both slowing and hasting effects.
+
+%%%%
+status|You cannot read scrolls.
+
+%%%%
+status|You cannot resist fire.
+
+%%%%
+status|You're fully limbered up.
+
+%%%%
+status|You're limbering up.
+
+%%%%
+status|You're starting to limber up.
+
+%%%%
+status|Your actions are hasted.
+
+%%%%
+status|Your inugami has been summoned.
+
+%%%%
+status|Your regeneration is inhibited by nearby monsters.
+
+%%%%
+status|Zot (%d)
+
+%%%%
+status|about to teleport
+即将传送
+%%%%
+status|afraid
+恐惧
+%%%%
+status|agile
+敏捷
+%%%%
+status|ambrosia-drunk
+
+%%%%
+status|animating dead
+复活死者
+%%%%
+status|attractive
+吸引怪物
+%%%%
+status|berserking
+狂暴中
+%%%%
+status|bezotted
+
+%%%%
+status|blinded
+
+%%%%
+status|blinkbolt cooldown
+
+%%%%
+status|blinking rapidly
+
+%%%%
+status|bribing [%s]
+
+%%%%
+status|brilliant
+聪慧
+%%%%
+status|calling dragons
+召唤龙群
+%%%%
+status|calling ooze
+召唤软泥
+%%%%
+status|catalyst
+
+%%%%
+status|channelling
+
+%%%%
+status|chanting a vengeful prayer
+吟唱复仇祈祷
+%%%%
+status|cleaving
+横扫中
+%%%%
+status|confused
+困惑
+%%%%
+status|confusing by touch
+
+%%%%
+status|constricted
+
+%%%%
+status|constricted (roots)
+
+%%%%
+status|constricted (zombie hands)
+
+%%%%
+status|corroded
+腐蚀
+%%%%
+status|corroded (%d)
+
+%%%%
+status|death channelling
+引导死亡
+%%%%
+status|devious
+狡诈
+%%%%
+status|diminished spells
+法术减弱
+%%%%
+status|disjoining
+位移中
+%%%%
+status|duelling
+
+%%%%
+status|elixired
+
+%%%%
+status|engorged
+饱食
+%%%%
+status|enkindled
+
+%%%%
+status|enlightened
+启迪
+%%%%
+status|enshackling
+束缚中
+%%%%
+status|especially stealthy
+极度潜行
+%%%%
+status|exhausted
+力竭
+%%%%
+status|extremely horrified
+
+%%%%
+status|finesse-ful
+精准
+%%%%
+status|fire susceptible
+
+%%%%
+status|fire vulnerable
+火焰易伤
+%%%%
+status|flayed
+剥皮
+%%%%
+status|flooded lungs
+
+%%%%
+status|flying
+飞行中
+%%%%
+status|forested
+召唤森林
+%%%%
+status|fortress blast
+
+%%%%
+status|fragile (+50% incoming damage)
+脆弱（+50%受伤）
+%%%%
+status|freezing walls
+
+%%%%
+status|frozen
+冰冻
+%%%%
+status|fugue
+赋格
+%%%%
+status|full of bloodlust
+充满嗜血
+%%%%
+status|glowing
+
+%%%%
+status|growing destruction
+毁灭增长
+%%%%
+status|hasted
+
+%%%%
+status|hasted and slowed
+
+%%%%
+status|held
+
+%%%%
+status|heroic
+英雄
+%%%%
+status|horrified
+恐惧
+%%%%
+status|immotile
+无法移动
+%%%%
+status|in a vortex
+极地漩涡中
+%%%%
+status|in death's door
+死亡之门中
+%%%%
+status|inhibited regen
+
+%%%%
+status|inugami summoned
+
+%%%%
+status|invisible
+隐形
+%%%%
+status|jinxed
+
+%%%%
+status|lethally
+
+%%%%
+status|liquefying
+液化地面
+%%%%
+status|lit by a corona
+被光晕照亮
+%%%%
+status|lit torch
+
+%%%%
+status|lost %s
+
+%%%%
+status|magic-sapped
+
+%%%%
+status|making a cacophony
+制造噪音
+%%%%
+status|marked
+被标记
+%%%%
+status|mesmerised
+被催眠
+%%%%
+status|mighty
+强力
+%%%%
+status|mildly
+
+%%%%
+status|missing status
+缺失状态
+%%%%
+status|nightfall
+
+%%%%
+status|no stairs
+拒绝楼梯
+%%%%
+status|oblivion-hounded
+被湮灭追逐
+%%%%
+status|on berserk cooldown
+狂暴冷却
+%%%%
+status|on blink cooldown
+闪烁冷却
+%%%%
+status|on bloodrite cooldown
+血祭冷却
+%%%%
+status|on death's door cooldown
+死亡之门冷却
+%%%%
+status|on dragon call cooldown
+龙群召唤冷却
+%%%%
+status|on eeljolt cooldown
+电鳗冲击冷却
+%%%%
+status|on fire
+燃烧中
+%%%%
+status|on gavotte cooldown
+加沃特冷却
+%%%%
+status|on hellfire mortar cooldown
+地狱火迫击炮冷却
+%%%%
+status|on lithotoxin cooldown
+石毒素冷却
+%%%%
+status|on mesmerism cooldown
+催眠冷却
+%%%%
+status|on recite cooldown
+吟诵冷却
+%%%%
+status|on siphon cooldown
+虹吸冷却
+%%%%
+status|on stardust cooldown
+星尘冷却
+%%%%
+status|on swarm cooldown
+虫群冷却
+%%%%
+status|on vortex cooldown
+漩涡冷却
+%%%%
+status|on word of chaos cooldown
+混沌之语冷却
+%%%%
+status|ooze regen
+
+%%%%
+status|overwhelmed with horror
+
+%%%%
+status|paralysed
+麻痹
+%%%%
+status|peeking
+
+%%%%
+status|petrified
+石化
+%%%%
+status|petrifying
+石化中
+%%%%
+status|poison vulnerable
+毒素易伤
+%%%%
+status|portalling projectiles
+传送飞弹中
+%%%%
+status|protected from cold
+寒冷防护
+%%%%
+status|protected from electricity
+电击防护
+%%%%
+status|protected from fire
+火焰防护
+%%%%
+status|quad damage
+四倍伤害
+%%%%
+status|quite
+
+%%%%
+status|rC+
+
+%%%%
+status|rElec+
+
+%%%%
+status|rF+
+
+%%%%
+status|rF-
+
+%%%%
+status|rF0
+
+%%%%
+status|rP-
+
+%%%%
+status|radiating poison
+辐射毒素
+%%%%
+status|raining reagents
+倾泻试剂
+%%%%
+status|reciting
+吟诵中
+%%%%
+status|regenerating
+再生中
+%%%%
+status|resistant
+抗性
+%%%%
+status|revved
+
+%%%%
+status|revving
+
+%%%%
+status|rising
+上升中
+%%%%
+status|sanguine armoured
+
+%%%%
+status|seriously
+
+%%%%
+status|serpent's lash
+
+%%%%
+status|short of breath
+喘息中
+%%%%
+status|shroud timeout
+黏液护罩破损
+%%%%
+status|sick
+疾病
+%%%%
+status|sign of ruin
+
+%%%%
+status|silenced
+沉默
+%%%%
+status|slimy
+
+%%%%
+status|slimy shroud
+黏液护罩
+%%%%
+status|slowed
+减速
+%%%%
+status|slowed movement
+
+%%%%
+status|spewing sludge
+喷吐泥沼
+%%%%
+status|spiked
+被刺穿
+%%%%
+status|studying 
+
+%%%%
+status|surrounded by blades
+刃之旋风
+%%%%
+status|swift
+迅捷
+%%%%
+status|teleporting to hostiles
+
+%%%%
+status|trickster (+%d AC)
+
+%%%%
+status|unable to call your familiar
+
+%%%%
+status|unable to cast spells
+
+%%%%
+status|unable to drink
+
+%%%%
+status|unable to hop
+
+%%%%
+status|unable to read
+
+%%%%
+status|unleashing the legion
+释放军团
+%%%%
+status|unswift
+
+%%%%
+status|untranslocatable
+无法位移
+%%%%
+status|vertiginous
+
+%%%%
+status|vexed
+恼怒
+%%%%
+status|vitalised
+生命活力
+%%%%
+status|weak-willed
+意志薄弱
+%%%%
+status|weakened
+虚弱
+%%%%
+status|wreathed by umbra
+
+%%%%
