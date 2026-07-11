@@ -694,12 +694,11 @@ static void _describe_book(const spellbook_contents &book,
             // looks nicer than Lehudib's Crystal S
             spell_name = "Crystal Spear";
         }
-        // Keep the name and effect adjacent.  Padding the name itself makes
-        // short CJK names look widely separated from their effect, and the
-        // resulting first-column width can differ between rows, shifting the
-        // start of the second column (so b and d no longer align).
+        // The book table's following columns rely on this fixed-width name
+        // field. Monster spellbooks use a two-column layout instead, where
+        // padding the name would make the spell effect look detached.
         const string compact_name = chop_string(spell_name, max(chop_len, 0),
-                                                false);
+                                                !doublecolumn);
         formatted_string spell_entry = formatted_string::parse_string(
             make_stringf("%c - %s%s%s%s%s", spell_letter,
                          dith_marker.c_str(), compact_name.c_str(),
