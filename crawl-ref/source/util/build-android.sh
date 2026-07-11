@@ -73,6 +73,8 @@ if [ -n "$(git status --porcelain --untracked-files=all)" ]; then
     exit 1
 fi
 git reset --hard "$MAIN_HEAD"
+# Init submodules (contrib/ libraries needed for NDK build)
+git submodule update --init --recursive
 echo "       Now at: $(git rev-parse --short HEAD)"
 
 # 2. Run make android (prepares data, rltiles, cflags, gradle files)
