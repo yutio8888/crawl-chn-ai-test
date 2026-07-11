@@ -295,8 +295,9 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
                          && (tmp == 'n' || tmp == 'y'
                              || (ask_always && tmp == 'a')
                              || crawl_state.game_is_hints_tutorial());
+            const string prefix = upper ? string(T_("Uppercase")) + " " : "";
             const string pr = make_stringf(T_("<lightred>%s%s only, please.</lightred>"),
-                                           upper ? string(T_("Uppercase")) + " " : "",
+                                           prefix.c_str(),
                                            ask_always ?
                                                T_("[Y]es, [N]o, or [A]lways") :
                                                T_("[Y]es or [N]o"));

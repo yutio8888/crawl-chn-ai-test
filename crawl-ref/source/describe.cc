@@ -6937,7 +6937,7 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         break;
 
     case MONS_PLAYER_ILLUSION:
-        inf.body << make_stringf(T_("An illusion of %s"), get_ghost_description(mi)) << ".\n";
+        inf.body << make_stringf(T_("An illusion of %s"), get_ghost_description(mi).c_str()) << ".\n";
         break;
 
     case MONS_PANDEMONIUM_LORD:
@@ -6963,11 +6963,11 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
         break;
 
     case MONS_FOXFIRE:
-        inf.body << make_stringf(T_("\nIt deals %s fire damage.\n"), _desc_foxfire_dam(mi));
+        inf.body << make_stringf(T_("\nIt deals %s fire damage.\n"), _desc_foxfire_dam(mi).c_str());
         break;
 
     case MONS_SHOOTING_STAR:
-        inf.body << make_stringf(T_("\nIt deals %s damage.\n"), _desc_shooting_star_dam(mi));
+        inf.body << make_stringf(T_("\nIt deals %s damage.\n"), _desc_shooting_star_dam(mi).c_str());
         break;
 
     case MONS_PROGRAM_BUG:
