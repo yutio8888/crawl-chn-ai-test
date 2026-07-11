@@ -15631,7 +15631,7 @@ Freezing Cloud
 冰冻云
 %%%%
 Mephitic Cloud
- 迷瘴云
+迷瘴云
 %%%%
 Venom Bolt
 毒液箭
@@ -15655,7 +15655,7 @@ Abjuration
 驱逐术
 %%%%
 Bolt of Draining
- 吸取箭
+吸取箭
 %%%%
 Lehudib's Crystal Spear
 勒胡迪布之水晶矛
@@ -15664,7 +15664,7 @@ Poisonous Cloud
 毒云
 %%%%
 Call Down Damnation
- 降下天谴
+降下天谴
 %%%%
 Call Down Lightning
 降下闪电
@@ -15721,7 +15721,7 @@ Ozocubu's Armour
 奥佐库布之护甲
 %%%%
 Call Imp
- 呼唤小恶魔
+呼唤小恶魔
 %%%%
 Berserker Rage
 狂暴之怒
@@ -15805,7 +15805,7 @@ Ignite Poison
 点燃毒素
 %%%%
 Call Canine Familiar
- 呼唤犬类使魔
+呼唤犬类使魔
 %%%%
 Summon Dragon
 召唤巨龙
@@ -15868,7 +15868,7 @@ Brain Bite
 脑噬
 %%%%
 Noxious Cloud
- 毒瘴云
+毒瘴云
 %%%%
 Steam Ball
 蒸汽球
@@ -15880,7 +15880,7 @@ Summon Sin Beast
 召唤罪兽
 %%%%
 Bolt of Devastation
- 毁灭箭
+毁灭箭
 %%%%
 Spit Poison
 喷毒
@@ -15925,13 +15925,13 @@ Caustic Breath
 腐蚀吐息
 %%%%
 Pyre Arrow
- 烈火箭
+烈火箭
 %%%%
 Fire Breath
 火焰吐息
 %%%%
 Searing Breath
- 灼热吐息
+灼热吐息
 %%%%
 Chaos Breath
 混沌吐息
@@ -15979,7 +15979,7 @@ Primal Wave
 原始波浪
 %%%%
 Call Tide
- 呼唤潮汐
+呼唤潮汐
 %%%%
 Orb of Destruction
 毁灭之球
@@ -16000,7 +16000,7 @@ Druid's Call
 德鲁伊召唤
 %%%%
 Brothers in Arms
- 战友
+战友
 %%%%
 Trog's Hand
 特洛格之手
@@ -16009,7 +16009,7 @@ Summon Mortal Champion
 召唤凡人冠军
 %%%%
 Vanquished Vanguard
- 败军先锋
+败军先锋
 %%%%
 Summon Holies
 召唤圣灵
@@ -16060,7 +16060,7 @@ Iskenderun's Battlesphere
 伊斯肯德伦之战斗球
 %%%%
 Summon Minor Demon
- 召唤次级恶魔
+召唤次级恶魔
 %%%%
 Sticks to Snakes
 棍变蛇
@@ -16093,7 +16093,7 @@ Ghostly Fireball
 幽灵火球
 %%%%
 Call Lost Souls
- 呼唤迷失灵魂
+呼唤迷失灵魂
 %%%%
 Dimension Anchor
 维度锚定
@@ -16132,7 +16132,7 @@ Searing Ray
 灼热射线
 %%%%
 Discord
- 纷乱
+纷乱
 %%%%
 Invisibility Other
 隐身他人
@@ -16156,7 +16156,7 @@ Chain of Chaos
 混沌之链
 %%%%
 Call of Chaos
- 混沌呼唤
+混沌呼唤
 %%%%
 Sap Magic
 削弱魔法
@@ -16204,10 +16204,10 @@ Corrosive Bolt
 腐蚀箭
 %%%%
 Bolt of Light
- 光箭
+光箭
 %%%%
 Bolt of Flesh
- 血肉箭
+血肉箭
 %%%%
 Awaken Flesh
 唤醒血肉
@@ -16372,7 +16372,7 @@ Warp Space
 扭曲空间
 %%%%
 Sojourning Bolt
- 旅居箭
+旅居箭
 %%%%
 Harpoon Shot
 鱼叉射击
@@ -16402,7 +16402,7 @@ Hailstorm
 冰雹风暴
 %%%%
 Eringya's Noxious Bog
- 埃林吉亚之毒沼
+埃林吉亚之毒沼
 %%%%
 Dispel Undead Range
 远程驱散亡灵
@@ -16471,7 +16471,7 @@ Summon Spiders
 召唤蜘蛛
 %%%%
 Anguish
- 哀痛
+哀痛
 %%%%
 Summon Scorpions
 召唤蝎子
@@ -16510,7 +16510,7 @@ Tremorstone
 震石
 %%%%
 Regenerate Other
- 再生他人
+再生他人
 %%%%
 Mass Regeneration
 群体再生
@@ -16624,7 +16624,7 @@ Shred
 撕裂
 %%%%
 Eringya's Surprising Crocodile
- 埃林吉亚之意外鳄鱼
+埃林吉亚之意外鳄鱼
 %%%%
 Platinum Paragon
 白金典范
@@ -16681,7 +16681,7 @@ Ill Omen
 凶兆
 %%%%
 Doom Bolt
- 厄运箭
+厄运箭
 %%%%
 Warp Body
 扭曲身体
@@ -37878,43 +37878,7 @@ Sting
 %%%%
 Throw
 投掷
-%%%%
-Vortex
-漩涡
-%%%%
-Agony
-剧痛
-%%%%
-Condensation Shield
-凝结之盾
-%%%%
-Fireball
-火球
-%%%%
-Foxfire
-狐火
-%%%%
-Golden Breath
-金龙吐息
-%%%%
-Haste
-加速
-%%%%
-See Invisible
-侦测隐形
-%%%%
-Sign of Ruin
-毁灭征兆
-%%%%
-Silence
-沉默
-%%%%
-Sting
-毒刺
-%%%%
-Throw
-投掷
-%%%%
+
 Vortex
 漩涡
 %%%%
