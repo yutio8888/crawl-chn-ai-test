@@ -5,42 +5,48 @@
 ## 架构概览
 
 ```
-Agent 生成修改 → post-*.sh 聚合验证 → 编排者读原始日志判断
+Agent 生成修改 → verify_zh.sh --profile <type>  (单入口调度器)
+        │
+        ├─ translation  → post-translator.sh
+        ├─ code         → post-coder.sh
+        └─ review       → post-reviewer.sh
                                     ↓
                   ┌──────────────────────────────────────────┐
-                   │  scan_i18n.py (10 子命令)                 │
+                   │  scan_i18n.py (子命令集)                  │
                    │  i18n_extract.py (4 子命令)               │
                    │  audit_data_i18n.py (数据驱动覆盖)        │
                    │  source_control_parity.py (控制符奇偶)    │
                    │  check_consistency.sh (7 模式)             │
                    │  cross_file_terms.py                      │
+                   │  zh_runtime_check.py (运行时聚合)         │
                    │  smoke_test.sh                            │
                    │  check_checkpoint.sh                      │
                    │  record_review.sh                         │
                   └──────────────────────────────────────────┘
+
+Parser (统一):
+  i18n_shared.py — 唯一 source.txt 解析器（Entry dataclass）
+  所有脚本通过 i18n_shared.parse_entries() / parse_source_txt() 解析
 ```
 
 ## 快速参考
 
 | 需求 | 命令 |
 |------|------|
+| **翻译/数据改动验证** | `bash .claude/scripts/verify_zh.sh --profile translation` |
+| **C++/i18n 改动验证** | `bash .claude/scripts/verify_zh.sh --profile code` |
+| **合并前审查** | `bash .claude/scripts/verify_zh.sh --profile review` |
+| **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **数据驱动翻译覆盖** | `python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
+| **source.txt 完整性** | `python3 .claude/scripts/scan_i18n.py source-txt-integrity --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **发现未翻译消息** | `python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/` |
 | **mprf_p 兼容性** | `python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **%s 数量一致** | `python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
-| **位置参数间隙** | `python3 .claude/scripts/scan_i18n.py check-gaps --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
-| **术语验证（decisions.md）** | `python3 .claude/scripts/scan_i18n.py validate-terms --glossary docs/decisions.md --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
-| **反模式检测** | `python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ --strict` |
-| **跨文件术语一致性** | `python3 .claude/scripts/cross_file_terms.py crawl-ref/source/dat/i18n/zh/` |
 | **控制符奇偶检查** | `python3 .claude/scripts/source_control_parity.py --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
-| **语言依赖参数** | `python3 .claude/scripts/scan_i18n.py lang-args crawl-ref/source/` |
-| **数据库完整性** | `bash .claude/scripts/check_consistency.sh --all --strict` |
 | **运行时冒烟测试** | `bash .claude/scripts/smoke_test.sh` |
-| **检查点验证** | `bash .claude/scripts/check_checkpoint.sh` |
-| **聚合验证（推荐）** | `bash .claude/scripts/post-coder.sh` / `post-translator.sh` / `post-reviewer.sh` |
-| **上下文注入** | `bash .claude/scripts/context_resolve.sh "task" --files <files>` |
-| **运行测试** | `bash .claude/scripts/tests/test_scan_i18n.sh` |
+| **运行时回归检查** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
+| **运行测试** | `bash .claude/scripts/tests/run_all.sh` |
 
 ## 脚本详解
 
@@ -67,7 +73,7 @@ python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查�
 
 ### scan_i18n.py — T_() 世界盲区扫描
 
-替代旧的 `scan_untranslated.sh`。10 个子命令：
+替代旧的 `scan_untranslated.sh`。子命令：
 
 ```bash
 # missing-t: 未翻译的 mprf/mpr 调用
@@ -77,26 +83,38 @@ python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
+# source-txt-integrity: 重复 key、自冲突、空译文检查
+python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+
 # arg-mismatch: EN key 和 CN 翻译的 %s 数量一致性
 python3 .claude/scripts/scan_i18n.py arg-mismatch \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
-# check-gaps: 位置参数编号间隙检测（Issue 29 %N$.0s 模式）
+# check-gaps: 位置参数编号间隙检测
 python3 .claude/scripts/scan_i18n.py check-gaps \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
-# validate-terms: 检查 decisions.md 中被拒绝的术语是否仍在代码或翻译中出现
+# validate-terms: 检查 decisions.md 中被拒绝的术语
 python3 .claude/scripts/scan_i18n.py validate-terms \
     --glossary docs/decisions.md \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
 # anti-patterns: 检测已知 Agent 错误模式
-#   --strict: 零误报规则（英文冠词残留）
-#   不加 --strict: 包含 lenient 规则（.c_str() 误用、conj_verb() 中文检测）
 python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ --strict
 
 # lang-args: 检测 T_() 中语言依赖参数（启发式，始终 exit 0）
 python3 .claude/scripts/scan_i18n.py lang-args crawl-ref/source/
+
+# 物种/怪物一致性子命令（已纳入 post-coder.sh）
+python3 .claude/scripts/scan_i18n.py species-consistency \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+python3 .claude/scripts/scan_i18n.py monster-compound-consistency \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+python3 .claude/scripts/scan_i18n.py monster-dbkey-consistency crawl-ref/source/
+python3 .claude/scripts/scan_i18n.py monster-name-assembly crawl-ref/source/mon-info.cc
+python3 .claude/scripts/scan_i18n.py monster-title-display \
+    crawl-ref/source/directn.cc crawl-ref/source/tileweb.cc
 ```
 
 ### audit_data_i18n.py — 数据驱动翻译覆盖检查
@@ -173,7 +191,7 @@ python3 .claude/scripts/source_control_parity.py \
 
 ```text
 L2619   # Attack monsters: 3→2 \n — CN 单行合并
-L24199  # Table legend: 13→10 \n — CJK 宽度软换行移除
+L24196  # Table legend (kills): 13→10 \n — CJK 宽度软换行移除
 ```
 
 也可通过 `--exempt-lines <file>` 指定自定义豁免文件。
@@ -233,16 +251,83 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
     --files dat/database/zh/godspeak.txt)
 ```
 
-### 聚合验证脚本（推荐使用，替代单独运行）
+### verify_zh.sh — 单入口验证调度器
+
+Agent 每次只需运行一个与改动类型匹配的命令，无需记忆脚本列表。
 
 ```bash
-bash .claude/scripts/post-coder.sh       # 代码修改后: 阻断 gate；string-concat / smoke 为 warning-only
-bash .claude/scripts/post-translator.sh  # 翻译后: 阻断 gate；validate-terms + format + @keyword@
-bash .claude/scripts/post-reviewer.sh    # 审查后: 阻断 gate；all consistency + cross-file terms
+# 翻译/数据文件改动
+bash .claude/scripts/verify_zh.sh --profile translation
+
+# C++/i18n 代码改动
+bash .claude/scripts/verify_zh.sh --profile code
+
+# 合并前审查
+bash .claude/scripts/verify_zh.sh --profile review
+
+# CI 门禁（translation + code 并集）
+bash .claude/scripts/verify_zh.sh --profile ci
 ```
 
-所有输出写入 `.claude/metrics/verify/<agent>-<timestamp>.log`，编排者直接读取原始日志。
-这三个脚本在存在 blocking failure 时都会以非零退出，适合本地 gate 和 CI 直接复用。
+每个 profile 运行 core-static 检查（始终阻断）加上领域特定检查。
+报告写入 `.claude/metrics/verify/verify-<profile>-<timestamp>.log`。
+
+底层仍保留 `post-coder.sh`、`post-translator.sh`、`post-reviewer.sh`，
+但它们通过 `verify_zh.sh` 统一调度。
+
+### post_zh_runtime.sh — 运行时测试与基线回归
+
+三层运行时测试，支持多种模式：
+
+```bash
+# catch2: 构建 catch2-tests + 运行 [zh-translation] + 基线对比（秒级）
+bash .claude/scripts/post_zh_runtime.sh catch2
+
+# full: Layer 1 (Catch2) + Layer 2 (Lua) + Layer 3 (RC Bot)（分钟级）
+bash .claude/scripts/post_zh_runtime.sh full
+
+# fast: 仅聚合已有日志（无构建）
+bash .claude/scripts/post_zh_runtime.sh fast
+
+# baseline: full 运行 + 写入新基线到 test/baselines/zh/
+bash .claude/scripts/post_zh_runtime.sh baseline
+
+# help-full: Issue 52 帮助系统全量测试（[zh-help] catch2 + zh_help.rc bot）
+bash .claude/scripts/post_zh_runtime.sh help-full
+
+# help-baseline: 帮助系统全量 + 写入基线到 test/baselines/zh-help/
+bash .claude/scripts/post_zh_runtime.sh help-baseline
+```
+
+聚合脚本 `zh_runtime_check.py` 支持 `--mode default`（三层 i18n 扫描）和
+`--mode help`（帮助系统状态标记）。
+
+### 运行时基线（版本控制）
+
+基线文件位于版本控制中：
+```
+test/baselines/zh/zh-baseline.json           # [zh-translation] 三层基线
+test/baselines/zh-help/zh-help-baseline.json  # [zh-help] 帮助系统基线
+```
+
+运行 `post_zh_runtime.sh baseline` 或 `help-baseline` 更新基线后，
+需 review diff 并提交。CI 始终对比版本控制中的固定基线，干净 CI runner
+也能可靠做回归检测。
+
+### CI 分层
+
+GitHub Actions 中 4 个 zh-specific job：
+
+| Job | 触发 | 需编译 | 说明 |
+|-----|------|--------|------|
+| `zh_tooling_tests` | push/PR | 否 | `run_all.sh`（12 个 Python 测试） |
+| `zh_ci_gate` | push/PR | 否 | `verify_zh.sh --profile ci`（code + translation 并集） |
+| `zh_runtime_catch2` | push/PR | 是 | catch2 [zh-translation] + 基线回归 |
+| `zh_help_runtime` | push/PR | 是 | [zh-help] catch2 + zh_help.rc bot |
+
+`zh_ci_gate` 替代了旧的 `zh_static_checks`（原仅运‎行 post-coder.sh），
+增加了 post-translator.sh 的控制符 parity、术语验证、格式完整性、
+@keyword@ 完整性检查。
 
 ### split_source.py — source.txt 条目拆分
 
@@ -265,27 +350,19 @@ python3 .claude/scripts/split_source.py crawl-ref/source/dat/i18n/zh/source.txt 
 ### 新增翻译后
 
 ```bash
-bash .claude/scripts/post-translator.sh
+bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
 ### 代码修改后
 
 ```bash
-bash .claude/scripts/post-coder.sh
-bash .claude/scripts/post-coder.sh --full   # 需要显式触发 L1-L3 运行时链路时使用
+bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 ### 提交前审查
 
 ```bash
-# 0. 检查编排者检查点是否过期
-bash .claude/scripts/check_checkpoint.sh
-
-# 1. 运行聚合审查
-bash .claude/scripts/post-reviewer.sh
-
-# 2. 编译
-cd crawl-ref/source && make -j4
+bash .claude/scripts/verify_zh.sh --profile review
 ```
 
 ### 发现盲区
@@ -296,44 +373,29 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt > mismatches.txt
 ```
 
-### CI / 提交前完整检查
-
-```bash
-bash .claude/scripts/check_checkpoint.sh && \
-bash .claude/scripts/tests/run_all.sh && \
-python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py arg-mismatch \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ --strict && \
-bash .claude/scripts/check_consistency.sh --all --strict && \
-cd crawl-ref/source && make -j4
-```
-
 ## 退出码约定
 
 | 脚本 | 子命令 | 发现时退出码 |
 |------|--------|-------------|
+| `verify_zh.sh` | `--profile translation/code/review/ci` | 1（有 blocking failure） |
 | `i18n_extract.py` | `validate` | 1（有缺失 key） |
-| `i18n_extract.py` | `stale`, `missing`, `extract`, `check-escapes` | 0（信息性） |
-| `scan_i18n.py` | `missing-t`, `mprf-p`, `arg-mismatch`, `check-gaps` | 1（有违规） |
-| `scan_i18n.py` | `validate-terms` | 1（有被拒绝术语） |
+| `i18n_extract.py` | `stale`, `missing`, `extract` | 0（信息性） |
+| `scan_i18n.py` | `missing-t`, `mprf-p`, `arg-mismatch`, `check-gaps`, `source-txt-integrity` | 1（有违规） |
+| `scan_i18n.py` | `validate-terms`, `species-consistency`, `monster-*-consistency` | 1（有违规） |
 | `scan_i18n.py` | `anti-patterns --strict` | 1（有 strict 发现） |
 | `scan_i18n.py` | `anti-patterns`（无 --strict） | 0（lenient-only 不阻断） |
 | `scan_i18n.py` | `lang-args` | 0（启发式，始终通过） |
 | `check_consistency.sh` | 所有模式 `--strict` | 1（有违规） |
-| `check_consistency.sh` | 所有模式（无 --strict） | 0（向后兼容） |
 | `cross_file_terms.py` | — | 1（有跨文件问题） |
 | `source_control_parity.py` | — | 1（有 `\n` 不匹配），0（仅 `\t`/`\r` 警告或全通过） |
 | `source_control_parity.py` | `--strict-all` | 1（有任何控制符不匹配） |
-| `post-coder.sh` | 默认 | 1（有 blocking failure），0（仅 warning 或全通过） |
-| `post-coder.sh` | `--full` | 1（静态 gate 或 L1-L3 / baseline 聚合失败） |
-| `post-translator.sh` | 默认 | 1（有 blocking failure） |
-| `post-reviewer.sh` | 默认 | 1（有 blocking failure） |
-| `post_zh_runtime.sh` | `fast`, `full`, `baseline` | 1+（任一层或聚合失败，含 marker/baseline 回归） |
-| `smoke_test.sh` | — | 0（始终，警告不阻断） |
+| `post-coder.sh` | — | 1（有 blocking failure） |
+| `post-translator.sh` | — | 1（有 blocking failure） |
+| `post-reviewer.sh` | — | 1（有 blocking failure） |
+| `post_zh_runtime.sh` | `catch2`, `full`, `baseline` | 1+（任一层/聚合失败或基线回归） |
+| `post_zh_runtime.sh` | `fast` | 1+（聚合失败） |
+| `post_zh_runtime.sh` | `help-full`, `help-baseline` | 1+（catch2 失败/bot 失败/帮助回归） |
+| `zh_runtime_check.py` | `--baseline` 对比 | 1（有新回归），0（无新问题） |
+| `zh_runtime_check.py` | `--mode help --baseline` | 1（帮助类型回归），0（无新问题） |
+| `smoke_test.sh` | — | 0（始终，警告不阻断；无 crawl 二进制时跳过） |
 | `check_checkpoint.sh` | — | 0=当前, 2=建议更新, 3=强烈建议 |
-| `record_review.sh` | — | 1（无效 JSON） |
-| `context_resolve.sh` | — | 1（参数错误） |
