@@ -253,6 +253,31 @@ static const char* _zh_status_short(const char* en)
         { "Breath", "吐息" }, { "Tesseract", "超立方体" }, { "Sunder", "碎裂" },
         { "Shroud", "护罩" }, { "slimy shroud", "黏液护罩" },
         { "Ostracised", "被排斥" }, { "Missing", "缺失" }, { "missing status", "缺失状态" },
+        // Newer duration lights. Keep the established one-character TextDB
+        // translations where they already existed.
+        { "Touch", "触" }, { "confusing by touch", "触之迷惑" },
+        { "Slime", "粘" }, { "slimy", "粘滑" },
+        { "Ambros", "仙" }, { "ambrosia-drunk", "仙酒醉" },
+        { "Channel", "引" }, { "channelling", "引导中" },
+        { "Vertigo", "眩" }, { "vertiginous", "眩晕" },
+        { "Blood", "血" }, { "sanguine armoured", "鲜血护甲" },
+        { "-Hop", "-跃" }, { "unable to hop", "无法跳跃" },
+        { "-Bbolt", "-电" }, { "blinkbolt cooldown", "闪电突袭冷却" },
+        { "Elixir", "灵" }, { "elixired", "灵药强化" },
+        { "Sap", "弱" }, { "magic-sapped", "魔力削弱" },
+        { "-Cast", "-法" }, { "unable to cast spells", "无法施法" },
+        { "Jinx", "厄" }, { "jinxed", "厄运缠身" },
+        { "-Dog", "-犬" }, { "unable to call your familiar", "无法召唤伙伴" },
+        { "Recruit", "招募" }, { "Nightfall", "暮" }, { "nightfall", "夜幕降临" },
+        { "Blind", "盲" }, { "blinded", "失明" },
+        { "Ruin", "灭" }, { "sign of ruin", "毁灭征兆" },
+        { "Unstable", "不稳" }, { "blinking rapidly", "频繁闪烁" },
+        { "Enkindled", "燃" }, { "enkindled", "点燃" },
+        { "Catalyst", "催" }, { "catalyst", "催化" },
+        { "Flooded", "淹" }, { "Ramparts", "壁" }, { "freezing walls", "冰冻壁垒" },
+        { "Challenge", "挑战" }, { "Vengeance", "复仇" },
+        { "Drowsy", "困倦" }, { "Slimifying", "软化" },
+        { "OozeRegen", "泥恢" }, { "ooze regen", "软泥恢复" },
     };
     auto it = zh_names.find(en);
     return it != zh_names.end() ? it->second : en;
@@ -266,6 +291,7 @@ static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
 
     inf.light_colour = ddef->light_colour;
     inf.db_key       = ddef->light_text; // English TextDB key (before translation)
+    inf.short_db_key = ddef->short_text;
     inf.light_text   = _zh_status_short(ddef->light_text);
     inf.short_text   = _zh_status_short(ddef->short_text);
     inf.long_text    = T_(ddef->long_text);
@@ -1202,6 +1228,8 @@ bool fill_status_info(int status, status_info& inf)
             break;
     }
     // Translate any remaining English text for Chinese mode
+    if (inf.short_db_key.empty())
+        inf.short_db_key = inf.short_text;
     if (Options.language == lang_t::ZH)
     {
         if (!inf.light_text.empty())

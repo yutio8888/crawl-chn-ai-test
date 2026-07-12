@@ -1346,26 +1346,31 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
         string light_text = inf.light_text;
         if (_uses_top_bar() && Options.language == lang_t::ZH)
         {
-            // Use a dedicated two-character label in the Android top bar.
-            // Conventional Tiles and Console retain their full status text.
-            if (inf.db_key == "Conf")
-                light_text = C_("topbar status", "Conf");
-            else if (inf.db_key == "Crippled")
-                light_text = C_("topbar status", "Crippled");
-            else if (inf.db_key == "Fast")
-                light_text = C_("topbar status", "Fast");
-            else if (inf.db_key == "Fast+Slow")
-                light_text = C_("topbar status", "Fast+Slow");
-            else if (inf.db_key == "Slow")
-                light_text = C_("topbar status", "Slow");
-            else if (inf.db_key == "Fly")
-                light_text = C_("topbar status", "Fly");
-            else if (inf.db_key == "Invis")
-                light_text = C_("topbar status", "Invis");
-            else if (inf.db_key == "Pois")
-                light_text = C_("topbar status", "Pois");
-            else if (!inf.short_text.empty())
-                light_text = chop_string(inf.short_text, 4, false);
+            // Preserve established one-character Chinese status lights. For
+            // longer lights, prefer a top-bar label, then the translated @:
+            // description. Conventional Tiles and Console never enter here.
+            const bool original_one_char = inf.light_text != inf.db_key
+                                           && strwidth(inf.light_text) <= 2;
+            if (!original_one_char)
+            {
+                string topbar_text;
+                if (!inf.db_key.empty())
+                {
+                    topbar_text = C_("topbar status", inf.db_key.c_str());
+                    if (topbar_text == inf.db_key)
+                        topbar_text.clear();
+                }
+                if (topbar_text.empty() && !inf.short_db_key.empty())
+                {
+                    topbar_text = C_("status", inf.short_db_key.c_str());
+                    if (topbar_text == inf.short_db_key)
+                        topbar_text.clear();
+                }
+                if (topbar_text.empty())
+                    topbar_text = inf.short_text;
+                if (!topbar_text.empty())
+                    light_text = chop_string(topbar_text, 4, false);
+            }
         }
         status_light sl(inf.light_colour, light_text, i);
         out.push_back(sl);
