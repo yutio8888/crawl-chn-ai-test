@@ -815,7 +815,7 @@ static const int max_inv_height  = 8;
 static const int max_mon_height  = 3;
 static const int min_cjk_sidebar_cols = 14;
 /// Number of text rows for the top stat bar in Android portrait mode.
-static const int top_bar_text_rows = 3;
+static const int top_bar_text_rows = 4;
 
 static int round_up_to_multiple(int a, int b)
 {

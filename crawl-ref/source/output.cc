@@ -97,7 +97,7 @@ static bool _low_vertical_space()
 
 static bool _uses_top_bar()
 {
-    bool top = _uses_compact_hud() && crawl_view.hudsz.y <= 3;
+    bool top = _uses_compact_hud() && crawl_view.hudsz.y <= 4;
     return top;
 }
 
@@ -277,7 +277,7 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         default:
             TOUCH_UI_STATE = TOUCH_S_INIT;
         }
-        y = min({y, 3, crawl_view.hudsz.y});
+        y = min({y, 4, crawl_view.hudsz.y});
         if (!skip_goto)
             cgotoxy(x, y, region);
         return;
