@@ -12,7 +12,8 @@ public:
 
     /// Update policy state with current window metrics.
     /// Called from do_layout() before semantic queries.
-    virtual void update(int window_width, int stat_cw, int msg_cw,
+    virtual void update(int window_width, int window_height,
+                        int stat_cw, int msg_cw,
                         maybe_bool override_mode) = 0;
 
     /// Compact HUD text formatting (short HP/MP/status in output.cc)
@@ -34,6 +35,7 @@ public:
 class DesktopLayoutPolicy : public LayoutPolicy
 {
     int m_window_width;
+    int m_window_height;
     int m_stat_cw;
     int m_msg_cw;
     maybe_bool m_override;
@@ -43,7 +45,33 @@ class DesktopLayoutPolicy : public LayoutPolicy
 public:
     DesktopLayoutPolicy();
 
-    void update(int window_width, int stat_cw, int msg_cw, maybe_bool override_mode);
+    void update(int window_width, int window_height,
+                int stat_cw, int msg_cw,
+                maybe_bool override_mode) override;
+
+    bool uses_compact_hud() const override;
+    bool uses_overlay_sidebar() const override;
+    bool uses_compact_stats() const override;
+    bool uses_touch_tabs() const override;
+    bool uses_overlay_messages() const override;
+};
+
+class AndroidPortraitLayoutPolicy : public LayoutPolicy
+{
+    int m_window_width;
+    int m_window_height;
+    int m_stat_cw;
+    int m_msg_cw;
+    maybe_bool m_override;
+
+    bool is_portrait() const;
+
+public:
+    AndroidPortraitLayoutPolicy();
+
+    void update(int window_width, int window_height,
+                int stat_cw, int msg_cw,
+                maybe_bool override_mode) override;
 
     bool uses_compact_hud() const override;
     bool uses_overlay_sidebar() const override;

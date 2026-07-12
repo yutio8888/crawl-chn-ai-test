@@ -858,7 +858,7 @@ void TilesFramework::do_layout()
     // if the screen estate is very small, or if the option is set, choose
     // a layout that is optimal for very small screens
     if (m_layout_policy)
-        m_layout_policy->update(m_windowsz.x,
+        m_layout_policy->update(m_windowsz.x, m_windowsz.y,
                                 m_stat_font ? m_stat_font->char_width() : 0,
                                 m_msg_font ? m_msg_font->char_width() : 0,
                                 Options.tile_use_small_layout);
