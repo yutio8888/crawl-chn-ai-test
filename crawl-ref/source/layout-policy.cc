@@ -133,8 +133,14 @@ bool AndroidPortraitLayoutPolicy::uses_overlay_messages() const
 
 bool AndroidPortraitLayoutPolicy::uses_top_hud() const
 {
-    // TODO: temp force for testing — revert after debug
-    return true;
+    // On mobile devices the stat region works best as a top bar.
+    // Use any portrait-like aspect (height >= width) so it activates
+    // even if initial window dimensions haven't stabilized yet.
+    if (m_override != maybe_bool::maybe)
+        return bool(m_override);
+    if (m_window_height <= 0 || m_window_width <= 0)
+        return true;
+    return m_window_height >= m_window_width;
 }
 
 // -------------------------------------------------------------------

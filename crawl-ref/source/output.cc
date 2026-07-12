@@ -191,15 +191,23 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
 
-    // Top bar layout: remap all HUD elements into 3 horizontal rows
+    // Top bar layout: remap all HUD elements into 3 horizontal rows.
+    // For stat label+value pairs (AC/EV/SH/STR/INT/DEX), the first
+    // CGOTOXY call (draw_border) gets the label position; the second
+    // call (_print_stats_xx) skips cgotoxy so the value continues from
+    // where the label ended, producing "AC:12 EV:15" etc.
     if (_uses_top_bar())
     {
+        static int topbar_visit[256];
+        // Reset tracking every frame (when TOUCH_S_INIT is hit)
+        if (TOUCH_UI_STATE == TOUCH_S_INIT)
+            memset(topbar_visit, 0, sizeof(topbar_visit));
+
+        bool skip_goto = false;
         switch (TOUCH_UI_STATE)
         {
         case TOUCH_S_INIT:
         case TOUCH_S_NULL:
-        case TOUCH_V_TITLE:
-        case TOUCH_V_TITL2:
             break;
         case TOUCH_V_GOD:
         case TOUCH_V_GOD2:
@@ -212,39 +220,66 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
             x = 18; y = 1; break;
         case TOUCH_V_MP:
             x = 21; y = 1; break;
-        case TOUCH_T_AC:  x = 1;  y = 2; break;
-        case TOUCH_V_AC:  x = 4;  y = 2; break;
-        case TOUCH_T_EV:  x = 7;  y = 2; break;
-        case TOUCH_V_EV:  x = 10; y = 2; break;
-        case TOUCH_T_SH:  x = 13; y = 2; break;
-        case TOUCH_V_SH:  x = 16; y = 2; break;
-        case TOUCH_T_STR: x = 20; y = 2; break;
-        case TOUCH_V_STR: x = 24; y = 2; break;
-        case TOUCH_T_INT: x = 28; y = 2; break;
-        case TOUCH_V_INT: x = 32; y = 2; break;
-        case TOUCH_T_DEX: x = 36; y = 2; break;
-        case TOUCH_V_DEX: x = 40; y = 2; break;
-        case TOUCH_T_XL:  x = 45; y = 2; break;
-        case TOUCH_V_XL:  x = 48; y = 2; break;
-        case TOUCH_V_XL2: x = 52; y = 2; break;
+        case TOUCH_T_AC:
+            if (topbar_visit[TOUCH_T_AC]++)
+                skip_goto = true;
+            else
+                { x = 1;  y = 2; }
+            break;
+        case TOUCH_T_EV:
+            if (topbar_visit[TOUCH_T_EV]++)
+                skip_goto = true;
+            else
+                { x = 10; y = 2; }
+            break;
+        case TOUCH_T_SH:
+            if (topbar_visit[TOUCH_T_SH]++)
+                skip_goto = true;
+            else
+                { x = 19; y = 2; }
+            break;
+        case TOUCH_T_STR:
+            if (topbar_visit[TOUCH_T_STR]++)
+                skip_goto = true;
+            else
+                { x = 28; y = 2; }
+            break;
+        case TOUCH_T_INT:
+            if (topbar_visit[TOUCH_T_INT]++)
+                skip_goto = true;
+            else
+                { x = 37; y = 2; }
+            break;
+        case TOUCH_T_DEX:
+            if (topbar_visit[TOUCH_T_DEX]++)
+                skip_goto = true;
+            else
+                { x = 46; y = 2; }
+            break;
+        case TOUCH_T_XL:  x = 1;  y = 2; break;
+        case TOUCH_V_XL:  x = 1;  y = 2; break;
+        case TOUCH_V_XL2: x = 1;  y = 2; break;
         case TOUCH_T_WP:    x = 1;  y = 3; break;
-        case TOUCH_V_WP:    x = 4;  y = 3; break;
-        case TOUCH_T_QV:    x = 18; y = 3; break;
-        case TOUCH_V_QV:    x = 21; y = 3; break;
-        case TOUCH_T_NOISE: x = 1;  y = 3; break;
-        case TOUCH_V_NOISE: x = 1;  y = 3; break;
-        case TOUCH_V_NOISW: x = 1;  y = 3; break;
+        case TOUCH_V_WP:    x = 1;  y = 3; break;
+        case TOUCH_T_QV:    x = 1;  y = 3; break;
+        case TOUCH_V_QV:    x = 1;  y = 3; break;
+        case TOUCH_T_NOISE:
+        case TOUCH_V_NOISE:
+        case TOUCH_V_NOISW:
         case TOUCH_V_NOISX: x = 1;  y = 3; break;
-        case TOUCH_T_PLACE: x = 30; y = 3; break;
-        case TOUCH_V_PLACE: x = 30; y = 3; break;
-        case TOUCH_T_TIME:  x = 45; y = 3; break;
-        case TOUCH_V_TIME:  x = 45; y = 3; break;
-        case TOUCH_V_LIGHT: x = 55; y = 3; break;
+        case TOUCH_T_PLACE:
+        case TOUCH_V_PLACE: x = 1;  y = 3; break;
+        case TOUCH_T_TIME:
+        case TOUCH_V_TIME:  x = 1;  y = 3; break;
+        case TOUCH_V_LIGHT: x = 1;  y = 3; break;
+        case TOUCH_V_TITLE:
+        case TOUCH_V_TITL2:
         default:
             TOUCH_UI_STATE = TOUCH_S_INIT;
         }
         y = min({y, 3, crawl_view.hudsz.y});
-        cgotoxy(x, y, region);
+        if (!skip_goto)
+            cgotoxy(x, y, region);
         return;
     }
 
