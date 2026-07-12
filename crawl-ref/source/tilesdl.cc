@@ -894,15 +894,10 @@ void TilesFramework::do_layout()
         m_region_tab->resize_to_fit(m_windowsz.x, m_windowsz.y);
         //  * ox tells us the width of screen obscured by the tabs
         sidebar_pw = m_region_tab->grid_width_to_pixels(m_region_tab->ox) / 32
-                        + m_region_stat->font().max_width(9);
-        // Widen sidebar for CJK in small_layout (same logic as normal layout)
-        if (is_cjk_primary_font())
-        {
-            const int cjk_pw = m_region_tab->grid_width_to_pixels(
-                                   min_cjk_sidebar_cols + 1)
-                               + m_region_tab->ox;
-            sidebar_pw = max(sidebar_pw, cjk_pw);
-        }
+                        + m_region_stat->font().max_width(
+                            is_cjk_primary_font()
+                            ? min_cjk_sidebar_cols - 2 // 12 chars for CJK
+                            : 9);
         m_stat_x_divider = m_windowsz.x - sidebar_pw;
     }
     else
