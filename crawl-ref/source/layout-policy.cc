@@ -95,9 +95,14 @@ bool AndroidPortraitLayoutPolicy::is_portrait() const
 {
     if (m_override != maybe_bool::maybe)
         return bool(m_override);
-    if (m_window_height <= 0)
-        return false;
-    return m_window_height > m_window_width * 1.25;
+    // On Android, treat all small/narrow windows as portrait.
+    // The initial m_windowsz is (1024,768) which is not truly portrait
+    // but will be overwritten by the actual screen dimensions once
+    // the window resize event fires. Return true for any window with
+    // width < 1280px (all phones) or portrait aspect ratio.
+    return m_window_width <= 0 || m_window_height <= 0
+        || m_window_width < 1280
+        || m_window_height >= m_window_width;
 }
 
 bool AndroidPortraitLayoutPolicy::uses_compact_hud() const
@@ -133,14 +138,14 @@ bool AndroidPortraitLayoutPolicy::uses_overlay_messages() const
 
 bool AndroidPortraitLayoutPolicy::uses_top_hud() const
 {
-    // On mobile devices the stat region works best as a top bar.
-    // Use any portrait-like aspect (height >= width) so it activates
-    // even if initial window dimensions haven't stabilized yet.
     if (m_override != maybe_bool::maybe)
         return bool(m_override);
-    if (m_window_height <= 0 || m_window_width <= 0)
-        return true;
-    return m_window_height >= m_window_width;
+    // On Android the stat region always works best as a top bar.
+    // Use a generous heuristic: if width < 1280 (all phones) or
+    // the aspect ratio is portrait-like, activate the top bar.
+    return m_window_width <= 0 || m_window_height <= 0
+        || m_window_width < 1280
+        || m_window_height >= m_window_width;
 }
 
 // -------------------------------------------------------------------
