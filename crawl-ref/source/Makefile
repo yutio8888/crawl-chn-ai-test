@@ -1564,6 +1564,8 @@ endif
 	for LANG in $(LANGUAGES); \
 		do mkdir -p $(datadir_fp)/dat/descript/$$LANG; \
 	done
+	mkdir -p $(datadir_fp)/dat/i18n
+	$(COPY_R) dat/i18n/* $(datadir_fp)/dat/i18n/
 	mkdir -p $(datadir_fp)/docs/develop
 	mkdir -p $(datadir_fp)/docs/develop/levels
 	mkdir -p $(datadir_fp)/docs/license
