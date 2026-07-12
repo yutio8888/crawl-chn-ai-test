@@ -2133,7 +2133,7 @@ mac-app-console: all
 
 NPROC := $(shell nproc 2>/dev/null || echo 1)
 
-android-project/app/build.gradle: android-project/app/build.gradle.in
+android-project/app/build.gradle: android-project/app/build.gradle.in FORCE
 	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" <android-project/app/build.gradle.in >android-project/app/build.gradle
 android-project/local.properties: android-project/local.properties.in
 	sed -e "s~@HOME@~${HOME}~" <android-project/local.properties.in >android-project/local.properties

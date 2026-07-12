@@ -22,6 +22,7 @@
 #include "macro.h"
 #include "message.h"
 #include "mutation.h"
+#include "options.h"
 #include "output.h"
 #include "playable.h"
 #include "player-stats.h"
@@ -679,6 +680,196 @@ void wizard_set_stats()
     you.base_stats[STAT_INT] = debug_cap_stat(sint);
     you.base_stats[STAT_DEX] = debug_cap_stat(sdex);
     notify_stat_change();
+}
+
+namespace
+{
+struct hud_test_snapshot
+{
+    bool valid = false;
+    int hp = 0;
+    int mp = 0;
+    int gold = 0;
+    int turns = 0;
+    int doom = 0;
+    int contamination = 0;
+    int strength = 0;
+    int intelligence = 0;
+    int dexterity = 0;
+    god_type religion = GOD_NO_GOD;
+    int piety = 0;
+    int religion_penance = 0;
+    int sif_muna_penance = 0;
+    int invis = 0;
+    int confusion = 0;
+    int slow = 0;
+    int haste = 0;
+    int flight = 0;
+    int poisoning = 0;
+    bool equip_bar = false;
+    int hp_max_adj_temp = 0;
+};
+
+static hud_test_snapshot _hud_test_snapshot;
+
+static void _redraw_hud_test_state()
+{
+    you.redraw_hit_points = true;
+    you.redraw_magic_points = true;
+    you.redraw_armour_class = true;
+    you.redraw_evasion = true;
+    you.redraw_experience = true;
+    you.redraw_status_lights = true;
+    you.redraw_title = true;
+    you.redraw_doom = true;
+    you.redraw_contam = true;
+    you.redraw_noise = true;
+    you.redraw_quiver = true;
+    you.wield_change = true;
+    you.gear_change = true;
+    you.redraw_stats.init(true);
+    redraw_screen();
+}
+
+static void _save_hud_test_state()
+{
+    if (_hud_test_snapshot.valid)
+        return;
+
+    _hud_test_snapshot.valid = true;
+    _hud_test_snapshot.hp = you.hp;
+    _hud_test_snapshot.mp = you.magic_points;
+    _hud_test_snapshot.gold = you.gold;
+    _hud_test_snapshot.turns = you.num_turns;
+    _hud_test_snapshot.doom = you.attribute[ATTR_DOOM];
+    _hud_test_snapshot.contamination = you.magic_contamination;
+    _hud_test_snapshot.strength = you.base_stats[STAT_STR];
+    _hud_test_snapshot.intelligence = you.base_stats[STAT_INT];
+    _hud_test_snapshot.dexterity = you.base_stats[STAT_DEX];
+    _hud_test_snapshot.religion = you.religion;
+    _hud_test_snapshot.piety = you.raw_piety;
+    _hud_test_snapshot.religion_penance = you.penance[you.religion];
+    _hud_test_snapshot.sif_muna_penance = you.penance[GOD_SIF_MUNA];
+    _hud_test_snapshot.invis = you.duration[DUR_INVIS];
+    _hud_test_snapshot.confusion = you.duration[DUR_CONF];
+    _hud_test_snapshot.slow = you.duration[DUR_SLOW];
+    _hud_test_snapshot.haste = you.duration[DUR_HASTE];
+    _hud_test_snapshot.flight = you.duration[DUR_FLIGHT];
+    _hud_test_snapshot.poisoning = you.duration[DUR_POISONING];
+    _hud_test_snapshot.equip_bar = Options.equip_bar;
+    _hud_test_snapshot.hp_max_adj_temp = you.hp_max_adj_temp;
+}
+
+static void _restore_hud_test_state()
+{
+    if (!_hud_test_snapshot.valid)
+        return;
+
+    you.hp_max_adj_temp = _hud_test_snapshot.hp_max_adj_temp;
+    calc_hp();
+    set_hp(min(_hud_test_snapshot.hp, you.hp_max));
+    set_mp(min(_hud_test_snapshot.mp, you.max_magic_points));
+    you.set_gold(_hud_test_snapshot.gold);
+    you.num_turns = _hud_test_snapshot.turns;
+    you.attribute[ATTR_DOOM] = _hud_test_snapshot.doom;
+    you.magic_contamination = _hud_test_snapshot.contamination;
+    you.base_stats[STAT_STR] = _hud_test_snapshot.strength;
+    you.base_stats[STAT_INT] = _hud_test_snapshot.intelligence;
+    you.base_stats[STAT_DEX] = _hud_test_snapshot.dexterity;
+    you.religion = _hud_test_snapshot.religion;
+    you.raw_piety = _hud_test_snapshot.piety;
+    you.penance[you.religion] = _hud_test_snapshot.religion_penance;
+    you.penance[GOD_SIF_MUNA] = _hud_test_snapshot.sif_muna_penance;
+    set_god_ability_slots();
+    you.duration[DUR_INVIS] = _hud_test_snapshot.invis;
+    you.duration[DUR_CONF] = _hud_test_snapshot.confusion;
+    you.duration[DUR_SLOW] = _hud_test_snapshot.slow;
+    you.duration[DUR_HASTE] = _hud_test_snapshot.haste;
+    you.duration[DUR_FLIGHT] = _hud_test_snapshot.flight;
+    you.duration[DUR_POISONING] = _hud_test_snapshot.poisoning;
+    Options.equip_bar = _hud_test_snapshot.equip_bar;
+    _hud_test_snapshot.valid = false;
+    notify_stat_change();
+    _redraw_hud_test_state();
+}
+} // namespace
+
+void wizard_set_hud_test_state()
+{
+    char buf[16];
+    mprf(MSGCH_PROMPT,
+         "Top HUD test state: (n)ormal, (s)tress, (c)lear? ");
+    if (cancellable_get_line_autohist(buf, sizeof buf) || !buf[0])
+    {
+        canned_msg(MSG_OK);
+        return;
+    }
+
+    const char mode = tolower(buf[0]);
+    if (mode == 'c')
+    {
+        if (!_hud_test_snapshot.valid)
+        {
+            mpr("No saved top HUD test state to restore.");
+            return;
+        }
+        _restore_hud_test_state();
+        mpr("Restored the pre-test HUD state.");
+        return;
+    }
+    if (mode != 'n' && mode != 's')
+    {
+        mpr("Unknown top HUD test state; use n, s, or c.");
+        return;
+    }
+
+    _save_hud_test_state();
+    Options.equip_bar = true;
+
+    you.hp_max_adj_temp = mode == 's' ? -2 : -1;
+    calc_hp();
+
+    set_hp(max(1, you.hp_max / 4));
+    set_mp(max(0, you.max_magic_points / 4));
+    you.set_gold(123456);
+    you.num_turns = 123456;
+    you.attribute[ATTR_DOOM] = mode == 's' ? 75 : 25;
+    you.magic_contamination = mode == 's' ? 600 : 100;
+
+    you.base_stats[STAT_STR] = mode == 's' ? 1 : 7;
+    you.base_stats[STAT_INT] = mode == 's' ? 27 : 15;
+    you.base_stats[STAT_DEX] = mode == 's' ? 3 : 11;
+
+    // Sif Muna has a conventional six-rank piety display and no unusual
+    // interest/progress meter, making it stable for compact HUD testing.
+    you.religion = GOD_SIF_MUNA;
+    you.raw_piety = mode == 's' ? piety_breakpoint(5)
+                                : piety_breakpoint(3);
+    you.penance[GOD_SIF_MUNA] = 0;
+    set_god_ability_slots();
+
+    const int long_duration = 100 * BASELINE_DELAY;
+    you.duration[DUR_POISONING] = 5 * BASELINE_DELAY;
+    you.duration[DUR_FLIGHT] = long_duration;
+    you.duration[DUR_INVIS] = long_duration;
+    you.duration[DUR_HASTE] = long_duration;
+    if (mode == 's')
+    {
+        // These deliberately conflict with other durations. Stress mode tests
+        // layout priority and truncation, not a naturally reachable state.
+        you.duration[DUR_SLOW] = long_duration;
+        you.duration[DUR_CONF] = long_duration;
+    }
+    else
+    {
+        you.duration[DUR_SLOW] = 0;
+        you.duration[DUR_CONF] = 0;
+    }
+
+    notify_stat_change();
+    _redraw_hud_test_state();
+    mpr(mode == 's' ? "Applied top HUD stress state."
+                    : "Applied top HUD normal state.");
 }
 
 // Let the user type in a duration name.
