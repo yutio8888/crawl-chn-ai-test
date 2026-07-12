@@ -1600,9 +1600,14 @@ endif
 ifdef TILES
 	mkdir -p $(datadir_fp)/dat/tiles
 	$(COPY) dat/tiles/*.png $(datadir_fp)/dat/tiles/
+	$(COPY) dat/tiles/*.ttf $(datadir_fp)/dat/tiles/ 2>/dev/null || true
 ifneq (,$(INSTALL_FONTS))
 	$(COPY) $(INSTALL_FONTS) $(datadir_fp)/dat/tiles/
 endif
+endif
+# copy init.txt for Android platform
+ifdef ANDROID
+	$(COPY) init.txt $(datadir_fp)/ 2>/dev/null || true
 endif
 ifdef WEBTILES
 	mkdir -p $(webdir_fp)
