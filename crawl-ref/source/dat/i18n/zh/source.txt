@@ -37942,3 +37942,27 @@ pyre of ghostly fire
 rain of gore
 凝血之雨
 %%%%
+topbar status|Conf
+混乱
+%%%%
+topbar status|Crippled
+残废
+%%%%
+topbar status|Fast
+加速
+%%%%
+topbar status|Fast+Slow
+速缓
+%%%%
+topbar status|Slow
+减速
+%%%%
+topbar status|Fly
+飞行
+%%%%
+topbar status|Invis
+隐形
+%%%%
+topbar status|Pois
+中毒
+%%%%

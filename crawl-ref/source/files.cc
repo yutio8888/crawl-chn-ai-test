@@ -327,6 +327,13 @@ string change_file_extension(const string &filename, const string &ext)
 
 time_t file_modtime(const string &file)
 {
+#ifdef __ANDROID__
+    // ANDROID_ASSETS paths are virtual and cannot be stat()ed. Using the APK
+    // install/update timestamp invalidates persistent TextDB caches after an
+    // incremental install; the previous code returned 0 forever.
+    if (file.find(ANDROID_ASSETS) == 0)
+        return jni_package_last_update_time();
+#endif
     struct stat filestat;
     if (stat(file.c_str(), &filestat))
         return 0;

@@ -29,6 +29,7 @@ void set_xl(const int newxl, const bool train, const bool silent=true);
 bool wizard_add_mutation();
 bool wizard_toggle_bane();
 void wizard_set_stats();
+void wizard_set_hud_test_state();
 void wizard_edit_durations();
 void wizard_list_props();
 void wizard_get_god_gift();

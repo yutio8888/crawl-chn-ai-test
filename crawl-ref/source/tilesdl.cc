@@ -814,8 +814,9 @@ static const int min_inv_height  = 4;
 static const int max_inv_height  = 8;
 static const int max_mon_height  = 3;
 static const int min_cjk_sidebar_cols = 14;
-/// Number of text rows for the top stat bar in Android portrait mode.
-static const int top_bar_text_rows = 4;
+/// Minimum/maximum text rows for the top stat bar in Android portrait mode.
+static const int min_top_bar_text_rows = 6;
+static const int max_top_bar_text_rows = 7;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -872,10 +873,23 @@ void TilesFramework::do_layout()
     {
         // Portrait top bar: stat region at top as compact horizontal bar,
         // dungeon view below (full width), messages overlay at bottom.
+        const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        int top_bar_text_rows = min_top_bar_text_rows;
+        const int expanded_top_bar_h = m_region_stat->dy
+                                       * max_top_bar_text_rows;
+        const int expanded_tile_h = m_windowsz.y - expanded_top_bar_h
+                                    - msg_min_h;
+        // Add a seventh row only when it neither forces the dungeon cells to
+        // shrink nor lets the HUD consume an excessive share of a short
+        // screen. Tall phone displays normally satisfy both constraints.
+        if (expanded_top_bar_h * 100 <= m_windowsz.y * 15
+            && expanded_tile_h / m_region_tile->dy >= ENV_SHOW_DIAMETER)
+        {
+            top_bar_text_rows = max_top_bar_text_rows;
+        }
         const int top_bar_h = m_region_stat->dy * top_bar_text_rows;
 
-        // Ensure dungeon view fits ENV_SHOW_DIAMETER
-        const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        // Ensure dungeon view fits ENV_SHOW_DIAMETER.
         int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
         if (tile_avail_h / m_region_tile->dy < ENV_SHOW_DIAMETER)
         {
