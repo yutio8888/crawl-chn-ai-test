@@ -920,7 +920,7 @@ static void _handle_boulder_movement(monster& boulder)
         {
             mprf(T_("%s slams into %s and falls apart!"),
                  boulder.name(DESC_THE).c_str(),
-                 article_a(feat_type_name(env.grid(targ))).c_str());
+                 article_a(T_(feat_type_name(env.grid(targ)))).c_str());
         }
         monster_die(boulder, KILL_NONE, true);
         return;
@@ -1016,7 +1016,7 @@ static void _handle_boulder_movement(monster& boulder)
             {
                 ++solid_count;
                 if (solid_name.empty())
-                    solid_name = feat_type_name(env.grid(*ai));
+                    solid_name = T_(feat_type_name(env.grid(*ai)));
             }
 
         const int self_dmg = roll_dice(solid_count, BOULDER_ABRASION_DAMAGE);
@@ -1107,7 +1107,7 @@ static void _handle_hellfire_mortar(monster& mortar)
                         if (actor_at(new_pos))
                             barrier = actor_at(new_pos)->name(DESC_THE);
                         else
-                            barrier = article_a(feat_type_name(env.grid(new_pos)));
+                            barrier = article_a(T_(feat_type_name(env.grid(new_pos))));
 
                         mprf_p(T_("%1$s collides with %2$s and sinks back into the magma."),
                                mortar.name(DESC_THE).c_str(),

@@ -14022,6 +14022,39 @@ lava
 water
 深水
 %%%%
+altar
+祭坛
+%%%%
+dais
+台座
+%%%%
+floor
+地板
+%%%%
+fountain
+喷泉
+%%%%
+grate
+铁栅栏
+%%%%
+portal
+传送门
+%%%%
+shop
+商店
+%%%%
+staircase
+楼梯
+%%%%
+trap
+陷阱
+%%%%
+unknown terrain
+未知地形
+%%%%
+wall
+墙壁
+%%%%
 programming rift
 程序裂缝
 %%%%
@@ -37881,4 +37914,31 @@ Throw
 
 Vortex
 漩涡
+%%%%
+blast of energy
+能量冲击
+%%%%
+blast of lightning
+闪电冲击
+%%%%
+blast of putrescent gases
+腐臭爆裂
+%%%%
+blast of shadow
+暗影冲击
+%%%%
+caustic explosion
+腐蚀爆炸
+%%%%
+explosion of spores
+孢子爆炸
+%%%%
+fiery explosion
+烈焰爆炸
+%%%%
+pyre of ghostly fire
+幽灵火葬
+%%%%
+rain of gore
+凝血之雨
 %%%%
