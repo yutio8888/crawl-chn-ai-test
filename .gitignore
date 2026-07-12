@@ -21,12 +21,14 @@
 # Transient/personal items handled by .opencode/.gitignore (node_modules, package*.json, etc.)
 .mcp.json
 
-# CJK fonts submodule — used locally, not tracked in main repo
+# CJK fonts — used locally, not tracked in main repo
 crawl-ref/source/contrib/fonts
+crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf
 
 # Game data
 saves/
 
 *.sublime-workspace
 *.sublime-project
+morgue/
 games.d/
