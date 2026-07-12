@@ -75,6 +75,14 @@ fi
 git reset --hard "$MAIN_HEAD"
 # Init submodules (contrib/ libraries needed for NDK build)
 git submodule update --init --recursive
+# Copy gitignored runtime files from main worktree if missing
+if [ ! -f "$WT_SOURCE/init.txt" ] && [ -f "$REPO_ROOT/crawl-ref/source/init.txt" ]; then
+    cp "$REPO_ROOT/crawl-ref/source/init.txt" "$WT_SOURCE/init.txt"
+fi
+if [ ! -f "$WT_SOURCE/dat/tiles/MapleMono-NF-CN-Regular.ttf" ] && [ -f "$REPO_ROOT/crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf" ]; then
+    mkdir -p "$WT_SOURCE/dat/tiles"
+    cp "$REPO_ROOT/crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf" "$WT_SOURCE/dat/tiles/"
+fi
 echo "       Now at: $(git rev-parse --short HEAD)"
 
 # 2. Run make android (prepares data, rltiles, cflags, gradle files)
