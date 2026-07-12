@@ -62,6 +62,11 @@ bool DesktopLayoutPolicy::uses_overlay_messages() const
     return active();
 }
 
+bool DesktopLayoutPolicy::uses_top_hud() const
+{
+    return false;
+}
+
 // -------------------------------------------------------------------
 // AndroidPortraitLayoutPolicy — portrait-aware layout for Android.
 // Uses aspect-ratio detection (height > width * 1.25) to switch
@@ -124,6 +129,11 @@ bool AndroidPortraitLayoutPolicy::uses_touch_tabs() const
 bool AndroidPortraitLayoutPolicy::uses_overlay_messages() const
 {
     return true;
+}
+
+bool AndroidPortraitLayoutPolicy::uses_top_hud() const
+{
+    return is_portrait();
 }
 
 // -------------------------------------------------------------------

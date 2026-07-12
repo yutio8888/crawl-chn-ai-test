@@ -30,6 +30,10 @@ public:
 
     /// Messages region overlays the dungeon view
     virtual bool uses_overlay_messages() const = 0;
+
+    /// Stat region rendered as a top horizontal bar (portrait HUD).
+    /// When false, stat region is a right-side column (desktop / small-landscape).
+    virtual bool uses_top_hud() const = 0;
 };
 
 class DesktopLayoutPolicy : public LayoutPolicy
@@ -54,6 +58,8 @@ public:
     bool uses_compact_stats() const override;
     bool uses_touch_tabs() const override;
     bool uses_overlay_messages() const override;
+
+    bool uses_top_hud() const override;
 };
 
 class AndroidPortraitLayoutPolicy : public LayoutPolicy
@@ -78,6 +84,8 @@ public:
     bool uses_compact_stats() const override;
     bool uses_touch_tabs() const override;
     bool uses_overlay_messages() const override;
+
+    bool uses_top_hud() const override;
 };
 
 std::unique_ptr<LayoutPolicy> make_layout_policy();

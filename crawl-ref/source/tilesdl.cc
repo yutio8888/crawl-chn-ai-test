@@ -1259,7 +1259,17 @@ void TilesFramework::layout_statcol()
         // * commands will be on right as tabs
         // * stats will be squeezed in gap between dungeon and commands
         m_statcol_top = 0;
-        m_statcol_bottom = m_windowsz.y;
+        if (m_layout_policy && m_layout_policy->uses_top_hud())
+        {
+            // Portrait: cap stat column height to a reasonable HUD height
+            // instead of full screen, preventing ultra-long HP/MP bars.
+            const int max_stat_lines = 22;
+            m_statcol_bottom = m_statcol_top
+                + max_stat_lines * m_region_stat->dy;
+            m_statcol_bottom = min(m_statcol_bottom, m_windowsz.y);
+        }
+        else
+            m_statcol_bottom = m_windowsz.y;
 
         // resize stats to be up to beginning of command tabs
         //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
