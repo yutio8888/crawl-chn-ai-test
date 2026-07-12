@@ -125,6 +125,7 @@ TilesFramework::TilesFramework() :
     m_mouse(-1, -1),
     m_last_tick_redraw(0)
 {
+    m_layout_policy = make_layout_policy();
 }
 
 TilesFramework::~TilesFramework()
@@ -856,6 +857,11 @@ void TilesFramework::do_layout()
 
     // if the screen estate is very small, or if the option is set, choose
     // a layout that is optimal for very small screens
+    if (m_layout_policy)
+        m_layout_policy->update(m_windowsz.x, m_windowsz.y,
+                                m_stat_font ? m_stat_font->char_width() : 0,
+                                m_msg_font ? m_msg_font->char_width() : 0,
+                                Options.tile_use_small_layout);
     bool use_small_layout = is_using_small_layout();
     bool message_overlay = Options.tile_force_overlay;
 
@@ -888,7 +894,10 @@ void TilesFramework::do_layout()
         m_region_tab->resize_to_fit(m_windowsz.x, m_windowsz.y);
         //  * ox tells us the width of screen obscured by the tabs
         sidebar_pw = m_region_tab->grid_width_to_pixels(m_region_tab->ox) / 32
-                        + m_region_stat->font().max_width(9);
+                        + m_region_stat->font().max_width(
+                            is_cjk_primary_font()
+                            ? min_cjk_sidebar_cols - 2 // 12 chars for CJK
+                            : 9);
         m_stat_x_divider = m_windowsz.x - sidebar_pw;
     }
     else
@@ -1035,15 +1044,9 @@ void TilesFramework::do_layout()
 
 bool TilesFramework::is_using_small_layout()
 {
-    if (Options.tile_use_small_layout == maybe_bool::maybe
-        && m_stat_font && m_msg_font)
-    {
-        // Rough estimation of the minimum usable window size
-        // Not using Options.tile_font_xxx_size because it's reset on new game
-        return m_windowsz.x < (int)(m_stat_font->char_width()*45+m_msg_font->char_width()*55);
-    }
-    else
-        return bool(Options.tile_use_small_layout);
+    // Deprecated: delegates to LayoutPolicy for desktop compatibility.
+    // New code should use layout_policy().uses_*() semantic queries instead.
+    return m_layout_policy && m_layout_policy->uses_overlay_sidebar();
 }
 
 #define ZOOM_INC 0.1
@@ -1259,7 +1262,17 @@ void TilesFramework::layout_statcol()
         // * commands will be on right as tabs
         // * stats will be squeezed in gap between dungeon and commands
         m_statcol_top = 0;
-        m_statcol_bottom = m_windowsz.y;
+        if (m_layout_policy && m_layout_policy->uses_top_hud())
+        {
+            // Portrait: cap stat column height to a reasonable HUD height
+            // instead of full screen, preventing ultra-long HP/MP bars.
+            const int max_stat_lines = 22;
+            m_statcol_bottom = m_statcol_top
+                + max_stat_lines * m_region_stat->dy;
+            m_statcol_bottom = min(m_statcol_bottom, m_windowsz.y);
+        }
+        else
+            m_statcol_bottom = m_windowsz.y;
 
         // resize stats to be up to beginning of command tabs
         //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
