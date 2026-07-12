@@ -125,6 +125,7 @@ TilesFramework::TilesFramework() :
     m_mouse(-1, -1),
     m_last_tick_redraw(0)
 {
+    m_layout_policy = make_layout_policy();
 }
 
 TilesFramework::~TilesFramework()
@@ -856,6 +857,11 @@ void TilesFramework::do_layout()
 
     // if the screen estate is very small, or if the option is set, choose
     // a layout that is optimal for very small screens
+    if (m_layout_policy)
+        m_layout_policy->update(m_windowsz.x,
+                                m_stat_font ? m_stat_font->char_width() : 0,
+                                m_msg_font ? m_msg_font->char_width() : 0,
+                                Options.tile_use_small_layout);
     bool use_small_layout = is_using_small_layout();
     bool message_overlay = Options.tile_force_overlay;
 
@@ -1035,15 +1041,9 @@ void TilesFramework::do_layout()
 
 bool TilesFramework::is_using_small_layout()
 {
-    if (Options.tile_use_small_layout == maybe_bool::maybe
-        && m_stat_font && m_msg_font)
-    {
-        // Rough estimation of the minimum usable window size
-        // Not using Options.tile_font_xxx_size because it's reset on new game
-        return m_windowsz.x < (int)(m_stat_font->char_width()*45+m_msg_font->char_width()*55);
-    }
-    else
-        return bool(Options.tile_use_small_layout);
+    // Deprecated: delegates to LayoutPolicy for desktop compatibility.
+    // New code should use layout_policy().uses_*() semantic queries instead.
+    return m_layout_policy && m_layout_policy->uses_overlay_sidebar();
 }
 
 #define ZOOM_INC 0.1

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "cursor-type.h"
+#include "layout-policy.h"
 #include "text-tag-type.h"
 #include "tilereg.h"
 
@@ -168,6 +169,7 @@ public:
     int get_number_of_lines();
     int get_number_of_cols();
     bool is_using_small_layout();
+    LayoutPolicy &layout_policy() { return *m_layout_policy; }
     void zoom_dungeon(bool in);
 
     void deactivate_tab();
@@ -312,6 +314,8 @@ protected:
     void autosize_minimap();
     void place_minimap();
     void resize_inventory(int max_extra_lines = INT_MAX);
+
+    unique_ptr<LayoutPolicy> m_layout_policy;
 
     ImageManager *m_image;
 

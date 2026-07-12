@@ -59,10 +59,10 @@
 #include "xom.h"
 
 
-static bool _is_using_small_layout()
+static bool _uses_compact_hud()
 {
 #ifdef USE_TILE_LOCAL
-    return tiles.is_using_small_layout();
+    return tiles.layout_policy().uses_compact_hud();
 #endif
     return false;
 }
@@ -180,7 +180,7 @@ touchui_states TOUCH_UI_STATE = TOUCH_S_INIT;
 static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
 {
     bool super_small = _low_vertical_space();
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         TOUCH_UI_STATE = (touchui_states)((x<<8)+y);
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
@@ -673,7 +673,7 @@ void update_turn_count()
     const int turncount_start_x = 19 + 6;
     int ypos = 9;
     // TODO: unify this with the calculation in print_stats
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ypos--;
     CGOTOXY(turncount_start_x, ypos, GOTO_STAT);
 
@@ -682,7 +682,7 @@ void update_turn_count()
         ? make_stringf("%.1f", you.elapsed_time / 10.0)
         : make_stringf("%d", you.num_turns);
 
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
         time += make_stringf(" (%.1f)",
                 (you.elapsed_time - you.elapsed_time_at_last_input) / 10.0);
@@ -816,7 +816,7 @@ static void _print_stats_noise(int x, int y)
         bar_position = 7;
     }
 
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         Noise_Bar.horiz_bar_width--;
 
     if (silence)
@@ -865,7 +865,7 @@ static void _print_stats_noise(int x, int y)
 static void _print_stats_gold(int x, int y)
 {
     textcolour(HUD_CAPTION_COLOUR);
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
         CGOTOXY(x, y, GOTO_STAT);
         CPRINTF("%s", T_("Gold:"));
@@ -939,7 +939,7 @@ static void _print_stats_mp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             MP_Bar.vdraw(6, 19, you.magic_points, you.max_magic_points);
@@ -994,7 +994,7 @@ static void _print_stats_hp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             HP_Bar.vdraw(2, 19, you.hp, you.hp_max);
@@ -1031,7 +1031,7 @@ static void _print_stat(stat_type stat, int x, int y)
 
     textcolour(_get_stat_colour(stat));
     CPRINTF("%d", you.stat(stat, false));
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
         CPRINTF("    ");
 }
 
@@ -1100,7 +1100,7 @@ static void _print_stats_ac(int x, int y)
     auto text_col = _colour_from_stat_mod(you.temp_ac_mod());
     string ac = make_stringf("%2d ", you.armour_class_scaled(1));
 #ifdef WIZARD
-    if (you.wizard && !_is_using_small_layout())
+    if (you.wizard && !_uses_compact_hud())
         ac += make_stringf("(%d%%) ", you.gdr_perc(false));
 #endif
     textcolour(text_col);
@@ -1227,7 +1227,7 @@ static void _print_stats_qv(int y)
 
     formatted_string qdesc = quiver::get_secondary_action()->quiver_description();
 #ifdef USE_TILE_LOCAL
-    const int max_width = crawl_view.hudsz.x - (_is_using_small_layout() ? 0 : 4);
+    const int max_width = crawl_view.hudsz.x - (_uses_compact_hud() ? 0 : 4);
 #else
     const int max_width = crawl_view.hudsz.x - 4;
 #endif
@@ -1351,7 +1351,7 @@ static void _print_status_lights(int y)
 #endif
 
 #ifdef USE_TILE_LOCAL
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
 #endif
     size_t i_light = 0;
@@ -1439,7 +1439,7 @@ static void _redraw_title()
     const unsigned int WIDTH = crawl_view.hudsz.x;
     string title = filtered_lang(player_title());
     title = you.your_name + (title[0] == ',' ? "" : " ") + title;
-    const bool small_layout = _is_using_small_layout();
+    const bool small_layout = _uses_compact_hud();
 
     if (small_layout)
         title = you.your_name;
@@ -1577,7 +1577,7 @@ void print_stats()
     // hide the MP bar for djinni
     if (you.has_mutation(MUT_HP_CASTING))
     {
-        if (!_is_using_small_layout())
+        if (!_uses_compact_hud())
             rows_hidden++;
     }
     else if (you.redraw_magic_points)
@@ -1607,7 +1607,7 @@ void print_stats()
         CGOTOXY(1, 8 - rows_hidden, GOTO_STAT);
         textcolour(Options.status_caption_colour);
         CPRINTF("%s", T_("XL: "));
-        if (_is_using_small_layout())
+        if (_uses_compact_hud())
             CGOTOXY(5, 8, GOTO_STAT);
         textcolour(HUD_VALUE_COLOUR);
         CPRINTF("%2d ", you.experience_level);
@@ -1616,7 +1616,7 @@ void print_stats()
         else
         {
             textcolour(Options.status_caption_colour);
-            if (!_is_using_small_layout())
+            if (!_uses_compact_hud())
                 CPRINTF("%s", T_("Next: "));
             else
                 CGOTOXY(14, 8, GOTO_STAT);
@@ -1653,14 +1653,14 @@ void print_stats_level()
 {
     int ypos = 8;
     // TODO: unify this with the calculation in print_stats
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ypos--;
 
     CGOTOXY(19, ypos, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
     CPRINTF("%s", T_("Place: "));
 
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         CGOTOXY(26, ypos, GOTO_STAT);
     textcolour(HUD_VALUE_COLOUR);
 #ifdef DEBUG_DIAGNOSTICS
@@ -1682,7 +1682,7 @@ void draw_border()
     int ac_pos;
     // TODO: unify this calculation with rows_hidden in print_stats in a
     // non-insane way
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ac_pos = 4;
     else
         ac_pos = 5;
