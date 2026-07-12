@@ -1410,9 +1410,27 @@ static void _print_status_lights(int y)
                     CPRINTF("%s",lights[i_light].text.c_str());
                 }
                 else if ((int)lights.size() > crawl_view.hudsz.x / 2)
-                    CPRINTF("%.1s",lights[i_light].text.c_str());
+                {
+                    // Use character-aware truncation (not byte-level %.1s)
+                    // to avoid corrupting CJK UTF-8 sequences (Issue 57).
+                    const char *ct = lights[i_light].text.c_str();
+                    int chlen = 1;
+                    unsigned char fb = (unsigned char)*ct;
+                    if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
+                    else if (fb >= 0xE0 && fb < 0xF0) chlen = 3;
+                    else if (fb >= 0xF0) chlen = 4;
+                    CPRINTF("%.*s", chlen, ct);
+                }
                 else
-                    CPRINTF("%.1s ",lights[i_light].text.c_str());
+                {
+                    const char *ct = lights[i_light].text.c_str();
+                    int chlen = 1;
+                    unsigned char fb = (unsigned char)*ct;
+                    if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
+                    else if (fb >= 0xE0 && fb < 0xF0) chlen = 3;
+                    else if (fb >= 0xF0) chlen = 4;
+                    CPRINTF("%.*s ", chlen, ct);
+                }
                 ++i_light;
             }
         }
