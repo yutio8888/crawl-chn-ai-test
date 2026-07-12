@@ -95,6 +95,11 @@ static bool _low_vertical_space()
     return crawl_view.hudsz.y < 30;
 }
 
+static bool _uses_top_bar()
+{
+    return _uses_compact_hud() && crawl_view.hudsz.y <= 3;
+}
+
 /*
  * this glorious piece of code works by:
     - overriding cgotoxy and cprintf
@@ -184,6 +189,64 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         TOUCH_UI_STATE = (touchui_states)((x<<8)+y);
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
+
+    // Top bar layout: remap all HUD elements into 3 horizontal rows
+    if (_uses_top_bar())
+    {
+        switch (TOUCH_UI_STATE)
+        {
+        case TOUCH_S_INIT:
+        case TOUCH_S_NULL:
+        case TOUCH_V_TITLE:
+        case TOUCH_V_TITL2:
+            break;
+        case TOUCH_V_GOD:
+        case TOUCH_V_GOD2:
+            x = 1; y = 1; break;
+        case TOUCH_T_HP:
+            x = 1; y = 1; break;
+        case TOUCH_V_HP:
+            x = 4; y = 1; break;
+        case TOUCH_T_MP:
+            x = 18; y = 1; break;
+        case TOUCH_V_MP:
+            x = 21; y = 1; break;
+        case TOUCH_T_AC:  x = 1;  y = 2; break;
+        case TOUCH_V_AC:  x = 4;  y = 2; break;
+        case TOUCH_T_EV:  x = 7;  y = 2; break;
+        case TOUCH_V_EV:  x = 10; y = 2; break;
+        case TOUCH_T_SH:  x = 13; y = 2; break;
+        case TOUCH_V_SH:  x = 16; y = 2; break;
+        case TOUCH_T_STR: x = 20; y = 2; break;
+        case TOUCH_V_STR: x = 24; y = 2; break;
+        case TOUCH_T_INT: x = 28; y = 2; break;
+        case TOUCH_V_INT: x = 32; y = 2; break;
+        case TOUCH_T_DEX: x = 36; y = 2; break;
+        case TOUCH_V_DEX: x = 40; y = 2; break;
+        case TOUCH_T_XL:  x = 45; y = 2; break;
+        case TOUCH_V_XL:  x = 48; y = 2; break;
+        case TOUCH_V_XL2: x = 52; y = 2; break;
+        case TOUCH_T_WP:    x = 1;  y = 3; break;
+        case TOUCH_V_WP:    x = 4;  y = 3; break;
+        case TOUCH_T_QV:    x = 18; y = 3; break;
+        case TOUCH_V_QV:    x = 21; y = 3; break;
+        case TOUCH_T_NOISE: x = 1;  y = 3; break;
+        case TOUCH_V_NOISE: x = 1;  y = 3; break;
+        case TOUCH_V_NOISW: x = 1;  y = 3; break;
+        case TOUCH_V_NOISX: x = 1;  y = 3; break;
+        case TOUCH_T_PLACE: x = 30; y = 3; break;
+        case TOUCH_V_PLACE: x = 30; y = 3; break;
+        case TOUCH_T_TIME:  x = 45; y = 3; break;
+        case TOUCH_V_TIME:  x = 45; y = 3; break;
+        case TOUCH_V_LIGHT: x = 55; y = 3; break;
+        default:
+            TOUCH_UI_STATE = TOUCH_S_INIT;
+        }
+        y = min({y, 3, crawl_view.hudsz.y});
+        cgotoxy(x, y, region);
+        return;
+    }
+
     switch (TOUCH_UI_STATE)
     {
         case TOUCH_V_HP:
@@ -312,9 +375,13 @@ static void _cprintf_touchui(const char *format, ...)
             // don't draw these
             break;
         case TOUCH_T_HP:
+            if (_uses_top_bar())
+                cprintf(T_("HP:"));
             TOUCH_UI_STATE = TOUCH_V_HP;
             break;
         case TOUCH_T_MP:
+            if (_uses_top_bar())
+                cprintf(T_("MP:"));
             TOUCH_UI_STATE = TOUCH_V_MP;
             break;
         case TOUCH_V_TITLE:
@@ -343,7 +410,8 @@ static void _cprintf_touchui(const char *format, ...)
             // Was buf.substr(0, 2) which splits 3-byte CJK chars at byte 2.
             int clen = 0, nchars = 0;
             const char *cp = buf.c_str();
-            while (cp[clen] && nchars < 2)
+            int max_chars = _uses_top_bar() ? 4 : 2;
+            while (cp[clen] && nchars < max_chars)
             {
                 unsigned char fb = (unsigned char)cp[clen];
                 int ch = 1;
@@ -355,7 +423,10 @@ static void _cprintf_touchui(const char *format, ...)
             }
             buf = buf.substr(0, clen);
             trim_string(buf);
-            cprintf("%2s", buf.c_str());
+            if (_uses_top_bar())
+                cprintf("%s ", buf.c_str());
+            else
+                cprintf("%2s", buf.c_str());
             break;
         }
         case TOUCH_T_XL:
@@ -955,7 +1026,13 @@ static void _print_stats_mp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_uses_compact_hud())
+    if (_uses_top_bar())
+    {
+        MP_Bar.horiz_bar_width = 10;
+        MP_Bar.draw(25, 1, you.magic_points, you.max_magic_points);
+        MP_Bar.horiz_bar_width = -1;
+    }
+    else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             MP_Bar.vdraw(6, 19, you.magic_points, you.max_magic_points);
@@ -1010,7 +1087,13 @@ static void _print_stats_hp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_uses_compact_hud())
+    if (_uses_top_bar())
+    {
+        HP_Bar.horiz_bar_width = 10;
+        HP_Bar.draw(8, 1, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+        HP_Bar.horiz_bar_width = -1;
+    }
+    else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             HP_Bar.vdraw(2, 19, you.hp, you.hp_max);

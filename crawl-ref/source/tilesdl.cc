@@ -814,6 +814,8 @@ static const int min_inv_height  = 4;
 static const int max_inv_height  = 8;
 static const int max_mon_height  = 3;
 static const int min_cjk_sidebar_cols = 14;
+/// Number of text rows for the top stat bar in Android portrait mode.
+static const int top_bar_text_rows = 3;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -863,6 +865,64 @@ void TilesFramework::do_layout()
                                 m_msg_font ? m_msg_font->char_width() : 0,
                                 Options.tile_use_small_layout);
     bool use_small_layout = is_using_small_layout();
+    bool use_top_bar = use_small_layout && m_layout_policy && m_layout_policy->uses_top_hud();
+
+    if (use_top_bar)
+    {
+        // Portrait top bar: stat region at top as compact horizontal bar,
+        // dungeon view below (full width), messages overlay at bottom.
+        const int top_bar_h = m_region_stat->dy * top_bar_text_rows;
+
+        // Ensure dungeon view fits ENV_SHOW_DIAMETER
+        const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
+        if (tile_avail_h / m_region_tile->dy < ENV_SHOW_DIAMETER)
+        {
+            m_region_tile->dy = tile_avail_h / ENV_SHOW_DIAMETER;
+            m_region_tile->dx = m_region_tile->dy;
+        }
+
+        // Stat bar at top, full width
+        m_region_stat->resize_to_fit(m_windowsz.x, top_bar_h);
+        m_region_stat->place(0, 0, 0);
+
+        // Tile (dungeon) region below stat bar, full width
+        const int tile_iw = m_windowsz.x;
+        const int tile_ih = tile_avail_h;
+        const int tile_ow = round_up_to_multiple(tile_iw, m_region_tile->dx*2) + m_region_tile->dx;
+        const int tile_oh = round_up_to_multiple(tile_ih, m_region_tile->dy*2) + m_region_tile->dx;
+        m_region_tile->resize_to_fit(tile_ow, tile_oh);
+        m_region_tile->place(-(tile_ow - tile_iw)/2, top_bar_h - (tile_oh - tile_ih)/2, 0);
+        m_region_tile->tile_iw = tile_iw;
+        m_region_tile->tile_ih = tile_ih;
+
+        // Message overlay at bottom
+        VColour overlay_col = Options.tile_overlay_col;
+        overlay_col.a = (255 * Options.tile_overlay_alpha_percent)/100;
+        m_region_msg->set_overlay(true, overlay_col);
+        m_region_msg->place(0, m_windowsz.y - msg_min_h, 0);
+        m_region_msg->resize_to_fit(m_windowsz.x, msg_min_h);
+
+        // Tabs on right (overlay on dungeon)
+        m_region_tab->set_small_layout(true, m_windowsz);
+        m_region_tab->resize_to_fit(m_windowsz.x, m_windowsz.y - top_bar_h);
+        m_region_tab->place(m_windowsz.x - m_region_tab->ox, top_bar_h);
+
+        // CRT overlay (full screen for text)
+        m_region_crt->place(0, 0, 0);
+        m_region_crt->resize_to_fit(m_windowsz.x, m_windowsz.y);
+
+        // crawl_view geometry
+        crawl_view.viewsz.x = m_region_tile->mx;
+        crawl_view.viewsz.y = m_region_tile->my;
+        crawl_view.msgsz.x = m_region_msg->mx;
+        crawl_view.msgsz.y = m_region_msg->my;
+        crawl_view.hudsz.x = m_region_stat->mx;
+        crawl_view.hudsz.y = m_region_stat->my;
+        crawl_view.init_view();
+        return;
+    }
+
     bool message_overlay = Options.tile_force_overlay;
 
     const int min_msg_h =
@@ -1264,19 +1324,17 @@ void TilesFramework::layout_statcol()
         m_statcol_top = 0;
         if (m_layout_policy && m_layout_policy->uses_top_hud())
         {
-            // Portrait: cap stat column height to a reasonable HUD height
-            // instead of full screen, preventing ultra-long HP/MP bars.
-            const int max_stat_lines = 22;
-            m_statcol_bottom = m_statcol_top
-                + max_stat_lines * m_region_stat->dy;
-            m_statcol_bottom = min(m_statcol_bottom, m_windowsz.y);
+            // Top bar: stat region positioned by do_layout().
+            // Don't resize — it's a horizontal bar at the top.
+            m_statcol_bottom = m_region_stat->ey - m_region_stat->sy;
         }
         else
+        {
             m_statcol_bottom = m_windowsz.y;
-
-        // resize stats to be up to beginning of command tabs
-        //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
-        m_region_stat->resize_to_fit((m_windowsz.x - m_stat_x_divider) - m_region_tab->ox*m_region_tab->dx/32, m_statcol_bottom-m_statcol_top);
+            // resize stats to be up to beginning of command tabs
+            //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
+            m_region_stat->resize_to_fit((m_windowsz.x - m_stat_x_divider) - m_region_tab->ox*m_region_tab->dx/32, m_statcol_bottom-m_statcol_top);
+        }
     }
     else
     {
