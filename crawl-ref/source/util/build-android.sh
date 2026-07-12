@@ -99,6 +99,31 @@ if [ -z "${APK_FILE:-}" ]; then
     exit 1
 fi
 
-echo "=== [4/4] Build complete ==="
+# 4. Sign unsigned APK (buildTest uses debug keystore; release must be signed separately)
+if [[ "$APK_FILE" == *unsigned* ]]; then
+    KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
+    SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
+    if [ -f "$KEYSTORE" ]; then
+        echo "=== [4/5] Signing APK ==="
+        BUILD_TOOLS=$(ls -d "$SDK_ROOT/build-tools/"*/ 2>/dev/null | sort -V | tail -1)
+        if [ -n "${BUILD_TOOLS:-}" ] && [ -x "${BUILD_TOOLS}zipalign" ]; then
+            "${BUILD_TOOLS}zipalign" -p 4 "$APK_FILE" "${APK_FILE}.aligned"
+            "${BUILD_TOOLS}apksigner" sign --ks "$KEYSTORE" \
+                --ks-pass "pass:${ANDROID_KEYSTORE_PASS:-android}" \
+                --out "$SIGNED_APK" "${APK_FILE}.aligned"
+            rm -f "${APK_FILE}.aligned"
+            APK_FILE="$SIGNED_APK"
+            echo "       Signed: $APK_FILE"
+        else
+            echo "WARNING: build-tools/zipalign not found, APK left unsigned"
+        fi
+    else
+        echo "WARNING: keystore not found at $KEYSTORE, APK left unsigned"
+    fi
+else
+    echo "=== [4/5] APK already signed ==="
+fi
+
+echo "=== Build complete ==="
 echo "       APK: $APK_FILE"
 echo "       Size: $(stat -c%s "$APK_FILE" 2>/dev/null || stat -f%z "$APK_FILE") bytes"
