@@ -198,8 +198,22 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     // the label inline, producing "AC:12 EV:15" etc.
     if (_uses_top_bar())
     {
-        // Track which stat label has already been output (draw_border
-        // first pass), so the value pass (_print_stats_xx) skips cgotoxy.
+        // Debug: write test marker at init
+        if (TOUCH_UI_STATE == TOUCH_S_INIT)
+        {
+            cgotoxy(1, 1, GOTO_STAT);
+            cprintf("TBAR:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
+
+            cgotoxy(1, 2, GOTO_STAT);
+            cprintf("ROW2:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
+
+            cgotoxy(1, 3, GOTO_STAT);
+            cprintf("ROW3:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
+
+            cgotoxy(1, 4, GOTO_STAT);
+            cprintf("ROW4:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
+        }
+
         // Track which stat label was already output (draw_border first pass),
         // so the value pass (_print_stats_xx) skips cgotoxy.
         static bool stat_label_seen[6];
