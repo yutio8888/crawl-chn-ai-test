@@ -865,7 +865,8 @@ void TilesFramework::do_layout()
                                 m_msg_font ? m_msg_font->char_width() : 0,
                                 Options.tile_use_small_layout);
     bool use_small_layout = is_using_small_layout();
-    bool use_top_bar = use_small_layout && m_layout_policy && m_layout_policy->uses_top_hud();
+    bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
+    bool use_top_bar = use_small_layout && top_bar_policy;
 
     if (use_top_bar)
     {

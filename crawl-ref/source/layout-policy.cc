@@ -133,7 +133,8 @@ bool AndroidPortraitLayoutPolicy::uses_overlay_messages() const
 
 bool AndroidPortraitLayoutPolicy::uses_top_hud() const
 {
-    return is_portrait();
+    // TODO: temp force for testing — revert after debug
+    return true;
 }
 
 // -------------------------------------------------------------------

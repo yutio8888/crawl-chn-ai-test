@@ -97,7 +97,8 @@ static bool _low_vertical_space()
 
 static bool _uses_top_bar()
 {
-    return _uses_compact_hud() && crawl_view.hudsz.y <= 3;
+    bool top = _uses_compact_hud() && crawl_view.hudsz.y <= 3;
+    return top;
 }
 
 /*
