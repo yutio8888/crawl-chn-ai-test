@@ -4,6 +4,7 @@
 #ifdef USE_FT
 
 #include <map>
+#include <unordered_map>
 #include <vector>
 
 #include <ft2build.h>
@@ -14,9 +15,14 @@
 using std::vector;
 
 // maximum number of unique glyphs that can be rendered with this font at once
-#define MAX_GLYPHS 256
-// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 <= MAX_GLYPHS
-#define GLYPHS_PER_ROWCOL 16
+constexpr unsigned int MAX_GLYPHS = 4096;
+// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 >= MAX_GLYPHS
+constexpr unsigned int GLYPHS_PER_ROWCOL = 64;
+static_assert(GLYPHS_PER_ROWCOL * GLYPHS_PER_ROWCOL >= MAX_GLYPHS,
+              "Glyph grid dimension squared must be at least MAX_GLYPHS");
+
+// atlas slot identifier — uint16_t is sufficient for up to 65536 slots
+using atlas_slot_t = uint16_t;
 
 struct HiDPIState;
 extern HiDPIState display_density;
@@ -128,10 +134,13 @@ protected:
 
     struct FontAtlasEntry
     {
-        char32_t uchar;
+        char32_t uchar = 0;
+        uint64_t last_used = 0;
+        bool reserved = false;
     };
     FontAtlasEntry *m_atlas;
-    vector<char32_t> m_atlas_lru;
+    // O(1) lookup: Unicode codepoint -> atlas slot
+    std::unordered_map<char32_t, atlas_slot_t> m_glyph_to_slot;
 
     // count of glyph loads in the current text block
     int n_subst;
@@ -170,6 +179,11 @@ protected:
     FT_Byte *cjk_ttf;          // CJK font data (must survive until cjk_face is freed)
     unsigned char *pixels;
     unsigned int fsize;
+
+    // monotonic clock for last_used tracking in eviction scan
+    uint64_t m_atlas_clock;
+    // peak number of distinct glyphs concurrently resident (0 = not tracking)
+    unsigned int m_peak_glyphs;
 };
 
 #endif // USE_FT
