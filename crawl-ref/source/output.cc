@@ -97,8 +97,7 @@ static bool _low_vertical_space()
 
 static bool _uses_top_bar()
 {
-    bool top = _uses_compact_hud() && crawl_view.hudsz.y <= 4;
-    return top;
+    return crawl_view.hudsz.y <= 4;
 }
 
 /*
@@ -191,102 +190,12 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
 
-    // Top bar layout: remap all HUD elements into horizontal rows.
-    // For stat label+value pairs (AC/EV/SH/STR/INT/DEX), the first
-    // CGOTOXY call (draw_border) gets the label position; the second
-    // call (_print_stats_xx) skips cgotoxy so the value text follows
-    // the label inline, producing "AC:12 EV:15" etc.
+    // Top bar: handled by _render_top_bar() via direct cgotoxy/cprintf,
+    // bypassing the touch UI system entirely. Just route everything
+    // through normal cgotoxy so no crash-y remapping is needed.
     if (crawl_view.hudsz.y <= 4)
     {
-        // Debug: verify this branch is reached
-        static bool _vmarker = false;
-        if (!_vmarker)
-        {
-            _vmarker = true;
-            cgotoxy(1, 1, GOTO_STAT);
-            cprintf("T-MARKER");
-        }
-
-        // Track which stat label was already output (draw_border first pass),
-        // so the value pass (_print_stats_xx) skips cgotoxy.
-        static bool stat_label_seen[6];
-        if (TOUCH_UI_STATE == TOUCH_S_INIT)
-            memset(stat_label_seen, 0, sizeof(stat_label_seen));
-
-        bool skip_goto = false;
-        {
-            int sid = -1;
-            switch (TOUCH_UI_STATE)
-            {
-            case TOUCH_T_AC:  sid = 0; break;
-            case TOUCH_T_EV:  sid = 1; break;
-            case TOUCH_T_SH:  sid = 2; break;
-            case TOUCH_T_STR: sid = 3; break;
-            case TOUCH_T_INT: sid = 4; break;
-            case TOUCH_T_DEX: sid = 5; break;
-            default: break;
-            }
-            if (sid >= 0)
-            {
-                if (stat_label_seen[sid])
-                    skip_goto = true;
-                else
-                    stat_label_seen[sid] = true;
-            }
-        }
-
-        switch (TOUCH_UI_STATE)
-        {
-        case TOUCH_S_INIT:
-        case TOUCH_S_NULL:
-            break;
-        case TOUCH_V_GOD:
-        case TOUCH_V_GOD2:
-            x = 1; y = 1; break;
-        case TOUCH_T_HP:
-            x = 1; y = 1; break;
-        case TOUCH_V_HP:
-            x = 4; y = 1; break;
-        case TOUCH_T_MP:
-            x = 18; y = 1; break;
-        case TOUCH_V_MP:
-            x = 21; y = 1; break;
-        case TOUCH_T_AC:
-            if (!skip_goto) { x = 1;  y = 2; } break;
-        case TOUCH_T_EV:
-            if (!skip_goto) { x = 10; y = 2; } break;
-        case TOUCH_T_SH:
-            if (!skip_goto) { x = 19; y = 2; } break;
-        case TOUCH_T_STR:
-            if (!skip_goto) { x = 28; y = 2; } break;
-        case TOUCH_T_INT:
-            if (!skip_goto) { x = 37; y = 2; } break;
-        case TOUCH_T_DEX:
-            if (!skip_goto) { x = 46; y = 2; } break;
-        case TOUCH_T_XL:  x = 1;  y = 2; break;
-        case TOUCH_V_XL:  x = 1;  y = 2; break;
-        case TOUCH_V_XL2: x = 1;  y = 2; break;
-        case TOUCH_T_WP:    x = 1;  y = 3; break;
-        case TOUCH_V_WP:    x = 1;  y = 3; break;
-        case TOUCH_T_QV:    x = 1;  y = 3; break;
-        case TOUCH_V_QV:    x = 1;  y = 3; break;
-        case TOUCH_T_NOISE:
-        case TOUCH_V_NOISE:
-        case TOUCH_V_NOISW:
-        case TOUCH_V_NOISX: x = 1;  y = 3; break;
-        case TOUCH_T_PLACE:
-        case TOUCH_V_PLACE: x = 1;  y = 3; break;
-        case TOUCH_T_TIME:
-        case TOUCH_V_TIME:  x = 1;  y = 3; break;
-        case TOUCH_V_LIGHT: x = 1;  y = 3; break;
-        case TOUCH_V_TITLE:
-        case TOUCH_V_TITL2:
-        default:
-            TOUCH_UI_STATE = TOUCH_S_INIT;
-        }
-        y = min({y, 4, crawl_view.hudsz.y});
-        if (!skip_goto)
-            cgotoxy(x, y, region);
+        cgotoxy(x, min(y, crawl_view.hudsz.y), region);
         return;
     }
 
@@ -1696,12 +1605,87 @@ static void _redraw_title()
     you.redraw_title = false;
 }
 
+static void _render_top_bar()
+{
+#ifdef USE_TILE_LOCAL
+    cursor_control coff(false);
+    textcolour(LIGHTGREY);
+
+    // Row 1: HP + MP bars
+    cgotoxy(1, 1, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    cprintf("HP:");
+    textcolour(HUD_VALUE_COLOUR);
+    cprintf("%d/%d ", you.hp, you.hp_max);
+    HP_Bar.horiz_bar_width = 8;
+    HP_Bar.draw(14, 1, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+    HP_Bar.horiz_bar_width = -1;
+
+    if (!you.has_mutation(MUT_HP_CASTING))
+    {
+        cgotoxy(24, 1, GOTO_STAT);
+        textcolour(HUD_CAPTION_COLOUR);
+        cprintf("MP:");
+        textcolour(HUD_VALUE_COLOUR);
+        cprintf("%d/%d ", you.magic_points, you.max_magic_points);
+        MP_Bar.horiz_bar_width = 8;
+        MP_Bar.draw(34, 1, you.magic_points, you.max_magic_points);
+        MP_Bar.horiz_bar_width = -1;
+    }
+
+    // Row 2: AC/EV/SH + Str/Int/Dex
+    cgotoxy(1, 2, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    cprintf("AC:%d ", you.armour_class_scaled(1));
+    cprintf("EV:%d ", you.evasion());
+    cprintf("SH:%d ", player_shield_class());
+    textcolour(HUD_VALUE_COLOUR);
+    cprintf("Str:%d Int:%d Dex:%d",
+            you.strength(), you.intel(), you.dex());
+
+    // Row 3: XL + Place
+    cgotoxy(1, 3, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    cprintf("XL:%d ", you.experience_level);
+    if (you.experience_level < you.get_max_xl())
+    {
+        textcolour(HUD_VALUE_COLOUR);
+        cprintf("%d%% ", get_exp_progress());
+    }
+    textcolour(HUD_CAPTION_COLOUR);
+    cprintf("Plc:");
+    textcolour(HUD_VALUE_COLOUR);
+    cprintf("%s ", _level_description_string_hud().c_str());
+
+    // Row 4: Weapon + Quiver
+    cgotoxy(1, 4, GOTO_STAT);
+    // Will be filled in as we refine the layout
+
+    you.redraw_stats.init(false);
+    you.redraw_hit_points = false;
+    you.redraw_magic_points = false;
+    you.redraw_armour_class = false;
+    you.redraw_evasion = false;
+    you.redraw_experience = false;
+    you.redraw_status_lights = false;
+#endif
+}
+
 void print_stats()
 {
 #ifndef USE_TILE_LOCAL
     if (crawl_state.smallterm)
         return;
 #endif
+
+#ifdef USE_TILE_LOCAL
+    if (_uses_top_bar())
+    {
+        _render_top_bar();
+        return;
+    }
+#endif
+
     int ac_pos = 5;
     int ev_pos = ac_pos + 1;
 
