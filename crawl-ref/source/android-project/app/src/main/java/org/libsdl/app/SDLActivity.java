@@ -623,15 +623,33 @@ public class SDLActivity extends AppCompatActivity {
                     } else {
                         mKeyboardExtra.setVisibility(View.GONE);
                     }
-                    // Update SDL Surface heigh
-                    if (keyboardOption == 1) {
-                        ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
+                    // Update SDL Surface height.
+                    // CRAWL HACK (Issue 57 phase 1): reserve Surface space above the
+                    // on-screen keyboard for BOTH the classic (1) and transparent (2)
+                    // keyboards so it no longer overlaps the game's message log / HP
+                    // bars. Previously only option 1 shrank the Surface; option 2
+                    // (transparent) drew on top of the game, which is the reported
+                    // portrait-mode overlap bug.
+                    // The reserved height is read inside a post() runnable because a
+                    // freshly-shown keyboard reports height 0 until the next layout
+                    // pass. Resizing the Surface triggers SDLSurface.surfaceChanged ->
+                    // onNativeResize, which re-runs the native do_layout(); this is the
+                    // proper resize path (no reliance on the delayed Ctrl+R refresh).
+                    if (keyboardOption == 1 || keyboardOption == 2) {
                         if (mScreenKeyboardShown) {
-                            lParams.height = keyboardsLayout.getHeight() - mKeyboard.getHeight();
+                            keyboardsLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
+                                    lParams.height = keyboardsLayout.getHeight() - mKeyboard.getHeight();
+                                    mSurface.setLayoutParams(lParams);
+                                }
+                            });
                         } else {
+                            ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
                             lParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                            mSurface.setLayoutParams(lParams);
                         }
-                        mSurface.setLayoutParams(lParams);
                     }
                 }
                 break;
