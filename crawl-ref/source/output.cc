@@ -196,22 +196,15 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     // CGOTOXY call (draw_border) gets the label position; the second
     // call (_print_stats_xx) skips cgotoxy so the value text follows
     // the label inline, producing "AC:12 EV:15" etc.
-    if (_uses_top_bar())
+    if (crawl_view.hudsz.y <= 4)
     {
-        // Debug: write test marker at init
-        if (TOUCH_UI_STATE == TOUCH_S_INIT)
+        // Debug: verify this branch is reached
+        static bool _vmarker = false;
+        if (!_vmarker)
         {
+            _vmarker = true;
             cgotoxy(1, 1, GOTO_STAT);
-            cprintf("TBAR:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
-
-            cgotoxy(1, 2, GOTO_STAT);
-            cprintf("ROW2:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
-
-            cgotoxy(1, 3, GOTO_STAT);
-            cprintf("ROW3:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
-
-            cgotoxy(1, 4, GOTO_STAT);
-            cprintf("ROW4:HP MP AC EV SH ST IN DEX XL WP QV NOISE PLACE TIME LIGHT GOD");
+            cprintf("T-MARKER");
         }
 
         // Track which stat label was already output (draw_border first pass),
