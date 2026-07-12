@@ -338,10 +338,26 @@ static void _cprintf_touchui(const char *format, ...)
         case TOUCH_V_AC:
         case TOUCH_V_EV:
         case TOUCH_V_SH:
-            buf = buf.substr(0, 2);
+        {
+            // Character-aware truncation (not byte-level) for CJK safety.
+            // Was buf.substr(0, 2) which splits 3-byte CJK chars at byte 2.
+            int clen = 0, nchars = 0;
+            const char *cp = buf.c_str();
+            while (cp[clen] && nchars < 2)
+            {
+                unsigned char fb = (unsigned char)cp[clen];
+                int ch = 1;
+                if (fb >= 0xC0 && fb < 0xE0) ch = 2;
+                else if (fb >= 0xE0 && fb < 0xF0) ch = 3;
+                else if (fb >= 0xF0) ch = 4;
+                clen += ch;
+                nchars++;
+            }
+            buf = buf.substr(0, clen);
             trim_string(buf);
             cprintf("%2s", buf.c_str());
             break;
+        }
         case TOUCH_T_XL:
             cprintf(T_("XL Next"));
             break;
