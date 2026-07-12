@@ -191,19 +191,43 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
 
-    // Top bar layout: remap all HUD elements into 3 horizontal rows.
+    // Top bar layout: remap all HUD elements into horizontal rows.
     // For stat label+value pairs (AC/EV/SH/STR/INT/DEX), the first
     // CGOTOXY call (draw_border) gets the label position; the second
-    // call (_print_stats_xx) skips cgotoxy so the value continues from
-    // where the label ended, producing "AC:12 EV:15" etc.
+    // call (_print_stats_xx) skips cgotoxy so the value text follows
+    // the label inline, producing "AC:12 EV:15" etc.
     if (_uses_top_bar())
     {
-        static int topbar_visit[256];
-        // Reset tracking every frame (when TOUCH_S_INIT is hit)
+        // Track which stat label has already been output (draw_border
+        // first pass), so the value pass (_print_stats_xx) skips cgotoxy.
+        // Track which stat label was already output (draw_border first pass),
+        // so the value pass (_print_stats_xx) skips cgotoxy.
+        static bool stat_label_seen[6];
         if (TOUCH_UI_STATE == TOUCH_S_INIT)
-            memset(topbar_visit, 0, sizeof(topbar_visit));
+            memset(stat_label_seen, 0, sizeof(stat_label_seen));
 
         bool skip_goto = false;
+        {
+            int sid = -1;
+            switch (TOUCH_UI_STATE)
+            {
+            case TOUCH_T_AC:  sid = 0; break;
+            case TOUCH_T_EV:  sid = 1; break;
+            case TOUCH_T_SH:  sid = 2; break;
+            case TOUCH_T_STR: sid = 3; break;
+            case TOUCH_T_INT: sid = 4; break;
+            case TOUCH_T_DEX: sid = 5; break;
+            default: break;
+            }
+            if (sid >= 0)
+            {
+                if (stat_label_seen[sid])
+                    skip_goto = true;
+                else
+                    stat_label_seen[sid] = true;
+            }
+        }
+
         switch (TOUCH_UI_STATE)
         {
         case TOUCH_S_INIT:
@@ -221,41 +245,17 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
         case TOUCH_V_MP:
             x = 21; y = 1; break;
         case TOUCH_T_AC:
-            if (topbar_visit[TOUCH_T_AC]++)
-                skip_goto = true;
-            else
-                { x = 1;  y = 2; }
-            break;
+            if (!skip_goto) { x = 1;  y = 2; } break;
         case TOUCH_T_EV:
-            if (topbar_visit[TOUCH_T_EV]++)
-                skip_goto = true;
-            else
-                { x = 10; y = 2; }
-            break;
+            if (!skip_goto) { x = 10; y = 2; } break;
         case TOUCH_T_SH:
-            if (topbar_visit[TOUCH_T_SH]++)
-                skip_goto = true;
-            else
-                { x = 19; y = 2; }
-            break;
+            if (!skip_goto) { x = 19; y = 2; } break;
         case TOUCH_T_STR:
-            if (topbar_visit[TOUCH_T_STR]++)
-                skip_goto = true;
-            else
-                { x = 28; y = 2; }
-            break;
+            if (!skip_goto) { x = 28; y = 2; } break;
         case TOUCH_T_INT:
-            if (topbar_visit[TOUCH_T_INT]++)
-                skip_goto = true;
-            else
-                { x = 37; y = 2; }
-            break;
+            if (!skip_goto) { x = 37; y = 2; } break;
         case TOUCH_T_DEX:
-            if (topbar_visit[TOUCH_T_DEX]++)
-                skip_goto = true;
-            else
-                { x = 46; y = 2; }
-            break;
+            if (!skip_goto) { x = 46; y = 2; } break;
         case TOUCH_T_XL:  x = 1;  y = 2; break;
         case TOUCH_V_XL:  x = 1;  y = 2; break;
         case TOUCH_V_XL2: x = 1;  y = 2; break;
