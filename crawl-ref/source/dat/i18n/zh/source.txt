@@ -39182,7 +39182,7 @@ died
 死亡
 %%%%
 Died
-死了
+死亡
 %%%%
 fell downstairs
 从楼梯跌落
@@ -39303,6 +39303,12 @@ A voice whispers, "%s"
 %%%%
 Bane of the Dilettante
 门外汉之祸
+%%%%
+%s's power
+%s的神力
+%%%%
+%s's anger
+%s的愤怒
 %%%%
 scribal knowledge
 抄写知识

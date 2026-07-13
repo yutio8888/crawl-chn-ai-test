@@ -580,7 +580,8 @@ string SkillMenuSwitch::get_help()
                 && have_passive(passive_t::bondage_skill_boost))
             {
                 if (chinese)
-                    causes.push_back(god_name(you.religion) + T_("的神力"));
+                    causes.push_back(make_stringf(T_("%s's power"),
+                                                  god_name(you.religion).c_str()));
                 else
                     causes.push_back(apostrophise(god_name(you.religion))
                                      + " power");
@@ -601,7 +602,7 @@ string SkillMenuSwitch::get_help()
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
-                    causes.begin(), causes.end(), T_(","), T_(","));
+                    causes.begin(), causes.end(), T_("、"), T_("、"));
                 result = make_stringf(T_("Skills enhanced by: %s."),
                                       cause_list.c_str());
             }
@@ -619,7 +620,8 @@ string SkillMenuSwitch::get_help()
             if (player_under_penance(GOD_ASHENZARI))
             {
                 if (chinese)
-                    causes.push_back(god_name(GOD_ASHENZARI) + T_("的愤怒"));
+                    causes.push_back(make_stringf(T_("%s's anger"),
+                                                  god_name(GOD_ASHENZARI).c_str()));
                 else
                     causes.push_back("Ashenzari's anger");
             }
@@ -634,7 +636,7 @@ string SkillMenuSwitch::get_help()
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
-                    causes.begin(), causes.end(), T_(","), T_(","));
+                    causes.begin(), causes.end(), T_("、"), T_("、"));
                 result += make_stringf(T_("Skills reduced by: %s."),
                                        cause_list.c_str());
             }
