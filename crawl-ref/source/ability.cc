@@ -1487,7 +1487,8 @@ static string _nemelex_desc(ability_type ability)
     deck_type deck = ability_deck(ability);
 
     desc << T_("Draw a card from ") << (deck == DECK_STACK ? T_("your ") : T_("the "));
-    desc << deck_name(deck) << T_("; ") << lowercase_first(deck_description(deck));
+    desc << deck_display_name(deck) << T_("; ")
+         << lowercase_first(deck_description(deck));
 
     return desc.str();
 }

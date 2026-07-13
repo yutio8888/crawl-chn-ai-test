@@ -4946,7 +4946,7 @@ void describe_deck(deck_type deck)
     if (deck == DECK_STACK)
         inf.title = T_("A stacked deck");
     else
-        inf.title = T_("The ") + deck_name(deck);
+        inf.title = make_stringf(T_("The %s"), deck_display_name(deck).c_str());
 
     inf.body << deck_description(deck);
 

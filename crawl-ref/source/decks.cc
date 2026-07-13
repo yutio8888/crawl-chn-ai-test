@@ -523,12 +523,11 @@ static void _describe_cards(CrawlVector& cards)
 
 string deck_status(deck_type deck)
 {
-    const string name = deck_name(deck);
     const int cards   = deck_cards(deck);
 
     ostringstream desc;
 
-    desc << chop_string(deck_name(deck), 24)
+    desc << chop_string(deck_display_name(deck), 24)
          << to_string(cards);
 
     return trimmed_string(desc.str());
@@ -1803,6 +1802,16 @@ string deck_name(deck_type deck)
     const deck_type_data *deck_data = map_find(all_decks, deck);
     const string name = deck_data ? deck_data->name : "bugginess";
     return "deck of " + name;
+}
+
+string deck_display_name(deck_type deck)
+{
+    if (deck == DECK_STACK)
+        return T_("stacked deck");
+
+    const deck_type_data *deck_data = map_find(all_decks, deck);
+    const char *name = deck_data ? deck_data->name.c_str() : "bugginess";
+    return make_stringf(T_("deck of %s"), T_(name));
 }
 
 #if TAG_MAJOR_VERSION == 34

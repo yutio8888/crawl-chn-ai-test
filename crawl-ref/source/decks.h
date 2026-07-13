@@ -86,6 +86,8 @@ void draw_from_deck_of_punishment(bool deal = false);
 
 string deck_status(deck_type deck);
 string deck_name(deck_type deck);
+// Localized display name. Keep deck_name() for persistent property keys.
+string deck_display_name(deck_type deck);
 string deck_description(deck_type deck);
 const string stack_top();
 const string stack_contents();

@@ -16,6 +16,7 @@
 #include "item-name.h"
 #include "item-status-flag-type.h"
 #include "items.h"
+#include "options.h"
 #include "religion.h"
 #include "spl-book.h"
 #include "stringutil.h"
@@ -25,6 +26,20 @@ static string _gen_randbook_name(string subject, string owner,
 static string _gen_randbook_owner(god_type god, spschool disc1,
                                   spschool disc2,
                                   const vector<spell_type> &spells);
+
+static string _book_owner_prefix(const string &owner)
+{
+    if (owner.empty())
+        return "";
+    if (Options.language == lang_t::ZH)
+        return make_stringf(T_("%s's"), owner.c_str());
+    return apostrophise(owner) + " ";
+}
+
+static const char *_book_title_separator()
+{
+    return Options.language == lang_t::ZH ? "" : " ";
+}
 
 /// How many spells should be in a random theme book?
 int theme_book_size() { return random2avg(4, 3) + 2; }
@@ -445,13 +460,13 @@ static string _gen_randlevel_name(int level, god_type god)
 {
     const string owner_name = _gen_randlevel_owner(god);
     const bool has_owner = !owner_name.empty();
-    const string apostrophised_owner = owner_name.empty() ? "" :
-    apostrophise(owner_name) + " ";
+    const string apostrophised_owner = _book_owner_prefix(owner_name);
 
     if (god == GOD_XOM && coinflip())
     {
-        const string xomname = getRandNameString("book_noun") + " of "
-        + getRandNameString("Xom_book_title");
+        const string xomname = make_stringf(T_("%s of %s"),
+                                             getRandNameString("book_noun").c_str(),
+                                             getRandNameString("Xom_book_title").c_str());
         return apostrophised_owner + xomname;
     }
 
@@ -717,9 +732,7 @@ static string _gen_randbook_name(string subject, string owner,
                                  spschool disc1,
                                  spschool disc2)
 {
-    const string apostrophised_owner = owner.empty() ?
-        "" :
-        apostrophise(owner) + " ";
+    const string apostrophised_owner = _book_owner_prefix(owner);
 
     const string real_subject = subject.empty() ?
         _maybe_gen_book_subject(owner) :
@@ -737,7 +750,7 @@ static string _gen_randbook_name(string subject, string owner,
 
     // Give a name that reflects the primary and secondary
     // spell disciplines of the spells contained in the book.
-    name += getRandNameString("book_name") + " ";
+    name += getRandNameString("book_name") + _book_title_separator();
 
     // For the actual name there's a 66% chance of getting something like
     //  <book> of the Fiery Traveller (Translocation/Fire), else
@@ -771,7 +784,7 @@ static string _gen_randbook_name(string subject, string owner,
     }
     else
     {
-        string bookname = type_name + " ";
+        string bookname = type_name + _book_title_separator();
 
         // Add the noun for the first discipline.
         type_name = getRandNameString(spelltype_long_name(disc1));

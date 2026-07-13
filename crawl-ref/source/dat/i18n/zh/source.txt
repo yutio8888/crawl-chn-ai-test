@@ -1580,6 +1580,33 @@ gain power from chaos
 %s of %s
 %s之%s
 %%%%
+%s's
+%s的
+%%%%
+%s cloud
+%s云雾
+%%%%
+ (detected)
+（已侦测）
+%%%%
+deck of %s
+%s牌组
+%%%%
+The %s
+%s
+%%%%
+stacked deck
+叠放牌组
+%%%%
+escape
+逃脱
+%%%%
+punishment
+惩罚
+%%%%
+bugginess
+故障
+%%%%
 barrage of energy
 能量齐射
 %%%%
