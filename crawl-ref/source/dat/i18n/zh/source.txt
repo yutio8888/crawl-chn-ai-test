@@ -38245,3 +38245,9 @@ match
 <darkgrey>The Orb of Zot (the Realm of Zot)</darkgrey>
 <darkgrey>佐特宝珠（佐特领域）</darkgrey>
 %%%%
+%s is %s.
+%s%s。
+%%%%
+ offers you knowledge of %s.
+赐予你%s的知识。
+%%%%

@@ -1600,24 +1600,16 @@ static bool _handle_veh_gift(bool forced)
         if (!offers.empty())
         {
             you.vehumet_gifts = offers;
-            string prompt = T_(" offers you knowledge of ");
+            vector<string> spell_names;
             for (auto it = offers.begin(); it != offers.end(); ++it)
             {
-                if (it != offers.begin())
-                {
-                    if (offers.size() > 2)
-                        prompt += ",";
-                    prompt += " ";
-                    auto next = it;
-                    next++;
-                    if (next == offers.end())
-                        prompt += "and ";
-                }
-                prompt += spell_title(*it);
+                spell_names.push_back(spell_title(*it));
                 _add_to_old_gifts(*it);
                 take_note(Note(NOTE_OFFERED_SPELL, *it));
             }
-            prompt += ".";
+            string prompt = make_stringf(
+                T_(" offers you knowledge of %s."),
+                comma_separated_line(spell_names.begin(), spell_names.end()).c_str());
             if (gifts >= NUM_VEHUMET_GIFTS - 1)
             {
                 prompt += T_(" These spells will remain available as long as you worship Vehumet.");

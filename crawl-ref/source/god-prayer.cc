@@ -31,23 +31,24 @@
 
 string god_prayer_reaction()
 {
-    string result = uppercase_first(god_name(you.religion));
+    const string god = uppercase_first(god_name(you.religion));
     const int rank = god_favour_rank(you.religion);
-    if (crawl_state.player_is_dead())
-        result += " was ";
-    else
-        result += " is ";
-    result +=
-        (rank == 7) ? "exalted by your worship" :
-        (rank == 6) ? "extremely pleased with you" :
-        (rank == 5) ? "greatly pleased with you" :
-        (rank == 4) ? "most pleased with you" :
-        (rank == 3) ? "pleased with you" :
-        (rank == 2) ? "aware of your devotion"
-                    : "noncommittal";
-    result += ".";
+    const char *reaction =
+        (rank == 7) ? T_("exalted by your worship") :
+        (rank == 6) ? T_("extremely pleased with you") :
+        (rank == 5) ? T_("greatly pleased with you") :
+        (rank == 4) ? T_("most pleased with you") :
+        (rank == 3) ? T_("pleased with you") :
+        (rank == 2) ? T_("aware of your devotion")
+                    : T_("noncommittal");
 
-    return result;
+    // Chinese does not need a copula here.  Keep the full sentence in one
+    // translatable template so a translated character dump never displays
+    // the English "is" or "was" between the deity and its reaction.
+    return make_stringf(crawl_state.player_is_dead()
+                        ? T_("%s was %s.")
+                        : T_("%s is %s."),
+                        god.c_str(), reaction);
 }
 
 static bool _prompt_ecu_worship(const vector<god_type> &gods)
