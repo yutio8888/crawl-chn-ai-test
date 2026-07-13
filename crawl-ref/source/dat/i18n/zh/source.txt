@@ -59,8 +59,6 @@ tail
 spore
 孢子
 %%%%
-雕刻岩壁
-%%%%
 broken wreckage
 破碎的残骸
 %%%%
@@ -277,8 +275,6 @@ damp floor
 %%%%
 crumbled stone wall
 崩塌的石墙
-%%%%
-光晕
 %%%%
 Dispersal
 驱散
@@ -12711,8 +12707,6 @@ enters the arena
 Last arena monster was dismissed.
 最后一只竞技场怪物已被清除。
 %%%%
- # - 推荐角色
-%%%%
 You continue %s %s.
 你继续%s%s。
 %%%%
@@ -14731,7 +14725,7 @@ Chain mail (+AC)
 链甲（+AC）
 %%%%
 Broad axe (flame)
-阔斧（火焰）
+阔刃斧（火焰）
 %%%%
 Binding melee attacks
 束缚近战攻击
@@ -14743,7 +14737,7 @@ Bolster
 强化
 %%%%
 Broad axe (speed)
-阔斧（速度）
+阔刃斧（速度）
 %%%%
 Increased hit points
 提升生命值
@@ -14944,7 +14938,7 @@ animal skin
 动物皮
 %%%%
 arbalest
-钢弩
+重弩
 %%%%
 athame
 仪式匕首
@@ -14962,7 +14956,7 @@ boomerang
 回旋镖
 %%%%
 broad axe
-阔斧
+阔刃斧
 %%%%
 buckler
 小圆盾
@@ -15007,13 +15001,13 @@ demon whip
 恶魔之鞭
 %%%%
 dire flail
-恐怖链枷
+双头链枷
 %%%%
 double sword
 双刃剑
 %%%%
 dragon-coil talisman
-龙卷护符
+盘龙护符
 %%%%
 dyed 
 染色
@@ -15028,13 +15022,13 @@ eudemon blade
 善灵之刃
 %%%%
 eveningstar
-黄昏之星
+暮星锤
 %%%%
 executioner's axe
-刽子手之斧
+刽子手斧
 %%%%
 falchion
-弯刃刀
+弯刃剑
 %%%%
 fire dragon scales
 火龙鳞甲
@@ -15064,7 +15058,7 @@ granite talisman
 花岗岩护符
 %%%%
 great mace
-大战锤
+巨型钉头锤
 %%%%
 great sword
 巨剑
@@ -15130,7 +15124,7 @@ medusa talisman
 美杜莎护符
 %%%%
 morningstar
-流星锤
+晨星锤
 %%%%
 necromancy
 死灵
@@ -15142,7 +15136,7 @@ orcbow
 兽人弓
 %%%%
 partisan
-阔刃戟
+阔头枪
 %%%%
 pearl dragon scales
 珍珠龙鳞甲
@@ -15157,7 +15151,7 @@ protean talisman
 千变护符
 %%%%
 quarterstaff
-铁头棍
+长棍
 %%%%
 quick
 快
@@ -15199,7 +15193,7 @@ sacred scourge
 神圣之鞭
 %%%%
 sanguine talisman
-血族护符
+血色护符
 %%%%
 scale mail
 鳞甲
@@ -15220,7 +15214,7 @@ shadow dragon scales
 暗影龙鳞甲
 %%%%
 shadows
-暗影庇护
+暗影
 %%%%
 shiny 
 闪亮
@@ -15280,7 +15274,7 @@ trident
 三叉戟
 %%%%
 triple crossbow
-三连弩
+三弦弩
 %%%%
 triple sword
 三刃剑
@@ -17310,7 +17304,7 @@ old cutlass
 旧短弯刀
 %%%%
 old falchion
-旧弯刃刀
+旧弯刃剑
 %%%%
 old long sword
 旧长剑
@@ -28366,7 +28360,7 @@ dreamshard necklace
 梦碎项链
 %%%%
 eveningstar "Brilliance"
-流星锤"光辉"
+暮星锤"光辉"
 %%%%
 faerie dragon scales
 仙灵龙鳞甲
@@ -28399,10 +28393,10 @@ gloves of the gadgeteer
 机关师手套
 %%%%
 great mace "Firestarter"
-大战锤"纵火者"
+巨型钉头锤"纵火者"
 %%%%
 great mace "Undeadhunter"
-大战锤"亡灵猎人"
+巨型钉头锤"亡灵猎人"
 %%%%
 greatsling
 巨投石索
@@ -33866,6 +33860,7 @@ Build '%s'
 Stack %s
 牌堆 %s
 %%%%
+# - Recommended character
 # - 推荐角色
 %%%%
  <lightgrey>(%s)</lightgrey>
@@ -35067,6 +35062,7 @@ Full palette:
 %%%%
 remaining)
 剩余）
+%%%%
 Unnamed gizmo
 无名装置
 %%%%
@@ -36699,6 +36695,7 @@ the Shapeless
 %%%%
 random rage
 随机狂暴
+%%%%
 infuse magic
 魔力灌注
 %%%%

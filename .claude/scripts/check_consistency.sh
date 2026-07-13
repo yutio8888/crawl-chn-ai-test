@@ -9,6 +9,7 @@
 #   --spells    : Verify spell key consistency (duplicates, orphans, missing)
 #   --database  : Verify @keyword@ reference integrity in database/zh/
 #   --monster-ssot : Enforce source.txt as unique-monster name SSOT
+#   --items     : Verify canonical item names and reject superseded names
 #
 # Usage:
 #   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh
@@ -17,6 +18,7 @@
 #   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --skills
 #   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --format
 #   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --database
+#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --items
 #
 # Suitable as a pre-commit hook or CI check.
 # Add a new check_entity line for each new decisions.md ruling.
@@ -580,6 +582,31 @@ do_monster_ssot() {
 }
 
 # ============================================================
+# Mode 7: Item-name terminology SSOT
+# ============================================================
+
+do_items() {
+    echo "=== Mode 7: Item terminology consistency ==="
+    echo ""
+    if python3 .claude/scripts/export_omegat_glossary.py --check; then
+        echo "  ✅ OmegaT glossary export is up to date"
+    else
+        violations_found=true
+    fi
+    echo ""
+    if python3 .claude/scripts/check_item_terms.py \
+        --glossary docs/glossary.md \
+        --decisions docs/decisions.md \
+        --omegat docs/glossary.utf8; then
+        echo "  ✅ Glossary item terms are consistent"
+    else
+        violations_found=true
+    fi
+    echo ""
+    echo "=== Item terminology check complete ==="
+}
+
+# ============================================================
 # Main — parse mode and --strict flag
 # ============================================================
 
@@ -589,10 +616,10 @@ STRICT_MODE=false
 while [ $# -gt 0 ]; do
     case "$1" in
         --strict) STRICT_MODE=true; shift ;;
-        --rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--all)
+        --rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--items|--all)
             MODE="$1"; shift ;;
         *)
-            echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--all] [--strict]"
+            echo "Usage: $0 [--rulings|--gods|--skills|--format|--spells|--database|--monster-ssot|--items|--all] [--strict]"
             echo ""
             echo "  --rulings   Check rejected translations from decisions.md (default)"
             echo "  --gods      Verify all 28 god names translated in ZH paths"
@@ -601,6 +628,7 @@ while [ $# -gt 0 ]; do
             echo "  --spells    Verify spell key consistency (duplicates, orphans, missing)"
             echo "  --database  Verify @keyword@ reference integrity in database/zh/"
             echo "  --monster-ssot  Enforce source.txt as unique-monster name SSOT"
+            echo "  --items     Verify canonical item names and rejected names"
             echo "  --all       Run all modes"
             echo "  --strict    Exit with non-zero code when violations are found"
             echo "              (default: always exit 0 for backward compatibility)"
@@ -631,6 +659,9 @@ case "$MODE" in
     --monster-ssot)
         do_monster_ssot
         ;;
+    --items)
+        do_items
+        ;;
     --all)
         do_rulings
         echo ""
@@ -645,6 +676,8 @@ case "$MODE" in
         do_database
         echo ""
         do_monster_ssot
+        echo ""
+        do_items
         ;;
 esac
 

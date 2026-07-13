@@ -40,6 +40,8 @@ run_check() {
         bash .claude/scripts/check_consistency.sh --format --strict
     run_check "Database @keyword@ integrity" \
         bash .claude/scripts/check_consistency.sh --database --strict
+    run_check "Item terminology consistency" \
+        bash .claude/scripts/check_consistency.sh --items --strict
     echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-translator.sh complete ==="
 } > "$OUT" 2>&1
