@@ -2725,7 +2725,7 @@ void dump_skills(string &text)
         int cur  = you.skill((skill_type)i, 10);
         if (real > 0 || (!you.auto_training && you.train[i] > 0))
         {
-            text += make_stringf(" %c Level %.*f%s %s\n",
+            text += make_stringf(T_(" %c Level %.*f%s %s\n"),
                                  real == 270       ? 'O' :
                                  !you.can_currently_train[i] ? ' ' :
                                  you.train[i] == 2 ? '*' :

@@ -637,8 +637,8 @@ void UseItemMenu::update_sections()
         floor_header->text = T_("Floor Items");
         if (easy_floor)
         {
-            floor_header->text += make_stringf(
-                "<lightgray> (%s to %s)</lightgray>",
+            floor_header->text += make_stringf(T_(
+                "<lightgray> (%s to %s)</lightgray>"),
                 menu_keyhelp_cmd(CMD_MENU_CYCLE_HEADERS).c_str(),
                 _oper_name(oper).c_str());
         }

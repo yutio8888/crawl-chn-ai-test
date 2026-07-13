@@ -463,13 +463,13 @@ static void _describe_cards(CrawlVector& cards)
             continue;
         seen[card] = true;
 
-        string name = card_name_en(card);
-        string desc = getLongDescription(name + " card");
+        const string lookup_name = card_name_en(card);
+        string desc = getLongDescription(lookup_name + " card");
         if (desc.empty())
-            desc = "No description found.\n";
+            desc = T_("No description found.\n");
         string decks = which_decks(card);
 
-        name = uppercase_first(name);
+        string name = uppercase_first(card_name(card));
         desc = desc + decks;
 
     auto title_hbox = make_shared<Box>(Widget::HORZ);

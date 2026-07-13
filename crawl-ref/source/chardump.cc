@@ -1265,7 +1265,7 @@ static void _sdump_kills_by_place(dump_params &par)
     string footer = "               ";
     footer += "+-------+-------+-------+-------+-------+----------------------\n";
 
-    result += _sdump_kills_place_info(you.global_info, "Total");
+    result += _sdump_kills_place_info(you.global_info, T_("Total"));
 
     for (const PlaceInfo &pi : all_visited)
         result += _sdump_kills_place_info(pi);

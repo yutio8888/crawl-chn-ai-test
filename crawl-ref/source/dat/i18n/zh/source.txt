@@ -27709,6 +27709,18 @@ Other
 Total
 总计
 %%%%
+ %c Level %.*f%s %s\n
+ %c 等级 %.*f%s %s\n
+%%%%
+<lightgray> (%s to %s)</lightgray>
+<lightgray>（按%s以%s）</lightgray>
+%%%%
+No description found.\n
+未找到说明。\n
+%%%%
+ protects %s from harm!
+保护了%s，使其免受伤害！
+%%%%
 A terrible howling echoes in your mind.
 一阵可怕的嚎叫在你脑海中回响。
 %%%%

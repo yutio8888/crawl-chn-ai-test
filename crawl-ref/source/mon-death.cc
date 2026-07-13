@@ -682,7 +682,8 @@ static bool _ely_protect_ally(monster* mons, killer_type killer)
 
     mons->hit_points = 1;
 
-    const string msg = " protects " + mons->name(DESC_THE) + " from harm!";
+    const string msg = make_stringf_p(T_(" protects %s from harm!"),
+                                      mons->name(DESC_THE).c_str());
     simple_god_message(msg.c_str(), false);
 
     return true;
