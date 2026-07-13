@@ -569,65 +569,6 @@ static const set<brand_type> brand_prefers_adj =
  * @param bool              Whether to use a terse or verbose name.
  * @return                  The name of the given brand.
  */
-static const char *zh_weapon_brands_terse[] =
-{
-    "", "烈焰", "寒霜", "圣光", "雷电",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "剧毒", "防护", "吸血", "疾速", "沉重",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "生命吸取", "痛苦", "禁魔", "扭曲",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "混沌",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "穿透", "收割", "幽魂", "斥责", "勇武",
-    "缠绕", "碎裂", "震荡", "狡诈",
-    "", "酸蚀",
-#if TAG_MAJOR_VERSION > 34
-    "迷惑",
-#endif
-    "弱化",
-    "脆弱",
-    "秽焰",
-    "",
-};
-
-static const char *zh_weapon_brands_adj[] =
-{
-    "", "烈焰", "寒霜", "圣光", "雷电",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "剧毒", "防护", "生命吸取", "疾速", "沉重",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "吸血", "痛苦", "禁魔", "扭曲",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "混沌",
-#if TAG_MAJOR_VERSION == 34
-    "", "",
-#endif
-    "穿透", "收割", "幽魂", "斥责", "勇武",
-    "缠绕", "碎裂", "震荡", "狡诈",
-    "", "酸蚀",
-#if TAG_MAJOR_VERSION > 34
-    "迷惑",
-#endif
-    "弱化",
-    "意志削弱",
-    "秽焰",
-    "",
-};
 
 const char* brand_type_name(brand_type brand, bool terse)
 {
@@ -1226,30 +1167,30 @@ const char* rune_type_name(short p)
 {
     switch (static_cast<rune_type>(p))
     {
-    case RUNE_DIS:         return "iron";
-    case RUNE_GEHENNA:     return "obsidian";
-    case RUNE_COCYTUS:     return "icy";
-    case RUNE_TARTARUS:    return "bone";
-    case RUNE_SLIME:       return "slimy";
-    case RUNE_VAULTS:      return "silver";
-    case RUNE_SNAKE:       return "serpentine";
-    case RUNE_ELF:         return "elven";
-    case RUNE_TOMB:        return "golden";
-    case RUNE_SWAMP:       return "decaying";
-    case RUNE_SHOALS:      return "barnacled";
-    case RUNE_SPIDER:      return "gossamer";
-    case RUNE_FOREST:      return "mossy";
+    case RUNE_DIS:         return C_("rune_name", "iron");
+    case RUNE_GEHENNA:     return C_("rune_name", "obsidian");
+    case RUNE_COCYTUS:     return C_("rune_name", "icy");
+    case RUNE_TARTARUS:    return C_("rune_name", "bone");
+    case RUNE_SLIME:       return C_("rune_name", "slimy");
+    case RUNE_VAULTS:      return C_("rune_name", "silver");
+    case RUNE_SNAKE:       return C_("rune_name", "serpentine");
+    case RUNE_ELF:         return C_("rune_name", "elven");
+    case RUNE_TOMB:        return C_("rune_name", "golden");
+    case RUNE_SWAMP:       return C_("rune_name", "decaying");
+    case RUNE_SHOALS:      return C_("rune_name", "barnacled");
+    case RUNE_SPIDER:      return C_("rune_name", "gossamer");
+    case RUNE_FOREST:      return C_("rune_name", "mossy");
 
     // pandemonium and abyss runes:
-    case RUNE_DEMONIC:     return "demonic";
-    case RUNE_ABYSSAL:     return "abyssal";
+    case RUNE_DEMONIC:     return C_("rune_name", "demonic");
+    case RUNE_ABYSSAL:     return C_("rune_name", "abyssal");
 
     // special pandemonium runes:
-    case RUNE_MNOLEG:      return "glowing";
-    case RUNE_LOM_LOBON:   return "magical";
-    case RUNE_CEREBOV:     return "fiery";
-    case RUNE_GLOORX_VLOQ: return "dark";
-    default:               return "buggy";
+    case RUNE_MNOLEG:      return C_("rune_name", "glowing");
+    case RUNE_LOM_LOBON:   return C_("rune_name", "magical");
+    case RUNE_CEREBOV:     return C_("rune_name", "fiery");
+    case RUNE_GLOORX_VLOQ: return C_("rune_name", "dark");
+    default:               return C_("rune_name", "buggy");
     }
 }
 

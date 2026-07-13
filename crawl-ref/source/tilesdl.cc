@@ -125,6 +125,7 @@ TilesFramework::TilesFramework() :
     m_mouse(-1, -1),
     m_last_tick_redraw(0)
 {
+    m_layout_policy = make_layout_policy();
 }
 
 TilesFramework::~TilesFramework()
@@ -813,6 +814,9 @@ static const int min_inv_height  = 4;
 static const int max_inv_height  = 8;
 static const int max_mon_height  = 3;
 static const int min_cjk_sidebar_cols = 14;
+/// Minimum/maximum text rows for the top stat bar in Android portrait mode.
+static const int min_top_bar_text_rows = 6;
+static const int max_top_bar_text_rows = 7;
 
 static int round_up_to_multiple(int a, int b)
 {
@@ -856,7 +860,84 @@ void TilesFramework::do_layout()
 
     // if the screen estate is very small, or if the option is set, choose
     // a layout that is optimal for very small screens
+    if (m_layout_policy)
+        m_layout_policy->update(m_windowsz.x, m_windowsz.y,
+                                m_stat_font ? m_stat_font->char_width() : 0,
+                                m_msg_font ? m_msg_font->char_width() : 0,
+                                Options.tile_use_small_layout);
     bool use_small_layout = is_using_small_layout();
+    bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
+    bool use_top_bar = use_small_layout && top_bar_policy;
+
+    if (use_top_bar)
+    {
+        // Portrait top bar: stat region at top as compact horizontal bar,
+        // dungeon view below (full width), messages overlay at bottom.
+        const int msg_min_h = m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        int top_bar_text_rows = min_top_bar_text_rows;
+        const int expanded_top_bar_h = m_region_stat->dy
+                                       * max_top_bar_text_rows;
+        const int expanded_tile_h = m_windowsz.y - expanded_top_bar_h
+                                    - msg_min_h;
+        // Add a seventh row only when it neither forces the dungeon cells to
+        // shrink nor lets the HUD consume an excessive share of a short
+        // screen. Tall phone displays normally satisfy both constraints.
+        if (expanded_top_bar_h * 100 <= m_windowsz.y * 15
+            && expanded_tile_h / m_region_tile->dy >= ENV_SHOW_DIAMETER)
+        {
+            top_bar_text_rows = max_top_bar_text_rows;
+        }
+        const int top_bar_h = m_region_stat->dy * top_bar_text_rows;
+
+        // Ensure dungeon view fits ENV_SHOW_DIAMETER.
+        int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
+        if (tile_avail_h / m_region_tile->dy < ENV_SHOW_DIAMETER)
+        {
+            m_region_tile->dy = tile_avail_h / ENV_SHOW_DIAMETER;
+            m_region_tile->dx = m_region_tile->dy;
+        }
+
+        // Stat bar at top, full width
+        m_region_stat->resize_to_fit(m_windowsz.x, top_bar_h);
+        m_region_stat->place(0, 0, 0);
+
+        // Tile (dungeon) region below stat bar, full width
+        const int tile_iw = m_windowsz.x;
+        const int tile_ih = tile_avail_h;
+        const int tile_ow = round_up_to_multiple(tile_iw, m_region_tile->dx*2) + m_region_tile->dx;
+        const int tile_oh = round_up_to_multiple(tile_ih, m_region_tile->dy*2) + m_region_tile->dx;
+        m_region_tile->resize_to_fit(tile_ow, tile_oh);
+        m_region_tile->place(-(tile_ow - tile_iw)/2, top_bar_h - (tile_oh - tile_ih)/2, 0);
+        m_region_tile->tile_iw = tile_iw;
+        m_region_tile->tile_ih = tile_ih;
+
+        // Message overlay at bottom
+        VColour overlay_col = Options.tile_overlay_col;
+        overlay_col.a = (255 * Options.tile_overlay_alpha_percent)/100;
+        m_region_msg->set_overlay(true, overlay_col);
+        m_region_msg->place(0, m_windowsz.y - msg_min_h, 0);
+        m_region_msg->resize_to_fit(m_windowsz.x, msg_min_h);
+
+        // Tabs on right (overlay on dungeon)
+        m_region_tab->set_small_layout(true, m_windowsz);
+        m_region_tab->resize_to_fit(m_windowsz.x, m_windowsz.y - top_bar_h);
+        m_region_tab->place(m_windowsz.x - m_region_tab->ox, top_bar_h);
+
+        // CRT overlay (full screen for text)
+        m_region_crt->place(0, 0, 0);
+        m_region_crt->resize_to_fit(m_windowsz.x, m_windowsz.y);
+
+        // crawl_view geometry
+        crawl_view.viewsz.x = m_region_tile->mx;
+        crawl_view.viewsz.y = m_region_tile->my;
+        crawl_view.msgsz.x = m_region_msg->mx;
+        crawl_view.msgsz.y = m_region_msg->my;
+        crawl_view.hudsz.x = m_region_stat->mx;
+        crawl_view.hudsz.y = m_region_stat->my;
+        crawl_view.init_view();
+        return;
+    }
+
     bool message_overlay = Options.tile_force_overlay;
 
     const int min_msg_h =
@@ -888,7 +969,10 @@ void TilesFramework::do_layout()
         m_region_tab->resize_to_fit(m_windowsz.x, m_windowsz.y);
         //  * ox tells us the width of screen obscured by the tabs
         sidebar_pw = m_region_tab->grid_width_to_pixels(m_region_tab->ox) / 32
-                        + m_region_stat->font().max_width(9);
+                        + m_region_stat->font().max_width(
+                            is_cjk_primary_font()
+                            ? min_cjk_sidebar_cols - 2 // 12 chars for CJK
+                            : 9);
         m_stat_x_divider = m_windowsz.x - sidebar_pw;
     }
     else
@@ -906,8 +990,9 @@ void TilesFramework::do_layout()
             sidebar_pw += m_region_tab->grid_width_to_pixels(1);
         if (is_cjk_primary_font())
             sidebar_pw = max(sidebar_pw,
-                             m_region_tab->grid_width_to_pixels(min_cjk_sidebar_cols)
-                                 + m_region_tab->ox * 2);
+                             m_region_tab->grid_width_to_pixels(
+                                 min_cjk_sidebar_cols + 1)
+                                 + m_region_tab->ox);
 
         // Locations in pixels. stat_x_divider is the dividing vertical line
         // between dungeon view on the left and status area on the right.
@@ -1034,15 +1119,9 @@ void TilesFramework::do_layout()
 
 bool TilesFramework::is_using_small_layout()
 {
-    if (Options.tile_use_small_layout == maybe_bool::maybe
-        && m_stat_font && m_msg_font)
-    {
-        // Rough estimation of the minimum usable window size
-        // Not using Options.tile_font_xxx_size because it's reset on new game
-        return m_windowsz.x < (int)(m_stat_font->char_width()*45+m_msg_font->char_width()*55);
-    }
-    else
-        return bool(Options.tile_use_small_layout);
+    // Deprecated: delegates to LayoutPolicy for desktop compatibility.
+    // New code should use layout_policy().uses_*() semantic queries instead.
+    return m_layout_policy && m_layout_policy->uses_overlay_sidebar();
 }
 
 #define ZOOM_INC 0.1
@@ -1258,11 +1337,19 @@ void TilesFramework::layout_statcol()
         // * commands will be on right as tabs
         // * stats will be squeezed in gap between dungeon and commands
         m_statcol_top = 0;
-        m_statcol_bottom = m_windowsz.y;
-
-        // resize stats to be up to beginning of command tabs
-        //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
-        m_region_stat->resize_to_fit((m_windowsz.x - m_stat_x_divider) - m_region_tab->ox*m_region_tab->dx/32, m_statcol_bottom-m_statcol_top);
+        if (m_layout_policy && m_layout_policy->uses_top_hud())
+        {
+            // Top bar: stat region positioned by do_layout().
+            // Don't resize — it's a horizontal bar at the top.
+            m_statcol_bottom = m_region_stat->ey - m_region_stat->sy;
+        }
+        else
+        {
+            m_statcol_bottom = m_windowsz.y;
+            // resize stats to be up to beginning of command tabs
+            //  ... this works because the margin (ox) on m_region_tab contains the tabs themselves
+            m_region_stat->resize_to_fit((m_windowsz.x - m_stat_x_divider) - m_region_tab->ox*m_region_tab->dx/32, m_statcol_bottom-m_statcol_top);
+        }
     }
     else
     {

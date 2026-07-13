@@ -42,6 +42,80 @@ extern "C"
 
 AAssetManager *_android_asset_manager = nullptr; // XXX
 
+time_t jni_package_last_update_time()
+{
+    static time_t cached_update_time = 0;
+    if (cached_update_time)
+        return cached_update_time;
+
+    JNIEnv *env = Android_JNI_GetEnv();
+    jclass sdl_class = env->FindClass("org/libsdl/app/SDLActivity");
+    if (!sdl_class)
+        return 1;
+
+    jmethodID get_context = env->GetStaticMethodID(
+        sdl_class, "getContext", "()Landroid/content/Context;");
+    jobject context = get_context
+        ? env->CallStaticObjectMethod(sdl_class, get_context) : nullptr;
+    if (!context || env->ExceptionCheck())
+    {
+        env->ExceptionClear();
+        return 1;
+    }
+
+    jclass context_class = env->GetObjectClass(context);
+    jmethodID get_package_manager = env->GetMethodID(
+        context_class, "getPackageManager",
+        "()Landroid/content/pm/PackageManager;");
+    jmethodID get_package_name = env->GetMethodID(
+        context_class, "getPackageName", "()Ljava/lang/String;");
+    jobject package_manager = get_package_manager
+        ? env->CallObjectMethod(context, get_package_manager) : nullptr;
+    jstring package_name = get_package_name
+        ? static_cast<jstring>(env->CallObjectMethod(context, get_package_name))
+        : nullptr;
+
+    jclass manager_class = package_manager
+        ? env->GetObjectClass(package_manager) : nullptr;
+    jmethodID get_package_info = manager_class
+        ? env->GetMethodID(manager_class, "getPackageInfo",
+                           "(Ljava/lang/String;I)Landroid/content/pm/PackageInfo;")
+        : nullptr;
+    jobject package_info = get_package_info && package_name
+        ? env->CallObjectMethod(package_manager, get_package_info,
+                                package_name, 0)
+        : nullptr;
+
+    jclass info_class = package_info ? env->GetObjectClass(package_info)
+                                     : nullptr;
+    jfieldID last_update_field = info_class
+        ? env->GetFieldID(info_class, "lastUpdateTime", "J") : nullptr;
+    const jlong last_update_time = last_update_field
+        ? env->GetLongField(package_info, last_update_field) : 0;
+
+    if (env->ExceptionCheck())
+        env->ExceptionClear();
+    if (info_class)
+        env->DeleteLocalRef(info_class);
+    if (package_info)
+        env->DeleteLocalRef(package_info);
+    if (manager_class)
+        env->DeleteLocalRef(manager_class);
+    if (package_name)
+        env->DeleteLocalRef(package_name);
+    if (package_manager)
+        env->DeleteLocalRef(package_manager);
+    env->DeleteLocalRef(context_class);
+    env->DeleteLocalRef(context);
+    env->DeleteLocalRef(sdl_class);
+
+    // PackageInfo.lastUpdateTime is milliseconds since epoch. Keeping the
+    // millisecond value makes consecutive development installs distinct.
+    cached_update_time = last_update_time > 0
+        ? static_cast<time_t>(last_update_time) : 1;
+    return cached_update_time;
+}
+
 // Used to save the game on SDLActivity.onPause
 extern "C" JNIEXPORT void JNICALL
 Java_org_libsdl_app_SDLActivity_nativeSaveGame(

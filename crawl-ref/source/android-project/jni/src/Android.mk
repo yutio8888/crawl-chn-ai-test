@@ -14,8 +14,8 @@ LOCAL_C_INCLUDES := $(LOCAL_PATH)/$(SDL_PATH)/include \
                     $(LOCAL_PATH)/$(CRAWL_PATH) \
                     $(LOCAL_PATH)/$(CRAWL_PATH)/rltiles
 
-LOCAL_CFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cflags)
-LOCAL_CXXFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cxxflags)
+LOCAL_CFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cflags) -Wno-error=format-security -Wno-format-security
+LOCAL_CXXFLAGS := $(shell cat $(LOCAL_PATH)/$(CRAWL_PATH)/.android-cxxflags) -Wno-error=format-security -Wno-format-security
 
 LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/ability.cc \
@@ -142,6 +142,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/l-wiz.cc \
     $(CRAWL_PATH)/l-you.cc \
     $(CRAWL_PATH)/lang-fake.cc \
+    $(CRAWL_PATH)/layout-policy.cc \
     $(CRAWL_PATH)/lev-pand.cc \
     $(CRAWL_PATH)/libutil.cc \
     $(CRAWL_PATH)/loading-screen.cc \
@@ -217,6 +218,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/player.cc \
     $(CRAWL_PATH)/potion.cc \
     $(CRAWL_PATH)/precision-menu.cc \
+    $(CRAWL_PATH)/positional_format.cc \
     $(CRAWL_PATH)/prompt.cc \
     $(CRAWL_PATH)/quiver.cc \
     $(CRAWL_PATH)/randbook.cc \
@@ -226,6 +228,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/ray.cc \
     $(CRAWL_PATH)/religion.cc \
     $(CRAWL_PATH)/scroller.cc \
+    $(CRAWL_PATH)/zh-scroll-appearance.cc \
     $(CRAWL_PATH)/shopping.cc \
     $(CRAWL_PATH)/shout.cc \
     $(CRAWL_PATH)/show.cc \

@@ -227,7 +227,7 @@ enum scroll_seal_type {
 |----------|-------------|---------|
 | 魔杖 (wand) | `iron jewelled wand` → 英文不变 | 材质 × 特征 |
 | 戒指 (ring) | `wooden encrusted ring` → 英文不变 | 材质 × 特征 |
-| 护身符 (amulet) | `sapphire dented amulet` → 英文不变 | 材质 × 特征 |
+| 项链 (amulet) | `sapphire dented amulet` → 英文不变 | 材质 × 特征 |
 | 法杖 (staff) | `glowing crooked staff` → 英文不变 | 特征 × 形状 |
 
-这些可以后续用同样的模式处理（魔杖/戒指/护身符/法杖走 T_()，因为描述词英文本身有意义）。
+这些可以后续用同样的模式处理（魔杖/戒指/项链/法杖走 T_()，因为描述词英文本身有意义）。

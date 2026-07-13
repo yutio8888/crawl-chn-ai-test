@@ -106,14 +106,13 @@ bool StatRegion::update_tip_text(string& tip)
                 return true;
             }
 
-            // Try the database key used by webtiles: "<first-word> status"
-            string dbname = inf.light_text;
-            const size_t sp = dbname.find(' ');
-            if (sp != string::npos)
-                dbname = dbname.substr(0, sp);
-            tip = getLongDescription(dbname + " status");
-            if (!tip.empty())
-                return true;
+            // Use db_key for stable English TextDB lookup
+            if (!inf.db_key.empty())
+            {
+                tip = getLongDescription(inf.db_key + " status");
+                if (!tip.empty())
+                    return true;
+            }
 
             if (!inf.short_text.empty())
             {

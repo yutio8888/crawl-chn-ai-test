@@ -77,6 +77,11 @@ public class SDLActivity extends AppCompatActivity {
     protected static LinearLayout keyboardsLayout;
     protected static SDLClipboardHandler mClipboardHandler;
 
+    // Phase 2: Window insets tracking (status bar, nav bar, IME)
+    protected static int mSystemTopInset;
+    protected static int mSystemBottomInset;
+    protected static int mImeBottomInset;
+
     // This is what SDL runs in. It invokes SDL_main(), eventually
     protected static Thread mSDLThread;
 
@@ -164,6 +169,10 @@ public class SDLActivity extends AppCompatActivity {
         mCurrentNativeState = NativeState.INIT;
         // CRAWL HACK: Custom keyboard
         mScreenKeyboardShown = false;
+        // Phase 2: Window insets
+        mSystemTopInset = 0;
+        mSystemBottomInset = 0;
+        mImeBottomInset = 0;
     }
 
     // Setup
@@ -240,6 +249,28 @@ public class SDLActivity extends AppCompatActivity {
 
         mLayout = new RelativeLayout(this);
         mLayout.setFitsSystemWindows(true);
+        // Phase 2: capture system bar insets + IME (keyboard) insets via the modern API.
+        // The listener replicates fitsSystemWindows padding behavior while giving us
+        // explicit access to inset values for Surface sizing and future portrait layout.
+        if (Build.VERSION.SDK_INT >= 21) {
+            mLayout.setOnApplyWindowInsetsListener((v, insets) -> {
+                mSystemTopInset = insets.getSystemWindowInsetTop();
+                mSystemBottomInset = insets.getSystemWindowInsetBottom();
+                if (Build.VERSION.SDK_INT >= 30) {
+                    mImeBottomInset = insets.getInsets(WindowInsets.Type.ime()).bottom;
+                } else {
+                    mImeBottomInset = 0;
+                }
+                updateSurfaceSize();
+                v.setPadding(
+                    insets.getSystemWindowInsetLeft(),
+                    insets.getSystemWindowInsetTop(),
+                    insets.getSystemWindowInsetRight(),
+                    insets.getSystemWindowInsetBottom()
+                );
+                return insets.consumeSystemWindowInsets();
+            });
+        }
         mLayout.setBackgroundColor(getResources().getColor(R.color.black));
         mSurface = new SDLSurface(getApplication());
         mKeyboard = new DCSSKeyboard(this);
@@ -623,15 +654,26 @@ public class SDLActivity extends AppCompatActivity {
                     } else {
                         mKeyboardExtra.setVisibility(View.GONE);
                     }
-                    // Update SDL Surface heigh
-                    if (keyboardOption == 1) {
-                        ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
+                    // CRAWL HACK (Issue 57 phase 1+2): reserve Surface space above
+                    // the on-screen keyboard. Phase 1 made both option 1 and option 2
+                    // shrink the Surface (previously only option 1 did). Phase 2
+                    // unifies all resize paths through updateSurfaceSize() which:
+                    //   - On API 30+: reads IME inset height from WindowInsets for
+                    //     exact keyboard height (no manual measurement needed)
+                    //   - On pre-API 30: falls back to keyboardsLayout manual measurement
+                    // The post() runnable ensures a freshly-shown keyboard's measured
+                    // height is available before we calculate the reserved area.
+                    if (keyboardOption == 1 || keyboardOption == 2) {
                         if (mScreenKeyboardShown) {
-                            lParams.height = keyboardsLayout.getHeight() - mKeyboard.getHeight();
+                            keyboardsLayout.post(new Runnable() {
+                                @Override
+                                public void run() {
+                                    updateSurfaceSize();
+                                }
+                            });
                         } else {
-                            lParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                            updateSurfaceSize();
                         }
-                        mSurface.setLayoutParams(lParams);
                     }
                 }
                 break;
@@ -1204,6 +1246,42 @@ public class SDLActivity extends AppCompatActivity {
      */
     public static void clipboardSetText(String string) {
         mClipboardHandler.clipboardSetText(string);
+    }
+
+    // Phase 2: update SDL Surface size based on effective content rectangle.
+    // Accounts for system bars (nav bar, status bar, cutouts) and the on-screen
+    // keyboard (IME). On API 30+ the IME height comes directly from WindowInsets;
+    // on pre-API 30 we fall back to manual measurement of the keyboard layout.
+    protected static void updateSurfaceSize() {
+        boolean keyboardActive = mScreenKeyboardShown
+            && (keyboardOption == 1 || keyboardOption == 2);
+
+        if (keyboardActive) {
+            int surfaceHeight;
+            // API 30+ IME path: WindowInsets.Type.ime() reports exact keyboard height
+            if (Build.VERSION.SDK_INT >= 30 && mImeBottomInset > 0) {
+                int totalHeight = Resources.getSystem().getDisplayMetrics().heightPixels;
+                surfaceHeight = totalHeight - mSystemTopInset
+                              - Math.max(mSystemBottomInset, mImeBottomInset);
+            } else {
+                // Pre-API 30 or IME insets unavailable: manual keyboard measurement.
+                // keyboardsLayout is already measured inside the nav-bar-padded parent,
+                // so this formula correctly accounts for the navigation bar.
+                surfaceHeight = keyboardsLayout.getHeight() - mKeyboard.getHeight();
+            }
+            surfaceHeight = Math.max(surfaceHeight, 100);
+            ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
+            if (lParams.height != surfaceHeight) {
+                lParams.height = surfaceHeight;
+                mSurface.setLayoutParams(lParams);
+            }
+        } else {
+            ViewGroup.LayoutParams lParams = mSurface.getLayoutParams();
+            if (lParams.height != ViewGroup.LayoutParams.MATCH_PARENT) {
+                lParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                mSurface.setLayoutParams(lParams);
+            }
+        }
     }
 
 }

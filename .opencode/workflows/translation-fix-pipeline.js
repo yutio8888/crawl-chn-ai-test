@@ -5,7 +5,7 @@ export const meta = {
     { title: 'Analyze', detail: '根因分析：定位未翻译文本的类型、来源和影响范围' },
     { title: 'Plan', detail: '制定修复方案：涉及文件、修改策略、风险评估' },
     { title: 'Review Plan', detail: '方案审核闸门：不通过则回退修订（最多3轮）' },
-    { title: 'Execute', detail: '并行执行：crawl-coder 改代码 + zh-translator 翻译' },
+    { title: 'Execute', detail: '顺序执行：zh-translator 独占翻译资产，crawl-coder 仅改代码' },
     { title: 'Review', detail: '三方并行审核：代码审查 + 翻译质量 + 术语一致性' },
     { title: 'Cross-validate', detail: '交叉验证：全部校验脚本 + 遗漏检测 + 副作用' },
     { title: 'Report', detail: '最终报告：汇总结果 + 合入建议' },
@@ -242,34 +242,13 @@ if (planReview.verdict !== 'approved') {
 }
 log('Plan approved after ' + planIterations + ' revision(s)')
 
-// ── Phase 4: Execute (parallel code + translate) ────────
+// ── Phase 4: Execute (single writer per asset) ──────────
 
 phase('Execute')
 
-const [codeResult, translationResult] = await parallel([
-  () => agent(
-    `Implement code changes for this translation fix.
-
-Code changes: ${JSON.stringify(plan.codeChanges)}
-Analysis type: ${analysis.translationType}
-
-Steps:
-1. Make each code change as specified in the plan
-2. Run make -j4 to verify compilation
-3. If compilation fails, diagnose, fix, recompile — iterate until pass
-4. Run: bash .claude/scripts/post-coder.sh
-
-CRITICAL rules (from CLAUDE.md):
-- Use mprf_p (not mprf) for positional format strings
-- Never add .c_str() on const char* return values
-- Never translate protocol/internal strings
-- Never call conj_verb() on Chinese strings
-- Type III: add source.txt entries with T_(variable)
-- Type V: report that text should remain English (not a bug)`,
-    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA, isolation: 'worktree' }
-  ),
-
-  () => agent(
+// Translation assets have one owner.  Run translation first, then code, so
+// source.txt/TextDB cannot be modified concurrently in separate worktrees.
+const translationResult = await agent(
     `Add Chinese translations for these entries.
 
 Translations needed: ${JSON.stringify(plan.translationsNeeded)}
@@ -279,10 +258,11 @@ ${ISSUE_FILE ? 'Issue file: ' + ISSUE_FILE : ''}
 Steps:
 1. Read docs/decisions.md and docs/glossary.md for terminology rulings
 2. For each entry, grep source.txt first to avoid duplicates
-3. Add entries to crawl-ref/source/dat/i18n/zh/source.txt
-4. Run: bash .claude/scripts/post-translator.sh
+3. You exclusively own source.txt and other zh/*.txt/TextDB assets for this run
+4. Run: bash .claude/scripts/verify_zh.sh --profile translation
 
 Translation rules:
+- Preserve literal \\n, \\t, \\r, %%%%, %N$s, <tag>, and @keyword@ tokens
 - No verb conjugation (remove conj_verb calls)
 - Add 了 after verbs for completed actions
 - Adverbs BEFORE verbs in Chinese
@@ -290,8 +270,30 @@ Translation rules:
 - Format specifiers (%s, %d) must match argument count
 - TextDB (Type IV): English key, Chinese value in zh/*.txt`,
     { agentType: 'zh-translator', label: 'translate', schema: TRANS_RESULT_SCHEMA }
-  ),
-])
+)
+
+const codeResult = await agent(
+    `Implement code changes for this translation fix.
+
+Code changes: ${JSON.stringify(plan.codeChanges)}
+Analysis type: ${analysis.translationType}
+
+Steps:
+1. Make each code change as specified in the plan
+2. Run make -j4 to verify compilation
+3. If compilation fails, diagnose, fix, recompile — iterate until pass
+4. Run: bash .claude/scripts/verify_zh.sh --profile code
+
+CRITICAL rules (from CLAUDE.md):
+- Use mprf_p (not mprf) for positional format strings
+- Never add .c_str() on const char* return values
+- Never translate protocol/internal strings
+- Never call conj_verb() on Chinese strings
+- Do not edit source.txt or any zh/*.txt/TextDB asset; zh-translator owns them
+- Type III: add T_(variable) in code; the preceding translation step owns its source.txt entry
+- Type V: report that text should remain English (not a bug)`,
+    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA, isolation: 'worktree' }
+)
 
 if (codeResult && codeResult.compileStatus === 'pass') {
   log('Code: compile OK | ' + codeResult.changesSummary)

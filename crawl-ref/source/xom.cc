@@ -2071,7 +2071,7 @@ static void _xom_drop_lightning()
     beam.glyph        = dchar_glyph(DCHAR_FIRED_BURST);
     beam.damage       = dice_def(3, 30);
     beam.target       = you.pos();
-    beam.name         = "blast of lightning";
+    beam.name         = T_("blast of lightning");
     beam.colour       = LIGHTCYAN;
     beam.thrower      = KILL_NON_ACTOR;
     beam.source_id    = MID_NOBODY;

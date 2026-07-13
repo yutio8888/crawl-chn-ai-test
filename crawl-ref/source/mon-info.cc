@@ -1246,11 +1246,14 @@ string monster_info::common_name(description_level_type desc) const
     if (type == MONS_BALLISTOMYCETE)
         ss << (is_active ? (T_("active ")) : "");
 
-    if (has_hydra_multi_attack()
-        && type != MONS_SENSED
-        && !mons_class_is_remnant(type))
-    {
+    const bool show_hydra_heads = has_hydra_multi_attack()
+                                  && type != MONS_SENSED
+                                  && !mons_class_is_remnant(type);
+    if (show_hydra_heads)
         ASSERT(num_heads > 0);
+
+    if (show_hydra_heads && Options.language != lang_t::ZH)
+    {
         if (num_heads < 11)
             ss << number_in_words(num_heads);
         else
@@ -1279,19 +1282,21 @@ string monster_info::common_name(description_level_type desc) const
         ss << core;
 
     // Add suffixes.
+    const char* const hydra_suffix_sep =
+        Options.language == lang_t::ZH && show_hydra_heads ? "" : " ";
     switch (type)
     {
     case MONS_ZOMBIE:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << T_("zombie");
+            ss << (nocore ? "" : hydra_suffix_sep) << T_("zombie");
         break;
     case MONS_DRAUGR:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << T_("draugr");
+            ss << (nocore ? "" : hydra_suffix_sep) << T_("draugr");
         break;
     case MONS_SIMULACRUM:
         if (!is(MB_NAME_ZOMBIE))
-            ss << (nocore ? "" : " ") << T_("simulacrum");
+            ss << (nocore ? "" : hydra_suffix_sep) << T_("simulacrum");
         break;
     case MONS_SPECTRAL_THING:
         if (nocore)
@@ -1311,6 +1316,18 @@ string monster_info::common_name(description_level_type desc) const
         break;
     default:
         break;
+    }
+
+    // Chinese hydras have a variable number of heads, so keep the species
+    // name intact and show the current number after any derived-form suffix.
+    if (show_hydra_heads && Options.language == lang_t::ZH)
+    {
+        ss << "（";
+        if (num_heads < 11)
+            ss << number_in_words(num_heads);
+        else
+            ss << std::to_string(num_heads);
+        ss << "头）";
     }
 
     if (is(MB_SHAPESHIFTER))

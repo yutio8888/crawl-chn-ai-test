@@ -59,10 +59,18 @@
 #include "xom.h"
 
 
-static bool _is_using_small_layout()
+static bool _uses_compact_hud()
 {
 #ifdef USE_TILE_LOCAL
-    return tiles.is_using_small_layout();
+    return tiles.layout_policy().uses_compact_hud();
+#endif
+    return false;
+}
+
+static bool _uses_top_bar()
+{
+#ifdef USE_TILE_LOCAL
+    return crawl_view.hudsz.y <= 7;
 #endif
     return false;
 }
@@ -175,15 +183,30 @@ enum touchui_states
     TOUCH_T_QV    = 0x010B,
     TOUCH_V_QV    = 0x020B, // dummy
     TOUCH_V_LIGHT = 0x010C,
+    // Explicit state used by the compact top bar.  Top-bar coordinates are
+    // already final screen coordinates; keeping a distinct state prevents
+    // them from being remapped as legacy vertical-HUD fields.
+    TOUCH_S_TOPBAR = 0x7F00,
 };
 touchui_states TOUCH_UI_STATE = TOUCH_S_INIT;
 static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
 {
     bool super_small = _low_vertical_space();
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         TOUCH_UI_STATE = (touchui_states)((x<<8)+y);
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
+
+    // Compact top-bar coordinates are final coordinates.  Still pass them
+    // through TouchUI so callers use one drawing path, but do not apply the
+    // legacy vertical-HUD remapping below.
+    if (crawl_view.hudsz.y <= 7)
+    {
+        TOUCH_UI_STATE = TOUCH_S_TOPBAR;
+        cgotoxy(x, min(y, crawl_view.hudsz.y), region);
+        return;
+    }
+
     switch (TOUCH_UI_STATE)
     {
         case TOUCH_V_HP:
@@ -312,9 +335,13 @@ static void _cprintf_touchui(const char *format, ...)
             // don't draw these
             break;
         case TOUCH_T_HP:
+            if (_uses_top_bar())
+                cprintf(T_("HP:"));
             TOUCH_UI_STATE = TOUCH_V_HP;
             break;
         case TOUCH_T_MP:
+            if (_uses_top_bar())
+                cprintf(T_("MP:"));
             TOUCH_UI_STATE = TOUCH_V_MP;
             break;
         case TOUCH_V_TITLE:
@@ -338,10 +365,30 @@ static void _cprintf_touchui(const char *format, ...)
         case TOUCH_V_AC:
         case TOUCH_V_EV:
         case TOUCH_V_SH:
-            buf = buf.substr(0, 2);
+        {
+            // Character-aware truncation (not byte-level) for CJK safety.
+            // Was buf.substr(0, 2) which splits 3-byte CJK chars at byte 2.
+            int clen = 0, nchars = 0;
+            const char *cp = buf.c_str();
+            int max_chars = _uses_top_bar() ? 4 : 2;
+            while (cp[clen] && nchars < max_chars)
+            {
+                unsigned char fb = (unsigned char)cp[clen];
+                int ch = 1;
+                if (fb >= 0xC0 && fb < 0xE0) ch = 2;
+                else if (fb >= 0xE0 && fb < 0xF0) ch = 3;
+                else if (fb >= 0xF0) ch = 4;
+                clen += ch;
+                nchars++;
+            }
+            buf = buf.substr(0, clen);
             trim_string(buf);
-            cprintf("%2s", buf.c_str());
+            if (_uses_top_bar())
+                cprintf("%s ", buf.c_str());
+            else
+                cprintf("%2s", buf.c_str());
             break;
+        }
         case TOUCH_T_XL:
             cprintf(T_("XL Next"));
             break;
@@ -659,12 +706,18 @@ void update_message_status()
 
 void update_turn_count()
 {
+    // The compact Android top bar owns the entire stat region.  The legacy
+    // turn/time line would otherwise be remapped onto its fourth row.
+    if (_uses_top_bar())
+        return;
+
     if (crawl_state.game_is_arena())
         return;
 
     // Don't update turn counter when running/resting/traveling to
     // prevent pointless screen updates.
-    if (mouse_control::current_mode() == MOUSE_MODE_NORMAL
+    if (!_uses_top_bar()
+        && mouse_control::current_mode() == MOUSE_MODE_NORMAL
         && (you.running > 0 || you.running < 0 && Options.travel_delay == -1))
     {
         return;
@@ -673,7 +726,7 @@ void update_turn_count()
     const int turncount_start_x = 19 + 6;
     int ypos = 9;
     // TODO: unify this with the calculation in print_stats
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ypos--;
     CGOTOXY(turncount_start_x, ypos, GOTO_STAT);
 
@@ -682,7 +735,7 @@ void update_turn_count()
         ? make_stringf("%.1f", you.elapsed_time / 10.0)
         : make_stringf("%d", you.num_turns);
 
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
         time += make_stringf(" (%.1f)",
                 (you.elapsed_time - you.elapsed_time_at_last_input) / 10.0);
@@ -723,7 +776,10 @@ static void _print_stats_equip(int x, int y)
     for (int i = SLOT_FIRST_STANDARD; i < NUM_EQUIP_SLOTS; ++i)
         total_slots += you.equipment.num_slots[i];
 
-    cprintf(total_slots > 8 ? "Eq: " : T_("Eq: "));
+    const char *equip_caption = _uses_top_bar() ? T_("Eq: ")
+                                                : total_slots > 8 ? "Eq: "
+                                                                  : T_("Eq: ");
+    cprintf("%s", equip_caption);
     textcolour(LIGHTGREY);
     for (equipment_slot slot : slot_order)
     {
@@ -764,7 +820,8 @@ static void _print_stats_equip(int x, int y)
 static void _print_stats_noise(int x, int y)
 {
     CGOTOXY(x, y, GOTO_STAT);
-    if (mouse_control::current_mode() == MOUSE_MODE_NORMAL
+    if (!_uses_top_bar()
+        && mouse_control::current_mode() == MOUSE_MODE_NORMAL
         && (you.running > 0 || you.running < 0 && Options.travel_delay == -1))
     {
         return;
@@ -799,7 +856,8 @@ static void _print_stats_noise(int x, int y)
     int bar_position;
     if (you.wizard && !silence)
     {
-        Noise_Bar.horiz_bar_width = 6;
+        Noise_Bar.horiz_bar_width = _uses_top_bar()
+            ? max(6, crawl_view.hudsz.x / 8) : 6;
         bar_position = 10;
 
         // numeric noise level, basically the internal value used by noise
@@ -812,11 +870,12 @@ static void _print_stats_noise(int x, int y)
     }
     else
     {
-        Noise_Bar.horiz_bar_width = 9;
+        Noise_Bar.horiz_bar_width = _uses_top_bar()
+            ? max(6, crawl_view.hudsz.x / 8) : 9;
         bar_position = 7;
     }
 
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         Noise_Bar.horiz_bar_width--;
 
     if (silence)
@@ -865,7 +924,7 @@ static void _print_stats_noise(int x, int y)
 static void _print_stats_gold(int x, int y)
 {
     textcolour(HUD_CAPTION_COLOUR);
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
         CGOTOXY(x, y, GOTO_STAT);
         CPRINTF("%s", T_("Gold:"));
@@ -939,7 +998,13 @@ static void _print_stats_mp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_is_using_small_layout())
+    if (_uses_top_bar())
+    {
+        MP_Bar.horiz_bar_width = 10;
+        MP_Bar.draw(25, 1, you.magic_points, you.max_magic_points);
+        MP_Bar.horiz_bar_width = -1;
+    }
+    else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             MP_Bar.vdraw(6, 19, you.magic_points, you.max_magic_points);
@@ -994,7 +1059,13 @@ static void _print_stats_hp(int x, int y)
         CPRINTF(" ");
 
 #ifdef USE_TILE_LOCAL
-    if (_is_using_small_layout())
+    if (_uses_top_bar())
+    {
+        HP_Bar.horiz_bar_width = 10;
+        HP_Bar.draw(8, 1, you.hp, you.hp_max, you.hp - max(0, poison_survival()));
+        HP_Bar.horiz_bar_width = -1;
+    }
+    else if (_uses_compact_hud())
     {
         if (_low_vertical_space())
             HP_Bar.vdraw(2, 19, you.hp, you.hp_max);
@@ -1031,7 +1102,7 @@ static void _print_stat(stat_type stat, int x, int y)
 
     textcolour(_get_stat_colour(stat));
     CPRINTF("%d", you.stat(stat, false));
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
         CPRINTF("    ");
 }
 
@@ -1049,7 +1120,7 @@ static void _print_stats_doom(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Doom: ");
+    CPRINTF("%s: ", T_("Misfortune"));
 
     if (you.attribute[ATTR_DOOM] >= 75)
         textcolour(LIGHTMAGENTA);
@@ -1079,7 +1150,7 @@ static void _print_stats_contam(int x, int y)
 
     CGOTOXY(x, y, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
-    CPRINTF("Contam: ");
+    CPRINTF("%s: ", T_("Contam"));
 
     const int contam = max(you.magic_contamination > 0 ? 1 : 0,
                            you.magic_contamination / 10);
@@ -1100,7 +1171,7 @@ static void _print_stats_ac(int x, int y)
     auto text_col = _colour_from_stat_mod(you.temp_ac_mod());
     string ac = make_stringf("%2d ", you.armour_class_scaled(1));
 #ifdef WIZARD
-    if (you.wizard && !_is_using_small_layout())
+    if (you.wizard && !_uses_compact_hud())
         ac += make_stringf("(%d%%) ", you.gdr_perc(false));
 #endif
     textcolour(text_col);
@@ -1190,19 +1261,35 @@ static void _print_weapon_name(const item_def &weapon, int width)
  *
  * @param y     The y-coordinate to print the description at.
  */
-static void _print_stats_wp(int y)
+static void _print_stats_wp(int y, int topbar_width = -1)
 {
-    if (mouse_control::current_mode() == MOUSE_MODE_NORMAL
+    if (!_uses_top_bar()
+        && mouse_control::current_mode() == MOUSE_MODE_NORMAL
         && (you.running > 0 || you.running < 0 && Options.travel_delay == -1))
     {
         return;
     }
 
-    CGOTOXY(1, y, GOTO_STAT);
+    CGOTOXY(_uses_top_bar() ? 1 : 1, y, GOTO_STAT);
 
     const item_def *weapon = you.weapon();
     const item_def *offhand = you.offhand_weapon();
-    if (weapon && offhand)
+    if (_uses_top_bar())
+    {
+        const int width = topbar_width > 0
+            ? topbar_width : max(1, crawl_view.hudsz.x / 2 - 1);
+        if (weapon && offhand)
+        {
+            _print_weapon_name(*weapon, width);
+            CGOTOXY(crawl_view.hudsz.x / 2 - 3, y, GOTO_STAT);
+            _print_weapon_name(*offhand, width);
+        }
+        else if (weapon || offhand)
+            _print_weapon_name(weapon ? *weapon : *offhand, width);
+        else
+            _print_unarmed_name();
+    }
+    else if (weapon && offhand)
     {
         _print_weapon_name(*weapon, crawl_view.hudsz.x/2-1);
         CPRINTF("  ");
@@ -1216,10 +1303,14 @@ static void _print_stats_wp(int y)
     you.wield_change  = false;
 }
 
-static void _print_stats_qv(int y)
+static void _print_stats_qv(int y, int topbar_x = -1)
 {
-    CGOTOXY(1, y, GOTO_STAT);
-    if (mouse_control::current_mode() == MOUSE_MODE_NORMAL
+    const int start_x = _uses_top_bar()
+        ? (topbar_x > 0 ? topbar_x : crawl_view.hudsz.x / 2 - 3) : 1;
+    CGOTOXY(start_x,
+            y, GOTO_STAT);
+    if (!_uses_top_bar()
+        && mouse_control::current_mode() == MOUSE_MODE_NORMAL
         && (you.running > 0 || you.running < 0 && Options.travel_delay == -1))
     {
         return;
@@ -1227,7 +1318,9 @@ static void _print_stats_qv(int y)
 
     formatted_string qdesc = quiver::get_secondary_action()->quiver_description();
 #ifdef USE_TILE_LOCAL
-    const int max_width = crawl_view.hudsz.x - (_is_using_small_layout() ? 0 : 4);
+    const int max_width = _uses_top_bar()
+        ? max(1, crawl_view.hudsz.x - start_x + 1)
+        : crawl_view.hudsz.x - (_uses_compact_hud() ? 0 : 4);
 #else
     const int max_width = crawl_view.hudsz.x - 4;
 #endif
@@ -1250,7 +1343,36 @@ static void _add_status_light_to_out(int i, vector<status_light>& out)
 
     if (fill_status_info(i, inf) && !inf.light_text.empty())
     {
-        status_light sl(inf.light_colour, inf.light_text, i);
+        string light_text = inf.light_text;
+        if (_uses_top_bar() && Options.language == lang_t::ZH)
+        {
+            // Preserve established one-character Chinese status lights. For
+            // longer lights, prefer a top-bar label, then the translated @:
+            // description. Conventional Tiles and Console never enter here.
+            const bool original_one_char = inf.light_text != inf.db_key
+                                           && strwidth(inf.light_text) <= 2;
+            if (!original_one_char)
+            {
+                string topbar_text;
+                if (!inf.db_key.empty())
+                {
+                    topbar_text = C_("topbar status", inf.db_key.c_str());
+                    if (topbar_text == inf.db_key)
+                        topbar_text.clear();
+                }
+                if (topbar_text.empty() && !inf.short_db_key.empty())
+                {
+                    topbar_text = C_("status", inf.short_db_key.c_str());
+                    if (topbar_text == inf.short_db_key)
+                        topbar_text.clear();
+                }
+                if (topbar_text.empty())
+                    topbar_text = inf.short_text;
+                if (!topbar_text.empty())
+                    light_text = chop_string(topbar_text, 4, false);
+            }
+        }
+        status_light sl(inf.light_colour, light_text, i);
         out.push_back(sl);
     }
 }
@@ -1336,6 +1458,32 @@ static void _print_status_lights(int y)
 
 #ifdef USE_TILE_LOCAL
     clear_status_hitboxes();
+
+    if (_uses_top_bar())
+    {
+        int status_x = 1;
+        for (const status_light &light : lights)
+        {
+            const int status_w = strwidth(light.text);
+            if (status_x + status_w - 1 > crawl_view.hudsz.x)
+                break;
+
+            CGOTOXY(status_x, y, GOTO_STAT);
+            record_status_hitbox(light.status, status_x - 1,
+                                 status_x + status_w - 2, y - 1);
+            textcolour(light.colour);
+            NOWRAP_EOL_CPRINTF("%s", light.text.c_str());
+            status_x += status_w + 1;
+        }
+        if (status_x <= crawl_view.hudsz.x)
+        {
+            CGOTOXY(status_x, y, GOTO_STAT);
+            clear_to_end_of_line();
+        }
+        CGOTOXY(1, 1, GOTO_STAT);
+        you.redraw_status_lights = false;
+        return;
+    }
 #endif
 
     size_t line_cur = y;
@@ -1351,7 +1499,7 @@ static void _print_status_lights(int y)
 #endif
 
 #ifdef USE_TILE_LOCAL
-    if (!_is_using_small_layout())
+    if (!_uses_compact_hud())
     {
 #endif
     size_t i_light = 0;
@@ -1410,9 +1558,27 @@ static void _print_status_lights(int y)
                     CPRINTF("%s",lights[i_light].text.c_str());
                 }
                 else if ((int)lights.size() > crawl_view.hudsz.x / 2)
-                    CPRINTF("%.1s",lights[i_light].text.c_str());
+                {
+                    // Use character-aware truncation (not byte-level %.1s)
+                    // to avoid corrupting CJK UTF-8 sequences (Issue 57).
+                    const char *ct = lights[i_light].text.c_str();
+                    int chlen = 1;
+                    unsigned char fb = (unsigned char)*ct;
+                    if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
+                    else if (fb >= 0xE0 && fb < 0xF0) chlen = 3;
+                    else if (fb >= 0xF0) chlen = 4;
+                    CPRINTF("%.*s", chlen, ct);
+                }
                 else
-                    CPRINTF("%.1s ",lights[i_light].text.c_str());
+                {
+                    const char *ct = lights[i_light].text.c_str();
+                    int chlen = 1;
+                    unsigned char fb = (unsigned char)*ct;
+                    if (fb >= 0xC0 && fb < 0xE0) chlen = 2;
+                    else if (fb >= 0xE0 && fb < 0xF0) chlen = 3;
+                    else if (fb >= 0xF0) chlen = 4;
+                    CPRINTF("%.*s ", chlen, ct);
+                }
                 ++i_light;
             }
         }
@@ -1439,7 +1605,7 @@ static void _redraw_title()
     const unsigned int WIDTH = crawl_view.hudsz.x;
     string title = filtered_lang(player_title());
     title = you.your_name + (title[0] == ',' ? "" : " ") + title;
-    const bool small_layout = _is_using_small_layout();
+    const bool small_layout = _uses_compact_hud();
 
     if (small_layout)
         title = you.your_name;
@@ -1536,12 +1702,383 @@ static void _redraw_title()
     you.redraw_title = false;
 }
 
+static void _render_top_bar()
+{
+#ifdef USE_TILE_LOCAL
+    cursor_control coff(false);
+    textcolour(LIGHTGREY);
+    const int hud_width = crawl_view.hudsz.x;
+    const int field_gap = 2;
+
+    // Top-bar fields frequently shrink (large values, status expiry, weapon
+    // swaps). Clear each owned row first so old text cannot remain behind.
+    for (int row = 1; row <= crawl_view.hudsz.y; ++row)
+    {
+        CGOTOXY(1, row, GOTO_STAT);
+        clear_to_end_of_line();
+    }
+
+    // Row 1: HP + MP bars
+    CGOTOXY(1, 1, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("HP:"));
+    short hp_colour = HUD_VALUE_COLOUR;
+    if (_boosted_hp())
+        hp_colour = LIGHTBLUE;
+    else
+    {
+        const int hp_percent = you.hp * 100 / get_real_hp(true, true);
+        for (const auto &entry : Options.hp_colour)
+            if (hp_percent <= entry.first)
+                hp_colour = entry.second;
+    }
+    textcolour(hp_colour);
+    const int mp_x = hud_width / 2 + 1;
+    const int undrained_hp = get_real_hp(true, false);
+    string hp_value = make_stringf("%d/%d", you.hp, you.hp_max);
+    if (undrained_hp != you.hp_max)
+        hp_value += make_stringf("(%d)", undrained_hp);
+    CPRINTF("%s ", hp_value.c_str());
+
+    const int preferred_bar_width = max(8, hud_width / 5 - 2);
+    const int hp_bar_x = max(16, strwidth(T_("HP:"))
+                                  + strwidth(hp_value) + 2);
+    const int hp_bar_width = max(4, min(preferred_bar_width,
+                                       mp_x - field_gap - hp_bar_x + 1));
+    HP_Bar.horiz_bar_width = hp_bar_width;
+    HP_Bar.draw(hp_bar_x, 1,
+                you.hp, you.hp_max,
+                you.hp - max(0, poison_survival()));
+    HP_Bar.horiz_bar_width = -1;
+
+    if (!you.has_mutation(MUT_HP_CASTING))
+    {
+        CGOTOXY(mp_x, 1, GOTO_STAT);
+        textcolour(HUD_CAPTION_COLOUR);
+        CPRINTF("%s", T_("MP:"));
+        short mp_colour = HUD_VALUE_COLOUR;
+        if (_boosted_mp())
+            mp_colour = LIGHTBLUE;
+        else
+        {
+            const int mp_percent = you.max_magic_points == 0 ? 100
+                : you.magic_points * 100 / you.max_magic_points;
+            for (const auto &entry : Options.mp_colour)
+                if (mp_percent <= entry.first)
+                    mp_colour = entry.second;
+        }
+        textcolour(mp_colour);
+        const string mp_value = make_stringf("%d/%d", you.magic_points,
+                                             you.max_magic_points);
+        CPRINTF("%s ", mp_value.c_str());
+        const int mp_bar_x = max(mp_x + 12, mp_x + strwidth(T_("MP:"))
+                                            + strwidth(mp_value) + 1);
+        const int mp_bar_width = max(4, min(preferred_bar_width,
+                                           hud_width - mp_bar_x + 1));
+        MP_Bar.horiz_bar_width = mp_bar_width;
+        MP_Bar.draw(mp_bar_x, 1,
+                    you.magic_points, you.max_magic_points);
+        MP_Bar.horiz_bar_width = -1;
+    }
+
+    // Row 2: AC/EV/SH + Str/Int/Dex
+    CGOTOXY(1, 2, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("AC:"));
+    textcolour(_colour_from_stat_mod(you.temp_ac_mod()));
+    CPRINTF("%d ", you.armour_class_scaled(1));
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("EV:"));
+    textcolour(_colour_from_stat_mod(you.temp_ev_mod()));
+    CPRINTF("%d ", you.evasion());
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("SH:"));
+    textcolour(_colour_from_stat_mod(you.temp_sh_mod()));
+    CPRINTF("%d ", player_displayed_shield_class());
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("Str:"));
+    textcolour(_get_stat_colour(STAT_STR));
+    CPRINTF("%d ", you.stat(STAT_STR, false));
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("Int:"));
+    textcolour(_get_stat_colour(STAT_INT));
+    CPRINTF("%d ", you.stat(STAT_INT, false));
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("Dex:"));
+    textcolour(_get_stat_colour(STAT_DEX));
+    CPRINTF("%d", you.stat(STAT_DEX, false));
+
+    // Keep character identity independent from the crowded progression row.
+    // The six numeric fields remain left-aligned; name and title are packed
+    // against the right edge and character-aware truncated if necessary.
+    const int row2_left_width = strwidth(T_("AC:"))
+        + strwidth(make_stringf("%d", you.armour_class_scaled(1))) + 1
+        + strwidth(T_("EV:")) + strwidth(make_stringf("%d", you.evasion())) + 1
+        + strwidth(T_("SH:"))
+        + strwidth(make_stringf("%d", player_displayed_shield_class())) + 1
+        + strwidth(T_("Str:"))
+        + strwidth(make_stringf("%d", you.stat(STAT_STR, false))) + 1
+        + strwidth(T_("Int:"))
+        + strwidth(make_stringf("%d", you.stat(STAT_INT, false))) + 1
+        + strwidth(T_("Dex:"))
+        + strwidth(make_stringf("%d", you.stat(STAT_DEX, false)));
+    const int title_width = max(0, hud_width - row2_left_width - field_gap);
+    if (title_width > 0)
+    {
+        const string player_title_text = filtered_lang(player_title(false));
+        string name_title = you.your_name;
+        if (!player_title_text.empty())
+            name_title += " " + player_title_text;
+        name_title = chop_string(name_title, title_width, false);
+        const int title_x = hud_width - strwidth(name_title) + 1;
+        CGOTOXY(title_x, 2, GOTO_STAT);
+        textcolour(YELLOW);
+        CPRINTF("%s", name_title.c_str());
+    }
+
+    // Row 3: XL + Place + currency + turn counter.
+    const string xl_text = make_stringf("%s%d ", T_("XL: "),
+                                        you.experience_level);
+    const string exp_text = you.experience_level < you.get_max_xl()
+        ? make_stringf("%d%% ", get_exp_progress()) : "";
+    const string place_text = _level_description_string_hud();
+    const string gold_text = make_stringf("%s%d", T_("Gold: "), you.gold);
+    const char *counter_caption = Options.show_game_time
+        ? T_("Time:") : T_("Turns:");
+    const string base_counter_value = Options.show_game_time
+        ? make_stringf("%.1f", you.elapsed_time / 10.0)
+        : make_stringf("%d", you.num_turns);
+    const string action_time = make_stringf(" (%.1f)",
+        (you.elapsed_time - you.elapsed_time_at_last_input) / 10.0);
+    string counter_value = base_counter_value;
+    string counter_text = make_stringf("%s %s%s", counter_caption,
+                                       base_counter_value.c_str(),
+                                       action_time.c_str());
+    const int minimum_left_width = strwidth(xl_text)
+        + strwidth(T_("Place: ")) + 4 + field_gap + 12;
+    int counter_x = max(1, hud_width - strwidth(counter_text) + 1);
+    int gold_x = max(1, counter_x - strwidth(gold_text) - field_gap);
+    if (gold_x - field_gap <= minimum_left_width)
+    {
+        counter_text = make_stringf("%s %s", counter_caption,
+                                    base_counter_value.c_str());
+        counter_x = max(1, hud_width - strwidth(counter_text) + 1);
+        gold_x = max(1, counter_x - strwidth(gold_text) - field_gap);
+    }
+    else
+        counter_value += action_time;
+    const int left_end = gold_x - field_gap;
+    bool show_exp = !exp_text.empty();
+    int fixed_left_width = strwidth(xl_text) + strwidth(T_("Place: "));
+    if (show_exp)
+        fixed_left_width += strwidth(exp_text);
+    if (fixed_left_width >= left_end && show_exp)
+    {
+        show_exp = false;
+        fixed_left_width -= strwidth(exp_text);
+    }
+    const int place_width = max(0, left_end - fixed_left_width);
+    const string visible_place = chop_string(place_text, place_width, false);
+    CGOTOXY(1, 3, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s%d ", T_("XL: "), you.experience_level);
+    if (show_exp)
+    {
+        textcolour(HUD_VALUE_COLOUR);
+        CPRINTF("%d%% ", get_exp_progress());
+    }
+    if (place_width > 0)
+    {
+        textcolour(HUD_CAPTION_COLOUR);
+        CPRINTF("%s", T_("Place: "));
+        textcolour(HUD_VALUE_COLOUR);
+        CPRINTF("%s", visible_place.c_str());
+    }
+
+    // Preserve the conventional HUD's species/religion line in the unused
+    // middle of row 3. Name and title live independently on row 2.
+    int left_used = strwidth(xl_text);
+    if (show_exp)
+        left_used += strwidth(exp_text);
+    if (place_width > 0)
+        left_used += strwidth(T_("Place: ")) + strwidth(visible_place);
+    const int identity_x = 1 + left_used + field_gap;
+    const int identity_width = gold_x - field_gap - identity_x + 1;
+    if (identity_width > 0)
+    {
+        string god_piety;
+        if (!you_worship(GOD_NO_GOD))
+        {
+            god_piety = you_worship(GOD_JIYVA) ? god_name_jiyva(true)
+                                                : god_name(you.religion);
+            god_piety += _god_asterisks(true);
+        }
+        else if (you.char_class == JOB_MONK
+                 && !you.has_mutation(MUT_FORLORN) && !had_gods())
+        {
+            god_piety = "**....";
+        }
+
+        const string species = player_species_name();
+        vector<string> identity_variants;
+        identity_variants.push_back(species
+                                    + (god_piety.empty() ? "" : " " + god_piety));
+        if (!god_piety.empty())
+            identity_variants.push_back(god_piety);
+        identity_variants.push_back(species);
+
+        formatted_string identity;
+        for (const string &variant : identity_variants)
+        {
+            formatted_string candidate = formatted_string::parse_string(variant);
+            if (candidate.width() <= identity_width)
+            {
+                identity = candidate;
+                break;
+            }
+        }
+        if (identity.empty())
+        {
+            identity = formatted_string::parse_string(identity_variants.back());
+            identity = identity.chop(identity_width);
+        }
+
+        CGOTOXY(identity_x, 3, GOTO_STAT);
+        textcolour(you_worship(GOD_NO_GOD)
+                   ? YELLOW : _god_status_colour(YELLOW));
+        const string identity_text = identity.tostring(0, identity.ops.size());
+        CPRINTF("%s", identity_text.c_str());
+    }
+
+    CGOTOXY(gold_x, 3, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s", T_("Gold: "));
+    if (you.duration[DUR_GOZAG_GOLD_AURA])
+        textcolour(LIGHTBLUE);
+    else if (you.attribute[ATTR_VOUCHER] > 0)
+        textcolour(MAGENTA);
+    else
+        textcolour(HUD_VALUE_COLOUR);
+    CPRINTF("%d", you.gold);
+    CGOTOXY(counter_x, 3, GOTO_STAT);
+    textcolour(HUD_CAPTION_COLOUR);
+    CPRINTF("%s ", counter_caption);
+    textcolour(HUD_VALUE_COLOUR);
+    CPRINTF("%s", counter_value.c_str());
+
+    // Row 4: Weapon + Quiver
+    CGOTOXY(1, 4, GOTO_STAT);
+    const item_def *weapon = you.weapon();
+    const item_def *offhand = you.offhand_weapon();
+    if (weapon && offhand)
+        _print_stats_wp(4);
+    else
+    {
+        const item_def *held = weapon ? weapon : offhand;
+        const int weapon_text_width = held
+            ? 3 + strwidth(_wpn_name_corroded(*held))
+            : 3 + strwidth(you.unarmed_attack_name());
+        const int quiver_x = min(max(weapon_text_width + field_gap, 12),
+                                 max(12, hud_width - 8));
+        _print_stats_wp(4, max(1, quiver_x - field_gap));
+        _print_stats_qv(4, quiver_x);
+    }
+
+    // On seven-row layouts, row 5 is dedicated to noise/equipment and row 6
+    // to warnings. Six-row layouts continue packing both groups together.
+    const bool expanded_top_bar = crawl_view.hudsz.y >= 7;
+    const int warning_row = expanded_top_bar ? 6 : 5;
+    string mode_text;
+    if (you.wizard)
+        mode_text = "*WIZ*";
+    else if (you.suppress_wizard)
+        mode_text = "*EX-WIZ*";
+    else if (you.explore)
+        mode_text = "*EXP*";
+
+    int right_edge = hud_width;
+    if (!mode_text.empty())
+    {
+        const int mode_x = max(1, right_edge - strwidth(mode_text) + 1);
+        CGOTOXY(mode_x, warning_row, GOTO_STAT);
+        textcolour(LIGHTMAGENTA);
+        CPRINTF("%s", mode_text.c_str());
+        right_edge = mode_x - field_gap;
+    }
+
+    const bool show_contam = you.magic_contamination > 0
+        || Options.always_show_doom_contam;
+    const bool show_doom = you.attribute[ATTR_DOOM] > 0
+        || Options.always_show_doom_contam;
+    if (show_contam)
+    {
+        const int contam = max(you.magic_contamination > 0 ? 1 : 0,
+                               you.magic_contamination / 10);
+        const string contam_text = make_stringf("%s: %d%% ", T_("Contam"),
+                                                contam);
+        const int contam_x = max(1, right_edge - strwidth(contam_text) + 1);
+        _print_stats_contam(contam_x, warning_row);
+        right_edge = contam_x - field_gap;
+    }
+    if (show_doom)
+    {
+        const string doom_text = make_stringf("%s: %d%% ", T_("Misfortune"),
+                                              you.attribute[ATTR_DOOM]);
+        const int doom_x = max(1, right_edge - strwidth(doom_text) + 1);
+        _print_stats_doom(doom_x, warning_row);
+        right_edge = doom_x - field_gap;
+    }
+
+    // Match the conventional Tiles option: equipment replaces noise only
+    // when the player explicitly enables equip_bar. Expanded top bars can
+    // retain noise on the warning row when the left side is still free.
+    if (Options.equip_bar)
+    {
+        _print_stats_equip(1, 5);
+        if (expanded_top_bar)
+        {
+            const int noise_bar_width = max(6, hud_width / 8)
+                + (you.get_noise_perception(true) == 1000 ? 1 : 0);
+            const int noise_position = you.wizard && !silenced(you.pos())
+                                       ? 10 : 7;
+            const int noise_end = 1 + noise_position + noise_bar_width - 1;
+            if (noise_end <= right_edge)
+                _print_stats_noise(1, warning_row);
+        }
+    }
+    else
+        _print_stats_noise(1, 5);
+
+    // The final row is exclusively reserved for status lights.
+    const int status_row = crawl_view.hudsz.y;
+    CGOTOXY(1, status_row, GOTO_STAT);
+    _print_status_lights(status_row);
+
+    you.redraw_stats.init(false);
+    you.redraw_hit_points = false;
+    you.redraw_magic_points = false;
+    you.redraw_armour_class = false;
+    you.redraw_evasion = false;
+    you.redraw_experience = false;
+    you.redraw_status_lights = false;
+#endif
+}
+
 void print_stats()
 {
 #ifndef USE_TILE_LOCAL
     if (crawl_state.smallterm)
         return;
 #endif
+
+#ifdef USE_TILE_LOCAL
+    if (_uses_top_bar())
+    {
+        _render_top_bar();
+        return;
+    }
+#endif
+
     int ac_pos = 5;
     int ev_pos = ac_pos + 1;
 
@@ -1577,7 +2114,7 @@ void print_stats()
     // hide the MP bar for djinni
     if (you.has_mutation(MUT_HP_CASTING))
     {
-        if (!_is_using_small_layout())
+        if (!_uses_compact_hud())
             rows_hidden++;
     }
     else if (you.redraw_magic_points)
@@ -1607,7 +2144,7 @@ void print_stats()
         CGOTOXY(1, 8 - rows_hidden, GOTO_STAT);
         textcolour(Options.status_caption_colour);
         CPRINTF("%s", T_("XL: "));
-        if (_is_using_small_layout())
+        if (_uses_compact_hud())
             CGOTOXY(5, 8, GOTO_STAT);
         textcolour(HUD_VALUE_COLOUR);
         CPRINTF("%2d ", you.experience_level);
@@ -1616,7 +2153,7 @@ void print_stats()
         else
         {
             textcolour(Options.status_caption_colour);
-            if (!_is_using_small_layout())
+            if (!_uses_compact_hud())
                 CPRINTF("%s", T_("Next: "));
             else
                 CGOTOXY(14, 8, GOTO_STAT);
@@ -1651,16 +2188,19 @@ void print_stats()
 
 void print_stats_level()
 {
+    if (_uses_top_bar())
+        return;
+
     int ypos = 8;
     // TODO: unify this with the calculation in print_stats
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ypos--;
 
     CGOTOXY(19, ypos, GOTO_STAT);
     textcolour(HUD_CAPTION_COLOUR);
     CPRINTF("%s", T_("Place: "));
 
-    if (_is_using_small_layout())
+    if (_uses_compact_hud())
         CGOTOXY(26, ypos, GOTO_STAT);
     textcolour(HUD_VALUE_COLOUR);
 #ifdef DEBUG_DIAGNOSTICS
@@ -1672,6 +2212,15 @@ void print_stats_level()
 
 void draw_border()
 {
+    if (_uses_top_bar())
+    {
+        // Clear the terminal before the top bar redraws the stat region, but
+        // do not emit any of the legacy labels into its compact rows.
+        CGOTOXY(1, 1, GOTO_CRT);
+        clrscr();
+        return;
+    }
+
     textcolour(HUD_CAPTION_COLOUR);
 
     CGOTOXY(1,1, GOTO_CRT);
@@ -1682,7 +2231,7 @@ void draw_border()
     int ac_pos;
     // TODO: unify this calculation with rows_hidden in print_stats in a
     // non-insane way
-    if (you.has_mutation(MUT_HP_CASTING) && !_is_using_small_layout())
+    if (you.has_mutation(MUT_HP_CASTING) && !_uses_compact_hud())
         ac_pos = 4;
     else
         ac_pos = 5;

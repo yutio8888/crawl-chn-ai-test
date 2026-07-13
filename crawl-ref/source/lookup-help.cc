@@ -1100,7 +1100,8 @@ int LookupType::describe(const string &key, bool exact_match) const
  */
 static int _describe_key(const string &key, const string &suffix,
                          string footer, const string &extra_info,
-                         const tile_def *tile = nullptr)
+                         const tile_def *tile = nullptr,
+                         const string &override_title = "")
 {
     describe_info inf;
     inf.quote = getQuoteString(key);
@@ -1108,7 +1109,9 @@ static int _describe_key(const string &key, const string &suffix,
     const string desc = getLongDescription(key);
 
     inf.body << desc << extra_info;
-    inf.title = [&]() {
+    inf.title = [&]() -> string {
+        if (!override_title.empty())
+            return override_title;
         string title = key;
         strip_suffix(title, suffix);
         return uppercase_first(title);
@@ -1368,8 +1371,8 @@ static string _branch_depth(branch_type br)
     if (depth > 1 && br != BRANCH_ABYSS)
     {
         desc = make_stringf(T_("\n\nThis %s is %d levels deep."),
-                            br == BRANCH_ZIGGURAT ? "portal"
-                                                  : "branch",
+                            br == BRANCH_ZIGGURAT ? T_("portal")
+                                                  : T_("branch"),
                             depth);
     }
 
@@ -1386,18 +1389,22 @@ static string _branch_location(branch_type br)
     // Ziggurat locations are explained in the description.
     if (parent != NUM_BRANCHES && br != BRANCH_ZIGGURAT)
     {
-        desc = "\n\nThe entrance to this branch can be found ";
+        const char* parent_name = T_(branches[parent].longname);
         if (min == max)
         {
             if (branches[parent].numlevels == 1)
-                desc += "in ";
+                desc = make_stringf_p(
+                        T_("\n\nThe entrance to this branch can be found in %s."),
+                        parent_name);
             else
-                desc += make_stringf(T_("on level %d of "), min);
+                desc = make_stringf_p(
+                        T_("\n\nThe entrance to this branch can be found on level %d of %s."),
+                        min, parent_name);
         }
         else
-            desc += make_stringf(T_("between levels %d and %d of "), min, max);
-        desc += branches[parent].longname;
-        desc += ".";
+            desc = make_stringf_p(
+                    T_("\n\nThe entrance to this branch can be found between levels %d and %d of %s."),
+                    min, max, parent_name);
     }
 
     return desc;
@@ -1454,7 +1461,8 @@ static int _describe_branch(const string &key, const string &suffix,
             + branch_rune_desc(branch, false);
 
     tile_def tile = tile_def(tileidx_branch(branch));
-    return _describe_key(key, suffix, footer, info, &tile);
+    const string branch_title = T_(branches[branch].shortname);
+    return _describe_key(key, suffix, footer, info, &tile, branch_title);
 }
 
 static int _describe_mutation(const string &key, const string &suffix,

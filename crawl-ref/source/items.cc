@@ -48,6 +48,7 @@
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "item-use.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "macro.h"
 #include "makeitem.h"
@@ -4855,6 +4856,12 @@ bool get_item_by_exact_name(item_def &item, const char* name)
     item.clear();
     item.quantity = 1;
     item.flags |= ISFLAG_IDENTIFIED;
+
+    // The ?/ lookup keys are always English DB names, but item.name(DESC_DBNAME)
+    // returns Chinese names when Options.language == ZH, so the comparison would
+    // never match (e.g. English key "staff of earth" vs Chinese "大地法杖").
+    // Force English names for this language-independent lookup.
+    ScopedLangEn en;
 
     string name_lc = lowercase_string(string(name));
 

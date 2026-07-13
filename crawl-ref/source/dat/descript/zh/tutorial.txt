@@ -369,7 +369,7 @@ tutorial3 amulet
 %%%%
 tutorial3 drop
 
-如果你追随了一个神，这个护身符会非常强大，但现在，它是没用的。
+如果你追随了一个神，这条项链会非常强大，但现在，它是没用的。
 你要是想扔下它的话，可以用<input>$cmd[CMD_DROP]</input><localtiles>
 或在物品栏中<input>Shift键+左键</input>点击它</localtiles>。
 %%%%

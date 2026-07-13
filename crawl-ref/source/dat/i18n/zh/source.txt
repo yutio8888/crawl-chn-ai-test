@@ -101,7 +101,7 @@ a statue of a princess
 一座公主雕像
 %%%%
 a statue of a hydra
-一座九头蛇雕像
+一座多头蛇雕像
 %%%%
 a statue of a dwarf
 一座矮人雕像
@@ -2737,10 +2737,10 @@ amnesia
 遗忘
 %%%%
 amulet
-护身符
+项链
 %%%%
 amulet of
-护身符
+项链
 %%%%
 An aura of fear fills the air!
 一股恐惧的气息充满了空气！
@@ -3921,6 +3921,9 @@ Fedhas
 Fedhas booms out: Become one with the cycle of life!
 费德哈斯轰鸣道：与生命的循环合为一体！
 %%%%
+Fedhas protects the tree from harm.
+费德哈斯保护了这棵树。
+%%%%
 fellow slime
 同行黏液
 %%%%
@@ -4175,7 +4178,7 @@ Guard this area!
 守卫这个区域！
 %%%%
 guardian spirit
-守护之魂
+精神护盾
 %%%%
 haloed
 被光环笼罩
@@ -5809,6 +5812,66 @@ run
 rune of Zot
 佐特符文
 %%%%
+rune_name|iron
+钢铁
+%%%%
+rune_name|obsidian
+黑曜
+%%%%
+rune_name|icy
+冰霜
+%%%%
+rune_name|bone
+骸骨
+%%%%
+rune_name|slimy
+黏液
+%%%%
+rune_name|silver
+白银
+%%%%
+rune_name|serpentine
+蛇纹
+%%%%
+rune_name|elven
+精灵
+%%%%
+rune_name|golden
+黄金
+%%%%
+rune_name|decaying
+腐朽
+%%%%
+rune_name|barnacled
+藤壶
+%%%%
+rune_name|gossamer
+蛛丝
+%%%%
+rune_name|mossy
+苔藓
+%%%%
+rune_name|demonic
+恶魔
+%%%%
+rune_name|abyssal
+深渊
+%%%%
+rune_name|glowing
+辉光
+%%%%
+rune_name|magical
+魔法
+%%%%
+rune_name|fiery
+烈焰
+%%%%
+rune_name|dark
+暗黑
+%%%%
+rune_name|buggy
+异常
+%%%%
 runed
 刻有符文的
 %%%%
@@ -6030,6 +6093,12 @@ silver
 %%%%
  sinks back into the magma.
  沉回了岩浆中。
+%%%%
+%1$s sinks back into the magma.
+%1$s沉回了岩浆中。
+%%%%
+%1$s collides with %2$s and sinks back into the magma.
+%1$s撞上了%2$s，沉回了岩浆中。
 %%%%
 skeleton
 骷髅
@@ -6654,7 +6723,7 @@ The abyssal rune of Zot can be found at this depth.
 佐特的深渊符文可能在这个深度找到。
 %%%%
 the acrobat
-闪避强化
+杂技
 %%%%
 the ceiling
 天花板
@@ -6745,6 +6814,9 @@ the Dance
 %%%%
 The demon of the infinite void smiles upon you.
 无限虚空的恶魔对你微笑。
+%%%%
+The demonic tree burns, releasing chaotic energy.
+恶魔之树燃烧着，释放出混沌能量。
 %%%%
 the denizens of %s
 %s的居民
@@ -6847,6 +6919,9 @@ The forest starts to sway and rumble!
 %%%%
 the Fortress
 堡垒
+%%%%
+The tree burns like a torch!
+这棵树像火炬一样燃烧！
 %%%%
 The trees move their gnarly branches around.
 树木扭动着粗糙多节的枝条。
@@ -6956,6 +7031,9 @@ The magic binding %s to this plane unravels!
 The malign portal rejects you as you step towards it.
 恶意的传送门在你靠近时拒绝了你。
 %%%%
+The mangrove smoulders and burns.
+红树林树木闷烧起来。
+%%%%
 The mercury splashes!
 水银四溅了！
 %%%%
@@ -7057,6 +7135,30 @@ The roots around you sink back into the ground.
 %%%%
 The roots grab %s!
 树根抓住了%s！
+%%%%
+The roots erupt in riotous growth!
+根须疯狂地爆发式生长！
+%%%%
+The grasping roots
+纠缠的根须
+%%%%
+The roots
+根须
+%%%%
+The zombie hands
+僵尸之手
+%%%%
+The vines
+藤蔓
+%%%%
+the roots'
+树根
+%%%%
+the zombie hands'
+僵尸之手
+%%%%
+the vines'
+藤蔓
 %%%%
 The sack is emptied!
 袋子被清空了！
@@ -7449,8 +7551,152 @@ To do this, you must remove one of the following items:
  toggle between ability selection and description.
  切换能力选择与描述模式。
 %%%%
- toggle selected    
- 切换选中
+  toggle selected  
+  切换选中  
+%%%%
+you cannot use spells of this school.
+你无法使用这个学派的法术。
+%%%%
+you cannot coerce anything to answer your summons.
+你无法强迫任何东西响应你的召唤。
+%%%%
+you cannot coerce anything to obey you.
+你无法强迫任何东西服从你。
+%%%%
+you can't cast spells right now.
+你现在无法施放法术。
+%%%%
+your stasis prevents you from teleporting.
+你的停滞状态阻止了你传送。
+%%%%
+you are still too unstable to blink.
+你的状态仍不稳定，无法闪烁。
+%%%%
+your stasis precludes magical swiftness.
+你的停滞状态排除了魔法迅捷。
+%%%%
+this spell is already in effect.
+此法术已在生效中。
+%%%%
+you're already travelling as fast as you can.
+你已经以最快速度移动了。
+%%%%
+you can't move.
+你无法移动。
+%%%%
+this spell is useless without hands.
+没有手的话，这个法术毫无用处。
+%%%%
+you need to wait for the ground to become solid again.
+你需要等待地面重新变硬。
+%%%%
+you cannot be healed further.
+你无法被进一步治疗。
+%%%%
+you lack the resilience to cast this spell.
+你缺乏施放此法术的韧性。
+%%%%
+you're too dead.
+你已经死透了。
+%%%%
+you are already standing in death's doorway.
+你已经站在死亡的门槛上。
+%%%%
+you are still too close to death's doorway.
+你离死亡的门槛还是太近了。
+%%%%
+your ring of flames would instantly melt the ice.
+你的火焰之环会瞬间融化冰层。
+%%%%
+you have no blood to sublime.
+你没有血液可以升华。
+%%%%
+you need to wait for the winds to calm down.
+你需要等待风势平息。
+%%%%
+you aren't next to any passable walls.
+你旁边没有任何可穿过的墙壁。
+%%%%
+you're being held away from the wall.
+你被阻挡着远离墙壁。
+%%%%
+you are already reaping souls!
+你已经在收割灵魂了！
+%%%%
+you are already channelling the dead.
+你已经在引导死者了。
+%%%%
+the air is too still for clouds to form.
+空气太过静止，无法形成云雾。
+%%%%
+you cannot issue another dragon's call so soon.
+你无法这么快再次发出龙之召唤。
+%%%%
+you cannot sustain more frozen ramparts right now.
+你现在无法维持更多的冰霜壁垒。
+%%%%
+you cannot sustain more bogs right now.
+你现在无法维持更多的毒沼泽。
+%%%%
+you cannot wear body armour.
+你无法穿着身体护甲。
+%%%%
+you have no body armour to summon the spirit of.
+你没有身体护甲来召唤其灵体。
+%%%%
+you cannot redirect your momentum while unable to move.
+你无法移动时无法重新定向你的动量。
+%%%%
+your stasis prevents you from launching yourself.
+你的停滞状态阻止了你发射自己。
+%%%%
+you cannot launch yourself while unable to move.
+你无法移动时无法发射自己。
+%%%%
+you cannot see anything nearby that you can launch.
+你看不到附近任何可以发射的目标。
+%%%%
+there is no room nearby to place a sigil.
+附近没有空间可以放置符文。
+%%%%
+your canine familiar is too injured to answer your call.
+你的犬类伙伴伤势过重，无法响应你的召唤。
+%%%%
+local gravity is still too unstable to reorient.
+局部重力仍然太不稳定，无法重新定向。
+%%%%
+you are already unleashing a barrage of alchemical concoctions!
+你已经在释放一连串炼金药剂了！
+%%%%
+you must wait for your last cast of this to end!
+你必须等待上一次施放结束！
+%%%%
+you cannot see far enough to hit anything with this spell.
+你看得不够远，无法用此法术击中任何目标。
+%%%%
+you must harvest more living souls to recharge this spell.
+你必须收割更多活人的灵魂来为这个法术充能。
+%%%%
+there are no nearby walls to construct a spike launcher in.
+附近没有墙壁可以构建尖刺发射器。
+%%%%
+there is no room to construct a sawblade.
+没有空间可以构建锯刃。
+%%%%
+you cannot be moved right now.
+你现在无法被移动。
+%%%%
+a crocodile could not survive beneath you.
+鳄鱼无法在你下方存活。
+%%%%
+your pet crocodile is still here.
+你的宠物鳄鱼还在。
+%%%%
+your paragon is already deployed, but not yet charged.
+你的典范已经部署，但尚未充能。
+%%%%
+you are already charging a Fortress Blast.
+你已经在为堡垒爆破充能了。
 %%%%
  toggle spell headers
  切换表头
@@ -8194,7 +8440,7 @@ You are wreathed by an umbra.
 你被暗影环绕着。
 %%%%
 You aren't carrying any amulets.
-你没有携带任何护身符。
+你没有携带任何项链。
 %%%%
 You aren't carrying any armour which can be enchanted further.
 你没有携带任何可以进一步附魔的护甲。
@@ -8260,7 +8506,7 @@ You aren't wearing any pieces of armour.
 你没有穿戴任何护甲。
 %%%%
 You aren't wearing any rings, amulets, or talismans.
-你没有穿戴任何戒指、护身符或护符。
+你没有穿戴任何戒指、项链或护符。
 %%%%
 You aren't wearing any uncursed rings.
 你没有穿戴任何未被诅咒的戒指。
@@ -8638,7 +8884,7 @@ You can't walk through walls!
 你不能穿墙！
 %%%%
 You can't wear amulets.
-你无法佩戴护身符。
+你无法佩戴项链。
 %%%%
 You can't wear any headgear with your large antennae!
 你的大触角让你无法穿戴任何头盔！
@@ -10146,6 +10392,9 @@ You slide down the stairs, covered in regenerating slime.
 You slip free of the bolas.
 你从流星索中滑脱了。
 %%%%
+You smell burning wood.
+你闻到了木头燃烧的气味。
+%%%%
 You smell decay.
 你闻到了腐朽的气味。
 %%%%
@@ -10428,7 +10677,7 @@ Your aim is not that steady anymore.
 你的瞄准不再那么稳定。
 %%%%
 Your amulet flashes!
-你的护身符闪烁了一下！
+你的项链闪烁了一下！
 %%%%
 Your anger overwhelms your terror!
 你的愤怒压倒了恐惧！
@@ -11019,6 +11268,114 @@ Zot's power touches on you...
 |Statuses
 |状态
 %%%%
+Breath
+吐息
+%%%%
+Constr
+束缚
+%%%%
+Aug
+增强
+%%%%
+Fire++
+强火焰
+%%%%
+Fire+
+火焰+
+%%%%
+Flooded
+淹水
+%%%%
+Drain
+虚弱
+%%%%
+Bribe
+贿赂
+%%%%
+Cloud
+云雾
+%%%%
+Orb
+宝珠
+%%%%
+Orb?
+宝珠？
+%%%%
+-Clouds
+无云
+%%%%
+Dog
+犬灵
+%%%%
+-Scroll
+禁卷轴
+%%%%
+rF0
+无火抗
+%%%%
+-GClaw
+禁墓爪
+%%%%
+Destr
+毁灭
+%%%%
+Pact
+契约
+%%%%
+Escape!
+逃离！
+%%%%
+!Tele!
+敌传送！
+%%%%
+Shroud
+护罩
+%%%%
+Ostracised
+被排斥
+%%%%
+Tesseract
+超立方体
+%%%%
+Sunder
+碎裂
+%%%%
+Missing
+缺失
+%%%%
+Rev
+暖机
+%%%%
+Rev+
+暖机+
+%%%%
+Rev*
+暖机*
+%%%%
+Regen Will++
+强再生意志
+%%%%
+-Regen
+禁再生
+%%%%
+Fast+Slow
+速+缓
+%%%%
+Slow
+减速
+%%%%
+Fast
+快速
+%%%%
+Water
+水域
+%%%%
+Lava
+熔岩
+%%%%
+Invis
+隐形
+%%%%
 powerful
 强大的
 %%%%
@@ -11318,6 +11675,14 @@ Desolation
 
 荒原
 %%%%
+Necropolis
+
+死灵城
+%%%%
+Crucible
+
+血肉熔炉
+%%%%
 the Dungeon
 
 地牢
@@ -11389,6 +11754,78 @@ the Depths
 the Abyss
 
 深渊
+%%%%
+a ziggurat
+
+通天塔
+%%%%
+a bazaar
+
+集市
+%%%%
+a treasure trove
+
+宝藏库
+%%%%
+a sewer
+
+下水道
+%%%%
+an ossuary
+
+骨堂
+%%%%
+a bailey
+
+堡垒
+%%%%
+an ice cave
+
+冰窟
+%%%%
+a volcano
+
+火山
+%%%%
+a wizard's laboratory
+
+巫师实验室
+%%%%
+the Desolation of Salt
+
+盐之荒原
+%%%%
+a Gauntlet
+
+竞技长廊
+%%%%
+the Arena
+
+竞技场
+%%%%
+the Crucible of Flesh
+
+血肉熔炉
+%%%%
+the Necropolis
+
+死灵城
+%%%%
+a Labyrinth
+
+迷宫
+%%%%
+\n\nThe entrance to this branch can be found in %s.
+
+\n\n此分支的入口位于%1$s。
+%%%%
+\n\nThe entrance to this branch can be found on level %d of %s.
+
+\n\n此分支的入口位于%2$s的第%1$d层。
+%%%%
+\n\nThe entrance to this branch can be found between levels %d and %d of %s.
+
+\n\n此分支的入口位于%3$s的第%1$d层到第%2$d层之间。
 %%%%
 Welcome to Hell!
 Please enjoy your stay.
@@ -12684,7 +13121,7 @@ Spry
 矫捷者
 %%%%
 Acrobat
-特技闪避
+杂技
 %%%%
 Intangible
 无形无影
@@ -13584,6 +14021,39 @@ lava
 %%%%
 water
 深水
+%%%%
+altar
+祭坛
+%%%%
+dais
+台座
+%%%%
+floor
+地板
+%%%%
+fountain
+喷泉
+%%%%
+grate
+铁栅栏
+%%%%
+portal
+传送门
+%%%%
+shop
+商店
+%%%%
+staircase
+楼梯
+%%%%
+trap
+陷阱
+%%%%
+unknown terrain
+未知地形
+%%%%
+wall
+墙壁
 %%%%
 programming rift
 程序裂缝
@@ -15145,6 +15615,9 @@ improve
  by up to %d%% (press '!' for details).
 ，最多%d%%（按'!'查看详情）。
 %%%%
+Apport
+传送
+%%%%
 Apportation
 隔空取物
 %%%%
@@ -15191,7 +15664,7 @@ Freezing Cloud
 冰冻云
 %%%%
 Mephitic Cloud
-瘴气云
+迷瘴云
 %%%%
 Venom Bolt
 毒液箭
@@ -15215,7 +15688,7 @@ Abjuration
 驱逐术
 %%%%
 Bolt of Draining
-吸取之箭
+吸取箭
 %%%%
 Lehudib's Crystal Spear
 勒胡迪布之水晶矛
@@ -15224,7 +15697,7 @@ Poisonous Cloud
 毒云
 %%%%
 Call Down Damnation
-降下诅咒
+降下天谴
 %%%%
 Call Down Lightning
 降下闪电
@@ -15281,7 +15754,7 @@ Ozocubu's Armour
 奥佐库布之护甲
 %%%%
 Call Imp
-召唤小恶魔
+呼唤小恶魔
 %%%%
 Berserker Rage
 狂暴之怒
@@ -15365,7 +15838,7 @@ Ignite Poison
 点燃毒素
 %%%%
 Call Canine Familiar
-召唤犬类使魔
+呼唤犬类使魔
 %%%%
 Summon Dragon
 召唤巨龙
@@ -15389,7 +15862,7 @@ Lee's Rapid Deconstruction
 李之快速解构
 %%%%
 Sandblast
-沙暴
+沙爆
 %%%%
 Sculpt Simulacrum
 塑造拟像
@@ -15428,7 +15901,7 @@ Brain Bite
 脑噬
 %%%%
 Noxious Cloud
-毒云
+毒瘴云
 %%%%
 Steam Ball
 蒸汽球
@@ -15440,7 +15913,7 @@ Summon Sin Beast
 召唤罪兽
 %%%%
 Bolt of Devastation
-毁灭之箭
+毁灭箭
 %%%%
 Spit Poison
 喷毒
@@ -15485,13 +15958,13 @@ Caustic Breath
 腐蚀吐息
 %%%%
 Pyre Arrow
-火葬之箭
+烈火箭
 %%%%
 Fire Breath
 火焰吐息
 %%%%
 Searing Breath
-灼热之息
+灼热吐息
 %%%%
 Chaos Breath
 混沌吐息
@@ -15518,13 +15991,13 @@ Haste Other
 加速他人
 %%%%
 Summon Earth Elementals
-召唤大地元素
+召唤地元素
 %%%%
 Summon Air Elementals
-召唤空气元素
+召唤气元素
 %%%%
 Summon Fire Elementals
-召唤火焰元素
+召唤火元素
 %%%%
 Sleep
 睡眠
@@ -15539,7 +16012,7 @@ Primal Wave
 原始波浪
 %%%%
 Call Tide
-召唤潮汐
+呼唤潮汐
 %%%%
 Orb of Destruction
 毁灭之球
@@ -15560,7 +16033,7 @@ Druid's Call
 德鲁伊召唤
 %%%%
 Brothers in Arms
-战友召唤
+战友
 %%%%
 Trog's Hand
 特洛格之手
@@ -15569,7 +16042,7 @@ Summon Mortal Champion
 召唤凡人冠军
 %%%%
 Vanquished Vanguard
-被征服的先锋
+败军先锋
 %%%%
 Summon Holies
 召唤圣灵
@@ -15593,10 +16066,10 @@ Leda's Liquefaction
 勒达之液化
 %%%%
 Summon Hydra
-召唤九头蛇
+召唤多头蛇
 %%%%
 Mesmerise
-迷惑
+催眠
 %%%%
 Hellfire Court
 地狱火法庭
@@ -15620,7 +16093,7 @@ Iskenderun's Battlesphere
 伊斯肯德伦之战斗球
 %%%%
 Summon Minor Demon
-召唤小恶魔
+召唤次级恶魔
 %%%%
 Sticks to Snakes
 棍变蛇
@@ -15653,7 +16126,7 @@ Ghostly Fireball
 幽灵火球
 %%%%
 Call Lost Souls
-召唤迷失灵魂
+呼唤迷失灵魂
 %%%%
 Dimension Anchor
 维度锚定
@@ -15692,7 +16165,7 @@ Searing Ray
 灼热射线
 %%%%
 Discord
-混乱
+纷乱
 %%%%
 Invisibility Other
 隐身他人
@@ -15716,7 +16189,7 @@ Chain of Chaos
 混沌之链
 %%%%
 Call of Chaos
-混沌召唤
+混沌呼唤
 %%%%
 Sap Magic
 削弱魔法
@@ -15764,10 +16237,10 @@ Corrosive Bolt
 腐蚀箭
 %%%%
 Bolt of Light
-光之箭
+光箭
 %%%%
 Bolt of Flesh
-血肉之箭
+血肉箭
 %%%%
 Awaken Flesh
 唤醒血肉
@@ -15932,7 +16405,7 @@ Warp Space
 扭曲空间
 %%%%
 Sojourning Bolt
-旅居之箭
+旅居箭
 %%%%
 Harpoon Shot
 鱼叉射击
@@ -15962,7 +16435,7 @@ Hailstorm
 冰雹风暴
 %%%%
 Eringya's Noxious Bog
-埃林吉亚之有毒沼泽
+埃林吉亚之毒沼
 %%%%
 Dispel Undead Range
 远程驱散亡灵
@@ -16031,7 +16504,7 @@ Summon Spiders
 召唤蜘蛛
 %%%%
 Anguish
-痛苦
+哀痛
 %%%%
 Summon Scorpions
 召唤蝎子
@@ -16070,7 +16543,7 @@ Tremorstone
 震石
 %%%%
 Regenerate Other
-治愈他人
+再生他人
 %%%%
 Mass Regeneration
 群体再生
@@ -16184,7 +16657,7 @@ Shred
 撕裂
 %%%%
 Eringya's Surprising Crocodile
-埃林吉亚之惊喜鳄鱼
+埃林吉亚之意外鳄鱼
 %%%%
 Platinum Paragon
 白金典范
@@ -16241,7 +16714,7 @@ Ill Omen
 凶兆
 %%%%
 Doom Bolt
-厄运之箭
+厄运箭
 %%%%
 Warp Body
 扭曲身体
@@ -16499,7 +16972,7 @@ Random Effects
 随机效果
 %%%%
 Hydra Form
-九头蛇变形
+多头蛇变形
 %%%%
 Goad Beasts
 激怒野兽
@@ -17644,7 +18117,7 @@ acidic bite
 酸蚀咬击
 %%%%
 acrobatic
-特技
+杂技
 %%%%
 antennae
 触角
@@ -18682,7 +19155,7 @@ You cannot drink.
 你无法饮用。
 %%%%
 You cannot equip rings or amulets.
-你无法佩戴戒指或护身符。
+你无法佩戴戒指或项链。
 %%%%
 You cannot study or cast Air magic.
 你无法学习或施放空气魔法。
@@ -20770,7 +21243,7 @@ Killer Klown
 杀手小丑
 %%%%
 Lernaean hydra
-勒拿九头蛇
+勒拿多头蛇
 %%%%
 Nobody
 无名氏
@@ -21143,6 +21616,9 @@ spider
 %%%%
 splinterfrost barricade
 碎冰壁垒
+%%%%
+splinters
+木刺
 %%%%
 starcursed mass
 受星诅咒的聚合体
@@ -21539,6 +22015,9 @@ mechanical trap
 %%%%
 metal statue
 金属雕像
+%%%%
+metal splinters
+金属碎刺
 %%%%
 metal wall
 金属墙
@@ -22957,7 +23436,7 @@ Noise:
 噪音: 
 %%%%
 Sil
-沉默  
+沉默
 %%%%
 Gold:
 金币:
@@ -23312,7 +23791,7 @@ Table legend:\n A = Non-vault XP\n B = Vault XP\n C = Vault XP percentage of tot
 表格说明：\n A = 非宝库经验值\n B = 宝库经验值\n C = 宝库经验值占总经验值的百分比\n D = 非宝库怪物数量\n E = 宝库怪物数量\n F = 宝库数量占总数的百分比\n\n
 %%%%
 Table legend:\n A = Kills in this place as a percentage of kills in the entire game.\n B = Kills by you in this place as a percentage of kills by you in\n     the entire game.\n C = Kills by friends in this place as a percentage of kills by\n     friends in the entire game.\n D = Other kills in this place as a percentage of other kills in the\n     entire game.\n E = Experience gained in this place as a percentage of experience\n     gained in the entire game.\n F = Experience gained in this place divided by the number of levels of\n     this place that you have seen.\n\n
-表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的此地点\n     层数。\n\n
+表格说明：\n A = 此地点的击杀数占整个游戏击杀数的百分比。\n B = 此地点的由你造成的击杀数占整个游戏中你造成的击杀数的\n     百分比。\n C = 此地点的由友方造成的击杀数占整个游戏中友方造成的击杀数\n     的百分比。\n D = 此地点的其他击杀数占整个游戏中其他击杀数的\n     百分比。\n E = 此地点的经验值占整个游戏经验值的\n     百分比。\n F = 此地点的经验值除以你所探索过的\n     此地点层数。\n\n
 %%%%
 Table legend:\n A = God\n B = Rank\n C = Start time\n D = Start piety\n E = Piety gained\n F = Piety on gifts\n G = Piety on penance\n H = Piety on stepdowns\n I = Piety decays\n J = Piety lost (inc. decay)\n
 表格说明：\n A = 神明\n B = 等级\n C = 开始时间\n D = 初始虔诚度\n E = 获得的虔诚度\n F = 赐礼上的虔诚度\n G = 赎罪上的虔诚度\n H = 衰减步进的虔诚度\n I = 虔诚度衰减\n J = 虔诚度损失（含衰减）\n
@@ -26713,6 +27192,14 @@ fire at
 
 向……射击
 %%%%
+fire at %s
+
+向%s射击
+%%%%
+fire in %s direction
+
+向%s的方向
+%%%%
 ghostly 
 
 鬼魅
@@ -26809,7 +27296,7 @@ Small
 小
 %%%%
  amulet
-护身符
+项链
 %%%%
 This could place you under penance!
 这可能会让你受到神罚！
@@ -27516,7 +28003,7 @@ Infuse+∞ VampMP
 注入+∞ 吸魔
 %%%%
 Inspire Amulet+
-激励 护符+
+激励 项链+
 %%%%
 Invo=14 Evo=0
 祈唤=14 唤术=0
@@ -27771,22 +28258,22 @@ Wrath of Trog
 特洛格之怒
 %%%%
 amulet of Cekugob
-塞库戈布之护符
+塞库戈布之项链
 %%%%
 amulet of Elemental Vulnerability
-元素易伤护符
+元素易伤项链
 %%%%
 amulet of Vitality
-活力护符
+活力项链
 %%%%
 amulet of invisibility
-隐身护符
+隐身项链
 %%%%
 amulet of the Air
-大气护符
+大气项链
 %%%%
 amulet of the Four Winds
-四方之风护符
+四方之风项链
 %%%%
 arbalest "Damnation"
 重弩"天谴"
@@ -28566,7 +29053,7 @@ Inspire
 激励
 %%%%
 Amulet+
-护符+
+项链+
 %%%%
 Hat+
 头盔+
@@ -28884,7 +29371,7 @@ When you summon or create an ally, it gains Regeneration.
 当你召唤或创造一个盟友时，它获得再生能力。
 %%%%
 You can equip an additional amulet.
-你可以装备一枚额外的护符。
+你可以装备一枚额外的项链。
 %%%%
 When you kill an enemy with your weapon, its spirit may be forced to fight for you.
 当你以武器杀死敌人时，其灵魂可能被迫为你而战。
@@ -29046,31 +29533,31 @@ entered
 进入了
 %%%%
 You hear the {prefix}rusting of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的锈蚀声。
+你听到{distance}{noisemaker}发出{prefix}的锈蚀声。
 %%%%
 You hear the {prefix}hiss of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的嘶嘶声。
+你听到{distance}{noisemaker}发出{prefix}的嘶嘶声。
 %%%%
 You hear the {prefix}creaking of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的吱嘎声。
+你听到{distance}{noisemaker}发出{prefix}的吱嘎声。
 %%%%
 You hear the {prefix}crackling of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的噼啪声。
+你听到{distance}{noisemaker}发出{prefix}的噼啪声。
 %%%%
 You hear the {prefix}rumble of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的轰隆声。
+你听到{distance}{noisemaker}发出{prefix}的轰隆声。
 %%%%
 You hear the {prefix}whistling of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的呼啸声。
+你听到{distance}{noisemaker}发出{prefix}的呼啸声。
 %%%%
 You hear the {prefix}beating of the {distance} {noisemaker}.
-你听到了{distance}{noisemaker}{prefix}鼓声。
+你听到{distance}{noisemaker}发出{prefix}的敲击声。
 %%%%
 You hear the {prefix}tolling of the {distance} {noisemaker}.
-你听到了{distance}{noisemaker}{prefix}钟声。
+你听到{distance}{noisemaker}发出{prefix}的鸣响。
 %%%%
 You hear the {prefix}crackle of the {distance} {noisemaker}.
-你听到{distance}{noisemaker}{prefix}的噼啪声。
+你听到{distance}{noisemaker}发出{prefix}的噼啪声。
 %%%%
 You hear the {prefix} of the {distance} {noisemaker}.
 你听到了{distance}{noisemaker}。
@@ -31466,7 +31953,7 @@ hungry ghost
 饥饿幽灵
 %%%%
 hydra
-九头蛇
+多头蛇
 %%%%
 hyperactive ballistomycete
 过度活跃的孢子炮菌
@@ -33365,7 +33852,7 @@ Build '%s'
   99只兽人 对阵 果冻王\n
 %%%%
   20-headed hydra v 10 kobold ; scimitar ego:flaming
-  20头九头蛇 对阵 10只狗头人；弯刀 附魔：烈焰
+  多头蛇（20头） 对阵 10只狗头人；弯刀 附魔：烈焰
 %%%%
 ) in view: (%d,%d), see_cell: %s
 ) 视野内：(%d,%d)，可见格：%s
@@ -34411,7 +34898,7 @@ Touched by the power of Zot (MHP
 被佐特之力触碰（最大生命值
 %%%%
 Saved by the dreamshard amulet
-被梦境碎片护身符拯救
+被梦境碎片项链拯救
 %%%%
 Lost the 
 在佐特之力下丢失了
@@ -34968,7 +35455,7 @@ obsoleteness
 <r>（BUG！这个物品不应赋予能力）</r>
 %%%%
 <red>"</red> : amulets (<w>%</w>ut on and <w>%</w>emove)
-<red>"</red>：护符（<w>%</w>戴上和<w>%</w>取下）
+<red>"</red>：项链（<w>%</w>戴上和<w>%</w>取下）
 %%%%
 <w>?</w> : scrolls (<w>%</w>ead)
 <w>?</w>：卷轴（<w>%</w>阅读）
@@ -35029,6 +35516,9 @@ Pois
 %%%%
 Portal
 传送门
+%%%%
+branch
+分支
 %%%%
 Preparing a Fortress Blast.
 正在准备堡垒爆破。
@@ -35403,6 +35893,9 @@ The ball of acid explodes!
 The cloud of blastmotes explodes!
 爆尘云爆炸了！
 %%%%
+The flask of dizzying concoctions shatters into a vile cloud!
+装满眩晕混合物的烧瓶碎裂成一团污浊的云雾！
+%%%%
 The gout of umbral fire explodes!
 暗影之火爆发了！
 %%%%
@@ -35417,6 +35910,21 @@ Piercing cold boils outward!
 %%%%
 A wave of flame ripples out!
 一道火焰波浪向外扩散！
+%%%%
+The shards fragment into shrapnel!
+碎片裂成了弹片！
+%%%%
+The flickering shadows explode!
+闪烁的阴影爆炸了！
+%%%%
+The antimagic surges outward!
+反魔法力量向外涌出！
+%%%%
+The beam explodes into a cloud of software bugs!
+光束爆炸成一团软件错误！
+%%%%
+You hear the sound of one hand!
+你听到一只手发出的声音！
 %%%%
 Necronomicon
 死灵书
@@ -36259,3 +36767,1307 @@ Unknown delay: %s\n
 %%%%
 Delay interrupt name "%s" not recognised.\n
 未识别的延迟中断名称“%s”。\n
+%%%%
+manuals
+技能手册
+%%%%
+Other Items
+其他物品
+%%%%
+recognised  
+已识别  
+%%%%
+runes
+符文
+%%%%
+spellbooks
+法术书
+%%%%
+unrecognised
+未识别
+%%%%
+unknown rings
+未识别戒指
+%%%%
+unknown amulets
+未识别项链
+%%%%
+unknown %s
+未识别%s
+%%%%
+Letters toggle autopickup  
+字母切换自动拾取  
+%%%%
+ toggle selected  
+  切换选中  
+%%%%
+Smite
+打击
+%%%%
+Fragment what (e.g. wall or brittle monster)?
+要粉碎什么（例如墙壁或脆弱的怪物）？
+%%%%
+Necr
+死灵
+%%%%
+Frge
+锻造
+%%%%
+Erth
+大地
+%%%%
+Rndm
+随机
+%%%%
+status| (but backlit and visible)
+（背面发光且可见）
+%%%%
+status| Gem (*)
+宝石(*)
+%%%%
+status| poisoned
+中毒
+%%%%
+status|!Tele!
+!传送!
+%%%%
+status|-Bbolt
+-电
+%%%%
+status|-Berserk
+-狂
+%%%%
+status|-Blink
+-闪
+%%%%
+status|-Bloodrite
+-祭
+%%%%
+status|-Breath
+-息
+%%%%
+status|-Cast
+-法
+%%%%
+status|-Clouds
+-云
+%%%%
+status|-DDoor
+-门
+%%%%
+status|-Dog
+-犬
+%%%%
+status|-Dragoncall
+-龙
+%%%%
+status|-GClaw
+-爪
+%%%%
+status|-Gavotte
+-舞
+%%%%
+status|-Hellfire
+-狱
+%%%%
+status|-Hop
+-跃
+%%%%
+status|-Jolt
+-冲
+%%%%
+status|-Lithotox
+-石
+%%%%
+status|-Mesm
+-眠
+%%%%
+status|-Move
+-移
+%%%%
+status|-Potion
+-药
+%%%%
+status|-Recite
+-诵
+%%%%
+status|-Regen
+-恢
+%%%%
+status|-Scroll
+-卷
+%%%%
+status|-Siphon
+-吸
+%%%%
+status|-Star
+-星
+%%%%
+status|-Swarm
+-群
+%%%%
+status|-Swift
+-速
+%%%%
+status|-Tele
+-传
+%%%%
+status|-Vortex
+-涡
+%%%%
+status|-Word
+-言
+%%%%
+status|Agi
+敏
+%%%%
+status|Ambros
+仙
+%%%%
+status|Aqua
+水
+%%%%
+status|Attr
+属
+%%%%
+status|Aug
+增
+%%%%
+status|Barbs
+尖刺
+%%%%
+status|Bat
+蝠
+%%%%
+status|Bat Swarm
+蝠群
+%%%%
+status|Bearserk
+熊狂
+%%%%
+status|Beogh
+贝奥
+%%%%
+status|Berserk
+狂暴
+%%%%
+status|Blade
+刃
+%%%%
+status|Blast
+爆
+%%%%
+status|Blind
+盲
+%%%%
+status|Blood
+血
+%%%%
+status|Bog
+沼
+%%%%
+status|Breath
+吐息
+%%%%
+status|Bribe
+贿
+%%%%
+status|Brill
+智
+%%%%
+status|Bullseye
+靶
+%%%%
+status|Cacophony
+噪
+%%%%
+status|Catalyst
+催
+%%%%
+status|Channel
+引
+%%%%
+status|Cleave
+扫
+%%%%
+status|Cloud
+云
+%%%%
+status|Conf
+惑
+%%%%
+status|Constr
+缠
+%%%%
+status|Contam
+污
+%%%%
+status|Corona
+晕
+%%%%
+status|Corr
+蚀
+%%%%
+status|Corr (%d)
+蚀(%d)
+%%%%
+status|Crab
+蟹
+%%%%
+status|Crippled
+残
+%%%%
+status|DChan
+亡道
+%%%%
+status|DDoor
+死门
+%%%%
+status|Death
+死
+%%%%
+status|Destr
+毁
+%%%%
+status|Devious
+诡
+%%%%
+status|Dig
+掘
+%%%%
+status|Dim
+暗
+%%%%
+status|Disjoin
+移
+%%%%
+status|Dog
+犬
+%%%%
+status|Dragon
+龙
+%%%%
+status|Dragoncall
+龙召
+%%%%
+status|Duel
+决
+%%%%
+status|Eel
+鳗
+%%%%
+status|Elixir
+灵
+%%%%
+status|Engorged
+胀
+%%%%
+status|Enkindled
+燃
+%%%%
+status|Enkindled (%d)
+燃(%d)
+%%%%
+status|Escape!
+逃!
+%%%%
+status|Execution
+刑
+%%%%
+status|Exh
+竭
+%%%%
+status|Fast
+快
+%%%%
+status|Fast+Slow
+快+慢
+%%%%
+status|Fear
+恐
+%%%%
+status|Finesse
+精
+%%%%
+status|Fire
+火
+%%%%
+status|Fire+
+火+
+%%%%
+status|Fire++
+火++
+%%%%
+status|Flay
+剥
+%%%%
+status|Flay (%d)
+剥(%d)
+%%%%
+status|Flooded
+淹
+%%%%
+status|Flux
+变
+%%%%
+status|Fly
+飞
+%%%%
+status|Forest
+森林
+%%%%
+status|Fragile
+脆
+%%%%
+status|Frozen
+冻
+%%%%
+status|Fugue
+赋
+%%%%
+status|Fugue (%s%u%s)
+赋(%s%u%s)
+%%%%
+status|Fungus
+菌
+%%%%
+status|Fusillade
+齐
+%%%%
+status|Gem (%d)
+宝石(%d)
+%%%%
+status|Heavenly (%d)
+天(%d)
+%%%%
+status|Held
+缚
+%%%%
+status|Hero
+英
+%%%%
+status|Hive
+巢
+%%%%
+status|Horr
+惧
+%%%%
+status|Horr (%d)
+惧(%d)
+%%%%
+status|Horror overwhelms you!
+恐惧淹没了你！
+%%%%
+status|Howl
+嚎
+%%%%
+status|Invis
+隐
+%%%%
+status|Jelly
+胶
+%%%%
+status|Jinx
+厄
+%%%%
+status|Lash (%u)
+鞭(%u)
+%%%%
+status|Lava
+熔
+%%%%
+status|Legion
+军
+%%%%
+status|Liquid
+液
+%%%%
+status|MPRegen (%d)
+魔恢(%d)
+%%%%
+status|Mark
+标
+%%%%
+status|Maw
+噬
+%%%%
+status|Medusa
+蛇
+%%%%
+status|Memories (%d)
+忆(%d)
+%%%%
+status|Mesm
+眠
+%%%%
+status|Might
+力
+%%%%
+status|Missing
+缺失
+%%%%
+status|Missing status description.
+缺失状态描述。
+%%%%
+status|Nightfall
+暮
+%%%%
+status|Ooze
+泥
+%%%%
+status|OozeRegen
+泥恢
+%%%%
+status|Orb
+球
+%%%%
+status|Orb?
+球?
+%%%%
+status|Ostracised
+被排斥
+%%%%
+status|Pact
+契
+%%%%
+status|Para
+麻
+%%%%
+status|Peek
+窥
+%%%%
+status|Petr
+石
+%%%%
+status|Phobia (-%d)
+惧(-%d)
+%%%%
+status|Pig
+猪
+%%%%
+status|Pois
+毒
+%%%%
+status|Pray
+祷
+%%%%
+status|Protected
+护
+%%%%
+status|Quad
+四倍
+%%%%
+status|Quill
+刺
+%%%%
+status|Ramparts
+壁
+%%%%
+status|Ray
+射
+%%%%
+status|Reap
+割
+%%%%
+status|Recite
+诵
+%%%%
+status|Regen (%d)
+恢(%d)
+%%%%
+status|Regen Will++
+恢意++
+%%%%
+status|Resist
+抗
+%%%%
+status|Rev
+转
+%%%%
+status|Rev*
+转*
+%%%%
+status|Rev+
+转+
+%%%%
+status|Rise
+升
+%%%%
+status|Ruin
+灭
+%%%%
+status|Sap
+弱
+%%%%
+status|Scarab
+虫
+%%%%
+status|Scroll
+卷
+%%%%
+status|Serpent
+蛇
+%%%%
+status|Shackles
+铐
+%%%%
+status|Shield (%d)
+盾(%d)
+%%%%
+status|Shroud
+护罩
+%%%%
+status|Sick
+病
+%%%%
+status|Sil
+默
+%%%%
+status|Slaughter
+屠
+%%%%
+status|Slay
+杀
+%%%%
+status|Slay +%d
+杀+%d
+%%%%
+status|Slime
+粘
+%%%%
+status|Slow
+慢
+%%%%
+status|SlowM
+慢移
+%%%%
+status|Sphinx
+斯
+%%%%
+status|Spider
+蛛
+%%%%
+status|Spore
+孢
+%%%%
+status|Statue
+像
+%%%%
+status|Stealth
+潜
+%%%%
+status|Stone
+石
+%%%%
+status|Storm
+风
+%%%%
+status|Sunder
+碎裂
+%%%%
+status|Swift
+速
+%%%%
+status|Tele
+传
+%%%%
+status|Tesseract
+超立方体
+%%%%
+status|Torch
+炬
+%%%%
+status|Torch (%d)
+炬(%d)
+%%%%
+status|Touch
+触
+%%%%
+status|Toxic
+毒
+%%%%
+status|Tree
+树
+%%%%
+status|Unstable
+不稳
+%%%%
+status|Vainglory
+虚
+%%%%
+status|Vampire
+鬼
+%%%%
+status|Vertigo
+眩
+%%%%
+status|Vexed
+恼
+%%%%
+status|Vit
+活
+%%%%
+status|Vortex
+涡
+%%%%
+status|Water
+水
+%%%%
+status|Wave
+波
+%%%%
+status|Weak
+弱
+%%%%
+status|Werewolf
+狼
+%%%%
+status|Will+
+意+
+%%%%
+status|Will/2
+意/2
+%%%%
+status|Winding
+绕
+%%%%
+status|Wisp
+灵
+%%%%
+status|Yak
+牛
+%%%%
+status|You are about to teleport to other enemies.
+你即将传送至其他敌人附近。
+%%%%
+status|You are engaged in single combat.
+你正在单挑中。
+%%%%
+status|You are extremely horrified!
+你极度恐惧！
+%%%%
+status|You are flying.
+你正在飞行。
+%%%%
+status|You are horrified!
+你感到恐惧！
+%%%%
+status|You are moving at supernatural speed.
+你以超自然速度移动。
+%%%%
+status|You are regenerating.
+你正在恢复生命。
+%%%%
+status|You are silenced.
+你被沉默了。
+%%%%
+status|You are slowed.
+你被减速了。
+%%%%
+status|You are under both slowing and hasting effects.
+你同时受到减速和加速效果。
+%%%%
+status|You cannot read scrolls.
+你无法阅读卷轴。
+%%%%
+status|You cannot resist fire.
+你无法抵抗火焰。
+%%%%
+status|You're fully limbered up.
+你已完全热身。
+%%%%
+status|You're limbering up.
+你正在热身。
+%%%%
+status|You're starting to limber up.
+你开始热身。
+%%%%
+status|Your actions are hasted.
+你的行动被加速了。
+%%%%
+status|Your inugami has been summoned.
+你的犬神已被召唤。
+%%%%
+status|Your regeneration is inhibited by nearby monsters.
+你的恢复被附近的怪物抑制了。
+%%%%
+status|Zot (%d)
+佐(%d)
+%%%%
+status|about to teleport
+即将传送
+%%%%
+status|afraid
+恐惧
+%%%%
+status|agile
+敏捷
+%%%%
+status|ambrosia-drunk
+仙酒醉
+%%%%
+status|animating dead
+复活死者
+%%%%
+status|attractive
+吸引怪物
+%%%%
+status|berserking
+狂暴中
+%%%%
+status|bezotted
+沉醉
+%%%%
+status|blinded
+致盲
+%%%%
+status|blinkbolt cooldown
+电闪冷却
+%%%%
+status|blinking rapidly
+快速闪烁
+%%%%
+status|bribing [%s]
+贿赂[%s]
+%%%%
+status|brilliant
+聪慧
+%%%%
+status|calling dragons
+召唤龙群
+%%%%
+status|calling ooze
+召唤软泥
+%%%%
+status|catalyst
+催化
+%%%%
+status|channelling
+引导中
+%%%%
+status|chanting a vengeful prayer
+吟唱复仇祈祷
+%%%%
+status|cleaving
+横扫中
+%%%%
+status|confused
+困惑
+%%%%
+status|confusing by touch
+触之迷惑
+%%%%
+status|constricted
+被缠绕
+%%%%
+status|constricted (roots)
+被根缠绕
+%%%%
+status|constricted (zombie hands)
+被尸手缠绕
+%%%%
+status|corroded
+腐蚀
+%%%%
+status|corroded (%d)
+腐蚀(%d)
+%%%%
+status|death channelling
+引导死亡
+%%%%
+status|devious
+狡诈
+%%%%
+status|diminished spells
+法术减弱
+%%%%
+status|disjoining
+位移中
+%%%%
+status|duelling
+决斗中
+%%%%
+status|elixired
+灵药生效
+%%%%
+status|engorged
+饱食
+%%%%
+status|enkindled
+点燃
+%%%%
+status|enlightened
+启迪
+%%%%
+status|enshackling
+束缚中
+%%%%
+status|especially stealthy
+极度潜行
+%%%%
+status|exhausted
+力竭
+%%%%
+status|extremely horrified
+极度恐惧
+%%%%
+status|finesse-ful
+精准
+%%%%
+status|fire susceptible
+火焰易伤
+%%%%
+status|fire vulnerable
+火焰易伤
+%%%%
+status|flayed
+剥皮
+%%%%
+status|flooded lungs
+肺部积水
+%%%%
+status|flying
+飞行中
+%%%%
+status|forested
+召唤森林
+%%%%
+status|fortress blast
+堡垒爆发
+%%%%
+status|fragile (+50% incoming damage)
+脆弱（+50%受伤）
+%%%%
+status|freezing walls
+冻结墙壁
+%%%%
+status|frozen
+冰冻
+%%%%
+status|fugue
+赋格
+%%%%
+status|full of bloodlust
+充满嗜血
+%%%%
+status|glowing
+发光
+%%%%
+status|growing destruction
+毁灭增长
+%%%%
+status|hasted
+加速中
+%%%%
+status|hasted and slowed
+加速且减速
+%%%%
+status|held
+被束缚
+%%%%
+status|heroic
+英雄
+%%%%
+status|horrified
+恐惧
+%%%%
+status|immotile
+无法移动
+%%%%
+status|in a vortex
+极地漩涡中
+%%%%
+status|in death's door
+死亡之门中
+%%%%
+status|inhibited regen
+恢复受阻
+%%%%
+status|inugami summoned
+犬神已召
+%%%%
+status|invisible
+隐形
+%%%%
+status|jinxed
+厄运缠身
+%%%%
+status|lethally
+致命
+%%%%
+status|liquefying
+液化地面
+%%%%
+status|lit by a corona
+被光晕照亮
+%%%%
+status|lit torch
+火炬点燃
+%%%%
+status|lost %s
+迷失%s
+%%%%
+status|magic-sapped
+魔力枯竭
+%%%%
+status|making a cacophony
+制造噪音
+%%%%
+status|marked
+被标记
+%%%%
+status|mesmerised
+被催眠
+%%%%
+status|mighty
+强力
+%%%%
+status|mildly
+轻度
+%%%%
+status|missing status
+缺失状态
+%%%%
+status|nightfall
+夜幕降临
+%%%%
+status|no stairs
+拒绝楼梯
+%%%%
+status|oblivion-hounded
+被湮灭追逐
+%%%%
+status|on berserk cooldown
+狂暴冷却
+%%%%
+status|on blink cooldown
+闪烁冷却
+%%%%
+status|on bloodrite cooldown
+血祭冷却
+%%%%
+status|on death's door cooldown
+死亡之门冷却
+%%%%
+status|on dragon call cooldown
+龙群召唤冷却
+%%%%
+status|on eeljolt cooldown
+电鳗冲击冷却
+%%%%
+status|on fire
+燃烧中
+%%%%
+status|on gavotte cooldown
+加沃特冷却
+%%%%
+status|on hellfire mortar cooldown
+地狱火迫击炮冷却
+%%%%
+status|on lithotoxin cooldown
+石毒素冷却
+%%%%
+status|on mesmerism cooldown
+催眠冷却
+%%%%
+status|on recite cooldown
+吟诵冷却
+%%%%
+status|on siphon cooldown
+虹吸冷却
+%%%%
+status|on stardust cooldown
+星尘冷却
+%%%%
+status|on swarm cooldown
+虫群冷却
+%%%%
+status|on vortex cooldown
+漩涡冷却
+%%%%
+status|on word of chaos cooldown
+混沌之语冷却
+%%%%
+status|ooze regen
+软泥恢复
+%%%%
+status|overwhelmed with horror
+被恐惧淹没
+%%%%
+status|paralysed
+麻痹
+%%%%
+status|peeking
+窥视中
+%%%%
+status|petrified
+石化
+%%%%
+status|petrifying
+石化中
+%%%%
+status|poison vulnerable
+毒素易伤
+%%%%
+status|portalling projectiles
+传送飞弹中
+%%%%
+status|protected from cold
+寒冷防护
+%%%%
+status|protected from electricity
+电击防护
+%%%%
+status|protected from fire
+火焰防护
+%%%%
+status|quad damage
+四倍伤害
+%%%%
+status|quite
+相当
+%%%%
+status|rC+
+抗寒+
+%%%%
+status|rElec+
+抗电+
+%%%%
+status|rF+
+抗火+
+%%%%
+status|rF-
+抗火-
+%%%%
+status|rF0
+无抗火
+%%%%
+status|rP-
+抗毒-
+%%%%
+status|radiating poison
+辐射毒素
+%%%%
+status|raining reagents
+倾泻试剂
+%%%%
+status|reciting
+吟诵中
+%%%%
+status|regenerating
+再生中
+%%%%
+status|resistant
+抗性
+%%%%
+status|revved
+运转中
+%%%%
+status|revving
+加速中
+%%%%
+status|rising
+上升中
+%%%%
+status|sanguine armoured
+血甲护体
+%%%%
+status|seriously
+严重
+%%%%
+status|serpent's lash
+蛇之鞭
+%%%%
+status|short of breath
+喘息中
+%%%%
+status|shroud timeout
+黏液护罩破损
+%%%%
+status|sick
+疾病
+%%%%
+status|sign of ruin
+毁灭征兆
+%%%%
+status|silenced
+沉默
+%%%%
+status|slimy
+粘滑
+%%%%
+status|slimy shroud
+黏液护罩
+%%%%
+status|slowed
+减速
+%%%%
+status|slowed movement
+移动减速
+%%%%
+status|spewing sludge
+喷吐泥沼
+%%%%
+status|spiked
+被刺穿
+%%%%
+status|studying 
+学习中
+%%%%
+status|surrounded by blades
+刃之旋风
+%%%%
+status|swift
+迅捷
+%%%%
+status|teleporting to hostiles
+传送至敌阵
+%%%%
+status|trickster (+%d AC)
+诡术(+%d甲)
+%%%%
+status|unable to call your familiar
+无法召唤使魔
+%%%%
+status|unable to cast spells
+无法施法
+%%%%
+status|unable to drink
+无法饮用药水
+%%%%
+status|unable to hop
+无法跳跃
+%%%%
+status|unable to read
+无法阅读
+%%%%
+status|unleashing the legion
+释放军团
+%%%%
+status|unswift
+迟缓
+%%%%
+status|untranslocatable
+无法位移
+%%%%
+status|vertiginous
+眩晕
+%%%%
+status|vexed
+恼怒
+%%%%
+status|vitalised
+生命活力
+%%%%
+status|weak-willed
+意志薄弱
+%%%%
+status|weakened
+虚弱
+%%%%
+status|wreathed by umbra
+暗影缠绕
+%%%%
+regeneration
+再生
+%%%%
+Faith
+信仰
+%%%%
+Wildshape
+变形
+%%%%
+Chemistry
+炼金
+%%%%
+acrobat
+杂技
+%%%%
+
+Agony
+剧痛
+%%%%
+Condensation Shield
+凝结之盾
+%%%%
+Fireball
+火球
+%%%%
+Foxfire
+狐火
+%%%%
+Golden Breath
+金龙吐息
+%%%%
+Haste
+加速
+%%%%
+See Invisible
+侦测隐形
+%%%%
+Sign of Ruin
+毁灭征兆
+%%%%
+Silence
+沉默
+%%%%
+Sting
+毒刺
+%%%%
+Throw
+投掷
+
+Vortex
+漩涡
+%%%%
+blast of energy
+能量冲击
+%%%%
+blast of lightning
+闪电冲击
+%%%%
+blast of putrescent gases
+腐臭爆裂
+%%%%
+blast of shadow
+暗影冲击
+%%%%
+caustic explosion
+腐蚀爆炸
+%%%%
+explosion of spores
+孢子爆炸
+%%%%
+fiery explosion
+烈焰爆炸
+%%%%
+pyre of ghostly fire
+幽灵火葬
+%%%%
+rain of gore
+凝血之雨
+%%%%
+topbar status|Conf
+混乱
+%%%%
+topbar status|Crippled
+残废
+%%%%
+topbar status|Fast
+加速
+%%%%
+topbar status|Fast+Slow
+速缓
+%%%%
+topbar status|Slow
+减速
+%%%%
+topbar status|Fly
+飞行
+%%%%
+topbar status|Invis
+隐形
+%%%%
+topbar status|Pois
+中毒
+%%%%

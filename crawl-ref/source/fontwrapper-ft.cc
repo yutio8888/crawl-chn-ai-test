@@ -22,10 +22,6 @@
 #include "unicode.h"
 #include "unwind.h"
 
-// maximum number of unique glyphs that can be rendered with this font at once; e.g. 4096, 256, 36
-#define MAX_GLYPHS 256
-// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 <= MAX_GLYPHS; e.g. 64, 16, 6
-#define GLYPHS_PER_ROWCOL 16
 // char to use if we can't find it in the font (upside-down question mark)
 #define MISSING_CHAR 0xbf
 // CJK fallback font — loaded alongside the primary font to provide glyphs
@@ -82,9 +78,12 @@ FTFontWrapper::FTFontWrapper() :
     cjk_face(nullptr),
     cjk_ttf(nullptr),
     pixels(nullptr),
-    fsize(0)
+    fsize(0),
+    m_atlas_clock(0),
+    m_peak_glyphs(0)
 {
     m_buf = GLShapeBuffer::create(true, true);
+    memset(m_pinned, 0, sizeof(m_pinned));
 }
 
 FTFontWrapper::~FTFontWrapper()
@@ -98,6 +97,11 @@ FTFontWrapper::~FTFontWrapper()
         FT_Done_Face(cjk_face);
     delete[] ttf;
     delete[] cjk_ttf;
+}
+
+void FTFontWrapper::clear_pins()
+{
+    memset(m_pinned, 0, sizeof(m_pinned));
 }
 
 /**
@@ -179,12 +183,19 @@ bool FTFontWrapper::configure_font()
     m_tex.load_texture(nullptr, m_ft_width, m_ft_height, MIPMAP_NONE);
 
     m_glyphs.clear();
+    m_glyph_to_slot.clear();
+    m_atlas_clock = 0;
 
-    for (int i = 0; i < MAX_GLYPHS; i++)
+    for (unsigned int i = 0; i < MAX_GLYPHS; i++)
+    {
         m_atlas[i] = FontAtlasEntry();
+        m_pinned[i] = false;
+    }
 
-    // atlas[0] always contains a full-white block (never evicted)
-    // this is currently used by colour_bar
+    // Slot 0: full-white block (reserved, never evicted)
+    // used by colour_bar
+    m_atlas[0].reserved = true;
+    m_atlas[0].last_used = ++m_atlas_clock;
     {
         for (int x = 0; x < m_max_advance.x; x++)
             for (int y = 0; y < m_max_advance.y; y++)
@@ -202,9 +213,32 @@ bool FTFontWrapper::configure_font()
         ASSERT(success);
     }
 
-    // precache common chars
-    for (int i = 0x20; i < 0x7f; i++)
-        map_unicode(i);
+    // Slot 1: MISSING_CHAR (reserved, never evicted)
+    {
+        atlas_slot_t slot = 1;
+        m_atlas[slot].uchar = MISSING_CHAR;
+        m_atlas[slot].reserved = true;
+        m_atlas[slot].last_used = ++m_atlas_clock;
+        m_glyph_to_slot[MISSING_CHAR] = slot;
+        load_glyph(slot, MISSING_CHAR);
+    }
+
+    // Preload and reserve ASCII printable characters (0x20-0x7E).
+    // These are consumed by almost every UI element and must never be
+    // evicted, preventing loss of menu/chrome glyphs under atlas pressure.
+    atlas_slot_t next_slot = 2;
+    for (char c = 0x20; c < 0x7f; c++)
+    {
+        atlas_slot_t slot = next_slot++;
+        m_atlas[slot].uchar = c;
+        m_atlas[slot].reserved = true;
+        m_atlas[slot].last_used = ++m_atlas_clock;
+        m_glyph_to_slot[(char32_t)c] = slot;
+        load_glyph(slot, c);
+    }
+
+    clear_pins();
+    m_peak_glyphs = 0;
     return true;
 }
 
@@ -247,8 +281,6 @@ bool FTFontWrapper::load_font(const char *font_name, unsigned int font_size)
     }
 
     m_atlas = new FontAtlasEntry[MAX_GLYPHS];
-    m_atlas_lru.clear();
-    m_atlas_lru.reserve(MAX_GLYPHS);
 
     // Load CJK fallback font for Chinese/Japanese/Korean characters.
     // Failure is non-fatal — the game will use MISSING_CHAR for glyphs
@@ -478,27 +510,66 @@ unsigned int FTFontWrapper::map_unicode(char *ch)
 
 unsigned int FTFontWrapper::map_unicode(char32_t uchar)
 {
-    unsigned int c = MAX_GLYPHS;
-    for (unsigned int i = 1; i < MAX_GLYPHS; i++)
-        if (m_atlas[i].uchar == uchar)
-        {
-            c = i;
-            break;
-        }
-
-    if (c == MAX_GLYPHS) // not found: need to load into atlas
+    // Fast path: hash lookup for O(1) glyph-to-slot resolution.
+    auto it = m_glyph_to_slot.find(uchar);
+    if (it != m_glyph_to_slot.end())
     {
-        bool atlas_full = m_atlas_lru.size() == MAX_GLYPHS-1;
-        c = atlas_full ? m_atlas_lru[0] : m_atlas_lru.size()+1;
-        m_atlas[c].uchar = uchar;
-        load_glyph(c, uchar);
-        n_subst++;
+        atlas_slot_t c = it->second;
+        m_atlas[c].last_used = ++m_atlas_clock;
+        m_pinned[c] = true;
+        return c;
     }
 
-    auto it = find(m_atlas_lru.begin(), m_atlas_lru.end(), (uint8_t)c);
-    if (it != m_atlas_lru.end())
-        m_atlas_lru.erase(it);
-    m_atlas_lru.push_back(c);
+    // Miss — need to load this glyph into the atlas.
+    // Find an eviction candidate among unreserved, unpinned slots.
+    atlas_slot_t evict = MAX_GLYPHS;
+    uint64_t oldest = UINT64_MAX;
+    for (atlas_slot_t i = 1; i < MAX_GLYPHS; i++)
+    {
+        if (m_atlas[i].reserved || m_pinned[i])
+            continue;
+        if (m_atlas[i].last_used < oldest)
+        {
+            oldest = m_atlas[i].last_used;
+            evict = i;
+        }
+    }
+
+    if (evict == MAX_GLYPHS)
+    {
+        // All unreserved slots are pinned — fall back to the oldest
+        // unreserved slot regardless (extremely rare at 4096 capacity).
+        uint64_t oldest_any = UINT64_MAX;
+        for (atlas_slot_t i = 1; i < MAX_GLYPHS; i++)
+        {
+            if (m_atlas[i].reserved)
+                continue;
+            if (m_atlas[i].last_used < oldest_any)
+            {
+                oldest_any = m_atlas[i].last_used;
+                evict = i;
+            }
+        }
+    }
+
+    // Remove the old glyph from the hash map before overwriting.
+    if (evict != MAX_GLYPHS && m_atlas[evict].uchar != 0)
+        m_glyph_to_slot.erase(m_atlas[evict].uchar);
+
+    atlas_slot_t c = evict != MAX_GLYPHS ? evict : 1; // last resort: MISSING_CHAR slot
+
+    // Count newly-loaded distinct glyphs for peak tracking.
+    // Evictions replace existing entries so only increment when the
+    // target slot was truly empty (first load since configure_font).
+    if (!m_atlas[c].reserved && m_atlas[c].uchar == 0)
+        m_peak_glyphs++;
+
+    m_atlas[c].uchar = uchar;
+    m_atlas[c].last_used = ++m_atlas_clock;
+    m_glyph_to_slot[uchar] = c;
+    load_glyph(c, uchar);
+    m_pinned[c] = true;
+    n_subst++;
 
     return c;
 }
@@ -878,6 +949,7 @@ void FTFontWrapper::render_tooltip(unsigned int px, unsigned int py,
 void FTFontWrapper::render_string(unsigned int px, unsigned int py,
                                   const formatted_string &text)
 {
+    clear_pins();
     glmanager->reset_transform();
     FontBuffer m_font_buf(this);
     m_font_buf.add(text, px, py);

@@ -916,7 +916,7 @@ void bolt::burn_wall_effect()
 
     if (have_passive(passive_t::shoot_through_plants))
     {
-        emit_message("Fedhas protects the tree from harm.");
+        emit_message(T_("Fedhas protects the tree from harm."));
         finish_beam();
         return;
     }
@@ -924,14 +924,14 @@ void bolt::burn_wall_effect()
     if (you.see_cell(pos()))
     {
         if (feat == DNGN_TREE)
-            emit_message("The tree burns like a torch!");
+            emit_message(T_("The tree burns like a torch!"));
         else if (feat == DNGN_MANGROVE)
-            emit_message("The mangrove smoulders and burns.");
+            emit_message(T_("The mangrove smoulders and burns."));
         else if (feat == DNGN_DEMONIC_TREE)
-            emit_message("The demonic tree burns, releasing chaotic energy.");
+            emit_message(T_("The demonic tree burns, releasing chaotic energy."));
     }
     else if (you.can_smell())
-        emit_message("You smell burning wood.");
+        emit_message(T_("You smell burning wood."));
 
     // If the tree we're destroying is temporary, immediately revert
     // terrain changes on this tile rather than permanently changing it.
@@ -6913,8 +6913,8 @@ void bolt::refine_for_explosion(const string& explode_msg)
         }
         else
         {
-            seeMsg  = "The beam explodes into a cloud of software bugs!";
-            hearMsg = "You hear the sound of one hand!";
+            seeMsg  = T_("The beam explodes into a cloud of software bugs!");
+            hearMsg = T_("You hear the sound of one hand!");
         }
     }
 
@@ -7963,20 +7963,24 @@ bool cancel_beam_prompt(const bolt& beam, const player_beam_tracer& tracer,
             victims.add(*target.mon, target.adj, target.suffix, target.penance);
 
         string mon_name = victims.describe();
-        string verb = "fire ";
+        string verb;
         if (tracer.bad_attack_targets.size() == 1)
         {
-            const monster* mon = tracer.bad_attack_targets[0].mon;
-            if (beam.target == mon->pos() && spell != SPELL_STARBURST)
-                verb += "at ";
+            if (beam.target == tracer.bad_attack_targets[0].mon->pos()
+                && spell != SPELL_STARBURST)
+            {
+                verb = make_stringf(T_("fire at %s"), mon_name.c_str());
+                mon_name = "";
+            }
             else
             {
-                verb += "in " + apostrophise(mon_name) + " direction";
+                verb = make_stringf(T_("fire in %s direction"),
+                                    mon_name.c_str());
                 mon_name = "";
             }
         }
         else
-            verb += "towards ";
+            verb = "fire towards ";
         const bool penance = victims.penance();
 
         const string prompt = make_stringf(T_("Really %s%s%s?%s"),

@@ -8,8 +8,8 @@
 #   bash .claude/scripts/classify_review.sh <range> --json   # JSON output
 #
 # Levels:
-#   GREEN  — no review needed (no crawl-ref/source/ changes)
-#   YELLOW — quick automated scan (post-coder.sh, no agent)
+#   GREEN  — no review needed
+#   YELLOW — translation-data-only automated scan
 #   RED    — full zh-code-reviewer agent review required
 #
 # Output: "LEVEL|REASON|<summary>" (single line) or JSON with --json
@@ -64,12 +64,21 @@ FILE_COUNT=$(echo "$FILES" | wc -l)
 
 # Classification rules (order matters — first match wins, conservative)
 LEVEL="GREEN"
-REASON="no-crawl-ref-changes"
+REASON="low-risk"
 SUMMARY=""
+
+# Workflow policy, verification, build/deploy automation, and their governing
+# documents can change the safety gates themselves.  Treat them like code.
+WORKFLOW_FILES=$(echo "$FILES" | grep -E '^(AGENTS\.md|CLAUDE\.md|CODEX\.md|docs/(build-workflow|dual-agent-workflow)\.md|\.claude/(scripts|workflows)/|\.opencode/(agents|skills|workflows)/|crawl-ref/source/(Makefile|Makefile\.obj|util/build-(console|tiles)\.sh))' || true)
+if [ -n "$WORKFLOW_FILES" ]; then
+    LEVEL="RED"
+    REASON="workflow-policy"
+    SUMMARY=$(echo "$WORKFLOW_FILES" | head -5 | tr '\n' ',' | sed 's/,$//')
+fi
 
 # Rule 1: C++ source changes → RED (highest risk: compilation, anti-patterns)
 CPP_FILES=$(echo "$FILES" | grep -E '^crawl-ref/source/.*\.(cc|h)$' || true)
-if [ -n "$CPP_FILES" ]; then
+if [ "$LEVEL" != "RED" ] && [ -n "$CPP_FILES" ]; then
     LEVEL="RED"
     REASON="cpp-source"
     SUMMARY=$(echo "$CPP_FILES" | head -5 | tr '\n' ',' | sed 's/,$//')
@@ -81,7 +90,8 @@ fi
 # Rule 2: i18n data files (only escalates if not already RED)
 if [ "$LEVEL" != "RED" ]; then
     I18N_FILES=$(echo "$FILES" | grep -E '^crawl-ref/source/dat/(i18n|descript|database)/zh/.*\.txt$' || true)
-    if [ -n "$I18N_FILES" ]; then
+    NON_I18N_FILES=$(echo "$FILES" | grep -Ev '^crawl-ref/source/dat/(i18n|descript|database)/zh/.*\.txt$' || true)
+    if [ -n "$I18N_FILES" ] && [ -z "$NON_I18N_FILES" ]; then
         LEVEL="YELLOW"
         REASON="i18n-data"
         SUMMARY=$(echo "$I18N_FILES" | head -3 | tr '\n' ',' | sed 's/,$//')

@@ -253,6 +253,31 @@ static const char* _zh_status_short(const char* en)
         { "Breath", "吐息" }, { "Tesseract", "超立方体" }, { "Sunder", "碎裂" },
         { "Shroud", "护罩" }, { "slimy shroud", "黏液护罩" },
         { "Ostracised", "被排斥" }, { "Missing", "缺失" }, { "missing status", "缺失状态" },
+        // Newer duration lights. Keep the established one-character TextDB
+        // translations where they already existed.
+        { "Touch", "触" }, { "confusing by touch", "触之迷惑" },
+        { "Slime", "粘" }, { "slimy", "粘滑" },
+        { "Ambros", "仙" }, { "ambrosia-drunk", "仙酒醉" },
+        { "Channel", "引" }, { "channelling", "引导中" },
+        { "Vertigo", "眩" }, { "vertiginous", "眩晕" },
+        { "Blood", "血" }, { "sanguine armoured", "鲜血护甲" },
+        { "-Hop", "-跃" }, { "unable to hop", "无法跳跃" },
+        { "-Bbolt", "-电" }, { "blinkbolt cooldown", "闪电突袭冷却" },
+        { "Elixir", "灵" }, { "elixired", "灵药强化" },
+        { "Sap", "弱" }, { "magic-sapped", "魔力削弱" },
+        { "-Cast", "-法" }, { "unable to cast spells", "无法施法" },
+        { "Jinx", "厄" }, { "jinxed", "厄运缠身" },
+        { "-Dog", "-犬" }, { "unable to call your familiar", "无法召唤伙伴" },
+        { "Recruit", "招募" }, { "Nightfall", "暮" }, { "nightfall", "夜幕降临" },
+        { "Blind", "盲" }, { "blinded", "失明" },
+        { "Ruin", "灭" }, { "sign of ruin", "毁灭征兆" },
+        { "Unstable", "不稳" }, { "blinking rapidly", "频繁闪烁" },
+        { "Enkindled", "燃" }, { "enkindled", "点燃" },
+        { "Catalyst", "催" }, { "catalyst", "催化" },
+        { "Flooded", "淹" }, { "Ramparts", "壁" }, { "freezing walls", "冰冻壁垒" },
+        { "Challenge", "挑战" }, { "Vengeance", "复仇" },
+        { "Drowsy", "困倦" }, { "Slimifying", "软化" },
+        { "OozeRegen", "泥恢" }, { "ooze regen", "软泥恢复" },
     };
     auto it = zh_names.find(en);
     return it != zh_names.end() ? it->second : en;
@@ -265,6 +290,8 @@ static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
         return false;
 
     inf.light_colour = ddef->light_colour;
+    inf.db_key       = ddef->light_text; // English TextDB key (before translation)
+    inf.short_db_key = ddef->short_text;
     inf.light_text   = _zh_status_short(ddef->light_text);
     inf.short_text   = _zh_status_short(ddef->short_text);
     inf.long_text    = T_(ddef->long_text);
@@ -328,6 +355,7 @@ bool fill_status_info(int status, status_info& inf)
         string msg = comma_separated_line(stat_str.begin(), stat_str.end());
 
         inf.light_text   = T_("Crippled");
+        inf.db_key       = "Crippled";
         inf.light_colour = LIGHTRED;
         inf.short_text   = make_stringf(T_("lost %s"), msg.c_str());
         inf.long_text    = make_stringf(T_("You have no %s!"), msg.c_str());
@@ -342,7 +370,8 @@ bool fill_status_info(int status, status_info& inf)
             break;
         }
 
-        inf.light_text = "Breath";
+        inf.light_text = T_("Breath");
+        inf.db_key     = "Breath";
 
         const int num = draconian_breath_uses_available();
         if (num == 0)
@@ -368,6 +397,7 @@ bool fill_status_info(int status, status_info& inf)
             {
                 inf.light_colour = DARKGRAY;
                 inf.light_text = T_("Torch");
+                inf.db_key     = "Torch";
             }
         }
         else
@@ -382,6 +412,7 @@ bool fill_status_info(int status, status_info& inf)
             else
                 inf.light_text = T_("Torch");
 
+            inf.db_key     = "Torch";
             inf.short_text = T_("lit torch");
         }
     break;
@@ -390,6 +421,7 @@ bool fill_status_info(int status, status_info& inf)
     {
         inf.light_text = make_stringf(T_("Shield (%d)"),
                                         you.duration[DUR_DIVINE_SHIELD]);
+        inf.db_key     = "Shield";
     }
     break;
 
@@ -402,17 +434,22 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_CORROSION:
         inf.light_text = make_stringf(T_("Corr (%d)"),
                           (-1 * you.corrosion_amount()));
+        inf.db_key     = "Corr";
         inf.short_text = make_stringf(T_("corroded (%d)"), (-1 * you.corrosion_amount()));
         break;
 
     case DUR_FLAYED:
         inf.light_text = make_stringf(T_("Flay (%d)"),
                           (-1 * you.props[FLAY_DAMAGE_KEY].get_int()));
+        inf.db_key     = "Flay";
         break;
 
     case DUR_BERSERK:
         if (you.unrand_equipped(UNRAND_BEAR_SPIRIT))
+        {
             inf.light_text = T_("Bearserk");
+            inf.db_key     = "Bearserk";
+        }
         break;
 
     case STATUS_NO_POTIONS:
@@ -422,6 +459,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = !you.can_drink(false) ? DARKGREY : RED;
             inf.light_text   = T_("-Potion");
+            inf.db_key       = "-Potion";
             inf.short_text   = T_("unable to drink");
             inf.long_text    = T_("You cannot drink potions.");
         }
@@ -431,6 +469,7 @@ bool fill_status_info(int status, status_info& inf)
         if (you.attribute[ATTR_SWIFTNESS] < 0)
         {
             inf.light_text   = T_("-Swift");
+            inf.db_key       = "-Swift";
             inf.light_colour = RED;
             inf.short_text   = T_("unswift");
             inf.long_text    = T_("You are covering ground slowly.");
@@ -458,6 +497,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = RED;
             inf.light_text   = T_("Mesm");
+            inf.db_key       = "Mesm";
             inf.short_text   = T_("mesmerised");
             inf.long_text    = T_("You are mesmerised.");
         }
@@ -469,6 +509,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = WHITE;
             inf.light_text   = T_("Peek");
+            inf.db_key       = "Peek";
             inf.short_text   = T_("peeking");
             inf.long_text    = T_("You are peeking down the stairs.");
         }
@@ -499,6 +540,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = RED;
             inf.light_text   = T_("Held");
+            inf.db_key       = "Held";
             inf.short_text   = T_("held");
             inf.long_text    = make_stringf(T_("You are %s."), held_status());
         }
@@ -519,6 +561,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = BROWN;
             inf.light_text   = T_("SlowM");
+            inf.db_key       = "SlowM";
             inf.short_text   = T_("slowed movement");
             inf.long_text    = T_("Your movement is slowed on this liquid ground.");
         }
@@ -535,7 +578,8 @@ bool fill_status_info(int status, status_info& inf)
                                (level == 2) ? LIGHTBLUE
                                             : BLUE;
 
-            inf.light_text = "Aug";
+            inf.light_text = T_("Aug");
+            inf.db_key     = "Aug";
         }
         break;
     }
@@ -563,6 +607,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = LIGHTMAGENTA;
             inf.light_text   = make_stringf(T_("Regen (%d)"), pbd_str);
+            inf.db_key       = "Regen";
         }
         break;
     }
@@ -576,6 +621,7 @@ bool fill_status_info(int status, status_info& inf)
             inf.light_colour = rh_lvl < 2 ? LIGHTBLUE : LIGHTMAGENTA;
             inf.light_text   = make_stringf(rh_lvl < 2 ? T_("MPRegen (%d)")
                                                        : T_("Regen (%d)"), rh_pwr);
+            inf.db_key       = rh_lvl < 2 ? "MPRegen" : "Regen";
         }
         break;
     }
@@ -610,7 +656,8 @@ bool fill_status_info(int status, status_info& inf)
             ASSERT(cstr);
 
             inf.light_colour = YELLOW;
-            inf.light_text   = "Constr";
+            inf.light_text   = T_("Constr");
+            inf.db_key       = "Constr";
 
             if (you.constricted_type == CONSTRICT_ROOTS)
                 inf.short_text   = "constricted (roots)";
@@ -633,7 +680,8 @@ bool fill_status_info(int status, status_info& inf)
             if (Options.equip_bar)
             {
                 inf.light_colour = LIGHTRED;
-                inf.light_text   = "Sil";
+                inf.light_text   = T_("Sil");
+                inf.db_key       = "Sil";
             }
             inf.short_text   = "silenced";
             inf.long_text    = "You are silenced.";
@@ -641,7 +689,8 @@ bool fill_status_info(int status, status_info& inf)
         if (Options.equip_bar && you.duration[DUR_SILENCE])
         {
             inf.light_colour = LIGHTMAGENTA;
-            inf.light_text = "Sil";
+            inf.light_text = T_("Sil");
+            inf.db_key     = "Sil";
         }
         break;
 
@@ -674,11 +723,13 @@ bool fill_status_info(int status, status_info& inf)
         const char* fugue_star = fugue_pow == FUGUE_MAX_STACKS ? "*" : "";
         inf.light_text = make_stringf(T_("Fugue (%s%u%s)"),
                                       fugue_star, fugue_pow, fugue_star);
+        inf.db_key     = "Fugue";
     }
     break;
 
     case DUR_WEREFURY:
         inf.light_text = make_stringf(T_("Slay +%d"), you.props[WEREFURY_KEY].get_int());
+        // No status.txt entry for "Slay" — keep db_key empty
     break;
 
     case DUR_DEVIOUS:
@@ -713,24 +764,33 @@ bool fill_status_info(int status, status_info& inf)
         if (intensity >= 13)
         {
             inf.light_colour = LIGHTRED;
-            inf.light_text = "Fire++";
+            inf.light_text = T_("Fire++");
+            inf.db_key     = "Fire++";
         }
         else if (intensity > 7)
-            inf.light_text = "Fire+";
+        {
+            inf.light_text = T_("Fire+");
+            inf.db_key     = "Fire+";
+        }
         else
-            inf.light_text = "Fire";
+        {
+            inf.light_text = T_("Fire");
+            inf.db_key     = "Fire";
+        }
     }
 
     case STATUS_BEOGH:
         if (env.level_state & LSTATE_BEOGH && can_convert_to_beogh())
         {
             inf.light_colour = WHITE;
-            inf.light_text = "Beogh";
+            inf.light_text = T_("Beogh");
+            inf.db_key     = "Beogh";
         }
         break;
 
     case DUR_FLOODED:
-        inf.light_text  = "Flooded";
+        inf.light_text  = T_("Flooded");
+        inf.db_key      = "Flooded";
         inf.short_text  = "flooded lungs";
         inf.long_text   = make_stringf(T_("Your lungs are flooded with %s and you "
                                        "cannot breathe."),
@@ -745,6 +805,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = MAGENTA;
             inf.light_text   = C_("status", "Drain");
+            inf.db_key       = "Drain";
             inf.short_text   = C_("status", "extremely drained");
             inf.long_text    = C_("status", "Your life force is extremely drained.");
         }
@@ -752,6 +813,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = RED;
             inf.light_text   = C_("status", "Drain");
+            inf.db_key       = "Drain";
             inf.short_text   = C_("status", "very heavily drained");
             inf.long_text    = C_("status", "Your life force is very heavily drained.");
         }
@@ -759,6 +821,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = LIGHTRED;
             inf.light_text   = C_("status", "Drain");
+            inf.db_key       = "Drain";
             inf.short_text   = C_("status", "heavily drained");
             inf.long_text    = C_("status", "Your life force is heavily drained.");
         }
@@ -766,6 +829,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = YELLOW;
             inf.light_text   = C_("status", "Drain");
+            inf.db_key       = "Drain";
             inf.short_text   = C_("status", "drained");
             inf.long_text    = C_("status", "Your life force is drained.");
         }
@@ -773,6 +837,7 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = LIGHTGREY;
             inf.light_text   = C_("status", "Drain");
+            inf.db_key       = "Drain";
             inf.short_text   = C_("status", "lightly drained");
             inf.long_text    = C_("status", "Your life force is lightly drained.");
         }
@@ -787,7 +852,8 @@ bool fill_status_info(int status, status_info& inf)
         if (you.digging)
         {
             inf.light_colour = WHITE;
-            inf.light_text   = "Dig";
+            inf.light_text   = T_("Dig");
+            inf.db_key       = "Dig";
         }
         break;
 
@@ -815,7 +881,8 @@ bool fill_status_info(int status, status_info& inf)
                                 (bribe >= 1000) ? LIGHTBLUE
                                                 : BLUE;
 
-            inf.light_text = "Bribe";
+            inf.light_text = T_("Bribe");
+            inf.db_key     = "Bribe";
             inf.short_text = make_stringf(T_("bribing [%s]"),
                                            comma_separated_line(places.begin(),
                                                                 places.end(),
@@ -833,6 +900,7 @@ bool fill_status_info(int status, status_info& inf)
     {
         const int horror = you.props[HORROR_PENALTY_KEY].get_int();
         inf.light_text = make_stringf(T_("Horr (%d)"), -1 * horror);
+        inf.db_key     = "Horr";
         if (horror >= HORROR_LVL_OVERWHELMING)
         {
             inf.light_colour = RED;
@@ -859,7 +927,8 @@ bool fill_status_info(int status, status_info& inf)
         cloud_type cloud = cloud_type_at(you.pos());
         if (Options.cloud_status && cloud != CLOUD_NONE)
         {
-            inf.light_text = "Cloud";
+            inf.light_text = T_("Cloud");
+            inf.db_key     = "Cloud";
             // TODO: make the colour based on the cloud's color; requires elemental
             // status lights, though.
             const bool yours = cloud_is_yours_at(you.pos());
@@ -882,17 +951,20 @@ bool fill_status_info(int status, status_info& inf)
         if (player_has_orb())
         {
             inf.light_colour = LIGHTMAGENTA;
-            inf.light_text = "Orb";
+            inf.light_text = T_("Orb");
+            inf.db_key     = "Orb";
         }
         else if (you.unrand_equipped(UNRAND_CHARLATANS_ORB))
         {
             inf.light_colour = LIGHTMAGENTA;
-            inf.light_text = "Orb?";
+            inf.light_text = T_("Orb?");
+            inf.db_key     = "Orb";
         }
         else if (orb_limits_translocation())
         {
             inf.light_colour = MAGENTA;
-            inf.light_text = "Orb";
+            inf.light_text = T_("Orb");
+            inf.db_key     = "Orb";
         }
 
         break;
@@ -902,7 +974,8 @@ bool fill_status_info(int status, status_info& inf)
         if (env.level_state & LSTATE_STILL_WINDS)
         {
             inf.light_colour = BROWN;
-            inf.light_text = "-Clouds";
+            inf.light_text = T_("-Clouds");
+            inf.db_key     = "-Clouds";
         }
         break;
 
@@ -910,7 +983,8 @@ bool fill_status_info(int status, status_info& inf)
         if (okawaru_duel_active())
         {
             inf.light_colour = WHITE;
-            inf.light_text   = "Duel";
+            inf.light_text   = T_("Duel");
+            inf.db_key       = "Duel";
             inf.short_text   = "duelling";
             inf.long_text    = "You are engaged in single combat.";
         }
@@ -920,7 +994,8 @@ bool fill_status_info(int status, status_info& inf)
         if (canine_familiar_is_alive())
         {
             inf.light_colour = WHITE;
-            inf.light_text   = "Dog";
+            inf.light_text   = T_("Dog");
+            inf.db_key       = "Dog";
             inf.short_text   = "inugami summoned";
             inf.long_text    = "Your inugami has been summoned.";
         }
@@ -932,7 +1007,8 @@ bool fill_status_info(int status, status_info& inf)
                 && you.props.exists(RENOUNCE_SCROLLS_TIMER_KEY)))
         {
             inf.light_colour = RED;
-            inf.light_text   = "-Scroll";
+            inf.light_text   = T_("-Scroll");
+            inf.db_key       = "-Scroll";
             inf.short_text   = "unable to read";
             inf.long_text    = "You cannot read scrolls.";
         }
@@ -948,7 +1024,8 @@ bool fill_status_info(int status, status_info& inf)
             break;
         }
         inf.light_colour = RED;
-        inf.light_text   = "rF0";
+        inf.light_text   = T_("rF0");
+        inf.db_key       = "rF0";
         inf.short_text   = "fire susceptible";
         inf.long_text    = "You cannot resist fire.";
         break;
@@ -971,7 +1048,8 @@ bool fill_status_info(int status, status_info& inf)
             && you.props[GRAVE_CLAW_CHARGES_KEY].get_int() == 0)
         {
             inf.light_colour = DARKGREY;
-            inf.light_text = "-GClaw";
+            inf.light_text = T_("-GClaw");
+            inf.db_key     = "-GClaw";
         }
         break;
 
@@ -990,7 +1068,8 @@ bool fill_status_info(int status, status_info& inf)
     {
         if (player_in_branch(BRANCH_CRUCIBLE))
         {
-            inf.light_text = "Pact";
+            inf.light_text = T_("Pact");
+            inf.db_key     = "Pact";
             const int debt = you.props[MAKHLEB_CRUCIBLE_DEBT_KEY].get_int();
             if (debt > 20)
                 inf.light_colour = MAGENTA;
@@ -1002,7 +1081,8 @@ bool fill_status_info(int status, status_info& inf)
                 inf.light_colour = YELLOW;
             else
             {
-                inf.light_text = "Escape!";
+                inf.light_text = T_("Escape!");
+                inf.db_key     = "Escape!";
                 inf.light_colour = WHITE;
             }
         }
@@ -1014,7 +1094,8 @@ bool fill_status_info(int status, status_info& inf)
         if (paragon_defense_bonus_active())
         {
             inf.light_colour = WHITE;
-            inf.light_text = "Protected";
+            inf.light_text = T_("Protected");
+            inf.db_key     = "Protected";
         }
         break;
     }
@@ -1022,6 +1103,7 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_FORTRESS_BLAST_TIMER:
         inf.light_colour = WHITE;
         inf.light_text = T_("Blast") + string(max(0, (40 - you.duration[DUR_FORTRESS_BLAST_TIMER]) / 10), '.');
+        inf.db_key     = "Blast";
         inf.short_text = T_("fortress blast");
         inf.long_text = T_("Preparing a Fortress Blast.");
         break;
@@ -1029,7 +1111,8 @@ bool fill_status_info(int status, status_info& inf)
     case DUR_TELEPORT:
         if (you.props.exists(TELEPORTITIS_SOURCE))
         {
-            inf.light_text   = "!Tele!";
+            inf.light_text   = T_("!Tele!");
+            inf.db_key       = "!Tele!";
             inf.light_colour = RED;
             inf.short_text   = "teleporting to hostiles";
             inf.long_text    = "You are about to teleport to other enemies.";
@@ -1071,11 +1154,13 @@ bool fill_status_info(int status, status_info& inf)
         {
             inf.light_colour = CYAN;
             inf.light_text = make_stringf(T_("Memories (%d)"), you.props[ENKINDLE_CHARGES_KEY].get_int());
+            inf.db_key     = "Memories";
         }
         break;
 
     case DUR_ENKINDLED:
         inf.light_text = make_stringf(T_("Enkindled (%d)"), you.props[ENKINDLE_CHARGES_KEY].get_int());
+        inf.db_key     = "Enkindled";
         break;
 
     case STATUS_SHROUD:
@@ -1083,7 +1168,8 @@ bool fill_status_info(int status, status_info& inf)
                 && !you.duration[DUR_SHROUD_TIMEOUT])
         {
             inf.light_colour = GREEN;
-            inf.light_text   = "Shroud";
+            inf.light_text   = T_("Shroud");
+            inf.db_key       = "Shroud";
             inf.short_text   = "slimy shroud";
         }
         break;
@@ -1091,7 +1177,8 @@ bool fill_status_info(int status, status_info& inf)
     case STATUS_OSTRACISM:
         if (you.attribute[ATTR_OSTRACISM] > 0)
         {
-            inf.light_text = "Ostracised";
+            inf.light_text = T_("Ostracised");
+            inf.db_key     = "Ostracised";
             if (!god_cares_about_ostracism())
                 inf.light_colour = DARKGREY;
             else if (you.attribute[ATTR_OSTRACISM] > 120)
@@ -1113,7 +1200,8 @@ bool fill_status_info(int status, status_info& inf)
             else
                 inf.light_colour = RED;
 
-            inf.light_text = "Tesseract";
+            inf.light_text = T_("Tesseract");
+            inf.db_key     = "Tesseract";
         }
         break;
 
@@ -1121,7 +1209,8 @@ bool fill_status_info(int status, status_info& inf)
         if (you.sunder_is_ready())
         {
             inf.light_colour = WHITE;
-            inf.light_text = "Sunder";
+            inf.light_text = T_("Sunder");
+            inf.db_key     = "Sunder";
         }
         break;
 
@@ -1129,7 +1218,8 @@ bool fill_status_info(int status, status_info& inf)
         if (!found)
         {
             inf.light_colour = RED;
-            inf.light_text   = "Missing";
+            inf.light_text   = T_("Missing");
+            inf.db_key       = "Missing";
             inf.short_text   = "missing status";
             inf.long_text    = "Missing status description.";
             return false;
@@ -1138,6 +1228,8 @@ bool fill_status_info(int status, status_info& inf)
             break;
     }
     // Translate any remaining English text for Chinese mode
+    if (inf.short_db_key.empty())
+        inf.short_db_key = inf.short_text;
     if (Options.language == lang_t::ZH)
     {
         if (!inf.light_text.empty())
@@ -1180,11 +1272,13 @@ static void _describe_gem(status_info& inf)
     {
         // player has picked up the orb, but the gem has not yet shattered
         inf.light_text = T_(" Gem (*)");
+        inf.db_key     = "Gem";
         inf.light_colour = CYAN;
         return;
     }
     const int d_aut_left = (limit - time_taken + 9) / 10;
     inf.light_text = make_stringf(T_("Gem (%d)"), d_aut_left);
+    inf.db_key     = "Gem";
     inf.light_colour = _gem_light_colour(d_aut_left);
 }
 
@@ -1204,6 +1298,7 @@ static void _describe_zot(status_info& inf)
 
     // XX code dup with overview screen
     inf.light_text = make_stringf(T_("Zot (%d)"), turns_until_zot());
+    inf.db_key     = "Zot";
     switch (lvl)
     {
         case 0:
@@ -1233,6 +1328,7 @@ static void _describe_glow(status_info& inf)
     else
         inf.light_colour = YELLOW;
     inf.light_text = T_("Contam");
+    inf.db_key     = "Contam";
 
     inf.short_text = describe_contamination(false);
     inf.long_text = describe_contamination();
@@ -1248,21 +1344,24 @@ static void _describe_rev(status_info& inf)
     {
         case 1:
             inf.light_colour = BLUE;
-            inf.light_text   = "Rev";
+            inf.light_text   = T_("Rev");
+            inf.db_key       = "Rev";
             inf.short_text   = "revving";
             inf.long_text    = "You're starting to limber up.";
             return;
 
         case 2:
             inf.light_colour = LIGHTBLUE;
-            inf.light_text   = "Rev+";
+            inf.light_text   = T_("Rev+");
+            inf.db_key       = "Rev";
             inf.short_text   = "revving";
             inf.long_text    = "You're limbering up.";
             return;
 
         case 3:
             inf.light_colour = WHITE;
-            inf.light_text   = "Rev*";
+            inf.light_text   = T_("Rev*");
+            inf.db_key       = "Rev";
             inf.short_text   = "revved";
             inf.long_text    = "You're fully limbered up.";
             return;
@@ -1274,7 +1373,8 @@ static void _describe_regen(status_info& inf)
     if (you.duration[DUR_TROGS_HAND])
     {
         inf.light_colour = _dur_colour(BLUE, dur_expiring(DUR_TROGS_HAND));
-        inf.light_text = "Regen Will++";
+        inf.light_text = T_("Regen Will++");
+        inf.db_key     = "Regen Will++";
         inf.short_text = "regenerating";
         inf.long_text  = "You are regenerating.";
         _mark_expiring(inf, dur_expiring(DUR_TROGS_HAND));
@@ -1282,7 +1382,8 @@ static void _describe_regen(status_info& inf)
     else if (regeneration_is_inhibited())
     {
         inf.light_colour = RED;
-        inf.light_text = "-Regen";
+        inf.light_text = T_("-Regen");
+        inf.db_key     = "-Regen";
         inf.short_text = "inhibited regen";
         inf.long_text = "Your regeneration is inhibited by nearby monsters.";
     }
@@ -1295,6 +1396,7 @@ static void _describe_poison(status_info& inf)
     inf.light_colour = (player_res_poison(false) >= 3
                         ? DARKGREY : _bad_ench_colour(pois_perc, 35, 100));
     inf.light_text   = T_("Pois");
+    inf.db_key       = "Pois";
     const bool zh = Options.language == lang_t::ZH;
     const string adj =
          (pois_perc >= 100) ? (T_("lethally")) :
@@ -1314,21 +1416,24 @@ static void _describe_speed(status_info& inf)
     if (slow && fast)
     {
         inf.light_colour = MAGENTA;
-        inf.light_text   = "Fast+Slow";
+        inf.light_text   = T_("Fast+Slow");
+        inf.db_key       = "Fast+Slow";
         inf.short_text   = "hasted and slowed";
         inf.long_text = "You are under both slowing and hasting effects.";
     }
     else if (slow)
     {
         inf.light_colour = RED;
-        inf.light_text   = "Slow";
+        inf.light_text   = T_("Slow");
+        inf.db_key       = "Slow";
         inf.short_text   = "slowed";
         inf.long_text    = "You are slowed.";
     }
     else if (fast)
     {
         inf.light_colour = _dur_colour(BLUE, dur_expiring(DUR_HASTE));
-        inf.light_text   = "Fast";
+        inf.light_text   = T_("Fast");
+        inf.db_key       = "Fast";
         inf.short_text = "hasted";
         inf.long_text = "Your actions are hasted.";
         _mark_expiring(inf, dur_expiring(DUR_HASTE));
@@ -1345,7 +1450,8 @@ static void _describe_airborne(status_info& inf)
     const bool emergency = you.props[EMERGENCY_FLIGHT_KEY].get_bool();
 
     inf.light_colour = perm ? WHITE : emergency ? LIGHTRED : BLUE;
-    inf.light_text   = "Fly";
+    inf.light_text   = T_("Fly");
+    inf.db_key       = "Fly";
     inf.short_text   = "flying";
     inf.long_text    = "You are flying.";
     inf.light_colour = _dur_colour(inf.light_colour, expiring);
@@ -1379,15 +1485,18 @@ static void _describe_terrain(status_info& inf)
     {
     case DNGN_SHALLOW_WATER:
         inf.light_colour = LIGHTBLUE;
-        inf.light_text = "Water";
+        inf.light_text = T_("Water");
+        inf.db_key     = "Water";
         break;
     case DNGN_DEEP_WATER:
         inf.light_colour = BLUE;
-        inf.light_text = "Water";
+        inf.light_text = T_("Water");
+        inf.db_key     = "Water";
         break;
     case DNGN_LAVA:
         inf.light_colour = RED;
-        inf.light_text = "Lava";
+        inf.light_text = T_("Lava");
+        inf.db_key     = "Lava";
         break;
     default:
         ;
@@ -1400,7 +1509,8 @@ static void _describe_invisible(status_info& inf)
         return;
 
     inf.light_colour = _dur_colour(BLUE, dur_expiring(DUR_INVIS));
-    inf.light_text   = "Invis";
+    inf.light_text   = T_("Invis");
+    inf.db_key       = "Invis";
     inf.short_text   = "invisible";
     if (you.backlit())
     {
@@ -1437,11 +1547,13 @@ static void _describe_channelled_spell(status_info& inf)
         case SPELL_FLAME_WAVE:
             inf.light_colour = WHITE;
             inf.light_text   = T_("Wave") + string(max(turns - 1, 0), '+');
+            inf.db_key       = "Wave";
             break;
 
         case SPELL_SEARING_RAY:
             inf.light_colour = WHITE;
             inf.light_text   = T_("Ray") + string(max(turns - 1, 0), '+');
+            inf.db_key       = "Ray";
             break;
 
         case SPELL_MAXWELLS_COUPLING:
@@ -1452,6 +1564,7 @@ static void _describe_channelled_spell(status_info& inf)
         case SPELL_CLOCKWORK_BEE:
             inf.light_colour = CYAN;
             inf.light_text = T_("Winding") + string(max(turns - 1, 0), '.');
+            inf.db_key     = "Winding";
             break;
 
         default:

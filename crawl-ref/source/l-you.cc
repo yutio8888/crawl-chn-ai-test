@@ -24,6 +24,7 @@
 #include "item-prop.h"
 #include "items.h"
 #include "jobs.h"
+#include "lang-en-guard.h"
 #include "losglobal.h"
 #include "mutation.h"
 #include "nearby-danger.h"
@@ -1067,9 +1068,12 @@ static int you_have_rune(lua_State *ls)
     else if (lua_gettop(ls) >= 1 && lua_isstring(ls, 1))
     {
         const char *spec = lua_tostring(ls, 1);
-        for (which_rune = 0; which_rune < NUM_RUNE_TYPES; which_rune++)
-            if (!strcasecmp(spec, rune_type_name(which_rune)))
-                break;
+        {
+            ScopedLangEn en;
+            for (which_rune = 0; which_rune < NUM_RUNE_TYPES; which_rune++)
+                if (!strcasecmp(spec, rune_type_name(which_rune)))
+                    break;
+        }
     }
     bool have_rune = false;
     if (which_rune >= 0 && which_rune < NUM_RUNE_TYPES)

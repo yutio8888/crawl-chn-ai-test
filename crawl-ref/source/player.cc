@@ -8383,9 +8383,9 @@ bool player::attempt_escape()
     escape_attempts += 1;
 
     const string object
-        = constricted_type == CONSTRICT_ROOTS      ? "the roots'"
-          : constricted_type == CONSTRICT_BVC      ? "the zombie hands'"
-          : constricted_type == CONSTRICT_ENTANGLE ? "the vines'"
+        = constricted_type == CONSTRICT_ROOTS      ? T_("the roots'")
+          : constricted_type == CONSTRICT_BVC      ? T_("the zombie hands'")
+          : constricted_type == CONSTRICT_ENTANGLE ? T_("the vines'")
                                         : themonst->name(DESC_ITS, true);
 
     if (x_chance_in_y(_constriction_escape_chance(escape_attempts), 100))

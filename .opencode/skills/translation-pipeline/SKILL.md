@@ -38,16 +38,23 @@ description: 翻译问题完整修复管道 — 玩家反馈 → 结构化收集
 - **位置**: <game location>
 ```
 
-## 启动修复 Workflow
+## 启动修复流程
 
-信息收集完毕后，使用 worktree 隔离并启动 workflow：
+`.opencode/workflows/*.js` 使用 OpenCode 宿主注入的 `args`、`agent()`、
+`phase()` 等 DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。
+只有当前 OpenCode 运行时明确提供 workflow runner 时，才通过该 runner 启动。
+
+运行时没有 workflow runner（包括 Codex）时，使用 `task` 逐阶段回退：
 
 ```
-Task(subagent_type="general", description="Analyze issue",
+task(subagent_type="general", description="Analyze issue",
   prompt="Analyze this DCSS Chinese translation issue to find the root cause...")
 ```
 
-Workflow 阶段：分析 → 方案 → 方案审核 → 代码修改+翻译（并行）→ 三方审核 → 交叉验证 → 报告。
+阶段：分析 → 方案 → 方案审核 → 翻译资产修改 → 代码修改 → 三方审核 → 交叉验证 → 报告。
+
+执行阶段必须保持单一写入者：`zh-translator` 独占 `source.txt` 及其他
+`zh/*.txt`/TextDB 文件，`crawl-coder` 只修改代码；两者不得并行写翻译资产。
 
 ## 结果汇报
 

@@ -545,7 +545,8 @@ IDEF(equip_type)
             {"武器", "weapon"}, {"披风", "cloak"}, {"头盔", "helmet"},
             {"手套", "gloves"}, {"靴子", "boots"}, {"副手", "offhand"},
             {"身体护甲", "body armour"}, {"护甲", "armour"}, {"战甲", "barding"},
-            {"戒指", "ring"}, {"护身符", "amulet"}, {"小装置", "gizmo"},
+            {"戒指", "ring"}, {"项链", "amulet"}, {"护身符", "amulet"},
+            {"小装置", "gizmo"},
         };
         const string* en = map_find(equip_slot_en, slot_name);
         lua_pushstring(ls, lowercase_string(en ? *en : slot_name).c_str());

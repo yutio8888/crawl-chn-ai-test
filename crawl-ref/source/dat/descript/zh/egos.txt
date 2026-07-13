@@ -47,7 +47,7 @@ flaming (flame) weapon ego
 flaming (flame) weapon ego blade
 
 它可以灼烧受害者，造成穿透护甲伤害的额外四分之一伤害。
-巨大的火焰刀刃也是九头蛇猎人的标配武器。
+巨大的火焰刀刃也是多头蛇猎人的标配武器。
 %%%%
 freezing (freeze) weapon ego
 

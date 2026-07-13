@@ -554,6 +554,12 @@ WINDRES := $(CROSSHOST)-windres
 
 endif
 
+# Auto-wrap compilers with ccache for transparent caching
+ifneq ($(shell which ccache 2>/dev/null),)
+  GCC := ccache $(GCC)
+  GXX := ccache $(GXX)
+endif
+
 ifdef USE_ICC
 # If you have a Core 2 processor, this _really_ makes things fly:
 #CFOPTIMIZE := -O2 -parallel -xT
@@ -1558,6 +1564,8 @@ endif
 	for LANG in $(LANGUAGES); \
 		do mkdir -p $(datadir_fp)/dat/descript/$$LANG; \
 	done
+	mkdir -p $(datadir_fp)/dat/i18n
+	$(COPY_R) dat/i18n/* $(datadir_fp)/dat/i18n/
 	mkdir -p $(datadir_fp)/docs/develop
 	mkdir -p $(datadir_fp)/docs/develop/levels
 	mkdir -p $(datadir_fp)/docs/license
@@ -1592,9 +1600,14 @@ endif
 ifdef TILES
 	mkdir -p $(datadir_fp)/dat/tiles
 	$(COPY) dat/tiles/*.png $(datadir_fp)/dat/tiles/
+	$(COPY) dat/tiles/*.ttf $(datadir_fp)/dat/tiles/ 2>/dev/null || true
 ifneq (,$(INSTALL_FONTS))
 	$(COPY) $(INSTALL_FONTS) $(datadir_fp)/dat/tiles/
 endif
+endif
+# copy init.txt for Android platform
+ifdef ANDROID
+	$(COPY) init.txt $(datadir_fp)/ 2>/dev/null || true
 endif
 ifdef WEBTILES
 	mkdir -p $(webdir_fp)
@@ -2120,7 +2133,7 @@ mac-app-console: all
 
 NPROC := $(shell nproc 2>/dev/null || echo 1)
 
-android-project/app/build.gradle: android-project/app/build.gradle.in
+android-project/app/build.gradle: android-project/app/build.gradle.in FORCE
 	sed -e "s/@ANDROID_VERSION@/${ANDROID}/" -e "s/@CRAWL_VERSION@/${SRC_VERSION}/" -e "s/@NPROC@/${NPROC}/" <android-project/app/build.gradle.in >android-project/app/build.gradle
 android-project/local.properties: android-project/local.properties.in
 	sed -e "s~@HOME@~${HOME}~" <android-project/local.properties.in >android-project/local.properties

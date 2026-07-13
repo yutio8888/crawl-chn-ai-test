@@ -70,6 +70,8 @@ struct status_info
 
     int light_colour;
     string light_text; // status light
+    string db_key;     // English TextDB key stem; empty means no status.txt entry
+    string short_db_key; // English @: key, for frontend-specific translations
     string short_text; // @: line
     string long_text;  // @ message
 };

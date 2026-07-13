@@ -136,7 +136,7 @@ static void _do_wizard_command(int wiz_command)
     case CONTROL('P'): wizard_list_props(); break;
 
     // case 'q': break;
-    // case 'Q': break;
+    case 'Q': wizard_set_hud_test_state(); break;
     case CONTROL('Q'): wizard_toggle_dprf(); break;
 
     case 'r': wizard_change_species(); break;
@@ -442,6 +442,7 @@ int list_wizard_commands(bool do_redraw_screen)
                        "<w>_</w>      gain religion\n"
                        "<w>^</w>      set piety to a value\n"
                        "<w>@</w>      set Str Int Dex\n"
+                       "<w>Q</w>      set/reset top HUD test state\n"
                        "<w>#</w>      load character from a dump file\n"
                        "<w>&</w>      list all divine followers\n"
                        "<w>=</w>      show info about skill points\n"

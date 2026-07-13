@@ -74,19 +74,19 @@ skill(name="translation-pipeline")  # loads .opencode/skills/translation-pipelin
 Available skills: `crawl-coder`, `translation-pipeline`, `translation-reviewer`,
 `zh-code-reviewer`.
 
-### Workflows → no `Workflow` tool exists; invoke via `bash`
+### Workflows → hosted runner only; otherwise use task fallback
 
-OpenCode has no `Workflow({...})` tool. Workflows are `.js` scripts that must be
-executed through `bash`:
+OpenCode has no `Workflow({...})` tool. These `.js` files depend on host-injected
+`args`, `agent()`, `parallel()`, `phase()`, and `log()` and are not standalone
+Node.js programs. Do not execute them with plain `node`.
 
 ```bash
 # ❌ CLAUDE.md (Claude Code)
 # Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {issues: [...]}})
 
-# ✅ OpenCode
-node .opencode/workflows/translation-fix-pipeline.js '<json args>'
-# or for batch:
-node .opencode/workflows/translation-batch-pipeline.js '<json args>'
+# ✅ Without an explicit hosted workflow runner
+# Load translation-pipeline, then dispatch its documented phases with task(...).
+# Keep source.txt and zh TextDB files under one zh-translator writer.
 ```
 
 The scripts are identical in both `.opencode/workflows/` and `.claude/workflows/`.
@@ -178,18 +178,15 @@ task(subagent_type="translation-reviewer", description="Review <scope>",
 
 ```python
 skill(name="translation-pipeline")
-# → internally invokes .opencode/workflows/translation-fix-pipeline.js via node/bash
+# → follows the hosted runner when available, otherwise the documented task fallback
 ```
 
-Pipeline phases: Analyze → Plan → Review Plan (gate) → Execute (code+translate parallel) → Review (3-way parallel) → Cross-validate → Report.
+Pipeline phases: Analyze → Plan → Review Plan (gate) → Execute (translator owns translation assets, then coder edits code) → Review (3-way parallel) → Cross-validate → Report.
 
-### Batch Pipeline → run workflow script directly
-For multiple issues at once, run the batch pipeline script via `bash`:
-
-```bash
-node .opencode/workflows/translation-batch-pipeline.js \
-  '{"issues": [{"description": "..."}, ...]}'
-```
+### Batch Pipeline → hosted runner or task fallback
+For multiple issues, use a runtime-provided workflow runner only when one is
+explicitly available. Otherwise reproduce the documented phases with `task(...)`;
+do not invoke `.opencode/workflows/*.js` with plain Node.js.
 
 Key differences from single-issue pipeline: shared worktree, phase-batched processing, parallel analysis with merged root causes and unified glossary, sequential execution to avoid source.txt merge conflicts.
 
@@ -251,11 +248,12 @@ memory (`system/handoff.md`). To hand work to Codex, write the plan / branch /
 commit range to `.claude/ORCHESTRATION_STATE.md` or `~/projects/issues/<N>/`.
 
 **Branch ownership:** Codex uses `codex/<topic>`; OpenCode uses `<topic>` or
-`consolidate-*`. Both commit with `Co-Authored-By: opencode`.
+`consolidate-*`. Use the trailer for the engine that actually authored the
+change; Codex must not claim OpenCode authorship.
 
 ## Commit Message Convention
 
-All commits MUST end with one of:
+Commits created by OpenCode or Claude Code MUST end with the matching trailer:
 
 ```
 Co-Authored-By: opencode <noreply@opencode.ai>
@@ -267,8 +265,9 @@ or (if you are still committing via Claude Code):
 Co-Authored-By: Claude <noreply@anthropic.com>
 ```
 
-Pick whichever matches the tool that actually generated the change. The repo
-history is mixed; both forms are acceptable.
+Pick whichever matches the tool that actually generated the change. Other
+runtimes must follow their own repository policy and must not falsely use one
+of these identities. The repo history is mixed; both listed forms are acceptable.
 
 ## Default init.txt Configuration
 
@@ -277,37 +276,70 @@ history is mixed; both forms are acceptable.
 ```ini
 language = zh
 # Unified Maple Mono NF CN for all tile fonts
-tile_font_crt_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_msg_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_stat_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_tip_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
-tile_font_lbl_file = contrib/fonts/MapleMono-NF-CN-Regular.ttf
+tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_tip_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
 ```
 
+Fonts must be deployed to `dat/tiles/` (not `contrib/fonts/`).
 This file must be copied alongside `crawl.exe` and data files on every deployment.
+
+## Build Workflow: Multi Worktree + ccache
+
+See `docs/build-workflow.md` for full documentation.
+
+Console and tiles builds use **separate worktrees** to keep `.o` files isolated:
+
+| Worktree | Target | Helper script |
+|----------|--------|--------------|
+| **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
+| `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
+| `.worktrees/android-tiles` | Android APK | `bash crawl-ref/source/util/build-android.sh` |
+
+When `ccache` is installed, the project Makefile automatically wraps `GCC` and
+`GXX` with it; no `CC`/`CXX` or `PATH` override is required.
 
 ## Windows Tiles Deployment
 
 ```bash
-# Cross-compile
-make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+# Use deploy.sh (recommended — syncs mingw-tiles worktree, builds, deploys)
+bash .claude/scripts/deploy.sh [target_dir]
 
-# Deploy to D: drive (adjust target path as needed)
-TARGET=/mnt/d/crawl-game
+# Or manually (from mingw-tiles worktree):
+cd .worktrees/mingw-tiles/crawl-ref/source
+make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+TARGET=/mnt/d/crawl-release
 cp -f crawl.exe "$TARGET/"
-cp -f dat/i18n/zh/source.txt "$TARGET/dat/i18n/zh/"
-cp -f dat/descript/zh/species.txt "$TARGET/dat/descript/zh/"
-cp -f dat/descript/zh/backgrounds.txt "$TARGET/dat/descript/zh/"
+cp -r dat/* "$TARGET/dat/"
+cp -f contrib/fonts/*.ttf "$TARGET/dat/tiles/"
 cp -f init.txt "$TARGET/"
 ```
+
+## Android Deployment
+
+```bash
+# Use deploy-android.sh (recommended — syncs android-tiles worktree, builds, deploys)
+bash .claude/scripts/deploy-android.sh [target_dir] [--release]
+
+# Or manually (from android-tiles worktree):
+cd .worktrees/android-tiles/crawl-ref/source
+make ANDROID=$(date +%Y%m%d) TILES=y android -j8
+cd android-project
+ANDROID_SDK_ROOT=$HOME/Android gradle :app:assembleBuildTest
+# APK at: app/build/outputs/apk/buildTest/app-buildTest-unsigned.apk
+```
+
+Android build requires Android SDK + NDK (see `crawl-ref/docs/develop/android.txt`).
+Default variant is `buildTest` (arm64-v8a only); use `--release` for all ABIs.
 
 Key files to always deploy:
 | File | Purpose |
 |------|---------|
 | `crawl.exe` | Cross-compiled Windows tiles binary |
-| `dat/i18n/zh/source.txt` | T_() string translations |
-| `dat/descript/zh/species.txt` | Species descriptions |
-| `dat/descript/zh/backgrounds.txt` | Background descriptions |
+| `dat/` | Full data directory (descriptions, tiles, database, etc.) |
+| `dat/tiles/*.ttf` | Font files (Maple Mono for CJK, DejaVu Sans as fallback) |
 | `init.txt` | Language + font configuration |
 
 ## Critical C++ Anti-Pattern: std::string in variadic `%s` (Issue #42 UB)

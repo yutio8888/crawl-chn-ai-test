@@ -8,6 +8,8 @@
 #include "database.h"
 #include "stash.h"
 
+#include "lang-en-guard.h"
+
 #include <algorithm>
 #include <cctype>
 #include <cstdio>
@@ -56,6 +58,14 @@ StashTracker StashTrack;
 
 string userdef_annotate_item(const char *s, const item_def *item)
 {
+    // The Lua annotation vocabulary (ego abbreviations like rF+/rC+, class
+    // and subtype names, resist tags) is a language-independent search /
+    // autopickup-config namespace. Force English so that item accessors
+    // (it.ego_type_terse, it.class, it.subtype, it.name) yield English
+    // tokens; otherwise ZH mode produces "火抗+" and abbreviation search
+    // (rF) fails. No-op when the language is already English.
+    ScopedLangEn en;
+
     lua_stack_cleaner cleaner(clua);
     clua_push_item(clua, const_cast<item_def*>(item));
     if (!clua.callfn(s, 1, 1) && !clua.error.empty())
@@ -396,12 +406,23 @@ vector<stash_search_result> Stash::matches_search(
 
     if (feat != DNGN_FLOOR)
     {
-        const string fdesc = feature_description();
-        if (!fdesc.empty() && search.matches(prefix + " " + fdesc))
+        const string fdesc = feature_description(); // Chinese display name
+        // Build search haystack from the Chinese display name plus an
+        // English version (for bilingual matching). Under EN mode the
+        // guard is a no-op and fdesc_en equals fdesc.
+        string haystack = prefix + " " + fdesc;
+        if (Options.language == lang_t::ZH)
+        {
+            ScopedLangEn en;
+            const string fdesc_en = ::feature_description(feat, trap);
+            if (!fdesc_en.empty() && fdesc_en != fdesc)
+                haystack += " " + fdesc_en;
+        }
+        if (!fdesc.empty() && search.matches(haystack))
         {
             stash_search_result res;
             res.match_type = MATCH_FEATURE;
-            res.match = fdesc;
+            res.match = fdesc;       // display stays Chinese
             res.primary_sort = fdesc;
             res.feat = feat;
             res.trap = trap;

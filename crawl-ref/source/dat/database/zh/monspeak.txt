@@ -1475,7 +1475,7 @@ w:1
 @The_monster@ 说："我可是教训过那个大家伙。你没问题。"
 
 w:1
-@The_monster@ 试图跟 @foe@ 讲一个关于九头蛇、@possessive@ 的血和婚姻的复杂故事。
+@The_monster@ 试图跟 @foe@ 讲一个关于多头蛇、@possessive@ 的血和婚姻的复杂故事。
 %%%%
 ############ NIKOLA ### 痴迷于电的天才科学家
 Nikola
@@ -1848,7 +1848,7 @@ w:50
 
 @The_monster@ 说："这是青蛙灾害还是怎么？至少不是蝗虫。"
 
-@The_monster@ 说："它们长的头越多，我就越恨九头蛇。"
+@The_monster@ 说："它们长的头越多，我就越恨多头蛇。"
 %%%%
 Shoals Donald
 
@@ -10620,7 +10620,7 @@ w:50
 @The_monster@ 说："是不是爆发什么青蛙瘟疫了？还好不是蝗虫。"
 
 
-@The_monster@ 说："九头蛇的头越多，我就越讨厌它们。"
+@The_monster@ 说："多头蛇的头越多，我就越讨厌它们。"
 %%%%
 Temple Donald
 
