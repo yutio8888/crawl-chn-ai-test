@@ -14,12 +14,12 @@
 
 using std::vector;
 
-// maximum number of unique glyphs that can be rendered with this font at once
+// Upper bounds only: the actual atlas grid is chosen at runtime from the
+// glyph cell size, GL_MAX_TEXTURE_SIZE, and a per-font memory budget.
 constexpr unsigned int MAX_GLYPHS = 4096;
-// dimensions of glyph grid; GLYPHS_PER_ROWCOL^2 >= MAX_GLYPHS
-constexpr unsigned int GLYPHS_PER_ROWCOL = 64;
-static_assert(GLYPHS_PER_ROWCOL * GLYPHS_PER_ROWCOL >= MAX_GLYPHS,
-              "Glyph grid dimension squared must be at least MAX_GLYPHS");
+constexpr unsigned int MAX_GLYPH_COLUMNS = 64;
+constexpr size_t FONT_ATLAS_BYTE_BUDGET = 16 * 1024 * 1024;
+constexpr unsigned int RESERVED_GLYPHS = 2 + (0x7f - 0x20);
 
 // atlas slot identifier — uint16_t is sufficient for up to 65536 slots
 using atlas_slot_t = uint16_t;
@@ -154,7 +154,7 @@ protected:
     // render batch (render_string / render_tooltip / render_hover_string).
     // Protects against font atlas LRU eviction corrupting glyphs that have
     // already been recorded in FontBuffer vertex data.
-    bool m_pinned[MAX_GLYPHS];
+    vector<uint8_t> m_pinned;
 
     // clear all pin marks — call at the start of each widget render batch
     void clear_pins();
@@ -172,6 +172,9 @@ protected:
     coord_def charsz;
     unsigned int m_ft_width;
     unsigned int m_ft_height;
+    unsigned int m_atlas_columns;
+    unsigned int m_atlas_rows;
+    unsigned int m_atlas_capacity;
     int m_max_width;
     int m_max_height;
 

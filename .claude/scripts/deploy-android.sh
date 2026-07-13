@@ -51,10 +51,19 @@ for arg in "${BUILD_ARGS[@]}"; do
     fi
 done
 APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
-APK_FILE="$(ls "$APK_DIR"/app-${VARIANT}*.apk 2>/dev/null | head -1)"
+shopt -s nullglob
+APK_CANDIDATES=("$APK_DIR"/app-${VARIANT}*.apk)
+APK_FILE=""
+for candidate in "${APK_CANDIDATES[@]}"; do
+    if [[ "$candidate" != *-unsigned.apk ]]; then
+        APK_FILE="$candidate"
+        break
+    fi
+done
+shopt -u nullglob
 
-if [ -z "${APK_FILE:-}" ]; then
-    echo "ERROR: APK not found in $APK_DIR" >&2
+if [ -z "$APK_FILE" ]; then
+    echo "ERROR: No signed APK found in $APK_DIR; refusing to deploy an unsigned APK." >&2
     exit 1
 fi
 

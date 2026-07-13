@@ -95,7 +95,7 @@ static void _setup_blazeheart_core_explosion(bolt & beam, const monster& origin)
 
     beam.flavour      = BEAM_FIRE;
     beam.damage       = _blazeheart_damage(origin.get_hit_dice());
-    beam.name         = T_("fiery explosion");
+    beam.name         = "fiery explosion";
     beam.colour       = RED;
     beam.ex_size      = 1;
     beam.source_name  = origin.name(DESC_PLAIN, true);
@@ -115,7 +115,7 @@ void setup_spore_explosion(bolt & beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_SPORE;
     beam.damage  = _spore_damage(origin.get_hit_dice());
-    beam.name    = T_("explosion of spores");
+    beam.name    = "explosion of spores";
     beam.colour  = LIGHTGREY;
     beam.ex_size = 1;
 }
@@ -131,7 +131,7 @@ static void _setup_lightning_explosion(bolt & beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour   = BEAM_ELECTRICITY;
     beam.damage    = ball_lightning_damage(origin.get_hit_dice());
-    beam.name      = T_("blast of lightning");
+    beam.name      = "blast of lightning";
     beam.explode_noise_msg = T_("You hear a clap of thunder!");
     beam.colour    = LIGHTCYAN;
     beam.ex_size   = x_chance_in_y(origin.get_hit_dice(), 24) ? 3 : 2;
@@ -150,7 +150,7 @@ static void _setup_prism_explosion(bolt& beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_MMISSILE;
     beam.damage  = prism_damage(origin.get_hit_dice(), origin.prism_charge == 2);
-    beam.name    = T_("blast of energy");
+    beam.name    = "blast of energy";
     beam.colour  = MAGENTA;
     beam.ex_size = origin.prism_charge;
     beam.origin_spell = SPELL_FULMINANT_PRISM;
@@ -163,7 +163,7 @@ static void _setup_shadow_prism_explosion(bolt& beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_MMISSILE;
     beam.damage  = prism_damage(origin.get_hit_dice(), origin.prism_charge == 2);
-    beam.name    = T_("blast of shadow");
+    beam.name    = "blast of shadow";
     beam.colour  = MAGENTA;
     beam.tile_explode = TILE_BOLT_SHADOW_BLAST;
     beam.ex_size = origin.prism_charge;
@@ -180,7 +180,7 @@ static void _setup_bennu_explosion(bolt& beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_NEG;
     beam.damage  = _bennu_damage(origin.get_hit_dice());
-    beam.name    = T_("pyre of ghostly fire");
+    beam.name    = "pyre of ghostly fire";
     beam.explode_noise_msg = T_("You hear an otherworldly crackling!");
     beam.colour  = CYAN;
     beam.ex_size = 2;
@@ -195,7 +195,7 @@ static void _setup_inner_flame_explosion(bolt & beam, const monster& origin,
     beam.damage      = (size > SIZE_LARGE) ? dice_def(3, 25) :
                        (size > SIZE_TINY)  ? dice_def(3, 20) :
                                              dice_def(3, 15);
-    beam.name        = T_("fiery explosion");
+    beam.name        = "fiery explosion";
     beam.colour      = RED;
     beam.ex_size     = (size > SIZE_LARGE) ? 2 : 1;
     beam.source_name = origin.name(DESC_PLAIN, true);
@@ -211,7 +211,7 @@ static void _setup_haemoclasm_explosion(bolt& beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour     = BEAM_HAEMOCLASM;
     beam.damage      = dice_def(3, 5 + origin.max_hit_points / 3);
-    beam.name        = T_("rain of gore");
+    beam.name        = "rain of gore";
     beam.hit_verb    = "batters";
     beam.colour      = RED;
     beam.tile_explode= TILE_BOLT_HAEMOCLASM;
@@ -231,7 +231,7 @@ static void _setup_bloated_husk_explosion(bolt & beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_MMISSILE;
     beam.damage  = _bloated_husk_damage(origin.get_hit_dice());
-    beam.name    = T_("blast of putrescent gases");
+    beam.name    = "blast of putrescent gases";
     beam.explode_noise_msg = T_("You hear an high-pitched explosion!");
     beam.colour  = GREEN;
     beam.ex_size = 2;
@@ -248,7 +248,7 @@ static void _setup_sporangium_explosion(bolt & beam, const monster& origin)
     _setup_base_explosion(beam, origin);
     beam.flavour = BEAM_ACID;
     beam.damage  = _sporangium_damage(0);
-    beam.name    = T_("caustic explosion");
+    beam.name    = "caustic explosion";
     beam.explode_noise_msg = T_("You hear an extremely violent squelch.");
     beam.colour  = YELLOW;
     beam.ex_size = 3;

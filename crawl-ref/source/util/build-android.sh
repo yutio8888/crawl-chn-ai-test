@@ -42,6 +42,19 @@ done
 
 ANDROID_VER="${ANDROID_VER:-$(date +%Y%m%d)}"
 
+# Signing credentials are required for every successful build. Validate them
+# before worktree synchronization, submodule setup, native compilation, or
+# Gradle can perform any expensive work.
+if [ "$VARIANT" = "release" ] && [ -z "${ANDROID_KEYSTORE:-}" ]; then
+    echo "ERROR: ANDROID_KEYSTORE is required for --release." >&2
+    exit 1
+fi
+KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
+if [ ! -f "$KEYSTORE" ]; then
+    echo "ERROR: keystore not found at $KEYSTORE; cannot build a signed APK." >&2
+    exit 1
+fi
+
 # Validate worktree
 if [ ! -d "$WT_SOURCE" ]; then
     echo "ERROR: android-tiles worktree not found at $WT"
@@ -57,11 +70,6 @@ if [ ! -d "$SDK_ROOT" ]; then
 fi
 
 export ANDROID_SDK_ROOT="$SDK_ROOT"
-
-# Ensure SDK root has a "Sdk" symlink (local.properties.in expects ~/Android/Sdk)
-if [ ! -e "$SDK_ROOT/Sdk" ]; then
-    ln -s . "$SDK_ROOT/Sdk"
-fi
 
 # 1. Sync worktree to main worktree HEAD (local only)
 MAIN_HEAD="$(cd "$REPO_ROOT" && git rev-parse HEAD)"
@@ -90,9 +98,24 @@ echo "=== [2/4] Preparing Android project (make ANDROID=$ANDROID_VER TILES=y and
 cd "$WT_SOURCE"
 make ANDROID="$ANDROID_VER" TILES=y android -j8
 
+# The template retains the historical default for direct Makefile users.
+# This helper supports arbitrary SDK locations by replacing the generated
+# property with the actual SDK root. Java properties require backslashes,
+# colons, and spaces in path values to be escaped.
+SDK_PROPERTY=${SDK_ROOT//\\/\\\\}
+SDK_PROPERTY=${SDK_PROPERTY//:/\\:}
+SDK_PROPERTY=${SDK_PROPERTY// /\\ }
+printf 'sdk.dir=%s\n' "$SDK_PROPERTY" > android-project/local.properties
+
 # 3. Build native code + APK with gradle
 echo "=== [3/4] Building APK with gradle (variant=$VARIANT) ==="
 cd "$WT_SOURCE/android-project"
+# Remove prior outputs before Gradle runs so artifact selection can never
+# mistake an old signed APK for the result of this build.
+APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
+if [ -d "$APK_DIR" ]; then
+    find "$APK_DIR" -maxdepth 1 -type f -name "app-${VARIANT}*.apk" -delete
+fi
 # Generate gradle wrapper if missing (e.g. after clean worktree sync)
 if [ ! -x gradlew ]; then
     gradle wrapper --gradle-version 8.13
@@ -100,9 +123,25 @@ fi
 ./gradlew --no-daemon ":app:assemble${VARIANT^}"
 
 # 4. Locate and report APK
-APK_DIR="$WT_SOURCE/android-project/app/build/outputs/apk/$VARIANT"
-APK_FILE="$(ls "$APK_DIR"/app-${VARIANT}*.apk 2>/dev/null | head -1)"
-if [ -z "${APK_FILE:-}" ]; then
+shopt -s nullglob
+APK_CANDIDATES=("$APK_DIR"/app-${VARIANT}*.apk)
+APK_FILE=""
+for candidate in "${APK_CANDIDATES[@]}"; do
+    if [[ "$candidate" == *-unsigned.apk ]]; then
+        APK_FILE="$candidate"
+        break
+    fi
+done
+if [ -z "$APK_FILE" ]; then
+    for candidate in "${APK_CANDIDATES[@]}"; do
+        if [[ "$candidate" != *-unsigned.apk ]]; then
+            APK_FILE="$candidate"
+            break
+        fi
+    done
+fi
+shopt -u nullglob
+if [ -z "$APK_FILE" ]; then
     echo "ERROR: APK not found in $APK_DIR" >&2
     exit 1
 fi
@@ -110,35 +149,34 @@ fi
 # 4. Sign unsigned APK (buildTest defaults to debug keystore; release requires
 # an explicitly configured ANDROID_KEYSTORE)
 if [[ "$APK_FILE" == *unsigned* ]]; then
-    KEYSTORE=""
-    if [ "$VARIANT" = "buildTest" ]; then
-        KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
-    elif [ -n "${ANDROID_KEYSTORE:-}" ]; then
-        KEYSTORE="$ANDROID_KEYSTORE"
+    SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
+    echo "=== [4/5] Signing APK ==="
+    BUILD_TOOLS=$(ls -d "$SDK_ROOT/build-tools/"*/ 2>/dev/null | sort -V | tail -1)
+    if [ -n "${BUILD_TOOLS:-}" ] \
+        && [ -x "${BUILD_TOOLS}zipalign" ] \
+        && [ -x "${BUILD_TOOLS}apksigner" ]; then
+        ALIGNED_APK="${APK_FILE}.aligned"
+        rm -f -- "$ALIGNED_APK"
+        trap 'rm -f -- "$ALIGNED_APK"' EXIT
+        "${BUILD_TOOLS}zipalign" -p 4 "$APK_FILE" "$ALIGNED_APK"
+        "${BUILD_TOOLS}apksigner" sign --ks "$KEYSTORE" \
+            --ks-pass "pass:${ANDROID_KEYSTORE_PASS:-android}" \
+            --out "$SIGNED_APK" "$ALIGNED_APK"
+        rm -f -- "$ALIGNED_APK"
+        trap - EXIT
+        APK_FILE="$SIGNED_APK"
+        echo "       Signed: $APK_FILE"
     else
-        echo "WARNING: ANDROID_KEYSTORE is not set; release APK left unsigned"
-    fi
-
-    if [ -n "$KEYSTORE" ] && [ -f "$KEYSTORE" ]; then
-        SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
-        echo "=== [4/5] Signing APK ==="
-        BUILD_TOOLS=$(ls -d "$SDK_ROOT/build-tools/"*/ 2>/dev/null | sort -V | tail -1)
-        if [ -n "${BUILD_TOOLS:-}" ] && [ -x "${BUILD_TOOLS}zipalign" ]; then
-            "${BUILD_TOOLS}zipalign" -p 4 "$APK_FILE" "${APK_FILE}.aligned"
-            "${BUILD_TOOLS}apksigner" sign --ks "$KEYSTORE" \
-                --ks-pass "pass:${ANDROID_KEYSTORE_PASS:-android}" \
-                --out "$SIGNED_APK" "${APK_FILE}.aligned"
-            rm -f "${APK_FILE}.aligned"
-            APK_FILE="$SIGNED_APK"
-            echo "       Signed: $APK_FILE"
-        else
-            echo "WARNING: build-tools/zipalign not found, APK left unsigned"
-        fi
-    elif [ -n "$KEYSTORE" ]; then
-        echo "WARNING: keystore not found at $KEYSTORE, APK left unsigned"
+        echo "ERROR: zipalign or apksigner not found; cannot sign APK." >&2
+        exit 1
     fi
 else
     echo "=== [4/5] APK already signed ==="
+fi
+
+if [[ "$APK_FILE" == *unsigned* ]]; then
+    echo "ERROR: build produced an unsigned APK; refusing success." >&2
+    exit 1
 fi
 
 echo "=== Build complete ==="

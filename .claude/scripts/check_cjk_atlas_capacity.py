@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""Build-time check: count unique CJK codepoints across zh translation files.
-Warns if total exceeds the 3900 threshold for the 4096-slot font atlas."""
+"""Check zh codepoint count and regress the runtime font-atlas model."""
 
-import os, sys, glob
+import glob
+import os
+import sys
 
 CJK_START = 0x4E00
 CJK_END = 0x9FFF
@@ -19,8 +20,60 @@ EXTRA_RANGES = [(0x3000, 0x303F), (0xFF00, 0xFFEF), (0x2000, 0x206F),
                 (0x2100, 0x214F), (0x2200, 0x22FF), (0x2500, 0x257F)]
 
 THRESHOLD_WARN = 3900
+MAX_GRID_SIDE = 64
+ATLAS_BYTE_BUDGET = 16 * 1024 * 1024
+RESERVED_GLYPHS = 2 + (0x7F - 0x20)
 ZH_DIR = os.path.join(os.path.dirname(__file__),
                       '../../crawl-ref/source/dat/**/zh/*.txt')
+
+
+def choose_atlas_grid(cell_width, cell_height, max_texture_size):
+    """Mirror FTFontWrapper's power-of-two rectangular grid selection."""
+    best = (0, 0)
+    best_score = (0, 0, 0)
+    columns = 1
+    while columns <= MAX_GRID_SIDE:
+        width = columns * cell_width
+        rows = 1
+        while rows <= MAX_GRID_SIDE:
+            height = rows * cell_height
+            byte_count = width * height * 4
+            if (width <= max_texture_size
+                    and height <= max_texture_size
+                    and byte_count <= ATLAS_BYTE_BUDGET):
+                capacity = columns * rows
+                score = (capacity, -max(width, height), -abs(width - height))
+                if score > best_score:
+                    best = (columns, rows)
+                    best_score = score
+            rows *= 2
+        columns *= 2
+    return (*best, best[0] * best[1])
+
+
+def check_atlas_model():
+    cases = [
+        ('cell32', (32, 32, 16384), (64, 64, 4096)),
+        ('cell64', (64, 64, 16384), (32, 32, 1024)),
+        ('cell128', (128, 128, 16384), (16, 16, 256)),
+        ('rectangular', (64, 32, 16384), (32, 64, 2048)),
+        ('low-max-texture', (32, 32, 1024), (32, 32, 1024)),
+        ('insufficient', (128, 128, 1024), (8, 8, 64)),
+    ]
+    for name, args, expected in cases:
+        actual = choose_atlas_grid(*args)
+        if actual != expected:
+            print(f'ERROR: atlas model {name}: expected {expected}, got {actual}')
+            return False
+    if choose_atlas_grid(128, 128, 1024)[2] >= RESERVED_GLYPHS:
+        print('ERROR: insufficient-capacity model must fail reserved slots')
+        return False
+    print('check_cjk_atlas_capacity: atlas model regressions OK')
+    return True
+
+
+if not check_atlas_model():
+    sys.exit(1)
 
 unique = set()
 for fpath in glob.glob(ZH_DIR, recursive=True):

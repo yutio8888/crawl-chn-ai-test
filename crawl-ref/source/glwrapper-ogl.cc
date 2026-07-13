@@ -35,17 +35,23 @@
 // TODO: if this gets big enough, pull out into opengl-utils.cc/h or sth
 namespace opengl
 {
+    int max_texture_size()
+    {
+        int size = 0;
+        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &size);
+        return size;
+    }
+
     bool check_texture_size(const char *name, int width, int height)
     {
-        int max_texture_size;
-        glGetIntegerv(GL_MAX_TEXTURE_SIZE, &max_texture_size);
-        if (width > max_texture_size || height > max_texture_size)
+        const int max_size = max_texture_size();
+        if (width > max_size || height > max_size)
         {
             mprf(MSGCH_ERROR,
                 "Texture %s is bigger than maximum driver texture size "
                 "(%d,%d vs. %d). Sprites from this texture will not display "
                 "properly.",
-                name, width, height, max_texture_size);
+                name, width, height, max_size);
             return false;
         }
         return true;
@@ -419,10 +425,16 @@ void OGLStateManager::bind_texture(unsigned int texture)
     glDebug("glBindTexture");
 }
 
-void OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
+bool OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
                                    unsigned int height, MipMapOptions mip_opt,
                                    int xoffset, int yoffset)
 {
+    // Discard errors from earlier GL work so the result only describes this
+    // texture upload.
+    while (glGetError() != GL_NO_ERROR)
+        ;
+    bool errors = false;
+
     // Assumptions...
 #ifdef __ANDROID__
     const GLenum bpp = GL_RGBA;
@@ -434,16 +446,18 @@ void OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
     // Also assume that the texture is already bound using bind_texture
 
     glTexEnvf(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_MODULATE);
-    glDebug("glTexEnvf");
+    errors |= glDebug("glTexEnvf");
 
 #ifdef GL_CLAMP
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+    errors |= glDebug("glTexParameterf GL_TEXTURE_WRAP_S");
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    errors |= glDebug("glTexParameterf GL_TEXTURE_WRAP_T");
 #else
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
-    glDebug("glTexParameterf GL_TEXTURE_WRAP_S");
+    errors |= glDebug("glTexParameterf GL_TEXTURE_WRAP_S");
     glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
-    glDebug("glTexParameterf GL_TEXTURE_WRAP_T");
+    errors |= glDebug("glTexParameterf GL_TEXTURE_WRAP_T");
 #endif
 #ifndef USE_GLES
     if (mip_opt == MIPMAP_CREATE)
@@ -453,10 +467,13 @@ void OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
                         m_mipmapFn != nullptr ? GL_LINEAR_MIPMAP_NEAREST :
                         Options.tile_filter_scaling ? GL_LINEAR :
                         GL_NEAREST);
+        errors |= glDebug("glTexParameterf GL_TEXTURE_MIN_FILTER");
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                         Options.tile_filter_scaling ? GL_LINEAR : GL_NEAREST);
+        errors |= glDebug("glTexParameterf GL_TEXTURE_MAG_FILTER");
         glTexImage2D(GL_TEXTURE_2D, 0, bpp, width, height, 0,
                      texture_format, format, pixels);
+        errors |= glDebug("glTexImage2D");
         // TODO: possibly restructure this into the main block below
         // so that we support mipmapping when glTexSubImage2D should be called.
         if (m_mipmapFn != nullptr)
@@ -464,6 +481,7 @@ void OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
             PFNGLGENERATEMIPMAPPROC mipmapFn =
                     reinterpret_cast<PFNGLGENERATEMIPMAPPROC>(m_mipmapFn);
             mipmapFn(GL_TEXTURE_2D);
+            errors |= glDebug("glGenerateMipmap");
         }
     }
     else
@@ -471,21 +489,24 @@ void OGLStateManager::load_texture(unsigned char *pixels, unsigned int width,
     {
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER,
                         Options.tile_filter_scaling ? GL_LINEAR : GL_NEAREST);
+        errors |= glDebug("glTexParameterf GL_TEXTURE_MIN_FILTER");
         glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER,
                         Options.tile_filter_scaling ? GL_LINEAR : GL_NEAREST);
+        errors |= glDebug("glTexParameterf GL_TEXTURE_MAG_FILTER");
         if (xoffset >= 0 && yoffset >= 0)
         {
             glTexSubImage2D(GL_TEXTURE_2D, 0, xoffset, yoffset, width, height,
                          texture_format, format, pixels);
-            glDebug("glTexSubImage2D");
+            errors |= glDebug("glTexSubImage2D");
         }
         else
         {
             glTexImage2D(GL_TEXTURE_2D, 0, bpp, width, height, 0,
                          texture_format, format, pixels);
-            glDebug("glTexImage2D");
+            errors |= glDebug("glTexImage2D");
         }
     }
+    return !errors;
 }
 
 void OGLStateManager::reset_view_for_redraw()
@@ -500,18 +521,21 @@ void OGLStateManager::reset_view_for_redraw()
 
 bool OGLStateManager::glDebug(const char* msg) const
 {
-#if defined(__ANDROID__) || defined(DEBUG_DIAGNOSTICS)
     int e = glGetError();
     if (e > 0)
     {
+#if defined(__ANDROID__) || defined(DEBUG_DIAGNOSTICS)
 # ifdef __ANDROID__
         __android_log_print(ANDROID_LOG_INFO, "Crawl.gl", "ERROR %x: %s", e, msg);
 # else
         fprintf(stderr, "OGLStateManager ERROR %x: %s\n", e, msg);
 # endif
+#else
+        UNUSED(msg);
+#endif
         return true;
     }
-#else
+#if !defined(__ANDROID__) && !defined(DEBUG_DIAGNOSTICS)
     UNUSED(msg);
 #endif
     return false;
