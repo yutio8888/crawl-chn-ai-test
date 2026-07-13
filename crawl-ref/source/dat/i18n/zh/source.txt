@@ -48,7 +48,7 @@ Kikubaaqudgha cackles.
 奇库巴库哈嘎嘎笑了一声。
 %%%%
 weakly hits
-轻轻击中了
+轻轻击中
 %%%%
 trunk
 象鼻
@@ -39189,3 +39189,18 @@ Press <w>%</w> to quaff this potion.
 %%%%
 \nTo see your current standing with %s press <w>^</w>.
 \n要查看你与%s当前的关系，按<w>^</w>。
+%%%%
+orb of destruction
+毁灭法球
+%%%%
+wavering %s
+摇曳的%s
+%%%%
+annihilating %s
+湮灭%s
+%%%%
+blasts
+轰击
+%%%%
+feebly blasts
+轻微轰击

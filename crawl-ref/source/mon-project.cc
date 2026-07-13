@@ -347,7 +347,7 @@ static void _iood_common_beam_setup(monster& orb, const coord_def& pos, bolt& be
 
 static void _iood_hit_setup(monster& orb, bolt& beam)
 {
-    beam.name = "orb of destruction";
+    beam.name = T_("orb of destruction");
     beam.flavour = BEAM_DESTRUCTION;
     beam.colour = WHITE;
     beam.glyph = dchar_glyph(DCHAR_FIRED_BURST);
@@ -359,7 +359,7 @@ static void _iood_hit_setup(monster& orb, bolt& beam)
     beam.damage = iood_damage(pow, dist);
 
     if (dist < 3)
-        beam.name = "wavering " + beam.name;
+        beam.name = make_stringf(T_("wavering %s"), beam.name.c_str());
     if (dist < 2)
         beam.hit_verb = T_("weakly hits");
     beam.ex_size = 1;
@@ -394,13 +394,14 @@ static void _annihilation_explode_setup(monster& globe, bolt& beam)
     if (beam.ex_size > 0)
     {
         beam.is_explosion = true;
-        beam.hit_verb = "blasts";
+        beam.hit_verb = T_("blasts");
     }
     else
-        beam.hit_verb = "feebly blasts";
+        beam.hit_verb = T_("feebly blasts");
 
     beam.glyph = dchar_glyph(DCHAR_FIRED_BURST);
-    beam.name = "annihilating " + beam.get_short_name();
+    beam.name = make_stringf(T_("annihilating %s"),
+                             beam.get_short_name().c_str());
 }
 
 static bool _iood_hit(monster& mon, const coord_def &pos, bool big_boom = false)
