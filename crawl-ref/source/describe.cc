@@ -7554,6 +7554,16 @@ string short_ghost_description(const monster *mon, bool abbrev)
     const ghost_demon &ghost = *(mon->ghost);
     const char* rank = xl_rank_names[ghost_level_to_rank(ghost.xl)];
 
+    if (Options.language == lang_t::ZH)
+    {
+        // The species and background abbreviations are English database
+        // identifiers. Use the display names instead of exposing them in the
+        // Chinese overview.
+        return make_stringf_p(T_("%1$s%2$s%3$s"), T_(rank),
+                                species::name(ghost.species).c_str(),
+                                get_job_name(ghost.job));
+    }
+
     string desc = make_stringf("%s %s %s", rank,
                                species::name(ghost.species).c_str(),
                                get_job_name(ghost.job));
@@ -7593,6 +7603,28 @@ string get_ghost_description(const monster_info &mi, bool concise)
                         false);
     }
 #endif
+
+    if (Options.language == lang_t::ZH)
+    {
+        // Build the whole Chinese display string here. The English form below
+        // relies on articles, spaces, commas, and "of", none of which can be
+        // safely appended to Chinese names and titles.
+        const char* rank = T_(xl_rank_names[mi.i_ghost.xl_rank]);
+        const string species_name = species::name(gspecies);
+        const char* job_name = get_job_name(mi.i_ghost.job);
+
+        if (mi.i_ghost.religion != GOD_NO_GOD)
+        {
+            return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）"),
+                                mi.mname.c_str(), title.c_str(), rank,
+                                species_name.c_str(), job_name,
+                                god_name(mi.i_ghost.religion));
+        }
+
+        return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s）"),
+                            mi.mname.c_str(), title.c_str(), rank,
+                            species_name.c_str(), job_name);
+    }
 
     gstr << mi.mname << " the "
          << title
