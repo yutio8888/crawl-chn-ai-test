@@ -59,8 +59,6 @@ tail
 spore
 孢子
 %%%%
-雕刻岩壁
-%%%%
 broken wreckage
 破碎的残骸
 %%%%
@@ -277,8 +275,6 @@ damp floor
 %%%%
 crumbled stone wall
 崩塌的石墙
-%%%%
-光晕
 %%%%
 Dispersal
 驱散
@@ -12710,8 +12706,6 @@ enters the arena
 %%%%
 Last arena monster was dismissed.
 最后一只竞技场怪物已被清除。
-%%%%
- # - 推荐角色
 %%%%
 You continue %s %s.
 你继续%s%s。
@@ -33857,6 +33851,7 @@ Build '%s'
 Stack %s
 牌堆 %s
 %%%%
+# - Recommended character
 # - 推荐角色
 %%%%
  <lightgrey>(%s)</lightgrey>
@@ -35001,6 +34996,7 @@ Full palette:
 %%%%
 remaining)
 剩余）
+%%%%
 Unnamed gizmo
 无名装置
 %%%%
@@ -36633,6 +36629,7 @@ the Shapeless
 %%%%
 random rage
 随机狂暴
+%%%%
 infuse magic
 魔力灌注
 %%%%
