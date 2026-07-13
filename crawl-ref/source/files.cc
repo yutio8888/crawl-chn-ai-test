@@ -1956,27 +1956,29 @@ bool pregen_dungeon(const level_id &stopping_point)
         // be sure that AK start doesn't interfere with the builder
         unwind_var<game_chapter> chapter(you.chapter, CHAPTER_ORB_HUNTING);
 
-        ui::progress_popup progress("Generating dungeon...\n\n", 35);
+        ui::progress_popup progress(T_("Generating dungeon...\n\n"), 35);
         progress.advance_progress();
 
         for (const level_id &new_level : to_generate)
         {
-            string status = "\nbuilding ";
+            const char* branch_name;
 
             switch (new_level.branch)
             {
             case BRANCH_SPIDER:
             case BRANCH_SNAKE:
-                status += "a lair branch";
+                branch_name = T_("a lair branch");
                 break;
             case BRANCH_SHOALS:
             case BRANCH_SWAMP:
-                status += "another lair branch";
+                branch_name = T_("another lair branch");
                 break;
             default:
-                status += branches[new_level.branch].longname;
+                branch_name = T_(branches[new_level.branch].longname);
                 break;
             }
+            const string status = make_stringf(T_("\nbuilding %s"),
+                                               branch_name);
             progress.set_status_text(status);
             dprf("Pregenerating %s:%d",
                 branches[new_level.branch].abbrevname, new_level.depth);

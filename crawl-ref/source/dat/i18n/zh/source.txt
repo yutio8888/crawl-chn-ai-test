@@ -1,4 +1,34 @@
 %%%%
+Generating dungeon...\n\n
+正在生成地城……\n\n
+%%%%
+\nbuilding %s
+\n正在生成%s
+%%%%
+a lair branch
+一个兽巢分支
+%%%%
+another lair branch
+另一个兽巢分支
+%%%%
+random monster
+随机怪物
+%%%%
+random draconian
+随机龙人
+%%%%
+random base draconian
+随机基础龙人
+%%%%
+random nonbase draconian
+随机特化龙人
+%%%%
+wandering monster
+游荡怪物
+%%%%
+invalid monster_type %d
+无效怪物类型 %d
+%%%%
     ! - Random character
     ! - 随机角色
 %%%%

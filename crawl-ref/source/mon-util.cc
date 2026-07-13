@@ -3061,18 +3061,28 @@ string mons_type_name(monster_type mc, description_level_type desc)
     switch (mc)
     {
     case RANDOM_MONSTER:
+        if (Options.language == lang_t::ZH)
+            return T_("random monster");
         result += "random monster";
         return result;
     case RANDOM_DRACONIAN:
+        if (Options.language == lang_t::ZH)
+            return T_("random draconian");
         result += "random draconian";
         return result;
     case RANDOM_BASE_DRACONIAN:
+        if (Options.language == lang_t::ZH)
+            return T_("random base draconian");
         result += "random base draconian";
         return result;
     case RANDOM_NONBASE_DRACONIAN:
+        if (Options.language == lang_t::ZH)
+            return T_("random nonbase draconian");
         result += "random nonbase draconian";
         return result;
     case WANDERING_MONSTER:
+        if (Options.language == lang_t::ZH)
+            return T_("wandering monster");
         result += "wandering monster";
         return result;
     default: ;
@@ -3081,6 +3091,8 @@ string mons_type_name(monster_type mc, description_level_type desc)
     const monsterentry *me = get_monster_data(mc);
     if (me == nullptr)
     {
+        if (Options.language == lang_t::ZH)
+            return make_stringf(T_("invalid monster_type %d"), mc);
         result += make_stringf("invalid monster_type %d", mc);
         return result;
     }
