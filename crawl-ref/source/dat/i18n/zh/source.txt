@@ -38188,6 +38188,15 @@ topbar status|Pois
 <cyan>Here:</cyan>
 <cyan>这里：</cyan>
 %%%%
+%s's spirit is torn from its body!
+%s的灵魂从躯体中被剥离！
+%%%%
+%s's spirit is momentarily torn from its body, then fades!
+%s的灵魂短暂地从躯体中被剥离，随后消散！
+%%%%
+Your %s simulacrum begins to move.
+你的%s拟像开始活动。
+%%%%
 <cyan>Item%1$s here:</cyan> %2$s.
 <cyan>此处物品：</cyan> %2$s。
 %%%%

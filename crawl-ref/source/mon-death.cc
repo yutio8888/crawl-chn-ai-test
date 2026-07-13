@@ -1967,10 +1967,24 @@ static bool _mons_reaped(actor &killer, monster& victim)
         beh = SAME_ATTITUDE(mon);
     }
 
-    string msg = victim.name(DESC_ITS) + " spirit is torn from " +
-                     victim.pronoun(PRONOUN_POSSESSIVE) + " body!";
-    string fail_msg = victim.name(DESC_ITS) + " spirit is momentarily torn from " +
-                          victim.pronoun(PRONOUN_POSSESSIVE) + " body, then fades!";
+    string msg;
+    string fail_msg;
+    if (Options.language == lang_t::ZH)
+    {
+        const string victim_name = victim.name(DESC_PLAIN);
+        msg = make_stringf(T_("%s's spirit is torn from its body!"),
+                           victim_name.c_str());
+        fail_msg = make_stringf(
+            T_("%s's spirit is momentarily torn from its body, then fades!"),
+            victim_name.c_str());
+    }
+    else
+    {
+        msg = victim.name(DESC_ITS) + " spirit is torn from "
+              + victim.pronoun(PRONOUN_POSSESSIVE) + " body!";
+        fail_msg = victim.name(DESC_ITS) + " spirit is momentarily torn from "
+                   + victim.pronoun(PRONOUN_POSSESSIVE) + " body, then fades!";
+    }
     _make_derived_undead(&victim, !you.can_see(victim), MONS_SPECTRAL_THING, beh,
                          MON_SUMM_WPN_REAP, GOD_NO_GOD, msg, fail_msg);
 
@@ -2726,7 +2740,8 @@ item_def* monster_die(monster& mons, killer_type killer,
         // No "the Enchantress".
         string name = remove_prepended_the(mons_type_name(simu.base_type, DESC_PLAIN));
 
-        string msg = "Your " + name + " simulacrum begins to move.";
+        string msg = make_stringf(T_("Your %s simulacrum begins to move."),
+                                  name.c_str());
         schedule_make_derived_undead_fineff(simu.pos, simu,
                                             get_monster_data(simu.base_type)->HD,
                                             "the player",
