@@ -3073,11 +3073,16 @@ void _walk_on_decor(dungeon_feature_type new_grid)
 
         // XXX: Ugly, but it'd take a lot of restructuring
         //      to follow melee_attack's use of @your_weapon@.
-        string weap = "your " + (you.weapon() ? you.weapon()->name(DESC_DBNAME).c_str()
-                                              : you.hand_name(true));
+        const bool chinese = Options.language == lang_t::ZH;
+        const string possessive = chinese ? "你的" : "your ";
+        string weap = possessive
+                      + (you.weapon() ? you.weapon()->name(
+                                           chinese ? DESC_PLAIN : DESC_DBNAME).c_str()
+                                      : you.hand_name(true));
 
         decorLine = replace_all(decorLine, "@your_weapon@", weap);
-        decorLine = replace_all(decorLine, "@your_hands@", "your " + you.hand_name(true));
+        decorLine = replace_all(decorLine, "@your_hands@",
+                                possessive + you.hand_name(true));
 
         // For name-related bits in graffiti.
         decorLine = do_mon_name_replacements(decorLine);
