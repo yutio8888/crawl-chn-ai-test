@@ -1599,10 +1599,10 @@ string AcquireMenu::get_keyhelp(bool) const
     {
         auto& entry = *selected[0];
         const string col = colour_to_str(channel_to_colour(MSGCH_PROMPT));
-        help = make_stringf(
-               "<%s>%s %s? (%s/N)</%s>\n",
+        help = make_stringf_p(
+               T_("<%1$s>%2$s %3$s? (%4$s/N)</%5$s>\n"),
                col.c_str(),
-               is_gizmo ? "Assemble" : "Acquire",
+               is_gizmo ? T_("Assemble") : T_("Acquire"),
                entry.text.c_str(),
                Options.easy_confirm == easy_confirm_type::none ? "Y" : "y",
                col.c_str());

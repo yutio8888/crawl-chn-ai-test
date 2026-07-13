@@ -2594,11 +2594,14 @@ void RuneMenu::set_footer()
     if (!can_show_gems())
         return;
 
-    string more_text = make_stringf("[<w>!</w>/<w>^</w>"
 #ifdef USE_TILE_LOCAL
-            "|<w>Right-click</w>"
+    string more_text = make_stringf(
+            T_("[<w>!</w>/<w>^</w>|<w>Right-click</w>]: %s"),
+#else
+    string more_text = make_stringf(
+            T_("[<w>!</w>/<w>^</w>]: %s"),
 #endif
-            "]: %s", show_gems ? "Show Runes" : "Show Gems");
+            show_gems ? T_("Show Runes") : T_("Show Gems"));
     if (!Options.more_gem_info && can_show_more_gems())
         more_text += make_stringf("\n[<w>-</w>]: %s", more_gems ? T_("Less") : T_("More"));
     set_more(more_text);

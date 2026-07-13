@@ -38218,6 +38218,27 @@ Disturbance
 Waypoint %d
 【路径点%d】
 %%%%
+<%1$s>%2$s %3$s? (%4$s/N)</%5$s>\n
+<%1$s>要%2$s%3$s吗？（%4$s/N）</%5$s>\n
+%%%%
+[<w>!</w>/<w>^</w>|<w>Right-click</w>]: %s
+[<w>!</w>/<w>^</w>|<w>右键点击</w>]：%s
+%%%%
+[<w>!</w>/<w>^</w>]: %s
+[<w>!</w>/<w>^</w>]：%s
+%%%%
+Show Runes
+显示佐特符文
+%%%%
+Show Gems
+显示宝石
+%%%%
+Acquire
+获取
+%%%%
+Assemble
+组装
+%%%%
  <lightgrey>([<w>,</w>] to cycle)</lightgrey>
  <lightgrey>（按[<w>,</w>]切换）</lightgrey>
 %%%%
