@@ -997,71 +997,71 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     static const char* body_types[] =
     {
         T_("armoured"),
-        "vast, spindly",
-        "fat",
-        "obese",
-        "muscular",
-        "spiked",
-        "splotchy",
-        "slender",
-        "tentacled",
-        "emaciated",
-        "bug-like",
-        "skeletal",
-        "mantis",
-        "slithering",
+        T_("vast, spindly"),
+        T_("fat"),
+        T_("obese"),
+        T_("muscular"),
+        T_("spiked"),
+        T_("splotchy"),
+        T_("slender"),
+        T_("tentacled"),
+        T_("emaciated"),
+        T_("bug-like"),
+        T_("skeletal"),
+        T_("mantis"),
+        T_("slithering"),
     };
 
     static const char* wing_names[] =
     {
-        "with small, bat-like wings",
-        "with bony wings",
-        "with sharp, metallic wings",
-        "with the wings of a moth",
-        "with thin, membranous wings",
-        "with dragonfly wings",
-        "with large, powerful wings",
-        "with fluttering wings",
-        "with great, sinister wings",
-        "with hideous, tattered wings",
-        "with sparrow-like wings",
-        "with hooked wings",
-        "with strange knobs attached",
-        "which hovers in mid-air",
-        "with sacs of gas hanging from its back",
+        T_("with small, bat-like wings"),
+        T_("with bony wings"),
+        T_("with sharp, metallic wings"),
+        T_("with the wings of a moth"),
+        T_("with thin, membranous wings"),
+        T_("with dragonfly wings"),
+        T_("with large, powerful wings"),
+        T_("with fluttering wings"),
+        T_("with great, sinister wings"),
+        T_("with hideous, tattered wings"),
+        T_("with sparrow-like wings"),
+        T_("with hooked wings"),
+        T_("with strange knobs attached"),
+        T_("which hovers in mid-air"),
+        T_("with sacs of gas hanging from its back"),
     };
 
     const char* head_names[] =
     {
-        "a cubic structure in place of a head",
-        "a brain for a head",
-        "a hideous tangle of tentacles for a mouth",
-        "the head of an elephant",
-        "an eyeball for a head",
-        "wears a helmet over its head",
-        "a horn in place of a head",
-        "a thick, horned head",
-        "the head of a horse",
-        "a vicious glare",
-        "snakes for hair",
-        "the face of a baboon",
-        "the head of a mouse",
-        "a ram's head",
-        "the head of a rhino",
-        "eerily human features",
-        "a gigantic mouth",
-        "a mass of tentacles growing from its neck",
-        "a thin, worm-like head",
-        "huge, compound eyes",
-        "the head of a frog",
-        "an insectoid head",
-        "a great mass of hair",
-        "a skull for a head",
-        "a cow's skull for a head",
-        "the head of a bird",
-        "a large fungus growing from its neck",
-        "an ominous eye at the end of a thin stalk",
-        "a face from nightmares",
+        T_("a cubic structure in place of a head"),
+        T_("a brain for a head"),
+        T_("a hideous tangle of tentacles for a mouth"),
+        T_("the head of an elephant"),
+        T_("an eyeball for a head"),
+        T_("wears a helmet over its head"),
+        T_("a horn in place of a head"),
+        T_("a thick, horned head"),
+        T_("the head of a horse"),
+        T_("a vicious glare"),
+        T_("snakes for hair"),
+        T_("the face of a baboon"),
+        T_("the head of a mouse"),
+        T_("a ram's head"),
+        T_("the head of a rhino"),
+        T_("eerily human features"),
+        T_("a gigantic mouth"),
+        T_("a mass of tentacles growing from its neck"),
+        T_("a thin, worm-like head"),
+        T_("huge, compound eyes"),
+        T_("the head of a frog"),
+        T_("an insectoid head"),
+        T_("a great mass of hair"),
+        T_("a skull for a head"),
+        T_("a cow's skull for a head"),
+        T_("the head of a bird"),
+        T_("a large fungus growing from its neck"),
+        T_("an ominous eye at the end of a thin stalk"),
+        T_("a face from nightmares"),
     };
 
     static const char* misc_descs[] =
@@ -1119,22 +1119,42 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     };
 
     ostringstream description;
-    description << T_("One of the many lords of Pandemonium, ") << name << " has ";
+    const char* body = HRANDOM_ELEMENT(body_types, 2);
+    const char* wings = HRANDOM_ELEMENT(wing_names, 3);
+    const char* head = HRANDOM_ELEMENT(head_names, 1);
 
-    description << article_a(HRANDOM_ELEMENT(body_types, 2));
-    // ETC_RANDOM is also possible, handled later
-    if (colour >= 0 && colour < NUM_TERM_COLOURS)
-        description << " " << colour_to_str(colour, true);
-    description << " body ";
-
-    if (flying)
+    if (Options.language == lang_t::ZH)
     {
-        description << HRANDOM_ELEMENT(wing_names, 3);
-        description << " ";
-    }
+        // Chinese needs a complete sentence: the English fragments below cannot
+        // be reordered simply by translating "has", "body", and "and".
+        string colour_name;
+        if (colour >= 0 && colour < NUM_TERM_COLOURS)
+            colour_name = T_(colour_to_str(colour, true).c_str());
 
-    description << "and ";
-    description << HRANDOM_ELEMENT(head_names, 1) << ".";
+        if (flying)
+            description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s."),
+                                        name.c_str(), colour_name.c_str(), body,
+                                        wings, head);
+        else
+            description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s."),
+                                        name.c_str(), colour_name.c_str(), body,
+                                        head);
+    }
+    else
+    {
+        // Keep the original English construction unchanged.
+        description << T_("One of the many lords of Pandemonium, ") << name << " has ";
+        description << article_a(body);
+        // ETC_RANDOM is also possible, handled later
+        if (colour >= 0 && colour < NUM_TERM_COLOURS)
+            description << " " << colour_to_str(colour, true);
+        description << " body ";
+
+        if (flying)
+            description << wings << " ";
+
+        description << "and " << head << ".";
+    }
 
     if (!hash_with_seed(5, seed, 4) && you.can_smell()) // 20%
         description << HRANDOM_ELEMENT(smell_descs, 5);

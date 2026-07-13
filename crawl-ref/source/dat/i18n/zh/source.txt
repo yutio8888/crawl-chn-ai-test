@@ -38263,3 +38263,203 @@ match
  offers you knowledge of %s.
 赐予你%s的知识。
 %%%%
+vast, spindly
+巨大而瘦长的
+%%%%
+fat
+肥胖的
+%%%%
+obese
+臃肿的
+%%%%
+muscular
+肌肉发达的
+%%%%
+spiked
+长满尖刺的
+%%%%
+splotchy
+斑驳的
+%%%%
+slender
+修长的
+%%%%
+tentacled
+长有触手的
+%%%%
+emaciated
+消瘦的
+%%%%
+bug-like
+虫状的
+%%%%
+skeletal
+骨架般的
+%%%%
+mantis
+螳螂状的
+%%%%
+slithering
+蜿蜒的
+%%%%
+with small, bat-like wings
+长有小巧的蝙蝠状翅膀
+%%%%
+with bony wings
+长有骨质翅膀
+%%%%
+with sharp, metallic wings
+长有锋利的金属翅膀
+%%%%
+with the wings of a moth
+长有飞蛾的翅膀
+%%%%
+with thin, membranous wings
+长有薄膜状翅膀
+%%%%
+with dragonfly wings
+长有蜻蜓翅膀
+%%%%
+with large, powerful wings
+长有巨大而强劲的翅膀
+%%%%
+with fluttering wings
+长有不断拍动的翅膀
+%%%%
+with great, sinister wings
+长有巨大而阴森的翅膀
+%%%%
+with hideous, tattered wings
+长有可怖而破烂的翅膀
+%%%%
+with sparrow-like wings
+长有麻雀状翅膀
+%%%%
+with hooked wings
+长有钩状翅膀
+%%%%
+with strange knobs attached
+身上长有奇异的瘤状物
+%%%%
+which hovers in mid-air
+悬浮在半空中
+%%%%
+with sacs of gas hanging from its back
+背上挂着数个气囊
+%%%%
+a cubic structure in place of a head
+头部是一块立方体结构
+%%%%
+a brain for a head
+以大脑为头
+%%%%
+a hideous tangle of tentacles for a mouth
+嘴部是一团可怖的纠结触手
+%%%%
+the head of an elephant
+长着大象的头
+%%%%
+an eyeball for a head
+以眼球为头
+%%%%
+wears a helmet over its head
+头上戴着一顶头盔
+%%%%
+a horn in place of a head
+以一只角为头
+%%%%
+a thick, horned head
+长着厚实的有角头颅
+%%%%
+the head of a horse
+长着马的头
+%%%%
+a vicious glare
+目露凶光
+%%%%
+snakes for hair
+头发由蛇组成
+%%%%
+the face of a baboon
+长着狒狒的脸
+%%%%
+the head of a mouse
+长着老鼠的头
+%%%%
+a ram's head
+长着公羊的头
+%%%%
+the head of a rhino
+长着犀牛的头
+%%%%
+eerily human features
+有着诡异的人类面容
+%%%%
+a gigantic mouth
+长着一张巨口
+%%%%
+a mass of tentacles growing from its neck
+脖子上长出一大团触手
+%%%%
+a thin, worm-like head
+长着细长的蠕虫状头颅
+%%%%
+huge, compound eyes
+长着巨大的复眼
+%%%%
+the head of a frog
+长着青蛙的头
+%%%%
+an insectoid head
+长着昆虫般的头
+%%%%
+a great mass of hair
+长着一大蓬头发
+%%%%
+a skull for a head
+以头骨为头
+%%%%
+a cow's skull for a head
+以牛头骨为头
+%%%%
+the head of a bird
+长着鸟的头
+%%%%
+a large fungus growing from its neck
+脖子上长着一朵大菌菇
+%%%%
+an ominous eye at the end of a thin stalk
+一只不祥的眼睛长在细长的柄端
+%%%%
+a face from nightmares
+长着一张来自噩梦的脸
+%%%%
+One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s.
+潘神之域的众多领主之一，%1$s拥有一具%2$s%3$s的躯体，%4$s，并且%5$s。
+%%%%
+One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s.
+潘神之域的众多领主之一，%1$s拥有一具%2$s%3$s的躯体，并且%4$s。
+%%%%
+light grey
+浅灰色
+%%%%
+dark grey
+深灰色
+%%%%
+light blue
+浅蓝色
+%%%%
+light green
+浅绿色
+%%%%
+light cyan
+浅青色
+%%%%
+light red
+浅红色
+%%%%
+light magenta
+浅品红色
+%%%%
+magenta
+品红色
