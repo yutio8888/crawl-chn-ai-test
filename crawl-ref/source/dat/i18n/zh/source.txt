@@ -23630,8 +23630,14 @@ Save game and return to main menu?
 Save game and quit?
 保存游戏并退出？
 %%%%
-Are you sure you want to abandon this character%s?
-你确定要放弃这个角色%s吗？
+Are you sure you want to abandon this character?
+你确定要放弃这个角色吗？
+%%%%
+Are you sure you want to abandon this character and return to the main menu?
+你确定要放弃这个角色并返回主菜单吗？
+%%%%
+Are you sure you want to abandon this character and quit the game?
+你确定要放弃这个角色并退出游戏吗？
 %%%%
 Game time: %s (%d turns).
 游戏时间: %s (%d 回合)。

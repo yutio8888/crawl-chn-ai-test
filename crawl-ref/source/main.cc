@@ -2483,11 +2483,12 @@ void process_command(command_type cmd, command_type prev_cmd)
     {
         // TODO: msg whether this will start a new game? not very important
         if (crawl_state.disables[DIS_CONFIRMATIONS]
-            || confirm_prompt("quit", T_("Are you sure you want to abandon this character%s?"),
-                Options.newgame_after_quit ? "" : // hard to predict this case
-                (crawl_should_restart(game_exit::quit)
-                                            ? " and return to the main menu"
-                                            : " and quit the game")))
+            || confirm_prompt("quit",
+                Options.newgame_after_quit
+                    ? T_("Are you sure you want to abandon this character?")
+                    : crawl_should_restart(game_exit::quit)
+                        ? T_("Are you sure you want to abandon this character and return to the main menu?")
+                        : T_("Are you sure you want to abandon this character and quit the game?")))
         {
             ouch(INSTANT_DEATH, KILLED_BY_QUITTING);
         }
