@@ -1650,7 +1650,10 @@ string make_artefact_name(const item_def &item, bool appearance)
         }
 
         result += appear;
-        result += " ";
+        if (Options.language == lang_t::ZH)
+            result += "的";
+        else
+            result += " ";
         result += base_name;
         return result;
     }
@@ -1676,7 +1679,7 @@ string make_artefact_name(const item_def &item, bool appearance)
         while (--tries > 0 && strwidth(name) > 25);
 
         if (name.empty()) // still nothing found?
-            name = "of Bugginess";
+            name = T_("of Bugginess");
 
         if (Options.language == lang_t::ZH)
         {
@@ -1694,18 +1697,20 @@ string make_artefact_name(const item_def &item, bool appearance)
     {
         // construct a unique name
         const string st_p = make_name();
-        result += base_name;
 
         if (one_chance_in(3))
         {
-            result += " of ";
-            result += st_p;
+            if (Options.language == lang_t::ZH)
+                result = st_p + "之" + base_name;
+            else
+                result = base_name + " of " + st_p;
         }
         else
         {
-            result += " \"";
-            result += st_p;
-            result += "\"";
+            if (Options.language == lang_t::ZH)
+                result = string("「") + st_p + "」" + base_name;
+            else
+                result = base_name + " \"" + st_p + "\"";
         }
     }
 
@@ -2083,7 +2088,7 @@ static string _ashenzari_artefact_name(item_def &item)
 
     if (Options.language == lang_t::ZH)
     {
-        const string mod = name.empty() ? "of Ashenzari" : name;
+        const string mod = name.empty() ? T_("of Ashenzari") : name;
         return mod + _base_name(item);
     }
     else
