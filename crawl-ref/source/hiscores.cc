@@ -269,7 +269,7 @@ void hiscores_print_all(int display_count, int format)
     if (scores == nullptr)
     {
         // will only happen from command line
-        puts("No scores.");
+        puts(T_("No scores."));
         return;
     }
 
@@ -428,7 +428,7 @@ UIHiscoresMenu::UIHiscoresMenu()
 #endif
 
     auto title = make_shared<Text>(formatted_string(
-                CRAWL ": High Scores", YELLOW));
+                make_stringf(T_("%s: High Scores"), CRAWL), YELLOW));
     title->set_margin_for_sdl(0, 0, 0, 16);
     title_hbox->add_child(std::move(title));
 
@@ -574,11 +574,8 @@ static string _hiscore_date_string(time_t time)
 {
     struct tm *date = TIME_FN(&time);
 
-    const char *mons[12] = { "Jan", "Feb", "Mar", "Apr", "May", "June",
-                             "July", "Aug", "Sept", "Oct", "Nov", "Dec" };
-
-    return make_stringf("%s %d, %d", mons[date->tm_mon], date->tm_mday,
-                                     date->tm_year + 1900);
+    return make_stringf(T_("%d-%02d-%02d"), date->tm_year + 1900,
+                        date->tm_mon + 1, date->tm_mday);
 }
 
 static string _hiscore_newline_string()
@@ -1991,19 +1988,17 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
     if (num_runes >= 1)
     {
         desc += _hiscore_newline_string();
-        desc += make_stringf(T_("... %s %d rune%s"),
-                             extra ? "and" : "with",
-                             num_runes,
-                             (num_runes > 1) ? "s" : "");
+        desc += make_stringf(extra ? T_("... and %d runes")
+                                  : T_("... with %d runes"),
+                             num_runes);
         extra = true;
     }
     if (gems_found >= 1)
     {
         desc += _hiscore_newline_string();
-        desc += make_stringf(T_("... %s %d gem%s"),
-                             extra ? "and" : "with",
-                             gems_found,
-                             (gems_found > 1) ? "s" : "");
+        desc += make_stringf(extra ? T_("... and %d gems")
+                                  : T_("... with %d gems"),
+                             gems_found);
         // semiverbose is true here only when making the vmsg logfile field,
         // so we always display all gem info when it is true
         if (Options.more_gem_info || semiverbose)
@@ -2022,8 +2017,8 @@ string scorefile_entry::runes_gems_desc(bool semiverbose) const
         && death_time > 0
         && !_hiscore_same_day(birth_time, death_time))
     {
-        desc += " on ";
-        desc += _hiscore_date_string(death_time);
+        desc += make_stringf(T_(" on %s"),
+                             _hiscore_date_string(death_time).c_str());
     }
 
     desc = _append_sentence_delimiter(desc, "!");
@@ -2071,14 +2066,12 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
     if (verbose)
     {
         string srace = _species_name(race);
-        desc += make_stringf(T_("Began as a%s %s %s"),
-                 is_vowel(srace[0]) ? "n" : "",
-                 srace.c_str(),
-                 _job_name(job));
+        desc += make_stringf(T_("Began as a %s %s"), srace.c_str(),
+                             _job_name(job));
 
         ASSERT(birth_time);
-        desc += " on ";
-        desc += _hiscore_date_string(birth_time);
+        desc += make_stringf(T_(" on %s"),
+                             _hiscore_date_string(birth_time).c_str());
         // TODO: show seed here?
 
         desc = _append_sentence_delimiter(desc, ".");
@@ -2090,8 +2083,9 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
         {
             if (god == GOD_XOM)
             {
-                desc += make_stringf(T_("Was a %sPlaything of Xom."),
-                                    (lvl >= 20) ? "Favourite " : "");
+                desc += (lvl >= 20)
+                     ? T_("Was a Favourite Plaything of Xom.")
+                     : T_("Was a Plaything of Xom.");
 
                 desc += _hiscore_newline_string();
             }
@@ -2100,15 +2094,15 @@ scorefile_entry::character_description(death_desc_verbosity verbosity) const
                 // Not exactly the same as the religion screen, but
                 // good enough to fill this slot for now.
                 desc += make_stringf(T_("Was %s of %s%s"),
-                             (piety >= piety_breakpoint(5)) ? "the Champion" :
-                             (piety >= piety_breakpoint(4)) ? "a High Priest" :
-                             (piety >= piety_breakpoint(3)) ? "an Elder" :
-                             (piety >= piety_breakpoint(2)) ? "a Priest" :
-                             (piety >= piety_breakpoint(1)) ? "a Believer" :
-                             (piety >= piety_breakpoint(0)) ? "a Follower"
-                                                            : "an Initiate",
+                             (piety >= piety_breakpoint(5)) ? T_("the Champion") :
+                             (piety >= piety_breakpoint(4)) ? T_("a High Priest") :
+                             (piety >= piety_breakpoint(3)) ? T_("an Elder") :
+                             (piety >= piety_breakpoint(2)) ? T_("a Priest") :
+                             (piety >= piety_breakpoint(1)) ? T_("a Believer") :
+                             (piety >= piety_breakpoint(0)) ? T_("a Follower")
+                                                            : T_("an Initiate"),
                           god_name(god).c_str(),
-                             (penance > 0) ? " (penitent)." : ".");
+                             (penance > 0) ? T_(" (penitent).") : ".");
 
                 desc += _hiscore_newline_string();
             }
@@ -2154,8 +2148,8 @@ string scorefile_entry::death_place(death_desc_verbosity verbosity) const
     if (verbose && death_time
         && !_hiscore_same_day(birth_time, death_time))
     {
-        place += " on ";
-        place += _hiscore_date_string(death_time);
+        place += make_stringf(T_(" on %s"),
+                              _hiscore_date_string(death_time).c_str());
     }
 
     place = _append_sentence_delimiter(place, ".");

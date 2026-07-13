@@ -34522,11 +34522,29 @@ weapon of %s
 (%d) %s
 （%d）%s
 %%%%
+%d-%02d-%02d
+%d年%02d月%02d日
+%%%%
+%s: High Scores
+%s：高分榜
+%%%%
 ... %s %d gem%s
 ……%s %d枚宝石%s
 %%%%
 ... %s %d rune%s
 ……%s %d枚符文%s
+%%%%
+... and %d gems
+……以及%d枚宝石
+%%%%
+... and %d runes
+……以及%d枚符文
+%%%%
+... with %d gems
+……带有%d枚宝石
+%%%%
+... with %d runes
+……带有%d枚符文
 %%%%
 ... %s by %s
 ……被%s%s
@@ -34554,6 +34572,9 @@ weapon of %s
 %%%%
 Began as a%s %s %s
 初始为一名%s%s%s
+%%%%
+Began as a %s %s
+初始为%s%s
 %%%%
 Crash caused by signal #%d: %s
 崩溃由信号#%d引起：%s
@@ -34599,6 +34620,9 @@ Missing version history before: %s
 %%%%
 No action for '%s'!\n
 '%s'没有关联动作！\n
+%%%%
+No scores.
+暂无高分记录。
 %%%%
 No longer under Kirke's spell, the %s %s %s!
 不再受喀耳刻的法术影响，%s%s%s！
@@ -34648,8 +34672,38 @@ Warning, next level annotated: <yellow>%s</yellow>
 Was %s of %s%s
 曾是%s%s之%s
 %%%%
-Was a %sPlaything of Xom.
-曾是佐姆的%s玩物。
+Was a Favourite Plaything of Xom.
+曾是佐姆宠爱的玩物。
+%%%%
+Was a Plaything of Xom.
+曾是佐姆的玩物。
+%%%%
+the Champion
+冠军
+%%%%
+a High Priest
+高阶祭司
+%%%%
+an Elder
+长老
+%%%%
+a Priest
+祭司
+%%%%
+a Believer
+信徒
+%%%%
+a Follower
+追随者
+%%%%
+an Initiate
+入门者
+%%%%
+ (penitent).
+（受惩罚中）。
+%%%%
+ on %s
+ 于%s
 %%%%
 Xom event %d has no associated data!\n
 佐姆事件%d没有关联数据！\n
