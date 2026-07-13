@@ -585,7 +585,7 @@ static char _deck_hotkey(deck_type deck)
     return get_talent(deck_ability[deck]).hotkey;
 }
 
-static deck_type _choose_deck(const string title = "Draw")
+static deck_type _choose_deck(const string title = T_("Draw"))
 {
     // TODO: refactor this into a subclass?
     ToggleableMenu deck_menu(MF_SINGLESELECT
@@ -595,8 +595,8 @@ static deck_type _choose_deck(const string title = "Draw")
         ToggleableMenuEntry* me =
             new ToggleableMenuEntry(make_stringf(T_("%s which deck?        "
                                     "Cards available"), title.c_str()),
-                                    "Describe which deck?    "
-                                    "Cards available",
+                                    T_("Describe which deck?    "
+                                    "Cards available"),
                                     MEL_TITLE);
         deck_menu.set_title(me, true, true);
     }
@@ -609,8 +609,8 @@ static deck_type _choose_deck(const string title = "Draw")
 
     // XX proper keyhelp
     deck_menu.set_more(formatted_string::parse_string(
-        menu_keyhelp_cmd(CMD_MENU_HELP) + " toggle "
-                       "between deck selection and description."));
+        menu_keyhelp_cmd(CMD_MENU_HELP) + T_(" toggle "
+                       "between deck selection and description.")));
 
     int numbers[NUM_DECKS];
 
@@ -659,10 +659,10 @@ static deck_type _choose_deck(const string title = "Draw")
  */
 static string _empty_deck_msg()
 {
-    string message = random_choose("disappears without a trace.",
-        "glows slightly and disappears.",
-        "glows with a rainbow of weird colours and disappears.");
-    return "The deck of cards " + message;
+    string message = random_choose(T_("disappears without a trace."),
+        T_("glows slightly and disappears."),
+        T_("glows with a rainbow of weird colours and disappears."));
+    return make_stringf(T_("The deck of cards %s"), message.c_str());
 }
 
 static void _evoke_deck(deck_type deck, bool dealt = false)
@@ -760,7 +760,7 @@ bool StackFiveMenu::process_key(int keyin)
     {
         formatted_string old_more = more;
         set_more(formatted_string::parse_string(
-                "Are you done? (press y or Y to confirm)"));
+                T_("Are you done? (press y or Y to confirm)")));
         if (yesno(nullptr, true, 'n', false, false, true))
             return false;
         set_more(old_more);
@@ -796,10 +796,10 @@ static void _draw_stack(int to_stack)
             | MF_ARROWS_SELECT | MF_INIT_HOVER);
     {
         ToggleableMenuEntry* me =
-            new ToggleableMenuEntry("Draw which deck?        "
-                                    "Cards available",
-                                    "Describe which deck?    "
-                                    "Cards available",
+            new ToggleableMenuEntry(T_("Draw which deck?        "
+                                    "Cards available"),
+                                    T_("Describe which deck?    "
+                                    "Cards available"),
                                     MEL_TITLE);
         deck_menu.set_title(me, true, true);
     }
@@ -812,17 +812,18 @@ static void _draw_stack(int to_stack)
 
     if (!stack.empty())
     {
-            string status = "Drawn so far: " + stack_contents();
+            string status = make_stringf(T_("Drawn so far: %s"),
+                                         stack_contents().c_str());
             deck_menu.set_more(formatted_string::parse_string(
                        status + "\n" +
-                       menu_keyhelp_cmd(CMD_MENU_HELP) + " toggle "
-                       "between deck selection and description."));
+                       menu_keyhelp_cmd(CMD_MENU_HELP) + T_(" toggle "
+                       "between deck selection and description.")));
     }
     else
     {
         deck_menu.set_more(formatted_string::parse_string(
-            menu_keyhelp_cmd(CMD_MENU_HELP) + " toggle "
-                       "between deck selection and description."));
+            menu_keyhelp_cmd(CMD_MENU_HELP) + T_(" toggle "
+                       "between deck selection and description.")));
     }
 
     int numbers[NUM_DECKS];
@@ -870,14 +871,15 @@ static void _draw_stack(int to_stack)
             stack.push_back(draw);
         }
         else
-            status = "<lightred>That deck is empty!</lightred> ";
+            status = T_("<lightred>That deck is empty!</lightred>") + " ";
 
         if (stack.size() > 0)
-            status += "Drawn so far: " + stack_contents();
+            status += make_stringf(T_("Drawn so far: %s"),
+                                   stack_contents().c_str());
         deck_menu.set_more(formatted_string::parse_string(
                    status + "\n" +
-                   "Press '<w>!</w>' or '<w>?</w>' to toggle "
-                   "between deck selection and description."));
+                   T_("Press '<w>!</w>' or '<w>?</w>' to toggle "
+                   "between deck selection and description.")));
 
         return stack.size() < to_stack;
     };
@@ -909,8 +911,8 @@ bool stack_five(int to_stack)
         menu.add_entry(entry);
     }
     menu.set_more(formatted_string::parse_string(
-                "<lightgrey>Press <w>?</w> for the card descriptions"
-                " or <w>Enter</w> to accept."));
+                T_("<lightgrey>Press <w>?</w> for the card descriptions"
+                " or <w>Enter</w> to accept.")));
     menu.show();
 
     if (crawl_state.seen_hups)
@@ -926,7 +928,7 @@ bool stack_five(int to_stack)
 // Return spret::abort if the operation was failed/aborted along the way.
 spret deck_deal(bool fail)
 {
-    deck_type choice = _choose_deck("Deal");
+    deck_type choice = _choose_deck(T_("Deal"));
 
     if (choice == NUM_DECKS)
         return spret::abort;

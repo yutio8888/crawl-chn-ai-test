@@ -39087,3 +39087,48 @@ Skills reduced by: %s.
 %%%%
 %1$s (gone by now)
 %1$s（现已消失）
+%%%%
+Draw
+抽牌
+%%%%
+Deal
+发牌
+%%%%
+%s which deck?        Cards available
+%s哪副牌？        可用牌数
+%%%%
+Describe which deck?    Cards available
+查看哪副牌？    可用牌数
+%%%%
+ toggle between deck selection and description.
+ 可在牌组选择与说明之间切换。
+%%%%
+disappears without a trace.
+无声无息地消失了。
+%%%%
+glows slightly and disappears.
+微微发光后消失了。
+%%%%
+glows with a rainbow of weird colours and disappears.
+闪烁着怪异的彩虹光芒后消失了。
+%%%%
+The deck of cards %s
+这副牌%s
+%%%%
+Are you done? (press y or Y to confirm)
+确定完成了吗？（按 y 或 Y 确认）
+%%%%
+Draw which deck?        Cards available
+从哪副牌中抽取？        可用牌数
+%%%%
+Drawn so far: %s
+目前已抽到：%s
+%%%%
+<lightred>That deck is empty!</lightred>
+<lightred>那副牌已空！</lightred>
+%%%%
+Press '<w>!</w>' or '<w>?</w>' to toggle between deck selection and description.
+按 '<w>!</w>' 或 '<w>?</w>' 可在牌组选择与说明之间切换。
+%%%%
+<lightgrey>Press <w>?</w> for the card descriptions or <w>Enter</w> to accept.
+<lightgrey>按 <w>?</w> 查看卡牌说明，按 <w>Enter</w> 确认。
