@@ -38805,3 +38805,177 @@ Rotted away (%s)
 %%%%
 Rotted away (%s) (%s)
 腐烂殆尽（%s）（%s）
+%%%%
+shot self
+误射自己
+%%%%
+Killed themself with bad targeting
+因瞄准失误而杀死了自己
+%%%%
+Killed themself with a badly aimed %s
+因误射%s而杀死了自己
+%%%%
+reflected bolt
+反射的射线
+%%%%
+Killed by a reflected bolt
+被反射的射线杀死
+%%%%
+Killed by a reflected %s
+被反射的%s杀死
+%%%%
+... reflected by %s
+……由%s反射
+%%%%
+bounced beam
+反弹的射线
+%%%%
+Killed themself with a bounced beam
+被反弹的射线杀死
+%%%%
+Killed themself with a bounced %s
+被反弹的%s杀死
+%%%%
+suicidal targeting
+自我瞄准
+%%%%
+Shot themself with a beam
+用射线射中了自己
+%%%%
+Shot themself with %s
+用%s射中了自己
+%%%%
+death explosion
+死亡爆炸
+%%%%
+Killed by an exploding monster
+被爆炸的怪物杀死
+%%%%
+Killed by exploding %s
+被爆炸的%s杀死
+%%%%
+smitten by Beogh
+被Beogh击中
+%%%%
+Smitten by Beogh
+被Beogh击杀
+%%%%
+Turned to stone
+变成了石头
+%%%%
+Slain by %s
+被%s杀死
+%%%%
+... wielded by %s
+……由%s持用
+%%%%
+a death curse
+死亡诅咒
+%%%%
+%s death curse
+%s的死亡诅咒
+%%%%
+Slain by %s's death curse
+被%s的死亡诅咒杀死
+%%%%
+died
+死亡
+%%%%
+Died
+死了
+%%%%
+fell downstairs
+从楼梯跌落
+%%%%
+Fell down a flight of stairs
+从一段楼梯跌落
+%%%%
+fell through a gate
+从大门跌落
+%%%%
+Fell down through a gate
+穿过大门坠落
+%%%%
+Splashed by %s acid
+被%s的酸液溅到
+%%%%
+Splashed with acid
+被酸液溅到
+%%%%
+asphyx
+窒息
+%%%%
+Asphyxiated
+窒息而死
+%%%%
+divine wrath
+神之愤怒
+%%%%
+Killed by divine wrath
+被神之愤怒杀死
+%%%%
+disintegration
+解体
+%%%%
+Blew themself up
+把自己炸毁了
+%%%%
+Blown up by %s
+被%s炸毁
+%%%%
+mirror damage
+镜像伤害
+%%%%
+Killed by mirror damage
+被镜像伤害杀死
+%%%%
+frailty
+虚弱
+%%%%
+Became unviable by %s
+因%s而无法存活
+%%%%
+barbs
+倒刺
+%%%%
+Succumbed to barbed spike wounds
+因倒刺伤口而死
+%%%%
+%s throw
+被%s投掷
+%%%%
+Thrown by %s
+被%s投掷而死
+%%%%
+%s collision
+与%s碰撞
+%%%%
+Collided with %s
+与%s碰撞而死
+%%%%
+Tarried too long and was consumed by Zot
+逗留太久，被Zot吞噬
+%%%%
+Constricted to death by %s
+被%s缠绕致死
+%%%%
+Nibbled to death by software bugs
+被软件虫子啃死
+%%%%
+... caused by
+……由以下原因造成：
+%%%%
+... caused by %s
+……由%s造成
+%%%%
+after being knocked back
+击退后
+%%%%
+awakened
+唤醒
+%%%%
+generated
+生成
+%%%%
+invoked
+召唤
