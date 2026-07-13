@@ -120,7 +120,7 @@ string trap_def::name(description_level_type desc) const
     if (desc == DESC_A)
         return article_a(basename) + basename;
     else if (desc == DESC_THE)
-        return string("the ") + basename;
+        return Options.language == lang_t::ZH ? basename : string("the ") + basename;
     else                        // everything else
         return basename;
 }
