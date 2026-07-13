@@ -38924,7 +38924,7 @@ xom
 Xom
 %%%%
 Killed for Xom's enjoyment
-为Xom取乐而死
+为佐姆取乐而死
 %%%%
 rotting
 腐烂
@@ -38987,10 +38987,10 @@ Killed by exploding %s
 被爆炸的%s杀死
 %%%%
 smitten by Beogh
-被Beogh击中
+被比欧弗击中
 %%%%
 Smitten by Beogh
-被Beogh击杀
+被比欧弗击杀
 %%%%
 Turned to stone
 变成了石头
@@ -39086,7 +39086,7 @@ Collided with %s
 与%s碰撞而死
 %%%%
 Tarried too long and was consumed by Zot
-逗留太久，被Zot吞噬
+逗留太久，被佐特吞噬
 %%%%
 Constricted to death by %s
 被%s缠绕致死
