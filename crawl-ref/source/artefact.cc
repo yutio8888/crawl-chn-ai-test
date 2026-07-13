@@ -27,6 +27,7 @@
 #include "libutil.h"
 #include "makeitem.h"
 #include "options.h"
+#include "positional_format.h"
 #include "random.h"
 #include "religion.h"
 #include "shout.h"
