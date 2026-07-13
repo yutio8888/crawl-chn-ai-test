@@ -1217,6 +1217,32 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
     if (facets.size() == 0)
         return "";
 
+    if (Options.language == lang_t::ZH)
+    {
+        // The English construction relies on a leading "It", possessive
+        // fragments, and an English conjunction. Chinese needs the subject
+        // and all facet predicates assembled as one complete sentence.
+        static const string zh_facet_descs[] = {
+            T_("It seems unusually buggy."),
+            T_("It sports a set of venomous tails."),
+            T_("It flies swiftly and unpredictably."),
+            T_("Its breath smoulders ominously."),
+            T_("It is covered with eyes and tentacles."),
+            T_("It flickers and crackles with electricity."),
+            T_("It is covered in dense fur and muscle."),
+        };
+        COMPILE_CHECK(ARRAYSZ(zh_facet_descs) == NUM_BEAST_FACETS);
+
+        const string description = comma_separated_fn(
+            begin(facets), end(facets), [] (const CrawlStoreValue &sv) -> string
+            {
+                const int facet = sv.get_int();
+                ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
+                return zh_facet_descs[facet];
+            }, T_("，并且"), T_("、"));
+        return make_stringf_p(T_("%1$s."), description.c_str());
+    }
+
     return "It" + comma_separated_fn(begin(facets), end(facets),
                       [] (const CrawlStoreValue &sv) -> string {
                           const int facet = sv.get_int();

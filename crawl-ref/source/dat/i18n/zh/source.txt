@@ -30182,6 +30182,36 @@ It is mature, stronger than a juvenile but weaker than its elders.
 It is of an unusually buggy age.
 它的年龄异常奇怪。
 %%%%
+It seems unusually buggy.
+它看起来异常古怪
+%%%%
+It sports a set of venomous tails.
+它长着一组剧毒的尾巴
+%%%%
+It flies swiftly and unpredictably.
+它飞行迅捷而飘忽不定
+%%%%
+Its breath smoulders ominously.
+它的气息阴燃着不祥的火焰
+%%%%
+It is covered with eyes and tentacles.
+它浑身布满眼睛和触手
+%%%%
+It flickers and crackles with electricity.
+它闪烁着噼啪作响的电光
+%%%%
+It is covered in dense fur and muscle.
+它覆盖着浓密的皮毛和肌肉
+%%%%
+%1$s.
+%1$s。
+%%%%
+，并且
+，并且
+%%%%
+、
+、
+%%%%
 It looks just like you...spooky!\n
 它看起来就像你……好诡异！\n
 %%%%
