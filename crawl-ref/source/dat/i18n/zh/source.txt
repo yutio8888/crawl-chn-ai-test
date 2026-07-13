@@ -38216,3 +38216,9 @@ status|weak
 %%%%
 status|weakness
 脆弱
+%%%%
+topbar status|Vortex
+漩涡
+%%%%
+topbar status|-Vortex
+-涡
