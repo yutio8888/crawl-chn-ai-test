@@ -36699,6 +36699,33 @@ Unknown background choice: %s\n
 Unknown species choice: %s\n
 未知种族选择：%s\n
 %%%%
+The webtiles client will display 16 colors.\n\n
+WebTiles 客户端将显示 16 种颜色。\n\n
+%%%%
+Your terminal is in <red>compatibility mode</red> and may not display full colours.\n
+你的终端处于<red>兼容模式</red>，可能无法显示完整颜色。\n
+%%%%
+For full 16-colour-mode, try setting a better TERM value than `xterm`, e.g. `xterm-256color` (most terminals) or `putty-256color` (for PuTTY).\n
+要使用完整的 16 色模式，请尝试将 TERM 设置为比 `xterm` 更合适的值，例如 `xterm-256color`（多数终端）或 `putty-256color`（PuTTY）。\n
+%%%%
+These two blocks should have the same background:    <bg:darkgrey><darkgrey>Block 1</darkgrey></bg:darkgrey>    <bg:darkgrey>Block 2</bg:darkgrey>\nThe following two spans should have continuous shading between 1 and 2:\n    <bg:darkgrey><darkgrey>1          2</darkgrey></bg:darkgrey>\n    <bg:darkgrey><darkgrey>1               2</darkgrey></bg:darkgrey>\n
+以下两个区块应使用相同背景：    <bg:darkgrey><darkgrey>区块 1</darkgrey></bg:darkgrey>    <bg:darkgrey>区块 2</bg:darkgrey>\n以下两行在 1 和 2 之间应保持连续阴影：\n    <bg:darkgrey><darkgrey>1          2</darkgrey></bg:darkgrey>\n    <bg:darkgrey><darkgrey>1               2</darkgrey></bg:darkgrey>\n
+%%%%
+Option `bold_brightens_foreground`: force\n\n
+选项 `bold_brightens_foreground`：强制\n\n
+%%%%
+Foreground palette:\n
+前景调色板：\n
+%%%%
+    (Because of compatibility mode, <darkgrey>darkgrey on black renders as blue</darkgrey>.)\n
+    （由于兼容模式，<darkgrey>黑底深灰会显示为蓝色</darkgrey>。）\n
+%%%%
+\nPalette with menu highlight:\n
+\n带菜单高亮的调色板：\n
+%%%%
+\nFull palette:\n
+\n完整调色板：\n
+%%%%
 \n<green>Portals:</green>\n
 \n<green>传送门：</green>\n
 %%%%
