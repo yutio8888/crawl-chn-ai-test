@@ -1870,7 +1870,7 @@ string scorefile_entry::death_source_desc() const
 // change death_source_desc(): it is also the value written to xlog fields.
 // This helper is only for the Chinese UI, where a plain legacy monster name
 // can be resolved through the canonical monster-name table.
-string scorefile_entry::death_source_display_desc() const
+static string _death_source_display_desc(const string &death_source_name)
 {
     if (Options.language != lang_t::ZH || death_source_name.empty())
         return death_source_name;
@@ -1917,10 +1917,54 @@ string scorefile_entry::death_source_display_desc() const
     return death_source_name;
 }
 
+string scorefile_entry::death_source_display_desc() const
+{
+    return _death_source_display_desc(death_source_name);
+}
+
+// killerpath is deliberately stored in English for old score files and xlog
+// compatibility. Translate only when rendering it in the Chinese UI.
+static string _killerpath_display_desc(const string &killerpath)
+{
+    if (Options.language != lang_t::ZH || killerpath.empty())
+        return killerpath;
+
+    if (killerpath == "called by an oblivion hound")
+        return T_("called by an oblivion hound");
+
+    struct blame_prefix
+    {
+        const char *english;
+        const char *translation;
+    };
+    static const blame_prefix prefixes[] =
+    {
+        { "led by ",                 "led by %1$s" },
+        { "summoned by ",            "summoned by %1$s" },
+        { "woven by ",               "woven by %1$s" },
+        { "animated by ",            "animated by %1$s" },
+        { "called from beyond by ",  "called from beyond by %1$s" },
+        { "called by ",              "called by %1$s" },
+        { "attached to ",            "attached to %1$s" },
+        { "created by ",             "created by %1$s" },
+    };
+    for (const auto &prefix : prefixes)
+    {
+        if (starts_with(killerpath, prefix.english))
+        {
+            const string source = _death_source_display_desc(
+                killerpath.substr(strlen(prefix.english)));
+            return make_stringf_p(T_(prefix.translation), source.c_str());
+        }
+    }
+
+    return _death_source_display_desc(killerpath);
+}
+
 string scorefile_entry::damage_string(bool terse) const
 {
-    return make_stringf("(%d%s)", damage,
-                        terse? "" : " damage");
+    return terse ? make_stringf("(%d)", damage)
+                 : make_stringf(T_("(%d damage)"), damage);
 }
 
 string scorefile_entry::strip_article_a(const string &s) const
@@ -3230,7 +3274,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             desc += chinese ? death_source_display_desc() : death_source_name;
 
         if (!killerpath.empty())
-            desc += "[" + indirectkiller + "]";
+            desc += "[" + (chinese ? _killerpath_display_desc(indirectkiller)
+                                    : indirectkiller) + "]";
 
         if (needs_damage && damage > 0)
             desc += " " + damage_string(true);
@@ -3322,11 +3367,16 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 {
                     if (!semiverbose)
                     {
-                        desc += "... " + sumname;
+                        if (chinese)
+                            desc += make_stringf_p(T_("... %1$s"),
+                                                  _killerpath_display_desc(sumname).c_str());
+                        else
+                            desc += "... " + sumname;
                         desc += _hiscore_newline_string();
                     }
                     else
-                        desc += " (" + sumname;
+                        desc += " (" + (chinese ? _killerpath_display_desc(sumname)
+                                                  : sumname);
                 }
 
                 if (semiverbose)

@@ -39459,3 +39459,36 @@ of Bugginess
 %%%%
 non-descript
 朴素
+%%%%
+(%d damage)
+（%d伤害）
+%%%%
+... %1$s
+……%1$s
+%%%%
+led by %1$s
+由%1$s带领
+%%%%
+summoned by %1$s
+由%1$s召唤
+%%%%
+woven by %1$s
+由%1$s编织
+%%%%
+animated by %1$s
+由%1$s操纵
+%%%%
+called from beyond by %1$s
+由%1$s从彼界召来
+%%%%
+called by %1$s
+由%1$s召唤
+%%%%
+attached to %1$s
+附着于%1$s
+%%%%
+created by %1$s
+由%1$s创造
+%%%%
+called by an oblivion hound
+由遗忘猎犬召唤
