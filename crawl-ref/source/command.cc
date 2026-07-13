@@ -554,7 +554,7 @@ void show_targeting_help()
     cols.add_formatted(0, T_(targeting_help_1), true);
 #ifdef WIZARD
     if (you.wizard)
-        cols.add_formatted(0, targeting_help_wiz, true);
+        cols.add_formatted(0, T_(targeting_help_wiz), true);
 #endif
     cols.add_formatted(1, T_(targeting_help_2), true);
     show_keyhelp_menu(cols.formatted_lines());

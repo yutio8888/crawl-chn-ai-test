@@ -38484,3 +38484,111 @@ Levels and vault maps discovered:\n
 %%%%
 magenta
 品红色
+%%%%
+<h>Examine surroundings ('<w>x</w><h>' in main):
+<w>Esc</w> : cancel (also <w>Space</w>, <w>x</w>)
+<w>Ctrl-X</w> : list all things in view
+<w>Dir.</w>: move cursor in that direction
+<w>.</w> : move to cursor (also <w>Enter</w>, <w>Del</w>)
+<w>g</w> : pick up item at cursor
+<w>v</w> : describe monster under cursor
+<w>+</w> : cycle monsters forward (also <w>=</w>)
+<w>-</w> : cycle monsters backward
+<w>^</w> : cycle through traps
+<w>_</w> : cycle through altars
+<w><<</w>/<w>></w> : cycle through up/down stairs
+<w>Tab</w> : cycle through shops and portals
+<w>r</w> : move cursor to you
+<w>e</w> : create/remove travel exclusion
+
+<h>查看周围环境（主界面按 '<w>x</w><h>'）：
+<w>Esc</w>：取消（也可用 <w>Space</w>、<w>x</w>）
+<w>Ctrl-X</w>：列出视野内的所有事物
+<w>Dir.</w>：向该方向移动光标
+<w>.</w>：移至光标处（也可用 <w>Enter</w>、<w>Del</w>）
+<w>g</w>：拾取光标处的物品
+<w>v</w>：描述光标下的怪物
+<w>+</w>：切换至下一个怪物（也可用 <w>=</w>）
+<w>-</w>：切换至上一个怪物
+<w>^</w>：切换陷阱
+<w>_</w>：切换祭坛
+<w><<</w>/<w>></w>：切换上/下楼梯
+<w>Tab</w>：切换商店和传送门
+<w>r</w>：将光标移至你的位置
+<w>e</w>：创建/移除旅行禁区
+%%%%
+<h>Wizard targeting commands:</h>
+<w>Ctrl-C</w> : cycle through beam paths
+<w>D</w>: get debugging information about the monster
+<w>o</w>: give item to monster
+<w>F</w>: cycle monster friendly/good neutral/neutral/hostile
+<w>Ctrl-H</w>: heal the monster fully
+<w>P</w>: apply divine blessing to monster
+<w>m</w>: move monster or player
+<w>M</w>: cause spell miscast for monster or player
+<w>s</w>: force monster to shout or speak
+<w>S</w>: make monster a summoned monster
+<w>w</w>: calculate shortest path to any point on the map
+<w>\"</w>: get debugging information about a portal
+<w>~</w>: polymorph monster to specific type
+<w>,</w>: bring down the monster to 1 hp
+<w>Ctrl-(</w>: place a mimic
+<w>Ctrl-B</w>: banish monster
+<w>Ctrl-K</w>: kill monster
+
+<h>巫师瞄准命令：</h>
+<w>Ctrl-C</w>：切换射线轨迹
+<w>D</w>：获取该怪物的调试信息
+<w>o</w>：将物品交给怪物
+<w>F</w>：切换怪物的友善/善意中立/中立/敌对状态
+<w>Ctrl-H</w>：完全治疗怪物
+<w>P</w>：对怪物施加神圣祝福
+<w>m</w>：移动怪物或玩家
+<w>M</w>：令怪物或玩家发生法术误施
+<w>s</w>：强制怪物喊叫或说话
+<w>S</w>：将怪物变为召唤怪物
+<w>w</w>：计算到地图任意位置的最短路径
+<w>\"</w>：获取传送门的调试信息
+<w>~</w>：将怪物变形为指定类型
+<w>,</w>：将怪物生命降至 1 点
+<w>Ctrl-(</w>：放置一个拟态怪
+<w>Ctrl-B</w>：放逐怪物
+<w>Ctrl-K</w>：杀死怪物
+%%%%
+<h>Targeting (zap wands, cast spells, etc.):
+Most keys from examine surroundings work.
+Some keys fire at the target. <w>Ctrl-X</w> only
+lists eligible targets. By default,
+range is respected and beams don't stop.
+<w>Enter</w> : fire (<w>Space</w>, <w>Del</w>, <w>f</w>)
+<w>.</w> : fire, stop at target
+<w>@</w> : fire, stop at target, ignore range
+<w>!</w> : fire, don't stop, ignore range
+<w>p</w> : fire at Previous target (also <w>f</w>)
+<w>:</w> : show/hide beam path
+<w>Shift-Dir.</w> : fire straight-line beam
+             (also <w>/ Dir.</w>)
+
+<h>Firing mode ('<w>f</w><h>' in main):
+<w>Q</w> : choose fire action.
+<w>(</w> : cycle to previous suitable action
+<w>)</w> : cycle to next suitable action.
+
+<h>瞄准（使用魔杖、施放法术等）：
+查看周围环境时的大多数按键均可使用。
+部分按键会向目标发射。<w>Ctrl-X</w> 仅
+列出可选目标。默认情况下，
+会遵守射程，且射线不会停下。
+<w>Enter</w>：发射（<w>Space</w>、<w>Del</w>、<w>f</w>）
+<w>.</w>：发射，并在目标处停下
+<w>@</w>：发射，在目标处停下，忽略射程
+<w>!</w>：发射，不停下，忽略射程
+<w>p</w>：向上一个目标发射（也可用 <w>f</w>）
+<w>:</w>：显示/隐藏射线轨迹
+<w>Shift-Dir.</w>：发射直线射线
+             （也可用 <w>/ Dir.</w>）
+
+<h>发射模式（主界面按 '<w>f</w><h>'）：
+<w>Q</w>：选择发射动作。
+<w>(</w>：切换至上一个合适的动作
+<w>)</w>：切换至下一个合适的动作。
