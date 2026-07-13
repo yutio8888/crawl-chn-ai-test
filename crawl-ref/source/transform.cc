@@ -1637,16 +1637,24 @@ string hand_transform_parts(bool terse)
 {
     // there's special casing in base_hand_name to use "eel" everywhere, so
     // use the non-temp name
-    string str = you.base_hand_name(true, false);
+    // Chinese does not mark plurality on these body-part names.  Using the
+    // singular form also lets the localized modifiers below form natural
+    // compounds (e.g. 前爪 and 主触手), rather than "front " + a translated
+    // English plural.
+    const bool chinese = Options.language == lang_t::ZH;
+    string str = you.base_hand_name(!chinese, false);
 
     // creatures with paws (aka felids) have four paws, but only two of them transform.
     if (!terse && you.has_mutation(MUT_PAWS, false))
-        str = "front " + str;
+        str = make_stringf_p(C_("hand transform parts", "front %1$s"),
+                             str.c_str());
     else if (!terse && you.arm_count() > 2)
-        str = "main " + str; // Op have four main tentacles
+        str = make_stringf_p(C_("hand transform parts", "main %1$s"),
+                             str.c_str()); // Op have four main tentacles
 
     if (you.arm_count() == 1)
-        str = "a " + str;
+        str = make_stringf_p(C_("hand transform parts", "a %1$s"),
+                             str.c_str());
 
     return str;
 }

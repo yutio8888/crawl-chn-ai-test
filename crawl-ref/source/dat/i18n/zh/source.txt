@@ -36400,6 +36400,15 @@ hand|eel hand
 hand|eel hands
 鳗鱼手
 %%%%
+hand transform parts|front %1$s
+前%1$s
+%%%%
+hand transform parts|main %1$s
+主%1$s
+%%%%
+hand transform parts|a %1$s
+一只%1$s
+%%%%
 hand|grasper
 钳手
 %%%%
