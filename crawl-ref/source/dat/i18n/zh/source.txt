@@ -35562,7 +35562,7 @@ An altar to
 的祭坛
 %%%%
 Annihilated
-被歼灭
+歼灭
 %%%%
 Are you sure you want to 
 你确定要
@@ -35580,7 +35580,7 @@ Ctrl + Shift keys
 Ctrl+Shift键
 %%%%
 Demolished
-被粉碎
+粉碎
 %%%%
 Escape hatch
 逃生口
@@ -35592,7 +35592,7 @@ Looks like
 看起来
 %%%%
 Mangled
-被肢解
+肢解
 %%%%
 Only nagas and armataurs can wear barding.
 只有纳迦和龙龟可以穿戴马甲。
@@ -35622,7 +35622,7 @@ Should you decide that abandoning
 如果你决定放弃
 %%%%
 Slain
-被击杀
+击杀
 %%%%
 Stairs
 楼梯
@@ -38592,3 +38592,69 @@ range is respected and beams don't stop.
 <w>Q</w>：选择发射动作。
 <w>(</w>：切换至上一个合适的动作
 <w>)</w>：切换至下一个合适的动作。
+%%%%
+%s by %s
+被%s%s
+%%%%
+Engulfed by %s's cloud of %s
+被%s制造的%s云吞噬
+%%%%
+Killed %s by %s
+被%s%s
+%%%%
+Killed by %s
+被%s杀死
+%%%%
+Killed by %s's ranged attack
+被%s的远程攻击杀死
+%%%%
+Killed by a ranged attack
+被远程攻击杀死
+%%%%
+Killed by their own ranged attack
+被自己的远程攻击杀死
+%%%%
+Killed from afar by %s
+被%s从远处杀死
+%%%%
+Succumbed to %s
+死于%s
+%%%%
+Succumbed to %s's %s
+死于%s的%s
+%%%%
+Succumbed to poison
+中毒身亡
+%%%%
+blasted
+轰杀
+%%%%
+cloud of %s
+一团%s云
+%%%%
+crushed by %s
+被%s碾死
+%%%%
+hit from afar
+远程击杀
+%%%%
+impaled on %s's spines
+被%s的尖刺刺穿
+%%%%
+killed by %s
+被%s杀死
+%%%%
+killed by %s's headbutt
+被%s用头槌杀死
+%%%%
+poison
+毒素
+%%%%
+poisoned by %s
+被%s毒死
+%%%%
+shot
+射杀
+%%%%
+%s's cloud of %s
+%s制造的%s云
