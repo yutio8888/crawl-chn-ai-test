@@ -569,47 +569,76 @@ string SkillMenuSwitch::get_help()
     case SKM_LEVEL_ENHANCED:
     {
         string result;
+        const bool chinese = Options.language == lang_t::ZH;
         if (skm.is_set(SKMF_ENHANCED))
         {
             vector<string> causes;
             if (you.duration[DUR_HEROISM])
-                causes.push_back("Heroism");
+                causes.push_back(T_("Heroism"));
 
             if (!you.skill_boost.empty()
                 && have_passive(passive_t::bondage_skill_boost))
             {
-                causes.push_back(apostrophise(god_name(you.religion))
-                                 + " power");
+                if (chinese)
+                    causes.push_back(god_name(you.religion) + T_("的神力"));
+                else
+                    causes.push_back(apostrophise(god_name(you.religion))
+                                     + " power");
             }
             if (_any_crosstrained())
                 causes.push_back(T_("cross-training"));
             if (_hermit_bonus())
-                causes.push_back("the Hermit's pendant");
+                causes.push_back(T_("Hermit's Pendant"));
             if (_wildshape_bonus())
-                causes.push_back("wildshape");
+                causes.push_back(T_("wildshape"));
             if (_charlatan_bonus())
-                causes.push_back("the Charlatan's Orb");
+                causes.push_back(T_("Charlatan's Orb"));
             if (you.form == transformation::walking_scroll)
-                causes.push_back("scribal knowledge");
-            result = (T_("Skills enhanced by "))
-                     + comma_separated_line(causes.begin(), causes.end())
-                     + (T_(" are in <green>green</green>."));
+                causes.push_back(T_("scribal knowledge"));
+            if (chinese)
+            {
+                const string cause_list = comma_separated_line(
+                    causes.begin(), causes.end(), T_(","), T_(","));
+                result = make_stringf(T_("Skills enhanced by: %s."),
+                                      cause_list.c_str());
+            }
+            else
+            {
+                result = (T_("Skills enhanced by "))
+                         + comma_separated_line(causes.begin(), causes.end())
+                         + (T_(" are in <green>green</green>."));
+            }
         }
 
         if (skm.is_set(SKMF_REDUCED))
         {
-            vector<const char *> causes;
+            vector<string> causes;
             if (player_under_penance(GOD_ASHENZARI))
-                causes.push_back("Ashenzari's anger");
+            {
+                if (chinese)
+                    causes.push_back(god_name(GOD_ASHENZARI) + T_("的愤怒"));
+                else
+                    causes.push_back("Ashenzari's anger");
+            }
             if (_hermit_penalty())
-                causes.push_back("the Hermit's pendant");
+                causes.push_back(T_("Hermit's Pendant"));
             if (you.has_bane(BANE_DILETTANTE))
-                causes.push_back("the Bane of the Dilettante");
+                causes.push_back(T_("Bane of the Dilettante"));
             if (!result.empty())
                 result += " ";
-            result += (T_("Skills reduced by "))
-                      + comma_separated_line(causes.begin(), causes.end())
-                      + (T_(" are in <magenta>magenta</magenta>."));
+            if (chinese)
+            {
+                const string cause_list = comma_separated_line(
+                    causes.begin(), causes.end(), T_(","), T_(","));
+                result += make_stringf(T_("Skills reduced by: %s."),
+                                       cause_list.c_str());
+            }
+            else
+            {
+                result += (T_("Skills reduced by "))
+                          + comma_separated_line(causes.begin(), causes.end())
+                          + (T_(" are in <magenta>magenta</magenta>."));
+            }
         }
 
         if (!result.empty())

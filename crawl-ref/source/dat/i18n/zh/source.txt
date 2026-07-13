@@ -39021,3 +39021,24 @@ invoked
 %%%%
 %s (L%d %s)
 %1$s（%2$d级，%3$s）
+%%%%
+A voice whispers, "%s"
+一个声音低语道：“%s”
+%%%%
+Bane of the Dilettante
+门外汉之祸
+%%%%
+scribal knowledge
+抄写知识
+%%%%
+的神力
+的神力
+%%%%
+的愤怒
+的愤怒
+%%%%
+Skills enhanced by: %s.
+以下效果会增强以<green>绿色</green>显示的技能：%s。
+%%%%
+Skills reduced by: %s.
+以下效果会削弱以<magenta>紫红色</magenta>显示的技能：%s。
