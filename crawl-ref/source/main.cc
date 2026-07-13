@@ -1495,9 +1495,9 @@ static bool _prompt_unique_pan_rune(dungeon_feature_type ygrd)
     item_def* rune = find_floor_item(OBJ_RUNES);
     if (rune && item_is_unique_rune(*rune))
     {
-        return confirm_prompt("yes", "A rune of Zot still resides in this realm, "
-                                     "and once you leave you can never return. "
-                                     "Are you sure you want to leave?");
+        return confirm_prompt("yes", T_("A rune of Zot still resides in this realm, "
+                                         "and once you leave you can never return. "
+                                         "Are you sure you want to leave?"));
     }
     return true;
 }
@@ -1635,9 +1635,9 @@ static bool _prompt_stairs(dungeon_feature_type ygrd, bool down, bool shaft)
 
     if (down && ygrd == DNGN_ENTER_VAULTS && !runes_in_pack())
     {
-        if (!confirm_prompt("yes", "You cannot leave the Vaults without holding a Rune of "
-                                   "Zot, and the runes within are jealously guarded."
-                                   " Continue?"))
+        if (!confirm_prompt("yes", T_("You cannot leave the Vaults without holding a Rune of "
+                                       "Zot, and the runes within are jealously guarded."
+                                       " Continue?")))
         {
             canned_msg(MSG_OK);
             return false;

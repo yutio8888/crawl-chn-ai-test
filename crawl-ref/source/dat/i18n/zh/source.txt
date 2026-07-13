@@ -27547,6 +27547,12 @@ Really leave the Orb behind?
 Are you sure you want to leave %s?%s
 确定要离开%s吗？%s
 %%%%
+A rune of Zot still resides in this realm, and once you leave you can never return. Are you sure you want to leave?
+此界仍留有一枚佐特符文，一旦离开便永远无法返回。确定要离开吗？
+%%%%
+You cannot leave the Vaults without holding a Rune of Zot, and the runes within are jealously guarded. Continue?
+未持有佐特符文便无法离开宝库，而其中的符文守卫森严。继续吗？
+%%%%
 Really go through this one-way escape hatch?
 确定要穿过这个单向逃生舱口吗？
 %%%%
