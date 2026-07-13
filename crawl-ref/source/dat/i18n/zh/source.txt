@@ -28893,6 +28893,9 @@ it is cumbersome to wear, and %simpedes the evasion, spellcasting ability, and a
 killing this monster yields no experience or items.
 杀死这个怪物不会获得经验或物品。
 %%%%
+It is incapable of using stairs.\n
+它无法使用楼梯。\n
+%%%%
 no experience or items
 没有经验或物品
 %%%%
@@ -30269,6 +30272,12 @@ Zin's power protects your fellow warrior from evil magic!
 \nThis monster has been 
 \n这个怪物已被
 %%%%
+\nThis monster has been created by magic and is temporary.\n
+\n这个怪物由魔法创造，是临时存在的。\n
+%%%%
+\nThis monster has been temporarily summoned to this location.\n
+\n这个怪物是被临时召唤到此地的。\n
+%%%%
 \nYou are here.
 \n你在这里。
 %%%%
@@ -30346,6 +30355,18 @@ rare
 %%%%
 s breath smoulders ominously
 的气息阴燃着不祥
+%%%%
+If angered, it will immediately vanish, yielding no experience or items
+它若被激怒，会立刻消失，且不会掉落经验值或物品
+%%%%
+Killing it yields no experience or items
+杀死它不会获得经验值或物品
+%%%%
+; it is incapable of using stairs
+；它无法使用楼梯
+%%%%
+\nIf slain, it may be possible to recover its hide, which can be used as armour.\n
+\n若杀死它，或许能取得它的皮，可用作护甲。\n
 %%%%
 short length of
 短时长

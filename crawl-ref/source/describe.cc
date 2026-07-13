@@ -7048,7 +7048,10 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
     bool did_stair_use = false;
     if (!mons_class_can_use_stairs(mi.type))
     {
-        inf.body << It << " " << is << T_(" incapable of using stairs.\n");
+        if (Options.language == lang_t::ZH)
+            inf.body << T_("It is incapable of using stairs.\n");
+        else
+            inf.body << It << " " << is << T_(" incapable of using stairs.\n");
         did_stair_use = true;
     }
 
@@ -7058,42 +7061,76 @@ void get_monster_db_desc(const monster_info& mi, describe_info &inf,
 
     if (mi.is(MB_SUMMONED))
     {
-        inf.body << T_("\nThis monster has been ");
-
-        // XXX: Expand this for better descriptions of some other types of
-        //      non-abjurable summons?
-        if (mi.is(MB_ABJURABLE))
-            inf.body << T_("temporarily summoned to this location. ");
-        else if (mi.is(MB_MINION))
-            inf.body << T_("created by magic and is temporary. ");
-
         // TODO: hacks; convert angered_by_attacks to a monster_info check
         // (but on the other hand, it is really limiting to not have access
         // to the monster...)
-        if (!mi.pos.origin() && monster_at(mi.pos)
-                                && monster_at(mi.pos)->angered_by_attacks()
-                                && mi.attitude == ATT_FRIENDLY)
+        const bool vanishes_when_angered = !mi.pos.origin()
+                                           && monster_at(mi.pos)
+                                           && monster_at(mi.pos)->angered_by_attacks()
+                                           && mi.attitude == ATT_FRIENDLY;
+        if (Options.language == lang_t::ZH)
         {
-            inf.body << T_("If angered ") << it
-                                      << T_(" will immediately vanish, yielding ");
+            // Chinese uses complete sentences instead of English pronoun and
+            // verb fragments, which would otherwise be separated by spaces.
+            if (mi.is(MB_ABJURABLE))
+                inf.body << T_("\nThis monster has been temporarily summoned to this "
+                               "location.\n");
+            else if (mi.is(MB_MINION))
+                inf.body << T_("\nThis monster has been created by magic and is "
+                               "temporary.\n");
+
+            if (vanishes_when_angered)
+                inf.body << T_("If angered, it will immediately vanish, yielding no experience or items");
+            else
+                inf.body << T_("Killing it yields no experience or items");
+
+            if (!did_stair_use)
+                inf.body << T_("; it is incapable of using stairs");
+
+            inf.body << T_(".\n");
         }
         else
-            inf.body << T_("Killing ") << it_o << T_(" yields ");
-        inf.body << T_("no experience or items");
+        {
+            inf.body << T_("\nThis monster has been ");
 
-        if (!did_stair_use)
-            inf.body << "; " << it << " " << is << T_(" incapable of using stairs");
+            // XXX: Expand this for better descriptions of some other types of
+            //      non-abjurable summons?
+            if (mi.is(MB_ABJURABLE))
+                inf.body << T_("temporarily summoned to this location. ");
+            else if (mi.is(MB_MINION))
+                inf.body << T_("created by magic and is temporary. ");
 
-        inf.body << ".\n";
+            if (vanishes_when_angered)
+            {
+                inf.body << T_("If angered ") << it
+                                          << T_(" will immediately vanish, yielding ");
+            }
+            else
+                inf.body << T_("Killing ") << it_o << T_(" yields ");
+            inf.body << T_("no experience or items");
+
+            if (!did_stair_use)
+                inf.body << "; " << it << " " << is << T_(" incapable of using stairs");
+
+            inf.body << ".\n";
+        }
     }
     else if (mi.is(MB_NO_REWARD))
         inf.body << "\n" << T_("Killing this monster yields no experience or items.");
     else if (mons_class_leaves_hide(mi.type))
     {
-        inf.body << "\nIf " << it << " " << is <<
-                    T_(" slain, it may be possible to recover ")
-                 << mi.pronoun(PRONOUN_POSSESSIVE)
-                 << T_(" hide, which can be used as armour.\n");
+        if (Options.language == lang_t::ZH)
+        {
+            inf.body << T_("\nIf slain, it may be possible to recover its hide, which "
+                           "can be used as armour.\n");
+        }
+        else
+        {
+            inf.body << "\nIf " << it << " " << is <<
+                        T_(" slain, it may be possible to recover ")
+                     << mi.pronoun(PRONOUN_POSSESSIVE)
+                     << T_(" hide, which can be used as armour.\n");
+        }
     }
 
     if (!inf.quote.empty())
