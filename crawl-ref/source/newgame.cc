@@ -361,7 +361,7 @@ static bool _reroll_random(newgame_def& ng)
     formatted_string prompt;
     prompt.cprintf(
         T_("You are a%s %s %s."),
-            (is_vowel(specs[0])) ? "" : "", specs.c_str(),
+            (is_vowel(specs[0])) ? "n" : "", specs.c_str(),
             get_job_name(ng.job));
 
     auto title_hbox = make_shared<Box>(Widget::HORZ);
@@ -586,7 +586,7 @@ static void _choose_name(newgame_def& ng, newgame_def& choice)
     formatted_string title;
     title.cprintf(
         T_("You are a%s %s %s."),
-            (is_vowel(specs[0])) ? "" : "", specs.c_str(),
+            (is_vowel(specs[0])) ? "n" : "", specs.c_str(),
             get_job_name(ng.job));
 
     auto title_hbox = make_shared<Box>(Widget::HORZ);

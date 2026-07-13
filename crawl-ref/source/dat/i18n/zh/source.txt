@@ -3491,6 +3491,9 @@ Control
 corpse
 尸体
 %%%%
+removed rod
+已移除的棒
+%%%%
 corpse bug
 尸体错误
 %%%%
