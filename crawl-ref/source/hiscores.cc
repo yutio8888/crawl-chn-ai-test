@@ -2430,7 +2430,16 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_LAVA:
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("lava");
+            else if (race == SP_MUMMY)
+                desc += T_("Turned to ash by lava");
+            else
+                desc += T_("Took a swim in molten lava");
+        }
+        else if (terse)
             desc += "lava";
         else
         {
@@ -2444,7 +2453,28 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_WATER:
-        if (species::is_undead(static_cast<species_type>(race)))
+        if (chinese)
+        {
+            if (species::is_undead(static_cast<species_type>(race)))
+            {
+                if (terse)
+                    desc += T_("fell apart");
+                else if (race == SP_MUMMY)
+                    desc += T_("Soaked and fell apart");
+                else
+                    desc += T_("Sank and fell apart");
+            }
+            else if (!death_source_name.empty())
+            {
+                desc += make_stringf(terse ? T_("drowned by %s")
+                                            : T_("Drowned by %s"),
+                                     death_source_name.c_str());
+                needs_damage = true;
+            }
+            else
+                desc += terse ? T_("drowned") : T_("Drowned");
+        }
+        else if (species::is_undead(static_cast<species_type>(race)))
         {
             if (terse)
                 desc = "fell apart";
@@ -2469,7 +2499,20 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_STUPIDITY:
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("stupidity");
+            else if (race >= 0
+                     && (species::is_undead(static_cast<species_type>(race))
+                         || species::is_nonliving(static_cast<species_type>(race))))
+            {
+                desc += T_("Forgot to exist");
+            }
+            else
+                desc += T_("Forgot to breathe");
+        }
+        else if (terse)
             desc += "stupidity";
         else if (race >= 0 && // not a removed race
                  (species::is_undead(static_cast<species_type>(race))
@@ -2482,11 +2525,15 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_WEAKNESS:
-        desc += terse? "collapsed" : "Collapsed under their own weight";
+        desc += chinese ? (terse ? T_("collapsed")
+                                 : T_("Collapsed under their own weight"))
+                        : (terse ? "collapsed" : "Collapsed under their own weight");
         break;
 
     case KILLED_BY_CLUMSINESS:
-        desc += terse? "clumsiness" : "Slipped on a banana peel";
+        desc += chinese ? (terse ? T_("clumsiness")
+                                 : T_("Slipped on a banana peel"))
+                        : (terse ? "clumsiness" : "Slipped on a banana peel");
         break;
 
     case KILLED_BY_TRAP:
@@ -2501,7 +2548,18 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_LEAVING:
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("left");
+            else if (num_runes > 0 || gems_found > 0)
+                desc += T_("Got out of the dungeon");
+            else if (species::is_undead(static_cast<species_type>(race)))
+                desc += T_("Safely got out of the dungeon");
+            else
+                desc += T_("Got out of the dungeon alive");
+        }
+        else if (terse)
             desc += "left";
         else
         {
@@ -2515,25 +2573,51 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_WINNING:
-        desc += terse? "escaped" : "Escaped with the Orb";
-        if (num_runes < 1 && gems_found < 1)
+        if (chinese)
+            desc += terse ? T_("escaped")
+                           : (num_runes < 1 && gems_found < 1
+                              ? T_("Escaped with the Orb!")
+                              : T_("Escaped with the Orb"));
+        else
+            desc += terse? "escaped" : "Escaped with the Orb";
+        if (!chinese && num_runes < 1 && gems_found < 1)
             desc += "!";
         break;
 
     case KILLED_BY_QUITTING:
-        desc += terse? "quit" : "Quit the game";
+        desc += chinese ? (terse ? T_("quit") : T_("Quit the game"))
+                        : (terse ? "quit" : "Quit the game");
         break;
 
     case KILLED_BY_WIZMODE:
-        desc += terse? "wizmode" : "Entered wizard mode";
+        desc += chinese ? (terse ? T_("wizmode") : T_("Entered wizard mode"))
+                        : (terse ? "wizmode" : "Entered wizard mode");
         break;
 
     case KILLED_BY_EXPLORING:
-        desc += terse? "exploremode" : "Entered explore mode";
+        desc += chinese ? (terse ? T_("exploremode") : T_("Entered explore mode"))
+                        : (terse ? "exploremode" : "Entered explore mode");
         break;
 
     case KILLED_BY_DRAINING:
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("drained");
+            else if (!death_source_desc().empty())
+            {
+                desc += make_stringf(T_("Drained of all life by %s"),
+                                     death_source_desc().c_str());
+                if (!auxkilldata.empty())
+                    needs_beam_cause_line = true;
+            }
+            else if (!auxkilldata.empty())
+                desc += make_stringf(T_("Drained of all life by %s"),
+                                     auxkilldata.c_str());
+            else
+                desc += T_("Drained of all life");
+        }
+        else if (terse)
             desc += "drained";
         else
         {
@@ -2551,18 +2635,44 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_STARVATION:
-        desc += terse? "starvation" : "Starved to death";
+        desc += chinese ? (terse ? T_("starvation") : T_("Starved to death"))
+                        : (terse ? "starvation" : "Starved to death");
         break;
 
     case KILLED_BY_FREEZING:    // Freeze, Fridge spells
-        desc += terse? "frozen" : "Frozen to death";
-        if (!terse && !death_source_desc().empty())
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("frozen");
+            else if (!death_source_desc().empty())
+                desc += make_stringf(T_("Frozen to death by %s"),
+                                     death_source_desc().c_str());
+            else
+                desc += T_("Frozen to death");
+        }
+        else
+            desc += terse? "frozen" : "Frozen to death";
+        if (!chinese && !terse && !death_source_desc().empty())
             desc += " by " + death_source_desc();
         needs_damage = true;
         break;
 
     case KILLED_BY_BURNING:     // sticky flame
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("burnt");
+            else if (!death_source_desc().empty())
+            {
+                desc += make_stringf(T_("Incinerated by %s"),
+                                     death_source_desc().c_str());
+                if (!auxkilldata.empty())
+                    needs_beam_cause_line = true;
+            }
+            else
+                desc += T_("Burnt to a crisp");
+        }
+        else if (terse)
             desc += "burnt";
         else if (!death_source_desc().empty())
         {
@@ -2578,7 +2688,21 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_BLINKING:     // disjunction darts
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("disjoined");
+            else if (!death_source_desc().empty())
+            {
+                desc += make_stringf(T_("Disjoined by %s"),
+                                     death_source_desc().c_str());
+                if (!auxkilldata.empty())
+                    needs_beam_cause_line = true;
+            }
+            else
+                desc += T_("Disjoined");
+        }
+        else if (terse)
             desc += "disjoined";
         else if (!death_source_desc().empty())
         {
@@ -2592,7 +2716,20 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_WILD_MAGIC:
-        if (auxkilldata.empty())
+        if (chinese)
+        {
+            if (auxkilldata.empty())
+                desc += terse ? T_("wild magic") : T_("Killed by wild magic");
+            else if (terse)
+                desc += terse_wild_magic();
+            else
+            {
+                const string cause = starts_with(auxkilldata, "by ")
+                                     ? auxkilldata.substr(3) : auxkilldata;
+                desc += make_stringf(T_("Killed by %s"), cause.c_str());
+            }
+        }
+        else if (auxkilldata.empty())
             desc += terse? "wild magic" : "Killed by wild magic";
         else
         {
@@ -2611,7 +2748,16 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_XOM:
-        if (terse)
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("xom");
+            else if (auxkilldata.empty())
+                desc += T_("Killed for Xom's enjoyment");
+            else
+                desc += make_stringf(T_("Killed by %s"), auxkilldata.c_str());
+        }
+        else if (terse)
             desc += "xom";
         else
             desc += auxkilldata.empty() ? "Killed for Xom's enjoyment"
@@ -2620,11 +2766,29 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_ROTTING:
-        desc += terse? "rotting" : "Rotted away";
-        if (!auxkilldata.empty())
-            desc += " (" + auxkilldata + ")";
-        if (!death_source_desc().empty())
-            desc += " (" + death_source_desc() + ")";
+        if (chinese)
+        {
+            if (terse)
+                desc += T_("rotting");
+            else if (!auxkilldata.empty() && !death_source_desc().empty())
+                desc += make_stringf(T_("Rotted away (%s) (%s)"),
+                                     auxkilldata.c_str(), death_source_desc().c_str());
+            else if (!auxkilldata.empty())
+                desc += make_stringf(T_("Rotted away (%s)"), auxkilldata.c_str());
+            else if (!death_source_desc().empty())
+                desc += make_stringf(T_("Rotted away (%s)"),
+                                     death_source_desc().c_str());
+            else
+                desc += T_("Rotted away");
+        }
+        else
+        {
+            desc += terse? "rotting" : "Rotted away";
+            if (!auxkilldata.empty())
+                desc += " (" + auxkilldata + ")";
+            if (!death_source_desc().empty())
+                desc += " (" + death_source_desc() + ")";
+        }
         break;
 
     case KILLED_BY_TARGETING:

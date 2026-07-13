@@ -38658,3 +38658,150 @@ shot
 %%%%
 %s's cloud of %s
 %s制造的%s云
+%%%%
+Turned to ash by lava
+被熔岩烧成灰烬
+%%%%
+Took a swim in molten lava
+在熔岩中游泳
+%%%%
+fell apart
+散架
+%%%%
+Soaked and fell apart
+浸水后散架
+%%%%
+Sank and fell apart
+沉入水中并散架
+%%%%
+drowned by %s
+被%s淹死
+%%%%
+Drowned by %s
+被%s淹死
+%%%%
+drowned
+溺水
+%%%%
+Drowned
+溺水身亡
+%%%%
+stupidity
+愚蠢
+%%%%
+Forgot to exist
+忘记了如何存在
+%%%%
+Forgot to breathe
+忘记了呼吸
+%%%%
+collapsed
+倒下
+%%%%
+Collapsed under their own weight
+不堪自身重量而倒下
+%%%%
+clumsiness
+笨拙
+%%%%
+Slipped on a banana peel
+踩到香蕉皮滑倒
+%%%%
+left
+离开
+%%%%
+Got out of the dungeon
+离开了地城
+%%%%
+Safely got out of the dungeon
+安全离开了地城
+%%%%
+Got out of the dungeon alive
+活着离开了地城
+%%%%
+escaped
+逃离
+%%%%
+Escaped with the Orb!
+带着魔法宝珠逃离了！
+%%%%
+Escaped with the Orb
+带着魔法宝珠逃离了
+%%%%
+quit
+退出
+%%%%
+Quit the game
+退出了游戏
+%%%%
+wizmode
+巫师模式
+%%%%
+Entered wizard mode
+进入了巫师模式
+%%%%
+exploremode
+探索模式
+%%%%
+Entered explore mode
+进入了探索模式
+%%%%
+Drained of all life
+生命力被完全吸尽
+%%%%
+Drained of all life by %s
+生命力被%s完全吸尽
+%%%%
+starvation
+饥饿
+%%%%
+Starved to death
+饿死
+%%%%
+Frozen to death
+冻死
+%%%%
+Frozen to death by %s
+被%s冻死
+%%%%
+burnt
+烧焦
+%%%%
+Incinerated by %s
+被%s焚毁
+%%%%
+Burnt to a crisp
+被烧成焦炭
+%%%%
+disjoined
+被解离
+%%%%
+Disjoined by %s
+被%s解离
+%%%%
+Disjoined
+被解离
+%%%%
+wild magic
+野性魔法
+%%%%
+Killed by wild magic
+被野性魔法杀死
+%%%%
+xom
+Xom
+%%%%
+Killed for Xom's enjoyment
+为Xom取乐而死
+%%%%
+rotting
+腐烂
+%%%%
+Rotted away
+腐烂殆尽
+%%%%
+Rotted away (%s)
+腐烂殆尽（%s）
+%%%%
+Rotted away (%s) (%s)
+腐烂殆尽（%s）（%s）
