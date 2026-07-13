@@ -2412,8 +2412,7 @@ static colour_t _gem_colour(const item_def *gem)
 
 static string _gem_parenthetical(gem_type gem)
 {
-    string text = " (";
-    text += branches[branch_for_gem(gem)].longname;
+    const char *where = T_(branches[branch_for_gem(gem)].longname);
 
     const int lim = gem_time_limit(gem);
     const int left = lim - you.gem_time_spent[gem];
@@ -2424,23 +2423,25 @@ static string _gem_parenthetical(gem_type gem)
     if (left <= 0)
     {
         if (Options.more_gem_info || !you.gems_found[gem])
-            return text + ", shattered)";
-        return text + ")";
+            return make_stringf_p(T_(" (%1$s, shattered)"), where);
+        return make_stringf_p(T_(" (%1$s)"), where);
     }
 
     if (!gem_clock_active()
         || !Options.more_gem_info && you.gems_found[gem])
     {
-        return text + ")";
+        return make_stringf_p(T_(" (%1$s)"), where);
     }
 
     // Rescale from aut to dAut. Round up.
-    text += make_stringf(", %d", (left + 9) / 10);
+    const int turns_left = (left + 9) / 10;
     if (left < lim)
-        text += make_stringf("/%d", (lim + 9) / 10);
-    else
-        text += T_(" turns"); // XXX: ?
-    return text + " until shattered)";
+    {
+        return make_stringf_p(T_(" (%1$s, %2$d/%3$d turns until shattered)"),
+                                where, turns_left, (lim + 9) / 10);
+    }
+    return make_stringf_p(T_(" (%1$s, %2$d turns until shattered)"),
+                            where, turns_left);
 }
 
 static string _gem_text(const item_def *gem_it)
@@ -2479,14 +2480,11 @@ static MenuEntry* _fixup_runeorb_entry(MenuEntry* me)
         string text = "<";
         text += colour_to_str(colour);
         text += ">";
-        text += rune_type_name(rune);
-        text += " rune of Zot";
+        text += make_stringf_p(T_("%1$s rune of Zot"),
+                                T_(rune_type_name(rune)));
         if (!you.runes[rune])
-        {
-            text += " (";
-            text += branches[rune_location(rune)].longname;
-            text += ")";
-        }
+            text += make_stringf_p(T_(" (%1$s)"),
+                                    T_(branches[rune_location(rune)].longname));
         text += "</";
         text += colour_to_str(colour);
         text += ">";
@@ -2498,11 +2496,11 @@ static MenuEntry* _fixup_runeorb_entry(MenuEntry* me)
         break;
     case OBJ_ORBS:
         if (player_has_orb())
-            entry->text = "<magenta>The Orb of Zot</magenta>";
+            entry->text = T_("<magenta>The Orb of Zot</magenta>");
         else
         {
-            entry->text = "<darkgrey>The Orb of Zot"
-            " (the Realm of Zot)</darkgrey>";
+            entry->text = T_("<darkgrey>The Orb of Zot"
+                             " (the Realm of Zot)</darkgrey>");
         }
         break;
     default:

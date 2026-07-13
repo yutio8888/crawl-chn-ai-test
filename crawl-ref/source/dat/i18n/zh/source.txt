@@ -38203,3 +38203,24 @@ Results elsewhere
 match
 匹配结果
 %%%%
+ (%1$s, shattered)
+（位于%1$s，已破碎）
+%%%%
+ (%1$s)
+（位于%1$s）
+%%%%
+ (%1$s, %2$d/%3$d turns until shattered)
+（位于%1$s，%2$d/%3$d回合后破碎）
+%%%%
+ (%1$s, %2$d turns until shattered)
+（位于%1$s，%2$d回合后破碎）
+%%%%
+%1$s rune of Zot
+%1$s佐特符文
+%%%%
+<magenta>The Orb of Zot</magenta>
+<magenta>佐特宝珠</magenta>
+%%%%
+<darkgrey>The Orb of Zot (the Realm of Zot)</darkgrey>
+<darkgrey>佐特宝珠（佐特领域）</darkgrey>
+%%%%
