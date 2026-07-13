@@ -8372,6 +8372,12 @@ You are healed.
 You are hurled out of the way!
 你被猛烈地推开了！
 %%%%
+You are hurled through space towards a monster!
+你被抛向空间中的一只怪物！
+%%%%
+You are hurled through space towards some monsters!
+你被抛向空间中的一些怪物！
+%%%%
 You are hurled through space towards %s monster%s!
 你被抛向空间中的%s怪物%s！
 %%%%
@@ -38409,6 +38415,12 @@ Throw
 
 Vortex
 漩涡
+%%%%
+growl
+低吼
+%%%%
+hiss
+嘶叫
 %%%%
 blast of energy
 能量冲击

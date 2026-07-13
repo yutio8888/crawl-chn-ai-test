@@ -1126,8 +1126,8 @@ void fontbuf_line_reader::cursorto(int newcpos)
     pos_x = start.x + m_font_buf.get_font_wrapper().string_width(preface.c_str());
 
     // redraw with a cursor
-    m_font_buf.get_font_wrapper().store(m_font_buf, pos_x, pos_y, c,
-        term_colours[LIGHTGRAY], term_colours[DARKGRAY]);
+    m_font_buf.add(c, term_colours[LIGHTGRAY], term_colours[DARKGRAY],
+                   pos_x, pos_y);
     m_font_buf.draw();
 }
 

@@ -34,6 +34,18 @@ and compilation/build fixes.
 8. **Compilation verification** — console (`make -j4`) and cross-compile (`TILES=y`)
 9. **Descriptor system** — DESC_YOUR/THE/A/PLAIN handling for monster names
 
+## Mandatory Current-Glossary Context
+
+Before dispatching any task that touches `T_()`, `C_()`, `source.txt`, or ZH
+TextDB content, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files>
+```
+
+Append the complete output to the task prompt. Require the implementer to report
+the glossary SHA-256. Do not replace this with terminology copied into the Skill.
+
 ## Dispatch Templates
 
 ### Template 1: T_() Guard Addition
@@ -41,6 +53,7 @@ and compilation/build fixes.
 ```
 Task(subagent_type="crawl-coder", description="Add T_() guards",
   prompt="Add T_() wrapping to untranslated strings in <file>.
+Use the attached context_resolve.sh output and report its glossary SHA-256.
 Follow the standard T_() migration pattern:
 1. Replace Options.language == lang_t::ZH ? \"中文\" : \"English\" with T_(\"English\")
 2. Add corresponding entries to crawl-ref/source/dat/i18n/zh/source.txt

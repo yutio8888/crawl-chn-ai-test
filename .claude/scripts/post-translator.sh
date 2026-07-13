@@ -42,6 +42,11 @@ run_check() {
         bash .claude/scripts/check_consistency.sh --database --strict
     run_check "Item terminology consistency" \
         bash .claude/scripts/check_consistency.sh --items --strict
+    run_check "OmegaT glossary export freshness" \
+        python3 .claude/scripts/export_omegat_glossary.py --check
+    run_check "Changed exact-key terminology (current glossary)" \
+        python3 .claude/scripts/check_glossary_terms.py \
+        --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-translator.sh complete ==="
 } > "$OUT" 2>&1

@@ -30,12 +30,14 @@ the results — your role is to execute the verification, not to interpret it.
 ### Pre-Review Scripts (mandatory — run before forming any opinion)
 
 ```bash
-bash .Codex/scripts/post-reviewer.sh
+bash .claude/scripts/context_resolve.sh "<review scope>" --task-type review --files <target-files>
+bash .claude/scripts/verify_zh.sh --profile review
 ```
 
 This aggregates: all consistency checks (rulings, gods, skills, format, spells,
 database), term validation (rejected names from decisions.md), and anti-patterns
-(strict + lenient). Output goes to `.Codex/metrics/verify/reviewer-<ts>.log`.
+(strict + lenient). Output goes under `.claude/metrics/verify/`. Include the
+resolver's glossary SHA-256 in the final report.
 
 ### Output Rule
 
@@ -141,7 +143,7 @@ Evaluates naturalness and grammatical correctness of the Chinese text.
 ## Layer 4 — Terminology & Cross-File Consistency
 
 **Check 16 — God name consistency across all files:**
-- Run: `bash .Codex/scripts/check_consistency.sh --gods`
+- Run: `bash .claude/scripts/check_consistency.sh --gods`
 - Sif Muna (西芙·穆娜), Trog (特洛格), Kikubaaqudgha (奇库巴库哈)
 
 **Check 17 — Character conventions:**
@@ -152,7 +154,7 @@ Evaluates naturalness and grammatical correctness of the Chinese text.
 - Evocations = 激活技能 (NOT 召唤术, which is Summoning). See `docs/glossary.md` Section 四.
 
 **Check 19 — Entry count drift:**
-- Run: `bash .Codex/scripts/check_consistency.sh --stale`
+- Run: `bash .claude/scripts/check_consistency.sh --stale`
 - Report files where ZH entries differ from EN by >10%.
 
 ---

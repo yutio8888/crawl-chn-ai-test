@@ -1,0 +1,6 @@
+interface:
+  display_name: "DCSS Translation Context"
+  short_description: "Load current project terminology before translation work"
+  default_prompt: "Use $dcss-translation-context to load current DCSS terminology before translating or reviewing text."
+policy:
+  allow_implicit_invocation: true

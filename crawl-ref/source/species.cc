@@ -497,18 +497,18 @@ namespace species
         {
         case SP_GNOLL:
             if (screaminess == 0 && directed && coinflip())
-                return "growl";
-            return dog_shout_verbs[screaminess];
+                return T_("growl");
+            return T_(dog_shout_verbs[screaminess].c_str());
         case SP_BARACHI:
-            return frog_shout_verbs[screaminess];
+            return T_(frog_shout_verbs[screaminess].c_str());
         case SP_FELID:
             if (screaminess == 0 && directed)
-                return "hiss"; // hiss at, not meow at
-            return felid_shout_verbs[screaminess];
+                return T_("hiss"); // hiss at, not meow at
+            return T_(felid_shout_verbs[screaminess].c_str());
         case SP_POLTERGEIST:
-            return ghost_shout_verbs[screaminess];
+            return T_(ghost_shout_verbs[screaminess].c_str());
         default:
-            return shout_verbs[screaminess];
+            return T_(shout_verbs[screaminess].c_str());
         }
     }
 

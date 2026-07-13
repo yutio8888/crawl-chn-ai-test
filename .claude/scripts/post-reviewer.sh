@@ -41,6 +41,11 @@ run_check() {
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "OmegaT glossary export freshness" \
+        python3 .claude/scripts/export_omegat_glossary.py --check
+    run_check "Changed exact-key terminology (current glossary)" \
+        python3 .claude/scripts/check_glossary_terms.py \
+        --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     run_check "Cross-file term consistency" \
         python3 .claude/scripts/cross_file_terms.py \
         crawl-ref/source/dat/i18n/zh/

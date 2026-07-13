@@ -7,7 +7,7 @@
 
 ## OpenCode Runtime Layout
 
-This repo carries two parallel config trees from a Claude Code → OpenCode migration:
+This repo carries parallel OpenCode, Codex, and legacy Claude Code config trees:
 
 | Tree | Purpose | Loaded by OpenCode? |
 |------|---------|---------------------|
@@ -22,6 +22,8 @@ This repo carries two parallel config trees from a Claude Code → OpenCode migr
 | `.opencode/skills/<name>/SKILL.md` | 4 skills (one file per skill in its own directory) | OpenCode loads `<name>/SKILL.md` |
 | `.opencode/workflows/*.js` | 2 workflow scripts | Run via `bash` — OpenCode has no `Workflow` tool |
 | `.opencode/opencode.json` | Project-level config | Set `explore.model = deepseek/deepseek-v4-flash` |
+| `.codex/agents/*.toml` | Codex-native translation/coder/reviewer subagents | Loaded by Codex; use `.claude/scripts/` shared tools |
+| `.agents/skills/<name>/SKILL.md` | Repository-scoped Codex skills | Loaded by Codex while working in this repository |
 | `.claude/scripts/*.sh,*.py` | 28 project tool scripts (post-coder, post-translator, classify_review, scan_varargs_string, etc.) | OpenCode loads via `bash` — paths still work |
 | `.claude/workflows/*.js` | Duplicate of `.opencode/workflows/` | Safe to keep as redundancy; can be deleted if not returning to Claude Code |
 | `.claude/agents/`, `.claude/skills/` | Claude Code-format legacy files (use `model: inherit`, `tools: Read, Write,...`) | **Not loaded by OpenCode** (syntax/structure incompatible) — safe to delete |
@@ -114,6 +116,22 @@ work, use `general` instead.
 When the user's request matches a scenario, **delegate to the specified agent**
 via the `task` tool. Do NOT handle these tasks inline.
 
+### Current Glossary Context (mandatory)
+
+For every translation, i18n implementation, or review task, resolve terminology
+from the current worktree immediately before dispatch:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" \
+  --task-type <translate|code|review> --files <target-files>
+```
+
+Pass the complete output to the subagent. It includes the canonical
+`docs/glossary.md` SHA-256; the subagent must report that hash in its result.
+Never copy a fixed list of terms into an Agent or Skill as a substitute for this
+step. If the glossary changes during a task, rerun the resolver before editing or
+reviewing further translation content.
+
 ### Translation → `zh-translator`
 | Trigger | Example |
 |---------|---------|
@@ -123,9 +141,9 @@ via the `task` tool. Do NOT handle these tasks inline.
 | Batch i18n operations | "批量翻译这批 %%%%% 条目" |
 
 ```python
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --files <target-files> 2>/dev/null)
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type translate --files <target-files> 2>/dev/null)
 task(subagent_type="zh-translator", description="Translate <target>",
-     prompt="<full translation task>\n\n## Terminology Context\n${CONTEXT}")
+     prompt="<full translation task>\n\n${CONTEXT}")
 ```
 
 ### Code Implementation → `crawl-coder`
@@ -137,8 +155,9 @@ task(subagent_type="zh-translator", description="Translate <target>",
 | Compilation / build fixes | "编译报错了帮我修", "fix the build" |
 
 ```python
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files> 2>/dev/null)
 task(subagent_type="crawl-coder", description="Implement <change>",
-     prompt="<full implementation task with file paths and requirements>")
+     prompt="<full implementation task with file paths and requirements>\n\n${CONTEXT}")
 ```
 
 ### Code Review → `zh-code-reviewer`
@@ -151,8 +170,9 @@ task(subagent_type="crawl-coder", description="Implement <change>",
 | Translation bug investigation | "这个翻译 bug 根因是什么" |
 
 ```python
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type review --files <target-files> 2>/dev/null)
 task(subagent_type="zh-code-reviewer", description="Review <scope>",
-     prompt="<review scope: commit hash, file list, or diff>")
+     prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
 ```
 
 ### Translation Quality Review → `translation-reviewer`
@@ -164,8 +184,9 @@ task(subagent_type="zh-code-reviewer", description="Review <scope>",
 | Character voice | "角色语气对不对" |
 
 ```python
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type review --files <target-files> 2>/dev/null)
 task(subagent_type="translation-reviewer", description="Review <scope>",
-     prompt="<review scope: commit hash, file list, or diff>")
+     prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
 ```
 
 ### Full Pipeline → `translation-pipeline` skill

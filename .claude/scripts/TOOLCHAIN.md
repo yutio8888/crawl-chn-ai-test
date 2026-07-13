@@ -37,6 +37,8 @@ Parser (统一):
 | **C++/i18n 改动验证** | `bash .claude/scripts/verify_zh.sh --profile code` |
 | **合并前审查** | `bash .claude/scripts/verify_zh.sh --profile review` |
 | **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
+| **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
+| **检查本次修改的精确术语键** | `python3 .claude/scripts/check_glossary_terms.py --base HEAD` |
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **数据驱动翻译覆盖** | `python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **source.txt 完整性** | `python3 .claude/scripts/scan_i18n.py source-txt-integrity --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
@@ -49,6 +51,45 @@ Parser (统一):
 | **运行测试** | `bash .claude/scripts/tests/run_all.sh` |
 
 ## 脚本详解
+
+### glossary_query.py — 当前术语表上下文
+
+`docs/glossary.md` 是唯一术语数据源。Agent、Skill 和编排器在翻译、i18n
+实现或审核开始前调用本脚本，根据任务说明、文件路径和明确词条选择相关
+domain，并输出术语表 SHA-256。输出可直接附加到 Agent prompt：
+
+```bash
+python3 .claude/scripts/glossary_query.py \
+    --task "翻译 broad axe" \
+    --files crawl-ref/source/dat/i18n/zh/source.txt
+
+# 需要精确词条或机器读取时
+python3 .claude/scripts/glossary_query.py --term cast --format json
+```
+
+不要把脚本输出复制回 Agent/Skill 形成静态术语副本；每次任务重新查询，
+才能使用当前 worktree 的最新术语表。`context_resolve.sh` 已统一调用本脚本。
+
+### check_glossary_terms.py — 增量精确键门禁
+
+读取由 `docs/glossary.md` 导出的 OmegaT `docs/glossary.utf8`，检查
+`source.txt` 中“英文 key 与术语 source 完全相同”的本次改动。多个批准译法
+均可通过；未批准后缀也会失败（例如术语为“召回”时，“召回术”不视为匹配）。
+
+```bash
+# 默认只检查相对 HEAD 新增或改动的条目（已接入三个 post-* 入口）
+python3 .claude/scripts/check_glossary_terms.py
+
+# 合并前指定比较基线
+GLOSSARY_DIFF_BASE=base python3 .claude/scripts/check_glossary_terms.py --base base
+
+# 历史全量审计；可能包含尚未清理的旧漂移，不作为默认门禁
+python3 .claude/scripts/check_glossary_terms.py --all
+```
+
+门禁前先运行 `export_omegat_glossary.py --check`，确保 OmegaT 导出与 Markdown
+源一致。该检查已接入 `post-translator.sh`、`post-coder.sh` 和
+`post-reviewer.sh`。
 
 ### i18n_extract.py — T_() 键提取与验证
 

@@ -1229,9 +1229,10 @@ bool hostile_teleport_player(monster* source)
                 break;
         }
 
-        mprf(T_("You are hurled through space towards %s monster%s!"),
-                mons_near_target > 1 ? "some" : "a",
-                mons_near_target > 1 ? "s" : "");
+        if (mons_near_target > 1)
+            mpr(T_("You are hurled through space towards some monsters!"));
+        else
+            mpr(T_("You are hurled through space towards a monster!"));
 
         large_change = _real_teleport_cleanup(oldpos, newpos, true);
         crawl_state.potential_pursuers.clear();

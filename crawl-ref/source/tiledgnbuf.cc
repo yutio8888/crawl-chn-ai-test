@@ -39,16 +39,12 @@ static bool _in_water(const packed_cell &cell)
 
 void DungeonCellBuffer::add_glyph(const char32_t &g, const VColour &col, int x, int y)
 {
-    float sx = x;
-    float sy = y;
-    m_buf_glyphs.get_font_wrapper().store(m_buf_glyphs, sx, sy, g, col);
+    m_buf_glyphs.add(g, col, x, y);
 }
 
 void DungeonCellBuffer::add_glyph(const char32_t &g, const VColour &col, const VColour &bg, int x, int y)
 {
-    float sx = x;
-    float sy = y;
-    m_buf_glyphs.get_font_wrapper().store(m_buf_glyphs, sx, sy, g, col, bg);
+    m_buf_glyphs.add(g, col, bg, x, y);
 }
 
 void DungeonCellBuffer::add(const packed_cell &cell, int x, int y)

@@ -38,12 +38,14 @@ the results — your role is to execute the verification, not to interpret it.
 ### Pre-Review Scripts (mandatory — run before forming any opinion)
 
 ```bash
+bash .claude/scripts/context_resolve.sh "<review scope>" --task-type review --files <target-files>
 bash .claude/scripts/verify_zh.sh --profile review
 ```
 
 This aggregates: all consistency checks (rulings, gods, skills, format, spells,
 database), term validation (rejected names from decisions.md), and anti-patterns
 (strict + lenient). Output goes to `.claude/metrics/verify/reviewer-<ts>.log`.
+The final report must also include the glossary SHA-256 emitted by the resolver.
 
 ### Output Rule
 

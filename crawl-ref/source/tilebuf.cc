@@ -9,6 +9,7 @@
 
 #include "tilebuf.h"
 
+#include "format.h"
 #include "tilefont.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -86,27 +87,120 @@ VertBuffer::~VertBuffer()
 // FontBuffer
 
 FontBuffer::FontBuffer(FontWrapper *font) :
-    VertBuffer(true, true, font->font_tex()), m_font(font)
+    VertBuffer(true, true, font->font_tex()), m_font(font),
+    m_packed_generation(font->atlas_generation())
 {
     m_state.array_colour = true;
 
     ASSERT(m_font);
     ASSERT(m_tex);
+    m_font->begin_font_buffer();
 }
 
 void FontBuffer::add(const formatted_string &fs, float x, float y)
 {
+    prepare_for_add();
+    m_replay.emplace_back([fs, x, y](FontBuffer &buf) {
+        float replay_x = x;
+        float replay_y = y;
+        buf.m_font->store(buf, replay_x, replay_y, fs);
+    });
+    const uint64_t generation_before = m_font->atlas_generation();
     m_font->store(*this, x, y, fs);
+    finish_add(generation_before);
 }
 
 void FontBuffer::add(const string &s, const VColour &col, float x, float y)
 {
+    prepare_for_add();
+    m_replay.emplace_back([s, col, x, y](FontBuffer &buf) {
+        float replay_x = x;
+        float replay_y = y;
+        buf.m_font->store(buf, replay_x, replay_y, s, col);
+    });
+    const uint64_t generation_before = m_font->atlas_generation();
     m_font->store(*this, x, y, s, col);
+    finish_add(generation_before);
 }
 
 void FontBuffer::add(const char32_t &g, const VColour &col, float x, float y)
 {
+    prepare_for_add();
+    m_replay.emplace_back([g, col, x, y](FontBuffer &buf) {
+        float replay_x = x;
+        float replay_y = y;
+        buf.m_font->store(buf, replay_x, replay_y, g, col);
+    });
+    const uint64_t generation_before = m_font->atlas_generation();
     m_font->store(*this, x, y, g, col);
+    finish_add(generation_before);
+}
+
+void FontBuffer::add(const char32_t &g, const VColour &fg, const VColour &bg,
+                     float x, float y)
+{
+    prepare_for_add();
+    m_replay.emplace_back([g, fg, bg, x, y](FontBuffer &buf) {
+        float replay_x = x;
+        float replay_y = y;
+        buf.m_font->store(buf, replay_x, replay_y, g, fg, bg);
+    });
+    const uint64_t generation_before = m_font->atlas_generation();
+    m_font->store(*this, x, y, g, fg, bg);
+    finish_add(generation_before);
+}
+
+void FontBuffer::draw() const
+{
+    if (!atlas_valid())
+        const_cast<FontBuffer *>(this)->rebuild();
+    VertBuffer::draw();
+}
+
+void FontBuffer::clear()
+{
+    VertBuffer::clear();
+    m_font->begin_font_buffer();
+    m_replay.clear();
+    packed_now();
+}
+
+bool FontBuffer::atlas_valid() const
+{
+    return m_packed_generation == m_font->atlas_generation();
+}
+
+void FontBuffer::packed_now()
+{
+    m_packed_generation = m_font->atlas_generation();
+}
+
+void FontBuffer::finish_add(uint64_t generation_before)
+{
+    // Another buffer may have cleared the wrapper-wide pin set between two
+    // additions to this buffer. If this store then evicted a slot, replay the
+    // entire retained source so old and new vertices share one generation.
+    if (generation_before != m_font->atlas_generation())
+        rebuild();
+    else
+        packed_now();
+}
+
+void FontBuffer::prepare_for_add()
+{
+    // Appending vertices to a stale buffer would create a mixture of old and
+    // current UV generations. Replay retained source operations first.
+    if (!atlas_valid())
+        rebuild();
+}
+
+void FontBuffer::rebuild()
+{
+    VertBuffer::clear();
+    m_font->begin_font_buffer();
+    for (const auto &replay : m_replay)
+        replay(*this);
+    packed_now();
 }
 
 FontWrapper &FontBuffer::get_font_wrapper()

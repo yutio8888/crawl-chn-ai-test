@@ -55,8 +55,18 @@ mpr(T_("You see a door."));
 mprf(T_("You hit %s."), target);
 ```
 
-**Workflow**: Read source → identify display strings → wrap with T_() →
+**Workflow**: Resolve current terminology → read source → identify display strings → wrap with T_() →
 append to zh/source.txt (`%%%%\nEN\nZH\n`) → `make -j4` → verify
+
+Before any change that adds or edits `T_()`, `C_()`, `source.txt`, or a ZH
+TextDB file, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files>
+```
+
+Apply the returned current-worktree glossary context and include its SHA-256 in
+the final report. Rerun after any concurrent glossary update.
 
 ### 2. TextDB .txt Operations
 

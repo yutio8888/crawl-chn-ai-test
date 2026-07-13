@@ -47,8 +47,18 @@ mpr(T_("You see a door."));
 mprf(T_("You hit %s."), target);
 ```
 
-**Workflow**: Read source → identify display strings → wrap with T_() →
+**Workflow**: Resolve current terminology → read source → identify display strings → wrap with T_() →
 append to zh/source.txt (`%%%%\nEN\nZH\n`) → `make -j4` → verify
+
+Before any change that adds or edits `T_()`, `C_()`, `source.txt`, or a ZH
+TextDB file, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files>
+```
+
+Use the returned current-worktree terminology context. Include its glossary
+SHA-256 in the final report, and rerun after any glossary update.
 
 ### 2. TextDB .txt Operations
 
@@ -195,23 +205,23 @@ and let the orchestrator read the raw output.
 
 After completing modifications, run:
 ```bash
-bash .Codex/scripts/post-coder.sh
+bash .claude/scripts/verify_zh.sh --profile code
 ```
 
 This aggregates: T_() key coverage, mprf_p compatibility, %s count parity,
-and anti-patterns (--strict). Output written to `.Codex/metrics/verify/coder-<ts>.log`.
+and anti-patterns (--strict). Output is written under `.claude/metrics/verify/`.
 
 ### Pre-Commit CI Checks
 
 ```bash
 # T_() key coverage + data-driven sources + mprf_p compatibility + %s count parity
-python3 .Codex/scripts/i18n_extract.py validate crawl-ref/source/ \
+python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .Codex/scripts/audit_data_i18n.py crawl-ref/source/ \
+python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .Codex/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
+python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .Codex/scripts/scan_i18n.py arg-mismatch \
+python3 .claude/scripts/scan_i18n.py arg-mismatch \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 ```
 

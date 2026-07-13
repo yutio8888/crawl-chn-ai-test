@@ -45,6 +45,11 @@ public:
     virtual bool load_font(const char *font_name, unsigned int font_size) override;
     virtual bool configure_font() override;
     virtual bool resize(unsigned int size) override;
+    virtual uint64_t atlas_generation() const override
+    {
+        return m_atlas_generation;
+    }
+    virtual void begin_font_buffer() override { clear_pins(); }
 
     // render just text
     virtual void render_textblock(unsigned int x, unsigned int y,
@@ -182,6 +187,8 @@ protected:
 
     // monotonic clock for last_used tracking in eviction scan
     uint64_t m_atlas_clock;
+    // Incremented whenever existing texture coordinates may become stale.
+    uint64_t m_atlas_generation;
     // peak number of distinct glyphs concurrently resident (0 = not tracking)
     unsigned int m_peak_glyphs;
 };

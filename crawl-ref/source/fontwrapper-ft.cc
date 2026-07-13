@@ -80,6 +80,7 @@ FTFontWrapper::FTFontWrapper() :
     pixels(nullptr),
     fsize(0),
     m_atlas_clock(0),
+    m_atlas_generation(0),
     m_peak_glyphs(0)
 {
     m_buf = GLShapeBuffer::create(true, true);
@@ -111,6 +112,10 @@ void FTFontWrapper::clear_pins()
  */
 bool FTFontWrapper::configure_font()
 {
+    // The texture is recreated below, invalidating every previously packed
+    // FontBuffer even if glyphs happen to occupy the same slots afterward.
+    ++m_atlas_generation;
+
     FT_Error error;
     error = FT_Set_Pixel_Sizes(face,
                                 display_density.logical_to_device(fsize),
@@ -537,26 +542,20 @@ unsigned int FTFontWrapper::map_unicode(char32_t uchar)
 
     if (evict == MAX_GLYPHS)
     {
-        // All unreserved slots are pinned — fall back to the oldest
-        // unreserved slot regardless (extremely rare at 4096 capacity).
-        uint64_t oldest_any = UINT64_MAX;
-        for (atlas_slot_t i = 1; i < MAX_GLYPHS; i++)
-        {
-            if (m_atlas[i].reserved)
-                continue;
-            if (m_atlas[i].last_used < oldest_any)
-            {
-                oldest_any = m_atlas[i].last_used;
-                evict = i;
-            }
-        }
+        // Never invalidate texture coordinates already emitted by this
+        // render batch. Missing glyph is preferable to corrupting the batch.
+        return m_glyph_to_slot.at(MISSING_CHAR);
     }
 
     // Remove the old glyph from the hash map before overwriting.
-    if (evict != MAX_GLYPHS && m_atlas[evict].uchar != 0)
+    if (m_atlas[evict].uchar != 0)
+    {
         m_glyph_to_slot.erase(m_atlas[evict].uchar);
+        // A live FontBuffer may retain UVs for the overwritten slot.
+        ++m_atlas_generation;
+    }
 
-    atlas_slot_t c = evict != MAX_GLYPHS ? evict : 1; // last resort: MISSING_CHAR slot
+    atlas_slot_t c = evict;
 
     // Count newly-loaded distinct glyphs for peak tracking.
     // Evictions replace existing entries so only increment when the
@@ -583,6 +582,7 @@ void FTFontWrapper::render_textblock(unsigned int x_pos, unsigned int y_pos,
     if (!chars || !colours || !width || !height || !m_atlas)
         return;
 
+    clear_pins();
     coord_def adv(max(-m_min_offset, 0), 0);
     unsigned int i = 0;
 

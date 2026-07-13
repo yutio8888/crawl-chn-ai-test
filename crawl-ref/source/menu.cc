@@ -561,6 +561,9 @@ int UIMenu::get_max_viewport_height()
 void UIMenu::_render()
 {
 #ifdef USE_TILE_LOCAL
+    if (!m_text_buf.atlas_valid())
+        mark_buffers_dirty();
+
     if (m_buffers_dirty)
     {
         pack_buffers();

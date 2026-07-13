@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -50,12 +52,25 @@ class FontBuffer : public VertBuffer
 {
 public:
     FontBuffer(FontWrapper *font);
+    // Font buffers only retain atlas UVs, not source text. Drawing a buffer
+    // packed against an older atlas would silently display unrelated glyphs.
+    void draw() const;
+    void clear();
+    bool atlas_valid() const;
     void add(const formatted_string &fs, float x, float y);
     void add(const string &s, const VColour &col, float x, float y);
     void add(const char32_t &g, const VColour &col, float x, float y);
+    void add(const char32_t &g, const VColour &fg, const VColour &bg,
+             float x, float y);
     FontWrapper &get_font_wrapper();
 protected:
+    void prepare_for_add();
+    void finish_add(uint64_t generation_before);
+    void packed_now();
+    void rebuild();
     FontWrapper *m_font;
+    uint64_t m_packed_generation;
+    std::vector<std::function<void(FontBuffer &)>> m_replay;
 };
 
 class TileBuffer : public VertBuffer
