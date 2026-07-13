@@ -38461,5 +38461,26 @@ light red
 light magenta
 浅品红色
 %%%%
+ %1$s version %2$s%3$s character file.\n\n
+%1$s %2$s版%3$s角色档案\n\n
+%%%%
+Message History\n\n
+消息历史\n\n
+%%%%
+%1$s was demanding penance.\n
+%1$s曾要求你赎罪。\n
+%%%%
+%1$s is demanding penance.\n
+%1$s正在要求你赎罪。\n
+%%%%
+Inventory:\n\n
+物品栏：\n\n
+%%%%
+   Skills:\n
+   技能：\n
+%%%%
+Levels and vault maps discovered:\n
+已发现的楼层与地城图：\n
+%%%%
 magenta
 品红色

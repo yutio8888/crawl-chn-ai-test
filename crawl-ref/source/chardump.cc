@@ -215,18 +215,19 @@ static void _sdump_header(dump_params &par)
     else
         type += " DCSS";
 
-    par.text += make_stringf(T_(" %s version %s"), type.c_str(), Version::Long);
+    string platform;
 #ifdef USE_TILE_LOCAL
-    par.text += T_(" (tiles)");
+    platform = T_(" (tiles)");
 #elif defined(USE_TILE_WEB)
     if (::tiles.is_controlled_from_web())
-        par.text += T_(" (webtiles)");
+        platform = T_(" (webtiles)");
     else
-        par.text += T_(" (console)");
+        platform = T_(" (console)");
 #else
-    par.text += T_(" (console)");
+    platform = T_(" (console)");
 #endif
-    par.text += " character file.\n\n";
+    par.text += make_stringf_p(T_(" %1$s version %2$s%3$s character file.\n\n"),
+                               type.c_str(), Version::Long, platform.c_str());
 
     if (you.fully_seeded && crawl_state.seed_is_known())
         par.text += seed_description() + "\n\n";
@@ -779,7 +780,7 @@ static void _sdump_messages(dump_params &par)
     // A little message history:
     if (Options.dump_message_count > 0)
     {
-        par.text += "Message History\n\n";
+        par.text += T_("Message History\n\n");
         par.text += get_last_messages(Options.dump_message_count);
     }
 }
@@ -878,10 +879,11 @@ static void _sdump_religion(dump_params &par)
             }
             else
             {
-                const char* verb = par.se ? T_("was") : T_("is");
-
-                text += uppercase_first(god_name(you.religion));
-                text += " " + string(verb) + " demanding penance.\n";
+                const string god = uppercase_first(god_name(you.religion));
+                text += make_stringf_p(
+                    par.se ? T_("%1$s was demanding penance.\n")
+                           : T_("%1$s is demanding penance.\n"),
+                    god.c_str());
             }
         }
         else
@@ -958,7 +960,7 @@ static void _sdump_inventory(dump_params &par)
     }
     else
     {
-        text += "Inventory:\n\n";
+        text += T_("Inventory:\n\n");
 
         for (int obj = 0; obj < NUM_OBJECT_CLASSES; obj++)
         {
@@ -997,7 +999,7 @@ static void _sdump_skills(dump_params &par)
 {
     string &text(par.text);
 
-    text += "   Skills:\n";
+    text += T_("   Skills:\n");
 
     dump_skills(text);
     text += "\n";
@@ -1310,7 +1312,7 @@ static void _sdump_vault_list(dump_params &par)
 #endif
      )
     {
-        par.text += "Levels and vault maps discovered:\n";
+        par.text += T_("Levels and vault maps discovered:\n");
         par.text += dump_vault_maps();
         par.text += "\n";
     }
@@ -1634,7 +1636,7 @@ static void _sdump_action_counts(dump_params &par)
     par.text += chop_string(T_("Action"), 26);
     for (int lt = 0; lt < max_lt; lt++)
         par.text += make_stringf(" | %2d-%2d", lt * 3 + 1, lt * 3 + 3);
-    par.text += " || total\n" + string(27, '-');
+    par.text += T_(" || total\n") + string(27, '-');
     for (int lt = 0; lt < max_lt; lt++)
         par.text += "+-------";
     par.text += "++-------\n";
