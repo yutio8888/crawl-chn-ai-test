@@ -574,7 +574,7 @@ string SkillMenuSwitch::get_help()
         {
             vector<string> causes;
             if (you.duration[DUR_HEROISM])
-                causes.push_back(T_("Heroism"));
+                causes.push_back(chinese ? T_("Heroism") : "Heroism");
 
             if (!you.skill_boost.empty()
                 && have_passive(passive_t::bondage_skill_boost))
@@ -588,13 +588,16 @@ string SkillMenuSwitch::get_help()
             if (_any_crosstrained())
                 causes.push_back(T_("cross-training"));
             if (_hermit_bonus())
-                causes.push_back(T_("Hermit's Pendant"));
+                causes.push_back(chinese ? T_("Hermit's Pendant")
+                                         : "the Hermit's pendant");
             if (_wildshape_bonus())
-                causes.push_back(T_("wildshape"));
+                causes.push_back(chinese ? T_("wildshape") : "wildshape");
             if (_charlatan_bonus())
-                causes.push_back(T_("Charlatan's Orb"));
+                causes.push_back(chinese ? T_("Charlatan's Orb")
+                                         : "the Charlatan's Orb");
             if (you.form == transformation::walking_scroll)
-                causes.push_back(T_("scribal knowledge"));
+                causes.push_back(chinese ? T_("scribal knowledge")
+                                         : "scribal knowledge");
             if (chinese)
             {
                 const string cause_list = comma_separated_line(
@@ -621,9 +624,11 @@ string SkillMenuSwitch::get_help()
                     causes.push_back("Ashenzari's anger");
             }
             if (_hermit_penalty())
-                causes.push_back(T_("Hermit's Pendant"));
+                causes.push_back(chinese ? T_("Hermit's Pendant")
+                                         : "the Hermit's pendant");
             if (you.has_bane(BANE_DILETTANTE))
-                causes.push_back(T_("Bane of the Dilettante"));
+                causes.push_back(chinese ? T_("Bane of the Dilettante")
+                                         : "the Bane of the Dilettante");
             if (!result.empty())
                 result += " ";
             if (chinese)
