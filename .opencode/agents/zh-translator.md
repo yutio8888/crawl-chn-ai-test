@@ -79,6 +79,15 @@ that reads like native game dialogue — not translated text.
 The authoritative Single Source of Truth for terminology is `docs/glossary.md`.
 It consolidates naming decisions from `docs/decisions.md` and style guides.
 
+Before reading or editing translation content, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type translate --files <target-files>
+```
+
+Use the returned terms and guidance. Record its glossary SHA-256 in the final
+report. Rerun it if `docs/glossary.md` changes while the task is in progress.
+
 **Before translating, you MUST consult the relevant glossary domain sections:**
 - Gods: `<!-- domain:gods -->` section (Section 一)
 - God titles: `<!-- domain:god-titles -->` section (Section 二)
@@ -217,8 +226,8 @@ the mechanical verification is handled by `verify_zh.sh --profile translation`:
 ## Workflow
 
 When given a translation task:
-1. Read the EN source text carefully
-2. Read `docs/glossary.md` for the relevant domain sections
+1. Run `context_resolve.sh` as specified above and retain the glossary SHA-256
+2. Read the EN source text carefully and use the returned glossary domains
 3. Consult `docs/decisions.md` for any existing rulings on the entities involved
 4. **Grep source.txt for EACH target key** — skip if translation already exists:
    ```bash
@@ -228,7 +237,7 @@ When given a translation task:
 6. Identify the speaker (if dialogue) and apply the correct voice profile
 7. Translate using glossary terminology
 8. **NEVER blindly append all enumerated names** — always diff against existing keys
-9. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path
+9. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path and glossary SHA-256
 10. Run source.txt integrity check:
     ```bash
     python3 .claude/scripts/scan_i18n.py source-txt-integrity \

@@ -38,18 +38,18 @@ Translation must not break program logic. These bugs don't fail at compile time 
 
 **Check 4**: T_() key coverage?
 - Every `T_("...")` must have a corresponding entry in zh/source.txt
-- Run: `python3 .Codex/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt`
+- Run: `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt`
 
 **Check 5**: Untranslated mprf/mpr calls?
-- Run: `python3 .Codex/scripts/scan_i18n.py missing-t crawl-ref/source/`
+- Run: `python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/`
 - Any bare `mprf("English...")` without T_() is untranslated display text
 - Exceptions: internal debug messages, protocol output (Type IV data)
 
 ### Layer 3 — Consistency (P0 — Terminology/Format)
 
 **Check 6**: Terminology consistency?
-- `bash .Codex/scripts/check_consistency.sh --rulings` — rejected translations from decisions.md
-- `bash .Codex/scripts/check_consistency.sh --gods --skills` — god/skill school names
+- `bash .claude/scripts/check_consistency.sh --rulings` — rejected translations from decisions.md
+- `bash .claude/scripts/check_consistency.sh --gods --skills` — god/skill school names
 - Cross-reference against `docs/glossary.md` canonical forms
 
 **Check 7**: strwidth on T_() return values?
@@ -66,7 +66,7 @@ Translation must not break program logic. These bugs don't fail at compile time 
 - Grep EN for numbers/percentages → check ZH retains them
 
 **Check 10**: Version drift?
-- `bash .Codex/scripts/check_consistency.sh --stale` — entries count drift >10%
+- `bash .claude/scripts/check_consistency.sh --stale` — entries count drift >10%
 
 ### Layer 5 — Database Integrity (P1)
 
@@ -74,8 +74,8 @@ Translation must not break program logic. These bugs don't fail at compile time 
 - `awk '/^%%%%$/{getline; print}' zh/*.txt | sort | uniq -d`
 
 **Check 12**: @keyword@ integrity and %%%% parity?
-- `bash .Codex/scripts/check_consistency.sh --database`
-- `bash .Codex/scripts/check_consistency.sh --format`
+- `bash .claude/scripts/check_consistency.sh --database`
+- `bash .claude/scripts/check_consistency.sh --format`
 
 ---
 
@@ -110,14 +110,18 @@ All translated strings fall into one of five types. Verify classification is cor
 
 ## Execution (Evidence Protocol)
 
-1. **Run all automated scripts first.** Report raw output path — do not summarize.
+1. **Resolve current terminology first.** Run and retain the glossary SHA-256:
    ```bash
-   bash .Codex/scripts/post-reviewer.sh
+   bash .claude/scripts/context_resolve.sh "<review scope>" --task-type review --files <target-files>
    ```
-2. **For each finding**, classify:
+2. **Run all automated scripts.** Report raw output path — do not summarize.
+   ```bash
+   bash .claude/scripts/verify_zh.sh --profile review
+   ```
+3. **For each finding**, classify:
    - P0 (functional/visibility impact) — must block commit
    - P1 (quality impact) — flag but do not block
-3. **For P0 findings**, verify against actual source code (not just scripts).
+4. **For P0 findings**, verify against actual source code (not just scripts).
    Scripts may produce false positives — the orchestrator needs verification.
-4. **Report format**: issue number reference, file:line, root cause, fix suggestion.
-5. **Summary**: Go/Conditional Go/No-Go with raw log path attached."""
+5. **Report format**: issue number reference, file:line, root cause, fix suggestion.
+6. **Summary**: Go/Conditional Go/No-Go with raw log path and glossary SHA-256 attached."""

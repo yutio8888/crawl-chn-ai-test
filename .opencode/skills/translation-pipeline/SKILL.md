@@ -40,6 +40,17 @@ description: 翻译问题完整修复管道 — 玩家反馈 → 结构化收集
 
 ## 启动修复流程
 
+进入分析阶段前，必须从当前 worktree 生成术语上下文：
+
+```bash
+bash .claude/scripts/context_resolve.sh "<issue/task>" \
+  --task-type translate --files <target-files>
+```
+
+将完整输出传给分析、翻译和审核 Agent，并在最终报告中记录其中的
+`docs/glossary.md` SHA-256。执行期间若术语表发生变化，重新生成上下文；
+不得用工作流或 Skill 内的静态术语副本覆盖当前术语表。
+
 `.opencode/workflows/*.js` 使用 OpenCode 宿主注入的 `args`、`agent()`、
 `phase()` 等 DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。
 只有当前 OpenCode 运行时明确提供 workflow runner 时，才通过该 runner 启动。
@@ -61,5 +72,6 @@ task(subagent_type="general", description="Analyze issue",
 完成后向用户报告：
 - 修改了哪些文件
 - 翻译了什么内容（EN → ZH）
+- 使用的术语表 SHA-256
 - 审核结论（Go / Conditional Go / No-Go）
 - 合入状态

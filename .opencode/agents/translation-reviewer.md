@@ -118,14 +118,19 @@ All translated strings fall into one of five types. Verify classification is cor
 
 ## Execution (Evidence Protocol)
 
-1. **Run all automated scripts first.** Report raw output path — do not summarize.
+1. **Resolve current terminology first.** Run the following command and retain
+   the reported glossary SHA-256:
+   ```bash
+   bash .claude/scripts/context_resolve.sh "<review scope>" --task-type review --files <target-files>
+   ```
+2. **Run all automated scripts.** Report raw output path — do not summarize.
    ```bash
    bash .claude/scripts/verify_zh.sh --profile review
    ```
-2. **For each finding**, classify:
+3. **For each finding**, classify:
    - P0 (functional/visibility impact) — must block commit
    - P1 (quality impact) — flag but do not block
-3. **For P0 findings**, verify against actual source code (not just scripts).
+4. **For P0 findings**, verify against actual source code (not just scripts).
    Scripts may produce false positives — the orchestrator needs verification.
-4. **Report format**: issue number reference, file:line, root cause, fix suggestion.
-5. **Summary**: Go/Conditional Go/No-Go with raw log path attached.
+5. **Report format**: issue number reference, file:line, root cause, fix suggestion.
+6. **Summary**: Go/Conditional Go/No-Go with raw log path and glossary SHA-256 attached.

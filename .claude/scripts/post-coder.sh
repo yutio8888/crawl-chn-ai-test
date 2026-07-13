@@ -81,6 +81,11 @@ run_check() {
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "OmegaT glossary export freshness" blocking \
+        python3 .claude/scripts/export_omegat_glossary.py --check
+    run_check "Changed exact-key terminology (current glossary)" blocking \
+        python3 .claude/scripts/check_glossary_terms.py \
+        --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" blocking \
         python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
         --format text

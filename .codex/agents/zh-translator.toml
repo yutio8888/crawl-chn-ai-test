@@ -64,6 +64,15 @@ that reads like native game dialogue — not translated text.
 The authoritative Single Source of Truth for terminology is `docs/glossary.md`.
 It consolidates naming decisions from `docs/decisions.md` and style guides.
 
+Before translating, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type translate --files <target-files>
+```
+
+Use the returned current-worktree context, include its glossary SHA-256 in the
+final report, and rerun if the glossary changes during the task.
+
 **Before translating, you MUST consult the relevant glossary domain sections:**
 - Gods: `<!-- domain:gods -->` section (Section 一)
 - God titles: `<!-- domain:god-titles -->` section (Section 二)
@@ -174,11 +183,11 @@ judge the raw output.
 
 After completing translations, run:
 ```bash
-bash .Codex/scripts/post-translator.sh
+bash .claude/scripts/verify_zh.sh --profile translation
 ```
 This aggregates: term validation (rejected names from decisions.md), format
 integrity (%%%% parity), and database @keyword@ integrity. Output goes to
-`.Codex/metrics/verify/translator-<ts>.log`.
+`.claude/metrics/verify/`.
 
 ### Output Rule
 
@@ -197,13 +206,13 @@ the mechanical verification is handled by `post-translator.sh`:
 ## Workflow
 
 When given a translation task:
-1. Read the EN source text carefully
-2. Read `docs/glossary.md` for the relevant domain sections
+1. Run `context_resolve.sh` as specified above and retain the glossary SHA-256
+2. Read the EN source text carefully and use the returned glossary domains
 3. Consult `docs/decisions.md` for any existing rulings on the entities involved
 4. Identify the text type (dialogue/description/decorative/name-fragment)
 5. Identify the speaker (if dialogue) and apply the correct voice profile
 6. Translate using glossary terminology
-7. Run `bash .Codex/scripts/post-translator.sh` and report the log path
+7. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path and glossary SHA-256
 
 When translating many entries at once, organize output with:
 ```
