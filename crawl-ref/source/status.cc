@@ -176,113 +176,6 @@ static void _mark_expiring(status_info& inf, bool expiring)
  * @param[out] inf   The status_info struct to be filled.
  * @return           Whether a duration_data struct was found.
  */
-// Translate common status short_text for Chinese
-static const char* _zh_status_short(const char* en)
-{
-    if (Options.language != lang_t::ZH || !en || !en[0])
-        return en;
-
-    static const map<string, const char*> zh_names = {
-        { "agile", "敏捷" }, { "berserking", "狂暴中" }, { "confused", "困惑" },
-        { "slowed", "减速" }, { "quick", "加速" }, { "invisible", "隐形" },
-        { "flying", "飞行中" }, { "poisoned", "中毒" }, { "mighty", "强力" },
-        { "regenerating", "再生中" }, { "swift", "迅捷" }, { "corroded", "腐蚀" },
-        { "petrifying", "石化中" }, { "teleporting", "传送中" }, { "drained", "虚弱" },
-        { "on fire", "燃烧中" }, { "paralysed", "麻痹" }, { "transformed", "变形" },
-        { "exhausted", "力竭" }, { "silenced", "沉默" }, { "mesmerised", "被催眠" },
-        { "sleeping", "睡眠" }, { "resistant", "抗性" }, { "protected", "防护" },
-        { "brilliant", "聪慧" }, { "diminished spells", "法术减弱" },
-        { "on berserk cooldown", "狂暴冷却" }, { "short of breath", "喘息中" },
-        { "lit by a corona", "被光晕照亮" }, { "reflecting", "反射中" },
-        { "repelling missiles", "弹开飞弹" }, { "infused", "魔法注入" },
-        { "nauseated", "恶心" }, { "weak", "脆弱" }, { "sapped magic", "魔力枯竭" },
-        { "breath weapon", "吐息冷却" }, { "berserk cooldown", "狂暴冷却" },
-        { "conf", "困惑" }, { "slow", "减速" }, { "haste", "加速" },
-        { "invis", "隐形" }, { "fly", "飞行" }, { "might", "强力" },
-        { "regen", "再生" }, { "petrify", "石化" }, { "tele", "传送" },
-        { "drain", "虚弱" }, { "corr", "腐蚀" }, { "para", "麻痹" },
-        { "silence", "沉默" }, { "exhaust", "力竭" }, { "nausea", "恶心" },
-        { "weakness", "脆弱" }, { "sap", "枯竭" }, { "infuse", "注入" },
-        { "reflect", "反射" }, { "rmissile", "弹飞弹" }, { "sleep", "睡眠" },
-        { "mesm", "催眠" }, { "transform", "变形" }, { "fire", "着火" },
-        { "about to teleport", "即将传送" }, { "afraid", "恐惧" },
-        { "animating dead", "复活死者" }, { "attractive", "吸引怪物" },
-        { "calling dragons", "召唤龙群" }, { "calling ooze", "召唤软泥" },
-        { "chanting a vengeful prayer", "吟唱复仇祈祷" }, { "cleaving", "横扫中" },
-        { "death channelling", "引导死亡" }, { "devious", "狡诈" },
-        { "disjoining", "位移中" }, { "divinely shielded", "神圣护盾" },
-        { "divinely vigorous", "神圣活力" }, { "engorged", "饱食" },
-        { "enlightened", "启迪" }, { "enshackling", "束缚中" },
-        { "ephemerally shielded", "短暂护盾" }, { "especially stealthy", "极度潜行" },
-        { "fiery-armoured", "火焰护甲" }, { "finesse-ful", "精准" },
-        { "fire vulnerable", "火焰易伤" }, { "flayed", "剥皮" },
-        { "forested", "召唤森林" }, { "fragile (+50% incoming damage)", "脆弱（+50%受伤）" },
-        { "frozen", "冰冻" }, { "fugue", "赋格" }, { "full of bloodlust", "充满嗜血" },
-        { "growing destruction", "毁灭增长" }, { "heroic", "英雄" },
-        { "horrified", "恐惧" }, { "ice-armoured", "冰甲" },
-        { "immotile", "无法移动" }, { "in a vortex", "极地漩涡中" },
-        { "in death's door", "死亡之门中" }, { "liquefying", "液化地面" },
-        { "making a cacophony", "制造噪音" }, { "marked", "被标记" },
-        { "no stairs", "拒绝楼梯" }, { "oblivion-hounded", "被湮灭追逐" },
-        { "on blink cooldown", "闪烁冷却" }, { "on bloodrite cooldown", "血祭冷却" },
-        { "on death's door cooldown", "死亡之门冷却" },
-        { "on dragon call cooldown", "龙群召唤冷却" },
-        { "on eeljolt cooldown", "电鳗冲击冷却" },
-        { "on gavotte cooldown", "加沃特冷却" },
-        { "on hellfire mortar cooldown", "地狱火迫击炮冷却" },
-        { "on lithotoxin cooldown", "石毒素冷却" },
-        { "on mesmerism cooldown", "催眠冷却" }, { "on recite cooldown", "吟诵冷却" },
-        { "on siphon cooldown", "虹吸冷却" }, { "on stardust cooldown", "星尘冷却" },
-        { "on swarm cooldown", "虫群冷却" }, { "on vortex cooldown", "漩涡冷却" },
-        { "on word of chaos cooldown", "混沌之语冷却" }, { "petrified", "石化" },
-        { "poison vulnerable", "毒素易伤" }, { "portalling projectiles", "传送飞弹中" },
-        { "protected from cold", "寒冷防护" }, { "protected from electricity", "电击防护" },
-        { "protected from fire", "火焰防护" }, { "protected from physical damage", "物理防护" },
-        { "quad damage", "四倍伤害" }, { "radiating poison", "辐射毒素" },
-        { "raining reagents", "倾泻试剂" }, { "reciting", "吟诵中" },
-        { "rising", "上升中" }, { "shroud timeout", "黏液护罩破损" },
-        { "sick", "疾病" }, { "spewing sludge", "喷吐泥沼" }, { "spiked", "被刺穿" },
-        { "surrounded by blades", "刃之旋风" }, { "unleashing the legion", "释放军团" },
-        { "untranslocatable", "无法位移" }, { "vexed", "恼怒" },
-        { "vitalised", "生命活力" }, { "weak-willed", "意志薄弱" },
-        { "weakened", "虚弱" },
-        { "Barbs", "尖刺" },
-        { "Forest", "森林" },
-        { "-Star", "-星" },
-        { "on stardust cooldown", "星尘冷却" },
-        { "Breath", "吐息" }, { "Tesseract", "超立方体" }, { "Sunder", "碎裂" },
-        { "Shroud", "护罩" }, { "slimy shroud", "黏液护罩" },
-        { "Ostracised", "被排斥" }, { "Missing", "缺失" }, { "missing status", "缺失状态" },
-        // Newer duration lights. Keep the established one-character TextDB
-        // translations where they already existed.
-        { "Touch", "触" }, { "confusing by touch", "触之迷惑" },
-        { "Slime", "粘" }, { "slimy", "粘滑" },
-        { "Ambros", "仙" }, { "ambrosia-drunk", "仙酒醉" },
-        { "Channel", "引" }, { "channelling", "引导中" },
-        { "Vertigo", "眩" }, { "vertiginous", "眩晕" },
-        { "Blood", "血" }, { "sanguine armoured", "鲜血护甲" },
-        { "-Hop", "-跃" }, { "unable to hop", "无法跳跃" },
-        { "-Bbolt", "-电" }, { "blinkbolt cooldown", "闪电突袭冷却" },
-        { "Elixir", "灵" }, { "elixired", "灵药强化" },
-        { "Sap", "弱" }, { "magic-sapped", "魔力削弱" },
-        { "-Cast", "-法" }, { "unable to cast spells", "无法施法" },
-        { "Jinx", "厄" }, { "jinxed", "厄运缠身" },
-        { "-Dog", "-犬" }, { "unable to call your familiar", "无法召唤伙伴" },
-        { "Recruit", "招募" }, { "Nightfall", "暮" }, { "nightfall", "夜幕降临" },
-        { "Blind", "盲" }, { "blinded", "失明" },
-        { "Ruin", "灭" }, { "sign of ruin", "毁灭征兆" },
-        { "Unstable", "不稳" }, { "blinking rapidly", "频繁闪烁" },
-        { "Enkindled", "燃" }, { "enkindled", "点燃" },
-        { "Catalyst", "催" }, { "catalyst", "催化" },
-        { "Flooded", "淹" }, { "Ramparts", "壁" }, { "freezing walls", "冰冻壁垒" },
-        { "Challenge", "挑战" }, { "Vengeance", "复仇" },
-        { "Drowsy", "困倦" }, { "Slimifying", "软化" },
-        { "OozeRegen", "泥恢" }, { "ooze regen", "软泥恢复" },
-    };
-    auto it = zh_names.find(en);
-    return it != zh_names.end() ? it->second : en;
-}
-
 static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
 {
     const duration_def* ddef = _lookup_duration(dur);
@@ -292,8 +185,8 @@ static bool _fill_inf_from_ddef(duration_type dur, status_info& inf)
     inf.light_colour = ddef->light_colour;
     inf.db_key       = ddef->light_text; // English TextDB key (before translation)
     inf.short_db_key = ddef->short_text;
-    inf.light_text   = _zh_status_short(ddef->light_text);
-    inf.short_text   = _zh_status_short(ddef->short_text);
+    inf.light_text   = C_("status", ddef->light_text);
+    inf.short_text   = C_("status", ddef->short_text);
     inf.long_text    = T_(ddef->long_text);
     if (ddef->duration_has_flag(D_EXPIRES))
     {
@@ -1233,9 +1126,9 @@ bool fill_status_info(int status, status_info& inf)
     if (Options.language == lang_t::ZH)
     {
         if (!inf.light_text.empty())
-            inf.light_text = _zh_status_short(inf.light_text.c_str());
+            inf.light_text = C_("status", inf.light_text.c_str());
         if (!inf.short_text.empty())
-            inf.short_text = _zh_status_short(inf.short_text.c_str());
+            inf.short_text = C_("status", inf.short_text.c_str());
     }
     return true;
 }
