@@ -1,0 +1,958 @@
+__BARK	吠叫	domain=shouts; source=EN/ZH
+__BELLOW	吼叫	domain=shouts; source=EN/ZH
+__BUZZ	嗡嗡声	domain=shouts; source=EN/ZH
+__CROAK	呱呱叫	domain=shouts; source=EN/ZH
+__HISS	嘶嘶声	domain=shouts; source=EN/ZH
+__HOWL	嚎叫	domain=shouts; source=EN/ZH
+__MOAN	呻吟	domain=shouts; source=EN/ZH
+__ROAR	咆哮	domain=shouts; source=EN/ZH
+__SCREAM	尖叫	domain=shouts; source=EN/ZH
+__SHOUT	喊叫	domain=shouts; source=EN/ZH
+__SKITTER	窸窣声	domain=shouts; source=EN/ZH
+Abjuration	驱逐术	domain=spells; source=EN/ZH; 备注=✅
+Abyss	深渊	domain=core; source=EN/ZH
+Acid Ball	酸液球	domain=spells; source=EN/ZH; 备注=✅
+acid blob	酸液团	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+acid dragon	酸龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+acidic bite	酸性撕咬	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+adder	蝰蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+agile	敏捷	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Agnes	艾格尼丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Agnes title	漫游者艾格尼丝	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Agonising Touch	剧痛之触	domain=spells; source=EN/ZH; 备注=✅
+Agony	剧痛	domain=spells; source=EN/ZH; 备注=🆕
+air elemental	气元素	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Air Elementalist	气元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Air Magic	空气魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Airstrike	空袭	domain=spells; source=EN/ZH; 备注=✅
+Aizul	艾祖尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Aizul title	疏忽的守卫艾祖尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Alchemist	炼金术士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Alchemy	炼金术	domain=magic; source=EN/ZH
+Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅
+Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅
+alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+alligator snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Amaemon title	恶魔投毒者亚麦蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+amulet	项链	domain=items; source=EN/ZH
+anaconda	水蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ancestor	先祖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ancient champion	远古冠军	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ancient lich	远古巫妖	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ancient zyme	古酶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+angel	天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Anguish	哀痛	domain=spells; source=EN/ZH; 备注=📝
+Animate Dead	操纵死尸	domain=spells; source=EN/ZH; 备注=✅
+Animate Skeleton	召唤骷髅	domain=spells; source=EN/ZH; 备注=✅
+Antaeus	安泰俄斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Antaeus title	安泰俄斯，悲叹河的守卫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+antennae	触角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Antimagic Gaze	反魔法凝视	domain=spells; source=EN/ZH; 备注=✅
+apis	阿匹斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+apocalypse crab	天启螃蟹	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Apportation	隔空取物	domain=spells; source=EN/ZH; 备注=✅
+Arachne	阿拉克涅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Arachne title	编织者阿拉克涅	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+arbalest	重弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
+arcanist	奥术师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Arcjolt	电弧震击	domain=spells; source=EN/ZH; 备注=✅
+armataur	甲马人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+armataur	甲龙兽人	domain=species; source=EN/ZH
+armor	护甲	domain=combat; source=EN/ZH
+armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
+Armour	护甲	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+armour echo	铠甲回响	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+artefact	神器	domain=items; source=EN/ZH
+Artificer	技师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Ashenzari	艾申扎利	domain=gods; source=EN/ZH; 类型=音译
+Asmodeus	阿斯摩蒂斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Asmodeus title	阿斯摩蒂斯，欣嫩谷的王子	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+aspiring flesh	渴望之肉	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Asterion	阿斯忒里翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+attack	攻击	domain=combat; source=EN/ZH
+Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅
+Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅
+Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅
+Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=✅
+Awaken Flesh	唤醒血肉	domain=spells; source=EN/ZH; 备注=✅
+Awaken Forest	唤醒森林	domain=spells; source=EN/ZH; 备注=✅
+Awaken Vines	唤醒藤蔓	domain=spells; source=EN/ZH; 备注=✅
+Axes	斧类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Azrael	阿兹瑞尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Azrael title	无边烈焰阿兹瑞尔	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+azure jelly	天蓝果冻怪	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Bai Suzhen	白素贞	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Bai Suzhen title	白素贞，白蛇夫人	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+ball lightning	球形闪电	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ball python	球蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ballistomycete	孢子炮菌	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+ballistomycete spore	孢子炮菌孢子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+balrug	巴鲁格	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Banishment	放逐	domain=spells; source=EN/ZH; 备注=✅
+barachi	蛙人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+basilisk	石化蜥蜴	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bat	蝙蝠	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
+battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Beastly Appendage	野兽肢体	domain=spells; source=EN/ZH; 备注=✅
+Beckoning Gale	召唤强风	domain=spells; source=EN/ZH; 备注=✅
+begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
+bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Beogh	比欧弗	domain=gods; source=EN/ZH; 类型=音译
+Berserk	狂暴	domain=core; source=EN/ZH; 注意事项=近战加成但结束后减速 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Berserk Other	狂暴他人	domain=spells; source=EN/ZH; 备注=✅
+Berserker	狂战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Berserker Rage	狂暴之怒	domain=spells; source=EN/ZH; 备注=✅
+Bestow Arms	赐予武器	domain=spells; source=EN/ZH; 备注=✅
+Bind Souls	绑定灵魂	domain=spells; source=EN/ZH; 备注=✅
+black bear	黑熊	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+black draconian	黑龙人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=✅
+blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（系列完整） | domain=spells; source=EN/ZH; 备注=✅
+Blink Allies Away	闪烁盟友远离	domain=spells; source=EN/ZH; 备注=✅
+Blink Allies Encircling	闪烁盟友包围	domain=spells; source=EN/ZH; 备注=✅
+Blink Away	远离闪烁	domain=spells; source=EN/ZH; 备注=✅
+Blink Close	接近闪烁	domain=spells; source=EN/ZH; 备注=✅
+blink frog	闪烁蛙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Blink Other	闪烁他人	domain=spells; source=EN/ZH; 备注=✅
+Blink Other Close	闪烁他人接近	domain=spells; source=EN/ZH; 备注=✅
+Blink Range	退避闪烁	domain=spells; source=EN/ZH; 备注=✅
+Blinkbolt	闪烁箭	domain=spells; source=EN/ZH; 备注=✅
+blizzard demon	暴雪恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bloated husk	肿胀尸壳	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+block	格挡	domain=combat; source=EN/ZH
+block of ice	冰块	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+blood	鲜血 / 血	domain=core; source=EN/ZH; 注意事项=强调用"鲜血"，普通用"血"
+bog body	沼泽之躯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+boggart	博加特	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Bolt of Cold	寒冰箭	domain=spells; source=EN/ZH; 备注=✅
+Bolt of Devastation	毁灭箭	domain=spells; source=EN/ZH; 备注=📝
+Bolt of Draining	吸取箭	domain=spells; source=EN/ZH; 备注=📝
+Bolt of Fire	火焰箭	domain=spells; source=EN/ZH; 备注=✅
+Bolt of Flesh	血肉箭	domain=spells; source=EN/ZH; 备注=📝
+Bolt of Inaccuracy	偏差箭矢	domain=spells; source=EN/ZH; 备注=✅
+Bolt of Light	光箭	domain=spells; source=EN/ZH; 备注=📝
+Bolt of Magma	岩浆箭	domain=spells; source=EN/ZH; 备注=✅
+Bombard	炮击	domain=spells; source=EN/ZH; 备注=✅
+bombardier beetle	投弹甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bone dragon	骨龙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Borgnjor's Revivification	博格尼尔之复活	domain=spells; source=EN/ZH; 备注=✅
+Borgnjor's Vile Clutch	博格尼尔之邪恶抓握	domain=spells; source=EN/ZH; 备注=✅
+Boris	鲍里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Boris title	鲍里斯，生死大师	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+boulder	巨石	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+boulder beetle	巨砾甲虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bound soul	缚魂	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Brain Bite	脑噬	domain=spells; source=EN/ZH; 备注=✅
+brain worm	脑虫	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+brand	铭印	domain=items; source=EN/ZH
+Breathe Acid	吐息酸液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Breathe Fire	吐息火焰	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Breathe Frost	吐息寒霜	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Breathe Lightning	吐息闪电	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Breathe Poison Gas	吐息毒气	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Breathe Steam	吐息蒸汽	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+briar patch	荆棘丛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Brigand	强盗	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Brimstone Fiend	硫磺邪魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+broad axe	阔刃斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
+Brom's Barrelling Boulder	布罗姆之碾压巨石	domain=spells; source=EN/ZH; 备注=✅
+broodmother	育母蜘蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Brothers in Arms	战友	domain=spells; source=EN/ZH; 备注=📝
+bullfrog	牛蛙	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bunyip	本耶普	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+burial acolyte	殡葬侍僧	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+bush	灌木	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+butterfly	蝴蝶	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+cacodemon	恶灵恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+cactus giant	仙人掌巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Call Canine Familiar	呼唤犬类使魔	domain=spells; source=EN/ZH; 备注=📝
+Call Down Damnation	降下天谴	domain=spells; source=EN/ZH; 备注=📝
+Call Down Lightning	降下闪电	domain=spells; source=EN/ZH; 备注=✅
+Call Imp	呼唤小恶魔	domain=spells; source=EN/ZH; 备注=📝
+Call Lost Souls	呼唤迷失灵魂	domain=spells; source=EN/ZH; 备注=📝
+Call of Chaos	混沌呼唤	domain=spells; source=EN/ZH; 备注=📝
+Call Tide	呼唤潮汐	domain=spells; source=EN/ZH; 备注=📝
+camouflage	伪装	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+cane toad	海蟾蜍	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Cantrip	小戏法	domain=spells; source=EN/ZH; 备注=✅
+cast	施法（通用）/ 吟诵（仪式）/ 咏唱（神圣）	domain=core; source=EN/ZH; 注意事项=按语境选择
+catoblepas	卡托布勒帕斯	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Cause Fear	恐惧术	domain=spells; source=EN/ZH; 备注=✅
+Caustic Breath	腐蚀吐息	domain=spells; source=EN/ZH; 备注=✅
+caustic shrike	腐蚀伯劳	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+centaur	半人马	domain=species; source=EN/ZH; 复合格式=半人马 + 职业 | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+centaur warrior	半人马战士	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Cerebov	塞雷波夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Cerebov title	塞雷波夫，火与钢之恶魔领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+cerulean imp	蔚蓝小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Chain Lightning	连锁闪电	domain=spells; source=EN/ZH; 备注=✅
+Chain of Chaos	混沌之链	domain=spells; source=EN/ZH; 备注=✅
+Chant Fire Storm	咏唱火焰风暴	domain=spells; source=EN/ZH; 备注=✅
+Chaos Breath	混沌吐息	domain=spells; source=EN/ZH; 备注=✅
+Chaos Knight	混沌骑士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+chaos spawn	混沌之子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Charm	魅惑	domain=spells; source=EN/ZH; 备注=✅
+Cheibriados	切布理亚多	domain=gods; source=EN/ZH; 类型=音译
+cherub	智天使	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Chuck	查克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Chuck title	收集者查克	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+chuckles	咯咯笑着	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
+Cigotuvi's Degeneration	西格图维之退化	domain=spells; source=EN/ZH; 备注=✅
+Cigotuvi's Embrace	西格图维之拥抱	domain=spells; source=EN/ZH; 备注=✅
+Cigotuvi's Putrefaction	西格图维之腐烂	domain=spells; source=EN/ZH; 备注=✅
+claws	利爪	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Cleansing Flame	净化之焰	domain=spells; source=EN/ZH; 备注=✅
+clever	聪慧	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Cloud Cone	云雾锥	domain=spells; source=EN/ZH; 备注=✅
+clumsy	笨拙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+cocytus serpent of hell breath	冰狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+Cold Breath	寒冷吐息	domain=spells; source=EN/ZH; 备注=✅
+Combustion Breath	燃烧吐息	domain=spells; source=EN/ZH; 备注=✅
+Concentrate Venom	浓缩毒液	domain=spells; source=EN/ZH; 备注=✅
+Condensation Shield	凝结之盾	domain=spells; source=EN/ZH; 备注=🆕
+Confuse	混乱	domain=spells; source=EN/ZH; 备注=✅
+Confusing Touch	困惑之触	domain=spells; source=EN/ZH; 备注=✅
+Confusion	混乱	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Confusion Gaze	困惑凝视	domain=spells; source=EN/ZH; 备注=✅
+Conjuration	咒法系	domain=magic; source=EN/ZH
+Conjurations	咒法系	domain=magic; source=EN/ZH
+Conjure Ball Lightning	召唤球形闪电	domain=spells; source=EN/ZH; 备注=✅
+Conjure Flame	召唤火焰	domain=spells; source=EN/ZH; 备注=✅
+Conjure Living Spells	召唤活体法术	domain=spells; source=EN/ZH; 备注=✅
+Conjurer	塑能师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
+Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Control Teleport	传送控制	domain=spells; source=EN/ZH; 备注=✅
+Control Undead	亡灵控制	domain=spells; source=EN/ZH; 备注=✅
+Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅
+Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅
+Corona	怪异发光球	domain=spells; source=EN/ZH; 备注=✅
+Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
+Corrosion	腐蚀	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Corrosive Bolt	腐蚀箭	domain=spells; source=EN/ZH; 备注=✅
+Corrupt	腐化	domain=spells; source=EN/ZH; 备注=✅
+Corrupt Body	腐化躯体	domain=spells; source=EN/ZH; 备注=✅
+Corrupting Pulse	腐化脉冲	domain=spells; source=EN/ZH; 备注=✅
+Crazy Yiuf	疯狂的尤夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Crazy Yiuf title	开悟者疯狂的尤夫	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Creeping Frost	蔓延冰霜	domain=spells; source=EN/ZH; 备注=✅
+creeping inferno	蔓延地狱火	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Creeping Shadow	蔓延暗影	domain=spells; source=EN/ZH; 备注=✅
+crimson imp	深红小恶魔	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+critical hit	暴击	domain=combat; source=EN/ZH
+crocodile	鳄鱼	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+crystal echidna	水晶针鼹	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+crystal guardian	水晶守护者	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Crystallising Shot	结晶射击	domain=spells; source=EN/ZH; 备注=✅
+culicivora	库蚊蛛	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Cure Poison	解毒术	domain=spells; source=EN/ZH; 备注=✅
+curse	诅咒	domain=core; source=EN/ZH | domain=items; source=EN/ZH
+Curse of Agony	痛苦诅咒	domain=spells; source=EN/ZH; 备注=✅
+curse skull	诅咒颅骨	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+curse toe	诅咒趾	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+cyclops	独眼巨人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+daeva	德瓦	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+damage	伤害	domain=combat; source=EN/ZH
+Darkness	黑暗术	domain=spells; source=EN/ZH; 备注=✅
+Death Channel	死亡通道	domain=spells; source=EN/ZH; 备注=✅
+Death Rattle	死亡之响	domain=spells; source=EN/ZH; 备注=✅
+Death's Door	死亡之门	domain=spells; source=EN/ZH; 备注=✅
+Debugging Ray	调试射线	domain=spells; source=EN/ZH; 备注=✅
+deep elf	精灵	domain=species; source=EN/ZH; 裁决=[D-A-008]; 复合格式=精灵 + 职业（精灵剑圣、精灵湮灭者）
+Deflect Missiles	偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
+Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=✅
+Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+demon	恶魔	domain=core; source=EN/ZH
+Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=✅
+demonspawn	恶魔后裔	domain=species; source=EN/ZH; 复合格式=恶魔后裔 + 职业
+Detonation Catalyst	引爆催化剂	domain=spells; source=EN/ZH; 备注=✅
+Diamond Sawblades	钻石锯片	domain=spells; source=EN/ZH; 备注=✅
+Dig	挖掘	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=✅
+Dimension Anchor	维度锚定	domain=spells; source=EN/ZH; 备注=✅
+Dimensional Bullseye	维度靶心	domain=spells; source=EN/ZH; 备注=✅
+Diminish Spells	削弱法术	domain=spells; source=EN/ZH; 备注=✅
+dire flail	双头链枷	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
+dis serpent of hell breath	铁城蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+Discord	纷乱	domain=spells; source=EN/ZH; 备注=📝
+Disjunction	空间分离	domain=spells; source=EN/ZH; 备注=✅
+Dispater	迪斯帕特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Dispater title	迪斯帕特，铁城领主	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Dispel	驱散	domain=magic; source=EN/ZH; 状态=✅ 已确认
+Dispel Undead	驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
+Dispel Undead Range	远程驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
+Dispersal	驱散	domain=spells; source=EN/ZH; 备注=✅
+Dissolution	分解者	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Dissolution title	分解者，吉瓦的高级祭司	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
+Dithmenos	迪斯姆诺	domain=gods; source=EN/ZH; 类型=音译
+Divine Armament	神圣武装	domain=spells; source=EN/ZH; 备注=✅
+dodge	闪避	domain=combat; source=EN/ZH
+Dodging	闪避	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Dominate Undead	支配亡灵	domain=spells; source=EN/ZH; 备注=✅
+Donald	唐纳德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Doom Bolt	厄运箭	domain=spells; source=EN/ZH; 备注=📝
+Doomsaying	宣告厄运	domain=spells; source=EN/ZH; 备注=✅
+dopey	愚钝	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+draconian	龙人	domain=species; source=EN/ZH; 裁决=[D-A-007]; 复合格式=颜色 + 龙人（黑龙人、绿龙人）
+Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=✅
+dragon	龙	domain=core; source=EN/ZH
+Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=✅
+Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
+dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
+Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
+Drain	衰竭	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Drain Life	吸取生命	domain=spells; source=EN/ZH; 备注=✅
+Drain Magic	汲取魔力	domain=spells; source=EN/ZH; 备注=✅
+Draining Gaze	吸取凝视	domain=spells; source=EN/ZH; 备注=✅
+Dream Dust	梦尘	domain=spells; source=EN/ZH; 备注=✅
+Druid's Call	德鲁伊召唤	domain=spells; source=EN/ZH; 备注=✅
+Dungeon	地牢	domain=core; source=EN/ZH
+Duvessa	杜维莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Earth Elementalist	土元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Earth Magic	大地魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Edmund	埃德蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
+Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅
+Elyvilon	艾利维隆	domain=gods; source=EN/ZH; 类型=音译
+enchant	附魔	domain=items; source=EN/ZH
+Enchanter	附魔师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Enchantress	妖术女王	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
+Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅
+Ensorcelled Hibernation	冬眠	domain=spells; source=EN/ZH; 备注=✅
+Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
+Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅
+Ereshkigal	埃列什基伽勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Erica	艾丽卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=📝
+Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source=EN/ZH; 备注=📝
+Erolcha	伊罗查	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
+Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Evaporate	蒸发术	domain=spells; source=EN/ZH; 备注=✅
+eveningstar	暮星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with morningstar; decision=D-B-017
+Evocations	激活技能	domain=core; source=EN/ZH; 注意事项=**绝不**译为"召唤术"——那是 Summoning
+Evocations	魔力释放	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Excruciating Wounds	剧痛之伤	domain=spells; source=EN/ZH; 备注=✅
+executioner's axe	刽子手斧	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
+experience	经验值	domain=core; source=EN/ZH
+Explosive Bolt	爆裂弩矢	domain=spells; source=EN/ZH; 备注=✅
+falchion	弯刃剑	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
+fangs	尖牙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Fannar	凡纳尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Fastroot	快速扎根	domain=spells; source=EN/ZH; 备注=✅
+faun	牧神	domain=species; source=EN/ZH
+Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
+felid	猫人	domain=species; source=EN/ZH
+Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Fire Brand	火焰烙印	domain=spells; source=EN/ZH; 备注=✅
+Fire Breath	火焰吐息	domain=spells; source=EN/ZH; 备注=✅
+Fire cloud	火云	domain=spells; source=EN/ZH; 备注=✅
+Fire Elementalist	火元素使	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Fire Magic	火焰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Fire Storm	火焰风暴	domain=spells; source=EN/ZH; 备注=✅
+Fireball	火球	domain=spells; source=EN/ZH; 备注=🆕
+Flame Tongue	火焰之舌	domain=spells; source=EN/ZH; 备注=✅
+Flame Wave	火焰波	domain=spells; source=EN/ZH; 备注=✅
+Flaming Cloud	燃烧云	domain=spells; source=EN/ZH; 备注=✅
+Flash Freeze	急冻	domain=spells; source=EN/ZH; 备注=✅
+Flashing Balestra	闪光弩击	domain=spells; source=EN/ZH; 备注=✅
+Flay	剥皮	domain=spells; source=EN/ZH; 备注=✅
+flee	逃跑	domain=core; source=EN/ZH
+Fleetfoot	轻快脚步	domain=spells; source=EN/ZH; 备注=✅
+Flight	飞行术	domain=spells; source=EN/ZH; 备注=✅
+Force Lance	力量之矛	domain=spells; source=EN/ZH; 备注=✅
+Forceful Dismissal	强制驱逐	domain=spells; source=EN/ZH; 备注=✅
+Forceful Invitation	强制邀请	domain=spells; source=EN/ZH; 备注=✅
+Forge Blazeheart Golem	锻造炽心魔像	domain=spells; source=EN/ZH; 备注=✅
+Forge Lightning Spire	锻造闪电尖塔	domain=spells; source=EN/ZH; 备注=✅
+Forge Monarch Bomb	锻造君主炸弹	domain=spells; source=EN/ZH; 备注=✅
+Forge Phalanx Beetle	锻造方阵甲虫	domain=spells; source=EN/ZH; 备注=✅
+Forgecraft	锻造术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Forgewright	锻造师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+formicid	蚁人	domain=species; source=EN/ZH
+Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅
+Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
+Frances	弗朗西斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Frederick	弗雷德里克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Freeze	冰冻	domain=spells; source=EN/ZH; 备注=✅
+Freezing Aura	冰封灵气	domain=spells; source=EN/ZH; 备注=✅
+Freezing Cloud	冰冻云	domain=spells; source=EN/ZH; 备注=✅
+Freezing Gust	冰冻狂风	domain=spells; source=EN/ZH; 备注=✅
+Frenzy	狂乱术	domain=spells; source=EN/ZH; 备注=✅
+Frozen	冰封	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Frozen Ramparts	冰冻壁垒	domain=spells; source=EN/ZH; 备注=✅
+Fugue of the Fallen	亡灵赋格	domain=spells; source=EN/ZH; 备注=✅
+Fulminant Prism	爆裂棱镜	domain=spells; source=EN/ZH; 备注=✅
+Fulsome Distillation	精华蒸馏	domain=spells; source=EN/ZH; 备注=✅
+Fulsome Fusillade	猛烈连射	domain=spells; source=EN/ZH; 备注=✅
+Funeral Dirge	葬礼哀歌	domain=spells; source=EN/ZH; 备注=✅
+Galvanic Breath	电击吐息	domain=spells; source=EN/ZH; 备注=✅
+gargoyle	石像鬼	domain=species; source=EN/ZH
+Gastronok	加斯特罗诺克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+gehenna serpent of hell breath	火焚地狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+Gell's Gavotte	盖尔之加沃特	domain=spells; source=EN/ZH; 备注=✅
+Gell's Gravitas	盖尔之重力	domain=spells; source=EN/ZH; 备注=✅
+Geryon	格律翁	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Ghostly Fireball	幽灵火球	domain=spells; source=EN/ZH; 备注=✅
+Ghostly Sacrifice	幽灵献祭	domain=spells; source=EN/ZH; 备注=✅
+ghoul	食尸鬼	domain=species; source=EN/ZH; 复合格式=食尸鬼 + 职业
+Glacial Breath	冰川吐息	domain=spells; source=EN/ZH; 备注=✅
+Glaciate	冰川	domain=spells; source=EN/ZH; 备注=✅
+Gladiator	角斗士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Gloom	阴郁	domain=spells; source=EN/ZH; 备注=✅
+Gloorx Vloq	格洛克斯·弗洛克	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+gnoll	豺狼人	domain=species; source=EN/ZH; 复合格式=豺狼人 + 职业
+gnoll bouda	豺狼人布达	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Goad Beasts	激怒野兽	domain=spells; source=EN/ZH; 备注=✅
+goblin	地精	domain=species; source=EN/ZH; 复合格式=地精 + 职业
+god	神祇 / 神	domain=core; source=EN/ZH; 注意事项=正式语境用"神祇"，口语可用"神"
+Golden Breath	金龙吐息	domain=spells; source=EN/ZH; 备注=🆕
+Gozag	哥萨戈·亿·赛格斯	domain=gods; source=EN/ZH; 类型=音译
+Grand Avatar	大化身	domain=spells; source=EN/ZH; 备注=✅
+Grasping Roots	抓握根须	domain=spells; source=EN/ZH; 备注=✅
+Grave Claw	墓爪	domain=spells; source=EN/ZH; 备注=✅
+great mace	巨型钉头锤	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
+Greater Ensnare	强力束缚	domain=spells; source=EN/ZH; 备注=✅
+Grinder	格林德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+growls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
+Grum	格拉姆	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Grunn	格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅
+Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅
+Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=🆕
+Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅
+Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅
+Haunt	鬼魂缠身	domain=spells; source=EN/ZH; 备注=✅
+Heal Other	治愈他人	domain=spells; source=EN/ZH; 备注=✅
+Heal Wounds	治疗创伤	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Hedge Wizard	杂学巫师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Held	受困	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Hellfire Court	地狱火法庭	domain=spells; source=EN/ZH; 备注=✅
+Hellfire Mortar	地狱火迫击炮	domain=spells; source=EN/ZH; 备注=✅
+Hepliaklqana	惠普利亚卡纳	domain=gods; source=EN/ZH; 类型=音译
+Hexes	诅咒系	domain=magic; source=EN/ZH
+high mp	高魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+hit	击中	domain=combat; source=EN/ZH
+Hoarfrost Bullet	白霜弹	domain=spells; source=EN/ZH; 备注=✅
+Hoarfrost Cannonade	白霜炮击	domain=spells; source=EN/ZH; 备注=✅
+Holy Breath	神圣吐息	domain=spells; source=EN/ZH; 备注=✅
+Holy Flames	神圣火焰	domain=spells; source=EN/ZH; 备注=✅
+Holy Light	圣光术	domain=spells; source=EN/ZH; 备注=✅
+Holy word	圣言术	domain=spells; source=EN/ZH; 备注=✅
+Homunculus	人造人	domain=spells; source=EN/ZH; 备注=✅
+hooves	蹄	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+horns	角	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Hunter	猎手	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Hunting Call	狩猎呼唤	domain=spells; source=EN/ZH; 备注=✅
+Hunting Cry	狩猎战吼	domain=spells; source=EN/ZH; 备注=✅
+Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Hurl Damnation	投掷诅咒	domain=spells; source=EN/ZH; 备注=✅
+Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅
+Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅
+Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=✅
+Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=✅
+Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅
+icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+identify	鉴定	domain=items; source=EN/ZH
+Ignacio	伊格纳西奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Ignis	曳焰	domain=gods; source=EN/ZH; 类型=意译
+Ignite Poison	点燃毒素	domain=spells; source=EN/ZH; 备注=✅
+Ignition	点火	domain=spells; source=EN/ZH; 备注=✅
+Ijyb	艾吉布	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Ill Omen	凶兆	domain=spells; source=EN/ZH; 备注=✅
+Ilsuiw	伊尔苏伊	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+immune	免疫	domain=combat; source=EN/ZH
+Imprison	监禁	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Infernal Servant	地狱仆从	domain=spells; source=EN/ZH; 备注=✅
+Infestation	虫群侵扰	domain=spells; source=EN/ZH; 备注=✅
+Infusion	灌注术	domain=spells; source=EN/ZH; 备注=✅
+Injury Bond	伤害链接	domain=spells; source=EN/ZH; 备注=✅
+Injury Mirror	伤害反射	domain=spells; source=EN/ZH; 备注=✅
+Ink Cloud	墨云	domain=spells; source=EN/ZH; 备注=✅
+Inner Flame	内焰	domain=spells; source=EN/ZH; 备注=✅
+Insulation	绝缘术	domain=spells; source=EN/ZH; 备注=✅
+Invisibility	隐形	domain=core; source=EN/ZH; 注意事项=不可被看见 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Invisibility	隐身术	domain=spells; source=EN/ZH; 备注=✅
+Invisibility Other	隐身他人	domain=spells; source=EN/ZH; 备注=✅
+Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅
+Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
+Iskenderun's Battlesphere	伊斯肯德伦之战斗球	domain=spells; source=EN/ZH; 备注=✅
+Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
+Jeremiah	耶利米	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Jessica	杰西卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Jinxbite	厄运之咬	domain=spells; source=EN/ZH; 备注=✅
+Jiyva	吉瓦	domain=gods; source=EN/ZH; 类型=音译
+Jorgrun	约格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Jory	乔里	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Joseph	约瑟夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Josephina	约瑟菲娜	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Josephine	约瑟芬	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Khufu	胡夫	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Kikubaaqudgha	奇库巴库哈	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-003]
+Kinetic Grapnel	动力抓钩	domain=spells; source=EN/ZH; 备注=✅
+Kirke	喀耳刻	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Kiss of Death	死亡之吻	domain=spells; source=EN/ZH; 备注=✅
+kobold	狗头人	domain=species; source=EN/ZH; 复合格式=狗头人 + 职业
+Landbreaker	裂地	domain=spells; source=EN/ZH; 备注=✅
+large bone plates	大型骨板	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
+Launch Bomblet	发射小型炸弹	domain=spells; source=EN/ZH; 备注=✅
+Launch Clockwork Bee	发射发条蜜蜂	domain=spells; source=EN/ZH; 备注=✅
+Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅
+Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅
+Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅
+Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅
+Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅
+Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Lesser Beckoning	次级召唤	domain=spells; source=EN/ZH; 备注=✅
+Lethal Infusion	致命灌注	domain=spells; source=EN/ZH; 备注=✅
+level	等级 / 层	domain=core; source=EN/ZH; 注意事项=角色用"等级"，楼层用"层"
+Lightning Bolt	闪电箭	domain=spells; source=EN/ZH; 备注=✅
+Localized Ignite Poison	局部引爆毒素	domain=spells; source=EN/ZH; 备注=✅
+Lodul	洛杜尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Lom Lobon	洛姆·洛邦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Long Blades	长刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Louise	路易丝	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+low mp	低魔力	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Lugonu	卢格努	domain=gods; source=EN/ZH; 类型=音译
+Maces & Flails	锤与链枷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Maggie	玛吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Magic Dart	魔法飞弹	domain=spells; source=EN/ZH; 备注=✅
+magic points	法力	domain=core; source=EN/ZH; 注意事项=施法资源
+Magma Barrage	岩浆弹幕	domain=spells; source=EN/ZH; 备注=✅
+Magnavolt	磁暴	domain=spells; source=EN/ZH; 备注=✅
+Major Destruction	大型毁灭	domain=spells; source=EN/ZH; 备注=✅
+Major Healing	大型治疗	domain=spells; source=EN/ZH; 备注=✅
+Makhleb	马科列布	domain=gods; source=EN/ZH; 类型=音译
+Malign Gateway	邪恶传送门	domain=spells; source=EN/ZH; 备注=✅
+Malign Offering	邪恶献祭	domain=spells; source=EN/ZH; 备注=✅
+Malmutate	恶性变异	domain=spells; source=EN/ZH; 备注=✅
+Manifold Assault	多重攻击	domain=spells; source=EN/ZH; 备注=✅
+Mara	玛拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Mara Summon	玛拉召唤	domain=spells; source=EN/ZH; 备注=✅
+March of Sorrows	悲伤行军	domain=spells; source=EN/ZH; 备注=✅
+Margery	玛杰丽	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Marshlight	沼泽之光	domain=spells; source=EN/ZH; 备注=✅
+Martyr's Knell	殉道者之丧钟	domain=spells; source=EN/ZH; 备注=✅
+Mass Confusion	群体混乱	domain=spells; source=EN/ZH; 备注=✅
+Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅
+Maurice	莫里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Maxwell's Capacitive Coupling	麦克斯韦之电容耦合	domain=spells; source=EN/ZH; 备注=✅
+Maxwell's Portable Piledriver	麦克斯韦之便携打桩机	domain=spells; source=EN/ZH; 备注=✅
+Melee	近战	domain=spells; source=EN/ZH; 备注=✅
+Menkaure	门卡拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Mennas	门纳斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Mephitic Cloud	迷瘴云	domain=spells; source=EN/ZH; 备注=📝
+Mercury Arrow	汞矢	domain=spells; source=EN/ZH; 备注=✅
+merfolk	人鱼	domain=species; source=EN/ZH; 复合格式=人鱼 + 职业（人鱼水法师）
+Mesmerise	催眠	domain=spells; source=EN/ZH; 备注=📝
+Metabolic Englaciation	深度冻结	domain=spells; source=EN/ZH; 备注=✅
+Metal Splinters	金属碎片	domain=spells; source=EN/ZH; 备注=✅
+Miasma Breath	瘴气吐息	domain=spells; source=EN/ZH; 备注=✅
+Miasma cloud	瘴气云	domain=spells; source=EN/ZH; 备注=✅
+Might	强壮	domain=spells; source=EN/ZH; 备注=✅
+Might	强效	domain=core; source=EN/ZH; 注意事项=+10% 伤害 | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Might Other	强壮他人	domain=spells; source=EN/ZH; 备注=✅
+Mindburst	心智爆发	domain=spells; source=EN/ZH; 备注=✅
+Minor Healing	小型治疗	domain=spells; source=EN/ZH; 备注=✅
+minotaur	牛头人	domain=species; source=EN/ZH
+miscast	施法失误	domain=core; source=EN/ZH; 注意事项=非"施法失败"（后者指被中断）
+Mislead	误导术	domain=spells; source=EN/ZH; 备注=✅
+miss	未命中	domain=combat; source=EN/ZH
+Mlioglotl	姆利奥格洛特尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Mnoleg	姆诺雷格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+molten scales	熔融鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Momentum Strike	动量打击	domain=spells; source=EN/ZH; 备注=✅
+Monk	武僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
+Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
+morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
+Mourning Wail	哀悼嚎哭	domain=spells; source=EN/ZH; 备注=✅
+MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
+Mud Breath	泥浆吐息	domain=spells; source=EN/ZH; 备注=✅
+mumbles	嘟囔道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
+mummy	木乃伊	domain=species; source=EN/ZH; 复合格式=木乃伊 + 职业
+Murray	默里	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Mutagenic Gaze	变异凝视	domain=spells; source=EN/ZH; 备注=✅
+mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
+naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
+nagaraja	纳迦王	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
+Natasha	娜塔莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/ZH; 备注=✅
+Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅
+Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Necromancy	死灵术	domain=magic; source=EN/ZH
+Necromutation	亡灵变形	domain=spells; source=EN/ZH; 备注=✅
+Nellie	内莉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Nemelex Xobeh	尼姆雷斯·索布	domain=gods; source=EN/ZH; 类型=音译·U+00B7; 裁决=[D-A-004]
+Nergalle	内尔加勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Nessos	涅索斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Nikola	尼古拉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+nonexistent spell	不存在的法术	domain=spells; source=EN/ZH; 备注=✅
+Norris	诺里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Noxious Breath	毒瘴吐息	domain=spells; source=EN/ZH; 备注=✅
+Noxious Cloud	毒瘴云	domain=spells; source=EN/ZH; 备注=📝
+Nullifying Breath	消魔吐息	domain=spells; source=EN/ZH; 备注=✅
+Oblivion Howl	湮灭嚎叫	domain=spells; source=EN/ZH; 备注=✅
+octopode	章鱼人	domain=species; source=EN/ZH
+ogre	食人魔	domain=species; source=EN/ZH; 复合格式=食人魔 + 职业
+Okawaru	奥卡瓦鲁	domain=gods; source=EN/ZH; 类型=音译
+Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
+old falchion	旧弯刃剑	domain=items; source=EN/ZH; Scope / comment=legacy weapon key; decision=D-B-018
+Old serpent of hell breath	地狱古蛇吐息	domain=spells; source=EN/ZH; 备注=✅
+Olgreb's Toxic Radiance	奥尔格雷布之毒辐射	domain=spells; source=EN/ZH; 备注=✅
+Orb of Destruction	毁灭之球	domain=spells; source=EN/ZH; 备注=✅
+Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅
+Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=两种译法均可
+orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人骑士、兽人大祭司）
+Ostracise	排斥	domain=spells; source=EN/ZH; 备注=✅
+Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅
+Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅
+Pain	痛苦	domain=spells; source=EN/ZH; 备注=✅
+Pakellas	帕克拉斯	domain=gods; source=EN/ZH; 类型=音译
+Paralyse	麻痹	domain=spells; source=EN/ZH; 备注=✅
+Paralysis	麻痹	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Paralysis Gaze	麻痹凝视	domain=spells; source=EN/ZH; 备注=✅
+Parghit	帕吉特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Pargi	帕尔吉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+partisan	阔头枪	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
+Passage of Golubria	戈卢布里亚之通道	domain=spells; source=EN/ZH; 备注=✅
+Passwall	穿墙术	domain=spells; source=EN/ZH; 备注=✅
+penance	惩戒（律法神）/ 苦修（自我牺牲神）	domain=core; source=EN/ZH; 注意事项=按神祇类型选择
+Permafrost Eruption	永冻爆发	domain=spells; source=EN/ZH; 备注=✅
+Petrification	石化	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Petrify	石化	domain=spells; source=EN/ZH; 备注=✅
+Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅
+Phantom Blitz	幻影突击	domain=spells; source=EN/ZH; 备注=✅
+Phantom Mirror	幻影镜	domain=spells; source=EN/ZH; 备注=✅
+Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=✅
+Pikel	皮克尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Planar Overlay	位面叠加	domain=spells; source=EN/ZH; 备注=✅
+Plane Rend	位面撕裂	domain=spells; source=EN/ZH; 备注=✅
+Plasma Beam	等离子光束	domain=spells; source=EN/ZH; 备注=✅
+Platinum Paragon	白金典范	domain=spells; source=EN/ZH; 备注=✅
+player ghost	玩家鬼魂	domain=core; source=EN/ZH
+pleads	恳求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
+Poison	中毒	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Poison Arrow	毒箭	domain=spells; source=EN/ZH; 备注=✅
+Poison cloud	毒气云	domain=spells; source=EN/ZH; 备注=✅
+Poison Magic	毒素魔法	domain=magic; source=EN/ZH
+Poison Weapon	淬毒武器	domain=spells; source=EN/ZH; 备注=✅
+Poisonous Cloud	毒云	domain=spells; source=EN/ZH; 备注=✅
+Poisonous Vapours	毒气	domain=spells; source=EN/ZH; 备注=✅
+Polar Vortex	极地漩涡	domain=spells; source=EN/ZH; 备注=✅
+Polearms	长柄武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Polymorph	变形术	domain=spells; source=EN/ZH; 备注=✅
+Polyphemus	波吕斐摩斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Porkalator	变猪术	domain=spells; source=EN/ZH; 备注=✅
+Portal Projectile	传送投射物	domain=spells; source=EN/ZH; 备注=✅
+potion	药水	domain=items; source=EN/ZH
+Prayer of Brilliance	聪慧祈祷	domain=spells; source=EN/ZH; 备注=✅
+Primal Wave	原始波浪	domain=spells; source=EN/ZH; 备注=✅
+Prince Ribbit	蛙王子	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Pyre Arrow	烈火箭	domain=spells; source=EN/ZH; 备注=📝
+Pyroclastic Surge	火山碎屑涌	domain=spells; source=EN/ZH; 备注=✅
+Pyrrhic Recollection	惨胜回忆	domain=spells; source=EN/ZH; 备注=✅
+Qazlal	卡兹拉尔	domain=gods; source=EN/ZH; 类型=音译
+quarterstaff	长棍	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
+Quicksilver Bolt	水银箭	domain=spells; source=EN/ZH; 备注=✅
+Rakshasa Summon	召唤罗刹	domain=spells; source=EN/ZH; 备注=✅
+Rampage	冲锋	domain=core; source=EN/ZH; 注意事项=攻击时自动向敌人移动一步
+Random Bolt	随机箭矢	domain=spells; source=EN/ZH; 备注=✅
+Random Effects	随机效果	domain=spells; source=EN/ZH; 备注=✅
+Ranged Weapons	远程武器	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Ravenous Swarm	贪婪虫群	domain=spells; source=EN/ZH; 备注=✅
+Rearrange the Pieces	重新布局	domain=spells; source=EN/ZH; 备注=✅
+Reaver	掠夺者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Rebounding Blaze	弹跳烈焰	domain=spells; source=EN/ZH; 备注=✅
+Rebounding Chill	弹跳寒冷	domain=spells; source=EN/ZH; 备注=✅
+Recall	召回术	domain=spells; source=EN/ZH; 备注=✅
+Recite	吟诵	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Regenerate Other	再生他人	domain=spells; source=EN/ZH; 备注=📝
+Regeneration	快速再生	domain=spells; source=EN/ZH; 备注=✅
+remove	卸下	domain=items; source=EN/ZH
+Rending Blade	撕裂之刃	domain=spells; source=EN/ZH; 备注=✅
+repulsion field	排斥力场	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+resist	抵抗	domain=combat; source=EN/ZH
+Resistance	抗性	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Resonance Strike	共鸣打击	domain=spells; source=EN/ZH; 备注=✅
+Resurrect	复活术	domain=spells; source=EN/ZH; 备注=✅
+Rimeblight	霜疫	domain=spells; source=EN/ZH; 备注=✅
+ring	戒指	domain=items; source=EN/ZH
+Ring of Flames	烈焰之环	domain=spells; source=EN/ZH; 备注=✅
+Ring of Thunder	雷霆之环	domain=spells; source=EN/ZH; 备注=✅
+roars	咆哮道 / 吼道	domain=dialogue; source=EN/ZH; 适用角色=龙、大型怪物
+Robin	罗宾	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Roll	翻滚	domain=spells; source=EN/ZH; 备注=✅
+Roxanne	罗克珊	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Ru	入	domain=gods; source=EN/ZH; 类型=意译（"enter"）
+rugged brown scales	粗糙褐鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Rupert	鲁珀特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Rust Breath	锈蚀吐息	domain=spells; source=EN/ZH; 备注=✅
+Sacrifice	献祭	domain=spells; source=EN/ZH; 备注=✅
+Saint Roka	圣罗卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Sanctuary	庇护所	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Sandblast	沙爆	domain=spells; source=EN/ZH; 备注=📝
+sanguine talisman	血色护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
+Sap Magic	削弱魔法	domain=spells; source=EN/ZH; 备注=✅
+says	说 / 说道	domain=dialogue; source=EN/ZH; 适用角色=通用
+Scattershot	散射术	domain=spells; source=EN/ZH; 备注=✅
+Scorch	烧焦	domain=spells; source=EN/ZH; 备注=✅
+scroll	卷轴	domain=items; source=EN/ZH
+Sculpt Simulacrum	塑造拟像	domain=spells; source=EN/ZH; 备注=✅
+Seal Doors	封印门	domain=spells; source=EN/ZH; 备注=✅
+Searing Breath	灼热吐息	domain=spells; source=EN/ZH; 备注=📝
+Searing Ray	灼热射线	domain=spells; source=EN/ZH; 备注=✅
+See Invisible	侦测隐形	domain=spells; source=EN/ZH; 备注=🆕
+Seismic Stomp	地震践踏	domain=spells; source=EN/ZH; 备注=✅
+Sentinel's Mark	哨兵印记	domain=spells; source=EN/ZH; 备注=✅
+Seracfall	冰塔崩塌	domain=spells; source=EN/ZH; 备注=✅
+Serpent of Hell cocytus	悲叹河地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Serpent of Hell dis	铁城地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Serpent of Hell gehenna	欣嫩谷地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Serpent of Hell tartarus	塔尔塔罗斯地狱巨蛇	domain=monsters; source=EN/ZH; monster; source=source.txt; shared display name=unique-monster; source=monsters.txt; branch-qualified display name
+Shadow Beam	暗影光束	domain=spells; source=EN/ZH; 备注=✅
+Shadow Bind	暗影束缚	domain=spells; source=EN/ZH; 备注=✅
+Shadow Creatures	暗影生物	domain=spells; source=EN/ZH; 备注=✅
+Shadow Draining	暗影吸取	domain=spells; source=EN/ZH; 备注=✅
+Shadow Prism	暗影棱镜	domain=spells; source=EN/ZH; 备注=✅
+Shadow Puppet	暗影傀儡	domain=spells; source=EN/ZH; 备注=✅
+Shadow Shard	暗影碎片	domain=spells; source=EN/ZH; 备注=✅
+Shadow Shot	暗影射击	domain=spells; source=EN/ZH; 备注=✅
+Shadow Tempest	暗影风暴	domain=spells; source=EN/ZH; 备注=✅
+Shadow Torpor	暗影麻木	domain=spells; source=EN/ZH; 备注=✅
+Shadow Turret	暗影炮塔	domain=spells; source=EN/ZH; 备注=✅
+Shadowball	暗影球	domain=spells; source=EN/ZH; 备注=✅
+shadows	暗影	domain=items; source=EN/ZH; Scope / comment=armour ego; decision=D-B-018
+Shaft Self	自我竖井	domain=spells; source=EN/ZH; 备注=✅
+shaggy fur	浓密皮毛	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Shapeshifter	变形人	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Shapeshifting	变形术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+sharp scales	锐利鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Shatter	粉碎	domain=spells; source=EN/ZH; 备注=✅
+Sheza's Dance	谢扎之舞	domain=spells; source=EN/ZH; 备注=✅
+shield	盾牌	domain=combat; source=EN/ZH
+Shields	盾牌	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Shock	震击	domain=spells; source=EN/ZH; 备注=✅
+Short Blades	短刃	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+shout	喊叫	domain=core; source=EN/ZH; 注意事项=非"吼叫"（那是 roar）
+shouts	喊道	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
+Shred	撕裂	domain=spells; source=EN/ZH; 备注=✅
+Shroud of Golubria	戈卢布里亚之幕	domain=spells; source=EN/ZH; 备注=✅
+Sick	患病	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
+Sif Muna	西芙·穆娜	domain=gods; source=EN/ZH; 类型=音译·U+00B7; 裁决=[D-A-001]
+Sigil of Binding	束缚符文	domain=spells; source=EN/ZH; 备注=✅
+Sigmund	西格蒙德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Sign of Ruin	毁灭征兆	domain=spells; source=EN/ZH; 备注=🆕
+Silence	沉默	domain=core; source=EN/ZH; 注意事项=禁止施法/阅读卷轴 | domain=spells; source=EN/ZH; 备注=🆕
+Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=✅
+Singularity	奇点术	domain=spells; source=EN/ZH; 备注=✅
+Siphon Essence	吸取精华	domain=spells; source=EN/ZH; 备注=✅
+Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅
+skill	技能	domain=core; source=EN/ZH
+Sleep	睡眠	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅
+Sleetstrike	冰雨打击	domain=spells; source=EN/ZH; 备注=✅
+slimy green scales	黏滑绿鳞	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Slow	减速	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=📝
+Slug Dart	弹丸飞镖	domain=spells; source=EN/ZH; 备注=✅
+Smiting	惩击	domain=spells; source=EN/ZH; 备注=✅
+snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
+Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Sojourning Bolt	旅居箭	domain=spells; source=EN/ZH; 备注=📝
+Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=✅
+Sonic wave	音波	domain=spells; source=EN/ZH; 备注=✅
+Sonja	索尼娅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+soul	灵魂	domain=core; source=EN/ZH
+Soul Splinter	灵魂分裂	domain=spells; source=EN/ZH; 备注=✅
+Spawn Tentacles	生成触须	domain=spells; source=EN/ZH; 备注=✅
+Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅
+Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=✅
+spell	法术	domain=core; source=EN/ZH; 注意事项=泛指
+Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
+Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
+Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
+Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=✅
+Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅
+Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
+Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Spit Poison	喷毒	domain=spells; source=EN/ZH; 备注=✅
+Splinterfrost Shell	碎霜之壳	domain=spells; source=EN/ZH; 备注=✅
+Splinterspray	碎片喷射	domain=spells; source=EN/ZH; 备注=✅
+Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅
+spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=小精灵 + 职业（小精灵气法师、小精灵狂战士）
+Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
+Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
+Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=✅
+Staves	棍棒	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
+Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
+Steam cloud	蒸汽云	domain=spells; source=EN/ZH; 备注=✅
+Sticks to Snakes	棍变蛇	domain=spells; source=EN/ZH; 备注=✅
+Sticky Flame	黏着火焰	domain=spells; source=EN/ZH; 备注=✅
+Still Winds	静止风	domain=spells; source=EN/ZH; 备注=✅
+Sting	毒刺	domain=spells; source=EN/ZH; 备注=🆕
+stinger	毒刺	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Stoke Flames	煽动火焰	domain=spells; source=EN/ZH; 备注=✅
+Stone Arrow	石箭	domain=spells; source=EN/ZH; 备注=✅
+Stoneskin	石肤术	domain=spells; source=EN/ZH; 备注=✅
+Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=✅
+Striking	打击术	domain=spells; source=EN/ZH; 备注=✅
+Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
+strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Stunning Burst	眩晕爆发	domain=spells; source=EN/ZH; 备注=✅
+Sublimation of Blood	血液升华	domain=spells; source=EN/ZH; 备注=✅
+Summon	召唤	domain=magic; source=EN/ZH; 状态=✅ 已确认
+Summon Air Elementals	召唤气元素	domain=spells; source=EN/ZH; 备注=📝
+Summon Butterflies	召唤蝴蝶	domain=spells; source=EN/ZH; 备注=✅
+Summon Cactus Giant	召唤仙人掌巨人	domain=spells; source=EN/ZH; 备注=✅
+Summon Demon	召唤恶魔	domain=spells; source=EN/ZH; 备注=✅
+Summon Dragon	召唤巨龙	domain=spells; source=EN/ZH; 备注=✅
+Summon Drakes	召唤幼龙	domain=spells; source=EN/ZH; 备注=✅
+Summon Earth Elementals	召唤地元素	domain=spells; source=EN/ZH; 备注=📝
+Summon Elemental	召唤元素	domain=spells; source=EN/ZH; 备注=✅
+Summon Emperor Scorpions	召唤帝蝎	domain=spells; source=EN/ZH; 备注=✅
+Summon Executioners	召唤行刑者	domain=spells; source=EN/ZH; 备注=✅
+Summon Eyeballs	召唤眼球	domain=spells; source=EN/ZH; 备注=✅
+Summon Fire Elementals	召唤火元素	domain=spells; source=EN/ZH; 备注=📝
+Summon Forest	召唤森林	domain=spells; source=EN/ZH; 备注=✅
+Summon Greater Demon	召唤高级恶魔	domain=spells; source=EN/ZH; 备注=✅
+Summon Hell Sentinel	召唤地狱哨兵	domain=spells; source=EN/ZH; 备注=✅
+Summon Holies	召唤圣灵	domain=spells; source=EN/ZH; 备注=✅
+Summon Horrible Things	召唤恐怖之物	domain=spells; source=EN/ZH; 备注=✅
+Summon Hydra	召唤多头蛇	domain=spells; source=EN/ZH; 备注=✅
+Summon Ice Beast	召唤冰兽	domain=spells; source=EN/ZH; 备注=✅
+Summon Illusion	召唤幻象	domain=spells; source=EN/ZH; 备注=✅
+Summon Iron Elementals	召唤铁元素	domain=spells; source=EN/ZH; 备注=✅
+Summon Mana Viper	召唤魔力蝰蛇	domain=spells; source=EN/ZH; 备注=✅
+Summon Minor Demon	召唤次级恶魔	domain=spells; source=EN/ZH; 备注=📝
+Summon Mortal Champion	召唤凡人冠军	domain=spells; source=EN/ZH; 备注=✅
+Summon Mushrooms	召唤蘑菇	domain=spells; source=EN/ZH; 备注=✅
+Summon Rakshasa	召唤罗刹	domain=spells; source=EN/ZH; 备注=✅
+Summon Scarabs	召唤圣甲虫	domain=spells; source=EN/ZH; 备注=✅
+Summon Scorpions	召唤蝎子	domain=spells; source=EN/ZH; 备注=✅
+Summon Seismosaurus Egg	召唤震龙蛋	domain=spells; source=EN/ZH; 备注=✅
+Summon Sin Beast	召唤罪兽	domain=spells; source=EN/ZH; 备注=✅
+Summon Small Mammal	召唤小型哺乳动物	domain=spells; source=EN/ZH; 备注=✅
+Summon Spiders	召唤蜘蛛	domain=spells; source=EN/ZH; 备注=✅
+Summon swarm	召唤虫群	domain=spells; source=EN/ZH; 备注=✅
+Summon Twister	召唤旋风	domain=spells; source=EN/ZH; 备注=✅
+Summon Tzitzimitl	召唤齐齐米特尔	domain=spells; source=EN/ZH; 备注=✅
+Summon Ufetubus	召唤乌菲图布斯	domain=spells; source=EN/ZH; 备注=✅
+Summon Undead	召唤亡灵	domain=spells; source=EN/ZH; 备注=✅
+Summon Vermin	召唤害虫	domain=spells; source=EN/ZH; 备注=✅
+Summon Water Elementals	召唤水元素	domain=spells; source=EN/ZH; 备注=✅
+Summoner	召唤师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Summoning	召唤系	domain=magic; source=EN/ZH
+Summonings	召唤系	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Sunray	阳光射线	domain=spells; source=EN/ZH; 备注=✅
+Sure Blade	精准之刃	domain=spells; source=EN/ZH; 备注=✅
+Swiftness	迅捷	domain=spells; source=EN/ZH; 备注=✅
+Symbol of Torment	折磨之符	domain=spells; source=EN/ZH; 备注=✅
+tartarus serpent of hell breath	悲叹地狱蛇之吐息	domain=spells; source=EN/ZH; 备注=✅
+taunts	嘲讽道	domain=dialogue; source=EN/ZH; 适用角色=高等恶魔、反派
+Teleport	传送	domain=core; source=EN/ZH; 注意事项=位移效果
+Teleport Other	传送他人	domain=spells; source=EN/ZH; 备注=✅
+Teleport Self	自我传送	domain=spells; source=EN/ZH; 备注=✅
+tengu	天狗	domain=species; source=EN/ZH; 复合格式=天狗 + 职业（天狗咒术师）
+Terence	特伦斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+The Shining One	光辉者	domain=gods; source=EN/ZH; 类型=意译; 裁决=[D-A-006]
+thin metallic scales	薄金属鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+thin skeletal structure	纤细骨骼	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Throw	投掷	domain=spells; source=EN/ZH; 备注=🆕
+Throw Ally	投掷盟友	domain=spells; source=EN/ZH; 备注=✅
+Throw Barbs	投掷倒刺	domain=spells; source=EN/ZH; 备注=✅
+Throw Bolas	投掷流星索	domain=spells; source=EN/ZH; 备注=✅
+Throw Flame	投掷火焰	domain=spells; source=EN/ZH; 备注=✅
+Throw Frost	投掷冰霜	domain=spells; source=EN/ZH; 备注=✅
+Throw Icicle	投掷冰柱	domain=spells; source=EN/ZH; 备注=✅
+Throw Klown Pie	投掷小丑派	domain=spells; source=EN/ZH; 备注=✅
+Throwing	投掷	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Thunderbolt	雷击	domain=spells; source=EN/ZH; 备注=✅
+Tiamat	提亚马特	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Tomb of Doroklohe	多洛克洛之墓	domain=spells; source=EN/ZH; 备注=✅
+Torment	折磨	domain=combat; source=EN/ZH; column3=按比例造成伤害
+tough skin	硬化表皮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Translocation	传送系	domain=magic; source=EN/ZH
+Translocations	传送系	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Tremorstone	震石	domain=spells; source=EN/ZH; 备注=✅
+triple crossbow	三弦弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-018
+Trog	特洛格	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-002]
+Trog's Hand	特洛格之手	domain=spells; source=EN/ZH; 备注=✅
+troll	巨魔	domain=species; source=EN/ZH; 复合格式=巨魔 + 职业
+Tukima's Dance	图基玛之舞	domain=spells; source=EN/ZH; 备注=✅
+Twisted Resurrection	扭曲复活	domain=spells; source=EN/ZH; 备注=✅
+Unarmed Combat	徒手格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+undead	亡灵	domain=core; source=EN/ZH
+Unleash Destruction	释放毁灭	domain=spells; source=EN/ZH; 备注=✅
+Upheaval	剧变	domain=spells; source=EN/ZH; 备注=✅
+Urug	乌鲁格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Uskayaw	乌斯卡亚	domain=gods; source=EN/ZH; 类型=音译
+vampire	吸血鬼	domain=species; source=EN/ZH; 复合格式=吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师）
+Vampire Summon	召唤吸血鬼	domain=spells; source=EN/ZH; 备注=✅
+Vampiric Draining	吸血术	domain=spells; source=EN/ZH; 备注=✅
+Vanquished Vanguard	败军先锋	domain=spells; source=EN/ZH; 备注=📝
+Vashnia	瓦什妮亚	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Vehumet	维胡梅特	domain=gods; source=EN/ZH; 类型=音译; 裁决=[D-A-005]
+Venom Bolt	毒液箭	domain=spells; source=EN/ZH; 备注=✅
+Vex	激怒	domain=spells; source=EN/ZH; 备注=✅
+Vhi's Electric Charge	维之电荷	domain=spells; source=EN/ZH; 备注=✅
+Vhi's Electrolunge	维之电冲	domain=spells; source=EN/ZH; 备注=✅
+vine stalker	藤蔓行者	domain=species; source=EN/ZH
+Virulence	毒性	domain=spells; source=EN/ZH; 备注=✅
+Vitalisation	活力再生	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Vitrify	玻璃化	domain=spells; source=EN/ZH; 备注=✅
+Vitrifying Gaze	玻璃化凝视	domain=spells; source=EN/ZH; 备注=✅
+Volatile Blastmotes	不稳定爆尘	domain=spells; source=EN/ZH; 备注=✅
+Volley of Thorns	荆棘齐射	domain=spells; source=EN/ZH; 备注=✅
+Vortex	漩涡	domain=spells; source=EN/ZH; 备注=🆕
+vulnerable	脆弱	domain=combat; source=EN/ZH
+Vv	芙芙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Wall of Brambles	荆棘之墙	domain=spells; source=EN/ZH; 备注=✅
+wand	魔杖	domain=items; source=EN/ZH
+Wanderer	漫游者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Warning Cry	警告之嚎	domain=spells; source=EN/ZH; 备注=✅
+Warp Body	扭曲身体	domain=spells; source=EN/ZH; 备注=✅
+Warp Space	扭曲空间	domain=spells; source=EN/ZH; 备注=✅
+Warp Weapon	扭曲武器	domain=spells; source=EN/ZH; 备注=✅
+Warper	折跃者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Waterstrike	水击	domain=spells; source=EN/ZH; 备注=✅
+weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+Weakening Gaze	虚弱凝视	domain=spells; source=EN/ZH; 备注=✅
+weapon	武器	domain=items; source=EN/ZH
+wear	穿戴	domain=items; source=EN/ZH
+Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=✅
+whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
+wield	持握	domain=items; source=EN/ZH
+Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅
+Woodweal	木质愈合	domain=spells; source=EN/ZH; 备注=✅
+Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
+Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅
+Wu Jian	无间门派	domain=gods; source=EN/ZH; 类型=意译（门派=sect）
+Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
+XP	经验值	domain=core; source=EN/ZH
+Xtahua	扎塔瓦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+yaktaur	牦牛人马	domain=species; source=EN/ZH; 复合格式=牦牛人马 + 职业
+Yara's Violent Unravelling	亚拉之猛烈解构	domain=spells; source=EN/ZH; 备注=✅
+yellow scales	黄色鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
+yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
+Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
+Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
+Zot	佐特	domain=gods; source=EN/ZH; 类型=音译

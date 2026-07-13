@@ -1,6 +1,7 @@
 # DCSS 中文翻译术语表
 
-> 统一 SSOT——翻译 Agent 在翻译前必须查阅此文件。
+> 统一人工维护 SSOT——翻译 Agent 在翻译前必须查阅此文件。
+> 物品显示名称区域另可导出为 OmegaT UTF-8 TSV：第一列源语、第二列译语、第三列作用域/备注。
 > 来源合并：`docs/decisions.md` + `issues/12/glossary_and_style.md` + `zh-translator.md` prompt
 > 维护规则：术语变更必须同步更新此文件和相关 decisions.md 裁决。
 
@@ -180,6 +181,27 @@
 | enchant | 附魔 |
 | curse | 诅咒 |
 
+### 基础物品显示名称（脚本 SSOT）
+
+<!-- item-name-terms -->
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| arbalest | 重弩 | weapon; decision=D-B-017 |
+| broad axe | 阔刃斧 | weapon; decision=D-B-018 |
+| dragon-coil talisman | 盘龙护符 | talisman; decision=D-B-018 |
+| dire flail | 双头链枷 | weapon; decision=D-B-017 |
+| falchion | 弯刃剑 | weapon; decision=D-B-018 |
+| great mace | 巨型钉头锤 | weapon; decision=D-B-017 |
+| morningstar | 晨星锤 | weapon; paired with eveningstar; decision=D-B-017 |
+| eveningstar | 暮星锤 | weapon; paired with morningstar; decision=D-B-017 |
+| old falchion | 旧弯刃剑 | legacy weapon key; decision=D-B-018 |
+| partisan | 阔头枪 | weapon; decision=D-B-018 |
+| quarterstaff | 长棍 | weapon; decision=D-B-017 |
+| sanguine talisman | 血色护符 | talisman; decision=D-B-018 |
+| shadows | 暗影 | armour ego; decision=D-B-018 |
+| triple crossbow | 三弦弩 | weapon; decision=D-B-018 |
+| executioner's axe | 刽子手斧 | weapon; decision=D-B-017 |
+
 ---
 
 <!-- domain:dialogue -->
@@ -202,7 +224,7 @@
 <!-- domain:shouts -->
 ## 八、怪物喊叫类型（__SHOUT 等）
 
-| EN Key | ZH |
+| EN | ZH |
 |--------|----|
 | `__SHOUT` | 喊叫 |
 | `__BARK` | 吠叫 |
@@ -318,14 +340,357 @@
 
 ---
 
-## 十三、法术名全表
+<!-- domain:skills -->
+## 十三、技能名
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Fighting | 格斗 | skill; source=source.txt; decision=D-C-001 |
+| Short Blades | 短刃 | skill; source=source.txt; decision=D-C-001 |
+| Long Blades | 长刃 | skill; source=source.txt; decision=D-C-001 |
+| Axes | 斧类 | skill; source=source.txt; decision=D-C-001 |
+| Maces & Flails | 锤与链枷 | skill; source=source.txt; decision=D-C-001 |
+| Polearms | 长柄武器 | skill; source=source.txt; decision=D-C-001 |
+| Staves | 棍棒 | skill; source=source.txt; decision=D-C-001 |
+| Ranged Weapons | 远程武器 | skill; source=source.txt; decision=D-C-001 |
+| Throwing | 投掷 | skill; source=source.txt; decision=D-C-001 |
+| Armour | 护甲 | skill; source=source.txt; decision=D-C-001 |
+| Dodging | 闪避 | skill; source=source.txt; decision=D-C-001 |
+| Shields | 盾牌 | skill; source=source.txt; decision=D-C-001 |
+| Unarmed Combat | 徒手格斗 | skill; source=source.txt; decision=D-C-001 |
+| Spellcasting | 施法能力 | skill; source=source.txt; decision=D-C-001 |
+| Summonings | 召唤系 | skill; source=source.txt; decision=D-C-001 |
+| Translocations | 传送系 | skill; source=source.txt; decision=D-C-001 |
+| Forgecraft | 锻造术 | skill; source=source.txt; decision=D-C-001 |
+| Fire Magic | 火焰魔法 | skill; source=source.txt; decision=D-C-001 |
+| Ice Magic | 寒冰魔法 | skill; source=source.txt; decision=D-C-001 |
+| Air Magic | 空气魔法 | skill; source=source.txt; decision=D-C-001 |
+| Earth Magic | 大地魔法 | skill; source=source.txt; decision=D-C-001 |
+| Invocations | 祈神 | skill; source=source.txt; decision=D-C-001 |
+| Evocations | 魔力释放 | skill; source=source.txt; decision=D-C-001 |
+| Shapeshifting | 变形术 | skill; source=source.txt; decision=D-C-001 |
+
+<!-- domain:status -->
+## 十四、状态与效果
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Haste | 加速 | status; source=status.txt |
+| Invisibility | 隐形 | status; source=status.txt |
+| Might | 强效 | status; source=status.txt |
+| Berserk | 狂暴 | status; source=status.txt |
+| Poison | 中毒 | status; source=status.txt |
+| Confusion | 混乱 | status; source=status.txt |
+| Contamination | 诱变辐射 | status; source=status.txt |
+| Drain | 衰竭 | status; source=status.txt |
+| Slow | 减速 | status; source=status.txt |
+| Paralysis | 麻痹 | status; source=status.txt |
+| Sleep | 睡眠 | status; source=status.txt |
+| Held | 受困 | status; source=status.txt |
+| Constriction | 束缚 | status; source=status.txt |
+| Fear | 恐惧 | status; source=status.txt |
+| Fire | 着火 | status; source=status.txt |
+| Sick | 患病 | status; source=status.txt |
+| Corrosion | 腐蚀 | status; source=status.txt |
+| Frozen | 冰封 | status; source=status.txt |
+| Petrification | 石化 | status; source=status.txt |
+| Resistance | 抗性 | status; source=status.txt |
+
+<!-- domain:backgrounds -->
+## 十五、角色背景
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Air Elementalist | 气元素使 | background; source=backgrounds.txt |
+| Artificer | 技师 | background; source=backgrounds.txt |
+| Berserker | 狂战士 | background; source=backgrounds.txt |
+| Brigand | 强盗 | background; source=backgrounds.txt |
+| Chaos Knight | 混沌骑士 | background; source=backgrounds.txt |
+| Conjurer | 塑能师 | background; source=backgrounds.txt |
+| Delver | 挖掘者 | background; source=backgrounds.txt |
+| Earth Elementalist | 土元素使 | background; source=backgrounds.txt |
+| Enchanter | 附魔师 | background; source=backgrounds.txt |
+| Fighter | 战士 | background; source=backgrounds.txt |
+| Fire Elementalist | 火元素使 | background; source=backgrounds.txt |
+| Gladiator | 角斗士 | background; source=backgrounds.txt |
+| Hedge Wizard | 杂学巫师 | background; source=backgrounds.txt |
+| Hunter | 猎手 | background; source=backgrounds.txt |
+| Monk | 武僧 | background; source=backgrounds.txt |
+| Necromancer | 死灵法师 | background; source=backgrounds.txt |
+| Reaver | 掠夺者 | background; source=backgrounds.txt |
+| Summoner | 召唤师 | background; source=backgrounds.txt |
+| Shapeshifter | 变形人 | background; source=backgrounds.txt |
+| Alchemist | 炼金术士 | background; source=backgrounds.txt |
+| Wanderer | 漫游者 | background; source=backgrounds.txt |
+| Warper | 折跃者 | background; source=backgrounds.txt |
+| Forgewright | 锻造师 | background; source=backgrounds.txt |
+
+<!-- domain:abilities -->
+## 十六、能力名
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Spit Poison | 喷吐毒液 | ability; source=ability.txt |
+| Breathe Fire | 吐息火焰 | ability; source=ability.txt |
+| Breathe Frost | 吐息寒霜 | ability; source=ability.txt |
+| Breathe Poison Gas | 吐息毒气 | ability; source=ability.txt |
+| Breathe Lightning | 吐息闪电 | ability; source=ability.txt |
+| Breathe Acid | 吐息酸液 | ability; source=ability.txt |
+| Breathe Steam | 吐息蒸汽 | ability; source=ability.txt |
+| Hurl Damnation | 投掷天谴 | ability; source=ability.txt |
+| Word of Chaos | 混沌之语 | ability; source=ability.txt |
+| Heal Wounds | 治疗创伤 | ability; source=ability.txt |
+| Dig | 挖掘 | ability; source=ability.txt |
+| Recite | 吟诵 | ability; source=ability.txt |
+| Vitalisation | 活力再生 | ability; source=ability.txt |
+| Imprison | 监禁 | ability; source=ability.txt |
+| Sanctuary | 庇护所 | ability; source=ability.txt |
+
+<!-- domain:mutations -->
+## 十七、变异名
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| tough skin | 硬化表皮 | mutation; source=mutations.txt |
+| shaggy fur | 浓密皮毛 | mutation; source=mutations.txt |
+| repulsion field | 排斥力场 | mutation; source=mutations.txt |
+| icy blue scales | 冰蓝鳞片 | mutation; source=mutations.txt |
+| molten scales | 熔融鳞片 | mutation; source=mutations.txt |
+| slimy green scales | 黏滑绿鳞 | mutation; source=mutations.txt |
+| yellow scales | 黄色鳞片 | mutation; source=mutations.txt |
+| thin metallic scales | 薄金属鳞片 | mutation; source=mutations.txt |
+| rugged brown scales | 粗糙褐鳞 | mutation; source=mutations.txt |
+| sharp scales | 锐利鳞片 | mutation; source=mutations.txt |
+| large bone plates | 大型骨板 | mutation; source=mutations.txt |
+| thin skeletal structure | 纤细骨骼 | mutation; source=mutations.txt |
+| strong | 强壮 | mutation; source=mutations.txt |
+| clever | 聪慧 | mutation; source=mutations.txt |
+| agile | 敏捷 | mutation; source=mutations.txt |
+| weak | 虚弱 | mutation; source=mutations.txt |
+| dopey | 愚钝 | mutation; source=mutations.txt |
+| clumsy | 笨拙 | mutation; source=mutations.txt |
+| high mp | 高魔力 | mutation; source=mutations.txt |
+| low mp | 低魔力 | mutation; source=mutations.txt |
+| camouflage | 伪装 | mutation; source=mutations.txt |
+| horns | 角 | mutation; source=mutations.txt |
+| beak | 鸟喙 | mutation; source=mutations.txt |
+| fangs | 尖牙 | mutation; source=mutations.txt |
+| acidic bite | 酸性撕咬 | mutation; source=mutations.txt |
+| claws | 利爪 | mutation; source=mutations.txt |
+| hooves | 蹄 | mutation; source=mutations.txt |
+| antennae | 触角 | mutation; source=mutations.txt |
+| stinger | 毒刺 | mutation; source=mutations.txt |
+
+<!-- domain:monsters -->
+## 十八、怪物名称（首批）
+
+> 名称来源：`dat/i18n/zh/source.txt`；只登记显示名称，不登记描述文本中的代码键。
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| acid blob | 酸液团 | monster; source=source.txt |
+| acid dragon | 酸龙 | monster; source=source.txt |
+| adder | 蝰蛇 | monster; source=source.txt |
+| air elemental | 气元素 | monster; source=source.txt |
+| alligator | 短吻鳄 | monster; source=source.txt |
+| alligator snapping turtle | 鳄龟 | monster; source=source.txt |
+| anaconda | 水蟒 | monster; source=source.txt |
+| ancestor | 先祖 | monster; source=source.txt |
+| ancient champion | 远古冠军 | monster; source=source.txt |
+| ancient lich | 远古巫妖 | monster; source=source.txt |
+| ancient zyme | 古酶 | monster; source=source.txt |
+| angel | 天使 | monster; source=source.txt |
+| armataur | 甲马人 | monster; source=source.txt |
+| armour echo | 铠甲回响 | monster; source=source.txt |
+| apis | 阿匹斯 | monster; source=source.txt |
+| apocalypse crab | 天启螃蟹 | monster; source=source.txt |
+| arcanist | 奥术师 | monster; source=source.txt |
+| aspiring flesh | 渴望之肉 | monster; source=source.txt |
+| azure jelly | 天蓝果冻怪 | monster; source=source.txt |
+| ball lightning | 球形闪电 | monster; source=source.txt |
+| ball python | 球蟒 | monster; source=source.txt |
+| ballistomycete | 孢子炮菌 | monster; source=source.txt |
+| ballistomycete spore | 孢子炮菌孢子 | monster; source=source.txt |
+| balrug | 巴鲁格 | monster; source=source.txt |
+| barachi | 蛙人 | monster; source=source.txt |
+| basilisk | 石化蜥蜴 | monster; source=source.txt |
+| bat | 蝙蝠 | monster; source=source.txt |
+| battlesphere | 战斗法球 | monster; source=source.txt |
+| bennu | 贝努鸟 | monster; source=source.txt |
+| black bear | 黑熊 | monster; source=source.txt |
+| black draconian | 黑龙人 | monster; source=source.txt |
+| black mamba | 黑曼巴蛇 | monster; source=source.txt |
+| blazeheart core | 焰心核心 | monster; source=source.txt |
+| blazeheart golem | 焰心魔像 | monster; source=source.txt |
+| blink frog | 闪烁蛙 | monster; source=source.txt |
+| blizzard demon | 暴雪恶魔 | monster; source=source.txt |
+| bloated husk | 肿胀尸壳 | monster; source=source.txt |
+| block of ice | 冰块 | monster; source=source.txt |
+| bog body | 沼泽之躯 | monster; source=source.txt |
+| boggart | 博加特 | monster; source=source.txt |
+| bombardier beetle | 投弹甲虫 | monster; source=source.txt |
+| bone dragon | 骨龙 | monster; source=source.txt |
+| gnoll bouda | 豺狼人布达 | monster; source=source.txt |
+| boulder | 巨石 | monster; source=source.txt |
+| boulder beetle | 巨砾甲虫 | monster; source=source.txt |
+| bound soul | 缚魂 | monster; source=source.txt |
+| brain worm | 脑虫 | monster; source=source.txt |
+| briar patch | 荆棘丛 | monster; source=source.txt |
+| Brimstone Fiend | 硫磺邪魔 | monster; source=source.txt |
+| broodmother | 育母蜘蛛 | monster; source=source.txt |
+| burial acolyte | 殡葬侍僧 | monster; source=source.txt |
+| bush | 灌木 | monster; source=source.txt |
+| bullfrog | 牛蛙 | monster; source=source.txt |
+| bunyip | 本耶普 | monster; source=source.txt |
+| butterfly | 蝴蝶 | monster; source=source.txt |
+| cactus giant | 仙人掌巨人 | monster; source=source.txt |
+| cacodemon | 恶灵恶魔 | monster; source=source.txt |
+| cane toad | 海蟾蜍 | monster; source=source.txt |
+| catoblepas | 卡托布勒帕斯 | monster; source=source.txt |
+| caustic shrike | 腐蚀伯劳 | monster; source=source.txt |
+| centaur | 半人马 | monster; source=source.txt |
+| centaur warrior | 半人马战士 | monster; source=source.txt |
+| cerulean imp | 蔚蓝小恶魔 | monster; source=source.txt |
+| chaos spawn | 混沌之子 | monster; source=source.txt |
+| cherub | 智天使 | monster; source=source.txt |
+| creeping inferno | 蔓延地狱火 | monster; source=source.txt |
+| crimson imp | 深红小恶魔 | monster; source=source.txt |
+| crocodile | 鳄鱼 | monster; source=source.txt |
+| crystal echidna | 水晶针鼹 | monster; source=source.txt |
+| crystal guardian | 水晶守护者 | monster; source=source.txt |
+| culicivora | 库蚊蛛 | monster; source=source.txt |
+| curse skull | 诅咒颅骨 | monster; source=source.txt |
+| curse toe | 诅咒趾 | monster; source=source.txt |
+| cyclops | 独眼巨人 | monster; source=source.txt |
+| daeva | 德瓦 | monster; source=source.txt |
+
+| Serpent of Hell | 地狱巨蛇 | monster; source=source.txt; shared display name |
+| Serpent of Hell gehenna | 欣嫩谷地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+| Serpent of Hell cocytus | 悲叹河地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+| Serpent of Hell dis | 铁城地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+| Serpent of Hell tartarus | 塔尔塔罗斯地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |
+
+<!-- domain:unique-monsters -->
+## 十九、独特怪物名称
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Agnes | 艾格尼丝 | unique-monster; source=source.txt |
+| Aizul | 艾祖尔 | unique-monster; source=source.txt |
+| Amaemon | 亚麦蒙 | unique-monster; source=source.txt |
+| Antaeus | 安泰俄斯 | unique-monster; source=source.txt |
+| Arachne | 阿拉克涅 | unique-monster; source=source.txt |
+| Asmodeus | 阿斯摩蒂斯 | unique-monster; source=source.txt |
+| Asterion | 阿斯忒里翁 | unique-monster; source=source.txt |
+| Azrael | 阿兹瑞尔 | unique-monster; source=source.txt |
+| Bai Suzhen | 白素贞 | unique-monster; source=source.txt |
+| Boris | 鲍里斯 | unique-monster; source=source.txt |
+| Cerebov | 塞雷波夫 | unique-monster; source=source.txt |
+| Chuck | 查克 | unique-monster; source=source.txt |
+| Crazy Yiuf | 疯狂的尤夫 | unique-monster; source=source.txt |
+| Dispater | 迪斯帕特 | unique-monster; source=source.txt |
+| Dissolution | 分解者 | unique-monster; source=source.txt |
+| Donald | 唐纳德 | unique-monster; source=source.txt |
+| Dowan | 多万 | unique-monster; source=source.txt |
+| Duvessa | 杜维莎 | unique-monster; source=source.txt |
+| Edmund | 埃德蒙 | unique-monster; source=source.txt |
+| Enchantress | 妖术女王 | unique-monster; source=source.txt |
+| Ereshkigal | 埃列什基伽勒 | unique-monster; source=source.txt |
+| Erica | 艾丽卡 | unique-monster; source=source.txt |
+| Erolcha | 伊罗查 | unique-monster; source=source.txt |
+| Eustachio | 尤斯塔奇奥 | unique-monster; source=source.txt |
+| Fannar | 凡纳尔 | unique-monster; source=source.txt |
+| Frances | 弗朗西斯 | unique-monster; source=source.txt |
+| Frederick | 弗雷德里克 | unique-monster; source=source.txt |
+| Gastronok | 加斯特罗诺克 | unique-monster; source=source.txt |
+| Geryon | 格律翁 | unique-monster; source=source.txt |
+| Gloorx Vloq | 格洛克斯·弗洛克 | unique-monster; source=source.txt |
+| Grinder | 格林德 | unique-monster; source=source.txt |
+| Grum | 格拉姆 | unique-monster; source=source.txt |
+| Grunn | 格伦 | unique-monster; source=source.txt |
+| Harold | 哈罗德 | unique-monster; source=source.txt |
+| Ignacio | 伊格纳西奥 | unique-monster; source=source.txt |
+| Ijyb | 艾吉布 | unique-monster; source=source.txt |
+| Ilsuiw | 伊尔苏伊 | unique-monster; source=source.txt |
+| Jeremiah | 耶利米 | unique-monster; source=source.txt |
+| Jessica | 杰西卡 | unique-monster; source=source.txt |
+| Jorgrun | 约格伦 | unique-monster; source=source.txt |
+| Jory | 乔里 | unique-monster; source=source.txt |
+| Joseph | 约瑟夫 | unique-monster; source=source.txt |
+| Josephina | 约瑟菲娜 | unique-monster; source=source.txt |
+| Josephine | 约瑟芬 | unique-monster; source=source.txt |
+| Khufu | 胡夫 | unique-monster; source=source.txt |
+| Kirke | 喀耳刻 | unique-monster; source=source.txt |
+| Lernaean hydra | 勒拿多头蛇 | unique-monster; source=source.txt |
+| Lodul | 洛杜尔 | unique-monster; source=source.txt |
+| Lom Lobon | 洛姆·洛邦 | unique-monster; source=source.txt |
+| Louise | 路易丝 | unique-monster; source=source.txt |
+| Mara | 玛拉 | unique-monster; source=source.txt |
+| Maggie | 玛吉 | unique-monster; source=source.txt |
+| Margery | 玛杰丽 | unique-monster; source=source.txt |
+| Maurice | 莫里斯 | unique-monster; source=source.txt |
+| Menkaure | 门卡拉 | unique-monster; source=source.txt |
+| Mennas | 门纳斯 | unique-monster; source=source.txt |
+| Mlioglotl | 姆利奥格洛特尔 | unique-monster; source=source.txt |
+| Mnoleg | 姆诺雷格 | unique-monster; source=source.txt |
+| Murray | 默里 | unique-monster; source=source.txt |
+| Natasha | 娜塔莎 | unique-monster; source=source.txt |
+| Nellie | 内莉 | unique-monster; source=source.txt |
+| Nergalle | 内尔加勒 | unique-monster; source=source.txt |
+| Nessos | 涅索斯 | unique-monster; source=source.txt |
+| Nikola | 尼古拉 | unique-monster; source=source.txt |
+| Norris | 诺里斯 | unique-monster; source=source.txt |
+| Pargi | 帕尔吉 | unique-monster; source=source.txt |
+| Parghit | 帕吉特 | unique-monster; source=source.txt |
+| Pikel | 皮克尔 | unique-monster; source=source.txt |
+| Polyphemus | 波吕斐摩斯 | unique-monster; source=source.txt |
+| Prince Ribbit | 蛙王子 | unique-monster; source=source.txt |
+| Robin | 罗宾 | unique-monster; source=source.txt |
+| Roxanne | 罗克珊 | unique-monster; source=source.txt |
+| Rupert | 鲁珀特 | unique-monster; source=source.txt |
+| Saint Roka | 圣罗卡 | unique-monster; source=source.txt |
+| Sigmund | 西格蒙德 | unique-monster; source=source.txt |
+| Snorg | 斯诺格 | unique-monster; source=source.txt |
+| Sojobo | 索乔波 | unique-monster; source=source.txt |
+| Sonja | 索尼娅 | unique-monster; source=source.txt |
+| Terence | 特伦斯 | unique-monster; source=source.txt |
+| Tiamat | 提亚马特 | unique-monster; source=source.txt |
+| Urug | 乌鲁格 | unique-monster; source=source.txt |
+| Vashnia | 瓦什妮亚 | unique-monster; source=source.txt |
+| Vv | 芙芙 | unique-monster; source=source.txt |
+| Xtahua | 扎塔瓦 | unique-monster; source=source.txt |
+| Zenata | 泽娜塔 | unique-monster; source=source.txt |
+
+<!-- domain:monster-titles -->
+## 二十、独特怪物称号（首批）
+
+| EN | ZH | Scope / comment |
+|----|----|----------------|
+| Agnes title | 漫游者艾格尼丝 | monster-title; source=database/zh/montitle.txt |
+| Aizul title | 疏忽的守卫艾祖尔 | monster-title; source=database/zh/montitle.txt |
+| Amaemon title | 恶魔投毒者亚麦蒙 | monster-title; source=database/zh/montitle.txt |
+| Antaeus title | 安泰俄斯，悲叹河的守卫 | monster-title; source=database/zh/montitle.txt |
+| Arachne title | 编织者阿拉克涅 | monster-title; source=database/zh/montitle.txt |
+| Asmodeus title | 阿斯摩蒂斯，欣嫩谷的王子 | monster-title; source=database/zh/montitle.txt |
+| Asterion title | 堕落之王阿斯忒里翁 | monster-title; source=database/zh/montitle.txt |
+| Azrael title | 无边烈焰阿兹瑞尔 | monster-title; source=database/zh/montitle.txt |
+| Bai Suzhen title | 白素贞，白蛇夫人 | monster-title; source=database/zh/montitle.txt |
+| Boris title | 鲍里斯，生死大师 | monster-title; source=database/zh/montitle.txt |
+| Cerebov title | 塞雷波夫，火与钢之恶魔领主 | monster-title; source=database/zh/montitle.txt |
+| Chuck title | 收集者查克 | monster-title; source=database/zh/montitle.txt |
+| Crazy Yiuf title | 开悟者疯狂的尤夫 | monster-title; source=database/zh/montitle.txt |
+| Dispater title | 迪斯帕特，铁城领主 | monster-title; source=database/zh/montitle.txt |
+| Dissolution title | 分解者，吉瓦的高级祭司 | monster-title; source=database/zh/montitle.txt |
+
+<!-- domain:spells -->
+## 二十一、法术名全表
 
 > 最终译名依据 `docs/spell-naming-rules.md` 审阅确定。
 > 修订标记：✅ 保留原译，📝 修订，🆕 新增。
 
 ### Blink（9）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Blink | 闪烁 | ✅ |
 | Blink Allies Away | 闪烁盟友远离 | ✅ |
@@ -339,7 +704,7 @@
 
 ### Bolt（19）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Blinkbolt | 闪烁箭 | ✅ |
 | Bolt of Cold | 寒冰箭 | ✅ |
@@ -363,7 +728,7 @@
 
 ### Summon（57）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Call Canine Familiar | 呼唤犬类使魔 | 📝 |
 | Call Down Damnation | 降下天谴 | 📝 |
@@ -425,7 +790,7 @@
 
 ### Cloud（12）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Fire cloud | 火云 | ✅ |
 | Flaming Cloud | 燃烧云 | ✅ |
@@ -442,7 +807,7 @@
 
 ### Breath（22）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Caustic Breath | 腐蚀吐息 | ✅ |
 | Chaos Breath | 混沌吐息 | ✅ |
@@ -469,7 +834,7 @@
 
 ### Gaze（7）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Antimagic Gaze | 反魔法凝视 | ✅ |
 | Confusion Gaze | 困惑凝视 | ✅ |
@@ -481,14 +846,14 @@
 
 ### Touch（2）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Agonising Touch | 剧痛之触 | ✅ |
 | Confusing Touch | 困惑之触 | ✅ |
 
 ### Form（9）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Beastly Appendage | 野兽肢体 | ✅ |
 | Blade Hands | 利刃之手 | ✅ |
@@ -502,7 +867,7 @@
 
 ### Possessive（35）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Alistair's Intoxication | 阿利斯泰尔之醉 | ✅ |
 | Alistair's Walking Alembic | 阿利斯泰尔之行走蒸馏器 | ✅ |
@@ -542,7 +907,7 @@
 
 ### Projectile（7）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Magic Dart | 魔法飞弹 | ✅ |
 | Mercury Arrow | 汞矢 | ✅ |
@@ -554,13 +919,13 @@
 
 ### Beam（1）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Plasma Beam | 等离子光束 | ✅ |
 
 ### Shadow（13）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Creeping Shadow | 蔓延暗影 | ✅ |
 | Shadow Beam | 暗影光束 | ✅ |
@@ -578,14 +943,14 @@
 
 ### Dispel（2）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Dispel Undead | 驱散亡灵 | ✅ |
 | Dispel Undead Range | 远程驱散亡灵 | ✅ |
 
 ### Other（316）
 
-| English | 中文 | 备注 |
+| EN | ZH | 备注 |
 |---------|------|------|
 | Abjuration | 驱逐术 | ✅ |
 | Acid Ball | 酸液球 | ✅ |

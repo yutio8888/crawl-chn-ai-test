@@ -1206,6 +1206,39 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Scope**: `source.txt` 中的 `weapon_brands_verbose[]` / `weapon_brands_terse[]` / `weapon_brands_adj[]` 对应 T_() 条目
 - **Note**: 所有品牌名翻译统一通过 source.txt 中的 T_() 条目管理，无重复数据
 
+### D-B-017 — 基础武器名称纠偏（结构、材质与系列关系）
+
+- **Type**: B — Naming revision
+- **Status**: active
+- **Date**: 2026-07-13
+- **Source**: 基础武器名称复审；对照 `item-prop.cc` 的武器类别、物品描述和法术命名规则中的“忠实且不误导”“系列一致”原则
+- **Choice**:
+  - `arbalest`：钢弩 → **重弩**。原译把描述中的钢制结构误当成名称限定；`arbalest` 的核心区别是重型弩，不应凭描述添加材质。
+  - `dire flail`：恐怖链枷 → **双头链枷**。`dire` 在此是武器型号/规模语义；“恐怖”表达情绪而未区分武器结构，改用稳定的双头结构信息。
+  - `morningstar` / `eveningstar`：流星锤 / 黄昏之星 → **晨星锤 / 暮星锤**。两者是对应的钉头锤武器名称，统一保留 morning/evening 的系列差异，并明确武器类别。
+  - `executioner's axe`：刽子手之斧 → **刽子手斧**。基础武器名采用紧凑的“修饰语+武器类别”结构；“之”仅用于品牌或 `of` 属格结构。
+  - `great mace`：大战锤 → **巨型钉头锤**。`mace` 应与基础名 `mace` 的“钉头锤”词根一致，不能改译为 hammer（战锤）。
+  - `quarterstaff`：铁头棍 → **长棍**。物品描述明确为木制战斗棍，原译凭空添加“铁头”；“长棍”保留 quarterstaff 的长棍形制。
+- **Rejected**: 保留“钢弩”“铁头棍”等描述性误加材质；将 `eveningstar` 继续译为“黄昏之星”（缺少锤类信息且破坏与 `morningstar` 的对应关系）。
+- **Scope**: `crawl-ref/source/dat/i18n/zh/source.txt` 基础武器名条目；不改变品牌、神器专名或物品描述正文。
+
+### D-B-018 — 其他物品名称纠偏与术语登记
+
+- **Type**: B — Naming revision
+- **Status**: active
+- **Date**: 2026-07-13
+- **Source**: 物品基础名、护甲 ego、护符名称复审；对照当前物品描述和实现，遵循“忠实且不误导”原则
+- **Choice**:
+  - `partisan`：阔刃戟 → **阔头枪**。它是枪头两侧带突出部的长柄枪，不应与 `halberd` 的“戟”混同。
+  - `broad axe`：阔斧 → **阔刃斧**。补出 broad 的刃部信息，避免过度省略。
+  - `dragon-coil talisman`：龙卷护符 → **盘龙护符**。`coil` 是盘绕形态，不是 tornado/龙卷。
+  - `falchion`：弯刃刀 → **弯刃剑**；`old falchion` 同步改为“旧弯刃剑”。物品描述明确为单刃剑，需保留武器类别。
+  - `sanguine talisman`：血族护符 → **血色护符**。`sanguine` 指血色/血液意象，不能把效果中的 vampire 反向写入名称。
+  - `shadows`（护甲 ego）：暗影庇护 → **暗影**。该 ego 的效果是降低可见距离，不是防护效果。
+  - `triple crossbow`：三连弩 → **三弦弩**。当前描述明确为三根弦串联以提高威力，不是三发连射。
+- **Rejected**: “阔刃戟”“龙卷护符”“血族护符”“暗影庇护”“三连弩”等会混淆武器类别、形态或机制的译法。
+- **Scope**: `source.txt`、旧版本 `old falchion` 条目、神器/测试名称、引文标题和术语表；不改动普通叙事文本中“空气”等自然用语。
+
 ---
 
 ## Quick Reference: All Decision IDs
