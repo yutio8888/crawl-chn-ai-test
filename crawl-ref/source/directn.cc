@@ -3074,7 +3074,9 @@ void _walk_on_decor(dungeon_feature_type new_grid)
         // XXX: Ugly, but it'd take a lot of restructuring
         //      to follow melee_attack's use of @your_weapon@.
         const bool chinese = Options.language == lang_t::ZH;
-        const string possessive = chinese ? "你的" : "your ";
+        const string possessive = chinese
+                                  ? C_("decor possessive", "your")
+                                  : "your ";
         string weap = possessive
                       + (you.weapon() ? you.weapon()->name(
                                            chinese ? DESC_PLAIN : DESC_DBNAME).c_str()

@@ -14646,6 +14646,27 @@ Seeker of Truth
 @Walker@ of the Path
 行路@Walker@
 %%%%
+artefact appearance|%1$s %2$s
+%1$s的%2$s
+%%%%
+artefact random name|%1$s of %2$s
+%2$s之%1$s
+%%%%
+artefact random name|%1$s "%2$s"
+「%2$s」%1$s
+%%%%
+god title walking stem|Walking
+行路
+%%%%
+god title walker suffix|Walker
+者
+%%%%
+decor possessive|your
+你的
+%%%%
+skill title walker|Walker
+行者
+%%%%
 Lifter of the Veil
 揭纱者
 %%%%

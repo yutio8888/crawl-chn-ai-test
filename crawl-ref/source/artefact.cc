@@ -1649,13 +1649,8 @@ string make_artefact_name(const item_def &item, bool appearance)
                 appear = "non-descript";
         }
 
-        result += appear;
-        if (Options.language == lang_t::ZH)
-            result += "的";
-        else
-            result += " ";
-        result += base_name;
-        return result;
+        return make_stringf_p(C_("artefact appearance", "%1$s %2$s"),
+                              appear.c_str(), base_name.c_str());
     }
 
     if (_pick_db_name(item))
@@ -1700,17 +1695,15 @@ string make_artefact_name(const item_def &item, bool appearance)
 
         if (one_chance_in(3))
         {
-            if (Options.language == lang_t::ZH)
-                result = st_p + "之" + base_name;
-            else
-                result = base_name + " of " + st_p;
+            result = make_stringf_p(
+                C_("artefact random name", "%1$s of %2$s"),
+                base_name.c_str(), st_p.c_str());
         }
         else
         {
-            if (Options.language == lang_t::ZH)
-                result = string("「") + st_p + "」" + base_name;
-            else
-                result = base_name + " \"" + st_p + "\"";
+            result = make_stringf_p(
+                C_("artefact random name", "%1$s \"%2$s\""),
+                base_name.c_str(), st_p.c_str());
         }
     }
 

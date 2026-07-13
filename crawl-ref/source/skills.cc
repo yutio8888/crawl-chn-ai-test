@@ -2391,9 +2391,10 @@ string skill_title_by_rank(skill_type best_skill, uint8_t skill_rank,
         { "genus", lowercase_string(species::name(species, species::SPNAME_GENUS)) },
         { "Genus_Short", species == SP_DEMIGOD ? "God" :
                            species::name(species, species::SPNAME_GENUS) },
-        // Chinese titles use the complete noun "行者" rather than appending
+        // Chinese titles use a complete noun rather than appending
         // the English agent suffix to the walking verb.
-        { "Walker", Options.language == lang_t::ZH ? "行者"
+        { "Walker", Options.language == lang_t::ZH
+                        ? C_("skill title walker", "Walker")
                                                    : species::walking_title(species) + "er" },
         { "Weight", _stk_weight(species) },
     };
