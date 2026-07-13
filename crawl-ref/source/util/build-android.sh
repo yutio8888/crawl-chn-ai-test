@@ -107,11 +107,20 @@ if [ -z "${APK_FILE:-}" ]; then
     exit 1
 fi
 
-# 4. Sign unsigned APK (buildTest uses debug keystore; release must be signed separately)
+# 4. Sign unsigned APK (buildTest defaults to debug keystore; release requires
+# an explicitly configured ANDROID_KEYSTORE)
 if [[ "$APK_FILE" == *unsigned* ]]; then
-    KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
-    SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
-    if [ -f "$KEYSTORE" ]; then
+    KEYSTORE=""
+    if [ "$VARIANT" = "buildTest" ]; then
+        KEYSTORE="${ANDROID_KEYSTORE:-$HOME/.android/debug.keystore}"
+    elif [ -n "${ANDROID_KEYSTORE:-}" ]; then
+        KEYSTORE="$ANDROID_KEYSTORE"
+    else
+        echo "WARNING: ANDROID_KEYSTORE is not set; release APK left unsigned"
+    fi
+
+    if [ -n "$KEYSTORE" ] && [ -f "$KEYSTORE" ]; then
+        SIGNED_APK="${APK_FILE%-unsigned.apk}.apk"
         echo "=== [4/5] Signing APK ==="
         BUILD_TOOLS=$(ls -d "$SDK_ROOT/build-tools/"*/ 2>/dev/null | sort -V | tail -1)
         if [ -n "${BUILD_TOOLS:-}" ] && [ -x "${BUILD_TOOLS}zipalign" ]; then
@@ -125,7 +134,7 @@ if [[ "$APK_FILE" == *unsigned* ]]; then
         else
             echo "WARNING: build-tools/zipalign not found, APK left unsigned"
         fi
-    else
+    elif [ -n "$KEYSTORE" ]; then
         echo "WARNING: keystore not found at $KEYSTORE, APK left unsigned"
     fi
 else

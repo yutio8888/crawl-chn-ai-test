@@ -870,7 +870,7 @@ static void _draw_stack(int to_stack)
             stack.push_back(draw);
         }
         else
-            status = T_("<lightred>That deck is empty!</lightred>") + " ";
+            status = string(T_("<lightred>That deck is empty!</lightred>")) + " ";
 
         if (stack.size() > 0)
             status += make_stringf(T_("Drawn so far: %s"),

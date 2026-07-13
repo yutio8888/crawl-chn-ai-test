@@ -27,6 +27,7 @@
 #include "output.h"
 #include "shout.h"
 #include "stepdown.h"
+#include "stringutil.h"
 #include "terrain.h"
 #ifdef USE_TILE
     #include "tilepick.h"

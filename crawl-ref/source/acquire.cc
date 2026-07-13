@@ -40,6 +40,7 @@
 #include "output.h"
 #include "options.h"
 #include "player-equip.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "randbook.h"
 #include "random.h"
