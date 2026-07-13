@@ -3289,33 +3289,37 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 if (needs_damage && !done_damage)
                     desc += _hiscore_newline_string();
 
+                string disabled_by;
+                if (you.props.exists(DISABLED_BY_KEY))
+                {
+                    const string disabled_source =
+                        you.props[DISABLED_BY_KEY].get_string();
+                    disabled_by = make_stringf_p(
+                        T_(" by %1$s"),
+                        disabled_source.c_str());
+                }
+
                 if (you.duration[DUR_PARALYSIS])
                 {
-                    desc += "... while paralysed";
-                    if (you.props.exists(DISABLED_BY_KEY))
-                        desc += " by " + you.props[DISABLED_BY_KEY].get_string();
-
+                    desc += make_stringf_p(T_("... while paralysed%1$s"),
+                                             disabled_by.c_str());
                     desc += _hiscore_newline_string();
                 }
                 else if (you.duration[DUR_PETRIFIED])
                 {
-                    desc += "... while petrified";
-                    if (you.props.exists(DISABLED_BY_KEY))
-                        desc += " by " + you.props[DISABLED_BY_KEY].get_string();
-
+                    desc += make_stringf_p(T_("... while petrified%1$s"),
+                                             disabled_by.c_str());
                     desc += _hiscore_newline_string();
                 }
                 else if (you.duration[DUR_SLEEP])
                 {
-                    desc += "... while put to sleep";
-                    if (you.props.exists(DISABLED_BY_KEY))
-                        desc += " by " + you.props[DISABLED_BY_KEY].get_string();
+                    desc += make_stringf_p(T_("... while put to sleep%1$s"),
+                                             disabled_by.c_str());
                 }
                 else if (you.duration[DUR_VEXED])
                 {
-                    desc += "... while vexed";
-                    if (you.props.exists(DISABLED_BY_KEY))
-                        desc += " by " + you.props[DISABLED_BY_KEY].get_string();
+                    desc += make_stringf_p(T_("... while vexed%1$s"),
+                                             disabled_by.c_str());
                 }
             }
         }

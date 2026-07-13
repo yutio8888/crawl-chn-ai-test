@@ -38979,3 +38979,18 @@ generated
 %%%%
 invoked
 召唤
+%%%%
+ by %1$s
+（由%1$s施加）
+%%%%
+... while paralysed%1$s
+……在麻痹状态下%1$s
+%%%%
+... while petrified%1$s
+……在石化状态下%1$s
+%%%%
+... while put to sleep%1$s
+……在睡眠状态下%1$s
+%%%%
+... while vexed%1$s
+……在恼怒状态下%1$s
