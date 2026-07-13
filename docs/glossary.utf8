@@ -57,8 +57,7 @@ Arachne title	编织者阿拉克涅	domain=monster-titles; source=EN/ZH; Scope /
 arbalest	重弩	domain=items; source=EN/ZH; Scope / comment=weapon; decision=D-B-017
 arcanist	奥术师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Arcjolt	电弧震击	domain=spells; source=EN/ZH; 备注=✅
-armataur	甲马人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-armataur	甲龙兽人	domain=species; source=EN/ZH
+armataur	甲马人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 armor	护甲	domain=combat; source=EN/ZH
 armour	护甲	domain=combat; source=EN/ZH | domain=items; source=EN/ZH
 Armour	护甲	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
@@ -272,7 +271,7 @@ Delayed Fireball	延迟火球	domain=spells; source=EN/ZH; 备注=✅
 Delver	挖掘者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 demon	恶魔	domain=core; source=EN/ZH
 Demonic Horde	恶魔大军	domain=spells; source=EN/ZH; 备注=✅
-demonspawn	恶魔后裔	domain=species; source=EN/ZH; 复合格式=恶魔后裔 + 职业
+demonspawn	恶魔裔	domain=species; source=EN/ZH; 复合格式=恶魔裔 + 职业
 Detonation Catalyst	引爆催化剂	domain=spells; source=EN/ZH; 备注=✅
 Diamond Sawblades	钻石锯片	domain=spells; source=EN/ZH; 备注=✅
 Dig	挖掘	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt | domain=spells; source=EN/ZH; 备注=✅
@@ -352,7 +351,7 @@ Fastroot	快速扎根	domain=spells; source=EN/ZH; 备注=✅
 faun	牧神	domain=species; source=EN/ZH
 Fear	恐惧	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Fedhas	费德哈	domain=gods; source=EN/ZH; 类型=音译
-felid	猫人	domain=species; source=EN/ZH
+felid	猫	domain=species; source=EN/ZH; 裁决=[D-A-039]
 Fighter	战士	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Fighting	格斗	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Fire	着火	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
@@ -609,7 +608,7 @@ Noxious Breath	毒瘴吐息	domain=spells; source=EN/ZH; 备注=✅
 Noxious Cloud	毒瘴云	domain=spells; source=EN/ZH; 备注=📝
 Nullifying Breath	消魔吐息	domain=spells; source=EN/ZH; 备注=✅
 Oblivion Howl	湮灭嚎叫	domain=spells; source=EN/ZH; 备注=✅
-octopode	章鱼人	domain=species; source=EN/ZH
+octopode	章鱼	domain=species; source=EN/ZH; 裁决=[D-A-040]
 ogre	食人魔	domain=species; source=EN/ZH; 复合格式=食人魔 + 职业
 Okawaru	奥卡瓦鲁	domain=gods; source=EN/ZH; 类型=音译
 Old Deflect Missiles	旧版偏转飞弹	domain=spells; source=EN/ZH; 备注=✅
