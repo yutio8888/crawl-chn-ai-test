@@ -47,6 +47,7 @@
 #include "options.h"
 #include "ouch.h"
 #include "place.h"
+#include "positional_format.h"
 #include "religion.h"
 #include "scroller.h"
 #include "skills.h"
@@ -1865,6 +1866,57 @@ string scorefile_entry::death_source_desc() const
     return death_source_name;
 }
 
+// Old score files keep the killer as an English display string.  Do not
+// change death_source_desc(): it is also the value written to xlog fields.
+// This helper is only for the Chinese UI, where a plain legacy monster name
+// can be resolved through the canonical monster-name table.
+string scorefile_entry::death_source_display_desc() const
+{
+    if (Options.language != lang_t::ZH || death_source_name.empty())
+        return death_source_name;
+
+    const string translated = T_(death_source_name.c_str());
+    if (translated != death_source_name)
+        return translated;
+
+    string legacy_name = death_source_name;
+    string suffix;
+    static const char *const modifiers[] =
+    {
+        " (shapeshifter)",
+        " (glowing shapeshifter)",
+        " (illusionary)",
+        " the pandemonium lord",
+    };
+    for (const char *modifier : modifiers)
+    {
+        if (ends_with(legacy_name, modifier))
+        {
+            legacy_name.resize(legacy_name.size() - strlen(modifier));
+            suffix = T_(modifier);
+            break;
+        }
+    }
+
+    for (const char *article : { "a ", "an ", "the " })
+    {
+        if (starts_with(legacy_name, article))
+        {
+            legacy_name.erase(0, strlen(article));
+            break;
+        }
+    }
+
+    init_mon_name_cache();
+    const monster_type type = get_monster_by_name(legacy_name);
+    if (type != MONS_PROGRAM_BUG)
+        return mons_type_name(type, DESC_PLAIN) + suffix;
+
+    // Proper names and arbitrary blame strings have no safe structured
+    // translation. Preserve them verbatim rather than treating them as keys.
+    return death_source_name;
+}
+
 string scorefile_entry::damage_string(bool terse) const
 {
     return make_stringf("(%d%s)", damage,
@@ -2188,10 +2240,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse || oneline)
                 desc += make_stringf(T_("killed by %s"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
             else
                 desc += make_stringf(T_("Killed %s by %s"),
-                                     death_source_desc().c_str(), damage_verb());
+                                     death_source_display_desc().c_str(), damage_verb());
         }
         else if (terse)
             desc += death_source_desc();
@@ -2212,7 +2264,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_HEADBUTT:
         if (chinese)
             desc += make_stringf(T_("killed by %s's headbutt"),
-                                 death_source_desc().c_str());
+                                 death_source_display_desc().c_str());
         else if (terse)
             desc += apostrophise(death_source_desc()) + " headbutt";
         else
@@ -2223,7 +2275,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_ROLLING:
         if (chinese)
             desc += make_stringf(T_("crushed by %s"),
-                                 death_source_desc().c_str());
+                                 death_source_display_desc().c_str());
         else if (terse)
             desc += "squashed by " + death_source_desc();
         else
@@ -2234,7 +2286,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_SPINES:
         if (chinese)
             desc += make_stringf(T_("impaled on %s's spines"),
-                                 death_source_desc().c_str());
+                                 death_source_display_desc().c_str());
         else if (terse)
             desc += apostrophise(death_source_desc()) + " spines";
         else
@@ -2253,18 +2305,18 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             }
             else if (terse)
                 desc += make_stringf(T_("poisoned by %s"),
-                                     death_source_name.c_str());
+                                     death_source_display_desc().c_str());
             else if (auxkilldata.empty()
                      && death_source_name.find("poison") != string::npos)
             {
                 desc += make_stringf(T_("Succumbed to %s"),
-                                     death_source_name.c_str());
+                                     death_source_display_desc().c_str());
             }
             else
             {
                 const char *source = death_source_name == "you"
                                      ? T_("themself")
-                                     : death_source_name.c_str();
+                                     : death_source_display_desc().c_str();
                 desc += make_stringf(T_("Succumbed to %s's %s"), source,
                                      (auxkilldata.empty() ? T_("poison")
                                                           : auxkilldata.c_str()));
@@ -2304,7 +2356,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 const char *source = death_source_name == "you"
                                      ? T_("themself")
-                                     : death_source_name.c_str();
+                                     : death_source_display_desc().c_str();
                 desc += make_stringf(terse ? T_("%s's cloud of %s")
                                             : T_("Engulfed by %s's cloud of %s"),
                                      source, auxkilldata.c_str());
@@ -2337,7 +2389,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 desc += make_stringf(T_("%s by %s"),
                     death_source_name == "you" ? T_("themself")
-                                                : death_source_desc().c_str(),
+                                                : death_source_display_desc().c_str(),
                     _range_type_verb(auxkilldata.c_str()));
             }
             else
@@ -2366,9 +2418,9 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 if (death_source_name == "you")
                     desc += T_("Killed by their own ranged attack");
-                else if (!death_source_desc().empty())
+                else if (!death_source_display_desc().empty())
                     desc += make_stringf(T_("Killed by %s's ranged attack"),
-                                         death_source_desc().c_str());
+                                         death_source_display_desc().c_str());
                 else
                     desc += T_("Killed by a ranged attack");
             }
@@ -2401,7 +2453,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 const char *source = death_source_name == "you"
                                      ? T_("themself")
-                                     : death_source_desc().c_str();
+                                     : death_source_display_desc().c_str();
                 if (semiverbose)
                     desc += make_stringf(T_("Killed by %s"), source);
                 else if (!terse)
@@ -2468,7 +2520,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 desc += make_stringf(terse ? T_("drowned by %s")
                                             : T_("Drowned by %s"),
-                                     death_source_name.c_str());
+                                     death_source_display_desc().c_str());
                 needs_damage = true;
             }
             else
@@ -2604,10 +2656,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc += T_("drained");
-            else if (!death_source_desc().empty())
+            else if (!death_source_display_desc().empty())
             {
                 desc += make_stringf(T_("Drained of all life by %s"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
                 if (!auxkilldata.empty())
                     needs_beam_cause_line = true;
             }
@@ -2644,9 +2696,9 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc += T_("frozen");
-            else if (!death_source_desc().empty())
+            else if (!death_source_display_desc().empty())
                 desc += make_stringf(T_("Frozen to death by %s"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
             else
                 desc += T_("Frozen to death");
         }
@@ -2662,10 +2714,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc += T_("burnt");
-            else if (!death_source_desc().empty())
+            else if (!death_source_display_desc().empty())
             {
                 desc += make_stringf(T_("Incinerated by %s"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
                 if (!auxkilldata.empty())
                     needs_beam_cause_line = true;
             }
@@ -2692,10 +2744,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc += T_("disjoined");
-            else if (!death_source_desc().empty())
+            else if (!death_source_display_desc().empty())
             {
                 desc += make_stringf(T_("Disjoined by %s"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
                 if (!auxkilldata.empty())
                     needs_beam_cause_line = true;
             }
@@ -2770,14 +2822,14 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         {
             if (terse)
                 desc += T_("rotting");
-            else if (!auxkilldata.empty() && !death_source_desc().empty())
+            else if (!auxkilldata.empty() && !death_source_display_desc().empty())
                 desc += make_stringf(T_("Rotted away (%s) (%s)"),
-                                     auxkilldata.c_str(), death_source_desc().c_str());
+                                     auxkilldata.c_str(), death_source_display_desc().c_str());
             else if (!auxkilldata.empty())
                 desc += make_stringf(T_("Rotted away (%s)"), auxkilldata.c_str());
-            else if (!death_source_desc().empty())
+            else if (!death_source_display_desc().empty())
                 desc += make_stringf(T_("Rotted away (%s)"),
-                                     death_source_desc().c_str());
+                                     death_source_display_desc().c_str());
             else
                 desc += T_("Rotted away");
         }
@@ -2825,7 +2877,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             {
                 desc += "\n             ";
                 desc += make_stringf(T_("... reflected by %s"),
-                                     death_source_name.c_str());
+                                     death_source_display_desc().c_str());
                 needs_damage = false;
             }
         }
@@ -2893,11 +2945,11 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_DEATH_EXPLOSION:
         if (chinese && terse)
             desc += death_source_name.empty() ? T_("death explosion")
-                                              : death_source_name;
+                                              : death_source_display_desc();
         else if (chinese)
             desc += death_source_name.empty() ? T_("Killed by an exploding monster")
                                               : make_stringf(T_("Killed by exploding %s"),
-                                                             death_source_name.c_str());
+                                                             death_source_display_desc().c_str());
         else if (terse)
         {
             if (death_source_name.empty())
@@ -2943,21 +2995,21 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 desc += (terse ? "" : "Slain by ") + auxkilldata;
             if (!terse && !death_source_name.empty())
                 desc += chinese ? "\n             "
-                                  + make_stringf(T_("... wielded by %s"), death_source_name.c_str())
+                                  + make_stringf(T_("... wielded by %s"), death_source_display_desc().c_str())
                                 : "\n             ... wielded by " + death_source_name;
         }
         else if (terse)
         {
 
             desc += chinese ? (death_source_name.empty() ? T_("a death curse")
-                                        : make_stringf(T_("%s death curse"), death_source_name.c_str()))
+                                        : make_stringf(T_("%s death curse"), death_source_display_desc().c_str()))
                             : (death_source_name.empty() ? "a death curse"
                                : death_source_name + " death curse");
         }
         else
         {
             desc += chinese ? make_stringf(T_("Slain by %s's death curse"),
-                                            death_source_desc().c_str())
+                                            death_source_display_desc().c_str())
                             : "Slain by " + apostrophise(death_source_desc())
                                             + "'s death curse";
         }
@@ -2990,8 +3042,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
     case KILLED_BY_ACID:
         if (chinese && terse)
             desc += T_("acid");
-        else if (chinese && !death_source_desc().empty())
-            desc += make_stringf(T_("Splashed by %s acid"), death_source_desc().c_str());
+        else if (chinese && !death_source_display_desc().empty())
+            desc += make_stringf(T_("Splashed by %s acid"), death_source_display_desc().c_str());
         else if (chinese)
             desc += T_("Splashed with acid");
         else if (terse)
@@ -3049,7 +3101,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         else if (chinese)
         {
             desc += death_source_name == "you" ? T_("Blew themself up")
-                                                : make_stringf(T_("Blown up by %s"), death_source_desc().c_str());
+                                                : make_stringf(T_("Blown up by %s"), death_source_display_desc().c_str());
             needs_beam_cause_line = true;
         }
         else if (terse)
@@ -3085,9 +3137,9 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
 
     case KILLED_BY_BEING_THROWN:
         if (chinese && terse)
-            desc += make_stringf(T_("%s throw"), death_source_desc().c_str());
+            desc += make_stringf(T_("%s throw"), death_source_display_desc().c_str());
         else if (chinese)
-            desc += make_stringf(T_("Thrown by %s"), death_source_desc().c_str());
+            desc += make_stringf(T_("Thrown by %s"), death_source_display_desc().c_str());
         else if (terse)
             desc += apostrophise(death_source_desc()) + " throw";
         else
@@ -3122,7 +3174,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese && terse)
             desc += T_("constriction");
         else if (chinese)
-            desc += make_stringf(T_("Constricted to death by %s"), death_source_desc().c_str());
+            desc += make_stringf(T_("Constricted to death by %s"), death_source_display_desc().c_str());
         else if (terse)
             desc += "constriction";
         else
@@ -3175,7 +3227,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         else if (needs_beam_cause_line)
             desc += "/" + terse_beam_cause();
         else if (needs_called_by_monster_line)
-            desc += death_source_name;
+            desc += chinese ? death_source_display_desc() : death_source_name;
 
         if (!killerpath.empty())
             desc += "[" + indirectkiller + "]";
@@ -3250,7 +3302,7 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                                          : auxkilldata == "by Freeze" ? T_("generated")
                                                                        : T_("invoked");
                     desc += make_stringf(T_("... %s by %s"), action,
-                                         death_source_name.c_str());
+                                         death_source_display_desc().c_str());
                 }
                 else
                     desc += make_stringf(T_("... %s by %s"),

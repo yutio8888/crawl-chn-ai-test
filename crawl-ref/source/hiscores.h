@@ -206,6 +206,7 @@ private:
     string terse_wild_magic() const;
     const char *damage_verb() const;
     string death_source_desc() const;
+    string death_source_display_desc() const;
     string damage_string(bool terse = false) const;
     string runes_gems_desc(bool semiverbose) const;
 
