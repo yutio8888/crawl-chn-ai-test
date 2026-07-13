@@ -402,6 +402,12 @@ kill_def::kill_def(const monster* mon) : kills(0), exp(0)
 // kill, else prefixes a kill count and pluralises the monster name.
 static string n_names(const string &name, int n)
 {
+    // Chinese monster names do not use articles or plural forms. Keep the
+    // count and the already-localised name together instead of passing the
+    // latter through the English pluraliser.
+    if (Options.language == lang_t::ZH)
+        return make_stringf(T_("%d %s"), n, name.c_str());
+
     if (n > 1)
     {
         char buf[20];
@@ -468,23 +474,26 @@ string kill_def::base_name(const kill_monster_desc &md) const
 {
     string name;
     if (md.monnum == MONS_PANDEMONIUM_LORD)
-        name = "pandemonium lord";
+        name = T_("pandemonium lord");
     else
         name = mons_type_name(md.monnum, DESC_PLAIN);
 
     switch (md.modifier)
     {
     case kill_monster_desc::M_ZOMBIE:
-        name += " zombie";
+        name += Options.language == lang_t::ZH ? T_("zombie") : " zombie";
         break;
     case kill_monster_desc::M_DRAUGR:
-        name += " draugr";
+        name += Options.language == lang_t::ZH ? T_("draugr") : " draugr";
         break;
     case kill_monster_desc::M_SIMULACRUM:
-        name += " simulacrum";
+        name += Options.language == lang_t::ZH ? T_("simulacrum")
+                                                 : " simulacrum";
         break;
     case kill_monster_desc::M_SPECTRE:
-        name = "spectral " + name;
+        name = Options.language == lang_t::ZH
+               ? make_stringf(T_("spectral %s"), name.c_str())
+               : "spectral " + name;
         break;
     default:
         // Silence compiler warning about not handling M_NORMAL and
@@ -511,7 +520,7 @@ string kill_def::info(const kill_monster_desc &md) const
             && md.monnum != MONS_SHAPESHIFTER
             && md.monnum != MONS_GLOWING_SHAPESHIFTER)
         {
-            name += " (shapeshifter)";
+            name += T_(" (shapeshifter)");
         }
     }
     else if (kills > 1)

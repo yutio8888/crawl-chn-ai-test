@@ -11948,6 +11948,9 @@ spectral
 
 幻影
 %%%%
+spectral %s
+幽灵%s
+%%%%
 vampire
 吸血鬼
 %%%%
