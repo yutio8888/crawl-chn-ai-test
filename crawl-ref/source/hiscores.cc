@@ -2358,10 +2358,10 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             }
             else
             {
-                const char *source = death_source_name == "you"
-                                     ? T_("themself")
-                                     : death_source_display_desc().c_str();
-                desc += make_stringf(T_("Succumbed to %s's %s"), source,
+                const string source = death_source_name == "you"
+                                      ? T_("themself")
+                                      : death_source_display_desc();
+                desc += make_stringf(T_("Succumbed to %s's %s"), source.c_str(),
                                      (auxkilldata.empty() ? T_("poison")
                                                           : auxkilldata.c_str()));
             }
@@ -2398,12 +2398,12 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
                 desc += make_stringf(T_("cloud of %s"), auxkilldata.c_str());
             else
             {
-                const char *source = death_source_name == "you"
-                                     ? T_("themself")
-                                     : death_source_display_desc().c_str();
+                const string source = death_source_name == "you"
+                                      ? T_("themself")
+                                      : death_source_display_desc();
                 desc += make_stringf(terse ? T_("%s's cloud of %s")
                                             : T_("Engulfed by %s's cloud of %s"),
-                                     source, auxkilldata.c_str());
+                                     source.c_str(), auxkilldata.c_str());
             }
         }
         else if (terse)
@@ -2495,13 +2495,14 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
             //       mode since listing the monster is more imporatant.
             if (chinese)
             {
-                const char *source = death_source_name == "you"
-                                     ? T_("themself")
-                                     : death_source_display_desc().c_str();
+                const string source = death_source_name == "you"
+                                      ? T_("themself")
+                                      : death_source_display_desc();
                 if (semiverbose)
-                    desc += make_stringf(T_("Killed by %s"), source);
+                    desc += make_stringf(T_("Killed by %s"), source.c_str());
                 else if (!terse)
-                    desc += make_stringf(T_("Killed from afar by %s"), source);
+                    desc += make_stringf(T_("Killed from afar by %s"),
+                                         source.c_str());
                 else
                     desc += source;
             }

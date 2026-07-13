@@ -22,7 +22,7 @@ checks = [
      re.search(r"m_atlas\[evict\]\.uchar != 0.*?\+\+m_atlas_generation;",
                read("crawl-ref/source/fontwrapper-ft.cc"), re.S) is not None),
     ("all-pinned path uses missing glyph",
-     re.search(r"if \(evict == MAX_GLYPHS\)\s*\{\s*.*?return "
+     re.search(r"if \(evict == m_atlas_capacity\)\s*\{\s*.*?return "
                r"m_glyph_to_slot\.at\(MISSING_CHAR\);\s*\}",
                read("crawl-ref/source/fontwrapper-ft.cc"), re.S) is not None),
     ("textblock starts a fresh pin batch",

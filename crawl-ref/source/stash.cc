@@ -39,6 +39,7 @@
 #include "message.h"
 #include "notes.h"
 #include "output.h"
+#include "positional_format.h"
 #include "prompt.h"
 #include "religion.h"
 #include "spl-book.h"

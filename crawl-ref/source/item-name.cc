@@ -1512,14 +1512,14 @@ string sub_type_string(const item_def &item, bool known)
         }
     }
 #if TAG_MAJOR_VERSION == 34
-    case OBJ_RODS:   return "已移除的棒";
+    case OBJ_RODS:   return T_("removed rod");
 #endif
     case OBJ_MISCELLANY: return misc_type_name(sub_type);
     case OBJ_TALISMANS: return talisman_type_name(sub_type);
     // these repeat as base_type_string
     case OBJ_ORBS:
         return T_("orb of Zot");
-    case OBJ_CORPSES: return "尸体";
+    case OBJ_CORPSES: return T_("corpse");
     case OBJ_GOLD: return T_("gold piece");
     case OBJ_RUNES:
         return T_("rune of Zot");

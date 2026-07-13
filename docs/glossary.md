@@ -325,15 +325,15 @@
 | vampire | 吸血鬼 | — | 吸血鬼 + 职业（吸血鬼骑士、吸血鬼法师） |
 | mummy | 木乃伊 | — | 木乃伊 + 职业 |
 | ghoul | 食尸鬼 | — | 食尸鬼 + 职业 |
-| demonspawn | 恶魔后裔 | — | 恶魔后裔 + 职业 |
+| demonspawn | 恶魔裔 | — | 恶魔裔 + 职业 |
 | minotaur | 牛头人 | — | — |
-| felid | 猫人 | — | — |
-| octopode | 章鱼人 | — | — |
+| felid | 猫 | [D-A-039] | — |
+| octopode | 章鱼 | [D-A-040] | — |
 | gargoyle | 石像鬼 | — | — |
 | formicid | 蚁人 | — | — |
 | barachi | 蛙人 | — | — |
 | vine stalker | 藤蔓行者 | — | — |
-| armataur | 甲龙兽人 | — | — |
+| armataur | 甲马人 | — | — |
 | faun | 牧神 | — | — |
 
 **复合命名规则**：`[种族基词] + [职业/角色名]`，不使用斜杠、破折号或空格分隔。

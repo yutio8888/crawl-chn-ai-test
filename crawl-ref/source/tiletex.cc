@@ -70,9 +70,8 @@ bool GenericTexture::load_texture(unsigned char *pixels, unsigned int new_width,
     }
 
     bind();
-    glmanager->load_texture(pixels, new_width, new_height, mip_opt, offsetx, offsety);
-
-    return true;
+    return glmanager->load_texture(pixels, new_width, new_height, mip_opt,
+                                   offsetx, offsety);
 }
 
 void GenericTexture::bind() const

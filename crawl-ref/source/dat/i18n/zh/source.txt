@@ -247,7 +247,7 @@ metal staircase leading up
 通往楼上的金属楼梯
 %%%%
 merfolk statue
-鱼人雕像
+人鱼雕像
 %%%%
 large window
 大窗户
@@ -3490,6 +3490,9 @@ Control
 %%%%
 corpse
 尸体
+%%%%
+removed rod
+已移除的棒
 %%%%
 corpse bug
 尸体错误
@@ -11349,7 +11352,7 @@ Flooded
 淹水
 %%%%
 Drain
-虚弱
+汲取
 %%%%
 Bribe
 贿赂
@@ -23627,8 +23630,14 @@ Save game and return to main menu?
 Save game and quit?
 保存游戏并退出？
 %%%%
-Are you sure you want to abandon this character%s?
-你确定要放弃这个角色%s吗？
+Are you sure you want to abandon this character?
+你确定要放弃这个角色吗？
+%%%%
+Are you sure you want to abandon this character and return to the main menu?
+你确定要放弃这个角色并返回主菜单吗？
+%%%%
+Are you sure you want to abandon this character and quit the game?
+你确定要放弃这个角色并退出游戏吗？
 %%%%
 Game time: %s (%d turns).
 游戏时间: %s (%d 回合)。
@@ -32223,7 +32232,7 @@ lurking horror
 潜伏恐怖
 %%%%
 malarious merfolk avatar
-疟疾的鱼人化身
+疟疾的人鱼化身
 %%%%
 manticore
 蝎尾狮
@@ -32232,22 +32241,22 @@ mara fake
 玛拉分身
 %%%%
 merfolk
-鱼人
+人鱼
 %%%%
 merfolk aquamancer
-鱼人水法师
+人鱼水法师
 %%%%
 merfolk avatar
-鱼人化身
+人鱼化身
 %%%%
 merfolk impaler
-鱼人穿刺者
+人鱼穿刺者
 %%%%
 merfolk javelineer
-鱼人标枪手
+人鱼标枪手
 %%%%
 merfolk siren
-鱼人塞壬
+人鱼塞壬
 %%%%
 merged slime creature
 融合史莱姆
@@ -32583,7 +32592,7 @@ shock serpent
 电击蛇
 %%%%
 sickly merfolk siren
-病弱的鱼人塞壬
+病弱的人鱼塞壬
 %%%%
 silver star
 银色之星
@@ -38412,7 +38421,7 @@ Sting
 %%%%
 Throw
 投掷
-
+%%%%
 Vortex
 漩涡
 %%%%
@@ -39456,6 +39465,123 @@ of Ashenzari
 %%%%
 of Bugginess
 故障之
+%%%%
+Halfling
+半身人
+%%%%
+Kobold
+狗头人
+%%%%
+Mummy
+木乃伊
+%%%%
+Naga
+纳迦
+%%%%
+Troll
+巨魔
+%%%%
+Minotaur
+牛头人
+%%%%
+Spriggan
+小精灵
+%%%%
+Centaur
+半人马
+%%%%
+Demigod
+半神
+%%%%
+Demonspawn
+恶魔裔
+%%%%
+Ghoul
+食尸鬼
+%%%%
+Tengu
+天狗
+%%%%
+Merfolk
+人鱼
+%%%%
+Vampire
+吸血鬼
+%%%%
+Felid
+猫
+%%%%
+Octopode
+章鱼
+%%%%
+Gargoyle
+石像鬼
+%%%%
+Formicid
+蚁人
+%%%%
+Vine Stalker
+藤蔓行者
+%%%%
+Barachi
+蛙人
+%%%%
+Gnoll
+豺狼人
+%%%%
+Coglin
+齿轮地精
+%%%%
+Deep Dwarf
+深矮人
+%%%%
+Poltergeist
+吵闹鬼
+%%%%
+Revenant
+归来者
+%%%%
+Djinni
+灯神
+%%%%
+Meteoran
+流星人
+%%%%
+Oni
+鬼
+%%%%
+Armataur
+甲马人
+%%%%
+Red Draconian
+红龙人
+%%%%
+Draconian
+龙人
+%%%%
+White Draconian
+白龙人
+%%%%
+Green Draconian
+绿龙人
+%%%%
+Yellow Draconian
+黄龙人
+%%%%
+Grey Draconian
+灰龙人
+%%%%
+Black Draconian
+黑龙人
+%%%%
+Purple Draconian
+紫龙人
+%%%%
+Mottled Draconian
+斑驳龙人
+%%%%
+Pale Draconian
+苍白龙人
 %%%%
 non-descript
 朴素

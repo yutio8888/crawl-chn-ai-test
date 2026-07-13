@@ -852,8 +852,10 @@ void TilesFramework::do_layout()
     const fixedp<> scale = m_map_mode_enabled ? Options.tile_map_scale
                                               : Options.tile_viewport_scale;
     ASSERT(scale > 0.0);
-    m_region_tile->dx = static_cast<int>(Options.tile_cell_pixels * scale);
-    m_region_tile->dy = static_cast<int>(Options.tile_cell_pixels * scale);
+    m_region_tile->dx = max(1, static_cast<int>(Options.tile_cell_pixels
+                                                * scale));
+    m_region_tile->dy = max(1, static_cast<int>(Options.tile_cell_pixels
+                                                * scale));
 
     int message_y_divider = 0;
     int sidebar_pw;
@@ -868,6 +870,23 @@ void TilesFramework::do_layout()
     bool use_small_layout = is_using_small_layout();
     bool top_bar_policy = m_layout_policy && m_layout_policy->uses_top_hud();
     bool use_top_bar = use_small_layout && top_bar_policy;
+
+    // Extremely short windows (Android split-screen or a visible soft
+    // keyboard) cannot fit the top HUD, messages, and even one pixel per
+    // dungeon cell. Fall back before the top-bar path can derive zero or
+    // negative tile sizes and pass them to round_up_to_multiple().
+    if (use_top_bar)
+    {
+        const int min_top_bar_h = m_region_stat->dy * min_top_bar_text_rows;
+        const int msg_min_h =
+            m_region_msg->grid_height_to_pixels(Options.msg_min_height);
+        const int min_tile_h = m_windowsz.y - min_top_bar_h - msg_min_h;
+        if (m_region_tile->dx <= 0 || m_region_tile->dy <= 0
+            || min_tile_h < ENV_SHOW_DIAMETER)
+        {
+            use_top_bar = false;
+        }
+    }
 
     if (use_top_bar)
     {
@@ -893,7 +912,7 @@ void TilesFramework::do_layout()
         int tile_avail_h = m_windowsz.y - top_bar_h - msg_min_h;
         if (tile_avail_h / m_region_tile->dy < ENV_SHOW_DIAMETER)
         {
-            m_region_tile->dy = tile_avail_h / ENV_SHOW_DIAMETER;
+            m_region_tile->dy = max(1, tile_avail_h / ENV_SHOW_DIAMETER);
             m_region_tile->dx = m_region_tile->dy;
         }
 
@@ -957,7 +976,7 @@ void TilesFramework::do_layout()
         int available_height_in_tiles = m_windowsz.y / m_region_tile->dy;
         if (available_height_in_tiles < ENV_SHOW_DIAMETER)
         {
-            m_region_tile->dy = m_windowsz.y / ENV_SHOW_DIAMETER;
+            m_region_tile->dy = max(1, m_windowsz.y / ENV_SHOW_DIAMETER);
             m_region_tile->dx = m_region_tile->dy;
 
             available_height_in_tiles = ENV_SHOW_DIAMETER;
@@ -1028,7 +1047,8 @@ void TilesFramework::do_layout()
             // tiles to fit full LOS into the available space.
             if (m_windowsz.y / m_region_tile->dy < ENV_SHOW_DIAMETER)
             {
-                m_region_tile->dy = m_windowsz.y / ENV_SHOW_DIAMETER;
+                m_region_tile->dy = max(1,
+                                        m_windowsz.y / ENV_SHOW_DIAMETER);
                 m_region_tile->dx = m_region_tile->dy;
             }
         }

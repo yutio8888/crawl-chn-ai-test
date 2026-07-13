@@ -11,6 +11,7 @@ namespace opengl
 {
     bool flush_opengl_errors();
     bool check_texture_size(const char *name, int width, int height);
+    int max_texture_size();
 }
 
 struct coord_def;
@@ -156,7 +157,7 @@ public:
     virtual void delete_textures(size_t count, unsigned int *textures) = 0;
     virtual void generate_textures(size_t count, unsigned int *textures) = 0;
     virtual void bind_texture(unsigned int texture) = 0;
-    virtual void load_texture(unsigned char *pixels, unsigned int width,
+    virtual bool load_texture(unsigned char *pixels, unsigned int width,
                               unsigned int height, MipMapOptions mip_opt,
                               int xoffset=-1, int yoffset=-1) = 0;
 
