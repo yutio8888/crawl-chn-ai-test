@@ -84,6 +84,8 @@ run_check() {
     run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" blocking \
         python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
         --format text
+    run_check "Font atlas generation safety (Issue #54)" blocking \
+        python3 .claude/scripts/check_font_atlas_generation.py
     run_check "String concatenation blind spots (tree-sitter AST)" warning \
         python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \
         --skip-low --format text

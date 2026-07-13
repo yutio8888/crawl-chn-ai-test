@@ -1,5 +1,7 @@
 #pragma once
 
+#include <cstdint>
+
 #include "defines.h"
 #include "glwrapper.h"
 
@@ -23,6 +25,11 @@ public:
     virtual bool load_font(const char *font_name, unsigned int font_size) = 0;
     virtual bool configure_font() = 0;
     virtual bool resize(unsigned int size) = 0;
+
+    // Changes whenever cached atlas texture coordinates may have become
+    // invalid. Persistent FontBuffers must be rebuilt after this changes.
+    virtual uint64_t atlas_generation() const { return 0; }
+    virtual void begin_font_buffer() {}
 
     // render just text
     virtual void render_textblock(unsigned int x, unsigned int y,
