@@ -868,12 +868,13 @@ string terse_spell_list(const item_def &item)
     vector<string> spell_descs;
     for (auto spell : spells_in_book(item))
     {
-        spell_descs.push_back(make_stringf("%s (L%d %s)",
-                                           spell_title(spell),
-                                           spell_difficulty(spell),
-                                           _spell_schools(spell).c_str()));
+        spell_descs.push_back(make_stringf_p(T_("%s (L%d %s)"),
+                                             spell_title(spell),
+                                             spell_difficulty(spell),
+                                             _spell_schools(spell).c_str()));
     }
     // could use comma_separated_fn and skip the intervening vec?
-    return "Spells: " + comma_separated_line(spell_descs.begin(),
-                                             spell_descs.end());
+    const string spells = comma_separated_line(spell_descs.begin(),
+                                               spell_descs.end());
+    return make_stringf(T_("Spells: %s"), spells.c_str());
 }

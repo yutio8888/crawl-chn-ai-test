@@ -2215,8 +2215,9 @@ static void _zonguldrok_comment_on_hat(const item_def& hat)
             key = unrand_key;
     }
 
-    const string msg = "A voice whispers, \"" + getSpeakString(key) + "\"";
-        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
+    const string msg = make_stringf(T_("A voice whispers, \"%s\""),
+                                    getSpeakString(key).c_str());
+    mprf(MSGCH_TALK, "%s", msg.c_str());
 }
 
 static void _equip_armour_effect(item_def& arm, bool unmeld)

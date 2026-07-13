@@ -23492,6 +23492,9 @@ God:
 Spells: 
 法术: 
 %%%%
+Spells: %s
+法术：%s
+%%%%
 %d/%d levels remaining
 剩余%d/%d等级
 %%%%
@@ -39015,3 +39018,6 @@ invoked
 %%%%
 ... while vexed%1$s
 ……在恼怒状态下%1$s
+%%%%
+%s (L%d %s)
+%1$s（%2$d级，%3$s）

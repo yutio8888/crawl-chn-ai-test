@@ -624,8 +624,9 @@ void seen_monster(monster* mons, bool do_encounter_message)
         }
         else if (mons->flags & MF_KNOWN_SHIFTER)
         {
-            name += make_stringf(T_(" (%sshapeshifter)"),
-                mons->has_ench(ENCH_GLOWING_SHAPESHIFTER) ? "glowing " : "");
+            name += mons->has_ench(ENCH_GLOWING_SHAPESHIFTER)
+                    ? T_(" (glowing shapeshifter)")
+                    : T_(" (shapeshifter)");
         }
         take_note(Note(NOTE_SEEN_MONSTER, mons->type, 0, name));
     }
