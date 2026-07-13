@@ -56,10 +56,10 @@ menu += white:神器
 # Possible egos
 menu += lightblue:^unidentified .*weapon.*(runed|glowing)
 # CN: unidentified weapon with runed/glowing
-menu += lightblue:未鉴定.*武器.*(符文|发光)
+menu += lightblue:^unidentified .*weapon.*(符文|发光)
 menu += lightblue:^unidentified .*armour.*(runed|glowing|embroidered|shiny|dyed)
 # CN: unidentified armour with appearance
-menu += lightblue:未鉴定.*(护甲|铠甲).*(符文|发光|绣花|闪亮|染色)
+menu += lightblue:^unidentified .*armour.*(符文|发光|绣花|闪亮|染色)
 
 # Enchanté
 menu += green:enchanted
@@ -85,8 +85,8 @@ menu += lightcyan:evoker.*
 
 # Defaults for normal items
 menu += lightblue:unidentified.*(potion|scroll|wand|jewellery|magical staff)
-# CN: unidentified item types
-menu += lightblue:未鉴定.*(药水|卷轴|魔杖|珠宝|法杖)
+# CN: unidentified item types (redundant — EN rule above already matches via English prefix)
+menu += lightblue:^unidentified .*(药水|卷轴|魔杖|珠宝|法杖)
 
 
 # Colouring of autoinscribed god gifts
