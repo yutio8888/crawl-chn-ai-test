@@ -2179,13 +2179,14 @@ string hints_describe_item(const item_def &item)
             }
             else
             {
-                ostr << T_("You can wear pieces of armour with <w>%</w> and take "
-                        "them off again with <w>%</w>"
 #ifdef USE_TILE
-                        ", or, alternatively, simply click on their tiles to "
-                        "perform either action"
+                ostr << T_("You can wear pieces of armour with <w>%</w> and take "
+                        "them off again with <w>%</w>, or, alternatively, simply "
+                        "click on their tiles to perform either action.");
+#else
+                ostr << T_("You can wear pieces of armour with <w>%</w> and take "
+                        "them off again with <w>%</w>.");
 #endif
-                        ".");
                 cmd.push_back(CMD_WEAR_ARMOUR);
                 cmd.push_back(CMD_REMOVE_ARMOUR);
             }
@@ -2225,14 +2226,16 @@ string hints_describe_item(const item_def &item)
             {
                 if (gives_resistance(item))
                 {
+#ifdef USE_TILE
+                    ostr << T_("\n\nThis armour offers its wearer protection from "
+                            "certain sources. For an overview of your resistances "
+                            "(among other things) press <w>%</w> or click on your "
+                            "avatar with the <w>right mouse button</w>.");
+#else
                     ostr << T_("\n\nThis armour offers its wearer protection from "
                             "certain sources. For an overview of your"
-                            " resistances (among other things) press <w>%</w>"
-#ifdef USE_TILE
-                            " or click on your avatar with the <w>right mouse "
-                            "button</w>"
+                            " resistances (among other things) press <w>%</w>.");
 #endif
-                            ".");
                     cmd.push_back(CMD_RESISTS_SCREEN);
                 }
                 if (gives_ability(item))
@@ -2252,32 +2255,36 @@ string hints_describe_item(const item_def &item)
                     "(<w>%</w>) it.");
             cmd.push_back(CMD_EVOKE);
 #ifdef USE_TILE
-            ostr << T_(" Alternatively, you can 1) <w>left mouse click</w> on "
-                    "the monster you wish to target (or your player character "
-                    "to target yourself) while pressing the <w>");
+            const char *modifier;
 #ifdef USE_TILE_WEB
-            ostr << T_("Ctrl + Shift keys");
+            modifier = T_("Ctrl + Shift keys");
 #else
 #if defined(UNIX) && defined(USE_TILE_LOCAL)
             if (!tiles.is_fullscreen())
-              ostr << T_("Ctrl + Shift keys");
+                modifier = T_("Ctrl + Shift keys");
             else
 #endif
-              ostr << T_("Alt key");
+                modifier = T_("Alt key");
 #endif
-            ostr << T_("</w> and pick the wand from the menu, or 2) "
-                    "<w>left mouse click</w> on the wand tile and then "
-                    "<w>left mouse click</w> on your target.");
+            ostr << make_stringf(T_(" Alternatively, you can 1) <w>left mouse "
+                                    "click</w> on the monster you wish to target "
+                                    "(or your player character to target yourself) "
+                                    "while pressing the <w>%s</w> and pick the wand "
+                                    "from the menu, or 2) <w>left mouse click</w> "
+                                    "on the wand tile and then <w>left mouse click"
+                                    "</w> on your target."), modifier);
 #endif
             Hints.hints_events[HINT_SEEN_WAND] = false;
             break;
 
         case OBJ_SCROLLS:
-            ostr << T_("Press <w>%</w> to read this scroll"
 #ifdef USE_TILE
-                    "or simply click on it with your <w>left mouse button</w>"
-#endif
+            ostr << T_("Press <w>%</w> to read this scroll, or simply click on it "
+                    "with your <w>left mouse button</w>.");
+#else
+            ostr << T_("Press <w>%</w> to read this scroll"
                     ".");
+#endif
             cmd.push_back(CMD_READ);
 
             Hints.hints_events[HINT_SEEN_SCROLL] = false;
@@ -2285,28 +2292,33 @@ string hints_describe_item(const item_def &item)
 
         case OBJ_JEWELLERY:
         {
-            ostr << T_("Jewellery can be <w>%</w>ut on or <w>%</w>emoved "
-                    "again"
 #ifdef USE_TILE
-                    ", though in Tiles, either can be done by clicking on the "
-                    "item in your inventory"
+            ostr << T_("Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, "
+                    "though in Tiles, either can be done by clicking on the item "
+                    "in your inventory.");
+#else
+            ostr << T_("Jewellery can be <w>%</w>ut on or <w>%</w>emoved "
+                    "again.");
 #endif
-                    ".");
             cmd.push_back(CMD_WEAR_JEWELLERY);
             cmd.push_back(CMD_REMOVE_JEWELLERY);
 
             if (gives_resistance(item))
             {
-                ostr << T_("\n\nThis ")
-                     << (item.sub_type < NUM_RINGS ? T_("ring") : T_("amulet"))
-                     << T_(" offers its wearer protection "
-                        "from certain sources. For an overview of your "
-                        "resistances (among other things) press <w>%</w>"
+                const char *jewellery =
+                    item.sub_type < NUM_RINGS ? T_("ring") : T_("amulet");
 #ifdef USE_TILE
-                        " or click on your avatar with the <w>right mouse "
-                        "button</w>"
+                ostr << make_stringf(T_("\n\nThis %s offers its wearer protection "
+                                        "from certain sources. For an overview of "
+                                        "your resistances (among other things) "
+                                        "press <w>%%</w> or click on your avatar with "
+                                        "the <w>right mouse button</w>."), jewellery);
+#else
+                ostr << make_stringf(T_("\n\nThis %s offers its wearer protection "
+                                        "from certain sources. For an overview of "
+                                        "your resistances (among other things) "
+                                        "press <w>%%</w>."), jewellery);
 #endif
-                        ".");
                 cmd.push_back(CMD_RESISTS_SCREEN);
             }
             if (gives_ability(item))
@@ -2320,11 +2332,13 @@ string hints_describe_item(const item_def &item)
             break;
         }
         case OBJ_POTIONS:
-            ostr << T_("Press <w>%</w> to quaff this potion"
 #ifdef USE_TILE
-                    "or simply click on it with your <w>left mouse button</w>"
-#endif
+            ostr << T_("Press <w>%</w> to quaff this potion, or simply click on "
+                    "it with your <w>left mouse button</w>.");
+#else
+            ostr << T_("Press <w>%</w> to quaff this potion"
                     ".");
+#endif
             cmd.push_back(CMD_QUAFF);
             Hints.hints_events[HINT_SEEN_POTION] = false;
             break;
@@ -2614,7 +2628,8 @@ static void _hints_describe_feature(int x, int y, ostringstream& ostr)
             }
             else
             {
-                ostr << god_name(you.religion)
+                const string current_god = god_name(you.religion);
+                ostr << current_god
                      << T_(" probably won't like it if you switch allegiance, "
                         "but having a look won't hurt: to get information "
                         "on <w>");
@@ -2623,14 +2638,16 @@ static void _hints_describe_feature(int x, int y, ostringstream& ostr)
                         "altar. Before taking up the responding faith (and "
                         "abandoning your current one!) you'll be asked for "
                         "confirmation."
-                        "\nTo see your current standing with ")
-                     << god_name(you.religion)
-                     << T_(" press <w>^</w>"
+                        );
 #ifdef USE_TILE
-                        ", or click with your <w>right mouse button</w> "
-                        "on your avatar while pressing <w>Shift</w>"
+                ostr << make_stringf(T_("\nTo see your current standing with %s "
+                                        "press <w>^</w>, or click with your <w>right "
+                                        "mouse button</w> on your avatar while "
+                                        "pressing <w>Shift</w>."), current_god.c_str());
+#else
+                ostr << make_stringf(T_("\nTo see your current standing with %s "
+                                        "press <w>^</w>."), current_god.c_str());
 #endif
-                        ".");
             }
             Hints.hints_events[HINT_SEEN_ALTAR] = false;
             break;

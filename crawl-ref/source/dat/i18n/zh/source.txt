@@ -39132,3 +39132,48 @@ Press '<w>!</w>' or '<w>?</w>' to toggle between deck selection and description.
 %%%%
 <lightgrey>Press <w>?</w> for the card descriptions or <w>Enter</w> to accept.
 <lightgrey>按 <w>?</w> 查看卡牌说明，按 <w>Enter</w> 确认。
+%%%%
+You can wear pieces of armour with <w>%</w> and take them off again with <w>%</w>, or, alternatively, simply click on their tiles to perform either action.
+你可以按<w>%</w>穿戴护甲，再按<w>%</w>将其脱下；也可以直接点击其图块来执行任一操作。
+%%%%
+You can wear pieces of armour with <w>%</w> and take them off again with <w>%</w>.
+你可以按<w>%</w>穿戴护甲，再按<w>%</w>将其脱下。
+%%%%
+\n\nThis armour offers its wearer protection from certain sources. For an overview of your resistances (among other things) press <w>%</w> or click on your avatar with the <w>right mouse button</w>.
+\n\n这件护甲可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按<w>%</w>，或用<w>鼠标右键</w>点击你的角色。
+%%%%
+\n\nThis armour offers its wearer protection from certain sources. For an overview of your resistances (among other things) press <w>%</w>.
+\n\n这件护甲可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按<w>%</w>。
+%%%%
+ Alternatively, you can 1) <w>left mouse click</w> on the monster you wish to target (or your player character to target yourself) while pressing the <w>%s</w> and pick the wand from the menu, or 2) <w>left mouse click</w> on the wand tile and then <w>left mouse click</w> on your target.
+ 或者，你可以：1）按住<w>%s</w>的同时，在要指定为目标的怪物上<w>左键点击</w>（或在你的角色上左键点击以指定自己为目标），然后从菜单中选择魔杖；或者 2）在魔杖图块上<w>左键点击</w>，再在目标上<w>左键点击</w>。
+%%%%
+Press <w>%</w> to read this scroll, or simply click on it with your <w>left mouse button</w>.
+按<w>%</w>阅读此卷轴，或用<w>鼠标左键</w>点击它。
+%%%%
+Press <w>%</w> to read this scroll.
+按<w>%</w>阅读此卷轴。
+%%%%
+Jewellery can be <w>%</w>ut on or <w>%</w>emoved again, though in Tiles, either can be done by clicking on the item in your inventory.
+可以按<w>%</w>戴上饰品，或按<w>%</w>将其取下；在 Tiles 中，也可以在物品栏中点击该物品来完成任一操作。
+%%%%
+Jewellery can be <w>%</w>ut on or <w>%</w>emoved again.
+可以按<w>%</w>戴上饰品，或按<w>%</w>将其取下。
+%%%%
+\n\nThis %s offers its wearer protection from certain sources. For an overview of your resistances (among other things) press <w>%%</w> or click on your avatar with the <w>right mouse button</w>.
+\n\n这件%s可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按<w>%%</w>，或用<w>鼠标右键</w>点击你的角色。
+%%%%
+\n\nThis %s offers its wearer protection from certain sources. For an overview of your resistances (among other things) press <w>%%</w>.
+\n\n这件%s可保护穿戴者免受某些伤害。若要查看你的抗性（以及其他信息），按<w>%%</w>。
+%%%%
+Press <w>%</w> to quaff this potion, or simply click on it with your <w>left mouse button</w>.
+按<w>%</w>饮下此药水，或用<w>鼠标左键</w>点击它。
+%%%%
+Press <w>%</w> to quaff this potion.
+按<w>%</w>饮下此药水。
+%%%%
+\nTo see your current standing with %s press <w>^</w>, or click with your <w>right mouse button</w> on your avatar while pressing <w>Shift</w>.
+\n要查看你与%s当前的关系，按<w>^</w>；或按住<w>Shift</w>的同时用<w>鼠标右键</w>点击你的角色。
+%%%%
+\nTo see your current standing with %s press <w>^</w>.
+\n要查看你与%s当前的关系，按<w>^</w>。
