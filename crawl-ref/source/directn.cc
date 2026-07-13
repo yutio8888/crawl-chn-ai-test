@@ -487,7 +487,7 @@ public:
     {
         const string t = MenuEntry::get_text();
         if (item && item->pos == you.pos())
-            return t + " (here)";
+            return t + T_(" (here)");
         return t;
     }
 };
@@ -1867,14 +1867,14 @@ string cell_monster_description(const coord_def& pos, bool include_areas, target
         text = get_monster_equipment_desc(mi);
     }
     else
-        text = "Disturbance";
+        text = T_("Disturbance");
 
     // Build the final description string.
     if (!suffixes.empty())
     {
-        text += " ("
-            + comma_separated_line(suffixes.begin(), suffixes.end(), ", ")
-            + ")";
+        const string suffix_desc =
+            comma_separated_line(suffixes.begin(), suffixes.end(), ", ");
+        text += make_stringf(T_(" (%s)"), suffix_desc.c_str());
     }
     return text;
 }
@@ -1904,7 +1904,7 @@ string cell_items_description(const coord_def& pos)
     if (items.empty())
         return "";
 
-    return make_stringf(T_("<cyan>Item%s here:</cyan> %s."),
+    return make_stringf_p(T_("<cyan>Item%1$s here:</cyan> %2$s."),
                         items.size() > 1 ? "s" : "",
                         item_message(items).c_str());
 }
@@ -1951,7 +1951,7 @@ string get_square_desc(const coord_def &pos)
 
     string mon_desc = cell_monster_description(pos);
     if (!mon_desc.empty())
-        out << "<cyan>Here:</cyan> " << mon_desc << "\n";
+        out << make_stringf(T_("<cyan>Here:</cyan> %s\n"), mon_desc.c_str());
 
     string desc = cell_items_description(pos);
     if (!desc.empty())
@@ -1961,7 +1961,7 @@ string get_square_desc(const coord_def &pos)
     if (!desc.empty())
     {
         if (mon_desc.empty())
-            out << "<cyan>Here:</cyan> ";
+            out << T_("<cyan>Here:</cyan>") << " ";
         out << desc << "\n";
     }
 
@@ -1970,7 +1970,7 @@ string get_square_desc(const coord_def &pos)
         out << desc << "\n";
 
     if (out.tellp() > 0)
-        out << "\n(Right-click to examine)";
+        out << T_("\n(Right-click to examine)");
 
     return out.str();
 }

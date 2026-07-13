@@ -1716,7 +1716,7 @@ bool StashTracker::display_search_results(
     stashmenu.action_cycle = Menu::CYCLE_TOGGLE;
     stashmenu.menu_action  = default_execute ? Menu::ACT_EXECUTE
                                              : Menu::ACT_EXAMINE;
-    string title = "match";
+    string title = T_("match");
     if (!nohl)
         stashmenu.search = search;
 
@@ -1742,7 +1742,7 @@ bool StashTracker::display_search_results(
         if (need_here_subtitle && (here || res.in_inventory))
         {
             // LIGHTCYAN for better contrast. XX change the default?
-            first_hdr = new StashMenuEntry("Results at your position",
+            first_hdr = new StashMenuEntry(T_("Results at your position"),
                                                     MEL_SUBTITLE, LIGHTCYAN);
             stashmenu.add_entry(first_hdr);
             // only show the `elsewhere` subtitle if there are any `here`
@@ -1754,9 +1754,11 @@ bool StashTracker::display_search_results(
 
         if (need_there_subtitle && !(here || res.in_inventory))
         {
-            const string cycle_keyhelp = " <lightgrey>([<w>,</w>] to cycle)</lightgrey>";
+            const string cycle_keyhelp =
+                T_(" <lightgrey>([<w>,</w>] to cycle)</lightgrey>");
             stashmenu.add_entry(new StashMenuEntry(
-                "Results elsewhere" + cycle_keyhelp, MEL_SUBTITLE, LIGHTCYAN));
+                string(T_("Results elsewhere")) + cycle_keyhelp,
+                MEL_SUBTITLE, LIGHTCYAN));
             ASSERT(first_hdr);
             first_hdr->text += cycle_keyhelp;
             need_there_subtitle = false;
@@ -1766,26 +1768,35 @@ bool StashTracker::display_search_results(
         if (!res.in_inventory)
         {
             if (const uint8_t waypoint = travel_cache.is_waypoint(res.pos))
-                matchtitle << "(" << waypoint << ") ";
+                matchtitle << make_stringf(T_("Waypoint %d"), waypoint) << " ";
             if (here)
-                matchtitle << "[right here] ";
+                matchtitle << T_("[right here]") << " ";
             else
-                matchtitle << "[" << res.pos.id.describe() << "] ";
+            {
+                const string place = res.pos.id.describe();
+                matchtitle << make_stringf(T_("[%s]"), place.c_str()) << " ";
+            }
         }
 
         matchtitle << res.match;
         if (res.duplicates > 0)
         {
-            matchtitle << " (" << res.duplicates << " further duplicate" <<
-                (res.duplicates == 1 ? "" : "s");
             if (res.duplicates != res.duplicate_piles  // piles are only
                                                        // meaningful for items
                 && res.match_type == MATCH_ITEM)
             {
-                matchtitle << " in " << res.duplicate_piles
-                           << " pile" << (res.duplicate_piles == 1 ? "" : "s");
+                matchtitle << make_stringf_p(
+                    T_(" (%1$d further duplicate%2$s in %3$d pile%4$s)"),
+                    res.duplicates, res.duplicates == 1 ? "" : "s",
+                    res.duplicate_piles,
+                    res.duplicate_piles == 1 ? "" : "s");
             }
-            matchtitle << ")";
+            else
+            {
+                matchtitle << make_stringf_p(
+                    T_(" (%1$d further duplicate%2$s)"),
+                    res.duplicates, res.duplicates == 1 ? "" : "s");
+            }
         }
 
         int colour = MENU_ITEM_STOCK_COLOUR;

@@ -2355,7 +2355,7 @@ barrage of energy
 \n%s%s
 %%%%
 \n<h>Attacking monsters\nWalking into a monster will attack it\nwith your wielded weapon, or unarmed.
-\n<h>攻击怪物\n走向怪物会用你装备的武器或空手攻击它。
+\n<h>攻击怪物\n走向怪物会用你装备的武器或空手\n攻击它。
 %%%%
 \n<w>0:</w> Orb of Zot
 \n<w>0:</w> 佐特宝珠
@@ -35636,9 +35636,6 @@ Uh-oh,
 Unfortunately, while converting back would appease 
 不幸的是，虽然重新改信可以安抚
 %%%%
-Unnamed gizmo
-未命名的小装置
-%%%%
 Version history for your current game:\n
 当前游戏的版本历史：\n
 %%%%
@@ -38154,4 +38151,49 @@ topbar status|Invis
 %%%%
 topbar status|Pois
 中毒
+%%%%
+ (here)
+（此处）
+%%%%
+<cyan>Here:</cyan> %s\n
+<cyan>这里：</cyan> %s\n
+%%%%
+<cyan>Here:</cyan>
+<cyan>这里：</cyan>
+%%%%
+<cyan>Item%1$s here:</cyan> %2$s.
+<cyan>此处物品：</cyan> %2$s。
+%%%%
+Disturbance
+扰动
+%%%%
+\n(Right-click to examine)
+\n（右键点击以查看）
+%%%%
+ (%1$d further duplicate%2$s)
+（另有%1$d个重复项）
+%%%%
+ (%1$d further duplicate%2$s in %3$d pile%4$s)
+（另有%1$d个重复项，分布于%3$d堆中）
+%%%%
+Waypoint %d
+【路径点%d】
+%%%%
+ <lightgrey>([<w>,</w>] to cycle)</lightgrey>
+ <lightgrey>（按[<w>,</w>]切换）</lightgrey>
+%%%%
+[%s]
+【%s】
+%%%%
+[right here]
+【就在此处】
+%%%%
+Results at your position
+当前位置的结果
+%%%%
+Results elsewhere
+其他位置的结果
+%%%%
+match
+匹配结果
 %%%%
