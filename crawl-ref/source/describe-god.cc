@@ -264,8 +264,12 @@ string god_title(god_type which_god, species_type which_species, int piety)
     {
         { "Adj", species::name(which_species, species::SPNAME_ADJ) },
         { "Genus", species::name(which_species, species::SPNAME_GENUS) },
-        { "Walking", species::walking_title(which_species) + "ing" },
-        { "Walker", species::walking_title(which_species) + "er" },
+        // The Chinese templates provide the shared "行路" stem themselves;
+        // unlike English, they must not receive an -ing/-er suffix.
+        { "Walking", Options.language == lang_t::ZH ? "行路"
+                                                    : species::walking_title(which_species) + "ing" },
+        { "Walker", Options.language == lang_t::ZH ? "者"
+                                                   : species::walking_title(which_species) + "er" },
         { "Child", species::child_name(which_species) },
         { "Orc", species::orc_name(which_species) },
     };
