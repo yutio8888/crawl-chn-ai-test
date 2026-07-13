@@ -1868,6 +1868,9 @@ barrage of energy
 %s willpower is stripped away!
 %s的意志力被剥夺了！
 %%%%
+%s%s.
+%s%s。
+%%%%
 %s%s falls off!
 %s%s掉落了下来！
 %%%%
@@ -33886,6 +33889,9 @@ Stack %s
 %%%%
 %d %s left
 剩余%d %s
+%%%%
+%d memories left
+尚存%d段记忆
 %%%%
 %d MP    %s    (%s)
 %d 法力    %s（%s）

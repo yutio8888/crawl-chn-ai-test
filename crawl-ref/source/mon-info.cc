@@ -1636,8 +1636,13 @@ vector<string> monster_info::attributes() const
         const int num_memories = props.exists(NOBODY_MEMORIES_KEY)
                                     ? props[NOBODY_MEMORIES_KEY].get_vector().size()
                                     : NOBODY_MAX_MEMORIES;
-        v.push_back(make_stringf(T_("%d %s left"), num_memories,
-                                               num_memories == 1 ? "memory" : "memories"));
+        if (Options.language == lang_t::ZH)
+            v.push_back(make_stringf(T_("%d memories left"), num_memories));
+        else
+        {
+            v.push_back(make_stringf(T_("%d %s left"), num_memories,
+                                     num_memories == 1 ? "memory" : "memories"));
+        }
     }
 
     return v;
@@ -1648,6 +1653,11 @@ string monster_info::wounds_description_sentence() const
     const string wounds = wounds_description();
     if (wounds.empty())
         return "";
+    else if (Options.language == lang_t::ZH)
+    {
+        return make_stringf(T_("%s%s."), pronoun(PRONOUN_SUBJECTIVE),
+                            wounds.c_str());
+    }
     else
     {
         return string(pronoun(PRONOUN_SUBJECTIVE)) + " "
