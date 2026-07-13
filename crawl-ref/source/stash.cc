@@ -349,8 +349,8 @@ string Stash::stash_item_name(const item_def &item)
         return name;
 
     if (mons_has_skeleton(item.mon_type))
-        return name + " (skeletalised by now)";
-    return name + " (gone by now)";
+        return make_stringf_p(T_("%1$s (skeletalised by now)"), name.c_str());
+    return make_stringf_p(T_("%1$s (gone by now)"), name.c_str());
 }
 
 string Stash::description() const

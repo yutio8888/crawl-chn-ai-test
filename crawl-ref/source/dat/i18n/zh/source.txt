@@ -39081,3 +39081,9 @@ Skills reduced by: %s.
 %%%%
 %1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
 %1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）
+%%%%
+%1$s (skeletalised by now)
+%1$s（现已化为骷髅）
+%%%%
+%1$s (gone by now)
+%1$s（现已消失）
