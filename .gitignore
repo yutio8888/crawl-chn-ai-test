@@ -11,6 +11,7 @@
 tools/okapi/__pycache__/
 tools/okapi/build/
 .claude/metrics/verify/
+.claude/metrics/review-verdicts/
 
 # opencode-goal-plugin persisted state
 .opencode/goals/

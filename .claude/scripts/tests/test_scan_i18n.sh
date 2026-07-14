@@ -153,8 +153,12 @@ assert_output "lang-args: finds language-dependent args" \
 
 # ── varargs-string (Issue #42 UB) ──
 echo "--- varargs-string ---"
-python3 "$SCRIPT_DIR/../scan_varargs_string.py" "$FIXTURES/varargs-string/" --include-warn > /tmp/actual_varargs.txt 2>&1 || true
-assert_output "varargs-string: detects std::string in %s slot (HIGH), ignores int arithmetic" \
+set +e
+python3 "$SCRIPT_DIR/../scan_varargs_string.py" "$FIXTURES/varargs-string/" --include-warn > /tmp/actual_varargs.txt 2>&1
+varargs_status=$?
+set -e
+assert_status "varargs-string: HIGH findings return blocking status" 1 "$varargs_status"
+assert_output "varargs-string: maps ordinary/positional %s slots and ignores non-string slots" \
     /tmp/actual_varargs.txt "$EXPECTED/varargs-string.txt"
 
 echo ""

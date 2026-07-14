@@ -21,6 +21,8 @@ Detected rules (variadic argument position only, i.e. AFTER the format string):
   R4 CALL_NO_CSTR  WARN — arg is a bare function call not ending in `.c_str()`
                           and not a known const char*-returning function
                           (verify the callee returns const char*, not std::string)
+  R5 STRING_RETURN_CALL HIGH — arg is a bare call to a function known to
+                                return std::string
 
 Usage:
     scan_varargs_string.py crawl-ref/source/
@@ -75,12 +77,42 @@ CONST_CHAR_WRAPPERS = {"T_", "N_", "C_", "gettext", "_"}
 # Known functions that return const char* — safe to pass directly as %s.
 # (std::string returners are intentionally NOT listed; they need .c_str().)
 CONST_CHAR_FUNCS = {
-    "skill_name", "spell_title", "god_name", "dungeon_feature_name",
+    "skill_name", "spell_title", "dungeon_feature_name",
     "brand_type_name", "card_name", "rune_type_name", "mutation_name",
     "potion_type_name", "spell_english_name", "armour_ego_name",
     "artp_name", "duration_name", "equip_slot_name", "spelltype_long_name",
-    "get_job_name", "mons_class_name", "held_status", "get_desc_quantity",
-    "conj_verb", "pronoun", "uppercase_first",
+    "get_job_name", "mons_class_name", "held_status",
+}
+
+# Known std::string returners. A bare call in a %s slot is always UB and should
+# block even though generic, unresolved calls remain advisory warnings.
+STRING_RETURN_FUNCS = {"god_name", "conj_verb", "uppercase_first"}
+
+# Methods whose return type depends on the receiver class.  These must never be
+# folded into the simple-name sets above: DCSS has same-name methods with
+# incompatible return types (for example monster_info::pronoun() returns
+# const char*, while actor::pronoun() returns string).
+CONST_CHAR_METHODS = {
+    "suffix": {"attacked_monster_list"},
+    "get_verb": {"EquipOnDelay", "EquipOffDelay"},
+    "pronoun": {"monster_info"},
+    "what": {
+        "map_load_exception", "dgn_veto_exception", "corrupted_save",
+        "bad_map_flag", "bad_level_id",
+    },
+    "damage_verb": {"scorefile_entry"},
+    "kill_category_desc": {"mon_enchant"},
+}
+
+STRING_RETURN_METHODS = {
+    "suffix": {"LookupType"},
+    "get_verb": {
+        "AuxAttackType", "AuxConstrict", "AuxKick", "AuxHeadbutt",
+        "AuxPeck", "AuxTail", "AuxPunch", "AuxBite", "AuxPseudopods",
+        "AuxTentacles", "AuxTouch", "AuxMaw", "AuxBlades",
+        "AuxFisticloak", "AuxMedusaStinger", "AuxTalismanBlade",
+    },
+    "pronoun": {"actor", "monster", "player"},
 }
 
 
@@ -105,6 +137,147 @@ def _callee_name(call_node, src):
                     return _text(c, src)
         break
     return ""
+
+
+def _declarator_identifiers(node, src):
+    """Return identifiers declared by a variable/parameter declarator."""
+    if node is None:
+        return []
+    if node.type == "identifier":
+        return [_text(node, src)]
+    if node.type == "function_declarator":
+        return []
+    # Do not mistake a function name or identifiers in an initializer for a
+    # variable binding.  Wrapper declarators expose the actual declarator via
+    # this field (pointer/reference/init/array declarations included).
+    child = node.child_by_field_name("declarator")
+    if child is not None:
+        return _declarator_identifiers(child, src)
+    identifiers = []
+    for child in node.named_children:
+        identifiers.extend(_declarator_identifiers(child, src))
+    return identifiers
+
+
+def _normalise_declared_type(type_text):
+    """Reduce a declaration type to the class name useful for method lookup."""
+    names = re.findall(r"[A-Za-z_]\w*", type_text)
+    names = [n for n in names if n not in {
+        "const", "volatile", "struct", "class", "typename",
+    }]
+    return names[-1] if names else ""
+
+
+def _binding_scope(node):
+    """Find the lexical scope in which a declaration can name a receiver."""
+    parent = node.parent
+    while parent is not None:
+        if parent.type in {
+            "compound_statement", "function_definition", "catch_clause",
+            "lambda_expression", "class_specifier", "struct_specifier",
+            "translation_unit",
+        }:
+            return parent
+        parent = parent.parent
+    return None
+
+
+def _build_type_bindings(root, src):
+    """Index explicitly declared variable/parameter types in one source file."""
+    bindings = defaultdict(list)
+
+    def visit(node, depth=0):
+        if node.type in ("declaration", "parameter_declaration"):
+            type_node = node.child_by_field_name("type")
+            declared_type = (_normalise_declared_type(_text(type_node, src))
+                             if type_node is not None else "")
+            if declared_type:
+                declarators = []
+                if node.type == "parameter_declaration":
+                    declarators.append(node.child_by_field_name("declarator"))
+                else:
+                    # A declaration may contain multiple declarators.
+                    declarators.extend(c for c in node.named_children
+                                       if c is not type_node
+                                       and c.type not in {"type_qualifier",
+                                                          "attribute_specifier"})
+                scope = _binding_scope(node)
+                if scope is not None:
+                    for declarator in declarators:
+                        for name in _declarator_identifiers(declarator, src):
+                            bindings[name].append({
+                                "type": declared_type,
+                                "position": node.start_byte,
+                                "scope_start": scope.start_byte,
+                                "scope_end": scope.end_byte,
+                                "depth": depth,
+                            })
+        for child in node.named_children:
+            visit(child, depth + 1)
+
+    visit(root)
+    return bindings
+
+
+def _receiver_expression(call_node):
+    """Return the expression to the left of `.`/`->` for a method call."""
+    function = call_node.child_by_field_name("function")
+    if function is None or function.type != "field_expression":
+        return None
+    return function.child_by_field_name("argument")
+
+
+def _enclosing_class(call_node, src):
+    """Infer `this` type for an unqualified call in a class method."""
+    ancestor = call_node.parent
+    while ancestor is not None:
+        if ancestor.type in ("class_specifier", "struct_specifier"):
+            name = ancestor.child_by_field_name("name")
+            if name is not None:
+                return _normalise_declared_type(_text(name, src))
+        if ancestor.type == "function_definition":
+            declarator = ancestor.child_by_field_name("declarator")
+            if declarator is not None:
+                qualified = []
+
+                def collect(node):
+                    if node.type == "qualified_identifier":
+                        qualified.append(node)
+                    for child in node.named_children:
+                        collect(child)
+
+                collect(declarator)
+                if qualified:
+                    qualified_text = _text(qualified[0], src)
+                    if "::" in qualified_text:
+                        qualifier = qualified_text.rsplit("::", 1)[0]
+                        return _normalise_declared_type(
+                            qualifier.rsplit("::", 1)[-1])
+        ancestor = ancestor.parent
+    return ""
+
+
+def _receiver_type(call_node, src, type_bindings):
+    """Resolve the receiver's explicit static type, or return unknown."""
+    receiver = _receiver_expression(call_node)
+    if receiver is None:
+        return _enclosing_class(call_node, src)
+    if receiver.type == "this":
+        return _enclosing_class(call_node, src)
+    if receiver.type != "identifier":
+        return ""
+
+    name = _text(receiver, src)
+    candidates = []
+    for binding in type_bindings.get(name, []):
+        if (binding["position"] <= call_node.start_byte
+                and binding["scope_start"] <= call_node.start_byte
+                < binding["scope_end"]):
+            candidates.append(binding)
+    if not candidates:
+        return ""
+    # Innermost scope wins; within it, use the nearest preceding declaration.
+    return max(candidates, key=lambda b: (b["depth"], b["position"]))["type"]
 
 
 def _is_const_char_wrapper_call(node, src):
@@ -167,6 +340,106 @@ def _format_arg_index(args, src):
     return -1
 
 
+def _format_literal_text(node, src):
+    """Extract the contents of a literal (possibly wrapped in T_()).
+
+    This intentionally accepts only statically visible string literals. A
+    dynamic format cannot be mapped safely without type/signature information,
+    so callers conservatively skip it rather than classifying non-%s slots.
+    """
+    # C_(context, message) carries a non-format context literal before the
+    # actual translated message. Parsing the whole call would let `%` tokens in
+    # the context shift or invent variadic slots.
+    if node.type == "call_expression" and _callee_name(node, src) == "C_":
+        for child in node.named_children:
+            if child.type == "argument_list":
+                call_args = list(child.named_children)
+                return (_format_literal_text(call_args[1], src)
+                        if len(call_args) >= 2 else None)
+        return None
+
+    text = _text(node, src)
+    literals = re.findall(r'"(?:\\.|[^"\\])*"', text)
+    if not literals:
+        return None
+    return "".join(literal[1:-1] for literal in literals)
+
+
+def _printf_string_arg_indexes(fmt):
+    """Return zero-based variadic argument indexes consumed by %s conversions.
+
+    Handles sequential and POSIX positional conversions, including `*` width
+    and precision arguments. Invalid/incomplete conversions are ignored. Mixed
+    positional/sequential formats are mapped according to the explicit indexes
+    and the sequential cursor; such formats are invalid printf usage anyway.
+    """
+    indexes = []
+    next_arg = 0
+    i = 0
+
+    def positional_index(pos):
+        return int(pos) - 1 if pos is not None and int(pos) > 0 else None
+
+    while i < len(fmt):
+        if fmt[i] != "%":
+            i += 1
+            continue
+        i += 1
+        if i < len(fmt) and fmt[i] == "%":
+            i += 1
+            continue
+
+        match = re.match(r"(\d+)\$", fmt[i:])
+        value_pos = match.group(1) if match else None
+        if match:
+            i += match.end()
+
+        while i < len(fmt) and fmt[i] in "#0- +'":
+            i += 1
+
+        if i < len(fmt) and fmt[i] == "*":
+            i += 1
+            match = re.match(r"(\d+)\$", fmt[i:])
+            if match:
+                i += match.end()
+            else:
+                next_arg += 1
+        else:
+            while i < len(fmt) and fmt[i].isdigit():
+                i += 1
+
+        if i < len(fmt) and fmt[i] == ".":
+            i += 1
+            if i < len(fmt) and fmt[i] == "*":
+                i += 1
+                match = re.match(r"(\d+)\$", fmt[i:])
+                if match:
+                    i += match.end()
+                else:
+                    next_arg += 1
+            else:
+                while i < len(fmt) and fmt[i].isdigit():
+                    i += 1
+
+        for length in ("hh", "ll", "I32", "I64", "h", "l", "j", "z", "t", "L", "q"):
+            if fmt.startswith(length, i):
+                i += len(length)
+                break
+        if i >= len(fmt):
+            break
+
+        conversion = fmt[i]
+        i += 1
+        arg_index = positional_index(value_pos)
+        if arg_index is None:
+            arg_index = next_arg
+            next_arg += 1
+        if conversion == "s":
+            indexes.append(arg_index)
+
+    return indexes
+
+
 def _binary_has_string_operand(node, src, depth=0):
     """True if a `+` binary_expression has at least one string-typed operand
     (string literal, concatenated string, or string(...) ctor), i.e. it is
@@ -195,7 +468,7 @@ def _binary_has_string_operand(node, src, depth=0):
     return False
 
 
-def _classify_vararg(arg, src):
+def _classify_vararg(arg, src, type_bindings):
     """Classify a variadic argument node. Returns (rule, risk) or (None, None)."""
     if _ends_with_cstr(arg, src):
         return None, None
@@ -220,10 +493,17 @@ def _classify_vararg(arg, src):
 
     if arg.type == "parenthesized_expression":
         for c in arg.named_children:
-            return _classify_vararg(c, src)
+            return _classify_vararg(c, src, type_bindings)
 
     if arg.type == "call_expression":
         name = _callee_name(arg, src)
+        receiver_type = _receiver_type(arg, src, type_bindings)
+        if receiver_type in STRING_RETURN_METHODS.get(name, set()):
+            return "STRING_RETURN_CALL", "HIGH"
+        if receiver_type in CONST_CHAR_METHODS.get(name, set()):
+            return None, None
+        if name in STRING_RETURN_FUNCS:
+            return "STRING_RETURN_CALL", "HIGH"
         if name and name not in CONST_CHAR_FUNCS and name not in CONST_CHAR_WRAPPERS:
             return "CALL_NO_CSTR", "WARN"
         return None, None
@@ -235,7 +515,7 @@ def _find_line(node, src):
     return node.start_point[0] + 1
 
 
-def _scan_call(call_node, src, findings):
+def _scan_call(call_node, src, findings, type_bindings):
     callee = _callee_name(call_node, src)
     if callee not in VARARG_FUNCS:
         return
@@ -250,11 +530,15 @@ def _scan_call(call_node, src, findings):
     fmt_idx = _format_arg_index(args, src)
     if fmt_idx < 0:
         return
-    fmt_text = _text(args[fmt_idx], src)
-    if "%s" not in fmt_text:
+    fmt_text = _format_literal_text(args[fmt_idx], src)
+    if fmt_text is None:
         return
-    for arg in args[fmt_idx + 1:]:
-        rule, risk = _classify_vararg(arg, src)
+    varargs = args[fmt_idx + 1:]
+    for arg_idx in sorted(set(_printf_string_arg_indexes(fmt_text))):
+        if arg_idx < 0 or arg_idx >= len(varargs):
+            continue
+        arg = varargs[arg_idx]
+        rule, risk = _classify_vararg(arg, src, type_bindings)
         if rule:
             findings.append({
                 "callee": callee,
@@ -266,11 +550,11 @@ def _scan_call(call_node, src, findings):
             })
 
 
-def _walk(node, src, findings):
+def _walk(node, src, findings, type_bindings):
     if node.type == "call_expression":
-        _scan_call(node, src, findings)
+        _scan_call(node, src, findings, type_bindings)
     for child in node.children:
-        _walk(child, src, findings)
+        _walk(child, src, findings, type_bindings)
 
 
 def scan_file(filepath, parser):
@@ -282,7 +566,8 @@ def scan_file(filepath, parser):
         return []
     tree = parser.parse(src)
     findings = []
-    _walk(tree.root_node, src, findings)
+    type_bindings = _build_type_bindings(tree.root_node, src)
+    _walk(tree.root_node, src, findings, type_bindings)
     for f in findings:
         f["file"] = filepath
         del f["node"]

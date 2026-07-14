@@ -7615,10 +7615,11 @@ string get_ghost_description(const monster_info &mi, bool concise)
 
         if (mi.i_ghost.religion != GOD_NO_GOD)
         {
+            const string god = god_name(mi.i_ghost.religion);
             return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s，信仰%6$s）"),
                                 mi.mname.c_str(), title.c_str(), rank,
                                 species_name.c_str(), job_name,
-                                god_name(mi.i_ghost.religion));
+                                god.c_str());
         }
 
         return make_stringf_p(T_("%1$s（%2$s，%3$s%4$s%5$s）"),

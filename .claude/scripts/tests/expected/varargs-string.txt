@@ -3,5 +3,20 @@
   [HIGH] sample.cc:9  make_stringf(...) TERNARY: upper ? string(T_("Uppercase")) + " " : ""
   [HIGH] sample.cc:12  mprf(...) CONCAT: some_string + " tail"
   [HIGH] sample.cc:14  mprf(...) STRING_CTOR: string("x")
+  [HIGH] sample.cc:16  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:17  make_stringf(...) STRING_RETURN_CALL: uppercase_first(word)
+  [HIGH] sample.cc:18  make_stringf(...) STRING_RETURN_CALL: conj_verb("be", plural)
+  [HIGH] sample.cc:20  make_stringf_p(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:21  mprf_p(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:23  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:24  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:25  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:26  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:27  make_stringf(...) STRING_RETURN_CALL: god_name(god)
+  [HIGH] sample.cc:40  make_stringf(...) STRING_RETURN_CALL: subject.pronoun(PRONOUN_SUBJECTIVE)
+  [HIGH] sample.cc:48  make_stringf(...) STRING_RETURN_CALL: lookup.suffix()
+  [HIGH] sample.cc:70  make_stringf(...) STRING_RETURN_CALL: get_verb()
+  [WARN] sample.cc:29  make_stringf(...) CALL_NO_CSTR: actor.pronoun(PRONOUN_SUBJECTIVE)
+  [WARN] sample.cc:51  make_stringf(...) CALL_NO_CSTR: unresolved.what()
 
-Summary: 3 HIGH (blocking), 0 WARN
+Summary: 16 HIGH (blocking), 2 WARN
