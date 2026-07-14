@@ -473,12 +473,13 @@ void actor::end_constriction(mid_t whom, bool intentional, bool quiet,
         }
         else
         {
-            mprf(T_("%s %s %s grip on %s."),
-                attacker_desc.c_str(),
-                force_plural ? verb.c_str()
-                            : conj_verb(verb).c_str(),
-                force_plural ? T_("their") : pronoun(PRONOUN_POSSESSIVE).c_str(),
-                constrictee->name(DESC_THE).c_str());
+            mprf_p(T_("%s %s %s grip on %s."),
+                   attacker_desc.c_str(),
+                   force_plural ? verb.c_str()
+                                : conj_verb(verb).c_str(),
+                   force_plural ? T_("their")
+                                : pronoun(PRONOUN_POSSESSIVE).c_str(),
+                   constrictee->name(DESC_THE).c_str());
         }
     }
 }

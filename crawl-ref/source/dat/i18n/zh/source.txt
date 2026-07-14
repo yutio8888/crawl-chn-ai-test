@@ -8268,7 +8268,7 @@ You acquired
 你获得了
 %%%%
 You add the spell%1$s %2$s to your library.
-你将法术%2$s添加到你的法术书中。
+你将法术<yellow>%2$s</yellow>添加到你的法术书中。
 %%%%
 You already have all the faith you need.
 你已拥有所需的全部信仰。
@@ -11992,7 +11992,7 @@ The silver sears
 %%%%
 %1$s %2$s life force from %3$s%4$s
 
-%1$s从%3$s身上%2$s了生命力%4$s
+%1$s从%3$s身上%2$.0s汲取了生命力%4$s
 %%%%
 %s blocks the %s with %s %s... and reflects it back!
 
@@ -22479,10 +22479,10 @@ tear
 撕裂
 %%%%
 %s %s %s last head off!
-%s%s了%s最后一个头！
+%1$s%2$.0s砍下了%3$s最后一个头！
 %%%%
 %s %s one of %s heads off!
-%s%s了%s一个头！
+%1$s%2$.0s砍下了%3$s一个头！
 %%%%
 flickers and vanishes
 闪烁了一下就消失了
@@ -28924,7 +28924,7 @@ kneel at
 %d张%s牌
 %%%%
 %s %s %s grip on %s.
-%s%s了%s对%s的束缚。
+%1$s%2$.0s%3$.0s不再束缚%4$s。
 %%%%
 %s %s constricted%s%s
 %s%s紧紧缠绕%s%s
@@ -39780,3 +39780,51 @@ You feel a surge of divine spite.
 %%%%
  says: Farewell. Go and enforce order with %s.
 说：再会了。去和%s一起维护秩序吧。
+%%%%
+artefact olgreb melee|%1$s %2$s %3$s%4$s
+%1$s%2$.0s使%3$s中了毒%4$s
+%%%%
+artefact wyrmbane melee|%1$s %2$s%3$s
+%1$s%2$.0s抽搐起来%3$s
+%%%%
+artefact thermic engine melee|%1$s %2$s %3$s.
+%1$s%2$.0s冻伤了%3$s。
+%%%%
+artefact dread knight melee|%1$s %2$s%3$s
+%1$s%2$.0s抽搐起来%3$s
+%%%%
+artefact woe cleave|%1$s %2$s %3$s in twain.
+%1$s%2$.0s将%3$s一劈为二。
+%%%%
+artefact woe pulverise|%1$s %2$s %3$s into a thin bloody mist.
+%1$s%2$.0s将%3$s轰成了一蓬血雾。
+%%%%
+artefact woe hew|%1$s %2$s %3$s violently.
+%1$s%2$.0s凶猛地劈开了%3$s。
+%%%%
+artefact woe mangle|%1$s fatally %2$s %3$s.
+%1$s%2$.0s将%3$s残暴地撕碎了。
+%%%%
+artefact woe dissect|%1$s %2$s %3$s like a pig carcass.
+%1$s%2$.0s像剖猪一样剖开了%3$s。
+%%%%
+artefact woe chop|%1$s %2$s %3$s into pieces.
+%1$s%2$.0s将%3$s剁成了碎块。
+%%%%
+artefact woe butcher|%1$s %2$s %3$s messily.
+%1$s%2$.0s将%3$s宰得血肉模糊。
+%%%%
+artefact woe slaughter|%1$s %2$s %3$s joyfully.
+%1$s%2$.0s欢快地屠杀了%3$s。
+%%%%
+artefact elemental staff burn|%1$s %2$s %3$s%4$s
+%1$s%2$.0s灼烧了%3$s%4$s
+%%%%
+artefact elemental staff freeze|%1$s %2$s %3$s%4$s
+%1$s%2$.0s冻伤了%3$s%4$s
+%%%%
+artefact elemental staff electrocute|%1$s %2$s %3$s%4$s
+%1$s%2$.0s电击了%3$s%4$s
+%%%%
+artefact elemental staff crush|%1$s %2$s %3$s%4$s
+%1$s%2$.0s砸伤了%3$s%4$s

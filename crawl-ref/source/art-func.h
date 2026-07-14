@@ -267,11 +267,11 @@ static void _OLGREB_melee_effects(item_def* /*weapon*/, actor* attacker,
 
     if (!mondied && bonus_dam)
     {
-        mprf("%s %s %s%s",
-             attacker->name(DESC_THE).c_str(),
-             attacker->conj_verb("envenom").c_str(),
-             defender->name(DESC_THE).c_str(),
-             attack_strength_punctuation(bonus_dam).c_str());
+        mprf_p(C_("artefact olgreb melee", "%1$s %2$s %3$s%4$s"),
+               attacker->name(DESC_THE).c_str(),
+               attacker->conj_verb("envenom").c_str(),
+               defender->name(DESC_THE).c_str(),
+               attack_strength_punctuation(bonus_dam).c_str());
 
         defender->hurt(attacker, bonus_dam);
         if (defender->alive())
@@ -622,10 +622,10 @@ static void _WYRMBANE_melee_effects(item_def* weapon, actor* attacker,
     if (!mondied)
     {
         int bonus_dam = 1 + random2(3 * dam / 2);
-        mprf("%s %s%s",
-            defender->name(DESC_THE).c_str(),
-            defender->conj_verb("convulse").c_str(),
-            attack_strength_punctuation(bonus_dam).c_str());
+        mprf_p(C_("artefact wyrmbane melee", "%1$s %2$s%3$s"),
+               defender->name(DESC_THE).c_str(),
+               defender->conj_verb("convulse").c_str(),
+               attack_strength_punctuation(bonus_dam).c_str());
 
         defender->hurt(attacker, bonus_dam);
 
@@ -813,25 +813,70 @@ static void _SNAKEBITE_melee_effects(item_def* /*weapon*/, actor* attacker,
 static void _WOE_melee_effects(item_def* /*weapon*/, actor* attacker,
                                actor* defender, bool mondied, int /*dam*/)
 {
-    const char *verb = "bugger", *adv = "";
-    switch (random2(8))
-    {
-    case 0: verb = "cleave", adv = " in twain"; break;
-    case 1: verb = "pulverise", adv = " into a thin bloody mist"; break;
-    case 2: verb = "hew", adv = " violently"; break;
-    case 3: verb = "fatally mangle", adv = ""; break;
-    case 4: verb = "dissect", adv = " like a pig carcass"; break;
-    case 5: verb = "chop", adv = " into pieces"; break;
-    case 6: verb = "butcher", adv = " messily"; break;
-    case 7: verb = "slaughter", adv = " joyfully"; break;
-    }
+    const int effect = random2(8);
     if (you.see_cell(attacker->pos()) || you.see_cell(defender->pos()))
     {
-        mprf("%s %s %s%s.", attacker->name(DESC_THE).c_str(),
-             attacker->conj_verb(verb).c_str(),
-             (attacker == defender ? defender->pronoun(PRONOUN_REFLEXIVE)
-                                   : defender->name(DESC_THE)).c_str(),
-             adv);
+        const string attacker_name = attacker->name(DESC_THE);
+        const string defender_name = attacker == defender
+                                     ? defender->pronoun(PRONOUN_REFLEXIVE)
+                                     : defender->name(DESC_THE);
+        switch (effect)
+        {
+        case 0:
+            mprf_p(C_("artefact woe cleave",
+                      "%1$s %2$s %3$s in twain."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("cleave").c_str(),
+                   defender_name.c_str());
+            break;
+        case 1:
+            mprf_p(C_("artefact woe pulverise",
+                      "%1$s %2$s %3$s into a thin bloody mist."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("pulverise").c_str(),
+                   defender_name.c_str());
+            break;
+        case 2:
+            mprf_p(C_("artefact woe hew",
+                      "%1$s %2$s %3$s violently."),
+                   attacker_name.c_str(), attacker->conj_verb("hew").c_str(),
+                   defender_name.c_str());
+            break;
+        case 3:
+            mprf_p(C_("artefact woe mangle",
+                      "%1$s fatally %2$s %3$s."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("mangle").c_str(),
+                   defender_name.c_str());
+            break;
+        case 4:
+            mprf_p(C_("artefact woe dissect",
+                      "%1$s %2$s %3$s like a pig carcass."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("dissect").c_str(),
+                   defender_name.c_str());
+            break;
+        case 5:
+            mprf_p(C_("artefact woe chop",
+                      "%1$s %2$s %3$s into pieces."),
+                   attacker_name.c_str(), attacker->conj_verb("chop").c_str(),
+                   defender_name.c_str());
+            break;
+        case 6:
+            mprf_p(C_("artefact woe butcher",
+                      "%1$s %2$s %3$s messily."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("butcher").c_str(),
+                   defender_name.c_str());
+            break;
+        case 7:
+            mprf_p(C_("artefact woe slaughter",
+                      "%1$s %2$s %3$s joyfully."),
+                   attacker_name.c_str(),
+                   attacker->conj_verb("slaughter").c_str(),
+                   defender_name.c_str());
+            break;
+        }
     }
 
     if (!mondied)
@@ -900,21 +945,18 @@ static void _ELEMENTAL_STAFF_melee_effects(item_def*, actor* attacker,
     if (mondied || !(x_chance_in_y(evoc, 27*27) || x_chance_in_y(evoc, 27*27)))
         return;
 
-    const char *verb = nullptr;
+    const int effect = random2(4);
     beam_type flavour = BEAM_NONE;
 
-    switch (random2(4))
+    switch (effect)
     {
     case 0:
-        verb = "burn";
         flavour = BEAM_FIRE;
         break;
     case 1:
-        verb = "freeze";
         flavour = BEAM_COLD;
         break;
     case 2:
-        verb = "electrocute";
         flavour = BEAM_ELECTRICITY;
         break;
     default:
@@ -922,7 +964,6 @@ static void _ELEMENTAL_STAFF_melee_effects(item_def*, actor* attacker,
         dprf("Bad damage type for elemental staff; defaulting to earth");
         // fallthrough to earth
     case 3:
-        verb = "crush";
         flavour = BEAM_MMISSILE;
         break;
     }
@@ -932,12 +973,38 @@ static void _ELEMENTAL_STAFF_melee_effects(item_def*, actor* attacker,
     if (bonus_dam <= 0)
         return;
 
-    mprf("%s %s %s%s",
-         attacker->name(DESC_THE).c_str(),
-         attacker->conj_verb(verb).c_str(),
-         (attacker == defender ? defender->pronoun(PRONOUN_REFLEXIVE)
-                               : defender->name(DESC_THE)).c_str(),
-         attack_strength_punctuation(bonus_dam).c_str());
+    const string attacker_name = attacker->name(DESC_THE);
+    const string defender_name = attacker == defender
+                                 ? defender->pronoun(PRONOUN_REFLEXIVE)
+                                 : defender->name(DESC_THE);
+    const string punctuation = attack_strength_punctuation(bonus_dam);
+    switch (effect)
+    {
+    case 0:
+        mprf_p(C_("artefact elemental staff burn", "%1$s %2$s %3$s%4$s"),
+               attacker_name.c_str(), attacker->conj_verb("burn").c_str(),
+               defender_name.c_str(), punctuation.c_str());
+        break;
+    case 1:
+        mprf_p(C_("artefact elemental staff freeze",
+                  "%1$s %2$s %3$s%4$s"),
+               attacker_name.c_str(), attacker->conj_verb("freeze").c_str(),
+               defender_name.c_str(), punctuation.c_str());
+        break;
+    case 2:
+        mprf_p(C_("artefact elemental staff electrocute",
+                  "%1$s %2$s %3$s%4$s"),
+               attacker_name.c_str(),
+               attacker->conj_verb("electrocute").c_str(),
+               defender_name.c_str(), punctuation.c_str());
+        break;
+    default:
+    case 3:
+        mprf_p(C_("artefact elemental staff crush", "%1$s %2$s %3$s%4$s"),
+               attacker_name.c_str(), attacker->conj_verb("crush").c_str(),
+               defender_name.c_str(), punctuation.c_str());
+        break;
+    }
 
     defender->hurt(attacker, bonus_dam, flavour);
 
@@ -1348,11 +1415,11 @@ static void _THERMIC_ENGINE_melee_effects(item_def* weapon, actor* attacker,
                                                random2(dam) / 2 + 1);
     if (bonus_dam > 0)
     {
-        mprf("%s %s %s.",
-            attacker->name(DESC_THE).c_str(),
-            attacker->conj_verb("freeze").c_str(),
-            (attacker == defender ? defender->pronoun(PRONOUN_REFLEXIVE)
-                                : defender->name(DESC_THE)).c_str());
+        mprf_p(C_("artefact thermic engine melee", "%1$s %2$s %3$s."),
+               attacker->name(DESC_THE).c_str(),
+               attacker->conj_verb("freeze").c_str(),
+               (attacker == defender ? defender->pronoun(PRONOUN_REFLEXIVE)
+                                     : defender->name(DESC_THE)).c_str());
 
         defender->hurt(attacker, bonus_dam, BEAM_COLD);
         if (defender->alive())
@@ -1768,10 +1835,10 @@ static void _DREAD_KNIGHT_melee_effects(item_def* /*item*/, actor* attacker,
     if (!mondied)
     {
         int bonus_dam = random2avg((1 + defender->stat_maxhp() / 10), 3);
-        mprf("%s %s%s",
-            defender->name(DESC_THE).c_str(),
-            defender->conj_verb("convulse").c_str(),
-            attack_strength_punctuation(bonus_dam).c_str());
+        mprf_p(C_("artefact dread knight melee", "%1$s %2$s%3$s"),
+               defender->name(DESC_THE).c_str(),
+               defender->conj_verb("convulse").c_str(),
+               attack_strength_punctuation(bonus_dam).c_str());
         defender->hurt(attacker, bonus_dam);
     }
 }
