@@ -1911,7 +1911,7 @@ zonguldrok greeting
 
 又一个渴望黑暗之道的追求者？我们一起让他们全都俯首称臣！
 
-终于，一个真正配得上我力量的子嗣。
+终于，一个真正配得上我力量的传人。
 
 终于有个比……这些人更有用的家伙了。
 %%%%
@@ -1933,7 +1933,7 @@ zonguldrok hat good
 
 一顶好帽子确实是生死之间最美好的事物之一。
 
-我为你的时尚品味鼓掌，我的子嗣。
+我为你的时尚品味鼓掌，我的传人。
 
 我们的敌人必将在我威严面前俯首称臣。
 %%%%
@@ -1961,7 +1961,7 @@ zonguldrok hat crown of Dyrovepreva
 
 青铜的纯净与宝石的美丽：一个相得益彰的组合。
 
-让我们上战场吧，我的子嗣！
+让我们上战场吧，我的传人！
 %%%%
 zonguldrok hat crown of vainglory
 
@@ -1969,12 +1969,12 @@ zonguldrok hat crown of vainglory
 
 我可以容忍光芒，只要它赋予我将敌人送入永恒黑暗的力量！
 
-为我的荣耀而杀戮，不是你的，子嗣！
+为我的荣耀而杀戮，不是你的，传人！
 %%%%
 zonguldrok hat hat of Pondering
 
 # Pinky and the Brain
-子嗣，你是不是在想我在想的事？
+传人，你是不是在想我在想的事？
 
 为这样的力量，我可以容忍一顶染污的帽子！
 
@@ -1991,7 +1991,7 @@ zonguldrok hat hat of the Alchemist
 zonguldrok hat hat of the Bear Spirit
 
 # 迪伦·托马斯
-我的子嗣，我们的敌人不会温和地走进那个良夜！
+我的传人，我们的敌人不会温和地走进那个良夜！
 
 # 迪伦·托马斯，再来
 怒斥，怒斥光明的消逝！
@@ -2012,6 +2012,6 @@ zonguldrok hat mask of the Dragon
 
 龙崇拜者的面具？我要让龙崇拜我！
 
-如此原始的杀戮力量，我的子嗣……
+如此原始的杀戮力量，我的传人……
 
 保持坚强的意志，给所有反对我们的人带去死亡！
