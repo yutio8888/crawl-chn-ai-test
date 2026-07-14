@@ -1030,7 +1030,7 @@ gain power from chaos
 %1$s%2$.0s说出了一句强大的话语！
 %%%%
 %1$s %2$s frozen%3$s
-%1$s%2$s被冻结了%3$s
+%1$s%2$.0s被冻结了%3$s
 %%%%
 %1$s %2$s in %3$s.
 %1$s在%3$s中%2$s。
@@ -11988,7 +11988,7 @@ The silver sears
 %%%%
 %1$s %2$s healed.
 
-%1$s%2$s恢复了生命值。
+%1$s%2$.0s恢复了生命值。
 %%%%
 %1$s %2$s life force from %3$s%4$s
 
