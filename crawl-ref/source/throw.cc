@@ -297,9 +297,9 @@ static shared_ptr<quiver::action> _fire_prompt_for_item()
         && !fire_warn_if_impossible(true, you.weapon()); // forms
 
     int slot = -1;
-    const string title = make_stringf(
-        T_("<lightgray>Fire%s/use which item?</lightgray>"),
-        (can_throw ? "/throw" : ""));
+    const string title = can_throw
+        ? T_("<lightgray>Fire/throw/use which item?</lightgray>")
+        : T_("<lightgray>Fire/use which item?</lightgray>");
     // TODO: the output api here is awkward
     // TODO: it would be nice if items with disabled actions got grayed out
     slot = prompt_invent_item(

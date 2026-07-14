@@ -34721,8 +34721,11 @@ weapon of %s
 <lightgray> (%s to select)</lightgray>
 <lightgray>（按%s选择）</lightgray>
 %%%%
-<lightgray>Fire%s/use which item?</lightgray>
-<lightgray>发射%s/使用哪件物品？</lightgray>
+<lightgray>Fire/throw/use which item?</lightgray>
+<lightgray>发射/投掷/使用哪件物品？</lightgray>
+%%%%
+<lightgray>Fire/use which item?</lightgray>
+<lightgray>发射/使用哪件物品？</lightgray>
 %%%%
 <lightgrey>%s </lightgrey>
 <lightgrey>%s</lightgrey>
