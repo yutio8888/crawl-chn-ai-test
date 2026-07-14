@@ -2,9 +2,44 @@
 
 #include "AppHdr.h"
 
+#include "artefact.h"
 #include "describe.h"
+#include "i18n.h"
+#include "item-status-flag-type.h"
 #include "mon-info.h"
 #include "monster-type.h"
+
+#include "test_zh_fixture.h"
+
+namespace
+{
+item_def make_test_randart()
+{
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.flags = ISFLAG_RANDART | ISFLAG_IDENTIFIED;
+
+    CrawlVector &props = item.props[ARTEFACT_PROPS_KEY]
+                              .new_vector(SV_SHORT);
+    props.resize(ART_PROPERTIES);
+    props.set_max_size(ART_PROPERTIES);
+    for (vec_size i = 0; i < ART_PROPERTIES; ++i)
+        props[i].get_short() = 0;
+
+    artefact_set_property(item, ARTP_FIRE, -1);
+    artefact_set_property(item, ARTP_STRENGTH, 9);
+    artefact_set_property(item, ARTP_DEXTERITY, 2);
+    return item;
+}
+
+bool any_line_contains(const vector<string> &lines, const string &needle)
+{
+    return any_of(lines.begin(), lines.end(), [&](const string &line)
+    {
+        return line.find(needle) != string::npos;
+    });
+}
+}
 
 TEST_CASE("_monster_habitat_description outputs correct descriptions", "[single-file]")
 {
@@ -45,4 +80,41 @@ TEST_CASE("_monster_habitat_description outputs correct descriptions", "[single-
 
         REQUIRE(habitat_info == "");
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "randart property descriptions survive i18n cache resets",
+                 "[zh-translation][describe]")
+{
+    const item_def item = make_test_randart();
+    vector<string> lines;
+    desc_randart_props(item, lines);
+
+    REQUIRE(any_line_contains(lines, "使你容易受到火焰"));
+    REQUIRE(any_line_contains(lines, "影响你的力量（+9）"));
+    REQUIRE(any_line_contains(lines, "影响你的敏捷（+2）"));
+
+    i18n_cache_clear();
+    const char *cache_churn[] =
+    {
+        "cache churn 0",
+        "cache churn 1",
+        "No target in view!",
+        "cache churn 3",
+        "No target in range!",
+        "cache churn 5",
+        "No targets found!",
+    };
+    for (const char *key : cache_churn)
+        T_(key);
+
+    lines.clear();
+    desc_randart_props(item, lines);
+
+    REQUIRE(any_line_contains(lines, "使你容易受到火焰"));
+    REQUIRE(any_line_contains(lines, "影响你的力量（+9）"));
+    REQUIRE(any_line_contains(lines, "影响你的敏捷（+2）"));
+    REQUIRE_FALSE(any_line_contains(lines, T_("No target in view!")));
+    REQUIRE_FALSE(any_line_contains(lines, T_("No target in range!")));
+    REQUIRE_FALSE(any_line_contains(lines, T_("No targets found!")));
 }
