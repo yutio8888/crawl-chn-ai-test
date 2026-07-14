@@ -211,7 +211,7 @@ static string _get_xom_speech(const string &key)
         result = getSpeakString("Xom " XOM_SPEECH("general effect"));
 
     if (result.empty())
-        return "Xom makes something happen.";
+        return T_("Xom makes something happen.");
 
     return result;
 }
@@ -379,7 +379,7 @@ void xom_tick()
         }
 
         if (you.gift_timeout == 1)
-            simple_god_message(" is getting BORED.");
+            simple_god_message(T_(" is getting BORED."));
     }
 
     if (x_chance_in_y(2 + you.faith(), 6))
@@ -405,9 +405,9 @@ void xom_tick()
             if (interest > 0)
             {
                 if (interest < 25)
-                    simple_god_message(" is interested.");
+                    simple_god_message(T_(" is interested."));
                 else
-                    simple_god_message(" is intrigued.");
+                    simple_god_message(T_(" is intrigued."));
 
                 you.gift_timeout += interest;
                 //updating piety status line
@@ -605,7 +605,7 @@ static void _xom_make_item(object_class_type base, int subtype, int power)
 
     if (thing_created == NON_ITEM)
     {
-        god_speaks(GOD_XOM, "\"No, never mind.\"");
+        god_speaks(GOD_XOM, T_("\"No, never mind.\""));
         return;
     }
     else if (base == OBJ_ARMOUR && subtype == ARM_ORB && one_chance_in(4))
@@ -622,7 +622,7 @@ static void _xom_make_item(object_class_type base, int subtype, int power)
     move_item_to_grid(&thing_created, you.pos());
 
     if (thing_created == NON_ITEM) // if it fell into lava
-        simple_god_message(" snickers.", false, GOD_XOM);
+        simple_god_message(T_(" snickers."), false, GOD_XOM);
 
     stop_running();
 }
@@ -644,7 +644,7 @@ static void _xom_acquirement(int /*sever*/)
             false, you.pos());
     if (item_index == NON_ITEM)
     {
-        god_speaks(GOD_XOM, "\"No, never mind.\"");
+        god_speaks(GOD_XOM, T_("\"No, never mind.\""));
         return;
     }
 
@@ -3811,7 +3811,7 @@ static void _xom_cloud_trail(int /*sever*/)
     god_speaks(GOD_XOM, speech.c_str());
 
     if (suppressed)
-        simple_god_message(" purifies the foul vapours!");
+        simple_god_message(T_(" purifies the foul vapours!"));
 }
 
 static void _xom_draining(int /*sever*/)
@@ -5317,7 +5317,7 @@ bool xom_saves_your_life(const kill_method_type death_type)
     if (you.hp < 1)
         set_hp(1 + random2(you.hp_max/4));
 
-    god_speaks(GOD_XOM, "Xom revives you!");
+    god_speaks(GOD_XOM, T_("Xom revives you!"));
 
     // Ideally, this should contain the death cause but that is too much
     // trouble for now.

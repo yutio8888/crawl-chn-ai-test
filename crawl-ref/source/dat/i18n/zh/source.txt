@@ -39618,3 +39618,33 @@ created by %1$s
 %%%%
 called by an oblivion hound
 由遗忘猎犬召唤
+%%%%
+Xom makes something happen.
+佐姆引发了某件事。
+%%%%
+ is getting BORED.
+开始觉得无聊了。
+%%%%
+ is interested.
+感到好奇。
+%%%%
+ is intrigued.
+被勾起了兴趣。
+%%%%
+"No, never mind."
+“不，还是算了。”
+%%%%
+ snickers.
+窃笑着。
+%%%%
+ purifies the foul vapours!
+净化了污浊的雾气！
+%%%%
+Xom snickers.
+佐姆窃笑着。
+%%%%
+Xom snickers loudly.
+佐姆大声嗤笑着。
+%%%%
+Xom revives you!
+佐姆复活了你！
