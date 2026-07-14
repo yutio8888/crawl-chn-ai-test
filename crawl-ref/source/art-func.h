@@ -1138,9 +1138,9 @@ static void _MAJIN_equip(item_def *item, bool *show_msgs, bool /*unmeld*/)
 
     if (!item->props.exists(MB_WELCOME_KEY) && should_msg)
     {
-        const string msg = "A voice whispers, \"" +
-                           getSpeakString("majin-bo greeting") + "\"";
-        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
+        const string msg = make_stringf(T_("A voice whispers, \"%s\""),
+                                        getSpeakString("majin-bo greeting").c_str());
+        mprf(MSGCH_TALK, "%s", msg.c_str());
         item->props[MB_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1801,8 +1801,9 @@ static void _SKULL_OF_ZONGULDROK_equip(item_def *item, bool *show_msgs, bool /*u
                                 ? "zonguldrok greeting"
                                 : "zonguldrok reprise";
 
-        const string msg = "A voice whispers, \"" + getSpeakString(key) + "\"";
-        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
+        const string msg = make_stringf(T_("A voice whispers, \"%s\""),
+                                        getSpeakString(key).c_str());
+        mprf(MSGCH_TALK, "%s", msg.c_str());
         item->props[ZONGULDROK_WELCOME_KEY].get_bool() = true;
     }
 }
@@ -1812,9 +1813,9 @@ static void _SKULL_OF_ZONGULDROK_unequip(item_def */*item*/, bool *show_msgs)
     const bool should_msg = !show_msgs || *show_msgs;
     if (should_msg)
     {
-        const string msg = "A voice whispers, \"" +
-                            getSpeakString("zonguldrok farewell") + "\"";
-        mprf(MSGCH_TALK, T_("%s"), msg.c_str());
+        const string msg = make_stringf(T_("A voice whispers, \"%s\""),
+                                        getSpeakString("zonguldrok farewell").c_str());
+        mprf(MSGCH_TALK, "%s", msg.c_str());
     }
 }
 

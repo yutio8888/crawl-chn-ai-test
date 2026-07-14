@@ -856,7 +856,8 @@ static void _majin_speak(spell_type spell)
     const int level = spell_difficulty(spell);
     const bool weak = level <= 4;
     const string lookup = weak ? "majin-bo cast weak" : "majin-bo cast";
-    const string msg = "A voice whispers, \"" + getSpeakString(lookup) + "\"";
+    const string msg = make_stringf(T_("A voice whispers, \"%s\""),
+                                    getSpeakString(lookup).c_str());
     mprf(MSGCH_TALK, "%s", msg.c_str());
 }
 
