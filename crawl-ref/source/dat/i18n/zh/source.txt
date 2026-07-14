@@ -39828,3 +39828,9 @@ artefact elemental staff electrocute|%1$s %2$s %3$s%4$s
 %%%%
 artefact elemental staff crush|%1$s %2$s %3$s%4$s
 %1$s%2$.0s砸伤了%3$s%4$s
+%%%%
+attack verb|spit
+刺穿
+%%%%
+attack verb|open
+剖开

@@ -39,6 +39,7 @@ Parser (统一):
 | **CI 门禁** | `bash .claude/scripts/verify_zh.sh --profile ci` |
 | **生成 Agent 术语上下文** | `python3 .claude/scripts/glossary_query.py --task "<任务>" --files <文件>` |
 | **检查本次修改的精确术语键** | `python3 .claude/scripts/check_glossary_terms.py --base HEAD` |
+| **检查持久化 T_()/C_() 指针** | `python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser` |
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **数据驱动翻译覆盖** | `python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **source.txt 完整性** | `python3 .claude/scripts/scan_i18n.py source-txt-integrity --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
@@ -170,6 +171,36 @@ python3 .claude/scripts/scan_i18n.py monster-title-display \
 扫描为零债务门禁，不使用 baseline；任何新 `DISPLAY`/`DYNKEY` 候选都会直接阻断。
 扫描器仍保留精确 `--allowlist` 能力，仅供未来受控迁移，豁免必须精确匹配 rule、
 文件、行号、函数和完整字面量。
+
+### scan_i18n_lifetime.py — 持久翻译指针生命周期门禁
+
+`T_()`/`C_()` 返回 i18n 缓存中的借用指针；清空缓存后，保存在函数静态、
+成员或持久容器中的裸 `const char*` 会悬空。扫描器报告：
+
+- `LIFE001`–`LIFE003`：阻断，分别覆盖静态 raw sink、持久成员赋值和容器写入；
+- `LIFE101`：非阻断，命名空间 raw 指针在启动期固化语言；
+- `LIFE102`：非阻断，持久 owning string 固化首次翻译；
+- `LIFE103`：非阻断，类型或 helper 无法可靠解析。
+
+```bash
+# 默认只输出并阻断 HIGH
+python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser
+
+# 人工审计时同时显示 WARN
+python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+    --include-warn --format json --require-parser
+
+# 单元测试（同时覆盖小型 AST 与大型词法路径）
+python3 .claude/scripts/tests/test_scan_i18n_lifetime.py
+```
+
+实现对小型目标使用 tree-sitter AST，对大型/完整仓库使用屏蔽注释与字面量的
+词法候选切片，避免旧 binding 在超大 C++ initializer 上的 native 崩溃。两条路径
+都检查 helper、聚合字段、成员赋值、容器 mutation、延迟 lambda 与立即调用
+lambda。解析器缺失、输入无效或严格目标解析失败均退出 2；CI 以 fail-closed 运行。
+
+修复时让持久表只保存稳定英文 key，在消费点调用 `T_()`/`C_()` 并立即复制；
+同一英文 key 需要不同译文时必须使用 `C_()` 的 context，不能覆盖全局译文。
 
 ### audit_data_i18n.py — 数据驱动翻译覆盖检查
 

@@ -75,6 +75,12 @@ run_check() {
         crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Anti-patterns (strict + lenient)" \
         python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/
+    run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
+        python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
+        --format text --require-parser
+    run_check "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
+        python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+        --format text --require-parser
     echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-reviewer.sh complete ==="
 } > "$OUT" 2>&1

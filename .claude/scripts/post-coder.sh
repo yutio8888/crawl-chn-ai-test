@@ -92,7 +92,10 @@ run_check() {
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" blocking \
         python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
-        --format text
+        --format text --require-parser
+    run_check "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" blocking \
+        python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+        --format text --require-parser
     run_check "Font atlas generation safety (Issue #54)" blocking \
         python3 .claude/scripts/check_font_atlas_generation.py
     run_check "String concatenation blind spots (tree-sitter AST)" warning \

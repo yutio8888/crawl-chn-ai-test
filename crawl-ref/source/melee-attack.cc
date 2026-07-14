@@ -932,9 +932,12 @@ bool melee_attack::handle_phase_hit()
             // ZH: "<atk><verb>了<def>，但没有造成伤害。"
             {
                 const bool is_player = attacker->is_player();
+                const string monster_verb = is_player ? "" : mons_attack_verb();
                 const string verb = is_player
                     ? attack_verb
-                    : attacker->conj_verb(mons_attack_verb());
+                    : Options.language == lang_t::ZH
+                      ? monster_verb
+                      : attacker->conj_verb(monster_verb);
                 mprf(T_(is_player
                         ? "%s %s %s but do no damage."
                         : "%s %s %s but does no damage."),
@@ -2920,14 +2923,16 @@ void melee_attack::set_attack_verb(int damage)
             {
                 static const char * const pierce_desc[][2] =
                 {
-                    {T_("spit"), T_("like a pig")},
-                    {T_("skewer"), T_("like a kebab")},
-                    {T_("stick"), T_("like a pincushion")},
-                    {T_("perforate"), T_("like a sieve")}
+                    {"spit", "like a pig"},
+                    {"skewer", "like a kebab"},
+                    {"stick", "like a pincushion"},
+                    {"perforate", "like a sieve"}
                 };
                 const int choice = random2(ARRAYSZ(pierce_desc));
-                attack_verb = pierce_desc[choice][0];
-                verb_degree = pierce_desc[choice][1];
+                attack_verb = choice == 0
+                              ? C_("attack verb", pierce_desc[choice][0])
+                              : T_(pierce_desc[choice][0]);
+                verb_degree = T_(pierce_desc[choice][1]);
             }
         }
         break;
@@ -2968,15 +2973,17 @@ void melee_attack::set_attack_verb(int damage)
         {
             static const char * const slice_desc[][2] =
             {
-                {T_("open"),    T_("like a pillowcase")},
-                {T_("slice"),   T_("like a ripe choko")},
-                {T_("cut"),     T_("into ribbons")},
-                {T_("carve"),   T_("like a ham")},
-                {T_("chop"),    T_("into pieces")}
+                {"open",  "like a pillowcase"},
+                {"slice", "like a ripe choko"},
+                {"cut",   "into ribbons"},
+                {"carve", "like a ham"},
+                {"chop",  "into pieces"}
             };
             const int choice = random2(ARRAYSZ(slice_desc));
-            attack_verb = slice_desc[choice][0];
-            verb_degree = slice_desc[choice][1];
+            attack_verb = choice == 0
+                          ? C_("attack verb", slice_desc[choice][0])
+                          : T_(slice_desc[choice][0]);
+            verb_degree = T_(slice_desc[choice][1]);
         }
         break;
 
@@ -2999,15 +3006,15 @@ void melee_attack::set_attack_verb(int damage)
         {
             static const char * const bludgeon_desc[][2] =
             {
-                {T_("crush"),   T_("like a grape")},
-                {T_("beat"),    T_("like a drum")},
-                {T_("hammer"),  T_("like a gong")},
-                {T_("pound"),   T_("like an anvil")},
-                {T_("flatten"), T_("like a pancake")}
+                {"crush",   "like a grape"},
+                {"beat",    "like a drum"},
+                {"hammer",  "like a gong"},
+                {"pound",   "like an anvil"},
+                {"flatten", "like a pancake"}
             };
             const int choice = random2(ARRAYSZ(bludgeon_desc));
-            attack_verb = bludgeon_desc[choice][0];
-            verb_degree = bludgeon_desc[choice][1];
+            attack_verb = T_(bludgeon_desc[choice][0]);
+            verb_degree = T_(bludgeon_desc[choice][1]);
         }
         break;
 
@@ -3079,10 +3086,10 @@ void melee_attack::set_attack_verb(int damage)
             {
                 static const char * const punch_desc[][2] =
                 {
-                    {T_("pound"),     T_("into fine dust")},
-                    {T_("pummel"),    T_("like a punching bag")},
-                    {T_("pulverise"), ""},
-                    {T_("squash"),    T_("like an ant")}
+                    {"pound",     "into fine dust"},
+                    {"pummel",    "like a punching bag"},
+                    {"pulverise", ""},
+                    {"squash",    "like an ant"}
                 };
                 const int choice = random2(ARRAYSZ(punch_desc));
                 // XXX: could this distinction work better?
@@ -3095,8 +3102,8 @@ void melee_attack::set_attack_verb(int damage)
                 }
                 else
                 {
-                    attack_verb = punch_desc[choice][0];
-                    verb_degree = punch_desc[choice][1];
+                    attack_verb = T_(punch_desc[choice][0]);
+                    verb_degree = T_(punch_desc[choice][1]);
                 }
             }
         }
@@ -3318,7 +3325,7 @@ void melee_attack::decapitate()
 
     if (damage_type == DVORP_CLAWING)
     {
-        static const char *claw_verbs[] = { T_("rip"), T_("tear"), T_("claw") };
+        static const char *claw_verbs[] = { "rip", "tear", "claw" };
         verb = RANDOM_ELEMENT(claw_verbs);
     }
     else
@@ -3573,31 +3580,31 @@ string melee_attack::mons_attack_verb()
 {
     static const char *klown_attack[] =
     {
-        T_("hit"),
-        T_("poke"),
-        T_("prod"),
-        T_("flog"),
-        T_("pound"),
-        T_("slap"),
-        T_("tickle"),
-        T_("defenestrate"),
-        T_("sucker-punch"),
-        T_("elbow"),
-        T_("pinch"),
-        T_("strangle-hug"),
-        T_("squeeze"),
-        T_("tease"),
-        T_("eye-gouge"),
-        T_("karate-kick"),
-        T_("headlock"),
-        T_("wrestle"),
-        T_("trip-wire"),
-        T_("kneecap")
+        "hit",
+        "poke",
+        "prod",
+        "flog",
+        "pound",
+        "slap",
+        "tickle",
+        "defenestrate",
+        "sucker-punch",
+        "elbow",
+        "pinch",
+        "strangle-hug",
+        "squeeze",
+        "tease",
+        "eye-gouge",
+        "karate-kick",
+        "headlock",
+        "wrestle",
+        "trip-wire",
+        "kneecap"
     };
 
-    // T_() array handles verb localization
+    // Translate only the selected verb so the static array remains stable.
     if (attacker->type == MONS_KILLER_KLOWN && attk_type == AT_HIT)
-        return RANDOM_ELEMENT(klown_attack);
+        return T_(RANDOM_ELEMENT(klown_attack));
 
     //XXX: then why give them it in the first place?
     if (attk_type == AT_TENTACLE_SLAP && mons_is_tentacle(attacker->type))
@@ -3702,7 +3709,10 @@ void melee_attack::announce_hit()
                 stealth = T_("stealthily "); // ZH: "潜行地" (no trailing space)
             }
 
-            const string verb = attacker->conj_verb(mons_attack_verb());
+            const string monster_verb = mons_attack_verb();
+            const string verb = Options.language == lang_t::ZH
+                                ? monster_verb
+                                : attacker->conj_verb(monster_verb);
 
             if (Options.language == lang_t::ZH && attk_type == AT_SPORE)
             {

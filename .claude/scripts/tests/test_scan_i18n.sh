@@ -161,6 +161,16 @@ assert_status "varargs-string: HIGH findings return blocking status" 1 "$varargs
 assert_output "varargs-string: maps ordinary/positional %s slots and ignores non-string slots" \
     /tmp/actual_varargs.txt "$EXPECTED/varargs-string.txt"
 
+# ── persistent i18n lifetime ──
+echo "--- i18n-lifetime ---"
+set +e
+python3 "$SCRIPT_DIR/test_scan_i18n_lifetime.py" \
+    > /tmp/actual_i18n_lifetime.txt 2>&1
+i18n_lifetime_status=$?
+set -e
+cat /tmp/actual_i18n_lifetime.txt
+assert_status "i18n-lifetime: black-box unit suite" 0 "$i18n_lifetime_status"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 if [ "$FAIL" -gt 0 ]; then

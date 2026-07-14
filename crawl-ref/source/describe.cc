@@ -1000,39 +1000,39 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     static const char* body_types[] =
     {
-        T_("armoured"),
-        T_("vast, spindly"),
-        T_("fat"),
-        T_("obese"),
-        T_("muscular"),
-        T_("spiked"),
-        T_("splotchy"),
-        T_("slender"),
-        T_("tentacled"),
-        T_("emaciated"),
-        T_("bug-like"),
-        T_("skeletal"),
-        T_("mantis"),
-        T_("slithering"),
+        "armoured",
+        "vast, spindly",
+        "fat",
+        "obese",
+        "muscular",
+        "spiked",
+        "splotchy",
+        "slender",
+        "tentacled",
+        "emaciated",
+        "bug-like",
+        "skeletal",
+        "mantis",
+        "slithering",
     };
 
     static const char* wing_names[] =
     {
-        T_("with small, bat-like wings"),
-        T_("with bony wings"),
-        T_("with sharp, metallic wings"),
-        T_("with the wings of a moth"),
-        T_("with thin, membranous wings"),
-        T_("with dragonfly wings"),
-        T_("with large, powerful wings"),
-        T_("with fluttering wings"),
-        T_("with great, sinister wings"),
-        T_("with hideous, tattered wings"),
-        T_("with sparrow-like wings"),
-        T_("with hooked wings"),
-        T_("with strange knobs attached"),
-        T_("which hovers in mid-air"),
-        T_("with sacs of gas hanging from its back"),
+        "with small, bat-like wings",
+        "with bony wings",
+        "with sharp, metallic wings",
+        "with the wings of a moth",
+        "with thin, membranous wings",
+        "with dragonfly wings",
+        "with large, powerful wings",
+        "with fluttering wings",
+        "with great, sinister wings",
+        "with hideous, tattered wings",
+        "with sparrow-like wings",
+        "with hooked wings",
+        "with strange knobs attached",
+        "which hovers in mid-air",
+        "with sacs of gas hanging from its back",
     };
 
     const char* head_names[] =
@@ -1070,61 +1070,61 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
     static const char* misc_descs[] =
     {
-        T_(" It seethes with hatred of the living."),
-        T_(" Tiny orange flames dance around it."),
-        T_(" Tiny purple flames dance around it."),
-        T_(" It is surrounded by a weird haze."),
-        T_(" It glows with a malevolent light."),
-        T_(" It looks incredibly angry."),
-        T_(" It oozes with slime."),
-        T_(" It dribbles constantly."),
-        T_(" Mould grows all over it."),
-        T_(" Its body is covered in fungus."),
-        T_(" It is covered with lank hair."),
-        T_(" It looks diseased."),
-        T_(" It looks as frightened of you as you are of it."),
-        T_(" It moves in a series of hideous convulsions."),
-        T_(" It moves with an unearthly grace."),
-        T_(" It leaves a glistening oily trail."),
-        T_(" It shimmers before your eyes."),
-        T_(" It is surrounded by a brilliant glow."),
-        T_(" It radiates an aura of extreme power."),
-        T_(" It seems utterly heartbroken."),
-        T_(" It seems filled with irrepressible glee."),
-        T_(" It constantly shivers and twitches."),
-        T_(" Blue sparks crawl across its body."),
-        T_(" It seems uncertain."),
-        T_(" A cloud of flies swarms around it."),
-        T_(" The air around it ripples with heat."),
-        T_(" Crystalline structures grow on everything near it."),
-        T_(" It appears supremely confident."),
-        T_(" Its skin is covered in a network of cracks."),
-        T_(" Its skin has a disgusting oily sheen."),
-        T_(" It seems somehow familiar."),
-        T_(" It is somehow always in shadow."),
-        T_(" It is difficult to look away."),
-        T_(" It is constantly speaking in tongues."),
-        T_(" It babbles unendingly."),
-        T_(" Its body is scourged by damnation."),
-        T_(" Its body is extensively scarred."),
-        T_(" You find it difficult to look away."),
-        T_(" Oddly mechanical noises accompany its jarring movements."),
-        T_(" Its skin looks unnervingly wrinkled."),
+        " It seethes with hatred of the living.",
+        " Tiny orange flames dance around it.",
+        " Tiny purple flames dance around it.",
+        " It is surrounded by a weird haze.",
+        " It glows with a malevolent light.",
+        " It looks incredibly angry.",
+        " It oozes with slime.",
+        " It dribbles constantly.",
+        " Mould grows all over it.",
+        " Its body is covered in fungus.",
+        " It is covered with lank hair.",
+        " It looks diseased.",
+        " It looks as frightened of you as you are of it.",
+        " It moves in a series of hideous convulsions.",
+        " It moves with an unearthly grace.",
+        " It leaves a glistening oily trail.",
+        " It shimmers before your eyes.",
+        " It is surrounded by a brilliant glow.",
+        " It radiates an aura of extreme power.",
+        " It seems utterly heartbroken.",
+        " It seems filled with irrepressible glee.",
+        " It constantly shivers and twitches.",
+        " Blue sparks crawl across its body.",
+        " It seems uncertain.",
+        " A cloud of flies swarms around it.",
+        " The air around it ripples with heat.",
+        " Crystalline structures grow on everything near it.",
+        " It appears supremely confident.",
+        " Its skin is covered in a network of cracks.",
+        " Its skin has a disgusting oily sheen.",
+        " It seems somehow familiar.",
+        " It is somehow always in shadow.",
+        " It is difficult to look away.",
+        " It is constantly speaking in tongues.",
+        " It babbles unendingly.",
+        " Its body is scourged by damnation.",
+        " Its body is extensively scarred.",
+        " You find it difficult to look away.",
+        " Oddly mechanical noises accompany its jarring movements.",
+        " Its skin looks unnervingly wrinkled.",
     };
 
     static const char* smell_descs[] =
     {
-        T_(" It smells of brimstone."),
-        T_(" It is surrounded by a sickening stench."),
-        T_(" It smells of rotting flesh."),
-        T_(" It stinks of death."),
-        T_(" It stinks of decay."),
-        T_(" It smells delicious!"),
+        " It smells of brimstone.",
+        " It is surrounded by a sickening stench.",
+        " It smells of rotting flesh.",
+        " It stinks of death.",
+        " It stinks of decay.",
+        " It smells delicious!",
     };
 
     ostringstream description;
-    const char* body = HRANDOM_ELEMENT(body_types, 2);
-    const char* wings = HRANDOM_ELEMENT(wing_names, 3);
+    const string body = T_(HRANDOM_ELEMENT(body_types, 2));
+    const string wings = T_(HRANDOM_ELEMENT(wing_names, 3));
     const char* head = HRANDOM_ELEMENT(head_names, 1);
 
     if (Options.language == lang_t::ZH)
@@ -1137,12 +1137,12 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
 
         if (flying)
             description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body, %4$s, and %5$s."),
-                                        name.c_str(), colour_name.c_str(), body,
-                                        wings, head);
+                                        name.c_str(), colour_name.c_str(),
+                                        body.c_str(), wings.c_str(), head);
         else
             description << make_stringf_p(T_("One of the many lords of Pandemonium, %1$s has a %2$s%3$s body and %4$s."),
-                                        name.c_str(), colour_name.c_str(), body,
-                                        head);
+                                        name.c_str(), colour_name.c_str(),
+                                        body.c_str(), head);
     }
     else
     {
@@ -1161,10 +1161,16 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
     }
 
     if (!hash_with_seed(5, seed, 4) && you.can_smell()) // 20%
-        description << HRANDOM_ELEMENT(smell_descs, 5);
+    {
+        const string smell = T_(HRANDOM_ELEMENT(smell_descs, 5));
+        description << smell;
+    }
 
     if (hash_with_seed(2, seed, 6)) // 50%
-        description << HRANDOM_ELEMENT(misc_descs, 6);
+    {
+        const string misc = T_(HRANDOM_ELEMENT(misc_descs, 6));
+        description << misc;
+    }
 
     if (colour == ETC_RANDOM)
         description << T_(" It changes colour whenever you look at it.");
