@@ -1,0 +1,11 @@
+%%%%
+Covered dynamic message.
+已覆盖的动态消息。
+%%%%
+Empty dynamic message.
+%%%%
+Case Dynamic Message.
+大小写不敏感的动态消息。
+%%%%
+Adjacent dynamic message.
+相邻动态消息。

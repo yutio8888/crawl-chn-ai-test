@@ -45,6 +45,11 @@ run_check() {
     run_check "T_() key coverage" blocking \
         python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Direct display sinks + runtime dynamic-key coverage" blocking \
+        python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
+        --display-contracts-only \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+        --allowlist .claude/scripts/i18n_display_contract_allowlist.json
     run_check "Data-driven i18n coverage (monsters, durations, features)" blocking \
         python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

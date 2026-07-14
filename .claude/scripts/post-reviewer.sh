@@ -37,6 +37,11 @@ run_check() {
     run_check "Source.txt integrity" \
         python3 .claude/scripts/scan_i18n.py source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Direct display sinks + runtime dynamic-key coverage" \
+        python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
+        --display-contracts-only \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+        --allowlist .claude/scripts/i18n_display_contract_allowlist.json
     run_check "Term validation (rejected names from decisions.md)" \
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \

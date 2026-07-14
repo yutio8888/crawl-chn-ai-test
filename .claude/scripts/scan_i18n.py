@@ -21,6 +21,7 @@ Usage:
 """
 
 import argparse
+import json
 import os
 import re
 import sys
@@ -38,6 +39,25 @@ from i18n_shared import parse_entries, parse_source_txt
 MPR_CALL_RE = re.compile(
     r'\b(?:mprf|mprf_nojoin|mprf_p|mpr|cprintf|formatted_string|make_stringf'
     r'|simple_monster_message)\s*\(')
+
+# High-confidence display contracts.  The integer is the zero-based argument
+# containing player-visible text.  Keep this metadata small: unlike the broad
+# MPR_CALL_RE heuristic, these sinks are blocking in the code/review profiles.
+DIRECT_DISPLAY_SINKS = {
+    'god_speaks': 1,
+    'simple_god_message': 0,
+}
+
+# Wrappers which translate a literal key internally (for example via
+# T_(variable)).  Callers must not add another T_(), but every literal passed in
+# the key argument must have an exact, non-empty source.txt entry.
+DYNAMIC_KEY_WRAPPERS = {
+    'xom_is_stimulated': 1,
+}
+
+# Calls whose result is already translated.  String literals below these calls
+# are translation keys or DB lookup keys, not raw player-visible text.
+TRANSLATED_VALUE_PROVIDERS = {'T_', 'C_', '_get_xom_speech'}
 
 # Severity grading: which function was matched
 def _severity(line: str) -> str:
@@ -279,10 +299,290 @@ def load_allowlist(filepath: str) -> set:
     """
     if not filepath or not os.path.exists(filepath):
         return set()
-    import json
     with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return {(entry['file'], entry['line']) for entry in data}
+
+
+def load_contract_allowlist(filepath: str) -> list:
+    """Load exact legacy display-contract exceptions.
+
+    Contract exceptions deliberately match file, line, rule, function, and
+    literal.  This makes moved/changed debt fail closed instead of silently
+    granting a broad exemption.
+    """
+    if not filepath or not os.path.exists(filepath):
+        return []
+    with open(filepath, 'r', encoding='utf-8') as f:
+        data = json.load(f)
+    return [entry for entry in data
+            if entry.get('rule') in ('direct-display', 'dynamic-key')]
+
+
+def _contract_is_allowlisted(entries, rule, rel_path, lineno, function,
+                             literal):
+    return any(entry.get('rule') == rule
+               and entry.get('file') == rel_path
+               and entry.get('line') == lineno
+               and entry.get('function') == function
+               and entry.get('literal') == literal
+               and entry.get('reason')
+               for entry in entries)
+
+
+# ══════════════════════════════════════════════════════════════════════════════
+# Lightweight C++ call parser for display contracts
+# ══════════════════════════════════════════════════════════════════════════════
+
+CPP_STRING_RE = re.compile(
+    r'(?:u8|u|U|L)?"((?:[^"\\]|\\.)*)"', re.DOTALL)
+
+
+def _mask_cpp_comments(source: str) -> str:
+    """Replace comments with spaces while preserving indices and newlines."""
+    out = list(source)
+    i = 0
+    state = 'code'
+    while i < len(source):
+        c = source[i]
+        nxt = source[i + 1] if i + 1 < len(source) else ''
+        if state == 'code':
+            if c == '/' and nxt == '/':
+                out[i] = out[i + 1] = ' '
+                i += 2
+                state = 'line-comment'
+                continue
+            if c == '/' and nxt == '*':
+                out[i] = out[i + 1] = ' '
+                i += 2
+                state = 'block-comment'
+                continue
+            if c == '"':
+                state = 'string'
+            elif c == "'":
+                state = 'char'
+        elif state == 'line-comment':
+            if c == '\n':
+                state = 'code'
+            else:
+                out[i] = ' '
+        elif state == 'block-comment':
+            if c == '*' and nxt == '/':
+                out[i] = out[i + 1] = ' '
+                i += 2
+                state = 'code'
+                continue
+            if c != '\n':
+                out[i] = ' '
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or \
+               (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    return ''.join(out)
+
+
+def _find_matching_paren(source: str, open_pos: int):
+    depth = 0
+    state = 'code'
+    i = open_pos
+    while i < len(source):
+        c = source[i]
+        if state == 'code':
+            if c == '"':
+                state = 'string'
+            elif c == "'":
+                state = 'char'
+            elif c == '(':
+                depth += 1
+            elif c == ')':
+                depth -= 1
+                if depth == 0:
+                    return i
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or \
+               (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    return None
+
+
+def _split_call_args(source: str, start: int, end: int):
+    """Return (argument_text, absolute_start) for one call's arguments."""
+    result = []
+    arg_start = start
+    paren = bracket = brace = 0
+    state = 'code'
+    i = start
+    while i < end:
+        c = source[i]
+        if state == 'code':
+            if c == '"':
+                state = 'string'
+            elif c == "'":
+                state = 'char'
+            elif c == '(':
+                paren += 1
+            elif c == ')':
+                paren -= 1
+            elif c == '[':
+                bracket += 1
+            elif c == ']':
+                bracket -= 1
+            elif c == '{':
+                brace += 1
+            elif c == '}':
+                brace -= 1
+            elif c == ',' and paren == bracket == brace == 0:
+                result.append((source[arg_start:i], arg_start))
+                arg_start = i + 1
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or \
+               (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    result.append((source[arg_start:end], arg_start))
+    return result
+
+
+def _iter_named_calls(source: str, names):
+    """Yield function calls using only Python stdlib lexical parsing.
+
+    This intentionally has no tree-sitter dependency, so the blocking check
+    behaves identically on developer machines and minimal CI images.
+    """
+    masked = _mask_cpp_comments(source)
+    pattern = re.compile(r'\b(' + '|'.join(map(re.escape, names)) + r')\s*\(')
+    for match in pattern.finditer(masked):
+        open_pos = masked.find('(', match.start(), match.end())
+        close_pos = _find_matching_paren(masked, open_pos)
+        if close_pos is None:
+            continue
+        yield (match.group(1), match.start(),
+               _split_call_args(masked, open_pos + 1, close_pos))
+
+
+def _string_literals_with_call_ancestors(expression: str):
+    """Return string literals and the call names which lexically contain them."""
+    result = []
+    paren_stack = []
+    i = 0
+    while i < len(expression):
+        c = expression[i]
+        if c == '"':
+            match = CPP_STRING_RE.match(expression, max(0, i - 2))
+            if not match or match.start() != i:
+                match = CPP_STRING_RE.match(expression, i)
+            if match:
+                result.append((match.group(1), match.start(),
+                               tuple(name for name in paren_stack if name)))
+                i = match.end()
+                continue
+        if c == "'":
+            i += 1
+            while i < len(expression):
+                if expression[i] == '\\':
+                    i += 2
+                    continue
+                if expression[i] == "'":
+                    i += 1
+                    break
+                i += 1
+            continue
+        if c == '(':
+            prefix = expression[:i].rstrip()
+            name_match = re.search(r'([A-Za-z_]\w*)$', prefix)
+            paren_stack.append(name_match.group(1) if name_match else None)
+        elif c == ')':
+            if paren_stack:
+                paren_stack.pop()
+        i += 1
+    return result
+
+
+def _direct_untranslated_literals(expression: str):
+    """Find literals not protected by a translation/DB provider call."""
+    return [(body, offset) for body, offset, ancestors
+            in _string_literals_with_call_ancestors(expression)
+            if not any(name in TRANSLATED_VALUE_PROVIDERS
+                       for name in ancestors)]
+
+
+def _dynamic_key_literals(expression: str):
+    """Find a dynamic wrapper's literal key, allowing grouping parentheses."""
+    return [(body, offset) for body, offset, ancestors
+            in _string_literals_with_call_ancestors(expression)
+            if not ancestors]
+
+
+def _decode_cpp_string(body: str) -> str:
+    replacements = {
+        r'\\n': '\n', r'\\t': '\t', r'\\r': '\r',
+        r'\\"': '"', r"\\'": "'", r'\\\\': '\\',
+    }
+    return re.sub(r'\\(?:n|t|r|"|\'|\\)',
+                  lambda match: replacements.get(match.group(0),
+                                                   match.group(0)), body)
+
+
+def _scan_display_contracts(source, rel_path, source_entries,
+                            contract_allowlist, debug_lines, strict):
+    findings = []
+    filtered = []
+    names = set(DIRECT_DISPLAY_SINKS) | set(DYNAMIC_KEY_WRAPPERS)
+    for function, _call_start, args in _iter_named_calls(source, names):
+        arg_index = (DIRECT_DISPLAY_SINKS.get(function)
+                     if function in DIRECT_DISPLAY_SINKS
+                     else DYNAMIC_KEY_WRAPPERS[function])
+        if arg_index >= len(args):
+            continue
+        expression, expression_start = args[arg_index]
+        literals = (_direct_untranslated_literals(expression)
+                    if function in DIRECT_DISPLAY_SINKS
+                    else _dynamic_key_literals(expression))
+        if not literals:
+            # Variables and translated DB/provider results are intentionally
+            # outside this literal-only contract and must not be guessed at.
+            continue
+        literal = ''.join(_decode_cpp_string(body) for body, _ in literals)
+        first_offset = expression_start + literals[0][1]
+        lineno = source.count('\n', 0, first_offset) + 1
+        if not strict and lineno in debug_lines:
+            continue
+        if not has_alpha(literal):
+            continue
+
+        if function in DIRECT_DISPLAY_SINKS:
+            rule = 'direct-display'
+            severity = 'DISPLAY'
+            display = f'{function}: {literal}'
+        else:
+            rule = 'dynamic-key'
+            severity = 'DYNKEY'
+            if source_entries is None:
+                display = (f'{function}: cannot verify "{literal}" '
+                           f'without --source-txt')
+            elif not source_entries.get(literal.lower(), '').strip():
+                display = f'{function}: missing source.txt key "{literal}"'
+            else:
+                continue
+
+        if _contract_is_allowlisted(contract_allowlist, rule, rel_path,
+                                    lineno, function, literal):
+            filtered.append((rel_path, lineno, display[:120], severity,
+                             'legacy-contract'))
+        else:
+            findings.append((rel_path, lineno, display[:120], severity))
+    return findings, filtered
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -294,12 +594,17 @@ def load_allowlist(filepath: str) -> set:
 # ══════════════════════════════════════════════════════════════════════════════
 
 def cmd_missing_t(args):
-    """Find untranslated calls across mprf/mpr/cprintf/formatted_string/make_stringf/simple_monster_message."""
+    """Find untranslated output calls and enforce display contracts."""
     source_dir = args.source_dir
     strict = getattr(args, 'strict', False)
     show_filtered = getattr(args, 'show_filtered', False)
+    contracts_only = getattr(args, 'display_contracts_only', False)
     allowlist_file = getattr(args, 'allowlist', None)
     allowlist = load_allowlist(allowlist_file)
+    contract_allowlist = (load_contract_allowlist(allowlist_file)
+                          if contracts_only else [])
+    source_entries = (parse_source_txt(args.source_txt)
+                      if contracts_only else None)
 
     findings = []       # (rel_path, lineno, display, severity) — candidates
     filtered = []       # (rel_path, lineno, display, severity, reason) — filtered out
@@ -319,6 +624,15 @@ def cmd_missing_t(args):
 
             debug_lines = build_debug_ranges(lines)
             comment_lines = build_comment_ranges(lines)
+
+            if contracts_only:
+                source = ''.join(lines)
+                contract_findings, contract_filtered = _scan_display_contracts(
+                    source, rel_path, source_entries, contract_allowlist,
+                    debug_lines, strict)
+                findings.extend(contract_findings)
+                filtered.extend(contract_filtered)
+                continue
 
             for lineno, line in enumerate(lines, 1):
                 # Pre-filter: skip preprocessor directives
@@ -376,12 +690,18 @@ def cmd_missing_t(args):
 
     # Per-category stats
     def cat_stats(lst):
-        return {
+        stats = {
             'MSG': sum(1 for _, _, _, s, *_ in lst if s == 'MSG'),
             'UI': sum(1 for _, _, _, s, *_ in lst if s == 'UI'),
             'STR': sum(1 for _, _, _, s, *_ in lst if s == 'STR'),
             'SMM': sum(1 for _, _, _, s, *_ in lst if s == 'SMM'),
         }
+        if contracts_only:
+            stats['DISPLAY'] = sum(1 for _, _, _, s, *_ in lst
+                                   if s == 'DISPLAY')
+            stats['DYNKEY'] = sum(1 for _, _, _, s, *_ in lst
+                                  if s == 'DYNKEY')
+        return stats
 
     cand_stats = cat_stats(findings)
     total_cand = len(findings)
@@ -395,7 +715,10 @@ def cmd_missing_t(args):
 
     # Candidate output
     if findings:
-        print("=== Untranslated calls — candidates (need T_()) ===")
+        if contracts_only:
+            print("=== I18n display-contract violations ===")
+        else:
+            print("=== Untranslated calls — candidates (need T_()) ===")
         print()
         for fpath, lineno, msg, sev in findings:
             print(f"[{sev}] {fpath}:{lineno}  \"{msg}\"")
@@ -413,7 +736,10 @@ def cmd_missing_t(args):
     print(f"--- scan_i18n.py missing-t ---")
     print(f"Files scanned: {files_scanned}")
     print()
-    for cat in ('MSG', 'UI', 'STR', 'SMM'):
+    categories = ['MSG', 'UI', 'STR', 'SMM']
+    if contracts_only:
+        categories.extend(['DISPLAY', 'DYNKEY'])
+    for cat in categories:
         print(f"  {cat}: {cand_stats[cat]} candidates")
     print()
     if not strict:
@@ -442,7 +768,7 @@ def cmd_missing_t(args):
         print("Per-file candidate breakdown:")
         for fpath in sorted(file_stats, key=lambda x: -sum(file_stats[x].values())):
             parts = []
-            for sev in ('MSG', 'UI', 'STR', 'SMM'):
+            for sev in categories:
                 if sev in file_stats[fpath]:
                     parts.append(f"{sev}:{file_stats[fpath][sev]}")
             print(f"  {fpath}: {', '.join(parts)}")
@@ -1620,6 +1946,11 @@ def main():
                           help="Show filtered-out items with reason")
     p_missing.add_argument("--allowlist",
                           help="Path to allowlist JSON file")
+    p_missing.add_argument("--source-txt",
+                          help="Path to source.txt for dynamic-key wrappers")
+    p_missing.add_argument(
+        "--display-contracts-only", action="store_true",
+        help="Run only high-confidence direct-sink and dynamic-key contracts")
 
     # mprf-p
     p_mprfp = subparsers.add_parser(
@@ -1738,6 +2069,11 @@ def main():
                        help="Path to source.txt")
 
     args = parser.parse_args()
+
+    if (args.command == "missing-t" and args.display_contracts_only
+            and not args.source_txt):
+        p_missing.error("--source-txt is required with "
+                        "--display-contracts-only")
 
     if args.command == "missing-t":
         return cmd_missing_t(args)

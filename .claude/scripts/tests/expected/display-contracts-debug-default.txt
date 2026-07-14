@@ -1,0 +1,13 @@
+--- scan_i18n.py missing-t ---
+Files scanned: 1
+
+  MSG: 0 candidates
+  UI: 0 candidates
+  STR: 0 candidates
+  SMM: 0 candidates
+  DISPLAY: 0 candidates
+  DYNKEY: 0 candidates
+
+  (debug/#if0 blocks excluded; use --strict to include)
+
+OK: No untranslated calls found.

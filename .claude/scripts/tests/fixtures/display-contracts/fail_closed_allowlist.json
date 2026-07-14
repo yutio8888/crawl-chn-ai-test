@@ -1,0 +1,10 @@
+[
+  {
+    "rule": "direct-display",
+    "file": "display_contracts.cc",
+    "line": 4,
+    "function": "simple_god_message",
+    "literal": " stale direct message",
+    "reason": "Deliberately stale fixture: exact literal mismatch must fail closed."
+  }
+]

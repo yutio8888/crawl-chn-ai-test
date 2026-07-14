@@ -24,19 +24,91 @@ assert_output() {
     rm -f /tmp/test_diff_$$.txt
 }
 
+assert_status() {
+    local name="$1"
+    local expected="$2"
+    local actual="$3"
+    if [ "$actual" -eq "$expected" ]; then
+        echo "  PASS: $name"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: $name (expected exit $expected, got $actual)"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
+assert_contains() {
+    local name="$1"
+    local needle="$2"
+    local actual="$3"
+    if grep -Fq -- "$needle" "$actual"; then
+        echo "  PASS: $name"
+        PASS=$((PASS + 1))
+    else
+        echo "  FAIL: $name (missing: $needle)"
+        FAIL=$((FAIL + 1))
+    fi
+}
+
 echo "=== scan_i18n.py Test Suite ==="
 echo ""
 
 # ── missing-t ──
 echo "--- missing-t ---"
 python3 "$SCAN_I18N" missing-t "$FIXTURES/missing-t/" > /tmp/actual_missing_t.txt 2>&1 || true
-assert_output "missing-t: finds untranslated" \
+assert_output "missing-t: default CLI remains backward compatible" \
     /tmp/actual_missing_t.txt "$EXPECTED/missing-t_untranslated.txt"
 
 # ── missing-t regression ──
 python3 "$SCAN_I18N" missing-t "$FIXTURES/missing-t/translated_sample.cc" > /tmp/actual_mt_reg.txt 2>&1 || true
 assert_output "missing-t: regression (no false positives)" \
     /tmp/actual_mt_reg.txt "$EXPECTED/missing-t_regression.txt"
+
+# ── display contracts ──
+set +e
+PYTHONNOUSERSITE=1 python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts/" \
+    --display-contracts-only \
+    --source-txt "$FIXTURES/display-contracts/source.txt" \
+    --allowlist "$FIXTURES/display-contracts/fail_closed_allowlist.json" \
+    > /tmp/actual_display_contracts.txt 2>&1
+DISPLAY_CONTRACT_RC=$?
+set -e
+assert_output "missing-t: direct sinks and dynamic-key wrappers" \
+    /tmp/actual_display_contracts.txt "$EXPECTED/display-contracts.txt"
+assert_status "missing-t: display-contract violations block without tree-sitter" \
+    1 "$DISPLAY_CONTRACT_RC"
+
+set +e
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts/" \
+    --display-contracts-only > /tmp/actual_display_no_source.txt 2>&1
+DISPLAY_NO_SOURCE_RC=$?
+set -e
+assert_status "missing-t: contract mode requires source.txt" \
+    2 "$DISPLAY_NO_SOURCE_RC"
+assert_contains "missing-t: missing source.txt has a clear CLI error" \
+    "--source-txt is required with --display-contracts-only" \
+    /tmp/actual_display_no_source.txt
+
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts-debug/" \
+    --display-contracts-only \
+    --source-txt "$FIXTURES/display-contracts/source.txt" \
+    > /tmp/actual_display_debug_default.txt 2>&1
+assert_output "missing-t: contract mode excludes #if0 by default" \
+    /tmp/actual_display_debug_default.txt \
+    "$EXPECTED/display-contracts-debug-default.txt"
+
+set +e
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts-debug/" \
+    --display-contracts-only --strict \
+    --source-txt "$FIXTURES/display-contracts/source.txt" \
+    > /tmp/actual_display_debug_strict.txt 2>&1
+DISPLAY_DEBUG_STRICT_RC=$?
+set -e
+assert_output "missing-t: --strict includes #if0 display contracts" \
+    /tmp/actual_display_debug_strict.txt \
+    "$EXPECTED/display-contracts-strict-debug.txt"
+assert_status "missing-t: --strict #if0 violation blocks" \
+    1 "$DISPLAY_DEBUG_STRICT_RC"
 
 # ── mprf-p ──
 echo "--- mprf-p ---"

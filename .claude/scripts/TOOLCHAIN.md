@@ -117,8 +117,15 @@ python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查�
 替代旧的 `scan_untranslated.sh`。子命令：
 
 ```bash
-# missing-t: 未翻译的 mprf/mpr 调用
+# missing-t: 未翻译的 mprf/mpr 调用（宽泛启发式，供人工审计）
 python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/
+
+# 高置信显示契约（code/review profile 阻断）
+# direct sinks 的顶层字面量必须包 T_()/C_()；动态 wrapper 字面量必须有 key
+python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
+    --display-contracts-only \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+    --allowlist .claude/scripts/i18n_display_contract_allowlist.json
 
 # mprf-p: 位置参数（%n$s）必须用 mprf_p 而非 mprf（MinGW 兼容）
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
@@ -157,6 +164,12 @@ python3 .claude/scripts/scan_i18n.py monster-name-assembly crawl-ref/source/mon-
 python3 .claude/scripts/scan_i18n.py monster-title-display \
     crawl-ref/source/directn.cc crawl-ref/source/tileweb.cc
 ```
+
+显示契约的 sink 与动态 key wrapper 统一声明在 `scan_i18n.py` 顶部元数据中。
+扫描器使用 Python 标准库的轻量 C++ 词法解析，不依赖 tree-sitter，因此最小 CI
+环境与开发机行为一致。变量参数和 DB/provider 返回值不会按字面量猜测。legacy
+allowlist 必须精确匹配 rule、文件、行号、函数和完整字面量；代码移动或文本变化
+会令豁免失效，避免宽泛白名单掩盖新问题。
 
 ### audit_data_i18n.py — 数据驱动翻译覆盖检查
 
