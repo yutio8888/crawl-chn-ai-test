@@ -699,6 +699,47 @@ function call; verify the callee returns `const char*` (safe) vs `std::string`
 `.c_str()`; for ternaries, remember `cond ? string(a) : ""` promotes BOTH
 branches to `std::string`. Requires `pip3 install tree-sitter tree-sitter-cpp`.
 
+### Persistent i18n Pointer Lifetime Scanner (`scan_i18n_lifetime.py`)
+
+`T_()` / `C_()` return borrowed pointers into `i18n_storage`. Appending cache
+entries preserves their addresses, but `i18n_cache_clear()` destroys all stored
+strings. Therefore the return value may be used immediately or copied to
+`std::string`, but must never be retained in static/global raw storage, members,
+persistent containers, or callback captures.
+
+```cpp
+// BAD: pointer outlives the cache generation
+static const char *descs[] = { T_("It protects you from poison.") };
+
+// GOOD: extraction-visible stable key; translate at use, own the result
+static const char *descs[] = { N_("It protects you from poison.") };
+const string desc = T_(descs[index]);
+```
+
+Use `C_("context", key)` when a shared English key requires a distinct
+translation in this use, and mark its persistent literal with
+`NC_("context", "key")`. `N_()` / `NC_()` do not translate or access the cache;
+their macros force literal concatenation before calling constexpr helpers, so
+runtime pointers and named character arrays are rejected, while deferred keys
+remain visible to `i18n_extract.py`. Use them
+only for C++ literal tables later consumed by dynamic `T_()` / `C_()` when no
+specialized data-source audit covers the keys. A translated value must not
+enter English morphology such as `conj_verb()`.
+
+```bash
+# Blocking HIGH findings (LIFE001-LIFE003)
+python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser
+
+# Include language-freezing/unresolved review warnings (LIFE101-LIFE103)
+python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+    --include-warn --format json --require-parser
+```
+
+The scanner is blocking in `post-coder.sh` and `post-reviewer.sh`. RED
+`review_at_merge.sh` locates the candidate branch's worktree and runs the review
+profile there before accepting a head-bound reviewer verdict. Root cause and
+rollout: Issue 63.
+
 ## Agent Commit Discipline
 
 **Before committing** any Agent-authored changes to crawl-ref:

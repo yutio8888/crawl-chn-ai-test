@@ -3817,6 +3817,9 @@ element|electricity
 element|fire
 火焰
 %%%%
+element|negative energy
+负能量
+%%%%
 element|physical attacks
 物理攻击
 %%%%

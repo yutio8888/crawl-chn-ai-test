@@ -10,7 +10,8 @@
 # Behavior by level:
 #   GREEN  — print "OK to merge", exit 0
 #   YELLOW — run verify_zh.sh --profile translation, exit 0/1
-#   RED    — require a recorded reviewer verdict bound to both branch heads
+#   RED    — run review profile, then require a recorded reviewer verdict bound
+#            to both branch heads
 #
 # This script does NOT auto-merge. It produces a recommendation and (for RED)
 # the exact prompt to feed into zh-code-reviewer.
@@ -22,6 +23,14 @@
 #   3 = error
 
 set -euo pipefail
+
+# Gate code is always taken from the target checkout that invoked this script.
+# Only the working directory changes to the candidate worktree. Otherwise an
+# older candidate branch could execute its own pre-gate verifier and bypass new
+# blocking checks added on the target branch.
+TARGET_ROOT=$(git rev-parse --show-toplevel)
+VERIFY_SCRIPT="$TARGET_ROOT/.claude/scripts/verify_zh.sh"
+CLASSIFY_SCRIPT="$TARGET_ROOT/.claude/scripts/classify_review.sh"
 
 if [ $# -lt 1 ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     sed -n '2,18p' "$0"
@@ -49,6 +58,19 @@ fi
 
 if [ "$WORKTREE_BRANCH" = "$TARGET_BRANCH" ]; then
     echo "ERROR: worktree and target branch are the same ($WORKTREE_BRANCH)." >&2
+    exit 3
+fi
+
+# Verification must run against the candidate worktree, not the main target
+# checkout from which this merge gate is invoked.
+WORKTREE_PATH=$(git worktree list --porcelain | awk \
+    -v wanted="refs/heads/$WORKTREE_BRANCH" '
+        $1 == "worktree" { path = substr($0, 10) }
+        $1 == "branch" && $2 == wanted { print path; exit }
+    ')
+if [ -z "$WORKTREE_PATH" ] || [ ! -d "$WORKTREE_PATH" ]; then
+    echo "ERROR: branch '$WORKTREE_BRANCH' is not checked out in a worktree." >&2
+    echo "Create it under .worktrees/ before running the merge gate." >&2
     exit 3
 fi
 
@@ -92,7 +114,7 @@ fi
 
 # Run classifier
 set +e
-CLASSIFY_OUT=$(bash .claude/scripts/classify_review.sh "$RANGE" --json 2>&1)
+CLASSIFY_OUT=$(bash "$CLASSIFY_SCRIPT" "$RANGE" --json 2>&1)
 CLASSIFY_EXIT=$?
 set -e
 if [ "$CLASSIFY_EXIT" -gt 2 ]; then
@@ -120,7 +142,7 @@ case "$LEVEL" in
         echo "⚠ YELLOW — i18n data only. Running translation verification..."
         echo ""
         set +e
-        bash .claude/scripts/verify_zh.sh --profile translation
+        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile translation)
         POST_EXIT=$?
         set -e
         echo ""
@@ -129,18 +151,32 @@ case "$LEVEL" in
             echo ""
             echo "  Suggested next:"
             echo "    # Review the log if you want spot-check:"
-            echo "    ls -t .claude/metrics/verify/verify-translation-*.log | head -1"
+            echo "    ls -t $WORKTREE_PATH/.claude/metrics/verify/verify-translation-*.log | head -1"
             echo "    # Then merge:"
             echo "    git merge --ff-only $WORKTREE_BRANCH"
             exit 0
         else
             echo "✗ translation profile flagged issues. Review log before merging."
             echo ""
-            echo "  Log: $(ls -t .claude/metrics/verify/verify-translation-*.log 2>/dev/null | head -1)"
+            echo "  Log: $(ls -t "$WORKTREE_PATH"/.claude/metrics/verify/verify-translation-*.log 2>/dev/null | head -1)"
             exit 1
         fi
         ;;
     RED)
+        echo "🔴 RED — running automated review profile..."
+        echo ""
+        set +e
+        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile review)
+        REVIEW_EXIT=$?
+        set -e
+        echo ""
+        if [ "$REVIEW_EXIT" -ne 0 ]; then
+            echo "✗ Automated review profile failed; merge is blocked." >&2
+            echo "  Log: $(ls -t "$WORKTREE_PATH"/.claude/metrics/verify/verify-review-*.log 2>/dev/null | head -1)" >&2
+            exit 1
+        fi
+        echo "✓ Automated review profile passed."
+        echo ""
         if [ -f "$VERDICT_FILE" ] \
             && grep -Eq '^verdict=(go|conditional-go)$' "$VERDICT_FILE" \
             && grep -Fxq "target_head=$TARGET_HEAD" "$VERDICT_FILE" \
@@ -152,7 +188,7 @@ case "$LEVEL" in
             echo "  Safe to merge with: git merge --ff-only $WORKTREE_BRANCH"
             exit 0
         fi
-        echo "🔴 RED — full review required before merge."
+        echo "🔴 RED — automated checks passed; full human/agent review is required."
         echo ""
         echo "  Run zh-code-reviewer with the prompt below:"
         echo ""

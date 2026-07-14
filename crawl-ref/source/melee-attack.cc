@@ -2923,10 +2923,10 @@ void melee_attack::set_attack_verb(int damage)
             {
                 static const char * const pierce_desc[][2] =
                 {
-                    {"spit", "like a pig"},
-                    {"skewer", "like a kebab"},
-                    {"stick", "like a pincushion"},
-                    {"perforate", "like a sieve"}
+                    {NC_("attack verb", "spit"), N_("like a pig")},
+                    {N_("skewer"), N_("like a kebab")},
+                    {N_("stick"), N_("like a pincushion")},
+                    {N_("perforate"), N_("like a sieve")}
                 };
                 const int choice = random2(ARRAYSZ(pierce_desc));
                 attack_verb = choice == 0
@@ -2973,11 +2973,11 @@ void melee_attack::set_attack_verb(int damage)
         {
             static const char * const slice_desc[][2] =
             {
-                {"open",  "like a pillowcase"},
-                {"slice", "like a ripe choko"},
-                {"cut",   "into ribbons"},
-                {"carve", "like a ham"},
-                {"chop",  "into pieces"}
+                {NC_("attack verb", "open"), N_("like a pillowcase")},
+                {N_("slice"), N_("like a ripe choko")},
+                {N_("cut"), N_("into ribbons")},
+                {N_("carve"), N_("like a ham")},
+                {N_("chop"), N_("into pieces")}
             };
             const int choice = random2(ARRAYSZ(slice_desc));
             attack_verb = choice == 0
@@ -3006,11 +3006,11 @@ void melee_attack::set_attack_verb(int damage)
         {
             static const char * const bludgeon_desc[][2] =
             {
-                {"crush",   "like a grape"},
-                {"beat",    "like a drum"},
-                {"hammer",  "like a gong"},
-                {"pound",   "like an anvil"},
-                {"flatten", "like a pancake"}
+                {N_("crush"), N_("like a grape")},
+                {N_("beat"), N_("like a drum")},
+                {N_("hammer"), N_("like a gong")},
+                {N_("pound"), N_("like an anvil")},
+                {N_("flatten"), N_("like a pancake")}
             };
             const int choice = random2(ARRAYSZ(bludgeon_desc));
             attack_verb = T_(bludgeon_desc[choice][0]);
@@ -3086,10 +3086,10 @@ void melee_attack::set_attack_verb(int damage)
             {
                 static const char * const punch_desc[][2] =
                 {
-                    {"pound",     "into fine dust"},
-                    {"pummel",    "like a punching bag"},
-                    {"pulverise", ""},
-                    {"squash",    "like an ant"}
+                    {N_("pound"), N_("into fine dust")},
+                    {N_("pummel"), N_("like a punching bag")},
+                    {N_("pulverise"), ""},
+                    {N_("squash"), N_("like an ant")}
                 };
                 const int choice = random2(ARRAYSZ(punch_desc));
                 // XXX: could this distinction work better?
@@ -3580,26 +3580,26 @@ string melee_attack::mons_attack_verb()
 {
     static const char *klown_attack[] =
     {
-        "hit",
-        "poke",
-        "prod",
-        "flog",
-        "pound",
-        "slap",
-        "tickle",
-        "defenestrate",
-        "sucker-punch",
-        "elbow",
-        "pinch",
-        "strangle-hug",
-        "squeeze",
-        "tease",
-        "eye-gouge",
-        "karate-kick",
-        "headlock",
-        "wrestle",
-        "trip-wire",
-        "kneecap"
+        N_("hit"),
+        N_("poke"),
+        N_("prod"),
+        N_("flog"),
+        N_("pound"),
+        N_("slap"),
+        N_("tickle"),
+        N_("defenestrate"),
+        N_("sucker-punch"),
+        N_("elbow"),
+        N_("pinch"),
+        N_("strangle-hug"),
+        N_("squeeze"),
+        N_("tease"),
+        N_("eye-gouge"),
+        N_("karate-kick"),
+        N_("headlock"),
+        N_("wrestle"),
+        N_("trip-wire"),
+        N_("kneecap")
     };
 
     // Translate only the selected verb so the static array remains stable.

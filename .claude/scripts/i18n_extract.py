@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """
-i18n_extract.py — Extract and validate T_() translation keys.
+i18n_extract.py — Extract and validate immediate and deferred translation keys.
 
-Scans C++ source files for T_("English") and C_("ctx", "English") calls,
+Scans C++ source files for T_("English"), C_("ctx", "English"),
+N_("English"), and NC_("ctx", "English") calls,
 and Lua files for crawl.t_("English") calls,
 extracts the English keys, and compares them against source.txt entries.
 
@@ -59,24 +60,9 @@ def i18n_escape(raw: str) -> str:
     return s
 
 
-# ── Regex for extracting T_("...") and C_("ctx", "...") from C++ source ──
-
-# Matches T_("string literal") — handles C++ escape sequences inside the string.
-# The captured group is the raw run-time string value (after C++ escape processing).
-T_RE = re.compile(r'''
-    \b T_ \s* \( \s*
-    " ( (?: [^"\\] | \\. )* ) "   # group 1: string content with C++ escapes
-    \s* \)
-''', re.VERBOSE)
-
-# Matches C_("context", "string literal")
-C_RE = re.compile(r'''
-    \b C_ \s* \( \s*
-    " ( (?: [^"\\] | \\. )* ) "   # group 1: context
-    \s* , \s*
-    " ( (?: [^"\\] | \\. )* ) "   # group 2: string content with C++ escapes
-    \s* \)
-''', re.VERBOSE)
+# C++ extraction uses the lexer below rather than a whole-file regex. This is
+# important: marker-looking text in comments, ordinary strings, and raw strings
+# must not satisfy coverage, while adjacent C++ string literals form one key.
 
 
 # ── Regex for extracting crawl.t_("...") and crawl.t_('...') from Lua ──
@@ -133,11 +119,334 @@ def cpp_unescape(s: str) -> str:
     return ''.join(out)
 
 
+class DeferredMarkerSyntaxError(ValueError):
+    """A deferred marker was called with a non-literal argument."""
+
+
+def _splice_cpp_lines(content: str):
+    """Apply C++ phase-2 line splicing and preserve original offsets.
+
+    Backslash-LF and backslash-CRLF pairs are removed before comments, tokens,
+    and ordinary strings are recognized. Raw-string bodies retain their source
+    spelling, as required by the later raw-string phase adjustment.
+    """
+    out, offsets = [], []
+    i, n = 0, len(content)
+    state = "normal"
+    raw_prefixes = ("u8R\"", "uR\"", "UR\"", "LR\"", "R\"")
+
+    def copy(count=1):
+        nonlocal i
+        out.extend(content[i:i + count])
+        offsets.extend(range(i, i + count))
+        i += count
+
+    while i < n:
+        # Phase 2 applies in every state except a genuine raw-string body.
+        # Raw strings are recognized only from normal code below; R"(...)"
+        # text inside a comment must never suppress comment line splicing.
+        if content[i] == "\\":
+            if i + 1 < n and content[i + 1] == "\n":
+                i += 2
+                continue
+            if (i + 2 < n and content[i + 1] == "\r"
+                    and content[i + 2] == "\n"):
+                i += 3
+                continue
+
+        if state == "line_comment":
+            if content[i] == "\n":
+                copy()
+                state = "normal"
+            else:
+                copy()
+            continue
+
+        if state == "block_comment":
+            if content.startswith("*/", i):
+                copy(2)
+                state = "normal"
+            else:
+                copy()
+            continue
+
+        if state in {"string", "char"}:
+            closing = '"' if state == "string" else "'"
+            if content[i] == "\\" and i + 1 < n:
+                copy(2)
+            elif content[i] == closing:
+                copy()
+                state = "normal"
+            else:
+                copy()
+            continue
+
+        # Normal code: comments take precedence over any raw-looking text.
+        if content.startswith("//", i):
+            copy(2)
+            state = "line_comment"
+            continue
+        if content.startswith("/*", i):
+            copy(2)
+            state = "block_comment"
+            continue
+
+        raw_prefix = next((p for p in raw_prefixes
+                           if content.startswith(p, i)), None)
+        if raw_prefix is not None:
+            quote = i + len(raw_prefix) - 1
+            open_paren = content.find("(", quote + 1, min(n, quote + 18))
+            if open_paren >= 0:
+                delimiter = content[quote + 1:open_paren]
+                close = ")" + delimiter + '"'
+                end = content.find(close, open_paren + 1)
+                if end >= 0:
+                    copy(end + len(close) - i)
+                    continue
+
+        if content[i] == '"':
+            copy()
+            state = "string"
+        elif content[i] == "'":
+            copy()
+            state = "char"
+        else:
+            copy()
+    return ''.join(out), offsets
+
+
+def _cpp_tokens(content: str):
+    """Yield (kind, value, offset) tokens needed to parse i18n calls.
+
+    This deliberately small lexer understands comments, identifiers, ordinary
+    and raw string literals, character literals, and punctuation. It is not a
+    C++ parser, but unlike regex scanning it never searches inside skipped text.
+    STRING values are already converted to their runtime contents.
+    """
+    i, n = 0, len(content)
+    string_prefixes = ("u8R\"", "uR\"", "UR\"", "LR\"", "R\"",
+                       "u8\"", "u\"", "U\"", "L\"", "\"")
+    char_prefixes = ("u8'", "u'", "U'", "L'", "'")
+    while i < n:
+        if content[i].isspace():
+            i += 1
+            continue
+        if content.startswith("//", i):
+            end = content.find("\n", i + 2)
+            body_end = n if end < 0 else end
+            yield ("COMMENT", content[i + 2:body_end], i + 2)
+            i = n if end < 0 else end + 1
+            continue
+        if content.startswith("/*", i):
+            end = content.find("*/", i + 2)
+            body_end = n if end < 0 else end
+            yield ("COMMENT", content[i + 2:body_end], i + 2)
+            i = n if end < 0 else end + 2
+            continue
+
+        prefix = next((p for p in string_prefixes
+                       if content.startswith(p, i)), None)
+        if prefix is not None:
+            start = i
+            if "R\"" in prefix:
+                quote = i + len(prefix) - 1
+                open_paren = content.find("(", quote + 1,
+                                          min(n, quote + 18))
+                if open_paren < 0:
+                    i += len(prefix)
+                    continue
+                delimiter = content[quote + 1:open_paren]
+                close = ")" + delimiter + '"'
+                end = content.find(close, open_paren + 1)
+                if end < 0:
+                    i = n
+                    continue
+                yield ("STRING", content[open_paren + 1:end], start)
+                i = end + len(close)
+                continue
+
+            quote = i + len(prefix) - 1
+            j = quote + 1
+            while j < n:
+                if content[j] == "\\":
+                    j += 2
+                elif content[j] == '"':
+                    break
+                else:
+                    j += 1
+            if j >= n:
+                i = n
+                continue
+            yield ("STRING", cpp_unescape(content[quote + 1:j]), start)
+            i = j + 1
+            continue
+
+        char_prefix = next((p for p in char_prefixes
+                            if content.startswith(p, i)), None)
+        if char_prefix is not None:
+            quote = i + len(char_prefix) - 1
+            j = quote + 1
+            while j < n:
+                if content[j] == "\\":
+                    j += 2
+                elif content[j] == "'":
+                    j += 1
+                    break
+                else:
+                    j += 1
+            i = j
+            continue
+
+        if content[i].isalpha() or content[i] == "_":
+            start = i
+            i += 1
+            while i < n and (content[i].isalnum() or content[i] == "_"):
+                i += 1
+            yield ("IDENT", content[start:i], start)
+            continue
+
+        yield (content[i], content[i], i)
+        i += 1
+
+
+def _literal_argument(tokens, index, adjacent=True):
+    """Parse a STRING token, joining adjacent tokens when requested."""
+    if index >= len(tokens) or tokens[index][0] != "STRING":
+        return None, index
+    parts = []
+    while index < len(tokens) and tokens[index][0] == "STRING":
+        parts.append(tokens[index][1])
+        index += 1
+        if not adjacent:
+            break
+    return ''.join(parts), index
+
+
+def _is_marker_definition(content: str, offset: int, name: str) -> bool:
+    """Return true only for the marker's own #define declaration line."""
+    start = content.rfind("\n", 0, offset) + 1
+    end = content.find("\n", offset)
+    if end < 0:
+        end = len(content)
+    return re.match(rf"\s*#\s*define\s+{re.escape(name)}\s*\(",
+                    content[start:end]) is not None
+
+
+def _extract_comment_markers(comment: str, base_offset: int):
+    """Yield deferred extraction annotations from one comment token.
+
+    N_/NC_ syntax in comments is explicitly an annotation. Other surrounding
+    comment text, including raw-string-looking text, has no C++ lexical meaning.
+    Non-literal marker arguments fail closed just like markers in normal code.
+    """
+    cursor = 0
+    marker_re = re.compile(r"\b(?:N_|NC_)\s*\(")
+    while True:
+        match = marker_re.search(comment, cursor)
+        if match is None:
+            return
+        tokens = [token for token in _cpp_tokens(comment[match.start():])
+                  if token[0] != "COMMENT"]
+        name = match.group(0).split("(", 1)[0].strip()
+        contextual = name == "NC_"
+        if (len(tokens) < 3 or tokens[0][0] != "IDENT"
+                or tokens[0][1] != name or tokens[1][0] != "("):
+            raise DeferredMarkerSyntaxError(
+                f"{name} comment annotation is malformed",
+                base_offset + match.start())
+        first, j = _literal_argument(tokens, 2, adjacent=True)
+        if first is None:
+            raise DeferredMarkerSyntaxError(
+                f"{name} requires string-literal arguments",
+                base_offset + match.start())
+        if contextual:
+            if j >= len(tokens) or tokens[j][0] != ",":
+                raise DeferredMarkerSyntaxError(
+                    "NC_ requires a literal context and key",
+                    base_offset + match.start())
+            second, j = _literal_argument(tokens, j + 1, adjacent=True)
+            if second is None:
+                raise DeferredMarkerSyntaxError(
+                    "NC_ requires a literal context and key",
+                    base_offset + match.start())
+            key, ctx = second, first
+        else:
+            key, ctx = first, None
+        if j >= len(tokens) or tokens[j][0] != ")":
+            raise DeferredMarkerSyntaxError(
+                f"{name} requires only string-literal arguments",
+                base_offset + match.start())
+        marker_end = match.start() + tokens[j][2] + 1
+        yield key, ctx, base_offset + match.start()
+        cursor = marker_end
+
+
+def _extract_cpp_calls(content: str, ignore_marker_definitions=False):
+    """Yield (runtime key, runtime context or None, source offset)."""
+    spliced, original_offsets = _splice_cpp_lines(content)
+    all_tokens = list(_cpp_tokens(spliced))
+    tokens = [token for token in all_tokens if token[0] != "COMMENT"]
+    results = []
+    for i, token in enumerate(tokens):
+        if token[0] != "IDENT" or token[1] not in {"T_", "C_", "N_", "NC_"}:
+            continue
+        contextual = token[1] in {"C_", "NC_"}
+        deferred = token[1] in {"N_", "NC_"}
+        if i + 1 >= len(tokens) or tokens[i + 1][0] != "(":
+            continue
+        # Adjacent literal support is enabled for deferred markers introduced
+        # here. Immediate T_/C_ retain their historical single-literal scope;
+        # migrating their existing adjacent-literal debt is a separate task.
+        first, j = _literal_argument(tokens, i + 2, adjacent=deferred)
+        if first is None:
+            original_offset = original_offsets[token[2]]
+            is_own_definition = (ignore_marker_definitions
+                                 and _is_marker_definition(
+                                     content, original_offset, token[1]))
+            if deferred and not is_own_definition:
+                raise DeferredMarkerSyntaxError(
+                    f"{token[1]} requires string-literal arguments",
+                    original_offset)
+            continue
+        if contextual:
+            if j >= len(tokens) or tokens[j][0] != ",":
+                if deferred:
+                    raise DeferredMarkerSyntaxError(
+                        "NC_ requires a literal context and key",
+                        original_offsets[token[2]])
+                continue
+            second, j = _literal_argument(tokens, j + 1, adjacent=deferred)
+            if second is None:
+                if deferred:
+                    raise DeferredMarkerSyntaxError(
+                        "NC_ requires a literal context and key",
+                        original_offsets[token[2]])
+                continue
+            key, ctx = second, first
+        else:
+            key, ctx = first, None
+        if j >= len(tokens) or tokens[j][0] != ")":
+            if deferred:
+                raise DeferredMarkerSyntaxError(
+                    f"{token[1]} requires only string-literal arguments",
+                    original_offsets[token[2]])
+            continue
+        results.append((key, ctx, original_offsets[token[2]]))
+
+    for comment_token in (token for token in all_tokens
+                          if token[0] == "COMMENT"):
+        for key, ctx, spliced_offset in _extract_comment_markers(
+                comment_token[1], comment_token[2]):
+            results.append((key, ctx, original_offsets[spliced_offset]))
+
+    yield from sorted(results, key=lambda result: result[2])
+
+
 def extract_keys_from_file(filepath: str):
     """Yield (key, context, line_number) tuples from a C++ or Lua source file.
 
     key: the normalized source.txt key (cpp_unescape + i18n_escape applied)
-    context: None for T_()/crawl.t_(), context string for C_()
+    context: None for T_()/N_()/crawl.t_(), context string for C_()/NC_()
     """
     with open(filepath, "r", encoding="utf-8", errors="replace") as f:
         content = f.read()
@@ -166,25 +475,25 @@ def extract_keys_from_file(filepath: str):
             yield (key, None, filepath, lineno, line_text)
         return
 
-    # C++ source: T_() and C_()
-    for match in C_RE.finditer(content):
-        ctx_raw = match.group(1)
-        str_raw = match.group(2)
-        ctx_runtime = cpp_unescape(ctx_raw)
-        key_runtime = cpp_unescape(str_raw)
-        key = i18n_escape(key_runtime)
-        ctx = i18n_escape(ctx_runtime)
-        lineno = _offset_to_lineno(offsets, match.start())
-        line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
-        yield (key, ctx, filepath, lineno, line_text)
+    try:
+        calls = _extract_cpp_calls(
+            content, ignore_marker_definitions=filepath.endswith("/i18n.h"))
+        for key_runtime, ctx_runtime, offset in calls:
+            key = i18n_escape(key_runtime)
+            ctx = i18n_escape(ctx_runtime) if ctx_runtime is not None else None
+            lineno = _offset_to_lineno(offsets, offset)
+            line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
+            yield (key, ctx, filepath, lineno, line_text)
+    except DeferredMarkerSyntaxError as exc:
+        offset = exc.args[1]
+        lineno = _offset_to_lineno(offsets, offset)
+        raise DeferredMarkerSyntaxError(
+            f"{filepath}:{lineno}: {exc.args[0]}") from None
 
-    for match in T_RE.finditer(content):
-        str_raw = match.group(1)
-        key_runtime = cpp_unescape(str_raw)
-        key = i18n_escape(key_runtime)
-        lineno = _offset_to_lineno(offsets, match.start())
-        line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
-        yield (key, None, filepath, lineno, line_text)
+    # Regexes intentionally require literal arguments. Dynamic T_(variable)
+    # remains invisible and must be covered by explicit N_/NC_ markers or a
+    # data-source audit; pretending to infer its possible values is unsafe.
+    return
 
 
 def _build_lineno_map(text: str) -> list:
@@ -202,9 +511,13 @@ def _offset_to_lineno(offsets: list, pos: int) -> int:
 
 
 def scan_source_dir(root: str) -> list:
-    """Walk a source directory and extract all T_() / C_() / crawl.t_() keys."""
+    """Walk source and extract T_/C_/N_/NC_/crawl.t_ literal keys."""
     all_keys = []  # [(key, context, file, line, line_text), ...]
-    for dirpath, _, filenames in os.walk(root):
+    for dirpath, dirnames, filenames in os.walk(root):
+        # Vendored libraries have independent gettext-style N_ macros. They are
+        # not DCSS source translation keys and must not be interpreted as our
+        # fail-closed deferred markers.
+        dirnames[:] = [name for name in dirnames if name != "contrib"]
         for fn in filenames:
             if fn.endswith(".cc") or fn.endswith(".h") or fn.endswith(".lua"):
                 filepath = os.path.join(dirpath, fn)
@@ -379,18 +692,22 @@ def main():
 
     args = parser.parse_args()
 
-    if args.command == "extract":
-        return cmd_extract(args)
-    elif args.command == "validate":
-        return cmd_validate(args)
-    elif args.command == "missing":
-        return cmd_missing(args)
-    elif args.command == "stale":
-        return cmd_stale(args)
-    elif args.command == "check-escapes":
-        return cmd_check_escapes(args)
-    else:
-        parser.print_help()
+    try:
+        if args.command == "extract":
+            return cmd_extract(args)
+        elif args.command == "validate":
+            return cmd_validate(args)
+        elif args.command == "missing":
+            return cmd_missing(args)
+        elif args.command == "stale":
+            return cmd_stale(args)
+        elif args.command == "check-escapes":
+            return cmd_check_escapes(args)
+        else:
+            parser.print_help()
+            return 1
+    except DeferredMarkerSyntaxError as exc:
+        print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 
 

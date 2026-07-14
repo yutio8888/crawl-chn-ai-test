@@ -400,6 +400,43 @@ WARN — verify the callee returns `const char*` (safe) vs `std::string` (needs
 `.c_str()`). Full write-up: `CLAUDE.md` "Variadic-String UB Scanner" +
 `.claude/scripts/TOOLCHAIN.md`.
 
+## Critical C++ Anti-Pattern: Persisting `T_()` / `C_()` Pointers
+
+`T_()` and `C_()` return borrowed `const char*` pointers backed by
+`i18n_storage`. `deque::push_back` keeps them stable only until
+`i18n_cache_clear()` clears the storage. They are **not** process-lifetime
+pointers.
+
+Never save a translation result in a function-static/namespace raw pointer,
+aggregate raw field, member, persistent container, or callback capture:
+
+```cpp
+// BAD: dangling after i18n_cache_clear()
+static const char *verbs[] = { T_("open"), T_("spit") };
+
+// GOOD: mark stable English keys for extraction; translate at consumption
+static const char *verbs[] =
+    { NC_("attack verb", "open"), NC_("attack verb", "spit") };
+const string verb = C_("attack verb", verbs[index]);
+```
+
+The blocking gate is wired into code/review verification:
+
+```bash
+python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser
+```
+
+`LIFE001`–`LIFE003` block; `LIFE101`–`LIFE103` are review warnings. If the
+same English key needs a context-specific translation, use `C_()` rather than
+changing the global entry. Full analysis: Issue 63 and
+`.claude/scripts/TOOLCHAIN.md`.
+
+`T_(variable)` / `C_(context, variable)` alone is invisible to the literal-key
+extractor. A C++ literal table whose values later enter dynamic `T_()` / `C_()`
+and which has no dedicated data-source audit must use literal-only `N_()` /
+`NC_()` markers. Internal/protocol tables and data sources covered by a
+specialized audit do not acquire markers merely because they are persistent.
+
 ## Simplified Verification: `verify_zh.sh --profile`
 
 **Agents should NOT run a dozen individual scripts.** A single command replaces

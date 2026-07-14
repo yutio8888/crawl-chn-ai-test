@@ -153,13 +153,18 @@ const char* desc = T_("silent "); // source.txt provides "无声的"
 mprf_p(T_("%1$s %2$s%3$s %4$s%5$s%6$s%7$s%8$s"), a1, a2, ...);
 ```
 
-### 5. Verb Arrays via T_()
+### 5. Persistent Verb Arrays via N_()
 ```cpp
-// Before: language-branched random_choose
-// After: all variants in T_() — T_() handles language selection
-const char* verbs[] = { T_("headbutt"), T_("head-knock"), T_("head-slam") };
-return RANDOM_ELEMENT(verbs);
+// N_ marks literals for extraction but keeps stable English pointers.
+static const char* verbs[] =
+    { N_("headbutt"), N_("head-knock"), N_("head-slam") };
+const string verb = T_(RANDOM_ELEMENT(verbs));
+return verb; // function returns std::string, never the borrowed T_ pointer
 ```
+
+When a literal cannot be wrapped at its declaration, an exact
+`// N_("key")` or `// NC_("context", "key")` comment is a supported extraction
+annotation. It must use literal arguments; `T_`/`C_` text in comments is ignored.
 
 ---
 
@@ -186,9 +191,10 @@ All translated strings fall into one of five types.
 5. **NEVER assume argument order is the same in both languages** — Chinese grammar often swaps subject/object positions. Use `mprf_p` with positional params.
 6. **NEVER change `god_name()` return value for DB lookups** — use `_god_name_en()` for database keys
 7. **NEVER use `buf.size()` for CJK alignment** — use `strwidth()` for display-width-aware padding
-8. **NEVER add `T_()` to a runtime variable without a source.txt entry** —
-   `T_(variable)` is invisible to `i18n_extract.py`. Always run
-   `audit_data_i18n.py` after changes to data-driven files.
+8. **NEVER add `T_()` to a runtime variable without an extractable key** —
+   `T_(variable)` is invisible to `i18n_extract.py`. Use `N_(literal)` or
+   `NC_(context, literal)` in C++ literal tables that feed dynamic translation
+   and lack a dedicated audit; use `audit_data_i18n.py` for covered data files.
 9. **NEVER blindly append all enumerated names to source.txt** —
    always `grep -F` for each key first. Mass duplicate re-add silently
    overwrites existing translations with different (potentially wrong) terms.

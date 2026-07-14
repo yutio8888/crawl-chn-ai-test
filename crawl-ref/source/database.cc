@@ -1057,8 +1057,9 @@ static string i18n_unescape_value(const string &s)
 // Falls back to "en" (without context), then to the English key itself.
 //
 // String lifetime: deque guarantees push_back never invalidates references
-// to existing elements. index stores const char* pointers into storage strings,
-// which remain valid for the entire program lifetime.
+// to existing elements. However, i18n_cache_clear() destroys every stored
+// string. Returned const char* values are borrowed until the next cache clear;
+// callers that retain a value must copy it into an owning string.
 
 static map<string, const char*> i18n_index;
 static deque<string> i18n_storage;
@@ -1126,9 +1127,9 @@ const char* i18n_source_lookup(const char* ctx, const char* en)
     else
         zh = en;
 
-    // Store permanently in deque. deque::push_back never invalidates
-    // references to existing elements, so the returned const char* is
-    // as stable as a string literal pointer.
+    // Store for this cache generation. deque::push_back never invalidates
+    // references to existing elements, but i18n_cache_clear() invalidates all
+    // returned pointers. Do not persist this borrowed pointer across a clear.
     i18n_storage.push_back(zh);
     const char* ptr = i18n_storage.back().c_str();
     i18n_index[lookup_key] = ptr;

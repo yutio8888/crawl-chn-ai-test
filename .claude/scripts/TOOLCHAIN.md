@@ -94,14 +94,35 @@ python3 .claude/scripts/check_glossary_terms.py --all
 
 ### i18n_extract.py — T_() 键提取与验证
 
-从 C++ 和 Lua 源码中提取所有 `T_("...")`、`C_("ctx", "...")` 和 `crawl.t_("...")` 字面量调用，与 source.txt 对比。
+从 C++ 和 Lua 源码中提取所有 `T_("...")`、`C_("ctx", "...")`、
+`N_("...")`、`NC_("ctx", "...")` 和 `crawl.t_("...")` 字面量调用，与
+source.txt 对比。`N_`/`NC_` 只标记“之后会进入动态 `T_`/`C_`，且没有
+专用数据审计”的 C++ 字面量表。它们的宏会先强制字面量拼接，再调用
+constexpr helper，因此运行时 `const char*` 和命名字符数组都会编译失败。
+宏返回稳定英文字面量且不查缓存；选中后仍必须用匹配的
+`T_`/`C_` 即时翻译。协议/内部表和已有专用审计的数据源不需一律标记。
 
-**已知限制**：只匹配 `T_("字面字符串")`，不匹配 `T_(变量)`。以下场景会遗漏：
+**已知限制**：不会猜测 `T_(变量)` 的取值范围。若变量来自 C++ 字面量持久表，
+必须在表中用 `N_`/`NC_` 标记；以下非 C++ 数据场景由专用审计补充：
 - `duration-data.h`: endmsg/expmsg → `T_(endmsg)` at runtime
 - `mon-util.cc`: 怪物名 → `T_(en.c_str())` at runtime
 - `dat/mons/*.yaml`: 怪物名定义（非 .cc/.h 文件）
 
 这些场景由 `audit_data_i18n.py` 补充扫描。
+
+`N_`/`NC_` 支持 C++ 相邻字符串字面量合并；既有 `T_`/`C_` 的相邻字面量
+仍保持历史上的单字面量提取范围，是独立范围债，本次不通过未翻译基线
+隐藏或批量生成译文。
+
+`//` 和 `/* ... */` 注释中的 `N_("字面量")` /
+`NC_("上下文", "字面量")` 是显式 extraction annotation，会纳入覆盖验证；
+注释中的 `T_`/`C_` 仍忽略。普通字符串、raw string 和字符字面量里的伪调用
+也不提取。注释 annotation 同样只允许语法字面量；宏名/变量实参会
+fail-closed，不尝试展开或猜测。
+
+`Ability_List` 中本次受 Issue 63 影响的条目已标记；其余既有能力名仍是
+提取可见性范围债，后续修改该表时应尽量整表迁移，不得把部分标记误说成
+已覆盖全部能力名。
 
 ```bash
 python3 .claude/scripts/i18n_extract.py extract crawl-ref/source/        # 提取所有 T_() 键

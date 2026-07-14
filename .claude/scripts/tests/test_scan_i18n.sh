@@ -170,6 +170,73 @@ i18n_lifetime_status=$?
 set -e
 cat /tmp/actual_i18n_lifetime.txt
 assert_status "i18n-lifetime: black-box unit suite" 0 "$i18n_lifetime_status"
+assert_contains "i18n-lifetime: post-reviewer blocking gate is wired" \
+    "scan_i18n_lifetime.py crawl-ref/source/" \
+    "$SCRIPT_DIR/../post-reviewer.sh"
+assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
+    "i18n_extract.py validate crawl-ref/source/" \
+    "$SCRIPT_DIR/../post-reviewer.sh"
+assert_contains "i18n-lifetime: merge RED gate runs review profile" \
+    '"$VERIFY_SCRIPT" --profile review' \
+    "$SCRIPT_DIR/../review_at_merge.sh"
+assert_contains "i18n-lifetime: merge gate verifies candidate worktree" \
+    "WORKTREE_PATH" \
+    "$SCRIPT_DIR/../review_at_merge.sh"
+
+# Execute the merge gate in a disposable repository. The candidate deliberately
+# replaces verify_zh.sh with a passing old stub; the target checkout's failing
+# verifier must still run, with PWD set to the candidate worktree.
+MERGE_GATE_TMP=$(mktemp -d)
+mkdir -p "$MERGE_GATE_TMP/repo/.claude/scripts"
+cp "$SCRIPT_DIR/../review_at_merge.sh" \
+   "$MERGE_GATE_TMP/repo/.claude/scripts/review_at_merge.sh"
+cat > "$MERGE_GATE_TMP/repo/.claude/scripts/classify_review.sh" <<'EOF'
+#!/bin/bash
+echo '{"level":"RED","reason":"test","summary":"gate provenance"}'
+exit 2
+EOF
+cat > "$MERGE_GATE_TMP/repo/.claude/scripts/verify_zh.sh" <<'EOF'
+#!/bin/bash
+echo "target:$PWD" >> "$TEST_LOG"
+exit 1
+EOF
+(
+    cd "$MERGE_GATE_TMP/repo"
+    git init -q
+    git config user.email test@example.invalid
+    git config user.name test
+    git add .claude/scripts
+    git commit -qm base
+    git branch -m target
+    git branch candidate
+    git worktree add -q .worktrees/candidate candidate
+    cat > .worktrees/candidate/.claude/scripts/verify_zh.sh <<'EOF'
+#!/bin/bash
+echo "candidate:$PWD" >> "$TEST_LOG"
+exit 0
+EOF
+    git -C .worktrees/candidate add .claude/scripts/verify_zh.sh
+    git -C .worktrees/candidate commit -qm 'old candidate verifier'
+)
+export TEST_LOG="$MERGE_GATE_TMP/verifier.log"
+set +e
+(
+    cd "$MERGE_GATE_TMP/repo"
+    bash .claude/scripts/review_at_merge.sh candidate target
+) > "$MERGE_GATE_TMP/gate.out" 2>&1
+MERGE_GATE_RC=$?
+set -e
+assert_status "merge gate: target verifier failure blocks old candidate" 1 "$MERGE_GATE_RC"
+assert_contains "merge gate: target verifier runs in candidate worktree" \
+    "target:$MERGE_GATE_TMP/repo/.worktrees/candidate" "$TEST_LOG"
+if grep -Fq 'candidate:' "$TEST_LOG"; then
+    echo "  FAIL: merge gate: candidate verifier was executed"
+    FAIL=$((FAIL + 1))
+else
+    echo "  PASS: merge gate: candidate verifier was not executed"
+    PASS=$((PASS + 1))
+fi
+rm -rf "$MERGE_GATE_TMP"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
