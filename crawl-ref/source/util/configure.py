@@ -15,28 +15,67 @@ if len(sys.argv) < 2:
     sys.stderr.write('CXX not specified\n')
     sys.exit(1)
 
-# Not just the name of the compiler, it can have arguments to
+# Not just the name of the compiler, it can have arguments too. Preserve the
+# flags passed separately by the Makefile as well.
 CXX = sys.argv[1]
-command = shlex.split(CXX) + ['-c', 'conftest.cc']
+command = shlex.split(CXX) + sys.argv[2:] + ['-c', 'conftest.cc']
 
-out = open('conftest.cc', 'w')
-out.write("""
+
+def cleanup_probe_files():
+    for filename in ('conftest.cc', 'conftest.o', 'conftest.obj'):
+        try:
+            os.remove(filename)
+        except OSError:
+            pass
+
+
+def compile_probe(source):
+    out = open('conftest.cc', 'w')
+    out.write(source)
+    out.close()
+
+    try:
+        process = Popen(command, stdout=PIPE, stderr=PIPE)
+    except OSError as error:
+        cleanup_probe_files()
+        sys.stderr.write('Could not run C++ compiler; config.h was not updated\n')
+        sys.stderr.write(str(error) + '\n')
+        sys.exit(1)
+    (output, err) = process.communicate()
+    return process.returncode, output, err
+
+
+def feature_probe(source, macro):
+    exit_code, _, _ = compile_probe(source)
+    return ("#define " if exit_code == 0 else "#undef ") + macro
+
+
+# Distinguish a missing platform feature from a compiler/wrapper failure. A
+# failed sanity probe must not replace a valid config.h with all-undef output.
+exit_code, _, sanity_err = compile_probe("""
+int main()
+{
+    return 0;
+}
+""")
+if exit_code != 0:
+    cleanup_probe_files()
+    sys.stderr.write('C++ compiler sanity check failed; config.h was not updated\n')
+    if not isinstance(sanity_err, str):
+        sanity_err = sanity_err.decode('utf-8', 'replace')
+    sys.stderr.write(sanity_err)
+    sys.exit(exit_code or 1)
+
+FDATASYNC = feature_probe("""
 #include <unistd.h>
 int main()
 {
     fdatasync(1);
     return 0;
 }
-""")
-out.close()
+""", "CRAWL_HAVE_FDATASYNC")
 
-process = Popen(command, stdout=PIPE, stderr=PIPE)
-(output, err) = process.communicate()
-exit_code = process.wait()
-FDATASYNC = "#define CRAWL_HAVE_FDATASYNC" if exit_code == 0 else "#undef CRAWL_HAVE_FDATASYNC"
-
-out = open('conftest.cc', 'w')
-out.write("""
+STRLCPY = feature_probe("""
 #include <cstring>
 using namespace std;
 int main()
@@ -46,16 +85,9 @@ int main()
     strlcpy(dst, src, sizeof(dst));
     return 0;
 }
-""")
-out.close()
+""", "CRAWL_HAVE_STRLCPY")
 
-process = Popen(command, stdout=PIPE, stderr=PIPE)
-(output, err) = process.communicate()
-exit_code = process.wait()
-STRLCPY = "#define CRAWL_HAVE_STRLCPY" if exit_code == 0 else "#undef CRAWL_HAVE_STRLCPY"
-
-out = open('conftest.cc', 'w')
-out.write("""
+MKSTEMP = feature_probe("""
 #include <cstdlib>
 using namespace std;
 int main()
@@ -64,44 +96,18 @@ int main()
     mkstemp(file);
     return 0;
 }
-""")
-out.close()
+""", "CRAWL_HAVE_MKSTEMP")
 
-process = Popen(command, stdout=PIPE, stderr=PIPE)
-(output, err) = process.communicate()
-exit_code = process.wait()
-MKSTEMP = "#define CRAWL_HAVE_MKSTEMP" if exit_code == 0 else "#undef CRAWL_HAVE_MKSTEMP"
-
-out = open('conftest.cc', 'w')
-out.write("""
+USLEEP = feature_probe("""
 #include <unistd.h>
 int main()
 {
     usleep(0);
     return 0;
 }
-""")
-out.close()
+""", "CRAWL_HAVE_USLEEP")
 
-process = Popen(command, stdout=PIPE, stderr=PIPE)
-(output, err) = process.communicate()
-exit_code = process.wait()
-USLEEP = "#define CRAWL_HAVE_USLEEP" if exit_code == 0 else "#undef CRAWL_HAVE_USLEEP"
-
-try:
-    os.remove('conftest.cc')
-except OSError:
-    pass
-
-try:
-    os.remove('conftest.o')
-except OSError:
-    pass
-
-try:
-    os.remove('conftest.obj')
-except OSError:
-    pass
+cleanup_probe_files()
 
 output_contents = """#pragma once
 

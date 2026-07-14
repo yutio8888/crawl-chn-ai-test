@@ -1,15 +1,17 @@
-# Build Workflow — Dual Worktree + ccache
+# Build Workflow — Target Worktrees + Persistent ccache
 
 ## Overview
 
-Two worktrees keep console and tiles `.o` files isolated, avoiding full
-rebuilds when switching build targets. ccache caches compiled objects so even
-within a worktree, switching branches with similar flags is faster.
+Dedicated worktrees keep target-specific `.o` files isolated. ccache stores
+compiled objects persistently under the main repository and separates them by
+toolchain, so switching branches with similar flags remains fast without
+mixing console, MinGW, and Android results.
 
 | Worktree | Build target | Purpose |
 |----------|-------------|---------|
 | **Main** (`/home/yutio888/projects/crawl`) | WSL Console | `make -j8` |
 | `.worktrees/mingw-tiles` | Windows Tiles | `CROSSHOST=x86_64-w64-mingw32 TILES=y` |
+| `.worktrees/android-tiles` | Android APK | NDK/Gradle build |
 
 ## Prerequisites
 
@@ -61,16 +63,42 @@ The deploy script auto-syncs `.worktrees/mingw-tiles` before building.
 ## ccache
 
 When `ccache` is installed, the project Makefile automatically wraps its `GCC`
-and `GXX` commands. No environment or `PATH` override is required. Cache stats:
+and `GXX` commands. Caches live under the ignored `.ccache/` directory:
+
+| Profile | Cache directory |
+|---------|-----------------|
+| WSL console | `.ccache/console` |
+| Windows tiles | `.ccache/mingw-tiles` |
+| Android | `.ccache/android-tiles` |
+
+The main worktree plus `.worktrees/mingw-tiles` and
+`.worktrees/android-tiles` use read-write mode. All other worktrees use the
+matching profile cache with `CCACHE_READONLY=1` and `CCACHE_NOSTATS=1`; they
+can get hits but cannot store results, update statistics, or trigger cleanup.
+Their temporary files go under `/tmp/crawl-ccache-<uid>/<profile>`, never into
+the persistent cache. The Android helper exports `NDK_CCACHE=ccache`, so native
+NDK compilation uses `.ccache/android-tiles` as well.
+
+Inspect the policy selected for the current worktree and target:
 
 ```bash
-ccache -s
+make ccache-config
+make CROSSHOST=x86_64-w64-mingw32 ccache-config
+make ANDROID=1 ccache-config
+```
+
+Cache stats for a particular profile:
+
+```bash
+# Run this command from the main worktree.
+CCACHE_DIR="$(git rev-parse --show-toplevel)/.ccache/console" ccache -s
 ```
 
 Default cache size: 5 GB (`ccache -M 5G`). To increase:
 
 ```bash
-ccache -M 10G
+# Run this command from the main worktree.
+CCACHE_DIR="$(git rev-parse --show-toplevel)/.ccache/console" ccache -M 10G
 ```
 
 ## Architecture
@@ -82,10 +110,13 @@ repo/
 │   ├── util/build-console.sh
 │   └── util/build-tiles.sh     ← Syncs & builds in mingw-tiles worktree
 │
-└── .worktrees/mingw-tiles/     ← Detached worktree (Windows Tiles)
-    └── crawl-ref/source/
-        ├── *.o, *.d, .cflags   ← Tiles-specific build artifacts
-        └── crawl.exe           ← Cross-compiled binary
+├── .ccache/                    ← Persistent and gitignored
+│   ├── console/
+│   ├── mingw-tiles/
+│   └── android-tiles/
+└── .worktrees/
+    ├── mingw-tiles/            ← Detached Windows Tiles build worktree
+    └── android-tiles/          ← Detached Android build worktree
 ```
 
 Contrib libraries go to `contrib/install/$(ARCH)/` — different compilers

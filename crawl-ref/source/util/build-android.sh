@@ -71,6 +71,21 @@ fi
 
 export ANDROID_SDK_ROOT="$SDK_ROOT"
 
+# Both the host preparation build and ndk-build use the dedicated persistent
+# Android cache. NDK_CCACHE is consumed by the NDK's compiler recipes.
+if command -v ccache >/dev/null 2>&1; then
+    export CCACHE_DIR="$REPO_ROOT/.ccache/android-tiles"
+    export CCACHE_TEMPDIR="/tmp/crawl-ccache-$(id -u)/android-tiles"
+    unset CCACHE_READONLY CCACHE_NOSTATS
+    export CCACHE_NOREADONLY=1 CCACHE_STATS=1
+    export NDK_CCACHE=ccache
+    mkdir -p "$CCACHE_DIR" "$CCACHE_TEMPDIR"
+    echo "ccache mode: read-write (host and NDK)"
+    echo "ccache dir:  $CCACHE_DIR"
+else
+    echo "ccache mode: disabled"
+fi
+
 # 1. Sync worktree to main worktree HEAD (local only)
 MAIN_HEAD="$(cd "$REPO_ROOT" && git rev-parse HEAD)"
 echo "=== [1/4] Syncing android-tiles worktree to $MAIN_HEAD ==="

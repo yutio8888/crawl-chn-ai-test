@@ -319,8 +319,12 @@ Console and tiles builds use **separate worktrees** to keep `.o` files isolated:
 | `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
 | `.worktrees/android-tiles` | Android APK | `bash crawl-ref/source/util/build-android.sh` |
 
-When `ccache` is installed, the project Makefile automatically wraps `GCC` and
-`GXX` with it; no `CC`/`CXX` or `PATH` override is required.
+When `ccache` is installed, caches persist under the ignored root `.ccache/`,
+split into `console`, `mingw-tiles`, and `android-tiles`. The main worktree and
+the two dedicated build worktrees above may update their caches. Every other
+worktree is strictly read-only (`CCACHE_READONLY=1`, `CCACHE_NOSTATS=1`) but can
+still consume matching cached results. Android's helper also exports
+`NDK_CCACHE=ccache`. Run `make ccache-config` to inspect the effective policy.
 
 ## Windows Tiles Deployment
 

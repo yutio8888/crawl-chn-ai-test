@@ -5,7 +5,7 @@
 # Steps:
 #   1. Sync .worktrees/mingw-tiles to current HEAD
 #   2. Build with CROSSHOST=x86_64-w64-mingw32 TILES=y
-#   3. Uses ccache automatically if available
+#   3. Uses the persistent mingw-tiles cache in read-write mode
 #
 # Run from crawl-ref/source/ (main worktree). The build happens in
 # the mingw-tiles worktree to keep .o files separate.
@@ -38,9 +38,21 @@ echo "       Now at: $(git rev-parse --short HEAD)"
 # Build
 echo "[2/3] Cross-compiling Windows tiles with ccache..."
 cd "$WT_SOURCE"
-echo "       ccache: $(ccache -s 2>&1 | grep 'Cache size')"
+if command -v ccache >/dev/null 2>&1; then
+    export CCACHE_DIR="$REPO_ROOT/.ccache/mingw-tiles"
+    export CCACHE_TEMPDIR="/tmp/crawl-ccache-$(id -u)/mingw-tiles"
+    unset CCACHE_READONLY CCACHE_NOSTATS
+    export CCACHE_NOREADONLY=1 CCACHE_STATS=1
+    mkdir -p "$CCACHE_DIR" "$CCACHE_TEMPDIR"
+    echo "       ccache mode: read-write"
+    echo "       ccache dir:  $CCACHE_DIR"
+else
+    echo "       ccache mode: disabled"
+fi
 make CROSSHOST=x86_64-w64-mingw32 TILES=y "$@" -j8
 
 echo "[3/3] Build complete."
 echo "       Binary: $WT_SOURCE/crawl.exe"
-ccache -s
+if command -v ccache >/dev/null 2>&1; then
+    ccache -s
+fi

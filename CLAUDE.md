@@ -262,8 +262,11 @@ Console and tiles builds use separate worktrees to isolate `.o` files:
 | **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
 | `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
 
-When `ccache` is installed, the project Makefile automatically wraps `GCC` and
-`GXX` with it and caches objects across builds with similar flags.
+When `ccache` is installed, persistent caches live in the ignored root
+`.ccache/`, separated into `console`, `mingw-tiles`, and `android-tiles`.
+Only the main worktree and the dedicated `mingw-tiles`/`android-tiles`
+worktrees update caches. Other worktrees use matching caches read-only with
+statistics disabled. Run `make ccache-config` to inspect the effective policy.
 
 ### WSL Console Build (main worktree)
 ```bash

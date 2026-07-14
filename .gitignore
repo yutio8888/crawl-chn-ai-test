@@ -6,6 +6,7 @@
 # Claude Code / OpenCode (transient/generated — local only)
 .claude/worktrees/
 .worktrees/
+/.ccache/
 .claude/scripts/__pycache__/
 tools/okapi/__pycache__/
 tools/okapi/build/

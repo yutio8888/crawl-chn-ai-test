@@ -107,7 +107,8 @@ MAKEFLAGS += -rR # This only works for recursive makes, i.e. contribs ...
         appimage distclean debug debug-lite profile package-source source \
         build-windows package-windows-installer docs greet api api-dev android FORCE \
         monster catch2-tests plug-and-play-tests \
-        crawl-universal crawl-arm64-apple-macos11 crawl-x86_64-apple-macos10.7 clean-mac
+        crawl-universal crawl-arm64-apple-macos11 crawl-x86_64-apple-macos10.7 clean-mac \
+        ccache-config
 
 include Makefile.obj
 
@@ -554,11 +555,66 @@ WINDRES := $(CROSSHOST)-windres
 
 endif
 
-# Auto-wrap compilers with ccache for transparent caching
-ifneq ($(shell which ccache 2>/dev/null),)
+# Share persistent caches by target, but only let the main worktree and the two
+# dedicated build worktrees update them. Other worktrees can consume cache hits
+# without changing cached results, statistics, or configuration.
+CCACHE_PROGRAM := $(shell command -v ccache 2>/dev/null)
+GIT_COMMON_DIR := $(shell git rev-parse --path-format=absolute --git-common-dir 2>/dev/null)
+GIT_WORKTREE_ROOT := $(shell git rev-parse --show-toplevel 2>/dev/null)
+MAIN_REPO_ROOT := $(patsubst %/.git,%,$(GIT_COMMON_DIR))
+
+ifneq ($(strip $(ANDROID)),)
+  CCACHE_PROFILE := android-tiles
+else ifeq ($(strip $(CROSSHOST)),x86_64-w64-mingw32)
+  CCACHE_PROFILE := mingw-tiles
+else ifneq ($(strip $(CROSSHOST)),)
+  # Do not mix unknown cross toolchains into the MinGW cache. Add an explicit
+  # profile before enabling ccache for another supported cross target.
+  CCACHE_PROFILE :=
+else
+  CCACHE_PROFILE := console
+endif
+
+CCACHE_WRITE_WORKTREES := $(MAIN_REPO_ROOT) \
+                         $(MAIN_REPO_ROOT)/.worktrees/mingw-tiles \
+                         $(MAIN_REPO_ROOT)/.worktrees/android-tiles
+
+# Clear inherited boolean controls before exporting an unambiguous mode. For
+# ccache boolean environment variables, a value of "0" is an error, not false.
+unexport CCACHE_READONLY CCACHE_NOREADONLY CCACHE_STATS CCACHE_NOSTATS
+
+ifneq ($(strip $(CCACHE_PROGRAM)),)
+ifneq ($(strip $(MAIN_REPO_ROOT)),)
+ifneq ($(strip $(GIT_WORKTREE_ROOT)),)
+ifneq ($(strip $(CCACHE_PROFILE)),)
+  CCACHE_DIR := $(MAIN_REPO_ROOT)/.ccache/$(CCACHE_PROFILE)
+  CCACHE_TEMPDIR := /tmp/crawl-ccache-$(shell id -u)/$(CCACHE_PROFILE)
+  export CCACHE_DIR CCACHE_TEMPDIR
+
+  ifneq ($(filter $(GIT_WORKTREE_ROOT),$(CCACHE_WRITE_WORKTREES)),)
+    CCACHE_MODE := read-write
+    CCACHE_NOREADONLY := 1
+    CCACHE_STATS := 1
+    export CCACHE_NOREADONLY CCACHE_STATS
+  else
+    CCACHE_MODE := read-only
+    CCACHE_READONLY := 1
+    CCACHE_NOSTATS := 1
+    export CCACHE_READONLY CCACHE_NOSTATS
+  endif
+
   GCC := ccache $(GCC)
   GXX := ccache $(GXX)
 endif
+endif
+endif
+endif
+
+ccache-config:
+	@echo "ccache mode: $(if $(CCACHE_MODE),$(CCACHE_MODE),disabled)"
+	@echo "ccache dir:  $(if $(CCACHE_DIR),$(CCACHE_DIR),n/a)"
+	@echo "ccache temp: $(if $(CCACHE_TEMPDIR),$(CCACHE_TEMPDIR),n/a)"
+	@echo "ccache profile: $(if $(CCACHE_PROFILE),$(CCACHE_PROFILE),n/a)"
 
 ifdef USE_ICC
 # If you have a Core 2 processor, this _really_ makes things fly:
