@@ -113,13 +113,7 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
-      - name: Build catch2-tests and debug console
-        run: |
-          make catch2-tests FULLDEBUG=1 -j$(nproc)
-          make debug FULLDEBUG=1 -j$(nproc)
-          make util/fake_pty
-        working-directory: crawl-ref/source
-      - name: Run help-system runtime tests
+      - name: Build and run help-system runtime tests
         run: bash .claude/scripts/post_zh_runtime.sh help-full
         env:
           TERM: dumb

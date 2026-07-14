@@ -1,7 +1,7 @@
 #!/bin/bash
 # post_zh_runtime.sh — run all 3 layers of zh runtime tests and aggregate.
 #
-# Layer 1 (Catch2): builds + runs catch2-tests [zh-translation]
+# Layer 1 (Catch2): builds the test executable + runs [zh-translation]
 # Layer 2 (Lua):    builds debug + runs ./crawl -test zh_runtime
 # Layer 3 (Bot):    builds console + runs RC bot via fake_pty
 #
@@ -72,8 +72,10 @@ STDOUT_C2="$METRICS_DIR/catch2-stdout.log"
 run_catch2() {
     cd "$SOURCE_DIR"
     echo "  Building catch2-tests..."
-    make catch2-tests -j4 > "$STDOUT_C2" 2>&1 || {
-        echo "  catch2-tests build failed"
+    make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+        > "$STDOUT_C2" 2>&1 || {
+        echo "  catch2-tests build failed; last 100 log lines:"
+        tail -n 100 "$STDOUT_C2" || true
         return 1
     }
     echo "  Running catch2-tests [zh-translation]..."
@@ -190,7 +192,8 @@ run_help_catch2() {
     echo "  Building catch2-tests..."
     make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
         > "$STDOUT_HELP_C2" 2>&1 || {
-        echo "  catch2-tests build failed (see $STDOUT_HELP_C2)"
+        echo "  catch2-tests build failed; last 100 log lines:"
+        tail -n 100 "$STDOUT_HELP_C2" || true
         return 1
     }
     echo "  Running catch2-tests [zh-help]..."
@@ -326,7 +329,7 @@ echo "Metrics: $METRICS_DIR"
 
 case "$MODE" in
     catch2)
-        # Lightweight: build catch2-tests + run [zh-translation] + compare baseline.
+        # Lightweight: build the test executable, run [zh-translation], and compare baseline.
         run_step "L1-catch2" run_catch2 || true
         run_step "aggregate" run_aggregate catch2
         ;;
