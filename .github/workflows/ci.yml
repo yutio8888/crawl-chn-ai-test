@@ -80,6 +80,9 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - name: Build catch2-tests and run [zh-translation]
         run: bash .claude/scripts/post_zh_runtime.sh catch2
         env:
@@ -114,6 +117,9 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - name: Build and run help-system runtime tests
         run: bash .claude/scripts/post_zh_runtime.sh help-full
         env:
@@ -155,6 +161,9 @@ jobs:
           submodules: true
       - name: Fix tags for release # work around https://github.com/actions/checkout/issues/882
         run: git fetch --depth=1 origin +refs/tags/*:refs/tags/* # will break on a lightweight tag
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - name: Build source packages
         run: make -j$(nproc) package-source
         working-directory: crawl-ref/source
@@ -249,6 +258,10 @@ jobs:
       - name: Install dependencies
         run: ./deps.py --compiler ${{ matrix.compiler }} --build-opts "${{ matrix.build_opts }}" --debug-opts "${{ matrix.debug }}"
         working-directory: .github/workflows
+      - name: Ensure version info (forks without git tags)
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > util/release_ver
+        working-directory: crawl-ref/source
       - name: Setup ccache
         uses: hendrikmuhs/ccache-action@v1.2
         with:
@@ -273,6 +286,10 @@ jobs:
           sed -i'' -e 's/^#define TAG_MAJOR_VERSION 34$/#define TAG_MAJOR_VERSION 35/' tag-version.h
           util/tag-major-upgrade -t 35
           util/tag-35-upgrade.py
+        working-directory: crawl-ref/source
+      - name: Ensure version info (forks without git tags)
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > util/release_ver
         working-directory: crawl-ref/source
       - run: make -j$(nproc) ${{ matrix.build_opts }} ${{ matrix.debug }} ${{ matrix.build_all }}
         working-directory: crawl-ref/source
@@ -324,6 +341,9 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - run: make -j$(nproc) ${{ matrix.build_opts }} appimage
         working-directory: crawl-ref/source
       - name: Add build to release
@@ -538,6 +558,9 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - run: make -j$(nproc) CROSSHOST=i686-w64-mingw32 package-windows-${{ matrix.build_type }}
         working-directory: crawl-ref/source
       # The zip & installer targets create different sorts of names, so we need
@@ -672,6 +695,10 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > util/release_ver
+        working-directory: crawl-ref/source
       - run: make -j$(nproc) catch2-tests TILES=1
         working-directory: crawl-ref/source
       - name: Generate LCOV data
@@ -770,6 +797,10 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > util/release_ver
+        working-directory: crawl-ref/source
       - run: make -j$(nproc) header-build-tests
         working-directory: crawl-ref/source
 
@@ -814,6 +845,9 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - name: Prepare Android build
         run: make -j$(nproc) ${{ matrix.build_opts }} android
         working-directory: crawl-ref/source
@@ -859,6 +893,10 @@ jobs:
         run: "echo /usr/lib/ccache >> $GITHUB_PATH"
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > util/release_ver
+        working-directory: crawl-ref/source
       - run: make -j$(nproc) monster
         working-directory: crawl-ref/source
 
@@ -868,6 +906,11 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       # Produce FAQ.html et cetera
       - name: Generate non-Lua docs
         run: make -j$(nproc) docs
