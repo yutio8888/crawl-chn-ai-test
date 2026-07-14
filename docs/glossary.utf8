@@ -323,7 +323,7 @@ ego	ego 装备 / 附魔装备	domain=items; source=EN/ZH
 Electrical Bolt	电击箭	domain=spells; source=EN/ZH; 备注=✅
 Elyvilon	艾利维隆	domain=gods; source=EN/ZH; 类型=音译
 enchant	附魔	domain=items; source=EN/ZH
-Enchanter	附魔师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Enchanter	惑控师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Enchantress	妖术女王	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Enfeeble	衰弱	domain=spells; source=EN/ZH; 备注=✅
 Ensnare	束缚	domain=spells; source=EN/ZH; 备注=✅

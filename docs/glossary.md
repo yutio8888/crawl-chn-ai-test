@@ -410,7 +410,7 @@
 | Conjurer | 塑能师 | background; source=backgrounds.txt |
 | Delver | 挖掘者 | background; source=backgrounds.txt |
 | Earth Elementalist | 土元素使 | background; source=backgrounds.txt |
-| Enchanter | 附魔师 | background; source=backgrounds.txt |
+| Enchanter | 惑控师 | background; source=backgrounds.txt |
 | Fighter | 战士 | background; source=backgrounds.txt |
 | Fire Elementalist | 火元素使 | background; source=backgrounds.txt |
 | Gladiator | 角斗士 | background; source=backgrounds.txt |

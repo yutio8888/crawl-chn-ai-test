@@ -13025,7 +13025,7 @@ Conjurer
 咒法师
 %%%%
 Enchanter
-附魔师
+惑控师
 %%%%
 Fire Elementalist
 火系元素师
