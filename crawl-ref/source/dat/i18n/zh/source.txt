@@ -7037,7 +7037,7 @@ The hog vanishes!
 猪消失了！
 %%%%
 the Hunter
-猎手
+猎人
 %%%%
 The ice freezes you terribly!
 寒冰严重地冻结了你！
