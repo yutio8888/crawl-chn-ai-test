@@ -187,6 +187,7 @@
 | EN | ZH | Scope / comment |
 |----|----|----------------|
 | arbalest | 重弩 | weapon; decision=D-B-017 |
+| Barding | 马铠 | armour; decision=D-B-019 |
 | broad axe | 阔刃斧 | weapon; decision=D-B-018 |
 | dragon-coil talisman | 盘龙护符 | talisman; decision=D-B-018 |
 | dire flail | 双头链枷 | weapon; decision=D-B-017 |
@@ -351,7 +352,7 @@
 | Axes | 斧类 | skill; source=source.txt; decision=D-C-001 |
 | Maces & Flails | 锤与链枷 | skill; source=source.txt; decision=D-C-001 |
 | Polearms | 长柄武器 | skill; source=source.txt; decision=D-C-001 |
-| Staves | 棍棒 | skill; source=source.txt; decision=D-C-001 |
+| Staves | 杖类 | skill; source=source.txt; decision=D-C-001 |
 | Ranged Weapons | 远程武器 | skill; source=source.txt; decision=D-C-001 |
 | Throwing | 投掷 | skill; source=source.txt; decision=D-C-001 |
 | Armour | 护甲 | skill; source=source.txt; decision=D-C-001 |

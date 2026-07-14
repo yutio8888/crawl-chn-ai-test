@@ -1222,6 +1222,22 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 - **Rejected**: 保留“钢弩”“铁头棍”等描述性误加材质；将 `eveningstar` 继续译为“黄昏之星”（缺少锤类信息且破坏与 `morningstar` 的对应关系）。
 - **Scope**: `crawl-ref/source/dat/i18n/zh/source.txt` 基础武器名条目；不改变品牌、神器专名或物品描述正文。
 
+### D-B-019 — Barding → 马铠（排除"马甲"歧义）
+
+- **Type**: B — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-14
+- **Source**: 玩家反馈——"马甲"有互联网"小号/分身"歧义
+- **Choice**: `Barding` → `马铠`
+- **Rejected**: `马甲`（游戏玩家首先联想到 sock puppet/小号，而非马用护甲）
+- **Rationale**: "马铠"是汉语中马用护甲的正统历史名称（古代亦称"具装"），无网络歧义。`Black Knight's barding` 和描述正文已使用"马铠"，本次统一物品类型名和提示语，消除内部不一致。`centaur barding` 保持"半人马战甲"（centaur 非马，用"战甲"合理）。
+- **Affected files**:
+  - `dat/i18n/zh/source.txt` ✅（Barding + 提示语两处）
+- **Tracking issue**: (none — direct fix)
+- **Resolved**: 2026-07-14
+
+---
+
 ### D-B-018 — 其他物品名称纠偏与术语登记
 
 - **Type**: B — Naming revision
@@ -1274,6 +1290,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-B-014 | Item base name translation style | 类+型, 种族之刃, X龙鳞甲 | active |
 | D-B-015 | Demon/Sacred/Eudemon prefix | 恶魔/善灵/神圣 | active |
 | D-B-016 | Weapon brand dictionary | full ZH table (29 brands) | active |
+| D-B-019 | Barding → 马铠 | 马铠 | active ✅ |
 | D-C-001 | Skill titles | 216 items | active |
 | D-C-002 | Spell names | 6 fixes | active |
 | D-C-003 | Item base names | ~200 items | active — all ✅ |

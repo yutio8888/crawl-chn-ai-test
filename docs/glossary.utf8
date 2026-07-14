@@ -91,6 +91,7 @@ ballistomycete spore	孢子炮菌孢子	domain=monsters; source=EN/ZH; Scope / c
 balrug	巴鲁格	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Banishment	放逐	domain=spells; source=EN/ZH; 备注=✅
 barachi	蛙人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Barding	马铠	domain=items; source=EN/ZH; Scope / comment=armour; decision=D-B-019
 basilisk	石化蜥蜴	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 bat	蝙蝠	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
@@ -799,7 +800,7 @@ spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
 Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=✅
-Staves	棍棒	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
+Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
 Steam cloud	蒸汽云	domain=spells; source=EN/ZH; 备注=✅

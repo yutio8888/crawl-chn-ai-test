@@ -13948,7 +13948,7 @@ Polearms
 长柄武器
 %%%%
 Staves
-棍棒
+杖类
 %%%%
 Ranged Weapons
 远程武器
@@ -22557,7 +22557,7 @@ Attack range
 攻击距离
 %%%%
 Barding
-马甲
+马铠
 %%%%
 Max HP
 最大生命
@@ -35736,7 +35736,7 @@ Mangled
 肢解
 %%%%
 Only nagas and armataurs can wear barding.
-只有纳迦和龙龟可以穿戴马甲。
+只有纳迦和龙龟可以穿戴马铠。
 %%%%
 Pois
 中毒
