@@ -1,6 +1,4 @@
 #include "AppHdr.h"
-#include <map>
-
 #include "database.h"
 #include "mpr.h"
 #include "options.h"
@@ -41,6 +39,50 @@ const species_def& get_species_def(species_type species)
 
 namespace species
 {
+    struct legacy_species_alias
+    {
+        species_type species;
+        const char* name;
+    };
+
+    // Migration-only aliases written by older Chinese builds. Keep these as
+    // literals: parsing init/save protocol must not depend on the current
+    // language, TextDB availability, or the lifetime of T_() results.
+    static const legacy_species_alias legacy_zh_species_aliases[] = {
+        { SP_HUMAN, "人类" }, { SP_HIGH_ELF, "高等精灵" },
+        { SP_DEEP_ELF, "精灵" }, { SP_SLUDGE_ELF, "污泥精灵" },
+        { SP_HALFLING, "半身人" }, { SP_HILL_ORC, "丘陵兽人" },
+        { SP_KOBOLD, "狗头人" },
+        { SP_MUMMY, "木乃伊" }, { SP_NAGA, "纳迦" },
+        { SP_TROLL, "巨魔" }, { SP_MINOTAUR, "牛头人" },
+        { SP_SPRIGGAN, "小精灵" }, { SP_CENTAUR, "半人马" },
+        { SP_DEMIGOD, "半神" }, { SP_DEMONSPAWN, "恶魔裔" },
+        { SP_GHOUL, "食尸鬼" }, { SP_TENGU, "天狗" },
+        { SP_MERFOLK, "鱼人" }, { SP_MERFOLK, "人鱼" },
+        { SP_VAMPIRE, "吸血鬼" },
+        { SP_FELID, "猫人" }, { SP_FELID, "猫" },
+        { SP_OCTOPODE, "章鱼人" }, { SP_OCTOPODE, "章鱼" },
+        { SP_GARGOYLE, "石像鬼" }, { SP_FORMICID, "蚁人" },
+        { SP_VINE_STALKER, "藤蔓行者" }, { SP_BARACHI, "蛙人" },
+        { SP_GNOLL, "豺狼人" }, { SP_COGLIN, "齿轮地精" },
+        { SP_DEEP_DWARF, "深矮人" }, { SP_LAVA_ORC, "熔岩兽人" },
+        { SP_MOUNTAIN_DWARF, "山矮人" },
+        { SP_MAYFLYTAUR, "强风半人马" }, { SP_MAYFLYTAUR, "蜉蝣半人马" },
+        { SP_POLTERGEIST, "吵闹鬼" }, { SP_REVENANT, "归来者" },
+        { SP_DJINNI, "灯神" }, { SP_METEORAN, "流星人" },
+        { SP_ONI, "鬼" }, { SP_ARMATAUR, "甲马人" },
+        { SP_RED_DRACONIAN, "红龙人" },
+        { SP_BASE_DRACONIAN, "龙人" },
+        { SP_WHITE_DRACONIAN, "白龙人" },
+        { SP_GREEN_DRACONIAN, "绿龙人" },
+        { SP_YELLOW_DRACONIAN, "黄龙人" },
+        { SP_GREY_DRACONIAN, "灰龙人" },
+        { SP_BLACK_DRACONIAN, "黑龙人" },
+        { SP_PURPLE_DRACONIAN, "紫龙人" },
+        { SP_MOTTLED_DRACONIAN, "斑驳龙人" },
+        { SP_PALE_DRACONIAN, "苍白龙人" },
+    };
+
     /**
      * Return the name of the given species.
      * @param speci       the species to be named.
@@ -48,51 +90,6 @@ namespace species
      * @returns the requested name, which will just be plain if no adjective
      *          or genus is defined.
      */
-    static const char* get_species_zh_name(species_type speci)
-    {
-        static const map<species_type, const char*> zh_names = {
-            { SP_HUMAN, T_("Human") }, { SP_HIGH_ELF, T_("High Elf") },
-            { SP_DEEP_ELF, T_("Deep Elf") },
-            { SP_SLUDGE_ELF, T_("Sludge Elf") },
-            { SP_HALFLING, T_("Halfling") },
-            { SP_HILL_ORC, T_("Hill Orc") }, { SP_KOBOLD, T_("Kobold") },
-            { SP_MUMMY, T_("Mummy") }, { SP_NAGA, T_("Naga") },
-            { SP_TROLL, T_("Troll") }, { SP_MINOTAUR, T_("Minotaur") },
-            { SP_SPRIGGAN, T_("Spriggan") },
-            { SP_CENTAUR, T_("Centaur") },
-            { SP_DEMIGOD, T_("Demigod") },
-            { SP_DEMONSPAWN, T_("Demonspawn") },
-            { SP_GHOUL, T_("Ghoul") }, { SP_TENGU, T_("Tengu") },
-            { SP_MERFOLK, T_("Merfolk") }, { SP_VAMPIRE, T_("Vampire") },
-            { SP_FELID, T_("Felid") }, { SP_OCTOPODE, T_("Octopode") },
-            { SP_GARGOYLE, T_("Gargoyle") },
-            { SP_FORMICID, T_("Formicid") },
-            { SP_VINE_STALKER, T_("Vine Stalker") },
-            { SP_BARACHI, T_("Barachi") },
-            { SP_GNOLL, T_("Gnoll") }, { SP_COGLIN, T_("Coglin") },
-            { SP_DEEP_DWARF, T_("Deep Dwarf") },
-            { SP_MOUNTAIN_DWARF, T_("Mountain Dwarf") },
-            { SP_POLTERGEIST, T_("Poltergeist") },
-            { SP_REVENANT, T_("Revenant") }, { SP_DJINNI, T_("Djinni") },
-            { SP_LAVA_ORC, T_("Lava Orc") },
-            { SP_METEORAN, T_("Meteoran") },
-            { SP_ONI, T_("Oni") }, { SP_MAYFLYTAUR, T_("Mayflytaur") },
-            { SP_ARMATAUR, T_("Armataur") },
-            { SP_RED_DRACONIAN, T_("Red Draconian") },
-            { SP_BASE_DRACONIAN, T_("Draconian") },
-            { SP_WHITE_DRACONIAN, T_("White Draconian") },
-            { SP_GREEN_DRACONIAN, T_("Green Draconian") },
-            { SP_YELLOW_DRACONIAN, T_("Yellow Draconian") },
-            { SP_GREY_DRACONIAN, T_("Grey Draconian") },
-            { SP_BLACK_DRACONIAN, T_("Black Draconian") },
-            { SP_PURPLE_DRACONIAN, T_("Purple Draconian") },
-            { SP_MOTTLED_DRACONIAN, T_("Mottled Draconian") },
-            { SP_PALE_DRACONIAN, T_("Pale Draconian") },
-        };
-        auto it = zh_names.find(speci);
-        return it != zh_names.end() ? it->second : nullptr;
-    }
-
     string name(species_type speci, name_type spname_type, bool raw)
     {
         const species_def& def = get_species_def(speci);
@@ -120,9 +117,9 @@ namespace species
             if (species == name(sp, SPNAME_PLAIN, true))
                 return sp;
             // deprecated: legacy ZH save compatibility — Chinese name matching
-            const char* zh = get_species_zh_name(sp);
-            if (zh && species == zh)
-                return sp;
+            for (const auto& alias : legacy_zh_species_aliases)
+                if (alias.species == sp && species == alias.name)
+                    return sp;
         }
 
         return SP_UNKNOWN;
@@ -147,11 +144,13 @@ namespace species
             // deprecated: legacy ZH save compatibility — Chinese name fallback
             if (pos == string::npos)
             {
-                const char* zh_name = get_species_zh_name(si);
-                if (zh_name)
+                for (const auto& alias : legacy_zh_species_aliases)
                 {
-                    const string sp_name_zh = lowercase_string(zh_name);
-                    pos = sp_name_zh.find(spec);
+                    if (alias.species != si)
+                        continue;
+                    pos = lowercase_string(alias.name).find(spec);
+                    if (pos != string::npos)
+                        break;
                 }
             }
             if (pos != string::npos)

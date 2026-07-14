@@ -13,6 +13,7 @@
 #include "game-type.h"
 #include "item-prop-enum.h"
 #include "job-type.h"
+#include "species-type.h"
 #include "unicode.h"
 
 using std::vector;
@@ -21,6 +22,7 @@ int str_to_summon_type(const string &str);
 string gametype_to_str(game_type type);
 
 job_type str_to_job(const string &str);
+species_type str_to_species(const string &str);
 
 string find_crawlrc();
 void read_init_file(bool runscript = false);

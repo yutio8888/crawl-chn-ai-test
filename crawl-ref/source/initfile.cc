@@ -129,7 +129,6 @@ static string _supported_language_listing();
 static bool _force_allow_wizard();
 static bool _force_allow_explore();
 
-static species_type _str_to_species(const string &str);
 static sound_mapping _interrupt_sound_mapping(const string &s);
 static pair<text_pattern,string> _slot_mapping(const string &s);
 static pair<string, char> _consumable_mapping(const string &s);
@@ -327,7 +326,7 @@ const vector<GameOption*> game_options::build_options_list()
                 game.allowed_jobs.clear();
                 game.allowed_weapons.clear();
             }),
-        new ListGameOption<species_type, OPTFUN(_str_to_species)>(
+        new ListGameOption<species_type, OPTFUN(str_to_species)>(
             game.allowed_species, {"species", "race"}, {}, true,
             [this]() { game.allowed_combos.clear(); }
             ),
@@ -1284,11 +1283,11 @@ static string _species_to_str(species_type sp)
     else if (sp == SP_VIABLE)
         return "viable";
     else
-        return species::name(sp);
+        return species::name(sp, species::SPNAME_PLAIN, true);
 }
 
 // XX move to species.cc?
-static species_type _str_to_species(const string &str)
+species_type str_to_species(const string &str)
 {
     if (str == "random")
         return SP_RANDOM;
@@ -1319,7 +1318,7 @@ static string _job_to_str(job_type job)
     else if (job == JOB_VIABLE)
         return "viable";
     else
-        return get_job_name(job);
+        return get_job_name_en(job);
 }
 
 job_type str_to_job(const string &str)
@@ -6033,7 +6032,7 @@ bool parse_args(int argc, char **argv, bool rc_only)
             if (!rc_only)
             {
                 if (o == 2)
-                    Options.game.species = _str_to_species(string(next_arg));
+                    Options.game.species = str_to_species(string(next_arg));
 
                 if (o == 3)
                     Options.game.job = str_to_job(string(next_arg));
