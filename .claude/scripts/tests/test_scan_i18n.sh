@@ -89,13 +89,18 @@ assert_contains "missing-t: missing source.txt has a clear CLI error" \
     "--source-txt is required with --display-contracts-only" \
     /tmp/actual_display_no_source.txt
 
+set +e
 python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts-debug/" \
     --display-contracts-only \
     --source-txt "$FIXTURES/display-contracts/source.txt" \
     > /tmp/actual_display_debug_default.txt 2>&1
-assert_output "missing-t: contract mode excludes #if0 by default" \
+DISPLAY_DEBUG_DEFAULT_RC=$?
+set -e
+assert_output "missing-t: default excludes dead branches but scans live alternatives" \
     /tmp/actual_display_debug_default.txt \
     "$EXPECTED/display-contracts-debug-default.txt"
+assert_status "missing-t: live else/elif and unknown branches block by default" \
+    1 "$DISPLAY_DEBUG_DEFAULT_RC"
 
 set +e
 python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts-debug/" \
@@ -104,10 +109,10 @@ python3 "$SCAN_I18N" missing-t "$FIXTURES/display-contracts-debug/" \
     > /tmp/actual_display_debug_strict.txt 2>&1
 DISPLAY_DEBUG_STRICT_RC=$?
 set -e
-assert_output "missing-t: --strict includes #if0 display contracts" \
+assert_output "missing-t: --strict includes every preprocessor branch" \
     /tmp/actual_display_debug_strict.txt \
     "$EXPECTED/display-contracts-strict-debug.txt"
-assert_status "missing-t: --strict #if0 violation blocks" \
+assert_status "missing-t: --strict dead-branch violations block" \
     1 "$DISPLAY_DEBUG_STRICT_RC"
 
 # ── mprf-p ──

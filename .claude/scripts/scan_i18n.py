@@ -174,77 +174,103 @@ PP_ELSE_RE = re.compile(r'^\s*#\s*else(?:\s|$)')
 PP_ELIF_RE = re.compile(r'^\s*#\s*elif(?:\s|$)')
 
 
-def build_debug_ranges(lines):
-    """Build a set of line numbers (1-based) that are inside #ifdef DEBUG blocks.
+def _known_preprocessor_condition(expression):
+    """Evaluate only conditions whose scan-time state is unambiguous.
 
-    Handles nested #if blocks correctly using a depth counter.
-    Lines inside #if 0 ... #endif are also collected (as debug_ranges).
+    DEBUG macros are treated as undefined in normal builds. Unknown build
+    expressions return None so both branches are scanned (fail-open).
     """
-    debug_lines = set()
-    debug_stack = []  # stack of (start_line, depth_at_entry)
+    expression = expression.strip()
+    if re.fullmatch(r'0(?:[uUlL]*)', expression):
+        return False
+    if re.fullmatch(r'1(?:[uUlL]*)', expression):
+        return True
 
-    for i, line in enumerate(lines):
-        lineno = i + 1
+    defined = re.fullmatch(
+        r'defined\s*(?:\(\s*(DEBUG\w*)\s*\)|(DEBUG\w*))', expression)
+    if defined:
+        return False
+    not_defined = re.fullmatch(
+        r'!\s*defined\s*(?:\(\s*(DEBUG\w*)\s*\)|(DEBUG\w*))', expression)
+    if not_defined:
+        return True
+    if re.fullmatch(r'DEBUG\w*', expression):
+        return False
+    if re.fullmatch(r'!\s*DEBUG\w*', expression):
+        return True
+    return None
 
-        # Check #ifdef DEBUG_*
-        m_def = PP_IFDEF_RE.match(line)
-        if m_def and m_def.group(1).startswith('DEBUG'):
-            debug_stack.append((lineno, len(debug_stack)))
+
+def build_debug_ranges(lines):
+    """Return lines in definitely inactive/debug preprocessor branches.
+
+    The state machine is nested-safe and branch-aware. Unknown conditions are
+    deliberately fail-open: their branch and alternatives remain scannable.
+    """
+    inactive_lines = set()
+    stack = []
+    current_inactive = False
+
+    for lineno, line in enumerate(lines, 1):
+        if PP_ENDIF_RE.match(line):
+            if stack:
+                frame = stack.pop()
+                current_inactive = frame['parent_inactive']
             continue
 
-        # Check #if 0
-        m_if0 = re.match(r'^\s*#\s*if\s+0\b', line)
-        if m_if0:
-            debug_stack.append((lineno, len(debug_stack)))
+        if PP_ELSE_RE.match(line):
+            if stack:
+                frame = stack[-1]
+                current_inactive = (frame['parent_inactive']
+                                    or frame['definitely_taken'])
+                frame['definitely_taken'] = True
             continue
 
-        # Nested #if/#ifdef/#ifndef inside debug block
-        if debug_stack:
-            if PP_IF_RE.match(line) or PP_IFDEF_RE.match(line) or PP_IFNDEF_RE.match(line):
-                debug_stack.append((lineno, len(debug_stack)))
-                continue
-
-        # #else/#elif inside debug block
-        if debug_stack:
-            if PP_ELSE_RE.match(line) or PP_ELIF_RE.match(line):
-                continue  # stay in debug block
-
-        # #endif
-        m_endif = PP_ENDIF_RE.match(line)
-        if m_endif and debug_stack:
-            debug_stack.pop()
-
-    # Now mark all lines from each debug block start to its matching #endif
-    # Re-scan to find the actual ranges
-    current_debug_depth = 0
-    debug_start = None
-
-    for i, line in enumerate(lines):
-        lineno = i + 1
-
-        m_def = PP_IFDEF_RE.match(line)
-        m_if0 = re.match(r'^\s*#\s*if\s+0\b', line)
-
-        if (m_def and m_def.group(1).startswith('DEBUG')) or m_if0:
-            if current_debug_depth == 0:
-                debug_start = lineno
-            current_debug_depth += 1
+        elif_match = re.match(r'^\s*#\s*elif\s+(.+?)\s*$', line)
+        if elif_match:
+            if stack:
+                frame = stack[-1]
+                condition = _known_preprocessor_condition(
+                    elif_match.group(1))
+                current_inactive = (frame['parent_inactive']
+                                    or frame['definitely_taken']
+                                    or condition is False)
+                if condition is True:
+                    frame['definitely_taken'] = True
             continue
 
-        if PP_IF_RE.match(line) or PP_IFDEF_RE.match(line) or PP_IFNDEF_RE.match(line):
-            if current_debug_depth > 0:
-                current_debug_depth += 1
+        condition = None
+        opening = False
+        ifdef_match = PP_IFDEF_RE.match(line)
+        if ifdef_match:
+            opening = True
+            macro = ifdef_match.group(1)
+            condition = False if macro.startswith('DEBUG') else None
+        else:
+            ifndef_match = PP_IFNDEF_RE.match(line)
+            if ifndef_match:
+                opening = True
+                macro = ifndef_match.group(1)
+                condition = True if macro.startswith('DEBUG') else None
+            else:
+                if_match = re.match(r'^\s*#\s*if\s+(.+?)\s*$', line)
+                if if_match:
+                    opening = True
+                    condition = _known_preprocessor_condition(if_match.group(1))
+
+        if opening:
+            parent_inactive = current_inactive
+            stack.append({
+                'parent_inactive': parent_inactive,
+                'definitely_taken': condition is True,
+            })
+            current_inactive = parent_inactive or condition is False
             continue
 
-        m_endif = PP_ENDIF_RE.match(line)
-        if m_endif and current_debug_depth > 0:
-            current_debug_depth -= 1
-            if current_debug_depth == 0 and debug_start is not None:
-                for ln in range(debug_start, lineno + 1):
-                    debug_lines.add(ln)
-                debug_start = None
+        if current_inactive:
+            inactive_lines.add(lineno)
 
-    return debug_lines
+    return inactive_lines
 
 
 def build_comment_ranges(lines):

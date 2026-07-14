@@ -1,6 +1,20 @@
 === I18n display-contract violations ===
 
-[DISPLAY] debug_contracts.cc:4  "simple_god_message: Dead debug message."
+[DISPLAY] debug_contracts.cc:4  "simple_god_message: Dead if-zero message."
+[DISPLAY] debug_contracts.cc:6  "simple_god_message: Live if-zero else message."
+[DISPLAY] debug_contracts.cc:10  "simple_god_message: Dead debug message."
+[DISPLAY] debug_contracts.cc:12  "simple_god_message: Live debug else message."
+[DISPLAY] debug_contracts.cc:16  "simple_god_message: Live ifndef-debug message."
+[DISPLAY] debug_contracts.cc:18  "simple_god_message: Dead ifndef-debug else message."
+[DISPLAY] debug_contracts.cc:22  "simple_god_message: Dead elif prelude message."
+[DISPLAY] debug_contracts.cc:24  "simple_god_message: Live elif-one message."
+[DISPLAY] debug_contracts.cc:26  "simple_god_message: Dead elif else message."
+[DISPLAY] debug_contracts.cc:30  "simple_god_message: Fail-open unknown branch message."
+[DISPLAY] debug_contracts.cc:32  "simple_god_message: Fail-open unknown else message."
+[DISPLAY] debug_contracts.cc:37  "simple_god_message: Dead nested inner message."
+[DISPLAY] debug_contracts.cc:39  "simple_god_message: Dead nested inner else message."
+[DISPLAY] debug_contracts.cc:43  "simple_god_message: Dead nested live-parent message."
+[DISPLAY] debug_contracts.cc:45  "simple_god_message: Live nested else message."
 
 --- scan_i18n.py missing-t ---
 Files scanned: 1
@@ -9,9 +23,9 @@ Files scanned: 1
   UI: 0 candidates
   STR: 0 candidates
   SMM: 0 candidates
-  DISPLAY: 1 candidates
+  DISPLAY: 15 candidates
   DYNKEY: 0 candidates
 
 
 Per-file candidate breakdown:
-  debug_contracts.cc: DISPLAY:1
+  debug_contracts.cc: DISPLAY:15

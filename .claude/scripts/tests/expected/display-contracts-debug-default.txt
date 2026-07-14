@@ -1,3 +1,13 @@
+=== I18n display-contract violations ===
+
+[DISPLAY] debug_contracts.cc:6  "simple_god_message: Live if-zero else message."
+[DISPLAY] debug_contracts.cc:12  "simple_god_message: Live debug else message."
+[DISPLAY] debug_contracts.cc:16  "simple_god_message: Live ifndef-debug message."
+[DISPLAY] debug_contracts.cc:24  "simple_god_message: Live elif-one message."
+[DISPLAY] debug_contracts.cc:30  "simple_god_message: Fail-open unknown branch message."
+[DISPLAY] debug_contracts.cc:32  "simple_god_message: Fail-open unknown else message."
+[DISPLAY] debug_contracts.cc:45  "simple_god_message: Live nested else message."
+
 --- scan_i18n.py missing-t ---
 Files scanned: 1
 
@@ -5,9 +15,10 @@ Files scanned: 1
   UI: 0 candidates
   STR: 0 candidates
   SMM: 0 candidates
-  DISPLAY: 0 candidates
+  DISPLAY: 7 candidates
   DYNKEY: 0 candidates
 
   (debug/#if0 blocks excluded; use --strict to include)
 
-OK: No untranslated calls found.
+Per-file candidate breakdown:
+  debug_contracts.cc: DISPLAY:7
