@@ -52,7 +52,7 @@ static const map<job_type, const char*>& _job_zh_names()
         { JOB_BERSERKER, "狂战士" },
         { JOB_HUNTER, "猎人" },
         { JOB_CONJURER, "咒法师" },
-        { JOB_ENCHANTER, "附魔师" },
+        { JOB_ENCHANTER, "惑控师" },
         { JOB_FIRE_ELEMENTALIST, "火系元素师" },
         { JOB_ICE_ELEMENTALIST, "冰系元素师" },
         { JOB_SUMMONER, "召唤师" },

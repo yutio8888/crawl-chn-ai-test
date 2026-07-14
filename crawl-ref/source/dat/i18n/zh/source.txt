@@ -32667,7 +32667,7 @@ spriggan druid
 小精灵德鲁伊
 %%%%
 spriggan enchanter
-小精灵附魔师
+小精灵惑控师
 %%%%
 spriggan rider
 小精灵骑手
