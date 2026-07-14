@@ -621,6 +621,13 @@ static void _describe_book(const spellbook_contents &book,
                            formatted_string &description,
                            const monster_info *mon_owner)
 {
+    constexpr int spell_entry_prefix_width = 4; // "a - "
+    constexpr int book_spell_column_width = 33;
+    constexpr int school_column_width = 28;
+    constexpr int level_column_width = 12;
+    constexpr int known_column_width = 12;
+    constexpr int monster_spell_content_width = 30;
+
     description.textcolour(LIGHTGREY);
 
     description.cprintf("%s", book.label.c_str());
@@ -630,11 +637,12 @@ static void _describe_book(const spellbook_contents &book,
     {
         // Column headers: spell name (variable), school, difficulty, known
         description.cprintf("%s",
-            ("\n " + chop_string(T_("Spells"), 33)
-                  + chop_string(T_("Type"), 28)
-                  + chop_string(T_("Level"), 12)).c_str());
+            ("\n " + chop_string(T_("Spells"), book_spell_column_width)
+                  + chop_string(T_("Type"), school_column_width)
+                  + chop_string(T_("Level"), level_column_width)).c_str());
         if (crawl_state.need_save)
-            description.cprintf("%s", chop_string(T_("Known"), 12).c_str());
+            description.cprintf("%s",
+                                chop_string(T_("Known"), known_column_width).c_str());
     }
     description.cprintf("\n");
 
@@ -680,9 +688,13 @@ static void _describe_book(const spellbook_contents &book,
         // the generic tile text wrapper then breaks the second column in the
         // middle of its range (e.g. moving "(7)" to the next line).  Keep a
         // small safety margin for the two-column layout.
-        const int column_width = doublecolumn ? 30 : 32;
-        const int chop_len = column_width - effect_len - range_len - effect_range_space
-                                - (dith_marker.length() > 0 ? 1 : 0);
+        const int content_width = doublecolumn
+                                  ? monster_spell_content_width
+                                  : book_spell_column_width
+                                    - spell_entry_prefix_width;
+        const int chop_len = content_width - effect_len - range_len
+                             - effect_range_space
+                             - (dith_marker.length() > 0 ? 1 : 0);
 
         if (effect_len && !testbits(get_spell_flags(spell), spflag::WL_check))
             effect_str = colourize_str(effect_str, _spell_colour(spell));
@@ -711,7 +723,7 @@ static void _describe_book(const spellbook_contents &book,
             // Pad the complete first cell to a fixed display width so every
             // second-column entry starts at the same x position.  Use the
             // parsed text width because range_str may contain colour tags.
-            const int target_width = column_width + 4;
+            const int target_width = content_width + spell_entry_prefix_width;
             const int padding = target_width - strwidth(spell_entry.tostring());
             if (padding > 0)
                 spell_entry += string(padding, ' ');
@@ -737,14 +749,16 @@ static void _describe_book(const spellbook_contents &book,
 #endif
                          _spell_schools(spell);
 
-        string known = "";
+        const string level = chop_string(make_stringf(
+                                             "%d", spell_difficulty(spell)),
+                                         level_column_width);
+        const char* known = "";
         if (!mon_owner && crawl_state.need_save)
-            known = you.spell_library[spell] ? chop_string(T_("yes"), 12) : chop_string(T_("no"), 12);
+            known = you.spell_library[spell] ? T_("yes") : T_("no");
 
-        description.cprintf("%s%d%s\n",
-                            chop_string(schools, 28).c_str(),
-                            spell_difficulty(spell),
-                            known.c_str());
+        description.cprintf("%s%s%s\n",
+                            chop_string(schools, school_column_width).c_str(),
+                            level.c_str(), known);
     }
 
     // are we halfway through a column?
