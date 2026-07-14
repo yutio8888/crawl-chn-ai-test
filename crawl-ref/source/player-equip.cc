@@ -2820,9 +2820,11 @@ void unwield_distortion(bool brand)
 {
     if (have_passive(passive_t::safe_distortion))
     {
-        simple_god_message(make_stringf(T_(" absorbs the residual spatial "
-                           "distortion as you %s your "
-                           "weapon."), brand ? "rebrand" : "unwield").c_str());
+        simple_god_message(
+            brand ? T_(" absorbs the residual spatial distortion as you "
+                       "rebrand your weapon.")
+                  : T_(" absorbs the residual spatial distortion as you "
+                       "unwield your weapon."));
         return;
     }
 

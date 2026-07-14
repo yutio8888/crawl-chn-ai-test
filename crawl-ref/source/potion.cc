@@ -552,7 +552,7 @@ public:
     {
         if (player_under_penance(GOD_HEPLIAKLQANA))
         {
-            simple_god_message(" appreciates the memories.", false,
+            simple_god_message(T_(" appreciates the memories."), false,
                                GOD_HEPLIAKLQANA);
             reduce_xp_penance(GOD_HEPLIAKLQANA,
                               750 * you.experience_level * pow / 40);
@@ -818,7 +818,7 @@ public:
     bool effect(bool = true, int = 40, bool = true) const override
     {
         if (have_passive(passive_t::cleanse_mut_potions))
-            simple_god_message(" cleanses your potion of mutation!");
+            simple_god_message(T_(" cleanses your potion of mutation!"));
         else
             mpr(T_("You feel extremely strange."));
         bool mutated = false;

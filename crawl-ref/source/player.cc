@@ -5096,7 +5096,7 @@ bool haste_player(int turns, bool rageext)
     }
     else if (have_passive(passive_t::no_haste))
     {
-        simple_god_message(" protects you from inadvertent hurry.");
+        simple_god_message(T_(" protects you from inadvertent hurry."));
         return false;
     }
 
@@ -5960,14 +5960,14 @@ void player::banish(const actor* /*agent*/, const string &who, bool force)
 
     if (player_in_branch(BRANCH_ARENA))
     {
-        simple_god_message(" prevents your banishment from the Arena!",
+        simple_god_message(T_(" prevents your banishment from the Arena!"),
                            false, GOD_OKAWARU);
         return;
     }
 
     if (you.duration[DUR_BEOGH_DIVINE_CHALLENGE])
     {
-        simple_god_message(" refuses to let the Abyss claim you during a challenge!",
+        simple_god_message(T_(" refuses to let the Abyss claim you during a challenge!"),
                            false, GOD_BEOGH);
 
         return;

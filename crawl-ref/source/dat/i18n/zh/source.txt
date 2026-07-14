@@ -39648,3 +39648,132 @@ Xom snickers loudly.
 %%%%
 Xom revives you!
 佐姆复活了你！
+%%%%
+ will bless one of your weapons.
+将祝福你的一件武器。
+%%%%
+ will bloody one of your weapons with pain.
+将以痛苦浸染你的一件武器。
+%%%%
+ Hand of Corruption reaches out!
+腐化之手伸了出来！
+%%%%
+ offers you a choice of weapons!
+让你挑选一件武器！
+%%%%
+ offers you a choice of armour!
+让你挑选一件护甲！
+%%%%
+Fedhas smiles on your commitment to the cycle of life.
+费德哈因你对生命循环的坚守而微笑。
+%%%%
+ protects you from inadvertent hurry.
+保护你免于无意中加速。
+%%%%
+ ignores your late donation.
+无视了你迟来的捐献。
+%%%%
+ petitions for your drink to fail.
+祈求你无法喝下药水。
+%%%%
+ prevents your attack.
+阻止了你的攻击。
+%%%%
+ protects your body from unnatural transformation!
+保护你的身体免遭异常变形！
+%%%%
+ protects your fellow warrior from evil magic!
+保护你的战友免受邪恶魔法侵害！
+%%%%
+ shields your ally from puny magic!
+保护你的盟友免受微末魔法侵害！
+%%%%
+ pulls their child back from the Abyss.
+将自己的孩子从深渊中拉了回来。
+%%%%
+ protects your slime from harm.
+保护你的黏液怪免受伤害。
+%%%%
+ protects your body from mutation!
+保护你的身体免于变异！
+%%%%
+ tells them not to hurry.
+告诉他们不必着急。
+%%%%
+ protects you from harm!
+保护你免受伤害！
+%%%%
+ forces you to slow down.
+迫使你慢下来。
+%%%%
+ prevents your banishment from the Arena!
+阻止你被逐出竞技场！
+%%%%
+ refuses to let the Abyss claim you during a challenge!
+不允许深渊在挑战期间将你吞噬！
+%%%%
+ appreciates the memories.
+很欣赏这些记忆。
+%%%%
+ cleanses your potion of mutation!
+净化了你的变异药水！
+%%%%
+You feel a surge of divine spite.
+你感到一股来自神祇的怨毒涌来。
+%%%%
+ protects you from your miscast necromantic spell!
+保护你免受死灵法术施法失误的伤害！
+%%%%
+ booms: How dare you animate that foul thing!
+轰鸣道：你竟敢让那污秽之物动起来！
+%%%%
+ has no space to call forth the wretched!
+没有空间召来可怜虫！
+%%%%
+ calls piteous wretches from the earth!
+从大地中唤出可怜虫！
+%%%%
+ power protects you from the chaos of Hell!
+力量保护你免受地狱的混乱侵扰！
+%%%%
+ gurgles merrily.
+愉快地汩汩作响。
+%%%%
+ says: Divide and consume!
+说道：分裂并吞噬！
+%%%%
+ reveals a hidden shaft just before you would have fallen in.
+在你即将跌入隐藏竖井前将其揭示出来。
+%%%%
+ reveals an alarm trap just before you would have tripped it.
+在你即将触发警报陷阱前将其揭示出来。
+%%%%
+ warns you in time for you to avoid it.
+及时警告你，让你得以避开陷阱。
+%%%%
+ anoints %s as instruments of vengeance!
+任命%s为复仇的利器！
+%%%%
+ anoints %s as an instrument of vengeance!
+任命%s为复仇的利器！
+%%%%
+ protects your plant from harm.
+保护你的植物免受伤害。
+%%%%
+ protects a plant from harm.
+保护一株植物免受伤害。
+%%%%
+ absorbs the residual spatial distortion as you rebrand your weapon.
+在你重新铭印武器时吸收了残余的空间扭曲。
+%%%%
+ absorbs the residual spatial distortion as you unwield your weapon.
+在你卸下武器时吸收了残余的空间扭曲。
+%%%%
+ says: Farewell. Go and aid the meek with %s.
+说：再会了。去和%s一起帮助弱者吧。
+%%%%
+ says: Farewell. Go and vanquish evil with %s.
+说：再会了。去和%s一起消灭邪恶吧。
+%%%%
+ says: Farewell. Go and enforce order with %s.
+说：再会了。去和%s一起维护秩序吧。

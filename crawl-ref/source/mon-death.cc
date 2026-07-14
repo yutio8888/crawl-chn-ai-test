@@ -1149,7 +1149,7 @@ static bool _monster_avoided_death(monster* mons, killer_type killer,
         {
             if (killer == KILL_BANISHED)
             {
-                simple_god_message(" pulls their child back from the Abyss.",
+                simple_god_message(T_(" pulls their child back from the Abyss."),
                                    false, GOD_BEOGH);
             }
 

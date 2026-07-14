@@ -210,7 +210,7 @@ int zin_tithe(const item_def& item, int quant, bool converting)
         if (item.tithe_state == TS_NO_PIETY) // seen before worshipping Zin
         {
             tithe = 0;
-            simple_god_message(" ignores your late donation.");
+            simple_god_message(T_(" ignores your late donation."));
         }
         // A single scroll can give you more than D:1-18, Lair and Orc
         // together, limit the gains. You're still required to pay from

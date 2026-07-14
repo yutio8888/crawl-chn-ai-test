@@ -3557,7 +3557,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         return cast_summon_holy_warrior(you.skill(SK_INVOCATIONS, 4), fail);
 
     case ABIL_TSO_BLESS_WEAPON:
-        simple_god_message(" will bless one of your weapons.");
+        simple_god_message(T_(" will bless one of your weapons."));
         // included in default force_more_message
         if (!bless_weapon(GOD_SHINING_ONE, SPWPN_HOLY_WRATH, YELLOW))
             return spret::abort;
@@ -3574,7 +3574,7 @@ static spret _do_ability(const ability_def& abil, bool fail, dist *target,
         break;
 
     case ABIL_KIKU_BLESS_WEAPON:
-        simple_god_message(" will bloody one of your weapons with pain.");
+        simple_god_message(T_(" will bloody one of your weapons with pain."));
         // included in default force_more_message
         if (!bless_weapon(GOD_KIKUBAAQUDGHA, SPWPN_PAIN, RED))
             return spret::abort;

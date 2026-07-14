@@ -2310,7 +2310,7 @@ void lugonu_corrupt_level(int power)
     if (is_level_incorruptible())
         return;
 
-    simple_god_message(" Hand of Corruption reaches out!", true);
+    simple_god_message(T_(" Hand of Corruption reaches out!"), true);
     take_note(Note(NOTE_MESSAGE, 0, 0, make_stringf(T_("Corrupted %s"),
               level_id::current().describe().c_str()).c_str()));
     mark_corrupted_level(level_id::current());

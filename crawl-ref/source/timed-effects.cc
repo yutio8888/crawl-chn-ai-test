@@ -199,7 +199,7 @@ static void _jiyva_effects(int /*time_delta*/)
             switch (random2(3))
             {
                 case 0:
-                    simple_god_message(" gurgles merrily.");
+                    simple_god_message(T_(" gurgles merrily."));
                     break;
                 case 1:
                     mprf_p(MSGCH_SOUND, T_("You hear %1$s splatter%2$s."),
@@ -207,7 +207,7 @@ static void _jiyva_effects(int /*time_delta*/)
                            total_jellies > 1 ? "s" : "");
                     break;
                 case 2:
-                    simple_god_message(" says: Divide and consume!");
+                    simple_god_message(T_(" says: Divide and consume!"));
                     break;
             }
         }

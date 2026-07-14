@@ -2331,7 +2331,7 @@ spret your_spells(spell_type spell, int powc, bool actual_spell,
         if (!you_worship(GOD_SIF_MUNA)
             && you.penance[GOD_SIF_MUNA] && one_chance_in(20))
         {
-            god_speaks(GOD_SIF_MUNA, "You feel a surge of divine spite.");
+            god_speaks(GOD_SIF_MUNA, T_("You feel a surge of divine spite."));
 
             // This will cause failure and increase the miscast effect.
             spfl = -you.penance[GOD_SIF_MUNA];

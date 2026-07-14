@@ -997,7 +997,7 @@ void do_trap_effects()
             _print_malev();
             if (have_passive(passive_t::avoid_traps))
             {
-                simple_god_message(" reveals a hidden shaft just before you would have fallen in.");
+                simple_god_message(T_(" reveals a hidden shaft just before you would have fallen in."));
                 return;
             }
             if (you.do_shaft())
@@ -1012,7 +1012,7 @@ void do_trap_effects()
             _print_malev();
             if (have_passive(passive_t::avoid_traps))
             {
-                simple_god_message(" reveals an alarm trap just before you would have tripped it.");
+                simple_god_message(T_(" reveals an alarm trap just before you would have tripped it."));
                 return;
             }
             mpr(T_("With a terrible screech, the alarm sounds!"));
@@ -1033,7 +1033,7 @@ void do_trap_effects()
             if (have_passive(passive_t::avoid_traps))
             {
                 mpr(msg);
-                simple_god_message(" warns you in time for you to avoid it.");
+                simple_god_message(T_(" warns you in time for you to avoid it."));
                 return;
             }
             mpr(msg);

@@ -648,9 +648,9 @@ static bool _god_prevents_berserk_haste(bool intentional)
         return false;
 
     if (intentional)
-        simple_god_message(" forces you to slow down.");
+        simple_god_message(T_(" forces you to slow down."));
     else
-        simple_god_message(" protects you from inadvertent hurry.");
+        simple_god_message(T_(" protects you from inadvertent hurry."));
 
     return true;
 }

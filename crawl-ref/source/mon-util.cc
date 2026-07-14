@@ -5758,10 +5758,10 @@ bool shoot_through_actor(const actor* agent, const actor* target, bool announce)
         {
             if (announce && you.can_see(*target))
             {
-                simple_god_message(
-                            make_stringf(T_(" protects %s plant from harm."),
-                                agent->is_player() ? "your" : "a").c_str(),
-                            false, GOD_FEDHAS);
+                simple_god_message(agent->is_player()
+                                   ? T_(" protects your plant from harm.")
+                                   : T_(" protects a plant from harm."),
+                                   false, GOD_FEDHAS);
             }
             return true;
         }
@@ -5862,7 +5862,8 @@ bool could_harm(const actor* agent, const actor* target, bool announce_important
         && target->wont_attack())
     {
         if (announce_mundane && you.can_see(*target))
-            simple_god_message(" protects your slime from harm.", false, GOD_JIYVA);
+            simple_god_message(T_(" protects your slime from harm."), false,
+                               GOD_JIYVA);
         return false;
     }
 

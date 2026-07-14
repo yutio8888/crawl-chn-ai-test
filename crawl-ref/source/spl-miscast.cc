@@ -346,8 +346,8 @@ void miscast_effect(spell_type spell, int fail)
     {
         if (x_chance_in_y(you.piety(), piety_breakpoint(5)))
         {
-            simple_god_message(" protects you from your miscast "
-                               "necromantic spell!");
+            simple_god_message(T_(" protects you from your miscast "
+                                  "necromantic spell!"));
             return;
         }
     }

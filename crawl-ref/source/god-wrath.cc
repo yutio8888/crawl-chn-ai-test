@@ -1682,9 +1682,11 @@ static bool _ignis_champion()
 
     // Message ordering is a bit touchy here.
     // First, we say what we're doing. TODO: more fun messages
-    simple_god_message(make_stringf(T_(" anoints %s as %s of vengeance!"),
-                                    multimonster_name_string(mons).c_str(),
-                                    mons.size() > 1 ? "instruments" : "an instrument").c_str(),
+    const char* message = mons.size() > 1
+        ? T_(" anoints %s as instruments of vengeance!")
+        : T_(" anoints %s as an instrument of vengeance!");
+    simple_god_message(make_stringf(message,
+                                    multimonster_name_string(mons).c_str()).c_str(),
                                     false, GOD_IGNIS);
 
     // Describe the effect on the monsters.

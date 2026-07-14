@@ -2176,7 +2176,7 @@ bool chaos_affects_actor(actor* victim, actor* source)
         if (victim->is_player() && have_passive(passive_t::no_haste)
             && beam.flavour == BEAM_HASTE)
         {
-            simple_god_message(" protects you from inadvertent hurry.");
+            simple_god_message(T_(" protects you from inadvertent hurry."));
             return true;
         }
 

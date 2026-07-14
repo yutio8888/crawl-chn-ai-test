@@ -2155,7 +2155,7 @@ bool transform(int dur, transformation which_trans, bool involuntary,
         && x_chance_in_y(you.piety(), piety_breakpoint(5))
         && which_trans != transformation::none)
     {
-        simple_god_message(" protects your body from unnatural transformation!");
+        simple_god_message(T_(" protects your body from unnatural transformation!"));
         return false;
     }
 

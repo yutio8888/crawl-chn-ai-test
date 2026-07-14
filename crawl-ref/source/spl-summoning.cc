@@ -956,7 +956,7 @@ static void _animate_weapon(int pow, actor* target)
 
     if (why)
     {
-        simple_god_message(" booms: How dare you animate that foul thing!");
+        simple_god_message(T_(" booms: How dare you animate that foul thing!"));
         did_god_conduct(why, 10, true, mons);
     }
 }
@@ -2912,9 +2912,9 @@ spret kiku_unearth_wretches(bool fail)
         mon->add_ench(mon_enchant(ENCH_PARALYSIS, nullptr, 9999));
     }
     if (!created)
-        simple_god_message(" has no space to call forth the wretched!");
+        simple_god_message(T_(" has no space to call forth the wretched!"));
     else
-        simple_god_message(" calls piteous wretches from the earth!");
+        simple_god_message(T_(" calls piteous wretches from the earth!"));
 
     return spret::success;
 }

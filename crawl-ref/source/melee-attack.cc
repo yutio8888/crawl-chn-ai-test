@@ -1800,7 +1800,7 @@ bool melee_attack::attack()
             && !is_followup
             && one_chance_in(20))
         {
-            simple_god_message(" prevents your attack.", false, GOD_ELYVILON);
+            simple_god_message(T_(" prevents your attack."), false, GOD_ELYVILON);
             return false;
         }
 
@@ -4482,7 +4482,7 @@ void melee_attack::mons_apply_attack_flavour(attack_flavour flavour)
                 // Zin's protection blocks this from the start, since having the
                 // passive will stop the transformation at the end.
                 if (have_passive(passive_t::resist_polymorph))
-                    simple_god_message(" protects your body from unnatural transformation!");
+                    simple_god_message(T_(" protects your body from unnatural transformation!"));
                 else
                 {
                     bool initial = you.duration[DUR_SLIMIFYING] == 0;

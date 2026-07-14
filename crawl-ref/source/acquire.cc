@@ -1431,7 +1431,7 @@ int acquirement_create_item(object_class_type class_wanted,
         && agent < NUM_GODS)
     {
         if (!quiet && agent == GOD_XOM)
-            simple_god_message(" snickers.", false, GOD_XOM);
+            simple_god_message(T_(" snickers."), false, GOD_XOM);
         else
             return _failed_acquirement(quiet);
     }
@@ -1831,7 +1831,7 @@ bool okawaru_gift_weapon()
 
     auto &acq_items = you.props[OKAWARU_WEAPONS_KEY].get_vector();
 
-    simple_god_message(" offers you a choice of weapons!");
+    simple_god_message(T_(" offers you a choice of weapons!"));
 
     int index = 0;
     if (!clua.callfn("c_choose_okawaru_weapon", ">d", &index))
@@ -1871,7 +1871,7 @@ bool okawaru_gift_armour()
 
     auto &acq_items = you.props[OKAWARU_ARMOUR_KEY].get_vector();
 
-    simple_god_message(" offers you a choice of armour!");
+    simple_god_message(T_(" offers you a choice of armour!"));
 
     int index = 0;
     if (!clua.callfn("c_choose_okawaru_armour", ">d", &index))

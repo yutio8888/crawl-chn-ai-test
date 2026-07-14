@@ -3550,18 +3550,26 @@ static void _transfer_good_god_piety()
 
     if (you.religion != old_god)
     {
-        static const map<god_type, const char*> farewell_messages = {
-            { GOD_ELYVILON, T_("aid the meek") },
-            { GOD_SHINING_ONE, T_("vanquish evil") },
-            { GOD_ZIN, T_("enforce order") },
-        };
+        const char* farewell;
+        switch (you.religion)
+        {
+        case GOD_ELYVILON:
+            farewell = T_(" says: Farewell. Go and aid the meek with %s.");
+            break;
+        case GOD_SHINING_ONE:
+            farewell = T_(" says: Farewell. Go and vanquish evil with %s.");
+            break;
+        case GOD_ZIN:
+            farewell = T_(" says: Farewell. Go and enforce order with %s.");
+            break;
+        default:
+            ASSERT(false);
+            return;
+        }
 
         // Some feedback that piety moved over.
-        simple_god_message(make_stringf(T_(" says: Farewell. Go and %s with %s."),
-                                        lookup(farewell_messages, you.religion,
-                                               "become a bug"),
+        simple_god_message(make_stringf(farewell,
                                         god_name(you.religion).c_str()).c_str(),
-
                            false, old_god);
     }
 
@@ -4039,7 +4047,7 @@ void print_god_rejection(god_type which_god)
 
     if (which_god == GOD_GOZAG)
     {
-        simple_god_message(" does not accept service from beggars like you!",
+        simple_god_message(T_(" does not accept service from beggars like you!"),
                            false, which_god);
         const int fee = gozag_service_fee();
         if (you.gold == 0)
@@ -4056,7 +4064,7 @@ void print_god_rejection(god_type which_god)
     }
     if (you.get_mutation_level(MUT_NO_LOVE) && _god_rejects_loveless(which_god))
     {
-        simple_god_message(" does not accept worship from the loveless!",
+        simple_god_message(T_(" does not accept worship from the loveless!"),
                            false, which_god);
         return;
     }
@@ -4075,7 +4083,7 @@ void print_god_rejection(god_type which_god)
         return;
     }
 
-    simple_god_message(" does not accept worship from those such as you!",
+    simple_god_message(T_(" does not accept worship from those such as you!"),
                        false, which_god);
 }
 
