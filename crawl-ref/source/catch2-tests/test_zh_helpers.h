@@ -52,6 +52,10 @@ std::vector<ZhIssue> scan_translation(const char* translated,
 // can target individual rules without running all 8.
 bool rule_untranslated   (const std::string& text, const std::string& key);
 bool rule_mixed_cn_en    (const std::string& text);
+// True for any error returned by TextDB's embedded-Lua evaluator. This is
+// checked independently of the mixed-language rule because an evaluator error
+// may contain no CJK text at all.
+bool rule_embedded_lua_error(const std::string& text);
 bool rule_format_broken  (const std::string& text, const std::string& key);
 bool rule_garbled_utf8   (const std::string& text);
 bool rule_whitespace     (const std::string& text);

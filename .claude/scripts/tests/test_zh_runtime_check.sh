@@ -140,6 +140,7 @@ FRAME_MARKER: help:card:ok | 卡牌
 FRAME_MARKER: help:skill:ok | 技能
 FRAME_MARKER: help:passive:ok | 被动能力
 FRAME_MARKER: help:status:ok | 状态
+FRAME_MARKER: help:status:bat:ok | 行动迅捷的吸血蝠
 FRAME_MARKER: help:monster:ok | 怪物
 FRAME_MARKER: help:spell:ok | 法术
 FRAME_MARKER: help:ability:ok | 能力
@@ -162,7 +163,36 @@ sed -i '/help:\(probe\|phase\)/! s/ | .*/ | {"cjk": 2}/' \
 
 python3 "$CHECKER" --mode help --bot-stderr "$TMPDIR/help-complete.stderr" \
     > "$TMPDIR/help-complete.out"
-grep -q 'Types seen:   22' "$TMPDIR/help-complete.out"
+grep -q 'Types seen:   23' "$TMPDIR/help-complete.out"
+
+cat > "$TMPDIR/help-baseline.json" <<'EOF'
+{"layer_help":{"known_issue_classification":{"gone status":"stale"}}}
+EOF
+python3 "$CHECKER" --mode help \
+    --bot-stderr "$TMPDIR/help-complete.stderr" \
+    --output-baseline "$TMPDIR/help-baseline.json" \
+    > "$TMPDIR/help-baseline.out"
+if grep -q 'known_issue_classification' "$TMPDIR/help-baseline.json"; then
+    echo "  FAIL: stale help issue classification survived baseline refresh"
+    exit 1
+fi
+
+cat > "$TMPDIR/help-changed.stderr" <<'EOF'
+ZH_ISSUE: 1 | status.txt | same status | 新样本 English
+EOF
+cat > "$TMPDIR/help-changed-baseline.json" <<'EOF'
+{"layer_help":{"catch2_issue_records":[{"kind":1,"source":"status.txt","key":"same status","sample":"旧样本 English"}],"known_issue_classification":{"same status":"old rationale"}}}
+EOF
+python3 "$CHECKER" --mode help \
+    --catch2-stderr "$TMPDIR/help-changed.stderr" \
+    --bot-stderr "$TMPDIR/help-complete.stderr" \
+    --output-baseline "$TMPDIR/help-changed-baseline.json" \
+    > "$TMPDIR/help-changed-baseline.out"
+if grep -q 'known_issue_classification' \
+    "$TMPDIR/help-changed-baseline.json"; then
+    echo "  FAIL: classification survived a full issue-identity change"
+    exit 1
+fi
 
 sed '/help:text:item/d' "$TMPDIR/help-complete.stderr" > "$TMPDIR/help-missing.stderr"
 if python3 "$CHECKER" --mode help --bot-stderr "$TMPDIR/help-missing.stderr" \

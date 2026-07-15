@@ -1494,10 +1494,13 @@ eel talisman
 
 一块奇异的海化石，装饰着鲍鱼壳和珍珠。
 {{
-    local hands = you.hand() .. "s"
+    local hand_names = {
+        hand = "手", paw = "爪", tentacle = "触手", claw = "爪",
+        grasper = "机械手", tendril = "卷须"
+    }
+    local hands = hand_names[you.hand()] or "手"
     return "使佩戴者的" .. hands
-}}
-变成一对扭动的电鳗，在攻击敌人时有概率通过相连的目标释放
+}}变成一对扭动的电鳗，在攻击敌人时有概率通过相连的目标释放
 电弧。当佩戴者的生命值降至危险水平时，它们将释放更强烈的电压。
 %%%%
 flux bauble

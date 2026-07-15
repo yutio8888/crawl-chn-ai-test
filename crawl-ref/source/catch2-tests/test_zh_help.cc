@@ -50,16 +50,100 @@
 #include "feature.h"         // get_feature_def
 #include "dungeon-feature-type.h" // NUM_FEATURES
 #include "database.h"        // getLongDescription, getLongDescKeysByRegex
+#include "clua.h"            // clua, lua_State
 #include "stringutil.h"      // strip_suffix
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
 
+#include <fstream>
+#include <iterator>
+#include <stdexcept>
 #include <string>
 #include <vector>
 
 using std::string;
 using std::vector;
+
+namespace {
+
+// The game installs rich `you` and `view` bindings before TextDB descriptions
+// execute. Catch2's lightweight main does not, so provide only the deterministic
+// surface used by status.txt and restore the previous globals via RAII.
+class ScopedHelpLuaGlobals
+{
+public:
+    ScopedHelpLuaGlobals()
+        : ls(clua.state()), you_ref(LUA_NOREF), view_ref(LUA_NOREF), active(true)
+    {
+        lua_getglobal(ls, "you");
+        you_ref = luaL_ref(ls, LUA_REGISTRYINDEX);
+        lua_getglobal(ls, "view");
+        view_ref = luaL_ref(ls, LUA_REGISTRYINDEX);
+
+        static const char fixture[] = R"lua(
+you = {
+    race = function() return "Mummy" end,
+    hand = function() return "hand" end,
+    flying = function() return false end,
+    mutation = function() return 0 end,
+    god = function() return "No God" end
+}
+view = {
+    feature_at = function() return "floor" end
+}
+)lua";
+        if (clua.execstring(fixture, "zh_help_fixture"))
+        {
+            const string error = clua.error;
+            restore();
+            throw std::runtime_error("failed to install Help Lua fixture: "
+                                     + error);
+        }
+    }
+
+    ~ScopedHelpLuaGlobals()
+    {
+        restore();
+    }
+
+    ScopedHelpLuaGlobals(const ScopedHelpLuaGlobals&) = delete;
+    ScopedHelpLuaGlobals& operator=(const ScopedHelpLuaGlobals&) = delete;
+
+    void set_god(const char* god)
+    {
+        lua_getglobal(ls, "you");
+        lua_pushstring(ls, god);
+        lua_pushcclosure(ls, [](lua_State* state) -> int
+        {
+            lua_pushvalue(state, lua_upvalueindex(1));
+            return 1;
+        }, 1);
+        lua_setfield(ls, -2, "god");
+        lua_pop(ls, 1);
+    }
+
+private:
+    void restore()
+    {
+        if (!active)
+            return;
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, you_ref);
+        lua_setglobal(ls, "you");
+        lua_rawgeti(ls, LUA_REGISTRYINDEX, view_ref);
+        lua_setglobal(ls, "view");
+        luaL_unref(ls, LUA_REGISTRYINDEX, you_ref);
+        luaL_unref(ls, LUA_REGISTRYINDEX, view_ref);
+        active = false;
+    }
+
+    lua_State* ls;
+    int you_ref;
+    int view_ref;
+    bool active;
+};
+
+} // anonymous namespace
 
 // =============================================================================
 // [zh-help][bidirectional] — round-trip lookups under the ZH fixture.
@@ -378,6 +462,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                  "[zh-help][textdb]")
 {
     std::vector<ZhIssue> issues;
+    ScopedHelpLuaGlobals lua_fixture;
 
     auto scan_keys = [&](const string& suffix_regex, const char* tag)
     {
@@ -392,6 +477,12 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             const string val = getLongDescription(key);
             if (val.empty())
                 continue;
+            if (rule_embedded_lua_error(val))
+            {
+                INFO("unexpected embedded-Lua error for " << key << ": " << val);
+                CHECK_FALSE(rule_embedded_lua_error(val));
+                continue;
+            }
             auto found = scan_translation(val.c_str(), key, tag);
             for (auto& iss : found)
             {
@@ -407,12 +498,68 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const size_t n_passive = scan_keys(" passive", "passive.txt");
     const size_t n_status  = scan_keys(" status",  "status.txt");
 
+    const vector<std::pair<string, string>> dynamic_statuses = {
+        { "app status", "你的身体上长出异常的角或爪" },
+        { "bat status", "你变成了行动迅捷的吸血蝠" },
+        { "blade status", "长长的、针般薄的刀片从你的手中生出" },
+        { "dragon status", "你变成了强大的，吐息火焰的龙" },
+        { "pact status", "战斗、流血" },
+        { "water status", "你正越过水面" },
+    };
+    for (const auto& expected : dynamic_statuses)
+    {
+        const string rendered = getLongDescription(expected.first);
+        INFO("dynamic status " << expected.first << ": " << rendered);
+        CHECK_FALSE(rule_embedded_lua_error(rendered));
+        CHECK(rendered.find(expected.second) != string::npos);
+    }
+
+    lua_fixture.set_god("Makhleb");
+    const string makhleb_pact = getLongDescription("pact status");
+    CHECK(makhleb_pact.find("作为他们的工具履行誓言") != string::npos);
+    CHECK(makhleb_pact.find("战斗、流血") == string::npos);
+    lua_fixture.set_god("No God");
+    const string other_pact = getLongDescription("pact status");
+    CHECK(other_pact.find("战斗、流血") != string::npos);
+    CHECK(other_pact.find("作为他们的工具履行誓言") == string::npos);
+
+    const string eel = getLongDescription("eel talisman");
+    INFO("dynamic item eel talisman: " << eel);
+    CHECK_FALSE(rule_embedded_lua_error(eel));
+    CHECK_FALSE(rule_mixed_cn_en(eel));
+    CHECK(eel.find("使佩戴者的手变成一对扭动的电鳗") != string::npos);
+
     WARN("zh-help textdb: passive keys=" << n_passive
          << " status keys=" << n_status
          << " issues=" << issues.size());
     // Non-blocking on key count (sandbox DB may be sparse); the scan issues
     // are emitted for the aggregator. Just require the pass completed.
     REQUIRE(true);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-help: Destr+++ expands its base status inline",
+                 "[zh-help][textdb][issue-64]")
+{
+    const string zh = getLongDescription("destr+++ status");
+
+    CHECK(zh.find("你的释放毁灭能力") != string::npos);
+    CHECK(zh.find("如果你再次使用它") != string::npos);
+    CHECK(zh.find("<Destr status>") == string::npos);
+    CHECK(zh.find("[[Destr status]]") == string::npos);
+
+    // The ZH fixture mounts the translated DB for its lifetime, so toggling
+    // Options.language alone cannot query the parent English DB. Verify the
+    // English source entry precisely instead; the same TextDB substitution
+    // path exercised above expands [[Destr status]] in both layers.
+    std::ifstream input("dat/descript/status.txt");
+    REQUIRE(input.good());
+    const string source((std::istreambuf_iterator<char>(input)),
+                        std::istreambuf_iterator<char>());
+    const string expected =
+        "Destr+++ status\n\n[[Destr status]]\n"
+        "If you use it again, it will unleash a salvo of additional bolts";
+    CHECK(source.find(expected) != string::npos);
 }
 
 // =============================================================================

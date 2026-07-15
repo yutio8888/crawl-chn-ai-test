@@ -103,6 +103,31 @@ std::string sample_of(const std::string& s)
     return s.substr(0, i);
 }
 
+// Produce a bounded UTF-8-safe sample around a known ASCII offender. Unlike
+// sample_of(), this keeps diagnostics useful when the bad token occurs after a
+// long translated prefix (Issue 64's Bat status false diagnosis).
+std::string sample_around(const std::string& s, size_t focus)
+{
+    const size_t max = 120;
+    if (s.size() <= max)
+        return s;
+
+    size_t start = focus > max / 2 ? focus - max / 2 : 0;
+    while (start < s.size()
+           && (static_cast<unsigned char>(s[start]) & 0xC0) == 0x80)
+    {
+        ++start;
+    }
+
+    size_t end = std::min(s.size(), start + max);
+    while (end > start && end < s.size()
+           && (static_cast<unsigned char>(s[end]) & 0xC0) == 0x80)
+    {
+        --end;
+    }
+    return s.substr(start, end - start);
+}
+
 } // anonymous namespace
 
 bool iscjk(char32_t cp)
@@ -159,7 +184,7 @@ bool rule_untranslated(const std::string& text, const std::string& key)
     return has_letter;
 }
 
-bool rule_mixed_cn_en(const std::string& text)
+static size_t mixed_cn_en_offender(const std::string& text)
 {
     // Fire when text contains a CJK ideograph AND >=3 consecutive ASCII
     // Latin letters that aren't whitelisted as an allowed embedded technical
@@ -180,7 +205,7 @@ bool rule_mixed_cn_en(const std::string& text)
         i += len;
     }
     if (!has_cjk)
-        return false;
+        return std::string::npos;
 
     // For each maximal run of ASCII letters, check whether it's whitelisted.
     // The whitelist lives in catch2-tests/zh_runtime_allowlist_enum.txt plus
@@ -276,7 +301,7 @@ bool rule_mixed_cn_en(const std::string& text)
                 }
             }
             if (!whitelisted)
-                return true;
+                return i;
             i = j;
         }
         else
@@ -284,7 +309,17 @@ bool rule_mixed_cn_en(const std::string& text)
             ++i;
         }
     }
-    return false;
+    return std::string::npos;
+}
+
+bool rule_mixed_cn_en(const std::string& text)
+{
+    return mixed_cn_en_offender(text) != std::string::npos;
+}
+
+bool rule_embedded_lua_error(const std::string& text)
+{
+    return text.find("[string \"db_embedded_lua\"]") != std::string::npos;
 }
 
 bool rule_format_broken(const std::string& text, const std::string& key)
@@ -545,8 +580,9 @@ std::vector<ZhIssue> scan_text(const std::string& text,
 
     if (!key.empty() && rule_untranslated(text, key))
         add(ZhIssue::UNTRANSLATED, text);
-    if (rule_mixed_cn_en(text))
-        add(ZhIssue::MIXED_CN_EN, text);
+    const size_t mixed_offender = mixed_cn_en_offender(text);
+    if (mixed_offender != std::string::npos)
+        add(ZhIssue::MIXED_CN_EN, sample_around(text, mixed_offender));
     if (rule_format_broken(text, key))
         add(ZhIssue::FORMAT_BROKEN, text);
     if (rule_garbled_utf8(text))

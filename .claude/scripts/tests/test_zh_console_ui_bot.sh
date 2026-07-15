@@ -16,7 +16,11 @@ bot = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bot)
 
 bot.assert_screen('positive', '你的法术：魔法飞弹', ('魔法飞弹',))
-for text in ('未知命令。', "没有匹配搜索字符串'foo'的法术。"):
+for text in (
+    '未知命令。', "没有匹配搜索字符串'foo'的法术。",
+    '中文 [string "db_embedded_lua"]:2: error',
+    "中文 attempt to index a nil value (global 'you')",
+):
     try:
         bot.assert_screen('mutation', text)
     except bot.BotFailure:

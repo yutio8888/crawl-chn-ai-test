@@ -406,7 +406,11 @@ Flux status
 Blade status
 
 {{
-    local hands = you.hand() .. "s"
+    local hand_names = {
+        hand = "手", paw = "爪", tentacle = "触手", claw = "爪",
+        grasper = "机械手", tendril = "卷须"
+    }
+    local hands = hand_names[you.hand()] or "手"
     return "长长的、针般薄的刀片从你的" .. hands
 }}中生出，更小的金属碎片在你的体内生长，使其变形并降低铠甲的效力。
 
@@ -893,7 +897,7 @@ Destr++ status
 %%%%
 Destr+++ status
 
-<Destr status>
+[[Destr status]]
 如果你再次使用它，它将向随机目标释放一阵额外的弩箭齐射，
 然后此加成将重置。
 %%%%
@@ -1010,7 +1014,7 @@ Pact status
 
 马赫勒布来清算你许下的某些承诺了。
 {{
-    if you.religion == "Makhleb" then
+    if you.god() == "Makhleb" then
         return "作为他们的工具履行誓言，杀死聚集在这里的恐惧凡人，" ..
                "他们可能再次赐予你自由。"
     else

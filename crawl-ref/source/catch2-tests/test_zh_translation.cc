@@ -277,6 +277,37 @@ TEST_CASE("MIXED_CN_EN rule", "[zh-translation][zh-helpers]")
     REQUIRE(rule_mixed_cn_en(text) == expect_issue);
 }
 
+TEST_CASE("MIXED_CN_EN sample is centred on the offending token",
+          "[zh-translation][zh-helpers]")
+{
+    std::string text;
+    for (int i = 0; i < 40; ++i)
+        text += "前";
+    text += "中文前缀 Butterfly 中文后缀";
+    const auto issues = scan_text(text, "sample key", "test");
+    const auto found = std::find_if(issues.begin(), issues.end(),
+        [](const ZhIssue& issue)
+        {
+            return issue.kind == ZhIssue::MIXED_CN_EN;
+        });
+    REQUIRE(found != issues.end());
+    CHECK(found->sample.find("Butterfly") != std::string::npos);
+}
+
+TEST_CASE("embedded Lua errors are detected independently of CJK content",
+          "[zh-translation][zh-helpers]")
+{
+    const std::string real_lua_error =
+        "中文 {{[string \"db_embedded_lua\"]:2: attempt to index a nil "
+        "value (global 'monster')}}";
+    CHECK(rule_embedded_lua_error(real_lua_error));
+    CHECK(rule_mixed_cn_en(real_lua_error));
+
+    CHECK(rule_embedded_lua_error(
+        "[string \"db_embedded_lua\"]:1: synthetic failure"));
+    CHECK_FALSE(rule_embedded_lua_error("普通中文状态说明。"));
+}
+
 // -----------------------------------------------------------------------------
 // 3) FORMAT_BROKEN rule — exercises the structural subrules
 //    (trailing 's'/'x' after CJK, lone %s, %n$s, %s/%d count mismatch)

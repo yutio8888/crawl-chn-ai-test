@@ -999,7 +999,7 @@ Destr++ status
 %%%%
 Destr+++ status
 
-<Destr status>
+[[Destr status]]
 If you use it again, it will unleash a salvo of additional bolts aimed at random
 targets and this bonus will reset.
 %%%%
@@ -1012,7 +1012,7 @@ ends.
 Pact status
 
 Makhleb has come to collect on certain promises made to them.
-{{ if you.religion == "Makhleb" then
+{{ if you.god() == "Makhleb" then
         return "Fulfill your oath as their instrument by slaying the terrified " ..
                "mortals that have been gathered here, and they may grant you " ..
                "freedom once again."

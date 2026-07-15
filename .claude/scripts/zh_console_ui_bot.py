@@ -32,7 +32,9 @@ HELP_CASES = [
     ('god', 'g', None, None), ('branch', 'b', None, None),
     ('cloud', 'l', None, None), ('card', 'c', None, None),
     ('skill', 'k', None, None), ('passive', 'p', None, None),
-    ('status', 't', None, None), ('monster', 'm', 'rat', '鼠'),
+    ('status', 't', None, None),
+    ('status:bat', 't', 'Bat', '行动迅捷的吸血蝠'),
+    ('monster', 'm', 'rat', '鼠'),
     ('spell', 's', 'Magic Dart', '魔法飞弹'),
     ('ability', 'a', 'Berserk', '狂暴'),
     ('feature', 'f', 'wall', '墙'), ('item', 'i', 'dagger', '匕首'),
@@ -113,7 +115,10 @@ class PtyBot:
 
 
 def assert_screen(case_id: str, text: str, required=()) -> None:
-    forbidden = ('未知命令', 'Unknown command', '没有匹配', 'No matching')
+    forbidden = (
+        '未知命令', 'Unknown command', '没有匹配', 'No matching',
+        'db_embedded_lua', "global 'you'",
+    )
     found_forbidden = [token for token in forbidden if token in text]
     if found_forbidden:
         raise BotFailure(f'{case_id}: forbidden output {found_forbidden}')

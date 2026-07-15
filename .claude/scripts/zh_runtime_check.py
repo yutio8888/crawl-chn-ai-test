@@ -317,7 +317,7 @@ BOT_CASE_MANIFESTS['all'] = (
 )
 
 HELP_EXPECTED_TYPES = [
-    'god', 'branch', 'cloud', 'card', 'skill', 'passive', 'status',
+    'god', 'branch', 'cloud', 'card', 'skill', 'passive', 'status', 'status:bat',
     'monster', 'spell', 'ability', 'feature', 'item', 'mutation', 'bane',
     'spell_school', 'text:spell', 'text:ability', 'text:mutation',
     'text:feature', 'text:bane', 'text:monster', 'text:item',
@@ -805,18 +805,31 @@ def _main_help(args) -> int:
                     merged = json.load(f)
             except (ValueError, OSError):
                 merged = {}
-        prior_classification = merged.get('layer_help', {}).get(
-            'known_issue_classification')
+        prior_help = merged.get('layer_help', {})
+        prior_classification = prior_help.get('known_issue_classification')
         if prior_classification:
-            current_issue_keys = {
-                issue.get('key')
-                for issue in help_section.get('catch2_issue_records', [])
-            }
-            help_section['known_issue_classification'] = {
+            def records_by_key(records):
+                grouped = defaultdict(Counter)
+                for issue in records:
+                    key = issue.get('key')
+                    identity = (issue.get('kind'), issue.get('source'),
+                                issue.get('key'), issue.get('sample'))
+                    grouped[key][identity] += 1
+                return grouped
+
+            prior_records = records_by_key(
+                prior_help.get('catch2_issue_records', []))
+            current_records = records_by_key(
+                help_section.get('catch2_issue_records', []))
+            retained_classification = {
                 key: rationale
                 for key, rationale in prior_classification.items()
-                if key in current_issue_keys
+                if prior_records.get(key)
+                and prior_records[key] == current_records.get(key)
             }
+            if retained_classification:
+                help_section['known_issue_classification'] = (
+                    retained_classification)
         merged['layer_help'] = help_section
         with open(args.output_baseline, 'w') as f:
             json.dump(merged, f, indent=2, ensure_ascii=False, default=str)
