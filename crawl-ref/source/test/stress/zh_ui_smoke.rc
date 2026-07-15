@@ -25,23 +25,15 @@ function ready()
     if action == 1 then
         crawl.enable_more(false)
         crawl.set_sendkeys_errors(true)
-        crawl.sendkeys("&yes" .. eol .. esc)
+        crawl.sendkeys(".")
     elseif action == 2 then
-        emit("probe", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
+        emit("probe:spells", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
         crawl.sendkeys(".")
 
     elseif action == 3 then
-        crawl.sendkeys("M" .. esc)
-    elseif action == 4 then
-        -- Capture messages + emit
-        local msgs = crawl.messages(20) or ""
-        emit("panel:spells", msgs)
-        crawl.sendkeys(".")
-
-    elseif action == 5 then
-        emit("phase", "done")
+        emit("phase:spells:done", "done")
         crawl.sendkeys(".")  -- advance before quit
-    elseif action == 6 then
+    elseif action == 4 then
         crawl.sendkeys(string.char(19))
     end
 end

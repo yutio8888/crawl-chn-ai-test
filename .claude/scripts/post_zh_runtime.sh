@@ -3,12 +3,14 @@
 #
 # Layer 1 (Catch2): builds the test executable + runs [zh-translation]
 # Layer 2 (Lua):    builds debug + runs ./crawl -test zh_runtime
-# Layer 3 (Bot):    builds console + runs RC bot via fake_pty
+# Layer 3 (Bot):    builds console once + runs all RC shards in a real PTY
 #
 # Stages:
 #   fast     — Layer 1 only (seconds)
 #   full     — Layers 1 + 2 + 3 (minutes)
-#   baseline — full + write new baseline (used on first run or after fixes)
+#   bot      — fresh console build + exact UI/spells/Issue48 Bot contract
+#   bot-fast — exact Bot contract using the existing console binary
+#   baseline — full + write new baseline (used after reviewed fixes)
 #
 # Usage:
 #   bash .claude/scripts/post_zh_runtime.sh fast
@@ -20,14 +22,17 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
 CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
+UI_BOT_SCRIPT="${ZH_RUNTIME_UI_BOT_SCRIPT:-$SCRIPT_DIR/zh_console_ui_bot.py}"
 SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)}"
-METRICS_DIR="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
+METRICS_ROOT="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
+RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
+METRICS_DIR="${ZH_RUNTIME_REUSE_DIR:-$METRICS_ROOT/zh-runtime-$RUN_ID}"
 # Version-controlled baselines (fixed paths, not sha-tagged)
 BASELINES_DIR="${ZH_RUNTIME_BASELINES_DIR:-$REPO_ROOT/test/baselines}"
 ZH_BASELINE="$BASELINES_DIR/zh/zh-baseline.json"
 ZH_HELP_BASELINE="$BASELINES_DIR/zh-help/zh-help-baseline.json"
-BOT_MIN_MARKERS="${ZH_RUNTIME_BOT_MIN_MARKERS:-5}"
-HELP_BOT_MIN_MARKERS="${ZH_RUNTIME_HELP_BOT_MIN_MARKERS:-12}"
+BOT_TIMEOUT="${ZH_RUNTIME_BOT_TIMEOUT:-15}"
+HELP_BOT_TIMEOUT="${ZH_RUNTIME_HELP_BOT_TIMEOUT:-30}"
 
 MODE="${1:-fast}"
 
@@ -79,12 +84,11 @@ run_catch2() {
         return 1
     }
     echo "  Running catch2-tests [zh-translation]..."
-    ./catch2-tests-executable '[zh-translation]' 2>"$STDERR_C2" 1>/dev/null
-    local rc=$?
+    local rc=0
+    ./catch2-tests-executable '[zh-translation]' \
+        2>"$STDERR_C2" 1>>"$STDOUT_C2" || rc=$?
     echo "  Catch2 tests exit code: $rc"
-    # Catch2 reports all zh-translation tests as green (intentionally —
-    # issues are stderr ZH_ISSUE, not test failures). So exit 0 is normal.
-    return 0
+    return "$rc"
 }
 
 # ============================================================================
@@ -137,46 +141,49 @@ STDERR_L3="$METRICS_DIR/bot-stderr.log"
 
 run_bot() {
     cd "$SOURCE_DIR"
-    # Build console binary + fake_pty if needed
-    if [ ! -x ./crawl ] || [ ! -x util/fake_pty ]; then
-        echo "  Building console binary + fake_pty..."
-        make -j4 > "$METRICS_DIR/bot-build.log" 2>&1 || {
+    if [ "${1:-build}" = "build" ]; then
+        echo "  Building current console binary once..."
+        make -j8 > "$METRICS_DIR/bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/bot-build.log)"
             return 1
         }
-        make util/fake_pty >> "$METRICS_DIR/bot-build.log" 2>&1 || return 1
-    else
-        echo "  Using existing console binary"
+    elif [ ! -x ./crawl ]; then
+        echo "  Existing console binary missing"
+        return 1
     fi
 
-    echo "  Running RC bot..."
-    local timeout_rc=0
-    TERM="${TERM:-xterm}" timeout --foreground 120 util/fake_pty ./crawl -seed 1 -no-save -name test \
-        -wizard -no-throttle -extra-opt-first 'language=zh' \
-        -rc test/stress/zh_ui_check.rc \
-        2>"$STDERR_L3" 1>/dev/null || timeout_rc=$?
-    local marker_count=$(grep -c 'FRAME_MARKER' "$STDERR_L3" 2>/dev/null || echo 0)
-    echo "  RC bot: $marker_count FRAME_MARKER(s) emitted"
-    if ! grep -q 'FRAME_MARKER: probe |' "$STDERR_L3"; then
-        echo "  RC bot: probe marker missing"
-        return 1
-    fi
-    if ! grep -qE 'FRAME_MARKER: phase:done \||FRAME_MARKER: phase \| done' "$STDERR_L3"; then
-        echo "  RC bot: completion marker missing"
-        return 1
-    fi
-    if [ "$marker_count" -lt "$BOT_MIN_MARKERS" ]; then
-        echo "  RC bot: marker count below threshold ($marker_count < $BOT_MIN_MARKERS)"
-        return 1
-    fi
-    if [ "$timeout_rc" -ne 0 ] && [ "$timeout_rc" -ne 124 ]; then
-        echo "  RC bot exited with $timeout_rc"
-        return 1
-    fi
-    if [ "$timeout_rc" -eq 124 ]; then
-        echo "  RC bot timed out after emitting required markers"
-    fi
-    return 0
+    : > "$STDERR_L3"
+    local shard rcfile transcript rc
+    for shard in ui spells issue48; do
+        case "$shard" in
+            ui) rcfile=test/stress/zh_ui_check.rc ;;
+            spells) rcfile=test/stress/zh_ui_smoke.rc ;;
+            issue48) rcfile=test/stress/zh_probe48.rc ;;
+        esac
+        [ -f "$rcfile" ] || { echo "  Missing required shard: $rcfile"; return 1; }
+        transcript="$METRICS_DIR/bot-$shard.typescript"
+        echo "  Running Bot shard: $shard"
+        rc=0
+        LC_ALL=C.UTF-8 LANG=C.UTF-8 TERM=xterm timeout --foreground "$BOT_TIMEOUT" \
+            script -qefc "./crawl -seed 1 -no-save -name bot_$shard -wizard -no-throttle -extra-opt-first language=zh -rc $rcfile" \
+            "$transcript" >/dev/null || rc=$?
+        if [ "$rc" -ne 0 ]; then
+            echo "  Bot shard $shard exited with $rc (timeouts always fail)"
+            return 1
+        fi
+        cat "$transcript" >> "$STDERR_L3"
+    done
+
+    # The spell list is a scroller, not message history; assert its rendered
+    # Chinese status tokens from the captured PTY transcript.
+    grep -q '施放：' "$METRICS_DIR/bot-spells.typescript" || return 1
+    grep -q '魔法飞弹' "$METRICS_DIR/bot-spells.typescript" || return 1
+    python3 "$CHECK_SCRIPT" --bot-stderr "$STDERR_L3" --bot-manifest all
+    echo "  Running rendered panel PTY assertions"
+    timeout --foreground "$BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+        --crawl "$SOURCE_DIR/crawl" --mode panels \
+        --transcript "$METRICS_DIR/panels.typescript" \
+        > "$METRICS_DIR/panels-results.jsonl"
 }
 
 # ============================================================================
@@ -211,43 +218,24 @@ run_help_catch2() {
 
 run_help_bot() {
     cd "$SOURCE_DIR"
-    if [ ! -x ./crawl ] || [ ! -x util/fake_pty ]; then
-        echo "  Building console binary + fake_pty..."
-        make -j4 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
+    # [zh-help] Catch2 uses different coverage flags in the same object tree;
+    # always restore a current console build before the PTY test.
+    make -j8 > "$METRICS_DIR/help-bot-build.log" 2>&1 || {
             echo "  Console build failed (see $METRICS_DIR/help-bot-build.log)"
             return 1
-        }
-        make util/fake_pty >> "$METRICS_DIR/help-bot-build.log" 2>&1 || return 1
-    else
-        echo "  Using existing console binary"
-    fi
+    }
 
-    echo "  Running help RC bot (zh_help.rc)..."
+    echo "  Running rendered help PTY bot..."
     local timeout_rc=0
-    TERM="${TERM:-xterm}" timeout --foreground 180 util/fake_pty ./crawl -seed 1 -no-save \
-        -name help_test -wizard -no-throttle \
-        -extra-opt-first 'language=zh' \
-        -rc test/stress/zh_help.rc \
-        2>"$STDERR_HELP_BOT" 1>/dev/null || timeout_rc=$?
-    local marker_count=$(grep -c 'FRAME_MARKER: help:' "$STDERR_HELP_BOT" 2>/dev/null || echo 0)
-    echo "  Help RC bot: $marker_count help FRAME_MARKER(s) emitted"
-    if ! grep -q 'FRAME_MARKER: help:probe:' "$STDERR_HELP_BOT"; then
-        echo "  Help RC bot: probe marker missing"
-        return 1
-    fi
-    if ! grep -q 'FRAME_MARKER: help:phase:done' "$STDERR_HELP_BOT"; then
-        echo "  Help RC bot: completion marker missing"
-        return 1
-    fi
-    if [ "$marker_count" -lt "$HELP_BOT_MIN_MARKERS" ]; then
-        echo "  Help RC bot: marker count below threshold ($marker_count < $HELP_BOT_MIN_MARKERS)"
-        return 1
-    fi
-    if [ "$timeout_rc" -ne 0 ] && [ "$timeout_rc" -ne 124 ]; then
+    timeout --foreground "$HELP_BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+        --crawl "$SOURCE_DIR/crawl" --mode help \
+        --transcript "$METRICS_DIR/help.typescript" \
+        > "$STDERR_HELP_BOT" || timeout_rc=$?
+    if [ "$timeout_rc" -ne 0 ]; then
         echo "  Help RC bot exited with $timeout_rc"
         return 1
     fi
-    return 0
+    python3 "$CHECK_SCRIPT" --mode help --bot-stderr "$STDERR_HELP_BOT"
 }
 
 run_help_aggregate() {
@@ -274,10 +262,8 @@ run_help_aggregate() {
         fi
         return $rc
     fi
-    echo -e "${YELLOW}  No help baseline at $ZH_HELP_BASELINE — generating seed baseline${NC}"
-    args+=(--output-baseline "$ZH_HELP_BASELINE")
-    python3 "$CHECK_SCRIPT" "${args[@]}"
-    return 0
+    echo -e "${RED}  Required help baseline missing: $ZH_HELP_BASELINE${NC}"
+    return 1
 }
 
 # ============================================================================
@@ -291,6 +277,7 @@ run_aggregate() {
         --catch2-stdout "$STDOUT_C2"
         --lua-stderr "$STDERR_L2"
         --bot-stderr "$STDERR_L3"
+        --bot-manifest all
     )
 
     if [ "$mode" = "baseline" ]; then
@@ -312,10 +299,8 @@ run_aggregate() {
             fi
             return $rc
         else
-            echo -e "${YELLOW}  No baseline at $ZH_BASELINE — generating seed baseline${NC}"
-            args+=(--output-baseline "$ZH_BASELINE")
-            python3 "$CHECK_SCRIPT" "${args[@]}"
-            return 0
+            echo -e "${RED}  Required baseline missing: $ZH_BASELINE${NC}"
+            return 1
         fi
     fi
 }
@@ -340,31 +325,35 @@ case "$MODE" in
         ;;
     full)
         run_step "L1-catch2" run_catch2 || true
-        # Only build+run L2 if lua test file exists
-        if [ -f "$SOURCE_DIR/test/zh_runtime.lua" ]; then
-            run_step "L2-lua" run_lua || true
-        fi
-        # Only build+run L3 if bot rc file exists
-        if [ -f "$SOURCE_DIR/test/stress/zh_ui_check.rc" ]; then
-            run_step "L3-bot" run_bot || true
-        fi
+        [ -f "$SOURCE_DIR/test/zh_runtime.lua" ] || { echo "Missing test/zh_runtime.lua"; exit 1; }
+        run_step "L2-lua" run_lua || true
+        [ -f "$SOURCE_DIR/test/stress/zh_ui_check.rc" ] || { echo "Missing zh_ui_check.rc"; exit 1; }
+        run_step "L3-bot" run_bot || true
         run_step "aggregate" run_aggregate full
         ;;
+    bot)
+        run_step "L3-bot" run_bot build
+        ;;
+    bot-fast)
+        run_step "L3-bot" run_bot reuse
+        ;;
     baseline)
-        run_step "L1-catch2" run_catch2 || true
-        run_step "L2-lua"    run_lua || true
-        run_step "L3-bot"    run_bot || true
+        run_step "L1-catch2" run_catch2
+        run_step "L2-lua"    run_lua
+        run_step "L3-bot"    run_bot
         run_step "aggregate" run_aggregate baseline
         ;;
     help-full)
         # Issue 52: help-system L1 [zh-help] + L3 zh_help.rc + help aggregation.
         if [ ! -f "$SOURCE_DIR/catch2-tests/test_zh_help.cc" ]; then
-            echo -e "${YELLOW}test_zh_help.cc missing — skipping help L1${NC}"
+            echo -e "${RED}test_zh_help.cc missing${NC}"
+            exit 1
         else
             run_step "help-L1-catch2" run_help_catch2 || true
         fi
-        if [ ! -f "$SOURCE_DIR/test/stress/zh_help.rc" ]; then
-            echo -e "${YELLOW}zh_help.rc missing — skipping help L3${NC}"
+        if [ ! -f "$UI_BOT_SCRIPT" ]; then
+            echo -e "${RED}PTY help driver missing: $UI_BOT_SCRIPT${NC}"
+            exit 1
         else
             run_step "help-L3-bot" run_help_bot || true
         fi
@@ -380,16 +369,16 @@ case "$MODE" in
         ;;
     help-baseline)
         # Issue 52: full help run + write a committable help baseline.
-        if [ -f "$SOURCE_DIR/catch2-tests/test_zh_help.cc" ]; then
-            run_step "help-L1-catch2" run_help_catch2 || true
-        fi
-        if [ -f "$SOURCE_DIR/test/stress/zh_help.rc" ]; then
-            run_step "help-L3-bot" run_help_bot || true
-        fi
+        [ -f "$SOURCE_DIR/catch2-tests/test_zh_help.cc" ] || {
+            echo "Missing required test_zh_help.cc"; exit 1; }
+        [ -f "$UI_BOT_SCRIPT" ] || {
+            echo "Missing required PTY driver: $UI_BOT_SCRIPT"; exit 1; }
+        run_step "help-L1-catch2" run_help_catch2
+        run_step "help-L3-bot" run_help_bot
         run_step "help-aggregate" run_help_aggregate baseline
         ;;
     *)
-        echo "Unknown mode: $MODE (use fast|full|baseline|help-full|help-fast|help-baseline)"
+        echo "Unknown mode: $MODE (use fast|full|bot|bot-fast|baseline|help-full|help-fast|help-baseline)"
         exit 1
         ;;
 esac

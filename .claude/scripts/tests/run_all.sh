@@ -7,6 +7,7 @@ TESTS=(
     "$SCRIPT_DIR/test_i18n_extract.py"
     "$SCRIPT_DIR/test_scan_i18n.sh"
     "$SCRIPT_DIR/test_zh_runtime_check.sh"
+    "$SCRIPT_DIR/test_zh_console_ui_bot.sh"
 )
 
 PASS=0

@@ -1,11 +1,256 @@
 {
   "layer_help": {
-    "status_map": {},
+    "status_map": {
+      "god": "ok",
+      "branch": "ok",
+      "cloud": "ok",
+      "card": "ok",
+      "skill": "ok",
+      "passive": "ok",
+      "status": "ok",
+      "monster": "ok",
+      "spell": "ok",
+      "ability": "ok",
+      "feature": "ok",
+      "item": "ok",
+      "mutation": "ok",
+      "bane": "ok",
+      "spell_school": "ok",
+      "text:spell": "ok",
+      "text:ability": "ok",
+      "text:mutation": "ok",
+      "text:feature": "ok",
+      "text:bane": "ok",
+      "text:monster": "ok",
+      "text:item": "ok"
+    },
     "non_ok": {},
     "non_ok_count": 0,
-    "total_types": 0,
-    "samples": [],
-    "catch2_issues": 0,
-    "catch2_by_kind": {}
+    "total_types": 22,
+    "samples": [
+      {
+        "type": "god",
+        "status": "ok",
+        "sample": "{\"cjk\": 96}"
+      },
+      {
+        "type": "branch",
+        "status": "ok",
+        "sample": "{\"cjk\": 116}"
+      },
+      {
+        "type": "cloud",
+        "status": "ok",
+        "sample": "{\"cjk\": 113}"
+      },
+      {
+        "type": "card",
+        "status": "ok",
+        "sample": "{\"cjk\": 21}"
+      },
+      {
+        "type": "skill",
+        "status": "ok",
+        "sample": "{\"cjk\": 81}"
+      },
+      {
+        "type": "passive",
+        "status": "ok",
+        "sample": "{\"cjk\": 22}"
+      },
+      {
+        "type": "status",
+        "status": "ok",
+        "sample": "{\"cjk\": 20}"
+      },
+      {
+        "type": "monster",
+        "status": "ok",
+        "sample": "{\"cjk\": 112}"
+      },
+      {
+        "type": "spell",
+        "status": "ok",
+        "sample": "{\"cjk\": 165}"
+      },
+      {
+        "type": "ability",
+        "status": "ok",
+        "sample": "{\"cjk\": 31}"
+      },
+      {
+        "type": "feature",
+        "status": "ok",
+        "sample": "{\"cjk\": 80}"
+      },
+      {
+        "type": "item",
+        "status": "ok",
+        "sample": "{\"cjk\": 175}"
+      },
+      {
+        "type": "mutation",
+        "status": "ok",
+        "sample": "{\"cjk\": 29}"
+      },
+      {
+        "type": "bane",
+        "status": "ok",
+        "sample": "{\"cjk\": 36}"
+      },
+      {
+        "type": "spell_school",
+        "status": "ok",
+        "sample": "{\"cjk\": 40}"
+      },
+      {
+        "type": "text:spell",
+        "status": "ok",
+        "sample": "{\"cjk\": 47}"
+      },
+      {
+        "type": "text:ability",
+        "status": "ok",
+        "sample": "{\"cjk\": 149}"
+      },
+      {
+        "type": "text:mutation",
+        "status": "ok",
+        "sample": "{\"cjk\": 36}"
+      },
+      {
+        "type": "text:feature",
+        "status": "ok",
+        "sample": "{\"cjk\": 80}"
+      },
+      {
+        "type": "text:bane",
+        "status": "ok",
+        "sample": "{\"cjk\": 36}"
+      },
+      {
+        "type": "text:monster",
+        "status": "ok",
+        "sample": "{\"cjk\": 112}"
+      },
+      {
+        "type": "text:item",
+        "status": "ok",
+        "sample": "{\"cjk\": 175}"
+      }
+    ],
+    "catch2_issues": 5,
+    "catch2_by_kind": {
+      "MIXED_CN_EN": 5
+    },
+    "catch2_issue_records": [
+      {
+        "kind": 1,
+        "kind_name": "MIXED_CN_EN",
+        "source": "status.txt",
+        "key": "bat status",
+        "sample": "你变成了行动迅捷的吸血蝠，闪避能力得到提升，但近战攻击力受到削弱。",
+        "layer": "catch2"
+      },
+      {
+        "kind": 1,
+        "kind_name": "MIXED_CN_EN",
+        "source": "status.txt",
+        "key": "blade status",
+        "sample": "{{[string \"db_embedded_lua\"]:2: attempt to index a nil value (global 'you')}}中生出，更小的金属碎片在你的",
+        "layer": "catch2"
+      },
+      {
+        "kind": 1,
+        "kind_name": "MIXED_CN_EN",
+        "source": "status.txt",
+        "key": "destr+++ status",
+        "sample": "<Destr status> 如果你再次使用它，它将向随机目标释放一阵额外的弩箭齐射， 然后此加成将",
+        "layer": "catch2"
+      },
+      {
+        "kind": 1,
+        "kind_name": "MIXED_CN_EN",
+        "source": "status.txt",
+        "key": "dragon status",
+        "sample": "{{[string \"db_embedded_lua\"]:4: attempt to index a nil value (global 'you')}}你的近战攻击会造成难以置信的",
+        "layer": "catch2"
+      },
+      {
+        "kind": 1,
+        "kind_name": "MIXED_CN_EN",
+        "source": "status.txt",
+        "key": "pact status",
+        "sample": "马赫勒布来清算你许下的某些承诺了。 {{[string \"db_embedded_lua\"]:2: attempt to index a nil value (global",
+        "layer": "catch2"
+      }
+    ],
+    "known_issue_classification": {
+      "blade status": "catch2 sandbox lacks the runtime 'you' Lua global",
+      "dragon status": "catch2 sandbox lacks the runtime 'you' Lua global",
+      "pact status": "catch2 sandbox lacks the runtime 'you' Lua global",
+      "destr+++ status": "known untranslated placeholder; exact identity remains regression-gated",
+      "bat status": "scanner mixed-text candidate retained pending translation review"
+    },
+    "coverage": {
+      "expected": [
+        "god",
+        "branch",
+        "cloud",
+        "card",
+        "skill",
+        "passive",
+        "status",
+        "monster",
+        "spell",
+        "ability",
+        "feature",
+        "item",
+        "mutation",
+        "bane",
+        "spell_school",
+        "text:spell",
+        "text:ability",
+        "text:mutation",
+        "text:feature",
+        "text:bane",
+        "text:monster",
+        "text:item"
+      ],
+      "observed": [
+        "god",
+        "branch",
+        "cloud",
+        "card",
+        "skill",
+        "passive",
+        "status",
+        "monster",
+        "spell",
+        "ability",
+        "feature",
+        "item",
+        "mutation",
+        "bane",
+        "spell_school",
+        "text:spell",
+        "text:ability",
+        "text:mutation",
+        "text:feature",
+        "text:bane",
+        "text:monster",
+        "text:item"
+      ],
+      "missing": [],
+      "duplicates": [],
+      "unexpected": [],
+      "out_of_order": false,
+      "lifecycle_observed": [
+        "help:probe:ok",
+        "help:phase:done"
+      ],
+      "lifecycle_complete": true,
+      "complete": true
+    }
   }
 }

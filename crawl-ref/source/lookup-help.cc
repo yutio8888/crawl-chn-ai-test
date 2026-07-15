@@ -326,19 +326,16 @@ vector<string> LookupType::get_desc_keys(string regex) const
     if (type == "spell" && starts_with(regex, "@"))
     {
         regex.erase(0, 1);
-        spschools_type school;
-        text_pattern tpat(regex, true);
-        for (const auto _school : spschools_type::range())
-        {
-            if (tpat.matches(spelltype_long_name(_school)))
-                school = _school;
-        }
+        const spschool school = school_by_name(regex);
+        if (school == spschool::none)
+            return {};
 
         for (spell_type i = SPELL_NO_SPELL; i < NUM_SPELLS; ++i)
         {
             if ((get_spell_disciplines(i) & school) && is_player_book_spell(i))
             {
-                string str = lowercase_string(make_stringf(T_("%s spell"), spell_english_name(i)));
+                string str = lowercase_string(string(spell_english_name(i))
+                                              + " spell");
                 key_matches.push_back(str);
             }
         }

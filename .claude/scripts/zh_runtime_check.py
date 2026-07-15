@@ -37,6 +37,7 @@ Lines parsed:
 """
 
 import argparse
+from collections import Counter
 import json
 import os
 import re
@@ -294,6 +295,46 @@ KIND_NAMES = {
 }
 
 
+# Exact runtime coverage contracts.  Marker counts are deliberately not used:
+# five copies of one marker are not equivalent to five exercised cases.
+BOT_CASE_MANIFESTS = {
+    'ui': [
+        'probe:ui', 'item:chaos_demon_whip', 'item:running_boots',
+        'god:Trog', 'phase:ui:done',
+    ],
+    'spells': [
+        'probe:spells', 'phase:spells:done',
+    ],
+    'issue48': [
+        'probe:issue48', 'path1:unid_appearance_msg',
+        'path3:enchantress_msg', 'phase:issue48:done',
+    ],
+}
+BOT_CASE_MANIFESTS['all'] = (
+    BOT_CASE_MANIFESTS['ui']
+    + BOT_CASE_MANIFESTS['spells']
+    + BOT_CASE_MANIFESTS['issue48']
+)
+
+HELP_EXPECTED_TYPES = [
+    'god', 'branch', 'cloud', 'card', 'skill', 'passive', 'status',
+    'monster', 'spell', 'ability', 'feature', 'item', 'mutation', 'bane',
+    'spell_school', 'text:spell', 'text:ability', 'text:mutation',
+    'text:feature', 'text:bane', 'text:monster', 'text:item',
+]
+
+BOT_REQUIRED_CONTENT = {
+    'probe:ui': ('lang=zh', '你攻击'),
+    'item:chaos_demon_whip': ('恶魔之鞭',),
+    'item:running_boots': ('蜘蛛之靴',),
+    'god:Trog': ('特洛格欢迎你',),
+    'probe:spells': ('lang=zh', '你攻击'),
+    'probe:issue48': ('lang=zh',),
+    'path1:unid_appearance_msg': ('歌唱之剑',),
+    'path3:enchantress_msg': ('妖术女王',),
+}
+
+
 def scan_text(text: str, key: str = '', source_tag: str = '') -> List[dict]:
     """Apply all 8 scan rules; returns list of issue dicts."""
     issues = []
@@ -360,27 +401,80 @@ def parse_catch2_stdout(path: str) -> Dict[str, int]:
     return summaries
 
 
+def parse_frame_records(path: str) -> List[dict]:
+    """Return every FRAME_MARKER record without normalising its content."""
+    records = []
+    if not path or not os.path.exists(path):
+        return records
+    with open(path, 'r', encoding='utf-8', errors='replace', newline='') as f:
+        for lineno, line in enumerate(f, 1):
+            # A typescript may prefix a marker with terminal control output,
+            # so search rather than requiring it at column zero.
+            m = re.search(r'FRAME_MARKER:\s*(.+?)\s*\| ?(.*?)(?:\r?\n)?$', line)
+            if m:
+                records.append({
+                    'case_id': m.group(1).strip(),
+                    'content': m.group(2),
+                    'line': lineno,
+                })
+    return records
+
+
+def validate_case_manifest(records: List[dict], manifest: str) -> dict:
+    """Require every expected case exactly once, in declared order."""
+    expected = BOT_CASE_MANIFESTS[manifest]
+    observed = [r['case_id'] for r in records]
+    counts = Counter(observed)
+    missing = [case for case in expected if counts[case] == 0]
+    duplicates = sorted(case for case, count in counts.items() if count > 1)
+    unexpected = [case for case in observed if case not in expected]
+    expected_observed = [case for case in observed if case in expected]
+    out_of_order = expected_observed != expected
+    semantic_failures = []
+    by_case = {r['case_id']: r['content'] for r in records
+               if counts[r['case_id']] == 1}
+    for case_id in expected:
+        required = BOT_REQUIRED_CONTENT.get(case_id, ())
+        missing_tokens = [token for token in required
+                          if token not in by_case.get(case_id, '')]
+        if missing_tokens:
+            semantic_failures.append({
+                'case_id': case_id,
+                'missing_tokens': missing_tokens,
+            })
+    return {
+        'manifest': manifest,
+        'expected': expected,
+        'observed': observed,
+        'missing': missing,
+        'duplicates': duplicates,
+        'unexpected': unexpected,
+        'out_of_order': out_of_order,
+        'semantic_failures': semantic_failures,
+        'complete': not (missing or duplicates or unexpected or out_of_order
+                         or semantic_failures),
+    }
+
+
 def parse_frame_markers(path: str, layer_name: str) -> List[dict]:
     """Parse FRAME_MARKER: <id> | <content> lines and scan content."""
     issues = []
-    if not path or not os.path.exists(path):
-        return issues
-    with open(path, 'r', encoding='utf-8', errors='replace') as f:
-        for line in f:
-            m = re.match(r'FRAME_MARKER:\s*(.+?)\s*\|\s*(.*)', line)
-            if not m:
-                continue
-            case_id = m.group(1).strip()
-            content = m.group(2).strip()
+    for record in parse_frame_records(path):
+            case_id = record['case_id']
+            content = record['content']
 
-            # Skip meta markers and wizard debug output (not translatable content).
-            # - probe: diagnostic metadata (t_=... lang=...)
-            # - item:*: wizard create-item output (art val, boots, demon whip)
-            # - god:*: wizard god-join output (debug prompts)
-            # - end/skipped/error/setup/phase: lifecycle markers
-            if case_id in ('end', 'skipped', 'error', 'setup', 'phase', 'probe'):
+            # Bot records are governed by exact, per-case semantic contracts;
+            # applying generic prose heuristics to wizard protocol text creates
+            # false positives (e.g. "art val" and "by name"). Lua layer
+            # records still use the generic scanner below.
+            if (layer_name == 'bot'
+                    and case_id in BOT_CASE_MANIFESTS['all']):
                 continue
-            if case_id.startswith('item:') or case_id.startswith('god:'):
+
+            # Skip lifecycle and diagnostic metadata.
+            if (case_id in ('end', 'skipped', 'error', 'setup', 'phase', 'probe')
+                    or case_id.startswith('probe:')
+                    or case_id.startswith('phase:')):
                 continue
 
             # Unescape literal \n in the content
@@ -413,15 +507,9 @@ def parse_help_markers(path: str) -> Tuple[Dict[str, str], List[dict]]:
     """
     status_map: Dict[str, str] = {}
     samples: List[dict] = []
-    if not path or not os.path.exists(path):
-        return status_map, samples
-    with open(path, 'r', encoding='utf-8', errors='replace') as f:
-        for line in f:
-            m = re.match(r'FRAME_MARKER:\s*(.+?)\s*\|\s*(.*)', line)
-            if not m:
-                continue
-            case_id = m.group(1).strip()
-            sample = m.group(2).strip()
+    for record in parse_frame_records(path):
+            case_id = record['case_id']
+            sample = record['content']
             # Only route help: markers here; everything else is ignored in
             # help mode.
             if not case_id.startswith('help:'):
@@ -441,6 +529,16 @@ def parse_help_markers(path: str) -> Tuple[Dict[str, str], List[dict]]:
             if status not in ('ok', 'empty', 'error'):
                 # Unknown status token — treat as error for safety.
                 status = 'error'
+            # The external PTY driver records how much Chinese was rendered
+            # after selecting the help type. Legacy RC markers contain only
+            # message-history text and must not be accepted as UI evidence.
+            try:
+                evidence = json.loads(sample)
+            except (TypeError, ValueError):
+                evidence = {}
+            if not isinstance(evidence.get('cjk'), int) \
+                    or evidence['cjk'] < 2:
+                status = 'error'
             status_map[htype] = status
             samples.append({'type': htype, 'status': status,
                             'sample': sample[:120]})
@@ -455,6 +553,24 @@ def build_help_baseline(catch2_stderr: str, bot_stderr: str) -> dict:
     """
     c2_kinds, c2_issues = parse_catch2_stderr(catch2_stderr)
     status_map, samples = parse_help_markers(bot_stderr)
+    all_records = parse_frame_records(bot_stderr)
+    lifecycle_ids = [r['case_id'] for r in all_records
+                     if r['case_id'] in ('help:probe:ok',
+                                         'help:phase:done')]
+    lifecycle_complete = lifecycle_ids == [
+        'help:probe:ok', 'help:phase:done']
+
+    counts = Counter(sample['type'] for sample in samples)
+    missing = [htype for htype in HELP_EXPECTED_TYPES
+               if counts[htype] == 0]
+    duplicates = sorted(htype for htype, count in counts.items()
+                        if count > 1)
+    unexpected = sorted(htype for htype in status_map
+                        if htype not in HELP_EXPECTED_TYPES)
+    observed = [sample['type'] for sample in samples]
+    out_of_order = observed != HELP_EXPECTED_TYPES
+    coverage_complete = not (missing or duplicates or unexpected
+                             or out_of_order) and lifecycle_complete
 
     non_ok = {t: s for t, s in status_map.items() if s != 'ok'}
 
@@ -467,6 +583,18 @@ def build_help_baseline(catch2_stderr: str, bot_stderr: str) -> dict:
             'samples': samples,
             'catch2_issues': len(c2_issues),
             'catch2_by_kind': dict(c2_kinds),
+            'catch2_issue_records': c2_issues,
+            'coverage': {
+                'expected': HELP_EXPECTED_TYPES,
+                'observed': observed,
+                'missing': missing,
+                'duplicates': duplicates,
+                'unexpected': unexpected,
+                'out_of_order': out_of_order,
+                'lifecycle_observed': lifecycle_ids,
+                'lifecycle_complete': lifecycle_complete,
+                'complete': coverage_complete,
+            },
         },
     }
 
@@ -488,8 +616,13 @@ def compare_help_baselines(current: dict, previous: dict) -> dict:
     regressions = []
     fixes = []
 
-    for htype, cur_status in cur_map.items():
+    for htype in sorted(set(cur_map) | set(prev_map)):
+        cur_status = cur_map.get(htype)
         prev_status = prev_map.get(htype)
+        if cur_status is None:
+            regressions.append({'type': htype, 'from': prev_status,
+                                'to': '(missing)'})
+            continue
         if prev_status is None:
             # New type: regression only if non-ok.
             if cur_status != 'ok':
@@ -503,6 +636,25 @@ def compare_help_baselines(current: dict, previous: dict) -> dict:
                 fixes.append({'type': htype, 'from': prev_status,
                               'to': cur_status})
 
+    def help_issue_signature(issue: dict) -> tuple:
+        return (issue.get('kind'), issue.get('source'), issue.get('key'),
+                issue.get('sample'))
+    prev_c2 = Counter(help_issue_signature(i)
+                      for i in prev.get('catch2_issue_records', []))
+    cur_c2 = Counter(help_issue_signature(i)
+                     for i in cur.get('catch2_issue_records', []))
+    for signature, count in (cur_c2 - prev_c2).items():
+        regressions.extend({
+            'type': '(catch2 issue)', 'from': None,
+            'to': signature,
+        } for _ in range(count))
+    catch2_delta = sum(cur_c2.values()) - sum(prev_c2.values())
+    coverage = cur.get('coverage', {})
+    if not coverage.get('complete', False):
+        regressions.append({
+            'type': '(coverage)', 'from': 'complete', 'to': coverage,
+        })
+
     return {
         'regressions': len(regressions),
         'fixes': len(fixes),
@@ -510,6 +662,7 @@ def compare_help_baselines(current: dict, previous: dict) -> dict:
         'fix_list': fixes,
         'curr_status_map': cur_map,
         'prev_status_map': prev_map,
+        'catch2_issue_delta': catch2_delta,
     }
 
 
@@ -526,7 +679,8 @@ def _count_by_kind(issues: List[dict]) -> Dict[str, int]:
 
 
 def build_baseline(catch2_stderr: str, catch2_stdout: str,
-                   lua_stderr: str, bot_stderr: str) -> dict:
+                   lua_stderr: str, bot_stderr: str,
+                   bot_manifest: Optional[str] = None) -> dict:
     """Build a complete baseline from all layer outputs."""
     c2_kinds, c2_issues = parse_catch2_stderr(catch2_stderr)
     c2_summaries = parse_catch2_stdout(catch2_stdout)
@@ -535,6 +689,9 @@ def build_baseline(catch2_stderr: str, catch2_stdout: str,
 
     all_issues = c2_issues + l2_issues + l3_issues
 
+    bot_coverage = (validate_case_manifest(parse_frame_records(bot_stderr),
+                                           bot_manifest)
+                    if bot_manifest else None)
     baseline = {
         'layer1_catch2': {
             'total_issues': len(c2_issues),
@@ -552,6 +709,8 @@ def build_baseline(catch2_stderr: str, catch2_stdout: str,
         'grand_total': len(all_issues),
         'all_issues': all_issues,
     }
+    if bot_coverage is not None:
+        baseline['layer3_bot']['coverage'] = bot_coverage
     return baseline
 
 
@@ -561,20 +720,34 @@ def compare_baselines(current: dict, previous: dict) -> dict:
     curr_total = current.get('grand_total', 0)
     delta = curr_total - prev_total
 
-    # Build lookup keyed by (layer, kind, key) for regression detection
-    prev_keys = set()
-    for iss in previous.get('all_issues', []):
-        prev_keys.add((iss.get('layer', ''), iss.get('kind', -1), iss.get('key', '')))
+    # Preserve issue source, sample and multiplicity. A set keyed only by
+    # (layer, kind, key) hides duplicate regressions and changed bad output.
+    def signature(iss: dict) -> tuple:
+        return (
+            iss.get('layer', ''), iss.get('kind', -1),
+            iss.get('key', ''), iss.get('source', ''),
+            iss.get('sample', ''),
+        )
 
-    curr_keys = set()
+    prev_counts = Counter(signature(iss)
+                          for iss in previous.get('all_issues', []))
+    curr_counts = Counter(signature(iss)
+                          for iss in current.get('all_issues', []))
     curr_lookup = {}
     for iss in current.get('all_issues', []):
-        k = (iss.get('layer', ''), iss.get('kind', -1), iss.get('key', ''))
-        curr_keys.add(k)
+        k = signature(iss)
         curr_lookup[k] = iss
 
-    new_issues = [curr_lookup[k] for k in (curr_keys - prev_keys)]
-    fixed_issues = [{'layer': l, 'kind': k, 'key': key} for l, k, key in (prev_keys - curr_keys)]
+    new_issues = []
+    for key, count in (curr_counts - prev_counts).items():
+        new_issues.extend([curr_lookup[key]] * count)
+    fixed_issues = []
+    for key, count in (prev_counts - curr_counts).items():
+        layer, kind, case_key, source, sample = key
+        fixed_issues.extend([{
+            'layer': layer, 'kind': kind, 'key': case_key,
+            'source': source, 'sample': sample,
+        }] * count)
 
     # Per-layer deltas
     layer_deltas = {}
@@ -615,9 +788,16 @@ def _main_help(args) -> int:
     )
     help_section = current['layer_help']
 
+    coverage_complete = help_section['coverage']['complete']
+    help_clean = coverage_complete and help_section['non_ok_count'] == 0
+
     if args.output_baseline:
         # If an existing baseline is present at the path, merge the layer_help
         # key into it rather than clobbering default layers.
+        if not help_clean:
+            print('ERROR: refusing to write incomplete/non-ok help baseline',
+                  file=sys.stderr)
+            return 1
         merged = {}
         if os.path.exists(args.output_baseline):
             try:
@@ -625,6 +805,18 @@ def _main_help(args) -> int:
                     merged = json.load(f)
             except (ValueError, OSError):
                 merged = {}
+        prior_classification = merged.get('layer_help', {}).get(
+            'known_issue_classification')
+        if prior_classification:
+            current_issue_keys = {
+                issue.get('key')
+                for issue in help_section.get('catch2_issue_records', [])
+            }
+            help_section['known_issue_classification'] = {
+                key: rationale
+                for key, rationale in prior_classification.items()
+                if key in current_issue_keys
+            }
         merged['layer_help'] = help_section
         with open(args.output_baseline, 'w') as f:
             json.dump(merged, f, indent=2, ensure_ascii=False, default=str)
@@ -661,7 +853,7 @@ def _main_help(args) -> int:
                 for r in report['fix_list']:
                     print(f'  {r["type"]}: {r["from"]} -> {r["to"]}')
 
-        return 0 if report['regressions'] == 0 else 1
+        return 0 if report['regressions'] == 0 and help_clean else 1
 
     # No baseline — just print a status summary.
     print('Help summary (no comparison baseline):')
@@ -673,7 +865,7 @@ def _main_help(args) -> int:
     print(f'  Catch2 [zh-help] issues: {help_section["catch2_issues"]}')
     # In summary mode, a non-ok status is informational but we surface it as a
     # non-zero exit so CI notices even on first (baseline-less) run.
-    return 0 if help_section['non_ok_count'] == 0 else 1
+    return 0 if help_clean else 1
 
 
 def main():
@@ -688,6 +880,8 @@ def main():
     parser.add_argument('--mode', choices=('default', 'help'), default='default',
                         help='aggregation mode: default (3-layer i18n scan) '
                              'or help (help-system status markers)')
+    parser.add_argument('--bot-manifest', choices=tuple(BOT_CASE_MANIFESTS),
+                        help='require the exact RC-bot case manifest')
     args = parser.parse_args()
 
     if args.mode == 'help':
@@ -697,10 +891,19 @@ def main():
         args.catch2_stderr or '',
         args.catch2_stdout or '',
         args.lua_stderr or '',
-        args.bot_stderr or ''
+        args.bot_stderr or '',
+        args.bot_manifest,
     )
 
+    bot_coverage = current['layer3_bot'].get('coverage')
+    bot_coverage_complete = (bot_coverage is None
+                             or bot_coverage.get('complete', False))
+
     if args.output_baseline:
+        if not bot_coverage_complete:
+            print('ERROR: refusing to write incomplete bot baseline',
+                  file=sys.stderr)
+            return 1
         with open(args.output_baseline, 'w') as f:
             json.dump(current, f, indent=2, ensure_ascii=False, default=str)
         print(f'Baseline written: {args.output_baseline}')
@@ -749,7 +952,8 @@ def main():
                 for name, cnt in sorted(out_count.items()):
                     print(f'  {name}: {cnt}')
 
-        return 0 if report['regressions'] == 0 else 1
+        return 0 if (report['regressions'] == 0
+                     and bot_coverage_complete) else 1
 
     # No baseline, no output-baseline — just print summary
     print(f'Summary (no comparison baseline):')
@@ -757,7 +961,18 @@ def main():
     print(f'  Layer 2 (Lua):    {current["layer2_lua"]["total_issues"]} issues')
     print(f'  Layer 3 (Bot):    {current["layer3_bot"]["total_issues"]} issues')
     print(f'  Grand total:      {current["grand_total"]} issues')
-    return 0
+    if bot_coverage is not None:
+        print(f'  Bot manifest:     {bot_coverage["manifest"]}')
+        print(f'  Bot coverage:     '
+              f'{len(bot_coverage["observed"])} / '
+              f'{len(bot_coverage["expected"])} markers')
+        if not bot_coverage_complete:
+            print(f'  Missing:          {bot_coverage["missing"]}')
+            print(f'  Duplicates:       {bot_coverage["duplicates"]}')
+            print(f'  Unexpected:       {bot_coverage["unexpected"]}')
+            print(f'  Out of order:     {bot_coverage["out_of_order"]}')
+            print(f'  Semantic failures:{bot_coverage["semantic_failures"]}')
+    return 0 if bot_coverage_complete else 1
 
 
 if __name__ == '__main__':

@@ -419,8 +419,14 @@ bash .claude/scripts/post_zh_runtime.sh catch2
 # full: Layer 1 (Catch2) + Layer 2 (Lua) + Layer 3 (RC Bot)（分钟级）
 bash .claude/scripts/post_zh_runtime.sh full
 
-# fast: 仅聚合已有日志（无构建）
-bash .claude/scripts/post_zh_runtime.sh fast
+# bot: 增量构建当前 Console，并运行 UI / spells / Issue48 三个 shard
+bash .claude/scripts/post_zh_runtime.sh bot
+
+# bot-fast: 复用当前 Console，但生成全新的 Bot 日志
+bash .claude/scripts/post_zh_runtime.sh bot-fast
+
+# fast: 仅聚合明确指定的旧运行目录（无构建）
+ZH_RUNTIME_REUSE_DIR=<run-dir> bash .claude/scripts/post_zh_runtime.sh fast
 
 # baseline: full 运行 + 写入新基线到 test/baselines/zh/
 bash .claude/scripts/post_zh_runtime.sh baseline
@@ -434,6 +440,15 @@ bash .claude/scripts/post_zh_runtime.sh help-baseline
 
 聚合脚本 `zh_runtime_check.py` 支持 `--mode default`（三层 i18n 扫描）和
 `--mode help`（帮助系统状态标记）。
+
+Bot 不再使用最低标记数门槛：`--bot-manifest all` 要求 11 个 RC 用例 ID
+完整、唯一、按序出现，并对恶魔之鞭、蜘蛛之靴、特洛格、歌唱之剑和
+妖术女王等关键结果执行语义 token 断言；独立 PTY 驱动再逐屏验证初始状态、
+宗教、角色、装备、技能、能力、总览、消息和法术（含魔法飞弹）。每次运行写入独立的
+`zh-runtime-<UTC>-<pid>/` 证据目录，固定 `C.UTF-8` / `xterm` / seed；
+任一 shard 超时或非零退出都阻断。帮助 PTY 驱动会逐键打开主帮助、`?/`
+查询菜单及全部 22 种类型，拒绝“未知命令”并要求每屏含中文；描述内容的
+数据库级精确性由同次 `[zh-help]` Catch2 验证。
 
 ### 运行时基线（版本控制）
 
@@ -526,6 +541,7 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 | `post-translator.sh` | — | 1（有 blocking failure） |
 | `post-reviewer.sh` | — | 1（有 blocking failure） |
 | `post_zh_runtime.sh` | `catch2`, `full`, `baseline` | 1+（任一层/聚合失败或基线回归） |
+| `post_zh_runtime.sh` | `bot`, `bot-fast` | 1+（缺失/重复/乱序/语义失败、非零退出或超时） |
 | `post_zh_runtime.sh` | `fast` | 1+（聚合失败） |
 | `post_zh_runtime.sh` | `help-full`, `help-baseline` | 1+（catch2 失败/bot 失败/帮助回归） |
 | `zh_runtime_check.py` | `--baseline` 对比 | 1（有新回归），0（无新问题） |

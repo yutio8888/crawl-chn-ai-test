@@ -22,11 +22,13 @@ function ready()
     if action == 1 then
         crawl.enable_more(false)
         crawl.set_sendkeys_errors(true)
-        crawl.sendkeys("&yes" .. eol .. esc)
-    elseif action == 2 then
-        emit("probe", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
         crawl.sendkeys(".")
-    elseif action == 3 then crawl.sendkeys("&o)demon whip" .. eol .. "chaos" .. eol)
+    elseif action == 2 then
+        emit("probe:ui", "t_=" .. crawl.t_("You attack %s.") .. " lang=" .. crawl.language())
+        crawl.sendkeys(".")
+    elseif action == 3 then
+        crawl.clear_messages(false)
+        crawl.sendkeys("&o)demon whip" .. eol .. "chaos" .. eol)
     elseif action == 4 then
         crawl.sendkeys(".")
     elseif action == 5 then
@@ -34,42 +36,25 @@ function ready()
         local msgs = crawl.messages(20) or ""
         emit("item:chaos_demon_whip", msgs)
         crawl.sendkeys(".")
-    elseif action == 6 then crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
+    elseif action == 6 then
+        crawl.clear_messages(false)
+        crawl.sendkeys("g&o[boots" .. eol .. "running" .. eol)
     elseif action == 7 then
         crawl.sendkeys(".")
     elseif action == 8 then
         local msgs = crawl.messages(20) or ""
         emit("item:running_boots", msgs)
         crawl.sendkeys(".")
-    elseif action == 9 then crawl.sendkeys("&G" .. eol .. "Trog" .. eol)
+    elseif action == 9 then
+        crawl.clear_messages(false)
+        crawl.sendkeys("&_特洛格" .. eol)
     elseif action == 10 then
         crawl.sendkeys(".")
     elseif action == 11 then
         local msgs = crawl.messages(20) or ""
         emit("god:Trog", msgs)
         crawl.sendkeys(".")
-    elseif action == 12 then crawl.sendkeys("^" .. esc)
-    elseif action == 13 then emit("panel:religion", "opened")
-        crawl.sendkeys(".")
-    elseif action == 14 then crawl.sendkeys("%" .. esc)
-    elseif action == 15 then emit("panel:character", "opened")
-        crawl.sendkeys(".")
-    elseif action == 16 then crawl.sendkeys("I" .. esc .. esc)
-    elseif action == 17 then emit("panel:inventory", "opened")
-        crawl.sendkeys(".")
-    elseif action == 18 then crawl.sendkeys("m" .. esc)
-    elseif action == 19 then emit("panel:skills", "opened")
-        crawl.sendkeys(".")
-    elseif action == 20 then crawl.sendkeys("a" .. esc)
-    elseif action == 21 then emit("panel:abilities", "opened")
-        crawl.sendkeys(".")
-    elseif action == 22 then crawl.sendkeys("O" .. esc)
-    elseif action == 23 then emit("panel:overview", "opened")
-        crawl.sendkeys(".")
-    elseif action == 24 then crawl.sendkeys(string.char(16) .. esc)
-    elseif action == 25 then emit("panel:messages", "opened")
-        crawl.sendkeys(".")
-    elseif action == 26 then emit("phase", "done")
+    elseif action == 12 then emit("phase:ui:done", "done")
         crawl.sendkeys(string.char(19))
     end
 end
