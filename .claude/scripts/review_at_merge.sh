@@ -66,7 +66,7 @@ fi
 WORKTREE_PATH=$(git worktree list --porcelain | awk \
     -v wanted="refs/heads/$WORKTREE_BRANCH" '
         $1 == "worktree" { path = substr($0, 10) }
-        $1 == "branch" && $2 == wanted { print path; exit }
+        $1 == "branch" && $2 == wanted && !found { print path; found = 1 }
     ')
 if [ -z "$WORKTREE_PATH" ] || [ ! -d "$WORKTREE_PATH" ]; then
     echo "ERROR: branch '$WORKTREE_BRANCH' is not checked out in a worktree." >&2

@@ -188,6 +188,7 @@ assert_contains "i18n-lifetime: merge gate verifies candidate worktree" \
 # verifier must still run, with PWD set to the candidate worktree.
 MERGE_GATE_TMP=$(mktemp -d)
 mkdir -p "$MERGE_GATE_TMP/repo/.claude/scripts"
+REAL_GIT=$(command -v git)
 cp "$SCRIPT_DIR/../review_at_merge.sh" \
    "$MERGE_GATE_TMP/repo/.claude/scripts/review_at_merge.sh"
 cat > "$MERGE_GATE_TMP/repo/.claude/scripts/classify_review.sh" <<'EOF'
@@ -219,10 +220,28 @@ EOF
     git -C .worktrees/candidate commit -qm 'old candidate verifier'
 )
 export TEST_LOG="$MERGE_GATE_TMP/verifier.log"
+# Keep producing enough porcelain output after the candidate match to trigger
+# SIGPIPE if the merge gate ever restores an early `awk ... exit` under
+# `set -o pipefail`.
+mkdir -p "$MERGE_GATE_TMP/bin"
+cat > "$MERGE_GATE_TMP/bin/git" <<EOF
+#!/bin/bash
+if [ "\${1:-}" = "worktree" ] && [ "\${2:-}" = "list" ] \
+    && [ "\${3:-}" = "--porcelain" ]; then
+    "$REAL_GIT" "\$@"
+    for i in \$(seq 1 2000); do
+        printf 'worktree /tmp/unrelated-%s-with-padding-abcdefghijklmnopqrstuvwxyz0123456789\\nHEAD deadbeef\\ndetached\\n\\n' "\$i"
+    done
+    exit 0
+fi
+exec "$REAL_GIT" "\$@"
+EOF
+chmod +x "$MERGE_GATE_TMP/bin/git"
 set +e
 (
     cd "$MERGE_GATE_TMP/repo"
-    bash .claude/scripts/review_at_merge.sh candidate target
+    PATH="$MERGE_GATE_TMP/bin:$PATH" \
+        bash .claude/scripts/review_at_merge.sh candidate target
 ) > "$MERGE_GATE_TMP/gate.out" 2>&1
 MERGE_GATE_RC=$?
 set -e
