@@ -5,7 +5,130 @@
 #include <cstring>
 #include <locale.h>
 
+#include "random.h"
 #include "stringutil.h"
+
+namespace
+{
+struct random_substring_run
+{
+    string output;
+    uint64_t rng_state;
+    uint64_t rng_count;
+    vector<random_substring_choice_trace> trace;
+};
+
+void record_random_substring_choice(
+    const random_substring_choice_trace &choice, void *context)
+{
+    static_cast<vector<random_substring_choice_trace> *>(context)
+        ->push_back(choice);
+}
+
+random_substring_run run_random_substring(const string &input, bool traced)
+{
+    random_substring_run result;
+    rng::subgenerator scoped_rng(0x123456789abcdef0ULL,
+                                 0x0fedcba987654321ULL);
+    if (traced)
+    {
+        const random_substring_trace_observer observer =
+            { record_random_substring_choice, &result.trace };
+        result.output = maybe_pick_random_substring(
+            input, &observer);
+    }
+    else
+        result.output = maybe_pick_random_substring(input);
+
+    result.rng_state = rng::current_generator().get_state();
+    result.rng_count = rng::current_generator().get_count();
+    return result;
+}
+
+random_substring_run run_random_substring_default_observer(
+    const string &input)
+{
+    random_substring_run result;
+    rng::subgenerator scoped_rng(0x123456789abcdef0ULL,
+                                 0x0fedcba987654321ULL);
+    random_substring_trace_observer observer;
+    result.output = maybe_pick_random_substring(input, &observer);
+    result.rng_state = rng::current_generator().get_state();
+    result.rng_count = rng::current_generator().get_count();
+    return result;
+}
+}
+
+TEST_CASE( "maybe_pick_random_substring tracing preserves behaviour",
+           "[single-file][textdb][phase0]" )
+{
+    const vector<string> patterns =
+    {
+        "[casts|pitches]",
+        "[casts|pitches] and [pulses|vibrates]",
+        "[|casts|]",
+        "an unfinished [choice",
+        // The first one-option site materializes to a string containing '['.
+        // The existing algorithm searches again from the replacement position,
+        // so the resulting [only|a|b] site must also be materialized.
+        "[[only]|a|b]",
+    };
+
+    for (const string &pattern : patterns)
+    {
+        DYNAMIC_SECTION( pattern )
+        {
+            const random_substring_run legacy =
+                run_random_substring(pattern, false);
+            const random_substring_run traced =
+                run_random_substring(pattern, true);
+            const random_substring_run default_observer =
+                run_random_substring_default_observer(pattern);
+
+            CHECK(traced.output == legacy.output);
+            CHECK(traced.rng_state == legacy.rng_state);
+            CHECK(traced.rng_count == legacy.rng_count);
+            CHECK(default_observer.output == legacy.output);
+            CHECK(default_observer.rng_state == legacy.rng_state);
+            CHECK(default_observer.rng_count == legacy.rng_count);
+            CHECK(default_observer.trace.empty());
+
+            for (size_t i = 0; i < traced.trace.size(); ++i)
+            {
+                CHECK(traced.trace[i].site_ordinal == i);
+                CHECK(traced.trace[i].random_bound > 0);
+                CHECK(traced.trace[i].selected_index >= 0);
+                CHECK(traced.trace[i].selected_index
+                      < traced.trace[i].random_bound);
+            }
+        }
+    }
+}
+
+TEST_CASE( "maybe_pick_random_substring reports materialized sites",
+           "[single-file][textdb][phase0]" )
+{
+    const random_substring_run multiple = run_random_substring(
+        "[casts|pitches] [pulses|vibrates]", true);
+    REQUIRE(multiple.trace.size() == 2);
+    CHECK(multiple.trace[0].random_bound == 2);
+    CHECK(multiple.trace[1].random_bound == 2);
+
+    const random_substring_run empty_options =
+        run_random_substring("[|casts|]", true);
+    REQUIRE(empty_options.trace.size() == 1);
+    CHECK(empty_options.trace[0].random_bound == 3);
+
+    const random_substring_run unfinished =
+        run_random_substring("an unfinished [choice", true);
+    CHECK(unfinished.trace.empty());
+
+    const random_substring_run replacement_contains_site =
+        run_random_substring("[[only]|a|b]", true);
+    REQUIRE(replacement_contains_site.trace.size() == 2);
+    CHECK(replacement_contains_site.trace[0].random_bound == 1);
+    CHECK(replacement_contains_site.trace[1].random_bound == 3);
+}
 
 // Test plain arrays, vectors, and lists (not random-access), with const variants of both
 TEMPLATE_TEST_CASE( "comma_separated_*", "[single-file]",

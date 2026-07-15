@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "inventory_semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
+  "variants": [
+    {
+      "key": "burial acolyte cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "confuse sphinx marauder cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "march of sorrows bone dragon cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 full canonical target and substring trace"
+    },
+    {
+      "key": "march of sorrows boris cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "march of sorrows boris cast",
+      "variant_ordinal": 1,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "orb of entropy cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 canonical CASE_MAP language projection"
+    },
+    {
+      "key": "orb of winter cast",
+      "variant_ordinal": 2,
+      "random_site_option_counts": [3],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "paralysis guardian sphinx cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "roxanne cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [],
+      "recursive_dynamic_targets": ["sphinx cast"],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "silent weeping skull cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "vanquished vanguard nergalle cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [],
+      "recursive_dynamic_targets": ["orc name", "orc name", "orc name"],
+      "lua_site_count": 0,
+      "policy": "LEGACY_ONLY",
+      "evidence": "Three independent recursive orc-name draws exceed one million combinations"
+    },
+    {
+      "key": "vex sphinx marauder cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [3],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "weeping skull cast",
+      "variant_ordinal": 0,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    },
+    {
+      "key": "weeping skull cast",
+      "variant_ordinal": 1,
+      "random_site_option_counts": [2],
+      "recursive_dynamic_targets": [],
+      "lua_site_count": 0,
+      "policy": "CASE_MAP_PROTOTYPE",
+      "evidence": "Catch2 all-finite-dynamic-site golden"
+    }
+  ]
+}

@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "mon-cast.h"
+#include "mon-cast-target.h"
 
 #include <algorithm>
 #include <cmath>
@@ -8914,12 +8915,23 @@ static string _speech_message(const monster &mon,
     return msg;
 }
 
-static void _speech_fill_target(string& targ_prep, string& target,
-                                const monster* mons, const bolt& pbolt,
-                                bool gestured)
+resolved_speech_target::resolved_speech_target()
+    : relation(speech_target_relation::AT),
+      kind(speech_target_kind::ERROR),
+      source(speech_target_source::UNRESOLVED),
+      preposition_display(T_("at")),
+      display("nothing"),
+      position(INVALID_COORD),
+      mid(MID_NOBODY),
+      feature(DNGN_UNSEEN)
 {
-    targ_prep = T_("at");
-    target    = "nothing";
+}
+
+resolved_speech_target resolve_speech_target(
+    const monster* mons, const bolt& pbolt, bool gestured,
+    const speech_target_observer *observer)
+{
+    resolved_speech_target result;
     bool is_at_prep = true;
 
     bolt tracer_beam = pbolt;
@@ -8928,27 +8940,72 @@ static void _speech_fill_target(string& targ_prep, string& target,
     // fire_tracer() will fill out path_taken.
     if (pbolt.range == 0 && pbolt.target != mons->pos())
         tracer_beam.range = ENV_SHOW_DIAMETER;
+    uint64_t tracer_state_before = 0;
+    uint64_t tracer_count_before = 0;
+    if (observer && observer->function)
+    {
+        tracer_state_before = rng::current_generator().get_state();
+        tracer_count_before = rng::current_generator().get_count();
+    }
     fire_tracer(mons, tracer, tracer_beam);
+    if (observer && observer->function)
+    {
+        speech_target_observer_event event;
+        event.kind = speech_target_observer_event_kind::FIRE_TRACER;
+        event.bound = 0;
+        event.selected = 0;
+        event.rng_state_before = tracer_state_before;
+        event.rng_count_before = tracer_count_before;
+        event.rng_state_after = rng::current_generator().get_state();
+        event.rng_count_after = rng::current_generator().get_count();
+        observer->function(event, observer->context);
+    }
 
     if (pbolt.target == you.pos())
-        target = T_("you");
+    {
+        result.kind = speech_target_kind::PLAYER;
+        result.source = speech_target_source::DIRECT_TARGET;
+        result.display = T_("you");
+        result.position = you.pos();
+        result.mid = you.mid;
+    }
     else if (pbolt.target == mons->pos())
-        target = mons->pronoun(PRONOUN_REFLEXIVE);
+    {
+        result.kind = speech_target_kind::SELF;
+        result.source = speech_target_source::DIRECT_TARGET;
+        result.display = mons->pronoun(PRONOUN_REFLEXIVE);
+        result.position = mons->pos();
+        result.mid = mons->mid;
+    }
     // Monsters should only use targeted spells while foe == MHITNOT
     // if they're targeting themselves.
     else if (mons->foe == MHITNOT && !mons_is_confused(*mons, true))
-        target = "NONEXISTENT FOE";
+    {
+        result.kind = speech_target_kind::ERROR;
+        result.source = speech_target_source::DIRECT_TARGET;
+        result.display = "NONEXISTENT FOE";
+        result.error = result.display;
+    }
     else if (!invalid_monster_index(mons->foe)
              && env.mons[mons->foe].type == MONS_NO_MONSTER)
     {
-        target = "DEAD FOE";
+        result.kind = speech_target_kind::ERROR;
+        result.source = speech_target_source::DIRECT_TARGET;
+        result.display = "DEAD FOE";
+        result.error = result.display;
     }
     else if (in_bounds(pbolt.target) && you.see_cell(pbolt.target))
     {
         if (const monster* mtarg = monster_at(pbolt.target))
         {
             if (you.can_see(*mtarg))
-                target = mtarg->name(DESC_THE);
+            {
+                result.kind = speech_target_kind::MONSTER;
+                result.source = speech_target_source::DIRECT_TARGET;
+                result.display = mtarg->name(DESC_THE);
+                result.position = mtarg->pos();
+                result.mid = mtarg->mid;
+            }
         }
     }
 
@@ -8956,7 +9013,7 @@ static void _speech_fill_target(string& targ_prep, string& target,
 
     // Monster might be aiming past the real target, or maybe some fuzz has
     // been applied because the target is invisible.
-    if (target == "nothing")
+    if (result.display == "nothing")
     {
         if (pbolt.aimed_at_spot || pbolt.origin_spell == SPELL_DIG)
         {
@@ -8966,11 +9023,48 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 const actor* act = actor_at(*ai);
                 if (act && act != mons && you.can_see(*act))
                 {
-                    targ_prep = T_("next to");
+                    result.relation = speech_target_relation::NEXT_TO;
+                    result.preposition_display = T_("next to");
                     is_at_prep = false;
 
-                    if (act->is_player() || one_chance_in(++count))
-                        target = act->name(DESC_THE);
+                    bool selected = act->is_player();
+                    if (!selected)
+                    {
+                        const int bound = ++count;
+                        uint64_t state_before = 0;
+                        uint64_t count_before = 0;
+                        if (observer && observer->function)
+                        {
+                            state_before = rng::current_generator().get_state();
+                            count_before = rng::current_generator().get_count();
+                        }
+                        selected = one_chance_in(bound);
+                        if (observer && observer->function)
+                        {
+                            speech_target_observer_event event;
+                            event.kind = speech_target_observer_event_kind::
+                                ADJACENT_RESERVOIR;
+                            event.bound = bound;
+                            event.selected = selected;
+                            event.rng_state_before = state_before;
+                            event.rng_count_before = count_before;
+                            event.rng_state_after =
+                                rng::current_generator().get_state();
+                            event.rng_count_after =
+                                rng::current_generator().get_count();
+                            observer->function(event, observer->context);
+                        }
+                    }
+                    if (selected)
+                    {
+                        result.kind = act->is_player()
+                            ? speech_target_kind::PLAYER
+                            : speech_target_kind::MONSTER;
+                        result.source = speech_target_source::ADJACENT_SPOT;
+                        result.display = act->name(DESC_THE);
+                        result.position = act->pos();
+                        result.mid = act->mid;
+                    }
 
                     if (act->is_player())
                         break;
@@ -8981,14 +9075,23 @@ static void _speech_fill_target(string& targ_prep, string& target,
             {
                 if (env.grid(pbolt.target) != DNGN_FLOOR)
                 {
-                    target = feature_description(env.grid(pbolt.target),
-                                                 NUM_TRAPS, "", DESC_THE);
+                    result.kind = speech_target_kind::FEATURE;
+                    result.source = speech_target_source::ADJACENT_SPOT;
+                    result.feature = env.grid(pbolt.target);
+                    result.position = pbolt.target;
+                    result.display = feature_description(
+                        result.feature, NUM_TRAPS, "", DESC_THE);
                 }
                 else
-                    target = T_("thin air");
+                {
+                    result.kind = speech_target_kind::THIN_AIR;
+                    result.source = speech_target_source::ADJACENT_SPOT;
+                    result.position = pbolt.target;
+                    result.display = T_("thin air");
+                }
             }
 
-            return;
+            return result;
         }
 
         bool mons_targ_aligned = false;
@@ -9006,20 +9109,30 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 // a beam aimed at an ally.
                 if (!mons->wont_attack())
                 {
-                    targ_prep = T_("at");
+                    result.relation = speech_target_relation::AT;
+                    result.preposition_display = T_("at");
                     is_at_prep = true;
-                    target    = T_("you");
+                    result.kind = speech_target_kind::PLAYER;
+                    result.source = speech_target_source::TRACER_PATH;
+                    result.display = T_("you");
+                    result.position = you.pos();
+                    result.mid = you.mid;
                     break;
                 }
                 // If the ally is confused or aiming at an invisible enemy,
                 // with the player in the path, act like it's targeted at
                 // the player if there isn't any visible target earlier
                 // in the path.
-                else if (target == "nothing")
+                else if (result.display == "nothing")
                 {
-                    targ_prep         = T_("at");
+                    result.relation = speech_target_relation::AT;
+                    result.preposition_display = T_("at");
                     is_at_prep = true;
-                    target            = T_("you");
+                    result.kind = speech_target_kind::PLAYER;
+                    result.source = speech_target_source::TRACER_PATH;
+                    result.display = T_("you");
+                    result.position = you.pos();
+                    result.mid = you.mid;
                     mons_targ_aligned = true;
                 }
             }
@@ -9028,10 +9141,14 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 bool is_aligned  = mons_aligned(m, mons);
                 string name = m->name(DESC_THE);
 
-                if (target == "nothing")
+                if (result.display == "nothing")
                 {
                     mons_targ_aligned = is_aligned;
-                    target            = name;
+                    result.kind = speech_target_kind::MONSTER;
+                    result.source = speech_target_source::TRACER_PATH;
+                    result.display = name;
+                    result.position = m->pos();
+                    result.mid = m->mid;
                 }
                 // If the first target was aligned with the beam source then
                 // the first subsequent non-aligned monster in the path will
@@ -9039,12 +9156,17 @@ static void _speech_fill_target(string& targ_prep, string& target,
                 else if (mons_targ_aligned && !is_aligned)
                 {
                     mons_targ_aligned = false;
-                    target            = name;
+                    result.kind = speech_target_kind::MONSTER;
+                    result.source = speech_target_source::TRACER_PATH;
+                    result.display = name;
+                    result.position = m->pos();
+                    result.mid = m->mid;
                 }
-                targ_prep = T_("at");
+                result.relation = speech_target_relation::AT;
+                result.preposition_display = T_("at");
                 is_at_prep = true;
             }
-            else if (visible_path && target == "nothing")
+            else if (visible_path && result.display == "nothing")
             {
                 int count = 0;
                 for (adjacent_iterator ai(pbolt.target); ai; ++ai)
@@ -9052,12 +9174,48 @@ static void _speech_fill_target(string& targ_prep, string& target,
                     const actor* act = monster_at(*ai);
                     if (act && act != mons && you.can_see(*act))
                     {
-                        targ_prep = T_("past");
+                        result.relation = speech_target_relation::PAST;
+                        result.preposition_display = T_("past");
                         is_at_prep = false;
-                        if (act->is_player()
-                            || one_chance_in(++count))
+                        bool selected = act->is_player();
+                        if (!selected)
                         {
-                            target = act->name(DESC_THE);
+                            const int bound = ++count;
+                            uint64_t state_before = 0;
+                            uint64_t count_before = 0;
+                            if (observer && observer->function)
+                            {
+                                state_before =
+                                    rng::current_generator().get_state();
+                                count_before =
+                                    rng::current_generator().get_count();
+                            }
+                            selected = one_chance_in(bound);
+                            if (observer && observer->function)
+                            {
+                                speech_target_observer_event event;
+                                event.kind = speech_target_observer_event_kind::
+                                    PAST_RESERVOIR;
+                                event.bound = bound;
+                                event.selected = selected;
+                                event.rng_state_before = state_before;
+                                event.rng_count_before = count_before;
+                                event.rng_state_after =
+                                    rng::current_generator().get_state();
+                                event.rng_count_after =
+                                    rng::current_generator().get_count();
+                                observer->function(event, observer->context);
+                            }
+                        }
+                        if (selected)
+                        {
+                            result.kind = act->is_player()
+                                ? speech_target_kind::PLAYER
+                                : speech_target_kind::MONSTER;
+                            result.source = speech_target_source::PAST_SCAN;
+                            result.display = act->name(DESC_THE);
+                            result.position = act->pos();
+                            result.mid = act->mid;
                         }
 
                         if (act->is_player())
@@ -9077,15 +9235,23 @@ static void _speech_fill_target(string& targ_prep, string& target,
     // implied by gesturing). But only if the beam didn't actually hit
     // anything (but if it did hit something, why didn't that monster
     // show up in the beam's path?)
-    if (target == "nothing"
+    if (result.display == "nothing"
         && (tracer.foe_info.count + tracer.friend_info.count) == 0
         && foe != nullptr
         && you.can_see(*foe)
         && !mons->confused()
         && visible_path)
     {
-        target = foe->name(DESC_THE);
-        targ_prep = (pbolt.aimed_at_spot ? T_("next to") : T_("past"));
+        result.kind = foe->is_player() ? speech_target_kind::PLAYER
+                                       : speech_target_kind::MONSTER;
+        result.source = speech_target_source::FOE_FALLBACK;
+        result.display = foe->name(DESC_THE);
+        result.position = foe->pos();
+        result.mid = foe->mid;
+        result.relation = pbolt.aimed_at_spot
+            ? speech_target_relation::NEXT_TO : speech_target_relation::PAST;
+        result.preposition_display =
+            (pbolt.aimed_at_spot ? T_("next to") : T_("past"));
         is_at_prep = false;
     }
 
@@ -9094,15 +9260,79 @@ static void _speech_fill_target(string& targ_prep, string& target,
     // Also, if the monster gestures to create a visible beam but it
     // misses still say that the monster gestured "at" the target,
     // rather than "past".
-    if (gestured || target == "nothing")
+    if (gestured || result.display == "nothing")
     {
-        targ_prep = T_("at");
+        result.relation = speech_target_relation::AT;
+        result.preposition_display = T_("at");
         is_at_prep = true;
     }
 
     // "throws whatever at something" is better than "at nothing"
-    if (target == "nothing")
-        target = T_("something");
+    if (result.display == "nothing")
+    {
+        result.kind = speech_target_kind::INDEFINITE;
+        result.source = speech_target_source::FINAL_FALLBACK;
+        result.display = T_("something");
+    }
+    return result;
+}
+
+static void _speech_fill_target(string& targ_prep, string& target,
+                                const monster* mons, const bolt& pbolt,
+                                bool gestured)
+{
+    const resolved_speech_target resolved =
+        resolve_speech_target(mons, pbolt, gestured);
+    targ_prep = resolved.preposition_display;
+    target = resolved.display;
+}
+
+resolved_beam::resolved_beam()
+    : status(resolved_beam_status::INVALID),
+      display_text("INVALID BEAM"),
+      origin_spell(SPELL_NO_SPELL),
+      flavour(BEAM_MAGIC),
+      real_flavour(BEAM_MAGIC),
+      pierces(false),
+      has_ranged_attack(false)
+{
+}
+
+resolved_beam resolve_speech_beam(const bolt &pbolt, bool targeted)
+{
+    resolved_beam result;
+    result.configured_name_en = pbolt.name;
+    result.configured_short_name_en = pbolt.short_name;
+    result.origin_spell = pbolt.origin_spell;
+    result.flavour = pbolt.flavour;
+    result.real_flavour = pbolt.real_flavour;
+    result.pierces = pbolt.pierce;
+    result.has_ranged_attack = pbolt.ranged_atk != nullptr;
+
+    // Preserve the legacy branch order: in particular, get_short_name() is
+    // never evaluated for non-targeted or invalid beams.
+    if (!targeted)
+    {
+        result.status = resolved_beam_status::NON_TARGETED;
+        result.display_text = "NON TARGETED BEAM";
+    }
+    else if (pbolt.name.empty())
+    {
+        result.status = resolved_beam_status::INVALID;
+        result.display_text = "INVALID BEAM";
+    }
+    else
+    {
+        result.status = resolved_beam_status::RESOLVED;
+        result.display_text = pbolt.get_short_name();
+    }
+    return result;
+}
+
+static void _speech_fill_beam(string &beam_name, const bolt &pbolt,
+                              bool targeted)
+{
+    beam_name = resolve_speech_beam(pbolt, targeted).display_text;
 }
 
 void mons_cast_noise(monster* mons, const bolt &pbolt,
@@ -9151,12 +9381,7 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
     msg = replace_all(msg, "@target@", target);
 
     string beam_name;
-    if (!targeted)
-        beam_name = "NON TARGETED BEAM";
-    else if (pbolt.name.empty())
-        beam_name = "INVALID BEAM";
-    else
-        beam_name = pbolt.get_short_name();
+    _speech_fill_beam(beam_name, pbolt, targeted);
 
     msg = replace_all(msg, "@beam@", beam_name);
 

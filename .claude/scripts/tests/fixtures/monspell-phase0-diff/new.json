@@ -1,0 +1,97 @@
+{
+  "schema_version": 1,
+  "semantic_fingerprint": "new-semantic",
+  "source_fingerprint": "new-source",
+  "speakdb_directory": "database/",
+  "speakdb_files": ["zero.txt", "one.txt", "monspell.txt"],
+  "entries": [
+    {
+      "key": "beta",
+      "defined_in_monspell": true,
+      "effective_source": "override.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 2}, {"file": "override.txt", "ordinal": 9}],
+      "overridden": true,
+      "entry_text_fingerprint": "beta-new-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "beta", "variant_ordinal": 0},
+        "weight": 7,
+        "text": "@beam@ @nested new@ [right|left|centre]",
+        "text_fingerprint": "beta-new-text",
+        "tokens": [
+          {"token": "beam", "canonical_key": "beam", "classification": "runtime", "start": 0, "end": 6},
+          {"token": "nested new", "canonical_key": "nested new", "classification": "recursive", "start": 7, "end": 19}
+        ],
+        "random_substring_sites": [{"start": 12, "end": 30, "raw": "right|left|centre", "options": ["right", "left", "centre"]}],
+        "control_prefixes": [{"prefix": "SOUND", "line": 1, "start": 0}],
+        "lua_sites": [{"start": 5, "end": 10, "text_fingerprint": "lua-new"}]
+      }, {
+        "variant_ordinal": 1,
+        "snapshot_locator": {"canonical_key": "beta", "variant_ordinal": 1},
+        "weight": 10,
+        "text": "added",
+        "text_fingerprint": "beta-added-variant",
+        "tokens": [],
+        "random_substring_sites": [],
+        "control_prefixes": [],
+        "lua_sites": []
+      }]
+    },
+    {
+      "key": "delta",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 4}],
+      "overridden": false,
+      "entry_text_fingerprint": "delta-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "delta", "variant_ordinal": 0},
+        "weight": 10,
+        "text": "delta",
+        "text_fingerprint": "delta-text",
+        "tokens": [],
+        "random_substring_sites": [],
+        "control_prefixes": [],
+        "lua_sites": []
+      }]
+    },
+    {
+      "key": "epsilon",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 5}],
+      "overridden": false,
+      "entry_text_fingerprint": "epsilon-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "epsilon", "variant_ordinal": 0},
+        "weight": 10,
+        "text": "xxxx[a|b]",
+        "text_fingerprint": "epsilon-text",
+        "tokens": [],
+        "random_substring_sites": [{"start": 4, "end": 10, "raw": "a|b", "options": ["a", "b"]}],
+        "control_prefixes": [],
+        "lua_sites": []
+      }]
+    },
+    {
+      "key": "gamma",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 3}],
+      "overridden": false,
+      "entry_text_fingerprint": "gamma-entry",
+      "variants": [
+        {"variant_ordinal": 0, "snapshot_locator": {"canonical_key": "gamma", "variant_ordinal": 0}, "weight": 10, "text": "two", "text_fingerprint": "g-two", "tokens": [], "random_substring_sites": [], "control_prefixes": [], "lua_sites": []},
+        {"variant_ordinal": 1, "snapshot_locator": {"canonical_key": "gamma", "variant_ordinal": 1}, "weight": 10, "text": "one", "text_fingerprint": "g-one", "tokens": [], "random_substring_sites": [], "control_prefixes": [], "lua_sites": []}
+      ]
+    }
+  ],
+  "closure": {
+    "keys": ["beta", "delta", "epsilon", "gamma", "nested new"],
+    "additional_nodes": [],
+    "edges": [{"from_key": "beta", "from_variant_ordinal": 0, "to_key": "nested new", "token": "nested new", "start": 0, "end": 12}],
+    "cycles": [{"keys": ["beta", "nested new"], "edge_sites": 2}]
+  }
+}

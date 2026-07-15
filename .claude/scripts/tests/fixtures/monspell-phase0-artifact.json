@@ -1,0 +1,63 @@
+{
+  "schema_version": 1,
+  "database_name": "speak",
+  "source_directory": "database/",
+  "sources": [
+    {"source_name": "database/monspeak.txt", "load_index": 0, "normalized_utf8": "monspeak normalized\n"},
+    {"source_name": "database/monspell.txt", "load_index": 1, "normalized_utf8": "monspell normalized\n"},
+    {"source_name": "database/monflee.txt", "load_index": 2, "normalized_utf8": "monflee normalized\n"}
+  ],
+  "entries": [
+    {
+      "canonical_key": "cycle a",
+      "effective_provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0},
+      "raw_body": "@cycle b@\n",
+      "source_history": [{"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0}],
+      "variants": [{"locator": {"canonical_key": "cycle a", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0}, "weight": 10, "raw_pattern": "@cycle b@"}],
+      "parse_error": null,
+      "body_empty": false
+    },
+    {
+      "canonical_key": "cycle b",
+      "effective_provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 1},
+      "raw_body": "cycle leaf\n",
+      "source_history": [{"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 1}],
+      "variants": [{"locator": {"canonical_key": "cycle b", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 1}, "weight": 10, "raw_pattern": "cycle leaf"}],
+      "parse_error": null,
+      "body_empty": false
+    },
+    {
+      "canonical_key": "flavor",
+      "effective_provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 2},
+      "raw_body": "@cycle a@\n",
+      "source_history": [{"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 2}],
+      "variants": [{"locator": {"canonical_key": "flavor", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 2}, "weight": 10, "raw_pattern": "@cycle a@"}],
+      "parse_error": null,
+      "body_empty": false
+    },
+    {
+      "canonical_key": "mixed key",
+      "effective_provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0},
+      "raw_body": "w:3\nVISUAL:@Flavor@ @Target@ [casts|pitches] [left||right] {{ code }}\n\nfallback\n",
+      "source_history": [{"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0}],
+      "variants": [
+        {"locator": {"canonical_key": "mixed key", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0}, "weight": 3, "raw_pattern": "VISUAL:@Flavor@ @Target@ [casts|pitches] [left||right] {{ code }}"},
+        {"locator": {"canonical_key": "mixed key", "variant_ordinal": 1}, "provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0}, "weight": 10, "raw_pattern": "fallback"}
+      ],
+      "parse_error": null,
+      "body_empty": false
+    },
+    {
+      "canonical_key": "overridden key",
+      "effective_provenance": {"source_name": "database/monflee.txt", "load_index": 2, "definition_ordinal": 0},
+      "raw_body": "from later file\n",
+      "source_history": [
+        {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 1},
+        {"source_name": "database/monflee.txt", "load_index": 2, "definition_ordinal": 0}
+      ],
+      "variants": [{"locator": {"canonical_key": "overridden key", "variant_ordinal": 0}, "provenance": {"source_name": "database/monflee.txt", "load_index": 2, "definition_ordinal": 0}, "weight": 10, "raw_pattern": "from later file"}],
+      "parse_error": null,
+      "body_empty": false
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "namespace_prefix": "__fork_message_",
+  "slots": [
+    {"name": "actor", "type": "resolved_actor"},
+    {"name": "target", "type": "resolved_target"}
+  ],
+  "overlay_keys": ["__fork_message_probe"],
+  "templates": [
+    {
+      "stable_id": "test.probe",
+      "text": "${actor} invokes @flavor@ toward ${target}.",
+      "declared_recursive_keys": ["flavor"]
+    }
+  ]
+}

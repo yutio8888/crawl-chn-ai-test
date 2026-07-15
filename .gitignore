@@ -8,6 +8,7 @@
 .worktrees/
 /.ccache/
 .claude/scripts/__pycache__/
+.claude/scripts/tests/__pycache__/
 tools/okapi/__pycache__/
 tools/okapi/build/
 .claude/metrics/verify/

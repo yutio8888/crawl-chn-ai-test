@@ -1790,6 +1790,15 @@ plug-and-play-tests: $(CATCH2_PNP_OBJECTS) $(CONTRIB_LIBS) dat/dlua/tags.lua
 catch2-tests: catch2-tests-executable
 	./catch2-tests-executable
 
+.PHONY: textdb-phase0-dump
+textdb-phase0-dump: STDFLAG = -std=c++14
+textdb-phase0-dump: catch2-tests-executable
+	@test -n "$(TEXTDB_PHASE0_DUMP)" || \
+	  { echo "TEXTDB_PHASE0_DUMP must name an output file" >&2; exit 2; }
+	TEXTDB_PHASE0_DUMP="$(TEXTDB_PHASE0_DUMP)" \
+	TEXTDB_PHASE0_LANGUAGE="$(TEXTDB_PHASE0_LANGUAGE)" \
+	  ./catch2-tests-executable "[.textdb-phase0-dump]" --reporter compact
+
 clean-coverage-full: clean-coverage
 	find . -type f -name '*.gcno' -delete
 

@@ -55,7 +55,29 @@ string replace_all_of(string s, const string &tofind, const string &replacement)
 string replace_keys(const string &text, const map<string, string>& replacements);
 
 string maybe_capitalise_substring(string s);
+
+struct random_substring_choice_trace
+{
+    // Zero-based ordinal among the sites actually materialized by this call.
+    size_t site_ordinal;
+    int random_bound;
+    int selected_index;
+};
+
+using random_substring_trace_observer_fn =
+    void (*)(const random_substring_choice_trace &, void *);
+
+// Diagnostic callbacks must not throw or consume game RNG. The production
+// overload passes no observer and performs no type-erased call/allocation.
+struct random_substring_trace_observer
+{
+    random_substring_trace_observer_fn function = nullptr;
+    void *context = nullptr;
+};
+
 string maybe_pick_random_substring(string s);
+string maybe_pick_random_substring(
+    string s, const random_substring_trace_observer *observer);
 
 int count_occurrences(const string &text, const string &searchfor);
 

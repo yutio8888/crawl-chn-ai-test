@@ -284,8 +284,14 @@ run_aggregate() {
         --catch2-stdout "$STDOUT_C2"
         --lua-stderr "$STDERR_L2"
         --bot-stderr "$STDERR_L3"
-        --bot-manifest all
     )
+
+    # Full and baseline runs promise complete bot coverage. Fast/catch2 runs do
+    # not execute that layer, so validate its manifest only when a real bot log
+    # is available (for example, when reusing a full-run metrics directory).
+    if [ "$mode" = "full" ] || [ "$mode" = "baseline" ] || [ -s "$STDERR_L3" ]; then
+        args+=(--bot-manifest all)
+    fi
 
     if [ "$mode" = "baseline" ]; then
         args+=(--output-baseline "$ZH_BASELINE")

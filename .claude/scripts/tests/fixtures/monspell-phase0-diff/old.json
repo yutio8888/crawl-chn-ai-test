@@ -1,0 +1,87 @@
+{
+  "schema_version": 1,
+  "semantic_fingerprint": "old-semantic",
+  "source_fingerprint": "old-source",
+  "speakdb_directory": "database/",
+  "speakdb_files": ["one.txt", "monspell.txt"],
+  "entries": [
+    {
+      "key": "alpha",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 1}],
+      "overridden": false,
+      "entry_text_fingerprint": "alpha-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "alpha", "variant_ordinal": 0},
+        "weight": 10,
+        "text": "alpha",
+        "text_fingerprint": "alpha-text",
+        "tokens": [],
+        "random_substring_sites": [],
+        "control_prefixes": [],
+        "lua_sites": []
+      }]
+    },
+    {
+      "key": "beta",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 2}],
+      "overridden": false,
+      "entry_text_fingerprint": "beta-old-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "beta", "variant_ordinal": 0},
+        "weight": 10,
+        "text": "@target@ @nested old@ [left|right]",
+        "text_fingerprint": "beta-old-text",
+        "tokens": [
+          {"token": "target", "canonical_key": "target", "classification": "runtime", "start": 0, "end": 8},
+          {"token": "nested old", "canonical_key": "nested old", "classification": "recursive", "start": 9, "end": 21}
+        ],
+        "random_substring_sites": [{"start": 10, "end": 22, "raw": "left|right", "options": ["left", "right"]}],
+        "control_prefixes": [{"prefix": "VISUAL", "line": 1, "start": 0}],
+        "lua_sites": [{"start": 4, "end": 8, "text_fingerprint": "lua-old"}]
+      }]
+    },
+    {
+      "key": "epsilon",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 5}],
+      "overridden": false,
+      "entry_text_fingerprint": "epsilon-entry",
+      "variants": [{
+        "variant_ordinal": 0,
+        "snapshot_locator": {"canonical_key": "epsilon", "variant_ordinal": 0},
+        "weight": 10,
+        "text": "xxx[a|b]",
+        "text_fingerprint": "epsilon-text",
+        "tokens": [],
+        "random_substring_sites": [{"start": 3, "end": 9, "raw": "a|b", "options": ["a", "b"]}],
+        "control_prefixes": [],
+        "lua_sites": []
+      }]
+    },
+    {
+      "key": "gamma",
+      "defined_in_monspell": true,
+      "effective_source": "monspell.txt",
+      "source_history": [{"file": "monspell.txt", "ordinal": 3}],
+      "overridden": false,
+      "entry_text_fingerprint": "gamma-entry",
+      "variants": [
+        {"variant_ordinal": 0, "snapshot_locator": {"canonical_key": "gamma", "variant_ordinal": 0}, "weight": 10, "text": "one", "text_fingerprint": "g-one", "tokens": [], "random_substring_sites": [], "control_prefixes": [], "lua_sites": []},
+        {"variant_ordinal": 1, "snapshot_locator": {"canonical_key": "gamma", "variant_ordinal": 1}, "weight": 10, "text": "two", "text_fingerprint": "g-two", "tokens": [], "random_substring_sites": [], "control_prefixes": [], "lua_sites": []}
+      ]
+    }
+  ],
+  "closure": {
+    "keys": ["alpha", "beta", "epsilon", "gamma", "nested old"],
+    "additional_nodes": [],
+    "edges": [{"from_key": "beta", "from_variant_ordinal": 0, "to_key": "nested old", "token": "nested old", "start": 0, "end": 12}],
+    "cycles": []
+  }
+}

@@ -442,7 +442,14 @@ string replace_keys(const string &text, const map<string, string>& replacements)
 // NOTE: Doesn't work for nested patterns!
 string maybe_pick_random_substring(string s)
 {
+    return maybe_pick_random_substring(s, nullptr);
+}
+
+string maybe_pick_random_substring(
+    string s, const random_substring_trace_observer *observer)
+{
     string::size_type start = 0;
+    size_t site_ordinal = 0;
     while ((start = s.find("[", start)) != string::npos)
     {
         string::size_type end = s.find("]", start);
@@ -452,6 +459,13 @@ string maybe_pick_random_substring(string s)
         string substring = s.substr(start + 1, end - start - 1);
         vector<string> split = split_string("|", substring, false, true);
         int index = random2(split.size());
+        if (observer && observer->function)
+        {
+            const random_substring_choice_trace event =
+                { site_ordinal, static_cast<int>(split.size()), index };
+            observer->function(event, observer->context);
+        }
+        ++site_ordinal;
         s.replace(start, end + 1 - start, split[index]);
     }
     return s;

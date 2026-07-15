@@ -1,0 +1,11 @@
+{
+  "schema_version": 1,
+  "namespace_prefix": "__fork_message_",
+  "slots": [
+    {"name": "actor", "type": "resolved_actor"},
+    {"name": "beam", "type": "resolved_beam"},
+    {"name": "target", "type": "resolved_target"}
+  ],
+  "overlay_keys": [],
+  "templates": []
+}

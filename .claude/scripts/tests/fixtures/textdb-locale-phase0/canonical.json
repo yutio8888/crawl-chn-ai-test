@@ -1,0 +1,56 @@
+{
+  "schema_version": 1,
+  "database_name": "speak",
+  "source_directory": "database/",
+  "sources": [
+    {"source_name": "database/monspeak.txt", "load_index": 0, "normalized_utf8": ""},
+    {"source_name": "database/monspell.txt", "load_index": 1, "normalized_utf8": ""}
+  ],
+  "entries": [
+    {
+      "canonical_key": "empty root",
+      "effective_provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0},
+      "source_history": [{"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 0}],
+      "raw_body": "",
+      "body_empty": true,
+      "parse_error": null,
+      "variants": []
+    },
+    {
+      "canonical_key": "root changed",
+      "effective_provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 1},
+      "source_history": [{"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 1}],
+      "raw_body": "@shared@ {{ return 1 }} [a|b]\n",
+      "body_empty": false,
+      "parse_error": null,
+      "variants": [{"locator": {"canonical_key": "root changed", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 1}, "weight": 10, "raw_pattern": "@shared@ {{ return 1 }} [a|b]"}]
+    },
+    {
+      "canonical_key": "root fallback",
+      "effective_provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 2},
+      "source_history": [{"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 2}],
+      "raw_body": "fallback @shared@ [a|b]\n",
+      "body_empty": false,
+      "parse_error": null,
+      "variants": [{"locator": {"canonical_key": "root fallback", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 2}, "weight": 10, "raw_pattern": "fallback @shared@ [a|b]"}]
+    },
+    {
+      "canonical_key": "root same",
+      "effective_provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 3},
+      "source_history": [{"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 3}],
+      "raw_body": "English @shared@ {{ return 1 }} [a|b]\n",
+      "body_empty": false,
+      "parse_error": null,
+      "variants": [{"locator": {"canonical_key": "root same", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspell.txt", "load_index": 1, "definition_ordinal": 3}, "weight": 10, "raw_pattern": "English @shared@ {{ return 1 }} [a|b]"}]
+    },
+    {
+      "canonical_key": "shared",
+      "effective_provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0},
+      "source_history": [{"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0}],
+      "raw_body": "shared text\n",
+      "body_empty": false,
+      "parse_error": null,
+      "variants": [{"locator": {"canonical_key": "shared", "variant_ordinal": 0}, "provenance": {"source_name": "database/monspeak.txt", "load_index": 0, "definition_ordinal": 0}, "weight": 10, "raw_pattern": "shared text"}]
+    }
+  ]
+}

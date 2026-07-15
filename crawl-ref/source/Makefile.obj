@@ -310,12 +310,14 @@ glwrapper-ogl.o \
 fontwrapper-ft.o
 
 TEST_OBJECTS = \
+catch2-tests/textdb_phase0_artifact.o \
 catch2-tests/test_branch.o \
 catch2-tests/test_coordit.o \
 catch2-tests/test_describe.o \
 catch2-tests/test_english.o \
 catch2-tests/test_files.o \
 catch2-tests/test_items.o \
+catch2-tests/test_mon_cast_target.o \
 catch2-tests/test_mon-util.o \
 catch2-tests/test_ng-init-branches.o \
 catch2-tests/test_player.o \
@@ -324,6 +326,7 @@ catch2-tests/test_randbook.o \
 catch2-tests/test_stringutil.o \
 catch2-tests/test_species.o \
 catch2-tests/test_tags.o \
+catch2-tests/test_textdb_phase0.o \
 catch2-tests/test_tilecell.o \
 catch2-tests/test_ui.o \
 catch2-tests/test_viewmap.o \

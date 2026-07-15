@@ -11,6 +11,9 @@
 #include <cstdlib>
 #include <deque>
 #include <fcntl.h>
+#include <functional>
+#include <fstream>
+#include <map>
 #include <sys/stat.h>
 #include <sys/types.h>
 #if defined(UNIX) || defined(TARGET_COMPILER_MINGW)
@@ -41,6 +44,11 @@ public:
     void shutdown(bool recursive = false);
     DBM* get() { return _db; }
 
+    // Phase 0 audit only: provenance cannot be recovered from DBM, so the
+    // canonical dump must re-read the production input sequence.
+    const string &phase0_directory() const { return _directory; }
+    const vector<string> &phase0_input_files() const { return _input_files; }
+
     // Make it easier to migrate from raw DBM* to TextDB
     operator bool() const { return _db != 0; }
     operator DBM*() const { return _db; }
@@ -68,7 +76,7 @@ static void _store_text_db(const string &in, DBM *db, bool trim_keys = true);
 
 static string _query_database(TextDB &db, string key, bool canonicalise_key,
                               bool run_lua, bool untranslated = false);
-static void _add_entry(DBM *db, const string &k, string &v);
+static void _add_entry(DBM *db, const string &k, const string &v);
 
 static TextDB AllDBs[] =
 {
@@ -474,38 +482,86 @@ static vector<string> _database_find_bodies(DBM *database,
 
 ///////////////////////////////////////////////////////////////////////////
 // Internal DB utility functions
-static void _execute_embedded_lua(string &str)
+static textdb_phase0::rng_observation _observe_rng()
+{
+    textdb_phase0::rng_observation result;
+    result.current_state = rng::current_generator().get_state();
+    result.current_count = rng::current_generator().get_count();
+    result.global_counts = rng::get_states();
+    return result;
+}
+
+static bool _execute_embedded_lua(
+    string &str, textdb_phase0::selection_trace *trace = nullptr)
 {
     // Execute any lua code found between "{{" and "}}". The lua code
     // is expected to return a string, with which the lua code and
     // braces will be replaced.
     string::size_type pos = str.find("{{");
+    size_t ordinal = 0;
     while (pos != string::npos)
     {
+        size_t event_index = 0;
+        if (trace)
+        {
+            textdb_phase0::lua_site_trace site;
+            site.ordinal = ordinal;
+            site.before = _observe_rng();
+            event_index = trace->lua_sites.size();
+            trace->lua_sites.push_back(site);
+        }
+        ++ordinal;
         string::size_type end = str.find("}}", pos + 2);
         if (end == string::npos)
         {
+            if (trace)
+            {
+                textdb_phase0::lua_site_trace &site =
+                    trace->lua_sites[event_index];
+                site.source = str.substr(pos + 2);
+                site.status = textdb_phase0::lua_site_status::UNBALANCED;
+                site.after = _observe_rng();
+            }
             mprf(MSGCH_DIAGNOSTICS, "Unbalanced {{, bailing.");
-            break;
+            return true;
         }
 
         string lua_full = str.substr(pos, end - pos + 2);
         string lua      = str.substr(pos + 2, end - pos - 2);
+        if (trace)
+            trace->lua_sites[event_index].source = lua;
 
         if (clua.execstring(lua.c_str(), "db_embedded_lua", 1))
         {
             string err = "{{" + clua.error + "}}";
             str.replace(pos, lua_full.length(), err);
-            return;
+            if (trace)
+            {
+                textdb_phase0::lua_site_trace &site =
+                    trace->lua_sites[event_index];
+                site.result = err;
+                site.status = textdb_phase0::lua_site_status::ERROR;
+                site.after = _observe_rng();
+            }
+            return true;
         }
 
         string result;
         clua.fnreturns(">s", &result);
 
         str.replace(pos, lua_full.length(), result);
+        if (trace)
+        {
+            textdb_phase0::lua_site_trace &site =
+                trace->lua_sites[event_index];
+            site.result = result;
+            site.status = textdb_phase0::lua_site_status::EXECUTED;
+            site.after = _observe_rng();
+        }
 
         pos = str.find("{{", pos + result.length());
     }
+    return false;
 }
 
 static void _substitute_descriptions(TextDB &db, string &str,
@@ -538,9 +594,8 @@ static void _trim_leading_newlines(string &s)
     s.erase(0, s.find_first_not_of("\n"));
 }
 
-static void _add_entry(DBM *db, const string &k, string &v)
+static void _add_entry(DBM *db, const string &k, const string &v)
 {
-    _trim_leading_newlines(v);
     datum key, value;
     key.dptr = (char *) k.c_str();
     key.dsize = k.length();
@@ -552,7 +607,12 @@ static void _add_entry(DBM *db, const string &k, string &v)
         end(1, true, "Error storing %s", k.c_str());
 }
 
-static void _parse_text_db(LineInput &inf, DBM *db, bool trim_keys = true)
+using textdb_entry_consumer =
+    std::function<void(const string &, const string &)>;
+
+static void _parse_text_db(LineInput &inf,
+                           const textdb_entry_consumer &consume,
+                           bool trim_keys = true)
 {
     string key;
     string value;
@@ -568,7 +628,10 @@ static void _parse_text_db(LineInput &inf, DBM *db, bool trim_keys = true)
         if (!line.compare(0, 4, "%%%%"))
         {
             if (!key.empty())
-                _add_entry(db, key, value);
+            {
+                _trim_leading_newlines(value);
+                consume(key, value);
+            }
             key.clear();
             value.clear();
             in_entry = true;
@@ -592,7 +655,19 @@ static void _parse_text_db(LineInput &inf, DBM *db, bool trim_keys = true)
     }
 
     if (!key.empty())
-        _add_entry(db, key, value);
+    {
+        _trim_leading_newlines(value);
+        consume(key, value);
+    }
+}
+
+static void _parse_text_db(LineInput &inf, DBM *db, bool trim_keys = true)
+{
+    _parse_text_db(inf,
+        [db](const string &key, const string &value)
+        {
+            _add_entry(db, key, value);
+        }, trim_keys);
 }
 
 static void _store_text_db(const string &in, DBM *db, bool trim_keys)
@@ -604,14 +679,355 @@ static void _store_text_db(const string &in, DBM *db, bool trim_keys)
     _parse_text_db(inf, db, trim_keys);
 }
 
-static string _chooseStrByWeight(const string &entry, int fixed_weight = -1)
+namespace
 {
-    vector<string> parts;
-    vector<int>    weights;
+class textdb_string_line_input : public LineInput
+{
+public:
+    explicit textdb_string_line_input(const string &text)
+        : _text(text), _position(0), _seen_eof(false)
+    {
+    }
 
+    bool eof() override { return _seen_eof; }
+
+    string get_line() override
+    {
+        if (_position >= _text.size())
+        {
+            _seen_eof = true;
+            return "";
+        }
+
+        const size_t newline = _text.find('\n', _position);
+        if (newline == string::npos)
+        {
+            const string result = _text.substr(_position);
+            _position = _text.size();
+            return result;
+        }
+
+        const string result = _text.substr(_position, newline - _position);
+        _position = newline + 1;
+        return result;
+    }
+
+private:
+    const string &_text;
+    size_t _position;
+    bool _seen_eof;
+};
+
+struct effective_textdb_entry
+{
+    string body;
+    textdb_phase0::source_provenance provenance;
+    vector<textdb_phase0::source_provenance> history;
+};
+
+using effective_textdb_entries = map<string, effective_textdb_entry>;
+
+static void _record_canonical_entries(LineInput &input,
+                                      const string &source_name,
+                                      size_t load_index,
+                                      effective_textdb_entries &entries,
+                                      bool trim_keys)
+{
+    size_t definition_ordinal = 0;
+    _parse_text_db(input,
+        [&entries, &source_name, load_index, &definition_ordinal]
+        (const string &key, const string &body)
+        {
+            effective_textdb_entry &entry = entries[key];
+            entry.body = body;
+            entry.provenance.source_name = source_name;
+            entry.provenance.load_index = load_index;
+            entry.provenance.definition_ordinal = definition_ordinal++;
+            entry.history.push_back(entry.provenance);
+        }, trim_keys);
+}
+
+static textdb_phase0::source_normalization_result
+_normalize_textdb_source(string text)
+{
+    if (text.size() >= 3
+        && static_cast<unsigned char>(text[0]) == 0xef
+        && static_cast<unsigned char>(text[1]) == 0xbb
+        && static_cast<unsigned char>(text[2]) == 0xbf)
+    {
+        text.erase(0, 3);
+    }
+
+    string normalized;
+    normalized.reserve(text.size());
+    for (size_t i = 0; i < text.size(); ++i)
+    {
+        if (text[i] == '\r')
+        {
+            if (i + 1 < text.size() && text[i + 1] == '\n')
+                ++i;
+            normalized += '\n';
+        }
+        else
+            normalized += text[i];
+    }
+    textdb_phase0::source_normalization_result result;
+    result.valid = false;
+    if (normalized.find('\0') != string::npos)
+    {
+        result.error = "source contains an embedded NUL byte";
+        return result;
+    }
+
+    string validated;
+    validated.reserve(normalized.size());
+    const char *cursor = normalized.c_str();
+    while (*cursor)
+    {
+        char32_t character;
+        const int consumed = utf8towc(&character, cursor);
+        if (consumed <= 0)
+            break;
+        cursor += consumed;
+
+        char encoded[4];
+        const int encoded_size = wctoutf8(encoded, character);
+        validated.append(encoded, encoded_size);
+    }
+    if (validated != normalized)
+    {
+        result.error = "source contains invalid UTF-8";
+        return result;
+    }
+
+    result.valid = true;
+    result.normalized_utf8 = normalized;
+    return result;
+}
+
+static string _read_normalized_textdb_source(const string &path)
+{
+    std::ifstream input(path, std::ios::binary);
+    if (!input)
+        end(1, true, "Unable to open input file: %s", path.c_str());
+    const string bytes((std::istreambuf_iterator<char>(input)),
+                       std::istreambuf_iterator<char>());
+    const textdb_phase0::source_normalization_result normalized =
+        _normalize_textdb_source(bytes);
+    if (!normalized.valid)
+    {
+        end(1, false, "Invalid TextDB source '%s': %s", path.c_str(),
+            normalized.error.c_str());
+    }
+    return normalized.normalized_utf8;
+}
+
+static vector<textdb_phase0::canonical_entry>
+_materialize_canonical_entries(const effective_textdb_entries &effective)
+{
+    vector<textdb_phase0::canonical_entry> result;
+    result.reserve(effective.size());
+    for (const auto &item : effective)
+    {
+        textdb_phase0::canonical_entry entry;
+        entry.canonical_key = item.first;
+        entry.provenance = item.second.provenance;
+        entry.source_history = item.second.history;
+        entry.raw_body = item.second.body;
+        entry.body_empty = item.second.body.empty();
+
+        const textdb_phase0::weighted_parse_result parsed =
+            textdb_phase0::parse_weighted_entry_result(item.second.body);
+        entry.parse_error = parsed.parse_error;
+        entry.variants.reserve(parsed.variants.size());
+        for (const textdb_phase0::weighted_variant &weighted
+             : parsed.variants)
+        {
+            textdb_phase0::canonical_variant variant;
+            variant.locator.canonical_key = item.first;
+            variant.locator.variant_ordinal = weighted.variant_ordinal;
+            variant.provenance = item.second.provenance;
+            variant.weight = weighted.weight;
+            variant.raw_pattern = weighted.raw_pattern;
+            entry.variants.push_back(variant);
+        }
+        result.push_back(entry);
+    }
+    return result;
+}
+}
+
+vector<textdb_phase0::canonical_entry>
+textdb_phase0::canonicalise_sources(const vector<source> &sources,
+                                    bool trim_keys)
+{
+    return canonicalise_source_dump(sources, trim_keys).entries;
+}
+
+textdb_phase0::source_normalization_result
+textdb_phase0::normalize_textdb_source(const string &text)
+{
+    return _normalize_textdb_source(text);
+}
+
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::canonicalise_source_dump(const vector<source> &sources,
+                                        bool trim_keys)
+{
+    canonical_speakdb_dump dump;
+    dump.schema_version = 1;
+    dump.database_name = "speak";
+    effective_textdb_entries effective;
+    for (size_t i = 0; i < sources.size(); ++i)
+    {
+        source_snapshot snapshot;
+        snapshot.source_name = sources[i].name;
+        snapshot.load_index = i;
+        const source_normalization_result normalized =
+            normalize_textdb_source(sources[i].text);
+        if (!normalized.valid)
+        {
+            end(1, false, "Invalid TextDB source '%s': %s",
+                sources[i].name.c_str(), normalized.error.c_str());
+        }
+        snapshot.normalized_utf8 = normalized.normalized_utf8;
+        dump.sources.push_back(snapshot);
+        textdb_string_line_input input(dump.sources.back().normalized_utf8);
+        _record_canonical_entries(input, sources[i].name, i, effective,
+                                  trim_keys);
+    }
+    dump.entries = _materialize_canonical_entries(effective);
+    return dump;
+}
+
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_canonical_english_speakdb_typed()
+{
+    canonical_speakdb_dump dump;
+    dump.schema_version = 1;
+    dump.database_name = "speak";
+    dump.source_directory = SpeakDB.phase0_directory();
+    effective_textdb_entries effective;
+    const vector<string> &files = SpeakDB.phase0_input_files();
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        const string relative = SpeakDB.phase0_directory() + files[i];
+        const string path = datafile_path(relative, true);
+        source_snapshot snapshot;
+        snapshot.source_name = relative;
+        snapshot.load_index = i;
+        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
+        dump.sources.push_back(snapshot);
+        UTF8FileLineInput input(path.c_str());
+        if (input.error())
+            end(1, true, "Unable to open input file: %s", path.c_str());
+        _record_canonical_entries(input, relative, i, effective, true);
+    }
+    dump.entries = _materialize_canonical_entries(effective);
+    return dump;
+}
+
+vector<textdb_phase0::canonical_entry>
+textdb_phase0::dump_canonical_english_speakdb()
+{
+    return dump_canonical_english_speakdb_typed().entries;
+}
+
+bool textdb_phase0::is_valid_textdb_locale(const string &language)
+{
+    const auto ascii_alpha = [](unsigned char c)
+    {
+        return (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z');
+    };
+    const auto ascii_digit = [](unsigned char c)
+    {
+        return c >= '0' && c <= '9';
+    };
+    if (language.empty()
+        || !ascii_alpha(static_cast<unsigned char>(language[0])))
+    {
+        return false;
+    }
+    for (const unsigned char c : language)
+    {
+        if (!ascii_alpha(c) && !ascii_digit(c) && c != '_' && c != '-')
+            return false;
+    }
+    return true;
+}
+
+vector<string> textdb_phase0::order_localized_speakdb_sources(
+    vector<string> files)
+{
+    files.erase(std::remove_if(files.begin(), files.end(),
+        [](const string &file)
+        {
+            return file.size() < 3
+                || file.compare(file.size() - 3, 3, "txt") != 0;
+        }), files.end());
+    // Mirror get_dir_files_ext(..., "txt"): project-default string sort.
+    std::sort(files.begin(), files.end());
+    const auto source = std::find(files.begin(), files.end(), "source.txt");
+    if (source != files.end())
+        std::rotate(files.begin(), source, source + 1);
+    return files;
+}
+
+textdb_phase0::canonical_speakdb_dump
+textdb_phase0::dump_localized_speakdb_typed(const string &language)
+{
+    if (!is_valid_textdb_locale(language))
+    {
+        end(1, false, "Invalid TextDB locale identifier: '%s'",
+            language.c_str());
+    }
+
+    canonical_speakdb_dump dump;
+    dump.schema_version = 1;
+    dump.database_name = "speak";
+    dump.source_directory = SpeakDB.phase0_directory() + language + "/";
+    const string physical_directory = datafile_path(
+        dump.source_directory, false, true, dir_exists);
+    if (physical_directory.empty())
+    {
+        end(1, false, "Cannot find localized TextDB directory '%s'",
+            dump.source_directory.c_str());
+    }
+
+    const vector<string> files = order_localized_speakdb_sources(
+        get_dir_files_ext(physical_directory, "txt"));
+    effective_textdb_entries effective;
+    for (size_t i = 0; i < files.size(); ++i)
+    {
+        const string relative = dump.source_directory + files[i];
+        const string path = datafile_path(relative, false);
+        source_snapshot snapshot;
+        snapshot.source_name = relative;
+        snapshot.load_index = i;
+        snapshot.normalized_utf8 = _read_normalized_textdb_source(path);
+        dump.sources.push_back(snapshot);
+        UTF8FileLineInput input(path.c_str());
+        if (input.error())
+            end(1, true, "Unable to open input file: %s", path.c_str());
+        _record_canonical_entries(input, relative, i, effective, true);
+    }
+    dump.entries = _materialize_canonical_entries(effective);
+    return dump;
+}
+
+namespace
+{
+struct parsed_weighted_entry
+{
+    vector<textdb_phase0::weighted_variant> variants;
+    string error;
+};
+
+static parsed_weighted_entry _parse_weighted_entry(const string &entry)
+{
+    parsed_weighted_entry parsed;
     vector<string> lines = split_string("\n", entry, false, true);
 
-    int total_weight = 0;
     for (int i = 0, size = lines.size(); i < size; i++)
     {
         // Skip over multiple blank lines, and leading and trailing
@@ -629,12 +1045,13 @@ static string _chooseStrByWeight(const string &entry, int fixed_weight = -1)
         {
             i++;
             if (i == size)
-                return "BUG, WEIGHT AT END OF ENTRY";
+            {
+                parsed.error = "BUG, WEIGHT AT END OF ENTRY";
+                return parsed;
+            }
         }
         else
             weight = 10;
-
-        total_weight += weight;
 
         while (i < size && !lines[i].empty())
         {
@@ -643,31 +1060,145 @@ static string _chooseStrByWeight(const string &entry, int fixed_weight = -1)
         }
         trim_string(part);
 
-        parts.push_back(part);
-        weights.push_back(total_weight);
+        textdb_phase0::weighted_variant variant;
+        variant.variant_ordinal = parsed.variants.size();
+        variant.weight = weight;
+        variant.raw_pattern = part;
+        parsed.variants.push_back(variant);
     }
 
-    if (parts.empty())
-        return "BUG, EMPTY ENTRY";
+    if (parsed.variants.empty())
+        parsed.error = "BUG, EMPTY ENTRY";
+    return parsed;
+}
+
+struct weighted_trace_context
+{
+    textdb_phase0::selection_trace *trace = nullptr;
+    string requested_key;
+    string resolved_key;
+    vector<size_t> recursion_path;
+    int recursion_depth = 0;
+    int replacement_count = 0;
+};
+
+struct weighted_choice_result
+{
+    bool selected = false;
+    string pattern;
+    size_t variant_ordinal = static_cast<size_t>(-1);
+    int weight = 0;
+};
+
+static weighted_choice_result _choose_weighted_variants(
+    const vector<textdb_phase0::weighted_variant> &variants,
+    int fixed_weight, const weighted_trace_context *context = nullptr)
+{
+    int total_weight = 0;
+    for (const textdb_phase0::weighted_variant &variant : variants)
+        total_weight += variant.weight;
+
+    size_t event_index = 0;
+    if (context && context->trace)
+    {
+        textdb_phase0::weighted_choice_trace event;
+        event.requested_key = context->requested_key;
+        event.resolved_canonical_key = context->resolved_key;
+        event.recursion_path = context->recursion_path;
+        event.recursion_depth = context->recursion_depth;
+        event.replacement_count = context->replacement_count;
+        event.variant_ordinal = static_cast<size_t>(-1);
+        event.weight = 0;
+        event.total_bound = total_weight;
+        event.before = _observe_rng();
+        event_index = context->trace->weighted_choices.size();
+        context->trace->weighted_choices.push_back(event);
+    }
 
     int choice = 0;
     if (fixed_weight != -1)
         choice = fixed_weight % total_weight;
     else
         choice = random2(total_weight);
+    if (context && context->trace)
+    {
+        textdb_phase0::weighted_choice_trace &event =
+            context->trace->weighted_choices[event_index];
+        event.random_result = choice;
+        event.after = _observe_rng();
+    }
 
-    for (int i = 0, size = parts.size(); i < size; i++)
-        if (choice < weights[i])
-            return parts[i];
+    int cumulative_weight = 0;
+    for (const textdb_phase0::weighted_variant &variant : variants)
+    {
+        cumulative_weight += variant.weight;
+        if (choice < cumulative_weight)
+        {
+            weighted_choice_result result;
+            result.selected = true;
+            result.pattern = variant.raw_pattern;
+            result.variant_ordinal = variant.variant_ordinal;
+            result.weight = variant.weight;
+            if (context && context->trace)
+            {
+                textdb_phase0::weighted_choice_trace &event =
+                    context->trace->weighted_choices[event_index];
+                event.variant_ordinal = variant.variant_ordinal;
+                event.weight = variant.weight;
+            }
+            return result;
+        }
+    }
+    weighted_choice_result result;
+    result.pattern = "BUG, NO STRING CHOSEN";
+    return result;
+}
+}
 
-    return "BUG, NO STRING CHOSEN";
+vector<textdb_phase0::weighted_variant>
+textdb_phase0::parse_weighted_entry(const string &entry)
+{
+    return parse_weighted_entry_result(entry).variants;
+}
+
+textdb_phase0::weighted_parse_result
+textdb_phase0::parse_weighted_entry_result(const string &entry)
+{
+    const parsed_weighted_entry parsed = _parse_weighted_entry(entry);
+    weighted_parse_result result;
+    result.variants = parsed.variants;
+    result.parse_error = parsed.error;
+    return result;
+}
+
+string textdb_phase0::choose_weighted_entry(const string &entry,
+                                             int fixed_weight)
+{
+    const parsed_weighted_entry parsed = _parse_weighted_entry(entry);
+
+    if (!parsed.error.empty())
+        return parsed.error;
+    return _choose_weighted_variants(parsed.variants, fixed_weight).pattern;
 }
 
 #define MAX_RECURSION_DEPTH 10
 #define MAX_REPLACEMENTS    100
 
-static string _getWeightedString(TextDB &db, const string &key,
-                                 const string &suffix, int fixed_weight = -1)
+struct weighted_lookup_result
+{
+    textdb_phase0::raw_selection_status status =
+        textdb_phase0::raw_selection_status::MISSING;
+    string pattern;
+    string resolved_key;
+    size_t variant_ordinal = static_cast<size_t>(-1);
+    int weight = 0;
+};
+
+static weighted_lookup_result _getWeightedSelection(
+    TextDB &db, const string &key, const string &suffix,
+    bool base_only, textdb_phase0::selection_trace *trace,
+    const vector<size_t> &recursion_path, int recursion_depth,
+    int replacement_count)
 {
     // We have to canonicalise the key (in case the user typed it
     // in and got the case wrong.)
@@ -676,8 +1207,10 @@ static string _getWeightedString(TextDB &db, const string &key,
 
     // Query the DB.
     datum result;
+    result.dptr = nullptr;
+    result.dsize = 0;
 
-    if (db.translation)
+    if (!base_only && db.translation)
         result = _database_fetch(db.translation->get(), canonical_key);
     // _database_has_entry returns true even for zero-length (dsize == 0)
     // entries — treat those as not found so we fall back to the base DB.
@@ -691,79 +1224,213 @@ static string _getWeightedString(TextDB &db, const string &key,
         lowercase(canonical_key);
 
         // Query the DB.
-        if (db.translation)
+        if (!base_only && db.translation)
             result = _database_fetch(db.translation->get(), canonical_key);
         if (!_database_has_entry(result) || result.dsize == 0)
             result = _database_fetch(db.get(), canonical_key);
 
         if (!_database_has_entry(result) || result.dsize == 0)
-            return "";
+            return weighted_lookup_result();
     }
 
     // Cons up a (C++) string to return. The caller must release it.
     string str = string((const char *)result.dptr, result.dsize);
     if (str.empty())
-        return "";
+        return weighted_lookup_result();
 
-    return _chooseStrByWeight(str, fixed_weight);
+    weighted_lookup_result result_value;
+    result_value.resolved_key = canonical_key;
+    const parsed_weighted_entry parsed = _parse_weighted_entry(str);
+    if (!parsed.error.empty())
+    {
+        result_value.status = textdb_phase0::raw_selection_status::CORRUPT;
+        result_value.pattern = parsed.error;
+        return result_value;
+    }
+
+    weighted_trace_context context;
+    weighted_trace_context *context_ptr = nullptr;
+    if (trace)
+    {
+        // Keep the legacy no-observer path free of trace-only string/vector
+        // copies; all identity data is populated only when requested.
+        context.trace = trace;
+        context.requested_key = key;
+        context.resolved_key = canonical_key;
+        context.recursion_path = recursion_path;
+        context.recursion_depth = recursion_depth;
+        context.replacement_count = replacement_count;
+        context_ptr = &context;
+    }
+    const weighted_choice_result chosen =
+        _choose_weighted_variants(parsed.variants, -1, context_ptr);
+    result_value.pattern = chosen.pattern;
+    result_value.variant_ordinal = chosen.variant_ordinal;
+    result_value.weight = chosen.weight;
+    result_value.status = chosen.selected
+        ? textdb_phase0::raw_selection_status::SELECTED
+        : textdb_phase0::raw_selection_status::CORRUPT;
+    return result_value;
 }
 
-static void _call_recursive_replacement(string &str, TextDB &db,
+template <typename Lookup>
+static bool _call_recursive_replacement(
+                                        string &str,
+                                        const Lookup &lookup,
                                         const string &suffix,
                                         int &num_replacements,
-                                        int recursion_depth = 0);
+                                        int recursion_depth,
+                                        const vector<size_t> &recursion_path,
+                                        textdb_phase0::selection_trace *trace);
 
-static string _getRandomisedStr(TextDB &db, const string &key,
+template <typename Lookup>
+static string _getRandomisedStr(const Lookup &lookup,
+                                const string &key,
                                 const string &suffix,
                                 int &num_replacements,
-                                int recursion_depth = 0)
+                                int recursion_depth,
+                                const vector<size_t> &recursion_path,
+                                textdb_phase0::selection_trace *trace,
+                                textdb_phase0::recursive_site_status *status,
+                                bool *corrupt_found = nullptr)
 {
     recursion_depth++;
     if (recursion_depth > MAX_RECURSION_DEPTH)
     {
+        if (status)
+            *status = textdb_phase0::recursive_site_status::DEPTH_LIMIT;
         mprf(MSGCH_DIAGNOSTICS, "Too many nested replacements, bailing.");
+        if (corrupt_found)
+            *corrupt_found = true;
 
         return "TOO MUCH RECURSION";
     }
 
-    string str = _getWeightedString(db, key, suffix);
+    const weighted_lookup_result selected =
+        lookup(key, suffix, trace, recursion_path, recursion_depth,
+               num_replacements);
+    if (status)
+    {
+        switch (selected.status)
+        {
+        case textdb_phase0::raw_selection_status::SELECTED:
+            *status = textdb_phase0::recursive_site_status::SELECTED;
+            break;
+        case textdb_phase0::raw_selection_status::CORRUPT:
+            *status = textdb_phase0::recursive_site_status::CORRUPT;
+            break;
+        case textdb_phase0::raw_selection_status::MISSING:
+            *status = textdb_phase0::recursive_site_status::MISSING;
+            break;
+        }
+    }
+    string str = selected.pattern;
 
-    _call_recursive_replacement(str, db, suffix, num_replacements,
-                                recursion_depth);
+    const bool nested_corrupt = _call_recursive_replacement(
+        str, lookup, suffix, num_replacements, recursion_depth,
+        recursion_path, trace);
+    if (corrupt_found)
+    {
+        *corrupt_found = selected.status
+                             == textdb_phase0::raw_selection_status::CORRUPT
+                         || nested_corrupt;
+    }
 
     return str;
 }
 
 // Replace any "@foo@" markers that can be found in this database.
 // Those that can't be found are left alone for the caller to deal with.
-static void _call_recursive_replacement(string &str, TextDB &db,
+template <typename Lookup>
+static bool _call_recursive_replacement(string &str,
+                                        const Lookup &lookup,
                                         const string &suffix,
                                         int &num_replacements,
-                                        int recursion_depth)
+                                        int recursion_depth,
+                                        const vector<size_t> &recursion_path,
+                                        textdb_phase0::selection_trace *trace)
 {
+    bool corrupt_found = false;
     string::size_type pos = str.find("@");
+    size_t site_ordinal = 0;
     while (pos != string::npos)
     {
+        const size_t current_site = site_ordinal++;
         num_replacements++;
         if (num_replacements > MAX_REPLACEMENTS)
         {
+            if (trace)
+            {
+                textdb_phase0::recursive_site_trace event;
+                const string::size_type limit_end = str.find("@", pos + 1);
+                event.marker = limit_end == string::npos
+                    ? str.substr(pos + 1)
+                    : str.substr(pos + 1, limit_end - pos - 1);
+                event.recursion_path = recursion_path;
+                event.recursion_path.push_back(current_site);
+                event.recursion_depth = recursion_depth + 1;
+                event.replacement_count = num_replacements;
+                event.status = textdb_phase0::recursive_site_status::
+                    REPLACEMENT_LIMIT;
+                trace->recursive_sites.push_back(event);
+            }
             mprf(MSGCH_DIAGNOSTICS, "Too many string replacements, bailing.");
-            return;
+            return true;
         }
 
         string::size_type end = str.find("@", pos + 1);
         if (end == string::npos)
         {
+            if (trace)
+            {
+                textdb_phase0::recursive_site_trace event;
+                event.marker = str.substr(pos + 1);
+                event.recursion_path = recursion_path;
+                event.recursion_path.push_back(current_site);
+                event.recursion_depth = recursion_depth + 1;
+                event.replacement_count = num_replacements;
+                event.status =
+                    textdb_phase0::recursive_site_status::UNBALANCED;
+                trace->recursive_sites.push_back(event);
+            }
             mprf(MSGCH_DIAGNOSTICS, "Unbalanced @, bailing.");
+            corrupt_found = true;
             break;
         }
 
         string marker_full = str.substr(pos, end - pos + 1);
         string marker      = str.substr(pos + 1, end - pos - 1);
 
+        // Legacy callers have no observer and carry the same empty path
+        // through recursion, avoiding a vector copy/allocation per marker.
+        const vector<size_t> *child_path = &recursion_path;
+        vector<size_t> traced_child_path;
+        size_t event_index = 0;
+        if (trace)
+        {
+            traced_child_path = recursion_path;
+            traced_child_path.push_back(current_site);
+            child_path = &traced_child_path;
+            textdb_phase0::recursive_site_trace event;
+            event.recursion_path = traced_child_path;
+            event.marker = marker;
+            event.recursion_depth = recursion_depth + 1;
+            event.replacement_count = num_replacements;
+            event.status = textdb_phase0::recursive_site_status::MISSING;
+            event_index = trace->recursive_sites.size();
+            trace->recursive_sites.push_back(event);
+        }
+
+        textdb_phase0::recursive_site_status child_status =
+            textdb_phase0::recursive_site_status::MISSING;
+        bool child_corrupt = false;
         string replacement =
-            _getRandomisedStr(db, marker, suffix, num_replacements,
-                              recursion_depth);
+            _getRandomisedStr(lookup, marker, suffix, num_replacements,
+                              recursion_depth, *child_path, trace,
+                              &child_status, &child_corrupt);
+        corrupt_found = corrupt_found || child_corrupt;
+        if (trace)
+            trace->recursive_sites[event_index].status = child_status;
 
         if (replacement.empty())
         {
@@ -780,6 +1447,432 @@ static void _call_recursive_replacement(string &str, TextDB &db,
             pos = str.find("@", pos);
         }
     } // while (pos != string::npos)
+    return corrupt_found;
+}
+
+static string _getRandomisedStr(TextDB &db, const string &key,
+                                const string &suffix,
+                                int &num_replacements,
+                                int recursion_depth = 0)
+{
+    const auto lookup =
+        [&db](const string &lookup_key, const string &lookup_suffix,
+              textdb_phase0::selection_trace *trace,
+              const vector<size_t> &path, int depth, int replacements)
+        {
+            return _getWeightedSelection(db, lookup_key, lookup_suffix,
+                                         false, trace, path, depth,
+                                         replacements);
+        };
+    const vector<size_t> path;
+    return _getRandomisedStr(lookup, key, suffix, num_replacements,
+                             recursion_depth, path, nullptr, nullptr);
+}
+
+using canonical_weighted_lookup = std::function<weighted_lookup_result(
+    const string &, const string &, textdb_phase0::selection_trace *,
+    const vector<size_t> &, int, int)>;
+
+static canonical_weighted_lookup _canonical_weighted_lookup(
+    const vector<textdb_phase0::canonical_entry> &entries)
+{
+    const auto find_entry = [&entries](string canonical_key)
+        -> const textdb_phase0::canonical_entry *
+    {
+        lowercase(canonical_key);
+        const auto found = std::lower_bound(entries.begin(), entries.end(),
+            canonical_key,
+            [](const textdb_phase0::canonical_entry &entry,
+               const string &candidate)
+            {
+                return entry.canonical_key < candidate;
+            });
+        if (found == entries.end() || found->canonical_key != canonical_key)
+        {
+            return nullptr;
+        }
+        // Only a zero-length TextDB value is MISSING before the chooser. A
+        // non-empty body that parses to no variants must return its BUG text.
+        if (found->body_empty)
+            return nullptr;
+        if (found->variants.empty() && found->parse_error.empty())
+            return nullptr;
+        return &*found;
+    };
+
+    return [find_entry](const string &lookup_key, const string &suffix,
+                        textdb_phase0::selection_trace *trace,
+                        const vector<size_t> &path, int depth,
+                        int replacements)
+        {
+            const textdb_phase0::canonical_entry *entry =
+                find_entry(lookup_key + suffix);
+            if (!entry)
+                entry = find_entry(lookup_key);
+            if (!entry)
+                return weighted_lookup_result();
+
+            weighted_lookup_result result;
+            result.resolved_key = entry->canonical_key;
+            if (!entry->parse_error.empty())
+            {
+                result.status = textdb_phase0::raw_selection_status::CORRUPT;
+                result.pattern = entry->parse_error;
+                return result;
+            }
+
+            vector<textdb_phase0::weighted_variant> variants;
+            variants.reserve(entry->variants.size());
+            for (const textdb_phase0::canonical_variant &canonical
+                 : entry->variants)
+            {
+                textdb_phase0::weighted_variant variant;
+                variant.variant_ordinal = canonical.locator.variant_ordinal;
+                variant.weight = canonical.weight;
+                variant.raw_pattern = canonical.raw_pattern;
+                variants.push_back(variant);
+            }
+            weighted_trace_context context;
+            context.trace = trace;
+            context.requested_key = lookup_key;
+            context.resolved_key = entry->canonical_key;
+            context.recursion_path = path;
+            context.recursion_depth = depth;
+            context.replacement_count = replacements;
+            const weighted_choice_result chosen =
+                _choose_weighted_variants(variants, -1, &context);
+            result.pattern = chosen.pattern;
+            result.variant_ordinal = chosen.variant_ordinal;
+            result.weight = chosen.weight;
+            result.status = chosen.selected
+                ? textdb_phase0::raw_selection_status::SELECTED
+                : textdb_phase0::raw_selection_status::CORRUPT;
+            return result;
+        };
+}
+
+textdb_phase0::raw_selection textdb_phase0::select_canonical_english(
+    const vector<canonical_entry> &entries, const string &key)
+{
+    raw_selection result;
+    result.status = raw_selection_status::MISSING;
+    const vector<size_t> path;
+    const weighted_lookup_result selected =
+        _canonical_weighted_lookup(entries)(key, "", &result.trace, path,
+                                             1, 0);
+    result.status = selected.status;
+    result.raw_pattern = selected.pattern;
+    result.locator.canonical_key = selected.resolved_key;
+    result.locator.variant_ordinal = selected.variant_ordinal;
+    return result;
+}
+
+textdb_phase0::expanded_selection textdb_phase0::expand_canonical_selection(
+    const vector<canonical_entry> &entries, const raw_selection &selection)
+{
+    expanded_selection result;
+    result.status = selection.status;
+    result.text = selection.raw_pattern;
+    result.trace = selection.trace;
+    int num_replacements = 0;
+    if (selection.status == raw_selection_status::SELECTED)
+    {
+        const vector<size_t> path;
+        const bool recursive_corrupt = _call_recursive_replacement(
+            result.text, _canonical_weighted_lookup(entries), "",
+            num_replacements, 1, path, &result.trace);
+        // Preserve the legacy expansion/Lua output and RNG trace even when a
+        // recursive entry is corrupt. The typed state below prevents any
+        // later target binding or bracket materialization.
+        const bool lua_corrupt = _execute_embedded_lua(result.text,
+                                                       &result.trace);
+        if (recursive_corrupt || lua_corrupt)
+            result.status = raw_selection_status::CORRUPT;
+    }
+    result.trace.final_replacement_count = num_replacements;
+    return result;
+}
+
+string textdb_phase0::expand_canonical_speakdb(
+    const vector<canonical_entry> &entries, const string &key)
+{
+    return expand_canonical_selection(entries,
+               select_canonical_english(entries, key)).text;
+}
+
+textdb_phase0::expanded_selection textdb_phase0::materialize_embedded_lua(
+    const string &pattern)
+{
+    expanded_selection result;
+    result.status = raw_selection_status::SELECTED;
+    result.text = pattern;
+    if (_execute_embedded_lua(result.text, &result.trace))
+        result.status = raw_selection_status::CORRUPT;
+    return result;
+}
+
+textdb_phase0::message_candidate_evaluation
+textdb_phase0::evaluate_message_candidate(
+    const vector<canonical_entry> &entries, const string &key,
+    message_attempt attempt, bool manifest_applicable)
+{
+    message_candidate_evaluation result;
+    result.result = message_result::MISSING;
+    result.applicability_checked = false;
+    result.post_expansion_materialized = false;
+
+    const raw_selection raw = select_canonical_english(entries, key);
+    result.trace = raw.trace;
+    if (raw.status == raw_selection_status::MISSING)
+        return result;
+    if (raw.status == raw_selection_status::CORRUPT)
+    {
+        result.result = message_result::CORRUPT;
+        return result;
+    }
+
+    const expanded_selection expanded =
+        expand_canonical_selection(entries, raw);
+    result.expanded_text = expanded.text;
+    result.trace = expanded.trace;
+    if (expanded.status == raw_selection_status::CORRUPT)
+    {
+        result.result = message_result::CORRUPT;
+        return result;
+    }
+    if (result.expanded_text == "__NONE")
+    {
+        result.result = message_result::SUPPRESS;
+        return result;
+    }
+
+    if (attempt == message_attempt::SILENT_UNPREFIXED_FALLBACK)
+    {
+        result.result = result.expanded_text.empty()
+            ? message_result::INAPPLICABLE : message_result::RENDERED;
+        return result;
+    }
+
+    result.applicability_checked = true;
+    result.result = !result.expanded_text.empty() && manifest_applicable
+        ? message_result::RENDERED : message_result::INAPPLICABLE;
+    return result;
+}
+
+textdb_phase0::message_search_action
+textdb_phase0::transition_message_candidate(message_attempt attempt,
+                                             message_result result)
+{
+    switch (result)
+    {
+    case message_result::SUPPRESS:
+        return message_search_action::STOP_SILENT;
+    case message_result::RENDERED:
+        return message_search_action::STOP_RENDERED;
+    case message_result::CORRUPT:
+        return message_search_action::STOP_CORRUPT;
+    case message_result::MISSING:
+    case message_result::INAPPLICABLE:
+        return attempt == message_attempt::SILENT_PREFIXED
+            ? message_search_action::RETRY_UNPREFIXED
+            : message_search_action::NEXT_CANDIDATE;
+    }
+    die("Invalid Phase 0 message result");
+}
+
+namespace
+{
+struct legacy_random_trace_context
+{
+    textdb_phase0::legacy_materialization *result;
+    const textdb_phase0::canonical_pre_random_pattern *pattern;
+    const vector<textdb_phase0::selected_recursive_variant>
+        *recursive_variants;
+};
+
+static void _record_legacy_random_site(
+    const random_substring_choice_trace &choice, void *opaque)
+{
+    legacy_random_trace_context &context =
+        *static_cast<legacy_random_trace_context *>(opaque);
+    textdb_phase0::legacy_random_site site;
+    site.identity.top_locator = context.pattern->top_locator;
+    site.identity.recursive_variants = *context.recursive_variants;
+    site.identity.expanded_site_ordinal = choice.site_ordinal;
+    site.option_count = choice.random_bound;
+    site.option_index = choice.selected_index;
+    context.result->sites.push_back(site);
+}
+}
+
+textdb_phase0::legacy_materialization
+textdb_phase0::materialize_legacy_randomness(
+    const canonical_pre_random_pattern &pattern)
+{
+    legacy_materialization result;
+    result.status = legacy_materialization_status::CORRUPT;
+    result.randomized_pattern_en = pattern.pattern_en;
+    result.before = _observe_rng();
+
+    static const char *runtime_tokens[] =
+    {
+        "@at@",
+        "@target@",
+        "@beam@",
+    };
+    for (const char *token : runtime_tokens)
+    {
+        if (pattern.pattern_en.find(token) != string::npos)
+        {
+            result.error = "unbound runtime token: " + string(token);
+            result.after = _observe_rng();
+            return result;
+        }
+    }
+
+    vector<selected_recursive_variant> recursive_variants;
+    for (const weighted_choice_trace &choice
+         : pattern.selection.weighted_choices)
+    {
+        if (choice.recursion_path.empty()
+            || choice.variant_ordinal == static_cast<size_t>(-1))
+        {
+            continue;
+        }
+        selected_recursive_variant selected;
+        selected.locator.canonical_key = choice.resolved_canonical_key;
+        selected.locator.variant_ordinal = choice.variant_ordinal;
+        selected.recursion_path = choice.recursion_path;
+        recursive_variants.push_back(selected);
+    }
+
+    legacy_random_trace_context trace_context =
+        { &result, &pattern, &recursive_variants };
+    random_substring_trace_observer observer;
+    observer.function = _record_legacy_random_site;
+    observer.context = &trace_context;
+    result.randomized_pattern_en = maybe_pick_random_substring(
+        pattern.pattern_en, &observer);
+    result.status = legacy_materialization_status::MATERIALIZED;
+    result.after = _observe_rng();
+    return result;
+}
+
+textdb_phase0::structured_message_materialization
+textdb_phase0::materialize_structured_message(
+    const vector<canonical_entry> &entries, const string &key,
+    message_runtime_binding_resolver resolve_bindings, void *context)
+{
+    structured_message_materialization result;
+    result.total_before = _observe_rng();
+
+    const raw_selection raw = select_canonical_english(entries, key);
+    result.top_locator = raw.locator;
+    const expanded_selection expanded =
+        expand_canonical_selection(entries, raw);
+    result.status = expanded.status;
+    result.expanded_pattern_en = expanded.text;
+    result.database_trace = expanded.trace;
+    result.database_after = _observe_rng();
+    if (expanded.status != raw_selection_status::SELECTED)
+    {
+        result.error = expanded.status == raw_selection_status::MISSING
+            ? "canonical key missing" : "canonical expansion corrupt";
+        result.total_after = _observe_rng();
+        return result;
+    }
+
+    result.binding_trace.before = _observe_rng();
+    if (!resolve_bindings)
+    {
+        result.status = raw_selection_status::CORRUPT;
+        result.error = "runtime binding resolver missing";
+        result.binding_trace.after = _observe_rng();
+        result.total_after = result.binding_trace.after;
+        return result;
+    }
+    result.binding_trace.values = resolve_bindings(context);
+    result.binding_trace.after = _observe_rng();
+
+    const message_runtime_bindings &bindings = result.binding_trace.values;
+    result.bound_pattern_en = replace_all(
+        result.expanded_pattern_en, "@The_monster@",
+        bindings.actor_sentence_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@the_monster@", bindings.actor_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@at@", bindings.relation_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@target@", bindings.target_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@beam@", bindings.beam_en);
+
+    canonical_pre_random_pattern pre_random;
+    pre_random.top_locator = result.top_locator;
+    pre_random.selection = result.database_trace;
+    pre_random.pattern_en = result.bound_pattern_en;
+    result.substring_trace = materialize_legacy_randomness(pre_random);
+    if (result.substring_trace.status !=
+        legacy_materialization_status::MATERIALIZED)
+    {
+        result.status = raw_selection_status::CORRUPT;
+        result.error = result.substring_trace.error;
+    }
+    else
+    {
+        result.randomized_message_en =
+            result.substring_trace.randomized_pattern_en;
+    }
+    result.total_after = _observe_rng();
+    return result;
+}
+
+string textdb_phase0::expand_loaded_canonical_english_speakdb(
+    const string &key)
+{
+    return expand_loaded_canonical_english_speakdb_traced(key).text;
+}
+
+textdb_phase0::expanded_selection
+textdb_phase0::expand_loaded_canonical_english_speakdb_traced(
+    const string &key)
+{
+    const auto lookup =
+        [](const string &lookup_key, const string &suffix,
+           selection_trace *trace, const vector<size_t> &path,
+           int depth, int replacements)
+        {
+            return _getWeightedSelection(SpeakDB, lookup_key, suffix, true,
+                                         trace, path, depth, replacements);
+        };
+    int num_replacements = 0;
+    const vector<size_t> path;
+    expanded_selection result;
+    recursive_site_status top_status = recursive_site_status::MISSING;
+    bool recursive_corrupt = false;
+    result.text = _getRandomisedStr(
+        lookup, key, "", num_replacements, 0, path, &result.trace,
+        &top_status, &recursive_corrupt);
+    switch (top_status)
+    {
+    case recursive_site_status::SELECTED:
+        result.status = raw_selection_status::SELECTED;
+        break;
+    case recursive_site_status::MISSING:
+        result.status = raw_selection_status::MISSING;
+        break;
+    case recursive_site_status::CORRUPT:
+    case recursive_site_status::UNBALANCED:
+    case recursive_site_status::DEPTH_LIMIT:
+    case recursive_site_status::REPLACEMENT_LIMIT:
+        result.status = raw_selection_status::CORRUPT;
+        break;
+    }
+    const bool lua_corrupt = _execute_embedded_lua(result.text, &result.trace);
+    if (recursive_corrupt || lua_corrupt)
+        result.status = raw_selection_status::CORRUPT;
+    result.trace.final_replacement_count = num_replacements;
+    return result;
 }
 
 static string _query_database(TextDB &db, string key, bool canonicalise_key,
