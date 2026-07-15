@@ -25,4 +25,9 @@ for test_script in "${TESTS[@]}"; do
     echo ""
 done
 
+echo ">>> test_audit_move_i18n.py"
+python3 "$SCRIPT_DIR/test_audit_move_i18n.py"
+PASS=$((PASS + 1))
+echo ""
+
 echo "=== Results: ${PASS} test script(s) passed ==="

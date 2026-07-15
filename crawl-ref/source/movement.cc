@@ -37,6 +37,7 @@
 #include "mon-death.h"
 #include "mon-place.h"
 #include "mon-util.h"
+#include "movement-i18n.h"
 #include "nearby-danger.h"
 #include "player.h"
 #include "player-reacts.h"
@@ -893,9 +894,11 @@ static bool _handle_player_step(const coord_def& targ, int& delay, bool rampagin
             if (!current || !fedhas_passthrough(current))
             {
                 mprf(T_("You %s carefully through the %s."),
-                        _get_move_verb(rampaging).c_str(),
-                    mons_genus(mon->type) == MONS_FUNGUS ? "fungus"
-                                                         : "plants");
+                     translated_move_phrase(
+                         _get_move_verb(rampaging).c_str(),
+                         move_phrase_context::through_obstacle),
+                     mons_genus(mon->type) == MONS_FUNGUS ? T_("fungus")
+                                                          : T_("plants"));
             }
         }
         else
@@ -1022,7 +1025,10 @@ void move_player_action(coord_def move)
     // Print a message, if rampaging.
     if (num_steps > 1)
     {
-        mprf(T_("You %s towards %s!"), move_verb.c_str(), mon_target->name(DESC_THE, true).c_str());
+        mprf(T_("You %s towards %s!"),
+             translated_move_phrase(move_verb.c_str(),
+                                    move_phrase_context::toward_target),
+             mon_target->name(DESC_THE, true).c_str());
 
         // Prevent full-LoS stabbing with Seven League Boots.
         if (you.unrand_equipped(UNRAND_SEVEN_LEAGUE_BOOTS))

@@ -369,6 +369,15 @@ Key files to always deploy:
 
 ## Critical C++ Anti-Pattern: std::string in variadic `%s` (Issue #42 UB)
 
+### Contextual movement phrase translations
+
+Movement verbs used in messages must stay as English internal values until the
+display sink, then pass through `translated_move_phrase()` with the applicable
+grammar context. Never rely on `C_()`'s unqualified fallback for coverage:
+update `.claude/scripts/data/move_i18n_manifest.json` and run
+`verify_zh.sh --profile translation`; the exact-key movement audit is blocking
+for every verification profile.
+
 **NEVER pass a `std::string` (or a `std::string`-producing expression) as a
 `%s` argument to a printf-style variadic function** (`make_stringf`, `mprf`,
 `mprf_p`, `die`, `cprintf`, ...). These are C variadic functions:

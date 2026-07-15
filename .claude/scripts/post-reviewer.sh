@@ -40,6 +40,9 @@ run_check() {
     run_check "Immediate + deferred i18n key coverage" \
         python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Contextual movement phrase coverage" \
+        python3 .claude/scripts/audit_move_i18n.py crawl-ref/source/ \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Direct display sinks + runtime dynamic-key coverage" \
         python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
         --display-contracts-only \

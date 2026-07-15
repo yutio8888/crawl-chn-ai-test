@@ -3,10 +3,14 @@
 #include "AppHdr.h"
 
 #include "i18n.h"                // T_()
+#include "movement-i18n.h"
+#include "options.h"
+#include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
 
 #include <cstring>
+#include <array>
 #include <string>
 #include <tuple>
 
@@ -54,6 +58,167 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             break;
         }
     REQUIRE(has_non_ascii);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: contextual movement phrases select grammar complements",
+                 "[zh-translation][zh-helpers][movement-i18n]")
+{
+    using Row = std::tuple<const char*, move_phrase_context, const char*>;
+    const auto row = GENERATE(table<const char*, move_phrase_context,
+                                    const char*>({
+        Row{"walk", move_phrase_context::enter_area, "走进"},
+        Row{"fly", move_phrase_context::enter_area, "飞入"},
+        Row{"roll", move_phrase_context::enter_area, "翻滚进入"},
+        Row{"walk", move_phrase_context::through_obstacle, "步行穿过"},
+        Row{"stride", move_phrase_context::through_obstacle, "大步穿过"},
+        Row{"rampage", move_phrase_context::toward_target, "冲向"},
+        Row{"blink", move_phrase_context::onto_actor, "闪烁到"},
+        Row{"step", move_phrase_context::onto_surface, "迈上"},
+        Row{"fly", move_phrase_context::over_terrain, "飞到"},
+    }));
+
+    REQUIRE(std::string(translated_move_phrase(std::get<0>(row),
+                                                std::get<1>(row)))
+            == std::get<2>(row));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: movement phrase full-sentence golden samples",
+                 "[zh-translation][zh-helpers][movement-i18n]")
+{
+    const char* enter = translated_move_phrase(
+        "walk", move_phrase_context::enter_area);
+    REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"), enter)
+            == "确定要走进探索排除区域吗？");
+
+    const char* through = translated_move_phrase(
+        "stride", move_phrase_context::through_obstacle);
+    REQUIRE(make_stringf(T_("You %s carefully through the %s."), through,
+                         T_("plants"))
+            == "你小心翼翼地大步穿过植物。");
+
+    const char* onto = translated_move_phrase(
+        "step", move_phrase_context::onto_surface);
+    REQUIRE(make_stringf(T_("Really %s onto that %s?"), onto, "警报陷阱")
+            == "确定要迈上那个警报陷阱吗？");
+
+    const char* over = translated_move_phrase(
+        "fly", move_phrase_context::over_terrain);
+    REQUIRE(make_stringf(
+                T_("Are you sure you want to %s over %s while you are "
+                   "losing your buoyancy?"), over, T_("lava"))
+            == "你确定要飞到熔岩上方吗？你的浮力正在消失。");
+
+    REQUIRE(make_stringf(T_("Really %s into that cloud of %s?"), enter,
+                         "毒气")
+            == "确定要走进那片毒气吗？");
+    const char* blink = translated_move_phrase(
+        "blink", move_phrase_context::bare);
+    REQUIRE(make_stringf(T_("You cannot %s away from %s!"), blink, "怪物")
+            == "你不能通过闪烁远离怪物！");
+    const char* hop = translated_move_phrase(
+        "hop", move_phrase_context::bare);
+    REQUIRE(make_stringf(T_("Are you sure you want to cancel this %s?"), hop)
+            == "你确定要取消此次跳跃吗？");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: possible forced movement prompt golden samples",
+                 "[zh-translation][zh-helpers][movement-i18n]")
+{
+    using Row = std::tuple<possible_forced_prompt_context, const char*,
+                           const char*>;
+    const auto row = GENERATE(table<possible_forced_prompt_context,
+                                    const char*, const char*>({
+        Row{possible_forced_prompt_context::cloud, "毒气",
+            "这可能使你踉跄着退入那片毒气。要继续吗？"},
+        Row{possible_forced_prompt_context::zot_trap, "",
+            "这可能使你踉跄着退入佐特陷阱。要继续吗？"},
+        Row{possible_forced_prompt_context::onto_trap, "警报陷阱",
+            "这可能使你踉跄着退到那个警报陷阱上。要继续吗？"},
+        Row{possible_forced_prompt_context::into_trap, "传送陷阱",
+            "这可能使你踉跄着退入那个传送陷阱。要继续吗？"},
+        Row{possible_forced_prompt_context::binding_sigil, "",
+            "这可能使你踉跄着退到束缚符文上。要继续吗？"},
+        Row{possible_forced_prompt_context::toxic_bog, "",
+            "这可能使你踉跄着退入毒沼。要继续吗？"},
+        Row{possible_forced_prompt_context::exclusion, "",
+            "这可能使你踉跄着退入探索排除区域。要继续吗？"},
+        Row{possible_forced_prompt_context::over_losing_buoyancy, "熔岩",
+            "你的浮力正在消失；这可能使你踉跄着退到熔岩上方。要继续吗？"},
+        Row{possible_forced_prompt_context::into_losing_buoyancy, "熔岩",
+            "你的浮力正在消失；这可能使你踉跄着退入熔岩。要继续吗？"},
+        Row{possible_forced_prompt_context::over_expiring_transformation, "深水",
+            "你的变形即将结束；这可能使你踉跄着退到深水上方。要继续吗？"},
+        Row{possible_forced_prompt_context::into_expiring_transformation, "熔岩",
+            "你的变形即将结束；这可能使你踉跄着退入熔岩。要继续吗？"},
+    }));
+    REQUIRE(possible_forced_move_prompt(std::get<0>(row), std::get<1>(row))
+            == std::get<2>(row));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "en: movement phrase helper preserves runtime verbs",
+                 "[zh-translation][zh-helpers][movement-i18n]")
+{
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+
+    const std::array<move_phrase_context,
+                     static_cast<size_t>(move_phrase_context::num_contexts)>
+        contexts = {{
+            move_phrase_context::bare,
+            move_phrase_context::enter_area,
+            move_phrase_context::onto_surface,
+            move_phrase_context::onto_actor,
+            move_phrase_context::through_obstacle,
+            move_phrase_context::toward_target,
+            move_phrase_context::over_terrain,
+        }};
+    for (move_phrase_context context : contexts)
+        REQUIRE(std::strcmp(translated_move_phrase("walk", context), "walk") == 0);
+
+    REQUIRE(make_stringf(T_("Really %s into a travel-excluded area?"),
+                         translated_move_phrase(
+                             "walk", move_phrase_context::enter_area))
+            == "Really walk into a travel-excluded area?");
+
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    i18n_cache_clear();
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "en: possible forced movement prompt templates are unchanged",
+                 "[zh-translation][zh-helpers][movement-i18n]")
+{
+    using Row = std::tuple<possible_forced_prompt_context, const char*,
+                           const char*>;
+    const auto row = GENERATE(table<possible_forced_prompt_context,
+                                    const char*, const char*>({
+        Row{possible_forced_prompt_context::cloud, "poison gas", "This might make you stumble backwards into that cloud of poison gas. Continue?"},
+        Row{possible_forced_prompt_context::zot_trap, "", "This might make you stumble backwards into the Zot trap. Continue?"},
+        Row{possible_forced_prompt_context::onto_trap, "alarm trap", "This might make you stumble backwards onto that alarm trap. Continue?"},
+        Row{possible_forced_prompt_context::into_trap, "teleport trap", "This might make you stumble backwards into that teleport trap. Continue?"},
+        Row{possible_forced_prompt_context::binding_sigil, "", "This might make you stumble backwards onto a binding sigil. Continue?"},
+        Row{possible_forced_prompt_context::toxic_bog, "", "This might make you stumble backwards into a toxic bog. Continue?"},
+        Row{possible_forced_prompt_context::exclusion, "", "This might make you stumble backwards into a travel-excluded area. Continue?"},
+        Row{possible_forced_prompt_context::over_losing_buoyancy, "lava", "This might make you stumble backwards over lava while you are losing your buoyancy. Continue?"},
+        Row{possible_forced_prompt_context::into_losing_buoyancy, "lava", "This might make you stumble backwards into lava while you are losing your buoyancy. Continue?"},
+        Row{possible_forced_prompt_context::over_expiring_transformation, "deep water", "This might make you stumble backwards over deep water while your transformation is expiring. Continue?"},
+        Row{possible_forced_prompt_context::into_expiring_transformation, "lava", "This might make you stumble backwards into lava while your transformation is expiring. Continue?"},
+    }));
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+    REQUIRE(possible_forced_move_prompt(std::get<0>(row), std::get<1>(row))
+            == std::get<2>(row));
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    i18n_cache_clear();
 }
 
 // -----------------------------------------------------------------------------

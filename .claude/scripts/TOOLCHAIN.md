@@ -2,6 +2,19 @@
 
 项目 `.claude/scripts/` 下有多个脚本覆盖翻译质量保障的完整链路。所有脚本从仓库根目录运行。
 
+## 语境化移动短语审计
+
+`audit_move_i18n.py` 会枚举 `_get_move_verb()`、物种 walking verb、
+`check_moveto*()` 固定动词及 `_find_cblink_target()` 动词，并将可达语法
+场景与 `.claude/scripts/data/move_i18n_manifest.json` 的结构化清单比较。
+每个 `move.<context>|<verb>` 都必须有精确且非空的 TextDB 条目；运行时
+`C_()` 回退不能视为覆盖成功。此检查在 translation、code、review 和 CI
+四类 profile 中均为阻断项。
+
+```bash
+python3 .claude/scripts/audit_move_i18n.py
+```
+
 ## 架构概览
 
 ```

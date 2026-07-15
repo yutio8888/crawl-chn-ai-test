@@ -57,6 +57,7 @@
 #include "message.h"
 #include "mon-behv.h"
 #include "mon-place.h"
+#include "movement-i18n.h"
 #include "movement.h"
 #include "mutation.h"
 #include "nearby-danger.h"
@@ -148,8 +149,16 @@ static void _moveto_maybe_repel_stairs()
     }
 }
 
-bool check_moveto_cloud(const coord_def& p, const string &move_verb,
-                        bool *prompted)
+enum class move_warning_style
+{
+    voluntary,
+    possible_forced,
+};
+
+static bool _check_moveto_cloud(const coord_def& p,
+                                const string &move_verb,
+                                bool *prompted,
+                                move_warning_style style)
 {
     if (you.confused())
         return true;
@@ -177,9 +186,20 @@ bool check_moveto_cloud(const coord_def& p, const string &move_verb,
 
         if (prompted)
             *prompted = true;
-        string prompt = make_stringf(T_("Really %s into that cloud of %s?"),
-                                     move_verb.c_str(),
-                                     cloud_type_name(ctype).c_str());
+        const string cloud_name = cloud_type_name(ctype);
+        string prompt;
+        if (style == move_warning_style::possible_forced)
+        {
+            prompt = possible_forced_move_prompt(
+                possible_forced_prompt_context::cloud, cloud_name.c_str());
+        }
+        else
+        {
+            prompt = make_stringf(T_("Really %s into that cloud of %s?"),
+                translated_move_phrase(move_verb.c_str(),
+                                       move_phrase_context::enter_area),
+                cloud_name.c_str());
+        }
         learned_something_new(HINT_CLOUD_WARNING);
 
         if (!yesno(prompt.c_str(), false, 'n'))
@@ -191,8 +211,17 @@ bool check_moveto_cloud(const coord_def& p, const string &move_verb,
     return true;
 }
 
-bool check_moveto_trap(const coord_def& p, const string &move_verb,
-                       bool *prompted)
+bool check_moveto_cloud(const coord_def& p, const string &move_verb,
+                        bool *prompted)
+{
+    return _check_moveto_cloud(p, move_verb, prompted,
+                               move_warning_style::voluntary);
+}
+
+static bool _check_moveto_trap(const coord_def& p,
+                               const string &move_verb,
+                               bool *prompted,
+                               move_warning_style style)
 {
     // Boldly go into the unknown (for ranged move prompts)
     if (env.map_knowledge(p).trap() == TRAP_UNASSIGNED)
@@ -205,8 +234,18 @@ bool check_moveto_trap(const coord_def& p, const string &move_verb,
 
     if (trap->type == TRAP_ZOT && !trap->is_safe() && !crawl_state.disables[DIS_CONFIRMATIONS])
     {
-        string msg = T_("Do you really want to %s into the Zot trap?");
-        string prompt = make_stringf(msg.c_str(), T_(move_verb.c_str()));
+        string prompt;
+        if (style == move_warning_style::possible_forced)
+        {
+            prompt = possible_forced_move_prompt(
+                possible_forced_prompt_context::zot_trap);
+        }
+        else
+        {
+            prompt = make_stringf(T_("Do you really want to %s into the Zot trap?"),
+                translated_move_phrase(move_verb.c_str(),
+                                       move_phrase_context::enter_area));
+        }
 
         if (prompted)
             *prompted = true;
@@ -222,11 +261,27 @@ bool check_moveto_trap(const coord_def& p, const string &move_verb,
 
         if (prompted)
             *prompted = true;
-        prompt = make_stringf(T_("Really %s %s that %s?"), move_verb.c_str(),
-                              (trap->type == TRAP_ALARM
-                               || trap->type == TRAP_PLATE) ? T_("onto")
-                              : T_("into"),
-                              feature_description_at(p, false, DESC_BASENAME).c_str());
+        const bool onto = trap->type == TRAP_ALARM
+                          || trap->type == TRAP_PLATE;
+        const string trap_name = feature_description_at(p, false,
+                                                        DESC_BASENAME);
+        if (style == move_warning_style::possible_forced)
+        {
+            prompt = possible_forced_move_prompt(onto
+                    ? possible_forced_prompt_context::onto_trap
+                    : possible_forced_prompt_context::into_trap,
+                trap_name.c_str());
+        }
+        else
+        {
+            prompt = make_stringf(onto
+                ? T_("Really %s onto that %s?")
+                : T_("Really %s into that %s?"),
+                translated_move_phrase(move_verb.c_str(), onto
+                    ? move_phrase_context::onto_surface
+                    : move_phrase_context::enter_area),
+                trap_name.c_str());
+        }
         if (!yesno(prompt.c_str(), true, 'n'))
         {
             canned_msg(MSG_OK);
@@ -234,6 +289,13 @@ bool check_moveto_trap(const coord_def& p, const string &move_verb,
         }
     }
     return true;
+}
+
+bool check_moveto_trap(const coord_def& p, const string &move_verb,
+                       bool *prompted)
+{
+    return _check_moveto_trap(p, move_verb, prompted,
+                              move_warning_style::voluntary);
 }
 
 static bool _check_moveto_dangerous(const coord_def& p, const string& msg)
@@ -257,7 +319,8 @@ static bool _check_moveto_dangerous(const coord_def& p, const string& msg)
 }
 
 static bool _check_moveto_binding_sigil(coord_def p, const string &move_verb,
-                                        const string &msg, bool *prompted)
+                                        const string &msg, bool *prompted,
+                                        move_warning_style style)
 {
     if (env.grid(p) == DNGN_BINDING_SIGIL && !you.is_binding_sigil_immune())
     {
@@ -268,7 +331,18 @@ static bool _check_moveto_binding_sigil(coord_def p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += make_stringf(T_("Are you sure you want to %s onto a binding sigil?"), move_verb.c_str());
+        if (style == move_warning_style::possible_forced)
+        {
+            prompt += possible_forced_move_prompt(
+                possible_forced_prompt_context::binding_sigil);
+        }
+        else
+        {
+            prompt += make_stringf(
+                T_("Are you sure you want to %s onto a binding sigil?"),
+                translated_move_phrase(move_verb.c_str(),
+                                       move_phrase_context::onto_surface));
+        }
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -279,8 +353,11 @@ static bool _check_moveto_binding_sigil(coord_def p, const string &move_verb,
     return true;
 }
 
-bool check_moveto_terrain(const coord_def& p, const string &move_verb,
-                          const string &msg, bool *prompted)
+static bool _check_moveto_terrain(const coord_def& p,
+                                  const string &move_verb,
+                                  const string &msg,
+                                  bool *prompted,
+                                  move_warning_style style)
 {
     // Boldly go into the unknown (for ranged move prompts)
     if (!env.map_knowledge(p).known())
@@ -289,7 +366,7 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
     if (!_check_moveto_dangerous(p, msg))
         return false;
 
-    if (!_check_moveto_binding_sigil(p, move_verb, msg, prompted))
+    if (!_check_moveto_binding_sigil(p, move_verb, msg, prompted, style))
         return false;
 
     if (!you.airborne() && !you.duration[DUR_NOXIOUS_BOG]
@@ -304,7 +381,18 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += make_stringf(T_("Are you sure you want to %s into a toxic bog?"), move_verb.c_str());
+        if (style == move_warning_style::possible_forced)
+        {
+            prompt += possible_forced_move_prompt(
+                possible_forced_prompt_context::toxic_bog);
+        }
+        else
+        {
+            prompt += make_stringf(
+                T_("Are you sure you want to %s into a toxic bog?"),
+                translated_move_phrase(move_verb.c_str(),
+                                       move_phrase_context::enter_area));
+        }
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -323,18 +411,40 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
         if (!msg.empty())
             prompt = msg + " ";
 
-        prompt += T_("Are you sure you want to ") + move_verb;
-
-        if (!you.airborne())
-            prompt += T_(" into ");
+        const bool over = you.airborne();
+        const bool losing_buoyancy = need_expiration_warning(DUR_FLIGHT, p);
+        const char* terrain = env.grid(p) == DNGN_DEEP_WATER
+                              ? T_("deep water") : T_("lava");
+        if (style == move_warning_style::possible_forced)
+        {
+            const possible_forced_prompt_context context = losing_buoyancy
+                ? (over
+                   ? possible_forced_prompt_context::over_losing_buoyancy
+                   : possible_forced_prompt_context::into_losing_buoyancy)
+                : (over
+                   ? possible_forced_prompt_context::over_expiring_transformation
+                   : possible_forced_prompt_context::into_expiring_transformation);
+            prompt += possible_forced_move_prompt(context, terrain);
+        }
         else
-            prompt += T_(" over ");
-
-        prompt += env.grid(p) == DNGN_DEEP_WATER ? T_("deep water") : T_("lava");
-
-        prompt += need_expiration_warning(DUR_FLIGHT, p)
-            ? T_(" while you are losing your buoyancy?")
-            : T_(" while your transformation is expiring?");
+        {
+            const char* format = losing_buoyancy
+                ? (over
+                   ? T_("Are you sure you want to %s over %s while you are "
+                        "losing your buoyancy?")
+                   : T_("Are you sure you want to %s into %s while you are "
+                        "losing your buoyancy?"))
+                : (over
+                   ? T_("Are you sure you want to %s over %s while your "
+                        "transformation is expiring?")
+                   : T_("Are you sure you want to %s into %s while your "
+                        "transformation is expiring?"));
+            prompt += make_stringf(format,
+                translated_move_phrase(move_verb.c_str(), over
+                    ? move_phrase_context::over_terrain
+                    : move_phrase_context::enter_area),
+                terrain);
+        }
 
         if (!yesno(prompt.c_str(), false, 'n'))
         {
@@ -345,9 +455,17 @@ bool check_moveto_terrain(const coord_def& p, const string &move_verb,
     return true;
 }
 
-bool check_moveto_exclusions(const vector<coord_def> &areas,
-                             const string &move_verb,
-                             bool *prompted)
+bool check_moveto_terrain(const coord_def& p, const string &move_verb,
+                          const string &msg, bool *prompted)
+{
+    return _check_moveto_terrain(p, move_verb, msg, prompted,
+                                 move_warning_style::voluntary);
+}
+
+static bool _check_moveto_exclusions(const vector<coord_def> &areas,
+                                     const string &move_verb,
+                                     bool *prompted,
+                                     move_warning_style style)
 {
     const bool you_pos_excluded = is_excluded(you.pos())
             && !is_stair_exclusion(you.pos());
@@ -362,10 +480,20 @@ bool check_moveto_exclusions(const vector<coord_def> &areas,
     }
     if (count == 0)
         return true;
-    const string prompt = make_stringf((count == (int) areas.size() ?
-                    "Really %s into a travel-excluded area?" :
-                    "You might %s into a travel-excluded area, are you sure?"),
-                              move_verb.c_str());
+    string prompt;
+    if (style == move_warning_style::possible_forced)
+    {
+        prompt = possible_forced_move_prompt(
+            possible_forced_prompt_context::exclusion);
+    }
+    else
+    {
+        prompt = make_stringf(count == (int) areas.size()
+                ? T_("Really %s into a travel-excluded area?")
+                : T_("You might %s into a travel-excluded area, are you sure?"),
+            translated_move_phrase(move_verb.c_str(),
+                                   move_phrase_context::enter_area));
+    }
 
     if (prompted)
         *prompted = true;
@@ -377,10 +505,19 @@ bool check_moveto_exclusions(const vector<coord_def> &areas,
     return true;
 }
 
+bool check_moveto_exclusions(const vector<coord_def> &areas,
+                             const string &move_verb,
+                             bool *prompted)
+{
+    return _check_moveto_exclusions(areas, move_verb, prompted,
+                                    move_warning_style::voluntary);
+}
+
 bool check_moveto_exclusion(const coord_def& p, const string &move_verb,
                             bool *prompted)
 {
-    return check_moveto_exclusions({p}, move_verb, prompted);
+    return _check_moveto_exclusions({p}, move_verb, prompted,
+                                    move_warning_style::voluntary);
 }
 
 /**
@@ -393,13 +530,26 @@ bool check_moveto_exclusion(const coord_def& p, const string &move_verb,
  *                   purposes of barbs causing damage and ice spells expiring
  * @return If true, continue with the move, otherwise cancel it
  */
-bool check_moveto(const coord_def& p, const string &move_verb, bool physically)
+static bool _check_moveto(const coord_def& p, const string &move_verb,
+                          bool physically, move_warning_style style)
 {
     return !(physically && cancel_harmful_move(physically))
-           && check_moveto_terrain(p, move_verb, "")
-           && check_moveto_cloud(p, move_verb)
-           && check_moveto_trap(p, move_verb)
-           && check_moveto_exclusion(p, move_verb);
+           && _check_moveto_terrain(p, move_verb, "", nullptr, style)
+           && _check_moveto_cloud(p, move_verb, nullptr, style)
+           && _check_moveto_trap(p, move_verb, nullptr, style)
+           && _check_moveto_exclusions({p}, move_verb, nullptr, style);
+}
+
+bool check_moveto(const coord_def& p, const string &move_verb, bool physically)
+{
+    return _check_moveto(p, move_verb, physically,
+                         move_warning_style::voluntary);
+}
+
+bool check_moveto_possible_forced(const coord_def& p, bool physically)
+{
+    return _check_moveto(p, "stumble backwards", physically,
+                         move_warning_style::possible_forced);
 }
 
 static bool _check_move_over_terrain(coord_def p, const string& move_verb)
@@ -411,13 +561,15 @@ static bool _check_move_over_terrain(coord_def p, const string& move_verb)
     if (crawl_state.disables[DIS_CONFIRMATIONS])
         return true;
 
-    return _check_moveto_binding_sigil(p, move_verb, "", nullptr);
+    return _check_moveto_binding_sigil(p, move_verb, "", nullptr,
+                                       move_warning_style::voluntary);
 }
 
 bool check_move_over(coord_def p, const string& move_verb)
 {
     return _check_move_over_terrain(p, move_verb)
-        && check_moveto_trap(p, move_verb);
+        && _check_moveto_trap(p, move_verb, nullptr,
+                              move_warning_style::voluntary);
 }
 
 // Returns true if this is a valid swap for this monster. If true, then

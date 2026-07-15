@@ -8244,7 +8244,7 @@ You %s a card...
 你%s了一张牌……
 %%%%
 You %s carefully through the %s.
-你小心翼翼地%s穿过%s。
+你小心翼翼地%s%s。
 %%%%
 You %s down.
 你向下%s。
@@ -8256,7 +8256,7 @@ You %s through the gate.
 你%s穿过了大门。
 %%%%
 You %s towards %s!
-你%s向%s！
+你%s%s！
 %%%%
 You %s%s at %s!
 你对%s%s%s！
@@ -8742,13 +8742,13 @@ You can't %s anything in your present form.
 你当前形态无法%s任何东西。
 %%%%
 You can't %s into that!
-你不能%s到那里！
+你不能%s那里！
 %%%%
 You can't %s jewellery%s.
 你无法%s珠宝%s。
 %%%%
 You can't %s onto %s!
-你不能%s到%s身上！
+你不能%s%s身上！
 %%%%
 You can't annotate this level.
 你无法注释此楼层。
@@ -8988,10 +8988,10 @@ You can't zap that!
 你无法电击那个！
 %%%%
 You cannot %s away from %s!
-你不能远离%s进行%s！
+你不能通过%s远离%s！
 %%%%
 You cannot %s closer to %s!
-你不能靠近%s进行%s！
+你不能通过%s靠近%s！
 %%%%
 You cannot apport that!
 你无法对其使用隔空取物！
@@ -24076,7 +24076,7 @@ A magical hammer augments %1$s in a flurry of sparks and slag.
 一把魔法锤在火星和熔渣的飞溅中强化了%1$s。
 %%%%
 Are you sure you want to cancel this %s?
-你确定要取消这个%s吗？
+你确定要取消此次%s吗？
 %%%%
 Are you sure you wish to flee a divine trial? This will place you under penance!
 你确定要逃离这场神圣试炼吗？这将使你受到惩罚！
@@ -29020,7 +29020,7 @@ really %s %s that %s?
 确定要%s%s那个%s吗？
 %%%%
 really %s into that cloud of %s?
-确定要%s进%s的云雾中吗？
+确定要%s那片%s吗？
 %%%%
 really %s while %s?
 确定要在%s时%s吗？
@@ -33630,10 +33630,10 @@ into
 入
 %%%%
 Are you sure you want to %s onto a binding sigil?
-你确定要%s到束缚符文上吗？
+你确定要%s束缚符文吗？
 %%%%
 Are you sure you want to %s into a toxic bog?
-你确定要%s进入毒沼吗？
+你确定要%s毒沼吗？
 %%%%
 very 
 非常
@@ -36566,7 +36566,7 @@ swing wildly
 ，浮力正在消失
 %%%%
  while your transformation is expiring
-，变身即将结束
+，变形即将结束
 %%%%
  Continue?
 继续吗？
@@ -39837,3 +39837,309 @@ attack verb|spit
 %%%%
 attack verb|open
 剖开
+%%%%
+move.bare|blink
+闪烁
+%%%%
+move.bare|hop
+跳跃
+%%%%
+move.enter-area|walk
+走进
+%%%%
+move.enter-area|fly
+飞入
+%%%%
+move.enter-area|swim
+游入
+%%%%
+move.enter-area|slither
+爬入
+%%%%
+move.enter-area|stride
+大步走入
+%%%%
+move.enter-area|roll
+翻滚进入
+%%%%
+move.enter-area|rampage
+冲入
+%%%%
+move.enter-area|stalk
+悄然走入
+%%%%
+move.enter-area|wriggle
+扭动着进入
+%%%%
+move.enter-area|sprint
+冲刺进入
+%%%%
+move.enter-area|float
+飘入
+%%%%
+move.enter-area|hop
+跳入
+%%%%
+move.enter-area|step
+迈入
+%%%%
+move.enter-area|blink
+闪烁至
+%%%%
+move.enter-area|leap
+跃入
+%%%%
+move.enter-area|passwall
+穿墙进入
+%%%%
+move.enter-area|line pass
+穿行至
+%%%%
+move.enter-area|move
+移入
+%%%%
+move.enter-area|transfer
+传送至
+%%%%
+move.enter-area|wall jump
+蹬墙跳入
+%%%%
+move.enter-area|charge
+冲入
+%%%%
+move.onto-surface|walk
+走上
+%%%%
+move.onto-surface|fly
+飞到
+%%%%
+move.onto-surface|swim
+游到
+%%%%
+move.onto-surface|slither
+爬上
+%%%%
+move.onto-surface|stride
+大步走上
+%%%%
+move.onto-surface|roll
+翻滚到
+%%%%
+move.onto-surface|rampage
+冲上
+%%%%
+move.onto-surface|stalk
+悄然走上
+%%%%
+move.onto-surface|wriggle
+扭动着爬上
+%%%%
+move.onto-surface|sprint
+冲刺到
+%%%%
+move.onto-surface|float
+飘到
+%%%%
+move.onto-surface|hop
+跳上
+%%%%
+move.onto-surface|step
+迈上
+%%%%
+move.onto-surface|blink
+闪烁到
+%%%%
+move.onto-surface|leap
+跃上
+%%%%
+move.onto-surface|passwall
+穿墙到达
+%%%%
+move.onto-surface|line pass
+穿行到
+%%%%
+move.onto-surface|move
+移到
+%%%%
+move.onto-surface|transfer
+传送到
+%%%%
+move.onto-surface|wall jump
+蹬墙跳到
+%%%%
+move.onto-surface|charge
+冲上
+%%%%
+move.onto-actor|blink
+闪烁到
+%%%%
+move.onto-actor|hop
+跳到
+%%%%
+move.through-obstacle|walk
+步行穿过
+%%%%
+move.through-obstacle|fly
+飞越
+%%%%
+move.through-obstacle|swim
+游过
+%%%%
+move.through-obstacle|slither
+爬过
+%%%%
+move.through-obstacle|stride
+大步穿过
+%%%%
+move.through-obstacle|roll
+翻滚穿过
+%%%%
+move.through-obstacle|rampage
+冲过
+%%%%
+move.through-obstacle|stalk
+悄然穿过
+%%%%
+move.through-obstacle|wriggle
+扭动着穿过
+%%%%
+move.through-obstacle|sprint
+冲刺穿过
+%%%%
+move.through-obstacle|float
+飘过
+%%%%
+move.through-obstacle|hop
+跳过
+%%%%
+move.toward-target|stride
+大步走向
+%%%%
+move.toward-target|roll
+翻滚冲向
+%%%%
+move.toward-target|rampage
+冲向
+%%%%
+move.over-terrain|walk
+走到
+%%%%
+move.over-terrain|fly
+飞到
+%%%%
+move.over-terrain|swim
+游到
+%%%%
+move.over-terrain|slither
+爬到
+%%%%
+move.over-terrain|stride
+大步走到
+%%%%
+move.over-terrain|roll
+翻滚到
+%%%%
+move.over-terrain|rampage
+冲到
+%%%%
+move.over-terrain|stalk
+悄然走到
+%%%%
+move.over-terrain|wriggle
+扭动着移到
+%%%%
+move.over-terrain|sprint
+冲刺到
+%%%%
+move.over-terrain|float
+飘到
+%%%%
+move.over-terrain|hop
+跳到
+%%%%
+move.over-terrain|step
+迈到
+%%%%
+move.over-terrain|blink
+闪烁到
+%%%%
+move.over-terrain|leap
+跃到
+%%%%
+move.over-terrain|passwall
+穿墙到达
+%%%%
+move.over-terrain|line pass
+穿行到
+%%%%
+move.over-terrain|move
+移到
+%%%%
+move.over-terrain|transfer
+传送到
+%%%%
+move.over-terrain|wall jump
+蹬墙跳到
+%%%%
+move.over-terrain|charge
+冲到
+%%%%
+plants
+植物
+%%%%
+Really %s onto that %s?
+确定要%s那个%s吗？
+%%%%
+Really %s into that %s?
+确定要%s那个%s吗？
+%%%%
+Really %s into a travel-excluded area?
+确定要%s探索排除区域吗？
+%%%%
+You might %s into a travel-excluded area, are you sure?
+你可能会%s探索排除区域，确定要继续吗？
+%%%%
+This might make you stumble backwards into that cloud of %s. Continue?
+这可能使你踉跄着退入那片%s。要继续吗？
+%%%%
+This might make you stumble backwards into the Zot trap. Continue?
+这可能使你踉跄着退入佐特陷阱。要继续吗？
+%%%%
+This might make you stumble backwards onto that %s. Continue?
+这可能使你踉跄着退到那个%s上。要继续吗？
+%%%%
+This might make you stumble backwards into that %s. Continue?
+这可能使你踉跄着退入那个%s。要继续吗？
+%%%%
+This might make you stumble backwards onto a binding sigil. Continue?
+这可能使你踉跄着退到束缚符文上。要继续吗？
+%%%%
+This might make you stumble backwards into a toxic bog. Continue?
+这可能使你踉跄着退入毒沼。要继续吗？
+%%%%
+This might make you stumble backwards into a travel-excluded area. Continue?
+这可能使你踉跄着退入探索排除区域。要继续吗？
+%%%%
+Are you sure you want to %s over %s while you are losing your buoyancy?
+你确定要%s%s上方吗？你的浮力正在消失。
+%%%%
+Are you sure you want to %s into %s while you are losing your buoyancy?
+你确定要%s%s吗？你的浮力正在消失。
+%%%%
+Are you sure you want to %s over %s while your transformation is expiring?
+你确定要%s%s上方吗？你的变形即将结束。
+%%%%
+Are you sure you want to %s into %s while your transformation is expiring?
+你确定要%s%s吗？你的变形即将结束。
+%%%%
+This might make you stumble backwards over %s while you are losing your buoyancy. Continue?
+你的浮力正在消失；这可能使你踉跄着退到%s上方。要继续吗？
+%%%%
+This might make you stumble backwards into %s while you are losing your buoyancy. Continue?
+你的浮力正在消失；这可能使你踉跄着退入%s。要继续吗？
+%%%%
+This might make you stumble backwards over %s while your transformation is expiring. Continue?
+你的变形即将结束；这可能使你踉跄着退到%s上方。要继续吗？
+%%%%
+This might make you stumble backwards into %s while your transformation is expiring. Continue?
+你的变形即将结束；这可能使你踉跄着退入%s。要继续吗？

@@ -1057,6 +1057,10 @@ public:
 
 bool check_moveto(const coord_def& p, const string &move_verb = "step",
                   bool physically = true);
+// Confirm hazards for an involuntary movement that might make the player
+// stumble backwards. Kept separate so the ordinary check_moveto API and its
+// many callers remain unchanged.
+bool check_moveto_possible_forced(const coord_def& p, bool physically = false);
 bool check_moveto_terrain(const coord_def& p, const string &move_verb,
                           const string &msg = "", bool *prompted = nullptr);
 bool check_moveto_cloud(const coord_def& p, const string &move_verb = "step",

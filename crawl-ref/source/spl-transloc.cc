@@ -39,6 +39,7 @@
 #include "mon-tentacle.h"
 #include "mon-util.h"
 #include "movement.h" // armataur charge
+#include "movement-i18n.h"
 #include "nearby-danger.h"
 #include "orb.h"
 #include "output.h"
@@ -231,22 +232,28 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         direction_chooser_args args;
         args.restricts = DIR_TARGET;
         args.needs_path = false;
+        const string display_verb = uppercase_first(translated_move_phrase(
+            verb.c_str(), move_phrase_context::bare));
         args.top_prompt = make_stringf(T_("%s to where?"),
-                                        uppercase_first(T_(verb.c_str())).c_str());
+                                       display_verb.c_str());
         args.hitfunc = hitfunc;
         args.mode = TARG_NON_ACTOR;
         direction(target, args);
 
         if (crawl_state.seen_hups)
         {
-            mprf(T_("Cancelling %s due to HUP."), verb.c_str());
+            mprf(T_("Cancelling %s due to HUP."),
+                 translated_move_phrase(verb.c_str(),
+                                        move_phrase_context::bare));
             return false;
         }
 
         if (!target.isValid || target.target == you.pos())
         {
             const string prompt =
-                make_stringf(T_("Are you sure you want to cancel this %s?"), verb.c_str());
+                make_stringf(T_("Are you sure you want to cancel this %s?"),
+                    translated_move_phrase(verb.c_str(),
+                                           move_phrase_context::bare));
             if (!safe_cancel && !yesno(prompt.c_str(), false, 'n'))
             {
                 clear_messages();
@@ -261,7 +268,8 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         if (beholder)
         {
             mprf(T_("You cannot %s away from %s!"),
-                 verb.c_str(),
+                 translated_move_phrase(verb.c_str(),
+                                        move_phrase_context::bare),
                  beholder->name(DESC_THE, true).c_str());
             continue;
         }
@@ -270,7 +278,8 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         if (fearmonger)
         {
             mprf(T_("You cannot %s closer to %s!"),
-                 verb.c_str(),
+                 translated_move_phrase(verb.c_str(),
+                                        move_phrase_context::bare),
                  fearmonger->name(DESC_THE, true).c_str());
             continue;
         }
@@ -278,14 +287,18 @@ static bool _find_cblink_target(dist &target, bool safe_cancel,
         if (cell_is_solid(target.target))
         {
             clear_messages();
-            mprf(T_("You can't %s into that!"), verb.c_str());
+            mprf(T_("You can't %s into that!"),
+                 translated_move_phrase(verb.c_str(),
+                                        move_phrase_context::enter_area));
             continue;
         }
 
         monster* target_mons = monster_at(target.target);
         if (target_mons && you.can_see(*target_mons))
         {
-            mprf(T_("You can't %s onto %s!"), verb.c_str(),
+            mprf(T_("You can't %s onto %s!"),
+                 translated_move_phrase(verb.c_str(),
+                                        move_phrase_context::onto_actor),
                  target_mons->name(DESC_THE).c_str());
             continue;
         }

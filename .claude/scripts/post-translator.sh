@@ -32,6 +32,9 @@ run_check() {
     run_check "source.txt control-character parity (\n)" \
         python3 .claude/scripts/source_control_parity.py \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Contextual movement phrase coverage" \
+        python3 .claude/scripts/audit_move_i18n.py crawl-ref/source/ \
+        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Term validation (rejected names from decisions.md)" \
         python3 .claude/scripts/scan_i18n.py validate-terms \
         --glossary docs/decisions.md \

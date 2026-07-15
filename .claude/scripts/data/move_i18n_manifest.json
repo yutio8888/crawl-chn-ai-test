@@ -1,0 +1,50 @@
+{
+  "contexts": {
+    "move.bare": {
+      "description": "Standalone action labels and cancellation prompts without a directional complement.",
+      "verbs": ["blink", "hop"]
+    },
+    "move.enter-area": {
+      "description": "Entering an area, cloud, trap, bog, or travel-excluded cell.",
+      "verbs": [
+        "walk", "fly", "swim", "slither", "stride", "roll", "rampage",
+        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "leap", "passwall", "line pass", "move", "transfer", "wall jump",
+        "charge"
+      ]
+    },
+    "move.onto-surface": {
+      "description": "Moving onto a sigil, pressure plate, alarm trap, or other surface.",
+      "verbs": [
+        "walk", "fly", "swim", "slither", "stride", "roll", "rampage",
+        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "leap", "passwall", "line pass", "move", "transfer", "wall jump",
+        "charge"
+      ]
+    },
+    "move.onto-actor": {
+      "description": "A targeted blink or hop that would land on an actor.",
+      "verbs": ["blink", "hop"]
+    },
+    "move.through-obstacle": {
+      "description": "Passing through allied fungi or plants.",
+      "verbs": [
+        "walk", "fly", "swim", "slither", "stride", "roll", "rampage",
+        "stalk", "wriggle", "sprint", "float", "hop"
+      ]
+    },
+    "move.toward-target": {
+      "description": "Rampaging toward a visible target.",
+      "verbs": ["stride", "roll", "rampage"]
+    },
+    "move.over-terrain": {
+      "description": "Moving over deep water or lava while a flight or transformation effect expires.",
+      "verbs": [
+        "walk", "fly", "swim", "slither", "stride", "roll", "rampage",
+        "stalk", "wriggle", "sprint", "float", "hop", "step", "blink",
+        "leap", "passwall", "line pass", "move", "transfer", "wall jump",
+        "charge"
+      ]
+    }
+  }
+}
