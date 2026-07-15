@@ -75,6 +75,15 @@ that reads like native game dialogue — not translated text.
 The authoritative Single Source of Truth for terminology is `docs/glossary.md`.
 It consolidates naming decisions from `docs/decisions.md` and style guides.
 
+Before reading or editing translation content, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type translate --files <target-files>
+```
+
+Use the returned terms and guidance. Record its glossary SHA-256 in the final
+report. Rerun it if `docs/glossary.md` changes while the task is in progress.
+
 **Before translating, you MUST consult the relevant glossary domain sections:**
 - Gods: `<!-- domain:gods -->` section (Section 一)
 - God titles: `<!-- domain:god-titles -->` section (Section 二)
@@ -176,10 +185,8 @@ Don't translate literally. Find the Chinese idiom that conveys the same meaning.
 
 ## Evidence Protocol (REQUIRED — replaces self-check)
 
-**Do NOT self-check.** LLM self-reporting is unreliable; the same model that made
-errors will rationalize them on re-inspection. Instead, verification is done by
-deterministic scripts — your job is to trigger them and let the orchestrator
-judge the raw output.
+**Do not claim success from intuition.** Run deterministic scripts, preserve
+their raw output, and explain every task-relevant failure or warning.
 
 ### Post-Translation Verification
 
@@ -190,7 +197,7 @@ python3 .claude/scripts/scan_i18n.py source-txt-integrity \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
 
 # Full translation quality check
-bash .claude/scripts/post-translator.sh
+bash .claude/scripts/verify_zh.sh --profile translation
 ```
 This aggregates: term validation (rejected names from decisions.md), format
 integrity (%%%% parity), and database @keyword@ integrity. Output goes to
@@ -198,13 +205,13 @@ integrity (%%%% parity), and database @keyword@ integrity. Output goes to
 
 ### Output Rule
 
-Report the verification report path to the orchestrator. Do **not** summarize,
-filter, or interpret script output. The orchestrator reads the raw log directly.
+Report the verification report path and preserve its raw contents. Explain every
+task-relevant failure or warning; never hide or rewrite results.
 
 ### Knowledge Reference (read, understand, apply — but scripts do the checking)
 
 The following rules guide your translation quality. Read and apply them, but
-the mechanical verification is handled by `post-translator.sh`:
+the mechanical verification is handled by `verify_zh.sh --profile translation`:
 - God names: use `docs/glossary.md` canonical forms (西芙·穆娜, not 席夫·穆纳)
 - Format strings: %s count must match EN key
 - @keyword@, w:N weights, VISUAL:/SOUND: prefixes: preserve exactly
@@ -213,8 +220,8 @@ the mechanical verification is handled by `post-translator.sh`:
 ## Workflow
 
 When given a translation task:
-1. Read the EN source text carefully
-2. Read `docs/glossary.md` for the relevant domain sections
+1. Run `context_resolve.sh` as specified above and retain the glossary SHA-256
+2. Read the EN source text carefully and use the returned glossary domains
 3. Consult `docs/decisions.md` for any existing rulings on the entities involved
 4. **Grep source.txt for EACH target key** — skip if translation already exists:
    ```bash
@@ -224,7 +231,7 @@ When given a translation task:
 6. Identify the speaker (if dialogue) and apply the correct voice profile
 7. Translate using glossary terminology
 8. **NEVER blindly append all enumerated names** — always diff against existing keys
-9. Run `bash .claude/scripts/post-translator.sh` and report the log path
+9. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path and glossary SHA-256
 10. Run source.txt integrity check:
     ```bash
     python3 .claude/scripts/scan_i18n.py source-txt-integrity \

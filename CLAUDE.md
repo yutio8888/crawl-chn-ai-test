@@ -37,6 +37,21 @@ The review gate (step 3) catches high-risk C++/T_() changes before they reach
 When the user's request matches a scenario below, **delegate to the specified
 agent** using the Agent tool. Do NOT handle these tasks inline.
 
+### Current Glossary Context (mandatory)
+
+For every translation, i18n implementation, or review task, resolve terminology
+from the current worktree immediately before dispatch:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" \
+  --task-type <translate|code|review> --files <target-files>
+```
+
+Pass the complete output to the Agent. The Agent must report the included
+`docs/glossary.md` SHA-256. If the glossary changes during the task, rerun the
+resolver before further translation or review work. Never substitute a fixed
+terminology list embedded in an Agent or Skill.
+
 ### Translation → `zh-translator` agent
 
 | Trigger | Example |
@@ -48,7 +63,8 @@ agent** using the Agent tool. Do NOT handle these tasks inline.
 
 ```
 # Auto-inject terminology context before dispatch
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --files <target-files> 2>/dev/null)
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" \
+  --task-type translate --files <target-files> 2>/dev/null)
 Agent(subagent_type="zh-translator", description="Translate <target>",
   prompt="<full translation task>\n\n## Terminology Context\n${CONTEXT}")
 ```
@@ -63,8 +79,10 @@ Agent(subagent_type="zh-translator", description="Translate <target>",
 | Compilation / build fixes | "编译报错了帮我修", "fix the build" |
 
 ```
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" \
+  --task-type code --files <target-files> 2>/dev/null)
 Agent(subagent_type="crawl-coder", description="Implement <change>",
-  prompt="<full implementation task with file paths and requirements>")
+  prompt="<full implementation task with file paths and requirements>\n\n${CONTEXT}")
 ```
 
 ### Code Review → `zh-code-reviewer` agent
@@ -81,8 +99,10 @@ user asks to review code, check correctness, or audit implementation quality.
 | Translation bug investigation | "这个翻译 bug 根因是什么", "analyze this i18n issue" |
 
 ```
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<scope>" \
+  --task-type review --files <target-files> 2>/dev/null)
 Agent(subagent_type="zh-code-reviewer", description="Review <scope>",
-  prompt="<review scope: commit hash, file list, or diff>")
+  prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
 ```
 
 ### Translation Quality Review → `translation-reviewer` agent
@@ -98,8 +118,10 @@ quality, terminology consistency, and character voice checks.
 | Character voice | "角色语气对不对", "check character voice consistency" |
 
 ```
+CONTEXT=$(bash .claude/scripts/context_resolve.sh "<scope>" \
+  --task-type review --files <target-files> 2>/dev/null)
 Agent(subagent_type="translation-reviewer", description="Review <scope>",
-  prompt="<review scope: commit hash, file list, or diff>")
+  prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
 ```
 
 ### Full Pipeline → `translation-pipeline` skill + workflow
@@ -116,12 +138,18 @@ the `translation-fix-pipeline` workflow for deterministic multi-agent orchestrat
 | New issue from scratch | "帮我处理 Issue #N" |
 
 ```
-# Skill handles intake → creates issue file → invokes Workflow
+# Skill handles intake; classifier output is the sole reviewer-routing input.
+REVIEW_ROUTING=$(python3 .claude/scripts/classify_reviewers.py \
+  --files <all-planned-target-files>)
 Skill("translation-pipeline")
-# → Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {...}})
+# → Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js",
+#             args: {..., reviewRouting: JSON.parse(REVIEW_ROUTING)}})
 ```
 
-Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (translator owns translation assets, then coder edits code) → Review (3-way parallel) → Cross-validate → Report.
+Workflow phases: Analyze → Plan → Review Plan (gate) → Execute (translator owns
+translation assets, then coder edits code) → mechanically routed Review (zero,
+one, or two reviewers) → Cross-validate → Report. Missing `reviewRouting` is a
+hard stop.
 
 ### Batch Pipeline → `translation-batch-pipeline` workflow
 
@@ -131,7 +159,8 @@ merges same-root-cause groups, builds a unified batch glossary, then executes
 sequentially to avoid source.txt merge conflicts.
 
 ```
-Workflow({scriptPath: ".claude/workflows/translation-batch-pipeline.js", args: {issues: [{description: "..."}, ...]}})
+Workflow({scriptPath: ".claude/workflows/translation-batch-pipeline.js",
+  args: {issues: [{description: "..."}, ...], reviewRouting: <classifier JSON>}})
 ```
 
 Key differences from single-issue pipeline:
@@ -272,7 +301,7 @@ resources; unbounded `-j$(nproc)` may cause system instability.
 
 **Full build docs**: `docs/build-workflow.md`
 
-### Architecture: Dual Worktree + ccache
+### Architecture: Multi-Target Worktrees + ccache
 
 Console and tiles builds use separate worktrees to isolate `.o` files:
 
@@ -280,6 +309,7 @@ Console and tiles builds use separate worktrees to isolate `.o` files:
 |----------|-------------|---------|
 | **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
 | `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
+| `.worktrees/android-tiles` | Android APK | `bash crawl-ref/source/util/build-android.sh` |
 
 When `ccache` is installed, persistent caches live in the ignored root
 `.ccache/`, separated into `console`, `mingw-tiles`, and `android-tiles`.
@@ -335,10 +365,14 @@ regeneration — this ensures text file changes (zh/*.txt) take effect
 even when only the C++ binary was modified.
 
 ### Required Fonts
-- `contrib/fonts/DejaVuSans.ttf` (~720KB) — proportional font
-- `contrib/fonts/DejaVuSansMono.ttf` (~330KB) — primary monospace font (layout metrics)
-- `contrib/fonts/SarasaMonoSC-Regular.ttf` (~25MB) — CJK fallback font (must obtain separately)
-- `contrib/fonts/MapleMono-NF-CN-Regular.ttf` — unified CJK tile font (see init.txt)
+- `dat/tiles/MapleMono-NF-CN-Regular.ttf` — unified default for every tile font
+- `dat/tiles/DejaVuSans.ttf` — fallback where required by the renderer
+- `init.txt` must set `tile_font_{crt,msg,stat,tip,lbl}_file` to the Maple font
+  and must be deployed beside `crawl.exe`.
+
+Deploy tile fonts to `dat/tiles/`, not `contrib/fonts/`. Renderer fallback
+support may remain in the source, but the supported deployment default is the
+single Maple Mono NF CN font configured for all tile text roles.
 
 ### Prebuilt Contrib Libraries
 Cross-compilation requires prebuilt MinGW libraries at:
@@ -497,7 +531,8 @@ cd crawl-ref/source && make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 cp crawl.exe ~/outputs/crawl-test/crawl.exe
 cp crawl.exe /mnt/d/crawl-game/crawl.exe
 cp -r dat/* /mnt/d/crawl-game/dat/
-cp contrib/fonts/SarasaMonoSC-Regular.ttf /mnt/d/crawl-game/contrib/fonts/
+cp dat/tiles/MapleMono-NF-CN-Regular.ttf /mnt/d/crawl-game/dat/tiles/
+cp init.txt /mnt/d/crawl-game/init.txt
 ```
 
 ### Automated Translation Regression Tests (three-layer pipeline)
@@ -629,7 +664,7 @@ block with only relevant terminology and constraints:
 ```bash
 # Capture context into a variable, include in agent dispatch prompt
 CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
-    --files <target-files>)
+    --task-type <translate|code|review> --files <target-files>)
 # Then include $CONTEXT in the agent prompt to reduce context bloat.
 ```
 

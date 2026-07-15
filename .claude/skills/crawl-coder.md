@@ -11,6 +11,39 @@ adding T_() guards, removing ZH language switches, TextDB data operations,
 creating new zh-* source files, fixing mixed CN/EN output, ARG-DIFF resolution,
 and compilation/build fixes.
 
+<!-- BEGIN GENERATED: i18n-safety -->
+# i18n-safety-v2
+
+This policy is the shared safety contract for DCSS Chinese i18n code.
+
+- `T_()` and `C_()` return borrowed pointers that become invalid after
+  `i18n_cache_clear()`. Never retain them in static or namespace storage,
+  members, persistent containers, aggregates, or callback captures.
+- Persistent literal tables use `N_("key")` or
+  `NC_("context", "key")`, then translate at the consumption site with the
+  matching `T_()` or `C_()`. Copy the result to `std::string` if it crosses a
+  statement boundary.
+- Never pass a `std::string`, concatenation, ternary promoted to
+  `std::string`, or a `std::string`-returning call directly to a printf-style
+  variadic `%s` slot. Store it locally and pass `.c_str()`.
+- Treat every `CALL_NO_CSTR` scanner warning as requiring manual return-type
+  confirmation: `const char *` is safe; `std::string` needs `.c_str()`.
+- Never pass translated text to English morphology such as `conj_verb()`.
+- Movement phrases remain English internal values until the display sink.
+  Translate them with `translated_move_phrase()` and the applicable grammar
+  context; update `move_i18n_manifest.json` and require exact-key coverage.
+- Keep protocol, lookup, serialization, Lua comparison, and TextDB key values
+  in English. Translate only at display boundaries.
+- Use `mprf_p` for positional `%n$s` formats and never mix positional and
+  sequential placeholders.
+- Resolve terminology from the current `docs/glossary.md` immediately before
+  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+
+Configuration checks validate this policy's generated blocks. C++ source
+analysis remains the responsibility of `scan_i18n_lifetime.py`,
+`scan_varargs_string.py`, and the other code verification gates.
+<!-- END GENERATED: i18n-safety -->
+
 ## When to Use
 
 | Trigger | Example |
@@ -35,6 +68,18 @@ and compilation/build fixes.
 8. **Compilation verification** — console (`make -j4`) and cross-compile (`TILES=y`)
 9. **Descriptor system** — DESC_YOUR/THE/A/PLAIN handling for monster names
 
+## Mandatory Current-Glossary Context
+
+Before dispatching any task that touches `T_()`, `C_()`, `source.txt`, or ZH
+TextDB content, run:
+
+```bash
+bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files>
+```
+
+Append the complete output to the task prompt. Require the implementer to report
+the glossary SHA-256. Do not replace this with terminology copied into the Skill.
+
 ## Dispatch Templates
 
 ### Template 1: T_() Guard Addition
@@ -42,11 +87,12 @@ and compilation/build fixes.
 ```
 Task(subagent_type="crawl-coder", description="Add T_() guards",
   prompt="Add T_() wrapping to untranslated strings in <file>.
+Use the attached context_resolve.sh output and report its glossary SHA-256.
 Follow the standard T_() migration pattern:
 1. Replace Options.language == lang_t::ZH ? \"中文\" : \"English\" with T_(\"English\")
 2. Add corresponding entries to crawl-ref/source/dat/i18n/zh/source.txt
 3. Run make -j4 to verify compilation
-4. Run bash .claude/scripts/post-coder.sh for verification")
+4. Run bash .claude/scripts/verify_zh.sh --profile code for verification")
 ```
 
 ### Template 2: Mixed CN/EN Output Fix
@@ -59,7 +105,7 @@ Root cause investigation pattern:
 2. Check if there's a descriptor system (DESC_YOUR, DESC_THE) that should be used
 3. Check if T_() is missing on any fragment
 4. Verify the fix with make -j4
-5. Run post-coder.sh verification")
+5. Run verify_zh.sh --profile code verification")
 ```
 
 ### Template 3: ZH Guard Removal
@@ -70,7 +116,7 @@ Task(subagent_type="crawl-coder", description="Remove ZH guards",
 Pattern: Replace 'condition ? zh_string : en_string' with T_(\"en_string\").
 For Lua vaults: replace crawl.language() == 'zh' with crawl.t_(\"English\").
 Add all new keys to source.txt. Compile and verify.
-Run post-coder.sh after completion.")
+Run verify_zh.sh --profile code after completion.")
 ```
 
 ### Template 4: New zh-* System Creation
@@ -98,7 +144,7 @@ Priority order:
 3. C_(ctx, key) — when same English word needs different Chinese translations
 4. Drop unused positional args — when CN doesn't need a verb position
 Rules: mprf_p (not mprf) for %n$s, never mix %1$s with bare %s,
-conj_verb on Chinese is banned. Run post-coder.sh to verify.")
+conj_verb on Chinese is banned. Run verify_zh.sh --profile code to verify.")
 ```
 
 ## Key Patterns (Synthesized from Recent Commits)
@@ -155,23 +201,25 @@ Common contexts: `"verb"` (cloud/action verbs), `"status"` (status labels),
 
 > **Commit**: `e9f0f22ae3` (items 4-5: cloud verbs + STATUS_DRAINED)
 
-### Pattern 4: Double T_() for Static Arrays
+### Pattern 4: Persistent Literal Tables via N_()/NC_()
 
-Static arrays initialize before i18n is loaded — T_() returns English (no-op).
-Keep T_() in the array for `i18n_extract.py` scanning, add T_() at call sites
-for actual runtime translation:
+`T_()` and `C_()` return borrowed cache pointers and must never be retained in
+static or persistent storage. Mark stable English literals for extraction with
+`N_()`/`NC_()`, then translate at the consumption site:
 
 ```cpp
-// Static definition — T_() for i18n_extract.py discovery
+// Stable English keys visible to i18n_extract.py
 static const char* fail_severity_adjs[] = {
-    T_("harmless"), T_("dangerous"), // ...
+    N_("harmless"), N_("dangerous"), // ...
 };
 
-// Runtime access — T_() does the real work
-mprf(T_(fail_severity_adjs[level]));
+// Runtime access — copy the borrowed result when it crosses the statement.
+const string severity = T_(fail_severity_adjs[level]);
+mpr(severity);
 ```
 
-> **Commit**: `329d7b7584` (fail_severity_adjs), also `divine_title[][]` in describe-god.cc
+For context-qualified keys, use `NC_("context", "key")` in the table and the
+matching `C_("context", value)` at the display sink.
 
 ### Pattern 5: Language-Agnostic Vault Data
 
@@ -264,7 +312,7 @@ resolution debugging.
 | 7 | Protocol key translated | Breaks save/load/serialization | Review `.des` tags, JSON keys |
 | 8 | Lua condition string T_()'d | `race == "木乃伊"` always false | `grep -rn 'T_.*==.*"' ` in Lua |
 | 9 | `buf.size()` for CJK alignment | Bytes ≠ display width | Use `strwidth()` instead |
-| 10 | Static init T_() only (no call-site T_()) | Returns EN at runtime | `i18n_extract.py validate` |
+| 10 | Persistent raw `T_()`/`C_()` pointer | Dangles after cache clear | `scan_i18n_lifetime.py --require-parser` |
 | 11 | Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys before writing |
 
 ## Source.txt Integrity Protocol (REQUIRED before commit)
@@ -312,4 +360,4 @@ Task(subagent_type="crawl-coder", description="<3-5 word summary>",
   prompt="<full task with file paths and requirements>")
 ```
 
-The agent uses `make -j4` (not -j8), and runs `post-coder.sh` before reporting completion.
+The agent uses `make -j4` (not -j8), and runs `verify_zh.sh --profile code` before reporting completion.

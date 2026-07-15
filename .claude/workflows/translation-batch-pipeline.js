@@ -295,10 +295,12 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
     'Type: ' + (validAnalyses[grp.issueIndices[0]]?.translationType || '?') + '\n' +
     '\nBatch glossary (USE THESE EXACT TRANSLATIONS):\n' + JSON.stringify(plan.batchGlossary) +
     '\n\nSteps:\n' +
-    '1. Make each code change as specified\n' +
-    '2. Run make -j4 to verify compilation\n' +
-    '3. If compilation fails, fix and recompile\n' +
-    '4. Run: bash .claude/scripts/post-coder.sh\n' +
+    '1. Run context_resolve.sh with --task-type code for the exact target files\n' +
+    '2. Apply the returned glossary context and retain its SHA-256\n' +
+    '3. Make each code change as specified\n' +
+    '4. Run make -j4 to verify compilation\n' +
+    '5. If compilation fails, fix and recompile\n' +
+    '6. Run: bash .claude/scripts/verify_zh.sh --profile code\n' +
     '\nCRITICAL: Use mprf_p for positional %s. No .c_str() on const char*. No protocol translation.',
     { agentType: 'crawl-coder', label: 'code-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.code }
   )
@@ -309,12 +311,14 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
     '\nTranslations needed: ' + JSON.stringify(grp.translationsNeeded) + '\n' +
     '\nBATCH GLOSSARY — YOU MUST USE THESE EXACT TRANSLATIONS:\n' + JSON.stringify(plan.batchGlossary) +
     '\n\nSteps:\n' +
-    '1. Read docs/decisions.md and docs/glossary.md\n' +
-    '2. For EACH entry, grep source.txt first to avoid duplicates\n' +
-    '3. Add entries to crawl-ref/source/dat/i18n/zh/source.txt\n' +
-    '4. For TextDB: add to correct zh/*.txt with English key\n' +
-    '5. Run: bash .claude/scripts/post-translator.sh\n' +
-    '\nCRITICAL: Batch glossary translations are AUTHORITATIVE for this batch. Do not deviate.',
+    '1. Run context_resolve.sh with --task-type translate for the exact target files\n' +
+    '2. Apply the returned glossary context and retain its SHA-256\n' +
+    '3. For EACH entry, grep source.txt first to avoid duplicates\n' +
+    '4. Add entries to crawl-ref/source/dat/i18n/zh/source.txt\n' +
+    '5. For TextDB: add to correct zh/*.txt with English key\n' +
+    '6. Preserve literal \\n, \\t, \\r, %%%%, %N$s, <tag>, and @keyword@ tokens byte-for-byte\n' +
+    '7. Run: bash .claude/scripts/verify_zh.sh --profile translation\n' +
+    '\nUse the batch glossary only when it agrees with the current resolver output; current docs/glossary.md wins.',
     { agentType: 'zh-translator', label: 'trans-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.translation }
   )
 
@@ -358,19 +362,21 @@ const reviewJobs = []
 if (routedReviewers.includes('zh-code-reviewer')) {
   reviewJobs.push(async () => ({ kind: 'code', result: await agent(
     'Review ALL code changes from this batch.\n' +
-    'Run: bash .claude/scripts/post-reviewer.sh\n' +
+    'Resolve current terminology with context_resolve.sh --task-type review.\n' +
+    'Run: bash .claude/scripts/verify_zh.sh --profile review\n' +
     'Review the diff: protocol/display, T_() correctness, compilation, DB integrity, EN mode.\n' +
-    'Output verdict with blocker/needs-fix/suggestion counts.',
+    'Preserve the raw log, interpret relevant failures/warnings, report glossary SHA-256, and output the review-contract-v2 verdict with counts.',
     { agentType: 'zh-code-reviewer', label: 'code-review', schema: BATCH_REVIEW_SCHEMA }
   ) }))
 }
 if (routedReviewers.includes('translation-reviewer')) {
   reviewJobs.push(async () => ({ kind: 'translation', result: await agent(
     'Review ALL translation quality from this batch.\n' +
-    'Run: bash .claude/scripts/post-reviewer.sh\n' +
+    'Resolve current terminology with context_resolve.sh --task-type review.\n' +
+    'Run: bash .claude/scripts/verify_zh.sh --profile review\n' +
     'Review: semantic accuracy, no fabrication, natural Chinese, precision, terminology.\n' +
     'Cross-reference against batch glossary and docs/glossary.md.\n' +
-    'Output verdict with blocker/needs-fix/suggestion counts.',
+    'Preserve the raw log, interpret content-relevant failures/warnings, report glossary SHA-256, and output the review-contract-v2 verdict with counts.',
     { agentType: 'translation-reviewer', label: 'trans-review', schema: BATCH_REVIEW_SCHEMA }
   ) }))
 }
@@ -384,7 +390,18 @@ log([
   transReview ? 'Trans:' + transReview.verdict + ' B' + transReview.blockers + 'F' + transReview.needsFix : 'Trans:N/A',
 ].join(' | '))
 
+const executionIncomplete = execResults.length !== plan.mergedGroups.length
+  || execResults.some(result => {
+    const group = plan.mergedGroups[result.groupIndex]
+    const codeRequired = (group?.codeChanges?.length || 0) > 0
+    const translationRequired = (group?.translationsNeeded?.length || 0) > 0
+    return (codeRequired && result.code?.compileStatus !== 'pass')
+      || (translationRequired && !result.translation)
+  })
+const reviewerIncomplete = routedReviewers.some(kind =>
+  kind === 'zh-code-reviewer' ? !codeReview : !transReview)
 const hasBlockers = (codeReview?.blockers > 0) || (transReview?.blockers > 0)
+  || codeReview?.verdict === 'No-Go' || transReview?.verdict === 'No-Go'
 
 // ── Phase 6: Cross-validate ────────────────────────────
 
@@ -395,14 +412,8 @@ const crossValidation = await agent(
   '\nBatch: ' + ISSUES.length + ' issues → ' + groups.length + ' groups → ' + execResults.length + ' executed\n' +
   'Code review: ' + (codeReview?.verdict || '?') + ' B' + (codeReview?.blockers || 0) + '\n' +
   'Trans review: ' + (transReview?.verdict || '?') + ' B' + (transReview?.blockers || 0) + '\n' +
-  '\nRun ALL verification scripts:\n' +
-  '  python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
-  '  python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
-  '  python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
-  '  python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt\n' +
-  '  bash .claude/scripts/check_consistency.sh --rulings\n' +
-  '  bash .claude/scripts/check_consistency.sh --gods\n' +
-  '  bash .claude/scripts/check_consistency.sh --skills\n' +
+  '\nRun the unified required gate and preserve its raw report:\n' +
+  '  bash .claude/scripts/verify_zh.sh --profile review\n' +
   '\nCheck: missed edge cases? side effects? same pattern elsewhere? EN mode ok? format strings ok? DB keys ok?\n' +
   'Also check: any glossary term used inconsistently across groups? Any duplicate source.txt keys from serial appends?',
   { label: 'cross-validate', schema: CROSS_VALIDATE_SCHEMA }
@@ -418,8 +429,11 @@ if (crossValidation) {
 
 phase('Report')
 
-const finalVerdict = hasBlockers ? 'NO-GO' :
-  ((codeReview?.needsFix > 0 || transReview?.needsFix > 0 || crossValidation?.passed === false) ? 'CONDITIONAL GO' : 'GO')
+const verificationIncomplete = crossValidation?.passed !== true
+const hardFailure = executionIncomplete || reviewerIncomplete
+  || verificationIncomplete || hasBlockers
+const finalVerdict = hardFailure ? 'NO-GO' :
+  ((codeReview?.needsFix > 0 || transReview?.needsFix > 0) ? 'CONDITIONAL GO' : 'GO')
 
 // Per-issue status
 const issueStatus = validAnalyses.map((a, i) => {
@@ -446,7 +460,7 @@ await agent(
   'Missed: ' + (crossValidation?.missedItems?.join('; ') || 'none') + '\n' +
   'Side effects: ' + (crossValidation?.sideEffects?.join('; ') || 'none') + '\n' +
   '\n## Verdict: ' + finalVerdict + '\n' +
-  (!hasBlockers ? 'Merge: git checkout chn-0.34.1-base && git merge <worktree-branch>' : 'Resolve blockers, re-run pipeline.') + '\n' +
+  (finalVerdict === 'GO' ? 'Merge: run review_at_merge.sh, then git merge --ff-only <worktree-branch>' : 'Resolve blockers/conditions and rerun required verification before merge.') + '\n' +
   '\nFormat as structured markdown with sections: Summary, Per-Issue Status, Batch Glossary, Changes, Reviews, Cross-Validation, Verdict.',
   { label: 'report' }
 )
@@ -465,4 +479,5 @@ return {
   crossValidation,
   verdict: finalVerdict,
   hasBlockers,
+  hardFailure,
 }

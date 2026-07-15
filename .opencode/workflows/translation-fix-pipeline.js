@@ -239,8 +239,8 @@ log('Plan approved after ' + planIterations + ' revision(s)')
 
 phase('Execute')
 
-// Translation assets have one owner.  Run translation first, then code, so
-// source.txt/TextDB cannot be modified concurrently in separate worktrees.
+// Translation assets have one owner. Run translation first, then code in the
+// same worktree so reviewers and cross-validation see the complete result.
 const translationResult = await agent(
     `Add Chinese translations for these entries.
 
@@ -249,10 +249,11 @@ Context: ${ISSUE}
 ${ISSUE_FILE ? 'Issue file: ' + ISSUE_FILE : ''}
 
 Steps:
-1. Read docs/decisions.md and docs/glossary.md for terminology rulings
-2. For each entry, grep source.txt first to avoid duplicates
-3. You exclusively own source.txt and other zh/*.txt/TextDB assets for this run
-4. Run: bash .claude/scripts/verify_zh.sh --profile translation
+1. Run context_resolve.sh with --task-type translate for the exact target files
+2. Apply the returned current glossary context and retain its SHA-256
+3. For each entry, grep source.txt first to avoid duplicates
+4. You exclusively own source.txt and other zh/*.txt/TextDB assets for this run
+5. Run: bash .claude/scripts/verify_zh.sh --profile translation
 
 Translation rules:
 - Preserve literal \\n, \\t, \\r, %%%%, %N$s, <tag>, and @keyword@ tokens
@@ -272,10 +273,12 @@ Code changes: ${JSON.stringify(plan.codeChanges)}
 Analysis type: ${analysis.translationType}
 
 Steps:
-1. Make each code change as specified in the plan
-2. Run make -j4 to verify compilation
-3. If compilation fails, diagnose, fix, recompile — iterate until pass
-4. Run: bash .claude/scripts/verify_zh.sh --profile code
+1. Run context_resolve.sh with --task-type code for the exact target files
+2. Apply the returned current glossary context and retain its SHA-256
+3. Make each code change as specified in the plan
+4. Run make -j4 to verify compilation
+5. If compilation fails, diagnose, fix, recompile — iterate until pass
+6. Run: bash .claude/scripts/verify_zh.sh --profile code
 
 CRITICAL rules (from CLAUDE.md):
 - Use mprf_p (not mprf) for positional format strings
@@ -285,7 +288,7 @@ CRITICAL rules (from CLAUDE.md):
 - Do not edit source.txt or any zh/*.txt/TextDB asset; zh-translator owns them
 - Type III: add T_(variable) in code; the preceding translation step owns its source.txt entry
 - Type V: report that text should remain English (not a bug)`,
-    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA, isolation: 'worktree' }
+    { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA }
 )
 
 if (codeResult && codeResult.compileStatus === 'pass') {
@@ -300,7 +303,7 @@ if (translationResult) {
   log('Translation: skipped')
 }
 
-// ── Phase 5: Review (parallel 3-way) ────────────────────
+// ── Phase 5: Review (machine-routed) ────────────────────
 
 phase('Review')
 
@@ -326,7 +329,8 @@ if (routedReviewers.includes('zh-code-reviewer')) {
   reviewJobs.push(async () => ({ kind: 'code', result: await agent(
     `Review the code changes for this translation fix.
 
-First run: bash .claude/scripts/post-reviewer.sh
+First resolve the current glossary with context_resolve.sh --task-type review.
+Then run: bash .claude/scripts/verify_zh.sh --profile review
 
 Then review the diff:
 1. Protocol/display separation — any protocol keys translated?
@@ -335,8 +339,9 @@ Then review the diff:
 4. Database integrity — %%%% parity, duplicate keys, @keyword@ refs?
 5. EN mode safety — does English mode still work?
 
-Classify: blocker (functional/runtime) | needs-fix (quality) | suggestion.
-Output verdict with counts.`,
+Use review-contract-v2: Blocker | Needs Fix | Suggestion. Preserve the raw log,
+interpret every relevant failure or warning, and report the glossary SHA-256.
+Output the mechanically derived verdict with counts.`,
     { agentType: 'zh-code-reviewer', label: 'code-review', schema: CODE_REVIEW_SCHEMA }
   ) }))
 }
@@ -345,7 +350,8 @@ if (routedReviewers.includes('translation-reviewer')) {
   reviewJobs.push(async () => ({ kind: 'translation', result: await agent(
     `Review the Chinese translation quality.
 
-First run: bash .claude/scripts/post-reviewer.sh
+First resolve the current glossary with context_resolve.sh --task-type review.
+Then run: bash .claude/scripts/verify_zh.sh --profile review
 
 Then review:
 1. Semantic accuracy — ZH matches EN exactly?
@@ -354,8 +360,9 @@ Then review:
 4. Precision — numbers/percentages preserved?
 5. Cross-reference docs/glossary.md for terminology.
 
-Classify: blocker (functional/runtime) | needs-fix (definite quality error) | suggestion.
-Output verdict with counts.`,
+Use review-contract-v2: Blocker | Needs Fix | Suggestion. Preserve the raw log,
+interpret every content-relevant failure or warning, and report the glossary SHA-256.
+Output the mechanically derived verdict with counts.`,
     { agentType: 'translation-reviewer', label: 'trans-review', schema: TRANS_REVIEW_SCHEMA }
   ) }))
 }
@@ -370,7 +377,14 @@ log([
   transReview ? 'Trans:' + transReview.verdict + ' B' + transReview.blockers + 'F' + transReview.needsFix + 'S' + transReview.suggestions : 'Trans:N/A',
 ].join(' | '))
 
+const codeRequired = (plan?.codeChanges?.length || 0) > 0
+const translationRequired = (plan?.translationsNeeded?.length || 0) > 0
+const executionIncomplete = (codeRequired && codeResult?.compileStatus !== 'pass')
+  || (translationRequired && !translationResult)
+const reviewerIncomplete = routedReviewers.some(kind =>
+  kind === 'zh-code-reviewer' ? !codeReview : !transReview)
 const hasBlockers = (codeReview?.blockers > 0) || (transReview?.blockers > 0)
+  || codeReview?.verdict === 'No-Go' || transReview?.verdict === 'No-Go'
 
 // ── Phase 6: Cross-validate ─────────────────────────────
 
@@ -385,14 +399,8 @@ Code result: ${JSON.stringify(codeResult)}
 Translation result: ${JSON.stringify(translationResult)}
 Reviews: code=${codeReview?.verdict}(B${codeReview?.blockers}) trans=${transReview?.verdict}(B${transReview?.blockers})
 
-Run ALL verification scripts:
-  python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-  python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-  python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-  python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-  bash .claude/scripts/check_consistency.sh --rulings
-  bash .claude/scripts/check_consistency.sh --gods
-  bash .claude/scripts/check_consistency.sh --skills
+Run the unified required gate and preserve its raw report:
+  bash .claude/scripts/verify_zh.sh --profile review
 
 Answer:
 1. Any edge cases missed?
@@ -416,8 +424,11 @@ if (crossValidation) {
 
 phase('Report')
 
-const finalVerdict = hasBlockers ? 'NO-GO' :
-  ((codeReview?.needsFix > 0 || transReview?.needsFix > 0 || crossValidation?.passed === false) ? 'CONDITIONAL GO' : 'GO')
+const verificationIncomplete = crossValidation?.passed !== true
+const hardFailure = executionIncomplete || reviewerIncomplete
+  || verificationIncomplete || hasBlockers
+const finalVerdict = hardFailure ? 'NO-GO' :
+  ((codeReview?.needsFix > 0 || transReview?.needsFix > 0) ? 'CONDITIONAL GO' : 'GO')
 
 await agent(
   `Generate the final pipeline report as clean markdown.
@@ -445,7 +456,7 @@ Cross-Validation: ${crossValidation?.passed ? 'PASS' : 'ISSUES'}
   Side effects: ${crossValidation?.sideEffects?.join('; ') || 'none'}
 
 Verdict: ${finalVerdict}
-${!hasBlockers ? 'Merge: git checkout chn-0.34.1-base && git merge <worktree-branch>' : 'Resolve blockers first, then re-run pipeline.'}
+${finalVerdict === 'GO' ? 'Merge: run review_at_merge.sh, then git merge --ff-only <worktree-branch>' : 'Resolve all blockers/conditions and rerun required verification before merge.'}
 
 Format as a structured markdown report with sections: Summary, Analysis, Changes Made, Review Results, Cross-Validation, Verdict, Merge Instructions.`,
   { label: 'report' }
@@ -457,5 +468,5 @@ return {
   reviewRouting: REVIEW_ROUTING,
   codeReview, transReview,
   crossValidation,
-  verdict: finalVerdict, hasBlockers,
+  verdict: finalVerdict, hasBlockers, hardFailure,
 }

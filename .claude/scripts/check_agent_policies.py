@@ -10,7 +10,8 @@ import sys
 
 
 ROOT = Path(__file__).resolve().parents[2]
-CONFIG_ROOTS = [ROOT / ".codex" / "agents", ROOT / ".opencode" / "agents",
+CONFIG_ROOTS = [ROOT / ".codex" / "agents", ROOT / ".claude" / "agents",
+                ROOT / ".claude" / "skills", ROOT / ".opencode" / "agents",
                 ROOT / ".opencode" / "skills"]
 
 FORBIDDEN = {

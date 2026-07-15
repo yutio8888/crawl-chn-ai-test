@@ -20,6 +20,10 @@ TARGETS = {
     "i18n-safety": [
         ".codex/agents/crawl-coder.toml",
         ".codex/agents/zh-code-reviewer.toml",
+        ".claude/agents/crawl-coder.md",
+        ".claude/agents/zh-code-reviewer.md",
+        ".claude/skills/crawl-coder.md",
+        ".claude/skills/zh-code-reviewer.md",
         ".opencode/agents/crawl-coder.md",
         ".opencode/agents/zh-code-reviewer.md",
         ".opencode/skills/crawl-coder/SKILL.md",
@@ -29,6 +33,10 @@ TARGETS = {
     "review-contract": [
         ".codex/agents/zh-code-reviewer.toml",
         ".codex/agents/translation-reviewer.toml",
+        ".claude/agents/zh-code-reviewer.md",
+        ".claude/agents/translation-reviewer.md",
+        ".claude/skills/zh-code-reviewer.md",
+        ".claude/skills/translation-reviewer.md",
         ".opencode/agents/zh-code-reviewer.md",
         ".opencode/agents/translation-reviewer.md",
         ".opencode/skills/zh-code-reviewer/SKILL.md",

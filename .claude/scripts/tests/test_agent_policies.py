@@ -23,6 +23,17 @@ CHECK_SPEC.loader.exec_module(CHECK)
 
 
 class PolicySyncTests(unittest.TestCase):
+    def test_claude_agents_and_skills_are_policy_targets(self) -> None:
+        self.assertIn(".claude/agents/crawl-coder.md", SYNC.TARGETS["i18n-safety"])
+        self.assertIn(".claude/skills/zh-code-reviewer.md", SYNC.TARGETS["i18n-safety"])
+        self.assertIn(".claude/agents/translation-reviewer.md", SYNC.TARGETS["review-contract"])
+        self.assertIn(".claude/skills/translation-reviewer.md", SYNC.TARGETS["review-contract"])
+
+    def test_claude_config_roots_are_scanned(self) -> None:
+        relative_roots = {path.relative_to(ROOT).as_posix() for path in CHECK.CONFIG_ROOTS}
+        self.assertIn(".claude/agents", relative_roots)
+        self.assertIn(".claude/skills", relative_roots)
+
     def test_replace_preserves_yaml_frontmatter(self) -> None:
         original = "---\nname: reviewer\n---\n\n# Title\n\n<!-- BEGIN GENERATED: p -->\nold\n<!-- END GENERATED: p -->\n"
         block = "<!-- BEGIN GENERATED: p -->\nnew\n<!-- END GENERATED: p -->"
