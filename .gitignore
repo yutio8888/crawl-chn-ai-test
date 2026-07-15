@@ -23,6 +23,8 @@ tools/okapi/build/
 # .opencode/workflows/      — project-specific workflows (track)
 # .claude/agents/learnings/ — project experience (track when content exists)
 # Transient/personal items handled by .opencode/.gitignore (node_modules, package*.json, etc.)
+.claude/settings.json
+.claude/settings.json.bak
 .mcp.json
 
 # CJK fonts — used locally, not tracked in main repo
