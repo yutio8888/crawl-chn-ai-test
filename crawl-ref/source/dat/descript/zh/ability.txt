@@ -221,9 +221,8 @@ Forget Spell ability
 %%%%
 Divine Exegesis ability
 
-能施展你的法术库中的任何法术，并保证成功。
-你会获得基于你的法术施展技能的法术威力加成，
-其效果等同于在法术相关技能上接受了同等水平的训练。
+能以必定成功的方式施展法术库中的任何法术。你会获得基于祈神技能的法术威力加成，
+其价值比在该法术相关技能上进行同等级训练高 50%。
 %%%%
 # 特洛格
 Berserk ability
@@ -296,8 +295,8 @@ Enter the Abyss ability
 %%%%
 Brand Weapon With Distortion ability
 
-用局部扭曲场永久腐化你所选择的一件武器。
-这个祝福只能使用一次，且不可用于神器。
+用局部扭曲场永久腐化你所选择的一件近战武器。
+这个祝福只能使用一次，且不可用于神器武器。
 %%%%
 # 尼姆雷斯・索布
 Draw ability
@@ -452,11 +451,11 @@ Sacrifice Purity ability
 %%%%
 Sacrifice Words ability
 
-舍弃在受伤时使用魔法卷轴的能力。
+舍弃在战斗中使用魔法卷轴的能力，除非身受重伤。
 %%%%
 Sacrifice Drink ability
 
-舍弃在受伤时使用饮用药水的能力。
+舍弃在战斗中饮用药水的能力，除非身受重伤。
 %%%%
 Sacrifice Essence ability
 
@@ -520,7 +519,7 @@ Sacrifice Experience ability
 %%%%
 Sacrifice Skill ability
 
-牺牲你的技能，使你所有的技能下降1。这可能会使你失去训练过的技能等级。
+牺牲你的技能，使你所有技能的资质降低 1。这很可能使已训练技能失去等级。
 %%%%
 Sacrifice an Eye ability
 

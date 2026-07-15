@@ -614,8 +614,12 @@ HINT_SEEN_STAFF
 %%%%
 HINT_SEEN_STAIRS
 
-楼梯带你到地牢的不同楼层。用 <w>$cmd[CMD_GO_DOWNSTAIRS]</w>
-向下走，用 <w>$cmd[CMD_GO_UPSTAIRS]</w> 向上走。
+这些<console>“$1”</console>是下楼梯。你可以沿它们向下进入下一（更深）层
+（<w>$cmd[CMD_GO_DOWNSTAIRS]</w>）。要返回本层，请站在上楼梯上按
+<w>$cmd[CMD_GO_UPSTAIRS]</w>。使用楼梯后，在任何你此前未见过的怪物行动前，
+你必定有一次行动机会；之后怪物会先行动。
+
+<localtiles>或者，你可以站在楼梯上<w>左键单击</w>它来使用。</localtiles>
 %%%%
 HINT_SEEN_TRAP
 

@@ -40167,3 +40167,6 @@ This might make you stumble backwards over %s while your transformation is expir
 %%%%
 This might make you stumble backwards into %s while your transformation is expiring. Continue?
 你的变形即将结束；这可能使你踉跄着退入%s。要继续吗？
+%%%%
+efficient metabolism
+高效代谢

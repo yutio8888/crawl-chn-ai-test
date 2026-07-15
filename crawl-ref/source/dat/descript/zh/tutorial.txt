@@ -454,20 +454,13 @@ tutorial4 spellbook
 %%%%
 tutorial4 spellcasting
 
-## 待办事项：一次显示的有点多了。
-##           不同的想法：通过不给他们弹药，让假人不会反击，
-##           把休息的消息放在更靠后的地方。
 ##           贴图记忆：点击库存中的魔法书的操作可能更容易被掌握；
 ##           可以留出记忆标签页，由玩家自己发现。
-你可以用<input>$cmd[CMD_CAST_SPELL]</input><localtiles>
-或<input>点击</input>法术贴图进行施法</localtiles>。
-按<input>$cmd[CMD_CAST_SPELL]?</input>获得你的法术列表。
-魔法如同弹药，会显示在弹药槽，
-你可以用<input>$cmd[CMD_QUIVER_ITEM]</input>查看预备的法术。
-使用<input>$cmd[CMD_FIRE]</input>或<input>Shift+Tab</input>投射当前预备的法术。
+要施放法术，先用 <input>$cmd[CMD_MEMORISE_SPELL]</input> 记忆它。
+随后可以用 <input>$cmd[CMD_CAST_SPELL]</input><localtiles> 或
+<input>点击</input>法术贴图</localtiles>来施放。
 
-一旦你的魔力用尽了，撤退后可以通过<input>$cmd[CMD_REST]</input><localtiles>
-或<input>点击</input>命令栏中的休息图标进行休息和回复</localtiles>。
+按 <input>$cmd[CMD_CAST_SPELL]</input>，再按 <input>?</input> 查看法术列表。
 %%%%
 tutorial4 ring_power
 

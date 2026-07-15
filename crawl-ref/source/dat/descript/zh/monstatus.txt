@@ -150,7 +150,10 @@ cursed with the promise of agony monstatus
 %%%%
 damage-immune at range monstatus
 
-这个生物不会受到任何非相邻来源的伤害（包括云雾，如果其创造者不在相邻位置）。
+除非伤害的原始来源与这个生物相邻，否则无论以何种方式都无法对其造成伤害。
+不造成伤害的附带效果仍会正常发生。
+
+（云雾和狐火等类投射物怪物的伤害来源，始终视为最初创造它们的生物。）
 %%%%
 dazed monstatus
 

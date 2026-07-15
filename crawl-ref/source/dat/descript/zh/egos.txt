@@ -137,7 +137,7 @@ air (Air) armour ego
 %%%%
 archery (Archery) armour ego
 
-对于远程战斗来说，它的负重仅为正常值的三分之一。
+对于远程战斗来说，它的负重仅为正常值的一半。
 %%%%
 attunement (Attunement) armour ego
 
