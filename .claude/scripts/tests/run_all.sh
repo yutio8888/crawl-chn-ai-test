@@ -9,6 +9,7 @@ TESTS=(
     "$SCRIPT_DIR/test_review_evidence.py"
     "$SCRIPT_DIR/test_verify_zh.sh"
     "$SCRIPT_DIR/test_verify_phase4.sh"
+    "$SCRIPT_DIR/test_post_coder_cleanup.sh"
     "$SCRIPT_DIR/test_scan_i18n.sh"
     "$SCRIPT_DIR/test_zh_runtime_check.sh"
     "$SCRIPT_DIR/test_zh_console_ui_bot.sh"

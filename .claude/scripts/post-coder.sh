@@ -11,6 +11,36 @@ OUT=".claude/metrics/verify/coder-${TS}.log"
 mkdir -p .claude/metrics/verify
 FAILURES=0
 WARNINGS=0
+TEMP_FILES=()
+
+register_temp() {
+    TEMP_FILES+=("$1")
+}
+
+release_temp() {
+    local target="$1" retained=() path
+    rm -f -- "$target"
+    for path in "${TEMP_FILES[@]}"; do
+        [[ "$path" == "$target" ]] || retained+=("$path")
+    done
+    TEMP_FILES=("${retained[@]}")
+}
+
+cleanup_temps() {
+    local path
+    for path in "${TEMP_FILES[@]}"; do
+        rm -f -- "$path"
+    done
+    TEMP_FILES=()
+}
+
+# EXIT also runs for unexpected set -e termination. Signal traps preserve the
+# conventional status and then delegate cleanup to EXIT. These traps live only
+# in the post-coder subprocess and do not replace verify_zh.sh's evidence traps.
+trap cleanup_temps EXIT
+trap 'exit 130' INT
+trap 'exit 143' TERM
+trap 'exit 129' HUP
 SCOPE="${ZH_VERIFY_SCOPE:-full}"
 CHANGED_CPP=()
 while IFS= read -r path; do
@@ -82,6 +112,7 @@ run_scoped_scanner() {
 run_concat_advisory() {
     local scan_json
     scan_json=$(mktemp)
+    register_temp "$scan_json"
     local args=()
     if [[ "$SCOPE" == changed && "${#CHANGED_CPP[@]}" -eq 0 ]]; then
         echo "--- String concatenation blind spots (baseline diff) ---"
@@ -89,7 +120,7 @@ run_concat_advisory() {
         echo "New warnings introduced by diff: 0"
         echo "RESULT: PASS (no changed C++ files)"
         echo ""
-        rm -f "$scan_json"
+        release_temp "$scan_json"
         return 0
     fi
     mapfile -d '' -t args < <(scanner_args concat)
@@ -113,7 +144,7 @@ run_concat_advisory() {
         WARNINGS=$((WARNINGS + 1))
     fi
     echo ""
-    rm -f "$scan_json"
+    release_temp "$scan_json"
 }
 
 {
