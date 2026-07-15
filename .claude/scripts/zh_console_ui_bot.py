@@ -18,15 +18,34 @@ ANSI_RE = re.compile(
 CJK_RE = re.compile(r'[\u3400-\u9fff]')
 
 PANEL_CASES = [
-    ('panel:religion', b'^', ('不信仰任何神祇',), False),
-    ('panel:character', b'@', ('移动速度', '伤害评级'), False),
-    ('panel:inventory', b'i', ('装备：', '匕首', '长袍'), True),
-    ('panel:skills', b'm', ('技能', '施法能力', '咒法系'), True),
-    ('panel:abilities', b'a', ('能力', '失败率'), True),
-    ('panel:overview', bytes([15]), ('地城总览', '分支'), True),
-    ('panel:messages', bytes([16]), ('欢迎', '游戏种子'), True),
-    ('panel:spells', b'I', ('你的法术', '魔法飞弹'), True),
+    ('panel:religion', b'^', ('不信仰任何神祇',), (), False),
+    ('panel:character', b'@', ('移动速度', '伤害评级'), (), False),
+    ('panel:inventory', b'i', ('装备：', '匕首', '长袍'), (), True),
+    ('panel:skills', b'm', ('技能', '施法能力', '咒法系'), (), True),
+    ('panel:abilities', b'a', ('能力', '失败率'), (), True),
+    ('panel:overview', bytes([15]), ('地城总览', '分支'), (), True),
+    ('panel:messages', bytes([16]), ('欢迎', '游戏种子'), (), True),
+    ('panel:spells', b'I', ('你的法术', '魔法飞弹'), (), True),
+    ('panel:resists', b'%', ('火抗', '冰抗', '毒抗'), (), True),
+    ('panel:mutations', b'A', ('先天能力、怪异特征与变异', '你对毒素免疫。'),
+     ('You are immune to poison.', 'Gained at a future XL.'), True),
+    ('panel:known-items', b'\\', ('已识别物品',), (), True),
+    ('panel:runes', b'}', ('佐特符文', '力量宝珠'), ('Runes of Zot',), True),
+    ('panel:armour', b'[', ('长袍',), (), False),
+    ('panel:jewellery', b'"', ('戒指 #1', '项链'), (), False),
+    ('panel:gold', b'$', ('你持有0枚金币。',), (), False),
+    ('panel:map', b'X', ('按?查看帮助',), ('(Press ? for help)',), True),
 ]
+
+# This manifest is intentionally independent of PANEL_CASES. It is the exact
+# ordered contract consumed by the panels shard, including its initial frame.
+PANEL_EXPECTED_IDS = (
+    'panel:initial',
+    'panel:religion', 'panel:character', 'panel:inventory', 'panel:skills',
+    'panel:abilities', 'panel:overview', 'panel:messages', 'panel:spells',
+    'panel:resists', 'panel:mutations', 'panel:known-items', 'panel:runes',
+    'panel:armour', 'panel:jewellery', 'panel:gold', 'panel:map',
+)
 
 HELP_CASES = [
     ('god', 'g', None, None), ('branch', 'b', None, None),
@@ -114,12 +133,14 @@ class PtyBot:
         os.close(self.master)
 
 
-def assert_screen(case_id: str, text: str, required=()) -> None:
-    forbidden = (
+def assert_screen(case_id: str, text: str, required=(), forbidden=()) -> None:
+    common_forbidden = (
         '未知命令', 'Unknown command', '没有匹配', 'No matching',
         'db_embedded_lua', "global 'you'",
     )
-    found_forbidden = [token for token in forbidden if token in text]
+    found_forbidden = [
+        token for token in (*common_forbidden, *forbidden) if token in text
+    ]
     if found_forbidden:
         raise BotFailure(f'{case_id}: forbidden output {found_forbidden}')
     missing = [token for token in required if token not in text]
@@ -145,17 +166,30 @@ def emit(case_id: str, **fields) -> None:
                      ensure_ascii=False, sort_keys=True), flush=True)
 
 
+def validate_panel_manifest(cases=PANEL_CASES,
+                            expected_ids=PANEL_EXPECTED_IDS) -> None:
+    case_ids = ('panel:initial', *(case[0] for case in cases))
+    if len(set(expected_ids)) != len(expected_ids):
+        raise BotFailure('panel manifest: expected IDs are not unique')
+    if len(set(case_ids)) != len(case_ids):
+        raise BotFailure('panel manifest: case IDs are not unique')
+    if case_ids != tuple(expected_ids):
+        raise BotFailure(
+            f'panel manifest mismatch: expected {tuple(expected_ids)}, got {case_ids}')
+
+
 def run_panels(bot: PtyBot) -> None:
+    validate_panel_manifest()
     initial = bot.read_screen(3.0)
     assert_screen('panel:initial', initial, ('生命:', '魔力:', '魔法飞弹'))
     emit('panel:initial')
-    for case_id, key, required, needs_escape in PANEL_CASES:
+    for case_id, key, required, forbidden, needs_escape in PANEL_CASES:
         screen = bot.send(key)
-        assert_screen(case_id, screen, required)
+        assert_screen(case_id, screen, required, forbidden)
         emit(case_id, required=list(required))
         if needs_escape:
             closed = bot.send(b'\x1b', 0.5)
-            assert_screen(case_id + ':close', closed)
+            assert_screen(case_id + ':close', closed, ('生命:', '魔力:'))
 
 
 def exit_nested_help(bot: PtyBot) -> None:

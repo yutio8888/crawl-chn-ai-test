@@ -18962,6 +18962,15 @@ You are immune to negative energy. (rN+++)
 You are immune to poison.
 你对毒素免疫。
 %%%%
+Gained at a future XL.
+将在未来的经验等级获得。
+%%%%
+(Press <w>?</w> for help)
+（按<w>?</w>查看帮助）
+%%%%
+<white>Runes of Zot (</white><%s>%d</%s><white> collected) & Orbs of Power</white>
+<white>佐特符文（已收集</white><%s>%d</%s><white>枚）与力量宝珠</white>
+%%%%
 You are immune to the effects of steam.
 你对蒸汽效果免疫。
 %%%%

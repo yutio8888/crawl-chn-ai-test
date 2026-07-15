@@ -33,8 +33,45 @@ except bot.BotFailure:
     pass
 else:
     raise SystemExit('missing positive token accepted')
+
+for token in (
+    'You are immune to poison.', 'Gained at a future XL.',
+    'Runes of Zot', '(Press ? for help)',
+):
+    try:
+        bot.assert_screen('panel-specific-forbidden', f'中文 {token}',
+                          forbidden=(token,))
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit(f'panel-specific forbidden token accepted: {token}')
+
+bot.validate_panel_manifest()
+configured_forbidden = {case[0]: case[3] for case in bot.PANEL_CASES}
+expected_forbidden = {
+    'panel:mutations': ('You are immune to poison.',
+                        'Gained at a future XL.'),
+    'panel:runes': ('Runes of Zot',),
+    'panel:map': ('(Press ? for help)',),
+}
+for case_id, tokens in expected_forbidden.items():
+    if configured_forbidden.get(case_id) != tokens:
+        raise SystemExit(f'{case_id}: forbidden contract mismatch')
+mutations = {
+    'deleted': bot.PANEL_CASES[:-1],
+    'duplicate': [bot.PANEL_CASES[0], *bot.PANEL_CASES],
+    'reordered': [bot.PANEL_CASES[1], bot.PANEL_CASES[0],
+                  *bot.PANEL_CASES[2:]],
+}
+for name, cases in mutations.items():
+    try:
+        bot.validate_panel_manifest(cases)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit(f'panel manifest accepted {name} case mutation')
 PY
-echo "  PASS: PTY screen assertions reject unknown/no-match/missing-token mutations"
+echo "  PASS: PTY assertions and exact panel manifest reject mutations"
 
 mkdir -p "$TMPDIR/source"
 set +e

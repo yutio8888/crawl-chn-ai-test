@@ -440,7 +440,7 @@ public:
 static void _draw_title(const coord_def& cpos, const feature_list& feats, const int columns)
 {
     const formatted_string help =
-        formatted_string::parse_string("(Press <w>?</w> for help)");
+        formatted_string::parse_string(T_("(Press <w>?</w> for help)"));
     const int helplen = help.width();
 
     if (columns < helplen)

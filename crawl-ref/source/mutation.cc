@@ -874,7 +874,7 @@ static vector<pair<string, string>> _get_fakemuts()
         result.push_back(armour_mut);
 
     if (player_res_poison(false, false, false, false) == 3)
-        result.push_back({"", _innatemut("You are immune to poison.")});
+        result.push_back({"", _innatemut(T_("You are immune to poison."))});
 
     return result;
 }
@@ -1169,7 +1169,11 @@ private:
         if (_has_transient_muts())
             extra += "<magenta>[]</magenta>: Transient mutations.\n";
         if (has_future_muts)
-            extra += "<darkgrey>[]</darkgrey>: Gained at a future XL.\n";
+        {
+            extra += "<darkgrey>[]</darkgrey>: ";
+            extra += T_("Gained at a future XL.");
+            extra += "\n";
+        }
         set_more(extra);
     }
 
