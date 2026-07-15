@@ -14,6 +14,39 @@ permission:
 > Based on code implementation experience from issues 6-24
 > Applies to: C++ source modification, TextDB data operations, T_() migration, compilation verification
 
+<!-- BEGIN GENERATED: i18n-safety -->
+# i18n-safety-v2
+
+This policy is the shared safety contract for DCSS Chinese i18n code.
+
+- `T_()` and `C_()` return borrowed pointers that become invalid after
+  `i18n_cache_clear()`. Never retain them in static or namespace storage,
+  members, persistent containers, aggregates, or callback captures.
+- Persistent literal tables use `N_("key")` or
+  `NC_("context", "key")`, then translate at the consumption site with the
+  matching `T_()` or `C_()`. Copy the result to `std::string` if it crosses a
+  statement boundary.
+- Never pass a `std::string`, concatenation, ternary promoted to
+  `std::string`, or a `std::string`-returning call directly to a printf-style
+  variadic `%s` slot. Store it locally and pass `.c_str()`.
+- Treat every `CALL_NO_CSTR` scanner warning as requiring manual return-type
+  confirmation: `const char *` is safe; `std::string` needs `.c_str()`.
+- Never pass translated text to English morphology such as `conj_verb()`.
+- Movement phrases remain English internal values until the display sink.
+  Translate them with `translated_move_phrase()` and the applicable grammar
+  context; update `move_i18n_manifest.json` and require exact-key coverage.
+- Keep protocol, lookup, serialization, Lua comparison, and TextDB key values
+  in English. Translate only at display boundaries.
+- Use `mprf_p` for positional `%n$s` formats and never mix positional and
+  sequential placeholders.
+- Resolve terminology from the current `docs/glossary.md` immediately before
+  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+
+Configuration checks validate this policy's generated blocks. C++ source
+analysis remains the responsibility of `scan_i18n_lifetime.py`,
+`scan_varargs_string.py`, and the other code verification gates.
+<!-- END GENERATED: i18n-safety -->
+
 ---
 
 ## Project Structure
@@ -215,8 +248,8 @@ at the translation database level. No `Options.language` guards are needed.
 
 ## Evidence Protocol (replaces self-check)
 
-**Do NOT self-check.** LLM self-checking is unreliable. Run deterministic scripts
-and let the orchestrator read the raw output.
+**Do not claim success from intuition.** Run deterministic scripts, preserve
+their raw output, and explain every task-relevant failure or warning.
 
 ### Post-Code Verification
 
@@ -255,8 +288,8 @@ python3 .claude/scripts/scan_i18n.py validate-terms \
 
 ### Output Rule
 
-Report the verification log path to the orchestrator. Do **not** summarize,
-filter, or interpret script output. The orchestrator reads the raw log directly.
+Report the verification log path and preserve its raw contents. Explain every
+failure or warning relevant to the changed code; never hide or rewrite results.
 
 ### Knowledge Reference (read, understand, apply — scripts do the checking)
 

@@ -189,10 +189,8 @@ Don't translate literally. Find the Chinese idiom that conveys the same meaning.
 
 ## Evidence Protocol (REQUIRED — replaces self-check)
 
-**Do NOT self-check.** LLM self-reporting is unreliable; the same model that made
-errors will rationalize them on re-inspection. Instead, verification is done by
-deterministic scripts — your job is to trigger them and let the orchestrator
-judge the raw output.
+**Do not claim success from intuition.** Run deterministic scripts, preserve
+their raw output, and explain every task-relevant failure or warning.
 
 ### Post-Translation Verification
 
@@ -211,8 +209,8 @@ integrity (%%%% parity), and database @keyword@ integrity. Output goes to
 
 ### Output Rule
 
-Report the verification report path to the orchestrator. Do **not** summarize,
-filter, or interpret script output. The orchestrator reads the raw log directly.
+Report the verification report path and preserve its raw contents. Explain every
+task-relevant failure or warning; never hide or rewrite results.
 
 ### Knowledge Reference (read, understand, apply — but scripts do the checking)
 

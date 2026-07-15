@@ -1,0 +1,143 @@
+{"date":"2026-06-30","agent_type":"test","task_summary":"test","findings":{"blocker":0,"needs_fix":0,"suggestion":1},"fix_iterations":1,"verdict":"Go"}
+{
+  "date": "2026-06-30T21:45:37+08:00",
+  "agent_type": "crawl-coder",
+  "task_summary": "Fix 3 arg-mismatch entries — mprf_p positional for art-func/transform/spl-transloc (Issue 34)",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 1,
+  "verdict": "Go",
+  "trigger": "issue-34-batch",
+  "session_id": "issue34-batch"
+}
+{
+  "date": "2026-07-01T08:23:29+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Manual review of hints.cc T_() wrapping and source.txt duplicate fix",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "manual-coder-worktree"
+}
+{
+  "date": "2026-07-01T23:24:59+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of cleanup: i18n cache refactor + item-name EN-only cache + output.cc T_() resist labels + worktree cleanup",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 1},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "cleanup-worktrees"
+}
+{
+  "date": "2026-07-01T23:26:34+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Fix hardcoded CN→T_() in chardump.cc + describe-spells.cc spell table headers",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 1,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "migration-phase"
+}
+{
+  "date": "2026-07-02T00:08:43+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review: spell title migration + beam.cc fix + describe.cc/mon-cast.cc T_()",
+  "findings": {"blocker": 0, "needs_fix": 1, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Conditional Go",
+  "trigger": "pre-commit",
+  "session_id": "migration-phase"
+}
+{
+  "date": "2026-07-02T00:48:34+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of stat_desc() static init T_() fix",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "stat-desc-fix"
+}
+{
+  "date": "2026-07-02T00:49:49+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of skill-menu.cc: add refresh_names() after show_description() to fix CJK atlas invalidation garbled text",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": ""
+}
+{"date": "2026-07-02T00:50:53+08:00", "agent_type": "zh-code-reviewer", "task_summary": "Pre-commit review: fix beam_name display + channel spell reminder translation", "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0}, "fix_iterations": 0, "verdict": "Go", "trigger": "pre-commit", "session_id": "direct-fix"}
+{
+  "date": "2026-07-02T18:35:38+08:00",
+  "agent_type": "crawl-coder",
+  "task_summary": "Batch B: travel.cc B2, place.cc B3, items.cc B4",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "post-commit",
+  "session_id": "batch-b-2026-07-02"
+}
+{
+  "date": "2026-07-02T19:36:38+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of player melee attack verb T_() migration",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "melee-attack-verb-t-migration"
+}
+{
+  "date": "2026-07-02T21:02:14+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of fontwrapper-ft.cc CJK advance alignment fix",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 1},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "font-cjk-advance-fix"
+}
+{
+  "date": "2026-07-02T21:33:14+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of fontwrapper-ft.cc CJK advance calibration fix",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 1},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "font-cjk-calibration-fix"
+}
+{
+  "date": "2026-07-02T21:49:57+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Pre-commit review of menu.cc console title indent fix",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "pre-commit",
+  "session_id": "menu-title-indent-fix"
+}
+{
+  "date": "2026-07-05T13:25:49+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Post-commit review of armour glow i18n fix (82d6440)",
+  "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
+  "fix_iterations": 0,
+  "verdict": "Go",
+  "trigger": "post-commit",
+  "session_id": "fix-armour-glow"
+}
+{
+  "date": "2026-07-10T07:45:04+08:00",
+  "agent_type": "zh-code-reviewer",
+  "task_summary": "Merge review of Issue 52 help-system test tooling (commit 54ac0cb2c0)",
+  "findings": {"blocker": 0, "needs_fix": 1, "suggestion": 2},
+  "fix_iterations": 1,
+  "verdict": "Go",
+  "trigger": "merge-time",
+  "session_id": "issue-52-implementation"
+}
+{"date":"2026-07-15T08:17:00+08:00","agent_type":"zh-code-reviewer","task_summary":"Worktree merge review of codex/move-phrase-i18n into chn-0.34.1-base","findings":{"blocker":0,"needs_fix":0,"suggestion":1},"fix_iterations":2,"verdict":"Go","trigger":"merge-time","session_id":"codex-move-phrase-i18n"}

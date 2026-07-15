@@ -10,6 +10,39 @@ adding T_() guards, removing ZH language switches, TextDB data operations,
 creating new zh-* source files, fixing mixed CN/EN output, ARG-DIFF resolution,
 and compilation/build fixes.
 
+<!-- BEGIN GENERATED: i18n-safety -->
+# i18n-safety-v2
+
+This policy is the shared safety contract for DCSS Chinese i18n code.
+
+- `T_()` and `C_()` return borrowed pointers that become invalid after
+  `i18n_cache_clear()`. Never retain them in static or namespace storage,
+  members, persistent containers, aggregates, or callback captures.
+- Persistent literal tables use `N_("key")` or
+  `NC_("context", "key")`, then translate at the consumption site with the
+  matching `T_()` or `C_()`. Copy the result to `std::string` if it crosses a
+  statement boundary.
+- Never pass a `std::string`, concatenation, ternary promoted to
+  `std::string`, or a `std::string`-returning call directly to a printf-style
+  variadic `%s` slot. Store it locally and pass `.c_str()`.
+- Treat every `CALL_NO_CSTR` scanner warning as requiring manual return-type
+  confirmation: `const char *` is safe; `std::string` needs `.c_str()`.
+- Never pass translated text to English morphology such as `conj_verb()`.
+- Movement phrases remain English internal values until the display sink.
+  Translate them with `translated_move_phrase()` and the applicable grammar
+  context; update `move_i18n_manifest.json` and require exact-key coverage.
+- Keep protocol, lookup, serialization, Lua comparison, and TextDB key values
+  in English. Translate only at display boundaries.
+- Use `mprf_p` for positional `%n$s` formats and never mix positional and
+  sequential placeholders.
+- Resolve terminology from the current `docs/glossary.md` immediately before
+  work. Do not embed canonical Chinese terms in Agent or Skill configuration.
+
+Configuration checks validate this policy's generated blocks. C++ source
+analysis remains the responsibility of `scan_i18n_lifetime.py`,
+`scan_varargs_string.py`, and the other code verification gates.
+<!-- END GENERATED: i18n-safety -->
+
 ## When to Use
 
 | Trigger | Example |
@@ -167,23 +200,25 @@ Common contexts: `"verb"` (cloud/action verbs), `"status"` (status labels),
 
 > **Commit**: `e9f0f22ae3` (items 4-5: cloud verbs + STATUS_DRAINED)
 
-### Pattern 4: Double T_() for Static Arrays
+### Pattern 4: Persistent Literal Tables via N_()/NC_()
 
-Static arrays initialize before i18n is loaded — T_() returns English (no-op).
-Keep T_() in the array for `i18n_extract.py` scanning, add T_() at call sites
-for actual runtime translation:
+`T_()` and `C_()` return borrowed cache pointers and must never be retained in
+static or persistent storage. Mark stable English literals for extraction with
+`N_()`/`NC_()`, then translate at the consumption site:
 
 ```cpp
-// Static definition — T_() for i18n_extract.py discovery
+// Stable English keys visible to i18n_extract.py
 static const char* fail_severity_adjs[] = {
-    T_("harmless"), T_("dangerous"), // ...
+    N_("harmless"), N_("dangerous"), // ...
 };
 
-// Runtime access — T_() does the real work
-mprf(T_(fail_severity_adjs[level]));
+// Runtime access — copy the borrowed result when it crosses the statement.
+const string severity = T_(fail_severity_adjs[level]);
+mpr(severity);
 ```
 
-> **Commit**: `329d7b7584` (fail_severity_adjs), also `divine_title[][]` in describe-god.cc
+For context-qualified keys, use `NC_("context", "key")` in the table and the
+matching `C_("context", value)` at the display sink.
 
 ### Pattern 5: Language-Agnostic Vault Data
 
@@ -276,7 +311,7 @@ resolution debugging.
 | 7 | Protocol key translated | Breaks save/load/serialization | Review `.des` tags, JSON keys |
 | 8 | Lua condition string T_()'d | `race == "木乃伊"` always false | `grep -rn 'T_.*==.*"' ` in Lua |
 | 9 | `buf.size()` for CJK alignment | Bytes ≠ display width | Use `strwidth()` instead |
-| 10 | Static init T_() only (no call-site T_()) | Returns EN at runtime | `i18n_extract.py validate` |
+| 10 | Persistent raw `T_()`/`C_()` pointer | Dangles after cache clear | `scan_i18n_lifetime.py --require-parser` |
 | 11 | Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys before writing |
 
 ## Source.txt Integrity Protocol (REQUIRED before commit)

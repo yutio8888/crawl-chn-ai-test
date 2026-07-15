@@ -376,8 +376,8 @@ python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json -
 #   退出码: 0=当前, 2=落后1-5个commit, 3=落后6+个commit
 bash .claude/scripts/check_checkpoint.sh
 
-# record_review.sh: 记录 review 指标到 review-log.jsonl
-bash .claude/scripts/record_review.sh '{"date":"...","agent_type":"...","findings":{...}}'
+# record_review.sh: 记录单行 schema-v2 review JSONL；merge-time 必须附证据字段
+bash .claude/scripts/record_review.sh '{"schema_version":2,"review_id":"...","run_id":"...","date":"...","agent_type":"...","task_summary":"...","base":"...","head":"...","diff_hash":"...","glossary_sha256":"...","raw_log":"...","findings":{"blocker":0,"needs_fix":0,"suggestion":0},"fix_iterations":0,"verdict":"Go","trigger":"merge-time","session_id":"..."}'
 
 # context_resolve.sh: 为 Agent 调度生成精简上下文
 CONTEXT=$(bash .claude/scripts/context_resolve.sh "translate god descriptions" \
@@ -394,6 +394,10 @@ bash .claude/scripts/verify_zh.sh --profile translation
 
 # C++/i18n 代码改动
 bash .claude/scripts/verify_zh.sh --profile code
+
+# 合并审核：绑定不可变 target/candidate 提交范围，并产生 run metadata
+bash .claude/scripts/verify_zh.sh --profile review \
+  --base <target-head> --head <candidate-head>
 
 # 合并前审查
 bash .claude/scripts/verify_zh.sh --profile review

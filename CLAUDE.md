@@ -200,9 +200,11 @@ The script:
 2. Classifies via `classify_review.sh`
 3. **GREEN** → prints merge command, exit 0
 4. **YELLOW** → runs `verify_zh.sh --profile translation`, exit 0/1
-5. **RED** → exits 2 until a reviewer returns Go/Conditional Go. Record that
-   result with `--record-verdict go|conditional-go`; the record is bound to the
-   target head, worktree head, and binary diff hash. Any later change invalidates it.
+5. **RED** → exits 2 until a reviewer returns Go/Conditional Go and writes a
+   schema-v2 review record. Record that result with
+   `--record-verdict go|conditional-go <review-id>`; the gate validates the
+   successful run metadata, raw-log hash, glossary hash, target head, worktree
+   head, and binary diff hash. Any later change invalidates it.
 
 ### Per-Commit Review (Optional, Advisory)
 
@@ -218,21 +220,38 @@ exception, not the default.
 
 ### Review Metrics Logging
 
-After each code review (RED path: post-merge verdict, or per-commit exception),
+After each code review (RED path: pre-merge verdict, or per-commit exception),
 record the results to establish a quality baseline for future optimization
 validation:
 
 ```bash
 bash .claude/scripts/record_review.sh '{
+  "schema_version": 2,
+  "review_id": "<unique-review-id>",
+  "run_id": "<verify_zh run-id>",
   "date": "'"$(date -Iseconds)"'",
   "agent_type": "zh-code-reviewer",
   "task_summary": "Worktree merge review of <worktree-branch>",
+  "base": "<target-head>",
+  "head": "<worktree-head>",
+  "diff_hash": "<binary-diff-hash>",
+  "glossary_sha256": "<context_resolve hash>",
+  "raw_log": ".worktrees/<worktree>/.claude/metrics/verify/<run-id>/verify.log",
   "findings": {"blocker": N, "needs_fix": N, "suggestion": N},
   "fix_iterations": N,
-  "verdict": "Go|Conditional Go|No-Go",
+  "verdict": "Go",
   "trigger": "merge-time",
   "session_id": "<from ORCHESTRATION_STATE.md>"
 }'
+```
+
+Use `Conditional Go` only when `blocker == 0 && needs_fix > 0`, and include a
+non-empty `conditions` array. `No-Go` is mandatory when blockers exist or the
+verification run is incomplete. After recording the review, bind it with:
+
+```bash
+bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch> \
+  --record-verdict go|conditional-go <review-id> "review note"
 ```
 
 The review metrics log (`.claude/metrics/review-log.jsonl`) establishes a baseline

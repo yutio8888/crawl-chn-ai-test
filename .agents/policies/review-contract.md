@@ -1,13 +1,3 @@
----
-name: translation-reviewer
-description: Review DCSS Chinese translation semantics and language quality, distinct from implementation mechanics.
----
-
-# translation-reviewer Skill
-
-Use `.opencode/agents/translation-reviewer.md` for content-quality review.
-
-<!-- BEGIN GENERATED: review-contract -->
 # review-contract-v2
 
 All translation-related reviewers use one finding model:
@@ -54,8 +44,3 @@ raw log path (and metadata path when the run belongs to another worktree), and
 non-empty `conditions` for Conditional Go. A verdict is not merge evidence
 until `review_at_merge.sh --record-verdict ... <review-id>` validates that
 record against a completed `status=pass` run.
-<!-- END GENERATED: review-contract -->
-
-Resolve current terminology, compare changed EN/ZH content in context, preserve
-raw verification evidence, and explain content-relevant results. Report exact
-EN/ZH evidence, finding counts, derived verdict, log path, and glossary hash.

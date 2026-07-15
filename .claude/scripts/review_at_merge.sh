@@ -3,7 +3,7 @@
 #
 # Usage (run from MAIN repo, before merging worktree branch):
 #   bash .claude/scripts/review_at_merge.sh <worktree-branch> [<target-branch>]
-#   bash .claude/scripts/review_at_merge.sh <worktree-branch> [<target-branch>] --record-verdict go|conditional-go [note]
+#   bash .claude/scripts/review_at_merge.sh <worktree-branch> [<target-branch>] --record-verdict go|conditional-go <review-id> [note]
 #
 # Default target: current branch (chn-0.34.1-base in active dev)
 #
@@ -31,6 +31,7 @@ set -euo pipefail
 TARGET_ROOT=$(git rev-parse --show-toplevel)
 VERIFY_SCRIPT="$TARGET_ROOT/.claude/scripts/verify_zh.sh"
 CLASSIFY_SCRIPT="$TARGET_ROOT/.claude/scripts/classify_review.sh"
+EVIDENCE_SCRIPT="$TARGET_ROOT/.claude/scripts/validate_review_evidence.py"
 
 if [ $# -lt 1 ] || [ "$1" = "--help" ] || [ "$1" = "-h" ]; then
     sed -n '2,18p' "$0"
@@ -40,14 +41,17 @@ fi
 WORKTREE_BRANCH="$1"
 TARGET_BRANCH="${2:-$(git rev-parse --abbrev-ref HEAD)}"
 RECORD_VERDICT=""
+REVIEW_ID=""
 VERDICT_NOTE=""
 if [ "${2:-}" = "--record-verdict" ]; then
     TARGET_BRANCH="$(git rev-parse --abbrev-ref HEAD)"
     RECORD_VERDICT="${3:-}"
-    VERDICT_NOTE="${4:-}"
+    REVIEW_ID="${4:-}"
+    VERDICT_NOTE="${5:-}"
 elif [ "${3:-}" = "--record-verdict" ]; then
     RECORD_VERDICT="${4:-}"
-    VERDICT_NOTE="${5:-}"
+    REVIEW_ID="${5:-}"
+    VERDICT_NOTE="${6:-}"
 fi
 
 # Sanity checks
@@ -95,6 +99,32 @@ if [ -n "$RECORD_VERDICT" ]; then
         go|conditional-go) ;;
         *) echo "ERROR: verdict must be 'go' or 'conditional-go'." >&2; exit 3 ;;
     esac
+    if [ -z "$REVIEW_ID" ]; then
+        echo "ERROR: --record-verdict requires a review-id." >&2
+        exit 3
+    fi
+    set +e
+    EVIDENCE_JSON=$(cd "$TARGET_ROOT" && python3 "$EVIDENCE_SCRIPT" \
+        --review-id "$REVIEW_ID" \
+        --base "$TARGET_HEAD" \
+        --head "$WORKTREE_HEAD" \
+        --diff-hash "$DIFF_HASH" \
+        --verdict "$RECORD_VERDICT" 2>&1)
+    EVIDENCE_EXIT=$?
+    set -e
+    if [ "$EVIDENCE_EXIT" -ne 0 ]; then
+        echo "ERROR: review evidence validation failed:" >&2
+        echo "$EVIDENCE_JSON" >&2
+        exit 3
+    fi
+    RUN_ID=$(printf '%s' "$EVIDENCE_JSON" | python3 -c \
+        "import json,sys; print(json.load(sys.stdin)['run_id'])")
+    RAW_LOG_SHA256=$(printf '%s' "$EVIDENCE_JSON" | python3 -c \
+        "import json,sys; print(json.load(sys.stdin)['raw_log_sha256'])")
+    REVIEW_RECORD_SHA256=$(printf '%s' "$EVIDENCE_JSON" | python3 -c \
+        "import json,sys; print(json.load(sys.stdin)['review_record_sha256'])")
+    GLOSSARY_SHA256=$(printf '%s' "$EVIDENCE_JSON" | python3 -c \
+        "import json,sys; print(json.load(sys.stdin)['glossary_sha256'])")
     mkdir -p "$VERDICT_DIR"
     {
         echo "verdict=$RECORD_VERDICT"
@@ -103,6 +133,11 @@ if [ -n "$RECORD_VERDICT" ]; then
         echo "worktree_branch=$WORKTREE_BRANCH"
         echo "worktree_head=$WORKTREE_HEAD"
         echo "diff_hash=$DIFF_HASH"
+        echo "review_id=$REVIEW_ID"
+        echo "run_id=$RUN_ID"
+        echo "review_record_sha256=$REVIEW_RECORD_SHA256"
+        echo "raw_log_sha256=$RAW_LOG_SHA256"
+        echo "glossary_sha256=$GLOSSARY_SHA256"
         echo "recorded_at=$(date -Iseconds)"
         echo "note=$VERDICT_NOTE"
     } > "$VERDICT_FILE"
@@ -142,7 +177,8 @@ case "$LEVEL" in
         echo "⚠ YELLOW — i18n data only. Running translation verification..."
         echo ""
         set +e
-        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile translation)
+        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile translation \
+            --base "$TARGET_HEAD" --head "$WORKTREE_HEAD")
         POST_EXIT=$?
         set -e
         echo ""
@@ -166,7 +202,8 @@ case "$LEVEL" in
         echo "🔴 RED — running automated review profile..."
         echo ""
         set +e
-        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile review)
+        (cd "$WORKTREE_PATH" && bash "$VERIFY_SCRIPT" --profile review \
+            --base "$TARGET_HEAD" --head "$WORKTREE_HEAD")
         REVIEW_EXIT=$?
         set -e
         echo ""
@@ -176,14 +213,48 @@ case "$LEVEL" in
             exit 1
         fi
         echo "✓ Automated review profile passed."
+        REVIEW_METADATA=$( \
+            { find "$WORKTREE_PATH/.claude/metrics/verify" \
+                -mindepth 2 -maxdepth 2 -type f -name metadata.json \
+                -printf '%T@ %p\n' 2>/dev/null || true; } \
+            | sort -nr | sed -n '1s/^[^ ]* //p')
         echo ""
+        VERDICT_EVIDENCE_VALID=0
         if [ -f "$VERDICT_FILE" ] \
             && grep -Eq '^verdict=(go|conditional-go)$' "$VERDICT_FILE" \
             && grep -Fxq "target_head=$TARGET_HEAD" "$VERDICT_FILE" \
             && grep -Fxq "worktree_head=$WORKTREE_HEAD" "$VERDICT_FILE" \
-            && grep -Fxq "diff_hash=$DIFF_HASH" "$VERDICT_FILE"; then
+            && grep -Fxq "diff_hash=$DIFF_HASH" "$VERDICT_FILE" \
+            && grep -Eq '^review_id=.+$' "$VERDICT_FILE" \
+            && grep -Eq '^run_id=.+$' "$VERDICT_FILE" \
+            && grep -Eq '^review_record_sha256=[0-9a-f]{64}$' "$VERDICT_FILE" \
+            && grep -Eq '^raw_log_sha256=[0-9a-f]{64}$' "$VERDICT_FILE" \
+            && grep -Eq '^glossary_sha256=[0-9a-f]{64}$' "$VERDICT_FILE"; then
+            STORED_VERDICT=$(sed -n 's/^verdict=//p' "$VERDICT_FILE")
+            STORED_REVIEW_ID=$(sed -n 's/^review_id=//p' "$VERDICT_FILE")
+            STORED_REVIEW_RECORD_SHA=$(sed -n 's/^review_record_sha256=//p' "$VERDICT_FILE")
+            STORED_RAW_LOG_SHA=$(sed -n 's/^raw_log_sha256=//p' "$VERDICT_FILE")
+            set +e
+            CURRENT_EVIDENCE=$(cd "$TARGET_ROOT" && python3 "$EVIDENCE_SCRIPT" \
+                --review-id "$STORED_REVIEW_ID" \
+                --base "$TARGET_HEAD" --head "$WORKTREE_HEAD" \
+                --diff-hash "$DIFF_HASH" --verdict "$STORED_VERDICT" 2>&1)
+            CURRENT_EVIDENCE_RC=$?
+            set -e
+            if [ "$CURRENT_EVIDENCE_RC" -eq 0 ]; then
+                CURRENT_REVIEW_RECORD_SHA=$(printf '%s' "$CURRENT_EVIDENCE" | python3 -c \
+                    "import json,sys; print(json.load(sys.stdin)['review_record_sha256'])")
+                CURRENT_RAW_LOG_SHA=$(printf '%s' "$CURRENT_EVIDENCE" | python3 -c \
+                    "import json,sys; print(json.load(sys.stdin)['raw_log_sha256'])")
+                if [ "$CURRENT_REVIEW_RECORD_SHA" = "$STORED_REVIEW_RECORD_SHA" ] \
+                    && [ "$CURRENT_RAW_LOG_SHA" = "$STORED_RAW_LOG_SHA" ]; then
+                    VERDICT_EVIDENCE_VALID=1
+                fi
+            fi
+        fi
+        if [ "$VERDICT_EVIDENCE_VALID" -eq 1 ]; then
             echo "✓ RED review verdict matches target head, worktree head, and diff hash."
-            echo "  Verdict: $(sed -n 's/^verdict=//p' "$VERDICT_FILE")"
+            echo "  Verdict: $STORED_VERDICT"
             echo "  Record:  $VERDICT_FILE"
             echo "  Safe to merge with: git merge --ff-only $WORKTREE_BRANCH"
             exit 0
@@ -193,7 +264,7 @@ case "$LEVEL" in
         echo "  Run zh-code-reviewer with the prompt below:"
         echo ""
         echo "  ─────────────────────────────────────────────────────────────"
-        REVIEW_PROMPT="Review $RANGE ($COMMIT_COUNT commits, $(printf '%s\n' "$DIFF_FILES" | sed '/^$/d' | wc -l) files). Inspect with: git diff $RANGE"
+        REVIEW_PROMPT="Review $RANGE ($COMMIT_COUNT commits, $(printf '%s\n' "$DIFF_FILES" | sed '/^$/d' | wc -l) files). Inspect with: git diff $RANGE. Immutable evidence: base=$TARGET_HEAD head=$WORKTREE_HEAD diff_hash=$DIFF_HASH metadata=$REVIEW_METADATA. Write a schema-v2 merge-time record with record_review.sh and return its review_id."
         echo "  OpenCode:"
         echo "    task(subagent_type=\"zh-code-reviewer\", prompt=\"$REVIEW_PROMPT\")"
         echo "  Claude Code:"
@@ -201,12 +272,12 @@ case "$LEVEL" in
         echo "  ─────────────────────────────────────────────────────────────"
         echo ""
         echo "  Verdict guide:"
-        echo "    Go             → fix any 🔴 blockers, then merge"
-        echo "    Conditional Go → spot-fix 🟡 issues (<2 min), then merge"
-        echo "    No-Go          → fix all blockers, re-run this script"
+        echo "    Go             → zero blockers and zero needs-fix findings"
+        echo "    Conditional Go → zero blockers, explicit verifiable conditions"
+        echo "    No-Go          → blockers or incomplete verification"
         echo ""
         echo "  After an actual reviewer returns Go or Conditional Go, record it:"
-        echo "    bash $0 $WORKTREE_BRANCH $TARGET_BRANCH --record-verdict go \"review reference/note\""
+        echo "    bash $0 $WORKTREE_BRANCH $TARGET_BRANCH --record-verdict go <review-id> \"review note\""
         echo "  Then re-run without --record-verdict. Any branch-head or diff change"
         echo "  produces a different verdict filename and blocks stale approval."
         exit 2
