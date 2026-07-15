@@ -4277,8 +4277,9 @@ void inscribe_item(item_def &item)
     mprf_nocap(MSGCH_EQUIPMENT, "%s", item.name(DESC_INVENTORY).c_str());
 
     const bool is_inscribed = !item.inscription.empty();
-    string prompt = is_inscribed ? "Replace inscription with what? "
-                                 : "Inscribe with what? ";
+    string prompt = is_inscribed ? T_("Replace inscription with what?")
+                                 : T_("Inscribe with what?");
+    prompt += " ";
 
     char buf[79];
     int ret = msgwin_get_line(prompt, buf, sizeof buf, nullptr,

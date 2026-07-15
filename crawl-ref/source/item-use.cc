@@ -1840,7 +1840,8 @@ void prompt_inscribe_item()
         return;
     }
 
-    int item_slot = prompt_invent_item("Inscribe which item?",
+    const string prompt = T_("Inscribe which item?");
+    int item_slot = prompt_invent_item(prompt.c_str(),
                                        menu_type::invlist, OSEL_ANY);
 
     if (prompt_failed(item_slot))

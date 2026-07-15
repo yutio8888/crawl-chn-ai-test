@@ -317,6 +317,8 @@ static string _get_seen_branches(bool display)
             // XX "Gauntlet" is too long
             const char *brname = branch == BRANCH_DUNGEON
                 ? it->shortname : it->abbrevname;
+            const string display_brname = branch == BRANCH_DUNGEON
+                ? T_(brname) : brname;
 
             if (entry_desc.size() == 0 && branch != BRANCH_DUNGEON
                 && you.where_are_you != branch)
@@ -349,7 +351,7 @@ static string _get_seen_branches(bool display)
                 const string main_desc = make_stringf(
                     "<yellow>%*s</yellow> <darkgrey>(%d/%d)</darkgrey>%s",
                     7,
-                    brname, lid.depth, brdepth[branch],
+                    display_brname.c_str(), lid.depth, brdepth[branch],
                     entry_desc.c_str());
                 cells.push_back(_pad_cs(main_desc, 22) + zclock_desc);
             }

@@ -33,6 +33,7 @@ ZH_BASELINE="$BASELINES_DIR/zh/zh-baseline.json"
 ZH_HELP_BASELINE="$BASELINES_DIR/zh-help/zh-help-baseline.json"
 BOT_TIMEOUT="${ZH_RUNTIME_BOT_TIMEOUT:-15}"
 HELP_BOT_TIMEOUT="${ZH_RUNTIME_HELP_BOT_TIMEOUT:-30}"
+WORKFLOW_BOT_TIMEOUT="${ZH_RUNTIME_WORKFLOW_BOT_TIMEOUT:-45}"
 
 MODE="${1:-fast}"
 
@@ -178,12 +179,18 @@ run_bot() {
     # Chinese status tokens from the captured PTY transcript.
     grep -q '施放：' "$METRICS_DIR/bot-spells.typescript" || return 1
     grep -q '魔法飞弹' "$METRICS_DIR/bot-spells.typescript" || return 1
-    python3 "$CHECK_SCRIPT" --bot-stderr "$STDERR_L3" --bot-manifest all
+    python3 "$CHECK_SCRIPT" --bot-stderr "$STDERR_L3" --bot-manifest all \
+        || return 1
     echo "  Running rendered panel PTY assertions"
     timeout --foreground "$BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
         --crawl "$SOURCE_DIR/crawl" --mode panels \
         --transcript "$METRICS_DIR/panels.typescript" \
-        > "$METRICS_DIR/panels-results.jsonl"
+        > "$METRICS_DIR/panels-results.jsonl" || return 1
+    echo "  Running wizard-assisted gameplay workflow assertions"
+    timeout --foreground "$WORKFLOW_BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
+        --crawl "$SOURCE_DIR/crawl" --mode workflows \
+        --transcript "$METRICS_DIR/workflows.typescript" \
+        > "$METRICS_DIR/workflows-results.jsonl" || return 1
 }
 
 # ============================================================================

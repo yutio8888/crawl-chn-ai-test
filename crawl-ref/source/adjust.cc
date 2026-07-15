@@ -28,8 +28,9 @@ static void _adjust_ability();
 
 void adjust()
 {
-    mprf(MSGCH_PROMPT, T_("Adjust (g)ear, (s)pells, (a)bilities, "
-                       "(p)otions, sc(r)olls or e(v)ocables? "));
+    const string prompt = T_("Adjust (g)ear, (s)pells, (a)bilities, "
+                             "(p)otions, sc(r)olls or e(v)ocables?");
+    mprf(MSGCH_PROMPT, "%s ", prompt.c_str());
 
     const int keyin = toalower(get_ch());
 
@@ -73,8 +74,9 @@ void adjust_item(int selector, item_def* to_adjust)
 
     if (!to_adjust)
     {
-        const int from_slot = prompt_invent_item("Adjust which item?",
-                                       menu_type::invlist, selector, OPER_ANY);
+        const string prompt = T_("Adjust which item?");
+        const int from_slot = prompt_invent_item(prompt.c_str(),
+                                          menu_type::invlist, selector, OPER_ANY);
         if (prompt_failed(from_slot))
             return;
 
@@ -83,7 +85,8 @@ void adjust_item(int selector, item_def* to_adjust)
         mprf_nocap("%s", to_adjust->name(DESC_INVENTORY_EQUIP).c_str());
     }
 
-    const int to_slot = prompt_invent_item("Adjust to which letter? ",
+    const string prompt = T_("Adjust to which letter?");
+    const int to_slot = prompt_invent_item(prompt.c_str(),
                                            menu_type::invlist,
                                            selector, OPER_ANY,
                                            invprompt_flag::unthings_ok
@@ -137,7 +140,7 @@ static void _adjust_spell()
     keyin = 0;
     while (!isaalpha(keyin))
     {
-        mprf(MSGCH_PROMPT, T_("Adjust to which letter? "));
+        mprf(MSGCH_PROMPT, "%s ", T_("Adjust to which letter?"));
         keyin = get_ch();
         if (key_is_escape(keyin))
         {

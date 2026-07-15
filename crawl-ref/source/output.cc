@@ -1678,7 +1678,7 @@ static void _redraw_title()
             god = "";
         }
         else
-            god = " of ";
+            god = T_(" of ");
         god += you_worship(GOD_JIYVA) ? god_name_jiyva(true)
                                       : god_name(you.religion);
         NOWRAP_EOL_CPRINTF("%s", god.c_str());

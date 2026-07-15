@@ -419,7 +419,7 @@ bash .claude/scripts/post_zh_runtime.sh catch2
 # full: Layer 1 (Catch2) + Layer 2 (Lua) + Layer 3 (RC Bot)（分钟级）
 bash .claude/scripts/post_zh_runtime.sh full
 
-# bot: 增量构建当前 Console，并运行 UI / spells / Issue48 三个 shard
+# bot: 增量构建当前 Console，并运行 RC、17 面板和 wizard gameplay workflows
 bash .claude/scripts/post_zh_runtime.sh bot
 
 # bot-fast: 复用当前 Console，但生成全新的 Bot 日志
@@ -446,6 +446,14 @@ Bot 不再使用最低标记数门槛：`--bot-manifest all` 要求 11 个 RC �
 妖术女王等关键结果执行语义 token 断言；独立 Python PTY 驱动使用精确、唯一、
 有序的 17 个面板用例（含 initial），逐屏验证宗教、角色、装备、技能、能力、
 总览、消息、法术、抗性、变异、已识别物品、符文、护甲、珠宝、金币和地图。
+独立的 wizard-assisted PTY 使用精确、唯一、有序的 21 个 workflow 用例：
+wizard 只负责构造加入特洛格、敌对老鼠和棍棒等确定状态，随后通过普通玩家
+按键验证有神宗教页、真实 Tab 近战与击杀、拾取、`=` 整理、`{` 首次铭刻
+及替换铭刻、`!` 楼层注释及地城总览。物品栏字母从实际渲染结果解析，
+不假定固定槽位；战斗最多
+执行 12 次 Tab，未击杀即失败。workflow 使用独立 transcript/results，不混入
+RC marker manifest；任一步缺少中文语义、出现已知英文提示、超时或非零退出均阻断。
+复用 Console 的 `bot-fast` 预计总耗时约 10–15 秒。
 每次运行写入独立的
 `zh-runtime-<UTC>-<pid>/` 证据目录，固定 `C.UTF-8` / `xterm` / seed；
 任一 shard 超时或非零退出都阻断。帮助 PTY 驱动会逐键打开主帮助、`?/`

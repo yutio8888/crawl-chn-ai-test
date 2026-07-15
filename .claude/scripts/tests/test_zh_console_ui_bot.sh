@@ -70,8 +70,76 @@ for name, cases in mutations.items():
         pass
     else:
         raise SystemExit(f'panel manifest accepted {name} case mutation')
+
+bot.validate_workflow_manifest(bot.WORKFLOW_EXPECTED_IDS)
+workflow_mutations = {
+    'deleted': bot.WORKFLOW_EXPECTED_IDS[:-1],
+    'duplicate': (bot.WORKFLOW_EXPECTED_IDS[0],
+                  *bot.WORKFLOW_EXPECTED_IDS),
+    'reordered': (bot.WORKFLOW_EXPECTED_IDS[1],
+                  bot.WORKFLOW_EXPECTED_IDS[0],
+                  *bot.WORKFLOW_EXPECTED_IDS[2:]),
+}
+for name, case_ids in workflow_mutations.items():
+    try:
+        bot.validate_workflow_manifest(case_ids)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit(f'workflow manifest accepted {name} mutation')
+
+evidence = bot.WorkflowEvidence()
+try:
+    evidence.record('workflow:initial', '中文 Adjust which item?')
+except bot.BotFailure:
+    pass
+else:
+    raise SystemExit('workflow accepted untranslated English prompt')
+
+for leaked in ('木乃伊 of 特洛格', '中文 Xom'):
+    evidence = bot.WorkflowEvidence()
+    try:
+        evidence.record('workflow:initial', leaked)
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit(f'workflow accepted mixed-language output: {leaked}')
+
+evidence = bot.WorkflowEvidence()
+try:
+    evidence.record('workflow:initial', '这是中文界面', ('魔法飞弹',))
+except bot.BotFailure:
+    pass
+else:
+    raise SystemExit('workflow accepted missing semantic evidence')
+
+if bot.inventory_letter_for('\na - +0 匕首\nd - +0 棍棒\n', '棍棒') != 'd':
+    raise SystemExit('workflow inventory letter parsing failed')
+for mutation in ('\na - +0 匕首\n',
+                 '\nd - +0 棍棒\ne - +1 棍棒\n'):
+    try:
+        bot.inventory_letter_for(mutation, '棍棒')
+    except bot.BotFailure:
+        pass
+    else:
+        raise SystemExit('workflow accepted ambiguous/missing item letter')
+
+for evidence_text in ('你攻击了老鼠。', '你穿刺了老鼠！'):
+    if not bot.has_combat_attack_evidence(evidence_text):
+        raise SystemExit(f'workflow rejected real combat evidence: {evidence_text}')
+for mutation in ('老鼠在附近。a) +0 匕首', '你穿刺了老鼠.',
+                 '你杀死了老鼠！', '你遭遇了老鼠。'):
+    if bot.has_combat_attack_evidence(mutation):
+        raise SystemExit('workflow accepted invalid combat evidence')
+if not bot.has_ascii_combat_punctuation('你穿刺了老鼠.'):
+    raise SystemExit('workflow missed ASCII combat punctuation')
+for valid in ('你穿刺了老鼠！', '你杀死了老鼠！', '你遭遇了老鼠。'):
+    if bot.has_ascii_combat_punctuation(valid):
+        raise SystemExit('workflow rejected Chinese/non-attack punctuation')
+if bot.has_ascii_combat_punctuation('你攻击了老鼠。'):
+    raise SystemExit('workflow rejected Chinese combat punctuation')
 PY
-echo "  PASS: PTY assertions and exact panel manifest reject mutations"
+echo "  PASS: PTY assertions and exact panel/workflow manifests reject mutations"
 
 mkdir -p "$TMPDIR/source"
 set +e
@@ -87,3 +155,28 @@ if [ "$rc" -eq 0 ]; then
 fi
 grep -q 'Missing required test_zh_help.cc' "$TMPDIR/missing-stage.out"
 echo "  PASS: help-baseline refuses missing required stages"
+
+mkdir -p "$TMPDIR/fake-source/test/stress"
+cp "$SCRIPT_DIR/fixtures/fake_zh_crawl.sh" "$TMPDIR/fake-source/crawl"
+chmod +x "$TMPDIR/fake-source/crawl"
+touch "$TMPDIR/fake-source/test/stress/zh_ui_check.rc"
+touch "$TMPDIR/fake-source/test/stress/zh_ui_smoke.rc"
+touch "$TMPDIR/fake-source/test/stress/zh_probe48.rc"
+set +e
+ZH_RUNTIME_SOURCE_DIR="$TMPDIR/fake-source" \
+ZH_RUNTIME_METRICS_DIR="$TMPDIR/masked-metrics" \
+ZH_RUNTIME_CHECK_SCRIPT=/dev/null \
+ZH_RUNTIME_UI_BOT_SCRIPT="$SCRIPT_DIR/fixtures/fake_ui_panels_fail.py" \
+    bash "$RUNNER" bot-fast > "$TMPDIR/masked-stage.out" 2>&1
+rc=$?
+set -e
+if [ "$rc" -eq 0 ]; then
+    echo "  FAIL: bot-fast masked a failing panels stage"
+    exit 1
+fi
+grep -q 'rendered panel PTY assertions' "$TMPDIR/masked-stage.out"
+if grep -q 'gameplay workflow assertions' "$TMPDIR/masked-stage.out"; then
+    echo "  FAIL: workflows ran after a blocking panels failure"
+    exit 1
+fi
+echo "  PASS: bot-fast propagates an earlier panels failure"

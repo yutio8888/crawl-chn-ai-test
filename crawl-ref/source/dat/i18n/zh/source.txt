@@ -2747,6 +2747,9 @@ adjust to
 Adjust to which letter?
 调整到哪个字母？
 %%%%
+Adjust which item?
+整理哪个物品？
+%%%%
 After Damaging Hits
 命中后效果
 %%%%
@@ -12138,6 +12141,18 @@ Adjust which spell?
 Adjust which ability?
 
 调整哪个能力？
+%%%%
+Inscribe which item?
+
+铭刻哪个物品？
+%%%%
+Inscribe with what?
+
+要铭刻什么内容？
+%%%%
+Replace inscription with what?
+
+要用什么内容替换铭刻？
 %%%%
 ctx|en
 
@@ -35586,7 +35601,7 @@ obsoleteness
 没有任何怪物！
 %%%%
  of 
-的
+，信仰
 %%%%
  or apply your Berserk <w>a</w>bility
 或使用你的狂暴<w>a</w>能力
@@ -39125,7 +39140,7 @@ Killed by wild magic
 被野性魔法杀死
 %%%%
 xom
-Xom
+佐姆
 %%%%
 Killed for Xom's enjoyment
 为佐姆取乐而死

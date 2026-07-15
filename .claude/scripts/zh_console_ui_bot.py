@@ -69,6 +69,40 @@ HELP_CASES = [
     ('text:item', 'i', 'dagger', '匕首'),
 ]
 
+# Kept independent from the implementation below: every workflow marker must
+# be emitted exactly once and in this order. This is a separate contract from
+# the RC and panel manifests because the evidence comes from interactive
+# wizard-assisted gameplay rather than Lua markers or read-only panels.
+WORKFLOW_EXPECTED_IDS = (
+    'workflow:initial',
+    'workflow:god:join',
+    'workflow:god:panel',
+    'workflow:combat:freeze',
+    'workflow:combat:spawn',
+    'workflow:combat:attack',
+    'workflow:combat:kill',
+    'workflow:item:create',
+    'workflow:item:pickup',
+    'workflow:item:adjust:menu',
+    'workflow:item:adjust:item',
+    'workflow:item:adjust:letter',
+    'workflow:item:inscribe:item',
+    'workflow:item:inscribe:text',
+    'workflow:item:inventory',
+    'workflow:item:replace:item',
+    'workflow:item:replace:text',
+    'workflow:item:replace:inventory',
+    'workflow:annotation:branch',
+    'workflow:annotation:text',
+    'workflow:annotation:overview',
+)
+
+WORKFLOW_FORBIDDEN = (
+    'Adjust (g)ear', 'Adjust which item?', 'Adjust to which letter?',
+    'Inscribe which item?', 'Inscribe with what?',
+    'Replace inscription with what?', ' of 特洛格', 'Xom',
+)
+
 
 class BotFailure(RuntimeError):
     pass
@@ -166,6 +200,40 @@ def emit(case_id: str, **fields) -> None:
                      ensure_ascii=False, sort_keys=True), flush=True)
 
 
+def validate_workflow_manifest(case_ids, expected_ids=WORKFLOW_EXPECTED_IDS):
+    case_ids = tuple(case_ids)
+    expected_ids = tuple(expected_ids)
+    if len(set(expected_ids)) != len(expected_ids):
+        raise BotFailure('workflow manifest: expected IDs are not unique')
+    if len(set(case_ids)) != len(case_ids):
+        raise BotFailure('workflow manifest: case IDs are not unique')
+    if case_ids != expected_ids:
+        raise BotFailure(
+            f'workflow manifest mismatch: expected {expected_ids}, got {case_ids}')
+
+
+class WorkflowEvidence:
+    def __init__(self):
+        self.case_ids = []
+
+    def record(self, case_id: str, text: str, required=(), forbidden=(),
+               **fields) -> None:
+        expected_index = len(self.case_ids)
+        if expected_index >= len(WORKFLOW_EXPECTED_IDS):
+            raise BotFailure(f'workflow manifest: unexpected extra ID {case_id}')
+        expected = WORKFLOW_EXPECTED_IDS[expected_index]
+        if case_id != expected:
+            raise BotFailure(
+                f'workflow manifest: expected next ID {expected}, got {case_id}')
+        assert_screen(case_id, text, required,
+                      (*WORKFLOW_FORBIDDEN, *forbidden))
+        self.case_ids.append(case_id)
+        emit(case_id, required=list(required), **fields)
+
+    def finish(self) -> None:
+        validate_workflow_manifest(self.case_ids)
+
+
 def validate_panel_manifest(cases=PANEL_CASES,
                             expected_ids=PANEL_EXPECTED_IDS) -> None:
     case_ids = ('panel:initial', *(case[0] for case in cases))
@@ -225,18 +293,207 @@ def run_help(bot: PtyBot) -> None:
     emit('help:phase:done')
 
 
+def drain_more(bot: PtyBot, text: str, max_pages: int = 6) -> str:
+    combined = text
+    for _ in range(max_pages):
+        if not re.search(r'--(?:更多|more)--', text, re.IGNORECASE):
+            return combined
+        text = bot.send(b' ', 1.0)
+        combined += text
+    raise BotFailure('workflow: pager did not terminate')
+
+
+def inventory_letter_for(text: str, item_name: str) -> str:
+    letters = []
+    for item in re.finditer(re.escape(item_name), text):
+        # Console cursor movement can place several inventory rows on one
+        # decoded line. Associate the item with the nearest preceding slot
+        # marker instead of assuming newline boundaries.
+        prefix = text[max(0, item.start() - 160):item.start()]
+        markers = re.findall(r'([a-zA-Z])\s*[-)]\s*', prefix)
+        if markers:
+            letters.append(markers[-1].lower())
+    unique = tuple(dict.fromkeys(letters))
+    if len(unique) != 1:
+        raise BotFailure(
+            f'workflow:item: expected one {item_name} inventory letter, got {unique}')
+    return unique[0].lower()
+
+
+COMBAT_ACTION_RE = re.compile(
+    r'你(?P<action>[^\r\n。！.!]{1,80})了老鼠(?P<punct>[。！.!])')
+
+
+def combat_attack_matches(text: str):
+    return tuple(match for match in COMBAT_ACTION_RE.finditer(text)
+                 if not any(excluded in match.group('action')
+                            for excluded in ('遭遇', '杀死')))
+
+
+def has_combat_attack_evidence(text: str) -> bool:
+    return any(match.group('punct') in '。！'
+               for match in combat_attack_matches(text))
+
+
+def has_ascii_combat_punctuation(text: str) -> bool:
+    return any(match.group('punct') in '.!'
+               for match in combat_attack_matches(text))
+
+
+def run_workflows(bot: PtyBot) -> None:
+    evidence = WorkflowEvidence()
+    initial = bot.read_screen(3.0)
+    evidence.record('workflow:initial', initial,
+                    ('生命:', '魔力:', '魔法飞弹'))
+
+    # Wizard state construction, followed by the real player religion panel.
+    god_prompt = bot.send(b'&_')
+    assert_screen('workflow:god:prompt', god_prompt, ('神祇',))
+    joined = drain_more(bot, bot.send('特洛格\r'.encode('utf-8'), 3.0))
+    evidence.record(
+        'workflow:god:join', joined, ('特洛格', '欢迎你'),
+        ('Trog welcomes you',))
+    religion = drain_more(bot, bot.send(b'^', 2.0))
+    evidence.record(
+        'workflow:god:panel', religion,
+        ('狂怒者特洛格', '神授能力', '特洛格不置可否'),
+        ('Trog the Wrathful', 'Granted powers', 'Trog is noncommittal'))
+    closed = bot.send(b'\x1b', 0.5)
+    assert_screen('workflow:god:panel:close', closed,
+                  ('木乃伊，信仰特洛格', '生命:', '魔力:'),
+                  WORKFLOW_FORBIDDEN)
+
+    frozen = bot.send(b'&E', 1.0)
+    evidence.record('workflow:combat:freeze', frozen,
+                    ('你让时间停止了流动。',),
+                    ('You bring the flow of time to a stop.',))
+    spawn_prompt = bot.send(b'&m')
+    assert_screen('workflow:combat:spawn-prompt', spawn_prompt,
+                  ('怪物',))
+    spawned = bot.send(b'rat\r', 2.0)
+    evidence.record('workflow:combat:spawn', spawned, ('老鼠',))
+
+    attacked = False
+    killed = False
+    combat_text = ''
+    for turn in range(1, 13):
+        step = drain_more(bot, bot.send(b'\t', 1.5))
+        combat_text += step
+        if has_ascii_combat_punctuation(step):
+            raise BotFailure(
+                'workflow:combat: Chinese attack ended in ASCII punctuation')
+        if not attacked and has_combat_attack_evidence(step):
+            evidence.record('workflow:combat:attack', combat_text, ('老鼠',),
+                            ('You hit', 'You miss', 'rat', '你攻击了老鼠.'),
+                            turns=turn)
+            attacked = True
+        if '你杀死了老鼠' in step:
+            if not attacked:
+                raise BotFailure('workflow:combat: kill appeared without attack evidence')
+            evidence.record('workflow:combat:kill', combat_text,
+                            ('你杀死了老鼠',), ('You kill', 'rat'), turns=turn)
+            killed = True
+            break
+    if not attacked:
+        raise BotFailure('workflow:combat: no attack evidence within 12 Tab turns')
+    if not killed:
+        raise BotFailure('workflow:combat: rat survived 12 Tab turns')
+
+    create_prompt = bot.send(b'&%')
+    assert_screen('workflow:item:create-prompt', create_prompt, ('物品',))
+    created = bot.send(b'club\r', 2.0)
+    picked_up = drain_more(bot, bot.send(b'g', 1.5))
+    # Successful named-item creation is intentionally silent. The immediately
+    # following real pickup is the authoritative evidence that the requested
+    # club was created on the player's square.
+    evidence.record('workflow:item:create',
+                    create_prompt + created + picked_up, ('物品', '棍棒'))
+    evidence.record('workflow:item:pickup', picked_up, ('棍棒',))
+
+    inventory = bot.send(b'i', 1.5)
+    assert_screen('workflow:item:locate', inventory, ('棍棒',))
+    old_letter = inventory_letter_for(inventory, '棍棒')
+    bot.send(b'\x1b', 0.5)
+
+    adjust_menu = bot.send(b'=', 1.0)
+    evidence.record('workflow:item:adjust:menu', adjust_menu,
+                    ('整理（g）装备',))
+    adjust_item = bot.send(b'g', 1.5)
+    evidence.record('workflow:item:adjust:item', adjust_item,
+                    ('整理哪个物品？', '棍棒'))
+    adjust_letter = bot.send(old_letter.encode('ascii'), 1.0)
+    evidence.record('workflow:item:adjust:letter', adjust_letter,
+                    ('调整到哪个字母？',))
+    adjusted = bot.send(b'z', 1.0)
+    inventory = bot.send(b'i', 1.5)
+    assert_screen('workflow:item:adjusted', adjusted + inventory, ('棍棒',))
+    if inventory_letter_for(inventory, '棍棒') != 'z':
+        raise BotFailure('workflow:item:adjusted: club was not moved to z')
+    bot.send(b'\x1b', 0.5)
+
+    inscribe_item = bot.send(b'{', 1.5)
+    evidence.record('workflow:item:inscribe:item', inscribe_item,
+                    ('铭刻哪个物品？', '棍棒'))
+    inscribe_text = bot.send(b'z', 1.0)
+    evidence.record('workflow:item:inscribe:text', inscribe_text,
+                    ('要铭刻什么内容？',))
+    inscribed = bot.send('自动测试\r'.encode('utf-8'), 1.0)
+    assert_screen('workflow:item:inscribed', inscribed,
+                  ('棍棒', '自动测试'))
+    inventory = bot.send(b'i', 1.5)
+    if inventory_letter_for(inventory, '棍棒') != 'z':
+        raise BotFailure('workflow:item:inventory: inscribed club is not in z')
+    evidence.record('workflow:item:inventory', inventory,
+                    ('z', '棍棒', '{自动测试}'))
+    bot.send(b'\x1b', 0.5)
+
+    replace_item = bot.send(b'{', 1.5)
+    evidence.record('workflow:item:replace:item', replace_item,
+                    ('铭刻哪个物品？', '棍棒'))
+    replace_text = bot.send(b'z', 1.0)
+    evidence.record('workflow:item:replace:text', replace_text,
+                    ('要用什么内容替换铭刻？',))
+    # The line editor pre-fills the old inscription; clear it before entering
+    # the replacement so this proves replacement rather than concatenation.
+    bot.send(bytes([21]), 0.2)  # Ctrl-U
+    replaced = bot.send('二次测试\r'.encode('utf-8'), 1.0)
+    assert_screen('workflow:item:replaced', replaced,
+                  ('棍棒', '二次测试'))
+    inventory = bot.send(b'i', 1.5)
+    if inventory_letter_for(inventory, '棍棒') != 'z':
+        raise BotFailure('workflow:item:replace:inventory: club is not in z')
+    evidence.record('workflow:item:replace:inventory', inventory,
+                    ('z', '棍棒', '{二次测试}'), ('{自动测试}',))
+    bot.send(b'\x1b', 0.5)
+
+    branch_prompt = bot.send(b'!', 1.0)
+    evidence.record('workflow:annotation:branch', branch_prompt,
+                    ('标注哪个分支？',))
+    annotation_prompt = bot.send(b'.', 1.0)
+    evidence.record('workflow:annotation:text', annotation_prompt,
+                    ('为D:1添加新注释',))
+    bot.send('危险测试!\r'.encode('utf-8'), 1.0)
+    overview = bot.send(bytes([15]), 2.0)
+    evidence.record('workflow:annotation:overview', overview,
+                    ('地城总览', 'D:1', '危险测试!', '佐姆'), ('Dungeon (',))
+    evidence.finish()
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument('--crawl', required=True)
-    parser.add_argument('--mode', choices=('panels', 'help'), required=True)
+    parser.add_argument('--mode', choices=('panels', 'help', 'workflows'),
+                        required=True)
     parser.add_argument('--transcript', required=True)
     args = parser.parse_args()
     bot = PtyBot(args.crawl, args.transcript)
     try:
         if args.mode == 'panels':
             run_panels(bot)
-        else:
+        elif args.mode == 'help':
             run_help(bot)
+        else:
+            run_workflows(bot)
         return 0
     except (BotFailure, OSError) as exc:
         print(f'BOT_FAILURE: {exc}', file=sys.stderr)
