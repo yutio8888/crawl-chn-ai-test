@@ -171,7 +171,10 @@ set -e
 cat /tmp/actual_i18n_lifetime.txt
 assert_status "i18n-lifetime: black-box unit suite" 0 "$i18n_lifetime_status"
 assert_contains "i18n-lifetime: post-reviewer blocking gate is wired" \
-    "scan_i18n_lifetime.py crawl-ref/source/" \
+    "scan_i18n_lifetime.py" \
+    "$SCRIPT_DIR/../post-reviewer.sh"
+assert_contains "i18n-lifetime: post-reviewer supports changed-file scope" \
+    "args=(--files" \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
     "i18n_extract.py validate crawl-ref/source/" \

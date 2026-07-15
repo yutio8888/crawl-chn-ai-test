@@ -10,6 +10,17 @@ TS=$(date -Iseconds | tr : -)
 OUT=".claude/metrics/verify/reviewer-${TS}.log"
 mkdir -p .claude/metrics/verify
 FAILURES=0
+SCOPE="${ZH_VERIFY_SCOPE:-full}"
+CHANGED_CPP=()
+while IFS= read -r path; do
+    case "$path" in
+        crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
+        crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
+        crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)
+            [[ -f "$path" ]] && CHANGED_CPP+=("$path")
+            ;;
+    esac
+done <<< "${ZH_VERIFY_CHANGED_FILES:-}"
 
 run_check() {
     local title="$1"
@@ -26,8 +37,33 @@ run_check() {
     echo ""
 }
 
+run_scoped_scanner() {
+    local title="$1" scanner="$2"
+    shift 2
+    local args=()
+    if [[ "$SCOPE" == changed && "${#CHANGED_CPP[@]}" -eq 0 ]]; then
+        echo "--- ${title} ---"
+        echo "RESULT: SKIP (changed scope has no C++ files)"
+        echo ""
+        return 0
+    fi
+    if [[ "$SCOPE" == changed ]]; then
+        if [[ "$scanner" == lifetime ]]; then
+            args=(--files "${CHANGED_CPP[@]}")
+        else
+            local csv
+            csv=$(IFS=,; echo "${CHANGED_CPP[*]}")
+            args=(--files "$csv")
+        fi
+    else
+        args=(crawl-ref/source/)
+    fi
+    run_check "$title" "$@" "${args[@]}"
+}
+
 {
     echo "=== post-reviewer.sh @ ${TS} ==="
+    echo "Scope: $SCOPE"
     echo ""
     run_check "Database consistency (--all --strict)" \
         bash .claude/scripts/check_consistency.sh --all --strict
@@ -81,11 +117,11 @@ run_check() {
         crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Anti-patterns (strict + lenient)" \
         python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/
-    run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
-        python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
+    run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
+        varargs python3 .claude/scripts/scan_varargs_string.py \
         --format text --require-parser
-    run_check "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
-        python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+    run_scoped_scanner "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
+        lifetime python3 .claude/scripts/scan_i18n_lifetime.py \
         --format text --require-parser
     echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-reviewer.sh complete ==="

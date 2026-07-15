@@ -395,6 +395,10 @@ bash .claude/scripts/verify_zh.sh --profile translation
 # C++/i18n 代码改动
 bash .claude/scripts/verify_zh.sh --profile code
 
+# 任务期默认 changed；也可显式要求全量静态检查
+bash .claude/scripts/verify_zh.sh --profile code --scope changed
+bash .claude/scripts/verify_zh.sh --profile code --scope full
+
 # 合并审核：绑定不可变 target/candidate 提交范围，并产生 run metadata
 bash .claude/scripts/verify_zh.sh --profile review \
   --base <target-head> --head <candidate-head>
@@ -404,6 +408,34 @@ bash .claude/scripts/verify_zh.sh --profile review
 
 # CI 门禁（translation + code 并集）
 bash .claude/scripts/verify_zh.sh --profile ci
+
+# 显式执行全量静态检查及 Layer 1-3 runtime
+bash .claude/scripts/verify_zh.sh --profile review --full
+```
+
+`translation`/`code` 默认 `--scope changed`，`review`/`ci` 默认
+`--scope full`。changed 只缩小明确支持文件列表的 AST 扫描；Agent/Skill
+策略同步、source.txt/TextDB 完整性、key coverage、格式、术语与导出新鲜度等
+全局门禁始终全量执行。绑定 `--base/--head` 时 changed 集合来自该不可变
+范围；未绑定时来自 `HEAD` 相对工作树（含 untracked files）。
+
+风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
+font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2；review/ci 至少运行
+同一 fast runtime。`--full` 才运行耗时的三层 runtime full。这里的 fast
+runtime 使用 `post_zh_runtime.sh catch2`，因为其 `fast` 子命令只重新聚合已有
+日志，并不产生新的运行证据。
+
+`post-coder.sh` 的 string-concat advisory 使用版本控制的
+`data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码
+移动不会制造新告警；报告分别列出 existing/new/resolved，且只展开 new。
+新增项仍是 advisory，不改变既有 blocking 语义。审核后更新基线：
+
+```bash
+python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \
+  --skip-low --format json > /tmp/string-concat.json || true
+python3 .claude/scripts/advisory_baseline.py \
+  --input /tmp/string-concat.json \
+  --baseline .claude/scripts/data/string_concat_advisory_baseline.json --write
 ```
 
 每个 profile 运行 core-static 检查（始终阻断）加上领域特定检查。

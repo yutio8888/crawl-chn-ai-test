@@ -65,6 +65,12 @@ printf '%s\n' \
     'exit "$(cat .phase-rc 2>/dev/null || echo 0)"' \
     > "$REPO/.claude/scripts/post-reviewer.sh"
 chmod +x "$REPO/.claude/scripts/post-reviewer.sh"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'echo "$1" >> .observed-runtime-mode' \
+    'exit 0' \
+    > "$REPO/.claude/scripts/post_zh_runtime.sh"
+chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
 
 (
     cd "$REPO"

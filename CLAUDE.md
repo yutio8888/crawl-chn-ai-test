@@ -636,13 +636,16 @@ CONTEXT=$(bash .claude/scripts/context_resolve.sh "task description" \
 **Aggregated verification**: After code changes, use these scripts to run checks.
 `post-coder.sh`, `post-translator.sh`, and `post-reviewer.sh` are blocking gates:
 they return non-zero when blocking checks fail and are suitable for CI.
-Within `post-coder.sh`, `scan_string_concat.py` and `smoke_test.sh` are currently
-warning-only, so they surface in the report without blocking the gate.
-Default is fast (seconds); `--full` / `post_zh_runtime.sh` only when explicitly requested
-(they trigger compilation and runtime test execution).
+Within `post-coder.sh`, `scan_string_concat.py` is a baseline-differenced
+advisory: existing findings are counted, but only new findings are expanded.
+`verify_zh.sh` runs incremental compilation plus `smoke_test.sh` as blocking
+risk gates for C++ i18n diffs. Review/CI also run fresh Catch2 runtime evidence;
+explicit `--full` runs all three runtime layers.
 
 ```bash
-bash .claude/scripts/post-coder.sh       # After code changes (blocking static gate; string-concat + smoke are warning-only)
+bash .claude/scripts/verify_zh.sh --profile code # changed static scope + risk-routed build/smoke
+bash .claude/scripts/verify_zh.sh --profile review --full # full static + all runtime layers
+bash .claude/scripts/post-coder.sh       # Low-level static gate (concat is baseline advisory)
 bash .claude/scripts/post-coder.sh --full # Same as above + catch2 (L1) + dlua (L2) + RC bot (L3) + aggregation
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
 bash .claude/scripts/post-reviewer.sh    # After review (all consistency + cross-file terms)

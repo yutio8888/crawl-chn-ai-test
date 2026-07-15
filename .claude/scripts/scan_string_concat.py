@@ -952,6 +952,28 @@ def format_json(findings, source_dir, files_scanned):
     }, indent=2, ensure_ascii=False)
 
 
+def _display_root(files_to_scan, source_dir):
+    """Choose a path root stable between recursive and explicit-file scans."""
+    if source_dir:
+        return os.path.abspath(source_dir)
+
+    source_roots = []
+    for filename in files_to_scan:
+        current = os.path.dirname(os.path.abspath(filename))
+        while True:
+            if (os.path.basename(current) == "source"
+                    and os.path.basename(os.path.dirname(current)) == "crawl-ref"):
+                source_roots.append(current)
+                break
+            parent = os.path.dirname(current)
+            if parent == current:
+                break
+            current = parent
+    if len(source_roots) == len(files_to_scan) and len(set(source_roots)) == 1:
+        return source_roots[0]
+    return os.path.commonpath([os.path.dirname(path) for path in files_to_scan])
+
+
 # ── Main Entry Point ──────────────────────────────────────────────────────────
 
 def main():
@@ -1008,7 +1030,7 @@ def main():
             f = f.strip()
             if f and os.path.isfile(f):
                 ext = os.path.splitext(f)[1]
-                if ext in (".cc", ".h", ".cpp", ".hpp"):
+                if ext in (".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"):
                     files_to_scan.append(os.path.abspath(f))
             elif f:
                 print(f"Warning: File not found or not C++: {f}",
@@ -1022,7 +1044,7 @@ def main():
                 if fn in SKIP_FILES:
                     continue
                 ext = os.path.splitext(fn)[1]
-                if ext in (".cc", ".h"):
+                if ext in (".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"):
                     files_to_scan.append(os.path.join(dirpath, fn))
 
     if not files_to_scan:
@@ -1068,10 +1090,7 @@ def main():
             all_findings.append(finding)
 
     # ── Output ────────────────────────────────────────────────────────────
-    if all_findings:
-        out_dir = os.path.commonpath([f["file"] for f in all_findings])
-    else:
-        out_dir = os.path.abspath(args.source_dir) if args.source_dir else "."
+    out_dir = _display_root(files_to_scan, args.source_dir)
 
     if args.format == "json":
         output = format_json(all_findings, out_dir, files_scanned)

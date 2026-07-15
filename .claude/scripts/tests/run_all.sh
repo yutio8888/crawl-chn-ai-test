@@ -4,9 +4,11 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 
 TESTS=(
+    "$SCRIPT_DIR/test_classify_reviewers.py"
     "$SCRIPT_DIR/test_i18n_extract.py"
     "$SCRIPT_DIR/test_review_evidence.py"
     "$SCRIPT_DIR/test_verify_zh.sh"
+    "$SCRIPT_DIR/test_verify_phase4.sh"
     "$SCRIPT_DIR/test_scan_i18n.sh"
     "$SCRIPT_DIR/test_zh_runtime_check.sh"
     "$SCRIPT_DIR/test_zh_console_ui_bot.sh"

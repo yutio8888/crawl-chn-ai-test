@@ -11,6 +11,38 @@ OUT=".claude/metrics/verify/coder-${TS}.log"
 mkdir -p .claude/metrics/verify
 FAILURES=0
 WARNINGS=0
+SCOPE="${ZH_VERIFY_SCOPE:-full}"
+CHANGED_CPP=()
+while IFS= read -r path; do
+    case "$path" in
+        crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
+        crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
+        crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)
+            [[ -f "$path" ]] && CHANGED_CPP+=("$path")
+            ;;
+    esac
+done <<< "${ZH_VERIFY_CHANGED_FILES:-}"
+
+scanner_args() {
+    local scanner="$1"
+    if [[ "$SCOPE" == changed ]]; then
+        if [[ "${#CHANGED_CPP[@]}" -eq 0 ]]; then
+            return 1
+        fi
+        case "$scanner" in
+            lifetime)
+                printf '%s\0' --files "${CHANGED_CPP[@]}"
+                ;;
+            *)
+                local csv
+                csv=$(IFS=,; echo "${CHANGED_CPP[*]}")
+                printf '%s\0' --files "$csv"
+                ;;
+        esac
+    else
+        printf '%s\0' crawl-ref/source/
+    fi
+}
 
 run_check() {
     local title="$1"
@@ -33,8 +65,60 @@ run_check() {
     echo ""
 }
 
+run_scoped_scanner() {
+    local title="$1" blocking="$2" scanner="$3"
+    shift 3
+    local args=()
+    if [[ "$SCOPE" == changed && "${#CHANGED_CPP[@]}" -eq 0 ]]; then
+        echo "--- ${title} ---"
+        echo "RESULT: SKIP (changed scope has no C++ files)"
+        echo ""
+        return 0
+    fi
+    mapfile -d '' -t args < <(scanner_args "$scanner")
+    run_check "$title" "$blocking" "$@" "${args[@]}"
+}
+
+run_concat_advisory() {
+    local scan_json
+    scan_json=$(mktemp)
+    local args=()
+    if [[ "$SCOPE" == changed && "${#CHANGED_CPP[@]}" -eq 0 ]]; then
+        echo "--- String concatenation blind spots (baseline diff) ---"
+        echo "Existing baseline warnings: 0"
+        echo "New warnings introduced by diff: 0"
+        echo "RESULT: PASS (no changed C++ files)"
+        echo ""
+        rm -f "$scan_json"
+        return 0
+    fi
+    mapfile -d '' -t args < <(scanner_args concat)
+    # Finding exit status is intentionally ignored: this scanner is advisory.
+    python3 .claude/scripts/scan_string_concat.py "${args[@]}" \
+        --skip-low --format json > "$scan_json" || true
+    echo "--- String concatenation blind spots (baseline diff) ---"
+    local comparison
+    if comparison=$(python3 .claude/scripts/advisory_baseline.py \
+        --input "$scan_json" \
+        --baseline .claude/scripts/data/string_concat_advisory_baseline.json); then
+        echo "$comparison"
+        local new_count
+        new_count=$(sed -n 's/^New warnings introduced by diff: //p' <<< "$comparison")
+        WARNINGS=$((WARNINGS + ${new_count:-0}))
+        echo "RESULT: PASS (advisory)"
+    else
+        local rc=$?
+        echo "$comparison"
+        echo "RESULT: WARN (baseline comparison failed, exit ${rc})"
+        WARNINGS=$((WARNINGS + 1))
+    fi
+    echo ""
+    rm -f "$scan_json"
+}
+
 {
     echo "=== post-coder.sh @ ${TS} ==="
+    echo "Scope: $SCOPE"
     echo ""
     run_check "source.txt integrity (dedup + self-conflicts)" blocking \
         python3 .claude/scripts/scan_i18n.py source-txt-integrity \
@@ -93,26 +177,23 @@ run_check() {
     run_check "Changed exact-key terminology (current glossary)" blocking \
         python3 .claude/scripts/check_glossary_terms.py \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
-    run_check "std::string in variadic args (Issue #42 UB, tree-sitter AST)" blocking \
-        python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ \
+    run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
+        blocking varargs python3 .claude/scripts/scan_varargs_string.py \
         --format text --require-parser
-    run_check "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" blocking \
-        python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
+    run_scoped_scanner "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
+        blocking lifetime python3 .claude/scripts/scan_i18n_lifetime.py \
         --format text --require-parser
     run_check "Font atlas generation safety (Issue #54)" blocking \
         python3 .claude/scripts/check_font_atlas_generation.py
-    run_check "String concatenation blind spots (tree-sitter AST)" warning \
-        python3 .claude/scripts/scan_string_concat.py crawl-ref/source/ \
-        --skip-low --format text
-    run_check "Smoke test (ZH mode)" warning \
-        bash .claude/scripts/smoke_test.sh
+    run_concat_advisory
 
     # ---- Full runtime test hook (plan v2 §5.3) ----
     # Triggered by: bash post-coder.sh --full
     # Runs the Catch2 enumerators, dlua smoke test, and RC bot
     # (builds happen within post_zh_runtime.sh). This adds several
     # minutes to the verification cycle, so it is off by default;
-    # merge-time review and CI gates should use --full.
+    # verify_zh.sh owns normal risk routing. Keep this direct-call compatibility
+    # hook for existing callers of `post-coder.sh --full`.
     if [[ "${1:-}" == "--full" ]] || [[ "${2:-}" == "--full" ]]; then
         run_check "Layer 1-3 runtime tests (--full)" blocking \
             bash .claude/scripts/post_zh_runtime.sh full

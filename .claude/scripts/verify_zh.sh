@@ -7,6 +7,8 @@
 #   verify_zh.sh --profile review         # Pre-merge review
 #   verify_zh.sh --profile ci             # CI gate (union of translation + code)
 #   verify_zh.sh --profile review --base <rev> --head <rev>
+#   verify_zh.sh --profile code --scope changed
+#   verify_zh.sh --profile review --full  # full static + full runtime
 #
 # --base and --head bind a run to an immutable commit range. They must be used
 # together. For bound runs, the checked-out HEAD must equal --head and glossary
@@ -21,6 +23,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 PROFILE=""
+SCOPE=""
+EXPLICIT_FULL=0
 BASE=""
 HEAD=""
 BASE_SHA=""
@@ -38,10 +42,14 @@ RESULTS=0
 STARTED_AT=""
 GLOSSARY_SHA256=""
 WORKTREE=""
+CHANGED_FILES=""
+RISK_CPP_I18N=0
+RISK_CJK_RUNTIME=0
 
 usage() {
     cat <<'EOF'
-Usage: verify_zh.sh --profile <translation|code|review|ci> [--base <rev> --head <rev>]
+Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full]
+                    [--base <rev> --head <rev>] [--full]
 
 Profiles:
   translation   Translation / data-file changes
@@ -52,6 +60,10 @@ Profiles:
 Evidence range:
   --base <rev>  Comparison base; requires --head
   --head <rev>  Candidate commit; requires --base and must be checked out
+
+Scope and runtime:
+  --scope changed|full  Task profiles default to changed; review/ci to full
+  --full                Alias for --scope full plus the full runtime suite
 EOF
     exit 2
 }
@@ -64,15 +76,21 @@ argument_error() {
 # ── Parse arguments ──
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --profile|--base|--head)
+        --profile|--base|--head|--scope)
             [[ $# -ge 2 && -n "${2:-}" ]] \
                 || argument_error "$1 requires a value"
             case "$1" in
                 --profile) PROFILE="$2" ;;
                 --base) BASE="$2" ;;
                 --head) HEAD="$2" ;;
+                --scope) SCOPE="$2" ;;
             esac
             shift 2
+            ;;
+        --full)
+            SCOPE="full"
+            EXPLICIT_FULL=1
+            shift
             ;;
         -h|--help)
             usage
@@ -96,6 +114,17 @@ case "$PROFILE" in
         ;;
 esac
 
+if [[ -z "$SCOPE" ]]; then
+    case "$PROFILE" in
+        translation|code) SCOPE="changed" ;;
+        review|ci) SCOPE="full" ;;
+    esac
+fi
+case "$SCOPE" in
+    changed|full) ;;
+    *) argument_error "unknown scope '$SCOPE'. Valid: changed, full" ;;
+esac
+
 WORKTREE=$(git rev-parse --show-toplevel 2>/dev/null) \
     || argument_error "verification must run inside a git worktree"
 CURRENT_HEAD=$(git rev-parse --verify HEAD 2>/dev/null) \
@@ -114,6 +143,50 @@ if [[ -n "$BASE" ]]; then
     fi
     DIFF_HASH=$(git diff --binary "$BASE_SHA..$HEAD_SHA" | git hash-object --stdin)
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
+fi
+
+# The changed set is used only to narrow checks that accept explicit file
+# lists and to select risk tests. Global integrity and policy gates remain full.
+if [[ -n "$BASE_SHA" ]]; then
+    CHANGED_FILES=$(git diff --name-only "$BASE_SHA..$HEAD_SHA")
+else
+    CHANGED_FILES=$({
+        git diff --name-only HEAD
+        git ls-files --others --exclude-standard
+    } | LC_ALL=C sort -u)
+fi
+export ZH_VERIFY_SCOPE="$SCOPE"
+export ZH_VERIFY_CHANGED_FILES="$CHANGED_FILES"
+
+if [[ -n "$CHANGED_FILES" ]]; then
+    while IFS= read -r changed_file; do
+        [[ -n "$changed_file" ]] || continue
+        case "$changed_file" in
+            crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
+            crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
+            crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)
+                if [[ -n "$BASE_SHA" ]]; then
+                    diff_text=$(git diff -U0 "$BASE_SHA..$HEAD_SHA" -- "$changed_file" || true)
+                elif git ls-files --error-unmatch -- "$changed_file" >/dev/null 2>&1; then
+                    diff_text=$(git diff -U0 HEAD -- "$changed_file" || true)
+                else
+                    # git diff omits untracked files; represent the new file as
+                    # additions so risk classification sees its i18n content.
+                    diff_text=$(sed 's/^/+/' -- "$changed_file" 2>/dev/null || true)
+                fi
+                if grep -Eq '^[+-].*(T_|C_|N_|i18n|language|translated_)' <<<"$diff_text"; then
+                    RISK_CPP_I18N=1
+                fi
+                ;;
+        esac
+        case "$changed_file" in
+            *font*|*Font*|*cjk*|*CJK*|*unicode*|*char-width*|*tile*font*|\
+            crawl-ref/source/tiles*.cc|crawl-ref/source/tiles*.h|\
+            crawl-ref/source/test/zh_runtime.lua|test/baselines/zh/*)
+                RISK_CJK_RUNTIME=1
+                ;;
+        esac
+    done <<< "$CHANGED_FILES"
 fi
 
 GLOSSARY_FILE="$WORKTREE/docs/glossary.md"
@@ -247,6 +320,8 @@ run_phase() {
 {
     echo "=== verify_zh.sh --profile $PROFILE @ $STARTED_AT ==="
     echo "Run ID: $RUN_ID"
+    echo "Scope: $SCOPE"
+    echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME explicit_full=$EXPLICIT_FULL"
     if [[ -n "$BASE_SHA" ]]; then
         echo "Base: $BASE_SHA"
         echo "Head: $HEAD_SHA"
@@ -279,6 +354,47 @@ run_phase() {
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
+
+
+    run_incremental_build() {
+        if [[ -n "${ZH_VERIFY_BUILD_COMMAND:-}" ]]; then
+            bash -c "$ZH_VERIFY_BUILD_COMMAND"
+        else
+            make -C crawl-ref/source -j4
+        fi
+    }
+    run_zh_smoke() {
+        if [[ -n "${ZH_VERIFY_SMOKE_COMMAND:-}" ]]; then
+            bash -c "$ZH_VERIFY_SMOKE_COMMAND"
+        else
+            bash "$SCRIPT_DIR/smoke_test.sh"
+        fi
+    }
+    run_runtime() {
+        local mode="$1"
+        if [[ -n "${ZH_VERIFY_RUNTIME_COMMAND:-}" ]]; then
+            bash -c "$ZH_VERIFY_RUNTIME_COMMAND $mode"
+        else
+            bash "$SCRIPT_DIR/post_zh_runtime.sh" "$mode"
+        fi
+    }
+
+    if [[ "$RISK_CPP_I18N" -eq 1 ]]; then
+        run_phase "Risk gate: incremental C++ build" run_incremental_build \
+            || RESULTS=$((RESULTS + 1))
+        run_phase "Risk gate: ZH smoke" run_zh_smoke \
+            || RESULTS=$((RESULTS + 1))
+    fi
+
+    if [[ "$EXPLICIT_FULL" -eq 1 ]]; then
+        run_phase "Risk gate: full ZH runtime" run_runtime full \
+            || RESULTS=$((RESULTS + 1))
+    elif [[ "$RISK_CJK_RUNTIME" -eq 1 || "$PROFILE" == review || "$PROFILE" == ci ]]; then
+        # post_zh_runtime.sh calls its build-and-run Catch2 path "catch2";
+        # its "fast" mode only re-aggregates an existing evidence directory.
+        run_phase "Risk gate: fast ZH runtime" run_runtime catch2 \
+            || RESULTS=$((RESULTS + 1))
+    fi
 
     echo "Summary: $RESULTS blocking failure(s)"
     echo "=== verify_zh.sh complete ==="
