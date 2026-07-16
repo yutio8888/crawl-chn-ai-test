@@ -1,9 +1,9 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0 已完成；Phase 1 已实现首个纵向迁移
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 首批迁移进行中
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（首个完整 key 闭包）**；Phase 2 尚未开始，
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 已迁移首批两个 key，
 > 全局 legacy heuristic 仍受门禁保护
 
 ## 1. 背景
@@ -567,9 +567,15 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-在 schema-driven binding 接线完成前，这一生产子集要求 `resolved_target`，并
-拒绝非默认 applicability、`implies_gesture=true` 与 `audible=true`；生成器不得
-先声明 actor-only 或尚未消费的行为元数据已经可用。
+当前生产 catalog 覆盖 4 个 canonical key、7 个 canonical variant。descriptor
+用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
+目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
+binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
+`implies_gesture`。actor schema 已支持 `actor_ref`、`actor_possessive_name`、
+`actor_possessive_pronoun` 和 `actor_reflexive`，并只验证模板实际声明的字段。
+英文模板仍可使用所有格和反身槽，中文模板可按自然语序省略冗余代词，只要完整
+EN/ZH 模板矩阵的 schema union 与声明一致。非默认 applicability 与
+`audible=true` 仍被生成期和加载期拒绝。
 
 ### 8.4 canonical English 与跨语言 RNG 契约
 
@@ -859,22 +865,27 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-16）：上述基础设施已落地，首个完整迁移项为
-`beam catchall cast`（stable ID `mon.cast.beam_catchall.v1`，`NONE`）。
+实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 4 个 canonical
+key、7 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+`mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
 [`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
 `monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT` 和
-Phase 2 heuristic 删除仍未启用。
+Phase 2 全局 heuristic 删除仍未启用。structured binding 已支持显式
+`resolves_target`、gesture，以及 actor possessive/reflexive 槽；模板是否引用
+`${target}` 不再决定是否解析目标。
 
 production candidate recipe 的 closed-world upper-bound dump 已与 EN/ZH effective
 SpeakDB 做 containment join。当前两种语言各命中 251 个 runtime root，Phase 0
 inventory 的 262 个 root 中有 11 个不在候选上界内；报告标记
 `candidate_key_containment_proven=true`、`runtime_reachability_proven=true` 与
 `reachability_kind=SOUND_UPPER_BOUND_NOT_EXACT`。这证明所有生产 candidate lookup
-都进入分析域，但不声称逐局精确可达。Phase 2 门禁仍为关闭，因为 70 个已分析
-behavior occurrence 尚无 catalog metadata 覆盖，EN/ZH 尚有 2 个确认差异，并有
-1 个 fail-closed occurrence。
+都进入分析域，但不声称逐局精确可达。Phase 2 首批已将
+`ensnare arachne cast` 与 `guardian serpent cast targeted` 的全部 5 个 canonical
+variant 迁移为显式 behavior metadata；effective runtime EN/ZH mismatch 已降为 0。
+门禁仍为关闭，因为还有 68 个 legacy behavior occurrence 未迁移，并有 1 个
+fail-closed occurrence。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
@@ -885,6 +896,8 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 ### Phase 2：移除正文行为嗅探
 
 - 将 `gesture`、`visual`、`audible` 等变为显式元数据；
+- binding resolver 接收已验证 descriptor frame、`resolves_target` 与
+  `implies_gesture`；即使模板不引用 target，也只执行一次目标解析以保持 RNG trace；
 - 结构化路径不再运行正文关键词 heuristic；
 - 只有所有仍可达、会影响 `gestured` 的 legacy 变体都已迁移或拥有等价
   元数据，并经可达性审计证明覆盖率为 100%，才能删除全局 heuristic；

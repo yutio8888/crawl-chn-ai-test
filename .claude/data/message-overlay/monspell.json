@@ -21,6 +21,7 @@
           "upstream_weight": 10,
           "english_snapshot": "@The_monster@ throws @beam@ @at@ @target@.",
           "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
           "applicability": {
             "requires_player": false,
             "requires_foe": false,
@@ -76,6 +77,7 @@
           "upstream_weight": 10,
           "english_snapshot": "@The_monster@ breathes [collective despair|endless sorrows] @at@ @target@.",
           "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
           "applicability": {
             "requires_player": false,
             "requires_foe": false,
@@ -135,6 +137,176 @@
       ]
     },
     {
+      "canonical_key": "ensnare arachne cast",
+      "canonical_fingerprint": "fnv1a64:05cc2f34c8565430",
+      "selection_graph_fingerprint": "fnv1a64:f7c7a4e4b36502da",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.ensnare_arachne.points_staff.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "8b3c230f2c6340e9188a598e3ac2df22eb01587f4cb2190f74760714af4d9a41",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ points @possessive@ staff @at@ @target@, shooting a stream of webbing.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false, "requires_foe": false,
+            "requires_named_foe": false, "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "possessive", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} points ${possessive} staff at ${target}, shooting a stream of webbing." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} points ${possessive} staff next to ${target}, shooting a stream of webbing." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} points ${possessive} staff past ${target}, shooting a stream of webbing." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}用法杖指向${target}，射出一股蛛网。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用法杖指向${target}旁边，射出一股蛛网。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}用法杖指向${target}身后，射出一股蛛网。" }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.ensnare_arachne.staff_shoots.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "0564e66e9df881bc435fed286717e46dfd7cfb12c48d3b6cd7823695c303cfb4",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster_possessive@ staff shoots out a stream of webbing.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false, "requires_foe": false,
+            "requires_named_foe": false, "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor_possessive", "type": "actor_possessive_name" }
+          ],
+          "required_arguments": [ "actor_possessive" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor_possessive} staff shoots out a stream of webbing." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor_possessive} staff shoots out a stream of webbing." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor_possessive} staff shoots out a stream of webbing." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor_possessive}法杖射出一股蛛网。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor_possessive}法杖射出一股蛛网。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor_possessive}法杖射出一股蛛网。" }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "guardian serpent cast targeted",
+      "canonical_fingerprint": "fnv1a64:77c1911541bd6e28",
+      "selection_graph_fingerprint": "fnv1a64:58c3a69138765c0b",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.guardian_serpent.coils.v1",
+          "tombstone": false, "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "bc74689e839f66880c824dd4a59b8661b0740b0bd48d82164ca9d4e61c62a60b",
+          "english_snapshot": "@The_monster@ coils @reflexive@ and waves @possessive@ upper body @at@ @target@.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "reflexive", "type": "actor_reflexive" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "reflexive", "possessive", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} coils ${reflexive} and waves ${possessive} upper body at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} coils ${reflexive} and waves ${possessive} upper body next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} coils ${reflexive} and waves ${possessive} upper body past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}盘起身躯，向${target}摆动上半身。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}盘起身躯，向${target}旁边摆动上半身。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}盘起身躯，向${target}身后摆动上半身。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.guardian_serpent.tail_gesture.v1",
+          "tombstone": false, "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "6641a78f9904683b487d1d7420192c5c5fd2b06d5912048def4c062cd075e1fe",
+          "english_snapshot": "@The_monster@ gestures with @possessive@ tail @at@ @target@.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "possessive", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} gestures with ${possessive} tail at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gestures with ${possessive} tail next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} gestures with ${possessive} tail past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}用尾巴向${target}做出手势。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用尾巴向${target}旁边做出手势。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}用尾巴向${target}身后做出手势。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.guardian_serpent.tongue_patterns.v1",
+          "tombstone": false, "variant_ordinal": 2, "upstream_weight": 3,
+          "upstream_variant_fingerprint": "7e8faaefc0371de12b80174de1b3c3ab7412beab1892fa560eaacafa118c2583",
+          "english_snapshot": "@The_monster@ weaves intricate patterns with the tip of @possessive@ tongue.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": [ "actor", "possessive" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} weaves intricate patterns with the tip of ${possessive} tongue." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} weaves intricate patterns with the tip of ${possessive} tongue." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} weaves intricate patterns with the tip of ${possessive} tongue." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}用舌尖编织出复杂的图案。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用舌尖编织出复杂的图案。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}用舌尖编织出复杂的图案。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",
@@ -148,6 +320,7 @@
           "upstream_weight": 10,
           "english_snapshot": "@The_monster@ calls out: \"@orc name@, @orc name@, @orc name@ - to me!\"",
           "frame": "VOCAL",
+          "binding": { "resolves_target": false },
           "applicability": {
             "requires_player": false,
             "requires_foe": false,
@@ -172,6 +345,7 @@
           "upstream_weight": 10,
           "english_snapshot": "@The_monster@ cries out, \"Spectres! Fight for the home you helped make!\"",
           "frame": "VOCAL",
+          "binding": { "resolves_target": false },
           "applicability": {
             "requires_player": false,
             "requires_foe": false,

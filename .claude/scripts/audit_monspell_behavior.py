@@ -919,9 +919,11 @@ def _occurrence(key: str, language: str, ordinal: int,
 
 def analyze_language(language: str, roots: list[str],
                      entries: dict[str, EffectiveEntry],
-                     catalog: dict[tuple[str, int], dict[str, Any]]) -> dict[str, Any]:
+                     catalog: dict[tuple[str, int], dict[str, Any]],
+                     structured_runtime: bool = True) -> dict[str, Any]:
     analyzer = PredicateAnalyzer(entries, language)
     occurrences: list[dict[str, object]] = []
+    metadata_variants: list[dict[str, object]] = []
     predicates: dict[str, set[str]] = {key: set() for key in roots}
     source_counts = {"selected_language": 0, "english_fallback": 0, "missing": 0}
     for key in roots:
@@ -937,6 +939,55 @@ def analyze_language(language: str, roots: list[str],
             source_counts["selected_language"] += 1
         else:
             source_counts["english_fallback"] += 1
+        structured_descriptors = sorted(
+            (
+                (ordinal, descriptor)
+                for (catalog_key, ordinal), descriptor in catalog.items()
+                if catalog_key == key
+                and descriptor.get("_entry_mode") == "CANDIDATE"
+            ),
+            key=lambda item: item[0],
+        )
+        if structured_runtime and structured_descriptors:
+            for ordinal, descriptor in structured_descriptors:
+                lines = list(descriptor.get("line_metadata", []))
+                for case in descriptor.get("materialization_cases", []):
+                    lines.extend(case.get("line_metadata", []))
+                complete = bool(lines) and all(
+                    isinstance(line.get("behavior"), dict)
+                    and set(line["behavior"])
+                        == {"implies_gesture", "audible"}
+                    and isinstance(line["behavior"]["implies_gesture"], bool)
+                    and line["behavior"]["audible"] is False
+                    for line in lines)
+                metadata_variants.append({
+                    "requested_root": key,
+                    "language": language,
+                    "variant_ordinal": ordinal,
+                    "stable_id": descriptor.get("stable_id"),
+                    "complete": complete,
+                })
+                if not complete:
+                    predicates[key].add("UNANALYSABLE")
+                    occurrences.append(_occurrence(
+                        key, language, ordinal, [], "ANALYSIS",
+                        "UNANALYSABLE", catalog,
+                        "structured behavior metadata is incomplete"))
+                    continue
+                structured_behaviors = set()
+                if any(line["behavior"]["implies_gesture"] for line in lines):
+                    structured_behaviors.add("GESTURE")
+                if any(line.get("sensory") == "VISUAL" for line in lines):
+                    structured_behaviors.update(
+                        {"VISUAL_APPLICABILITY", "VISUAL_CHANNEL"})
+                if any(line.get("sensory") == "SOUND" for line in lines):
+                    structured_behaviors.add("SOUND_LIKE_CHANNEL")
+                for behavior in sorted(structured_behaviors):
+                    predicates[key].add(behavior)
+                    occurrences.append(_occurrence(
+                        key, language, ordinal, [],
+                        "STRUCTURED_METADATA", behavior, catalog))
+            continue
         if entry.parse_error is not None or not entry.variants:
             detail = entry.parse_error or "requested root has no selectable variants"
             occurrences.append(_occurrence(
@@ -988,6 +1039,7 @@ def analyze_language(language: str, roots: list[str],
             key for key, values in predicates.items()
             if values - {"UNANALYSABLE"}),
         "occurrences": occurrences,
+        "structured_variant_metadata": metadata_variants,
     }
 
 
@@ -1062,9 +1114,17 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
     ]
     inventory_root_set = set(inventory_roots)
     inventory_unreachable = sorted(inventory_root_set - set(runtime_roots))
+    legacy_languages = {
+        "en": analyze_language(
+            "en", runtime_roots, en_effective, catalog, False),
+        "zh": analyze_language(
+            "zh", runtime_roots, zh_effective, catalog, False),
+    }
     languages = {
-        "en": analyze_language("en", runtime_roots, en_effective, catalog),
-        "zh": analyze_language("zh", runtime_roots, zh_effective, catalog),
+        "en": analyze_language(
+            "en", runtime_roots, en_effective, catalog, True),
+        "zh": analyze_language(
+            "zh", runtime_roots, zh_effective, catalog, True),
     }
     mismatches = []
     inconclusive = []
@@ -1096,15 +1156,41 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
                 "migration_priority": "BEHAVIOR_DIVERGENCE",
             })
     occurrences = languages["en"]["occurrences"] + languages["zh"]["occurrences"]
-    behavioral = [item for item in occurrences if item["behavior"] != "UNANALYSABLE"]
-    covered = sum(1 for item in behavioral if item["catalog_coverage"]["covered"])
+    behavioral = [item for item in occurrences
+                  if item["behavior"] != "UNANALYSABLE"]
+    legacy_behavioral = [
+        item for item in behavioral
+        if item["phase"] != "STRUCTURED_METADATA"
+    ]
+    metadata_variants = (
+        languages["en"]["structured_variant_metadata"]
+        + languages["zh"]["structured_variant_metadata"]
+    )
+    legacy_covered = sum(
+        1 for item in legacy_behavioral
+        if item["catalog_coverage"]["covered"])
+    canonical_metadata: dict[tuple[str, int], bool] = {}
+    for item in metadata_variants:
+        identity = (str(item["requested_root"]), int(item["variant_ordinal"]))
+        canonical_metadata[identity] = (
+            canonical_metadata.get(identity, True) and bool(item["complete"])
+        )
+    canonical_metadata_complete = sum(canonical_metadata.values())
+    per_language_metadata_complete = sum(
+        1 for item in metadata_variants if item["complete"])
     unanalysable = sum(1 for item in occurrences if item["behavior"] == "UNANALYSABLE")
-    catalog_complete = covered == len(behavioral)
+    catalog_complete = (
+        legacy_covered == len(legacy_behavioral)
+        and canonical_metadata_complete == len(canonical_metadata)
+        and per_language_metadata_complete == len(metadata_variants)
+    )
     parity_proven = not mismatches and not presence_mismatches
     analysis_conclusive = not inconclusive
     blockers = []
     if not catalog_complete:
-        blockers.append("legacy behavior metadata coverage is incomplete")
+        blockers.append(
+            f"{len(legacy_behavioral) - legacy_covered} remaining legacy "
+            "behavior occurrences lack explicit metadata")
     if not parity_proven:
         blockers.append("EN/ZH behavior parity is not proven")
     if not analysis_conclusive:
@@ -1170,12 +1256,22 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
             "source_parity_mismatch": source_mismatches,
         },
         "languages": languages,
+        "raw_legacy_evidence": legacy_languages,
         "locale_presence_mismatch": presence_mismatches,
         "locale_behavior_mismatch": mismatches,
         "locale_behavior_inconclusive": inconclusive,
         "coverage": {
-            "behavior_occurrences": len(behavioral),
-            "catalog_covered_occurrences": covered,
+            "effective_runtime_behavior_occurrences": len(behavioral),
+            "remaining_legacy_behavior_occurrences": len(legacy_behavioral),
+            "legacy_behavior_metadata_covered_occurrences": legacy_covered,
+            "canonical_structured_variant_metadata_units":
+                len(canonical_metadata),
+            "canonical_structured_variant_metadata_complete":
+                canonical_metadata_complete,
+            "per_language_structured_variant_verification_units":
+                len(metadata_variants),
+            "per_language_structured_variant_verification_complete":
+                per_language_metadata_complete,
             "catalog_coverage_complete": catalog_complete,
             "unanalysable_occurrences": unanalysable,
             "en_zh_behavior_parity_proven": parity_proven,

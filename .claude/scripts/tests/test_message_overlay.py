@@ -32,7 +32,9 @@ class MessageOverlayTests(unittest.TestCase):
         candidates = [entry["canonical_key"] for entry in validated["entries"]
                       if entry["mode"] == "CANDIDATE"]
         self.assertEqual(["beam catchall cast",
-                          "march of sorrows bone dragon cast"], candidates)
+                          "march of sorrows bone dragon cast",
+                          "ensnare arachne cast",
+                          "guardian serpent cast targeted"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -146,10 +148,10 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_current_slice_rejects_unwired_binding_metadata(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["slot_schema"][2]["type"] = (
-            "resolved_beam")
+        value["entries"][0]["variants"][0]["binding"][
+            "resolves_target"] = False
         with self.assertRaisesRegex(MODULE.ManifestError,
-                                    "requires resolved_target"):
+                                    "must resolve target"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
@@ -161,10 +163,23 @@ class MessageOverlayTests(unittest.TestCase):
 
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["line_metadata"][0][
-            "behavior"]["implies_gesture"] = True
+            "behavior"]["audible"] = True
         with self.assertRaisesRegex(MODULE.ManifestError,
-                                    "behavior metadata"):
+                                    "audible behavior metadata"):
             self.validate(value)
+
+    def test_phase2_gesture_metadata_is_variant_exact(self):
+        expected = {
+            "ensnare arachne cast": [True, False],
+            "guardian serpent cast targeted": [False, True, False],
+        }
+        for key, gestures in expected.items():
+            entry = next(e for e in MANIFEST["entries"]
+                         if e["canonical_key"] == key)
+            self.assertEqual(
+                gestures,
+                [variant["line_metadata"][0]["behavior"]["implies_gesture"]
+                 for variant in entry["variants"]])
 
 
 if __name__ == "__main__":

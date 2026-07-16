@@ -48,14 +48,15 @@ fork_message_overlay::message_lookup_result lookup_result(
 }
 
 canonical_textdb::loaded_candidate canonical_candidate(
-    canonical_textdb::candidate_status status, const string &pattern = "")
+    canonical_textdb::candidate_status status, const string &pattern = "",
+    const string &key = "beam catchall cast", size_t ordinal = 0)
 {
     canonical_textdb::loaded_candidate candidate;
     candidate.status = status;
     candidate.expanded_pattern_en = pattern;
     if (status == canonical_textdb::candidate_status::SELECTED)
     {
-        candidate.top_locator = { "beam catchall cast", 0 };
+        candidate.top_locator = { key, ordinal };
         canonical_textdb::selected_variant selected;
         selected.locator = candidate.top_locator;
         candidate.selected_variants.push_back(selected);
@@ -74,7 +75,16 @@ fork_message_overlay::runtime_bindings beam_bindings(
     runtime_bindings values;
     values.actor.sentence_en = "The orc";
     values.actor.canonical_en = "the orc";
+    values.actor.possessive_name_en = "The orc's";
+    values.actor.possessive_pronoun_en = "its";
+    values.actor.reflexive_en = "itself";
     values.actor.localized = { { "en", "The orc" }, { "zh", "兽人" } };
+    values.actor.possessive_name_localized =
+        { { "en", "The orc's" }, { "zh", "兽人的" } };
+    values.actor.possessive_pronoun_localized =
+        { { "en", "its" }, { "zh", "它的" } };
+    values.actor.reflexive_localized =
+        { { "en", "itself" }, { "zh", "自己" } };
     values.actor.visibility = visibility;
     values.target.relation = relation;
     values.target.kind = kind;
@@ -149,9 +159,11 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 2);
+        CHECK(report.structured_key_count == 4);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
+        CHECK(monspell_overlay_covers("ensnare arachne cast"));
+        CHECK(monspell_overlay_covers("guardian serpent cast targeted"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -235,12 +247,6 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[1].variants[0].slot_schema[1].type = "resolved_beam";
-        CHECK(load_monspell_overlay(canonical, &source).failure
-              == load_failure::CORRUPT);
-
-        reset_monspell_overlay_for_test();
-        source = generated_monspell_catalog();
         source.entries[1].variants[0].conditions.requires_foe = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
@@ -256,6 +262,21 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         source = generated_monspell_catalog();
         source.entries[1].variants[0].materialization_cases[0]
             .lines[0].implies_gesture = true;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+    }
+
+    SECTION("Phase 2 binding and behavior metadata fail closed")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        source.entries[2].variants[0].resolves_target = false;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[2].variants[0].lines[0].audible = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
     }
@@ -509,7 +530,8 @@ TEST_CASE("canonical monspell materialization observes all five boundaries",
     const uint64_t initial_state = rng::current_generator().get_state();
     const uint64_t initial_count = rng::current_generator().get_count();
     size_t binding_calls = 0;
-    const runtime_binding_resolver bindings = [&]()
+    const runtime_binding_resolver bindings =
+        [&](const binding_requirements &)
     {
         ++binding_calls;
         return beam_bindings(target_relation::AT);
@@ -567,7 +589,8 @@ TEST_CASE("production canonical trace and pure renderer are language neutral",
     const canonical_materialization materialized =
         materialize_monspell_candidate(
             "beam catchall cast", message_attempt::NORMAL_OR_UNSEEN, true,
-            [] { return beam_bindings(target_relation::AT); });
+            [](const binding_requirements &)
+            { return beam_bindings(target_relation::AT); });
     REQUIRE(materialized.result == message_result::RENDERED);
     REQUIRE(materialized.canonical.trace.weighted_choices.size() == 1);
     const canonical_textdb::weighted_choice_trace &top =
@@ -608,8 +631,10 @@ TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
           == message_result::CORRUPT);
     CHECK(render_typed_template("${missing}", one, value).result
           == message_result::CORRUPT);
-    CHECK(render_typed_template("plain", one, value).result
-          == message_result::CORRUPT);
+    const render_result language_local_omission =
+        render_typed_template("plain", one, value);
+    REQUIRE(language_local_omission.result == message_result::RENDERED);
+    CHECK(language_local_omission.lines[0].text == "plain");
     CHECK(render_typed_template("${actor} @target@", one, value).result
           == message_result::CORRUPT);
     CHECK(render_typed_template("${actor} __NONE", one, value).result
@@ -668,7 +693,8 @@ TEST_CASE("beam templates cover relation target kind and visibility snapshots",
                     materialize_monspell_candidate(
                         "beam catchall cast",
                         message_attempt::NORMAL_OR_UNSEEN, true,
-                        [=] { return beam_bindings(relation, kind, visibility); },
+                        [=](const binding_requirements &)
+                        { return beam_bindings(relation, kind, visibility); },
                         [](const string &)
                         {
                             return canonical_candidate(
@@ -927,7 +953,7 @@ TEST_CASE("production CASE_MAP maps every March of Sorrows seed",
             materialize_monspell_candidate(
                 "march of sorrows bone dragon cast",
                 message_attempt::NORMAL_OR_UNSEEN, true,
-                [&]
+                [&](const binding_requirements &)
                 {
                     ++binding_calls;
                     runtime_bindings values = beam_bindings(
@@ -1017,7 +1043,7 @@ TEST_CASE("production CASE_MAP maps every March of Sorrows seed",
     const canonical_materialization unknown = materialize_monspell_candidate(
         "march of sorrows bone dragon cast",
         message_attempt::NORMAL_OR_UNSEEN, true,
-        [&]
+        [&](const binding_requirements &)
         {
             ++forged_binding_calls;
             return beam_bindings(target_relation::AT);
@@ -1026,4 +1052,185 @@ TEST_CASE("production CASE_MAP maps every March of Sorrows seed",
     CHECK(unknown.result == message_result::CORRUPT);
     CHECK(unknown.diagnostic == "CASE_MAP materialization signature is unknown");
     CHECK(forged_binding_calls == 1);
+}
+
+TEST_CASE("Phase 2 gesture variants bind once and render every relation",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    struct fixture
+    {
+        const char *key;
+        size_t ordinal;
+        const char *pattern;
+        bool gesture;
+        cast_frame frame;
+        const char *bound_at;
+        const char *en[3];
+        const char *zh[3];
+    };
+    const fixture cases[] =
+    {
+        { "ensnare arachne cast", 0,
+          "@The_monster@ points @possessive@ staff @at@ @target@, shooting a stream of webbing.",
+          true, cast_frame::GESTURE,
+          "The orc points its staff at you, shooting a stream of webbing.",
+          { "The orc points its staff at you, shooting a stream of webbing.",
+            "The orc points its staff next to you, shooting a stream of webbing.",
+            "The orc points its staff past you, shooting a stream of webbing." },
+          { "兽人用法杖指向你，射出一股蛛网。",
+            "兽人用法杖指向你旁边，射出一股蛛网。",
+            "兽人用法杖指向你身后，射出一股蛛网。" } },
+        { "ensnare arachne cast", 1,
+          "@The_monster_possessive@ staff shoots out a stream of webbing.",
+          false, cast_frame::PROJECTILE,
+          "The orc's staff shoots out a stream of webbing.",
+          { "The orc's staff shoots out a stream of webbing.",
+            "The orc's staff shoots out a stream of webbing.",
+            "The orc's staff shoots out a stream of webbing." },
+          { "兽人的法杖射出一股蛛网。", "兽人的法杖射出一股蛛网。",
+            "兽人的法杖射出一股蛛网。" } },
+        { "guardian serpent cast targeted", 0,
+          "@The_monster@ coils @reflexive@ and waves @possessive@ upper body @at@ @target@.",
+          false, cast_frame::GESTURE,
+          "The orc coils itself and waves its upper body at you.",
+          { "The orc coils itself and waves its upper body at you.",
+            "The orc coils itself and waves its upper body next to you.",
+            "The orc coils itself and waves its upper body past you." },
+          { "兽人盘起身躯，向你摆动上半身。",
+            "兽人盘起身躯，向你旁边摆动上半身。",
+            "兽人盘起身躯，向你身后摆动上半身。" } },
+        { "guardian serpent cast targeted", 1,
+          "@The_monster@ gestures with @possessive@ tail @at@ @target@.",
+          true, cast_frame::GESTURE,
+          "The orc gestures with its tail at you.",
+          { "The orc gestures with its tail at you.",
+            "The orc gestures with its tail next to you.",
+            "The orc gestures with its tail past you." },
+          { "兽人用尾巴向你做出手势。",
+            "兽人用尾巴向你旁边做出手势。",
+            "兽人用尾巴向你身后做出手势。" } },
+        { "guardian serpent cast targeted", 2,
+          "@The_monster@ weaves intricate patterns with the tip of @possessive@ tongue.",
+          false, cast_frame::GESTURE,
+          "The orc weaves intricate patterns with the tip of its tongue.",
+          { "The orc weaves intricate patterns with the tip of its tongue.",
+            "The orc weaves intricate patterns with the tip of its tongue.",
+            "The orc weaves intricate patterns with the tip of its tongue." },
+          { "兽人用舌尖编织出复杂的图案。",
+            "兽人用舌尖编织出复杂的图案。",
+            "兽人用舌尖编织出复杂的图案。" } },
+    };
+    const target_relation relations[] =
+        { target_relation::AT, target_relation::NEXT_TO,
+          target_relation::PAST };
+    for (const fixture &item : cases)
+    {
+        CAPTURE(item.key, item.ordinal);
+        size_t calls = 0;
+        binding_requirements observed;
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                item.pattern, item.key, item.ordinal);
+        canonical_materialization materialized =
+            materialize_monspell_candidate(
+                item.key, message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    ++calls;
+                    observed = requirements;
+                    runtime_bindings values =
+                        beam_bindings(target_relation::AT);
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(calls == 1);
+        CHECK(materialized.binding.callback_count == 1);
+        CHECK(observed.resolves_target);
+        CHECK(observed.implies_gesture == item.gesture);
+        CHECK(observed.frame == item.frame);
+        CHECK(materialized.bound_pattern_en == item.bound_at);
+        CHECK(materialized.bound_pattern_en.find('@') == string::npos);
+        for (size_t relation = 0; relation < 3; ++relation)
+        {
+            materialized.binding.values.target.relation =
+                relations[relation];
+            const render_result en =
+                render_materialized_candidate(materialized, "en");
+            const render_result zh =
+                render_materialized_candidate(materialized, "zh");
+            REQUIRE(en.result == message_result::RENDERED);
+            REQUIRE(zh.result == message_result::RENDERED);
+            CHECK(en.lines[0].text == item.en[relation]);
+            CHECK(zh.lines[0].text == item.zh[relation]);
+            CHECK(en.lines[0].implies_gesture == item.gesture);
+            CHECK(zh.lines[0].implies_gesture == item.gesture);
+        }
+    }
+}
+
+TEST_CASE("actor binding validation follows declared slot types",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    const canonical_textdb::loaded_candidate beam = canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED,
+        "@The_monster@ throws @beam@ @at@ @target@.");
+    const canonical_materialization actor_only =
+        materialize_monspell_candidate(
+            "beam catchall cast", message_attempt::NORMAL_OR_UNSEEN, true,
+            [](const binding_requirements &requirements)
+            {
+                runtime_bindings values =
+                    beam_bindings(target_relation::AT);
+                values.cast.frame = requirements.frame;
+                values.actor.possessive_name_en.clear();
+                values.actor.possessive_pronoun_en.clear();
+                values.actor.reflexive_en.clear();
+                return values;
+            },
+            [beam](const string &) { return beam; });
+    CHECK(actor_only.result == message_result::RENDERED);
+
+    const canonical_textdb::loaded_candidate possessive =
+        canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            "@The_monster_possessive@ staff shoots out a stream of webbing.",
+            "ensnare arachne cast", 1);
+    const canonical_materialization possessive_only =
+        materialize_monspell_candidate(
+            "ensnare arachne cast",
+            message_attempt::NORMAL_OR_UNSEEN, true,
+            [](const binding_requirements &requirements)
+            {
+                runtime_bindings values =
+                    beam_bindings(target_relation::AT);
+                values.cast.frame = requirements.frame;
+                values.actor.sentence_en.clear();
+                values.actor.canonical_en.clear();
+                values.actor.possessive_pronoun_en.clear();
+                values.actor.reflexive_en.clear();
+                return values;
+            },
+            [possessive](const string &) { return possessive; });
+    CHECK(possessive_only.result == message_result::RENDERED);
+
+    const canonical_materialization missing_declared =
+        materialize_monspell_candidate(
+            "ensnare arachne cast",
+            message_attempt::NORMAL_OR_UNSEEN, true,
+            [](const binding_requirements &requirements)
+            {
+                runtime_bindings values =
+                    beam_bindings(target_relation::AT);
+                values.cast.frame = requirements.frame;
+                values.actor.possessive_name_en.clear();
+                return values;
+            },
+            [possessive](const string &) { return possessive; });
+    CHECK(missing_declared.result == message_result::CORRUPT);
+    CHECK(missing_declared.diagnostic == "runtime bindings are incomplete");
 }

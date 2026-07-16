@@ -179,6 +179,7 @@ struct catalog_variant
     std::string upstream_variant_fingerprint;
     std::string english_snapshot;
     cast_frame frame = cast_frame::DIRECT_EFFECT;
+    bool resolves_target = false;
     applicability conditions;
     materialization_policy policy = materialization_policy::LEGACY_ONLY;
     std::vector<slot_definition> slot_schema;
@@ -290,7 +291,13 @@ struct resolved_actor
 {
     std::string sentence_en;
     std::string canonical_en;
+    std::string possessive_name_en;
+    std::string possessive_pronoun_en;
+    std::string reflexive_en;
     std::vector<localized_value> localized;
+    std::vector<localized_value> possessive_name_localized;
+    std::vector<localized_value> possessive_pronoun_localized;
+    std::vector<localized_value> reflexive_localized;
     message_visibility visibility = message_visibility::UNKNOWN;
 };
 
@@ -374,7 +381,15 @@ struct binding_resolution
     size_t callback_count = 0;
 };
 
-using runtime_binding_resolver = std::function<runtime_bindings()>;
+struct binding_requirements
+{
+    cast_frame frame = cast_frame::DIRECT_EFFECT;
+    bool resolves_target = false;
+    bool implies_gesture = false;
+};
+
+using runtime_binding_resolver = std::function<runtime_bindings(
+    const binding_requirements &)>;
 using canonical_candidate_lookup = std::function<
     canonical_textdb::loaded_candidate(const std::string &)>;
 
@@ -397,6 +412,7 @@ struct canonical_materialization
     canonical_textdb::loaded_candidate canonical;
     canonical_textdb::randomized_pattern randomized;
     binding_resolution binding;
+    binding_requirements requirements;
     std::string stable_id;
     std::string materialization_signature;
     std::string bound_pattern_en;

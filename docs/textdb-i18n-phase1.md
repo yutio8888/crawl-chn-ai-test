@@ -1,7 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
-状态：**Phase 1 已完成两个 `monspell` catalog overlay 纵向迁移，并启用首个
-生产 `CASE_MAP`；Phase 2 尚未开始。**
+状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
+`CASE_MAP`；Phase 2 首批两个行为差异 key 也已结构化迁移。当前覆盖 4 个
+canonical key、7 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -10,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-本阶段迁移两个完整 key 闭包：
+当前共迁移四个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -51,9 +52,17 @@ TextDB 文件。
 `[a|b]` 站点；
 `CAPTURE_SLOT` 仍被生成期与加载期拒绝，避免未完成策略被静默接受。
 
-当前 structured slice 还要求 `resolved_target` 槽；非默认 applicability、
-`implies_gesture=true` 和 `audible=true` 在其生产消费路径接线前均由生成期和
-加载期拒绝。actor-only 模板不在本阶段能力声明内。
+Phase 2 又完整迁移 `ensnare arachne cast` 的 2 个 variant 和
+`guardian serpent cast targeted` 的 3 个 variant。structured descriptor 通过
+`binding.resolves_target` 独立声明是否执行目标解析，因此模板可以不引用
+`${target}`，同时仍保持一次目标解析及其 RNG trace。`implies_gesture` 已作为
+逐行显式元数据接入目标解析前的 binding requirements；`audible=true` 与非默认
+applicability 仍由生成期和加载期拒绝。
+
+当前 actor 槽支持 `actor_ref`、`actor_possessive_name`、
+`actor_possessive_pronoun` 与 `actor_reflexive`。模板可仅声明所需的 actor 槽；
+加载期和运行时只验证实际声明的字段。中文模板可省略英语语法需要的所有格或
+反身代词，但整个 EN/ZH 模板矩阵的 slot schema union 必须与声明一致。
 
 ## 2. 三类 artifact 的职责
 
@@ -198,9 +207,12 @@ code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖仅 2 个 key，不代表 262 个 `monspell` root 已迁移；
+- structured 覆盖为 4 个 key、7 个 canonical variant，不代表 262 个
+  `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
-- catalog renderer 当前只为 actor/target/beam 的 projectile schema 接线；
+- catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
+  类型化槽，并通过 `binding.resolves_target` 将目标解析需求与 `${target}` 引用解耦；
+- structured gesture 元数据已启用，但 audible 与非默认 applicability 尚未启用；
 - 全局 legacy gesture/visual/audible heuristic 仍存在；
 - 当前 canonical `monspell` 闭包无 Lua；未来出现 Lua 或不可控副作用时，在建立
   完整契约前必须 `LEGACY_ONLY`；
@@ -318,22 +330,28 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 
 | 指标 | EN | ZH |
 |---|---:|---:|
-| behavior root union | 18 | 16 |
-| gesture root | 15 | 13 |
+| effective runtime behavior root union | 18 | 18 |
+| effective runtime gesture root | 15 | 15 |
 | visual applicability root | 5 | 5 |
 | visual channel root | 5 | 5 |
 | sound-like channel root | 0 | 0 |
 | unanalyzable root | 1 | 0 |
 
-总计 70 个已证明 behavior occurrence，另有 1 个 fail-closed occurrence；catalog
-显式覆盖为 0；当前两个 structured key
-均没有被错误计为 behavior root coverage。EN/ZH 有两个已确认的正文行为差异：
+effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
+occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- `ensnare arachne cast`；
-- `guardian serpent cast targeted`。
+- 68 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+  metadata；
+- 7 个 canonical structured variant，7 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 14 个逐语言验证单位，
+  14 个均完整。
 
-两者英文正文会令旧 heuristic 设置 `gestured=true`，当前中文正文不会，应进入
-下一批 behavior migration 优先队列；本阶段不通过修改译文继续维持正文驱动行为。
+`ensnare arachne cast` 的 2 个 variant 与
+`guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
+分别为 `[true, false]` 与 `[false, true, false]`，在 canonical variant 选定后、
+目标解析前传入唯一一次 binding callback。实际运行路径的 EN/ZH behavior mismatch
+因此降为 0；报告仍保留 `raw_legacy_evidence`，用于展示旧中英文正文曾产生的差异，
+但该证据不再代表 structured 路径的运行行为。
 `vanquished vanguard nergalle cast` 的英文 pattern 在残留运行时槽之后包含 ASCII
 冒号，频道前缀无法由静态 artifact 安全确定；它进入
 `locale_behavior_inconclusive`，不会被误报为已确认的双语差异。任何一侧含
@@ -346,11 +364,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
-`phase2_ready` 仍为 false，但现在只由三个动态门禁决定：legacy behavior metadata
-覆盖不完整、EN/ZH behavior parity 未证明，以及仍有不可判定 behavior。报告当前
-分别记录 70 个可分析 behavior occurrence、0 个 catalog coverage、2 个正文行为
-差异和 1 个 fail-closed occurrence。候选 containment 与 runtime reachability
-本身不再是 Phase 2 blocker。
+`phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
+剩余门禁是 68 个 legacy behavior occurrence 尚无显式 metadata，以及
+`vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
+特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
+候选 containment、runtime reachability 和本批两个迁移 key 不再是 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

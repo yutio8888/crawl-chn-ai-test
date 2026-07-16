@@ -31,7 +31,10 @@ CHANNELS = {
     "orb", "timed_portal", "hell_effect", "monster_warning",
     "dgl_message", "decor_flavour", "monster_timeout", "visual", "spell",
 }
-SLOT_TYPES = {"actor_ref", "resolved_target", "resolved_beam"}
+SLOT_TYPES = {
+    "actor_ref", "actor_possessive_name", "actor_possessive_pronoun",
+    "actor_reflexive", "resolved_target", "resolved_beam",
+}
 
 
 class ManifestError(ValueError):
@@ -173,8 +176,8 @@ def _validate_lines(lines: Any, languages: list[str], declared: set[str],
                  and set(behavior) == {"implies_gesture", "audible"}
                  and all(isinstance(x, bool) for x in behavior.values()),
                  f"{lcontext} has invalid behavior metadata")
-        _require(not behavior["implies_gesture"] and not behavior["audible"],
-                 f"{lcontext} behavior metadata is not enabled yet")
+        _require(not behavior["audible"],
+                 f"{lcontext} audible behavior metadata is not enabled yet")
         shape.append((line["sensory"], line.get("channel"),
                       behavior["implies_gesture"], behavior["audible"]))
         templates = line.get("templates")
@@ -270,6 +273,11 @@ def validate_manifest(manifest: dict[str, Any],
             stable_ids.add(stable_id)
             _require(variant.get("frame") in FRAMES,
                      f"{vcontext} has invalid frame")
+            binding = variant.get("binding")
+            _require(isinstance(binding, dict)
+                     and set(binding) == {"resolves_target"}
+                     and isinstance(binding["resolves_target"], bool),
+                     f"{vcontext} has invalid binding requirements")
             policy = variant.get("materialization_policy")
             _require(policy in POLICIES, f"{vcontext} has invalid policy")
             _require((mode == "LEGACY_ONLY") == (policy == "LEGACY_ONLY"),
@@ -335,8 +343,8 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
-            _require("resolved_target" in slot_types.values(),
-                     f"{vcontext} current structured slice requires resolved_target")
+            _require(binding["resolves_target"],
+                     f"{vcontext} structured monspell must resolve target")
             relations = RELATIONS
             if policy == "NONE":
                 _validate_lines(variant.get("line_metadata"), languages,
@@ -472,6 +480,7 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
                 f"                        {_cpp(variant['upstream_variant_fingerprint'])},",
                 f"                        {_cpp(variant['english_snapshot'])},",
                 f"                        cast_frame::{variant['frame']},",
+                f"                        {str(variant['binding']['resolves_target']).lower()},",
                 "                        { %s, %s, %s, %s, %s }," % tuple(
                     str(app[k]).lower() for k in (
                         "requires_player", "requires_foe",

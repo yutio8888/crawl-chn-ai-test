@@ -8935,7 +8935,7 @@ static void _record_overlay_target_event(
 
 static fmo::runtime_bindings _resolve_overlay_bindings(
     const monster &mon, const bolt &pbolt, bool targeted,
-    const string &language)
+    const string &language, const fmo::binding_requirements &requirements)
 {
     fmo::runtime_bindings bindings;
 
@@ -8946,7 +8946,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     observer.function = _record_overlay_target_event;
     observer.context = &bindings.target_trace;
     const resolved_speech_target target =
-        resolve_speech_target(&mon, pbolt, false, &observer);
+        resolve_speech_target(&mon, pbolt, requirements.implies_gesture,
+                              &observer);
     const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
     const string actor_display = _cast_actor_display(mon);
 
@@ -8984,19 +8985,31 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     bindings.beam.pierce = beam.pierces;
     bindings.beam.has_ranged_attack = beam.has_ranged_attack;
 
-    bindings.cast.frame = fmo::cast_frame::PROJECTILE;
+    bindings.cast.frame = requirements.frame;
     bindings.cast.caster_visibility = bindings.actor.visibility;
     bindings.cast.origin_spell = static_cast<int>(pbolt.origin_spell);
 
     if (language == "en")
     {
         bindings.actor.localized.push_back({ "en", actor_display });
+        bindings.actor.possessive_name_localized.push_back(
+            { "en", apostrophise(actor_display) });
+        bindings.actor.possessive_pronoun_localized.push_back(
+            { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
+        bindings.actor.reflexive_localized.push_back(
+            { "en", mon.pronoun(PRONOUN_REFLEXIVE) });
         bindings.target.localized.push_back({ "en", target.display });
         bindings.beam.localized.push_back({ "en", beam.display_text });
     }
     else if (language == "zh")
     {
         bindings.actor.localized.push_back({ "zh", actor_display });
+        bindings.actor.possessive_name_localized.push_back(
+            { "zh", apostrophise(actor_display) });
+        bindings.actor.possessive_pronoun_localized.push_back(
+            { "zh", mon.pronoun(PRONOUN_POSSESSIVE) });
+        bindings.actor.reflexive_localized.push_back(
+            { "zh", mon.pronoun(PRONOUN_REFLEXIVE) });
         bindings.target.localized.push_back({ "zh", target.display });
         bindings.beam.localized.push_back({ "zh", beam.display_text });
     }
@@ -9005,6 +9018,11 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         ScopedLangEn english;
         bindings.actor.sentence_en = _cast_actor_display(mon);
         bindings.actor.canonical_en = bindings.actor.sentence_en;
+        bindings.actor.possessive_name_en =
+            apostrophise(bindings.actor.sentence_en);
+        bindings.actor.possessive_pronoun_en =
+            mon.pronoun(PRONOUN_POSSESSIVE);
+        bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);
         bindings.target.canonical_en = _canonical_target_display(target, mon);
         bindings.beam.canonical_en =
             resolve_speech_beam(pbolt, targeted).display_text;
@@ -9058,10 +9076,11 @@ static fmo::message_lookup_result _cast_message_lookup(
     const fmo::canonical_materialization materialized =
         fmo::materialize_monspell_candidate(
             route.canonical_key, request.attempt, true,
-            [&mon, &pbolt, targeted, &language]
+            [&mon, &pbolt, targeted, &language](
+                const fmo::binding_requirements &requirements)
             {
                 return _resolve_overlay_bindings(mon, pbolt, targeted,
-                                                 language);
+                                                 language, requirements);
             });
     if (materialization_out)
         *materialization_out = materialized;

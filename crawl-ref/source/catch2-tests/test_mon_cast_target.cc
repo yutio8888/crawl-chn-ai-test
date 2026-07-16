@@ -956,6 +956,171 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     }
 }
 
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Phase 2 gesture requirements preserve production target trace",
+                 "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.range = grid_distance(source.pos(), beam.target);
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+    beam.glyph = '*';
+
+    struct key_fixture
+    {
+        string key;
+        vector<string> patterns;
+        vector<bool> gestures;
+    };
+    const vector<key_fixture> fixtures =
+    {
+        {
+            "ensnare arachne cast",
+            {
+                "@The_monster@ points @possessive@ staff @at@ @target@, shooting a stream of webbing.",
+                "@The_monster_possessive@ staff shoots out a stream of webbing.",
+            },
+            { true, false },
+        },
+        {
+            "guardian serpent cast targeted",
+            {
+                "@The_monster@ coils @reflexive@ and waves @possessive@ upper body @at@ @target@.",
+                "@The_monster@ gestures with @possessive@ tail @at@ @target@.",
+                "@The_monster@ weaves intricate patterns with the tip of @possessive@ tongue.",
+            },
+            { false, true, false },
+        },
+    };
+
+    for (const key_fixture &fixture : fixtures)
+    {
+        vector<uint64_t> seeds(fixture.patterns.size(), 0);
+        {
+            scoped_test_language language(lang_t::EN);
+            for (uint64_t seed = 1; seed <= 4096; ++seed)
+            {
+                rng::subgenerator scoped_rng(seed, seed ^ 0x9e3779b97f4a7c15ULL);
+                const string pattern = getSpeakString(fixture.key);
+                const auto found = find(fixture.patterns.begin(),
+                                        fixture.patterns.end(), pattern);
+                REQUIRE(found != fixture.patterns.end());
+                const size_t ordinal = found - fixture.patterns.begin();
+                if (!seeds[ordinal])
+                    seeds[ordinal] = seed;
+                if (all_of(seeds.begin(), seeds.end(),
+                           [](uint64_t value) { return value != 0; }))
+                {
+                    break;
+                }
+            }
+        }
+        REQUIRE(all_of(seeds.begin(), seeds.end(),
+                       [](uint64_t value) { return value != 0; }));
+
+        for (size_t ordinal = 0; ordinal < seeds.size(); ++ordinal)
+        {
+            CAPTURE(fixture.key, ordinal, seeds[ordinal]);
+            vector<speech_target_observer_event> legacy_events;
+            uint64_t legacy_state = 0;
+            uint64_t legacy_count = 0;
+            {
+                scoped_test_language language(lang_t::EN);
+                rng::subgenerator scoped_rng(
+                    seeds[ordinal],
+                    seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
+                const string pattern = getSpeakString(fixture.key);
+                REQUIRE(pattern == fixture.patterns[ordinal]);
+                const bool gestured =
+                    pattern.find("Gesture") != string::npos
+                    || pattern.find(" gesture") != string::npos
+                    || pattern.find("Point") != string::npos
+                    || pattern.find(" point") != string::npos;
+                CHECK(gestured == fixture.gestures[ordinal]);
+                const speech_target_observer observer =
+                    { observe_target_event, &legacy_events };
+                const resolved_speech_target target =
+                    resolve_speech_target(&source, beam, gestured, &observer);
+                CHECK(target.relation == (gestured
+                    ? speech_target_relation::AT
+                    : speech_target_relation::PAST));
+                legacy_state = rng::current_generator().get_state();
+                legacy_count = rng::current_generator().get_count();
+            }
+
+            resolved_monspell_cast_message english;
+            uint64_t english_state = 0;
+            uint64_t english_count = 0;
+            {
+                scoped_test_language language(lang_t::EN);
+                rng::subgenerator scoped_rng(
+                    seeds[ordinal],
+                    seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
+                english = resolve_monspell_cast_message(
+                    source, beam, true, { fixture.key }, false, false);
+                english_state = rng::current_generator().get_state();
+                english_count = rng::current_generator().get_count();
+            }
+            resolved_monspell_cast_message chinese;
+            uint64_t chinese_state = 0;
+            uint64_t chinese_count = 0;
+            {
+                scoped_test_language language(lang_t::ZH);
+                rng::subgenerator scoped_rng(
+                    seeds[ordinal],
+                    seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
+                chinese = resolve_monspell_cast_message(
+                    source, beam, true, { fixture.key }, false, false);
+                chinese_state = rng::current_generator().get_state();
+                chinese_count = rng::current_generator().get_count();
+            }
+
+            REQUIRE(english.has_materialization);
+            REQUIRE(chinese.has_materialization);
+            const auto &en = english.materialization;
+            const auto &zh = chinese.materialization;
+            CHECK(en.canonical.top_locator.variant_ordinal == ordinal);
+            CHECK(zh.canonical.top_locator.variant_ordinal == ordinal);
+            CHECK(en.requirements.implies_gesture
+                  == fixture.gestures[ordinal]);
+            CHECK(zh.requirements.implies_gesture
+                  == fixture.gestures[ordinal]);
+            CHECK(en.binding.callback_count == 1);
+            CHECK(zh.binding.callback_count == 1);
+            CHECK(english_state == legacy_state);
+            CHECK(english_count == legacy_count);
+            CHECK(chinese_state == legacy_state);
+            CHECK(chinese_count == legacy_count);
+            REQUIRE(en.binding.values.target_trace.size()
+                    == legacy_events.size());
+            REQUIRE(zh.binding.values.target_trace.size()
+                    == legacy_events.size());
+            for (size_t event = 0; event < legacy_events.size(); ++event)
+            {
+                const auto &expected = legacy_events[event];
+                const auto &en_event = en.binding.values.target_trace[event];
+                const auto &zh_event = zh.binding.values.target_trace[event];
+                CHECK(en_event.bound == expected.bound);
+                CHECK(en_event.selected == expected.selected);
+                CHECK(en_event.rng_state_before == expected.rng_state_before);
+                CHECK(en_event.rng_state_after == expected.rng_state_after);
+                CHECK(en_event.rng_count_before == expected.rng_count_before);
+                CHECK(en_event.rng_count_after == expected.rng_count_after);
+                CHECK(zh_event.bound == en_event.bound);
+                CHECK(zh_event.selected == en_event.selected);
+                CHECK(zh_event.rng_state_before == en_event.rng_state_before);
+                CHECK(zh_event.rng_state_after == en_event.rng_state_after);
+                CHECK(zh_event.rng_count_before == en_event.rng_count_before);
+                CHECK(zh_event.rng_count_after == en_event.rng_count_after);
+            }
+        }
+    }
+}
+
 TEST_CASE("structured localized body cannot select a message channel",
                  "[single-file][mon-cast-target][message-overlay][phase1][runtime]")
 {

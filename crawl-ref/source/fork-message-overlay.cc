@@ -207,18 +207,20 @@ bool _validate_lines(const catalog_source &source,
                      const catalog_variant &variant, string &error)
 {
     set<string> declared;
-    bool has_target = false;
     for (const slot_definition &slot : variant.slot_schema)
     {
         static const set<string> slot_types =
-            { "actor_ref", "resolved_target", "resolved_beam" };
+        {
+            "actor_ref", "actor_possessive_name",
+            "actor_possessive_pronoun", "actor_reflexive",
+            "resolved_target", "resolved_beam",
+        };
         if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
         {
             error = "invalid or duplicate slot declaration";
             return false;
         }
-        has_target = has_target || slot.type == "resolved_target";
     }
 
     set<string> required(variant.required_arguments.begin(),
@@ -244,19 +246,13 @@ bool _validate_lines(const catalog_source &source,
         error = "structured variant has no line metadata";
         return false;
     }
-    if (!has_target)
-    {
-        error = "current structured slice requires resolved_target";
-        return false;
-    }
-
     static const set<string> relations = { "AT", "NEXT_TO", "PAST" };
     set<string> used_slots;
     for (const line_metadata &line : variant.lines)
     {
-        if (line.implies_gesture || line.audible)
+        if (line.audible)
         {
-            error = "behavior metadata is not enabled yet";
+            error = "audible behavior metadata is not enabled yet";
             return false;
         }
         if (!line.channel.empty() && str_to_channel(line.channel) < 0)
@@ -646,6 +642,12 @@ const load_report &load_monspell_overlay(
                 return _disable(load_failure::CORRUPT,
                                 "applicability metadata is not enabled yet");
             }
+            if (entry.mode == entry_mode::CANDIDATE
+                && !variant.resolves_target)
+            {
+                return _disable(load_failure::CORRUPT,
+                                "structured monspell must resolve target");
+            }
             if (variant.policy == materialization_policy::CAPTURE_SLOT)
             {
                 return _disable(load_failure::CORRUPT,
@@ -884,23 +886,53 @@ canonical_materialization materialize_monspell_candidate(
         return result;
     }
 
+    const vector<line_metadata> *requirement_lines = &descriptor->lines;
+    if (descriptor->policy == materialization_policy::CASE_MAP)
+    {
+        if (descriptor->materialization_cases.empty())
+        {
+            result.result = message_result::CORRUPT;
+            result.diagnostic = "CASE_MAP has no binding metadata";
+            return result;
+        }
+        requirement_lines = &descriptor->materialization_cases.front().lines;
+    }
+    result.requirements.frame = descriptor->frame;
+    result.requirements.resolves_target = descriptor->resolves_target;
+    result.requirements.implies_gesture = any_of(
+        requirement_lines->begin(), requirement_lines->end(),
+        [](const line_metadata &line) { return line.implies_gesture; });
     result.binding.rng.before = canonical_textdb::observe_rng();
-    result.binding.values = bindings();
+    result.binding.values = bindings(result.requirements);
     result.binding.rng.after = canonical_textdb::observe_rng();
     result.binding.callback_count = 1;
     const runtime_bindings &resolved = result.binding.values;
-    bool needs_actor = false;
+    bool needs_actor_ref = false;
+    bool needs_actor_possessive_name = false;
+    bool needs_actor_possessive_pronoun = false;
+    bool needs_actor_reflexive = false;
     bool needs_target = false;
     bool needs_beam = false;
     for (const slot_definition &slot : descriptor->slot_schema)
     {
-        needs_actor = needs_actor || slot.type == "actor_ref";
+        needs_actor_ref = needs_actor_ref || slot.type == "actor_ref";
+        needs_actor_possessive_name = needs_actor_possessive_name
+            || slot.type == "actor_possessive_name";
+        needs_actor_possessive_pronoun = needs_actor_possessive_pronoun
+            || slot.type == "actor_possessive_pronoun";
+        needs_actor_reflexive = needs_actor_reflexive
+            || slot.type == "actor_reflexive";
         needs_target = needs_target || slot.type == "resolved_target";
         needs_beam = needs_beam || slot.type == "resolved_beam";
     }
-    if ((needs_actor && (resolved.actor.sentence_en.empty()
-                         || resolved.actor.canonical_en.empty()))
-        || (needs_target && (resolved.target.relation
+    if ((needs_actor_ref && (resolved.actor.sentence_en.empty()
+                             || resolved.actor.canonical_en.empty()))
+        || (needs_actor_possessive_name
+            && resolved.actor.possessive_name_en.empty())
+        || (needs_actor_possessive_pronoun
+            && resolved.actor.possessive_pronoun_en.empty())
+        || (needs_actor_reflexive && resolved.actor.reflexive_en.empty())
+        || (descriptor->resolves_target && (resolved.target.relation
                              == target_relation::NONE
                              || !_valid_target_payload(resolved.target)
                              || resolved.target.relation_en.empty()
@@ -918,6 +950,15 @@ canonical_materialization materialize_monspell_candidate(
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@the_monster@",
         resolved.actor.canonical_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@The_monster_possessive@",
+        resolved.actor.possessive_name_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@possessive@",
+        resolved.actor.possessive_pronoun_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@reflexive@",
+        resolved.actor.reflexive_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@at@", resolved.target.relation_en);
     result.bound_pattern_en = replace_all(
@@ -1035,7 +1076,6 @@ render_result render_typed_template(
     }
 
     string rendered;
-    set<string> used;
     size_t position = 0;
     while (position < pattern.size())
     {
@@ -1058,14 +1098,8 @@ render_result render_typed_template(
             result.diagnostic = "template references an undeclared slot";
             return result;
         }
-        used.insert(name);
         rendered += supplied[name];
         position = end + 1;
-    }
-    if (used.size() != declared.size())
-    {
-        result.diagnostic = "declared slot is unused";
-        return result;
     }
     if (_contains_protocol_text(rendered))
     {
@@ -1166,6 +1200,40 @@ render_result render_materialized_candidate(
                     language, display))
             {
                 result.diagnostic = "localized actor binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_possessive_name")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.possessive_name_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor possessive-name binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_possessive_pronoun")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor
+                        .possessive_pronoun_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor possessive-pronoun binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_reflexive")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.reflexive_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor reflexive binding is missing";
                 return result;
             }
         }

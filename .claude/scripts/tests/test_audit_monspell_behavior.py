@@ -19,9 +19,12 @@ from audit_monspell_behavior import (  # noqa: E402
     CANDIDATE_INPUT_DOMAIN,
     CANDIDATE_PRODUCER_CONTRACT,
     EXPECTED_CANDIDATE_SCENARIOS,
+    analyze_language,
     build_report,
+    effective_entries,
     load_candidate_artifact,
 )
+from audit_monspell_phase0 import load_artifact  # noqa: E402
 
 
 AUDIT = SCRIPTS / "audit_monspell_behavior.py"
@@ -636,6 +639,125 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
             [item["canonical_key"] for item in
              report["candidate_lookup"]["source_parity_mismatch"]],
             ["cross domain cast"])
+
+    def test_structured_runtime_uses_metadata_and_covers_negative_variants(self):
+        en = load_artifact(self.en_path)
+        zh = load_artifact(self.zh_path)
+        catalog = {
+            ("locale mismatch cast", 0): {
+                "_entry_mode": "CANDIDATE",
+                "stable_id": "fixture.gesture",
+                "line_metadata": [{
+                    "sensory": "PLAIN",
+                    "behavior": {
+                        "implies_gesture": True,
+                        "audible": False,
+                    },
+                }],
+                "materialization_cases": [],
+            },
+            ("locale mismatch cast", 1): {
+                "_entry_mode": "CANDIDATE",
+                "stable_id": "fixture.negative-one",
+                "line_metadata": [{
+                    "sensory": "PLAIN",
+                    "behavior": {
+                        "implies_gesture": False,
+                        "audible": False,
+                    },
+                }],
+                "materialization_cases": [],
+            },
+            ("locale mismatch cast", 2): {
+                "_entry_mode": "CANDIDATE",
+                "stable_id": "fixture.negative-two",
+                "line_metadata": [{
+                    "sensory": "PLAIN",
+                    "behavior": {
+                        "implies_gesture": False,
+                        "audible": False,
+                    },
+                }],
+                "materialization_cases": [],
+            },
+            ("none cast", 0): {
+                "_entry_mode": "CANDIDATE",
+                "stable_id": "fixture.negative",
+                "line_metadata": [
+                    {
+                        "sensory": "PLAIN",
+                        "behavior": {
+                            "implies_gesture": False,
+                            "audible": False,
+                        },
+                    },
+                    {
+                        "sensory": "VISUAL",
+                        "behavior": {
+                            "implies_gesture": False,
+                            "audible": False,
+                        },
+                    },
+                ],
+                "materialization_cases": [],
+            },
+        }
+        roots = ["locale mismatch cast", "none cast"]
+        en_runtime = analyze_language(
+            "en", roots, effective_entries(en, None, "en"), catalog)
+        zh_runtime = analyze_language(
+            "zh", roots, effective_entries(en, zh, "zh"), catalog)
+        self.assertEqual(
+            en_runtime["predicate_roots"]["GESTURE"],
+            ["locale mismatch cast"])
+        self.assertEqual(
+            zh_runtime["predicate_roots"]["GESTURE"],
+            ["locale mismatch cast"])
+        self.assertEqual(
+            [item["variant_ordinal"] for item in
+             en_runtime["structured_variant_metadata"]
+             if item["requested_root"] == "locale mismatch cast"],
+            [0, 1, 2])
+        self.assertEqual(
+            [item["variant_ordinal"] for item in
+             zh_runtime["structured_variant_metadata"]
+             if item["requested_root"] == "locale mismatch cast"],
+            [0, 1, 2])
+        self.assertTrue(all(
+            item["complete"]
+            for item in en_runtime["structured_variant_metadata"]))
+        expected_occurrences = {
+            ("locale mismatch cast", 0, "GESTURE"),
+            ("none cast", 0, "VISUAL_APPLICABILITY"),
+            ("none cast", 0, "VISUAL_CHANNEL"),
+        }
+        for runtime in (en_runtime, zh_runtime):
+            structured_roots = {"locale mismatch cast", "none cast"}
+            effective = [
+                item for item in runtime["occurrences"]
+                if item["requested_root"] in structured_roots
+                and item["behavior"] != "UNANALYSABLE"
+            ]
+            self.assertEqual(len(effective), 3)
+            self.assertTrue(all(
+                item["phase"] == "STRUCTURED_METADATA"
+                for item in effective))
+            self.assertEqual({
+                (item["requested_root"],
+                 item["top_locator"]["variant_ordinal"],
+                 item["behavior"])
+                for item in effective
+            }, expected_occurrences)
+            self.assertEqual(
+                sum(item["behavior"] == "GESTURE" for item in effective), 1)
+            self.assertEqual(
+                sum(item["behavior"] != "GESTURE" for item in effective), 2)
+            self.assertEqual(len(runtime["structured_variant_metadata"]), 4)
+        self.assertIn(
+            "none cast",
+            en_runtime["predicate_roots"]["VISUAL_APPLICABILITY"])
+        self.assertIn(
+            "none cast", en_runtime["predicate_roots"]["VISUAL_CHANNEL"])
 
     def test_deterministic_output_and_check(self):
         command = [
