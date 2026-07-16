@@ -1,6 +1,7 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
-状态：**Phase 1 已完成首个 `monspell` catalog overlay 纵向迁移；Phase 2 尚未开始。**
+状态：**Phase 1 已完成两个 `monspell` catalog overlay 纵向迁移，并启用首个
+生产 `CASE_MAP`；Phase 2 尚未开始。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -9,16 +10,18 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-本阶段只迁移一个完整 key 闭包：
+本阶段迁移两个完整 key 闭包：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
 | `beam catchall cast` | `mon.cast.beam_catchall.v1` | `NONE` | 单一 weight-10 变体；无成功递归、Lua 或 `[a|b]`；不依赖 foe/god/visual 条件；可完整复现 target relation 与 beam 显示 |
+| `march of sorrows bone dragon cast` | `mon.cast.march_of_sorrows_bone_dragon.v1` + 两个稳定 case ID | `CASE_MAP` | 单一变体、单一二选一站点、无递归/Lua；原有 targeted binding 时序可保持不变 |
 
-canonical English 快照为：
+两个 canonical English 快照为：
 
 ```text
 @The_monster@ throws @beam@ @at@ @target@.
+@The_monster@ breathes [collective despair|endless sorrows] @at@ @target@.
 ```
 
 模板使用 TextDB 不识别的 `${slot}`：
@@ -28,14 +31,29 @@ canonical English 快照为：
 - ZH `NEXT_TO`：`${actor}朝${target}旁边射出${beam}。`
 - ZH `PAST`：`${actor}射出${beam}，从${target}旁边掠过。`
 
+`march of sorrows bone dragon cast` 将 option index `0/1` 分别映射到两个全局
+稳定 case ID：
+
+- `mon.cast.march_of_sorrows_bone_dragon.collective_despair.v1`；
+- `mon.cast.march_of_sorrows_bone_dragon.endless_sorrows.v1`。
+
+两者分别渲染“集体的绝望”和“无尽的悲伤”，同样提供 `AT/NEXT_TO/PAST`
+三套 EN/ZH 模板。case ID 与 variant ID、其他 case ID 和 tombstone 共享全局
+唯一命名空间。
+
 `zh/monspell.txt` 未修改。structured 中文不从该文件选择变体，也不执行中文
 递归、Lua 或正文随机。
 
 `Vanquished Vanguard Nergalle cast` 继续为 `LEGACY_ONLY`。其三个
 `@orc name@` 形成不可合理穷举的动态组合，在建立 `CAPTURE_SLOT` 证明前不得迁移。
 其余未列入 catalog 的 `monspell` key 均在查询和 RNG 之前进入当前语言的 legacy
-路径。本阶段生成器仍主动拒绝 `CASE_MAP` 与 `CAPTURE_SLOT`，避免未完成策略被
-静默当作 `NONE` 使用。
+路径。`CASE_MAP` 当前只允许无递归、无 Lua、恰好一个至少包含两个选项的有限
+`[a|b]` 站点；
+`CAPTURE_SLOT` 仍被生成期与加载期拒绝，避免未完成策略被静默接受。
+
+当前 structured slice 还要求 `resolved_target` 槽；非默认 applicability、
+`implies_gesture=true` 和 `audible=true` 在其生产消费路径接线前均由生成期和
+加载期拒绝。actor-only 模板不在本阶段能力声明内。
 
 ## 2. 三类 artifact 的职责
 
@@ -105,7 +123,10 @@ canonical English 顶层选择
 `materialize_bound_legacy_randomness()` 只接受已绑定 `@at@/@target@/@beam@` 的
 canonical pattern；未选择输入或残留 token 返回 `CORRUPT`，且 RNG 不动。动态
 物化签名包含顶层/递归变体、Lua 结果和每个 `[a|b]` 站点身份/选项，禁止执行后
-丢弃。当前迁移项的签名为 `NONE`。
+丢弃。`beam catchall cast` 的签名为 `NONE`；March 条目的两个签名以
+`materialization-v1` 编码同一 locator 和唯一站点，并分别以 option index `0`
+与 `1` 结尾。生成期和加载期都从 canonical key、variant ordinal 和选项数量
+重建完整集合，同数量但伪造的 signature 也会禁用整个 structured 域。
 
 ## 4. owning 类型与显示边界
 
@@ -152,10 +173,10 @@ RNG state 或 count。
 
 实现阶段已经观察到以下结果（均为退出码 0）：
 
-- `[message-overlay][phase1]`：837 assertions / 14 test cases；
+- `[message-overlay][phase1]`：21,333 assertions / 15 test cases；
 - `[textdb][phase0]`：736,197 assertions / 18 test cases；
 - `[mon-cast-target][phase0]`：640 assertions / 5 test cases；
-- Python manifest/generator tests：7 tests；
+- Python manifest/generator tests：10 tests；
 - `audit_message_overlay.py`：`message overlay audit: ok`；
 - generated sidecar `--check`：逐字节通过；
 - `scan_varargs_string.py`：0 个阻塞问题；
@@ -165,16 +186,20 @@ RNG state 或 count。
 Phase 1 精确测试覆盖：五态、normal/unseen/silent、加载失败、English legacy
 输出/RNG、EN/ZH canonical 与 target trace、真实 `[casts|pitches]` 和
 `[pulses|vibrates]`、关系/目标/可见性快照、CORRUPT 无 fallback、多行 metadata、
-协议残留、本地化正文不参与频道判断，以及诊断无副作用。
+协议残留、本地化正文不参与频道判断，以及诊断无副作用。生产 CASE_MAP 另对
+March 条目固定运行 1,024 seeds，逐 seed 核对 option index、全局稳定 case ID、
+英文逐字节结果、中文投影、三种目标关系和纯 renderer 不改变 RNG；Phase 0 对同一
+key 的既有 1,024-seed 测试继续证明 canonical、真实目标解析、substring 与 legacy
+最终 RNG/英文输出等价。
 
 统一 verifier 现在无条件运行 manifest/generator/audit；相关文件发生变化时，
 code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖仅 1 个 key，不代表 262 个 `monspell` root 已迁移；
-- `CASE_MAP`/`CAPTURE_SLOT` 生产策略尚未启用；
-- catalog renderer 当前只为首个 actor/beam/target projectile schema 接线；
+- structured 覆盖仅 2 个 key，不代表 262 个 `monspell` root 已迁移；
+- `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
+- catalog renderer 当前只为 actor/target/beam 的 projectile schema 接线；
 - 全局 legacy gesture/visual/audible heuristic 仍存在；
 - 当前 canonical `monspell` 闭包无 Lua；未来出现 Lua 或不可控副作用时，在建立
   完整契约前必须 `LEGACY_ONLY`；

@@ -140,7 +140,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     const vector<textdb_phase0::canonical_entry> canonical =
         textdb_phase0::dump_canonical_english_speakdb();
 
-    SECTION("valid generated catalog enables only the candidate key")
+    SECTION("valid generated catalog enables both candidate keys")
     {
         scoped_overlay_reset reset;
         rng::subgenerator scoped_rng(0x1234, 0x5678);
@@ -149,8 +149,9 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 1);
+        CHECK(report.structured_key_count == 2);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
+        CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -209,6 +210,54 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(report.state == domain_state::DISABLED);
         CHECK(report.failure == load_failure::CLOSURE_INCOMPLETE);
         CHECK(report.structured_key_count == 0);
+    }
+
+    SECTION("CASE_MAP signatures and slot types are load-time invariants")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        source.entries[1].variants[0].materialization_cases[1].signature =
+            "forged-signature";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[1].variants[0].materialization_cases.pop_back();
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[1].variants[0].slot_schema[0].type = "unknown_ref";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[1].variants[0].slot_schema[1].type = "resolved_beam";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[1].variants[0].conditions.requires_foe = true;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[0].mode = entry_mode::CLOSURE_ONLY;
+        source.entries[0].variants[0].conditions.requires_foe = true;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[1].variants[0].materialization_cases[0]
+            .lines[0].implies_gesture = true;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
     }
 }
 
@@ -856,4 +905,125 @@ TEST_CASE("production materializer preserves real monspell bracket sites",
         }
         CHECK(found);
     }
+}
+
+TEST_CASE("production CASE_MAP maps every March of Sorrows seed",
+          "[single-file][message-overlay][phase1][case-map]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    set<string> english;
+    set<string> chinese;
+    set<string> stable_cases;
+    // Phase 0 already proves legacy target/RNG equivalence for this exact key
+    // over 1024 seeds. This production slice exhaustively proves that every
+    // observed option index maps to the corresponding stable case and locale.
+    for (uint64_t seed = 1; seed <= 1024; ++seed)
+    {
+        size_t binding_calls = 0;
+        rng::subgenerator scoped_rng(seed, seed ^ 0x517cc1b727220a95ULL);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "march of sorrows bone dragon cast",
+                message_attempt::NORMAL_OR_UNSEEN, true,
+                [&]
+                {
+                    ++binding_calls;
+                    runtime_bindings values = beam_bindings(
+                        target_relation::AT);
+                    values.actor.sentence_en = "The bone dragon";
+                    values.actor.canonical_en = "the bone dragon";
+                    values.actor.localized =
+                        { { "en", "The bone dragon" }, { "zh", "骨龙" } };
+                    return values;
+                });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        REQUIRE(materialized.randomized.sites.size() == 1);
+        const int option = materialized.randomized.sites[0].option_index;
+        REQUIRE((option == 0 || option == 1));
+        CHECK(binding_calls == 1);
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        const render_result en = render_materialized_candidate(
+            materialized, "en");
+        const render_result zh = render_materialized_candidate(
+            materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        REQUIRE(en.lines.size() == 1);
+        REQUIRE(zh.lines.size() == 1);
+        CHECK(en.lines[0].text == materialized.randomized.pattern_en);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+        english.insert(en.lines[0].text);
+        chinese.insert(zh.lines[0].text);
+        stable_cases.insert(materialized.stable_id);
+        if (option == 0)
+        {
+            CHECK(materialized.stable_id ==
+                "mon.cast.march_of_sorrows_bone_dragon.collective_despair.v1");
+            CHECK(en.lines[0].text ==
+                  "The bone dragon breathes collective despair at you.");
+            CHECK(zh.lines[0].text == "骨龙朝你吐出集体的绝望。");
+        }
+        else
+        {
+            CHECK(materialized.stable_id ==
+                "mon.cast.march_of_sorrows_bone_dragon.endless_sorrows.v1");
+            CHECK(en.lines[0].text ==
+                  "The bone dragon breathes endless sorrows at you.");
+            CHECK(zh.lines[0].text == "骨龙朝你吐出无尽的悲伤。");
+        }
+
+        canonical_materialization adjacent = materialized;
+        adjacent.binding.values.target.relation = target_relation::NEXT_TO;
+        const render_result next_zh = render_materialized_candidate(
+            adjacent, "zh");
+        REQUIRE(next_zh.result == message_result::RENDERED);
+        CHECK(next_zh.lines[0].text == (option == 0
+            ? "骨龙朝你旁边吐出集体的绝望。"
+            : "骨龙朝你旁边吐出无尽的悲伤。"));
+        canonical_materialization past = materialized;
+        past.binding.values.target.relation = target_relation::PAST;
+        const render_result past_zh = render_materialized_candidate(past,
+                                                                     "zh");
+        REQUIRE(past_zh.result == message_result::RENDERED);
+        CHECK(past_zh.lines[0].text == (option == 0
+            ? "骨龙吐出集体的绝望，从你旁边掠过。"
+            : "骨龙吐出无尽的悲伤，从你旁边掠过。"));
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
+    CHECK(english == set<string>{
+        "The bone dragon breathes collective despair at you.",
+        "The bone dragon breathes endless sorrows at you.",
+    });
+    CHECK(chinese == set<string>{
+        "骨龙朝你吐出集体的绝望。",
+        "骨龙朝你吐出无尽的悲伤。",
+    });
+    CHECK(stable_cases == set<string>{
+        "mon.cast.march_of_sorrows_bone_dragon.collective_despair.v1",
+        "mon.cast.march_of_sorrows_bone_dragon.endless_sorrows.v1",
+    });
+
+    canonical_textdb::loaded_candidate forged = canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED,
+        "@The_monster@ breathes [one|two|three] @at@ @target@.");
+    forged.top_locator = { "march of sorrows bone dragon cast", 0 };
+    forged.selected_variants[0].locator = forged.top_locator;
+    size_t forged_binding_calls = 0;
+    const canonical_materialization unknown = materialize_monspell_candidate(
+        "march of sorrows bone dragon cast",
+        message_attempt::NORMAL_OR_UNSEEN, true,
+        [&]
+        {
+            ++forged_binding_calls;
+            return beam_bindings(target_relation::AT);
+        },
+        [forged](const string &) { return forged; });
+    CHECK(unknown.result == message_result::CORRUPT);
+    CHECK(unknown.diagnostic == "CASE_MAP materialization signature is unknown");
+    CHECK(forged_binding_calls == 1);
 }

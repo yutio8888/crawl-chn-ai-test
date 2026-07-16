@@ -561,6 +561,16 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `materialization_case_id` 或 choice ID 选择本地化模板，可以重排语序，但不能
 重新随机。如果这一等价无法由生成器和 golden 证明，该 key 保持 legacy。
 
+首个生产 `CASE_MAP` 切片把 `materialization_case_id` 定义为稳定子变体 ID：
+它与顶层 variant stable ID、其他 case ID 及 tombstone 共享全局唯一命名空间；
+语义删除后同样必须保留 tombstone。当前只启用无递归、无 Lua、恰好一个有限
+`[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
+option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
+`PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
+在 schema-driven binding 接线完成前，这一生产子集要求 `resolved_target`，并
+拒绝非默认 applicability、`implies_gesture=true` 与 `audible=true`；生成器不得
+先声明 actor-only 或尚未消费的行为元数据已经可用。
+
 ### 8.4 canonical English 与跨语言 RNG 契约
 
 本项目明确采用“所有语言共享 canonical English 选择与物化轨迹”的方案：
@@ -854,7 +864,8 @@ bash .claude/scripts/verify_zh.sh --profile review
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
 [`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
-`monspell` 已结构化；`CASE_MAP`、`CAPTURE_SLOT` 和 Phase 2 heuristic 删除仍未启用。
+`monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT` 和
+Phase 2 heuristic 删除仍未启用。
 
 ### Phase 2：移除正文行为嗅探
 

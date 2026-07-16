@@ -35,6 +35,45 @@ const catalog_source &generated_monspell_catalog()
                 },
             },
             {
+                "march of sorrows bone dragon cast",
+                "fnv1a64:01f20fc426f7f3bb",
+                "fnv1a64:d1e3dd153ab52528",
+                entry_mode::CANDIDATE,
+                {
+                    {
+                        "mon.cast.march_of_sorrows_bone_dragon.v1", false,
+                        0, 10,
+                        "1f886e17bdf828398eda0eb870841e59435db19db4ac221773328def27ea7c8a",
+                        "@The_monster@ breathes [collective despair|endless sorrows] @at@ @target@.",
+                        cast_frame::PROJECTILE,
+                        { false, false, false, false, false },
+                        materialization_policy::CASE_MAP,
+                        { {"actor", "actor_ref"}, {"target", "resolved_target"} },
+                        { "actor", "target" },
+                    {
+                    },
+                        {
+                            {
+                                "mon.cast.march_of_sorrows_bone_dragon.collective_despair.v1",
+                                "materialization-v1|variants=1|33:march of sorrows bone dragon cast:0:0|lua=0|sites=1|33:march of sorrows bone dragon cast:0:0:2:0",
+                            {
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes collective despair at ${target}."}, {"en", "NEXT_TO", "${actor} breathes collective despair next to ${target}."}, {"en", "PAST", "${actor} breathes collective despair past ${target}."}, {"zh", "AT", "${actor}朝${target}吐出集体的绝望。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边吐出集体的绝望。"}, {"zh", "PAST", "${actor}吐出集体的绝望，从${target}旁边掠过。"} } },
+                            },
+                            },
+                            {
+                                "mon.cast.march_of_sorrows_bone_dragon.endless_sorrows.v1",
+                                "materialization-v1|variants=1|33:march of sorrows bone dragon cast:0:0|lua=0|sites=1|33:march of sorrows bone dragon cast:0:0:2:1",
+                            {
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} breathes endless sorrows at ${target}."}, {"en", "NEXT_TO", "${actor} breathes endless sorrows next to ${target}."}, {"en", "PAST", "${actor} breathes endless sorrows past ${target}."}, {"zh", "AT", "${actor}朝${target}吐出无尽的悲伤。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边吐出无尽的悲伤。"}, {"zh", "PAST", "${actor}吐出无尽的悲伤，从${target}旁边掠过。"} } },
+                            },
+                            },
+                        },
+                        {  },
+                        {  },
+                    },
+                },
+            },
+            {
                 "vanquished vanguard nergalle cast",
                 "fnv1a64:35230ef08e134f6b",
                 "fnv1a64:551fa23da779388b",

@@ -207,14 +207,18 @@ bool _validate_lines(const catalog_source &source,
                      const catalog_variant &variant, string &error)
 {
     set<string> declared;
+    bool has_target = false;
     for (const slot_definition &slot : variant.slot_schema)
     {
-        if (!_valid_identifier(slot.name) || slot.type.empty()
+        static const set<string> slot_types =
+            { "actor_ref", "resolved_target", "resolved_beam" };
+        if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
         {
             error = "invalid or duplicate slot declaration";
             return false;
         }
+        has_target = has_target || slot.type == "resolved_target";
     }
 
     set<string> required(variant.required_arguments.begin(),
@@ -240,11 +244,21 @@ bool _validate_lines(const catalog_source &source,
         error = "structured variant has no line metadata";
         return false;
     }
+    if (!has_target)
+    {
+        error = "current structured slice requires resolved_target";
+        return false;
+    }
 
     static const set<string> relations = { "AT", "NEXT_TO", "PAST" };
     set<string> used_slots;
     for (const line_metadata &line : variant.lines)
     {
+        if (line.implies_gesture || line.audible)
+        {
+            error = "behavior metadata is not enabled yet";
+            return false;
+        }
         if (!line.channel.empty() && str_to_channel(line.channel) < 0)
         {
             error = "line metadata has an invalid message channel";
@@ -334,12 +348,103 @@ const catalog_variant *_find_catalog_variant(
             {
                 return &variant;
             }
-            // CASE_MAP and CAPTURE_SLOT remain deliberately unavailable in
-            // Stage 3. A dynamic signature cannot silently select NONE.
+            if (variant.policy == materialization_policy::CASE_MAP)
+            {
+                for (const materialization_case &materialized
+                     : variant.materialization_cases)
+                {
+                    if (materialized.signature == signature)
+                        return &variant;
+                }
+            }
             return nullptr;
         }
     }
     return nullptr;
+}
+
+const materialization_case *_find_materialization_case(
+    const catalog_variant &variant, const string &signature)
+{
+    if (variant.policy != materialization_policy::CASE_MAP)
+        return nullptr;
+    for (const materialization_case &materialized
+         : variant.materialization_cases)
+    {
+        if (materialized.signature == signature)
+            return &materialized;
+    }
+    return nullptr;
+}
+
+const catalog_variant *_find_catalog_variant_by_locator(
+    const string &canonical_key, size_t variant_ordinal)
+{
+    for (const catalog_entry &entry : generated_monspell_catalog().entries)
+    {
+        if (entry.canonical_key != canonical_key
+            || entry.mode != entry_mode::CANDIDATE)
+        {
+            continue;
+        }
+        for (const catalog_variant &variant : entry.variants)
+        {
+            if (variant.variant_ordinal == variant_ordinal)
+                return &variant;
+        }
+    }
+    return nullptr;
+}
+
+bool _single_site_case_signatures(const string &key, size_t ordinal,
+                                  const string &pattern,
+                                  set<string> &signatures)
+{
+    const size_t open = pattern.find('[');
+    const size_t close = open == string::npos
+        ? string::npos : pattern.find(']', open + 1);
+    if (open == string::npos || close == string::npos
+        || pattern.find('[', open + 1) != string::npos
+        || pattern.find(']', close + 1) != string::npos)
+    {
+        return false;
+    }
+    int options = 1;
+    for (size_t i = open + 1; i < close; ++i)
+    {
+        if (pattern[i] == '[' || pattern[i] == ']')
+            return false;
+        if (pattern[i] == '|')
+            ++options;
+    }
+    if (options < 2)
+        return false;
+    const string prefix = "materialization-v1|variants=1|"
+        + std::to_string(key.size()) + ':' + key + ':'
+        + std::to_string(ordinal) + ":0|lua=0|sites=1|"
+        + std::to_string(key.size()) + ':' + key + ':'
+        + std::to_string(ordinal) + ":0:" + std::to_string(options) + ':';
+    for (int option = 0; option < options; ++option)
+        signatures.insert(prefix + std::to_string(option));
+    return true;
+}
+
+bool _same_case_line_shape(const vector<line_metadata> &lhs,
+                           const vector<line_metadata> &rhs)
+{
+    if (lhs.size() != rhs.size())
+        return false;
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        if (lhs[i].sensory != rhs[i].sensory
+            || lhs[i].channel != rhs[i].channel
+            || lhs[i].implies_gesture != rhs[i].implies_gesture
+            || lhs[i].audible != rhs[i].audible)
+        {
+            return false;
+        }
+    }
+    return true;
 }
 
 bool _localized_display(const vector<localized_value> &values,
@@ -531,8 +636,17 @@ const load_report &load_monspell_overlay(
                 return _disable(load_failure::CORRUPT,
                                 "candidate key has legacy-only policy");
             }
-            if (variant.policy == materialization_policy::CASE_MAP
-                || variant.policy == materialization_policy::CAPTURE_SLOT)
+            if (entry.mode != entry_mode::LEGACY_ONLY
+                && (variant.conditions.requires_player
+                    || variant.conditions.requires_foe
+                    || variant.conditions.requires_named_foe
+                    || variant.conditions.requires_god
+                    || variant.conditions.requires_caster_visible))
+            {
+                return _disable(load_failure::CORRUPT,
+                                "applicability metadata is not enabled yet");
+            }
+            if (variant.policy == materialization_policy::CAPTURE_SLOT)
             {
                 return _disable(load_failure::CORRUPT,
                                 "materialization policy is not enabled yet");
@@ -547,8 +661,58 @@ const load_report &load_monspell_overlay(
                                 "NONE policy contains dynamic materialization");
             }
 
+            if (variant.policy == materialization_policy::CASE_MAP)
+            {
+                set<string> expected_signatures;
+                if (!_single_site_case_signatures(entry.canonical_key,
+                        variant.variant_ordinal, actual_variant.raw_pattern,
+                        expected_signatures)
+                    || actual_variant.raw_pattern.find("{{") != string::npos
+                    || !dependencies.empty() || !variant.lines.empty()
+                    || variant.materialization_cases.size()
+                       != expected_signatures.size())
+                {
+                    return _disable(load_failure::CORRUPT,
+                                    "CASE_MAP dynamic closure is incomplete");
+                }
+                set<string> signatures;
+                const vector<line_metadata> *shape = nullptr;
+                for (const materialization_case &materialized
+                     : variant.materialization_cases)
+                {
+                    if (materialized.case_id.empty()
+                        || materialized.signature.empty()
+                        || !stable_ids.insert(materialized.case_id).second
+                        || !signatures.insert(materialized.signature).second)
+                    {
+                        return _disable(load_failure::CORRUPT,
+                                        "invalid CASE_MAP stable ID/signature");
+                    }
+                    catalog_variant case_variant = variant;
+                    case_variant.policy = materialization_policy::NONE;
+                    case_variant.lines = materialized.lines;
+                    case_variant.materialization_cases.clear();
+                    string case_error;
+                    if (!_validate_lines(*source, case_variant, case_error))
+                        return _disable(load_failure::CORRUPT, case_error);
+                    if (shape
+                        && !_same_case_line_shape(*shape, materialized.lines))
+                    {
+                        return _disable(load_failure::CORRUPT,
+                            "CASE_MAP changes binding-relevant line metadata");
+                    }
+                    shape = &materialized.lines;
+                }
+                if (signatures != expected_signatures)
+                {
+                    return _disable(load_failure::CORRUPT,
+                                    "CASE_MAP signature set is incomplete");
+                }
+            }
+
             string line_error;
-            if (!_validate_lines(*source, variant, line_error))
+            if (variant.policy != materialization_policy::CASE_MAP
+                && !_validate_lines(*source, variant, line_error))
                 return _disable(load_failure::CORRUPT, line_error);
         }
     }
@@ -704,6 +868,15 @@ canonical_materialization materialize_monspell_candidate(
         result.result = message_result::INAPPLICABLE;
         return result;
     }
+    const catalog_variant *descriptor = _find_catalog_variant_by_locator(
+        result.canonical.top_locator.canonical_key,
+        result.canonical.top_locator.variant_ordinal);
+    if (!descriptor)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "canonical locator has no catalog descriptor";
+        return result;
+    }
     if (!bindings)
     {
         result.result = message_result::CORRUPT;
@@ -716,13 +889,23 @@ canonical_materialization materialize_monspell_candidate(
     result.binding.rng.after = canonical_textdb::observe_rng();
     result.binding.callback_count = 1;
     const runtime_bindings &resolved = result.binding.values;
-    if (resolved.actor.sentence_en.empty()
-        || resolved.actor.canonical_en.empty()
-        || resolved.target.relation == target_relation::NONE
-        || !_valid_target_payload(resolved.target)
-        || resolved.target.relation_en.empty()
-        || resolved.target.canonical_en.empty()
-        || resolved.beam.canonical_en.empty())
+    bool needs_actor = false;
+    bool needs_target = false;
+    bool needs_beam = false;
+    for (const slot_definition &slot : descriptor->slot_schema)
+    {
+        needs_actor = needs_actor || slot.type == "actor_ref";
+        needs_target = needs_target || slot.type == "resolved_target";
+        needs_beam = needs_beam || slot.type == "resolved_beam";
+    }
+    if ((needs_actor && (resolved.actor.sentence_en.empty()
+                         || resolved.actor.canonical_en.empty()))
+        || (needs_target && (resolved.target.relation
+                             == target_relation::NONE
+                             || !_valid_target_payload(resolved.target)
+                             || resolved.target.relation_en.empty()
+                             || resolved.target.canonical_en.empty()))
+        || (needs_beam && resolved.beam.canonical_en.empty()))
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "runtime bindings are incomplete";
@@ -751,15 +934,33 @@ canonical_materialization materialize_monspell_candidate(
         result.diagnostic = result.randomized.error;
         return result;
     }
-    if (result.randomized.signature != "NONE"
-        || result.randomized.random_site_count != 0
-        || result.randomized.pattern_en != result.bound_pattern_en
-        || result.canonical.lua_site_count != 0
-        || result.canonical.selected_variants.size() != 1
-        || result.canonical.expanded_pattern_en.find('[') != string::npos)
+    if (result.canonical.lua_site_count != 0
+        || result.canonical.selected_variants.size() != 1)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "structured policy observed unsupported dynamics";
+        return result;
+    }
+    if (descriptor->policy == materialization_policy::NONE
+        && (result.randomized.signature != "NONE"
+            || result.randomized.random_site_count != 0
+            || result.randomized.pattern_en != result.bound_pattern_en
+            || result.canonical.expanded_pattern_en.find('[')
+               != string::npos))
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "NONE policy observed dynamic materialization";
+        return result;
+    }
+    if (descriptor->policy == materialization_policy::CASE_MAP
+        && (result.randomized.signature == "NONE"
+            || result.randomized.random_site_count == 0
+            || result.randomized.pattern_en.find('[') != string::npos
+            || !_find_materialization_case(*descriptor,
+                                           result.randomized.signature)))
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "CASE_MAP materialization signature is unknown";
         return result;
     }
 
@@ -767,13 +968,17 @@ canonical_materialization materialize_monspell_candidate(
         result.canonical.top_locator.canonical_key,
         result.canonical.top_locator.variant_ordinal,
         result.randomized.signature);
-    if (!variant || variant->frame != resolved.cast.frame)
+    if (!variant || variant != descriptor
+        || variant->frame != resolved.cast.frame)
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "canonical locator has no matching catalog case";
         return result;
     }
-    result.stable_id = variant->stable_id;
+    const materialization_case *materialized_case =
+        _find_materialization_case(*variant, result.randomized.signature);
+    result.stable_id = materialized_case
+        ? materialized_case->case_id : variant->stable_id;
     result.materialization_signature = result.randomized.signature;
     result.result = message_result::RENDERED;
     return result;
@@ -939,30 +1144,62 @@ render_result render_materialized_candidate(
         materialized.canonical.top_locator.canonical_key,
         materialized.canonical.top_locator.variant_ordinal,
         materialized.materialization_signature);
-    if (!variant || variant->stable_id != materialized.stable_id)
+    const materialization_case *materialized_case = variant
+        ? _find_materialization_case(*variant,
+                                     materialized.materialization_signature)
+        : nullptr;
+    const string expected_id = materialized_case
+        ? materialized_case->case_id : (variant ? variant->stable_id : "");
+    if (!variant || expected_id != materialized.stable_id)
     {
         result.diagnostic = "materialized stable ID is not in the catalog";
         return result;
     }
-    string actor;
-    string target;
-    string beam;
-    if (!_localized_display(materialized.binding.values.actor.localized,
-                            language, actor)
-        || !_localized_display(materialized.binding.values.target.localized,
-                               language, target)
-        || !_localized_display(materialized.binding.values.beam.localized,
-                               language, beam))
+    vector<slot_value> values;
+    for (const slot_definition &slot : variant->slot_schema)
     {
-        result.diagnostic = "localized runtime binding is missing";
-        return result;
+        string display;
+        if (slot.type == "actor_ref")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.localized,
+                    language, display))
+            {
+                result.diagnostic = "localized actor binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "resolved_target")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.target.localized,
+                    language, display))
+            {
+                result.diagnostic = "localized target binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "resolved_beam")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.beam.localized,
+                    language, display))
+            {
+                result.diagnostic = "localized beam binding is missing";
+                return result;
+            }
+        }
+        else
+        {
+            result.diagnostic = "unsupported typed slot binding";
+            return result;
+        }
+        values.push_back({ slot.name, display });
     }
-    const vector<slot_value> values =
-    {
-        { "actor", actor }, { "target", target }, { "beam", beam },
-    };
+    const vector<line_metadata> &lines = materialized_case
+        ? materialized_case->lines : variant->lines;
     return render_typed_lines(
-        variant->lines, language,
+        lines, language,
         materialized.binding.values.target.relation,
         variant->slot_schema, values);
 }

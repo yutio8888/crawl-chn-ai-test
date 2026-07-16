@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import hashlib
+import itertools
 import json
 import re
 import sys
@@ -30,6 +31,7 @@ CHANNELS = {
     "orb", "timed_portal", "hell_effect", "monster_warning",
     "dgl_message", "decor_flavour", "monster_timeout", "visual", "spell",
 }
+SLOT_TYPES = {"actor_ref", "resolved_target", "resolved_beam"}
 
 
 class ManifestError(ValueError):
@@ -136,6 +138,70 @@ def _template_slots(pattern: str, context: str) -> set[str]:
     return slots
 
 
+def _case_signatures(key: str, ordinal: int,
+                     random_sites: list[dict[str, Any]]) -> set[str]:
+    signatures = set()
+    key_size = len(key.encode("utf-8"))
+    for choices in itertools.product(
+            *(range(len(site["options"])) for site in random_sites)):
+        signature = (f"materialization-v1|variants=1|{key_size}:{key}:"
+                     f"{ordinal}:0|lua=0|sites={len(random_sites)}")
+        for site_ordinal, (site, choice) in enumerate(zip(random_sites,
+                                                          choices)):
+            signature += (f"|{key_size}:{key}:{ordinal}:{site_ordinal}:"
+                          f"{len(site['options'])}:{choice}")
+        signatures.add(signature)
+    return signatures
+
+
+def _validate_lines(lines: Any, languages: list[str], declared: set[str],
+                    context: str, relations: tuple[str, ...]) -> tuple:
+    _require(isinstance(lines, list) and lines,
+             f"{context} needs line_metadata")
+    used_slots: set[str] = set()
+    shape = []
+    for line_index, line in enumerate(lines):
+        lcontext = f"{context}.line_metadata[{line_index}]"
+        _require(line.get("sensory") in SENSORY,
+                 f"{lcontext} has invalid sensory")
+        _require(line.get("channel") is None
+                 or (isinstance(line.get("channel"), str)
+                     and line.get("channel") in CHANNELS),
+                 f"{lcontext} has invalid channel")
+        behavior = line.get("behavior")
+        _require(isinstance(behavior, dict)
+                 and set(behavior) == {"implies_gesture", "audible"}
+                 and all(isinstance(x, bool) for x in behavior.values()),
+                 f"{lcontext} has invalid behavior metadata")
+        _require(not behavior["implies_gesture"] and not behavior["audible"],
+                 f"{lcontext} behavior metadata is not enabled yet")
+        shape.append((line["sensory"], line.get("channel"),
+                      behavior["implies_gesture"], behavior["audible"]))
+        templates = line.get("templates")
+        _require(isinstance(templates, list),
+                 f"{lcontext}.templates must be a list")
+        matrix: set[tuple[str, str]] = set()
+        for template_index, template in enumerate(templates):
+            tcontext = f"{lcontext}.templates[{template_index}]"
+            pair = (template.get("language"), template.get("relation"))
+            _require(pair[0] in languages and pair[1] in relations
+                     and pair not in matrix,
+                     f"{tcontext} invalid/duplicate language relation")
+            matrix.add(pair)
+            pattern = template.get("pattern")
+            _require(isinstance(pattern, str) and pattern
+                     and "\n" not in pattern,
+                     f"{tcontext} needs a pattern")
+            used_slots.update(_template_slots(pattern, tcontext))
+        _require(matrix == {(language, relation)
+                            for language in languages
+                            for relation in relations},
+                 f"{lcontext} template matrix is incomplete")
+    _require(used_slots == declared,
+             f"{context} template slots mismatch slot schema")
+    return tuple(shape)
+
+
 def validate_manifest(manifest: dict[str, Any],
                       inventory: dict[str, Any]) -> dict[str, Any]:
     _require(manifest.get("schema_version") == SCHEMA_VERSION,
@@ -219,19 +285,24 @@ def validate_manifest(manifest: dict[str, Any],
                      and all(isinstance(x, bool)
                              for x in applicability.values()),
                      f"{vcontext} has invalid applicability")
+            if mode != "LEGACY_ONLY":
+                _require(not any(applicability.values()),
+                         f"{vcontext} applicability metadata is not enabled yet")
 
             slot_schema = variant.get("slot_schema")
             _require(isinstance(slot_schema, list),
                      f"{vcontext}.slot_schema must be a list")
             declared: set[str] = set()
+            slot_types: dict[str, str] = {}
             for slot in slot_schema:
                 _require(isinstance(slot, dict)
                          and set(slot) == {"name", "type"}
                          and IDENTIFIER_RE.fullmatch(slot["name"])
-                         and isinstance(slot["type"], str) and slot["type"]
+                         and slot["type"] in SLOT_TYPES
                          and slot["name"] not in declared,
                          f"{vcontext} has invalid/duplicate slot schema")
                 declared.add(slot["name"])
+                slot_types[slot["name"]] = slot["type"]
             required = variant.get("required_arguments")
             _require(isinstance(required, list) and set(required) == declared
                      and len(required) == len(declared),
@@ -255,8 +326,6 @@ def validate_manifest(manifest: dict[str, Any],
             cases = variant.get("materialization_cases")
             _require(isinstance(cases, list),
                      f"{vcontext}.materialization_cases must be a list")
-            _require(policy in {"NONE", "LEGACY_ONLY"},
-                     f"{vcontext} materialization policy is not enabled yet")
             if policy == "NONE":
                 _require(not actual["random_substring_sites"]
                          and not actual["lua_sites"] and not dependencies
@@ -266,46 +335,53 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
-
-            lines = variant.get("line_metadata")
-            _require(isinstance(lines, list) and lines,
-                     f"{vcontext} needs line_metadata")
-            used_slots: set[str] = set()
-            for line_index, line in enumerate(lines):
-                lcontext = f"{vcontext}.line_metadata[{line_index}]"
-                _require(line.get("sensory") in SENSORY,
-                         f"{lcontext} has invalid sensory")
-                _require(line.get("channel") is None
-                         or (isinstance(line.get("channel"), str)
-                             and line.get("channel") in CHANNELS),
-                         f"{lcontext} has invalid channel")
-                behavior = line.get("behavior")
-                _require(isinstance(behavior, dict)
-                         and set(behavior) == {"implies_gesture", "audible"}
-                         and all(isinstance(x, bool) for x in behavior.values()),
-                         f"{lcontext} has invalid behavior metadata")
-                templates = line.get("templates")
-                _require(isinstance(templates, list),
-                         f"{lcontext}.templates must be a list")
-                matrix: set[tuple[str, str]] = set()
-                for template_index, template in enumerate(templates):
-                    tcontext = f"{lcontext}.templates[{template_index}]"
-                    pair = (template.get("language"), template.get("relation"))
-                    _require(pair[0] in languages and pair[1] in RELATIONS
-                             and pair not in matrix,
-                             f"{tcontext} invalid/duplicate language relation")
-                    matrix.add(pair)
-                    pattern = template.get("pattern")
-                    _require(isinstance(pattern, str) and pattern
-                             and "\n" not in pattern,
-                             f"{tcontext} needs a pattern")
-                    used_slots.update(_template_slots(pattern, tcontext))
-                _require(matrix == {(language, relation)
-                                    for language in languages
-                                    for relation in RELATIONS},
-                         f"{lcontext} template matrix is incomplete")
-            _require(used_slots == declared,
-                     f"{vcontext} template slots mismatch slot schema")
+            _require("resolved_target" in slot_types.values(),
+                     f"{vcontext} current structured slice requires resolved_target")
+            relations = RELATIONS
+            if policy == "NONE":
+                _validate_lines(variant.get("line_metadata"), languages,
+                                declared, vcontext, relations)
+                continue
+            _require(policy == "CASE_MAP",
+                     f"{vcontext} materialization policy is not enabled yet")
+            _require(actual["random_substring_sites"]
+                     and not actual["lua_sites"] and not dependencies,
+                     f"{vcontext} CASE_MAP must consume finite bracket sites")
+            _require(len(actual["random_substring_sites"]) == 1,
+                     f"{vcontext} CASE_MAP slice supports exactly one site")
+            _require(all(len(site["options"]) >= 2
+                         for site in actual["random_substring_sites"]),
+                     f"{vcontext} CASE_MAP site needs at least two options")
+            _require(not variant.get("line_metadata"),
+                     f"{vcontext} CASE_MAP lines belong to cases")
+            expected = _case_signatures(key, variant_index,
+                                        actual["random_substring_sites"])
+            seen_signatures: set[str] = set()
+            expected_shape = None
+            for case_index, case in enumerate(cases):
+                ccontext = f"{vcontext}.materialization_cases[{case_index}]"
+                _require(isinstance(case, dict)
+                         and set(case) == {"case_id", "signature",
+                                          "line_metadata"},
+                         f"{ccontext} has invalid fields")
+                case_id = case["case_id"]
+                _require(isinstance(case_id, str) and case_id
+                         and case_id not in stable_ids,
+                         f"{ccontext} has invalid/reused case_id")
+                stable_ids.add(case_id)
+                signature = case["signature"]
+                _require(signature in expected
+                         and signature not in seen_signatures,
+                         f"{ccontext} has unknown/duplicate signature")
+                seen_signatures.add(signature)
+                shape = _validate_lines(case["line_metadata"], languages,
+                                        declared, ccontext, relations)
+                if expected_shape is None:
+                    expected_shape = shape
+                _require(shape == expected_shape,
+                         f"{ccontext} changes binding-relevant line metadata")
+            _require(seen_signatures == expected,
+                     f"{vcontext} CASE_MAP cases are incomplete")
 
     # A structured recursive dependency must itself be present as closure data.
     by_key = {entry["canonical_key"]: entry for entry in manifest["entries"]}
@@ -377,6 +453,18 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
                 _cpp(variant["recursive_dependency_fingerprints"][x])
                 for x in deps)
             lines = _emit_lines(variant.get("line_metadata", []), "                    ")
+            emitted_cases = []
+            for case in variant.get("materialization_cases", []):
+                case_lines = _emit_lines(case["line_metadata"],
+                                         "                            ")
+                emitted_cases.extend([
+                    "                            {",
+                    f"                                {_cpp(case['case_id'])},",
+                    f"                                {_cpp(case['signature'])},",
+                ])
+                emitted_cases.extend(case_lines[:-1])
+                emitted_cases.append(case_lines[-1] + ",")
+                emitted_cases.append("                            },")
             out.extend([
                 "                    {",
                 f"                        {_cpp(variant['stable_id'])}, false,",
@@ -395,8 +483,13 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
             ])
             out.extend(lines[:-1])
             out.append(lines[-1] + ",")
+            if emitted_cases:
+                out.append("                        {")
+                out.extend(emitted_cases)
+                out.append("                        },")
+            else:
+                out.append("                        {},")
             out.extend([
-                "                        {},",
                 f"                        {{ {dep_names} }},",
                 f"                        {{ {dep_fps} }},",
                 "                    },",

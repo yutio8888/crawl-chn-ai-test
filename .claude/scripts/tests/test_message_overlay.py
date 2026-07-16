@@ -31,7 +31,8 @@ class MessageOverlayTests(unittest.TestCase):
                          MODULE.render_sidecar(validated))
         candidates = [entry["canonical_key"] for entry in validated["entries"]
                       if entry["mode"] == "CANDIDATE"]
-        self.assertEqual(["beam catchall cast"], candidates)
+        self.assertEqual(["beam catchall cast",
+                          "march of sorrows bone dragon cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -65,6 +66,12 @@ class MessageOverlayTests(unittest.TestCase):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
+        value["entries"][0]["variants"][0]["slot_schema"][0]["type"] = (
+            "unknown_ref")
+        with self.assertRaisesRegex(MODULE.ManifestError, "slot schema"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
         template = value["entries"][0]["variants"][0]["line_metadata"][0]["templates"][0]
         template["pattern"] += " @target@"
         with self.assertRaisesRegex(MODULE.ManifestError, "legacy TextDB"):
@@ -89,10 +96,74 @@ class MessageOverlayTests(unittest.TestCase):
             with self.assertRaisesRegex(MODULE.ManifestError, "fingerprint mismatch"):
                 self.validate(value)
 
-    def test_unimplemented_materialization_policy_is_rejected(self):
+    def test_case_map_requires_dynamic_sites(self):
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["materialization_policy"] = "CASE_MAP"
-        with self.assertRaisesRegex(MODULE.ManifestError, "not enabled yet"):
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "finite bracket sites"):
+            self.validate(value)
+
+    def test_case_map_requires_complete_unique_signatures(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"]
+                     == "march of sorrows bone dragon cast")
+        entry_index = MANIFEST["entries"].index(entry)
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][entry_index]["variants"][0][
+            "materialization_cases"].pop()
+        with self.assertRaisesRegex(MODULE.ManifestError, "cases are incomplete"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        cases = value["entries"][entry_index]["variants"][0][
+            "materialization_cases"]
+        cases[1]["signature"] = cases[0]["signature"]
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "unknown/duplicate signature"):
+            self.validate(value)
+
+    def test_case_map_rejects_unconsumed_or_semantic_dynamic_data(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"]
+                     == "march of sorrows bone dragon cast")
+        entry_index = MANIFEST["entries"].index(entry)
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][entry_index]["variants"][0]["line_metadata"] = (
+            copy.deepcopy(value["entries"][entry_index]["variants"][0]
+                          ["materialization_cases"][0]["line_metadata"]))
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "lines belong to cases"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        cases = value["entries"][entry_index]["variants"][0][
+            "materialization_cases"]
+        cases[1]["line_metadata"][0]["sensory"] = "VISUAL"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "binding-relevant line metadata"):
+            self.validate(value)
+
+    def test_current_slice_rejects_unwired_binding_metadata(self):
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][0]["variants"][0]["slot_schema"][2]["type"] = (
+            "resolved_beam")
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "requires resolved_target"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][0]["variants"][0]["applicability"][
+            "requires_foe"] = True
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "applicability metadata"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][0]["variants"][0]["line_metadata"][0][
+            "behavior"]["implies_gesture"] = True
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "behavior metadata"):
             self.validate(value)
 
 
