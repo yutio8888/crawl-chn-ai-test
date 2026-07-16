@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成四批通用施法消息迁移。当前覆盖 16 个 canonical
-key、28 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成五批通用施法消息迁移。当前覆盖 18 个 canonical
+key、37 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 16 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 18 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -95,6 +95,23 @@ canonical plural 为 `strata`，中文通过
 未知 body-part 或不可复数 caster 均 fail closed 为 `CORRUPT`，不会让
 任意 legacy token 或未经审计的动态翻译穿透 renderer。不可复数错误边界不再输出
 legacy 的 `NO PLURAL ARMS`；该边界保持 RNG 消耗等价，但采用更严格的显式协议错误。
+
+第五批完整迁移 `vv cast` 的 4 个 variant 与
+`smiting jeremiah cast` 的 5 个 variant。两者均为 non-target descriptor，
+使用 `resolves_target=false` / `NONE`，不解析目标也不消费目标 RNG。
+`vv cast` 的上游权重为 `[10, 10, 10, 3]`，四行均保留 `VISUAL` sensory，
+gesture metadata 为 `[true, false, false, false]`；Jeremiah 的第三行保留
+`VISUAL` sensory，其余四行保持 `PLAIN`，gesture metadata 全为 `false`。
+这 9 个 variant 仅复用既有 actor/possessive 槽，不引入新的身体部位、目标或
+正文随机物化需求。
+
+structured 中文 actor possessive binding 另有一个窄语法适配：当 caster 可见、
+使用 neutral pronoun，且 `mons_is_or_was_unique()` 证明其为单一身份时，
+`${possessive}` 使用 context key
+`structured actor possessive|neutral singular` → “其”。这修正 Jeremiah 的
+英文 singular-they `their` 被全局中文 pronoun 表投影成“它们的”的问题，但不修改
+通用 pronoun 表。非 unique neutral actor 因没有单数身份保证，仍保留既有
+“它们的”；女性 Vv 仍正常使用“她的”。英文 binding 始终保持 legacy pronoun。
 
 ## 2. 三类 artifact 的职责
 
@@ -216,11 +233,11 @@ RNG state 或 count。
 
 实现阶段已经观察到以下结果（均为退出码 0）：
 
-- `[message-overlay][phase1]`：21,333 assertions / 15 test cases；
+- `[message-overlay]`：25,263 assertions / 27 test cases；
 - `[textdb][phase0]`：736,197 assertions / 18 test cases；
 - `[mon-cast-target][phase0]`：640 assertions / 5 test cases；
-- Python manifest/generator tests：10 tests；
-- monspell behavior 审计 fixture：10 tests；
+- Python manifest/generator tests：14 tests；
+- monspell behavior 审计 fixture：18 tests；
 - `audit_message_overlay.py`：`message overlay audit: ok`；
 - generated sidecar `--check`：逐字节通过；
 - `scan_varargs_string.py`：0 个阻塞问题；
@@ -237,15 +254,18 @@ key 的既有 1,024-seed 测试继续证明 canonical、真实目标解析、sub
 最终 RNG/英文输出等价。
 
 统一 verifier 现在无条件运行 manifest/generator/audit 和 behavior fixture；相关文件发生变化时，
-code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
+code/review/CI profile 还会构建并运行完整 `[message-overlay]` 测试集，覆盖
+Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 16 个 key、28 个 canonical variant，不代表 262 个
+- structured 覆盖为 18 个 key、37 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
   类型化槽，并通过 `binding.resolves_target` 将目标解析需求与 `${target}` 引用解耦；
+- neutral singular 的中文 actor possessive 只在“可见 + unique identity”边界
+  使用 context key“其”，不会把非 unique neutral actor 自动单数化；
 - structured gesture 与 `VISUAL` sensory/channel 元数据已启用，但 audible
   与其他非默认 applicability 尚未启用；
 - 全局 legacy gesture/visual/audible heuristic 仍存在；
@@ -375,11 +395,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- 38 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+- 16 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 28 个 canonical structured variant，28 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 56 个逐语言验证单位，
-  56 个均完整。
+- 37 个 canonical structured variant，37 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 74 个逐语言验证单位，
+  74 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -400,10 +420,10 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁是 38 个 legacy behavior occurrence 尚无显式 metadata，以及
+剩余门禁是 16 个 legacy behavior occurrence 尚无显式 metadata，以及
 `vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
 特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
-候选 containment、runtime reachability 和当前四批已迁移 key 不再是 blocker。
+候选 containment、runtime reachability 和当前五批已迁移 key 不再是 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

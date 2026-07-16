@@ -312,6 +312,30 @@ struct scoped_test_language
     }
 };
 
+struct scoped_zh_database
+{
+    lang_t saved_language = Options.language;
+    const char *saved_name = Options.lang_name;
+
+    scoped_zh_database()
+    {
+        databaseSystemShutdown();
+        Options.language = lang_t::ZH;
+        Options.lang_name = "zh";
+        databaseSystemInit();
+        i18n_cache_clear();
+    }
+
+    ~scoped_zh_database()
+    {
+        databaseSystemShutdown();
+        Options.language = saved_language;
+        Options.lang_name = saved_name;
+        databaseSystemInit();
+        i18n_cache_clear();
+    }
+};
+
 string legacy_beam_catchall(const monster &source, const bolt &beam)
 {
     string message = getSpeakString("beam catchall cast");
@@ -962,6 +986,10 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
 {
     ensure_phase1_overlay_loaded();
+    // Load the localized SourceDB/name layers while keeping canonical
+    // selection explicitly pinned to the English base. The guard restores an
+    // English database after this test so later legacy fixtures stay isolated.
+    scoped_zh_database localized_database;
     scoped_past_target_world world;
     REQUIRE(world.valid());
     monster &source = *world.placed_source();
@@ -1098,19 +1126,50 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { false, true, false },
             false,
         },
+        {
+            "vv cast",
+            {
+                "VISUAL:@The_monster@ gestures sharply.",
+                "VISUAL:@The_monster@ stamps @possessive@ foot.",
+                "VISUAL:@The_monster@ slams @possessive@ palms together.",
+                "VISUAL:@The_monster@ makes an elaborate arcing motion.",
+            },
+            { true, false, false, false },
+            false,
+        },
+        {
+            "smiting jeremiah cast",
+            {
+                "@The_monster@ lets out a twisted cry.",
+                "@The_monster@ mumbles a slurred invocation.",
+                "VISUAL:@The_monster@ throws @possessive@ arms up pleadingly.",
+                "@The_monster@ cries, \"Fearful master, protect me!\"",
+                "@The_monster@ shouts, \"O dreadful one, destroy my foe!\"",
+            },
+            { false, false, false, false, false },
+            false,
+        },
     };
 
     for (const key_fixture &fixture : fixtures)
     {
-        source.type = fixture.key == "airstrike blizzard demon cast"
-            ? MONS_BLIZZARD_DEMON : MONS_ORC;
+        source.type =
+            fixture.key == "airstrike blizzard demon cast"
+                ? MONS_BLIZZARD_DEMON
+            : fixture.key == "vv cast"
+                ? MONS_VV
+            : fixture.key == "smiting jeremiah cast"
+                ? MONS_JEREMIAH
+                : MONS_ORC;
         vector<uint64_t> seeds(fixture.patterns.size(), 0);
         {
             scoped_test_language language(lang_t::EN);
             for (uint64_t seed = 1; seed <= 4096; ++seed)
             {
                 rng::subgenerator scoped_rng(seed, seed ^ 0x9e3779b97f4a7c15ULL);
-                const string pattern = getSpeakString(fixture.key);
+                const string pattern =
+                    textdb_phase0::expand_loaded_canonical_english_speakdb(
+                        fixture.key);
                 const auto found = find(fixture.patterns.begin(),
                                         fixture.patterns.end(), pattern);
                 REQUIRE(found != fixture.patterns.end());
@@ -1138,7 +1197,9 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 rng::subgenerator scoped_rng(
                     seeds[ordinal],
                     seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
-                const string pattern = getSpeakString(fixture.key);
+                const string pattern =
+                    textdb_phase0::expand_loaded_canonical_english_speakdb(
+                        fixture.key);
                 REQUIRE(pattern == fixture.patterns[ordinal]);
                 const bool gestured =
                     pattern.find("Gesture") != string::npos
@@ -1211,7 +1272,11 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                   == en.requirements.needs_actor_arms_plural);
             CHECK(en.binding.callback_count == 1);
             CHECK(zh.binding.callback_count == 1);
-            if (fixture.key == "mennas cast")
+            const bool visual =
+                fixture.key == "mennas cast"
+                || fixture.key == "vv cast"
+                || (fixture.key == "smiting jeremiah cast" && ordinal == 2);
+            if (visual)
             {
                 CHECK("VISUAL:" + english.text == en.randomized.pattern_en);
                 REQUIRE(english.lines.size() == 1);
@@ -1235,6 +1300,46 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 CHECK(english.text == expected_en[ordinal]);
                 if (ordinal == 2)
                     CHECK(en.binding.values.actor.arms_plural_en == "strata");
+            }
+            else if (fixture.key == "vv cast")
+            {
+                static const char *expected_en[] =
+                {
+                    "Vv gestures sharply.",
+                    "Vv stamps her foot.",
+                    "Vv slams her palms together.",
+                    "Vv makes an elaborate arcing motion.",
+                };
+                static const char *expected_zh[] =
+                {
+                    "芙芙猛然做出手势。",
+                    "芙芙用她的脚猛跺地面。",
+                    "芙芙用力合拢她的双掌。",
+                    "芙芙划出一道精巧的弧线。",
+                };
+                CHECK(english.text == expected_en[ordinal]);
+                CHECK(chinese.text == expected_zh[ordinal]);
+            }
+            else if (fixture.key == "smiting jeremiah cast")
+            {
+                static const char *expected_en[] =
+                {
+                    "Jeremiah lets out a twisted cry.",
+                    "Jeremiah mumbles a slurred invocation.",
+                    "Jeremiah throws their arms up pleadingly.",
+                    "Jeremiah cries, \"Fearful master, protect me!\"",
+                    "Jeremiah shouts, \"O dreadful one, destroy my foe!\"",
+                };
+                static const char *expected_zh[] =
+                {
+                    "耶利米发出一声扭曲的喊叫。",
+                    "耶利米含糊不清地咕哝着祷文。",
+                    "耶利米恳求般地举起其双臂。",
+                    "耶利米哭喊道：“可畏的主人，保护我吧！”",
+                    "耶利米大喊道：“可怖者啊，毁灭我的敌人！”",
+                };
+                CHECK(english.text == expected_en[ordinal]);
+                CHECK(chinese.text == expected_zh[ordinal]);
             }
             CHECK(english_state == legacy_state);
             CHECK(english_count == legacy_count);
@@ -1289,6 +1394,40 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             fork_message_overlay::monspell_overlay_diagnostics();
         CHECK(counters.legacy_fallback == 1);
         CHECK(counters.overlay_hit == 1);
+    }
+
+    SECTION("non-unique neutral caster keeps the normal plural pronoun")
+    {
+        source.type = MONS_VAMPIRE_BLOODPRINCE;
+        uint64_t pleading_seed = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            for (uint64_t seed = 1; seed <= 4096; ++seed)
+            {
+                rng::subgenerator scoped_rng(
+                    seed, seed ^ 0x9e3779b97f4a7c15ULL);
+                if (textdb_phase0::expand_loaded_canonical_english_speakdb(
+                        "smiting jeremiah cast")
+                    == "VISUAL:@The_monster@ throws @possessive@ arms up "
+                       "pleadingly.")
+                {
+                    pleading_seed = seed;
+                    break;
+                }
+            }
+        }
+        REQUIRE(pleading_seed != 0);
+        scoped_test_language language(lang_t::ZH);
+        rng::subgenerator scoped_rng(
+            pleading_seed,
+            pleading_seed ^ 0x9e3779b97f4a7c15ULL);
+        const resolved_monspell_cast_message result =
+            resolve_monspell_cast_message(
+                source, beam, false, { "smiting jeremiah cast" },
+                false, false);
+        REQUIRE(result.structured);
+        CHECK(result.text.find("它们的双臂") != string::npos);
+        CHECK(result.text.find("其双臂") == string::npos);
     }
 
     SECTION("silent prefix directly selects the covered blizzard key")

@@ -828,6 +828,189 @@
       ]
     },
     {
+      "canonical_key": "vv cast",
+      "canonical_fingerprint": "fnv1a64:412b3842e1b116c7",
+      "selection_graph_fingerprint": "fnv1a64:83e0368326c87327",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.vv.sharp_gesture.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "8c30963c6c928a3ef7ffadee1f68350e5c548858126827938aab900d94cd6f1a",
+          "english_snapshot": "VISUAL:@The_monster@ gestures sharply.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures sharply." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}猛然做出手势。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.vv.stamp_foot.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "723b97c3453dfc84e959cbaa435b020ee3f9d5d8699357e6b7f5204cefcddd6b",
+          "english_snapshot": "VISUAL:@The_monster@ stamps @possessive@ foot.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} stamps ${possessive} foot." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用${possessive}脚猛跺地面。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.vv.slam_palms.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "cca10220c587ca634bdd31b4dc538115b00ee3f1fae23f0e4f3bb6f56c2d7da8",
+          "english_snapshot": "VISUAL:@The_monster@ slams @possessive@ palms together.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} slams ${possessive} palms together." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用力合拢${possessive}双掌。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.vv.elaborate_arc.v1", "tombstone": false,
+          "variant_ordinal": 3, "upstream_weight": 3,
+          "upstream_variant_fingerprint": "63de890246661d8f5796b59c92ad71a38d82c3b99cff047043ac480cd6cbb584",
+          "english_snapshot": "VISUAL:@The_monster@ makes an elaborate arcing motion.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} makes an elaborate arcing motion." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}划出一道精巧的弧线。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "smiting jeremiah cast",
+      "canonical_fingerprint": "fnv1a64:d348443537e62852",
+      "selection_graph_fingerprint": "fnv1a64:578660e61d611039",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.smiting_jeremiah.twisted_cry.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "f3b08ba2fad14e3c4fcf629f24fad44f58cf1419fd54b947b26a3f57766c09a3",
+          "english_snapshot": "@The_monster@ lets out a twisted cry.",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} lets out a twisted cry." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}发出一声扭曲的喊叫。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.smiting_jeremiah.slurred_invocation.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "8d2769b9bac12b8dcdb8fecf4522f98e2e0a15c89eb4d9f3d1e734b60c82a34a",
+          "english_snapshot": "@The_monster@ mumbles a slurred invocation.",
+          "frame": "INVOCATION", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} mumbles a slurred invocation." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}含糊不清地咕哝着祷文。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "6911405826a44c9127e7cd9c816c827ba83aa6286f7ad13bdcdd0cd9776a39d8",
+          "english_snapshot": "VISUAL:@The_monster@ throws @possessive@ arms up pleadingly.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} throws ${possessive} arms up pleadingly." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}恳求般地举起${possessive}双臂。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.smiting_jeremiah.fearful_master.v1", "tombstone": false,
+          "variant_ordinal": 3, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ea5aa8467c84e216f6432d34056f3c46bd880c25194dd483b9f2422bee9ad43a",
+          "english_snapshot": "@The_monster@ cries, \"Fearful master, protect me!\"",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} cries, \"Fearful master, protect me!\"" },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}哭喊道：“可畏的主人，保护我吧！”" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.smiting_jeremiah.dreadful_destroy.v1", "tombstone": false,
+          "variant_ordinal": 4, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "603d991633c06bcd50a5a9fd0815512087bf79a84d7622a8728378d97655a7c4",
+          "english_snapshot": "@The_monster@ shouts, \"O dreadful one, destroy my foe!\"",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} shouts, \"O dreadful one, destroy my foe!\"" },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}大喊道：“可怖者啊，毁灭我的敌人！”" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",

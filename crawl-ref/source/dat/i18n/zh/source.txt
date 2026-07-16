@@ -15717,6 +15717,9 @@ monster body part plural|arms
 monster body part plural|strata
 云层
 %%%%
+structured actor possessive|neutral singular
+其
+%%%%
 improve
 改善
 %%%%

@@ -179,7 +179,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 16);
+        CHECK(report.structured_key_count == 18);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -197,6 +197,8 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("ushabti cast targeted"));
         CHECK(monspell_overlay_covers("mennas cast"));
         CHECK(monspell_overlay_covers("airstrike blizzard demon cast"));
+        CHECK(monspell_overlay_covers("vv cast"));
+        CHECK(monspell_overlay_covers("smiting jeremiah cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -1676,4 +1678,122 @@ TEST_CASE("airstrike blizzard demon uses a fail-closed plural-arms slot",
     CHECK(duplicate_zh.result == message_result::CORRUPT);
     CHECK(duplicate_zh.diagnostic
           == "localized actor plural-arms binding is missing");
+}
+
+TEST_CASE("Vv and Jeremiah variants have exact weighted bilingual goldens",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    reset_monspell_overlay_for_test();
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+
+    struct fixture
+    {
+        const char *key;
+        size_t ordinal;
+        int weight;
+        const char *pattern;
+        bool gesture;
+        sensory_mode sensory;
+        const char *english;
+        const char *chinese;
+    };
+    const fixture cases[] =
+    {
+        { "vv cast", 0, 10,
+          "VISUAL:@The_monster@ gestures sharply.", true,
+          sensory_mode::VISUAL,
+          "The orc gestures sharply.", "兽人猛然做出手势。" },
+        { "vv cast", 1, 10,
+          "VISUAL:@The_monster@ stamps @possessive@ foot.", false,
+          sensory_mode::VISUAL,
+          "The orc stamps its foot.", "兽人用它的脚猛跺地面。" },
+        { "vv cast", 2, 10,
+          "VISUAL:@The_monster@ slams @possessive@ palms together.", false,
+          sensory_mode::VISUAL,
+          "The orc slams its palms together.", "兽人用力合拢它的双掌。" },
+        { "vv cast", 3, 3,
+          "VISUAL:@The_monster@ makes an elaborate arcing motion.", false,
+          sensory_mode::VISUAL,
+          "The orc makes an elaborate arcing motion.",
+          "兽人划出一道精巧的弧线。" },
+        { "smiting jeremiah cast", 0, 10,
+          "@The_monster@ lets out a twisted cry.", false,
+          sensory_mode::PLAIN,
+          "The orc lets out a twisted cry.", "兽人发出一声扭曲的喊叫。" },
+        { "smiting jeremiah cast", 1, 10,
+          "@The_monster@ mumbles a slurred invocation.", false,
+          sensory_mode::PLAIN,
+          "The orc mumbles a slurred invocation.",
+          "兽人含糊不清地咕哝着祷文。" },
+        { "smiting jeremiah cast", 2, 10,
+          "VISUAL:@The_monster@ throws @possessive@ arms up pleadingly.",
+          false, sensory_mode::VISUAL,
+          "The orc throws its arms up pleadingly.",
+          "兽人恳求般地举起它的双臂。" },
+        { "smiting jeremiah cast", 3, 10,
+          "@The_monster@ cries, \"Fearful master, protect me!\"", false,
+          sensory_mode::PLAIN,
+          "The orc cries, \"Fearful master, protect me!\"",
+          "兽人哭喊道：“可畏的主人，保护我吧！”" },
+        { "smiting jeremiah cast", 4, 10,
+          "@The_monster@ shouts, \"O dreadful one, destroy my foe!\"", false,
+          sensory_mode::PLAIN,
+          "The orc shouts, \"O dreadful one, destroy my foe!\"",
+          "兽人大喊道：“可怖者啊，毁灭我的敌人！”" },
+    };
+
+    const catalog_source &catalog = generated_monspell_catalog();
+    for (const fixture &item : cases)
+    {
+        CAPTURE(item.key, item.ordinal);
+        const auto entry = find_if(
+            catalog.entries.begin(), catalog.entries.end(),
+            [&](const catalog_entry &candidate)
+            {
+                return candidate.canonical_key == item.key;
+            });
+        REQUIRE(entry != catalog.entries.end());
+        REQUIRE(item.ordinal < entry->variants.size());
+        CHECK(entry->variants[item.ordinal].upstream_weight == item.weight);
+
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                item.pattern, item.key, item.ordinal);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                item.key, message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    CHECK_FALSE(requirements.resolves_target);
+                    CHECK_FALSE(requirements.needs_actor_arms_plural);
+                    CHECK(requirements.implies_gesture == item.gesture);
+                    runtime_bindings values =
+                        beam_bindings(target_relation::NONE);
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(materialized.binding.values.target_trace.empty());
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        REQUIRE(en.lines.size() == 1);
+        REQUIRE(zh.lines.size() == 1);
+        CHECK(en.lines[0].text == item.english);
+        CHECK(zh.lines[0].text == item.chinese);
+        CHECK(en.lines[0].sensory == item.sensory);
+        CHECK(zh.lines[0].sensory == item.sensory);
+        CHECK(en.lines[0].implies_gesture == item.gesture);
+        CHECK(zh.lines[0].implies_gesture == item.gesture);
+    }
 }

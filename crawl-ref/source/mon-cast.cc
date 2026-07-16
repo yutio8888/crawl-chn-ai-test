@@ -8950,11 +8950,34 @@ static string _localized_plural_arms(const string &canonical,
     {
         if (canonical != display.canonical)
             continue;
-        return language == "en"
-            ? canonical
-            : C_("monster body part plural", display.translation_key);
+        if (language == "en")
+            return canonical;
+        if (language != "zh")
+            return "";
+        unwind_var<lang_t> requested_language(Options.language, lang_t::ZH);
+        return C_("monster body part plural", display.translation_key);
     }
     return "";
+}
+
+static string _localized_zh_actor_possessive_pronoun(const monster &mon)
+{
+    // GENDER_NEUTRAL selects English singular-they forms, but the global
+    // Chinese pronoun table deliberately uses plural-looking forms. Narrow
+    // that mismatch only for a visible unique actor, whose identity proves a
+    // single referent. A non-unique neutral actor may still be semantically
+    // plural and must retain the normal pronoun-table result.
+    static const char * const neutral_singular =
+        NC_("structured actor possessive", "neutral singular");
+    if (mons_is_or_was_unique(mon) && mon.pronoun_plurality())
+    {
+        // Canonical TextDB materialization invokes this binding callback while
+        // English is forced globally. Translate the declared localized value
+        // under the requested language, then copy it before restoring English.
+        unwind_var<lang_t> requested_language(Options.language, lang_t::ZH);
+        return C_("structured actor possessive", neutral_singular);
+    }
+    return mon.pronoun(PRONOUN_POSSESSIVE);
 }
 
 static fmo::runtime_bindings _resolve_overlay_bindings(
@@ -9050,7 +9073,7 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         bindings.actor.possessive_name_localized.push_back(
             { "zh", apostrophise(actor_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
-            { "zh", mon.pronoun(PRONOUN_POSSESSIVE) });
+            { "zh", _localized_zh_actor_possessive_pronoun(mon) });
         bindings.actor.reflexive_localized.push_back(
             { "zh", mon.pronoun(PRONOUN_REFLEXIVE) });
         const string arms = _localized_plural_arms(

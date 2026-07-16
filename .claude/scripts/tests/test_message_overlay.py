@@ -46,7 +46,9 @@ class MessageOverlayTests(unittest.TestCase):
                           "silent blizzard demon cast",
                           "ushabti cast targeted",
                           "mennas cast",
-                          "airstrike blizzard demon cast"], candidates)
+                          "airstrike blizzard demon cast",
+                          "vv cast",
+                          "smiting jeremiah cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -251,6 +253,8 @@ class MessageOverlayTests(unittest.TestCase):
             "ushabti cast targeted": [True],
             "mennas cast": [True],
             "airstrike blizzard demon cast": [False, True, False],
+            "vv cast": [True, False, False, False],
+            "smiting jeremiah cast": [False, False, False, False, False],
         }
         for key, gestures in expected.items():
             entry = next(e for e in MANIFEST["entries"]

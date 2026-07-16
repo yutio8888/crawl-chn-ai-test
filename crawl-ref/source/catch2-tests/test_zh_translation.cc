@@ -230,6 +230,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 {
     REQUIRE(string(C_("monster body part plural", "arms")) == "手臂");
     REQUIRE(string(C_("monster body part plural", "strata")) == "云层");
+    REQUIRE(string(C_("structured actor possessive", "neutral singular"))
+            == "其");
 }
 
 TEST_CASE("UNTRANSLATED rule", "[zh-translation][zh-helpers]")

@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 28,
-    "canonical_structured_variant_metadata_units": 28,
+    "canonical_structured_variant_metadata_complete": 37,
+    "canonical_structured_variant_metadata_units": 37,
     "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 56,
-    "per_language_structured_variant_verification_units": 56,
-    "remaining_legacy_behavior_occurrences": 38,
+    "per_language_structured_variant_verification_complete": 74,
+    "per_language_structured_variant_verification_units": 74,
+    "remaining_legacy_behavior_occurrences": 16,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "a88838f1ae588191082bc704504ea0fdb70fd703ee5e6a5384cc1ede9ad3fa4d"
+      "sha256": "d3bbcc62bbc09191a3d1ea6aceae1dc3b75e616b203dad42c181e79fbc88e0ad"
     }
   },
   "languages": {
@@ -4883,14 +4883,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
+          "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "smiting jeremiah cast",
           "top_locator": {
@@ -4899,14 +4899,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "smiting jeremiah cast",
           "top_locator": {
@@ -4948,30 +4948,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "en",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "vv cast",
-          "top_locator": {
-            "canonical_key": "vv cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -4982,12 +4966,12 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -4998,28 +4982,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
             "canonical_key": "vv cast",
-            "variant_ordinal": 1
+            "variant_ordinal": 0
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5030,28 +5014,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
             "canonical_key": "vv cast",
-            "variant_ordinal": 2
+            "variant_ordinal": 1
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5062,12 +5046,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "vv cast",
+          "top_locator": {
+            "canonical_key": "vv cast",
+            "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5076,14 +5076,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5328,9 +5328,72 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.twisted_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.slurred_invocation.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.fearful_master.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.dreadful_destroy.v1",
+          "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "ushabti cast targeted",
           "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.sharp_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.stamp_foot.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.slam_palms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.elaborate_arc.v1",
+          "variant_ordinal": 3
         },
         {
           "complete": true,
@@ -5740,14 +5803,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
+          "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "smiting jeremiah cast",
           "top_locator": {
@@ -5756,14 +5819,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "smiting jeremiah cast",
           "top_locator": {
@@ -5788,30 +5851,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "zh",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "vv cast",
-          "top_locator": {
-            "canonical_key": "vv cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5822,12 +5869,12 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5838,28 +5885,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
             "canonical_key": "vv cast",
-            "variant_ordinal": 1
+            "variant_ordinal": 0
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5870,28 +5917,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
             "canonical_key": "vv cast",
-            "variant_ordinal": 2
+            "variant_ordinal": 1
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5902,12 +5949,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "vv cast",
+          "top_locator": {
+            "canonical_key": "vv cast",
+            "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -5916,14 +5979,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "vv cast",
           "top_locator": {
@@ -6166,9 +6229,72 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.twisted_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.slurred_invocation.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.fearful_master.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "smiting jeremiah cast",
+          "stable_id": "mon.cast.smiting_jeremiah.dreadful_destroy.v1",
+          "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "ushabti cast targeted",
           "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.sharp_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.stamp_foot.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.slam_palms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vv cast",
+          "stable_id": "mon.cast.vv.elaborate_arc.v1",
+          "variant_ordinal": 3
         },
         {
           "complete": true,
@@ -6227,7 +6353,7 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "38 remaining legacy behavior occurrences lack explicit metadata",
+    "16 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6598,8 +6724,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6614,8 +6740,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6663,8 +6789,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6679,8 +6805,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6695,8 +6821,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6711,8 +6837,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6727,8 +6853,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6743,8 +6869,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6759,8 +6885,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6775,8 +6901,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6791,8 +6917,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7224,8 +7350,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7240,8 +7366,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.smiting_jeremiah.pleading_arms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7272,8 +7398,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7288,8 +7414,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7304,8 +7430,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.sharp_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7320,8 +7446,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7336,8 +7462,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.stamp_foot.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7352,8 +7478,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7368,8 +7494,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.slam_palms.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7384,8 +7510,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7400,8 +7526,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.vv.elaborate_arc.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",

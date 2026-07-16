@@ -1,10 +1,10 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成四批低风险迁移
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成五批低风险迁移
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 16 个
-> canonical key、28 个 canonical variant，全局 legacy heuristic 仍受门禁保护
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 18 个
+> canonical key、37 个 canonical variant，全局 legacy heuristic 仍受门禁保护
 
 ## 1. 背景
 
@@ -569,7 +569,7 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 覆盖 16 个 canonical key、28 个 canonical variant。descriptor
+当前生产 catalog 覆盖 18 个 canonical key、37 个 canonical variant。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -583,6 +583,13 @@ EN/ZH 模板矩阵的 schema union 与声明一致。第三批的 `mennas cast` 
 unseen 前缀缺失回退到 normal key；这里的不可见抑制属于选中 structured 消息后的
 sensory 输出语义。其他非默认 applicability 与 `audible=true` 仍被生成期和加载期
 拒绝。
+
+actor possessive 的本地化允许一个受控窄适配：neutral pronoun 只说明英语采用
+singular-they 变格，现有 `pronoun_plurality()` 因主谓一致会返回 true，不能单独
+证明中文应使用复数。structured binding 仅在 caster 可见且
+`mons_is_or_was_unique()` 证明单一身份时，通过 literal-only context key
+`structured actor possessive|neutral singular` 渲染“其”；否则继续使用全局
+pronoun 表。该规则不改变英文 canonical binding，也不修改通用代词语义。
 
 第四批的 `airstrike blizzard demon cast` 新增窄类型
 `actor_arms_plural` 槽。production binding 在 canonical English 边界调用
@@ -896,8 +903,8 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 16 个 canonical
-key、28 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 18 个 canonical
+key、37 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
@@ -925,8 +932,11 @@ non-target `resolves_target=false` / `NONE` relation 契约。第三批低风险
 `VISUAL` sensory/channel descriptor，unseen suppression 继续由 sensory 输出层
 承担。第四批迁移 `airstrike blizzard demon cast` 的全部 3 个 variant，并以
 `actor_arms_plural` 收敛 legacy `@arms@` 身体部位替换，并以 descriptor-derived
-requirement 保持随机身体形态的 legacy RNG 调用顺序。门禁仍为关闭，因为还有
-38 个 legacy behavior occurrence 未迁移，并有 1 个
+requirement 保持随机身体形态的 legacy RNG 调用顺序。第五批迁移 `vv cast`
+的全部 4 个 variant 与 `smiting jeremiah cast` 的全部 5 个 variant；两者均
+使用 non-target `NONE` 契约，并逐行保留原有 `VISUAL` / `PLAIN` sensory 与
+显式 gesture metadata，不增加新槽类型或随机物化策略。门禁仍为关闭，因为还有
+16 个 legacy behavior occurrence 未迁移，并有 1 个
 fail-closed occurrence。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的

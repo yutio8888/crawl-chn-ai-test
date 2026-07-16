@@ -392,7 +392,7 @@ run_phase() {
             STDFLAG=-std=c++14 -j4 \
             && (cd crawl-ref/source \
                 && ./catch2-tests-executable \
-                    '[message-overlay][phase1]' --reporter compact)
+                    '[message-overlay]' --reporter compact)
     }
 
     run_phase "TextDB message overlay static audit" \

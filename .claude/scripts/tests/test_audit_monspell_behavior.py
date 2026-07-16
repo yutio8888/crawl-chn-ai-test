@@ -790,22 +790,22 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         report = json.loads(TRACKED_REPORT.read_text(encoding="utf-8"))
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
-            28)
+            37)
         self.assertEqual(
             report["coverage"][
                 "canonical_structured_variant_metadata_complete"],
-            28)
+            37)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_units"],
-            56)
+            74)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_complete"],
-            56)
+            74)
         self.assertEqual(
             report["coverage"]["remaining_legacy_behavior_occurrences"],
-            38)
+            16)
         self.assertEqual(report["locale_behavior_mismatch"], [])
         self.assertEqual(
             [item["requested_root"]
