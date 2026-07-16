@@ -1964,6 +1964,23 @@ canonical_textdb::materialize_bound_legacy_randomness(
         result.after = _production_rng_observation(_observe_rng());
         return result;
     }
+    static const char *const runtime_tokens[] =
+    {
+        "@at@", "@target@", "@beam@",
+    };
+    for (const char *token : runtime_tokens)
+    {
+        if (bound_pattern_en.find(token) != string::npos)
+        {
+            result.error = "unbound runtime token: " + string(token);
+            result.after = _production_rng_observation(_observe_rng());
+            return result;
+        }
+    }
+    ASSERT(bound_pattern_en.find("@at@") == string::npos);
+    ASSERT(bound_pattern_en.find("@target@") == string::npos);
+    ASSERT(bound_pattern_en.find("@beam@") == string::npos);
+
     textdb_phase0::canonical_pre_random_pattern pattern;
     pattern.top_locator.canonical_key = candidate.top_locator.canonical_key;
     pattern.top_locator.variant_ordinal =
