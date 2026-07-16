@@ -1187,12 +1187,19 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
     parity_proven = not mismatches and not presence_mismatches
     analysis_conclusive = not inconclusive
     blockers = []
+    if legacy_behavioral:
+        blockers.append(
+            f"{len(legacy_behavioral)} reachable monspell behavior "
+            "occurrences still use the legacy parser")
     if not catalog_complete:
         blockers.append(
             f"{len(legacy_behavioral) - legacy_covered} remaining legacy "
             "behavior occurrences lack explicit metadata")
     if not parity_proven:
         blockers.append("EN/ZH behavior parity is not proven")
+    if unanalysable:
+        blockers.append(
+            f"{unanalysable} behavior occurrences are unanalysable")
     if not analysis_conclusive:
         blockers.append("EN/ZH behavior analysis is inconclusive")
     return {
@@ -1274,6 +1281,7 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
                 per_language_metadata_complete,
             "catalog_coverage_complete": catalog_complete,
             "unanalysable_occurrences": unanalysable,
+            "fail_closed_behavior_roots": len(inconclusive),
             "en_zh_behavior_parity_proven": parity_proven,
             "en_zh_behavior_analysis_conclusive": analysis_conclusive,
         },

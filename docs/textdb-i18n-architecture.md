@@ -4,7 +4,8 @@
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
 > 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 21 个
-> canonical key、51 个 canonical variant；删除全局 legacy heuristic 留待后续提交
+> canonical key、51 个 canonical variant；正常 `monspell` 路径的 gesture
+> 正文嗅探已删除，safe compatibility fallback 保留
 
 ## 1. 背景
 
@@ -19,9 +20,10 @@ DCSS 的 TextDB 同时承担多种职责：完整句子存储、加权随机选�
 - `NEXT_TO`：朝目标旁边射出火焰；
 - `PAST`：火焰从目标旁边掠过。
 
-这三种关系无法共享同一个前置或后置词片段。与此同时，
-`mon-cast.cc` 还会搜索已本地化正文中的 `gesture`、`手势`、`指向`，
-再据此影响目标推断。翻译措辞因此反向参与了游戏行为。
+这三种关系无法共享同一个前置或后置词片段。原实现还会在
+`mon-cast.cc` 中搜索已本地化正文里的 `gesture`、`手势`、`指向`，
+再据此影响目标推断，使翻译措辞反向参与游戏行为；该嗅探现已由
+structured descriptor 与审计门禁取代。
 
 本项目是长期下游分支，不受“补丁必须易于上游接受”的限制；但每年仍需
 吸收一次上游大版本，因此架构必须把永久分叉集中在少数稳定边界，并能
@@ -923,7 +925,9 @@ normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 
 [`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
 `monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT`
 仅启用 Nergalle 的三个 `orc name`、leaf-only vocabulary、无 Lua/substring
-randomness 窄切片，Phase 2 全局 heuristic 删除仍未启用。structured binding 已支持显式
+randomness 窄切片。正常 `monspell` 路径的 gesture 正文嗅探已删除；仅
+overlay 故障/未加载或语言不受支持的 compiled-candidate compatibility fallback
+保留旧行为。structured binding 已支持显式
 `resolves_target`、gesture，以及 actor possessive/reflexive 槽；模板是否引用
 `${target}` 不再决定是否解析目标。
 
@@ -960,9 +964,12 @@ target relation 与 foe entity 独立解析，无 foe 的 normal attempt 在 bin
 以受控 `CAPTURE_SLOT` 从同一 canonical English trace 捕获三个有序
 `orc name` leaf replacement，EN/ZH 共享捕获值且不重新随机，ordinal 1 使用
 `NONE`。依赖闭包、站点顺序、模板槽和 103 项 leaf vocabulary 均由
-generator/loader 双重验证。当前 behavior report 的 unanalyzable 与 fail-closed
-occurrence 均为 0，`phase2_ready=true`；全局 heuristic 的实际删除仍留给后续
-独立提交。
+generator/loader 双重验证。当前 behavior report 的 unanalyzable occurrence 与
+fail-closed root 均为 0，`phase2_ready=true`。随后完成独立删除批次：
+ordinary legacy targeted `monspell` 仍做目标/beam replacement，但固定
+`gestured=false`；structured 路径只使用 descriptor `implies_gesture`。
+若 overlay 非 `ENABLED` 或语言不受支持，compiled catalog 中的 `CANDIDATE`
+会得到 typed compatibility 标记，并在该窄 fallback 中保留旧正文嗅探。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
@@ -976,10 +983,26 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 - binding resolver 接收已验证 descriptor frame、`resolves_target` 与
   `implies_gesture`；true descriptor 即使模板不引用 target，也只执行一次目标
   解析以保持 RNG trace；false descriptor 完全跳过目标解析；
-- 结构化路径不再运行正文关键词 heuristic；
+- 结构化路径不运行正文关键词 heuristic；
 - 只有所有仍可达、会影响 `gestured` 的 legacy 变体都已迁移或拥有等价
   元数据，并经可达性审计证明覆盖率为 100%，才能删除全局 heuristic；
 - 加入 EN/ZH 行为等价测试。
+
+实施状态：上述门禁已由 `phase2_ready=true`、
+`remaining_legacy_behavior_occurrences=0`、`unanalysable_occurrences=0` 与
+`fail_closed_behavior_roots=0` 满足，`mon-cast.cc` 的正常 `monspell`
+中英文 gesture 正文嗅探已经删除。compatibility fallback 不属于 ordinary
+uncovered legacy：它只在 overlay 非 `ENABLED` 或语言不受支持，且 key 是
+compiled `CANDIDATE` 时启用旧嗅探，以保持 safe fallback 的行为/RNG 等价。
+未来可达 ordinary legacy gesture/visual/audible occurrence 会使审计失败。
+generic `mon-speak` 的 `invalid_msg()`、`VISUAL` applicability 与频道前缀
+parser 仍服务其他 TextDB 域，未在本批次删除。
+窄诊断 seam 将 target observer 与通用 final-emission observer 收敛在默认空
+options 中；后者定义于 `mon-speak`，只在 `mons_speaks_msg()` 原本调用
+`mprf()` 的位置接收 owning final line、最终频道、effective silence 与
+`already_rendered`。默认生产调用的选择、替换与输出不变。该 seam 用于直接覆盖
+`mons_cast_noise` 的 ordinary legacy、compatibility legacy 与 structured 分支，
+不会让外部 legacy observer 参与 structured binding。
 
 ### Phase 3：通用类型化实体槽
 
@@ -1021,7 +1044,7 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 9. overlay 在载入期整体验证；禁用域从首次查询起走 legacy，抽取后不回退。
 10. 候选搜索使用五态结果，严格复制现有 missing、silent 和 `__NONE` 语义。
 11. 只有 parser 同构、完整 RNG/Lua 轨迹和 legacy heuristic 覆盖率通过门禁，
-    才能推进相应迁移阶段。
+    才能推进相应迁移阶段；删除后的 monspell gesture 审计继续阻断覆盖倒退。
 12. structured key 的所有语言共享 canonical English 选择、递归、Lua、目标和
     `[a|b]` 轨迹；本地化只发生在最终纯模板与类型化槽。
 13. legacy 动态正文必须通过稳定 case 或声明槽进入最终模板，禁止“执行但丢弃”。

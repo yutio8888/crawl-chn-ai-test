@@ -850,7 +850,8 @@ bool resolve_mon_speech_line_channel(string &line, msg_channel_type &channel,
 
 bool mons_speaks_msg(monster* mons, const string &msg,
                      const msg_channel_type def_chan, bool silence,
-                     const bool already_rendered)
+                     const bool already_rendered,
+                     const mon_speech_emission_observer *observer)
 {
     if (!you.see_cell(mons->pos()))
         return false;
@@ -899,7 +900,16 @@ bool mons_speaks_msg(monster* mons, const string &msg,
         if (msg_type == MSGCH_TALK_VISUAL && !you.can_see(*mons))
             noticed = old_noticed;
         else
-            mprf(msg_type, "%s", line.c_str());
+        {
+            if (observer && observer->function)
+            {
+                const mon_speech_final_emission emission =
+                    { mons, line, msg_type, silence, already_rendered };
+                observer->function(emission, observer->context);
+            }
+            else
+                mprf(msg_type, "%s", line.c_str());
+        }
     }
     return noticed;
 }

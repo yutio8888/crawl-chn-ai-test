@@ -149,8 +149,12 @@ replacement；EN/ZH renderer 共享这三个捕获值，不重新抽取。loader
 捕获站点数量与顺序、模板槽、103 项 leaf vocabulary locator 及最终 replacement
 逐项绑定，重复名字合法，未声明正文或畸形 trace 均 fail closed。ordinal 1 使用
 `NONE`，保留固定台词。该迁移消除了最后一个 behavior
-`UNANALYSABLE` occurrence；全局 legacy gesture/visual/audible heuristic 仍留待
-后续独立提交删除。
+`UNANALYSABLE` occurrence。随后从正常 `monspell` legacy 路径删除了由本地化
+正文关键词推断 `gestured` 的嗅探；ordinary uncovered legacy targeted 消息仍执行
+`@at@` / `@target@` / `@beam@` replacement，但固定以 `gestured=false` 解析目标。
+仅当 overlay 非 `ENABLED` 或语言不受支持，且 canonical key 是 compiled catalog
+中的 `CANDIDATE` 时，typed compatibility fallback 才保留旧嗅探，以兑现 safe
+fallback 的行为与 RNG 契约。
 
 ## 2. 三类 artifact 的职责
 
@@ -248,8 +252,10 @@ structured line 进入 `mons_speaks_msg()` 时标记为 `already_rendered`：不
 `ERROR:`、`WARN:` 等开头，也不能改变频道。多行只能由 catalog 的多条 line
 metadata 表达；单个模板内嵌换行会被生成期、加载期和 renderer 拒绝。
 
-legacy 路径继续运行既有 replacement 与 gesture/visual/audible 文本 heuristic。
-Phase 1 只让已迁移 structured key 使用显式元数据，没有删除全局 heuristic。
+legacy 路径继续运行既有 replacement、`invalid_msg()` applicability、silent
+fallback 与通用频道/输出逻辑；但 `mon-cast.cc` 不再扫描中英文正文来决定
+`gestured`。generic `mon-speak` 的 `VISUAL` candidate applicability 和频道前缀
+parser 仍为其他 TextDB 域保留，不属于本次删除范围。
 
 ## 5. 诊断与年度升级
 
@@ -309,13 +315,17 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 - structured gesture、`VISUAL` sensory/channel、`requires_player`、
   `requires_foe` 与 `requires_caster_visible` 元数据已启用；audible、
   requires named foe/god 尚未启用；
-- 全局 legacy gesture/visual/audible heuristic 仍存在；
+- 正常 `monspell` 路径不再嗅探 gesture 正文；structured gesture 仅来自
+  descriptor `implies_gesture`，ordinary legacy targeted 固定传入
+  `gestured=false`；故障/不支持语言的 typed compatibility fallback 保留旧嗅探；
 - 当前 canonical `monspell` 闭包无 Lua；未来出现 Lua 或不可控副作用时，在建立
   完整契约前必须 `LEGACY_ONLY`；
 - 其他 TextDB 域没有迁移。
 
-进入 Phase 2 前必须先证明所有仍可达、会影响 gesture/visual/audible 行为的
-legacy 变体都有等价元数据覆盖；在覆盖率审计达到 100% 前不得删除全局 heuristic。
+删除操作依赖 behavior audit 的强门禁：`phase2_ready=true`、
+`remaining_legacy_behavior_occurrences=0`、`unanalysable_occurrences=0` 和
+`fail_closed_behavior_roots=0`。未来上游新增任何可达的 legacy
+gesture/visual/audible 正 behavior occurrence，审计会重新关闭门禁。
 
 ### 7.1 candidate key recipe seam
 
@@ -459,10 +469,18 @@ trace 的受控递归捕获，不再由静态正文猜测。
 silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
-`phase2_ready` 现在为 true。EN/ZH effective runtime behavior parity、候选
+`phase2_ready` 为 true。EN/ZH effective runtime behavior parity、候选
 containment、runtime reachability 与全部八批已迁移 key 均已证明，且
-unanalyzable/fail-closed occurrence 均为 0。这只表示删除正文行为 heuristic 的
-数据门禁已经满足；实际删除仍应在独立提交中进行，并保留完整生产轨迹回归。
+unanalyzable occurrence 与 fail-closed root 均为 0。正常 `monspell` 路径的
+gesture 正文嗅探已在独立批次删除；审计持续作为回归门禁。只有 overlay
+故障/未加载或语言不受支持，且 key 属于 compiled `CANDIDATE` catalog 时，
+compatibility legacy 才执行旧嗅探。generic `mon-speak` parser 仍保留。
+生产回归测试通过默认空的 `mons_cast_noise_diagnostics` 注入 target observer 与
+通用 `mon_speech_emission_observer`；默认 options 仍调用原 sink。通用 observer
+位于 `mons_speaks_msg()` 原本调用 `mprf()` 的最终边界：可见性、`mon_acting`、
+legacy replacement、分行、mute、prefix/channel 与 friendly 转换始终先执行，
+observer 仅替代最终打印且不能改变 `noticed`。structured 目标解析不使用外部
+legacy observer。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

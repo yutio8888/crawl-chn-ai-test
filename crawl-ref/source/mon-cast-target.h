@@ -128,6 +128,7 @@ struct resolved_monspell_cast_message
     std::string text;
     std::vector<fork_message_overlay::rendered_line> lines;
     bool structured = false;
+    bool legacy_behavior_compatibility = false;
     bool corrupt = false;
     bool has_materialization = false;
     fork_message_overlay::canonical_materialization materialization;

@@ -5,10 +5,12 @@
 #include "beam.h"
 #include "coordit.h"
 #include "database.h"
+#include "dungeon.h"
 #include "env.h"
 #include "feature.h"
 #include "initfile.h"
 #include "losglobal.h"
+#include "mon-cast.h"
 #include "mon-cast-target.h"
 #include "mon-ench.h"
 #include "mon-place.h"
@@ -32,6 +34,14 @@ struct saved_cell
     coord_def position;
     dungeon_feature_type feature;
     unsigned short monster_index;
+};
+
+struct saved_past_target_cell
+{
+    coord_def position;
+    dungeon_feature_type feature;
+    unsigned short monster_index;
+    unsigned int level_map_id;
 };
 
 class scoped_target_world
@@ -75,7 +85,7 @@ private:
 class scoped_past_target_world
 {
 public:
-    scoped_past_target_world()
+    explicit scoped_past_target_world(monster_type source_type = MONS_ORC)
         : old_test(crawl_state.test), old_player_position(you.pos()),
           old_on_current_level(you.on_current_level),
           old_current_vision(you.current_vision),
@@ -99,9 +109,11 @@ public:
             {
                 const coord_def position(x, y);
                 cells.push_back({ position, env.grid(position),
-                                  env.mgrid(position) });
+                                  env.mgrid(position),
+                                  env.level_map_ids(position) });
                 env.grid(position) = DNGN_FLOOR;
                 env.mgrid(position) = NON_MONSTER;
+                env.level_map_ids(position) = INVALID_MAP_INDEX;
             }
         }
         you.set_position(coord_def(18, 25));
@@ -115,7 +127,7 @@ public:
             init_show_table();
             init_monsters();
             init_spell_descs();
-            source = add_monster(MONS_ORC, coord_def(20, 20));
+            source = add_monster(source_type, coord_def(20, 20));
             candidates.push_back(add_monster(MONS_RAT, coord_def(25, 22)));
             candidates.push_back(add_monster(MONS_RAT, coord_def(25, 24)));
         }
@@ -142,10 +154,11 @@ public:
         you.current_vision = old_current_vision;
         you.wizard_vision = old_wizard_vision;
         you.last_mid = old_last_mid;
-        for (const saved_cell &cell : cells)
+        for (const saved_past_target_cell &cell : cells)
         {
             env.grid(cell.position) = cell.feature;
             env.mgrid(cell.position) = cell.monster_index;
+            env.level_map_ids(cell.position) = cell.level_map_id;
         }
         env.max_mon_index = old_max_mon_index;
         env.mid_cache = old_mid_cache;
@@ -216,7 +229,7 @@ private:
     uint64_t parent_count_before;
     uint64_t parent_state_after;
     uint64_t parent_count_after;
-    vector<saved_cell> cells;
+    vector<saved_past_target_cell> cells;
     monster *source = nullptr;
     vector<monster *> candidates;
     vector<monster *> registered_monsters;
@@ -250,11 +263,35 @@ bolt make_target_beam(const coord_def &target)
     return beam;
 }
 
+void check_registered_source_identity(const monster &source,
+                                      const bolt *beam = nullptr)
+{
+    REQUIRE(source.mid != MID_NOBODY);
+    REQUIRE(source.mid < MID_FIRST_NON_MONSTER);
+    const auto cached = env.mid_cache.find(source.mid);
+    REQUIRE(cached != env.mid_cache.end());
+    CHECK(cached->second == source.mindex());
+    CHECK(monster_by_mid(source.mid, true) == &source);
+    CHECK(actor_by_mid(source.mid, true) == &source);
+    if (beam)
+    {
+        CHECK(beam->source_id == source.mid);
+        CHECK(beam->agent() == &source);
+    }
+}
+
 void observe_target_event(const speech_target_observer_event &event,
                           void *context)
 {
     static_cast<vector<speech_target_observer_event> *>(context)
         ->push_back(event);
+}
+
+void observe_cast_emission(const mon_speech_final_emission &emission,
+                           void *context)
+{
+    static_cast<vector<mon_speech_final_emission> *>(context)
+        ->push_back(emission);
 }
 
 bool same_target(const resolved_speech_target &lhs,
@@ -291,6 +328,16 @@ void ensure_phase1_overlay_loaded()
             textdb_phase0::dump_canonical_english_speakdb());
     REQUIRE(report.state == fork_message_overlay::domain_state::ENABLED);
 }
+
+struct scoped_overlay_restore
+{
+    ~scoped_overlay_restore()
+    {
+        fork_message_overlay::reset_monspell_overlay_for_test();
+        fork_message_overlay::load_monspell_overlay(
+            textdb_phase0::dump_canonical_english_speakdb());
+    }
+};
 
 struct scoped_test_language
 {
@@ -979,6 +1026,277 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(observed_state == baseline_state);
         CHECK(observed_count == baseline_count);
     }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "legacy non-gesture target behavior is language independent",
+                 "[single-file][mon-cast-target][message-overlay][phase2][legacy]")
+{
+    ensure_phase1_overlay_loaded();
+    const mons_cast_noise_diagnostics defaults;
+    CHECK(defaults.target_observer == nullptr);
+    CHECK(defaults.emission_observer == nullptr);
+    scoped_zh_database localized_database;
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+    check_registered_source_identity(source, &beam);
+
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(0x4f524449, 0x4e415259);
+        const resolved_monspell_cast_message ordinary =
+            resolve_monspell_cast_message(
+                source, beam, true,
+                { "spit acid cast" }, false, false);
+        REQUIRE_FALSE(ordinary.structured);
+        REQUIRE_FALSE(ordinary.legacy_behavior_compatibility);
+        REQUIRE_FALSE(ordinary.text.empty());
+    }
+
+    struct observed_legacy
+    {
+        vector<speech_target_observer_event> events;
+        vector<mon_speech_final_emission> emissions;
+        uint64_t state = 0;
+        uint64_t count = 0;
+    };
+    auto observe = [&](lang_t language)
+    {
+        observed_legacy result;
+        scoped_test_language scoped_language(language);
+        rng::subgenerator scoped_rng(0x47535452, 0x4c454741);
+        const speech_target_observer observer =
+            { observe_target_event, &result.events };
+        const mon_speech_emission_observer emission_observer =
+            { observe_cast_emission, &result.emissions };
+        const mons_cast_noise_diagnostics diagnostics =
+            { &observer, &emission_observer };
+        mons_cast_noise(&source, beam, SPELL_SPIT_ACID, MON_SPELL_NATURAL,
+                        &diagnostics);
+        result.state = rng::current_generator().get_state();
+        result.count = rng::current_generator().get_count();
+        return result;
+    };
+
+    const observed_legacy english = observe(lang_t::EN);
+    const observed_legacy chinese = observe(lang_t::ZH);
+    CHECK(english.state == chinese.state);
+    CHECK(english.count == chinese.count);
+    REQUIRE_FALSE(english.events.empty());
+    REQUIRE(english.emissions.size() == 1);
+    REQUIRE(chinese.emissions.size() == 1);
+    CHECK_FALSE(english.emissions[0].line.empty());
+    CHECK_FALSE(chinese.emissions[0].line.empty());
+    CHECK(english.emissions[0].line.find('@') == string::npos);
+    CHECK(chinese.emissions[0].line.find('@') == string::npos);
+    CHECK(english.emissions[0].channel == chinese.emissions[0].channel);
+    CHECK(english.emissions[0].effective_silence
+          == chinese.emissions[0].effective_silence);
+    // Spit Acid has non-zero spell noise, so this covers the real noisy()
+    // branch while retaining a registered beam agent.
+    CHECK_FALSE(english.emissions[0].effective_silence);
+    CHECK_FALSE(chinese.emissions[0].effective_silence);
+    CHECK_FALSE(english.emissions[0].already_rendered);
+    CHECK_FALSE(chinese.emissions[0].already_rendered);
+    REQUIRE(english.events.size() == chinese.events.size());
+    for (size_t i = 0; i < english.events.size(); ++i)
+    {
+        CHECK(english.events[i].kind == chinese.events[i].kind);
+        CHECK(english.events[i].bound == chinese.events[i].bound);
+        CHECK(english.events[i].selected == chinese.events[i].selected);
+    }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "disabled overlay preserves legacy gesture target behavior",
+                 "[single-file][mon-cast-target][message-overlay][phase2][compatibility]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_overlay_restore restore_overlay;
+    scoped_past_target_world world(MONS_REVENANT);
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+    check_registered_source_identity(source, &beam);
+
+    fork_message_overlay::reset_monspell_overlay_for_test();
+    REQUIRE(fork_message_overlay::load_monspell_overlay(
+                textdb_phase0::dump_canonical_english_speakdb(), nullptr)
+            .state == fork_message_overlay::domain_state::DISABLED);
+
+    vector<speech_target_observer_event> baseline_events;
+    vector<mon_speech_final_emission> baseline_emissions;
+    uint64_t baseline_state = 0;
+    uint64_t baseline_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(0x434f4d50, 0x47455354);
+        const resolved_monspell_cast_message speech =
+            resolve_monspell_cast_message(
+                source, beam, true, { "dispel undead revenant cast" },
+                false, false);
+        REQUIRE_FALSE(speech.structured);
+        REQUIRE(speech.legacy_behavior_compatibility);
+        REQUIRE((speech.text.find("Gesture") != string::npos
+                 || speech.text.find(" gesture") != string::npos
+                 || speech.text.find("Point") != string::npos
+                 || speech.text.find(" point") != string::npos
+                 || speech.text.find("手势") != string::npos
+                 || speech.text.find("指向") != string::npos));
+        const speech_target_observer observer =
+            { observe_target_event, &baseline_events };
+        const resolved_speech_target target =
+            resolve_speech_target(&source, beam, true, &observer);
+        string message = replace_all(
+            speech.text, "@at@", target.preposition_display);
+        message = replace_all(message, "@target@", target.display);
+        message = replace_all(
+            message, "@beam@", resolve_speech_beam(beam, true).display_text);
+        const mon_speech_emission_observer emission_observer =
+            { observe_cast_emission, &baseline_emissions };
+        mons_speaks_msg(
+            &source, message, MSGCH_MONSTER_SPELL, true, false,
+            &emission_observer);
+        baseline_state = rng::current_generator().get_state();
+        baseline_count = rng::current_generator().get_count();
+    }
+
+    vector<speech_target_observer_event> production_events;
+    vector<mon_speech_final_emission> production_emissions;
+    uint64_t production_state = 0;
+    uint64_t production_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(0x434f4d50, 0x47455354);
+        const speech_target_observer observer =
+            { observe_target_event, &production_events };
+        const mon_speech_emission_observer emission_observer =
+            { observe_cast_emission, &production_emissions };
+        const mons_cast_noise_diagnostics diagnostics =
+            { &observer, &emission_observer };
+        mons_cast_noise(&source, beam, SPELL_DISPEL_UNDEAD, MON_SPELL_MAGICAL,
+                        &diagnostics);
+        production_state = rng::current_generator().get_state();
+        production_count = rng::current_generator().get_count();
+    }
+
+    REQUIRE_FALSE(baseline_events.empty());
+    REQUIRE(baseline_emissions.size() == production_emissions.size());
+    REQUIRE(production_emissions.size() == 1);
+    CHECK(production_emissions[0].line == baseline_emissions[0].line);
+    CHECK(production_emissions[0].channel == baseline_emissions[0].channel);
+    CHECK(production_emissions[0].effective_silence
+          == baseline_emissions[0].effective_silence);
+    CHECK(production_emissions[0].line.find('@') == string::npos);
+    CHECK(production_emissions[0].line.find("NO_TARGET") == string::npos);
+    CHECK(production_emissions[0].channel == MSGCH_MONSTER_SPELL);
+    CHECK(production_emissions[0].effective_silence);
+    CHECK_FALSE(production_emissions[0].already_rendered);
+    REQUIRE(production_events.size() == baseline_events.size());
+    for (size_t i = 0; i < baseline_events.size(); ++i)
+    {
+        CHECK(production_events[i].kind == baseline_events[i].kind);
+        CHECK(production_events[i].bound == baseline_events[i].bound);
+        CHECK(production_events[i].selected == baseline_events[i].selected);
+        CHECK(production_events[i].rng_state_before
+              == baseline_events[i].rng_state_before);
+        CHECK(production_events[i].rng_state_after
+              == baseline_events[i].rng_state_after);
+        CHECK(production_events[i].rng_count_before
+              == baseline_events[i].rng_count_before);
+        CHECK(production_events[i].rng_count_after
+              == baseline_events[i].rng_count_after);
+    }
+    CHECK(production_state == baseline_state);
+    CHECK(production_count == baseline_count);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "structured cast ignores external legacy target observer",
+                 "[single-file][mon-cast-target][message-overlay][phase2][diagnostics]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_test_language language(lang_t::EN);
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    vector<speech_target_observer_event> external_target_events;
+    vector<mon_speech_final_emission> emissions;
+    const speech_target_observer observer =
+        { observe_target_event, &external_target_events };
+    const mon_speech_emission_observer emission_observer =
+        { observe_cast_emission, &emissions };
+    const mons_cast_noise_diagnostics diagnostics =
+        { &observer, &emission_observer };
+    {
+        rng::subgenerator scoped_rng(0x53545255, 0x43545552);
+        mons_cast_noise(&source, beam, SPELL_MAGIC_DART, MON_SPELL_MAGICAL,
+                        &diagnostics);
+    }
+
+    CHECK(external_target_events.empty());
+    REQUIRE(emissions.size() == 1);
+    CHECK(emissions[0].already_rendered);
+    CHECK(emissions[0].line.find('@') == string::npos);
+    CHECK(emissions[0].line.find("${") == string::npos);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "monster speech observer matches the final mprf boundary",
+                 "[single-file][mon-speech][message-overlay][diagnostics]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    check_registered_source_identity(source);
+
+    vector<mon_speech_final_emission> emissions;
+    const mon_speech_emission_observer observer =
+        { observe_cast_emission, &emissions };
+
+    CHECK(mons_speaks_msg(
+        &source, "VISUAL:first line\nSOUND:second line", MSGCH_TALK,
+        false, false, &observer));
+    REQUIRE(emissions.size() == 2);
+    CHECK(emissions[0].source == &source);
+    CHECK(emissions[0].line == "first line");
+    CHECK(emissions[0].channel == MSGCH_TALK_VISUAL);
+    CHECK_FALSE(emissions[0].effective_silence);
+    CHECK_FALSE(emissions[0].already_rendered);
+    CHECK(emissions[1].line == "second line");
+    CHECK(emissions[1].channel == MSGCH_SOUND);
+    CHECK_FALSE(emissions[1].effective_silence);
+    CHECK_FALSE(emissions[1].already_rendered);
+
+    emissions.clear();
+    REQUIRE(source.add_ench(
+        mon_enchant(ENCH_MUTE, &source, INFINITE_DURATION)));
+    CHECK(mons_speaks_msg(
+        &source, "muted line", MSGCH_TALK, false, true, &observer));
+    REQUIRE(emissions.size() == 1);
+    CHECK(emissions[0].line == "muted line");
+    CHECK(emissions[0].effective_silence);
+    CHECK(emissions[0].already_rendered);
+    source.del_ench(ENCH_MUTE);
+
+    emissions.clear();
+    REQUIRE(source.add_ench(
+        mon_enchant(ENCH_INVIS, &source, INFINITE_DURATION)));
+    CHECK_FALSE(you.can_see(source));
+    CHECK_FALSE(mons_speaks_msg(
+        &source, "VISUAL:hidden line", MSGCH_TALK, false, false,
+        &observer));
+    CHECK(emissions.empty());
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,

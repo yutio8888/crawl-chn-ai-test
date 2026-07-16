@@ -528,8 +528,10 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         const route_decision uncovered = route_monspell_message(
             "Acid Splash cast");
         CHECK(covered.route == message_route::STRUCTURED);
+        CHECK_FALSE(covered.legacy_behavior_compatibility);
         CHECK(covered.canonical_key == "beam catchall cast");
         CHECK(uncovered.route == message_route::LEGACY);
+        CHECK_FALSE(uncovered.legacy_behavior_compatibility);
         const diagnostic_counters diagnostics =
             monspell_overlay_diagnostics();
         CHECK(diagnostics.domain == "monspell");
@@ -540,17 +542,65 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         CHECK(rng::current_generator().get_count() == count);
     }
 
+    SECTION("uninitialized candidate fails safe to compatibility legacy")
+    {
+        scoped_overlay_reset reset;
+        rng::subgenerator scoped_rng(0x2011, 0x2012);
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        const route_decision decision =
+            route_monspell_message("beam catchall cast");
+        CHECK(decision.route == message_route::LEGACY);
+        CHECK(decision.legacy_behavior_compatibility);
+        CHECK(monspell_overlay_report().state == domain_state::DISABLED);
+        CHECK(monspell_overlay_report().failure == load_failure::NOT_LOADED);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
+
     SECTION("disabled domain routes every key to legacy before lookup")
     {
         scoped_overlay_reset reset;
         REQUIRE(load_monspell_overlay(canonical, nullptr).state
                 == domain_state::DISABLED);
-        CHECK(route_monspell_message("beam catchall cast").route
-              == message_route::LEGACY);
+        const route_decision former_covered =
+            route_monspell_message("beam catchall cast");
+        const route_decision truly_uncovered =
+            route_monspell_message("acid splash cast");
+        CHECK(former_covered.route == message_route::LEGACY);
+        CHECK(former_covered.legacy_behavior_compatibility);
+        CHECK(truly_uncovered.route == message_route::LEGACY);
+        CHECK_FALSE(truly_uncovered.legacy_behavior_compatibility);
         const diagnostic_counters diagnostics =
             monspell_overlay_diagnostics();
         CHECK(diagnostics.overlay_hit == 0);
-        CHECK(diagnostics.legacy_fallback == 1);
+        CHECK(diagnostics.legacy_fallback == 2);
+    }
+
+    SECTION("disabled silent fallback marks only the compiled base candidate")
+    {
+        scoped_overlay_reset reset;
+        REQUIRE(load_monspell_overlay(canonical, nullptr).state
+                == domain_state::DISABLED);
+        const route_decision prefixed =
+            route_monspell_message("silent beam catchall cast");
+        const route_decision unprefixed =
+            route_monspell_message("beam catchall cast");
+        CHECK(prefixed.route == message_route::LEGACY);
+        CHECK_FALSE(prefixed.legacy_behavior_compatibility);
+        CHECK(unprefixed.route == message_route::LEGACY);
+        CHECK(unprefixed.legacy_behavior_compatibility);
+    }
+
+    SECTION("disabled unseen prefix remains ordinary legacy")
+    {
+        scoped_overlay_reset reset;
+        REQUIRE(load_monspell_overlay(canonical, nullptr).state
+                == domain_state::DISABLED);
+        const route_decision unseen =
+            route_monspell_message("unseen beam catchall cast");
+        CHECK(unseen.route == message_route::LEGACY);
+        CHECK_FALSE(unseen.legacy_behavior_compatibility);
     }
 
     SECTION("unsupported language routes legacy before lookup")
@@ -561,8 +611,10 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         rng::subgenerator scoped_rng(0x2111, 0x2222);
         const uint64_t state = rng::current_generator().get_state();
         const uint64_t count = rng::current_generator().get_count();
-        CHECK(route_monspell_message("beam catchall cast", "fr").route
-              == message_route::LEGACY);
+        const route_decision decision =
+            route_monspell_message("beam catchall cast", "fr");
+        CHECK(decision.route == message_route::LEGACY);
+        CHECK(decision.legacy_behavior_compatibility);
         const diagnostic_counters diagnostics =
             monspell_overlay_diagnostics();
         CHECK(diagnostics.overlay_hit == 0);
@@ -578,8 +630,10 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         source.schema_version = 99;
         REQUIRE(load_monspell_overlay(canonical, &source).failure
                 == load_failure::UNKNOWN_SCHEMA);
-        CHECK(route_monspell_message("beam catchall cast").route
-              == message_route::LEGACY);
+        const route_decision decision =
+            route_monspell_message("beam catchall cast");
+        CHECK(decision.route == message_route::LEGACY);
+        CHECK(decision.legacy_behavior_compatibility);
         const diagnostic_counters diagnostics =
             monspell_overlay_diagnostics();
         CHECK(diagnostics.unknown_schema == 1);

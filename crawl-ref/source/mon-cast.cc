@@ -9169,6 +9169,8 @@ static fmo::message_lookup_result _cast_message_lookup(
     fmo::message_lookup_result result;
     if (route.route == fmo::message_route::LEGACY)
     {
+        result.legacy_behavior_compatibility =
+            route.legacy_behavior_compatibility;
         result.message = getSpeakString(request.lookup_key);
         if (result.message == "__NONE")
             result.result = fmo::message_result::SUPPRESS;
@@ -9273,6 +9275,8 @@ resolved_monspell_cast_message resolve_monspell_cast_message(
             result.text = search.lookup.message;
             result.lines = search.lookup.rendered_lines;
             result.structured = search.lookup.structured;
+            result.legacy_behavior_compatibility =
+                search.lookup.legacy_behavior_compatibility;
             result.has_materialization = has_materialization;
             if (has_materialization)
                 result.materialization = materialization;
@@ -9294,12 +9298,23 @@ resolved_monspell_cast_message resolve_monspell_cast_message(
 
 static void _speech_fill_target(string& targ_prep, string& target,
                                 const monster* mons, const bolt& pbolt,
-                                bool gestured)
+                                bool gestured,
+                                const speech_target_observer *observer)
 {
     const resolved_speech_target resolved =
-        resolve_speech_target(mons, pbolt, gestured);
+        resolve_speech_target(mons, pbolt, gestured, observer);
     targ_prep = resolved.preposition_display;
     target = resolved.display;
+}
+
+static bool _legacy_message_implies_gesture(const string &message)
+{
+    return message.find("Gesture") != string::npos
+           || message.find(" gesture") != string::npos
+           || message.find("Point") != string::npos
+           || message.find(" point") != string::npos
+           || message.find("手势") != string::npos
+           || message.find("指向") != string::npos;
 }
 
 static void _speech_fill_beam(string &beam_name, const bolt &pbolt,
@@ -9328,7 +9343,8 @@ static msg_channel_type _structured_line_channel(
 
 static bool _emit_structured_cast_message(
     monster *mons, const vector<fmo::rendered_line> &lines,
-    msg_channel_type fallback, bool silence)
+    msg_channel_type fallback, bool silence,
+    const mons_cast_noise_diagnostics *diagnostics)
 {
     bool noticed = false;
     for (const fmo::rendered_line &line : lines)
@@ -9337,14 +9353,16 @@ static bool _emit_structured_cast_message(
             _structured_line_channel(line, fallback);
         if (channel == NUM_MESSAGE_CHANNELS)
             return false;
-        noticed = mons_speaks_msg(mons, line.text, channel, silence, true)
-                  || noticed;
+        noticed = mons_speaks_msg(
+            mons, line.text, channel, silence, true,
+            diagnostics ? diagnostics->emission_observer : nullptr) || noticed;
     }
     return noticed;
 }
 
 void mons_cast_noise(monster* mons, const bolt &pbolt,
-                     spell_type spell_cast, mon_spell_slot_flags slot_flags)
+                     spell_type spell_cast, mon_spell_slot_flags slot_flags,
+                     const mons_cast_noise_diagnostics *diagnostics)
 {
     const bool unseen = !you.can_see(*mons);
     const bool silent = silenced(mons->pos());
@@ -9376,19 +9394,22 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
 
     if (!speech.structured)
     {
-        // Legacy messages retain the global text heuristic until Phase 2.
-        const bool gestured = msg.find("Gesture") != string::npos
-                              || msg.find(" gesture") != string::npos
-                              || msg.find("Point") != string::npos
-                              || msg.find(" point") != string::npos
-                              || msg.find("手势") != string::npos
-                              || msg.find("指向") != string::npos;
-
         string targ_prep = T_("at");
         string target    = "NO_TARGET";
 
+        // Ordinary legacy messages never derive behavior from localized prose.
+        // A compiled-catalog candidate can reach legacy only when the overlay
+        // is unavailable or the language is unsupported; that narrow safe
+        // fallback preserves the pre-overlay behavior contract.
+        const bool gestured =
+            speech.legacy_behavior_compatibility
+            && _legacy_message_implies_gesture(msg);
         if (targeted)
-            _speech_fill_target(targ_prep, target, mons, pbolt, gestured);
+        {
+            _speech_fill_target(targ_prep, target, mons, pbolt, gestured,
+                                diagnostics
+                                    ? diagnostics->target_observer : nullptr);
+        }
 
         msg = replace_all(msg, "@at@",     targ_prep);
         msg = replace_all(msg, "@target@", target);
@@ -9406,17 +9427,31 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
     if (silent || noise == 0)
     {
         if (speech.structured)
-            _emit_structured_cast_message(mons, speech.lines, chan, true);
+        {
+            _emit_structured_cast_message(
+                mons, speech.lines, chan, true, diagnostics);
+        }
         else
-            mons_speaks_msg(mons, msg, chan, true);
+        {
+            mons_speaks_msg(
+                mons, msg, chan, true, false,
+                diagnostics ? diagnostics->emission_observer : nullptr);
+        }
     }
     else if (noisy(noise, mons->pos(), mons->mid) || !unseen)
     {
         // noisy() returns true if the player heard the noise.
         if (speech.structured)
-            _emit_structured_cast_message(mons, speech.lines, chan, false);
+        {
+            _emit_structured_cast_message(
+                mons, speech.lines, chan, false, diagnostics);
+        }
         else
-            mons_speaks_msg(mons, msg, chan);
+        {
+            mons_speaks_msg(
+                mons, msg, chan, false, false,
+                diagnostics ? diagnostics->emission_observer : nullptr);
+        }
     }
 }
 

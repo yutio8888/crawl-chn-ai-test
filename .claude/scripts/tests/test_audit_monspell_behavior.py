@@ -30,6 +30,7 @@ from audit_monspell_phase0 import load_artifact  # noqa: E402
 AUDIT = SCRIPTS / "audit_monspell_behavior.py"
 TRACKED_REPORT = (
     ROOT / ".claude/data/message-overlay/monspell-behavior-report.json")
+MON_CAST_SOURCE = ROOT / "crawl-ref/source/mon-cast.cc"
 
 
 class MonspellBehaviorAuditTest(unittest.TestCase):
@@ -404,6 +405,9 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertEqual(report["universe"]["reachability_kind"],
                          "SOUND_UPPER_BOUND_NOT_EXACT")
         self.assertFalse(report["phase2_ready"])
+        self.assertTrue(any(
+            "still use the legacy parser" in blocker
+            for blocker in report["phase2_blockers"]))
         self.assertNotIn("candidate key containment is not proven",
                          report["phase2_blockers"])
         self.assertNotIn("runtime reachability is not proven",
@@ -806,9 +810,33 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertEqual(
             report["coverage"]["remaining_legacy_behavior_occurrences"],
             0)
+        self.assertEqual(report["coverage"]["unanalysable_occurrences"], 0)
+        self.assertEqual(
+            report["coverage"]["fail_closed_behavior_roots"], 0)
+        self.assertTrue(report["coverage"]["catalog_coverage_complete"])
+        self.assertTrue(
+            report["coverage"]["en_zh_behavior_analysis_conclusive"])
         self.assertEqual(report["locale_behavior_mismatch"], [])
         self.assertEqual(report["locale_behavior_inconclusive"], [])
         self.assertTrue(report["phase2_ready"])
+        self.assertEqual(report["phase2_blockers"], [])
+
+    def test_monspell_gesture_sniffing_is_compatibility_gated(self):
+        source = MON_CAST_SOURCE.read_text(encoding="utf-8")
+        self.assertIn(
+            "static bool _legacy_message_implies_gesture("
+            "const string &message)",
+            source)
+        self.assertIn(
+            "speech.legacy_behavior_compatibility\n"
+            "            && _legacy_message_implies_gesture(msg)",
+            source)
+        self.assertIn(
+            "_speech_fill_target(targ_prep, target, mons, pbolt, gestured,\n"
+            "                                diagnostics\n"
+            "                                    ? diagnostics->target_observer"
+            " : nullptr);",
+            source)
 
 
 if __name__ == "__main__":

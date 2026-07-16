@@ -266,6 +266,7 @@ struct message_lookup_result
     std::string message;
     std::vector<rendered_line> rendered_lines;
     bool structured = false;
+    bool legacy_behavior_compatibility = false;
     std::string diagnostic;
     bool applicability_checked = false;
 };
@@ -292,6 +293,7 @@ struct route_decision
 {
     message_route route = message_route::LEGACY;
     std::string canonical_key;
+    bool legacy_behavior_compatibility = false;
     int schema_version = MONSPELL_OVERLAY_SCHEMA_VERSION;
 };
 

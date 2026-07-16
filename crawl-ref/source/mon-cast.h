@@ -14,6 +14,22 @@ class actor;
 class monster;
 struct bolt;
 struct dice_def;
+struct speech_target_observer;
+struct mon_speech_emission_observer;
+
+struct mons_cast_noise_diagnostics
+{
+    mons_cast_noise_diagnostics(
+        const speech_target_observer *target_observer_ = nullptr,
+        const mon_speech_emission_observer *emission_observer_ = nullptr)
+        : target_observer(target_observer_),
+          emission_observer(emission_observer_)
+    {
+    }
+
+    const speech_target_observer *target_observer;
+    const mon_speech_emission_observer *emission_observer;
+};
 
 #define OLD_ARMS_KEY "old_arms"
 #define OLD_ARMS_ALT_KEY "old_arms_alt"
@@ -46,7 +62,8 @@ void mons_cast(monster* mons, bolt pbolt, spell_type spell_cast,
 bool is_mons_cast_possible(monster& mons, spell_type spell);
 bool try_mons_cast(monster& mons, spell_type spell);
 void mons_cast_noise(monster* mons, const bolt &pbolt,
-                     spell_type spell_cast, mon_spell_slot_flags slot_flags);
+                     spell_type spell_cast, mon_spell_slot_flags slot_flags,
+                     const mons_cast_noise_diagnostics *diagnostics = nullptr);
 bool setup_mons_cast(const monster* mons, bolt &pbolt, spell_type spell_cast,
                      bool evoke = false,
                      bool check_validity = false);

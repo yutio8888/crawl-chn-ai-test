@@ -1176,6 +1176,18 @@ bool monspell_overlay_covers(const string &canonical_key)
     return covered_keys.count(key) != 0;
 }
 
+static bool _generated_catalog_declares_candidate(const string &canonical_key)
+{
+    const catalog_source &catalog = generated_monspell_catalog();
+    return any_of(
+        catalog.entries.begin(), catalog.entries.end(),
+        [&canonical_key](const catalog_entry &entry)
+        {
+            return entry.mode == entry_mode::CANDIDATE
+                   && entry.canonical_key == canonical_key;
+        });
+}
+
 route_decision route_monspell_message(const string &canonical_key)
 {
     return route_monspell_message(canonical_key, "en");
@@ -1187,14 +1199,21 @@ route_decision route_monspell_message(const string &canonical_key,
     route_decision decision;
     decision.canonical_key = canonical_key;
     lowercase(decision.canonical_key);
-    if ((language == "en" || language == "zh")
-        && monspell_overlay_covers(decision.canonical_key))
+    const bool supported_language = language == "en" || language == "zh";
+    const bool overlay_enabled =
+        monspell_overlay_report().state == domain_state::ENABLED;
+    if (supported_language && monspell_overlay_covers(decision.canonical_key))
     {
         decision.route = message_route::STRUCTURED;
         ++current_diagnostics.overlay_hit;
     }
     else
+    {
+        decision.legacy_behavior_compatibility =
+            (!overlay_enabled || !supported_language)
+            && _generated_catalog_declares_candidate(decision.canonical_key);
         ++current_diagnostics.legacy_fallback;
+    }
     return decision;
 }
 

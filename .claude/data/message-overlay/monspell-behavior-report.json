@@ -4476,6 +4476,7 @@
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
+    "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
     "per_language_structured_variant_verification_complete": 102,
     "per_language_structured_variant_verification_units": 102,

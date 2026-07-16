@@ -7,6 +7,41 @@
 
 #include "mpr.h"
 
+struct mon_speech_final_emission
+{
+    mon_speech_final_emission(monster *source_, const string &line_,
+                              msg_channel_type channel_,
+                              bool effective_silence_,
+                              bool already_rendered_)
+        : source(source_), line(line_), channel(channel_),
+          effective_silence(effective_silence_),
+          already_rendered(already_rendered_)
+    {
+    }
+
+    monster *source;
+    string line;
+    msg_channel_type channel;
+    bool effective_silence;
+    bool already_rendered;
+};
+
+using mon_speech_emission_observer_fn =
+    void (*)(const mon_speech_final_emission &, void *);
+
+struct mon_speech_emission_observer
+{
+    mon_speech_emission_observer(
+        mon_speech_emission_observer_fn function_ = nullptr,
+        void *context_ = nullptr)
+        : function(function_), context(context_)
+    {
+    }
+
+    mon_speech_emission_observer_fn function;
+    void *context;
+};
+
 struct mon_speech_applicability
 {
     const actor *foe = nullptr;
@@ -25,7 +60,8 @@ bool resolve_mon_speech_line_channel(string &line, msg_channel_type &channel,
 bool mons_speaks_msg(monster* mons, const string &msg,
                      const msg_channel_type def_chan = MSGCH_TALK,
                      const bool silence = false,
-                     const bool already_rendered = false);
+                     const bool already_rendered = false,
+                     const mon_speech_emission_observer *observer = nullptr);
 bool invalid_msg(const monster &mon, string msg);
 mon_speech_applicability resolve_mon_speech_applicability(
     const monster &mon);
