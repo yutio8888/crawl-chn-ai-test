@@ -2,7 +2,7 @@
 name: crawl-coder
 description: DCSS Chinese translation code implementation agent — C++ source modification, TextDB operations, T_() migration, compilation verification
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4-flash
 hidden: true
 permission:
   edit: allow

@@ -1,6 +1,7 @@
 {
   "$schema": "https://opencode.ai/config.json",
-  "lsp": true,
+  "model": "openai/gpt-5.6-sol",
+  "lsp": false,
   "plugin": ["opencode-goal-plugin"],
   "command": {
     "goal": {
@@ -11,7 +12,7 @@
   },
   "agent": {
     "explore": {
-      "model": "deepseek/deepseek-v4-flash"
+      "model": "opencode-go/deepseek-v4-flash"
     }
   }
 }

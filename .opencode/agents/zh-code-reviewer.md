@@ -2,7 +2,7 @@
 name: zh-code-reviewer
 description: DCSS Chinese i18n implementation reviewer — runtime safety, protocol/display separation, formats, TextDB integrity, compilation, and scanner triage
 mode: subagent
-model: deepseek/deepseek-v4-pro
+model: openai/gpt-5.6-sol
 hidden: true
 permission:
   edit: deny

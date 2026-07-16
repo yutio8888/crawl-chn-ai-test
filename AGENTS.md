@@ -21,7 +21,7 @@ This repo carries parallel OpenCode, Codex, and legacy Claude Code config trees:
 | `.opencode/agents/*.md` | 5 subagents: `crawl-coder`, `ocr`, `translation-reviewer`, `zh-code-reviewer`, `zh-translator` | OpenCode syntax (`mode: subagent`, `model: deepseek/...`, `permission:`) |
 | `.opencode/skills/<name>/SKILL.md` | 4 skills (one file per skill in its own directory) | OpenCode loads `<name>/SKILL.md` |
 | `.opencode/workflows/*.js` | 2 workflow scripts | Run via `bash` — OpenCode has no `Workflow` tool |
-| `.opencode/opencode.json` | Project-level config | Set `explore.model = deepseek/deepseek-v4-flash` |
+| `.opencode/opencode.json` | Project-level config | Sets the main model and `explore.model` |
 | `.codex/agents/*.toml` | Codex-native translation/coder/reviewer subagents | Loaded by Codex; use `.claude/scripts/` shared tools |
 | `.agents/skills/<name>/SKILL.md` | Repository-scoped Codex skills | Loaded by Codex while working in this repository |
 | `.claude/scripts/*.sh,*.py` | 28 project tool scripts (post-coder, post-translator, classify_review, scan_varargs_string, etc.) | OpenCode loads via `bash` — paths still work |
@@ -33,12 +33,12 @@ This repo carries parallel OpenCode, Codex, and legacy Claude Code config trees:
 
 | Agent | Model | Source |
 |-------|-------|--------|
-| `crawl-coder` | `deepseek/deepseek-v4-flash` | `.opencode/agents/crawl-coder.md` |
-| `translation-reviewer` | `deepseek/deepseek-v4-flash` | `.opencode/agents/translation-reviewer.md` |
-| `zh-translator` | `deepseek/deepseek-v4-flash` | `.opencode/agents/zh-translator.md` |
-| `zh-code-reviewer` | `deepseek/deepseek-v4-pro` | `.opencode/agents/zh-code-reviewer.md` (intentionally v4-pro, not v4-flash) |
+| `crawl-coder` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/crawl-coder.md` |
+| `translation-reviewer` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/translation-reviewer.md` |
+| `zh-translator` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/zh-translator.md` |
+| `zh-code-reviewer` | `openai/gpt-5.6-sol` | `.opencode/agents/zh-code-reviewer.md` |
 | `ocr` | `openrouter/qwen/qwen3-vl-8b-instruct` | `.opencode/agents/ocr.md` |
-| `explore` (built-in) | `deepseek/deepseek-v4-flash` | `.opencode/opencode.json` |
+| `explore` (built-in) | `opencode-go/deepseek-v4-flash` | `.opencode/opencode.json` |
 
 ## OpenCode Tool Surface (the syntax differences)
 
@@ -99,7 +99,7 @@ The scripts are identical in both `.opencode/workflows/` and `.claude/workflows/
 `.opencode/agents/explore.md` exists. Configuration goes in `opencode.json`:
 
 ```json
-{ "agent": { "explore": { "model": "deepseek/deepseek-v4-flash" } } }
+{ "agent": { "explore": { "model": "opencode-go/deepseek-v4-flash" } } }
 ```
 
 To invoke:

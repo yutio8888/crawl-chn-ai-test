@@ -2,7 +2,7 @@
 name: translation-reviewer
 description: DCSS Chinese translation quality reviewer — semantic parity, contextual glossary use, completeness, naturalness, terminology, and character voice
 mode: subagent
-model: deepseek/deepseek-v4-flash
+model: opencode-go/deepseek-v4-flash
 hidden: true
 permission:
   edit: deny
