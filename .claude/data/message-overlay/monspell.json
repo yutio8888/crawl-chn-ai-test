@@ -762,6 +762,72 @@
       }]
     },
     {
+      "canonical_key": "airstrike blizzard demon cast",
+      "canonical_fingerprint": "fnv1a64:648b235f07352409",
+      "selection_graph_fingerprint": "fnv1a64:9dc569cfabb99b38",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.airstrike_blizzard_demon.icy_lash.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "948fab004a159d28a276215e8319c8d8f80ffbad95c7aebc77bef75d33f70f82",
+          "english_snapshot": "@The_monster@ lashes out with icy intensity.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} lashes out with icy intensity." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}以刺骨寒意猛烈出击。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ac9c8f992722a6c0886c46cb8be157a0e500f42eee6cade23908ac04f6fa65d2",
+          "english_snapshot": "@The_monster@ gestures with frozen lightning.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures with frozen lightning." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}做出手势，释放出冰封闪电。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.airstrike_blizzard_demon.writhing_arms.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ab572a8aa138c43ae84acf74540193174a5511397934484a78060f0504892999",
+          "english_snapshot": "@The_monster@ waves @possessive@ @arms@ in writhing circles.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" },
+            { "name": "arms", "type": "actor_arms_plural" }
+          ],
+          "required_arguments": ["actor", "possessive", "arms"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} waves ${possessive} ${arms} in writhing circles." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}挥动${possessive}${arms}，令其盘旋扭动。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",

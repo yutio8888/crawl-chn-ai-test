@@ -45,7 +45,8 @@ class MessageOverlayTests(unittest.TestCase):
                           "sheza's dance cast",
                           "silent blizzard demon cast",
                           "ushabti cast targeted",
-                          "mennas cast"], candidates)
+                          "mennas cast",
+                          "airstrike blizzard demon cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -157,6 +158,30 @@ class MessageOverlayTests(unittest.TestCase):
                                     "binding-relevant line metadata"):
             self.validate(value)
 
+    def test_plural_arms_token_requires_the_narrow_slot_type(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"]
+                     == "airstrike blizzard demon cast")
+        entry_index = MANIFEST["entries"].index(entry)
+
+        value = copy.deepcopy(MANIFEST)
+        arms = value["entries"][entry_index]["variants"][2]
+        arms["slot_schema"][2]["type"] = "actor_ref"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "plural arms token/type mismatch"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        plain = value["entries"][entry_index]["variants"][0]
+        plain["slot_schema"].append(
+            { "name": "arms", "type": "actor_arms_plural" })
+        plain["required_arguments"].append("arms")
+        plain["line_metadata"][0]["templates"][0]["pattern"] += " ${arms}"
+        plain["line_metadata"][0]["templates"][1]["pattern"] += "${arms}"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "plural arms token/type mismatch"):
+            self.validate(value)
+
     def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["binding"][
@@ -225,6 +250,7 @@ class MessageOverlayTests(unittest.TestCase):
             "silent blizzard demon cast": [False, True],
             "ushabti cast targeted": [True],
             "mennas cast": [True],
+            "airstrike blizzard demon cast": [False, True, False],
         }
         for key, gestures in expected.items():
             entry = next(e for e in MANIFEST["entries"]

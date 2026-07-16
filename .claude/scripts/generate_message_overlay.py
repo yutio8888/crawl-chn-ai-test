@@ -34,7 +34,8 @@ CHANNELS = {
 }
 SLOT_TYPES = {
     "actor_ref", "actor_possessive_name", "actor_possessive_pronoun",
-    "actor_reflexive", "resolved_target", "resolved_beam",
+    "actor_reflexive", "actor_arms_plural", "resolved_target",
+    "resolved_beam",
 }
 
 
@@ -356,6 +357,15 @@ def validate_manifest(manifest: dict[str, Any],
             }
             _require(binding["resolves_target"] or not target_tokens,
                      f"{vcontext} non-target binding contains target tokens")
+            has_arms_token = any(
+                token["classification"] == "runtime"
+                and token["canonical_key"] == "arms"
+                for token in actual["tokens"])
+            has_arms_slot = any(
+                slot_type == "actor_arms_plural"
+                for slot_type in slot_types.values())
+            _require(has_arms_token == has_arms_slot,
+                     f"{vcontext} plural arms token/type mismatch")
             relations = (TARGET_RELATIONS if binding["resolves_target"]
                          else NO_TARGET_RELATIONS)
             if policy == "NONE":

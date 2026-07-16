@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成三批通用施法消息迁移。当前覆盖 15 个 canonical
-key、25 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成四批通用施法消息迁移。当前覆盖 16 个 canonical
+key、28 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 15 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 16 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -81,6 +81,20 @@ descriptor 使用 `binding.resolves_target=false` 和唯一 `NONE` 关系。后�
 本地化正文关键词。`mennas cast` 还首次迁移了 `VISUAL` sensory/channel
 metadata：模板正文不携带 `VISUAL:` 协议前缀，renderer 生成的 line metadata
 保持现有视觉可见性和输出频道语义。
+
+第四批完整迁移 `airstrike blizzard demon cast` 的 3 个 variant，gesture
+metadata 为 `[false, true, false]`，全部使用
+`resolves_target=false` / `NONE`。第三个 variant 的 legacy
+`@possessive@ @arms@` 被收敛为 `actor_possessive_pronoun` 与窄类型
+`actor_arms_plural` 槽。production binding 从
+descriptor 派生 `needs_actor_arms_plural`，仅该 slot 存在时才严格按 legacy 顺序
+调用 `arm_name(false, &can_plural)`，可复数时再调用 `arm_name(true)`；其他
+structured key 不检查身体部位，也不新增 chaos spawn 的 RNG。真实暴雪恶魔的
+canonical plural 为 `strata`，中文通过
+`monster body part plural|strata` 的 literal-only context key 显示为“云层”。
+未知 body-part 或不可复数 caster 均 fail closed 为 `CORRUPT`，不会让
+任意 legacy token 或未经审计的动态翻译穿透 renderer。不可复数错误边界不再输出
+legacy 的 `NO PLURAL ARMS`；该边界保持 RNG 消耗等价，但采用更严格的显式协议错误。
 
 ## 2. 三类 artifact 的职责
 
@@ -227,7 +241,7 @@ code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 15 个 key、25 个 canonical variant，不代表 262 个
+- structured 覆盖为 16 个 key、28 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
@@ -361,11 +375,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- 40 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+- 38 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 25 个 canonical structured variant，25 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 50 个逐语言验证单位，
-  50 个均完整。
+- 28 个 canonical structured variant，28 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 56 个逐语言验证单位，
+  56 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -386,10 +400,10 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁是 40 个 legacy behavior occurrence 尚无显式 metadata，以及
+剩余门禁是 38 个 legacy behavior occurrence 尚无显式 metadata，以及
 `vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
 特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
-候选 containment、runtime reachability 和当前三批已迁移 key 不再是 blocker。
+候选 containment、runtime reachability 和当前四批已迁移 key 不再是 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

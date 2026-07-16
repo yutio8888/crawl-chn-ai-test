@@ -1088,10 +1088,22 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { true },
             false,
         },
+        {
+            "airstrike blizzard demon cast",
+            {
+                "@The_monster@ lashes out with icy intensity.",
+                "@The_monster@ gestures with frozen lightning.",
+                "@The_monster@ waves @possessive@ @arms@ in writhing circles.",
+            },
+            { false, true, false },
+            false,
+        },
     };
 
     for (const key_fixture &fixture : fixtures)
     {
+        source.type = fixture.key == "airstrike blizzard demon cast"
+            ? MONS_BLIZZARD_DEMON : MONS_ORC;
         vector<uint64_t> seeds(fixture.patterns.size(), 0);
         {
             scoped_test_language language(lang_t::EN);
@@ -1192,6 +1204,11 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                   == fixture.resolves_target);
             CHECK(zh.requirements.resolves_target
                   == fixture.resolves_target);
+            CHECK(en.requirements.needs_actor_arms_plural
+                  == (fixture.key == "airstrike blizzard demon cast"
+                      && ordinal == 2));
+            CHECK(zh.requirements.needs_actor_arms_plural
+                  == en.requirements.needs_actor_arms_plural);
             CHECK(en.binding.callback_count == 1);
             CHECK(zh.binding.callback_count == 1);
             if (fixture.key == "mennas cast")
@@ -1207,6 +1224,18 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             else
                 CHECK(english.text == en.randomized.pattern_en);
             CHECK_FALSE(chinese.text.empty());
+            if (fixture.key == "airstrike blizzard demon cast")
+            {
+                static const char *expected_en[] =
+                {
+                    "The blizzard demon lashes out with icy intensity.",
+                    "The blizzard demon gestures with frozen lightning.",
+                    "The blizzard demon waves its strata in writhing circles.",
+                };
+                CHECK(english.text == expected_en[ordinal]);
+                if (ordinal == 2)
+                    CHECK(en.binding.values.actor.arms_plural_en == "strata");
+            }
             CHECK(english_state == legacy_state);
             CHECK(english_count == legacy_count);
             CHECK(chinese_state == legacy_state);
@@ -1280,6 +1309,192 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(counters.overlay_hit == 1);
         CHECK(counters.legacy_fallback == 0);
     }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "airstrike plural arms reject a non-plural caster",
+                 "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    source.type = MONS_ADDER;
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    uint64_t ordinal_two_seed = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        for (uint64_t seed = 1; seed <= 4096; ++seed)
+        {
+            rng::subgenerator scoped_rng(
+                seed, seed ^ 0x9e3779b97f4a7c15ULL);
+            if (getSpeakString("airstrike blizzard demon cast")
+                == "@The_monster@ waves @possessive@ @arms@ in writhing circles.")
+            {
+                ordinal_two_seed = seed;
+                break;
+            }
+        }
+    }
+    REQUIRE(ordinal_two_seed != 0);
+
+    uint64_t legacy_state = 0;
+    uint64_t legacy_count = 0;
+    string singular_arm;
+    bool can_plural = true;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(
+            ordinal_two_seed,
+            ordinal_two_seed ^ 0x9e3779b97f4a7c15ULL);
+        CHECK(getSpeakString("airstrike blizzard demon cast")
+              == "@The_monster@ waves @possessive@ @arms@ in writhing circles.");
+        singular_arm = source.arm_name(false, &can_plural);
+        if (can_plural)
+            (void) source.arm_name(true);
+        legacy_state = rng::current_generator().get_state();
+        legacy_count = rng::current_generator().get_count();
+    }
+    CHECK(singular_arm == "tail");
+    CHECK_FALSE(can_plural);
+
+    resolved_monspell_cast_message result;
+    uint64_t structured_state = 0;
+    uint64_t structured_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(
+            ordinal_two_seed,
+            ordinal_two_seed ^ 0x9e3779b97f4a7c15ULL);
+        result = resolve_monspell_cast_message(
+            source, beam, false,
+            { "airstrike blizzard demon cast" }, false, false);
+        structured_state = rng::current_generator().get_state();
+        structured_count = rng::current_generator().get_count();
+    }
+    REQUIRE(result.structured);
+    REQUIRE(result.corrupt);
+    REQUIRE(result.has_materialization);
+    CHECK(result.materialization.canonical.top_locator.variant_ordinal == 2);
+    CHECK(result.materialization.binding.values.actor.arms_plural_en.empty());
+    CHECK(result.diagnostic == "runtime bindings are incomplete");
+    CHECK(structured_state == legacy_state);
+    CHECK(structured_count == legacy_count);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "non-arms structured casts do not inspect chaos spawn anatomy",
+                 "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    source.type = MONS_CHAOS_SPAWN;
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    constexpr uint64_t seed = 0x6d25e9a4;
+    constexpr uint64_t stream = 0x8f1073bc;
+    uint64_t legacy_state = 0;
+    uint64_t legacy_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(seed, stream);
+        CHECK(getSpeakString("magical cast")
+              == "@The_monster@ gestures.");
+        legacy_state = rng::current_generator().get_state();
+        legacy_count = rng::current_generator().get_count();
+    }
+
+    resolved_monspell_cast_message structured;
+    uint64_t structured_state = 0;
+    uint64_t structured_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(seed, stream);
+        structured = resolve_monspell_cast_message(
+            source, beam, false, { "magical cast" }, false, false);
+        structured_state = rng::current_generator().get_state();
+        structured_count = rng::current_generator().get_count();
+    }
+    REQUIRE(structured.structured);
+    REQUIRE_FALSE(structured.corrupt);
+    REQUIRE(structured.has_materialization);
+    CHECK_FALSE(
+        structured.materialization.requirements.needs_actor_arms_plural);
+    CHECK(structured_state == legacy_state);
+    CHECK(structured_count == legacy_count);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "arms binding preserves chaos spawn legacy anatomy RNG order",
+                 "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    source.type = MONS_CHAOS_SPAWN;
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    size_t checked = 0;
+    for (uint64_t seed = 1; seed <= 4096 && checked < 32; ++seed)
+    {
+        constexpr uint64_t salt = 0x9e3779b97f4a7c15ULL;
+        bool selected_arms = false;
+        bool can_plural = false;
+        string plural;
+        uint64_t legacy_state = 0;
+        uint64_t legacy_count = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            rng::subgenerator scoped_rng(seed, seed ^ salt);
+            selected_arms =
+                getSpeakString("airstrike blizzard demon cast")
+                == "@The_monster@ waves @possessive@ @arms@ in writhing circles.";
+            if (!selected_arms)
+                continue;
+            (void) source.arm_name(false, &can_plural);
+            if (can_plural)
+                plural = source.arm_name(true);
+            legacy_state = rng::current_generator().get_state();
+            legacy_count = rng::current_generator().get_count();
+        }
+
+        resolved_monspell_cast_message structured;
+        uint64_t structured_state = 0;
+        uint64_t structured_count = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            rng::subgenerator scoped_rng(seed, seed ^ salt);
+            structured = resolve_monspell_cast_message(
+                source, beam, false,
+                { "airstrike blizzard demon cast" }, false, false);
+            structured_state = rng::current_generator().get_state();
+            structured_count = rng::current_generator().get_count();
+        }
+        CAPTURE(seed, can_plural, plural);
+        REQUIRE(structured.structured);
+        REQUIRE(structured.has_materialization);
+        CHECK(structured.materialization.canonical.top_locator.variant_ordinal
+              == 2);
+        CHECK(structured.materialization.requirements
+                  .needs_actor_arms_plural);
+        CHECK(structured.materialization.binding.values.actor.arms_plural_en
+              == plural);
+        CHECK(structured.corrupt == !can_plural);
+        CHECK(structured_state == legacy_state);
+        CHECK(structured_count == legacy_count);
+        ++checked;
+    }
+    CHECK(checked == 32);
 }
 
 TEST_CASE("structured localized body cannot select a message channel",

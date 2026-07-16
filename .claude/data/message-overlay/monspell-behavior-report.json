@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 25,
-    "canonical_structured_variant_metadata_units": 25,
+    "canonical_structured_variant_metadata_complete": 28,
+    "canonical_structured_variant_metadata_units": 28,
     "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 50,
-    "per_language_structured_variant_verification_units": 50,
-    "remaining_legacy_behavior_occurrences": 40,
+    "per_language_structured_variant_verification_complete": 56,
+    "per_language_structured_variant_verification_units": 56,
+    "remaining_legacy_behavior_occurrences": 38,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "8839ec96031d2be016ff0b5f815e230ab414d1791a37ec2209c76798946a26e9"
+      "sha256": "a88838f1ae588191082bc704504ea0fdb70fd703ee5e6a5384cc1ede9ad3fa4d"
     }
   },
   "languages": {
@@ -4549,12 +4549,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "airstrike blizzard demon cast",
           "top_locator": {
@@ -5181,6 +5181,27 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.icy_lash.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.writhing_arms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
           "variant_ordinal": 0
@@ -5385,12 +5406,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "airstrike blizzard demon cast",
           "top_locator": {
@@ -5998,6 +6019,27 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.icy_lash.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "airstrike blizzard demon cast",
+          "stable_id": "mon.cast.airstrike_blizzard_demon.writhing_arms.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
           "variant_ordinal": 0
@@ -6185,7 +6227,7 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "40 remaining legacy behavior occurrences lack explicit metadata",
+    "38 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6220,8 +6262,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6878,8 +6920,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.airstrike_blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",

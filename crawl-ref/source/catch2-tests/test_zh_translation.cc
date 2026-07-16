@@ -224,6 +224,14 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 // -----------------------------------------------------------------------------
 // 1) UNTRANSLATED rule
 // -----------------------------------------------------------------------------
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "contextual monster plural arms are extracted",
+                 "[zh-translation][message-overlay]")
+{
+    REQUIRE(string(C_("monster body part plural", "arms")) == "手臂");
+    REQUIRE(string(C_("monster body part plural", "strata")) == "云层");
+}
+
 TEST_CASE("UNTRANSLATED rule", "[zh-translation][zh-helpers]")
 {
     using Row = std::tuple<std::string, std::string, bool>;

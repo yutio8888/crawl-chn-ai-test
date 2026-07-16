@@ -15711,6 +15711,12 @@ at
 next to
 旁边
 %%%%
+monster body part plural|arms
+手臂
+%%%%
+monster body part plural|strata
+云层
+%%%%
 improve
 改善
 %%%%

@@ -78,6 +78,7 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.actor.possessive_name_en = "The orc's";
     values.actor.possessive_pronoun_en = "its";
     values.actor.reflexive_en = "itself";
+    values.actor.arms_plural_en = "arms";
     values.actor.localized = { { "en", "The orc" }, { "zh", "兽人" } };
     values.actor.possessive_name_localized =
         { { "en", "The orc's" }, { "zh", "兽人的" } };
@@ -85,6 +86,8 @@ fork_message_overlay::runtime_bindings beam_bindings(
         { { "en", "its" }, { "zh", "它的" } };
     values.actor.reflexive_localized =
         { { "en", "itself" }, { "zh", "自己" } };
+    values.actor.arms_plural_localized =
+        { { "en", "arms" }, { "zh", "手臂" } };
     values.actor.visibility = visibility;
     values.target.relation = relation;
     values.target.kind = kind;
@@ -130,6 +133,23 @@ fork_message_overlay::runtime_bindings beam_bindings(
     return values;
 }
 
+fork_message_overlay::runtime_bindings blizzard_demon_bindings()
+{
+    using namespace fork_message_overlay;
+    runtime_bindings values = beam_bindings(target_relation::NONE);
+    values.actor.sentence_en = "The blizzard demon";
+    values.actor.canonical_en = "the blizzard demon";
+    values.actor.possessive_name_en = "The blizzard demon's";
+    values.actor.localized =
+        { { "en", "The blizzard demon" }, { "zh", "暴雪恶魔" } };
+    values.actor.possessive_name_localized =
+        { { "en", "The blizzard demon's" }, { "zh", "暴雪恶魔的" } };
+    values.actor.arms_plural_en = "strata";
+    values.actor.arms_plural_localized =
+        { { "en", "strata" }, { "zh", "云层" } };
+    return values;
+}
+
 void check_rng_equal(const canonical_textdb::rng_observation &production,
                      const textdb_phase0::rng_observation &prototype)
 {
@@ -159,7 +179,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 15);
+        CHECK(report.structured_key_count == 16);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -176,6 +196,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("silent blizzard demon cast"));
         CHECK(monspell_overlay_covers("ushabti cast targeted"));
         CHECK(monspell_overlay_covers("mennas cast"));
+        CHECK(monspell_overlay_covers("airstrike blizzard demon cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -311,6 +332,27 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         source.entries[2].variants[0].lines[0].audible = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
+    }
+
+    SECTION("plural arms token cannot use a generic slot type")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        auto entry = find_if(
+            source.entries.begin(), source.entries.end(),
+            [](const catalog_entry &candidate)
+            {
+                return candidate.canonical_key
+                       == "airstrike blizzard demon cast";
+            });
+        REQUIRE(entry != source.entries.end());
+        REQUIRE(entry->variants.size() == 3);
+        REQUIRE(entry->variants[2].slot_schema.size() == 3);
+        entry->variants[2].slot_schema[2].type = "actor_ref";
+        const load_report &report = load_monspell_overlay(canonical, &source);
+        CHECK(report.state == domain_state::DISABLED);
+        CHECK(report.failure == load_failure::CORRUPT);
+        CHECK(report.diagnostic == "plural arms token/type mismatch");
     }
 }
 
@@ -1507,4 +1549,131 @@ TEST_CASE("third Phase 2 batch has exact Chinese catalog goldens",
             CHECK(zh.lines[0].implies_gesture == item.gesture);
         }
     }
+}
+
+TEST_CASE("airstrike blizzard demon uses a fail-closed plural-arms slot",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    reset_monspell_overlay_for_test();
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+    struct fixture
+    {
+        size_t ordinal;
+        const char *pattern;
+        bool gesture;
+        cast_frame frame;
+        const char *english;
+        const char *chinese;
+    };
+    const fixture cases[] =
+    {
+        { 0, "@The_monster@ lashes out with icy intensity.",
+          false, cast_frame::DIRECT_EFFECT,
+          "The blizzard demon lashes out with icy intensity.",
+          "暴雪恶魔以刺骨寒意猛烈出击。" },
+        { 1, "@The_monster@ gestures with frozen lightning.",
+          true, cast_frame::GESTURE,
+          "The blizzard demon gestures with frozen lightning.",
+          "暴雪恶魔做出手势，释放出冰封闪电。" },
+        { 2, "@The_monster@ waves @possessive@ @arms@ in writhing circles.",
+          false, cast_frame::GESTURE,
+          "The blizzard demon waves its strata in writhing circles.",
+          "暴雪恶魔挥动它的云层，令其盘旋扭动。" },
+    };
+
+    for (const fixture &item : cases)
+    {
+        CAPTURE(item.ordinal);
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                item.pattern, "airstrike blizzard demon cast", item.ordinal);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "airstrike blizzard demon cast",
+                message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    CHECK_FALSE(requirements.resolves_target);
+                    CHECK(requirements.implies_gesture == item.gesture);
+                    CHECK(requirements.frame == item.frame);
+                    CHECK(requirements.needs_actor_arms_plural
+                          == (item.ordinal == 2));
+                    runtime_bindings values = blizzard_demon_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        INFO(materialized.diagnostic);
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(materialized.binding.values.target_trace.empty());
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        CHECK(en.lines[0].text == item.english);
+        CHECK(zh.lines[0].text == item.chinese);
+        if (item.ordinal == 2)
+        {
+            CHECK(materialized.binding.values.actor.arms_plural_en == "strata");
+            CHECK(materialized.bound_pattern_en == item.english);
+        }
+    }
+
+    const canonical_textdb::loaded_candidate arms_candidate =
+        canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            "@The_monster@ waves @possessive@ @arms@ in writhing circles.",
+            "airstrike blizzard demon cast", 2);
+    const auto materialize_arms =
+        [&](const runtime_bindings &bindings)
+        {
+            return materialize_monspell_candidate(
+                "airstrike blizzard demon cast",
+                message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    runtime_bindings values = bindings;
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [arms_candidate](const string &) { return arms_candidate; });
+        };
+
+    runtime_bindings missing_canonical = blizzard_demon_bindings();
+    missing_canonical.actor.arms_plural_en.clear();
+    const canonical_materialization unavailable =
+        materialize_arms(missing_canonical);
+    CHECK(unavailable.result == message_result::CORRUPT);
+    CHECK(unavailable.diagnostic == "runtime bindings are incomplete");
+
+    runtime_bindings missing_localized = blizzard_demon_bindings();
+    missing_localized.actor.arms_plural_localized.clear();
+    const canonical_materialization missing =
+        materialize_arms(missing_localized);
+    REQUIRE(missing.result == message_result::RENDERED);
+    const render_result missing_zh =
+        render_materialized_candidate(missing, "zh");
+    CHECK(missing_zh.result == message_result::CORRUPT);
+    CHECK(missing_zh.diagnostic
+          == "localized actor plural-arms binding is missing");
+
+    runtime_bindings duplicate_localized = blizzard_demon_bindings();
+    duplicate_localized.actor.arms_plural_localized.push_back(
+        { "zh", "额外手臂" });
+    const canonical_materialization duplicate =
+        materialize_arms(duplicate_localized);
+    REQUIRE(duplicate.result == message_result::RENDERED);
+    const render_result duplicate_zh =
+        render_materialized_candidate(duplicate, "zh");
+    CHECK(duplicate_zh.result == message_result::CORRUPT);
+    CHECK(duplicate_zh.diagnostic
+          == "localized actor plural-arms binding is missing");
 }

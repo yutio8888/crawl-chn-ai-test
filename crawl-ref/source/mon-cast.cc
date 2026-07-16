@@ -8933,6 +8933,30 @@ static void _record_overlay_target_event(
     trace.push_back(converted);
 }
 
+static string _localized_plural_arms(const string &canonical,
+                                     const string &language)
+{
+    struct body_part_display
+    {
+        const char *canonical;
+        const char *translation_key;
+    };
+    static const body_part_display displays[] =
+    {
+        { "arms", NC_("monster body part plural", "arms") },
+        { "strata", NC_("monster body part plural", "strata") },
+    };
+    for (const body_part_display &display : displays)
+    {
+        if (canonical != display.canonical)
+            continue;
+        return language == "en"
+            ? canonical
+            : C_("monster body part plural", display.translation_key);
+    }
+    return "";
+}
+
 static fmo::runtime_bindings _resolve_overlay_bindings(
     const monster &mon, const bolt &pbolt, bool targeted,
     const string &language, const fmo::binding_requirements &requirements)
@@ -8991,6 +9015,17 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     bindings.cast.caster_visibility = bindings.actor.visibility;
     bindings.cast.origin_spell = static_cast<int>(pbolt.origin_spell);
 
+    {
+        if (requirements.needs_actor_arms_plural)
+        {
+            ScopedLangEn english;
+            bool can_plural = false;
+            (void) mon.arm_name(false, &can_plural);
+            if (can_plural)
+                bindings.actor.arms_plural_en = mon.arm_name(true);
+        }
+    }
+
     if (language == "en")
     {
         bindings.actor.localized.push_back({ "en", actor_display });
@@ -9000,6 +9035,11 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
         bindings.actor.reflexive_localized.push_back(
             { "en", mon.pronoun(PRONOUN_REFLEXIVE) });
+        if (!bindings.actor.arms_plural_en.empty())
+        {
+            bindings.actor.arms_plural_localized.push_back(
+                { "en", bindings.actor.arms_plural_en });
+        }
         if (requirements.resolves_target)
             bindings.target.localized.push_back({ "en", target.display });
         bindings.beam.localized.push_back({ "en", beam.display_text });
@@ -9013,6 +9053,10 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "zh", mon.pronoun(PRONOUN_POSSESSIVE) });
         bindings.actor.reflexive_localized.push_back(
             { "zh", mon.pronoun(PRONOUN_REFLEXIVE) });
+        const string arms = _localized_plural_arms(
+            bindings.actor.arms_plural_en, "zh");
+        if (!arms.empty())
+            bindings.actor.arms_plural_localized.push_back({ "zh", arms });
         if (requirements.resolves_target)
             bindings.target.localized.push_back({ "zh", target.display });
         bindings.beam.localized.push_back({ "zh", beam.display_text });

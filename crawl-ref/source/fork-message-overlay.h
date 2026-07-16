@@ -294,10 +294,12 @@ struct resolved_actor
     std::string possessive_name_en;
     std::string possessive_pronoun_en;
     std::string reflexive_en;
+    std::string arms_plural_en;
     std::vector<localized_value> localized;
     std::vector<localized_value> possessive_name_localized;
     std::vector<localized_value> possessive_pronoun_localized;
     std::vector<localized_value> reflexive_localized;
+    std::vector<localized_value> arms_plural_localized;
     message_visibility visibility = message_visibility::UNKNOWN;
 };
 
@@ -386,6 +388,7 @@ struct binding_requirements
     cast_frame frame = cast_frame::DIRECT_EFFECT;
     bool resolves_target = false;
     bool implies_gesture = false;
+    bool needs_actor_arms_plural = false;
 };
 
 using runtime_binding_resolver = std::function<runtime_bindings(

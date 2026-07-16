@@ -203,6 +203,13 @@ bool _same_strings(vector<string> lhs, vector<string> rhs)
     return lhs == rhs;
 }
 
+bool _has_slot_type(const catalog_variant &variant, const string &type)
+{
+    return any_of(
+        variant.slot_schema.begin(), variant.slot_schema.end(),
+        [&type](const slot_definition &slot) { return slot.type == type; });
+}
+
 bool _validate_lines(const catalog_source &source,
                      const catalog_variant &variant, string &error)
 {
@@ -213,7 +220,7 @@ bool _validate_lines(const catalog_source &source,
         {
             "actor_ref", "actor_possessive_name",
             "actor_possessive_pronoun", "actor_reflexive",
-            "resolved_target", "resolved_beam",
+            "actor_arms_plural", "resolved_target", "resolved_beam",
         };
         if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
@@ -663,6 +670,14 @@ const load_report &load_monspell_overlay(
                 return _disable(load_failure::CORRUPT,
                                 "non-target binding contains target tokens");
             }
+            const bool has_arms_token =
+                actual_variant.raw_pattern.find("@arms@") != string::npos;
+            if (has_arms_token
+                != _has_slot_type(variant, "actor_arms_plural"))
+            {
+                return _disable(load_failure::CORRUPT,
+                                "plural arms token/type mismatch");
+            }
             if (variant.policy == materialization_policy::CAPTURE_SLOT)
             {
                 return _disable(load_failure::CORRUPT,
@@ -904,6 +919,13 @@ canonical_materialization materialize_monspell_candidate(
             "non-target materialization contains target tokens";
         return result;
     }
+    if ((result.canonical.expanded_pattern_en.find("@arms@") != string::npos)
+        != _has_slot_type(*descriptor, "actor_arms_plural"))
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "materialized plural arms token/type mismatch";
+        return result;
+    }
     if (!bindings)
     {
         result.result = message_result::CORRUPT;
@@ -927,6 +949,8 @@ canonical_materialization materialize_monspell_candidate(
     result.requirements.implies_gesture = any_of(
         requirement_lines->begin(), requirement_lines->end(),
         [](const line_metadata &line) { return line.implies_gesture; });
+    result.requirements.needs_actor_arms_plural =
+        _has_slot_type(*descriptor, "actor_arms_plural");
     result.binding.rng.before = canonical_textdb::observe_rng();
     result.binding.values = bindings(result.requirements);
     result.binding.rng.after = canonical_textdb::observe_rng();
@@ -936,6 +960,7 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_possessive_name = false;
     bool needs_actor_possessive_pronoun = false;
     bool needs_actor_reflexive = false;
+    bool needs_actor_arms_plural = false;
     bool needs_target = false;
     bool needs_beam = false;
     for (const slot_definition &slot : descriptor->slot_schema)
@@ -947,6 +972,8 @@ canonical_materialization materialize_monspell_candidate(
             || slot.type == "actor_possessive_pronoun";
         needs_actor_reflexive = needs_actor_reflexive
             || slot.type == "actor_reflexive";
+        needs_actor_arms_plural = needs_actor_arms_plural
+            || slot.type == "actor_arms_plural";
         needs_target = needs_target || slot.type == "resolved_target";
         needs_beam = needs_beam || slot.type == "resolved_beam";
     }
@@ -957,6 +984,8 @@ canonical_materialization materialize_monspell_candidate(
         || (needs_actor_possessive_pronoun
             && resolved.actor.possessive_pronoun_en.empty())
         || (needs_actor_reflexive && resolved.actor.reflexive_en.empty())
+        || (needs_actor_arms_plural
+            && resolved.actor.arms_plural_en.empty())
         || (descriptor->resolves_target && (resolved.target.relation
                              == target_relation::NONE
                              || !_valid_target_payload(resolved.target)
@@ -991,6 +1020,9 @@ canonical_materialization materialize_monspell_candidate(
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@reflexive@",
         resolved.actor.reflexive_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@arms@",
+        resolved.actor.arms_plural_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@at@", resolved.target.relation_en);
     result.bound_pattern_en = replace_all(
@@ -1269,6 +1301,17 @@ render_result render_materialized_candidate(
             {
                 result.diagnostic =
                     "localized actor reflexive binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_arms_plural")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.arms_plural_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor plural-arms binding is missing";
                 return result;
             }
         }
