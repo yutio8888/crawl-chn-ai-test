@@ -149,6 +149,7 @@ mon-abil.o \
 mon-act.o \
 mon-aura.o \
 mon-behv.o \
+mon-cast-message-keys.o \
 mon-cast-target.o \
 mon-cast.o \
 mon-clone.o \
@@ -320,6 +321,7 @@ catch2-tests/test_english.o \
 catch2-tests/test_files.o \
 catch2-tests/test_fork_message_overlay.o \
 catch2-tests/test_items.o \
+catch2-tests/test_mon_cast_message_keys.o \
 catch2-tests/test_mon_cast_target.o \
 catch2-tests/test_mon-util.o \
 catch2-tests/test_ng-init-branches.o \

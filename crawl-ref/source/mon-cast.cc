@@ -6,6 +6,7 @@
 #include "AppHdr.h"
 
 #include "mon-cast.h"
+#include "mon-cast-message-keys.h"
 #include "mon-cast-target.h"
 
 #include <algorithm>
@@ -8765,110 +8766,39 @@ static void _speech_keys(vector<string>& key_list,
                          spell_type spell, mon_spell_slot_flags slot_flags,
                          bool targeted)
 {
-    const string cast_str = " cast";
-
-    // Can't use copy-initialization 'wizard = slot_flags & ...' here,
-    // because the bitfield-to-bool conversion is not implicit.
-    const bool wizard  {slot_flags & MON_SPELL_WIZARD};
-    const bool priest  {slot_flags & MON_SPELL_PRIEST};
-    const bool natural {slot_flags & MON_SPELL_NATURAL
-                        || slot_flags & MON_SPELL_VOCAL};
-    const bool magical {slot_flags & MON_SPELL_MAGICAL};
-
+    namespace mcmk = mon_cast_message_keys;
     const mon_body_shape shape = get_mon_shape(*mons);
-    const string    spell_name = spell_english_name(spell);
-    const bool      real_spell = priest || wizard;
-
-    // Before just using generic per-spell and per-monster casts, try
-    // per-monster, per-spell, with the monster type name, then the
-    // species name, then the genus name, then wizard/priest/magical/natural.
-    // We don't include "real" or "gestures" here since that can be
-    // be determined from the monster type; or "targeted" since that
-    // can be determined from the spell.
-
-    // No "the Serpent of Hell". (Its genus doesn't start with "the ", but
-    // just in case that changes...)
-    string mon_type = remove_prepended_the(mons_type_name(mons->type, DESC_DBNAME));
-    string spe_type = remove_prepended_the(mons_type_name(mons_species(mons->type), DESC_DBNAME));
-    string gen_type = remove_prepended_the(mons_type_name(mons_genus(mons->type), DESC_DBNAME));
-
-    key_list.push_back(spell_name + " " + mon_type + cast_str);
-    key_list.push_back(spell_name + " " + spe_type + cast_str);
-    key_list.push_back(spell_name + " " + gen_type + cast_str);
-
-    if (wizard)
-    {
-        key_list.push_back(make_stringf("%s %swizard%s",
-                               spell_name.c_str(),
-                               mon_shape_is_humanoid(shape) ? ""
-                                                            : "non-humanoid ",
-                               cast_str.c_str()));
-    }
-    else if (priest)
-        key_list.push_back(spell_name + " priest" + cast_str);
-    else if (magical)
-        key_list.push_back(spell_name + " magical" + cast_str);
-    else if (natural)
-        key_list.push_back(spell_name + " natural" + cast_str);
-
-
-    // Now try just the spell's name.
-    if (mon_shape_is_humanoid(shape))
-    {
-        if (real_spell)
-            key_list.push_back(spell_name + cast_str + " real");
-        if (mons_intel(*mons) >= I_HUMAN)
-            key_list.push_back(spell_name + cast_str + " gestures");
-    }
-
-    // XXX: Give the final shot from hoarfrost cannonade a different message.
-    //      (If only I could see a nicer way to do this...)
-    if (spell == SPELL_HOARFROST_BULLET
+    mcmk::recipe_input input;
+    input.spell_name = spell_english_name(spell);
+    input.monster_type = remove_prepended_the(
+        mons_type_name(mons->type, DESC_DBNAME));
+    input.monster_species = remove_prepended_the(
+        mons_type_name(mons_species(mons->type), DESC_DBNAME));
+    input.monster_genus = remove_prepended_the(
+        mons_type_name(mons_genus(mons->type), DESC_DBNAME));
+    if (slot_flags & MON_SPELL_NATURAL)
+        input.category_bits |= mcmk::CATEGORY_NATURAL;
+    if (slot_flags & MON_SPELL_MAGICAL)
+        input.category_bits |= mcmk::CATEGORY_MAGICAL;
+    if (slot_flags & MON_SPELL_VOCAL)
+        input.category_bits |= mcmk::CATEGORY_VOCAL;
+    if (slot_flags & MON_SPELL_WIZARD)
+        input.category_bits |= mcmk::CATEGORY_WIZARD;
+    if (slot_flags & MON_SPELL_PRIEST)
+        input.category_bits |= mcmk::CATEGORY_PRIEST;
+    input.humanoid = mon_shape_is_humanoid(shape);
+    input.at_least_human_intelligence = mons_intel(*mons) >= I_HUMAN;
+    input.hoarfrost_finale =
+        spell == SPELL_HOARFROST_BULLET
         && mons->props.exists(HOARFROST_SHOTS_KEY)
-        && mons->props[HOARFROST_SHOTS_KEY].get_int() == MAX_HOARFROST_SHOTS)
-    {
-        key_list.push_back(spell_name + cast_str + " finale");
-    }
+        && mons->props[HOARFROST_SHOTS_KEY].get_int() == MAX_HOARFROST_SHOTS;
+    input.targeted = targeted;
+    input.visible_beam = targeted && pbolt.visible();
 
-    key_list.push_back(spell_name + cast_str);
-
-    // Only postfix "targeted" after this point.
-    const unsigned int num_spell_keys = key_list.size();
-
-    // Next the monster type name, then species name, then genus name.
-    key_list.push_back(mon_type + cast_str);
-    key_list.push_back(spe_type + cast_str);
-    key_list.push_back(gen_type + cast_str);
-
-    // Last, generic wizard, priest or magical.
-    if (wizard)
-    {
-        key_list.push_back(make_stringf("%swizard%s",
-                               mon_shape_is_humanoid(shape) ? ""
-                                                            : "non-humanoid ",
-                               cast_str.c_str()));
-    }
-    else if (priest)
-        key_list.push_back("priest" + cast_str);
-    else if (magical)
-        key_list.push_back("magical" + cast_str);
-
-    if (targeted)
-    {
-        // For targeted spells, try with the targeted suffix first.
-        for (unsigned int i = key_list.size() - 1; i >= num_spell_keys; i--)
-        {
-            string str = key_list[i] + " targeted";
-            key_list.insert(key_list.begin() + i, str);
-        }
-
-        // Generic beam messages.
-        if (pbolt.visible())
-        {
-            key_list.push_back(pbolt.get_short_name() + " beam " + cast_str);
-            key_list.emplace_back("beam catchall cast");
-        }
-    }
+    const vector<string> materialized = mcmk::materialize_key_recipe(
+        mcmk::build_key_recipe(input),
+        input.visible_beam ? pbolt.get_short_name() : "");
+    key_list.insert(key_list.end(), materialized.begin(), materialized.end());
 }
 
 namespace fmo = fork_message_overlay;
