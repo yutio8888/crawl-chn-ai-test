@@ -19,6 +19,7 @@ namespace
 load_report current_report;
 set<string> covered_keys;
 diagnostic_counters current_diagnostics;
+map<string, vector<string>> capture_parent_leaf_keys;
 
 string _fnv1a64(const string &payload)
 {
@@ -68,6 +69,7 @@ string _selection_fingerprint(const textdb_phase0::canonical_entry &entry)
 const load_report &_disable(load_failure failure, const string &diagnostic)
 {
     covered_keys.clear();
+    capture_parent_leaf_keys.clear();
     current_report.state = domain_state::DISABLED;
     current_report.failure = failure;
     current_report.diagnostic = diagnostic;
@@ -196,6 +198,37 @@ vector<string> _recursive_dependencies(
     return vector<string>(dependencies.begin(), dependencies.end());
 }
 
+vector<string> _recursive_closure(
+    const string &pattern,
+    const map<string, const textdb_phase0::canonical_entry *> &canonical)
+{
+    set<string> closure;
+    vector<string> pending = _recursive_dependencies(pattern, canonical);
+    while (!pending.empty())
+    {
+        const string key = pending.back();
+        pending.pop_back();
+        if (!closure.insert(key).second)
+            continue;
+        const auto found = canonical.find(key);
+        if (found == canonical.end())
+            continue;
+        for (const textdb_phase0::canonical_variant &variant
+             : found->second->variants)
+        {
+            const vector<string> nested =
+                _recursive_dependencies(variant.raw_pattern, canonical);
+            pending.insert(pending.end(), nested.begin(), nested.end());
+        }
+    }
+    return vector<string>(closure.begin(), closure.end());
+}
+
+string _variant_fingerprint(const textdb_phase0::canonical_variant &variant)
+{
+    return _fnv1a64(variant.raw_pattern);
+}
+
 bool _same_strings(vector<string> lhs, vector<string> rhs)
 {
     sort(lhs.begin(), lhs.end());
@@ -221,7 +254,7 @@ bool _validate_lines(const catalog_source &source,
             "actor_ref", "actor_possessive_name",
             "actor_possessive_pronoun", "actor_reflexive",
             "actor_arms_plural", "resolved_target", "resolved_foe",
-            "resolved_beam",
+            "resolved_beam", "recursive_capture",
         };
         if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
@@ -517,6 +550,169 @@ bool _valid_foe_payload(const resolved_foe &foe)
     }
     return false;
 }
+
+void _append_capture_signature_string(string &signature, const string &value)
+{
+    signature += std::to_string(value.size());
+    signature += ':';
+    signature += value;
+}
+
+string _capture_identity_signature(
+    const canonical_textdb::loaded_candidate &candidate)
+{
+    string signature = "materialization-v1|variants=";
+    signature += std::to_string(candidate.selected_variants.size());
+    for (const canonical_textdb::selected_variant &selected
+         : candidate.selected_variants)
+    {
+        signature += '|';
+        _append_capture_signature_string(
+            signature, selected.locator.canonical_key);
+        signature += ':' + std::to_string(selected.locator.variant_ordinal);
+        signature += ':' + std::to_string(selected.recursion_path.size());
+        for (const size_t step : selected.recursion_path)
+            signature += ':' + std::to_string(step);
+    }
+    signature += "|lua=0|sites=0";
+    return signature;
+}
+
+bool _same_selected_choice(
+    const canonical_textdb::selected_variant &selected,
+    const canonical_textdb::weighted_choice_trace &choice)
+{
+    return selected.locator.canonical_key == choice.resolved_canonical_key
+        && selected.locator.variant_ordinal == choice.variant_ordinal
+        && selected.recursion_path == choice.recursion_path;
+}
+
+bool _extract_recursive_captures(
+    const catalog_variant &descriptor,
+    const canonical_textdb::loaded_candidate &candidate,
+    vector<slot_value> &captures, string &identity, string &error)
+{
+    if (descriptor.policy != materialization_policy::CAPTURE_SLOT)
+        return descriptor.recursive_captures.empty();
+    if (candidate.trace.weighted_choices.size() != 7
+        || candidate.trace.recursive_sites.size() != 7
+        || candidate.selected_variants.size() != 7
+        || !candidate.trace.lua_sites.empty()
+        || candidate.lua_site_count != 0
+        || candidate.recursive_site_count != 7
+        || candidate.trace.final_replacement_count != 7)
+    {
+        error = "recursive capture trace shape is invalid";
+        return false;
+    }
+    const auto &choices = candidate.trace.weighted_choices;
+    const auto &selected = candidate.selected_variants;
+    const auto &sites = candidate.trace.recursive_sites;
+    const auto parent_leaf_keys =
+        capture_parent_leaf_keys.find(descriptor.stable_id);
+    if (parent_leaf_keys == capture_parent_leaf_keys.end()
+        || parent_leaf_keys->second.size()
+           != descriptor.recursive_captures.size())
+    {
+        error = "recursive capture parent mapping is unavailable";
+        return false;
+    }
+    if (candidate.top_locator.canonical_key
+            != "vanquished vanguard nergalle cast"
+        || candidate.top_locator.variant_ordinal != 0
+        || choices[0].recursion_path != vector<size_t>()
+        || choices[0].requested_key
+            != "vanquished vanguard nergalle cast"
+        || choices[0].resolved_canonical_key
+            != "vanquished vanguard nergalle cast"
+        || choices[0].variant_ordinal != 0
+        || !_same_selected_choice(selected[0], choices[0])
+        || selected[0].locator.canonical_key
+            != candidate.top_locator.canonical_key
+        || selected[0].locator.variant_ordinal
+            != candidate.top_locator.variant_ordinal
+        || sites[0].recursion_path != vector<size_t>{ 0 }
+        || sites[0].marker != "The_monster"
+        || sites[0].status
+            != canonical_textdb::recursive_site_status::MISSING
+        || !sites[0].replacement.empty())
+    {
+        error = "recursive capture top-level topology is invalid";
+        return false;
+    }
+
+    for (size_t index = 0; index < descriptor.recursive_captures.size();
+         ++index)
+    {
+        const recursive_capture_definition &definition =
+            descriptor.recursive_captures[index];
+        const size_t parent_index = 1 + index * 2;
+        const size_t leaf_index = parent_index + 1;
+        const vector<size_t> parent_path = { index + 1 };
+        const vector<size_t> leaf_path = { index + 1, 0 };
+        const canonical_textdb::weighted_choice_trace &parent_choice =
+            choices[parent_index];
+        const canonical_textdb::weighted_choice_trace &leaf_choice =
+            choices[leaf_index];
+        const canonical_textdb::recursive_site_trace &parent_site =
+            sites[parent_index];
+        const canonical_textdb::recursive_site_trace &leaf_site =
+            sites[leaf_index];
+        if (definition.ordinal != index
+            || definition.marker != parent_site.marker
+            || definition.vocabulary != "orc_name_leaf_v1"
+            || parent_choice.requested_key != "orc name"
+            || parent_choice.resolved_canonical_key != "orc name"
+            || parent_choice.recursion_path != parent_path
+            || parent_site.recursion_path != parent_path
+            || parent_site.marker != "orc name"
+            || parent_site.status
+               != canonical_textdb::recursive_site_status::SELECTED
+            || leaf_choice.recursion_path != leaf_path
+            || leaf_site.recursion_path != leaf_path
+            || leaf_choice.requested_key != leaf_site.marker
+            || leaf_choice.resolved_canonical_key != leaf_site.marker
+            || parent_choice.variant_ordinal
+               >= parent_leaf_keys->second.size()
+            || leaf_choice.requested_key
+               != parent_leaf_keys->second[parent_choice.variant_ordinal]
+            || leaf_choice.resolved_canonical_key
+               != parent_leaf_keys->second[parent_choice.variant_ordinal]
+            || leaf_site.status
+               != canonical_textdb::recursive_site_status::SELECTED
+            || parent_site.replacement.empty()
+            || parent_site.replacement != leaf_site.replacement
+            || !_same_selected_choice(
+                selected[parent_index], parent_choice)
+            || !_same_selected_choice(selected[leaf_index], leaf_choice))
+        {
+            error = "recursive capture topology is invalid";
+            return false;
+        }
+
+        const auto word = find_if(
+            descriptor.recursive_capture_vocabulary.begin(),
+            descriptor.recursive_capture_vocabulary.end(),
+            [&leaf_choice, &leaf_site](
+                const recursive_capture_vocabulary_entry &candidate_word)
+            {
+                return candidate_word.canonical_key
+                           == leaf_choice.resolved_canonical_key
+                       && candidate_word.variant_ordinal
+                           == leaf_choice.variant_ordinal
+                       && candidate_word.expanded_replacement_en
+                           == leaf_site.replacement;
+            });
+        if (word == descriptor.recursive_capture_vocabulary.end())
+        {
+            error = "recursive capture is outside the declared vocabulary";
+            return false;
+        }
+        captures.push_back({ definition.name, parent_site.replacement });
+    }
+    identity = _capture_identity_signature(candidate);
+    return true;
+}
 }
 
 #include "fork-message-overlay.generated.inc"
@@ -630,8 +826,12 @@ const load_report &load_monspell_overlay(
                                 "canonical variant snapshot drifted");
             }
 
-            const vector<string> dependencies = _recursive_dependencies(
-                actual_variant.raw_pattern, canonical);
+            const vector<string> direct_dependencies =
+                _recursive_dependencies(actual_variant.raw_pattern, canonical);
+            const vector<string> dependencies =
+                variant.policy == materialization_policy::CAPTURE_SLOT
+                    ? _recursive_closure(actual_variant.raw_pattern, canonical)
+                    : direct_dependencies;
             if (!_same_strings(dependencies,
                                variant.recursive_dependencies)
                 || variant.recursive_dependencies.size()
@@ -640,10 +840,27 @@ const load_report &load_monspell_overlay(
                 return _disable(load_failure::CLOSURE_INCOMPLETE,
                                 "recursive closure declaration is incomplete");
             }
+            if (variant.policy == materialization_policy::CAPTURE_SLOT)
+            {
+                for (size_t i = 0; i < dependencies.size(); ++i)
+                {
+                    const auto dependency = canonical.find(dependencies[i]);
+                    if (dependency == canonical.end()
+                        || variant.recursive_dependency_fingerprints[i]
+                           != _canonical_fingerprint(*dependency->second))
+                    {
+                        return _disable(
+                            load_failure::CLOSURE_INCOMPLETE,
+                            "recursive capture closure fingerprint drifted");
+                    }
+                }
+            }
             if (entry.mode == entry_mode::CANDIDATE)
             {
-                for (const string &dependency : dependencies)
+                for (const string &dependency : direct_dependencies)
                 {
+                    if (variant.policy == materialization_policy::CAPTURE_SLOT)
+                        continue;
                     const auto dependency_entry =
                         catalog_entries.find(dependency);
                     if (dependency_entry == catalog_entries.end()
@@ -703,8 +920,167 @@ const load_report &load_monspell_overlay(
             }
             if (variant.policy == materialization_policy::CAPTURE_SLOT)
             {
+                if (variant.materialization_cases.size()
+                    || variant.recursive_captures.size() != 3
+                    || variant.recursive_capture_vocabulary.size() != 103
+                    || direct_dependencies
+                       != vector<string>{ "orc name" })
+                {
+                    return _disable(load_failure::CORRUPT,
+                                    "recursive capture declaration is invalid");
+                }
+                set<string> capture_names;
+                set<string> capture_slot_names;
+                for (const slot_definition &slot : variant.slot_schema)
+                {
+                    if (slot.type == "recursive_capture")
+                        capture_slot_names.insert(slot.name);
+                }
+                for (size_t i = 0; i < variant.recursive_captures.size(); ++i)
+                {
+                    const recursive_capture_definition &capture =
+                        variant.recursive_captures[i];
+                    if (!_valid_identifier(capture.name)
+                        || !capture_names.insert(capture.name).second
+                        || capture.marker != "orc name"
+                        || capture.ordinal != i
+                        || capture.vocabulary != "orc_name_leaf_v1")
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture site declaration is invalid");
+                    }
+                }
+                if (capture_names != capture_slot_names)
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        "recursive capture slots do not match declarations");
+                }
+                map<pair<string, size_t>, pair<string, string>>
+                    expected_vocabulary;
+                const auto orc_names = canonical.find("orc name");
+                if (orc_names == canonical.end())
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        "recursive capture vocabulary root is missing");
+                }
+                set<string> reachable_leaf_keys;
+                vector<string> parent_leaf_mapping(
+                    orc_names->second->variants.size());
+                for (const textdb_phase0::canonical_variant &orc_variant
+                     : orc_names->second->variants)
+                {
+                    const vector<string> leaf_dependencies =
+                        _recursive_dependencies(
+                            orc_variant.raw_pattern, canonical);
+                    if (leaf_dependencies.size() != 1)
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture vocabulary root is not leaf-only");
+                    }
+                    if (orc_variant.raw_pattern
+                        != "@" + leaf_dependencies[0] + "@")
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture parent is not one exact marker");
+                    }
+                    if (orc_variant.locator.variant_ordinal
+                        >= parent_leaf_mapping.size()
+                        || !parent_leaf_mapping[
+                            orc_variant.locator.variant_ordinal].empty())
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture parent mapping is invalid");
+                    }
+                    parent_leaf_mapping[
+                        orc_variant.locator.variant_ordinal] =
+                            leaf_dependencies[0];
+                    reachable_leaf_keys.insert(leaf_dependencies[0]);
+                }
+                if (parent_leaf_mapping.size() != 3
+                    || any_of(
+                        parent_leaf_mapping.begin(),
+                        parent_leaf_mapping.end(),
+                        [](const string &key) { return key.empty(); }))
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        "recursive capture parent mapping is incomplete");
+                }
+                for (const string &leaf_key : reachable_leaf_keys)
+                {
+                    const auto leaf = canonical.find(leaf_key);
+                    if (leaf == canonical.end())
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture vocabulary leaf is missing");
+                    }
+                    for (const textdb_phase0::canonical_variant &leaf_variant
+                         : leaf->second->variants)
+                    {
+                        if (!_recursive_dependencies(
+                                leaf_variant.raw_pattern, canonical).empty()
+                            || leaf_variant.raw_pattern.find('@')
+                               != string::npos
+                            || leaf_variant.raw_pattern.find('[')
+                               != string::npos
+                            || leaf_variant.raw_pattern.find(']')
+                               != string::npos
+                            || leaf_variant.raw_pattern.find("{{")
+                               != string::npos
+                            || leaf_variant.raw_pattern.find("}}")
+                               != string::npos)
+                        {
+                            return _disable(
+                                load_failure::CORRUPT,
+                                "recursive capture vocabulary leaf is dynamic");
+                        }
+                        expected_vocabulary.emplace(
+                            make_pair(
+                                leaf_key,
+                                leaf_variant.locator.variant_ordinal),
+                            make_pair(
+                                _variant_fingerprint(leaf_variant),
+                                leaf_variant.raw_pattern));
+                    }
+                }
+                map<pair<string, size_t>, pair<string, string>>
+                    declared_vocabulary;
+                for (const recursive_capture_vocabulary_entry &word
+                     : variant.recursive_capture_vocabulary)
+                {
+                    if (!declared_vocabulary.emplace(
+                            make_pair(
+                                word.canonical_key, word.variant_ordinal),
+                            make_pair(
+                                word.variant_fingerprint,
+                                word.expanded_replacement_en)).second)
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "recursive capture vocabulary is invalid");
+                    }
+                }
+                if (declared_vocabulary != expected_vocabulary)
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        "recursive capture vocabulary does not match closure");
+                }
+                capture_parent_leaf_keys[variant.stable_id] =
+                    parent_leaf_mapping;
+            }
+            else if (!variant.recursive_captures.empty()
+                     || !variant.recursive_capture_vocabulary.empty())
+            {
                 return _disable(load_failure::CORRUPT,
-                                "materialization policy is not enabled yet");
+                                "non-capture policy declares captures");
             }
             if (variant.policy == materialization_policy::NONE
                 && (actual_variant.raw_pattern.find('[') != string::npos
@@ -1005,6 +1381,15 @@ canonical_materialization materialize_monspell_candidate(
             "non-target materialization contains target tokens";
         return result;
     }
+    if (!_extract_recursive_captures(
+            *descriptor, result.canonical, result.recursive_captures,
+            result.materialization_signature, result.diagnostic))
+    {
+        result.result = message_result::CORRUPT;
+        if (result.diagnostic.empty())
+            result.diagnostic = "unexpected recursive capture metadata";
+        return result;
+    }
     if ((result.canonical.expanded_pattern_en.find("@arms@") != string::npos)
         != _has_slot_type(*descriptor, "actor_arms_plural"))
     {
@@ -1123,6 +1508,12 @@ canonical_materialization materialize_monspell_candidate(
         result.bound_pattern_en, "@foe@", resolved.foe.canonical_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@beam@", resolved.beam.canonical_en);
+    if (result.bound_pattern_en.find('@') != string::npos)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "materialized pattern retains a legacy token";
+        return result;
+    }
 
     result.randomized = canonical_textdb::materialize_bound_legacy_randomness(
         result.canonical, result.bound_pattern_en);
@@ -1134,7 +1525,8 @@ canonical_materialization materialize_monspell_candidate(
         return result;
     }
     if (result.canonical.lua_site_count != 0
-        || result.canonical.selected_variants.size() != 1)
+        || (descriptor->policy != materialization_policy::CAPTURE_SLOT
+            && result.canonical.selected_variants.size() != 1))
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "structured policy observed unsupported dynamics";
@@ -1162,11 +1554,62 @@ canonical_materialization materialize_monspell_candidate(
         result.diagnostic = "CASE_MAP materialization signature is unknown";
         return result;
     }
+    if (descriptor->policy == materialization_policy::CAPTURE_SLOT)
+    {
+        if (result.randomized.signature
+                != result.materialization_signature
+            || result.randomized.random_site_count != 0
+            || result.randomized.pattern_en != result.bound_pattern_en
+            || result.canonical.expanded_pattern_en.find('[')
+               != string::npos
+            || descriptor->lines.size() != 1)
+        {
+            result.result = message_result::CORRUPT;
+            result.diagnostic =
+                "CAPTURE_SLOT observed unsupported materialization";
+            return result;
+        }
+        const localized_template *english_template = nullptr;
+        for (const localized_template &localized
+             : descriptor->lines[0].templates)
+        {
+            if (localized.language == "en" && localized.relation == "NONE")
+            {
+                if (english_template)
+                {
+                    result.result = message_result::CORRUPT;
+                    result.diagnostic =
+                        "CAPTURE_SLOT has ambiguous English template";
+                    return result;
+                }
+                english_template = &localized;
+            }
+        }
+        vector<slot_value> english_values = result.recursive_captures;
+        english_values.push_back({ "actor", resolved.actor.sentence_en });
+        const render_result english = english_template
+            ? render_typed_template(
+                  english_template->pattern, descriptor->slot_schema,
+                  english_values)
+            : render_result();
+        if (english.result != message_result::RENDERED
+            || english.lines.size() != 1
+            || english.lines[0].text != result.randomized.pattern_en)
+        {
+            result.result = message_result::CORRUPT;
+            result.diagnostic =
+                "CAPTURE_SLOT English reconstruction does not match legacy";
+            return result;
+        }
+    }
 
-    const catalog_variant *variant = _find_catalog_variant(
-        result.canonical.top_locator.canonical_key,
-        result.canonical.top_locator.variant_ordinal,
-        result.randomized.signature);
+    const catalog_variant *variant =
+        descriptor->policy == materialization_policy::CAPTURE_SLOT
+            ? descriptor
+            : _find_catalog_variant(
+                result.canonical.top_locator.canonical_key,
+                result.canonical.top_locator.variant_ordinal,
+                result.randomized.signature);
     if (!variant || variant != descriptor
         || variant->frame != resolved.cast.frame)
     {
@@ -1327,10 +1770,50 @@ render_result render_materialized_candidate(
         result.diagnostic = materialized.diagnostic;
         return result;
     }
-    const catalog_variant *variant = _find_catalog_variant(
+    const catalog_variant *variant = _find_catalog_variant_by_locator(
         materialized.canonical.top_locator.canonical_key,
-        materialized.canonical.top_locator.variant_ordinal,
-        materialized.materialization_signature);
+        materialized.canonical.top_locator.variant_ordinal);
+    if (variant && variant->policy == materialization_policy::CAPTURE_SLOT)
+    {
+        vector<slot_value> captures;
+        string identity;
+        string error;
+        if (!_extract_recursive_captures(
+                *variant, materialized.canonical, captures, identity, error)
+            || identity != materialized.randomized.signature
+            || identity != materialized.materialization_signature
+            || captures.size() != materialized.recursive_captures.size())
+        {
+            result.diagnostic = error.empty()
+                ? "materialized capture identity is invalid" : error;
+            return result;
+        }
+        for (size_t i = 0; i < captures.size(); ++i)
+        {
+            if (captures[i].name != materialized.recursive_captures[i].name
+                || captures[i].value
+                   != materialized.recursive_captures[i].value)
+            {
+                result.diagnostic =
+                    "materialized capture values do not match canonical trace";
+                return result;
+            }
+        }
+    }
+    else
+    {
+        variant = _find_catalog_variant(
+            materialized.canonical.top_locator.canonical_key,
+            materialized.canonical.top_locator.variant_ordinal,
+            materialized.materialization_signature);
+        if (materialized.materialization_signature
+            != materialized.randomized.signature)
+        {
+            result.diagnostic =
+                "materialization signature does not match canonical randomness";
+            return result;
+        }
+    }
     const materialization_case *materialized_case = variant
         ? _find_materialization_case(*variant,
                                      materialized.materialization_signature)
@@ -1439,6 +1922,23 @@ render_result render_materialized_candidate(
                 return result;
             }
         }
+        else if (slot.type == "recursive_capture")
+        {
+            const auto capture = find_if(
+                materialized.recursive_captures.begin(),
+                materialized.recursive_captures.end(),
+                [&slot](const slot_value &value)
+                {
+                    return value.name == slot.name;
+                });
+            if (capture == materialized.recursive_captures.end()
+                || capture->value.empty())
+            {
+                result.diagnostic = "recursive capture binding is missing";
+                return result;
+            }
+            display = capture->value;
+        }
         else
         {
             result.diagnostic = "unsupported typed slot binding";
@@ -1462,6 +1962,7 @@ diagnostic_counters monspell_overlay_diagnostics()
 void reset_monspell_overlay_for_test()
 {
     covered_keys.clear();
+    capture_parent_leaf_keys.clear();
     current_report = load_report();
 }
 

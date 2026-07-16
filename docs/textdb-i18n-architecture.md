@@ -1,10 +1,10 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成七批低风险迁移
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成八批低风险迁移
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 20 个
-> canonical key、49 个 canonical variant，全局 legacy heuristic 仍受门禁保护
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 21 个
+> canonical key、51 个 canonical variant；删除全局 legacy heuristic 留待后续提交
 
 ## 1. 背景
 
@@ -569,7 +569,7 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 覆盖 20 个 canonical key、49 个 canonical variant。descriptor
+当前生产 catalog 覆盖 21 个 canonical key、51 个 canonical variant。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -915,14 +915,15 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 20 个 canonical
-key、49 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 21 个 canonical
+key、51 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
 [`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
-`monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT` 和
-Phase 2 全局 heuristic 删除仍未启用。structured binding 已支持显式
+`monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT`
+仅启用 Nergalle 的三个 `orc name`、leaf-only vocabulary、无 Lua/substring
+randomness 窄切片，Phase 2 全局 heuristic 删除仍未启用。structured binding 已支持显式
 `resolves_target`、gesture，以及 actor possessive/reflexive 槽；模板是否引用
 `${target}` 不再决定是否解析目标。
 
@@ -950,11 +951,18 @@ requirement 保持随机身体形态的 legacy RNG 调用顺序。第五批迁�
 显式 gesture metadata，不增加新槽类型或随机物化策略。第六批迁移
 `cantrip gastronok cast` 的全部 9 个 variant，显式表达 3 个 visual-only caster
 行和 5 个 player-directed 行的 applicability，并验证末尾 weight-5 变体、
-真实 Gastronok 所有格以及 visible/unseen candidate 行为。门禁仍为关闭，因为还有
-1 个 fail-closed occurrence。第七批迁移 `hellfire mortar wiglaf cast` 的全部
+真实 Gastronok 所有格以及 visible/unseen candidate 行为。第七批迁移
+`hellfire mortar wiglaf cast` 的全部
 3 个 variant，引入窄类型 `resolved_foe` binding 与 `requires_foe` applicability；
 target relation 与 foe entity 独立解析，无 foe 的 normal attempt 在 binding
 前继续下一个 candidate，silent-unprefixed 无法解析 foe 时则 fail closed。
+第八批迁移 `vanquished vanguard nergalle cast` 的全部 2 个 variant；ordinal 0
+以受控 `CAPTURE_SLOT` 从同一 canonical English trace 捕获三个有序
+`orc name` leaf replacement，EN/ZH 共享捕获值且不重新随机，ordinal 1 使用
+`NONE`。依赖闭包、站点顺序、模板槽和 103 项 leaf vocabulary 均由
+generator/loader 双重验证。当前 behavior report 的 unanalyzable 与 fail-closed
+occurrence 均为 0，`phase2_ready=true`；全局 heuristic 的实际删除仍留给后续
+独立提交。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序

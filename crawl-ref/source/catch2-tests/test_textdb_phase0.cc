@@ -1995,8 +1995,10 @@ TEST_CASE("Phase 0 canonical expansion traces recursion limits",
         REQUIRE(expanded.trace.recursive_sites.size() == 2);
         CHECK(expanded.trace.recursive_sites[0].recursion_path
               == vector<size_t>{ 0 });
+        CHECK(expanded.trace.recursive_sites[0].replacement == "leaf");
         CHECK(expanded.trace.recursive_sites[1].recursion_path
               == vector<size_t>{ 1 });
+        CHECK(expanded.trace.recursive_sites[1].replacement == "leaf");
     }
 
     {
@@ -2015,8 +2017,10 @@ TEST_CASE("Phase 0 canonical expansion traces recursion limits",
         REQUIRE(expanded.trace.recursive_sites.size() == 2);
         CHECK(expanded.trace.recursive_sites[0].recursion_path
               == vector<size_t>{ 0 });
+        CHECK(expanded.trace.recursive_sites[0].replacement == "done");
         CHECK(expanded.trace.recursive_sites[1].recursion_path
               == (vector<size_t>{ 0, 0 }));
+        CHECK(expanded.trace.recursive_sites[1].replacement == "done");
     }
 }
 

@@ -177,6 +177,22 @@ struct materialization_case
     std::vector<line_metadata> lines;
 };
 
+struct recursive_capture_definition
+{
+    std::string name;
+    std::string marker;
+    size_t ordinal = 0;
+    std::string vocabulary;
+};
+
+struct recursive_capture_vocabulary_entry
+{
+    std::string canonical_key;
+    size_t variant_ordinal = 0;
+    std::string variant_fingerprint;
+    std::string expanded_replacement_en;
+};
+
 struct catalog_variant
 {
     std::string stable_id;
@@ -195,6 +211,9 @@ struct catalog_variant
     std::vector<materialization_case> materialization_cases;
     std::vector<std::string> recursive_dependencies;
     std::vector<std::string> recursive_dependency_fingerprints;
+    std::vector<recursive_capture_definition> recursive_captures;
+    std::vector<recursive_capture_vocabulary_entry>
+        recursive_capture_vocabulary;
 };
 
 struct catalog_entry
@@ -446,6 +465,7 @@ struct canonical_materialization
     std::string stable_id;
     std::string materialization_signature;
     std::string bound_pattern_en;
+    std::vector<slot_value> recursive_captures;
     std::string diagnostic;
 };
 

@@ -1687,6 +1687,176 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "Nergalle recursive captures preserve canonical names and RNG",
+                 "[single-file][mon-cast-target][message-overlay][phase2][capture]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_zh_database localized_database;
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    source.type = MONS_NERGALLE;
+    source.attitude = ATT_HOSTILE;
+    source.foe = MHITYOU;
+    bolt beam = make_target_beam(coord_def(25, 23));
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    uint64_t duplicate_seed = 0;
+    uint64_t plain_seed = 0;
+    for (uint64_t seed = 1; seed <= 65536
+         && (!duplicate_seed || !plain_seed); ++seed)
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(
+            seed, seed ^ 0x9e3779b97f4a7c15ULL);
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_textdb::expand_loaded_english_candidate(
+                "vanquished vanguard nergalle cast");
+        REQUIRE(candidate.status
+                == canonical_textdb::candidate_status::SELECTED);
+        if (candidate.top_locator.variant_ordinal == 1)
+        {
+            plain_seed = seed;
+            continue;
+        }
+        vector<string> names;
+        for (const auto &site : candidate.trace.recursive_sites)
+        {
+            if (site.recursion_path.size() == 1
+                && site.marker == "orc name")
+            {
+                names.push_back(site.replacement);
+            }
+        }
+        REQUIRE(names.size() == 3);
+        if (names[0] == names[1] || names[0] == names[2]
+            || names[1] == names[2])
+        {
+            duplicate_seed = seed;
+        }
+    }
+    REQUIRE(duplicate_seed != 0);
+    REQUIRE(plain_seed != 0);
+
+    for (const uint64_t seed : { duplicate_seed, plain_seed })
+    {
+        CAPTURE(seed);
+        string legacy;
+        uint64_t legacy_state = 0;
+        uint64_t legacy_count = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            rng::subgenerator scoped_rng(
+                seed, seed ^ 0x9e3779b97f4a7c15ULL);
+            const canonical_textdb::loaded_candidate candidate =
+                canonical_textdb::expand_loaded_english_candidate(
+                    "vanquished vanguard nergalle cast");
+            REQUIRE(candidate.status
+                    == canonical_textdb::candidate_status::SELECTED);
+            legacy = replace_all(
+                candidate.expanded_pattern_en, "@The_monster@", "Nergalle");
+            legacy_state = rng::current_generator().get_state();
+            legacy_count = rng::current_generator().get_count();
+        }
+
+        resolved_monspell_cast_message english;
+        uint64_t english_state = 0;
+        uint64_t english_count = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            rng::subgenerator scoped_rng(
+                seed, seed ^ 0x9e3779b97f4a7c15ULL);
+            english = resolve_monspell_cast_message(
+                source, beam, false,
+                { "vanquished vanguard nergalle cast" }, false, false);
+            english_state = rng::current_generator().get_state();
+            english_count = rng::current_generator().get_count();
+        }
+        resolved_monspell_cast_message chinese;
+        uint64_t chinese_state = 0;
+        uint64_t chinese_count = 0;
+        {
+            scoped_test_language language(lang_t::ZH);
+            rng::subgenerator scoped_rng(
+                seed, seed ^ 0x9e3779b97f4a7c15ULL);
+            chinese = resolve_monspell_cast_message(
+                source, beam, false,
+                { "vanquished vanguard nergalle cast" }, false, false);
+            chinese_state = rng::current_generator().get_state();
+            chinese_count = rng::current_generator().get_count();
+        }
+
+        CAPTURE(english.diagnostic, chinese.diagnostic);
+        REQUIRE(english.has_materialization);
+        REQUIRE(chinese.has_materialization);
+        REQUIRE_FALSE(english.corrupt);
+        REQUIRE_FALSE(chinese.corrupt);
+        CHECK(english.text == legacy);
+        CHECK(english_state == legacy_state);
+        CHECK(english_count == legacy_count);
+        CHECK(chinese_state == legacy_state);
+        CHECK(chinese_count == legacy_count);
+        CHECK(english.materialization.binding.callback_count == 1);
+        CHECK(chinese.materialization.binding.callback_count == 1);
+        CHECK(english.materialization.binding.values.target_trace.empty());
+        CHECK(chinese.materialization.binding.values.target_trace.empty());
+
+        const size_t ordinal =
+            english.materialization.canonical.top_locator.variant_ordinal;
+        REQUIRE(ordinal
+                == chinese.materialization.canonical.top_locator.variant_ordinal);
+        if (ordinal == 0)
+        {
+            CHECK(english.materialization.randomized.signature.find(
+                      "materialization-v1|") == 0);
+            CHECK(english.materialization.materialization_signature
+                  == english.materialization.randomized.signature);
+            CHECK(chinese.materialization.materialization_signature
+                  == english.materialization.materialization_signature);
+            const auto &captures = english.materialization.recursive_captures;
+            const auto &zh_captures =
+                chinese.materialization.recursive_captures;
+            REQUIRE(captures.size() == 3);
+            REQUIRE(zh_captures.size() == captures.size());
+            for (size_t i = 0; i < captures.size(); ++i)
+            {
+                CHECK(captures[i].name == zh_captures[i].name);
+                CHECK(captures[i].value == zh_captures[i].value);
+            }
+            CHECK((captures[0].value == captures[1].value
+                   || captures[0].value == captures[2].value
+                   || captures[1].value == captures[2].value));
+            CHECK(chinese.text
+                  == "内尔加勒呼唤道：“" + captures[0].value + "、"
+                     + captures[1].value + "、" + captures[2].value
+                     + "——到我这里来！”");
+        }
+        else
+        {
+            CHECK(english.text
+                  == "Nergalle cries out, \"Spectres! Fight for the home you helped make!\"");
+            CHECK(chinese.text
+                  == "内尔加勒哭喊道：“幽灵们！为你们亲手建造的家园而战！”");
+            CHECK(english.materialization.recursive_captures.empty());
+            CHECK(chinese.materialization.recursive_captures.empty());
+        }
+    }
+
+    scoped_test_language language(lang_t::EN);
+    rng::subgenerator scoped_rng(
+        duplicate_seed,
+        duplicate_seed ^ 0x9e3779b97f4a7c15ULL);
+    const resolved_monspell_cast_message silent =
+        resolve_monspell_cast_message(
+            source, beam, false,
+            { "vanquished vanguard nergalle cast" }, true, false);
+    REQUIRE(silent.structured);
+    REQUIRE_FALSE(silent.corrupt);
+    REQUIRE(silent.has_materialization);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                  "non-arms structured casts do not inspect chaos spawn anatomy",
                  "[single-file][mon-cast-target][message-overlay][phase2][runtime]")
 {

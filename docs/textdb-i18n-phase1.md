@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成七批通用施法消息迁移。当前覆盖 20 个 canonical
-key、49 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移。当前覆盖 21 个 canonical
+key、51 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 20 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 21 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -45,12 +45,14 @@ TextDB 文件。
 `zh/monspell.txt` 未修改。structured 中文不从该文件选择变体，也不执行中文
 递归、Lua 或正文随机。
 
-`Vanquished Vanguard Nergalle cast` 继续为 `LEGACY_ONLY`。其三个
-`@orc name@` 形成不可合理穷举的动态组合，在建立 `CAPTURE_SLOT` 证明前不得迁移。
+`Vanquished Vanguard Nergalle cast` 已通过窄 `CAPTURE_SLOT` 迁移。三个
+`@orc name@` 不穷举组合，而是从同一次 canonical English 递归展开 trace 捕获三个
+有序的最终名字，并以 inventory closure 约束的 leaf vocabulary 验证。
 其余未列入 catalog 的 `monspell` key 均在查询和 RNG 之前进入当前语言的 legacy
 路径。`CASE_MAP` 当前只允许无递归、无 Lua、恰好一个至少包含两个选项的有限
 `[a|b]` 站点；
-`CAPTURE_SLOT` 仍被生成期与加载期拒绝，避免未完成策略被静默接受。
+`CAPTURE_SLOT` 只启用上述“三个 `orc name`、leaf-only vocabulary、无 Lua/
+`[a|b]`”严格切片；其他 capture 形状仍被生成期与加载期拒绝。
 
 Phase 2 又完整迁移 `ensnare arachne cast` 的 2 个 variant 和
 `guardian serpent cast targeted` 的 3 个 variant。structured descriptor 通过
@@ -139,6 +141,16 @@ target RNG。foe 显示与 legacy replacement 同构：player 为 `you`/“你�
 并保留 `'` 后缀裁剪。silent-unprefixed 仍绕过 applicability；若 replacement
 语义也无法解析 foe，则 structured binding fail closed 为 `CORRUPT`，不会泄漏
 `@foe@`。
+
+第八批完整迁移 `vanquished vanguard nergalle cast` 的 2 个 variant。
+ordinal 0 使用窄 `CAPTURE_SLOT`：canonical English 仍按既有顺序完成顶层选择、
+三个 `orc name` 递归选择及其 leaf 选择，并从同一 trace 按出现顺序捕获三个最终
+replacement；EN/ZH renderer 共享这三个捕获值，不重新抽取。loader 将依赖闭包、
+捕获站点数量与顺序、模板槽、103 项 leaf vocabulary locator 及最终 replacement
+逐项绑定，重复名字合法，未声明正文或畸形 trace 均 fail closed。ordinal 1 使用
+`NONE`，保留固定台词。该迁移消除了最后一个 behavior
+`UNANALYSABLE` occurrence；全局 legacy gesture/visual/audible heuristic 仍留待
+后续独立提交删除。
 
 ## 2. 三类 artifact 的职责
 
@@ -286,9 +298,10 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 20 个 key、49 个 canonical variant，不代表 262 个
+- structured 覆盖为 21 个 key、51 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
-- `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
+- `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
+  `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target、foe 与 beam
   类型化槽，并通过 `binding.resolves_target` 将目标解析需求与 `${target}` 引用解耦；
 - neutral singular 的中文 actor possessive 只在“可见 + unique identity”边界
@@ -418,16 +431,16 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 | visual applicability root | 5 | 5 |
 | visual channel root | 5 | 5 |
 | sound-like channel root | 0 | 0 |
-| unanalyzable root | 1 | 0 |
+| unanalyzable root | 0 | 0 |
 
-effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
+effective runtime 共证明 72 个正 behavior occurrence，没有 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 49 个 canonical structured variant，49 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 98 个逐语言验证单位，
-  98 个均完整。
+- 51 个 canonical structured variant，51 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 102 个逐语言验证
+  单位，102 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -435,10 +448,9 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 目标解析前传入唯一一次 binding callback。实际运行路径的 EN/ZH behavior mismatch
 因此降为 0；报告仍保留 `raw_legacy_evidence`，用于展示旧中英文正文曾产生的差异，
 但该证据不再代表 structured 路径的运行行为。
-`vanquished vanguard nergalle cast` 的英文 pattern 在残留运行时槽之后包含 ASCII
-冒号，频道前缀无法由静态 artifact 安全确定；它进入
-`locale_behavior_inconclusive`，不会被误报为已确认的双语差异。任何一侧含
-`UNANALYSABLE` 的 root 都遵循这一规则。
+`vanquished vanguard nergalle cast` 已通过窄 `CAPTURE_SLOT` 完整迁移。频道和
+gesture 行为由 descriptor 显式给出；三个动态兽人名字来自 canonical English
+trace 的受控递归捕获，不再由静态正文猜测。
 
 这份报告明确标记
 `analysis_completeness=SOUND_CLOSED_WORLD_UPPER_BOUND`、
@@ -447,11 +459,10 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
-`phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁仅为 `vanquished vanguard nergalle cast` 的 1 个不可判定
-occurrence。它未使用文本
-特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
-候选 containment、runtime reachability 和当前七批已迁移 key 不再是 blocker。
+`phase2_ready` 现在为 true。EN/ZH effective runtime behavior parity、候选
+containment、runtime reachability 与全部八批已迁移 key 均已证明，且
+unanalyzable/fail-closed occurrence 均为 0。这只表示删除正文行为 heuristic 的
+数据门禁已经满足；实际删除仍应在独立提交中进行，并保留完整生产轨迹回归。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

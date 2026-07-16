@@ -4470,17 +4470,17 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 49,
-    "canonical_structured_variant_metadata_units": 49,
+    "canonical_structured_variant_metadata_complete": 51,
+    "canonical_structured_variant_metadata_units": 51,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
-    "en_zh_behavior_analysis_conclusive": false,
+    "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 98,
-    "per_language_structured_variant_verification_units": 98,
+    "per_language_structured_variant_verification_complete": 102,
+    "per_language_structured_variant_verification_units": 102,
     "remaining_legacy_behavior_occurrences": 0,
-    "unanalysable_occurrences": 1
+    "unanalysable_occurrences": 0
   },
   "domain": "monspell",
   "inputs": {
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "9cadf51dacb17fc4495adf0f4c7c4ebe9aa03dec9adcd48a12c2f314876bfbe9"
+      "sha256": "7698dc016335dd90dad60de3ea4299fef9e907e880f94a357d84675e15f8e960"
     }
   },
   "languages": {
@@ -4931,23 +4931,6 @@
           }
         },
         {
-          "behavior": "UNANALYSABLE",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "detail": "vanquished vanguard nergalle cast:0: dynamic or unknown channel prefix",
-          "language": "en",
-          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
-          "phase": "ANALYSIS",
-          "recursive_provenance": [],
-          "requested_root": "vanquished vanguard nergalle cast",
-          "top_locator": {
-            "canonical_key": "vanquished vanguard nergalle cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -5159,9 +5142,7 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [
-          "vanquished vanguard nergalle cast"
-        ],
+        "UNANALYSABLE": [],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -5450,6 +5431,20 @@
           "requested_root": "ushabti cast targeted",
           "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vanquished vanguard nergalle cast",
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vanquished vanguard nergalle cast",
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -6439,6 +6434,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "vanquished vanguard nergalle cast",
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vanquished vanguard nergalle cast",
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "vv cast",
           "stable_id": "mon.cast.vv.sharp_gesture.v1",
           "variant_ordinal": 0
@@ -6509,21 +6518,11 @@
       ]
     }
   },
-  "locale_behavior_inconclusive": [
-    {
-      "en_analyzable": false,
-      "en_proven_predicates": [],
-      "requested_root": "vanquished vanguard nergalle cast",
-      "zh_analyzable": true,
-      "zh_proven_predicates": []
-    }
-  ],
+  "locale_behavior_inconclusive": [],
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
-  "phase2_blockers": [
-    "EN/ZH behavior analysis is inconclusive"
-  ],
-  "phase2_ready": false,
+  "phase2_blockers": [],
+  "phase2_ready": true,
   "raw_legacy_evidence": {
     "en": {
       "behavior_root_union": [
@@ -6940,7 +6939,7 @@
           "behavior": "UNANALYSABLE",
           "catalog_coverage": {
             "covered": false,
-            "stable_id": null
+            "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1"
           },
           "detail": "vanquished vanguard nergalle cast:0: dynamic or unknown channel prefix",
           "language": "en",

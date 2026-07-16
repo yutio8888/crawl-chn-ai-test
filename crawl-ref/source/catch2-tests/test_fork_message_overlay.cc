@@ -10,9 +10,35 @@
 #include <unistd.h>
 
 #include <deque>
+#include <iomanip>
+#include <sstream>
 
 namespace
 {
+string test_canonical_fingerprint(
+    const textdb_phase0::canonical_entry &entry)
+{
+    string payload("canonical-v1\0", 13);
+    payload += entry.canonical_key;
+    payload += '\0';
+    for (const textdb_phase0::canonical_variant &variant : entry.variants)
+    {
+        payload += std::to_string(variant.locator.variant_ordinal);
+        payload += ':';
+        payload += variant.raw_pattern;
+        payload += '\0';
+    }
+    uint64_t value = 14695981039346656037ULL;
+    for (const unsigned char byte : payload)
+    {
+        value ^= byte;
+        value *= 1099511628211ULL;
+    }
+    ostringstream formatted;
+    formatted << "fnv1a64:" << hex << setfill('0') << setw(16) << value;
+    return formatted.str();
+}
+
 void ensure_overlay_data_root()
 {
     if (!SysEnv.crawl_dir.empty())
@@ -179,7 +205,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 20);
+        CHECK(report.structured_key_count == 21);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -201,7 +227,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("smiting jeremiah cast"));
         CHECK(monspell_overlay_covers("cantrip gastronok cast"));
         CHECK(monspell_overlay_covers("hellfire mortar wiglaf cast"));
-        CHECK_FALSE(monspell_overlay_covers(
+        CHECK(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
         CHECK(rng::current_generator().get_count() == count);
@@ -378,6 +404,105 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(report.failure == load_failure::CORRUPT);
         CHECK(report.diagnostic == "plural arms token/type mismatch");
     }
+
+    SECTION("recursive capture vocabulary exactly matches reachable leaves")
+    {
+        auto nergalle_variant = [](catalog_source &source)
+            -> catalog_variant &
+        {
+            auto entry = find_if(
+                source.entries.begin(), source.entries.end(),
+                [](const catalog_entry &candidate)
+                {
+                    return candidate.canonical_key
+                           == "vanquished vanguard nergalle cast";
+                });
+            REQUIRE(entry != source.entries.end());
+            REQUIRE_FALSE(entry->variants.empty());
+            return entry->variants[0];
+        };
+
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        catalog_variant &replaced = nergalle_variant(source);
+        REQUIRE(replaced.recursive_capture_vocabulary.size() == 103);
+        replaced.recursive_capture_vocabulary[0] =
+            replaced.recursive_capture_vocabulary[1];
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        nergalle_variant(source).recursive_capture_vocabulary.pop_back();
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        recursive_capture_vocabulary_entry &unreachable =
+            nergalle_variant(source).recursive_capture_vocabulary[0];
+        unreachable.canonical_key = "acid splash cast";
+        unreachable.variant_ordinal = 0;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        nergalle_variant(source).recursive_capture_vocabulary[0]
+            .variant_fingerprint = "fnv1a64:0000000000000000";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+    }
+
+    SECTION("recursive capture parents are exact single markers")
+    {
+        for (const string replacement :
+             { "prefix @_beogh_name_@",
+               "@_beogh_name_@@_beogh_name_@" })
+        {
+            CAPTURE(replacement);
+            reset_monspell_overlay_for_test();
+            vector<textdb_phase0::canonical_entry> changed = canonical;
+            auto parent = find_if(
+                changed.begin(), changed.end(),
+                [](const textdb_phase0::canonical_entry &entry)
+                {
+                    return entry.canonical_key == "orc name";
+                });
+            REQUIRE(parent != changed.end());
+            REQUIRE_FALSE(parent->variants.empty());
+            parent->variants[0].raw_pattern = replacement;
+
+            catalog_source source = generated_monspell_catalog();
+            auto nergalle = find_if(
+                source.entries.begin(), source.entries.end(),
+                [](const catalog_entry &entry)
+                {
+                    return entry.canonical_key
+                           == "vanquished vanguard nergalle cast";
+                });
+            REQUIRE(nergalle != source.entries.end());
+            REQUIRE_FALSE(nergalle->variants.empty());
+            auto dependency = find(
+                nergalle->variants[0].recursive_dependencies.begin(),
+                nergalle->variants[0].recursive_dependencies.end(),
+                "orc name");
+            REQUIRE(dependency
+                    != nergalle->variants[0].recursive_dependencies.end());
+            const size_t dependency_index = static_cast<size_t>(
+                dependency
+                - nergalle->variants[0].recursive_dependencies.begin());
+            nergalle->variants[0]
+                .recursive_dependency_fingerprints[dependency_index] =
+                    test_canonical_fingerprint(*parent);
+
+            const load_report &report =
+                load_monspell_overlay(changed, &source);
+            CHECK(report.failure == load_failure::CORRUPT);
+            CHECK(report.diagnostic
+                  == "recursive capture parent is not one exact marker");
+        }
+    }
 }
 
 TEST_CASE("monspell routing is final before selection and tracks diagnostics",
@@ -401,7 +526,7 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         const route_decision covered =
             route_monspell_message("BEAM CATCHALL CAST");
         const route_decision uncovered = route_monspell_message(
-            "Vanquished Vanguard Nergalle cast");
+            "Acid Splash cast");
         CHECK(covered.route == message_route::STRUCTURED);
         CHECK(covered.canonical_key == "beam catchall cast");
         CHECK(uncovered.route == message_route::LEGACY);
@@ -912,6 +1037,7 @@ TEST_CASE("production seam preserves complete canonical and bracket traces",
         const auto &expected = prototype.trace.recursive_sites[i];
         CHECK(actual.recursion_path == expected.recursion_path);
         CHECK(actual.marker == expected.marker);
+        CHECK(actual.replacement == expected.replacement);
         CHECK(actual.recursion_depth == expected.recursion_depth);
         CHECK(actual.replacement_count == expected.replacement_count);
         CHECK(static_cast<int>(actual.status)
@@ -2066,6 +2192,221 @@ TEST_CASE("Wiglaf mortar variants keep relation and foe bindings independent",
                 [candidate](const string &) { return candidate; });
         CHECK(materialized.result == message_result::INAPPLICABLE);
         CHECK(callback_count == 0);
+    }
+}
+
+TEST_CASE("Nergalle recursive captures are ordered and vocabulary-bound",
+          "[single-file][message-overlay][phase2][capture]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    reset_monspell_overlay_for_test();
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+
+    canonical_textdb::loaded_candidate selected;
+    for (uint64_t seed = 1; seed <= 4096; ++seed)
+    {
+        rng::subgenerator scoped_rng(
+            seed, seed ^ 0x9e3779b97f4a7c15ULL);
+        selected = canonical_textdb::expand_loaded_english_candidate(
+            "vanquished vanguard nergalle cast");
+        if (selected.status == canonical_textdb::candidate_status::SELECTED
+            && selected.top_locator.variant_ordinal == 0)
+        {
+            break;
+        }
+    }
+    REQUIRE(selected.top_locator.variant_ordinal == 0);
+
+    auto bindings = [](const binding_requirements &requirements)
+    {
+        runtime_bindings values = beam_bindings(target_relation::NONE);
+        values.actor.sentence_en = "Nergalle";
+        values.actor.canonical_en = "Nergalle";
+        values.actor.localized =
+            { { "en", "Nergalle" }, { "zh", "内尔加勒" } };
+        values.cast.frame = requirements.frame;
+        return values;
+    };
+    runtime_applicability applicability;
+    applicability.caster_visibility = message_visibility::VISIBLE;
+
+    size_t callback_count = 0;
+    const canonical_materialization materialized =
+        materialize_monspell_candidate(
+            "vanquished vanguard nergalle cast",
+            message_attempt::NORMAL_OR_UNSEEN, applicability,
+            [&](const binding_requirements &requirements)
+            {
+                ++callback_count;
+                CHECK_FALSE(requirements.resolves_target);
+                CHECK_FALSE(requirements.implies_gesture);
+                return bindings(requirements);
+            },
+            [selected](const string &) { return selected; });
+    CAPTURE(materialized.diagnostic);
+    REQUIRE(materialized.result == message_result::RENDERED);
+    CHECK(callback_count == 1);
+    REQUIRE(materialized.recursive_captures.size() == 3);
+    CHECK(materialized.randomized.signature.find("materialization-v1|") == 0);
+    CHECK(materialized.materialization_signature
+          == materialized.randomized.signature);
+    const render_result en =
+        render_materialized_candidate(materialized, "en");
+    const render_result zh =
+        render_materialized_candidate(materialized, "zh");
+    REQUIRE(en.result == message_result::RENDERED);
+    REQUIRE(zh.result == message_result::RENDERED);
+    CHECK(en.lines[0].text == materialized.randomized.pattern_en);
+    CHECK(zh.lines[0].text
+          == "内尔加勒呼唤道：“"
+             + materialized.recursive_captures[0].value + "、"
+             + materialized.recursive_captures[1].value + "、"
+             + materialized.recursive_captures[2].value
+             + "——到我这里来！”");
+
+    SECTION("renderer rejects both identity signatures changed together")
+    {
+        canonical_materialization corrupt = materialized;
+        corrupt.materialization_signature += "|tampered";
+        corrupt.randomized.signature = corrupt.materialization_signature;
+        const render_result rejected =
+            render_materialized_candidate(corrupt, "en");
+        CHECK(rejected.result == message_result::CORRUPT);
+        CHECK(rejected.diagnostic
+              == "materialized capture identity is invalid");
+    }
+
+    SECTION("renderer rejects a changed capture value")
+    {
+        canonical_materialization corrupt = materialized;
+        corrupt.recursive_captures[0].value = "INJECTED";
+        const render_result rejected =
+            render_materialized_candidate(corrupt, "zh");
+        CHECK(rejected.result == message_result::CORRUPT);
+        CHECK(rejected.diagnostic
+              == "materialized capture values do not match canonical trace");
+    }
+
+    SECTION("opaque replacement injection is rejected before binding")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        auto site = find_if(
+            corrupt.trace.recursive_sites.begin(),
+            corrupt.trace.recursive_sites.end(),
+            [](const canonical_textdb::recursive_site_trace &candidate)
+            {
+                return candidate.recursion_path.size() == 1
+                       && candidate.marker == "orc name";
+            });
+        REQUIRE(site != corrupt.trace.recursive_sites.end());
+        site->replacement = "INJECTED";
+        callback_count = 0;
+        const canonical_materialization rejected =
+            materialize_monspell_candidate(
+                "vanquished vanguard nergalle cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++callback_count;
+                    return bindings(requirements);
+                },
+                [corrupt](const string &) { return corrupt; });
+        CHECK(rejected.result == message_result::CORRUPT);
+        CHECK(rejected.diagnostic
+              == "recursive capture topology is invalid");
+        CHECK(callback_count == 0);
+    }
+
+    SECTION("incomplete capture trace is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        corrupt.trace.recursive_sites.pop_back();
+        callback_count = 0;
+        const canonical_materialization rejected =
+            materialize_monspell_candidate(
+                "vanquished vanguard nergalle cast",
+                message_attempt::SILENT_UNPREFIXED_FALLBACK, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++callback_count;
+                    return bindings(requirements);
+                },
+                [corrupt](const string &) { return corrupt; });
+        CHECK(rejected.result == message_result::CORRUPT);
+        CHECK(rejected.diagnostic
+              == "recursive capture trace shape is invalid");
+        CHECK(callback_count == 0);
+    }
+
+    auto reject_trace = [&](canonical_textdb::loaded_candidate corrupt)
+    {
+        callback_count = 0;
+        const canonical_materialization rejected =
+            materialize_monspell_candidate(
+                "vanquished vanguard nergalle cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++callback_count;
+                    return bindings(requirements);
+                },
+                [corrupt](const string &) { return corrupt; });
+        CHECK(rejected.result == message_result::CORRUPT);
+        CHECK(callback_count == 0);
+    };
+
+    SECTION("choice ordinal mismatch is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        ++corrupt.trace.weighted_choices[2].variant_ordinal;
+        reject_trace(corrupt);
+    }
+
+    SECTION("choice key mismatch is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        corrupt.trace.weighted_choices[2].resolved_canonical_key =
+            "_orcish_name_";
+        reject_trace(corrupt);
+    }
+
+    SECTION("choice path mismatch is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        corrupt.trace.weighted_choices[2].recursion_path = { 1, 1 };
+        reject_trace(corrupt);
+    }
+
+    SECTION("selected variant mismatch is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        ++corrupt.selected_variants[2].locator.variant_ordinal;
+        reject_trace(corrupt);
+    }
+
+    SECTION("coordinated parent ordinal change cannot retain the old leaf")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        const size_t parent_index = 1;
+        const size_t changed_ordinal =
+            (corrupt.trace.weighted_choices[parent_index].variant_ordinal + 1)
+            % 3;
+        corrupt.trace.weighted_choices[parent_index].variant_ordinal =
+            changed_ordinal;
+        corrupt.selected_variants[parent_index].locator.variant_ordinal =
+            changed_ordinal;
+        reject_trace(corrupt);
+    }
+
+    SECTION("non-capture recursive site mutation is rejected")
+    {
+        canonical_textdb::loaded_candidate corrupt = selected;
+        corrupt.trace.recursive_sites[0].marker = "other";
+        reject_trace(corrupt);
     }
 }
 

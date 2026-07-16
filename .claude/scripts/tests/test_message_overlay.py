@@ -25,6 +25,19 @@ class MessageOverlayTests(unittest.TestCase):
     def validate(self, manifest):
         return MODULE.validate_manifest(manifest, INVENTORY)
 
+    def validate_inventory(self, inventory):
+        manifest = copy.deepcopy(MANIFEST)
+        node = next(
+            entry for entry in inventory["closure"]["additional_nodes"]
+            if entry["key"] == "orc name")
+        variant = next(
+            entry for entry in manifest["entries"]
+            if entry["canonical_key"]
+               == "vanquished vanguard nergalle cast")["variants"][0]
+        variant["recursive_dependency_fingerprints"]["orc name"] = (
+            MODULE.runtime_canonical_fingerprint(node))
+        return MODULE.validate_manifest(manifest, inventory)
+
     def test_production_manifest_and_sidecar_are_exact(self):
         validated = self.validate(copy.deepcopy(MANIFEST))
         self.assertEqual(SIDECAR.read_text(encoding="utf-8"),
@@ -50,11 +63,14 @@ class MessageOverlayTests(unittest.TestCase):
                           "vv cast",
                           "smiting jeremiah cast",
                           "cantrip gastronok cast",
-                          "hellfire mortar wiglaf cast"], candidates)
+                          "hellfire mortar wiglaf cast",
+                          "vanquished vanguard nergalle cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
-        self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
-                            for variant in nergalle["variants"]))
+        self.assertEqual(
+            ["CAPTURE_SLOT", "NONE"],
+            [variant["materialization_policy"]
+             for variant in nergalle["variants"]])
 
     def test_unknown_schema_is_rejected(self):
         value = copy.deepcopy(MANIFEST)
@@ -298,6 +314,58 @@ class MessageOverlayTests(unittest.TestCase):
             [any(slot["type"] == "resolved_foe"
                  for slot in variant["slot_schema"])
              for variant in entry["variants"]])
+
+    def test_nergalle_recursive_capture_contract_is_exact(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"]
+                     == "vanquished vanguard nergalle cast")
+        variant = entry["variants"][0]
+        self.assertEqual("CAPTURE_SLOT",
+                         variant["materialization_policy"])
+        self.assertEqual(
+            ["orc_name_1", "orc_name_2", "orc_name_3"],
+            [capture["name"] for capture in variant["recursive_captures"]])
+        self.assertEqual(
+            [0, 1, 2],
+            [capture["ordinal"] for capture
+             in variant["recursive_captures"]])
+        self.assertEqual(
+            {"_beogh_name_", "_orcish_name_", "_other_orcish_name_",
+             "orc name"},
+            set(variant["recursive_dependency_fingerprints"]))
+
+        entry_index = MANIFEST["entries"].index(entry)
+        for mutation, error in (
+            (lambda value: value["entries"][entry_index]["variants"][0][
+                "recursive_captures"].pop(), "capture count"),
+            (lambda value: value["entries"][entry_index]["variants"][0][
+                "recursive_captures"][1].update({"ordinal": 0}),
+             "capture declaration"),
+            (lambda value: value["entries"][entry_index]["variants"][0][
+                "recursive_dependency_fingerprints"].pop("_beogh_name_"),
+             "capture closure"),
+        ):
+            value = copy.deepcopy(MANIFEST)
+            mutation(value)
+            with self.subTest(error=error):
+                with self.assertRaisesRegex(MODULE.ManifestError, error):
+                    self.validate(value)
+
+    def test_nergalle_capture_parents_are_exact_single_markers(self):
+        for replacement in (
+            "prefix @_beogh_name_@",
+            "@_beogh_name_@@_beogh_name_@",
+        ):
+            inventory = copy.deepcopy(INVENTORY)
+            parent = next(
+                entry for entry in inventory["closure"]["additional_nodes"]
+                if entry["key"] == "orc name")
+            parent["variants"][0]["text"] = replacement
+            with self.subTest(replacement=replacement):
+                with self.assertRaisesRegex(
+                        MODULE.ManifestError,
+                        "capture parent must be one exact marker"):
+                    self.validate_inventory(inventory)
 
     def test_target_binding_selects_exact_relation_schema(self):
         for entry in MANIFEST["entries"]:

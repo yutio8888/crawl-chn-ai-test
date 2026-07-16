@@ -790,27 +790,25 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         report = json.loads(TRACKED_REPORT.read_text(encoding="utf-8"))
         self.assertEqual(
             report["coverage"]["canonical_structured_variant_metadata_units"],
-            49)
+            51)
         self.assertEqual(
             report["coverage"][
                 "canonical_structured_variant_metadata_complete"],
-            49)
+            51)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_units"],
-            98)
+            102)
         self.assertEqual(
             report["coverage"][
                 "per_language_structured_variant_verification_complete"],
-            98)
+            102)
         self.assertEqual(
             report["coverage"]["remaining_legacy_behavior_occurrences"],
             0)
         self.assertEqual(report["locale_behavior_mismatch"], [])
-        self.assertEqual(
-            [item["requested_root"]
-             for item in report["locale_behavior_inconclusive"]],
-            ["vanquished vanguard nergalle cast"])
+        self.assertEqual(report["locale_behavior_inconclusive"], [])
+        self.assertTrue(report["phase2_ready"])
 
 
 if __name__ == "__main__":

@@ -35,7 +35,7 @@ CHANNELS = {
 SLOT_TYPES = {
     "actor_ref", "actor_possessive_name", "actor_possessive_pronoun",
     "actor_reflexive", "actor_arms_plural", "resolved_target",
-    "resolved_foe", "resolved_beam",
+    "resolved_foe", "resolved_beam", "recursive_capture",
 }
 
 
@@ -129,6 +129,23 @@ def _inventory_nodes(inventory: dict[str, Any]) -> dict[str, dict[str, Any]]:
                  f"inventory has duplicate key {node['key']!r}")
         result[node["key"]] = node
     return result
+
+
+def _recursive_closure(nodes: dict[str, dict[str, Any]],
+                       roots: list[str]) -> list[str]:
+    pending = list(roots)
+    seen: set[str] = set()
+    while pending:
+        key = pending.pop(0)
+        _require(key in nodes, f"recursive closure key {key!r} is missing")
+        if key in seen:
+            continue
+        seen.add(key)
+        for variant in nodes[key]["variants"]:
+            pending.extend(
+                token["canonical_key"] for token in variant["tokens"]
+                if token["classification"] == "recursive")
+    return sorted(seen)
 
 
 def _template_slots(pattern: str, context: str) -> set[str]:
@@ -319,20 +336,32 @@ def validate_manifest(manifest: dict[str, Any],
                      and len(required) == len(declared),
                      f"{vcontext} required arguments mismatch slot schema")
 
-            dependencies = sorted({
+            direct_dependencies = sorted({
                 token["canonical_key"] for token in actual["tokens"]
                 if token["classification"] == "recursive"
             })
             dependency_fingerprints = variant.get(
                 "recursive_dependency_fingerprints")
-            _require(isinstance(dependency_fingerprints, dict)
-                     and sorted(dependency_fingerprints) == dependencies,
+            _require(isinstance(dependency_fingerprints, dict),
                      f"{vcontext} recursive dependency closure mismatch")
-            for dependency in dependencies:
-                _require(dependency in nodes
-                         and dependency_fingerprints[dependency]
-                         == nodes[dependency]["entry_text_fingerprint"],
-                         f"{vcontext} dependency fingerprint mismatch")
+            if policy == "CAPTURE_SLOT":
+                dependencies = _recursive_closure(nodes, direct_dependencies)
+                _require(sorted(dependency_fingerprints) == dependencies,
+                         f"{vcontext} recursive capture closure mismatch")
+                for dependency in dependencies:
+                    _require(dependency_fingerprints[dependency]
+                             == runtime_canonical_fingerprint(
+                                 nodes[dependency]),
+                             f"{vcontext} dependency fingerprint mismatch")
+            else:
+                dependencies = direct_dependencies
+                _require(sorted(dependency_fingerprints) == dependencies,
+                         f"{vcontext} recursive dependency closure mismatch")
+                for dependency in dependencies:
+                    _require(dependency in nodes
+                             and dependency_fingerprints[dependency]
+                             == nodes[dependency]["entry_text_fingerprint"],
+                             f"{vcontext} dependency fingerprint mismatch")
 
             cases = variant.get("materialization_cases")
             _require(isinstance(cases, list),
@@ -346,6 +375,9 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
+            captures = variant.get("recursive_captures", [])
+            _require(isinstance(captures, list),
+                     f"{vcontext}.recursive_captures must be a list")
             has_target_slot = any(
                 slot_type == "resolved_target"
                 for slot_type in slot_types.values())
@@ -381,6 +413,68 @@ def validate_manifest(manifest: dict[str, Any],
             relations = (TARGET_RELATIONS if binding["resolves_target"]
                          else NO_TARGET_RELATIONS)
             if policy == "NONE":
+                _require(not captures,
+                         f"{vcontext} NONE declares recursive captures")
+                _validate_lines(variant.get("line_metadata"), languages,
+                                declared, vcontext, relations)
+                continue
+            if policy == "CAPTURE_SLOT":
+                recursive_tokens = [
+                    token for token in actual["tokens"]
+                    if token["classification"] == "recursive"
+                ]
+                _require(not actual["random_substring_sites"]
+                         and not actual["lua_sites"]
+                         and len(recursive_tokens) == 3
+                         and all(token["canonical_key"] == "orc name"
+                                 for token in recursive_tokens),
+                         f"{vcontext} unsupported recursive capture shape")
+                _require(len(captures) == 3,
+                         f"{vcontext} recursive capture count mismatch")
+                for index, capture in enumerate(captures):
+                    _require(isinstance(capture, dict)
+                             and set(capture)
+                                 == {"name", "marker", "ordinal",
+                                     "vocabulary"}
+                             and capture["name"] in declared
+                             and slot_types[capture["name"]]
+                                 == "recursive_capture"
+                             and capture["marker"] == "orc name"
+                             and capture["ordinal"] == index
+                             and capture["vocabulary"] == "orc_name_leaf_v1",
+                             f"{vcontext} invalid recursive capture declaration")
+                leaf_keys = []
+                for dependency_variant in nodes["orc name"]["variants"]:
+                    parent_tokens = [
+                        token for token in dependency_variant["tokens"]
+                        if token["classification"] == "recursive"
+                    ]
+                    _require(
+                        len(parent_tokens) == 1
+                        and dependency_variant["text"]
+                            == f"@{parent_tokens[0]['canonical_key']}@",
+                        f"{vcontext} capture parent must be one exact marker")
+                    leaf_keys.append(parent_tokens[0]["canonical_key"])
+                leaf_keys = sorted(set(leaf_keys))
+                vocabulary = []
+                for leaf_key in leaf_keys:
+                    for leaf_variant in nodes[leaf_key]["variants"]:
+                        _require(not leaf_variant["tokens"]
+                                 and not leaf_variant["random_substring_sites"]
+                                 and not leaf_variant["lua_sites"],
+                                 f"{vcontext} capture vocabulary is not leaf-only")
+                        vocabulary.append({
+                            "canonical_key": leaf_key,
+                            "variant_ordinal":
+                                leaf_variant["variant_ordinal"],
+                            "variant_fingerprint":
+                                _fnv1a64(
+                                    leaf_variant["text"].encode("utf-8")),
+                            "expanded_replacement_en": leaf_variant["text"],
+                        })
+                _require(len(vocabulary) == 103,
+                         f"{vcontext} capture vocabulary size drifted")
+                variant["_recursive_capture_vocabulary"] = vocabulary
                 _validate_lines(variant.get("line_metadata"), languages,
                                 declared, vcontext, relations)
                 continue
@@ -431,6 +525,8 @@ def validate_manifest(manifest: dict[str, Any],
         if entry["mode"] != "CANDIDATE":
             continue
         for variant in entry["variants"]:
+            if variant["materialization_policy"] == "CAPTURE_SLOT":
+                continue
             for dependency in variant["recursive_dependency_fingerprints"]:
                 _require(dependency in by_key
                          and by_key[dependency]["mode"] != "LEGACY_ONLY",
@@ -494,6 +590,17 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
             dep_fps = ", ".join(
                 _cpp(variant["recursive_dependency_fingerprints"][x])
                 for x in deps)
+            captures = ", ".join(
+                "{%s, %s, %d, %s}" % (
+                    _cpp(x["name"]), _cpp(x["marker"]), x["ordinal"],
+                    _cpp(x["vocabulary"]))
+                for x in variant.get("recursive_captures", []))
+            vocabulary = ", ".join(
+                "{%s, %d, %s, %s}" % (
+                    _cpp(x["canonical_key"]), x["variant_ordinal"],
+                    _cpp(x["variant_fingerprint"]),
+                    _cpp(x["expanded_replacement_en"]))
+                for x in variant.get("_recursive_capture_vocabulary", []))
             lines = _emit_lines(variant.get("line_metadata", []), "                    ")
             emitted_cases = []
             for case in variant.get("materialization_cases", []):
@@ -535,6 +642,8 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
             out.extend([
                 f"                        {{ {dep_names} }},",
                 f"                        {{ {dep_fps} }},",
+                f"                        {{ {captures} }},",
+                f"                        {{ {vocabulary} }},",
                 "                    },",
             ])
         out.extend(["                },", "            },"])

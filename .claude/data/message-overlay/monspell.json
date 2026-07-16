@@ -1348,7 +1348,7 @@
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [
         {
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1",
@@ -1366,14 +1366,60 @@
             "requires_god": false,
             "requires_caster_visible": false
           },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [],
-          "required_arguments": [],
-          "line_metadata": [],
+          "materialization_policy": "CAPTURE_SLOT",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "orc_name_1", "type": "recursive_capture" },
+            { "name": "orc_name_2", "type": "recursive_capture" },
+            { "name": "orc_name_3", "type": "recursive_capture" }
+          ],
+          "required_arguments": [
+            "actor", "orc_name_1", "orc_name_2", "orc_name_3"
+          ],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              {
+                "language": "en",
+                "relation": "NONE",
+                "pattern": "${actor} calls out: \"${orc_name_1}, ${orc_name_2}, ${orc_name_3} - to me!\""
+              },
+              {
+                "language": "zh",
+                "relation": "NONE",
+                "pattern": "${actor}呼唤道：“${orc_name_1}、${orc_name_2}、${orc_name_3}——到我这里来！”"
+              }
+            ]
+          }],
           "materialization_cases": [],
           "recursive_dependency_fingerprints": {
-            "orc name": "18b06b1dc0612159d62109ae44f8d887ac415643df9ced448148257e4a8dc74a"
-          }
+            "_beogh_name_": "fnv1a64:fc8b8a3994dc9122",
+            "_orcish_name_": "fnv1a64:ebba5ee7ca782057",
+            "_other_orcish_name_": "fnv1a64:d776b1b2a0a19398",
+            "orc name": "fnv1a64:01d0cb312e2b96d5"
+          },
+          "recursive_captures": [
+            {
+              "name": "orc_name_1",
+              "marker": "orc name",
+              "ordinal": 0,
+              "vocabulary": "orc_name_leaf_v1"
+            },
+            {
+              "name": "orc_name_2",
+              "marker": "orc name",
+              "ordinal": 1,
+              "vocabulary": "orc_name_leaf_v1"
+            },
+            {
+              "name": "orc_name_3",
+              "marker": "orc name",
+              "ordinal": 2,
+              "vocabulary": "orc_name_leaf_v1"
+            }
+          ]
         },
         {
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
@@ -1391,10 +1437,28 @@
             "requires_god": false,
             "requires_caster_visible": false
           },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [],
-          "required_arguments": [],
-          "line_metadata": [],
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              {
+                "language": "en",
+                "relation": "NONE",
+                "pattern": "${actor} cries out, \"Spectres! Fight for the home you helped make!\""
+              },
+              {
+                "language": "zh",
+                "relation": "NONE",
+                "pattern": "${actor}哭喊道：“幽灵们！为你们亲手建造的家园而战！”"
+              }
+            ]
+          }],
           "materialization_cases": [],
           "recursive_dependency_fingerprints": {}
         }

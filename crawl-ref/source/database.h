@@ -115,6 +115,7 @@ struct recursive_site_trace
 {
     vector<size_t> recursion_path;
     string marker;
+    string replacement;
     int recursion_depth = 0;
     int replacement_count = 0;
     recursive_site_status status = recursive_site_status::MISSING;
@@ -300,6 +301,7 @@ struct recursive_site_trace
 {
     vector<size_t> recursion_path;
     string marker;
+    string replacement;
     int recursion_depth;
     int replacement_count;
     recursive_site_status status;

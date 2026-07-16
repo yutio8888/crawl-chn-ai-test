@@ -1435,7 +1435,10 @@ static bool _call_recursive_replacement(string &str,
                               &child_status, &child_corrupt);
         corrupt_found = corrupt_found || child_corrupt;
         if (trace)
+        {
             trace->recursive_sites[event_index].status = child_status;
+            trace->recursive_sites[event_index].replacement = replacement;
+        }
 
         if (replacement.empty())
         {
@@ -1924,6 +1927,7 @@ canonical_textdb::expand_loaded_english_candidate(const string &key)
         recursive_site_trace event;
         event.recursion_path = site.recursion_path;
         event.marker = site.marker;
+        event.replacement = site.replacement;
         event.recursion_depth = site.recursion_depth;
         event.replacement_count = site.replacement_count;
         event.status = _production_recursive_status(site.status);
