@@ -17,6 +17,7 @@ namespace
 {
 load_report current_report;
 set<string> covered_keys;
+diagnostic_counters current_diagnostics;
 
 string _fnv1a64(const string &payload)
 {
@@ -70,7 +71,62 @@ const load_report &_disable(load_failure failure, const string &diagnostic)
     current_report.failure = failure;
     current_report.diagnostic = diagnostic;
     current_report.structured_key_count = 0;
+    if (failure == load_failure::UNKNOWN_SCHEMA)
+        ++current_diagnostics.unknown_schema;
+    else if (failure == load_failure::CORRUPT
+             || failure == load_failure::CLOSURE_INCOMPLETE)
+    {
+        ++current_diagnostics.overlay_corrupt;
+    }
     return current_report;
+}
+
+void _record_message_result(message_result result)
+{
+    switch (result)
+    {
+    case message_result::INAPPLICABLE:
+        ++current_diagnostics.candidate_inapplicable;
+        break;
+    case message_result::SUPPRESS:
+        ++current_diagnostics.message_suppressed;
+        break;
+    case message_result::CORRUPT:
+        ++current_diagnostics.overlay_corrupt;
+        break;
+    case message_result::MISSING:
+    case message_result::RENDERED:
+        break;
+    }
+}
+
+message_lookup_request _initial_request(const string &base_key,
+                                        message_prefix prefix)
+{
+    message_lookup_request request;
+    request.lookup_key = base_key;
+    switch (prefix)
+    {
+    case message_prefix::NORMAL:
+        break;
+    case message_prefix::UNSEEN:
+        request.lookup_key = "unseen " + base_key;
+        break;
+    case message_prefix::SILENT:
+        request.lookup_key = "silent " + base_key;
+        request.attempt = message_attempt::SILENT_PREFIXED;
+        break;
+    }
+    return request;
+}
+
+message_lookup_request _silent_unprefixed_request(const string &base_key)
+{
+    message_lookup_request request;
+    request.lookup_key = base_key;
+    request.attempt = message_attempt::SILENT_UNPREFIXED_FALLBACK;
+    request.applicability = applicability_policy::ACCEPT_ANY_NONEMPTY;
+    return request;
 }
 
 bool _valid_identifier(const string &name)
@@ -425,9 +481,85 @@ bool monspell_overlay_covers(const string &canonical_key)
     return covered_keys.count(key) != 0;
 }
 
+route_decision route_monspell_message(const string &canonical_key)
+{
+    route_decision decision;
+    decision.canonical_key = canonical_key;
+    lowercase(decision.canonical_key);
+    if (monspell_overlay_covers(decision.canonical_key))
+    {
+        decision.route = message_route::STRUCTURED;
+        ++current_diagnostics.overlay_hit;
+    }
+    else
+        ++current_diagnostics.legacy_fallback;
+    return decision;
+}
+
+message_search_action transition_message_candidate(message_attempt attempt,
+                                                   message_result result)
+{
+    switch (result)
+    {
+    case message_result::SUPPRESS:
+        return message_search_action::STOP_SILENT;
+    case message_result::RENDERED:
+        return message_search_action::STOP_RENDERED;
+    case message_result::CORRUPT:
+        return message_search_action::STOP_CORRUPT;
+    case message_result::MISSING:
+    case message_result::INAPPLICABLE:
+        return attempt == message_attempt::SILENT_PREFIXED
+            ? message_search_action::RETRY_UNPREFIXED
+            : message_search_action::NEXT_CANDIDATE;
+    }
+    die("Invalid message overlay result");
+}
+
+message_candidate_search search_message_candidate(
+    const string &base_key, message_prefix prefix,
+    const message_lookup &lookup)
+{
+    message_candidate_search search;
+    if (!lookup)
+    {
+        search.lookup.result = message_result::CORRUPT;
+        search.lookup.diagnostic = "message lookup callback is missing";
+        _record_message_result(search.lookup.result);
+        search.action = message_search_action::STOP_CORRUPT;
+        return search;
+    }
+    message_lookup_request request = _initial_request(base_key, prefix);
+    search.lookup = lookup(request);
+    ++search.lookup_count;
+    _record_message_result(search.lookup.result);
+    search.action = transition_message_candidate(request.attempt,
+                                                  search.lookup.result);
+    if (search.action != message_search_action::RETRY_UNPREFIXED)
+        return search;
+
+    request = _silent_unprefixed_request(base_key);
+    search.lookup = lookup(request);
+    ++search.lookup_count;
+    _record_message_result(search.lookup.result);
+    search.action = transition_message_candidate(request.attempt,
+                                                  search.lookup.result);
+    return search;
+}
+
+diagnostic_counters monspell_overlay_diagnostics()
+{
+    return current_diagnostics;
+}
+
 void reset_monspell_overlay_for_test()
 {
     covered_keys.clear();
     current_report = load_report();
+}
+
+void reset_monspell_overlay_diagnostics_for_test()
+{
+    current_diagnostics = diagnostic_counters();
 }
 }

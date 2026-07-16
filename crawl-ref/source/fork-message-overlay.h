@@ -1,6 +1,8 @@
 #pragma once
 
 #include <cstddef>
+#include <cstdint>
+#include <functional>
 #include <string>
 #include <vector>
 
@@ -28,6 +30,50 @@ enum class load_failure
     CORRUPT,
     UNKNOWN_SCHEMA,
     CLOSURE_INCOMPLETE,
+};
+
+enum class message_result
+{
+    MISSING,
+    SUPPRESS,
+    INAPPLICABLE,
+    RENDERED,
+    CORRUPT,
+};
+
+enum class message_attempt
+{
+    NORMAL_OR_UNSEEN,
+    SILENT_PREFIXED,
+    SILENT_UNPREFIXED_FALLBACK,
+};
+
+enum class message_search_action
+{
+    NEXT_CANDIDATE,
+    RETRY_UNPREFIXED,
+    STOP_SILENT,
+    STOP_RENDERED,
+    STOP_CORRUPT,
+};
+
+enum class message_prefix
+{
+    NORMAL,
+    UNSEEN,
+    SILENT,
+};
+
+enum class applicability_policy
+{
+    REQUIRE_APPLICABLE,
+    ACCEPT_ANY_NONEMPTY,
+};
+
+enum class message_route
+{
+    STRUCTURED,
+    LEGACY,
 };
 
 enum class entry_mode
@@ -152,6 +198,53 @@ struct load_report
     size_t structured_key_count = 0;
 };
 
+// All fields own their data. Stage 2 deliberately does not expose Phase 0
+// selection/materialization types as part of the production adapter API.
+struct message_lookup_result
+{
+    message_result result = message_result::MISSING;
+    std::string message;
+    std::string diagnostic;
+    bool applicability_checked = false;
+};
+
+struct message_lookup_request
+{
+    std::string lookup_key;
+    message_attempt attempt = message_attempt::NORMAL_OR_UNSEEN;
+    applicability_policy applicability =
+        applicability_policy::REQUIRE_APPLICABLE;
+};
+
+struct message_candidate_search
+{
+    message_lookup_result lookup;
+    message_search_action action = message_search_action::NEXT_CANDIDATE;
+    size_t lookup_count = 0;
+};
+
+using message_lookup = std::function<message_lookup_result(
+    const message_lookup_request &)>;
+
+struct route_decision
+{
+    message_route route = message_route::LEGACY;
+    std::string canonical_key;
+    int schema_version = MONSPELL_OVERLAY_SCHEMA_VERSION;
+};
+
+struct diagnostic_counters
+{
+    std::string domain = "monspell";
+    int schema_version = MONSPELL_OVERLAY_SCHEMA_VERSION;
+    uint64_t overlay_hit = 0;
+    uint64_t legacy_fallback = 0;
+    uint64_t candidate_inapplicable = 0;
+    uint64_t message_suppressed = 0;
+    uint64_t overlay_corrupt = 0;
+    uint64_t unknown_schema = 0;
+};
+
 const catalog_source &generated_monspell_catalog();
 
 // Phase 1 stage 1 loading boundary. Validation is deterministic and performs
@@ -165,7 +258,25 @@ const load_report &load_monspell_overlay(
 const load_report &monspell_overlay_report();
 bool monspell_overlay_covers(const std::string &canonical_key);
 
+// Must be called before any TextDB selection, recursive expansion, Lua, or RNG.
+// The decision is final for the attempt: structured failures never fall back
+// to legacy lookup.
+route_decision route_monspell_message(const std::string &canonical_key);
+
+// Pure transition plus the Stage 2 lookup harness. The silent unprefixed
+// request explicitly carries ACCEPT_ANY_NONEMPTY to preserve the current
+// compatibility rule that bypasses a second applicability check.
+message_search_action transition_message_candidate(message_attempt attempt,
+                                                    message_result result);
+message_candidate_search search_message_candidate(
+    const std::string &base_key, message_prefix prefix,
+    const message_lookup &lookup);
+
+// Read-only production diagnostics. The returned value is an owning snapshot.
+diagnostic_counters monspell_overlay_diagnostics();
+
 // Test-only reset for isolated load-state fixtures. Production must load once
 // before the first coverage query.
 void reset_monspell_overlay_for_test();
+void reset_monspell_overlay_diagnostics_for_test();
 }
