@@ -69,6 +69,7 @@ fight.o \
 files.o \
 fineff.o \
 format.o \
+fork-message-overlay.o \
 fprop.o \
 game-options.o \
 geom2d.o \
@@ -316,6 +317,7 @@ catch2-tests/test_coordit.o \
 catch2-tests/test_describe.o \
 catch2-tests/test_english.o \
 catch2-tests/test_files.o \
+catch2-tests/test_fork_message_overlay.o \
 catch2-tests/test_items.o \
 catch2-tests/test_mon_cast_target.o \
 catch2-tests/test_mon-util.o \

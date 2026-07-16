@@ -23,6 +23,7 @@
 #include "clua.h"
 #include "end.h"
 #include "files.h"
+#include "fork-message-overlay.h"
 #include "libutil.h"
 #include "options.h"
 #include "random.h"
@@ -389,6 +390,10 @@ void databaseSystemInit()
 {
     for (unsigned int i = 0; i < NUM_DB; i++)
         AllDBs[i].init();
+    // Validate the compiled monspell catalog against the canonical English
+    // source snapshot before any speech query can consume RNG or run Lua.
+    fork_message_overlay::load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb());
     i18n_cache_clear();
 }
 

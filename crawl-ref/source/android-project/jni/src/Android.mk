@@ -88,6 +88,7 @@ LOCAL_SRC_FILES := $(SDL_PATH)/src/main/android/SDL_android_main.c \
     $(CRAWL_PATH)/files.cc \
     $(CRAWL_PATH)/fineff.cc \
     $(CRAWL_PATH)/format.cc \
+    $(CRAWL_PATH)/fork-message-overlay.cc \
     $(CRAWL_PATH)/fprop.cc \
     $(CRAWL_PATH)/game-options.cc \
     $(CRAWL_PATH)/geom2d.cc \

@@ -1,0 +1,121 @@
+{
+  "schema_version": 1,
+  "domain": "monspell",
+  "inventory_semantic_fingerprint": "7031515a931079c2c58c792d5c7ddc44d8fb391c2814aa371fa3c417298db94b",
+  "supported_languages": [
+    "en",
+    "zh"
+  ],
+  "entries": [
+    {
+      "canonical_key": "beam catchall cast",
+      "canonical_fingerprint": "fnv1a64:9c4063f90696aadb",
+      "selection_graph_fingerprint": "fnv1a64:82eba52590a641ca",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.beam_catchall.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "f4acb4e7b29a282716363320f3639f891f0deffad6206812a50f507b2438d6e9",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ throws @beam@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {"name": "actor", "type": "actor_ref"},
+            {"name": "beam", "type": "resolved_beam"},
+            {"name": "target", "type": "resolved_target"}
+          ],
+          "required_arguments": [
+            "actor",
+            "beam",
+            "target"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {"language": "en", "relation": "AT", "pattern": "${actor} throws ${beam} at ${target}."},
+                {"language": "en", "relation": "NEXT_TO", "pattern": "${actor} throws ${beam} next to ${target}."},
+                {"language": "en", "relation": "PAST", "pattern": "${actor} throws ${beam} past ${target}."},
+                {"language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出${beam}。"},
+                {"language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出${beam}。"},
+                {"language": "zh", "relation": "PAST", "pattern": "${actor}射出${beam}，从${target}旁边掠过。"}
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "vanquished vanguard nergalle cast",
+      "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
+      "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",
+      "mode": "LEGACY_ONLY",
+      "variants": [
+        {
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.call_names.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "834b3a3045e5a663f0d3b34042c2becb9a8a6133843c78b7149a9526e4c98361",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ calls out: \"@orc name@, @orc name@, @orc name@ - to me!\"",
+          "frame": "VOCAL",
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [],
+          "required_arguments": [],
+          "line_metadata": [],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {
+            "orc name": "18b06b1dc0612159d62109ae44f8d887ac415643df9ced448148257e4a8dc74a"
+          }
+        },
+        {
+          "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "9e78cb55d8fa18b2e1263f5a9d2b20891314b1d727ced20198e24418f3471ad2",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ cries out, \"Spectres! Fight for the home you helped make!\"",
+          "frame": "VOCAL",
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [],
+          "required_arguments": [],
+          "line_metadata": [],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
