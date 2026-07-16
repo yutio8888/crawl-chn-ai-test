@@ -9012,8 +9012,9 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     // This is the one and only target-resolution call for the structured
     // attempt. It remains after canonical TextDB selection and before legacy
     // bracket materialization, preserving the established RNG boundary.
-    const speech_target_observer observer =
-        { _record_overlay_target_event, &bindings.target_trace };
+    speech_target_observer observer;
+    observer.function = _record_overlay_target_event;
+    observer.context = &bindings.target_trace;
     const resolved_speech_target target =
         resolve_speech_target(&mon, pbolt, false, &observer);
     const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
