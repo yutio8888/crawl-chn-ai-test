@@ -527,6 +527,241 @@
       ]
     },
     {
+      "canonical_key": "awaken flesh kobold fleshcrafter cast",
+      "canonical_fingerprint": "fnv1a64:5100841c4bca1e37",
+      "selection_graph_fingerprint": "fnv1a64:3e6f0fdd58dcea89",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "56fed4b325bad0a40b1214aebcf645baf6f732659a8c4990cf5e4dbb6752ac41",
+          "english_snapshot": "@The_monster@ cackles and gestures.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} cackles and gestures." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}咯咯笑着做出手势。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.awaken_flesh.chant_writhe.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "831f1130389ac67b5ddae835e33dcb82d3f3b6cca5929f6fb63c4920be3bc91d",
+          "english_snapshot": "@The_monster@ chants and writhes.",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} chants and writhes." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}一边吟诵，一边扭动身躯。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "dispel undead revenant cast",
+      "canonical_fingerprint": "fnv1a64:8e34d41bb64b98cf",
+      "selection_graph_fingerprint": "fnv1a64:2ffbd2d6695e3c94",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "ef1b3dcdaada8fe86e2505c5efb1997cab9e253c2dbc9e55aeffdaa233f57821",
+        "english_snapshot": "@The_monster@ gestures violently @at@ @target@.",
+        "frame": "GESTURE", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": true, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} gestures violently at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gestures violently next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} gestures violently past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}猛烈地做出手势。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边猛烈地做出手势。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后猛烈地做出手势。" }
+          ] }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "malign offering priest cast",
+      "canonical_fingerprint": "fnv1a64:be1c4566ec9a68c6",
+      "selection_graph_fingerprint": "fnv1a64:9f9685c06bc6e5f7",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "19bc846780df03d7dd8e1f20aa6d94b37d3ce41e37c635f28e97d84359a8a22a",
+        "english_snapshot": "@The_monster@ utters a dark prayer and points @at@ @target@.",
+        "frame": "INVOCATION", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": true, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} utters a dark prayer and points at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} utters a dark prayer and points next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} utters a dark prayer and points past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}低声念出一段黑暗祷词，指向${target}身后。" }
+          ] }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "sheza's dance cast",
+      "canonical_fingerprint": "fnv1a64:045d6fbd640e38fb",
+      "selection_graph_fingerprint": "fnv1a64:56ed8f098b608bc3",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.shezas_dance.weapons_fly.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ce6cc86dbab03e10a2c4920a68567175410eee0477442a53e19ba600590666ca",
+          "english_snapshot": "@The_monster@ sends weapons flying into battle!",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} sends weapons flying into battle!" },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}让武器飞入战场！" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "c81f8a4ea6b45c4ff58c602ca9f234bb7e6a31222e8d2ac9891fcd1f4aa8ad88",
+          "english_snapshot": "@The_monster@ gestures, and weapons take to the air!",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures, and weapons take to the air!" },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}做出手势，武器随即飞上空中！" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "silent blizzard demon cast",
+      "canonical_fingerprint": "fnv1a64:3df5701853ea79dd",
+      "selection_graph_fingerprint": "fnv1a64:08d316ac024d878f",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.blizzard_demon.icy_lash.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "948fab004a159d28a276215e8319c8d8f80ffbad95c7aebc77bef75d33f70f82",
+          "english_snapshot": "@The_monster@ lashes out with icy intensity.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} lashes out with icy intensity." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}以刺骨寒意猛烈出击。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ac9c8f992722a6c0886c46cb8be157a0e500f42eee6cade23908ac04f6fa65d2",
+          "english_snapshot": "@The_monster@ gestures with frozen lightning.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures with frozen lightning." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}做出手势，释放出冰封闪电。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "ushabti cast targeted",
+      "canonical_fingerprint": "fnv1a64:2c1ab9a99281c359",
+      "selection_graph_fingerprint": "fnv1a64:bd4de275055a1dec",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ushabti.stiff_gesture.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "cf368db49cf73c15cc7f8a6ce0670be1729db6a80b7ecb182e7568310648327f",
+        "english_snapshot": "@The_monster@ gestures stiffly @at@ @target@.",
+        "frame": "GESTURE", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": true, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} gestures stiffly at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gestures stiffly next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} gestures stiffly past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}僵硬地向${target}做出手势。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}僵硬地向${target}旁边做出手势。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}僵硬地向${target}身后做出手势。" }
+          ] }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "mennas cast",
+      "canonical_fingerprint": "fnv1a64:7b93f4179a0b1cfb",
+      "selection_graph_fingerprint": "fnv1a64:cdea326b4e1cfa70",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "3d56c3dd54b1ae3f0787fe2b352ec0cfa5b4506497980a4c1ffc55a95a7f8523",
+        "english_snapshot": "VISUAL:@The_monster@ gestures frantically.",
+        "frame": "GESTURE", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+        "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+          "behavior": { "implies_gesture": true, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} gestures frantically." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}疯狂地做出手势。" }
+          ] }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",

@@ -159,7 +159,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 8);
+        CHECK(report.structured_key_count == 15);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -168,6 +168,14 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("wizard cast"));
         CHECK(monspell_overlay_covers("magical cast targeted"));
         CHECK(monspell_overlay_covers("magical cast"));
+        CHECK(monspell_overlay_covers(
+            "awaken flesh kobold fleshcrafter cast"));
+        CHECK(monspell_overlay_covers("dispel undead revenant cast"));
+        CHECK(monspell_overlay_covers("malign offering priest cast"));
+        CHECK(monspell_overlay_covers("sheza's dance cast"));
+        CHECK(monspell_overlay_covers("silent blizzard demon cast"));
+        CHECK(monspell_overlay_covers("ushabti cast targeted"));
+        CHECK(monspell_overlay_covers("mennas cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -1385,5 +1393,118 @@ TEST_CASE("common cast variants render targeted and NONE relation matrices",
               == (item.resolves_target ? item.en_at : item.en_none));
         CHECK(zh.lines[0].text
               == (item.resolves_target ? item.zh_at : item.zh_none));
+    }
+}
+
+TEST_CASE("third Phase 2 batch has exact Chinese catalog goldens",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    struct fixture
+    {
+        const char *key;
+        size_t ordinal;
+        const char *pattern;
+        bool resolves_target;
+        bool gesture;
+        cast_frame frame;
+        sensory_mode sensory;
+        const char *zh[3];
+    };
+    const fixture cases[] =
+    {
+        { "awaken flesh kobold fleshcrafter cast", 0,
+          "@The_monster@ cackles and gestures.",
+          false, true, cast_frame::GESTURE, sensory_mode::PLAIN,
+          { "兽人咯咯笑着做出手势。", nullptr, nullptr } },
+        { "awaken flesh kobold fleshcrafter cast", 1,
+          "@The_monster@ chants and writhes.",
+          false, false, cast_frame::VOCAL, sensory_mode::PLAIN,
+          { "兽人一边吟诵，一边扭动身躯。", nullptr, nullptr } },
+        { "dispel undead revenant cast", 0,
+          "@The_monster@ gestures violently @at@ @target@.",
+          true, true, cast_frame::GESTURE, sensory_mode::PLAIN,
+          { "兽人向你猛烈地做出手势。",
+            "兽人向你旁边猛烈地做出手势。",
+            "兽人向你身后猛烈地做出手势。" } },
+        { "malign offering priest cast", 0,
+          "@The_monster@ utters a dark prayer and points @at@ @target@.",
+          true, true, cast_frame::INVOCATION, sensory_mode::PLAIN,
+          { "兽人低声念出一段黑暗祷词，指向你。",
+            "兽人低声念出一段黑暗祷词，指向你旁边。",
+            "兽人低声念出一段黑暗祷词，指向你身后。" } },
+        { "sheza's dance cast", 0,
+          "@The_monster@ sends weapons flying into battle!",
+          false, false, cast_frame::DIRECT_EFFECT, sensory_mode::PLAIN,
+          { "兽人让武器飞入战场！", nullptr, nullptr } },
+        { "sheza's dance cast", 1,
+          "@The_monster@ gestures, and weapons take to the air!",
+          false, true, cast_frame::GESTURE, sensory_mode::PLAIN,
+          { "兽人做出手势，武器随即飞上空中！", nullptr, nullptr } },
+        { "silent blizzard demon cast", 0,
+          "@The_monster@ lashes out with icy intensity.",
+          false, false, cast_frame::DIRECT_EFFECT, sensory_mode::PLAIN,
+          { "兽人以刺骨寒意猛烈出击。", nullptr, nullptr } },
+        { "silent blizzard demon cast", 1,
+          "@The_monster@ gestures with frozen lightning.",
+          false, true, cast_frame::GESTURE, sensory_mode::PLAIN,
+          { "兽人做出手势，释放出冰封闪电。", nullptr, nullptr } },
+        { "ushabti cast targeted", 0,
+          "@The_monster@ gestures stiffly @at@ @target@.",
+          true, true, cast_frame::GESTURE, sensory_mode::PLAIN,
+          { "兽人僵硬地向你做出手势。",
+            "兽人僵硬地向你旁边做出手势。",
+            "兽人僵硬地向你身后做出手势。" } },
+        { "mennas cast", 0,
+          "VISUAL:@The_monster@ gestures frantically.",
+          false, true, cast_frame::GESTURE, sensory_mode::VISUAL,
+          { "兽人疯狂地做出手势。", nullptr, nullptr } },
+    };
+    const target_relation relations[] =
+    {
+        target_relation::AT,
+        target_relation::NEXT_TO,
+        target_relation::PAST,
+    };
+
+    for (const fixture &item : cases)
+    {
+        CAPTURE(item.key, item.ordinal);
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                item.pattern, item.key, item.ordinal);
+        canonical_materialization materialized =
+            materialize_monspell_candidate(
+                item.key, message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    CHECK(requirements.resolves_target
+                          == item.resolves_target);
+                    CHECK(requirements.implies_gesture == item.gesture);
+                    CHECK(requirements.frame == item.frame);
+                    runtime_bindings values = beam_bindings(
+                        requirements.resolves_target
+                            ? target_relation::AT : target_relation::NONE);
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+
+        const size_t relation_count = item.resolves_target ? 3 : 1;
+        for (size_t relation = 0; relation < relation_count; ++relation)
+        {
+            if (item.resolves_target)
+                materialized.binding.values.target.relation =
+                    relations[relation];
+            const render_result zh =
+                render_materialized_candidate(materialized, "zh");
+            REQUIRE(zh.result == message_result::RENDERED);
+            REQUIRE(zh.lines.size() == 1);
+            CHECK(zh.lines[0].text == item.zh[relation]);
+            CHECK(zh.lines[0].sensory == item.sensory);
+            CHECK(zh.lines[0].implies_gesture == item.gesture);
+        }
     }
 }

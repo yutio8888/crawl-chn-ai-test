@@ -1035,6 +1035,59 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { true },
             false,
         },
+        {
+            "awaken flesh kobold fleshcrafter cast",
+            {
+                "@The_monster@ cackles and gestures.",
+                "@The_monster@ chants and writhes.",
+            },
+            { true, false },
+            false,
+        },
+        {
+            "dispel undead revenant cast",
+            { "@The_monster@ gestures violently @at@ @target@." },
+            { true },
+            true,
+        },
+        {
+            "malign offering priest cast",
+            {
+                "@The_monster@ utters a dark prayer and points @at@ @target@.",
+            },
+            { true },
+            true,
+        },
+        {
+            "sheza's dance cast",
+            {
+                "@The_monster@ sends weapons flying into battle!",
+                "@The_monster@ gestures, and weapons take to the air!",
+            },
+            { false, true },
+            false,
+        },
+        {
+            "silent blizzard demon cast",
+            {
+                "@The_monster@ lashes out with icy intensity.",
+                "@The_monster@ gestures with frozen lightning.",
+            },
+            { false, true },
+            false,
+        },
+        {
+            "ushabti cast targeted",
+            { "@The_monster@ gestures stiffly @at@ @target@." },
+            { true },
+            true,
+        },
+        {
+            "mennas cast",
+            { "VISUAL:@The_monster@ gestures frantically." },
+            { true },
+            false,
+        },
     };
 
     for (const key_fixture &fixture : fixtures)
@@ -1141,7 +1194,18 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                   == fixture.resolves_target);
             CHECK(en.binding.callback_count == 1);
             CHECK(zh.binding.callback_count == 1);
-            CHECK(english.text == en.randomized.pattern_en);
+            if (fixture.key == "mennas cast")
+            {
+                CHECK("VISUAL:" + english.text == en.randomized.pattern_en);
+                REQUIRE(english.lines.size() == 1);
+                REQUIRE(chinese.lines.size() == 1);
+                CHECK(english.lines[0].sensory
+                      == fork_message_overlay::sensory_mode::VISUAL);
+                CHECK(chinese.lines[0].sensory
+                      == fork_message_overlay::sensory_mode::VISUAL);
+            }
+            else
+                CHECK(english.text == en.randomized.pattern_en);
             CHECK_FALSE(chinese.text.empty());
             CHECK(english_state == legacy_state);
             CHECK(english_count == legacy_count);
@@ -1196,6 +1260,25 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             fork_message_overlay::monspell_overlay_diagnostics();
         CHECK(counters.legacy_fallback == 1);
         CHECK(counters.overlay_hit == 1);
+    }
+
+    SECTION("silent prefix directly selects the covered blizzard key")
+    {
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(0x7a11b22d, 0xc35f901e);
+        const resolved_monspell_cast_message result =
+            resolve_monspell_cast_message(
+                source, beam, false, { "blizzard demon cast" },
+                true, false);
+        REQUIRE(result.structured);
+        REQUIRE(result.has_materialization);
+        CHECK(result.materialization.canonical.top_locator.canonical_key
+              == "silent blizzard demon cast");
+        const auto counters =
+            fork_message_overlay::monspell_overlay_diagnostics();
+        CHECK(counters.overlay_hit == 1);
+        CHECK(counters.legacy_fallback == 0);
     }
 }
 

@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成两批通用施法消息迁移。当前覆盖 8 个 canonical
-key、15 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成三批通用施法消息迁移。当前覆盖 15 个 canonical
+key、25 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移四个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 15 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -71,6 +71,16 @@ Phase 2 又完整迁移 `ensnare arachne cast` 的 2 个 variant 和
 descriptor 使用 `binding.resolves_target=false` 和唯一 `NONE` 关系。后者禁止
 声明 `resolved_target` 槽，也不会调用 `resolve_speech_target()`、消费目标 RNG 或
 产生 target trace。`NONE` 是强类型关系，不以伪 `AT` sentinel 表示。
+
+第三批低风险迁移覆盖 7 个完整 key 闭包、10 个 variant：
+`awaken flesh kobold fleshcrafter cast`、`dispel undead revenant cast`、
+`malign offering priest cast`、`sheza's dance cast`、
+`silent blizzard demon cast`、`ushabti cast targeted` 与 `mennas cast`。
+其中 targeted descriptor 继续显式声明三种 target relation；其余 descriptor
+使用 `NONE`。每个 variant 的 `implies_gesture` 均由 metadata 表达，不再依赖
+本地化正文关键词。`mennas cast` 还首次迁移了 `VISUAL` sensory/channel
+metadata：模板正文不携带 `VISUAL:` 协议前缀，renderer 生成的 line metadata
+保持现有视觉可见性和输出频道语义。
 
 ## 2. 三类 artifact 的职责
 
@@ -217,12 +227,13 @@ code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 8 个 key、15 个 canonical variant，不代表 262 个
+- structured 覆盖为 15 个 key、25 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
   类型化槽，并通过 `binding.resolves_target` 将目标解析需求与 `${target}` 引用解耦；
-- structured gesture 元数据已启用，但 audible 与非默认 applicability 尚未启用；
+- structured gesture 与 `VISUAL` sensory/channel 元数据已启用，但 audible
+  与其他非默认 applicability 尚未启用；
 - 全局 legacy gesture/visual/audible heuristic 仍存在；
 - 当前 canonical `monspell` 闭包无 Lua；未来出现 Lua 或不可控副作用时，在建立
   完整契约前必须 `LEGACY_ONLY`；
@@ -350,11 +361,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- 58 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+- 40 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 15 个 canonical structured variant，15 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 30 个逐语言验证单位，
-  30 个均完整。
+- 25 个 canonical structured variant，25 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 50 个逐语言验证单位，
+  50 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -375,10 +386,10 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁是 58 个 legacy behavior occurrence 尚无显式 metadata，以及
+剩余门禁是 40 个 legacy behavior occurrence 尚无显式 metadata，以及
 `vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
 特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
-候选 containment、runtime reachability 和本批两个迁移 key 不再是 blocker。
+候选 containment、runtime reachability 和当前三批已迁移 key 不再是 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时

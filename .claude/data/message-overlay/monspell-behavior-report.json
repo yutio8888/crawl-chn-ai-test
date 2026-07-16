@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 15,
-    "canonical_structured_variant_metadata_units": 15,
+    "canonical_structured_variant_metadata_complete": 25,
+    "canonical_structured_variant_metadata_units": 25,
     "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 30,
-    "per_language_structured_variant_verification_units": 30,
-    "remaining_legacy_behavior_occurrences": 58,
+    "per_language_structured_variant_verification_complete": 50,
+    "per_language_structured_variant_verification_units": 50,
+    "remaining_legacy_behavior_occurrences": 40,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "2164cf54ed99322655fd080169890d4557b1b129bd6af1bef7f8f5036b3a9386"
+      "sha256": "8839ec96031d2be016ff0b5f815e230ab414d1791a37ec2209c76798946a26e9"
     }
   },
   "languages": {
@@ -4565,12 +4565,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "top_locator": {
@@ -4677,12 +4677,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "dispel undead revenant cast",
           "top_locator": {
@@ -4789,12 +4789,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "malign offering priest cast",
           "top_locator": {
@@ -4803,30 +4803,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "en",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "mennas cast",
-          "top_locator": {
-            "canonical_key": "mennas cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "mennas cast",
           "top_locator": {
@@ -4837,12 +4821,28 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "mennas cast",
+          "top_locator": {
+            "canonical_key": "mennas cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "mennas cast",
           "top_locator": {
@@ -4853,12 +4853,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "sheza's dance cast",
           "top_locator": {
@@ -4869,12 +4869,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "silent blizzard demon cast",
           "top_locator": {
@@ -4917,12 +4917,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.ushabti.stiff_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "ushabti cast targeted",
           "top_locator": {
@@ -5181,8 +5181,29 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "awaken flesh kobold fleshcrafter cast",
+          "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "awaken flesh kobold fleshcrafter cast",
+          "stable_id": "mon.cast.awaken_flesh.chant_writhe.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "beam catchall cast",
           "stable_id": "mon.cast.beam_catchall.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "dispel undead revenant cast",
+          "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
           "variant_ordinal": 0
         },
         {
@@ -5237,8 +5258,57 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "malign offering priest cast",
+          "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "mennas cast",
+          "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sheza's dance cast",
+          "stable_id": "mon.cast.shezas_dance.weapons_fly.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sheza's dance cast",
+          "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent blizzard demon cast",
+          "stable_id": "mon.cast.blizzard_demon.icy_lash.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent blizzard demon cast",
+          "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ushabti cast targeted",
+          "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
         },
         {
@@ -5331,12 +5401,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "top_locator": {
@@ -5443,12 +5513,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "dispel undead revenant cast",
           "top_locator": {
@@ -5555,12 +5625,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "malign offering priest cast",
           "top_locator": {
@@ -5569,30 +5639,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "zh",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "mennas cast",
-          "top_locator": {
-            "canonical_key": "mennas cast",
-            "variant_ordinal": 0
-          }
-        },
-        {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "mennas cast",
           "top_locator": {
@@ -5603,12 +5657,28 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "mennas cast",
+          "top_locator": {
+            "canonical_key": "mennas cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "VISUAL_CHANNEL",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "mennas cast",
           "top_locator": {
@@ -5619,12 +5689,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "sheza's dance cast",
           "top_locator": {
@@ -5635,12 +5705,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "silent blizzard demon cast",
           "top_locator": {
@@ -5683,12 +5753,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.ushabti.stiff_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "ushabti cast targeted",
           "top_locator": {
@@ -5928,8 +5998,29 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "awaken flesh kobold fleshcrafter cast",
+          "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "awaken flesh kobold fleshcrafter cast",
+          "stable_id": "mon.cast.awaken_flesh.chant_writhe.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "beam catchall cast",
           "stable_id": "mon.cast.beam_catchall.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "dispel undead revenant cast",
+          "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
           "variant_ordinal": 0
         },
         {
@@ -5984,8 +6075,57 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "malign offering priest cast",
+          "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "mennas cast",
+          "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sheza's dance cast",
+          "stable_id": "mon.cast.shezas_dance.weapons_fly.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sheza's dance cast",
+          "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent blizzard demon cast",
+          "stable_id": "mon.cast.blizzard_demon.icy_lash.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent blizzard demon cast",
+          "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ushabti cast targeted",
+          "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
         },
         {
@@ -6045,7 +6185,7 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "58 remaining legacy behavior occurrences lack explicit metadata",
+    "40 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6096,8 +6236,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6208,8 +6348,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6320,8 +6460,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6336,8 +6476,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6352,8 +6492,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6368,8 +6508,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6384,8 +6524,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6400,8 +6540,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6448,8 +6588,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.ushabti.stiff_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6754,8 +6894,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6866,8 +7006,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6946,8 +7086,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6962,8 +7102,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6978,8 +7118,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6994,8 +7134,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7010,8 +7150,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7026,8 +7166,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.blizzard_demon.frozen_lightning_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7074,8 +7214,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.ushabti.stiff_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
