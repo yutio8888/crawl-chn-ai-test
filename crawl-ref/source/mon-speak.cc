@@ -823,8 +823,15 @@ bool invalid_msg(const monster &mon, string msg)
 
 }
 
+bool resolve_mon_speech_line_channel(string &line, msg_channel_type &channel,
+                                     bool silence, bool already_rendered)
+{
+    return !already_rendered && strip_channel_prefix(line, channel, silence);
+}
+
 bool mons_speaks_msg(monster* mons, const string &msg,
-                     const msg_channel_type def_chan, bool silence)
+                     const msg_channel_type def_chan, bool silence,
+                     const bool already_rendered)
 {
     if (!you.see_cell(mons->pos()))
         return false;
@@ -832,7 +839,8 @@ bool mons_speaks_msg(monster* mons, const string &msg,
     mon_acting mact(mons);
 
     // We have a speech string, now parse and act on it.
-    const string _msg = do_mon_str_replacements(msg, *mons);
+    const string _msg = already_rendered
+        ? msg : do_mon_str_replacements(msg, *mons);
     const vector<string> lines = split_string("\n", _msg);
 
     bool noticed = false;       // Any messages actually printed?
@@ -851,7 +859,8 @@ bool mons_speaks_msg(monster* mons, const string &msg,
         // [jpeg] Added MSGCH_TALK_VISUAL for silent "chatter".
         msg_channel_type msg_type = def_chan;
 
-        if (strip_channel_prefix(line, msg_type, silence))
+        if (resolve_mon_speech_line_channel(line, msg_type, silence,
+                                            already_rendered))
         {
             if (msg_type == MSGCH_MONSTER_SPELL && mons->friendly())
                 msg_type = MSGCH_FRIEND_SPELL;

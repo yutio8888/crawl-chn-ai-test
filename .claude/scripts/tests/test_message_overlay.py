@@ -70,6 +70,18 @@ class MessageOverlayTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.ManifestError, "legacy TextDB"):
             self.validate(value)
 
+        value = copy.deepcopy(MANIFEST)
+        line = value["entries"][0]["variants"][0]["line_metadata"][0]
+        line["channel"] = "not_a_message_channel"
+        with self.assertRaisesRegex(MODULE.ManifestError, "invalid channel"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        template = value["entries"][0]["variants"][0]["line_metadata"][0]["templates"][0]
+        template["pattern"] += "\nsecond protocol line"
+        with self.assertRaisesRegex(MODULE.ManifestError, "pattern"):
+            self.validate(value)
+
     def test_fingerprint_tampering_is_rejected(self):
         for field in ("canonical_fingerprint", "selection_graph_fingerprint"):
             value = copy.deepcopy(MANIFEST)

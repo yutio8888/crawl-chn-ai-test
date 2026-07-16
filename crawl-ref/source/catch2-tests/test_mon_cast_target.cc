@@ -4,20 +4,26 @@
 
 #include "beam.h"
 #include "coordit.h"
+#include "database.h"
 #include "env.h"
 #include "feature.h"
+#include "initfile.h"
 #include "losglobal.h"
 #include "mon-cast-target.h"
 #include "mon-ench.h"
 #include "mon-place.h"
+#include "mon-speak.h"
 #include "mon-util.h"
 #include "monster.h"
 #include "player.h"
 #include "random.h"
 #include "state.h"
 #include "spl-util.h"
+#include "stringutil.h"
 
 #include "test_player_fixture.h"
+
+#include <unistd.h>
 
 namespace
 {
@@ -263,6 +269,86 @@ bool same_target(const resolved_speech_target &lhs,
         && lhs.mid == rhs.mid
         && lhs.feature == rhs.feature
         && lhs.error == rhs.error;
+}
+
+void ensure_phase1_overlay_loaded()
+{
+    if (SysEnv.crawl_dir.empty())
+    {
+        char cwd[4096];
+        REQUIRE(getcwd(cwd, sizeof(cwd)) != nullptr);
+        SysEnv.crawl_dir = cwd;
+    }
+    databaseSystemInit();
+    if (fork_message_overlay::monspell_overlay_report().state
+        == fork_message_overlay::domain_state::ENABLED)
+    {
+        return;
+    }
+    fork_message_overlay::reset_monspell_overlay_for_test();
+    const fork_message_overlay::load_report report =
+        fork_message_overlay::load_monspell_overlay(
+            textdb_phase0::dump_canonical_english_speakdb());
+    REQUIRE(report.state == fork_message_overlay::domain_state::ENABLED);
+}
+
+struct scoped_test_language
+{
+    lang_t saved_language = Options.language;
+    const char *saved_name = Options.lang_name;
+
+    explicit scoped_test_language(lang_t language)
+    {
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        i18n_cache_clear();
+    }
+
+    ~scoped_test_language()
+    {
+        Options.language = saved_language;
+        Options.lang_name = saved_name;
+        i18n_cache_clear();
+    }
+};
+
+string legacy_beam_catchall(const monster &source, const bolt &beam)
+{
+    string message = getSpeakString("beam catchall cast");
+    const resolved_speech_target target =
+        resolve_speech_target(&source, beam, false);
+    message = replace_all(message, "@at@", target.preposition_display);
+    message = replace_all(message, "@target@", target.display);
+    message = replace_all(message, "@beam@",
+                          resolve_speech_beam(beam, true).display_text);
+    description_level_type desc = DESC_THE;
+    if (source.attitude == ATT_FRIENDLY
+        && !mons_is_unique(source.type)
+        && !crawl_state.game_is_arena()
+        && you.can_see(source))
+    {
+        desc = DESC_YOUR;
+    }
+    const string actor = source.is_named() && you.can_see(source)
+        ? source.name(DESC_THE) : uppercase_first(source.name(desc));
+    return replace_all(message, "@The_monster@", actor);
+}
+
+void check_target_trace_equal(
+    const vector<fork_message_overlay::target_rng_event> &lhs,
+    const vector<fork_message_overlay::target_rng_event> &rhs)
+{
+    REQUIRE(lhs.size() == rhs.size());
+    for (size_t i = 0; i < lhs.size(); ++i)
+    {
+        CHECK(lhs[i].kind == rhs[i].kind);
+        CHECK(lhs[i].bound == rhs[i].bound);
+        CHECK(lhs[i].selected == rhs[i].selected);
+        CHECK(lhs[i].rng_state_before == rhs[i].rng_state_before);
+        CHECK(lhs[i].rng_state_after == rhs[i].rng_state_after);
+        CHECK(lhs[i].rng_count_before == rhs[i].rng_count_before);
+        CHECK(lhs[i].rng_count_after == rhs[i].rng_count_after);
+    }
 }
 
 }
@@ -599,4 +685,291 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(env.grid(cell.position) == cell.feature);
         CHECK(env.mgrid(cell.position) == cell.monster_index);
     }
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "beam catchall production overlay matches legacy English",
+                 "[single-file][mon-cast-target][message-overlay][phase1][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_test_language english(lang_t::EN);
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(you.pos());
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+    beam.short_name = "Phase 1 bolt";
+
+    string legacy;
+    uint64_t legacy_state = 0;
+    uint64_t legacy_count = 0;
+    {
+        rng::subgenerator scoped_rng(0x14f0a122, 0xb38d7c91);
+        legacy = legacy_beam_catchall(source, beam);
+        legacy_state = rng::current_generator().get_state();
+        legacy_count = rng::current_generator().get_count();
+    }
+
+    resolved_monspell_cast_message structured;
+    uint64_t structured_state = 0;
+    uint64_t structured_count = 0;
+    {
+        rng::subgenerator scoped_rng(0x14f0a122, 0xb38d7c91);
+        structured = resolve_monspell_cast_message(
+            source, beam, true, { "beam catchall cast" }, false, false);
+        structured_state = rng::current_generator().get_state();
+        structured_count = rng::current_generator().get_count();
+    }
+
+    REQUIRE(structured.structured);
+    REQUIRE_FALSE(structured.corrupt);
+    REQUIRE(structured.has_materialization);
+    CHECK(structured.text == legacy);
+    CHECK(structured_state == legacy_state);
+    CHECK(structured_count == legacy_count);
+    CHECK(structured.materialization.stable_id
+          == "mon.cast.beam_catchall.v1");
+    REQUIRE(structured.materialization.canonical.trace.weighted_choices.size()
+            == 1);
+    REQUIRE_FALSE(
+        structured.materialization.canonical.trace.recursive_sites.empty());
+    for (const canonical_textdb::recursive_site_trace &site
+         : structured.materialization.canonical.trace.recursive_sites)
+    {
+        CHECK(site.status == canonical_textdb::recursive_site_status::MISSING);
+    }
+    CHECK(structured.materialization.canonical.trace.lua_sites.empty());
+    CHECK(structured.materialization.randomized.sites.empty());
+    REQUIRE(structured.materialization.binding.values.target_trace.size()
+            == 1);
+    CHECK(structured.materialization.binding.values.target_trace[0].kind
+          == fork_message_overlay::target_rng_event_kind::FIRE_TRACER);
+    CHECK(structured.text.find("${") == string::npos);
+    CHECK(structured.text.find('@') == string::npos);
+    CHECK(structured.text.find('[') == string::npos);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "beam catchall EN and ZH share one canonical runtime trace",
+                 "[single-file][mon-cast-target][message-overlay][phase1][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(you.pos());
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+    beam.short_name = "magic missile";
+
+    resolved_monspell_cast_message english;
+    uint64_t english_state = 0;
+    uint64_t english_count = 0;
+    {
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(0x51c0ffee, 0x8badf00d);
+        english = resolve_monspell_cast_message(
+            source, beam, true, { "beam catchall cast" }, false, false);
+        english_state = rng::current_generator().get_state();
+        english_count = rng::current_generator().get_count();
+    }
+
+    resolved_monspell_cast_message chinese;
+    uint64_t chinese_state = 0;
+    uint64_t chinese_count = 0;
+    {
+        scoped_test_language language(lang_t::ZH);
+        rng::subgenerator scoped_rng(0x51c0ffee, 0x8badf00d);
+        chinese = resolve_monspell_cast_message(
+            source, beam, true, { "beam catchall cast" }, false, false);
+        chinese_state = rng::current_generator().get_state();
+        chinese_count = rng::current_generator().get_count();
+    }
+
+    REQUIRE(english.has_materialization);
+    REQUIRE(chinese.has_materialization);
+    const auto &en_mat = english.materialization;
+    const auto &zh_mat = chinese.materialization;
+    CHECK(en_mat.canonical.expanded_pattern_en
+          == zh_mat.canonical.expanded_pattern_en);
+    REQUIRE(en_mat.canonical.trace.weighted_choices.size()
+            == zh_mat.canonical.trace.weighted_choices.size());
+    REQUIRE(en_mat.canonical.trace.weighted_choices.size() == 1);
+    CHECK(en_mat.canonical.trace.weighted_choices[0].variant_ordinal
+          == zh_mat.canonical.trace.weighted_choices[0].variant_ordinal);
+    CHECK(en_mat.canonical.trace.weighted_choices[0].random_result
+          == zh_mat.canonical.trace.weighted_choices[0].random_result);
+    CHECK(en_mat.canonical.trace.recursive_sites.size()
+          == zh_mat.canonical.trace.recursive_sites.size());
+    CHECK(en_mat.canonical.trace.lua_sites.size()
+          == zh_mat.canonical.trace.lua_sites.size());
+    CHECK(en_mat.randomized.sites.size() == zh_mat.randomized.sites.size());
+    check_target_trace_equal(en_mat.binding.values.target_trace,
+                             zh_mat.binding.values.target_trace);
+    CHECK(english_state == chinese_state);
+    CHECK(english_count == chinese_count);
+    CHECK(chinese.text.find("射出") != string::npos);
+    CHECK(chinese.text.find("向") != string::npos);
+    CHECK(chinese.text.find("throws") == string::npos);
+    CHECK(chinese.text.find("${") == string::npos);
+    CHECK(chinese.text.find('@') == string::npos);
+}
+
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "beam catchall runtime preserves silent unseen and corrupt transitions",
+                 "[single-file][mon-cast-target][message-overlay][phase1][runtime]")
+{
+    ensure_phase1_overlay_loaded();
+    scoped_test_language english(lang_t::EN);
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+    bolt beam = make_target_beam(you.pos());
+    beam.source = source.pos();
+    beam.source_id = source.mid;
+
+    SECTION("silent missing prefixed key retries the covered base key")
+    {
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        const resolved_monspell_cast_message result =
+            resolve_monspell_cast_message(
+                source, beam, true, { "beam catchall cast" }, true, false);
+        REQUIRE(result.structured);
+        REQUIRE_FALSE(result.text.empty());
+        const auto counters =
+            fork_message_overlay::monspell_overlay_diagnostics();
+        CHECK(counters.overlay_hit == 1);
+        CHECK(counters.legacy_fallback == 1);
+    }
+
+    SECTION("uncovered key preserves legacy selection output and RNG")
+    {
+        string direct;
+        uint64_t direct_state = 0;
+        uint64_t direct_count = 0;
+        {
+            rng::subgenerator scoped_rng(0x31415926, 0x27182818);
+            direct = getSpeakString("magical cast");
+            direct_state = rng::current_generator().get_state();
+            direct_count = rng::current_generator().get_count();
+        }
+        resolved_monspell_cast_message routed;
+        uint64_t routed_state = 0;
+        uint64_t routed_count = 0;
+        {
+            rng::subgenerator scoped_rng(0x31415926, 0x27182818);
+            routed = resolve_monspell_cast_message(
+                source, beam, false, { "magical cast" }, false, false);
+            routed_state = rng::current_generator().get_state();
+            routed_count = rng::current_generator().get_count();
+        }
+        REQUIRE_FALSE(direct.empty());
+        CHECK_FALSE(routed.structured);
+        CHECK(routed.text == direct);
+        CHECK(routed_state == direct_state);
+        CHECK(routed_count == direct_count);
+    }
+
+    SECTION("unseen missing prefixed key does not retry the base key")
+    {
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        const resolved_monspell_cast_message result =
+            resolve_monspell_cast_message(
+                source, beam, true, { "beam catchall cast" }, false, true);
+        CHECK_FALSE(result.structured);
+        CHECK(result.text.empty());
+        const auto counters =
+            fork_message_overlay::monspell_overlay_diagnostics();
+        CHECK(counters.overlay_hit == 0);
+        CHECK(counters.legacy_fallback == 1);
+    }
+
+    SECTION("post-selection corrupt is terminal without legacy fallback")
+    {
+        source.foe = MHITNOT;
+        beam.target = coord_def(25, 25);
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        resolved_monspell_cast_message result;
+        uint64_t final_state = 0;
+        uint64_t final_count = 0;
+        {
+            rng::subgenerator scoped_rng(0xdead1010, 0xbeef2020);
+            result = resolve_monspell_cast_message(
+                source, beam, true, { "beam catchall cast" }, false, false);
+            final_state = rng::current_generator().get_state();
+            final_count = rng::current_generator().get_count();
+        }
+        REQUIRE(result.structured);
+        REQUIRE(result.corrupt);
+        REQUIRE(result.has_materialization);
+        CHECK(result.text.empty());
+        CHECK(result.materialization.result
+              == fork_message_overlay::message_result::CORRUPT);
+        CHECK(final_state
+              == result.materialization.binding.rng.after.current_state);
+        CHECK(final_count
+              == result.materialization.binding.rng.after.current_count);
+        const auto counters =
+            fork_message_overlay::monspell_overlay_diagnostics();
+        CHECK(counters.overlay_hit == 1);
+        CHECK(counters.legacy_fallback == 0);
+        CHECK(counters.overlay_corrupt == 1);
+    }
+
+
+    SECTION("diagnostic counter state cannot alter output or RNG")
+    {
+        resolved_monspell_cast_message baseline;
+        uint64_t baseline_state = 0;
+        uint64_t baseline_count = 0;
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        {
+            rng::subgenerator scoped_rng(0x71a9b00b, 0x13579bdf);
+            baseline = resolve_monspell_cast_message(
+                source, beam, true, { "beam catchall cast" }, false, false);
+            baseline_state = rng::current_generator().get_state();
+            baseline_count = rng::current_generator().get_count();
+        }
+
+        for (int i = 0; i < 25; ++i)
+        {
+            (void) fork_message_overlay::route_monspell_message(
+                i % 2 ? "beam catchall cast" : "uncovered diagnostic key",
+                "en");
+            (void) fork_message_overlay::monspell_overlay_diagnostics();
+        }
+
+        resolved_monspell_cast_message observed;
+        uint64_t observed_state = 0;
+        uint64_t observed_count = 0;
+        {
+            rng::subgenerator scoped_rng(0x71a9b00b, 0x13579bdf);
+            observed = resolve_monspell_cast_message(
+                source, beam, true, { "beam catchall cast" }, false, false);
+            observed_state = rng::current_generator().get_state();
+            observed_count = rng::current_generator().get_count();
+        }
+        CHECK(observed.text == baseline.text);
+        CHECK(observed_state == baseline_state);
+        CHECK(observed_count == baseline_count);
+    }
+}
+
+TEST_CASE("structured localized body cannot select a message channel",
+                 "[single-file][mon-cast-target][message-overlay][phase1][runtime]")
+{
+    string structured = "ERROR: localized body";
+    msg_channel_type structured_channel = MSGCH_MONSTER_SPELL;
+    CHECK_FALSE(resolve_mon_speech_line_channel(
+        structured, structured_channel, true, true));
+    CHECK(structured == "ERROR: localized body");
+    CHECK(structured_channel == MSGCH_MONSTER_SPELL);
+
+    string legacy = "ERROR: legacy protocol body";
+    msg_channel_type legacy_channel = MSGCH_MONSTER_SPELL;
+    CHECK(resolve_mon_speech_line_channel(
+        legacy, legacy_channel, true, false));
+    CHECK(legacy == " legacy protocol body");
+    CHECK(legacy_channel == MSGCH_ERROR);
 }

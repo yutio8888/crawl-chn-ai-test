@@ -222,12 +222,23 @@ struct load_report
     size_t structured_key_count = 0;
 };
 
+struct rendered_line
+{
+    sensory_mode sensory = sensory_mode::PLAIN;
+    std::string channel;
+    bool implies_gesture = false;
+    bool audible = false;
+    std::string text;
+};
+
 // All fields own their data. Stage 2 deliberately does not expose Phase 0
 // selection/materialization types as part of the production adapter API.
 struct message_lookup_result
 {
     message_result result = message_result::MISSING;
     std::string message;
+    std::vector<rendered_line> rendered_lines;
+    bool structured = false;
     std::string diagnostic;
     bool applicability_checked = false;
 };
@@ -323,12 +334,31 @@ struct cast_context
     std::string god_canonical_en;
 };
 
+enum class target_rng_event_kind
+{
+    FIRE_TRACER,
+    ADJACENT_RESERVOIR,
+    PAST_RESERVOIR,
+};
+
+struct target_rng_event
+{
+    target_rng_event_kind kind = target_rng_event_kind::FIRE_TRACER;
+    int bound = 0;
+    int selected = 0;
+    uint64_t rng_state_before = 0;
+    uint64_t rng_state_after = 0;
+    uint64_t rng_count_before = 0;
+    uint64_t rng_count_after = 0;
+};
+
 struct runtime_bindings
 {
     resolved_actor actor;
     resolved_target target;
     resolved_beam beam;
     cast_context cast;
+    std::vector<target_rng_event> target_trace;
 };
 
 struct rng_boundary
@@ -352,15 +382,6 @@ struct slot_value
 {
     std::string name;
     std::string value;
-};
-
-struct rendered_line
-{
-    sensory_mode sensory = sensory_mode::PLAIN;
-    std::string channel;
-    bool implies_gesture = false;
-    bool audible = false;
-    std::string text;
 };
 
 struct render_result
@@ -399,6 +420,8 @@ bool monspell_overlay_covers(const std::string &canonical_key);
 // The decision is final for the attempt: structured failures never fall back
 // to legacy lookup.
 route_decision route_monspell_message(const std::string &canonical_key);
+route_decision route_monspell_message(const std::string &canonical_key,
+                                      const std::string &language);
 
 // Pure transition plus the Stage 2 lookup harness. The silent unprefixed
 // request explicitly carries ACCEPT_ANY_NONEMPTY to preserve the current

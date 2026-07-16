@@ -3,6 +3,7 @@
 #include "fork-message-overlay.h"
 
 #include "database.h"
+#include "initfile.h"
 #include "stringutil.h"
 
 #include <algorithm>
@@ -244,10 +245,16 @@ bool _validate_lines(const catalog_source &source,
     set<string> used_slots;
     for (const line_metadata &line : variant.lines)
     {
+        if (!line.channel.empty() && str_to_channel(line.channel) < 0)
+        {
+            error = "line metadata has an invalid message channel";
+            return false;
+        }
         set<pair<string, string>> language_relations;
         for (const localized_template &localized : line.templates)
         {
             if (localized.pattern.empty()
+                || localized.pattern.find('\n') != string::npos
                 || !relations.count(localized.relation)
                 || find(source.supported_languages.begin(),
                         source.supported_languages.end(), localized.language)
@@ -576,10 +583,17 @@ bool monspell_overlay_covers(const string &canonical_key)
 
 route_decision route_monspell_message(const string &canonical_key)
 {
+    return route_monspell_message(canonical_key, "en");
+}
+
+route_decision route_monspell_message(const string &canonical_key,
+                                      const string &language)
+{
     route_decision decision;
     decision.canonical_key = canonical_key;
     lowercase(decision.canonical_key);
-    if (monspell_overlay_covers(decision.canonical_key))
+    if ((language == "en" || language == "zh")
+        && monspell_overlay_covers(decision.canonical_key))
     {
         decision.route = message_route::STRUCTURED;
         ++current_diagnostics.overlay_hit;
@@ -770,6 +784,11 @@ render_result render_typed_template(
     const vector<slot_value> &values)
 {
     render_result result;
+    if (pattern.find('\n') != string::npos)
+    {
+        result.diagnostic = "typed line contains an embedded newline";
+        return result;
+    }
     map<string, string> declared;
     for (const slot_definition &slot : declarations)
     {

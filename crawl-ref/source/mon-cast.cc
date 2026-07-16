@@ -35,9 +35,11 @@
 #include "fight.h"
 #include "fineff.h"
 #include "fprop.h"
+#include "fork-message-overlay.h"
 #include "ghost.h"
 #include "god-passive.h"
 #include "items.h"
+#include "lang-en-guard.h"
 #include "item-def.h"
 #include "level-state-type.h"
 #include "libutil.h"
@@ -54,6 +56,7 @@
 #include "mon-gear.h"
 #include "mon-pathfind.h"
 #include "i18n.h"
+#include "initfile.h"
 #include "mon-pick.h"
 #include "mon-place.h"
 #include "mon-project.h"
@@ -8868,51 +8871,343 @@ static void _speech_keys(vector<string>& key_list,
     }
 }
 
-static string _speech_message(const monster &mon,
-                              const vector<string>& key_list,
-                              bool silent, bool unseen)
-{
-    string prefix;
-    if (silent)
-        prefix = "silent ";
-    else if (unseen)
-        prefix = "unseen ";
+namespace fmo = fork_message_overlay;
 
-    string msg;
+static string _overlay_language()
+{
+    switch (Options.language)
+    {
+    case lang_t::EN: return "en";
+    case lang_t::ZH: return "zh";
+    default:         return "";
+    }
+}
+
+static fmo::message_prefix _overlay_prefix(bool silent, bool unseen)
+{
+    if (silent)
+        return fmo::message_prefix::SILENT;
+    if (unseen)
+        return fmo::message_prefix::UNSEEN;
+    return fmo::message_prefix::NORMAL;
+}
+
+static string _cast_actor_display(const monster &mon)
+{
+    if (mon.is_named() && you.can_see(mon))
+        return mon.name(DESC_THE);
+
+    description_level_type desc = DESC_THE;
+    if (mon.attitude == ATT_FRIENDLY
+        && !mons_is_unique(mon.type)
+        && !crawl_state.game_is_arena()
+        && you.can_see(mon))
+    {
+        desc = DESC_YOUR;
+    }
+    return uppercase_first(mon.name(desc));
+}
+
+static fmo::target_relation _overlay_relation(speech_target_relation relation)
+{
+    switch (relation)
+    {
+    case speech_target_relation::AT:      return fmo::target_relation::AT;
+    case speech_target_relation::NEXT_TO: return fmo::target_relation::NEXT_TO;
+    case speech_target_relation::PAST:    return fmo::target_relation::PAST;
+    }
+    return fmo::target_relation::NONE;
+}
+
+static string _relation_english(speech_target_relation relation)
+{
+    switch (relation)
+    {
+    case speech_target_relation::AT:      return "at";
+    case speech_target_relation::NEXT_TO: return "next to";
+    case speech_target_relation::PAST:    return "past";
+    }
+    return "";
+}
+
+static fmo::target_kind _overlay_target_kind(speech_target_kind kind)
+{
+    switch (kind)
+    {
+    case speech_target_kind::PLAYER:     return fmo::target_kind::PLAYER;
+    case speech_target_kind::SELF:       return fmo::target_kind::SELF;
+    case speech_target_kind::MONSTER:    return fmo::target_kind::MONSTER;
+    case speech_target_kind::FEATURE:    return fmo::target_kind::FEATURE;
+    case speech_target_kind::THIN_AIR:   return fmo::target_kind::THIN_AIR;
+    case speech_target_kind::INDEFINITE: return fmo::target_kind::INDEFINITE;
+    case speech_target_kind::ERROR:      return fmo::target_kind::ERROR;
+    }
+    return fmo::target_kind::ERROR;
+}
+
+static string _canonical_target_display(const resolved_speech_target &target,
+                                        const monster &caster)
+{
+    switch (target.kind)
+    {
+    case speech_target_kind::PLAYER:
+        return "you";
+    case speech_target_kind::SELF:
+        return caster.pronoun(PRONOUN_REFLEXIVE);
+    case speech_target_kind::MONSTER:
+        if (const actor *target_actor = actor_by_mid(target.mid))
+            return target_actor->name(DESC_THE);
+        return "";
+    case speech_target_kind::FEATURE:
+        return feature_description(target.feature, NUM_TRAPS, "", DESC_THE);
+    case speech_target_kind::THIN_AIR:
+        return "thin air";
+    case speech_target_kind::INDEFINITE:
+        return "something";
+    case speech_target_kind::ERROR:
+        return "";
+    }
+    return "";
+}
+
+static fmo::message_visibility _overlay_visibility(bool visible)
+{
+    return visible ? fmo::message_visibility::VISIBLE
+                   : fmo::message_visibility::UNSEEN;
+}
+
+static void _record_overlay_target_event(
+    const speech_target_observer_event &event, void *context)
+{
+    vector<fmo::target_rng_event> &trace =
+        *static_cast<vector<fmo::target_rng_event> *>(context);
+    fmo::target_rng_event converted;
+    switch (event.kind)
+    {
+    case speech_target_observer_event_kind::FIRE_TRACER:
+        converted.kind = fmo::target_rng_event_kind::FIRE_TRACER;
+        break;
+    case speech_target_observer_event_kind::ADJACENT_RESERVOIR:
+        converted.kind = fmo::target_rng_event_kind::ADJACENT_RESERVOIR;
+        break;
+    case speech_target_observer_event_kind::PAST_RESERVOIR:
+        converted.kind = fmo::target_rng_event_kind::PAST_RESERVOIR;
+        break;
+    }
+    converted.bound = event.bound;
+    converted.selected = event.selected;
+    converted.rng_state_before = event.rng_state_before;
+    converted.rng_state_after = event.rng_state_after;
+    converted.rng_count_before = event.rng_count_before;
+    converted.rng_count_after = event.rng_count_after;
+    trace.push_back(converted);
+}
+
+static fmo::runtime_bindings _resolve_overlay_bindings(
+    const monster &mon, const bolt &pbolt, bool targeted,
+    const string &language)
+{
+    fmo::runtime_bindings bindings;
+
+    // This is the one and only target-resolution call for the structured
+    // attempt. It remains after canonical TextDB selection and before legacy
+    // bracket materialization, preserving the established RNG boundary.
+    const speech_target_observer observer =
+        { _record_overlay_target_event, &bindings.target_trace };
+    const resolved_speech_target target =
+        resolve_speech_target(&mon, pbolt, false, &observer);
+    const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
+    const string actor_display = _cast_actor_display(mon);
+
+    bindings.actor.visibility = _overlay_visibility(you.can_see(mon));
+    bindings.target.relation = _overlay_relation(target.relation);
+    bindings.target.kind = _overlay_target_kind(target.kind);
+    bindings.target.relation_en = _relation_english(target.relation);
+    bindings.target.error = target.error;
+    bindings.target.visibility = target.position == INVALID_COORD
+        ? fmo::message_visibility::UNKNOWN
+        : _overlay_visibility(you.see_cell(target.position));
+    if (target.position != INVALID_COORD)
+    {
+        bindings.target.has_position = true;
+        bindings.target.position_x = target.position.x;
+        bindings.target.position_y = target.position.y;
+    }
+    if (target.kind == speech_target_kind::FEATURE)
+    {
+        bindings.target.has_feature = true;
+        bindings.target.feature_id = static_cast<int>(target.feature);
+    }
+    if (target.kind == speech_target_kind::SELF
+        || target.kind == speech_target_kind::MONSTER)
+    {
+        bindings.target.has_actor_mid = true;
+        bindings.target.actor_mid = target.mid;
+    }
+
+    bindings.beam.configured_name_en = beam.configured_name_en;
+    bindings.beam.short_name_en = beam.configured_short_name_en;
+    bindings.beam.origin_spell = static_cast<int>(beam.origin_spell);
+    bindings.beam.flavour = static_cast<int>(beam.flavour);
+    bindings.beam.real_flavour = static_cast<int>(beam.real_flavour);
+    bindings.beam.pierce = beam.pierces;
+    bindings.beam.has_ranged_attack = beam.has_ranged_attack;
+
+    bindings.cast.frame = fmo::cast_frame::PROJECTILE;
+    bindings.cast.caster_visibility = bindings.actor.visibility;
+    bindings.cast.origin_spell = static_cast<int>(pbolt.origin_spell);
+
+    if (language == "en")
+    {
+        bindings.actor.localized.push_back({ "en", actor_display });
+        bindings.target.localized.push_back({ "en", target.display });
+        bindings.beam.localized.push_back({ "en", beam.display_text });
+    }
+    else if (language == "zh")
+    {
+        bindings.actor.localized.push_back({ "zh", actor_display });
+        bindings.target.localized.push_back({ "zh", target.display });
+        bindings.beam.localized.push_back({ "zh", beam.display_text });
+    }
+
+    {
+        ScopedLangEn english;
+        bindings.actor.sentence_en = _cast_actor_display(mon);
+        bindings.actor.canonical_en = bindings.actor.sentence_en;
+        bindings.target.canonical_en = _canonical_target_display(target, mon);
+        bindings.beam.canonical_en =
+            resolve_speech_beam(pbolt, targeted).display_text;
+    }
+    return bindings;
+}
+
+static string _join_rendered_lines(const vector<fmo::rendered_line> &lines)
+{
+    string result;
+    for (const fmo::rendered_line &line : lines)
+    {
+        if (!result.empty())
+            result += '\n';
+        result += line.text;
+    }
+    return result;
+}
+
+static fmo::message_lookup_result _cast_message_lookup(
+    const monster &mon, const bolt &pbolt, bool targeted,
+    const string &language, const fmo::message_lookup_request &request,
+    const fmo::route_decision &route,
+    fmo::canonical_materialization *materialization_out)
+{
+    fmo::message_lookup_result result;
+    if (route.route == fmo::message_route::LEGACY)
+    {
+        result.message = getSpeakString(request.lookup_key);
+        if (result.message == "__NONE")
+            result.result = fmo::message_result::SUPPRESS;
+        else if (result.message.empty())
+            result.result = fmo::message_result::MISSING;
+        else if (request.applicability
+                 == fmo::applicability_policy::ACCEPT_ANY_NONEMPTY)
+        {
+            result.result = fmo::message_result::RENDERED;
+        }
+        else
+        {
+            result.applicability_checked = true;
+            result.result = invalid_msg(mon, result.message)
+                ? fmo::message_result::INAPPLICABLE
+                : fmo::message_result::RENDERED;
+        }
+        return result;
+    }
+
+    result.structured = true;
+    result.applicability_checked = true;
+    const fmo::canonical_materialization materialized =
+        fmo::materialize_monspell_candidate(
+            route.canonical_key, request.attempt, true,
+            [&mon, &pbolt, targeted, &language]
+            {
+                return _resolve_overlay_bindings(mon, pbolt, targeted,
+                                                 language);
+            });
+    if (materialization_out)
+        *materialization_out = materialized;
+    result.result = materialized.result;
+    result.diagnostic = materialized.diagnostic;
+    if (materialized.result != fmo::message_result::RENDERED)
+        return result;
+
+    const fmo::render_result rendered =
+        fmo::render_materialized_candidate(materialized, language);
+    result.result = rendered.result;
+    result.diagnostic = rendered.diagnostic;
+    result.rendered_lines = rendered.lines;
+    result.message = _join_rendered_lines(rendered.lines);
+    return result;
+}
+
+resolved_monspell_cast_message resolve_monspell_cast_message(
+    const monster &mon, const bolt &pbolt, bool targeted,
+    const vector<string> &key_list, bool silent, bool unseen)
+{
+    const string language = _overlay_language();
+    const fmo::message_prefix prefix = _overlay_prefix(silent, unseen);
+    const string debug_prefix = silent ? "silent " : unseen ? "unseen " : "";
+
+    resolved_monspell_cast_message result;
     for (const string &key : key_list)
     {
 #ifdef DEBUG_MONSPEAK
         dprf(DIAG_SPEECH, "monster casting lookup: %s%s",
-             prefix.c_str(), key.c_str());
+             debug_prefix.c_str(), key.c_str());
 #endif
-
-        msg = getSpeakString(prefix + key);
-
-        if (msg == "__NONE")
+        fmo::canonical_materialization materialization;
+        bool has_materialization = false;
+        const fmo::message_candidate_search search =
+            fmo::search_message_candidate(
+                key, prefix,
+                [&mon, &pbolt, targeted, &language, &materialization,
+                 &has_materialization]
+                (const fmo::message_lookup_request &request)
+                {
+                    const fmo::route_decision route =
+                        fmo::route_monspell_message(request.lookup_key,
+                                                   language);
+                    if (route.route == fmo::message_route::STRUCTURED)
+                        has_materialization = true;
+                    return _cast_message_lookup(
+                        mon, pbolt, targeted, language, request, route,
+                        has_materialization ? &materialization : nullptr);
+                });
+        switch (search.action)
         {
-            msg = "";
-            break;
-        }
-
-        if (!msg.empty() && !invalid_msg(mon, msg))
-            break;
-
-        // If we got no message and we're using the silent prefix, then
-        // try again without the prefix.
-        if (prefix != "silent ")
+        case fmo::message_search_action::NEXT_CANDIDATE:
             continue;
-
-        msg = getSpeakString(key);
-        if (msg == "__NONE")
-        {
-            msg = "";
-            break;
+        case fmo::message_search_action::STOP_SILENT:
+            return result;
+        case fmo::message_search_action::STOP_RENDERED:
+            result.text = search.lookup.message;
+            result.lines = search.lookup.rendered_lines;
+            result.structured = search.lookup.structured;
+            result.has_materialization = has_materialization;
+            if (has_materialization)
+                result.materialization = materialization;
+            return result;
+        case fmo::message_search_action::STOP_CORRUPT:
+            result.structured = search.lookup.structured;
+            result.corrupt = true;
+            result.has_materialization = has_materialization;
+            if (has_materialization)
+                result.materialization = materialization;
+            result.diagnostic = search.lookup.diagnostic;
+            return result;
+        case fmo::message_search_action::RETRY_UNPREFIXED:
+            die("Unhandled monspell silent fallback transition");
         }
-        else if (!msg.empty())
-            break;
     }
-
-    return msg;
+    return result;
 }
 
 resolved_speech_target::resolved_speech_target()
@@ -9335,6 +9630,41 @@ static void _speech_fill_beam(string &beam_name, const bolt &pbolt,
     beam_name = resolve_speech_beam(pbolt, targeted).display_text;
 }
 
+static msg_channel_type _structured_line_channel(
+    const fmo::rendered_line &line, msg_channel_type fallback)
+{
+    if (!line.channel.empty())
+    {
+        const int channel = str_to_channel(line.channel);
+        return channel < 0 ? NUM_MESSAGE_CHANNELS
+                           : static_cast<msg_channel_type>(channel);
+    }
+    switch (line.sensory)
+    {
+    case fmo::sensory_mode::PLAIN:  return fallback;
+    case fmo::sensory_mode::VISUAL: return MSGCH_TALK_VISUAL;
+    case fmo::sensory_mode::SOUND:  return MSGCH_SOUND;
+    }
+    return NUM_MESSAGE_CHANNELS;
+}
+
+static bool _emit_structured_cast_message(
+    monster *mons, const vector<fmo::rendered_line> &lines,
+    msg_channel_type fallback, bool silence)
+{
+    bool noticed = false;
+    for (const fmo::rendered_line &line : lines)
+    {
+        const msg_channel_type channel =
+            _structured_line_channel(line, fallback);
+        if (channel == NUM_MESSAGE_CHANNELS)
+            return false;
+        noticed = mons_speaks_msg(mons, line.text, channel, silence, true)
+                  || noticed;
+    }
+    return noticed;
+}
+
 void mons_cast_noise(monster* mons, const bolt &pbolt,
                      spell_type spell_cast, mon_spell_slot_flags slot_flags)
 {
@@ -9352,7 +9682,10 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
     vector<string> key_list;
     _speech_keys(key_list, mons, pbolt, spell_cast, slot_flags, targeted);
 
-    string msg = _speech_message(*mons, key_list, silent, unseen);
+    const resolved_monspell_cast_message speech =
+        resolve_monspell_cast_message(*mons, pbolt, targeted, key_list,
+                                      silent, unseen);
+    string msg = speech.text;
 
     if (msg.empty())
     {
@@ -9363,27 +9696,29 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
         return;
     }
 
-    // FIXME: we should not need to look at the message text.
-    const bool gestured = msg.find("Gesture") != string::npos
-                          || msg.find(" gesture") != string::npos
-                          || msg.find("Point") != string::npos
-                          || msg.find(" point") != string::npos
-                          || msg.find("手势") != string::npos
-                          || msg.find("指向") != string::npos;
+    if (!speech.structured)
+    {
+        // Legacy messages retain the global text heuristic until Phase 2.
+        const bool gestured = msg.find("Gesture") != string::npos
+                              || msg.find(" gesture") != string::npos
+                              || msg.find("Point") != string::npos
+                              || msg.find(" point") != string::npos
+                              || msg.find("手势") != string::npos
+                              || msg.find("指向") != string::npos;
 
-    string targ_prep = T_("at");
-    string target    = "NO_TARGET";
+        string targ_prep = T_("at");
+        string target    = "NO_TARGET";
 
-    if (targeted)
-        _speech_fill_target(targ_prep, target, mons, pbolt, gestured);
+        if (targeted)
+            _speech_fill_target(targ_prep, target, mons, pbolt, gestured);
 
-    msg = replace_all(msg, "@at@",     targ_prep);
-    msg = replace_all(msg, "@target@", target);
+        msg = replace_all(msg, "@at@",     targ_prep);
+        msg = replace_all(msg, "@target@", target);
 
-    string beam_name;
-    _speech_fill_beam(beam_name, pbolt, targeted);
-
-    msg = replace_all(msg, "@beam@", beam_name);
+        string beam_name;
+        _speech_fill_beam(beam_name, pbolt, targeted);
+        msg = replace_all(msg, "@beam@", beam_name);
+    }
 
     const msg_channel_type chan =
         (unseen              ? MSGCH_SOUND :
@@ -9391,11 +9726,19 @@ void mons_cast_noise(monster* mons, const bolt &pbolt,
                              : MSGCH_MONSTER_SPELL);
 
     if (silent || noise == 0)
-        mons_speaks_msg(mons, msg, chan, true);
+    {
+        if (speech.structured)
+            _emit_structured_cast_message(mons, speech.lines, chan, true);
+        else
+            mons_speaks_msg(mons, msg, chan, true);
+    }
     else if (noisy(noise, mons->pos(), mons->mid) || !unseen)
     {
         // noisy() returns true if the player heard the noise.
-        mons_speaks_msg(mons, msg, chan);
+        if (speech.structured)
+            _emit_structured_cast_message(mons, speech.lines, chan, false);
+        else
+            mons_speaks_msg(mons, msg, chan);
     }
 }
 

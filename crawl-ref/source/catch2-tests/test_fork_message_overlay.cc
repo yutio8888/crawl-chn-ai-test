@@ -260,6 +260,24 @@ TEST_CASE("monspell routing is final before selection and tracks diagnostics",
         CHECK(diagnostics.legacy_fallback == 1);
     }
 
+    SECTION("unsupported language routes legacy before lookup")
+    {
+        scoped_overlay_reset reset;
+        REQUIRE(load_monspell_overlay(canonical).state
+                == domain_state::ENABLED);
+        rng::subgenerator scoped_rng(0x2111, 0x2222);
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        CHECK(route_monspell_message("beam catchall cast", "fr").route
+              == message_route::LEGACY);
+        const diagnostic_counters diagnostics =
+            monspell_overlay_diagnostics();
+        CHECK(diagnostics.overlay_hit == 0);
+        CHECK(diagnostics.legacy_fallback == 1);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
+
     SECTION("unknown schema disables routing and has its own counter")
     {
         scoped_overlay_reset reset;
@@ -547,6 +565,8 @@ TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
           == message_result::CORRUPT);
     CHECK(render_typed_template("${actor} __NONE", one, value).result
           == message_result::CORRUPT);
+    CHECK(render_typed_template("${actor}\nsecond line", one, value).result
+          == message_result::CORRUPT);
     CHECK(render_typed_template("${actor}", one,
           { { "actor", "兽人" }, { "beam", "箭" } }).result
           == message_result::CORRUPT);
@@ -796,4 +816,44 @@ TEST_CASE("production seam preserves complete canonical and bracket traces",
     CHECK(actual_site.option_index == expected_site.option_index);
     check_rng_equal(production_random.before, prototype_random.before);
     check_rng_equal(production_random.after, prototype_random.after);
+}
+
+TEST_CASE("production materializer preserves real monspell bracket sites",
+          "[single-file][message-overlay][phase1][materialization]")
+{
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    const vector<pair<string, string>> cases =
+    {
+        { "March of Sorrows Boris cast", "[casts|pitches]" },
+        { "orb of entropy cast", "[pulses|vibrates]" },
+    };
+
+    for (const auto &item : cases)
+    {
+        bool found = false;
+        for (uint64_t seed = 1; seed <= 256 && !found; ++seed)
+        {
+            rng::subgenerator scoped_rng(seed, seed ^ 0x9e3779b97f4a7c15ULL);
+            const canonical_textdb::loaded_candidate candidate =
+                canonical_textdb::expand_loaded_english_candidate(item.first);
+            REQUIRE(candidate.status
+                    == canonical_textdb::candidate_status::SELECTED);
+            if (candidate.expanded_pattern_en.find(item.second)
+                == string::npos)
+            {
+                continue;
+            }
+            const canonical_textdb::randomized_pattern materialized =
+                canonical_textdb::materialize_bound_legacy_randomness(
+                    candidate, candidate.expanded_pattern_en);
+            REQUIRE(materialized.status
+                    == canonical_textdb::candidate_status::SELECTED);
+            REQUIRE(materialized.sites.size() >= 1);
+            CHECK(materialized.pattern_en.find(item.second) == string::npos);
+            CHECK(materialized.signature.find("materialization-v1|") == 0);
+            found = true;
+        }
+        CHECK(found);
+    }
 }

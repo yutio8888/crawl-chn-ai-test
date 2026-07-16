@@ -5,9 +5,11 @@
 #include "dungeon-feature-type.h"
 #include "externs.h"
 #include "spell-type.h"
+#include "fork-message-overlay.h"
 
 #include <cstdint>
 #include <string>
+#include <vector>
 
 class monster;
 struct bolt;
@@ -117,3 +119,21 @@ struct speech_target_observer
 resolved_speech_target resolve_speech_target(
     const monster *mons, const bolt &pbolt, bool gestured,
     const speech_target_observer *observer = nullptr);
+
+// Owning result of the production monspell candidate search. Structured lines
+// have already consumed canonical TextDB/target randomness and need no legacy
+// replacements at the display sink.
+struct resolved_monspell_cast_message
+{
+    std::string text;
+    std::vector<fork_message_overlay::rendered_line> lines;
+    bool structured = false;
+    bool corrupt = false;
+    bool has_materialization = false;
+    fork_message_overlay::canonical_materialization materialization;
+    std::string diagnostic;
+};
+
+resolved_monspell_cast_message resolve_monspell_cast_message(
+    const monster &mon, const bolt &pbolt, bool targeted,
+    const std::vector<std::string> &key_list, bool silent, bool unseen);

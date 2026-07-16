@@ -20,6 +20,16 @@ POLICIES = {"NONE", "CASE_MAP", "CAPTURE_SLOT", "LEGACY_ONLY"}
 FRAMES = {"PROJECTILE", "GAZE", "GESTURE", "VOCAL", "INVOCATION",
           "DIRECT_EFFECT"}
 SENSORY = {"PLAIN", "VISUAL", "SOUND"}
+CHANNELS = {
+    "plain", "friend_action", "prompt", "god", "duration", "danger",
+    "warning", "recovery", "sound", "talk", "talk_visual",
+    "intrinsic_gain", "mutation", "monster_spell", "monster_enchant",
+    "friend_spell", "friend_enchant", "monster_damage",
+    "monster_target", "banishment", "equipment", "floor", "multiturn",
+    "examine", "examine_filter", "diagnostic", "error", "tutorial",
+    "orb", "timed_portal", "hell_effect", "monster_warning",
+    "dgl_message", "decor_flavour", "monster_timeout", "visual", "spell",
+}
 
 
 class ManifestError(ValueError):
@@ -266,7 +276,8 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(line.get("sensory") in SENSORY,
                          f"{lcontext} has invalid sensory")
                 _require(line.get("channel") is None
-                         or isinstance(line.get("channel"), str),
+                         or (isinstance(line.get("channel"), str)
+                             and line.get("channel") in CHANNELS),
                          f"{lcontext} has invalid channel")
                 behavior = line.get("behavior")
                 _require(isinstance(behavior, dict)
@@ -285,7 +296,8 @@ def validate_manifest(manifest: dict[str, Any],
                              f"{tcontext} invalid/duplicate language relation")
                     matrix.add(pair)
                     pattern = template.get("pattern")
-                    _require(isinstance(pattern, str) and pattern,
+                    _require(isinstance(pattern, str) and pattern
+                             and "\n" not in pattern,
                              f"{tcontext} needs a pattern")
                     used_slots.update(_template_slots(pattern, tcontext))
                 _require(matrix == {(language, relation)
