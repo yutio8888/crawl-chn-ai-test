@@ -1763,6 +1763,267 @@ textdb_phase0::materialize_legacy_randomness(
     return result;
 }
 
+namespace
+{
+canonical_textdb::rng_observation _production_rng_observation(
+    const textdb_phase0::rng_observation &source)
+{
+    canonical_textdb::rng_observation result;
+    result.current_state = source.current_state;
+    result.current_count = source.current_count;
+    result.global_counts = source.global_counts;
+    return result;
+}
+
+canonical_textdb::recursive_site_status _production_recursive_status(
+    textdb_phase0::recursive_site_status status)
+{
+    using source = textdb_phase0::recursive_site_status;
+    using target = canonical_textdb::recursive_site_status;
+    switch (status)
+    {
+    case source::SELECTED:          return target::SELECTED;
+    case source::CORRUPT:           return target::CORRUPT;
+    case source::MISSING:           return target::MISSING;
+    case source::UNBALANCED:        return target::UNBALANCED;
+    case source::DEPTH_LIMIT:       return target::DEPTH_LIMIT;
+    case source::REPLACEMENT_LIMIT: return target::REPLACEMENT_LIMIT;
+    }
+    return target::CORRUPT;
+}
+
+canonical_textdb::lua_site_status _production_lua_status(
+    textdb_phase0::lua_site_status status)
+{
+    using source = textdb_phase0::lua_site_status;
+    using target = canonical_textdb::lua_site_status;
+    switch (status)
+    {
+    case source::EXECUTED:   return target::EXECUTED;
+    case source::ERROR:      return target::ERROR;
+    case source::UNBALANCED: return target::UNBALANCED;
+    }
+    return target::ERROR;
+}
+
+void _append_signature_string(string &signature, const string &value)
+{
+    signature += std::to_string(value.size());
+    signature += ':';
+    signature += value;
+}
+
+string _production_materialization_signature(
+    const canonical_textdb::loaded_candidate &candidate,
+    const canonical_textdb::randomized_pattern &materialized)
+{
+    if (candidate.selected_variants.size() == 1
+        && candidate.trace.lua_sites.empty() && materialized.sites.empty())
+    {
+        return "NONE";
+    }
+
+    string signature = "materialization-v1|variants=";
+    signature += std::to_string(candidate.selected_variants.size());
+    for (const canonical_textdb::selected_variant &selected
+         : candidate.selected_variants)
+    {
+        signature += '|';
+        _append_signature_string(signature,
+                                 selected.locator.canonical_key);
+        signature += ':' + std::to_string(selected.locator.variant_ordinal);
+        signature += ':' + std::to_string(selected.recursion_path.size());
+        for (const size_t step : selected.recursion_path)
+            signature += ':' + std::to_string(step);
+    }
+    signature += "|lua=" +
+                 std::to_string(candidate.trace.lua_sites.size());
+    for (const canonical_textdb::lua_site_trace &site
+         : candidate.trace.lua_sites)
+    {
+        signature += '|';
+        signature += std::to_string(site.ordinal);
+        signature += ':' + std::to_string(static_cast<int>(site.status));
+        signature += ':';
+        _append_signature_string(signature, site.source);
+        signature += ':';
+        _append_signature_string(signature, site.result);
+    }
+    signature += "|sites=" + std::to_string(materialized.sites.size());
+    for (const canonical_textdb::randomized_pattern::site &site
+         : materialized.sites)
+    {
+        signature += '|';
+        _append_signature_string(signature, site.top_locator.canonical_key);
+        signature += ':' +
+                     std::to_string(site.top_locator.variant_ordinal);
+        signature += ':' + std::to_string(site.expanded_site_ordinal);
+        signature += ':' + std::to_string(site.option_count);
+        signature += ':' + std::to_string(site.option_index);
+    }
+    return signature;
+}
+}
+
+canonical_textdb::loaded_candidate
+canonical_textdb::expand_loaded_english_candidate(const string &key)
+{
+    loaded_candidate result;
+    result.before = _production_rng_observation(_observe_rng());
+    const textdb_phase0::expanded_selection expanded =
+        textdb_phase0::expand_loaded_canonical_english_speakdb_traced(key);
+    result.expanded_pattern_en = expanded.text;
+    result.recursive_site_count = expanded.trace.recursive_sites.size();
+    result.lua_site_count = expanded.trace.lua_sites.size();
+    result.trace.final_replacement_count =
+        expanded.trace.final_replacement_count;
+    switch (expanded.status)
+    {
+    case textdb_phase0::raw_selection_status::MISSING:
+        result.status = candidate_status::MISSING;
+        result.error = "canonical key missing";
+        break;
+    case textdb_phase0::raw_selection_status::CORRUPT:
+        result.status = candidate_status::CORRUPT;
+        result.error = "canonical expansion corrupt";
+        break;
+    case textdb_phase0::raw_selection_status::SELECTED:
+        result.status = candidate_status::SELECTED;
+        break;
+    }
+    for (const textdb_phase0::weighted_choice_trace &choice
+         : expanded.trace.weighted_choices)
+    {
+        weighted_choice_trace event;
+        event.requested_key = choice.requested_key;
+        event.resolved_canonical_key = choice.resolved_canonical_key;
+        event.recursion_path = choice.recursion_path;
+        event.recursion_depth = choice.recursion_depth;
+        event.replacement_count = choice.replacement_count;
+        event.variant_ordinal = choice.variant_ordinal;
+        event.weight = choice.weight;
+        event.total_bound = choice.total_bound;
+        event.random_result = choice.random_result;
+        event.before = _production_rng_observation(choice.before);
+        event.after = _production_rng_observation(choice.after);
+        result.trace.weighted_choices.push_back(event);
+        selected_variant selected;
+        selected.locator.canonical_key = choice.resolved_canonical_key;
+        selected.locator.variant_ordinal = choice.variant_ordinal;
+        selected.recursion_path = choice.recursion_path;
+        result.selected_variants.push_back(selected);
+        if (choice.recursion_path.empty()
+            && result.top_locator.canonical_key.empty())
+        {
+            result.top_locator = selected.locator;
+        }
+    }
+    for (const textdb_phase0::recursive_site_trace &site
+         : expanded.trace.recursive_sites)
+    {
+        recursive_site_trace event;
+        event.recursion_path = site.recursion_path;
+        event.marker = site.marker;
+        event.recursion_depth = site.recursion_depth;
+        event.replacement_count = site.replacement_count;
+        event.status = _production_recursive_status(site.status);
+        result.trace.recursive_sites.push_back(event);
+    }
+    for (const textdb_phase0::lua_site_trace &site
+         : expanded.trace.lua_sites)
+    {
+        lua_site_trace event;
+        event.ordinal = site.ordinal;
+        event.source = site.source;
+        event.result = site.result;
+        event.status = _production_lua_status(site.status);
+        event.before = _production_rng_observation(site.before);
+        event.after = _production_rng_observation(site.after);
+        result.trace.lua_sites.push_back(event);
+    }
+    if (result.status == candidate_status::SELECTED
+        && result.top_locator.canonical_key.empty())
+    {
+        result.status = candidate_status::CORRUPT;
+        result.error = "canonical top-level locator missing";
+    }
+    result.after = _production_rng_observation(_observe_rng());
+    return result;
+}
+
+canonical_textdb::randomized_pattern
+canonical_textdb::materialize_bound_legacy_randomness(
+    const loaded_candidate &candidate, const string &bound_pattern_en)
+{
+    randomized_pattern result;
+    result.before = _production_rng_observation(_observe_rng());
+    if (candidate.status != candidate_status::SELECTED
+        || candidate.top_locator.canonical_key.empty())
+    {
+        result.error = "canonical candidate is not selected";
+        result.after = _production_rng_observation(_observe_rng());
+        return result;
+    }
+    textdb_phase0::canonical_pre_random_pattern pattern;
+    pattern.top_locator.canonical_key = candidate.top_locator.canonical_key;
+    pattern.top_locator.variant_ordinal =
+        candidate.top_locator.variant_ordinal;
+    pattern.pattern_en = bound_pattern_en;
+    for (const selected_variant &selected : candidate.selected_variants)
+    {
+        textdb_phase0::weighted_choice_trace choice;
+        choice.resolved_canonical_key = selected.locator.canonical_key;
+        choice.variant_ordinal = selected.locator.variant_ordinal;
+        choice.recursion_path = selected.recursion_path;
+        pattern.selection.weighted_choices.push_back(choice);
+    }
+    const textdb_phase0::legacy_materialization materialized =
+        textdb_phase0::materialize_legacy_randomness(pattern);
+    result.pattern_en = materialized.randomized_pattern_en;
+    result.random_site_count = materialized.sites.size();
+    for (const textdb_phase0::legacy_random_site &site : materialized.sites)
+    {
+        randomized_pattern::site event;
+        event.top_locator.canonical_key =
+            site.identity.top_locator.canonical_key;
+        event.top_locator.variant_ordinal =
+            site.identity.top_locator.variant_ordinal;
+        for (const textdb_phase0::selected_recursive_variant &recursive
+             : site.identity.recursive_variants)
+        {
+            selected_variant selected;
+            selected.locator.canonical_key =
+                recursive.locator.canonical_key;
+            selected.locator.variant_ordinal =
+                recursive.locator.variant_ordinal;
+            selected.recursion_path = recursive.recursion_path;
+            event.recursive_variants.push_back(selected);
+        }
+        event.expanded_site_ordinal = site.identity.expanded_site_ordinal;
+        event.option_count = site.option_count;
+        event.option_index = site.option_index;
+        result.sites.push_back(event);
+    }
+    result.before = _production_rng_observation(materialized.before);
+    result.after = _production_rng_observation(materialized.after);
+    result.error = materialized.error;
+    if (materialized.status
+        == textdb_phase0::legacy_materialization_status::MATERIALIZED)
+    {
+        result.status = candidate_status::SELECTED;
+        result.signature = _production_materialization_signature(candidate,
+                                                                  result);
+    }
+    else
+        result.status = candidate_status::CORRUPT;
+    return result;
+}
+
+canonical_textdb::rng_observation canonical_textdb::observe_rng()
+{
+    return _production_rng_observation(_observe_rng());
+}
+
 textdb_phase0::structured_message_materialization
 textdb_phase0::materialize_structured_message(
     const vector<canonical_entry> &entries, const string &key,

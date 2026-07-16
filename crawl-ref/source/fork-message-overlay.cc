@@ -280,6 +280,99 @@ bool _validate_lines(const catalog_source &source,
     }
     return true;
 }
+
+string _relation_name(target_relation relation)
+{
+    switch (relation)
+    {
+    case target_relation::AT:      return "AT";
+    case target_relation::NEXT_TO: return "NEXT_TO";
+    case target_relation::PAST:    return "PAST";
+    case target_relation::NONE:    return "NONE";
+    }
+    return "NONE";
+}
+
+bool _contains_protocol_text(const string &text)
+{
+    return text.find('@') != string::npos
+        || text.find("${") != string::npos
+        || text.find('[') != string::npos
+        || text.find(']') != string::npos
+        || text.find("{{") != string::npos
+        || text.find("}}") != string::npos
+        || text.find("%%%%") != string::npos
+        || text.find("__NONE") != string::npos
+        || text.find("VISUAL:") != string::npos
+        || text.find("SOUND:") != string::npos;
+}
+
+const catalog_variant *_find_catalog_variant(
+    const string &canonical_key, size_t variant_ordinal,
+    const string &signature)
+{
+    for (const catalog_entry &entry : generated_monspell_catalog().entries)
+    {
+        if (entry.canonical_key != canonical_key
+            || entry.mode != entry_mode::CANDIDATE)
+        {
+            continue;
+        }
+        for (const catalog_variant &variant : entry.variants)
+        {
+            if (variant.variant_ordinal != variant_ordinal)
+                continue;
+            if (signature == "NONE"
+                && variant.policy == materialization_policy::NONE)
+            {
+                return &variant;
+            }
+            // CASE_MAP and CAPTURE_SLOT remain deliberately unavailable in
+            // Stage 3. A dynamic signature cannot silently select NONE.
+            return nullptr;
+        }
+    }
+    return nullptr;
+}
+
+bool _localized_display(const vector<localized_value> &values,
+                        const string &language, string &display)
+{
+    bool found = false;
+    for (const localized_value &value : values)
+    {
+        if (value.language != language)
+            continue;
+        if (found || value.display.empty())
+            return false;
+        found = true;
+        display = value.display;
+    }
+    return found;
+}
+
+bool _valid_target_payload(const resolved_target &target)
+{
+    if (!target.error.empty())
+        return false;
+    switch (target.kind)
+    {
+    case target_kind::PLAYER:
+    case target_kind::THIN_AIR:
+    case target_kind::INDEFINITE:
+        return true;
+    case target_kind::SELF:
+    case target_kind::MONSTER:
+        return target.has_actor_mid;
+    case target_kind::FEATURE:
+        return target.has_feature && target.has_position;
+    case target_kind::LOCATION:
+        return target.has_position;
+    case target_kind::ERROR:
+        return false;
+    }
+    return false;
+}
 }
 
 #include "fork-message-overlay.generated.inc"
@@ -545,6 +638,314 @@ message_candidate_search search_message_candidate(
     search.action = transition_message_candidate(request.attempt,
                                                   search.lookup.result);
     return search;
+}
+
+canonical_materialization materialize_monspell_candidate(
+    const string &canonical_key, message_attempt attempt,
+    bool manifest_applicable, const runtime_binding_resolver &bindings)
+{
+    return materialize_monspell_candidate(
+        canonical_key, attempt, manifest_applicable, bindings,
+        [](const string &key)
+        {
+            return canonical_textdb::expand_loaded_english_candidate(key);
+        });
+}
+
+canonical_materialization materialize_monspell_candidate(
+    const string &canonical_key, message_attempt attempt,
+    bool manifest_applicable, const runtime_binding_resolver &bindings,
+    const canonical_candidate_lookup &lookup)
+{
+    canonical_materialization result;
+    if (!lookup)
+    {
+        result.diagnostic = "canonical candidate lookup is missing";
+        return result;
+    }
+    result.canonical = lookup(canonical_key);
+    switch (result.canonical.status)
+    {
+    case canonical_textdb::candidate_status::MISSING:
+        result.result = message_result::MISSING;
+        result.diagnostic = result.canonical.error;
+        return result;
+    case canonical_textdb::candidate_status::CORRUPT:
+        result.result = message_result::CORRUPT;
+        result.diagnostic = result.canonical.error;
+        return result;
+    case canonical_textdb::candidate_status::SELECTED:
+        break;
+    }
+    if (result.canonical.expanded_pattern_en == "__NONE")
+    {
+        result.result = message_result::SUPPRESS;
+        return result;
+    }
+    const bool accepts_any =
+        attempt == message_attempt::SILENT_UNPREFIXED_FALLBACK;
+    if (result.canonical.expanded_pattern_en.empty()
+        || (!accepts_any && !manifest_applicable))
+    {
+        result.result = message_result::INAPPLICABLE;
+        return result;
+    }
+    if (!bindings)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "runtime binding resolver is missing";
+        return result;
+    }
+
+    result.binding.rng.before = canonical_textdb::observe_rng();
+    result.binding.values = bindings();
+    result.binding.rng.after = canonical_textdb::observe_rng();
+    result.binding.callback_count = 1;
+    const runtime_bindings &resolved = result.binding.values;
+    if (resolved.actor.sentence_en.empty()
+        || resolved.actor.canonical_en.empty()
+        || resolved.target.relation == target_relation::NONE
+        || !_valid_target_payload(resolved.target)
+        || resolved.target.relation_en.empty()
+        || resolved.target.canonical_en.empty()
+        || resolved.beam.canonical_en.empty())
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "runtime bindings are incomplete";
+        return result;
+    }
+
+    result.bound_pattern_en = replace_all(
+        result.canonical.expanded_pattern_en, "@The_monster@",
+        resolved.actor.sentence_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@the_monster@",
+        resolved.actor.canonical_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@at@", resolved.target.relation_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@target@", resolved.target.canonical_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@beam@", resolved.beam.canonical_en);
+
+    result.randomized = canonical_textdb::materialize_bound_legacy_randomness(
+        result.canonical, result.bound_pattern_en);
+    if (result.randomized.status
+        != canonical_textdb::candidate_status::SELECTED)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = result.randomized.error;
+        return result;
+    }
+    if (result.randomized.signature != "NONE"
+        || result.randomized.random_site_count != 0
+        || result.randomized.pattern_en != result.bound_pattern_en
+        || result.canonical.lua_site_count != 0
+        || result.canonical.selected_variants.size() != 1
+        || result.canonical.expanded_pattern_en.find('[') != string::npos)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "NONE policy observed dynamic materialization";
+        return result;
+    }
+
+    const catalog_variant *variant = _find_catalog_variant(
+        result.canonical.top_locator.canonical_key,
+        result.canonical.top_locator.variant_ordinal,
+        result.randomized.signature);
+    if (!variant || variant->frame != resolved.cast.frame)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "canonical locator has no matching catalog case";
+        return result;
+    }
+    result.stable_id = variant->stable_id;
+    result.materialization_signature = result.randomized.signature;
+    result.result = message_result::RENDERED;
+    return result;
+}
+
+render_result render_typed_template(
+    const string &pattern, const vector<slot_definition> &declarations,
+    const vector<slot_value> &values)
+{
+    render_result result;
+    map<string, string> declared;
+    for (const slot_definition &slot : declarations)
+    {
+        if (!_valid_identifier(slot.name) || slot.type.empty()
+            || !declared.emplace(slot.name, slot.type).second)
+        {
+            result.diagnostic = "invalid or duplicate slot declaration";
+            return result;
+        }
+    }
+    map<string, string> supplied;
+    for (const slot_value &value : values)
+    {
+        if (!_valid_identifier(value.name) || value.value.empty()
+            || !supplied.emplace(value.name, value.value).second)
+        {
+            result.diagnostic = "invalid or duplicate slot value";
+            return result;
+        }
+    }
+    if (declared.size() != supplied.size())
+    {
+        result.diagnostic = "missing or extra slot value";
+        return result;
+    }
+    for (const auto &item : declared)
+    {
+        if (!supplied.count(item.first))
+        {
+            result.diagnostic = "missing or extra slot value";
+            return result;
+        }
+    }
+    if (_contains_protocol_text(pattern)
+        && pattern.find("${") == string::npos)
+    {
+        result.diagnostic = "template contains protocol text";
+        return result;
+    }
+
+    string rendered;
+    set<string> used;
+    size_t position = 0;
+    while (position < pattern.size())
+    {
+        const size_t slot = pattern.find("${", position);
+        if (slot == string::npos)
+        {
+            rendered += pattern.substr(position);
+            break;
+        }
+        rendered += pattern.substr(position, slot - position);
+        const size_t end = pattern.find('}', slot + 2);
+        if (end == string::npos)
+        {
+            result.diagnostic = "template has an unclosed typed slot";
+            return result;
+        }
+        const string name = pattern.substr(slot + 2, end - slot - 2);
+        if (!_valid_identifier(name) || !declared.count(name))
+        {
+            result.diagnostic = "template references an undeclared slot";
+            return result;
+        }
+        used.insert(name);
+        rendered += supplied[name];
+        position = end + 1;
+    }
+    if (used.size() != declared.size())
+    {
+        result.diagnostic = "declared slot is unused";
+        return result;
+    }
+    if (_contains_protocol_text(rendered))
+    {
+        result.diagnostic = "rendered text contains protocol residue";
+        return result;
+    }
+    rendered_line line;
+    line.text = rendered;
+    result.lines.push_back(line);
+    result.result = message_result::RENDERED;
+    return result;
+}
+
+render_result render_typed_lines(
+    const vector<line_metadata> &lines, const string &language,
+    target_relation relation, const vector<slot_definition> &declarations,
+    const vector<slot_value> &values)
+{
+    render_result result;
+    const string relation_name = _relation_name(relation);
+    if (relation_name == "NONE")
+    {
+        result.diagnostic = "target relation has no render template";
+        return result;
+    }
+    for (const line_metadata &metadata : lines)
+    {
+        const localized_template *selected = nullptr;
+        for (const localized_template &candidate : metadata.templates)
+        {
+            if (candidate.language == language
+                && candidate.relation == relation_name)
+            {
+                if (selected)
+                {
+                    result.diagnostic = "duplicate localized template";
+                    return result;
+                }
+                selected = &candidate;
+            }
+        }
+        if (!selected)
+        {
+            result.diagnostic = "localized template is missing";
+            return result;
+        }
+        const render_result rendered = render_typed_template(
+            selected->pattern, declarations, values);
+        if (rendered.result != message_result::RENDERED
+            || rendered.lines.size() != 1)
+        {
+            return rendered;
+        }
+        rendered_line line = rendered.lines[0];
+        line.sensory = metadata.sensory;
+        line.channel = metadata.channel;
+        line.implies_gesture = metadata.implies_gesture;
+        line.audible = metadata.audible;
+        result.lines.push_back(line);
+    }
+    result.result = message_result::RENDERED;
+    return result;
+}
+
+render_result render_materialized_candidate(
+    const canonical_materialization &materialized, const string &language)
+{
+    render_result result;
+    if (materialized.result != message_result::RENDERED)
+    {
+        result.result = materialized.result;
+        result.diagnostic = materialized.diagnostic;
+        return result;
+    }
+    const catalog_variant *variant = _find_catalog_variant(
+        materialized.canonical.top_locator.canonical_key,
+        materialized.canonical.top_locator.variant_ordinal,
+        materialized.materialization_signature);
+    if (!variant || variant->stable_id != materialized.stable_id)
+    {
+        result.diagnostic = "materialized stable ID is not in the catalog";
+        return result;
+    }
+    string actor;
+    string target;
+    string beam;
+    if (!_localized_display(materialized.binding.values.actor.localized,
+                            language, actor)
+        || !_localized_display(materialized.binding.values.target.localized,
+                               language, target)
+        || !_localized_display(materialized.binding.values.beam.localized,
+                               language, beam))
+    {
+        result.diagnostic = "localized runtime binding is missing";
+        return result;
+    }
+    const vector<slot_value> values =
+    {
+        { "actor", actor }, { "target", target }, { "beam", beam },
+    };
+    return render_typed_lines(
+        variant->lines, language,
+        materialized.binding.values.target.relation,
+        variant->slot_schema, values);
 }
 
 diagnostic_counters monspell_overlay_diagnostics()

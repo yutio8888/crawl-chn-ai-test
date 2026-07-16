@@ -5,6 +5,7 @@
 
 #pragma once
 
+#include <cstdint>
 #include <list>
 #include <string>
 #include "i18n.h"
@@ -52,6 +53,137 @@ string getHelpString(const string &topic);
 string getMiscString(const string &misc, const string &suffix = "");
 string getHintString(const string &key);
 string getEgoString(const string &key);
+
+// Narrow owning production seam for canonical English SpeakDB materialization.
+// It delegates to the existing loaded-DB chooser, recursive expander, embedded
+// Lua executor, and legacy bracket materializer without changing their syntax
+// or selection semantics.
+namespace canonical_textdb
+{
+enum class candidate_status
+{
+    MISSING,
+    SELECTED,
+    CORRUPT,
+};
+
+struct variant_locator
+{
+    string canonical_key;
+    size_t variant_ordinal = static_cast<size_t>(-1);
+};
+
+struct rng_observation
+{
+    uint64_t current_state = 0;
+    uint64_t current_count = 0;
+    vector<uint64_t> global_counts;
+};
+
+struct selected_variant
+{
+    variant_locator locator;
+    vector<size_t> recursion_path;
+};
+
+struct weighted_choice_trace
+{
+    string requested_key;
+    string resolved_canonical_key;
+    vector<size_t> recursion_path;
+    int recursion_depth = 0;
+    int replacement_count = 0;
+    size_t variant_ordinal = static_cast<size_t>(-1);
+    int weight = 0;
+    int total_bound = 0;
+    int random_result = 0;
+    rng_observation before;
+    rng_observation after;
+};
+
+enum class recursive_site_status
+{
+    SELECTED,
+    CORRUPT,
+    MISSING,
+    UNBALANCED,
+    DEPTH_LIMIT,
+    REPLACEMENT_LIMIT,
+};
+
+struct recursive_site_trace
+{
+    vector<size_t> recursion_path;
+    string marker;
+    int recursion_depth = 0;
+    int replacement_count = 0;
+    recursive_site_status status = recursive_site_status::MISSING;
+};
+
+enum class lua_site_status
+{
+    EXECUTED,
+    ERROR,
+    UNBALANCED,
+};
+
+struct lua_site_trace
+{
+    size_t ordinal = 0;
+    string source;
+    string result;
+    lua_site_status status = lua_site_status::ERROR;
+    rng_observation before;
+    rng_observation after;
+};
+
+struct selection_trace
+{
+    vector<weighted_choice_trace> weighted_choices;
+    vector<recursive_site_trace> recursive_sites;
+    vector<lua_site_trace> lua_sites;
+    int final_replacement_count = 0;
+};
+
+struct loaded_candidate
+{
+    candidate_status status = candidate_status::MISSING;
+    variant_locator top_locator;
+    string expanded_pattern_en;
+    vector<selected_variant> selected_variants;
+    selection_trace trace;
+    size_t recursive_site_count = 0;
+    size_t lua_site_count = 0;
+    rng_observation before;
+    rng_observation after;
+    string error;
+};
+
+struct randomized_pattern
+{
+    candidate_status status = candidate_status::CORRUPT;
+    string pattern_en;
+    string signature;
+    size_t random_site_count = 0;
+    struct site
+    {
+        variant_locator top_locator;
+        vector<selected_variant> recursive_variants;
+        size_t expanded_site_ordinal = 0;
+        int option_count = 0;
+        int option_index = -1;
+    };
+    vector<site> sites;
+    rng_observation before;
+    rng_observation after;
+    string error;
+};
+
+loaded_candidate expand_loaded_english_candidate(const string &key);
+randomized_pattern materialize_bound_legacy_randomness(
+    const loaded_candidate &candidate, const string &bound_pattern_en);
+rng_observation observe_rng();
+}
 
 // Read-only audit surface for the Phase 0 TextDB migration prototype. These
 // types deliberately keep the runtime locator (key + variant ordinal) apart

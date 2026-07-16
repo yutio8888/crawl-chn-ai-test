@@ -46,6 +46,87 @@ fork_message_overlay::message_lookup_result lookup_result(
     value.applicability_checked = applicability_checked;
     return value;
 }
+
+canonical_textdb::loaded_candidate canonical_candidate(
+    canonical_textdb::candidate_status status, const string &pattern = "")
+{
+    canonical_textdb::loaded_candidate candidate;
+    candidate.status = status;
+    candidate.expanded_pattern_en = pattern;
+    if (status == canonical_textdb::candidate_status::SELECTED)
+    {
+        candidate.top_locator = { "beam catchall cast", 0 };
+        canonical_textdb::selected_variant selected;
+        selected.locator = candidate.top_locator;
+        candidate.selected_variants.push_back(selected);
+    }
+    return candidate;
+}
+
+fork_message_overlay::runtime_bindings beam_bindings(
+    fork_message_overlay::target_relation relation,
+    fork_message_overlay::target_kind kind =
+        fork_message_overlay::target_kind::PLAYER,
+    fork_message_overlay::message_visibility visibility =
+        fork_message_overlay::message_visibility::VISIBLE)
+{
+    using namespace fork_message_overlay;
+    runtime_bindings values;
+    values.actor.sentence_en = "The orc";
+    values.actor.canonical_en = "the orc";
+    values.actor.localized = { { "en", "The orc" }, { "zh", "兽人" } };
+    values.actor.visibility = visibility;
+    values.target.relation = relation;
+    values.target.kind = kind;
+    values.target.visibility = visibility;
+    values.target.canonical_en = "you";
+    values.target.localized = { { "en", "you" }, { "zh", "你" } };
+    switch (relation)
+    {
+    case target_relation::AT:      values.target.relation_en = "at"; break;
+    case target_relation::NEXT_TO: values.target.relation_en = "next to"; break;
+    case target_relation::PAST:    values.target.relation_en = "past"; break;
+    case target_relation::NONE:    break;
+    }
+    if (kind == target_kind::SELF || kind == target_kind::MONSTER)
+    {
+        values.target.has_actor_mid = true;
+        values.target.actor_mid = 42;
+    }
+    if (kind == target_kind::FEATURE || kind == target_kind::LOCATION)
+    {
+        values.target.has_position = true;
+        values.target.position_x = 7;
+        values.target.position_y = 9;
+    }
+    if (kind == target_kind::FEATURE)
+    {
+        values.target.has_feature = true;
+        values.target.feature_id = 3;
+    }
+    values.beam.canonical_en = "a bolt";
+    values.beam.localized =
+        { { "en", "a bolt" }, { "zh", "一支箭" } };
+    values.beam.configured_name_en = "bolt";
+    values.beam.short_name_en = "bolt";
+    values.beam.origin_spell = 17;
+    values.beam.flavour = 2;
+    values.beam.real_flavour = 2;
+    values.beam.pierce = false;
+    values.beam.has_ranged_attack = false;
+    values.cast.frame = cast_frame::PROJECTILE;
+    values.cast.caster_visibility = visibility;
+    values.cast.origin_spell = 17;
+    return values;
+}
+
+void check_rng_equal(const canonical_textdb::rng_observation &production,
+                     const textdb_phase0::rng_observation &prototype)
+{
+    CHECK(production.current_state == prototype.current_state);
+    CHECK(production.current_count == prototype.current_count);
+    CHECK(production.global_counts == prototype.global_counts);
+}
 }
 
 TEST_CASE("monspell overlay validates completely before coverage queries",
@@ -351,4 +432,368 @@ TEST_CASE("production candidate state machine preserves speech search semantics"
         CHECK(search.lookup_count == 0);
         CHECK(monspell_overlay_diagnostics().overlay_corrupt == 1);
     }
+}
+
+TEST_CASE("canonical monspell materialization observes all five boundaries",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    using namespace fork_message_overlay;
+    rng::subgenerator scoped_rng(0x3501, 0x3502);
+    const uint64_t initial_state = rng::current_generator().get_state();
+    const uint64_t initial_count = rng::current_generator().get_count();
+    size_t binding_calls = 0;
+    const runtime_binding_resolver bindings = [&]()
+    {
+        ++binding_calls;
+        return beam_bindings(target_relation::AT);
+    };
+    const auto run = [&](canonical_textdb::loaded_candidate candidate,
+                         bool applicable = true)
+    {
+        return materialize_monspell_candidate(
+            "beam catchall cast", message_attempt::NORMAL_OR_UNSEEN,
+            applicable, bindings,
+            [candidate](const string &) { return candidate; });
+    };
+
+    CHECK(run(canonical_candidate(
+              canonical_textdb::candidate_status::MISSING)).result
+          == message_result::MISSING);
+    CHECK(run(canonical_candidate(
+              canonical_textdb::candidate_status::CORRUPT)).result
+          == message_result::CORRUPT);
+    CHECK(run(canonical_candidate(
+              canonical_textdb::candidate_status::SELECTED,
+              "__NONE")).result == message_result::SUPPRESS);
+    CHECK(run(canonical_candidate(
+              canonical_textdb::candidate_status::SELECTED,
+              "@The_monster@ throws @beam@ @at@ @target@."), false).result
+          == message_result::INAPPLICABLE);
+    CHECK(binding_calls == 0);
+    CHECK(rng::current_generator().get_state() == initial_state);
+    CHECK(rng::current_generator().get_count() == initial_count);
+
+    const canonical_materialization rendered = run(canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED,
+        "@The_monster@ throws @beam@ @at@ @target@."));
+    CHECK(rendered.result == message_result::RENDERED);
+    CHECK(binding_calls == 1);
+    CHECK(rendered.binding.callback_count == 1);
+    CHECK(rendered.binding.rng.before.current_state
+          == rendered.binding.rng.after.current_state);
+    CHECK(rendered.binding.rng.before.current_count
+          == rendered.binding.rng.after.current_count);
+    CHECK(rendered.bound_pattern_en == "The orc throws a bolt at you.");
+    CHECK(rendered.bound_pattern_en.find('@') == string::npos);
+    CHECK(rendered.randomized.random_site_count == 0);
+    CHECK(rendered.materialization_signature == "NONE");
+    CHECK(rendered.stable_id == "mon.cast.beam_catchall.v1");
+}
+
+TEST_CASE("production canonical trace and pure renderer are language neutral",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    rng::subgenerator scoped_rng(0x4001, 0x4002);
+    const canonical_materialization materialized =
+        materialize_monspell_candidate(
+            "beam catchall cast", message_attempt::NORMAL_OR_UNSEEN, true,
+            [] { return beam_bindings(target_relation::AT); });
+    REQUIRE(materialized.result == message_result::RENDERED);
+    REQUIRE(materialized.canonical.trace.weighted_choices.size() == 1);
+    const canonical_textdb::weighted_choice_trace &top =
+        materialized.canonical.trace.weighted_choices[0];
+    CHECK(top.requested_key == "beam catchall cast");
+    CHECK(top.resolved_canonical_key == "beam catchall cast");
+    CHECK(top.recursion_path.empty());
+    CHECK(top.variant_ordinal == 0);
+    CHECK(top.weight == 10);
+    CHECK(top.total_bound == 10);
+    CHECK(top.before.current_count <= top.after.current_count);
+    CHECK(materialized.canonical.trace.final_replacement_count > 0);
+    CHECK_FALSE(materialized.canonical.trace.recursive_sites.empty());
+    CHECK(materialized.canonical.trace.lua_sites.empty());
+    CHECK(materialized.randomized.sites.empty());
+
+    const uint64_t state = rng::current_generator().get_state();
+    const uint64_t count = rng::current_generator().get_count();
+    const render_result en = render_materialized_candidate(materialized, "en");
+    const render_result zh = render_materialized_candidate(materialized, "zh");
+    REQUIRE(en.result == message_result::RENDERED);
+    REQUIRE(zh.result == message_result::RENDERED);
+    REQUIRE(en.lines.size() == 1);
+    REQUIRE(zh.lines.size() == 1);
+    CHECK(en.lines[0].text == "The orc throws a bolt at you.");
+    CHECK(zh.lines[0].text == "兽人向你射出一支箭。");
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    using namespace fork_message_overlay;
+    const vector<slot_definition> one = { { "actor", "actor_ref" } };
+    const vector<slot_value> value = { { "actor", "兽人" } };
+    CHECK(render_typed_template("${actor", one, value).result
+          == message_result::CORRUPT);
+    CHECK(render_typed_template("${missing}", one, value).result
+          == message_result::CORRUPT);
+    CHECK(render_typed_template("plain", one, value).result
+          == message_result::CORRUPT);
+    CHECK(render_typed_template("${actor} @target@", one, value).result
+          == message_result::CORRUPT);
+    CHECK(render_typed_template("${actor} __NONE", one, value).result
+          == message_result::CORRUPT);
+    CHECK(render_typed_template("${actor}", one,
+          { { "actor", "兽人" }, { "beam", "箭" } }).result
+          == message_result::CORRUPT);
+
+    line_metadata visual;
+    visual.sensory = sensory_mode::VISUAL;
+    visual.channel = "talk";
+    visual.implies_gesture = true;
+    visual.templates.push_back({ "zh", "AT", "${actor}挥手。" });
+    line_metadata sound;
+    sound.sensory = sensory_mode::SOUND;
+    sound.channel = "sound";
+    sound.audible = true;
+    sound.templates.push_back({ "zh", "AT", "${actor}喊叫。" });
+    const render_result rendered = render_typed_lines(
+        { visual, sound }, "zh", target_relation::AT, one, value);
+    REQUIRE(rendered.result == message_result::RENDERED);
+    REQUIRE(rendered.lines.size() == 2);
+    CHECK(rendered.lines[0].sensory == sensory_mode::VISUAL);
+    CHECK(rendered.lines[0].channel == "talk");
+    CHECK(rendered.lines[0].implies_gesture);
+    CHECK(rendered.lines[0].text == "兽人挥手。");
+    CHECK(rendered.lines[1].sensory == sensory_mode::SOUND);
+    CHECK(rendered.lines[1].channel == "sound");
+    CHECK(rendered.lines[1].audible);
+    CHECK(rendered.lines[1].text == "兽人喊叫。");
+}
+
+TEST_CASE("beam templates cover relation target kind and visibility snapshots",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    using namespace fork_message_overlay;
+    const vector<target_relation> relations =
+        { target_relation::AT, target_relation::NEXT_TO,
+          target_relation::PAST };
+    const vector<target_kind> kinds =
+        { target_kind::PLAYER, target_kind::SELF, target_kind::MONSTER,
+          target_kind::FEATURE, target_kind::LOCATION,
+          target_kind::THIN_AIR, target_kind::INDEFINITE };
+    const vector<message_visibility> visibilities =
+        { message_visibility::VISIBLE, message_visibility::UNSEEN,
+          message_visibility::UNKNOWN };
+    for (const target_relation relation : relations)
+    {
+        for (const target_kind kind : kinds)
+        {
+            for (const message_visibility visibility : visibilities)
+            {
+                const canonical_materialization materialized =
+                    materialize_monspell_candidate(
+                        "beam catchall cast",
+                        message_attempt::NORMAL_OR_UNSEEN, true,
+                        [=] { return beam_bindings(relation, kind, visibility); },
+                        [](const string &)
+                        {
+                            return canonical_candidate(
+                                canonical_textdb::candidate_status::SELECTED,
+                                "@The_monster@ throws @beam@ @at@ @target@.");
+                        });
+                REQUIRE(materialized.result == message_result::RENDERED);
+                const render_result rendered =
+                    render_materialized_candidate(materialized, "zh");
+                REQUIRE(rendered.result == message_result::RENDERED);
+                REQUIRE(rendered.lines.size() == 1);
+                const string &text = rendered.lines[0].text;
+                CHECK(text.find("${") == string::npos);
+                CHECK(text.find('@') == string::npos);
+                CHECK(text.find("__NONE") == string::npos);
+                if (relation == target_relation::AT)
+                    CHECK(text == "兽人向你射出一支箭。");
+                else if (relation == target_relation::NEXT_TO)
+                    CHECK(text == "兽人朝你旁边射出一支箭。");
+                else
+                    CHECK(text == "兽人射出一支箭，从你旁边掠过。");
+            }
+        }
+    }
+}
+
+TEST_CASE("bound legacy materializer rejects runtime tokens without RNG",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    canonical_textdb::loaded_candidate candidate = canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED, "ignored");
+    rng::subgenerator scoped_rng(0x5001, 0x5002);
+    for (const string token : { "@at@", "@target@", "@beam@" })
+    {
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        const canonical_textdb::randomized_pattern result =
+            canonical_textdb::materialize_bound_legacy_randomness(
+                candidate, "still " + token);
+        CHECK(result.status == canonical_textdb::candidate_status::CORRUPT);
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
+
+    SECTION("non-selected candidates are rejected without materialization")
+    {
+        canonical_textdb::loaded_candidate missing;
+        missing.status = canonical_textdb::candidate_status::MISSING;
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        const canonical_textdb::randomized_pattern result =
+            canonical_textdb::materialize_bound_legacy_randomness(
+                missing, "[casts|pitches]");
+        CHECK(result.status == canonical_textdb::candidate_status::CORRUPT);
+        CHECK(result.sites.empty());
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+    }
+
+    SECTION("dynamic signatures encode the selected bracket case")
+    {
+        const canonical_textdb::randomized_pattern result =
+            canonical_textdb::materialize_bound_legacy_randomness(
+                candidate, "it [casts|pitches]");
+        REQUIRE(result.status == canonical_textdb::candidate_status::SELECTED);
+        REQUIRE(result.sites.size() == 1);
+        CHECK(result.signature.find("materialization-v1|") == 0);
+        CHECK(result.signature.find("|sites=1|") != string::npos);
+        CHECK(result.signature != "DYNAMIC");
+    }
+}
+
+TEST_CASE("production seam preserves complete canonical and bracket traces",
+          "[single-file][message-overlay][phase1][stage3]")
+{
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    textdb_phase0::expanded_selection prototype;
+    canonical_textdb::loaded_candidate production;
+    {
+        rng::subgenerator scoped_rng(0x6001, 0x6002);
+        prototype = textdb_phase0::
+            expand_loaded_canonical_english_speakdb_traced(
+                "beam catchall cast");
+    }
+    {
+        rng::subgenerator scoped_rng(0x6001, 0x6002);
+        production = canonical_textdb::expand_loaded_english_candidate(
+            "beam catchall cast");
+    }
+    REQUIRE(prototype.status == textdb_phase0::raw_selection_status::SELECTED);
+    REQUIRE(production.status == canonical_textdb::candidate_status::SELECTED);
+    CHECK(production.expanded_pattern_en == prototype.text);
+    REQUIRE(production.trace.weighted_choices.size()
+            == prototype.trace.weighted_choices.size());
+    for (size_t i = 0; i < prototype.trace.weighted_choices.size(); ++i)
+    {
+        const auto &actual = production.trace.weighted_choices[i];
+        const auto &expected = prototype.trace.weighted_choices[i];
+        CHECK(actual.requested_key == expected.requested_key);
+        CHECK(actual.resolved_canonical_key == expected.resolved_canonical_key);
+        CHECK(actual.recursion_path == expected.recursion_path);
+        CHECK(actual.recursion_depth == expected.recursion_depth);
+        CHECK(actual.replacement_count == expected.replacement_count);
+        CHECK(actual.variant_ordinal == expected.variant_ordinal);
+        CHECK(actual.weight == expected.weight);
+        CHECK(actual.total_bound == expected.total_bound);
+        CHECK(actual.random_result == expected.random_result);
+        check_rng_equal(actual.before, expected.before);
+        check_rng_equal(actual.after, expected.after);
+    }
+    REQUIRE(production.trace.recursive_sites.size()
+            == prototype.trace.recursive_sites.size());
+    for (size_t i = 0; i < prototype.trace.recursive_sites.size(); ++i)
+    {
+        const auto &actual = production.trace.recursive_sites[i];
+        const auto &expected = prototype.trace.recursive_sites[i];
+        CHECK(actual.recursion_path == expected.recursion_path);
+        CHECK(actual.marker == expected.marker);
+        CHECK(actual.recursion_depth == expected.recursion_depth);
+        CHECK(actual.replacement_count == expected.replacement_count);
+        CHECK(static_cast<int>(actual.status)
+              == static_cast<int>(expected.status));
+    }
+    REQUIRE(production.trace.lua_sites.size()
+            == prototype.trace.lua_sites.size());
+    for (size_t i = 0; i < prototype.trace.lua_sites.size(); ++i)
+    {
+        const auto &actual = production.trace.lua_sites[i];
+        const auto &expected = prototype.trace.lua_sites[i];
+        CHECK(actual.ordinal == expected.ordinal);
+        CHECK(actual.source == expected.source);
+        CHECK(actual.result == expected.result);
+        CHECK(static_cast<int>(actual.status)
+              == static_cast<int>(expected.status));
+        check_rng_equal(actual.before, expected.before);
+        check_rng_equal(actual.after, expected.after);
+    }
+    CHECK(production.trace.final_replacement_count
+          == prototype.trace.final_replacement_count);
+
+    textdb_phase0::canonical_pre_random_pattern prototype_pattern;
+    prototype_pattern.top_locator = { "dynamic test", 2 };
+    prototype_pattern.pattern_en = "[casts|pitches]";
+    textdb_phase0::weighted_choice_trace recursive;
+    recursive.resolved_canonical_key = "flavour child";
+    recursive.variant_ordinal = 4;
+    recursive.recursion_path = { 1, 3 };
+    prototype_pattern.selection.weighted_choices.push_back(recursive);
+    canonical_textdb::loaded_candidate production_pattern;
+    production_pattern.status = canonical_textdb::candidate_status::SELECTED;
+    production_pattern.top_locator = { "dynamic test", 2 };
+    canonical_textdb::selected_variant production_recursive;
+    production_recursive.locator = { "flavour child", 4 };
+    production_recursive.recursion_path = { 1, 3 };
+    production_pattern.selected_variants.push_back(production_recursive);
+
+    textdb_phase0::legacy_materialization prototype_random;
+    canonical_textdb::randomized_pattern production_random;
+    {
+        rng::subgenerator scoped_rng(0x7001, 0x7002);
+        prototype_random = textdb_phase0::materialize_legacy_randomness(
+            prototype_pattern);
+    }
+    {
+        rng::subgenerator scoped_rng(0x7001, 0x7002);
+        production_random =
+            canonical_textdb::materialize_bound_legacy_randomness(
+                production_pattern, "[casts|pitches]");
+    }
+    REQUIRE(production_random.status
+            == canonical_textdb::candidate_status::SELECTED);
+    CHECK(production_random.pattern_en
+          == prototype_random.randomized_pattern_en);
+    REQUIRE(production_random.sites.size() == prototype_random.sites.size());
+    REQUIRE(production_random.sites.size() == 1);
+    const auto &actual_site = production_random.sites[0];
+    const auto &expected_site = prototype_random.sites[0];
+    CHECK(actual_site.top_locator.canonical_key
+          == expected_site.identity.top_locator.canonical_key);
+    CHECK(actual_site.top_locator.variant_ordinal
+          == expected_site.identity.top_locator.variant_ordinal);
+    REQUIRE(actual_site.recursive_variants.size()
+            == expected_site.identity.recursive_variants.size());
+    CHECK(actual_site.recursive_variants[0].locator.canonical_key
+          == expected_site.identity.recursive_variants[0].locator.canonical_key);
+    CHECK(actual_site.recursive_variants[0].locator.variant_ordinal
+          == expected_site.identity.recursive_variants[0].locator.variant_ordinal);
+    CHECK(actual_site.recursive_variants[0].recursion_path
+          == expected_site.identity.recursive_variants[0].recursion_path);
+    CHECK(actual_site.expanded_site_ordinal
+          == expected_site.identity.expanded_site_ordinal);
+    CHECK(actual_site.option_count == expected_site.option_count);
+    CHECK(actual_site.option_index == expected_site.option_index);
+    check_rng_equal(production_random.before, prototype_random.before);
+    check_rng_equal(production_random.after, prototype_random.after);
 }

@@ -6,10 +6,7 @@
 #include <string>
 #include <vector>
 
-namespace textdb_phase0
-{
-struct canonical_entry;
-}
+#include "database.h"
 
 namespace fork_message_overlay
 {
@@ -106,6 +103,33 @@ enum class sensory_mode
     PLAIN,
     VISUAL,
     SOUND,
+};
+
+enum class target_relation
+{
+    NONE,
+    AT,
+    NEXT_TO,
+    PAST,
+};
+
+enum class target_kind
+{
+    PLAYER,
+    SELF,
+    MONSTER,
+    FEATURE,
+    LOCATION,
+    THIN_AIR,
+    INDEFINITE,
+    ERROR,
+};
+
+enum class message_visibility
+{
+    VISIBLE,
+    UNSEEN,
+    UNKNOWN,
 };
 
 struct applicability
@@ -245,6 +269,119 @@ struct diagnostic_counters
     uint64_t unknown_schema = 0;
 };
 
+struct localized_value
+{
+    std::string language;
+    std::string display;
+};
+
+struct resolved_actor
+{
+    std::string sentence_en;
+    std::string canonical_en;
+    std::vector<localized_value> localized;
+    message_visibility visibility = message_visibility::UNKNOWN;
+};
+
+struct resolved_target
+{
+    target_relation relation = target_relation::NONE;
+    target_kind kind = target_kind::ERROR;
+    message_visibility visibility = message_visibility::UNKNOWN;
+    std::string relation_en;
+    std::string canonical_en;
+    std::vector<localized_value> localized;
+    bool has_position = false;
+    int position_x = 0;
+    int position_y = 0;
+    bool has_feature = false;
+    int feature_id = 0;
+    bool has_actor_mid = false;
+    int actor_mid = 0;
+    std::string error;
+};
+
+struct resolved_beam
+{
+    std::string canonical_en;
+    std::vector<localized_value> localized;
+    std::string configured_name_en;
+    std::string short_name_en;
+    int origin_spell = 0;
+    int flavour = 0;
+    int real_flavour = 0;
+    bool pierce = false;
+    bool has_ranged_attack = false;
+};
+
+struct cast_context
+{
+    cast_frame frame = cast_frame::DIRECT_EFFECT;
+    message_visibility caster_visibility = message_visibility::UNKNOWN;
+    int origin_spell = 0;
+    bool has_god = false;
+    std::string god_canonical_en;
+};
+
+struct runtime_bindings
+{
+    resolved_actor actor;
+    resolved_target target;
+    resolved_beam beam;
+    cast_context cast;
+};
+
+struct rng_boundary
+{
+    canonical_textdb::rng_observation before;
+    canonical_textdb::rng_observation after;
+};
+
+struct binding_resolution
+{
+    runtime_bindings values;
+    rng_boundary rng;
+    size_t callback_count = 0;
+};
+
+using runtime_binding_resolver = std::function<runtime_bindings()>;
+using canonical_candidate_lookup = std::function<
+    canonical_textdb::loaded_candidate(const std::string &)>;
+
+struct slot_value
+{
+    std::string name;
+    std::string value;
+};
+
+struct rendered_line
+{
+    sensory_mode sensory = sensory_mode::PLAIN;
+    std::string channel;
+    bool implies_gesture = false;
+    bool audible = false;
+    std::string text;
+};
+
+struct render_result
+{
+    message_result result = message_result::CORRUPT;
+    std::vector<rendered_line> lines;
+    std::string diagnostic;
+};
+
+struct canonical_materialization
+{
+    message_result result = message_result::CORRUPT;
+    canonical_textdb::loaded_candidate canonical;
+    canonical_textdb::randomized_pattern randomized;
+    binding_resolution binding;
+    std::string stable_id;
+    std::string materialization_signature;
+    std::string bound_pattern_en;
+    std::string diagnostic;
+};
+
 const catalog_source &generated_monspell_catalog();
 
 // Phase 1 stage 1 loading boundary. Validation is deterministic and performs
@@ -271,6 +408,28 @@ message_search_action transition_message_candidate(message_attempt attempt,
 message_candidate_search search_message_candidate(
     const std::string &base_key, message_prefix prefix,
     const message_lookup &lookup);
+
+canonical_materialization materialize_monspell_candidate(
+    const std::string &canonical_key, message_attempt attempt,
+    bool manifest_applicable, const runtime_binding_resolver &bindings);
+canonical_materialization materialize_monspell_candidate(
+    const std::string &canonical_key, message_attempt attempt,
+    bool manifest_applicable, const runtime_binding_resolver &bindings,
+    const canonical_candidate_lookup &lookup);
+
+// These functions are pure: no TextDB, RNG, Lua, or translation lookup.
+render_result render_typed_template(
+    const std::string &pattern,
+    const std::vector<slot_definition> &declarations,
+    const std::vector<slot_value> &values);
+render_result render_typed_lines(
+    const std::vector<line_metadata> &lines, const std::string &language,
+    target_relation relation,
+    const std::vector<slot_definition> &declarations,
+    const std::vector<slot_value> &values);
+render_result render_materialized_candidate(
+    const canonical_materialization &materialized,
+    const std::string &language);
 
 // Read-only production diagnostics. The returned value is an owning snapshot.
 diagnostic_counters monspell_overlay_diagnostics();
