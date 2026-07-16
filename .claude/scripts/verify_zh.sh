@@ -183,7 +183,9 @@ if [[ -n "$CHANGED_FILES" ]]; then
         case "$changed_file" in
             .claude/data/message-overlay/*|\
             .claude/scripts/*message_overlay*|\
+            .claude/scripts/audit_monspell_behavior.py|\
             .claude/scripts/tests/test_message_overlay.py|\
+            .claude/scripts/tests/test_audit_monspell_behavior.py|\
             docs/textdb-i18n-*|\
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
             crawl-ref/source/fork-message-overlay.*|\
@@ -372,6 +374,7 @@ run_phase() {
 
     run_message_overlay_static() {
         python3 .claude/scripts/tests/test_message_overlay.py \
+            && python3 .claude/scripts/tests/test_audit_monspell_behavior.py \
             && python3 .claude/scripts/generate_message_overlay.py \
                 --manifest .claude/data/message-overlay/monspell.json \
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \

@@ -177,6 +177,7 @@ RNG state 或 count。
 - `[textdb][phase0]`：736,197 assertions / 18 test cases；
 - `[mon-cast-target][phase0]`：640 assertions / 5 test cases；
 - Python manifest/generator tests：10 tests；
+- monspell behavior 审计 fixture：10 tests；
 - `audit_message_overlay.py`：`message overlay audit: ok`；
 - generated sidecar `--check`：逐字节通过；
 - `scan_varargs_string.py`：0 个阻塞问题；
@@ -192,7 +193,7 @@ March 条目固定运行 1,024 seeds，逐 seed 核对 option index、全局稳�
 key 的既有 1,024-seed 测试继续证明 canonical、真实目标解析、substring 与 legacy
 最终 RNG/英文输出等价。
 
-统一 verifier 现在无条件运行 manifest/generator/audit；相关文件发生变化时，
+统一 verifier 现在无条件运行 manifest/generator/audit 和 behavior fixture；相关文件发生变化时，
 code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
@@ -207,6 +208,97 @@ code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 进入 Phase 2 前必须先证明所有仍可达、会影响 gesture/visual/audible 行为的
 legacy 变体都有等价元数据覆盖；在覆盖率审计达到 100% 前不得删除全局 heuristic。
+
+### 7.1 behavior lower-bound 审计
+
+`.claude/scripts/audit_monspell_behavior.py` 只消费两份 production C++ SpeakDB
+artifact、Phase 0 inventory 与 production overlay manifest；它不重新解析 TextDB
+源文件。审计器按运行时规则建立 EN 与 ZH effective merge（本地化空条目回退
+canonical English），并在 selectable variant/递归 marker 图上传播固定行为谓词：
+
+- `PRE_BINDING/GESTURE` 对应 target resolution 前的旧正文 heuristic；
+- `PRE_BINDING/VISUAL_APPLICABILITY` 对应 unseen candidate rejection；
+- `POST_MATERIALIZATION/VISUAL_CHANNEL` 与 `SOUND_LIKE_CHANNEL` 对应
+  `[a|b]` 物化后的逐行 control prefix；后者不等同于怪物施法的默认 noise，报告
+  不把 audible 建模成正文布尔量；
+- Lua、递归循环、损坏节点和无法静态确定的频道前缀均 fail closed 为
+  `UNANALYSABLE`。
+
+root 与递归子键都复用 Phase 0 `_reachable_variants` 的 production 累计权重边界，
+不把 weight 为正简单等同于可达；总权重不为正、不平衡 `@`、递归深度超过 10、
+累计 replacement 超过 100，以及随机 option 生成新 bracket 站点时同样 fail closed。
+缺失的递归子键仍计一次 leaf call depth，因为 production 会先进入递归查询再发现
+missing；该失败查询不额外增加 replacement，配对 marker 本身只计一次。
+频道审计中，只要冒号前仍含 `@...@`、`[...]` 或 `{{...}}` 动态片段，即使与
+字面后缀拼接或跨递归边界形成，也不得推断为普通频道。
+
+生成的 schema-v1 报告位于
+`.claude/data/message-overlay/monspell-behavior-report.json`，支持确定性
+`--output` 与逐字节 `--check`。当前 production artifact SHA-256 为：
+
+- EN：`0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4`；
+- ZH：`da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0`。
+
+在 inventory 的全部 262 个 `monspell` root 上，当前静态结果为：
+
+| 指标 | EN | ZH |
+|---|---:|---:|
+| behavior root union | 18 | 16 |
+| gesture root | 15 | 13 |
+| visual applicability root | 5 | 5 |
+| visual channel root | 5 | 5 |
+| sound-like channel root | 0 | 0 |
+| unanalyzable root | 1 | 0 |
+
+总计 70 个已证明 behavior occurrence，另有 1 个 fail-closed occurrence；catalog
+显式覆盖为 0；当前两个 structured key
+均没有被错误计为 behavior root coverage。EN/ZH 有两个已确认的正文行为差异：
+
+- `ensnare arachne cast`；
+- `guardian serpent cast targeted`。
+
+两者英文正文会令旧 heuristic 设置 `gestured=true`，当前中文正文不会，应进入
+下一批 behavior migration 优先队列；本阶段不通过修改译文继续维持正文驱动行为。
+`vanquished vanguard nergalle cast` 的英文 pattern 在残留运行时槽之后包含 ASCII
+冒号，频道前缀无法由静态 artifact 安全确定；它进入
+`locale_behavior_inconclusive`，不会被误报为已确认的双语差异。任何一侧含
+`UNANALYSABLE` 的 root 都遵循这一规则。
+
+这份报告明确标记 `analysis_completeness=LOWER_BOUND`、
+`candidate_key_containment_proven=false`、`runtime_reachability_proven=false` 和
+`phase2_ready=false`。原因是 `_speech_keys()` 可查询完整 SpeakDB，而当前 inventory
+只证明 `monspell` root 与其静态闭包，并未证明所有实际候选 key 都包含在分析域。
+下一步必须增加 production C++ candidate-key dump/trace，覆盖 normal、silent、
+unseen、targeted 以及无前缀重试路径；将其与本报告的 universe 做 containment proof
+后，才能把 lower bound 提升为 Phase 2 可用的 runtime reachability 证据。
+
+production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
+可执行文件。以下命令可从 worktree 根目录直接复制；两个 artifact 是 `/tmp` 临时
+文件，不加入 Git：
+
+```sh
+make -C crawl-ref/source textdb-phase0-dump \
+  TEXTDB_PHASE0_DUMP=/tmp/textdb-phase1-behavior-en.json
+
+make -C crawl-ref/source textdb-phase0-dump \
+  TEXTDB_PHASE0_LANGUAGE=zh \
+  TEXTDB_PHASE0_DUMP=/tmp/textdb-phase1-behavior-zh.json
+
+python3 .claude/scripts/audit_monspell_behavior.py \
+  --english-artifact /tmp/textdb-phase1-behavior-en.json \
+  --localized-artifact /tmp/textdb-phase1-behavior-zh.json \
+  --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
+  --manifest .claude/data/message-overlay/monspell.json \
+  --output .claude/data/message-overlay/monspell-behavior-report.json
+
+python3 .claude/scripts/audit_monspell_behavior.py \
+  --english-artifact /tmp/textdb-phase1-behavior-en.json \
+  --localized-artifact /tmp/textdb-phase1-behavior-zh.json \
+  --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
+  --manifest .claude/data/message-overlay/monspell.json \
+  --output .claude/data/message-overlay/monspell-behavior-report.json \
+  --check
+```
 
 术语表 SHA-256：
 `c221e1f1a39b085869ba918da061efaf7c2c32b431c9169d5512be0cecc22c4c`
