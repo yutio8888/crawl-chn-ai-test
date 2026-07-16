@@ -3042,7 +3042,8 @@ monster_type draconian_colour_by_name(const string &name)
     return MONS_PROGRAM_BUG;
 }
 
-string mons_type_name(monster_type mc, description_level_type desc)
+static string _mons_type_name(monster_type mc, description_level_type desc,
+                              bool canonical_english)
 {
     string result;
 
@@ -3061,27 +3062,27 @@ string mons_type_name(monster_type mc, description_level_type desc)
     switch (mc)
     {
     case RANDOM_MONSTER:
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return T_("random monster");
         result += "random monster";
         return result;
     case RANDOM_DRACONIAN:
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return T_("random draconian");
         result += "random draconian";
         return result;
     case RANDOM_BASE_DRACONIAN:
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return T_("random base draconian");
         result += "random base draconian";
         return result;
     case RANDOM_NONBASE_DRACONIAN:
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return T_("random nonbase draconian");
         result += "random nonbase draconian";
         return result;
     case WANDERING_MONSTER:
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return T_("wandering monster");
         result += "wandering monster";
         return result;
@@ -3091,13 +3092,14 @@ string mons_type_name(monster_type mc, description_level_type desc)
     const monsterentry *me = get_monster_data(mc);
     if (me == nullptr)
     {
-        if (Options.language == lang_t::ZH)
+        if (!canonical_english && Options.language == lang_t::ZH)
             return make_stringf(T_("invalid monster_type %d"), mc);
         result += make_stringf("invalid monster_type %d", mc);
         return result;
     }
 
-    const char* zh_name = zh_monster_name(me->name);
+    const char* zh_name = canonical_english ? nullptr
+                                           : zh_monster_name(me->name);
     result += zh_name ? zh_name : me->name;
 
     // Vowel fix: Change 'a orc' to 'an orc'..
@@ -3112,6 +3114,16 @@ string mons_type_name(monster_type mc, description_level_type desc)
     }
 
     return result;
+}
+
+string mons_type_name(monster_type mc, description_level_type desc)
+{
+    return _mons_type_name(mc, desc, false);
+}
+
+string mons_type_name_en(monster_type mc, description_level_type desc)
+{
+    return _mons_type_name(mc, desc, true);
 }
 
 static string _get_proper_monster_name(const monster& mon)

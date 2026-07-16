@@ -212,20 +212,23 @@ legacy 变体都有等价元数据覆盖；在覆盖率审计达到 100% 前不�
 ### 7.1 candidate key recipe seam
 
 `mon-cast-message-keys.{h,cc}` 是怪物施法 candidate key 顺序的唯一算法源。
-`mon-cast.cc` 中的薄 adapter 仍按现有运行时路径取得 `DESC_DBNAME` 怪物名称、
+`mon-cast.cc` 中的薄 adapter 通过显式 `mons_type_name_en(..., DESC_DBNAME)` 取得
+canonical English 怪物 type/species/genus 片段，并按现有运行时路径取得
 `spell_english_name()`、body shape、intelligence、Hoarfrost finale 状态与
 `bolt::get_short_name()`；它只把这些值快照到 owning `recipe_input`，再物化纯
 `key_recipe`。builder 不读取 RNG、TextDB、Lua、全局语言或其他运行时状态，且不对
 type/species/genus 重复候选去重。
 
-beam key 在 recipe 中保留为显式 `BEAM_SHORT_NAME` expression，运行时才注入
-`get_short_name()`。现有 `short_name + " beam " + " cast"` 产生的双空格是兼容
-契约，当前 seam 与 golden test 会逐字保留它。candidate containment dump 应直接
-消费这份 recipe，不能另写一份候选顺序算法。
+beam key 在 recipe 中保留为显式 `BEAM_SHORT_NAME` expression；containment dump
+在 expression 层处理该 token，不依赖当前语言下的 runtime materialization。
+运行时仍注入 `get_short_name()`。现有 `short_name + " beam " + " cast"` 产生的
+双空格是兼容契约，当前 seam 与 golden test 会逐字保留它。candidate containment
+dump 应直接消费这份 recipe，不能另写一份候选顺序算法。
 
-本次抽离仅收敛算法所有权，不修复 canonical-English：adapter 仍使用当前 locale 下
-的既有运行时值。canonical English key 构造、双空格行为修正及相应 DB 漂移必须放在
-后续独立行为变更中，并分别提供 EN/ZH 与 RNG golden。
+monster type/species/genus candidate 已不再受 locale 影响；现有
+`mons_type_name()` 显示行为保持不变。`BEAM_SHORT_NAME` 的 locale-dependent runtime
+物化、双空格行为修正及相应 DB 漂移仍必须放在后续独立行为变更中，并分别提供
+EN/ZH 与 RNG golden。
 
 ### 7.2 behavior lower-bound 审计
 

@@ -2,8 +2,14 @@
 
 #include "AppHdr.h"
 
+#include "database.h"
 #include "mon-cast-message-keys.h"
+#include "mon-util.h"
+#include "options.h"
 #include "random.h"
+#include "stringutil.h"
+
+#include "test_zh_fixture.h"
 
 namespace
 {
@@ -23,6 +29,46 @@ std::vector<std::string> keys(const mcmk::recipe_input &input,
                               const std::string &beam = "crystal")
 {
     return mcmk::materialize_key_recipe(mcmk::build_key_recipe(input), beam);
+}
+
+std::vector<std::string> expression_signature(const mcmk::key_recipe &recipe)
+{
+    std::vector<std::string> result;
+    for (const mcmk::key_expression &expression : recipe.candidates)
+    {
+        std::string value;
+        for (const mcmk::key_token &token : expression.tokens)
+        {
+            value += token.kind == mcmk::key_token_kind::BEAM_SHORT_NAME
+                     ? "${BEAM_SHORT_NAME}" : token.text;
+        }
+        result.push_back(value);
+    }
+    return result;
+}
+
+bool contains_non_ascii(const std::string &text)
+{
+    for (unsigned char c : text)
+    {
+        if (c >= 0x80)
+            return true;
+    }
+    return false;
+}
+
+mcmk::recipe_input runtime_monster_fragments(monster_type type)
+{
+    mcmk::recipe_input input = base_input();
+    input.monster_type = remove_prepended_the(
+        mons_type_name_en(type, DESC_DBNAME));
+    input.monster_species = remove_prepended_the(
+        mons_type_name_en(mons_species(type), DESC_DBNAME));
+    input.monster_genus = remove_prepended_the(
+        mons_type_name_en(mons_genus(type), DESC_DBNAME));
+    input.targeted = true;
+    input.visible_beam = true;
+    return input;
 }
 }
 
@@ -205,6 +251,79 @@ TEST_CASE("monspell key recipe operations do not consume game RNG",
     const std::vector<std::string> materialized =
         mcmk::materialize_key_recipe(recipe, "bolt");
     CHECK_FALSE(materialized.empty());
+    CHECK(rng::current_generator().get_state() == state_before);
+    CHECK(rng::current_generator().get_count() == count_before);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "canonical monster key fragments ignore display language",
+                 "[mon-cast-message-keys][phase1][zh]")
+{
+    init_monsters();
+
+    const uint64_t state_before = rng::current_generator().get_state();
+    const uint64_t count_before = rng::current_generator().get_count();
+
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    i18n_cache_clear();
+    const std::string ordinary_zh =
+        mons_type_name_en(MONS_ORC_WIZARD, DESC_DBNAME);
+    const std::string unique_the_zh =
+        mons_type_name_en(MONS_ENCHANTRESS, DESC_THE);
+    const std::string random_zh =
+        mons_type_name_en(RANDOM_MONSTER, DESC_THE);
+    const std::string invalid_zh = mons_type_name_en(
+        static_cast<monster_type>(NUM_MONSTERS), DESC_THE);
+    const std::string localized_ordinary =
+        mons_type_name(MONS_ORC_WIZARD, DESC_DBNAME);
+    const std::string localized_random =
+        mons_type_name(RANDOM_MONSTER, DESC_THE);
+    const mcmk::key_recipe recipe_zh = mcmk::build_key_recipe(
+        runtime_monster_fragments(MONS_ORC_WIZARD));
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+    const std::string ordinary_en =
+        mons_type_name_en(MONS_ORC_WIZARD, DESC_DBNAME);
+    const std::string unique_the_en =
+        mons_type_name_en(MONS_ENCHANTRESS, DESC_THE);
+    const std::string random_en =
+        mons_type_name_en(RANDOM_MONSTER, DESC_THE);
+    const std::string invalid_en = mons_type_name_en(
+        static_cast<monster_type>(NUM_MONSTERS), DESC_THE);
+    const mcmk::key_recipe recipe_en = mcmk::build_key_recipe(
+        runtime_monster_fragments(MONS_ORC_WIZARD));
+
+    CHECK(ordinary_en == "orc wizard");
+    CHECK(unique_the_en == "the Enchantress");
+    CHECK(random_en == "the random monster");
+    CHECK(invalid_en == "the invalid monster_type "
+                        + std::to_string(NUM_MONSTERS));
+    CHECK(ordinary_zh == ordinary_en);
+    CHECK(unique_the_zh == unique_the_en);
+    CHECK(random_zh == random_en);
+    CHECK(invalid_zh == invalid_en);
+
+    // The existing display helper remains localized and unchanged.
+    CHECK(localized_ordinary != ordinary_en);
+    CHECK(localized_random != random_en);
+    CHECK(contains_non_ascii(localized_ordinary));
+    CHECK(contains_non_ascii(localized_random));
+    CHECK(mons_type_name(MONS_ORC_WIZARD, DESC_DBNAME) == ordinary_en);
+
+    const std::vector<std::string> signature_en =
+        expression_signature(recipe_en);
+    const std::vector<std::string> signature_zh =
+        expression_signature(recipe_zh);
+    CHECK(signature_en == signature_zh);
+    REQUIRE_FALSE(signature_en.empty());
+    for (const std::string &candidate : signature_en)
+        CHECK_FALSE(contains_non_ascii(candidate));
+    CHECK(signature_en[signature_en.size() - 2]
+          == "${BEAM_SHORT_NAME} beam  cast");
+
     CHECK(rng::current_generator().get_state() == state_before);
     CHECK(rng::current_generator().get_count() == count_before);
 }

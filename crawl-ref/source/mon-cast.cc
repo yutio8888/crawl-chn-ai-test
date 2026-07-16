@@ -8771,11 +8771,11 @@ static void _speech_keys(vector<string>& key_list,
     mcmk::recipe_input input;
     input.spell_name = spell_english_name(spell);
     input.monster_type = remove_prepended_the(
-        mons_type_name(mons->type, DESC_DBNAME));
+        mons_type_name_en(mons->type, DESC_DBNAME));
     input.monster_species = remove_prepended_the(
-        mons_type_name(mons_species(mons->type), DESC_DBNAME));
+        mons_type_name_en(mons_species(mons->type), DESC_DBNAME));
     input.monster_genus = remove_prepended_the(
-        mons_type_name(mons_genus(mons->type), DESC_DBNAME));
+        mons_type_name_en(mons_genus(mons->type), DESC_DBNAME));
     if (slot_flags & MON_SPELL_NATURAL)
         input.category_bits |= mcmk::CATEGORY_NATURAL;
     if (slot_flags & MON_SPELL_MAGICAL)

@@ -211,6 +211,9 @@ monster *monster_at(const coord_def &pos);
 // this is the old moname()
 string mons_type_name(monster_type type, description_level_type desc);
 
+// Locale-independent form for protocol and TextDB key construction.
+string mons_type_name_en(monster_type type, description_level_type desc);
+
 bool give_monster_proper_name(monster& mon);
 
 size_type mons_class_body_size(monster_type mc);
