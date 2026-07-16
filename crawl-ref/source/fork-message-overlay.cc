@@ -246,7 +246,19 @@ bool _validate_lines(const catalog_source &source,
         error = "structured variant has no line metadata";
         return false;
     }
-    static const set<string> relations = { "AT", "NEXT_TO", "PAST" };
+    const set<string> relations = variant.resolves_target
+        ? set<string>{ "AT", "NEXT_TO", "PAST" }
+        : set<string>{ "NONE" };
+    if (!variant.resolves_target
+        && any_of(variant.slot_schema.begin(), variant.slot_schema.end(),
+                  [](const slot_definition &slot)
+                  {
+                      return slot.type == "resolved_target";
+                  }))
+    {
+        error = "non-target binding declares resolved_target";
+        return false;
+    }
     set<string> used_slots;
     for (const line_metadata &line : variant.lines)
     {
@@ -643,10 +655,13 @@ const load_report &load_monspell_overlay(
                                 "applicability metadata is not enabled yet");
             }
             if (entry.mode == entry_mode::CANDIDATE
-                && !variant.resolves_target)
+                && !variant.resolves_target
+                && (actual_variant.raw_pattern.find("@at@") != string::npos
+                    || actual_variant.raw_pattern.find("@target@")
+                       != string::npos))
             {
                 return _disable(load_failure::CORRUPT,
-                                "structured monspell must resolve target");
+                                "non-target binding contains target tokens");
             }
             if (variant.policy == materialization_policy::CAPTURE_SLOT)
             {
@@ -879,6 +894,16 @@ canonical_materialization materialize_monspell_candidate(
         result.diagnostic = "canonical locator has no catalog descriptor";
         return result;
     }
+    if (!descriptor->resolves_target
+        && (result.canonical.expanded_pattern_en.find("@at@") != string::npos
+            || result.canonical.expanded_pattern_en.find("@target@")
+               != string::npos))
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic =
+            "non-target materialization contains target tokens";
+        return result;
+    }
     if (!bindings)
     {
         result.result = message_result::CORRUPT;
@@ -941,6 +966,13 @@ canonical_materialization materialize_monspell_candidate(
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "runtime bindings are incomplete";
+        return result;
+    }
+    if (!descriptor->resolves_target
+        && resolved.target.relation != target_relation::NONE)
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic = "non-target binding unexpectedly resolved target";
         return result;
     }
 
@@ -1120,11 +1152,6 @@ render_result render_typed_lines(
 {
     render_result result;
     const string relation_name = _relation_name(relation);
-    if (relation_name == "NONE")
-    {
-        result.diagnostic = "target relation has no render template";
-        return result;
-    }
     for (const line_metadata &metadata : lines)
     {
         const localized_template *selected = nullptr;
@@ -1187,6 +1214,14 @@ render_result render_materialized_candidate(
     if (!variant || expected_id != materialized.stable_id)
     {
         result.diagnostic = "materialized stable ID is not in the catalog";
+        return result;
+    }
+    const target_relation relation =
+        materialized.binding.values.target.relation;
+    if ((variant->resolves_target && relation == target_relation::NONE)
+        || (!variant->resolves_target && relation != target_relation::NONE))
+    {
+        result.diagnostic = "binding relation does not match descriptor";
         return result;
     }
     vector<slot_value> values;
@@ -1268,7 +1303,7 @@ render_result render_materialized_candidate(
         ? materialized_case->lines : variant->lines;
     return render_typed_lines(
         lines, language,
-        materialized.binding.values.target.relation,
+        relation,
         variant->slot_schema, values);
 }
 

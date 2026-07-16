@@ -15,7 +15,8 @@ from typing import Any
 SCHEMA_VERSION = 1
 IDENTIFIER_RE = re.compile(r"^[a-z][a-z0-9_]*$")
 SLOT_RE = re.compile(r"\$\{([^}]*)\}")
-RELATIONS = ("AT", "NEXT_TO", "PAST")
+TARGET_RELATIONS = ("AT", "NEXT_TO", "PAST")
+NO_TARGET_RELATIONS = ("NONE",)
 MODES = {"CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY"}
 POLICIES = {"NONE", "CASE_MAP", "CAPTURE_SLOT", "LEGACY_ONLY"}
 FRAMES = {"PROJECTILE", "GAZE", "GESTURE", "VOCAL", "INVOCATION",
@@ -343,9 +344,20 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
-            _require(binding["resolves_target"],
-                     f"{vcontext} structured monspell must resolve target")
-            relations = RELATIONS
+            has_target_slot = any(
+                slot_type == "resolved_target"
+                for slot_type in slot_types.values())
+            _require(binding["resolves_target"] or not has_target_slot,
+                     f"{vcontext} non-target binding declares resolved_target")
+            target_tokens = {
+                token["canonical_key"] for token in actual["tokens"]
+                if token["classification"] == "runtime"
+                and token["canonical_key"] in {"at", "target"}
+            }
+            _require(binding["resolves_target"] or not target_tokens,
+                     f"{vcontext} non-target binding contains target tokens")
+            relations = (TARGET_RELATIONS if binding["resolves_target"]
+                         else NO_TARGET_RELATIONS)
             if policy == "NONE":
                 _validate_lines(variant.get("line_metadata"), languages,
                                 declared, vcontext, relations)

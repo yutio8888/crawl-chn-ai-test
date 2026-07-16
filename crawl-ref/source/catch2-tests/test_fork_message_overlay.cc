@@ -150,7 +150,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     const vector<textdb_phase0::canonical_entry> canonical =
         textdb_phase0::dump_canonical_english_speakdb();
 
-    SECTION("valid generated catalog enables both candidate keys")
+    SECTION("valid generated catalog enables every candidate key")
     {
         scoped_overlay_reset reset;
         rng::subgenerator scoped_rng(0x1234, 0x5678);
@@ -159,11 +159,15 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 4);
+        CHECK(report.structured_key_count == 8);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
         CHECK(monspell_overlay_covers("guardian serpent cast targeted"));
+        CHECK(monspell_overlay_covers("wizard cast targeted"));
+        CHECK(monspell_overlay_covers("wizard cast"));
+        CHECK(monspell_overlay_covers("magical cast targeted"));
+        CHECK(monspell_overlay_covers("magical cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -266,11 +270,31 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
               == load_failure::CORRUPT);
     }
 
-    SECTION("Phase 2 binding and behavior metadata fail closed")
+    SECTION("Phase 2 binding relation and behavior metadata fail closed")
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
         source.entries[2].variants[0].resolves_target = false;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[5].variants[0].slot_schema.push_back(
+            { "target", "resolved_target" });
+        source.entries[5].variants[0].required_arguments.push_back("target");
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[5].variants[0].lines[0].templates[0].relation = "AT";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[4].variants[0].lines[0].templates[0].relation = "NONE";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
@@ -1233,4 +1257,133 @@ TEST_CASE("actor binding validation follows declared slot types",
             [possessive](const string &) { return possessive; });
     CHECK(missing_declared.result == message_result::CORRUPT);
     CHECK(missing_declared.diagnostic == "runtime bindings are incomplete");
+}
+
+TEST_CASE("non-target materialization rejects late target tokens before binding",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    const canonical_textdb::loaded_candidate forged = canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED,
+        "@The_monster@ gestures @at@ @target@.", "wizard cast", 0);
+    size_t calls = 0;
+    rng::subgenerator scoped_rng(0x90210, 0x314159);
+    const uint64_t state = rng::current_generator().get_state();
+    const uint64_t count = rng::current_generator().get_count();
+    const canonical_materialization materialized =
+        materialize_monspell_candidate(
+            "wizard cast", message_attempt::NORMAL_OR_UNSEEN, true,
+            [&](const binding_requirements &)
+            {
+                ++calls;
+                return beam_bindings(target_relation::NONE);
+            },
+            [forged](const string &) { return forged; });
+    CHECK(materialized.result == message_result::CORRUPT);
+    CHECK(materialized.diagnostic
+          == "non-target materialization contains target tokens");
+    CHECK(calls == 0);
+    CHECK(materialized.binding.callback_count == 0);
+    CHECK(rng::current_generator().get_state() == state);
+    CHECK(rng::current_generator().get_count() == count);
+}
+
+TEST_CASE("common cast variants render targeted and NONE relation matrices",
+          "[single-file][message-overlay][phase2]")
+{
+    using namespace fork_message_overlay;
+    struct fixture
+    {
+        const char *key;
+        size_t ordinal;
+        const char *pattern;
+        bool resolves_target;
+        bool gesture;
+        cast_frame frame;
+        const char *en_at;
+        const char *zh_at;
+        const char *en_none;
+        const char *zh_none;
+    };
+    const fixture cases[] =
+    {
+        { "wizard cast targeted", 0,
+          "@The_monster@ gestures @at@ @target@ while chanting.",
+          true, true, cast_frame::GESTURE,
+          "The orc gestures at you while chanting.",
+          "兽人一边吟诵，一边向你做出手势。", "", "" },
+        { "wizard cast targeted", 1,
+          "@The_monster@ points @at@ @target@ and mumbles some strange words.",
+          true, true, cast_frame::GESTURE,
+          "The orc points at you and mumbles some strange words.",
+          "兽人指向你，咕哝着一些奇怪的话。", "", "" },
+        { "wizard cast targeted", 2,
+          "@The_monster@ casts a spell @at@ @target@.",
+          true, false, cast_frame::DIRECT_EFFECT,
+          "The orc casts a spell at you.",
+          "兽人向你施展了一个法术。", "", "" },
+        { "wizard cast", 0,
+          "@The_monster@ gestures wildly while chanting.",
+          false, true, cast_frame::GESTURE, "", "",
+          "The orc gestures wildly while chanting.",
+          "兽人一边吟诵，一边狂乱地做出手势。" },
+        { "wizard cast", 1,
+          "@The_monster@ mumbles some strange words.",
+          false, false, cast_frame::VOCAL, "", "",
+          "The orc mumbles some strange words.",
+          "兽人咕哝着一些奇怪的话。" },
+        { "wizard cast", 2,
+          "@The_monster@ casts a spell.",
+          false, false, cast_frame::DIRECT_EFFECT, "", "",
+          "The orc casts a spell.", "兽人施展了一个法术。" },
+        { "magical cast targeted", 0,
+          "@The_monster@ gestures @at@ @target@.",
+          true, true, cast_frame::GESTURE,
+          "The orc gestures at you.", "兽人向你做出手势。", "", "" },
+        { "magical cast", 0,
+          "@The_monster@ gestures.",
+          false, true, cast_frame::GESTURE, "", "",
+          "The orc gestures.", "兽人做出手势。" },
+    };
+
+    for (const fixture &item : cases)
+    {
+        CAPTURE(item.key, item.ordinal);
+        size_t calls = 0;
+        binding_requirements observed;
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                item.pattern, item.key, item.ordinal);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                item.key, message_attempt::NORMAL_OR_UNSEEN, true,
+                [&](const binding_requirements &requirements)
+                {
+                    ++calls;
+                    observed = requirements;
+                    runtime_bindings values = beam_bindings(
+                        requirements.resolves_target
+                            ? target_relation::AT : target_relation::NONE);
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(calls == 1);
+        CHECK(observed.resolves_target == item.resolves_target);
+        CHECK(observed.implies_gesture == item.gesture);
+        CHECK(observed.frame == item.frame);
+        CHECK(materialized.binding.values.target_trace.empty());
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        CHECK(en.lines[0].text
+              == (item.resolves_target ? item.en_at : item.en_none));
+        CHECK(zh.lines[0].text
+              == (item.resolves_target ? item.zh_at : item.zh_none));
+    }
 }

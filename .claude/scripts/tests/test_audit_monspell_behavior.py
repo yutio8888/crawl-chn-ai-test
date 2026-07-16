@@ -28,6 +28,8 @@ from audit_monspell_phase0 import load_artifact  # noqa: E402
 
 
 AUDIT = SCRIPTS / "audit_monspell_behavior.py"
+TRACKED_REPORT = (
+    ROOT / ".claude/data/message-overlay/monspell-behavior-report.json")
 
 
 class MonspellBehaviorAuditTest(unittest.TestCase):
@@ -783,6 +785,32 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
                                capture_output=True, check=False)
         self.assertEqual(drift.returncode, 1)
         self.assertIn("report drift", drift.stderr)
+
+    def test_tracked_phase2_coverage_contract(self):
+        report = json.loads(TRACKED_REPORT.read_text(encoding="utf-8"))
+        self.assertEqual(
+            report["coverage"]["canonical_structured_variant_metadata_units"],
+            15)
+        self.assertEqual(
+            report["coverage"][
+                "canonical_structured_variant_metadata_complete"],
+            15)
+        self.assertEqual(
+            report["coverage"][
+                "per_language_structured_variant_verification_units"],
+            30)
+        self.assertEqual(
+            report["coverage"][
+                "per_language_structured_variant_verification_complete"],
+            30)
+        self.assertEqual(
+            report["coverage"]["remaining_legacy_behavior_occurrences"],
+            58)
+        self.assertEqual(report["locale_behavior_mismatch"], [])
+        self.assertEqual(
+            [item["requested_root"]
+             for item in report["locale_behavior_inconclusive"]],
+            ["vanquished vanguard nergalle cast"])
 
 
 if __name__ == "__main__":

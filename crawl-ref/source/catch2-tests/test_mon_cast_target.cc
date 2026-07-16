@@ -850,7 +850,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         uint64_t direct_count = 0;
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
-            direct = getSpeakString("magical cast");
+            direct = getSpeakString("non-humanoid wizard cast");
             direct_state = rng::current_generator().get_state();
             direct_count = rng::current_generator().get_count();
         }
@@ -860,7 +860,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
             routed = resolve_monspell_cast_message(
-                source, beam, false, { "magical cast" }, false, false);
+                source, beam, false, { "non-humanoid wizard cast" },
+                false, false);
             routed_state = rng::current_generator().get_state();
             routed_count = rng::current_generator().get_count();
         }
@@ -975,6 +976,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         string key;
         vector<string> patterns;
         vector<bool> gestures;
+        bool resolves_target;
     };
     const vector<key_fixture> fixtures =
     {
@@ -985,6 +987,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 "@The_monster_possessive@ staff shoots out a stream of webbing.",
             },
             { true, false },
+            true,
         },
         {
             "guardian serpent cast targeted",
@@ -994,6 +997,43 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 "@The_monster@ weaves intricate patterns with the tip of @possessive@ tongue.",
             },
             { false, true, false },
+            true,
+        },
+        {
+            "wizard cast targeted",
+            {
+                "@The_monster@ gestures @at@ @target@ while chanting.",
+                "@The_monster@ points @at@ @target@ and mumbles some strange words.",
+                "@The_monster@ casts a spell @at@ @target@.",
+            },
+            { true, true, false },
+            true,
+        },
+        {
+            "wizard cast",
+            {
+                "@The_monster@ gestures wildly while chanting.",
+                "@The_monster@ mumbles some strange words.",
+                "@The_monster@ casts a spell.",
+            },
+            { true, false, false },
+            false,
+        },
+        {
+            "magical cast targeted",
+            {
+                "@The_monster@ gestures @at@ @target@.",
+            },
+            { true },
+            true,
+        },
+        {
+            "magical cast",
+            {
+                "@The_monster@ gestures.",
+            },
+            { true },
+            false,
         },
     };
 
@@ -1041,13 +1081,17 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     || pattern.find("Point") != string::npos
                     || pattern.find(" point") != string::npos;
                 CHECK(gestured == fixture.gestures[ordinal]);
-                const speech_target_observer observer =
-                    { observe_target_event, &legacy_events };
-                const resolved_speech_target target =
-                    resolve_speech_target(&source, beam, gestured, &observer);
-                CHECK(target.relation == (gestured
-                    ? speech_target_relation::AT
-                    : speech_target_relation::PAST));
+                if (fixture.resolves_target)
+                {
+                    const speech_target_observer observer =
+                        { observe_target_event, &legacy_events };
+                    const resolved_speech_target target =
+                        resolve_speech_target(
+                            &source, beam, gestured, &observer);
+                    CHECK(target.relation == (gestured
+                        ? speech_target_relation::AT
+                        : speech_target_relation::PAST));
+                }
                 legacy_state = rng::current_generator().get_state();
                 legacy_count = rng::current_generator().get_count();
             }
@@ -1061,7 +1105,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     seeds[ordinal],
                     seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
                 english = resolve_monspell_cast_message(
-                    source, beam, true, { fixture.key }, false, false);
+                    source, beam, fixture.resolves_target,
+                    { fixture.key }, false, false);
                 english_state = rng::current_generator().get_state();
                 english_count = rng::current_generator().get_count();
             }
@@ -1074,7 +1119,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     seeds[ordinal],
                     seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
                 chinese = resolve_monspell_cast_message(
-                    source, beam, true, { fixture.key }, false, false);
+                    source, beam, fixture.resolves_target,
+                    { fixture.key }, false, false);
                 chinese_state = rng::current_generator().get_state();
                 chinese_count = rng::current_generator().get_count();
             }
@@ -1089,8 +1135,14 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                   == fixture.gestures[ordinal]);
             CHECK(zh.requirements.implies_gesture
                   == fixture.gestures[ordinal]);
+            CHECK(en.requirements.resolves_target
+                  == fixture.resolves_target);
+            CHECK(zh.requirements.resolves_target
+                  == fixture.resolves_target);
             CHECK(en.binding.callback_count == 1);
             CHECK(zh.binding.callback_count == 1);
+            CHECK(english.text == en.randomized.pattern_en);
+            CHECK_FALSE(chinese.text.empty());
             CHECK(english_state == legacy_state);
             CHECK(english_count == legacy_count);
             CHECK(chinese_state == legacy_state);
@@ -1117,7 +1169,33 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 CHECK(zh_event.rng_count_before == en_event.rng_count_before);
                 CHECK(zh_event.rng_count_after == en_event.rng_count_after);
             }
+            if (!fixture.resolves_target)
+            {
+                CHECK(en.binding.values.target.relation
+                      == fork_message_overlay::target_relation::NONE);
+                CHECK(zh.binding.values.target.relation
+                      == fork_message_overlay::target_relation::NONE);
+                CHECK(en.binding.values.target_trace.empty());
+                CHECK(zh.binding.values.target_trace.empty());
+            }
         }
+
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+        scoped_test_language language(lang_t::EN);
+        rng::subgenerator scoped_rng(
+            seeds[0], seeds[0] ^ 0x9e3779b97f4a7c15ULL);
+        const resolved_monspell_cast_message silent =
+            resolve_monspell_cast_message(
+                source, beam, fixture.resolves_target,
+                { fixture.key }, true, false);
+        REQUIRE(silent.structured);
+        REQUIRE(silent.has_materialization);
+        CHECK(silent.materialization.canonical.top_locator.variant_ordinal
+              < fixture.patterns.size());
+        const auto counters =
+            fork_message_overlay::monspell_overlay_diagnostics();
+        CHECK(counters.legacy_fallback == 1);
+        CHECK(counters.overlay_hit == 1);
     }
 }
 

@@ -8939,44 +8939,46 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
 {
     fmo::runtime_bindings bindings;
 
-    // This is the one and only target-resolution call for the structured
-    // attempt. It remains after canonical TextDB selection and before legacy
-    // bracket materialization, preserving the established RNG boundary.
-    speech_target_observer observer;
-    observer.function = _record_overlay_target_event;
-    observer.context = &bindings.target_trace;
-    const resolved_speech_target target =
-        resolve_speech_target(&mon, pbolt, requirements.implies_gesture,
-                              &observer);
+    resolved_speech_target target;
+    if (requirements.resolves_target)
+    {
+        // This is the one and only target-resolution call for a targeted
+        // structured attempt. Non-target descriptors skip it entirely.
+        speech_target_observer observer;
+        observer.function = _record_overlay_target_event;
+        observer.context = &bindings.target_trace;
+        target = resolve_speech_target(
+            &mon, pbolt, requirements.implies_gesture, &observer);
+        bindings.target.relation = _overlay_relation(target.relation);
+        bindings.target.kind = _overlay_target_kind(target.kind);
+        bindings.target.relation_en = _relation_english(target.relation);
+        bindings.target.error = target.error;
+        bindings.target.visibility = target.position == INVALID_COORD
+            ? fmo::message_visibility::UNKNOWN
+            : _overlay_visibility(you.see_cell(target.position));
+        if (target.position != INVALID_COORD)
+        {
+            bindings.target.has_position = true;
+            bindings.target.position_x = target.position.x;
+            bindings.target.position_y = target.position.y;
+        }
+        if (target.kind == speech_target_kind::FEATURE)
+        {
+            bindings.target.has_feature = true;
+            bindings.target.feature_id = static_cast<int>(target.feature);
+        }
+        if (target.kind == speech_target_kind::SELF
+            || target.kind == speech_target_kind::MONSTER)
+        {
+            bindings.target.has_actor_mid = true;
+            bindings.target.actor_mid = target.mid;
+        }
+    }
+
     const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
     const string actor_display = _cast_actor_display(mon);
 
     bindings.actor.visibility = _overlay_visibility(you.can_see(mon));
-    bindings.target.relation = _overlay_relation(target.relation);
-    bindings.target.kind = _overlay_target_kind(target.kind);
-    bindings.target.relation_en = _relation_english(target.relation);
-    bindings.target.error = target.error;
-    bindings.target.visibility = target.position == INVALID_COORD
-        ? fmo::message_visibility::UNKNOWN
-        : _overlay_visibility(you.see_cell(target.position));
-    if (target.position != INVALID_COORD)
-    {
-        bindings.target.has_position = true;
-        bindings.target.position_x = target.position.x;
-        bindings.target.position_y = target.position.y;
-    }
-    if (target.kind == speech_target_kind::FEATURE)
-    {
-        bindings.target.has_feature = true;
-        bindings.target.feature_id = static_cast<int>(target.feature);
-    }
-    if (target.kind == speech_target_kind::SELF
-        || target.kind == speech_target_kind::MONSTER)
-    {
-        bindings.target.has_actor_mid = true;
-        bindings.target.actor_mid = target.mid;
-    }
-
     bindings.beam.configured_name_en = beam.configured_name_en;
     bindings.beam.short_name_en = beam.configured_short_name_en;
     bindings.beam.origin_spell = static_cast<int>(beam.origin_spell);
@@ -8998,7 +9000,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
         bindings.actor.reflexive_localized.push_back(
             { "en", mon.pronoun(PRONOUN_REFLEXIVE) });
-        bindings.target.localized.push_back({ "en", target.display });
+        if (requirements.resolves_target)
+            bindings.target.localized.push_back({ "en", target.display });
         bindings.beam.localized.push_back({ "en", beam.display_text });
     }
     else if (language == "zh")
@@ -9010,7 +9013,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "zh", mon.pronoun(PRONOUN_POSSESSIVE) });
         bindings.actor.reflexive_localized.push_back(
             { "zh", mon.pronoun(PRONOUN_REFLEXIVE) });
-        bindings.target.localized.push_back({ "zh", target.display });
+        if (requirements.resolves_target)
+            bindings.target.localized.push_back({ "zh", target.display });
         bindings.beam.localized.push_back({ "zh", beam.display_text });
     }
 
@@ -9023,7 +9027,9 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         bindings.actor.possessive_pronoun_en =
             mon.pronoun(PRONOUN_POSSESSIVE);
         bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);
-        bindings.target.canonical_en = _canonical_target_display(target, mon);
+        if (requirements.resolves_target)
+            bindings.target.canonical_en =
+                _canonical_target_display(target, mon);
         bindings.beam.canonical_en =
             resolve_speech_beam(pbolt, targeted).display_text;
     }

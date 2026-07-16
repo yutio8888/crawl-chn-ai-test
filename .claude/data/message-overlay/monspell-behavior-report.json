@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 7,
-    "canonical_structured_variant_metadata_units": 7,
+    "canonical_structured_variant_metadata_complete": 15,
+    "canonical_structured_variant_metadata_units": 15,
     "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 14,
-    "per_language_structured_variant_verification_units": 14,
-    "remaining_legacy_behavior_occurrences": 68,
+    "per_language_structured_variant_verification_complete": 30,
+    "per_language_structured_variant_verification_units": 30,
+    "remaining_legacy_behavior_occurrences": 58,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "f6552ab7f088dc442397df6607bc899804c7c126fa8ba1d7ef992bbc7c677170"
+      "sha256": "2164cf54ed99322655fd080169890d4557b1b129bd6af1bef7f8f5036b3a9386"
     }
   },
   "languages": {
@@ -4757,12 +4757,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "magical cast",
           "top_locator": {
@@ -4773,12 +4773,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.targeted.gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "magical cast targeted",
           "top_locator": {
@@ -5094,12 +5094,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.chant_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast",
           "top_locator": {
@@ -5110,12 +5110,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast targeted",
           "top_locator": {
@@ -5126,12 +5126,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.point_mumble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast targeted",
           "top_locator": {
@@ -5223,9 +5223,65 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "magical cast",
+          "stable_id": "mon.cast.magical.gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "magical cast targeted",
+          "stable_id": "mon.cast.magical.targeted.gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.chant_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.mumble.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.cast_spell.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.point_mumble.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.cast_spell.v1",
+          "variant_ordinal": 2
         }
       ]
     },
@@ -5467,12 +5523,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "magical cast",
           "top_locator": {
@@ -5483,12 +5539,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.targeted.gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "magical cast targeted",
           "top_locator": {
@@ -5787,12 +5843,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.chant_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast",
           "top_locator": {
@@ -5803,12 +5859,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast targeted",
           "top_locator": {
@@ -5819,12 +5875,12 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.point_mumble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "wizard cast targeted",
           "top_locator": {
@@ -5914,9 +5970,65 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "magical cast",
+          "stable_id": "mon.cast.magical.gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "magical cast targeted",
+          "stable_id": "mon.cast.magical.targeted.gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "march of sorrows bone dragon cast",
           "stable_id": "mon.cast.march_of_sorrows_bone_dragon.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.chant_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.mumble.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast",
+          "stable_id": "mon.cast.wizard.cast_spell.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.point_mumble.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wizard cast targeted",
+          "stable_id": "mon.cast.wizard.targeted.cast_spell.v1",
+          "variant_ordinal": 2
         }
       ]
     }
@@ -5933,7 +6045,7 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "68 remaining legacy behavior occurrences lack explicit metadata",
+    "58 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6176,8 +6288,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6192,8 +6304,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.targeted.gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6513,8 +6625,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.chant_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6529,8 +6641,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6545,8 +6657,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.point_mumble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6802,8 +6914,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -6818,8 +6930,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.magical.targeted.gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7122,8 +7234,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.chant_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7138,8 +7250,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",
@@ -7154,8 +7266,8 @@
         {
           "behavior": "GESTURE",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.wizard.targeted.point_mumble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy target resolution receives gestured=true",

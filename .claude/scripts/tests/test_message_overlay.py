@@ -34,7 +34,11 @@ class MessageOverlayTests(unittest.TestCase):
         self.assertEqual(["beam catchall cast",
                           "march of sorrows bone dragon cast",
                           "ensnare arachne cast",
-                          "guardian serpent cast targeted"], candidates)
+                          "guardian serpent cast targeted",
+                          "wizard cast targeted",
+                          "wizard cast",
+                          "magical cast targeted",
+                          "magical cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -146,14 +150,45 @@ class MessageOverlayTests(unittest.TestCase):
                                     "binding-relevant line metadata"):
             self.validate(value)
 
-    def test_current_slice_rejects_unwired_binding_metadata(self):
+    def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["binding"][
             "resolves_target"] = False
         with self.assertRaisesRegex(MODULE.ManifestError,
-                                    "must resolve target"):
+                                    "non-target binding declares"):
             self.validate(value)
 
+        untargeted = next(e for e in MANIFEST["entries"]
+                          if e["canonical_key"] == "wizard cast")
+        untargeted_index = MANIFEST["entries"].index(untargeted)
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][untargeted_index]["variants"][0][
+            "slot_schema"].append(
+                { "name": "target", "type": "resolved_target" })
+        value["entries"][untargeted_index]["variants"][0][
+            "required_arguments"].append("target")
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "non-target binding declares"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][untargeted_index]["variants"][0][
+            "line_metadata"][0]["templates"][0]["relation"] = "AT"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "invalid/duplicate language relation"):
+            self.validate(value)
+
+        targeted = next(e for e in MANIFEST["entries"]
+                        if e["canonical_key"] == "wizard cast targeted")
+        targeted_index = MANIFEST["entries"].index(targeted)
+        value = copy.deepcopy(MANIFEST)
+        value["entries"][targeted_index]["variants"][0][
+            "line_metadata"][0]["templates"][0]["relation"] = "NONE"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "invalid/duplicate language relation"):
+            self.validate(value)
+
+    def test_current_slice_rejects_unwired_metadata(self):
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["applicability"][
             "requires_foe"] = True
@@ -172,6 +207,10 @@ class MessageOverlayTests(unittest.TestCase):
         expected = {
             "ensnare arachne cast": [True, False],
             "guardian serpent cast targeted": [False, True, False],
+            "wizard cast targeted": [True, True, False],
+            "wizard cast": [True, False, False],
+            "magical cast targeted": [True],
+            "magical cast": [True],
         }
         for key, gestures in expected.items():
             entry = next(e for e in MANIFEST["entries"]
@@ -180,6 +219,33 @@ class MessageOverlayTests(unittest.TestCase):
                 gestures,
                 [variant["line_metadata"][0]["behavior"]["implies_gesture"]
                  for variant in entry["variants"]])
+
+    def test_target_binding_selects_exact_relation_schema(self):
+        for entry in MANIFEST["entries"]:
+            if entry["mode"] != "CANDIDATE":
+                continue
+            for variant in entry["variants"]:
+                resolves_target = variant["binding"]["resolves_target"]
+                expected = ({"AT", "NEXT_TO", "PAST"}
+                            if resolves_target else {"NONE"})
+                lines = variant["line_metadata"]
+                for case in variant["materialization_cases"]:
+                    lines = lines + case["line_metadata"]
+                self.assertTrue(lines)
+                for line in lines:
+                    by_language = {}
+                    for template in line["templates"]:
+                        by_language.setdefault(
+                            template["language"], set()).add(
+                                template["relation"])
+                    self.assertEqual(
+                        {language: expected
+                         for language in MANIFEST["supported_languages"]},
+                        by_language)
+                if not resolves_target:
+                    self.assertNotIn(
+                        "resolved_target",
+                        {slot["type"] for slot in variant["slot_schema"]})
 
 
 if __name__ == "__main__":

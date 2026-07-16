@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 首批两个行为差异 key 也已结构化迁移。当前覆盖 4 个
-canonical key、7 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成两批通用施法消息迁移。当前覆盖 8 个 canonical
+key、15 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -55,14 +55,22 @@ TextDB 文件。
 Phase 2 又完整迁移 `ensnare arachne cast` 的 2 个 variant 和
 `guardian serpent cast targeted` 的 3 个 variant。structured descriptor 通过
 `binding.resolves_target` 独立声明是否执行目标解析，因此模板可以不引用
-`${target}`，同时仍保持一次目标解析及其 RNG trace。`implies_gesture` 已作为
-逐行显式元数据接入目标解析前的 binding requirements；`audible=true` 与非默认
-applicability 仍由生成期和加载期拒绝。
+`${target}`。当 `resolves_target=true` 时，即使模板不引用 target，仍恰好执行
+一次目标解析并保留其 RNG trace；当其为 `false` 时则完全跳过目标解析。
+`implies_gesture` 已作为逐行显式元数据接入目标解析前的 binding requirements；
+`audible=true` 与非默认 applicability 仍由生成期和加载期拒绝。
 
 当前 actor 槽支持 `actor_ref`、`actor_possessive_name`、
 `actor_possessive_pronoun` 与 `actor_reflexive`。模板可仅声明所需的 actor 槽；
 加载期和运行时只验证实际声明的字段。中文模板可省略英语语法需要的所有格或
 反身代词，但整个 EN/ZH 模板矩阵的 slot schema union 必须与声明一致。
+
+下一批完整迁移 `wizard cast targeted`、`wizard cast`、
+`magical cast targeted` 与 `magical cast`，合计 8 个 variant。targeted descriptor
+使用 `binding.resolves_target=true` 和 `AT/NEXT_TO/PAST` 关系矩阵；non-target
+descriptor 使用 `binding.resolves_target=false` 和唯一 `NONE` 关系。后者禁止
+声明 `resolved_target` 槽，也不会调用 `resolve_speech_target()`、消费目标 RNG 或
+产生 target trace。`NONE` 是强类型关系，不以伪 `AT` sentinel 表示。
 
 ## 2. 三类 artifact 的职责
 
@@ -121,7 +129,8 @@ structured 调用顺序为：
 canonical English 顶层选择
 → 既有递归/Lua expansion
 → __NONE 与 applicability
-→ 一次目标解析（附只读 trace observer）
+→ 若 resolves_target=true，一次目标解析（附只读 trace observer）；
+  否则跳过且不产生 target RNG/trace
 → canonical @The_monster@/@at@/@target@/@beam@ 绑定
 → 既有 [a|b] materializer
 → stable locator/signature
@@ -149,9 +158,10 @@ canonical pattern；未选择输入或残留 token 返回 `CORRUPT`，且 RNG �
 - 逐行 sensory、channel、`implies_gesture`、`audible`；
 - 完整 canonical TextDB、Lua、target 和 `[a|b]` owning trace。
 
-canonical English 与当前语言显示值在一次 binding callback 内生成。目标解析只执行
-一次；临时 `ScopedLangEn` 只重建已选实体的 owning English 显示，不重新查询
-`monspell`，也不消耗 RNG。
+canonical English 与当前语言显示值在一次 binding callback 内生成。
+`resolves_target=true` 时目标解析恰好执行一次，且先于 beam 与 actor binding；
+`false` 时目标解析执行零次。临时 `ScopedLangEn` 只重建已选实体的 owning
+English 显示，不重新查询 `monspell`，也不消耗 RNG。
 
 structured line 进入 `mons_speaks_msg()` 时标记为 `already_rendered`：不再运行
 `do_mon_str_replacements()`、`[a|b]` 或正文频道前缀解析。本地化正文即使以
@@ -207,7 +217,7 @@ code/review/CI profile 还会构建并运行 `[message-overlay][phase1]`。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 4 个 key、7 个 canonical variant，不代表 262 个
+- structured 覆盖为 8 个 key、15 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
@@ -340,11 +350,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- 68 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+- 58 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 7 个 canonical structured variant，7 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 14 个逐语言验证单位，
-  14 个均完整。
+- 15 个 canonical structured variant，15 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 30 个逐语言验证单位，
+  30 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -365,7 +375,7 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁是 68 个 legacy behavior occurrence 尚无显式 metadata，以及
+剩余门禁是 58 个 legacy behavior occurrence 尚无显式 metadata，以及
 `vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
 特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
 候选 containment、runtime reachability 和本批两个迁移 key 不再是 blocker。

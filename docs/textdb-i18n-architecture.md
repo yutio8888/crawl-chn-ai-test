@@ -259,7 +259,8 @@ struct selected_message
   → 对该英语变体执行一次既有 @foo@ 展开与 Lua
   → 用变体身份取得已验证的基础 stable ID 和元数据
   → 先判断 __NONE 与适用性；不适用候选不执行后续 [a|b] 选择
-  → 根据元数据解析目标和 beam，保留现有目标解析 RNG 顺序
+  → 若 resolves_target=true，先解析一次目标并保留现有 RNG 顺序；否则跳过
+  → 解析 beam，再生成 actor 与其他 bindings
   → 用 canonical English 值绑定 @at@、@target@、@beam@
   → 执行一次 legacy [a|b] 随机物化并记录分支身份
   → 用“变体身份 + 物化签名”取得 materialization case
@@ -503,8 +504,9 @@ legacy_materialization materialize_legacy_randomness(
    递归深度/替换次数超限、`@` 未闭合、递归子项损坏、Lua 错误或 Lua 未闭合，
    则标记 `CORRUPT`，但仍完成本次 legacy 必须产生的 Lua/output/RNG trace；
 4. expansion 后先识别 `__NONE`、再判断适用性；不适用候选不得执行 `[a|b]`；
-5. 适用候选先完成现有目标解析 RNG，再由 `bind_canonical_cast_tokens()` 以
-   canonical English 值替换 `@at@`、`@target@`、`@beam@`；
+5. 适用候选仅在 `resolves_target=true` 时完成现有目标解析 RNG，再由
+   `bind_canonical_cast_tokens()` 以 canonical English 值替换 `@at@`、
+   `@target@`、`@beam@`；false descriptor 跳过目标解析且不得包含目标 token；
 6. materializer 按现有源码顺序对每个 `[a|b]` 恰好调用一次 `random2()`，并
    同时返回实际英语正文、分支身份和 trace；
 7. sidecar catalog 和模板查询是纯 map 查找，不消耗 RNG、不执行 Lua；
@@ -567,7 +569,7 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 覆盖 4 个 canonical key、7 个 canonical variant。descriptor
+当前生产 catalog 覆盖 8 个 canonical key、15 个 canonical variant。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -577,12 +579,20 @@ binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target
 EN/ZH 模板矩阵的 schema union 与声明一致。非默认 applicability 与
 `audible=true` 仍被生成期和加载期拒绝。
 
+target relation matrix 由 `binding.resolves_target` 决定：`true` 必须完整提供
+`AT/NEXT_TO/PAST`，`false` 必须且只能提供 `NONE`。non-target descriptor 禁止
+声明 `resolved_target` 槽；production resolver 不调用目标解析、不消费目标 RNG，
+target trace 为空。加载期还检查 canonical raw pattern，materialization 则在
+binding callback 前再次检查 expanded pattern，防止递归或漂移引入
+`@at@/@target@` 后被空字符串替换。
+
 ### 8.4 canonical English 与跨语言 RNG 契约
 
 本项目明确采用“所有语言共享 canonical English 选择与物化轨迹”的方案：
 
 - structured key 无论当前语言为何，都只查询英语 `monspell.txt`；
-- 顶层选择、递归 `@foo@`、Lua、目标解析 RNG 和 `[a|b]` 均只执行一次；
+- 顶层选择、递归 `@foo@`、Lua 和 `[a|b]` 均只执行一次；目标解析仅在
+  descriptor 声明 `resolves_target=true` 时执行一次；
 - structured 路径不得读取 `zh/monspell.txt`，也不得执行本地化递归、Lua 或
   `[a|b]`；
 - 当前语言只影响最后一次无随机 catalog 模板查询和确定性的类型化槽显示。
@@ -591,8 +601,9 @@ EN/ZH 模板矩阵的 schema union 与声明一致。非默认 applicability 与
 
 1. 顶层变体选择，随后执行递归选择与 Lua；
 2. 识别 `__NONE` 并检查适用性；被拒候选不消耗后续 RNG；
-3. 对适用候选执行目标解析，包括现有 `one_chance_in()`，随后以 canonical
-   English 值替换 `@at@`、`@target@`、`@beam@`；
+3. 对适用且 `resolves_target=true` 的候选执行目标解析，包括现有
+   `one_chance_in()`，随后以 canonical English 值替换 `@at@`、`@target@`、
+   `@beam@`；false 候选跳过目标解析，只绑定已声明的非目标 token；
 4. 对替换完成的 canonical pattern 按正文顺序执行 `[a|b]` 的 `random2()`；
 5. stable case 查询、模板选择和槽渲染，全程不再使用 RNG。
 
@@ -602,7 +613,8 @@ EN/ZH 模板矩阵的 schema union 与声明一致。非默认 applicability 与
 最终 RNG 状态固定这个顺序。
 
 trace 比较覆盖顶层顺序、显式/默认权重 10、每个递归选择、递归上限、Lua
-执行顺序与副作用、目标解析 RNG、每个正文随机站点及其结果。对同一 seed 和
+执行顺序与副作用、descriptor 要求时的目标解析 RNG、每个正文随机站点及其结果。
+对同一 seed 和
 同一语义上下文，EN/ZH structured 路径必须拥有完全相同的 trace；英文还必须
 满足新旧路径的逐字节输出与最终 RNG 状态等价。
 
@@ -865,8 +877,8 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 4 个 canonical
-key、7 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 8 个 canonical
+key、15 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
@@ -884,7 +896,10 @@ inventory 的 262 个 root 中有 11 个不在候选上界内；报告标记
 都进入分析域，但不声称逐局精确可达。Phase 2 首批已将
 `ensnare arachne cast` 与 `guardian serpent cast targeted` 的全部 5 个 canonical
 variant 迁移为显式 behavior metadata；effective runtime EN/ZH mismatch 已降为 0。
-门禁仍为关闭，因为还有 68 个 legacy behavior occurrence 未迁移，并有 1 个
+第二批又迁移 `wizard cast targeted`、`wizard cast`、
+`magical cast targeted` 与 `magical cast` 的全部 8 个 variant，并正式启用
+non-target `resolves_target=false` / `NONE` relation 契约。门禁仍为关闭，因为
+还有 58 个 legacy behavior occurrence 未迁移，并有 1 个
 fail-closed occurrence。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
@@ -897,7 +912,8 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 
 - 将 `gesture`、`visual`、`audible` 等变为显式元数据；
 - binding resolver 接收已验证 descriptor frame、`resolves_target` 与
-  `implies_gesture`；即使模板不引用 target，也只执行一次目标解析以保持 RNG trace；
+  `implies_gesture`；true descriptor 即使模板不引用 target，也只执行一次目标
+  解析以保持 RNG trace；false descriptor 完全跳过目标解析；
 - 结构化路径不再运行正文关键词 heuristic；
 - 只有所有仍可达、会影响 `gestured` 的 legacy 变体都已迁移或拥有等价
   元数据，并经可达性审计证明覆盖率为 100%，才能删除全局 heuristic；

@@ -307,6 +307,226 @@
       ]
     },
     {
+      "canonical_key": "wizard cast targeted",
+      "canonical_fingerprint": "fnv1a64:8b1d3f326b518836",
+      "selection_graph_fingerprint": "fnv1a64:35b0ca71c59e327b",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.wizard.targeted.chant_gesture.v1",
+          "tombstone": false, "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "b5cc8adb3b66946a7ace48d895e72b807f1bfc7049f2a0c082ed12089061c692",
+          "english_snapshot": "@The_monster@ gestures @at@ @target@ while chanting.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} gestures at ${target} while chanting." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gestures next to ${target} while chanting." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} gestures past ${target} while chanting." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}一边吟诵，一边向${target}做出手势。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}一边吟诵，一边向${target}旁边做出手势。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边向${target}身后做出手势。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.wizard.targeted.point_mumble.v1",
+          "tombstone": false, "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "0b00e45f28546fee0ddac4265bef55d183eec0cbe1b33f35fa7ab9d3ec8cf8c4",
+          "english_snapshot": "@The_monster@ points @at@ @target@ and mumbles some strange words.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} points at ${target} and mumbles some strange words." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} points next to ${target} and mumbles some strange words." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} points past ${target} and mumbles some strange words." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}指向${target}，咕哝着一些奇怪的话。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}指向${target}旁边，咕哝着一些奇怪的话。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}指向${target}身后，咕哝着一些奇怪的话。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.wizard.targeted.cast_spell.v1",
+          "tombstone": false, "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "ddecb8d00b3a49668137d8b79d0738241d23d7b11edfb5932be7e64deac05d97",
+          "english_snapshot": "@The_monster@ casts a spell @at@ @target@.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} casts a spell at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} casts a spell next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} casts a spell past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}施展了一个法术。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边施展了一个法术。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后施展了一个法术。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "wizard cast",
+      "canonical_fingerprint": "fnv1a64:e7729893310c71b3",
+      "selection_graph_fingerprint": "fnv1a64:f49384487ae89ca4",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.wizard.chant_gesture.v1",
+          "tombstone": false, "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "8ad88cf8b5891a2c1e2b0c37294b400f3c5ac52ad1111ceb7617bc2aad4f41c9",
+          "english_snapshot": "@The_monster@ gestures wildly while chanting.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures wildly while chanting." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}一边吟诵，一边狂乱地做出手势。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.wizard.mumble.v1",
+          "tombstone": false, "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "22406cd794488e1b8a3b74d6b43eb93e84c60a3b42bf7276f9b2b26fcbba92b0",
+          "english_snapshot": "@The_monster@ mumbles some strange words.",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} mumbles some strange words." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}咕哝着一些奇怪的话。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.wizard.cast_spell.v1",
+          "tombstone": false, "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "bfbac6a719eb32f89047a913834b9257f3b6ef56dfee5e11466aa24688ae5428",
+          "english_snapshot": "@The_monster@ casts a spell.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} casts a spell." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}施展了一个法术。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "magical cast targeted",
+      "canonical_fingerprint": "fnv1a64:8ae6010c97579a3a",
+      "selection_graph_fingerprint": "fnv1a64:6eab190cee4bb82b",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.magical.targeted.gesture.v1",
+          "tombstone": false, "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "58342fcd694bb78decb4d408713873f6e23701520f970c61d797d205f6d56c53",
+          "english_snapshot": "@The_monster@ gestures @at@ @target@.",
+          "frame": "GESTURE", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} gestures at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gestures next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} gestures past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}做出手势。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边做出手势。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后做出手势。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "magical cast",
+      "canonical_fingerprint": "fnv1a64:09cc22b956badc84",
+      "selection_graph_fingerprint": "fnv1a64:eca6aa7c3e4d368d",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.magical.gesture.v1",
+          "tombstone": false, "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "bc156231b0028bd202574b44d4b4de1bf908e2c6096a2904fd0ed5304cca1ad9",
+          "english_snapshot": "@The_monster@ gestures.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": true, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} gestures." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}做出手势。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",
