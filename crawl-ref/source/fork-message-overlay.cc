@@ -220,7 +220,8 @@ bool _validate_lines(const catalog_source &source,
         {
             "actor_ref", "actor_possessive_name",
             "actor_possessive_pronoun", "actor_reflexive",
-            "actor_arms_plural", "resolved_target", "resolved_beam",
+            "actor_arms_plural", "resolved_target", "resolved_foe",
+            "resolved_beam",
         };
         if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
@@ -500,6 +501,22 @@ bool _valid_target_payload(const resolved_target &target)
     }
     return false;
 }
+
+bool _valid_foe_payload(const resolved_foe &foe)
+{
+    if (!foe.error.empty() || foe.canonical_en.empty())
+        return false;
+    switch (foe.kind)
+    {
+    case foe_kind::PLAYER:
+        return !foe.has_actor_mid;
+    case foe_kind::MONSTER:
+        return foe.has_actor_mid;
+    case foe_kind::ERROR:
+        return false;
+    }
+    return false;
+}
 }
 
 #include "fork-message-overlay.generated.inc"
@@ -652,8 +669,7 @@ const load_report &load_monspell_overlay(
                                 "candidate key has legacy-only policy");
             }
             if (entry.mode != entry_mode::LEGACY_ONLY
-                && (variant.conditions.requires_foe
-                    || variant.conditions.requires_named_foe
+                && (variant.conditions.requires_named_foe
                     || variant.conditions.requires_god))
             {
                 return _disable(load_failure::CORRUPT,
@@ -667,6 +683,15 @@ const load_report &load_monspell_overlay(
             {
                 return _disable(load_failure::CORRUPT,
                                 "non-target binding contains target tokens");
+            }
+            const bool has_foe_token =
+                actual_variant.raw_pattern.find("@foe@") != string::npos;
+            const bool has_foe_slot = _has_slot_type(variant, "resolved_foe");
+            if (has_foe_token != has_foe_slot
+                || variant.conditions.requires_foe != has_foe_slot)
+            {
+                return _disable(load_failure::CORRUPT,
+                                "foe token/type/applicability mismatch");
             }
             const bool has_arms_token =
                 actual_variant.raw_pattern.find("@arms@") != string::npos;
@@ -948,6 +973,12 @@ canonical_materialization materialize_monspell_candidate(
             result.result = message_result::INAPPLICABLE;
             return result;
         }
+        if (descriptor->conditions.requires_foe
+            && !applicability.foe_applicable)
+        {
+            result.result = message_result::INAPPLICABLE;
+            return result;
+        }
         if (descriptor->conditions.requires_caster_visible)
         {
             if (applicability.caster_visibility == message_visibility::UNSEEN)
@@ -1001,6 +1032,8 @@ canonical_materialization materialize_monspell_candidate(
     }
     result.requirements.frame = descriptor->frame;
     result.requirements.resolves_target = descriptor->resolves_target;
+    result.requirements.needs_foe =
+        _has_slot_type(*descriptor, "resolved_foe");
     result.requirements.implies_gesture = any_of(
         requirement_lines->begin(), requirement_lines->end(),
         [](const line_metadata &line) { return line.implies_gesture; });
@@ -1017,6 +1050,7 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_reflexive = false;
     bool needs_actor_arms_plural = false;
     bool needs_target = false;
+    bool needs_foe = false;
     bool needs_beam = false;
     for (const slot_definition &slot : descriptor->slot_schema)
     {
@@ -1030,6 +1064,7 @@ canonical_materialization materialize_monspell_candidate(
         needs_actor_arms_plural = needs_actor_arms_plural
             || slot.type == "actor_arms_plural";
         needs_target = needs_target || slot.type == "resolved_target";
+        needs_foe = needs_foe || slot.type == "resolved_foe";
         needs_beam = needs_beam || slot.type == "resolved_beam";
     }
     if ((needs_actor_ref && (resolved.actor.sentence_en.empty()
@@ -1041,11 +1076,13 @@ canonical_materialization materialize_monspell_candidate(
         || (needs_actor_reflexive && resolved.actor.reflexive_en.empty())
         || (needs_actor_arms_plural
             && resolved.actor.arms_plural_en.empty())
-        || (descriptor->resolves_target && (resolved.target.relation
-                             == target_relation::NONE
-                             || !_valid_target_payload(resolved.target)
-                             || resolved.target.relation_en.empty()
-                             || resolved.target.canonical_en.empty()))
+        || (descriptor->resolves_target
+            && (resolved.target.relation == target_relation::NONE
+                || resolved.target.relation_en.empty()))
+        || (needs_target
+            && (!_valid_target_payload(resolved.target)
+                || resolved.target.canonical_en.empty()))
+        || (needs_foe && !_valid_foe_payload(resolved.foe))
         || (needs_beam && resolved.beam.canonical_en.empty()))
     {
         result.result = message_result::CORRUPT;
@@ -1082,6 +1119,8 @@ canonical_materialization materialize_monspell_candidate(
         result.bound_pattern_en, "@at@", resolved.target.relation_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@target@", resolved.target.canonical_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@foe@", resolved.foe.canonical_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@beam@", resolved.beam.canonical_en);
 
@@ -1377,6 +1416,16 @@ render_result render_materialized_candidate(
                     language, display))
             {
                 result.diagnostic = "localized target binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "resolved_foe")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.foe.localized,
+                    language, display))
+            {
+                result.diagnostic = "localized foe binding is missing";
                 return result;
             }
         }

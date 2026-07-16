@@ -428,6 +428,13 @@ mon_speech_applicability resolve_mon_speech_applicability(
     const actor *foe = _get_foe(mon);
     const monster *m_foe = foe ? foe->as_monster() : nullptr;
     mon_speech_applicability result;
+    result.foe = foe;
+    // do_mon_str_replacements() predates _get_foe()'s arena guard. This is
+    // observable only for ACCEPT_ANY silent fallback, where applicability is
+    // deliberately skipped before replacement.
+    result.replacement_foe =
+        mon.wont_attack() && invalid_monster_index(mon.foe)
+            ? static_cast<const actor *>(&you) : mon.get_foe();
     result.no_foe = foe == nullptr;
     result.no_player = crawl_state.game_is_arena()
                        || (!mon.wont_attack()

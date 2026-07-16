@@ -9,6 +9,8 @@
 
 struct mon_speech_applicability
 {
+    const actor *foe = nullptr;
+    const actor *replacement_foe = nullptr;
     bool no_player = false;
     bool no_foe = false;
     bool no_foe_name = false;

@@ -49,7 +49,8 @@ class MessageOverlayTests(unittest.TestCase):
                           "airstrike blizzard demon cast",
                           "vv cast",
                           "smiting jeremiah cast",
-                          "cantrip gastronok cast"], candidates)
+                          "cantrip gastronok cast",
+                          "hellfire mortar wiglaf cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -224,7 +225,7 @@ class MessageOverlayTests(unittest.TestCase):
             self.validate(value)
 
     def test_current_slice_rejects_unwired_metadata(self):
-        for field in ("requires_foe", "requires_named_foe", "requires_god"):
+        for field in ("requires_named_foe", "requires_god"):
             value = copy.deepcopy(MANIFEST)
             value["entries"][0]["variants"][0]["applicability"][
                 field] = True
@@ -259,6 +260,7 @@ class MessageOverlayTests(unittest.TestCase):
             "vv cast": [True, False, False, False],
             "smiting jeremiah cast": [False, False, False, False, False],
             "cantrip gastronok cast": [False] * 9,
+            "hellfire mortar wiglaf cast": [False, False, False],
         }
         for key, gestures in expected.items():
             entry = next(e for e in MANIFEST["entries"]
@@ -278,6 +280,23 @@ class MessageOverlayTests(unittest.TestCase):
         self.assertEqual(
             [False, False, False, False, True, True, True, True, True],
             [variant["applicability"]["requires_player"]
+             for variant in entry["variants"]])
+
+    def test_wiglaf_applicability_and_foe_slots_are_variant_exact(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"] == "hellfire mortar wiglaf cast")
+        self.assertEqual(
+            [True, False, False],
+            [variant["applicability"]["requires_caster_visible"]
+             for variant in entry["variants"]])
+        self.assertEqual(
+            [False, True, True],
+            [variant["applicability"]["requires_foe"]
+             for variant in entry["variants"]])
+        self.assertEqual(
+            [False, True, True],
+            [any(slot["type"] == "resolved_foe"
+                 for slot in variant["slot_schema"])
              for variant in entry["variants"]])
 
     def test_target_binding_selects_exact_relation_schema(self):

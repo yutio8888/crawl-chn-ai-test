@@ -1165,6 +1165,16 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { false, false, false, false, false, false, false, false, false },
             false,
         },
+        {
+            "hellfire mortar wiglaf cast",
+            {
+                "VISUAL:@The_monster@ slams @possessive@ weapon against the ground.",
+                "@The_monster@ shouts @at@ @foe@, \"Taste the blood o the mountain!\"",
+                "@The_monster@ roars @at@ @foe@, \"Let me show ye whit a REAL cannon looks like!\"",
+            },
+            { false, false, false },
+            false,
+        },
     };
 
     for (const key_fixture &fixture : fixtures)
@@ -1178,6 +1188,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 ? MONS_JEREMIAH
             : fixture.key == "cantrip gastronok cast"
                 ? MONS_GASTRONOK
+            : fixture.key == "hellfire mortar wiglaf cast"
+                ? MONS_WIGLAF
                 : MONS_ORC;
         vector<uint64_t> seeds(fixture.patterns.size(), 0);
         {
@@ -1207,6 +1219,9 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         for (size_t ordinal = 0; ordinal < seeds.size(); ++ordinal)
         {
             CAPTURE(fixture.key, ordinal, seeds[ordinal]);
+            const bool resolves_target =
+                fixture.key == "hellfire mortar wiglaf cast"
+                    ? ordinal > 0 : fixture.resolves_target;
             vector<speech_target_observer_event> legacy_events;
             uint64_t legacy_state = 0;
             uint64_t legacy_count = 0;
@@ -1225,7 +1240,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     || pattern.find("Point") != string::npos
                     || pattern.find(" point") != string::npos;
                 CHECK(gestured == fixture.gestures[ordinal]);
-                if (fixture.resolves_target)
+                if (resolves_target)
                 {
                     const speech_target_observer observer =
                         { observe_target_event, &legacy_events };
@@ -1249,7 +1264,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     seeds[ordinal],
                     seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
                 english = resolve_monspell_cast_message(
-                    source, beam, fixture.resolves_target,
+                    source, beam, resolves_target,
                     { fixture.key }, false, false);
                 english_state = rng::current_generator().get_state();
                 english_count = rng::current_generator().get_count();
@@ -1263,7 +1278,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     seeds[ordinal],
                     seeds[ordinal] ^ 0x9e3779b97f4a7c15ULL);
                 chinese = resolve_monspell_cast_message(
-                    source, beam, fixture.resolves_target,
+                    source, beam, resolves_target,
                     { fixture.key }, false, false);
                 chinese_state = rng::current_generator().get_state();
                 chinese_count = rng::current_generator().get_count();
@@ -1280,9 +1295,14 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             CHECK(zh.requirements.implies_gesture
                   == fixture.gestures[ordinal]);
             CHECK(en.requirements.resolves_target
-                  == fixture.resolves_target);
+                  == resolves_target);
             CHECK(zh.requirements.resolves_target
-                  == fixture.resolves_target);
+                  == resolves_target);
+            CHECK(en.requirements.needs_foe
+                  == (fixture.key == "hellfire mortar wiglaf cast"
+                      && ordinal > 0));
+            CHECK(zh.requirements.needs_foe
+                  == en.requirements.needs_foe);
             CHECK(en.requirements.needs_actor_arms_plural
                   == (fixture.key == "airstrike blizzard demon cast"
                       && ordinal == 2));
@@ -1295,6 +1315,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 || fixture.key == "vv cast"
                 || (fixture.key == "cantrip gastronok cast"
                     && ordinal >= 1 && ordinal <= 3)
+                || (fixture.key == "hellfire mortar wiglaf cast"
+                    && ordinal == 0)
                 || (fixture.key == "smiting jeremiah cast" && ordinal == 2);
             if (visual)
             {
@@ -1390,6 +1412,23 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
             }
+            else if (fixture.key == "hellfire mortar wiglaf cast")
+            {
+                static const char *expected_en[] =
+                {
+                    "Wiglaf slams his weapon against the ground.",
+                    "Wiglaf shouts past you, \"Taste the blood o the mountain!\"",
+                    "Wiglaf roars past you, \"Let me show ye whit a REAL cannon looks like!\"",
+                };
+                static const char *expected_zh[] =
+                {
+                    "威格拉夫将他的武器砸向地面。",
+                    "威格拉夫向你身后喊道：“尝尝大山的血！”",
+                    "威格拉夫向你身后咆哮道：“让老子给你看看什么才叫真正的炮！”",
+                };
+                CHECK(english.text == expected_en[ordinal]);
+                CHECK(chinese.text == expected_zh[ordinal]);
+            }
             CHECK(english_state == legacy_state);
             CHECK(english_count == legacy_count);
             CHECK(chinese_state == legacy_state);
@@ -1416,7 +1455,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 CHECK(zh_event.rng_count_before == en_event.rng_count_before);
                 CHECK(zh_event.rng_count_after == en_event.rng_count_after);
             }
-            if (!fixture.resolves_target)
+            if (!resolves_target)
             {
                 CHECK(en.binding.values.target.relation
                       == fork_message_overlay::target_relation::NONE);
@@ -1477,6 +1516,66 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         REQUIRE(result.structured);
         CHECK(result.text.find("它们的双臂") != string::npos);
         CHECK(result.text.find("其双臂") == string::npos);
+    }
+
+    SECTION("Wiglaf binds a monster foe independently from beam target")
+    {
+        source.type = MONS_WIGLAF;
+        source.attitude = ATT_HOSTILE;
+        monster *foe = world.placed_candidates()[0];
+        REQUIRE(foe != nullptr);
+        source.foe = foe->mindex();
+
+        uint64_t shout_seed = 0;
+        {
+            scoped_test_language language(lang_t::EN);
+            for (uint64_t seed = 1; seed <= 4096; ++seed)
+            {
+                rng::subgenerator scoped_rng(
+                    seed, seed ^ 0x9e3779b97f4a7c15ULL);
+                if (textdb_phase0::expand_loaded_canonical_english_speakdb(
+                        "hellfire mortar wiglaf cast")
+                    == "@The_monster@ shouts @at@ @foe@, "
+                       "\"Taste the blood o the mountain!\"")
+                {
+                    shout_seed = seed;
+                    break;
+                }
+            }
+        }
+        REQUIRE(shout_seed != 0);
+
+        resolved_monspell_cast_message english;
+        {
+            scoped_test_language language(lang_t::EN);
+            rng::subgenerator scoped_rng(
+                shout_seed, shout_seed ^ 0x9e3779b97f4a7c15ULL);
+            english = resolve_monspell_cast_message(
+                source, beam, true, { "hellfire mortar wiglaf cast" },
+                false, false);
+        }
+        resolved_monspell_cast_message chinese;
+        {
+            scoped_test_language language(lang_t::ZH);
+            rng::subgenerator scoped_rng(
+                shout_seed, shout_seed ^ 0x9e3779b97f4a7c15ULL);
+            chinese = resolve_monspell_cast_message(
+                source, beam, true, { "hellfire mortar wiglaf cast" },
+                false, false);
+        }
+        REQUIRE(english.has_materialization);
+        REQUIRE(chinese.has_materialization);
+        CHECK(english.materialization.binding.values.foe.kind
+              == fork_message_overlay::foe_kind::MONSTER);
+        CHECK(english.materialization.binding.values.foe.actor_mid
+              == static_cast<int>(foe->mid));
+        CHECK(english.materialization.binding.values.foe.canonical_en
+              == "the rat");
+        CHECK(english.text
+              == "Wiglaf shouts past the rat, "
+                 "\"Taste the blood o the mountain!\"");
+        CHECK(chinese.text
+              == "威格拉夫向老鼠身后喊道：“尝尝大山的血！”");
     }
 
     SECTION("speech player applicability preserves friendly foe fallback")

@@ -8980,9 +8980,33 @@ static string _localized_zh_actor_possessive_pronoun(const monster &mon)
     return mon.pronoun(PRONOUN_POSSESSIVE);
 }
 
+static string _overlay_foe_display(const actor &foe)
+{
+    if (foe.is_player())
+        return T_("you");
+
+    const monster *m_foe = foe.as_monster();
+    if (!m_foe)
+        return "";
+    string display;
+    if (m_foe->attitude == ATT_FRIENDLY
+        && !mons_is_unique(m_foe->type)
+        && !crawl_state.game_is_arena())
+    {
+        display = foe.name(DESC_YOUR);
+        const string::size_type apostrophe = display.find("'");
+        if (apostrophe != string::npos)
+            display.erase(apostrophe);
+    }
+    else
+        display = foe.name(DESC_THE);
+    return display;
+}
+
 static fmo::runtime_bindings _resolve_overlay_bindings(
     const monster &mon, const bolt &pbolt, bool targeted,
-    const string &language, const fmo::binding_requirements &requirements)
+    const string &language, const actor *foe,
+    const fmo::binding_requirements &requirements)
 {
     fmo::runtime_bindings bindings;
 
@@ -9038,6 +9062,17 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     bindings.cast.caster_visibility = bindings.actor.visibility;
     bindings.cast.origin_spell = static_cast<int>(pbolt.origin_spell);
 
+    if (requirements.needs_foe && foe)
+    {
+        bindings.foe.kind = foe->is_player()
+            ? fmo::foe_kind::PLAYER : fmo::foe_kind::MONSTER;
+        if (const monster *m_foe = foe->as_monster())
+        {
+            bindings.foe.has_actor_mid = true;
+            bindings.foe.actor_mid = m_foe->mid;
+        }
+    }
+
     {
         if (requirements.needs_actor_arms_plural)
         {
@@ -9065,6 +9100,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         }
         if (requirements.resolves_target)
             bindings.target.localized.push_back({ "en", target.display });
+        if (requirements.needs_foe && foe)
+            bindings.foe.localized.push_back({ "en", _overlay_foe_display(*foe) });
         bindings.beam.localized.push_back({ "en", beam.display_text });
     }
     else if (language == "zh")
@@ -9082,6 +9119,12 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             bindings.actor.arms_plural_localized.push_back({ "zh", arms });
         if (requirements.resolves_target)
             bindings.target.localized.push_back({ "zh", target.display });
+        if (requirements.needs_foe && foe)
+        {
+            unwind_var<lang_t> requested_language(Options.language, lang_t::ZH);
+            bindings.foe.localized.push_back(
+                { "zh", _overlay_foe_display(*foe) });
+        }
         bindings.beam.localized.push_back({ "zh", beam.display_text });
     }
 
@@ -9097,6 +9140,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         if (requirements.resolves_target)
             bindings.target.canonical_en =
                 _canonical_target_display(target, mon);
+        if (requirements.needs_foe && foe)
+            bindings.foe.canonical_en = _overlay_foe_display(*foe);
         bindings.beam.canonical_en =
             resolve_speech_beam(pbolt, targeted).display_text;
     }
@@ -9150,6 +9195,7 @@ static fmo::message_lookup_result _cast_message_lookup(
         resolve_mon_speech_applicability(mon);
     fmo::runtime_applicability applicability;
     applicability.player_applicable = !speech_applicability.no_player;
+    applicability.foe_applicable = !speech_applicability.no_foe;
     applicability.caster_visibility =
         speech_applicability.unseen
             ? fmo::message_visibility::UNSEEN
@@ -9157,11 +9203,16 @@ static fmo::message_lookup_result _cast_message_lookup(
     const fmo::canonical_materialization materialized =
         fmo::materialize_monspell_candidate(
             route.canonical_key, request.attempt, applicability,
-            [&mon, &pbolt, targeted, &language](
+            [&mon, &pbolt, targeted, &language, &speech_applicability,
+             attempt = request.attempt](
                 const fmo::binding_requirements &requirements)
             {
+                const actor *foe =
+                    attempt == fmo::message_attempt::SILENT_UNPREFIXED_FALLBACK
+                        ? speech_applicability.replacement_foe
+                        : speech_applicability.foe;
                 return _resolve_overlay_bindings(mon, pbolt, targeted,
-                                                 language, requirements);
+                                                 language, foe, requirements);
             });
     if (materialization_out)
         *materialization_out = materialized;

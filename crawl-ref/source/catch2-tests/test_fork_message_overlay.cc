@@ -179,7 +179,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 19);
+        CHECK(report.structured_key_count == 20);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -199,6 +199,8 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("airstrike blizzard demon cast"));
         CHECK(monspell_overlay_covers("vv cast"));
         CHECK(monspell_overlay_covers("smiting jeremiah cast"));
+        CHECK(monspell_overlay_covers("cantrip gastronok cast"));
+        CHECK(monspell_overlay_covers("hellfire mortar wiglaf cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
         CHECK(rng::current_generator().get_state() == state);
@@ -282,7 +284,6 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
 
         bool applicability::* const unsupported[] =
         {
-            &applicability::requires_foe,
             &applicability::requires_named_foe,
             &applicability::requires_god,
         };
@@ -1816,6 +1817,255 @@ TEST_CASE("Vv and Jeremiah variants have exact weighted bilingual goldens",
         CHECK(zh.lines[0].sensory == item.sensory);
         CHECK(en.lines[0].implies_gesture == item.gesture);
         CHECK(zh.lines[0].implies_gesture == item.gesture);
+    }
+}
+
+TEST_CASE("Wiglaf mortar variants keep relation and foe bindings independent",
+          "[single-file][message-overlay][phase2][applicability][foe]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    reset_monspell_overlay_for_test();
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+
+    const catalog_source &catalog = generated_monspell_catalog();
+    const auto entry = find_if(
+        catalog.entries.begin(), catalog.entries.end(),
+        [](const catalog_entry &candidate)
+        {
+            return candidate.canonical_key
+                   == "hellfire mortar wiglaf cast";
+        });
+    REQUIRE(entry != catalog.entries.end());
+    REQUIRE(entry->variants.size() == 3);
+    CHECK(entry->variants[0].conditions.requires_caster_visible);
+    CHECK_FALSE(entry->variants[0].conditions.requires_foe);
+    CHECK(entry->variants[1].conditions.requires_foe);
+    CHECK(entry->variants[2].conditions.requires_foe);
+    for (const catalog_variant &variant : entry->variants)
+    {
+        CHECK(variant.upstream_weight == 10);
+        CHECK_FALSE(variant.lines[0].implies_gesture);
+    }
+
+    const char *patterns[] =
+    {
+        "VISUAL:@The_monster@ slams @possessive@ weapon against the ground.",
+        "@The_monster@ shouts @at@ @foe@, \"Taste the blood o the mountain!\"",
+        "@The_monster@ roars @at@ @foe@, \"Let me show ye whit a REAL cannon looks like!\"",
+    };
+    const target_relation relations[] =
+    {
+        target_relation::AT,
+        target_relation::NEXT_TO,
+        target_relation::PAST,
+    };
+    const char *relation_en[] = { "at", "next to", "past" };
+    const char *relation_zh[] = { "", "旁边", "身后" };
+
+    auto bindings = [](target_relation relation, const string &relation_text,
+                       bool with_foe)
+    {
+        runtime_bindings values = beam_bindings(relation);
+        values.actor.sentence_en = "Wiglaf";
+        values.actor.canonical_en = "Wiglaf";
+        values.actor.possessive_pronoun_en = "his";
+        values.actor.localized =
+            { { "en", "Wiglaf" }, { "zh", "威格拉夫" } };
+        values.actor.possessive_pronoun_localized =
+            { { "en", "his" }, { "zh", "他的" } };
+        values.target.relation_en = relation_text;
+        if (with_foe)
+        {
+            values.foe.kind = foe_kind::PLAYER;
+            values.foe.canonical_en = "you";
+            values.foe.localized =
+                { { "en", "you" }, { "zh", "你" } };
+        }
+        return values;
+    };
+
+    SECTION("all variants render exact locale metadata")
+    {
+        for (size_t ordinal = 0; ordinal < 3; ++ordinal)
+        {
+            CAPTURE(ordinal);
+            const bool targeted = ordinal > 0;
+            const auto candidate = canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                patterns[ordinal], "hellfire mortar wiglaf cast", ordinal);
+            runtime_applicability applicability;
+            applicability.caster_visibility = message_visibility::VISIBLE;
+            size_t callback_count = 0;
+            const canonical_materialization materialized =
+                materialize_monspell_candidate(
+                    "hellfire mortar wiglaf cast",
+                    message_attempt::NORMAL_OR_UNSEEN, applicability,
+                    [&](const binding_requirements &requirements)
+                    {
+                        ++callback_count;
+                        CHECK(requirements.resolves_target == targeted);
+                        CHECK(requirements.needs_foe == targeted);
+                        CHECK_FALSE(requirements.implies_gesture);
+                        runtime_bindings values = bindings(
+                            targeted ? target_relation::AT
+                                     : target_relation::NONE,
+                            targeted ? "at" : "", targeted);
+                        values.cast.frame = requirements.frame;
+                        return values;
+                    },
+                    [candidate](const string &) { return candidate; });
+            CAPTURE(materialized.diagnostic);
+            REQUIRE(materialized.result == message_result::RENDERED);
+            CHECK(callback_count == 1);
+            const render_result en =
+                render_materialized_candidate(materialized, "en");
+            const render_result zh =
+                render_materialized_candidate(materialized, "zh");
+            REQUIRE(en.result == message_result::RENDERED);
+            REQUIRE(zh.result == message_result::RENDERED);
+            if (ordinal == 0)
+            {
+                CHECK(en.lines[0].text
+                      == "Wiglaf slams his weapon against the ground.");
+                CHECK(zh.lines[0].text
+                      == "威格拉夫将他的武器砸向地面。");
+                CHECK(en.lines[0].sensory == sensory_mode::VISUAL);
+            }
+            else if (ordinal == 1)
+            {
+                CHECK(en.lines[0].text
+                      == "Wiglaf shouts at you, \"Taste the blood o the mountain!\"");
+                CHECK(zh.lines[0].text
+                      == "威格拉夫向你喊道：“尝尝大山的血！”");
+            }
+            else
+            {
+                CHECK(en.lines[0].text
+                      == "Wiglaf roars at you, \"Let me show ye whit a REAL cannon looks like!\"");
+                CHECK(zh.lines[0].text
+                      == "威格拉夫向你咆哮道：“让老子给你看看什么才叫真正的炮！”");
+            }
+        }
+    }
+
+    SECTION("every target relation keeps the same independent foe")
+    {
+        for (size_t ordinal = 1; ordinal <= 2; ++ordinal)
+        {
+            for (size_t relation = 0; relation < 3; ++relation)
+            {
+                CAPTURE(ordinal, relation);
+                const auto candidate = canonical_candidate(
+                    canonical_textdb::candidate_status::SELECTED,
+                    patterns[ordinal], "hellfire mortar wiglaf cast", ordinal);
+                runtime_applicability applicability;
+                applicability.caster_visibility = message_visibility::VISIBLE;
+                const canonical_materialization materialized =
+                    materialize_monspell_candidate(
+                        "hellfire mortar wiglaf cast",
+                        message_attempt::NORMAL_OR_UNSEEN, applicability,
+                        [&](const binding_requirements &requirements)
+                        {
+                            runtime_bindings values =
+                                bindings(relations[relation],
+                                         relation_en[relation], true);
+                            values.cast.frame = requirements.frame;
+                            return values;
+                        },
+                        [candidate](const string &) { return candidate; });
+                CAPTURE(materialized.diagnostic);
+                REQUIRE(materialized.result == message_result::RENDERED);
+                const render_result zh =
+                    render_materialized_candidate(materialized, "zh");
+                REQUIRE(zh.result == message_result::RENDERED);
+                CHECK(zh.lines[0].text.find(
+                          "向你" + string(relation_zh[relation]))
+                      != string::npos);
+            }
+        }
+    }
+
+    SECTION("normal missing foe skips callback and candidate")
+    {
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            patterns[1], "hellfire mortar wiglaf cast", 1);
+        runtime_applicability applicability;
+        applicability.foe_applicable = false;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t callback_count = 0;
+        canonical_materialization observed;
+        const message_candidate_search search =
+            search_message_candidate(
+                "hellfire mortar wiglaf cast", message_prefix::NORMAL,
+                [&](const message_lookup_request &request)
+                {
+                    observed = materialize_monspell_candidate(
+                        "hellfire mortar wiglaf cast", request.attempt,
+                        applicability,
+                        [&](const binding_requirements &)
+                        {
+                            ++callback_count;
+                            return bindings(target_relation::AT, "at", false);
+                        },
+                        [candidate](const string &) { return candidate; });
+                    return lookup_result(observed.result, "", true);
+                });
+        CHECK(observed.result == message_result::INAPPLICABLE);
+        CHECK(search.action == message_search_action::NEXT_CANDIDATE);
+        CHECK(callback_count == 0);
+        CHECK(observed.binding.callback_count == 0);
+        CHECK(observed.binding.values.target_trace.empty());
+    }
+
+    SECTION("silent missing foe cannot leak protocol")
+    {
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            patterns[1], "hellfire mortar wiglaf cast", 1);
+        runtime_applicability applicability;
+        applicability.foe_applicable = false;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t callback_count = 0;
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "hellfire mortar wiglaf cast",
+                message_attempt::SILENT_UNPREFIXED_FALLBACK, applicability,
+                [&](const binding_requirements &)
+                {
+                    ++callback_count;
+                    return bindings(target_relation::AT, "at", false);
+                },
+                [candidate](const string &) { return candidate; });
+        CHECK(materialized.result == message_result::CORRUPT);
+        CHECK(materialized.diagnostic == "runtime bindings are incomplete");
+        CHECK(callback_count == 1);
+    }
+
+    SECTION("unseen visual variant skips binding")
+    {
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            patterns[0], "hellfire mortar wiglaf cast", 0);
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::UNSEEN;
+        size_t callback_count = 0;
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "hellfire mortar wiglaf cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &)
+                {
+                    ++callback_count;
+                    return bindings(target_relation::NONE, "", false);
+                },
+                [candidate](const string &) { return candidate; });
+        CHECK(materialized.result == message_result::INAPPLICABLE);
+        CHECK(callback_count == 0);
     }
 }
 

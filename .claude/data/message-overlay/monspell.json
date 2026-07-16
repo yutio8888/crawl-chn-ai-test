@@ -1171,6 +1171,180 @@
       ]
     },
     {
+      "canonical_key": "hellfire mortar wiglaf cast",
+      "canonical_fingerprint": "fnv1a64:e95c4911c317c729",
+      "selection_graph_fingerprint": "fnv1a64:35ef2708b181084e",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_weight": 10,
+          "upstream_variant_fingerprint": "311f01928bbfd65f0359b7def78e8a5e4f7ad7c95d88f3068cccfe3c72747d5b",
+          "english_snapshot": "VISUAL:@The_monster@ slams @possessive@ weapon against the ground.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": true
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": [ "actor", "possessive" ],
+          "line_metadata": [{
+            "sensory": "VISUAL",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              {
+                "language": "en",
+                "relation": "NONE",
+                "pattern": "${actor} slams ${possessive} weapon against the ground."
+              },
+              {
+                "language": "zh",
+                "relation": "NONE",
+                "pattern": "${actor}将${possessive}武器砸向地面。"
+              }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.taste_mountain_blood.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_weight": 10,
+          "upstream_variant_fingerprint": "8a5f14447464d298aeab1db99455574d840f28651efd17435bbdbe654bcc2ac0",
+          "english_snapshot": "@The_monster@ shouts @at@ @foe@, \"Taste the blood o the mountain!\"",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": true,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "foe", "type": "resolved_foe" }
+          ],
+          "required_arguments": [ "actor", "foe" ],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              {
+                "language": "en",
+                "relation": "AT",
+                "pattern": "${actor} shouts at ${foe}, \"Taste the blood o the mountain!\""
+              },
+              {
+                "language": "en",
+                "relation": "NEXT_TO",
+                "pattern": "${actor} shouts next to ${foe}, \"Taste the blood o the mountain!\""
+              },
+              {
+                "language": "en",
+                "relation": "PAST",
+                "pattern": "${actor} shouts past ${foe}, \"Taste the blood o the mountain!\""
+              },
+              {
+                "language": "zh",
+                "relation": "AT",
+                "pattern": "${actor}向${foe}喊道：“尝尝大山的血！”"
+              },
+              {
+                "language": "zh",
+                "relation": "NEXT_TO",
+                "pattern": "${actor}向${foe}旁边喊道：“尝尝大山的血！”"
+              },
+              {
+                "language": "zh",
+                "relation": "PAST",
+                "pattern": "${actor}向${foe}身后喊道：“尝尝大山的血！”"
+              }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.real_cannon.v1",
+          "tombstone": false,
+          "variant_ordinal": 2,
+          "upstream_weight": 10,
+          "upstream_variant_fingerprint": "07a59e861ac64c5655be5c6dfaf2b2065e90d7bcb9b06b32da20a3ae88458deb",
+          "english_snapshot": "@The_monster@ roars @at@ @foe@, \"Let me show ye whit a REAL cannon looks like!\"",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": true,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "foe", "type": "resolved_foe" }
+          ],
+          "required_arguments": [ "actor", "foe" ],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              {
+                "language": "en",
+                "relation": "AT",
+                "pattern": "${actor} roars at ${foe}, \"Let me show ye whit a REAL cannon looks like!\""
+              },
+              {
+                "language": "en",
+                "relation": "NEXT_TO",
+                "pattern": "${actor} roars next to ${foe}, \"Let me show ye whit a REAL cannon looks like!\""
+              },
+              {
+                "language": "en",
+                "relation": "PAST",
+                "pattern": "${actor} roars past ${foe}, \"Let me show ye whit a REAL cannon looks like!\""
+              },
+              {
+                "language": "zh",
+                "relation": "AT",
+                "pattern": "${actor}向${foe}咆哮道：“让老子给你看看什么才叫真正的炮！”"
+              },
+              {
+                "language": "zh",
+                "relation": "NEXT_TO",
+                "pattern": "${actor}向${foe}旁边咆哮道：“让老子给你看看什么才叫真正的炮！”"
+              },
+              {
+                "language": "zh",
+                "relation": "PAST",
+                "pattern": "${actor}向${foe}身后咆哮道：“让老子给你看看什么才叫真正的炮！”"
+              }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",

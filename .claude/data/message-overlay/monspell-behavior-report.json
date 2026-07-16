@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 46,
-    "canonical_structured_variant_metadata_units": 46,
-    "catalog_coverage_complete": false,
+    "canonical_structured_variant_metadata_complete": 49,
+    "canonical_structured_variant_metadata_units": 49,
+    "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 92,
-    "per_language_structured_variant_verification_units": 92,
-    "remaining_legacy_behavior_occurrences": 4,
+    "per_language_structured_variant_verification_complete": 98,
+    "per_language_structured_variant_verification_units": 98,
+    "remaining_legacy_behavior_occurrences": 0,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "e5e7a10537dc1681438ee21e4591a1814a1aef93906c76b0cfe9344322a34bed"
+      "sha256": "9cadf51dacb17fc4495adf0f4c7c4ebe9aa03dec9adcd48a12c2f314876bfbe9"
     }
   },
   "languages": {
@@ -4723,14 +4723,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
+          "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "hellfire mortar wiglaf cast",
           "top_locator": {
@@ -4739,14 +4739,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "hellfire mortar wiglaf cast",
           "top_locator": {
@@ -5328,6 +5328,27 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.taste_mountain_blood.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.real_cannon.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "magical cast",
           "stable_id": "mon.cast.magical.gesture.v1",
           "variant_ordinal": 0
@@ -5706,14 +5727,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
+          "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "hellfire mortar wiglaf cast",
           "top_locator": {
@@ -5722,14 +5743,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "hellfire mortar wiglaf cast",
           "top_locator": {
@@ -6292,6 +6313,27 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.taste_mountain_blood.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "hellfire mortar wiglaf cast",
+          "stable_id": "mon.cast.hellfire_mortar_wiglaf.real_cannon.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "magical cast",
           "stable_id": "mon.cast.magical.gesture.v1",
           "variant_ordinal": 0
@@ -6479,7 +6521,6 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "4 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6690,8 +6731,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6706,8 +6747,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7316,8 +7357,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7332,8 +7373,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.hellfire_mortar_wiglaf.weapon_slam.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",

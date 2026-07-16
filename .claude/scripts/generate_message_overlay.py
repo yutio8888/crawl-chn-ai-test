@@ -35,7 +35,7 @@ CHANNELS = {
 SLOT_TYPES = {
     "actor_ref", "actor_possessive_name", "actor_possessive_pronoun",
     "actor_reflexive", "actor_arms_plural", "resolved_target",
-    "resolved_beam",
+    "resolved_foe", "resolved_beam",
 }
 
 
@@ -296,8 +296,7 @@ def validate_manifest(manifest: dict[str, Any],
                              for x in applicability.values()),
                      f"{vcontext} has invalid applicability")
             if mode != "LEGACY_ONLY":
-                _require(not applicability["requires_foe"]
-                         and not applicability["requires_named_foe"]
+                _require(not applicability["requires_named_foe"]
                          and not applicability["requires_god"],
                          f"{vcontext} applicability metadata is not enabled yet")
 
@@ -359,6 +358,17 @@ def validate_manifest(manifest: dict[str, Any],
             }
             _require(binding["resolves_target"] or not target_tokens,
                      f"{vcontext} non-target binding contains target tokens")
+            has_foe_token = any(
+                token["classification"] == "runtime"
+                and token["canonical_key"] == "foe"
+                for token in actual["tokens"])
+            has_foe_slot = any(
+                slot_type == "resolved_foe"
+                for slot_type in slot_types.values())
+            _require(has_foe_token == has_foe_slot,
+                     f"{vcontext} foe token/type mismatch")
+            _require(applicability["requires_foe"] == has_foe_slot,
+                     f"{vcontext} foe applicability/slot mismatch")
             has_arms_token = any(
                 token["classification"] == "runtime"
                 and token["canonical_key"] == "arms"

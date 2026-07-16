@@ -125,6 +125,13 @@ enum class target_kind
     ERROR,
 };
 
+enum class foe_kind
+{
+    PLAYER,
+    MONSTER,
+    ERROR,
+};
+
 enum class message_visibility
 {
     VISIBLE,
@@ -321,6 +328,16 @@ struct resolved_target
     std::string error;
 };
 
+struct resolved_foe
+{
+    foe_kind kind = foe_kind::ERROR;
+    std::string canonical_en;
+    std::vector<localized_value> localized;
+    bool has_actor_mid = false;
+    int actor_mid = 0;
+    std::string error;
+};
+
 struct resolved_beam
 {
     std::string canonical_en;
@@ -365,6 +382,7 @@ struct runtime_bindings
 {
     resolved_actor actor;
     resolved_target target;
+    resolved_foe foe;
     resolved_beam beam;
     cast_context cast;
     std::vector<target_rng_event> target_trace;
@@ -387,6 +405,7 @@ struct binding_requirements
 {
     cast_frame frame = cast_frame::DIRECT_EFFECT;
     bool resolves_target = false;
+    bool needs_foe = false;
     bool implies_gesture = false;
     bool needs_actor_arms_plural = false;
 };
@@ -395,6 +414,7 @@ struct runtime_applicability
 {
     bool manifest_applicable = true;
     bool player_applicable = true;
+    bool foe_applicable = true;
     message_visibility caster_visibility = message_visibility::UNKNOWN;
 };
 

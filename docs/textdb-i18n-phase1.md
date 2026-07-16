@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成六批通用施法消息迁移。当前覆盖 19 个 canonical
-key、46 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成七批通用施法消息迁移。当前覆盖 20 个 canonical
+key、49 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 19 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 20 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -124,6 +124,21 @@ applicability 在 canonical English variant 已选定、原有选择 RNG 已消�
 但在 binding/target/beam callback 前判定；不适用时继续下一个 candidate，
 不会重抽同一 key。silent-unprefixed fallback 仍按既有
 `ACCEPT_ANY_NONEMPTY` 绕过第二次 applicability 检查。
+
+第七批完整迁移 `hellfire mortar wiglaf cast` 的 3 个 weight-10 variant。
+ordinal 0 保留 `VISUAL` sensory 并声明
+`requires_caster_visible=true`；behavior audit 证明三行均不命中现有 gesture
+heuristic，因此 `implies_gesture` 均为 false。ordinal 1–2 同时保留两套独立
+语义：`@at@` 仍由唯一一次 `resolve_speech_target()` 解析
+`AT/NEXT_TO/PAST` relation 及其 RNG trace，`${foe}` 则由窄类型
+`resolved_foe` binding 解析 player 或 monster foe。normal attempt 的
+`requires_foe` 在 canonical variant 选择后、binding 前使用与
+`invalid_msg()` 相同的 snapshot 判定；无 foe 时继续下一个 candidate，且不执行
+target RNG。foe 显示与 legacy replacement 同构：player 为 `you`/“你”，monster
+按 friendly non-unique/non-arena 的 `DESC_YOUR` 与其余 `DESC_THE` 分支命名，
+并保留 `'` 后缀裁剪。silent-unprefixed 仍绕过 applicability；若 replacement
+语义也无法解析 foe，则 structured binding fail closed 为 `CORRUPT`，不会泄漏
+`@foe@`。
 
 ## 2. 三类 artifact 的职责
 
@@ -271,16 +286,16 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 19 个 key、46 个 canonical variant，不代表 262 个
+- structured 覆盖为 20 个 key、49 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 尚未启用；
-- catalog renderer 已接线 actor、actor possessive/reflexive、target 与 beam
+- catalog renderer 已接线 actor、actor possessive/reflexive、target、foe 与 beam
   类型化槽，并通过 `binding.resolves_target` 将目标解析需求与 `${target}` 引用解耦；
 - neutral singular 的中文 actor possessive 只在“可见 + unique identity”边界
   使用 context key“其”，不会把非 unique neutral actor 自动单数化；
-- structured gesture、`VISUAL` sensory/channel、`requires_player` 与
-  `requires_caster_visible` 元数据已启用；audible、requires foe/named foe/god
-  尚未启用；
+- structured gesture、`VISUAL` sensory/channel、`requires_player`、
+  `requires_foe` 与 `requires_caster_visible` 元数据已启用；audible、
+  requires named foe/god 尚未启用；
 - 全局 legacy gesture/visual/audible heuristic 仍存在；
 - 当前 canonical `monspell` 闭包无 Lua；未来出现 Lua 或不可控副作用时，在建立
   完整契约前必须 `LEGACY_ONLY`；
@@ -408,11 +423,11 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 effective runtime 共证明 72 个正 behavior occurrence，另有 1 个 fail-closed
 occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后混称“occurrence”：
 
-- 4 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
+- 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 46 个 canonical structured variant，46 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 92 个逐语言验证单位，
-  92 个均完整。
+- 49 个 canonical structured variant，49 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 98 个逐语言验证单位，
+  98 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -433,10 +448,10 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 仍为 false。EN/ZH effective runtime behavior parity 现已证明；
-剩余门禁是 4 个 legacy behavior occurrence 尚无显式 metadata，以及
-`vanquished vanguard nergalle cast` 的 1 个不可判定 occurrence。后者未使用文本
+剩余门禁仅为 `vanquished vanguard nergalle cast` 的 1 个不可判定
+occurrence。它未使用文本
 特判消除，必须等到有同构于运行时频道前缀解析的证明或显式可运行 metadata 契约。
-候选 containment、runtime reachability 和当前六批已迁移 key 不再是 blocker。
+候选 containment、runtime reachability 和当前七批已迁移 key 不再是 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
 可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时
