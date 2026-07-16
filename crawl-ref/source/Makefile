@@ -1799,6 +1799,16 @@ textdb-phase0-dump: catch2-tests-executable
 	TEXTDB_PHASE0_LANGUAGE="$(TEXTDB_PHASE0_LANGUAGE)" \
 	  ./catch2-tests-executable "[.textdb-phase0-dump]" --reporter compact
 
+.PHONY: textdb-monspell-candidate-dump
+textdb-monspell-candidate-dump: STDFLAG = -std=c++14
+textdb-monspell-candidate-dump: catch2-tests-executable
+	@test -n "$(TEXTDB_MONSPELL_CANDIDATE_DUMP)" || \
+	  { echo "TEXTDB_MONSPELL_CANDIDATE_DUMP must name an output file" >&2; \
+	    exit 2; }
+	TEXTDB_MONSPELL_CANDIDATE_DUMP="$(TEXTDB_MONSPELL_CANDIDATE_DUMP)" \
+	  ./catch2-tests-executable "[.textdb-monspell-candidate-dump]" \
+	  --reporter compact
+
 clean-coverage-full: clean-coverage
 	find . -type f -name '*.gcno' -delete
 

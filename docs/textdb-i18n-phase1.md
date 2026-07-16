@@ -230,7 +230,39 @@ monster type/species/genus candidate 已不再受 locale 影响；现有
 物化、双空格行为修正及相应 DB 漂移仍必须放在后续独立行为变更中，并分别提供
 EN/ZH 与 RNG golden。
 
-### 7.2 behavior lower-bound 审计
+### 7.2 candidate closed-world upper-bound dump
+
+离线审计模块 `catch2-tests/monspell_candidate_artifact.{h,cc}` 只进入
+`TEST_OBJECTS`，不进入游戏或 Android runtime；它直接消费 production
+`mon_cast_message_keys::build_key_recipe()`，枚举所有有数据的 runtime
+`monster_type`、所有 `is_valid_spell()` 法术、去重后的 canonical English
+type/species/genus tuple，以及一组有限 scenario cover。scenario cover 的 Catch2
+proof 会穷举 32 种 category mask 与所有 humanoid/intelligence/finale/targeted/
+visible-beam 布尔组合，要求每个生成 expression 都属于 cover union。
+
+artifact schema-v1 标记 `completeness=closed_world_upper_bound`。base expression
+保留 `${beam_short_name}` 符号，不调用 locale-dependent `get_short_name()`；normal、
+unseen、silent-prefixed 与 silent-unprefixed fallback lookup 则通过 production
+`search_message_candidate()` recorder 生成，再按 production DB fetch 规则 lowercase
+后聚合。大小写碰撞会合并 attempt 集合。base 与 lookup expression 都按字节排序并
+去重；lookup record 显式列出其 attempt 集合，counts 同时区分唯一 expression 与
+attempt 数量。canonical monster/spell fragment 若包含保留标记
+`${beam_short_name}`，生成器会 fail closed 为 invalid，避免与符号 token 混淆。
+artifact 只写入调用方指定的临时路径，不加入 Git。
+
+生成命令：
+
+```sh
+make -C crawl-ref/source textdb-monspell-candidate-dump \
+  TEXTDB_MONSPELL_CANDIDATE_DUMP=/tmp/monspell-candidate-upper-bound.json
+```
+
+target 会以原子 replace 连续写入两次，并由 hidden Catch2 test 检查最终字节与内存中
+的 deterministic serialization 完全相同。该 dump 只建立 candidate closed-world
+上界；它尚未与 `monspell` inventory/behavior report 做 Python containment join，
+因此不单独提升 `runtime_reachability_proven` 或 `phase2_ready`。
+
+### 7.3 behavior lower-bound 审计
 
 `.claude/scripts/audit_monspell_behavior.py` 只消费两份 production C++ SpeakDB
 artifact、Phase 0 inventory 与 production overlay manifest；它不重新解析 TextDB

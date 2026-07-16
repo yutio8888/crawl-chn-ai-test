@@ -49,8 +49,8 @@ struct key_recipe
 };
 
 // Owning snapshot of the runtime facts used by the legacy monspell candidate
-// ordering algorithm. Name fragments are opaque adapter inputs and may still
-// depend on the active locale; canonical-English resolution is a later step.
+// ordering algorithm. Name fragments are opaque owning adapter inputs;
+// protocol callers must resolve them to canonical English before this seam.
 struct recipe_input
 {
     std::string spell_name;
