@@ -190,8 +190,11 @@ if [[ -n "$CHANGED_FILES" ]]; then
             crawl-ref/source/database.cc|crawl-ref/source/database.h|\
             crawl-ref/source/fork-message-overlay.*|\
             crawl-ref/source/mon-cast.cc|crawl-ref/source/mon-cast-target.h|\
+            crawl-ref/source/mon-cast-message-keys.*|\
             crawl-ref/source/mon-speak.cc|crawl-ref/source/mon-speak.h|\
+            crawl-ref/source/catch2-tests/monspell_candidate_artifact.*|\
             crawl-ref/source/catch2-tests/test_fork_message_overlay.cc|\
+            crawl-ref/source/catch2-tests/test_mon_cast_candidate_dump.cc|\
             crawl-ref/source/catch2-tests/test_mon_cast_target.cc)
                 RISK_MESSAGE_OVERLAY=1
                 ;;

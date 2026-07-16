@@ -1,13 +1,4503 @@
 {
-  "analysis_completeness": "LOWER_BOUND",
+  "analysis_completeness": "SOUND_CLOSED_WORLD_UPPER_BOUND",
+  "candidate_lookup": {
+    "en": {
+      "cross_domain_hits": [],
+      "hit_count": 251,
+      "hits": [
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "acid ball nascent plasmodium cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike blizzard demon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike wind drake cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "angel cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "antimagic gaze norris cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "avatar song cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "awaken flesh kobold fleshcrafter cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "basilisk cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "basilisk cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry cherub cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry satyr cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beam catchall cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beckoning gale chonchon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beckoning gale hippogriff cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "berserker rage rupert cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bes kemwar cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink away revenant cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink magical cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink range ironbound thunderhulk cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blinkbolt cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blizzard demon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of draining natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of fire ophan cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of flesh kobold fleshcrafter cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of flesh zykzyl cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of magma molten gargoyle cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bombardier beetle cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "brain worm cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "burial acolyte cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call down lightning cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call lost souls cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call of chaos cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip dissolution cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip gastronok cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cause fear satyr cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "clockroach cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cognitogaunt cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cold breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "confuse sphinx marauder cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "conjure living spells cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "corrupting pulse wretched star cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crab cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "creeping frost cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crystal echidna cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crystallising shot crystal guardian cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "culicivora cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "curse skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "death rattle ushabti cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dispel undead revenant cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dissolution cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "divine armament cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dominate undead vampire bloodprince cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "doomsaying cassandra cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dragon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dragon cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "drake cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "druid's call cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dryad cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eidolon cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "electrical bolt cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "electrical bolt shock serpent cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "enfeeble zykzyl cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ensnare arachne cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ensnare natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eruption cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eye of draining cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "fire breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "fireball hell hog cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "flashing balestra undying armoury cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "flayed ghost cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "floating eye cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "floating eye cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "force lance polterguardian cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "formless jellyfish cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "frances cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "freeze cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "gastronok cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "gastronok cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "geryon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghost moth cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghost moth cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghostly fireball revenant cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "glowing orange brain cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "golden eye cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grasping roots cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grasping roots natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grave claw vampire bloodprince cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "guardian serpent cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "guardian serpent cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "harpoon shot cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "haste other priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "heal other priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire court cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire mortar cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire mortar wiglaf cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hoarfrost bullet cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hoarfrost bullet cast finale",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "holy flames cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hurl torchlight cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "injury mirror screaming refraction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "invisibility shadowghast cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "kobold blastminer cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "landbreaker natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "laughing skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "launch bomblet cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lee's rapid deconstruction screaming refraction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "legendary destruction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lightning bolt electric golem cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lightning bolt natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "living spell cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "magical cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "magical cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "major destruction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "malign offering priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "malmutate zykzyl cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "manifold assault natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "manticore cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "mara summon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "march of sorrows bone dragon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "march of sorrows boris cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "mennas cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "metal splinters war gargoyle cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "might other priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "minor healing dryad cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "non-humanoid wizard cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "non-humanoid wizard cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "obsidian statue cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orange crystal statue cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orange crystal statue cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of destruction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of destruction orb spider cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of entropy cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of fire cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of winter cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ostracise cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "paralyse xtahua cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "paralysis gaze cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "petrifying cloud cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "phantom blitz cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "phantom mirror cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "poisonous cloud natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "priest cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "primal wave elemental wellspring cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "primal wave norris cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "pyroclastic surge cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "quicksilver bolt natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "raven cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ravenous swarm vampire bloodprince cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rebounding blaze thermic dynamo cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rebounding chill thermic dynamo cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "roxanne cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rupert cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "scrub nettle cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "seal doors cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "searing breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "seismic stomp cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "shadow shot cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sheza's dance cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent berserker rage rupert cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent blizzard demon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent curse skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent flayed ghost cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent laughing skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent weeping skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "siphon essence cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "siren song cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sleep satyr cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "slug dart cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "smiting guardian sphinx cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "smiting jeremiah cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sojourning bolt cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spectral cloud revenant cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sphinx cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit acid cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit lava cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit poison cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "splinterspray cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "steam ball natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sticks to snakes cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sticky flame cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "stone arrow gargoyle cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "stunning burst cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon eyeballs dissolution cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon mortal champion fravashi cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon water elementals elemental wellspring cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sun moth cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "symbol of torment cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "thrashing horror cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw bolas cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw icicle shard shrike cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw klown pie cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "undertaker cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen airstrike cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen blinkbolt cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen bolt of fire ophan cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen call of chaos cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen cold breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen curse skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen dragon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ensnare arachne cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ensnare natural cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen fire breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen floating eye cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen geryon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ghost moth cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen holy flames cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen laughing skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen mara summon cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen non-humanoid wizard cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen orb of destruction cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen phantom blitz cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen priest cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen priest cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen searing breath cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen spit acid cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen spit poison cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen symbol of torment cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen thermic dynamo cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen vv cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry howler monkey cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry seraph cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry ushabti cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry vault sentinel cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen weeping skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen wizard cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ushabti cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vanquished vanguard nergalle cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vex sphinx marauder cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vhi's electrolunge cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "volley of thorns cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vv cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry hippogriff cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry howler monkey cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry seraph cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry ushabti cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry vault sentinel cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "weakening gaze cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "weeping skull cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wind blast cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wind blast wind drake cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wizard cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wizard cast targeted",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "woodweal cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "word of recall cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wretched star cast",
+          "effective_source": "database/monspell.txt",
+          "source": "database/monspell.txt"
+        }
+      ],
+      "source_counts": {
+        "database/monspell.txt": 251
+      },
+      "symbol_match_key_count": 0,
+      "symbol_matches": []
+    },
+    "language_only_hits": {
+      "en_only": [],
+      "zh_only": []
+    },
+    "presence_parity_proven": true,
+    "source_parity_mismatch": [],
+    "source_parity_proven": true,
+    "zh": {
+      "cross_domain_hits": [],
+      "hit_count": 251,
+      "hits": [
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "acid ball nascent plasmodium cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike blizzard demon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "airstrike wind drake cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "angel cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "antimagic gaze norris cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "avatar song cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "awaken flesh kobold fleshcrafter cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "basilisk cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "basilisk cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry cherub cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "battlecry satyr cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beam catchall cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beckoning gale chonchon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "beckoning gale hippogriff cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "berserker rage rupert cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bes kemwar cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink away revenant cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink magical cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blink range ironbound thunderhulk cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blinkbolt cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "blizzard demon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of draining natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of fire ophan cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of flesh kobold fleshcrafter cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of flesh zykzyl cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bolt of magma molten gargoyle cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "bombardier beetle cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "brain worm cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "burial acolyte cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call down lightning cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call lost souls cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "call of chaos cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip dissolution cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cantrip gastronok cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cause fear satyr cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "clockroach cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cognitogaunt cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "cold breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "confuse sphinx marauder cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "conjure living spells cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "corrupting pulse wretched star cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crab cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "creeping frost cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crystal echidna cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "crystallising shot crystal guardian cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "culicivora cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "curse skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "death rattle ushabti cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dispel undead revenant cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dissolution cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "divine armament cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dominate undead vampire bloodprince cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "doomsaying cassandra cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dragon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dragon cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "drake cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "druid's call cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "dryad cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eidolon cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "electrical bolt cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "electrical bolt shock serpent cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "enfeeble zykzyl cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ensnare arachne cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ensnare natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eruption cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "eye of draining cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "fire breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "fireball hell hog cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "flashing balestra undying armoury cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "flayed ghost cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "floating eye cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "floating eye cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "force lance polterguardian cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "formless jellyfish cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "frances cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "freeze cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "gastronok cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "gastronok cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "geryon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghost moth cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghost moth cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ghostly fireball revenant cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "glowing orange brain cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "golden eye cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grasping roots cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grasping roots natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "grave claw vampire bloodprince cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "guardian serpent cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "guardian serpent cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "harpoon shot cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "haste other priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "heal other priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire court cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire mortar cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hellfire mortar wiglaf cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hoarfrost bullet cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hoarfrost bullet cast finale",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "holy flames cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "hurl torchlight cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "injury mirror screaming refraction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "invisibility shadowghast cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "kobold blastminer cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "landbreaker natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "laughing skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "launch bomblet cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lee's rapid deconstruction screaming refraction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "legendary destruction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lightning bolt electric golem cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "lightning bolt natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "living spell cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "magical cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "magical cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "major destruction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "malign offering priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "malmutate zykzyl cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "manifold assault natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "manticore cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "mara summon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "march of sorrows bone dragon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "march of sorrows boris cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "mennas cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "metal splinters war gargoyle cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "might other priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "minor healing dryad cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "non-humanoid wizard cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "non-humanoid wizard cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "obsidian statue cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orange crystal statue cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orange crystal statue cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of destruction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of destruction orb spider cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of entropy cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of fire cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "orb of winter cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ostracise cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "paralyse xtahua cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "paralysis gaze cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "petrifying cloud cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "phantom blitz cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "phantom mirror cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "poisonous cloud natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "priest cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "primal wave elemental wellspring cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "primal wave norris cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "pyroclastic surge cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "quicksilver bolt natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "raven cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ravenous swarm vampire bloodprince cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rebounding blaze thermic dynamo cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rebounding chill thermic dynamo cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "roxanne cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "rupert cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "scrub nettle cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "seal doors cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "searing breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "seismic stomp cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "shadow shot cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sheza's dance cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent berserker rage rupert cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent blizzard demon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent curse skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent flayed ghost cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent laughing skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "silent_prefixed"
+          ],
+          "canonical_key": "silent weeping skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "siphon essence cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "siren song cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sleep satyr cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "slug dart cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "smiting guardian sphinx cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "smiting jeremiah cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sojourning bolt cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spectral cloud revenant cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sphinx cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit acid cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit lava cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "spit poison cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "splinterspray cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "steam ball natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sticks to snakes cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sticky flame cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "stone arrow gargoyle cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "stunning burst cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon eyeballs dissolution cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon mortal champion fravashi cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "summon water elementals elemental wellspring cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "sun moth cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "symbol of torment cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "thrashing horror cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw bolas cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw icicle shard shrike cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "throw klown pie cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "undertaker cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen airstrike cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen blinkbolt cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen bolt of fire ophan cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen call of chaos cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen cold breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen curse skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen dragon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ensnare arachne cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ensnare natural cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen fire breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen floating eye cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen geryon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen ghost moth cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen holy flames cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen laughing skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen mara summon cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen non-humanoid wizard cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen orb of destruction cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen phantom blitz cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen priest cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen priest cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen searing breath cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen spit acid cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen spit poison cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen symbol of torment cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen thermic dynamo cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen vv cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry howler monkey cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry seraph cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry ushabti cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen warning cry vault sentinel cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen weeping skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "unseen"
+          ],
+          "canonical_key": "unseen wizard cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "ushabti cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vanquished vanguard nergalle cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vex sphinx marauder cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vhi's electrolunge cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "volley of thorns cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "vv cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry hippogriff cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry howler monkey cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry seraph cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry ushabti cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "warning cry vault sentinel cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "weakening gaze cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "weeping skull cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wind blast cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wind blast wind drake cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wizard cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wizard cast targeted",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "woodweal cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "word of recall cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        },
+        {
+          "attempts": [
+            "normal",
+            "silent_unprefixed_fallback"
+          ],
+          "canonical_key": "wretched star cast",
+          "effective_source": "database/zh/monspell.txt",
+          "source": "database/monspell.txt"
+        }
+      ],
+      "source_counts": {
+        "database/monspell.txt": 251
+      },
+      "symbol_match_key_count": 0,
+      "symbol_matches": []
+    }
+  },
   "coverage": {
     "behavior_occurrences": 70,
     "catalog_coverage_complete": false,
     "catalog_covered_occurrences": 0,
+    "en_zh_behavior_analysis_conclusive": false,
+    "en_zh_behavior_parity_proven": false,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
   "inputs": {
+    "candidate_anchor": {
+      "artifact_sha256": "9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083",
+      "sha256": "ad9c696342707d5b776761f2bbb487abc05af7b39bcf3f51bd4391b42f339762"
+    },
+    "candidate_artifact": {
+      "completeness": "closed_world_upper_bound",
+      "counts": {
+        "base_expressions": 409592,
+        "lookup_attempts": 1638320,
+        "lookup_expressions": 1228740,
+        "monster_spell_tuples": 403410,
+        "monster_tuples": 791,
+        "monster_types": 795,
+        "scenarios": 6,
+        "spells": 510
+      },
+      "schema_version": 1,
+      "sha256": "9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083"
+    },
     "english_artifact": {
       "sha256": "0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4"
     },
@@ -48,7 +4538,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 262
+        "selected_language": 251
       },
       "occurrences": [
         {
@@ -705,7 +5195,7 @@
       "effective_source_counts": {
         "english_fallback": 0,
         "missing": 0,
-        "selected_language": 262
+        "selected_language": 251
       },
       "occurrences": [
         {
@@ -1315,25 +5805,295 @@
       "zh_predicates": []
     }
   ],
+  "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "candidate key containment is not proven",
-    "runtime reachability is not proven",
     "legacy behavior metadata coverage is incomplete",
-    "EN/ZH behavior parity is not proven"
+    "EN/ZH behavior parity is not proven",
+    "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
   "schema_version": 1,
   "universe": {
-    "candidate_key_containment_proven": false,
-    "containment_gap": "_speech_keys() queries the complete SpeakDB; a production candidate-key trace/dump is still required",
+    "candidate_key_containment_proven": true,
+    "containment_proof": "production recipe closed-world upper bound joined against effective nonempty SpeakDB keys",
     "effective_merge_languages": [
       "en",
       "zh"
     ],
+    "inventory_reachable_root_count": 251,
+    "inventory_root_count": 262,
     "inventory_roots_contained_in_english_artifact": true,
     "inventory_roots_contained_in_zh_effective_merge": true,
-    "requested_root_count": 262,
-    "requested_root_source": "phase0_inventory.entries[defined_in_monspell=true]",
-    "runtime_reachability_proven": false
+    "inventory_unreachable_root_count": 11,
+    "inventory_unreachable_roots": [
+      "_unseen_breath_cast_",
+      "_unseen_spit_cast_",
+      "acid splash cast",
+      "branch summon cast prefix",
+      "chilling breath cast",
+      "paralysis guardian sphinx cast",
+      "polymorphed unseen wizard cast",
+      "polymorphed wizard cast",
+      "polymorphed wizard cast targeted",
+      "unseen acid splash cast",
+      "unseen chilling breath cast"
+    ],
+    "reachability_kind": "SOUND_UPPER_BOUND_NOT_EXACT",
+    "requested_root_count": 251,
+    "requested_root_source": "union of canonical candidate lookup hits in EN and ZH effective nonempty SpeakDB",
+    "runtime_reachability_proven": true,
+    "runtime_roots": [
+      "acid ball nascent plasmodium cast",
+      "airstrike blizzard demon cast",
+      "airstrike cast",
+      "airstrike wind drake cast",
+      "angel cast targeted",
+      "antimagic gaze norris cast",
+      "avatar song cast",
+      "awaken flesh kobold fleshcrafter cast",
+      "basilisk cast",
+      "basilisk cast targeted",
+      "battlecry cast",
+      "battlecry cherub cast",
+      "battlecry satyr cast",
+      "beam catchall cast",
+      "beckoning gale chonchon cast",
+      "beckoning gale hippogriff cast",
+      "berserker rage rupert cast",
+      "bes kemwar cast",
+      "blink away revenant cast",
+      "blink magical cast",
+      "blink range ironbound thunderhulk cast",
+      "blinkbolt cast",
+      "blizzard demon cast",
+      "bolt of draining natural cast",
+      "bolt of fire ophan cast",
+      "bolt of flesh kobold fleshcrafter cast",
+      "bolt of flesh zykzyl cast",
+      "bolt of magma molten gargoyle cast",
+      "bombardier beetle cast",
+      "brain worm cast",
+      "burial acolyte cast",
+      "call down lightning cast",
+      "call lost souls cast",
+      "call of chaos cast",
+      "cantrip cast",
+      "cantrip dissolution cast",
+      "cantrip gastronok cast",
+      "cause fear satyr cast",
+      "clockroach cast",
+      "cognitogaunt cast",
+      "cold breath cast",
+      "confuse sphinx marauder cast",
+      "conjure living spells cast",
+      "corrupting pulse wretched star cast",
+      "crab cast targeted",
+      "creeping frost cast",
+      "crystal echidna cast targeted",
+      "crystallising shot crystal guardian cast",
+      "culicivora cast targeted",
+      "curse skull cast",
+      "death rattle ushabti cast",
+      "dispel undead revenant cast",
+      "dissolution cast",
+      "divine armament cast",
+      "dominate undead vampire bloodprince cast",
+      "doomsaying cassandra cast",
+      "dragon cast",
+      "dragon cast targeted",
+      "drake cast targeted",
+      "druid's call cast",
+      "dryad cast",
+      "eidolon cast targeted",
+      "electrical bolt cast",
+      "electrical bolt shock serpent cast",
+      "enfeeble zykzyl cast",
+      "ensnare arachne cast",
+      "ensnare natural cast",
+      "eruption cast",
+      "eye of draining cast",
+      "fire breath cast",
+      "fireball hell hog cast",
+      "flashing balestra undying armoury cast",
+      "flayed ghost cast",
+      "floating eye cast",
+      "floating eye cast targeted",
+      "force lance polterguardian cast",
+      "formless jellyfish cast",
+      "frances cast",
+      "freeze cast",
+      "gastronok cast",
+      "gastronok cast targeted",
+      "geryon cast",
+      "ghost moth cast",
+      "ghost moth cast targeted",
+      "ghostly fireball revenant cast",
+      "glowing orange brain cast",
+      "golden eye cast targeted",
+      "grasping roots cast",
+      "grasping roots natural cast",
+      "grave claw vampire bloodprince cast",
+      "guardian serpent cast",
+      "guardian serpent cast targeted",
+      "harpoon shot cast",
+      "haste other priest cast",
+      "heal other priest cast",
+      "hellfire court cast",
+      "hellfire mortar cast",
+      "hellfire mortar wiglaf cast",
+      "hoarfrost bullet cast",
+      "hoarfrost bullet cast finale",
+      "holy flames cast",
+      "hurl torchlight cast",
+      "injury mirror screaming refraction cast",
+      "invisibility shadowghast cast",
+      "kobold blastminer cast targeted",
+      "landbreaker natural cast",
+      "laughing skull cast",
+      "launch bomblet cast",
+      "lee's rapid deconstruction screaming refraction cast",
+      "legendary destruction cast",
+      "lightning bolt electric golem cast",
+      "lightning bolt natural cast",
+      "living spell cast",
+      "magical cast",
+      "magical cast targeted",
+      "major destruction cast",
+      "malign offering priest cast",
+      "malmutate zykzyl cast",
+      "manifold assault natural cast",
+      "manticore cast",
+      "mara summon cast",
+      "march of sorrows bone dragon cast",
+      "march of sorrows boris cast",
+      "mennas cast",
+      "metal splinters war gargoyle cast",
+      "might other priest cast",
+      "minor healing dryad cast",
+      "non-humanoid wizard cast",
+      "non-humanoid wizard cast targeted",
+      "obsidian statue cast",
+      "orange crystal statue cast",
+      "orange crystal statue cast targeted",
+      "orb of destruction cast",
+      "orb of destruction orb spider cast",
+      "orb of entropy cast",
+      "orb of fire cast",
+      "orb of winter cast",
+      "ostracise cast",
+      "paralyse xtahua cast",
+      "paralysis gaze cast",
+      "petrifying cloud cast",
+      "phantom blitz cast",
+      "phantom mirror cast",
+      "poisonous cloud natural cast",
+      "priest cast",
+      "priest cast targeted",
+      "primal wave elemental wellspring cast",
+      "primal wave norris cast",
+      "pyroclastic surge cast",
+      "quicksilver bolt natural cast",
+      "raven cast",
+      "ravenous swarm vampire bloodprince cast",
+      "rebounding blaze thermic dynamo cast",
+      "rebounding chill thermic dynamo cast",
+      "roxanne cast",
+      "rupert cast targeted",
+      "scrub nettle cast targeted",
+      "seal doors cast",
+      "searing breath cast",
+      "seismic stomp cast",
+      "shadow shot cast",
+      "sheza's dance cast",
+      "silent berserker rage rupert cast",
+      "silent blizzard demon cast",
+      "silent curse skull cast",
+      "silent flayed ghost cast",
+      "silent laughing skull cast",
+      "silent weeping skull cast",
+      "siphon essence cast",
+      "siren song cast",
+      "sleep satyr cast",
+      "slug dart cast",
+      "smiting guardian sphinx cast",
+      "smiting jeremiah cast",
+      "sojourning bolt cast",
+      "spectral cloud revenant cast",
+      "sphinx cast",
+      "spit acid cast",
+      "spit lava cast",
+      "spit poison cast",
+      "splinterspray cast",
+      "steam ball natural cast",
+      "sticks to snakes cast",
+      "sticky flame cast",
+      "stone arrow gargoyle cast",
+      "stunning burst cast",
+      "summon eyeballs dissolution cast",
+      "summon mortal champion fravashi cast",
+      "summon water elementals elemental wellspring cast",
+      "sun moth cast",
+      "symbol of torment cast",
+      "thrashing horror cast",
+      "throw bolas cast",
+      "throw icicle shard shrike cast",
+      "throw klown pie cast",
+      "undertaker cast targeted",
+      "unseen airstrike cast",
+      "unseen blinkbolt cast",
+      "unseen bolt of fire ophan cast",
+      "unseen call of chaos cast",
+      "unseen cold breath cast",
+      "unseen curse skull cast",
+      "unseen dragon cast",
+      "unseen ensnare arachne cast",
+      "unseen ensnare natural cast",
+      "unseen fire breath cast",
+      "unseen floating eye cast targeted",
+      "unseen geryon cast",
+      "unseen ghost moth cast targeted",
+      "unseen holy flames cast",
+      "unseen laughing skull cast",
+      "unseen mara summon cast",
+      "unseen non-humanoid wizard cast",
+      "unseen orb of destruction cast",
+      "unseen phantom blitz cast",
+      "unseen priest cast",
+      "unseen priest cast targeted",
+      "unseen searing breath cast",
+      "unseen spit acid cast",
+      "unseen spit poison cast",
+      "unseen symbol of torment cast",
+      "unseen thermic dynamo cast",
+      "unseen vv cast",
+      "unseen warning cry cast",
+      "unseen warning cry howler monkey cast",
+      "unseen warning cry seraph cast",
+      "unseen warning cry ushabti cast",
+      "unseen warning cry vault sentinel cast",
+      "unseen weeping skull cast",
+      "unseen wizard cast",
+      "ushabti cast targeted",
+      "vanquished vanguard nergalle cast",
+      "vex sphinx marauder cast",
+      "vhi's electrolunge cast",
+      "volley of thorns cast",
+      "vv cast",
+      "warning cry cast",
+      "warning cry hippogriff cast",
+      "warning cry howler monkey cast",
+      "warning cry seraph cast",
+      "warning cry ushabti cast",
+      "warning cry vault sentinel cast",
+      "weakening gaze cast",
+      "weeping skull cast",
+      "wind blast cast",
+      "wind blast wind drake cast",
+      "wizard cast",
+      "wizard cast targeted",
+      "woodweal cast",
+      "word of recall cast",
+      "wretched star cast"
+    ]
   }
 }

@@ -258,16 +258,35 @@ make -C crawl-ref/source textdb-monspell-candidate-dump \
 ```
 
 target 会以原子 replace 连续写入两次，并由 hidden Catch2 test 检查最终字节与内存中
-的 deterministic serialization 完全相同。该 dump 只建立 candidate closed-world
-上界；它尚未与 `monspell` inventory/behavior report 做 Python containment join，
-因此不单独提升 `runtime_reachability_proven` 或 `phase2_ready`。
+的 deterministic serialization 完全相同。该 dump 已由下节的 Python 审计器与
+EN/ZH effective SpeakDB 做 containment join；它证明的是所有运行时 candidate 的
+closed-world 上界，不声称精确复现某一局游戏实际走过的候选集合。
 
-### 7.3 behavior lower-bound 审计
+### 7.3 behavior sound closed-world upper-bound 审计
 
-`.claude/scripts/audit_monspell_behavior.py` 只消费两份 production C++ SpeakDB
-artifact、Phase 0 inventory 与 production overlay manifest；它不重新解析 TextDB
-源文件。审计器按运行时规则建立 EN 与 ZH effective merge（本地化空条目回退
-canonical English），并在 selectable variant/递归 marker 图上传播固定行为谓词：
+`.claude/scripts/audit_monspell_behavior.py` 消费 production C++ candidate artifact、
+两份 production C++ SpeakDB artifact、Phase 0 inventory 与 production overlay
+manifest；它不重新解析 TextDB 源文件。审计器严格验证 candidate schema、domain、
+完整性声明、计数、production 六条有序 scenario cover、排序、attempt 集合和
+`${beam_short_name}` 符号契约。它将 lowercase 后去重的 base expression 作为三个
+有序流，分别生成 normal/fallback、silent-prefixed 与 unseen lookup，再做三路
+merge/coalesce，逐条验证 artifact lookup expression 及碰撞后的 attempt union；
+不会物化第二份百万级 lookup 集合。base/lookup 同时限定为 canonical English
+ASCII，使 Python `lower()` 与当前 production key canonicalization 的证明边界一致；
+遇到非 ASCII candidate 时必须升级契约而不是静默沿用。
+
+tracked anchor
+`.claude/data/message-overlay/monspell-candidate-anchor.json` 另行固定审阅过的
+production artifact SHA-256、counts 与 producer contract。审计器先验证 anchor
+并比较 candidate 字节 hash，再解析候选内容；因此即使同时删除一个 base、其三个
+lookup 和相应 counts，使剩余闭包内部自洽，也会 fail closed。通过验证后才流式扫描
+lookup expression，与 EN/ZH effective nonempty SpeakDB key 求交。EN/ZH effective
+merge 遵循本地化空条目回退 canonical English 的运行时规则。
+
+行为分析的 root universe 是 EN/ZH candidate hit 的并集，而不是 inventory 全集。
+candidate 命中来自其他 SpeakDB 内容域、仅单语言存在的 key、inventory 中不可达的
+root 和符号 expression 的实际匹配均单独报告；单语言存在差异会显式阻断 EN/ZH
+parity。随后在 selectable variant/递归 marker 图上传播固定行为谓词：
 
 - `PRE_BINDING/GESTURE` 对应 target resolution 前的旧正文 heuristic；
 - `PRE_BINDING/VISUAL_APPLICABILITY` 对应 unseen candidate rejection；
@@ -289,10 +308,13 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 `.claude/data/message-overlay/monspell-behavior-report.json`，支持确定性
 `--output` 与逐字节 `--check`。当前 production artifact SHA-256 为：
 
+- candidate：`9eb63d334f31c1dfb608c7c742f2ce4046a711f7450d6de0ac516033baf3c083`；
 - EN：`0e539d83c66ace3522e97fe8f7d67fd06766c4953b273f1bab0e31a35f18c1b4`；
 - ZH：`da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0`。
 
-在 inventory 的全部 262 个 `monspell` root 上，当前静态结果为：
+当前 candidate upper-bound 在 EN/ZH effective SpeakDB 各命中 251 个 root；命中
+并集也是 251 个。Phase 0 inventory 的 262 个 root 中有 11 个不在生产 candidate
+上界内，因此行为分析只覆盖 251 个 runtime root。当前静态行为结果为：
 
 | 指标 | EN | ZH |
 |---|---:|---:|
@@ -317,19 +339,27 @@ missing；该失败查询不额外增加 replacement，配对 marker 本身只�
 `locale_behavior_inconclusive`，不会被误报为已确认的双语差异。任何一侧含
 `UNANALYSABLE` 的 root 都遵循这一规则。
 
-这份报告明确标记 `analysis_completeness=LOWER_BOUND`、
-`candidate_key_containment_proven=false`、`runtime_reachability_proven=false` 和
-`phase2_ready=false`。原因是 `_speech_keys()` 可查询完整 SpeakDB，而当前 inventory
-只证明 `monspell` root 与其静态闭包，并未证明所有实际候选 key 都包含在分析域。
-下一步必须增加 production C++ candidate-key dump/trace，覆盖 normal、silent、
-unseen、targeted 以及无前缀重试路径；将其与本报告的 universe 做 containment proof
-后，才能把 lower bound 提升为 Phase 2 可用的 runtime reachability 证据。
+这份报告明确标记
+`analysis_completeness=SOUND_CLOSED_WORLD_UPPER_BOUND`、
+`candidate_key_containment_proven=true`、`runtime_reachability_proven=true` 和
+`reachability_kind=SOUND_UPPER_BOUND_NOT_EXACT`。这表示 normal、unseen、
+silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
+闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
+
+`phase2_ready` 仍为 false，但现在只由三个动态门禁决定：legacy behavior metadata
+覆盖不完整、EN/ZH behavior parity 未证明，以及仍有不可判定 behavior。报告当前
+分别记录 70 个可分析 behavior occurrence、0 个 catalog coverage、2 个正文行为
+差异和 1 个 fail-closed occurrence。候选 containment 与 runtime reachability
+本身不再是 Phase 2 blocker。
 
 production dump 与审计必须串行运行，避免多个 `make` 同时重建或写入同一 Catch2
-可执行文件。以下命令可从 worktree 根目录直接复制；两个 artifact 是 `/tmp` 临时
+可执行文件。以下命令可从 worktree 根目录直接复制；三个 artifact 是 `/tmp` 临时
 文件，不加入 Git：
 
 ```sh
+make -C crawl-ref/source textdb-monspell-candidate-dump \
+  TEXTDB_MONSPELL_CANDIDATE_DUMP=/tmp/monspell-candidate-upper-bound.json
+
 make -C crawl-ref/source textdb-phase0-dump \
   TEXTDB_PHASE0_DUMP=/tmp/textdb-phase1-behavior-en.json
 
@@ -338,6 +368,9 @@ make -C crawl-ref/source textdb-phase0-dump \
   TEXTDB_PHASE0_DUMP=/tmp/textdb-phase1-behavior-zh.json
 
 python3 .claude/scripts/audit_monspell_behavior.py \
+  --candidate-anchor \
+    .claude/data/message-overlay/monspell-candidate-anchor.json \
+  --candidate-artifact /tmp/monspell-candidate-upper-bound.json \
   --english-artifact /tmp/textdb-phase1-behavior-en.json \
   --localized-artifact /tmp/textdb-phase1-behavior-zh.json \
   --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
@@ -345,6 +378,9 @@ python3 .claude/scripts/audit_monspell_behavior.py \
   --output .claude/data/message-overlay/monspell-behavior-report.json
 
 python3 .claude/scripts/audit_monspell_behavior.py \
+  --candidate-anchor \
+    .claude/data/message-overlay/monspell-candidate-anchor.json \
+  --candidate-artifact /tmp/monspell-candidate-upper-bound.json \
   --english-artifact /tmp/textdb-phase1-behavior-en.json \
   --localized-artifact /tmp/textdb-phase1-behavior-zh.json \
   --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
@@ -352,6 +388,12 @@ python3 .claude/scripts/audit_monspell_behavior.py \
   --output .claude/data/message-overlay/monspell-behavior-report.json \
   --check
 ```
+
+年度升级时不得根据新 dump 自动改写 anchor。应先保留旧 anchor，审计 candidate
+artifact 的 scenario、counts、base/lookup 差异和上游 recipe 变化；只有人工确认
+producer contract 仍成立或已按语义变化升级后，才显式更新 anchor SHA/counts，
+重新生成 behavior report，并重复 `--check`。未知或漂移的 candidate artifact
+必须保持 fail closed，不能自动继承上一版本的可达性证明。
 
 术语表 SHA-256：
 `c221e1f1a39b085869ba918da061efaf7c2c32b431c9169d5512be0cecc22c4c`

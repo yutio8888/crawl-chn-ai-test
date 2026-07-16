@@ -867,6 +867,21 @@ normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 
 `monspell` 已结构化；`CASE_MAP` 仅启用上述单有限站点切片，`CAPTURE_SLOT` 和
 Phase 2 heuristic 删除仍未启用。
 
+production candidate recipe 的 closed-world upper-bound dump 已与 EN/ZH effective
+SpeakDB 做 containment join。当前两种语言各命中 251 个 runtime root，Phase 0
+inventory 的 262 个 root 中有 11 个不在候选上界内；报告标记
+`candidate_key_containment_proven=true`、`runtime_reachability_proven=true` 与
+`reachability_kind=SOUND_UPPER_BOUND_NOT_EXACT`。这证明所有生产 candidate lookup
+都进入分析域，但不声称逐局精确可达。Phase 2 门禁仍为关闭，因为 70 个已分析
+behavior occurrence 尚无 catalog metadata 覆盖，EN/ZH 尚有 2 个确认差异，并有
+1 个 fail-closed occurrence。
+
+candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
+artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
+scenario cover，并由 lowercase base expression 三路 merge/coalesce 重建完整
+lookup/attempt 闭包。年度升级生成的新 dump 不得自动更新 anchor；必须先审计
+recipe 与 artifact 差异，再显式更新该可达性证明锚点。
+
 ### Phase 2：移除正文行为嗅探
 
 - 将 `gesture`、`visual`、`audible` 等变为显式元数据；

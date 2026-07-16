@@ -1,17 +1,19 @@
 #!/usr/bin/env python3
-"""Conservative Phase-1 audit of behavior-bearing monspell patterns.
+"""Sound Phase-1 audit of behavior-bearing runtime monspell candidates.
 
-This consumes production C++ SpeakDB dumps, the Phase-0 inventory, and the
-production overlay manifest.  It deliberately does not parse TextDB source.
-The current root universe is useful as a lower bound only: `_speech_keys()`
-queries the complete SpeakDB and no candidate-key trace is available yet.
+This consumes the production C++ candidate upper-bound artifact, production
+SpeakDB dumps, the Phase-0 inventory, and the production overlay manifest. It
+deliberately does not parse TextDB source.
 """
 
 from __future__ import annotations
 
 import argparse
+from collections import Counter
 from dataclasses import dataclass
 import hashlib
+import heapq
+import itertools
 import json
 import re
 import sys
@@ -48,6 +50,116 @@ NON_CONTROL_FRAGMENT = "\0"
 DYNAMIC_FRAGMENT = "\1"
 _DYNAMIC_PREFIX_RE = re.compile(r"(?:@[^@]+@|\[[^]]+\]|\{\{.*?\}\})", re.DOTALL)
 _STATIC_CONTROL_RE = re.compile(r"[A-Z][A-Z0-9_ ]*")
+SYMBOL_MARKER = "${beam_short_name}"
+ALLOWED_ATTEMPTS = frozenset({
+    "normal", "unseen", "silent_prefixed", "silent_unprefixed_fallback",
+})
+CANDIDATE_TOP_LEVEL_KEYS = {
+    "schema_version", "domain", "completeness", "valid", "diagnostic",
+    "input_domain", "counts", "scenarios", "base_expressions",
+    "lookup_expressions",
+}
+CANDIDATE_COUNT_KEYS = {
+    "monster_types", "spells", "monster_tuples", "monster_spell_tuples",
+    "scenarios", "base_expressions", "lookup_expressions", "lookup_attempts",
+}
+CANDIDATE_ANCHOR_KEYS = {
+    "schema_version", "domain", "artifact_sha256", "counts",
+    "producer_contract",
+}
+CANDIDATE_INPUT_KEYS = {
+    "monster_types", "monster_fragments", "spells", "scenarios",
+    "beam_short_name", "lookup_state_machine",
+}
+CANDIDATE_SCENARIO_KEYS = {
+    "id", "category_bits", "humanoid", "at_least_human_intelligence",
+    "hoarfrost_finale", "targeted", "visible_beam",
+}
+CANDIDATE_INPUT_DOMAIN = {
+    "monster_types": (
+        "integer range [0,NUM_MONSTERS) with "
+        "get_monster_data(type) != nullptr"
+    ),
+    "monster_fragments": (
+        "unique canonical-English type/species/genus tuples"
+    ),
+    "spells": (
+        "all is_valid_spell(spell) values in [0,NUM_SPELLS), "
+        "deduplicated by spell_english_name"
+    ),
+    "scenarios": (
+        "finite branch cover proven exhaustive over 32 category masks "
+        "and all recipe booleans"
+    ),
+    "beam_short_name": (
+        "symbolic ${beam_short_name}; runtime materialization excluded"
+    ),
+    "lookup_state_machine": (
+        "search_message_candidate recorder, then production lowercase "
+        "canonicalization, for normal, unseen, silent-prefixed and "
+        "silent-unprefixed fallback"
+    ),
+}
+EXPECTED_CANDIDATE_SCENARIOS = (
+    {
+        "id": "none_humanoid_maximal",
+        "category_bits": 0,
+        "humanoid": True,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+    {
+        "id": "wizard_humanoid_maximal",
+        "category_bits": 8,
+        "humanoid": True,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+    {
+        "id": "priest_humanoid_maximal",
+        "category_bits": 16,
+        "humanoid": True,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+    {
+        "id": "magical_humanoid_maximal",
+        "category_bits": 2,
+        "humanoid": True,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+    {
+        "id": "natural_humanoid_maximal",
+        "category_bits": 1,
+        "humanoid": True,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+    {
+        "id": "wizard_non_humanoid_maximal",
+        "category_bits": 8,
+        "humanoid": False,
+        "at_least_human_intelligence": True,
+        "hoarfrost_finale": True,
+        "targeted": True,
+        "visible_beam": True,
+    },
+)
+CANDIDATE_PRODUCER_CONTRACT = (
+    "production scenario_cover + mon_cast_message_keys::build_key_recipe "
+    "+ search_message_candidate recorder"
+)
 
 
 class AuditError(ValueError):
@@ -56,6 +168,29 @@ class AuditError(ValueError):
 
 class Unanalysable(AuditError):
     pass
+
+
+@dataclass(frozen=True)
+class CandidateArtifact:
+    schema_version: int
+    completeness: str
+    counts: dict[str, int]
+    lookup_expressions: list[dict[str, Any]]
+
+
+@dataclass(frozen=True)
+class CandidateAnchor:
+    artifact_sha256: str
+    counts: dict[str, int]
+
+
+def _is_int(value: object) -> bool:
+    return isinstance(value, int) and not isinstance(value, bool)
+
+
+def _require(condition: bool, message: str) -> None:
+    if not condition:
+        raise AuditError(message)
 
 
 def _read_json(path: Path) -> dict[str, Any]:
@@ -77,6 +212,175 @@ def _sha256(path: Path) -> str:
 
 def _render(value: object) -> str:
     return json.dumps(value, ensure_ascii=False, sort_keys=True, indent=2) + "\n"
+
+
+def _validate_symbol_expression(expression: str, context: str) -> None:
+    count = expression.count(SYMBOL_MARKER)
+    _require(count <= 1, f"{context} contains duplicate {SYMBOL_MARKER}")
+    without_symbol = expression.replace(SYMBOL_MARKER, "")
+    _require("${" not in without_symbol and "$" not in without_symbol
+             and "{" not in without_symbol and "}" not in without_symbol,
+             f"{context} contains an invalid symbolic marker")
+
+
+def _expected_lookup_records(
+    normalized_bases: list[str],
+) -> Iterable[tuple[str, tuple[str, ...]]]:
+    streams = (
+        ((base, ("normal", "silent_unprefixed_fallback"))
+         for base in normalized_bases),
+        (("silent " + base, ("silent_prefixed",))
+         for base in normalized_bases),
+        (("unseen " + base, ("unseen",))
+         for base in normalized_bases),
+    )
+    merged = heapq.merge(*streams, key=lambda item: item[0])
+    for expression, grouped in itertools.groupby(
+            merged, key=lambda item: item[0]):
+        attempts = sorted({
+            attempt
+            for _, item_attempts in grouped
+            for attempt in item_attempts
+        })
+        yield expression, tuple(attempts)
+
+
+def load_candidate_anchor(path: Path) -> CandidateAnchor:
+    anchor = _read_json(path)
+    _require(set(anchor) == CANDIDATE_ANCHOR_KEYS,
+             "candidate anchor has unknown or missing fields")
+    _require(anchor["schema_version"] == 1,
+             "candidate anchor schema_version must be 1")
+    _require(anchor["domain"] == "monspell_candidate_lookup",
+             "candidate anchor domain mismatch")
+    digest = anchor["artifact_sha256"]
+    _require(isinstance(digest, str)
+             and re.fullmatch(r"[0-9a-f]{64}", digest) is not None,
+             "candidate anchor artifact_sha256 is invalid")
+    counts = anchor["counts"]
+    _require(isinstance(counts, dict) and set(counts) == CANDIDATE_COUNT_KEYS
+             and all(_is_int(value) and value > 0 for value in counts.values()),
+             "candidate anchor counts are invalid")
+    _require(anchor["producer_contract"] == CANDIDATE_PRODUCER_CONTRACT,
+             "candidate anchor producer_contract mismatch")
+    return CandidateAnchor(artifact_sha256=digest, counts=dict(counts))
+
+
+def load_candidate_artifact(path: Path) -> CandidateArtifact:
+    artifact = _read_json(path)
+    _require(set(artifact) == CANDIDATE_TOP_LEVEL_KEYS,
+             "candidate artifact has unknown or missing top-level fields")
+    _require(artifact["schema_version"] == 1,
+             "candidate artifact schema_version must be 1")
+    _require(artifact["domain"] == "monspell_candidate_lookup",
+             "candidate artifact domain mismatch")
+    _require(artifact["completeness"] == "closed_world_upper_bound",
+             "candidate artifact completeness mismatch")
+    _require(artifact["valid"] is True and artifact["diagnostic"] is None,
+             "candidate artifact is not valid")
+
+    input_domain = artifact["input_domain"]
+    _require(isinstance(input_domain, dict)
+             and set(input_domain) == CANDIDATE_INPUT_KEYS,
+             "candidate artifact input_domain fields are invalid")
+    _require(input_domain == CANDIDATE_INPUT_DOMAIN,
+             "candidate artifact input_domain contract mismatch")
+    counts = artifact["counts"]
+    _require(isinstance(counts, dict) and set(counts) == CANDIDATE_COUNT_KEYS
+             and all(_is_int(value) and value >= 0 for value in counts.values()),
+             "candidate artifact counts are invalid")
+    _require(all(counts[key] > 0 for key in CANDIDATE_COUNT_KEYS),
+             "candidate artifact counts must all be positive")
+    _require(counts["monster_spell_tuples"]
+             == counts["monster_tuples"] * counts["spells"],
+             "candidate monster/spell tuple count mismatch")
+
+    scenarios = artifact["scenarios"]
+    _require(isinstance(scenarios, list)
+             and len(scenarios) == counts["scenarios"],
+             "candidate scenario count mismatch")
+    for index, scenario in enumerate(scenarios):
+        context = f"candidate scenarios[{index}]"
+        _require(isinstance(scenario, dict)
+                 and set(scenario) == CANDIDATE_SCENARIO_KEYS,
+                 f"{context} fields are invalid")
+        _require(_is_int(scenario["category_bits"])
+                 and scenario["category_bits"] >= 0
+                 and all(isinstance(scenario[field], bool)
+                         for field in CANDIDATE_SCENARIO_KEYS
+                         - {"id", "category_bits"}),
+                 f"{context} values are invalid")
+    _require(scenarios == list(EXPECTED_CANDIDATE_SCENARIOS),
+             "candidate scenarios do not match production scenario_cover()")
+
+    base = artifact["base_expressions"]
+    _require(isinstance(base, list) and len(base) == counts["base_expressions"],
+             "candidate base expression count mismatch")
+    previous_expression: str | None = None
+    for index, expression in enumerate(base):
+        context = f"candidate base_expressions[{index}]"
+        _require(isinstance(expression, str) and expression
+                 and expression.isascii(),
+                 f"{context} must be non-empty canonical English ASCII")
+        _require(previous_expression is None or previous_expression < expression,
+                 "candidate base expressions must be strictly sorted and unique")
+        _validate_symbol_expression(expression, context)
+        previous_expression = expression
+    normalized_bases = sorted(expression.lower() for expression in base)
+    normalized_bases = [
+        expression
+        for expression, _ in itertools.groupby(normalized_bases)
+    ]
+
+    lookup = artifact["lookup_expressions"]
+    _require(isinstance(lookup, list)
+             and len(lookup) == counts["lookup_expressions"],
+             "candidate lookup expression count mismatch")
+    previous_expression = None
+    attempt_count = 0
+    for index, record in enumerate(lookup):
+        context = f"candidate lookup_expressions[{index}]"
+        _require(isinstance(record, dict)
+                 and set(record) == {"expression", "attempts"},
+                 f"{context} fields are invalid")
+        expression = record["expression"]
+        attempts = record["attempts"]
+        _require(isinstance(expression, str) and expression
+                 and expression.isascii()
+                 and expression == expression.lower(),
+                 f"{context}.expression is not production lowercase")
+        _require(previous_expression is None or previous_expression < expression,
+                 "candidate lookup expressions must be strictly sorted and unique")
+        _validate_symbol_expression(expression, f"{context}.expression")
+        _require(isinstance(attempts, list) and attempts
+                 and all(isinstance(attempt, str)
+                         and attempt in ALLOWED_ATTEMPTS for attempt in attempts)
+                 and all(left < right
+                         for left, right in zip(attempts, attempts[1:])),
+                 f"{context}.attempts must be strictly sorted, unique, and known")
+        attempt_count += len(attempts)
+        previous_expression = expression
+    _require(attempt_count == counts["lookup_attempts"],
+             "candidate lookup attempt count mismatch")
+    expected = _expected_lookup_records(normalized_bases)
+    for index, pair in enumerate(itertools.zip_longest(lookup, expected)):
+        record, expected_record = pair
+        _require(record is not None,
+                 "candidate lookup closure is truncated")
+        _require(expected_record is not None,
+                 "candidate lookup closure contains an extra expression")
+        expected_expression, expected_attempts = expected_record
+        _require(
+            record["expression"] == expected_expression
+            and tuple(record["attempts"]) == expected_attempts,
+            f"candidate lookup closure mismatch at index {index}",
+        )
+    return CandidateArtifact(
+        schema_version=artifact["schema_version"],
+        completeness=artifact["completeness"],
+        counts=dict(counts),
+        lookup_expressions=lookup,
+    )
 
 
 def _clip_head(text: str) -> str:
@@ -268,6 +572,8 @@ class EffectiveEntry:
     fallback_to_english: bool
     parse_error: str | None
     had_parsed_variants: bool
+    effective_source: str
+    effective_nonempty: bool
 
 
 def _entry_index(artifact: dict[str, Any]) -> dict[str, dict[str, Any]]:
@@ -298,8 +604,75 @@ def effective_entries(
             fallback_to_english=fallback and chosen is base,
             parse_error=chosen.get("parse_error"),
             had_parsed_variants=bool(chosen["variants"]),
+            effective_source=chosen["effective_provenance"]["source_name"],
+            effective_nonempty=not chosen["body_empty"],
         )
     return result
+
+
+def _normalized_source(source: str, language: str) -> str:
+    localized_prefix = f"database/{language}/"
+    if language != "en" and source.startswith(localized_prefix):
+        return "database/" + source[len(localized_prefix):]
+    return source
+
+
+def candidate_hits(candidate: CandidateArtifact,
+                   entries: dict[str, EffectiveEntry],
+                   language: str) -> dict[str, Any]:
+    key_index = {
+        key: entry for key, entry in entries.items() if entry.effective_nonempty
+    }
+    sorted_keys = sorted(key_index)
+    attempts_by_key: dict[str, set[str]] = {}
+    symbol_matches: list[dict[str, object]] = []
+    for record in candidate.lookup_expressions:
+        expression = record["expression"]
+        attempts = record["attempts"]
+        if SYMBOL_MARKER not in expression:
+            matches = (expression,) if expression in key_index else ()
+        else:
+            prefix, suffix = expression.split(SYMBOL_MARKER)
+            matches = tuple(
+                key for key in sorted_keys
+                if key.startswith(prefix) and key.endswith(suffix)
+                and len(key) >= len(prefix) + len(suffix)
+            )
+            if matches:
+                symbol_matches.append({
+                    "expression": expression,
+                    "matched_keys": list(matches),
+                    "attempts": list(attempts),
+                })
+        for key in matches:
+            attempts_by_key.setdefault(key, set()).update(attempts)
+
+    hits = []
+    source_counts: Counter[str] = Counter()
+    cross_domain = []
+    for key in sorted(attempts_by_key):
+        entry = key_index[key]
+        source = _normalized_source(entry.effective_source, language)
+        source_counts[source] += 1
+        hit = {
+            "canonical_key": key,
+            "source": source,
+            "effective_source": entry.effective_source,
+            "attempts": sorted(attempts_by_key[key]),
+        }
+        hits.append(hit)
+        if source != "database/monspell.txt":
+            cross_domain.append(hit)
+    return {
+        "hit_count": len(hits),
+        "hits": hits,
+        "source_counts": dict(sorted(source_counts.items())),
+        "cross_domain_hits": cross_domain,
+        "symbol_matches": symbol_matches,
+        "symbol_match_key_count": len({
+            key for record in symbol_matches for key in record["matched_keys"]
+        }),
+    }
 
 
 class PredicateAnalyzer:
@@ -619,7 +992,8 @@ def analyze_language(language: str, roots: list[str],
 
 
 def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
-                 manifest_path: Path) -> dict[str, Any]:
+                 manifest_path: Path, candidate_path: Path,
+                 candidate_anchor_path: Path) -> dict[str, Any]:
     try:
         en_artifact = load_artifact(en_path)
         zh_artifact = load_artifact(zh_path)
@@ -634,22 +1008,70 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
         manifest = validate_manifest(manifest_raw, inventory)
     except ManifestError as exc:
         raise AuditError(str(exc)) from exc
-    roots = sorted(
+    candidate_anchor = load_candidate_anchor(candidate_anchor_path)
+    candidate_sha256 = _sha256(candidate_path)
+    _require(candidate_sha256 == candidate_anchor.artifact_sha256,
+             "candidate artifact does not match tracked anchor")
+    candidate = load_candidate_artifact(candidate_path)
+    _require(candidate.counts == candidate_anchor.counts,
+             "candidate artifact counts do not match tracked anchor")
+    inventory_roots = sorted(
         entry["key"] for entry in inventory.get("entries", [])
         if entry.get("defined_in_monspell") is True
     )
-    if not roots or len(roots) != len(set(roots)):
+    if not inventory_roots or len(inventory_roots) != len(set(inventory_roots)):
         raise AuditError("inventory monspell root universe is empty or duplicated")
     catalog = _catalog_index(manifest)
     en_effective = effective_entries(en_artifact, None, "en")
     zh_effective = effective_entries(en_artifact, zh_artifact, "zh")
+    en_candidate = candidate_hits(candidate, en_effective, "en")
+    zh_candidate = candidate_hits(candidate, zh_effective, "zh")
+    en_hit_index = {
+        item["canonical_key"]: item for item in en_candidate["hits"]
+    }
+    zh_hit_index = {
+        item["canonical_key"]: item for item in zh_candidate["hits"]
+    }
+    en_hit_keys = set(en_hit_index)
+    zh_hit_keys = set(zh_hit_index)
+    runtime_roots = sorted(en_hit_keys | zh_hit_keys)
+    en_only = sorted(en_hit_keys - zh_hit_keys)
+    zh_only = sorted(zh_hit_keys - en_hit_keys)
+    presence_mismatches = [
+        {
+            "requested_root": key,
+            "mismatch_kind": "PRESENCE",
+            "en_present": key in en_hit_index,
+            "zh_present": key in zh_hit_index,
+            "en_hit": en_hit_index.get(key),
+            "zh_hit": zh_hit_index.get(key),
+            "migration_priority": "CANDIDATE_PRESENCE_DIVERGENCE",
+        }
+        for key in sorted(set(en_only) | set(zh_only))
+    ]
+    source_mismatches = [
+        {
+            "canonical_key": key,
+            "en_source": en_hit_index[key]["source"],
+            "zh_source": zh_hit_index[key]["source"],
+            "en_effective_source": en_hit_index[key]["effective_source"],
+            "zh_effective_source": zh_hit_index[key]["effective_source"],
+        }
+        for key in sorted(en_hit_keys & zh_hit_keys)
+        if en_hit_index[key]["source"] != zh_hit_index[key]["source"]
+    ]
+    inventory_root_set = set(inventory_roots)
+    inventory_unreachable = sorted(inventory_root_set - set(runtime_roots))
     languages = {
-        "en": analyze_language("en", roots, en_effective, catalog),
-        "zh": analyze_language("zh", roots, zh_effective, catalog),
+        "en": analyze_language("en", runtime_roots, en_effective, catalog),
+        "zh": analyze_language("zh", runtime_roots, zh_effective, catalog),
     }
     mismatches = []
     inconclusive = []
-    for key in roots:
+    presence_mismatch_keys = set(en_only) | set(zh_only)
+    for key in runtime_roots:
+        if key in presence_mismatch_keys:
+            continue
         en_unanalysable = key in languages["en"]["predicate_roots"]["UNANALYSABLE"]
         zh_unanalysable = key in languages["zh"]["predicate_roots"]["UNANALYSABLE"]
         en_predicates = sorted(
@@ -677,13 +1099,33 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
     behavioral = [item for item in occurrences if item["behavior"] != "UNANALYSABLE"]
     covered = sum(1 for item in behavioral if item["catalog_coverage"]["covered"])
     unanalysable = sum(1 for item in occurrences if item["behavior"] == "UNANALYSABLE")
+    catalog_complete = covered == len(behavioral)
+    parity_proven = not mismatches and not presence_mismatches
+    analysis_conclusive = not inconclusive
+    blockers = []
+    if not catalog_complete:
+        blockers.append("legacy behavior metadata coverage is incomplete")
+    if not parity_proven:
+        blockers.append("EN/ZH behavior parity is not proven")
+    if not analysis_conclusive:
+        blockers.append("EN/ZH behavior analysis is inconclusive")
     return {
         "schema_version": SCHEMA_VERSION,
         "domain": "monspell",
-        "analysis_completeness": "LOWER_BOUND",
+        "analysis_completeness": "SOUND_CLOSED_WORLD_UPPER_BOUND",
         "inputs": {
             "english_artifact": {"sha256": _sha256(en_path)},
             "localized_artifact": {"language": "zh", "sha256": _sha256(zh_path)},
+            "candidate_artifact": {
+                "sha256": candidate_sha256,
+                "schema_version": candidate.schema_version,
+                "completeness": candidate.completeness,
+                "counts": candidate.counts,
+            },
+            "candidate_anchor": {
+                "sha256": _sha256(candidate_anchor_path),
+                "artifact_sha256": candidate_anchor.artifact_sha256,
+            },
             "inventory": {
                 "semantic_fingerprint": semantic,
                 "sha256": _sha256(inventory_path),
@@ -691,36 +1133,56 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
             "overlay_manifest": {"sha256": _sha256(manifest_path)},
         },
         "universe": {
-            "requested_root_source": "phase0_inventory.entries[defined_in_monspell=true]",
-            "requested_root_count": len(roots),
+            "requested_root_source": (
+                "union of canonical candidate lookup hits in EN and ZH "
+                "effective nonempty SpeakDB"
+            ),
+            "requested_root_count": len(runtime_roots),
+            "runtime_roots": runtime_roots,
             "effective_merge_languages": ["en", "zh"],
+            "inventory_root_count": len(inventory_roots),
+            "inventory_reachable_root_count": (
+                len(inventory_root_set & set(runtime_roots))
+            ),
+            "inventory_unreachable_root_count": len(inventory_unreachable),
+            "inventory_unreachable_roots": inventory_unreachable,
             "inventory_roots_contained_in_english_artifact": all(
-                key in en_effective for key in roots),
+                key in en_effective for key in inventory_roots),
             "inventory_roots_contained_in_zh_effective_merge": all(
-                key in zh_effective for key in roots),
-            "candidate_key_containment_proven": False,
-            "runtime_reachability_proven": False,
-            "containment_gap": (
-                "_speech_keys() queries the complete SpeakDB; a production "
-                "candidate-key trace/dump is still required"
+                key in zh_effective for key in inventory_roots),
+            "candidate_key_containment_proven": True,
+            "runtime_reachability_proven": True,
+            "reachability_kind": "SOUND_UPPER_BOUND_NOT_EXACT",
+            "containment_proof": (
+                "production recipe closed-world upper bound joined against "
+                "effective nonempty SpeakDB keys"
             ),
         },
+        "candidate_lookup": {
+            "en": en_candidate,
+            "zh": zh_candidate,
+            "language_only_hits": {
+                "en_only": [en_hit_index[key] for key in en_only],
+                "zh_only": [zh_hit_index[key] for key in zh_only],
+            },
+            "presence_parity_proven": not presence_mismatches,
+            "source_parity_proven": not source_mismatches,
+            "source_parity_mismatch": source_mismatches,
+        },
         "languages": languages,
+        "locale_presence_mismatch": presence_mismatches,
         "locale_behavior_mismatch": mismatches,
         "locale_behavior_inconclusive": inconclusive,
         "coverage": {
             "behavior_occurrences": len(behavioral),
             "catalog_covered_occurrences": covered,
-            "catalog_coverage_complete": bool(behavioral) and covered == len(behavioral),
+            "catalog_coverage_complete": catalog_complete,
             "unanalysable_occurrences": unanalysable,
+            "en_zh_behavior_parity_proven": parity_proven,
+            "en_zh_behavior_analysis_conclusive": analysis_conclusive,
         },
-        "phase2_ready": False,
-        "phase2_blockers": [
-            "candidate key containment is not proven",
-            "runtime reachability is not proven",
-            "legacy behavior metadata coverage is incomplete",
-            "EN/ZH behavior parity is not proven",
-        ],
+        "phase2_ready": not blockers,
+        "phase2_blockers": blockers,
     }
 
 
@@ -730,13 +1192,16 @@ def main() -> int:
     parser.add_argument("--localized-artifact", type=Path, required=True)
     parser.add_argument("--inventory", type=Path, required=True)
     parser.add_argument("--manifest", type=Path, required=True)
+    parser.add_argument("--candidate-artifact", type=Path, required=True)
+    parser.add_argument("--candidate-anchor", type=Path, required=True)
     parser.add_argument("--output", type=Path, required=True)
     parser.add_argument("--check", action="store_true")
     args = parser.parse_args()
     try:
         rendered = _render(build_report(
             args.english_artifact, args.localized_artifact,
-            args.inventory, args.manifest))
+            args.inventory, args.manifest, args.candidate_artifact,
+            args.candidate_anchor))
         if args.check:
             actual = args.output.read_text(encoding="utf-8")
             if actual != rendered:
