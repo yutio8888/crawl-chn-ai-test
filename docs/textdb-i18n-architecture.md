@@ -1,10 +1,10 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0 已实现并完成验证
+> 状态：架构规格已定；Phase 0 已完成；Phase 1 已实现首个纵向迁移
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 0 Go（Blocker 0 / Needs Fix 0）**；允许开始 Phase 1，
-> 但本结论不表示 Phase 1 runtime/catalog 已经实现
+> 评审状态：**Phase 1 Go（首个完整 key 闭包）**；Phase 2 尚未开始，
+> 全局 legacy heuristic 仍受门禁保护
 
 ## 1. 背景
 
@@ -849,6 +849,13 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
+实施状态（2026-07-16）：上述基础设施已落地，首个完整迁移项为
+`beam catchall cast`（stable ID `mon.cast.beam_catchall.v1`，`NONE`）。
+normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
+保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
+[`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。本状态不表示全部
+`monspell` 已结构化；`CASE_MAP`、`CAPTURE_SLOT` 和 Phase 2 heuristic 删除仍未启用。
+
 ### Phase 2：移除正文行为嗅探
 
 - 将 `gesture`、`visual`、`audible` 等变为显式元数据；
@@ -884,7 +891,8 @@ bash .claude/scripts/verify_zh.sh --profile review
 
 ## 15. 最终决策摘要
 
-1. `monspell` 采用类型化事件与关系渲染。
+1. 已迁移的 `monspell` 完整 key 闭包采用类型化事件与关系渲染；其余 key 保持
+   legacy。
 2. `monspeak` 只迁移行为约束和高风险关系槽，正文继续留在 TextDB。
 3. `miscast`、`shout`、`godspeak`、`wpnnoise` 按需使用通用类型化实体槽。
 4. 随机名字、书名、涂鸦和辱骂使用语言专用生成语法，不使用事件模型。

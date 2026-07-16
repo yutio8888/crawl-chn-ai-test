@@ -45,6 +45,7 @@ WORKTREE=""
 CHANGED_FILES=""
 RISK_CPP_I18N=0
 RISK_CJK_RUNTIME=0
+RISK_MESSAGE_OVERLAY=0
 
 usage() {
     cat <<'EOF'
@@ -177,6 +178,20 @@ if [[ -n "$CHANGED_FILES" ]]; then
                 if grep -Eq '^[+-].*(T_|C_|N_|i18n|language|translated_)' <<<"$diff_text"; then
                     RISK_CPP_I18N=1
                 fi
+                ;;
+        esac
+        case "$changed_file" in
+            .claude/data/message-overlay/*|\
+            .claude/scripts/*message_overlay*|\
+            .claude/scripts/tests/test_message_overlay.py|\
+            docs/textdb-i18n-*|\
+            crawl-ref/source/database.cc|crawl-ref/source/database.h|\
+            crawl-ref/source/fork-message-overlay.*|\
+            crawl-ref/source/mon-cast.cc|crawl-ref/source/mon-cast-target.h|\
+            crawl-ref/source/mon-speak.cc|crawl-ref/source/mon-speak.h|\
+            crawl-ref/source/catch2-tests/test_fork_message_overlay.cc|\
+            crawl-ref/source/catch2-tests/test_mon_cast_target.cc)
+                RISK_MESSAGE_OVERLAY=1
                 ;;
         esac
         case "$changed_file" in
@@ -321,7 +336,7 @@ run_phase() {
     echo "=== verify_zh.sh --profile $PROFILE @ $STARTED_AT ==="
     echo "Run ID: $RUN_ID"
     echo "Scope: $SCOPE"
-    echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME explicit_full=$EXPLICIT_FULL"
+    echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME message_overlay=$RISK_MESSAGE_OVERLAY explicit_full=$EXPLICIT_FULL"
     if [[ -n "$BASE_SHA" ]]; then
         echo "Base: $BASE_SHA"
         echo "Head: $HEAD_SHA"
@@ -354,6 +369,32 @@ run_phase() {
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
+
+    run_message_overlay_static() {
+        python3 .claude/scripts/tests/test_message_overlay.py \
+            && python3 .claude/scripts/generate_message_overlay.py \
+                --manifest .claude/data/message-overlay/monspell.json \
+                --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
+                --check crawl-ref/source/fork-message-overlay.generated.inc \
+            && python3 .claude/scripts/audit_message_overlay.py \
+                --manifest .claude/data/message-overlay/monspell.json \
+                --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
+                --sidecar crawl-ref/source/fork-message-overlay.generated.inc
+    }
+    run_message_overlay_catch2() {
+        make -C crawl-ref/source catch2-tests-executable \
+            STDFLAG=-std=c++14 -j4 \
+            && (cd crawl-ref/source \
+                && ./catch2-tests-executable \
+                    '[message-overlay][phase1]' --reporter compact)
+    }
+
+    run_phase "TextDB message overlay static audit" \
+        run_message_overlay_static || RESULTS=$((RESULTS + 1))
+    if [[ "$RISK_MESSAGE_OVERLAY" -eq 1 ]]; then
+        run_phase "Risk gate: TextDB message overlay Catch2" \
+            run_message_overlay_catch2 || RESULTS=$((RESULTS + 1))
+    fi
 
 
     run_incremental_build() {
