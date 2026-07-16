@@ -1011,6 +1011,166 @@
       ]
     },
     {
+      "canonical_key": "cantrip gastronok cast",
+      "canonical_fingerprint": "fnv1a64:c5048b150cb94cb4",
+      "selection_graph_fingerprint": "fnv1a64:d71e7304621c9849",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.bubbles_merrily.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "3b658d1150d0466d71de1ea7536abd0a53b346063bdaa4c75208c72f25d15d99",
+          "english_snapshot": "@The_monster@ bubbles merrily.",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} bubbles merrily." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}欢快地咕嘟冒泡。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "74f323b3c2b9784d6a37800f0032fba7ba3270e8eabc8da652571e2691433d6c",
+          "english_snapshot": "VISUAL:@The_monster@ glows a brilliant shade of cerise.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": true },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} glows a brilliant shade of cerise." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}泛起鲜亮的樱桃红光芒。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "439a3d9bed59cfef340933b7742cd9914a03b7d0050729ada440c40d4d796fb9",
+          "english_snapshot": "VISUAL:@The_monster@ wobbles crazily.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": true },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} wobbles crazily." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}疯狂地摇晃起来。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1", "tombstone": false,
+          "variant_ordinal": 3, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "c1ddcf57f6b599da39e9e10817c4a3e044f50be7d44e8e49bd8fdef7cd346609",
+          "english_snapshot": "VISUAL:@The_monster_possessive@ eyestalks stretch out, then return to normal size.",
+          "frame": "GESTURE", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": true },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+          "required_arguments": ["actor_possessive"],
+          "line_metadata": [{ "sensory": "VISUAL", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} eyestalks stretch out, then return to normal size." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}眼柄伸展开来，随后恢复原状。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.player_wobble.v1", "tombstone": false,
+          "variant_ordinal": 4, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "d064183d7f00693fbad7880f03b904e1ecd5543cf66df55ea4c58aafd086d861",
+          "english_snapshot": "You wobble.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "You wobble." },
+              { "language": "zh", "relation": "NONE", "pattern": "你晃了晃。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.player_green_cast.v1", "tombstone": false,
+          "variant_ordinal": 5, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "879e99d5804911524e84aa30baeea0eeac5b2dd2d6134315515f5c1b23b2446f",
+          "english_snapshot": "You take on a slight green cast.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "You take on a slight green cast." },
+              { "language": "zh", "relation": "NONE", "pattern": "你的脸色微微发绿。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.player_sluggish.v1", "tombstone": false,
+          "variant_ordinal": 6, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "5a2fa538a4f7b34bf3825cd28bf273fb73995b8911e1549ce700e340b7036de5",
+          "english_snapshot": "You feel briefly sluggish.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "You feel briefly sluggish." },
+              { "language": "zh", "relation": "NONE", "pattern": "你短暂地感到迟钝。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.player_salt_aversion.v1", "tombstone": false,
+          "variant_ordinal": 7, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "00d490250691049ee7a36f356b1920826103d0328dd08a37ed2aa113ecdcd933",
+          "english_snapshot": "You feel a sudden, passing aversion to salt.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "You feel a sudden, passing aversion to salt." },
+              { "language": "zh", "relation": "NONE", "pattern": "你突然对盐产生了一阵厌恶。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_gastronok.player_eyestalk_urge.v1", "tombstone": false,
+          "variant_ordinal": 8, "upstream_weight": 5,
+          "upstream_variant_fingerprint": "91fc80979617ca1f46c165acf9ce045f4f49a47db763c4d78deada58986a52ea",
+          "english_snapshot": "You feel a sudden urge to swivel your nonexistent eyestalks around.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "You feel a sudden urge to swivel your nonexistent eyestalks around." },
+              { "language": "zh", "relation": "NONE", "pattern": "你突然很想转动自己并不存在的眼柄。" }
+            ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
       "canonical_key": "vanquished vanguard nergalle cast",
       "canonical_fingerprint": "fnv1a64:35230ef08e134f6b",
       "selection_graph_fingerprint": "fnv1a64:551fa23da779388b",

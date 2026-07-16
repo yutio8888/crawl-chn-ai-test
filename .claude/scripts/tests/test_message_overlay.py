@@ -48,7 +48,8 @@ class MessageOverlayTests(unittest.TestCase):
                           "mennas cast",
                           "airstrike blizzard demon cast",
                           "vv cast",
-                          "smiting jeremiah cast"], candidates)
+                          "smiting jeremiah cast",
+                          "cantrip gastronok cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertTrue(all(variant["materialization_policy"] == "LEGACY_ONLY"
@@ -223,12 +224,14 @@ class MessageOverlayTests(unittest.TestCase):
             self.validate(value)
 
     def test_current_slice_rejects_unwired_metadata(self):
-        value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["applicability"][
-            "requires_foe"] = True
-        with self.assertRaisesRegex(MODULE.ManifestError,
-                                    "applicability metadata"):
-            self.validate(value)
+        for field in ("requires_foe", "requires_named_foe", "requires_god"):
+            value = copy.deepcopy(MANIFEST)
+            value["entries"][0]["variants"][0]["applicability"][
+                field] = True
+            with self.subTest(field=field):
+                with self.assertRaisesRegex(MODULE.ManifestError,
+                                            "applicability metadata"):
+                    self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
         value["entries"][0]["variants"][0]["line_metadata"][0][
@@ -255,6 +258,7 @@ class MessageOverlayTests(unittest.TestCase):
             "airstrike blizzard demon cast": [False, True, False],
             "vv cast": [True, False, False, False],
             "smiting jeremiah cast": [False, False, False, False, False],
+            "cantrip gastronok cast": [False] * 9,
         }
         for key, gestures in expected.items():
             entry = next(e for e in MANIFEST["entries"]
@@ -263,6 +267,18 @@ class MessageOverlayTests(unittest.TestCase):
                 gestures,
                 [variant["line_metadata"][0]["behavior"]["implies_gesture"]
                  for variant in entry["variants"]])
+
+    def test_gastronok_visibility_applicability_is_variant_exact(self):
+        entry = next(e for e in MANIFEST["entries"]
+                     if e["canonical_key"] == "cantrip gastronok cast")
+        self.assertEqual(
+            [False, True, True, True, False, False, False, False, False],
+            [variant["applicability"]["requires_caster_visible"]
+             for variant in entry["variants"]])
+        self.assertEqual(
+            [False, False, False, False, True, True, True, True, True],
+            [variant["applicability"]["requires_player"]
+             for variant in entry["variants"]])
 
     def test_target_binding_selects_exact_relation_schema(self):
         for entry in MANIFEST["entries"]:

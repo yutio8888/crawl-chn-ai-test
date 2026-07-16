@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 37,
-    "canonical_structured_variant_metadata_units": 37,
+    "canonical_structured_variant_metadata_complete": 46,
+    "canonical_structured_variant_metadata_units": 46,
     "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 74,
-    "per_language_structured_variant_verification_units": 74,
-    "remaining_legacy_behavior_occurrences": 16,
+    "per_language_structured_variant_verification_complete": 92,
+    "per_language_structured_variant_verification_units": 92,
+    "remaining_legacy_behavior_occurrences": 4,
     "unanalysable_occurrences": 1
   },
   "domain": "monspell",
@@ -4515,7 +4515,7 @@
       "sha256": "da4724309f5341873b1a04fe9a713f42552d6f2d32f4657804e9e84781d996d0"
     },
     "overlay_manifest": {
-      "sha256": "d3bbcc62bbc09191a3d1ea6aceae1dc3b75e616b203dad42c181e79fbc88e0ad"
+      "sha256": "e5e7a10537dc1681438ee21e4591a1814a1aef93906c76b0cfe9344322a34bed"
     }
   },
   "languages": {
@@ -4579,30 +4579,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "en",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "cantrip gastronok cast",
-          "top_locator": {
-            "canonical_key": "cantrip gastronok cast",
-            "variant_ordinal": 1
-          }
-        },
-        {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -4613,28 +4597,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
             "canonical_key": "cantrip gastronok cast",
-            "variant_ordinal": 2
+            "variant_ordinal": 1
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -4645,12 +4629,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "cantrip gastronok cast",
+          "top_locator": {
+            "canonical_key": "cantrip gastronok cast",
+            "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
+          },
+          "language": "en",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -4659,14 +4659,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "en",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -5223,6 +5223,69 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.bubbles_merrily.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_wobble.v1",
+          "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_green_cast.v1",
+          "variant_ordinal": 5
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_sluggish.v1",
+          "variant_ordinal": 6
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_salt_aversion.v1",
+          "variant_ordinal": 7
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_eyestalk_urge.v1",
+          "variant_ordinal": 8
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "dispel undead revenant cast",
           "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
           "variant_ordinal": 0
@@ -5499,30 +5562,14 @@
           }
         },
         {
-          "behavior": "VISUAL_CHANNEL",
-          "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
-          },
-          "language": "zh",
-          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
-          "recursive_provenance": [],
-          "requested_root": "cantrip gastronok cast",
-          "top_locator": {
-            "canonical_key": "cantrip gastronok cast",
-            "variant_ordinal": 1
-          }
-        },
-        {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -5533,28 +5580,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
             "canonical_key": "cantrip gastronok cast",
-            "variant_ordinal": 2
+            "variant_ordinal": 1
           }
         },
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -5565,12 +5612,28 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
-          "phase": "POST_MATERIALIZATION",
+          "phase": "STRUCTURED_METADATA",
+          "recursive_provenance": [],
+          "requested_root": "cantrip gastronok cast",
+          "top_locator": {
+            "canonical_key": "cantrip gastronok cast",
+            "variant_ordinal": 2
+          }
+        },
+        {
+          "behavior": "VISUAL_APPLICABILITY",
+          "catalog_coverage": {
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
+          },
+          "language": "zh",
+          "legacy_effect": "legacy unseen applicability rejects the candidate",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -5579,14 +5642,14 @@
           }
         },
         {
-          "behavior": "VISUAL_APPLICABILITY",
+          "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "zh",
-          "legacy_effect": "legacy unseen applicability rejects the candidate",
-          "phase": "PRE_BINDING",
+          "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
+          "phase": "STRUCTURED_METADATA",
           "recursive_provenance": [],
           "requested_root": "cantrip gastronok cast",
           "top_locator": {
@@ -6124,6 +6187,69 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.bubbles_merrily.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_wobble.v1",
+          "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_green_cast.v1",
+          "variant_ordinal": 5
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_sluggish.v1",
+          "variant_ordinal": 6
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_salt_aversion.v1",
+          "variant_ordinal": 7
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip gastronok cast",
+          "stable_id": "mon.cast.cantrip_gastronok.player_eyestalk_urge.v1",
+          "variant_ordinal": 8
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "dispel undead revenant cast",
           "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
           "variant_ordinal": 0
@@ -6353,7 +6479,7 @@
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
   "phase2_blockers": [
-    "16 remaining legacy behavior occurrences lack explicit metadata",
+    "4 remaining legacy behavior occurrences lack explicit metadata",
     "EN/ZH behavior analysis is inconclusive"
   ],
   "phase2_ready": false,
@@ -6420,8 +6546,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6436,8 +6562,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6452,8 +6578,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6468,8 +6594,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -6484,8 +6610,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "en",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -6500,8 +6626,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "en",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7078,8 +7204,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7094,8 +7220,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.cerise_glow.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7110,8 +7236,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7126,8 +7252,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.crazy_wobble.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",
@@ -7142,8 +7268,8 @@
         {
           "behavior": "VISUAL_CHANNEL",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy output routes the materialized line to MSGCH_TALK_VISUAL",
@@ -7158,8 +7284,8 @@
         {
           "behavior": "VISUAL_APPLICABILITY",
           "catalog_coverage": {
-            "covered": false,
-            "stable_id": null
+            "covered": true,
+            "stable_id": "mon.cast.cantrip_gastronok.stretching_eyestalks.v1"
           },
           "language": "zh",
           "legacy_effect": "legacy unseen applicability rejects the candidate",

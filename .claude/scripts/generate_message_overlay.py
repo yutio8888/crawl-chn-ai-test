@@ -296,7 +296,9 @@ def validate_manifest(manifest: dict[str, Any],
                              for x in applicability.values()),
                      f"{vcontext} has invalid applicability")
             if mode != "LEGACY_ONLY":
-                _require(not any(applicability.values()),
+                _require(not applicability["requires_foe"]
+                         and not applicability["requires_named_foe"]
+                         and not applicability["requires_god"],
                          f"{vcontext} applicability metadata is not enabled yet")
 
             slot_schema = variant.get("slot_schema")

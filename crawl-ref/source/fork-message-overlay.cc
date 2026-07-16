@@ -652,11 +652,9 @@ const load_report &load_monspell_overlay(
                                 "candidate key has legacy-only policy");
             }
             if (entry.mode != entry_mode::LEGACY_ONLY
-                && (variant.conditions.requires_player
-                    || variant.conditions.requires_foe
+                && (variant.conditions.requires_foe
                     || variant.conditions.requires_named_foe
-                    || variant.conditions.requires_god
-                    || variant.conditions.requires_caster_visible))
+                    || variant.conditions.requires_god))
             {
                 return _disable(load_failure::CORRUPT,
                                 "applicability metadata is not enabled yet");
@@ -854,8 +852,11 @@ canonical_materialization materialize_monspell_candidate(
     const string &canonical_key, message_attempt attempt,
     bool manifest_applicable, const runtime_binding_resolver &bindings)
 {
+    runtime_applicability applicability;
+    applicability.manifest_applicable = manifest_applicable;
+    applicability.caster_visibility = message_visibility::VISIBLE;
     return materialize_monspell_candidate(
-        canonical_key, attempt, manifest_applicable, bindings,
+        canonical_key, attempt, applicability, bindings,
         [](const string &key)
         {
             return canonical_textdb::expand_loaded_english_candidate(key);
@@ -865,6 +866,32 @@ canonical_materialization materialize_monspell_candidate(
 canonical_materialization materialize_monspell_candidate(
     const string &canonical_key, message_attempt attempt,
     bool manifest_applicable, const runtime_binding_resolver &bindings,
+    const canonical_candidate_lookup &lookup)
+{
+    runtime_applicability applicability;
+    applicability.manifest_applicable = manifest_applicable;
+    applicability.caster_visibility = message_visibility::VISIBLE;
+    return materialize_monspell_candidate(
+        canonical_key, attempt, applicability, bindings, lookup);
+}
+
+canonical_materialization materialize_monspell_candidate(
+    const string &canonical_key, message_attempt attempt,
+    const runtime_applicability &applicability,
+    const runtime_binding_resolver &bindings)
+{
+    return materialize_monspell_candidate(
+        canonical_key, attempt, applicability, bindings,
+        [](const string &key)
+        {
+            return canonical_textdb::expand_loaded_english_candidate(key);
+        });
+}
+
+canonical_materialization materialize_monspell_candidate(
+    const string &canonical_key, message_attempt attempt,
+    const runtime_applicability &applicability,
+    const runtime_binding_resolver &bindings,
     const canonical_candidate_lookup &lookup)
 {
     canonical_materialization result;
@@ -894,8 +921,7 @@ canonical_materialization materialize_monspell_candidate(
     }
     const bool accepts_any =
         attempt == message_attempt::SILENT_UNPREFIXED_FALLBACK;
-    if (result.canonical.expanded_pattern_en.empty()
-        || (!accepts_any && !manifest_applicable))
+    if (result.canonical.expanded_pattern_en.empty())
     {
         result.result = message_result::INAPPLICABLE;
         return result;
@@ -908,6 +934,35 @@ canonical_materialization materialize_monspell_candidate(
         result.result = message_result::CORRUPT;
         result.diagnostic = "canonical locator has no catalog descriptor";
         return result;
+    }
+    if (!accepts_any)
+    {
+        if (!applicability.manifest_applicable)
+        {
+            result.result = message_result::INAPPLICABLE;
+            return result;
+        }
+        if (descriptor->conditions.requires_player
+            && !applicability.player_applicable)
+        {
+            result.result = message_result::INAPPLICABLE;
+            return result;
+        }
+        if (descriptor->conditions.requires_caster_visible)
+        {
+            if (applicability.caster_visibility == message_visibility::UNSEEN)
+            {
+                result.result = message_result::INAPPLICABLE;
+                return result;
+            }
+            if (applicability.caster_visibility == message_visibility::UNKNOWN)
+            {
+                result.result = message_result::CORRUPT;
+                result.diagnostic =
+                    "caster visibility is required but unknown";
+                return result;
+            }
+        }
     }
     if (!descriptor->resolves_target
         && (result.canonical.expanded_pattern_en.find("@at@") != string::npos

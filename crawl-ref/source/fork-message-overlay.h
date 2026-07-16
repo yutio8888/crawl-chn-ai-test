@@ -391,6 +391,13 @@ struct binding_requirements
     bool needs_actor_arms_plural = false;
 };
 
+struct runtime_applicability
+{
+    bool manifest_applicable = true;
+    bool player_applicable = true;
+    message_visibility caster_visibility = message_visibility::UNKNOWN;
+};
+
 using runtime_binding_resolver = std::function<runtime_bindings(
     const binding_requirements &)>;
 using canonical_candidate_lookup = std::function<
@@ -457,6 +464,15 @@ canonical_materialization materialize_monspell_candidate(
 canonical_materialization materialize_monspell_candidate(
     const std::string &canonical_key, message_attempt attempt,
     bool manifest_applicable, const runtime_binding_resolver &bindings,
+    const canonical_candidate_lookup &lookup);
+canonical_materialization materialize_monspell_candidate(
+    const std::string &canonical_key, message_attempt attempt,
+    const runtime_applicability &applicability,
+    const runtime_binding_resolver &bindings);
+canonical_materialization materialize_monspell_candidate(
+    const std::string &canonical_key, message_attempt attempt,
+    const runtime_applicability &applicability,
+    const runtime_binding_resolver &bindings,
     const canonical_candidate_lookup &lookup);
 
 // These functions are pure: no TextDB, RNG, Lua, or translation lookup.

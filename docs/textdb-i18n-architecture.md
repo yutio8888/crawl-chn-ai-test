@@ -1,10 +1,10 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成五批低风险迁移
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成六批低风险迁移
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 18 个
-> canonical key、37 个 canonical variant，全局 legacy heuristic 仍受门禁保护
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 19 个
+> canonical key、46 个 canonical variant，全局 legacy heuristic 仍受门禁保护
 
 ## 1. 背景
 
@@ -569,7 +569,7 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 覆盖 18 个 canonical key、37 个 canonical variant。descriptor
+当前生产 catalog 覆盖 19 个 canonical key、46 个 canonical variant。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -581,8 +581,18 @@ EN/ZH 模板矩阵的 schema union 与声明一致。第三批的 `mennas cast` 
 输出层将 sensory 映射到 `MSGCH_TALK_VISUAL`，并由现有
 `mons_speaks_msg()` 在 caster 不可见时抑制该行。candidate 搜索本身不会把
 unseen 前缀缺失回退到 normal key；这里的不可见抑制属于选中 structured 消息后的
-sensory 输出语义。其他非默认 applicability 与 `audible=true` 仍被生成期和加载期
-拒绝。
+sensory 输出语义。当前另启用窄 applicability 子集：
+`requires_player` 与 `requires_caster_visible`；requires foe/named foe/god 与
+`audible=true` 仍被生成期和加载期拒绝。
+
+这两个 applicability 条件均为逐 variant metadata，并在 canonical English
+选择之后、binding 之前判断。`requires_player` 的 runtime snapshot 与 legacy
+`invalid_msg()` 共用 `resolve_mon_speech_applicability()`，因此保留 friendly
+caster 在无有效 foe index 时把玩家视为 foe 的特殊规则；
+`requires_caster_visible` 使用同一 snapshot 的 unseen 状态。不适用结果为
+`INAPPLICABLE`，candidate 搜索继续下一候选，既不重抽当前 key，也不调用
+target/beam/actor binding。silent-unprefixed 的 `ACCEPT_ANY_NONEMPTY` 兼容路径
+继续绕过这两个条件。
 
 actor possessive 的本地化允许一个受控窄适配：neutral pronoun 只说明英语采用
 singular-they 变格，现有 `pronoun_plurality()` 因主谓一致会返回 true，不能单独
@@ -903,8 +913,8 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 18 个 canonical
-key、37 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+实施状态（2026-07-16）：上述基础设施已落地，当前完整迁移 19 个 canonical
+key、46 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
@@ -935,8 +945,11 @@ non-target `resolves_target=false` / `NONE` relation 契约。第三批低风险
 requirement 保持随机身体形态的 legacy RNG 调用顺序。第五批迁移 `vv cast`
 的全部 4 个 variant 与 `smiting jeremiah cast` 的全部 5 个 variant；两者均
 使用 non-target `NONE` 契约，并逐行保留原有 `VISUAL` / `PLAIN` sensory 与
-显式 gesture metadata，不增加新槽类型或随机物化策略。门禁仍为关闭，因为还有
-16 个 legacy behavior occurrence 未迁移，并有 1 个
+显式 gesture metadata，不增加新槽类型或随机物化策略。第六批迁移
+`cantrip gastronok cast` 的全部 9 个 variant，显式表达 3 个 visual-only caster
+行和 5 个 player-directed 行的 applicability，并验证末尾 weight-5 变体、
+真实 Gastronok 所有格以及 visible/unseen candidate 行为。门禁仍为关闭，因为还有
+4 个 legacy behavior occurrence 未迁移，并有 1 个
 fail-closed occurrence。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的

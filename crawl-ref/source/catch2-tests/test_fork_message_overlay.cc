@@ -179,7 +179,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 18);
+        CHECK(report.structured_key_count == 19);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -280,11 +280,32 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
+        bool applicability::* const unsupported[] =
+        {
+            &applicability::requires_foe,
+            &applicability::requires_named_foe,
+            &applicability::requires_god,
+        };
+        for (const auto field : unsupported)
+        {
+            reset_monspell_overlay_for_test();
+            source = generated_monspell_catalog();
+            source.entries[1].variants[0].conditions.*field = true;
+            CHECK(load_monspell_overlay(canonical, &source).failure
+                  == load_failure::CORRUPT);
+        }
+
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[1].variants[0].conditions.requires_foe = true;
-        CHECK(load_monspell_overlay(canonical, &source).failure
-              == load_failure::CORRUPT);
+        source.entries[0].variants[0].conditions.requires_player = true;
+        CHECK(load_monspell_overlay(canonical, &source).state
+              == domain_state::ENABLED);
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries[0].variants[0].conditions.requires_caster_visible = true;
+        CHECK(load_monspell_overlay(canonical, &source).state
+              == domain_state::ENABLED);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
@@ -1795,5 +1816,353 @@ TEST_CASE("Vv and Jeremiah variants have exact weighted bilingual goldens",
         CHECK(zh.lines[0].sensory == item.sensory);
         CHECK(en.lines[0].implies_gesture == item.gesture);
         CHECK(zh.lines[0].implies_gesture == item.gesture);
+    }
+}
+
+TEST_CASE("Gastronok cantrip variants preserve weights, locale and applicability",
+          "[single-file][message-overlay][phase2][applicability]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    reset_monspell_overlay_for_test();
+    REQUIRE(load_monspell_overlay(
+        textdb_phase0::dump_canonical_english_speakdb()).state
+        == domain_state::ENABLED);
+
+    struct fixture
+    {
+        const char *pattern;
+        int weight;
+        sensory_mode sensory;
+        const char *english;
+        const char *chinese;
+    };
+    const fixture cases[] =
+    {
+        { "@The_monster@ bubbles merrily.", 10, sensory_mode::PLAIN,
+          "Gastronok bubbles merrily.", "加斯特罗诺克欢快地咕嘟冒泡。" },
+        { "VISUAL:@The_monster@ glows a brilliant shade of cerise.", 10,
+          sensory_mode::VISUAL,
+          "Gastronok glows a brilliant shade of cerise.",
+          "加斯特罗诺克泛起鲜亮的樱桃红光芒。" },
+        { "VISUAL:@The_monster@ wobbles crazily.", 10,
+          sensory_mode::VISUAL,
+          "Gastronok wobbles crazily.", "加斯特罗诺克疯狂地摇晃起来。" },
+        { "VISUAL:@The_monster_possessive@ eyestalks stretch out, then return to normal size.",
+          10, sensory_mode::VISUAL,
+          "Gastronok's eyestalks stretch out, then return to normal size.",
+          "加斯特罗诺克的眼柄伸展开来，随后恢复原状。" },
+        { "You wobble.", 10, sensory_mode::PLAIN,
+          "You wobble.", "你晃了晃。" },
+        { "You take on a slight green cast.", 10, sensory_mode::PLAIN,
+          "You take on a slight green cast.", "你的脸色微微发绿。" },
+        { "You feel briefly sluggish.", 10, sensory_mode::PLAIN,
+          "You feel briefly sluggish.", "你短暂地感到迟钝。" },
+        { "You feel a sudden, passing aversion to salt.", 10,
+          sensory_mode::PLAIN,
+          "You feel a sudden, passing aversion to salt.",
+          "你突然对盐产生了一阵厌恶。" },
+        { "You feel a sudden urge to swivel your nonexistent eyestalks around.",
+          5, sensory_mode::PLAIN,
+          "You feel a sudden urge to swivel your nonexistent eyestalks around.",
+          "你突然很想转动自己并不存在的眼柄。" },
+    };
+
+    const catalog_source &catalog = generated_monspell_catalog();
+    const auto entry = find_if(
+        catalog.entries.begin(), catalog.entries.end(),
+        [](const catalog_entry &candidate)
+        {
+            return candidate.canonical_key == "cantrip gastronok cast";
+        });
+    REQUIRE(entry != catalog.entries.end());
+    REQUIRE(entry->variants.size() == 9);
+
+    auto gastronok_bindings = []()
+    {
+        runtime_bindings values = beam_bindings(target_relation::NONE);
+        values.actor.sentence_en = "Gastronok";
+        values.actor.canonical_en = "Gastronok";
+        values.actor.possessive_name_en = "Gastronok's";
+        values.actor.localized =
+            { { "en", "Gastronok" }, { "zh", "加斯特罗诺克" } };
+        values.actor.possessive_name_localized =
+            { { "en", "Gastronok's" }, { "zh", "加斯特罗诺克的" } };
+        return values;
+    };
+
+    for (size_t ordinal = 0; ordinal < entry->variants.size(); ++ordinal)
+    {
+        CAPTURE(ordinal);
+        const catalog_variant &descriptor = entry->variants[ordinal];
+        CHECK(descriptor.upstream_weight == cases[ordinal].weight);
+        CHECK(descriptor.conditions.requires_caster_visible
+              == (ordinal >= 1 && ordinal <= 3));
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t binding_calls = 0;
+        const canonical_textdb::loaded_candidate candidate =
+            canonical_candidate(
+                canonical_textdb::candidate_status::SELECTED,
+                cases[ordinal].pattern, "cantrip gastronok cast", ordinal);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++binding_calls;
+                    CHECK_FALSE(requirements.resolves_target);
+                    CHECK_FALSE(requirements.implies_gesture);
+                    runtime_bindings values = gastronok_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(binding_calls == 1);
+        CHECK(materialized.binding.values.target_trace.empty());
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        REQUIRE(en.lines.size() == 1);
+        REQUIRE(zh.lines.size() == 1);
+        CHECK(en.lines[0].text == cases[ordinal].english);
+        CHECK(zh.lines[0].text == cases[ordinal].chinese);
+        CHECK(en.lines[0].sensory == cases[ordinal].sensory);
+        CHECK(zh.lines[0].sensory == cases[ordinal].sensory);
+        CHECK_FALSE(en.lines[0].implies_gesture);
+        CHECK_FALSE(zh.lines[0].implies_gesture);
+    }
+
+    SECTION("unseen visual selection consumes canonical RNG then skips binding")
+    {
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[1].pattern, "cantrip gastronok cast", 1);
+        uint64_t expected_state = 0;
+        uint64_t expected_count = 0;
+        {
+            rng::subgenerator scoped_rng(0x91a2, 0x37b4);
+            (void) random2(97);
+            expected_state = rng::current_generator().get_state();
+            expected_count = rng::current_generator().get_count();
+        }
+        size_t lookup_calls = 0;
+        size_t binding_calls = 0;
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::UNSEEN;
+        rng::subgenerator scoped_rng(0x91a2, 0x37b4);
+        canonical_materialization observed;
+        const message_candidate_search search =
+            search_message_candidate(
+                "cantrip gastronok cast", message_prefix::NORMAL,
+                [&](const message_lookup_request &request)
+                {
+                    CHECK(request.attempt
+                          == message_attempt::NORMAL_OR_UNSEEN);
+                    observed = materialize_monspell_candidate(
+                        "cantrip gastronok cast", request.attempt,
+                        applicability,
+                        [&](const binding_requirements &)
+                        {
+                            ++binding_calls;
+                            return gastronok_bindings();
+                        },
+                        [&](const string &)
+                        {
+                            ++lookup_calls;
+                            (void) random2(97);
+                            return candidate;
+                        });
+                    return lookup_result(observed.result, "", true);
+                });
+        CHECK(observed.result == message_result::INAPPLICABLE);
+        CHECK(search.action == message_search_action::NEXT_CANDIDATE);
+        CHECK(search.lookup_count == 1);
+        CHECK(lookup_calls == 1);
+        CHECK(binding_calls == 0);
+        CHECK(rng::current_generator().get_state() == expected_state);
+        CHECK(rng::current_generator().get_count() == expected_count);
+        CHECK(observed.binding.callback_count == 0);
+        CHECK(observed.binding.values.target_trace.empty());
+    }
+
+    SECTION("unseen plain player line remains renderable")
+    {
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::UNSEEN;
+        size_t binding_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[4].pattern, "cantrip gastronok cast", 4);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++binding_calls;
+                    runtime_bindings values = gastronok_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(binding_calls == 1);
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(zh.result == message_result::RENDERED);
+        CHECK(zh.lines[0].text == "你晃了晃。");
+    }
+
+    SECTION("player-directed line without player applicability skips binding")
+    {
+        runtime_applicability applicability;
+        applicability.player_applicable = false;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t binding_calls = 0;
+        size_t lookup_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[4].pattern, "cantrip gastronok cast", 4);
+        canonical_materialization observed;
+        const message_candidate_search search =
+            search_message_candidate(
+                "cantrip gastronok cast", message_prefix::NORMAL,
+                [&](const message_lookup_request &request)
+                {
+                    observed = materialize_monspell_candidate(
+                        "cantrip gastronok cast", request.attempt,
+                        applicability,
+                        [&](const binding_requirements &)
+                        {
+                            ++binding_calls;
+                            return gastronok_bindings();
+                        },
+                        [&](const string &)
+                        {
+                            ++lookup_calls;
+                            return candidate;
+                        });
+                    return lookup_result(observed.result, "", true);
+                });
+        CHECK(observed.result == message_result::INAPPLICABLE);
+        CHECK(search.action == message_search_action::NEXT_CANDIDATE);
+        CHECK(search.lookup_count == 1);
+        CHECK(lookup_calls == 1);
+        CHECK(binding_calls == 0);
+        CHECK(observed.binding.callback_count == 0);
+        CHECK(observed.binding.values.target_trace.empty());
+    }
+
+    SECTION("caster plain line does not require player applicability")
+    {
+        runtime_applicability applicability;
+        applicability.player_applicable = false;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t binding_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[0].pattern, "cantrip gastronok cast", 0);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++binding_calls;
+                    runtime_bindings values = gastronok_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(binding_calls == 1);
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        REQUIRE(en.result == message_result::RENDERED);
+        CHECK(en.lines[0].text == "Gastronok bubbles merrily.");
+    }
+
+    SECTION("silent unprefixed fallback preserves accept-any bypass")
+    {
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::UNSEEN;
+        size_t binding_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[1].pattern, "cantrip gastronok cast", 1);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::SILENT_UNPREFIXED_FALLBACK, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++binding_calls;
+                    runtime_bindings values = gastronok_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(binding_calls == 1);
+        const render_result en =
+            render_materialized_candidate(materialized, "en");
+        REQUIRE(en.result == message_result::RENDERED);
+        CHECK(en.lines[0].sensory == sensory_mode::VISUAL);
+    }
+
+    SECTION("silent unprefixed fallback also bypasses player applicability")
+    {
+        runtime_applicability applicability;
+        applicability.player_applicable = false;
+        applicability.caster_visibility = message_visibility::VISIBLE;
+        size_t binding_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[4].pattern, "cantrip gastronok cast", 4);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::SILENT_UNPREFIXED_FALLBACK, applicability,
+                [&](const binding_requirements &requirements)
+                {
+                    ++binding_calls;
+                    runtime_bindings values = gastronok_bindings();
+                    values.cast.frame = requirements.frame;
+                    return values;
+                },
+                [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(binding_calls == 1);
+    }
+
+    SECTION("required visibility cannot be unknown")
+    {
+        runtime_applicability applicability;
+        applicability.caster_visibility = message_visibility::UNKNOWN;
+        size_t binding_calls = 0;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED,
+            cases[1].pattern, "cantrip gastronok cast", 1);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "cantrip gastronok cast",
+                message_attempt::NORMAL_OR_UNSEEN, applicability,
+                [&](const binding_requirements &)
+                {
+                    ++binding_calls;
+                    return gastronok_bindings();
+                },
+                [candidate](const string &) { return candidate; });
+        CHECK(materialized.result == message_result::CORRUPT);
+        CHECK(materialized.diagnostic
+              == "caster visibility is required but unknown");
+        CHECK(binding_calls == 0);
     }
 }

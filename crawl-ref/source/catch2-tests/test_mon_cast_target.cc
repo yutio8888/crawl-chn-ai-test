@@ -1149,6 +1149,22 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { false, false, false, false, false },
             false,
         },
+        {
+            "cantrip gastronok cast",
+            {
+                "@The_monster@ bubbles merrily.",
+                "VISUAL:@The_monster@ glows a brilliant shade of cerise.",
+                "VISUAL:@The_monster@ wobbles crazily.",
+                "VISUAL:@The_monster_possessive@ eyestalks stretch out, then return to normal size.",
+                "You wobble.",
+                "You take on a slight green cast.",
+                "You feel briefly sluggish.",
+                "You feel a sudden, passing aversion to salt.",
+                "You feel a sudden urge to swivel your nonexistent eyestalks around.",
+            },
+            { false, false, false, false, false, false, false, false, false },
+            false,
+        },
     };
 
     for (const key_fixture &fixture : fixtures)
@@ -1160,6 +1176,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                 ? MONS_VV
             : fixture.key == "smiting jeremiah cast"
                 ? MONS_JEREMIAH
+            : fixture.key == "cantrip gastronok cast"
+                ? MONS_GASTRONOK
                 : MONS_ORC;
         vector<uint64_t> seeds(fixture.patterns.size(), 0);
         {
@@ -1275,6 +1293,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             const bool visual =
                 fixture.key == "mennas cast"
                 || fixture.key == "vv cast"
+                || (fixture.key == "cantrip gastronok cast"
+                    && ordinal >= 1 && ordinal <= 3)
                 || (fixture.key == "smiting jeremiah cast" && ordinal == 2);
             if (visual)
             {
@@ -1337,6 +1357,35 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
                     "耶利米恳求般地举起其双臂。",
                     "耶利米哭喊道：“可畏的主人，保护我吧！”",
                     "耶利米大喊道：“可怖者啊，毁灭我的敌人！”",
+                };
+                CHECK(english.text == expected_en[ordinal]);
+                CHECK(chinese.text == expected_zh[ordinal]);
+            }
+            else if (fixture.key == "cantrip gastronok cast")
+            {
+                static const char *expected_en[] =
+                {
+                    "Gastronok bubbles merrily.",
+                    "Gastronok glows a brilliant shade of cerise.",
+                    "Gastronok wobbles crazily.",
+                    "Gastronok's eyestalks stretch out, then return to normal size.",
+                    "You wobble.",
+                    "You take on a slight green cast.",
+                    "You feel briefly sluggish.",
+                    "You feel a sudden, passing aversion to salt.",
+                    "You feel a sudden urge to swivel your nonexistent eyestalks around.",
+                };
+                static const char *expected_zh[] =
+                {
+                    "加斯特罗诺克欢快地咕嘟冒泡。",
+                    "加斯特罗诺克泛起鲜亮的樱桃红光芒。",
+                    "加斯特罗诺克疯狂地摇晃起来。",
+                    "加斯特罗诺克的眼柄伸展开来，随后恢复原状。",
+                    "你晃了晃。",
+                    "你的脸色微微发绿。",
+                    "你短暂地感到迟钝。",
+                    "你突然对盐产生了一阵厌恶。",
+                    "你突然很想转动自己并不存在的眼柄。",
                 };
                 CHECK(english.text == expected_en[ordinal]);
                 CHECK(chinese.text == expected_zh[ordinal]);
@@ -1428,6 +1477,20 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         REQUIRE(result.structured);
         CHECK(result.text.find("它们的双臂") != string::npos);
         CHECK(result.text.find("其双臂") == string::npos);
+    }
+
+    SECTION("speech player applicability preserves friendly foe fallback")
+    {
+        source.type = MONS_GASTRONOK;
+        source.attitude = ATT_FRIENDLY;
+        source.foe = MHITNOT;
+        CHECK_FALSE(resolve_mon_speech_applicability(source).no_player);
+
+        source.attitude = ATT_HOSTILE;
+        CHECK(resolve_mon_speech_applicability(source).no_player);
+
+        source.foe = MHITYOU;
+        CHECK_FALSE(resolve_mon_speech_applicability(source).no_player);
     }
 
     SECTION("silent prefix directly selects the covered blizzard key")

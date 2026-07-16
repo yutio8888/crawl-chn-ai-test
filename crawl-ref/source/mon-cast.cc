@@ -9146,9 +9146,17 @@ static fmo::message_lookup_result _cast_message_lookup(
 
     result.structured = true;
     result.applicability_checked = true;
+    const mon_speech_applicability speech_applicability =
+        resolve_mon_speech_applicability(mon);
+    fmo::runtime_applicability applicability;
+    applicability.player_applicable = !speech_applicability.no_player;
+    applicability.caster_visibility =
+        speech_applicability.unseen
+            ? fmo::message_visibility::UNSEEN
+            : fmo::message_visibility::VISIBLE;
     const fmo::canonical_materialization materialized =
         fmo::materialize_monspell_candidate(
-            route.canonical_key, request.attempt, true,
+            route.canonical_key, request.attempt, applicability,
             [&mon, &pbolt, targeted, &language](
                 const fmo::binding_requirements &requirements)
             {

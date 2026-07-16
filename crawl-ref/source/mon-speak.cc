@@ -422,6 +422,27 @@ static actor* _get_foe(const monster &mon)
     return mon.get_foe();
 }
 
+mon_speech_applicability resolve_mon_speech_applicability(
+    const monster &mon)
+{
+    const actor *foe = _get_foe(mon);
+    const monster *m_foe = foe ? foe->as_monster() : nullptr;
+    mon_speech_applicability result;
+    result.no_foe = foe == nullptr;
+    result.no_player = crawl_state.game_is_arena()
+                       || (!mon.wont_attack()
+                           && (!foe || !foe->is_player()));
+    result.no_god =
+        result.no_foe || (m_foe && foe->deity() == GOD_NO_GOD);
+    const bool named_foe =
+        !result.no_foe
+        && (!m_foe || (m_foe->is_named() && m_foe->type != MONS_ROYAL_JELLY));
+    result.no_foe_name =
+        !named_foe || (m_foe && (m_foe->flags & MF_NAME_MASK));
+    result.unseen = !you.can_see(mon);
+    return result;
+}
+
 // Returns true if something is said.
 bool mons_speaks(monster* mons)
 {
@@ -805,21 +826,12 @@ bool mons_speaks(monster* mons)
 
 bool invalid_msg(const monster &mon, string msg)
 {
-    const actor*    foe    = _get_foe(mon);
-    const monster* m_foe   = foe ? foe->as_monster() : nullptr;
-    // TODO: dedup with mons_speaks()
-    const bool no_foe      = (foe == nullptr);
-    const bool no_player   = crawl_state.game_is_arena()
-                             || (!mon.wont_attack()
-                                 && (!foe || !foe->is_player()));
-    const bool mon_foe     = (m_foe != nullptr);
-    const bool no_god      = no_foe || (mon_foe && foe->deity() == GOD_NO_GOD);
-    const bool named_foe   = !no_foe && (!mon_foe || (m_foe->is_named()
-                                && m_foe->type != MONS_ROYAL_JELLY));
-    const bool no_foe_name = !named_foe
-                             || (mon_foe && (m_foe->flags & MF_NAME_MASK));
-    const bool unseen = !you.can_see(mon);
-    return _invalid_msg(msg, no_player, no_foe, no_foe_name, no_god, unseen);
+    const mon_speech_applicability applicability =
+        resolve_mon_speech_applicability(mon);
+    return _invalid_msg(
+        msg, applicability.no_player, applicability.no_foe,
+        applicability.no_foe_name, applicability.no_god,
+        applicability.unseen);
 
 }
 
