@@ -139,8 +139,15 @@ enum class message_visibility
     UNKNOWN,
 };
 
+// The generated catalog uses nested brace initializers. Keep explicit
+// constructors on nodes with default member initializers: the normal game
+// build is C++11, where those nodes are not aggregates (Catch2 uses C++14).
 struct applicability
 {
+    applicability();
+    applicability(bool player, bool foe, bool named_foe, bool god,
+                  bool caster_visible);
+
     bool requires_player = false;
     bool requires_foe = false;
     bool requires_named_foe = false;
@@ -163,6 +170,11 @@ struct localized_template
 
 struct line_metadata
 {
+    line_metadata();
+    line_metadata(sensory_mode sensory_mode, const std::string &channel_name,
+                  bool gesture, bool is_audible,
+                  const std::vector<localized_template> &localized_templates);
+
     sensory_mode sensory = sensory_mode::PLAIN;
     std::string channel;
     bool implies_gesture = false;
@@ -179,6 +191,12 @@ struct materialization_case
 
 struct recursive_capture_definition
 {
+    recursive_capture_definition();
+    recursive_capture_definition(const std::string &capture_name,
+                                 const std::string &capture_marker,
+                                 size_t capture_ordinal,
+                                 const std::string &capture_vocabulary);
+
     std::string name;
     std::string marker;
     size_t ordinal = 0;
@@ -187,6 +205,12 @@ struct recursive_capture_definition
 
 struct recursive_capture_vocabulary_entry
 {
+    recursive_capture_vocabulary_entry();
+    recursive_capture_vocabulary_entry(
+        const std::string &key, size_t ordinal,
+        const std::string &fingerprint,
+        const std::string &expanded_replacement);
+
     std::string canonical_key;
     size_t variant_ordinal = 0;
     std::string variant_fingerprint;
@@ -195,6 +219,22 @@ struct recursive_capture_vocabulary_entry
 
 struct catalog_variant
 {
+    catalog_variant();
+    catalog_variant(
+        const std::string &id, bool is_tombstone, size_t ordinal, int weight,
+        const std::string &variant_fingerprint,
+        const std::string &snapshot, cast_frame cast_message_frame,
+        bool target_resolution, const applicability &variant_conditions,
+        materialization_policy materialization,
+        const std::vector<slot_definition> &schema,
+        const std::vector<std::string> &arguments,
+        const std::vector<line_metadata> &message_lines,
+        const std::vector<materialization_case> &cases,
+        const std::vector<std::string> &dependencies,
+        const std::vector<std::string> &dependency_fingerprints,
+        const std::vector<recursive_capture_definition> &captures,
+        const std::vector<recursive_capture_vocabulary_entry> &vocabulary);
+
     std::string stable_id;
     bool tombstone = false;
     size_t variant_ordinal = static_cast<size_t>(-1);
@@ -218,6 +258,13 @@ struct catalog_variant
 
 struct catalog_entry
 {
+    catalog_entry();
+    catalog_entry(const std::string &key,
+                  const std::string &fingerprint,
+                  const std::string &graph_fingerprint,
+                  entry_mode entry_type,
+                  const std::vector<catalog_variant> &entry_variants);
+
     std::string canonical_key;
     std::string canonical_fingerprint;
     std::string selection_graph_fingerprint;
@@ -233,6 +280,13 @@ struct tombstone_record
 
 struct catalog_source
 {
+    catalog_source();
+    catalog_source(int version, const std::string &source_domain,
+                   const std::string &semantic_fingerprint,
+                   const std::vector<std::string> &languages,
+                   const std::vector<catalog_entry> &catalog_entries,
+                   const std::vector<tombstone_record> &catalog_tombstones);
+
     int schema_version = 0;
     std::string domain;
     std::string inventory_semantic_fingerprint;

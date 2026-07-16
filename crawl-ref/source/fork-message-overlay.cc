@@ -14,6 +14,103 @@
 
 namespace fork_message_overlay
 {
+applicability::applicability() = default;
+
+applicability::applicability(bool player, bool foe, bool named_foe, bool god,
+                             bool caster_visible)
+    : requires_player(player), requires_foe(foe),
+      requires_named_foe(named_foe), requires_god(god),
+      requires_caster_visible(caster_visible)
+{
+}
+
+line_metadata::line_metadata() = default;
+
+line_metadata::line_metadata(
+    sensory_mode sensory_mode, const string &channel_name, bool gesture,
+    bool is_audible, const vector<localized_template> &localized_templates)
+    : sensory(sensory_mode), channel(channel_name), implies_gesture(gesture),
+      audible(is_audible), templates(localized_templates)
+{
+}
+
+recursive_capture_definition::recursive_capture_definition() = default;
+
+recursive_capture_definition::recursive_capture_definition(
+    const string &capture_name, const string &capture_marker,
+    size_t capture_ordinal, const string &capture_vocabulary)
+    : name(capture_name), marker(capture_marker), ordinal(capture_ordinal),
+      vocabulary(capture_vocabulary)
+{
+}
+
+recursive_capture_vocabulary_entry::
+recursive_capture_vocabulary_entry() = default;
+
+recursive_capture_vocabulary_entry::recursive_capture_vocabulary_entry(
+    const string &key, size_t ordinal, const string &fingerprint,
+    const string &expanded_replacement)
+    : canonical_key(key), variant_ordinal(ordinal),
+      variant_fingerprint(fingerprint),
+      expanded_replacement_en(expanded_replacement)
+{
+}
+
+catalog_variant::catalog_variant() = default;
+
+catalog_variant::catalog_variant(
+    const string &id, bool is_tombstone, size_t ordinal, int weight,
+    const string &variant_fingerprint, const string &snapshot,
+    cast_frame cast_message_frame, bool target_resolution,
+    const applicability &variant_conditions,
+    materialization_policy materialization,
+    const vector<slot_definition> &schema,
+    const vector<string> &arguments,
+    const vector<line_metadata> &message_lines,
+    const vector<materialization_case> &cases,
+    const vector<string> &dependencies,
+    const vector<string> &dependency_fingerprints,
+    const vector<recursive_capture_definition> &captures,
+    const vector<recursive_capture_vocabulary_entry> &vocabulary)
+    : stable_id(id), tombstone(is_tombstone), variant_ordinal(ordinal),
+      upstream_weight(weight),
+      upstream_variant_fingerprint(variant_fingerprint),
+      english_snapshot(snapshot), frame(cast_message_frame),
+      resolves_target(target_resolution), conditions(variant_conditions),
+      policy(materialization), slot_schema(schema),
+      required_arguments(arguments), lines(message_lines),
+      materialization_cases(cases), recursive_dependencies(dependencies),
+      recursive_dependency_fingerprints(dependency_fingerprints),
+      recursive_captures(captures), recursive_capture_vocabulary(vocabulary)
+{
+}
+
+catalog_entry::catalog_entry() = default;
+
+catalog_entry::catalog_entry(
+    const string &key, const string &fingerprint,
+    const string &graph_fingerprint, entry_mode entry_type,
+    const vector<catalog_variant> &entry_variants)
+    : canonical_key(key), canonical_fingerprint(fingerprint),
+      selection_graph_fingerprint(graph_fingerprint), mode(entry_type),
+      variants(entry_variants)
+{
+}
+
+catalog_source::catalog_source() = default;
+
+catalog_source::catalog_source(
+    int version, const string &source_domain,
+    const string &semantic_fingerprint, const vector<string> &languages,
+    const vector<catalog_entry> &catalog_entries,
+    const vector<tombstone_record> &catalog_tombstones)
+    : schema_version(version), domain(source_domain),
+      inventory_semantic_fingerprint(semantic_fingerprint),
+      supported_languages(languages), entries(catalog_entries),
+      tombstones(catalog_tombstones)
+{
+}
+
 namespace
 {
 load_report current_report;
