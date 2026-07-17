@@ -1,0 +1,324 @@
+{
+  "entries": [
+    {
+      "canonical_key": "antimagic gaze norris cast",
+      "canonical_fingerprint": "fnv1a64:7bf6ec09c4cf2ee3",
+      "selection_graph_fingerprint": "fnv1a64:edff9d161b7e279f",
+      "mode": "LEGACY_ONLY",
+      "variants": [
+        {
+          "stable_id": "mon.cast.antimagic_gaze_norris.numinous_presence_gazes.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "18e89c532685edf4a6209318e654313eb912af0e3977cead715e4e591936e5b9",
+          "upstream_weight": 10,
+          "english_snapshot": "Something numinous underneath @the_monster_possessive@ waves suddenly gazes at @target@.",
+          "frame": "GAZE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [],
+          "required_arguments": [],
+          "line_metadata": [],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.antimagic_gaze_norris.eyes_shimmer.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "a49610af9b3120294aeae7d79179c27bab87f643033a2591abcee6a68e23937b",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster_possessive@ eyes shimmer, overwhelming @target@ with visions from beyond.",
+          "frame": "GAZE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [],
+          "required_arguments": [],
+          "line_metadata": [],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "blink range ironbound thunderhulk cast",
+      "canonical_fingerprint": "fnv1a64:53f1993d249b28da",
+      "selection_graph_fingerprint": "fnv1a64:013c8551f488b0b5",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.blink_range_ironbound_thunderhulk.strange_energies_crackle.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "b92a16defd329e8aaf094b033cc90202f0b91a8a8f59fdead4ede6076646c5c4",
+        "upstream_weight": 10,
+        "english_snapshot": "Strange energies crackle from @the_monster_possessive@ apparatus.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "brain worm cast",
+      "canonical_fingerprint": "fnv1a64:7a2d7248e3822cd2",
+      "selection_graph_fingerprint": "fnv1a64:af3fb0e375bb4aa4",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.brain_worm.bulging_head_throbs.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "7aff31b57e1827b88835180fc2086faf4d724e6ec733b715915d92b43734239b",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster_possessive@ bulging head throbs.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+          "required_arguments": ["actor_possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} bulging head throbs." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}鼓胀的脑袋阵阵抽动。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.brain_worm.throbbing_head_pulsates.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "11cc97a71bd6b6e14ff454b3ebda17aa937ff40ab9362b10580365b3cb2c3a4e",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster_possessive@ throbbing head pulsates.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+          "required_arguments": ["actor_possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} throbbing head pulsates." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}头部一阵阵地搏动。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "call down lightning cast",
+      "canonical_fingerprint": "fnv1a64:e463dd23b508d325",
+      "selection_graph_fingerprint": "fnv1a64:a347c33d2921ecb8",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.call_down_lightning.electricity_crackles.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "2c7e9f5ae1aaf5b4a412f3de319c7dcca185bc2a4cd6a360ee022888f16f8bc4",
+        "upstream_weight": 10,
+        "english_snapshot": "Electricity crackles from @the_monster_possessive@ apparatus.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "obsidian statue cast",
+      "canonical_fingerprint": "fnv1a64:9fd8df79e99aef00",
+      "selection_graph_fingerprint": "fnv1a64:d15405e5e994f5cf",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.obsidian_statue.eyes_glow_briefly.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "4f08416e5009bbce2a7b34693b5a99f4117176e1112298a29ff14894454e89a4",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster_possessive@ eyes glow briefly.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+        "required_arguments": ["actor_possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} eyes glow briefly." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}双眼短暂地泛起光芒。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "searing breath cast",
+      "canonical_fingerprint": "fnv1a64:ee10edf952e5bdfa",
+      "selection_graph_fingerprint": "fnv1a64:0d884f1fc4b8febb",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.searing_breath.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "siphon essence cast",
+      "canonical_fingerprint": "fnv1a64:a6d5868f94d5d596",
+      "selection_graph_fingerprint": "fnv1a64:33f8671efc993997",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.siphon_essence.draws_nearby_souls.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "51de9877b442e9b34b50e9936a9614e9af8a003bf78a18f2852ec9df3548476b",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ draws nearby souls into @reflexive@!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "reflexive", "type": "actor_reflexive" }
+        ],
+        "required_arguments": ["actor", "reflexive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} draws nearby souls into ${reflexive}!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}将附近的灵魂吸入${reflexive}体内！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "sun moth cast",
+      "canonical_fingerprint": "fnv1a64:bc731e894f7e2d1a",
+      "selection_graph_fingerprint": "fnv1a64:1531d8948f2be477",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.sun_moth.wings_beat_fiercely.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "61903b36760772bb6bd377928d4014fe6291047b7fd3b455aa6ee2d955d00963",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster_possessive@ wings beat fiercely.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+        "required_arguments": ["actor_possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} wings beat fiercely." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}翅膀猛烈地拍动。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen geryon cast",
+      "canonical_fingerprint": "fnv1a64:978ef56e9f9200e3",
+      "selection_graph_fingerprint": "fnv1a64:b010019e05c0fd1c",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_geryon.weird_mournful_sound.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "1b80c0feb5b06ecd1cf39fddb911b0795d7fcc62eaa92862afbf193b098b7678",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a weird and mournful sound.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [], "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a weird and mournful sound." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一声奇异而哀伤的声响。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen holy flames cast",
+      "canonical_fingerprint": "fnv1a64:f79af439a297bd8d",
+      "selection_graph_fingerprint": "fnv1a64:0d26ea9e3831a57a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_holy_flames.blessed_flames_called_forth.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d10cbc4c5ab8d37bb3eccb479b48344e5be5d1767762c234abe6a13147565895",
+        "upstream_weight": 10,
+        "english_snapshot": "Blessed flames are called forth!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [], "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Blessed flames are called forth!" },
+            { "language": "zh", "relation": "NONE", "pattern": "神圣火焰应召而出！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
