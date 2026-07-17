@@ -2,7 +2,7 @@
 name: crawl-coder
 description: DCSS Chinese translation code implementation agent — C++ source modification, TextDB operations, T_() migration, compilation verification
 mode: subagent
-model: opencode-go/deepseek-v4-flash
+model: openai/gpt-5.6-sol
 hidden: true
 permission:
   edit: allow
@@ -347,7 +347,7 @@ Run `bash .claude/scripts/verify_zh.sh --profile code` only after ALL units are 
 ## Commit Conventions
 
 - Standalone commit: `Feat: <description>` or `Fix: <description>`
-- Must append `Co-Authored-By: Claude <noreply@anthropic.com>`
+- Must append `Co-Authored-By: opencode <noreply@opencode.ai>`
 - **Compile must pass before commit** (`make -j4`)
 
 ---
