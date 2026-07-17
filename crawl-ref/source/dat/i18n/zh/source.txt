@@ -40016,3 +40016,490 @@ This might make you stumble backwards into %s while your transformation is expir
 %%%%
 efficient metabolism
 高效代谢
+%%%%
+    Health or Magic become full or\n    something is detected. If Health\n    and Magic are already full, stops\n    when 100 turns over (<w>numpad-5</w>)\n
+    生命或法力已回满，或\n    检测到某些情况。若生命\n    和法力均已回满，则在\n    经过 100 回合后停止（<w>小键盘-5</w>）\n
+%%%%
+ didn't appreciate your converting to 
+ 并不欣赏你改信
+%%%%
+ would have been much more forgiving. 
+ 本来会宽容得多。
+%%%%
+ frowns upon the use of magic, this staff will be of little use to you and you might just as well <w>%</w>rop it now.
+ 不喜魔法，这根法杖对你没什么用，你不如现在就<w>%</w>掉它。
+%%%%
+ In Tiles, you can achieve the same, in either direction, by clicking the <w>left mouse button</w>.
+ 在图形界面下，你可以通过点击<w>鼠标左键</w>来实现任意方向上的相同操作。
+%%%%
+ In Tiles, you can perform either action simply by clicking the <w>left mouse button</w> instead.
+ 在图形界面下，你也可以通过简单点击<w>鼠标左键</w>来执行任一操作。
+%%%%
+ probably won't like it if you switch allegiance. If you want to take the risk, you can convert here by pressing <w>></w> while standing on the altar. Doing so will enter you into service of a random god, who will grant you some additional piety in thanks.
+ 可能不会喜欢你改换门庭。如果你愿意冒这个险，你可以站在祭坛上按<w>></w>来改信。这样做会让你投入一位随机神祇的麾下，祂会赐予你一些额外的虔诚作为感谢。
+%%%%
+ probably won't like it if you switch allegiance, but having a look won't hurt: to get information on <w>
+ 可能不会喜欢你改换门庭，但看一看也无妨：要获取关于<w>
+%%%%
+ is opaque. If two or more opaque clouds are between you and a square, you won't be able to see anything in that square.
+ 是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。
+%%%%
+ form twists and warps, and jellies spill out!
+ 形态扭曲变形，果冻怪倾泻而出！
+%%%%
+ You have not yet explored it and cannot tell where it leads.
+ 你尚未探索过它，无法判断它的去向。
+%%%%
+ You can view the location it leads to by examining it with <w>%s</w> and pressing <w>%s</w>.
+ 你可以用<w>%s</w>检查它，然后按<w>%s</w>来查看其通往的位置。
+%%%%
+ powers are based on %s instead of Invocations skill.
+ 能力基于 %s 而非祈祷技能。
+%%%%
+%s stares at you suspiciously for a moment, then relaxes.
+%s怀疑地凝视了你一会儿，然后放松了下来。
+%%%%
+All level %d spells are either disliked by %s or cannot be cast by you.
+所有%d级法术要么不被%s喜欢，要么你无法施放。
+%%%%
+Shopping list: replace %dgp %s with cheaper one? (Y/n)
+购物清单：用更便宜的替换%d金币的%s？（是/否）
+%%%%
+Travel to: %s\nYou cannot afford this item; travel there anyway? (y/N)
+前往：%s\n你买不起这件物品；仍然前往吗？（是/否）
+%%%%
+<w>Features</w>\n--------\n
+<w>功能特性</w>\n--------\n
+%%%%
+\nCurrent terminal options (see the Options Guide for details):\n    `<w>allow_extended_colours</w>`: %d%s\n    `<w>bold_brightens_foreground</w>`: %d        `<w>blink_brightens_background</w>`: %d\n    `<w>best_effort_brighten_foreground</w>`: %d  `<w>best_effort_brighten_background</w>`: %d\n\n
+\n当前终端选项（详情请参阅选项指南）：\n    `<w>allow_extended_colours</w>`：%d%s\n    `<w>bold_brightens_foreground</w>`：%d        `<w>blink_brightens_background</w>`：%d\n    `<w>best_effort_brighten_foreground</w>`：%d  `<w>best_effort_brighten_background</w>`：%d\n\n
+%%%%
+<h>Dungeon Crawl Help\n\nPress one of the following keys to\nobtain more information on a certain\naspect of Dungeon Crawl.\n<w>?</w>: List of commands\n<w>^</w>: Quickstart Guide
+<h>地牢爬行帮助\n\n按以下键之一以获取\n关于地牢爬行某个方面的\n更多信息。\n<w>?</w>：命令列表\n<w>^</w>：快速入门指南
+%%%%
+<darkgrey>:: Browse character notes</darkgrey>\n<darkgrey>#: Browse character dump</darkgrey>
+<darkgrey>:: 浏览角色笔记</darkgrey>\n<darkgrey>#: 浏览角色存档信息</darkgrey>
+%%%%
+<w>:</w>: Browse character notes\n<w>#</w>: Browse character dump
+<w>:</w>：浏览角色笔记\n<w>#</w>：浏览角色存档信息
+%%%%
+<h>Manual Contents\n\n<w>*</w>       Table of contents\n<w>A</w>.      Overview\n<w>B</w>.      Starting Screen\n<w>C</w>.      Attributes and Stats\n<w>D</w>.      Exploring the Dungeon\n<w>E</w>.      Experience and Skills\n<w>F</w>.      Monsters\n<w>G</w>.      Items\n<w>H</w>.      Spellcasting\n<w>I</w>.      Targeting\n<w>J</w>.      Religion\n<w>K</w>.      Mutations\n<w>L</w>.      Licence, Contact, History\n<w>M</w>.      Macros, Options, Performance\n<w>N</w>.      Philosophy\n<w>1</w>.      List of Character Species\n<w>2</w>.      List of Character Backgrounds\n<w>3</w>.      List of Skills\n<w>4</w>.      List of Keys and Commands\n<w>5</w>.      Inscriptions\n<w>6</w>.      Dungeon sprint modes\n
+<h>手册目录\n\n<w>*</w>       目录\n<w>A</w>.      概述\n<w>B</w>.      起始界面\n<w>C</w>.      属性与数值\n<w>D</w>.      探索地牢\n<w>E</w>.      经验与技能\n<w>F</w>.      怪物\n<w>G</w>.      物品\n<w>H</w>.      法术\n<w>I</w>.      瞄准\n<w>J</w>.      信仰\n<w>K</w>.      变异\n<w>L</w>.      许可、联系方式、历史\n<w>M</w>.      宏、选项、性能\n<w>N</w>.      理念\n<w>1</w>.      角色种族列表\n<w>2</w>.      角色背景列表\n<w>3</w>.      技能列表\n<w>4</w>.      按键与命令列表\n<w>5</w>.      铭文\n<w>6</w>.      地牢冲刺模式\n
+%%%%
+<h>Movement:\nTo move in a direction or to attack, \nuse the numpad (try Numlock off and \non) or vi keys:\n
+<h>移动：\n要用方向键移动或攻击，\n请使用数字小键盘（试试关闭和\n开启 Numlock）或 vi 键：\n
+%%%%
+<w>/ Dir.</w>, <w>Shift-Dir.</w>: long walk\n<w>* Dir.</w>, <w>Ctrl-Dir.</w> : attack without move \n
+<w>/ 方向</w>、<w>Shift-方向</w>：长距离移动\n<w>* 方向</w>、<w>Ctrl-方向</w>：原地攻击\n
+%%%%
+<h>Autofight:\n<w>Tab</w>          : attack nearest monster,\n               moving if necessary\n<w>Shift-Tab</w>, <w>p</w> : trigger quivered action;\n               if targeted, aims at\n               nearest monster\n
+<h>自动战斗：\n<w>Tab</w>          ：攻击最近的怪物，\n               必要时移动\n<w>Shift-Tab</w>、<w>p</w>：触发已装填的动作；\n               若已瞄准，则瞄准\n               最近的怪物\n
+%%%%
+<brown>(</brown> : missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
+<brown>(</brown> ：弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+%%%%
+</lightcyan> : books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to library)
+</lightcyan> ：书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+%%%%
+<lightmagenta>0</lightmagenta> : the Orb of Zot\n    Carry it to the surface and win!\n
+<lightmagenta>0</lightmagenta> ：佐特宝珠\n    带上它回到地面即可获胜！\n
+%%%%
+Many commands have context sensitive help, among them <w>%</w>, <w>%</w>, <w>%</w> (or any form of targeting), <w>%</w>, and <w>%</w>.\nYou can read descriptions of your current spells (<w>%</w>), skills (<w>%?</w>) and abilities (<w>%!</w>).
+许多命令都有上下文相关帮助，包括<w>%</w>、<w>%</w>、<w>%</w>（或任何形式的瞄准）、<w>%</w>和<w>%</w>。\n你可以阅读当前法术（<w>%</w>）、技能（<w>%?</w>）和能力（<w>%!</w>）的描述。
+%%%%
+<w>%</w>/<w>%</w> to cast spells (<w>%?/%</w> lists spells)
+<w>%</w>/<w>%</w> 施法（<w>%?/%</w>列出法术）
+%%%%
+Memorise spells and view spell\n    library (get books to add to it)
+记忆法术并查看法术\n    库（获取书籍以添加法术）
+%%%%
+<console><cyan>)</cyan> : </console>hand weapons (<w>%</w>ield)
+<console><cyan>)</cyan> ：</console>手持武器（<w>%</w>持）
+%%%%
+<console><brown>(</brown> : </console>missiles (<w>%</w>uiver, <w>%</w>ire, <w>%</w>/<w>%</w> cycle)
+<console><brown>(</brown> ：</console>弹药（<w>%</w>装填、<w>%</w>瞄准、<w>%</w>/<w>%</w>切换）
+%%%%
+<console><cyan>[</cyan> : </console>armour (<w>%</w>ear and <w>%</w>ake off)
+<console><cyan>[</cyan> ：</console>护甲（<w>%</w>穿上和<w>%</w>脱下）
+%%%%
+<console><w>?</w> : </console>scrolls (<w>%</w>ead)
+<console><w>?</w> ：</console>卷轴（<w>%</w>读）
+%%%%
+<console><magenta>!</magenta> : </console>potions (<w>%</w>uaff)
+<console><magenta>!</magenta> ：</console>药水（<w>%</w>喝）
+%%%%
+<console><blue>=</blue> : </console>rings (<w>%</w>ut on and <w>%</w>emove)
+<console><blue>=</blue> ：</console>戒指（<w>%</w>戴上和<w>%</w>取下）
+%%%%
+<console><red>"</red> : </console>amulets (<w>%</w>ut on and <w>%</w>emove)
+<console><red>"</red> ：</console>项链（<w>%</w>戴上和<w>%</w>取下）
+%%%%
+<console><lightred>percent</lightred> : </console>talismans (e<w>%</w>oke)
+<console><lightred>percent</lightred> ：</console>护符（<w>%</w>激发）
+%%%%
+<console><lightgrey>/</lightgrey> : </console>wands (e<w>%</w>oke)
+<console><lightgrey>/</lightgrey> ：</console>魔杖（<w>%</w>激发）
+%%%%
+</lightcyan> : </console>books (<w>%</w>emorise, <w>%</w>ap, <w>%</w>ap,\n    pick up to add to spell library)
+</lightcyan> ：</console>书籍（<w>%</w>记忆、<w>%</w>翻阅、<w>%</w>翻阅、\n    捡起以添加至法术库）
+%%%%
+</brown> : </console>staves (<w>%</w>ield)
+</brown> ：</console>法杖（<w>%</w>持）
+%%%%
+\n<h>Targeting\n<w>Enter</w> or <w>.</w> or <w>Del</w> : confirm target\n<w>+</w> and <w>-</w> : cycle between targets\n<w>f</w> or <w>p</w> : shoot at previous target\n         if still alive and in sight\n
+\n<h>瞄准\n<w>Enter</w>或<w>.</w>或<w>Del</w>：确认目标\n<w>+</w>和<w>-</w>：在目标之间切换\n<w>f</w>或<w>p</w>：射击上一个目标\n        如果目标还活着且在视野内\n
+%%%%
+You feel yourself growing ill in the presence of %s.
+你在%s面前感到身体不适。
+%%%%
+\nIf you bind an item with this curse Ashenzari will enhance the following skills:\n
+\n如果你用此诅咒绑定一件物品，阿莎扎丽将强化以下技能：\n
+%%%%
+\nIf you make this sacrifice, your powers granted by Ru will become stronger in proportion to the value of the sacrifice, and you may gain new powers as well.\n\nSacrifices cannot be taken back.\n
+\n如果你做出此牺牲，茹赐予你的力量将根据牺牲的价值变强，你可能还会获得新的力量。\n\n牺牲不可撤销。\n
+%%%%
+ will brand one of your weapons with the corruption of the Abyss.
+ 将用深渊的腐化之力为你的某件武器附魔。
+%%%%
+Your lungs are flooded with %s and you cannot breathe.
+你的肺部被%s淹没，无法呼吸。
+%%%%
+<white>Welcome!</white>\n\n<cyan>You can be:</cyan>
+<white>欢迎！</white>\n\n<cyan>你可以选择：</cyan>
+%%%%
+Remember to rest between fights and to enter unexplored terrain with full health and magic. Ideally you should retreat into areas you've already explored and cleared of monsters; resting on the edge of the explored terrain increases the chances of your rest being interrupted by wandering monsters. To rest, press <w>5</w> or <w>Shift-numpad 5</w><tiles>, or <w>click the rest button</w></tiles>.
+记得在战斗之间休息，以满生命和法力进入未探索区域。理想情况下，你应该在遇险时撤退。
+%%%%
+\nAlso, berserking might help you not to lose so much health in the first place. To use your abilities press <w>a</w>.
+\n此外，狂暴可能有助于你一开始就不会损失那么多生命。要使用你的能力，请按<w>a</w>。
+%%%%
+. You can learn about any monster by hovering your mouse over it, and read its description by <w>right-clicking</w> on it.
+。你可以将鼠标悬停在任何怪物上来了解它，并通过<w>鼠标右键</w>阅读其描述。
+%%%%
+ is a monster, usually depicted by a letter. Some typical early monsters look like <brown>r</brown>, <green>l</green>, <brown>K</brown> or <lightgrey>g</lightgrey>. 
+ 是一个怪物，通常用字母表示。一些典型的早期怪物看起来像 <brown>r</brown>、<green>l</green>、<brown>K</brown> 或 <lightgrey>g</lightgrey>。
+%%%%
+Your console settings allowing, you'll always see a list of monsters somewhere on the screen.\n
+如果你的控制台设置允许，你总能在屏幕某处看到怪物列表。\n
+%%%%
+You can gain information about it by pressing <w>x</w> and moving the cursor over the monster, and read the monster description by then pressing <w>v</w>. 
+你可以按<w>x</w>并将光标移到怪物上来获取信息，然后按<w>v</w>阅读怪物描述。
+%%%%
+\nTo attack this monster with your wielded weapon, just move into it. 
+\n要用已装备的武器攻击此怪物，直接向它移动即可。
+%%%%
+Note that as long as there's a non-friendly monster in view you won't be able to automatically move to distant squares, to avoid death by misclicking.
+注意，只要视野中有非友好怪物，你就无法自动移动到远处格子。
+%%%%
+However, as a hunter you will want to deal with it using your bow. If you have a look at your shortbow from your <w>i</w>nventory, you'll find an explanation of how to do this. 
+然而，作为一名猎人，你会想用弓箭来对付它。如果你从<w>i</w>背包中查看你的短弓，你会找到相关的操作说明。
+%%%%
+First <w>w</w>ield it, then follow the instructions.<tiles>\nAs a short-cut you can also <w>right-click</w> on your shortbow to read its description, and <w>left-click</w> to wield it.</tiles>
+首先<w>w</w>持它，然后按照说明操作。<tiles>\n作为快捷方式，你也可以<w>鼠标右键</w>点击你的短弓来阅读其描述。</tiles>
+%%%%
+<tiles>Clicking with your <w>right mouse button</w> on your shortbow will also let you read its description.</tiles>
+<tiles>用<w>鼠标右键</w>点击你的短弓也可阅读其描述。</tiles>
+%%%%
+However, as a conjurer you will want to deal with it using magic. If you look at the help entry for the <w>M</w>emorisation screen you'll find an explanation of how to do this.
+然而，作为一名咒术师，你会想用魔法来对付它。如果你查看<w>M</w>记忆法术的帮助条目
+%%%%
+ just excommunicated you for running out of piety (your divine favour went to nothing). Maybe you repeatedly violated the religious rules, or maybe you failed to please your deity often enough, or some combination of the two. If you can find an altar dedicated to 
+ 刚刚因你的虔诚耗尽而将你逐出教门（你的神恩已化为乌有）。也许你一再违反教规，或者未能经常取悦你的神祇，抑或两者皆有。如果你能找到
+%%%%
+wasn't such a smart move after all, and you'd like to return to your old faith, you'll have to find an altar dedicated to 
+ 并不是那么明智的选择，你想回到原来的信仰，你需要找到一座
+%%%%
+Otherwise, you'll have to weather this god's displeasure until their divine wrath is spent.
+否则，你将不得不忍受这位神祇的不满，直到祂的神怒消散。
+%%%%
+Note that this kind of alliance only exists between the three good gods, so don't expect this to be the norm.
+注意，这种联盟仅存在于三位善良神祇之间，所以不要指望这是常态。
+%%%%
+ is one of the good gods who generally are rather forgiving about change of faith - unless you switch over to the path of evil, in which case their retribution can be nasty indeed!
+ 是善良神祇之一，通常对改信相当宽容——除非你投身邪恶之路，那时他们的报复可不会留情！
+%%%%
+! But really, changing from one of the good gods to an evil one, what did you expect!? For any god not on the opposing side of the faith, 
+！但是，从善良神祇改信邪恶神祇，你还想怎样！？对于任何不站在信仰对立面的神祇，
+%%%%
+! (Actually, only the three good gods will usually be forgiving about this kind of faithlessness.) 
+！（实际上，只有三位善良神祇通常会对这种背信行为表示宽容。）
+%%%%
+, so you're stuck with having to suffer the wrath of one god or another.
+，所以你只能承受某位神祇的怒火了。
+%%%%
+Welcome back! If it's been a while, you may want to refresh your memory.\nYour <w>%</w>nventory, 
+欢迎回来！如果有一段时间没玩了，你可能需要回顾一下。\n你的<w>%</w>背包
+%%%%
+This screen shows your character's set of talents. You can gain new abilities via certain items, through religion or by way of mutations. Activation of an ability usually comes at a cost, e.g. Magic power. Press '<w>!</w>' or '<w>?</w>' to toggle between ability selection and description.
+此界面显示你的角色的天赋集。你可以通过特定物品、宗教信仰或变异来获得新能力。
+%%%%
+This screen shows the skill set of your character. The number next to the skill is your current level, the higher the better. <w>Training</w> displays training percentages. <w>Costs</w> displays relative training costs. <w>Targets</w> displays skill training targets. You can toggle which skills to train by pressing their slot letters. A <darkgrey>grey</darkgrey> skill will not be trained and ease the training of others.
+此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。
+%%%%
+The training percentage (in <brown>brown</brown>) shows the relative amount of the experience gained which will be used to train each skill. It is automatically set depending on which skills you have used recently. Disabling a skill sets the training rate to 0.
+训练百分比（以<brown>棕色</brown>显示）表示获得的经验值中将用于训练该技能的相对比例。
+%%%%
+The training cost (in <cyan>cyan</cyan>) shows the experience cost to raise the given skill one level, relative to the cost of raising an aptitude zero skill from level zero to level one.
+训练成本（以<cyan>青色</cyan>显示）表示将指定技能提升一级所需的经验值，相对于当前
+%%%%
+Press the letter of a skill to set a training target. When the target is reached a message will appear and the training of the skill will be disabled.
+按技能对应的字母来设定训练目标。达到目标后会有消息显示，训练会自动停止。
+%%%%
+This screen shows the skill set of your character. Press the letter of a skill to read its description, or press <w>?</w> again to return to the skill selection.
+此界面显示你的角色技能集。技能旁边的数字是你的当前等级，等级越高越好。
+%%%%
+then be taken to target mode with the nearest monster or previous target already targeted. You can also cycle through all hostile monsters in sight with <w>+</w> or <w>-</w>. Once you're aiming at the correct monster, simply hit <w>f</w>, <w>Enter</w> or <w>.</w> to shoot at it. If you miss, <w>
+然后进入瞄准模式，最近的怪物或上一个目标已被自动锁定。你也可以循环切换所有可见目标。
+%%%%
+This screen shows the spells in your spell library. From here you can memorise spells by selecting them, as well as view spell descriptions, search for them, and organize them. As a conjurer, you start with five memorisable spells, and one already memorised: Magic Dart. (To view memorised spells, you can exit this menu and select <w>I</w>.)
+此界面显示你的法术库中的法术。你可以在此选择法术进行记忆，也可以查看
+%%%%
+\n\nA spell that isn't <darkgray>grayed out</darkgray> or <lightred>forbidden</lightred> can be memorised right away by selecting it at this menu.
+\n\n没有<darkgray>变灰</darkgray>或<lightred>禁止</lightred>的法术可以立即被记忆。
+%%%%
+spells right now. This will change as you grow in levels and Spellcasting proficiency. 
+目前的法术。随着你等级和法术技能的提升，这种情况会改变。
+%%%%
+you can <w>left mouse click</w> on the monster you wish to target (or on your player character to cast a spell on yourself) while pressing the <w>Control key</w>, and then select a spell from the menu. Or you can switch to the spellcasting display by <w>clicking on the</w> corresponding <w>tab</w>.\n\nAlternatively, 
+你可以<w>点击鼠标左键</w>选择你想要瞄准的怪物（或点击你自己的角色对自己施法），同时按住<w>Ctrl键</w>，然后从菜单中选择法术。或者你也可以切换到法术界面，<w>点击</w>对应的<w>标签</w>。\n\n或者，
+%%%%
+you can press <w>%</w> and choose a spell, e.g. <w>a</w> (check with <w>?</w>). For attack spells you'll 
+你可以按<w>%</w>并选择一个法术，比如<w>a</w>（用<w>?</w>查看）。对于攻击法术，你
+%%%%
+enter the ability menu with <w>%</w>, and then choose the corresponding ability. Note that such an attempt of activation, especially by the untrained, is likely to fail.
+用<w>%</w>进入能力菜单，然后选择对应的能力。注意，这种激活尝试，尤其是未经训练的尝试，很可能会失败。
+%%%%
+When wielded, some weapons (such as this one) offer certain abilities you can activate. 
+持握时，某些武器（比如这把）会提供一些可激活的能力。
+%%%%
+You can wield this weapon with <w>%</w>, or use <w>%</w> to switch between the weapons in slot a and b. (Use <w>%i</w> to adjust item slots.)
+你可以用<w>%</w>持握这把武器，或用<w>%</w>在插槽 a 和 b 之间切换。（用<w>%i</w>查看
+%%%%
+</w> for a while, so maybe you should continue training that rather than <w>
+</w>一段时间，所以也许你应该继续训练那个而不是<w>
+%%%%
+</w>. (Press <w>%</w> to see the skill management screen for the actual numbers.)
+</w>。（按<w>%</w>查看技能管理界面了解实际数值。）
+%%%%
+Because of your horns you cannot wear helmets. (Press <w>%</w> to see a list of your mutations and innate abilities.)
+因为你的角，你无法戴头盔。（按<w>%</w>查看你的变异和天生能力列表。）
+%%%%
+\nNote that body armour with a high encumbrance rating may hinder your ability to cast spells. Light armour such as robes and leather armour will be generally safe for any aspiring spellcaster.
+\n请注意，高负重等级的护甲可能影响你施法的能力。轻甲如长袍
+%%%%
+\nNote that shields will hinder your ability to cast spells, until you've gained enough Shields skill to remove the penalty.
+\n请注意，盾牌会影响你施法的能力，直到你提升足够的盾牌技能来消除惩罚。
+%%%%
+\nNote that many ranged weapons are two handed and so cannot be used with an offhand item.
+\n请注意，许多远程武器是双手武器，不能与副手物品同时使用。
+%%%%
+\n\nWhen worn, some types of armour (such as this one) offer certain <w>%</w>bilities you can activate. 
+\n\n穿戴时，某些类型的护甲（比如这件）提供一些可<w>%</w>激活的能力。
+%%%%
+The magic within can be unleashed by evoking (<w>%</w>) it.
+其中的魔力可以通过<w>%</w>激发来释放。
+%%%%
+\n\nWhen worn, some types of jewellery (such as this one) offer certain <w>%</w>bilities you can activate. 
+\n\n穿戴时，某些类型的首饰（比如这件）提供一些可<w>%</w>激活的能力。
+%%%%
+A manual can greatly help you in training a skill. After you pick one up, the skill in question will be trained more efficiently and will level up faster until you exhaust the manual's contents.
+手册能极大帮助你训练某一技能。捡起手册后，相关技能的训练效率将大幅提高。
+%%%%
+\nYou can pick up a spellbook to add its spells to your spell library. (View your spell library with <w>%</w>.)
+\n你可以捡起法术书将其法术添加到你的法术库中。（用<w>%</w>查看你的法术库。）
+%%%%
+Skeletons and corpses can be used as components for certain necromantic spells. Apart from that, they are largely useless.
+骷髅和尸体可以用作某些死灵法术的组件。除此之外，它们基本没什么用。
+%%%%
+This staff can enhance your spellcasting, making spells of its related spell school more powerful.
+这根法杖可以增强你的施法能力，使其相关学派的法术更加强大。
+%%%%
+Miscellaneous items sometimes harbour magical powers that can be harnessed by e<w>%</w>oking the item.
+杂项物品有时蕴藏着魔法力量，可以通过<w>%</w>激发物品来利用。
+%%%%
+These nasty constructions can cause a range of unpleasant effects. You won't be able to avoid tripping traps by flying over them; their magic construction will cause them to be triggered anyway.
+这些讨厌的构造会造成一系列令人不快的效果。你无法通过飞行来避免触发陷阱。
+%%%%
+The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
+地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道它们的存在，
+%%%%
+Some areas of the dungeon, such as the Spider Nest, may be strewn with giant webs that may ensnare you for a short time. Insects, oozes and incorporeal entities can navigate the webs safely.
+地牢的某些区域，比如蜘蛛巢穴，可能布满巨大的蛛网，会让你短暂被困。
+%%%%
+You can enter the next (deeper) level by following them down (<w>></w>). To get back to this level again, press <w><<</w> while standing on the upstairs.
+你可以顺梯而下进入下一层（更深处）（<w>></w>）。要回到这一层，按<w><<</w>。
+%%%%
+\n\nYou have not yet passed through this particular set of stairs. 
+\n\n你还没有走过这组特定的楼梯。
+%%%%
+These stairs lead out of the dungeon. Following them will end the game. The only way to win is to transport the fabled Orb of Zot outside.
+这些楼梯通往地牢之外。走下去会结束游戏。获胜的唯一方法是将传说中的佐特宝
+%%%%
+You can enter the previous (shallower) level by following these up (<w><<</w>). This is ideal for retreating or finding a safe resting spot, since the previous level will have less monsters, and monsters on this level can't follow you up unless they're standing right next to you. To get back to this level again, press <w>></w> while standing on the downstairs.
+你可以顺梯而上进入上一层（更浅处）（<w><<</w>）。这很适合撤退或寻找
+%%%%
+Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>, respectively. Note that you will usually be unable to return right away.
+逃生口可以用<w><<</w>和<w>></w>来快速离开一层。注意，你通常会掉落在下一层。
+%%%%
+\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.\n\\n为避免在旅行或自动探索时意外打开你不想打开的门，你可以用排除标记标记它。
+%%%%
+This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\\n\n这是你加入宗教的机会！一般来说，神祇会帮助它们的信徒，赐予各种力量。\\n
+%%%%
+This particular altar is so ancient that you cannot make out which god it is dedicated to! Converting here by pressing <w>></w> while standing on the altar will enter you into service of a random god, who will grant you some additional piety in thanks.
+这座祭坛古老到你无法辨认它属于哪位神祇，而且
+%%%%
+</w> by pressing <w>></w> while standing on the altar. Before taking up the responding faith you'll be asked for confirmation.
+</w>按<w>></w>站在祭坛上。在信奉回应信仰之前，你会被要求确认
+%%%%
+This particular altar is so ancient that you cannot make out which god it is dedicated to, and 
+这座祭坛古老到你无法辨认它属于哪位神祇，而且
+%%%%
+</w>, press <w>></w> while standing on the altar. Before taking up the responding faith (and abandoning your current one!) you'll be asked for confirmation.
+</w>，按<w>></w>站在祭坛上。在信奉回应信仰（以及放弃当前信仰）之前
+%%%%
+An entryway into one of the many dungeon side branches in Crawl. 
+通往地牢众多侧支之一的入口。
+%%%%
+probably dangerous, and you should stay out of it if you can. 
+可能有危险，如果可能的话你应该远离它。
+%%%%
+currently harmless, but that could change at some point. Check the overview screen (<w>%</w>) to view your resistances.
+目前无害，但情况可能在某个时候改变。查看概览界面（<w>%</w>）来了解你的抗性。
+%%%%
+Did you think you were the only adventurer in the dungeon? Well, you thought wrong! These unique adversaries often possess skills that normal monsters wouldn't, so be careful.\\n\\n\n你以为地牢里只有你一个冒险者吗？好吧，你错了！这些独特的对手往往拥有强大的力量。\\n\\n
+%%%%
+The ghost of a deceased adventurer, it would like nothing better than to send you the same way.\n\n
+这是已故冒险者的鬼魂，它最想做的就是让你也走上同一条路。\n\n
+%%%%
+A berserking monster is bloodthirsty and fighting madly. Such a blood rage makes it particularly dangerous!\n\n
+狂暴的怪物嗜血好战，疯狂战斗。这种血狂状态使其格外危险！\n\n
+%%%%
+Friendly monsters will follow you around and attempt to aid you in battle. You can order nearby allies by <w>t</w>alking to them.
+友方怪物会跟随你并尝试在战斗中协助你。你可以通过<w>t</w>与附近的盟友对话来下达指令。
+%%%%
+\n\nHowever, it is only <w>temporarily</w> friendly, and will become dangerous again when this friendliness wears off.
+\n\n但它只是<w>暂时</w>友好的，当这种友好状态消失时它将重新变得危险。
+%%%%
+You can easily mark its square as dangerous to avoid accidentally entering into its field of view when using auto-explore or auto-travel. To do so, enter targeting mode with <w>x</w> and then press <w>e</w> when your cursor is hovering over the monster's grid. Doing so will mark this grid and all surrounding ones within a radius of 8 as "excluded" ones that explore or travel modes won't enter.
+你可以轻松地将其所在格子标记为危险，以避免在使用自动探索时意外进入它的视野。
+%%%%
+Apparently it has not noticed you - yet. Note that you do not have to engage every monster you meet. Sometimes, discretion is the better part of valour.
+它似乎还没有注意到你——至少目前还没有。注意，你并非必须与遇到的每一个怪物交战。有时，谨慎行事才是明智之举。
+%%%%
+Apparently it has been distracted by something. You could use this opportunity to sneak up on this monster - or to sneak away.
+它似乎被什么东西分散了注意力。你可以利用这个机会潜行靠近它——或者悄悄溜走。
+%%%%
+\\nThis monster doesn't appear to have any resistances or susceptibilities. It cannot fly and is of average speed. Examining other, possibly more high-level monsters can give important clues as to how to deal with them.\n\\n这个怪物似乎没有任何抗性或弱点。它不能飞行，速度一般。检查
+%%%%
+If you linger in this branch for another %d turns, the power of Zot will shatter your %s gem.\n
+如果你在此分支再逗留%d回合，佐特之力将粉碎你的%s宝石。\n
+%%%%
+%s and a teleportation trap spontaneously manifests!
+%s处突然出现了一个传送陷阱！
+%%%%
+This entrance appears to skip some branches and may be quite dangerous. Continue anyway?
+这个入口似乎跳过了某些分支，可能相当危险。仍然继续吗？
+%%%%
+discovered their monstrous ancestry!
+发现了他们怪物般的血统！
+%%%%
+A magic seal in the Gauntlet prevents long-range teleports.
+手套关卡中的魔法封印阻止了远距离传送。
+%%%%
+This %s%s is marked as excluded! Open it anyway?
+这个%s%s被标记为已排除！要打开它吗？
+%%%%
+\nTrigger chance:  %d%%\nBase damage:     %d\n\n
+\n触发几率：%d%%\n基础伤害：%d\n\n
+%%%%
+\nTrigger chance:  %d%%\nBase damage:     %d
+\n触发几率：%d%%\n基础伤害：%d
+%%%%
+\n\nThis branch can only be %sed while carrying at least %d rune%s of Zot.
+\n\n此分支只有在携带至少%d个佐特符文时才能进入。
+%%%%
+\n(If you entered the Abyss now, you could be pulled as deep as Abyss:%d.)
+\n（如果你现在进入深渊，你可能会被拖到深渊：%d层。）
+%%%%
+<lightgrey>: <w>%s</w> [toggle: <w>!</w>], by <w>%s</w> [<w>/</w>], <w>%s</w> useless & duplicates [<w>=</w>]</lightgrey>
+<lightgrey>：<w>%s</w> [切换：<w>!</w>]，按<w>%s</w> [<w>/</w>]，<w>%s</w>无用与重复 [<w>=</w>]</lightgrey>
+%%%%
+Pikel's spell is broken, but his former %s can only feel hate for you!
+皮克尔的法术被打破了，但他曾经的%s只能对你满怀仇恨！
+%%%%
+What monsters to dismiss (ENTER for all, "harmful", "mobile", "los" or a regex, "keepitem" to leave items)? 
+要遣散哪些怪物（回车表示全部、「harmful」「mobile」「los」或正则表达式、「keepitem」保留物品）？
+%%%%
+You are silenced but the monster isn't; you will probably hear/see nothing.
+你处于沉默状态但怪物没有；你很可能听/看不到什么。
+%%%%
+Both you and the monster are silenced, so you likely won't hear anything.
+你和怪物都处于沉默状态，所以你很可能听不到任何动静。
+%%%%
+Your spells cost less MP as you Rev up. Whenever you cast a spell, you make a melee attack against a random enemy in range.
+你的法术消耗法力随热机等级增加而减少。每当你施法时，你会对范围内的随机敌人进行一次近战攻击。
+%%%%
+Your AC increases as you Rev (up to +5) and while fully Revved, your attacks may disarm enemies.
+你的护甲等级会随着热机而增加（最多 +5），完全热机时你的攻击可能缴械敌人。
+%%%%
+It sometimes fires a blinding ray at enemies whose attacks you dodge.
+它有时会向闪避了它攻击的敌人发射致盲光线。
+%%%%
+\nWhile standing here, you can exit the dungeon with the <w>%s</w> key.
+\n站在这里时，你可以按<w>%s</w>键离开地牢。
+%%%%
+\nWhile standing here, you can traverse %s with the <w>%s</w> key.
+\n站在这里时，你可以按<w>%s</w>键穿越%s。
+%%%%
+\nWhile standing here, you can %senter %s with the <w>%s</w> key; it will vanish after you do so.
+\n站在这里时，你可以按<w>%s</w>键进入%s；进入后它就会消失。
+%%%%
+\nWhile standing here, you can %s %s with the <w>%s</w> key%s.
+\n站在这里时，你可以按<w>%s</w>键%s%s。
+%%%%
+\nWhile standing here, you can enter <w>%s</w> with the <w>%s</w> key.
+\n站在这里时，你可以按<w>%s</w>键进入<w>%s</w>。
+%%%%
+\nWhile standing here, you can enter %s with with the <w>%s</w> key.
+\n站在这里时，你可以按<w>%s</w>键进入%s。
+%%%%
+\nWhile adjacent to it, you can %s%s it by pressing the <w>%s</w> key.
+\n在它旁边时，你可以按<w>%s</w>键%s%s它。
+%%%%
+\nIf you are struck by this, you will no longer be %s.\n
+\n如果你被此击中，你将不再%s。\n
+%%%%
+\nYou currently have no enchantments that could be removed by this.\n
+\n你目前没有任何可以以此移除的附魔。\n
+%%%%
+\n\n<magenta>This spell cannot be performed via Aphotic Marionette.</magenta>\n
+\n\n<magenta>此法术无法通过暗影牵线木偶施展。</magenta>\n
+%%%%
+\n\n<magenta>When cast via Aphotic Marionette, this spell will affect the player instead.
+\n\n<magenta>通过暗影牵线木偶施展时，此法术将影响施法者本人。
+%%%%
+%s can sustain at most %s creature summoned by this spell.\n
+%s最多能维持该法术召唤的%s个生物。\n
+%%%%
+%s can sustain at most %s creatures summoned by this spell.\n
+%s最多能维持该法术召唤的%s个生物。\n
+%%%%
+You cannot be affected by this spell right now. %s\n
+你目前无法受到此法术的影响。%s\n
+%%%%
+\n<lightmagenta>This bane will be lifted from you when you gain another %.1f XLs worth of experience.</lightmagenta>
+\n<lightmagenta>当你再获得%.1f级的经验值后，此灾祸将被解除。</lightmagenta>
+%%%%
+It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
+它会在受到伤害或被杀死时释放各种果冻怪，果冻的数量与受到的伤害成正比。\n
+%%%%
+If this monster is a "program bug", then it\'s recommended that you save your game and reload. Please report monsters who masquerade as program bugs or run around the dungeon without a proper description to the authorities.\\n\n如果这个怪物是一个「程序错误」，建议你保存游戏并重新加载。请报告那些具有特殊能力的怪物。\\n
+%%%%
+\nThis cloud is opaque; one tile will not block vision, but multiple will.\n
+\n 是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。\n
+%%%%
+\nClouds of this kind an adventurer makes will vanish %s once outside their sight.\n
+\n冒险者制造的这类云团一旦离开其视野%s就会消散。\n
+%%%%
+<white>The lance glows brightly as it skewers %s. You feel that it has reached its full power.</white>
+<white>长枪刺穿%s时发出耀眼的光芒。你感到它已达到了力量的巅峰。</white>
