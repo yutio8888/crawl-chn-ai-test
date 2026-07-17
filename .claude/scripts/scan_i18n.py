@@ -2389,11 +2389,24 @@ def cmd_validate_source_classification_shard(args):
         for g in inventory.get('groups', []):
             inventory_groups[g.get('group_id')] = g
 
+    # Check for duplicate group_ids within shard
+    seen_gids = set()
+    for i, g in enumerate(groups):
+        gid = g.get('group_id', '')
+        if gid in seen_gids:
+            errors.append(f"groups[{i}]: duplicate group_id: {gid}")
+        seen_gids.add(gid)
+
     for i, g in enumerate(groups):
         gid = g.get('group_id', '')
         # Validate group_id format
         if not GROUP_ID_RE.match(gid):
             errors.append(f"groups[{i}]: invalid group_id: {gid}")
+
+        # Cross-reference with inventory: every group_id must exist in inventory
+        if inventory and gid not in inventory_groups:
+            errors.append(
+                f"groups[{i}]: group_id not in inventory: {gid}")
 
         # Validate fingerprint
         fp = g.get('group_fingerprint', '')
@@ -2632,6 +2645,10 @@ def cmd_assemble_source_key_collision_classifications(args):
             if s:
                 for g in s.get('groups', []):
                     gid = g.get('group_id', '')
+                    if gid in shards:
+                        print(f"ERROR: duplicate group_id across shards: {gid}",
+                              file=sys.stderr)
+                        return 1
                     shards[gid] = g
 
     # Load adjudications
