@@ -153,6 +153,8 @@ a dead tree
 一棵枯树
 %%%%
 Corona
+怪异发光球
+%%%%
 weirdly glowing ball
 怪异发光球
 %%%%
@@ -11423,9 +11425,6 @@ Fast+Slow
 Slow
 减速
 %%%%
-Fast
-快速
-%%%%
 Water
 水域
 %%%%
@@ -11855,10 +11854,6 @@ a Gauntlet
 
 竞技长廊
 %%%%
-the Arena
-
-竞技场
-%%%%
 the Crucible of Flesh
 
 血肉熔炉
@@ -11883,11 +11878,8 @@ a Labyrinth
 
 \n\n此分支的入口位于%3$s的第%1$d层到第%2$d层之间。
 %%%%
-Welcome to Hell!
-Please enjoy your stay.
-
-欢迎来到地狱！
-祝你入住愉快。
+Welcome to Hell!\nPlease enjoy your stay.
+欢迎来到地狱！\n祝你入住愉快。
 %%%%
 An ancient malice corrodes your equipment.
 
@@ -12836,10 +12828,8 @@ completely
  barely
 勉强
 %%%%
-<yellow>Hello, welcome to Dungeon Crawl Stone Soup %s!</yellow>
-<brown>(c) Copyright 1997-2002 Linley Henzell, 2002-2025 Crawl DevTeam
-<yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>
-<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
+<yellow>Hello, welcome to Dungeon Crawl Stone Soup %s!</yellow>\n<brown>(c) Copyright 1997-2002 Linley Henzell, 2002-2025 Crawl DevTeam
+<yellow>你好，欢迎来到地牢爬行石汤 %s！</yellow>\n<brown>(c) 版权所有 1997-2002 Linley Henzell，2002-2025 Crawl 开发团队
 %%%%
  are unaffected.
  不受影响。
@@ -13596,11 +13586,6 @@ You %s know any spells.
 %%%%
 a %1$s
 %1$s
-%%%%
-Welcome back! If it's been a while, you may want to refresh your memory.
-Your <w>%</w>nventory, 
-欢迎回来！如果已经有一段时间了，你可能想刷新你的记忆。
-你的<w>%</w>物品栏, 
 %%%%
 %s is nearby
 %s在附近
@@ -28113,6 +28098,7 @@ Dragonpray
 %%%%
 Flames, rFlCloud
 烈焰，火云抗
+%%%%
 Fury
 狂怒
 %%%%
@@ -29741,6 +29727,7 @@ rising multitudes
 %%%%
 full choir
 齐声合唱
+%%%%
 nearby
 附近的
 %%%%
@@ -32925,11 +32912,7 @@ Sludge Elf
 %1$s挡住了%3$s%4$s
 %%%%
 Jiyva will unlock the Slime Pits vault.
-
 吉瓦将解锁软泥坑宝库。
-
- guffaws at your puny god.
-嘲笑你软弱的神祇。
 %%%%
  sneers at your recitation.
 对你的吟诵嗤之以鼻。
@@ -34489,9 +34472,6 @@ summons %d friend%s
 %%%%
 summons friendly %s
 召唤了友善的%s
-%%%%
-the %s
-%s
 %%%%
 ties %s tail in a knot.
 把%s的尾巴打了个结。
@@ -36281,6 +36261,7 @@ encrusted
 %%%%
 sharpened 
 磨利的
+%%%%
 brass
 黄铜
 %%%%
@@ -36298,6 +36279,7 @@ bronze
 %%%%
 ivory
 象牙
+%%%%
 lead
 铅
 %%%%
@@ -36813,7 +36795,7 @@ Octopus
 %%%%
 Octopoid
 章鱼形
-
+%%%%
 Lethargy
 倦怠
 %%%%
@@ -36864,6 +36846,7 @@ the Dilettante
 %%%%
 You are less proficient with several skills.
 你对数项技能的熟练度降低。
+%%%%
 Enemies you spot sometimes become touched by paradox.
 你发现的敌人有时会受到悖论影响。
 %%%%
@@ -38394,9 +38377,6 @@ status|weakness
 regeneration
 再生
 %%%%
-Faith
-信仰
-%%%%
 Wildshape
 变形
 %%%%
@@ -38799,113 +38779,14 @@ Levels and vault maps discovered:\n
 magenta
 品红色
 %%%%
-<h>Examine surroundings ('<w>x</w><h>' in main):
-<w>Esc</w> : cancel (also <w>Space</w>, <w>x</w>)
-<w>Ctrl-X</w> : list all things in view
-<w>Dir.</w>: move cursor in that direction
-<w>.</w> : move to cursor (also <w>Enter</w>, <w>Del</w>)
-<w>g</w> : pick up item at cursor
-<w>v</w> : describe monster under cursor
-<w>+</w> : cycle monsters forward (also <w>=</w>)
-<w>-</w> : cycle monsters backward
-<w>^</w> : cycle through traps
-<w>_</w> : cycle through altars
-<w><<</w>/<w>></w> : cycle through up/down stairs
-<w>Tab</w> : cycle through shops and portals
-<w>r</w> : move cursor to you
-<w>e</w> : create/remove travel exclusion
-
-<h>查看周围环境（主界面按 '<w>x</w><h>'）：
-<w>Esc</w>：取消（也可用 <w>Space</w>、<w>x</w>）
-<w>Ctrl-X</w>：列出视野内的所有事物
-<w>Dir.</w>：向该方向移动光标
-<w>.</w>：移至光标处（也可用 <w>Enter</w>、<w>Del</w>）
-<w>g</w>：拾取光标处的物品
-<w>v</w>：描述光标下的怪物
-<w>+</w>：切换至下一个怪物（也可用 <w>=</w>）
-<w>-</w>：切换至上一个怪物
-<w>^</w>：切换陷阱
-<w>_</w>：切换祭坛
-<w><<</w>/<w>></w>：切换上/下楼梯
-<w>Tab</w>：切换商店和传送门
-<w>r</w>：将光标移至你的位置
-<w>e</w>：创建/移除旅行禁区
+<h>Examine surroundings ('<w>x</w><h>' in main):\n<w>Esc</w> : cancel (also <w>Space</w>, <w>x</w>)\n<w>Ctrl-X</w> : list all things in view\n<w>Dir.</w>: move cursor in that direction\n<w>.</w> : move to cursor (also <w>Enter</w>, <w>Del</w>)\n<w>g</w> : pick up item at cursor\n<w>v</w> : describe monster under cursor\n<w>+</w> : cycle monsters forward (also <w>=</w>)\n<w>-</w> : cycle monsters backward\n<w>^</w> : cycle through traps\n<w>_</w> : cycle through altars\n<w><<</w>/<w>></w> : cycle through up/down stairs\n<w>Tab</w> : cycle through shops and portals\n<w>r</w> : move cursor to you\n<w>e</w> : create/remove travel exclusion\n
+<h>查看周围环境（主界面按 '<w>x</w><h>'）：\n<w>Esc</w>：取消（也可用 <w>Space</w>、<w>x</w>）\n<w>Ctrl-X</w>：列出视野内的所有事物\n<w>Dir.</w>：向该方向移动光标\n<w>.</w>：移至光标处（也可用 <w>Enter</w>、<w>Del</w>）\n<w>g</w>：拾取光标处的物品\n<w>v</w>：描述光标下的怪物\n<w>+</w>：切换至下一个怪物（也可用 <w>=</w>）\n<w>-</w>：切换至上一个怪物\n<w>^</w>：切换陷阱\n<w>_</w>：切换祭坛\n<w><<</w>/<w>></w>：切换上/下楼梯\n<w>Tab</w>：切换商店和传送门\n<w>r</w>：将光标移至你的位置\n<w>e</w>：创建/移除旅行禁区\n
 %%%%
-<h>Wizard targeting commands:</h>
-<w>Ctrl-C</w> : cycle through beam paths
-<w>D</w>: get debugging information about the monster
-<w>o</w>: give item to monster
-<w>F</w>: cycle monster friendly/good neutral/neutral/hostile
-<w>Ctrl-H</w>: heal the monster fully
-<w>P</w>: apply divine blessing to monster
-<w>m</w>: move monster or player
-<w>M</w>: cause spell miscast for monster or player
-<w>s</w>: force monster to shout or speak
-<w>S</w>: make monster a summoned monster
-<w>w</w>: calculate shortest path to any point on the map
-<w>\"</w>: get debugging information about a portal
-<w>~</w>: polymorph monster to specific type
-<w>,</w>: bring down the monster to 1 hp
-<w>Ctrl-(</w>: place a mimic
-<w>Ctrl-B</w>: banish monster
-<w>Ctrl-K</w>: kill monster
-
-<h>巫师瞄准命令：</h>
-<w>Ctrl-C</w>：切换射线轨迹
-<w>D</w>：获取该怪物的调试信息
-<w>o</w>：将物品交给怪物
-<w>F</w>：切换怪物的友善/善意中立/中立/敌对状态
-<w>Ctrl-H</w>：完全治疗怪物
-<w>P</w>：对怪物施加神圣祝福
-<w>m</w>：移动怪物或玩家
-<w>M</w>：令怪物或玩家发生法术误施
-<w>s</w>：强制怪物喊叫或说话
-<w>S</w>：将怪物变为召唤怪物
-<w>w</w>：计算到地图任意位置的最短路径
-<w>\"</w>：获取传送门的调试信息
-<w>~</w>：将怪物变形为指定类型
-<w>,</w>：将怪物生命降至 1 点
-<w>Ctrl-(</w>：放置一个拟态怪
-<w>Ctrl-B</w>：放逐怪物
-<w>Ctrl-K</w>：杀死怪物
+<h>Wizard targeting commands:</h>\n<w>Ctrl-C</w> : cycle through beam paths\n<w>D</w>: get debugging information about the monster\n<w>o</w>: give item to monster\n<w>F</w>: cycle monster friendly/good neutral/neutral/hostile\n<w>Ctrl-H</w>: heal the monster fully\n<w>P</w>: apply divine blessing to monster\n<w>m</w>: move monster or player\n<w>M</w>: cause spell miscast for monster or player\n<w>s</w>: force monster to shout or speak\n<w>S</w>: make monster a summoned monster\n<w>w</w>: calculate shortest path to any point on the map\n<w>\"</w>: get debugging information about a portal\n<w>~</w>: polymorph monster to specific type\n<w>,</w>: bring down the monster to 1 hp\n<w>Ctrl-(</w>: place a mimic\n<w>Ctrl-B</w>: banish monster\n<w>Ctrl-K</w>: kill monster\n
+<h>巫师瞄准命令：</h>\n<w>Ctrl-C</w>：切换射线轨迹\n<w>D</w>：获取该怪物的调试信息\n<w>o</w>：将物品交给怪物\n<w>F</w>：切换怪物的友善/善意中立/中立/敌对状态\n<w>Ctrl-H</w>：完全治疗怪物\n<w>P</w>：对怪物施加神圣祝福\n<w>m</w>：移动怪物或玩家\n<w>M</w>：令怪物或玩家发生施法失误\n<w>s</w>：强制怪物喊叫或说话\n<w>S</w>：将怪物变为召唤怪物\n<w>w</w>：计算到地图任意位置的最短路径\n<w>\"</w>：获取传送门的调试信息\n<w>~</w>：将怪物变形为指定类型\n<w>,</w>：将怪物生命降至1点\n<w>Ctrl-(</w>：放置一个拟态怪\n<w>Ctrl-B</w>：放逐怪物\n<w>Ctrl-K</w>：杀死怪物\n
 %%%%
-<h>Targeting (zap wands, cast spells, etc.):
-Most keys from examine surroundings work.
-Some keys fire at the target. <w>Ctrl-X</w> only
-lists eligible targets. By default,
-range is respected and beams don't stop.
-<w>Enter</w> : fire (<w>Space</w>, <w>Del</w>, <w>f</w>)
-<w>.</w> : fire, stop at target
-<w>@</w> : fire, stop at target, ignore range
-<w>!</w> : fire, don't stop, ignore range
-<w>p</w> : fire at Previous target (also <w>f</w>)
-<w>:</w> : show/hide beam path
-<w>Shift-Dir.</w> : fire straight-line beam
-             (also <w>/ Dir.</w>)
-
-<h>Firing mode ('<w>f</w><h>' in main):
-<w>Q</w> : choose fire action.
-<w>(</w> : cycle to previous suitable action
-<w>)</w> : cycle to next suitable action.
-
-<h>瞄准（使用魔杖、施放法术等）：
-查看周围环境时的大多数按键均可使用。
-部分按键会向目标发射。<w>Ctrl-X</w> 仅
-列出可选目标。默认情况下，
-会遵守射程，且射线不会停下。
-<w>Enter</w>：发射（<w>Space</w>、<w>Del</w>、<w>f</w>）
-<w>.</w>：发射，并在目标处停下
-<w>@</w>：发射，在目标处停下，忽略射程
-<w>!</w>：发射，不停下，忽略射程
-<w>p</w>：向上一个目标发射（也可用 <w>f</w>）
-<w>:</w>：显示/隐藏射线轨迹
-<w>Shift-Dir.</w>：发射直线射线
-             （也可用 <w>/ Dir.</w>）
-
-<h>发射模式（主界面按 '<w>f</w><h>'）：
-<w>Q</w>：选择发射动作。
-<w>(</w>：切换至上一个合适的动作
-<w>)</w>：切换至下一个合适的动作。
+<h>Targeting (zap wands, cast spells, etc.):\nMost keys from examine surroundings work.\nSome keys fire at the target. <w>Ctrl-X</w> only\nlists eligible targets. By default,\nrange is respected and beams don't stop.\n<w>Enter</w> : fire (<w>Space</w>, <w>Del</w>, <w>f</w>)\n<w>.</w> : fire, stop at target\n<w>@</w> : fire, stop at target, ignore range\n<w>!</w> : fire, don't stop, ignore range\n<w>p</w> : fire at Previous target (also <w>f</w>)\n<w>:</w> : show/hide beam path\n<w>Shift-Dir.</w> : fire straight-line beam\n             (also <w>/ Dir.</w>)\n\n<h>Firing mode ('<w>f</w><h>' in main):\n<w>Q</w> : choose fire action.\n<w>(</w> : cycle to previous suitable action\n<w>)</w> : cycle to next suitable action.\n
+<h>瞄准（使用魔杖、施放法术等）：\n查看周围环境时的大多数按键均可使用。\n部分按键会向目标发射。<w>Ctrl-X</w>仅\n列出可选目标。默认情况下，\n会遵守射程，且射线不会停下。\n<w>Enter</w>：发射（<w>Space</w>、<w>Del</w>、<w>f</w>）\n<w>.</w>：发射，并在目标处停下\n<w>@</w>：发射，在目标处停下，忽略射程\n<w>!</w>：发射，不停下，忽略射程\n<w>p</w>：向上一个目标发射（也可用<w>f</w>）\n<w>:</w>：显示/隐藏射线轨迹\n<w>Shift-Dir.</w>：发射直线射线\n             （也可用<w>/ Dir.</w>）\n\n<h>发射模式（主界面按'<w>f</w><h>'）：\n<w>Q</w>：选择发射动作。\n<w>(</w>：切换至上一个合适的动作\n<w>)</w>：切换至下一个合适的动作。\n
 %%%%
 %s by %s
 被%s%s
@@ -38984,9 +38865,6 @@ Soaked and fell apart
 %%%%
 Sank and fell apart
 沉入水中并散架
-%%%%
-drowned by %s
-被%s淹死
 %%%%
 Drowned by %s
 被%s淹死
@@ -39441,26 +39319,8 @@ of Ashenzari
 of Bugginess
 故障之
 %%%%
-Mummy
-木乃伊
-%%%%
-Spriggan
-小精灵
-%%%%
-Deep Dwarf
-深矮人
-%%%%
 Poltergeist
 吵闹鬼
-%%%%
-Meteoran
-流星人
-%%%%
-Yellow Draconian
-黄龙人
-%%%%
-Black Draconian
-黑龙人
 %%%%
 non-descript
 朴素
@@ -40324,7 +40184,7 @@ These nasty constructions can cause a range of unpleasant effects. You won't be 
 这些讨厌的构造会造成一系列令人不快的效果。你无法通过飞行来避免触发陷阱。
 %%%%
 The dungeon contains a number of natural obstacles such as shafts, which lead one to three levels down. Once you know the shaft is there, you can safely step over it.\nIf you want to jump down there, use <w>></w> to do so. Be warned that getting back here might be difficult.
-地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道它们的存在，
+地牢中有许多天然障碍，比如陷坑，会让你掉下一到三层。一旦你知道陷坑在那里，就可以安全地从上面走过。\n如果想跳下去，请按<w>></w>。但要注意，返回这里可能会很困难。
 %%%%
 Some areas of the dungeon, such as the Spider Nest, may be strewn with giant webs that may ensnare you for a short time. Insects, oozes and incorporeal entities can navigate the webs safely.
 地牢的某些区域，比如蜘蛛巢穴，可能布满巨大的蛛网，会让你短暂被困。
@@ -40344,9 +40204,11 @@ You can enter the previous (shallower) level by following these up (<w><<</w>). 
 Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>, respectively. Note that you will usually be unable to return right away.
 逃生口可以用<w><<</w>和<w>></w>来快速离开一层。注意，你通常会掉落在下一层。
 %%%%
-\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.\n\\n为避免在旅行或自动探索时意外打开你不想打开的门，你可以在地图界面（<w>X</w>）中将光标移到目标格子上，然后按<w>ee</w>来标记排除。排除标记将阻止自动旅行进入该格子，直到你再次按<w>Xe</w>移除该标记。
+\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.
+\n为避免在旅行或自动探索时意外打开你希望保持关闭的门，你可以在光标位于该格时，从地图视图（<w>X</w>）中按<w>ee</w>将其标记为排除区域。此排除标记会阻止自动旅行进入该格，直到你再次按<w>Xe</w>将其移除。
 %%%%
-This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\\n\n这是你加入宗教的机会！一般来说，神祇会帮助它们的信徒，赐予各种力量，但许多神祇要求信徒奉献一生、不断献祭或提供娱乐作为回报。\\n
+This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\n
+这是你加入宗教的机会！通常，神祇会帮助其信徒，赐予各种力量，但其中许多神祇会要求你以奉献一生、不断进贡或娱乐作为回报。\n
 %%%%
 This particular altar is so ancient that you cannot make out which god it is dedicated to! Converting here by pressing <w>></w> while standing on the altar will enter you into service of a random god, who will grant you some additional piety in thanks.
 这座祭坛古老到你无法辨认它属于哪位神祇，而且
@@ -40369,7 +40231,8 @@ probably dangerous, and you should stay out of it if you can.
 currently harmless, but that could change at some point. Check the overview screen (<w>%</w>) to view your resistances.
 目前无害，但情况可能在某个时候改变。查看概览界面（<w>%</w>）来了解你的抗性。
 %%%%
-Did you think you were the only adventurer in the dungeon? Well, you thought wrong! These unique adversaries often possess skills that normal monsters wouldn't, so be careful.\\n\\n\n你以为地牢里只有你一个冒险者吗？好吧，你错了！这些独特的对手往往拥有普通怪物不具备的特殊能力，千万要小心。\\n\\n
+Did you think you were the only adventurer in the dungeon? Well, you thought wrong! These unique adversaries often possess skills that normal monsters wouldn't, so be careful.\n\n
+你以为自己是地牢里唯一的冒险者吗？你错了！这些独特的对手往往拥有普通怪物没有的技能，所以要小心。\n\n
 %%%%
 The ghost of a deceased adventurer, it would like nothing better than to send you the same way.\n\n
 这是已故冒险者的鬼魂，它最想做的就是让你也走上同一条路。\n\n
@@ -40392,7 +40255,8 @@ Apparently it has not noticed you - yet. Note that you do not have to engage eve
 Apparently it has been distracted by something. You could use this opportunity to sneak up on this monster - or to sneak away.
 它似乎被什么东西分散了注意力。你可以利用这个机会潜行靠近它——或者悄悄溜走。
 %%%%
-\\nThis monster doesn't appear to have any resistances or susceptibilities. It cannot fly and is of average speed. Examining other, possibly more high-level monsters can give important clues as to how to deal with them.\n\\n这个怪物似乎没有任何抗性或弱点。它不能飞行，速度一般。检查其他可能等级更高的怪物，可以为你提供应对它们的重要线索。
+\nThis monster doesn't appear to have any resistances or susceptibilities. It cannot fly and is of average speed. Examining other, possibly more high-level monsters can give important clues as to how to deal with them.
+\n这只怪物似乎没有任何抗性或易受性。它不会飞，速度一般。查看其他可能更高级的怪物，或许能为如何对付它们提供重要线索。
 %%%%
 If you linger in this branch for another %d turns, the power of Zot will shatter your %s gem.\n
 如果你在此分支再逗留%d回合，佐特之力将粉碎你的%s宝石。\n
@@ -40496,7 +40360,8 @@ You cannot be affected by this spell right now. %s\n
 It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
 它会在受到伤害或被杀死时释放各种果冻怪，果冻的数量与受到的伤害成正比。\n
 %%%%
-If this monster is a "program bug", then it\'s recommended that you save your game and reload. Please report monsters who masquerade as program bugs or run around the dungeon without a proper description to the authorities.\\n\n如果这个怪物是"程序错误"，建议你保存游戏并重新加载。请向官方报告那些冒充程序错误，或没有适当描述就在地牢中四处游荡的怪物。\\n
+If this monster is a "program bug", then it's recommended that you save your game and reload. Please report monsters who masquerade as program bugs or run around the dungeon without a proper description to the authorities.\n
+如果这只怪物是“程序错误”，建议保存游戏并重新加载。请向相关人员报告那些伪装成程序错误，或在地牢中四处乱跑却没有适当描述的怪物。\n
 %%%%
 \nThis cloud is opaque; one tile will not block vision, but multiple will.\n
 \n 是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。\n
@@ -40506,3 +40371,30 @@ If this monster is a "program bug", then it\'s recommended that you save your ga
 %%%%
 <white>The lance glows brightly as it skewers %s. You feel that it has reached its full power.</white>
 <white>长枪刺穿%s时发出耀眼的光芒。你感到它已达到了力量的巅峰。</white>
+%%%%
+Dead mon also at (%d, %d): %s,midx = %d
+死亡怪物也位于（%d，%d）：%s，midx = %d
+%%%%
+Monster %s (%d, %d) holding invalid item in slot %d (midx = %d)
+怪物%s（%d，%d）在槽位%d中持有无效物品（midx = %d）
+%%%%
+Monster %s (%d, %d) [midx = %d] holding item %s, but item thinks it's held by monster %s (%d, %d) [midx = %d]
+怪物%s（%d，%d）[midx = %d]持有物品%s，但该物品认为自己由怪物%s（%d，%d）[midx = %d]持有
+%%%%
+On %s; %d g, %d fail, %u err%s, %u uniq, %d try, %d (%.2f%%) vetos
+位于%s；生成%d，失败%d，错误%u%s，唯一%u，尝试%d，否决%d（%.2f%%）
+%%%%
+On %d of %d; %d g, %d fail, %u err%s, %u uniq, %d try, %d (%.2f%%) vetoes
+第%d次，共%d次；生成%d，失败%d，错误%u%s，唯一%u，尝试%d，否决%d（%.2f%%）
+%%%%
+Placing %s on top of you would put part of the map outside of the level, cancelling.
+将%s放置在你身上会使部分地图位于关卡外，已取消。
+%%%%
+Ok; try placing with &L or go to the relevant location to safely place with &P.
+好的；请尝试用&L放置，或前往相关位置后再用&P安全放置。
+%%%%
+Set Abyss speed to what? (now %d, higher value = higher speed) 
+将深渊速度设为多少？（当前为%d，数值越高速度越快） 
+%%%%
+Mipmap Setup: Disabled because OpenGL version: %s does not provide glGenerateMipmap.
+Mipmap设置：已禁用，因为OpenGL版本%s不提供glGenerateMipmap。
