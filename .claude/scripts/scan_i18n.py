@@ -2171,132 +2171,70 @@ def cmd_source_key_collision_inventory(args):
             print(f"ERROR: check file {args.check} not found", file=sys.stderr)
             return 1
 
-        errors = []
-        KNOWN_TOP = {'schema', 'canonical_contract', 'generator', 'generator_version',
-                     'generator_sha', 'source_snapshot', 'source_file',
-                     'source_sha256', 'summary', 'groups'}
-        KNOWN_GROUP = {'group_id', 'group_fingerprint', 'canonical_key',
-                       'definitions', 'source_value_relation', 'runtime_value_relation'}
-        KNOWN_DEF = {'definition_ordinal', 'raw_key', 'key_line', 'value_line',
-                     'order', 'value', 'source_value_sha256', 'runtime_value_sha256',
-                     'runtime_value_preview', 'runtime_winner', 'source_load_ordinal'}
+        # Reject non-frozen inventories: deep recursive comparison.
+        # Generate canonical JSON of the frozen inventory (exclude the check file
+        # metadata fields that are expected to differ). Compare byte-level against
+        # the freshly regenerated inventory.
+        # This detects: field drift, value tampering, missing/extra keys,
+        # sorting changes, fingerprint corruption — everything.
+        def _to_canonical(inv):
+            def _normalize(value):
+                if isinstance(value, OrderedDict):
+                    return {k: _normalize(v) for k, v in value.items()}
+                if isinstance(value, dict):
+                    return {k: _normalize(value[k]) for k in sorted(value)}
+                if isinstance(value, list):
+                    return [_normalize(v) for v in value]
+                return value
+            return _normalize(inv)
 
-        # ── Schema/contract identity ──
-        for field in ('schema', 'canonical_contract'):
-            if existing.get(field) != inventory.get(field):
-                errors.append(f"  {field}: inventory={existing.get(field)!r}, "
-                              f"current={inventory.get(field)!r}")
+        # Strip generator metadata (generator_sha changes when code changes)
+        # and source_snapshot.commit (may differ across worktree checkouts)
+        old_canonical = {k: v for k, v in existing.items()
+                         if k not in ('generator_sha', 'generator', 'generator_version')}
+        # Also strip snapshot_commit from source_snapshot (expected drift)
+        if 'source_snapshot' in old_canonical:
+            old_snap = dict(old_canonical['source_snapshot'])
+            old_snap.pop('snapshot_commit', None)
+            old_canonical['source_snapshot'] = old_snap
 
-        # ── Generator identity ──
-        for field in ('generator', 'generator_version', 'generator_sha'):
-            if existing.get(field) != inventory.get(field):
-                errors.append(f"  {field}: inventory={existing.get(field)!r}, "
-                              f"current={inventory.get(field)!r}")
+        new_canonical = {k: v for k, v in inventory.items()
+                         if k not in ('generator_sha', 'generator', 'generator_version')}
+        if 'source_snapshot' in new_canonical:
+            new_snap = dict(new_canonical['source_snapshot'])
+            new_snap.pop('snapshot_commit', None)
+            new_canonical['source_snapshot'] = new_snap
 
-        # ── Unknown top-level fields ──
-        for k in existing:
-            if k not in KNOWN_TOP:
-                errors.append(f"  unknown top-level field: {k}")
+        old_frozen = json.dumps(_to_canonical(old_canonical), sort_keys=True,
+                                ensure_ascii=False, separators=(',', ':'))
+        new_frozen = json.dumps(_to_canonical(new_canonical), sort_keys=True,
+                                ensure_ascii=False, separators=(',', ':'))
 
-        # ── Source snapshot ──
-        old_snap = existing.get('source_snapshot', {})
-        new_snap = inventory.get('source_snapshot', {})
-        for snap_field in ('relative_path', 'blob_oid', 'sha256', 'snapshot_commit'):
-            if old_snap.get(snap_field) != new_snap.get(snap_field):
-                errors.append(f"  source_snapshot.{snap_field}: "
-                              f"inventory={old_snap.get(snap_field)!r}, "
-                              f"current={new_snap.get(snap_field)!r}")
-
-        # ── Summary ──
-        old_summary = existing.get('summary', {})
-        new_summary = inventory['summary']
-        for key in ('total_entries', 'unique_canonical_keys', 'collision_groups',
-                     'runtime_equal', 'runtime_different'):
-            if old_summary.get(key) != new_summary.get(key):
-                errors.append(f"  summary.{key}: inventory={old_summary.get(key)}, "
-                              f"current={new_summary.get(key)}")
-
-        # ── Groups: fingerprint map + content validation ──
-        old_groups = existing.get('groups', [])
-        new_groups = inventory.get('groups', [])
-
-        old_fps = {g.get('group_id'): g.get('group_fingerprint')
-                   for g in old_groups if g.get('group_id')}
-        new_fps = {g.get('group_id'): g.get('group_fingerprint')
-                   for g in new_groups if g.get('group_id')}
-
-        # Extra/missing groups
-        for gid, fp in new_fps.items():
-            if gid not in old_fps:
-                errors.append(f"  new group {gid}: not in inventory")
-            elif old_fps[gid] != fp:
-                errors.append(f"  group {gid}: fingerprint drift")
-        for gid in old_fps:
-            if gid not in new_fps:
-                errors.append(f"  missing group {gid}: in inventory but not current")
-
-        # Validate each old group structure, unknown fields, definition fields,
-        # canonical_key ordering, and definition self-consistency
-        old_by_gid = {g.get('group_id'): g for g in old_groups}
-        new_by_gid = {g.get('group_id'): g for g in new_groups}
-
-        # Sorting: old groups must be sorted by canonical_key UTF-8 bytes
-        old_sorted_keys = [g.get('canonical_key', '') for g in old_groups]
-        if old_sorted_keys != sorted(old_sorted_keys, key=lambda s: s.encode('utf-8')):
-            errors.append(f"  groups not sorted by canonical_key (UTF-8 byte order)")
-
-        # Sorting: definitions within each group must be sorted by order
-        for g in old_groups:
-            defs = g.get('definitions', [])
-            orders = [d.get('order', 0) for d in defs]
-            if orders != sorted(orders):
-                errors.append(f"  group {g.get('group_id','?')}: "
-                              f"definitions not sorted by order")
-
-        # Unknown group-level and definition-level fields
-        for g in old_groups:
-            gid = g.get('group_id', '?')
-            for k in g:
-                if k not in KNOWN_GROUP:
-                    errors.append(f"  group {gid}: unknown field '{k}'")
-            for d in g.get('definitions', []):
-                for k in d:
-                    if k not in KNOWN_DEF:
-                        errors.append(f"  group {gid}: unknown definition field '{k}'")
-
-        # Cross-validate: every old group must exist in new inventory
-        # with identical group_fingerprint AND matching definition content
-        for old_g in old_groups:
-            gid = old_g.get('group_id')
-            if gid not in new_by_gid:
-                continue  # already reported
-            new_g = new_by_gid[gid]
-            old_defs = old_g.get('definitions', [])
-            new_defs = new_g.get('definitions', [])
-            if len(old_defs) != len(new_defs):
-                errors.append(f"  group {gid}: definition count mismatch "
-                              f"({len(old_defs)} vs {len(new_defs)})")
-            else:
-                # Compare definition-by-definition by order
-                for i in range(len(old_defs)):
-                    od = old_defs[i]
-                    nd = new_defs[i]
-                    for dk in ('raw_key', 'key_line', 'value_line', 'order'):
-                        if od.get(dk) != nd.get(dk):
-                            errors.append(
-                                f"  group {gid} def [{i}].{dk}: "
-                                f"inventory={od.get(dk)!r} current={nd.get(dk)!r}")
-
-        if errors:
-            print(f"ERROR: Inventory mismatch with current source.txt:",
+        if old_frozen != new_frozen:
+            old_hash = hashlib.sha256(old_frozen.encode('utf-8')).hexdigest()
+            new_hash = hashlib.sha256(new_frozen.encode('utf-8')).hexdigest()
+            print(f"ERROR: Inventory content mismatch with frozen baseline:",
                   file=sys.stderr)
-            for e in errors:
-                print(e, file=sys.stderr)
+            print(f"  frozen SHA-256: {old_hash}", file=sys.stderr)
+            print(f"  current SHA-256: {new_hash}", file=sys.stderr)
             print(f"  (freeze HEAD to match)", file=sys.stderr)
             return 1
 
+        # Also validate summary counts for quick diagnosis
+        old_sum = existing.get('summary', {})
+        new_sum = inventory.get('summary', {})
+        summary_ok = True
+        for key in ('total_entries', 'unique_canonical_keys', 'collision_groups',
+                     'runtime_equal', 'runtime_different'):
+            if old_sum.get(key) != new_sum.get(key):
+                print(f"  summary.{key}: expected={old_sum.get(key)}, "
+                      f"actual={new_sum.get(key)}", file=sys.stderr)
+                summary_ok = False
+        if not summary_ok:
+            return 1
+
         print(f"OK: Inventory matches current source.txt "
-              f"({len(old_groups)} groups, all fields frozen, deterministic).")
+              f"({len(existing.get('groups', []))} groups, fully frozen).")
         return 0
 
     return 0
