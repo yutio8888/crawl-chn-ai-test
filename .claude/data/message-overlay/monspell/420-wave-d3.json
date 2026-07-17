@@ -1,0 +1,345 @@
+{
+  "entries": [
+    {
+      "canonical_key": "clockroach cast",
+      "canonical_fingerprint": "fnv1a64:1bef130597d11f49",
+      "selection_graph_fingerprint": "fnv1a64:23b6726ae5ca497a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.clockroach.sprays_hourglass_sand.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "313a2cf1497806cc34e69d5959edf4b5ab2da50d65054c931432ca8c2cc99f99",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ sprays sand from its hourglass @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} sprays sand from its hourglass at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} sprays sand from its hourglass next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} sprays sand from its hourglass past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}从沙漏中向${target}喷出沙子。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}从沙漏中向${target}旁边喷出沙子。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}从沙漏中喷出沙子，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "crab cast targeted",
+      "canonical_fingerprint": "fnv1a64:972b81fcdd9b2947",
+      "selection_graph_fingerprint": "fnv1a64:95616d82e0995d88",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.crab.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "beam", "type": "resolved_beam" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "crystal echidna cast targeted",
+      "canonical_fingerprint": "fnv1a64:4215d633523ae3f2",
+      "selection_graph_fingerprint": "fnv1a64:5bb825d4ed1d2815",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.crystal_echidna.flicks_quills.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "4fccc87e82543575975e95f59d5e43eec29fcee451c9764fa1f7270b993bdc80",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ flicks its quills @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} flicks its quills at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} flicks its quills next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} flicks its quills past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}甩出棘刺。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边甩出棘刺。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}甩出棘刺，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "culicivora cast targeted",
+      "canonical_fingerprint": "fnv1a64:46cc34bee02830cf",
+      "selection_graph_fingerprint": "fnv1a64:45aa405301ae43a4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.culicivora.chitters.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "af62f0a7191122362e87c7e816de697bb4ef7ce5e2faf06938fa80d7f033fb5c",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ chitters @at@ @target@.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} chitters at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} chitters next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} chitters past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}发出窸窣声。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边发出窸窣声。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后发出窸窣声。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "eidolon cast targeted",
+      "canonical_fingerprint": "fnv1a64:242de8e1bf2e4320",
+      "selection_graph_fingerprint": "fnv1a64:ee895a88337f8ee3",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.eidolon.piercing_stare.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7a7d38a7e3b6f5503f8c969450a3acd69dd5de2d6c629b9128a559429909d131",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ stares piercingly @at@ @target@.",
+        "frame": "GAZE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} stares piercingly at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} stares piercingly next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} stares piercingly past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}以锐利的目光凝视${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}以锐利的目光望向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}以锐利的目光望向${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "eye of draining cast",
+      "canonical_fingerprint": "fnv1a64:2569103e24cdc1ce",
+      "selection_graph_fingerprint": "fnv1a64:1d3031fc37776c07",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.eye_of_draining.smirks_and_gazes.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7a92e91060939baa27b1f02d44ab8c5dd277efe4989314770b0bdd4baf7f9ab3",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ smirks and gazes @at@ @target@.",
+        "frame": "GAZE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} smirks and gazes at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} smirks and gazes next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} smirks and gazes past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}得意地笑着，凝视${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}得意地笑着，望向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}得意地笑着，望向${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "fireball hell hog cast",
+      "canonical_fingerprint": "fnv1a64:a398d3170db80625",
+      "selection_graph_fingerprint": "fnv1a64:9a75d305a103f9e6",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.fireball_hell_hog.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "beam", "type": "resolved_beam" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "floating eye cast targeted",
+      "canonical_fingerprint": "fnv1a64:6cb4c3195f955ba7",
+      "selection_graph_fingerprint": "fnv1a64:600b1b095910b09e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.floating_eye.gazes.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "4d59378cab53b0ecfa3b21a6297b03407197866cf4104c5e1679bcb4a9ffe293",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ gazes @at@ @target@.",
+        "frame": "GAZE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} gazes at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gazes next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} gazes past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "force lance polterguardian cast",
+      "canonical_fingerprint": "fnv1a64:f49cdcc586a8aab9",
+      "selection_graph_fingerprint": "fnv1a64:b50f75bea8694a76",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.force_lance_polterguardian.focuses_will.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "92661defd5f5629acd4159a71aaa3498c98c5f9452216ed63b3c05b04776ccc9",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ focuses its will @at@ @target@.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} focuses its will at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} focuses its will next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} focuses its will past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}将意志聚焦于${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}将意志聚焦于${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}将意志聚焦于${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "ghost moth cast targeted",
+      "canonical_fingerprint": "fnv1a64:437179a2cf3b58a1",
+      "selection_graph_fingerprint": "fnv1a64:c8b56244ec051686",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ghost_moth.stares.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5f480e81d50f4a6e3c067e3dc7d085f030aef541fa49d9e3114c695db1b9acf4",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ stares @at@ @target@.",
+        "frame": "GAZE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} stares at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} stares next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} stares past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
