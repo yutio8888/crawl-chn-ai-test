@@ -136,6 +136,40 @@ class DeferredMarkerTests(unittest.TestCase):
         self.assertIn("missing adjacent", proc.stdout)
         self.assertNotIn("comment ghost", proc.stdout)
 
+    def test_t_c_adjacent_literal_extraction(self):
+        """T_() and C_() now join adjacent C++ string literals like N_()/NC_()."""
+        keys = self._extract_source(
+            # Positive: basic adjacent T_
+            'auto a = T_("foo" "bar");\n'
+            # Positive: three adjacent strings
+            'auto b = T_("a" "b" "c");\n'
+            # Positive: C_ both sides adjacent
+            'auto c = C_("ctx" "more", "key" "concat");\n'
+            # Positive: C_ only context adjacent
+            'auto d = C_("attack" " verb", "open");\n'
+            # Positive: T_ with comment between strings (line comment)
+            'auto e = T_("foo" // this is a comment\n'
+            '"bar");\n'
+            # Positive: T_ with block comment between strings
+            'auto f = T_("hello" /* block comment */ "world");\n'
+            # Negative: dynamic arg still fails closed (ident not STRING)
+            'auto g = T_(runtime_var);\n'
+            # Negative: adjacent string + non-string stops at non-string
+            'auto h = T_("literal" 42);\n'
+            # Negative: T_ with string and then dynamic
+            '// The call below is syntactically fishy but the lexer should'
+            ' not extract it\n'
+            'auto i = T_("only_literal" + more);\n')
+        self.assertEqual([
+            ("foobar", None),       # T_("foo" "bar")
+            ("abc", None),          # T_("a" "b" "c")
+            ("keyconcat", "ctxmore"),  # C_("ctx" "more", "key" "concat")
+            ("open", "attack verb"),   # C_("attack" " verb", "open")
+            ("foobar", None),       # T_("foo" // comment\n "bar")
+            ("helloworld", None),   # T_("hello" /* block */ "world")
+            # Negative cases produce no extraction
+        ], keys)
+
     def test_nonliteral_comment_marker_fails_closed(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)

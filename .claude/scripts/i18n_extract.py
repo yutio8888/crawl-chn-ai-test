@@ -394,10 +394,10 @@ def _extract_cpp_calls(content: str, ignore_marker_definitions=False):
         deferred = token[1] in {"N_", "NC_"}
         if i + 1 >= len(tokens) or tokens[i + 1][0] != "(":
             continue
-        # Adjacent literal support is enabled for deferred markers introduced
-        # here. Immediate T_/C_ retain their historical single-literal scope;
-        # migrating their existing adjacent-literal debt is a separate task.
-        first, j = _literal_argument(tokens, i + 2, adjacent=deferred)
+        # Join adjacent C++ string literals for all T_/C_/N_/NC_.
+        # C++ compilers concatenate adjacent "foo" "bar" into "foobar";
+        # our extractor mirrors this by joining consecutive STRING tokens.
+        first, j = _literal_argument(tokens, i + 2, adjacent=True)
         if first is None:
             original_offset = original_offsets[token[2]]
             is_own_definition = (ignore_marker_definitions
@@ -415,7 +415,7 @@ def _extract_cpp_calls(content: str, ignore_marker_definitions=False):
                         "NC_ requires a literal context and key",
                         original_offsets[token[2]])
                 continue
-            second, j = _literal_argument(tokens, j + 1, adjacent=deferred)
+            second, j = _literal_argument(tokens, j + 1, adjacent=True)
             if second is None:
                 if deferred:
                     raise DeferredMarkerSyntaxError(
