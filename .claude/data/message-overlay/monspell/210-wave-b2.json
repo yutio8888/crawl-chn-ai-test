@@ -1,0 +1,305 @@
+{
+  "entries": [
+    {
+      "canonical_key": "ensnare natural cast",
+      "canonical_fingerprint": "fnv1a64:5aebdcfd9866a888",
+      "selection_graph_fingerprint": "fnv1a64:8818d7518539add1",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ensnare_natural.expels_webbing.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "77b62e6ad32e172367e43a6a47575620ea9b06a09c7218e71afc432cd63f3295",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ expels a string of sticky webbing.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} expels a string of sticky webbing." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}吐出一缕黏性蛛网。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "formless jellyfish cast",
+      "canonical_fingerprint": "fnv1a64:cd80fb1e4f3a5abf",
+      "selection_graph_fingerprint": "fnv1a64:4689e581f1832b9a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.formless_jellyfish.shimmers.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "97ae6d7277ea70ee03b2bab43c1d4a82690f32fc0f1b1e75f970d602ed1fe8b7",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ shimmers eerily.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} shimmers eerily." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}诡异地闪烁着微光。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "geryon cast",
+      "canonical_fingerprint": "fnv1a64:7713243ef1d403c7",
+      "selection_graph_fingerprint": "fnv1a64:9d024ffd8efd658c",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.geryon.winds_horn.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "ec4cdd875d0690748cc3f3443b943d165be79d98106fd877f9b39e7c5ad9ec42",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ winds a great silver horn.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} winds a great silver horn." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}吹响一只巨大的银号角。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "ghost moth cast",
+      "canonical_fingerprint": "fnv1a64:c376aa00ca76ff4c",
+      "selection_graph_fingerprint": "fnv1a64:d9d58b94174a5ed7",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ghost_moth.looks_around.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "29f1bc7f3ec4f3a3653c4e107a458a2dac80d6397c63aded72260ad721a835a1",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ looks around.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} looks around." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}环顾四周。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "glowing orange brain cast",
+      "canonical_fingerprint": "fnv1a64:ae3bce87b8c708c8",
+      "selection_graph_fingerprint": "fnv1a64:cdcd2ba8160f476b",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.glowing_orange_brain.pulsates.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "895aa70c82621b6de8e2328094bd0ba29b8ffb71a945e30b0935df08eaf9a20d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ pulsates.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} pulsates." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}悸动着。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "grasping roots cast",
+      "canonical_fingerprint": "fnv1a64:b618652f1f0e9a76",
+      "selection_graph_fingerprint": "fnv1a64:1d04e80a1db20849",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.grasping_roots.reaches_roots.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "0428bd05ff70a3c95358604149ff010433d1a157dd942b48a47774bcef11a08d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ reaches out to the roots within the earth.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} reaches out to the roots within the earth." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}伸手触及大地深处的根须。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "guardian serpent cast",
+      "canonical_fingerprint": "fnv1a64:f8857558f48169a1",
+      "selection_graph_fingerprint": "fnv1a64:539c6110e3fdf78e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.guardian_serpent.casts_spell.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "bfbac6a719eb32f89047a913834b9257f3b6ef56dfee5e11466aa24688ae5428",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ casts a spell.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} casts a spell." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}施展法术。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "hurl torchlight cast",
+      "canonical_fingerprint": "fnv1a64:a153f3edb1b16bc0",
+      "selection_graph_fingerprint": "fnv1a64:279491dc40bd36a7",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.hurl_torchlight.raises_torch.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "b3064bfb8efe26e5f4e52db651b6c75adedeaac12ccc50e06d382026244d5af2",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ raises the black torch.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} raises the black torch." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}举起黑色火炬。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "invisibility shadowghast cast",
+      "canonical_fingerprint": "fnv1a64:a36d932c1d69f95c",
+      "selection_graph_fingerprint": "fnv1a64:06bf93ec7661c67f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.invisibility_shadowghast.slips_darkness.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "21e991c1e6b3bab00d2afaea74432ca0e77a513ab7b26a5b300391653c525c1a",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ slips into darkness.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} slips into darkness." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}没入黑暗。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "manifold assault natural cast",
+      "canonical_fingerprint": "fnv1a64:73986af675b8a0c4",
+      "selection_graph_fingerprint": "fnv1a64:fe4637bfa89fc5bb",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.manifold_assault_natural.many_places.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7de829215485048d8097d32d9f3994231d3650c60005d0ec7a2cd0d8b172590",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ seems to occupy many places at once.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} seems to occupy many places at once." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}似乎同时存在于许多地方。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
