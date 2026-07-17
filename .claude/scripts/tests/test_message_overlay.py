@@ -4,6 +4,7 @@ import copy
 import importlib.util
 import json
 import sys
+import tempfile
 import unittest
 from pathlib import Path
 
@@ -14,14 +15,132 @@ MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader
 SPEC.loader.exec_module(MODULE)
 
-MANIFEST = json.loads((ROOT / ".claude/data/message-overlay/monspell.json")
-                      .read_text(encoding="utf-8"))
+MANIFEST_PATH = ROOT / ".claude/data/message-overlay/monspell.json"
+MANIFEST = MODULE.load_manifest(MANIFEST_PATH)
 INVENTORY = json.loads((ROOT / ".claude/data/message-overlay/monspell-phase0-inventory.json")
                        .read_text(encoding="utf-8"))
 SIDECAR = ROOT / "crawl-ref/source/fork-message-overlay.generated.inc"
 
 
 class MessageOverlayTests(unittest.TestCase):
+    def entry(self, manifest, key):
+        return next(entry for entry in manifest["entries"]
+                    if entry["canonical_key"] == key)
+
+    def variant(self, manifest, key, ordinal=0):
+        return next(variant for variant in self.entry(manifest, key)["variants"]
+                    if variant["variant_ordinal"] == ordinal)
+
+    def fragmented_manifest(self, directory, fragments):
+        root = Path(directory)
+        names = []
+        for ordinal, fragment in enumerate(fragments):
+            name = f"fragment-{ordinal}.json"
+            (root / name).write_text(json.dumps(fragment, ensure_ascii=False),
+                                     encoding="utf-8")
+            names.append(name)
+        header = {
+            "schema_version": MANIFEST["schema_version"],
+            "domain": MANIFEST["domain"],
+            "inventory_semantic_fingerprint":
+                MANIFEST["inventory_semantic_fingerprint"],
+            "supported_languages": MANIFEST["supported_languages"],
+            "catalog_order": [entry["canonical_key"]
+                              for entry in MANIFEST["entries"]],
+            "fragments": names,
+        }
+        path = root / "monspell.json"
+        path.write_text(json.dumps(header), encoding="utf-8")
+        return path
+
+    def test_fragment_aggregation_is_order_stable(self):
+        entries = copy.deepcopy(MANIFEST["entries"])
+        for entry in entries:
+            entry["variants"].reverse()
+            for variant in entry["variants"]:
+                variant["materialization_cases"].reverse()
+        midpoint = len(entries) // 2
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.fragmented_manifest(tmp, [
+                {"entries": list(reversed(entries[midpoint:])),
+                 "tombstones": []},
+                {"entries": list(reversed(entries[:midpoint])),
+                 "tombstones": []},
+            ])
+            aggregated = self.validate(MODULE.load_manifest(path))
+        self.assertEqual(MODULE.render_sidecar(self.validate(
+                             copy.deepcopy(MANIFEST))),
+                         MODULE.render_sidecar(aggregated))
+
+    def test_fragment_duplicate_key_is_rejected_globally(self):
+        duplicate = copy.deepcopy(MANIFEST["entries"][0])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.fragmented_manifest(tmp, [
+                {"entries": copy.deepcopy(MANIFEST["entries"]),
+                 "tombstones": []},
+                {"entries": [duplicate], "tombstones": []},
+            ])
+            with self.assertRaisesRegex(MODULE.ManifestError,
+                                        "duplicate canonical_key"):
+                self.validate(MODULE.load_manifest(path))
+
+    def test_fragment_active_and_tombstone_id_conflict_is_rejected(self):
+        stable_id = MANIFEST["entries"][0]["variants"][0]["stable_id"]
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.fragmented_manifest(tmp, [
+                {"entries": copy.deepcopy(MANIFEST["entries"]),
+                 "tombstones": []},
+                {"entries": [], "tombstones": [
+                    {"stable_id": stable_id, "reason": "fixture"},
+                ]},
+            ])
+            with self.assertRaisesRegex(MODULE.ManifestError,
+                                        "reused active stable_id"):
+                self.validate(MODULE.load_manifest(path))
+
+    def test_fragment_active_ids_are_globally_unique(self):
+        entries = copy.deepcopy(MANIFEST["entries"])
+        entries[1]["variants"][0]["stable_id"] = (
+            entries[0]["variants"][0]["stable_id"])
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.fragmented_manifest(tmp, [
+                {"entries": entries[:1], "tombstones": []},
+                {"entries": entries[1:], "tombstones": []},
+            ])
+            with self.assertRaisesRegex(MODULE.ManifestError,
+                                        "reused active stable_id"):
+                self.validate(MODULE.load_manifest(path))
+
+    def test_fragment_tombstones_are_sorted_and_globally_unique(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            path = self.fragmented_manifest(tmp, [
+                {"entries": copy.deepcopy(MANIFEST["entries"]),
+                 "tombstones": [
+                     {"stable_id": "retired.z", "reason": "fixture"},
+                 ]},
+                {"entries": [], "tombstones": [
+                     {"stable_id": "retired.a", "reason": "fixture"},
+                ]},
+            ])
+            aggregated = MODULE.load_manifest(path)
+            self.assertEqual(["retired.a", "retired.z"],
+                             [item["stable_id"]
+                              for item in aggregated["tombstones"]])
+            self.validate(aggregated)
+
+            duplicate = json.loads(path.read_text(encoding="utf-8"))
+            duplicate["fragments"].append("duplicate.json")
+            path.write_text(json.dumps(duplicate), encoding="utf-8")
+            (Path(tmp) / "duplicate.json").write_text(json.dumps({
+                "entries": [],
+                "tombstones": [
+                    {"stable_id": "retired.a", "reason": "fixture"},
+                ],
+            }), encoding="utf-8")
+            with self.assertRaisesRegex(MODULE.ManifestError,
+                                        "duplicate stable_id"):
+                self.validate(MODULE.load_manifest(path))
+
     def validate(self, manifest):
         return MODULE.validate_manifest(manifest, INVENTORY)
 
@@ -80,14 +199,14 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_incomplete_key_closure_is_rejected(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"][1]["variants"].pop()
+        self.entry(value, "march of sorrows bone dragon cast")["variants"].pop()
         with self.assertRaisesRegex(MODULE.ManifestError, "every selectable"):
             self.validate(value)
 
     def test_active_and_tombstone_ids_are_globally_unique(self):
         value = copy.deepcopy(MANIFEST)
         value["tombstones"] = [{
-            "stable_id": value["entries"][0]["variants"][0]["stable_id"],
+            "stable_id": self.entry(value, "beam catchall cast")["variants"][0]["stable_id"],
             "reason": "fixture",
         }]
         with self.assertRaisesRegex(MODULE.ManifestError, "reused active"):
@@ -95,30 +214,30 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_slot_and_template_invariants_are_blocking(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["slot_schema"][0]["name"] = "Bad"
+        self.entry(value, "beam catchall cast")["variants"][0]["slot_schema"][0]["name"] = "Bad"
         with self.assertRaisesRegex(MODULE.ManifestError, "slot schema"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["slot_schema"][0]["type"] = (
+        self.entry(value, "beam catchall cast")["variants"][0]["slot_schema"][0]["type"] = (
             "unknown_ref")
         with self.assertRaisesRegex(MODULE.ManifestError, "slot schema"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        template = value["entries"][0]["variants"][0]["line_metadata"][0]["templates"][0]
+        template = self.entry(value, "beam catchall cast")["variants"][0]["line_metadata"][0]["templates"][0]
         template["pattern"] += " @target@"
         with self.assertRaisesRegex(MODULE.ManifestError, "legacy TextDB"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        line = value["entries"][0]["variants"][0]["line_metadata"][0]
+        line = self.entry(value, "beam catchall cast")["variants"][0]["line_metadata"][0]
         line["channel"] = "not_a_message_channel"
         with self.assertRaisesRegex(MODULE.ManifestError, "invalid channel"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        template = value["entries"][0]["variants"][0]["line_metadata"][0]["templates"][0]
+        template = self.entry(value, "beam catchall cast")["variants"][0]["line_metadata"][0]["templates"][0]
         template["pattern"] += "\nsecond protocol line"
         with self.assertRaisesRegex(MODULE.ManifestError, "pattern"):
             self.validate(value)
@@ -126,13 +245,13 @@ class MessageOverlayTests(unittest.TestCase):
     def test_fingerprint_tampering_is_rejected(self):
         for field in ("canonical_fingerprint", "selection_graph_fingerprint"):
             value = copy.deepcopy(MANIFEST)
-            value["entries"][0][field] = "fnv1a64:0000000000000000"
+            self.entry(value, "beam catchall cast")[field] = "fnv1a64:0000000000000000"
             with self.assertRaisesRegex(MODULE.ManifestError, "fingerprint mismatch"):
                 self.validate(value)
 
     def test_case_map_requires_dynamic_sites(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["materialization_policy"] = "CASE_MAP"
+        self.entry(value, "beam catchall cast")["variants"][0]["materialization_policy"] = "CASE_MAP"
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "finite bracket sites"):
             self.validate(value)
@@ -141,16 +260,14 @@ class MessageOverlayTests(unittest.TestCase):
         entry = next(e for e in MANIFEST["entries"]
                      if e["canonical_key"]
                      == "march of sorrows bone dragon cast")
-        entry_index = MANIFEST["entries"].index(entry)
-
         value = copy.deepcopy(MANIFEST)
-        value["entries"][entry_index]["variants"][0][
+        self.variant(value, entry["canonical_key"])[
             "materialization_cases"].pop()
         with self.assertRaisesRegex(MODULE.ManifestError, "cases are incomplete"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        cases = value["entries"][entry_index]["variants"][0][
+        cases = self.variant(value, entry["canonical_key"])[
             "materialization_cases"]
         cases[1]["signature"] = cases[0]["signature"]
         with self.assertRaisesRegex(MODULE.ManifestError,
@@ -161,17 +278,17 @@ class MessageOverlayTests(unittest.TestCase):
         entry = next(e for e in MANIFEST["entries"]
                      if e["canonical_key"]
                      == "march of sorrows bone dragon cast")
-        entry_index = MANIFEST["entries"].index(entry)
         value = copy.deepcopy(MANIFEST)
-        value["entries"][entry_index]["variants"][0]["line_metadata"] = (
-            copy.deepcopy(value["entries"][entry_index]["variants"][0]
+        variant = self.variant(value, entry["canonical_key"])
+        variant["line_metadata"] = (
+            copy.deepcopy(variant
                           ["materialization_cases"][0]["line_metadata"]))
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "lines belong to cases"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        cases = value["entries"][entry_index]["variants"][0][
+        cases = self.variant(value, entry["canonical_key"])[
             "materialization_cases"]
         cases[1]["line_metadata"][0]["sensory"] = "VISUAL"
         with self.assertRaisesRegex(MODULE.ManifestError,
@@ -182,17 +299,15 @@ class MessageOverlayTests(unittest.TestCase):
         entry = next(e for e in MANIFEST["entries"]
                      if e["canonical_key"]
                      == "airstrike blizzard demon cast")
-        entry_index = MANIFEST["entries"].index(entry)
-
         value = copy.deepcopy(MANIFEST)
-        arms = value["entries"][entry_index]["variants"][2]
+        arms = self.variant(value, entry["canonical_key"], 2)
         arms["slot_schema"][2]["type"] = "actor_ref"
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "plural arms token/type mismatch"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        plain = value["entries"][entry_index]["variants"][0]
+        plain = self.variant(value, entry["canonical_key"])
         plain["slot_schema"].append(
             { "name": "arms", "type": "actor_arms_plural" })
         plain["required_arguments"].append("arms")
@@ -204,7 +319,7 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["binding"][
+        self.entry(value, "beam catchall cast")["variants"][0]["binding"][
             "resolves_target"] = False
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "non-target binding declares"):
@@ -212,19 +327,18 @@ class MessageOverlayTests(unittest.TestCase):
 
         untargeted = next(e for e in MANIFEST["entries"]
                           if e["canonical_key"] == "wizard cast")
-        untargeted_index = MANIFEST["entries"].index(untargeted)
         value = copy.deepcopy(MANIFEST)
-        value["entries"][untargeted_index]["variants"][0][
+        self.variant(value, untargeted["canonical_key"])[
             "slot_schema"].append(
                 { "name": "target", "type": "resolved_target" })
-        value["entries"][untargeted_index]["variants"][0][
+        self.variant(value, untargeted["canonical_key"])[
             "required_arguments"].append("target")
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "non-target binding declares"):
             self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        value["entries"][untargeted_index]["variants"][0][
+        self.variant(value, untargeted["canonical_key"])[
             "line_metadata"][0]["templates"][0]["relation"] = "AT"
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "invalid/duplicate language relation"):
@@ -232,9 +346,8 @@ class MessageOverlayTests(unittest.TestCase):
 
         targeted = next(e for e in MANIFEST["entries"]
                         if e["canonical_key"] == "wizard cast targeted")
-        targeted_index = MANIFEST["entries"].index(targeted)
         value = copy.deepcopy(MANIFEST)
-        value["entries"][targeted_index]["variants"][0][
+        self.variant(value, targeted["canonical_key"])[
             "line_metadata"][0]["templates"][0]["relation"] = "NONE"
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "invalid/duplicate language relation"):
@@ -243,7 +356,7 @@ class MessageOverlayTests(unittest.TestCase):
     def test_current_slice_rejects_unwired_metadata(self):
         for field in ("requires_named_foe", "requires_god"):
             value = copy.deepcopy(MANIFEST)
-            value["entries"][0]["variants"][0]["applicability"][
+            self.entry(value, "beam catchall cast")["variants"][0]["applicability"][
                 field] = True
             with self.subTest(field=field):
                 with self.assertRaisesRegex(MODULE.ManifestError,
@@ -251,7 +364,7 @@ class MessageOverlayTests(unittest.TestCase):
                     self.validate(value)
 
         value = copy.deepcopy(MANIFEST)
-        value["entries"][0]["variants"][0]["line_metadata"][0][
+        self.entry(value, "beam catchall cast")["variants"][0]["line_metadata"][0][
             "behavior"]["audible"] = True
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "audible behavior metadata"):
@@ -334,15 +447,17 @@ class MessageOverlayTests(unittest.TestCase):
              "orc name"},
             set(variant["recursive_dependency_fingerprints"]))
 
-        entry_index = MANIFEST["entries"].index(entry)
         for mutation, error in (
-            (lambda value: value["entries"][entry_index]["variants"][0][
-                "recursive_captures"].pop(), "capture count"),
-            (lambda value: value["entries"][entry_index]["variants"][0][
-                "recursive_captures"][1].update({"ordinal": 0}),
+            (lambda value: self.variant(
+                value, "vanquished vanguard nergalle cast")[
+                    "recursive_captures"].pop(), "capture count"),
+            (lambda value: self.variant(
+                value, "vanquished vanguard nergalle cast")[
+                    "recursive_captures"][1].update({"ordinal": 0}),
              "capture declaration"),
-            (lambda value: value["entries"][entry_index]["variants"][0][
-                "recursive_dependency_fingerprints"].pop("_beogh_name_"),
+            (lambda value: self.variant(
+                value, "vanquished vanguard nergalle cast")[
+                    "recursive_dependency_fingerprints"].pop("_beogh_name_"),
              "capture closure"),
         ):
             value = copy.deepcopy(MANIFEST)

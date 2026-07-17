@@ -28,7 +28,7 @@ from audit_monspell_phase0 import (
     load_artifact,
     textdb_marker_sites,
 )
-from generate_message_overlay import ManifestError, validate_manifest
+from generate_message_overlay import ManifestError, load_manifest, validate_manifest
 
 
 SCHEMA_VERSION = 1
@@ -1052,7 +1052,7 @@ def build_report(en_path: Path, zh_path: Path, inventory_path: Path,
     except ArtifactError as exc:
         raise AuditError(str(exc)) from exc
     inventory = _read_json(inventory_path)
-    manifest_raw = _read_json(manifest_path)
+    manifest_raw = load_manifest(manifest_path)
     semantic = inventory.get("semantic_fingerprint")
     if not isinstance(semantic, str) or not semantic:
         raise AuditError("inventory semantic_fingerprint is missing")

@@ -30,6 +30,7 @@ TRANSLATION_GOVERNANCE = {
     "docs/decisions.md",
     "docs/spell-naming-rules.md",
 }
+LOCALIZED_OVERLAY_PREFIX = ".claude/data/message-overlay/monspell"
 POLICY_PREFIXES = (
     ".agents/",
     ".claude/",
@@ -73,6 +74,10 @@ def classify_file(raw: str) -> tuple[str, str]:
     if path in TRANSLATION_GOVERNANCE:
         return "translation", "translation terminology/governance text"
 
+    if path == LOCALIZED_OVERLAY_PREFIX + ".json" or path.startswith(
+            LOCALIZED_OVERLAY_PREFIX + "/"):
+        return "mixed", "localized overlay manifest/template"
+
     if any(path.startswith(prefix) for prefix in TRANSLATION_PREFIXES):
         if path.endswith(".txt"):
             return "translation", "Chinese i18n/TextDB text asset"
@@ -108,6 +113,9 @@ def classify_files(raw_files: list[str], *, source: dict | None = None) -> dict:
         classified.append({"path": path, "category": category, "reason": reason})
         has_code |= category == "code"
         has_translation |= category == "translation"
+        if category == "mixed":
+            has_code = True
+            has_translation = True
 
     if has_code and has_translation:
         classification = "mixed"

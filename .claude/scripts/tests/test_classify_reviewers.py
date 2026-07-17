@@ -43,6 +43,17 @@ class ReviewerRoutingTests(unittest.TestCase):
             "mixed", ["zh-code-reviewer", "translation-reviewer"],
         )
 
+    def test_localized_overlay_fragments_route_both_reviewers(self):
+        for path in (
+            ".claude/data/message-overlay/monspell.json",
+            ".claude/data/message-overlay/monspell/batch-a.json",
+        ):
+            with self.subTest(path=path):
+                self.assert_route(
+                    [path], "mixed",
+                    ["zh-code-reviewer", "translation-reviewer"],
+                )
+
     def test_unknown_source_file_fails_safe_to_code(self):
         self.assert_route(
             ["crawl-ref/source/dat/mystery/runtime.asset"],

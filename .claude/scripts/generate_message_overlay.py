@@ -57,6 +57,99 @@ def _read(path: Path) -> dict[str, Any]:
     return value
 
 
+def _normalise_manifest(manifest: dict[str, Any],
+                        catalog_order: list[str] | None = None) -> dict[str, Any]:
+    """Return the deterministic aggregate order consumed by validation/codegen."""
+    result = dict(manifest)
+    raw_entries = result.get("entries", [])
+    _require(isinstance(raw_entries, list)
+             and all(isinstance(item, dict) for item in raw_entries),
+             "entries must be a list of objects")
+    entries = list(raw_entries)
+    for entry in entries:
+        variants = entry.get("variants", [])
+        _require(isinstance(variants, list)
+                 and all(isinstance(item, dict) for item in variants),
+                 "entry variants must be a list of objects")
+        entry["variants"] = sorted(
+            variants,
+            key=lambda item: item.get("variant_ordinal", -1))
+        for variant in entry["variants"]:
+            cases = variant.get("materialization_cases", [])
+            _require(isinstance(cases, list)
+                     and all(isinstance(item, dict) for item in cases),
+                     "materialization_cases must be a list of objects")
+            variant["materialization_cases"] = sorted(
+                cases,
+                key=lambda item: (str(item.get("signature", "")),
+                                  str(item.get("case_id", ""))))
+    if catalog_order is None:
+        catalog_order = [item.get("canonical_key", "") for item in entries]
+    _require(all(isinstance(item, str) and item for item in catalog_order)
+             and len(catalog_order) == len(set(catalog_order)),
+             "catalog_order must contain unique canonical keys")
+    rank = {key: ordinal for ordinal, key in enumerate(catalog_order)}
+    result["entries"] = sorted(
+        entries, key=lambda item: (
+            rank.get(item.get("canonical_key"), len(rank)),
+            str(item.get("canonical_key", ""))))
+    tombstones = result.get("tombstones", [])
+    _require(isinstance(tombstones, list)
+             and all(isinstance(item, dict) for item in tombstones),
+             "tombstones must be a list of objects")
+    result["tombstones"] = sorted(
+        tombstones,
+        key=lambda item: str(item.get("stable_id", "")))
+    return result
+
+
+def load_manifest(path: Path) -> dict[str, Any]:
+    """Load a legacy monolith or aggregate the fragments named by a header."""
+    header = _read(path)
+    fragments = header.get("fragments")
+    fragment_glob = header.get("fragment_glob")
+    if fragments is None and fragment_glob is None:
+        return _normalise_manifest(header)
+    _require((fragments is None) != (fragment_glob is None),
+             "use exactly one of fragments or fragment_glob")
+    if fragment_glob is not None:
+        _require(isinstance(fragment_glob, str) and fragment_glob
+                 and not Path(fragment_glob).is_absolute()
+                 and ".." not in Path(fragment_glob).parts,
+                 "fragment_glob must be a repository-relative pattern")
+        fragments = sorted(
+            item.relative_to(path.parent).as_posix()
+            for item in path.parent.glob(fragment_glob) if item.is_file())
+    _require(isinstance(fragments, list) and fragments
+             and all(isinstance(item, str) and item for item in fragments)
+             and len(set(fragments)) == len(fragments),
+             "fragments must resolve to unique non-empty paths")
+    _require("entries" not in header and "tombstones" not in header,
+             "fragment header must not contain entries or tombstones")
+    catalog_order = header.get("catalog_order", [])
+    _require(isinstance(catalog_order, list),
+             "catalog_order must be a list")
+    aggregate = {key: value for key, value in header.items()
+                 if key not in {"fragments", "fragment_glob",
+                                "catalog_order"}}
+    aggregate["entries"] = []
+    aggregate["tombstones"] = []
+    root = path.parent.resolve()
+    for name in fragments:
+        fragment_path = (path.parent / name).resolve()
+        _require(fragment_path.is_relative_to(root),
+                 f"fragment path escapes manifest directory: {name!r}")
+        fragment = _read(fragment_path)
+        _require(set(fragment) == {"entries", "tombstones"},
+                 f"fragment {name!r} must contain entries and tombstones only")
+        _require(isinstance(fragment["entries"], list)
+                 and isinstance(fragment["tombstones"], list),
+                 f"fragment {name!r} entries/tombstones must be lists")
+        aggregate["entries"].extend(fragment["entries"])
+        aggregate["tombstones"].extend(fragment["tombstones"])
+    return _normalise_manifest(aggregate, catalog_order)
+
+
 def _canonical_bytes(value: object) -> bytes:
     return json.dumps(value, ensure_ascii=False, sort_keys=True,
                       separators=(",", ":")).encode("utf-8")
@@ -663,7 +756,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", type=Path)
     args = parser.parse_args(argv)
     try:
-        manifest = validate_manifest(_read(args.manifest), _read(args.inventory))
+        manifest = validate_manifest(load_manifest(args.manifest),
+                                     _read(args.inventory))
         rendered = render_sidecar(manifest)
     except ManifestError as exc:
         print(f"message overlay error: {exc}", file=sys.stderr)

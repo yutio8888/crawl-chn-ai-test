@@ -73,6 +73,18 @@ fork_message_overlay::message_lookup_result lookup_result(
     return value;
 }
 
+fork_message_overlay::catalog_entry &catalog_entry_by_key(
+    fork_message_overlay::catalog_source &source, const string &key)
+{
+    auto entry = find_if(source.entries.begin(), source.entries.end(),
+                         [&key](const fork_message_overlay::catalog_entry &item)
+                         {
+                             return item.canonical_key == key;
+                         });
+    REQUIRE(entry != source.entries.end());
+    return *entry;
+}
+
 canonical_textdb::loaded_candidate canonical_candidate(
     canonical_textdb::candidate_status status, const string &pattern = "",
     const string &key = "beam catchall cast", size_t ordinal = 0)
@@ -264,13 +276,15 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
-        source.entries[0].canonical_fingerprint = "fnv1a64:0000000000000000";
+        catalog_entry_by_key(source, "beam catchall cast")
+            .canonical_fingerprint = "fnv1a64:0000000000000000";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[0].variants[0].lines[0].templates[0].pattern +=
+        catalog_entry_by_key(source, "beam catchall cast")
+            .variants[0].lines[0].templates[0].pattern +=
             " @target@";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
@@ -280,7 +294,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
-        source.entries[0].variants.clear();
+        catalog_entry_by_key(source, "beam catchall cast").variants.clear();
         const load_report &report = load_monspell_overlay(canonical, &source);
         CHECK(report.state == domain_state::DISABLED);
         CHECK(report.failure == load_failure::CLOSURE_INCOMPLETE);
@@ -291,20 +305,23 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
-        source.entries[1].variants[0].materialization_cases[1].signature =
+        catalog_entry_by_key(source, "march of sorrows bone dragon cast")
+            .variants[0].materialization_cases[1].signature =
             "forged-signature";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[1].variants[0].materialization_cases.pop_back();
+        catalog_entry_by_key(source, "march of sorrows bone dragon cast")
+            .variants[0].materialization_cases.pop_back();
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[1].variants[0].slot_schema[0].type = "unknown_ref";
+        catalog_entry_by_key(source, "march of sorrows bone dragon cast")
+            .variants[0].slot_schema[0].type = "unknown_ref";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
@@ -317,33 +334,40 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         {
             reset_monspell_overlay_for_test();
             source = generated_monspell_catalog();
-            source.entries[1].variants[0].conditions.*field = true;
+            catalog_entry_by_key(source,
+                "march of sorrows bone dragon cast")
+                .variants[0].conditions.*field = true;
             CHECK(load_monspell_overlay(canonical, &source).failure
                   == load_failure::CORRUPT);
         }
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[0].variants[0].conditions.requires_player = true;
+        catalog_entry_by_key(source, "beam catchall cast")
+            .variants[0].conditions.requires_player = true;
         CHECK(load_monspell_overlay(canonical, &source).state
               == domain_state::ENABLED);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[0].variants[0].conditions.requires_caster_visible = true;
+        catalog_entry_by_key(source, "beam catchall cast")
+            .variants[0].conditions.requires_caster_visible = true;
         CHECK(load_monspell_overlay(canonical, &source).state
               == domain_state::ENABLED);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[0].mode = entry_mode::CLOSURE_ONLY;
-        source.entries[0].variants[0].conditions.requires_foe = true;
+        catalog_entry_by_key(source, "beam catchall cast").mode =
+            entry_mode::CLOSURE_ONLY;
+        catalog_entry_by_key(source, "beam catchall cast")
+            .variants[0].conditions.requires_foe = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[1].variants[0].materialization_cases[0]
+        catalog_entry_by_key(source, "march of sorrows bone dragon cast")
+            .variants[0].materialization_cases[0]
             .lines[0].implies_gesture = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
@@ -353,33 +377,39 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
-        source.entries[2].variants[0].resolves_target = false;
+        catalog_entry_by_key(source, "ensnare arachne cast")
+            .variants[0].resolves_target = false;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[5].variants[0].slot_schema.push_back(
+        catalog_entry_by_key(source, "wizard cast")
+            .variants[0].slot_schema.push_back(
             { "target", "resolved_target" });
-        source.entries[5].variants[0].required_arguments.push_back("target");
+        catalog_entry_by_key(source, "wizard cast")
+            .variants[0].required_arguments.push_back("target");
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[5].variants[0].lines[0].templates[0].relation = "AT";
+        catalog_entry_by_key(source, "wizard cast")
+            .variants[0].lines[0].templates[0].relation = "AT";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[4].variants[0].lines[0].templates[0].relation = "NONE";
+        catalog_entry_by_key(source, "wizard cast targeted")
+            .variants[0].lines[0].templates[0].relation = "NONE";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries[2].variants[0].lines[0].audible = true;
+        catalog_entry_by_key(source, "ensnare arachne cast")
+            .variants[0].lines[0].audible = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
     }
