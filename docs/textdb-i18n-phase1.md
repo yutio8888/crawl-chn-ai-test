@@ -512,7 +512,7 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
   不进入这两个计数；
 - tracked behavior report 已达到 341/341 canonical metadata、682/682 双语验证、
   0 个不可分析 occurrence 与 `phase2_ready=true`；完整 code profile 验证 Run ID
-  `20260717T131108316095302+0800-2-c705834ce018` 以 0 failures 通过，作为
+  `20260717T132313054399083+0800-2-23f9a907e418` 以 0 failures 通过，作为
   Phase 2 最终验证证据。
 
 `ensnare arachne cast` 的 2 个 variant 与

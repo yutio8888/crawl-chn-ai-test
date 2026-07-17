@@ -1055,7 +1055,7 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 262-key 数据迁移也已完成。最终 tracked report 已达到 `phase2_ready=true`、
 `remaining_legacy_behavior_occurrences=0`、`unanalysable_occurrences=0`、
 `fail_closed_behavior_roots=0`、341/341 canonical metadata 与 682/682 双语验证单位。
-完整 code profile 验证 Run ID `20260717T131108316095302+0800-2-c705834ce018`
+完整 code profile 验证 Run ID `20260717T132313054399083+0800-2-23f9a907e418`
 以 0 failures 通过，构成最终 Phase 2 验证证据。compatibility fallback 不属于 ordinary
 uncovered legacy：它只在 overlay 非 `ENABLED` 或语言不受支持，且 key 是
 compiled `CANDIDATE` 时启用旧嗅探，以保持 safe fallback 的行为/RNG 等价。
