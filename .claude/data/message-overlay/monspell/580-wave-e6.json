@@ -1,0 +1,98 @@
+{
+  "entries": [
+    {
+      "canonical_key": "_unseen_breath_cast_", "canonical_fingerprint": "fnv1a64:f4488c27dbd83022", "selection_graph_fingerprint": "fnv1a64:7c2eefc0e9505445", "mode": "CLOSURE_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.closure.unseen_breath.roar.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "35d9e1669c8b32ed69a00fccc4557ccc743b46fa6ba0d6597c1684a9ac8f97ae", "upstream_weight": 10, "english_snapshot": "You hear a roar.",
+        "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [], "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a roar." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声咆哮。" }] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "_unseen_spit_cast_", "canonical_fingerprint": "fnv1a64:ffa1e3c0cffdf707", "selection_graph_fingerprint": "fnv1a64:732a8b0cb234ff88", "mode": "CLOSURE_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.closure.unseen_spit.spitting_sound.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "f87049e6f89d17240ccbb2dec93a48f93f336261d3e63026abd2f8d1413759f4", "upstream_weight": 10, "english_snapshot": "You hear a spitting sound.",
+        "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [], "required_arguments": [], "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a spitting sound." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声喷吐声。" }] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "basilisk cast", "canonical_fingerprint": "fnv1a64:1dd69c771da2eba6", "selection_graph_fingerprint": "fnv1a64:632880fe3955715f", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.basilisk.floating_eye_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "d9320b0ae5fdf467098e5461fdd9add5bbd8e475fd507762843b507ff6669c3c", "upstream_weight": 10, "english_snapshot": "@floating eye cast@",
+        "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false }, "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"], "line_metadata": [],
+        "materialization_cases": [{ "case_id": "mon.cast.basilisk.looks_around.v1", "signature": "materialization-v1|variants=2|13:basilisk cast:0:0|17:floating eye cast:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} looks around." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}环顾四周。" }] }] }],
+        "recursive_dependency_fingerprints": { "floating eye cast": "fnv1a64:64f233d8fc674dc6" }, "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "basilisk cast targeted", "canonical_fingerprint": "fnv1a64:1c13e11e3841eb46", "selection_graph_fingerprint": "fnv1a64:e12e472b583974ad", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.basilisk.targeted.floating_eye_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "07fe89ab05d070f6878a613e19ab3cb59baf8157bd90275f7fbfaeb32b5583a1", "upstream_weight": 10, "english_snapshot": "@floating eye cast targeted@",
+        "frame": "GAZE", "binding": { "resolves_target": true }, "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "target"], "line_metadata": [],
+        "materialization_cases": [{ "case_id": "mon.cast.basilisk.targeted.gazes.v1", "signature": "materialization-v1|variants=2|22:basilisk cast targeted:0:0|26:floating eye cast targeted:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} gazes at ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gazes next to ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} gazes past ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}凝视${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}望向${target}旁边。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}望向${target}身后。" }
+        ] }] }],
+        "recursive_dependency_fingerprints": { "floating eye cast targeted": "fnv1a64:6cb4c3195f955ba7" }, "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "drake cast targeted", "canonical_fingerprint": "fnv1a64:54ffe1afdb22d705", "selection_graph_fingerprint": "fnv1a64:997def044100ede0", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.drake.targeted.dragon_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "fbee6f63e08535429bf4983a9261c040e18ddfd065329ad5343356c7dbae36fd", "upstream_weight": 10, "english_snapshot": "@dragon cast targeted@",
+        "frame": "PROJECTILE", "binding": { "resolves_target": true }, "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "beam", "type": "resolved_beam" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "beam", "target"], "line_metadata": [],
+        "materialization_cases": [{ "case_id": "mon.cast.drake.targeted.breathes_beam.v1", "signature": "materialization-v1|variants=2|19:drake cast targeted:0:0|20:dragon cast targeted:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}吐出${beam}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+        ] }] }],
+        "recursive_dependency_fingerprints": { "dragon cast targeted": "fnv1a64:b56bb6f119f1fef2" }, "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "roxanne cast", "canonical_fingerprint": "fnv1a64:a94fe6ac1a2fdc20", "selection_graph_fingerprint": "fnv1a64:11d0fcab5bce6fef", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.roxanne.sphinx_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "4279138c102d2b4c6d94ccd56f8be31358198cfe7832022251756ad6683b1e47", "upstream_weight": 10, "english_snapshot": "@sphinx cast@",
+        "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false }, "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"], "line_metadata": [],
+        "materialization_cases": [
+          { "case_id": "mon.cast.roxanne.mumbles_strange_words.v1", "signature": "materialization-v1|variants=2|12:roxanne cast:0:0|11:sphinx cast:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} mumbles some strange words." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}咕哝着一些奇怪的话。" }] }] },
+          { "case_id": "mon.cast.roxanne.casts_spell.v1", "signature": "materialization-v1|variants=2|12:roxanne cast:0:0|11:sphinx cast:1:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} casts a spell." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}施展了一个法术。" }] }] }
+        ],
+        "recursive_dependency_fingerprints": { "sphinx cast": "fnv1a64:b5f2c71951ac0bb2" }, "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "unseen acid splash cast", "canonical_fingerprint": "fnv1a64:0f250e460c8a596f", "selection_graph_fingerprint": "fnv1a64:a211daccdc42cfd0", "mode": "LEGACY_ONLY",
+      "variants": [{ "stable_id": "mon.cast.unseen_acid_splash.spitting_sound.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "dc972cb7d97804420bdead4b88f0df2a68119fc3274948e8e95e72cd054374ac", "upstream_weight": 10, "english_snapshot": "@_unseen_spit_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "LEGACY_ONLY", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [], "recursive_dependency_fingerprints": { "_unseen_spit_cast_": "0d9503dc5acb5c1af42b33fc449c538cea4d82102afea24181484fe8d3443f85" } }]
+    },
+    {
+      "canonical_key": "unseen chilling breath cast", "canonical_fingerprint": "fnv1a64:4c734680444ed133", "selection_graph_fingerprint": "fnv1a64:41d858c2040d2ad0", "mode": "LEGACY_ONLY",
+      "variants": [{ "stable_id": "mon.cast.unseen_chilling_breath.roar.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "6c0dea38cb3e06c966213a80fee22504828b4ac63c3311688306a12243fb6398", "upstream_weight": 10, "english_snapshot": "@_unseen_breath_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "LEGACY_ONLY", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [], "recursive_dependency_fingerprints": { "_unseen_breath_cast_": "18b499cf5fcc6b04703ac36225553641b7f48f93964038588f897bec1ac69a47" } }]
+    },
+    {
+      "canonical_key": "unseen cold breath cast", "canonical_fingerprint": "fnv1a64:e7d7784571477c17", "selection_graph_fingerprint": "fnv1a64:d56f58b58ed2e39c", "mode": "CANDIDATE",
+      "variants": [{ "stable_id": "mon.cast.unseen_cold_breath.breath_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "6c0dea38cb3e06c966213a80fee22504828b4ac63c3311688306a12243fb6398", "upstream_weight": 10, "english_snapshot": "@_unseen_breath_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [{ "case_id": "mon.cast.unseen_cold_breath.roar.v1", "signature": "materialization-v1|variants=2|23:unseen cold breath cast:0:0|20:_unseen_breath_cast_:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a roar." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声咆哮。" }] }] }], "recursive_dependency_fingerprints": { "_unseen_breath_cast_": "fnv1a64:f4488c27dbd83022" }, "recursive_captures": [] }]
+    },
+    {
+      "canonical_key": "unseen fire breath cast", "canonical_fingerprint": "fnv1a64:8c61e94d7ee6d4a1", "selection_graph_fingerprint": "fnv1a64:4e790ab24430b676", "mode": "CANDIDATE",
+      "variants": [{ "stable_id": "mon.cast.unseen_fire_breath.breath_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "6c0dea38cb3e06c966213a80fee22504828b4ac63c3311688306a12243fb6398", "upstream_weight": 10, "english_snapshot": "@_unseen_breath_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [{ "case_id": "mon.cast.unseen_fire_breath.roar.v1", "signature": "materialization-v1|variants=2|23:unseen fire breath cast:0:0|20:_unseen_breath_cast_:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a roar." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声咆哮。" }] }] }], "recursive_dependency_fingerprints": { "_unseen_breath_cast_": "fnv1a64:f4488c27dbd83022" }, "recursive_captures": [] }]
+    },
+    {
+      "canonical_key": "unseen searing breath cast", "canonical_fingerprint": "fnv1a64:a292d6a612dcff32", "selection_graph_fingerprint": "fnv1a64:c172bdcfeb2648b3", "mode": "CANDIDATE",
+      "variants": [{ "stable_id": "mon.cast.unseen_searing_breath.breath_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "6c0dea38cb3e06c966213a80fee22504828b4ac63c3311688306a12243fb6398", "upstream_weight": 10, "english_snapshot": "@_unseen_breath_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [{ "case_id": "mon.cast.unseen_searing_breath.roar.v1", "signature": "materialization-v1|variants=2|26:unseen searing breath cast:0:0|20:_unseen_breath_cast_:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a roar." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声咆哮。" }] }] }], "recursive_dependency_fingerprints": { "_unseen_breath_cast_": "fnv1a64:f4488c27dbd83022" }, "recursive_captures": [] }]
+    },
+    {
+      "canonical_key": "unseen spit acid cast", "canonical_fingerprint": "fnv1a64:c4bc8da9c43bd412", "selection_graph_fingerprint": "fnv1a64:cc9314fd1b3bab7b", "mode": "CANDIDATE",
+      "variants": [{ "stable_id": "mon.cast.unseen_spit_acid.spit_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "dc972cb7d97804420bdead4b88f0df2a68119fc3274948e8e95e72cd054374ac", "upstream_weight": 10, "english_snapshot": "@_unseen_spit_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [{ "case_id": "mon.cast.unseen_spit_acid.spitting_sound.v1", "signature": "materialization-v1|variants=2|21:unseen spit acid cast:0:0|18:_unseen_spit_cast_:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a spitting sound." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声喷吐声。" }] }] }], "recursive_dependency_fingerprints": { "_unseen_spit_cast_": "fnv1a64:ffa1e3c0cffdf707" }, "recursive_captures": [] }]
+    },
+    {
+      "canonical_key": "unseen spit poison cast", "canonical_fingerprint": "fnv1a64:db87ab8e61ee6bb5", "selection_graph_fingerprint": "fnv1a64:c6c5101288559a06", "mode": "CANDIDATE",
+      "variants": [{ "stable_id": "mon.cast.unseen_spit_poison.spit_alias.v1", "tombstone": false, "variant_ordinal": 0, "upstream_variant_fingerprint": "dc972cb7d97804420bdead4b88f0df2a68119fc3274948e8e95e72cd054374ac", "upstream_weight": 10, "english_snapshot": "@_unseen_spit_cast_@", "frame": "VOCAL", "binding": { "resolves_target": false }, "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false }, "materialization_policy": "RECURSIVE_CASE_MAP", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [{ "case_id": "mon.cast.unseen_spit_poison.spitting_sound.v1", "signature": "materialization-v1|variants=2|23:unseen spit poison cast:0:0|18:_unseen_spit_cast_:0:1:0|lua=0|sites=0", "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "You hear a spitting sound." }, { "language": "zh", "relation": "NONE", "pattern": "你听到一声喷吐声。" }] }] }], "recursive_dependency_fingerprints": { "_unseen_spit_cast_": "fnv1a64:ffa1e3c0cffdf707" }, "recursive_captures": [] }]
+    }
+  ],
+  "tombstones": []
+}
