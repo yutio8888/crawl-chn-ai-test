@@ -5481,9 +5481,6 @@ pleased with you
 Points
 点数
 %%%%
-Poison
-毒素
-%%%%
 poison and negative energy
 毒素与负能量
 %%%%
@@ -8193,9 +8190,6 @@ Writing noise grid with %d noise sources
 %%%%
 Wu Jian
 无间
-%%%%
-Xom
-佐姆
 %%%%
 Xom finds this level too familiar and boring!
 佐姆觉得这一层太过熟悉、太过无聊了！
@@ -11366,9 +11360,6 @@ Bribe
 Cloud
 云雾
 %%%%
-Orb
-宝珠
-%%%%
 Orb?
 宝珠？
 %%%%
@@ -11408,9 +11399,6 @@ Ostracised
 Tesseract
 超立方体
 %%%%
-Sunder
-碎裂
-%%%%
 Missing
 缺失
 %%%%
@@ -11440,9 +11428,6 @@ Fast
 %%%%
 Water
 水域
-%%%%
-Lava
-熔岩
 %%%%
 Invis
 隐形
@@ -13203,9 +13188,6 @@ Nimble
 %%%%
 Spry
 矫捷者
-%%%%
-Acrobat
-杂技
 %%%%
 Intangible
 无形无影
@@ -35777,9 +35759,6 @@ Only nagas and armataurs can wear barding.
 Pois
 中毒
 %%%%
-Portal
-传送门
-%%%%
 branch
 分支
 %%%%
@@ -37022,9 +37001,6 @@ Visible features
 %%%%
 Monsters
 怪物
-%%%%
-Items
-物品
 %%%%
 Features
 地形
@@ -38427,39 +38403,14 @@ Chemistry
 acrobat
 杂技
 %%%%
-
-Agony
-剧痛
-%%%%
 Condensation Shield
 凝结之盾
-%%%%
-Fireball
-火球
-%%%%
-Foxfire
-狐火
-%%%%
-Golden Breath
-金龙吐息
-%%%%
-Haste
-加速
-%%%%
-See Invisible
-侦测隐形
 %%%%
 Sign of Ruin
 毁灭征兆
 %%%%
-Silence
-沉默
-%%%%
 Sting
 毒刺
-%%%%
-Throw
-投掷
 %%%%
 Vortex
 漩涡
@@ -38962,9 +38913,6 @@ Engulfed by %s's cloud of %s
 Killed %s by %s
 被%s%s
 %%%%
-Killed by %s
-被%s杀死
-%%%%
 Killed by %s's ranged attack
 被%s的远程攻击杀死
 %%%%
@@ -39042,9 +38990,6 @@ Drowned by %s
 %%%%
 drowned
 溺水
-%%%%
-Drowned
-溺水身亡
 %%%%
 stupidity
 愚蠢
@@ -39138,9 +39083,6 @@ disjoined
 %%%%
 Disjoined by %s
 被%s解离
-%%%%
-Disjoined
-被解离
 %%%%
 wild magic
 野性魔法
@@ -39239,9 +39181,6 @@ Slain by %s's death curse
 被%s的死亡诅咒杀死
 %%%%
 died
-死亡
-%%%%
-Died
 死亡
 %%%%
 fell downstairs
@@ -39394,12 +39333,6 @@ Skills reduced by: %s.
 %1$s (gone by now)
 %1$s（现已消失）
 %%%%
-Draw
-抽牌
-%%%%
-Deal
-发牌
-%%%%
 %s which deck?        Cards available
 %s哪副牌？        可用牌数
 %%%%
@@ -39505,71 +39438,11 @@ of Ashenzari
 of Bugginess
 故障之
 %%%%
-Halfling
-半身人
-%%%%
-Kobold
-狗头人
-%%%%
 Mummy
 木乃伊
 %%%%
-Naga
-纳迦
-%%%%
-Troll
-巨魔
-%%%%
-Minotaur
-牛头人
-%%%%
 Spriggan
 小精灵
-%%%%
-Centaur
-半人马
-%%%%
-Demigod
-半神
-%%%%
-Demonspawn
-恶魔裔
-%%%%
-Ghoul
-食尸鬼
-%%%%
-Tengu
-天狗
-%%%%
-Merfolk
-人鱼
-%%%%
-Vampire
-吸血鬼
-%%%%
-Felid
-猫
-%%%%
-Octopode
-章鱼
-%%%%
-Gargoyle
-石像鬼
-%%%%
-Formicid
-蚁人
-%%%%
-Vine Stalker
-藤蔓行者
-%%%%
-Barachi
-蛙人
-%%%%
-Gnoll
-豺狼人
-%%%%
-Coglin
-齿轮地精
 %%%%
 Deep Dwarf
 深矮人
@@ -39577,50 +39450,14 @@ Deep Dwarf
 Poltergeist
 吵闹鬼
 %%%%
-Revenant
-归来者
-%%%%
-Djinni
-灯神
-%%%%
 Meteoran
 流星人
-%%%%
-Oni
-鬼
-%%%%
-Armataur
-甲马人
-%%%%
-Red Draconian
-红龙人
-%%%%
-Draconian
-龙人
-%%%%
-White Draconian
-白龙人
-%%%%
-Green Draconian
-绿龙人
 %%%%
 Yellow Draconian
 黄龙人
 %%%%
-Grey Draconian
-灰龙人
-%%%%
 Black Draconian
 黑龙人
-%%%%
-Purple Draconian
-紫龙人
-%%%%
-Mottled Draconian
-斑驳龙人
-%%%%
-Pale Draconian
-苍白龙人
 %%%%
 non-descript
 朴素
