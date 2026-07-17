@@ -1,11 +1,11 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
 > 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成八批低风险迁移、
-> 一次 21-key 分片并行试点及 Wave B 的 30-key 并行迁移
+> 一次 21-key 分片并行试点、Wave B 的 30-key 与 Wave C 的 26-key 并行迁移
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 72 个
-> canonical key、103 个 canonical variant；正常 `monspell` 路径的 gesture
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前覆盖 98 个
+> canonical key、129 个 canonical variant；正常 `monspell` 路径的 gesture
 > 正文嗅探已删除，safe compatibility fallback 保留
 
 ## 1. 背景
@@ -572,7 +572,7 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 覆盖 72 个 canonical key、103 个 canonical variant。descriptor
+当前生产 catalog 覆盖 98 个 canonical key、129 个 canonical variant。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -918,8 +918,8 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-17）：上述基础设施已落地，当前完整迁移 72 个 canonical
-key、103 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
+实施状态（2026-07-17）：上述基础设施已落地，当前完整迁移 98 个 canonical
+key、129 个 canonical variant。首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
 保持 legacy 语义。具体 artifact、运行时链、验证证据和限制见
@@ -980,9 +980,17 @@ tombstone 唯一性检查和确定性排序后统一生成。该机制验证了�
 每个 key 都是单一 `NONE` 变体，只声明 `${actor}`，并显式保持
 `resolves_target=false`。其中 `ostracise cast` 虽含面向玩家的英文措辞，仍按
 legacy candidate applicability 保持全部 `requires_*` 为 false（包括
-`requires_player=false`），不从正文代词推导新门禁。当前 72-key catalog 仍只是
-262 个 inventory root 的子集，不代表剩余条目已经
+`requires_player=false`），不从正文代词推导新门禁。72-key catalog 是 Wave B
+完成时的阶段计数，不代表剩余条目已经
 结构化或可以跳过逐 key 闭包、RNG、适用性与译文审计。
+
+Wave C 再由三个独立 fragment 并行迁移 26 个单变体 key：18 个 unseen 消息使用
+无槽纯模板，其中所有以 `You` 开头的 variant 显式声明
+`requires_player=true`，其余 applicability 仍按 legacy 保持 false；另外 8 个
+visible key 使用 `${actor}`。全部条目均为 `NONE`、`PLAIN`，无递归、Lua 或
+`[a|b]`，且不从正文中的听觉措辞推导 `audible` 或 channel。集成后 catalog 为
+98 个 key、129 个 variant、258 个逐语言验证单位；仍只是 262 个 inventory root
+的子集。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序

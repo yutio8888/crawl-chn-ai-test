@@ -2,8 +2,8 @@
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
 `CASE_MAP`；Phase 2 已完成八批通用施法消息迁移、一次 21-key 分片并行
-试点及 Wave B 的 30-key 并行迁移。当前覆盖 72 个 canonical key、103 个
-canonical variant。**
+试点、Wave B 的 30-key 与 Wave C 的 26-key 并行迁移。当前覆盖 98 个
+canonical key、129 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -12,7 +12,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 72 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 98 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -172,6 +172,15 @@ canonical variant。它们均使用 `NONE`、仅声明 `${actor}`，并保持
 applicability 仍按 legacy 行为保持 `requires_player=false`，其他
 `requires_*` 也均为 false；catalog 不从翻译或正文代词推导候选适用条件。
 
+Wave C 由 `300-wave-c1.json`、`310-wave-c2.json` 与 `320-wave-c3.json`
+并行新增 26 个 key、26 个 canonical variant。C1/C2 覆盖 18 个 unseen 消息，
+使用无槽纯模板；所有以 `You` 开头的 variant 显式声明
+`requires_player=true`，其余 applicability 保持 false。C3 覆盖 8 个 visible
+actor-only 消息并声明 `${actor}`。三组均为单一 `NONE` 变体、
+`resolves_target=false`、`PLAIN` sensory，且无递归、Lua、`[a|b]`、gesture 或
+audible metadata。集成后 catalog 为 98 个 key、129 个 canonical variant、
+258 个逐语言验证单位。
+
 ## 2. 三类 artifact 的职责
 
 ### manifest
@@ -322,7 +331,7 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 72 个 key、103 个 canonical variant，不代表 262 个
+- structured 覆盖为 98 个 key、129 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
   `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
@@ -466,9 +475,9 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 103 个 canonical structured variant，103 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 206 个逐语言验证
-  单位，206 个均完整。
+- 129 个 canonical structured variant，129 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 258 个逐语言验证
+  单位，258 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement

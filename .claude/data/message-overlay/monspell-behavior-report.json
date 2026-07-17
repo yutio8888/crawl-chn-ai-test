@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 103,
-    "canonical_structured_variant_metadata_units": 103,
+    "canonical_structured_variant_metadata_complete": 129,
+    "canonical_structured_variant_metadata_units": 129,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
     "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 206,
-    "per_language_structured_variant_verification_units": 206,
+    "per_language_structured_variant_verification_complete": 258,
+    "per_language_structured_variant_verification_units": 258,
     "remaining_legacy_behavior_occurrences": 0,
     "unanalysable_occurrences": 0
   },
@@ -5772,6 +5772,132 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "unseen airstrike cast",
+          "stable_id": "mon.cast.unseen_airstrike.blowing_wind.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen blinkbolt cast",
+          "stable_id": "mon.cast.unseen_blinkbolt.living_lightning_bursts.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen bolt of fire ophan cast",
+          "stable_id": "mon.cast.unseen_bolt_of_fire_ophan.cleansing_fire.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen curse skull cast",
+          "stable_id": "mon.cast.unseen_curse_skull.clattering_teeth.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen dragon cast",
+          "stable_id": "mon.cast.unseen_dragon.roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen ensnare arachne cast",
+          "stable_id": "mon.cast.unseen_ensnare_arachne.webbing_from_thin_air.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen ensnare natural cast",
+          "stable_id": "mon.cast.unseen_ensnare_natural.sticky_webbing_from_thin_air.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen mara summon cast",
+          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen non-humanoid wizard cast",
+          "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen thermic dynamo cast",
+          "stable_id": "mon.cast.unseen_thermic_dynamo.violent_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen vv cast",
+          "stable_id": "mon.cast.unseen_vv.rock_striking_rock.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen warning cry cast",
+          "stable_id": "mon.cast.unseen_warning_cry.loud_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen warning cry howler monkey cast",
+          "stable_id": "mon.cast.unseen_warning_cry_howler_monkey.hooting_and_howling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen warning cry seraph cast",
+          "stable_id": "mon.cast.unseen_warning_cry_seraph.loud_warning_shout.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen warning cry ushabti cast",
+          "stable_id": "mon.cast.unseen_warning_cry_ushabti.deafening_rattle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen warning cry vault sentinel cast",
+          "stable_id": "mon.cast.unseen_warning_cry_vault_sentinel.horn_note.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen weeping skull cast",
+          "stable_id": "mon.cast.unseen_weeping_skull.gushing_sobs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen wizard cast",
+          "stable_id": "mon.cast.unseen_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "ushabti cast targeted",
           "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
@@ -5828,8 +5954,57 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "warning cry cast",
+          "stable_id": "mon.cast.warning_cry.howls_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "warning cry hippogriff cast",
+          "stable_id": "mon.cast.warning_cry_hippogriff.screeches_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "warning cry howler monkey cast",
+          "stable_id": "mon.cast.warning_cry_howler_monkey.hoots_and_howls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "warning cry ushabti cast",
+          "stable_id": "mon.cast.warning_cry_ushabti.shakes_and_rattles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "warning cry vault sentinel cast",
+          "stable_id": "mon.cast.warning_cry_vault_sentinel.blows_signal_horn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "weakening gaze cast",
           "stable_id": "mon.cast.weakening_gaze.fierce_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wind blast cast",
+          "stable_id": "mon.cast.wind_blast.conjures_wind.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wind blast wind drake cast",
+          "stable_id": "mon.cast.wind_blast_wind_drake.exhales_wind.v1",
           "variant_ordinal": 0
         },
         {
@@ -5879,6 +6054,13 @@
           "language": "en",
           "requested_root": "woodweal cast",
           "stable_id": "mon.cast.woodweal.draw_tree_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "wretched star cast",
+          "stable_id": "mon.cast.wretched_star.glows_turbulently.v1",
           "variant_ordinal": 0
         }
       ]
@@ -7135,6 +7317,132 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "unseen airstrike cast",
+          "stable_id": "mon.cast.unseen_airstrike.blowing_wind.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen blinkbolt cast",
+          "stable_id": "mon.cast.unseen_blinkbolt.living_lightning_bursts.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen bolt of fire ophan cast",
+          "stable_id": "mon.cast.unseen_bolt_of_fire_ophan.cleansing_fire.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen curse skull cast",
+          "stable_id": "mon.cast.unseen_curse_skull.clattering_teeth.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen dragon cast",
+          "stable_id": "mon.cast.unseen_dragon.roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen ensnare arachne cast",
+          "stable_id": "mon.cast.unseen_ensnare_arachne.webbing_from_thin_air.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen ensnare natural cast",
+          "stable_id": "mon.cast.unseen_ensnare_natural.sticky_webbing_from_thin_air.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen mara summon cast",
+          "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen non-humanoid wizard cast",
+          "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen thermic dynamo cast",
+          "stable_id": "mon.cast.unseen_thermic_dynamo.violent_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen vv cast",
+          "stable_id": "mon.cast.unseen_vv.rock_striking_rock.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen warning cry cast",
+          "stable_id": "mon.cast.unseen_warning_cry.loud_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen warning cry howler monkey cast",
+          "stable_id": "mon.cast.unseen_warning_cry_howler_monkey.hooting_and_howling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen warning cry seraph cast",
+          "stable_id": "mon.cast.unseen_warning_cry_seraph.loud_warning_shout.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen warning cry ushabti cast",
+          "stable_id": "mon.cast.unseen_warning_cry_ushabti.deafening_rattle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen warning cry vault sentinel cast",
+          "stable_id": "mon.cast.unseen_warning_cry_vault_sentinel.horn_note.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen weeping skull cast",
+          "stable_id": "mon.cast.unseen_weeping_skull.gushing_sobs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen wizard cast",
+          "stable_id": "mon.cast.unseen_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "ushabti cast targeted",
           "stable_id": "mon.cast.ushabti.stiff_gesture.v1",
           "variant_ordinal": 0
@@ -7191,8 +7499,57 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "warning cry cast",
+          "stable_id": "mon.cast.warning_cry.howls_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "warning cry hippogriff cast",
+          "stable_id": "mon.cast.warning_cry_hippogriff.screeches_warning_cry.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "warning cry howler monkey cast",
+          "stable_id": "mon.cast.warning_cry_howler_monkey.hoots_and_howls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "warning cry ushabti cast",
+          "stable_id": "mon.cast.warning_cry_ushabti.shakes_and_rattles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "warning cry vault sentinel cast",
+          "stable_id": "mon.cast.warning_cry_vault_sentinel.blows_signal_horn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "weakening gaze cast",
           "stable_id": "mon.cast.weakening_gaze.fierce_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wind blast cast",
+          "stable_id": "mon.cast.wind_blast.conjures_wind.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wind blast wind drake cast",
+          "stable_id": "mon.cast.wind_blast_wind_drake.exhales_wind.v1",
           "variant_ordinal": 0
         },
         {
@@ -7242,6 +7599,13 @@
           "language": "zh",
           "requested_root": "woodweal cast",
           "stable_id": "mon.cast.woodweal.draw_tree_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "wretched star cast",
+          "stable_id": "mon.cast.wretched_star.glows_turbulently.v1",
           "variant_ordinal": 0
         }
       ]
