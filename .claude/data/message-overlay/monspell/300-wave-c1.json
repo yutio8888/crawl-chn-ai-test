@@ -1,0 +1,275 @@
+{
+  "entries": [
+    {
+      "canonical_key": "unseen airstrike cast",
+      "canonical_fingerprint": "fnv1a64:1e5a0117c3e62e05",
+      "selection_graph_fingerprint": "fnv1a64:069626d8bf86e8ca",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_airstrike.blowing_wind.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "352b0d00f775b460e40524dddac9ae8fa7d3ab7d445bfa4a4139dc5680aa164d",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear blowing wind.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear blowing wind." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到刮风的声音。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen blinkbolt cast",
+      "canonical_fingerprint": "fnv1a64:c25cbebdbc8d117f",
+      "selection_graph_fingerprint": "fnv1a64:620d33be8522bb56",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_blinkbolt.living_lightning_bursts.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "954466dcd5b31e8c3bd829cd7bf3f5c411eae2806e167a552c6c0c0dceb94f8c",
+        "upstream_weight": 10,
+        "english_snapshot": "Living lightning bursts into view!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Living lightning bursts into view!" },
+            { "language": "zh", "relation": "NONE", "pattern": "活体闪电在眼前迸发！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen bolt of fire ophan cast",
+      "canonical_fingerprint": "fnv1a64:b38607c2eb44e51a",
+      "selection_graph_fingerprint": "fnv1a64:732a192c65d62b75",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_bolt_of_fire_ophan.cleansing_fire.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "44e7f2243f0552d0c69f8e0df6d21a2a2b3ac53099df4581738183cacbbbbe98",
+        "upstream_weight": 10,
+        "english_snapshot": "Something harnesses the cleansing power of fire!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Something harnesses the cleansing power of fire!" },
+            { "language": "zh", "relation": "NONE", "pattern": "有什么东西掌控着火的净化力量！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen curse skull cast",
+      "canonical_fingerprint": "fnv1a64:b12d27c5e2cfc065",
+      "selection_graph_fingerprint": "fnv1a64:568d2f156572975e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_curse_skull.clattering_teeth.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3127455231b5e4dbbdcc72c134a1d950b62a535744aa6b6db64256380fcfefd8",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear the clattering of teeth.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear the clattering of teeth." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到了牙齿的撞击声。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen dragon cast",
+      "canonical_fingerprint": "fnv1a64:092feb95ca7f67db",
+      "selection_graph_fingerprint": "fnv1a64:9703eb02b1d9501a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_dragon.roar.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "35d9e1669c8b32ed69a00fccc4557ccc743b46fa6ba0d6597c1684a9ac8f97ae",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a roar.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a roar." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一声咆哮。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen ensnare arachne cast",
+      "canonical_fingerprint": "fnv1a64:4de7b5cbcacf9cc7",
+      "selection_graph_fingerprint": "fnv1a64:d420b9d86f7f00e2",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_ensnare_arachne.webbing_from_thin_air.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cba3551314ce8d7891b278f72b68aa6544f9bd81e486d49d6f08c7d4a7b6507a",
+        "upstream_weight": 10,
+        "english_snapshot": "A stream of webbing shoots out from thin air.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "A stream of webbing shoots out from thin air." },
+            { "language": "zh", "relation": "NONE", "pattern": "一连串的网从稀薄的空气中喷射而来。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen ensnare natural cast",
+      "canonical_fingerprint": "fnv1a64:f331f36195042cf2",
+      "selection_graph_fingerprint": "fnv1a64:819983d29693869b",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_ensnare_natural.sticky_webbing_from_thin_air.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "9f3200b54a4c7f3751ed838adfb40957f34677e13dfc3b0aa8dc9b13d1974a87",
+        "upstream_weight": 10,
+        "english_snapshot": "A string of sticky webbing shoots out from thin air.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "A string of sticky webbing shoots out from thin air." },
+            { "language": "zh", "relation": "NONE", "pattern": "稀薄的空气中冒出一串黏性的网。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen mara summon cast",
+      "canonical_fingerprint": "fnv1a64:99259eb12cd6a862",
+      "selection_graph_fingerprint": "fnv1a64:655ec975bd7f7493",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "ae715d59ba497418182f9ab39519177fa1489c3233688717a4ce55daaf7b1abd",
+        "upstream_weight": 10,
+        "english_snapshot": "Something weaves an illusion!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Something weaves an illusion!" },
+            { "language": "zh", "relation": "NONE", "pattern": "有什么东西编织出了一个幻象！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen non-humanoid wizard cast",
+      "canonical_fingerprint": "fnv1a64:3df914533c0a5b1c",
+      "selection_graph_fingerprint": "fnv1a64:50f88c20ab941919",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7b4235a5381936b1287d1b509777b986715549bd3b8d7ac03d94cb2b5c6ac53a",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear some strange, mumbled words.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear some strange, mumbled words." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一些奇怪的、含糊不清的话。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
