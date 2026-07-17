@@ -253,6 +253,7 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
                 ))
             raw_key = None
             value_lines = []
+            value_line = 0
             in_entry = True
             continue
 
@@ -266,8 +267,8 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
                 raw_key = processed
                 key_line = line_num
         else:
-            # C++ database.cc: trim_string_right(line) — strips " \t\n\r"
-            trimmed = processed.rstrip()
+            # C++ database.cc: trim_string_right(line) — strips " \t\n\r" only
+            trimmed = processed.rstrip(" \t\n\r")
             value_lines.append(trimmed)
             if value_line == 0:
                 value_line = line_num
@@ -373,8 +374,11 @@ def i18n_unescape_value(value: str) -> str:
 
 
 def trim_string_right(s: str) -> str:
-    """C++ trim_string_right(): strip trailing space, tab, newline, CR."""
-    return s.rstrip(" \t\n\r")
+    """C++ trim_string_right(): strip trailing space, tab, newline, CR only."""
+    # Explicit character set, NOT rstrip() default (which removes Unicode whitespace)
+    while s and s[-1] in " \t\n\r":
+        s = s[:-1]
+    return s
 
 
 def trim_leading_newlines(s: str) -> str:
