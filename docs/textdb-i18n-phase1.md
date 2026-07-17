@@ -1,8 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移。当前覆盖 21 个 canonical
-key、51 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移及一次 21-key 分片并行
+试点。当前覆盖 42 个 canonical key、73 个 canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +11,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 21 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 42 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -156,11 +156,21 @@ replacement；EN/ZH renderer 共享这三个捕获值，不重新抽取。loader
 中的 `CANDIDATE` 时，typed compatibility fallback 才保留旧嗅探，以兑现 safe
 fallback 的行为与 RNG 契约。
 
+随后进行一次 21-key 分片并行试点，新增 22 个 canonical variant。人工 manifest
+由 `000-baseline.json`、`100-wave-a1-pilot.json`、
+`110-wave-a2-pilot.json` 与 `120-wave-a3-pilot.json` 四个独立 fragment 组成；
+顶层 `monspell.json` 只声明 catalog 顺序和 `fragment_glob`。三个 worker 各自只
+拥有一个 pilot fragment，集成者统一执行全局 stable/case/tombstone 唯一性检查、
+确定性排序并生成唯一 sidecar，避免并行分支同时改写共享 JSON 数组和生成文件。
+这次试点只把 catalog 从 21 个 key 扩至 42 个，不表示其余 `monspell` root 已迁移。
+
 ## 2. 三类 artifact 的职责
 
 ### manifest
 
-`.claude/data/message-overlay/monspell.json` 是人工复审入口，保存：
+`.claude/data/message-overlay/monspell.json` 是人工复审入口和聚合头，保存 schema、
+inventory fingerprint、语言集合、显式 catalog 顺序与 fragment glob。实际条目由
+`.claude/data/message-overlay/monspell/*.json` fragments 保存：
 
 - stable ID 与 tombstone；
 - canonical/selection fingerprint、variant ordinal、权重与英文快照；
@@ -304,7 +314,7 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 21 个 key、51 个 canonical variant，不代表 262 个
+- structured 覆盖为 42 个 key、73 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
   `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
@@ -448,9 +458,9 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 51 个 canonical structured variant，51 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 102 个逐语言验证
-  单位，102 个均完整。
+- 73 个 canonical structured variant，73 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 146 个逐语言验证
+  单位，146 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -470,7 +480,7 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 为 true。EN/ZH effective runtime behavior parity、候选
-containment、runtime reachability 与全部八批已迁移 key 均已证明，且
+containment、runtime reachability 与八批既有迁移及 21-key pilot 均已证明，且
 unanalyzable occurrence 与 fail-closed root 均为 0。正常 `monspell` 路径的
 gesture 正文嗅探已在独立批次删除；审计持续作为回归门禁。只有 overlay
 故障/未加载或语言不受支持，且 key 属于 compiled `CANDIDATE` catalog 时，

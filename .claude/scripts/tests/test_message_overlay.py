@@ -183,7 +183,28 @@ class MessageOverlayTests(unittest.TestCase):
                           "smiting jeremiah cast",
                           "cantrip gastronok cast",
                           "hellfire mortar wiglaf cast",
-                          "vanquished vanguard nergalle cast"], candidates)
+                          "vanquished vanguard nergalle cast",
+                          "battlecry cast",
+                          "call lost souls cast",
+                          "call of chaos cast",
+                          "cold breath cast",
+                          "creeping frost cast",
+                          "dragon cast targeted",
+                          "druid's call cast",
+                          "dryad cast",
+                          "fire breath cast",
+                          "floating eye cast",
+                          "freeze cast",
+                          "grasping roots natural cast",
+                          "mara summon cast",
+                          "phantom mirror cast",
+                          "poisonous cloud natural cast",
+                          "spectral cloud revenant cast",
+                          "steam ball natural cast",
+                          "sticky flame cast",
+                          "undertaker cast targeted",
+                          "weakening gaze cast",
+                          "woodweal cast"], candidates)
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertEqual(
