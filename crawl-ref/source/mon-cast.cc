@@ -8987,6 +8987,14 @@ static string _overlay_foe_display(const actor &foe)
     return display;
 }
 
+static string _overlay_foe_possessive_display(const actor &foe)
+{
+    if (foe.is_player())
+        return T_("your");
+    const string display = _overlay_foe_display(foe);
+    return display.empty() ? "" : apostrophise(display);
+}
+
 static fmo::runtime_bindings _resolve_overlay_bindings(
     const monster &mon, const bolt &pbolt, bool targeted,
     const string &language, const actor *foe,
@@ -9081,6 +9089,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "en", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
+        bindings.actor.subjective_pronoun_localized.push_back(
+            { "en", mon.pronoun(PRONOUN_SUBJECTIVE) });
         bindings.actor.god_possessive_localized.push_back(
             { "en", actor_god.possessive_display });
         bindings.actor.god_my_localized.push_back(
@@ -9097,7 +9107,11 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         if (requirements.resolves_target)
             bindings.target.localized.push_back({ "en", target.display });
         if (requirements.needs_foe && foe)
+        {
             bindings.foe.localized.push_back({ "en", _overlay_foe_display(*foe) });
+            bindings.foe.possessive_localized.push_back(
+                { "en", _overlay_foe_possessive_display(*foe) });
+        }
         bindings.beam.localized.push_back({ "en", beam.display_text });
     }
     else if (language == "zh")
@@ -9111,6 +9125,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "zh", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "zh", _localized_zh_actor_possessive_pronoun(mon) });
+        bindings.actor.subjective_pronoun_localized.push_back(
+            { "zh", mon.pronoun(PRONOUN_SUBJECTIVE) });
         bindings.actor.god_possessive_localized.push_back(
             { "zh", actor_god.possessive_display });
         bindings.actor.god_my_localized.push_back(
@@ -9130,6 +9146,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             unwind_var<lang_t> requested_language(Options.language, lang_t::ZH);
             bindings.foe.localized.push_back(
                 { "zh", _overlay_foe_display(*foe) });
+            bindings.foe.possessive_localized.push_back(
+                { "zh", _overlay_foe_possessive_display(*foe) });
         }
         bindings.beam.localized.push_back({ "zh", beam.display_text });
     }
@@ -9147,6 +9165,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             apostrophise(bindings.actor.canonical_en);
         bindings.actor.possessive_pronoun_en =
             mon.pronoun(PRONOUN_POSSESSIVE);
+        bindings.actor.subjective_pronoun_en =
+            mon.pronoun(PRONOUN_SUBJECTIVE);
         bindings.actor.god_possessive_en = english_god.possessive_display;
         bindings.actor.god_my_en = english_god.my_display;
         bindings.actor.god_indefinite_en = english_god.indefinite_display;
@@ -9155,10 +9175,16 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             bindings.target.canonical_en =
                 _canonical_target_display(target, mon);
         if (requirements.needs_foe && foe)
+        {
             bindings.foe.canonical_en = _overlay_foe_display(*foe);
+            bindings.foe.possessive_en =
+                _overlay_foe_possessive_display(*foe);
+        }
         bindings.beam.canonical_en =
             resolve_speech_beam(pbolt, targeted).display_text;
     }
+    if (requirements.needs_player_name)
+        bindings.player_name = you.your_name;
     return bindings;
 }
 

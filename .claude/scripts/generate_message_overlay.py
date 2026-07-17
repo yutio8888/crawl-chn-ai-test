@@ -38,10 +38,11 @@ CHANNELS = {
 SLOT_TYPES = {
     "actor_ref", "actor_ref_lower", "actor_possessive_name",
     "actor_possessive_name_lower",
-    "actor_possessive_pronoun",
+    "actor_possessive_pronoun", "actor_subjective_pronoun", "player_name",
     "actor_god_possessive", "actor_god_my", "actor_god_indefinite",
     "actor_reflexive", "actor_arms_plural", "resolved_target",
-    "resolved_foe", "resolved_beam", "recursive_capture",
+    "resolved_foe", "resolved_foe_possessive", "resolved_beam",
+    "recursive_capture",
 }
 
 
@@ -589,7 +590,9 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
-            has_actor_ref_token = "@The_monster@" in binding_text
+            has_actor_ref_token = any(
+                token in binding_text
+                for token in ("@The_monster@", "@The_something@"))
             has_actor_ref_lower_token = "@the_monster@" in binding_text
             has_actor_possessive_token = (
                 "@The_monster_possessive@" in binding_text)
@@ -622,6 +625,21 @@ def validate_manifest(manifest: dict[str, Any],
                 has_actor_possessive_lower_token
                 == has_actor_possessive_lower_slot,
                 f"{vcontext} lower possessive actor token/type mismatch")
+            has_subjective_token = "@subjective@" in binding_text
+            has_subjective_slot = any(
+                value == "actor_subjective_pronoun"
+                for value in slot_types.values())
+            _require(has_subjective_token == has_subjective_slot,
+                     f"{vcontext} subjective actor token/type mismatch")
+            has_player_name_token = "@player_name@" in binding_text
+            has_player_name_slot = any(
+                value == "player_name" for value in slot_types.values())
+            _require(has_player_name_token == has_player_name_slot,
+                     f"{vcontext} player-name token/type mismatch")
+            has_player_only_marker = "@player_only@" in binding_text
+            _require(not (has_player_name_token or has_player_only_marker)
+                     or applicability["requires_player"],
+                     f"{vcontext} player token/marker requires player applicability")
             for token, slot_type in god_token_types.items():
                 _require(
                     (token in binding_text)
@@ -648,7 +666,14 @@ def validate_manifest(manifest: dict[str, Any],
                 for slot_type in slot_types.values())
             _require(has_foe_token == has_foe_slot,
                      f"{vcontext} foe token/type mismatch")
-            _require(applicability["requires_foe"] == has_foe_slot,
+            has_foe_possessive_token = "@foe_possessive@" in binding_text
+            has_foe_possessive_slot = any(
+                slot_type == "resolved_foe_possessive"
+                for slot_type in slot_types.values())
+            _require(has_foe_possessive_token == has_foe_possessive_slot,
+                     f"{vcontext} possessive foe token/type mismatch")
+            _require(applicability["requires_foe"]
+                     == (has_foe_slot or has_foe_possessive_slot),
                      f"{vcontext} foe applicability/slot mismatch")
             has_arms_token = "@arms@" in binding_text
             has_arms_slot = any(

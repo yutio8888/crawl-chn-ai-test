@@ -362,11 +362,12 @@ bool _validate_lines(const catalog_source &source,
         {
             "actor_ref", "actor_ref_lower", "actor_possessive_name",
             "actor_possessive_name_lower",
-            "actor_possessive_pronoun", "actor_reflexive",
+            "actor_possessive_pronoun", "actor_subjective_pronoun",
+            "player_name", "actor_reflexive",
             "actor_god_possessive", "actor_god_my",
             "actor_god_indefinite",
             "actor_arms_plural", "resolved_target", "resolved_foe",
-            "resolved_beam", "recursive_capture",
+            "resolved_foe_possessive", "resolved_beam", "recursive_capture",
         };
         if (!_valid_identifier(slot.name) || !slot_types.count(slot.type)
             || !declared.insert(slot.name).second)
@@ -424,7 +425,8 @@ bool _validate_lines(const catalog_source &source,
         return true;
     }
     const bool has_actor_ref_token =
-        variant.english_snapshot.find("@The_monster@") != string::npos;
+        variant.english_snapshot.find("@The_monster@") != string::npos
+        || variant.english_snapshot.find("@The_something@") != string::npos;
     const bool has_actor_ref_lower_token =
         variant.english_snapshot.find("@the_monster@") != string::npos;
     const bool has_actor_possessive_token =
@@ -470,6 +472,29 @@ bool _validate_lines(const catalog_source &source,
         != _has_slot_type(variant, "actor_possessive_name_lower"))
     {
         error = "lower possessive actor token/type mismatch";
+        return false;
+    }
+    const bool has_subjective_token =
+        variant.english_snapshot.find("@subjective@") != string::npos;
+    if (has_subjective_token
+        != _has_slot_type(variant, "actor_subjective_pronoun"))
+    {
+        error = "subjective actor token/type mismatch";
+        return false;
+    }
+    const bool has_player_name_token =
+        variant.english_snapshot.find("@player_name@") != string::npos;
+    if (has_player_name_token != _has_slot_type(variant, "player_name"))
+    {
+        error = "player-name token/type mismatch";
+        return false;
+    }
+    const bool has_player_only_marker =
+        variant.english_snapshot.find("@player_only@") != string::npos;
+    if ((has_player_name_token || has_player_only_marker)
+        && !variant.conditions.requires_player)
+    {
+        error = "player token/marker requires player applicability";
         return false;
     }
     if (variant.lines.empty())
@@ -1312,8 +1337,14 @@ const load_report &load_monspell_overlay(
             const bool has_foe_token =
                 binding_snapshot.find("@foe@") != string::npos;
             const bool has_foe_slot = _has_slot_type(variant, "resolved_foe");
+            const bool has_foe_possessive_token =
+                binding_snapshot.find("@foe_possessive@") != string::npos;
+            const bool has_foe_possessive_slot =
+                _has_slot_type(variant, "resolved_foe_possessive");
             if (has_foe_token != has_foe_slot
-                || variant.conditions.requires_foe != has_foe_slot)
+                || has_foe_possessive_token != has_foe_possessive_slot
+                || variant.conditions.requires_foe
+                   != (has_foe_slot || has_foe_possessive_slot))
             {
                 return _disable(load_failure::CORRUPT,
                                 "foe token/type/applicability mismatch");
@@ -1915,12 +1946,15 @@ canonical_materialization materialize_monspell_candidate(
     result.requirements.frame = descriptor->frame;
     result.requirements.resolves_target = descriptor->resolves_target;
     result.requirements.needs_foe =
-        _has_slot_type(*descriptor, "resolved_foe");
+        _has_slot_type(*descriptor, "resolved_foe")
+        || _has_slot_type(*descriptor, "resolved_foe_possessive");
     result.requirements.implies_gesture = any_of(
         requirement_lines->begin(), requirement_lines->end(),
         [](const line_metadata &line) { return line.implies_gesture; });
     result.requirements.needs_actor_arms_plural =
         _has_slot_type(*descriptor, "actor_arms_plural");
+    result.requirements.needs_player_name =
+        _has_slot_type(*descriptor, "player_name");
     result.binding.rng.before = canonical_textdb::observe_rng();
     result.binding.values = bindings(result.requirements);
     result.binding.rng.after = canonical_textdb::observe_rng();
@@ -1931,6 +1965,7 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_possessive_name = false;
     bool needs_actor_possessive_name_lower = false;
     bool needs_actor_possessive_pronoun = false;
+    bool needs_actor_subjective_pronoun = false;
     bool needs_actor_god_possessive = false;
     bool needs_actor_god_my = false;
     bool needs_actor_god_indefinite = false;
@@ -1938,6 +1973,7 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_arms_plural = false;
     bool needs_target = false;
     bool needs_foe = false;
+    bool needs_foe_possessive = false;
     bool needs_beam = false;
     for (const slot_definition &slot : descriptor->slot_schema)
     {
@@ -1950,6 +1986,8 @@ canonical_materialization materialize_monspell_candidate(
             || slot.type == "actor_possessive_name_lower";
         needs_actor_possessive_pronoun = needs_actor_possessive_pronoun
             || slot.type == "actor_possessive_pronoun";
+        needs_actor_subjective_pronoun = needs_actor_subjective_pronoun
+            || slot.type == "actor_subjective_pronoun";
         needs_actor_god_possessive = needs_actor_god_possessive
             || slot.type == "actor_god_possessive";
         needs_actor_god_my = needs_actor_god_my
@@ -1962,6 +2000,8 @@ canonical_materialization materialize_monspell_candidate(
             || slot.type == "actor_arms_plural";
         needs_target = needs_target || slot.type == "resolved_target";
         needs_foe = needs_foe || slot.type == "resolved_foe";
+        needs_foe_possessive = needs_foe_possessive
+            || slot.type == "resolved_foe_possessive";
         needs_beam = needs_beam || slot.type == "resolved_beam";
     }
     if ((needs_actor_ref && (resolved.actor.sentence_en.empty()
@@ -1973,6 +2013,8 @@ canonical_materialization materialize_monspell_candidate(
             && resolved.actor.possessive_name_lower_en.empty())
         || (needs_actor_possessive_pronoun
             && resolved.actor.possessive_pronoun_en.empty())
+        || (needs_actor_subjective_pronoun
+            && resolved.actor.subjective_pronoun_en.empty())
         || (needs_actor_god_possessive
             && resolved.actor.god_possessive_en.empty())
         || (needs_actor_god_my && resolved.actor.god_my_en.empty())
@@ -1988,6 +2030,11 @@ canonical_materialization materialize_monspell_candidate(
             && (!_valid_target_payload(resolved.target)
                 || resolved.target.canonical_en.empty()))
         || (needs_foe && !_valid_foe_payload(resolved.foe))
+        || (needs_foe_possessive
+            && (!_valid_foe_payload(resolved.foe)
+                || resolved.foe.possessive_en.empty()))
+        || (result.requirements.needs_player_name
+            && resolved.player_name.empty())
         || (needs_beam && resolved.beam.canonical_en.empty()))
     {
         result.result = message_result::CORRUPT;
@@ -2006,6 +2053,9 @@ canonical_materialization materialize_monspell_candidate(
         result.canonical.expanded_pattern_en, "@The_monster@",
         resolved.actor.sentence_en);
     result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@The_something@",
+        resolved.actor.sentence_en);
+    result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@the_monster@",
         resolved.actor.canonical_en);
     result.bound_pattern_en = replace_all(
@@ -2017,6 +2067,9 @@ canonical_materialization materialize_monspell_candidate(
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@possessive@",
         resolved.actor.possessive_pronoun_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@subjective@",
+        resolved.actor.subjective_pronoun_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@possessive_God@",
         resolved.actor.god_possessive_en);
@@ -2037,6 +2090,13 @@ canonical_materialization materialize_monspell_candidate(
         result.bound_pattern_en, "@target@", resolved.target.canonical_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@foe@", resolved.foe.canonical_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@foe_possessive@",
+        resolved.foe.possessive_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@player_name@", resolved.player_name);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@player_only@", "");
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@beam@", resolved.beam.canonical_en);
     if (result.bound_pattern_en.find('@') != string::npos)
@@ -2148,6 +2208,11 @@ canonical_materialization materialize_monspell_candidate(
             else if (slot.type == "actor_possessive_name_lower")
                 english_values.push_back(
                     { slot.name, resolved.actor.possessive_name_lower_en });
+            else if (slot.type == "actor_subjective_pronoun")
+                english_values.push_back(
+                    { slot.name, resolved.actor.subjective_pronoun_en });
+            else if (slot.type == "player_name")
+                english_values.push_back({ slot.name, resolved.player_name });
             else if (slot.type == "actor_god_possessive")
                 english_values.push_back(
                     { slot.name, resolved.actor.god_possessive_en });
@@ -2464,6 +2529,27 @@ render_result render_materialized_candidate(
                 return result;
             }
         }
+        else if (slot.type == "actor_subjective_pronoun")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor
+                        .subjective_pronoun_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor subjective-pronoun binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "player_name")
+        {
+            display = materialized.binding.values.player_name;
+            if (display.empty())
+            {
+                result.diagnostic = "player-name binding is missing";
+                return result;
+            }
+        }
         else if (slot.type == "actor_god_possessive")
         {
             if (!_localized_display(
@@ -2537,6 +2623,17 @@ render_result render_materialized_candidate(
                     language, display))
             {
                 result.diagnostic = "localized foe binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "resolved_foe_possessive")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.foe.possessive_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized possessive foe binding is missing";
                 return result;
             }
         }

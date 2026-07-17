@@ -379,6 +379,7 @@ struct resolved_actor
     std::string possessive_name_en;
     std::string possessive_name_lower_en;
     std::string possessive_pronoun_en;
+    std::string subjective_pronoun_en;
     std::string god_possessive_en;
     std::string god_my_en;
     std::string god_indefinite_en;
@@ -389,6 +390,7 @@ struct resolved_actor
     std::vector<localized_value> possessive_name_localized;
     std::vector<localized_value> possessive_name_lower_localized;
     std::vector<localized_value> possessive_pronoun_localized;
+    std::vector<localized_value> subjective_pronoun_localized;
     std::vector<localized_value> god_possessive_localized;
     std::vector<localized_value> god_my_localized;
     std::vector<localized_value> god_indefinite_localized;
@@ -420,6 +422,8 @@ struct resolved_foe
     foe_kind kind = foe_kind::ERROR;
     std::string canonical_en;
     std::vector<localized_value> localized;
+    std::string possessive_en;
+    std::vector<localized_value> possessive_localized;
     bool has_actor_mid = false;
     int actor_mid = 0;
     std::string error;
@@ -472,6 +476,7 @@ struct runtime_bindings
     resolved_foe foe;
     resolved_beam beam;
     cast_context cast;
+    std::string player_name;
     std::vector<target_rng_event> target_trace;
 };
 
@@ -495,6 +500,7 @@ struct binding_requirements
     bool needs_foe = false;
     bool implies_gesture = false;
     bool needs_actor_arms_plural = false;
+    bool needs_player_name = false;
 };
 
 struct runtime_applicability

@@ -194,6 +194,75 @@ class MessageOverlayTests(unittest.TestCase):
             }],
         }
 
+    def special_slot_entry(self, key, resolves_target=False):
+        upstream = MODULE._inventory_nodes(INVENTORY)[key]
+        variants = []
+        replacements = {
+            "@The_monster@": ("actor", "actor_ref"),
+            "@The_something@": ("actor", "actor_ref"),
+            "@The_monster_possessive@":
+                ("actor_possessive", "actor_possessive_name"),
+            "@subjective@":
+                ("actor_subjective", "actor_subjective_pronoun"),
+            "@player_name@": ("player_name", "player_name"),
+            "@foe_possessive@":
+                ("foe_possessive", "resolved_foe_possessive"),
+        }
+        for ordinal, actual in enumerate(upstream["variants"]):
+            pattern = actual["text"]
+            slots = []
+            for token, (name, slot_type) in replacements.items():
+                if token in pattern:
+                    slots.append({"name": name, "type": slot_type})
+                    pattern = pattern.replace(token, "${" + name + "}")
+            has_player_marker = "@player_only@" in pattern
+            pattern = pattern.replace("@player_only@", "").rstrip()
+            relations = MODULE.TARGET_RELATIONS if resolves_target else ("NONE",)
+            templates = []
+            for language in ("en", "zh"):
+                templates.extend(
+                    {"language": language, "relation": relation,
+                     "pattern": pattern}
+                    for relation in relations)
+            variants.append({
+                "stable_id": f"test.{key.replace(' ', '_')}.{ordinal}",
+                "tombstone": False,
+                "variant_ordinal": ordinal,
+                "upstream_weight": actual["weight"],
+                "upstream_variant_fingerprint": actual["text_fingerprint"],
+                "english_snapshot": actual["text"],
+                "frame": "DIRECT_EFFECT",
+                "binding": {"resolves_target": resolves_target},
+                "applicability": {
+                    "requires_player": has_player_marker
+                        or "@player_name@" in actual["text"],
+                    "requires_foe": "@foe_possessive@" in actual["text"],
+                    "requires_named_foe": False,
+                    "requires_god": False,
+                    "requires_caster_visible": False,
+                },
+                "materialization_policy": "NONE",
+                "slot_schema": slots,
+                "required_arguments": [slot["name"] for slot in slots],
+                "line_metadata": [{
+                    "sensory": "PLAIN", "channel": None,
+                    "behavior": {"implies_gesture": False,
+                                 "audible": False},
+                    "templates": templates,
+                }],
+                "materialization_cases": [],
+                "recursive_dependency_fingerprints": {},
+            })
+        return {
+            "canonical_key": key,
+            "canonical_fingerprint":
+                MODULE.runtime_canonical_fingerprint(upstream),
+            "selection_graph_fingerprint":
+                MODULE.runtime_selection_fingerprint(upstream),
+            "mode": "CANDIDATE",
+            "variants": variants,
+        }
+
     def recursive_roxanne_fixture(self, inventory=None):
         inventory = inventory or INVENTORY
         manifest = copy.deepcopy(MANIFEST)
@@ -751,6 +820,72 @@ class MessageOverlayTests(unittest.TestCase):
         plain["line_metadata"][0]["templates"][1]["pattern"] += "${arms}"
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "plural arms token/type mismatch"):
+            self.validate(value)
+
+    def test_player_name_and_subjective_slots_are_narrow_and_applicable(self):
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(
+            self.special_slot_entry("doomsaying cassandra cast"))
+        validated = self.validate(value)
+        variant = self.variant(validated, "doomsaying cassandra cast")
+        self.assertTrue(variant["applicability"]["requires_player"])
+        self.assertIn({"name": "player_name", "type": "player_name"},
+                      variant["slot_schema"])
+
+        bad = copy.deepcopy(value)
+        self.variant(bad, "doomsaying cassandra cast")["applicability"][
+            "requires_player"] = False
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "requires player applicability"):
+            self.validate(bad)
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(self.special_slot_entry("gastronok cast"))
+        self.validate(value)
+        bad = copy.deepcopy(value)
+        self.variant(bad, "gastronok cast")["slot_schema"][1]["type"] = (
+            "actor_possessive_pronoun")
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "subjective actor token/type mismatch"):
+            self.validate(bad)
+
+    def test_the_something_alias_and_possessive_foe_are_exact(self):
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(
+            self.special_slot_entry("unseen call of chaos cast"))
+        variant = self.variant(self.validate(value),
+                               "unseen call of chaos cast")
+        self.assertEqual([{"name": "actor", "type": "actor_ref"}],
+                         variant["slot_schema"])
+
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(
+            self.special_slot_entry("raven cast"))
+        variant = self.variant(self.validate(value), "raven cast")
+        self.assertTrue(variant["applicability"]["requires_foe"])
+        self.assertIn("resolved_foe_possessive",
+                      {slot["type"] for slot in variant["slot_schema"]})
+        variant["applicability"]["requires_foe"] = False
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "foe applicability/slot mismatch"):
+            self.validate(value)
+
+    def test_player_only_is_zero_width_and_keeps_target_resolution(self):
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(self.special_slot_entry(
+            "unseen ghost moth cast targeted", resolves_target=True))
+        variant = self.variant(self.validate(value),
+                               "unseen ghost moth cast targeted")
+        self.assertTrue(variant["binding"]["resolves_target"])
+        self.assertTrue(variant["applicability"]["requires_player"])
+        self.assertEqual([], variant["slot_schema"])
+        self.assertEqual(
+            set(MODULE.TARGET_RELATIONS),
+            {template["relation"]
+             for template in variant["line_metadata"][0]["templates"]})
+        variant["applicability"]["requires_player"] = False
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "requires player applicability"):
             self.validate(value)
 
     def test_lower_actor_token_requires_the_narrow_slot_type(self):

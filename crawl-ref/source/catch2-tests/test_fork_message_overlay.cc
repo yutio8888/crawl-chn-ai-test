@@ -40,6 +40,232 @@ string test_canonical_fingerprint(
     return formatted.str();
 }
 
+void ensure_overlay_data_root();
+const textdb_phase0::canonical_entry &canonical_entry_by_key(
+    const vector<textdb_phase0::canonical_entry> &entries,
+    const string &key);
+fork_message_overlay::catalog_source special_slot_catalog(
+    const vector<textdb_phase0::canonical_entry> &canonical,
+    const string &key, bool resolves_target = false);
+canonical_textdb::loaded_candidate canonical_candidate(
+    canonical_textdb::candidate_status status, const string &pattern = "",
+    const string &key = "beam catchall cast", size_t ordinal = 0);
+fork_message_overlay::runtime_bindings beam_bindings(
+    fork_message_overlay::target_relation relation,
+    fork_message_overlay::target_kind kind =
+        fork_message_overlay::target_kind::PLAYER,
+    fork_message_overlay::message_visibility visibility =
+        fork_message_overlay::message_visibility::VISIBLE);
+
+struct special_slot_overlay_reset
+{
+    special_slot_overlay_reset()
+    {
+        fork_message_overlay::reset_monspell_overlay_for_test();
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+    }
+    ~special_slot_overlay_reset()
+    {
+        fork_message_overlay::reset_monspell_overlay_for_test();
+        fork_message_overlay::reset_monspell_overlay_diagnostics_for_test();
+    }
+};
+
+TEST_CASE("special monspell slots preserve legacy bindings narrowly",
+          "[single-file][message-overlay][special-slots]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    const vector<textdb_phase0::canonical_entry> canonical =
+        textdb_phase0::dump_canonical_english_speakdb();
+
+    SECTION("player name and subjective pronoun are typed and fail closed")
+    {
+        special_slot_overlay_reset reset;
+        catalog_source source = special_slot_catalog(
+            canonical, "doomsaying cassandra cast");
+        REQUIRE(load_monspell_overlay(canonical, &source).state
+                == domain_state::ENABLED);
+        const string raw = canonical_entry_by_key(
+            canonical, "doomsaying cassandra cast").variants[0].raw_pattern;
+        const auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED, raw,
+            "doomsaying cassandra cast");
+        bool observed_player_name = false;
+        canonical_materialization materialized = materialize_monspell_candidate(
+            "doomsaying cassandra cast",
+            message_attempt::NORMAL_OR_UNSEEN, runtime_applicability(),
+            [&](const binding_requirements &requirements)
+            {
+                observed_player_name = requirements.needs_player_name;
+                runtime_bindings values = beam_bindings(target_relation::NONE);
+                values.cast.frame = requirements.frame;
+                return values;
+            }, [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(observed_player_name);
+        CHECK(materialized.bound_pattern_en.find("Ada") != string::npos);
+        const render_result rendered =
+            render_materialized_candidate(materialized, "en");
+        REQUIRE(rendered.result == message_result::RENDERED);
+        CHECK(rendered.lines[0].text.find("Ada") != string::npos);
+
+        reset_monspell_overlay_for_test();
+        source = special_slot_catalog(canonical, "gastronok cast");
+        REQUIRE(load_monspell_overlay(canonical, &source).state
+                == domain_state::ENABLED);
+        const string gastronok = canonical_entry_by_key(
+            canonical, "gastronok cast").variants[0].raw_pattern;
+        const auto subjective = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED, gastronok,
+            "gastronok cast");
+        materialized = materialize_monspell_candidate(
+            "gastronok cast", message_attempt::NORMAL_OR_UNSEEN,
+            runtime_applicability(),
+            [](const binding_requirements &requirements)
+            {
+                runtime_bindings values = beam_bindings(target_relation::NONE);
+                values.cast.frame = requirements.frame;
+                return values;
+            }, [subjective](const string &) { return subjective; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(materialized.bound_pattern_en
+              == "The orc's eyestalks quiver as it mumbles some strange words.");
+
+        reset_monspell_overlay_for_test();
+        source = special_slot_catalog(canonical, "gastronok cast");
+        source.entries.back().variants[0].slot_schema[1].type =
+            "actor_possessive_pronoun";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+    }
+
+    SECTION("actor alias and foe possessive use resolved displays")
+    {
+        special_slot_overlay_reset reset;
+        catalog_source source = special_slot_catalog(
+            canonical, "unseen call of chaos cast");
+        REQUIRE(load_monspell_overlay(canonical, &source).state
+                == domain_state::ENABLED);
+        string raw = canonical_entry_by_key(
+            canonical, "unseen call of chaos cast").variants[0].raw_pattern;
+        auto candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED, raw,
+            "unseen call of chaos cast");
+        canonical_materialization materialized = materialize_monspell_candidate(
+            "unseen call of chaos cast",
+            message_attempt::NORMAL_OR_UNSEEN, runtime_applicability(),
+            [](const binding_requirements &requirements)
+            {
+                runtime_bindings values = beam_bindings(target_relation::NONE);
+                values.cast.frame = requirements.frame;
+                return values;
+            }, [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(materialized.bound_pattern_en
+              == "The orc calls on the powers of chaos!");
+
+        reset_monspell_overlay_for_test();
+        source = special_slot_catalog(canonical, "raven cast");
+        REQUIRE(load_monspell_overlay(canonical, &source).state
+                == domain_state::ENABLED);
+        raw = canonical_entry_by_key(
+            canonical, "raven cast").variants[0].raw_pattern;
+        candidate = canonical_candidate(
+            canonical_textdb::candidate_status::SELECTED, raw, "raven cast");
+        bool needs_foe = false;
+        materialized = materialize_monspell_candidate(
+            "raven cast", message_attempt::NORMAL_OR_UNSEEN,
+            runtime_applicability(),
+            [&](const binding_requirements &requirements)
+            {
+                needs_foe = requirements.needs_foe;
+                runtime_bindings values = beam_bindings(target_relation::NONE);
+                values.cast.frame = requirements.frame;
+                values.foe.kind = foe_kind::PLAYER;
+                values.foe.canonical_en = "you";
+                values.foe.localized = { { "en", "you" }, { "zh", "你" } };
+                values.foe.possessive_en = "your";
+                values.foe.possessive_localized =
+                    { { "en", "your" }, { "zh", "你的" } };
+                return values;
+            }, [candidate](const string &) { return candidate; });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        CHECK(needs_foe);
+        CHECK(materialized.bound_pattern_en
+              == "The orc stares into your soul.");
+        const render_result zh =
+            render_materialized_candidate(materialized, "zh");
+        REQUIRE(zh.result == message_result::RENDERED);
+        CHECK(zh.lines[0].text.find("你的") != string::npos);
+
+        reset_monspell_overlay_for_test();
+        source = special_slot_catalog(canonical, "raven cast");
+        source.entries.back().variants[0].conditions.requires_foe = false;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+    }
+
+    SECTION("player-only marker is zero-width while targets resolve once")
+    {
+        const char *keys[] = {
+            "unseen floating eye cast targeted",
+            "unseen ghost moth cast targeted",
+        };
+        const target_relation relations[] = {
+            target_relation::AT,
+            target_relation::NEXT_TO,
+            target_relation::PAST,
+        };
+        for (const char *key : keys)
+        {
+            for (target_relation relation : relations)
+            {
+                special_slot_overlay_reset reset;
+                catalog_source source = special_slot_catalog(
+                    canonical, key, true);
+                REQUIRE(load_monspell_overlay(canonical, &source).state
+                        == domain_state::ENABLED);
+                const string raw = canonical_entry_by_key(
+                    canonical, key).variants[0].raw_pattern;
+                const auto candidate = canonical_candidate(
+                    canonical_textdb::candidate_status::SELECTED, raw, key);
+                size_t callbacks = 0;
+                const canonical_materialization materialized =
+                    materialize_monspell_candidate(
+                        key, message_attempt::NORMAL_OR_UNSEEN,
+                        runtime_applicability(),
+                        [&](const binding_requirements &requirements)
+                        {
+                            ++callbacks;
+                            CHECK(requirements.resolves_target);
+                            runtime_bindings values = beam_bindings(relation);
+                            values.cast.frame = requirements.frame;
+                            values.target_trace.push_back(target_rng_event());
+                            return values;
+                        }, [candidate](const string &) { return candidate; });
+                REQUIRE(materialized.result == message_result::RENDERED);
+                CHECK(callbacks == 1);
+                CHECK(materialized.binding.values.target_trace.size() == 1);
+                CHECK(materialized.bound_pattern_en.find("@player_only@")
+                      == string::npos);
+                const render_result rendered =
+                    render_materialized_candidate(materialized, "en");
+                REQUIRE(rendered.result == message_result::RENDERED);
+                CHECK(rendered.lines.size() == 1);
+            }
+        }
+
+        special_slot_overlay_reset reset;
+        catalog_source source = special_slot_catalog(
+            canonical, keys[0], true);
+        source.entries.back().variants[0].conditions.requires_player = false;
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+    }
+}
+
 string test_selection_fingerprint(
     const textdb_phase0::canonical_entry &entry)
 {
@@ -235,9 +461,76 @@ fork_message_overlay::catalog_source recursive_roxanne_catalog(
     return source;
 }
 
+fork_message_overlay::catalog_source special_slot_catalog(
+    const vector<textdb_phase0::canonical_entry> &canonical,
+    const string &key, bool resolves_target)
+{
+    using namespace fork_message_overlay;
+    catalog_source source = generated_monspell_catalog();
+    const textdb_phase0::canonical_entry &actual =
+        canonical_entry_by_key(canonical, key);
+    catalog_entry entry;
+    entry.canonical_key = key;
+    entry.canonical_fingerprint = test_canonical_fingerprint(actual);
+    entry.selection_graph_fingerprint = test_selection_fingerprint(actual);
+    entry.mode = entry_mode::CANDIDATE;
+    for (size_t ordinal = 0; ordinal < actual.variants.size(); ++ordinal)
+    {
+        const string &raw = actual.variants[ordinal].raw_pattern;
+        catalog_variant variant;
+        variant.stable_id = "test.special." + std::to_string(ordinal);
+        variant.variant_ordinal = ordinal;
+        variant.upstream_weight = actual.variants[ordinal].weight;
+        variant.upstream_variant_fingerprint = "fixture-fingerprint";
+        variant.english_snapshot = raw;
+        variant.frame = cast_frame::DIRECT_EFFECT;
+        variant.resolves_target = resolves_target;
+        variant.policy = materialization_policy::NONE;
+        variant.conditions.requires_player =
+            raw.find("@player_name@") != string::npos
+            || raw.find("@player_only@") != string::npos;
+        variant.conditions.requires_foe =
+            raw.find("@foe_possessive@") != string::npos;
+        string pattern = raw;
+        const auto bind = [&](const string &token, const string &name,
+                              const string &type)
+        {
+            if (pattern.find(token) == string::npos)
+                return;
+            variant.slot_schema.push_back({ name, type });
+            variant.required_arguments.push_back(name);
+            pattern = replace_all(pattern, token, "${" + name + "}");
+        };
+        bind("@The_monster@", "actor", "actor_ref");
+        bind("@The_something@", "actor", "actor_ref");
+        bind("@The_monster_possessive@", "actor_possessive",
+             "actor_possessive_name");
+        bind("@subjective@", "actor_subjective",
+             "actor_subjective_pronoun");
+        bind("@player_name@", "player_name", "player_name");
+        bind("@foe_possessive@", "foe_possessive",
+             "resolved_foe_possessive");
+        pattern = replace_all(pattern, " @player_only@", "");
+        pattern = replace_all(pattern, "@player_only@", "");
+        line_metadata line;
+        const vector<string> relations = resolves_target
+            ? vector<string>{ "AT", "NEXT_TO", "PAST" }
+            : vector<string>{ "NONE" };
+        for (const string &relation : relations)
+        {
+            line.templates.push_back({ "en", relation, pattern });
+            line.templates.push_back({ "zh", relation, pattern });
+        }
+        variant.lines = { line };
+        entry.variants.push_back(variant);
+    }
+    source.entries.push_back(entry);
+    return source;
+}
+
 canonical_textdb::loaded_candidate canonical_candidate(
-    canonical_textdb::candidate_status status, const string &pattern = "",
-    const string &key = "beam catchall cast", size_t ordinal = 0)
+    canonical_textdb::candidate_status status, const string &pattern,
+    const string &key, size_t ordinal)
 {
     canonical_textdb::loaded_candidate candidate;
     candidate.status = status;
@@ -254,10 +547,8 @@ canonical_textdb::loaded_candidate canonical_candidate(
 
 fork_message_overlay::runtime_bindings beam_bindings(
     fork_message_overlay::target_relation relation,
-    fork_message_overlay::target_kind kind =
-        fork_message_overlay::target_kind::PLAYER,
-    fork_message_overlay::message_visibility visibility =
-        fork_message_overlay::message_visibility::VISIBLE)
+    fork_message_overlay::target_kind kind,
+    fork_message_overlay::message_visibility visibility)
 {
     using namespace fork_message_overlay;
     runtime_bindings values;
@@ -266,6 +557,7 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.actor.possessive_name_en = "The orc's";
     values.actor.possessive_name_lower_en = "the orc's";
     values.actor.possessive_pronoun_en = "its";
+    values.actor.subjective_pronoun_en = "it";
     values.actor.god_possessive_en = "Trog";
     values.actor.god_my_en = "Trog";
     values.actor.god_indefinite_en = "Trog";
@@ -280,6 +572,8 @@ fork_message_overlay::runtime_bindings beam_bindings(
         { { "en", "the orc's" }, { "zh", "兽人的" } };
     values.actor.possessive_pronoun_localized =
         { { "en", "its" }, { "zh", "它的" } };
+    values.actor.subjective_pronoun_localized =
+        { { "en", "it" }, { "zh", "它" } };
     values.actor.god_possessive_localized =
         { { "en", "Trog" }, { "zh", "特洛格" } };
     values.actor.god_my_localized =
@@ -332,6 +626,7 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.cast.frame = cast_frame::PROJECTILE;
     values.cast.caster_visibility = visibility;
     values.cast.origin_spell = 17;
+    values.player_name = "Ada";
     return values;
 }
 
