@@ -1,0 +1,469 @@
+{
+  "entries": [
+    {
+      "canonical_key": "burial acolyte cast",
+      "canonical_fingerprint": "fnv1a64:ebec09353c7f5920",
+      "selection_graph_fingerprint": "fnv1a64:342c59060e864ce1",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.burial_acolyte.funeral_chant.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "dd610e0510e40a28af43f3e2bf32bccbec5328e19e72e17e217ff4f5e4bf3f30",
+        "english_snapshot": "@The_monster@ [drones|recites] a funeral chant.",
+        "frame": "VOCAL", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "CASE_MAP",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"], "line_metadata": [],
+        "materialization_cases": [
+          {
+            "case_id": "mon.cast.burial_acolyte.drones_funeral_chant.v1",
+            "signature": "materialization-v1|variants=1|19:burial acolyte cast:0:0|lua=0|sites=1|19:burial acolyte cast:0:0:2:0",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} drones a funeral chant." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}低沉单调地吟唱着一首挽歌。" }
+            ] }]
+          },
+          {
+            "case_id": "mon.cast.burial_acolyte.recites_funeral_chant.v1",
+            "signature": "materialization-v1|variants=1|19:burial acolyte cast:0:0|lua=0|sites=1|19:burial acolyte cast:0:0:2:1",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} recites a funeral chant." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}吟诵着一首挽歌。" }
+            ] }]
+          }
+        ],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "confuse sphinx marauder cast",
+      "canonical_fingerprint": "fnv1a64:455dcd9fa7792b3c",
+      "selection_graph_fingerprint": "fnv1a64:1d25cd73108b1223",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.confuse_sphinx_marauder.strange_tongue_riddle.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "7e78731212d939846511c9cb6ad5169bcd44b2b54bfed6db5ca4665294929256",
+        "english_snapshot": "@The_monster@ roars a[n obscure| perplexing] riddle with a strange tongue.",
+        "frame": "VOCAL", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "CASE_MAP",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"], "line_metadata": [],
+        "materialization_cases": [
+          {
+            "case_id": "mon.cast.confuse_sphinx_marauder.obscure_riddle.v1",
+            "signature": "materialization-v1|variants=1|28:confuse sphinx marauder cast:0:0|lua=0|sites=1|28:confuse sphinx marauder cast:0:0:2:0",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} roars an obscure riddle with a strange tongue." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用奇异的语言吼出一个晦涩的谜语。" }
+            ] }]
+          },
+          {
+            "case_id": "mon.cast.confuse_sphinx_marauder.perplexing_riddle.v1",
+            "signature": "materialization-v1|variants=1|28:confuse sphinx marauder cast:0:0|lua=0|sites=1|28:confuse sphinx marauder cast:0:0:2:1",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} roars a perplexing riddle with a strange tongue." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用奇异的语言吼出一个令人困惑的谜语。" }
+            ] }]
+          }
+        ],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "march of sorrows boris cast",
+      "canonical_fingerprint": "fnv1a64:0ed50bf85d0dc278",
+      "selection_graph_fingerprint": "fnv1a64:b26587c5fdfbb840",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.march_of_sorrows_boris.casts_or_pitches_sorrows.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "65a1591231cc6f01fd861b3364f64199e7799960aa17f63c8ce10d73218d3f62",
+          "english_snapshot": "@The_monster@ [casts|pitches] forth @possessive@ victims' sorrows.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "possessive", "type": "actor_possessive_pronoun" }],
+          "required_arguments": ["actor", "possessive"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.march_of_sorrows_boris.casts_forth_sorrows.v1",
+              "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} casts forth ${possessive} victims' sorrows." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}释放出受害者的悲伤。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.march_of_sorrows_boris.pitches_forth_sorrows.v1",
+              "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} pitches forth ${possessive} victims' sorrows." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}抛出受害者的悲伤。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.march_of_sorrows_boris.rolls_out_victims_affliction.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 5,
+          "upstream_variant_fingerprint": "c290732f8e0c74f20dedc4e976a3b80973279533b18ec085d5ae5346600f1780",
+          "english_snapshot": "@The_monster@ rolls out @possessive@ victims' [laments|suffering].",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "possessive", "type": "actor_possessive_pronoun" }],
+          "required_arguments": ["actor", "possessive"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.march_of_sorrows_boris.rolls_out_laments.v1",
+              "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} rolls out ${possessive} victims' laments." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开受害者的挽歌。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.march_of_sorrows_boris.rolls_out_suffering.v1",
+              "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} rolls out ${possessive} victims' suffering." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开受害者的苦难。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "orb of entropy cast",
+      "canonical_fingerprint": "fnv1a64:fecb28c1b6a39f4d",
+      "selection_graph_fingerprint": "fnv1a64:ddc05e17667acbe8",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.orb_of_entropy.pulses_or_vibrates.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 20,
+          "upstream_variant_fingerprint": "11709087a5ba34b9b4e2e429f9ead9f6f4b5862b4090a15c6d221b06d2f451bd",
+          "english_snapshot": "@The_monster@ [pulses|vibrates].",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.orb_of_entropy.pulses.v1",
+              "signature": "materialization-v1|variants=1|19:orb of entropy cast:0:0|lua=0|sites=1|19:orb of entropy cast:0:0:2:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} pulses." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}脉动着。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.orb_of_entropy.vibrates.v1",
+              "signature": "materialization-v1|variants=1|19:orb of entropy cast:0:0|lua=0|sites=1|19:orb of entropy cast:0:0:2:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} vibrates." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}振颤着。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.orb_of_entropy.gnaws_at_world.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "8047216019b19437bebf2f505ee8ad479c457202657a153124e484cba70f32e0",
+          "english_snapshot": "@The_monster@ gnaws at the world.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} gnaws at the world." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}啃噬着世界。" }
+          ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.orb_of_entropy.eats_away_reality.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "6e17394307678ff00f1acd553e8c8ad9973e53f5e7e516e7883aabbf260acf92",
+          "english_snapshot": "@The_monster@ eats away at reality.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} eats away at reality." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}蚕食着现实。" }
+          ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.orb_of_entropy.existence_decays.v1", "tombstone": false,
+          "variant_ordinal": 3, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "c84dca555b49d06177e3d15e193bc73d7b96c3ada6ee559f7e60e14dc935bbb5",
+          "english_snapshot": "Existence decays around @the_monster@.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor_lower", "type": "actor_ref_lower" }], "required_arguments": ["actor_lower"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Existence decays around ${actor_lower}." },
+            { "language": "zh", "relation": "NONE", "pattern": "存在本身在${actor_lower}周围衰败。" }
+          ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "orb of winter cast",
+      "canonical_fingerprint": "fnv1a64:821836efa487ad1c",
+      "selection_graph_fingerprint": "fnv1a64:c4a93da6f81d5a87",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.orb_of_winter.glitters_with_frost.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "fae3c53a99de67ae1c0d317b967389e8afa508ab8d737117fa3ad2863dfb359f",
+          "english_snapshot": "@The_monster@ glitters with frost.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} glitters with frost." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}闪耀着寒霜。" }
+          ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.orb_of_winter.swirls_like_blizzard.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "e9b762f9f172af17d23ead5984f80b2e09186bb1d384073edf2adfd85081fd8e",
+          "english_snapshot": "@The_monster@ swirls like a blizzard.",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} swirls like a blizzard." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}如暴风雪般旋转着。" }
+          ] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.orb_of_winter.glows.v1", "tombstone": false,
+          "variant_ordinal": 2, "upstream_weight": 30,
+          "upstream_variant_fingerprint": "0dbd52a9ffeb6174be015601b82e6540e31cf2c1f31c2fc59a7df8a2871a0da1",
+          "english_snapshot": "@The_monster@ glows [icy blue|with a pale light|sapphire].",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.orb_of_winter.glows_icy_blue.v1",
+              "signature": "materialization-v1|variants=1|18:orb of winter cast:2:0|lua=0|sites=1|18:orb of winter cast:2:0:3:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} glows icy blue." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}泛起冰蓝色光芒。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.orb_of_winter.glows_pale_light.v1",
+              "signature": "materialization-v1|variants=1|18:orb of winter cast:2:0|lua=0|sites=1|18:orb of winter cast:2:0:3:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} glows with a pale light." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}泛起苍白的光芒。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.orb_of_winter.glows_sapphire.v1",
+              "signature": "materialization-v1|variants=1|18:orb of winter cast:2:0|lua=0|sites=1|18:orb of winter cast:2:0:3:2",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} glows sapphire." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}泛起蓝宝石色光芒。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "paralysis guardian sphinx cast",
+      "canonical_fingerprint": "fnv1a64:3a62a326ebdef4ab",
+      "selection_graph_fingerprint": "fnv1a64:0b48f5018eb5c8b0",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.paralysis_guardian_sphinx.mystic_riddle.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "fb510d359d18858cfe9cd9037e7aa5a702ce5c0bed611a78afe20e585625de65",
+        "english_snapshot": "@The_monster@ whispers a [stupefying|staggering] mystic riddle.",
+        "frame": "VOCAL", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "silent weeping skull cast",
+      "canonical_fingerprint": "fnv1a64:8de70dacd53343fb",
+      "selection_graph_fingerprint": "fnv1a64:56967dfa7d1d2010",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.silent_weeping_skull.misery_surges.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "31ed467a056960ee4165de33fe8024c172f77d1c6d74326568a57c2b595c0721",
+        "english_snapshot": "@The_monster_possessive@ misery [bubbles over|overflows].",
+        "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "CASE_MAP",
+        "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+        "required_arguments": ["actor_possessive"], "line_metadata": [],
+        "materialization_cases": [
+          {
+            "case_id": "mon.cast.silent_weeping_skull.misery_bubbles_over.v1",
+            "signature": "materialization-v1|variants=1|25:silent weeping skull cast:0:0|lua=0|sites=1|25:silent weeping skull cast:0:0:2:0",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} misery bubbles over." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}痛苦汩汩涌出。" }
+            ] }]
+          },
+          {
+            "case_id": "mon.cast.silent_weeping_skull.misery_overflows.v1",
+            "signature": "materialization-v1|variants=1|25:silent weeping skull cast:0:0|lua=0|sites=1|25:silent weeping skull cast:0:0:2:1",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} misery overflows." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}痛苦满溢而出。" }
+            ] }]
+          }
+        ],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "vex sphinx marauder cast",
+      "canonical_fingerprint": "fnv1a64:b3a57b984ee1cea2",
+      "selection_graph_fingerprint": "fnv1a64:497e0fe13893b689",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.vex_sphinx_marauder.mystic_tongue_riddle.v1", "tombstone": false,
+        "variant_ordinal": 0, "upstream_weight": 10,
+        "upstream_variant_fingerprint": "768946d1bc13ea704c9eac4ede8c6ce39c689e8429b028974b7d448438e33373",
+        "english_snapshot": "@The_monster@ screeches a[n impossible| nonsensical| cliché] riddle in a mystic tongue.",
+        "frame": "VOCAL", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "CASE_MAP",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"], "line_metadata": [],
+        "materialization_cases": [
+          {
+            "case_id": "mon.cast.vex_sphinx_marauder.impossible_riddle.v1",
+            "signature": "materialization-v1|variants=1|24:vex sphinx marauder cast:0:0|lua=0|sites=1|24:vex sphinx marauder cast:0:0:3:0",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} screeches an impossible riddle in a mystic tongue." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用神秘的语言尖啸出一个不可能的谜语。" }
+            ] }]
+          },
+          {
+            "case_id": "mon.cast.vex_sphinx_marauder.nonsensical_riddle.v1",
+            "signature": "materialization-v1|variants=1|24:vex sphinx marauder cast:0:0|lua=0|sites=1|24:vex sphinx marauder cast:0:0:3:1",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} screeches a nonsensical riddle in a mystic tongue." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用神秘的语言尖啸出一个荒谬的谜语。" }
+            ] }]
+          },
+          {
+            "case_id": "mon.cast.vex_sphinx_marauder.cliche_riddle.v1",
+            "signature": "materialization-v1|variants=1|24:vex sphinx marauder cast:0:0|lua=0|sites=1|24:vex sphinx marauder cast:0:0:3:2",
+            "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} screeches a cliché riddle in a mystic tongue." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}用神秘的语言尖啸出一个老套的谜语。" }
+            ] }]
+          }
+        ],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "weeping skull cast",
+      "canonical_fingerprint": "fnv1a64:78327568023dffbf",
+      "selection_graph_fingerprint": "fnv1a64:0892818d7f27bd0d",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.weeping_skull.gushing_sobs.v1", "tombstone": false,
+          "variant_ordinal": 0, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "4ea5713843b192f3a13aa57446d5c87896485662fbc14567c697a18847bf91bb",
+          "english_snapshot": "@The_monster@ [unleashes|releases] gushing sobs.",
+          "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.weeping_skull.unleashes_gushing_sobs.v1",
+              "signature": "materialization-v1|variants=1|18:weeping skull cast:0:0|lua=0|sites=1|18:weeping skull cast:0:0:2:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} unleashes gushing sobs." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}倾泻出不绝于耳的抽泣声。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.weeping_skull.releases_gushing_sobs.v1",
+              "signature": "materialization-v1|variants=1|18:weeping skull cast:0:0|lua=0|sites=1|18:weeping skull cast:0:0:2:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} releases gushing sobs." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}宣泄出不绝于耳的抽泣声。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.weeping_skull.misery_surges.v1", "tombstone": false,
+          "variant_ordinal": 1, "upstream_weight": 10,
+          "upstream_variant_fingerprint": "31ed467a056960ee4165de33fe8024c172f77d1c6d74326568a57c2b595c0721",
+          "english_snapshot": "@The_monster_possessive@ misery [bubbles over|overflows].",
+          "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "CASE_MAP",
+          "slot_schema": [{ "name": "actor_possessive", "type": "actor_possessive_name" }],
+          "required_arguments": ["actor_possessive"], "line_metadata": [],
+          "materialization_cases": [
+            {
+              "case_id": "mon.cast.weeping_skull.misery_bubbles_over.v1",
+              "signature": "materialization-v1|variants=1|18:weeping skull cast:1:0|lua=0|sites=1|18:weeping skull cast:1:0:2:0",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} misery bubbles over." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}痛苦汩汩涌出。" }
+              ] }]
+            },
+            {
+              "case_id": "mon.cast.weeping_skull.misery_overflows.v1",
+              "signature": "materialization-v1|variants=1|18:weeping skull cast:1:0|lua=0|sites=1|18:weeping skull cast:1:0:2:1",
+              "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor_possessive} misery overflows." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor_possessive}痛苦满溢而出。" }
+              ] }]
+            }
+          ],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
