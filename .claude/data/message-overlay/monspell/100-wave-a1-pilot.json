@@ -1,0 +1,261 @@
+{
+  "entries": [
+    {
+      "canonical_key": "call lost souls cast",
+      "canonical_fingerprint": "fnv1a64:d1f7f755cee4289c",
+      "selection_graph_fingerprint": "fnv1a64:7eb52f480286e779",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.call_lost_souls.beckon_restless_souls.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "fb410003f3e24e5317c306a78040b435cbc592fcbd64ee3db486d4e274faecda",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ beckons forth restless souls!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} beckons forth restless souls!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召来不安的灵魂！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "creeping frost cast",
+      "canonical_fingerprint": "fnv1a64:6b3242b559911a0a",
+      "selection_graph_fingerprint": "fnv1a64:d911d247e44bbe3d",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.creeping_frost.wall_cold.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3cc88fdbc220fba9c40fa7e23e2c0f55b7c4dc14f8057926fa33d650d04ad07d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls freezing cold from the walls.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls freezing cold from the walls." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}从墙壁中唤来刺骨寒气。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "druid's call cast",
+      "canonical_fingerprint": "fnv1a64:1e56314288dabe8c",
+      "selection_graph_fingerprint": "fnv1a64:8d932041b05fa697",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.druids_call.wild_beasts.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "fa3c174171115fa4b43eeaad388ea479b824e2e73963771ed3c0caacbbed1f9f",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls out to the beasts of the wild!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls out to the beasts of the wild!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}呼唤荒野中的野兽！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "floating eye cast",
+      "canonical_fingerprint": "fnv1a64:64f233d8fc674dc6",
+      "selection_graph_fingerprint": "fnv1a64:9cdc9c2ec4aef011",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.floating_eye.looks_around.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "29f1bc7f3ec4f3a3653c4e107a458a2dac80d6397c63aded72260ad721a835a1",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ looks around.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} looks around." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}环顾四周。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "grasping roots natural cast",
+      "canonical_fingerprint": "fnv1a64:46480009d1658de1",
+      "selection_graph_fingerprint": "fnv1a64:9cb1e964bb58a39c",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.grasping_roots_natural.roots_beneath.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7d710830b15a7c30a73a08e156ed7b7128117553df2009bd2a1b077b5455a0c1",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ runs its roots beneath @target@!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} runs its roots beneath ${target}!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} runs its roots beneath ${target}!" },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} runs its roots beneath ${target}!" },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}将根须伸到${target}身下！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}将根须伸到${target}身下！" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}将根须伸到${target}身下！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "sticky flame cast",
+      "canonical_fingerprint": "fnv1a64:5326ee9102d7f603",
+      "selection_graph_fingerprint": "fnv1a64:f200995b2a4d369e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.sticky_flame.liquid_fire.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "e318cd4b68fcae01c92537cbb84606f7694367307d11a57499ea2f3fa6d565c6",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ sprays @target@ with liquid fire.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} sprays ${target} with liquid fire." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} sprays ${target} with liquid fire." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} sprays ${target} with liquid fire." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}喷洒液态火焰。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}喷洒液态火焰。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}喷洒液态火焰。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "fire breath cast",
+      "canonical_fingerprint": "fnv1a64:f21bcbc5e6713d69",
+      "selection_graph_fingerprint": "fnv1a64:bd1a49153edc4242",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.fire_breath.breathe_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "beam", "type": "resolved_beam" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后吐出${beam}。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "poisonous cloud natural cast",
+      "canonical_fingerprint": "fnv1a64:b893217bc41d1f34",
+      "selection_graph_fingerprint": "fnv1a64:2969d81cc864f60d",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.poisonous_cloud_natural.breathe_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "beam", "type": "resolved_beam" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}身后吐出${beam}。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
