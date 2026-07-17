@@ -1976,6 +1976,48 @@ def _load_json(path: str) -> dict:
         return json.load(f)
 
 
+def _load_jsonl(path: str) -> list:
+    """Load JSONL from path (one JSON object per line). Returns list of dicts."""
+    if not path or not os.path.exists(path):
+        return []
+    objects = []
+    with open(path, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                objects.append(json.loads(line))
+    return objects
+
+
+def _load_json_or_jsonl(path: str) -> list:
+    """Load a shard file: try JSON first, fall back to JSONL lines.
+    Always returns a list of group dicts."""
+    if not path or not os.path.exists(path):
+        return []
+    with open(path, 'r', encoding='utf-8') as f:
+        lines = f.readlines()
+    if not lines:
+        return []
+    # Try single JSON
+    content = ''.join(lines).strip()
+    if content:
+        try:
+            d = json.loads(content)
+            return d.get('groups', [])
+        except json.JSONDecodeError:
+            pass
+    # JSONL: one object per line
+    groups = []
+    for line in content.split('\n'):
+        line = line.strip()
+        if line and line.startswith('{'):
+            try:
+                groups.append(json.loads(line))
+            except json.JSONDecodeError:
+                pass
+    return groups
+
+
 def _sha256_file(path: str) -> str:
     """Compute SHA-256 of a file."""
     h = hashlib.sha256()
@@ -2670,15 +2712,13 @@ def cmd_assemble_source_key_collision_classifications(args):
     shards = {}
     if args.shards:
         for sp in args.shards:
-            s = _load_json(sp)
-            if s:
-                for g in s.get('groups', []):
-                    gid = g.get('group_id', '')
-                    if gid in shards:
-                        print(f"ERROR: duplicate group_id across shards: {gid}",
-                              file=sys.stderr)
-                        return 1
-                    shards[gid] = g
+            for g in _load_json_or_jsonl(sp):
+                gid = g.get('group_id', '')
+                if gid in shards:
+                    print(f"ERROR: duplicate group_id across shards: {gid}",
+                          file=sys.stderr)
+                    return 1
+                shards[gid] = g
 
     # Load adjudications
     adjudications = {}
@@ -2741,15 +2781,13 @@ def cmd_assemble_source_missing_key_classifications(args):
     shards = {}
     if args.shards:
         for sp in args.shards:
-            s = _load_json(sp)
-            if s:
-                for g in s.get('groups', []):
-                    gid = g.get('group_id', '')
-                    if gid in shards:
-                        print(f"ERROR: duplicate group_id across shards: {gid}",
-                              file=sys.stderr)
-                        return 1
-                    shards[gid] = g
+            for g in _load_json_or_jsonl(sp):
+                gid = g.get('group_id', '')
+                if gid in shards:
+                    print(f"ERROR: duplicate group_id across shards: {gid}",
+                          file=sys.stderr)
+                    return 1
+                shards[gid] = g
 
     missing_keys = inventory.get('missing_keys', [])
     assembled_groups = []
