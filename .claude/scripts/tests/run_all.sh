@@ -47,9 +47,9 @@ for test_script in "${DISCOVERED[@]}"; do
         rc=$?
     fi
     set -e
+    EXECUTED+=("$test_script")
     if [ "$rc" -eq 0 ]; then
         PASS=$((PASS + 1))
-        EXECUTED+=("$test_script")
     else
         FAIL=$((FAIL + 1))
         echo "  FAIL (exit $rc)"
