@@ -1,0 +1,320 @@
+{
+  "entries": [
+    {
+      "canonical_key": "mara summon cast",
+      "canonical_fingerprint": "fnv1a64:c0a084e8d668755e",
+      "selection_graph_fingerprint": "fnv1a64:39162d3ebd4e4934",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "7ca6d0baed08411950c12fd8c258ad0b019991c8771f3d459e11fc523e4b5941",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ weaves an illusion.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} weaves an illusion." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}编织出幻象。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.mara_summon.shimmers.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "3fe6b267c5e103cdb13cfd6f5583e50a5b6bf4c661979adc96878dec7591cb51",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ shimmers.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} shimmers." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}发出微光。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "phantom mirror cast",
+      "canonical_fingerprint": "fnv1a64:110acd608dd87ed1",
+      "selection_graph_fingerprint": "fnv1a64:1b45d81cd637d738",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.phantom_mirror.weaves_illusion.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "7ca6d0baed08411950c12fd8c258ad0b019991c8771f3d459e11fc523e4b5941",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ weaves an illusion.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} weaves an illusion." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}编织出幻象。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "spectral cloud revenant cast",
+      "canonical_fingerprint": "fnv1a64:d6e038b55bdc5e23",
+      "selection_graph_fingerprint": "fnv1a64:e752ae9f260bbed4",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.spectral_cloud_revenant.spectral_mists.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "9c289c6189133248e05a814da4942f78aebec66957309e2b4bce0f169639d62d",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ conjures spectral mists around @target@.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} conjures spectral mists around ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} conjures spectral mists around ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} conjures spectral mists around ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}在${target}周围生成幽灵迷雾。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}在${target}周围生成幽灵迷雾。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}在${target}周围生成幽灵迷雾。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "undertaker cast targeted",
+      "canonical_fingerprint": "fnv1a64:bc2a71485d5b8834",
+      "selection_graph_fingerprint": "fnv1a64:43dbddf752e5bbc3",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.undertaker.reaches_out.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "6412b78eff1545b2d50a395b91c8e5e259f4ad192f911a638d03c1c1135f27f6",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ reaches out for @target@.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} reaches out for ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} reaches out for ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} reaches out for ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}伸出手。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${target}伸出手。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}向${target}伸出手。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "cold breath cast",
+      "canonical_fingerprint": "fnv1a64:96ad6af8e979b713",
+      "selection_graph_fingerprint": "fnv1a64:1a095538d46a484c",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.cold_breath.breathes_beam.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "beam", "type": "resolved_beam" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "beam", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}吐出${beam}。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "dragon cast targeted",
+      "canonical_fingerprint": "fnv1a64:b56bb6f119f1fef2",
+      "selection_graph_fingerprint": "fnv1a64:bddd47a6abd6cd53",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.dragon.targeted.breathes_beam.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "beam", "type": "resolved_beam" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "beam", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}吐出${beam}。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
