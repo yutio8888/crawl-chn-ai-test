@@ -1,0 +1,343 @@
+{
+  "entries": [
+    {
+      "canonical_key": "battlecry satyr cast",
+      "canonical_fingerprint": "fnv1a64:581596c1472e5af7",
+      "selection_graph_fingerprint": "fnv1a64:b3e831b31a354ce0",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.battlecry_satyr.rousing_melody.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "0c50cdfe03a23a1b9f1c138bf768e095c2e0883dd4c372aa847fdf56b49dbd1d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ plays a rousing melody on @possessive@ pipes!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} plays a rousing melody on ${possessive} pipes!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}用排箫奏出一曲激昂的旋律！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "blinkbolt cast",
+      "canonical_fingerprint": "fnv1a64:1c823905cb52bd76",
+      "selection_graph_fingerprint": "fnv1a64:a6919351eabeda79",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.blinkbolt.living_lightning.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "e7770d8642bb3c9e7e40e740aeed814e8747b80891dde8163703405651cc043d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ bursts into living lightning!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} bursts into living lightning!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}迸发成活体闪电！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "blizzard demon cast",
+      "canonical_fingerprint": "fnv1a64:e6c4128bef44c637",
+      "selection_graph_fingerprint": "fnv1a64:035695c3eef899fb",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.blizzard_demon.melancholic_malice.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "e4846244ba1dc9e8627074265b647d106031582b0508b958c697e9f6c2be66ae",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ crackles with melancholic malice.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} crackles with melancholic malice." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}忧郁而恶毒地噼啪作响。" }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.blizzard_demon.sorrowful_spite.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "e4d9349a04ae2d6fc06b97898d8a5cf3e093af3a2a9e2a5b740449897a8d346d",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ roars with sorrowful spite.",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} roars with sorrowful spite." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}满怀悲怨地咆哮。" }
+            ]
+          }],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "branch summon cast prefix",
+      "canonical_fingerprint": "fnv1a64:3ed9215b901b03cf",
+      "selection_graph_fingerprint": "fnv1a64:cfc3a84a6f9ce87e",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.branch_summon.prefix.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "23ebb024b9e54eab9ae71e4262ecd11c3644c2b1b8c2463beeebe017e8b75b12",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls forth creatures from",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "cause fear satyr cast",
+      "canonical_fingerprint": "fnv1a64:e1f35b0d7717fc76",
+      "selection_graph_fingerprint": "fnv1a64:8ade43a25c924df3",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.cause_fear_satyr.frightful_melody.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "72e60525fb99f834953efe1aa69f793fa386aa5fb765aa39247377ebadec5c7f",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ plays a frightful melody on @possessive@ pipes!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} plays a frightful melody on ${possessive} pipes!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}用排箫奏出一曲骇人的旋律！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "conjure living spells cast",
+      "canonical_fingerprint": "fnv1a64:24f3d2c2b21c0085",
+      "selection_graph_fingerprint": "fnv1a64:5c060e165383434a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.conjure_living_spells.flurry.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7fa75f0f149462397a8bcd873dece079b3026feab98470bab9041af21b56a615",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ erupts in a flurry of living spells!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} erupts in a flurry of living spells!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}猛然迸出一群活体法术！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "curse skull cast",
+      "canonical_fingerprint": "fnv1a64:1f4f2b4ae1ba33b4",
+      "selection_graph_fingerprint": "fnv1a64:f3fd99216ad4dd6f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.curse_skull.rattles_jaw.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "1a8e3d467aca2355b3437065caaf4a9c67100307a022611ae7bac9a6e2aae566",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ rattles @possessive@ jaw.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} rattles ${possessive} jaw." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}摇动颌骨，嘎嘎作响。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "ghostly fireball revenant cast",
+      "canonical_fingerprint": "fnv1a64:de106cdcd6b0868e",
+      "selection_graph_fingerprint": "fnv1a64:fdb22c40180b0b7f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ghostly_fireball_revenant.ghostly_flames.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d8c7ab7cef48fa2cf0503d0b62e95d0bdf40fa26976b37edf05cc28edde0fcce",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ lashes out with ghostly flames.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} lashes out with ghostly flames." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}猛然挥出幽灵火焰。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "hoarfrost bullet cast",
+      "canonical_fingerprint": "fnv1a64:1386f6d31096d0fa",
+      "selection_graph_fingerprint": "fnv1a64:15bce1984f52b971",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.hoarfrost_bullet.icy_salvo.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "0c1cbd5c59b7005c60ba4b8fd69b6b6cb2b76f63557909c46bf709e675562942",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires a salvo of icy shards.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} fires a salvo of icy shards." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}齐射出一阵冰晶碎片。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "holy flames cast",
+      "canonical_fingerprint": "fnv1a64:5edf36204af57a5b",
+      "selection_graph_fingerprint": "fnv1a64:d517e68f07952a06",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.holy_flames.blessed_flames.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "59369fd7e08be8f5d58bb3d16ee32373f49ee53848c8da46b37b8dd959104dc6",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls forth blessed flames!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN",
+          "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls forth blessed flames!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召来神圣火焰！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
