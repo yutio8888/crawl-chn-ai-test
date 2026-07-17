@@ -12,7 +12,7 @@ from pathlib import Path
 import sys
 
 
-ROOT = Path(__file__).resolve().parents[2]
+DEFAULT_ROOT = Path(__file__).resolve().parents[2]
 BEGIN = "<!-- BEGIN GENERATED: {name} -->"
 END = "<!-- END GENERATED: {name} -->"
 
@@ -46,8 +46,8 @@ TARGETS = {
 }
 
 
-def policy_block(name: str) -> str:
-    body = (ROOT / ".agents" / "policies" / f"{name}.md").read_text().rstrip()
+def policy_block(root: Path, name: str) -> str:
+    body = (root / ".agents" / "policies" / f"{name}.md").read_text().rstrip()
     return f"{BEGIN.format(name=name)}\n{body}\n{END.format(name=name)}"
 
 
@@ -67,13 +67,16 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group(required=True)
     mode.add_argument("--check", action="store_true")
     mode.add_argument("--write", action="store_true")
+    parser.add_argument("--root", type=Path, default=DEFAULT_ROOT,
+                        help="repository whose policy/config text is checked or updated")
     args = parser.parse_args()
+    root = args.root.resolve()
 
     stale: list[str] = []
     for name, targets in TARGETS.items():
-        expected = policy_block(name)
+        expected = policy_block(root, name)
         for relative in targets:
-            path = ROOT / relative
+            path = root / relative
             original = path.read_text()
             try:
                 updated = replace_block(original, name, expected)

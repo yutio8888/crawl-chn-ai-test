@@ -4,8 +4,9 @@
 #   bash .claude/scripts/record_review.sh '{"date":"...", "agent_type":"...", ...}'
 #   echo '{"date":"...", ...}' | bash .claude/scripts/record_review.sh
 #
-# Version 2 records are compact, one-record-per-line JSON. Merge-time records
-# additionally carry immutable review evidence (base/head/diff/run/log hashes).
+# Version 2 records are compact, one-record-per-line historical metrics.
+# They are never schema-v3 merge authorization; review_bundle.py is the sole
+# writer for new readiness, verification, and final-approval evidence.
 
 set -euo pipefail
 
@@ -18,6 +19,8 @@ if [ $# -ge 1 ]; then
 else
     ENTRY=$(cat)
 fi
+
+echo "NOTICE: record_review.sh writes historical metrics only; it does not authorize a merge." >&2
 
 # Validate and canonicalise JSON with Python. The compact output is what gets
 # appended; accepting pretty-printed input must never corrupt the JSONL file.

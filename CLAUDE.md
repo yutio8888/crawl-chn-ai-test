@@ -19,12 +19,17 @@ repository's index and working tree, leading to false "staged changes".
 **Correct procedure after committing in a worktree:**
 1. `cd ~/projects/crawl` (the main repository)
 2. `git checkout <target-branch>` (e.g. `chn-0.34.1-base`)
-3. **Run merge review gate**: `bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch>`
-   - See "Worktree Merge Review" below — this classifies the cumulative diff
-     and decides whether full review is required before merging.
-4. `git merge --ff-only <worktree-branch>` (use an explicit non-FF merge only when intended)
-5. Resolve any conflicts in the main repository
-6. Verify `git status`; never use `reset --hard` as routine synchronization
+3. Create the exact committed review boundary:
+   `bash .claude/scripts/review_prepare.sh <worktree-branch> <target-branch>`
+4. Review that bundle and record every mechanically routed readiness result.
+5. Run the single final verifier:
+   `bash .claude/scripts/review_final_gate.sh <worktree-branch> <target-branch>`
+6. Run the read-only merge gate:
+   `bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch>`
+7. `git merge --ff-only <approved-candidate-oid>` using the exact OID printed
+   by the gate (use an explicit non-FF merge only when intended)
+8. Resolve any conflicts in the main repository
+9. Verify `git status`; never use `reset --hard` as routine synchronization
 
 This ensures the main repository's index and working tree stay in sync with the
 branch reference, avoiding the stale-index problem caused by `update-ref`.
@@ -186,106 +191,129 @@ operations, quick questions) → handle inline. Multi-step complex tasks that sp
 categories → break into steps, dispatch each step to the right agent.
 
 
-## Code Review Strategy: Risk-Tiered, Merge-Time Gated
+## Code Review Strategy: Development Feedback + One Final Gate
 
-**Review happens at worktree merge time, not at every commit.** Per-commit review
-on every translation micro-edit is too costly; instead, classify the cumulative
-worktree diff and apply the right level of scrutiny before merging into
-`chn-0.34.1-base`.
+Development verification and merge authorization are deliberately separate.
+During implementation, use targeted tests plus `--profile translation` or
+`--profile code`. Reviewers inspect the committed, clean, exact candidate diff
+and those existing logs; they do not run `--profile review`. The expensive full
+review profile is owned by one locked final-gate attempt after all required
+reviewers are ready.
 
-### Risk Classification
+### Risk Classification and Reviewer Routing
 
-Use `classify_review.sh` to categorize a diff:
+`classify_review.sh` remains an advisory risk summary. Immutable reviewer
+routing comes only from `classify_reviewers.py` for the exact target and
+candidate commits:
 
-| Level | Trigger | Treatment |
-|-------|---------|-----------|
-| 🟢 **GREEN** | Low-risk files outside source and workflow policy | No review — just merge |
-| 🟡 **YELLOW** | Only `crawl-ref/source/dat/{i18n,descript,database}/zh/*.txt` | Run `verify_zh.sh --profile translation`; merge if clean |
-| 🔴 **RED** | Source code/other source files, workflow policy, verification or build/deploy scripts, core workflow docs | Full reviewer pass plus a head-bound recorded verdict |
-
-```bash
-# Classify staged diff (per-commit quick check, advisory)
-bash .claude/scripts/classify_review.sh
-
-# Classify a worktree→target range (use at merge time)
-bash .claude/scripts/classify_review.sh <target>..<worktree>
-
-# JSON output for tooling
-bash .claude/scripts/classify_review.sh <range> --json
-```
-
-### Worktree Merge Review (the actual gate)
-
-**Run this in the MAIN repo before merging a worktree branch:**
+| Change | Required readiness |
+|--------|--------------------|
+| Outside reviewer-owned source/policy paths | none |
+| ZH translation/text terminology only | `translation-reviewer` |
+| Code, source, scripts, policy, build/verification infrastructure | `zh-code-reviewer` |
+| Mixed code and translation | both reviewers |
 
 ```bash
-cd ~/projects/crawl
-git checkout chn-0.34.1-base
-bash .claude/scripts/review_at_merge.sh <worktree-branch> chn-0.34.1-base
+python3 .claude/scripts/classify_reviewers.py \
+  --base <target-head> --head <candidate-head>
 ```
 
-The script:
-1. Computes the cumulative diff range `<target>..<worktree-branch>`
-2. Classifies via `classify_review.sh`
-3. **GREEN** → prints merge command, exit 0
-4. **YELLOW** → runs `verify_zh.sh --profile translation`, exit 0/1
-5. **RED** → exits 2 until a reviewer returns Go/Conditional Go and writes a
-   schema-v2 review record. Record that result with
-   `--record-verdict go|conditional-go <review-id>`; the gate validates the
-   successful run metadata, raw-log hash, glossary hash, target head, worktree
-   head, and binary diff hash. Any later change invalidates it.
+Reviewer outcomes are `Ready for Final Gate`, `Changes Requested`, or `No-Go`.
+Schema-v3 has no Conditional Go; definite fixes are made before final
+verification. Reviewer identity in local JSON is an audit declaration, not a
+cryptographic signature.
 
-### Per-Commit Review (Optional, Advisory)
+### Schema-v3 Bundle Lifecycle
 
-During worktree development, you can still run `classify_review.sh` on staged
-changes to get an early warning. **This is advisory only — the actual gate is
-at merge time.** No need to dispatch the full `zh-code-reviewer` agent for
-every micro-commit; defer that work to the merge point.
+Before readiness is recorded, commit all task changes and require both target
+and candidate worktrees to be clean. `review_bundle.py` stores canonical,
+write-once evidence under the Git common directory, so linked worktrees share
+the same bundle:
 
-If a single commit is large enough to warrant full review on its own (e.g., a
-risky T_() migration, a refactor of an enemy attack table), you may invoke
-`zh-code-reviewer` directly on `git diff --cached` — but treat this as an
-exception, not the default.
+```text
+created → readiness-complete → verifying → verified → approved/sealed
+```
 
-### Review Metrics Logging
+The bundle binds target/candidate OIDs, the exact binary diff SHA-256, current
+glossary SHA-256, trusted routing output, reviewer findings, verification
+artifacts, target-head control-plane digest, and final approval. Any changed
+ref, diff, glossary, route, required phase, or artifact invalidates approval.
 
-After each code review (RED path: pre-merge verdict, or per-commit exception),
-record the results to establish a quality baseline for future optimization
-validation:
+From the clean target checkout, create the bundle for the clean candidate
+worktree. The helper computes and verifies the actual glossary hash, ancestry,
+refs and trusted routing before any reviewer begins:
 
 ```bash
-bash .claude/scripts/record_review.sh '{
-  "schema_version": 2,
-  "review_id": "<unique-review-id>",
-  "run_id": "<verify_zh run-id>",
-  "date": "'"$(date -Iseconds)"'",
-  "agent_type": "zh-code-reviewer",
-  "task_summary": "Worktree merge review of <worktree-branch>",
-  "base": "<target-head>",
-  "head": "<worktree-head>",
-  "diff_hash": "<binary-diff-hash>",
-  "glossary_sha256": "<context_resolve hash>",
-  "raw_log": ".worktrees/<worktree>/.claude/metrics/verify/<run-id>/verify.log",
-  "findings": {"blocker": N, "needs_fix": N, "suggestion": N},
-  "fix_iterations": N,
-  "verdict": "Go",
-  "trigger": "merge-time",
-  "session_id": "<from ORCHESTRATION_STATE.md>"
-}'
+bash .claude/scripts/review_prepare.sh <candidate-branch> <target-branch>
 ```
 
-Use `Conditional Go` only when `blocker == 0 && needs_fix > 0`, and include a
-non-empty `conditions` array. `No-Go` is mandatory when blockers exist or the
-verification run is incomplete. After recording the review, bind it with:
+Review that exact bundle, then record only the reviewers named by its trusted
+`routing.json` (run the target checkout's script with the candidate worktree as
+`--repo`):
 
 ```bash
-bash .claude/scripts/review_at_merge.sh <worktree-branch> <target-branch> \
-  --record-verdict go|conditional-go <review-id> "review note"
+python3 "$TARGET_ROOT/.claude/scripts/review_bundle.py" record-readiness \
+  --repo <candidate-worktree> --bundle <bundle-id> --reviewer <routed-role> \
+  --blocker 0 --needs-fix 0 --suggestion N
 ```
 
-The review metrics log (`.claude/metrics/review-log.jsonl`) establishes a baseline
-for quantitatively validating future optimization scripts (Phase B #1 term
-validation, #5 anti-pattern detection). Target: ≥30 records before first trend analysis.
+Readiness records are write-once. If the reviewer requests a fix, change and
+commit the code, create the newly identified bundle, and review that exact diff;
+never overwrite the old record.
+
+After all mechanically routed reviewers are Ready, run from the clean target
+checkout:
+
+```bash
+bash .claude/scripts/review_final_gate.sh <candidate-branch> <target-branch>
+```
+
+The final gate holds a bundle-specific lock across the entire target-head
+verifier subprocess and publication. At most one attempt is running for a
+bundle; an existing valid pass is reused and never rerun. Failed attempts need
+an explicit retry, and stale running residue needs explicit recovery.
+
+```bash
+# Retry a completed failed/interrupted attempt with a new attempt id
+bash .claude/scripts/review_final_gate.sh <candidate> <target> --retry-failed
+
+# Recover a proven-dead running marker, then retry if a failed attempt exists
+bash .claude/scripts/review_final_gate.sh <candidate> <target> \
+  --recover-stale --retry-failed
+```
+
+Machine-readable states use stable exit codes: `MERGEABLE=0`,
+`READINESS_REQUIRED=10`, `FINAL_GATE_REQUIRED=11`, `FINAL_GATE_RUNNING=12`,
+`FINAL_APPROVAL_REQUIRED=13`, `EVIDENCE_FAILED=14`, `STALE_EVIDENCE=15`,
+`INVALID_EVIDENCE=16`, and `INTERNAL_ERROR=20`.
+
+### Worktree Merge Review (read-only gate)
+
+Immediately before merging, run:
+
+```bash
+bash .claude/scripts/review_at_merge.sh <candidate-branch> <target-branch>
+```
+
+This command only resolves refs, recomputes the deterministic bundle identity,
+runs the pure classifier, and validates existing schema-v3 evidence. It never
+builds, runs Catch2, creates, repairs, or updates evidence. It resolves refs at
+entry and exit, verifies that target is an ancestor of candidate, and prints
+the exact approved candidate OID. Merge that immutable OID, not a movable branch
+name:
+
+```bash
+git merge --ff-only <approved-candidate-oid>
+```
+
+The read-only validator narrows but cannot eliminate the time gap between gate
+and merge; strict atomic authorization belongs in a merge wrapper, hook, or CI.
+
+### Historical Review Metrics
+
+`record_review.sh` and schema-v1/v2 records remain available only for historical
+metrics and display. They are not schema-v3 merge authorization and cannot be
+upgraded automatically. Old Conditional Go records never become a v3 approval.
 
 ### Commit Message Convention
 
@@ -679,7 +707,7 @@ explicit `--full` runs all three runtime layers.
 
 ```bash
 bash .claude/scripts/verify_zh.sh --profile code # changed static scope + risk-routed build/smoke
-bash .claude/scripts/verify_zh.sh --profile review --full # full static + all runtime layers
+bash .claude/scripts/review_final_gate.sh <candidate> <target> # one locked final review run
 bash .claude/scripts/post-coder.sh       # Low-level static gate (concat is baseline advisory)
 bash .claude/scripts/post-coder.sh --full # Same as above + catch2 (L1) + dlua (L2) + RC bot (L3) + aggregation
 bash .claude/scripts/post-translator.sh  # After translation (terms + format + @keyword@)
@@ -792,10 +820,10 @@ python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
     --include-warn --format json --require-parser
 ```
 
-The scanner is blocking in `post-coder.sh` and `post-reviewer.sh`. RED
-`review_at_merge.sh` locates the candidate branch's worktree and runs the review
-profile there before accepting a head-bound reviewer verdict. Root cause and
-rollout: Issue 63.
+The scanner is blocking in `post-coder.sh` and `post-reviewer.sh`.
+`review_final_gate.sh` runs the target-head review profile once in the candidate
+worktree; `review_at_merge.sh` only validates the sealed head-bound bundle.
+Root cause and rollout: Issue 63.
 
 ## Agent Commit Discipline
 

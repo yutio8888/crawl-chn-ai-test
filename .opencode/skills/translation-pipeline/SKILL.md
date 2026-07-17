@@ -51,22 +51,25 @@ bash .claude/scripts/context_resolve.sh "<issue/task>" \
 `docs/glossary.md` SHA-256。执行期间若术语表发生变化，重新生成上下文；
 不得用工作流或 Skill 内的静态术语副本覆盖当前术语表。
 
-`.opencode/workflows/*.js` 使用 OpenCode 宿主注入的 `args`、`agent()`、
-`phase()` 等 DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。
-只有当前 OpenCode 运行时明确提供 workflow runner 时，才通过该 runner 启动。
+`.claude/workflows/*.js` 使用宿主注入的 `args`、`agent()`、`phase()` 等
+DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。只有当前
+Claude Code 运行时明确提供 workflow runner 时，才通过该 runner 启动。
 
 ## 审核 Agent 自动路由
 
 Hosted workflow 与无 runner fallback 必须共享
 `.claude/scripts/classify_reviewers.py` 的机器判定，不得各自维护路径规则。
-执行前按不可变提交范围生成 JSON：
+计划阶段可按目标文件运行分类器作成本预估，但该结果不是 readiness 路由。
+执行者必须先完成开发期 profile、只提交自己拥有的文件并留下 clean
+worktree。随后从 clean target checkout 运行：
 
 ```bash
-REVIEW_ROUTING=$(python3 .claude/scripts/classify_reviewers.py \
-  --base <base-revision> --head <head-revision>)
+bash .claude/scripts/review_prepare.sh <candidate-branch> <target-branch>
 ```
 
-尚未形成提交范围时，使用计划中所有目标文件（每个路径作为独立参数）：
+该命令绑定精确 target/candidate OID、真实 glossary SHA-256 与 binary diff，
+创建 shared-common-dir bundle；其 `routing` 字段才是唯一审核路由依据。
+尚未形成提交范围时可使用以下命令预估 reviewer，但不得据此写 readiness：
 
 ```bash
 REVIEW_ROUTING=$(python3 .claude/scripts/classify_reviewers.py \
@@ -81,26 +84,37 @@ REVIEW_ROUTING=$(python3 .claude/scripts/classify_reviewers.py \
 - 空 diff：不派发 reviewer，继续机械交叉验证
 - `crawl-ref/source/` 下未识别文件：fail-safe 派发 `zh-code-reviewer`
 
-Hosted runner 必须把解析后的完整 JSON 对象作为
-`args.reviewRouting` 传给 single/batch workflow。workflow 缺少该字段时会以
-`review_routing_required` 停止，不能静默固定双审或跳过审核。
+Hosted runner 必须给 single/batch workflow 传入 `args.targetRoot`、
+`args.targetBranch` 和 `args.candidateBranch`。workflow 在 Execute 后调用
+`review_prepare.sh`，直接消费新 bundle 的完整 `routing`；缺少参数、工作树
+未提交/不干净或边界创建失败时以 `review_boundary_required` 停止，不能审查
+旧 routing，也不能静默固定双审或跳过审核。
 
-运行时没有 workflow runner（包括 Codex）时，使用 `task` 逐阶段回退：
+运行时没有 workflow runner 时，使用 `Agent` 逐阶段回退：
 
 ```
-task(subagent_type="general", description="Analyze issue",
+Agent(subagent_type="general", description="Analyze issue",
   prompt="Analyze this DCSS Chinese translation issue to find the root cause...")
 ```
 
-阶段：分析 → 方案 → 方案审核 → 翻译资产修改 → 代码修改 → 路由审核 → 交叉验证 → 报告。
+阶段：分析 → 方案 → 方案审核 → 翻译资产修改 → 代码修改 → 提交/Bundle
+边界 → 路由审核 → 交叉验证 → readiness 持久化 → 单次 final gate → 报告。
 
-fallback 在审核阶段解析同一个 `REVIEW_ROUTING` JSON，并且只对
-`reviewers` 数组中列出的类型调用 `task`。不得从 issue 类型、自然语言描述
+fallback 同样先运行 `review_prepare.sh`，解析 bundle 的 `routing`，并且只对
+`reviewers` 数组中列出的类型调用 `Agent`。不得从 issue 类型、自然语言描述
 或 Agent 自报的修改内容另行猜测审核人。术语一致性机械检查和交叉验证不受
-reviewer 数量影响，始终执行。
+reviewer 数量影响，始终执行。reviewer 只检查已提交、干净 worktree 的精确
+bundle diff 和开发期日志，输出 `Ready for Final Gate`、`Changes Requested`
+或 `No-Go`；不得运行 `--profile review`。
 
 执行阶段必须保持单一写入者：`zh-translator` 独占 `source.txt` 及其他
 `zh/*.txt`/TextDB 文件，`crawl-coder` 只修改代码；两者不得并行写翻译资产。
+
+交叉验证通过且所有路由 reviewer 都 Ready 后，orchestrator 先使用 target
+checkout 的 `review_bundle.py record-readiness` 写入每个角色的精确计数，再且
+仅再运行一次 `review_final_gate.sh <candidate> <target>`。失败或中断不得自动
+重试；该命令持有 bundle 锁并生成 head-bound verification 与最终批准，
+`review_at_merge.sh` 只读验证现有证据。
 
 ## 结果汇报
 
@@ -108,5 +122,6 @@ reviewer 数量影响，始终执行。
 - 修改了哪些文件
 - 翻译了什么内容（EN → ZH）
 - 使用的术语表 SHA-256
-- 审核结论（Go / Conditional Go / No-Go）
+- readiness（Ready for Final Gate / Changes Requested / No-Go）
+- final gate / merge gate 状态
 - 合入状态

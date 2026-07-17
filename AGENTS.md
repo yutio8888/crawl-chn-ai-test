@@ -455,7 +455,7 @@ the three post-* scripts:
 |------------|---------|
 | Translation / data files | `bash .claude/scripts/verify_zh.sh --profile translation` |
 | C++ / i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
-| Pre-merge review | `bash .claude/scripts/verify_zh.sh --profile review` |
+| Final pre-merge evidence | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
 | CI gate | `bash .claude/scripts/verify_zh.sh --profile ci` |
 
 **Agent post-task template:**
@@ -484,6 +484,13 @@ C++ i18n 改动：
 The report (written to `.claude/metrics/verify/`) aggregates results from
 `core-static` checks (always blocking) plus domain-specific checks per profile.
 All three `post-*.sh` scripts remain available as backward-compatible aliases.
+
+Reviewers do not run `--profile review` during iterative feedback. Once the
+candidate changes are committed and both worktrees are clean, run
+`review_prepare.sh <candidate> <target>` before dispatching reviewers. Once that
+exact bundle has all mechanically routed schema-v3 readiness records,
+`review_final_gate.sh` owns the single full run; `review_at_merge.sh` only reads
+and validates the sealed bundle.
 
 ## Pointer to CLAUDE.md (for shared knowledge)
 

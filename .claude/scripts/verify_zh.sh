@@ -9,6 +9,8 @@
 #   verify_zh.sh --profile review --base <rev> --head <rev>
 #   verify_zh.sh --profile code --scope changed
 #   verify_zh.sh --profile review --full  # full static + full runtime
+#   verify_zh.sh --profile review --base <rev> --head <rev> \
+#       --routing-sha256 <sha256> --control-plane-sha256 <sha256>
 #
 # --base and --head bind a run to an immutable commit range. They must be used
 # together. For bound runs, the checked-out HEAD must equal --head and glossary
@@ -30,12 +32,17 @@ HEAD=""
 BASE_SHA=""
 HEAD_SHA=""
 DIFF_HASH=""
+DIFF_SHA256=""
 OUTPUT_DIR=".claude/metrics/verify"
+ROUTING_SHA256=""
+CONTROL_PLANE_SHA256=""
+VERIFICATION_CONTRACT="dcss-zh-review-v3"
 RUN_DIR=""
 RUN_ID=""
 REPORT_FILE=""
 WRAPPER_FILE=""
 METADATA_FILE=""
+PHASES_FILE=""
 METADATA_INITIALIZED=0
 FINALIZED=0
 RESULTS=0
@@ -51,6 +58,8 @@ usage() {
     cat <<'EOF'
 Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full]
                     [--base <rev> --head <rev>] [--full]
+                    [--output-dir <path>] [--routing-sha256 <sha256>]
+                    [--control-plane-sha256 <sha256>]
 
 Profiles:
   translation   Translation / data-file changes
@@ -77,7 +86,7 @@ argument_error() {
 # ── Parse arguments ──
 while [[ $# -gt 0 ]]; do
     case "$1" in
-        --profile|--base|--head|--scope)
+        --profile|--base|--head|--scope|--output-dir|--routing-sha256|--control-plane-sha256)
             [[ $# -ge 2 && -n "${2:-}" ]] \
                 || argument_error "$1 requires a value"
             case "$1" in
@@ -85,6 +94,9 @@ while [[ $# -gt 0 ]]; do
                 --base) BASE="$2" ;;
                 --head) HEAD="$2" ;;
                 --scope) SCOPE="$2" ;;
+                --output-dir) OUTPUT_DIR="$2" ;;
+                --routing-sha256) ROUTING_SHA256="$2" ;;
+                --control-plane-sha256) CONTROL_PLANE_SHA256="$2" ;;
             esac
             shift 2
             ;;
@@ -143,8 +155,17 @@ if [[ -n "$BASE" ]]; then
         argument_error "bound verification requires a clean worktree"
     fi
     DIFF_HASH=$(git diff --binary "$BASE_SHA..$HEAD_SHA" | git hash-object --stdin)
+    DIFF_SHA256=$(git diff --no-ext-diff --no-textconv --binary --full-index \
+        "$BASE_SHA..$HEAD_SHA" -- | sha256sum | awk '{print $1}')
     export GLOSSARY_DIFF_BASE="$BASE_SHA"
 fi
+
+for digest_name in ROUTING_SHA256 CONTROL_PLANE_SHA256; do
+    digest_value="${!digest_name}"
+    if [[ -n "$digest_value" && ! "$digest_value" =~ ^[0-9a-f]{64}$ ]]; then
+        argument_error "${digest_name,,} must be a lowercase SHA-256"
+    fi
+done
 
 # The changed set is used only to narrow checks that accept explicit file
 # lists and to select risk tests. Global integrity and policy gates remain full.
@@ -221,8 +242,10 @@ RUN_ID="${RUN_STAMP}-${$}-${CURRENT_HEAD:0:12}"
 RUN_DIR="$OUTPUT_DIR/$RUN_ID"
 REPORT_FILE="$RUN_DIR/verify.log"
 METADATA_FILE="$RUN_DIR/metadata.json"
+PHASES_FILE="$RUN_DIR/phases.tsv"
 WRAPPER_FILE="$OUTPUT_DIR/verify-${PROFILE}-${RUN_ID}.log"
 mkdir -p "$RUN_DIR"
+: > "$PHASES_FILE"
 
 # Write metadata through a sibling temporary file and atomically replace the
 # public file. Arguments are JSON-encoded by Python, not interpolated into JSON.
@@ -232,25 +255,67 @@ write_metadata() {
     local failures="$3"
     python3 - \
         "$METADATA_FILE" "$status" "$PROFILE" "$BASE_SHA" "$HEAD_SHA" \
-        "$DIFF_HASH" "$GLOSSARY_SHA256" "$WORKTREE" "$STARTED_AT" \
-        "$completed_at" "$failures" "$RUN_ID" <<'PY'
+        "$DIFF_HASH" "$DIFF_SHA256" "$GLOSSARY_SHA256" "$WORKTREE" \
+        "$STARTED_AT" "$completed_at" "$failures" "$RUN_ID" "$SCOPE" \
+        "$ROUTING_SHA256" "$CONTROL_PLANE_SHA256" "$VERIFICATION_CONTRACT" \
+        "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_MESSAGE_OVERLAY" \
+        "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" <<'PY'
 import json
 import os
 import sys
 
 (
-    path, status, profile, base, head, diff_hash, glossary_sha256,
-    worktree, started_at, completed_at, failures, run_id,
+    path, status, profile, base, head, diff_hash, diff_sha256,
+    glossary_sha256, worktree, started_at, completed_at, failures, run_id,
+    scope, routing_sha256, control_plane_sha256, verification_contract,
+    risk_cpp_i18n, risk_cjk_runtime, risk_message_overlay, explicit_full,
+    phases_path, report_path,
 ) = sys.argv[1:]
+phases = []
+if os.path.isfile(phases_path):
+    with open(phases_path, encoding="utf-8") as stream:
+        for line in stream:
+            line = line.rstrip("\n")
+            if not line:
+                continue
+            phase_id, required, phase_status, exit_code = line.split("\t")
+            phases.append({
+                "id": phase_id,
+                "required": required == "1",
+                "status": phase_status,
+                "exit_code": int(exit_code),
+            })
+artifacts = []
+if os.path.isfile(report_path):
+    import hashlib
+    data = open(report_path, "rb").read()
+    artifacts.append({
+        "path": "verify.log",
+        "size": len(data),
+        "sha256": hashlib.sha256(data).hexdigest(),
+    })
 payload = {
-    "schema_version": 2,
+    "schema_version": 3,
+    "verification_contract": verification_contract,
     "run_id": run_id,
     "status": status,
     "profile": profile,
+    "scope": scope,
     "base": base or None,
     "head": head or None,
     "diff_hash": diff_hash or None,
+    "diff_sha256": diff_sha256 or None,
     "glossary_sha256": glossary_sha256,
+    "routing_sha256": routing_sha256 or None,
+    "control_plane_sha256": control_plane_sha256 or None,
+    "risk_cpp_i18n": risk_cpp_i18n == "1",
+    "risk_cjk_runtime": risk_cjk_runtime == "1",
+    "risk_message_overlay": risk_message_overlay == "1",
+    "runtime_mode": ("full" if explicit_full == "1" else
+                     "catch2" if profile in ("review", "ci") or risk_cjk_runtime == "1"
+                     else "none"),
+    "phases": phases,
+    "artifacts": artifacts,
     "worktree": worktree,
     "started_at": started_at,
     "completed_at": completed_at or None,
@@ -321,16 +386,18 @@ trap 'handle_signal 129' HUP
 
 # ── Run phase function ──
 run_phase() {
-    local label="$1"
-    shift
+    local phase_id="$1" required="$2" label="$3"
+    shift 3
     local phase_rc=0
 
     echo "=== $label ==="
     if "$@" 2>&1; then
         echo "RESULT: PASS"
+        printf '%s\t%s\tpass\t0\n' "$phase_id" "$required" >> "$PHASES_FILE"
     else
         phase_rc=$?
         echo "RESULT: FAIL (exit $phase_rc)"
+        printf '%s\t%s\tfail\t%s\n' "$phase_id" "$required" "$phase_rc" >> "$PHASES_FILE"
     fi
     echo ""
     return "$phase_rc"
@@ -346,48 +413,57 @@ run_phase() {
         echo "Base: $BASE_SHA"
         echo "Head: $HEAD_SHA"
         echo "Diff hash: $DIFF_HASH"
+        echo "Diff SHA-256: $DIFF_SHA256"
     fi
     echo "Glossary SHA-256: $GLOSSARY_SHA256"
     echo ""
 
-    run_phase "Agent/Skill policy synchronization" \
-        python3 "$SCRIPT_DIR/check_agent_policies.py" \
+    run_phase "policy-sync" 1 "Agent/Skill policy synchronization" \
+        python3 "$SCRIPT_DIR/check_agent_policies.py" --root "$WORKTREE" \
         || RESULTS=$((RESULTS + 1))
 
     case "$PROFILE" in
         translation)
-            run_phase "Translation verification (post-translator.sh)" \
+            run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
         code)
-            run_phase "Code verification (post-coder.sh)" \
+            run_phase "code-static" 1 "Code verification (post-coder.sh)" \
                 bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
         review)
-            run_phase "Review verification (post-reviewer.sh)" \
+            run_phase "review-static" 1 "Review verification (post-reviewer.sh)" \
                 bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
             ;;
         ci)
-            run_phase "Code verification (post-coder.sh)" \
+            run_phase "code-static" 1 "Code verification (post-coder.sh)" \
                 bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
-            run_phase "Translation verification (post-translator.sh)" \
+            run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
 
     run_message_overlay_static() {
-        python3 .claude/scripts/tests/test_message_overlay.py \
-            && python3 .claude/scripts/tests/test_audit_monspell_behavior.py \
-            && python3 .claude/scripts/generate_message_overlay.py \
+        if [[ -n "${ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND:-}" ]]; then
+            bash -c "$ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND"
+            return
+        fi
+        python3 "$SCRIPT_DIR/tests/test_message_overlay.py" \
+            && python3 "$SCRIPT_DIR/tests/test_audit_monspell_behavior.py" \
+            && python3 "$SCRIPT_DIR/generate_message_overlay.py" \
                 --manifest .claude/data/message-overlay/monspell.json \
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
                 --check crawl-ref/source/fork-message-overlay.generated.inc \
-            && python3 .claude/scripts/audit_message_overlay.py \
+            && python3 "$SCRIPT_DIR/audit_message_overlay.py" \
                 --manifest .claude/data/message-overlay/monspell.json \
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
                 --sidecar crawl-ref/source/fork-message-overlay.generated.inc
     }
     run_message_overlay_catch2() {
+        if [[ -n "${ZH_VERIFY_MESSAGE_OVERLAY_CATCH2_COMMAND:-}" ]]; then
+            bash -c "$ZH_VERIFY_MESSAGE_OVERLAY_CATCH2_COMMAND"
+            return
+        fi
         make -C crawl-ref/source catch2-tests-executable \
             STDFLAG=-std=c++14 -j4 \
             && (cd crawl-ref/source \
@@ -395,10 +471,10 @@ run_phase() {
                     '[message-overlay]' --reporter compact)
     }
 
-    run_phase "TextDB message overlay static audit" \
+    run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
         run_message_overlay_static || RESULTS=$((RESULTS + 1))
     if [[ "$RISK_MESSAGE_OVERLAY" -eq 1 ]]; then
-        run_phase "Risk gate: TextDB message overlay Catch2" \
+        run_phase "message-overlay-catch2" 1 "Risk gate: TextDB message overlay Catch2" \
             run_message_overlay_catch2 || RESULTS=$((RESULTS + 1))
     fi
 
@@ -427,19 +503,19 @@ run_phase() {
     }
 
     if [[ "$RISK_CPP_I18N" -eq 1 ]]; then
-        run_phase "Risk gate: incremental C++ build" run_incremental_build \
+        run_phase "cpp-build" 1 "Risk gate: incremental C++ build" run_incremental_build \
             || RESULTS=$((RESULTS + 1))
-        run_phase "Risk gate: ZH smoke" run_zh_smoke \
+        run_phase "zh-smoke" 1 "Risk gate: ZH smoke" run_zh_smoke \
             || RESULTS=$((RESULTS + 1))
     fi
 
     if [[ "$EXPLICIT_FULL" -eq 1 ]]; then
-        run_phase "Risk gate: full ZH runtime" run_runtime full \
+        run_phase "zh-runtime-full" 1 "Risk gate: full ZH runtime" run_runtime full \
             || RESULTS=$((RESULTS + 1))
     elif [[ "$RISK_CJK_RUNTIME" -eq 1 || "$PROFILE" == review || "$PROFILE" == ci ]]; then
         # post_zh_runtime.sh calls its build-and-run Catch2 path "catch2";
         # its "fast" mode only re-aggregates an existing evidence directory.
-        run_phase "Risk gate: fast ZH runtime" run_runtime catch2 \
+        run_phase "zh-runtime-catch2" 1 "Risk gate: fast ZH runtime" run_runtime catch2 \
             || RESULTS=$((RESULTS + 1))
     fi
 

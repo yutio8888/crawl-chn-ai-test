@@ -6,6 +6,7 @@
 # Output: .claude/metrics/verify/translator-<timestamp>.log
 
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TS=$(date -Iseconds | tr : -)
 OUT=".claude/metrics/verify/translator-${TS}.log"
 mkdir -p .claude/metrics/verify
@@ -30,25 +31,25 @@ run_check() {
     echo "=== post-translator.sh @ ${TS} ==="
     echo ""
     run_check "source.txt control-character parity (\n)" \
-        python3 .claude/scripts/source_control_parity.py \
+        python3 "$SCRIPT_DIR/source_control_parity.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Contextual movement phrase coverage" \
-        python3 .claude/scripts/audit_move_i18n.py crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/audit_move_i18n.py" crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Term validation (rejected names from decisions.md)" \
-        python3 .claude/scripts/scan_i18n.py validate-terms \
+        python3 "$SCRIPT_DIR/scan_i18n.py" validate-terms \
         --glossary docs/decisions.md \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Format integrity (%%%% parity)" \
-        bash .claude/scripts/check_consistency.sh --format --strict
+        bash "$SCRIPT_DIR/check_consistency.sh" --format --strict
     run_check "Database @keyword@ integrity" \
-        bash .claude/scripts/check_consistency.sh --database --strict
+        bash "$SCRIPT_DIR/check_consistency.sh" --database --strict
     run_check "Item terminology consistency" \
-        bash .claude/scripts/check_consistency.sh --items --strict
+        bash "$SCRIPT_DIR/check_consistency.sh" --items --strict
     run_check "OmegaT glossary export freshness" \
-        python3 .claude/scripts/export_omegat_glossary.py --check
+        python3 "$SCRIPT_DIR/export_omegat_glossary.py" --check
     run_check "Changed exact-key terminology (current glossary)" \
-        python3 .claude/scripts/check_glossary_terms.py \
+        python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     echo "Summary: ${FAILURES} blocking failure(s)"
     echo "=== post-translator.sh complete ==="

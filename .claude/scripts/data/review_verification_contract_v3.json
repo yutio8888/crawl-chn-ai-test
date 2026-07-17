@@ -1,0 +1,77 @@
+{
+  "control_plane_files": [
+    ".claude/scripts/audit_message_overlay.py",
+    ".claude/scripts/audit_monspell_behavior.py",
+    ".claude/scripts/audit_monspell_phase0.py",
+    ".claude/scripts/audit_move_i18n.py",
+    ".claude/scripts/check_agent_policies.py",
+    ".claude/scripts/check_consistency.sh",
+    ".claude/scripts/check_glossary_terms.py",
+    ".claude/scripts/check_item_terms.py",
+    ".claude/scripts/classify_reviewers.py",
+    ".claude/scripts/context_resolve.sh",
+    ".claude/scripts/cross_file_terms.py",
+    ".claude/scripts/data/review_verification_contract_v3.json",
+    ".claude/scripts/export_omegat_glossary.py",
+    ".claude/scripts/generate_message_overlay.py",
+    ".claude/scripts/i18n_extract.py",
+    ".claude/scripts/i18n_shared.py",
+    ".claude/scripts/monster_name_ssot.py",
+    ".claude/scripts/post-reviewer.sh",
+    ".claude/scripts/post_zh_runtime.sh",
+    ".claude/scripts/review_at_merge.sh",
+    ".claude/scripts/review_bundle.py",
+    ".claude/scripts/review_final_gate.sh",
+    ".claude/scripts/review_prepare.sh",
+    ".claude/scripts/scan_i18n.py",
+    ".claude/scripts/scan_i18n_lifetime.py",
+    ".claude/scripts/scan_varargs_string.py",
+    ".claude/scripts/smoke_test.sh",
+    ".claude/scripts/source_control_parity.py",
+    ".claude/scripts/sync_agent_policies.py",
+    ".claude/scripts/tests/test_audit_monspell_behavior.py",
+    ".claude/scripts/tests/test_message_overlay.py",
+    ".claude/scripts/verify_zh.sh",
+    ".claude/scripts/zh_console_ui_bot.py",
+    ".claude/scripts/zh_runtime_check.py"
+  ],
+  "phase_plan": [
+    {
+      "id": "policy-sync",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "review-static",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "message-overlay-static",
+      "required": true,
+      "when": "always"
+    },
+    {
+      "id": "message-overlay-catch2",
+      "required": true,
+      "when": "risk_message_overlay"
+    },
+    {
+      "id": "cpp-build",
+      "required": true,
+      "when": "risk_cpp_i18n"
+    },
+    {
+      "id": "zh-smoke",
+      "required": true,
+      "when": "risk_cpp_i18n"
+    },
+    {
+      "id": "zh-runtime-catch2",
+      "required": true,
+      "when": "review_profile"
+    }
+  ],
+  "schema": "dcss-zh-final-gate-contract-v1",
+  "verification_contract": "dcss-zh-review-v3"
+}

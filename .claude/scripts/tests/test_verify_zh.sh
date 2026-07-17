@@ -87,7 +87,10 @@ git -C "$REPO" commit -qm candidate
 HEAD_SHA=$(git -C "$REPO" rev-parse HEAD)
 EXPECTED_DIFF_HASH=$(git -C "$REPO" diff --binary "$BASE..$HEAD_SHA" \
     | git -C "$REPO" hash-object --stdin)
+EXPECTED_DIFF_SHA256=$(git -C "$REPO" diff --no-ext-diff --no-textconv \
+    --binary --full-index "$BASE..$HEAD_SHA" -- | sha256sum | awk '{print $1}')
 EXPECTED_GLOSSARY_SHA=$(sha256sum "$REPO/docs/glossary.md" | awk '{print $1}')
+export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 
 echo "--- argument and revision validation ---"
 set +e
@@ -146,32 +149,44 @@ echo "--- successful bound evidence run ---"
 RUN_DIR=$(latest_run_dir)
 METADATA="$RUN_DIR/metadata.json"
 python3 - "$METADATA" "$BASE" "$HEAD_SHA" "$EXPECTED_DIFF_HASH" \
-    "$EXPECTED_GLOSSARY_SHA" "$REPO" <<'PY'
+    "$EXPECTED_DIFF_SHA256" "$EXPECTED_GLOSSARY_SHA" "$REPO" <<'PY'
 import json
 import os
 import sys
 
-path, base, head, diff_hash, glossary_sha, worktree = sys.argv[1:]
+path, base, head, diff_hash, diff_sha256, glossary_sha, worktree = sys.argv[1:]
 with open(path, encoding="utf-8") as stream:
     data = json.load(stream)
-assert data["schema_version"] == 2
+assert data["schema_version"] == 3
+assert data["verification_contract"] == "dcss-zh-review-v3"
 assert data["status"] == "pass"
 assert data["profile"] == "review"
+assert data["scope"] == "full"
 assert data["base"] == base
 assert data["head"] == head
 assert data["diff_hash"] == diff_hash
+assert data["diff_sha256"] == diff_sha256
 assert data["glossary_sha256"] == glossary_sha
 assert data["worktree"] == worktree
 assert data["started_at"]
 assert data["completed_at"]
 assert data["failures"] == 0
 assert data["run_id"] == os.path.basename(os.path.dirname(path))
+assert [phase["id"] for phase in data["phases"]] == [
+    "policy-sync", "review-static", "message-overlay-static",
+    "zh-runtime-catch2",
+]
+assert all(phase["status"] == "pass" for phase in data["phases"])
+assert data["artifacts"][0]["path"] == "verify.log"
+assert data["artifacts"][0]["size"] > 0
 PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
 assert_contains "bound run exports glossary comparison base" \
     "$BASE" "$REPO/.observed-glossary-base"
 assert_contains "detailed report records diff hash" \
     "Diff hash: $EXPECTED_DIFF_HASH" "$RUN_DIR/verify.log"
+assert_contains "detailed report records protocol SHA-256" \
+    "Diff SHA-256: $EXPECTED_DIFF_SHA256" "$RUN_DIR/verify.log"
 if find "$RUN_DIR" -maxdepth 1 -name '.*.tmp.*' | grep -q .; then
     fail "metadata updates leave no temporary file"
 else

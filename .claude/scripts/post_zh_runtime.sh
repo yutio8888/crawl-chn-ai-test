@@ -20,11 +20,19 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
-REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+# The script may intentionally come from a clean target checkout while its
+# working directory is the candidate under review. Keep control-plane code
+# rooted at SCRIPT_DIR, but derive all tested inputs and evidence outputs from
+# the current worktree.
+REPO_ROOT="${ZH_RUNTIME_REPO_ROOT:-$(git rev-parse --show-toplevel 2>/dev/null)}"
+[[ -n "$REPO_ROOT" && -d "$REPO_ROOT" ]] || {
+    echo "ERROR: post_zh_runtime.sh must run inside a Git worktree." >&2
+    exit 2
+}
 CHECK_SCRIPT="${ZH_RUNTIME_CHECK_SCRIPT:-$SCRIPT_DIR/zh_runtime_check.py}"
 UI_BOT_SCRIPT="${ZH_RUNTIME_UI_BOT_SCRIPT:-$SCRIPT_DIR/zh_console_ui_bot.py}"
-SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$(cd "$SCRIPT_DIR/../../crawl-ref/source" && pwd)}"
-METRICS_ROOT="${ZH_RUNTIME_METRICS_DIR:-$SCRIPT_DIR/../metrics/verify}"
+SOURCE_DIR="${ZH_RUNTIME_SOURCE_DIR:-$REPO_ROOT/crawl-ref/source}"
+METRICS_ROOT="${ZH_RUNTIME_METRICS_DIR:-$REPO_ROOT/.claude/metrics/verify}"
 RUN_ID="$(date -u +%Y%m%dT%H%M%SZ)-$$"
 METRICS_DIR="${ZH_RUNTIME_REUSE_DIR:-$METRICS_ROOT/zh-runtime-$RUN_ID}"
 # Version-controlled baselines (fixed paths, not sha-tagged)

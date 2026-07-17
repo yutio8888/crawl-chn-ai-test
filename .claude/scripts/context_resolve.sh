@@ -105,24 +105,30 @@ fi
 
 # ── Review context ──
 if [ "$TASK_TYPE" = "review" ]; then
-    echo "### Review Contract (review-contract-v2)"
+    echo "### Review Contract (review-contract-v3)"
     echo ""
     echo "#### Finding severity"
     echo "- **Blocker**: runtime/functional failure, undefined behaviour, protocol or lookup corruption, structural data damage, compilation failure, or incomplete required verification"
     echo "- **Needs Fix**: definite semantic, terminology, accuracy, completeness, or language error without runtime corruption"
     echo "- **Suggestion**: non-required style preference"
+    echo "- **Ready for Final Gate**: zero Blocker and zero Needs Fix; suggestions may remain"
+    echo "- **Changes Requested**: at least one Needs Fix and no Blocker"
+    echo "- **No-Go**: Blocker or incomplete immutable review scope"
     echo ""
     echo "#### Reviewer ownership"
     echo "- \`zh-code-reviewer\`: runtime safety, protocol/display separation, extraction and key coverage, format arguments, TextDB structure, borrowed translation lifetime, variadic calls, movement routing, English morphology, compilation, and scanner warning triage"
     echo "- \`translation-reviewer\`: EN/ZH semantic parity, glossary choice in context, facts and numbers, completeness, natural Chinese, terminology consistency, and character voice"
-    echo "- Both reviewers report the current glossary SHA-256 and interpret relevant raw verification failures/warnings; do not duplicate the other reviewer's primary scope"
+    echo "- Reviewers require the exact bundle created by \`review_prepare.sh\`, report its glossary SHA-256, and inspect existing development/targeted logs; do not run the final review profile"
     echo ""
     echo "### Code-review anti-patterns to check:"
     echo "- \`equip_slot_name()\` used for matching → needs \`_en()\` variant"
     echo "- \`god_name()\` for DB key construction → needs \`_god_name_en()\`"
     echo "- DB query key mismatch: EN key vs ZH code"
     echo ""
-    echo "### Post-task: run \`bash .claude/scripts/verify_zh.sh --profile review\`"
+    echo "### Post-task: record immutable readiness for the supplied bundle; the orchestrator owns the single final review profile"
+    echo ""
+    echo "After every mechanically routed reviewer is Ready, run:"
+    echo "\`bash .claude/scripts/review_final_gate.sh <candidate> <target>\`"
     echo ""
 fi
 

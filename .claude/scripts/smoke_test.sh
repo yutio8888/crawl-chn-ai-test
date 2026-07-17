@@ -12,8 +12,8 @@
 # startup output only (init messages, Lua errors, crash traces).
 # Interactive testing requires manual gameplay or an expect-based driver.
 #
-# Always exits 0 (warning only), but reports errors found.
-# Integration: post-coder.sh step or pre-commit verification.
+# Exits non-zero when a blocking protocol leak, English residue, or crash is
+# detected. Integration: verify_zh.sh risk gate.
 
 set -euo pipefail
 
@@ -120,6 +120,7 @@ echo ""
 if [ "$ERRORS" -eq 0 ]; then
     echo "✓ Smoke test passed (startup output clean)"
 else
-    echo "⚠️  Smoke test: $ERRORS error category(ies) — review output above"
+    echo "✗ Smoke test: $ERRORS error category(ies) — review output above"
+    exit 1
 fi
 exit 0

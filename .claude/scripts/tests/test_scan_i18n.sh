@@ -177,88 +177,21 @@ assert_contains "i18n-lifetime: post-reviewer supports changed-file scope" \
     "args=(--files" \
     "$SCRIPT_DIR/../post-reviewer.sh"
 assert_contains "deferred i18n keys: post-reviewer coverage gate is wired" \
-    "i18n_extract.py validate crawl-ref/source/" \
+    '"$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/' \
     "$SCRIPT_DIR/../post-reviewer.sh"
-assert_contains "i18n-lifetime: merge RED gate runs review profile" \
-    '"$VERIFY_SCRIPT" --profile review' \
-    "$SCRIPT_DIR/../review_at_merge.sh"
+assert_contains "i18n-lifetime: final gate owns review profile" \
+    "review_bundle.py" \
+    "$SCRIPT_DIR/../review_final_gate.sh"
 assert_contains "i18n-lifetime: merge gate verifies candidate worktree" \
     "WORKTREE_PATH" \
     "$SCRIPT_DIR/../review_at_merge.sh"
-
-# Execute the merge gate in a disposable repository. The candidate deliberately
-# replaces verify_zh.sh with a passing old stub; the target checkout's failing
-# verifier must still run, with PWD set to the candidate worktree.
-MERGE_GATE_TMP=$(mktemp -d)
-mkdir -p "$MERGE_GATE_TMP/repo/.claude/scripts"
-REAL_GIT=$(command -v git)
-cp "$SCRIPT_DIR/../review_at_merge.sh" \
-   "$MERGE_GATE_TMP/repo/.claude/scripts/review_at_merge.sh"
-cat > "$MERGE_GATE_TMP/repo/.claude/scripts/classify_review.sh" <<'EOF'
-#!/bin/bash
-echo '{"level":"RED","reason":"test","summary":"gate provenance"}'
-exit 2
-EOF
-cat > "$MERGE_GATE_TMP/repo/.claude/scripts/verify_zh.sh" <<'EOF'
-#!/bin/bash
-echo "target:$PWD" >> "$TEST_LOG"
-exit 1
-EOF
-(
-    cd "$MERGE_GATE_TMP/repo"
-    git init -q
-    git config user.email test@example.invalid
-    git config user.name test
-    git add .claude/scripts
-    git commit -qm base
-    git branch -m target
-    git branch candidate
-    git worktree add -q .worktrees/candidate candidate
-    cat > .worktrees/candidate/.claude/scripts/verify_zh.sh <<'EOF'
-#!/bin/bash
-echo "candidate:$PWD" >> "$TEST_LOG"
-exit 0
-EOF
-    git -C .worktrees/candidate add .claude/scripts/verify_zh.sh
-    git -C .worktrees/candidate commit -qm 'old candidate verifier'
-)
-export TEST_LOG="$MERGE_GATE_TMP/verifier.log"
-# Keep producing enough porcelain output after the candidate match to trigger
-# SIGPIPE if the merge gate ever restores an early `awk ... exit` under
-# `set -o pipefail`.
-mkdir -p "$MERGE_GATE_TMP/bin"
-cat > "$MERGE_GATE_TMP/bin/git" <<EOF
-#!/bin/bash
-if [ "\${1:-}" = "worktree" ] && [ "\${2:-}" = "list" ] \
-    && [ "\${3:-}" = "--porcelain" ]; then
-    "$REAL_GIT" "\$@"
-    for i in \$(seq 1 2000); do
-        printf 'worktree /tmp/unrelated-%s-with-padding-abcdefghijklmnopqrstuvwxyz0123456789\\nHEAD deadbeef\\ndetached\\n\\n' "\$i"
-    done
-    exit 0
-fi
-exec "$REAL_GIT" "\$@"
-EOF
-chmod +x "$MERGE_GATE_TMP/bin/git"
-set +e
-(
-    cd "$MERGE_GATE_TMP/repo"
-    PATH="$MERGE_GATE_TMP/bin:$PATH" \
-        bash .claude/scripts/review_at_merge.sh candidate target
-) > "$MERGE_GATE_TMP/gate.out" 2>&1
-MERGE_GATE_RC=$?
-set -e
-assert_status "merge gate: target verifier failure blocks old candidate" 1 "$MERGE_GATE_RC"
-assert_contains "merge gate: target verifier runs in candidate worktree" \
-    "target:$MERGE_GATE_TMP/repo/.worktrees/candidate" "$TEST_LOG"
-if grep -Fq 'candidate:' "$TEST_LOG"; then
-    echo "  FAIL: merge gate: candidate verifier was executed"
+if grep -Fq -- '--profile review' "$SCRIPT_DIR/../review_at_merge.sh"; then
+    echo "  FAIL: merge gate must not run the review profile"
     FAIL=$((FAIL + 1))
 else
-    echo "  PASS: merge gate: candidate verifier was not executed"
+    echo "  PASS: merge gate is free of review-profile execution"
     PASS=$((PASS + 1))
 fi
-rm -rf "$MERGE_GATE_TMP"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

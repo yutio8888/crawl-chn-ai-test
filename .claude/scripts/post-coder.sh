@@ -6,6 +6,7 @@
 # Output: .claude/metrics/verify/coder-<timestamp>.log
 
 set -euo pipefail
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 TS=$(date -Iseconds | tr : -)
 OUT=".claude/metrics/verify/coder-${TS}.log"
 mkdir -p .claude/metrics/verify
@@ -125,13 +126,13 @@ run_concat_advisory() {
     fi
     mapfile -d '' -t args < <(scanner_args concat)
     # Finding exit status is intentionally ignored: this scanner is advisory.
-    python3 .claude/scripts/scan_string_concat.py "${args[@]}" \
+    python3 "$SCRIPT_DIR/scan_string_concat.py" "${args[@]}" \
         --skip-low --format json > "$scan_json" || true
     echo "--- String concatenation blind spots (baseline diff) ---"
     local comparison
-    if comparison=$(python3 .claude/scripts/advisory_baseline.py \
+    if comparison=$(python3 "$SCRIPT_DIR/advisory_baseline.py" \
         --input "$scan_json" \
-        --baseline .claude/scripts/data/string_concat_advisory_baseline.json); then
+        --baseline "$SCRIPT_DIR/data/string_concat_advisory_baseline.json"); then
         echo "$comparison"
         local new_count
         new_count=$(sed -n 's/^New warnings introduced by diff: //p' <<< "$comparison")
@@ -152,70 +153,70 @@ run_concat_advisory() {
     echo "Scope: $SCOPE"
     echo ""
     run_check "source.txt integrity (dedup + self-conflicts)" blocking \
-        python3 .claude/scripts/scan_i18n.py source-txt-integrity \
+        python3 "$SCRIPT_DIR/scan_i18n.py" source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "source.txt control-character parity (\n)" blocking \
-        python3 .claude/scripts/source_control_parity.py \
+        python3 "$SCRIPT_DIR/source_control_parity.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "T_() key coverage" blocking \
-        python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Direct display sinks + runtime dynamic-key coverage" blocking \
-        python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/scan_i18n.py" missing-t crawl-ref/source/ \
         --display-contracts-only \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Data-driven i18n coverage (monsters, durations, features)" blocking \
-        python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/audit_data_i18n.py" crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Contextual movement phrase coverage" blocking \
-        python3 .claude/scripts/audit_move_i18n.py crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/audit_move_i18n.py" crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Monster name SSOT (source.txt authority)" blocking \
-        python3 .claude/scripts/monster_name_ssot.py \
+        python3 "$SCRIPT_DIR/monster_name_ssot.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "mprf_p compatibility" blocking \
-        python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/scan_i18n.py" mprf-p crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Format validation (count, type-order, gaps, mixed, pos-type)" blocking \
-        python3 .claude/scripts/scan_i18n.py arg-mismatch \
+        python3 "$SCRIPT_DIR/scan_i18n.py" arg-mismatch \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Anti-patterns (strict)" blocking \
-        python3 .claude/scripts/scan_i18n.py anti-patterns crawl-ref/source/ \
+        python3 "$SCRIPT_DIR/scan_i18n.py" anti-patterns crawl-ref/source/ \
         --strict
     run_check "Species term consistency" blocking \
-        python3 .claude/scripts/scan_i18n.py species-consistency \
+        python3 "$SCRIPT_DIR/scan_i18n.py" species-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Monster compound consistency" blocking \
-        python3 .claude/scripts/scan_i18n.py monster-compound-consistency \
+        python3 "$SCRIPT_DIR/scan_i18n.py" monster-compound-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "Monster DB-key consistency" blocking \
-        python3 .claude/scripts/scan_i18n.py monster-dbkey-consistency \
+        python3 "$SCRIPT_DIR/scan_i18n.py" monster-dbkey-consistency \
         crawl-ref/source/
     run_check "Monster name assembly" blocking \
-        python3 .claude/scripts/scan_i18n.py monster-name-assembly \
+        python3 "$SCRIPT_DIR/scan_i18n.py" monster-name-assembly \
         crawl-ref/source/mon-info.cc
     run_check "Monster title display" blocking \
-        python3 .claude/scripts/scan_i18n.py monster-title-display \
+        python3 "$SCRIPT_DIR/scan_i18n.py" monster-title-display \
         crawl-ref/source/directn.cc crawl-ref/source/tileweb.cc \
         crawl-ref/source/xom.cc crawl-ref/source/god-companions.cc \
         crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Term validation (rejected names from decisions.md)" blocking \
-        python3 .claude/scripts/scan_i18n.py validate-terms \
+        python3 "$SCRIPT_DIR/scan_i18n.py" validate-terms \
         --glossary docs/decisions.md \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     run_check "OmegaT glossary export freshness" blocking \
-        python3 .claude/scripts/export_omegat_glossary.py --check
+        python3 "$SCRIPT_DIR/export_omegat_glossary.py" --check
     run_check "Changed exact-key terminology (current glossary)" blocking \
-        python3 .claude/scripts/check_glossary_terms.py \
+        python3 "$SCRIPT_DIR/check_glossary_terms.py" \
         --base "${GLOSSARY_DIFF_BASE:-HEAD}"
     run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
-        blocking varargs python3 .claude/scripts/scan_varargs_string.py \
+        blocking varargs python3 "$SCRIPT_DIR/scan_varargs_string.py" \
         --format text --require-parser
     run_scoped_scanner "Persistent borrowed T_()/C_() lifetime (tree-sitter + lexical)" \
-        blocking lifetime python3 .claude/scripts/scan_i18n_lifetime.py \
+        blocking lifetime python3 "$SCRIPT_DIR/scan_i18n_lifetime.py" \
         --format text --require-parser
     run_check "Font atlas generation safety (Issue #54)" blocking \
-        python3 .claude/scripts/check_font_atlas_generation.py
+        python3 "$SCRIPT_DIR/check_font_atlas_generation.py"
     run_concat_advisory
 
     # ---- Full runtime test hook (plan v2 §5.3) ----
@@ -227,9 +228,9 @@ run_concat_advisory() {
     # hook for existing callers of `post-coder.sh --full`.
     if [[ "${1:-}" == "--full" ]] || [[ "${2:-}" == "--full" ]]; then
         run_check "Layer 1-3 runtime tests (--full)" blocking \
-            bash .claude/scripts/post_zh_runtime.sh full
+            bash "$SCRIPT_DIR/post_zh_runtime.sh" full
         run_check "Runtime baseline check" blocking \
-            bash .claude/scripts/post_zh_runtime.sh fast
+            bash "$SCRIPT_DIR/post_zh_runtime.sh" fast
     fi
 
     echo "Summary: ${FAILURES} blocking failure(s), ${WARNINGS} warning(s)"

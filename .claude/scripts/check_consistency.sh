@@ -25,6 +25,8 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+
 SOURCEDIR="crawl-ref/source"
 GREP_SCOPE=(--include='*.cc' --include='*.h' --include='*.txt')
 EXCLUDE_PATTERN='worktrees|contrib/'
@@ -569,7 +571,7 @@ do_monster_ssot() {
     echo "=== Mode 6: Monster name SSOT ==="
     echo ""
 
-    if python3 .claude/scripts/monster_name_ssot.py \
+    if python3 "$SCRIPT_DIR/monster_name_ssot.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     then
         echo "  ✅ source.txt is authoritative for unique monster names"
@@ -588,13 +590,13 @@ do_monster_ssot() {
 do_items() {
     echo "=== Mode 7: Item terminology consistency ==="
     echo ""
-    if python3 .claude/scripts/export_omegat_glossary.py --check; then
+    if python3 "$SCRIPT_DIR/export_omegat_glossary.py" --check; then
         echo "  ✅ OmegaT glossary export is up to date"
     else
         violations_found=true
     fi
     echo ""
-    if python3 .claude/scripts/check_item_terms.py \
+    if python3 "$SCRIPT_DIR/check_item_terms.py" \
         --glossary docs/glossary.md \
         --decisions docs/decisions.md \
         --omegat docs/glossary.utf8; then

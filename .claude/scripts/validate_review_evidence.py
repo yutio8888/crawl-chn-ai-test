@@ -82,11 +82,46 @@ def validate(args: argparse.Namespace) -> dict:
     metadata = json.loads(metadata_path.read_text(encoding="utf-8"))
     if metadata.get("status") != "pass":
         fail("review run did not complete with status=pass")
+    if metadata.get("profile") != "review":
+        fail("merge evidence must come from profile=review")
+    if metadata.get("scope") not in (None, "full"):
+        fail("merge evidence must use scope=full")
+    if metadata.get("run_id") not in (None, run_id):
+        fail("run metadata run_id does not match review record")
+    if metadata.get("failures") not in (None, 0):
+        fail("review run reports blocking failures")
+    if metadata.get("schema_version") == 3:
+        if metadata.get("scope") != "full":
+            fail("schema-v3 review evidence requires scope=full")
+        phases = metadata.get("phases")
+        if not isinstance(phases, list) or not phases:
+            fail("schema-v3 review evidence is missing phase results")
+        for phase in phases:
+            if phase.get("required") and (
+                phase.get("status") != "pass" or phase.get("exit_code") != 0
+            ):
+                fail(f"required verification phase did not pass: {phase.get('id')}")
     for key, value in expected.items():
         if metadata.get(key) != value:
             fail(f"run metadata {key} does not match current merge range")
     if metadata.get("glossary_sha256") != glossary_hash:
         fail("review record and run metadata glossary hashes differ")
+
+    artifacts = metadata.get("artifacts", [])
+    if metadata.get("schema_version") == 3:
+        verify_artifact = next(
+            (item for item in artifacts if item.get("path") == "verify.log"), None
+        )
+        if not verify_artifact:
+            fail("schema-v3 metadata is missing verify.log artifact")
+        verify_log = metadata_path.parent / "verify.log"
+        if verify_log.is_symlink() or not verify_log.is_file():
+            fail("verify.log artifact is missing or is a symlink")
+        data = verify_log.read_bytes()
+        if verify_artifact.get("size") != len(data):
+            fail("verify.log artifact size mismatch")
+        if verify_artifact.get("sha256") != hashlib.sha256(data).hexdigest():
+            fail("verify.log artifact hash mismatch")
 
     raw_hash = hashlib.sha256(raw_log.read_bytes()).hexdigest()
     if record.get("raw_log_sha256") and record["raw_log_sha256"] != raw_hash:

@@ -111,7 +111,11 @@ class ReviewEvidenceTests(unittest.TestCase):
             raw_log.write_text("review passed\n", encoding="utf-8")
             raw_hash = hashlib.sha256(raw_log.read_bytes()).hexdigest()
             metadata = {
+                "schema_version": 2,
+                "run_id": run_id,
                 "status": "pass",
+                "profile": "review",
+                "scope": "full",
                 "base": "base",
                 "head": "head",
                 "diff_hash": "diff",
@@ -153,100 +157,33 @@ class ReviewEvidenceTests(unittest.TestCase):
             )
             self.assertNotEqual(mismatch.returncode, 0)
 
-    def test_merge_gate_records_only_matching_review(self):
+            metadata["profile"] = "code"
+            (run_dir / "metadata.json").write_text(json.dumps(metadata))
+            wrong_profile = self.run_cmd(
+                "python3", str(SCRIPTS / "validate_review_evidence.py"),
+                "--log", str(log.relative_to(root)),
+                "--review-id", "review-1", "--base", "base",
+                "--head", "head", "--diff-hash", "diff",
+                "--verdict", "go", cwd=root
+            )
+            self.assertNotEqual(wrong_profile.returncode, 0)
+
+    def test_merge_gate_rejects_legacy_record_verdict(self):
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp) / "repo"
             scripts = root / ".claude/scripts"
             scripts.mkdir(parents=True)
-            for name in ("review_at_merge.sh", "validate_review_evidence.py"):
-                (scripts / name).write_bytes((SCRIPTS / name).read_bytes())
-            (scripts / "classify_review.sh").write_text(
-                '#!/bin/bash\necho \'{"level":"RED","reason":"test","summary":"test"}\'\nexit 2\n'
-            )
-            (scripts / "verify_zh.sh").write_text("#!/bin/bash\nexit 0\n")
-            for path in scripts.iterdir():
-                path.chmod(0o755)
-            self.run_cmd("git", "init", "-q", cwd=root, check=True)
-            self.run_cmd("git", "config", "user.email", "test@example.invalid", cwd=root, check=True)
-            self.run_cmd("git", "config", "user.name", "test", cwd=root, check=True)
-            self.run_cmd("git", "add", ".claude/scripts", cwd=root, check=True)
-            self.run_cmd("git", "commit", "-qm", "base", cwd=root, check=True)
-            self.run_cmd("git", "branch", "-m", "target", cwd=root, check=True)
-            self.run_cmd("git", "branch", "candidate", cwd=root, check=True)
-            self.run_cmd(
-                "git", "worktree", "add", "-q", ".worktrees/candidate", "candidate",
-                cwd=root, check=True
-            )
-            candidate = root / ".worktrees/candidate"
-            (candidate / "change.txt").write_text("candidate\n")
-            self.run_cmd("git", "add", "change.txt", cwd=candidate, check=True)
-            self.run_cmd("git", "commit", "-qm", "candidate", cwd=candidate, check=True)
+            gate = scripts / "review_at_merge.sh"
+            gate.write_bytes((SCRIPTS / "review_at_merge.sh").read_bytes())
+            gate.chmod(0o755)
 
-            base = self.run_cmd("git", "rev-parse", "target", cwd=root, check=True).stdout.strip()
-            head = self.run_cmd("git", "rev-parse", "candidate", cwd=root, check=True).stdout.strip()
-            diff = subprocess.run(
-                "git diff --binary target..candidate | git hash-object --stdin",
-                cwd=root, shell=True, text=True, capture_output=True, check=True
-            ).stdout.strip()
-            run_id = "run-merge"
-            run_dir = root / ".claude/metrics/verify" / run_id
-            run_dir.mkdir(parents=True)
-            raw_log = run_dir / "reviewer.log"
-            raw_log.write_text("pass\n")
-            (run_dir / "metadata.json").write_text(json.dumps({
-                "status": "pass", "base": base, "head": head,
-                "diff_hash": diff, "glossary_sha256": "a" * 64,
-            }))
-            review_log = root / ".claude/metrics/review-log.jsonl"
-            review_log.write_text(json.dumps({
-                "schema_version": 2, "review_id": "review-merge",
-                "run_id": run_id, "trigger": "merge-time", "base": base,
-                "head": head, "diff_hash": diff, "glossary_sha256": "a" * 64,
-                "raw_log": str(raw_log.relative_to(root)),
-                "findings": {"blocker": 0, "needs_fix": 0, "suggestion": 0},
-                "verdict": "Go",
-            }) + "\n")
-
-            missing = self.run_cmd(
-                "bash", ".claude/scripts/review_at_merge.sh", "candidate", "target",
-                "--record-verdict", "go", cwd=root
-            )
-            self.assertNotEqual(missing.returncode, 0)
-            accepted = self.run_cmd(
+            rejected = self.run_cmd(
                 "bash", ".claude/scripts/review_at_merge.sh", "candidate", "target",
                 "--record-verdict", "go", "review-merge", "unit test", cwd=root
             )
-            self.assertEqual(accepted.returncode, 0, accepted.stdout + accepted.stderr)
-            verdicts = list((root / ".claude/metrics/review-verdicts").glob("*.verdict"))
-            self.assertEqual(len(verdicts), 1)
-            verdict_text = verdicts[0].read_text()
-            self.assertIn("review_id=review-merge", verdict_text)
-            self.assertIn("glossary_sha256=" + "a" * 64, verdict_text)
-            self.assertIn("review_record_sha256=", verdict_text)
-            self.assertIn("raw_log_sha256=", verdict_text)
-
-            gated = self.run_cmd(
-                "bash", ".claude/scripts/review_at_merge.sh", "candidate", "target",
-                cwd=root
-            )
-            self.assertEqual(gated.returncode, 0, gated.stdout + gated.stderr)
-
-            raw_log.write_text("tampered\n")
-            tampered = self.run_cmd(
-                "bash", ".claude/scripts/review_at_merge.sh", "candidate", "target",
-                cwd=root
-            )
-            self.assertEqual(tampered.returncode, 2)
-
-            raw_log.write_text("pass\n")
-            changed_record = json.loads(review_log.read_text())
-            changed_record["findings"]["suggestion"] = 1
-            review_log.write_text(json.dumps(changed_record) + "\n")
-            changed = self.run_cmd(
-                "bash", ".claude/scripts/review_at_merge.sh", "candidate", "target",
-                cwd=root
-            )
-            self.assertEqual(changed.returncode, 2)
+            self.assertEqual(rejected.returncode, 20)
+            self.assertIn("--record-verdict is no longer authorization", rejected.stderr)
+            self.assertFalse((root / ".claude/metrics").exists())
 
 
 if __name__ == "__main__":

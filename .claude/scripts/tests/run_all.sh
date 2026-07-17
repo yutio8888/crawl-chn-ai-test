@@ -7,6 +7,8 @@ TESTS=(
     "$SCRIPT_DIR/test_classify_reviewers.py"
     "$SCRIPT_DIR/test_i18n_extract.py"
     "$SCRIPT_DIR/test_review_evidence.py"
+    "$SCRIPT_DIR/test_review_bundle.py"
+    "$SCRIPT_DIR/test_review_at_merge.py"
     "$SCRIPT_DIR/test_verify_zh.sh"
     "$SCRIPT_DIR/test_verify_phase4.sh"
     "$SCRIPT_DIR/test_post_coder_cleanup.sh"

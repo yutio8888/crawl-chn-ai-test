@@ -108,13 +108,28 @@ class ReviewerRoutingTests(unittest.TestCase):
             text = (workflow_dir / name).read_text(encoding="utf-8")
             legacy_text = (legacy_workflow_dir / name).read_text(encoding="utf-8")
             self.assertEqual(legacy_text, text, name + " workflow copies diverged")
-            self.assertIn("args?.reviewRouting", text, name)
-            self.assertIn("review_routing_required", text, name)
+            self.assertNotIn("args?.reviewRouting", text, name)
+            self.assertIn("args?.targetRoot", text, name)
+            self.assertIn("args?.targetBranch", text, name)
+            self.assertIn("args?.candidateBranch", text, name)
+            self.assertIn("review_prepare.sh", text, name)
+            self.assertIn("review_boundary_arguments_required", text, name)
+            self.assertIn("const REVIEW_ROUTING = reviewBoundary.routing", text, name)
             self.assertIn("REVIEW_ROUTING?.schema_version !== 1", text, name)
             self.assertIn("JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)", text, name)
             self.assertIn("routedReviewers.includes('zh-code-reviewer')", text, name)
             self.assertIn("routedReviewers.includes('translation-reviewer')", text, name)
             self.assertIn("reviewJobs.length ? await parallel(reviewJobs) : []", text, name)
+            self.assertIn("review-contract-v3", text, name)
+            self.assertIn("Ready for Final Gate", text, name)
+            self.assertIn("persist-review-readiness", text, name)
+            self.assertIn("run-single-final-gate", text, name)
+            self.assertIn("routedReviewers.length === 0", text, name)
+            self.assertIn("READINESS_NOT_REQUIRED", text, name)
+            self.assertIn("finalGate?.state !== 'MERGEABLE'", text, name)
+            self.assertIn("review_final_gate.sh", text, name)
+            self.assertNotIn("bash .claude/scripts/verify_zh.sh --profile review", text, name)
+            self.assertNotIn("Conditional Go", text, name)
             self.assertNotIn("p0Issues", text, name)
             self.assertNotIn("p1Issues", text, name)
             self.assertNotIn("P0", text, name)
@@ -122,10 +137,15 @@ class ReviewerRoutingTests(unittest.TestCase):
             self.assertNotIn("label: 'terminology'", text, name)
             self.assertNotIn("termCheck", text, name)
             self.assertIn("bash .claude/scripts/check_consistency.sh --rulings", text, name)
+            self.assertLess(text.index("commit only"), text.index("phase('Prepare Review Bundle')"), name)
+            self.assertLess(text.index("phase('Prepare Review Bundle')"), text.index("phase('Cross-validate')"), name)
+            self.assertLess(text.index("phase('Cross-validate')"), text.index("phase('Seal Final Evidence')"), name)
 
         skill = (REPO / ".opencode/skills/translation-pipeline/SKILL.md").read_text(encoding="utf-8")
         self.assertIn(".claude/scripts/classify_reviewers.py", skill)
-        self.assertIn("args.reviewRouting", skill)
+        self.assertIn("args.targetRoot", skill)
+        self.assertIn("review_prepare.sh", skill)
+        self.assertNotIn("args.reviewRouting", skill)
         self.assertIn("只对\n`reviewers`", skill)
 
     def test_forged_routing_payload_is_rejected_by_workflow_contract(self):
@@ -141,7 +161,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             text = (REPO / ".opencode/workflows" / name).read_text(encoding="utf-8")
             self.assertIn("JSON.stringify(routedReviewers) !== JSON.stringify(expectedReviewers)", text)
 
-    def test_review_context_uses_v2_contract_and_ownership(self):
+    def test_review_context_uses_v3_readiness_contract_and_ownership(self):
         proc = subprocess.run(
             [
                 "bash", ".claude/scripts/context_resolve.sh", "review routing",
@@ -150,12 +170,15 @@ class ReviewerRoutingTests(unittest.TestCase):
             cwd=REPO, text=True, capture_output=True, check=True,
         )
         output = proc.stdout
-        self.assertIn("review-contract-v2", output)
+        self.assertIn("review-contract-v3", output)
         self.assertIn("**Blocker**", output)
         self.assertIn("**Needs Fix**", output)
         self.assertIn("**Suggestion**", output)
         self.assertIn("`zh-code-reviewer`", output)
         self.assertIn("`translation-reviewer`", output)
+        self.assertIn("Ready for Final Gate", output)
+        self.assertIn("review_final_gate.sh", output)
+        self.assertNotIn("Conditional Go", output)
         self.assertNotIn("P0", output)
         self.assertNotIn("P1", output)
 

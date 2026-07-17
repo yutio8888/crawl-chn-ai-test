@@ -51,6 +51,7 @@ echo "$1" >> .runtime-runs
 exit 0
 SH
 chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
+export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 
 (
     cd "$REPO"

@@ -3,16 +3,19 @@
 
 from __future__ import annotations
 
+import argparse
 from pathlib import Path
 import re
 import subprocess
 import sys
 
 
-ROOT = Path(__file__).resolve().parents[2]
-CONFIG_ROOTS = [ROOT / ".codex" / "agents", ROOT / ".claude" / "agents",
-                ROOT / ".claude" / "skills", ROOT / ".opencode" / "agents",
-                ROOT / ".opencode" / "skills"]
+SCRIPT_ROOT = Path(__file__).resolve().parents[2]
+CONFIG_ROOTS = [SCRIPT_ROOT / ".codex" / "agents",
+                SCRIPT_ROOT / ".claude" / "agents",
+                SCRIPT_ROOT / ".claude" / "skills",
+                SCRIPT_ROOT / ".opencode" / "agents",
+                SCRIPT_ROOT / ".opencode" / "skills"]
 
 FORBIDDEN = {
     r"Double T_\(\) for Static Arrays": "obsolete persistent T_ pattern",
@@ -25,28 +28,37 @@ FORBIDDEN = {
 }
 
 
-def config_files() -> list[Path]:
+def config_files(root: Path) -> list[Path]:
     result: list[Path] = []
-    for root in CONFIG_ROOTS:
-        result.extend(path for path in root.rglob("*") if path.is_file()
+    config_roots = [root / ".codex" / "agents", root / ".claude" / "agents",
+                    root / ".claude" / "skills", root / ".opencode" / "agents",
+                    root / ".opencode" / "skills"]
+    for config_root in config_roots:
+        result.extend(path for path in config_root.rglob("*") if path.is_file()
                       and path.suffix in {".md", ".toml"})
     return sorted(result)
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--root", type=Path, default=SCRIPT_ROOT,
+                        help="candidate repository whose generated config is checked")
+    args = parser.parse_args()
+    root = args.root.resolve()
     problems: list[str] = []
     sync = subprocess.run(
-        [sys.executable, str(ROOT / ".claude/scripts/sync_agent_policies.py"), "--check"],
-        cwd=ROOT, text=True, capture_output=True,
+        [sys.executable, str(SCRIPT_ROOT / ".claude/scripts/sync_agent_policies.py"),
+         "--check", "--root", str(root)],
+        cwd=root, text=True, capture_output=True,
     )
     if sync.returncode:
         problems.extend(line for line in sync.stderr.splitlines() if line.startswith("- "))
 
-    for path in config_files():
+    for path in config_files(root):
         text = path.read_text()
         for pattern, reason in FORBIDDEN.items():
             if re.search(pattern, text, re.MULTILINE | re.DOTALL):
-                problems.append(f"- {path.relative_to(ROOT)}: {reason}")
+                problems.append(f"- {path.relative_to(root)}: {reason}")
 
     if problems:
         print("Agent/Skill configuration policy check failed:", file=sys.stderr)
