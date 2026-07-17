@@ -1,0 +1,70 @@
+{
+  "schema": "dcss-zh-source-classification-schema-v1",
+  "description": "Classification schema for SourceDB key collision groups (Issue 66)",
+  "canonical_contract": "source-db-canonical-v1",
+  "group": {
+    "group_id": "sourcedb-v1:<sha256(canonical_key)>",
+    "group_fingerprint": "<sha256 of sorted definitions>",
+    "canonical_key": "<lowercased raw_key>",
+    "definitions": [
+      {
+        "order": "<int: 1-based appearance order>",
+        "raw_key": "<physical key line as read>",
+        "value": "<Chinese translation>",
+        "key_line": "<int: 1-based line number>",
+        "value_line": "<int: 1-based line number>"
+      }
+    ],
+    "source_value_relation": "equal|different",
+    "runtime_value_relation": "equal|different",
+    "classification": {
+      "cause": "case_variant_duplicate|semantic_overload|missing_context|structural_corruption|unknown",
+      "action": "dedupe|choose_translation|introduce_context|repair_block|trace_callsites|defer_semantic_ruling",
+      "status": "classified|needs_semantic_ruling|ready_for_writer",
+      "owner": "translator|coder|strong_reasoning",
+      "confidence": "high|medium|low",
+      "evidence": ["<string: evidence items>"],
+      "rationale": "<string: explanation>"
+    }
+  },
+  "classification_fields": {
+    "cause": {
+      "case_variant_duplicate": "Same key with different case (e.g. 'Drain' vs 'drain')",
+      "semantic_overload": "Same canonical key used for different concepts",
+      "missing_context": "C_() context needed to disambiguate",
+      "structural_corruption": "Broken %%%% separator or merge artifact",
+      "unknown": "Cannot determine cause without human review"
+    },
+    "action": {
+      "dedupe": "Remove duplicate entry (keep one definition)",
+      "choose_translation": "Select correct translation among variants",
+      "introduce_context": "Add C_() context to differentiate entries",
+      "repair_block": "Fix structural issue in %%%% block",
+      "trace_callsites": "Investigate all call sites before deciding",
+      "defer_semantic_ruling": "Needs glossary-level semantic decision"
+    },
+    "status": {
+      "classified": "Fully classified and ready for next pipeline stage",
+      "needs_semantic_ruling": "Requires translator/coder judgment on semantics",
+      "ready_for_writer": "Classification complete, awaiting writer execution"
+    },
+    "owner": {
+      "translator": "Translation content decision needed",
+      "coder": "Code change needed",
+      "strong_reasoning": "Requires strong-reasoning agent (Codex)"
+    },
+    "confidence": {
+      "high": "Clear cause with deterministic action",
+      "medium": "Likely cause but needs verification",
+      "low": "Speculative classification"
+    }
+  },
+  "validation_rules": {
+    "group_id_format": "sourcedb-v1:<64-hex-chars>",
+    "group_fingerprint_format": "<64-hex-chars>",
+    "hash_range_format": "<64-hex-chars>:<64-hex-chars>",
+    "no_unknown_at_p0": "cause='unknown' is not allowed in P0 classification shards",
+    "conservation": "Every inventory group must appear in collision manifest",
+    "fingerprint_integrity": "Group fingerprint must match between inventory and shard"
+  }
+}

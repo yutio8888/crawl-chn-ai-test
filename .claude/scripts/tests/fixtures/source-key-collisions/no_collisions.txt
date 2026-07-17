@@ -1,0 +1,13 @@
+%%%%
+health
+生命值
+%%%%
+mana
+法力值
+%%%%
+strength
+力量
+%%%%
+dexterity
+灵巧
+%%%%

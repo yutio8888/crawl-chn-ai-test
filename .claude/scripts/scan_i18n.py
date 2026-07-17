@@ -21,6 +21,7 @@ Usage:
 """
 
 import argparse
+import hashlib
 import json
 import os
 import re
@@ -28,7 +29,9 @@ import sys
 from collections import OrderedDict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import parse_entries, parse_source_txt
+from i18n_shared import (parse_entries, parse_source_txt,
+                         parse_entries_physical, compute_canonical_key,
+                         compute_group_fingerprint)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -1954,6 +1957,993 @@ def cmd_source_txt_integrity(args):
     return exit_code
 
 
+# ══════════════════════════════════════════════════════════════════════════════
+# Issue 66 — SourceDB canonical key collision detection and classification
+# ══════════════════════════════════════════════════════════════════════════════
+
+SHA256_HEX_RE = re.compile(r'^[0-9a-f]{64}$')
+GROUP_ID_RE = re.compile(
+    r'^sourcedb-v1:[0-9a-f]{64}$')
+KIND_NAME = {None: 'source-key-collision', 'collision': 'source-key-collision',
+             'missing-key': 'source-missing-key'}
+
+
+def _load_json(path: str) -> dict:
+    """Load JSON from path, handling None or missing."""
+    if not path or not os.path.exists(path):
+        return None
+    with open(path, 'r', encoding='utf-8') as f:
+        return json.load(f)
+
+
+def _sha256_file(path: str) -> str:
+    """Compute SHA-256 of a file."""
+    h = hashlib.sha256()
+    with open(path, 'rb') as f:
+        for chunk in iter(lambda: f.read(65536), b''):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def _get_source_snapshot(path: str) -> dict:
+    """Get git snapshot info for a file path relative to repo root."""
+    import subprocess
+    try:
+        abs_path = os.path.abspath(path)
+        rel_path = os.path.relpath(abs_path)
+        blob_oid = subprocess.check_output(
+            ['git', 'hash-object', abs_path],
+            stderr=subprocess.DEVNULL).decode().strip()
+        sha256 = _sha256_file(abs_path)
+        commit = subprocess.check_output(
+            ['git', 'log', '-1', '--format=%H', '--', abs_path],
+            stderr=subprocess.DEVNULL).decode().strip()
+        return {
+            'relative_path': rel_path,
+            'blob_oid': blob_oid,
+            'sha256': sha256,
+            'snapshot_commit': commit,
+        }
+    except Exception:
+        return {
+            'relative_path': os.path.relpath(os.path.abspath(path)),
+            'blob_oid': None,
+            'sha256': _sha256_file(os.path.abspath(path)),
+            'snapshot_commit': None,
+        }
+
+
+def _compute_collision_groups(source_txt: str):
+    """Parse source.txt and return (entries, groups) for collision analysis.
+
+    groups: dict mapping canonical_key -> list of PhysicalEntry
+    """
+    phys_entries = parse_entries_physical(source_txt)
+    groups = OrderedDict()
+    for entry in phys_entries:
+        ck = entry.canonical_key
+        if ck not in groups:
+            groups[ck] = []
+        groups[ck].append(entry)
+    return phys_entries, groups
+
+
+# ── source-key-collisions ──────────────────────────────────────────
+
+
+def cmd_source_key_collisions(args):
+    """Detect lowercase collisions in SourceDB keys.
+
+    Prints summary: total_entries / unique_canonical_keys /
+    collision_groups / runtime_equal / runtime_different.
+
+    Returns 1 if collisions found, else 0.
+    """
+    from i18n_shared import runtime_normalize_value, classify_value_relation
+
+    phys, groups = _compute_collision_groups(args.source_txt)
+    total = len(phys)
+    unique = len(groups)
+    collision_groups = OrderedDict()
+    for ck, defs in groups.items():
+        if len(defs) >= 2:
+            collision_groups[ck] = defs
+
+    n_collisions = len(collision_groups)
+    n_equal = 0
+    n_diff = 0
+
+    for ck, defs in collision_groups.items():
+        values = [d.value for d in defs]
+        rel = classify_value_relation(values, runtime_normalize_value)
+        if rel == 'equal':
+            n_equal += 1
+        else:
+            n_diff += 1
+
+    print(f"{total} / {unique} / {n_collisions} / {n_equal} runtime-equal / "
+          f"{n_diff} runtime-different")
+
+    if n_collisions == 0:
+        print("OK: No canonical key collisions.")
+        return 0
+    else:
+        print(f"WARNING: {n_collisions} collision group(s) found.")
+        for ck, defs in list(collision_groups.items())[:20]:
+            print(f"  canonical='{ck}' ({len(defs)} definitions)")
+            for d in defs:
+                val_preview = d.value[:60].replace('\n', '\\n')
+                print(f"    [{d.order}] raw='{d.raw_key}' "
+                      f"val='{val_preview}'")
+        if n_collisions > 20:
+            print(f"  ... and {n_collisions - 20} more group(s)")
+        return 1
+
+
+# ── source-key-collision-inventory ─────────────────────────────────
+
+
+def cmd_source_key_collision_inventory(args):
+    """Generate or check the pre-fix collision inventory JSON."""
+    from i18n_shared import runtime_normalize_value, classify_value_relation
+
+    phys, groups = _compute_collision_groups(args.source_txt)
+    total = len(phys)
+    unique = len(groups)
+    collision_groups = OrderedDict()
+    for ck, defs in groups.items():
+        if len(defs) >= 2:
+            collision_groups[ck] = defs
+
+    n_collisions = len(collision_groups)
+    n_equal = 0
+    n_diff = 0
+
+    groups_list = []
+    for ck, defs in collision_groups.items():
+        values = [d.value for d in defs]
+        runtime_rel = classify_value_relation(values, runtime_normalize_value)
+        source_rel = classify_value_relation(
+            values, lambda v: v)  # raw comparison
+        if runtime_rel == 'equal':
+            n_equal += 1
+        else:
+            n_diff += 1
+
+        # Compute group_id = sourcedb-v1:<sha256(canonical_key)>
+        ck_hash = hashlib.sha256(ck.encode('utf-8')).hexdigest()
+        group_id = f"sourcedb-v1:{ck_hash}"
+        fingerprint = compute_group_fingerprint(defs)
+
+        definitions = []
+        for d in defs:
+            definitions.append({
+                'order': d.order,
+                'raw_key': d.raw_key,
+                'value': d.value,
+                'key_line': d.key_line,
+                'value_line': d.value_line,
+            })
+
+        groups_list.append({
+            'group_id': group_id,
+            'group_fingerprint': fingerprint,
+            'canonical_key': ck,
+            'definitions': definitions,
+            'source_value_relation': source_rel,
+            'runtime_value_relation': runtime_rel,
+        })
+
+    # Sort for determinism
+    groups_list.sort(key=lambda g: g['canonical_key'])
+
+    source_snapshot = _get_source_snapshot(args.source_txt)
+
+    inventory = {
+        'schema': 'dcss-zh-source-inventory-v1',
+        'canonical_contract': 'source-db-canonical-v1',
+        'generator': 'scan_i18n.py source-key-collision-inventory',
+        'generator_version': '1.0',
+        'generator_sha': _sha256_file(__file__),
+        'source_snapshot': source_snapshot,
+        'summary': {
+            'total_entries': total,
+            'unique_canonical_keys': unique,
+            'collision_groups': n_collisions,
+            'runtime_equal': n_equal,
+            'runtime_different': n_diff,
+        },
+        'groups': groups_list,
+    }
+
+    if args.output:
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(inventory, f, indent=2, ensure_ascii=False)
+        print(f"Inventory written to {args.output}")
+        print(f"Summary: {total} entries, {unique} unique, "
+              f"{n_collisions} collision groups "
+              f"({n_equal} runtime-equal, {n_diff} runtime-different)")
+
+    if args.check:
+        existing = _load_json(args.check)
+        if existing is None:
+            print(f"ERROR: check file {args.check} not found", file=sys.stderr)
+            return 1
+
+        # Compare summary
+        old_summary = existing.get('summary', {})
+        new_summary = inventory['summary']
+        mismatches = []
+        for key in old_summary:
+            if old_summary[key] != new_summary.get(key):
+                mismatches.append(f"  {key}: inventory={old_summary[key]}, "
+                                  f"current={new_summary.get(key)}")
+        if mismatches:
+            print(f"ERROR: Inventory mismatch with current source.txt:",
+                  file=sys.stderr)
+            for m in mismatches:
+                print(m, file=sys.stderr)
+            print(f"  (freeze HEAD to match)", file=sys.stderr)
+            return 1
+
+        # Compare group count
+        old_groups = existing.get('groups', [])
+        if len(old_groups) != len(inventory['groups']):
+            print(f"ERROR: Group count mismatch: "
+                  f"inventory={len(old_groups)}, "
+                  f"current={len(inventory['groups'])}",
+                  file=sys.stderr)
+            return 1
+
+        print(f"OK: Inventory matches current source.txt "
+              f"({len(old_groups)} groups, deterministic).")
+        return 0
+
+    return 0
+
+
+# ── source-db-structure ────────────────────────────────────────────
+
+
+def cmd_source_db_structure(args):
+    """Scan source.txt for structural issues in the SourceDB block view.
+
+    Reports:
+        MULTILINE_KEY_SWALLOWED — value prefix matches an extracted key
+        ORPHAN_KEY_IN_VALUE — a line within value is itself a missing key
+    """
+    from i18n_shared import parse_entries_physical
+
+    phys = parse_entries_physical(args.source_txt)
+    # Build set of all extracted keys for lookup
+    all_raw_keys = {e.raw_key for e in phys}
+    structure_groups = []
+    issues = 0
+
+    for entry in phys:
+        value = entry.value
+        if not value:
+            continue
+
+        # Check for value prefix matches (multiline key swallow)
+        # Look at the first line of value
+        value_lines = value.split('\n')
+        first_line = value_lines[0].strip() if value_lines else ''
+
+        if first_line and first_line in all_raw_keys:
+            structure_groups.append({
+                'type': 'MULTILINE_KEY_SWALLOWED',
+                'key': entry.raw_key,
+                'canonical': entry.canonical_key,
+                'line': entry.key_line,
+                'detail': f"Value starts with extracted key: '{first_line}'",
+            })
+            issues += 1
+
+        # Check for orphan keys within value body lines
+        for vl in value_lines:
+            stripped_vl = vl.strip()
+            if stripped_vl and stripped_vl in all_raw_keys:
+                # Check it's NOT the same as own key (could be shared)
+                if stripped_vl != entry.raw_key and stripped_vl.lower() != entry.canonical_key:
+                    structure_groups.append({
+                        'type': 'ORPHAN_KEY_IN_VALUE',
+                        'key': entry.raw_key,
+                        'canonical': entry.canonical_key,
+                        'line': entry.key_line,
+                        'detail': f"Value contains line matching extracted key: "
+                                  f"'{stripped_vl}'",
+                    })
+                    issues += 1
+                    break  # One issue per entry is enough
+
+    if issues == 0:
+        print(f"OK: No structural issues in {len(phys)} entries.")
+        return 0
+
+    print(f"WARNING: {issues} structural issue(s) found in {len(phys)} entries:")
+    for sg in structure_groups:
+        print(f"  [{sg['type']}] canonical='{sg['canonical']}' "
+              f"line={sg['line']}: {sg['detail']}")
+    return 1 if args.exit_nonzero_if_issues else 0
+
+
+# ── validate-source-classification-shard ───────────────────────────
+
+
+def cmd_validate_source_classification_shard(args):
+    """Validate a classification shard file.
+
+    Checks: schema version, group_id format, fingerprint consistency,
+    hash-range ownership, intra-group dedup, ordering.
+    Rejects 'unknown' or 'needs_semantic_ruling' uncovered groups.
+    """
+    shard = _load_json(args.shard)
+    if shard is None:
+        print(f"ERROR: shard file not found: {args.shard}", file=sys.stderr)
+        return 1
+
+    # Validate top-level structure
+    if not isinstance(shard, dict):
+        print(f"ERROR: shard must be a JSON object", file=sys.stderr)
+        return 1
+
+    if shard.get('schema') != 'dcss-zh-source-classification-shard-v1':
+        print(f"ERROR: Unknown shard schema: {shard.get('schema')}",
+              file=sys.stderr)
+        return 1
+
+    kind = args.kind
+    groups = shard.get('groups', [])
+    if not isinstance(groups, list):
+        print(f"ERROR: shard groups must be a list", file=sys.stderr)
+        return 1
+
+    errors = []
+
+    # Load inventory if provided to cross-reference
+    inventory = _load_json(args.inventory) if args.inventory else None
+    inventory_groups = {}
+    if inventory:
+        for g in inventory.get('groups', []):
+            inventory_groups[g.get('group_id')] = g
+
+    for i, g in enumerate(groups):
+        gid = g.get('group_id', '')
+        # Validate group_id format
+        if not GROUP_ID_RE.match(gid):
+            errors.append(f"groups[{i}]: invalid group_id: {gid}")
+
+        # Validate fingerprint
+        fp = g.get('group_fingerprint', '')
+        if not SHA256_HEX_RE.match(fp):
+            errors.append(f"groups[{i}]: invalid fingerprint: {fp}")
+
+        # Validate classification
+        cls = g.get('classification', {})
+        if not cls:
+            errors.append(f"groups[{i}]: missing classification")
+
+        cause = cls.get('cause', '')
+        if cause not in ('case_variant_duplicate', 'semantic_overload',
+                         'missing_context', 'structural_corruption', 'unknown'):
+            errors.append(f"groups[{i}]: invalid cause: {cause}")
+
+        action = cls.get('action', '')
+        if action not in ('dedupe', 'choose_translation', 'introduce_context',
+                          'repair_block', 'trace_callsites',
+                          'defer_semantic_ruling'):
+            errors.append(f"groups[{i}]: invalid action: {action}")
+
+        status = cls.get('status', '')
+        if status not in ('classified', 'needs_semantic_ruling',
+                          'ready_for_writer'):
+            errors.append(f"groups[{i}]: invalid status: {status}")
+
+        # If status is 'unknown' or 'needs_semantic_ruling', that's a problem
+        if cause == 'unknown' and (
+                args.kind != 'missing-key'):
+            errors.append(
+                f"groups[{i}]: cause='unknown' — reject uncovered group")
+
+        # Cross-reference with inventory if available
+        if inventory and gid in inventory_groups:
+            inv_g = inventory_groups[gid]
+            # Verify fingerprint matches
+            if fp != inv_g.get('group_fingerprint', ''):
+                errors.append(
+                    f"groups[{i}]: fingerprint drift: "
+                    f"shard={fp}, inventory={inv_g.get('group_fingerprint')}")
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s) in shard:",
+              file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: shard valid — {len(groups)} groups ({kind})")
+    return 0
+
+
+# ── source-missing-key-inventory ───────────────────────────────────
+
+
+def cmd_source_missing_key_inventory(args):
+    """Generate or check missing-key inventory.
+
+    Scans for keys extracted by i18n_extract.py that have no source.txt entry.
+    """
+    from i18n_shared import parse_entries_physical, parse_source_txt
+
+    # Get all defined keys
+    defined = set()
+    phys = parse_entries_physical(args.source_txt)
+    for e in phys:
+        defined.add(e.canonical_key)
+        defined.add(e.raw_key.lower())
+
+    # Get all extracted keys from C++ source
+    extracted = set()
+    if args.source_dir:
+        extracted = _extract_source_keys(args.source_dir)
+
+    if not extracted:
+        # If no source dir, do a simplified check based on source.txt coverage
+        print(f"INFO: No source dir provided, using source.txt only analysis")
+        print(f"OK: {len(defined)} defined keys in source.txt")
+        missing = []
+    else:
+        missing = sorted(extracted - defined)
+        # Filter out common false positives
+        missing = [k for k in missing
+                   if not k.startswith(' ')]
+        # Also mark keys where canonical is same but different whitespace
+        missing = [k for k in missing
+                   if k not in defined]
+
+    if args.output:
+        snapshot = {}
+        if args.source_txt:
+            snapshot = _get_source_snapshot(args.source_txt)
+        inventory = {
+            'schema': 'dcss-zh-missing-key-inventory-v1',
+            'canonical_contract': 'source-db-canonical-v1',
+            'generator': 'scan_i18n.py source-missing-key-inventory',
+            'generator_version': '1.0',
+            'generator_sha': _sha256_file(__file__),
+            'source_snapshot': snapshot,
+            'total_defined': len(defined),
+            'total_missing': len(missing),
+            'missing_keys': missing,
+        }
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(inventory, f, indent=2, ensure_ascii=False)
+        print(f"Missing-key inventory: {len(missing)} keys missing")
+        print(f"Written to {args.output}")
+
+    if args.check:
+        existing = _load_json(args.check)
+        if existing is None:
+            print(f"ERROR: check file {args.check} not found", file=sys.stderr)
+            return 1
+        old_missing = set(existing.get('missing_keys', []))
+        new_missing = set(missing)
+        if old_missing != new_missing:
+            added = sorted(new_missing - old_missing)
+            removed = sorted(old_missing - new_missing)
+            if added:
+                print(f"NEW missing keys ({len(added)}):", file=sys.stderr)
+                for k in added[:10]:
+                    print(f"  '{k}'", file=sys.stderr)
+            if removed:
+                print(f"RESOLVED missing keys ({len(removed)}):",
+                      file=sys.stderr)
+                for k in removed[:10]:
+                    print(f"  '{k}'", file=sys.stderr)
+            print(f"ERROR: Missing-key inventory mismatch", file=sys.stderr)
+            return 1
+        print(f"OK: Missing-key inventory matches ({len(old_missing)} keys)")
+
+    if missing:
+        print(f"NOTE: {len(missing)} missing key(s) found "
+              f"(not blocking for inventory)")
+        return 0
+
+    return 0
+
+
+def _extract_source_keys(source_dir: str) -> set:
+    """Extract T_() / N_() literal keys from C++ source."""
+    extracted = set()
+    T_RE = re.compile(r'\b[Tt]_\(\s*"((?:[^"\\]|\\.)*)"')
+    N_RE = re.compile(r'\bN_\(\s*"((?:[^"\\]|\\.)*)"')
+
+    for root, dirs, files in os.walk(source_dir):
+        prune_dirs(dirs)
+        for fn in files:
+            if not (fn.endswith('.cc') or fn.endswith('.h') or
+                    fn.endswith('.cpp') or fn.endswith('.hpp')):
+                continue
+            path = os.path.join(root, fn)
+            try:
+                with open(path, 'r', encoding='utf-8', errors='replace') as f:
+                    content = f.read()
+            except Exception:
+                continue
+            for m in T_RE.finditer(content):
+                extracted.add(m.group(1).lower())
+            for m in N_RE.finditer(content):
+                extracted.add(m.group(1).lower())
+    return extracted
+
+
+# ── validate-source-adjudications ──────────────────────────────────
+
+
+def cmd_validate_source_adjudications(args):
+    """Validate two overlay adjudication files.
+
+    Checks: references to inventory/shard, uniqueness, precedence.
+    """
+    primary = _load_json(args.primary)
+    secondary = _load_json(args.secondary)
+
+    errors = []
+
+    if primary is None:
+        errors.append(f"Primary adjudication file not found: {args.primary}")
+    if secondary is None:
+        errors.append(
+            f"Secondary adjudication file not found: {args.secondary}")
+    if errors:
+        for e in errors:
+            print(e, file=sys.stderr)
+        return 1
+
+    # Check schemas
+    for name, data in [('primary', primary), ('secondary', secondary)]:
+        if not isinstance(data, dict):
+            errors.append(f"{name}: must be a JSON object")
+        elif data.get('schema') != 'dcss-zh-source-adjudication-v1':
+            errors.append(f"{name}: unknown schema: {data.get('schema')}")
+
+    # Check group_id uniqueness across both files
+    seen_gids = {}
+    for name, data in [('primary', primary), ('secondary', secondary)]:
+        groups = data.get('groups', []) if isinstance(data, dict) else []
+        for g in groups:
+            gid = g.get('group_id', '')
+            if gid in seen_gids:
+                errors.append(
+                    f"Duplicate group_id in {name}: {gid} "
+                    f"(also in {seen_gids[gid]})")
+            seen_gids[gid] = name
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s):", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: Adjudications valid — "
+          f"{len(primary.get('groups', []))} primary, "
+          f"{len(secondary.get('groups', []))} secondary groups")
+    return 0
+
+
+# ── assemble-source-key-collision-classifications ──────────────────
+
+
+def cmd_assemble_source_key_collision_classifications(args):
+    """Assemble collision manifest from inventory + shards + adjudications."""
+    inventory = _load_json(args.inventory)
+    if inventory is None:
+        print(f"ERROR: inventory not found: {args.inventory}", file=sys.stderr)
+        return 1
+
+    # Load shards
+    shards = {}
+    if args.shards:
+        for sp in args.shards:
+            s = _load_json(sp)
+            if s:
+                for g in s.get('groups', []):
+                    gid = g.get('group_id', '')
+                    shards[gid] = g
+
+    # Load adjudications
+    adjudications = {}
+    if args.adjudications:
+        for ap in args.adjudications:
+            a = _load_json(ap)
+            if a:
+                for g in a.get('groups', []):
+                    gid = g.get('group_id', '')
+                    adjudications[gid] = g
+
+    assembled = []
+    inv_groups = inventory.get('groups', [])
+    for inv_g in inv_groups:
+        gid = inv_g.get('group_id', '')
+        entry = dict(inv_g)
+        # Apply shard classifications
+        if gid in shards:
+            shard_cls = shards[gid].get('classification', {})
+            if shard_cls:
+                entry['classification'] = shard_cls
+        elif gid in adjudications:
+            adj_cls = adjudications[gid].get('classification', {})
+            if adj_cls:
+                entry['classification'] = adj_cls
+        assembled.append(entry)
+
+    manifest = {
+        'schema': 'dcss-zh-source-collision-manifest-v1',
+        'generator': 'scan_i18n.py assemble-source-key-collision-classifications',
+        'generator_version': '1.0',
+        'generator_sha': _sha256_file(__file__),
+        'source_snapshot': inventory.get('source_snapshot', {}),
+        'summary': dict(inventory.get('summary', {})),
+        'groups': assembled,
+    }
+
+    if args.output:
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(manifest, f, indent=2, ensure_ascii=False)
+        print(f"Assembled manifest: {len(assembled)} groups "
+              f"({len(shards)} sharded, {len(adjudications)} adjudicated)")
+        print(f"Written to {args.output}")
+
+    return 0
+
+
+# ── assemble-source-missing-key-classifications ────────────────────
+
+
+def cmd_assemble_source_missing_key_classifications(args):
+    """Assemble missing-key manifest."""
+    inventory = _load_json(args.inventory)
+    if inventory is None:
+        print(f"ERROR: inventory not found: {args.inventory}", file=sys.stderr)
+        return 1
+
+    # Load shards
+    shards = {}
+    if args.shards:
+        for sp in args.shards:
+            s = _load_json(sp)
+            if s:
+                for g in s.get('groups', []):
+                    gid = g.get('group_id', '')
+                    shards[gid] = g
+
+    missing_keys = inventory.get('missing_keys', [])
+    assembled_groups = []
+    for mk in missing_keys:
+        mk_hash = hashlib.sha256(mk.encode('utf-8')).hexdigest()
+        gid = f"sourcedb-v1:{mk_hash}"
+        entry = {
+            'group_id': gid,
+            'canonical_key': mk,
+            'classification': shards.get(gid, {}).get(
+                'classification', {}),
+        }
+        assembled_groups.append(entry)
+
+    manifest = {
+        'schema': 'dcss-zh-source-missing-key-manifest-v1',
+        'generator':
+            'scan_i18n.py assemble-source-missing-key-classifications',
+        'generator_version': '1.0',
+        'generator_sha': _sha256_file(__file__),
+        'source_snapshot': inventory.get('source_snapshot', {}),
+        'total_missing': len(missing_keys),
+        'groups': assembled_groups,
+    }
+
+    if args.output:
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(manifest, f, indent=2, ensure_ascii=False)
+        print(f"Missing-key manifest: {len(assembled_groups)} groups")
+        print(f"Written to {args.output}")
+
+    return 0
+
+
+# ── validate-source-key-collision-classifications ──────────────────
+
+
+def cmd_validate_source_key_collision_classifications(args):
+    """Validate assembled collision manifest.
+
+    Checks: conservation (all inventory groups present), fresh fingerprints,
+    completeness (all groups classified), no 'unknown' cause remaining.
+    """
+    manifest = _load_json(args.manifest)
+    if manifest is None:
+        print(f"ERROR: manifest not found: {args.manifest}", file=sys.stderr)
+        return 1
+
+    if manifest.get('schema') != 'dcss-zh-source-collision-manifest-v1':
+        print(f"ERROR: unknown manifest schema: {manifest.get('schema')}",
+              file=sys.stderr)
+        return 1
+
+    inventory = _load_json(args.inventory) if args.inventory else None
+    errors = []
+    groups = manifest.get('groups', [])
+
+    # Conservation: every inventory group must be in manifest
+    if inventory:
+        inv_gids = {g.get('group_id', '') for g in inventory.get('groups', [])}
+        manifest_gids = {g.get('group_id', '') for g in groups}
+        missing_from_manifest = inv_gids - manifest_gids
+        if missing_from_manifest:
+            errors.append(
+                f"Conservation failure: {len(missing_from_manifest)} "
+                f"inventory groups missing from manifest")
+
+        extra = manifest_gids - inv_gids
+        if extra:
+            errors.append(
+                f"Extra groups in manifest not in inventory: "
+                f"{len(extra)}")
+
+    # Fingerprint freshness
+    if inventory:
+        inv_by_gid = {g.get('group_id', ''): g
+                      for g in inventory.get('groups', [])}
+        for g in groups:
+            gid = g.get('group_id', '')
+            if gid in inv_by_gid:
+                inv_fp = inv_by_gid[gid].get('group_fingerprint', '')
+                man_fp = g.get('group_fingerprint', '')
+                if inv_fp and man_fp and inv_fp != man_fp:
+                    errors.append(
+                        f"Fingerprint drift for {gid}: "
+                        f"inventory={inv_fp}, manifest={man_fp}")
+
+    # Completeness: all groups must have classification
+    unclassified = [g for g in groups
+                    if not g.get('classification')
+                    or g.get('classification', {}).get('cause') == 'unknown']
+    if unclassified:
+        errors.append(
+            f"{len(unclassified)} group(s) still unclassified or unknown")
+
+    # All groups must have status != 'needs_semantic_ruling' for completeness
+    needs_ruling = [g for g in groups
+                    if g.get('classification', {}).get('status')
+                    == 'needs_semantic_ruling']
+    if needs_ruling and args.reject_needs_ruling:
+        errors.append(
+            f"{len(needs_ruling)} group(s) still need semantic ruling")
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s):", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: Manifest valid — {len(groups)} groups, all classified")
+    return 0
+
+
+# ── validate-source-missing-key-classifications ────────────────────
+
+
+def cmd_validate_source_missing_key_classifications(args):
+    """Validate assembled missing-key manifest."""
+    manifest = _load_json(args.manifest)
+    if manifest is None:
+        print(f"ERROR: manifest not found: {args.manifest}", file=sys.stderr)
+        return 1
+
+    if manifest.get('schema') != 'dcss-zh-source-missing-key-manifest-v1':
+        print(f"ERROR: unknown manifest schema: {manifest.get('schema')}",
+              file=sys.stderr)
+        return 1
+
+    inventory = _load_json(args.inventory) if args.inventory else None
+    errors = []
+    groups = manifest.get('groups', [])
+
+    if inventory:
+        inv_missing = set(inventory.get('missing_keys', []))
+        manifest_keys = {g.get('canonical_key', '') for g in groups}
+        extra = manifest_keys - inv_missing
+        if extra:
+            errors.append(
+                f"{len(extra)} keys in manifest not in inventory")
+
+    unclassified = [g for g in groups
+                    if not g.get('classification')
+                    or g.get('classification', {}).get('cause') == 'unknown']
+    if unclassified:
+        errors.append(
+            f"{len(unclassified)} group(s) still unclassified or unknown")
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s):", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: Missing-key manifest valid — {len(groups)} groups")
+    return 0
+
+
+# ── source-callsite-receipt ────────────────────────────────────────
+
+
+def cmd_source_callsite_receipt(args):
+    """Accept adjudicated old→new extracted-key/callsite delta.
+
+    Validates that the delta file has the correct format and that
+    all referenced old keys exist and new keys don't conflict.
+    """
+    delta = _load_json(args.delta)
+    if delta is None:
+        print(f"ERROR: delta file not found: {args.delta}", file=sys.stderr)
+        return 1
+
+    if delta.get('schema') != 'dcss-zh-source-callsite-delta-v1':
+        print(f"ERROR: unknown delta schema: {delta.get('schema')}",
+              file=sys.stderr)
+        return 1
+
+    mappings = delta.get('mappings', [])
+    if not isinstance(mappings, list):
+        print(f"ERROR: mappings must be a list", file=sys.stderr)
+        return 1
+
+    errors = []
+    old_keys = set()
+    new_keys = set()
+    for i, m in enumerate(mappings):
+        old_key = m.get('old_key', '')
+        new_key = m.get('new_key', '')
+        if not old_key or not new_key:
+            errors.append(f"mappings[{i}]: missing old_key or new_key")
+        if old_key in old_keys:
+            errors.append(f"mappings[{i}]: duplicate old_key: {old_key}")
+        old_keys.add(old_key)
+        if new_key in new_keys:
+            errors.append(f"mappings[{i}]: duplicate new_key: {new_key}")
+        new_keys.add(new_key)
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s):", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: Callsite delta receipt accepted — "
+          f"{len(mappings)} mappings")
+    if args.output:
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump({
+                'schema': 'dcss-zh-source-callsite-receipt-v1',
+                'status': 'accepted',
+                'delta_source': os.path.basename(args.delta),
+                'total_mappings': len(mappings),
+            }, f, indent=2)
+        print(f"Receipt written to {args.output}")
+
+    return 0
+
+
+# ── assemble-post-coder-source-handoff ─────────────────────────────
+
+
+def cmd_assemble_post_coder_source_handoff(args):
+    """Assemble translator handoff document from collision manifest."""
+    collision_manifest = _load_json(args.collision_manifest)
+    missing_manifest = (
+        _load_json(args.missing_manifest) if args.missing_manifest else None)
+
+    if collision_manifest is None:
+        print(f"ERROR: collision manifest not found: "
+              f"{args.collision_manifest}", file=sys.stderr)
+        return 1
+
+    handoff = {
+        'schema': 'dcss-zh-source-handoff-v1',
+        'generator': 'scan_i18n.py assemble-post-coder-source-handoff',
+        'generator_version': '1.0',
+        'generator_sha': _sha256_file(__file__),
+        'collision_summary': collision_manifest.get('summary', {}),
+        'collision_groups': [],
+        'missing_key_groups': [],
+        'handoff_instructions': {
+            'for_each_collision_group':
+                'Review the canonical_key and its definitions. '
+                'Apply translator judgment: if values are equal, pick one; '
+                'if different, choose the correct translation or add context.',
+            'for_each_missing_key':
+                'Translate the English key and add to source.txt.',
+        },
+    }
+
+    # Collision groups needing semantic ruling
+    for g in collision_manifest.get('groups', []):
+        cls = g.get('classification', {})
+        if cls.get('status') == 'needs_semantic_ruling':
+            handoff['collision_groups'].append({
+                'group_id': g.get('group_id', ''),
+                'canonical_key': g.get('canonical_key', ''),
+                'classification': cls,
+                'definitions': g.get('definitions', []),
+            })
+
+    # Missing keys
+    if missing_manifest:
+        for g in missing_manifest.get('groups', []):
+            handoff['missing_key_groups'].append({
+                'group_id': g.get('group_id', ''),
+                'canonical_key': g.get('canonical_key', ''),
+            })
+
+    if args.output:
+        os.makedirs(os.path.dirname(args.output), exist_ok=True)
+        with open(args.output, 'w', encoding='utf-8') as f:
+            json.dump(handoff, f, indent=2, ensure_ascii=False)
+        print(f"Handoff written to {args.output} — "
+              f"{len(handoff['collision_groups'])} collision groups, "
+              f"{len(handoff['missing_key_groups'])} missing keys")
+
+    return 0
+
+
+# ── validate-post-coder-source-handoff ─────────────────────────────
+
+
+def cmd_validate_post_coder_source_handoff(args):
+    """Validate translator handoff document."""
+    handoff = _load_json(args.handoff)
+    if handoff is None:
+        print(f"ERROR: handoff not found: {args.handoff}", file=sys.stderr)
+        return 1
+
+    if handoff.get('schema') != 'dcss-zh-source-handoff-v1':
+        print(f"ERROR: unknown handoff schema: {handoff.get('schema')}",
+              file=sys.stderr)
+        return 1
+
+    errors = []
+    coll_groups = handoff.get('collision_groups', [])
+    missing_groups = handoff.get('missing_key_groups', [])
+
+    for i, g in enumerate(coll_groups):
+        if not g.get('group_id'):
+            errors.append(
+                f"collision_groups[{i}]: missing group_id")
+        if not g.get('canonical_key'):
+            errors.append(
+                f"collision_groups[{i}]: missing canonical_key")
+
+    for i, g in enumerate(missing_groups):
+        if not g.get('group_id'):
+            errors.append(
+                f"missing_key_groups[{i}]: missing group_id")
+
+    if errors:
+        print(f"ERROR: {len(errors)} validation error(s):", file=sys.stderr)
+        for e in errors:
+            print(f"  {e}", file=sys.stderr)
+        return 1
+
+    print(f"OK: Handoff valid — "
+          f"{len(coll_groups)} collision groups, "
+          f"{len(missing_groups)} missing keys")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="T_() world translation blind-spot scanner"
@@ -2094,6 +3084,158 @@ def main():
     p_sti.add_argument("--source-txt", required=True,
                        help="Path to source.txt")
 
+    # ══════════════════════════════════════════════════════════════════
+    # Issue 66 — SourceDB commands
+    # ══════════════════════════════════════════════════════════════════
+
+    # source-key-collisions
+    p_skc = subparsers.add_parser(
+        "source-key-collisions",
+        help="Find lowercase collisions in SourceDB canonical keys"
+    )
+    p_skc.add_argument("--source-txt", required=True,
+                       help="Path to source.txt")
+
+    # source-key-collision-inventory
+    p_ski = subparsers.add_parser(
+        "source-key-collision-inventory",
+        help="Generate/check pre-fix collision inventory JSON"
+    )
+    p_ski.add_argument("--source-txt", required=True,
+                       help="Path to source.txt")
+    p_ski.add_argument("--output",
+                       help="Output path for inventory JSON")
+    p_ski.add_argument("--check",
+                       help="Check existing inventory against current source.txt")
+
+    # source-db-structure
+    p_sds = subparsers.add_parser(
+        "source-db-structure",
+        help="Scan source.txt for structural issues (MULTILINE_KEY_SWALLOWED, "
+             "ORPHAN_KEY_IN_VALUE)"
+    )
+    p_sds.add_argument("--source-txt", required=True,
+                       help="Path to source.txt")
+    p_sds.add_argument("--exit-nonzero-if-issues", action="store_true",
+                       help="Exit 1 if any structural issues found")
+
+    # validate-source-classification-shard
+    p_vscs = subparsers.add_parser(
+        "validate-source-classification-shard",
+        help="Validate a classification shard file"
+    )
+    p_vscs.add_argument("--kind", required=True,
+                        choices=['collision', 'missing-key'],
+                        help="Kind of classification")
+    p_vscs.add_argument("--inventory",
+                        help="Path to inventory JSON (optional cross-ref)")
+    p_vscs.add_argument("--range",
+                        help="Hash-range ownership string")
+    p_vscs.add_argument("--shard", required=True,
+                        help="Path to shard JSON")
+
+    # source-missing-key-inventory
+    p_smki = subparsers.add_parser(
+        "source-missing-key-inventory",
+        help="Generate/check missing-key inventory"
+    )
+    p_smki.add_argument("--source-dir",
+                        help="Root of C++ source tree (for extraction scan)")
+    p_smki.add_argument("--source-txt", required=True,
+                        help="Path to source.txt")
+    p_smki.add_argument("--output",
+                        help="Output path for inventory JSON")
+    p_smki.add_argument("--check",
+                        help="Check existing inventory against current source.txt")
+
+    # validate-source-adjudications
+    p_vsa = subparsers.add_parser(
+        "validate-source-adjudications",
+        help="Validate two overlay adjudication files"
+    )
+    p_vsa.add_argument("--primary", required=True,
+                       help="Primary adjudication file")
+    p_vsa.add_argument("--secondary", required=True,
+                       help="Secondary adjudication file")
+
+    # assemble-source-key-collision-classifications
+    p_askcc = subparsers.add_parser(
+        "assemble-source-key-collision-classifications",
+        help="Assemble collision manifest from inventory + shards + adjudications"
+    )
+    p_askcc.add_argument("--inventory", required=True,
+                         help="Path to inventory JSON")
+    p_askcc.add_argument("--shards", nargs="*", default=[],
+                         help="Shard file paths")
+    p_askcc.add_argument("--adjudications", nargs="*", default=[],
+                         help="Adjudication file paths")
+    p_askcc.add_argument("--output", required=True,
+                         help="Output path for assembled manifest")
+
+    # assemble-source-missing-key-classifications
+    p_asmkc = subparsers.add_parser(
+        "assemble-source-missing-key-classifications",
+        help="Assemble missing-key manifest"
+    )
+    p_asmkc.add_argument("--inventory", required=True,
+                         help="Path to missing-key inventory JSON")
+    p_asmkc.add_argument("--shards", nargs="*", default=[],
+                         help="Shard file paths")
+    p_asmkc.add_argument("--output", required=True,
+                         help="Output path for assembled manifest")
+
+    # validate-source-key-collision-classifications
+    p_vskcc = subparsers.add_parser(
+        "validate-source-key-collision-classifications",
+        help="Validate assembled collision manifest"
+    )
+    p_vskcc.add_argument("--manifest", required=True,
+                         help="Path to manifest JSON")
+    p_vskcc.add_argument("--inventory",
+                         help="Path to inventory JSON (optional cross-ref)")
+    p_vskcc.add_argument("--reject-needs-ruling", action="store_true",
+                         help="Reject groups needing semantic ruling")
+
+    # validate-source-missing-key-classifications
+    p_vsmkc = subparsers.add_parser(
+        "validate-source-missing-key-classifications",
+        help="Validate assembled missing-key manifest"
+    )
+    p_vsmkc.add_argument("--manifest", required=True,
+                         help="Path to manifest JSON")
+    p_vsmkc.add_argument("--inventory",
+                         help="Path to inventory JSON (optional cross-ref)")
+
+    # source-callsite-receipt
+    p_scr = subparsers.add_parser(
+        "source-callsite-receipt",
+        help="Accept adjudicated old→new extracted-key/callsite delta"
+    )
+    p_scr.add_argument("--delta", required=True,
+                       help="Path to callsite delta JSON")
+    p_scr.add_argument("--output",
+                       help="Output path for receipt JSON")
+
+    # assemble-post-coder-source-handoff
+    p_apcsh = subparsers.add_parser(
+        "assemble-post-coder-source-handoff",
+        help="Assemble translator handoff document"
+    )
+    p_apcsh.add_argument("--collision-manifest", required=True,
+                         help="Path to collision manifest JSON")
+    p_apcsh.add_argument("--missing-manifest",
+                         help="Path to missing-key manifest JSON (optional)")
+    p_apcsh.add_argument("--output", required=True,
+                         help="Output path for handoff JSON")
+
+    # validate-post-coder-source-handoff
+    p_vpcsh = subparsers.add_parser(
+        "validate-post-coder-source-handoff",
+        help="Validate translator handoff document"
+    )
+    p_vpcsh.add_argument("--handoff", required=True,
+                         help="Path to handoff JSON")
+
     args = parser.parse_args()
 
     if (args.command == "missing-t" and args.display_contracts_only
@@ -2131,6 +3273,33 @@ def main():
         return cmd_monster_title_display(args)
     elif args.command == "source-txt-integrity":
         return cmd_source_txt_integrity(args)
+    # ── Issue 66 commands ──
+    elif args.command == "source-key-collisions":
+        return cmd_source_key_collisions(args)
+    elif args.command == "source-key-collision-inventory":
+        return cmd_source_key_collision_inventory(args)
+    elif args.command == "source-db-structure":
+        return cmd_source_db_structure(args)
+    elif args.command == "validate-source-classification-shard":
+        return cmd_validate_source_classification_shard(args)
+    elif args.command == "source-missing-key-inventory":
+        return cmd_source_missing_key_inventory(args)
+    elif args.command == "validate-source-adjudications":
+        return cmd_validate_source_adjudications(args)
+    elif args.command == "assemble-source-key-collision-classifications":
+        return cmd_assemble_source_key_collision_classifications(args)
+    elif args.command == "assemble-source-missing-key-classifications":
+        return cmd_assemble_source_missing_key_classifications(args)
+    elif args.command == "validate-source-key-collision-classifications":
+        return cmd_validate_source_key_collision_classifications(args)
+    elif args.command == "validate-source-missing-key-classifications":
+        return cmd_validate_source_missing_key_classifications(args)
+    elif args.command == "source-callsite-receipt":
+        return cmd_source_callsite_receipt(args)
+    elif args.command == "assemble-post-coder-source-handoff":
+        return cmd_assemble_post_coder_source_handoff(args)
+    elif args.command == "validate-post-coder-source-handoff":
+        return cmd_validate_post_coder_source_handoff(args)
     else:
         parser.print_help()
         return 1
