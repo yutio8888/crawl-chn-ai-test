@@ -1,0 +1,369 @@
+{
+  "entries": [
+    {
+      "canonical_key": "acid ball nascent plasmodium cast",
+      "canonical_fingerprint": "fnv1a64:8b792e19f6e32b93",
+      "selection_graph_fingerprint": "fnv1a64:5cf61bcfd4749ef8",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.acid_ball_nascent_plasmodium.squirts_acid.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "35f9c81debc3649deac8d563a2989b67fe2a0b2f21610b713e39050614037e6a",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ squirts acid @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} squirts acid at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} squirts acid next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} squirts acid past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}喷射酸液。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边喷射酸液。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}喷射酸液，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "acid splash cast",
+      "canonical_fingerprint": "fnv1a64:b70beb62929288b4",
+      "selection_graph_fingerprint": "fnv1a64:d0df5585666c9375",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.acid_splash.spits_acid.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "0470608b2761d1036e813b4198ec52983d700c2f2ec4d28c5c09728bb4231ff4",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ spits acid @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "airstrike wind drake cast",
+      "canonical_fingerprint": "fnv1a64:2ca1eea735dff689",
+      "selection_graph_fingerprint": "fnv1a64:516de28510a6d3aa",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.airstrike_wind_drake.flaps_wings.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f9826cb194268272681139e2707d1848b292185e4ae7f3f6fc81e43530df44b1",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ flaps @possessive@ wings @at@ @target@.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "possessive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} flaps ${possessive} wings at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} flaps ${possessive} wings next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} flaps ${possessive} wings past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}拍动翅膀。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边拍动翅膀。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后拍动翅膀。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "beckoning gale chonchon cast",
+      "canonical_fingerprint": "fnv1a64:447cb2cfdbf855df",
+      "selection_graph_fingerprint": "fnv1a64:d236c1fab443b193",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.beckoning_gale_chonchon.chants_flaps_wings.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "e028892e20991adc72f3cd207dcb243c37a5e8af6cd54f90ecc0a6caacefb090",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ chants while flapping @possessive@ wings @at@ @target@.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "possessive", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} chants while flapping ${possessive} wings at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} chants while flapping ${possessive} wings next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} chants while flapping ${possessive} wings past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}一边吟诵，一边朝${target}拍动翅膀。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}一边吟诵，一边朝${target}旁边拍动翅膀。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边吟诵，一边朝${target}身后拍动翅膀。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.beckoning_gale_chonchon.screeches_spinning.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "78245b98f2ab3180af6811640775ed1750ab3673503aefce285b0ba458ddf699",
+          "upstream_weight": 5,
+          "english_snapshot": "@The_monster@ screeches @at@ @target@ while spinning and swirling.",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} screeches at ${target} while spinning and swirling." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} screeches next to ${target} while spinning and swirling." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} screeches past ${target} while spinning and swirling." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}一边盘旋飞舞，一边朝${target}尖啸。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}一边盘旋飞舞，一边朝${target}旁边尖啸。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}一边盘旋飞舞，一边朝${target}身后尖啸。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "beckoning gale hippogriff cast",
+      "canonical_fingerprint": "fnv1a64:ce4e575846888b31",
+      "selection_graph_fingerprint": "fnv1a64:38357ff375c55e92",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.beckoning_gale_hippogriff.flaps_wings.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f9826cb194268272681139e2707d1848b292185e4ae7f3f6fc81e43530df44b1",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ flaps @possessive@ wings @at@ @target@.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "possessive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} flaps ${possessive} wings at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} flaps ${possessive} wings next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} flaps ${possessive} wings past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}拍动翅膀。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边拍动翅膀。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后拍动翅膀。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bolt of draining natural cast",
+      "canonical_fingerprint": "fnv1a64:ab740807ce89f5a0",
+      "selection_graph_fingerprint": "fnv1a64:8d33b341dbbe5091",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bolt_of_draining_natural.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bolt of flesh kobold fleshcrafter cast",
+      "canonical_fingerprint": "fnv1a64:f0b855d4967fe87a",
+      "selection_graph_fingerprint": "fnv1a64:61067a67d37b6c1f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bolt_of_flesh_kobold_fleshcrafter.wave_of_flesh.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "8eb0abf1fb4a13f9c780ff715944d8a694a6ad21ee11f3e8123899935620611e",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ weaves a wave of flesh @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} weaves a wave of flesh at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} weaves a wave of flesh next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} weaves a wave of flesh past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}编织出一股血肉浪潮。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边编织出一股血肉浪潮。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}编织出一股血肉浪潮，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bolt of magma molten gargoyle cast",
+      "canonical_fingerprint": "fnv1a64:46a3f2c1b75bd6fd",
+      "selection_graph_fingerprint": "fnv1a64:f06951116a644234",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bolt_of_magma_molten_gargoyle.blasts_magma.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d67e14b9d460d7792f1fe4bae1fd8e92ce98c42fa89605b587b99ee025346bf7",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ blasts magma @at@ @target@!",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} blasts magma at ${target}!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} blasts magma next to ${target}!" },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} blasts magma past ${target}!" },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}轰出岩浆！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边轰出岩浆！" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}轰出岩浆，从${target}旁边掠过！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bombardier beetle cast",
+      "canonical_fingerprint": "fnv1a64:50aa870ff479e256",
+      "selection_graph_fingerprint": "fnv1a64:14dcd7d044d092bd",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bombardier_beetle.sprays_incendiary_fluid.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "df60ac249b4bf371847a8c6e35dc8ea57d0e9b5141034f2651eccde455c92832",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ sprays incendiary fluid @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} sprays incendiary fluid at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} sprays incendiary fluid next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} sprays incendiary fluid past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}喷射燃烧液。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边喷射燃烧液。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}喷射燃烧液，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "chilling breath cast",
+      "canonical_fingerprint": "fnv1a64:e7e9cb0e5e66d0a3",
+      "selection_graph_fingerprint": "fnv1a64:dc00efcf74ca541c",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.chilling_breath.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
