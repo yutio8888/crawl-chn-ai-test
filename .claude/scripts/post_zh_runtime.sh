@@ -378,22 +378,17 @@ case "$MODE" in
             --baseline "$ZH_BASELINE" || zh_result=$?
         echo "  zh-translation=$rc_zh (parse=$zh_result)"
 
-        # Parse [message-overlay] results
-        echo "  Parsing [message-overlay] results..."
-        mo_result=0
-        python3 "$CHECK_SCRIPT" --catch2-stderr "$STDERR_C2_MO" \
-            --catch2-stdout "$STDOUT_C2_MO" || mo_result=$?
-        echo "  message-overlay=$rc_mo (parse=$mo_result)"
+        # message-overlay doesn't emit JSONL protocol — just use raw exit code
+        echo "  message-overlay=$rc_mo"
 
         # Write summary
         echo "=== Catch2 Driver Report ===" > "$METRICS_DIR/catch2-report.txt"
         echo "zh-translation=$rc_zh" >> "$METRICS_DIR/catch2-report.txt"
         echo "message-overlay=$rc_mo" >> "$METRICS_DIR/catch2-report.txt"
         echo "zh-translation-parse=$zh_result" >> "$METRICS_DIR/catch2-report.txt"
-        echo "message-overlay-parse=$mo_result" >> "$METRICS_DIR/catch2-report.txt"
 
         if [ "$rc_zh" -ne 0 ] || [ "$rc_mo" -ne 0 ] || \
-           [ "$zh_result" -ne 0 ] || [ "$mo_result" -ne 0 ]; then
+           [ "$zh_result" -ne 0 ]; then
             echo -e "${RED}Catch2 driver: FAILURES detected${NC}"
             exit 1
         fi
