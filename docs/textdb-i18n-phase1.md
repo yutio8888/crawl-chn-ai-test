@@ -4,7 +4,7 @@
 catalog 跟踪 262 个 canonical key、355 个 canonical variant：250 个 key、
 341 个 variant 进入 structured 路径，10 个 key、12 个 variant 为
 `LEGACY_ONLY`，2 个 key、2 个 variant 为 `CLOSURE_ONLY`。最终 behavior
-report 刷新与完整验证门禁尚待执行。**
+report 已刷新，完整验证门禁尚待执行。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -507,11 +507,12 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 最终 manifest 预期有 341 个 canonical structured variant 和 682 个 EN/ZH
+- 最终 manifest 有 341 个 canonical structured variant 和 682 个 EN/ZH
   逐语言验证单位；12 个 `LEGACY_ONLY` variant 与 2 个 `CLOSURE_ONLY` variant
   不进入这两个计数；
-- 当前 tracked behavior report 仍是最终分片前的旧快照（256/512），必须重新
-  生成并达到上述 341/682 后，才可作为完整 Phase 2 通过证据。
+- tracked behavior report 已达到 341/341 canonical metadata、682/682 双语验证、
+  0 个不可分析 occurrence 与 `phase2_ready=true`；完整验证通过后即可作为
+  Phase 2 最终证据。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
