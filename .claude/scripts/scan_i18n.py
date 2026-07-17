@@ -2171,33 +2171,46 @@ def cmd_source_key_collision_inventory(args):
             print(f"ERROR: check file {args.check} not found", file=sys.stderr)
             return 1
 
-        # Compare summary
+        # Build fingerprint maps: group_id -> group_fingerprint
+        old_fps = {g['group_id']: g['group_fingerprint']
+                   for g in existing.get('groups', []) if 'group_id' in g}
+        new_fps = {g['group_id']: g['group_fingerprint']
+                   for g in inventory['groups'] if 'group_id' in g}
+
+        errors = []
+
+        # Detect extra groups in new (not in old)
+        for gid, fp in new_fps.items():
+            if gid not in old_fps:
+                errors.append(f"  new group {gid}: not in inventory")
+            elif old_fps[gid] != fp:
+                errors.append(f"  group {gid}: fingerprint drift — "
+                              f"inventory={old_fps[gid][:20]}..., "
+                              f"current={fp[:20]}...")
+
+        # Detect missing groups (in old but not in new)
+        for gid in old_fps:
+            if gid not in new_fps:
+                errors.append(f"  missing group {gid}: in inventory but not current")
+
+        # Summary field check (backward compat)
         old_summary = existing.get('summary', {})
         new_summary = inventory['summary']
-        mismatches = []
         for key in old_summary:
             if old_summary[key] != new_summary.get(key):
-                mismatches.append(f"  {key}: inventory={old_summary[key]}, "
-                                  f"current={new_summary.get(key)}")
-        if mismatches:
+                errors.append(f"  {key}: inventory={old_summary[key]}, "
+                              f"current={new_summary.get(key)}")
+
+        if errors:
             print(f"ERROR: Inventory mismatch with current source.txt:",
                   file=sys.stderr)
-            for m in mismatches:
-                print(m, file=sys.stderr)
+            for e in errors:
+                print(e, file=sys.stderr)
             print(f"  (freeze HEAD to match)", file=sys.stderr)
             return 1
 
-        # Compare group count
-        old_groups = existing.get('groups', [])
-        if len(old_groups) != len(inventory['groups']):
-            print(f"ERROR: Group count mismatch: "
-                  f"inventory={len(old_groups)}, "
-                  f"current={len(inventory['groups'])}",
-                  file=sys.stderr)
-            return 1
-
         print(f"OK: Inventory matches current source.txt "
-              f"({len(old_groups)} groups, deterministic).")
+              f"({len(new_fps)} groups, deterministic).")
         return 0
 
     return 0

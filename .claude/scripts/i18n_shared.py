@@ -236,11 +236,12 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
             continue
 
         # %%%% separator — flush current entry
-        if processed.strip() == '%%%%':
+        # C++ database.cc: !line.compare(0, 4, "%%%%") — starts-with match
+        if processed.startswith('%%%%'):
             if raw_key is not None:
                 order += 1
                 value = '\n'.join(value_lines).rstrip('\n')
-                canonical = raw_key.lower()
+                canonical = lowercase_string(raw_key)
                 entries.append(PhysicalEntry(
                     raw_key=raw_key,
                     value=value,
@@ -265,7 +266,9 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
                 raw_key = processed
                 key_line = line_num
         else:
-            value_lines.append(processed)
+            # C++ database.cc: trim_string_right(line) — strips " \t\n\r"
+            trimmed = processed.rstrip()
+            value_lines.append(trimmed)
             if value_line == 0:
                 value_line = line_num
 
@@ -273,7 +276,7 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
     if raw_key is not None:
         order += 1
         value = '\n'.join(value_lines).rstrip('\n')
-        canonical = raw_key.lower()
+        canonical = lowercase_string(raw_key)
         entries.append(PhysicalEntry(
             raw_key=raw_key,
             value=value,
@@ -290,6 +293,30 @@ def parse_entries_physical(filepath: str) -> List[PhysicalEntry]:
 # ── Canonical key helpers ──────────────────────────────────────────
 
 
+def lowercase_string(s: str) -> str:
+    """DCSS lowercase_string() — matches C++ stringutil.cc lowercase_string().
+
+    Rules (per C++ implementation):
+      - ASCII A-Z: hardcode to a-z (locale-independent, never Turkish dotless i)
+      - CJK U+2E80..U+9FFF: pass through unchanged (no case concept)
+      - Other non-ASCII without uppercase/lowercase: pass through unchanged
+      - Other non-ASCII with case: use str.lower() (towlower equivalent)
+    """
+    result = []
+    for c in s:
+        if 'A' <= c <= 'Z':
+            result.append(chr(ord(c) + 32))
+        else:
+            cp = ord(c)
+            if 0x2E80 <= cp <= 0x9FFF:
+                result.append(c)
+            elif cp > 0x7F and not c.isupper() and not c.islower():
+                result.append(c)
+            else:
+                result.append(c.lower())
+    return ''.join(result)
+
+
 def compute_canonical_key(raw_key: str) -> str:
     """Compute SourceDB canonical key from raw_key.
 
@@ -297,7 +324,7 @@ def compute_canonical_key(raw_key: str) -> str:
         Canonical key = DCSS lowercase_string(raw_key)
     NO \\# decode, NO key unescape.
     """
-    return raw_key.lower()
+    return lowercase_string(raw_key)
 
 
 def i18n_escape_key(key: str) -> str:
@@ -314,30 +341,44 @@ def i18n_escape_key(key: str) -> str:
 
 
 def i18n_unescape_value(value: str) -> str:
-    """Unescape source.txt escape sequences to actual characters.
+    """Unescape source.txt escape sequences — matches C++ database.cc.
 
-    Reverses i18n_escape_key(): \\\\n → \\n, \\\\t → \\t, \\\\r → \\r,
-    \\\\\\\\ → \\.
+    Single-pass left-to-right scanner like C++ i18n_unescape_value():
+      \\\\ → \\, \\n → \\n, \\r → \\r, \\t → \\t
+      Unknown escapes: \\X → X (drop backslash, keep next char)
     """
-    # Must handle \\\\ (escaped backslash) first to avoid double-unescape
-    result = value.replace('\\\\', '\x00')
-    result = result.replace('\\n', '\n')
-    result = result.replace('\\t', '\t')
-    result = result.replace('\\r', '\r')
-    result = result.replace('\x00', '\\')
-    return result
+    out = []
+    i = 0
+    while i < len(value):
+        if value[i] == '\\' and i + 1 < len(value):
+            nxt = value[i + 1]
+            if nxt == 'n':
+                out.append('\n')
+            elif nxt == 'r':
+                out.append('\r')
+            elif nxt == 't':
+                out.append('\t')
+            elif nxt == '\\':
+                out.append('\\')
+            else:
+                out.append(nxt)  # unknown: drop backslash, keep char
+            i += 2
+        else:
+            out.append(value[i])
+            i += 1
+    return ''.join(out)
 
 
 # ── Value normalization for collision comparison ───────────────────
 
 
 def trim_string_right(s: str) -> str:
-    """Strip trailing whitespace from string (SourceDB trim_string_right)."""
-    return s.rstrip()
+    """C++ trim_string_right(): strip trailing space, tab, newline, CR."""
+    return s.rstrip(" \t\n\r")
 
 
 def trim_leading_newlines(s: str) -> str:
-    """Strip leading newlines from string (SourceDB trim_leading_newlines)."""
+    """C++ _trim_leading_newlines(): strip leading LF only."""
     return s.lstrip('\n')
 
 
