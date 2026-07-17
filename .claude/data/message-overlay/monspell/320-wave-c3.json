@@ -1,0 +1,493 @@
+{
+  "entries": [
+    {
+      "canonical_key": "warning cry cast",
+      "canonical_fingerprint": "fnv1a64:feb50aaa29c647e1",
+      "selection_graph_fingerprint": "fnv1a64:b0946883242f0502",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.warning_cry.howls_warning_cry.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "9d5aeb9ba523d7a66e717d2c68862ae979eadb48bfd1cfc0d5462f56c23753be",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ howls a warning cry!",
+          "frame": "VOCAL",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} howls a warning cry!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}发出一声警告的嚎叫！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "warning cry hippogriff cast",
+      "canonical_fingerprint": "fnv1a64:18dfe6a7d0cfff0d",
+      "selection_graph_fingerprint": "fnv1a64:8e0b809685effb26",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.warning_cry_hippogriff.screeches_warning_cry.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "188bdfca40c68ff2136761ca8bb87f7cfe586acfbc0ef4ff75953a3402999b03",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ screeches a warning cry!",
+          "frame": "VOCAL",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} screeches a warning cry!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}发出一声警告的尖啸！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "warning cry howler monkey cast",
+      "canonical_fingerprint": "fnv1a64:c248e73085e71cf9",
+      "selection_graph_fingerprint": "fnv1a64:ad55af885e3882f4",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.warning_cry_howler_monkey.hoots_and_howls.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "75245e23fde22ffdd3cf83bb0714fdcf52bcbb4d76f91322705ec8ab161963fd",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ hoots and howls with incredible vigour!",
+          "frame": "VOCAL",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} hoots and howls with incredible vigour!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}以惊人的气势发出啼叫与嚎叫！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "warning cry ushabti cast",
+      "canonical_fingerprint": "fnv1a64:91199e6bf66e314a",
+      "selection_graph_fingerprint": "fnv1a64:fc298fd02946894b",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.warning_cry_ushabti.shakes_and_rattles.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "c3d3fb3218f3490389269dbd3b54b9b26f5f17a3a30f16989446e1acaeb9a32d",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ shakes and rattles deafeningly!",
+          "frame": "VOCAL",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} shakes and rattles deafeningly!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}震动起来，发出震耳欲聋的嘎嘎声！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "warning cry vault sentinel cast",
+      "canonical_fingerprint": "fnv1a64:7545b1c9c62b8cce",
+      "selection_graph_fingerprint": "fnv1a64:152b2b6bc9276893",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.warning_cry_vault_sentinel.blows_signal_horn.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "58e480890fc55d0b28655a5c276c12d3ad0838731b4a7399e8086296f7723bfc",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ blows a loud note on a signal horn!",
+          "frame": "VOCAL",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} blows a loud note on a signal horn!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}用信号号角吹出一声响亮的号音！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "wind blast cast",
+      "canonical_fingerprint": "fnv1a64:bdb388e497002634",
+      "selection_graph_fingerprint": "fnv1a64:388d76058f36ebd7",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.wind_blast.conjures_wind.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "5a10f2cf571dbdc1db3fe874277bb655c63b569525c2c860b4453c225cf5dcba",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ conjures a fierce blast of wind!",
+          "frame": "DIRECT_EFFECT",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} conjures a fierce blast of wind!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}召来一阵猛烈的狂风！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "wind blast wind drake cast",
+      "canonical_fingerprint": "fnv1a64:c3fc19426d9ecfb4",
+      "selection_graph_fingerprint": "fnv1a64:59e0ca1463d78057",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.wind_blast_wind_drake.exhales_wind.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "34ce0095e479444572fe2fd348e5b280957fe5130306d72636b4c20eb2df6bd1",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ exhales a fierce blast of wind!",
+          "frame": "DIRECT_EFFECT",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} exhales a fierce blast of wind!"
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}呼出一阵猛烈的狂风！"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "wretched star cast",
+      "canonical_fingerprint": "fnv1a64:2643b68ff50dc11e",
+      "selection_graph_fingerprint": "fnv1a64:a4b1e972326b8259",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.wretched_star.glows_turbulently.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "cba8717fe6a092de1eb902360896a630e9fc44857d8a61193750c8e8b6da367e",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ glows turbulently.",
+          "frame": "DIRECT_EFFECT",
+          "binding": {
+            "resolves_target": false
+          },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            {
+              "name": "actor",
+              "type": "actor_ref"
+            }
+          ],
+          "required_arguments": [
+            "actor"
+          ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": {
+                "implies_gesture": false,
+                "audible": false
+              },
+              "templates": [
+                {
+                  "language": "en",
+                  "relation": "NONE",
+                  "pattern": "${actor} glows turbulently."
+                },
+                {
+                  "language": "zh",
+                  "relation": "NONE",
+                  "pattern": "${actor}发出紊乱的光芒。"
+                }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
