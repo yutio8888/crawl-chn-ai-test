@@ -2189,17 +2189,16 @@ def cmd_source_key_collision_inventory(args):
             return _normalize(inv)
 
         # Strip generator metadata (generator_sha changes when code changes)
-        # and source_snapshot.commit (may differ across worktree checkouts)
+        # and source_snapshot.snapshot_commit (may differ across worktree checkouts)
         old_canonical = {k: v for k, v in existing.items()
-                         if k not in ('generator_sha', 'generator', 'generator_version')}
-        # Also strip snapshot_commit from source_snapshot (expected drift)
+                         if k != 'generator_sha'}
         if 'source_snapshot' in old_canonical:
             old_snap = dict(old_canonical['source_snapshot'])
             old_snap.pop('snapshot_commit', None)
             old_canonical['source_snapshot'] = old_snap
 
         new_canonical = {k: v for k, v in inventory.items()
-                         if k not in ('generator_sha', 'generator', 'generator_version')}
+                         if k != 'generator_sha'}
         if 'source_snapshot' in new_canonical:
             new_snap = dict(new_canonical['source_snapshot'])
             new_snap.pop('snapshot_commit', None)
@@ -2217,20 +2216,15 @@ def cmd_source_key_collision_inventory(args):
                   file=sys.stderr)
             print(f"  frozen SHA-256: {old_hash}", file=sys.stderr)
             print(f"  current SHA-256: {new_hash}", file=sys.stderr)
+            # Also show summary differences for quick diagnosis
+            old_sum = existing.get('summary', {})
+            new_sum = inventory.get('summary', {})
+            for key in ('total_entries', 'unique_canonical_keys', 'collision_groups',
+                         'runtime_equal', 'runtime_different'):
+                if old_sum.get(key) != new_sum.get(key):
+                    print(f"  summary.{key}: expected={old_sum.get(key)}, "
+                          f"actual={new_sum.get(key)}", file=sys.stderr)
             print(f"  (freeze HEAD to match)", file=sys.stderr)
-            return 1
-
-        # Also validate summary counts for quick diagnosis
-        old_sum = existing.get('summary', {})
-        new_sum = inventory.get('summary', {})
-        summary_ok = True
-        for key in ('total_entries', 'unique_canonical_keys', 'collision_groups',
-                     'runtime_equal', 'runtime_different'):
-            if old_sum.get(key) != new_sum.get(key):
-                print(f"  summary.{key}: expected={old_sum.get(key)}, "
-                      f"actual={new_sum.get(key)}", file=sys.stderr)
-                summary_ok = False
-        if not summary_ok:
             return 1
 
         print(f"OK: Inventory matches current source.txt "
