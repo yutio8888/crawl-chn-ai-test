@@ -7,6 +7,7 @@
 #include "database.h"
 #include "dungeon.h"
 #include "env.h"
+#include "english.h"
 #include "feature.h"
 #include "initfile.h"
 #include "losglobal.h"
@@ -450,18 +451,23 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     const resolved_speech_actor ordinary = resolve_speech_actor(source);
     CHECK(ordinary.sentence_display == "The orc");
     CHECK(ordinary.lower_display == "the orc");
+    CHECK(apostrophise(ordinary.lower_display) == "the orc's");
+    CHECK(apostrophise(ordinary.sentence_display) == "The orc's");
 
     source.mname = "McTest";
     const resolved_speech_actor named = resolve_speech_actor(source);
     CHECK(named.sentence_display == source.name(DESC_THE));
     CHECK(named.lower_display == source.name(DESC_THE));
     CHECK(named.lower_display.find("McTest") != string::npos);
+    CHECK(apostrophise(named.lower_display)
+          == apostrophise(source.name(DESC_THE)));
 
     source.mname.clear();
     source.attitude = ATT_FRIENDLY;
     const resolved_speech_actor friendly = resolve_speech_actor(source);
     CHECK(friendly.sentence_display == "Your orc");
     CHECK(friendly.lower_display == "your orc");
+    CHECK(apostrophise(friendly.lower_display) == "your orc's");
 
     source.attitude = ATT_HOSTILE;
     scoped_zh_database localized_database;
@@ -469,6 +475,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     CHECK(chinese.sentence_display == chinese.lower_display);
     CHECK(chinese.lower_display.find("The") == string::npos);
     CHECK(chinese.lower_display.find("the") == string::npos);
+    CHECK(apostrophise(chinese.lower_display)
+          == chinese.lower_display + "的");
 }
 
 TEST_CASE("speech beam typed seam preserves all legacy branches and RNG",

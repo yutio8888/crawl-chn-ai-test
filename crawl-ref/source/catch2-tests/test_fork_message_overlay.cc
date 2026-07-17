@@ -180,6 +180,7 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.actor.sentence_en = "The orc";
     values.actor.canonical_en = "the orc";
     values.actor.possessive_name_en = "The orc's";
+    values.actor.possessive_name_lower_en = "the orc's";
     values.actor.possessive_pronoun_en = "its";
     values.actor.reflexive_en = "itself";
     values.actor.arms_plural_en = "arms";
@@ -188,6 +189,8 @@ fork_message_overlay::runtime_bindings beam_bindings(
         { { "en", "the orc" }, { "zh", "兽人" } };
     values.actor.possessive_name_localized =
         { { "en", "The orc's" }, { "zh", "兽人的" } };
+    values.actor.possessive_name_lower_localized =
+        { { "en", "the orc's" }, { "zh", "兽人的" } };
     values.actor.possessive_pronoun_localized =
         { { "en", "its" }, { "zh", "它的" } };
     values.actor.reflexive_localized =
@@ -362,6 +365,59 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &unknown = load_monspell_overlay(canonical, &source);
         CHECK(unknown.state == domain_state::DISABLED);
         CHECK(unknown.failure == load_failure::CORRUPT);
+    }
+
+    SECTION("lower possessive actor slot is narrow and renders independently")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        catalog_entry &entry = catalog_entry_by_key(
+            source, "summon water elementals elemental wellspring cast");
+        entry.mode = entry_mode::CANDIDATE;
+        catalog_variant &variant = entry.variants[0];
+        variant.policy = materialization_policy::NONE;
+        variant.english_snapshot =
+            "Electricity crackles from @the_monster_possessive@ apparatus.";
+        vector<textdb_phase0::canonical_entry> possessive_canonical = canonical;
+        auto actual = find_if(
+            possessive_canonical.begin(), possessive_canonical.end(),
+            [&entry](const textdb_phase0::canonical_entry &item)
+            {
+                return item.canonical_key == entry.canonical_key;
+            });
+        REQUIRE(actual != possessive_canonical.end());
+        REQUIRE(actual->variants.size() == 1);
+        actual->variants[0].raw_pattern = variant.english_snapshot;
+        actual->raw_body = variant.english_snapshot;
+        entry.canonical_fingerprint = test_canonical_fingerprint(*actual);
+        entry.selection_graph_fingerprint =
+            test_selection_fingerprint(*actual);
+        variant.slot_schema = {
+            { "actor_possessive_lower", "actor_possessive_name_lower" },
+        };
+        variant.required_arguments = { "actor_possessive_lower" };
+        line_metadata line;
+        line.templates = {
+            { "en", "NONE",
+              "Electricity crackles from ${actor_possessive_lower} apparatus." },
+            { "zh", "NONE",
+              "电流在${actor_possessive_lower}装置上噼啪作响。" },
+        };
+        variant.lines = { line };
+        const load_report &valid =
+            load_monspell_overlay(possessive_canonical, &source);
+        REQUIRE(valid.state == domain_state::ENABLED);
+        CHECK(monspell_overlay_covers(entry.canonical_key));
+
+        reset_monspell_overlay_for_test();
+        variant.slot_schema[0].type = "actor_possessive_name";
+        const load_report &mismatched =
+            load_monspell_overlay(possessive_canonical, &source);
+        CHECK(mismatched.state == domain_state::DISABLED);
+        CHECK(mismatched.failure == load_failure::CORRUPT);
+        CHECK(mismatched.diagnostic.find(
+                  "possessive actor token/type mismatch")
+              != string::npos);
     }
 
     SECTION("explicit suppress descriptors are narrow and fail closed")
@@ -1207,6 +1263,26 @@ TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
     CHECK(chinese.lines[0].text == "在兽人周围");
     CHECK(render_typed_template("${actor_lower}", lower, {}).result
           == message_result::CORRUPT);
+
+    const vector<slot_definition> lower_possessive = {
+        { "actor_possessive_lower", "actor_possessive_name_lower" },
+    };
+    const vector<pair<string, string>> lower_possessive_cases = {
+        { "the orc's", "from the orc's apparatus" },
+        { "Mara's", "from Mara's apparatus" },
+        { "your orc's", "from your orc's apparatus" },
+        { "兽人的", "from 兽人的 apparatus" },
+    };
+    for (const auto &item : lower_possessive_cases)
+    {
+        const render_result possessive = render_typed_template(
+            "from ${actor_possessive_lower} apparatus", lower_possessive,
+            { { "actor_possessive_lower", item.first } });
+        REQUIRE(possessive.result == message_result::RENDERED);
+        CHECK(possessive.lines[0].text == item.second);
+    }
+    CHECK(render_typed_template("${actor_possessive_lower}",
+          lower_possessive, {}).result == message_result::CORRUPT);
 
     const render_result sentence = render_typed_template(
         "${actor} attacks", one, { { "actor", "The orc" } });

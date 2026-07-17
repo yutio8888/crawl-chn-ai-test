@@ -9076,6 +9076,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "en", actor.lower_display });
         bindings.actor.possessive_name_localized.push_back(
             { "en", apostrophise(actor_display) });
+        bindings.actor.possessive_name_lower_localized.push_back(
+            { "en", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
         bindings.actor.reflexive_localized.push_back(
@@ -9098,6 +9100,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "zh", actor.lower_display });
         bindings.actor.possessive_name_localized.push_back(
             { "zh", apostrophise(actor_display) });
+        bindings.actor.possessive_name_lower_localized.push_back(
+            { "zh", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "zh", _localized_zh_actor_possessive_pronoun(mon) });
         bindings.actor.reflexive_localized.push_back(
@@ -9125,6 +9129,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         bindings.actor.canonical_en = english_actor.lower_display;
         bindings.actor.possessive_name_en =
             apostrophise(bindings.actor.sentence_en);
+        bindings.actor.possessive_name_lower_en =
+            apostrophise(bindings.actor.canonical_en);
         bindings.actor.possessive_pronoun_en =
             mon.pronoun(PRONOUN_POSSESSIVE);
         bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);

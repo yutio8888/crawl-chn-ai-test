@@ -634,6 +634,45 @@ class MessageOverlayTests(unittest.TestCase):
                                     "sentence actor token/type mismatch"):
             self.validate(value)
 
+    def test_lower_possessive_actor_token_requires_the_narrow_slot_type(self):
+        key = "call down lightning cast"
+        value = copy.deepcopy(MANIFEST)
+        entry = self.entry(value, key)
+        variant = self.variant(value, key)
+        entry["mode"] = "CANDIDATE"
+        variant["materialization_policy"] = "NONE"
+        variant["slot_schema"] = [{
+            "name": "actor_possessive_lower",
+            "type": "actor_possessive_name_lower",
+        }]
+        variant["required_arguments"] = ["actor_possessive_lower"]
+        variant["line_metadata"] = [{
+            "sensory": "PLAIN", "channel": None,
+            "behavior": {"implies_gesture": False, "audible": False},
+            "templates": [
+                {"language": "en", "relation": "NONE",
+                 "pattern": "Electricity crackles from "
+                            "${actor_possessive_lower} apparatus."},
+                {"language": "zh", "relation": "NONE",
+                 "pattern": "电流在${actor_possessive_lower}装置上噼啪作响。"},
+            ],
+        }]
+        self.validate(value)
+
+        variant["slot_schema"][0]["type"] = "actor_possessive_name"
+        with self.assertRaisesRegex(
+                MODULE.ManifestError,
+                "possessive actor token/type mismatch"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        upper = self.variant(value, "brain worm cast")
+        upper["slot_schema"][0]["type"] = "actor_possessive_name_lower"
+        with self.assertRaisesRegex(
+                MODULE.ManifestError,
+                "sentence possessive actor token/type mismatch"):
+            self.validate(value)
+
     def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)
         self.entry(value, "beam catchall cast")["variants"][0]["binding"][

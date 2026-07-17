@@ -351,6 +351,7 @@ bool _validate_lines(const catalog_source &source,
         static const set<string> slot_types =
         {
             "actor_ref", "actor_ref_lower", "actor_possessive_name",
+            "actor_possessive_name_lower",
             "actor_possessive_pronoun", "actor_reflexive",
             "actor_arms_plural", "resolved_target", "resolved_foe",
             "resolved_beam", "recursive_capture",
@@ -414,6 +415,12 @@ bool _validate_lines(const catalog_source &source,
         variant.english_snapshot.find("@The_monster@") != string::npos;
     const bool has_actor_ref_lower_token =
         variant.english_snapshot.find("@the_monster@") != string::npos;
+    const bool has_actor_possessive_token =
+        variant.english_snapshot.find("@The_monster_possessive@")
+            != string::npos;
+    const bool has_actor_possessive_lower_token =
+        variant.english_snapshot.find("@the_monster_possessive@")
+            != string::npos;
     if (has_actor_ref_token != _has_slot_type(variant, "actor_ref"))
     {
         error = "sentence actor token/type mismatch";
@@ -423,6 +430,18 @@ bool _validate_lines(const catalog_source &source,
         != _has_slot_type(variant, "actor_ref_lower"))
     {
         error = "lower actor token/type mismatch";
+        return false;
+    }
+    if (has_actor_possessive_token
+        != _has_slot_type(variant, "actor_possessive_name"))
+    {
+        error = "sentence possessive actor token/type mismatch";
+        return false;
+    }
+    if (has_actor_possessive_lower_token
+        != _has_slot_type(variant, "actor_possessive_name_lower"))
+    {
+        error = "lower possessive actor token/type mismatch";
         return false;
     }
     if (variant.lines.empty())
@@ -1607,6 +1626,7 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_ref = false;
     bool needs_actor_ref_lower = false;
     bool needs_actor_possessive_name = false;
+    bool needs_actor_possessive_name_lower = false;
     bool needs_actor_possessive_pronoun = false;
     bool needs_actor_reflexive = false;
     bool needs_actor_arms_plural = false;
@@ -1620,6 +1640,8 @@ canonical_materialization materialize_monspell_candidate(
             || slot.type == "actor_ref_lower";
         needs_actor_possessive_name = needs_actor_possessive_name
             || slot.type == "actor_possessive_name";
+        needs_actor_possessive_name_lower = needs_actor_possessive_name_lower
+            || slot.type == "actor_possessive_name_lower";
         needs_actor_possessive_pronoun = needs_actor_possessive_pronoun
             || slot.type == "actor_possessive_pronoun";
         needs_actor_reflexive = needs_actor_reflexive
@@ -1635,6 +1657,8 @@ canonical_materialization materialize_monspell_candidate(
         || (needs_actor_ref_lower && resolved.actor.canonical_en.empty())
         || (needs_actor_possessive_name
             && resolved.actor.possessive_name_en.empty())
+        || (needs_actor_possessive_name_lower
+            && resolved.actor.possessive_name_lower_en.empty())
         || (needs_actor_possessive_pronoun
             && resolved.actor.possessive_pronoun_en.empty())
         || (needs_actor_reflexive && resolved.actor.reflexive_en.empty())
@@ -1670,6 +1694,9 @@ canonical_materialization materialize_monspell_candidate(
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@The_monster_possessive@",
         resolved.actor.possessive_name_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@the_monster_possessive@",
+        resolved.actor.possessive_name_lower_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@possessive@",
         resolved.actor.possessive_pronoun_en);
@@ -1773,6 +1800,12 @@ canonical_materialization materialize_monspell_candidate(
             else if (slot.type == "actor_ref_lower")
                 english_values.push_back(
                     { slot.name, resolved.actor.canonical_en });
+            else if (slot.type == "actor_possessive_name")
+                english_values.push_back(
+                    { slot.name, resolved.actor.possessive_name_en });
+            else if (slot.type == "actor_possessive_name_lower")
+                english_values.push_back(
+                    { slot.name, resolved.actor.possessive_name_lower_en });
         }
         const render_result english = english_template
             ? render_typed_template(
@@ -2053,6 +2086,18 @@ render_result render_materialized_candidate(
             {
                 result.diagnostic =
                     "localized actor possessive-name binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_possessive_name_lower")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor
+                        .possessive_name_lower_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized lower-case actor possessive-name binding is missing";
                 return result;
             }
         }

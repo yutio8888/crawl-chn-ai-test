@@ -376,12 +376,14 @@ struct resolved_actor
     std::string sentence_en;
     std::string canonical_en;
     std::string possessive_name_en;
+    std::string possessive_name_lower_en;
     std::string possessive_pronoun_en;
     std::string reflexive_en;
     std::string arms_plural_en;
     std::vector<localized_value> localized;
     std::vector<localized_value> lower_localized;
     std::vector<localized_value> possessive_name_localized;
+    std::vector<localized_value> possessive_name_lower_localized;
     std::vector<localized_value> possessive_pronoun_localized;
     std::vector<localized_value> reflexive_localized;
     std::vector<localized_value> arms_plural_localized;
