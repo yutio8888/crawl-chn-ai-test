@@ -49,6 +49,8 @@ latest_run_dir() {
 
 REPO="$TMP_ROOT/repo"
 mkdir -p "$REPO/.claude/scripts" "$REPO/docs"
+printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' '.risk-runs' \
+    > "$REPO/.gitignore"
 cp "$VERIFY_SOURCE" "$REPO/.claude/scripts/verify_zh.sh"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
@@ -73,6 +75,19 @@ printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
 chmod +x "$REPO/.claude/scripts/i18n_extract.py"
 printf '%s\n' \
     '#!/bin/bash' \
+    'echo "test mock: running $@" >&2' \
+    'exit 0' \
+    > "$REPO/.claude/scripts/post_zh_runtime.sh"
+chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
+printf '%s\n' \
+    '#!/bin/bash' \
+    'echo "test mock" >&2' \
+    'exit 0' \
+    > "$REPO/.claude/scripts/smoke_test.sh"
+chmod +x "$REPO/.claude/scripts/smoke_test.sh"
+export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
+printf '%s\n' \
+    '#!/bin/bash' \
     'echo "$1" >> .observed-runtime-mode' \
     'exit 0' \
     > "$REPO/.claude/scripts/post_zh_runtime.sh"
@@ -83,7 +98,7 @@ chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
     git init -q
     git config user.email test@example.invalid
     git config user.name test
-    git add .claude docs
+    git add .claude docs .gitignore
     git commit -qm base
 )
 BASE=$(git -C "$REPO" rev-parse HEAD)
@@ -179,8 +194,8 @@ assert data["completed_at"]
 assert data["failures"] == 0
 assert data["run_id"] == os.path.basename(os.path.dirname(path))
 assert [phase["id"] for phase in data["phases"]] == [
-    "policy-sync", "review-static", "message-overlay-static",
-    "zh-runtime-catch2",
+    "policy-sync", "source-db-static", "review-static",
+    "message-overlay-static", "zh-runtime-catch2",
 ]
 assert all(phase["status"] == "pass" for phase in data["phases"])
 assert data["artifacts"][0]["path"] == "verify.log"
