@@ -1,0 +1,275 @@
+{
+  "entries": [
+    {
+      "canonical_key": "unseen thermic dynamo cast",
+      "canonical_fingerprint": "fnv1a64:6e44f325cde66325",
+      "selection_graph_fingerprint": "fnv1a64:267cc742039bc2d4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_thermic_dynamo.violent_whirl.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "1ca2fe6aefb21971059b16248877ca8dfdc6f937c5159780fab69c3487e1c7e6",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a violent whirl.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a violent whirl." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一阵猛烈的旋转呼啸声。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen vv cast",
+      "canonical_fingerprint": "fnv1a64:88014d7d1b383bc9",
+      "selection_graph_fingerprint": "fnv1a64:8e0bc9f9bef13660",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_vv.rock_striking_rock.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f74eec9b98566eff5010974c7df1d63a82c07bea60dac801c8bc355c2f1cf6f8",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear the sound of rock striking rock.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear the sound of rock striking rock." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到岩石相互撞击的声音。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen warning cry cast",
+      "canonical_fingerprint": "fnv1a64:753702ca2ab77ec3",
+      "selection_graph_fingerprint": "fnv1a64:53aac5da4ec801e4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_warning_cry.loud_warning_cry.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "37f15097e021330cb964efba13182b6301c5ea4e393a26fa3beea04f683bbdc1",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a loud warning cry!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a loud warning cry!" },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一声响亮的示警嚎叫！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen warning cry howler monkey cast",
+      "canonical_fingerprint": "fnv1a64:af9b39f87b6ba1ee",
+      "selection_graph_fingerprint": "fnv1a64:a06966e222f77fa1",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_warning_cry_howler_monkey.hooting_and_howling.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5e2e360e6fb8e40d83405b1e04bb9d60ff6f61b7ffdf4c21073d6d089519733f",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a tremendous hooting and howling!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a tremendous hooting and howling!" },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到震耳欲聋的鸣叫与嚎叫声！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen warning cry seraph cast",
+      "canonical_fingerprint": "fnv1a64:09b56af48e01072f",
+      "selection_graph_fingerprint": "fnv1a64:cd2175ed71dd29a2",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_warning_cry_seraph.loud_warning_shout.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "90e1bc6543495dfc3d4a574e4c2ddbeeccf371408c1a83c86e0bb7f488efd383",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a loud warning shout!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a loud warning shout!" },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一声响亮的示警喊声！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen warning cry ushabti cast",
+      "canonical_fingerprint": "fnv1a64:cba513062d92e29a",
+      "selection_graph_fingerprint": "fnv1a64:60e68d71eb2c6005",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_warning_cry_ushabti.deafening_rattle.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "52241a395a24c4ff28eeca26157d39a97ec01689b50d73dc2e958a19977c78c9",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a deafening rattling sound!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a deafening rattling sound!" },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到震耳欲聋的嘎嘎响声！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen warning cry vault sentinel cast",
+      "canonical_fingerprint": "fnv1a64:e75dba0acad2695f",
+      "selection_graph_fingerprint": "fnv1a64:f2daae91e071f3be",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_warning_cry_vault_sentinel.horn_note.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cf526b88fb11f077fc88b9a5308728ed50f43c16f486b64e83d87e78d397a097",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear a note loudly blown on a horn!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear a note loudly blown on a horn!" },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到号角发出一声响亮的鸣音！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen weeping skull cast",
+      "canonical_fingerprint": "fnv1a64:6c981fc225396c21",
+      "selection_graph_fingerprint": "fnv1a64:dac21570c19b028a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_weeping_skull.gushing_sobs.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5f706936231fcefa21e14679bfcf8b8316501f09b569cc95a62bc9f214c8daf2",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear gushing sobs.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear gushing sobs." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一阵喷涌而出的抽泣声。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen wizard cast",
+      "canonical_fingerprint": "fnv1a64:e2a28efa5f0ebff9",
+      "selection_graph_fingerprint": "fnv1a64:88b62742548cd03a",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_wizard.mumbled_words.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7b4235a5381936b1287d1b509777b986715549bd3b8d7ac03d94cb2b5c6ac53a",
+        "upstream_weight": 10,
+        "english_snapshot": "You hear some strange, mumbled words.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "You hear some strange, mumbled words." },
+            { "language": "zh", "relation": "NONE", "pattern": "你听到一些奇怪而含糊不清的话语。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
