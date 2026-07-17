@@ -434,7 +434,8 @@ run_phase() {
     run_source_db_static() {
         local rc=0
         python3 "$SCRIPT_DIR/scan_i18n.py" source-db-structure \
-            --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+            --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" \
+            --exit-nonzero-if-issues || rc=$?
         python3 "$SCRIPT_DIR/scan_i18n.py" source-key-collisions \
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
         python3 "$SCRIPT_DIR/i18n_extract.py" validate "$WORKTREE/crawl-ref/source" \
@@ -459,9 +460,11 @@ run_phase() {
             ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.
-            # Only source-db-static (run above) and translation-static needed.
+            # source-db-static (run above) + translation-static + code-static.
             run_phase "translation-static" 1 "Translation verification (static)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
+            run_phase "code-static" 1 "Code verification (post-coder.sh, static)" \
+                bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
 

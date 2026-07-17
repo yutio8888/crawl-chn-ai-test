@@ -65,6 +65,12 @@ printf '%s\n' \
     'exit "$(cat .phase-rc 2>/dev/null || echo 0)"' \
     > "$REPO/.claude/scripts/post-reviewer.sh"
 chmod +x "$REPO/.claude/scripts/post-reviewer.sh"
+printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/scan_i18n.py"
+chmod +x "$REPO/.claude/scripts/scan_i18n.py"
+printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/i18n_extract.py"
+chmod +x "$REPO/.claude/scripts/i18n_extract.py"
 printf '%s\n' \
     '#!/bin/bash' \
     'echo "$1" >> .observed-runtime-mode' \

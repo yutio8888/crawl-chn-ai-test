@@ -51,6 +51,12 @@ echo "$1" >> .runtime-runs
 exit 0
 SH
 chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
+printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/scan_i18n.py"
+chmod +x "$REPO/.claude/scripts/scan_i18n.py"
+printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+    > "$REPO/.claude/scripts/i18n_extract.py"
+chmod +x "$REPO/.claude/scripts/i18n_extract.py"
 export ZH_VERIFY_MESSAGE_OVERLAY_STATIC_COMMAND=true
 
 (
