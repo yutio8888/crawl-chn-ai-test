@@ -765,6 +765,58 @@ class MonspellBehaviorAuditTest(unittest.TestCase):
         self.assertIn(
             "none cast", en_runtime["predicate_roots"]["VISUAL_CHANNEL"])
 
+    def test_explicit_suppress_is_complete_silent_behavior_metadata(self):
+        en = load_artifact(self.en_path)
+        zh = load_artifact(self.zh_path)
+        descriptor = {
+            "_entry_mode": "CANDIDATE",
+            "stable_id": "fixture.explicit-suppress",
+            "suppresses": True,
+            "line_metadata": [],
+            "materialization_cases": [],
+        }
+        catalog = {("none cast", 0): descriptor}
+
+        for language, entries in (
+            ("en", effective_entries(en, None, "en")),
+            ("zh", effective_entries(en, zh, "zh")),
+        ):
+            with self.subTest(language=language):
+                runtime = analyze_language(
+                    language, ["none cast"], entries, catalog)
+                self.assertEqual(runtime["occurrences"], [])
+                self.assertEqual(runtime["behavior_root_union"], [])
+                self.assertEqual(
+                    runtime["predicate_roots"]["UNANALYSABLE"], [])
+                self.assertEqual(
+                    runtime["structured_variant_metadata"], [{
+                        "requested_root": "none cast",
+                        "language": language,
+                        "variant_ordinal": 0,
+                        "stable_id": "fixture.explicit-suppress",
+                        "complete": True,
+                    }])
+
+        for suppress_value in (None, False):
+            malformed = copy.deepcopy(descriptor)
+            if suppress_value is None:
+                malformed.pop("suppresses")
+            else:
+                malformed["suppresses"] = suppress_value
+            with self.subTest(suppresses=suppress_value):
+                runtime = analyze_language(
+                    "en", ["none cast"], effective_entries(en, None, "en"),
+                    {("none cast", 0): malformed})
+                self.assertEqual(
+                    runtime["predicate_roots"]["UNANALYSABLE"],
+                    ["none cast"])
+                self.assertEqual(
+                    runtime["structured_variant_metadata"][0]["complete"],
+                    False)
+                self.assertEqual(
+                    [item["behavior"] for item in runtime["occurrences"]],
+                    ["UNANALYSABLE"])
+
     def test_deterministic_output_and_check(self):
         command = [
             sys.executable, str(AUDIT),

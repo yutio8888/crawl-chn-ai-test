@@ -953,13 +953,16 @@ def analyze_language(language: str, roots: list[str],
                 lines = list(descriptor.get("line_metadata", []))
                 for case in descriptor.get("materialization_cases", []):
                     lines.extend(case.get("line_metadata", []))
-                complete = bool(lines) and all(
-                    isinstance(line.get("behavior"), dict)
-                    and set(line["behavior"])
-                        == {"implies_gesture", "audible"}
-                    and isinstance(line["behavior"]["implies_gesture"], bool)
-                    and line["behavior"]["audible"] is False
-                    for line in lines)
+                explicit_suppress = descriptor.get("suppresses") is True
+                complete = explicit_suppress or (
+                    bool(lines) and all(
+                        isinstance(line.get("behavior"), dict)
+                        and set(line["behavior"])
+                            == {"implies_gesture", "audible"}
+                        and isinstance(
+                            line["behavior"]["implies_gesture"], bool)
+                        and line["behavior"]["audible"] is False
+                        for line in lines))
                 metadata_variants.append({
                     "requested_root": key,
                     "language": language,
@@ -973,6 +976,11 @@ def analyze_language(language: str, roots: list[str],
                         key, language, ordinal, [], "ANALYSIS",
                         "UNANALYSABLE", catalog,
                         "structured behavior metadata is incomplete"))
+                    continue
+                if explicit_suppress:
+                    # A validated suppress descriptor is the complete behavior:
+                    # the selected candidate terminates silently in every locale.
+                    # It intentionally has no renderable line metadata.
                     continue
                 structured_behaviors = set()
                 if any(line["behavior"]["implies_gesture"] for line in lines):

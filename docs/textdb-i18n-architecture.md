@@ -371,6 +371,11 @@ recursive_dependency_fingerprints
 tombstone
 ```
 
+显式沉默变体是唯一无可渲染行的 `CANDIDATE`：`suppresses=true` 本身就是完整的
+跨语言行为元数据，表示候选搜索立即停止且不输出正文，因此不得伪造空模板或
+`line_metadata`。行为审计必须将其计为 EN/ZH 均完整、零 predicate，而不是
+`UNANALYSABLE`。
+
 `fork-message-overlay.generated.inc` 是生成器物化的只读 sidecar catalog，保存
 canonical English 变体身份、适用条件、逐行元数据、物化 case 和各语言最终
 模板；不得人工编辑。语言只选择最终纯模板，不拥有独立的 TextDB 变体身份。
