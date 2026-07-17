@@ -33,7 +33,7 @@ assert_rc() {
 # We'll run smoke_test.sh from a temporary git repo to provide the right
 # directory structure.
 REPO="$TMP_ROOT/repo"
-mkdir -p "$REPO/crawl-ref/source" "$REPO/docs"
+mkdir -p "$REPO/crawl-ref/source" "$REPO/docs" "$REPO/.claude/scripts"
 echo '# glossary' > "$REPO/docs/glossary.md"
 cp "$SMOKE_SCRIPT" "$REPO/.claude/scripts/smoke_test.sh"
 chmod +x "$REPO/.claude/scripts/smoke_test.sh"
