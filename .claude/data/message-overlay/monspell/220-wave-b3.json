@@ -1,0 +1,305 @@
+{
+  "entries": [
+    {
+      "canonical_key": "minor healing dryad cast",
+      "canonical_fingerprint": "fnv1a64:10940ecdb119872b",
+      "selection_graph_fingerprint": "fnv1a64:b0ff2f37e3dc52fa",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.minor_healing_dryad.draws_vitality.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "694ed159a91af0d0b160860f5f4a02c8d73be7a86cc5876746b719d669e4c3ce",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ draws upon the vitality of nature.",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} draws upon the vitality of nature." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}汲取了大自然的生命力。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "orange crystal statue cast",
+      "canonical_fingerprint": "fnv1a64:e0c2370b43d1d2e0",
+      "selection_graph_fingerprint": "fnv1a64:ea23acd4ef4b022d",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.orange_crystal_statue.glitters.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "687f07fa5104bdce7c68625fe1a62dacc474dd36c1d99b78358a36ff53b45fda",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ glitters.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} glitters." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}闪闪发光。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "ostracise cast",
+      "canonical_fingerprint": "fnv1a64:6666408c57318085",
+      "selection_graph_fingerprint": "fnv1a64:79f4de1c277918ce",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.ostracise.freezes_soul.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "a242355f7df4b1c69f3d336fd5dfe43a66de1b9d318946701239f006f6e74771",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ freezes your soul cold.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} freezes your soul cold." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}冻结了你的灵魂。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "pyroclastic surge cast",
+      "canonical_fingerprint": "fnv1a64:f91f1b1023eb8938",
+      "selection_graph_fingerprint": "fnv1a64:7b757eb504469a83",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.pyroclastic_surge.calls_gouts_of_flame.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "6e5ad9cbeb41eddfef8491e0560adf95c1557df96f134261cde7ea74de5e375a",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls gouts of flame from the lava!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls gouts of flame from the lava!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}从熔岩中召唤出一团团火焰！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "silent berserker rage rupert cast",
+      "canonical_fingerprint": "fnv1a64:abdfbd4ce63ee6dd",
+      "selection_graph_fingerprint": "fnv1a64:5a8b066e35cd2144",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.silent_berserker_rage_rupert.flies_into_rage.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cabd24635036f6a7b5d5273b07d0862b2120851ca082997ef9e935057d824c31",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ flies into a rage!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} flies into a rage!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}勃然大怒！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "sticks to snakes cast",
+      "canonical_fingerprint": "fnv1a64:88671018358ef5a4",
+      "selection_graph_fingerprint": "fnv1a64:f66917d46c07c417",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.sticks_to_snakes.twin_branches.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "9bebd73da1eb3651f0a4a5467179dac72e4a1e3c5861efffd925ff7a7a984f4e",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ drops twin branches, and they both wriggle to life!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} drops twin branches, and they both wriggle to life!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}扔下两根树枝，它们随即扭动着活了过来！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "summon mortal champion fravashi cast",
+      "canonical_fingerprint": "fnv1a64:b325e0d1d8728c38",
+      "selection_graph_fingerprint": "fnv1a64:d04eef749b2c7157",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "61087074d4ce7786a9fa3710187b5a5e4a278bb677f060a93b0cc4e9c7da688d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ beckons forth its champion.",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} beckons forth its champion." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召唤出其冠军斗士。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "symbol of torment cast",
+      "canonical_fingerprint": "fnv1a64:766e8b7f21d03d6c",
+      "selection_graph_fingerprint": "fnv1a64:abf1ed881c1d0167",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.symbol_of_torment.calls_powers_of_darkness.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "75b03606135eb95e28a615c7092069c7f4d4a33882a4548fa6a76c4add14cab9",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls on the powers of darkness!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls on the powers of darkness!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召来黑暗的力量！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "thrashing horror cast",
+      "canonical_fingerprint": "fnv1a64:e33be8926b98fa72",
+      "selection_graph_fingerprint": "fnv1a64:ba88933b51824da3",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.thrashing_horror.churns_violently.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "18e59ba7f6320d49e28e59cd06f8c01f9bae9de6723969881f670a2313d55482",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ churns violently!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} churns violently!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}剧烈地翻腾着！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "vhi's electrolunge cast",
+      "canonical_fingerprint": "fnv1a64:867734c9fbd0f1b5",
+      "selection_graph_fingerprint": "fnv1a64:6aeebdee7210730c",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.vhis_electrolunge.electric_crackle.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "76a097bf527ab6102c783a866d71ebdd276609cb242505cef5cb6cef76446aef",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ charges forward with an electric crackle.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} charges forward with an electric crackle." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}伴着电流的噼啪声向前猛冲。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
