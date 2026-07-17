@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 73,
-    "canonical_structured_variant_metadata_units": 73,
+    "canonical_structured_variant_metadata_complete": 103,
+    "canonical_structured_variant_metadata_units": 103,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
     "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 146,
-    "per_language_structured_variant_verification_units": 146,
+    "per_language_structured_variant_verification_complete": 206,
+    "per_language_structured_variant_verification_units": 206,
     "remaining_legacy_behavior_occurrences": 0,
     "unanalysable_occurrences": 0
   },
@@ -5205,8 +5205,29 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "battlecry cherub cast",
+          "stable_id": "mon.cast.battlecry_cherub.powerful_hymn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "beam catchall cast",
           "stable_id": "mon.cast.beam_catchall.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "berserker rage rupert cast",
+          "stable_id": "mon.cast.berserker_rage_rupert.mad_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "bolt of fire ophan cast",
+          "stable_id": "mon.cast.bolt_of_fire_ophan.cleansing_fire.v1",
           "variant_ordinal": 0
         },
         {
@@ -5289,8 +5310,22 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "cognitogaunt cast",
+          "stable_id": "mon.cast.cognitogaunt.glimmers_violently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "cold breath cast",
           "stable_id": "mon.cast.cold_breath.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "corrupting pulse wretched star cast",
+          "stable_id": "mon.cast.corrupting_pulse_wretched_star.eldritch_light.v1",
           "variant_ordinal": 0
         },
         {
@@ -5303,8 +5338,29 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "death rattle ushabti cast",
+          "stable_id": "mon.cast.death_rattle_ushabti.shakes_rattles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "dispel undead revenant cast",
           "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "dissolution cast",
+          "stable_id": "mon.cast.dissolution.deep_gurgle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "dragon cast",
+          "stable_id": "mon.cast.dragon.roar.v1",
           "variant_ordinal": 0
         },
         {
@@ -5331,6 +5387,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "electrical bolt shock serpent cast",
+          "stable_id": "mon.cast.electrical_bolt_shock_serpent.electric_tendril.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "enfeeble zykzyl cast",
+          "stable_id": "mon.cast.enfeeble_zykzyl.resentment.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "ensnare arachne cast",
           "stable_id": "mon.cast.ensnare_arachne.points_staff.v1",
           "variant_ordinal": 0
@@ -5341,6 +5411,13 @@
           "requested_root": "ensnare arachne cast",
           "stable_id": "mon.cast.ensnare_arachne.staff_shoots.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ensnare natural cast",
+          "stable_id": "mon.cast.ensnare_natural.expels_webbing.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -5359,6 +5436,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "formless jellyfish cast",
+          "stable_id": "mon.cast.formless_jellyfish.shimmers.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "freeze cast",
           "stable_id": "mon.cast.freeze.freeze_target.v1",
           "variant_ordinal": 0
@@ -5366,8 +5450,43 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "geryon cast",
+          "stable_id": "mon.cast.geryon.winds_horn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ghost moth cast",
+          "stable_id": "mon.cast.ghost_moth.looks_around.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "glowing orange brain cast",
+          "stable_id": "mon.cast.glowing_orange_brain.pulsates.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "grasping roots cast",
+          "stable_id": "mon.cast.grasping_roots.reaches_roots.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "grasping roots natural cast",
           "stable_id": "mon.cast.grasping_roots_natural.roots_beneath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "guardian serpent cast",
+          "stable_id": "mon.cast.guardian_serpent.casts_spell.v1",
           "variant_ordinal": 0
         },
         {
@@ -5415,6 +5534,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "hurl torchlight cast",
+          "stable_id": "mon.cast.hurl_torchlight.raises_torch.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "invisibility shadowghast cast",
+          "stable_id": "mon.cast.invisibility_shadowghast.slips_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "magical cast",
           "stable_id": "mon.cast.magical.gesture.v1",
           "variant_ordinal": 0
@@ -5431,6 +5564,13 @@
           "language": "en",
           "requested_root": "malign offering priest cast",
           "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "manifold assault natural cast",
+          "stable_id": "mon.cast.manifold_assault_natural.many_places.v1",
           "variant_ordinal": 0
         },
         {
@@ -5464,6 +5604,27 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "minor healing dryad cast",
+          "stable_id": "mon.cast.minor_healing_dryad.draws_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orange crystal statue cast",
+          "stable_id": "mon.cast.orange_crystal_statue.glitters.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ostracise cast",
+          "stable_id": "mon.cast.ostracise.freezes_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "phantom mirror cast",
           "stable_id": "mon.cast.phantom_mirror.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -5473,6 +5634,13 @@
           "language": "en",
           "requested_root": "poisonous cloud natural cast",
           "stable_id": "mon.cast.poisonous_cloud_natural.breathe_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "pyroclastic surge cast",
+          "stable_id": "mon.cast.pyroclastic_surge.calls_gouts_of_flame.v1",
           "variant_ordinal": 0
         },
         {
@@ -5488,6 +5656,13 @@
           "requested_root": "sheza's dance cast",
           "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent berserker rage rupert cast",
+          "stable_id": "mon.cast.silent_berserker_rage_rupert.flies_into_rage.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -5555,8 +5730,36 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "sticks to snakes cast",
+          "stable_id": "mon.cast.sticks_to_snakes.twin_branches.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "sticky flame cast",
           "stable_id": "mon.cast.sticky_flame.liquid_fire.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "summon mortal champion fravashi cast",
+          "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "symbol of torment cast",
+          "stable_id": "mon.cast.symbol_of_torment.calls_powers_of_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "thrashing horror cast",
+          "stable_id": "mon.cast.thrashing_horror.churns_violently.v1",
           "variant_ordinal": 0
         },
         {
@@ -5586,6 +5789,13 @@
           "requested_root": "vanquished vanguard nergalle cast",
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vhi's electrolunge cast",
+          "stable_id": "mon.cast.vhis_electrolunge.electric_crackle.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6358,8 +6568,29 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "battlecry cherub cast",
+          "stable_id": "mon.cast.battlecry_cherub.powerful_hymn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "beam catchall cast",
           "stable_id": "mon.cast.beam_catchall.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "berserker rage rupert cast",
+          "stable_id": "mon.cast.berserker_rage_rupert.mad_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "bolt of fire ophan cast",
+          "stable_id": "mon.cast.bolt_of_fire_ophan.cleansing_fire.v1",
           "variant_ordinal": 0
         },
         {
@@ -6442,8 +6673,22 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "cognitogaunt cast",
+          "stable_id": "mon.cast.cognitogaunt.glimmers_violently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "cold breath cast",
           "stable_id": "mon.cast.cold_breath.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "corrupting pulse wretched star cast",
+          "stable_id": "mon.cast.corrupting_pulse_wretched_star.eldritch_light.v1",
           "variant_ordinal": 0
         },
         {
@@ -6456,8 +6701,29 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "death rattle ushabti cast",
+          "stable_id": "mon.cast.death_rattle_ushabti.shakes_rattles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "dispel undead revenant cast",
           "stable_id": "mon.cast.dispel_undead_revenant.violent_gesture.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "dissolution cast",
+          "stable_id": "mon.cast.dissolution.deep_gurgle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "dragon cast",
+          "stable_id": "mon.cast.dragon.roar.v1",
           "variant_ordinal": 0
         },
         {
@@ -6484,6 +6750,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "electrical bolt shock serpent cast",
+          "stable_id": "mon.cast.electrical_bolt_shock_serpent.electric_tendril.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "enfeeble zykzyl cast",
+          "stable_id": "mon.cast.enfeeble_zykzyl.resentment.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "ensnare arachne cast",
           "stable_id": "mon.cast.ensnare_arachne.points_staff.v1",
           "variant_ordinal": 0
@@ -6494,6 +6774,13 @@
           "requested_root": "ensnare arachne cast",
           "stable_id": "mon.cast.ensnare_arachne.staff_shoots.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ensnare natural cast",
+          "stable_id": "mon.cast.ensnare_natural.expels_webbing.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6512,6 +6799,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "formless jellyfish cast",
+          "stable_id": "mon.cast.formless_jellyfish.shimmers.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "freeze cast",
           "stable_id": "mon.cast.freeze.freeze_target.v1",
           "variant_ordinal": 0
@@ -6519,8 +6813,43 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "geryon cast",
+          "stable_id": "mon.cast.geryon.winds_horn.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ghost moth cast",
+          "stable_id": "mon.cast.ghost_moth.looks_around.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "glowing orange brain cast",
+          "stable_id": "mon.cast.glowing_orange_brain.pulsates.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "grasping roots cast",
+          "stable_id": "mon.cast.grasping_roots.reaches_roots.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "grasping roots natural cast",
           "stable_id": "mon.cast.grasping_roots_natural.roots_beneath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "guardian serpent cast",
+          "stable_id": "mon.cast.guardian_serpent.casts_spell.v1",
           "variant_ordinal": 0
         },
         {
@@ -6568,6 +6897,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "hurl torchlight cast",
+          "stable_id": "mon.cast.hurl_torchlight.raises_torch.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "invisibility shadowghast cast",
+          "stable_id": "mon.cast.invisibility_shadowghast.slips_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "magical cast",
           "stable_id": "mon.cast.magical.gesture.v1",
           "variant_ordinal": 0
@@ -6584,6 +6927,13 @@
           "language": "zh",
           "requested_root": "malign offering priest cast",
           "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "manifold assault natural cast",
+          "stable_id": "mon.cast.manifold_assault_natural.many_places.v1",
           "variant_ordinal": 0
         },
         {
@@ -6617,6 +6967,27 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "minor healing dryad cast",
+          "stable_id": "mon.cast.minor_healing_dryad.draws_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orange crystal statue cast",
+          "stable_id": "mon.cast.orange_crystal_statue.glitters.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ostracise cast",
+          "stable_id": "mon.cast.ostracise.freezes_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "phantom mirror cast",
           "stable_id": "mon.cast.phantom_mirror.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -6626,6 +6997,13 @@
           "language": "zh",
           "requested_root": "poisonous cloud natural cast",
           "stable_id": "mon.cast.poisonous_cloud_natural.breathe_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "pyroclastic surge cast",
+          "stable_id": "mon.cast.pyroclastic_surge.calls_gouts_of_flame.v1",
           "variant_ordinal": 0
         },
         {
@@ -6641,6 +7019,13 @@
           "requested_root": "sheza's dance cast",
           "stable_id": "mon.cast.shezas_dance.gesture_weapons_rise.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent berserker rage rupert cast",
+          "stable_id": "mon.cast.silent_berserker_rage_rupert.flies_into_rage.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6708,8 +7093,36 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "sticks to snakes cast",
+          "stable_id": "mon.cast.sticks_to_snakes.twin_branches.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "sticky flame cast",
           "stable_id": "mon.cast.sticky_flame.liquid_fire.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "summon mortal champion fravashi cast",
+          "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "symbol of torment cast",
+          "stable_id": "mon.cast.symbol_of_torment.calls_powers_of_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "thrashing horror cast",
+          "stable_id": "mon.cast.thrashing_horror.churns_violently.v1",
           "variant_ordinal": 0
         },
         {
@@ -6739,6 +7152,13 @@
           "requested_root": "vanquished vanguard nergalle cast",
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vhi's electrolunge cast",
+          "stable_id": "mon.cast.vhis_electrolunge.electric_crackle.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,

@@ -1,8 +1,9 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移及一次 21-key 分片并行
-试点。当前覆盖 42 个 canonical key、73 个 canonical variant。**
+`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移、一次 21-key 分片并行
+试点及 Wave B 的 30-key 并行迁移。当前覆盖 72 个 canonical key、103 个
+canonical variant。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -11,7 +12,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 42 个完整 key 闭包。Phase 1 的两个初始 key 为：
+当前共迁移 72 个完整 key 闭包。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -164,6 +165,13 @@ fallback 的行为与 RNG 契约。
 确定性排序并生成唯一 sidecar，避免并行分支同时改写共享 JSON 数组和生成文件。
 这次试点只把 catalog 从 21 个 key 扩至 42 个，不表示其余 `monspell` root 已迁移。
 
+Wave B 随后由 `200-wave-b1.json`、`210-wave-b2.json` 与
+`220-wave-b3.json` 三个独立 fragment 并行新增 30 个 actor-only key、30 个
+canonical variant。它们均使用 `NONE`、仅声明 `${actor}`，并保持
+`resolves_target=false`。`ostracise cast` 的英文虽然出现 “your soul”，其
+applicability 仍按 legacy 行为保持 `requires_player=false`，其他
+`requires_*` 也均为 false；catalog 不从翻译或正文代词推导候选适用条件。
+
 ## 2. 三类 artifact 的职责
 
 ### manifest
@@ -314,7 +322,7 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 42 个 key、73 个 canonical variant，不代表 262 个
+- structured 覆盖为 72 个 key、103 个 canonical variant，不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
   `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
@@ -458,9 +466,9 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 73 个 canonical structured variant，73 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 146 个逐语言验证
-  单位，146 个均完整。
+- 103 个 canonical structured variant，103 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 206 个逐语言验证
+  单位，206 个均完整。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement
@@ -480,7 +488,8 @@ silent-prefixed 与 silent-unprefixed fallback 的 production candidate lookup
 闭包已经包含在分析域中，但不表示每个 root 在某个具体运行时状态都一定可达。
 
 `phase2_ready` 为 true。EN/ZH effective runtime behavior parity、候选
-containment、runtime reachability 与八批既有迁移及 21-key pilot 均已证明，且
+containment、runtime reachability、八批既有迁移、21-key pilot 与 Wave B
+30-key actor-only 批次均已证明，且
 unanalyzable occurrence 与 fail-closed root 均为 0。正常 `monspell` 路径的
 gesture 正文嗅探已在独立批次删除；审计持续作为回归门禁。只有 overlay
 故障/未加载或语言不受支持，且 key 属于 compiled `CANDIDATE` catalog 时，
