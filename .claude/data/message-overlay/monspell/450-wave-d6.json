@@ -1,0 +1,382 @@
+{
+  "entries": [
+    {
+      "canonical_key": "polymorphed wizard cast",
+      "canonical_fingerprint": "fnv1a64:e75a24aa6f2274f5",
+      "selection_graph_fingerprint": "fnv1a64:1193b83a9c07b1fa",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.polymorphed_wizard.casts_spell.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "bfbac6a719eb32f89047a913834b9257f3b6ef56dfee5e11466aa24688ae5428",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ casts a spell.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "polymorphed wizard cast targeted",
+      "canonical_fingerprint": "fnv1a64:1a97a0fc708be463",
+      "selection_graph_fingerprint": "fnv1a64:18ff6ae90904cfe8",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.polymorphed_wizard.targeted.casts_spell.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "ddecb8d00b3a49668137d8b79d0738241d23d7b11edfb5932be7e64deac05d97",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ casts a spell @at@ @target@.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "quicksilver bolt natural cast",
+      "canonical_fingerprint": "fnv1a64:61176c021e380a05",
+      "selection_graph_fingerprint": "fnv1a64:c8b95827bc7cca66",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.quicksilver_bolt_natural.breathes_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "ravenous swarm vampire bloodprince cast",
+      "canonical_fingerprint": "fnv1a64:d21c01896203c926",
+      "selection_graph_fingerprint": "fnv1a64:7ae54fdd4e011e1c",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.unfurls_wings.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "b087b35d3d34ff06aec2ff7ba1dd79439eee34a5048749838d5349fdefa319e0",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ unfurls @possessive@ wings.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} unfurls ${possessive} wings." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}展开翅膀。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.spreads_arms.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "d601683d15e7ecb9e5cae831c1b18c560f860b0f30ea175a0b6ce8ca82f7d9aa",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ spreads @possessive@ arms wide.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} spreads ${possessive} arms wide." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}张开双臂。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "rebounding chill thermic dynamo cast",
+      "canonical_fingerprint": "fnv1a64:c75743a3c6ddeff3",
+      "selection_graph_fingerprint": "fnv1a64:807465a0e9ffb03b",
+      "mode": "LEGACY_ONLY",
+      "variants": [
+        {
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.wild_ice_whirl.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "8b9bdf6c033f70cd6e01134ae8b406ef54ae1eabdcff71fd3a0024155e352cf8",
+          "upstream_weight": 10,
+          "english_snapshot": "A wild whirl of ice shoots out from @the_monster@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [], "required_arguments": [], "line_metadata": [],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.vents_cold.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "0a32d909f5f6e67a92ace71c82693df239aee37958c5c65e1ca0ec1580910c48",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ overflows with ice and vents excess cold @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY",
+          "slot_schema": [], "required_arguments": [], "line_metadata": [],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "rupert cast targeted",
+      "canonical_fingerprint": "fnv1a64:48974421ec35c5d1",
+      "selection_graph_fingerprint": "fnv1a64:1a78a5cce4864051",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.rupert.targeted.wild_roar.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "52e3e799b00ff468c29332c7e6ef50d5807d543c621cac0a6f41675317a098e7",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ roars wildly @at@ @target@.",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} roars wildly at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} roars wildly next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} roars wildly past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}狂野咆哮。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边狂野咆哮。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后狂野咆哮。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.rupert.targeted.loud_yell.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "de5baf20c424760947ec41b1910de7145922306bb2f180674c0d5dd7c9767bbf",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ yells loudly @at@ @target@.",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} yells loudly at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} yells loudly next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} yells loudly past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}高声喊叫。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边高声喊叫。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后高声喊叫。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "scrub nettle cast targeted",
+      "canonical_fingerprint": "fnv1a64:23e892e622fc6a61",
+      "selection_graph_fingerprint": "fnv1a64:f3925396294529dc",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.scrub_nettle.targeted.launches_toxic_spines.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cd10359a279a655e5ed9d359fe59cab228a19f85fadc891fbdd376396b32484e",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ launches toxic spines @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} launches toxic spines at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} launches toxic spines next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} launches toxic spines past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出毒刺。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出毒刺。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出毒刺，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "seismic stomp cast",
+      "canonical_fingerprint": "fnv1a64:2312c7462e094465",
+      "selection_graph_fingerprint": "fnv1a64:ac07530770ac4fd4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.seismic_stomp.stomps_heavy_feet.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "6ee920e1c8050a9238fd8515041c0f4b4ac8efeeaf029e054c6def318f13b37a",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ stomps @possessive@ heavy feet.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} stomps ${possessive} heavy feet." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}跺动沉重的双脚。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "shadow shot cast",
+      "canonical_fingerprint": "fnv1a64:cdd91d68645a418d",
+      "selection_graph_fingerprint": "fnv1a64:197756c46eb24bae",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.shadow_shot.fires.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "452f8455be3e531c926a67a86cd0be8ac7dc6a708a0398a1ae274b8ba4c613bd",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} fires at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} fires next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} fires past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射击。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射击。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后射击。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "silent curse skull cast",
+      "canonical_fingerprint": "fnv1a64:d707e5c9d986397b",
+      "selection_graph_fingerprint": "fnv1a64:c116600bbd029164",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.silent_curse_skull.rattles_jaw_silently.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "2831c9dd4973c4bb35fd334742a5f7d38bee06ac0b939457b541857f8f081345",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ rattles @possessive@ jaw silently.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} rattles ${possessive} jaw silently." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}无声地颤动下颌。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
