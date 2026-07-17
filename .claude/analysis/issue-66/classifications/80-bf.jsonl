@@ -1,0 +1,566 @@
+{
+  "schema": "dcss-zh-source-classification-shard-v1",
+  "kind": "collision",
+  "range": "80-bf",
+  "groups": [
+    {
+      "group_id": "sourcedb-v1:81a4bfc1a70e0e793a3710d45407d2c1d8a165eaf84cb445a7f5083ddcc93c54",
+      "group_fingerprint": "d78df2dd9717ab5bda067b787c73e82e676c809c42236157f155107eafb25649",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'gnoll'/'Gnoll': case-only duplicate, identical translation '豺狼人'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8347c6f08dad027048ae4dbaaca4c941063695ec8475d030d7b5cd89ee08d8c1",
+      "group_fingerprint": "47e48e299f090945e77fa3bdbb833ddd5bf58278993b6852d4c278a8440768a5",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'demonspawn'/'Demonspawn': case-only duplicate, identical translation '恶魔裔'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:84820a336e10a3131079bbc9bbe3d4aa4093c0f54b679d115e9401133376f749",
+      "group_fingerprint": "25026edb0624ca340e0ed2b145e915750b020f0d2e23998528dacbae53230162",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'pale draconian'/'Pale Draconian': case-only duplicate, identical translation '苍白龙人'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8597d34ca4c425f56468dd5d90f6d16296f6dd185de1483c22f7b93e4cd409c2",
+      "group_fingerprint": "f0a195899927a89a6f365379440d2e865593212516b80fb432e12206b08f5e01",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'orb'/'Orb': case-only duplicate, identical translation '宝珠'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8d9001d32c6a703d95921a77115050f33dd823d3f1730bd35215dcbecad6dc20",
+      "group_fingerprint": "44b4a5e9a3e52c37bddd2a66aeddd0d13007ddc1d8ba0eef346ea074c7d5d56a",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 14127,
+            "note": "lowercase 'shop' → '商店'"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 36258,
+            "note": "capitalized 'Shop' → '店铺'"
+          }
+        ],
+        "rationale": "Same concept with case-only key difference. '商店' vs '店铺' — choose canonical translation (recommend '商店' as more standard)."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8ee29584ab7c8c6c639207b2cf86c047ba95bda3068c93ff4b78a14761c4f6d6",
+      "group_fingerprint": "638306e0d0bef857c024f9b679667796c02ab07dd983da8e6cc63e4094f24947",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37359,
+            "note": "capitalized 'status|Engorged' → '胀' (short form for status bar)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37890,
+            "note": "lowercase 'status|engorged' → '饱食' (full form for status description)"
+          }
+        ],
+        "rationale": "Deliberate short/full form distinction via case, collapsed by canonical lowercase. Needs C_('status_short','Engorged') and C_('status_full','Engorged') contexts."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:94c41436f038313595af6897442afcc442ebec2c31803cb8fb88765258a52f85",
+      "group_fingerprint": "315a07b0a393c9bb6eeef2cacbe8d7266442832cf3678aff9552b74c61d05218",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'vampire'/'Vampire': case-only duplicate, identical translation '吸血鬼'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:95abaaf7ecfc5ac57b71d405616047bf9565269135ee62e916b08dee79c3a617",
+      "group_fingerprint": "d3695f2b27e83353c56ecf1f17e30485f35523a31835eb50cedf558e20c9fdf2",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'foxfire'/'Foxfire': case-only duplicate, identical translation '狐火'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:96d1e6e93ddb1feb29e5d10e3a5737dda412ff5d527c1c32ddb6cee00ebd22c8",
+      "group_fingerprint": "9e6a6cfc02dca2989b3e9b1d927855cf2aab4fb223915407470d5e4281b351a9",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37419,
+            "note": "capitalized 'status|Frozen' → '冻' (short form)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37941,
+            "note": "lowercase 'status|frozen' → '冰冻' (full form)"
+          }
+        ],
+        "rationale": "Short/full form distinction. Needs C_('status_short','Frozen') and C_('status_full','Frozen')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:978f34d9406cd3a8d0dd102939f2dea1eab502bdbab4ef37e961ca1c91999e48",
+      "group_fingerprint": "817e8c9bf7e820f2a77c06469f80a890540cea3cc29900891d5ba4265439a1b4",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'coglin'/'Coglin': case-only duplicate, identical translation '齿轮地精'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:99726fe9dc494a8ad978fc053ac28262d5e62c617de42f769d8ca7046b541fca",
+      "group_fingerprint": "2b2ce3b0d7cec8fa1a3123abae72ae88e5077da501cfdc3f30fd6bfedd304214",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 32468,
+            "note": "lowercase 'poltergeist' → '骚灵'"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 39577,
+            "note": "capitalized 'Poltergeist' → '吵闹鬼'"
+          }
+        ],
+        "rationale": "Same monster with case-only key difference. '骚灵' vs '吵闹鬼' — choose canonical translation (recommend '吵闹鬼' per glossary)."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9bb532ff0cec6292319941afbb0f810b95e9389cc9c70a6fa24c146940d4475d",
+      "group_fingerprint": "6978ccc36b605bfef10d7e22b1fd8c13c6357f13942bb06a2794b6f088e125e7",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'golden breath'/'Golden Breath': case-only duplicate, identical translation '金龙吐息'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9e31f4c4698c8a0ad3da7c9f8f6bfe1e365a26f79cccfaaebc5fe9a4d301d42a",
+      "group_fingerprint": "fab481fde42af97e07c8216228a9da6e874ef28f2e31be15b420be110dd49753",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'Sunder'/'sunder': case-only duplicate, identical translation '碎裂'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a0944b29d7c0b37b33e17e2a399ea0c96f2070b2b04fa215f1968f818ed65830",
+      "group_fingerprint": "b046d2c633a1e7282d15a4d547a1680e17a017b40bda0db0ca58196da761e5cb",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'djinni'/'Djinni': case-only duplicate, identical translation '灯神'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a10ae662b7f34bd31f777f6fe8e648344019a95760730d7bf752b3c7076d4fd5",
+      "group_fingerprint": "c3625a0af964fb618a537b93388c334a5a91259355f255a2eaddd12c07a0a22d",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'Killed by %s'/'killed by %s': case-only duplicate, identical translation '被%s杀死'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a3b442312f14c6d1231dab8952001db9f3fef06f12ba425c4697e1322b5d0d3c",
+      "group_fingerprint": "8f40ebd52115763f8d5f38713e02628b7356d421400af773aef3cb5f1cbf2109",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "trace_callsites",
+        "status": "needs_semantic_ruling",
+        "owner": "strong_reasoning",
+        "confidence": "medium",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 16044,
+            "note": "capitalized 'Metal Splinters' → '金属碎片' (named ability/item?)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 22142,
+            "note": "lowercase 'metal splinters' → '金属碎刺' (generic attack type?)"
+          }
+        ],
+        "rationale": "Capitalized form (order 5244) likely a named spell/ability; lowercase (order 7277) a damage descriptor. Different translations suggest different runtime concepts. Needs callsite investigation."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a462bba1e6c04c4b734d68077f32a8de381b8349e0ae09be95c3d12625faff52",
+      "group_fingerprint": "fd0346e8b046b81bcbb42404f21527e3954421c930cc508f8c5e3e242e5eccbe",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'barachi'/'Barachi': case-only duplicate, identical translation '蛙人'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a5c032f4faf0c5b1a73cfd99b4d481311ada25cee1cf24fe367ef975796a1ced",
+      "group_fingerprint": "f21eee626914e8c1d46d87f35b30901f7cec9492ccc5b58d5797f1fe8585e15e",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 20138,
+            "note": "lowercase 'vortex' → '涡流'"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 38464,
+            "note": "capitalized 'Vortex' → '漩涡'"
+          }
+        ],
+        "rationale": "Same concept with case-only key difference. '涡流' vs '漩涡' — choose canonical translation (recommend '漩涡')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a724e7de5f0bd118095ae7248becb7c8606fa802fd9e387bad42e28ac43fb0f8",
+      "group_fingerprint": "16a6f327edb8e8846fac1814872e6427d336e96ef6bccd39fe1957ae5fe00a7b",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'merfolk'/'Merfolk': case-only duplicate, identical translation '人鱼'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a822b1ab92e2db7181eadc979e72c4e9be6aa02a41c820460933d5429a179f6f",
+      "group_fingerprint": "f03609c3959822fcad7f5c526426427119bc738dfac4f15c2df4800907b8550e",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'disjoined'/'Disjoined': case-only duplicate, identical translation '被解离'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a86d42c61d1a0529cc2b88692ab1d195248ac6be7ce8748ee2b9c7c306750bed",
+      "group_fingerprint": "e6a6ff53dd84e9be60804753919dfda3fd1fb483888a04261e78e3ec6d83f2b3",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37497,
+            "note": "capitalized 'status|Mesm' → '眠' (short form)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 38334,
+            "note": "lowercase 'status|mesm' → '催眠' (full form)"
+          }
+        ],
+        "rationale": "Short/full form distinction. Needs C_('status_short','Mesm') and C_('status_full','Mesm')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aa033bda2a7c6092d9d81213bfdfc7179f525d8f2801e55eb1252ba22bfb6cb6",
+      "group_fingerprint": "04efb04c32d7a75d43ea21a3e48145bd3f4522f0c1754a2070d42fc1af666917",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'tengu'/'Tengu': case-only duplicate, identical translation '天狗'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aaad5f787082990ecac270f72a3b3f04862a49fc866f2a683035e709f75be119",
+      "group_fingerprint": "d898c97802e295aef72bc992653c0b1685c8d310eebdc0fabc2c2d3a135e4e34",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'Xom'/'xom': case-only duplicate, identical translation '佐姆'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aad37f443fc2861102f5310a235aa81730ffd1e10552ecbe8054d109a9b56e59",
+      "group_fingerprint": "36449ecd1ab8995608c87d020fdd930984c866ce6d2bbfb10eadeda9f7960608",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37500,
+            "note": "capitalized 'status|Might' → '力' (short form)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 38337,
+            "note": "lowercase 'status|might' → '强力' (full form)"
+          }
+        ],
+        "rationale": "Short/full form distinction. Needs C_('status_short','Might') and C_('status_full','Might')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ad67cbf4481446bce2cffee5fa433de2a321eceaddc84436bab9872a67f8a78a",
+      "group_fingerprint": "d193d8a240bf73bc2ba37f318ead073567c52b9268b66e49cdbe7785d296980c",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 18281,
+            "note": "lowercase 'condensation shield' → '凝结护盾'"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 38434,
+            "note": "capitalized 'Condensation Shield' → '凝结之盾'"
+          }
+        ],
+        "rationale": "Same spell name with case-only key difference. '凝结护盾' vs '凝结之盾' — choose canonical translation (recommend '凝结护盾')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ae1dfaa27ea08c13faf7d264cebc0bbd9d44f7028c79377c66dac41158b02b42",
+      "group_fingerprint": "09c19fe449f554bcb563431083def4c7bead2722effa86b911100e819193f1dc",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37422,
+            "note": "capitalized 'status|Fugue' → '赋' (short form)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37944,
+            "note": "lowercase 'status|fugue' → '赋格' (full form)"
+          }
+        ],
+        "rationale": "Short/full form distinction. Needs C_('status_short','Fugue') and C_('status_full','Fugue')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:af5d8797ea69c42cd96ae0e37b5304b3f57b9178b396c92423e700c0522fae07",
+      "group_fingerprint": "decce84eed3d08f198e243639c1f475b783576c12c792198d5489861d071a728",
+      "classification": {
+        "cause": "structural_corruption",
+        "action": "repair_block",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 11873,
+            "note": "lowercase 'the Arena' → '\\n竞技场' (leading newline is structural corruption)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 12967,
+            "note": "capitalized 'The Arena' → '竞技场' (clean)"
+          }
+        ],
+        "rationale": "Lowercase entry has leading '\\n' in value, likely a %%%% separator artifact. source=different but runtime=equal after norm. Remove leading newline from line 11874."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b474c98a92f1b3d3e0ac18edd6780885af8df0d1546077f036c6757ff0cde70d",
+      "group_fingerprint": "1c98993b3854587d02fe9c8d22e45fd6eb3ee6508067d8d64ac0cbe60be60f2e",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'purple draconian'/'Purple Draconian': case-only duplicate, identical translation '紫龙人'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b5f24dd1334d8f5e1ff7ff35c93d2f0dbc3d5b81506ed4dada2caf658cca548d",
+      "group_fingerprint": "ffd6054bc26b88f8c978191e58368382c637f4682d7c4a61877ca01dc1136eb3",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 37665,
+            "note": "capitalized 'status|Swift' → '速' (short form)"
+          },
+          {
+            "kind": "source_block",
+            "path": "crawl-ref/source/dat/i18n/zh/source.txt",
+            "line": 38217,
+            "note": "lowercase 'status|swift' → '迅捷' (full form)"
+          }
+        ],
+        "rationale": "Short/full form distinction. Needs C_('status_short','Swift') and C_('status_full','Swift')."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:baf1f24970f312d4c98cd8138be1a8312817532fcd3d4b30a9feafe6789f864d",
+      "group_fingerprint": "174a15bb6fcd2d4a4044a46e1233fa4e29ffe70af2e6659b9e80d030e3dc550e",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'revenant'/'Revenant': case-only duplicate, identical translation '归来者'. Keep one."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bd4bdbe846085acf409dbb100caaacdd633a395725b9e1d3a4866b664219d4aa",
+      "group_fingerprint": "c78d43f86cfe8977e05140446a0753af114fdff818c49c046ef1a385f99e9fc2",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "ready_for_writer",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [],
+        "rationale": "'Acrobat'/'acrobat': case-only duplicate, identical translation '杂技'. Keep one."
+      }
+    }
+  ]
+}
