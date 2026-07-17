@@ -1,6 +1,8 @@
 #!/usr/bin/env python3
 """Shared utilities for i18n tools — unified source.txt parser and helpers."""
 
+import ctypes
+import ctypes.util
 import hashlib
 import os
 import re
@@ -8,6 +10,18 @@ from collections import OrderedDict
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List, Tuple
+
+# libc towlower for parity with C++ database.cc lowercase_string()
+_libc = None
+def _get_towlower():
+    global _libc
+    if _libc is None:
+        libc_path = ctypes.util.find_library('c')
+        if libc_path:
+            _libc = ctypes.CDLL(libc_path)
+            _libc.towlower.argtypes = [ctypes.c_uint]
+            _libc.towlower.restype = ctypes.c_uint
+    return _libc.towlower if _libc else None
 
 
 @dataclass
@@ -303,6 +317,7 @@ def lowercase_string(s: str) -> str:
       - Other non-ASCII without uppercase/lowercase: pass through unchanged
       - Other non-ASCII with case: use str.lower() (towlower equivalent)
     """
+    towlower = _get_towlower()
     result = []
     for c in s:
         if 'A' <= c <= 'Z':
@@ -313,6 +328,14 @@ def lowercase_string(s: str) -> str:
                 result.append(c)
             elif cp > 0x7F and not c.isupper() and not c.islower():
                 result.append(c)
+            elif towlower and cp > 0x7F:
+                # Use libc towlower for non-ASCII case mapping (C++ parity)
+                # This handles Turkish İ (U+0130) correctly: → 'i' (single cp)
+                lower_cp = towlower(cp)
+                if lower_cp != cp and lower_cp != 0:
+                    result.append(chr(lower_cp))
+                else:
+                    result.append(c)
             else:
                 result.append(c.lower())
     return ''.join(result)
