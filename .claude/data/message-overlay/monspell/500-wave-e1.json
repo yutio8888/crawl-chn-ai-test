@@ -1,0 +1,335 @@
+{
+  "entries": [
+    {
+      "canonical_key": "airstrike cast",
+      "canonical_fingerprint": "fnv1a64:947d5a3c9692b176",
+      "selection_graph_fingerprint": "fnv1a64:37d8e21c9c2f0dbd",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.airstrike.waves_arms.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "1dda7b681e4c6839fa350d6813da3eeed2325f48d15d67e2c22aef3b6b5e8591",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ waves @possessive@ @arms@ in wide circles.",
+        "frame": "GESTURE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" },
+          { "name": "arms", "type": "actor_arms_plural" }
+        ],
+        "required_arguments": ["actor", "possessive", "arms"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} waves ${possessive} ${arms} in wide circles." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}挥动${arms}，在空中划出大圈。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bes kemwar cast",
+      "canonical_fingerprint": "fnv1a64:2ca30b8feb593c5d",
+      "selection_graph_fingerprint": "fnv1a64:91935158b3e53e32",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bes_kemwar.writhes_within_target.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d288028bff3ac921c6d1a92c49eb054e385b45cc718fb1cd274157835735c4fc",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ writhes about, and something writhes within @target@.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} writhes about, and something writhes within ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} writhes about, and something writhes within ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} writhes about, and something writhes within ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}扭动着，${target}体内的某种东西也随之扭动。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}扭动着，${target}体内的某种东西也随之扭动。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}扭动着，${target}体内的某种东西也随之扭动。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bolt of flesh zykzyl cast",
+      "canonical_fingerprint": "fnv1a64:0960e305552a886d",
+      "selection_graph_fingerprint": "fnv1a64:7f02859839a0406e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bolt_of_flesh_zykzyl.hurls_piece_of_self.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "41621e03e4688c5cfff735165bc965502ad8cd1f874ffc0667e8431274af7461",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ hurls a piece of @reflexive@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "reflexive", "type": "actor_reflexive" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "reflexive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} hurls a piece of ${reflexive} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} hurls a piece of ${reflexive} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} hurls a piece of ${reflexive} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}掷出${reflexive}的一块血肉。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边掷出${reflexive}的一块血肉。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}掷出${reflexive}的一块血肉，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "crystallising shot crystal guardian cast",
+      "canonical_fingerprint": "fnv1a64:6127181abed616c4",
+      "selection_graph_fingerprint": "fnv1a64:6f27092470c91d0b",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.crystallising_shot_crystal_guardian.fires_shard_of_self.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5568f5387cab2918acf927fd6f327eea4f6445cf37d64030b6a3561f6d2ce09c",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires a shard of @reflexive@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "reflexive", "type": "actor_reflexive" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "reflexive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} fires a shard of ${reflexive} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} fires a shard of ${reflexive} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} fires a shard of ${reflexive} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出一块自身的碎片。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出一块自身的碎片。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出一块自身的碎片，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "electrical bolt cast",
+      "canonical_fingerprint": "fnv1a64:776e4cb7ce21cdc0",
+      "selection_graph_fingerprint": "fnv1a64:05e735fdbb31cc51",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.electrical_bolt.shoots_beam_bolt.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "075c17a8746141f70a97b5410832aec315df2d28eb7ecec45e9007cb34c1d0d6",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ shoots out a bolt of @beam@ @at@ @target@!",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} shoots out a bolt of ${beam} at ${target}!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} shoots out a bolt of ${beam} next to ${target}!" },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} shoots out a bolt of ${beam} past ${target}!" },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出一道${beam}！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出一道${beam}！" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出一道${beam}，从${target}旁边掠过！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "eruption cast",
+      "canonical_fingerprint": "fnv1a64:9e295e6a2e710d1c",
+      "selection_graph_fingerprint": "fnv1a64:2b9bae4b830839ed",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.eruption.rends_earth_beneath_target.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "764b38cba461f247daa5d2e3867a57794533553717125e18a6a786211e8ddec8",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ rends the earth beneath @target@!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} rends the earth beneath ${target}!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} rends the earth beneath ${target}!" },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} rends the earth beneath ${target}!" },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}撕裂${target}下方的大地！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}撕裂${target}下方的大地！" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}撕裂${target}下方的大地！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "flashing balestra undying armoury cast",
+      "canonical_fingerprint": "fnv1a64:9ac18274d6415f9f",
+      "selection_graph_fingerprint": "fnv1a64:ffb328d73d1ba0a0",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.flashing_balestra_undying_armoury.weapon_lunges.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "c11982f533410b6d6e060816776740187c9b13440a213fd60411273265ea7636",
+        "upstream_weight": 10,
+        "english_snapshot": "A weapon leaps out from @the_monster@ and lunges @at@ @target@!",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "hoarfrost bullet cast finale",
+      "canonical_fingerprint": "fnv1a64:ee8e33d81e47b212",
+      "selection_graph_fingerprint": "fnv1a64:d47f5ec7780b0ac7",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.hoarfrost_bullet.finale.launches_last_of_self.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "8cb8e90522876ed5e1b8fc789a6bb436b83389dc8823223fa3ae0fd6a68a5b18",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ launches the last of @reflexive@ @at@ @target@ with a shrill rumble.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "reflexive", "type": "actor_reflexive" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "reflexive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} launches the last of ${reflexive} at ${target} with a shrill rumble." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} launches the last of ${reflexive} next to ${target} with a shrill rumble." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} launches the last of ${reflexive} past ${target} with a shrill rumble." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}伴着一声尖厉的轰鸣，将${reflexive}的最后一部分射向${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}伴着一声尖厉的轰鸣，将${reflexive}的最后一部分射向${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}伴着一声尖厉的轰鸣，将${reflexive}的最后一部分射出，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "lee's rapid deconstruction screaming refraction cast",
+      "canonical_fingerprint": "fnv1a64:7642e50e8d35c391",
+      "selection_graph_fingerprint": "fnv1a64:3b36ac9a15919f38",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.lees_rapid_deconstruction_screaming_refraction.echo_wails.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d281f5e15dccaf86345bb5d39d0edc9fab8c81155c5b3b11813db4a3658d58e1",
+        "upstream_weight": 10,
+        "english_snapshot": "An echo of @the_monster@ flickers and hopelessly wails @at@ @target@.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "living spell cast",
+      "canonical_fingerprint": "fnv1a64:757516aa7741aea3",
+      "selection_graph_fingerprint": "fnv1a64:f0f8f37fcdc9d23e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.living_spell.casts_self.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "38d89beaae2b1c997ba57c2acb849125092927b4eb07ec2a4091a9a46026f09a",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ casts @reflexive@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "reflexive", "type": "actor_reflexive" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "reflexive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} casts ${reflexive} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} casts ${reflexive} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} casts ${reflexive} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}投射${reflexive}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边投射${reflexive}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}投射出${reflexive}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
