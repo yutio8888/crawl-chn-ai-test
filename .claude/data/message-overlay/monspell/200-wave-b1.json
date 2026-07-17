@@ -1,0 +1,305 @@
+{
+  "entries": [
+    {
+      "canonical_key": "battlecry cherub cast",
+      "canonical_fingerprint": "fnv1a64:a3a664c4b89a945f",
+      "selection_graph_fingerprint": "fnv1a64:dc3ecf27051969e2",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.battlecry_cherub.powerful_hymn.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "b42d6ebc2b0b990464e673bdda0c9b55aee27792eebe3b4a74b79e6c8b237a3e",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ sings a powerful hymn!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} sings a powerful hymn!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}唱响一首激昂的圣歌！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "berserker rage rupert cast",
+      "canonical_fingerprint": "fnv1a64:6526ed9f6cca83a8",
+      "selection_graph_fingerprint": "fnv1a64:315272c75ff4a149",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.berserker_rage_rupert.mad_roar.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "6f670eee1302f129bc6063a29719417d4d61e93774c076c51aa4db74876cf6e2",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ roars madly and goes into a rage!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} roars madly and goes into a rage!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}疯狂咆哮，陷入狂怒！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "bolt of fire ophan cast",
+      "canonical_fingerprint": "fnv1a64:5a2dabbd4db7efba",
+      "selection_graph_fingerprint": "fnv1a64:ec0f4f96f01c21f5",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.bolt_of_fire_ophan.cleansing_fire.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "17b5e8ee4d33d3745e2db30770155144477a2a220cf7d4a936e5e896f630dd14",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ harnesses the cleansing power of fire!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} harnesses the cleansing power of fire!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}驾驭起火焰的净化之力！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "cognitogaunt cast",
+      "canonical_fingerprint": "fnv1a64:a59cd42801f51de4",
+      "selection_graph_fingerprint": "fnv1a64:1bb3da3d4366ade1",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.cognitogaunt.glimmers_violently.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "554481bc7539c0af6b3d085ea67a9cf788034eb61611ce2baf7534192c342a87",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ glimmers violently.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} glimmers violently." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}剧烈地闪烁着光芒。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "corrupting pulse wretched star cast",
+      "canonical_fingerprint": "fnv1a64:97a0ec3169ebe79d",
+      "selection_graph_fingerprint": "fnv1a64:22767bd567325dba",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.corrupting_pulse_wretched_star.eldritch_light.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5e829b5551b5949bef89e7dad12f7263e057320184842c408323db5ef70cff5d",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ pulses with an eldritch light!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} pulses with an eldritch light!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}脉动着诡异的光芒！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "death rattle ushabti cast",
+      "canonical_fingerprint": "fnv1a64:f2e4adc34ead80bd",
+      "selection_graph_fingerprint": "fnv1a64:36f8640f0af5793c",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.death_rattle_ushabti.shakes_rattles.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "34cd546ca846b1fa54efad18ebb9a1c34a2c3657ebba8e86e7c2b5fd6b3c0f07",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ shakes and rattles.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} shakes and rattles." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}摇晃着，嘎嘎作响。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "dissolution cast",
+      "canonical_fingerprint": "fnv1a64:891cafd4e0755eaf",
+      "selection_graph_fingerprint": "fnv1a64:ab2452181096d6a4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.dissolution.deep_gurgle.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f595ce74c92f705e9fb129c7c5c51151ff60d3a6841c907de48a8957a77e300e",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ gurgles deeply.",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} gurgles deeply." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}发出低沉的咕噜声。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "dragon cast",
+      "canonical_fingerprint": "fnv1a64:c39ca141d6cb847f",
+      "selection_graph_fingerprint": "fnv1a64:186c6bc10c5114f2",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.dragon.roar.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "93cb747d4da9ea0321687aa6a161249814ef2a9ea4217bbf91300f7d686633dc",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ roars!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} roars!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}咆哮！" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "electrical bolt shock serpent cast",
+      "canonical_fingerprint": "fnv1a64:29230eae11982c98",
+      "selection_graph_fingerprint": "fnv1a64:98e5c80fe790b007",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.electrical_bolt_shock_serpent.electric_tendril.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "5297618e98b0f5695c68900142c5120a457b2a08ddeec54815cde5925ec15a21",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ discharges a tendril of electricity.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} discharges a tendril of electricity." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}释放出一道电光触须。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "enfeeble zykzyl cast",
+      "canonical_fingerprint": "fnv1a64:253bb218eb2b23a7",
+      "selection_graph_fingerprint": "fnv1a64:6947ef5697914cc6",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.enfeeble_zykzyl.resentment.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d9391737783046d4faf718c395fd0bf2a8704fb10c4cd03fc28d6d27a5c47f67",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ overflows with resentment.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} overflows with resentment." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}满溢着怨恨。" }
+          ]
+        }],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
