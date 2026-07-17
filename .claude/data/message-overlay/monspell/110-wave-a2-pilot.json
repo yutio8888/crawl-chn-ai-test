@@ -1,0 +1,322 @@
+{
+  "entries": [
+    {
+      "canonical_key": "battlecry cast",
+      "canonical_fingerprint": "fnv1a64:fc166a11b943f8bb",
+      "selection_graph_fingerprint": "fnv1a64:aa16c2ca932202cc",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.battlecry.roar.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d92f24143b4e9a4bcb0394e8a4333f867689910a4ecb5d2eaaa7fd553761909a",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ roars a battlecry!",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} roars a battlecry!" },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}咆哮着发出一声战吼！" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "call of chaos cast",
+      "canonical_fingerprint": "fnv1a64:e7312144a701b88e",
+      "selection_graph_fingerprint": "fnv1a64:a9d78f5db9f2073d",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.call_of_chaos.invoke_powers.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "89ea4cc71092391d86eafd85297af1516d09251eaea41c2335a08bda5b53bcda",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ calls on the powers of chaos!",
+          "frame": "INVOCATION",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} calls on the powers of chaos!" },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}呼唤混沌之力！" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "dryad cast",
+      "canonical_fingerprint": "fnv1a64:0309a9191b028274",
+      "selection_graph_fingerprint": "fnv1a64:1eca4e7b2c5e8caf",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.dryad.call_forest.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "bd50dd42292daf0e13c37dc7d40bdb428bd6ff5e868769f75b23dcc86a58f388",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ calls out to the forest.",
+          "frame": "VOCAL",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} calls out to the forest." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}向森林呼唤。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "freeze cast",
+      "canonical_fingerprint": "fnv1a64:312ca5685b141380",
+      "selection_graph_fingerprint": "fnv1a64:291f89e194b26eb3",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.freeze.freeze_target.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d30e93a673a5bff98eb2f9c4dcfc55b5d4ecd772384f60ea4e8c79fd72077d82",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ freezes @target@.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} freezes ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} freezes ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} freezes ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}将${target}冻住。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}将${target}冻住。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}将${target}冻住。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "steam ball natural cast",
+      "canonical_fingerprint": "fnv1a64:812037ce4bde3609",
+      "selection_graph_fingerprint": "fnv1a64:9e1e1dc7a97f9302",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.steam_ball_natural.breathe_beam.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d7e1953a47781f20372197e1cf5e54c684effe17567fad086444494fe362bbac",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ breathes @beam@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "beam", "type": "resolved_beam" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "beam", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} breathes ${beam} at ${target}." },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} breathes ${beam} next to ${target}." },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} breathes ${beam} past ${target}." },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}吐出${beam}。" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边吐出${beam}。" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}吐出${beam}，从${target}旁边掠过。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "weakening gaze cast",
+      "canonical_fingerprint": "fnv1a64:227d4915fac4afa0",
+      "selection_graph_fingerprint": "fnv1a64:51f4d2246d93586b",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.weakening_gaze.fierce_gaze.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "1edc2849a21f144937b5788edb4dadbeff785cc17e7e611b5c8bef00cc567c8e",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ gazes fiercely through @target@!",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": true },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": [ "actor", "target" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "AT", "pattern": "${actor} gazes fiercely through ${target}!" },
+                { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} gazes fiercely through ${target}!" },
+                { "language": "en", "relation": "PAST", "pattern": "${actor} gazes fiercely through ${target}!" },
+                { "language": "zh", "relation": "AT", "pattern": "${actor}以凶狠的目光直视${target}！" },
+                { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}以凶狠的目光直视${target}！" },
+                { "language": "zh", "relation": "PAST", "pattern": "${actor}以凶狠的目光直视${target}！" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "woodweal cast",
+      "canonical_fingerprint": "fnv1a64:dfb8d28d10fef62e",
+      "selection_graph_fingerprint": "fnv1a64:13b37ed4e1f9f2d7",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.woodweal.draw_tree_vitality.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "b30e0e3985572bb5e76695cffb1e2a642f5fd464817a291da71f9f9e7709db92",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ touches a tree and draws upon its vitality.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": {
+            "requires_player": false,
+            "requires_foe": false,
+            "requires_named_foe": false,
+            "requires_god": false,
+            "requires_caster_visible": false
+          },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" }
+          ],
+          "required_arguments": [ "actor" ],
+          "line_metadata": [
+            {
+              "sensory": "PLAIN",
+              "channel": null,
+              "behavior": { "implies_gesture": false, "audible": false },
+              "templates": [
+                { "language": "en", "relation": "NONE", "pattern": "${actor} touches a tree and draws upon its vitality." },
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}触碰一棵树，汲取其生命力。" }
+              ]
+            }
+          ],
+          "materialization_cases": [],
+          "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
