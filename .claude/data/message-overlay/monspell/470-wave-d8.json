@@ -1,0 +1,340 @@
+{
+  "entries": [
+    {
+      "canonical_key": "splinterspray cast",
+      "canonical_fingerprint": "fnv1a64:250e0620fec61dfc",
+      "selection_graph_fingerprint": "fnv1a64:e0d7a5e64c6e332f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.splinterspray.hurls_spray.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "6f83d113d2c93da2f44b176eb26b94b9d69e6a6f7cbb3d41220d4471454564ac",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ hurls a spray of @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} hurls a spray of ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} hurls a spray of ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} hurls a spray of ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}掷出一蓬${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边掷出一蓬${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}掷出一蓬${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "stone arrow gargoyle cast",
+      "canonical_fingerprint": "fnv1a64:a858ebb4498202dc",
+      "selection_graph_fingerprint": "fnv1a64:1ec88cf2adc556f9",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.stone_arrow_gargoyle.hurls_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "07961da3ab26a15262056d85fc2a457f951fde226acaa47c4e973d704fd40be4",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ hurls a @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} hurls a ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} hurls a ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} hurls a ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}掷出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边掷出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}掷出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "stunning burst cast",
+      "canonical_fingerprint": "fnv1a64:e44cffcf499c560a",
+      "selection_graph_fingerprint": "fnv1a64:3b9bd9b47b73d44f",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.stunning_burst.electricity_burst.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "e50a79796a6e55529d17e299d582715c1863671e3845059a8f6bf7f7bfc545a3",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires a burst of electricity @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} fires a burst of electricity at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} fires a burst of electricity next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} fires a burst of electricity past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出一阵电流。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出一阵电流。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出一阵电流，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "summon water elementals elemental wellspring cast",
+      "canonical_fingerprint": "fnv1a64:b5bf0ad2165444a5",
+      "selection_graph_fingerprint": "fnv1a64:a90699dbf5a10cf2",
+      "mode": "LEGACY_ONLY",
+      "variants": [{
+        "stable_id": "mon.cast.summon_water_elementals_elemental_wellspring.water_spirits.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cb918fdc660c2cf2c3db4e925254b1d5683f1be069c14679f7eb794817f13439",
+        "upstream_weight": 10,
+        "english_snapshot": "Water spirits pour forth from @the_monster@!",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "LEGACY_ONLY",
+        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "throw bolas cast",
+      "canonical_fingerprint": "fnv1a64:f20f219e0a0038ef",
+      "selection_graph_fingerprint": "fnv1a64:ae5a935aef9bb51e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.throw_bolas.hurls_bolas.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "49da1d655cbff0954e5620ce576f0d8db707f855ed2a9dd13e87301fe90a919c",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ hurls a bolas @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} hurls a bolas at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} hurls a bolas next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} hurls a bolas past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}投出流星索。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边投出流星索。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}投出流星索，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "throw icicle shard shrike cast",
+      "canonical_fingerprint": "fnv1a64:531976d8cb77e3b5",
+      "selection_graph_fingerprint": "fnv1a64:7ef9684a083815f6",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.throw_icicle_shard_shrike.spits_ice_shard.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "bd4e7424611e29633a916077d1554dca5a7359a585b86f8c587d5908e050910c",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ spits a shard of ice @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} spits a shard of ice at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} spits a shard of ice next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} spits a shard of ice past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}喷出一块冰片。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边喷出一块冰片。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}喷出一块冰片，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "throw klown pie cast",
+      "canonical_fingerprint": "fnv1a64:f94b6086a6600fcf",
+      "selection_graph_fingerprint": "fnv1a64:0098296230cd1186",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.throw_klown_pie.pies_target.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3f972f57c6c12ca20bbea0a0fa0ae9d9435fa6aff77954156a23d9922470f839",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ pies @target@ viciously!",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} pies ${target} viciously!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} pies ${target} viciously!" },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} pies ${target} viciously!" },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}恶狠狠地用派砸向${target}！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}恶狠狠地用派砸向${target}！" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}恶狠狠地用派砸向${target}！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "volley of thorns cast",
+      "canonical_fingerprint": "fnv1a64:b6f4626949241ff4",
+      "selection_graph_fingerprint": "fnv1a64:4344d5e3b1b0f655",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.volley_of_thorns.thorn_volley.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "02658698fb06de6fbeac9312a8753428941feb44d57a8a43ab664556a7a2c13b",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires a volley of thorns @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} fires a volley of thorns at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} fires a volley of thorns next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} fires a volley of thorns past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}齐射荆棘。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边齐射荆棘。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}齐射荆棘，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "warning cry seraph cast",
+      "canonical_fingerprint": "fnv1a64:1226c0c2a03ac29e",
+      "selection_graph_fingerprint": "fnv1a64:c8f131157b812e23",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.warning_cry_seraph.warns_allies.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f360b4b7084c24380fbdb8afde7214174e1c56291c6fad5e2f13a17c8a6456ef",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ shouts a warning to @possessive@ allies!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} shouts a warning to ${possessive} allies!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}向盟友高声示警！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "word of recall cast",
+      "canonical_fingerprint": "fnv1a64:ea146bc9ea199d6f",
+      "selection_graph_fingerprint": "fnv1a64:4be5c107d48ddaa4",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.word_of_recall.recites_word.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "b90ee464a57c741d44dea390e68bc5e06923fec110a2294a7f89c1117f24907b",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ begins to recite a word of recall!",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} begins to recite a word of recall!" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}开始吟诵召回之言！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
