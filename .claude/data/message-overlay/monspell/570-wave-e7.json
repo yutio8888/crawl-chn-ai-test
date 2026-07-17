@@ -1,0 +1,298 @@
+{
+  "entries": [
+    {
+      "canonical_key": "angel cast targeted",
+      "canonical_fingerprint": "fnv1a64:b5e4e4cb440539c4",
+      "selection_graph_fingerprint": "fnv1a64:0c9b5259bdaf5f97",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.angel.calls_down_god_wrath.v1",
+        "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "d82f86ca95373eff50385327a9bdbea0b42ec95881f9faeb52b45d33dbd2adde",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls down the wrath of @possessive_God@ upon @target@.",
+        "frame": "INVOCATION", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }],
+        "required_arguments": ["actor", "god", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." },
+          { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." },
+          { "language": "en", "relation": "PAST", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" },
+          { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" },
+          { "language": "zh", "relation": "PAST", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" }
+        ] }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "cantrip dissolution cast",
+      "canonical_fingerprint": "fnv1a64:081991ed095dba41",
+      "selection_graph_fingerprint": "fnv1a64:6d9d42497ed4fcf8",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.cantrip_dissolution.gurgles_absent_god.v1", "tombstone": false, "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "b3765d98801809e36c8cd31470ed70c07eb477f8c796adaf79f6aa890918c850", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ gurgles to an absent god.", "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} gurgles to an absent god." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}对着一位不在场的神咕噜作响。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_dissolution.jiggles_mournfully.v1", "tombstone": false, "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "9254c89e7759a9eb1ce905f9cd55566db454633ad16a0343e2a3ea8b032560cd", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ jiggles mournfully.", "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} jiggles mournfully." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}悲伤地晃动着。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_dissolution.wobbles_aimlessly.v1", "tombstone": false, "variant_ordinal": 2,
+          "upstream_variant_fingerprint": "4ab49c1dc4b642e36bbbbc6c17ea13c48510cad218f1d742e9fee95c133ac705", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ wobbles aimlessly.", "frame": "DIRECT_EFFECT", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} wobbles aimlessly." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}漫无目的地摇摆着。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_dissolution.become_one_with_sorrow.v1", "tombstone": false, "variant_ordinal": 3,
+          "upstream_variant_fingerprint": "27f3af57765c1ea8e4ec233f383a5c98c71934c5171135213c13232407f2f2d6", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ says, \"Become one with my sorrow!\"", "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} says, \"Become one with my sorrow!\"" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}说：“与我的悲伤融为一体吧！”" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.cantrip_dissolution.forsaken_by_god.v1", "tombstone": false, "variant_ordinal": 4,
+          "upstream_variant_fingerprint": "f606d3ff9cc18e8a933a63410f3f3630d23e38e2742965de0356123bb09e4837", "upstream_weight": 1,
+          "english_snapshot": "@The_monster@ asks, \"Why have you forsaken me @My_God@?\"", "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_my" }], "required_arguments": ["actor", "god"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} asks, \"Why have you forsaken me ${god}?\"" },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}问道：“${god}，你为什么抛弃我？”" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "divine armament cast", "canonical_fingerprint": "fnv1a64:60c9b87a34b65e22", "selection_graph_fingerprint": "fnv1a64:176ce6ee736f5af5", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.divine_armament.beseeches_god_for_weapon.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "de2aae4e6b2de2515db82b445595569f69c5b12f12a8ce7fc29b007e934d0f03", "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ beseeches @My_God@ to grant them a weapon.", "frame": "INVOCATION", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_my" }], "required_arguments": ["actor", "god"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "NONE", "pattern": "${actor} beseeches ${god} to grant them a weapon." },
+          { "language": "zh", "relation": "NONE", "pattern": "${actor}恳求${god}赐予自己一件武器。" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "haste other priest cast", "canonical_fingerprint": "fnv1a64:1c7b18e5a1b5a62e", "selection_graph_fingerprint": "fnv1a64:f70aa35c22ac3317", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.haste_other_priest.calls_on_god_to_hasten.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "cb07b473eb8ee1c56a0829451bae2f14bf9d0925d85d4b6cfe5cc56ca412732c", "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls upon @possessive_God@ to speed up @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} calls upon ${god} to speed up ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} calls upon ${god} to speed up ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} calls upon ${god} to speed up ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}祈求${god}加速${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}祈求${god}加速${target}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}祈求${god}加速${target}。" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "heal other priest cast", "canonical_fingerprint": "fnv1a64:ac2638630dfdf059", "selection_graph_fingerprint": "fnv1a64:37de04b8b8c3a0d2", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.heal_other_priest.calls_on_god_to_heal.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "f1fb96dc841f10d539076ef609507d56c5fa23430d9feea679bfb8abc2baaaf6", "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls upon @possessive_God@ to heal @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} calls upon ${god} to heal ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} calls upon ${god} to heal ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} calls upon ${god} to heal ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}祈求${god}治疗${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}祈求${god}治疗${target}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}祈求${god}治疗${target}。" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "might other priest cast", "canonical_fingerprint": "fnv1a64:446cc868c6ad5dbc", "selection_graph_fingerprint": "fnv1a64:446e85be198c4461", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.might_other_priest.calls_on_god_to_strengthen.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "4b39526f3b749899de6b70fe572917d69df315ad6fbcfcedb74db9ce450735b6", "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls upon @possessive_God@ to strengthen @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "AT", "pattern": "${actor} calls upon ${god} to strengthen ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} calls upon ${god} to strengthen ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} calls upon ${god} to strengthen ${target}." },
+          { "language": "zh", "relation": "AT", "pattern": "${actor}祈求${god}强化${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}祈求${god}强化${target}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}祈求${god}强化${target}。" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "major destruction cast", "canonical_fingerprint": "fnv1a64:ed9fdcbd9554de48", "selection_graph_fingerprint": "fnv1a64:ab5a85131aa2e0e7", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.major_destruction.conjures_destructive_force.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "c84548b6282302efa2862b321ed653fc765d3909c230b8de7488067fb021d88b", "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ conjures a destructive force in the name of @possessive_God@!", "frame": "INVOCATION", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }], "required_arguments": ["actor", "god"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "NONE", "pattern": "${actor} conjures a destructive force in the name of ${god}!" },
+          { "language": "zh", "relation": "NONE", "pattern": "${actor}以${god}之名召来一股毁灭之力！" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "priest cast", "canonical_fingerprint": "fnv1a64:76cbcf8c9bd7b18a", "selection_graph_fingerprint": "fnv1a64:cd21fb58f1903677", "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.priest.prays_to_god.v1", "tombstone": false, "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "b628994abc66b6ab07878c831c764ce5f686250f03715652692ac504b08080a5", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ prays to @possessive_God@.", "frame": "INVOCATION", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }], "required_arguments": ["actor", "god"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} prays to ${god}." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}向${god}祈祷。" }] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.priest.mumbles_strange_prayers.v1", "tombstone": false, "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "7c97b1c4436f2cfe9d3cc5c3aae56f33cc0028a239075ab4ea38a656363da40e", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ mumbles some strange prayers to @possessive_God@.", "frame": "INVOCATION", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }], "required_arguments": ["actor", "god"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} mumbles some strange prayers to ${god}." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}向${god}低声念着一些奇怪的祷词。" }] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.priest.utters_invocation.v1", "tombstone": false, "variant_ordinal": 2,
+          "upstream_variant_fingerprint": "dbf4d456e30f372bb1233e021972183720d6124a33dc31949f68998ef316e8db", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ utters an invocation to @possessive_God@.", "frame": "INVOCATION", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }], "required_arguments": ["actor", "god"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} utters an invocation to ${god}." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}向${god}吟诵祷文。" }] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "priest cast targeted", "canonical_fingerprint": "fnv1a64:463bcd3e6e4565d6", "selection_graph_fingerprint": "fnv1a64:8772b9c7be4947cd", "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.priest.targeted.calls_down_wrath.v1", "tombstone": false, "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "d82f86ca95373eff50385327a9bdbea0b42ec95881f9faeb52b45d33dbd2adde", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ calls down the wrath of @possessive_God@ upon @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} calls down the wrath of ${god} upon ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}召下${god}的神怒，降临在${target}身上。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.priest.targeted.mumbles_prayers_against_target.v1", "tombstone": false, "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "22bb66bf70585c5f18484590fbd33fa7eb75b7b4fe628165b846acd276ce315b", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ mumbles some strange prayers to @possessive_God@ against @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} mumbles some strange prayers to ${god} against ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} mumbles some strange prayers to ${god} against ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} mumbles some strange prayers to ${god} against ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${god}低声念着奇怪的祷词，诅咒${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}向${god}低声念着奇怪的祷词，诅咒${target}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}向${god}低声念着奇怪的祷词，诅咒${target}。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.priest.targeted.invokes_aid_against_target.v1", "tombstone": false, "variant_ordinal": 2,
+          "upstream_variant_fingerprint": "1b6178077242586509707c087eb91ba838a4141f7da9575e3c59c861d5913532", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ invokes the aid of @possessive_God@ against @target@.", "frame": "INVOCATION", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_possessive" }, { "name": "target", "type": "resolved_target" }], "required_arguments": ["actor", "god", "target"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} invokes the aid of ${god} against ${target}." }, { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} invokes the aid of ${god} against ${target}." }, { "language": "en", "relation": "PAST", "pattern": "${actor} invokes the aid of ${god} against ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}祈求${god}相助，对付${target}。" }, { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}祈求${god}相助，对付${target}。" }, { "language": "zh", "relation": "PAST", "pattern": "${actor}祈求${god}相助，对付${target}。" }
+          ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "summon eyeballs dissolution cast", "canonical_fingerprint": "fnv1a64:abba3f5cb3cfb4f1", "selection_graph_fingerprint": "fnv1a64:5233726b518de7a7", "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.calls_fellow_slimes.v1", "tombstone": false, "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "0100910d70678756665dace22e02869126a4e9d019e7cb12cf5ae89026fa8e18", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ gurgles deeply, a call to fellow slimes.", "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }], "required_arguments": ["actor"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} gurgles deeply, a call to fellow slimes." }, { "language": "zh", "relation": "NONE", "pattern": "${actor}发出低沉的咕噜声，呼唤黏液同伴。" }] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.god_sees_all.v1", "tombstone": false, "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "ec4c0949b870ef6a9d75e3c2c371ae38afe4fd54faaaaf7bf55b3c4afc41fd5b", "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ says, \"@My_God@ sees all!\"", "frame": "VOCAL", "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE", "slot_schema": [{ "name": "actor", "type": "actor_ref" }, { "name": "god", "type": "actor_god_my" }], "required_arguments": ["actor", "god"],
+          "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [{ "language": "en", "relation": "NONE", "pattern": "${actor} says, \"${god} sees all!\"" }, { "language": "zh", "relation": "NONE", "pattern": "${actor}说：“${god}洞察一切！”" }] }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "unseen priest cast", "canonical_fingerprint": "fnv1a64:fca0074daf794ad3", "selection_graph_fingerprint": "fnv1a64:2e786c39790ba9ae", "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.unseen_priest.hears_mumbled_prayers.v1", "tombstone": false, "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "e7fced05e2432f0a78860674c4d3ca701aa9177ea94a187408748b5fd8c61f7e", "upstream_weight": 10,
+        "english_snapshot": "You hear some strange, mumbled prayers to @a_God@.", "frame": "VOCAL", "binding": { "resolves_target": false },
+        "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE", "slot_schema": [{ "name": "god", "type": "actor_god_indefinite" }], "required_arguments": ["god"],
+        "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
+          { "language": "en", "relation": "NONE", "pattern": "You hear some strange, mumbled prayers to ${god}." },
+          { "language": "zh", "relation": "NONE", "pattern": "你听到有人向${god}低声念着一些奇怪的祷词。" }
+        ] }], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "unseen priest cast targeted", "canonical_fingerprint": "fnv1a64:45d7ce93f080fe87", "selection_graph_fingerprint": "fnv1a64:99829d637410a7b6", "mode": "LEGACY_ONLY",
+      "variants": [
+        {
+          "stable_id": "mon.cast.unseen_priest.targeted.hears_wrath_called_down.v1", "tombstone": false, "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "1fffa073c283976341d05851ca59d459e8cf5262a9f1c34939d35718567dcc80", "upstream_weight": 10,
+          "english_snapshot": "You hear @something@ call down the wrath of @a_God@ upon @target@.", "frame": "VOCAL", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.unseen_priest.targeted.hears_mumbled_prayers.v1", "tombstone": false, "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "516fbfa638a24b397c8e61150c19467037ae2aaa03631685da3ecdf586ed5f2d", "upstream_weight": 10,
+          "english_snapshot": "You hear @something@ mumble some strange prayers to @a_God@ against @target@.", "frame": "VOCAL", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.unseen_priest.targeted.hears_invoked_aid.v1", "tombstone": false, "variant_ordinal": 2,
+          "upstream_variant_fingerprint": "23fe68416c6ac8617f8eedbd323366b7787372ac4a144c1b339646ae5ae0476c", "upstream_weight": 10,
+          "english_snapshot": "You hear @something@ invoke the aid of @a_God@ against @target@.", "frame": "VOCAL", "binding": { "resolves_target": true },
+          "applicability": { "requires_player": true, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "LEGACY_ONLY", "slot_schema": [], "required_arguments": [], "line_metadata": [], "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}
