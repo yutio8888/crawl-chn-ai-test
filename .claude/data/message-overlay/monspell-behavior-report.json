@@ -4470,18 +4470,18 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 256,
-    "canonical_structured_variant_metadata_units": 256,
-    "catalog_coverage_complete": true,
+    "canonical_structured_variant_metadata_complete": 336,
+    "canonical_structured_variant_metadata_units": 341,
+    "catalog_coverage_complete": false,
     "effective_runtime_behavior_occurrences": 72,
-    "en_zh_behavior_analysis_conclusive": true,
+    "en_zh_behavior_analysis_conclusive": false,
     "en_zh_behavior_parity_proven": true,
-    "fail_closed_behavior_roots": 0,
+    "fail_closed_behavior_roots": 5,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 512,
-    "per_language_structured_variant_verification_units": 512,
+    "per_language_structured_variant_verification_complete": 672,
+    "per_language_structured_variant_verification_units": 682,
     "remaining_legacy_behavior_occurrences": 0,
-    "unanalysable_occurrences": 0
+    "unanalysable_occurrences": 10
   },
   "domain": "monspell",
   "inputs": {
@@ -4564,6 +4564,23 @@
           }
         },
         {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.avatar_song.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "avatar song cast",
+          "top_locator": {
+            "canonical_key": "avatar song cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -4576,6 +4593,40 @@
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "top_locator": {
             "canonical_key": "awaken flesh kobold fleshcrafter cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.blink_away_revenant.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "blink away revenant cast",
+          "top_locator": {
+            "canonical_key": "blink away revenant cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.blink_magical.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "blink magical cast",
+          "top_locator": {
+            "canonical_key": "blink magical cast",
             "variant_ordinal": 0
           }
         },
@@ -4852,6 +4903,23 @@
           }
         },
         {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.seal_doors.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "seal doors cast",
+          "top_locator": {
+            "canonical_key": "seal doors cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -4881,6 +4949,23 @@
           "top_locator": {
             "canonical_key": "silent blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.siren_song.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "en",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "siren song cast",
+          "top_locator": {
+            "canonical_key": "siren song cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -5143,7 +5228,13 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [],
+        "UNANALYSABLE": [
+          "avatar song cast",
+          "blink away revenant cast",
+          "blink magical cast",
+          "seal doors cast",
+          "siren song cast"
+        ],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -5205,6 +5296,34 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "angel cast targeted",
+          "stable_id": "mon.cast.angel.calls_down_god_wrath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "antimagic gaze norris cast",
+          "stable_id": "mon.cast.antimagic_gaze_norris.numinous_presence_gazes.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "antimagic gaze norris cast",
+          "stable_id": "mon.cast.antimagic_gaze_norris.eyes_shimmer.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": false,
+          "language": "en",
+          "requested_root": "avatar song cast",
+          "stable_id": "mon.cast.avatar_song.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
           "variant_ordinal": 0
@@ -5215,6 +5334,20 @@
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.chant_writhe.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "basilisk cast",
+          "stable_id": "mon.cast.basilisk.floating_eye_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "basilisk cast targeted",
+          "stable_id": "mon.cast.basilisk.targeted.floating_eye_alias.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -5277,6 +5410,27 @@
           "language": "en",
           "requested_root": "bes kemwar cast",
           "stable_id": "mon.cast.bes_kemwar.writhes_within_target.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "en",
+          "requested_root": "blink away revenant cast",
+          "stable_id": "mon.cast.blink_away_revenant.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "en",
+          "requested_root": "blink magical cast",
+          "stable_id": "mon.cast.blink_magical.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "blink range ironbound thunderhulk cast",
+          "stable_id": "mon.cast.blink_range_ironbound_thunderhulk.strange_energies_crackle.v1",
           "variant_ordinal": 0
         },
         {
@@ -5345,6 +5499,34 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "brain worm cast",
+          "stable_id": "mon.cast.brain_worm.bulging_head_throbs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "brain worm cast",
+          "stable_id": "mon.cast.brain_worm.throbbing_head_pulsates.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "burial acolyte cast",
+          "stable_id": "mon.cast.burial_acolyte.funeral_chant.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "call down lightning cast",
+          "stable_id": "mon.cast.call_down_lightning.electricity_crackles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "call lost souls cast",
           "stable_id": "mon.cast.call_lost_souls.beckon_restless_souls.v1",
           "variant_ordinal": 0
@@ -5397,6 +5579,41 @@
           "requested_root": "cantrip cast",
           "stable_id": "mon.cast.cantrip.satisfied.v1",
           "variant_ordinal": 5
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.gurgles_absent_god.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.jiggles_mournfully.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.wobbles_aimlessly.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.become_one_with_sorrow.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.forsaken_by_god.v1",
+          "variant_ordinal": 4
         },
         {
           "complete": true,
@@ -5492,6 +5709,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "confuse sphinx marauder cast",
+          "stable_id": "mon.cast.confuse_sphinx_marauder.strange_tongue_riddle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "conjure living spells cast",
           "stable_id": "mon.cast.conjure_living_spells.flurry.v1",
           "variant_ordinal": 0
@@ -5569,6 +5793,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "divine armament cast",
+          "stable_id": "mon.cast.divine_armament.beseeches_god_for_weapon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "dominate undead vampire bloodprince cast",
           "stable_id": "mon.cast.dominate_undead_vampire_bloodprince.exerts_authority.v1",
           "variant_ordinal": 0
@@ -5590,6 +5821,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "doomsaying cassandra cast",
+          "stable_id": "mon.cast.doomsaying_cassandra.warns_player_future.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "dragon cast",
           "stable_id": "mon.cast.dragon.roar.v1",
           "variant_ordinal": 0
@@ -5599,6 +5837,13 @@
           "language": "en",
           "requested_root": "dragon cast targeted",
           "stable_id": "mon.cast.dragon.targeted.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "drake cast targeted",
+          "stable_id": "mon.cast.drake.targeted.dragon_alias.v1",
           "variant_ordinal": 0
         },
         {
@@ -5695,6 +5940,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "flashing balestra undying armoury cast",
+          "stable_id": "mon.cast.flashing_balestra_undying_armoury.weapon_lunges.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "flayed ghost cast",
           "stable_id": "mon.cast.flayed_ghost.tortured_malice.v1",
           "variant_ordinal": 0
@@ -5775,6 +6027,34 @@
           "requested_root": "freeze cast",
           "stable_id": "mon.cast.freeze.freeze_target.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.eyestalks_quiver_while_mumbling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.chants_while_wobbling.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.mumbles_strange_words.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.casts_spell.v1",
+          "variant_ordinal": 3
         },
         {
           "complete": true,
@@ -5900,6 +6180,20 @@
           "language": "en",
           "requested_root": "harpoon shot cast",
           "stable_id": "mon.cast.harpoon_shot.fires_harpoon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "haste other priest cast",
+          "stable_id": "mon.cast.haste_other_priest.calls_on_god_to_hasten.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "heal other priest cast",
+          "stable_id": "mon.cast.heal_other_priest.calls_on_god_to_heal.v1",
           "variant_ordinal": 0
         },
         {
@@ -6031,6 +6325,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "lee's rapid deconstruction screaming refraction cast",
+          "stable_id": "mon.cast.lees_rapid_deconstruction_screaming_refraction.echo_wails.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "legendary destruction cast",
+          "stable_id": "mon.cast.legendary_destruction.major_destruction_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "lightning bolt electric golem cast",
           "stable_id": "mon.cast.lightning_bolt_electric_golem.hurls_beam.v1",
           "variant_ordinal": 0
@@ -6066,8 +6374,22 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "major destruction cast",
+          "stable_id": "mon.cast.major_destruction.conjures_destructive_force.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "malign offering priest cast",
           "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "malmutate zykzyl cast",
+          "stable_id": "mon.cast.malmutate_zygzyl.envies_foe_form.v1",
           "variant_ordinal": 0
         },
         {
@@ -6108,6 +6430,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "march of sorrows boris cast",
+          "stable_id": "mon.cast.march_of_sorrows_boris.casts_or_pitches_sorrows.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "march of sorrows boris cast",
+          "stable_id": "mon.cast.march_of_sorrows_boris.rolls_out_victims_affliction.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "mennas cast",
           "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1",
           "variant_ordinal": 0
@@ -6117,6 +6453,13 @@
           "language": "en",
           "requested_root": "metal splinters war gargoyle cast",
           "stable_id": "mon.cast.metal_splinters_war_gargoyle.launches_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "might other priest cast",
+          "stable_id": "mon.cast.might_other_priest.calls_on_god_to_strengthen.v1",
           "variant_ordinal": 0
         },
         {
@@ -6153,6 +6496,13 @@
           "requested_root": "non-humanoid wizard cast targeted",
           "stable_id": "mon.cast.non_humanoid_wizard_targeted.casts_spell.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "obsidian statue cast",
+          "stable_id": "mon.cast.obsidian_statue.eyes_glow_briefly.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6199,6 +6549,34 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.pulses_or_vibrates.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.gnaws_at_world.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.eats_away_reality.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.existence_decays.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "orb of fire cast",
           "stable_id": "mon.cast.orb_of_fire.glows_yellow.v1",
           "variant_ordinal": 0
@@ -6230,6 +6608,27 @@
           "requested_root": "orb of fire cast",
           "stable_id": "mon.cast.orb_of_fire.emits_lurid_red_light.v1",
           "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.glitters_with_frost.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.swirls_like_blizzard.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.glows.v1",
+          "variant_ordinal": 2
         },
         {
           "complete": true,
@@ -6290,6 +6689,55 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.prays_to_god.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.mumbles_strange_prayers.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.utters_invocation.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.calls_down_wrath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.mumbles_prayers_against_target.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.invokes_aid_against_target.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "primal wave elemental wellspring cast",
+          "stable_id": "mon.cast.primal_wave_elemental_wellspring.water_torrent.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "primal wave norris cast",
           "stable_id": "mon.cast.primal_wave_norris.invokes_beyond_life.v1",
           "variant_ordinal": 0
@@ -6325,6 +6773,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "raven cast",
+          "stable_id": "mon.cast.raven.stares_into_foe_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "ravenous swarm vampire bloodprince cast",
           "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.unfurls_wings.v1",
           "variant_ordinal": 0
@@ -6335,6 +6790,41 @@
           "requested_root": "ravenous swarm vampire bloodprince cast",
           "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.spreads_arms.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rebounding blaze thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.wild_fire_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rebounding blaze thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.releases_excess_heat.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rebounding chill thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.wild_ice_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rebounding chill thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.vents_cold.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "roxanne cast",
+          "stable_id": "mon.cast.roxanne.sphinx_alias.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6355,6 +6845,20 @@
           "language": "en",
           "requested_root": "scrub nettle cast targeted",
           "stable_id": "mon.cast.scrub_nettle.targeted.launches_toxic_spines.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "en",
+          "requested_root": "seal doors cast",
+          "stable_id": "mon.cast.seal_doors.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "searing breath cast",
+          "stable_id": "mon.cast.searing_breath.breathes_beam.v1",
           "variant_ordinal": 0
         },
         {
@@ -6440,6 +6944,27 @@
           "requested_root": "silent laughing skull cast",
           "stable_id": "mon.cast.silent_laughing_skull.rattles_with_glee.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent weeping skull cast",
+          "stable_id": "mon.cast.silent_weeping_skull.misery_surges.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "siphon essence cast",
+          "stable_id": "mon.cast.siphon_essence.draws_nearby_souls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "en",
+          "requested_root": "siren song cast",
+          "stable_id": "mon.cast.siren_song.suppress.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6591,8 +7116,36 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "summon eyeballs dissolution cast",
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.calls_fellow_slimes.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "summon eyeballs dissolution cast",
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.god_sees_all.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "summon water elementals elemental wellspring cast",
+          "stable_id": "mon.cast.summon_water_elementals_elemental_wellspring.water_spirits.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sun moth cast",
+          "stable_id": "mon.cast.sun_moth.wings_beat_fiercely.v1",
           "variant_ordinal": 0
         },
         {
@@ -6661,6 +7214,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "unseen call of chaos cast",
+          "stable_id": "mon.cast.unseen_call_of_chaos.calls_powers_chaos.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen cold breath cast",
+          "stable_id": "mon.cast.unseen_cold_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "unseen curse skull cast",
           "stable_id": "mon.cast.unseen_curse_skull.clattering_teeth.v1",
           "variant_ordinal": 0
@@ -6689,6 +7256,55 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "unseen fire breath cast",
+          "stable_id": "mon.cast.unseen_fire_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen floating eye cast targeted",
+          "stable_id": "mon.cast.unseen_floating_eye.feels_stare.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen geryon cast",
+          "stable_id": "mon.cast.unseen_geryon.weird_mournful_sound.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen ghost moth cast targeted",
+          "stable_id": "mon.cast.unseen_ghost_moth.feels_watched.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen holy flames cast",
+          "stable_id": "mon.cast.unseen_holy_flames.blessed_flames_called_forth.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen laughing skull cast",
+          "stable_id": "mon.cast.unseen_laughing_skull.spiteful_cackling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen laughing skull cast",
+          "stable_id": "mon.cast.unseen_laughing_skull.scornful_gibbering.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "unseen mara summon cast",
           "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -6698,6 +7314,55 @@
           "language": "en",
           "requested_root": "unseen non-humanoid wizard cast",
           "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen orb of destruction cast",
+          "stable_id": "mon.cast.unseen_orb_of_destruction.conjures_glowing_orb.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen phantom blitz cast",
+          "stable_id": "mon.cast.unseen_phantom_blitz.casts_phantasmal_image.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen priest cast",
+          "stable_id": "mon.cast.unseen_priest.hears_mumbled_prayers.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen searing breath cast",
+          "stable_id": "mon.cast.unseen_searing_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen spit acid cast",
+          "stable_id": "mon.cast.unseen_spit_acid.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen spit poison cast",
+          "stable_id": "mon.cast.unseen_spit_poison.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "unseen symbol of torment cast",
+          "stable_id": "mon.cast.unseen_symbol_of_torment.calls_powers_darkness.v1",
           "variant_ordinal": 0
         },
         {
@@ -6783,6 +7448,13 @@
           "requested_root": "vanquished vanguard nergalle cast",
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "vex sphinx marauder cast",
+          "stable_id": "mon.cast.vex_sphinx_marauder.mystic_tongue_riddle.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -6874,6 +7546,20 @@
           "requested_root": "weakening gaze cast",
           "stable_id": "mon.cast.weakening_gaze.fierce_gaze.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "weeping skull cast",
+          "stable_id": "mon.cast.weeping_skull.gushing_sobs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "weeping skull cast",
+          "stable_id": "mon.cast.weeping_skull.misery_surges.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -6998,6 +7684,23 @@
           }
         },
         {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.avatar_song.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "avatar song cast",
+          "top_locator": {
+            "canonical_key": "avatar song cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -7010,6 +7713,40 @@
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "top_locator": {
             "canonical_key": "awaken flesh kobold fleshcrafter cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.blink_away_revenant.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "blink away revenant cast",
+          "top_locator": {
+            "canonical_key": "blink away revenant cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.blink_magical.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "blink magical cast",
+          "top_locator": {
+            "canonical_key": "blink magical cast",
             "variant_ordinal": 0
           }
         },
@@ -7286,6 +8023,23 @@
           }
         },
         {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.seal_doors.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "seal doors cast",
+          "top_locator": {
+            "canonical_key": "seal doors cast",
+            "variant_ordinal": 0
+          }
+        },
+        {
           "behavior": "GESTURE",
           "catalog_coverage": {
             "covered": true,
@@ -7315,6 +8069,23 @@
           "top_locator": {
             "canonical_key": "silent blizzard demon cast",
             "variant_ordinal": 1
+          }
+        },
+        {
+          "behavior": "UNANALYSABLE",
+          "catalog_coverage": {
+            "covered": false,
+            "stable_id": "mon.cast.siren_song.suppress.v1"
+          },
+          "detail": "structured behavior metadata is incomplete",
+          "language": "zh",
+          "legacy_effect": "analysis fails closed; legacy effect is not statically proven",
+          "phase": "ANALYSIS",
+          "recursive_provenance": [],
+          "requested_root": "siren song cast",
+          "top_locator": {
+            "canonical_key": "siren song cast",
+            "variant_ordinal": 0
           }
         },
         {
@@ -7577,7 +8348,13 @@
           "wizard cast targeted"
         ],
         "SOUND_LIKE_CHANNEL": [],
-        "UNANALYSABLE": [],
+        "UNANALYSABLE": [
+          "avatar song cast",
+          "blink away revenant cast",
+          "blink magical cast",
+          "seal doors cast",
+          "siren song cast"
+        ],
         "VISUAL_APPLICABILITY": [
           "cantrip gastronok cast",
           "hellfire mortar wiglaf cast",
@@ -7639,6 +8416,34 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "angel cast targeted",
+          "stable_id": "mon.cast.angel.calls_down_god_wrath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "antimagic gaze norris cast",
+          "stable_id": "mon.cast.antimagic_gaze_norris.numinous_presence_gazes.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "antimagic gaze norris cast",
+          "stable_id": "mon.cast.antimagic_gaze_norris.eyes_shimmer.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": false,
+          "language": "zh",
+          "requested_root": "avatar song cast",
+          "stable_id": "mon.cast.avatar_song.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.cackle_gesture.v1",
           "variant_ordinal": 0
@@ -7649,6 +8454,20 @@
           "requested_root": "awaken flesh kobold fleshcrafter cast",
           "stable_id": "mon.cast.awaken_flesh.chant_writhe.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "basilisk cast",
+          "stable_id": "mon.cast.basilisk.floating_eye_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "basilisk cast targeted",
+          "stable_id": "mon.cast.basilisk.targeted.floating_eye_alias.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -7711,6 +8530,27 @@
           "language": "zh",
           "requested_root": "bes kemwar cast",
           "stable_id": "mon.cast.bes_kemwar.writhes_within_target.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "zh",
+          "requested_root": "blink away revenant cast",
+          "stable_id": "mon.cast.blink_away_revenant.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "zh",
+          "requested_root": "blink magical cast",
+          "stable_id": "mon.cast.blink_magical.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "blink range ironbound thunderhulk cast",
+          "stable_id": "mon.cast.blink_range_ironbound_thunderhulk.strange_energies_crackle.v1",
           "variant_ordinal": 0
         },
         {
@@ -7779,6 +8619,34 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "brain worm cast",
+          "stable_id": "mon.cast.brain_worm.bulging_head_throbs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "brain worm cast",
+          "stable_id": "mon.cast.brain_worm.throbbing_head_pulsates.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "burial acolyte cast",
+          "stable_id": "mon.cast.burial_acolyte.funeral_chant.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "call down lightning cast",
+          "stable_id": "mon.cast.call_down_lightning.electricity_crackles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "call lost souls cast",
           "stable_id": "mon.cast.call_lost_souls.beckon_restless_souls.v1",
           "variant_ordinal": 0
@@ -7831,6 +8699,41 @@
           "requested_root": "cantrip cast",
           "stable_id": "mon.cast.cantrip.satisfied.v1",
           "variant_ordinal": 5
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.gurgles_absent_god.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.jiggles_mournfully.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.wobbles_aimlessly.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.become_one_with_sorrow.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "cantrip dissolution cast",
+          "stable_id": "mon.cast.cantrip_dissolution.forsaken_by_god.v1",
+          "variant_ordinal": 4
         },
         {
           "complete": true,
@@ -7926,6 +8829,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "confuse sphinx marauder cast",
+          "stable_id": "mon.cast.confuse_sphinx_marauder.strange_tongue_riddle.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "conjure living spells cast",
           "stable_id": "mon.cast.conjure_living_spells.flurry.v1",
           "variant_ordinal": 0
@@ -8003,6 +8913,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "divine armament cast",
+          "stable_id": "mon.cast.divine_armament.beseeches_god_for_weapon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "dominate undead vampire bloodprince cast",
           "stable_id": "mon.cast.dominate_undead_vampire_bloodprince.exerts_authority.v1",
           "variant_ordinal": 0
@@ -8024,6 +8941,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "doomsaying cassandra cast",
+          "stable_id": "mon.cast.doomsaying_cassandra.warns_player_future.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "dragon cast",
           "stable_id": "mon.cast.dragon.roar.v1",
           "variant_ordinal": 0
@@ -8033,6 +8957,13 @@
           "language": "zh",
           "requested_root": "dragon cast targeted",
           "stable_id": "mon.cast.dragon.targeted.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "drake cast targeted",
+          "stable_id": "mon.cast.drake.targeted.dragon_alias.v1",
           "variant_ordinal": 0
         },
         {
@@ -8129,6 +9060,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "flashing balestra undying armoury cast",
+          "stable_id": "mon.cast.flashing_balestra_undying_armoury.weapon_lunges.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "flayed ghost cast",
           "stable_id": "mon.cast.flayed_ghost.tortured_malice.v1",
           "variant_ordinal": 0
@@ -8209,6 +9147,34 @@
           "requested_root": "freeze cast",
           "stable_id": "mon.cast.freeze.freeze_target.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.eyestalks_quiver_while_mumbling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.chants_while_wobbling.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.mumbles_strange_words.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "gastronok cast",
+          "stable_id": "mon.cast.gastronok.casts_spell.v1",
+          "variant_ordinal": 3
         },
         {
           "complete": true,
@@ -8334,6 +9300,20 @@
           "language": "zh",
           "requested_root": "harpoon shot cast",
           "stable_id": "mon.cast.harpoon_shot.fires_harpoon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "haste other priest cast",
+          "stable_id": "mon.cast.haste_other_priest.calls_on_god_to_hasten.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "heal other priest cast",
+          "stable_id": "mon.cast.heal_other_priest.calls_on_god_to_heal.v1",
           "variant_ordinal": 0
         },
         {
@@ -8465,6 +9445,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "lee's rapid deconstruction screaming refraction cast",
+          "stable_id": "mon.cast.lees_rapid_deconstruction_screaming_refraction.echo_wails.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "legendary destruction cast",
+          "stable_id": "mon.cast.legendary_destruction.major_destruction_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "lightning bolt electric golem cast",
           "stable_id": "mon.cast.lightning_bolt_electric_golem.hurls_beam.v1",
           "variant_ordinal": 0
@@ -8500,8 +9494,22 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "major destruction cast",
+          "stable_id": "mon.cast.major_destruction.conjures_destructive_force.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "malign offering priest cast",
           "stable_id": "mon.cast.malign_offering_priest.dark_prayer.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "malmutate zykzyl cast",
+          "stable_id": "mon.cast.malmutate_zygzyl.envies_foe_form.v1",
           "variant_ordinal": 0
         },
         {
@@ -8542,6 +9550,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "march of sorrows boris cast",
+          "stable_id": "mon.cast.march_of_sorrows_boris.casts_or_pitches_sorrows.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "march of sorrows boris cast",
+          "stable_id": "mon.cast.march_of_sorrows_boris.rolls_out_victims_affliction.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "mennas cast",
           "stable_id": "mon.cast.mennas.frantic_visual_gesture.v1",
           "variant_ordinal": 0
@@ -8551,6 +9573,13 @@
           "language": "zh",
           "requested_root": "metal splinters war gargoyle cast",
           "stable_id": "mon.cast.metal_splinters_war_gargoyle.launches_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "might other priest cast",
+          "stable_id": "mon.cast.might_other_priest.calls_on_god_to_strengthen.v1",
           "variant_ordinal": 0
         },
         {
@@ -8587,6 +9616,13 @@
           "requested_root": "non-humanoid wizard cast targeted",
           "stable_id": "mon.cast.non_humanoid_wizard_targeted.casts_spell.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "obsidian statue cast",
+          "stable_id": "mon.cast.obsidian_statue.eyes_glow_briefly.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -8633,6 +9669,34 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.pulses_or_vibrates.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.gnaws_at_world.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.eats_away_reality.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of entropy cast",
+          "stable_id": "mon.cast.orb_of_entropy.existence_decays.v1",
+          "variant_ordinal": 3
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "orb of fire cast",
           "stable_id": "mon.cast.orb_of_fire.glows_yellow.v1",
           "variant_ordinal": 0
@@ -8664,6 +9728,27 @@
           "requested_root": "orb of fire cast",
           "stable_id": "mon.cast.orb_of_fire.emits_lurid_red_light.v1",
           "variant_ordinal": 4
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.glitters_with_frost.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.swirls_like_blizzard.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of winter cast",
+          "stable_id": "mon.cast.orb_of_winter.glows.v1",
+          "variant_ordinal": 2
         },
         {
           "complete": true,
@@ -8724,6 +9809,55 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.prays_to_god.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.mumbles_strange_prayers.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "priest cast",
+          "stable_id": "mon.cast.priest.utters_invocation.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.calls_down_wrath.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.mumbles_prayers_against_target.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "priest cast targeted",
+          "stable_id": "mon.cast.priest.targeted.invokes_aid_against_target.v1",
+          "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "primal wave elemental wellspring cast",
+          "stable_id": "mon.cast.primal_wave_elemental_wellspring.water_torrent.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "primal wave norris cast",
           "stable_id": "mon.cast.primal_wave_norris.invokes_beyond_life.v1",
           "variant_ordinal": 0
@@ -8759,6 +9893,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "raven cast",
+          "stable_id": "mon.cast.raven.stares_into_foe_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "ravenous swarm vampire bloodprince cast",
           "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.unfurls_wings.v1",
           "variant_ordinal": 0
@@ -8769,6 +9910,41 @@
           "requested_root": "ravenous swarm vampire bloodprince cast",
           "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.spreads_arms.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rebounding blaze thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.wild_fire_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rebounding blaze thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.releases_excess_heat.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rebounding chill thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.wild_ice_whirl.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rebounding chill thermic dynamo cast",
+          "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.vents_cold.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "roxanne cast",
+          "stable_id": "mon.cast.roxanne.sphinx_alias.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -8789,6 +9965,20 @@
           "language": "zh",
           "requested_root": "scrub nettle cast targeted",
           "stable_id": "mon.cast.scrub_nettle.targeted.launches_toxic_spines.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "zh",
+          "requested_root": "seal doors cast",
+          "stable_id": "mon.cast.seal_doors.suppress.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "searing breath cast",
+          "stable_id": "mon.cast.searing_breath.breathes_beam.v1",
           "variant_ordinal": 0
         },
         {
@@ -8874,6 +10064,27 @@
           "requested_root": "silent laughing skull cast",
           "stable_id": "mon.cast.silent_laughing_skull.rattles_with_glee.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent weeping skull cast",
+          "stable_id": "mon.cast.silent_weeping_skull.misery_surges.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "siphon essence cast",
+          "stable_id": "mon.cast.siphon_essence.draws_nearby_souls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": false,
+          "language": "zh",
+          "requested_root": "siren song cast",
+          "stable_id": "mon.cast.siren_song.suppress.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -9025,8 +10236,36 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "summon eyeballs dissolution cast",
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.calls_fellow_slimes.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "summon eyeballs dissolution cast",
+          "stable_id": "mon.cast.summon_eyeballs_dissolution.god_sees_all.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "summon water elementals elemental wellspring cast",
+          "stable_id": "mon.cast.summon_water_elementals_elemental_wellspring.water_spirits.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sun moth cast",
+          "stable_id": "mon.cast.sun_moth.wings_beat_fiercely.v1",
           "variant_ordinal": 0
         },
         {
@@ -9095,6 +10334,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "unseen call of chaos cast",
+          "stable_id": "mon.cast.unseen_call_of_chaos.calls_powers_chaos.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen cold breath cast",
+          "stable_id": "mon.cast.unseen_cold_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "unseen curse skull cast",
           "stable_id": "mon.cast.unseen_curse_skull.clattering_teeth.v1",
           "variant_ordinal": 0
@@ -9123,6 +10376,55 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "unseen fire breath cast",
+          "stable_id": "mon.cast.unseen_fire_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen floating eye cast targeted",
+          "stable_id": "mon.cast.unseen_floating_eye.feels_stare.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen geryon cast",
+          "stable_id": "mon.cast.unseen_geryon.weird_mournful_sound.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen ghost moth cast targeted",
+          "stable_id": "mon.cast.unseen_ghost_moth.feels_watched.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen holy flames cast",
+          "stable_id": "mon.cast.unseen_holy_flames.blessed_flames_called_forth.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen laughing skull cast",
+          "stable_id": "mon.cast.unseen_laughing_skull.spiteful_cackling.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen laughing skull cast",
+          "stable_id": "mon.cast.unseen_laughing_skull.scornful_gibbering.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "unseen mara summon cast",
           "stable_id": "mon.cast.unseen_mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -9132,6 +10434,55 @@
           "language": "zh",
           "requested_root": "unseen non-humanoid wizard cast",
           "stable_id": "mon.cast.unseen_non_humanoid_wizard.mumbled_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen orb of destruction cast",
+          "stable_id": "mon.cast.unseen_orb_of_destruction.conjures_glowing_orb.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen phantom blitz cast",
+          "stable_id": "mon.cast.unseen_phantom_blitz.casts_phantasmal_image.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen priest cast",
+          "stable_id": "mon.cast.unseen_priest.hears_mumbled_prayers.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen searing breath cast",
+          "stable_id": "mon.cast.unseen_searing_breath.breath_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen spit acid cast",
+          "stable_id": "mon.cast.unseen_spit_acid.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen spit poison cast",
+          "stable_id": "mon.cast.unseen_spit_poison.spit_alias.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "unseen symbol of torment cast",
+          "stable_id": "mon.cast.unseen_symbol_of_torment.calls_powers_darkness.v1",
           "variant_ordinal": 0
         },
         {
@@ -9217,6 +10568,13 @@
           "requested_root": "vanquished vanguard nergalle cast",
           "stable_id": "mon.cast.vanquished_vanguard_nergalle.rally_spectres.v1",
           "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "vex sphinx marauder cast",
+          "stable_id": "mon.cast.vex_sphinx_marauder.mystic_tongue_riddle.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -9312,6 +10670,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "weeping skull cast",
+          "stable_id": "mon.cast.weeping_skull.gushing_sobs.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "weeping skull cast",
+          "stable_id": "mon.cast.weeping_skull.misery_surges.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "wind blast cast",
           "stable_id": "mon.cast.wind_blast.conjures_wind.v1",
           "variant_ordinal": 0
@@ -9389,11 +10761,51 @@
       ]
     }
   },
-  "locale_behavior_inconclusive": [],
+  "locale_behavior_inconclusive": [
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "avatar song cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    },
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "blink away revenant cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    },
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "blink magical cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    },
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "seal doors cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    },
+    {
+      "en_analyzable": false,
+      "en_proven_predicates": [],
+      "requested_root": "siren song cast",
+      "zh_analyzable": false,
+      "zh_proven_predicates": []
+    }
+  ],
   "locale_behavior_mismatch": [],
   "locale_presence_mismatch": [],
-  "phase2_blockers": [],
-  "phase2_ready": true,
+  "phase2_blockers": [
+    "0 remaining legacy behavior occurrences lack explicit metadata",
+    "10 behavior occurrences are unanalysable",
+    "EN/ZH behavior analysis is inconclusive"
+  ],
+  "phase2_ready": false,
   "raw_legacy_evidence": {
     "en": {
       "behavior_root_union": [
