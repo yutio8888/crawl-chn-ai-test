@@ -1,0 +1,972 @@
+{
+  "schema": "dcss-zh-source-classification-shard-v1",
+  "kind": "collision",
+  "hash_range": "40-7f",
+  "groups": [
+    {
+      "group_id": "sourcedb-v1:5cabba76b7936a4334fa85d844f27c7781c80ec30438844117550e9a950117e3",
+      "group_fingerprint": "fa8edd62b4b50b3d85016bacd9abb4ed58ab75ffbe4c863714c629ebe443967f",
+      "canonical_key": "demigod",
+      "definitions": [
+        {
+          "order": 10478,
+          "raw_key": "demigod",
+          "value": "半神",
+          "key_line": 31826,
+          "value_line": 31827
+        },
+        {
+          "order": 13010,
+          "raw_key": "Demigod",
+          "value": "半神",
+          "key_line": 39532,
+          "value_line": 39533
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'demigod' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5ddf61f4d52f255942217bf9578854a3ef26cb313ffcd1fa0c38f0e66f42cc8e",
+      "group_fingerprint": "1a8dd6970138704b5fcfe063b661cfbade80da94e41c147144605890076a6fb1",
+      "canonical_key": "died",
+      "definitions": [
+        {
+          "order": 12913,
+          "raw_key": "died",
+          "value": "死亡",
+          "key_line": 39241,
+          "value_line": 39242
+        },
+        {
+          "order": 12914,
+          "raw_key": "Died",
+          "value": "死亡",
+          "key_line": 39244,
+          "value_line": 39245
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'died' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:400dfb05f0143520dbc668a184016b1d4e61e67fb926f2ada849f830b5bb5203",
+      "group_fingerprint": "99f2a40028bb06e7ddeafb9bf64a07380dc04463414ac48316b33fb3cbdd4216",
+      "canonical_key": "draconian",
+      "definitions": [
+        {
+          "order": 10489,
+          "raw_key": "draconian",
+          "value": "龙人",
+          "key_line": 31859,
+          "value_line": 31860
+        },
+        {
+          "order": 13032,
+          "raw_key": "Draconian",
+          "value": "龙人",
+          "key_line": 39598,
+          "value_line": 39599
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'draconian' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:510345478efc1edf0c921f97f5b314eb51b4a0347fd85f36845101d3beff1a1d",
+      "group_fingerprint": "941f1ac67c2e4fda9783d0321db81b68561c3ed391be81ffe657d1dadf7242d7",
+      "canonical_key": "drain",
+      "definitions": [
+        {
+          "order": 3774,
+          "raw_key": "Drain",
+          "value": "汲取",
+          "key_line": 11360,
+          "value_line": 11361
+        },
+        {
+          "order": 5046,
+          "raw_key": "drain",
+          "value": "吸血",
+          "key_line": 15450,
+          "value_line": 15451
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "needs_semantic_ruling",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          "'Drain' (capital D, order 3774) maps to '汲取' — likely brand/status effect (HP drain)",
+          "'drain' (lowercase, order 5046) maps to '吸血' — likely attack type or behavior (blood drain)"
+        ],
+        "rationale": "Same English word 'drain' used for two conceptually different game mechanics. The Chinese translations '汲取' and '吸血' reflect this semantic difference. Needs C_() context to distinguish, or separate canonical keys."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:50f7becde477bb509c7704de62c349247fb3499c03a95e4bce20151cd552dea5",
+      "group_fingerprint": "20846a715e312648078ab4652abaaf964086c3af63a5ca0ef27c03d1b5c6b35f",
+      "canonical_key": "draw",
+      "definitions": [
+        {
+          "order": 9501,
+          "raw_key": "draw",
+          "value": "抽牌",
+          "key_line": 28895,
+          "value_line": 28896
+        },
+        {
+          "order": 12965,
+          "raw_key": "Draw",
+          "value": "抽牌",
+          "key_line": 39397,
+          "value_line": 39398
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'draw' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:7f1151d8155585283aa25d73958f3453075d584139227996d0c9ae6afc97b3e4",
+      "group_fingerprint": "97856125e0d5c472da4457912351457c7a94b08648fc13bfe43326d101e1074f",
+      "canonical_key": "felid",
+      "definitions": [
+        {
+          "order": 10522,
+          "raw_key": "felid",
+          "value": "猫",
+          "key_line": 31958,
+          "value_line": 31959
+        },
+        {
+          "order": 13016,
+          "raw_key": "Felid",
+          "value": "猫",
+          "key_line": 39550,
+          "value_line": 39551
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'felid' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:66bfadac4eb22a57871e8b89dddb390d4c97c932720fd3c5f327f59cc1a80493",
+      "group_fingerprint": "a73316238b450ff34810c951a91cc3959b174078a158838f020e97979af46340",
+      "canonical_key": "formicid",
+      "definitions": [
+        {
+          "order": 10530,
+          "raw_key": "formicid",
+          "value": "蚁人",
+          "key_line": 31982,
+          "value_line": 31983
+        },
+        {
+          "order": 13019,
+          "raw_key": "Formicid",
+          "value": "蚁人",
+          "key_line": 39559,
+          "value_line": 39560
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'formicid' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:79ca2057b15f4a24e5c8e620b58187666f234208e3318b8f71f6b14be68fa4dd",
+      "group_fingerprint": "eebdff6933e65c3b2f8ddd3705197369489f34878622df07a06d3494a9cc1cd8",
+      "canonical_key": "gargoyle",
+      "definitions": [
+        {
+          "order": 10540,
+          "raw_key": "gargoyle",
+          "value": "石像鬼",
+          "key_line": 32012,
+          "value_line": 32013
+        },
+        {
+          "order": 13018,
+          "raw_key": "Gargoyle",
+          "value": "石像鬼",
+          "key_line": 39556,
+          "value_line": 39557
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'gargoyle' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:64c393506db87e3ffa5f93fa9577b98540275aac3d9118181e70d50972c4f44f",
+      "group_fingerprint": "07ede02370f956825d47c7e2b2244eafd657dfa074977d46a7f3e4f7533e94e2",
+      "canonical_key": "ghoul",
+      "definitions": [
+        {
+          "order": 10543,
+          "raw_key": "ghoul",
+          "value": "食尸鬼",
+          "key_line": 32021,
+          "value_line": 32022
+        },
+        {
+          "order": 13012,
+          "raw_key": "Ghoul",
+          "value": "食尸鬼",
+          "key_line": 39538,
+          "value_line": 39539
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'ghoul' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5e6dd3de134a5ea39c33a6eea1909645356f077e0ba1e418ba0ffdf231ebc9ab",
+      "group_fingerprint": "208e94e423bfc62d9fcb5ccad5bd7cc3bee3de7577969526bb7b23d6a6e3b649",
+      "canonical_key": "green draconian",
+      "definitions": [
+        {
+          "order": 10564,
+          "raw_key": "green draconian",
+          "value": "绿龙人",
+          "key_line": 32084,
+          "value_line": 32085
+        },
+        {
+          "order": 13034,
+          "raw_key": "Green Draconian",
+          "value": "绿龙人",
+          "key_line": 39604,
+          "value_line": 39605
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'green draconian' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:49fa6d753c7ad75b524c671134e672d5854a7412608f22902e69510fa30478a4",
+      "group_fingerprint": "27c6936a36b0edd1b39402b98b87ccd2aa9eb83ccf89feb8c22586c20fd49481",
+      "canonical_key": "haste",
+      "definitions": [
+        {
+          "order": 1421,
+          "raw_key": "haste",
+          "value": "加速",
+          "key_line": 4275,
+          "value_line": 4276
+        },
+        {
+          "order": 12681,
+          "raw_key": "Haste",
+          "value": "加速",
+          "key_line": 38446,
+          "value_line": 38447
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'haste' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5f3c4f8580d392e422e7c2f6802674ac27966c98d95c39696e4b2490168e5488",
+      "group_fingerprint": "e21f396754d337f779baf3b7e8733f005c131186bafdc9471783de4918f95fc1",
+      "canonical_key": "items",
+      "definitions": [
+        {
+          "order": 1598,
+          "raw_key": "items",
+          "value": "物品",
+          "key_line": 4811,
+          "value_line": 4812
+        },
+        {
+          "order": 12208,
+          "raw_key": "Items",
+          "value": "物品",
+          "key_line": 37026,
+          "value_line": 37027
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'items' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5ed45566f29d2f055b2732b8bbae8d8dc7a4dce16cc6abb5d12aa1a6f82fc3a4",
+      "group_fingerprint": "d8b932b5789bb5b3f124326656d2ba34b695729fe75d318082eee9d4e8fb8886",
+      "canonical_key": "lava",
+      "definitions": [
+        {
+          "order": 3802,
+          "raw_key": "Lava",
+          "value": "熔岩",
+          "key_line": 11444,
+          "value_line": 11445
+        },
+        {
+          "order": 4597,
+          "raw_key": "lava",
+          "value": "熔岩",
+          "key_line": 14103,
+          "value_line": 14104
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'lava' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:55235d10c95c19c7bb7dfd3f9f2cbac184b8662ae36b009a26005070b80b717f",
+      "group_fingerprint": "bb13f311138afa21c85794cd2412ec439a05f6e5d218ea9da16ea302798f2363",
+      "canonical_key": "naga",
+      "definitions": [
+        {
+          "order": 10647,
+          "raw_key": "naga",
+          "value": "纳迦",
+          "key_line": 32333,
+          "value_line": 32334
+        },
+        {
+          "order": 13005,
+          "raw_key": "Naga",
+          "value": "纳迦",
+          "key_line": 39517,
+          "value_line": 39518
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'naga' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5743abddddfa08c1e3a99fdebc2e8f3f1108fa12dcd2a8f58a42f141418c22ec",
+      "group_fingerprint": "e0d176e291849566a0ceb60facc3303bc1e07e2ddb842245de4774a60b3240a7",
+      "canonical_key": "poison",
+      "definitions": [
+        {
+          "order": 1821,
+          "raw_key": "Poison",
+          "value": "毒素",
+          "key_line": 5484,
+          "value_line": 5485
+        },
+        {
+          "order": 12836,
+          "raw_key": "poison",
+          "value": "毒素",
+          "key_line": 39010,
+          "value_line": 39011
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'poison' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5a5ec3506d42746db24168a1049cc9e0558908db065483388c3ec99d7ed4e7a7",
+      "group_fingerprint": "9fa4e3b0caedfb43800f371366a3cea5b1148d221e05c9e9d7df701344d4e6bd",
+      "canonical_key": "see invisible",
+      "definitions": [
+        {
+          "order": 1994,
+          "raw_key": "see invisible",
+          "value": "识破隐形",
+          "key_line": 6006,
+          "value_line": 6007
+        },
+        {
+          "order": 12682,
+          "raw_key": "See Invisible",
+          "value": "侦测隐形",
+          "key_line": 38449,
+          "value_line": 38450
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "needs_semantic_ruling",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          "English key 'see invisible' mapped to '识破隐形'",
+          "English key 'See Invisible' mapped to '侦测隐形'",
+          "Both refer to same game mechanic: ability to detect invisible creatures"
+        ],
+        "rationale": "Same underlying concept collides due to case difference in English keys. Translator must choose one canonical Chinese term and deduplicate the source.txt entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5e0cf7bd1dfa3831788b0cf6dedcdd228fba6f34dc238d371e746567e80bc7b6",
+      "group_fingerprint": "ccf05a00ed02bb527d17be791da533e4f4de068ddd5dcc0477476d43c68a23e6",
+      "canonical_key": "slow",
+      "definitions": [
+        {
+          "order": 3799,
+          "raw_key": "Slow",
+          "value": "减速",
+          "key_line": 11435,
+          "value_line": 11436
+        },
+        {
+          "order": 6658,
+          "raw_key": "slow",
+          "value": "缓慢",
+          "key_line": 20285,
+          "value_line": 20286
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "medium",
+        "evidence": [
+          "'Slow' (capital S, order 3774) maps to '减速' — likely status effect name",
+          "'slow' (lowercase, order 6658) maps to '缓慢' — likely generic adjective/verb"
+        ],
+        "rationale": "Capitalized 'Slow' and lowercase 'slow' may serve different semantic roles (status label vs description). Use C_() context to disambiguate if they diverge; otherwise standardize on one translation."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:6116f4494e0703fcb8f5ce75a3db45f2f918a1a1f1c81f27704e42803241ded7",
+      "group_fingerprint": "f11d14dbab10c7ed7f25a4f1431643c583c1bda85769b7bd03fb876ad580d0c7",
+      "canonical_key": "status|conf",
+      "definitions": [
+        {
+          "order": 12297,
+          "raw_key": "status|Conf",
+          "value": "惑",
+          "key_line": 37293,
+          "value_line": 37294
+        },
+        {
+          "order": 12629,
+          "raw_key": "status|conf",
+          "value": "困惑",
+          "key_line": 38289,
+          "value_line": 38290
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Conf' maps to '惑' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|conf' maps to '困惑' — full description"
+        ],
+        "rationale": "status|Conf and status|conf represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'conf') and C_('status_full', 'conf') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:779774b9bd5793714053fe1066d78ad50ea8487498732eab2101cc40dd29810e",
+      "group_fingerprint": "c6a540ac30849d15302c5bebd4222d16b4f0f96a8b9c8bddc49a478adad54c99",
+      "canonical_key": "status|corr",
+      "definitions": [
+        {
+          "order": 12301,
+          "raw_key": "status|Corr",
+          "value": "蚀",
+          "key_line": 37305,
+          "value_line": 37306
+        },
+        {
+          "order": 12630,
+          "raw_key": "status|corr",
+          "value": "腐蚀",
+          "key_line": 38292,
+          "value_line": 38293
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Corr' maps to '蚀' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|corr' maps to '腐蚀' — full description"
+        ],
+        "rationale": "status|Corr and status|corr represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'corr') and C_('status_full', 'corr') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:46c78870fb0469a0eff0bbf7ef4000b99d03a03008bec2fe206d0c2005de0560",
+      "group_fingerprint": "c7b2f96a623e4f31d42905222e29fef0489f43a0e03aef5fd3e86819a3a928c0",
+      "canonical_key": "status|fly",
+      "definitions": [
+        {
+          "order": 12336,
+          "raw_key": "status|Fly",
+          "value": "飞",
+          "key_line": 37410,
+          "value_line": 37411
+        },
+        {
+          "order": 12638,
+          "raw_key": "status|fly",
+          "value": "飞行",
+          "key_line": 38316,
+          "value_line": 38317
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Fly' maps to '飞' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|fly' maps to '飞行' — full description"
+        ],
+        "rationale": "status|Fly and status|fly represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'fly') and C_('status_full', 'fly') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:71d8eecd31aacfb798bd8d4f6e48bdcda66058584ea396be1ed4f80cd9cd669a",
+      "group_fingerprint": "0a3de68c758bb8eabcf5b0d7f97ced6df102ba0f9bc684c5b4b59bb60b342929",
+      "canonical_key": "status|invis",
+      "definitions": [
+        {
+          "order": 12353,
+          "raw_key": "status|Invis",
+          "value": "隐",
+          "key_line": 37461,
+          "value_line": 37462
+        },
+        {
+          "order": 12643,
+          "raw_key": "status|invis",
+          "value": "隐形",
+          "key_line": 38331,
+          "value_line": 38332
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Invis' maps to '隐' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|invis' maps to '隐形' — full description"
+        ],
+        "rationale": "status|Invis and status|invis represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'invis') and C_('status_full', 'invis') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:7c6768727fe333cca3bec3af5a1ece703e29db783487cdac7e6a5dc74a70ed3f",
+      "group_fingerprint": "042e458b6086ef6f17505b057cf012a03098f9686c9c3c69319283d49d794551",
+      "canonical_key": "status|nightfall",
+      "definitions": [
+        {
+          "order": 12369,
+          "raw_key": "status|Nightfall",
+          "value": "暮",
+          "key_line": 37509,
+          "value_line": 37510
+        },
+        {
+          "order": 12542,
+          "raw_key": "status|nightfall",
+          "value": "夜幕降临",
+          "key_line": 38028,
+          "value_line": 38029
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Nightfall' maps to '暮' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|nightfall' maps to '夜幕降临' — full description"
+        ],
+        "rationale": "status|Nightfall and status|nightfall represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'nightfall') and C_('status_full', 'nightfall') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5e0656372cb11a248aa097238d388ad0f072e037a2cfffa6b090a57031954e16",
+      "group_fingerprint": "7380675810813603726fc61b8eac0946acd3e05cf814552d634479a2d63dcc6e",
+      "canonical_key": "status|protected",
+      "definitions": [
+        {
+          "order": 12383,
+          "raw_key": "status|Protected",
+          "value": "护",
+          "key_line": 37551,
+          "value_line": 37552
+        },
+        {
+          "order": 12651,
+          "raw_key": "status|protected",
+          "value": "防护",
+          "key_line": 38355,
+          "value_line": 38356
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Protected' maps to '护' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|protected' maps to '防护' — full description"
+        ],
+        "rationale": "status|Protected and status|protected represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'protected') and C_('status_full', 'protected') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:537b5a94ade9d8c91c27c37c76b28e95bde835f84a69ff89b7129e2af47c36c0",
+      "group_fingerprint": "de801bdb9b043482e2e8e3d332731aa84dbc5d6965824b5777b68a0854a100b0",
+      "canonical_key": "status|sick",
+      "definitions": [
+        {
+          "order": 12405,
+          "raw_key": "status|Sick",
+          "value": "病",
+          "key_line": 37617,
+          "value_line": 37618
+        },
+        {
+          "order": 12594,
+          "raw_key": "status|sick",
+          "value": "疾病",
+          "key_line": 38184,
+          "value_line": 38185
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Sick' maps to '病' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|sick' maps to '疾病' — full description"
+        ],
+        "rationale": "status|Sick and status|sick represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'sick') and C_('status_full', 'sick') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:7a512000cc5da63813a12f8bcdb27cbc7f0aaae4556b33c5532c0956de74bc6a",
+      "group_fingerprint": "838b5fe65556c875df3e2f41dfa904fd8290780c7204db5a988f38f3aa341eb7",
+      "canonical_key": "status|tele",
+      "definitions": [
+        {
+          "order": 12422,
+          "raw_key": "status|Tele",
+          "value": "传",
+          "key_line": 37668,
+          "value_line": 37669
+        },
+        {
+          "order": 12665,
+          "raw_key": "status|tele",
+          "value": "传送",
+          "key_line": 38397,
+          "value_line": 38398
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Tele' maps to '传' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|tele' maps to '传送' — full description"
+        ],
+        "rationale": "status|Tele and status|tele represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'tele') and C_('status_full', 'tele') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:679bfe7312140d5217a9a0706c58c01b3ce6553e69566ce95a3d2c390700b0f3",
+      "group_fingerprint": "b675d18a7767c24cb310fe78bb9258028ee17723495dbe4ee689c8aee880ffae",
+      "canonical_key": "status|weak",
+      "definitions": [
+        {
+          "order": 12438,
+          "raw_key": "status|Weak",
+          "value": "弱",
+          "key_line": 37716,
+          "value_line": 37717
+        },
+        {
+          "order": 12669,
+          "raw_key": "status|weak",
+          "value": "脆弱",
+          "key_line": 38409,
+          "value_line": 38410
+        }
+      ],
+      "source_value_relation": "different",
+      "runtime_value_relation": "different",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Capitalized 'status|Weak' maps to '弱' — abbreviated status bar display (1 char)",
+          "Lowercase 'status|weak' maps to '脆弱' — full description"
+        ],
+        "rationale": "status|Weak and status|weak represent the same game status effect in different UI contexts (compact status bar vs full description). Use C_() contexts like C_('status_abbr', 'weak') and C_('status_full', 'weak') to disambiguate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:7b0456581bef4cb1f0e2c9c52ab9a3d80989f8aabe74e609d3cc183c365363de",
+      "group_fingerprint": "982a747213962ebb3253e6de298c00c9a8ca7672beeb20827323574880072a26",
+      "canonical_key": "throw",
+      "definitions": [
+        {
+          "order": 4573,
+          "raw_key": "throw",
+          "value": "投掷",
+          "key_line": 14031,
+          "value_line": 14032
+        },
+        {
+          "order": 12686,
+          "raw_key": "Throw",
+          "value": "投掷",
+          "key_line": 38461,
+          "value_line": 38462
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'throw' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:551916735aeecf1474109865fda11948173d76b1a705293de527130b8dc7271b",
+      "group_fingerprint": "716bbda00125f4a81ed09fb3e180647036b12ec768b612f64777d0f105f045dd",
+      "canonical_key": "troll",
+      "definitions": [
+        {
+          "order": 10802,
+          "raw_key": "troll",
+          "value": "巨魔",
+          "key_line": 32798,
+          "value_line": 32799
+        },
+        {
+          "order": 13006,
+          "raw_key": "Troll",
+          "value": "巨魔",
+          "key_line": 39520,
+          "value_line": 39521
+        }
+      ],
+      "source_value_relation": "equal",
+      "runtime_value_relation": "equal",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "dedupe",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          "Chinese translations are identical across both case variants"
+        ],
+        "rationale": "'troll' appears in both lowercase and Title Case with identical Chinese values. Keep lowercase entry, remove Title Case duplicate."
+      }
+    }
+  ]
+}
