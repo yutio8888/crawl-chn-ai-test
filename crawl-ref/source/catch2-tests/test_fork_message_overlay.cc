@@ -217,7 +217,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 98);
+        CHECK(report.structured_key_count == 125);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -241,6 +241,11 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(monspell_overlay_covers("hellfire mortar wiglaf cast"));
         CHECK(monspell_overlay_covers(
             "vanquished vanguard nergalle cast"));
+        CHECK(monspell_overlay_covers("clockroach cast"));
+        CHECK(monspell_overlay_covers("ghost moth cast targeted"));
+        CHECK_FALSE(monspell_overlay_covers("acid splash cast"));
+        CHECK_FALSE(monspell_overlay_covers("branch summon cast prefix"));
+        CHECK_FALSE(monspell_overlay_covers("chilling breath cast"));
         CHECK(rng::current_generator().get_state() == state);
         CHECK(rng::current_generator().get_count() == count);
     }
