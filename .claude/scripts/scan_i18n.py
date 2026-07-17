@@ -2188,21 +2188,12 @@ def cmd_source_key_collision_inventory(args):
                 return value
             return _normalize(inv)
 
-        # Strip generator metadata (generator_sha changes when code changes)
-        # and source_snapshot.snapshot_commit (may differ across worktree checkouts)
-        old_canonical = {k: v for k, v in existing.items()
-                         if k != 'generator_sha'}
-        if 'source_snapshot' in old_canonical:
-            old_snap = dict(old_canonical['source_snapshot'])
-            old_snap.pop('snapshot_commit', None)
-            old_canonical['source_snapshot'] = old_snap
-
-        new_canonical = {k: v for k, v in inventory.items()
-                         if k != 'generator_sha'}
-        if 'source_snapshot' in new_canonical:
-            new_snap = dict(new_canonical['source_snapshot'])
-            new_snap.pop('snapshot_commit', None)
-            new_canonical['source_snapshot'] = new_snap
+        # Full frozen comparison — no field exclusions.
+        # generator_sha anchors the specific generator version that produced
+        # this inventory. snapshot_commit anchors the frozen source blob.
+        # Both must remain stable; any change requires re-generating.
+        old_canonical = dict(existing)
+        new_canonical = dict(inventory)
 
         old_frozen = json.dumps(_to_canonical(old_canonical), sort_keys=True,
                                 ensure_ascii=False, separators=(',', ':'))

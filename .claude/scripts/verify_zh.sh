@@ -508,7 +508,7 @@ run_phase() {
         if [[ -n "${ZH_VERIFY_BUILD_COMMAND:-}" ]]; then
             bash -c "$ZH_VERIFY_BUILD_COMMAND"
         else
-            make -C crawl-ref/source -j4
+            make -C crawl-ref/source -j4 STDFLAG=-std=c++14
         fi
     }
     run_zh_smoke() {

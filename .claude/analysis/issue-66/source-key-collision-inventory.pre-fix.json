@@ -3,7 +3,7 @@
   "canonical_contract": "source-db-canonical-v1",
   "generator": "scan_i18n.py source-key-collision-inventory",
   "generator_version": "1.0",
-  "generator_sha": "ca8a3faa110cc04fe139fc3076abba0be91a72b5ea7e40d45e1d1574a5c1e6ae",
+  "generator_sha": "637fb7fe5b08da719c6ab0458b041801edd26464a3a801c1234289e5dba0ce5e",
   "source_snapshot": {
     "relative_path": "crawl-ref/source/dat/i18n/zh/source.txt",
     "blob_oid": "76ae630228f377839ee2a359008a9758583eb30b",
