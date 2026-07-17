@@ -395,6 +395,56 @@ class TestAssembleSourceKeyCollisionClassifications(unittest.TestCase):
                 if os.path.exists(p):
                     os.unlink(p)
 
+    def test_assembler_rejects_duplicate_shard_gids(self):
+        """Assembler must reject duplicate group_ids across shard files."""
+        f = str(FIXTURES / "case_collisions.txt")
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as inv_tf:
+            inv_path = inv_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as shard1_tf:
+            s1_path = shard1_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as shard2_tf:
+            s2_path = shard2_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as out_tf:
+            out_path = out_tf.name
+        try:
+            _run_cmd("source-key-collision-inventory",
+                     "--source-txt", f, "--output", inv_path)
+            # Create two shard files with the same group_id
+            gid = "sourcedb-v1:" + "a" * 64
+            fp = "b" * 64
+            shard_data = {
+                "schema": "dcss-zh-source-classification-shard-v1",
+                "groups": [{
+                    "group_id": gid, "group_fingerprint": fp,
+                    "classification": {
+                        "cause": "case_variant_duplicate",
+                        "action": "dedupe", "status": "classified",
+                        "owner": "translator", "confidence": "high",
+                        "evidence": [], "rationale": "test"
+                    }
+                }]
+            }
+            with open(s1_path, 'w') as fh:
+                json.dump(shard_data, fh)
+            with open(s2_path, 'w') as fh:
+                shard_data['groups'][0]['rationale'] = 'override'
+                json.dump(shard_data, fh)
+            ec, out, err = _run_cmd(
+                "assemble-source-key-collision-classifications",
+                "--inventory", inv_path,
+                "--shards", s1_path, s2_path,
+                "--output", out_path)
+            self.assertNotEqual(ec, 0,
+                                "Expected non-zero for duplicate shard IDs")
+        finally:
+            for p in [inv_path, s1_path, s2_path, out_path]:
+                if os.path.exists(p):
+                    os.unlink(p)
+
 
 class TestAssembleSourceMissingKeyClassifications(unittest.TestCase):
     """Test assemble-source-missing-key-classifications."""
@@ -422,6 +472,53 @@ class TestAssembleSourceMissingKeyClassifications(unittest.TestCase):
                              'dcss-zh-source-missing-key-manifest-v1')
         finally:
             for p in [inv_path, out_path]:
+                if os.path.exists(p):
+                    os.unlink(p)
+
+    def test_missing_key_assembler_rejects_duplicate_shard_gids(self):
+        """Missing-key assembler must reject duplicate group_ids."""
+        f = str(FIXTURES / "no_collisions.txt")
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as inv_tf:
+            inv_path = inv_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as s1_tf:
+            s1_path = s1_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as s2_tf:
+            s2_path = s2_tf.name
+        with tempfile.NamedTemporaryFile(
+                mode='w', suffix='.json', delete=False) as out_tf:
+            out_path = out_tf.name
+        try:
+            _run_cmd("source-missing-key-inventory",
+                     "--source-txt", f, "--output", inv_path)
+            gid = "source-missing-v1:" + "c" * 64
+            shard_data = {
+                "schema": "dcss-zh-source-classification-shard-v1",
+                "groups": [{
+                    "group_id": gid, "group_fingerprint": "d" * 64,
+                    "classification": {
+                        "cause": "case_variant_duplicate",
+                        "action": "dedupe", "status": "classified",
+                        "owner": "translator", "confidence": "high",
+                        "evidence": [], "rationale": "test"
+                    }
+                }]
+            }
+            with open(s1_path, 'w') as fh:
+                json.dump(shard_data, fh)
+            with open(s2_path, 'w') as fh:
+                json.dump(shard_data, fh)
+            ec, out, err = _run_cmd(
+                "assemble-source-missing-key-classifications",
+                "--inventory", inv_path,
+                "--shards", s1_path, s2_path,
+                "--output", out_path)
+            self.assertNotEqual(ec, 0,
+                                "Expected non-zero for duplicate shard IDs")
+        finally:
+            for p in [inv_path, s1_path, s2_path, out_path]:
                 if os.path.exists(p):
                     os.unlink(p)
 
