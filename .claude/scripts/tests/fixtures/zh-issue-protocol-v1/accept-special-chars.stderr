@@ -1,0 +1,19 @@
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"spells","sequence":0,"kind":"WHITESPACE_ANOMALY","source":"test.txt","key":"key\nwith\nnewlines","sample":"line1\nline2\rline3\twith|pipe","sample_bytes_hex":"6c696e65310a6c696e65320d6c696e653309776974687c70697065"}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"spells","sequence":1,"kind":"INVISIBLE_CHAR","source":"cjk.txt","key":"quotes\"and\\backslash","sample":"中文\u200b符号","sample_bytes_hex":"e4b8ade69687e2808be7aca6e58fb7"}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"issue","suite":"zh_translation","enumerator":"spells","sequence":2,"kind":"MIXED_CN_EN","source":"empty.txt","key":"","sample":"CJK mixed English","sample_bytes_hex":"434a4b206d6978656420456e676c697368"}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"spells","issue_count":3}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"gods","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"god_abilities","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"monsters","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"features","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"clouds","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"mutations","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"fixed_artefacts","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"skill_name","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"species_backgrounds","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"durations","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"godspeak","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"tutorial_hints_commands","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"weapon_brands","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"armour_egos","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"item_base_names","issue_count":0}

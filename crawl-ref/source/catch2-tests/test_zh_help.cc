@@ -485,12 +485,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             }
             auto found = scan_translation(val.c_str(), key, tag);
             for (auto& iss : found)
-            {
-                fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
-                        static_cast<int>(iss.kind), iss.source.c_str(),
-                        iss.key.c_str(), iss.sample.c_str());
                 issues.push_back(std::move(iss));
-            }
         }
         return keys.size();
     };
@@ -529,6 +524,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     CHECK_FALSE(rule_mixed_cn_en(eel));
     CHECK(eel.find("使佩戴者的手变成一对扭动的电鳗") != string::npos);
 
+    emit_issue_protocol("zh_help", "passive_status_textdb", issues);
     WARN("zh-help textdb: passive keys=" << n_passive
          << " status keys=" << n_status
          << " issues=" << issues.size());

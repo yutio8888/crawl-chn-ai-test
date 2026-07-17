@@ -13,5 +13,29 @@
     "by_kind": {}
   },
   "grand_total": 0,
-  "all_issues": []
+  "all_issues": [],
+  "catch2_protocol": {
+    "schema": "dcss-zh-catch2-jsonl",
+    "schema_version": 1,
+    "suite": "zh_translation",
+    "enumerators": [
+      "gods",
+      "god_abilities",
+      "spells",
+      "monsters",
+      "features",
+      "clouds",
+      "mutations",
+      "fixed_artefacts",
+      "skill_name",
+      "species_backgrounds",
+      "durations",
+      "godspeak",
+      "tutorial_hints_commands",
+      "weapon_brands",
+      "armour_egos",
+      "item_base_names"
+    ],
+    "manifest_sha256": "bac996e8ba93f0d7c17f6f7768f4d84a9af39f7f469c842d8e3443709392c8e5"
+  }
 }

@@ -210,5 +210,14 @@
       "lifecycle_complete": true,
       "complete": true
     }
+  },
+  "catch2_protocol": {
+    "schema": "dcss-zh-catch2-jsonl",
+    "schema_version": 1,
+    "suite": "zh_help",
+    "enumerators": [
+      "passive_status_textdb"
+    ],
+    "manifest_sha256": "8a5b4f147c1b12538cef99958bd08cb0129dd4d7c4b9240b4304b35f9ecb3faa"
   }
 }

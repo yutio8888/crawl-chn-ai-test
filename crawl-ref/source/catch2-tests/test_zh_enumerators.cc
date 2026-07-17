@@ -55,20 +55,17 @@ namespace {
 // Convenience: collect issues into a unary REQUIRE-friendly form. Each scan
 // returns the issues pushed by the scan into the supplied vector; the
 // enumerator TEST_CASE wraps the test with a diagnostic WARN summary.
-// Per-issue samples are dumped to stderr (so M5 aggregator / log parser can
-// pick them up even when the catch2 test case itself passes), and a single
-// WARN line emits the per-enumerator total — this is the line the M5
-// aggregator parses to compare against the per-sha baseline.
+// Issues are emitted to stderr as JSONL protocol records by a single
+// emit_issue_protocol() call at the end of each enumerator test.
 void scan_one(const char* translated, const std::string& key,
               const std::string& source_tag, std::vector<ZhIssue>& out)
 {
     auto issues = scan_translation(translated, key, source_tag);
     for (auto& iss : issues)
     {
-        // Machine-parseable stderr marker for M5 aggregator output parsing.
-        fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
-                static_cast<int>(iss.kind), iss.source.c_str(),
-                iss.key.c_str(), iss.sample.c_str());
+        // NOTE: Old ZH_ISSUE: fprintf removed per Issue 66 protocol migration.
+        // Issues are now emitted collectively via emit_issue_protocol() at
+        // the end of each enumerator TEST_CASE.
         out.push_back(std::move(iss));
     }
 }
@@ -127,8 +124,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 scan_T_key(p.loss, "god_power.loss", issues);
         }
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "gods", issues);
     WARN("zh enumerator summary: gods -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -174,8 +170,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         // UNTRANSLATED only fires when T_() actually fell back to the key.
         scan_one(display.c_str(), en_name, "source.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "god_abilities", issues);
     WARN("zh enumerator summary: god abilities -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -211,8 +206,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (!tr.empty())
             scan_one(tr.c_str(), key, "spells.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "spells", issues);
     WARN("zh enumerator summary: spells -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -249,8 +243,7 @@ if (name.empty() || name.find("removed") == 0)
         if (!tr.empty())
             scan_one(tr.c_str(), name, "monsters.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "monsters", issues);
     WARN("zh enumerator summary: monsters -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -277,8 +270,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             continue;
         scan_T_key(def.name, "features.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "features", issues);
     WARN("zh enumerator summary: features -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -307,8 +299,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (!tr.empty())
             scan_one(tr.c_str(), key, "clouds.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "clouds", issues);
     WARN("zh enumerator summary: clouds -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -336,8 +327,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (!tr.empty())
             scan_one(tr.c_str(), key, "mutations.txt", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "mutations", issues);
     WARN("zh enumerator summary: mutations -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -382,8 +372,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (e->unid_name && e->unid_name[0])
             scan_T_key(e->unid_name, "unrand.unid_name", issues);
     }
-    // Per-enumerator summary line is the M5 aggregator input. Per-issue
-    // samples were already emitted to stderr via scan_one() helper.
+    emit_issue_protocol("zh_translation", "fixed_artefacts", issues);
     WARN("zh enumerator summary: fixed artefacts -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -414,13 +403,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         // rules here. Pass empty key to bypass UNTRANSLATED.
         std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
         for (auto& iss : local)
-        {
-            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
-                    static_cast<int>(iss.kind), iss.source.c_str(),
-                    iss.key.c_str(), iss.sample.c_str());
             issues.push_back(std::move(iss));
-        }
     }
+    emit_issue_protocol("zh_translation", "skill_name", issues);
     WARN("zh enumerator summary: skill_name -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -449,12 +434,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         // long description in species.txt keyed by the English name.
         std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
         for (auto& iss : local)
-        {
-            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
-                    static_cast<int>(iss.kind), iss.source.c_str(),
-                    iss.key.c_str(), iss.sample.c_str());
             issues.push_back(std::move(iss));
-        }
         // Each species' long description in species.txt is keyed by the
         // canonical English species name. We grab the English key via the
         // raw=true flag of species::name.
@@ -476,12 +456,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             continue;
         std::vector<ZhIssue> local = scan_text(disp, "", "source.txt");
         for (auto& iss : local)
-        {
-            fprintf(stderr, "ZH_ISSUE: %d | %s | %s | %s\n",
-                    static_cast<int>(iss.kind), iss.source.c_str(),
-                    iss.key.c_str(), iss.sample.c_str());
             issues.push_back(std::move(iss));
-        }
         // Long description keyed by the canonical English job name in
         // backgrounds.txt. get_job_name doesn't take a `raw` flag, so we
         // read the English key from jobs-data via get_job_name_en if available;
@@ -492,6 +467,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             scan_one(tr.c_str(), disp, "backgrounds.txt", issues);
     }
 
+    emit_issue_protocol("zh_translation", "species_backgrounds", issues);
     WARN("zh enumerator summary: species+backgrounds -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -528,6 +504,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (d.decr.expire_msg.msg && d.decr.expire_msg.msg[0])
             scan_T_key(d.decr.expire_msg.msg, "duration.expire", issues);
     }
+    emit_issue_protocol("zh_translation", "durations", issues);
     WARN("zh enumerator summary: durations -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -613,6 +590,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             continue;
         scan_one(val.c_str(), key, "godspeak.txt", issues);
     }
+    emit_issue_protocol("zh_translation", "godspeak", issues);
     WARN("zh enumerator summary: godspeak -> " << issues.size() << " issues");
     REQUIRE(true);
 }
@@ -677,6 +655,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             }
         }
     }
+    emit_issue_protocol("zh_translation", "tutorial_hints_commands", issues);
     WARN("zh enumerator summary: tutorial/hints/commands -> "
          << issues.size() << " issues");
     REQUIRE(true);
@@ -714,6 +693,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             scan_one(tr ? tr : "", en, "source.txt", issues);
         }
     }
+    emit_issue_protocol("zh_translation", "weapon_brands", issues);
     WARN("zh enumerator summary: weapon_brands -> " << issues.size()
                                                     << " issues");
     REQUIRE(true);
@@ -747,6 +727,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
             scan_one(tr ? tr : "", en, "source.txt", issues);
         }
     }
+    emit_issue_protocol("zh_translation", "armour_egos", issues);
     WARN("zh enumerator summary: armour_egos -> " << issues.size()
                                                   << " issues");
     REQUIRE(true);
@@ -843,7 +824,8 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     Options.language = prev_lang;
     Options.lang_name = prev_lang_name;
 
+    emit_issue_protocol("zh_translation", "item_base_names", issues);
     WARN("zh enumerator summary: item_base_names -> " << issues.size()
-                                                      << " issues");
+                                                       << " issues");
     REQUIRE(true);
 }

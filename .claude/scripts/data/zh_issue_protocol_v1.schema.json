@@ -1,0 +1,57 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "zh-issue-protocol-v1",
+  "description": "JSONL issue protocol for DCSS Chinese i18n Catch2 tests. Each record occupies exactly one physical line with prefix ZH_ISSUE_JSON: followed by compact JSON.",
+  "definitions": {
+    "common_fields": {
+      "type": "object",
+      "properties": {
+        "schema_version": { "enum": [1] },
+        "record_type": { "type": "string" },
+        "suite": { "type": "string", "enum": ["zh_translation", "zh_help"] },
+        "enumerator": { "type": "string" }
+      },
+      "required": ["schema_version", "record_type", "suite", "enumerator"],
+      "additionalProperties": false
+    },
+    "issue_record": {
+      "type": "object",
+      "properties": {
+        "schema_version": { "enum": [1] },
+        "record_type": { "type": "string", "pattern": "^issue$" },
+        "suite": { "type": "string" },
+        "enumerator": { "type": "string" },
+        "sequence": { "type": "integer", "minimum": 0 },
+        "kind": {
+          "type": "string",
+          "enum": ["UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN", "GARBLED_UTF8", "EMPTY_DB", "WHITESPACE_ANOMALY", "INVISIBLE_CHAR", "PUNCT_STYLE"]
+        },
+        "source": { "type": "string" },
+        "key": { "type": "string" },
+        "sample": { "type": "string" },
+        "sample_bytes_hex": { "type": "string", "pattern": "^([0-9a-f]{2})*$" }
+      },
+      "required": ["schema_version", "record_type", "suite", "enumerator", "sequence", "kind", "source", "key", "sample", "sample_bytes_hex"],
+      "additionalProperties": false
+    },
+    "summary_record": {
+      "type": "object",
+      "properties": {
+        "schema_version": { "enum": [1] },
+        "record_type": { "type": "string", "pattern": "^summary$" },
+        "suite": { "type": "string" },
+        "enumerator": { "type": "string" },
+        "issue_count": { "type": "integer", "minimum": 0 }
+      },
+      "required": ["schema_version", "record_type", "suite", "enumerator", "issue_count"],
+      "additionalProperties": false
+    }
+  },
+  "zh_translation_enumerators": [
+    "gods", "god_abilities", "spells", "monsters", "features", "clouds",
+    "mutations", "fixed_artefacts", "skill_name", "species_backgrounds",
+    "durations", "godspeak", "tutorial_hints_commands", "weapon_brands",
+    "armour_egos", "item_base_names"
+  ],
+  "zh_help_enumerators": ["passive_status_textdb"]
+}

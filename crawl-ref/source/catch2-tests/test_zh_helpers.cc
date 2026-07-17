@@ -128,7 +128,116 @@ std::string sample_around(const std::string& s, size_t focus)
     return s.substr(start, end - start);
 }
 
+// =============================================================================
+// JSONL protocol v1 — JSON escaping and hex encoding.
+// =============================================================================
+
+// Escapes a string for JSON: backslash, quote, tab, LF, CR, and control chars.
+// Returns a valid JSON string value (WITHOUT the surrounding double quotes).
+std::string json_escape_internal(const std::string& s)
+{
+    std::string out;
+    out.reserve(s.size() + 16);
+    for (size_t i = 0; i < s.size(); ++i)
+    {
+        const unsigned char c = static_cast<unsigned char>(s[i]);
+        switch (c)
+        {
+        case '"':  out += "\\\""; break;
+        case '\\': out += "\\\\"; break;
+        case '\t': out += "\\t";  break;
+        case '\n': out += "\\n";  break;
+        case '\r': out += "\\r";  break;
+        default:
+            if (c < 0x20)
+            {
+                // U+0000–U+001F: \uXXXX
+                char buf[8];
+                snprintf(buf, sizeof(buf), "\\u%04x", c);
+                out += buf;
+            }
+            else
+                out += s[i];
+            break;
+        }
+    }
+    return out;
+}
+
 } // anonymous namespace
+
+std::string json_escape(const std::string& s)
+{
+    return json_escape_internal(s);
+}
+
+std::string sample_to_hex(const std::string& s)
+{
+    const size_t max_bytes = 120;
+    const size_t n = std::min(s.size(), max_bytes);
+    std::string hex;
+    hex.reserve(n * 2);
+    static const char hex_chars[] = "0123456789abcdef";
+    for (size_t i = 0; i < n; ++i)
+    {
+        unsigned char c = static_cast<unsigned char>(s[i]);
+        hex += hex_chars[c >> 4];
+        hex += hex_chars[c & 0x0F];
+    }
+    return hex;
+}
+
+void emit_jsonl_issue(const std::string& suite,
+                      const std::string& enumerator,
+                      int sequence,
+                      const ZhIssue& issue)
+{
+    // Build the kind string from the enum integer.
+    static const char* kind_names[] = {
+        "UNTRANSLATED", "MIXED_CN_EN", "FORMAT_BROKEN",
+        "GARBLED_UTF8", "EMPTY_DB", "WHITESPACE_ANOMALY",
+        "INVISIBLE_CHAR", "PUNCT_STYLE"
+    };
+    const char* kind_str = "UNKNOWN";
+    if (issue.kind >= ZhIssue::UNTRANSLATED && issue.kind <= ZhIssue::PUNCT_STYLE)
+        kind_str = kind_names[issue.kind];
+
+    // Compact JSON construction using snprintf to avoid JSON library dependency.
+    // Manual construction is simpler than streaming JSON.
+    // Format: {"schema_version":1,"record_type":"issue","suite":"...","enumerator":"...","sequence":N,"kind":"...","source":"...","key":"...","sample":"...","sample_bytes_hex":"..."}
+    std::string json = "{\"schema_version\":1,\"record_type\":\"issue\"";
+    json += ",\"suite\":\"" + json_escape_internal(suite) + "\"";
+    json += ",\"enumerator\":\"" + json_escape_internal(enumerator) + "\"";
+    json += ",\"sequence\":" + std::to_string(sequence);
+    json += ",\"kind\":\"" + std::string(kind_str) + "\"";
+    json += ",\"source\":\"" + json_escape_internal(issue.source) + "\"";
+    json += ",\"key\":\"" + json_escape_internal(issue.key) + "\"";
+    json += ",\"sample\":\"" + json_escape_internal(issue.sample) + "\"";
+    json += ",\"sample_bytes_hex\":\"" + sample_to_hex(issue.sample) + "\"}";
+
+    fprintf(stderr, "ZH_ISSUE_JSON: %s\n", json.c_str());
+}
+
+void emit_jsonl_summary(const std::string& suite,
+                        const std::string& enumerator,
+                        int issue_count)
+{
+    std::string json = "{\"schema_version\":1,\"record_type\":\"summary\"";
+    json += ",\"suite\":\"" + json_escape_internal(suite) + "\"";
+    json += ",\"enumerator\":\"" + json_escape_internal(enumerator) + "\"";
+    json += ",\"issue_count\":" + std::to_string(issue_count) + "}";
+
+    fprintf(stderr, "ZH_ISSUE_JSON: %s\n", json.c_str());
+}
+
+void emit_issue_protocol(const std::string& suite,
+                         const std::string& enumerator,
+                         const std::vector<ZhIssue>& issues)
+{
+    for (size_t i = 0; i < issues.size(); ++i)
+        emit_jsonl_issue(suite, enumerator, static_cast<int>(i), issues[i]);
+    emit_jsonl_summary(suite, enumerator, static_cast<int>(issues.size()));
+}
 
 bool iscjk(char32_t cp)
 {

@@ -28,6 +28,38 @@ struct ZhIssue
     std::string sample;     // offending text (truncated for logging)
 };
 
+// =============================================================================
+// JSONL issue protocol v1 helpers.
+//
+// Emit ZH_ISSUE_JSON: prefixed protocol records to stderr. The protocol
+// replaces the old ZH_ISSUE: plain-text format with one-JSON-object-per-line
+// transport. See .claude/scripts/data/zh_issue_protocol_v1.schema.json.
+// =============================================================================
+
+// JSON-escape a string for use as a JSON string value.
+// Escapes LF/CR/TAB/quotes/backslash/U+0000-001F.
+std::string json_escape(const std::string& s);
+
+// Hex-encode the raw bytes of `s` (up to 120 bytes) as lowercase even-digit hex.
+std::string sample_to_hex(const std::string& s);
+
+// Emit one JSONL issue record to stderr.
+void emit_jsonl_issue(const std::string& suite,
+                      const std::string& enumerator,
+                      int sequence,
+                      const ZhIssue& issue);
+
+// Emit one JSONL summary record to stderr.
+void emit_jsonl_summary(const std::string& suite,
+                        const std::string& enumerator,
+                        int issue_count);
+
+// Convenience: emit all issues (in order) then a summary record.
+// Call this once per enumerator after all scanning is done.
+void emit_issue_protocol(const std::string& suite,
+                         const std::string& enumerator,
+                         const std::vector<ZhIssue>& issues);
+
 // scan_text applies all 8 scan rules to `text` (the rendered / translated
 // string) given the optional English `key` that produced it. `source_tag` is
 // an arbitrary short identifier for grouping the report (e.g. the enumerator

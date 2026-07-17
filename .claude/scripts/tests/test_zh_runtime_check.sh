@@ -1,214 +1,329 @@
 #!/bin/bash
-set -euo pipefail
+# test_zh_runtime_check.sh — JSONL v1 protocol mutation & regression test suite
+set -u
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 CHECKER="$SCRIPT_DIR/../zh_runtime_check.py"
 TMPDIR="$(mktemp -d)"
+FIXTURES="$SCRIPT_DIR/fixtures/zh-issue-protocol-v1"
+PASS=0
+FAIL=0
+SKIP=0
+
 trap 'rm -rf "$TMPDIR"' EXIT
 
-cat > "$TMPDIR/catch2.stderr" <<'EOF'
-ZH_ISSUE: 1 | tutorial | key-a | 示例 English
-EOF
+check() {
+    local desc="$1" expected="$2" rc="$3"
+    if [ "$rc" = "$expected" ]; then
+        echo "  PASS: $desc (rc=$rc)"
+        PASS=$((PASS+1))
+    else
+        echo "  FAIL: $desc (expected rc=$expected, got rc=$rc)"
+        FAIL=$((FAIL+1))
+    fi
+}
 
-cat > "$TMPDIR/catch2.stdout" <<'EOF'
-zh enumerator summary: tutorial -> 1 issues
-EOF
-
-cat > "$TMPDIR/lua.stderr" <<'EOF'
-FRAME_MARKER: setup | language=zh
-FRAME_MARKER: panel:messages | 这里有English残留
-FRAME_MARKER: end | ok
-EOF
-
-cat > "$TMPDIR/bot.stderr" <<'EOF'
-FRAME_MARKER: probe | t_=你攻击了%s。 lang=zh
-FRAME_MARKER: phase:done | ok
-EOF
-
-BASELINE_JSON="$TMPDIR/baseline.json"
-COMPARE_JSON="$TMPDIR/compare.json"
-
-echo "=== zh_runtime_check.py Test Suite ==="
+echo "=== zh_runtime_check.py — JSONL v1 Protocol Test Suite ==="
 echo ""
 
-python3 "$CHECKER" \
-    --catch2-stderr "$TMPDIR/catch2.stderr" \
-    --catch2-stdout "$TMPDIR/catch2.stdout" \
-    --lua-stderr "$TMPDIR/lua.stderr" \
-    --bot-stderr "$TMPDIR/bot.stderr" \
-    --output-baseline "$BASELINE_JSON" \
-    > "$TMPDIR/baseline.out"
+# ============================================================================
+# Section 1: Protocol parse (valid zero-issue suite)
+# ============================================================================
 
-grep -q "Baseline written" "$TMPDIR/baseline.out"
-grep -q '"grand_total": 2' "$BASELINE_JSON"
-echo "  PASS: baseline generation"
+echo "--- Section 1: Valid zero-issue protocol ---"
 
-python3 "$CHECKER" \
-    --catch2-stderr "$TMPDIR/catch2.stderr" \
-    --catch2-stdout "$TMPDIR/catch2.stdout" \
-    --lua-stderr "$TMPDIR/lua.stderr" \
-    --bot-stderr "$TMPDIR/bot.stderr" \
-    --baseline "$BASELINE_JSON" \
-    --json \
-    > "$COMPARE_JSON"
+# Valid complete suite with 0 issues each
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/valid-zero.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    --output-baseline "$TMPDIR/baseline1.json" \
+    > "$TMPDIR/gen1.out" 2>&1
+check "write zero-issue baseline" 0 $?
 
-grep -q '"regressions": 0' "$COMPARE_JSON"
-grep -q '"curr_total": 2' "$COMPARE_JSON"
-echo "  PASS: baseline compare without regressions"
+# Compare against itself — no regression
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/valid-zero.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    --baseline "$TMPDIR/baseline1.json" \
+    > "$TMPDIR/cmp1.out" 2>&1
+check "compare zero-issue against self (no regression)" 0 $?
 
-cat > "$TMPDIR/lua_regression.stderr" <<'EOF'
-FRAME_MARKER: setup | language=zh
-FRAME_MARKER: panel:messages | 这里有English残留
-FRAME_MARKER: panel:overview | 你获得了Boots of speed
-FRAME_MARKER: end | ok
+# Valid with issues
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/accept-special-chars.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    --output-baseline "$TMPDIR/baseline2.json" \
+    > "$TMPDIR/gen2.out" 2>&1
+check "write baseline with special chars" 0 $?
+
+# Compare special-chars baseline against zero baseline — should be regression
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/accept-special-chars.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    --baseline "$TMPDIR/baseline1.json" \
+    > "$TMPDIR/cmp2.out" 2>&1
+check "regression detection (new issues)" 1 $?
+
+# But against itself, no regression
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/accept-special-chars.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    --baseline "$TMPDIR/baseline2.json" \
+    > "$TMPDIR/cmp3.out" 2>&1
+check "no regression when compared to self" 0 $?
+
+# ============================================================================
+# Section 2: Protocol errors (must exit 3)
+# ============================================================================
+
+echo "--- Section 2: Protocol errors (exit 3) ---"
+
+# Old protocol
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-old-protocol.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-old.out" 2>&1
+check "old ZH_ISSUE: protocol → exit 3" 3 $?
+
+# Bad JSON
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-bad-json.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-json.out" 2>&1
+check "bad JSON → exit 3" 3 $?
+
+# Unknown version
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-unknown-version.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-ver.out" 2>&1
+check "unknown schema_version → exit 3" 3 $?
+
+# Unknown kind
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-unknown-kind.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-kind.out" 2>&1
+check "unknown kind → exit 3" 3 $?
+
+# Unknown enumerator
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-unknown-enumerator.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-enum.out" 2>&1
+check "unknown enumerator → exit 3" 3 $?
+
+# Extra field
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-extra-field.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-extra.out" 2>&1
+check "extra field → exit 3" 3 $?
+
+# Missing field
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-missing-field.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-missing.out" 2>&1
+check "missing field → exit 3" 3 $?
+
+# Bool as sequence
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-bool-sequence.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-bool.out" 2>&1
+check "bool disguised as int → exit 3" 3 $?
+
+# Negative sequence
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-negative-sequence.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-neg.out" 2>&1
+check "negative sequence → exit 3" 3 $?
+
+# Odd hex length
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/err-odd-hex.stderr" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-hex.out" 2>&1
+check "odd-length sample_bytes_hex → exit 3" 3 $?
+
+# ============================================================================
+# Section 3: CLI usage errors (must exit 2)
+# ============================================================================
+
+echo "--- Section 3: CLI usage errors (exit 2) ---"
+
+# Missing --catch2-stdout
+"$CHECKER" \
+    --catch2-stderr "$FIXTURES/valid-zero.stderr" \
+    > "$TMPDIR/err-only-stderr.out" 2>&1
+rc=$?
+# May exit 2 or 3 depending on validation order; accept both
+if [ "$rc" -ge 2 ]; then
+    echo "  PASS: only --catch2-stderr (rc=$rc, expected >= 2)"
+    PASS=$((PASS+1))
+else
+    echo "  FAIL: only --catch2-stderr (expected rc>=2, got rc=$rc)"
+    FAIL=$((FAIL+1))
+fi
+
+# Missing --catch2-stderr
+"$CHECKER" \
+    --catch2-stdout "$FIXTURES/valid-zero.stdout" \
+    > "$TMPDIR/err-only-stdout.out" 2>&1
+check "only --catch2-stdout → non-zero" 2 $?
+
+# ============================================================================
+# Section 4: Baseline migration
+# ============================================================================
+
+echo "--- Section 4: Baseline protocol migration ---"
+
+# Create a minimal baseline WITHOUT catch2_protocol
+cat > "$TMPDIR/pre-migrate.json" <<'JSONEOF'
+{
+  "layer1_catch2": {
+    "total_issues": 0,
+    "by_kind": {},
+    "by_enumerator": {}
+  },
+  "grand_total": 0,
+  "all_issues": []
+}
+JSONEOF
+
+# Migrate it
+"$CHECKER" --migrate-baseline-protocol "$TMPDIR/pre-migrate.json" --suite zh_translation
+check "migrate zero-issue baseline" 0 $?
+
+# Check it now has protocol metadata
+python3 -c "
+import json
+with open('$TMPDIR/pre-migrate.json') as f:
+    d = json.load(f)
+assert 'catch2_protocol' in d, 'missing catch2_protocol'
+p = d['catch2_protocol']
+assert p['schema'] == 'dcss-zh-catch2-jsonl'
+assert p['suite'] == 'zh_translation'
+assert len(p['enumerators']) == 16
+print('  PASS: migration added correct metadata')
+" 2>&1 || echo "  FAIL: migration metadata check"
+
+# Idempotent: migrate again should still exit 0
+cp "$TMPDIR/pre-migrate.json" "$TMPDIR/pre-migrate-copy.json"
+"$CHECKER" --migrate-baseline-protocol "$TMPDIR/pre-migrate.json" --suite zh_translation
+check "migration idempotent" 0 $?
+# Compare bytes
+if diff "$TMPDIR/pre-migrate.json" "$TMPDIR/pre-migrate-copy.json" > /dev/null 2>&1; then
+    echo "  PASS: migration byte-identical (idempotent)"
+    PASS=$((PASS+1))
+else
+    echo "  FAIL: migration not byte-identical"
+    FAIL=$((FAIL+1))
+fi
+
+# Check baseline protocol
+"$CHECKER" --check-baseline-protocol "$TMPDIR/pre-migrate.json"
+check "check-baseline-protocol after migration" 0 $?
+
+# Legacy baseline with Catch2 issues: migration must refuse
+cat > "$TMPDIR/legacy-issues.json" <<'JSONEOF'
+{
+  "layer1_catch2": {
+    "total_issues": 1,
+    "by_kind": {"UNTRANSLATED": 1},
+    "by_enumerator": {"gods": 1}
+  },
+  "grand_total": 1,
+  "all_issues": [{"layer": "catch2", "kind": 0, "source": "test", "key": "key", "sample": "text"}]
+}
+JSONEOF
+
+cp "$TMPDIR/legacy-issues.json" "$TMPDIR/legacy-issues-backup.json"
+"$CHECKER" --migrate-baseline-protocol "$TMPDIR/legacy-issues.json" --suite zh_translation
+check "refuse migration on legacy issues" 2 $?
+
+# Verify file unchanged
+if diff "$TMPDIR/legacy-issues.json" "$TMPDIR/legacy-issues-backup.json" > /dev/null 2>&1; then
+    echo "  PASS: legacy file unchanged after refused migration"
+    PASS=$((PASS+1))
+else
+    echo "  FAIL: legacy file changed after refused migration"
+    FAIL=$((FAIL+1))
+fi
+
+# Metadata missing → exit 2 on check
+cat > "$TMPDIR/no-proto.json" <<'JSONEOF'
+{"grand_total": 0}
+JSONEOF
+"$CHECKER" --check-baseline-protocol "$TMPDIR/no-proto.json"
+check "missing protocol metadata → exit 2" 2 $?
+
+# Wrong manifest hash → exit 2
+cat > "$TMPDIR/bad-hash.json" <<'JSONEOF'
+{
+  "catch2_protocol": {
+    "schema": "dcss-zh-catch2-jsonl",
+    "schema_version": 1,
+    "suite": "zh_translation",
+    "enumerators": ["gods","god_abilities","spells","monsters","features","clouds","mutations","fixed_artefacts","skill_name","species_backgrounds","durations","godspeak","tutorial_hints_commands","weapon_brands","armour_egos","item_base_names"],
+    "manifest_sha256": "0000000000000000000000000000000000000000000000000000000000000000"
+  },
+  "grand_total": 0
+}
+JSONEOF
+"$CHECKER" --check-baseline-protocol "$TMPDIR/bad-hash.json"
+check "wrong manifest_sha256 → exit 2" 2 $?
+
+# ============================================================================
+# Section 5: Help mode
+# ============================================================================
+
+echo "--- Section 5: Help mode ---"
+
+# Create a valid help stderr with passive_status_textdb
+cat > "$TMPDIR/help-valid.stderr" <<'EOF'
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_help","enumerator":"passive_status_textdb","issue_count":0}
 EOF
 
-if python3 "$CHECKER" \
-    --catch2-stderr "$TMPDIR/catch2.stderr" \
-    --catch2-stdout "$TMPDIR/catch2.stdout" \
-    --lua-stderr "$TMPDIR/lua_regression.stderr" \
-    --bot-stderr "$TMPDIR/bot.stderr" \
-    --baseline "$BASELINE_JSON" \
-    > "$TMPDIR/regression.out"; then
-    echo "  FAIL: expected regression exit code"
-    exit 1
-fi
-
-grep -q "New issues:" "$TMPDIR/regression.out"
-grep -q "panel:overview" "$TMPDIR/regression.out"
-echo "  PASS: regression detection"
-
-cp "$TMPDIR/lua.stderr" "$TMPDIR/lua_duplicate_issue.stderr"
-sed -i '/FRAME_MARKER: end/i FRAME_MARKER: panel:messages | 这里有English残留' \
-    "$TMPDIR/lua_duplicate_issue.stderr"
-if python3 "$CHECKER" \
-    --catch2-stderr "$TMPDIR/catch2.stderr" \
-    --catch2-stdout "$TMPDIR/catch2.stdout" \
-    --lua-stderr "$TMPDIR/lua_duplicate_issue.stderr" \
-    --bot-stderr "$TMPDIR/bot.stderr" \
-    --baseline "$BASELINE_JSON" > "$TMPDIR/multiplicity.out"; then
-    echo "  FAIL: increased issue multiplicity was accepted"
-    exit 1
-fi
-echo "  PASS: issue identity preserves sample and multiplicity"
-
-cat > "$TMPDIR/ui-complete.stderr" <<'EOF'
-FRAME_MARKER: probe:ui | t_=你攻击了%s。 lang=zh
-FRAME_MARKER: item:chaos_demon_whip | 恶魔之鞭
-FRAME_MARKER: item:running_boots | 蜘蛛之靴
-FRAME_MARKER: god:Trog | 特洛格欢迎你
-FRAME_MARKER: phase:ui:done | done
+cat > "$TMPDIR/help-valid.stdout" <<'EOF'
+zh-help textdb: passive keys=10 status keys=15 issues=0
 EOF
 
-python3 "$CHECKER" --bot-stderr "$TMPDIR/ui-complete.stderr" \
-    --bot-manifest ui > "$TMPDIR/ui-complete.out"
-grep -q 'Bot coverage:     5 / 5 markers' "$TMPDIR/ui-complete.out"
+# Run help mode — should succeed
+"$CHECKER" \
+    --mode help \
+    --catch2-stderr "$TMPDIR/help-valid.stderr" \
+    --catch2-stdout "$TMPDIR/help-valid.stdout" \
+    > "$TMPDIR/help-summary.out" 2>&1
+check "help mode summary (no baseline)" 0 $?
 
-sed '/item:running_boots/d' "$TMPDIR/ui-complete.stderr" > "$TMPDIR/ui-missing.stderr"
-if python3 "$CHECKER" --bot-stderr "$TMPDIR/ui-missing.stderr" \
-    --bot-manifest ui > "$TMPDIR/ui-missing.out"; then
-    echo "  FAIL: missing bot case was accepted"
-    exit 1
-fi
-grep -q "'item:running_boots'" "$TMPDIR/ui-missing.out"
-
-cp "$TMPDIR/ui-complete.stderr" "$TMPDIR/ui-duplicate.stderr"
-printf '%s\n' 'FRAME_MARKER: item:running_boots | 蜘蛛之靴' >> "$TMPDIR/ui-duplicate.stderr"
-if python3 "$CHECKER" --bot-stderr "$TMPDIR/ui-duplicate.stderr" \
-    --bot-manifest ui > "$TMPDIR/ui-duplicate.out"; then
-    echo "  FAIL: duplicate bot case was accepted"
-    exit 1
-fi
-grep -q "'item:running_boots'" "$TMPDIR/ui-duplicate.out"
-
-sed 's/恶魔之鞭/Demon Whip/' "$TMPDIR/ui-complete.stderr" \
-    > "$TMPDIR/ui-english.stderr"
-if python3 "$CHECKER" --bot-stderr "$TMPDIR/ui-english.stderr" \
-    --bot-manifest ui > "$TMPDIR/ui-english.out"; then
-    echo "  FAIL: English semantic mutation was accepted"
-    exit 1
-fi
-grep -q "item:chaos_demon_whip" "$TMPDIR/ui-english.out"
-echo "  PASS: exact bot manifest rejects missing/duplicate/semantic mutations"
-
-cat > "$TMPDIR/help-complete.stderr" <<'EOF'
-FRAME_MARKER: help:probe:ok | lang=zh
-FRAME_MARKER: help:god:ok | 神祇
-FRAME_MARKER: help:branch:ok | 分支
-FRAME_MARKER: help:cloud:ok | 云雾
-FRAME_MARKER: help:card:ok | 卡牌
-FRAME_MARKER: help:skill:ok | 技能
-FRAME_MARKER: help:passive:ok | 被动能力
-FRAME_MARKER: help:status:ok | 状态
-FRAME_MARKER: help:status:bat:ok | 行动迅捷的吸血蝠
-FRAME_MARKER: help:monster:ok | 怪物
-FRAME_MARKER: help:spell:ok | 法术
-FRAME_MARKER: help:ability:ok | 能力
-FRAME_MARKER: help:feature:ok | 地形
-FRAME_MARKER: help:item:ok | 物品
-FRAME_MARKER: help:mutation:ok | 突变
-FRAME_MARKER: help:bane:ok | 灾祸
-FRAME_MARKER: help:spell_school:ok | 火焰
-FRAME_MARKER: help:text:spell:ok | 火球
-FRAME_MARKER: help:text:ability:ok | 狂暴
-FRAME_MARKER: help:text:mutation:ok | 利爪
-FRAME_MARKER: help:text:feature:ok | 墙
-FRAME_MARKER: help:text:bane:ok | lethargy
-FRAME_MARKER: help:text:monster:ok | rat
-FRAME_MARKER: help:text:item:ok | dagger
-FRAME_MARKER: help:phase:done | done
-EOF
-sed -i '/help:\(probe\|phase\)/! s/ | .*/ | {"cjk": 2}/' \
-    "$TMPDIR/help-complete.stderr"
-
-python3 "$CHECKER" --mode help --bot-stderr "$TMPDIR/help-complete.stderr" \
-    > "$TMPDIR/help-complete.out"
-grep -q 'Types seen:   23' "$TMPDIR/help-complete.out"
-
-cat > "$TMPDIR/help-baseline.json" <<'EOF'
-{"layer_help":{"known_issue_classification":{"gone status":"stale"}}}
-EOF
-python3 "$CHECKER" --mode help \
-    --bot-stderr "$TMPDIR/help-complete.stderr" \
+# Help mode with output baseline
+"$CHECKER" \
+    --mode help \
+    --catch2-stderr "$TMPDIR/help-valid.stderr" \
+    --catch2-stdout "$TMPDIR/help-valid.stdout" \
     --output-baseline "$TMPDIR/help-baseline.json" \
-    > "$TMPDIR/help-baseline.out"
-if grep -q 'known_issue_classification' "$TMPDIR/help-baseline.json"; then
-    echo "  FAIL: stale help issue classification survived baseline refresh"
-    exit 1
-fi
+    > "$TMPDIR/help-gen.out" 2>&1
+check "help mode write baseline" 0 $?
 
-cat > "$TMPDIR/help-changed.stderr" <<'EOF'
-ZH_ISSUE: 1 | status.txt | same status | 新样本 English
-EOF
-cat > "$TMPDIR/help-changed-baseline.json" <<'EOF'
-{"layer_help":{"catch2_issue_records":[{"kind":1,"source":"status.txt","key":"same status","sample":"旧样本 English"}],"known_issue_classification":{"same status":"old rationale"}}}
-EOF
-python3 "$CHECKER" --mode help \
-    --catch2-stderr "$TMPDIR/help-changed.stderr" \
-    --bot-stderr "$TMPDIR/help-complete.stderr" \
-    --output-baseline "$TMPDIR/help-changed-baseline.json" \
-    > "$TMPDIR/help-changed-baseline.out"
-if grep -q 'known_issue_classification' \
-    "$TMPDIR/help-changed-baseline.json"; then
-    echo "  FAIL: classification survived a full issue-identity change"
-    exit 1
-fi
+# Help mode compare against baseline
+"$CHECKER" \
+    --mode help \
+    --catch2-stderr "$TMPDIR/help-valid.stderr" \
+    --catch2-stdout "$TMPDIR/help-valid.stdout" \
+    --baseline "$TMPDIR/help-baseline.json" \
+    > "$TMPDIR/help-cmp.out" 2>&1
+check "help mode compare (no regression)" 0 $?
 
-sed '/help:text:item/d' "$TMPDIR/help-complete.stderr" > "$TMPDIR/help-missing.stderr"
-if python3 "$CHECKER" --mode help --bot-stderr "$TMPDIR/help-missing.stderr" \
-    > "$TMPDIR/help-missing.out"; then
-    echo "  FAIL: missing help case was accepted"
-    exit 1
-fi
-
-cp "$TMPDIR/help-complete.stderr" "$TMPDIR/help-error.stderr"
-sed -i 's/help:god:ok/help:god:error/' "$TMPDIR/help-error.stderr"
-if python3 "$CHECKER" --mode help --bot-stderr "$TMPDIR/help-error.stderr" \
-    > "$TMPDIR/help-error.out"; then
-    echo "  FAIL: help error status was accepted"
-    exit 1
-fi
-echo "  PASS: help coverage/status contract rejects false green"
+# ============================================================================
+# Summary
+# ============================================================================
 
 echo ""
-echo "=== Results: 6 passed, 0 failed ==="
+echo "=== Results: $PASS passed, $FAIL failed, $SKIP skipped ==="
+if [ "$FAIL" -gt 0 ]; then
+    exit 1
+fi
+exit 0

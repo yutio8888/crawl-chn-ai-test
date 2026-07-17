@@ -1,0 +1,16 @@
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"gods","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"god_abilities","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"spells","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"monsters","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"features","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"clouds","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"mutations","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"fixed_artefacts","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"skill_name","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"species_backgrounds","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"durations","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"godspeak","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"tutorial_hints_commands","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"weapon_brands","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"armour_egos","issue_count":0}
+ZH_ISSUE_JSON: {"schema_version":1,"record_type":"summary","suite":"zh_translation","enumerator":"item_base_names","issue_count":0}
