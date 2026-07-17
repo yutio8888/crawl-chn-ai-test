@@ -4,7 +4,7 @@
       "canonical_key": "antimagic gaze norris cast",
       "canonical_fingerprint": "fnv1a64:7bf6ec09c4cf2ee3",
       "selection_graph_fingerprint": "fnv1a64:edff9d161b7e279f",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [
         {
           "stable_id": "mon.cast.antimagic_gaze_norris.numinous_presence_gazes.v1",
@@ -16,10 +16,25 @@
           "frame": "GAZE",
           "binding": { "resolves_target": true },
           "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [],
-          "required_arguments": [],
-          "line_metadata": [],
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor_possessive_lower", "type": "actor_possessive_name_lower" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor_possessive_lower", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "Something numinous underneath ${actor_possessive_lower} waves suddenly gazes at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "Something numinous underneath ${actor_possessive_lower} waves suddenly gazes at ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "Something numinous underneath ${actor_possessive_lower} waves suddenly gazes at ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "某种藏在${actor_possessive_lower}波浪之下的神圣存在突然凝视${target}。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "某种藏在${actor_possessive_lower}波浪之下的神圣存在突然凝视${target}。" },
+              { "language": "zh", "relation": "PAST", "pattern": "某种藏在${actor_possessive_lower}波浪之下的神圣存在突然凝视${target}。" }
+            ]
+          }],
           "materialization_cases": [],
           "recursive_dependency_fingerprints": {}
         },
@@ -33,10 +48,25 @@
           "frame": "GAZE",
           "binding": { "resolves_target": true },
           "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [],
-          "required_arguments": [],
-          "line_metadata": [],
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor_possessive", "type": "actor_possessive_name" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor_possessive", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN",
+            "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor_possessive} eyes shimmer, overwhelming ${target} with visions from beyond." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor_possessive} eyes shimmer, overwhelming ${target} with visions from beyond." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor_possessive} eyes shimmer, overwhelming ${target} with visions from beyond." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor_possessive}双眼闪烁着微光，来自彼岸的幻象淹没了${target}。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor_possessive}双眼闪烁着微光，来自彼岸的幻象淹没了${target}。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor_possessive}双眼闪烁着微光，来自彼岸的幻象淹没了${target}。" }
+            ]
+          }],
           "materialization_cases": [],
           "recursive_dependency_fingerprints": {}
         }
@@ -46,7 +76,7 @@
       "canonical_key": "blink range ironbound thunderhulk cast",
       "canonical_fingerprint": "fnv1a64:53f1993d249b28da",
       "selection_graph_fingerprint": "fnv1a64:013c8551f488b0b5",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.blink_range_ironbound_thunderhulk.strange_energies_crackle.v1",
         "tombstone": false,
@@ -57,8 +87,17 @@
         "frame": "DIRECT_EFFECT",
         "binding": { "resolves_target": false },
         "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-        "materialization_policy": "LEGACY_ONLY",
-        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_possessive_lower", "type": "actor_possessive_name_lower" }],
+        "required_arguments": ["actor_possessive_lower"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Strange energies crackle from ${actor_possessive_lower} apparatus." },
+            { "language": "zh", "relation": "NONE", "pattern": "奇异的能量从${actor_possessive_lower}装置中迸发，噼啪作响。" }
+          ]
+        }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
     },
@@ -120,7 +159,7 @@
       "canonical_key": "call down lightning cast",
       "canonical_fingerprint": "fnv1a64:e463dd23b508d325",
       "selection_graph_fingerprint": "fnv1a64:a347c33d2921ecb8",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.call_down_lightning.electricity_crackles.v1",
         "tombstone": false,
@@ -131,8 +170,17 @@
         "frame": "DIRECT_EFFECT",
         "binding": { "resolves_target": false },
         "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-        "materialization_policy": "LEGACY_ONLY",
-        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_possessive_lower", "type": "actor_possessive_name_lower" }],
+        "required_arguments": ["actor_possessive_lower"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Electricity crackles from ${actor_possessive_lower} apparatus." },
+            { "language": "zh", "relation": "NONE", "pattern": "电流从${actor_possessive_lower}装置中迸发，噼啪作响。" }
+          ]
+        }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
     },
