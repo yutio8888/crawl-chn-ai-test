@@ -2716,6 +2716,10 @@ def cmd_assemble_source_missing_key_classifications(args):
             if s:
                 for g in s.get('groups', []):
                     gid = g.get('group_id', '')
+                    if gid in shards:
+                        print(f"ERROR: duplicate group_id across shards: {gid}",
+                              file=sys.stderr)
+                        return 1
                     shards[gid] = g
 
     missing_keys = inventory.get('missing_keys', [])
