@@ -1,0 +1,384 @@
+{
+  "schema": "dcss-zh-source-adjudication-v1",
+  "description": "Collision classification overrides for Issue 66",
+  "generator": "crawl-coder agent — issue-66-classification-adjudication",
+  "generator_version": "1.0",
+  "groups": [
+    {
+      "group_id": "sourcedb-v1:197580558693a4ab0e2391c2d15a3728d4cc98c333caa78c8ad65a9f41bbcdcd",
+      "group_fingerprint": "10e32e254b7855199cb67350727c47e46e01e5b34dc3e5dce629ebe3d10d03d2",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Keep 溺水 as canonical death-reason translation. Remove 溺水身亡 entry. Death messages use concise form."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:396e9ba2beda7b4635894f96a0b8fc1f7c8b75e51f68cf8e237fcf8214baaa97",
+      "group_fingerprint": "9fdb342e5d813dc0aaebae148f2d9d62ba1345b9083a4715f18f9665aad752b4",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"spell_name\", \"Regeneration\")": "快速再生",
+          "C_(\"generic\", \"regeneration\")": "再生"
+        },
+        "adjudication": "Regeneration (capitalized, line 16989) = spell name → context spell_name. regeneration (lowercase, line 38415) = generic concept → context generic."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:1783de661c9e93705f09232d8bdb8accc3d716176a9d9c6df44162f5eaeab59f",
+      "group_fingerprint": "85572b5bafb2a1af0ba87de5a3084b2b0b1a8867e83d680014d7ca627b298775",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"monster_status\", \"sign of ruin\")": "毁灭印记",
+          "C_(\"spell_name\", \"Sign of Ruin\")": "毁灭征兆"
+        },
+        "adjudication": "sign of ruin (lowercase, line 20168) = monster status property → context monster_status. Sign of Ruin (capitalized, line 38452) = ability/spell name → context spell_name."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:10619daae7799c4ae09bfcd7b5b36d44eef1229c11e1ffe622ff09e67ff0a2f4",
+      "group_fingerprint": "b70d1195d19158722165271a3285be0cd92f992549df3db673e1feefbb7b2e52",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Catalyst\")": "催",
+          "C_(\"status_full\", \"catalyst\")": "催化"
+        },
+        "adjudication": "Standard short/full status form pair. Uppercase key = short (status bar), lowercase key = full (tooltip)."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:3b9d2456e3183d39b8a7451579cd775cc7e724df69480225a17e5446f2b33736",
+      "group_fingerprint": "dbd856aac94527fcad458102394cbc445025b74aa49b026f94ececfdf4cc5fd6",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_life_drain\", \"Drain\")": "削命",
+          "C_(\"status_weaken\", \"drain\")": "虚弱"
+        },
+        "adjudication": "Different game status effects conflated: 削命 = negative-energy max-HP drain, 虚弱 = weaken debuff. Reclassify from missing_context to semantic_overload with separate contexts."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:2b8def308650c879021e9e19cb81dc4fba110e804fead08b2c1267d8eb6c00b7",
+      "group_fingerprint": "66c260b4760b9f771066022937a7ae781c4ab5de14de589123e3265417985bf4",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Enkindled\")": "燃",
+          "C_(\"status_full\", \"enkindled\")": "点燃"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:29fe5e9653a7670c5ee3fa9f3c5ac4c81d1536cdf862ac30dac000168fae2315",
+      "group_fingerprint": "537dc965b3e7fd26a57ac625ad903eb3d97f2424b77c13f6961d14718cd818f5",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Held\")": "缚",
+          "C_(\"status_full\", \"held\")": "被束缚"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:14f6d5163dab24511370aad6063d9f48995088855d4a71d1799166a72a031764",
+      "group_fingerprint": "c3e9f5e0715936f7993e3bd29b0fb49324f28c24067c46a5697c47667621ea6a",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Sap\")": "弱",
+          "C_(\"status_full\", \"sap\")": "枯竭"
+        },
+        "adjudication": "Standard short/full status form pair despite 弱/枯竭 having different semantics. Keep as missing_context: status_short→弱 (1-char status bar), status_full→枯竭 (2-char tooltip)."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:20f96fcc331b3345a24dd4b9ee6893c45deb0133b88e378a134c1a4c16576ce4",
+      "group_fingerprint": "7a6dd63259cbfc7e341876cfb1623b835c3711fd89db5e4cc8764cd354d1e16d",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Vexed\")": "恼",
+          "C_(\"status_full\", \"vexed\")": "恼怒"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:04695fa805d662a7ca811a5d9568e6cc080c07e6ec9f81360f8146eccb701cc6",
+      "group_fingerprint": "ef5033bef6c3a44c67da8c0a312d1e3bc0e566d8e2ca7f3f58c249421da8f926",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"monster_attack\", \"sting\")": "刺痛",
+          "C_(\"spell_name\", \"Sting\")": "毒刺"
+        },
+        "adjudication": "sting (lowercase, line 17903) = monster attack name → context monster_attack. Sting (capitalized, line 38458) = player spell name → context spell_name."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:0f4168490e38b8447e11ba4bd656aa11b925bd22af30bac464bc153fdb608501",
+      "group_fingerprint": "697e92b32237f4bea11d0ba1b5127db0e310db4b1251f2cbde5777f854206549",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"terrain_label\", \"Water\")": "水域",
+          "C_(\"terrain_deep\", \"water\")": "深水"
+        },
+        "adjudication": "Water (capitalized, line 11441) = water terrain label → context terrain_label. water (lowercase, line 14106) = deep water terrain → context terrain_deep."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:1ae40b613501ff2d6667bb63b73647913247d78ffce88e180774e11d50c9ddf7",
+      "group_fingerprint": "e717f7cc240d2321c5947336c6e3564bfa932b3907065ab1494f913a2dd10e12",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"mutation\", \"Wild Magic\")": "狂野魔法",
+          "C_(\"death_cause\", \"wild magic\")": "野性魔法"
+        },
+        "adjudication": "Wild Magic (capitalized, line 8082) = mutation name → context mutation. wild magic (lowercase, line 39145) = death-message cause → context death_cause."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:37c58f56028d4e0264462f7db5fc1cd017dce4986eafdce4427e31be40d8da7a",
+      "group_fingerprint": "b0aeb4aeb8bdea99bcf62a3e16b2e69ff8593a841774c26c1cc3a7fd766722a4",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"ability_desc\", \"wildshape\")": "野性变形",
+          "C_(\"title\", \"Wildshape\")": "变形"
+        },
+        "adjudication": "wildshape (lowercase, line 8085) = ability description → context ability_desc. Wildshape (capitalized, line 38421) = title/name → context title."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:510345478efc1edf0c921f97f5b314eb51b4a0347fd85f36845101d3beff1a1d",
+      "group_fingerprint": "941f1ac67c2e4fda9783d0321db81b68561c3ed391be81ffe657d1dadf7242d7",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"brand\", \"Drain\")": "汲取",
+          "C_(\"attack_type\", \"drain\")": "吸血"
+        },
+        "adjudication": "'Drain' (capital D) → 汲取 is brand/status effect (HP drain). 'drain' (lowercase) → 吸血 is attack type (blood drain). Separate contexts: brand vs attack_type."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:5a5ec3506d42746db24168a1049cc9e0558908db065483388c3ec99d7ed4e7a7",
+      "group_fingerprint": "9fa4e3b0caedfb43800f371366a3cea5b1148d221e05c9e9d7df701344d4e6bd",
+      "classification": {
+        "cause": "case_variant_duplicate",
+        "action": "choose_translation",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Choose 识破隐形 as canonical Chinese term. Remove 侦测隐形 entry. 识破隐形 is more game-specific and matches existing convention for perception-based abilities."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a3b442312f14c6d1231dab8952001db9f3fef06f12ba425c4697e1322b5d0d3c",
+      "group_fingerprint": "8f40ebd52115763f8d5f38713e02628b7356d421400af773aef3cb5f1cbf2109",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"spell_name\", \"Metal Splinters\")": "金属碎片",
+          "C_(\"damage_type\", \"metal splinters\")": "金属碎刺"
+        },
+        "adjudication": "'Metal Splinters' (capitalized, order 5244) = named spell/ability → context spell_name. 'metal splinters' (lowercase, order 7277) = generic damage type descriptor → context damage_type. No callsite tracing needed — different game concepts clearly identifiable by case."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8ee29584ab7c8c6c639207b2cf86c047ba95bda3068c93ff4b78a14761c4f6d6",
+      "group_fingerprint": "638306e0d0bef857c024f9b679667796c02ab07dd983da8e6cc63e4094f24947",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Engorged\")": "胀",
+          "C_(\"status_full\", \"engorged\")": "饱食"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:96d1e6e93ddb1feb29e5d10e3a5737dda412ff5d527c1c32ddb6cee00ebd22c8",
+      "group_fingerprint": "9e6a6cfc02dca2989b3e9b1d927855cf2aab4fb223915407470d5e4281b351a9",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Frozen\")": "冻",
+          "C_(\"status_full\", \"frozen\")": "冰冻"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a86d42c61d1a0529cc2b88692ab1d195248ac6be7ce8748ee2b9c7c306750bed",
+      "group_fingerprint": "e6a6ff53dd84e9be60804753919dfda3fd1fb483888a04261e78e3ec6d83f2b3",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Mesm\")": "眠",
+          "C_(\"status_full\", \"mesm\")": "催眠"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aad37f443fc2861102f5310a235aa81730ffd1e10552ecbe8054d109a9b56e59",
+      "group_fingerprint": "36449ecd1ab8995608c87d020fdd930984c866ce6d2bbfb10eadeda9f7960608",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Might\")": "力",
+          "C_(\"status_full\", \"might\")": "强力"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ae1dfaa27ea08c13faf7d264cebc0bbd9d44f7028c79377c66dac41158b02b42",
+      "group_fingerprint": "09c19fe449f554bcb563431083def4c7bead2722effa86b911100e819193f1dc",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Fugue\")": "赋",
+          "C_(\"status_full\", \"fugue\")": "赋格"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b5f24dd1334d8f5e1ff7ff35c93d2f0dbc3d5b81506ed4dada2caf658cca548d",
+      "group_fingerprint": "ffd6054bc26b88f8c978191e58368382c637f4682d7c4a61877ca01dc1136eb3",
+      "classification": {
+        "cause": "missing_context",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"status_short\", \"Swift\")": "速",
+          "C_(\"status_full\", \"swift\")": "迅捷"
+        },
+        "adjudication": "Standard short/full status form pair."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:dedfb5ecbf470a70c4099ef98e8aeb16d242128f521efb7d8d2f2e3da548371b",
+      "group_fingerprint": "2c658e8698217a39cb615dfae4f5d8b882972626233b639c0a8d04307adbf0a1",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"terrain_status\", \"Flooded\")": "淹水",
+          "C_(\"verb_state\", \"flooded\")": "被淹没"
+        },
+        "adjudication": "'Flooded' (capitalized) = terrain/branch status descriptor (e.g., flooded tomb) → context terrain_status with 淹水. 'flooded' (lowercase) = passive verb state (being flooded) → context verb_state with 被淹没. Different meanings, separate contexts."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:d1e75aca758154ee2147853c02ec6716f4a7ea0418c685978f5d4b8c7b0be25a",
+      "group_fingerprint": "91615f6934ad8ce2306c4551e0e1637143ed0f5b584e7170d87f785f1bd47825",
+      "classification": {
+        "cause": "semantic_overload",
+        "action": "introduce_context",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "context_map": {
+          "C_(\"ability_rev_up\", \"Rev\")": "暖机",
+          "C_(\"card_reverse\", \"rev\")": "反转"
+        },
+        "adjudication": "'Rev' (capitalized) = engine revving/rev up (Zin revocation context) → context ability_rev_up with 暖机. 'rev' (lowercase) = reverse/revolution (card order or similar) → context card_reverse with 反转. Fundamentally different English meanings sharing same canonical form."
+      }
+    }
+  ]
+}

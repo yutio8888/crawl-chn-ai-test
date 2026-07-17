@@ -1,0 +1,176 @@
+{
+  "schema": "dcss-zh-source-adjudication-v1",
+  "description": "Content-gap classification overrides for Issue 66",
+  "generator": "crawl-coder agent — issue-66-classification-adjudication",
+  "generator_version": "1.0",
+  "groups": [
+    {
+      "group_id": "sourcedb-v1:506f80d24c721dbd9ffd509e33ca1171a50941ebde845398a9bbfdc3d4eb4450",
+      "group_fingerprint": "506f80d24c721dbd9ffd509e33ca1171a50941ebde845398a9bbfdc3d4eb4450",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "classified",
+        "owner": "translator",
+        "confidence": "high",
+        "adjudication": "User-visible gameplay description text with positional parameters. The format string describes a creature moving through an object/portal before doing something. Translator can handle positional params. Cause override from missing_context to adjacent_literal."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:7ca2cbdf0ea6ef9100deddfb9746b80ae81ddcce4aff32714760223763dd7b93",
+      "group_fingerprint": "7ca2cbdf0ea6ef9100deddfb9746b80ae81ddcce4aff32714760223763dd7b93",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "classified",
+        "owner": "translator",
+        "confidence": "high",
+        "adjudication": "User-visible trailing conditional clause fragment. This is part of a larger gameplay message about deity punishment. Translator should translate as sentence fragment (preserve leading comma if context requires it). Cause override from missing_context to adjacent_literal."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:4315517634bf35cdd18c82fa09e9bea729501faafbb81d2ef0d46826a18ff523",
+      "group_fingerprint": "4315517634bf35cdd18c82fa09e9bea729501faafbb81d2ef0d46826a18ff523",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Debug/developer-only wizmode prompt for 'describe' command. Not shown in normal gameplay. Coder should exclude from extractor or remove T_() wrapping."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:4d1992af54350242e296f31d19a6516c173813051e2a940af2db8adc00e743dd",
+      "group_fingerprint": "4d1992af54350242e296f31d19a6516c173813051e2a940af2db8adc00e743dd",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Debug/developer-only string. Not shown in normal gameplay. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:608170aabf7c903c3ed6cf0cee70e77f28debbe5edcf5cdf20056bf59cad15c3",
+      "group_fingerprint": "608170aabf7c903c3ed6cf0cee70e77f28debbe5edcf5cdf20056bf59cad15c3",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Developer error message for missing help entry. Not normal user-facing text. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:49acde9b91626cab1c73abbf427cd8152cc23ec031ff7e2399c928e1d9b1a910",
+      "group_fingerprint": "49acde9b91626cab1c73abbf427cd8152cc23ec031ff7e2399c928e1d9b1a910",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "OpenGL technical initialization message. Not normal user-facing gameplay text. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:435fc840827ebe7cdd8a1dd141139d5e773c259c6166ed64d6a6e216359da2aa",
+      "group_fingerprint": "435fc840827ebe7cdd8a1dd141139d5e773c259c6166ed64d6a6e216359da2aa",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Debug validation message about invalid monster items. Only shown in debug builds. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:46cdf3d8afed989548383502c29a2b27016f9cc11d0bb468ec84549b36bb8d7f",
+      "group_fingerprint": "46cdf3d8afed989548383502c29a2b27016f9cc11d0bb468ec84549b36bb8d7f",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Developer error message for FAQ lookup failure. Not normal gameplay text. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:55bceb9f00d18a676c869c5edf8fb9a11402dce7c09405db4fec76c9ccc16f57",
+      "group_fingerprint": "55bceb9f00d18a676c869c5edf8fb9a11402dce7c09405db4fec76c9ccc16f57",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Level editor / wizmode instruction string. Not normal gameplay. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:71142dc4f842cbe7883d17cb1d342ace691fb8cb0c17831af60c5833a065b220",
+      "group_fingerprint": "71142dc4f842cbe7883d17cb1d342ace691fb8cb0c17831af60c5833a065b220",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Debug settings display string. Not normal gameplay. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:683f136bb6c38a358e2043a1e11fa28a9386ba3d0e06effc09e1a21f3d389108",
+      "group_fingerprint": "683f136bb6c38a358e2043a1e11fa28a9386ba3d0e06effc09e1a21f3d389108",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Debug/developer-only fprops command output. Not normal gameplay. Coder should exclude from extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:d8114110ee0aaab14e051a0f371de71be8e91961bb1cd5bb80a0062ac6d206f9",
+      "group_fingerprint": "d8114110ee0aaab14e051a0f371de71be8e91961bb1cd5bb80a0062ac6d206f9",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Console UI layout formatting string with <console> markup tags. Pure structural markup, not user-visible translatable text. Coder should exclude from T_() extractor or restructure code to not pass tags through T_()."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:f32626bc252d16a4c4c0d94b7ae5a9d0a430d231d195ab85bbadc6dbd56fd22c",
+      "group_fingerprint": "f32626bc252d16a4c4c0d94b7ae5a9d0a430d231d195ab85bbadc6dbd56fd22c",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Console UI layout formatting string with <console> markup tags. Pure structural markup, not user-visible translatable text. Coder should exclude from T_() extractor."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:cd81493e8ae9b286a3216e8b84e59b20d254d68835ca87af2f32bf30f9897b59",
+      "group_fingerprint": "cd81493e8ae9b286a3216e8b84e59b20d254d68835ca87af2f32bf30f9897b59",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "adjudication": "Console darkgrey formatting string. Pure structural markup, not user-visible translatable text. Coder should exclude from T_() extractor."
+      }
+    }
+  ]
+}
