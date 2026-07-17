@@ -263,6 +263,14 @@ class MessageOverlayTests(unittest.TestCase):
             "variants": variants,
         }
 
+    def replace_entry(self, manifest, replacement):
+        key = replacement["canonical_key"]
+        manifest["entries"] = [
+            entry for entry in manifest["entries"]
+            if entry["canonical_key"] != key
+        ]
+        manifest["entries"].append(replacement)
+
     def recursive_roxanne_fixture(self, inventory=None):
         inventory = inventory or INVENTORY
         manifest = copy.deepcopy(MANIFEST)
@@ -313,7 +321,7 @@ class MessageOverlayTests(unittest.TestCase):
                 }],
             })
         actual = roxanne["variants"][0]
-        manifest["entries"].append({
+        self.replace_entry(manifest, {
             "canonical_key": "roxanne cast",
             "canonical_fingerprint":
                 MODULE.runtime_canonical_fingerprint(roxanne),
@@ -354,9 +362,33 @@ class MessageOverlayTests(unittest.TestCase):
         validated = self.validate(copy.deepcopy(MANIFEST))
         self.assertEqual(SIDECAR.read_text(encoding="utf-8"),
                          MODULE.render_sidecar(validated))
+        inventory_keys = {entry["key"] for entry in INVENTORY["entries"]}
+        self.assertEqual(262, len(validated["entries"]))
+        self.assertEqual(
+            inventory_keys,
+            {entry["canonical_key"] for entry in validated["entries"]})
+        self.assertEqual(
+            355,
+            sum(len(entry["variants"]) for entry in validated["entries"]))
+        self.assertEqual(
+            35,
+            sum(len(variant["materialization_cases"])
+                for entry in validated["entries"]
+                for variant in entry["variants"]))
+        self.assertEqual(
+            {"CANDIDATE": 250, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 10},
+            {mode: sum(entry["mode"] == mode
+                       for entry in validated["entries"])
+             for mode in ("CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY")})
+        self.assertEqual(
+            {"CANDIDATE": 341, "CLOSURE_ONLY": 2, "LEGACY_ONLY": 12},
+            {mode: sum(len(entry["variants"])
+                       for entry in validated["entries"]
+                       if entry["mode"] == mode)
+             for mode in ("CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY")})
         candidates = [entry["canonical_key"] for entry in validated["entries"]
                       if entry["mode"] == "CANDIDATE"]
-        self.assertEqual(["beam catchall cast",
+        self.assertTrue(set(["beam catchall cast",
                           "march of sorrows bone dragon cast",
                           "ensnare arachne cast",
                           "guardian serpent cast targeted",
@@ -544,17 +576,27 @@ class MessageOverlayTests(unittest.TestCase):
                           "wind blast wind drake cast",
                           "woodweal cast",
                           "word of recall cast",
-                          "wretched star cast"], candidates)
+                          "wretched star cast"]).issubset(candidates))
+        legacy_keys = [
+            "acid splash cast", "branch summon cast prefix",
+            "chilling breath cast", "paralysis guardian sphinx cast",
+            "polymorphed unseen wizard cast", "polymorphed wizard cast",
+            "polymorphed wizard cast targeted", "unseen acid splash cast",
+            "unseen chilling breath cast", "unseen priest cast targeted",
+        ]
+        closure_keys = ["_unseen_breath_cast_", "_unseen_spit_cast_"]
         self.assertEqual(
-            ["acid splash cast", "branch summon cast prefix",
-             "chilling breath cast", "flashing balestra undying armoury cast",
-             "lee's rapid deconstruction screaming refraction cast",
-             "polymorphed wizard cast",
-             "polymorphed wizard cast targeted",
-             "rebounding chill thermic dynamo cast",
-             "summon water elementals elemental wellspring cast"],
+            inventory_keys - set(legacy_keys) - set(closure_keys),
+            set(candidates))
+        self.assertEqual(250, len(candidates))
+        self.assertEqual(
+            legacy_keys,
             [entry["canonical_key"] for entry in validated["entries"]
              if entry["mode"] == "LEGACY_ONLY"])
+        self.assertEqual(
+            closure_keys,
+            [entry["canonical_key"] for entry in validated["entries"]
+             if entry["mode"] == "CLOSURE_ONLY"])
         nergalle = next(entry for entry in validated["entries"]
                         if "nergalle" in entry["canonical_key"])
         self.assertEqual(
@@ -564,14 +606,14 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_explicit_suppress_descriptor_is_template_free(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(self.suppress_entry())
+        self.replace_entry(value, self.suppress_entry())
         generated = MODULE.render_sidecar(self.validate(value))
         self.assertIn('"siren song cast"', generated)
         self.assertIn("                        true,", generated)
 
     def test_suppress_descriptor_rejects_protocol_misuse(self):
         valid = copy.deepcopy(MANIFEST)
-        valid["entries"].append(self.suppress_entry())
+        self.replace_entry(valid, self.suppress_entry())
 
         missing_marker = copy.deepcopy(valid)
         missing_marker["entries"][-1]["variants"][0].pop("suppresses")
@@ -824,8 +866,8 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_player_name_and_subjective_slots_are_narrow_and_applicable(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(
-            self.special_slot_entry("doomsaying cassandra cast"))
+        self.replace_entry(
+            value, self.special_slot_entry("doomsaying cassandra cast"))
         validated = self.validate(value)
         variant = self.variant(validated, "doomsaying cassandra cast")
         self.assertTrue(variant["applicability"]["requires_player"])
@@ -840,7 +882,7 @@ class MessageOverlayTests(unittest.TestCase):
             self.validate(bad)
 
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(self.special_slot_entry("gastronok cast"))
+        self.replace_entry(value, self.special_slot_entry("gastronok cast"))
         self.validate(value)
         bad = copy.deepcopy(value)
         self.variant(bad, "gastronok cast")["slot_schema"][1]["type"] = (
@@ -851,16 +893,15 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_the_something_alias_and_possessive_foe_are_exact(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(
-            self.special_slot_entry("unseen call of chaos cast"))
+        self.replace_entry(
+            value, self.special_slot_entry("unseen call of chaos cast"))
         variant = self.variant(self.validate(value),
                                "unseen call of chaos cast")
         self.assertEqual([{"name": "actor", "type": "actor_ref"}],
                          variant["slot_schema"])
 
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(
-            self.special_slot_entry("raven cast"))
+        self.replace_entry(value, self.special_slot_entry("raven cast"))
         variant = self.variant(self.validate(value), "raven cast")
         self.assertTrue(variant["applicability"]["requires_foe"])
         self.assertIn("resolved_foe_possessive",
@@ -872,7 +913,7 @@ class MessageOverlayTests(unittest.TestCase):
 
     def test_player_only_is_zero_width_and_keeps_target_resolution(self):
         value = copy.deepcopy(MANIFEST)
-        value["entries"].append(self.special_slot_entry(
+        self.replace_entry(value, self.special_slot_entry(
             "unseen ghost moth cast targeted", resolves_target=True))
         variant = self.variant(self.validate(value),
                                "unseen ghost moth cast targeted")
@@ -1027,7 +1068,7 @@ class MessageOverlayTests(unittest.TestCase):
                     }],
                 }
                 value = copy.deepcopy(MANIFEST)
-                value["entries"].append(record)
+                self.replace_entry(value, record)
                 self.validate(value)
 
                 record["variants"][0]["slot_schema"][-1]["type"] = (
@@ -1035,7 +1076,7 @@ class MessageOverlayTests(unittest.TestCase):
                     if slot_type != "actor_god_indefinite"
                     else "actor_god_my")
                 value = copy.deepcopy(MANIFEST)
-                value["entries"].append(record)
+                self.replace_entry(value, record)
                 with self.assertRaisesRegex(
                         MODULE.ManifestError,
                         "token/type mismatch"):
@@ -1217,6 +1258,9 @@ class MessageOverlayTests(unittest.TestCase):
                 lines = variant["line_metadata"]
                 for case in variant["materialization_cases"]:
                     lines = lines + case["line_metadata"]
+                if variant.get("suppresses", False):
+                    self.assertEqual([], lines)
+                    continue
                 self.assertTrue(lines)
                 for line in lines:
                     by_language = {}

@@ -1,10 +1,10 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
-状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
-`CASE_MAP`；Phase 2 已完成八批通用施法消息迁移、一次 21-key 分片并行
-试点，以及 Wave B、C、D、E 的并行迁移。当前 catalog 跟踪 198 个 canonical
-key、266 个 canonical variant；其中 189 个 key、256 个 variant 进入
-structured 路径，另有 9 个完整 key、10 个 variant 显式标记为 `LEGACY_ONLY`。**
+状态：**Phase 1 基础设施已完成；Phase 2 的 262-key 数据迁移已完成。当前
+catalog 跟踪 262 个 canonical key、355 个 canonical variant：250 个 key、
+341 个 variant 进入 structured 路径，10 个 key、12 个 variant 为
+`LEGACY_ONLY`，2 个 key、2 个 variant 为 `CLOSURE_ONLY`。最终 behavior
+report 刷新与完整验证门禁尚待执行。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -13,8 +13,9 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 189 个完整 key 闭包，并为 9 个暂不适合结构化的完整 key 固定
-`LEGACY_ONLY` 路由。Phase 1 的两个初始 key 为：
+当前 262 个 inventory root 均已进入 catalog：250 个完整 key 闭包走 structured，
+10 个暂不适合结构化的完整 key 固定为 `LEGACY_ONLY`，另有 2 个递归闭包 key
+标记为 `CLOSURE_ONLY`。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
 |---|---|---|---|
@@ -205,6 +206,12 @@ Wave E 使用 `500-wave-e1.json` 至 `520-wave-e3.json` 三个独立分片，共
 集成后 catalog 为 198 key、266 variant；structured 为 189 key、256 variant、
 512 个逐语言验证单位，`LEGACY_ONLY` 为 9 key、10 variant。
 
+最终分片补齐剩余 inventory、递归 case、特殊 actor/player/foe 槽、suppress
+descriptor 与闭包节点。完整 catalog 最终为 262 key、355 variant、35 个
+materialization case；其中 structured 为 250 key、341 variant，逐语言验证单位
+应为 682，另有 10 key/12 variant `LEGACY_ONLY` 与 2 key/2 variant
+`CLOSURE_ONLY`。
+
 ## 2. 三类 artifact 的职责
 
 ### manifest
@@ -355,10 +362,9 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 189 个 key、256 个 canonical variant；catalog 另跟踪
-  9 个 `LEGACY_ONLY` key、10 个 variant，因此总量为 198 key、266 variant。这仍
-  不代表 262 个
-  `monspell` root 已迁移；
+- 262 个 `monspell` inventory root 已全部进入 catalog；structured 覆盖为
+  250 个 key、341 个 canonical variant，另有 10 个 `LEGACY_ONLY` key/12 个
+  variant 与 2 个 `CLOSURE_ONLY` key/2 个 variant；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
   `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
 - catalog renderer 已接线 actor、actor possessive/reflexive、target、foe 与 beam
@@ -501,9 +507,11 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 256 个 canonical structured variant，256 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 512 个逐语言验证
-  单位，512 个均完整；10 个 `LEGACY_ONLY` variant 不进入这两个计数。
+- 最终 manifest 预期有 341 个 canonical structured variant 和 682 个 EN/ZH
+  逐语言验证单位；12 个 `LEGACY_ONLY` variant 与 2 个 `CLOSURE_ONLY` variant
+  不进入这两个计数；
+- 当前 tracked behavior report 仍是最终分片前的旧快照（256/512），必须重新
+  生成并达到上述 341/682 后，才可作为完整 Phase 2 通过证据。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement

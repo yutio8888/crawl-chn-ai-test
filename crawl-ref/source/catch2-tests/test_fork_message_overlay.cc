@@ -135,7 +135,8 @@ TEST_CASE("special monspell slots preserve legacy bindings narrowly",
 
         reset_monspell_overlay_for_test();
         source = special_slot_catalog(canonical, "gastronok cast");
-        source.entries.back().variants[0].slot_schema[1].type =
+        catalog_entry_by_key(source, "gastronok cast")
+            .variants[0].slot_schema[1].type =
             "actor_possessive_pronoun";
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
@@ -202,7 +203,8 @@ TEST_CASE("special monspell slots preserve legacy bindings narrowly",
 
         reset_monspell_overlay_for_test();
         source = special_slot_catalog(canonical, "raven cast");
-        source.entries.back().variants[0].conditions.requires_foe = false;
+        catalog_entry_by_key(source, "raven cast")
+            .variants[0].conditions.requires_foe = false;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
     }
@@ -260,7 +262,8 @@ TEST_CASE("special monspell slots preserve legacy bindings narrowly",
         special_slot_overlay_reset reset;
         catalog_source source = special_slot_catalog(
             canonical, keys[0], true);
-        source.entries.back().variants[0].conditions.requires_player = false;
+        catalog_entry_by_key(source, keys[0])
+            .variants[0].conditions.requires_player = false;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
     }
@@ -335,6 +338,25 @@ fork_message_overlay::catalog_entry &catalog_entry_by_key(
                              return item.canonical_key == key;
                          });
     REQUIRE(entry != source.entries.end());
+    return *entry;
+}
+
+fork_message_overlay::catalog_entry &replace_catalog_entry(
+    fork_message_overlay::catalog_source &source,
+    fork_message_overlay::catalog_entry replacement)
+{
+    auto entry = find_if(
+        source.entries.begin(), source.entries.end(),
+        [&replacement](const fork_message_overlay::catalog_entry &item)
+        {
+            return item.canonical_key == replacement.canonical_key;
+        });
+    if (entry == source.entries.end())
+    {
+        source.entries.push_back(std::move(replacement));
+        return source.entries.back();
+    }
+    *entry = std::move(replacement);
     return *entry;
 }
 
@@ -457,7 +479,7 @@ fork_message_overlay::catalog_source recursive_roxanne_catalog(
     entry.selection_graph_fingerprint = test_selection_fingerprint(actual);
     entry.mode = entry_mode::CANDIDATE;
     entry.variants = { variant };
-    source.entries.push_back(entry);
+    replace_catalog_entry(source, std::move(entry));
     return source;
 }
 
@@ -524,7 +546,7 @@ fork_message_overlay::catalog_source special_slot_catalog(
         variant.lines = { line };
         entry.variants.push_back(variant);
     }
-    source.entries.push_back(entry);
+    replace_catalog_entry(source, std::move(entry));
     return source;
 }
 
@@ -670,13 +692,55 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     SECTION("valid generated catalog enables every candidate key")
     {
         scoped_overlay_reset reset;
+        const catalog_source generated = generated_monspell_catalog();
+        CHECK(generated.entries.size() == 262);
+        size_t candidate_keys = 0;
+        size_t closure_keys = 0;
+        size_t legacy_keys = 0;
+        size_t candidate_variants = 0;
+        size_t closure_variants = 0;
+        size_t legacy_variants = 0;
+        size_t materialization_cases = 0;
+        for (const catalog_entry &entry : generated.entries)
+        {
+            size_t *key_count = nullptr;
+            size_t *variant_count = nullptr;
+            switch (entry.mode)
+            {
+            case entry_mode::CANDIDATE:
+                key_count = &candidate_keys;
+                variant_count = &candidate_variants;
+                break;
+            case entry_mode::CLOSURE_ONLY:
+                key_count = &closure_keys;
+                variant_count = &closure_variants;
+                break;
+            case entry_mode::LEGACY_ONLY:
+                key_count = &legacy_keys;
+                variant_count = &legacy_variants;
+                break;
+            }
+            REQUIRE(key_count != nullptr);
+            REQUIRE(variant_count != nullptr);
+            ++*key_count;
+            *variant_count += entry.variants.size();
+            for (const catalog_variant &variant : entry.variants)
+                materialization_cases += variant.materialization_cases.size();
+        }
+        CHECK(candidate_keys == 250);
+        CHECK(closure_keys == 2);
+        CHECK(legacy_keys == 10);
+        CHECK(candidate_variants == 341);
+        CHECK(closure_variants == 2);
+        CHECK(legacy_variants == 12);
+        CHECK(materialization_cases == 35);
         rng::subgenerator scoped_rng(0x1234, 0x5678);
         const uint64_t state = rng::current_generator().get_state();
         const uint64_t count = rng::current_generator().get_count();
         const load_report &report = load_monspell_overlay(canonical);
         CHECK(report.state == domain_state::ENABLED);
         CHECK(report.failure == load_failure::NONE);
-        CHECK(report.structured_key_count == 189);
+        CHECK(report.structured_key_count == 250);
         CHECK(monspell_overlay_covers("BEAM CATCHALL CAST"));
         CHECK(monspell_overlay_covers("march of sorrows bone dragon cast"));
         CHECK(monspell_overlay_covers("ensnare arachne cast"));
@@ -705,13 +769,19 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK_FALSE(monspell_overlay_covers("acid splash cast"));
         CHECK_FALSE(monspell_overlay_covers("branch summon cast prefix"));
         CHECK_FALSE(monspell_overlay_covers("chilling breath cast"));
+        CHECK_FALSE(monspell_overlay_covers(
+            "paralysis guardian sphinx cast"));
+        CHECK_FALSE(monspell_overlay_covers(
+            "polymorphed unseen wizard cast"));
         CHECK_FALSE(monspell_overlay_covers("polymorphed wizard cast"));
         CHECK_FALSE(monspell_overlay_covers(
             "polymorphed wizard cast targeted"));
         CHECK_FALSE(monspell_overlay_covers(
-            "rebounding chill thermic dynamo cast"));
+            "unseen acid splash cast"));
         CHECK_FALSE(monspell_overlay_covers(
-            "summon water elementals elemental wellspring cast"));
+            "unseen chilling breath cast"));
+        CHECK_FALSE(monspell_overlay_covers(
+            "unseen priest cast targeted"));
         CHECK(rng::current_generator().get_state() == state);
         CHECK(rng::current_generator().get_count() == count);
     }
@@ -736,7 +806,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         variant.lines = { line };
         const load_report &valid = load_monspell_overlay(canonical, &source);
         REQUIRE(valid.state == domain_state::ENABLED);
-        CHECK(valid.structured_key_count == 190);
+        CHECK(valid.structured_key_count == 250);
         CHECK(monspell_overlay_covers(entry.canonical_key));
 
         reset_monspell_overlay_for_test();
@@ -881,16 +951,16 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
     {
         scoped_overlay_reset reset;
         catalog_source source = generated_monspell_catalog();
-        source.entries.push_back(suppress_catalog_entry(canonical));
+        replace_catalog_entry(source, suppress_catalog_entry(canonical));
         const load_report &valid = load_monspell_overlay(canonical, &source);
         REQUIRE(valid.state == domain_state::ENABLED);
-        CHECK(valid.structured_key_count == 190);
+        CHECK(valid.structured_key_count == 250);
         CHECK(monspell_overlay_covers("siren song cast"));
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries.push_back(suppress_catalog_entry(canonical));
-        source.entries.back().variants[0].suppresses = false;
+        replace_catalog_entry(source, suppress_catalog_entry(canonical))
+            .variants[0].suppresses = false;
         const load_report &unmarked =
             load_monspell_overlay(canonical, &source);
         CHECK(unmarked.failure == load_failure::CORRUPT);
@@ -899,9 +969,10 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
 
         reset_monspell_overlay_for_test();
         source = generated_monspell_catalog();
-        source.entries.push_back(suppress_catalog_entry(canonical));
-        source.entries.back().mode = entry_mode::LEGACY_ONLY;
-        source.entries.back().variants[0].policy =
+        catalog_entry &legacy_entry = replace_catalog_entry(
+            source, suppress_catalog_entry(canonical));
+        legacy_entry.mode = entry_mode::LEGACY_ONLY;
+        legacy_entry.variants[0].policy =
             materialization_policy::LEGACY_ONLY;
         const load_report &legacy = load_monspell_overlay(canonical, &source);
         CHECK(legacy.failure == load_failure::CORRUPT);
@@ -923,8 +994,8 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
             CAPTURE(add_slot);
             reset_monspell_overlay_for_test();
             source = generated_monspell_catalog();
-            source.entries.push_back(suppress_catalog_entry(canonical));
-            catalog_variant &renderable = source.entries.back().variants[0];
+            catalog_variant &renderable = replace_catalog_entry(
+                source, suppress_catalog_entry(canonical)).variants[0];
             if (add_slot)
             {
                 renderable.slot_schema = { { "actor", "actor_ref" } };
@@ -1604,7 +1675,7 @@ TEST_CASE("explicit suppress descriptor routes and stops after one selection",
         textdb_phase0::dump_canonical_english_speakdb();
     scoped_overlay_reset reset;
     catalog_source source = generated_monspell_catalog();
-    source.entries.push_back(suppress_catalog_entry(canonical));
+    replace_catalog_entry(source, suppress_catalog_entry(canonical));
     REQUIRE(load_monspell_overlay(canonical, &source).state
             == domain_state::ENABLED);
 

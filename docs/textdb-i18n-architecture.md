@@ -1,12 +1,13 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 已完成八批低风险迁移、
-> 一次 21-key 分片并行试点，以及 Wave B、C、D、E 的并行迁移
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 的 262-key 数据迁移已完成，
+> 最终 behavior report 刷新与完整验证门禁尚待执行
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
-> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前 structured
-> 覆盖 189 个 canonical key、256 个 canonical variant；catalog 另跟踪 9 个
-> `LEGACY_ONLY` key、10 个 variant；正常 `monspell` 路径的 gesture
+> 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 catalog 共覆盖
+> 262 个 canonical key、355 个 variant：250 个 key/341 个 variant 进入
+> structured，10 个 key/12 个 variant 为 `LEGACY_ONLY`，2 个 key/2 个
+> variant 为 `CLOSURE_ONLY`；正常 `monspell` 路径的 gesture
 > 正文嗅探已删除，safe compatibility fallback 保留
 
 ## 1. 背景
@@ -573,14 +574,15 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 跟踪 198 个 canonical key、266 个 canonical variant，其中
-189 个 key、256 个 variant 进入 structured 覆盖表，9 个完整 key、10 个 variant
-为 `LEGACY_ONLY`。descriptor
+当前生产 catalog 跟踪 262 个 canonical key、355 个 canonical variant，其中
+250 个 key、341 个 variant 进入 structured 覆盖表，10 个完整 key、12 个 variant
+为 `LEGACY_ONLY`，2 个闭包 key、2 个 variant 为 `CLOSURE_ONLY`。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
-`implies_gesture`。actor schema 已支持 `actor_ref`、`actor_possessive_name`、
-`actor_possessive_pronoun` 和 `actor_reflexive`，并只验证模板实际声明的字段。
+`implies_gesture`。actor schema 已支持 actor 名称、所有格、主格/反身代词、
+大小写受控别名，以及 player name、resolved foe possessive 和神名等窄槽类型，
+并只验证模板实际声明的字段。
 英文模板仍可使用所有格和反身槽，中文模板可按自然语序省略冗余代词，只要完整
 EN/ZH 模板矩阵的 schema union 与声明一致。第三批的 `mennas cast` 首次启用
 生产 `VISUAL` sensory/channel metadata：纯模板不携带 `VISUAL:` 正文协议前缀，
@@ -921,8 +923,9 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-17）：上述基础设施已落地，当前完整迁移 189 个 canonical
-key、256 个 canonical variant，并显式跟踪 9 个 `LEGACY_ONLY` key、10 个
+实施状态（2026-07-17）：上述基础设施已落地，262 个 inventory root 已全部进入
+catalog。250 个 canonical key、341 个 canonical variant 完整进入 structured；
+另有 10 个 `LEGACY_ONLY` key/12 个 variant 和 2 个 `CLOSURE_ONLY` key/2 个
 variant。
 首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
@@ -1019,6 +1022,13 @@ Wave E 的三个分片共审计 20 个 key、44 个 variant。E1 将 8 个单变
 198 key、266 variant；structured 覆盖为 189 key、256 variant、512 个逐语言
 验证单位，`LEGACY_ONLY` 为 9 key、10 variant。
 
+最终分片继续迁移剩余 inventory，并补齐 recursive case、特殊 actor/player/foe
+槽、显式 suppress descriptor 与闭包节点。当前完整 catalog 因而达到 262 key、
+355 variant、35 个 materialization case：250 key/341 variant 为 `CANDIDATE`，
+10 key/12 variant 为 `LEGACY_ONLY`，2 key/2 variant 为 `CLOSURE_ONLY`。这是
+Phase 2 数据迁移的最终计数；tracked behavior report 仍须按该 catalog 重新生成，
+并通过一次完整验证后才能作为最终门禁证据。
+
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
 scenario cover，并由 lowercase base expression 三路 merge/coalesce 重建完整
@@ -1036,10 +1046,11 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
   元数据，并经可达性审计证明覆盖率为 100%，才能删除全局 heuristic；
 - 加入 EN/ZH 行为等价测试。
 
-实施状态：上述门禁已由 `phase2_ready=true`、
+实施状态：`mon-cast.cc` 的正常 `monspell` 中英文 gesture 正文嗅探已经删除，
+262-key 数据迁移也已完成。上一版 tracked report 的 `phase2_ready=true`、
 `remaining_legacy_behavior_occurrences=0`、`unanalysable_occurrences=0` 与
-`fail_closed_behavior_roots=0` 满足，`mon-cast.cc` 的正常 `monspell`
-中英文 gesture 正文嗅探已经删除。compatibility fallback 不属于 ordinary
+`fail_closed_behavior_roots=0` 证明了当时的运行时门禁；最终 355-variant catalog
+仍须刷新 report 并重跑完整验证，才构成最终 Phase 2 证据。compatibility fallback 不属于 ordinary
 uncovered legacy：它只在 overlay 非 `ENABLED` 或语言不受支持，且 key 是
 compiled `CANDIDATE` 时启用旧嗅探，以保持 safe fallback 的行为/RNG 等价。
 未来可达 ordinary legacy gesture/visual/audible occurrence 会使审计失败。
