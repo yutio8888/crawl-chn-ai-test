@@ -18,7 +18,10 @@ SLOT_RE = re.compile(r"\$\{([^}]*)\}")
 TARGET_RELATIONS = ("AT", "NEXT_TO", "PAST")
 NO_TARGET_RELATIONS = ("NONE",)
 MODES = {"CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY"}
-POLICIES = {"NONE", "CASE_MAP", "CAPTURE_SLOT", "LEGACY_ONLY"}
+POLICIES = {
+    "NONE", "CASE_MAP", "RECURSIVE_CASE_MAP", "CAPTURE_SLOT",
+    "LEGACY_ONLY",
+}
 FRAMES = {"PROJECTILE", "GAZE", "GESTURE", "VOCAL", "INVOCATION",
           "DIRECT_EFFECT"}
 SENSORY = {"PLAIN", "VISUAL", "SOUND"}
@@ -33,9 +36,13 @@ CHANNELS = {
     "dgl_message", "decor_flavour", "monster_timeout", "visual", "spell",
 }
 SLOT_TYPES = {
-    "actor_ref", "actor_possessive_name", "actor_possessive_pronoun",
+    "actor_ref", "actor_ref_lower", "actor_possessive_name",
+    "actor_possessive_name_lower",
+    "actor_possessive_pronoun", "actor_subjective_pronoun", "player_name",
+    "actor_god_possessive", "actor_god_my", "actor_god_indefinite",
     "actor_reflexive", "actor_arms_plural", "resolved_target",
-    "resolved_foe", "resolved_beam", "recursive_capture",
+    "resolved_foe", "resolved_foe_possessive", "resolved_beam",
+    "recursive_capture",
 }
 
 
@@ -55,6 +62,99 @@ def _read(path: Path) -> dict[str, Any]:
         raise ManifestError(f"cannot read {path}: {exc}") from exc
     _require(isinstance(value, dict), f"{path} must contain an object")
     return value
+
+
+def _normalise_manifest(manifest: dict[str, Any],
+                        catalog_order: list[str] | None = None) -> dict[str, Any]:
+    """Return the deterministic aggregate order consumed by validation/codegen."""
+    result = dict(manifest)
+    raw_entries = result.get("entries", [])
+    _require(isinstance(raw_entries, list)
+             and all(isinstance(item, dict) for item in raw_entries),
+             "entries must be a list of objects")
+    entries = list(raw_entries)
+    for entry in entries:
+        variants = entry.get("variants", [])
+        _require(isinstance(variants, list)
+                 and all(isinstance(item, dict) for item in variants),
+                 "entry variants must be a list of objects")
+        entry["variants"] = sorted(
+            variants,
+            key=lambda item: item.get("variant_ordinal", -1))
+        for variant in entry["variants"]:
+            cases = variant.get("materialization_cases", [])
+            _require(isinstance(cases, list)
+                     and all(isinstance(item, dict) for item in cases),
+                     "materialization_cases must be a list of objects")
+            variant["materialization_cases"] = sorted(
+                cases,
+                key=lambda item: (str(item.get("signature", "")),
+                                  str(item.get("case_id", ""))))
+    if catalog_order is None:
+        catalog_order = [item.get("canonical_key", "") for item in entries]
+    _require(all(isinstance(item, str) and item for item in catalog_order)
+             and len(catalog_order) == len(set(catalog_order)),
+             "catalog_order must contain unique canonical keys")
+    rank = {key: ordinal for ordinal, key in enumerate(catalog_order)}
+    result["entries"] = sorted(
+        entries, key=lambda item: (
+            rank.get(item.get("canonical_key"), len(rank)),
+            str(item.get("canonical_key", ""))))
+    tombstones = result.get("tombstones", [])
+    _require(isinstance(tombstones, list)
+             and all(isinstance(item, dict) for item in tombstones),
+             "tombstones must be a list of objects")
+    result["tombstones"] = sorted(
+        tombstones,
+        key=lambda item: str(item.get("stable_id", "")))
+    return result
+
+
+def load_manifest(path: Path) -> dict[str, Any]:
+    """Load a legacy monolith or aggregate the fragments named by a header."""
+    header = _read(path)
+    fragments = header.get("fragments")
+    fragment_glob = header.get("fragment_glob")
+    if fragments is None and fragment_glob is None:
+        return _normalise_manifest(header)
+    _require((fragments is None) != (fragment_glob is None),
+             "use exactly one of fragments or fragment_glob")
+    if fragment_glob is not None:
+        _require(isinstance(fragment_glob, str) and fragment_glob
+                 and not Path(fragment_glob).is_absolute()
+                 and ".." not in Path(fragment_glob).parts,
+                 "fragment_glob must be a repository-relative pattern")
+        fragments = sorted(
+            item.relative_to(path.parent).as_posix()
+            for item in path.parent.glob(fragment_glob) if item.is_file())
+    _require(isinstance(fragments, list) and fragments
+             and all(isinstance(item, str) and item for item in fragments)
+             and len(set(fragments)) == len(fragments),
+             "fragments must resolve to unique non-empty paths")
+    _require("entries" not in header and "tombstones" not in header,
+             "fragment header must not contain entries or tombstones")
+    catalog_order = header.get("catalog_order", [])
+    _require(isinstance(catalog_order, list),
+             "catalog_order must be a list")
+    aggregate = {key: value for key, value in header.items()
+                 if key not in {"fragments", "fragment_glob",
+                                "catalog_order"}}
+    aggregate["entries"] = []
+    aggregate["tombstones"] = []
+    root = path.parent.resolve()
+    for name in fragments:
+        fragment_path = (path.parent / name).resolve()
+        _require(fragment_path.is_relative_to(root),
+                 f"fragment path escapes manifest directory: {name!r}")
+        fragment = _read(fragment_path)
+        _require(set(fragment) == {"entries", "tombstones"},
+                 f"fragment {name!r} must contain entries and tombstones only")
+        _require(isinstance(fragment["entries"], list)
+                 and isinstance(fragment["tombstones"], list),
+                 f"fragment {name!r} entries/tombstones must be lists")
+        aggregate["entries"].extend(fragment["entries"])
+        aggregate["tombstones"].extend(fragment["tombstones"])
+    return _normalise_manifest(aggregate, catalog_order)
 
 
 def _canonical_bytes(value: object) -> bytes:
@@ -173,6 +273,93 @@ def _case_signatures(key: str, ordinal: int,
             signature += (f"|{key_size}:{key}:{ordinal}:{site_ordinal}:"
                           f"{len(site['options'])}:{choice}")
         signatures.add(signature)
+    return signatures
+
+
+def _identity_signature(
+        selections: list[tuple[str, int, tuple[int, ...]]]) -> str:
+    signature = f"materialization-v1|variants={len(selections)}"
+    for key, ordinal, path in selections:
+        key_size = len(key.encode("utf-8"))
+        signature += f"|{key_size}:{key}:{ordinal}:{len(path)}"
+        for step in path:
+            signature += f":{step}"
+    return signature + "|lua=0|sites=0"
+
+
+def _reachable_weighted_variants(node: dict[str, Any]) -> list[dict[str, Any]]:
+    variants = node["variants"]
+    total = sum(variant["weight"] for variant in variants)
+    _require(total > 0, "recursive identity key has no weighted choice")
+    reachable = []
+    cumulative = 0
+    previous_max = 0
+    for variant in variants:
+        cumulative += variant["weight"]
+        if previous_max < min(cumulative, total):
+            reachable.append(variant)
+        previous_max = max(previous_max, cumulative)
+    return reachable
+
+
+def _recursive_identity_signatures(
+        nodes: dict[str, dict[str, Any]], key: str, ordinal: int) -> set[str]:
+    """Enumerate production selected-variant identities without consuming RNG.
+
+    The parent site ordinal counts every marker it observes, including runtime
+    markers left in a recursively expanded replacement. This mirrors the
+    production replacement loop, which resumes scanning at the insertion point.
+    """
+    limit = 10000
+
+    def expand(selected_key: str, selected_ordinal: int,
+               path: tuple[int, ...], stack: tuple[str, ...]
+               ) -> list[tuple[str, list[tuple[str, int, tuple[int, ...]]]]]:
+        _require(selected_key in nodes,
+                 f"recursive identity key {selected_key!r} is missing")
+        _require(selected_key not in stack and len(stack) <= 10,
+                 "recursive identity closure is cyclic or too deep")
+        variants = nodes[selected_key]["variants"]
+        _require(0 <= selected_ordinal < len(variants),
+                 "recursive identity variant is missing")
+        variant = variants[selected_ordinal]
+        _require(not variant["lua_sites"]
+                 and not variant["random_substring_sites"],
+                 "RECURSIVE_CASE_MAP closure contains Lua or bracket sites")
+        states = [(variant["text"], 0, 0,
+                   [(selected_key, selected_ordinal, path)])]
+        complete = []
+        while states:
+            text, position, site_ordinal, selections = states.pop()
+            start = text.find("@", position)
+            if start < 0:
+                complete.append((text, selections))
+                continue
+            end = text.find("@", start + 1)
+            _require(end >= 0, "recursive identity closure has an unbalanced marker")
+            marker = text[start + 1:end].lower()
+            current_site = site_ordinal
+            if marker not in nodes:
+                states.append((text, end + 1, site_ordinal + 1, selections))
+                continue
+            child_path = path + (current_site,)
+            for child in _reachable_weighted_variants(nodes[marker]):
+                child_ordinal = child["variant_ordinal"]
+                for replacement, child_selections in expand(
+                        marker, child_ordinal, child_path,
+                        stack + (selected_key,)):
+                    replaced = text[:start] + replacement + text[end + 1:]
+                    states.append((replaced, start, site_ordinal + 1,
+                                   selections + child_selections))
+                    _require(len(states) + len(complete) <= limit,
+                             "recursive identity case set exceeds safe limit")
+        return complete
+
+    outcomes = expand(key, ordinal, (), ())
+    signatures = {_identity_signature(selections)
+                  for _, selections in outcomes}
+    _require(len(signatures) == len(outcomes),
+             "recursive identity paths do not produce unique signatures")
     return signatures
 
 
@@ -344,10 +531,13 @@ def validate_manifest(manifest: dict[str, Any],
                 "recursive_dependency_fingerprints")
             _require(isinstance(dependency_fingerprints, dict),
                      f"{vcontext} recursive dependency closure mismatch")
-            if policy == "CAPTURE_SLOT":
+            if policy in {"CAPTURE_SLOT", "RECURSIVE_CASE_MAP"}:
                 dependencies = _recursive_closure(nodes, direct_dependencies)
                 _require(sorted(dependency_fingerprints) == dependencies,
-                         f"{vcontext} recursive capture closure mismatch")
+                         f"{vcontext} "
+                         + ("recursive capture closure mismatch"
+                            if policy == "CAPTURE_SLOT"
+                            else "recursive full closure mismatch"))
                 for dependency in dependencies:
                     _require(dependency_fingerprints[dependency]
                              == runtime_canonical_fingerprint(
@@ -363,18 +553,99 @@ def validate_manifest(manifest: dict[str, Any],
                              == nodes[dependency]["entry_text_fingerprint"],
                              f"{vcontext} dependency fingerprint mismatch")
 
+            binding_text = actual["text"]
+            if policy == "RECURSIVE_CASE_MAP":
+                binding_text += "".join(
+                    child["text"]
+                    for dependency in dependencies
+                    for child in nodes[dependency]["variants"])
+
             cases = variant.get("materialization_cases")
             _require(isinstance(cases, list),
                      f"{vcontext}.materialization_cases must be a list")
+            suppresses = variant.get("suppresses", False)
+            _require(isinstance(suppresses, bool),
+                     f"{vcontext} has invalid suppresses flag")
             if policy == "NONE":
                 _require(not actual["random_substring_sites"]
                          and not actual["lua_sites"] and not dependencies
                          and not cases,
                          f"{vcontext} NONE policy has dynamic materialization")
+            if suppresses:
+                _require(mode == "CANDIDATE",
+                         f"{vcontext} suppress descriptor must be CANDIDATE")
+                _require(actual["text"] == "__NONE" and policy == "NONE",
+                         f"{vcontext} suppress descriptor must select exact __NONE")
+                _require(not binding["resolves_target"]
+                         and not any(applicability.values())
+                         and not slot_schema and not required
+                         and not variant.get("line_metadata") and not cases
+                         and not dependency_fingerprints
+                         and not variant.get("recursive_captures", []),
+                         f"{vcontext} suppress descriptor contains renderable data")
+                continue
+            _require(mode != "CANDIDATE" or actual["text"] != "__NONE",
+                     f"{vcontext} candidate __NONE requires suppress descriptor")
             if policy == "LEGACY_ONLY":
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
+            has_actor_ref_token = any(
+                token in binding_text
+                for token in ("@The_monster@", "@The_something@"))
+            has_actor_ref_lower_token = "@the_monster@" in binding_text
+            has_actor_possessive_token = (
+                "@The_monster_possessive@" in binding_text)
+            has_actor_possessive_lower_token = (
+                "@the_monster_possessive@" in binding_text)
+            god_token_types = {
+                "@possessive_God@": "actor_god_possessive",
+                "@My_God@": "actor_god_my",
+                "@a_God@": "actor_god_indefinite",
+            }
+            has_actor_ref_slot = any(
+                slot_type == "actor_ref"
+                for slot_type in slot_types.values())
+            has_actor_ref_lower_slot = any(
+                slot_type == "actor_ref_lower"
+                for slot_type in slot_types.values())
+            has_actor_possessive_slot = any(
+                slot_type == "actor_possessive_name"
+                for slot_type in slot_types.values())
+            has_actor_possessive_lower_slot = any(
+                slot_type == "actor_possessive_name_lower"
+                for slot_type in slot_types.values())
+            _require(has_actor_ref_token == has_actor_ref_slot,
+                     f"{vcontext} sentence actor token/type mismatch")
+            _require(has_actor_ref_lower_token == has_actor_ref_lower_slot,
+                     f"{vcontext} lower actor token/type mismatch")
+            _require(has_actor_possessive_token == has_actor_possessive_slot,
+                     f"{vcontext} sentence possessive actor token/type mismatch")
+            _require(
+                has_actor_possessive_lower_token
+                == has_actor_possessive_lower_slot,
+                f"{vcontext} lower possessive actor token/type mismatch")
+            has_subjective_token = "@subjective@" in binding_text
+            has_subjective_slot = any(
+                value == "actor_subjective_pronoun"
+                for value in slot_types.values())
+            _require(has_subjective_token == has_subjective_slot,
+                     f"{vcontext} subjective actor token/type mismatch")
+            has_player_name_token = "@player_name@" in binding_text
+            has_player_name_slot = any(
+                value == "player_name" for value in slot_types.values())
+            _require(has_player_name_token == has_player_name_slot,
+                     f"{vcontext} player-name token/type mismatch")
+            has_player_only_marker = "@player_only@" in binding_text
+            _require(not (has_player_name_token or has_player_only_marker)
+                     or applicability["requires_player"],
+                     f"{vcontext} player token/marker requires player applicability")
+            for token, slot_type in god_token_types.items():
+                _require(
+                    (token in binding_text)
+                    == any(value == slot_type
+                           for value in slot_types.values()),
+                    f"{vcontext} {token} token/type mismatch")
             captures = variant.get("recursive_captures", [])
             _require(isinstance(captures, list),
                      f"{vcontext}.recursive_captures must be a list")
@@ -384,27 +655,27 @@ def validate_manifest(manifest: dict[str, Any],
             _require(binding["resolves_target"] or not has_target_slot,
                      f"{vcontext} non-target binding declares resolved_target")
             target_tokens = {
-                token["canonical_key"] for token in actual["tokens"]
-                if token["classification"] == "runtime"
-                and token["canonical_key"] in {"at", "target"}
+                token for token in {"at", "target"}
+                if f"@{token}@" in binding_text
             }
             _require(binding["resolves_target"] or not target_tokens,
                      f"{vcontext} non-target binding contains target tokens")
-            has_foe_token = any(
-                token["classification"] == "runtime"
-                and token["canonical_key"] == "foe"
-                for token in actual["tokens"])
+            has_foe_token = "@foe@" in binding_text
             has_foe_slot = any(
                 slot_type == "resolved_foe"
                 for slot_type in slot_types.values())
             _require(has_foe_token == has_foe_slot,
                      f"{vcontext} foe token/type mismatch")
-            _require(applicability["requires_foe"] == has_foe_slot,
+            has_foe_possessive_token = "@foe_possessive@" in binding_text
+            has_foe_possessive_slot = any(
+                slot_type == "resolved_foe_possessive"
+                for slot_type in slot_types.values())
+            _require(has_foe_possessive_token == has_foe_possessive_slot,
+                     f"{vcontext} possessive foe token/type mismatch")
+            _require(applicability["requires_foe"]
+                     == (has_foe_slot or has_foe_possessive_slot),
                      f"{vcontext} foe applicability/slot mismatch")
-            has_arms_token = any(
-                token["classification"] == "runtime"
-                and token["canonical_key"] == "arms"
-                for token in actual["tokens"])
+            has_arms_token = "@arms@" in binding_text
             has_arms_slot = any(
                 slot_type == "actor_arms_plural"
                 for slot_type in slot_types.values())
@@ -477,6 +748,46 @@ def validate_manifest(manifest: dict[str, Any],
                 variant["_recursive_capture_vocabulary"] = vocabulary
                 _validate_lines(variant.get("line_metadata"), languages,
                                 declared, vcontext, relations)
+                continue
+            if policy == "RECURSIVE_CASE_MAP":
+                _require(direct_dependencies
+                         and not actual["random_substring_sites"]
+                         and not actual["lua_sites"],
+                         f"{vcontext} RECURSIVE_CASE_MAP needs pure recursion")
+                _require(not captures,
+                         f"{vcontext} RECURSIVE_CASE_MAP declares captures")
+                _require(not variant.get("line_metadata"),
+                         f"{vcontext} RECURSIVE_CASE_MAP lines belong to cases")
+                expected = _recursive_identity_signatures(
+                    nodes, key, variant_index)
+                seen_signatures: set[str] = set()
+                expected_shape = None
+                for case_index, case in enumerate(cases):
+                    ccontext = (f"{vcontext}.materialization_cases"
+                                f"[{case_index}]")
+                    _require(isinstance(case, dict)
+                             and set(case) == {"case_id", "signature",
+                                              "line_metadata"},
+                             f"{ccontext} has invalid fields")
+                    case_id = case["case_id"]
+                    _require(isinstance(case_id, str) and case_id
+                             and case_id not in stable_ids,
+                             f"{ccontext} has invalid/reused case_id")
+                    stable_ids.add(case_id)
+                    signature = case["signature"]
+                    _require(signature in expected
+                             and signature not in seen_signatures,
+                             f"{ccontext} has unknown/duplicate signature")
+                    seen_signatures.add(signature)
+                    shape = _validate_lines(
+                        case["line_metadata"], languages, declared,
+                        ccontext, relations)
+                    if expected_shape is None:
+                        expected_shape = shape
+                    _require(shape == expected_shape,
+                             f"{ccontext} changes binding-relevant line metadata")
+                _require(seen_signatures == expected,
+                         f"{vcontext} RECURSIVE_CASE_MAP cases are incomplete")
                 continue
             _require(policy == "CASE_MAP",
                      f"{vcontext} materialization policy is not enabled yet")
@@ -644,8 +955,10 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
                 f"                        {{ {dep_fps} }},",
                 f"                        {{ {captures} }},",
                 f"                        {{ {vocabulary} }},",
-                "                    },",
             ])
+            if variant.get("suppresses", False):
+                out.append("                        true,")
+            out.append("                    },")
         out.extend(["                },", "            },"])
     out.extend(["        },", "        {"])
     for tombstone in manifest.get("tombstones", []):
@@ -663,7 +976,8 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--check", type=Path)
     args = parser.parse_args(argv)
     try:
-        manifest = validate_manifest(_read(args.manifest), _read(args.inventory))
+        manifest = validate_manifest(load_manifest(args.manifest),
+                                     _read(args.inventory))
         rendered = render_sidecar(manifest)
     except ManifestError as exc:
         print(f"message overlay error: {exc}", file=sys.stderr)

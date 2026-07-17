@@ -7,7 +7,8 @@ import argparse
 import sys
 from pathlib import Path
 
-from generate_message_overlay import ManifestError, _read, render_sidecar, validate_manifest
+from generate_message_overlay import (ManifestError, _read, load_manifest,
+                                      render_sidecar, validate_manifest)
 
 
 def main() -> int:
@@ -17,7 +18,8 @@ def main() -> int:
     parser.add_argument("--sidecar", type=Path, required=True)
     args = parser.parse_args()
     try:
-        manifest = validate_manifest(_read(args.manifest), _read(args.inventory))
+        manifest = validate_manifest(load_manifest(args.manifest),
+                                     _read(args.inventory))
         expected = render_sidecar(manifest)
         actual = args.sidecar.read_text(encoding="utf-8")
     except (ManifestError, OSError, UnicodeError) as exc:
