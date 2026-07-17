@@ -114,7 +114,7 @@
       "canonical_key": "summon water elementals elemental wellspring cast",
       "canonical_fingerprint": "fnv1a64:b5bf0ad2165444a5",
       "selection_graph_fingerprint": "fnv1a64:a90699dbf5a10cf2",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.summon_water_elementals_elemental_wellspring.water_spirits.v1",
         "tombstone": false,
@@ -125,8 +125,17 @@
         "frame": "INVOCATION",
         "binding": { "resolves_target": false },
         "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-        "materialization_policy": "LEGACY_ONLY",
-        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_lower", "type": "actor_ref_lower" }],
+        "required_arguments": ["actor_lower"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "Water spirits pour forth from ${actor_lower}!" },
+            { "language": "zh", "relation": "NONE", "pattern": "水之灵从${actor_lower}身上涌出！" }
+          ]
+        }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
     },

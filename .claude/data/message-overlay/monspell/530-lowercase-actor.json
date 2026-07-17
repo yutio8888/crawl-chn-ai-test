@@ -1,0 +1,103 @@
+{
+  "entries": [
+    {
+      "canonical_key": "primal wave elemental wellspring cast",
+      "canonical_fingerprint": "fnv1a64:5f961d4a0f30e55a",
+      "selection_graph_fingerprint": "fnv1a64:ddd0bd5b0d7b24f1",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.primal_wave_elemental_wellspring.water_torrent.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "a2eb96eee55b9059d62e79262a6aad832384134a35c699432a1f4d73d6f2e4c1",
+        "upstream_weight": 10,
+        "english_snapshot": "A torrent of water rises up through @the_monster@!",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor_lower", "type": "actor_ref_lower" }],
+        "required_arguments": ["actor_lower"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "A torrent of water rises up through ${actor_lower}!" },
+            { "language": "zh", "relation": "NONE", "pattern": "一股激流从${actor_lower}身上涌起！" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "rebounding blaze thermic dynamo cast",
+      "canonical_fingerprint": "fnv1a64:90adf2cf9f872903",
+      "selection_graph_fingerprint": "fnv1a64:001e398c3340fbdb",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.wild_fire_whirl.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "4aad425449204ab803a5e1634fe65ea325cc59d2eed2fafd88015bc1dbb7a032",
+          "upstream_weight": 10,
+          "english_snapshot": "A wild whirl of fire shoots out from @the_monster@ @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor_lower", "type": "actor_ref_lower" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor_lower", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "A wild whirl of fire shoots out from ${actor_lower} at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "A wild whirl of fire shoots out from ${actor_lower} next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "A wild whirl of fire shoots out from ${actor_lower} past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "一股狂野的火焰漩涡从${actor_lower}身上射出，直奔${target}而去。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "一股狂野的火焰漩涡从${actor_lower}身上射出，直奔${target}旁边而去。" },
+              { "language": "zh", "relation": "PAST", "pattern": "一股狂野的火焰漩涡从${actor_lower}身上射出，从${target}旁边掠过。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.rebounding_blaze_thermic_dynamo.releases_excess_heat.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "8d850f0eeaec1790bfb269b6eac339782f86ea62f787d258280c3e5704485138",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ overcharges @reflexive@ and releases excess heat @at@ @target@.",
+          "frame": "PROJECTILE",
+          "binding": { "resolves_target": true },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "reflexive", "type": "actor_reflexive" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "reflexive", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} overcharges ${reflexive} and releases excess heat at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} overcharges ${reflexive} and releases excess heat next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} overcharges ${reflexive} and releases excess heat past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}过度充能，向${target}释放多余的热量。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}过度充能，朝${target}旁边释放多余的热量。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}过度充能，释放出多余的热量，使其从${target}旁边掠过。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    }
+  ],
+  "tombstones": []
+}

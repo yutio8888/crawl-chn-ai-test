@@ -141,7 +141,7 @@
       "canonical_key": "rebounding chill thermic dynamo cast",
       "canonical_fingerprint": "fnv1a64:c75743a3c6ddeff3",
       "selection_graph_fingerprint": "fnv1a64:807465a0e9ffb03b",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [
         {
           "stable_id": "mon.cast.rebounding_chill_thermic_dynamo.wild_ice_whirl.v1",
@@ -153,8 +153,24 @@
           "frame": "PROJECTILE",
           "binding": { "resolves_target": true },
           "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [], "required_arguments": [], "line_metadata": [],
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor_lower", "type": "actor_ref_lower" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor_lower", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "A wild whirl of ice shoots out from ${actor_lower} at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "A wild whirl of ice shoots out from ${actor_lower} next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "A wild whirl of ice shoots out from ${actor_lower} past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "一股狂野的寒冰漩涡从${actor_lower}身上射出，直奔${target}而去。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "一股狂野的寒冰漩涡从${actor_lower}身上射出，直奔${target}旁边而去。" },
+              { "language": "zh", "relation": "PAST", "pattern": "一股狂野的寒冰漩涡从${actor_lower}身上射出，从${target}旁边掠过。" }
+            ]
+          }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
         },
         {
@@ -167,8 +183,24 @@
           "frame": "PROJECTILE",
           "binding": { "resolves_target": true },
           "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-          "materialization_policy": "LEGACY_ONLY",
-          "slot_schema": [], "required_arguments": [], "line_metadata": [],
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "target", "type": "resolved_target" }
+          ],
+          "required_arguments": ["actor", "target"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "AT", "pattern": "${actor} overflows with ice and vents excess cold at ${target}." },
+              { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} overflows with ice and vents excess cold next to ${target}." },
+              { "language": "en", "relation": "PAST", "pattern": "${actor} overflows with ice and vents excess cold past ${target}." },
+              { "language": "zh", "relation": "AT", "pattern": "${actor}体内寒冰满溢，向${target}排出多余的寒气。" },
+              { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}体内寒冰满溢，朝${target}旁边排出多余的寒气。" },
+              { "language": "zh", "relation": "PAST", "pattern": "${actor}体内寒冰满溢，排出多余的寒气，使其从${target}旁边掠过。" }
+            ]
+          }],
           "materialization_cases": [], "recursive_dependency_fingerprints": {}
         }
       ]

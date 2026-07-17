@@ -220,7 +220,7 @@
       "canonical_key": "flashing balestra undying armoury cast",
       "canonical_fingerprint": "fnv1a64:9ac18274d6415f9f",
       "selection_graph_fingerprint": "fnv1a64:ffb328d73d1ba0a0",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.flashing_balestra_undying_armoury.weapon_lunges.v1",
         "tombstone": false,
@@ -231,8 +231,24 @@
         "frame": "PROJECTILE",
         "binding": { "resolves_target": true },
         "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-        "materialization_policy": "LEGACY_ONLY",
-        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor_lower", "type": "actor_ref_lower" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor_lower", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "A weapon leaps out from ${actor_lower} and lunges at ${target}!" },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "A weapon leaps out from ${actor_lower} and lunges next to ${target}!" },
+            { "language": "en", "relation": "PAST", "pattern": "A weapon leaps out from ${actor_lower} and lunges past ${target}!" },
+            { "language": "zh", "relation": "AT", "pattern": "一件武器从${actor_lower}身上跃出，朝${target}猛刺而去！" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "一件武器从${actor_lower}身上跃出，朝${target}旁边猛刺而去！" },
+            { "language": "zh", "relation": "PAST", "pattern": "一件武器从${actor_lower}身上猛刺而出，从${target}旁边掠过！" }
+          ]
+        }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
     },
@@ -277,7 +293,7 @@
       "canonical_key": "lee's rapid deconstruction screaming refraction cast",
       "canonical_fingerprint": "fnv1a64:7642e50e8d35c391",
       "selection_graph_fingerprint": "fnv1a64:3b36ac9a15919f38",
-      "mode": "LEGACY_ONLY",
+      "mode": "CANDIDATE",
       "variants": [{
         "stable_id": "mon.cast.lees_rapid_deconstruction_screaming_refraction.echo_wails.v1",
         "tombstone": false,
@@ -288,8 +304,24 @@
         "frame": "VOCAL",
         "binding": { "resolves_target": true },
         "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
-        "materialization_policy": "LEGACY_ONLY",
-        "slot_schema": [], "required_arguments": [], "line_metadata": [],
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor_lower", "type": "actor_ref_lower" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor_lower", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "An echo of ${actor_lower} flickers and hopelessly wails at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "An echo of ${actor_lower} flickers and hopelessly wails next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "An echo of ${actor_lower} flickers and hopelessly wails past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}哀嚎。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}旁边哀嚎。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor_lower}的一道回声忽明忽灭，绝望地朝${target}身后哀嚎。" }
+          ]
+        }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
       }]
     },
