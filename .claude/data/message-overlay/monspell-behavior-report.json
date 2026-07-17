@@ -4470,16 +4470,16 @@
     }
   },
   "coverage": {
-    "canonical_structured_variant_metadata_complete": 158,
-    "canonical_structured_variant_metadata_units": 158,
+    "canonical_structured_variant_metadata_complete": 214,
+    "canonical_structured_variant_metadata_units": 214,
     "catalog_coverage_complete": true,
     "effective_runtime_behavior_occurrences": 72,
     "en_zh_behavior_analysis_conclusive": true,
     "en_zh_behavior_parity_proven": true,
     "fail_closed_behavior_roots": 0,
     "legacy_behavior_metadata_covered_occurrences": 0,
-    "per_language_structured_variant_verification_complete": 316,
-    "per_language_structured_variant_verification_units": 316,
+    "per_language_structured_variant_verification_complete": 428,
+    "per_language_structured_variant_verification_units": 428,
     "remaining_legacy_behavior_occurrences": 0,
     "unanalysable_occurrences": 0
   },
@@ -5660,6 +5660,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "golden eye cast targeted",
+          "stable_id": "mon.cast.golden_eye.targeted.blinks.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "grasping roots cast",
           "stable_id": "mon.cast.grasping_roots.reaches_roots.v1",
           "variant_ordinal": 0
@@ -5670,6 +5677,20 @@
           "requested_root": "grasping roots natural cast",
           "stable_id": "mon.cast.grasping_roots_natural.roots_beneath.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "grave claw vampire bloodprince cast",
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.reaches_hand.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "grave claw vampire bloodprince cast",
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.snaps_fingers.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -5698,6 +5719,27 @@
           "requested_root": "guardian serpent cast targeted",
           "stable_id": "mon.cast.guardian_serpent.tongue_patterns.v1",
           "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "harpoon shot cast",
+          "stable_id": "mon.cast.harpoon_shot.fires_harpoon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "hellfire court cast",
+          "stable_id": "mon.cast.hellfire_court.calls_servants.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "hellfire mortar cast",
+          "stable_id": "mon.cast.hellfire_mortar.magma_torrent.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -5744,8 +5786,57 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "injury mirror screaming refraction cast",
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.woeful_anguish.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "injury mirror screaming refraction cast",
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.radiant_agony.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "invisibility shadowghast cast",
           "stable_id": "mon.cast.invisibility_shadowghast.slips_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "kobold blastminer cast targeted",
+          "stable_id": "mon.cast.kobold_blastminer.blasts_cannon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "landbreaker natural cast",
+          "stable_id": "mon.cast.landbreaker_natural.fractures_ground.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "launch bomblet cast",
+          "stable_id": "mon.cast.launch_bomblet.launches_bomblet.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "lightning bolt electric golem cast",
+          "stable_id": "mon.cast.lightning_bolt_electric_golem.hurls_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "lightning bolt natural cast",
+          "stable_id": "mon.cast.lightning_bolt_natural.breathes_beam.v1",
           "variant_ordinal": 0
         },
         {
@@ -5779,6 +5870,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "manticore cast",
+          "stable_id": "mon.cast.manticore.flicks_tail.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "mara summon cast",
           "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -5807,9 +5905,44 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "metal splinters war gargoyle cast",
+          "stable_id": "mon.cast.metal_splinters_war_gargoyle.launches_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "minor healing dryad cast",
           "stable_id": "mon.cast.minor_healing_dryad.draws_vitality.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "non-humanoid wizard cast",
+          "stable_id": "mon.cast.non_humanoid_wizard.mumbles_strange_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "non-humanoid wizard cast",
+          "stable_id": "mon.cast.non_humanoid_wizard.casts_spell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "non-humanoid wizard cast targeted",
+          "stable_id": "mon.cast.non_humanoid_wizard_targeted.stares_and_mumbles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "non-humanoid wizard cast targeted",
+          "stable_id": "mon.cast.non_humanoid_wizard_targeted.casts_spell.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -5821,8 +5954,50 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "orange crystal statue cast targeted",
+          "stable_id": "mon.cast.orange_crystal_statue_targeted.fixes_piercing_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "orb of destruction orb spider cast",
+          "stable_id": "mon.cast.orb_of_destruction_orb_spider.weaves_glowing_orb.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "ostracise cast",
           "stable_id": "mon.cast.ostracise.freezes_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "paralyse xtahua cast",
+          "stable_id": "mon.cast.paralyse_xtahua.overwhelming_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "paralyse xtahua cast",
+          "stable_id": "mon.cast.paralyse_xtahua.ferocious_thunder.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "paralysis gaze cast",
+          "stable_id": "mon.cast.paralysis_gaze.piercing_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "petrifying cloud cast",
+          "stable_id": "mon.cast.petrifying_cloud.calcifying_dust.v1",
           "variant_ordinal": 0
         },
         {
@@ -5844,6 +6019,62 @@
           "language": "en",
           "requested_root": "pyroclastic surge cast",
           "stable_id": "mon.cast.pyroclastic_surge.calls_gouts_of_flame.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "quicksilver bolt natural cast",
+          "stable_id": "mon.cast.quicksilver_bolt_natural.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ravenous swarm vampire bloodprince cast",
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.unfurls_wings.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "ravenous swarm vampire bloodprince cast",
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.spreads_arms.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rupert cast targeted",
+          "stable_id": "mon.cast.rupert.targeted.wild_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "rupert cast targeted",
+          "stable_id": "mon.cast.rupert.targeted.loud_yell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "scrub nettle cast targeted",
+          "stable_id": "mon.cast.scrub_nettle.targeted.launches_toxic_spines.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "seismic stomp cast",
+          "stable_id": "mon.cast.seismic_stomp.stomps_heavy_feet.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "shadow shot cast",
+          "stable_id": "mon.cast.shadow_shot.fires.v1",
           "variant_ordinal": 0
         },
         {
@@ -5884,6 +6115,62 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "silent curse skull cast",
+          "stable_id": "mon.cast.silent_curse_skull.rattles_jaw_silently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent flayed ghost cast",
+          "stable_id": "mon.cast.silent_flayed_ghost.moans_silent_anguish.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent flayed ghost cast",
+          "stable_id": "mon.cast.silent_flayed_ghost.tortured_malice.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent laughing skull cast",
+          "stable_id": "mon.cast.silent_laughing_skull.cackles_in_silence.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "silent laughing skull cast",
+          "stable_id": "mon.cast.silent_laughing_skull.rattles_with_glee.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sleep satyr cast",
+          "stable_id": "mon.cast.sleep_satyr.lulling_melody.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "slug dart cast",
+          "stable_id": "mon.cast.slug_dart.launches_dart.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "smiting guardian sphinx cast",
+          "stable_id": "mon.cast.smiting_guardian_sphinx.ancient_curse.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "smiting jeremiah cast",
           "stable_id": "mon.cast.smiting_jeremiah.twisted_cry.v1",
           "variant_ordinal": 0
@@ -5919,8 +6206,57 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "sojourning bolt cast",
+          "stable_id": "mon.cast.sojourning_bolt.rupture_space_time.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "spectral cloud revenant cast",
           "stable_id": "mon.cast.spectral_cloud_revenant.spectral_mists.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sphinx cast",
+          "stable_id": "mon.cast.sphinx.mumbles_strange_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "sphinx cast",
+          "stable_id": "mon.cast.sphinx.casts_spell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "spit acid cast",
+          "stable_id": "mon.cast.spit_acid.spits_acid.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "spit lava cast",
+          "stable_id": "mon.cast.spit_lava.spits_lava.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "spit poison cast",
+          "stable_id": "mon.cast.spit_poison.spits_poison.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "splinterspray cast",
+          "stable_id": "mon.cast.splinterspray.hurls_spray.v1",
           "variant_ordinal": 0
         },
         {
@@ -5947,6 +6283,20 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "stone arrow gargoyle cast",
+          "stable_id": "mon.cast.stone_arrow_gargoyle.hurls_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "stunning burst cast",
+          "stable_id": "mon.cast.stunning_burst.electricity_burst.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
           "variant_ordinal": 0
@@ -5963,6 +6313,27 @@
           "language": "en",
           "requested_root": "thrashing horror cast",
           "stable_id": "mon.cast.thrashing_horror.churns_violently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "throw bolas cast",
+          "stable_id": "mon.cast.throw_bolas.hurls_bolas.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "throw icicle shard shrike cast",
+          "stable_id": "mon.cast.throw_icicle_shard_shrike.spits_ice_shard.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "throw klown pie cast",
+          "stable_id": "mon.cast.throw_klown_pie.pies_target.v1",
           "variant_ordinal": 0
         },
         {
@@ -6129,6 +6500,13 @@
         {
           "complete": true,
           "language": "en",
+          "requested_root": "volley of thorns cast",
+          "stable_id": "mon.cast.volley_of_thorns.thorn_volley.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
           "requested_root": "vv cast",
           "stable_id": "mon.cast.vv.sharp_gesture.v1",
           "variant_ordinal": 0
@@ -6173,6 +6551,13 @@
           "language": "en",
           "requested_root": "warning cry howler monkey cast",
           "stable_id": "mon.cast.warning_cry_howler_monkey.hoots_and_howls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "warning cry seraph cast",
+          "stable_id": "mon.cast.warning_cry_seraph.warns_allies.v1",
           "variant_ordinal": 0
         },
         {
@@ -6257,6 +6642,13 @@
           "language": "en",
           "requested_root": "woodweal cast",
           "stable_id": "mon.cast.woodweal.draw_tree_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "en",
+          "requested_root": "word of recall cast",
+          "stable_id": "mon.cast.word_of_recall.recites_word.v1",
           "variant_ordinal": 0
         },
         {
@@ -7408,6 +7800,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "golden eye cast targeted",
+          "stable_id": "mon.cast.golden_eye.targeted.blinks.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "grasping roots cast",
           "stable_id": "mon.cast.grasping_roots.reaches_roots.v1",
           "variant_ordinal": 0
@@ -7418,6 +7817,20 @@
           "requested_root": "grasping roots natural cast",
           "stable_id": "mon.cast.grasping_roots_natural.roots_beneath.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "grave claw vampire bloodprince cast",
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.reaches_hand.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "grave claw vampire bloodprince cast",
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.snaps_fingers.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -7446,6 +7859,27 @@
           "requested_root": "guardian serpent cast targeted",
           "stable_id": "mon.cast.guardian_serpent.tongue_patterns.v1",
           "variant_ordinal": 2
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "harpoon shot cast",
+          "stable_id": "mon.cast.harpoon_shot.fires_harpoon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "hellfire court cast",
+          "stable_id": "mon.cast.hellfire_court.calls_servants.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "hellfire mortar cast",
+          "stable_id": "mon.cast.hellfire_mortar.magma_torrent.v1",
+          "variant_ordinal": 0
         },
         {
           "complete": true,
@@ -7492,8 +7926,57 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "injury mirror screaming refraction cast",
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.woeful_anguish.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "injury mirror screaming refraction cast",
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.radiant_agony.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "invisibility shadowghast cast",
           "stable_id": "mon.cast.invisibility_shadowghast.slips_darkness.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "kobold blastminer cast targeted",
+          "stable_id": "mon.cast.kobold_blastminer.blasts_cannon.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "landbreaker natural cast",
+          "stable_id": "mon.cast.landbreaker_natural.fractures_ground.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "launch bomblet cast",
+          "stable_id": "mon.cast.launch_bomblet.launches_bomblet.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "lightning bolt electric golem cast",
+          "stable_id": "mon.cast.lightning_bolt_electric_golem.hurls_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "lightning bolt natural cast",
+          "stable_id": "mon.cast.lightning_bolt_natural.breathes_beam.v1",
           "variant_ordinal": 0
         },
         {
@@ -7527,6 +8010,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "manticore cast",
+          "stable_id": "mon.cast.manticore.flicks_tail.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "mara summon cast",
           "stable_id": "mon.cast.mara_summon.weaves_illusion.v1",
           "variant_ordinal": 0
@@ -7555,9 +8045,44 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "metal splinters war gargoyle cast",
+          "stable_id": "mon.cast.metal_splinters_war_gargoyle.launches_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "minor healing dryad cast",
           "stable_id": "mon.cast.minor_healing_dryad.draws_vitality.v1",
           "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "non-humanoid wizard cast",
+          "stable_id": "mon.cast.non_humanoid_wizard.mumbles_strange_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "non-humanoid wizard cast",
+          "stable_id": "mon.cast.non_humanoid_wizard.casts_spell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "non-humanoid wizard cast targeted",
+          "stable_id": "mon.cast.non_humanoid_wizard_targeted.stares_and_mumbles.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "non-humanoid wizard cast targeted",
+          "stable_id": "mon.cast.non_humanoid_wizard_targeted.casts_spell.v1",
+          "variant_ordinal": 1
         },
         {
           "complete": true,
@@ -7569,8 +8094,50 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "orange crystal statue cast targeted",
+          "stable_id": "mon.cast.orange_crystal_statue_targeted.fixes_piercing_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "orb of destruction orb spider cast",
+          "stable_id": "mon.cast.orb_of_destruction_orb_spider.weaves_glowing_orb.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "ostracise cast",
           "stable_id": "mon.cast.ostracise.freezes_soul.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "paralyse xtahua cast",
+          "stable_id": "mon.cast.paralyse_xtahua.overwhelming_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "paralyse xtahua cast",
+          "stable_id": "mon.cast.paralyse_xtahua.ferocious_thunder.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "paralysis gaze cast",
+          "stable_id": "mon.cast.paralysis_gaze.piercing_gaze.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "petrifying cloud cast",
+          "stable_id": "mon.cast.petrifying_cloud.calcifying_dust.v1",
           "variant_ordinal": 0
         },
         {
@@ -7592,6 +8159,62 @@
           "language": "zh",
           "requested_root": "pyroclastic surge cast",
           "stable_id": "mon.cast.pyroclastic_surge.calls_gouts_of_flame.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "quicksilver bolt natural cast",
+          "stable_id": "mon.cast.quicksilver_bolt_natural.breathes_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ravenous swarm vampire bloodprince cast",
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.unfurls_wings.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "ravenous swarm vampire bloodprince cast",
+          "stable_id": "mon.cast.ravenous_swarm_vampire_bloodprince.spreads_arms.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rupert cast targeted",
+          "stable_id": "mon.cast.rupert.targeted.wild_roar.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "rupert cast targeted",
+          "stable_id": "mon.cast.rupert.targeted.loud_yell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "scrub nettle cast targeted",
+          "stable_id": "mon.cast.scrub_nettle.targeted.launches_toxic_spines.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "seismic stomp cast",
+          "stable_id": "mon.cast.seismic_stomp.stomps_heavy_feet.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "shadow shot cast",
+          "stable_id": "mon.cast.shadow_shot.fires.v1",
           "variant_ordinal": 0
         },
         {
@@ -7632,6 +8255,62 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "silent curse skull cast",
+          "stable_id": "mon.cast.silent_curse_skull.rattles_jaw_silently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent flayed ghost cast",
+          "stable_id": "mon.cast.silent_flayed_ghost.moans_silent_anguish.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent flayed ghost cast",
+          "stable_id": "mon.cast.silent_flayed_ghost.tortured_malice.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent laughing skull cast",
+          "stable_id": "mon.cast.silent_laughing_skull.cackles_in_silence.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "silent laughing skull cast",
+          "stable_id": "mon.cast.silent_laughing_skull.rattles_with_glee.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sleep satyr cast",
+          "stable_id": "mon.cast.sleep_satyr.lulling_melody.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "slug dart cast",
+          "stable_id": "mon.cast.slug_dart.launches_dart.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "smiting guardian sphinx cast",
+          "stable_id": "mon.cast.smiting_guardian_sphinx.ancient_curse.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "smiting jeremiah cast",
           "stable_id": "mon.cast.smiting_jeremiah.twisted_cry.v1",
           "variant_ordinal": 0
@@ -7667,8 +8346,57 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "sojourning bolt cast",
+          "stable_id": "mon.cast.sojourning_bolt.rupture_space_time.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "spectral cloud revenant cast",
           "stable_id": "mon.cast.spectral_cloud_revenant.spectral_mists.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sphinx cast",
+          "stable_id": "mon.cast.sphinx.mumbles_strange_words.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "sphinx cast",
+          "stable_id": "mon.cast.sphinx.casts_spell.v1",
+          "variant_ordinal": 1
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "spit acid cast",
+          "stable_id": "mon.cast.spit_acid.spits_acid.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "spit lava cast",
+          "stable_id": "mon.cast.spit_lava.spits_lava.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "spit poison cast",
+          "stable_id": "mon.cast.spit_poison.spits_poison.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "splinterspray cast",
+          "stable_id": "mon.cast.splinterspray.hurls_spray.v1",
           "variant_ordinal": 0
         },
         {
@@ -7695,6 +8423,20 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "stone arrow gargoyle cast",
+          "stable_id": "mon.cast.stone_arrow_gargoyle.hurls_beam.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "stunning burst cast",
+          "stable_id": "mon.cast.stunning_burst.electricity_burst.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "summon mortal champion fravashi cast",
           "stable_id": "mon.cast.summon_mortal_champion_fravashi.beckons_champion.v1",
           "variant_ordinal": 0
@@ -7711,6 +8453,27 @@
           "language": "zh",
           "requested_root": "thrashing horror cast",
           "stable_id": "mon.cast.thrashing_horror.churns_violently.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "throw bolas cast",
+          "stable_id": "mon.cast.throw_bolas.hurls_bolas.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "throw icicle shard shrike cast",
+          "stable_id": "mon.cast.throw_icicle_shard_shrike.spits_ice_shard.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "throw klown pie cast",
+          "stable_id": "mon.cast.throw_klown_pie.pies_target.v1",
           "variant_ordinal": 0
         },
         {
@@ -7877,6 +8640,13 @@
         {
           "complete": true,
           "language": "zh",
+          "requested_root": "volley of thorns cast",
+          "stable_id": "mon.cast.volley_of_thorns.thorn_volley.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
           "requested_root": "vv cast",
           "stable_id": "mon.cast.vv.sharp_gesture.v1",
           "variant_ordinal": 0
@@ -7921,6 +8691,13 @@
           "language": "zh",
           "requested_root": "warning cry howler monkey cast",
           "stable_id": "mon.cast.warning_cry_howler_monkey.hoots_and_howls.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "warning cry seraph cast",
+          "stable_id": "mon.cast.warning_cry_seraph.warns_allies.v1",
           "variant_ordinal": 0
         },
         {
@@ -8005,6 +8782,13 @@
           "language": "zh",
           "requested_root": "woodweal cast",
           "stable_id": "mon.cast.woodweal.draw_tree_vitality.v1",
+          "variant_ordinal": 0
+        },
+        {
+          "complete": true,
+          "language": "zh",
+          "requested_root": "word of recall cast",
+          "stable_id": "mon.cast.word_of_recall.recites_word.v1",
           "variant_ordinal": 0
         },
         {

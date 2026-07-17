@@ -2,9 +2,9 @@
 
 状态：**Phase 1 已完成基础设施与两个初始纵向迁移，并启用首个生产
 `CASE_MAP`；Phase 2 已完成八批通用施法消息迁移、一次 21-key 分片并行
-试点，以及 Wave B、C、D 的并行迁移。当前 catalog 跟踪 128 个 canonical
-key、161 个 canonical variant；其中 125 个 key、158 个 variant 进入
-structured 路径，另有 3 个完整 key 显式标记为 `LEGACY_ONLY`。**
+试点，以及 Wave B、C、D 的并行迁移。当前 catalog 跟踪 178 个 canonical
+key、222 个 canonical variant；其中 171 个 key、214 个 variant 进入
+structured 路径，另有 7 个完整 key、8 个 variant 显式标记为 `LEGACY_ONLY`。**
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
 Phase 1 实际实现范围。Phase 0 基线提交为 `070f812bb6`；Phase 1 在独立分支
@@ -13,7 +13,7 @@ TextDB 文件。
 
 ## 1. 实际迁移范围
 
-当前共迁移 125 个完整 key 闭包，并为 3 个暂不适合结构化的完整 key 固定
+当前共迁移 171 个完整 key 闭包，并为 7 个暂不适合结构化的完整 key 固定
 `LEGACY_ONLY` 路由。Phase 1 的两个初始 key 为：
 
 | canonical key | stable ID | 策略 | 选择理由 |
@@ -183,15 +183,18 @@ actor-only 消息并声明 `${actor}`。三组均为单一 `NONE` 变体、
 audible metadata。集成后 catalog 为 98 个 key、129 个 canonical variant、
 258 个逐语言验证单位。
 
-Wave D 由 `400-wave-d1.json`、`410-wave-d2.json` 与 `420-wave-d3.json`
-并行审计 30 个 key、32 个 canonical variant。其中 27 个 key、29 个 variant
-进入 structured 路径；`acid splash cast`、`branch summon cast prefix` 与
-`chilling breath cast` 的 3 个 variant 显式保留为 `LEGACY_ONLY`。后者仍属于
-catalog 的完整 key 闭包和年度漂移审计范围，但不进入运行时 structured 覆盖表，
-也不计入 structured behavior metadata 单位。三者当前都没有 legacy behavior
-heuristic occurrence，因此不增加 `remaining_legacy_behavior_occurrences`，也不
-阻断 `phase2_ready`。Wave D 集成后的 catalog 总量为 128 key、161 variant；
-structured 覆盖为 125 key、158 variant、316 个逐语言验证单位。
+Wave D 由 `400-wave-d1.json` 至 `470-wave-d8.json` 八个独立分片并行审计
+80 个 key、93 个 canonical variant。其中 73 个 key、85 个 variant 进入
+structured 路径；`acid splash cast`、`branch summon cast prefix`、
+`chilling breath cast`、`polymorphed wizard cast`、
+`polymorphed wizard cast targeted`、`rebounding chill thermic dynamo cast` 与
+`summon water elementals elemental wellspring cast` 共 7 个 key、8 个 variant
+显式保留为 `LEGACY_ONLY`。后者仍属于 catalog 的完整 key 闭包和年度漂移审计
+范围，但不进入运行时 structured 覆盖表，也不计入 structured behavior metadata
+单位。这些 key 当前都没有 legacy behavior heuristic occurrence，因此不增加
+`remaining_legacy_behavior_occurrences`，也不阻断 `phase2_ready`。Wave D 集成后
+catalog 总量为 178 key、222 variant；structured 覆盖为 171 key、214 variant、
+428 个逐语言验证单位。
 
 ## 2. 三类 artifact 的职责
 
@@ -343,8 +346,9 @@ Phase 1 基础设施与 Phase 2 production/runtime golden。
 
 ## 7. 已知限制与 Phase 2 门禁
 
-- structured 覆盖为 125 个 key、158 个 canonical variant；catalog 另跟踪
-  3 个 `LEGACY_ONLY` key，因此总量为 128 key、161 variant。这仍不代表 262 个
+- structured 覆盖为 171 个 key、214 个 canonical variant；catalog 另跟踪
+  7 个 `LEGACY_ONLY` key、8 个 variant，因此总量为 178 key、222 variant。这仍
+  不代表 262 个
   `monspell` root 已迁移；
 - `CASE_MAP` 仅启用单有限站点子集；`CAPTURE_SLOT` 仅启用 Nergalle 的三个
   `orc name`、leaf-only vocabulary、无 Lua/substring randomness 窄切片；
@@ -488,9 +492,9 @@ occurrence。这里的覆盖计数拆分为三个不同单位，不能相加后�
 
 - 0 个仍走 legacy 正文 heuristic 的 behavior occurrence，其中 0 个已有等价
   metadata；
-- 158 个 canonical structured variant，158 个均有完整 behavior metadata；
-- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 316 个逐语言验证
-  单位，316 个均完整；3 个 `LEGACY_ONLY` variant 不进入这两个计数。
+- 214 个 canonical structured variant，214 个均有完整 behavior metadata；
+- 上述 structured variant 的 EN/ZH 模板与 behavior shape 共 428 个逐语言验证
+  单位，428 个均完整；8 个 `LEGACY_ONLY` variant 不进入这两个计数。
 
 `ensnare arachne cast` 的 2 个 variant 与
 `guardian serpent cast targeted` 的 3 个 variant 已完整迁移。其 gesture requirement

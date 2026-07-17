@@ -921,7 +921,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         uint64_t direct_count = 0;
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
-            direct = getSpeakString("non-humanoid wizard cast");
+            direct = getSpeakString("brain worm cast");
             direct_state = rng::current_generator().get_state();
             direct_count = rng::current_generator().get_count();
         }
@@ -931,7 +931,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
             routed = resolve_monspell_cast_message(
-                source, beam, false, { "non-humanoid wizard cast" },
+                source, beam, false, { "brain worm cast" },
                 false, false);
             routed_state = rng::current_generator().get_state();
             routed_count = rng::current_generator().get_count();
@@ -1051,7 +1051,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         const resolved_monspell_cast_message ordinary =
             resolve_monspell_cast_message(
                 source, beam, true,
-                { "spit acid cast" }, false, false);
+                { "searing breath cast" }, false, false);
         REQUIRE_FALSE(ordinary.structured);
         REQUIRE_FALSE(ordinary.legacy_behavior_compatibility);
         REQUIRE_FALSE(ordinary.text.empty());
@@ -1075,7 +1075,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             { observe_cast_emission, &result.emissions };
         const mons_cast_noise_diagnostics diagnostics =
             { &observer, &emission_observer };
-        mons_cast_noise(&source, beam, SPELL_SPIT_ACID, MON_SPELL_NATURAL,
+        mons_cast_noise(&source, beam, SPELL_SEARING_BREATH,
+                        MON_SPELL_NATURAL,
                         &diagnostics);
         result.state = rng::current_generator().get_state();
         result.count = rng::current_generator().get_count();
@@ -1096,7 +1097,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     CHECK(english.emissions[0].channel == chinese.emissions[0].channel);
     CHECK(english.emissions[0].effective_silence
           == chinese.emissions[0].effective_silence);
-    // Spit Acid has non-zero spell noise, so this covers the real noisy()
+    // Searing Breath has non-zero spell noise, so this covers the real noisy()
     // branch while retaining a registered beam agent.
     CHECK_FALSE(english.emissions[0].effective_silence);
     CHECK_FALSE(chinese.emissions[0].effective_silence);

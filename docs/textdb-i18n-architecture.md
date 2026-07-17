@@ -5,8 +5,8 @@
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
 > 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 当前 structured
-> 覆盖 125 个 canonical key、158 个 canonical variant；catalog 另跟踪 3 个
-> `LEGACY_ONLY` key/variant；正常 `monspell` 路径的 gesture
+> 覆盖 171 个 canonical key、214 个 canonical variant；catalog 另跟踪 7 个
+> `LEGACY_ONLY` key、8 个 variant；正常 `monspell` 路径的 gesture
 > 正文嗅探已删除，safe compatibility fallback 保留
 
 ## 1. 背景
@@ -573,9 +573,9 @@ materialization 走现有 legacy replacement 所得正文逐字节一致。中�
 `[a|b]` 站点的严格子集，生成期与加载期都从 canonical key、顶层 ordinal 和
 option index 重建完整 signature 集合。`march of sorrows bone dragon cast` 的
 `PROJECTILE` frame 表示复用现有 target/beam binding 时序，而非重新分类法术。
-当前生产 catalog 跟踪 128 个 canonical key、161 个 canonical variant，其中
-125 个 key、158 个 variant 进入 structured 覆盖表，3 个完整 key/variant 为
-`LEGACY_ONLY`。descriptor
+当前生产 catalog 跟踪 178 个 canonical key、222 个 canonical variant，其中
+171 个 key、214 个 variant 进入 structured 覆盖表，7 个完整 key、8 个 variant
+为 `LEGACY_ONLY`。descriptor
 用 `binding.resolves_target` 独立声明是否执行目标解析，因此 `${target}` 不再是
 目标解析的隐式开关；不引用 target 的 actor-only 模板也可保持既有目标 RNG trace。
 binding resolver 在目标解析前接收已验证的 `frame`、`resolves_target` 与
@@ -921,8 +921,9 @@ bash .claude/scripts/verify_zh.sh --profile review
   `CASE_MAP / CAPTURE_SLOT` 的 catchall key；
 - 未迁移 key 在查询前直接路由当前语言的 legacy TextDB。
 
-实施状态（2026-07-17）：上述基础设施已落地，当前完整迁移 125 个 canonical
-key、158 个 canonical variant，并显式跟踪 3 个 `LEGACY_ONLY` key/variant。
+实施状态（2026-07-17）：上述基础设施已落地，当前完整迁移 171 个 canonical
+key、214 个 canonical variant，并显式跟踪 7 个 `LEGACY_ONLY` key、8 个
+variant。
 首个迁移项为 `beam catchall cast`（stable ID
 `mon.cast.beam_catchall.v1`，`NONE`）。
 normal 与 silent fallback 已接入生产候选搜索；unseen、未覆盖 key 和不支持语言
@@ -996,14 +997,17 @@ visible key 使用 `${actor}`。全部条目均为 `NONE`、`PLAIN`，无递归�
 98 个 key、129 个 variant、258 个逐语言验证单位；仍只是 262 个 inventory root
 的子集。
 
-Wave D 再并行审计 30 个 key、32 个 variant。27 个 key、29 个 variant 完整进入
-structured 路径；`acid splash cast`、`branch summon cast prefix` 与
-`chilling breath cast` 以整 key 的 `LEGACY_ONLY` 模式留在 catalog 中。它们参与
-fingerprint、闭包和年度漂移校验，但不会被 `monspell_overlay_covers()` 收录，
-也不会计入 structured metadata 完整性分母。由于这 3 个 key 当前都不存在 legacy
-gesture/visual 等 behavior occurrence，behavior report 仍有
+Wave D 的八个分片共审计 80 个 key、93 个 variant。73 个 key、85 个 variant
+完整进入 structured 路径；`acid splash cast`、`branch summon cast prefix`、
+`chilling breath cast`、`polymorphed wizard cast`、
+`polymorphed wizard cast targeted`、`rebounding chill thermic dynamo cast` 与
+`summon water elementals elemental wellspring cast` 以整 key 的 `LEGACY_ONLY`
+模式留在 catalog 中，共 7 个 key、8 个 variant。它们参与 fingerprint、闭包和
+年度漂移校验，但不会被 `monspell_overlay_covers()` 收录，也不会计入 structured
+metadata 完整性分母。由于这些 key 当前都不存在 legacy gesture/visual 等
+behavior occurrence，behavior report 仍有
 `remaining_legacy_behavior_occurrences=0`、`phase2_ready=true`。集成后 catalog
-总量为 128 key、161 variant；structured 覆盖为 125 key、158 variant、316 个
+总量为 178 key、222 variant；structured 覆盖为 171 key、214 variant、428 个
 逐语言验证单位。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
