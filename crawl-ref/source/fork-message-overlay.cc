@@ -119,6 +119,14 @@ load_report current_report;
 set<string> covered_keys;
 diagnostic_counters current_diagnostics;
 map<string, vector<string>> capture_parent_leaf_keys;
+catalog_source active_catalog;
+bool active_catalog_loaded = false;
+
+const catalog_source &_catalog()
+{
+    return active_catalog_loaded ? active_catalog
+                                 : generated_monspell_catalog();
+}
 
 string _fnv1a64(const string &payload)
 {
@@ -169,6 +177,8 @@ const load_report &_disable(load_failure failure, const string &diagnostic)
 {
     covered_keys.clear();
     capture_parent_leaf_keys.clear();
+    active_catalog = catalog_source();
+    active_catalog_loaded = false;
     current_report.state = domain_state::DISABLED;
     current_report.failure = failure;
     current_report.diagnostic = diagnostic;
@@ -561,7 +571,7 @@ const catalog_variant *_find_catalog_variant(
     const string &canonical_key, size_t variant_ordinal,
     const string &signature)
 {
-    for (const catalog_entry &entry : generated_monspell_catalog().entries)
+    for (const catalog_entry &entry : _catalog().entries)
     {
         if (entry.canonical_key != canonical_key
             || entry.mode != entry_mode::CANDIDATE)
@@ -577,7 +587,9 @@ const catalog_variant *_find_catalog_variant(
             {
                 return &variant;
             }
-            if (variant.policy == materialization_policy::CASE_MAP)
+            if (variant.policy == materialization_policy::CASE_MAP
+                || variant.policy
+                   == materialization_policy::RECURSIVE_CASE_MAP)
             {
                 for (const materialization_case &materialized
                      : variant.materialization_cases)
@@ -595,7 +607,8 @@ const catalog_variant *_find_catalog_variant(
 const materialization_case *_find_materialization_case(
     const catalog_variant &variant, const string &signature)
 {
-    if (variant.policy != materialization_policy::CASE_MAP)
+    if (variant.policy != materialization_policy::CASE_MAP
+        && variant.policy != materialization_policy::RECURSIVE_CASE_MAP)
         return nullptr;
     for (const materialization_case &materialized
          : variant.materialization_cases)
@@ -609,7 +622,7 @@ const materialization_case *_find_materialization_case(
 const catalog_variant *_find_catalog_variant_by_locator(
     const string &canonical_key, size_t variant_ordinal)
 {
-    for (const catalog_entry &entry : generated_monspell_catalog().entries)
+    for (const catalog_entry &entry : _catalog().entries)
     {
         if (entry.canonical_key != canonical_key
             || entry.mode != entry_mode::CANDIDATE)
@@ -756,6 +769,184 @@ string _capture_identity_signature(
     }
     signature += "|lua=0|sites=0";
     return signature;
+}
+
+struct recursive_identity_outcome
+{
+    string expanded_pattern;
+    vector<canonical_textdb::selected_variant> selected;
+};
+
+struct recursive_identity_state
+{
+    recursive_identity_state(
+        const string &source_pattern, size_t scan_position,
+        size_t current_site,
+        const vector<canonical_textdb::selected_variant> &choices)
+        : pattern(source_pattern), position(scan_position),
+          site_ordinal(current_site), selected(choices)
+    {
+    }
+
+    string pattern;
+    size_t position;
+    size_t site_ordinal;
+    vector<canonical_textdb::selected_variant> selected;
+};
+
+bool _reachable_weighted_variants(
+    const textdb_phase0::canonical_entry &entry,
+    vector<const textdb_phase0::canonical_variant *> &reachable)
+{
+    int total = 0;
+    for (const textdb_phase0::canonical_variant &variant : entry.variants)
+        total += variant.weight;
+    if (total <= 0)
+        return false;
+    int cumulative = 0;
+    int previous_max = 0;
+    for (const textdb_phase0::canonical_variant &variant : entry.variants)
+    {
+        cumulative += variant.weight;
+        if (previous_max < min(cumulative, total))
+            reachable.push_back(&variant);
+        previous_max = max(previous_max, cumulative);
+    }
+    return !reachable.empty();
+}
+
+bool _enumerate_recursive_variant(
+    const map<string, const textdb_phase0::canonical_entry *> &canonical,
+    const string &key, size_t ordinal, const vector<size_t> &path,
+    vector<string> stack, vector<recursive_identity_outcome> &out,
+    string &error)
+{
+    const auto found = canonical.find(key);
+    if (found == canonical.end() || ordinal >= found->second->variants.size())
+    {
+        error = "recursive identity variant is missing";
+        return false;
+    }
+    if (find(stack.begin(), stack.end(), key) != stack.end()
+        || stack.size() > 10)
+    {
+        error = "recursive identity closure is cyclic or too deep";
+        return false;
+    }
+    stack.push_back(key);
+    const textdb_phase0::canonical_variant &variant =
+        found->second->variants[ordinal];
+    if (variant.raw_pattern.find('[') != string::npos
+        || variant.raw_pattern.find(']') != string::npos
+        || variant.raw_pattern.find("{{") != string::npos
+        || variant.raw_pattern.find("}}") != string::npos)
+    {
+        error = "RECURSIVE_CASE_MAP closure contains Lua or bracket sites";
+        return false;
+    }
+
+    canonical_textdb::selected_variant root;
+    root.locator = { key, ordinal };
+    root.recursion_path = path;
+    vector<recursive_identity_state> pending = {
+        { variant.raw_pattern, 0, 0, { root } },
+    };
+    while (!pending.empty())
+    {
+        recursive_identity_state state = pending.back();
+        pending.pop_back();
+        const size_t start = state.pattern.find('@', state.position);
+        if (start == string::npos)
+        {
+            out.push_back({ state.pattern, state.selected });
+            if (out.size() > 10000)
+            {
+                error = "recursive identity case set exceeds safe limit";
+                return false;
+            }
+            continue;
+        }
+        const size_t end = state.pattern.find('@', start + 1);
+        if (end == string::npos)
+        {
+            error = "recursive identity closure has an unbalanced marker";
+            return false;
+        }
+        string marker = state.pattern.substr(start + 1, end - start - 1);
+        lowercase(marker);
+        const auto dependency = canonical.find(marker);
+        if (dependency == canonical.end())
+        {
+            state.position = end + 1;
+            ++state.site_ordinal;
+            pending.push_back(state);
+            continue;
+        }
+
+        vector<size_t> child_path = path;
+        child_path.push_back(state.site_ordinal);
+        vector<const textdb_phase0::canonical_variant *> reachable;
+        if (!_reachable_weighted_variants(*dependency->second, reachable))
+        {
+            error = "recursive identity key has no weighted choice";
+            return false;
+        }
+        for (const textdb_phase0::canonical_variant *child : reachable)
+        {
+            vector<recursive_identity_outcome> children;
+            if (!_enumerate_recursive_variant(
+                    canonical, marker, child->locator.variant_ordinal,
+                    child_path, stack, children, error))
+            {
+                return false;
+            }
+            for (const recursive_identity_outcome &expanded : children)
+            {
+                recursive_identity_state next = state;
+                next.pattern.replace(start, end - start + 1,
+                                     expanded.expanded_pattern);
+                // Production resumes at the insertion point. This observes
+                // any unresolved runtime markers in the replacement before
+                // moving on to the parent's next recursive marker.
+                next.position = start;
+                ++next.site_ordinal;
+                next.selected.insert(next.selected.end(),
+                                     expanded.selected.begin(),
+                                     expanded.selected.end());
+                pending.push_back(next);
+                if (pending.size() + out.size() > 10000)
+                {
+                    error = "recursive identity case set exceeds safe limit";
+                    return false;
+                }
+            }
+        }
+    }
+    return true;
+}
+
+bool _recursive_case_signatures(
+    const map<string, const textdb_phase0::canonical_entry *> &canonical,
+    const string &key, size_t ordinal, set<string> &signatures,
+    string &error)
+{
+    vector<recursive_identity_outcome> outcomes;
+    if (!_enumerate_recursive_variant(
+            canonical, key, ordinal, {}, {}, outcomes, error))
+    {
+        return false;
+    }
+    for (const recursive_identity_outcome &outcome : outcomes)
+    {
+        canonical_textdb::loaded_candidate identity;
+        identity.selected_variants = outcome.selected;
+        if (!signatures.insert(_capture_identity_signature(identity)).second)
+        {
+            error = "recursive identity paths do not produce unique signatures";
+            return false;
+        }
+    }
+    return true;
 }
 
 bool _same_selected_choice(
@@ -1008,8 +1199,12 @@ const load_report &load_monspell_overlay(
 
             const vector<string> direct_dependencies =
                 _recursive_dependencies(actual_variant.raw_pattern, canonical);
-            const vector<string> dependencies =
+            const bool full_recursive_closure =
                 variant.policy == materialization_policy::CAPTURE_SLOT
+                || variant.policy
+                   == materialization_policy::RECURSIVE_CASE_MAP;
+            const vector<string> dependencies =
+                full_recursive_closure
                     ? _recursive_closure(actual_variant.raw_pattern, canonical)
                     : direct_dependencies;
             if (!_same_strings(dependencies,
@@ -1020,7 +1215,7 @@ const load_report &load_monspell_overlay(
                 return _disable(load_failure::CLOSURE_INCOMPLETE,
                                 "recursive closure declaration is incomplete");
             }
-            if (variant.policy == materialization_policy::CAPTURE_SLOT)
+            if (full_recursive_closure)
             {
                 for (size_t i = 0; i < dependencies.size(); ++i)
                 {
@@ -1035,9 +1230,29 @@ const load_report &load_monspell_overlay(
                     }
                 }
             }
+            string binding_snapshot = actual_variant.raw_pattern;
+            if (variant.policy
+                == materialization_policy::RECURSIVE_CASE_MAP)
+            {
+                for (const string &dependency_key : dependencies)
+                {
+                    const auto dependency = canonical.find(dependency_key);
+                    if (dependency == canonical.end())
+                    {
+                        return _disable(
+                            load_failure::CLOSURE_INCOMPLETE,
+                            "recursive binding closure is incomplete");
+                    }
+                    for (const textdb_phase0::canonical_variant &child
+                         : dependency->second->variants)
+                    {
+                        binding_snapshot += child.raw_pattern;
+                    }
+                }
+            }
             if (entry.mode == entry_mode::CANDIDATE)
             {
-                for (const string &dependency : direct_dependencies)
+                for (const string &dependency : dependencies)
                 {
                     if (variant.policy == materialization_policy::CAPTURE_SLOT)
                         continue;
@@ -1087,15 +1302,15 @@ const load_report &load_monspell_overlay(
             }
             if (entry.mode == entry_mode::CANDIDATE
                 && !variant.resolves_target
-                && (actual_variant.raw_pattern.find("@at@") != string::npos
-                    || actual_variant.raw_pattern.find("@target@")
+                && (binding_snapshot.find("@at@") != string::npos
+                    || binding_snapshot.find("@target@")
                        != string::npos))
             {
                 return _disable(load_failure::CORRUPT,
                                 "non-target binding contains target tokens");
             }
             const bool has_foe_token =
-                actual_variant.raw_pattern.find("@foe@") != string::npos;
+                binding_snapshot.find("@foe@") != string::npos;
             const bool has_foe_slot = _has_slot_type(variant, "resolved_foe");
             if (has_foe_token != has_foe_slot
                 || variant.conditions.requires_foe != has_foe_slot)
@@ -1104,7 +1319,7 @@ const load_report &load_monspell_overlay(
                                 "foe token/type/applicability mismatch");
             }
             const bool has_arms_token =
-                actual_variant.raw_pattern.find("@arms@") != string::npos;
+                binding_snapshot.find("@arms@") != string::npos;
             if (has_arms_token
                 != _has_slot_type(variant, "actor_arms_plural"))
             {
@@ -1314,6 +1529,7 @@ const load_report &load_monspell_overlay(
                     }
                     catalog_variant case_variant = variant;
                     case_variant.policy = materialization_policy::NONE;
+                    case_variant.english_snapshot = binding_snapshot;
                     case_variant.lines = materialized.lines;
                     case_variant.materialization_cases.clear();
                     string case_error;
@@ -1334,8 +1550,73 @@ const load_report &load_monspell_overlay(
                 }
             }
 
+            if (variant.policy
+                == materialization_policy::RECURSIVE_CASE_MAP)
+            {
+                set<string> expected_signatures;
+                string identity_error;
+                if (direct_dependencies.empty()
+                    || actual_variant.raw_pattern.find('[') != string::npos
+                    || actual_variant.raw_pattern.find(']') != string::npos
+                    || actual_variant.raw_pattern.find("{{") != string::npos
+                    || actual_variant.raw_pattern.find("}}") != string::npos
+                    || !variant.lines.empty()
+                    || !_recursive_case_signatures(
+                        canonical, entry.canonical_key,
+                        variant.variant_ordinal, expected_signatures,
+                        identity_error)
+                    || variant.materialization_cases.size()
+                       != expected_signatures.size())
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        identity_error.empty()
+                            ? "RECURSIVE_CASE_MAP dynamic closure is incomplete"
+                            : identity_error);
+                }
+                set<string> signatures;
+                const vector<line_metadata> *shape = nullptr;
+                for (const materialization_case &materialized
+                     : variant.materialization_cases)
+                {
+                    if (materialized.case_id.empty()
+                        || materialized.signature.empty()
+                        || !stable_ids.insert(materialized.case_id).second
+                        || !signatures.insert(materialized.signature).second)
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "invalid RECURSIVE_CASE_MAP stable ID/signature");
+                    }
+                    catalog_variant case_variant = variant;
+                    case_variant.policy = materialization_policy::NONE;
+                    case_variant.english_snapshot = binding_snapshot;
+                    case_variant.lines = materialized.lines;
+                    case_variant.materialization_cases.clear();
+                    string case_error;
+                    if (!_validate_lines(*source, case_variant, case_error))
+                        return _disable(load_failure::CORRUPT, case_error);
+                    if (shape
+                        && !_same_case_line_shape(*shape, materialized.lines))
+                    {
+                        return _disable(
+                            load_failure::CORRUPT,
+                            "RECURSIVE_CASE_MAP changes binding-relevant line metadata");
+                    }
+                    shape = &materialized.lines;
+                }
+                if (signatures != expected_signatures)
+                {
+                    return _disable(
+                        load_failure::CORRUPT,
+                        "RECURSIVE_CASE_MAP signature set is incomplete");
+                }
+            }
+
             string line_error;
             if (variant.policy != materialization_policy::CASE_MAP
+                && variant.policy
+                   != materialization_policy::RECURSIVE_CASE_MAP
                 && !_validate_lines(*source, variant, line_error))
                 return _disable(load_failure::CORRUPT, line_error);
         }
@@ -1346,6 +1627,8 @@ const load_report &load_monspell_overlay(
         if (item.second->mode == entry_mode::CANDIDATE)
             covered_keys.insert(item.first);
     }
+    active_catalog = *source;
+    active_catalog_loaded = true;
     current_report.state = domain_state::ENABLED;
     current_report.failure = load_failure::NONE;
     current_report.diagnostic.clear();
@@ -1369,9 +1652,9 @@ bool monspell_overlay_covers(const string &canonical_key)
     return covered_keys.count(key) != 0;
 }
 
-static bool _generated_catalog_declares_candidate(const string &canonical_key)
+static bool _catalog_declares_candidate(const string &canonical_key)
 {
-    const catalog_source &catalog = generated_monspell_catalog();
+    const catalog_source &catalog = _catalog();
     return any_of(
         catalog.entries.begin(), catalog.entries.end(),
         [&canonical_key](const catalog_entry &entry)
@@ -1404,7 +1687,7 @@ route_decision route_monspell_message(const string &canonical_key,
     {
         decision.legacy_behavior_compatibility =
             (!overlay_enabled || !supported_language)
-            && _generated_catalog_declares_candidate(decision.canonical_key);
+            && _catalog_declares_candidate(decision.canonical_key);
         ++current_diagnostics.legacy_fallback;
     }
     return decision;
@@ -1617,7 +1900,9 @@ canonical_materialization materialize_monspell_candidate(
     }
 
     const vector<line_metadata> *requirement_lines = &descriptor->lines;
-    if (descriptor->policy == materialization_policy::CASE_MAP)
+    if (descriptor->policy == materialization_policy::CASE_MAP
+        || descriptor->policy
+           == materialization_policy::RECURSIVE_CASE_MAP)
     {
         if (descriptor->materialization_cases.empty())
         {
@@ -1772,6 +2057,8 @@ canonical_materialization materialize_monspell_candidate(
     }
     if (result.canonical.lua_site_count != 0
         || (descriptor->policy != materialization_policy::CAPTURE_SLOT
+            && descriptor->policy
+               != materialization_policy::RECURSIVE_CASE_MAP
             && result.canonical.selected_variants.size() != 1))
     {
         result.result = message_result::CORRUPT;
@@ -1798,6 +2085,21 @@ canonical_materialization materialize_monspell_candidate(
     {
         result.result = message_result::CORRUPT;
         result.diagnostic = "CASE_MAP materialization signature is unknown";
+        return result;
+    }
+    if (descriptor->policy
+            == materialization_policy::RECURSIVE_CASE_MAP
+        && (result.randomized.signature == "NONE"
+            || result.randomized.random_site_count != 0
+            || result.randomized.pattern_en != result.bound_pattern_en
+            || result.canonical.expanded_pattern_en.find('[')
+               != string::npos
+            || !_find_materialization_case(*descriptor,
+                                           result.randomized.signature)))
+    {
+        result.result = message_result::CORRUPT;
+        result.diagnostic =
+            "RECURSIVE_CASE_MAP materialization signature is unknown";
         return result;
     }
     if (descriptor->policy == materialization_policy::CAPTURE_SLOT)
@@ -2289,6 +2591,8 @@ void reset_monspell_overlay_for_test()
 {
     covered_keys.clear();
     capture_parent_leaf_keys.clear();
+    active_catalog = catalog_source();
+    active_catalog_loaded = false;
     current_report = load_report();
 }
 

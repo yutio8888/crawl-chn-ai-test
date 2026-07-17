@@ -152,6 +152,89 @@ fork_message_overlay::catalog_entry suppress_catalog_entry(
     return entry;
 }
 
+string recursive_case_signature(size_t sphinx_ordinal)
+{
+    const string root = "roxanne cast";
+    const string leaf = "sphinx cast";
+    return "materialization-v1|variants=2|"
+        + std::to_string(root.size()) + ':' + root + ":0:0|"
+        + std::to_string(leaf.size()) + ':' + leaf + ':'
+        + std::to_string(sphinx_ordinal) + ":1:0|lua=0|sites=0";
+}
+
+fork_message_overlay::catalog_source recursive_roxanne_catalog(
+    const vector<textdb_phase0::canonical_entry> &canonical)
+{
+    using namespace fork_message_overlay;
+    catalog_source source = generated_monspell_catalog();
+    const string roxanne_key = "roxanne cast";
+    const string sphinx_key = "sphinx cast";
+    const textdb_phase0::canonical_entry &actual =
+        canonical_entry_by_key(canonical, roxanne_key);
+    REQUIRE(actual.variants.size() == 1);
+    const textdb_phase0::canonical_entry &sphinx =
+        canonical_entry_by_key(canonical, sphinx_key);
+    REQUIRE(sphinx.variants.size() == 2);
+    catalog_entry &sphinx_descriptor =
+        catalog_entry_by_key(source, sphinx_key);
+    sphinx_descriptor.mode = entry_mode::CLOSURE_ONLY;
+    sphinx_descriptor.canonical_fingerprint =
+        test_canonical_fingerprint(sphinx);
+    sphinx_descriptor.selection_graph_fingerprint =
+        test_selection_fingerprint(sphinx);
+    REQUIRE(sphinx_descriptor.variants.size() == sphinx.variants.size());
+    for (size_t i = 0; i < sphinx.variants.size(); ++i)
+    {
+        sphinx_descriptor.variants[i].upstream_weight =
+            sphinx.variants[i].weight;
+        sphinx_descriptor.variants[i].english_snapshot =
+            sphinx.variants[i].raw_pattern;
+    }
+
+    catalog_variant variant;
+    variant.stable_id = "test.roxanne.recursive.root";
+    variant.variant_ordinal = 0;
+    variant.upstream_weight = actual.variants[0].weight;
+    variant.upstream_variant_fingerprint = "fixture-fingerprint";
+    variant.english_snapshot = actual.variants[0].raw_pattern;
+    variant.frame = cast_frame::VOCAL;
+    variant.policy = materialization_policy::RECURSIVE_CASE_MAP;
+    variant.slot_schema = { { "actor", "actor_ref" } };
+    variant.required_arguments = { "actor" };
+    variant.recursive_dependencies = { "sphinx cast" };
+    variant.recursive_dependency_fingerprints = {
+        test_canonical_fingerprint(sphinx),
+    };
+    const vector<pair<string, string>> patterns = {
+        { "${actor} mumbles some strange words.",
+          "${actor}低声念着奇怪的咒语。" },
+        { "${actor} casts a spell.", "${actor}施放了一个法术。" },
+    };
+    for (size_t ordinal = 0; ordinal < patterns.size(); ++ordinal)
+    {
+        line_metadata line;
+        line.templates = {
+            { "en", "NONE", patterns[ordinal].first },
+            { "zh", "NONE", patterns[ordinal].second },
+        };
+        materialization_case materialized;
+        materialized.case_id =
+            "test.roxanne.recursive." + std::to_string(ordinal);
+        materialized.signature = recursive_case_signature(ordinal);
+        materialized.lines = { line };
+        variant.materialization_cases.push_back(materialized);
+    }
+
+    catalog_entry entry;
+    entry.canonical_key = "roxanne cast";
+    entry.canonical_fingerprint = test_canonical_fingerprint(actual);
+    entry.selection_graph_fingerprint = test_selection_fingerprint(actual);
+    entry.mode = entry_mode::CANDIDATE;
+    entry.variants = { variant };
+    source.entries.push_back(entry);
+    return source;
+}
+
 canonical_textdb::loaded_candidate canonical_candidate(
     canonical_textdb::candidate_status status, const string &pattern = "",
     const string &key = "beam catchall cast", size_t ordinal = 0)
@@ -695,6 +778,69 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
             .lines[0].implies_gesture = true;
         CHECK(load_monspell_overlay(canonical, &source).failure
               == load_failure::CORRUPT);
+    }
+
+    SECTION("recursive identity cases are exact and pure")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = recursive_roxanne_catalog(canonical);
+        const load_report &valid = load_monspell_overlay(canonical, &source);
+        REQUIRE(valid.state == domain_state::ENABLED);
+        CHECK(monspell_overlay_covers("roxanne cast"));
+        CHECK_FALSE(monspell_overlay_covers("sphinx cast"));
+
+        reset_monspell_overlay_for_test();
+        source = recursive_roxanne_catalog(canonical);
+        catalog_entry_by_key(source, "roxanne cast")
+            .variants[0].materialization_cases.pop_back();
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = recursive_roxanne_catalog(canonical);
+        materialization_case duplicate = catalog_entry_by_key(
+            source, "roxanne cast").variants[0].materialization_cases[0];
+        duplicate.case_id = "test.roxanne.recursive.duplicate";
+        catalog_entry_by_key(source, "roxanne cast")
+            .variants[0].materialization_cases.push_back(duplicate);
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = recursive_roxanne_catalog(canonical);
+        materialization_case extra = catalog_entry_by_key(
+            source, "roxanne cast").variants[0].materialization_cases[0];
+        extra.case_id = "test.roxanne.recursive.extra";
+        extra.signature += "|extra";
+        catalog_entry_by_key(source, "roxanne cast")
+            .variants[0].materialization_cases.push_back(extra);
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CORRUPT);
+
+        reset_monspell_overlay_for_test();
+        source = recursive_roxanne_catalog(canonical);
+        catalog_entry_by_key(source, "roxanne cast")
+            .variants[0].recursive_dependency_fingerprints[0] = "stale";
+        CHECK(load_monspell_overlay(canonical, &source).failure
+              == load_failure::CLOSURE_INCOMPLETE);
+
+        for (const string dynamic : {
+                 "@The_monster@ [mumbles|chants].",
+                 "@The_monster@ {{ return 'chants' }}.",
+             })
+        {
+            reset_monspell_overlay_for_test();
+            vector<textdb_phase0::canonical_entry> changed = canonical;
+            const auto sphinx = find_if(
+                changed.begin(), changed.end(),
+                [](const textdb_phase0::canonical_entry &entry)
+                { return entry.canonical_key == "sphinx cast"; });
+            REQUIRE(sphinx != changed.end());
+            sphinx->variants[0].raw_pattern = dynamic;
+            catalog_source dynamic_source = recursive_roxanne_catalog(changed);
+            CHECK(load_monspell_overlay(changed, &dynamic_source).failure
+                  == load_failure::CORRUPT);
+        }
     }
 
     SECTION("Phase 2 binding relation and behavior metadata fail closed")
@@ -1794,6 +1940,111 @@ TEST_CASE("production CASE_MAP maps every March of Sorrows seed",
     CHECK(unknown.result == message_result::CORRUPT);
     CHECK(unknown.diagnostic == "CASE_MAP materialization signature is unknown");
     CHECK(forged_binding_calls == 1);
+}
+
+TEST_CASE("recursive identity case map selects once and renders purely",
+          "[single-file][message-overlay][phase1][recursive-case-map]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    const vector<textdb_phase0::canonical_entry> canonical =
+        textdb_phase0::dump_canonical_english_speakdb();
+    scoped_overlay_reset reset;
+    catalog_source source = recursive_roxanne_catalog(canonical);
+    REQUIRE(load_monspell_overlay(canonical, &source).state
+            == domain_state::ENABLED);
+    CHECK(route_monspell_message("roxanne cast").route
+          == message_route::STRUCTURED);
+    CHECK(route_monspell_message("sphinx cast").route
+          == message_route::LEGACY);
+
+    set<size_t> leaves;
+    for (uint64_t seed = 1; seed <= 64; ++seed)
+    {
+        rng::subgenerator scoped_rng(seed, seed ^ 0x6a09e667f3bcc909ULL);
+        const canonical_materialization materialized =
+            materialize_monspell_candidate(
+                "roxanne cast", message_attempt::NORMAL_OR_UNSEEN, true,
+                [](const binding_requirements &requirements)
+                {
+                    CHECK_FALSE(requirements.resolves_target);
+                    runtime_bindings values = beam_bindings(
+                        target_relation::NONE);
+                    values.actor.sentence_en = "Roxanne";
+                    values.actor.canonical_en = "Roxanne";
+                    values.actor.localized = {
+                        { "en", "Roxanne" }, { "zh", "罗克珊" },
+                    };
+                    values.actor.lower_localized = values.actor.localized;
+                    values.cast.frame = cast_frame::VOCAL;
+                    return values;
+                });
+        REQUIRE(materialized.result == message_result::RENDERED);
+        REQUIRE(materialized.canonical.trace.weighted_choices.size() == 2);
+        REQUIRE(materialized.canonical.selected_variants.size() == 2);
+        CHECK(materialized.canonical.selected_variants[0].recursion_path
+              == vector<size_t>());
+        CHECK(materialized.canonical.selected_variants[1].recursion_path
+              == vector<size_t>{ 0 });
+        const size_t leaf = materialized.canonical.selected_variants[1]
+            .locator.variant_ordinal;
+        REQUIRE(leaf < 2);
+        leaves.insert(leaf);
+        CHECK(materialized.materialization_signature
+              == recursive_case_signature(leaf));
+        CHECK(materialized.randomized.random_site_count == 0);
+        CHECK(materialized.randomized.pattern_en
+              == materialized.bound_pattern_en);
+
+        const uint64_t state = rng::current_generator().get_state();
+        const uint64_t count = rng::current_generator().get_count();
+        const render_result en = render_materialized_candidate(
+            materialized, "en");
+        const render_result zh = render_materialized_candidate(
+            materialized, "zh");
+        REQUIRE(en.result == message_result::RENDERED);
+        REQUIRE(zh.result == message_result::RENDERED);
+        REQUIRE(en.lines.size() == 1);
+        REQUIRE(zh.lines.size() == 1);
+        CHECK(en.lines[0].text == materialized.randomized.pattern_en);
+        CHECK(zh.lines[0].text == (leaf == 0
+            ? "罗克珊低声念着奇怪的咒语。"
+            : "罗克珊施放了一个法术。"));
+        CHECK(rng::current_generator().get_state() == state);
+        CHECK(rng::current_generator().get_count() == count);
+
+        canonical_materialization corrupt = materialized;
+        corrupt.materialization_signature += "|tampered";
+        CHECK(render_materialized_candidate(corrupt, "zh").result
+              == message_result::CORRUPT);
+    }
+    CHECK(leaves == set<size_t>{ 0, 1 });
+
+    canonical_textdb::loaded_candidate forged = canonical_candidate(
+        canonical_textdb::candidate_status::SELECTED,
+        "@The_monster@ casts a spell.", "roxanne cast", 0);
+    canonical_textdb::selected_variant unknown_leaf;
+    unknown_leaf.locator = { "sphinx cast", 9 };
+    unknown_leaf.recursion_path = { 0 };
+    forged.selected_variants.push_back(unknown_leaf);
+    const canonical_materialization unknown = materialize_monspell_candidate(
+        "roxanne cast", message_attempt::NORMAL_OR_UNSEEN, true,
+        [](const binding_requirements &)
+        {
+            runtime_bindings values = beam_bindings(target_relation::NONE);
+            values.actor.sentence_en = "Roxanne";
+            values.actor.canonical_en = "Roxanne";
+            values.actor.localized = {
+                { "en", "Roxanne" }, { "zh", "罗克珊" },
+            };
+            values.cast.frame = cast_frame::VOCAL;
+            return values;
+        },
+        [forged](const string &) { return forged; });
+    CHECK(unknown.result == message_result::CORRUPT);
+    CHECK(unknown.diagnostic
+          == "RECURSIVE_CASE_MAP materialization signature is unknown");
 }
 
 TEST_CASE("Phase 2 gesture variants bind once and render every relation",

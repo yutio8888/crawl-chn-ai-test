@@ -18,7 +18,10 @@ SLOT_RE = re.compile(r"\$\{([^}]*)\}")
 TARGET_RELATIONS = ("AT", "NEXT_TO", "PAST")
 NO_TARGET_RELATIONS = ("NONE",)
 MODES = {"CANDIDATE", "CLOSURE_ONLY", "LEGACY_ONLY"}
-POLICIES = {"NONE", "CASE_MAP", "CAPTURE_SLOT", "LEGACY_ONLY"}
+POLICIES = {
+    "NONE", "CASE_MAP", "RECURSIVE_CASE_MAP", "CAPTURE_SLOT",
+    "LEGACY_ONLY",
+}
 FRAMES = {"PROJECTILE", "GAZE", "GESTURE", "VOCAL", "INVOCATION",
           "DIRECT_EFFECT"}
 SENSORY = {"PLAIN", "VISUAL", "SOUND"}
@@ -272,6 +275,93 @@ def _case_signatures(key: str, ordinal: int,
     return signatures
 
 
+def _identity_signature(
+        selections: list[tuple[str, int, tuple[int, ...]]]) -> str:
+    signature = f"materialization-v1|variants={len(selections)}"
+    for key, ordinal, path in selections:
+        key_size = len(key.encode("utf-8"))
+        signature += f"|{key_size}:{key}:{ordinal}:{len(path)}"
+        for step in path:
+            signature += f":{step}"
+    return signature + "|lua=0|sites=0"
+
+
+def _reachable_weighted_variants(node: dict[str, Any]) -> list[dict[str, Any]]:
+    variants = node["variants"]
+    total = sum(variant["weight"] for variant in variants)
+    _require(total > 0, "recursive identity key has no weighted choice")
+    reachable = []
+    cumulative = 0
+    previous_max = 0
+    for variant in variants:
+        cumulative += variant["weight"]
+        if previous_max < min(cumulative, total):
+            reachable.append(variant)
+        previous_max = max(previous_max, cumulative)
+    return reachable
+
+
+def _recursive_identity_signatures(
+        nodes: dict[str, dict[str, Any]], key: str, ordinal: int) -> set[str]:
+    """Enumerate production selected-variant identities without consuming RNG.
+
+    The parent site ordinal counts every marker it observes, including runtime
+    markers left in a recursively expanded replacement. This mirrors the
+    production replacement loop, which resumes scanning at the insertion point.
+    """
+    limit = 10000
+
+    def expand(selected_key: str, selected_ordinal: int,
+               path: tuple[int, ...], stack: tuple[str, ...]
+               ) -> list[tuple[str, list[tuple[str, int, tuple[int, ...]]]]]:
+        _require(selected_key in nodes,
+                 f"recursive identity key {selected_key!r} is missing")
+        _require(selected_key not in stack and len(stack) <= 10,
+                 "recursive identity closure is cyclic or too deep")
+        variants = nodes[selected_key]["variants"]
+        _require(0 <= selected_ordinal < len(variants),
+                 "recursive identity variant is missing")
+        variant = variants[selected_ordinal]
+        _require(not variant["lua_sites"]
+                 and not variant["random_substring_sites"],
+                 "RECURSIVE_CASE_MAP closure contains Lua or bracket sites")
+        states = [(variant["text"], 0, 0,
+                   [(selected_key, selected_ordinal, path)])]
+        complete = []
+        while states:
+            text, position, site_ordinal, selections = states.pop()
+            start = text.find("@", position)
+            if start < 0:
+                complete.append((text, selections))
+                continue
+            end = text.find("@", start + 1)
+            _require(end >= 0, "recursive identity closure has an unbalanced marker")
+            marker = text[start + 1:end].lower()
+            current_site = site_ordinal
+            if marker not in nodes:
+                states.append((text, end + 1, site_ordinal + 1, selections))
+                continue
+            child_path = path + (current_site,)
+            for child in _reachable_weighted_variants(nodes[marker]):
+                child_ordinal = child["variant_ordinal"]
+                for replacement, child_selections in expand(
+                        marker, child_ordinal, child_path,
+                        stack + (selected_key,)):
+                    replaced = text[:start] + replacement + text[end + 1:]
+                    states.append((replaced, start, site_ordinal + 1,
+                                   selections + child_selections))
+                    _require(len(states) + len(complete) <= limit,
+                             "recursive identity case set exceeds safe limit")
+        return complete
+
+    outcomes = expand(key, ordinal, (), ())
+    signatures = {_identity_signature(selections)
+                  for _, selections in outcomes}
+    _require(len(signatures) == len(outcomes),
+             "recursive identity paths do not produce unique signatures")
+    return signatures
+
+
 def _validate_lines(lines: Any, languages: list[str], declared: set[str],
                     context: str, relations: tuple[str, ...]) -> tuple:
     _require(isinstance(lines, list) and lines,
@@ -440,10 +530,13 @@ def validate_manifest(manifest: dict[str, Any],
                 "recursive_dependency_fingerprints")
             _require(isinstance(dependency_fingerprints, dict),
                      f"{vcontext} recursive dependency closure mismatch")
-            if policy == "CAPTURE_SLOT":
+            if policy in {"CAPTURE_SLOT", "RECURSIVE_CASE_MAP"}:
                 dependencies = _recursive_closure(nodes, direct_dependencies)
                 _require(sorted(dependency_fingerprints) == dependencies,
-                         f"{vcontext} recursive capture closure mismatch")
+                         f"{vcontext} "
+                         + ("recursive capture closure mismatch"
+                            if policy == "CAPTURE_SLOT"
+                            else "recursive full closure mismatch"))
                 for dependency in dependencies:
                     _require(dependency_fingerprints[dependency]
                              == runtime_canonical_fingerprint(
@@ -458,6 +551,13 @@ def validate_manifest(manifest: dict[str, Any],
                              and dependency_fingerprints[dependency]
                              == nodes[dependency]["entry_text_fingerprint"],
                              f"{vcontext} dependency fingerprint mismatch")
+
+            binding_text = actual["text"]
+            if policy == "RECURSIVE_CASE_MAP":
+                binding_text += "".join(
+                    child["text"]
+                    for dependency in dependencies
+                    for child in nodes[dependency]["variants"])
 
             cases = variant.get("materialization_cases")
             _require(isinstance(cases, list),
@@ -489,12 +589,12 @@ def validate_manifest(manifest: dict[str, Any],
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
                 continue
-            has_actor_ref_token = "@The_monster@" in actual["text"]
-            has_actor_ref_lower_token = "@the_monster@" in actual["text"]
+            has_actor_ref_token = "@The_monster@" in binding_text
+            has_actor_ref_lower_token = "@the_monster@" in binding_text
             has_actor_possessive_token = (
-                "@The_monster_possessive@" in actual["text"])
+                "@The_monster_possessive@" in binding_text)
             has_actor_possessive_lower_token = (
-                "@the_monster_possessive@" in actual["text"])
+                "@the_monster_possessive@" in binding_text)
             god_token_types = {
                 "@possessive_God@": "actor_god_possessive",
                 "@My_God@": "actor_god_my",
@@ -524,7 +624,7 @@ def validate_manifest(manifest: dict[str, Any],
                 f"{vcontext} lower possessive actor token/type mismatch")
             for token, slot_type in god_token_types.items():
                 _require(
-                    (token in actual["text"])
+                    (token in binding_text)
                     == any(value == slot_type
                            for value in slot_types.values()),
                     f"{vcontext} {token} token/type mismatch")
@@ -537,16 +637,12 @@ def validate_manifest(manifest: dict[str, Any],
             _require(binding["resolves_target"] or not has_target_slot,
                      f"{vcontext} non-target binding declares resolved_target")
             target_tokens = {
-                token["canonical_key"] for token in actual["tokens"]
-                if token["classification"] == "runtime"
-                and token["canonical_key"] in {"at", "target"}
+                token for token in {"at", "target"}
+                if f"@{token}@" in binding_text
             }
             _require(binding["resolves_target"] or not target_tokens,
                      f"{vcontext} non-target binding contains target tokens")
-            has_foe_token = any(
-                token["classification"] == "runtime"
-                and token["canonical_key"] == "foe"
-                for token in actual["tokens"])
+            has_foe_token = "@foe@" in binding_text
             has_foe_slot = any(
                 slot_type == "resolved_foe"
                 for slot_type in slot_types.values())
@@ -554,10 +650,7 @@ def validate_manifest(manifest: dict[str, Any],
                      f"{vcontext} foe token/type mismatch")
             _require(applicability["requires_foe"] == has_foe_slot,
                      f"{vcontext} foe applicability/slot mismatch")
-            has_arms_token = any(
-                token["classification"] == "runtime"
-                and token["canonical_key"] == "arms"
-                for token in actual["tokens"])
+            has_arms_token = "@arms@" in binding_text
             has_arms_slot = any(
                 slot_type == "actor_arms_plural"
                 for slot_type in slot_types.values())
@@ -630,6 +723,46 @@ def validate_manifest(manifest: dict[str, Any],
                 variant["_recursive_capture_vocabulary"] = vocabulary
                 _validate_lines(variant.get("line_metadata"), languages,
                                 declared, vcontext, relations)
+                continue
+            if policy == "RECURSIVE_CASE_MAP":
+                _require(direct_dependencies
+                         and not actual["random_substring_sites"]
+                         and not actual["lua_sites"],
+                         f"{vcontext} RECURSIVE_CASE_MAP needs pure recursion")
+                _require(not captures,
+                         f"{vcontext} RECURSIVE_CASE_MAP declares captures")
+                _require(not variant.get("line_metadata"),
+                         f"{vcontext} RECURSIVE_CASE_MAP lines belong to cases")
+                expected = _recursive_identity_signatures(
+                    nodes, key, variant_index)
+                seen_signatures: set[str] = set()
+                expected_shape = None
+                for case_index, case in enumerate(cases):
+                    ccontext = (f"{vcontext}.materialization_cases"
+                                f"[{case_index}]")
+                    _require(isinstance(case, dict)
+                             and set(case) == {"case_id", "signature",
+                                              "line_metadata"},
+                             f"{ccontext} has invalid fields")
+                    case_id = case["case_id"]
+                    _require(isinstance(case_id, str) and case_id
+                             and case_id not in stable_ids,
+                             f"{ccontext} has invalid/reused case_id")
+                    stable_ids.add(case_id)
+                    signature = case["signature"]
+                    _require(signature in expected
+                             and signature not in seen_signatures,
+                             f"{ccontext} has unknown/duplicate signature")
+                    seen_signatures.add(signature)
+                    shape = _validate_lines(
+                        case["line_metadata"], languages, declared,
+                        ccontext, relations)
+                    if expected_shape is None:
+                        expected_shape = shape
+                    _require(shape == expected_shape,
+                             f"{ccontext} changes binding-relevant line metadata")
+                _require(seen_signatures == expected,
+                         f"{vcontext} RECURSIVE_CASE_MAP cases are incomplete")
                 continue
             _require(policy == "CASE_MAP",
                      f"{vcontext} materialization policy is not enabled yet")

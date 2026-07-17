@@ -194,6 +194,93 @@ class MessageOverlayTests(unittest.TestCase):
             }],
         }
 
+    def recursive_roxanne_fixture(self, inventory=None):
+        inventory = inventory or INVENTORY
+        manifest = copy.deepcopy(MANIFEST)
+        nodes = MODULE._inventory_nodes(inventory)
+        roxanne = nodes["roxanne cast"]
+        sphinx = nodes["sphinx cast"]
+        sphinx_record = self.entry(manifest, "sphinx cast")
+        sphinx_record["mode"] = "CLOSURE_ONLY"
+        sphinx_record["canonical_fingerprint"] = (
+            MODULE.runtime_canonical_fingerprint(sphinx))
+        sphinx_record["selection_graph_fingerprint"] = (
+            MODULE.runtime_selection_fingerprint(sphinx))
+        for descriptor, actual in zip(sphinx_record["variants"],
+                                      sphinx["variants"]):
+            descriptor["upstream_weight"] = actual["weight"]
+            descriptor["upstream_variant_fingerprint"] = (
+                actual["text_fingerprint"])
+            descriptor["english_snapshot"] = actual["text"]
+
+        signatures = [
+            MODULE._identity_signature([
+                ("roxanne cast", 0, ()),
+                ("sphinx cast", ordinal, (0,)),
+            ])
+            for ordinal in range(len(sphinx["variants"]))
+        ]
+        lines = [
+            ("${actor} mumbles some strange words.",
+             "${actor}低声念着奇怪的咒语。"),
+            ("${actor} casts a spell.", "${actor}施放了一个法术。"),
+        ]
+        cases = []
+        for ordinal, (signature, patterns) in enumerate(zip(signatures,
+                                                             lines)):
+            cases.append({
+                "case_id": f"test.roxanne.recursive.{ordinal}",
+                "signature": signature,
+                "line_metadata": [{
+                    "sensory": "PLAIN", "channel": None,
+                    "behavior": {"implies_gesture": False,
+                                 "audible": False},
+                    "templates": [
+                        {"language": "en", "relation": "NONE",
+                         "pattern": patterns[0]},
+                        {"language": "zh", "relation": "NONE",
+                         "pattern": patterns[1]},
+                    ],
+                }],
+            })
+        actual = roxanne["variants"][0]
+        manifest["entries"].append({
+            "canonical_key": "roxanne cast",
+            "canonical_fingerprint":
+                MODULE.runtime_canonical_fingerprint(roxanne),
+            "selection_graph_fingerprint":
+                MODULE.runtime_selection_fingerprint(roxanne),
+            "mode": "CANDIDATE",
+            "variants": [{
+                "stable_id": "test.roxanne.recursive.root",
+                "tombstone": False,
+                "variant_ordinal": 0,
+                "upstream_weight": actual["weight"],
+                "upstream_variant_fingerprint": actual["text_fingerprint"],
+                "english_snapshot": actual["text"],
+                "frame": "VOCAL",
+                "binding": {"resolves_target": False},
+                "applicability": {
+                    "requires_player": False,
+                    "requires_foe": False,
+                    "requires_named_foe": False,
+                    "requires_god": False,
+                    "requires_caster_visible": False,
+                },
+                "materialization_policy": "RECURSIVE_CASE_MAP",
+                "slot_schema": [{"name": "actor", "type": "actor_ref"}],
+                "required_arguments": ["actor"],
+                "line_metadata": [],
+                "materialization_cases": cases,
+                "recursive_dependency_fingerprints": {
+                    "sphinx cast":
+                        MODULE.runtime_canonical_fingerprint(sphinx),
+                },
+                "recursive_captures": [],
+            }],
+        })
+        return manifest
+
     def test_production_manifest_and_sidecar_are_exact(self):
         validated = self.validate(copy.deepcopy(MANIFEST))
         self.assertEqual(SIDECAR.read_text(encoding="utf-8"),
@@ -576,6 +663,73 @@ class MessageOverlayTests(unittest.TestCase):
         with self.assertRaisesRegex(MODULE.ManifestError,
                                     "binding-relevant line metadata"):
             self.validate(value)
+
+    def test_recursive_case_map_accepts_roxanne_two_leaf_identity_set(self):
+        value = self.recursive_roxanne_fixture()
+        validated = self.validate(value)
+        variant = self.variant(validated, "roxanne cast")
+        self.assertEqual("RECURSIVE_CASE_MAP",
+                         variant["materialization_policy"])
+        self.assertEqual(2, len(variant["materialization_cases"]))
+        expected = MODULE._recursive_identity_signatures(
+            MODULE._inventory_nodes(INVENTORY), "roxanne cast", 0)
+        self.assertEqual(expected,
+                         {case["signature"] for case
+                          in variant["materialization_cases"]})
+        self.assertEqual("CLOSURE_ONLY",
+                         self.entry(validated, "sphinx cast")["mode"])
+
+    def test_recursive_case_map_requires_exact_unique_case_set(self):
+        value = self.recursive_roxanne_fixture()
+        self.variant(value, "roxanne cast")["materialization_cases"].pop()
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "cases are incomplete"):
+            self.validate(value)
+
+        value = self.recursive_roxanne_fixture()
+        cases = self.variant(value, "roxanne cast")["materialization_cases"]
+        duplicate = copy.deepcopy(cases[0])
+        duplicate["case_id"] = "test.roxanne.recursive.duplicate"
+        cases.append(duplicate)
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "unknown/duplicate signature"):
+            self.validate(value)
+
+        value = self.recursive_roxanne_fixture()
+        cases = self.variant(value, "roxanne cast")["materialization_cases"]
+        extra = copy.deepcopy(cases[0])
+        extra["case_id"] = "test.roxanne.recursive.extra"
+        extra["signature"] += "|extra"
+        cases.append(extra)
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "unknown/duplicate signature"):
+            self.validate(value)
+
+    def test_recursive_case_map_rejects_dependency_drift_and_dynamics(self):
+        value = self.recursive_roxanne_fixture()
+        self.variant(value, "roxanne cast")[
+            "recursive_dependency_fingerprints"]["sphinx cast"] = "stale"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "dependency fingerprint mismatch"):
+            self.validate(value)
+
+        inventory = copy.deepcopy(INVENTORY)
+        sphinx = MODULE._inventory_nodes(inventory)["sphinx cast"]
+        sphinx["variants"][0]["lua_sites"] = [{"source": "return 'x'"}]
+        value = self.recursive_roxanne_fixture(inventory)
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "dynamic materialization|Lua or bracket"):
+            MODULE.validate_manifest(value, inventory)
+
+        inventory = copy.deepcopy(INVENTORY)
+        sphinx = MODULE._inventory_nodes(inventory)["sphinx cast"]
+        sphinx["variants"][0]["random_substring_sites"] = [{
+            "options": ["mumbles", "chants"],
+        }]
+        value = self.recursive_roxanne_fixture(inventory)
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "dynamic materialization|Lua or bracket"):
+            MODULE.validate_manifest(value, inventory)
 
     def test_plural_arms_token_requires_the_narrow_slot_type(self):
         entry = next(e for e in MANIFEST["entries"]

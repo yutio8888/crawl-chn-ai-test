@@ -84,6 +84,7 @@ enum class materialization_policy
 {
     NONE,
     CASE_MAP,
+    RECURSIVE_CASE_MAP,
     CAPTURE_SLOT,
     LEGACY_ONLY,
 };
