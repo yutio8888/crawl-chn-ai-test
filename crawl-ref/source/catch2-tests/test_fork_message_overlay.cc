@@ -6,6 +6,7 @@
 #include "fork-message-overlay.h"
 #include "initfile.h"
 #include "random.h"
+#include "stringutil.h"
 
 #include <unistd.h>
 
@@ -182,6 +183,9 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.actor.possessive_name_en = "The orc's";
     values.actor.possessive_name_lower_en = "the orc's";
     values.actor.possessive_pronoun_en = "its";
+    values.actor.god_possessive_en = "Trog";
+    values.actor.god_my_en = "Trog";
+    values.actor.god_indefinite_en = "Trog";
     values.actor.reflexive_en = "itself";
     values.actor.arms_plural_en = "arms";
     values.actor.localized = { { "en", "The orc" }, { "zh", "兽人" } };
@@ -193,6 +197,12 @@ fork_message_overlay::runtime_bindings beam_bindings(
         { { "en", "the orc's" }, { "zh", "兽人的" } };
     values.actor.possessive_pronoun_localized =
         { { "en", "its" }, { "zh", "它的" } };
+    values.actor.god_possessive_localized =
+        { { "en", "Trog" }, { "zh", "特洛格" } };
+    values.actor.god_my_localized =
+        { { "en", "Trog" }, { "zh", "特洛格" } };
+    values.actor.god_indefinite_localized =
+        { { "en", "Trog" }, { "zh", "特洛格" } };
     values.actor.reflexive_localized =
         { { "en", "itself" }, { "zh", "自己" } };
     values.actor.arms_plural_localized =
@@ -417,6 +427,75 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         CHECK(mismatched.failure == load_failure::CORRUPT);
         CHECK(mismatched.diagnostic.find(
                   "possessive actor token/type mismatch")
+              != string::npos);
+    }
+
+    SECTION("monster god slots are distinct and case-sensitive")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        catalog_entry &entry = catalog_entry_by_key(
+            source, "summon water elementals elemental wellspring cast");
+        entry.mode = entry_mode::CANDIDATE;
+        catalog_variant &variant = entry.variants[0];
+        variant.policy = materialization_policy::NONE;
+        variant.english_snapshot =
+            "@possessive_God@ invokes @My_God@ before @a_God@.";
+        vector<textdb_phase0::canonical_entry> god_canonical = canonical;
+        auto actual = find_if(
+            god_canonical.begin(), god_canonical.end(),
+            [&entry](const textdb_phase0::canonical_entry &item)
+            {
+                return item.canonical_key == entry.canonical_key;
+            });
+        REQUIRE(actual != god_canonical.end());
+        REQUIRE(actual->variants.size() == 1);
+        const auto synchronize = [&]()
+        {
+            actual->variants[0].raw_pattern = variant.english_snapshot;
+            actual->raw_body = variant.english_snapshot;
+            entry.canonical_fingerprint = test_canonical_fingerprint(*actual);
+            entry.selection_graph_fingerprint =
+                test_selection_fingerprint(*actual);
+        };
+        synchronize();
+        variant.slot_schema = {
+            { "god_possessive", "actor_god_possessive" },
+            { "god_my", "actor_god_my" },
+            { "god_indefinite", "actor_god_indefinite" },
+        };
+        variant.required_arguments = {
+            "god_possessive", "god_my", "god_indefinite",
+        };
+        line_metadata line;
+        line.templates = {
+            { "en", "NONE", "${god_possessive} invokes ${god_my} "
+                              "before ${god_indefinite}." },
+            { "zh", "NONE", "${god_possessive}向${god_my}祈祷，"
+                              "又提到${god_indefinite}。" },
+        };
+        variant.lines = { line };
+        const load_report &valid = load_monspell_overlay(god_canonical, &source);
+        REQUIRE(valid.state == domain_state::ENABLED);
+        CHECK(monspell_overlay_covers(entry.canonical_key));
+
+        reset_monspell_overlay_for_test();
+        variant.slot_schema[0].type = "actor_god_my";
+        const load_report &aliased =
+            load_monspell_overlay(god_canonical, &source);
+        CHECK(aliased.state == domain_state::DISABLED);
+        CHECK(aliased.diagnostic.find(
+                  "@possessive_God@ token/type mismatch") != string::npos);
+
+        reset_monspell_overlay_for_test();
+        variant.slot_schema[0].type = "actor_god_possessive";
+        variant.english_snapshot = replace_all(
+            variant.english_snapshot, "@My_God@", "@my_God@");
+        synchronize();
+        const load_report &wrong_case =
+            load_monspell_overlay(god_canonical, &source);
+        CHECK(wrong_case.state == domain_state::DISABLED);
+        CHECK(wrong_case.diagnostic.find("@My_God@ token/type mismatch")
               != string::npos);
     }
 
@@ -1283,6 +1362,24 @@ TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
     }
     CHECK(render_typed_template("${actor_possessive_lower}",
           lower_possessive, {}).result == message_result::CORRUPT);
+
+    const vector<slot_definition> god_slots = {
+        { "possessive", "actor_god_possessive" },
+        { "my", "actor_god_my" },
+        { "indefinite", "actor_god_indefinite" },
+    };
+    const vector<slot_value> named_god = {
+        { "possessive", "Trog" }, { "my", "Trog" },
+        { "indefinite", "Trog" },
+    };
+    const render_result god_render = render_typed_template(
+        "${possessive}/${my}/${indefinite}", god_slots, named_god);
+    REQUIRE(god_render.result == message_result::RENDERED);
+    CHECK(god_render.lines[0].text == "Trog/Trog/Trog");
+    CHECK(render_typed_template("${possessive}/${my}/${indefinite}",
+          god_slots,
+          { { "possessive", "Trog" }, { "my", "Trog" } }).result
+          == message_result::CORRUPT);
 
     const render_result sentence = render_typed_template(
         "${actor} attacks", one, { { "actor", "The orc" } });

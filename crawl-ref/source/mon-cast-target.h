@@ -24,6 +24,18 @@ struct resolved_speech_actor
 
 resolved_speech_actor resolve_speech_actor(const monster &mons);
 
+// Owning displays for the three case-sensitive legacy monster-god tokens.
+// Resolve under the current display language; callers that need canonical
+// English do so under ScopedLangEn.
+struct resolved_speech_god
+{
+    std::string possessive_display;
+    std::string my_display;
+    std::string indefinite_display;
+};
+
+resolved_speech_god resolve_speech_god(const monster &mons);
+
 enum class resolved_beam_status
 {
     RESOLVED,

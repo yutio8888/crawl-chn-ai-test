@@ -672,6 +672,85 @@ class MessageOverlayTests(unittest.TestCase):
                 MODULE.ManifestError,
                 "sentence possessive actor token/type mismatch"):
             self.validate(value)
+    def test_actor_god_tokens_require_distinct_case_sensitive_slot_types(self):
+        fixtures = [
+            ("divine armament cast", "@My_God@", "actor_god_my",
+             "${actor} beseeches ${god} to grant them a weapon."),
+            ("major destruction cast", "@possessive_God@",
+             "actor_god_possessive",
+             "${actor} conjures force in the name of ${god}!"),
+            ("unseen priest cast", "@a_God@", "actor_god_indefinite",
+             "You hear prayers to ${god}."),
+        ]
+        for key, token, slot_type, pattern in fixtures:
+            with self.subTest(token=token):
+                upstream = MODULE._inventory_nodes(INVENTORY)[key]
+                self.assertEqual(1, len(upstream["variants"]))
+                actual = upstream["variants"][0]
+                slots = []
+                required = []
+                if "@The_monster@" in actual["text"]:
+                    slots.append({"name": "actor", "type": "actor_ref"})
+                    required.append("actor")
+                slots.append({"name": "god", "type": slot_type})
+                required.append("god")
+                record = {
+                    "canonical_key": key,
+                    "canonical_fingerprint":
+                        MODULE.runtime_canonical_fingerprint(upstream),
+                    "selection_graph_fingerprint":
+                        MODULE.runtime_selection_fingerprint(upstream),
+                    "mode": "CANDIDATE",
+                    "variants": [{
+                        "stable_id": "test." + key.replace(" ", "_"),
+                        "tombstone": False,
+                        "variant_ordinal": 0,
+                        "upstream_weight": actual["weight"],
+                        "upstream_variant_fingerprint":
+                            actual["text_fingerprint"],
+                        "english_snapshot": actual["text"],
+                        "frame": "INVOCATION",
+                        "binding": {"resolves_target": False},
+                        "applicability": {
+                            "requires_player": False,
+                            "requires_foe": False,
+                            "requires_named_foe": False,
+                            "requires_god": False,
+                            "requires_caster_visible": False,
+                        },
+                        "materialization_policy": "NONE",
+                        "slot_schema": slots,
+                        "required_arguments": required,
+                        "line_metadata": [{
+                            "sensory": "PLAIN", "channel": None,
+                            "behavior": {
+                                "implies_gesture": False, "audible": False,
+                            },
+                            "templates": [
+                                {"language": "en", "relation": "NONE",
+                                 "pattern": pattern},
+                                {"language": "zh", "relation": "NONE",
+                                 "pattern": pattern},
+                            ],
+                        }],
+                        "materialization_cases": [],
+                        "recursive_dependency_fingerprints": {},
+                    }],
+                }
+                value = copy.deepcopy(MANIFEST)
+                value["entries"].append(record)
+                self.validate(value)
+
+                record["variants"][0]["slot_schema"][-1]["type"] = (
+                    "actor_god_indefinite"
+                    if slot_type != "actor_god_indefinite"
+                    else "actor_god_my")
+                value = copy.deepcopy(MANIFEST)
+                value["entries"].append(record)
+                with self.assertRaisesRegex(
+                        MODULE.ManifestError,
+                        "token/type mismatch"):
+                    self.validate(value)
 
     def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)

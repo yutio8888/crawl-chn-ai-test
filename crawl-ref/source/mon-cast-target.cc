@@ -12,11 +12,13 @@
 #include "coordit.h"
 #include "directn.h"
 #include "env.h"
+#include "format.h"
 #include "i18n.h"
 #include "mon-util.h"
 #include "monster.h"
 #include "player.h"
 #include "random.h"
+#include "religion.h"
 #include "state.h"
 #include "stringutil.h"
 #include "terrain.h"
@@ -36,6 +38,32 @@ resolved_speech_actor resolve_speech_actor(const monster &mons)
     result.lower_display = mons.name(desc);
     result.sentence_display = mons.is_named() && you.can_see(mons)
         ? result.lower_display : uppercase_first(result.lower_display);
+    return result;
+}
+
+resolved_speech_god resolve_speech_god(const monster &mons)
+{
+    resolved_speech_god result;
+    if (mons.god == GOD_NO_GOD)
+    {
+        result.possessive_display = T_("NO GOD");
+        result.my_display = T_("NO GOD");
+        result.indefinite_display = T_("NO GOD");
+        return result;
+    }
+    if (mons.god == GOD_NAMELESS)
+    {
+        result.possessive_display = make_stringf(
+            T_("%s god"), mons.pronoun(PRONOUN_POSSESSIVE).c_str());
+        result.my_display = T_("My God");
+        result.indefinite_display = T_("a god");
+        return result;
+    }
+
+    const string name = god_name(mons.god);
+    result.possessive_display = name;
+    result.my_display = uppercase_first(name);
+    result.indefinite_display = name;
     return result;
 }
 

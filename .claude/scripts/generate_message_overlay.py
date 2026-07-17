@@ -36,6 +36,7 @@ SLOT_TYPES = {
     "actor_ref", "actor_ref_lower", "actor_possessive_name",
     "actor_possessive_name_lower",
     "actor_possessive_pronoun",
+    "actor_god_possessive", "actor_god_my", "actor_god_indefinite",
     "actor_reflexive", "actor_arms_plural", "resolved_target",
     "resolved_foe", "resolved_beam", "recursive_capture",
 }
@@ -494,6 +495,11 @@ def validate_manifest(manifest: dict[str, Any],
                 "@The_monster_possessive@" in actual["text"])
             has_actor_possessive_lower_token = (
                 "@the_monster_possessive@" in actual["text"])
+            god_token_types = {
+                "@possessive_God@": "actor_god_possessive",
+                "@My_God@": "actor_god_my",
+                "@a_God@": "actor_god_indefinite",
+            }
             has_actor_ref_slot = any(
                 slot_type == "actor_ref"
                 for slot_type in slot_types.values())
@@ -516,6 +522,12 @@ def validate_manifest(manifest: dict[str, Any],
                 has_actor_possessive_lower_token
                 == has_actor_possessive_lower_slot,
                 f"{vcontext} lower possessive actor token/type mismatch")
+            for token, slot_type in god_token_types.items():
+                _require(
+                    (token in actual["text"])
+                    == any(value == slot_type
+                           for value in slot_types.values()),
+                    f"{vcontext} {token} token/type mismatch")
             captures = variant.get("recursive_captures", [])
             _require(isinstance(captures, list),
                      f"{vcontext}.recursive_captures must be a list")

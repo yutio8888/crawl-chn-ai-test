@@ -353,6 +353,8 @@ bool _validate_lines(const catalog_source &source,
             "actor_ref", "actor_ref_lower", "actor_possessive_name",
             "actor_possessive_name_lower",
             "actor_possessive_pronoun", "actor_reflexive",
+            "actor_god_possessive", "actor_god_my",
+            "actor_god_indefinite",
             "actor_arms_plural", "resolved_target", "resolved_foe",
             "resolved_beam", "recursive_capture",
         };
@@ -425,6 +427,22 @@ bool _validate_lines(const catalog_source &source,
     {
         error = "sentence actor token/type mismatch";
         return false;
+    }
+    const pair<const char *, const char *> god_slots[] =
+    {
+        { "@possessive_God@", "actor_god_possessive" },
+        { "@My_God@", "actor_god_my" },
+        { "@a_God@", "actor_god_indefinite" },
+    };
+    for (const auto &god_slot : god_slots)
+    {
+        const bool has_token = variant.english_snapshot.find(god_slot.first)
+            != string::npos;
+        if (has_token != _has_slot_type(variant, god_slot.second))
+        {
+            error = string(god_slot.first) + " token/type mismatch";
+            return false;
+        }
     }
     if (has_actor_ref_lower_token
         != _has_slot_type(variant, "actor_ref_lower"))
@@ -1628,6 +1646,9 @@ canonical_materialization materialize_monspell_candidate(
     bool needs_actor_possessive_name = false;
     bool needs_actor_possessive_name_lower = false;
     bool needs_actor_possessive_pronoun = false;
+    bool needs_actor_god_possessive = false;
+    bool needs_actor_god_my = false;
+    bool needs_actor_god_indefinite = false;
     bool needs_actor_reflexive = false;
     bool needs_actor_arms_plural = false;
     bool needs_target = false;
@@ -1644,6 +1665,12 @@ canonical_materialization materialize_monspell_candidate(
             || slot.type == "actor_possessive_name_lower";
         needs_actor_possessive_pronoun = needs_actor_possessive_pronoun
             || slot.type == "actor_possessive_pronoun";
+        needs_actor_god_possessive = needs_actor_god_possessive
+            || slot.type == "actor_god_possessive";
+        needs_actor_god_my = needs_actor_god_my
+            || slot.type == "actor_god_my";
+        needs_actor_god_indefinite = needs_actor_god_indefinite
+            || slot.type == "actor_god_indefinite";
         needs_actor_reflexive = needs_actor_reflexive
             || slot.type == "actor_reflexive";
         needs_actor_arms_plural = needs_actor_arms_plural
@@ -1661,6 +1688,11 @@ canonical_materialization materialize_monspell_candidate(
             && resolved.actor.possessive_name_lower_en.empty())
         || (needs_actor_possessive_pronoun
             && resolved.actor.possessive_pronoun_en.empty())
+        || (needs_actor_god_possessive
+            && resolved.actor.god_possessive_en.empty())
+        || (needs_actor_god_my && resolved.actor.god_my_en.empty())
+        || (needs_actor_god_indefinite
+            && resolved.actor.god_indefinite_en.empty())
         || (needs_actor_reflexive && resolved.actor.reflexive_en.empty())
         || (needs_actor_arms_plural
             && resolved.actor.arms_plural_en.empty())
@@ -1700,6 +1732,14 @@ canonical_materialization materialize_monspell_candidate(
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@possessive@",
         resolved.actor.possessive_pronoun_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@possessive_God@",
+        resolved.actor.god_possessive_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@My_God@", resolved.actor.god_my_en);
+    result.bound_pattern_en = replace_all(
+        result.bound_pattern_en, "@a_God@",
+        resolved.actor.god_indefinite_en);
     result.bound_pattern_en = replace_all(
         result.bound_pattern_en, "@reflexive@",
         resolved.actor.reflexive_en);
@@ -1806,6 +1846,15 @@ canonical_materialization materialize_monspell_candidate(
             else if (slot.type == "actor_possessive_name_lower")
                 english_values.push_back(
                     { slot.name, resolved.actor.possessive_name_lower_en });
+            else if (slot.type == "actor_god_possessive")
+                english_values.push_back(
+                    { slot.name, resolved.actor.god_possessive_en });
+            else if (slot.type == "actor_god_my")
+                english_values.push_back(
+                    { slot.name, resolved.actor.god_my_en });
+            else if (slot.type == "actor_god_indefinite")
+                english_values.push_back(
+                    { slot.name, resolved.actor.god_indefinite_en });
         }
         const render_result english = english_template
             ? render_typed_template(
@@ -2110,6 +2159,40 @@ render_result render_materialized_candidate(
             {
                 result.diagnostic =
                     "localized actor possessive-pronoun binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_god_possessive")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor
+                        .god_possessive_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor possessive-god binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_god_my")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.god_my_localized,
+                    language, display))
+            {
+                result.diagnostic = "localized actor my-god binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_god_indefinite")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor
+                        .god_indefinite_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized actor indefinite-god binding is missing";
                 return result;
             }
         }

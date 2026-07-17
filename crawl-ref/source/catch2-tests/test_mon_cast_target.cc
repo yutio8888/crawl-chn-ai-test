@@ -479,6 +479,46 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
           == chinese.lower_display + "的");
 }
 
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "speech god preserves three legacy token meanings",
+                 "[single-file][mon-cast-target][message-overlay][phase2]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+
+    source.god = GOD_NO_GOD;
+    const resolved_speech_god atheist = resolve_speech_god(source);
+    CHECK(atheist.possessive_display == "NO GOD");
+    CHECK(atheist.my_display == "NO GOD");
+    CHECK(atheist.indefinite_display == "NO GOD");
+
+    source.god = GOD_NAMELESS;
+    const resolved_speech_god nameless = resolve_speech_god(source);
+    CHECK(nameless.possessive_display == "its god");
+    CHECK(nameless.my_display == "My God");
+    CHECK(nameless.indefinite_display == "a god");
+
+    source.god = GOD_TROG;
+    const resolved_speech_god named = resolve_speech_god(source);
+    CHECK(named.possessive_display == "Trog");
+    CHECK(named.my_display == "Trog");
+    CHECK(named.indefinite_display == "Trog");
+
+    scoped_zh_database localized_database;
+    source.god = GOD_NAMELESS;
+    const resolved_speech_god zh_nameless = resolve_speech_god(source);
+    CHECK(zh_nameless.possessive_display == "它的神");
+    CHECK(zh_nameless.my_display == "我的神");
+    CHECK(zh_nameless.indefinite_display == "某个神");
+
+    source.god = GOD_TROG;
+    const resolved_speech_god zh_named = resolve_speech_god(source);
+    CHECK(zh_named.possessive_display == "特洛格");
+    CHECK(zh_named.my_display == "特洛格");
+    CHECK(zh_named.indefinite_display == "特洛格");
+}
+
 TEST_CASE("speech beam typed seam preserves all legacy branches and RNG",
           "[single-file][mon-cast-target][phase0]")
 {

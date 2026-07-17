@@ -9032,6 +9032,7 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
 
     const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
     const resolved_speech_actor actor = resolve_speech_actor(mon);
+    const resolved_speech_god actor_god = resolve_speech_god(mon);
     const string &actor_display = actor.sentence_display;
 
     bindings.actor.visibility = _overlay_visibility(you.can_see(mon));
@@ -9080,6 +9081,12 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "en", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "en", mon.pronoun(PRONOUN_POSSESSIVE) });
+        bindings.actor.god_possessive_localized.push_back(
+            { "en", actor_god.possessive_display });
+        bindings.actor.god_my_localized.push_back(
+            { "en", actor_god.my_display });
+        bindings.actor.god_indefinite_localized.push_back(
+            { "en", actor_god.indefinite_display });
         bindings.actor.reflexive_localized.push_back(
             { "en", mon.pronoun(PRONOUN_REFLEXIVE) });
         if (!bindings.actor.arms_plural_en.empty())
@@ -9104,6 +9111,12 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             { "zh", apostrophise(actor.lower_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
             { "zh", _localized_zh_actor_possessive_pronoun(mon) });
+        bindings.actor.god_possessive_localized.push_back(
+            { "zh", actor_god.possessive_display });
+        bindings.actor.god_my_localized.push_back(
+            { "zh", actor_god.my_display });
+        bindings.actor.god_indefinite_localized.push_back(
+            { "zh", actor_god.indefinite_display });
         bindings.actor.reflexive_localized.push_back(
             { "zh", mon.pronoun(PRONOUN_REFLEXIVE) });
         const string arms = _localized_plural_arms(
@@ -9125,6 +9138,7 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
         ScopedLangEn english;
         const resolved_speech_actor english_actor =
             resolve_speech_actor(mon);
+        const resolved_speech_god english_god = resolve_speech_god(mon);
         bindings.actor.sentence_en = english_actor.sentence_display;
         bindings.actor.canonical_en = english_actor.lower_display;
         bindings.actor.possessive_name_en =
@@ -9133,6 +9147,9 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
             apostrophise(bindings.actor.canonical_en);
         bindings.actor.possessive_pronoun_en =
             mon.pronoun(PRONOUN_POSSESSIVE);
+        bindings.actor.god_possessive_en = english_god.possessive_display;
+        bindings.actor.god_my_en = english_god.my_display;
+        bindings.actor.god_indefinite_en = english_god.indefinite_display;
         bindings.actor.reflexive_en = mon.pronoun(PRONOUN_REFLEXIVE);
         if (requirements.resolves_target)
             bindings.target.canonical_en =
