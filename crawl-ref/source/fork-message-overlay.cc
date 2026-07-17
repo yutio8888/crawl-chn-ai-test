@@ -348,7 +348,7 @@ bool _validate_lines(const catalog_source &source,
     {
         static const set<string> slot_types =
         {
-            "actor_ref", "actor_possessive_name",
+            "actor_ref", "actor_ref_lower", "actor_possessive_name",
             "actor_possessive_pronoun", "actor_reflexive",
             "actor_arms_plural", "resolved_target", "resolved_foe",
             "resolved_beam", "recursive_capture",
@@ -378,6 +378,21 @@ bool _validate_lines(const catalog_source &source,
             return false;
         }
         return true;
+    }
+    const bool has_actor_ref_token =
+        variant.english_snapshot.find("@The_monster@") != string::npos;
+    const bool has_actor_ref_lower_token =
+        variant.english_snapshot.find("@the_monster@") != string::npos;
+    if (has_actor_ref_token != _has_slot_type(variant, "actor_ref"))
+    {
+        error = "sentence actor token/type mismatch";
+        return false;
+    }
+    if (has_actor_ref_lower_token
+        != _has_slot_type(variant, "actor_ref_lower"))
+    {
+        error = "lower actor token/type mismatch";
+        return false;
     }
     if (variant.lines.empty())
     {
@@ -1546,6 +1561,7 @@ canonical_materialization materialize_monspell_candidate(
     result.binding.callback_count = 1;
     const runtime_bindings &resolved = result.binding.values;
     bool needs_actor_ref = false;
+    bool needs_actor_ref_lower = false;
     bool needs_actor_possessive_name = false;
     bool needs_actor_possessive_pronoun = false;
     bool needs_actor_reflexive = false;
@@ -1556,6 +1572,8 @@ canonical_materialization materialize_monspell_candidate(
     for (const slot_definition &slot : descriptor->slot_schema)
     {
         needs_actor_ref = needs_actor_ref || slot.type == "actor_ref";
+        needs_actor_ref_lower = needs_actor_ref_lower
+            || slot.type == "actor_ref_lower";
         needs_actor_possessive_name = needs_actor_possessive_name
             || slot.type == "actor_possessive_name";
         needs_actor_possessive_pronoun = needs_actor_possessive_pronoun
@@ -1570,6 +1588,7 @@ canonical_materialization materialize_monspell_candidate(
     }
     if ((needs_actor_ref && (resolved.actor.sentence_en.empty()
                              || resolved.actor.canonical_en.empty()))
+        || (needs_actor_ref_lower && resolved.actor.canonical_en.empty())
         || (needs_actor_possessive_name
             && resolved.actor.possessive_name_en.empty())
         || (needs_actor_possessive_pronoun
@@ -1702,7 +1721,15 @@ canonical_materialization materialize_monspell_candidate(
             }
         }
         vector<slot_value> english_values = result.recursive_captures;
-        english_values.push_back({ "actor", resolved.actor.sentence_en });
+        for (const slot_definition &slot : descriptor->slot_schema)
+        {
+            if (slot.type == "actor_ref")
+                english_values.push_back(
+                    { slot.name, resolved.actor.sentence_en });
+            else if (slot.type == "actor_ref_lower")
+                english_values.push_back(
+                    { slot.name, resolved.actor.canonical_en });
+        }
         const render_result english = english_template
             ? render_typed_template(
                   english_template->pattern, descriptor->slot_schema,
@@ -1960,6 +1987,17 @@ render_result render_materialized_candidate(
                     language, display))
             {
                 result.diagnostic = "localized actor binding is missing";
+                return result;
+            }
+        }
+        else if (slot.type == "actor_ref_lower")
+        {
+            if (!_localized_display(
+                    materialized.binding.values.actor.lower_localized,
+                    language, display))
+            {
+                result.diagnostic =
+                    "localized lower-case actor binding is missing";
                 return result;
             }
         }

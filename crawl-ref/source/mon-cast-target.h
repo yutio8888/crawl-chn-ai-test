@@ -14,6 +14,16 @@
 class monster;
 struct bolt;
 
+// Owning displays for the two legacy actor tokens. Both use the same
+// description level; only @The_monster@ applies sentence-case capitalization.
+struct resolved_speech_actor
+{
+    std::string sentence_display;
+    std::string lower_display;
+};
+
+resolved_speech_actor resolve_speech_actor(const monster &mons);
+
 enum class resolved_beam_status
 {
     RESOLVED,

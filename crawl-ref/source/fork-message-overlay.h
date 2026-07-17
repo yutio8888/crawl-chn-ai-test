@@ -378,6 +378,7 @@ struct resolved_actor
     std::string reflexive_en;
     std::string arms_plural_en;
     std::vector<localized_value> localized;
+    std::vector<localized_value> lower_localized;
     std::vector<localized_value> possessive_name_localized;
     std::vector<localized_value> possessive_pronoun_localized;
     std::vector<localized_value> reflexive_localized;

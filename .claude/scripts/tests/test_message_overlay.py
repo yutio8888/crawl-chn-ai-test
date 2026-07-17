@@ -495,6 +495,41 @@ class MessageOverlayTests(unittest.TestCase):
                                     "plural arms token/type mismatch"):
             self.validate(value)
 
+    def test_lower_actor_token_requires_the_narrow_slot_type(self):
+        key = "summon water elementals elemental wellspring cast"
+        value = copy.deepcopy(MANIFEST)
+        entry = self.entry(value, key)
+        variant = self.variant(value, key)
+        entry["mode"] = "CANDIDATE"
+        variant["materialization_policy"] = "NONE"
+        variant["slot_schema"] = [
+            {"name": "actor_lower", "type": "actor_ref_lower"},
+        ]
+        variant["required_arguments"] = ["actor_lower"]
+        variant["line_metadata"] = [{
+            "sensory": "PLAIN", "channel": None,
+            "behavior": {"implies_gesture": False, "audible": False},
+            "templates": [
+                {"language": "en", "relation": "NONE",
+                 "pattern": "Water spirits pour forth from ${actor_lower}!"},
+                {"language": "zh", "relation": "NONE",
+                 "pattern": "水之灵从${actor_lower}身上涌出！"},
+            ],
+        }]
+        self.validate(value)
+
+        variant["slot_schema"][0]["type"] = "resolved_beam"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "lower actor token/type mismatch"):
+            self.validate(value)
+
+        value = copy.deepcopy(MANIFEST)
+        upper = self.variant(value, "beam catchall cast")
+        upper["slot_schema"][0]["type"] = "actor_ref_lower"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "sentence actor token/type mismatch"):
+            self.validate(value)
+
     def test_binding_relation_contract_is_fail_closed(self):
         value = copy.deepcopy(MANIFEST)
         self.entry(value, "beam catchall cast")["variants"][0]["binding"][

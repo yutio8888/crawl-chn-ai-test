@@ -118,6 +118,8 @@ fork_message_overlay::runtime_bindings beam_bindings(
     values.actor.reflexive_en = "itself";
     values.actor.arms_plural_en = "arms";
     values.actor.localized = { { "en", "The orc" }, { "zh", "兽人" } };
+    values.actor.lower_localized =
+        { { "en", "the orc" }, { "zh", "兽人" } };
     values.actor.possessive_name_localized =
         { { "en", "The orc's" }, { "zh", "兽人的" } };
     values.actor.possessive_pronoun_localized =
@@ -255,6 +257,45 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
             "summon water elementals elemental wellspring cast"));
         CHECK(rng::current_generator().get_state() == state);
         CHECK(rng::current_generator().get_count() == count);
+    }
+
+    SECTION("lower actor slot is validated without changing production data")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        catalog_entry &entry = catalog_entry_by_key(
+            source, "summon water elementals elemental wellspring cast");
+        entry.mode = entry_mode::CANDIDATE;
+        catalog_variant &variant = entry.variants[0];
+        variant.policy = materialization_policy::NONE;
+        variant.slot_schema = { { "actor_lower", "actor_ref_lower" } };
+        variant.required_arguments = { "actor_lower" };
+        line_metadata line;
+        line.templates = {
+            { "en", "NONE",
+              "Water spirits pour forth from ${actor_lower}!" },
+            { "zh", "NONE", "水之灵从${actor_lower}身上涌出！" },
+        };
+        variant.lines = { line };
+        const load_report &valid = load_monspell_overlay(canonical, &source);
+        REQUIRE(valid.state == domain_state::ENABLED);
+        CHECK(valid.structured_key_count == 172);
+        CHECK(monspell_overlay_covers(entry.canonical_key));
+
+        reset_monspell_overlay_for_test();
+        variant.slot_schema[0].type = "resolved_beam";
+        const load_report &mismatched =
+            load_monspell_overlay(canonical, &source);
+        CHECK(mismatched.state == domain_state::DISABLED);
+        CHECK(mismatched.failure == load_failure::CORRUPT);
+        CHECK(mismatched.diagnostic.find("lower actor token/type mismatch")
+              != string::npos);
+
+        reset_monspell_overlay_for_test();
+        variant.slot_schema[0].type = "unknown_actor_binding";
+        const load_report &unknown = load_monspell_overlay(canonical, &source);
+        CHECK(unknown.state == domain_state::DISABLED);
+        CHECK(unknown.failure == load_failure::CORRUPT);
     }
 
     SECTION("missing overlay disables the whole domain")
@@ -963,6 +1004,28 @@ TEST_CASE("typed renderer rejects malformed slots and preserves line metadata",
     CHECK(render_typed_template("${actor}", one,
           { { "actor", "兽人" }, { "beam", "箭" } }).result
           == message_result::CORRUPT);
+
+    const vector<slot_definition> lower =
+        { { "actor_lower", "actor_ref_lower" } };
+    const render_result common = render_typed_template(
+        "around ${actor_lower}", lower, { { "actor_lower", "the orc" } });
+    REQUIRE(common.result == message_result::RENDERED);
+    CHECK(common.lines[0].text == "around the orc");
+    const render_result proper = render_typed_template(
+        "around ${actor_lower}", lower, { { "actor_lower", "Mara" } });
+    REQUIRE(proper.result == message_result::RENDERED);
+    CHECK(proper.lines[0].text == "around Mara");
+    const render_result chinese = render_typed_template(
+        "在${actor_lower}周围", lower, { { "actor_lower", "兽人" } });
+    REQUIRE(chinese.result == message_result::RENDERED);
+    CHECK(chinese.lines[0].text == "在兽人周围");
+    CHECK(render_typed_template("${actor_lower}", lower, {}).result
+          == message_result::CORRUPT);
+
+    const render_result sentence = render_typed_template(
+        "${actor} attacks", one, { { "actor", "The orc" } });
+    REQUIRE(sentence.result == message_result::RENDERED);
+    CHECK(sentence.lines[0].text == "The orc attacks");
 
     line_metadata visual;
     visual.sensory = sensory_mode::VISUAL;

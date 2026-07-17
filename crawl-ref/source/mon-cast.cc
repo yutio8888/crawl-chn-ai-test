@@ -8822,22 +8822,6 @@ static fmo::message_prefix _overlay_prefix(bool silent, bool unseen)
     return fmo::message_prefix::NORMAL;
 }
 
-static string _cast_actor_display(const monster &mon)
-{
-    if (mon.is_named() && you.can_see(mon))
-        return mon.name(DESC_THE);
-
-    description_level_type desc = DESC_THE;
-    if (mon.attitude == ATT_FRIENDLY
-        && !mons_is_unique(mon.type)
-        && !crawl_state.game_is_arena()
-        && you.can_see(mon))
-    {
-        desc = DESC_YOUR;
-    }
-    return uppercase_first(mon.name(desc));
-}
-
 static fmo::target_relation _overlay_relation(speech_target_relation relation)
 {
     switch (relation)
@@ -9047,7 +9031,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     }
 
     const ::resolved_beam beam = resolve_speech_beam(pbolt, targeted);
-    const string actor_display = _cast_actor_display(mon);
+    const resolved_speech_actor actor = resolve_speech_actor(mon);
+    const string &actor_display = actor.sentence_display;
 
     bindings.actor.visibility = _overlay_visibility(you.can_see(mon));
     bindings.beam.configured_name_en = beam.configured_name_en;
@@ -9087,6 +9072,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     if (language == "en")
     {
         bindings.actor.localized.push_back({ "en", actor_display });
+        bindings.actor.lower_localized.push_back(
+            { "en", actor.lower_display });
         bindings.actor.possessive_name_localized.push_back(
             { "en", apostrophise(actor_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
@@ -9107,6 +9094,8 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
     else if (language == "zh")
     {
         bindings.actor.localized.push_back({ "zh", actor_display });
+        bindings.actor.lower_localized.push_back(
+            { "zh", actor.lower_display });
         bindings.actor.possessive_name_localized.push_back(
             { "zh", apostrophise(actor_display) });
         bindings.actor.possessive_pronoun_localized.push_back(
@@ -9130,8 +9119,10 @@ static fmo::runtime_bindings _resolve_overlay_bindings(
 
     {
         ScopedLangEn english;
-        bindings.actor.sentence_en = _cast_actor_display(mon);
-        bindings.actor.canonical_en = bindings.actor.sentence_en;
+        const resolved_speech_actor english_actor =
+            resolve_speech_actor(mon);
+        bindings.actor.sentence_en = english_actor.sentence_display;
+        bindings.actor.canonical_en = english_actor.lower_display;
         bindings.actor.possessive_name_en =
             apostrophise(bindings.actor.sentence_en);
         bindings.actor.possessive_pronoun_en =

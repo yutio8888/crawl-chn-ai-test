@@ -17,7 +17,27 @@
 #include "monster.h"
 #include "player.h"
 #include "random.h"
+#include "state.h"
+#include "stringutil.h"
 #include "terrain.h"
+
+resolved_speech_actor resolve_speech_actor(const monster &mons)
+{
+    description_level_type desc = DESC_THE;
+    if (mons.attitude == ATT_FRIENDLY
+        && !mons_is_unique(mons.type)
+        && !crawl_state.game_is_arena()
+        && you.can_see(mons))
+    {
+        desc = DESC_YOUR;
+    }
+
+    resolved_speech_actor result;
+    result.lower_display = mons.name(desc);
+    result.sentence_display = mons.is_named() && you.can_see(mons)
+        ? result.lower_display : uppercase_first(result.lower_display);
+    return result;
+}
 
 resolved_speech_target::resolved_speech_target()
     : relation(speech_target_relation::AT),

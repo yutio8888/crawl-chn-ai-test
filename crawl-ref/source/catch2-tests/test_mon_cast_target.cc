@@ -439,6 +439,38 @@ TEST_CASE("speech target typed value has safe owning defaults",
     CHECK(target.display == "nothing");
 }
 
+TEST_CASE_METHOD(MockPlayerYouTestsFixture,
+                 "speech actor preserves legacy sentence and lower displays",
+                 "[single-file][mon-cast-target][message-overlay][phase2]")
+{
+    scoped_past_target_world world;
+    REQUIRE(world.valid());
+    monster &source = *world.placed_source();
+
+    const resolved_speech_actor ordinary = resolve_speech_actor(source);
+    CHECK(ordinary.sentence_display == "The orc");
+    CHECK(ordinary.lower_display == "the orc");
+
+    source.mname = "McTest";
+    const resolved_speech_actor named = resolve_speech_actor(source);
+    CHECK(named.sentence_display == source.name(DESC_THE));
+    CHECK(named.lower_display == source.name(DESC_THE));
+    CHECK(named.lower_display.find("McTest") != string::npos);
+
+    source.mname.clear();
+    source.attitude = ATT_FRIENDLY;
+    const resolved_speech_actor friendly = resolve_speech_actor(source);
+    CHECK(friendly.sentence_display == "Your orc");
+    CHECK(friendly.lower_display == "your orc");
+
+    source.attitude = ATT_HOSTILE;
+    scoped_zh_database localized_database;
+    const resolved_speech_actor chinese = resolve_speech_actor(source);
+    CHECK(chinese.sentence_display == chinese.lower_display);
+    CHECK(chinese.lower_display.find("The") == string::npos);
+    CHECK(chinese.lower_display.find("the") == string::npos);
+}
+
 TEST_CASE("speech beam typed seam preserves all legacy branches and RNG",
           "[single-file][mon-cast-target][phase0]")
 {
