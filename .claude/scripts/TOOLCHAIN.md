@@ -55,14 +55,16 @@ Parser (统一):
 | **检查持久化 T_()/C_() 指针** | `python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser` |
 | **T_() 键验证** | `python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **数据驱动翻译覆盖** | `python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
+| **source.txt 结构检查** | `python3 .claude/scripts/scan_i18n.py source-db-structure --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
+| **source.txt 大小写碰撞** | `python3 .claude/scripts/scan_i18n.py source-key-collisions --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **source.txt 完整性** | `python3 .claude/scripts/scan_i18n.py source-txt-integrity --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **发现未翻译消息** | `python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/` |
 | **mprf_p 兼容性** | `python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **%s 数量一致** | `python3 .claude/scripts/scan_i18n.py arg-mismatch --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **控制符奇偶检查** | `python3 .claude/scripts/source_control_parity.py --source-txt crawl-ref/source/dat/i18n/zh/source.txt` |
 | **运行时冒烟测试** | `bash .claude/scripts/smoke_test.sh` |
-| **运行时回归检查** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
-| **运行测试** | `bash .claude/scripts/tests/run_all.sh` |
+| **统一 Catch2 运行时** | `bash .claude/scripts/post_zh_runtime.sh catch2` |
+| **运行工具测试** | `bash .claude/scripts/tests/run_all.sh` |
 
 ## 脚本详解
 
@@ -164,8 +166,16 @@ python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
 # mprf-p: 位置参数（%n$s）必须用 mprf_p 而非 mprf（MinGW 兼容）
 python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+# source-db-structure: 检查 %%%% 分隔符完整性、格式合规
+python3 .claude/scripts/scan_i18n.py source-db-structure \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+
+# source-key-collisions: 大小写不敏感键碰撞检测
+python3 .claude/scripts/scan_i18n.py source-key-collisions \
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
 # source-txt-integrity: 重复 key、自冲突、空译文检查
+
 python3 .claude/scripts/scan_i18n.py source-txt-integrity \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 
@@ -331,6 +341,23 @@ python3 .claude/scripts/source_control_parity.py \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt --strict-all
 ```
 
+### zh_runtime_check.py — JSONL Issue Protocol v1
+
+统一 Catch2 驱动 `post_zh_runtime.sh catch2` 使用 `zh_runtime_check.py` 解析
+`[zh-translation]` 和 `[message-overlay]` 两个标号的输出：
+
+```bash
+# 从 Catch2 输出解析 [zh-translation] 协议
+python3 .claude/scripts/zh_runtime_check.py \
+    --catch2-stderr <path> --catch2-stdout <path> --baseline <path>
+
+# 生成输出基线
+python3 .claude/scripts/zh_runtime_check.py \
+    --catch2-stderr <path> --catch2-stdout <path> --output-baseline <path>
+```
+
+协议 v1 schema 定义在 `.claude/scripts/data/zh_issue_protocol_v1.schema.json`。
+
 ### scan_translation_length.py — 翻译段落长度风险扫描
 
 按 Unicode East Asian Width 估算中文译文的显示列数，逐段检查显式 `\\n`
@@ -406,7 +433,7 @@ bash .claude/scripts/verify_zh.sh --profile review \
 # 合并前审查
 bash .claude/scripts/verify_zh.sh --profile review
 
-# CI 门禁（translation + code 并集）
+# CI 门禁（纯静态，不执行 make/runtime）
 bash .claude/scripts/verify_zh.sh --profile ci
 
 # 显式执行全量静态检查及 Layer 1-3 runtime
@@ -415,15 +442,26 @@ bash .claude/scripts/verify_zh.sh --profile review --full
 
 `translation`/`code` 默认 `--scope changed`，`review`/`ci` 默认
 `--scope full`。changed 只缩小明确支持文件列表的 AST 扫描；Agent/Skill
-策略同步、source.txt/TextDB 完整性、key coverage、格式、术语与导出新鲜度等
-全局门禁始终全量执行。绑定 `--base/--head` 时 changed 集合来自该不可变
-范围；未绑定时来自 `HEAD` 相对工作树（含 untracked files）。
+策略同步、**source-db-static**、source.txt/TextDB 完整性、key coverage、格式、
+术语与导出新鲜度等全局门禁始终全量执行。绑定 `--base/--head` 时 changed 集合
+来自该不可变范围；未绑定时来自 `HEAD` 相对工作树（含 untracked files）。
+
+**source-db-static 阶段**：所有 profile 均要求执行，不可绕过。连续运行三个
+检查（即使前一个失败也继续），收集全部证据后统一判断是否阻断：
+```bash
+python3 .claude/scripts/scan_i18n.py source-db-structure --source-txt ...
+python3 .claude/scripts/scan_i18n.py source-key-collisions --source-txt ...
+python3 .claude/scripts/i18n_extract.py validate crawl-ref/source --source-txt ...
+```
+
+**--profile ci 纯静态**：`ci` profile 不执行 `make`、`smoke_test.sh`、
+`post_zh_runtime.sh` 等任何编译/运行时操作。仅运行静态数据检查（source-db-static
++ translation-static）。
 
 风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
-font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2；review/ci 至少运行
-同一 fast runtime。`--full` 才运行耗时的三层 runtime full。这里的 fast
-runtime 使用 `post_zh_runtime.sh catch2`，因为其 `fast` 子命令只重新聚合已有
-日志，并不产生新的运行证据。
+font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2；review 至少运行
+同一 fast runtime。`--full` 才运行耗时的三层 runtime full。`ci` 完全跳过
+编译和运行时。
 
 `post-coder.sh` 的 string-concat advisory 使用版本控制的
 `data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码
@@ -449,7 +487,10 @@ python3 .claude/scripts/advisory_baseline.py \
 三层运行时测试，支持多种模式：
 
 ```bash
-# catch2: 构建 catch2-tests + 运行 [zh-translation] + 基线对比（秒级）
+# catch2: 统一 Catch2 驱动，构建一次 + 运行两个标号 + 独立解析 + 报告
+#         [zh-translation] 和 [message-overlay] 均阻断
+#         若 [zh-translation] 失败，[message-overlay] 仍继续运行
+#         报告包含 zh-translation=rc, message-overlay=rc 两条记录
 bash .claude/scripts/post_zh_runtime.sh catch2
 
 # full: Layer 1 (Catch2) + Layer 2 (Lua) + Layer 3 (RC Bot)（分钟级）
@@ -510,18 +551,33 @@ test/baselines/zh-help/zh-help-baseline.json  # [zh-help] 帮助系统基线
 
 ### CI 分层
 
-GitHub Actions 中 4 个 zh-specific job：
+GitHub Actions 中 5 个 zh-specific job：
 
 | Job | 触发 | 需编译 | 说明 |
 |-----|------|--------|------|
-| `zh_tooling_tests` | push/PR | 否 | `run_all.sh`（12 个 Python 测试） |
-| `zh_ci_gate` | push/PR | 否 | `verify_zh.sh --profile ci`（code + translation 并集） |
-| `zh_runtime_catch2` | push/PR | 是 | catch2 [zh-translation] + 基线回归 |
+| `zh_tooling_tests` | push/PR | 否 | `run_all.sh`（自动发现所有 test_*） |
+| `zh_ci_gate` | push/PR | 否 | `verify_zh.sh --profile ci`（纯静态） |
+| `zh_runtime_catch2` | push/PR | 是 | 统一 Catch2 驱动：[zh-translation] + [message-overlay] |
+| `zh_runtime_full` | schedule/workflow_dispatch | 是 | L1+L2+L3 全量运行时 |
 | `zh_help_runtime` | push/PR | 是 | [zh-help] catch2 + zh_help.rc bot |
 
-`zh_ci_gate` 替代了旧的 `zh_static_checks`（原仅运‎行 post-coder.sh），
-增加了 post-translator.sh 的控制符 parity、术语验证、格式完整性、
-@keyword@ 完整性检查。
+`zh_ci_gate` 不执行任何编译或运行时操作。`zh_runtime_full` 仅在定时触发
+（UTC 17:18）或手动 `workflow_dispatch` 且 `run_full_runtime=true` 时运行。
+
+所有 zh-specific job 均可通过 `schedule` 和 `workflow_dispatch` 控制：
+```yaml
+schedule:
+  - cron: '17 18 * * *'
+workflow_dispatch:
+  inputs:
+    run_full_runtime:
+      description: 'Run full runtime tests (L1+L2+L3, slow)'
+      type: boolean
+      default: false
+```
+
+`--profile ci` 为纯静态 gate，合并 source-db-static 和 translation-static
+检查，不包含 make、smoke_test.sh 或 post_zh_runtime.sh 等编译/运行时步骤。
 
 ### split_source.py — source.txt 条目拆分
 

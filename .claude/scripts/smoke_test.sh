@@ -7,6 +7,12 @@
 #   2. English residue — core UI text still in English
 #   3. Crashes — segfault, assertion, abort
 #
+# Exit codes:
+#   0 — normal run, no issues found (or empty output with 0 exit)
+#   1 — protocol leak, English residue, or crash detected
+#   2 — binary or timeout tool missing
+#   124 — child timeout (output still scanned for issues)
+#
 # Note: crawl's ncurses console mode reads from /dev/tty, not stdin,
 # so we cannot drive in-game navigation via pipes. This test checks
 # startup output only (init messages, Lua errors, crash traces).
@@ -24,10 +30,16 @@ TIMEOUT_SEC=10
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
+# Exit 2 if binary missing
 if [ ! -x "$CRAWL" ]; then
-    echo "⚠️  Crawl binary not found at $CRAWL — skipping smoke test."
-    echo "   Build first: cd crawl-ref/source && make -j8"
-    exit 0
+    echo "Crawl binary not found at $CRAWL" >&2
+    exit 2
+fi
+
+# Exit 2 if timeout tool missing
+if ! command -v timeout &>/dev/null; then
+    echo "Required tool 'timeout' not found" >&2
+    exit 2
 fi
 
 # Back up and restore init.txt via trap (registered BEFORE modification)
@@ -50,7 +62,15 @@ echo 'language = zh' > "$SOURCE_DIR/init.txt"
 # We don't try to drive in-game UI (ncurses reads /dev/tty).
 # The test catches: startup crashes, Lua init errors, protocol
 # strings in printf/fprintf-based messages.
-timeout "$TIMEOUT_SEC" "$CRAWL" > "$ZH_OUT" 2>&1 || true
+# Capturing both stdout and stderr; child exit preserved.
+CHILD_RC=0
+timeout "$TIMEOUT_SEC" "$CRAWL" > "$ZH_OUT" 2>&1 || CHILD_RC=$?
+
+# Acceptable: 0 (normal exit) or 124 (timeout). Any other rc/signal → exit 1.
+if [ "$CHILD_RC" -ne 0 ] && [ "$CHILD_RC" -ne 124 ]; then
+    echo "Crawl exited with unexpected code $CHILD_RC — possible crash or error" >&2
+    exit 1
+fi
 
 ERRORS=0
 
@@ -65,15 +85,17 @@ PROTOCOL_PATTERNS=(
     'you\.race\b'
     'you\.god\b'
 )
+PROTOCOL_COUNT=0
 for pat in "${PROTOCOL_PATTERNS[@]}"; do
     if grep -qPn "$pat" "$ZH_OUT" 2>/dev/null; then
-        echo "  🔴 $pat"
+        echo "  PROTOCOL: $pat"
         grep -nP "$pat" "$ZH_OUT" | head -5 | sed 's/^/     /'
+        PROTOCOL_COUNT=$((PROTOCOL_COUNT + 1))
         ERRORS=$((ERRORS + 1))
     fi
 done
-if [ "$ERRORS" -eq 0 ]; then
-    echo "  ✓ No protocol leaks"
+if [ "$PROTOCOL_COUNT" -eq 0 ]; then
+    echo "  No protocol leaks"
 fi
 
 # ── Check 2: English residue ─────────────────────────────────────────
@@ -93,24 +115,23 @@ EN_UI=(
 RESIDUE_COUNT=0
 for pat in "${EN_UI[@]}"; do
     if grep -qPn "$pat" "$ZH_OUT" 2>/dev/null; then
-        [ "$RESIDUE_COUNT" -eq 0 ] && echo ""
-        echo "  🔴 $pat"
+        echo "  RESIDUE: $pat"
         RESIDUE_COUNT=$((RESIDUE_COUNT + 1))
         ERRORS=$((ERRORS + 1))
     fi
 done
 if [ "$RESIDUE_COUNT" -eq 0 ]; then
-    echo "  ✓ No English residue in core UI"
+    echo "  No English residue in core UI"
 fi
 
 # ── Check 3: Crashes ──────────────────────────────────────────────────
 echo "--- Crashes ---"
 if grep -qPi '(Segmentation fault|Aborted|assertion failed|core dumped|SIGSEGV|SIGABRT)' "$ZH_OUT" 2>/dev/null; then
-    echo "  🔴 CRASH detected"
+    echo "  CRASH detected"
     grep -nPi '(Segmentation fault|Aborted|assertion failed)' "$ZH_OUT" | head -10 | sed 's/^/     /'
     ERRORS=$((ERRORS + 1))
 else
-    echo "  ✓ No crashes"
+    echo "  No crashes"
 fi
 
 # ── Cleanup ───────────────────────────────────────────────────────────
@@ -118,9 +139,9 @@ fi
 
 echo ""
 if [ "$ERRORS" -eq 0 ]; then
-    echo "✓ Smoke test passed (startup output clean)"
+    echo "Smoke test passed"
 else
-    echo "✗ Smoke test: $ERRORS error category(ies) — review output above"
+    echo "Smoke test: $ERRORS error category(ies)"
     exit 1
 fi
 exit 0

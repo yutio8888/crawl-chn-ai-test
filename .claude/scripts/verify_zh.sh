@@ -216,7 +216,15 @@ if [[ -n "$CHANGED_FILES" ]]; then
             crawl-ref/source/catch2-tests/monspell_candidate_artifact.*|\
             crawl-ref/source/catch2-tests/test_fork_message_overlay.cc|\
             crawl-ref/source/catch2-tests/test_mon_cast_candidate_dump.cc|\
-            crawl-ref/source/catch2-tests/test_mon_cast_target.cc)
+            crawl-ref/source/catch2-tests/test_mon_cast_target.cc|\
+            crawl-ref/source/mon-cast-target.cc|\
+            crawl-ref/source/mon-cast.h|\
+            crawl-ref/source/mon-util.cc|crawl-ref/source/mon-util.h|\
+            crawl-ref/source/stringutil.cc|crawl-ref/source/stringutil.h|\
+            crawl-ref/source/catch2-tests/test_mon_cast_message_keys.cc|\
+            crawl-ref/source/catch2-tests/test_textdb_phase0.cc|\
+            dat/database/monspell.txt|\
+            dat/database/zh/monspell.txt)
                 RISK_MESSAGE_OVERLAY=1
                 ;;
         esac
@@ -422,6 +430,20 @@ run_phase() {
         python3 "$SCRIPT_DIR/check_agent_policies.py" --root "$WORKTREE" \
         || RESULTS=$((RESULTS + 1))
 
+    # ── source-db-static: REQUIRED for ALL profiles, NOT bypassable ──
+    run_source_db_static() {
+        local rc=0
+        python3 "$SCRIPT_DIR/scan_i18n.py" source-db-structure \
+            --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+        python3 "$SCRIPT_DIR/scan_i18n.py" source-key-collisions \
+            --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+        python3 "$SCRIPT_DIR/i18n_extract.py" validate "$WORKTREE/crawl-ref/source" \
+            --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+        return "$rc"
+    }
+    run_phase "source-db-static" 1 "Source/DB static integrity" \
+        run_source_db_static || RESULTS=$((RESULTS + 1))
+
     case "$PROFILE" in
         translation)
             run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
@@ -436,9 +458,9 @@ run_phase() {
                 bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
             ;;
         ci)
-            run_phase "code-static" 1 "Code verification (post-coder.sh)" \
-                bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
-            run_phase "translation-static" 1 "Translation verification (post-translator.sh)" \
+            # --profile ci is truly static: no make, no runtime execution.
+            # Only source-db-static (run above) and translation-static needed.
+            run_phase "translation-static" 1 "Translation verification (static)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
@@ -502,7 +524,8 @@ run_phase() {
         fi
     }
 
-    if [[ "$RISK_CPP_I18N" -eq 1 ]]; then
+    if [[ "$RISK_CPP_I18N" -eq 1 && "$PROFILE" != ci ]]; then
+        # ci profile is truly static — no make, no runtime
         run_phase "cpp-build" 1 "Risk gate: incremental C++ build" run_incremental_build \
             || RESULTS=$((RESULTS + 1))
         run_phase "zh-smoke" 1 "Risk gate: ZH smoke" run_zh_smoke \
@@ -512,9 +535,10 @@ run_phase() {
     if [[ "$EXPLICIT_FULL" -eq 1 ]]; then
         run_phase "zh-runtime-full" 1 "Risk gate: full ZH runtime" run_runtime full \
             || RESULTS=$((RESULTS + 1))
-    elif [[ "$RISK_CJK_RUNTIME" -eq 1 || "$PROFILE" == review || "$PROFILE" == ci ]]; then
+    elif [[ "$PROFILE" != ci && ( "$RISK_CJK_RUNTIME" -eq 1 || "$PROFILE" == review ) ]]; then
         # post_zh_runtime.sh calls its build-and-run Catch2 path "catch2";
         # its "fast" mode only re-aggregates an existing evidence directory.
+        # ci profile is truly static — skip runtime entirely.
         run_phase "zh-runtime-catch2" 1 "Risk gate: fast ZH runtime" run_runtime catch2 \
             || RESULTS=$((RESULTS + 1))
     fi

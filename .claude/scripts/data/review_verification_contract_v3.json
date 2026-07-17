@@ -16,6 +16,7 @@
     ".claude/scripts/generate_message_overlay.py",
     ".claude/scripts/i18n_extract.py",
     ".claude/scripts/i18n_shared.py",
+    ".claude/scripts/data/zh_issue_protocol_v1.schema.json",
     ".claude/scripts/monster_name_ssot.py",
     ".claude/scripts/post-reviewer.sh",
     ".claude/scripts/post_zh_runtime.sh",
@@ -30,7 +31,10 @@
     ".claude/scripts/source_control_parity.py",
     ".claude/scripts/sync_agent_policies.py",
     ".claude/scripts/tests/test_audit_monspell_behavior.py",
+    ".claude/scripts/tests/test_i18n_extract.py",
     ".claude/scripts/tests/test_message_overlay.py",
+    ".claude/scripts/tests/test_source_key_collisions.py",
+    ".claude/scripts/tests/test_zh_runtime_check.sh",
     ".claude/scripts/verify_zh.sh",
     ".claude/scripts/zh_console_ui_bot.py",
     ".claude/scripts/zh_runtime_check.py"

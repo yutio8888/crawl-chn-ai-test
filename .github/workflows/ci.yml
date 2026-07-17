@@ -7,7 +7,14 @@ on:
   pull_request:
     branches:
       - chn-0.34.1-base
-  workflow_dispatch: {}
+  schedule:
+    - cron: '17 18 * * *'
+  workflow_dispatch:
+    inputs:
+      run_full_runtime:
+        description: 'Run full runtime tests (L1+L2+L3, slow)'
+        type: boolean
+        default: false
 
 permissions: {}
 jobs:
@@ -36,7 +43,7 @@ jobs:
     permissions:
       contents: read
 
-    name: ZH CI Gate (static + data)
+    name: ZH CI Gate (static + data, no make)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -50,14 +57,14 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install tree-sitter==0.26.0 tree-sitter-cpp==0.23.4 pyyaml
-      - name: Run Chinese localization CI gate
+      - name: Run Chinese localization CI gate (static only)
         run: bash .claude/scripts/verify_zh.sh --profile ci
 
   zh_runtime_catch2:
     permissions:
       contents: read
 
-    name: ZH Runtime Catch2 (lightweight)
+    name: ZH Runtime Catch2 ([zh-translation] + [message-overlay])
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -86,8 +93,47 @@ jobs:
         run: |
           git describe 2>/dev/null > crawl-ref/source/util/release_ver \
             || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
-      - name: Build catch2-tests and run [zh-translation]
+      - name: Build catch2-tests and run [zh-translation] + [message-overlay]
         run: bash .claude/scripts/post_zh_runtime.sh catch2
+        env:
+          TERM: dumb
+
+  zh_runtime_full:
+    permissions:
+      contents: read
+
+    name: ZH Runtime Full (L1+L2+L3)
+    if: ${{ github.event_name == 'schedule' || (github.event_name == 'workflow_dispatch' && github.event.inputs.run_full_runtime == 'true') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+          submodules: true
+      - name: Set up Python 3.13
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.13
+      - name: Install build dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyyaml
+          sudo .github/workflows/deps.py --compiler gcc --build-opts "" --debug-opts "FULLDEBUG=1"
+      - name: Setup ccache
+        uses: hendrikmuhs/ccache-action@v1.2
+        with:
+          key: zh-runtime-full
+          restore-keys: zh-runtime-full
+      - name: "Setup ccache: prepend path"
+        run: "echo /usr/lib/ccache >> $GITHUB_PATH"
+      - name: "Setup ccache: update symlinks"
+        run: "/usr/sbin/update-ccache-symlinks"
+      - name: Ensure version info
+        run: |
+          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
+            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+      - name: Build and run full ZH runtime (L1+L2+L3)
+        run: bash .claude/scripts/post_zh_runtime.sh full
         env:
           TERM: dumb
 

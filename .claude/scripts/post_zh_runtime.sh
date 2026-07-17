@@ -335,9 +335,69 @@ echo "Metrics: $METRICS_DIR"
 
 case "$MODE" in
     catch2)
-        # Lightweight: build the test executable, run [zh-translation], and compare baseline.
-        run_step "L1-catch2" run_catch2 || true
-        run_step "aggregate" run_aggregate catch2
+        # Unified Catch2 driver: build once, run [zh-translation] first,
+        # run [message-overlay] second, parse both independently.
+        # If first label fails, still run the second label.
+        echo "=== Unified Catch2 Driver ==="
+        METRICS_DIR_C2="$METRICS_DIR"
+        STDERR_C2_ZH="$METRICS_DIR/catch2-zh-stderr.log"
+        STDOUT_C2_ZH="$METRICS_DIR/catch2-zh-stdout.log"
+        STDERR_C2_MO="$METRICS_DIR/catch2-mo-stderr.log"
+        STDOUT_C2_MO="$METRICS_DIR/catch2-mo-stdout.log"
+        CHECK_SCRIPT="$SCRIPT_DIR/zh_runtime_check.py"
+
+        # Build once
+        echo "  Building catch2-tests..."
+        cd "$SOURCE_DIR"
+        make catch2-tests-executable STDFLAG=-std=c++14 COVERAGE=YesPlease -j4 \
+            > "$METRICS_DIR/catch2-build.log" 2>&1 || {
+            echo "  catch2-tests build failed; last 100 log lines:"
+            tail -n 100 "$METRICS_DIR/catch2-build.log" || true
+            exit 1
+        }
+
+        # Run [zh-translation] first
+        echo "  Running [zh-translation]..."
+        rc_zh=0
+        ./catch2-tests-executable '[zh-translation]' \
+            2>"$STDERR_C2_ZH" 1>"$STDOUT_C2_ZH" || rc_zh=$?
+        echo "  [zh-translation] exit code: $rc_zh"
+
+        # Run [message-overlay] second (even if first failed)
+        echo "  Running [message-overlay]..."
+        rc_mo=0
+        ./catch2-tests-executable '[message-overlay]' \
+            2>"$STDERR_C2_MO" 1>"$STDOUT_C2_MO" || rc_mo=$?
+        echo "  [message-overlay] exit code: $rc_mo"
+
+        # Parse [zh-translation] results
+        echo "  Parsing [zh-translation] results..."
+        zh_result=0
+        python3 "$CHECK_SCRIPT" --catch2-stderr "$STDERR_C2_ZH" \
+            --catch2-stdout "$STDOUT_C2_ZH" \
+            --baseline "$ZH_BASELINE" || zh_result=$?
+        echo "  zh-translation=$rc_zh (parse=$zh_result)"
+
+        # Parse [message-overlay] results
+        echo "  Parsing [message-overlay] results..."
+        mo_result=0
+        python3 "$CHECK_SCRIPT" --catch2-stderr "$STDERR_C2_MO" \
+            --catch2-stdout "$STDOUT_C2_MO" || mo_result=$?
+        echo "  message-overlay=$rc_mo (parse=$mo_result)"
+
+        # Write summary
+        echo "=== Catch2 Driver Report ===" > "$METRICS_DIR/catch2-report.txt"
+        echo "zh-translation=$rc_zh" >> "$METRICS_DIR/catch2-report.txt"
+        echo "message-overlay=$rc_mo" >> "$METRICS_DIR/catch2-report.txt"
+        echo "zh-translation-parse=$zh_result" >> "$METRICS_DIR/catch2-report.txt"
+        echo "message-overlay-parse=$mo_result" >> "$METRICS_DIR/catch2-report.txt"
+
+        if [ "$rc_zh" -ne 0 ] || [ "$rc_mo" -ne 0 ] || \
+           [ "$zh_result" -ne 0 ] || [ "$mo_result" -ne 0 ]; then
+            echo -e "${RED}Catch2 driver: FAILURES detected${NC}"
+            exit 1
+        fi
+        echo -e "${GREEN}Catch2 driver: ALL PASS${NC}"
         ;;
     fast)
         # Fast: aggregate from existing log files (no rebuild).
