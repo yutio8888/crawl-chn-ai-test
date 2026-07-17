@@ -1,0 +1,160 @@
+{
+  "entries": [
+    {
+      "canonical_key": "avatar song cast",
+      "canonical_fingerprint": "fnv1a64:a158c4236c2eaf80",
+      "selection_graph_fingerprint": "fnv1a64:ae39afb808e48ecf",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.avatar_song.suppress.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3c872a3cb00e2051db1d24b5fe1c5a852aa350f9f5f0317724a84ade0aa9f7b7",
+        "upstream_weight": 10,
+        "english_snapshot": "__NONE",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": {
+          "requires_player": false,
+          "requires_foe": false,
+          "requires_named_foe": false,
+          "requires_god": false,
+          "requires_caster_visible": false
+        },
+        "materialization_policy": "NONE",
+        "suppresses": true,
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {},
+        "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "blink away revenant cast",
+      "canonical_fingerprint": "fnv1a64:bc8e713ea84da5fb",
+      "selection_graph_fingerprint": "fnv1a64:598e671e256e8faa",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.blink_away_revenant.suppress.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3c872a3cb00e2051db1d24b5fe1c5a852aa350f9f5f0317724a84ade0aa9f7b7",
+        "upstream_weight": 10,
+        "english_snapshot": "__NONE",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": {
+          "requires_player": false,
+          "requires_foe": false,
+          "requires_named_foe": false,
+          "requires_god": false,
+          "requires_caster_visible": false
+        },
+        "materialization_policy": "NONE",
+        "suppresses": true,
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {},
+        "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "blink magical cast",
+      "canonical_fingerprint": "fnv1a64:cc691a6d74d8b70e",
+      "selection_graph_fingerprint": "fnv1a64:f59b07430570aa35",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.blink_magical.suppress.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3c872a3cb00e2051db1d24b5fe1c5a852aa350f9f5f0317724a84ade0aa9f7b7",
+        "upstream_weight": 10,
+        "english_snapshot": "__NONE",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": {
+          "requires_player": false,
+          "requires_foe": false,
+          "requires_named_foe": false,
+          "requires_god": false,
+          "requires_caster_visible": false
+        },
+        "materialization_policy": "NONE",
+        "suppresses": true,
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {},
+        "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "seal doors cast",
+      "canonical_fingerprint": "fnv1a64:00a5c1b33745ef4c",
+      "selection_graph_fingerprint": "fnv1a64:d00db5ea85aef583",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.seal_doors.suppress.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3c872a3cb00e2051db1d24b5fe1c5a852aa350f9f5f0317724a84ade0aa9f7b7",
+        "upstream_weight": 10,
+        "english_snapshot": "__NONE",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": {
+          "requires_player": false,
+          "requires_foe": false,
+          "requires_named_foe": false,
+          "requires_god": false,
+          "requires_caster_visible": false
+        },
+        "materialization_policy": "NONE",
+        "suppresses": true,
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {},
+        "recursive_captures": []
+      }]
+    },
+    {
+      "canonical_key": "siren song cast",
+      "canonical_fingerprint": "fnv1a64:e7399ae6e7bd2452",
+      "selection_graph_fingerprint": "fnv1a64:b2895a6d7c42ef21",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.siren_song.suppress.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3c872a3cb00e2051db1d24b5fe1c5a852aa350f9f5f0317724a84ade0aa9f7b7",
+        "upstream_weight": 10,
+        "english_snapshot": "__NONE",
+        "frame": "VOCAL",
+        "binding": { "resolves_target": false },
+        "applicability": {
+          "requires_player": false,
+          "requires_foe": false,
+          "requires_named_foe": false,
+          "requires_god": false,
+          "requires_caster_visible": false
+        },
+        "materialization_policy": "NONE",
+        "suppresses": true,
+        "slot_schema": [],
+        "required_arguments": [],
+        "line_metadata": [],
+        "materialization_cases": [],
+        "recursive_dependency_fingerprints": {},
+        "recursive_captures": []
+      }]
+    }
+  ],
+  "tombstones": []
+}
