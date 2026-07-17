@@ -71,7 +71,8 @@ catalog_variant::catalog_variant(
     const vector<string> &dependencies,
     const vector<string> &dependency_fingerprints,
     const vector<recursive_capture_definition> &captures,
-    const vector<recursive_capture_vocabulary_entry> &vocabulary)
+    const vector<recursive_capture_vocabulary_entry> &vocabulary,
+    bool suppress_message)
     : stable_id(id), tombstone(is_tombstone), variant_ordinal(ordinal),
       upstream_weight(weight),
       upstream_variant_fingerprint(variant_fingerprint),
@@ -81,7 +82,8 @@ catalog_variant::catalog_variant(
       required_arguments(arguments), lines(message_lines),
       materialization_cases(cases), recursive_dependencies(dependencies),
       recursive_dependency_fingerprints(dependency_fingerprints),
-      recursive_captures(captures), recursive_capture_vocabulary(vocabulary)
+      recursive_captures(captures), recursive_capture_vocabulary(vocabulary),
+      suppresses(suppress_message)
 {
 }
 
@@ -368,6 +370,35 @@ bool _validate_lines(const catalog_source &source,
     {
         error = "required_arguments do not exactly match slot_schema";
         return false;
+    }
+
+    if (variant.suppresses)
+    {
+        if (variant.english_snapshot != "__NONE"
+            || variant.policy != materialization_policy::NONE)
+        {
+            error = "suppress descriptor must select exact __NONE";
+            return false;
+        }
+        if (variant.resolves_target
+            || variant.conditions.requires_player
+            || variant.conditions.requires_foe
+            || variant.conditions.requires_named_foe
+            || variant.conditions.requires_god
+            || variant.conditions.requires_caster_visible
+            || !variant.slot_schema.empty()
+            || !variant.required_arguments.empty()
+            || !variant.lines.empty()
+            || !variant.materialization_cases.empty()
+            || !variant.recursive_dependencies.empty()
+            || !variant.recursive_dependency_fingerprints.empty()
+            || !variant.recursive_captures.empty()
+            || !variant.recursive_capture_vocabulary.empty())
+        {
+            error = "suppress descriptor contains renderable data";
+            return false;
+        }
+        return true;
     }
 
     if (variant.policy == materialization_policy::LEGACY_ONLY)
@@ -996,6 +1027,19 @@ const load_report &load_monspell_overlay(
             {
                 return _disable(load_failure::CORRUPT,
                                 "candidate key has legacy-only policy");
+            }
+            if (variant.suppresses && entry.mode != entry_mode::CANDIDATE)
+            {
+                return _disable(load_failure::CORRUPT,
+                                "suppress descriptor must be CANDIDATE");
+            }
+            if (!variant.suppresses
+                && entry.mode == entry_mode::CANDIDATE
+                && actual_variant.raw_pattern == "__NONE")
+            {
+                return _disable(
+                    load_failure::CORRUPT,
+                    "candidate __NONE requires suppress descriptor");
             }
             if (entry.mode != entry_mode::LEGACY_ONLY
                 && (variant.conditions.requires_named_foe

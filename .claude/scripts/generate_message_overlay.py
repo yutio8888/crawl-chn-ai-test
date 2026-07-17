@@ -460,11 +460,29 @@ def validate_manifest(manifest: dict[str, Any],
             cases = variant.get("materialization_cases")
             _require(isinstance(cases, list),
                      f"{vcontext}.materialization_cases must be a list")
+            suppresses = variant.get("suppresses", False)
+            _require(isinstance(suppresses, bool),
+                     f"{vcontext} has invalid suppresses flag")
             if policy == "NONE":
                 _require(not actual["random_substring_sites"]
                          and not actual["lua_sites"] and not dependencies
                          and not cases,
                          f"{vcontext} NONE policy has dynamic materialization")
+            if suppresses:
+                _require(mode == "CANDIDATE",
+                         f"{vcontext} suppress descriptor must be CANDIDATE")
+                _require(actual["text"] == "__NONE" and policy == "NONE",
+                         f"{vcontext} suppress descriptor must select exact __NONE")
+                _require(not binding["resolves_target"]
+                         and not any(applicability.values())
+                         and not slot_schema and not required
+                         and not variant.get("line_metadata") and not cases
+                         and not dependency_fingerprints
+                         and not variant.get("recursive_captures", []),
+                         f"{vcontext} suppress descriptor contains renderable data")
+                continue
+            _require(mode != "CANDIDATE" or actual["text"] != "__NONE",
+                     f"{vcontext} candidate __NONE requires suppress descriptor")
             if policy == "LEGACY_ONLY":
                 _require(not variant.get("line_metadata") and not cases,
                          f"{vcontext} LEGACY_ONLY must not emit templates")
@@ -750,8 +768,10 @@ def render_sidecar(manifest: dict[str, Any]) -> str:
                 f"                        {{ {dep_fps} }},",
                 f"                        {{ {captures} }},",
                 f"                        {{ {vocabulary} }},",
-                "                    },",
             ])
+            if variant.get("suppresses", False):
+                out.append("                        true,")
+            out.append("                    },")
         out.extend(["                },", "            },"])
     out.extend(["        },", "        {"])
     for tombstone in manifest.get("tombstones", []):

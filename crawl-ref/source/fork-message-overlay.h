@@ -233,7 +233,8 @@ struct catalog_variant
         const std::vector<std::string> &dependencies,
         const std::vector<std::string> &dependency_fingerprints,
         const std::vector<recursive_capture_definition> &captures,
-        const std::vector<recursive_capture_vocabulary_entry> &vocabulary);
+        const std::vector<recursive_capture_vocabulary_entry> &vocabulary,
+        bool suppress_message = false);
 
     std::string stable_id;
     bool tombstone = false;
@@ -254,6 +255,7 @@ struct catalog_variant
     std::vector<recursive_capture_definition> recursive_captures;
     std::vector<recursive_capture_vocabulary_entry>
         recursive_capture_vocabulary;
+    bool suppresses = false;
 };
 
 struct catalog_entry

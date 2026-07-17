@@ -39,6 +39,32 @@ string test_canonical_fingerprint(
     return formatted.str();
 }
 
+string test_selection_fingerprint(
+    const textdb_phase0::canonical_entry &entry)
+{
+    string payload("selection-v1\0", 13);
+    payload += entry.canonical_key;
+    payload += '\0';
+    for (const textdb_phase0::canonical_variant &variant : entry.variants)
+    {
+        payload += std::to_string(variant.locator.variant_ordinal);
+        payload += ':';
+        payload += std::to_string(variant.weight);
+        payload += ':';
+        payload += variant.raw_pattern;
+        payload += '\0';
+    }
+    uint64_t value = 14695981039346656037ULL;
+    for (const unsigned char byte : payload)
+    {
+        value ^= byte;
+        value *= 1099511628211ULL;
+    }
+    ostringstream formatted;
+    formatted << "fnv1a64:" << hex << setfill('0') << setw(16) << value;
+    return formatted.str();
+}
+
 void ensure_overlay_data_root()
 {
     if (!SysEnv.crawl_dir.empty())
@@ -83,6 +109,46 @@ fork_message_overlay::catalog_entry &catalog_entry_by_key(
                          });
     REQUIRE(entry != source.entries.end());
     return *entry;
+}
+
+const textdb_phase0::canonical_entry &canonical_entry_by_key(
+    const vector<textdb_phase0::canonical_entry> &entries, const string &key)
+{
+    const auto entry = find_if(
+        entries.begin(), entries.end(),
+        [&key](const textdb_phase0::canonical_entry &item)
+        {
+            return item.canonical_key == key;
+        });
+    REQUIRE(entry != entries.end());
+    return *entry;
+}
+
+fork_message_overlay::catalog_entry suppress_catalog_entry(
+    const vector<textdb_phase0::canonical_entry> &canonical,
+    const string &key = "siren song cast")
+{
+    using namespace fork_message_overlay;
+    const textdb_phase0::canonical_entry &actual =
+        canonical_entry_by_key(canonical, key);
+    REQUIRE(actual.variants.size() == 1);
+    catalog_variant variant;
+    variant.stable_id = "mon.cast.siren_song.suppress.v1";
+    variant.variant_ordinal = 0;
+    variant.upstream_weight = actual.variants[0].weight;
+    variant.upstream_variant_fingerprint = "fixture-fingerprint";
+    variant.english_snapshot = actual.variants[0].raw_pattern;
+    variant.frame = cast_frame::DIRECT_EFFECT;
+    variant.policy = materialization_policy::NONE;
+    variant.suppresses = true;
+
+    catalog_entry entry;
+    entry.canonical_key = key;
+    entry.canonical_fingerprint = test_canonical_fingerprint(actual);
+    entry.selection_graph_fingerprint = test_selection_fingerprint(actual);
+    entry.mode = entry_mode::CANDIDATE;
+    entry.variants = { variant };
+    return entry;
 }
 
 canonical_textdb::loaded_candidate canonical_candidate(
@@ -279,7 +345,7 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         variant.lines = { line };
         const load_report &valid = load_monspell_overlay(canonical, &source);
         REQUIRE(valid.state == domain_state::ENABLED);
-        CHECK(valid.structured_key_count == 172);
+        CHECK(valid.structured_key_count == 190);
         CHECK(monspell_overlay_covers(entry.canonical_key));
 
         reset_monspell_overlay_for_test();
@@ -296,6 +362,76 @@ TEST_CASE("monspell overlay validates completely before coverage queries",
         const load_report &unknown = load_monspell_overlay(canonical, &source);
         CHECK(unknown.state == domain_state::DISABLED);
         CHECK(unknown.failure == load_failure::CORRUPT);
+    }
+
+    SECTION("explicit suppress descriptors are narrow and fail closed")
+    {
+        scoped_overlay_reset reset;
+        catalog_source source = generated_monspell_catalog();
+        source.entries.push_back(suppress_catalog_entry(canonical));
+        const load_report &valid = load_monspell_overlay(canonical, &source);
+        REQUIRE(valid.state == domain_state::ENABLED);
+        CHECK(valid.structured_key_count == 190);
+        CHECK(monspell_overlay_covers("siren song cast"));
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries.push_back(suppress_catalog_entry(canonical));
+        source.entries.back().variants[0].suppresses = false;
+        const load_report &unmarked =
+            load_monspell_overlay(canonical, &source);
+        CHECK(unmarked.failure == load_failure::CORRUPT);
+        CHECK(unmarked.diagnostic
+              == "candidate __NONE requires suppress descriptor");
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        source.entries.push_back(suppress_catalog_entry(canonical));
+        source.entries.back().mode = entry_mode::LEGACY_ONLY;
+        source.entries.back().variants[0].policy =
+            materialization_policy::LEGACY_ONLY;
+        const load_report &legacy = load_monspell_overlay(canonical, &source);
+        CHECK(legacy.failure == load_failure::CORRUPT);
+        CHECK(legacy.diagnostic == "suppress descriptor must be CANDIDATE");
+
+        reset_monspell_overlay_for_test();
+        source = generated_monspell_catalog();
+        catalog_variant &ordinary =
+            catalog_entry_by_key(source, "beam catchall cast").variants[0];
+        ordinary.suppresses = true;
+        const load_report &normal_body =
+            load_monspell_overlay(canonical, &source);
+        CHECK(normal_body.failure == load_failure::CORRUPT);
+        CHECK(normal_body.diagnostic
+              == "suppress descriptor must select exact __NONE");
+
+        for (const bool add_slot : { false, true })
+        {
+            CAPTURE(add_slot);
+            reset_monspell_overlay_for_test();
+            source = generated_monspell_catalog();
+            source.entries.push_back(suppress_catalog_entry(canonical));
+            catalog_variant &renderable = source.entries.back().variants[0];
+            if (add_slot)
+            {
+                renderable.slot_schema = { { "actor", "actor_ref" } };
+                renderable.required_arguments = { "actor" };
+            }
+            else
+            {
+                line_metadata line;
+                line.templates = {
+                    { "en", "NONE", "not silent" },
+                    { "zh", "NONE", "不再静默" },
+                };
+                renderable.lines = { line };
+            }
+            const load_report &with_render_data =
+                load_monspell_overlay(canonical, &source);
+            CHECK(with_render_data.failure == load_failure::CORRUPT);
+            CHECK(with_render_data.diagnostic
+                  == "suppress descriptor contains renderable data");
+        }
     }
 
     SECTION("missing overlay disables the whole domain")
@@ -880,6 +1016,56 @@ TEST_CASE("production candidate state machine preserves speech search semantics"
         CHECK(search.lookup_count == 0);
         CHECK(monspell_overlay_diagnostics().overlay_corrupt == 1);
     }
+}
+
+TEST_CASE("explicit suppress descriptor routes and stops after one selection",
+          "[single-file][message-overlay][suppress]")
+{
+    using namespace fork_message_overlay;
+    ensure_overlay_data_root();
+    databaseSystemInit();
+    const vector<textdb_phase0::canonical_entry> canonical =
+        textdb_phase0::dump_canonical_english_speakdb();
+    scoped_overlay_reset reset;
+    catalog_source source = generated_monspell_catalog();
+    source.entries.push_back(suppress_catalog_entry(canonical));
+    REQUIRE(load_monspell_overlay(canonical, &source).state
+            == domain_state::ENABLED);
+
+    rng::subgenerator scoped_rng(0x3401, 0x3402);
+    const uint64_t initial_state = rng::current_generator().get_state();
+    const uint64_t initial_count = rng::current_generator().get_count();
+    const route_decision route = route_monspell_message("SIREN SONG CAST");
+    CHECK(route.route == message_route::STRUCTURED);
+    CHECK(rng::current_generator().get_state() == initial_state);
+    CHECK(rng::current_generator().get_count() == initial_count);
+
+    size_t binding_calls = 0;
+    canonical_materialization observed;
+    const message_candidate_search search = search_message_candidate(
+        "siren song cast", message_prefix::NORMAL,
+        [&](const message_lookup_request &request)
+        {
+            observed = materialize_monspell_candidate(
+                request.lookup_key, request.attempt, runtime_applicability(),
+                [&](const binding_requirements &)
+                {
+                    ++binding_calls;
+                    return beam_bindings(target_relation::NONE);
+                });
+            return lookup_result(observed.result);
+        });
+    CHECK(search.action == message_search_action::STOP_SILENT);
+    CHECK(search.lookup_count == 1);
+    CHECK(observed.result == message_result::SUPPRESS);
+    CHECK(binding_calls == 0);
+    REQUIRE(observed.canonical.trace.weighted_choices.size() == 1);
+    const canonical_textdb::weighted_choice_trace &choice =
+        observed.canonical.trace.weighted_choices[0];
+    CHECK(choice.before.current_count == initial_count);
+    CHECK(choice.after.current_count == initial_count + 1);
+    CHECK(rng::current_generator().get_count() == initial_count + 1);
+    CHECK(monspell_overlay_diagnostics().message_suppressed == 1);
 }
 
 TEST_CASE("canonical monspell materialization observes all five boundaries",

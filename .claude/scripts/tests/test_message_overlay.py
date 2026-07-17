@@ -157,6 +157,43 @@ class MessageOverlayTests(unittest.TestCase):
             MODULE.runtime_canonical_fingerprint(node))
         return MODULE.validate_manifest(manifest, inventory)
 
+    def suppress_entry(self, key="siren song cast"):
+        upstream = MODULE._inventory_nodes(INVENTORY)[key]
+        self.assertEqual(1, len(upstream["variants"]))
+        actual = upstream["variants"][0]
+        return {
+            "canonical_key": key,
+            "canonical_fingerprint":
+                MODULE.runtime_canonical_fingerprint(upstream),
+            "selection_graph_fingerprint":
+                MODULE.runtime_selection_fingerprint(upstream),
+            "mode": "CANDIDATE",
+            "variants": [{
+                "stable_id": "mon.cast.siren_song.suppress.v1",
+                "tombstone": False,
+                "variant_ordinal": 0,
+                "upstream_weight": actual["weight"],
+                "upstream_variant_fingerprint": actual["text_fingerprint"],
+                "english_snapshot": actual["text"],
+                "frame": "DIRECT_EFFECT",
+                "binding": {"resolves_target": False},
+                "applicability": {
+                    "requires_player": False,
+                    "requires_foe": False,
+                    "requires_named_foe": False,
+                    "requires_god": False,
+                    "requires_caster_visible": False,
+                },
+                "materialization_policy": "NONE",
+                "suppresses": True,
+                "slot_schema": [],
+                "required_arguments": [],
+                "recursive_dependency_fingerprints": {},
+                "materialization_cases": [],
+                "line_metadata": [],
+            }],
+        }
+
     def test_production_manifest_and_sidecar_are_exact(self):
         validated = self.validate(copy.deepcopy(MANIFEST))
         self.assertEqual(SIDECAR.read_text(encoding="utf-8"),
@@ -368,6 +405,73 @@ class MessageOverlayTests(unittest.TestCase):
             ["CAPTURE_SLOT", "NONE"],
             [variant["materialization_policy"]
              for variant in nergalle["variants"]])
+
+    def test_explicit_suppress_descriptor_is_template_free(self):
+        value = copy.deepcopy(MANIFEST)
+        value["entries"].append(self.suppress_entry())
+        generated = MODULE.render_sidecar(self.validate(value))
+        self.assertIn('"siren song cast"', generated)
+        self.assertIn("                        true,", generated)
+
+    def test_suppress_descriptor_rejects_protocol_misuse(self):
+        valid = copy.deepcopy(MANIFEST)
+        valid["entries"].append(self.suppress_entry())
+
+        missing_marker = copy.deepcopy(valid)
+        missing_marker["entries"][-1]["variants"][0].pop("suppresses")
+        with self.assertRaisesRegex(
+                MODULE.ManifestError,
+                "candidate __NONE requires suppress descriptor"):
+            self.validate(missing_marker)
+
+        legacy = copy.deepcopy(valid)
+        legacy["entries"][-1]["mode"] = "LEGACY_ONLY"
+        legacy["entries"][-1]["variants"][0][
+            "materialization_policy"] = "LEGACY_ONLY"
+        with self.assertRaisesRegex(MODULE.ManifestError,
+                                    "suppress descriptor must be CANDIDATE"):
+            self.validate(legacy)
+
+        ordinary = copy.deepcopy(MANIFEST)
+        entry = self.entry(
+            ordinary, "summon water elementals elemental wellspring cast")
+        entry["mode"] = "CANDIDATE"
+        variant = entry["variants"][0]
+        variant["materialization_policy"] = "NONE"
+        variant["suppresses"] = True
+        variant["slot_schema"] = []
+        variant["required_arguments"] = []
+        with self.assertRaisesRegex(
+                MODULE.ManifestError,
+                "suppress descriptor must select exact __NONE"):
+            self.validate(ordinary)
+
+        for field in ("slots", "lines"):
+            with self.subTest(field=field):
+                renderable = copy.deepcopy(valid)
+                variant = renderable["entries"][-1]["variants"][0]
+                if field == "slots":
+                    variant["slot_schema"] = [
+                        {"name": "actor", "type": "actor_ref"},
+                    ]
+                    variant["required_arguments"] = ["actor"]
+                else:
+                    variant["line_metadata"] = [{
+                        "sensory": "PLAIN",
+                        "channel": None,
+                        "behavior": {
+                            "implies_gesture": False,
+                            "audible": False,
+                        },
+                        "templates": [{
+                            "language": "en", "relation": "NONE",
+                            "pattern": "not silent",
+                        }],
+                    }]
+                with self.assertRaisesRegex(
+                        MODULE.ManifestError,
+                        "suppress descriptor contains renderable data"):
+                    self.validate(renderable)
 
     def test_unknown_schema_is_rejected(self):
         value = copy.deepcopy(MANIFEST)
