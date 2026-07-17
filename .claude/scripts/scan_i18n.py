@@ -2395,8 +2395,17 @@ def cmd_validate_source_classification_shard(args):
     inventory = _load_json(args.inventory) if args.inventory else None
     inventory_groups = {}
     if inventory:
-        for g in inventory.get('groups', []):
-            inventory_groups[g.get('group_id')] = g
+        if args.kind == 'missing-key':
+            # Missing-key inventory: missing_keys is a list of key strings
+            inv_keys = inventory.get('missing_keys', [])
+            for mk in inv_keys:
+                import hashlib
+                h = hashlib.sha256(mk.encode('utf-8')).hexdigest()
+                gid = f"sourcedb-v1:{h}"
+                inventory_groups[gid] = {'group_fingerprint': h}
+        else:
+            for g in inventory.get('groups', []):
+                inventory_groups[g.get('group_id')] = g
 
     # Check for duplicate group_ids within shard
     seen_gids = set()
@@ -2428,19 +2437,29 @@ def cmd_validate_source_classification_shard(args):
             errors.append(f"groups[{i}]: missing classification")
 
         cause = cls.get('cause', '')
-        if cause not in ('case_variant_duplicate', 'semantic_overload',
-                         'missing_context', 'structural_corruption', 'unknown'):
-            errors.append(f"groups[{i}]: invalid cause: {cause}")
+        if args.kind == 'missing-key':
+            if cause not in ('adjacent_literal', 'not_in_source_txt',
+                             'structural_corruption', 'not_user_visible'):
+                errors.append(f"groups[{i}]: invalid cause: {cause}")
+        else:
+            if cause not in ('case_variant_duplicate', 'semantic_overload',
+                             'missing_context', 'structural_corruption', 'unknown'):
+                errors.append(f"groups[{i}]: invalid cause: {cause}")
 
         action = cls.get('action', '')
-        if action not in ('dedupe', 'choose_translation', 'introduce_context',
-                          'repair_block', 'trace_callsites',
-                          'defer_semantic_ruling'):
-            errors.append(f"groups[{i}]: invalid action: {action}")
+        if args.kind == 'missing-key':
+            if action not in ('add_translation', 'repair_block',
+                              'not_user_visible'):
+                errors.append(f"groups[{i}]: invalid action: {action}")
+        else:
+            if action not in ('dedupe', 'choose_translation', 'introduce_context',
+                              'repair_block', 'trace_callsites',
+                              'defer_semantic_ruling'):
+                errors.append(f"groups[{i}]: invalid action: {action}")
 
         status = cls.get('status', '')
         if status not in ('classified', 'needs_semantic_ruling',
-                          'ready_for_writer'):
+                          'ready_for_writer', 'not_applicable'):
             errors.append(f"groups[{i}]: invalid status: {status}")
 
         # If status is 'unknown' or 'needs_semantic_ruling', that's a problem
@@ -2453,10 +2472,11 @@ def cmd_validate_source_classification_shard(args):
         if inventory and gid in inventory_groups:
             inv_g = inventory_groups[gid]
             # Verify fingerprint matches
-            if fp != inv_g.get('group_fingerprint', ''):
+            inv_fp = inv_g.get('group_fingerprint', '')
+            if fp and inv_fp and fp != inv_fp:
                 errors.append(
                     f"groups[{i}]: fingerprint drift: "
-                    f"shard={fp}, inventory={inv_g.get('group_fingerprint')}")
+                    f"shard={fp}, inventory={inv_fp}")
 
     if errors:
         print(f"ERROR: {len(errors)} validation error(s) in shard:",
