@@ -22946,6 +22946,9 @@ You lack an exoframe to install that in.
 Your %s briefly %s through it before you manage to get a firm grip on it.
 你的%s在你握紧之前短暂地%s穿过了它。
 %%%%
+%1$s %2$s briefly %3$s through it before %4$s %5$s to get a firm grip on it.
+%1$s%2$s在%4$s握紧之前短暂地%3$s了它。
+%%%%
 You stand defiantly in death's doorway!
 你无畏地站在死亡的门槛上！
 %%%%
@@ -40341,9 +40344,9 @@ You can enter the previous (shallower) level by following these up (<w><<</w>). 
 Escape hatches can be used to quickly leave a level with <w><<</w> and <w>></w>, respectively. Note that you will usually be unable to return right away.
 逃生口可以用<w><<</w>和<w>></w>来快速离开一层。注意，你通常会掉落在下一层。
 %%%%
-\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.\n\\n为避免在旅行或自动探索时意外打开你不想打开的门，你可以用排除标记标记它。
+\\nTo avoid accidentally opening a door you'd rather remain closed during travel or autoexplore, you can mark it with an exclusion from the map view (<w>X</w>) with <w>ee</w> while your cursor is on the grid in question. Such an exclusion will prevent autotravel from ever entering that grid until you remove the exclusion with another press of <w>Xe</w>.\n\\n为避免在旅行或自动探索时意外打开你不想打开的门，你可以在地图界面（<w>X</w>）中将光标移到目标格子上，然后按<w>ee</w>来标记排除。排除标记将阻止自动旅行进入该格子，直到你再次按<w>Xe</w>移除该标记。
 %%%%
-This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\\n\n这是你加入宗教的机会！一般来说，神祇会帮助它们的信徒，赐予各种力量。\\n
+This is your chance to join a religion! In general, the gods will help their followers, bestowing powers of all sorts upon them, but many of them demand a life of dedication, constant tributes or entertainment in return.\\n\n这是你加入宗教的机会！一般来说，神祇会帮助它们的信徒，赐予各种力量，但许多神祇要求信徒奉献一生、不断献祭或提供娱乐作为回报。\\n
 %%%%
 This particular altar is so ancient that you cannot make out which god it is dedicated to! Converting here by pressing <w>></w> while standing on the altar will enter you into service of a random god, who will grant you some additional piety in thanks.
 这座祭坛古老到你无法辨认它属于哪位神祇，而且
@@ -40366,7 +40369,7 @@ probably dangerous, and you should stay out of it if you can.
 currently harmless, but that could change at some point. Check the overview screen (<w>%</w>) to view your resistances.
 目前无害，但情况可能在某个时候改变。查看概览界面（<w>%</w>）来了解你的抗性。
 %%%%
-Did you think you were the only adventurer in the dungeon? Well, you thought wrong! These unique adversaries often possess skills that normal monsters wouldn't, so be careful.\\n\\n\n你以为地牢里只有你一个冒险者吗？好吧，你错了！这些独特的对手往往拥有强大的力量。\\n\\n
+Did you think you were the only adventurer in the dungeon? Well, you thought wrong! These unique adversaries often possess skills that normal monsters wouldn't, so be careful.\\n\\n\n你以为地牢里只有你一个冒险者吗？好吧，你错了！这些独特的对手往往拥有普通怪物不具备的特殊能力，千万要小心。\\n\\n
 %%%%
 The ghost of a deceased adventurer, it would like nothing better than to send you the same way.\n\n
 这是已故冒险者的鬼魂，它最想做的就是让你也走上同一条路。\n\n
@@ -40389,7 +40392,7 @@ Apparently it has not noticed you - yet. Note that you do not have to engage eve
 Apparently it has been distracted by something. You could use this opportunity to sneak up on this monster - or to sneak away.
 它似乎被什么东西分散了注意力。你可以利用这个机会潜行靠近它——或者悄悄溜走。
 %%%%
-\\nThis monster doesn't appear to have any resistances or susceptibilities. It cannot fly and is of average speed. Examining other, possibly more high-level monsters can give important clues as to how to deal with them.\n\\n这个怪物似乎没有任何抗性或弱点。它不能飞行，速度一般。检查
+\\nThis monster doesn't appear to have any resistances or susceptibilities. It cannot fly and is of average speed. Examining other, possibly more high-level monsters can give important clues as to how to deal with them.\n\\n这个怪物似乎没有任何抗性或弱点。它不能飞行，速度一般。检查其他可能等级更高的怪物，可以为你提供应对它们的重要线索。
 %%%%
 If you linger in this branch for another %d turns, the power of Zot will shatter your %s gem.\n
 如果你在此分支再逗留%d回合，佐特之力将粉碎你的%s宝石。\n
@@ -40493,7 +40496,7 @@ You cannot be affected by this spell right now. %s\n
 It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
 它会在受到伤害或被杀死时释放各种果冻怪，果冻的数量与受到的伤害成正比。\n
 %%%%
-If this monster is a "program bug", then it\'s recommended that you save your game and reload. Please report monsters who masquerade as program bugs or run around the dungeon without a proper description to the authorities.\\n\n如果这个怪物是一个「程序错误」，建议你保存游戏并重新加载。请报告那些具有特殊能力的怪物。\\n
+If this monster is a "program bug", then it\'s recommended that you save your game and reload. Please report monsters who masquerade as program bugs or run around the dungeon without a proper description to the authorities.\\n\n如果这个怪物是"程序错误"，建议你保存游戏并重新加载。请向官方报告那些冒充程序错误，或没有适当描述就在地牢中四处游荡的怪物。\\n
 %%%%
 \nThis cloud is opaque; one tile will not block vision, but multiple will.\n
 \n 是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。\n
