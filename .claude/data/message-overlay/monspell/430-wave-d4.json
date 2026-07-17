@@ -1,0 +1,394 @@
+{
+  "entries": [
+    {
+      "canonical_key": "golden eye cast targeted",
+      "canonical_fingerprint": "fnv1a64:5d34aa359e6a03dd",
+      "selection_graph_fingerprint": "fnv1a64:b553c7458d148a90",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.golden_eye.targeted.blinks.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "805e815625b8654b44f987ac1f006808fa0d2f2b59d45721bdc70bb804a18cec",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ blinks @at@ @target@.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} blinks at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} blinks next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} blinks past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}闪烁。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}闪烁到${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}从${target}旁边闪烁而过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "grave claw vampire bloodprince cast",
+      "canonical_fingerprint": "fnv1a64:6b5f85a0600c8e11",
+      "selection_graph_fingerprint": "fnv1a64:8962929440ff2fab",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.reaches_hand.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "4e3e03102c4bcec33fcc67bfb28d9d46865613abf7fb03644166b312bea761a1",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ reaches out @possessive@ hand.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} reaches out ${possessive} hand." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}伸出手。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.grave_claw_vampire_bloodprince.snaps_fingers.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "96b65bb0962704fe80bb48e0b1a4b7c476912301e5f51967bafc3caa7cd2e06f",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ snaps @possessive@ fingers.",
+          "frame": "GESTURE",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [
+            { "name": "actor", "type": "actor_ref" },
+            { "name": "possessive", "type": "actor_possessive_pronoun" }
+          ],
+          "required_arguments": ["actor", "possessive"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} snaps ${possessive} fingers." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}打了个响指。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "harpoon shot cast",
+      "canonical_fingerprint": "fnv1a64:41387d8a4fe60280",
+      "selection_graph_fingerprint": "fnv1a64:1e675282459946e7",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.harpoon_shot.fires_harpoon.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "b181aa7df0e93342e96235285c8f49e09403b2bb2ac95cfe905c8034edb181a4",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fires a harpoon shot @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} fires a harpoon shot at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} fires a harpoon shot next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} fires a harpoon shot past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}射出一枚鱼叉。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边射出一枚鱼叉。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}射出一枚鱼叉，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "hellfire court cast",
+      "canonical_fingerprint": "fnv1a64:d66a307c92219946",
+      "selection_graph_fingerprint": "fnv1a64:3513a71dedf05011",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.hellfire_court.calls_servants.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "7c0daf16845ce1640565b490aa927b8cd2b035f7427a9aac6a068922e26c3660",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ calls forth @possessive@ servants.",
+        "frame": "INVOCATION",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} calls forth ${possessive} servants." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}召来仆从。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "hellfire mortar cast",
+      "canonical_fingerprint": "fnv1a64:7cb7715859d99b72",
+      "selection_graph_fingerprint": "fnv1a64:7b799494196af935",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.hellfire_mortar.magma_torrent.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "806b4f6a363776704708df2d6ad2f76cdd80b8dd4703df399dec07bc09481fff",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ blasts a torrent of magma @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} blasts a torrent of magma at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} blasts a torrent of magma next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} blasts a torrent of magma past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}轰出一股岩浆洪流。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边轰出一股岩浆洪流。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}轰出一股岩浆洪流，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "injury mirror screaming refraction cast",
+      "canonical_fingerprint": "fnv1a64:3c36ce7ebf07cc3d",
+      "selection_graph_fingerprint": "fnv1a64:83c9b89035887d93",
+      "mode": "CANDIDATE",
+      "variants": [
+        {
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.woeful_anguish.v1",
+          "tombstone": false,
+          "variant_ordinal": 0,
+          "upstream_variant_fingerprint": "51f47f7fcc10892730005a101c520b148341b988f65f215bf0aa587e5799563d",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ shines with woeful anguish.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} shines with woeful anguish." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}痛苦而悲怆地闪耀着。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        },
+        {
+          "stable_id": "mon.cast.injury_mirror_screaming_refraction.radiant_agony.v1",
+          "tombstone": false,
+          "variant_ordinal": 1,
+          "upstream_variant_fingerprint": "a7f4828d30513b6da994e5cd6090fbe337373be2e3fd716f773868b3c14047ef",
+          "upstream_weight": 10,
+          "english_snapshot": "@The_monster@ rattles its vertebrae in radiant agony.",
+          "frame": "DIRECT_EFFECT",
+          "binding": { "resolves_target": false },
+          "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+          "materialization_policy": "NONE",
+          "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+          "required_arguments": ["actor"],
+          "line_metadata": [{
+            "sensory": "PLAIN", "channel": null,
+            "behavior": { "implies_gesture": false, "audible": false },
+            "templates": [
+              { "language": "en", "relation": "NONE", "pattern": "${actor} rattles its vertebrae in radiant agony." },
+              { "language": "zh", "relation": "NONE", "pattern": "${actor}在光辉的剧痛中让椎骨嘎嘎作响。" }
+            ]
+          }],
+          "materialization_cases": [], "recursive_dependency_fingerprints": {}
+        }
+      ]
+    },
+    {
+      "canonical_key": "kobold blastminer cast targeted",
+      "canonical_fingerprint": "fnv1a64:6a91b647766a7f32",
+      "selection_graph_fingerprint": "fnv1a64:600379500d696887",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.kobold_blastminer.blasts_cannon.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "3fbcae55316f5efd6fdda4ef72594102a2431da32fddc0e21cc324973d1cc678",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ blasts @possessive@ cannon @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "possessive", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} blasts ${possessive} cannon at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} blasts ${possessive} cannon next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} blasts ${possessive} cannon past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}用火炮轰击${target}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}用火炮轰击${target}旁边。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}用火炮轰击${target}身后。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "landbreaker natural cast",
+      "canonical_fingerprint": "fnv1a64:b30533334a0d4f0e",
+      "selection_graph_fingerprint": "fnv1a64:d564ae9c92908833",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.landbreaker_natural.fractures_ground.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "47ea791afa8fd338e3d5a0f18ebdd73fd79be896b28705f52d38d2969c243c00",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ fractures the ground with @possessive@ footsteps.",
+        "frame": "DIRECT_EFFECT",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "possessive", "type": "actor_possessive_pronoun" }
+        ],
+        "required_arguments": ["actor", "possessive"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} fractures the ground with ${possessive} footsteps." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}的脚步震裂大地。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "launch bomblet cast",
+      "canonical_fingerprint": "fnv1a64:d74892030b31242b",
+      "selection_graph_fingerprint": "fnv1a64:55f04b09bc32fb8e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.launch_bomblet.launches_bomblet.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "1fcbc3d1316891b90ff9b83f3a832c4cb91be39b9e8d67a5dcdeea4d62de1a7f",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ launches a bomblet.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": false },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [{ "name": "actor", "type": "actor_ref" }],
+        "required_arguments": ["actor"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "NONE", "pattern": "${actor} launches a bomblet." },
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}发射一枚小型炸弹。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    },
+    {
+      "canonical_key": "lightning bolt electric golem cast",
+      "canonical_fingerprint": "fnv1a64:62a46ae58340e593",
+      "selection_graph_fingerprint": "fnv1a64:8de6cf62e7039b1e",
+      "mode": "CANDIDATE",
+      "variants": [{
+        "stable_id": "mon.cast.lightning_bolt_electric_golem.hurls_beam.v1",
+        "tombstone": false,
+        "variant_ordinal": 0,
+        "upstream_variant_fingerprint": "e6f6833a838ad1d872a17288cc543a0ffb6e411b2e298d2796a5671b184b4515",
+        "upstream_weight": 10,
+        "english_snapshot": "@The_monster@ hurls @beam@ @at@ @target@.",
+        "frame": "PROJECTILE",
+        "binding": { "resolves_target": true },
+        "applicability": { "requires_player": false, "requires_foe": false, "requires_named_foe": false, "requires_god": false, "requires_caster_visible": false },
+        "materialization_policy": "NONE",
+        "slot_schema": [
+          { "name": "actor", "type": "actor_ref" },
+          { "name": "beam", "type": "resolved_beam" },
+          { "name": "target", "type": "resolved_target" }
+        ],
+        "required_arguments": ["actor", "beam", "target"],
+        "line_metadata": [{
+          "sensory": "PLAIN", "channel": null,
+          "behavior": { "implies_gesture": false, "audible": false },
+          "templates": [
+            { "language": "en", "relation": "AT", "pattern": "${actor} hurls ${beam} at ${target}." },
+            { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} hurls ${beam} next to ${target}." },
+            { "language": "en", "relation": "PAST", "pattern": "${actor} hurls ${beam} past ${target}." },
+            { "language": "zh", "relation": "AT", "pattern": "${actor}向${target}掷出${beam}。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边掷出${beam}。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}掷出${beam}，从${target}旁边掠过。" }
+          ]
+        }],
+        "materialization_cases": [], "recursive_dependency_fingerprints": {}
+      }]
+    }
+  ],
+  "tombstones": []
+}
