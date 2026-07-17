@@ -94,7 +94,7 @@
               "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:0",
               "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
                 { "language": "en", "relation": "NONE", "pattern": "${actor} casts forth ${possessive} victims' sorrows." },
-                { "language": "zh", "relation": "NONE", "pattern": "${actor}释放出受害者的悲伤。" }
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}释放出${possessive}受害者的悲伤。" }
               ] }]
             },
             {
@@ -102,7 +102,7 @@
               "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:1",
               "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
                 { "language": "en", "relation": "NONE", "pattern": "${actor} pitches forth ${possessive} victims' sorrows." },
-                { "language": "zh", "relation": "NONE", "pattern": "${actor}抛出受害者的悲伤。" }
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}抛出${possessive}受害者的悲伤。" }
               ] }]
             }
           ],
@@ -124,7 +124,7 @@
               "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:0",
               "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
                 { "language": "en", "relation": "NONE", "pattern": "${actor} rolls out ${possessive} victims' laments." },
-                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开受害者的挽歌。" }
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开${possessive}受害者的挽歌。" }
               ] }]
             },
             {
@@ -132,7 +132,7 @@
               "signature": "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:1",
               "line_metadata": [{ "sensory": "PLAIN", "channel": null, "behavior": { "implies_gesture": false, "audible": false }, "templates": [
                 { "language": "en", "relation": "NONE", "pattern": "${actor} rolls out ${possessive} victims' suffering." },
-                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开受害者的苦难。" }
+                { "language": "zh", "relation": "NONE", "pattern": "${actor}铺展开${possessive}受害者的苦难。" }
               ] }]
             }
           ],

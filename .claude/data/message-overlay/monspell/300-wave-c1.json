@@ -173,7 +173,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "A stream of webbing shoots out from thin air." },
-            { "language": "zh", "relation": "NONE", "pattern": "一连串的网从稀薄的空气中喷射而来。" }
+            { "language": "zh", "relation": "NONE", "pattern": "一股蛛网凭空射出。" }
           ]
         }],
         "materialization_cases": [],
@@ -203,7 +203,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "A string of sticky webbing shoots out from thin air." },
-            { "language": "zh", "relation": "NONE", "pattern": "稀薄的空气中冒出一串黏性的网。" }
+            { "language": "zh", "relation": "NONE", "pattern": "一缕黏性蛛网凭空射出。" }
           ]
         }],
         "materialization_cases": [],

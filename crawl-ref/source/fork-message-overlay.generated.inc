@@ -3859,7 +3859,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor_possessive", "actor_possessive_name"}, {"actor_subjective", "actor_subjective_pronoun"} },
                         { "actor_possessive", "actor_subjective" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor_possessive} eyestalks quiver as ${actor_subjective} mumbles some strange words."}, {"zh", "NONE", "${actor_possessive}眼柄微微颤动，同时咕哝着一些奇怪的话。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor_possessive} eyestalks quiver as ${actor_subjective} mumbles some strange words."}, {"zh", "NONE", "${actor_possessive}眼柄微微颤动，${actor_subjective}同时咕哝着一些奇怪的话。"} } },
                     },
                         {},
                         {  },
@@ -4127,7 +4127,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"} },
                         { "actor" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} pulsates."}, {"zh", "NONE", "${actor}悸动着。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} pulsates."}, {"zh", "NONE", "${actor}脉动着。"} } },
                     },
                         {},
                         {  },
@@ -4155,7 +4155,7 @@ const catalog_source &generated_monspell_catalog()
                         { {"actor", "actor_ref"}, {"target", "resolved_target"} },
                         { "actor", "target" },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blinks at ${target}."}, {"en", "NEXT_TO", "${actor} blinks next to ${target}."}, {"en", "PAST", "${actor} blinks past ${target}."}, {"zh", "AT", "${actor}朝${target}闪烁。"}, {"zh", "NEXT_TO", "${actor}闪烁到${target}旁边。"}, {"zh", "PAST", "${actor}从${target}旁边闪烁而过。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "AT", "${actor} blinks at ${target}."}, {"en", "NEXT_TO", "${actor} blinks next to ${target}."}, {"en", "PAST", "${actor} blinks past ${target}."}, {"zh", "AT", "${actor}朝${target}眨眼。"}, {"zh", "NEXT_TO", "${actor}朝${target}旁边眨眼。"}, {"zh", "PAST", "${actor}朝${target}身后眨眼。"} } },
                     },
                         {},
                         {  },
@@ -5108,14 +5108,14 @@ const catalog_source &generated_monspell_catalog()
                                 "mon.cast.march_of_sorrows_boris.casts_forth_sorrows.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:0",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} casts forth ${possessive} victims' sorrows."}, {"zh", "NONE", "${actor}释放出受害者的悲伤。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} casts forth ${possessive} victims' sorrows."}, {"zh", "NONE", "${actor}释放出${possessive}受害者的悲伤。"} } },
                             },
                             },
                             {
                                 "mon.cast.march_of_sorrows_boris.pitches_forth_sorrows.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:0:0|lua=0|sites=1|27:march of sorrows boris cast:0:0:2:1",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} pitches forth ${possessive} victims' sorrows."}, {"zh", "NONE", "${actor}抛出受害者的悲伤。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} pitches forth ${possessive} victims' sorrows."}, {"zh", "NONE", "${actor}抛出${possessive}受害者的悲伤。"} } },
                             },
                             },
                         },
@@ -5142,14 +5142,14 @@ const catalog_source &generated_monspell_catalog()
                                 "mon.cast.march_of_sorrows_boris.rolls_out_laments.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:0",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' laments."}, {"zh", "NONE", "${actor}铺展开受害者的挽歌。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' laments."}, {"zh", "NONE", "${actor}铺展开${possessive}受害者的挽歌。"} } },
                             },
                             },
                             {
                                 "mon.cast.march_of_sorrows_boris.rolls_out_suffering.v1",
                                 "materialization-v1|variants=1|27:march of sorrows boris cast:1:0|lua=0|sites=1|27:march of sorrows boris cast:1:0:2:1",
                             {
-                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' suffering."}, {"zh", "NONE", "${actor}铺展开受害者的苦难。"} } },
+                              { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "${actor} rolls out ${possessive} victims' suffering."}, {"zh", "NONE", "${actor}铺展开${possessive}受害者的苦难。"} } },
                             },
                             },
                         },
@@ -8098,7 +8098,7 @@ const catalog_source &generated_monspell_catalog()
                         {  },
                         {  },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "A stream of webbing shoots out from thin air."}, {"zh", "NONE", "一连串的网从稀薄的空气中喷射而来。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "A stream of webbing shoots out from thin air."}, {"zh", "NONE", "一股蛛网凭空射出。"} } },
                     },
                         {},
                         {  },
@@ -8126,7 +8126,7 @@ const catalog_source &generated_monspell_catalog()
                         {  },
                         {  },
                     {
-                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "A string of sticky webbing shoots out from thin air."}, {"zh", "NONE", "稀薄的空气中冒出一串黏性的网。"} } },
+                      { sensory_mode::PLAIN, "", false, false, { {"en", "NONE", "A string of sticky webbing shoots out from thin air."}, {"zh", "NONE", "一缕黏性蛛网凭空射出。"} } },
                     },
                         {},
                         {  },

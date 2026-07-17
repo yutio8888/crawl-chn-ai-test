@@ -143,7 +143,7 @@
           "behavior": { "implies_gesture": false, "audible": false },
           "templates": [
             { "language": "en", "relation": "NONE", "pattern": "${actor} pulsates." },
-            { "language": "zh", "relation": "NONE", "pattern": "${actor}悸动着。" }
+            { "language": "zh", "relation": "NONE", "pattern": "${actor}脉动着。" }
           ]
         }],
         "materialization_cases": [],

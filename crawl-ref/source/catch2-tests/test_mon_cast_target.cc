@@ -994,14 +994,14 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         CHECK(counters.legacy_fallback == 1);
     }
 
-    SECTION("uncovered key preserves legacy selection output and RNG")
+    SECTION("legacy-only key preserves legacy selection output and RNG")
     {
         string direct;
         uint64_t direct_state = 0;
         uint64_t direct_count = 0;
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
-            direct = getSpeakString("brain worm cast");
+            direct = getSpeakString("acid splash cast");
             direct_state = rng::current_generator().get_state();
             direct_count = rng::current_generator().get_count();
         }
@@ -1011,7 +1011,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
         {
             rng::subgenerator scoped_rng(0x31415926, 0x27182818);
             routed = resolve_monspell_cast_message(
-                source, beam, false, { "brain worm cast" },
+                source, beam, false, { "acid splash cast" },
                 false, false);
             routed_state = rng::current_generator().get_state();
             routed_count = rng::current_generator().get_count();
@@ -1109,8 +1109,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
 }
 
 TEST_CASE_METHOD(MockPlayerYouTestsFixture,
-                 "legacy non-gesture target behavior is language independent",
-                 "[single-file][mon-cast-target][message-overlay][phase2][legacy]")
+                 "structured non-gesture emission behavior is language independent",
+                 "[single-file][mon-cast-target][message-overlay][phase2][structured]")
 {
     ensure_phase1_overlay_loaded();
     const mons_cast_noise_diagnostics defaults;
@@ -1132,7 +1132,7 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
             resolve_monspell_cast_message(
                 source, beam, true,
                 { "searing breath cast" }, false, false);
-        REQUIRE_FALSE(ordinary.structured);
+        REQUIRE(ordinary.structured);
         REQUIRE_FALSE(ordinary.legacy_behavior_compatibility);
         REQUIRE_FALSE(ordinary.text.empty());
     }
@@ -1167,7 +1167,6 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     const observed_legacy chinese = observe(lang_t::ZH);
     CHECK(english.state == chinese.state);
     CHECK(english.count == chinese.count);
-    REQUIRE_FALSE(english.events.empty());
     REQUIRE(english.emissions.size() == 1);
     REQUIRE(chinese.emissions.size() == 1);
     CHECK_FALSE(english.emissions[0].line.empty());
@@ -1181,8 +1180,8 @@ TEST_CASE_METHOD(MockPlayerYouTestsFixture,
     // branch while retaining a registered beam agent.
     CHECK_FALSE(english.emissions[0].effective_silence);
     CHECK_FALSE(chinese.emissions[0].effective_silence);
-    CHECK_FALSE(english.emissions[0].already_rendered);
-    CHECK_FALSE(chinese.emissions[0].already_rendered);
+    CHECK(english.emissions[0].already_rendered);
+    CHECK(chinese.emissions[0].already_rendered);
     REQUIRE(english.events.size() == chinese.events.size());
     for (size_t i = 0; i < english.events.size(); ++i)
     {

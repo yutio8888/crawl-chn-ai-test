@@ -56,6 +56,8 @@ fork_message_overlay::runtime_bindings beam_bindings(
         fork_message_overlay::target_kind::PLAYER,
     fork_message_overlay::message_visibility visibility =
         fork_message_overlay::message_visibility::VISIBLE);
+fork_message_overlay::catalog_entry &catalog_entry_by_key(
+    fork_message_overlay::catalog_source &source, const string &key);
 
 struct special_slot_overlay_reset
 {

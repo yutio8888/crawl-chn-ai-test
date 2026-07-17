@@ -28,9 +28,9 @@
             { "language": "en", "relation": "AT", "pattern": "${actor} blinks at ${target}." },
             { "language": "en", "relation": "NEXT_TO", "pattern": "${actor} blinks next to ${target}." },
             { "language": "en", "relation": "PAST", "pattern": "${actor} blinks past ${target}." },
-            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}闪烁。" },
-            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}闪烁到${target}旁边。" },
-            { "language": "zh", "relation": "PAST", "pattern": "${actor}从${target}旁边闪烁而过。" }
+            { "language": "zh", "relation": "AT", "pattern": "${actor}朝${target}眨眼。" },
+            { "language": "zh", "relation": "NEXT_TO", "pattern": "${actor}朝${target}旁边眨眼。" },
+            { "language": "zh", "relation": "PAST", "pattern": "${actor}朝${target}身后眨眼。" }
           ]
         }],
         "materialization_cases": [], "recursive_dependency_fingerprints": {}
