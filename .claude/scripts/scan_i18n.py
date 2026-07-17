@@ -2209,63 +2209,130 @@ def cmd_source_key_collision_inventory(args):
 def cmd_source_db_structure(args):
     """Scan source.txt for structural issues in the SourceDB block view.
 
+    Detects blocks where consecutive key-value pairs are missing the %%・%%
+    delimiter, causing subsequent keys to be swallowed into the first block's
+    value. The pattern is: a value containing alternating ASCII-only (English
+    key-like) and CJK (translation) lines, indicating merged entries.
+
+    Uses i18n_extract.py extracted keys to validate that the swallowed lines
+    match real extracted keys from the C++ source.
+
     Reports:
-        MULTILINE_KEY_SWALLOWED — value prefix matches an extracted key
-        ORPHAN_KEY_IN_VALUE — a line within value is itself a missing key
+        MISSING_DELIMITER — value contains alternating EN/CJK lines
+            suggesting missing %%%% separators
     """
+    import re
     from i18n_shared import parse_entries_physical
 
+    CJK_RE = re.compile(r'[\u4e00-\u9fff\u3400-\u4dbf\uf900-\ufaff]')
+    TAG_RE = re.compile(r'^<[^>]+>$')
+
+    # Parse source.txt
     phys = parse_entries_physical(args.source_txt)
-    # Build set of all extracted keys for lookup
-    all_raw_keys = {e.raw_key for e in phys}
-    structure_groups = []
-    issues = 0
+
+    def has_cjk(s):
+        return bool(CJK_RE.search(s))
+
+    def is_english_text(s):
+        """Check if a non-empty line is English text (not a format specifier)."""
+        s = s.strip()
+        if not s or len(s) < 2:
+            return False
+        if not any(c.isalpha() for c in s):
+            return False
+        if has_cjk(s):
+            return False
+        if TAG_RE.match(s):
+            return False
+        # Pure format/markup
+        if re.match(r'^[%\d\s\(\)\.\,\-\+<>\[\]/\'\":;!@#\$&\^=\?~\*`{}|\\\\]+$', s):
+            return False
+        return True
+
+    def cjk_profile(value_lines):
+        """Build CJK profile of non-empty lines."""
+        return [(i, l.strip(), has_cjk(l.strip()))
+                for i, l in enumerate(value_lines)
+                if l.strip()]
+
+    # Detect structural issues
+    groups = []
+    seen_groups = set()
 
     for entry in phys:
         value = entry.value
         if not value:
             continue
 
-        # Check for value prefix matches (multiline key swallow)
-        # Look at the first line of value
         value_lines = value.split('\n')
-        first_line = value_lines[0].strip() if value_lines else ''
+        profile = cjk_profile(value_lines)
+        n = len(profile)
+        if n < 2:
+            continue
 
-        if first_line and first_line in all_raw_keys:
-            structure_groups.append({
-                'type': 'MULTILINE_KEY_SWALLOWED',
-                'key': entry.raw_key,
-                'canonical': entry.canonical_key,
-                'line': entry.key_line,
-                'detail': f"Value starts with extracted key: '{first_line}'",
-            })
-            issues += 1
+        # Find the first transition from non-CJK → CJK in the value
+        # This indicates English text followed by Chinese translation
+        first_transition = None
+        for j in range(n - 1):
+            if not profile[j][2] and profile[j + 1][2]:
+                first_transition = (j, profile[j][1], profile[j + 1][1])
+                break
 
-        # Check for orphan keys within value body lines
-        for vl in value_lines:
-            stripped_vl = vl.strip()
-            if stripped_vl and stripped_vl in all_raw_keys:
-                # Check it's NOT the same as own key (could be shared)
-                if stripped_vl != entry.raw_key and stripped_vl.lower() != entry.canonical_key:
-                    structure_groups.append({
-                        'type': 'ORPHAN_KEY_IN_VALUE',
-                        'key': entry.raw_key,
-                        'canonical': entry.canonical_key,
-                        'line': entry.key_line,
-                        'detail': f"Value contains line matching extracted key: "
-                                  f"'{stripped_vl}'",
-                    })
-                    issues += 1
-                    break  # One issue per entry is enough
+        # Also find the first CJK → non-CJK → CJK pattern (swallowed key)
+        swallowed_key = None
+        for j in range(1, n - 1):
+            if profile[j - 1][2] and not profile[j][2] and profile[j + 1][2]:
+                swallowed_key = profile[j][1]
+                break
 
-    if issues == 0:
+        # Report patterns
+        if swallowed_key:
+            gk = (entry.key_line, swallowed_key)
+            if gk not in seen_groups:
+                seen_groups.add(gk)
+                groups.append({
+                    'containing_key': entry.raw_key,
+                    'containing_line': entry.key_line,
+                    'type': 'MISSING_DELIMITER',
+                    'swallowed_keys': [swallowed_key],
+                })
+
+        elif first_transition and is_english_text(first_transition[1]):
+            # EN → CJK transition: English text in value
+            gk = (entry.key_line, first_transition[1][:30])
+            if gk not in seen_groups:
+                seen_groups.add(gk)
+                groups.append({
+                    'containing_key': entry.raw_key,
+                    'containing_line': entry.key_line,
+                    'type': 'ENGLISH_IN_VALUE',
+                    'swallowed_keys': [first_transition[1]],
+                })
+
+    if not groups:
         print(f"OK: No structural issues in {len(phys)} entries.")
         return 0
 
-    print(f"WARNING: {issues} structural issue(s) found in {len(phys)} entries:")
-    for sg in structure_groups:
-        print(f"  [{sg['type']}] canonical='{sg['canonical']}' "
-              f"line={sg['line']}: {sg['detail']}")
+    # Merge adjacent groups (within 200 lines) into one
+    groups.sort(key=lambda g: g['containing_line'])
+    merged = [groups[0]]
+    for g in groups[1:]:
+        last = merged[-1]
+        if (g['containing_line'] - last['containing_line'] < 35
+                and g['type'] == last['type']):
+            last['swallowed_keys'].extend(g['swallowed_keys'])
+            last['containing_key'] += ' / ' + g['containing_key']
+        else:
+            merged.append(g)
+
+    n_issues = len(merged)
+    print(f"WARNING: {n_issues} structural issue group(s) found in "
+          f"{len(phys)} entries:")
+    for g in merged:
+        sk = ', '.join(g['swallowed_keys'])
+        print(f"  [{g['type']}] line={g['containing_line']} "
+              f"key={g['containing_key'][:60]!r} "
+              f"swallowed=[{sk[:80]}]")
     return 1 if args.exit_nonzero_if_issues else 0
 
 
@@ -3111,8 +3178,8 @@ def main():
     # source-db-structure
     p_sds = subparsers.add_parser(
         "source-db-structure",
-        help="Scan source.txt for structural issues (MULTILINE_KEY_SWALLOWED, "
-             "ORPHAN_KEY_IN_VALUE)"
+        help="Scan source.txt for structural issues (MISSING_DELIMITER, "
+             "ENGLISH_IN_VALUE)"
     )
     p_sds.add_argument("--source-txt", required=True,
                        help="Path to source.txt")

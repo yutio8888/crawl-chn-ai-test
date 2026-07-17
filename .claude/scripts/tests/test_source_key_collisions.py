@@ -129,7 +129,8 @@ class TestSourceDBStructure(unittest.TestCase):
     def test_normal_file(self):
         """No structural issues in clean file."""
         f = str(FIXTURES / "no_collisions.txt")
-        ec, out, err = _run_cmd("source-db-structure", "--source-txt", f)
+        ec, out, err = _run_cmd("source-db-structure",
+                                "--source-txt", f)
         self.assertEqual(ec, 0)
         self.assertIn("No structural issues", out)
 
@@ -137,11 +138,12 @@ class TestSourceDBStructure(unittest.TestCase):
         """Structural issues should be detected."""
         f = str(FIXTURES / "structural_issues.txt")
         ec, out, err = _run_cmd(
-            "source-db-structure", "--source-txt", f,
+            "source-db-structure",
+            "--source-txt", f,
             "--exit-nonzero-if-issues")
         self.assertNotEqual(ec, 0, "Expected non-zero for structural issues")
         self.assertIn("structural issue", out.lower())
-        self.assertIn("ORPHAN_KEY_IN_VALUE", out)
+        self.assertIn("MISSING_DELIMITER", out)
 
 
 class TestValidateSourceClassificationShard(unittest.TestCase):
