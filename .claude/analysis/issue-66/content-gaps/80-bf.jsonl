@@ -1,0 +1,1242 @@
+{
+  "schema": "dcss-zh-source-classification-shard-v1",
+  "kind": "missing-key",
+  "hash_range": "80-bf",
+  "groups": [
+    {
+      "group_id": "sourcedb-v1:84381170799da68e55300c98e93998591339090a3c225abbe8312c9ca5dc4145",
+      "group_fingerprint": "84381170799da68e55300c98e93998591339090a3c225abbe8312c9ca5dc4145",
+      "canonical_key": "delay interrupt name \\\"%s\\\" not recognised.\\n",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'delay interrupt name \\\\\"%s\\\\\" not recognised.\\\\n' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:852452839f0e43e57b72f5d679dd165fff84d8a6f942572570b5c3f0a410114e",
+      "group_fingerprint": "852452839f0e43e57b72f5d679dd165fff84d8a6f942572570b5c3f0a410114e",
+      "canonical_key": "\\n\\na spell that isn't <darkgray>grayed out</darkgray> or ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key \"\\\\n\\\\na spell that isn't <darkgray>grayed out</darkgray> or \" is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8687a8dfcf50e70c2286ee78dfe3670cca98ed019ebc60f0d70aa67ab1129cda",
+      "group_fingerprint": "8687a8dfcf50e70c2286ee78dfe3670cca98ed019ebc60f0d70aa67ab1129cda",
+      "canonical_key": "on %s; %d g, %d fail, %u err%s, %u uniq, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'on %s; %d g, %d fail, %u err%s, %u uniq, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:86d77db83f28cc5f9d4c745ff6211e8ea227e3848d0b1f742164e4a4c4423720",
+      "group_fingerprint": "86d77db83f28cc5f9d4c745ff6211e8ea227e3848d0b1f742164e4a4c4423720",
+      "canonical_key": "some areas of the dungeon, such as the spider nest, may ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'some areas of the dungeon, such as the spider nest, may ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8777345c23f767d8622f50ac1862977f3d327c1abba1371d80d8eca74d77173c",
+      "group_fingerprint": "8777345c23f767d8622f50ac1862977f3d327c1abba1371d80d8eca74d77173c",
+      "canonical_key": "<console><cyan>)</cyan> : </console>",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '<console><cyan>)</cyan> : </console>' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8a31fc372d7ca413b8e2d6f5879e9bcefd999ef0f8f5868895b17ba0cd8a3cbd",
+      "group_fingerprint": "8a31fc372d7ca413b8e2d6f5879e9bcefd999ef0f8f5868895b17ba0cd8a3cbd",
+      "canonical_key": "this screen shows the skill set of your character. ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'this screen shows the skill set of your character. ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8aa846597eb8f95d52b77f285b90f9cdc8d777fb22fb68732c6bd0900224b948",
+      "group_fingerprint": "8aa846597eb8f95d52b77f285b90f9cdc8d777fb22fb68732c6bd0900224b948",
+      "canonical_key": "then be taken to target mode with the nearest monster or ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'then be taken to target mode with the nearest monster or ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8b78fce0a8f1e1d7e2b050e7fc04e8c78bb6fc83f24279f22a06dabae806fddb",
+      "group_fingerprint": "8b78fce0a8f1e1d7e2b050e7fc04e8c78bb6fc83f24279f22a06dabae806fddb",
+      "canonical_key": "if you enter this portal you could be pulled as ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'if you enter this portal you could be pulled as ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8c501ce660bde5e95e302751f60723253ea1e1b75002c3e0134bb166d66dc1ca",
+      "group_fingerprint": "8c501ce660bde5e95e302751f60723253ea1e1b75002c3e0134bb166d66dc1ca",
+      "canonical_key": "you feel a strong urge to %s, but ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you feel a strong urge to %s, but ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8d4e2f1ab421df06a8e582f8c6afe8453503c840eedd3c4b70bd0dd708aa821b",
+      "group_fingerprint": "8d4e2f1ab421df06a8e582f8c6afe8453503c840eedd3c4b70bd0dd708aa821b",
+      "canonical_key": "apparently it has been distracted by something. you could ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'apparently it has been distracted by something. you could ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:8e95c738e44c1c26022cdabe5f74a6804f71ff4cc52a23b7e0312153f0d65ee7",
+      "group_fingerprint": "8e95c738e44c1c26022cdabe5f74a6804f71ff4cc52a23b7e0312153f0d65ee7",
+      "canonical_key": "<white>runes of zot (</white>",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '<white>runes of zot (</white>' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:92469b9bf8279ef18ed3dc30981bf4fa140772ed9f7d116e9f8d2a21a73991a8",
+      "group_fingerprint": "92469b9bf8279ef18ed3dc30981bf4fa140772ed9f7d116e9f8d2a21a73991a8",
+      "canonical_key": "found #%d: %s (\\\"%s\\\")",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'found #%d: %s (\\\\\"%s\\\\\")' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9276db088f43c3723fea278aa9562e04d0a57769298b35e33ff3ba26910d04a0",
+      "group_fingerprint": "9276db088f43c3723fea278aa9562e04d0a57769298b35e33ff3ba26910d04a0",
+      "canonical_key": "\\n\\nwhen worn, some types of jewellery (such as this ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\n\\\\nwhen worn, some types of jewellery (such as this ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:928c122725ccacc36dd2baea1fb0915987a2eb7c7b88fd27017269cd40760307",
+      "group_fingerprint": "928c122725ccacc36dd2baea1fb0915987a2eb7c7b88fd27017269cd40760307",
+      "canonical_key": "it is cumbersome to wear, and %simpedes the evasion, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'it is cumbersome to wear, and %simpedes the evasion, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:93740371bba777c9be5c2c4dd74cc2f9e81ed1148894eb0c8d187173caba5570",
+      "group_fingerprint": "93740371bba777c9be5c2c4dd74cc2f9e81ed1148894eb0c8d187173caba5570",
+      "canonical_key": "%s which deck?        ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '%s which deck?        ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:93c41b79d3326d189c443cc7f1ef9125ce84ed00435171c284e324386a6f4954",
+      "group_fingerprint": "93c41b79d3326d189c443cc7f1ef9125ce84ed00435171c284e324386a6f4954",
+      "canonical_key": "\\n\\nthis %s offers its wearer protection ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\n\\\\nthis %s offers its wearer protection ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9474c76ef065f2a999d23f85a2104b81f5dea775326c44c089e6240997803cab",
+      "group_fingerprint": "9474c76ef065f2a999d23f85a2104b81f5dea775326c44c089e6240997803cab",
+      "canonical_key": "dead mon also at (%d, %d): %s,",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'dead mon also at (%d, %d): %s,' is an internal/debug message not visible to players"
+          }
+        ],
+        "rationale": "Internal/debug message: 'dead mon also at (%d, %d): %s,'. Not user-visible, no translation needed."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:96ab39c27bb8da83f737b8be442e0954a9986afdd0c78176a2c7addd834b03d0",
+      "group_fingerprint": "96ab39c27bb8da83f737b8be442e0954a9986afdd0c78176a2c7addd834b03d0",
+      "canonical_key": "press <w>%</w> to read this scroll",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'press <w>%</w> to read this scroll' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9721d9f8264a722e96f7cfbc845737861fac7d58015ae4d3e6743b7b39a86a43",
+      "group_fingerprint": "9721d9f8264a722e96f7cfbc845737861fac7d58015ae4d3e6743b7b39a86a43",
+      "canonical_key": "you can easily mark its square as dangerous to avoid ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you can easily mark its square as dangerous to avoid ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:98437c49a9c233a88e3bc10c2d79f3db2803b9b1251bda72d70c7caf5c9eac65",
+      "group_fingerprint": "98437c49a9c233a88e3bc10c2d79f3db2803b9b1251bda72d70c7caf5c9eac65",
+      "canonical_key": "you have lingered too long. zot senses you. ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you have lingered too long. zot senses you. ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9877b16f9892e05c5cdf5172de06d1122a981b10df537aa2ad115e0603e56ba6",
+      "group_fingerprint": "9877b16f9892e05c5cdf5172de06d1122a981b10df537aa2ad115e0603e56ba6",
+      "canonical_key": "your body shudders with the violent release ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'your body shudders with the violent release ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9b014dd19c2eb2727bb2582c6c708edeaa7d243438682d4f610c2759c24d3dd9",
+      "group_fingerprint": "9b014dd19c2eb2727bb2582c6c708edeaa7d243438682d4f610c2759c24d3dd9",
+      "canonical_key": "the dungeon can only cope with one malign gateway",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'the dungeon can only cope with one malign gateway' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9d74ec76e2449dd3e88555076b8de1829846be5b7397b27766d5c70c24ea8dd9",
+      "group_fingerprint": "9d74ec76e2449dd3e88555076b8de1829846be5b7397b27766d5c70c24ea8dd9",
+      "canonical_key": "\\nwhile adjacent to it, you can %s%s it by pressing the ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\nwhile adjacent to it, you can %s%s it by pressing the ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9e2604d870e2a3ccf954cdc086120de8a5dd409e121f269d8ac13259fb16dfe6",
+      "group_fingerprint": "9e2604d870e2a3ccf954cdc086120de8a5dd409e121f269d8ac13259fb16dfe6",
+      "canonical_key": "you cannot see any enemies that you can affect. speak a ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you cannot see any enemies that you can affect. speak a ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9e5eb3e944b4e01a7799cf4cd44526986ac796e97ea1a6ebd86a92033c9f4118",
+      "group_fingerprint": "9e5eb3e944b4e01a7799cf4cd44526986ac796e97ea1a6ebd86a92033c9f4118",
+      "canonical_key": "pikel's spell is broken, but his former %s can only feel hate",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key \"pikel's spell is broken, but his former %s can only feel hate\" is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:9fad227e108a4c87e79b0a5d8e19960cce2b4c77a08ec6a4d1e3a110ff41fd1f",
+      "group_fingerprint": "9fad227e108a4c87e79b0a5d8e19960cce2b4c77a08ec6a4d1e3a110ff41fd1f",
+      "canonical_key": "\\n\\nyour current strength and armour skill ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\n\\\\nyour current strength and armour skill ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a0e1475c820a35c3765bc27b58183c1049df707eb88da4279b97b8710d19a773",
+      "group_fingerprint": "a0e1475c820a35c3765bc27b58183c1049df707eb88da4279b97b8710d19a773",
+      "canonical_key": "you radiate a%s aura of righteousness, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you radiate a%s aura of righteousness, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a1b83c599a4fe73e090a5d4f1e9742bfaae0ffe4fc144d8dbee2c40a9995c8ac",
+      "group_fingerprint": "a1b83c599a4fe73e090a5d4f1e9742bfaae0ffe4fc144d8dbee2c40a9995c8ac",
+      "canonical_key": "there are friendlies around; are you sure you want to hurt ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'there are friendlies around; are you sure you want to hurt ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a2d1123005dc19088a8b27c00d1d6473468f8d458b7ff6a54c984a904ad0a7b4",
+      "group_fingerprint": "a2d1123005dc19088a8b27c00d1d6473468f8d458b7ff6a54c984a904ad0a7b4",
+      "canonical_key": "\\nnote that shields will hinder your ability to ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\nnote that shields will hinder your ability to ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a3db7c7362fb73a4c59cd7e5ac66f0b79cb8d36780de7ed9a80dbe2002aecf56",
+      "group_fingerprint": "a3db7c7362fb73a4c59cd7e5ac66f0b79cb8d36780de7ed9a80dbe2002aecf56",
+      "canonical_key": "you become %stransparent, but the glow from %s ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you become %stransparent, but the glow from %s ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a48b60025ff577e66d7fbf207a50daedcbcc7add75a0d068655066d41f15d00c",
+      "group_fingerprint": "a48b60025ff577e66d7fbf207a50daedcbcc7add75a0d068655066d41f15d00c",
+      "canonical_key": "it will release varied jellies when damaged or killed,",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'it will release varied jellies when damaged or killed,' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a722cf959d06772e3947b3c19eac0fad76d58aecb36dc18edeabfd876a2b1c8c",
+      "group_fingerprint": "a722cf959d06772e3947b3c19eac0fad76d58aecb36dc18edeabfd876a2b1c8c",
+      "canonical_key": "this might make you stumble backwards into ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'this might make you stumble backwards into ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a752758ced9e06a7ace3a7e117229e4fe04106bcd0ca0d686de66e7e032dc327",
+      "group_fingerprint": "a752758ced9e06a7ace3a7e117229e4fe04106bcd0ca0d686de66e7e032dc327",
+      "canonical_key": "! (actually, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '! (actually, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a8f5bd40578223eec1c642c99ef68b132ed2e1dc28e603181838e8d89479d618",
+      "group_fingerprint": "a8f5bd40578223eec1c642c99ef68b132ed2e1dc28e603181838e8d89479d618",
+      "canonical_key": "your stasis prevents you from being slowed,",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'your stasis prevents you from being slowed,' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a91c004cbb51d6c78a2957c26821f3550a673e88ead80b381fd597c53004455a",
+      "group_fingerprint": "a91c004cbb51d6c78a2957c26821f3550a673e88ead80b381fd597c53004455a",
+      "canonical_key": "<lightmagenta>0</lightmagenta> : the orb of zot\\n",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '<lightmagenta>0</lightmagenta> : the orb of zot\\\\n' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:a9f53576f3e73fe4c5ceef74ee126eb98e06f6a764831c95460a7bc6329bf054",
+      "group_fingerprint": "a9f53576f3e73fe4c5ceef74ee126eb98e06f6a764831c95460a7bc6329bf054",
+      "canonical_key": "what monsters to dismiss (enter for all, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'what monsters to dismiss (enter for all, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aa167227bd8b065bf8c20153339843621993f432a2b91b4978218af2dae11f97",
+      "group_fingerprint": "aa167227bd8b065bf8c20153339843621993f432a2b91b4978218af2dae11f97",
+      "canonical_key": "these two blocks should have the same background:",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'these two blocks should have the same background:' is an internal/debug message not visible to players"
+          }
+        ],
+        "rationale": "Internal/debug message: 'these two blocks should have the same background:'. Not user-visible, no translation needed."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aa5d96c3487c8a8e327e281b8eabd1fbaa1d682dfa1b7274ff08d89f40b8763f",
+      "group_fingerprint": "aa5d96c3487c8a8e327e281b8eabd1fbaa1d682dfa1b7274ff08d89f40b8763f",
+      "canonical_key": "describe which deck?    ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'describe which deck?    ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aa60257e9570835d1ceac4b11b5288745602b500f513425b9d2e8ba17bd5eaf7",
+      "group_fingerprint": "aa60257e9570835d1ceac4b11b5288745602b500f513425b9d2e8ba17bd5eaf7",
+      "canonical_key": "<darkgrey>the orb of zot",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '<darkgrey>the orb of zot' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:aaaeb42cf7c89e7491c18f6ce6ba0a436d41e08e18e1947191550a147d457710",
+      "group_fingerprint": "aaaeb42cf7c89e7491c18f6ce6ba0a436d41e08e18e1947191550a147d457710",
+      "canonical_key": "apparently it has not noticed you - yet. note that you do ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'apparently it has not noticed you - yet. note that you do ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ad4ec15beed383889aa67d0486638b100559fced8572f6db99edf197c9f3c67f",
+      "group_fingerprint": "ad4ec15beed383889aa67d0486638b100559fced8572f6db99edf197c9f3c67f",
+      "canonical_key": "%s and a teleportation trap ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '%s and a teleportation trap ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ae3dffd10fe8cc2485e0fd96cc4ed357779dc4bf842398f03b5c013c85e33594",
+      "group_fingerprint": "ae3dffd10fe8cc2485e0fd96cc4ed357779dc4bf842398f03b5c013c85e33594",
+      "canonical_key": "</w>, press <w>></w> while standing on the ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '</w>, press <w>></w> while standing on the ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ae5fb77573e581944d6cd558df717b79b02a34a3548f89302d2c50863ff12770",
+      "group_fingerprint": "ae5fb77573e581944d6cd558df717b79b02a34a3548f89302d2c50863ff12770",
+      "canonical_key": "your evocable items recharge 30% faster and wands have ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'your evocable items recharge 30% faster and wands have ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:af1c6fd2628caf76c44eb168faf900ae750e7777fb66d2f9e8aeacea3aefe612",
+      "group_fingerprint": "af1c6fd2628caf76c44eb168faf900ae750e7777fb66d2f9e8aeacea3aefe612",
+      "canonical_key": "you can <w>left mouse click</w> on the monster you wish to ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you can <w>left mouse click</w> on the monster you wish to ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:af64a9504ca473dd70d428e39aa3cb655900202372c1ebc4b74bab5caf9199cf",
+      "group_fingerprint": "af64a9504ca473dd70d428e39aa3cb655900202372c1ebc4b74bab5caf9199cf",
+      "canonical_key": "you feel yourself growing ill in the ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you feel yourself growing ill in the ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b04186f2ad6fed42a67cf1bfdb374a961a854710692c43e5560120d36faabeac",
+      "group_fingerprint": "b04186f2ad6fed42a67cf1bfdb374a961a854710692c43e5560120d36faabeac",
+      "canonical_key": "the dream sheep ruffle%s wool and motes of ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'the dream sheep ruffle%s wool and motes of ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b162f74470b681b03ca9894f67b3dbbe70c122a9bf22b2563472948fa43eca2e",
+      "group_fingerprint": "b162f74470b681b03ca9894f67b3dbbe70c122a9bf22b2563472948fa43eca2e",
+      "canonical_key": "old value: 0x%08",
+      "classification": {
+        "cause": "not_user_visible",
+        "action": "not_user_visible",
+        "status": "classified",
+        "owner": "coder",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'old value: 0x%08' is an internal/debug message not visible to players"
+          }
+        ],
+        "rationale": "Internal/debug message: 'old value: 0x%08'. Not user-visible, no translation needed."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b26d8b0c16ca3dee2fa1753d602558ea071095919998ef8c3a7648a42abbb041",
+      "group_fingerprint": "b26d8b0c16ca3dee2fa1753d602558ea071095919998ef8c3a7648a42abbb041",
+      "canonical_key": "by zin's power, the foul cloud within the sanctuary ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key \"by zin's power, the foul cloud within the sanctuary \" is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b41ec9c78f6e231dace9667d6f526816d15e4ddac8c514d3adc160aed70aca7e",
+      "group_fingerprint": "b41ec9c78f6e231dace9667d6f526816d15e4ddac8c514d3adc160aed70aca7e",
+      "canonical_key": "\\nenchanting this artefact any further ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\nenchanting this artefact any further ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b4d8acdda79221b8bd2e729ee24c6a46cdcb30f23f0167dcc23806499f61842a",
+      "group_fingerprint": "b4d8acdda79221b8bd2e729ee24c6a46cdcb30f23f0167dcc23806499f61842a",
+      "canonical_key": "\\nyou currently have no enchantments that could be",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\nyou currently have no enchantments that could be' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b4ebdcc05193c6c78a639eb4b055e7d4bcc775432ce53f30c5e5fd6611478796",
+      "group_fingerprint": "b4ebdcc05193c6c78a639eb4b055e7d4bcc775432ce53f30c5e5fd6611478796",
+      "canonical_key": "both you and the monster are silenced, so you likely ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'both you and the monster are silenced, so you likely ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b62abeb8e646e1aec9beab456710eebd101ee4710aa21560cc68c170c7936ad9",
+      "group_fingerprint": "b62abeb8e646e1aec9beab456710eebd101ee4710aa21560cc68c170c7936ad9",
+      "canonical_key": "jewellery can be <w>%</w>ut on or <w>%</w>emoved again, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'jewellery can be <w>%</w>ut on or <w>%</w>emoved again, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b6665898e6b957663c5281c5ac19b4fa26ac78f79a14d2b90d118813256244a9",
+      "group_fingerprint": "b6665898e6b957663c5281c5ac19b4fa26ac78f79a14d2b90d118813256244a9",
+      "canonical_key": "escape hatches can be used to quickly leave a level with ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'escape hatches can be used to quickly leave a level with ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b6da0fb2e308361fcfaca0fa05e33bcac98b981d3bfd1cd28914bf4931db756a",
+      "group_fingerprint": "b6da0fb2e308361fcfaca0fa05e33bcac98b981d3bfd1cd28914bf4931db756a",
+      "canonical_key": "warning: your build does not support stable seeds!\\n",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'warning: your build does not support stable seeds!\\\\n' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b80d581f1d61b0a7552edc92f4f2b5e2f83936f08e34ed10309eea9f9c1149eb",
+      "group_fingerprint": "b80d581f1d61b0a7552edc92f4f2b5e2f83936f08e34ed10309eea9f9c1149eb",
+      "canonical_key": "your icy armour cracks and falls away as ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'your icy armour cracks and falls away as ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:b8f709e92d5dd8e946f3e40b154db90c171ad050f665fa403133e19e25b4a0d4",
+      "group_fingerprint": "b8f709e92d5dd8e946f3e40b154db90c171ad050f665fa403133e19e25b4a0d4",
+      "canonical_key": "\\n\\nthis armour offers its wearer protection from ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '\\\\n\\\\nthis armour offers its wearer protection from ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:ba452d71c7506806b6b7b06243fcd2888f7e0ab4b3b46918091faf420eb41ac0",
+      "group_fingerprint": "ba452d71c7506806b6b7b06243fcd2888f7e0ab4b3b46918091faf420eb41ac0",
+      "canonical_key": "you can enter the next (deeper) level by following them ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you can enter the next (deeper) level by following them ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bb75103e1a38b4cbcd4152a68eb7b170a5b0acd3d8603c2774468537dd08237f",
+      "group_fingerprint": "bb75103e1a38b4cbcd4152a68eb7b170a5b0acd3d8603c2774468537dd08237f",
+      "canonical_key": "miscellaneous items sometimes harbour magical powers ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'miscellaneous items sometimes harbour magical powers ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bbc5b2cf2a347f1679797536895898e688e4d0a0dbab8fa7db3a2d0f9e2b7a7e",
+      "group_fingerprint": "bbc5b2cf2a347f1679797536895898e688e4d0a0dbab8fa7db3a2d0f9e2b7a7e",
+      "canonical_key": "casting this spell will place you under penance. ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'casting this spell will place you under penance. ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bc53be7e4d1c8f62eeca9bb140f40b9cec027d31a8625cd5f3c97d19858e758e",
+      "group_fingerprint": "bc53be7e4d1c8f62eeca9bb140f40b9cec027d31a8625cd5f3c97d19858e758e",
+      "canonical_key": "you cannot be affected by this ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you cannot be affected by this ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bd14c6e160cab590677d65dde7a6810f49c4898cb5a08d7be860bc330ffa1a6f",
+      "group_fingerprint": "bd14c6e160cab590677d65dde7a6810f49c4898cb5a08d7be860bc330ffa1a6f",
+      "canonical_key": "the %s cannot attune itself to your injured",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'the %s cannot attune itself to your injured' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bed80cd963464985d1b043e2b08d2e7ec3795ed4e732a82595eb3211ccb8af94",
+      "group_fingerprint": "bed80cd963464985d1b043e2b08d2e7ec3795ed4e732a82595eb3211ccb8af94",
+      "canonical_key": "you cannot create a passage on the other side of the ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'you cannot create a passage on the other side of the ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bee1ff40d69f97a341d7cb971815f60b7d9dddb116614cc04a0a6dc9049d350a",
+      "group_fingerprint": "bee1ff40d69f97a341d7cb971815f60b7d9dddb116614cc04a0a6dc9049d350a",
+      "canonical_key": "the ghost of a deceased adventurer, it would like nothing ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key 'the ghost of a deceased adventurer, it would like nothing ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bf8f545423a0b1bb157650ea26a2f0910ddacaab3d78533eeaa9c381f8d8e4c0",
+      "group_fingerprint": "bf8f545423a0b1bb157650ea26a2f0910ddacaab3d78533eeaa9c381f8d8e4c0",
+      "canonical_key": "<lightgrey>",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key '<lightgrey>' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    },
+    {
+      "group_id": "sourcedb-v1:bfddb033edde93653bdda0241a12d864762dc07e0d6fde7ccd6e20e91671bf2f",
+      "group_fingerprint": "bfddb033edde93653bdda0241a12d864762dc07e0d6fde7ccd6e20e91671bf2f",
+      "canonical_key": ", with one final cry of rage, ",
+      "classification": {
+        "cause": "adjacent_literal",
+        "action": "add_translation",
+        "status": "ready_for_writer",
+        "owner": "translator",
+        "confidence": "high",
+        "evidence": [
+          {
+            "kind": "missing_key",
+            "note": "Key ', with one final cry of rage, ' is user-visible display text missing from source.txt"
+          }
+        ],
+        "rationale": "User-visible display text fragment missing from source.txt. Likely from adjacent literal concatenation fix. Requires translator to add Chinese translation entry."
+      }
+    }
+  ]
+}
