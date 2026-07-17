@@ -1,7 +1,7 @@
 # TextDB 中文消息渲染架构与年度升级策略
 
-> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 的 262-key 数据迁移与
-> 最终 behavior report 已完成，完整验证门禁尚待执行
+> 状态：架构规格已定；Phase 0/1 已完成；Phase 2 的 262-key 数据迁移、
+> 最终 behavior report 与完整 code profile 验证均已完成
 > 适用项目：DCSS 中文长期下游分支
 > 上游策略：不计划合入 Crawl 主仓库，约每年跟进一次上游大版本
 > 评审状态：**Phase 1 Go（完整 candidate 上界）**；Phase 2 catalog 共覆盖
@@ -1032,7 +1032,7 @@ Wave E 的三个分片共审计 20 个 key、44 个 variant。E1 将 8 个单变
 355 variant、35 个 materialization case：250 key/341 variant 为 `CANDIDATE`，
 10 key/12 variant 为 `LEGACY_ONLY`，2 key/2 variant 为 `CLOSURE_ONLY`。这是
 Phase 2 数据迁移的最终计数；tracked behavior report 已按该 catalog 重新生成，
-完整验证通过后即可作为最终门禁证据。
+完整 code profile 验证已通过。
 
 candidate dump 还必须匹配 tracked production anchor；anchor 固定经人工审阅的
 artifact SHA-256、counts 与 producer contract。审计器另外精确验证六条有序
@@ -1054,8 +1054,9 @@ recipe 与 artifact 差异，再显式更新该可达性证明锚点。
 实施状态：`mon-cast.cc` 的正常 `monspell` 中英文 gesture 正文嗅探已经删除，
 262-key 数据迁移也已完成。最终 tracked report 已达到 `phase2_ready=true`、
 `remaining_legacy_behavior_occurrences=0`、`unanalysable_occurrences=0`、
-`fail_closed_behavior_roots=0`、341/341 canonical metadata 与 682/682 双语验证单位；
-仍须重跑完整验证，才构成最终 Phase 2 证据。compatibility fallback 不属于 ordinary
+`fail_closed_behavior_roots=0`、341/341 canonical metadata 与 682/682 双语验证单位。
+完整 code profile 验证 Run ID `20260717T131108316095302+0800-2-c705834ce018`
+以 0 failures 通过，构成最终 Phase 2 验证证据。compatibility fallback 不属于 ordinary
 uncovered legacy：它只在 overlay 非 `ENABLED` 或语言不受支持，且 key 是
 compiled `CANDIDATE` 时启用旧嗅探，以保持 safe fallback 的行为/RNG 等价。
 未来可达 ordinary legacy gesture/visual/audible occurrence 会使审计失败。
