@@ -60,6 +60,18 @@ class TestSourceKeyCollisions(unittest.TestCase):
         self.assertEqual(ec, 1, f"Expected exit 1, got {ec}")
         self.assertIn("WARNING: 5 collision group(s) found", out)
 
+    def test_lowercase_parity_utf8(self):
+        """C++ lowercase_string parity for non-ASCII (U+0130 Turkish I)."""
+        from i18n_shared import lowercase_string
+        # Turkish İ (U+0130) → must produce single 'i', not 'i' + combining dot
+        result = lowercase_string('\u0130')
+        self.assertEqual(result, 'i',
+                         f'U+0130 lowercase: got {result!r} (len={len(result)})')
+        # ASCII
+        self.assertEqual(lowercase_string('Hello'), 'hello')
+        # CJK passthrough
+        self.assertEqual(lowercase_string('法术'), '法术')
+
 
 class TestSourceKeyCollisionInventory(unittest.TestCase):
     """Test the source-key-collision-inventory command."""
