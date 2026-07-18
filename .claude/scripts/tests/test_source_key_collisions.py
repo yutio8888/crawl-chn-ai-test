@@ -771,6 +771,23 @@ class TestSourceDBCommandIntegrity(unittest.TestCase):
         finally:
             os.unlink(out_path)
 
+    def test_production_status_labels_are_not_single_character(self):
+        """Status translations must use readable full labels, not one-glyph abbreviations."""
+        source_txt = ROOT / "crawl-ref/source/dat/i18n/zh/source.txt"
+        if not source_txt.exists():
+            self.skipTest("Production source.txt not available")
+        text = source_txt.read_text(encoding="utf-8")
+        short = []
+        for record in text.split("\n%%%%\n"):
+            lines = record.splitlines()
+            if len(lines) < 2 or not lines[0].startswith("status|"):
+                continue
+            label = lines[1]
+            han_count = sum("\u4e00" <= ch <= "\u9fff" for ch in label)
+            if han_count < 2:
+                short.append((lines[0], label))
+        self.assertEqual(short, [], f"single-character status labels: {short}")
+
 
 if __name__ == "__main__":
     unittest.main()
