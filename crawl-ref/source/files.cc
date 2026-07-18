@@ -2687,7 +2687,7 @@ void save_game(bool leave_game, const char *farewellmsg)
     _save_game_exit();
 
     game_ended(game_exit::save, farewellmsg ? farewellmsg
-                                : "See you soon, " + you.your_name + "!");
+        : make_stringf(T_("See you soon, %s!"), you.your_name.c_str()));
 }
 
 // Saves the game without exiting.
@@ -3194,12 +3194,6 @@ bool load_ghosts(int max_ghosts, bool creating_level)
     return true;
 }
 
-static string _type_name_processed(game_type t)
-{
-    string name = game_state::game_type_name_for(t);
-    return name.size() ? name : "regular";
-}
-
 static const char *_type_name_with_article_display(game_type type)
 {
     switch (type)
@@ -3222,6 +3216,19 @@ static const char *_type_name_with_article_display(game_type type)
     default:
         return T_("a regular");
     }
+}
+
+// The translated values above do not include English articles, while the
+// English fallback does.  This display-only helper supplies the noun phrase
+// expected by messages which already provide their own article.
+static string _type_name_without_article_display(game_type type)
+{
+    const string name = _type_name_with_article_display(type);
+    if (starts_with(name, "an "))
+        return name.substr(3);
+    if (starts_with(name, "a "))
+        return name.substr(2);
+    return name;
 }
 
 // returns false if a new game should start instead
@@ -3280,8 +3287,9 @@ static bool _restore_game(const string& filename)
             you.save = 0;
             // explicitly don't set default startup name here
             game_ended(game_exit::abort,
-                "Please use a different name to start a new " +
-                _type_name_processed(menu_game_type) + " game, then.");
+                make_stringf(
+                    T_("Please use a different name to start a new %s game, then."),
+                    _type_name_without_article_display(menu_game_type).c_str()));
         }
     }
     if (Options.remember_name)
@@ -3299,9 +3307,10 @@ static bool _restore_game(const string& filename)
             you.save->abort(); // don't even rewrite the header
             delete you.save;
             you.save = 0;
-            game_ended(game_exit::abort, "Please use version " +
-                save_info.prev_save_version
-                + " to load " + save_info.name + " then.");
+            game_ended(game_exit::abort,
+                make_stringf(T_("Please use version %s to load %s then."),
+                             save_info.prev_save_version.c_str(),
+                             save_info.name.c_str()));
         }
     }
     you.init_from_save_info(save_info);
@@ -3592,8 +3601,8 @@ static bool _convert_obsolete_species()
             delete you.save;
             you.save = 0;
             game_ended(game_exit::abort,
-                "Please load the save in an earlier version "
-                "if you want to keep it as a Lava Orc.");
+                T_("Please load the save in an earlier version "
+                   "if you want to keep it as a Lava Orc."));
         }
         change_species_to(SP_MOUNTAIN_DWARF);
         // No need for conservation
@@ -3617,8 +3626,8 @@ static bool _convert_obsolete_species()
             delete you.save;
             you.save = 0;
             game_ended(game_exit::abort,
-                "Please load the save in an earlier version "
-                "if you want to remain a Vampire.");
+                T_("Please load the save in an earlier version "
+                   "if you want to remain a Vampire."));
         }
         change_species_to(SP_HUMAN);
         return true;

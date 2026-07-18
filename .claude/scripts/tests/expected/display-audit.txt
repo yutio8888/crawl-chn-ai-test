@@ -9,6 +9,7 @@
 [DISPLAY] target.cc:7  "draw_desc: Mouse description"
 [DISPLAY] target.cc:8  "title_prompt: Enter a value:"
 [DISPLAY] target.cc:9  "MenuEntry: Items"
+[DISPLAY] target.cc:10  "game_ended: Quit message"
 [DISPLAY] tilereg-doll.cc:7  "DISPLAY004 render doll_name: Doll %d"
 [DISPLAY] tilereg-doll.cc:4  "DISPLAY004 render help_text: Raw doll help"
 [DISPLAY] tilereg-inv.cc:3  "DISPLAY004 update_tip_text tip: Next page"
@@ -22,13 +23,13 @@ Files scanned: 5
   UI: 0 candidates
   STR: 0 candidates
   SMM: 0 candidates
-  DISPLAY: 14 candidates
+  DISPLAY: 15 candidates
   DYNKEY: 0 candidates
 
   (debug/#if0 blocks excluded; use --strict to include)
 
 Per-file candidate breakdown:
-  target.cc: DISPLAY:6
+  target.cc: DISPLAY:7
   tilereg-inv.cc: DISPLAY:3
   evoke.cc: DISPLAY:2
   tilereg-doll.cc: DISPLAY:2

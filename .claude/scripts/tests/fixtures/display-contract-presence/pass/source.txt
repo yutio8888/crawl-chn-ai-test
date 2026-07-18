@@ -1,12 +1,9 @@
 %%%%
-Translated target failure.
-已翻译的目标失败消息。
-%%%%
 Translated producer reason.
 已翻译的生产者消息。
 %%%%
-Translated out parameter.
-已翻译的输出参数。
+Translated tooltip.
+已翻译的工具提示。
 %%%%
 Translated tab tooltip.
 已翻译的标签提示。

@@ -49,6 +49,7 @@ MPR_CALL_RE = re.compile(
 DIRECT_DISPLAY_SINKS = {
     'MenuEntry': 0,
     'draw_desc': 0,
+    'game_ended': 1,
     'god_speaks': 1,
     'notify_fail': 0,
     'prompt_for_int': 0,
@@ -832,8 +833,20 @@ def _scan_display_producers(source, rel_path, contract_allowlist,
     if not producer_specs:
         return findings, filtered
 
-    for function, body_start, body_end in _iter_named_function_bodies(
-            source, producer_specs):
+    definitions = list(_iter_named_function_bodies(source, producer_specs))
+    by_function = {function: [] for function in producer_specs}
+    for definition in definitions:
+        by_function[definition[0]].append(definition)
+
+    for function, matches in by_function.items():
+        if len(matches) != 1:
+            lineno = (source.count('\n', 0, matches[0][1]) + 1
+                      if matches else 1)
+            display = (f'DISPLAY005 producer contract {function}: expected '
+                       f'exactly one definition, found {len(matches)}')
+            findings.append((rel_path, lineno, display[:160], 'DISPLAY'))
+
+    for function, body_start, body_end in definitions:
         out_params = producer_specs[function]
         for carrier, expression_start, expression in _producer_expressions(
                 source, body_start, body_end, out_params):
@@ -870,8 +883,20 @@ def _scan_display_builders(source, rel_path, contract_allowlist,
     if not builder_specs:
         return findings, filtered
 
-    for function, body_start, body_end in _iter_named_function_bodies(
-            source, builder_specs):
+    definitions = list(_iter_named_function_bodies(source, builder_specs))
+    by_function = {function: [] for function in builder_specs}
+    for definition in definitions:
+        by_function[definition[0]].append(definition)
+
+    for function, matches in by_function.items():
+        if len(matches) != 1:
+            lineno = (source.count('\n', 0, matches[0][1]) + 1
+                      if matches else 1)
+            display = (f'DISPLAY006 builder contract {function}: expected '
+                       f'exactly one definition, found {len(matches)}')
+            findings.append((rel_path, lineno, display[:160], 'DISPLAY'))
+
+    for function, body_start, body_end in definitions:
         for carrier, expression_start, expression in _builder_expressions(
                 source, body_start, body_end, builder_specs[function]):
             literals = _direct_untranslated_literals(expression)

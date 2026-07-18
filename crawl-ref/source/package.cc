@@ -33,6 +33,7 @@ Notes:
 #include <unistd.h>
 #endif
 
+#include "database.h"
 #include "end.h"
 #include "endianness.h"
 #include "errors.h"
@@ -118,7 +119,7 @@ package::package(const char* file, bool writeable, bool empty)
             if (!lock_file(fd, writeable))
             {
                 game_ended(game_exit::abort,
-                    "Another game is already in progress using this save!");
+                    T_("Another game is already in progress using this save!"));
             }
 
             load();

@@ -7,6 +7,7 @@ void extended_display_sinks(const string &action)
     draw_desc("Mouse description");
     title_prompt(buffer, sizeof(buffer), "Enter a value:");
     add_entry(new MenuEntry("Items", MEL_ITEM));
+    game_ended(game_exit::abort, "Quit message");
 
     tiles.json_write_string("msg", "protocol field");
     add_entry(new MenuEntry("(%c) %s", MEL_ITEM));

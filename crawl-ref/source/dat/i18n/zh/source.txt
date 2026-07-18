@@ -6014,6 +6014,9 @@ see invisible
 See you next game!
 下次游戏再见！
 %%%%
+See you soon, %s!
+%s，下次见！
+%%%%
  seems less brilliant.
 看起来不那么闪耀了。
 %%%%
@@ -9059,7 +9062,7 @@ You cannot duel that!
 你无法与那个决斗！
 %%%%
 You cannot evoke magical items.
-你无法唤起魔法物品。
+你无法激活魔法物品。
 %%%%
 You cannot heal while in death's door.
 你在死之门中无法治疗。
@@ -40615,8 +40618,14 @@ It isn't safe to move backwards.
 You already have %s game saved under the name '%s';\ndo you want to load that instead?
 你已经有一个%s游戏存档，名称为“%s”；\n是否改为加载该存档？
 %%%%
+Please use a different name to start a new %s game, then.
+请换一个名称开始新的%s游戏。
+%%%%
 This game comes from a previous release of Crawl (%s).\n\nIf you load it now, you won't be able to go back. Continue?
 该存档来自较早版本的 Crawl（%s）。\n\n如果现在加载，将无法回退。是否继续？
+%%%%
+Please use version %s to load %s then.
+请使用%s版本加载%s。
 %%%%
 There exists a save by that name but it appears to be invalid.\nDo you want to delete it?\nError: %s
 存在同名存档，但该存档似乎无效。\n是否删除？\n错误：%s
@@ -40624,8 +40633,17 @@ There exists a save by that name but it appears to be invalid.\nDo you want to d
 This Lava Orc save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Mountain Dwarf. Continue?
 该熔岩兽人存档无法保持原状加载。如果现在加载，\n你的角色将被转换为山矮人。是否继续？
 %%%%
+Please load the save in an earlier version if you want to keep it as a Lava Orc.
+如果想保留熔岩兽人角色，请使用较早版本加载该存档。
+%%%%
 This Vampire save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Human. Continue?
 该吸血鬼存档无法保持原状加载。如果现在加载，\n你的角色将被转换为人类。是否继续？
+%%%%
+Please load the save in an earlier version if you want to remain a Vampire.
+如果想继续作为吸血鬼，请使用较早版本加载该存档。
+%%%%
+Another game is already in progress using this save!
+该存档正被另一个游戏进程使用！
 %%%%
 a regular
 普通

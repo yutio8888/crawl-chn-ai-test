@@ -10,3 +10,8 @@ bool InventoryRegion::update_tip_text(string &tip)
     tip += tmp;
     return true;
 }
+
+void InventoryRegion::update_tab_tip_text(string &tip)
+{
+    tip = T_("Translated tab tooltip.");
+}

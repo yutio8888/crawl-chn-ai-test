@@ -3,6 +3,7 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../../.." && pwd)"
 SCAN_I18N="$SCRIPT_DIR/../scan_i18n.py"
 FIXTURES="$SCRIPT_DIR/fixtures"
 EXPECTED="$SCRIPT_DIR/expected"
@@ -151,6 +152,47 @@ assert_contains "missing-t: strict contracts include WIZARD branches" \
     "Wizard-only confirmation?" /tmp/actual_display_audit_strict.txt
 assert_status "missing-t: strict WIZARD display violation blocks" \
     1 "$DISPLAY_AUDIT_STRICT_RC"
+
+# ── registered producer/builder definition cardinality ──
+PRESENCE_FIXTURES="$FIXTURES/display-contract-presence"
+python3 "$SCAN_I18N" missing-t "$PRESENCE_FIXTURES/pass/" \
+    --display-contracts-only \
+    --source-txt "$PRESENCE_FIXTURES/pass/source.txt" \
+    > /tmp/actual_contract_presence_pass.txt 2>&1
+assert_contains "display registry: one producer/builder definition passes" \
+    "DISPLAY: 0 candidates" /tmp/actual_contract_presence_pass.txt
+
+for contract_case in missing-producer missing-builder \
+                     duplicate-producer duplicate-builder; do
+    set +e
+    python3 "$SCAN_I18N" missing-t "$PRESENCE_FIXTURES/$contract_case/" \
+        --display-contracts-only \
+        --source-txt "$PRESENCE_FIXTURES/pass/source.txt" \
+        > "/tmp/actual_contract_${contract_case}.txt" 2>&1
+    contract_status=$?
+    set -e
+    assert_status "display registry: $contract_case blocks" 1 "$contract_status"
+done
+assert_contains "display registry: missing producer fails closed" \
+    "DISPLAY005 producer contract cannot_evoke_item_reason: expected exactly one definition, found 0" \
+    /tmp/actual_contract_missing-producer.txt
+assert_contains "display registry: duplicate producer fails closed" \
+    "DISPLAY005 producer contract cannot_evoke_item_reason: expected exactly one definition, found 2" \
+    /tmp/actual_contract_duplicate-producer.txt
+assert_contains "display registry: missing builder fails closed" \
+    "DISPLAY006 builder contract update_tip_text: expected exactly one definition, found 0" \
+    /tmp/actual_contract_missing-builder.txt
+assert_contains "display registry: duplicate builder fails closed" \
+    "DISPLAY006 builder contract update_tip_text: expected exactly one definition, found 2" \
+    /tmp/actual_contract_duplicate-builder.txt
+
+# ── direct T_ branches remain extractable ──
+python3 "$SCRIPT_DIR/../i18n_extract.py" extract \
+    "$REPO_ROOT/crawl-ref/source" > /tmp/actual_i18n_extract.txt
+assert_contains "i18n extract: singular XP evoker recharge key" \
+    "%%s has regained %d charge." /tmp/actual_i18n_extract.txt
+assert_contains "i18n extract: plural XP evoker recharge key" \
+    "%%s has regained %d charges." /tmp/actual_i18n_extract.txt
 
 # ── mprf-p ──
 echo "--- mprf-p ---"
