@@ -3,6 +3,7 @@
 #
 # Usage:
 #   bash .claude/scripts/deploy.sh [target_dir]
+#   bash .claude/scripts/deploy.sh --validate-init <init_file>
 #
 # Default target_dir: /mnt/d/crawl-release
 #
@@ -29,17 +30,63 @@ MAPLE_FONT="MapleMono-NF-CN-Regular.ttf"
 VERSIONED_INIT="$REPO_ROOT/crawl-ref/source/init.zh.txt"
 LOCAL_INIT="$REPO_ROOT/crawl-ref/source/init.txt"
 
+effective_init_value() {
+    local init_file="$1"
+    local option="$2"
+
+    awk -v wanted="$option" '
+        function trim(value) {
+            sub(/^[[:space:]]+/, "", value)
+            sub(/[[:space:]]+$/, "", value)
+            return value
+        }
+        {
+            line = $0
+            sub(/\r$/, "", line)
+            sub(/[[:space:]]*#.*/, "", line)
+            equals = index(line, "=")
+            if (!equals)
+                next
+            name = trim(substr(line, 1, equals - 1))
+            if (name != wanted)
+                next
+            value = trim(substr(line, equals + 1))
+            last = value
+            found = 1
+        }
+        END {
+            if (!found)
+                exit 1
+            print last
+        }
+    ' "$init_file"
+}
+
 validate_chinese_init() {
     local init_file="$1"
-    local role
+    local role actual
 
-    grep -Eq '^[[:space:]]*language[[:space:]]*=[[:space:]]*zh([[:space:]]|$)' \
-        "$init_file" || return 1
+    actual="$(effective_init_value "$init_file" language)" || return 1
+    [ "$actual" = "zh" ] || return 1
     for role in crt msg stat tip lbl; do
-        grep -Eq "^[[:space:]]*tile_font_${role}_file[[:space:]]*=[[:space:]]*dat/tiles/MapleMono-NF-CN-Regular[.]ttf([[:space:]]|$)" \
-            "$init_file" || return 1
+        actual="$(effective_init_value "$init_file" "tile_font_${role}_file")" \
+            || return 1
+        [ "$actual" = "dat/tiles/$MAPLE_FONT" ] || return 1
     done
 }
+
+if [ "${1:-}" = "--validate-init" ]; then
+    if [ "$#" -ne 2 ]; then
+        echo "Usage: $0 --validate-init <init_file>" >&2
+        exit 2
+    fi
+    if validate_chinese_init "$2"; then
+        echo "Chinese init configuration is valid: $2"
+        exit 0
+    fi
+    echo "ERROR: effective Chinese init configuration is invalid: $2" >&2
+    exit 1
+fi
 
 echo "=== Deploying to $TARGET ==="
 

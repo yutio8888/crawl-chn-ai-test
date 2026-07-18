@@ -3,6 +3,7 @@
 from pathlib import Path
 import re
 import subprocess
+import tempfile
 import unittest
 
 
@@ -180,15 +181,38 @@ class AgentDocumentationTests(unittest.TestCase):
 
         deploy = (ROOT / ".claude/scripts/deploy.sh").read_text()
         self.assertIn("validate_chinese_init", deploy)
+        self.assertIn("effective_init_value", deploy)
         self.assertIn("VERSIONED_INIT", deploy)
         self.assertIn("FONT_SOURCE", deploy)
-        self.assertIn("MapleMono-NF-CN-Regular[.]ttf", deploy)
         self.assertIn('cmp -s "$INIT_SOURCE" "$TARGET/init.txt"', deploy)
         self.assertIn(
             'cmp -s "$FONT_SOURCE" "$TARGET/dat/tiles/$MAPLE_FONT"', deploy
         )
         self.assertNotIn("init.txt not found in either worktree. Skipping", deploy)
         self.assertNotIn("cp contrib/fonts/*.ttf", deploy)
+
+        script = ROOT / ".claude/scripts/deploy.sh"
+        cases = {
+            "canonical": (template, 0),
+            "later_language_override": (template + "\nlanguage = en\n", 1),
+            "later_font_override": (
+                template
+                + "\ntile_font_msg_file = dat/tiles/DejaVuSansMono.ttf\n",
+                1,
+            ),
+            "last_assignment_wins": ("language = en\n" + template, 0),
+        }
+        for name, (contents, expected) in cases.items():
+            with self.subTest(case=name), tempfile.NamedTemporaryFile(
+                mode="w", encoding="utf-8"
+            ) as handle:
+                handle.write(contents)
+                handle.flush()
+                result = subprocess.run(
+                    ["bash", str(script), "--validate-init", handle.name],
+                    cwd=ROOT, text=True, capture_output=True,
+                )
+                self.assertEqual(expected, result.returncode, result.stderr)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
