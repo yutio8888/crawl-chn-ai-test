@@ -69,8 +69,9 @@ const CODE_RESULT_SCHEMA = {
     filesModified: { type: 'array', items: { type: 'string' } },
     changesSummary: { type: 'string' },
     compileStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
+    verificationStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
   },
-  required: ['filesModified', 'changesSummary', 'compileStatus'],
+  required: ['filesModified', 'changesSummary', 'compileStatus', 'verificationStatus'],
 }
 
 const TRANS_RESULT_SCHEMA = {
@@ -78,8 +79,9 @@ const TRANS_RESULT_SCHEMA = {
   properties: {
     entriesAdded: { type: 'number' },
     entriesModified: { type: 'number' },
+    verificationStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
   },
-  required: ['entriesAdded', 'entriesModified'],
+  required: ['entriesAdded', 'entriesModified', 'verificationStatus'],
 }
 
 const CODE_REVIEW_SCHEMA = {
@@ -189,7 +191,7 @@ Design the minimal, correct fix:
 
 For each code change: file path, what to change, why.
 For each translation: English text and context.
-Follow .agents/policies/i18n-safety.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.`,
+Follow .agents/policies/i18n-safety.md: mprf_p for positional %n$s formats, no .c_str() on const char*, no protocol translation.`,
   { label: 'plan', schema: PLAN_SCHEMA }
 )
 
@@ -283,7 +285,8 @@ Steps:
 3. For each entry, grep source.txt first to avoid duplicates
 4. You exclusively own source.txt and other zh/*.txt/TextDB assets for this run
 5. Run: bash .claude/scripts/verify_zh.sh --profile translation
-6. If you changed translation assets, commit only those owned files after the
+6. Return verificationStatus=pass only when that profile exits 0; otherwise return fail
+7. If you changed translation assets, commit only those owned files after the
    profile passes, follow the active runtime's commit-trailer policy, and leave
    the worktree clean for immutable review.
 
@@ -298,6 +301,11 @@ Translation rules:
     { agentType: 'zh-translator', label: 'translate', schema: TRANS_RESULT_SCHEMA }
 )
 
+if (translationResult?.verificationStatus !== 'pass') {
+  log('Translation verification failed; code execution is blocked.')
+  return { error: 'translation_execution_failed', phase: 'Execute', translationResult }
+}
+
 const codeResult = await agent(
     `Implement code changes for this translation fix.
 
@@ -311,7 +319,8 @@ Steps:
 4. Run make -j4 to verify compilation
 5. If compilation fails, diagnose, fix, recompile — iterate until pass
 6. Run: bash .claude/scripts/verify_zh.sh --profile code
-7. If you changed code, commit only your owned files after the profile passes,
+7. Return verificationStatus=pass only when that profile exits 0; otherwise return fail
+8. If you changed code, commit only your owned files after the profile passes,
    follow the active runtime's commit-trailer policy, and leave the worktree
    clean for immutable review.
 
@@ -325,6 +334,12 @@ CRITICAL rules (from .agents/policies/i18n-safety.md and asset-ownership.md):
 - Type V: report that text should remain English (not a bug)`,
     { agentType: 'crawl-coder', label: 'code', schema: CODE_RESULT_SCHEMA }
 )
+
+if (codeResult?.compileStatus !== 'pass'
+    || codeResult?.verificationStatus !== 'pass') {
+  log('Code compilation or verification failed; review is blocked.')
+  return { error: 'code_execution_failed', phase: 'Execute', codeResult, translationResult }
+}
 
 if (codeResult && codeResult.compileStatus === 'pass') {
   log('Code: compile OK | ' + codeResult.changesSummary)
@@ -466,8 +481,9 @@ log([
 
 const codeRequired = (plan?.codeChanges?.length || 0) > 0
 const translationRequired = (plan?.translationsNeeded?.length || 0) > 0
-const executionIncomplete = (codeRequired && codeResult?.compileStatus !== 'pass')
-  || (translationRequired && !translationResult)
+const executionIncomplete = (codeRequired && (codeResult?.compileStatus !== 'pass'
+    || codeResult?.verificationStatus !== 'pass'))
+  || (translationRequired && translationResult?.verificationStatus !== 'pass')
 const reviewerIncomplete = routedReviewers.some(kind =>
   kind === 'zh-code-reviewer' ? !codeReview : !transReview)
 const hasBlockers = (codeReview?.blockers > 0) || (transReview?.blockers > 0)

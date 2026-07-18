@@ -28,7 +28,13 @@ The helper configures the console ccache profile and builds the `crawl` binary.
 
 ## Windows Tiles
 
-From the main worktree:
+Create the dedicated detached worktree once from the main repository root:
+
+```bash
+git worktree add .worktrees/mingw-tiles --detach HEAD
+```
+
+Then build from the main worktree:
 
 ```bash
 cd crawl-ref/source
@@ -42,12 +48,14 @@ Manual synchronization is discouraged. If diagnosis requires it, reproduce the
 same guard exactly:
 
 ```bash
-cd /home/yutio888/projects/crawl/.worktrees/mingw-tiles
+REPO_ROOT="$(git rev-parse --show-toplevel)"
+MAIN_HEAD="$(git -C "$REPO_ROOT" rev-parse HEAD)"
+cd "$REPO_ROOT/.worktrees/mingw-tiles"
 test -z "$(git status --porcelain --untracked-files=all)" || {
   echo "refusing destructive sync: build worktree is dirty" >&2
   exit 1
 }
-git reset --hard "$(git -C /home/yutio888/projects/crawl rev-parse HEAD)"
+git reset --hard "$MAIN_HEAD"
 cd crawl-ref/source
 make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 ```
@@ -79,9 +87,12 @@ bash .claude/scripts/deploy.sh
 bash .claude/scripts/deploy.sh /mnt/d/crawl-game
 ```
 
-It synchronizes and builds the MinGW worktree, copies `crawl.exe`, `dat/`, tile
-fonts, and `init.txt`, then clears the target `saves/db/` cache so TextDB changes
-are reloaded. Close the running game before deployment.
+It first requires a valid Chinese configuration and the configured Maple font,
+then synchronizes and builds the MinGW worktree, copies `crawl.exe`, `dat/`, the
+exact font, and `init.txt`, verifies the deployed copies, and clears the target
+`saves/db/` cache so TextDB changes are reloaded. It fails before building when
+either required asset is absent or invalid. Close the running game before
+deployment.
 
 ## Android Deployment
 
@@ -95,21 +106,19 @@ unsigned APK.
 
 ## Local `init.txt` and Fonts
 
-`crawl-ref/source/init.txt` is intentionally gitignored. The supported Chinese
-tiles configuration is:
+`crawl-ref/source/init.txt` is intentionally gitignored. The version-controlled
+`crawl-ref/source/init.zh.txt` is the supported Chinese configuration template:
 
-```ini
-language = zh
-tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_tip_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+```bash
+cd crawl-ref/source
+test -e init.txt || cp init.zh.txt init.txt
 ```
 
-Deploy runtime fonts into the target's `dat/tiles/`. Source fonts may live in
-the `contrib/fonts` submodule and the local ignored `dat/tiles/` cache; the
-deployment destination, not every source location, is `dat/tiles/`.
+Install `MapleMono-NF-CN-Regular.ttf` locally under
+`crawl-ref/source/dat/tiles/` or `crawl-ref/source/contrib/fonts/`. The font is
+not stored in this repository. The deployment helper copies that exact file to
+the target's `dat/tiles/`; the deployment destination, not every source
+location, is `dat/tiles/`.
 
 The configured Maple font is CJK-capable and is the default primary font for
 all tile text roles. Renderer fallback support remains available for other

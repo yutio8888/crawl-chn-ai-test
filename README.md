@@ -28,16 +28,17 @@
 
 ### 中文翻译
 
-- 覆盖 **~30,000+** 条翻译条目（`source.txt`），涵盖游戏界面、战斗日志、怪物名称、
-  技能说明、物品描述、神明对话等
+- `source.txt` 与 ZH TextDB 覆盖游戏界面、战斗日志、怪物名称、技能说明、物品描述、
+  神祇对话等；当前条目与覆盖数据以验证脚本报告为准
 - 支持 `T_()` 宏系统：C++ 端直接嵌入翻译键，编译期提取与校验
 - 三种翻译通道：
-  - **C++ 字面量** `T_("English text")` — ~93% 覆盖率，可静态扫描
+  - **C++ 字面量** `T_("English text")` — 可静态扫描
   - **函数包装器** `skill_name()` / `spell_title()` 等 — 内部自动翻译，调用者无感
   - **运行时变量** `T_(variable)` — 数据驱动的动态翻译（怪物名、地形名等）
-- 独立的 TextDB 描述数据库：怪物描述、装备说明、神明对话等存储在
-  `dat/descript/zh/` 和 `dat/database/zh/` 中
-- 翻译决策注册表 [`docs/decisions.md`](docs/decisions.md) 确保术语一致性
+- 独立的 TextDB 描述数据库：怪物描述、装备说明、神祇对话等存储在
+  `crawl-ref/source/dat/descript/zh/` 和 `crawl-ref/source/dat/database/zh/` 中
+- 当前术语以 [`docs/glossary.md`](docs/glossary.md) 为准；
+  [`docs/decisions.md`](docs/decisions.md) 保存裁定理由和历史
 
 ### CJK Tiles 渲染
 
@@ -45,8 +46,8 @@
   1. **网格计数层** (`tilereg-text.cc`)：使用 `wcwidth()` 计算每个字符的实际显示宽度，
      CJK 字符占 2 格，第二格标记为零宽空格 (U+200B)
   2. **渲染层** (`fontwrapper-ft.cc`)：跳过续格标记，CJK 字符使用 2 倍背景宽度
-  3. **字体回退层**：DejaVu Sans Mono 提供布局度量，Sarasa Mono SC（更纱等宽黑体）
-     作为 CJK 回退字体
+  3. **字体选择层**：默认中文部署使用 Maple Mono NF CN 作为主字体；渲染器仍支持
+     可选的缺字回退
 - 支持中英文混排，对齐正确
 
 ### 工具链
@@ -67,13 +68,14 @@
 
 - Linux (WSL2) 或 macOS
 - GCC / Clang (C++17)
-- `make`、`pkg-config`
+- Git、`make`、`pkg-config`
 - 依赖库：Lua、SQLite、PCRE、SDL2、SDL2_image、Freetype、libpng、zlib
 
 ### 控制台版
 
 ```bash
 cd crawl-ref/source
+test -e init.txt || cp init.zh.txt init.txt
 bash util/build-console.sh
 ./crawl
 ```
@@ -81,13 +83,18 @@ bash util/build-console.sh
 ### Tiles 版（Windows 交叉编译）
 
 ```bash
-cd crawl-ref/source
-bash util/build-tiles.sh
+test -d .worktrees/mingw-tiles/crawl-ref/source || \
+  git worktree add .worktrees/mingw-tiles --detach HEAD
+test -e crawl-ref/source/init.txt || \
+  cp crawl-ref/source/init.zh.txt crawl-ref/source/init.txt
+# 先按 docs/build-workflow.md 安装 MapleMono-NF-CN-Regular.ttf
+bash crawl-ref/source/util/build-tiles.sh
+bash .claude/scripts/deploy.sh
 ```
 
-帮助脚本在专用 `.worktrees/mingw-tiles` 中生成 `crawl.exe`。推荐使用
-`bash .claude/scripts/deploy.sh` 部署二进制、`dat/`、字体和本地 `init.txt`；
-完整流程见 `docs/build-workflow.md`。
+以上命令从仓库根目录运行。帮助脚本在专用 `.worktrees/mingw-tiles` 中生成
+`crawl.exe`；部署脚本会在构建前检查中文配置和 Maple 字体，并在目标中验证
+二者。完整流程与字体放置位置见 `docs/build-workflow.md`。
 
 ### 必需字体
 
@@ -121,10 +128,11 @@ crawl/                               # 仓库根目录
 │   ├── source/
 │   │   ├── *.cc, *.h                # C++ 游戏源码（含 T_() 翻译宏）
 │   │   ├── dat/
-│   │   │   ├── i18n/zh/source.txt   # 主翻译数据库（~30,000 条）
+│   │   │   ├── i18n/zh/source.txt   # 主翻译数据库
 │   │   │   ├── descript/zh/         # 描述文本数据库
-│   │   │   └── database/zh/         # 文本数据库（神明对话等）
-│   │   ├── contrib/fonts/           # 字体文件
+│   │   │   └── database/zh/         # 文本数据库（神祇对话等）
+│   │   ├── contrib/fonts/           # 可选的本地字体来源
+│   │   ├── init.zh.txt              # 受版本控制的中文配置模板
 │   │   └── Makefile                 # 构建配置
 │   └── docs/                        # 上游游戏文档
 ├── .claude/
@@ -136,26 +144,22 @@ crawl/                               # 仓库根目录
 
 ### 分支说明
 
-| 分支 | 用途 | 基线 |
-|------|------|------|
-| `chn-0.34.1-base` | **活跃开发分支** | `0.34.1` 稳定标签（干净重建） |
-| `chinese-translation-0.34.1` | 历史遗留分支（仅供参考） | `0.34.1` 稳定标签 → 被 master 合并污染 |
+分支状态会随并行开发变化，不在本文维护“当前活跃”清单。使用
+`git branch --show-current`、`git branch --all` 和任务交接记录确认当前状态；
+Agent 的分支与 worktree 约束见 [`AGENTS.md`](AGENTS.md)。
 
 ---
 
 ## 翻译进度
 
-| 指标 | 数据 |
-|------|------|
-| source.txt 条目数 | **~30,452** |
-| 涉及 C++ 源文件 | **96+** `.cc` 文件 |
-| T_() 调用点 | **6,000+** |
-| 翻译提交数（稳定分支） | **894+** |
+翻译条目、调用点和覆盖率均为易变数据，不在手写文档中冻结。运行
+`bash .claude/scripts/verify_zh.sh --profile translation` 查看当前 worktree 的
+结构、键覆盖和术语验证结果；最终合并证据由项目审查门禁生成。
 
 ### 覆盖范围
 
 - ✅ 战斗日志消息
-- ✅ 怪物攻击动词（25+）
+- ✅ 怪物攻击动词
 - ✅ UI 面板（Q/W/I/E/!/$/^）
 - ✅ 瞄准界面
 - ✅ 物品栏提示
@@ -206,13 +210,13 @@ dat/i18n/zh/source.txt  ← 翻译数据库
 
 ### 翻译类型体系
 
-| 类型 | 模式 | 覆盖率 | 可审计性 |
-|------|------|--------|----------|
-| I — C++ 字面量 | `T_("You hit %s.")` | ~93% | 静态扫描 ✅ |
-| II — 函数包装器 | `skill_name(sk)` → 内部 `T_()` | ~5% | 人工审计 |
-| III — 运行时变量 | `T_(endmsg)` 数据驱动 | ~1% | `audit_data_i18n.py` |
-| IV — TextDB | `zh/monsters.txt` 等 | 附加 | 按文件校验 |
-| V — 协议/内部 | 永不翻译 | — | 禁止翻译 ❌ |
+| 类型 | 模式 | 可审计性 |
+|------|------|----------|
+| I — C++ 字面量 | `T_("You hit %s.")` | 静态扫描 ✅ |
+| II — 函数包装器 | `skill_name(sk)` → 内部 `T_()` | 调用链审计 |
+| III — 运行时变量 | `T_(endmsg)` 数据驱动 | `audit_data_i18n.py` |
+| IV — TextDB | `zh/monsters.txt` 等 | 按文件校验 |
+| V — 协议/内部 | 永不翻译 | 禁止翻译 ❌ |
 
 ---
 
@@ -220,16 +224,14 @@ dat/i18n/zh/source.txt  ← 翻译数据库
 
 ### 翻译贡献
 
-1. 阅读 [`docs/decisions.md`](docs/decisions.md) — 术语决策唯一来源
-2. 修改或新增 `dat/i18n/zh/source.txt` 条目
-3. 如有新增 `T_()` 调用，同步添加对应 `source.txt` 条目
-4. 运行工具链校验：
+1. 从 [`docs/glossary.md`](docs/glossary.md) 解析当前术语；
+   [`docs/decisions.md`](docs/decisions.md) 仅用于查阅裁定理由和历史
+2. 修改或新增 `crawl-ref/source/dat/i18n/zh/source.txt` 条目
+3. 如有新增 `T_()` 调用，由同一任务的翻译资产所有者补齐对应条目
+4. 运行统一校验：
 
 ```bash
-python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
 ### 代码贡献
@@ -274,16 +276,13 @@ python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
 
 | 字体 | 许可证 | 说明 |
 |------|--------|------|
-| **DejaVu Sans** / **DejaVu Sans Mono** | [Bitstream Vera](crawl-ref/docs/license/lgpl.txt) + 公共领域 | 主字体，由上游 DCSS 提供 |
-| **Sarasa Mono SC**（更纱等宽黑体） | [SIL Open Font License 1.1](https://openfontlicense.org/) | CJK 回退字体，版权归原作者及贡献者所有 |
+| **Maple Mono NF CN** | 遵循所下载字体发行包附带的许可证 | 中文 Tiles 默认主字体；文件不存入本仓库 |
+| **DejaVu Sans** / **DejaVu Sans Mono** | [Bitstream Vera](crawl-ref/docs/license/lgpl.txt) + 公共领域 | 上游 DCSS 字体，可用于其他配置 |
+| **Sarasa Mono SC**（可选） | [SIL Open Font License 1.1](https://openfontlicense.org/) | 历史回退方案；不是当前部署必需项 |
 
-**关于 Sarasa Mono SC：**
-
-- 该字体基于 SIL OFL 1.1 发布，允许免费使用、复制、嵌入、修改和再分发。
-- **字体文件不包含在本 Git 仓库中**（文件大小约 25MB），仅随发布包一同分发。
-- 如需自行获取，请访问 [Sarasa Gothic GitHub](https://github.com/be5invis/Sarasa-Gothic) 下载
-  `SarasaMonoSC-Regular.ttf`，放入 `crawl-ref/source/contrib/fonts/` 目录。
-- 完整版权声明与 OFL 许可证文本见 [`docs/fonts/LICENSE-Sarasa-Gothic.txt`](docs/fonts/LICENSE-Sarasa-Gothic.txt)。
+部署前请自行取得 `MapleMono-NF-CN-Regular.ttf`，确认其发行包许可证，并按
+[`docs/build-workflow.md`](docs/build-workflow.md) 放置。Sarasa 的仓库内许可证副本
+见 [`docs/fonts/LICENSE-Sarasa-Gothic.txt`](docs/fonts/LICENSE-Sarasa-Gothic.txt)。
 
 ---
 

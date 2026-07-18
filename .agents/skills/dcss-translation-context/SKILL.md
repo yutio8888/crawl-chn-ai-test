@@ -78,7 +78,8 @@ writer, and coordinate before touching an overlapping path.
 ## Default ownership
 
 - `zh-translator` owns Chinese wording and translation assets under
-  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+  `crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and
+  `crawl-ref/source/dat/descript/zh/`.
 - `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
   database loading/schema, and code-side `T_()`/`C_()` migration.
 - English/protocol/TextDB lookup keys remain English regardless of the writer.

@@ -699,7 +699,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: `docs/translation-architecture.md` and `docs/glossary.md`
+- **Source**: `docs/glossary.md`
 - **Choice**: Adverbs always precede verbs in Chinese translations
 - **Rejected**: English adverb placement (can be post-verbal)
 - **Rationale**: Chinese word order is strictly modifier-before-modified. English allows adverbs after verbs; Chinese does not.

@@ -5,7 +5,7 @@ export const meta = {
     { title: 'Batch Analyze', detail: '并行分析所有 issue → 归并同根因 → 建立批次术语表' },
     { title: 'Batch Plan', detail: '基于合并后的问题集制定统一修复方案' },
     { title: 'Review Plan', detail: '方案审核闸门（最多3轮修订）' },
-    { title: 'Execute Sequential', detail: '串行落盘：逐项执行代码修改+翻译，避免 source.txt 合并冲突' },
+    { title: 'Execute Sequential', detail: '串行落盘：每组先写翻译资产、再改代码，避免 source.txt 冲突' },
     { title: 'Prepare Review Bundle', detail: '提交边界：要求两端 clean，并由 target checkout 创建不可变 bundle' },
     { title: 'Batch Review', detail: '按文件机械路由代码/翻译 reviewer，并检查术语一致性' },
     { title: 'Cross-validate', detail: '全量校验脚本 + 遗漏检测' },
@@ -76,11 +76,13 @@ const EXEC_ITEM_SCHEMA = {
     code: { type: 'object', properties: {
       filesModified: { type: 'array', items: { type: 'string' } },
       compileStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
+      verificationStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
       summary: { type: 'string' },
-    } },
+    }, required: ['filesModified', 'compileStatus', 'verificationStatus', 'summary'] },
     translation: { type: 'object', properties: {
       entriesAdded: { type: 'number' }, entriesModified: { type: 'number' },
-    } },
+      verificationStatus: { type: 'string', enum: ['pass', 'fail', 'not_attempted'] },
+    }, required: ['entriesAdded', 'entriesModified', 'verificationStatus'] },
   },
 }
 
@@ -239,8 +241,8 @@ let plan = await agent(
   '- codeChanges: files to modify, what to change, why\n' +
   '- translationsNeeded: English text + context for each entry\n' +
   '\nCRITICAL: Use the batch glossary for ALL terminology. Consistency across groups is mandatory.\n' +
-  'Follow .agents/policies/i18n-safety.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.\n' +
-  'For Type III: add source.txt entries with T_(variable). For Type V: text should stay English.',
+  'Follow .agents/policies/i18n-safety.md: mprf_p for positional %n$s formats, no .c_str() on const char*, no protocol translation.\n' +
+  'For Type III: plan the translator-owned source.txt entry before the coder-owned T_(variable). For Type V: text should stay English.',
   { label: 'batch-plan', schema: MERGED_PLAN_SCHEMA }
 )
 
@@ -316,26 +318,7 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
   const grp = plan.mergedGroups[g]
   log('执行组 ' + (g + 1) + '/' + plan.mergedGroups.length + ': ' + grp.rootCause.substring(0, 50) + '...')
 
-  // Step 1: Code changes (crawl-coder)
-  const codeResult = await agent(
-    'Implement code changes for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
-    '\nRoot cause: ' + grp.rootCause + '\n' +
-    'Code changes: ' + JSON.stringify(grp.codeChanges) + '\n' +
-    'Type: ' + (validAnalyses[grp.issueIndices[0]]?.translationType || '?') + '\n' +
-    '\nBatch glossary (USE THESE EXACT TRANSLATIONS):\n' + JSON.stringify(plan.batchGlossary) +
-    '\n\nSteps:\n' +
-    '1. Run context_resolve.sh with --task-type code for the exact target files\n' +
-    '2. Apply the returned glossary context and retain its SHA-256\n' +
-    '3. Make each code change as specified\n' +
-    '4. Run make -j4 to verify compilation\n' +
-    '5. If compilation fails, fix and recompile\n' +
-    '6. Run: bash .claude/scripts/verify_zh.sh --profile code\n' +
-    '7. If files changed, commit only coder-owned files after verification, follow the active runtime commit-trailer policy, and leave the worktree clean\n' +
-    '\nCRITICAL: Use mprf_p for positional %s. No .c_str() on const char*. No protocol translation.',
-    { agentType: 'crawl-coder', label: 'code-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.code }
-  )
-
-  // Step 2: Translation (zh-translator) — sequential, same worktree
+  // Step 1: Translation assets (zh-translator) — one writer, same worktree.
   const transResult = await agent(
     'Add Chinese translations for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
     '\nTranslations needed: ' + JSON.stringify(grp.translationsNeeded) + '\n' +
@@ -348,10 +331,44 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
     '5. For TextDB: add to correct zh/*.txt with English key\n' +
     '6. Preserve literal \\n, \\t, \\r, %%%%, %N$s, <tag>, and @keyword@ tokens byte-for-byte\n' +
     '7. Run: bash .claude/scripts/verify_zh.sh --profile translation\n' +
-    '8. If files changed, commit only translator-owned assets after verification, follow the active runtime commit-trailer policy, and leave the worktree clean\n' +
+    '8. Return verificationStatus=pass only when that profile exits 0; otherwise return fail\n' +
+    '9. If files changed, commit only translator-owned assets after verification, follow the active runtime commit-trailer policy, and leave the worktree clean\n' +
     '\nUse the batch glossary only when it agrees with the current resolver output; current docs/glossary.md wins.',
     { agentType: 'zh-translator', label: 'trans-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.translation }
   )
+
+  const transOk = transResult?.verificationStatus === 'pass'
+  if (!transOk) {
+    log('  G' + (g + 1) + ' 翻译验证失败；停止，代码阶段未运行。')
+    return { error: 'translation_execution_failed', groupIndex: g, translation: transResult }
+  }
+
+  // Step 2: Code changes (crawl-coder), after required keys/assets exist.
+  const codeResult = await agent(
+    'Implement code changes for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
+    '\nRoot cause: ' + grp.rootCause + '\n' +
+    'Code changes: ' + JSON.stringify(grp.codeChanges) + '\n' +
+    'Type: ' + (validAnalyses[grp.issueIndices[0]]?.translationType || '?') + '\n' +
+    '\nBatch glossary (USE THESE EXACT TRANSLATIONS):\n' + JSON.stringify(plan.batchGlossary) +
+    '\n\nSteps:\n' +
+    '1. Run context_resolve.sh with --task-type code for the exact target files\n' +
+    '2. Apply the returned glossary context and retain its SHA-256\n' +
+    '3. Make each code change as specified; do not reopen translator-owned assets\n' +
+    '4. Run make -j4 to verify compilation\n' +
+    '5. If compilation fails, fix and recompile\n' +
+    '6. Run: bash .claude/scripts/verify_zh.sh --profile code\n' +
+    '7. Return verificationStatus=pass only when that profile exits 0; otherwise return fail\n' +
+    '8. If files changed, commit only coder-owned files after verification, follow the active runtime commit-trailer policy, and leave the worktree clean\n' +
+    '\nCRITICAL: Use mprf_p for positional %n$s formats. No .c_str() on const char*. No protocol translation. Do not edit source.txt or ZH TextDB assets.',
+    { agentType: 'crawl-coder', label: 'code-g' + (g + 1), schema: EXEC_ITEM_SCHEMA.properties.code }
+  )
+
+  const codeOk = codeResult?.compileStatus === 'pass'
+    && codeResult?.verificationStatus === 'pass'
+  if (!codeOk) {
+    log('  G' + (g + 1) + ' 代码编译或验证失败；停止后续组。')
+    return { error: 'code_execution_failed', groupIndex: g, code: codeResult, translation: transResult }
+  }
 
   execResults.push({
     groupIndex: g,
@@ -359,11 +376,8 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
     translation: transResult,
   })
 
-  const codeOk = codeResult && codeResult.compileStatus === 'pass'
-  if (codeOk) log('  G' + (g + 1) + ' 代码: ✅ | ' + (codeResult?.summary || ''))
-  else log('  G' + (g + 1) + ' 代码: ⚠️ ' + (codeResult?.compileStatus || 'skipped'))
-
-  if (transResult) log('  G' + (g + 1) + ' 翻译: +' + transResult.entriesAdded + ' added, ' + (transResult.entriesModified || 0) + ' modified')
+  log('  G' + (g + 1) + ' 翻译: +' + transResult.entriesAdded + ' added, ' + (transResult.entriesModified || 0) + ' modified')
+  log('  G' + (g + 1) + ' 代码: ✅ | ' + (codeResult?.summary || ''))
 }
 
 log('执行完成: ' + execResults.length + ' 组全部处理')

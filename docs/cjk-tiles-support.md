@@ -1,5 +1,10 @@
 # CJK (中日韩) 字符在 Tiles 版本中的双倍宽度支持
 
+> **历史实现记录。** 本文保留早期双字体方案、问题分析和提交背景，不再
+> 定义当前部署配置。当前权威架构见
+> [`docs/cjk-tiles-architecture.md`](cjk-tiles-architecture.md)，构建与字体
+> 前置条件见 [`docs/build-workflow.md`](build-workflow.md)。
+
 ## 概述
 
 DCSS (Dungeon Crawl Stone Soup) 的 Webtiles/本地 tiles 版本最初设计仅支持 ASCII/Latin 字符。中文字符（以及日文、韩文字符）的标准显示宽度是英文字符的 **2 倍**，但游戏引擎将所有字符统一视为单倍宽度。本文档记录了为 tiles 版本添加 CJK 双倍宽度支持的实现方案。
@@ -143,20 +148,13 @@ while (charsz.x <= m_max_advance.x * 2)
     charsz.x *= 2;
 ```
 
-## 字体配置
+## 字体配置（历史说明）
 
-游戏需要以下字体文件（放置在 `contrib/fonts/`）：
-
-| 文件 | 大小 | 用途 |
-|------|------|------|
-| `DejaVuSans.ttf` | ~700KB | 比例字体（UI/tooltip） |
-| `DejaVuSansMono.ttf` | ~330KB | 主等宽字体（Latin 字形 + 网格 metrics） |
-| `SarasaMonoSC-Regular.ttf` | ~25MB | CJK 回退字体（简体中文等宽） |
-
-**字体选择原则**：
-- 主字体必须保留 DejaVu Sans Mono——游戏的全部 UI 布局依赖其 metrics
-- 回退字体需要是**等宽**字体，且 CJK 字形宽度恰好为 Latin 字形的 2 倍
-- 推荐 **Sarasa Mono SC**（更纱黑体简体中文等宽版）：Iosevka Latin + Source Han Sans SC，SIL Open Font License
+本文件记录最初的 DejaVu/Sarasa 双字体实现，不再定义受支持的部署配置。
+当前中文部署以 Maple Mono NF CN 为所有 Tiles 文本角色的主字体；渲染器
+仍支持可选回退，但不要求固定的 DejaVu/Sarasa 组合。权威配置、字体放置
+位置和部署前置条件见 [`docs/cjk-tiles-architecture.md`](cjk-tiles-architecture.md)
+与 [`docs/build-workflow.md`](build-workflow.md)。
 
 ## 编译
 

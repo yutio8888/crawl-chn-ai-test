@@ -36,9 +36,10 @@ entry in the same change.
 
 ### Type IV — TextDB descriptions
 
-Long descriptions live in `%%%%`-separated databases under `dat/database/zh/`
-and `dat/descript/zh/`. Lookup keys remain English; only display values are
-translated. Preserve separators, format placeholders, control characters,
+Long descriptions live in `%%%%`-separated databases under
+`crawl-ref/source/dat/database/zh/` and
+`crawl-ref/source/dat/descript/zh/`. Lookup keys remain English; only display
+values are translated. Preserve separators, format placeholders, control characters,
 `@keyword@` markers, and embedded template syntax exactly.
 
 ### Type V — protocol and internal values

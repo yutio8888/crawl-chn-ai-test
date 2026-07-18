@@ -28,9 +28,10 @@ AUTHORITIES = [
     ROOT / "docs/issue-tracking.md",
     ROOT / "docs/translation-architecture.md",
     ROOT / "docs/zh-testing.md",
+    ROOT / "crawl-ref/source/init.zh.txt",
 ]
 
-DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES
+DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES + [ROOT / "README.md"]
 
 STALE_PATTERNS = {
     r"28 project tool scripts": "hard-coded obsolete script count",
@@ -40,6 +41,7 @@ STALE_PATTERNS = {
     r"Review \(3-way parallel\)": "obsolete fixed reviewer count",
     r"Run via `bash`[^\n]*OpenCode has no `Workflow`":
         "workflow DSL described as a shell program",
+    r"/home/yutio888": "clone-specific absolute path",
 }
 
 MARKDOWN_LINK = re.compile(r"\[[^\]]+\]\(([^)]+)\)")
@@ -104,6 +106,92 @@ class AgentDocumentationTests(unittest.TestCase):
                 opencode = (ROOT / ".opencode/workflows" / name).read_bytes()
                 claude = (ROOT / ".claude/workflows" / name).read_bytes()
                 self.assertEqual(opencode, claude)
+
+    def test_workflows_enforce_translation_first_and_profile_success(self) -> None:
+        for tree in (".claude", ".opencode"):
+            batch = (ROOT / tree / "workflows/translation-batch-pipeline.js").read_text()
+            execute = batch.split("phase('Execute Sequential')", 1)[1].split(
+                "phase('Prepare Review Bundle')", 1)[0]
+            with self.subTest(tree=tree):
+                self.assertLess(
+                    execute.index("agentType: 'zh-translator'"),
+                    execute.index("agentType: 'crawl-coder'"),
+                )
+                self.assertIn("translation_execution_failed", execute)
+                self.assertIn("code_execution_failed", execute)
+                self.assertIn("verificationStatus", batch)
+                self.assertNotIn("mprf_p for positional %s", batch)
+
+            single = (ROOT / tree / "workflows/translation-fix-pipeline.js").read_text()
+            self.assertIn("translation_execution_failed", single)
+            self.assertIn("code_execution_failed", single)
+            self.assertNotIn("mprf_p for positional %s", single)
+
+    def test_translation_assets_use_full_repository_paths(self) -> None:
+        paths = [
+            ROOT / "AGENTS.md",
+            ROOT / "docs/translation-architecture.md",
+            ROOT / ".agents/policies/asset-ownership.md",
+            *ROOT.glob(".claude/agents/*.md"),
+            *ROOT.glob(".claude/skills/*.md"),
+            *ROOT.glob(".opencode/agents/*.md"),
+            *ROOT.glob(".opencode/skills/*/SKILL.md"),
+            *ROOT.glob(".codex/agents/*.toml"),
+        ]
+        for path in paths:
+            text = path.read_text()
+            with self.subTest(path=path.relative_to(ROOT)):
+                self.assertNotIn("`dat/database/zh/`", text)
+                self.assertNotIn("`dat/descript/zh/`", text)
+
+    def test_coder_templates_handoff_translation_assets(self) -> None:
+        paths = [
+            ROOT / ".claude/agents/crawl-coder.md",
+            ROOT / ".claude/skills/crawl-coder.md",
+            ROOT / ".opencode/agents/crawl-coder.md",
+            ROOT / ".opencode/skills/crawl-coder/SKILL.md",
+            ROOT / ".codex/agents/crawl-coder.toml",
+        ]
+        forbidden = (
+            "append to zh/source.txt",
+            "Add corresponding entries to crawl-ref/source/dat/i18n/zh/source.txt",
+            "Add all new keys to source.txt",
+            "T_() + source.txt entry in same commit",
+        )
+        for path in paths:
+            text = path.read_text()
+            with self.subTest(path=path.relative_to(ROOT)):
+                for phrase in forbidden:
+                    self.assertNotIn(phrase, text)
+                self.assertIn("zh-translator", text)
+
+    def test_chinese_deploy_contract_is_fail_closed(self) -> None:
+        template = (ROOT / "crawl-ref/source/init.zh.txt").read_text()
+        self.assertIn("language = zh", template)
+        for role in ("crt", "msg", "stat", "tip", "lbl"):
+            self.assertIn(
+                f"tile_font_{role}_file = dat/tiles/MapleMono-NF-CN-Regular.ttf",
+                template,
+            )
+
+        deploy = (ROOT / ".claude/scripts/deploy.sh").read_text()
+        self.assertIn("validate_chinese_init", deploy)
+        self.assertIn("VERSIONED_INIT", deploy)
+        self.assertIn("FONT_SOURCE", deploy)
+        self.assertIn('cmp -s "$INIT_SOURCE" "$TARGET/init.txt"', deploy)
+        self.assertIn(
+            'cmp -s "$FONT_SOURCE" "$TARGET/dat/tiles/$MAPLE_FONT"', deploy
+        )
+        self.assertNotIn("init.txt not found in either worktree. Skipping", deploy)
+        self.assertNotIn("cp contrib/fonts/*.ttf", deploy)
+
+    def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
+        text = (ROOT / "README.md").read_text()
+        for pattern in (r"~30,", r"30,452", r"~93%", r"\*\*活跃开发分支\*\*"):
+            self.assertIsNone(re.search(pattern, text))
+        self.assertNotIn("必须保留 DejaVu Sans Mono", text)
+        historical = (ROOT / "docs/cjk-tiles-support.md").read_text()
+        self.assertIn("历史实现记录", historical[:500])
 
     def test_relative_markdown_links_resolve(self) -> None:
         for path in DOCS_TO_LINT:

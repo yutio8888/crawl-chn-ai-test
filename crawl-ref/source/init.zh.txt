@@ -1,0 +1,8 @@
+# Version-controlled Chinese runtime configuration template.
+# Copy to init.txt for local use; init.txt remains gitignored.
+language = zh
+tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_tip_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
+tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf

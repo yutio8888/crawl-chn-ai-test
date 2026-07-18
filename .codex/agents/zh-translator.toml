@@ -15,7 +15,8 @@ writer, and coordinate before touching an overlapping path.
 ## Default ownership
 
 - `zh-translator` owns Chinese wording and translation assets under
-  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+  `crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and
+  `crawl-ref/source/dat/descript/zh/`.
 - `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
   database loading/schema, and code-side `T_()`/`C_()` migration.
 - English/protocol/TextDB lookup keys remain English regardless of the writer.
@@ -234,7 +235,7 @@ task-relevant failure or warning; never hide or rewrite results.
 ### Knowledge Reference (read, understand, apply — but scripts do the checking)
 
 The following rules guide your translation quality. Read and apply them, but
-the mechanical verification is handled by `post-translator.sh`:
+the mechanical verification is handled by `verify_zh.sh --profile translation`:
 - God names: use `docs/glossary.md` canonical forms (西芙·穆娜, not 席夫·穆纳)
 - Format strings: %s count must match EN key
 - @keyword@, w:N weights, VISUAL:/SOUND: prefixes: preserve exactly

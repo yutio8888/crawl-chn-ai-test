@@ -55,7 +55,8 @@ writer, and coordinate before touching an overlapping path.
 ## Default ownership
 
 - `zh-translator` owns Chinese wording and translation assets under
-  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+  `crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and
+  `crawl-ref/source/dat/descript/zh/`.
 - `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
   database loading/schema, and code-side `T_()`/`C_()` migration.
 - English/protocol/TextDB lookup keys remain English regardless of the writer.
@@ -129,8 +130,9 @@ mpr(T_("You see a door."));
 mprf(T_("You hit %s."), target);
 ```
 
-**Workflow**: Resolve current terminology → read source → identify display strings → wrap with T_() →
-append to zh/source.txt (`%%%%\nEN\nZH\n`) → `make -j4` → verify
+**Workflow**: Resolve current terminology → confirm translator-owned keys/assets
+already exist or hand them off to `zh-translator` → wrap code-side display
+strings with `T_()` → `make -j4` → verify
 
 Before any change that adds or edits `T_()`, `C_()`, `source.txt`, or a ZH
 TextDB file, run:
@@ -250,7 +252,7 @@ All translated strings fall into one of five types.
 |------|-------------|-----------------|
 | **I — T_("literal")** | T_() wrapping of string literals | T_() at each call site, statically auditable by i18n_extract.py |
 | **II — Function Wrappers** | skill_name(), spell_title() with internal T_() | Transparent to callers — no T_() needed at call sites |
-| **III — Runtime T_(variable)** | endmsg, expmsg, monster YAML names | T_() + source.txt entry in same commit; audit with audit_data_i18n.py |
+| **III — Runtime T_(variable)** | endmsg, expmsg, monster YAML names | Translator-owned source.txt entry first, then coder-owned T_(); audit with audit_data_i18n.py |
 | **IV — TextDB Descriptors** | zh/egos.txt, zh/monsters.txt, zh/spells.txt | English keys, Chinese values; separate from T_() system |
 | **V — Protocol/Internal** | JSON keys, .des tags, Lua API params | Never translated — must remain English |
 
@@ -302,31 +304,6 @@ bash .claude/scripts/verify_zh.sh --profile code
 This aggregates: T_() key coverage, mprf_p compatibility, %s count parity,
 and anti-patterns (--strict). Output written to `.claude/metrics/verify/coder-<ts>.log`.
 
-### Pre-Commit CI Checks
-
-```bash
-# 0. Check source.txt integrity — no duplicates or self-conflicts
-python3 .claude/scripts/scan_i18n.py source-txt-integrity \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-
-# 1. T_() key coverage + data-driven sources + mprf_p compatibility + format integrity
-python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/audit_data_i18n.py crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py mprf-p crawl-ref/source/ \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py arg-mismatch \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-
-# 2. Term consistency and validation
-python3 .claude/scripts/scan_i18n.py species-consistency \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt && \
-python3 .claude/scripts/scan_i18n.py validate-terms \
-    --glossary docs/decisions.md \
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-```
-
 ### Output Rule
 
 Report the verification log path and preserve its raw contents. Explain every
@@ -338,7 +315,8 @@ The following rules guide code quality. **Understand and follow them**, but
 mechanical verification is handled by `verify_zh.sh --profile code`:
 - `const char*` return values do NOT get `.c_str()` — `skill_name(sk)` not `skill_name(sk).c_str()`
 - Positional params use `mprf_p` not `mprf` — MinGW vsnprintf doesn't support `%n$s`
-- `grep -F` dedup before appending to source.txt
+- Confirm the translator's key/verification handoff; do not append to source.txt
+  unless assigned the complete path under the structural exception
 - All text fragments wrapped with T_()
 - `god_name()` returns `string`, needs `.c_str()`
 
@@ -367,7 +345,7 @@ Run `bash .claude/scripts/verify_zh.sh --profile code` only after ALL units are 
 | `.c_str()` on `const char*` | `skill_name(sk).c_str()` | Remove `.c_str()` — `skill_name()` returns `const char*` |
 | `mprf` with positional params | `mprf(T_("%1$s..."), ...)` | Use `mprf_p` — MinGW vsnprintf doesn't support `%n$s` |
 | Untranslated inline args | `T_("You %s %s."), verb, "... the rest"` | Wrap ALL text fragments: `T_(", but do no damage")` |
-| Duplicate source.txt keys | Agent adds key that already exists | `grep -F` source.txt before adding |
+| Duplicate source.txt keys | Asset writer adds an existing key | Translator greps first; coder does not append in mixed work |
 | Mass duplicate re-add | Appending all enumerated names without diff | Diff against existing keys; never blind-append |
 | `git add -A` in main repo | Stages worktrees, cache files | Only `git add` specific source files |
 

@@ -54,7 +54,8 @@ writer, and coordinate before touching an overlapping path.
 ## Default ownership
 
 - `zh-translator` owns Chinese wording and translation assets under
-  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+  `crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and
+  `crawl-ref/source/dat/descript/zh/`.
 - `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
   database loading/schema, and code-side `T_()`/`C_()` migration.
 - English/protocol/TextDB lookup keys remain English regardless of the writer.
@@ -135,9 +136,10 @@ Task(subagent_type="crawl-coder", description="Add T_() guards",
 Use the attached context_resolve.sh output and report its glossary SHA-256.
 Follow the standard T_() migration pattern:
 1. Replace Options.language == lang_t::ZH ? \"中文\" : \"English\" with T_(\"English\")
-2. Add corresponding entries to crawl-ref/source/dat/i18n/zh/source.txt
-3. Run make -j4 to verify compilation
-4. Run bash .claude/scripts/verify_zh.sh --profile code for verification")
+2. Report every required English key and context to the zh-translator; do not edit translation assets
+3. Confirm the translator-owned entries already exist before code verification
+4. Run make -j4 to verify compilation
+5. Run bash .claude/scripts/verify_zh.sh --profile code for verification")
 ```
 
 ### Template 2: Mixed CN/EN Output Fix
@@ -160,7 +162,8 @@ Task(subagent_type="crawl-coder", description="Remove ZH guards",
   prompt="Remove all Options.language / crawl.language() guards from <files>.
 Pattern: Replace 'condition ? zh_string : en_string' with T_(\"en_string\").
 For Lua vaults: replace crawl.language() == 'zh' with crawl.t_(\"English\").
-Add all new keys to source.txt. Compile and verify.
+Hand off all new keys and their contexts to zh-translator; do not edit source.txt.
+Compile only after the translator-owned entries exist.
 Run verify_zh.sh --profile code after completion.")
 ```
 

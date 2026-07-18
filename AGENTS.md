@@ -74,8 +74,9 @@ available, follow the same contract inline. Full boundaries and examples are in
 | End-to-end translation bug | `translation-pipeline` skill or its documented fallback |
 
 Translation assets have one writer per task. By default, `zh-translator` owns
-`dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`; `crawl-coder` owns
-source and build files. A coder may receive an explicitly scoped structural
+`crawl-ref/source/dat/i18n/zh/`, `crawl-ref/source/dat/database/zh/`, and
+`crawl-ref/source/dat/descript/zh/`; `crawl-coder` owns source and build files.
+A coder may receive an explicitly scoped structural
 repair in a ZH data file only when it is the sole writer for that path. Mixed
 tasks execute translation-asset edits first and code edits second. See
 `.agents/policies/asset-ownership.md`.
