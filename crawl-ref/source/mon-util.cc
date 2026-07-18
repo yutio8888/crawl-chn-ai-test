@@ -968,13 +968,22 @@ static void _mimic_vanish(const coord_def& pos, const string& name)
     if (!you.see_cell(pos))
         return;
 
-    const char* const smoke_str = can_place_smoke ? (T_(" in a puff of smoke")) : "";
+    const char* const smoke_str = can_place_smoke
+                                  ? T_(" in a puff of smoke") : "";
 
     const bool can_cackle = !silenced(pos) && !silenced(you.pos());
-    const string cackle = can_cackle ? getSpeakString("_laughs_") + (T_(" and ")) : "";
-
-    mprf_p(T_("The %1$s mimic %2$svanishes%3$s!"),
-         name.c_str(), cackle.c_str(), smoke_str);
+    if (can_cackle)
+    {
+        const string cackle = getSpeakString("_laughs_");
+        mprf_p(C_("mimic vanish cackle",
+                  "The %1$s mimic %2$s and vanishes%3$s!"),
+               name.c_str(), cackle.c_str(), smoke_str);
+    }
+    else
+    {
+        mprf_p(C_("mimic vanish", "The %1$s mimic vanishes%2$s!"),
+               name.c_str(), smoke_str);
+    }
     interrupt_activity(activity_interrupt::mimic);
 }
 
@@ -1018,15 +1027,24 @@ void discover_mimic(const coord_def& pos)
         return;
     }
 
-    const string name = feature_mimic ? "the " + string(feat_type_name(feat))
+    const string name = feature_mimic
+                                      ? feature_description_at(pos, false,
+                                                               DESC_THE)
                                       : item->name(DESC_THE, false, false,
                                                              false, true);
     const bool plural = feature_mimic ? false : item->quantity > 1;
 
     if (you.see_cell(pos))
-        mprf_p(T_("%1$s %2$s a mimic!"), name.c_str(), plural ? T_("are") : T_("is "));
+    {
+        const char* const fmt = plural
+            ? C_("mimic reveal plural", "%s are mimics!")
+            : C_("mimic reveal singular", "%s is a mimic!");
+        mprf(fmt, name.c_str());
+    }
 
-    const string shortname = feature_mimic ? feat_type_name(feat)
+    const string shortname = feature_mimic
+                                      ? feature_description_at(pos, false,
+                                                               DESC_PLAIN)
                                            : item->name(DESC_BASENAME);
     if (item)
         destroy_item(item->index(), true);

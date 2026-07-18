@@ -6791,92 +6791,92 @@ struct explosion_sfx
 // A map from origin_spells to special explosion info for each.
 const map<spell_type, explosion_sfx> spell_explosions = {
     { SPELL_HURL_DAMNATION, {
-        "The sphere of damnation explodes!",
-        "the wailing of the damned",
+        N_("The sphere of damnation explodes!"),
+        N_("the wailing of the damned"),
     } },
     { SPELL_CALL_DOWN_DAMNATION, {
-        "The sphere of damnation explodes!",
-        "the wailing of the damned",
+        N_("The sphere of damnation explodes!"),
+        N_("the wailing of the damned"),
     } },
     { SPELL_FIREBALL, {
-        "The fireball explodes!",
-        "an explosion",
+        N_("The fireball explodes!"),
+        N_("an explosion"),
     } },
     { SPELL_ORB_OF_ELECTRICITY, {
-        "The orb of electricity explodes!",
-        "a clap of thunder",
+        N_("The orb of electricity explodes!"),
+        N_("a clap of thunder"),
     } },
     { SPELL_FIRE_STORM, {
-        "A raging storm of fire appears!",
-        "a raging storm",
+        N_("A raging storm of fire appears!"),
+        N_("a raging storm"),
     } },
     { SPELL_MEPHITIC_CLOUD, {
-        "The flask of dizzying concoctions shatters into a vile cloud!",
-        "a loud shattering of glass",
+        N_("The flask of dizzying concoctions shatters into a vile cloud!"),
+        N_("a loud shattering of glass"),
     } },
     { SPELL_GHOSTLY_FIREBALL, {
-        "The ghostly flame explodes!",
-        "the shriek of haunting fire",
+        N_("The ghostly flame explodes!"),
+        N_("the shriek of haunting fire"),
     } },
     { SPELL_VIOLENT_UNRAVELLING, {
-        "The enchantments explode!",
-        "a sharp crackling", // radiation = geiger counter
+        N_("The enchantments explode!"),
+        N_("a sharp crackling"), // radiation = geiger counter
     } },
     { SPELL_ICEBLAST, {
-        "The mass of ice explodes!",
-        "an explosion",
+        N_("The mass of ice explodes!"),
+        N_("an explosion"),
     } },
     { SPELL_PERMAFROST_ERUPTION, {
-        "Piercing cold boils outward!",
-        "an explosion", // maybe?
+        N_("Piercing cold boils outward!"),
+        N_("an explosion"), // maybe?
     } },
     { SPELL_GHOSTLY_SACRIFICE, {
-        "The ghostly flame explodes!",
-        "the shriek of haunting fire",
+        N_("The ghostly flame explodes!"),
+        N_("the shriek of haunting fire"),
     } },
     { SPELL_SERACFALL, {
-        "The mass of ice explodes!",
-        "an explosion",
+        N_("The mass of ice explodes!"),
+        N_("an explosion"),
     } },
     { SPELL_FLAME_WAVE, {
-        "A wave of flame ripples out!",
-        "the roar of flame",
+        N_("A wave of flame ripples out!"),
+        N_("the roar of flame"),
     } },
     { SPELL_FASTROOT, {
-        "The roots erupt in riotous growth!",
-        "creaking and crackling",
+        N_("The roots erupt in riotous growth!"),
+        N_("creaking and crackling"),
     } },
     { SPELL_BLASTMOTE, {
-        "The cloud of blastmotes explodes!",
-        "a concussive explosion",
+        N_("The cloud of blastmotes explodes!"),
+        N_("a concussive explosion"),
     } },
     { SPELL_HURL_TORCHLIGHT, {
-        "The gout of umbral fire explodes!",
-        "the shriek of umbral fire",
+        N_("The gout of umbral fire explodes!"),
+        N_("the shriek of umbral fire"),
     } },
     { SPELL_WARP_SPACE, {
-        "Space twists violently!",
-        "shrill echo",
+        N_("Space twists violently!"),
+        N_("shrill echo"),
     } },
     { SPELL_COMBUSTION_BREATH, {
-        "The embers explode!",
-        "a fiery explosion",
+        N_("The embers explode!"),
+        N_("a fiery explosion"),
     } },
     { SPELL_NULLIFYING_BREATH, {
-        "The antimagic surges outward!",
-        "a quiet echo",
+        N_("The antimagic surges outward!"),
+        N_("a quiet echo"),
     } },
     { SPELL_HOARFROST_BULLET, {
-        "The shards fragment into shrapnel!",
-        "an explosion",
+        N_("The shards fragment into shrapnel!"),
+        N_("an explosion"),
     } },
     { SPELL_SHADOW_BALL, {
-        "The flickering shadows explode!",
-        "a quiet whistle",
+        N_("The flickering shadows explode!"),
+        N_("a quiet whistle"),
     } },
     { SPELL_ACID_BALL, {
-        "The ball of acid explodes!",
-        "a violent squelch",
+        N_("The ball of acid explodes!"),
+        N_("a violent squelch"),
     } },
 };
 
@@ -6909,7 +6909,7 @@ void bolt::refine_for_explosion(const string& explode_msg)
         if (explosion)
         {
             seeMsg = explosion->seeMsg;
-            hearMsg = make_stringf(T_("You hear %s!"), explosion->sound);
+            hearMsg = make_stringf(T_("You hear %s!"), T_(explosion->sound));
         }
         else
         {

@@ -862,7 +862,7 @@ static string _format_dbrand(string dbrand)
         if (brand.size() == 0)
             continue;
         if (brand.size() == 1)
-            out.push_back(brand[0]);
+            out.push_back(T_(brand[0].c_str()));
         else
         {
             ASSERT(brand.size() == 2);

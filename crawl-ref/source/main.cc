@@ -2211,7 +2211,9 @@ void process_command(command_type cmd, command_type prev_cmd)
             Options.autopickup_on = 1;
         else
             Options.autopickup_on = 0;
-        mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0 ? T_("on") : T_("off"));
+        mprf(T_("Autopickup is now %s."), Options.autopickup_on > 0
+             ? C_("autopickup state", "on")
+             : C_("autopickup state", "off"));
         break;
 
 #ifdef USE_SOUND

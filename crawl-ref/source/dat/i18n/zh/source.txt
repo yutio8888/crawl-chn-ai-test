@@ -1025,6 +1025,12 @@ gain power from chaos
 %1$s %2$s a mimic!
 %1$s%2$s拟态怪！
 %%%%
+mimic reveal singular|%s is a mimic!
+%s是拟态怪！
+%%%%
+mimic reveal plural|%s are mimics!
+%s是拟态怪！
+%%%%
 %1$s %2$s a powerful frost blast!
 %1$s%2$.0s释放了一股强大的冰霜冲击！
 %%%%
@@ -6381,6 +6387,9 @@ Space warps around you for a moment!
 Space warps around you!
 空间在你周围扭曲！
 %%%%
+Space twists violently!
+空间剧烈扭曲！
+%%%%
 Space warps into you!
 空间向你扭曲！
 %%%%
@@ -6704,6 +6713,12 @@ That's too large for you to wield.
 %%%%
 The %1$s mimic %2$svanishes%3$s!
 %1$s拟态怪%2$s消失了%3$s！
+%%%%
+mimic vanish|The %1$s mimic vanishes%2$s!
+%1$s拟态怪%2$s消失了！
+%%%%
+mimic vanish cackle|The %1$s mimic %2$s and vanishes%3$s!
+%1$s拟态怪%2$s，随后%3$s消失了！
 %%%%
 The %s %s %s!
 %s%s了%s！
@@ -15198,6 +15213,9 @@ necromancy
 off
 关闭
 %%%%
+autopickup state|off
+关闭
+%%%%
 orcbow
 兽人弓
 %%%%
@@ -20944,6 +20962,9 @@ describe
 %%%%
 on
 第
+%%%%
+autopickup state|on
+开启
 %%%%
  put item on shopping list
  将物品加入购物清单
@@ -29471,7 +29492,7 @@ It interferes with translocations, delaying teleports.
 它干扰传送魔法，延迟传送。
 %%%%
 It boosts your other skills by 20% of your base Evocations skill.
-以你基础激活技能的20%提升你的其他技能。
+以你基础魔力释放技能的20%提升你的其他技能。
 %%%%
 When you summon or create an ally, it gains Regeneration.
 当你召唤或创造一个盟友时，它获得再生能力。
@@ -30639,6 +30660,9 @@ verb|hold
 %%%%
 verb|draw
 汲取
+%%%%
+shrill echo
+尖锐的回声
 %%%%
 shrivel
 枯萎
@@ -36118,8 +36142,56 @@ The shards fragment into shrapnel!
 The flickering shadows explode!
 闪烁的阴影爆炸了！
 %%%%
+The embers explode!
+余烬爆炸了！
+%%%%
 The antimagic surges outward!
 反魔法力量向外涌出！
+%%%%
+a clap of thunder
+一声雷鸣
+%%%%
+a concussive explosion
+一声震荡爆炸
+%%%%
+a fiery explosion
+一声炽烈的爆炸
+%%%%
+a loud shattering of glass
+一声响亮的玻璃碎裂声
+%%%%
+a quiet echo
+一声微弱的回声
+%%%%
+a quiet whistle
+一声轻微的呼啸
+%%%%
+a raging storm
+狂暴风暴的呼啸声
+%%%%
+a sharp crackling
+一阵尖锐的噼啪声
+%%%%
+a violent squelch
+一声猛烈的挤压声
+%%%%
+an explosion
+一声爆炸
+%%%%
+creaking and crackling
+一阵嘎吱与噼啪声
+%%%%
+the roar of flame
+火焰的咆哮声
+%%%%
+the shriek of haunting fire
+鬼火的尖啸声
+%%%%
+the shriek of umbral fire
+暗影之火的尖啸声
+%%%%
+the wailing of the damned
+受诅咒者的哀嚎声
 %%%%
 The beam explodes into a cloud of software bugs!
 光束爆炸成一团软件错误！
