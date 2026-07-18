@@ -1103,7 +1103,7 @@ static int _stun_delay()
 static void _input()
 {
     if (crawl_state.seen_hups)
-        save_game(true, "Game saved, see you later!");
+        save_game(true, T_("Game saved, see you later!"));
 
     crawl_state.clear_mon_acting();
 
@@ -1287,7 +1287,7 @@ static void _input()
         const command_type cmd = you.turn_is_over ? CMD_NO_CMD : _get_next_cmd();
 
         if (crawl_state.seen_hups)
-            save_game(true, "Game saved, see you later!");
+            save_game(true, T_("Game saved, see you later!"));
 
         crawl_state.waiting_for_command = false;
 

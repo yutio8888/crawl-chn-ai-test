@@ -6017,6 +6017,9 @@ See you next game!
 See you soon, %s!
 %s，下次见！
 %%%%
+Game saved, see you later!
+游戏已保存，下次见！
+%%%%
  seems less brilliant.
 看起来不那么闪耀了。
 %%%%

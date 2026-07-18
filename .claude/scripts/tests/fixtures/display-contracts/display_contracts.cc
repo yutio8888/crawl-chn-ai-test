@@ -15,6 +15,11 @@ void direct_display_contracts(const char *message)
     god_speaks(GOD_XOM, C_("speech", "Translated divine speech."));
     simple_god_message(make_stringf(T_("Translated nested %s."), message));
 
+    save_game(true, "Bare forwarded save message.");
+    save_game(true, T_("Translated forwarded save message."));
+    save_game(true, message);
+    save_game(true);
+
     // Variables and DB-backed providers are already translated upstream.
     simple_god_message(message);
     god_speaks(GOD_XOM, _get_xom_speech("database lookup key").c_str());

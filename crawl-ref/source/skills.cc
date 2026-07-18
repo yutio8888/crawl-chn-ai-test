@@ -845,7 +845,7 @@ bool check_selected_skills()
 
     if (crawl_state.seen_hups)
     {
-        save_game(true, "Game saved, see you later!");
+        save_game(true, T_("Game saved, see you later!"));
         return false;
     }
 
@@ -1357,11 +1357,11 @@ static void _train_skills(int exp, const int cost, const bool simu)
             }
 #ifdef DEBUG_TRAINING_COST
             total += total_gain[sk];
+#endif
         }
+#ifdef DEBUG_TRAINING_COST
         dprf(DIAG_SKILLS, "Total skill points gained: %d, cost: %d XP.",
              total, exp_pool - you.exp_available);
-#else
-        }
 #endif
     }
 #endif

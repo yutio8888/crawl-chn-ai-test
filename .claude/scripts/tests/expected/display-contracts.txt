@@ -7,8 +7,9 @@
 [DISPLAY] display_contracts.cc:8  "simple_god_message: Adjacent multiline raw."
 [DISPLAY] display_contracts.cc:10  "notify_fail: Bare target failure."
 [DISPLAY] display_contracts.cc:11  "notify_fail: Deferred marker is not translated."
-[DYNKEY] display_contracts.cc:30  "xom_is_stimulated: missing source.txt key "Missing dynamic message.""
-[DYNKEY] display_contracts.cc:31  "xom_is_stimulated: missing source.txt key "Empty dynamic message.""
+[DISPLAY] display_contracts.cc:18  "save_game: Bare forwarded save message."
+[DYNKEY] display_contracts.cc:35  "xom_is_stimulated: missing source.txt key "Missing dynamic message.""
+[DYNKEY] display_contracts.cc:36  "xom_is_stimulated: missing source.txt key "Empty dynamic message.""
 
 --- scan_i18n.py missing-t ---
 Files scanned: 1
@@ -17,11 +18,11 @@ Files scanned: 1
   UI: 0 candidates
   STR: 0 candidates
   SMM: 0 candidates
-  DISPLAY: 7 candidates
+  DISPLAY: 8 candidates
   DYNKEY: 2 candidates
 
   (debug/#if0 blocks excluded; use --strict to include)
   Allowlisted: 1 entries loaded
 
 Per-file candidate breakdown:
-  display_contracts.cc: DISPLAY:7, DYNKEY:2
+  display_contracts.cc: DISPLAY:8, DYNKEY:2

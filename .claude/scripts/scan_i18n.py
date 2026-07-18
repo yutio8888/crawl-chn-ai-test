@@ -53,6 +53,7 @@ DIRECT_DISPLAY_SINKS = {
     'god_speaks': 1,
     'notify_fail': 0,
     'prompt_for_int': 0,
+    'save_game': 1,
     'set_more': 0,
     'simple_god_message': 0,
     'title_prompt': 2,
