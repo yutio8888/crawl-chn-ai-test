@@ -30187,9 +30187,6 @@ verb|fire
 %s attempts to bespell %s!
 %s试图对%s施下咒术！
 %%%%
-%s bane
-%s灾祸
-%%%%
 %s draws you further into %s thrall.
 %s将你进一步拉入%s的奴役。
 %%%%
@@ -33264,7 +33261,7 @@ Found #%d: %s ("%s")
 找到第 %d 个：%s（"%s"）
 %%%%
 No matching bane names.
-没有匹配的克星名称。
+没有匹配的灾祸名称。
 %%%%
 Enter values for X, Y, Z (space separated) or return: 
 输入 X、Y、Z 的值（以空格分隔）或按回车：
@@ -36842,7 +36839,7 @@ the Hunted
 被猎者
 %%%%
 When enemies are summoned, they will appear beside you instead.
-召唤敌人时，它们会出现在你身边。
+敌人被召唤时，它们会转而出现在你身边。
 %%%%
 Mortality
 必死
@@ -39086,7 +39083,7 @@ A voice whispers, "%s"
 一个声音低语道：“%s”
 %%%%
 Bane of the Dilettante
-门外汉之祸
+半吊子之灾
 %%%%
 %s's power
 %s的神力

@@ -5002,7 +5002,8 @@ string bane_long_description(bane_type bane, bool ignore_player)
     const bool player_has = !ignore_player && you.banes[bane];
     ostringstream output;
 
-    const string key = make_stringf(T_("%s bane"), bane_name(bane, true).c_str());
+    const string short_name = bane_name(bane, true);
+    const string key = make_stringf("%s bane", short_name.c_str());
     string lookup = getLongDescription(key);
 
     if (!lookup.empty())

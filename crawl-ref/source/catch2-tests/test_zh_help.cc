@@ -51,9 +51,11 @@
 #include "feature.h"         // get_feature_def
 #include "dungeon-feature-type.h" // NUM_FEATURES
 #include "database.h"        // getLongDescription, getLongDescKeysByRegex
+#include "describe.h"        // bane_long_description
 #include "clua.h"            // clua, lua_State
 #include "stringutil.h"      // strip_suffix
 #include "positional_format.h" // make_stringf_p
+#include "unicode.h"         // utf8towc
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
@@ -68,6 +70,22 @@ using std::string;
 using std::vector;
 
 namespace {
+
+static bool contains_cjk_text(const string& text)
+{
+    size_t pos = 0;
+    while (pos < text.size())
+    {
+        char32_t cp = 0;
+        const int len = utf8towc(&cp, text.c_str() + pos);
+        if (len <= 0)
+            return false;
+        if (iscjk(cp))
+            return true;
+        pos += len;
+    }
+    return false;
+}
 
 // The game installs rich `you` and `view` bindings before TextDB descriptions
 // execute. Catch2's lightweight main does not, so provide only the deterministic
@@ -733,6 +751,29 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK_FALSE(rule_untranslated(short_desc, def.description));
         CHECK_FALSE(rule_mixed_cn_en(display_name));
     }
+
+    // Exercise the actual TextDB-backed description path for every active
+    // bane. A lookup miss starts with the translated short description plus
+    // a newline, so reject that prefix without coupling to the full long text.
+    for (const bane_def& def : bane_data)
+    {
+#if TAG_MAJOR_VERSION == 34
+        if (def.type == BANE_RECKLESS_REMOVED)
+            continue;
+#endif
+        const string long_desc = bane_long_description(def.type, true);
+        const string fallback_prefix = string(T_(def.description)) + "\n";
+        INFO("bane long description: " << def.name);
+        CHECK_FALSE(long_desc.empty());
+        CHECK(contains_cjk_text(long_desc));
+        CHECK(long_desc.compare(0, fallback_prefix.size(), fallback_prefix) != 0);
+    }
+
+    const string lethargy_long = bane_long_description(BANE_LETHARGY, true);
+    CHECK(lethargy_long.find("30%") != string::npos);
+    const string claustrophobia_long =
+        bane_long_description(BANE_CLAUSTROPHOBIA, true);
+    CHECK(claustrophobia_long.find("-10%") != string::npos);
 #if TAG_MAJOR_VERSION == 34
     CHECK_FALSE(rule_untranslated(T_("the Removed"), "the Removed"));
     CHECK_FALSE(rule_untranslated(T_("You feel a strange sense of nostalgia."),
