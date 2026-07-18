@@ -87,12 +87,12 @@ int MemoriseRegion::handle_mouse(wm_mouse_event &event)
 
 bool MemoriseRegion::update_tab_tip_text(string &tip, bool active)
 {
-    const char *prefix1 = active ? "" : "[L-Click] ";
+    const string prefix1 = active ? "" : string(T_("[L-Click]")) + " ";
     const char *prefix2 = active ? "" : "          ";
 
     tip = make_stringf("%s%s\n%s%s",
-                       prefix1, "Display spells in carried books",
-                       prefix2, "Memorise spells");
+                       prefix1.c_str(), T_("Display spells in carried books"),
+                       prefix2, T_("Memorise spells"));
 
     return true;
 }
@@ -109,14 +109,14 @@ bool MemoriseRegion::update_tip_text(string& tip)
     int flag = m_items[item_idx].flag;
     vector<command_type> cmd;
     if (flag & TILEI_FLAG_INVALID)
-        tip = "You cannot memorise this spell now.";
+        tip = T_("You cannot memorise this spell now.");
     else
     {
-        tip = "[L-Click] Memorise (%)";
+        tip = T_("[L-Click] Memorise (%)");
         cmd.push_back(CMD_MEMORISE_SPELL);
     }
 
-    tip += "\n[R-Click] Describe";
+    tip += T_("\n[R-Click] Describe");
 
     insert_commands(tip, cmd);
     return true;

@@ -223,12 +223,12 @@ static bool _can_use_item(const item_def &item, bool equipped)
 
 bool InventoryRegion::update_tab_tip_text(string &tip, bool active)
 {
-    const char *prefix1 = active ? "" : "[L-Click] ";
+    const string prefix1 = active ? "" : string(T_("[L-Click]")) + " ";
     const char *prefix2 = active ? "" : "          ";
 
     tip = make_stringf("%s%s\n%s%s",
-                       prefix1, "Display inventory",
-                       prefix2, "Use items");
+                       prefix1.c_str(), T_("Display inventory"),
+                       prefix2, T_("Use items"));
 
     return true;
 }
@@ -245,12 +245,12 @@ bool InventoryRegion::update_tip_text(string& tip)
     // page next/prev
     if (_is_next_button(item_idx))
     {
-        tip = "Next page\n[L-Click] Show next page of items";
+        tip = T_("Next page\n[L-Click] Show next page of items");
         return true;
     }
     else if (_is_prev_button(item_idx))
     {
-        tip = "Previous page\n[L-Click] Show previous page of items";
+        tip = T_("Previous page\n[L-Click] Show previous page of items");
         return true;
     }
 
@@ -284,11 +284,11 @@ bool InventoryRegion::update_tip_text(string& tip)
 
         if (!item_is_stationary(item))
         {
-            tip += "\n[L-Click] Pick up (%)";
+            tip += T_("\n[L-Click] Pick up (%)");
             cmd.push_back(CMD_PICKUP);
             if (item.quantity > 1)
             {
-                tip += "\n[Ctrl + L-Click] Partial pick up (%)";
+                tip += T_("\n[Ctrl + L-Click] Partial pick up (%)");
                 cmd.push_back(CMD_PICKUP_QUANTITY);
             }
         }
@@ -312,7 +312,7 @@ bool InventoryRegion::update_tip_text(string& tip)
 
         if (_can_use_item(item, equipped))
         {
-            string tip_prefix = "\n[L-Click] ";
+            string tip_prefix = string(T_("\n[L-Click]")) + " ";
             string tmp = "";
             if (equipped)
             {
@@ -335,79 +335,79 @@ bool InventoryRegion::update_tip_text(string& tip)
             case OBJ_STAVES:
                 if (!you.has_mutation(MUT_NO_GRASPING))
                 {
-                    tmp += "Wield (%)";
+                    tmp += T_("Wield (%)");
                     cmd.push_back(CMD_WIELD_WEAPON);
                     if (you.has_mutation(MUT_WIELD_OFFHAND)
                         && you.hands_reqd(item) == HANDS_ONE)
                     {
-                        tmp += "\n[Ctrl + L-Click] Offhand";
+                        tmp += T_("\n[Ctrl + L-Click] Offhand");
                     }
                 }
                 break;
             case OBJ_WEAPONS + EQUIP_OFFSET:
-                tmp += "Unwield (%-)";
+                tmp += T_("Unwield (%-)");
                 cmd.push_back(CMD_WIELD_WEAPON);
                 break;
             case OBJ_MISCELLANY:
             case OBJ_WANDS:
             case OBJ_TALISMANS:
-                tmp += "Evoke (%)";
+                tmp += T_("Evoke (%)");
                 cmd.push_back(CMD_EVOKE);
                 break;
             case OBJ_ARMOUR:
                 if (!you.has_mutation(MUT_NO_ARMOUR))
                 {
-                    tmp += "Wear (%)";
+                    tmp += T_("Wear (%)");
                     cmd.push_back(CMD_WEAR_ARMOUR);
                 }
                 break;
             case OBJ_ARMOUR + EQUIP_OFFSET:
-                tmp += "Take off (%)";
+                tmp += T_("Take off (%)");
                 cmd.push_back(CMD_REMOVE_ARMOUR);
                 break;
             case OBJ_JEWELLERY:
-                tmp += "Put on (%)";
+                tmp += T_("Put on (%)");
                 cmd.push_back(CMD_WEAR_JEWELLERY);
                 break;
             case OBJ_JEWELLERY + EQUIP_OFFSET:
-                tmp += "Remove (%)";
+                tmp += T_("Remove (%)");
                 cmd.push_back(CMD_REMOVE_JEWELLERY);
                 break;
             case OBJ_MISSILES:
                 if (!you.has_mutation(MUT_NO_GRASPING))
                 {
-                    tmp += "Fire (%)";
+                    tmp += T_("Fire (%)");
                     cmd.push_back(CMD_FIRE);
                 }
                 break;
             case OBJ_SCROLLS:
-                tmp += "Read (%)";
+                tmp += T_("Read (%)");
                 cmd.push_back(CMD_READ);
                 break;
             case OBJ_POTIONS:
-                tmp += "Quaff (%)";
+                tmp += T_("Quaff (%)");
                 cmd.push_back(CMD_QUAFF);
                 break;
             case OBJ_CORPSES:
             case OBJ_BOOKS:
                 break;
             default:
-                tmp += "Use";
+                tmp += T_("Use");
             }
 
             if (!tmp.empty())
                 tip += tip_prefix + tmp;
         }
 
-        tip += "\n[R-Click] Describe";
+        tip += T_("\n[R-Click] Describe");
         // Has to be non-equipped or non-cursed to drop.
         if (!equipped || !you.inv[idx].cursed())
         {
-            tip += "\n[Shift + L-Click] Drop (%)";
+            tip += T_("\n[Shift + L-Click] Drop (%)");
             cmd.push_back(CMD_DROP);
             if (you.inv[idx].quantity > 1)
             {
-                tip += "\n[Ctrl-Shift + L-Click] Drop quantity (%#)";
+                tip += T_("\n[Ctrl-Shift + L-Click] Drop quantity (%#)");
                 cmd.push_back(CMD_DROP);
             }
         }
@@ -447,12 +447,12 @@ bool InventoryRegion::update_alt_text(string &alt)
     if (_is_next_button(item_idx))
     {
         // alt text for next page button
-        inf.title = "Next page";
+        inf.title = T_("Next page");
     }
     else if (_is_prev_button(item_idx))
     {
         // alt text for prev page button
-        inf.title = "Previous page";
+        inf.title = T_("Previous page");
     }
     else
         get_item_desc(*item, inf);
@@ -475,9 +475,9 @@ void InventoryRegion::draw_tag()
     bool floor = m_items[curs_index].flag & TILEI_FLAG_FLOOR;
 
     if (_is_next_button(curs_index))
-        draw_desc("Next page");
+        draw_desc(T_("Next page"));
     else if (_is_prev_button(curs_index))
-        draw_desc("Previous page");
+        draw_desc(T_("Previous page"));
     else if (floor && env.item[idx].defined())
         draw_desc(env.item[idx].name(DESC_PLAIN).c_str());
     else if (!floor && you.inv[idx].defined())

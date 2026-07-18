@@ -1151,7 +1151,7 @@ public:
 
         set_more(formatted_string::parse_string(
             status_msg + "\n"
-            "Arrows/[<w>enter</w>] to select, [<w>bksp</w>] to clear selected, [<w>?</w>] for help\n"
+            + T_("Arrows/[<w>enter</w>] to select, [<w>bksp</w>] to clear selected, [<w>?</w>] for help\n")
             + menu_keyhelp_cmd(CMD_MENU_CYCLE_MODE)
             + mode_hint));
 
@@ -1286,7 +1286,7 @@ public:
                 T_("Input trigger key to edit or create a %s:"),
                 parent.mode_name().c_str());
             set_title(new MenuEntry(prompt, MEL_TITLE));
-            set_more("<lightgray>([<w>~</w>] to enter by keycode)</lightgray>");
+            set_more(T_("<lightgray>([<w>~</w>] to enter by keycode)</lightgray>"));
             doing_key_input = true;
         }
 
@@ -1360,7 +1360,7 @@ public:
                         parent.mode_name().c_str(),
                         _keyseq_desc(key).c_str());
             set_title(new MenuEntry(prompt, MEL_TITLE));
-            set_more("Raw input: [<w>esc</w>] to abort, [<w>enter</w>] to accept.");
+            set_more(T_("Raw input: [<w>esc</w>] to abort, [<w>enter</w>] to accept."));
             update_menu(true);
 #ifdef USE_TILE_WEB
             // put the javascript menu mode in raw input mode
@@ -1385,7 +1385,7 @@ public:
 
             int old_last_hovered = last_hovered;
             set_hovered(-1);
-            set_more("Input a key sequence. Use <w>\\{n}</w> to enter keycode <w>n</w>. [<w>esc</w>] for menu");
+            set_more(T_("Input a key sequence. Use <w>\\{n}</w> to enter keycode <w>n</w>. [<w>esc</w>] for menu"));
             if (!title_prompt(buff, sizeof(buff), edit_prompt.c_str()))
             {
                 set_hovered(old_last_hovered);
@@ -1472,12 +1472,11 @@ public:
                 else if (keyin == '~')
                 {
                     char buff[10];
-                    set_more("[<w>?</w>] Keycode help. "
+                    set_more(T_("[<w>?</w>] Keycode help. "
                         "Quick reference: 8: [<w>bksp</w>], "
-                        "9: [<w>tab</w>], 13: [<w>enter</w>], 27: [<w>esc</w>]"
-                        );
+                        "9: [<w>tab</w>], 13: [<w>enter</w>], 27: [<w>esc</w>]"));
                     if (!title_prompt(buff, sizeof(buff),
-                        "Enter keycode by number:"
+                        T_("Enter keycode by number:")
 #ifndef USE_TILE_LOCAL
                         , "console-keycodes"
 #endif

@@ -71,11 +71,11 @@ int AbilityRegion::handle_mouse(wm_mouse_event &event)
 }
 bool AbilityRegion::update_tab_tip_text(string &tip, bool active)
 {
-    const char *prefix1 = active ? "" : "[L-Click] ";
+    const string prefix1 = active ? "" : string(T_("[L-Click]")) + " ";
     const char *prefix2 = active ? "" : "          ";
     tip = make_stringf("%s%s\n%s%s",
-                       prefix1, "Display abilities",
-                       prefix2, "Use abilities");
+                       prefix1.c_str(), T_("Display abilities"),
+                       prefix2, T_("Use abilities"));
     return true;
 }
 bool AbilityRegion::update_tip_text(string& tip)
@@ -91,10 +91,10 @@ bool AbilityRegion::update_tip_text(string& tip)
         tip = T_("You cannot use this ability right now.");
     else
     {
-        tip = "[L-Click] Use (%)";
+        tip = T_("[L-Click] Use (%)");
         cmd.push_back(CMD_USE_ABILITY);
     }
-    tip += "\n[R-Click] Describe";
+    tip += T_("\n[R-Click] Describe");
     insert_commands(tip, cmd);
     return true;
 }

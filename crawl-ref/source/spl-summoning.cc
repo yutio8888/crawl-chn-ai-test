@@ -3194,13 +3194,13 @@ spret cast_broms_barrelling_boulder(actor& agent, coord_def targ, int pow, bool 
 string mons_simulacrum_immune_reason(const monster *mons)
 {
     if (!mons || !you.can_see(*mons))
-        return "You can't see anything there.";
+        return T_("You can't see anything there.");
 
     if (!mons_can_be_spectralised(*mons))
-        return "You can't make a simulacrum of that!";
+        return T_("You can't make a simulacrum of that!");
 
     if (mons->friendly() || mons->neutral())
-        return "That would be terribly rude!";
+        return T_("That would be terribly rude!");
 
     return "";
 }
@@ -3887,24 +3887,24 @@ string surprising_crocodile_unusable_reason(const actor& agent, const coord_def&
                                             bool actual)
 {
     if (!monster_habitable_grid(MONS_CROCODILE, agent.pos()))
-        return "A crocodile could not survive beneath you.";
+        return T_("A crocodile could not survive beneath you.");
 
     actor* targ = actor_at(target);
     if (!targ || !agent.can_see(*targ) || mons_aligned(&agent, targ))
-        return "You can't see a valid target there.";
+        return T_("You can't see a valid target there.");
 
     const coord_def drag_shift = -(target - agent.pos()).sgn();
     const coord_def move_pos = agent.pos() + drag_shift;
     if (cell_is_solid(move_pos)
         || actor_at(move_pos) && (actual || agent.can_see(*actor_at(move_pos))))
     {
-        return "There's not enough room behind you.";
+        return T_("There's not enough room behind you.");
     }
 
     if (!agent.is_habitable(move_pos)
          || agent.is_player() && need_expiration_warning(move_pos))
     {
-        return "It isn't safe to move backwards.";
+        return T_("It isn't safe to move backwards.");
     }
 
     // Nothing is preventing this spell from being cast (even if the crocodile

@@ -1,0 +1,35 @@
+=== I18n display-contract violations ===
+
+[DISPLAY] evoke.cc:4  "DISPLAY003 cannot_evoke_item_reason return: Cannot evoke %s."
+[DISPLAY] evoke.cc:6  "DISPLAY003 cannot_evoke_item_reason return: Bare producer reason."
+[DISPLAY] god-abil.cc:5  "DISPLAY003 wu_jian_can_wall_jump error_ret: No room to jump."
+[DISPLAY] target.cc:4  "yesno: Really ?"
+[DISPLAY] target.cc:5  "prompt_for_int: How many? "
+[DISPLAY] target.cc:6  "set_more: Raw menu help."
+[DISPLAY] target.cc:7  "draw_desc: Mouse description"
+[DISPLAY] target.cc:8  "title_prompt: Enter a value:"
+[DISPLAY] target.cc:9  "MenuEntry: Items"
+[DISPLAY] tilereg-doll.cc:7  "DISPLAY004 render doll_name: Doll %d"
+[DISPLAY] tilereg-doll.cc:4  "DISPLAY004 render help_text: Raw doll help"
+[DISPLAY] tilereg-inv.cc:3  "DISPLAY004 update_tip_text tip: Next page"
+[DISPLAY] tilereg-inv.cc:6  "DISPLAY004 update_tip_text tmp: Use item"
+[DISPLAY] tilereg-inv.cc:7  "DISPLAY004 update_tip_text tip_prefix: Initializer prefix"
+
+--- scan_i18n.py missing-t ---
+Files scanned: 5
+
+  MSG: 0 candidates
+  UI: 0 candidates
+  STR: 0 candidates
+  SMM: 0 candidates
+  DISPLAY: 14 candidates
+  DYNKEY: 0 candidates
+
+  (debug/#if0 blocks excluded; use --strict to include)
+
+Per-file candidate breakdown:
+  target.cc: DISPLAY:6
+  tilereg-inv.cc: DISPLAY:3
+  evoke.cc: DISPLAY:2
+  tilereg-doll.cc: DISPLAY:2
+  god-abil.cc: DISPLAY:1

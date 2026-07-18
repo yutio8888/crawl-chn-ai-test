@@ -219,7 +219,7 @@ int yesno(const char *str, bool allow_lowercase, int default_answer, bool clear_
                 default_answer == 'Y' ? yes_str
                 : default_answer == 'N' ? no_str
                 : (ask_always && default_answer == 'A') ? always_str
-                : "bugs"));
+                : T_("bugs")));
         }
     }
     mouse_control mc(MOUSE_MODE_YESNO);

@@ -4255,11 +4255,11 @@ bool god_hates_spell(spell_type spell, god_type god, bool fake_spell)
 string god_spell_warn_string(spell_type spell, god_type god)
 {
     if (god_punishes_memorising_spells(god))
-        return "This will place you under penance!";
+        return T_("This will place you under penance!");
     if (god_hates_spellcasting(god))
-        return "Your god hates spellcasting!";
+        return T_("Your god hates spellcasting!");
     if (god_hates_spell(spell, god))
-        return "Your god hates this spell!";
+        return T_("Your god hates this spell!");
     return "";
 }
 

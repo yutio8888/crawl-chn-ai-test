@@ -6301,7 +6301,7 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
 {
     if (target.distance_from(you.pos()) != 1)
     {
-        error_ret = "Please select an adjacent position to wall jump against.";
+        error_ret = T_("Please select an adjacent position to wall jump against.");
         return false;
     }
 
@@ -6349,10 +6349,10 @@ bool wu_jian_can_wall_jump(const coord_def& target, string &error_ret)
                 T_("You have no room to wall jump there; %s is in the way."),
                 landing_actor->observable()
                             ? landing_actor->name(DESC_THE).c_str()
-                            : "something you can't see");
+                            : T_("something you can't see"));
         }
         else
-            error_ret = "You have no room to wall jump there.";
+            error_ret = T_("You have no room to wall jump there.");
         return false;
     }
     error_ret = "";

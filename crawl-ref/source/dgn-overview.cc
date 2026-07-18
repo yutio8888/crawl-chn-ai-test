@@ -344,7 +344,7 @@ static string _get_seen_branches(bool display)
                           : bzot <= 1 ? "yellow"
                           : bzot == 2 ? "red"
                           : "lightmagenta";
-                    zclock_desc = make_stringf(" Zot: <%s>%d</%s>",
+                    zclock_desc = make_stringf(T_(" Zot: <%s>%d</%s>"),
                                     zcol, zturns, zcol);
                 }
 

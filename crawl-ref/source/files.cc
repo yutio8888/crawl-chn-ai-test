@@ -3200,6 +3200,30 @@ static string _type_name_processed(game_type t)
     return name.size() ? name : "regular";
 }
 
+static const char *_type_name_with_article_display(game_type type)
+{
+    switch (type)
+    {
+    case GAME_TYPE_CUSTOM_SEED:
+        return T_("a Seeded");
+    case GAME_TYPE_TUTORIAL:
+        return T_("a Tutorial");
+    case GAME_TYPE_ARENA:
+        return T_("an Arena");
+    case GAME_TYPE_SPRINT:
+        return T_("a Dungeon Sprint");
+    case GAME_TYPE_DESCENT:
+        return T_("a Dungeon Descent");
+    case NUM_GAME_TYPE:
+        return T_("an Unknown");
+    case GAME_TYPE_UNSPECIFIED:
+    case GAME_TYPE_NORMAL:
+    case GAME_TYPE_HINTS:
+    default:
+        return T_("a regular");
+    }
+}
+
 // returns false if a new game should start instead
 static bool _restore_game(const string& filename)
 {
@@ -3244,11 +3268,12 @@ static bool _restore_game(const string& filename)
     if (!crawl_state.bypassed_startup_menu
         && menu_game_type != crawl_state.type)
     {
-        auto atype = article_a(_type_name_processed(save_info.saved_game_type));
-        if (!yesno(("You already have " + atype +
-                    " game saved under the name '" + save_info.name + "';\n"
-                    "do you want to load that instead?").c_str(),
-                   true, 'n'))
+        const string load_prompt = make_stringf(
+            T_("You already have %s game saved under the name '%s';\n"
+               "do you want to load that instead?"),
+            _type_name_with_article_display(save_info.saved_game_type),
+            save_info.name.c_str());
+        if (!yesno(load_prompt.c_str(), true, 'n'))
         {
             you.save->abort(); // don't even rewrite the header
             delete you.save;
@@ -3265,10 +3290,11 @@ static bool _restore_game(const string& filename)
     if (numcmp(save_info.prev_save_version.c_str(), Version::Long, 2) == -1
         && version_is_stable(save_info.prev_save_version.c_str()))
     {
-        if (!yesno(("This game comes from a previous release of Crawl (" +
-                    save_info.prev_save_version + ").\n\nIf you load it now,"
-                    " you won't be able to go back. Continue?").c_str(),
-                    true, 'n'))
+        const string version_prompt = make_stringf(
+            T_("This game comes from a previous release of Crawl (%s).\n\n"
+               "If you load it now, you won't be able to go back. Continue?"),
+            save_info.prev_save_version.c_str());
+        if (!yesno(version_prompt.c_str(), true, 'n'))
         {
             you.save->abort(); // don't even rewrite the header
             delete you.save;
@@ -3361,10 +3387,10 @@ bool restore_game(const string& filename)
     }
     catch (corrupted_save &err)
     {
-        if (yesno(make_stringf(
+        if (yesno(make_stringf(T_(
                    "There exists a save by that name but it appears to be invalid.\n"
                    "Do you want to delete it?\n"
-                   "Error: %s", err.what()).c_str(), // TODO linebreak error
+                   "Error: %s"), err.what()).c_str(), // TODO linebreak error
                   true, 'n'))
         {
             if (you.save)
@@ -3557,9 +3583,9 @@ static bool _convert_obsolete_species()
 #if TAG_MAJOR_VERSION == 34
     if (you.species == SP_LAVA_ORC)
     {
-        if (!yesno(
+        if (!yesno(T_(
             "This Lava Orc save game cannot be loaded as-is. If you load it now,\n"
-            "your character will be converted to a Mountain Dwarf. Continue?",
+            "your character will be converted to a Mountain Dwarf. Continue?"),
                        false, 'N'))
         {
             you.save->abort(); // don't even rewrite the header
@@ -3582,9 +3608,9 @@ static bool _convert_obsolete_species()
     }
     else if (you.species == SP_VAMPIRE)
     {
-        if (!yesno(
+        if (!yesno(T_(
             "This Vampire save game cannot be loaded as-is. If you load it now,\n"
-            "your character will be converted to a Human. Continue?",
+            "your character will be converted to a Human. Continue?"),
                        false, 'N'))
         {
             you.save->abort(); // don't even rewrite the header

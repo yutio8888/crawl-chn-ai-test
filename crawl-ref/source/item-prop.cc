@@ -3492,10 +3492,10 @@ static string _xp_evoker_recharge_msg(const item_def &evoker, int gained, bool s
     if (!msg.empty())
         return msg;
     if (edata->max_charges == 1)
-        return "%s has recharged.";
-    return make_stringf("%%s has regained %s charge%s.",
-                        number_in_words(gained).c_str(),
-                        gained > 1 ? "s" : "");
+        return T_("%s has recharged.");
+    return make_stringf(T_(gained == 1
+                           ? "%%s has regained %d charge."
+                           : "%%s has regained %d charges."), gained);
 }
 
 void print_xp_evoker_recharge(const item_def &evoker, int gained, bool silenced)

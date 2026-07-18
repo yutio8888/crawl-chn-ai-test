@@ -210,9 +210,9 @@ void DollEditRegion::render()
     m_cur_buf.draw();
 
     // Add text.
-    const char *part_name = "(none)";
+    const char *part_name = T_("(none)");
     if (m_part_idx == TILEP_SHOW_EQUIP)
-        part_name = "(show equip)";
+        part_name = T_("(show equip)");
     else if (m_part_idx)
         part_name = tile_player_name(m_part_idx);
 
@@ -228,40 +228,41 @@ void DollEditRegion::render()
     m_font_buf.add(item_str, VColour::white, item_name_x, item_name_y);
 
     string doll_name;
-    doll_name = make_stringf("Doll index %d / %d", m_doll_idx, NUM_MAX_DOLLS - 1);
+    doll_name = make_stringf(T_("Doll index %d / %d"),
+                             m_doll_idx, NUM_MAX_DOLLS - 1);
     float doll_name_x = left_gutter * 32.0f;
     float doll_name_y = (doll_line + 1) * 32.0f;
     m_font_buf.add(doll_name, VColour::white, doll_name_x, doll_name_y);
 
     const char *mode_name[TILEP_MODE_MAX] =
     {
-        "Current Equipment",
-        "Custom Doll",
-        "Job Defaults"
+        T_("Current Equipment"),
+        T_("Custom Doll"),
+        T_("Job Defaults")
     };
-    doll_name = make_stringf("Doll Mode: %s", mode_name[m_mode]);
+    doll_name = make_stringf(T_("Doll Mode: %s"), mode_name[m_mode]);
     doll_name_y += m_font->char_height() * 2.0f;
     m_font_buf.add(doll_name, VColour::white, doll_name_x, doll_name_y);
 
     // FIXME - this should be generated in rltiles
     const char *cat_name[TILEP_PART_MAX] =
     {
-        "Base",
-        "Shadow",
-        "Halo",
-        "Ench",
-        "Cloak",
-        "Boots",
-        "Legs",
-        "Body",
-        "Gloves",
-        "LHand",
-        "RHandWpn",
-        "RHand",
-        "Hair",
-        "Beard",
-        "Helm",
-        "DrcWing"
+        T_("Base"),
+        T_("Shadow"),
+        T_("Halo"),
+        T_("Ench"),
+        T_("Cloak"),
+        T_("Boots"),
+        T_("Legs"),
+        T_("Body"),
+        T_("Gloves"),
+        T_("LHand"),
+        T_("RHandWpn"),
+        T_("RHand"),
+        T_("Hair"),
+        T_("Beard"),
+        T_("Helm"),
+        T_("DrcWing")
     };
 
     // Add current doll information:
@@ -280,9 +281,10 @@ void DollEditRegion::render()
         const char *sel = (m_cat_idx == i) ? "->" : "  ";
 
         if (part == TILEP_SHOW_EQUIP)
-            info_str = make_stringf("%2s%9s: (show equip)", sel, cat_name[i]);
+            info_str = make_stringf(T_("%2s%9s: (show equip)"),
+                                    sel, cat_name[i]);
         else if (!part)
-            info_str = make_stringf("%2s%9s: (none)", sel, cat_name[i]);
+            info_str = make_stringf(T_("%2s%9s: (none)"), sel, cat_name[i]);
         else
             info_str = make_stringf("%2s%9s: %3d/%3d", sel, cat_name[i], disp, maxp);
         m_font_buf.add(info_str, VColour::white, info_x, info_y);
@@ -295,24 +297,19 @@ void DollEditRegion::render()
         const int height = m_font->char_height();
         const float start_y = doll_name_y + height * 3;
         const float start_x = 0;
-        m_font_buf.add(
-            "Change parts       left/right              Confirm choice      Enter",
-            VColour::white, start_x, start_y);
-        m_font_buf.add(
-            "Change category    up/down                 Copy doll           Ctrl-C",
-            VColour::white, start_x, start_y + height * 1);
-        m_font_buf.add(
-            "Change doll        0-9, Shift + arrows     Paste copied doll   Ctrl-V",
-            VColour::white, start_x, start_y + height * 2);
-        m_font_buf.add(
-            "Change doll mode   m                       Randomise doll      Ctrl-R",
-            VColour::white, start_x, start_y + height * 3);
-        m_font_buf.add(
-            "Save menu          Escape, Ctrl-S          Toggle equipment    *",
-            VColour::white, start_x, start_y + height * 4);
-        m_font_buf.add(
-            "Quit menu          q, Ctrl-Q",
-            VColour::white, start_x, start_y + height * 5);
+        const char *help_text[] = {
+            T_("Change parts       left/right              Confirm choice      Enter"),
+            T_("Change category    up/down                 Copy doll           Ctrl-C"),
+            T_("Change doll        0-9, Shift + arrows     Paste copied doll   Ctrl-V"),
+            T_("Change doll mode   m                       Randomise doll      Ctrl-R"),
+            T_("Save menu          Escape, Ctrl-S          Toggle equipment    *"),
+            T_("Quit menu          q, Ctrl-Q"),
+        };
+        for (unsigned int i = 0; i < ARRAYSZ(help_text); ++i)
+        {
+            m_font_buf.add(help_text[i], VColour::white, start_x,
+                           start_y + height * i);
+        }
     }
 
     m_font_buf.draw();

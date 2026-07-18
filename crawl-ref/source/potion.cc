@@ -516,7 +516,7 @@ public:
             return false;
         }
         if (!can_quaff(&reason, true)
-             && !yesno((reason + " Use anyway?").c_str(), false, 'n'))
+             && !yesno((reason + T_(" Use anyway?")).c_str(), false, 'n'))
         {
             canned_msg(MSG_OK);
             return false;

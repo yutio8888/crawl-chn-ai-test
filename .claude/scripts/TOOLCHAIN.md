@@ -158,7 +158,7 @@ python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查�
 python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/
 
 # 高置信显示契约（code/review profile 阻断）
-# direct sinks 的顶层字面量必须包 T_()/C_()；动态 wrapper 字面量必须有 key
+# 覆盖 direct sink、显示文本 producer、Tiles builder 和动态 key wrapper。
 python3 .claude/scripts/scan_i18n.py missing-t crawl-ref/source/ \
     --display-contracts-only \
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
@@ -215,6 +215,16 @@ python3 .claude/scripts/scan_i18n.py monster-title-display \
 扫描为零债务门禁，不使用 baseline；任何新 `DISPLAY`/`DYNKEY` 候选都会直接阻断。
 扫描器仍保留精确 `--allowlist` 能力，仅供未来受控迁移，豁免必须精确匹配 rule、
 文件、行号、函数和完整字面量。
+
+`notify_fail`/`yesno`/`set_more` 等 sink、已登记的不可使用原因
+producer，以及 Tiles tooltip builder 都属于零债务生产阻断契约。
+裸英文或只经 `N_()`/`NC_()` 延迟标记的文本会统一报 `DISPLAY`
+并返回失败；必须在显示消费点执行 `T_()`/`C_()`。
+
+默认扫描排除 DEBUG、`#if 0`、WIZARD 分支及 `wiz-*`/`dbg-*` 文件。
+TextDB 查找键保持英文；例如 `getLongDescription(... + " status")` 被登记为
+已翻译值 provider，不将其键误报为 UI 文案。
+`--extended-display-audit` 仅作旧调用兼容标志，不再改变扫描范围或阻断语义。
 
 ### scan_i18n_lifetime.py — 持久翻译指针生命周期门禁
 

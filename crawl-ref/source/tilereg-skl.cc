@@ -91,8 +91,8 @@ int SkillRegion::handle_mouse(wm_mouse_event &event)
 }
 bool SkillRegion::update_tab_tip_text(string &tip, bool active)
 {
-    const char *prefix = active ? "" : "[L-Click] ";
-    tip = make_stringf("%s%s", prefix, "Manage skills");
+    const string prefix = active ? "" : string(T_("[L-Click]")) + " ";
+    tip = make_stringf("%s%s", prefix.c_str(), T_("Manage skills"));
     return true;
 }
 bool SkillRegion::update_tip_text(string& tip)
@@ -108,17 +108,17 @@ bool SkillRegion::update_tip_text(string& tip)
     else if (!you.has_mutation(MUT_DISTRIBUTED_TRAINING))
     {
         const skill_type skill = (skill_type) m_items[item_idx].idx;
-        tip = "[L-Click] ";
+        tip = string(T_("[L-Click]")) + " ";
         if (you.train[skill])
-            tip += "Disable training";
+            tip += T_("Disable training");
         else
-            tip += "Enable training";
+            tip += T_("Enable training");
     }
 #ifdef WIZARD
     if (you.wizard)
         tip += "\n[Ctrl + L-Click] Change skill level (wizmode)";
 #endif
-    tip += "\n[R-Click] Describe";
+    tip += T_("\n[R-Click] Describe");
     return true;
 }
 bool SkillRegion::update_alt_text(string &alt)

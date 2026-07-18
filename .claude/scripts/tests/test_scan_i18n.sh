@@ -115,6 +115,43 @@ assert_output "missing-t: --strict includes every preprocessor branch" \
 assert_status "missing-t: --strict dead-branch violations block" \
     1 "$DISPLAY_DEBUG_STRICT_RC"
 
+# ── blocking display producers/builders and compatibility flag ──
+set +e
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-audit/" \
+    --display-contracts-only \
+    --source-txt "$FIXTURES/display-audit/source.txt" \
+    > /tmp/actual_display_audit.txt 2>&1
+DISPLAY_AUDIT_RC=$?
+set -e
+assert_output "missing-t: sinks, producers, and builders block by default" \
+    /tmp/actual_display_audit.txt "$EXPECTED/display-audit.txt"
+assert_status "missing-t: every registered display contract blocks" \
+    1 "$DISPLAY_AUDIT_RC"
+
+set +e
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-audit/" \
+    --extended-display-audit \
+    > /tmp/actual_display_audit_bad_cli.txt 2>&1
+DISPLAY_AUDIT_BAD_CLI_RC=$?
+set -e
+assert_status "missing-t: extended audit requires contract mode" \
+    2 "$DISPLAY_AUDIT_BAD_CLI_RC"
+assert_contains "missing-t: extended audit CLI error is clear" \
+    "--extended-display-audit requires --display-contracts-only" \
+    /tmp/actual_display_audit_bad_cli.txt
+
+set +e
+python3 "$SCAN_I18N" missing-t "$FIXTURES/display-audit/" \
+    --display-contracts-only --extended-display-audit --strict \
+    --source-txt "$FIXTURES/display-audit/source.txt" \
+    > /tmp/actual_display_audit_strict.txt 2>&1
+DISPLAY_AUDIT_STRICT_RC=$?
+set -e
+assert_contains "missing-t: strict contracts include WIZARD branches" \
+    "Wizard-only confirmation?" /tmp/actual_display_audit_strict.txt
+assert_status "missing-t: strict WIZARD display violation blocks" \
+    1 "$DISPLAY_AUDIT_STRICT_RC"
+
 # ── mprf-p ──
 echo "--- mprf-p ---"
 python3 "$SCAN_I18N" mprf-p "$FIXTURES/mprf-p/" --source-txt "$FIXTURES/mprf-p/source.txt" > /tmp/actual_mprfp.txt 2>&1 || true

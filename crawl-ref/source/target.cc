@@ -272,11 +272,11 @@ bool targeter_beam::valid_aim(coord_def a)
             !cell_see_cell(origin, a, LOS_NO_TRANS))
     {
         if (agent->see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
     if ((origin - a).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     return true;
 }
 
@@ -428,22 +428,22 @@ bool targeter_smite::valid_aim(coord_def a)
     {
         // Scrying/glass/tree/grate.
         if (agent && agent->see_cell(a))
-            return notify_fail("There's something in the way.");
+            return notify_fail(T_("There's something in the way."));
         else if (agent && agent->is_player())
-            return notify_fail("You cannot see that place.");
+            return notify_fail(T_("You cannot see that place."));
         // When aiming something from a different actor's perspective
         else
-            return notify_fail("Out of range.");
+            return notify_fail(T_("Out of range."));
     }
     if ((origin - a).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     if (!can_affect_walls() && cell_is_solid(a) && !anyone_there(a))
         return notify_fail(_wallmsg(a));
     if (!can_target_monsters && monster_at(a) && you.can_see(*monster_at(a))
         // XXX: To let Paragon Tempest be cast without moving the Paragon.
         && monster_at(a) != agent)
     {
-        return notify_fail("There's something in the way.");
+        return notify_fail(T_("There's something in the way."));
     }
     return true;
 }
@@ -551,7 +551,7 @@ bool targeter_passwall::valid_aim(coord_def a)
 {
     // Don't allow casting with 0 LOS
     if (!you.see_cell(a))
-        return notify_fail("You cannot see that place.");
+        return notify_fail(T_("You cannot see that place."));
     passwall_path tmp_path(you, a - you.pos(), range);
     string failmsg;
     tmp_path.is_valid(&failmsg);
@@ -602,9 +602,9 @@ targeter_dig::targeter_dig(int max_range) :
 bool targeter_dig::valid_aim(coord_def a)
 {
     if (a == origin)
-        return notify_fail("Please select a direction to dig.");
+        return notify_fail(T_("Please select a direction to dig."));
     if ((origin - a).rdist() > range || !in_bounds(a))
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     int possible_squares_affected;
     if (aim_test_cache.count(a))
         possible_squares_affected = aim_test_cache[a];
@@ -624,7 +624,7 @@ bool targeter_dig::valid_aim(coord_def a)
         aim_test_cache[a] = possible_squares_affected;
     }
     if (possible_squares_affected == 0)
-        return notify_fail("Digging in that direction won't affect any walls.");
+        return notify_fail(T_("Digging in that direction won't affect any walls."));
     else if (possible_squares_affected < 0)
         return false;
     else
@@ -693,13 +693,13 @@ bool targeter_transference::valid_aim(coord_def a)
     {
         if (mons_is_hepliaklqana_ancestor(victim->type))
         {
-            return notify_fail("You can't transfer your ancestor with "
-                               + victim->pronoun(PRONOUN_REFLEXIVE) + ".");
+            return notify_fail(
+                T_("You can't transfer your ancestor with themself."));
         }
         if (mons_is_tentacle_or_tentacle_segment(victim->type)
             || victim->is_stationary())
         {
-            return notify_fail("You can't transfer that.");
+            return notify_fail(T_("You can't transfer that."));
         }
     }
     return true;
@@ -798,14 +798,16 @@ bool targeter_unravelling::valid_aim(coord_def a)
     const monster* mons = monster_at(a);
     if (mons && you.can_see(*mons) && !_unravelling_explodes_at(a))
     {
-        return notify_fail(mons->name(DESC_THE) + " has no magical effects to "
-                           "unravel.");
+        return notify_fail(make_stringf(
+            T_("%s has no magical effects to unravel."),
+            mons->name(DESC_THE).c_str()));
     }
 
     if (mons && you.can_see(*mons) && _unravelling_explodes_at(a)
         && !could_harm(&you, mons))
     {
-        return notify_fail("You cannot do harm to " + mons->name(DESC_THE));
+        return notify_fail(make_stringf(T_("You cannot do harm to %s."),
+                                        mons->name(DESC_THE).c_str()));
     }
 
     return true;
@@ -878,8 +880,8 @@ bool targeter_airstrike::valid_aim(coord_def a)
     if (a != origin && !cell_see_cell(origin, a, LOS_NO_TRANS))
     {
         if (you.see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
     return true;
 }
@@ -922,7 +924,7 @@ bool targeter_fragment::valid_aim(coord_def a)
     bolt tempbeam;
     bool temp;
     if (!setup_fragmentation_beam(tempbeam, pow, agent, a, true, nullptr, temp))
-        return notify_fail("You cannot affect that.");
+        return notify_fail(T_("You cannot affect that."));
     return true;
 }
 
@@ -967,14 +969,14 @@ targeter_reach::targeter_reach(const actor* act, int ran) :
 bool targeter_reach::valid_aim(coord_def a)
 {
     if (!cell_see_cell(origin, a, LOS_DEFAULT))
-        return notify_fail("You cannot see that place.");
+        return notify_fail(T_("You cannot see that place."));
     if (!agent->see_cell_no_trans(a))
-        return notify_fail("You can't get through.");
+        return notify_fail(T_("You can't get through."));
 
     int dist = (origin - a).rdist();
 
     if (dist > range)
-        return notify_fail("Your weapon can't reach that far!");
+        return notify_fail(T_("Your weapon can't reach that far!"));
 
     return true;
 }
@@ -1011,7 +1013,7 @@ bool targeter_cleave::valid_aim(coord_def a)
 {
     const coord_def delta = a - origin;
     if (delta.rdist() > range)
-        return notify_fail("Your weapon can't reach that far!");
+        return notify_fail(T_("Your weapon can't reach that far!"));
     if (range == 2)
     {
         const coord_def first_middle(origin + delta / 2);
@@ -1019,7 +1021,7 @@ bool targeter_cleave::valid_aim(coord_def a)
         if (!feat_is_reachable_past(env.grid(first_middle))
              && !feat_is_reachable_past(env.grid(second_middle)))
         {
-            return notify_fail("There's something in the way.");
+            return notify_fail(T_("There's something in the way."));
         }
     }
     return true;
@@ -1072,7 +1074,7 @@ static bool _cloudable(coord_def loc, cloud_type ctype, const actor *agent)
 bool targeter_cloud::valid_aim(coord_def a)
 {
     if (agent && (origin - a).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     if (!map_bounds(a)
         || agent
            && origin != a
@@ -1080,8 +1082,8 @@ bool targeter_cloud::valid_aim(coord_def a)
     {
         // Scrying/glass/tree/grate.
         if (agent && agent->see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
     if (cell_is_solid(a))
         return notify_fail(_wallmsg(a));
@@ -1089,11 +1091,11 @@ bool targeter_cloud::valid_aim(coord_def a)
     {
         const cloud_struct *cloud = cloud_at(a);
         if (cloud && !cloud_is_stronger(ctype, *cloud))
-            return notify_fail("There's already a cloud there.");
+            return notify_fail(T_("There's already a cloud there."));
         else if (is_sanctuary(a) && !is_harmless_cloud(ctype))
         {
-            return notify_fail("You can't place harmful clouds in a "
-                               "sanctuary.");
+            return notify_fail(
+                T_("You can't place harmful clouds in a sanctuary."));
         }
         ASSERT(_cloudable(a, ctype, agent));
     }
@@ -1222,12 +1224,12 @@ targeter_radius::targeter_radius(const actor *act, los_type _los,
 bool targeter_radius::valid_aim(coord_def a)
 {
     if ((a - origin).rdist() > range_max || (a - origin).rdist() < range_min)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     // If this message ever becomes used, please improve it. I did not
     // bother adding complexity just for monsters and "hit allies" prompts
     // which don't need it.
     if (!is_affected(a))
-        return notify_fail("The effect is blocked.");
+        return notify_fail(T_("The effect is blocked."));
     return true;
 }
 
@@ -1326,11 +1328,11 @@ bool targeter_thunderbolt::valid_aim(coord_def a)
     {
         // Scrying/glass/tree/grate.
         if (agent->see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
     if ((origin - a).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     return true;
 }
 
@@ -1458,11 +1460,11 @@ bool targeter_cone::valid_aim(coord_def a)
     {
         // Scrying/glass/tree/grate.
         if (agent->see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
     if ((origin - a).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     return true;
 }
 
@@ -1666,12 +1668,12 @@ bool targeter_overgrow::valid_aim(coord_def a)
     if (a != origin && !cell_see_cell(origin, a, LOS_NO_TRANS))
     {
         if (agent && agent->see_cell(a))
-            return notify_fail("There's something in the way.");
-        return notify_fail("You cannot see that place.");
+            return notify_fail(T_("There's something in the way."));
+        return notify_fail(T_("You cannot see that place."));
     }
 
     if (!overgrow_affects_pos(a))
-        return notify_fail("You cannot grow anything here.");
+        return notify_fail(T_("You cannot grow anything here."));
 
     return true;
 }
@@ -1750,7 +1752,7 @@ targeter_scorch::targeter_scorch(const actor &a, int _range, bool affect_invis)
 bool targeter_scorch::valid_aim(coord_def a)
 {
     if ((a - origin).rdist() > range)
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     return true;
 }
 
@@ -1988,8 +1990,9 @@ bool targeter_poisonous_vapours::valid_aim(coord_def a)
     const monster_info *mon = env.map_knowledge(a).monsterinfo();
     if (mon && !affects_monster(*mon))
     {
-        return notify_fail(mon->full_name(DESC_THE) + " cannot be affected by "
-                           "poisonous vapours.");
+        return notify_fail(make_stringf(
+            T_("%s cannot be affected by poisonous vapours."),
+            mon->full_name(DESC_THE).c_str()));
     }
 
     return true;
@@ -2061,24 +2064,26 @@ bool targeter_boulder::valid_aim(coord_def a)
         return false;
 
     if (a == agent->pos())
-        return notify_fail("There's a thick-headed creature in the way.");
+        return notify_fail(T_("There's a thick-headed creature in the way."));
 
     const coord_def delta = a - agent->pos();
     if (delta.x && delta.y && abs(delta.x) != abs(delta.y))
-        return notify_fail("You can only roll a boulder in a compass direction.");
+        return notify_fail(
+            T_("You can only roll a boulder in a compass direction."));
 
     ray_def ray;
     if (!find_ray(agent->pos(), a, ray, opc_solid))
-        return notify_fail("There's something in the way.");
+        return notify_fail(T_("There's something in the way."));
     if (!ray.advance())
-        return notify_fail("You cannot conjure a boulder there.");
+        return notify_fail(T_("You cannot conjure a boulder there."));
 
     const coord_def start = ray.pos();
     actor* act = actor_at(start);
     if (feat_is_solid(env.grid(start)) || (act && you.can_see(*act)))
-        return notify_fail("You cannot conjure a boulder in an occupied space.");
+        return notify_fail(
+            T_("You cannot conjure a boulder in an occupied space."));
     if (env.grid(start) == DNGN_LAVA)
-        return notify_fail("You cannot conjure a boulder there.");
+        return notify_fail(T_("You cannot conjure a boulder there."));
 
     return true;
 }
@@ -2152,22 +2157,22 @@ bool targeter_bind_soul::valid_aim(coord_def a)
 
     monster* targ = monster_at(a);
     if (!targ || !agent->can_see(*targ))
-        return notify_fail("You can't see anything there.");
+        return notify_fail(T_("You can't see anything there."));
 
     if (!yred_can_bind_soul(targ))
     {
         if (targ->friendly())
-            return notify_fail("You cannot bind the soul of an ally.");
+            return notify_fail(T_("You cannot bind the soul of an ally."));
         else if (targ->type == MONS_PANDEMONIUM_LORD)
-            return notify_fail("You are unable to grasp such an alien soul.");
+            return notify_fail(T_("You are unable to grasp such an alien soul."));
         else if (targ->is_summoned())
-            return notify_fail("You cannot bind the soul of a summoned being.");
+            return notify_fail(T_("You cannot bind the soul of a summoned being."));
         else
-            return notify_fail("That does not possess a soul you can bind.");
+            return notify_fail(T_("That does not possess a soul you can bind."));
     }
 
     if (mons_get_damage_level(*targ) > MDAM_LIGHTLY_DAMAGED)
-        return notify_fail("Their soul is too badly injured.");
+        return notify_fail(T_("Their soul is too badly injured."));
 
     return true;
 }
@@ -2318,12 +2323,13 @@ bool targeter_gavotte::valid_aim(coord_def a)
         return false;
 
     if (a == agent->pos())
-        return notify_fail("Gravity is already pointing downward.");
+        return notify_fail(T_("Gravity is already pointing downward."));
 
     // make sure it's a true cardinal
     const coord_def delta = a - agent->pos();
     if (delta.x && delta.y && abs(delta.x) != abs(delta.y))
-        return notify_fail("You can only reorient gravity in a cardinal direction.");
+        return notify_fail(
+            T_("You can only reorient gravity in a cardinal direction."));
 
     return true;
 }
@@ -2352,7 +2358,7 @@ bool targeter_magnavolt::valid_aim(coord_def a)
         return false;
 
     if (!monster_at(a) || !you.can_see(*monster_at(a)))
-        return notify_fail("You don't see a valid target there.");
+        return notify_fail(T_("You don't see a valid target there."));
 
     return true;
 }
@@ -2418,7 +2424,7 @@ bool targeter_mortar::can_affect_walls()
 bool targeter_mortar::valid_aim(coord_def a)
 {
     if (!in_bounds(a))
-        return notify_fail("Out of range.");
+        return notify_fail(T_("Out of range."));
     else
         return targeter_beam::valid_aim(a);
 }
@@ -2491,13 +2497,14 @@ bool targeter_marionette::valid_aim(coord_def a)
         return notify_fail("");
 
     if (mons->has_ench(ENCH_SHADOWLESS))
-        return notify_fail("Their shadow is too faded to take hold of.");
+        return notify_fail(T_("Their shadow is too faded to take hold of."));
 
     if (mons->is_summoned() && !mons->is_illusion())
-        return notify_fail("A summoned shadow is too ephemeral to take hold of.");
+        return notify_fail(
+            T_("A summoned shadow is too ephemeral to take hold of."));
 
     if (mons->props[DITHMENOS_MARIONETTE_SPELLS_KEY].get_int() <= 0)
-        return notify_fail("They have no useful spells to cast right now.");
+        return notify_fail(T_("They have no useful spells to cast right now."));
 
     return true;
 }
@@ -2517,13 +2524,13 @@ bool targeter_putrefaction::valid_aim(coord_def a)
         return false;
 
     if (mons_aligned(&you, mon))
-        return notify_fail("You cannot putrefy a friendly monster.");
+        return notify_fail(T_("You cannot putrefy a friendly monster."));
 
     if (!(mon->holiness() & MH_NATURAL))
-        return notify_fail("You can only putrefy natural creatures.");
+        return notify_fail(T_("You can only putrefy natural creatures."));
 
     if (mons_get_damage_level(*mon) < MDAM_HEAVILY_DAMAGED)
-        return notify_fail("This isn't wounded badly enough.");
+        return notify_fail(T_("This isn't wounded badly enough."));
 
     return true;
 }
@@ -2638,13 +2645,15 @@ bool targeter_tempering::valid_aim(coord_def a)
 
     monster* mons = monster_at(a);
     if (!mons || !you.can_see(*mons) || !mons->friendly())
-        return notify_fail("There's nothing to be tempered there.");
+        return notify_fail(T_("There's nothing to be tempered there."));
 
     if (mons->has_ench(ENCH_TEMPERED))
-        return notify_fail("You cannot target a construct which is already augmented.");
+        return notify_fail(
+            T_("You cannot target a construct which is already augmented."));
 
     if (!is_valid_tempering_target(*mons, *agent))
-        return notify_fail("You can only target your own Forgecraft constructs.");
+        return notify_fail(
+            T_("You can only target your own Forgecraft constructs."));
 
     return true;
 }
@@ -2691,7 +2700,7 @@ bool targeter_piledriver::valid_aim(coord_def a)
             if (piledriver_lengths[i] > 0)
                 return true;
             else
-                return notify_fail("You see nothing there you can launch.");
+                return notify_fail(T_("You see nothing there you can launch."));
         }
     }
 
@@ -2740,7 +2749,7 @@ bool targeter_teleport_other::valid_aim(coord_def a)
         return false;
 
     if (mi->is(MB_NO_TELE))
-        return notify_fail("That cannot be teleported.");
+        return notify_fail(T_("That cannot be teleported."));
 
     if (mi->willpower() == WILL_INVULN)
         return false;
@@ -2803,13 +2812,14 @@ bool targeter_bestial_takedown::valid_aim(coord_def a)
         if (!mon->friendly() && mon->has_ench(ENCH_FEAR) && you.can_see(*mon))
         {
             if (get_bestial_landing_spots(a).empty())
-                return notify_fail("You can see nowhere safe to land near that.");
+                return notify_fail(
+                    T_("You can see nowhere safe to land near that."));
             else
                 return true;
         }
     }
 
-    return notify_fail("You must target an enemy who is afraid.");
+    return notify_fail(T_("You must target an enemy who is afraid."));
 }
 
 bool targeter_bestial_takedown::set_aim(coord_def a)
@@ -2845,7 +2855,8 @@ bool targeter_paragon_deploy::valid_aim(coord_def a)
         return false;
 
     if (!monster_habitable_grid(MONS_PLATINUM_PARAGON, a))
-        return notify_fail("Your paragon could not survive being deployed there.");
+        return notify_fail(
+            T_("Your paragon could not survive being deployed there."));
 
     return true;
 }

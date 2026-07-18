@@ -71,7 +71,7 @@ bool StatRegion::update_tip_text(string& tip)
 #ifdef __ANDROID__
     if (tiles.is_using_small_layout())
     {
-        tip = "[L-Click] Toggle tab icons";
+        tip = T_("[L-Click] Toggle tab icons");
         return true;
     }
 #endif
@@ -80,14 +80,14 @@ bool StatRegion::update_tip_text(string& tip)
     // would be unreliable, so keep the generic fallback.
     if (tiles.is_using_small_layout())
     {
-        tip = "[L-Click] Show player information";
+        tip = T_("[L-Click] Show player information");
         return true;
     }
 
     int cx, cy;
     if (!mouse_pos(m_last_mouse_x, m_last_mouse_y, cx, cy))
     {
-        tip = "[L-Click] Show player information";
+        tip = T_("[L-Click] Show player information");
         return true;
     }
 
@@ -125,7 +125,7 @@ bool StatRegion::update_tip_text(string& tip)
         }
     }
 
-    tip = "[L-Click] Show player information";
+    tip = T_("[L-Click] Show player information");
     return true;
 }
 

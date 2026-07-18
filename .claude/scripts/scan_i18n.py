@@ -47,9 +47,108 @@ MPR_CALL_RE = re.compile(
 # containing player-visible text.  Keep this metadata small: unlike the broad
 # MPR_CALL_RE heuristic, these sinks are blocking in the code/review profiles.
 DIRECT_DISPLAY_SINKS = {
+    'MenuEntry': 0,
+    'draw_desc': 0,
     'god_speaks': 1,
+    'notify_fail': 0,
+    'prompt_for_int': 0,
+    'set_more': 0,
     'simple_god_message': 0,
+    'title_prompt': 2,
+    'yesno': 0,
 }
+
+# Functions whose returned or out-parameter text is displayed to the player.
+# The key is relative to crawl-ref/source (or the scan root used by fixtures).
+# Values map an unqualified function name to out-parameters which also carry
+# display text. Return expressions are always checked. These are zero-debt,
+# blocking contracts; keep the registry explicit to avoid guessing from names.
+DISPLAY_TEXT_PRODUCERS = {
+    'evoke.cc': {
+        'cannot_evoke_item_reason': (),
+    },
+    'files.cc': {
+        '_type_name_with_article_display': (),
+    },
+    'item-name.cc': {
+        'cannot_read_item_reason': (),
+        'cannot_drink_item_reason': (),
+    },
+    'item-prop.cc': {
+        '_xp_evoker_recharge_msg': (),
+    },
+    'item-use.cc': {
+        'cannot_put_on_talisman_reason': (),
+    },
+    'player.cc': {
+        'no_tele_reason': (),
+    },
+    'religion.cc': {
+        'god_spell_warn_string': (),
+    },
+    'spl-summoning.cc': {
+        'mons_simulacrum_immune_reason': (),
+        'surprising_crocodile_unusable_reason': (),
+    },
+    'spl-transloc.cc': {
+        'movement_impossible_reason': (),
+    },
+    'god-abil.cc': {
+        'wu_jian_can_wall_jump': ('error_ret',),
+    },
+}
+
+# UI builder functions mutate one or more strings which are rendered after the
+# function returns.  These scopes are intentionally file-qualified to avoid
+# treating generic variables such as ``tip`` or ``text`` as player-visible in
+# unrelated protocol and parser code.
+DISPLAY_TEXT_BUILDERS = {
+    'dgn-overview.cc': {
+        '_get_seen_branches': ('zclock_desc',),
+    },
+    'mon-project.cc': {
+        '_iood_hit_setup': ('beam.name',),
+        '_annihilation_explode_setup': ('beam.name',),
+    },
+    'tilereg-doll.cc': {
+        'render': ('part_name', 'item_str', 'doll_name', 'mode_name',
+                   'cat_name', 'info_str', 'help_text'),
+    },
+    'tilereg-inv.cc': {
+        'update_tab_tip_text': ('tip', 'prefix1'),
+        'update_tip_text': ('tip', 'tmp', 'tip_prefix', 'inf.title'),
+    },
+    'tilereg-map.cc': {
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-spl.cc': {
+        'update_tab_tip_text': ('tip', 'prefix1'),
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-skl.cc': {
+        'update_tab_tip_text': ('tip', 'prefix'),
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-stat.cc': {
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-msg.cc': {
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-abl.cc': {
+        'update_tab_tip_text': ('tip', 'prefix1'),
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-mem.cc': {
+        'update_tab_tip_text': ('tip', 'prefix1'),
+        'update_tip_text': ('tip',),
+    },
+    'tilereg-dgn.cc': {
+        'update_tip_text': ('tip',),
+    },
+}
+
+DISPLAY_SKIP_FILE_RE = re.compile(r'^(?:wiz-|dbg-)')
 
 # Wrappers which translate a literal key internally (for example via
 # T_(variable)).  Callers must not add another T_(), but every literal passed in
@@ -60,7 +159,9 @@ DYNAMIC_KEY_WRAPPERS = {
 
 # Calls whose result is already translated.  String literals below these calls
 # are translation keys or DB lookup keys, not raw player-visible text.
-TRANSLATED_VALUE_PROVIDERS = {'T_', 'C_', '_get_xom_speech'}
+TRANSLATED_VALUE_PROVIDERS = {
+    'T_', 'C_', '_get_xom_speech', 'getLongDescription',
+}
 
 # Severity grading: which function was matched
 def _severity(line: str) -> str:
@@ -177,7 +278,7 @@ PP_ELSE_RE = re.compile(r'^\s*#\s*else(?:\s|$)')
 PP_ELIF_RE = re.compile(r'^\s*#\s*elif(?:\s|$)')
 
 
-def _known_preprocessor_condition(expression):
+def _known_preprocessor_condition(expression, extra_undefined=None):
     """Evaluate only conditions whose scan-time state is unambiguous.
 
     DEBUG macros are treated as undefined in normal builds. Unknown build
@@ -189,22 +290,31 @@ def _known_preprocessor_condition(expression):
     if re.fullmatch(r'1(?:[uUlL]*)', expression):
         return True
 
+    undefined = {'WIZARD'} & set(extra_undefined or ())
+    undefined_pattern = r'DEBUG\w*'
+    if undefined:
+        undefined_pattern = (r'(?:' + undefined_pattern + '|'
+                             + '|'.join(map(re.escape, sorted(undefined)))
+                             + r')')
+
     defined = re.fullmatch(
-        r'defined\s*(?:\(\s*(DEBUG\w*)\s*\)|(DEBUG\w*))', expression)
+        r'defined\s*(?:\(\s*(' + undefined_pattern + r')\s*\)|('
+        + undefined_pattern + r'))', expression)
     if defined:
         return False
     not_defined = re.fullmatch(
-        r'!\s*defined\s*(?:\(\s*(DEBUG\w*)\s*\)|(DEBUG\w*))', expression)
+        r'!\s*defined\s*(?:\(\s*(' + undefined_pattern + r')\s*\)|('
+        + undefined_pattern + r'))', expression)
     if not_defined:
         return True
-    if re.fullmatch(r'DEBUG\w*', expression):
+    if re.fullmatch(undefined_pattern, expression):
         return False
-    if re.fullmatch(r'!\s*DEBUG\w*', expression):
+    if re.fullmatch(r'!\s*' + undefined_pattern, expression):
         return True
     return None
 
 
-def build_debug_ranges(lines):
+def build_debug_ranges(lines, extra_undefined=None):
     """Return lines in definitely inactive/debug preprocessor branches.
 
     The state machine is nested-safe and branch-aware. Unknown conditions are
@@ -234,7 +344,7 @@ def build_debug_ranges(lines):
             if stack:
                 frame = stack[-1]
                 condition = _known_preprocessor_condition(
-                    elif_match.group(1))
+                    elif_match.group(1), extra_undefined)
                 current_inactive = (frame['parent_inactive']
                                     or frame['definitely_taken']
                                     or condition is False)
@@ -248,18 +358,21 @@ def build_debug_ranges(lines):
         if ifdef_match:
             opening = True
             macro = ifdef_match.group(1)
-            condition = False if macro.startswith('DEBUG') else None
+            condition = (False if macro.startswith('DEBUG')
+                         or macro in set(extra_undefined or ()) else None)
         else:
             ifndef_match = PP_IFNDEF_RE.match(line)
             if ifndef_match:
                 opening = True
                 macro = ifndef_match.group(1)
-                condition = True if macro.startswith('DEBUG') else None
+                condition = (True if macro.startswith('DEBUG')
+                             or macro in set(extra_undefined or ()) else None)
             else:
                 if_match = re.match(r'^\s*#\s*if\s+(.+?)\s*$', line)
                 if if_match:
                     opening = True
-                    condition = _known_preprocessor_condition(if_match.group(1))
+                    condition = _known_preprocessor_condition(
+                        if_match.group(1), extra_undefined)
 
         if opening:
             parent_inactive = current_inactive
@@ -345,7 +458,9 @@ def load_contract_allowlist(filepath: str) -> list:
     with open(filepath, 'r', encoding='utf-8') as f:
         data = json.load(f)
     return [entry for entry in data
-            if entry.get('rule') in ('direct-display', 'dynamic-key')]
+            if entry.get('rule') in ('direct-display', 'dynamic-key',
+                                     'direct-display-producer',
+                                     'direct-display-builder')]
 
 
 def _contract_is_allowlisted(entries, rule, rel_path, lineno, function,
@@ -442,6 +557,72 @@ def _find_matching_paren(source: str, open_pos: int):
     return None
 
 
+def _find_matching_brace(source: str, open_pos: int):
+    """Return the matching closing brace, ignoring braces in literals."""
+    depth = 0
+    state = 'code'
+    i = open_pos
+    while i < len(source):
+        c = source[i]
+        if state == 'code':
+            if c == '"':
+                state = 'string'
+            elif c == "'":
+                state = 'char'
+            elif c == '{':
+                depth += 1
+            elif c == '}':
+                depth -= 1
+                if depth == 0:
+                    return i
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or \
+               (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    return None
+
+
+def _find_statement_end(source: str, start: int, end: int):
+    """Find a top-level semicolon inside one function body."""
+    paren = bracket = brace = 0
+    state = 'code'
+    i = start
+    while i < end:
+        c = source[i]
+        if state == 'code':
+            if c == '"':
+                state = 'string'
+            elif c == "'":
+                state = 'char'
+            elif c == '(':
+                paren += 1
+            elif c == ')':
+                paren -= 1
+            elif c == '[':
+                bracket += 1
+            elif c == ']':
+                bracket -= 1
+            elif c == '{':
+                brace += 1
+            elif c == '}':
+                brace -= 1
+            elif c == ';' and paren == bracket == brace == 0:
+                return i
+        elif state in ('string', 'char'):
+            if c == '\\':
+                i += 2
+                continue
+            if (state == 'string' and c == '"') or \
+               (state == 'char' and c == "'"):
+                state = 'code'
+        i += 1
+    return None
+
+
 def _split_call_args(source: str, start: int, end: int):
     """Return (argument_text, absolute_start) for one call's arguments."""
     result = []
@@ -500,6 +681,43 @@ def _iter_named_calls(source: str, names):
                _split_call_args(masked, open_pos + 1, close_pos))
 
 
+def _iter_named_function_bodies(source: str, names):
+    """Yield explicitly named C++ function bodies without an AST dependency.
+
+    Calls and declarations are rejected because their closing parenthesis is
+    followed by a semicolon rather than a body.  Qualifiers such as ``const``,
+    ``override`` and trailing return syntax are tolerated.
+    """
+    masked = _mask_cpp_comments(source)
+    pattern = re.compile(r'\b(' + '|'.join(map(re.escape, names)) + r')\s*\(')
+    for match in pattern.finditer(masked):
+        open_pos = masked.find('(', match.start(), match.end())
+        close_pos = _find_matching_paren(masked, open_pos)
+        if close_pos is None:
+            continue
+
+        cursor = close_pos + 1
+        while cursor < len(masked) and masked[cursor].isspace():
+            cursor += 1
+        while cursor < len(masked) and masked[cursor] not in '{;':
+            cursor += 1
+        if cursor >= len(masked) or masked[cursor] != '{':
+            continue
+
+        # A matching call used in an if-condition or member chain can also be
+        # followed by a brace.  Function definitions do not contain a closing
+        # parenthesis or member-access dot between their parameter list and
+        # body for any registered producer/builder signature.
+        suffix = masked[close_pos + 1:cursor]
+        if ')' in suffix or '.' in suffix:
+            continue
+
+        body_end = _find_matching_brace(masked, cursor)
+        if body_end is None:
+            continue
+        yield match.group(1), cursor + 1, body_end
+
+
 def _string_literals_with_call_ancestors(expression: str):
     """Return string literals and the call names which lexically contain them."""
     result = []
@@ -555,28 +773,149 @@ def _dynamic_key_literals(expression: str):
 
 def _decode_cpp_string(body: str) -> str:
     replacements = {
-        r'\\n': '\n', r'\\t': '\t', r'\\r': '\r',
-        r'\\"': '"', r"\\'": "'", r'\\\\': '\\',
+        r'\n': '\n', r'\t': '\t', r'\r': '\r',
+        r'\"': '"', r"\'": "'", r'\\': '\\',
     }
     return re.sub(r'\\(?:n|t|r|"|\'|\\)',
                   lambda match: replacements.get(match.group(0),
                                                    match.group(0)), body)
 
 
+def _escape_display_controls(value: str) -> str:
+    """Keep one finding on one terminal/CI output line."""
+    return value.replace('\n', r'\n').replace('\t', r'\t').replace('\r', r'\r')
+
+
+def _producer_expressions(source, body_start, body_end, out_params):
+    """Yield display-bearing expressions from one contracted producer."""
+    masked = _mask_cpp_comments(source)
+    body = masked[body_start:body_end]
+
+    for match in re.finditer(r'\breturn\b', body):
+        expression_start = body_start + match.end()
+        expression_end = _find_statement_end(masked, expression_start,
+                                             body_end)
+        if expression_end is not None:
+            yield 'return', expression_start, source[expression_start:expression_end]
+
+    for param in out_params:
+        pattern = re.compile(r'\b' + re.escape(param) + r'\s*(?:\+=|=)')
+        for match in pattern.finditer(body):
+            expression_start = body_start + match.end()
+            expression_end = _find_statement_end(masked, expression_start,
+                                                 body_end)
+            if expression_end is not None:
+                yield param, expression_start, source[expression_start:expression_end]
+
+
+def _builder_expressions(source, body_start, body_end, variables):
+    """Yield assignments to explicitly contracted UI builder variables."""
+    masked = _mask_cpp_comments(source)
+    body = masked[body_start:body_end]
+    for variable in variables:
+        pattern = re.compile(r'\b' + re.escape(variable)
+                             + r'(?:\s*\[[^\]]*\])?\s*(?:\+=|=)')
+        for match in pattern.finditer(body):
+            expression_start = body_start + match.end()
+            expression_end = _find_statement_end(masked, expression_start,
+                                                 body_end)
+            if expression_end is not None:
+                yield variable, expression_start, source[expression_start:expression_end]
+
+
+def _scan_display_producers(source, rel_path, contract_allowlist,
+                            debug_lines, strict):
+    """Enforce translation in explicitly registered UI text producers."""
+    findings = []
+    filtered = []
+    producer_specs = DISPLAY_TEXT_PRODUCERS.get(rel_path, {})
+    if not producer_specs:
+        return findings, filtered
+
+    for function, body_start, body_end in _iter_named_function_bodies(
+            source, producer_specs):
+        out_params = producer_specs[function]
+        for carrier, expression_start, expression in _producer_expressions(
+                source, body_start, body_end, out_params):
+            literals = _direct_untranslated_literals(expression)
+            if not literals:
+                continue
+            literal = ''.join(_decode_cpp_string(body) for body, _ in literals)
+            if not has_word(literal):
+                continue
+            first_offset = expression_start + literals[0][1]
+            lineno = source.count('\n', 0, first_offset) + 1
+            if not strict and lineno in debug_lines:
+                continue
+
+            rule = 'direct-display-producer'
+            display = (f'DISPLAY003 {function} {carrier}: '
+                       f'{_escape_display_controls(literal)}')
+            if _contract_is_allowlisted(contract_allowlist, rule, rel_path,
+                                        lineno, function, literal):
+                filtered.append((rel_path, lineno, display[:160],
+                                 'DISPLAY', 'legacy-contract'))
+            else:
+                findings.append((rel_path, lineno, display[:160],
+                                 'DISPLAY'))
+    return findings, filtered
+
+
+def _scan_display_builders(source, rel_path, contract_allowlist,
+                           debug_lines, strict):
+    """Enforce translation in explicitly registered UI builder strings."""
+    findings = []
+    filtered = []
+    builder_specs = DISPLAY_TEXT_BUILDERS.get(rel_path, {})
+    if not builder_specs:
+        return findings, filtered
+
+    for function, body_start, body_end in _iter_named_function_bodies(
+            source, builder_specs):
+        for carrier, expression_start, expression in _builder_expressions(
+                source, body_start, body_end, builder_specs[function]):
+            literals = _direct_untranslated_literals(expression)
+            if not literals:
+                continue
+            literal = ''.join(_decode_cpp_string(body) for body, _ in literals)
+            if not has_word(literal):
+                continue
+            first_offset = expression_start + literals[0][1]
+            lineno = source.count('\n', 0, first_offset) + 1
+            if not strict and lineno in debug_lines:
+                continue
+
+            rule = 'direct-display-builder'
+            display = (f'DISPLAY004 {function} {carrier}: '
+                       f'{_escape_display_controls(literal)}')
+            if _contract_is_allowlisted(contract_allowlist, rule, rel_path,
+                                        lineno, function, literal):
+                filtered.append((rel_path, lineno, display[:160],
+                                 'DISPLAY', 'legacy-contract'))
+            else:
+                findings.append((rel_path, lineno, display[:160],
+                                 'DISPLAY'))
+    return findings, filtered
+
+
 def _scan_display_contracts(source, rel_path, source_entries,
                             contract_allowlist, debug_lines, strict):
     findings = []
     filtered = []
-    names = set(DIRECT_DISPLAY_SINKS) | set(DYNAMIC_KEY_WRAPPERS)
+    if DISPLAY_SKIP_FILE_RE.match(os.path.basename(rel_path)):
+        return findings, filtered
+
+    sink_specs = dict(DIRECT_DISPLAY_SINKS)
+    names = set(sink_specs) | set(DYNAMIC_KEY_WRAPPERS)
     for function, _call_start, args in _iter_named_calls(source, names):
-        arg_index = (DIRECT_DISPLAY_SINKS.get(function)
-                     if function in DIRECT_DISPLAY_SINKS
+        arg_index = (sink_specs.get(function)
+                     if function in sink_specs
                      else DYNAMIC_KEY_WRAPPERS[function])
         if arg_index >= len(args):
             continue
         expression, expression_start = args[arg_index]
         literals = (_direct_untranslated_literals(expression)
-                    if function in DIRECT_DISPLAY_SINKS
+                    if function in sink_specs
                     else _dynamic_key_literals(expression))
         if not literals:
             # Variables and translated DB/provider results are intentionally
@@ -587,13 +926,16 @@ def _scan_display_contracts(source, rel_path, source_entries,
         lineno = source.count('\n', 0, first_offset) + 1
         if not strict and lineno in debug_lines:
             continue
-        if not has_alpha(literal):
+        if function in sink_specs:
+            if not has_word(literal):
+                continue
+        elif not has_alpha(literal):
             continue
 
-        if function in DIRECT_DISPLAY_SINKS:
+        if function in sink_specs:
             rule = 'direct-display'
             severity = 'DISPLAY'
-            display = f'{function}: {literal}'
+            display = f'{function}: {_escape_display_controls(literal)}'
         else:
             rule = 'dynamic-key'
             severity = 'DYNKEY'
@@ -611,6 +953,15 @@ def _scan_display_contracts(source, rel_path, source_entries,
                              'legacy-contract'))
         else:
             findings.append((rel_path, lineno, display[:120], severity))
+
+    producer_findings, producer_filtered = _scan_display_producers(
+        source, rel_path, contract_allowlist, debug_lines, strict)
+    findings.extend(producer_findings)
+    filtered.extend(producer_filtered)
+    builder_findings, builder_filtered = _scan_display_builders(
+        source, rel_path, contract_allowlist, debug_lines, strict)
+    findings.extend(builder_findings)
+    filtered.extend(builder_filtered)
     return findings, filtered
 
 
@@ -651,7 +1002,8 @@ def cmd_missing_t(args):
             with open(filepath, "r", encoding="utf-8", errors="replace") as f:
                 lines = f.readlines()
 
-            debug_lines = build_debug_ranges(lines)
+            debug_lines = build_debug_ranges(
+                lines, {'WIZARD'} if contracts_only else None)
             comment_lines = build_comment_ranges(lines)
 
             if contracts_only:
@@ -3135,6 +3487,10 @@ def main():
     p_missing.add_argument(
         "--display-contracts-only", action="store_true",
         help="Run only high-confidence direct-sink and dynamic-key contracts")
+    p_missing.add_argument(
+        "--extended-display-audit", action="store_true",
+        help="Compatibility flag; all registered display contracts are now "
+             "included and blocking")
 
     # mprf-p
     p_mprfp = subparsers.add_parser(
@@ -3409,6 +3765,10 @@ def main():
     if (args.command == "missing-t" and args.display_contracts_only
             and not args.source_txt):
         p_missing.error("--source-txt is required with "
+                        "--display-contracts-only")
+    if (args.command == "missing-t" and args.extended_display_audit
+            and not args.display_contracts_only):
+        p_missing.error("--extended-display-audit requires "
                         "--display-contracts-only")
 
     if args.command == "missing-t":

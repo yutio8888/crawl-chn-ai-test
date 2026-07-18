@@ -2857,7 +2857,8 @@ bool read(item_def* scroll, dist *target)
     {
         const bool hostile_check = scroll_hostile_check(which_scroll);
         bool penance = god_hates_item(*scroll);
-        string verb_object = "read the " + scroll->name(DESC_DBNAME);
+        const string verb_object = make_stringf(
+            T_("read the %s"), scroll->name(DESC_DBNAME).c_str());
 
         string penance_prompt = make_stringf(T_("Really %s? This action would"
                                              " place you under penance%s!"),
@@ -2898,8 +2899,8 @@ bool read(item_def* scroll, dist *target)
             canned_msg(MSG_OK);
             return false;
         }
-        else if (!bad_item && !hostile_check && !yesno(make_stringf(
-            "You can't see any enemies this would affect, really %s?",
+        else if (!bad_item && !hostile_check && !yesno(make_stringf(T_(
+            "You can't see any enemies this would affect, really %s?"),
                                         verb_object.c_str()).c_str(),
                                                 false, 'n'))
         {
@@ -3363,11 +3364,11 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
     {
         if (temp && you.skill(SK_SHAPESHIFTING) < 6)
         {
-            return "you lack the shapeshifting skill to coax this "
-                    "talisman into a stable form.";
+            return T_("you lack the shapeshifting skill to coax this "
+                      "talisman into a stable form.");
         }
         else if (species_apt(SK_SHAPESHIFTING) == UNUSABLE_SKILL)
-            return "you can never gain the skill to use this talisman.";
+            return T_("you can never gain the skill to use this talisman.");
         else
             return "";
     }
@@ -3378,14 +3379,14 @@ string cannot_put_on_talisman_reason(const item_def& talisman, bool temp)
         return lowercase_first(form_unreason);
 
     if (you.form != you.default_form && temp)
-        return "you need to leave your temporary form first.";
+        return T_("you need to leave your temporary form first.");
 
     if (trans == transformation::hive)
     {
         if (you_worship(GOD_OKAWARU))
-            return "you have forsworn all allies in Okawaru's name.";
+            return T_("you have forsworn all allies in Okawaru's name.");
         if (you.get_mutation_level(MUT_NO_LOVE))
-            return "you are loveless.";
+            return T_("you are loveless.");
     }
 
     return "";
@@ -3458,7 +3459,7 @@ void tile_item_pickup(int idx, bool part)
     int quantity = env.item[idx].quantity;
     if (part && quantity > 1)
     {
-        quantity = prompt_for_int("Pick up how many? ", true);
+        quantity = prompt_for_int(T_("Pick up how many?"), true);
         if (quantity < 1)
         {
             canned_msg(MSG_OK);
@@ -3480,7 +3481,7 @@ void tile_item_drop(int idx, bool partdrop)
     int quantity = you.inv[idx].quantity;
     if (partdrop && quantity > 1)
     {
-        quantity = prompt_for_int("Drop how many? ", true);
+        quantity = prompt_for_int(T_("Drop how many?"), true);
         if (quantity < 1)
         {
             canned_msg(MSG_OK);

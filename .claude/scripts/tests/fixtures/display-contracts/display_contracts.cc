@@ -7,8 +7,11 @@ void direct_display_contracts(const char *message)
     simple_god_message(make_stringf("Nested raw %s.", message));
     simple_god_message("Adjacent "
                        "multiline raw.");
+    notify_fail("Bare target failure.");
+    notify_fail(N_("Deferred marker is not translated."));
 
     simple_god_message(T_(" translated direct message"));
+    notify_fail(T_("Translated target failure."));
     god_speaks(GOD_XOM, C_("speech", "Translated divine speech."));
     simple_god_message(make_stringf(T_("Translated nested %s."), message));
 

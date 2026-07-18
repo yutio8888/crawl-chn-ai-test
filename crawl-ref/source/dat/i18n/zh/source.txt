@@ -40380,3 +40380,534 @@ the Removed
 %%%%
 You feel a strange sense of nostalgia.
 你感到一股莫名的怀旧之情。
+%%%%
+You cannot see that place.
+你看不到那里。
+%%%%
+Out of range.
+超出范围。
+%%%%
+Please select a direction to dig.
+请选择要挖掘的方向。
+%%%%
+Digging in that direction won't affect any walls.
+朝那个方向挖掘不会影响任何墙壁。
+%%%%
+You can't transfer your ancestor with themself.
+你无法将先祖与其自身交换位置。
+%%%%
+%s has no magical effects to unravel.
+%s没有可解除的魔法效果。
+%%%%
+You cannot do harm to %s.
+你无法伤害%s。
+%%%%
+You cannot affect that.
+你无法影响那个目标。
+%%%%
+You can't get through.
+你无法通过那里。
+%%%%
+There's already a cloud there.
+那里已经有一片云了。
+%%%%
+You can't place harmful clouds in a sanctuary.
+你无法在庇护所中放置有害云雾。
+%%%%
+The effect is blocked.
+效果被阻挡了。
+%%%%
+You cannot grow anything here.
+你无法在这里种植任何东西。
+%%%%
+%s cannot be affected by poisonous vapours.
+%s不受毒气影响。
+%%%%
+There's a thick-headed creature in the way.
+有个脑袋很硬的生物挡住了路。
+%%%%
+You can only roll a boulder in a compass direction.
+你只能沿八个方位之一滚动巨石。
+%%%%
+You cannot conjure a boulder there.
+你无法在那里召出巨石。
+%%%%
+You cannot conjure a boulder in an occupied space.
+你无法在被占据的位置召出巨石。
+%%%%
+You can't see anything there.
+你在那里什么也看不到。
+%%%%
+You cannot bind the soul of an ally.
+你无法束缚盟友的灵魂。
+%%%%
+You are unable to grasp such an alien soul.
+你无法掌控如此异质的灵魂。
+%%%%
+You cannot bind the soul of a summoned being.
+你无法束缚召唤生物的灵魂。
+%%%%
+That does not possess a soul you can bind.
+那个目标没有可供你束缚的灵魂。
+%%%%
+Their soul is too badly injured.
+其灵魂受损过重。
+%%%%
+Gravity is already pointing downward.
+重力已经指向下方。
+%%%%
+You can only reorient gravity in a cardinal direction.
+你只能沿四个正方向重新定向重力。
+%%%%
+You don't see a valid target there.
+你在那里看不到有效目标。
+%%%%
+Their shadow is too faded to take hold of.
+其暗影过于黯淡，无法控制。
+%%%%
+A summoned shadow is too ephemeral to take hold of.
+召唤出的暗影过于虚幻，无法控制。
+%%%%
+They have no useful spells to cast right now.
+其目前没有可施放的有效法术。
+%%%%
+You cannot putrefy a friendly monster.
+你无法使友方怪物腐烂。
+%%%%
+You can only putrefy natural creatures.
+你只能使自然生物腐烂。
+%%%%
+This isn't wounded badly enough.
+其伤势还不够严重。
+%%%%
+There's nothing to be tempered there.
+那里没有可供淬炼的目标。
+%%%%
+You cannot target a construct which is already augmented.
+你无法以已经强化的构装体为目标。
+%%%%
+You can only target your own Forgecraft constructs.
+你只能选择自己以锻造术制造的构装体。
+%%%%
+You see nothing there you can launch.
+你在那里看不到可发射的东西。
+%%%%
+That cannot be teleported.
+那个目标无法被传送。
+%%%%
+You can see nowhere safe to land near that.
+你看不到目标附近有任何安全落点。
+%%%%
+You must target an enemy who is afraid.
+你必须选择一名正在恐惧的敌人。
+%%%%
+Your paragon could not survive being deployed there.
+你的白金典范无法在该位置存活。
+%%%%
+you are already filled with unstable energy.
+你体内已经充满不稳定能量。
+%%%%
+Sorry, this item was removed!
+抱歉，该物品已被移除！
+%%%%
+You can't evoke that!
+你无法激活那个！
+%%%%
+This wand has no charges.
+这根魔杖已经没有充能了。
+%%%%
+That item cannot be used by those who cannot gain allies!
+无法获得盟友者不能使用该物品！
+%%%%
+You can't produce a sound!
+你无法发出声音！
+%%%%
+Please select an adjacent position to wall jump against.
+请选择一个相邻位置作为蹬墙跳的支点。
+%%%%
+You have no room to wall jump there.
+你没有空间在那里蹬墙跳。
+%%%%
+You don't have control over your spell memory.
+你无法控制自己的法术记忆。
+%%%%
+Trog doesn't allow you to memorise spells!
+特洛格不允许你记忆法术！
+%%%%
+There's no point in enhancing weapons you can't use!
+强化你无法使用的武器毫无意义！
+%%%%
+There's no point in enchanting armour you can't use!
+为你无法使用的护甲附魔毫无意义！
+%%%%
+There is nothing left to identify.
+已经没有需要鉴定的东西了。
+%%%%
+You have no need of identification.
+你不需要进行鉴定。
+%%%%
+You can't read that!
+你无法阅读那个！
+%%%%
+You have no spells to forget.
+你没有可忘却的法术。
+%%%%
+This place cannot be mapped!
+这里无法绘制地图！
+%%%%
+You can't drink.
+你无法饮用药水。
+%%%%
+You cannot drink potions in your current state!
+你当前的状态无法饮用药水！
+%%%%
+You refuse to indulge in frivolous drinking.
+你拒绝沉溺于无谓的饮用。
+%%%%
+It's too cold; everything's frozen solid!
+这里太冷了；一切都已经冻得坚硬无比！
+%%%%
+You can't drink that!
+你无法饮用那个！
+%%%%
+you lack the shapeshifting skill to coax this talisman into a stable form.
+你的变形术技能不足，无法使这枚护符稳定变形。
+%%%%
+you can never gain the skill to use this talisman.
+你永远无法获得使用这枚护符所需的技能。
+%%%%
+you need to leave your temporary form first.
+你需要先解除临时形态。
+%%%%
+you have forsworn all allies in Okawaru's name.
+你已以奥卡瓦鲁之名誓绝所有盟友。
+%%%%
+you are loveless.
+你无法感受爱。
+%%%%
+Long-range teleportation is disallowed in Dungeon Sprint.
+地牢冲刺中不允许进行长距离传送。
+%%%%
+This will place you under penance!
+这会使你受到惩戒！
+%%%%
+Your god hates spellcasting!
+你的神祇厌恶施法！
+%%%%
+Your god hates this spell!
+你的神祇厌恶这个法术！
+%%%%
+You can't make a simulacrum of that!
+你无法用那个制作拟像！
+%%%%
+That would be terribly rude!
+那样做太无礼了！
+%%%%
+You can't see a valid target there.
+你在那里看不到有效目标。
+%%%%
+There's not enough room behind you.
+你身后没有足够的空间。
+%%%%
+It isn't safe to move backwards.
+向后移动并不安全。
+%%%%
+You already have %s game saved under the name '%s';\ndo you want to load that instead?
+你已经有一个%s游戏存档，名称为“%s”；\n是否改为加载该存档？
+%%%%
+This game comes from a previous release of Crawl (%s).\n\nIf you load it now, you won't be able to go back. Continue?
+该存档来自较早版本的 Crawl（%s）。\n\n如果现在加载，将无法回退。是否继续？
+%%%%
+There exists a save by that name but it appears to be invalid.\nDo you want to delete it?\nError: %s
+存在同名存档，但该存档似乎无效。\n是否删除？\n错误：%s
+%%%%
+This Lava Orc save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Mountain Dwarf. Continue?
+该熔岩兽人存档无法保持原状加载。如果现在加载，\n你的角色将被转换为山矮人。是否继续？
+%%%%
+This Vampire save game cannot be loaded as-is. If you load it now,\nyour character will be converted to a Human. Continue?
+该吸血鬼存档无法保持原状加载。如果现在加载，\n你的角色将被转换为人类。是否继续？
+%%%%
+a regular
+普通
+%%%%
+a Seeded
+自定义种子
+%%%%
+a Tutorial
+教程
+%%%%
+an Arena
+竞技场
+%%%%
+a Dungeon Sprint
+地牢冲刺
+%%%%
+a Dungeon Descent
+地牢下降
+%%%%
+an Unknown
+未知类型
+%%%%
+You can't see any enemies this would affect, really %s?
+你看不到任何会受此影响的敌人，确定要%s吗？
+%%%%
+read the %s
+阅读%s
+%%%%
+Pick up how many?
+拾取多少？
+%%%%
+Drop how many?
+丢弃多少？
+%%%%
+Arrows/[<w>enter</w>] to select, [<w>bksp</w>] to clear selected, [<w>?</w>] for help\n
+方向键/[<w>enter</w>]选择，[<w>bksp</w>]清除所选项，[<w>?</w>]查看帮助\n
+%%%%
+<lightgray>([<w>~</w>] to enter by keycode)</lightgray>
+<lightgray>（[<w>~</w>]按键码输入）</lightgray>
+%%%%
+Raw input: [<w>esc</w>] to abort, [<w>enter</w>] to accept.
+原始输入：[<w>esc</w>]中止，[<w>enter</w>]接受。
+%%%%
+Input a key sequence. Use <w>\\{n}</w> to enter keycode <w>n</w>. [<w>esc</w>] for menu
+输入按键序列。使用<w>\\{n}</w>输入按键码<w>n</w>。[<w>esc</w>]返回菜单
+%%%%
+[<w>?</w>] Keycode help. Quick reference: 8: [<w>bksp</w>], 9: [<w>tab</w>], 13: [<w>enter</w>], 27: [<w>esc</w>]
+[<w>?</w>]按键码帮助。快速参考：8：[<w>bksp</w>]，9：[<w>tab</w>]，13：[<w>enter</w>]，27：[<w>esc</w>]
+%%%%
+Enter keycode by number:
+输入数字按键码：
+%%%%
+<cyan>Press Esc to close, arrows/pgup/pgdn to scroll.</cyan>
+<cyan>按 Esc 关闭，使用方向键/pgup/pgdn 滚动。</cyan>
+%%%%
+Trunk doesn't count for the tournament, you want %s. Still play Trunk? (Y/N)
+Trunk 不计入锦标赛，你想参加%s。仍然游玩 Trunk 吗？（Y/N）
+%%%%
+ Use anyway?
+ 仍然使用？
+%%%%
+bugs
+错误
+%%%%
+<lightcyan>Items</lightcyan>
+<lightcyan>物品</lightcyan>
+%%%%
+<lightcyan>Spells</lightcyan>
+<lightcyan>法术</lightcyan>
+%%%%
+<lightcyan>Abilities</lightcyan>
+<lightcyan>能力</lightcyan>
+%%%%
+Next page
+下一页
+%%%%
+Previous page
+上一页
+%%%%
+Display abilities
+显示能力
+%%%%
+Use abilities
+使用能力
+%%%%
+[L-Click] Use (%)
+[左键] 使用 (%)
+%%%%
+\n[R-Click] Describe
+\n[右键] 查看说明
+%%%%
+Display inventory
+显示物品栏
+%%%%
+Use items
+使用物品
+%%%%
+Next page\n[L-Click] Show next page of items
+下一页\n[左键] 显示下一页物品
+%%%%
+Previous page\n[L-Click] Show previous page of items
+上一页\n[左键] 显示上一页物品
+%%%%
+\n[L-Click] Pick up (%)
+\n[左键] 拾取 (%)
+%%%%
+\n[Ctrl + L-Click] Partial pick up (%)
+\n[Ctrl + 左键] 部分拾取 (%)
+%%%%
+\n[Shift + L-Click] Drop (%)
+\n[Shift + 左键] 丢弃 (%)
+%%%%
+\n[Ctrl-Shift + L-Click] Drop quantity (%#)
+\n[Ctrl-Shift + 左键] 按数量丢弃 (%#)
+%%%%
+Wield (%)
+持握 (%)
+%%%%
+\n[Ctrl + L-Click] Offhand
+\n[Ctrl + 左键] 副手
+%%%%
+Unwield (%-)
+取消持握 (%-)
+%%%%
+Evoke (%)
+激活 (%)
+%%%%
+Wear (%)
+穿戴 (%)
+%%%%
+Take off (%)
+卸下 (%)
+%%%%
+Put on (%)
+戴上 (%)
+%%%%
+Remove (%)
+卸下 (%)
+%%%%
+Fire (%)
+发射 (%)
+%%%%
+Read (%)
+阅读 (%)
+%%%%
+Quaff (%)
+饮用 (%)
+%%%%
+\n[L-Click]
+\n[左键]
+%%%%
+[L-Click] Travel / [R-Click] View
+[左键] 旅行 / [右键] 查看
+%%%%
+\n[Shift + L-Click] Autoexplore
+\n[Shift + 左键] 自动探索
+%%%%
+Display spells in carried books
+显示随身书籍中的法术
+%%%%
+Memorise spells
+记忆法术
+%%%%
+You cannot memorise this spell now.
+你现在无法记忆这个法术。
+%%%%
+[L-Click] Memorise (%)
+[左键] 记忆 (%)
+%%%%
+[L-Click] Browse message history
+[左键] 浏览消息历史
+%%%%
+Manage skills
+管理技能
+%%%%
+[L-Click]
+[左键]
+%%%%
+Disable training
+停止训练
+%%%%
+Enable training
+启用训练
+%%%%
+Display memorised spells
+显示已记忆法术
+%%%%
+Cast spells
+施放法术
+%%%%
+[L-Click] Cast (%)
+[左键] 施放 (%)
+%%%%
+\n[R-Click] Describe (%)
+\n[右键] 查看说明 (%)
+%%%%
+[L-Click] Toggle tab icons
+[左键] 切换标签页图标
+%%%%
+[L-Click] Show player information
+[左键] 显示玩家信息
+%%%%
+(none)
+（无）
+%%%%
+(show equip)
+（显示装备）
+%%%%
+Doll index %d / %d
+纸娃娃索引 %d / %d
+%%%%
+Current Equipment
+当前装备
+%%%%
+Custom Doll
+自定义纸娃娃
+%%%%
+Job Defaults
+职业默认值
+%%%%
+Doll Mode: %s
+纸娃娃模式：%s
+%%%%
+Legs
+腿部
+%%%%
+Body
+身体
+%%%%
+LHand
+左手
+%%%%
+RHandWpn
+右手武器
+%%%%
+RHand
+右手
+%%%%
+Hair
+头发
+%%%%
+Beard
+胡须
+%%%%
+Helm
+头盔
+%%%%
+DrcWing
+龙翼
+%%%%
+%2s%9s: (show equip)
+%2s%9s：（显示装备）
+%%%%
+%2s%9s: (none)
+%2s%9s：（无）
+%%%%
+Change parts       left/right              Confirm choice      Enter
+更换部件        左/右方向键             确认选择        Enter
+%%%%
+Change category    up/down                 Copy doll           Ctrl-C
+更换类别        上/下方向键             复制纸娃娃      Ctrl-C
+%%%%
+Change doll        0-9, Shift + arrows     Paste copied doll   Ctrl-V
+更换纸娃娃      0-9、Shift + 方向键    粘贴纸娃娃      Ctrl-V
+%%%%
+Change doll mode   m                       Randomise doll      Ctrl-R
+更换纸娃娃模式  m                       随机生成纸娃娃  Ctrl-R
+%%%%
+Save menu          Escape, Ctrl-S          Toggle equipment    *
+保存菜单        Escape、Ctrl-S           切换装备        *
+%%%%
+Quit menu          q, Ctrl-Q
+退出菜单        q、Ctrl-Q
+%%%%
+%%s has regained %d charge.
+%%s恢复了%d次充能。
+%%%%
+%%s has regained %d charges.
+%%s恢复了%d次充能。
+%%%%
+%s has recharged.
+%s已重新充能。
+%%%%
+ Zot: <%s>%d</%s>
+ 佐特：<%s>%d</%s>

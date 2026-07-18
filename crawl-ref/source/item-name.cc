@@ -2597,11 +2597,12 @@ void RuneMenu::set_footer()
 #ifdef USE_TILE_LOCAL
     string more_text = make_stringf(
             T_("[<w>!</w>/<w>^</w>|<w>Right-click</w>]: %s"),
+            show_gems ? T_("Show Runes") : T_("Show Gems"));
 #else
     string more_text = make_stringf(
             T_("[<w>!</w>/<w>^</w>]: %s"),
-#endif
             show_gems ? T_("Show Runes") : T_("Show Gems"));
+#endif
     if (!Options.more_gem_info && can_show_more_gems())
         more_text += make_stringf("\n[<w>-</w>]: %s", more_gems ? T_("Less") : T_("More"));
     set_more(more_text);
@@ -3407,33 +3408,33 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
         {
         case SCR_AMNESIA:
             if (you.has_mutation(MUT_INNATE_CASTER))
-                return "You don't have control over your spell memory.";
+                return T_("You don't have control over your spell memory.");
             // XX possibly amnesia should be allowed to work under Trog, despite
             // being marked useless..
             if (you_worship(GOD_TROG))
-                return "Trog doesn't allow you to memorise spells!";
+                return T_("Trog doesn't allow you to memorise spells!");
             break;
         case SCR_ENCHANT_WEAPON:
         case SCR_BRAND_WEAPON:
             if (you.has_mutation(MUT_NO_GRASPING))
-                return "There's no point in enhancing weapons you can't use!";
+                return T_("There's no point in enhancing weapons you can't use!");
             break;
         case SCR_ENCHANT_ARMOUR:
             if (you.has_mutation(MUT_NO_GRASPING))
-                return "There's no point in enchanting armour you can't use!";
+                return T_("There's no point in enchanting armour you can't use!");
             break;
 
         case SCR_IDENTIFY:
             if (you.props.exists(IDENTIFIED_ALL_KEY))
-                return "There is nothing left to identify.";
+                return T_("There is nothing left to identify.");
             if (have_passive(passive_t::identify_items))
-                return "You have no need of identification.";
+                return T_("You have no need of identification.");
             break;
 
         case SCR_SUMMONING:
         case SCR_BUTTERFLIES:
             if (you.allies_forbidden())
-                return "You cannot coerce anything to answer your summons.";
+                return T_("You cannot coerce anything to answer your summons.");
             break;
         case SCR_BLINKING:
         case SCR_TELEPORTATION:
@@ -3460,7 +3461,7 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
 
     // still possible to use * at the `r` prompt. (Why do we allow this now?)
     if (item->base_type != OBJ_SCROLLS)
-        return "You can't read that!";
+        return T_("You can't read that!");
 
     // temp uselessness only below this check
     if (!temp || (!ident && !item_type_known(*item)))
@@ -3477,7 +3478,7 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
 
         case SCR_AMNESIA:
             if (you.spell_no == 0)
-                return "You have no spells to forget.";
+                return T_("You have no spells to forget.");
             return "";
 
         case SCR_ENCHANT_ARMOUR:
@@ -3495,12 +3496,12 @@ string cannot_read_item_reason(const item_def *item, bool temp, bool ident)
         case SCR_FOG:
         case SCR_POISON:
             if (env.level_state & LSTATE_STILL_WINDS)
-                return "The air is too still for clouds to form.";
+                return T_("The air is too still for clouds to form.");
             return "";
 
         case SCR_REVELATION:
             if (!is_map_persistent())
-                return "This place cannot be mapped!";
+                return T_("This place cannot be mapped!");
             return "";
 
         default:
@@ -3513,7 +3514,7 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
 {
     // general permanent reasons
     if (!you.can_drink(false))
-        return "You can't drink.";
+        return T_("You can't drink.");
 
     const bool valid = item && item->base_type == OBJ_POTIONS
                             && (item->is_identified() || ident);
@@ -3534,20 +3535,20 @@ string cannot_drink_item_reason(const item_def *item, bool temp,
     if (temp)
     {
         if (!you.can_drink(true))
-            return "You cannot drink potions in your current state!";
+            return T_("You cannot drink potions in your current state!");
 
         if (you.berserk())
-            return "You are too berserk!";
+            return T_("You are too berserk!");
 
         if (you.has_mutation(MUT_RENOUNCE_POTIONS) && you.props.exists(RENOUNCE_POTIONS_TIMER_KEY))
-            return "You refuse to indulge in frivolous drinking.";
+            return T_("You refuse to indulge in frivolous drinking.");
 
         if (player_in_branch(BRANCH_COCYTUS))
-            return "It's too cold; everything's frozen solid!";
+            return T_("It's too cold; everything's frozen solid!");
     }
 
     if (item && item->base_type != OBJ_POTIONS)
-        return "You can't drink that!";
+        return T_("You can't drink that!");
 
     // !valid now means either no item, or unid'd item.
     if (!temp || !valid)

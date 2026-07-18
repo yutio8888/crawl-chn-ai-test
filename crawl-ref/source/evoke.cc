@@ -1009,10 +1009,10 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
 {
     // id is not at issue here
     if (temp && you.berserk())
-        return "You are too berserk!";
+        return T_("You are too berserk!");
 
     if (temp && you.confused())
-        return "You are too confused!";
+        return T_("You are too confused!");
 
     // all generic checks passed
     if (!item)
@@ -1030,7 +1030,7 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
     if (item->is_type(OBJ_BAUBLES, BAUBLE_FLUX))
     {
         if (you.form == transformation::flux && temp)
-            return "you are already filled with unstable energy.";
+            return T_("you are already filled with unstable energy.");
 
         const string form_unreason = cant_transform_reason(transformation::flux, false, temp);
         if (!form_unreason.empty())
@@ -1039,28 +1039,28 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
     }
 
     if (you.get_mutation_level(MUT_NO_ARTIFICE))
-        return "You cannot evoke magical items.";
+        return T_("You cannot evoke magical items.");
 
     // is this really necessary?
     if (item_type_removed(item->base_type, item->sub_type))
-        return "Sorry, this item was removed!";
+        return T_("Sorry, this item was removed!");
     if (item->base_type != OBJ_WANDS && item->base_type != OBJ_MISCELLANY)
-        return "You can't evoke that!";
+        return T_("You can't evoke that!");
 
 #if TAG_MAJOR_VERSION == 34
     if (is_known_empty_wand(*item))
-        return "This wand has no charges.";
+        return T_("This wand has no charges.");
 #endif
 
     if (_evoke_ally_only(*item, ident) && you.allies_forbidden())
-        return "That item cannot be used by those who cannot gain allies!";
+        return T_("That item cannot be used by those who cannot gain allies!");
 
     if (temp
         && item->base_type == OBJ_MISCELLANY
         && item->sub_type == MISC_CONDENSER_VANE
         && (env.level_state & LSTATE_STILL_WINDS))
     {
-        return "The air is too still for clouds to form.";
+        return T_("The air is too still for clouds to form.");
     }
 
     if (temp
@@ -1068,7 +1068,7 @@ string cannot_evoke_item_reason(const item_def *item, bool temp, bool ident)
         && item->sub_type == MISC_HORN_OF_GERYON
         && you.is_silenced())
     {
-        return "You can't produce a sound!";
+        return T_("You can't produce a sound!");
     }
 
     if (temp && is_xp_evoker(*item) && evoker_charges(item->sub_type) <= 0)

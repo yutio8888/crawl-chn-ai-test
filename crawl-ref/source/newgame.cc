@@ -432,8 +432,9 @@ static void _choose_char(newgame_def& ng, newgame_def& choice,
     // Apologies to non-public servers.
     if (ng.type == GAME_TYPE_NORMAL || ng.type == GAME_TYPE_DESCENT)
     {
-        if (!yesno(T_("Trunk doesn't count for the tournament, you want ")
-                     TOURNEY ". Still play Trunk? (Y/N)", false, 'n'))
+        if (!yesno(make_stringf(
+            T_("Trunk doesn't count for the tournament, you want %s. "
+               "Still play Trunk? (Y/N)"), TOURNEY).c_str(), false, 'n'))
         {
             game_ended(game_exit::abort);
         }

@@ -2611,7 +2611,7 @@ namespace quiver
             if (it_count && show_headers)
             {
                 add_entry(
-                    new MenuEntry("<lightcyan>Items</lightcyan>" + keyhelp,
+                    new MenuEntry(T_("<lightcyan>Items</lightcyan>") + keyhelp,
                     MEL_SUBTITLE));
                 first_spell += 1;
                 first_abil += 1;
@@ -2624,7 +2624,7 @@ namespace quiver
                 if (i == it_count && spell_count && show_headers)
                 {
                     add_entry(
-                        new MenuEntry("<lightcyan>Spells</lightcyan>" + keyhelp,
+                        new MenuEntry(T_("<lightcyan>Spells</lightcyan>") + keyhelp,
                         MEL_SUBTITLE));
                     first_spell += 1;
                     first_abil += 1;
@@ -2632,7 +2632,7 @@ namespace quiver
                 else if (i == it_count + spell_count && show_headers)
                 {
                     add_entry(
-                        new MenuEntry("<lightcyan>Abilities</lightcyan>" + keyhelp,
+                        new MenuEntry(T_("<lightcyan>Abilities</lightcyan>") + keyhelp,
                         MEL_SUBTITLE));
                     first_abil += 1;
                 }

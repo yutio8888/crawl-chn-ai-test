@@ -7315,12 +7315,12 @@ int player_willpower(bool temp)
 string player::no_tele_reason(bool blinking, bool temp) const
 {
     if (stasis())
-        return "Your stasis prevents you from teleporting.";
+        return T_("Your stasis prevents you from teleporting.");
 
     if (!blinking)
     {
         if (crawl_state.game_is_sprint())
-            return "Long-range teleportation is disallowed in Dungeon Sprint.";
+        return T_("Long-range teleportation is disallowed in Dungeon Sprint.");
         else if (player_in_branch(BRANCH_GAUNTLET))
         {
             return T_("A magic seal in the Gauntlet prevents long-range "

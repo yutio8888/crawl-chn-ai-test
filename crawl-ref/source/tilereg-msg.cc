@@ -44,7 +44,7 @@ bool MessageRegion::update_tip_text(string& tip)
     if (mouse_control::current_mode() != MOUSE_MODE_COMMAND)
         return false;
 
-    tip = "[L-Click] Browse message history";
+    tip = T_("[L-Click] Browse message history");
     return true;
 }
 
