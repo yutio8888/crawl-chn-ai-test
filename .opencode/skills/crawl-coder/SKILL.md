@@ -1,12 +1,12 @@
 ---
 name: crawl-coder
-description: DCSS Chinese translation code implementation — C++ source modification, T_() migration, TextDB operations, ZH guard removal, Makefile fixes, new zh-* file creation, compilation verification
+description: DCSS Chinese i18n code implementation — C++ source modification, T_() migration, TextDB loader/schema and assigned structural repairs, ZH guard removal, Makefile fixes, compilation verification
 ---
 
 # Crawl-Coder Skill
 
 Code implementation agent for DCSS Chinese translation. Covers the full spectrum:
-adding T_() guards, removing ZH language switches, TextDB data operations,
+adding T_() guards, removing ZH language switches, TextDB loader/schema work,
 creating new zh-* source files, fixing mixed CN/EN output, ARG-DIFF resolution,
 and compilation/build fixes.
 
@@ -43,13 +43,56 @@ analysis remains the responsibility of `scan_i18n_lifetime.py`,
 `scan_varargs_string.py`, and the other code verification gates.
 <!-- END GENERATED: i18n-safety -->
 
+<!-- BEGIN GENERATED: asset-ownership -->
+# asset-ownership-v1
+
+Every task assigns exactly one writer to every file. Agents are not alone in
+the repository: preserve existing changes, do not revert work owned by another
+writer, and coordinate before touching an overlapping path.
+
+## Default ownership
+
+- `zh-translator` owns Chinese wording and translation assets under
+  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+- `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
+  database loading/schema, and code-side `T_()`/`C_()` migration.
+- English/protocol/TextDB lookup keys remain English regardless of the writer.
+- Reviewers are read-only and never repair findings during the readiness pass.
+
+## Structural exception
+
+A coder may edit an explicitly listed ZH data file for a purely structural or
+mechanical repair, such as a broken delimiter or loader-compatible key, only
+when the orchestrator assigns that complete path to the coder and no translator
+is writing it concurrently. The coder must not make independent wording or
+terminology decisions under this exception.
+
+## Mixed tasks
+
+For a task that needs both translated assets and source changes:
+
+1. resolve the current glossary context;
+2. assign every ZH translation asset to one translator writer;
+3. complete translation-asset edits first;
+4. run the coder for source/build changes without reopening translator-owned
+   files;
+5. verify the combined worktree and review the exact committed diff.
+
+Batch work uses the same ownership model. Parallel analysis is allowed, but
+translation assets are written sequentially by their single owner.
+<!-- END GENERATED: asset-ownership -->
+
+All later examples that write `source.txt` or another ZH data file are
+conditional on the structural exception above. In mixed translation/code work,
+the translator owns those assets and this skill edits source/build files only.
+
 ## When to Use
 
 | Trigger | Example |
 |---------|---------|
 | Add T_() wrapping | "把这个文件的硬编码中文改成 T_()", "add T_() to this function" |
 | Remove ZH guards | "去掉这个文件的语言判断", "replace Options.language checks" |
-| TextDB operations | "更新 zh/source.txt", "fix %%%% separator" |
+| TextDB structure | "fix %%%% separator", "repair TextDB loader/schema" |
 | New zh-* file | "创建新的中文 scroll appearance 系统" |
 | Mixed output fix | "中英混合输出", "Your 影子 bug" |
 | Compilation fix | "编译报错了", "fix the build", "link error" |
@@ -59,8 +102,10 @@ analysis remains the responsibility of `scan_i18n_lifetime.py`,
 
 1. **T_() guard addition** — wrap bare English strings, remove `Options.language` branches
 2. **ZH guard removal** — eliminate `lang_t::ZH` / `crawl.language() == 'zh'` patterns
-3. **TextDB (.txt) operations** — add/modify entries in `%%%%`-separated files
-4. **source.txt maintenance** — append new T_() entries, fix delimiter issues
+3. **TextDB structure** — loader/schema changes and explicitly assigned
+   delimiter/key repairs under the sole-writer exception
+4. **Translation handoff** — identify required `source.txt`/ZH TextDB entries
+   for the translator in mixed work
 5. **ARG-DIFF resolution** — fix positional parameter mismatches, conj_verb splits
 6. **New zh-* file creation** — isolate Chinese strings in dedicated .h/.cc files
 7. **Makefile fixes** — add new .o files to correct OBJECTS lists

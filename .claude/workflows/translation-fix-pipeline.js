@@ -157,7 +157,7 @@ Steps:
    V = protocol/internal (should stay English, not a bug)
 4. Determine severity: blocker (crash/fully English UI), major, minor
 
-Reference CLAUDE.md "Translation System Architecture" section.`,
+Reference docs/translation-architecture.md.`,
   { label: 'analyze', schema: ANALYSIS_SCHEMA }
 )
 
@@ -189,7 +189,7 @@ Design the minimal, correct fix:
 
 For each code change: file path, what to change, why.
 For each translation: English text and context.
-Follow CLAUDE.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.`,
+Follow .agents/policies/i18n-safety.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.`,
   { label: 'plan', schema: PLAN_SCHEMA }
 )
 
@@ -215,7 +215,7 @@ Check:
 2. ALL affected files identified? (grep to verify)
 3. Approach minimal — only changes what's needed?
 4. Format string risks (%s count, arg order)?
-5. Project conventions followed (CLAUDE.md)?
+5. Project conventions followed (AGENTS.md and .agents/policies/)?
 6. Missing edge cases or side effects?
 
 Verdict: approved (proceed) | changes_requested (revise) | rejected (abort)`,
@@ -315,7 +315,7 @@ Steps:
    follow the active runtime's commit-trailer policy, and leave the worktree
    clean for immutable review.
 
-CRITICAL rules (from CLAUDE.md):
+CRITICAL rules (from .agents/policies/i18n-safety.md and asset-ownership.md):
 - Use mprf_p (not mprf) for positional format strings
 - Never add .c_str() on const char* return values
 - Never translate protocol/internal strings

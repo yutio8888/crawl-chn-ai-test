@@ -239,7 +239,7 @@ let plan = await agent(
   '- codeChanges: files to modify, what to change, why\n' +
   '- translationsNeeded: English text + context for each entry\n' +
   '\nCRITICAL: Use the batch glossary for ALL terminology. Consistency across groups is mandatory.\n' +
-  'Follow CLAUDE.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.\n' +
+  'Follow .agents/policies/i18n-safety.md: mprf_p for positional %s, no .c_str() on const char*, no protocol translation.\n' +
   'For Type III: add source.txt entries with T_(variable). For Type V: text should stay English.',
   { label: 'batch-plan', schema: MERGED_PLAN_SCHEMA }
 )

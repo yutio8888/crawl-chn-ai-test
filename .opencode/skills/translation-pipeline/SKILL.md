@@ -5,6 +5,45 @@ description: 翻译问题完整修复管道 — 玩家反馈 → 结构化收集
 
 # Translation Fix Pipeline
 
+<!-- BEGIN GENERATED: asset-ownership -->
+# asset-ownership-v1
+
+Every task assigns exactly one writer to every file. Agents are not alone in
+the repository: preserve existing changes, do not revert work owned by another
+writer, and coordinate before touching an overlapping path.
+
+## Default ownership
+
+- `zh-translator` owns Chinese wording and translation assets under
+  `crawl-ref/source/dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`.
+- `crawl-coder` owns C++, headers, Lua integration, build files, parsers,
+  database loading/schema, and code-side `T_()`/`C_()` migration.
+- English/protocol/TextDB lookup keys remain English regardless of the writer.
+- Reviewers are read-only and never repair findings during the readiness pass.
+
+## Structural exception
+
+A coder may edit an explicitly listed ZH data file for a purely structural or
+mechanical repair, such as a broken delimiter or loader-compatible key, only
+when the orchestrator assigns that complete path to the coder and no translator
+is writing it concurrently. The coder must not make independent wording or
+terminology decisions under this exception.
+
+## Mixed tasks
+
+For a task that needs both translated assets and source changes:
+
+1. resolve the current glossary context;
+2. assign every ZH translation asset to one translator writer;
+3. complete translation-asset edits first;
+4. run the coder for source/build changes without reopening translator-owned
+   files;
+5. verify the combined worktree and review the exact committed diff.
+
+Batch work uses the same ownership model. Parallel analysis is allowed, but
+translation assets are written sequentially by their single owner.
+<!-- END GENERATED: asset-ownership -->
+
 当用户报告翻译问题（未翻译文本、翻译错误、翻译 bug）时，按以下流程处理。
 
 ## Trigger
@@ -51,9 +90,9 @@ bash .claude/scripts/context_resolve.sh "<issue/task>" \
 `docs/glossary.md` SHA-256。执行期间若术语表发生变化，重新生成上下文；
 不得用工作流或 Skill 内的静态术语副本覆盖当前术语表。
 
-`.claude/workflows/*.js` 使用宿主注入的 `args`、`agent()`、`phase()` 等
+`.opencode/workflows/*.js` 使用宿主注入的 `args`、`agent()`、`phase()` 等
 DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。只有当前
-Claude Code 运行时明确提供 workflow runner 时，才通过该 runner 启动。
+OpenCode 宿主明确提供兼容 workflow runner 时，才通过该 runner 启动。
 
 ## 审核 Agent 自动路由
 
@@ -90,10 +129,10 @@ Hosted runner 必须给 single/batch workflow 传入 `args.targetRoot`、
 未提交/不干净或边界创建失败时以 `review_boundary_required` 停止，不能审查
 旧 routing，也不能静默固定双审或跳过审核。
 
-运行时没有 workflow runner 时，使用 `Agent` 逐阶段回退：
+运行时没有 workflow runner 时，使用 `task` 逐阶段回退：
 
 ```
-Agent(subagent_type="general", description="Analyze issue",
+task(subagent_type="general", description="Analyze issue",
   prompt="Analyze this DCSS Chinese translation issue to find the root cause...")
 ```
 
@@ -101,7 +140,7 @@ Agent(subagent_type="general", description="Analyze issue",
 边界 → 路由审核 → 交叉验证 → readiness 持久化 → 单次 final gate → 报告。
 
 fallback 同样先运行 `review_prepare.sh`，解析 bundle 的 `routing`，并且只对
-`reviewers` 数组中列出的类型调用 `Agent`。不得从 issue 类型、自然语言描述
+`reviewers` 数组中列出的类型调用 `task`。不得从 issue 类型、自然语言描述
 或 Agent 自报的修改内容另行猜测审核人。术语一致性机械检查和交叉验证不受
 reviewer 数量影响，始终执行。reviewer 只检查已提交、干净 worktree 的精确
 bundle diff 和开发期日志，输出 `Ready for Final Gate`、`Changes Requested`

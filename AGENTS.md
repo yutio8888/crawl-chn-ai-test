@@ -1,532 +1,165 @@
-# AGENTS.md — OpenCode-Specific Instructions
+# AGENTS.md — Shared Agent Entry Point
 
-> **OpenCode overlay for the DCSS Chinese translation project.**
-> For shared project knowledge (build, branches, translation system, CJK tiles,
-> testing pipeline, issue tracking, agent commit discipline), see `CLAUDE.md`.
-> OpenCode loads `AGENTS.md` first; if absent, it falls back to `CLAUDE.md`.
+> Status: **canonical shared instructions**. This file is intentionally
+> runtime-neutral. Runtime-specific tool syntax belongs in `CODEX.md`,
+> `CLAUDE.md`, or `.opencode/RUNTIME.md`.
 
-## OpenCode Runtime Layout
+This repository contains the DCSS Chinese translation, i18n tooling, and CJK
+tiles work. Read this file first in every agent runtime. For the source-of-truth
+map and maintenance rules, see `.agents/README.md`.
 
-This repo carries parallel OpenCode, Codex, and legacy Claude Code config trees:
+## Runtime Adapter
 
-| Tree | Purpose | Loaded by OpenCode? |
-|------|---------|---------------------|
-| `.opencode/` | **OpenCode-native** agents/skills/workflows/config | ✅ Yes |
-| `.claude/`  | Legacy Claude Code infrastructure | ⚠️ Partial |
+After this file, read only the adapter for the active runtime:
 
-### What lives in each (current state)
+| Runtime | Adapter |
+|---|---|
+| OpenCode | `.opencode/RUNTIME.md` |
+| Codex | `CODEX.md` |
+| Claude Code | `CLAUDE.md` |
 
-| Path | Role | Notes |
-|------|------|-------|
-| `.opencode/agents/*.md` | 5 subagents: `crawl-coder`, `ocr`, `translation-reviewer`, `zh-code-reviewer`, `zh-translator` | OpenCode syntax (`mode: subagent`, `model: deepseek/...`, `permission:`) |
-| `.opencode/skills/<name>/SKILL.md` | 4 skills (one file per skill in its own directory) | OpenCode loads `<name>/SKILL.md` |
-| `.opencode/workflows/*.js` | 2 workflow scripts | Run via `bash` — OpenCode has no `Workflow` tool |
-| `.opencode/opencode.json` | Project-level config | Sets the main model and `explore.model` |
-| `.codex/agents/*.toml` | Codex-native translation/coder/reviewer subagents | Loaded by Codex; use `.claude/scripts/` shared tools |
-| `.agents/skills/<name>/SKILL.md` | Repository-scoped Codex skills | Loaded by Codex while working in this repository |
-| `.claude/scripts/*.sh,*.py` | 28 project tool scripts (post-coder, post-translator, classify_review, scan_varargs_string, etc.) | OpenCode loads via `bash` — paths still work |
-| `.claude/workflows/*.js` | Duplicate of `.opencode/workflows/` | Safe to keep as redundancy; can be deleted if not returning to Claude Code |
-| `.claude/agents/`, `.claude/skills/` | Claude Code-format legacy files (use `model: inherit`, `tools: Read, Write,...`) | **Not loaded by OpenCode** (syntax/structure incompatible) — safe to delete |
-| `.claude/ORCHESTRATION_STATE.md`, `.claude/analysis/`, `.claude/metrics/`, `.claude/worktrees/` | Project state, analysis, metrics, worktree bookkeeping | OpenCode reads as files (no special loading) |
+Adapters translate tool syntax only. They must not weaken the shared policies
+in this file or `.agents/policies/`.
 
-### Agent model assignments (current)
+## Canonical Sources
 
-| Agent | Model | Source |
-|-------|-------|--------|
-| `crawl-coder` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/crawl-coder.md` |
-| `translation-reviewer` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/translation-reviewer.md` |
-| `zh-translator` | `opencode-go/deepseek-v4-flash` | `.opencode/agents/zh-translator.md` |
-| `zh-code-reviewer` | `openai/gpt-5.6-sol` | `.opencode/agents/zh-code-reviewer.md` |
-| `ocr` | `openrouter/qwen/qwen3-vl-8b-instruct` | `.opencode/agents/ocr.md` |
-| `explore` (built-in) | `opencode-go/deepseek-v4-flash` | `.opencode/opencode.json` |
+| Concern | Authority |
+|---|---|
+| Runtime roles and task routing | `docs/agent-routing.md` |
+| Translation terminology | `docs/glossary.md` |
+| i18n safety | `.agents/policies/i18n-safety.md` |
+| Translation-asset ownership | `.agents/policies/asset-ownership.md` |
+| Review findings and final evidence | `.agents/policies/review-contract.md` |
+| Worktree placement and branch safety | `.agents/policies/worktree-policy.md` |
+| Translation architecture | `docs/translation-architecture.md` |
+| CJK tiles architecture | `docs/cjk-tiles-architecture.md` |
+| Build and deployment | `docs/build-workflow.md` |
+| ZH testing and verification | `docs/zh-testing.md` and `.claude/scripts/TOOLCHAIN.md` |
+| Cross-runtime collaboration | `docs/dual-agent-workflow.md` |
+| Issue tracking | `docs/issue-tracking.md` |
 
-## OpenCode Tool Surface (the syntax differences)
+Do not copy model assignments, script counts, branch lists, test counts, or
+other volatile state into prose. Read the corresponding configuration, Git
+state, script `--help`, or CI workflow instead.
 
-`CLAUDE.md` was written for Claude Code and uses Claude Code dispatch syntax.
-**Replace those syntaxes when invoking tools in OpenCode:**
+## Mandatory Terminology Context
 
-### Subagents → use `task`, not `Agent`
-
-```python
-# ❌ CLAUDE.md (Claude Code) — does NOT work in OpenCode
-# Agent(subagent_type="zh-translator", description="...", prompt="...")
-
-# ✅ OpenCode
-task(
-  subagent_type="zh-translator",  # or "crawl-coder" | "translation-reviewer" | "zh-code-reviewer" | "ocr" | "explore" | "general"
-  description="Translate <target>",
-  prompt="<full task>\n\n## Terminology Context\n${CONTEXT}"
-)
-```
-
-Available built-in subagent types in OpenCode: `general`, `explore` (lowercase!),
-`scout`. Project-defined subagents: `crawl-coder`, `ocr`, `translation-reviewer`,
-`zh-code-reviewer`, `zh-translator`.
-
-### Skills → use `skill(name=...)`, not `Skill("...")`
-
-```python
-# ❌ CLAUDE.md (Claude Code)
-# Skill("translation-pipeline")
-
-# ✅ OpenCode
-skill(name="translation-pipeline")  # loads .opencode/skills/translation-pipeline/SKILL.md
-```
-
-Available skills: `crawl-coder`, `translation-pipeline`, `translation-reviewer`,
-`zh-code-reviewer`.
-
-### Workflows → hosted runner only; otherwise use task fallback
-
-OpenCode has no `Workflow({...})` tool. These `.js` files depend on host-injected
-`args`, `agent()`, `parallel()`, `phase()`, and `log()` and are not standalone
-Node.js programs. Do not execute them with plain `node`.
-
-```bash
-# ❌ CLAUDE.md (Claude Code)
-# Workflow({scriptPath: ".claude/workflows/translation-fix-pipeline.js", args: {issues: [...]}})
-
-# ✅ Without an explicit hosted workflow runner
-# Load translation-pipeline, then dispatch its documented phases with task(...).
-# Keep source.txt and zh TextDB files under one zh-translator writer.
-```
-
-The scripts are identical in both `.opencode/workflows/` and `.claude/workflows/`.
-
-### Built-in `explore` agent (read-only code search)
-
-`explore` is a **built-in OpenCode subagent**, not a project file. No
-`.opencode/agents/explore.md` exists. Configuration goes in `opencode.json`:
-
-```json
-{ "agent": { "explore": { "model": "opencode-go/deepseek-v4-flash" } } }
-```
-
-To invoke:
-```python
-task(subagent_type="explore", description="Find <target>",
-     prompt="<search task>")
-```
-
-`explore` cannot edit files (read-only by design). For write-capable multi-step
-work, use `general` instead.
-
-## Agent Auto-Routing (OpenCode syntax)
-
-When the user's request matches a scenario, **delegate to the specified agent**
-via the `task` tool. Do NOT handle these tasks inline.
-
-### Current Glossary Context (mandatory)
-
-For every translation, i18n implementation, or review task, resolve terminology
-from the current worktree immediately before dispatch:
+For every translation, i18n implementation, or translation review task, resolve
+terminology from the current worktree immediately before dispatch or editing:
 
 ```bash
 bash .claude/scripts/context_resolve.sh "<task>" \
   --task-type <translate|code|review> --files <target-files>
 ```
 
-Pass the complete output to the subagent. It includes the canonical
-`docs/glossary.md` SHA-256; the subagent must report that hash in its result.
-Never copy a fixed list of terms into an Agent or Skill as a substitute for this
-step. If the glossary changes during a task, rerun the resolver before editing or
-reviewing further translation content.
+Pass the complete output to every applicable agent. Preserve the emitted
+`docs/glossary.md` SHA-256 in the final report. If the glossary changes, rerun
+the resolver before continuing. Never embed a fixed canonical terminology list
+in an Agent, Skill, workflow, or runtime adapter.
 
-### Translation → `zh-translator`
-| Trigger | Example |
-|---------|---------|
-| Translate text / files | "翻译这个文件", "translate these god descriptions" |
-| Add T_() entries | "把这些字符串加到 source.txt" |
-| Convert hardcoded ZH to T_() | "把这个文件的硬编码中文改成 T_() 形式" |
-| Batch i18n operations | "批量翻译这批 %%%%% 条目" |
+## Task Routing
 
-```python
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type translate --files <target-files> 2>/dev/null)
-task(subagent_type="zh-translator", description="Translate <target>",
-     prompt="<full translation task>\n\n${CONTEXT}")
-```
+Use the project role when the active runtime exposes it. If that role is not
+available, follow the same contract inline. Full boundaries and examples are in
+`docs/agent-routing.md`.
 
-### Code Implementation → `crawl-coder`
-| Trigger | Example |
-|---------|---------|
-| C++ source modification | "修一下这个 bug", "把这个函数迁移到 T_()" |
-| T_() migration (code side) | "把这个文件迁移到 T_()" |
-| TextDB / .txt data files | "更新 zh/source.txt", "fix %%%% separators" |
-| Compilation / build fixes | "编译报错了帮我修", "fix the build" |
+| Task | Role |
+|---|---|
+| Translate or revise Chinese game text | `zh-translator` |
+| C++, Lua, build, TextDB loader/schema, or code-side `T_()` work | `crawl-coder` |
+| Translation wording, terminology, completeness, or voice review | `translation-reviewer` |
+| i18n implementation, protocol/display, format, or database review | `zh-code-reviewer` |
+| Verbatim text extraction from a screenshot or image | `ocr` |
+| Read-only code search | runtime read-only explorer |
+| End-to-end translation bug | `translation-pipeline` skill or its documented fallback |
 
-```python
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type code --files <target-files> 2>/dev/null)
-task(subagent_type="crawl-coder", description="Implement <change>",
-     prompt="<full implementation task with file paths and requirements>\n\n${CONTEXT}")
-```
+Translation assets have one writer per task. By default, `zh-translator` owns
+`dat/i18n/zh/`, `dat/database/zh/`, and `dat/descript/zh/`; `crawl-coder` owns
+source and build files. A coder may receive an explicitly scoped structural
+repair in a ZH data file only when it is the sole writer for that path. Mixed
+tasks execute translation-asset edits first and code edits second. See
+`.agents/policies/asset-ownership.md`.
 
-### Code Review → `zh-code-reviewer`
-| Trigger | Example |
-|---------|---------|
-| Code review | "帮我 review 这个 commit", "审查代码改动" |
-| T_() migration review | "检查 T_() 迁移是否正确" |
-| Protocol/display audit | "检查有没有 protocol 泄露" |
-| Database integrity | "检查 TextDB 完整性", "verify %%%% parity" |
-| Translation bug investigation | "这个翻译 bug 根因是什么" |
+## Workflow Execution
 
-```python
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type review --files <target-files> 2>/dev/null)
-task(subagent_type="zh-code-reviewer", description="Review <scope>",
-     prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
-```
+Files under `.opencode/workflows/` and `.claude/workflows/` use a hosted DSL
+with injected `args`, `agent()`, `parallel()`, `phase()`, and `log()` globals.
+They are not standalone shell or Node.js programs.
 
-### Translation Quality Review → `translation-reviewer`
-| Trigger | Example |
-|---------|---------|
-| Translation quality | "审查翻译质量", "review translation content" |
-| Terminology consistency | "检查神名一致性" |
-| Content accuracy | "对比中英文内容是否一致" |
-| Character voice | "角色语气对不对" |
+- Use them only when the active runtime explicitly exposes a compatible hosted
+  workflow runner.
+- Never run them with `bash`, `node`, or another ordinary interpreter.
+- Without a runner, load `translation-pipeline` and reproduce its documented
+  phases with the runtime's normal agent tools.
+- Keep every ZH translation asset under one writer throughout the fallback.
 
-```python
-CONTEXT=$(bash .claude/scripts/context_resolve.sh "<task>" --task-type review --files <target-files> 2>/dev/null)
-task(subagent_type="translation-reviewer", description="Review <scope>",
-     prompt="<review scope: commit hash, file list, or diff>\n\n${CONTEXT}")
-```
+## Worktrees and Branches
 
-### Full Pipeline → `translation-pipeline` skill
-| Trigger | Example |
-|---------|---------|
-| "有个翻译问题" | "神名翻译不一致，帮我看看" |
-| "translation bug" | "There's a bug in the Chinese UI text" |
-| "这里没翻译" | "XX还是显示英文" |
-| New issue from scratch | "帮我处理 Issue #N" |
-
-```python
-skill(name="translation-pipeline")
-# → follows the hosted runner when available, otherwise the documented task fallback
-```
-
-Pipeline phases: Analyze → Plan → Review Plan (gate) → Execute (translator owns translation assets, then coder edits code) → Review (3-way parallel) → Cross-validate → Report.
-
-### Batch Pipeline → hosted runner or task fallback
-For multiple issues, use a runtime-provided workflow runner only when one is
-explicitly available. Otherwise reproduce the documented phases with `task(...)`;
-do not invoke `.opencode/workflows/*.js` with plain Node.js.
-
-Key differences from single-issue pipeline: shared worktree, phase-batched processing, parallel analysis with merged root causes and unified glossary, sequential execution to avoid source.txt merge conflicts.
-
-### Code Exploration → `explore` (built-in)
-| Trigger | Example |
-|---------|---------|
-| Search / find in codebase | "查找所有未翻译的 mprf", "where is spell_title defined" |
-
-```python
-task(subagent_type="explore", description="Find <target>", prompt="<search task>")
-```
-
-### Fallback
-- Simple git ops, quick questions, planning → handle inline.
-- Multi-step complex tasks spanning categories → break into steps, dispatch each.
-
-## Worktree Placement Policy (ENFORCED)
-
-**All git worktrees MUST be created inside `.worktrees/` at the repo root, using
-a relative path:**
+All new worktrees must use a relative path inside the repository:
 
 ```bash
 git worktree add .worktrees/<name> <branch>
 ```
 
-Rules:
-- Path MUST start with `.worktrees/` (repo-internal).
-- MUST be relative — no absolute paths, no `~`, no `../` escaping the repo.
-- `git config --global worktree.useRelativePaths true` is already set.
+Never create a worktree under an absolute path, `~`, `../`, or the deprecated
+`.claude/worktrees/`. OpenCode additionally enforces this with
+`.opencode/plugin/enforce-worktree-path.js`. Follow the complete shared policy
+in `.agents/policies/worktree-policy.md`.
 
-This is **hard-enforced** by the auto-loaded plugin
-`.opencode/plugin/enforce-worktree-path.js`, which intercepts `bash` tool calls
-and blocks any `git worktree add` whose target is not a compliant
-`.worktrees/<name>` relative path. Non-compliant commands raise an error and do
-not execute. Do not attempt to bypass it (e.g. `cd` elsewhere then add) — keep
-worktrees inside the repo so cleanup, relative paths, and WSL access stay
-consistent.
+Do not move another branch ref from inside a linked worktree. Commit in the
+candidate worktree, prepare and review the immutable candidate, then merge the
+approved commit from the target checkout. Dedicated detached build worktrees
+may be reset only through their guarded helper scripts or after the documented
+clean-tree check in `docs/build-workflow.md`.
 
-Legacy `.claude/worktrees/` is deprecated and now empty; do not create new
-worktrees there.
+## Verification
 
-## Codex Collaboration (when to hand off)
+Use the single matching development profile; do not run a dozen individual
+scripts or serially run every profile against one immutable candidate.
 
-This repo is worked by two AI engines. See `docs/dual-agent-workflow.md` for the
-full matrix. Quick guidance for OpenCode sessions:
+| Change | Command |
+|---|---|
+| Translation or ZH data | `bash .claude/scripts/verify_zh.sh --profile translation` |
+| C++ or i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
+| Combined static CI preflight | `bash .claude/scripts/verify_zh.sh --profile ci` |
+| Final evidence | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
+| Merge-time validation | `bash .claude/scripts/review_at_merge.sh <candidate> <target>` |
 
-**Keep in OpenCode** (our strengths): batch `T_()` / `%%%%` translation, routine
-C++ `T_()` migration, Makefile fixes, multi-issue batch pipelines, script-verifiable
-patterned work, anything parallelizable across subagents.
+The `review` profile is final-gate internal. Reviewers do not run it during
+readiness. Prepare the exact committed, clean boundary with
+`review_prepare.sh`, dispatch only mechanically routed reviewers, record their
+readiness, and let `review_final_gate.sh` own the single final run. See
+`.agents/policies/review-contract.md`.
 
-**Suggest handing to Codex** (deep single-thread reasoning): CJK render /
-char-width / advance / font-fallback bugs, hidden crashes / UB / call-chain root
-cause, large architectural refactor design. When a task clearly fits this
-profile, tell the user "this is a good Codex task" rather than grinding on it
-with flash-tier reasoning.
+Use at most eight build jobs. Agents compiling alongside other work should use
+`-j4`, and concurrent agents must not start overlapping compile storms.
 
-**Handoff is via disk, not memory.** Codex CANNOT read OpenCode's persistent
-memory (`system/handoff.md`). To hand work to Codex, write the plan / branch /
-commit range to `.claude/ORCHESTRATION_STATE.md` or `~/projects/issues/<N>/`.
+## Commit Attribution
 
-**Branch ownership:** Codex uses `codex/<topic>`; OpenCode uses `<topic>` or
-`consolidate-*`. Use the trailer for the engine that actually authored the
-change; Codex must not claim OpenCode authorship.
+Authorship must match the runtime that actually produced the change:
 
-## Commit Message Convention
+- OpenCode-authored commits use
+  `Co-Authored-By: opencode <noreply@opencode.ai>`.
+- Claude Code-authored commits use
+  `Co-Authored-By: Claude <noreply@anthropic.com>`.
+- Other runtimes must follow their own declared identity policy and must not
+  claim OpenCode or Claude authorship. If no trailer is required, omit it rather
+  than inventing or borrowing an identity.
 
-Commits created by OpenCode or Claude Code MUST end with the matching trailer:
+Branch names are an ownership signal: Codex uses `codex/<topic>`; OpenCode uses
+`<topic>` or `consolidate-*` unless the user requests another name.
 
-```
-Co-Authored-By: opencode <noreply@opencode.ai>
-```
+## Configuration Maintenance
 
-or (if you are still committing via Claude Code):
-
-```
-Co-Authored-By: Claude <noreply@anthropic.com>
-```
-
-Pick whichever matches the tool that actually generated the change. Other
-runtimes must follow their own repository policy and must not falsely use one
-of these identities. The repo history is mixed; both listed forms are acceptable.
-
-## Default init.txt Configuration
-
-`crawl-ref/source/init.txt` (gitignored — user-local config) must contain:
-
-```ini
-language = zh
-# Unified Maple Mono NF CN for all tile fonts
-tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_stat_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_tip_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-tile_font_lbl_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
-```
-
-Fonts must be deployed to `dat/tiles/` (not `contrib/fonts/`).
-This file must be copied alongside `crawl.exe` and data files on every deployment.
-
-## Build Workflow: Multi Worktree + ccache
-
-See `docs/build-workflow.md` for full documentation.
-
-Console and tiles builds use **separate worktrees** to keep `.o` files isolated:
-
-| Worktree | Target | Helper script |
-|----------|--------|--------------|
-| **Main** (`crawl/`) | WSL Console | `bash crawl-ref/source/util/build-console.sh` |
-| `.worktrees/mingw-tiles` | Windows Tiles | `bash crawl-ref/source/util/build-tiles.sh` |
-| `.worktrees/android-tiles` | Android APK | `bash crawl-ref/source/util/build-android.sh` |
-
-When `ccache` is installed, caches persist under the ignored root `.ccache/`,
-split into `console`, `mingw-tiles`, and `android-tiles`. The main worktree and
-the two dedicated build worktrees above may update their caches. Every other
-worktree is strictly read-only (`CCACHE_READONLY=1`, `CCACHE_NOSTATS=1`) but can
-still consume matching cached results. Android's helper also exports
-`NDK_CCACHE=ccache`. Run `make ccache-config` to inspect the effective policy.
-
-## Windows Tiles Deployment
+Shared policy bodies live only in `.agents/policies/`. Generated copies inside
+runtime Agent and Skill files are maintained by:
 
 ```bash
-# Use deploy.sh (recommended — syncs mingw-tiles worktree, builds, deploys)
-bash .claude/scripts/deploy.sh [target_dir]
-
-# Or manually (from mingw-tiles worktree):
-cd .worktrees/mingw-tiles/crawl-ref/source
-make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
-TARGET=/mnt/d/crawl-release
-cp -f crawl.exe "$TARGET/"
-cp -r dat/* "$TARGET/dat/"
-cp -f contrib/fonts/*.ttf "$TARGET/dat/tiles/"
-cp -f init.txt "$TARGET/"
+python3 .claude/scripts/sync_agent_policies.py --check
+python3 .claude/scripts/sync_agent_policies.py --write
 ```
 
-## Android Deployment
-
-```bash
-# Use deploy-android.sh (recommended — syncs android-tiles worktree, builds, deploys)
-bash .claude/scripts/deploy-android.sh [target_dir] [--release]
-
-# Or manually (from android-tiles worktree):
-cd .worktrees/android-tiles/crawl-ref/source
-make ANDROID=$(date +%Y%m%d) TILES=y android -j8
-cd android-project
-ANDROID_SDK_ROOT=$HOME/Android gradle :app:assembleBuildTest
-# APK at: app/build/outputs/apk/buildTest/app-buildTest-unsigned.apk
-```
-
-Android build requires Android SDK + NDK (see `crawl-ref/docs/develop/android.txt`).
-Default variant is `buildTest` (arm64-v8a only); use `--release` for all ABIs.
-
-Key files to always deploy:
-| File | Purpose |
-|------|---------|
-| `crawl.exe` | Cross-compiled Windows tiles binary |
-| `dat/` | Full data directory (descriptions, tiles, database, etc.) |
-| `dat/tiles/*.ttf` | Font files (Maple Mono for CJK, DejaVu Sans as fallback) |
-| `init.txt` | Language + font configuration |
-
-## Critical C++ Anti-Pattern: std::string in variadic `%s` (Issue #42 UB)
-
-### Contextual movement phrase translations
-
-Movement verbs used in messages must stay as English internal values until the
-display sink, then pass through `translated_move_phrase()` with the applicable
-grammar context. Never rely on `C_()`'s unqualified fallback for coverage:
-update `.claude/scripts/data/move_i18n_manifest.json` and run
-`verify_zh.sh --profile translation`; the exact-key movement audit is blocking
-for every verification profile.
-
-**NEVER pass a `std::string` (or a `std::string`-producing expression) as a
-`%s` argument to a printf-style variadic function** (`make_stringf`, `mprf`,
-`mprf_p`, `die`, `cprintf`, ...). These are C variadic functions:
-`va_arg(ap, const char*)` reads the first 8 bytes of the `std::string` object
-(its SSO buffer / data pointer) as a `char*` → **runtime garbage / control
-characters**. `-Wformat` does NOT reliably catch this for class temporaries.
-
-Watch especially for:
-- Ternaries: `cond ? string(a) + " " : ""` promotes **BOTH** branches to
-  `std::string` (the bug that produced the garbled "请仅输入%s%s。" prompt).
-- Runtime concatenation: `make_stringf("%s", a + b)`.
-- Function calls returning `std::string`: `make_stringf("%s", foo())` where
-  `foo()` returns `std::string`.
-
-**Fix:** build a `std::string` local first, then pass `.c_str()`; `T_()`
-already returns `const char*` so it needs no wrapping.
-
-**Enforced gate:** `.claude/scripts/scan_varargs_string.py` (tree-sitter AST)
-is wired into `post-coder.sh` (and `verify_zh.sh --profile code`) as **blocking**. Run it after any C++ edit
-touching these calls:
-
-```bash
-python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/          # HIGH only (blocking)
-python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --include-warn  # + advisory
-```
-
-HIGH rules (`STRING_CTOR` / `CONCAT` / `TERNARY`) block; `CALL_NO_CSTR` is a
-WARN — verify the callee returns `const char*` (safe) vs `std::string` (needs
-`.c_str()`). Full write-up: `CLAUDE.md` "Variadic-String UB Scanner" +
-`.claude/scripts/TOOLCHAIN.md`.
-
-## Critical C++ Anti-Pattern: Persisting `T_()` / `C_()` Pointers
-
-`T_()` and `C_()` return borrowed `const char*` pointers backed by
-`i18n_storage`. `deque::push_back` keeps them stable only until
-`i18n_cache_clear()` clears the storage. They are **not** process-lifetime
-pointers.
-
-Never save a translation result in a function-static/namespace raw pointer,
-aggregate raw field, member, persistent container, or callback capture:
-
-```cpp
-// BAD: dangling after i18n_cache_clear()
-static const char *verbs[] = { T_("open"), T_("spit") };
-
-// GOOD: mark stable English keys for extraction; translate at consumption
-static const char *verbs[] =
-    { NC_("attack verb", "open"), NC_("attack verb", "spit") };
-const string verb = C_("attack verb", verbs[index]);
-```
-
-The blocking gate is wired into code/review verification:
-
-```bash
-python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser
-```
-
-`LIFE001`–`LIFE003` block; `LIFE101`–`LIFE103` are review warnings. If the
-same English key needs a context-specific translation, use `C_()` rather than
-changing the global entry. Full analysis: Issue 63 and
-`.claude/scripts/TOOLCHAIN.md`.
-
-`T_(variable)` / `C_(context, variable)` alone is invisible to the literal-key
-extractor. A C++ literal table whose values later enter dynamic `T_()` / `C_()`
-and which has no dedicated data-source audit must use literal-only `N_()` /
-`NC_()` markers. Internal/protocol tables and data sources covered by a
-specialized audit do not acquire markers merely because they are persistent.
-
-## Simplified Verification: `verify_zh.sh --profile`
-
-**Agents should NOT run a dozen individual scripts.** A single command replaces
-the three post-* scripts:
-
-| Change type | Command |
-|------------|---------|
-| Translation / data files | `bash .claude/scripts/verify_zh.sh --profile translation` |
-| C++ / i18n code | `bash .claude/scripts/verify_zh.sh --profile code` |
-| Final pre-merge evidence | `bash .claude/scripts/review_final_gate.sh <candidate> <target>` |
-| CI gate | `bash .claude/scripts/verify_zh.sh --profile ci` |
-
-**Agent post-task template:**
-```
-翻译 source.txt：
-1. 修改
-2. bash .claude/scripts/verify_zh.sh --profile translation
-3. 若失败，只修复报告中列出的条目
-4. 报告命令、退出码、失败项数
-```
-
-```
-C++ i18n 改动：
-1. 修改
-2. bash .claude/scripts/verify_zh.sh --profile code
-3. 必要时编译目标
-4. 报告命令、退出码、失败项数
-```
-
-**Hard rule for translator agents:**
-```
-将 \n、\t、\r、%%%%、%N$s、<tag>、@keyword@ 视为不可翻译 token。
-输出前必须逐字保留；不得为了中文自然性删除它们。
-```
-
-The report (written to `.claude/metrics/verify/`) aggregates results from
-`core-static` checks (always blocking) plus domain-specific checks per profile.
-All three `post-*.sh` scripts remain available as backward-compatible aliases.
-
-For one immutable mixed candidate, do not serially run `translation`, `code`,
-and `ci`; use the matching profile during development, or one `ci` run when a
-combined static preflight is needed. Prepare the bundle and finish routed review
-before expensive independent `run_all.sh`, `help-full`, or runtime `full`
-evidence. Run each required heavy suite once against the final reviewer-approved
-OID. A requested fix starts a new targeted-check/review loop rather than another
-full-suite cycle.
-
-Reviewers do not run `--profile review` during iterative feedback. Once the
-candidate changes are committed and both worktrees are clean, run
-`review_prepare.sh <candidate> <target>` before dispatching reviewers. Once that
-exact bundle has all mechanically routed schema-v3 readiness records,
-`review_final_gate.sh` owns the single full run; `review_at_merge.sh` only reads
-and validates the sealed bundle.
-
-## Pointer to CLAUDE.md (for shared knowledge)
-
-The following topics are documented in `CLAUDE.md` and **not duplicated here**
-(OpenCode loads CLAUDE.md as a fallback only if AGENTS.md is absent, so explicit
-pointer matters for the in-context awareness):
-
-- **Worktree branch discipline** — see `CLAUDE.md` "Worktree Branch Discipline"
-- **Risk-tiered code review** — see `CLAUDE.md` "Code Review Strategy" + the
-  `review_at_merge.sh` / `classify_review.sh` scripts
-- **Build commands** (WSL console, Windows tiles cross-compile, deploy) — see
-  `CLAUDE.md` "Build Requirements & Commands"
-- **CJK tiles architecture** (3 layers) — see `CLAUDE.md` "CJK Tiles Support
-  Architecture"
-- **Translation system architecture** (Type I-V translation patterns) — see
-  `CLAUDE.md` "Translation System Architecture"
-- **Current branch status** — see `CLAUDE.md` "Current Branch Status"
-- **Testing** (manual + 3-layer pipeline + M5 aggregator) — see `CLAUDE.md`
-  "Testing"
-- **Verification checklist per commit** — see `CLAUDE.md` "Verification Checklist"
-- **Translation toolchain** (pre-commit CI scripts) — see `CLAUDE.md`
-  "Translation Toolchain"
-- **Agent commit discipline** (cherry-pick, concurrency limits) — see
-  `CLAUDE.md` "Agent Commit Discipline"
-- **Multi-agent parallel development pattern** — see `CLAUDE.md` "Multi-Agent
-  Parallel Development Pattern"
-- **Issue tracking** (`~/projects/issues/INDEX.md`, file naming, auto-commit) —
-  see `CLAUDE.md` "Issue Tracking"
-
-Read `CLAUDE.md` on first invocation of this project, or when you encounter a
-topic from the list above and need the canonical reference.
+Do not edit generated blocks directly. Do not delete `.claude/agents/` or
+`.claude/skills/` as “legacy” while they remain synchronization and test
+targets. Before changing or removing a compatibility tree, update the source
+map, synchronizer, tests, and every runtime reference in the same change.

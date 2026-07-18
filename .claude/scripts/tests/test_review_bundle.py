@@ -23,7 +23,8 @@ SPEC = importlib.util.spec_from_file_location("review_bundle", SCRIPT)
 MODULE = importlib.util.module_from_spec(SPEC)
 assert SPEC.loader
 SPEC.loader.exec_module(MODULE)
-GLOSSARY_SHA256 = "c221e1f1a39b085869ba918da061efaf7c2c32b431c9169d5512be0cecc22c4c"
+GLOSSARY_SOURCE = SCRIPT.parents[2] / "docs/glossary.md"
+GLOSSARY_SHA256 = hashlib.sha256(GLOSSARY_SOURCE.read_bytes()).hexdigest()
 CLASSIFIER_SOURCE = """#!/usr/bin/env python3
 import argparse
 import json
@@ -221,7 +222,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         docs = self.repo / "docs"
         docs.mkdir()
         (docs / "glossary.md").write_bytes(
-            (SCRIPT.parents[2] / "docs/glossary.md").read_bytes()
+            GLOSSARY_SOURCE.read_bytes()
         )
         (self.repo / ".gitignore").write_text("/.worktrees/\n", encoding="utf-8")
         (self.repo / "tracked.txt").write_text("base\n", encoding="utf-8")

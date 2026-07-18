@@ -74,8 +74,7 @@
 
 ```bash
 cd crawl-ref/source
-echo 'language = zh' > init.txt
-make -j8
+bash util/build-console.sh
 ./crawl
 ```
 
@@ -83,18 +82,22 @@ make -j8
 
 ```bash
 cd crawl-ref/source
-make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
+bash util/build-tiles.sh
 ```
 
-输出文件：`crawl-ref/source/crawl.exe`，与 `dat/` 目录一同部署到目标 Windows 环境即可。
+帮助脚本在专用 `.worktrees/mingw-tiles` 中生成 `crawl.exe`。推荐使用
+`bash .claude/scripts/deploy.sh` 部署二进制、`dat/`、字体和本地 `init.txt`；
+完整流程见 `docs/build-workflow.md`。
 
 ### 必需字体
 
-| 字体 | 大小 | 用途 |
-|------|------|------|
-| `DejaVuSans.ttf` | ~720KB | 比例字体 |
-| `DejaVuSansMono.ttf` | ~330KB | 主等宽字体（布局度量来源） |
-| `SarasaMonoSC-Regular.ttf` | ~25MB | CJK 回退字体（**不包含在仓库中**，随发布包分发，详见[字体版权](#字体版权)） |
+| 字体 | 用途 |
+|------|------|
+| `MapleMono-NF-CN-Regular.ttf` | 所有 Tiles 文本角色的默认 CJK 主字体 |
+
+渲染器仍支持缺字回退，但默认中文部署不再依赖固定的
+DejaVu-primary/Sarasa-secondary 组合。运行时字体部署到 `dat/tiles/`，详见
+`docs/cjk-tiles-architecture.md` 和 `docs/build-workflow.md`。
 
 ---
 
@@ -104,9 +107,16 @@ make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 crawl/                               # 仓库根目录
 ├── README.md                        # 本文件
 ├── README.upstream.md               # 上游原版 README（归档）
-├── CLAUDE.md                        # AI 辅助开发指引
+├── AGENTS.md                        # 跨运行时共享 Agent 入口
+├── CODEX.md                         # Codex 运行时适配
+├── CLAUDE.md                        # Claude Code 运行时适配
+├── .agents/                         # 共享 policy、skill 与权威性地图
+├── .opencode/                       # OpenCode agent/skill/运行时配置
+├── .codex/                          # Codex agent 配置
 ├── docs/
-│   └── decisions.md                 # 翻译决策注册表（术语 SSOT）
+│   ├── glossary.md                  # 当前术语 SSOT
+│   ├── decisions.md                 # 翻译决策注册表
+│   └── build-workflow.md            # 构建与部署流程
 ├── crawl-ref/
 │   ├── source/
 │   │   ├── *.cc, *.h                # C++ 游戏源码（含 T_() 翻译宏）

@@ -6,16 +6,17 @@
 # Layer 3 (Bot):    builds console once + runs all RC shards in a real PTY
 #
 # Stages:
-#   fast     — Layer 1 only (seconds)
+#   catch2   — build once and run both Catch2 translation labels
+#   fast     — aggregate explicitly reused existing logs (no build)
 #   full     — Layers 1 + 2 + 3 (minutes)
 #   bot      — fresh console build + exact UI/spells/Issue48 Bot contract
 #   bot-fast — exact Bot contract using the existing console binary
 #   baseline — full + write new baseline (used after reviewed fixes)
+#   help-*   — help-system Catch2/Bot aggregation and baseline modes
 #
 # Usage:
-#   bash .claude/scripts/post_zh_runtime.sh fast
-#   bash .claude/scripts/post_zh_runtime.sh full
-#   bash .claude/scripts/post_zh_runtime.sh baseline [sha]
+#   bash .claude/scripts/post_zh_runtime.sh \
+#     <catch2|fast|full|bot|bot-fast|baseline|help-full|help-fast|help-baseline>
 
 set -euo pipefail
 
@@ -44,6 +45,37 @@ HELP_BOT_TIMEOUT="${ZH_RUNTIME_HELP_BOT_TIMEOUT:-30}"
 WORKFLOW_BOT_TIMEOUT="${ZH_RUNTIME_WORKFLOW_BOT_TIMEOUT:-45}"
 
 MODE="${1:-fast}"
+
+usage() {
+    cat <<'EOF'
+Usage: post_zh_runtime.sh <mode>
+
+Modes:
+  catch2        Build once; run [zh-translation] and [message-overlay]
+  fast          Aggregate explicitly reused existing runtime logs
+  full          Run Catch2, dlua, RC Bot, and aggregate
+  bot           Build console and run the complete Bot contract
+  bot-fast      Run the Bot contract with the existing console binary
+  baseline      Run full and update the ZH runtime baseline
+  help-full     Run help Catch2, help Bot, and aggregate
+  help-fast     Aggregate existing help logs
+  help-baseline Run help-full and update the help baseline
+EOF
+}
+
+case "$MODE" in
+    -h|--help)
+        usage
+        exit 0
+        ;;
+    catch2|fast|full|bot|bot-fast|baseline|help-full|help-fast|help-baseline)
+        ;;
+    *)
+        usage >&2
+        echo "Unknown mode: $MODE" >&2
+        exit 2
+        ;;
+esac
 
 mkdir -p "$METRICS_DIR"
 
@@ -456,8 +488,8 @@ case "$MODE" in
         run_step "help-aggregate" run_help_aggregate baseline
         ;;
     *)
-        echo "Unknown mode: $MODE (use fast|full|bot|bot-fast|baseline|help-full|help-fast|help-baseline)"
-        exit 1
+        echo "Internal error: unhandled validated mode: $MODE" >&2
+        exit 2
         ;;
 esac
 

@@ -43,6 +43,19 @@ TARGETS = {
         ".opencode/skills/translation-reviewer/SKILL.md",
         ".agents/skills/dcss-translation-context/SKILL.md",
     ],
+    "asset-ownership": [
+        ".codex/agents/crawl-coder.toml",
+        ".codex/agents/zh-translator.toml",
+        ".claude/agents/crawl-coder.md",
+        ".claude/agents/zh-translator.md",
+        ".claude/skills/crawl-coder.md",
+        ".claude/skills/translation-pipeline.md",
+        ".opencode/agents/crawl-coder.md",
+        ".opencode/agents/zh-translator.md",
+        ".opencode/skills/crawl-coder/SKILL.md",
+        ".opencode/skills/translation-pipeline/SKILL.md",
+        ".agents/skills/dcss-translation-context/SKILL.md",
+    ],
 }
 
 

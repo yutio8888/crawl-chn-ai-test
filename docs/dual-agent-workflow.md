@@ -1,97 +1,91 @@
-# Dual-Agent Workflow — Codex × OpenCode
+# Cross-Runtime Collaboration — Codex, OpenCode, and Claude Code
 
-Authoritative division of labor for this repo. Both tools read this file:
-OpenCode via `instructions`/AGENTS.md pointer, Codex via CODEX.md pointer.
+This document defines shared handoff and ownership. Runtime capabilities and
+model assignments change over time; read current runtime configuration instead
+of treating this document as a model inventory.
 
-> One-line model: **OpenCode is the high-throughput pipeline; Codex is the
-> deep-reasoning consultant.** Not primary/secondary — a two-speed engine.
+## Routing Principles
 
-## 1. Engine Profiles
+Choose the runtime and role by the work, not by a permanent claim that one
+engine is always “fast” or “deep”:
 
-| | OpenCode | Codex |
-|---|---|---|
-| Models | deepseek flash / pro | gpt-5.5 + `reasoning_effort` |
-| Concurrency | many subagents in parallel | single-thread deep reasoning |
-| Strengths | volume, patterned work, script-verifiable, orchestratable | cross-file global reasoning, hard root-cause, architecture tradeoffs |
-| Unique | `task` parallelism, `workflow` scripts, plugin hard-guards, persistent memory | high reasoning budget, adversarial review |
-| Role | pipeline workshop | staff engineer / consultant |
+| Work | Preferred capability |
+|---|---|
+| High-volume, patterned translation | Translator role with current glossary context and deterministic verification |
+| Routine C++ i18n migration | Coder role with compiler/scanner access |
+| CJK metrics, hidden UB, or call-chain root cause | Strong cross-file reasoning and focused runtime evidence |
+| Translation quality review | Independent translation reviewer |
+| i18n implementation review | Independent code reviewer |
+| Multi-issue batch | Orchestrator that can enforce one writer per translation asset |
 
-## 2. Task Routing Matrix
+The active session's tools and user instructions determine whether delegation
+or parallel work is available. Do not hard-code model versions or concurrency
+claims here.
 
-| Task | Owner | Rationale |
-|---|---|---|
-| Batch `T_()` entries, `%%%%` description-body translation | OpenCode `zh-translator` (flash) | high volume, cheap, parallelizable |
-| Routine C++ `T_()` migration, Makefile fixes | OpenCode `crawl-coder` | patterned, script-verifiable |
-| CJK render / char-width / advance / font-fallback bugs | **Codex** | needs cross-file reasoning over font metrics |
-| Hidden crashes / UB / call-chain root cause | **Codex** | global reasoning |
-| Large architectural refactor | Codex **designs** → OpenCode **executes** | complementary |
-| Merge-gate final review | Codex (adversarial) + OpenCode `zh-code-reviewer` | two independent passes |
-| Multi-issue batch | OpenCode `batch-pipeline` | shared worktree, sequential source.txt |
+## Collaboration Glue
 
-Fallback: simple git ops / quick questions / planning → whichever tool the user
-is already in, handled inline.
+### Branches identify ownership
 
-## 3. Collaboration Glue (this is what makes it work)
+- Codex-authored branches use `codex/<topic>` by default.
+- OpenCode-authored branches use `<topic>` or `consolidate-*` by default.
+- Claude Code uses the branch explicitly assigned by the user or orchestrator.
 
-1. **Branch naming = ownership.**
-   - Codex-authored: `codex/<topic>`
-   - OpenCode-authored: `<topic>` or `consolidate-*`
-   - Makes merge provenance obvious and keeps the two engines from stepping on
-     each other's branches.
+Branch naming does not replace commit review or attribution.
 
-2. **Cross-tool state lives on disk, not in memory.**
-   OpenCode's persistent memory (`system/handoff.md`) is **invisible to Codex**.
-   Any handoff between the two tools MUST be written to a shared on-disk file:
-   - `.claude/ORCHESTRATION_STATE.md` — active plan / who-owns-what
-   - `~/projects/issues/<N>/` — issue tracking (independent git repo)
-   Rule of thumb: if Codex needs to know it, it does NOT go in OpenCode memory.
+### State lives on disk
 
-3. **Worktrees: always `.worktrees/<name>` (relative).**
-   - OpenCode: hard-enforced by `.opencode/plugin/enforce-worktree-path.js`.
-   - Codex: NOT covered by that plugin — enforced only by convention in
-     `CODEX.md`. Codex must self-discipline here.
+Runtime-private memory is not a cross-runtime handoff mechanism. Record the
+following in a shared file:
 
-4. **Commit attribution:** both tools use
-   `Co-Authored-By: opencode <noreply@opencode.ai>` (see CODEX.md / AGENTS.md).
+- active plan, owner, file scope, branch, and commit range in
+  `.claude/ORCHESTRATION_STATE.md`; or
+- issue-specific analysis and status in the repository described by
+  `docs/issue-tracking.md`.
 
-## 4. Ideal Day Loop
+A handoff is incomplete until the receiving runtime can reconstruct the task
+from disk without relying on conversation memory.
 
-```
-issue (~/projects/issues/)
-   │
-   ├─[simple / high-volume]→ OpenCode full flow
-   │     explore → translation-pipeline → zh-code-reviewer
-   │     → consolidate-* worktree → merge
-   │
-   └─[hard / architectural]→ Codex deep reasoning designs plan
-         (writes plan to .claude/ORCHESTRATION_STATE.md)
-            │
-            ├→ OpenCode executes plan in parallel (.worktrees/)
-            │
-            ├→ Codex adversarial review ─────────┐
-            │                                     ├→ dual sign-off → merge
-            └→ OpenCode zh-code-reviewer ─────────┘
-```
+### Worktrees are shared infrastructure
 
-## 5. Handoff Protocol (Codex ⇄ OpenCode)
+Every runtime follows `.agents/policies/worktree-policy.md`. OpenCode has an
+additional plugin guard, while other runtimes must obey the same relative
+`.worktrees/<name>` rule through their shell behavior.
 
-**Codex → OpenCode** (design handed to execution):
-1. Codex writes plan + file list + risks to `.claude/ORCHESTRATION_STATE.md`.
-2. Codex creates/points to `codex/<topic>` branch or a `.worktrees/<name>`.
-3. OpenCode reads the state file, executes in `.worktrees/`, runs post-coder /
-   audit scripts, commits.
+### Authorship is truthful
 
-**OpenCode → Codex** (execution handed to review):
-1. OpenCode records worktree branch + commit range in the state file.
-2. Codex runs `.claude/scripts/classify_review.sh <target>..<branch>` then an
-   adversarial read.
-3. Merge only after both a Codex pass and an OpenCode `zh-code-reviewer` pass.
+- OpenCode uses its OpenCode trailer.
+- Claude Code uses its Claude trailer.
+- Codex and other runtimes do not borrow either identity. They use a declared
+  runtime identity when required or omit the co-author trailer.
 
-## 6. Anti-Patterns
+## Handoff Protocol
 
-- Using Codex for bulk patterned translation (waste of reasoning budget).
-- Using OpenCode flash for subtle font-metric / call-chain root cause (misses it).
-- Relying on OpenCode memory to hand off to Codex (Codex can't see it).
-- Creating worktrees outside `.worktrees/` from Codex (breaks the shared layout).
-- Both tools editing `source.txt` on different branches concurrently (merge hell —
-  serialize through one worktree).
+### Design or diagnosis → implementation
+
+The handing-off runtime records:
+
+1. objective and non-goals;
+2. exact files or modules;
+3. root cause and evidence;
+4. invariants and risks;
+5. branch/worktree and starting commit;
+6. required verification.
+
+The implementing runtime confirms file ownership before editing and reports the
+resulting commit plus verification evidence back to the same state file.
+
+### Implementation → review
+
+The implementer records the clean candidate branch and commit range. For
+translation-related changes, the target checkout runs `review_prepare.sh`; the
+prepared bundle's routing decides which reviewers are required. Informal
+cross-runtime review cannot replace schema-v3 readiness or final evidence.
+
+## Anti-Patterns
+
+- Routing by stale model names or old assumptions about runtime concurrency.
+- Handing off through private memory only.
+- Both runtimes editing the same translation asset concurrently.
+- Creating worktrees outside `.worktrees/`.
+- Claiming another runtime's commit identity.
+- Running hosted workflow DSL files with an ordinary Node.js or shell process.

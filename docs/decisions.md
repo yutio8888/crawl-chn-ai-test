@@ -675,7 +675,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Choice**: Never call `conj_verb()` on Chinese strings
 - **Rejected**: Calling `conj_verb()` and getting garbled output (e.g., `"抓取s"`)
 - **Rationale**: `conj_verb()` applies English conjugation rules (adding -s/-es/-ing suffix). Chinese has no verb conjugation — person/number/tense are expressed through particles and word order, not suffixes.
-- **Scope**: All .cc files — this is a NEVER rule (anti-pattern #2 in CLAUDE.md)
+- **Scope**: All .cc files — this is a NEVER rule in `.agents/policies/i18n-safety.md`
 - **Tracking issue**: issues/8
 
 ---
@@ -699,7 +699,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: CLAUDE.md translation rules
+- **Source**: `docs/translation-architecture.md` and `docs/glossary.md`
 - **Choice**: Adverbs always precede verbs in Chinese translations
 - **Rejected**: English adverb placement (can be post-verbal)
 - **Rationale**: Chinese word order is strictly modifier-before-modified. English allows adverbs after verbs; Chinese does not.

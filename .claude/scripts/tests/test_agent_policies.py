@@ -28,9 +28,15 @@ class PolicySyncTests(unittest.TestCase):
         self.assertIn(".claude/skills/zh-code-reviewer.md", SYNC.TARGETS["i18n-safety"])
         self.assertIn(".claude/agents/translation-reviewer.md", SYNC.TARGETS["review-contract"])
         self.assertIn(".claude/skills/translation-reviewer.md", SYNC.TARGETS["review-contract"])
+        self.assertIn(".claude/agents/zh-translator.md", SYNC.TARGETS["asset-ownership"])
+        self.assertIn(".opencode/skills/translation-pipeline/SKILL.md",
+                      SYNC.TARGETS["asset-ownership"])
+        self.assertIn(".agents/skills/dcss-translation-context/SKILL.md",
+                      SYNC.TARGETS["asset-ownership"])
 
     def test_claude_config_roots_are_scanned(self) -> None:
         relative_roots = {path.relative_to(ROOT).as_posix() for path in CHECK.CONFIG_ROOTS}
+        self.assertIn(".agents/skills", relative_roots)
         self.assertIn(".claude/agents", relative_roots)
         self.assertIn(".claude/skills", relative_roots)
 
