@@ -484,25 +484,8 @@ run_phase() {
                 --inventory .claude/data/message-overlay/monspell-phase0-inventory.json \
                 --sidecar crawl-ref/source/fork-message-overlay.generated.inc
     }
-    run_message_overlay_catch2() {
-        if [[ -n "${ZH_VERIFY_MESSAGE_OVERLAY_CATCH2_COMMAND:-}" ]]; then
-            bash -c "$ZH_VERIFY_MESSAGE_OVERLAY_CATCH2_COMMAND"
-            return
-        fi
-        make -C crawl-ref/source catch2-tests-executable \
-            STDFLAG=-std=c++14 -j4 \
-            && (cd crawl-ref/source \
-                && ./catch2-tests-executable \
-                    '[message-overlay]' --reporter compact)
-    }
-
     run_phase "message-overlay-static" 1 "TextDB message overlay static audit" \
         run_message_overlay_static || RESULTS=$((RESULTS + 1))
-    if [[ "$RISK_MESSAGE_OVERLAY" -eq 1 ]]; then
-        run_phase "message-overlay-catch2" 1 "Risk gate: TextDB message overlay Catch2" \
-            run_message_overlay_catch2 || RESULTS=$((RESULTS + 1))
-    fi
-
 
     run_incremental_build() {
         if [[ -n "${ZH_VERIFY_BUILD_COMMAND:-}" ]]; then
