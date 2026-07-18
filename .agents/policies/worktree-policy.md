@@ -11,6 +11,10 @@ git worktree add .worktrees/<name> <branch>
 - Do not bypass `.opencode/plugin/enforce-worktree-path.js`.
 - A linked worktree owns its checked-out branch. Do not push, merge, update-ref,
   or otherwise move a different target branch from inside it.
+- Keep the repository's designated integration/base branch unowned by linked
+  worktrees so the primary checkout can switch back to it at any time. Never
+  check that branch out when creating or repurposing a linked worktree; use a
+  task branch or detached HEAD instead.
 - Commit candidate changes in the candidate worktree. Prepare and review that
   immutable commit, then merge the approved OID from the target checkout.
 - Never use `git reset --hard` as routine development synchronization.

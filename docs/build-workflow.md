@@ -32,7 +32,14 @@ Create the dedicated detached worktree once from the main repository root:
 
 ```bash
 git worktree add .worktrees/mingw-tiles --detach HEAD
+git -C .worktrees/mingw-tiles submodule update --init --recursive
 ```
+
+The submodule initialization is required before the first build. A newly
+created worktree contains empty contrib submodule directories; without this
+step, the MinGW build stops when a required contrib Makefile is missing. The
+initialized submodules and their target-specific build products remain in the
+persistent build worktree for later incremental deployments.
 
 Then build from the main worktree:
 
