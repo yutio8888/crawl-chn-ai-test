@@ -54,6 +54,44 @@ Review readiness and final verification are separate:
 6. immediately before merge, run the read-only
    `review_at_merge.sh <candidate> <target>` and merge the approved OID.
 
+### Headless terminal requirement
+
+Run the final gate from the clean target checkout with an explicitly exported,
+installed terminal type:
+
+```bash
+TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
+    <candidate> <target>
+```
+
+This matters even when `printf '%s\n' "$TERM"` prints `dumb`: some automation
+shells create that as a shell-local fallback without exporting it. The final
+gate starts its verifier through a sanitized Python environment, so ncurses may
+instead receive no `TERM`, report
+`ncurses: cannot initialize terminal type ($TERM="unknown")`, and make
+`zh-smoke` report `Crawl exited with unexpected code 1`.
+
+Check the exported value and the local terminfo entry rather than relying on
+shell expansion:
+
+```bash
+printenv TERM
+infocmp xterm-256color >/dev/null
+TERM=xterm-256color bash .claude/scripts/smoke_test.sh
+```
+
+If a final attempt failed only because `TERM` was missing or invalid, keep the
+failed evidence and retry through the supported path; do not delete or rewrite
+the bundle:
+
+```bash
+TERM=xterm-256color bash .claude/scripts/review_final_gate.sh \
+    <candidate> <target> --retry-failed
+```
+
+An explicit valid `TERM` only permits ncurses startup. It does not skip static
+checks, compilation, runtime tests, readiness binding, or evidence sealing.
+
 Reviewers never run `verify_zh.sh --profile review` themselves. The complete
 security contract is `.agents/policies/review-contract.md`. New authorization
 uses schema-v4 bundles with schema-v2 atomic readiness; schema-v3 bundles are
