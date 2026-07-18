@@ -31,6 +31,7 @@ in this file or `.agents/policies/`.
 | Translation-asset ownership | `.agents/policies/asset-ownership.md` |
 | Review findings and final evidence | `.agents/policies/review-contract.md` |
 | Worktree placement and branch safety | `.agents/policies/worktree-policy.md` |
+| Portable repository and external paths | `.agents/policies/path-portability.md` |
 | Translation architecture | `docs/translation-architecture.md` |
 | CJK tiles architecture | `docs/cjk-tiles-architecture.md` |
 | Build and deployment | `docs/build-workflow.md` |
@@ -106,6 +107,11 @@ Never create a worktree under an absolute path, `~`, `../`, or the deprecated
 `.claude/worktrees/`. OpenCode additionally enforces this with
 `.opencode/plugin/enforce-worktree-path.js`. Follow the complete shared policy
 in `.agents/policies/worktree-policy.md`.
+
+Repository documentation and script defaults must not embed clone-specific
+home directories, drive letters, or mount points. Use repository-root-relative
+paths and documented environment variables as defined by
+`.agents/policies/path-portability.md`.
 
 Do not move another branch ref from inside a linked worktree. Commit in the
 candidate worktree, prepare and review the immutable candidate, then merge the

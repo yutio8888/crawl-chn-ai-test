@@ -80,11 +80,32 @@ or deploy an `*-unsigned.apk` as a successful artifact.
 
 ## Windows Deployment
 
+### Deployment path configuration
+
+The deployment root can be configured once for a different mount or artifact
+location:
+
+```bash
+cp .dcss-paths.conf.example .dcss-paths.conf
+# Edit DCSS_DEPLOY_ROOT in the ignored local copy.
+```
+
+The local file is a non-executable `key=value` format. It accepts only
+`DCSS_DEPLOY_ROOT`, `DCSS_WINDOWS_DEPLOY_DIR`, and
+`DCSS_ANDROID_DEPLOY_DIR`; relative values are anchored at the repository root.
+Set `DCSS_PATH_CONFIG` to use a different config file. An explicitly selected
+but missing file is an error.
+
+Resolution precedence is command-line target, matching per-target environment
+variable, `DCSS_DEPLOY_ROOT`, then `.artifacts`. Existing environment variables
+override the local config file. The shared root produces `windows-tiles/` and
+`android/` subdirectories unless a per-target destination is configured.
+
 Use the guarded deployment helper from the repository root:
 
 ```bash
 bash .claude/scripts/deploy.sh
-bash .claude/scripts/deploy.sh /mnt/d/crawl-game
+DCSS_WINDOWS_DEPLOY_DIR=../crawl-game bash .claude/scripts/deploy.sh
 ```
 
 It first requires a valid Chinese configuration and the configured Maple font,
@@ -93,6 +114,11 @@ exact font, and `init.txt`, verifies the deployed copies, and clears the target
 `saves/db/` cache so TextDB changes are reloaded. It fails before building when
 either required asset is absent or invalid. Close the running game before
 deployment.
+
+Without a path configuration, deployment goes to the ignored
+repository-relative `.artifacts/windows-tiles/` directory. Relative values are
+resolved from the repository root before the script enters a build worktree;
+absolute values remain accepted when an external destination is required.
 
 When a local `crawl-ref/source/init.txt` exists, the helper preserves its user
 preferences but appends `init.zh.txt` to the deployed copy. The canonical
@@ -105,11 +131,14 @@ effective even if the local file contains duplicates, `include` directives, or
 
 ```bash
 bash .claude/scripts/deploy-android.sh
-bash .claude/scripts/deploy-android.sh /mnt/d/crawl-release --release
+DCSS_ANDROID_DEPLOY_DIR=../crawl-apks \
+  bash .claude/scripts/deploy-android.sh --release
 ```
 
 The deployment helper invokes the Android build helper and refuses to copy an
-unsigned APK.
+unsigned APK. Its default destination is the ignored repository-relative
+`.artifacts/android/` directory; relative overrides are resolved from the
+repository root.
 
 ## Local `init.txt` and Fonts
 

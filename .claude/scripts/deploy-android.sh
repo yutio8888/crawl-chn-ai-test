@@ -4,7 +4,8 @@
 # Usage:
 #   bash .claude/scripts/deploy-android.sh [target_dir] [--release]
 #
-# Default target_dir: /mnt/d/crawl-release
+# Default target_dir: ${DCSS_DEPLOY_ROOT:-.artifacts}/android
+# Override with an argument, DCSS_ANDROID_DEPLOY_DIR, or .dcss-paths.conf.
 #
 # Builds from .worktrees/android-tiles (auto-synced) to keep .o files
 # separate from other builds. Uses ccache for host tools (rltiles).
@@ -17,6 +18,8 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/lib/path_utils.sh"
+dcss_load_repo_path_config "$REPO_ROOT" "${DCSS_PATH_CONFIG:-}"
 TARGET=""
 BUILD_ARGS=()
 
@@ -32,7 +35,9 @@ while [[ $# -gt 0 ]]; do
             ;;
     esac
 done
-TARGET="${TARGET:-/mnt/d/crawl-release}"
+DEPLOY_ROOT="${DCSS_DEPLOY_ROOT:-.artifacts}"
+TARGET_INPUT="${TARGET:-${DCSS_ANDROID_DEPLOY_DIR:-$DEPLOY_ROOT/android}}"
+TARGET="$(dcss_resolve_repo_path "$REPO_ROOT" "$TARGET_INPUT")"
 
 echo "=== Deploying Android APK to $TARGET ==="
 

@@ -1,7 +1,9 @@
 # Translation Issue Tracking
 
-Translation issues are tracked in the independent repository under
-`~/projects/issues/`. Its `INDEX.md` is the authority for issue status.
+Translation issues are tracked in an independent repository. From the crawl
+repository root, its location is `${DCSS_ISSUES_DIR:-../issues}`; set
+`DCSS_ISSUES_DIR` when the repositories are not siblings. Its `INDEX.md` is the
+authority for issue status.
 
 ## Per-Issue Files
 

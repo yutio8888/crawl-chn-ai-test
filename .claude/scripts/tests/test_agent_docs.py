@@ -20,6 +20,7 @@ AUTHORITIES = [
     ROOT / ".agents/README.md",
     ROOT / ".agents/policies/i18n-safety.md",
     ROOT / ".agents/policies/asset-ownership.md",
+    ROOT / ".agents/policies/path-portability.md",
     ROOT / ".agents/policies/review-contract.md",
     ROOT / ".agents/policies/worktree-policy.md",
     ROOT / "docs/agent-routing.md",

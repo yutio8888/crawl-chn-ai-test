@@ -7,11 +7,15 @@
 #
 # Usage:
 #   bash .claude/scripts/context_resolve.sh "translate god descriptions" \
-#       --files dat/database/zh/godspeak.txt
+#       --files crawl-ref/source/dat/database/zh/godspeak.txt
 #   bash .claude/scripts/context_resolve.sh "add T_() to beam.cc" \
 #       --task-type code
 
 set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$REPO_ROOT"
 
 TASK="${1:-}"
 shift 2>/dev/null || true
@@ -69,7 +73,7 @@ echo ""
 
 # Always resolve terminology from the current worktree.  The query includes a
 # glossary hash so callers and reviewers can prove which revision was used.
-python3 .claude/scripts/glossary_query.py \
+python3 "$SCRIPT_DIR/glossary_query.py" \
     --task "$TASK" \
     --files "${FILES[@]}" \
     --limit 120

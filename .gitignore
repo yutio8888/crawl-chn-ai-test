@@ -7,6 +7,8 @@
 .claude/worktrees/
 .worktrees/
 /.ccache/
+/.artifacts/
+/.dcss-paths.conf
 .claude/scripts/__pycache__/
 .claude/scripts/tests/__pycache__/
 tools/okapi/__pycache__/

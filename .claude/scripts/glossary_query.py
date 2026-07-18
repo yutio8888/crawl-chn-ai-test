@@ -244,8 +244,13 @@ def build_context(
         if domain in {"god-titles", "rules", "characters", "culture"}
     ]
     digest = hashlib.sha256(glossary.read_bytes()).hexdigest()
+    try:
+        glossary_reference = glossary.resolve().relative_to(ROOT.resolve()).as_posix()
+    except ValueError:
+        # A caller-supplied external glossary has no repository-relative name.
+        glossary_reference = str(glossary)
     return {
-        "glossary": str(glossary),
+        "glossary": glossary_reference,
         "sha256": digest,
         "domains": selected_domains,
         "terms": [

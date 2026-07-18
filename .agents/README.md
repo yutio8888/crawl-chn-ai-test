@@ -27,6 +27,7 @@ defined per concern; no one monolithic file is authoritative for everything.
 | review contract | `.agents/policies/review-contract.md` | code/translation reviewer prompts/skills plus the translation-context skill |
 | asset ownership | `.agents/policies/asset-ownership.md` | coder/translator prompts and relevant skills |
 | worktree policy | `.agents/policies/worktree-policy.md` | referenced by every runtime entry point; OpenCode adds a hard plugin guard |
+| path portability | `.agents/policies/path-portability.md` | referenced by the shared entry point and enforced by a repository checker |
 
 Generated blocks use `<!-- BEGIN GENERATED: name -->` and
 `<!-- END GENERATED: name -->`. Update the canonical policy, then run:
@@ -49,6 +50,7 @@ Never edit generated blocks directly.
 | Verification | `docs/zh-testing.md`, `.claude/scripts/TOOLCHAIN.md` |
 | Cross-runtime handoff | `docs/dual-agent-workflow.md` |
 | Issue files | `docs/issue-tracking.md` |
+| Path portability | `.agents/policies/path-portability.md` |
 
 ## Change Rules
 
@@ -64,3 +66,5 @@ Never edit generated blocks directly.
   hosted runner contract chooses one canonical location.
 - Documentation links and forbidden standalone workflow invocations are checked
   by `.claude/scripts/tests/test_agent_docs.py`.
+- Machine-specific paths in maintained documentation, configuration, and
+  project scripts are rejected by `.claude/scripts/check_path_portability.py`.

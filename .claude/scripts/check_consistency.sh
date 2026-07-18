@@ -12,13 +12,13 @@
 #   --items     : Verify canonical item names and reject superseded names
 #
 # Usage:
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --rulings
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --gods
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --skills
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --format
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --database
-#   cd ~/projects/crawl && bash .claude/scripts/check_consistency.sh --items
+#   bash .claude/scripts/check_consistency.sh
+#   bash .claude/scripts/check_consistency.sh --rulings
+#   bash .claude/scripts/check_consistency.sh --gods
+#   bash .claude/scripts/check_consistency.sh --skills
+#   bash .claude/scripts/check_consistency.sh --format
+#   bash .claude/scripts/check_consistency.sh --database
+#   bash .claude/scripts/check_consistency.sh --items
 #
 # Suitable as a pre-commit hook or CI check.
 # Add a new check_entity line for each new decisions.md ruling.
@@ -26,6 +26,8 @@
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+cd "$REPO_ROOT"
 
 SOURCEDIR="crawl-ref/source"
 GREP_SCOPE=(--include='*.cc' --include='*.h' --include='*.txt')
@@ -491,7 +493,7 @@ def extract_keys(filepath):
                     if key:
                         keys.add(key)
                 else:
-                    if not re.match(r'^(w:\d+|\{\{|if |else|end$)', stripped):
+                    if not re.match(r'^(w:\d+|\{\{|if |else|end$)', stripped):  # path-portability: allow-regex
                         keys.add(stripped)
     except FileNotFoundError:
         pass

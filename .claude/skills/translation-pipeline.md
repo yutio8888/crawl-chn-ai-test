@@ -67,7 +67,8 @@ translation assets are written sequentially by their single owner.
 
 ## 创建 Issue 跟踪文件
 
-在 `~/projects/issues/` 下创建 issue 文件：
+在 `${DCSS_ISSUES_DIR:-../issues}/` 下创建 issue 文件；该相对默认值以仓库
+根目录为基准，可通过 `DCSS_ISSUES_DIR` 指向其他位置：
 
 ```markdown
 # Issue <N>: <简述>

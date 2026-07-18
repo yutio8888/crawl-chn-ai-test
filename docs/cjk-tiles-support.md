@@ -409,6 +409,6 @@ make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 
 ### 部署路径
 
-- 产物目录: `~/outputs/crawl-test/`
-- Windows 游戏目录: `D:\crawl-game\`
-- 需同步复制: `crawl.exe`, `dat/`, `contrib/fonts/`
+- 仓库内产物目录示例：`.artifacts/windows-tiles/`
+- 外部游戏目录：通过 `deploy.sh` 参数或 `DCSS_WINDOWS_DEPLOY_DIR` 指定
+- 需同步复制：`crawl.exe`、`dat/`、`init.txt` 和配置的字体

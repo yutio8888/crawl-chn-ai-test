@@ -1,11 +1,14 @@
 #!/bin/sh
-# You probably want to stick the following into your .bash_profile:
-# alias ev=~/crawl/crawl-ref/source/util/edit_vault
+# Run this as crawl-ref/source/util/edit_vault from the repository root, or add
+# crawl-ref/source/util/ to PATH before defining a short shell alias.
 #
 # You need to define $EDITOR as well; on Debian there's some weak-ass
 # autodetection but that's unlikely to match _your_ preferences. And it
 # may start something as vile as vi.
 
+SCRIPT_DIR=$(CDPATH= cd -- "$(dirname "$0")" && pwd)
+SOURCE_DIR=$(CDPATH= cd -- "$SCRIPT_DIR/.." && pwd)
+cd "$SOURCE_DIR" || exit 1
 
 if [ -z "$1" ]
   then
@@ -13,7 +16,7 @@ if [ -z "$1" ]
     exit 1
 fi
 
-V=`grep -rHn --include='*.des' "NAME: *$1$"`
+V=`grep -rHn --include='*.des' "NAME: *$1$" dat`
 if [ -z "$V" ]
   then
     echo >&2 "Vault \"$1\" not found."

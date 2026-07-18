@@ -68,7 +68,7 @@ def extract_control_sequence(s: str) -> str:
         "\\n\\t\\n" → "ntn"
         "\\t\\n\\n" → "tnn"
         "hello\\nworld" → "n"
-        "C:\\\\path\\\\to" → ""  (\\\\n is escaped)
+        "C:\\\\path\\\\to" → ""  (\\\\n is escaped)  # path-portability: allow-example
     """
     seq = []
     i = 0

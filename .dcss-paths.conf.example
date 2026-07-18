@@ -1,0 +1,9 @@
+# Copy this file to .dcss-paths.conf for repository-local deployment paths.
+# Values may be repository-root-relative or absolute. Do not add shell syntax;
+# everything after the first '=' is treated as a literal path.
+
+DCSS_DEPLOY_ROOT=../mounted-storage/dcss-release
+
+# Per-target overrides take precedence over DCSS_DEPLOY_ROOT.
+# DCSS_WINDOWS_DEPLOY_DIR=../windows-game
+# DCSS_ANDROID_DEPLOY_DIR=../android-apks

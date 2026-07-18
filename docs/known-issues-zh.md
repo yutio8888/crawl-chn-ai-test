@@ -1,7 +1,7 @@
 # 已知未完成的小问题（快速参考）
 
 > 本文件仅记录太小而无需开 issue 的零散问题。
-> 翻译工程进展和已追踪的 issue → ~/projects/issues/INDEX.md
+> 翻译工程进展和已追踪的 issue → `${DCSS_ISSUES_DIR:-../issues}/INDEX.md`
 > 翻译裁决（术语选择）→ docs/decisions.md
 > 最后更新：2026-07-01
 

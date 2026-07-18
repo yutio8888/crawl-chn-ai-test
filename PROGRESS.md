@@ -2,7 +2,7 @@
 
 Workspace: worktree `.claude/worktrees/zh-runtime-tests-m1`
 Branch: `worktree-zh-runtime-tests-m1` based on `chn-0.34.1-base`
-Plan: `~/projects/plan/1/1.md` (plan v2, 565L, 11 sections)
+Plan: external planning artifact (not required to reproduce this historical report)
 
 ## Status: **COMPLETE ✅ — All milestones delivered, false positives cleaned, baseline stable at 160 issues**
 

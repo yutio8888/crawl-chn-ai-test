@@ -5,7 +5,8 @@
 #   bash .claude/scripts/deploy.sh [target_dir]
 #   bash .claude/scripts/deploy.sh --validate-init <init_file>
 #
-# Default target_dir: /mnt/d/crawl-release
+# Default target_dir: ${DCSS_DEPLOY_ROOT:-.artifacts}/windows-tiles
+# Override with an argument, DCSS_WINDOWS_DEPLOY_DIR, or .dcss-paths.conf.
 #
 # Builds from .worktrees/mingw-tiles (auto-synced) to keep .o files
 # separate from the WSL console build in the main worktree.
@@ -23,9 +24,9 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
+source "$SCRIPT_DIR/lib/path_utils.sh"
 WT="$REPO_ROOT/.worktrees/mingw-tiles"
 WT_SOURCE="$WT/crawl-ref/source"
-TARGET="${1:-/mnt/d/crawl-release}"
 MAPLE_FONT="MapleMono-NF-CN-Regular.ttf"
 VERSIONED_INIT="$REPO_ROOT/crawl-ref/source/init.zh.txt"
 LOCAL_INIT="$REPO_ROOT/crawl-ref/source/init.txt"
@@ -94,6 +95,11 @@ if [ "${1:-}" = "--validate-init" ]; then
     echo "ERROR: effective Chinese init configuration is invalid: $2" >&2
     exit 1
 fi
+
+dcss_load_repo_path_config "$REPO_ROOT" "${DCSS_PATH_CONFIG:-}"
+DEPLOY_ROOT="${DCSS_DEPLOY_ROOT:-.artifacts}"
+TARGET_INPUT="${1:-${DCSS_WINDOWS_DEPLOY_DIR:-$DEPLOY_ROOT/windows-tiles}}"
+TARGET="$(dcss_resolve_repo_path "$REPO_ROOT" "$TARGET_INPUT")"
 
 echo "=== Deploying to $TARGET ==="
 
