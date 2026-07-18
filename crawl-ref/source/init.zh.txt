@@ -1,5 +1,13 @@
 # Version-controlled Chinese runtime configuration template.
 # Copy to init.txt for local use; init.txt remains gitignored.
+# Reset option aliases before assigning required values. This is essential when
+# the template is appended after a user init that may contain `option := alias`.
+language := language
+tile_font_crt_file := tile_font_crt_file
+tile_font_msg_file := tile_font_msg_file
+tile_font_stat_file := tile_font_stat_file
+tile_font_tip_file := tile_font_tip_file
+tile_font_lbl_file := tile_font_lbl_file
 language = zh
 tile_font_crt_file = dat/tiles/MapleMono-NF-CN-Regular.ttf
 tile_font_msg_file = dat/tiles/MapleMono-NF-CN-Regular.ttf

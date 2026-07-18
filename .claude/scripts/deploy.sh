@@ -48,9 +48,16 @@ effective_init_value() {
             if (!equals)
                 next
             name = trim(substr(line, 1, equals - 1))
+            value = trim(substr(line, equals + 1))
+            if (name ~ /:$/) {
+                sub(/[[:space:]]*:[[:space:]]*$/, "", name)
+                aliases[name] = value
+                next
+            }
+            if (name in aliases)
+                name = aliases[name]
             if (name != wanted)
                 next
-            value = trim(substr(line, equals + 1))
             last = value
             found = 1
         }

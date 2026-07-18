@@ -96,8 +96,10 @@ deployment.
 
 When a local `crawl-ref/source/init.txt` exists, the helper preserves its user
 preferences but appends `init.zh.txt` to the deployed copy. The canonical
-language and five font assignments are therefore last and remain effective even
-if the local file contains duplicates or `include` directives.
+template first resets aliases for the six required option names, then assigns
+the language and five fonts. Those values are therefore last and remain
+effective even if the local file contains duplicates, `include` directives, or
+`option := alias` rules.
 
 ## Android Deployment
 

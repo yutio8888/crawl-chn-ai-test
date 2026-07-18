@@ -173,7 +173,9 @@ class AgentDocumentationTests(unittest.TestCase):
     def test_chinese_deploy_contract_is_fail_closed(self) -> None:
         template = (ROOT / "crawl-ref/source/init.zh.txt").read_text()
         self.assertIn("language = zh", template)
+        self.assertIn("language := language", template)
         for role in ("crt", "msg", "stat", "tip", "lbl"):
+            self.assertIn(f"tile_font_{role}_file := tile_font_{role}_file", template)
             self.assertIn(
                 f"tile_font_{role}_file = dat/tiles/MapleMono-NF-CN-Regular.ttf",
                 template,
@@ -193,6 +195,9 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("cp contrib/fonts/*.ttf", deploy)
 
         script = ROOT / ".claude/scripts/deploy.sh"
+        template_without_alias_resets = "\n".join(
+            line for line in template.splitlines() if ":=" not in line
+        ) + "\n"
         cases = {
             "canonical": (template, 0),
             "later_language_override": (template + "\nlanguage = en\n", 1),
@@ -202,6 +207,21 @@ class AgentDocumentationTests(unittest.TestCase):
                 1,
             ),
             "last_assignment_wins": ("language = en\n" + template, 0),
+            "language_alias_without_reset": (
+                "language := fake_lang\n" + template_without_alias_resets,
+                1,
+            ),
+            "font_alias_without_reset": (
+                "tile_font_msg_file := other_font\n"
+                + template_without_alias_resets,
+                1,
+            ),
+            "canonical_resets_local_alias": (
+                "language := fake_lang\n"
+                "tile_font_msg_file := other_font\n"
+                + template,
+                0,
+            ),
         }
         for name, (contents, expected) in cases.items():
             with self.subTest(case=name), tempfile.NamedTemporaryFile(
