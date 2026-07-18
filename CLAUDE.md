@@ -200,6 +200,15 @@ and those existing logs; they do not run `--profile review`. The expensive full
 review profile is owned by one locked final-gate attempt after all required
 reviewers are ready.
 
+Do not serially run `translation`, `code`, and `ci` against the same immutable
+mixed candidate. Use the matching domain profile while editing; if one combined
+static preflight is useful after the candidate is frozen, run `ci` once. Create
+the bundle and finish routed review before task-specific heavy evidence. Run
+`run_all.sh`, `help-full`, or `post_zh_runtime.sh full` at most once, only after
+all reviewers report Ready, against the exact OID entering the final gate.
+Reviewer-requested fixes use targeted checks and a new bundle rather than full
+suites on an already-rejected candidate.
+
 ### Risk Classification and Reviewer Routing
 
 `classify_review.sh` remains an advisory risk summary. Immutable reviewer
@@ -260,6 +269,11 @@ python3 "$TARGET_ROOT/.claude/scripts/review_bundle.py" record-readiness \
 Readiness records are write-once. If the reviewer requests a fix, change and
 commit the code, create the newly identified bundle, and review that exact diff;
 never overwrite the old record.
+
+When the task or release contract requires independent tooling/help/full-runtime
+logs, collect them after every routed reviewer reports Ready and before invoking
+the final gate. These logs remain separate artifacts; they neither replace nor
+cause a second execution of the review profile.
 
 After all mechanically routed reviewers are Ready, run from the clean target
 checkout:

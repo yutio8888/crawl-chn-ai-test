@@ -4,11 +4,10 @@
 # Usage:
 #   verify_zh.sh --profile translation   # Translation / data-file changes
 #   verify_zh.sh --profile code           # C++ / i18n code changes
-#   verify_zh.sh --profile review         # Pre-merge review
+#   verify_zh.sh --profile review         # Final-gate internal profile
 #   verify_zh.sh --profile ci             # CI gate (union of translation + code)
-#   verify_zh.sh --profile review --base <rev> --head <rev>
+#   review_final_gate.sh <candidate> <target>  # Supported review entry point
 #   verify_zh.sh --profile code --scope changed
-#   verify_zh.sh --profile review --full  # full static + full runtime
 #   verify_zh.sh --profile review --base <rev> --head <rev> \
 #       --routing-sha256 <sha256> --control-plane-sha256 <sha256>
 #
@@ -64,7 +63,7 @@ Usage: verify_zh.sh --profile <translation|code|review|ci> [--scope changed|full
 Profiles:
   translation   Translation / data-file changes
   code          C++ / i18n code changes
-  review        Pre-merge review report
+  review        Final-gate internal review report; use review_final_gate.sh
   ci            CI gate (translation + code union)
 
 Evidence range:
@@ -452,11 +451,13 @@ run_phase() {
             ;;
         code)
             run_phase "code-static" 1 "Code verification (post-coder.sh)" \
-                bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
+                env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
+                    bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
         review)
             run_phase "review-static" 1 "Review verification (post-reviewer.sh)" \
-                bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
+                env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
+                    bash "$SCRIPT_DIR/post-reviewer.sh" || RESULTS=$((RESULTS + 1))
             ;;
         ci)
             # --profile ci is truly static: no make, no runtime execution.
@@ -464,7 +465,8 @@ run_phase() {
             run_phase "translation-static" 1 "Translation verification (static)" \
                 bash "$SCRIPT_DIR/post-translator.sh" || RESULTS=$((RESULTS + 1))
             run_phase "code-static" 1 "Code verification (post-coder.sh, static)" \
-                bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
+                env ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1 \
+                    bash "$SCRIPT_DIR/post-coder.sh" || RESULTS=$((RESULTS + 1))
             ;;
     esac
 

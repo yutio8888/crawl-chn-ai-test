@@ -16,6 +16,26 @@ verification. A reviewer never runs `verify_zh.sh --profile review` during the
 readiness pass; that profile is executed once by `review_final_gate.sh` after
 all required reviewers are ready.
 
+## Cost-aware orchestration
+
+Development feedback uses targeted tests and only the profile that matches the
+current edit. Do not serially run `translation`, `code`, and `ci` against the
+same immutable mixed candidate: when one combined static preflight is useful,
+run `ci` once. These development profiles are not schema-v3 final evidence.
+
+Create the immutable bundle and complete routed domain review before running
+expensive independent suites such as `run_all.sh`, `help-full`, or
+`post_zh_runtime.sh full`. If the task or release contract requires those
+suites, run each once only after all reviewers report Ready, against the exact
+candidate OID that will enter the final gate. A reviewer-requested fix creates a
+new bundle and uses targeted checks during the next feedback loop; do not spend
+full-suite evidence on a candidate already known to need changes.
+
+`review_prepare.sh`, routed readiness, `review_final_gate.sh`, and
+`review_at_merge.sh` remain separate security boundaries. Their repeated
+identity and clean-worktree checks are intentional and must not be removed as
+performance optimizations.
+
 ## Finding model
 
 - **Blocker**: runtime/functional failure, undefined behaviour, protocol or
@@ -45,6 +65,10 @@ deployment or release conditions are outside the immutable code-review proof.
   in context, facts and numbers, completeness, natural Chinese, terminology
   consistency, and character voice. It reports implementation defects it
   encounters but does not duplicate the code reviewer's primary scope.
+
+For mixed changes, each reviewer stays within that ownership and inspects the
+shared context/fallback boundary only where the two domains meet. Neither
+reviewer reruns whole-project verification suites during readiness.
 
 The mechanically generated routing for the immutable target/candidate range is
 authoritative. Mixed changes require both readiness records; a final evidence

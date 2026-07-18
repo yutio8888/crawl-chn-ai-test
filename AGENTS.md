@@ -485,6 +485,14 @@ The report (written to `.claude/metrics/verify/`) aggregates results from
 `core-static` checks (always blocking) plus domain-specific checks per profile.
 All three `post-*.sh` scripts remain available as backward-compatible aliases.
 
+For one immutable mixed candidate, do not serially run `translation`, `code`,
+and `ci`; use the matching profile during development, or one `ci` run when a
+combined static preflight is needed. Prepare the bundle and finish routed review
+before expensive independent `run_all.sh`, `help-full`, or runtime `full`
+evidence. Run each required heavy suite once against the final reviewer-approved
+OID. A requested fix starts a new targeted-check/review loop rather than another
+full-suite cycle.
+
 Reviewers do not run `--profile review` during iterative feedback. Once the
 candidate changes are committed and both worktrees are clean, run
 `review_prepare.sh <candidate> <target>` before dispatching reviewers. Once that

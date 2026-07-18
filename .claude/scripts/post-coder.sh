@@ -158,9 +158,15 @@ run_concat_advisory() {
     run_check "source.txt control-character parity (\n)" blocking \
         python3 "$SCRIPT_DIR/source_control_parity.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-    run_check "T_() key coverage" blocking \
-        python3 "$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/ \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    if [[ "${ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE:-0}" == "1" ]]; then
+        echo "--- T_() key coverage ---"
+        echo "RESULT: PASS (covered by verify_zh source-db-static)"
+        echo ""
+    else
+        run_check "T_() key coverage" blocking \
+            python3 "$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/ \
+            --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    fi
     run_check "Direct display sinks + runtime dynamic-key coverage" blocking \
         python3 "$SCRIPT_DIR/scan_i18n.py" missing-t crawl-ref/source/ \
         --display-contracts-only \

@@ -426,18 +426,14 @@ bash .claude/scripts/verify_zh.sh --profile code
 bash .claude/scripts/verify_zh.sh --profile code --scope changed
 bash .claude/scripts/verify_zh.sh --profile code --scope full
 
-# 合并审核：绑定不可变 target/candidate 提交范围，并产生 run metadata
-bash .claude/scripts/verify_zh.sh --profile review \
-  --base <target-head> --head <candidate-head>
-
-# 合并前审查
-bash .claude/scripts/verify_zh.sh --profile review
-
 # CI 门禁（纯静态，不执行 make/runtime）
 bash .claude/scripts/verify_zh.sh --profile ci
 
-# 显式执行全量静态检查及 Layer 1-3 runtime
-bash .claude/scripts/verify_zh.sh --profile review --full
+# 合并审核唯一入口；不要手工运行 --profile review 或 review --full
+bash .claude/scripts/review_prepare.sh <candidate> <target>
+# 按 routing 完成 reviewer readiness 后：
+bash .claude/scripts/review_final_gate.sh <candidate> <target>
+bash .claude/scripts/review_at_merge.sh <candidate> <target>
 ```
 
 `translation`/`code` 默认 `--scope changed`，`review`/`ci` 默认
@@ -454,14 +450,26 @@ python3 .claude/scripts/scan_i18n.py source-key-collisions --source-txt ...
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source --source-txt ...
 ```
 
+`verify_zh.sh` 随后嵌套调用 `post-coder.sh` / `post-reviewer.sh` 时会设置
+`ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE=1`，仅跳过底层脚本中重复的
+`i18n_extract.py validate`。直接运行底层脚本时不设置该标记，仍执行完整 key
+coverage；无论前置 phase 成败，`source-db-static` 的结果都已独立记录且阻断。
+
 **--profile ci 纯静态**：`ci` profile 不执行 `make`、`smoke_test.sh`、
 `post_zh_runtime.sh` 等任何编译/运行时操作。仅运行静态数据检查（source-db-static
-+ translation-static）。
++ translation-static + code-static）。
 
 风险路由自动追加测试：C++ i18n diff 运行增量 `make` 和 ZH smoke；
-font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2；review 至少运行
-同一 fast runtime。`--full` 才运行耗时的三层 runtime full。`ci` 完全跳过
-编译和运行时。
+font/CJK/runtime diff 运行新鲜的 `[zh-translation]` Catch2。review profile 仅由
+`review_final_gate.sh` 调用，并运行统一 Catch2；不要在 readiness 或本地 preflight
+手工重跑。`--full` 是显式的三层 runtime 开发/发布工具，不属于 reviewer
+readiness。`ci` 完全跳过编译和运行时。
+
+同一 immutable mixed candidate 不得串行运行 `translation`、`code`、`ci` 三个
+profile。开发期按当前改动选 domain profile；若需要一次组合静态 preflight，只跑
+`ci`。先完成 bundle reviewer，再在 reviewer-approved 最终 OID 上各运行一次任务或
+release 契约明确要求的 `run_all.sh`、`help-full`、runtime `full`，最后进入唯一
+`review_final_gate.sh`。
 
 `post-coder.sh` 的 string-concat advisory 使用版本控制的
 `data/string_concat_advisory_baseline.json`。稳定 identity 排除行号，因此代码

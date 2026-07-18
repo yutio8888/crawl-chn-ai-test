@@ -74,9 +74,15 @@ run_scoped_scanner() {
     run_check "Source.txt integrity" \
         python3 "$SCRIPT_DIR/scan_i18n.py" source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
-    run_check "Immediate + deferred i18n key coverage" \
-        python3 "$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/ \
-        --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    if [[ "${ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE:-0}" == "1" ]]; then
+        echo "--- Immediate + deferred i18n key coverage ---"
+        echo "RESULT: PASS (covered by verify_zh source-db-static)"
+        echo ""
+    else
+        run_check "Immediate + deferred i18n key coverage" \
+            python3 "$SCRIPT_DIR/i18n_extract.py" validate crawl-ref/source/ \
+            --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    fi
     run_check "Contextual movement phrase coverage" \
         python3 "$SCRIPT_DIR/audit_move_i18n.py" crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

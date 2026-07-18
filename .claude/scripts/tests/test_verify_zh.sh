@@ -60,6 +60,9 @@ printf '%s\n' '# test glossary' > "$REPO/docs/glossary.md"
 printf '%s\n' \
     '#!/bin/bash' \
     'echo "${GLOSSARY_DIFF_BASE-}" >> .observed-glossary-base' \
+    'if [[ "${ZH_VERIFY_SOURCE_DB_STATIC_COMPLETE:-0}" != 1 ]]; then' \
+    '    python3 .claude/scripts/i18n_extract.py validate' \
+    'fi' \
     'if [[ "${TEST_INTERRUPT:-0}" = 1 ]]; then' \
     '    kill -TERM "$PPID"' \
     '    exit 0' \
@@ -70,7 +73,11 @@ chmod +x "$REPO/.claude/scripts/post-reviewer.sh"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/scan_i18n.py"
 chmod +x "$REPO/.claude/scripts/scan_i18n.py"
-printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
+printf '%s\n' '#!/usr/bin/env python3' \
+    'from pathlib import Path' \
+    'path = Path(".observed-i18n-extract")' \
+    'path.write_text(path.read_text() + "run\n" if path.exists() else "run\n")' \
+    'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/i18n_extract.py"
 chmod +x "$REPO/.claude/scripts/i18n_extract.py"
 printf '%s\n' \
@@ -204,6 +211,16 @@ PY
 assert_status "bound metadata contains immutable evidence" 0 "$?"
 assert_contains "bound run exports glossary comparison base" \
     "$BASE" "$REPO/.observed-glossary-base"
+EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
+assert_status "review profile runs i18n_extract once through source-db-static" \
+    1 "$EXTRACT_COUNT"
+(
+    cd "$REPO"
+    bash .claude/scripts/post-reviewer.sh
+) >/dev/null 2>&1
+EXTRACT_COUNT=$(wc -l < "$REPO/.observed-i18n-extract")
+assert_status "standalone post-reviewer retains i18n_extract coverage" \
+    2 "$EXTRACT_COUNT"
 assert_contains "detailed report records diff hash" \
     "Diff hash: $EXPECTED_DIFF_HASH" "$RUN_DIR/verify.log"
 assert_contains "detailed report records protocol SHA-256" \
