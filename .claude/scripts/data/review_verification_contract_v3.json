@@ -46,6 +46,11 @@
       "when": "always"
     },
     {
+      "id": "source-db-static",
+      "required": true,
+      "when": "always"
+    },
+    {
       "id": "review-static",
       "required": true,
       "when": "always"
@@ -54,11 +59,6 @@
       "id": "message-overlay-static",
       "required": true,
       "when": "always"
-    },
-    {
-      "id": "message-overlay-catch2",
-      "required": true,
-      "when": "risk_message_overlay"
     },
     {
       "id": "cpp-build",

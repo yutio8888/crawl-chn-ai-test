@@ -276,6 +276,20 @@ else
     fail "expected 3 unique run directories, found $RUN_COUNT"
 fi
 
+python3 - "$SCRIPT_DIR/../data/review_verification_contract_v3.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as stream:
+    contract = json.load(stream)
+assert [phase["id"] for phase in contract["phase_plan"]] == [
+    "policy-sync", "source-db-static", "review-static",
+    "message-overlay-static", "cpp-build", "zh-smoke",
+    "zh-runtime-catch2",
+]
+PY
+assert_status "trusted final contract matches the frozen phase plan" 0 "$?"
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 if [[ "$FAIL" -gt 0 ]]; then
