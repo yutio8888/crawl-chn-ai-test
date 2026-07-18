@@ -187,8 +187,6 @@ run_bot() {
     # Chinese status tokens from the captured PTY transcript.
     grep -q '施放：' "$METRICS_DIR/bot-spells.typescript" || return 1
     grep -q '魔法飞弹' "$METRICS_DIR/bot-spells.typescript" || return 1
-    python3 "$CHECK_SCRIPT" --bot-stderr "$STDERR_L3" --bot-manifest all \
-        || return 1
     echo "  Running rendered panel PTY assertions"
     timeout --foreground "$BOT_TIMEOUT" python3 "$UI_BOT_SCRIPT" \
         --crawl "$SOURCE_DIR/crawl" --mode panels \

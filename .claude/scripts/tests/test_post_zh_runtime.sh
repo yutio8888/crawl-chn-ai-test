@@ -150,6 +150,20 @@ if [ -n "$C2_REPORT" ] && [ -f "$C2_REPORT" ]; then
     fi
 fi
 
+# The JSONL checker aggregates Catch2 output. Rendered bot workflows enforce
+# their own assertions and must not invoke it with only a bot transcript.
+if grep -Fq 'python3 "$CHECK_SCRIPT" --bot-stderr' "$POST_RUNTIME"; then
+    fail "Bot path still invokes the Catch2 checker without Catch2 logs"
+else
+    pass "Bot path relies on its rendered workflow assertions"
+fi
+
+if grep -Fq -- '--catch2-stdout "$STDOUT_HELP_C2"' "$POST_RUNTIME"; then
+    pass "Help aggregate supplies Catch2 stdout"
+else
+    fail "Help aggregate is missing Catch2 stdout"
+fi
+
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="
 if [ "$FAIL" -gt 0 ]; then
