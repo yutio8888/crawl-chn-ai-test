@@ -157,15 +157,16 @@ cd crawl-ref/source
 test -e init.txt || cp init.zh.txt init.txt
 ```
 
-Install `MapleMono-NF-CN-Regular.ttf` locally under
-`crawl-ref/source/dat/tiles/` or `crawl-ref/source/contrib/fonts/`. The font is
-not stored in this repository. The deployment helper copies that exact file to
-the target's `dat/tiles/`; the deployment destination, not every source
-location, is `dat/tiles/`.
+The `crawl-ref/source/contrib/fonts` submodule includes
+`MapleMono-NF-CN-Regular.ttf` and the supported Sarasa Gothic alternatives.
+Initialize submodules before building; no separate font download or local
+source copy is required. The deployment helper copies the configured Maple
+font to the target's `dat/tiles/`.
 
 The configured Maple font is CJK-capable and is the default primary font for
 all tile text roles. Renderer fallback support remains available for other
-configurations; see `docs/cjk-tiles-architecture.md`.
+configurations; see `docs/cjk-tiles-architecture.md`. Font licensing and the
+repository license copies are listed in the root `README.md`.
 
 ## ccache
 

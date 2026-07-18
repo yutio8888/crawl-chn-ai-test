@@ -1,289 +1,266 @@
-# 龙腾世纪：地下城探险 · 中文版
+# Dungeon Crawl Stone Soup 中文版
 
-*Dungeon Crawl Stone Soup (DCSS) — Chinese Localization & CJK Tiles Support*
+*DCSS 0.34.1 Chinese localization and CJK Tiles support*
 
-[![Build Status](https://github.com/crawl/crawl/workflows/Build/badge.svg)](https://github.com/crawl/crawl/actions/)
+[![中文项目 CI](https://github.com/yutio8888/crawl-chn-ai-test/actions/workflows/ci.yml/badge.svg)](https://github.com/yutio8888/crawl-chn-ai-test/actions/workflows/ci.yml)
 
-一个基于 DCSS 0.34.1 的中文汉化分支，提供完整的中文界面翻译与 CJK（中日韩）字符 tiles
-渲染支持。玩家可以用中文畅玩这款经典 roguelike 游戏，在 tiles 模式下正常显示汉字。
+这是基于 Dungeon Crawl Stone Soup（DCSS）0.34.1 的中文本地化分支。项目同时维护
+中文界面与游戏文本、TextDB 中文数据，以及 Tiles 模式下的 CJK 字宽和字体渲染。
 
-> **上游原版 README**：[README.upstream.md](README.upstream.md)
+> 上游说明见 [README.upstream.md](README.upstream.md)，上游构建细节见
+> [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md)。
 
----
+## 当前状态
 
-## 目录
+项目目前已具备可持续开发和验证的完整链路：
 
-1. [功能特性](#功能特性)
-2. [快速开始](#快速开始)
-3. [项目结构](#项目结构)
-4. [翻译进度](#翻译进度)
-5. [技术架构](#技术架构)
-6. [贡献指南](#贡献指南)
-7. [相关资源](#相关资源)
-8. [许可证](#许可证)
+- `source.txt`、ZH TextDB 和代码侧 `T_()` 覆盖主要界面、战斗消息、名称与描述文本；
+- 显示文本与协议、存档、Lua/API 等内部英文值分离，避免翻译破坏查找和兼容性；
+- Tiles 使用显示宽度感知的 CJK 网格与字体渲染，支持中英文混排；
+- 控制台、Windows Tiles 和 Android 使用相互隔离的构建目录与 ccache；
+- 中文静态检查、运行时测试、术语检查和候选审查均已有统一入口。
 
----
-
-## 功能特性
-
-### 中文翻译
-
-- `source.txt` 与 ZH TextDB 覆盖游戏界面、战斗日志、怪物名称、技能说明、物品描述、
-  神祇对话等；当前条目与覆盖数据以验证脚本报告为准
-- 支持 `T_()` 宏系统：C++ 端直接嵌入翻译键，编译期提取与校验
-- 三种翻译通道：
-  - **C++ 字面量** `T_("English text")` — 可静态扫描
-  - **函数包装器** `skill_name()` / `spell_title()` 等 — 内部自动翻译，调用者无感
-  - **运行时变量** `T_(variable)` — 数据驱动的动态翻译（怪物名、地形名等）
-- 独立的 TextDB 描述数据库：怪物描述、装备说明、神祇对话等存储在
-  `crawl-ref/source/dat/descript/zh/` 和 `crawl-ref/source/dat/database/zh/` 中
-- 当前术语以 [`docs/glossary.md`](docs/glossary.md) 为准；
-  [`docs/decisions.md`](docs/decisions.md) 保存裁定理由和历史
-
-### CJK Tiles 渲染
-
-- **三层架构**解决 CJK 字符在 tiles 网格中的宽度问题：
-  1. **网格计数层** (`tilereg-text.cc`)：使用 `wcwidth()` 计算每个字符的实际显示宽度，
-     CJK 字符占 2 格，第二格标记为零宽空格 (U+200B)
-  2. **渲染层** (`fontwrapper-ft.cc`)：跳过续格标记，CJK 字符使用 2 倍背景宽度
-  3. **字体选择层**：默认中文部署使用 Maple Mono NF CN 作为主字体；渲染器仍支持
-     可选的缺字回退
-- 支持中英文混排，对齐正确
-
-### 工具链
-
-| 工具 | 用途 |
-|------|------|
-| `i18n_extract.py` | 提取 `T_()` 键 → 校验 source.txt 覆盖率 |
-| `audit_data_i18n.py` | 审计数据驱动的运行时翻译 |
-| `scan_i18n.py` | 多维度扫描：格式字符串、参数匹配、`mprf`→`mprf_p` 兼容性 |
-| `check_consistency.sh` | 跨文件术语一致性检查 |
-| `context_resolve.sh` | 动态术语上下文注入（AI 辅助翻译） |
-
----
-
-## 快速开始
-
-### 环境要求
-
-- Linux (WSL2) 或 macOS
-- GCC / Clang (C++17)
-- Git、`make`、`pkg-config`
-- 依赖库：Lua、SQLite、PCRE、SDL2、SDL2_image、Freetype、libpng、zlib
-
-### 控制台版
-
-```bash
-cd crawl-ref/source
-test -e init.txt || cp init.zh.txt init.txt
-bash util/build-console.sh
-./crawl
-```
-
-### Tiles 版（Windows 交叉编译）
-
-```bash
-test -d .worktrees/mingw-tiles/crawl-ref/source || \
-  git worktree add .worktrees/mingw-tiles --detach HEAD
-test -e crawl-ref/source/init.txt || \
-  cp crawl-ref/source/init.zh.txt crawl-ref/source/init.txt
-# 先按 docs/build-workflow.md 安装 MapleMono-NF-CN-Regular.ttf
-bash crawl-ref/source/util/build-tiles.sh
-bash .claude/scripts/deploy.sh
-```
-
-以上命令从仓库根目录运行。帮助脚本在专用 `.worktrees/mingw-tiles` 中生成
-`crawl.exe`；部署脚本会在构建前检查中文配置和 Maple 字体，并在目标中验证
-二者。完整流程与字体放置位置见 `docs/build-workflow.md`。
-
-### 必需字体
-
-| 字体 | 用途 |
-|------|------|
-| `MapleMono-NF-CN-Regular.ttf` | 所有 Tiles 文本角色的默认 CJK 主字体 |
-
-渲染器仍支持缺字回退，但默认中文部署不再依赖固定的
-DejaVu-primary/Sarasa-secondary 组合。运行时字体部署到 `dat/tiles/`，详见
-`docs/cjk-tiles-architecture.md` 和 `docs/build-workflow.md`。
-
----
-
-## 项目结构
-
-```
-crawl/                               # 仓库根目录
-├── README.md                        # 本文件
-├── README.upstream.md               # 上游原版 README（归档）
-├── AGENTS.md                        # 跨运行时共享 Agent 入口
-├── CODEX.md                         # Codex 运行时适配
-├── CLAUDE.md                        # Claude Code 运行时适配
-├── .agents/                         # 共享 policy、skill 与权威性地图
-├── .opencode/                       # OpenCode agent/skill/运行时配置
-├── .codex/                          # Codex agent 配置
-├── docs/
-│   ├── glossary.md                  # 当前术语 SSOT
-│   ├── decisions.md                 # 翻译决策注册表
-│   └── build-workflow.md            # 构建与部署流程
-├── crawl-ref/
-│   ├── source/
-│   │   ├── *.cc, *.h                # C++ 游戏源码（含 T_() 翻译宏）
-│   │   ├── dat/
-│   │   │   ├── i18n/zh/source.txt   # 主翻译数据库
-│   │   │   ├── descript/zh/         # 描述文本数据库
-│   │   │   └── database/zh/         # 文本数据库（神祇对话等）
-│   │   ├── contrib/fonts/           # 可选的本地字体来源
-│   │   ├── init.zh.txt              # 受版本控制的中文配置模板
-│   │   └── Makefile                 # 构建配置
-│   └── docs/                        # 上游游戏文档
-├── .claude/
-│   ├── scripts/                     # 翻译工具链脚本
-│   ├── workflows/                   # AI 工作流定义
-│   └── skills/                      # AI 技能定义
-└── .github/                         # CI 配置
-```
-
-### 分支说明
-
-分支状态会随并行开发变化，不在本文维护“当前活跃”清单。使用
-`git branch --show-current`、`git branch --all` 和任务交接记录确认当前状态；
-Agent 的分支与 worktree 约束见 [`AGENTS.md`](AGENTS.md)。
-
----
-
-## 翻译进度
-
-翻译条目、调用点和覆盖率均为易变数据，不在手写文档中冻结。运行
-`bash .claude/scripts/verify_zh.sh --profile translation` 查看当前 worktree 的
-结构、键覆盖和术语验证结果；最终合并证据由项目审查门禁生成。
-
-### 覆盖范围
-
-- ✅ 战斗日志消息
-- ✅ 怪物攻击动词
-- ✅ UI 面板（Q/W/I/E/!/$/^）
-- ✅ 瞄准界面
-- ✅ 物品栏提示
-- ✅ 地形描述
-- ✅ 技能/法术名称
-- ✅ 怪物描述表
-- ✅ 命令帮助文本
-- ✅ 种族难度标签
-- ✅ 未鉴定药水/卷轴命名
-
----
-
-## 技术架构
-
-### 翻译系统
-
-```
-T_("English text")
-    ↓
-i18n_source_lookup()
-    ↓
-dat/i18n/zh/source.txt  ← 翻译数据库
-    ↓
-返回中文 / 回退英文
-```
-
-所有翻译通过 `T_()` 宏进行，语言选择在翻译数据库层面完成，C++ 代码保持语言无关。
-`Options.language` 仅影响 `T_()` 查找的数据文件，调用方无需添加语言守卫。
-
-### CJK Tiles 渲染
-
-```
-┌─────────────────────────────────────────┐
-│  Layer 1: tilereg-text.cc               │
-│  wcwidth() → CJK=2格, ASCII=1格         │
-│  第2格写入 U+200B (ZWS) 续格标记        │
-├─────────────────────────────────────────┤
-│  Layer 2: fontwrapper-ft.cc             │
-│  render_textblock()                     │
-│  跳过续格标记，CJK 字符 2x 背景宽度      │
-├─────────────────────────────────────────┤
-│  Layer 3: fontwrapper-ft.cc             │
-│  get_glyph_info() / load_glyph()        │
-│  主字体 → CJK 回退字体链                 │
-│  Atlas 单元格加宽以容纳 CJK 字形         │
-└─────────────────────────────────────────┘
-```
-
-### 翻译类型体系
-
-| 类型 | 模式 | 可审计性 |
-|------|------|----------|
-| I — C++ 字面量 | `T_("You hit %s.")` | 静态扫描 ✅ |
-| II — 函数包装器 | `skill_name(sk)` → 内部 `T_()` | 调用链审计 |
-| III — 运行时变量 | `T_(endmsg)` 数据驱动 | `audit_data_i18n.py` |
-| IV — TextDB | `zh/monsters.txt` 等 | 按文件校验 |
-| V — 协议/内部 | 永不翻译 | 禁止翻译 ❌ |
-
----
-
-## 贡献指南
-
-### 翻译贡献
-
-1. 从 [`docs/glossary.md`](docs/glossary.md) 解析当前术语；
-   [`docs/decisions.md`](docs/decisions.md) 仅用于查阅裁定理由和历史
-2. 修改或新增 `crawl-ref/source/dat/i18n/zh/source.txt` 条目
-3. 如有新增 `T_()` 调用，由同一任务的翻译资产所有者补齐对应条目
-4. 运行统一校验：
+覆盖率、条目数和待办状态会持续变化，不在 README 中写死。查看当前 worktree 的中文
+校验结果，请运行：
 
 ```bash
 bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
-### 代码贡献
+已追踪任务以独立 Issue 仓库的 `INDEX.md` 为准，位置和接入方式见
+[docs/issue-tracking.md](docs/issue-tracking.md)；仓库内零散事项见
+[docs/known-issues-zh.md](docs/known-issues-zh.md)。
 
-1. Fork 本仓库
-2. 在 `chn-0.34.1-base` 分支上创建特性分支
-3. 确保 `make -j8` 编译通过
-4. 如涉及 tiles，确保 `make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8` 通过
-5. 提交 PR
+## 快速开始
 
-### 常见反模式（请勿重复）
+### 1. 获取源码与依赖
 
-- ❌ 翻译协议键（JSON key、`.des` 标签、存档标识符必须保持英文）
-- ❌ 对中文调用 `conj_verb()`（产生乱码如 `"抓取s"`）
-- ❌ 修改用作数据库查找键的 `.name` 字段
-- ❌ 在同一格式字符串中混用中英文
-- ❌ 使用 `buf.size()` 做 CJK 对齐（用 `strwidth()` 代替）
-- ❌ 对运行时变量添加 `T_()` 但不添加 `source.txt` 条目
+```bash
+git clone --recurse-submodules https://github.com/yutio8888/crawl-chn-ai-test.git
+cd crawl-chn-ai-test
+```
 
----
+推荐在 Ubuntu、Debian 或 WSL2 中构建。Ubuntu/Debian 的控制台版依赖可用：
+
+```bash
+sudo apt install build-essential libncursesw5-dev bison flex liblua5.4-dev \
+  libsqlite3-dev libz-dev pkg-config python3-yaml binutils-gold \
+  python-is-python3 ccache
+```
+
+Tiles 版还需要 SDL2、Freetype、libpng 和 MinGW 等目标相关依赖。其他发行版、macOS、
+MSYS2 和 Android 的依赖说明以 [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md) 为准。
+
+### 2. 准备中文配置
+
+`init.txt` 是本地文件，不提交到 Git。首次构建前从受版本控制的中文模板创建：
+
+```bash
+cd crawl-ref/source
+test -e init.txt || cp init.zh.txt init.txt
+```
+
+### 3. 构建并运行控制台版
+
+```bash
+bash util/build-console.sh
+./crawl
+```
+
+该脚本必须从主 worktree 的 `crawl-ref/source/` 运行，并自动使用独立的控制台 ccache。
+如需传递 Make 参数，可直接追加在脚本后面。
+
+## Windows Tiles 构建与部署
+
+Windows Tiles 使用专用的 detached worktree，避免 MinGW 对象文件污染主工作区。首次使用时，
+从仓库根目录创建并初始化一次：
+
+```bash
+git worktree add .worktrees/mingw-tiles --detach HEAD
+git -C .worktrees/mingw-tiles submodule update --init --recursive
+```
+
+字体已经随 `crawl-ref/source/contrib/fonts` 子模块纳入项目。使用前确认子模块已初始化：
+
+```bash
+git submodule update --init --recursive
+test -s crawl-ref/source/contrib/fonts/MapleMono-NF-CN-Regular.ttf
+```
+
+中文默认部署使用 Maple Mono NF CN；更纱黑体的 Fixed SC 和 Mono SC 字体作为仓库内的
+CJK 备选字体保留。无需再手动下载或复制字体到源码目录。
+
+只构建 `crawl.exe`：
+
+```bash
+cd crawl-ref/source
+bash util/build-tiles.sh
+```
+
+构建并部署完整可运行目录：
+
+```bash
+cd "$(git rev-parse --show-toplevel)"
+bash .claude/scripts/deploy.sh
+```
+
+默认部署到仓库内已忽略的 `.artifacts/windows-tiles/`。需要固定其他位置时：
+
+```bash
+cp .dcss-paths.conf.example .dcss-paths.conf
+# 在本地配置中设置 DCSS_DEPLOY_ROOT 或 DCSS_WINDOWS_DEPLOY_DIR
+bash .claude/scripts/deploy.sh
+```
+
+部署脚本会验证中文配置和 Maple 字体、同步并构建专用 worktree、复制运行时数据，并清理
+TextDB 缓存以确保文本更新生效。运行中的游戏应先关闭。完整说明见
+[docs/build-workflow.md](docs/build-workflow.md)，渲染原理见
+[docs/cjk-tiles-architecture.md](docs/cjk-tiles-architecture.md)。
+
+## 如何参与开发
+
+### 开始一个任务
+
+1. 先阅读 [AGENTS.md](AGENTS.md)；使用 Codex、Claude Code 或 OpenCode 时，再读取对应的
+   runtime adapter。
+2. 从仓库当前默认/集成分支创建任务分支，不要依赖 README 中的静态“活跃分支”清单。
+3. 开工前查看独立 Issue 仓库的 `INDEX.md`，确认任务状态、文件所有权和已有分析。
+4. 若使用 Git worktree，只能从仓库根目录创建在 `.worktrees/<name>` 下；不要让 linked
+   worktree 占用集成分支。
+
+```bash
+git fetch origin
+git switch -c <topic-branch> origin/HEAD
+```
+
+也可以不切换主工作区，直接从当前远端默认分支创建任务 worktree：
+
+```bash
+git fetch origin
+git worktree add -b <topic-branch> .worktrees/<name> origin/HEAD
+```
+
+分支和 worktree 的完整安全约束见
+[.agents/policies/worktree-policy.md](.agents/policies/worktree-policy.md)。
+
+### 翻译或中文数据修改
+
+术语以 [docs/glossary.md](docs/glossary.md) 为唯一当前来源；
+[docs/decisions.md](docs/decisions.md) 记录裁定理由和历史。编辑前先解析本任务所需的最新
+术语上下文：
+
+```bash
+bash .claude/scripts/context_resolve.sh "<任务说明>" \
+  --task-type translate --files <目标文件...>
+```
+
+常见翻译资产位于：
+
+- `crawl-ref/source/dat/i18n/zh/source.txt`：代码和数据使用的主翻译键；
+- `crawl-ref/source/dat/descript/zh/`：怪物、物品、能力等描述；
+- `crawl-ref/source/dat/database/zh/`：神祇对话、怪物言语和模板文本。
+
+同一任务中的中文翻译资产必须保持单一写入者。修改完成后运行：
+
+```bash
+bash .claude/scripts/verify_zh.sh --profile translation
+```
+
+### C++、Lua 或 i18n 实现修改
+
+代码侧修改应保持协议值和显示文本分离，不要翻译 JSON key、存档标识、`.des` 标签、Lua
+API 值或数据库查找键。新增 `T_()` 调用时，同一任务还要补齐对应中文条目。
+
+```bash
+bash .claude/scripts/context_resolve.sh "<任务说明>" \
+  --task-type code --files <目标文件...>
+bash .claude/scripts/verify_zh.sh --profile code
+```
+
+随后按受影响目标执行一次匹配的构建或运行时测试。若一个候选同时修改代码和翻译资产，
+可运行一次组合静态预检：
+
+```bash
+bash .claude/scripts/verify_zh.sh --profile ci
+```
+
+不要对同一个不可变候选依次重复运行 `translation`、`code` 和 `ci`。测试层级、产物位置和
+运行时证据见 [docs/zh-testing.md](docs/zh-testing.md)。
+
+### 提交与审查
+
+提交前请确认：
+
+- `git status --short` 只包含本任务改动；
+- 已运行与改动类型匹配的验证 profile，并记录命令、退出码和警告；
+- 已构建受影响目标，或说明为什么无需构建；
+- 新增行为、架构约束或术语决定已经更新对应权威文档；
+- 没有在受管理的字体子模块之外重复提交字体，也没有提交 `init.txt`、构建产物、缓存或
+  部署目录。
+
+翻译相关候选进入合并阶段后，由维护者按不可变 commit 执行
+`review_prepare.sh`、机械路由的领域审查、`review_final_gate.sh` 和合并时校验。不要用一次
+非正式 review 或单独运行 `--profile review` 代替该流程。详情见
+[.agents/policies/review-contract.md](.agents/policies/review-contract.md)。当前 CI 配置以
+[.github/workflows/ci.yml](.github/workflows/ci.yml) 为准。
+
+## 开发约束速查
+
+- 用 `strwidth()` 处理显示宽度，不要用字节数或 `string::size()` 对齐 CJK 文本；
+- 不要对中文文本调用英文形态变化函数（例如 `conj_verb()`）；
+- 不要修改兼作数据库、协议或存档键的英文 `.name` 字段；
+- 格式串的参数位置、类型和复数逻辑必须与英文源文本一致；
+- 运行时变量经 `T_()` 查找时，必须确保翻译数据库中存在对应键；
+- hosted workflow 文件不是普通 Bash/Node.js 脚本，不要直接执行；
+- 构建最多使用 8 个 job；多人或多任务同时编译时使用 4 个并避免并发编译风暴。
+
+翻译架构与安全边界的详细说明见
+[docs/translation-architecture.md](docs/translation-architecture.md) 和
+[.agents/policies/i18n-safety.md](.agents/policies/i18n-safety.md)。
+
+## 项目结构
+
+```text
+.
+├── AGENTS.md                         # 跨 runtime 的协作入口
+├── CODEX.md / CLAUDE.md              # runtime adapter
+├── .agents/                          # 共享 policy、角色路由与技能来源
+├── .claude/scripts/                  # 验证、审查、部署和辅助脚本
+├── .codex/ / .opencode/              # 各 runtime 配置
+├── .github/workflows/ci.yml          # 当前 CI 权威配置
+├── docs/                             # 架构、术语、构建、测试与协作文档
+└── crawl-ref/
+    ├── INSTALL.md                    # 上游跨平台依赖与构建说明
+    └── source/
+        ├── *.cc, *.h                 # 游戏与 i18n 实现
+        ├── dat/i18n/zh/source.txt    # 主翻译数据库
+        ├── dat/descript/zh/          # 中文描述 TextDB
+        ├── dat/database/zh/          # 中文运行时 TextDB
+        ├── init.zh.txt               # 中文配置模板
+        └── util/build-*.sh            # 目标隔离的构建入口
+```
 
 ## 相关资源
 
-- **上游项目**：[github.com/crawl/crawl](https://github.com/crawl/crawl)
-- **官方主页**：[crawl.develz.org](https://crawl.develz.org/)
-- **在线游玩**：crawl.develz.org 提供 Webtiles 和 SSH 接入
-- **社区论坛**：[tavern.dcss.io](https://tavern.dcss.io/)
-- **Reddit**：[r/dcss](https://www.reddit.com/r/dcss/)
-- **IRC**：Libera 上的 `#crawl`（玩家）、`#crawl-dev`（开发）
-
----
+- [DCSS 上游仓库](https://github.com/crawl/crawl)
+- [DCSS 官方主页](https://crawl.develz.org/)
+- [DCSS 社区论坛](https://tavern.dcss.io/)
+- [r/dcss](https://www.reddit.com/r/dcss/)
+- Libera IRC：`#crawl`（玩家）、`#crawl-dev`（开发）
 
 ## 许可证
 
-本项目基于上游 DCSS，采用 **GPLv2+** 许可证。详见 [LICENSE](LICENSE)。
+本项目继承上游 DCSS，采用 GPLv2+ 许可证，详见 [LICENSE](LICENSE)。上游贡献者名单见
+[crawl-ref/CREDITS.txt](crawl-ref/CREDITS.txt)。
 
-上游项目致谢名单见 [CREDITS.txt](crawl-ref/CREDITS.txt)。
+字体文件随 `crawl-ref/source/contrib/fonts` 子模块一同分发，但不因此改用项目的 GPLv2+
+许可证；各字体继续适用其自身许可证：
 
-### 字体版权
+| 字体 | 仓库内文件 | 许可证 |
+|---|---|---|
+| Maple Mono NF CN | `MapleMono-NF-CN-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Maple-Mono.txt) |
+| 更纱黑体（Sarasa Gothic） | `SarasaFixedSC-Regular.ttf`、`SarasaMonoSC-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Sarasa-Gothic.txt) |
+| DejaVu Sans / DejaVu Sans Mono | 子模块中的 DejaVu 字体文件 | Bitstream Vera 衍生许可，DejaVu 修改部分为公有领域；见 [DejaVu 官方许可证](https://dejavu-fonts.github.io/License.html) |
 
-本项目使用以下字体：
-
-| 字体 | 许可证 | 说明 |
-|------|--------|------|
-| **Maple Mono NF CN** | 遵循所下载字体发行包附带的许可证 | 中文 Tiles 默认主字体；文件不存入本仓库 |
-| **DejaVu Sans** / **DejaVu Sans Mono** | [Bitstream Vera](crawl-ref/docs/license/lgpl.txt) + 公共领域 | 上游 DCSS 字体，可用于其他配置 |
-| **Sarasa Mono SC**（可选） | [SIL Open Font License 1.1](https://openfontlicense.org/) | 历史回退方案；不是当前部署必需项 |
-
-部署前请自行取得 `MapleMono-NF-CN-Regular.ttf`，确认其发行包许可证，并按
-[`docs/build-workflow.md`](docs/build-workflow.md) 放置。Sarasa 的仓库内许可证副本
-见 [`docs/fonts/LICENSE-Sarasa-Gothic.txt`](docs/fonts/LICENSE-Sarasa-Gothic.txt)。
-
----
-
-*Have fun crawling! 祝探索愉快！🐉*
+OFL 1.1 允许字体随软件捆绑和再分发，但字体本身及其修改版本仍须遵守 OFL 条件；上述
+许可证副本和版权声明应与字体文件一同保留。
