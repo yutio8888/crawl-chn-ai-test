@@ -84,24 +84,85 @@ const TRANS_RESULT_SCHEMA = {
   required: ['entriesAdded', 'entriesModified', 'verificationStatus'],
 }
 
+const CODE_FINDING_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  properties: {
+    id: { type: 'string', pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$' },
+    severity: { type: 'string', enum: ['blocker', 'needs_fix', 'suggestion'] },
+    file: { type: 'string', minLength: 1, maxLength: 512 },
+    line: { type: 'integer', minimum: 1, maximum: 10000000 },
+    evidence: { type: 'string', minLength: 1, maxLength: 4000 },
+    impact: { type: 'string', minLength: 1, maxLength: 4000 },
+    fix: { type: 'string', minLength: 1, maxLength: 4000 },
+  },
+  required: ['id', 'severity', 'file', 'line', 'evidence', 'impact', 'fix'],
+}
+
+const TRANS_FINDING_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  properties: {
+    ...CODE_FINDING_SCHEMA.properties,
+    english: { type: 'string', minLength: 1, maxLength: 4000 },
+    chinese: { type: 'string', minLength: 1, maxLength: 4000 },
+  },
+  required: [...CODE_FINDING_SCHEMA.required, 'english', 'chinese'],
+}
+
 const CODE_REVIEW_SCHEMA = {
   type: 'object',
   properties: {
-    readiness: { type: 'string', enum: ['Ready for Final Gate', 'Changes Requested', 'No-Go'] },
-    blockers: { type: 'number' }, needsFix: { type: 'number' }, suggestions: { type: 'number' },
+    findings: { type: 'array', maxItems: 200, items: CODE_FINDING_SCHEMA },
     summary: { type: 'string' },
+    glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
   },
-  required: ['readiness', 'blockers', 'needsFix', 'suggestions'],
+  required: ['findings', 'glossarySha256'],
 }
 
 const TRANS_REVIEW_SCHEMA = {
   type: 'object',
   properties: {
-    readiness: { type: 'string', enum: ['Ready for Final Gate', 'Changes Requested', 'No-Go'] },
-    blockers: { type: 'number' }, needsFix: { type: 'number' }, suggestions: { type: 'number' },
+    findings: { type: 'array', maxItems: 200, items: TRANS_FINDING_SCHEMA },
     summary: { type: 'string' },
+    glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
   },
-  required: ['readiness', 'blockers', 'needsFix', 'suggestions'],
+  required: ['findings', 'glossarySha256'],
+}
+
+const validateReviewFindings = (kind, result, expectedGlossarySha256) => {
+  if (result.glossarySha256 !== expectedGlossarySha256)
+    throw new Error(`${kind} reviewer glossary SHA-256 does not match the bundle`)
+  if (!Array.isArray(result.findings) || result.findings.length > 200)
+    throw new Error(`${kind} reviewer findings must be an array of at most 200 items`)
+  const translation = kind === 'translation'
+  const fields = ['id', 'severity', 'file', 'line', 'evidence', 'impact', 'fix']
+    .concat(translation ? ['english', 'chinese'] : []).sort()
+  const ids = new Set()
+  const text = (value, limit, label) => {
+    if (typeof value !== 'string' || !value || value.includes('\0') || [...value].length > limit)
+      throw new Error(`${kind} reviewer ${label} is invalid`)
+  }
+  for (const [index, finding] of result.findings.entries()) {
+    if (!finding || typeof finding !== 'object' || Array.isArray(finding)
+        || JSON.stringify(Object.keys(finding).sort()) !== JSON.stringify(fields))
+      throw new Error(`${kind} reviewer finding ${index} fields are invalid`)
+    if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(finding.id) || ids.has(finding.id))
+      throw new Error(`${kind} reviewer finding ${index} id is invalid or duplicated`)
+    ids.add(finding.id)
+    if (!['blocker', 'needs_fix', 'suggestion'].includes(finding.severity))
+      throw new Error(`${kind} reviewer finding ${index} severity is invalid`)
+    text(finding.file, 512, `finding ${index} file`)
+    const pathParts = finding.file.split('/')
+    if (finding.file.startsWith('/') || pathParts.some(part => !part || part === '.' || part === '..'))
+      throw new Error(`${kind} reviewer finding ${index} file is not a normalized relative path`)
+    if (!Number.isInteger(finding.line) || finding.line < 1 || finding.line > 10000000)
+      throw new Error(`${kind} reviewer finding ${index} line is invalid`)
+    for (const field of ['evidence', 'impact', 'fix'])
+      text(finding[field], 4000, `finding ${index} ${field}`)
+    if (translation)
+      for (const field of ['english', 'chinese'])
+        text(finding[field], 4000, `finding ${index} ${field}`)
+  }
+  return result.findings
 }
 
 const CROSS_VALIDATE_SCHEMA = {
@@ -123,6 +184,8 @@ const REVIEW_BOUNDARY_SCHEMA = {
     target_head: { type: 'string' },
     candidate_head: { type: 'string' },
     glossary_sha256: { type: 'string' },
+    bundle_sha256: { type: 'string' },
+    routing_sha256: { type: 'string' },
     routing: { type: 'object' },
     error: { type: 'string' },
   },
@@ -367,7 +430,7 @@ if (!TARGET_ROOT || !TARGET_BRANCH || !CANDIDATE_BRANCH) {
 }
 
 const reviewBoundary = await agent(
-  `Prepare the immutable schema-v3 review boundary. This is a mechanical Git
+  `Prepare the immutable schema-v4 review boundary. This is a mechanical Git
 and evidence task; do not edit source, translation, policy, or documentation files.
 
 Target checkout: ${TARGET_ROOT}
@@ -437,9 +500,10 @@ Then review the diff:
 4. Database integrity — %%%% parity, duplicate keys, @keyword@ refs?
 5. EN mode safety — does English mode still work?
 
-Use review-contract-v3: Blocker | Needs Fix | Suggestion. Interpret every relevant
-failure or warning in the available logs and report the glossary SHA-256.
-Output the mechanically derived readiness with counts.`,
+Use review-contract-v4 severities: blocker | needs_fix | suggestion. Return the
+complete findings array; every finding must contain id, severity, file, line,
+evidence, impact, and fix. Do not return counts or a readiness verdict. Interpret
+every relevant failure or warning and report the glossary SHA-256.`,
     { agentType: 'zh-code-reviewer', label: 'code-review', schema: CODE_REVIEW_SCHEMA }
   ) }))
 }
@@ -462,15 +526,25 @@ Then review:
 4. Precision — numbers/percentages preserved?
 5. Cross-reference docs/glossary.md for terminology.
 
-Use review-contract-v3: Blocker | Needs Fix | Suggestion. Interpret every
-content-relevant failure or warning in the available logs and report the glossary SHA-256.
-Output the mechanically derived readiness with counts.`,
+Use review-contract-v4 severities: blocker | needs_fix | suggestion. Return the
+complete findings array; every finding must contain id, severity, file, line,
+evidence, impact, fix, english, and chinese. Do not return counts or a readiness
+verdict. Interpret every relevant failure or warning and report the glossary SHA-256.`,
     { agentType: 'translation-reviewer', label: 'trans-review', schema: TRANS_REVIEW_SCHEMA }
   ) }))
 }
 
 const reviews = reviewJobs.length ? await parallel(reviewJobs) : []
-const reviewResult = kind => reviews.find(item => item?.kind === kind)?.result || null
+const reviewResult = kind => {
+  const result = reviews.find(item => item?.kind === kind)?.result || null
+  if (!result) return null
+  const findings = validateReviewFindings(kind, result, reviewBoundary.glossary_sha256)
+  const count = severity => findings.filter(item => item.severity === severity).length
+  const blockers = count('blocker')
+  const needsFix = count('needs_fix')
+  return { ...result, findings, blockers, needsFix, suggestions: count('suggestion'),
+    readiness: blockers ? 'No-Go' : needsFix ? 'Changes Requested' : 'Ready for Final Gate' }
+}
 const codeReview = reviewResult('code')
 const transReview = reviewResult('translation')
 
@@ -556,21 +630,25 @@ if (!reviewFailure && routedReviewers.length === 0) {
   }
 } else if (!reviewFailure) {
   readinessEvidence = await agent(
-    `Persist the exact schema-v3 reviewer readiness records. This is an evidence
+    `Persist the exact schema-v4 reviewer findings and readiness records. This is an evidence
 task only; do not edit or commit repository files and do not run any verification profile.
 
 Target checkout: ${TARGET_ROOT}
 Candidate branch: ${CANDIDATE_BRANCH}
 Bundle id: ${reviewBoundary.bundle_id}
 Required routed reviewers: ${JSON.stringify(routedReviewers)}
-Code review counts: blocker=${codeReview?.blockers || 0}, needs_fix=${codeReview?.needsFix || 0}, suggestion=${codeReview?.suggestions || 0}
-Translation review counts: blocker=${transReview?.blockers || 0}, needs_fix=${transReview?.needsFix || 0}, suggestion=${transReview?.suggestions || 0}
+Code findings: ${JSON.stringify(codeReview?.findings || [])}
+Translation findings: ${JSON.stringify(transReview?.findings || [])}
 
 1. Resolve the candidate linked-worktree path from the clean target checkout.
 2. For each routed reviewer, invoke the target checkout's
    .claude/scripts/review_bundle.py record-readiness with --repo set to that
    candidate worktree, --bundle ${reviewBoundary.bundle_id}, the exact reviewer
-   role, and the counts above.
+   role, and --findings-json naming a canonical ordinary JSON file outside both
+   clean Git worktrees (for example under /tmp). The file must
+   contain schema, bundle_id, bundle_sha256, routing_sha256, reviewer, and the
+   exact findings array. Obtain all bindings from validated bundle status; never
+   invent or copy them from reviewer prose.
 3. Run review_bundle.py status for the same bundle. Return completed=true only
    when every routed role was recorded and status is FINAL_GATE_REQUIRED (11)
    or FINAL_APPROVAL_REQUIRED (13). Copy the actual state/exit code and roles.
@@ -580,7 +658,7 @@ Translation review counts: blocker=${transReview?.blockers || 0}, needs_fix=${tr
 
   if (readinessEvidence?.completed) {
     finalGate = await agent(
-      `Run the single schema-v3 final gate now that all required reviewers are ready.
+      `Run the single schema-v4 final gate now that all required reviewers are ready.
 Do not run verify_zh.sh directly, do not pass retry/recovery flags, and do not
 modify source or evidence manually.
 

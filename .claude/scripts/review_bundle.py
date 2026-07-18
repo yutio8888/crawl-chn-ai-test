@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Create and validate immutable schema-v3 review evidence bundles.
+"""Create and validate immutable schema-v4 review evidence bundles.
 
 Bundle evidence is shared by all linked worktrees through Git's common
 directory.  Every persisted JSON object is canonical and write-once; callers
@@ -64,14 +64,19 @@ UNSAFE_CHILD_ENV_EXACT = frozenset(
     }
 )
 
-BUNDLE_SCHEMA = "dcss-zh-review-bundle-v3"
-READINESS_SCHEMA = "dcss-zh-review-readiness-v1"
+BUNDLE_SCHEMA = "dcss-zh-review-bundle-v4"
+READINESS_SCHEMA = "dcss-zh-review-readiness-v2"
+FINDINGS_INPUT_SCHEMA = "dcss-zh-review-findings-v1"
+VERIFICATION_CONTRACT = "dcss-zh-review-v4"
+LEGACY_BUNDLE_SCHEMA = "dcss-zh-review-bundle-v3"
+LEGACY_READINESS_SCHEMA = "dcss-zh-review-readiness-v1"
 ATTEMPT_COMPLETION_SCHEMA = "dcss-zh-final-attempt-v1"
 FINAL_APPROVAL_SCHEMA = "dcss-zh-final-approval-v1"
 RUNNING_SCHEMA = "dcss-zh-final-running-v1"
 CONTRACT_SCHEMA = "dcss-zh-final-gate-contract-v1"
 CONTROL_PLANE_SCHEMA = "dcss-zh-control-plane-v1"
-EVIDENCE_PARTS = ("zh-review-evidence", "v3")
+EVIDENCE_PARTS = ("zh-review-evidence", "v4")
+LEGACY_EVIDENCE_PARTS = ("zh-review-evidence", "v3")
 IDENTITY_FIELDS = (
     "schema",
     "target_head",
@@ -91,9 +96,21 @@ READINESS_FIELDS = frozenset(
         "ready",
     )
 )
-FINDING_FIELDS = frozenset(("blocker", "needs_fix", "suggestion"))
+LEGACY_FINDING_FIELDS = frozenset(("blocker", "needs_fix", "suggestion"))
+FINDINGS_INPUT_FIELDS = frozenset(
+    ("schema", "bundle_id", "bundle_sha256", "routing_sha256", "reviewer", "findings")
+)
+FINDING_FIELDS = frozenset(("id", "severity", "file", "line", "evidence", "impact", "fix"))
+TRANSLATION_FINDING_FIELDS = frozenset((*FINDING_FIELDS, "english", "chinese"))
+FINDING_SEVERITIES = frozenset(("blocker", "needs_fix", "suggestion"))
+MAX_FINDINGS_INPUT_BYTES = 1024 * 1024
+MAX_FINDINGS = 200
+MAX_FINDING_ID_LENGTH = 64
+MAX_FINDING_FILE_LENGTH = 512
+MAX_FINDING_TEXT_LENGTH = 4000
 SHA256_RE = re.compile(r"^[0-9a-f]{64}$")
 ROLE_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.-]{0,127}$")
+FINDING_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$")
 RUN_ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9_.+:-]{0,191}$")
 LOCK_NAME = ".bundle.lock"
 RUNNING_NAME = "running.json"
@@ -109,6 +126,7 @@ EVIDENCE_FAILED = 14
 STALE_EVIDENCE = 15
 INVALID_EVIDENCE = 16
 INTERNAL_ERROR = 20
+LEGACY_READ_ONLY = 17
 
 STATE_NAMES = {
     MERGEABLE: "MERGEABLE",
@@ -120,6 +138,7 @@ STATE_NAMES = {
     STALE_EVIDENCE: "STALE_EVIDENCE",
     INVALID_EVIDENCE: "INVALID_EVIDENCE",
     INTERNAL_ERROR: "INTERNAL_ERROR",
+    LEGACY_READ_ONLY: "LEGACY_READ_ONLY",
 }
 
 
@@ -400,6 +419,15 @@ def evidence_root(
         else:
             root = root / part
             _require_directory(root, "review evidence directory")
+    return root
+
+
+def legacy_evidence_root(repo: os.PathLike[str] | str = ".") -> Path:
+    """Return the historical schema-v3 evidence root without creating it."""
+    root = git_common_dir(repo)
+    for part in LEGACY_EVIDENCE_PARTS:
+        root = root / part
+        _require_directory(root, "legacy review evidence directory")
     return root
 
 
@@ -910,14 +938,21 @@ def create_bundle(
 def _resolve_bundle_path(
     repo: os.PathLike[str] | str, bundle: os.PathLike[str] | str
 ) -> Path:
-    root = evidence_root(repo, create=False)
     raw = Path(bundle)
     if raw.is_absolute() or len(raw.parts) > 1:
         path = Path(os.path.abspath(os.fspath(raw)))
-        if path.parent != Path(os.path.abspath(os.fspath(root))):
-            raise ReviewBundleError("bundle path is outside the schema-v3 evidence root")
+        roots: list[Path] = []
+        for resolver in (evidence_root, legacy_evidence_root):
+            try:
+                roots.append(Path(os.path.abspath(os.fspath(resolver(repo)))))
+            except ReviewBundleError:
+                pass
+        if path.parent not in roots:
+            raise ReviewBundleError("bundle path is outside the v3/v4 evidence roots")
     else:
-        path = root / raw
+        path = git_common_dir(repo).joinpath(*EVIDENCE_PARTS, raw)
+        if _lstat(path) is None:
+            path = git_common_dir(repo).joinpath(*LEGACY_EVIDENCE_PARTS, raw)
     if not SHA256_RE.fullmatch(path.name):
         raise ReviewBundleError("bundle selector must end in its 64-character bundle id")
     _require_directory(path, "bundle directory")
@@ -941,6 +976,110 @@ def _validate_count(value: Any, label: str) -> int:
     if isinstance(value, bool) or not isinstance(value, int) or value < 0:
         raise ReviewBundleError(f"{label} must be a non-negative integer")
     return value
+
+
+def _validate_finding_text(value: Any, label: str, *, limit: int) -> str:
+    if not isinstance(value, str) or not value or "\x00" in value:
+        raise ReviewBundleError(f"{label} must be non-empty UTF-8 text")
+    if len(value) > limit:
+        raise ReviewBundleError(f"{label} exceeds the {limit}-character limit")
+    return value
+
+
+def _validate_findings(findings: Any, reviewer: str) -> list[dict[str, Any]]:
+    if not isinstance(findings, list):
+        raise ReviewBundleError("findings must be a JSON array")
+    if len(findings) > MAX_FINDINGS:
+        raise ReviewBundleError(f"findings exceeds the {MAX_FINDINGS}-item limit")
+    required_fields = (
+        TRANSLATION_FINDING_FIELDS
+        if reviewer == "translation-reviewer"
+        else FINDING_FIELDS
+    )
+    result: list[dict[str, Any]] = []
+    seen_ids: set[str] = set()
+    for index, finding in enumerate(findings):
+        label = f"findings[{index}]"
+        if not isinstance(finding, dict):
+            raise ReviewBundleError(f"{label} fields do not match the reviewer schema")
+        actual_fields = frozenset(finding)
+        if actual_fields != required_fields:
+            missing = sorted(required_fields - actual_fields)
+            unknown = sorted(actual_fields - required_fields)
+            detail = []
+            if missing:
+                detail.append("missing " + ", ".join(missing))
+            if unknown:
+                detail.append("unknown " + ", ".join(unknown))
+            raise ReviewBundleError(
+                f"{label} fields do not match the reviewer schema: {'; '.join(detail)}"
+            )
+        finding_id = finding.get("id")
+        if not isinstance(finding_id, str) or not FINDING_ID_RE.fullmatch(finding_id):
+            raise ReviewBundleError(f"{label}.id is invalid")
+        if finding_id in seen_ids:
+            raise ReviewBundleError(f"duplicate finding id: {finding_id}")
+        seen_ids.add(finding_id)
+        if finding.get("severity") not in FINDING_SEVERITIES:
+            raise ReviewBundleError(f"{label}.severity is invalid")
+        _validate_finding_text(
+            finding.get("file"), f"{label}.file", limit=MAX_FINDING_FILE_LENGTH
+        )
+        _safe_relative_path(finding["file"], f"{label}.file")
+        line = finding.get("line")
+        if isinstance(line, bool) or not isinstance(line, int) or not 1 <= line <= 10_000_000:
+            raise ReviewBundleError(f"{label}.line must be an integer from 1 to 10000000")
+        for field in ("evidence", "impact", "fix"):
+            _validate_finding_text(
+                finding.get(field), f"{label}.{field}", limit=MAX_FINDING_TEXT_LENGTH
+            )
+        if reviewer == "translation-reviewer":
+            for field in ("english", "chinese"):
+                _validate_finding_text(
+                    finding.get(field), f"{label}.{field}", limit=MAX_FINDING_TEXT_LENGTH
+                )
+        result.append(dict(finding))
+    return result
+
+
+def _load_findings_input(
+    path: os.PathLike[str] | str,
+    *,
+    reviewer: str,
+    bundle_id: str,
+    bundle_sha256: str,
+    routing_sha256: str,
+) -> list[dict[str, Any]]:
+    input_path = Path(path)
+    info = _require_regular_file(input_path, "findings JSON")
+    if info.st_size > MAX_FINDINGS_INPUT_BYTES:
+        raise ReviewBundleError(
+            f"findings JSON exceeds the {MAX_FINDINGS_INPUT_BYTES}-byte limit"
+        )
+    data = _read_regular_bytes(input_path)
+    if len(data) > MAX_FINDINGS_INPUT_BYTES:
+        raise ReviewBundleError(
+            f"findings JSON exceeds the {MAX_FINDINGS_INPUT_BYTES}-byte limit"
+        )
+    try:
+        value = json.loads(data.decode("utf-8", errors="strict"))
+    except (UnicodeDecodeError, json.JSONDecodeError) as exc:
+        raise ReviewBundleError(f"findings JSON is invalid UTF-8 JSON: {exc}") from exc
+    if not isinstance(value, dict) or frozenset(value) != FINDINGS_INPUT_FIELDS:
+        raise ReviewBundleError("findings JSON fields do not match the input schema")
+    if canonical_json_bytes(value) != data:
+        raise ReviewBundleError("findings JSON is not canonical JSON")
+    expected = {
+        "schema": FINDINGS_INPUT_SCHEMA,
+        "reviewer": reviewer,
+        "bundle_id": bundle_id,
+        "bundle_sha256": bundle_sha256,
+        "routing_sha256": routing_sha256,
+    }
+    for field, expected_value in expected.items():
+        if value.get(field) != expected_value:
+            raise ReviewBundleError(f"findings JSON {field} binding failed")
+    return _validate_findings(value.get("findings"), reviewer)
 
 
 def _parse_contract(data: bytes, label: str = "final-gate contract") -> dict[str, Any]:
@@ -1474,9 +1613,20 @@ def _validate_bundle_locked(
     _reject_unknown_top_level(bundle_path)
     manifest, manifest_bytes = _load_canonical_object(bundle_path / "bundle.json")
     if frozenset(manifest) != MANIFEST_FIELDS:
-        raise ReviewBundleError("bundle manifest fields do not match schema-v3")
-    if manifest.get("schema") != BUNDLE_SCHEMA:
+        raise ReviewBundleError("bundle manifest fields do not match the supported schema")
+    schema = manifest.get("schema")
+    if schema not in (BUNDLE_SCHEMA, LEGACY_BUNDLE_SCHEMA):
         raise ReviewBundleError("unsupported review bundle schema")
+    legacy = schema == LEGACY_BUNDLE_SCHEMA
+    expected_root_parts = LEGACY_EVIDENCE_PARTS if legacy else EVIDENCE_PARTS
+    expected_root = Path(
+        os.path.abspath(os.fspath(git_common_dir(repo).joinpath(*expected_root_parts)))
+    )
+    actual_root = Path(os.path.abspath(os.fspath(bundle_path.parent)))
+    if actual_root != expected_root:
+        raise ReviewBundleError(
+            f"{schema} bundle is stored outside its required evidence namespace"
+        )
     target_head = manifest.get("target_head")
     candidate_head = manifest.get("candidate_head")
     if not isinstance(target_head, str) or resolve_commit(repo, target_head) != target_head:
@@ -1514,6 +1664,7 @@ def _validate_bundle_locked(
     bundle_digest = sha256_bytes(manifest_bytes)
     records: dict[str, dict[str, Any]] = {}
     readiness_sha256: dict[str, str] = {}
+    finding_counts: dict[str, dict[str, int]] = {}
     readiness_dir = bundle_path / "readiness"
     readiness_info = _lstat(readiness_dir)
     if readiness_info is not None:
@@ -1528,7 +1679,10 @@ def _validate_bundle_locked(
                 record, record_bytes = _load_canonical_object(Path(entry.path))
                 if frozenset(record) != READINESS_FIELDS:
                     raise ReviewBundleError(f"invalid readiness fields for {reviewer}")
-                if record.get("schema") != READINESS_SCHEMA:
+                expected_readiness_schema = (
+                    LEGACY_READINESS_SCHEMA if legacy else READINESS_SCHEMA
+                )
+                if record.get("schema") != expected_readiness_schema:
                     raise ReviewBundleError(f"invalid readiness schema for {reviewer}")
                 if record.get("bundle_id") != expected_id:
                     raise ReviewBundleError(f"readiness bundle binding failed for {reviewer}")
@@ -1539,16 +1693,35 @@ def _validate_bundle_locked(
                 if record.get("reviewer") != reviewer:
                     raise ReviewBundleError(f"readiness reviewer binding failed for {reviewer}")
                 findings = record.get("findings")
-                if not isinstance(findings, dict) or frozenset(findings) != FINDING_FIELDS:
-                    raise ReviewBundleError(f"invalid readiness findings for {reviewer}")
-                blocker = _validate_count(findings.get("blocker"), "findings.blocker")
-                needs_fix = _validate_count(findings.get("needs_fix"), "findings.needs_fix")
-                _validate_count(findings.get("suggestion"), "findings.suggestion")
+                if legacy:
+                    if not isinstance(findings, dict) or frozenset(findings) != LEGACY_FINDING_FIELDS:
+                        raise ReviewBundleError(f"invalid legacy readiness findings for {reviewer}")
+                    blocker = _validate_count(findings.get("blocker"), "findings.blocker")
+                    needs_fix = _validate_count(findings.get("needs_fix"), "findings.needs_fix")
+                    suggestion = _validate_count(
+                        findings.get("suggestion"), "findings.suggestion"
+                    )
+                else:
+                    validated_findings = _validate_findings(findings, reviewer)
+                    blocker = sum(
+                        finding["severity"] == "blocker" for finding in validated_findings
+                    )
+                    needs_fix = sum(
+                        finding["severity"] == "needs_fix" for finding in validated_findings
+                    )
+                    suggestion = sum(
+                        finding["severity"] == "suggestion" for finding in validated_findings
+                    )
                 expected_ready = blocker == 0 and needs_fix == 0
                 if record.get("ready") is not expected_ready:
                     raise ReviewBundleError(f"readiness verdict is inconsistent for {reviewer}")
                 records[reviewer] = record
                 readiness_sha256[reviewer] = sha256_bytes(record_bytes)
+                finding_counts[reviewer] = {
+                    "blocker": blocker,
+                    "needs_fix": needs_fix,
+                    "suggestion": suggestion,
+                }
 
     ready_reviewers = [role for role in reviewers if records.get(role, {}).get("ready") is True]
     missing_reviewers = [role for role in reviewers if role not in records]
@@ -1567,7 +1740,9 @@ def _validate_bundle_locked(
         readiness_sha256,
         passing_attempt,
     )
-    if running_marker is not None:
+    if legacy:
+        exit_code = LEGACY_READ_ONLY
+    elif running_marker is not None:
         exit_code = FINAL_GATE_RUNNING
     elif not ready:
         exit_code = READINESS_REQUIRED
@@ -1593,6 +1768,7 @@ def _validate_bundle_locked(
         "missing_reviewers": missing_reviewers,
         "not_ready_reviewers": not_ready_reviewers,
         "readiness_sha256": readiness_sha256,
+        "finding_counts": finding_counts,
         "attempts": attempts,
         "passing_attempt": passing_attempt,
         "approved": approval is not None,
@@ -1602,6 +1778,7 @@ def _validate_bundle_locked(
         "exit_code": exit_code,
         "ready": ready,
         "valid": True,
+        "legacy_read_only": legacy,
     }
 
 
@@ -1683,18 +1860,22 @@ def record_readiness(
     repo: os.PathLike[str] | str,
     bundle: os.PathLike[str] | str,
     reviewer: str,
-    blocker: int,
-    needs_fix: int,
-    suggestion: int = 0,
+    findings_json: os.PathLike[str] | str,
 ) -> dict[str, Any]:
     path = _resolve_bundle_path(repo, bundle)
-    blocker = _validate_count(blocker, "blocker")
-    needs_fix = _validate_count(needs_fix, "needs_fix")
-    suggestion = _validate_count(suggestion, "suggestion")
     with bundle_lock(path):
         status = _validate_bundle_locked(repo, path, check_clean=True)
+        if status.get("legacy_read_only"):
+            raise ReviewBundleError("schema-v3 bundles are historical read-only evidence")
         if reviewer not in status["required_reviewers"]:
             raise ReviewBundleError(f"reviewer role is not required by routing: {reviewer}")
+        findings = _load_findings_input(
+            findings_json,
+            reviewer=reviewer,
+            bundle_id=status["bundle_id"],
+            bundle_sha256=status["bundle_sha256"],
+            routing_sha256=status["routing_sha256"],
+        )
         readiness_dir = _ensure_child_directory(path, "readiness")
         record = {
             "schema": READINESS_SCHEMA,
@@ -1702,12 +1883,11 @@ def record_readiness(
             "bundle_sha256": status["bundle_sha256"],
             "routing_sha256": status["routing_sha256"],
             "reviewer": reviewer,
-            "findings": {
-                "blocker": blocker,
-                "needs_fix": needs_fix,
-                "suggestion": suggestion,
-            },
-            "ready": blocker == 0 and needs_fix == 0,
+            "findings": findings,
+            "ready": not any(
+                finding["severity"] in ("blocker", "needs_fix")
+                for finding in findings
+            ),
         }
         created = atomic_write_once(
             readiness_dir / f"{reviewer}.json", canonical_json_bytes(record)
@@ -1754,6 +1934,10 @@ def _check_final_inputs(
         contract_relative,
         verifier_relative,
     )
+    if control["contract"].get("verification_contract") != VERIFICATION_CONTRACT:
+        raise ReviewBundleError(
+            f"schema-v4 final verification requires {VERIFICATION_CONTRACT}"
+        )
     for record in control["control_plane"]["files"]:
         working_path, relative = _path_under_checkout(
             target_top, target_top / record["path"], "control-plane file"
@@ -2103,6 +2287,8 @@ def run_final(
                 raise
             _recover_stale_locked(bundle_path, bundle_path.name)
             status = _validate_bundle_locked(repo, bundle_path, check_clean=True)
+        if status.get("legacy_read_only"):
+            raise ReviewBundleError("schema-v3 bundles cannot create new merge authorization")
         if not status["ready"]:
             return status
         if status["exit_code"] == FINAL_GATE_RUNNING:
@@ -2213,6 +2399,8 @@ def final_gate(
     path = _resolve_bundle_path(repo, bundle)
     with bundle_lock(path, exclusive=True):
         status = _validate_bundle_locked(repo, path, check_clean=True)
+        if status.get("legacy_read_only"):
+            raise ReviewBundleError("schema-v3 bundles cannot authorize final actions")
         if require_ready and not status["ready"]:
             raise ReviewBundleError("bundle is valid but not ready for final approval")
         yield status
@@ -2247,9 +2435,7 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     )
     _add_bundle_selector(readiness)
     readiness.add_argument("--reviewer", "--reviewer-role", dest="reviewer", required=True)
-    readiness.add_argument("--blocker", type=int, required=True)
-    readiness.add_argument("--needs-fix", type=int, required=True)
-    readiness.add_argument("--suggestion", type=int, default=0)
+    readiness.add_argument("--findings-json", required=True)
     status = subparsers.add_parser("status", help="show validated aggregate readiness")
     _add_bundle_selector(status)
     validate = subparsers.add_parser("validate", help="validate all immutable evidence")
@@ -2294,9 +2480,7 @@ def main(argv: list[str] | None = None) -> int:
                 args.repo,
                 args.bundle,
                 args.reviewer,
-                args.blocker,
-                args.needs_fix,
-                args.suggestion,
+                args.findings_json,
             )
         elif args.command == "status":
             result = status_bundle(args.repo, args.bundle)

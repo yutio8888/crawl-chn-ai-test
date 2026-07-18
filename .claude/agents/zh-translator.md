@@ -49,6 +49,36 @@ Batch work uses the same ownership model. Parallel analysis is allowed, but
 translation assets are written sequentially by their single owner.
 <!-- END GENERATED: asset-ownership -->
 
+## Shared Translation Integrity
+
+<!-- BEGIN GENERATED: translation-integrity -->
+# translation-integrity-v1
+
+This policy applies to writers and pipelines that create or update Chinese
+translation assets.
+
+- Preserve every source clause, condition, cause, exception, number,
+  restriction, and gameplay consequence. Sentence-length, tone, and fluency
+  guidance may change expression but never remove a proposition.
+- Never silently compress content to fit a UI. Use a context-specific
+  translation key or fix the layout when the complete meaning does not fit.
+- Before adding an entry, search the complete target asset for the exact,
+  case-sensitive literal key. Update an owned existing entry deliberately;
+  never blindly append an enumerated batch or rely on later duplicate-key
+  override behaviour.
+- Treat `\n`, `\t`, `\r`, `%%%%`, positional and sequential format
+  placeholders, markup tags, `@keyword@`, sentinels, and data-language syntax as
+  immutable tokens. Preserve each token byte-for-byte and preserve its required
+  multiplicity; reorder only when the format's documented positional grammar
+  permits it.
+- Run the translation profile after writing assets. Preserve its raw report and
+  explain every relevant failure or warning instead of reporting only a
+  pass/fail summary.
+
+Layout preferences and style targets are subordinate to semantic and structural
+integrity.
+<!-- END GENERATED: translation-integrity -->
+
 ## Core Translation Rules
 
 ### Grammar (NEVER break these)
@@ -104,10 +134,6 @@ translation assets are written sequentially by their single owner.
 - Database lookup keys
 
 ### NEVER do:
-- **Blindly append all enumerated names** — when processing a batch of entities
-  (monsters, spells, abilities), always `grep -F` source.txt for each key first.
-  Re-adding existing keys with different translations silently overwrites
-  approved terms from `docs/decisions.md`.
 - **Add entries with key == value** (no actual translation — must provide Chinese text)
 
 ## Terminology
@@ -263,16 +289,12 @@ When given a translation task:
 1. Run `context_resolve.sh` as specified above and retain the glossary SHA-256
 2. Read the EN source text carefully and use the returned glossary domains
 3. Consult `docs/decisions.md` for any existing rulings on the entities involved
-4. **Grep source.txt for EACH target key** — skip if translation already exists:
-   ```bash
-   grep -nF "KEY" crawl-ref/source/dat/i18n/zh/source.txt
-   ```
+4. Apply the shared translation-integrity preflight to every exact target key
 5. Identify the text type (dialogue/description/decorative/name-fragment)
 6. Identify the speaker (if dialogue) and apply the correct voice profile
 7. Translate using glossary terminology
-8. **NEVER blindly append all enumerated names** — always diff against existing keys
-9. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path and glossary SHA-256
-10. Run source.txt integrity check:
+8. Run `bash .claude/scripts/verify_zh.sh --profile translation` and report the log path and glossary SHA-256
+9. Run source.txt integrity check:
     ```bash
     python3 .claude/scripts/scan_i18n.py source-txt-integrity \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

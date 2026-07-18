@@ -22,6 +22,8 @@ AUTHORITIES = [
     ROOT / ".agents/policies/asset-ownership.md",
     ROOT / ".agents/policies/path-portability.md",
     ROOT / ".agents/policies/review-contract.md",
+    ROOT / ".agents/policies/translation-integrity.md",
+    ROOT / ".agents/policies/verification-authoring.md",
     ROOT / ".agents/policies/worktree-policy.md",
     ROOT / "docs/agent-routing.md",
     ROOT / "docs/build-workflow.md",
@@ -108,6 +110,24 @@ class AgentDocumentationTests(unittest.TestCase):
                 opencode = (ROOT / ".opencode/workflows" / name).read_bytes()
                 claude = (ROOT / ".claude/workflows" / name).read_bytes()
                 self.assertEqual(opencode, claude)
+
+    def test_workflows_fail_closed_on_invalid_structured_findings(self) -> None:
+        required_fragments = (
+            "maxItems: 200",
+            "maximum: 10000000",
+            "id is invalid or duplicated",
+            "file is not a normalized relative path",
+            "glossary SHA-256 does not match the bundle",
+            "validateReviewFindings(kind, result, reviewBoundary.glossary_sha256)",
+        )
+        for name in (
+            "translation-fix-pipeline.js",
+            "translation-batch-pipeline.js",
+        ):
+            text = (ROOT / ".claude/workflows" / name).read_text()
+            for fragment in required_fragments:
+                with self.subTest(workflow=name, fragment=fragment):
+                    self.assertIn(fragment, text)
 
     def test_workflows_enforce_translation_first_and_profile_success(self) -> None:
         for tree in (".claude", ".opencode"):

@@ -186,7 +186,7 @@ path, base, head, diff_hash, diff_sha256, glossary_sha, worktree = sys.argv[1:]
 with open(path, encoding="utf-8") as stream:
     data = json.load(stream)
 assert data["schema_version"] == 3
-assert data["verification_contract"] == "dcss-zh-review-v3"
+assert data["verification_contract"] == "dcss-zh-review-v4"
 assert data["status"] == "pass"
 assert data["profile"] == "review"
 assert data["scope"] == "full"
@@ -293,12 +293,14 @@ else
     fail "expected 3 unique run directories, found $RUN_COUNT"
 fi
 
-python3 - "$SCRIPT_DIR/../data/review_verification_contract_v3.json" <<'PY'
+python3 - "$SCRIPT_DIR/../data/review_verification_contract_v4.json" <<'PY'
 import json
 import sys
 
 with open(sys.argv[1], encoding="utf-8") as stream:
     contract = json.load(stream)
+assert contract["verification_contract"] == "dcss-zh-review-v4"
+assert ".claude/scripts/data/review_findings_v1.schema.json" in contract["control_plane_files"]
 assert [phase["id"] for phase in contract["phase_plan"]] == [
     "policy-sync", "source-db-static", "review-static",
     "message-overlay-static", "cpp-build", "zh-smoke",

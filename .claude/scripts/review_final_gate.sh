@@ -1,5 +1,5 @@
 #!/bin/bash
-# review_final_gate.sh — Run the single locked schema-v3 final verification.
+# review_final_gate.sh — Run the single locked schema-v4 final verification.
 #
 # Usage:
 #   bash .claude/scripts/review_final_gate.sh <candidate-branch> [target-branch]
@@ -32,7 +32,7 @@ TARGET_ROOT=$(git rev-parse --show-toplevel 2>/dev/null) || {
 BUNDLE_SCRIPT="$TARGET_ROOT/.claude/scripts/review_bundle.py"
 CLASSIFIER="$TARGET_ROOT/.claude/scripts/classify_reviewers.py"
 VERIFIER="$TARGET_ROOT/.claude/scripts/verify_zh.sh"
-CONTRACT="$TARGET_ROOT/.claude/scripts/data/review_verification_contract_v3.json"
+CONTRACT="$TARGET_ROOT/.claude/scripts/data/review_verification_contract_v4.json"
 
 CANDIDATE_BRANCH="$1"
 shift
@@ -118,7 +118,7 @@ DESCRIPTION=$(python3 "$BUNDLE_SCRIPT" describe \
 BUNDLE_ID=$(printf '%s' "$DESCRIPTION" | python3 -c \
     'import json,sys; print(json.load(sys.stdin)["bundle_id"])')
 
-echo "=== Schema-v3 Final Review Gate ==="
+echo "=== Schema-v4 Final Review Gate ==="
 echo "Target:    $TARGET_BRANCH @ $TARGET_HEAD"
 echo "Candidate: $CANDIDATE_BRANCH @ $CANDIDATE_HEAD"
 echo "Bundle:    $BUNDLE_ID"

@@ -20,6 +20,11 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   context; update `move_i18n_manifest.json` and require exact-key coverage.
 - Keep protocol, lookup, serialization, Lua comparison, and TextDB key values
   in English. Translate only at display boundaries.
+- When a changed value may serve both identity and display, enumerate its
+  producer, every intermediate consumer, and its final sinks. Identity and
+  lookup paths use the original value or an English accessor (for example,
+  `_god_name_en()`); only display sinks localize it. Cover the real lookup and
+  fallback path with a targeted test.
 - Use `mprf_p` for positional `%n$s` formats and never mix positional and
   sequential placeholders.
 - Resolve terminology from the current `docs/glossary.md` immediately before

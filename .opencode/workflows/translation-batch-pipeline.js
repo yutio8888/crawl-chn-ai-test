@@ -86,14 +86,85 @@ const EXEC_ITEM_SCHEMA = {
   },
 }
 
-const BATCH_REVIEW_SCHEMA = {
+const CODE_FINDING_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  properties: {
+    id: { type: 'string', pattern: '^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$' },
+    severity: { type: 'string', enum: ['blocker', 'needs_fix', 'suggestion'] },
+    file: { type: 'string', minLength: 1, maxLength: 512 },
+    line: { type: 'integer', minimum: 1, maximum: 10000000 },
+    evidence: { type: 'string', minLength: 1, maxLength: 4000 },
+    impact: { type: 'string', minLength: 1, maxLength: 4000 },
+    fix: { type: 'string', minLength: 1, maxLength: 4000 },
+  },
+  required: ['id', 'severity', 'file', 'line', 'evidence', 'impact', 'fix'],
+}
+
+const TRANS_FINDING_SCHEMA = {
+  type: 'object', additionalProperties: false,
+  properties: {
+    ...CODE_FINDING_SCHEMA.properties,
+    english: { type: 'string', minLength: 1, maxLength: 4000 },
+    chinese: { type: 'string', minLength: 1, maxLength: 4000 },
+  },
+  required: [...CODE_FINDING_SCHEMA.required, 'english', 'chinese'],
+}
+
+const CODE_BATCH_REVIEW_SCHEMA = {
   type: 'object',
   properties: {
-    readiness: { type: 'string', enum: ['Ready for Final Gate', 'Changes Requested', 'No-Go'] },
-    blockers: { type: 'number' }, needsFix: { type: 'number' }, suggestions: { type: 'number' },
+    findings: { type: 'array', maxItems: 200, items: CODE_FINDING_SCHEMA },
     summary: { type: 'string' },
+    glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
   },
-  required: ['readiness', 'blockers', 'needsFix', 'suggestions'],
+  required: ['findings', 'glossarySha256'],
+}
+
+const TRANS_BATCH_REVIEW_SCHEMA = {
+  type: 'object',
+  properties: {
+    findings: { type: 'array', maxItems: 200, items: TRANS_FINDING_SCHEMA },
+    summary: { type: 'string' },
+    glossarySha256: { type: 'string', pattern: '^[0-9a-f]{64}$' },
+  },
+  required: ['findings', 'glossarySha256'],
+}
+
+const validateReviewFindings = (kind, result, expectedGlossarySha256) => {
+  if (result.glossarySha256 !== expectedGlossarySha256)
+    throw new Error(`${kind} reviewer glossary SHA-256 does not match the bundle`)
+  if (!Array.isArray(result.findings) || result.findings.length > 200)
+    throw new Error(`${kind} reviewer findings must be an array of at most 200 items`)
+  const translation = kind === 'translation'
+  const fields = ['id', 'severity', 'file', 'line', 'evidence', 'impact', 'fix']
+    .concat(translation ? ['english', 'chinese'] : []).sort()
+  const ids = new Set()
+  const text = (value, limit, label) => {
+    if (typeof value !== 'string' || !value || value.includes('\0') || [...value].length > limit)
+      throw new Error(`${kind} reviewer ${label} is invalid`)
+  }
+  for (const [index, finding] of result.findings.entries()) {
+    if (!finding || typeof finding !== 'object' || Array.isArray(finding)
+        || JSON.stringify(Object.keys(finding).sort()) !== JSON.stringify(fields))
+      throw new Error(`${kind} reviewer finding ${index} fields are invalid`)
+    if (!/^[A-Za-z0-9][A-Za-z0-9_.:-]{0,63}$/.test(finding.id) || ids.has(finding.id))
+      throw new Error(`${kind} reviewer finding ${index} id is invalid or duplicated`)
+    ids.add(finding.id)
+    if (!['blocker', 'needs_fix', 'suggestion'].includes(finding.severity))
+      throw new Error(`${kind} reviewer finding ${index} severity is invalid`)
+    text(finding.file, 512, `finding ${index} file`)
+    const pathParts = finding.file.split('/')
+    if (finding.file.startsWith('/') || pathParts.some(part => !part || part === '.' || part === '..'))
+      throw new Error(`${kind} reviewer finding ${index} file is not a normalized relative path`)
+    if (!Number.isInteger(finding.line) || finding.line < 1 || finding.line > 10000000)
+      throw new Error(`${kind} reviewer finding ${index} line is invalid`)
+    for (const field of ['evidence', 'impact', 'fix'])
+      text(finding[field], 4000, `finding ${index} ${field}`)
+    if (translation)
+      for (const field of ['english', 'chinese'])
+        text(finding[field], 4000, `finding ${index} ${field}`)
+  }
+  return result.findings
 }
 
 const CROSS_VALIDATE_SCHEMA = {
@@ -115,6 +186,8 @@ const REVIEW_BOUNDARY_SCHEMA = {
     target_head: { type: 'string' },
     candidate_head: { type: 'string' },
     glossary_sha256: { type: 'string' },
+    bundle_sha256: { type: 'string' },
+    routing_sha256: { type: 'string' },
     routing: { type: 'object' },
     error: { type: 'string' },
   },
@@ -402,7 +475,7 @@ if (!TARGET_ROOT || !TARGET_BRANCH || !CANDIDATE_BRANCH) {
 }
 
 const reviewBoundary = await agent(
-  'Prepare the immutable schema-v3 review boundary. This is a mechanical Git and evidence task; do not edit source or translation files.\n' +
+  'Prepare the immutable schema-v4 review boundary. This is a mechanical Git and evidence task; do not edit source or translation files.\n' +
   '\nTarget checkout: ' + TARGET_ROOT +
   '\nTarget branch: ' + TARGET_BRANCH +
   '\nCandidate branch: ' + CANDIDATE_BRANCH +
@@ -455,8 +528,8 @@ if (routedReviewers.includes('zh-code-reviewer')) {
     'Fail No-Go if the bundle, heads, routing, glossary hash, or clean-worktree precondition cannot be verified.\n' +
     'Do not run verify_zh.sh --profile review; the final gate owns the single full review run.\n' +
     'Review the diff: protocol/display, T_() correctness, compilation, DB integrity, EN mode.\n' +
-    'Interpret relevant failures/warnings, report glossary SHA-256, and output review-contract-v3 readiness with counts.',
-    { agentType: 'zh-code-reviewer', label: 'code-review', schema: BATCH_REVIEW_SCHEMA }
+    'Use review-contract-v4 severities blocker|needs_fix|suggestion. Return the complete findings array; each finding requires id, severity, file, line, evidence, impact, and fix. Do not return counts or readiness. Interpret relevant failures/warnings and report glossary SHA-256.',
+    { agentType: 'zh-code-reviewer', label: 'code-review', schema: CODE_BATCH_REVIEW_SCHEMA }
   ) }))
 }
 if (routedReviewers.includes('translation-reviewer')) {
@@ -468,12 +541,21 @@ if (routedReviewers.includes('translation-reviewer')) {
     'Do not run verify_zh.sh --profile review; the final gate owns the single full review run.\n' +
     'Review: semantic accuracy, no fabrication, natural Chinese, precision, terminology.\n' +
     'Cross-reference against batch glossary and docs/glossary.md.\n' +
-    'Interpret content-relevant failures/warnings, report glossary SHA-256, and output review-contract-v3 readiness with counts.',
-    { agentType: 'translation-reviewer', label: 'trans-review', schema: BATCH_REVIEW_SCHEMA }
+    'Use review-contract-v4 severities blocker|needs_fix|suggestion. Return the complete findings array; each finding requires id, severity, file, line, evidence, impact, fix, english, and chinese. Do not return counts or readiness. Interpret content-relevant failures/warnings and report glossary SHA-256.',
+    { agentType: 'translation-reviewer', label: 'trans-review', schema: TRANS_BATCH_REVIEW_SCHEMA }
   ) }))
 }
 const reviews = reviewJobs.length ? await parallel(reviewJobs) : []
-const reviewResult = kind => reviews.find(item => item?.kind === kind)?.result || null
+const reviewResult = kind => {
+  const result = reviews.find(item => item?.kind === kind)?.result || null
+  if (!result) return null
+  const findings = validateReviewFindings(kind, result, reviewBoundary.glossary_sha256)
+  const count = severity => findings.filter(item => item.severity === severity).length
+  const blockers = count('blocker')
+  const needsFix = count('needs_fix')
+  return { ...result, findings, blockers, needsFix, suggestions: count('suggestion'),
+    readiness: blockers ? 'No-Go' : needsFix ? 'Changes Requested' : 'Ready for Final Gate' }
+}
 const codeReview = reviewResult('code')
 const transReview = reviewResult('translation')
 
@@ -548,20 +630,20 @@ if (!reviewFailure && routedReviewers.length === 0) {
   }
 } else if (!reviewFailure) {
   readinessEvidence = await agent(
-    'Persist the exact schema-v3 reviewer readiness records. Do not edit or commit repository files and do not run any verification profile.\n' +
+    'Persist the exact schema-v4 reviewer findings and readiness records. Do not edit or commit repository files and do not run any verification profile.\n' +
     '\nTarget checkout: ' + TARGET_ROOT +
     '\nCandidate branch: ' + CANDIDATE_BRANCH +
     '\nBundle id: ' + reviewBoundary.bundle_id +
     '\nRequired routed reviewers: ' + JSON.stringify(routedReviewers) +
-    '\nCode counts: blocker=' + (codeReview?.blockers || 0) + ', needs_fix=' + (codeReview?.needsFix || 0) + ', suggestion=' + (codeReview?.suggestions || 0) +
-    '\nTranslation counts: blocker=' + (transReview?.blockers || 0) + ', needs_fix=' + (transReview?.needsFix || 0) + ', suggestion=' + (transReview?.suggestions || 0) +
-    '\n\nResolve the candidate linked-worktree path. For every routed role, invoke the target checkout review_bundle.py record-readiness with the exact bundle, role, and counts. Then run status. Return completed=true only when every role was recorded and state is FINAL_GATE_REQUIRED (11) or FINAL_APPROVAL_REQUIRED (13). Never invoke review_final_gate.sh in this step.',
+    '\nCode findings: ' + JSON.stringify(codeReview?.findings || []) +
+    '\nTranslation findings: ' + JSON.stringify(transReview?.findings || []) +
+    '\n\nResolve the candidate linked-worktree path. For every routed role, write a canonical ordinary JSON file outside both clean Git worktrees (for example under /tmp) containing schema, validated bundle_id/bundle_sha256/routing_sha256, reviewer, and the exact findings array. Invoke record-readiness with --findings-json naming that file. Then run status. Return completed=true only when every role was recorded and state is FINAL_GATE_REQUIRED (11) or FINAL_APPROVAL_REQUIRED (13). Never invoke review_final_gate.sh in this step.',
     { label: 'persist-review-readiness', schema: EVIDENCE_RESULT_SCHEMA }
   )
 
   if (readinessEvidence?.completed) {
     finalGate = await agent(
-      'Run the single schema-v3 final gate. Do not run verify_zh.sh directly, pass retry/recovery flags, or modify evidence manually.\n' +
+      'Run the single schema-v4 final gate. Do not run verify_zh.sh directly, pass retry/recovery flags, or modify evidence manually.\n' +
       '\nFrom the clean target checkout ' + TARGET_ROOT + ', run exactly:\n' +
       '  bash .claude/scripts/review_final_gate.sh ' + CANDIDATE_BRANCH + ' ' + TARGET_BRANCH + '\n' +
       '\nParse the emitted JSON and return completed=true only for MERGEABLE with exit code 0. Preserve any other exact state/exit code and do not retry automatically.',

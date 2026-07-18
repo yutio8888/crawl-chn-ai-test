@@ -1,5 +1,5 @@
 #!/bin/bash
-# review_prepare.sh — Create the immutable schema-v3 bundle before review.
+# review_prepare.sh — Create the immutable schema-v4 bundle before review.
 #
 # Usage (run from the clean target checkout):
 #   bash .claude/scripts/review_prepare.sh <candidate-branch> [target-branch]

@@ -131,7 +131,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             self.assertIn("routedReviewers.includes('zh-code-reviewer')", text, name)
             self.assertIn("routedReviewers.includes('translation-reviewer')", text, name)
             self.assertIn("reviewJobs.length ? await parallel(reviewJobs) : []", text, name)
-            self.assertIn("review-contract-v3", text, name)
+            self.assertIn("review-contract-v4", text, name)
             self.assertIn("Ready for Final Gate", text, name)
             self.assertIn("persist-review-readiness", text, name)
             self.assertIn("run-single-final-gate", text, name)
@@ -181,7 +181,7 @@ class ReviewerRoutingTests(unittest.TestCase):
             cwd=REPO, text=True, capture_output=True, check=True,
         )
         output = proc.stdout
-        self.assertIn("review-contract-v3", output)
+        self.assertIn("review-contract-v4", output)
         self.assertIn("**Blocker**", output)
         self.assertIn("**Needs Fix**", output)
         self.assertIn("**Suggestion**", output)

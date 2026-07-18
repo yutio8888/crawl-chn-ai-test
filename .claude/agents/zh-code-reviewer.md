@@ -12,7 +12,7 @@ Review implementation mechanics only. Translation wording and character voice
 belong to `translation-reviewer`.
 
 <!-- BEGIN GENERATED: review-contract -->
-# review-contract-v3
+# review-contract-v4
 
 Translation-related review separates domain review from expensive final
 verification. A reviewer never runs `verify_zh.sh --profile review` during the
@@ -24,7 +24,7 @@ all required reviewers are ready.
 Development feedback uses targeted tests and only the profile that matches the
 current edit. Do not serially run `translation`, `code`, and `ci` against the
 same immutable mixed candidate: when one combined static preflight is useful,
-run `ci` once. These development profiles are not schema-v3 final evidence.
+run `ci` once. These development profiles are not schema-v4 final evidence.
 
 Create the immutable bundle and complete routed domain review before running
 expensive independent suites such as `run_all.sh`, `help-full`, or
@@ -54,7 +54,7 @@ Readiness is derived mechanically:
 - **Changes Requested**: `blocker == 0` and `needs_fix > 0`.
 - **No-Go**: `blocker > 0` or the reviewer could not complete the exact scope.
 
-Suggestions do not block readiness. Schema-v3 merge authorization has no
+Suggestions do not block readiness. Schema-v4 merge authorization has no
 Conditional Go: a definite fix is completed before final verification, while
 deployment or release conditions are outside the immutable code-review proof.
 
@@ -86,13 +86,16 @@ bundle ID and range; a reviewer returns No-Go if this immutable boundary is
 missing or mismatched. The target checkout must remain clean through the final
 gate. Each readiness record binds the exact
 target head, candidate head, binary diff SHA-256, glossary SHA-256, routing
-digest, reviewer role, reviewed scope, and finding counts. Any ref, diff,
+digest, reviewer role, reviewed scope, and the complete structured findings
+array. Any ref, diff,
 glossary, or routing change invalidates the record.
 
-Every finding cites the exact file and line, evidence, impact, and a concrete
-fix. Translation findings also include the English source and current Chinese
-text. Reviewer identity in local evidence is an audit declaration, not a
-cryptographic signature.
+Every finding is persisted inside the reviewer's atomic readiness object and
+cites a unique id, severity, exact file and line, evidence, impact, and a
+concrete fix. Translation-reviewer findings also include the English source and
+current Chinese text. The tool derives severity counts and readiness from this
+array; callers never supply either value independently. Reviewer identity in
+local evidence is an audit declaration, not a cryptographic signature.
 
 ## Final evidence
 
@@ -110,9 +113,10 @@ records a final Go bound to the verification digest, routing digest, and every
 required readiness digest. `review_at_merge.sh` is a read-only validator: it
 does not build, test, create, repair, or update evidence.
 
-Historical schema-v1/v2 records remain metrics only. New merge authorization
-is written exclusively as a schema-v3 review bundle; old Conditional Go records
-are never converted into a schema-v3 Go.
+Historical schema-v1/v2 log records and schema-v3 bundles remain read-only
+metrics only. New merge authorization is written exclusively as a schema-v4
+bundle with schema-v2 readiness. Old records are never upgraded, appended to,
+or converted into a schema-v4 Go.
 <!-- END GENERATED: review-contract -->
 
 <!-- BEGIN GENERATED: i18n-safety -->
@@ -138,6 +142,11 @@ This policy is the shared safety contract for DCSS Chinese i18n code.
   context; update `move_i18n_manifest.json` and require exact-key coverage.
 - Keep protocol, lookup, serialization, Lua comparison, and TextDB key values
   in English. Translate only at display boundaries.
+- When a changed value may serve both identity and display, enumerate its
+  producer, every intermediate consumer, and its final sinks. Identity and
+  lookup paths use the original value or an English accessor (for example,
+  `_god_name_en()`); only display sinks localize it. Cover the real lookup and
+  fallback path with a targeted test.
 - Use `mprf_p` for positional `%n$s` formats and never mix positional and
   sequential placeholders.
 - Resolve terminology from the current `docs/glossary.md` immediately before
@@ -147,6 +156,36 @@ Configuration checks validate this policy's generated blocks. C++ source
 analysis remains the responsibility of `scan_i18n_lifetime.py`,
 `scan_varargs_string.py`, and the other code verification gates.
 <!-- END GENERATED: i18n-safety -->
+
+## Shared Verification Authoring
+
+<!-- BEGIN GENERATED: verification-authoring -->
+# verification-authoring-v1
+
+This policy applies when an agent writes or reviews a validator, scanner,
+deployment check, parser-facing test, or other verification control.
+
+- Enumerate the complete production artifact and its invariants before writing
+  the check. Counts alone never prove identity, membership, uniqueness, order,
+  content, conservation, or rejection of unknown data.
+- Match production semantics for the parser, working directory,
+  initialization, locale, environment, and compile/runtime options. Prefer the
+  production helper or entry point. If a test must reimplement semantics,
+  document the difference and cover it with a strict end-to-end check.
+- Exercise the real construction, lookup, fallback, or deployment path. A
+  relaxed helper test is insufficient unless a stricter end-to-end test covers
+  the behaviour it omits.
+- Fail closed when required input is missing, parsing is incomplete, an unknown
+  field or state appears, or the complete invariant cannot be evaluated.
+- Give every invariant a passing fixture and a minimal negative mutation that
+  breaks only that invariant and must be rejected.
+- Preserve raw tool evidence. Report the exact command, exit code, blocking
+  failure count, relevant warnings, and the reason a failure is or is not
+  actionable.
+
+Reviewers reject checks that validate only source tokens or a convenient subset
+when the production consumer observes a larger effective artifact.
+<!-- END GENERATED: verification-authoring -->
 
 ## Required workflow
 

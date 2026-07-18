@@ -14,6 +14,11 @@ bash .claude/scripts/verify_zh.sh --profile ci
 gate. Read the current options from `verify_zh.sh --help`; do not duplicate an
 exhaustive phase list in agent adapters.
 
+Agents that write or review verification controls follow
+`.agents/policies/verification-authoring.md`. It is authoritative for complete
+invariant coverage, production-semantic fixtures, fail-closed behaviour, and
+negative mutation tests; this document does not duplicate that contract.
+
 The report is written below `.claude/metrics/verify/`. Agents report the exact
 command, exit code, blocking failure count, and relevant warnings rather than
 only saying that verification “passed”.
@@ -43,13 +48,16 @@ Review readiness and final verification are separate:
 1. commit the candidate and require clean target/candidate worktrees;
 2. run `review_prepare.sh <candidate> <target>` from the target checkout;
 3. dispatch only reviewers named by the prepared bundle routing;
-4. record exact findings/readiness;
+4. persist each reviewer's complete structured findings; the bundle tool derives
+   severity counts and readiness;
 5. run `review_final_gate.sh <candidate> <target>` once;
 6. immediately before merge, run the read-only
    `review_at_merge.sh <candidate> <target>` and merge the approved OID.
 
 Reviewers never run `verify_zh.sh --profile review` themselves. The complete
-security contract is `.agents/policies/review-contract.md`.
+security contract is `.agents/policies/review-contract.md`. New authorization
+uses schema-v4 bundles with schema-v2 atomic readiness; schema-v3 bundles are
+historical read-only evidence.
 
 ## CI
 

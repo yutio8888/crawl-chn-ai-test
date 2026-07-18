@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Black-box checks for the read-only schema-v3 merge gate."""
+"""Black-box checks for the read-only schema-v4 merge gate."""
 
 from __future__ import annotations
 
@@ -182,7 +182,7 @@ class ReviewAtMergeTests(unittest.TestCase):
     def test_repository_contract_matches_bundle_core(self) -> None:
         contract_path = (
             SOURCE_ROOT
-            / ".claude/scripts/data/review_verification_contract_v3.json"
+            / ".claude/scripts/data/review_verification_contract_v4.json"
         )
         contract = MODULE._parse_contract(contract_path.read_bytes())
         self.assertIn(MODULE.TRUSTED_CLASSIFIER_PATH, contract["control_plane_files"])

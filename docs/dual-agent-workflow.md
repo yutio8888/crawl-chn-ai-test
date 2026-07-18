@@ -79,7 +79,7 @@ resulting commit plus verification evidence back to the same state file.
 The implementer records the clean candidate branch and commit range. For
 translation-related changes, the target checkout runs `review_prepare.sh`; the
 prepared bundle's routing decides which reviewers are required. Informal
-cross-runtime review cannot replace schema-v3 readiness or final evidence.
+cross-runtime review cannot replace schema-v4 readiness or final evidence.
 
 ## Anti-Patterns
 

@@ -50,7 +50,7 @@ to reproduce the skill's phases and preserve single-writer ownership.
 ## Review and Merge
 
 Code-review answers use findings-first format with exact file/line evidence.
-For translation candidates, use the schema-v3 process in
+For translation candidates, use the schema-v4 process in
 `.agents/policies/review-contract.md`; do not substitute an informal review for
 mechanical routing or final evidence.
 

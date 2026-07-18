@@ -5,7 +5,7 @@
 #   echo '{"date":"...", ...}' | bash .claude/scripts/record_review.sh
 #
 # Version 2 records are compact, one-record-per-line historical metrics.
-# They are never schema-v3 merge authorization; review_bundle.py is the sole
+# They are never schema-v4 merge authorization; review_bundle.py is the sole
 # writer for new readiness, verification, and final-approval evidence.
 
 set -euo pipefail

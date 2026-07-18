@@ -1,5 +1,5 @@
 #!/bin/bash
-# review_at_merge.sh — Read-only schema-v3 merge authorization validator.
+# review_at_merge.sh — Read-only schema-v4 merge authorization validator.
 #
 # Usage (run from the clean target checkout):
 #   bash .claude/scripts/review_at_merge.sh <candidate-branch> [target-branch]
@@ -120,7 +120,7 @@ recheck_refs() {
     [[ "$target_now" == "$START_TARGET_HEAD" && "$candidate_now" == "$START_CANDIDATE_HEAD" ]]
 }
 
-echo "=== Read-only Schema-v3 Merge Gate ==="
+echo "=== Read-only Schema-v4 Merge Gate ==="
 echo "Target:    $TARGET_BRANCH @ $START_TARGET_HEAD"
 echo "Candidate: $CANDIDATE_BRANCH @ $START_CANDIDATE_HEAD"
 echo "Bundle:    $BUNDLE_ID"
@@ -171,6 +171,6 @@ if [[ "$STATUS_RC" -eq 0 ]]; then
     echo "Approved candidate OID: $START_CANDIDATE_HEAD"
     echo "Merge with: git merge --ff-only $START_CANDIDATE_HEAD"
 else
-    echo "Merge is not authorized; inspect the schema-v3 state above." >&2
+    echo "Merge is not authorized; inspect the schema-v4 state above." >&2
 fi
 exit "$STATUS_RC"

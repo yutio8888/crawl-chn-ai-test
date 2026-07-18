@@ -45,6 +45,36 @@ Batch work uses the same ownership model. Parallel analysis is allowed, but
 translation assets are written sequentially by their single owner.
 <!-- END GENERATED: asset-ownership -->
 
+## Shared Translation Integrity
+
+<!-- BEGIN GENERATED: translation-integrity -->
+# translation-integrity-v1
+
+This policy applies to writers and pipelines that create or update Chinese
+translation assets.
+
+- Preserve every source clause, condition, cause, exception, number,
+  restriction, and gameplay consequence. Sentence-length, tone, and fluency
+  guidance may change expression but never remove a proposition.
+- Never silently compress content to fit a UI. Use a context-specific
+  translation key or fix the layout when the complete meaning does not fit.
+- Before adding an entry, search the complete target asset for the exact,
+  case-sensitive literal key. Update an owned existing entry deliberately;
+  never blindly append an enumerated batch or rely on later duplicate-key
+  override behaviour.
+- Treat `\n`, `\t`, `\r`, `%%%%`, positional and sequential format
+  placeholders, markup tags, `@keyword@`, sentinels, and data-language syntax as
+  immutable tokens. Preserve each token byte-for-byte and preserve its required
+  multiplicity; reorder only when the format's documented positional grammar
+  permits it.
+- Run the translation profile after writing assets. Preserve its raw report and
+  explain every relevant failure or warning instead of reporting only a
+  pass/fail summary.
+
+Layout preferences and style targets are subordinate to semantic and structural
+integrity.
+<!-- END GENERATED: translation-integrity -->
+
 当用户报告翻译问题（未翻译文本、翻译错误、翻译 bug）时，按以下流程处理。
 
 ## Trigger
@@ -152,7 +182,8 @@ bundle diff 和开发期日志，输出 `Ready for Final Gate`、`Changes Reques
 `zh/*.txt`/TextDB 文件，`crawl-coder` 只修改代码；两者不得并行写翻译资产。
 
 交叉验证通过且所有路由 reviewer 都 Ready 后，orchestrator 先使用 target
-checkout 的 `review_bundle.py record-readiness` 写入每个角色的精确计数，再且
+checkout 的 `review_bundle.py record-readiness --findings-json <file>` 写入每个
+角色的完整结构化 findings；工具机械派生计数与 readiness，然后
 仅再运行一次 `review_final_gate.sh <candidate> <target>`。失败或中断不得自动
 重试；该命令持有 bundle 锁并生成 head-bound verification 与最终批准，
 `review_at_merge.sh` 只读验证现有证据。

@@ -34,6 +34,35 @@ class PolicySyncTests(unittest.TestCase):
         self.assertIn(".agents/skills/dcss-translation-context/SKILL.md",
                       SYNC.TARGETS["asset-ownership"])
 
+    def test_verification_authoring_has_exact_role_scope(self) -> None:
+        self.assertEqual(
+            {
+                ".codex/agents/crawl-coder.toml",
+                ".codex/agents/zh-code-reviewer.toml",
+                ".claude/agents/crawl-coder.md",
+                ".claude/agents/zh-code-reviewer.md",
+                ".claude/skills/crawl-coder.md",
+                ".claude/skills/zh-code-reviewer.md",
+                ".opencode/agents/crawl-coder.md",
+                ".opencode/agents/zh-code-reviewer.md",
+                ".opencode/skills/crawl-coder/SKILL.md",
+                ".opencode/skills/zh-code-reviewer/SKILL.md",
+            },
+            set(SYNC.TARGETS["verification-authoring"]),
+        )
+
+    def test_translation_integrity_has_exact_writer_scope(self) -> None:
+        self.assertEqual(
+            {
+                ".codex/agents/zh-translator.toml",
+                ".claude/agents/zh-translator.md",
+                ".claude/skills/translation-pipeline.md",
+                ".opencode/agents/zh-translator.md",
+                ".opencode/skills/translation-pipeline/SKILL.md",
+            },
+            set(SYNC.TARGETS["translation-integrity"]),
+        )
+
     def test_claude_config_roots_are_scanned(self) -> None:
         relative_roots = {path.relative_to(ROOT).as_posix() for path in CHECK.CONFIG_ROOTS}
         self.assertIn(".agents/skills", relative_roots)

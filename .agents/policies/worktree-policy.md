@@ -21,5 +21,5 @@ after refusing a dirty worktree. Manual operation must reproduce the same
 clean-tree guard documented in `docs/build-workflow.md`.
 
 Before merging, both target and candidate worktrees must be clean. Translation
-candidates additionally follow the schema-v3 process in
+candidates additionally follow the schema-v4 process in
 `.agents/policies/review-contract.md`.

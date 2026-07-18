@@ -56,6 +56,25 @@ TARGETS = {
         ".opencode/skills/translation-pipeline/SKILL.md",
         ".agents/skills/dcss-translation-context/SKILL.md",
     ],
+    "verification-authoring": [
+        ".codex/agents/crawl-coder.toml",
+        ".codex/agents/zh-code-reviewer.toml",
+        ".claude/agents/crawl-coder.md",
+        ".claude/agents/zh-code-reviewer.md",
+        ".claude/skills/crawl-coder.md",
+        ".claude/skills/zh-code-reviewer.md",
+        ".opencode/agents/crawl-coder.md",
+        ".opencode/agents/zh-code-reviewer.md",
+        ".opencode/skills/crawl-coder/SKILL.md",
+        ".opencode/skills/zh-code-reviewer/SKILL.md",
+    ],
+    "translation-integrity": [
+        ".codex/agents/zh-translator.toml",
+        ".claude/agents/zh-translator.md",
+        ".claude/skills/translation-pipeline.md",
+        ".opencode/agents/zh-translator.md",
+        ".opencode/skills/translation-pipeline/SKILL.md",
+    ],
 }
 
 

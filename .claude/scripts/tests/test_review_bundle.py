@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Focused tests for immutable schema-v3 review bundles."""
+"""Focused tests for immutable schema-v4 review bundles."""
 
 from __future__ import annotations
 
@@ -76,7 +76,7 @@ class ReviewBundleTests(unittest.TestCase):
         self.contract = trusted / "final_contract.json"
         contract = {
             "schema": MODULE.CONTRACT_SCHEMA,
-            "verification_contract": "dcss-zh-review-v3",
+            "verification_contract": "dcss-zh-review-v4",
             "control_plane_files": [
                 MODULE.TRUSTED_CLASSIFIER_PATH,
                 ".trusted/fake_verify.py",
@@ -97,6 +97,15 @@ class ReviewBundleTests(unittest.TestCase):
             ],
         }
         self.contract.write_bytes(MODULE.canonical_json_bytes(contract))
+        self.wrong_contract = trusted / "wrong_contract.json"
+        wrong_contract = dict(contract)
+        wrong_contract["verification_contract"] = "dcss-zh-review-v3"
+        wrong_contract["control_plane_files"] = [
+            MODULE.TRUSTED_CLASSIFIER_PATH,
+            ".trusted/fake_verify.py",
+            ".trusted/wrong_contract.json",
+        ]
+        self.wrong_contract.write_bytes(MODULE.canonical_json_bytes(wrong_contract))
         self.verifier.write_text(
             """#!/usr/bin/env python3
 import argparse
@@ -166,7 +175,7 @@ if mode == 'missing-phase':
     phases.pop()
 metadata = {
     'schema_version': 2 if mode == 'v2' else 3,
-    'verification_contract': 'dcss-zh-review-v3',
+    'verification_contract': 'dcss-zh-review-v4',
     'run_id': 'wrong-run' if mode == 'wrong-run-id' else run_id,
     'status': 'fail' if mode == 'fail' else 'pass',
     'profile': 'code' if mode == 'wrong-profile' else args.profile,
@@ -208,12 +217,12 @@ raise SystemExit(7 if mode == 'fail' else 0)
         shutil.copy2(SCRIPT.parent / "review_final_gate.sh", shell_scripts / "review_final_gate.sh")
         shell_verifier = shell_scripts / "verify_zh.sh"
         shutil.copy2(self.verifier, shell_verifier)
-        shell_contract_path = shell_scripts / "data/review_verification_contract_v3.json"
+        shell_contract_path = shell_scripts / "data/review_verification_contract_v4.json"
         shell_contract_path.parent.mkdir(parents=True)
         shell_contract = dict(contract)
         shell_contract["control_plane_files"] = sorted([
             MODULE.TRUSTED_CLASSIFIER_PATH,
-            ".claude/scripts/data/review_verification_contract_v3.json",
+            ".claude/scripts/data/review_verification_contract_v4.json",
             ".claude/scripts/review_bundle.py",
             ".claude/scripts/review_final_gate.sh",
             ".claude/scripts/verify_zh.sh",
@@ -262,9 +271,31 @@ raise SystemExit(7 if mode == 'fail' else 0)
     def ready(self) -> dict:
         created = self.create()
         MODULE.record_readiness(
-            self.candidate, created["bundle_id"], "zh-code-reviewer", 0, 0
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, []),
         )
         return created
+
+    def findings_file(
+        self, created: dict, findings: list[dict], reviewer: str = "zh-code-reviewer"
+    ) -> Path:
+        path = self.temp / f"findings-{reviewer}-{time.time_ns()}.json"
+        path.write_bytes(MODULE.canonical_json_bytes({
+            "schema": MODULE.FINDINGS_INPUT_SCHEMA,
+            "bundle_id": created["bundle_id"],
+            "bundle_sha256": created["bundle_sha256"],
+            "routing_sha256": created["routing_sha256"],
+            "reviewer": reviewer,
+            "findings": findings,
+        }))
+        return path
+
+    @staticmethod
+    def finding(severity: str = "suggestion", finding_id: str = "ZR-001") -> dict:
+        return {
+            "id": finding_id, "severity": severity, "file": "tracked.txt", "line": 1,
+            "evidence": "observed text", "impact": "review impact", "fix": "suggested fix",
+        }
 
     def run_final(self, created: dict, **kwargs: object) -> dict:
         return MODULE.run_final(
@@ -321,7 +352,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         ))
         self.assertEqual(MODULE.git_common_dir(self.candidate), common)
         bundle_path = Path(result["bundle_path"])
-        self.assertEqual(bundle_path.parent, common / "zh-review-evidence/v3")
+        self.assertEqual(bundle_path.parent, common / "zh-review-evidence/v4")
 
         raw_diff = subprocess.check_output(
             [
@@ -334,7 +365,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
         manifest_bytes = (bundle_path / "bundle.json").read_bytes()
         manifest = json.loads(manifest_bytes)
         self.assertEqual(manifest, {
-            "schema": "dcss-zh-review-bundle-v3",
+            "schema": "dcss-zh-review-bundle-v4",
             "target_head": self.base,
             "candidate_head": self.head,
             "diff_sha256": expected_diff,
@@ -364,12 +395,18 @@ raise SystemExit(7 if mode == 'fail' else 0)
 
         with self.assertRaises(MODULE.ReviewBundleError):
             MODULE.record_readiness(
-                self.candidate, created["bundle_id"], "translation-reviewer", 0, 0
+                self.candidate, created["bundle_id"], "translation-reviewer",
+                self.findings_file(created, [], "translation-reviewer"),
             )
         status = MODULE.record_readiness(
-            self.candidate, created["bundle_id"], "zh-code-reviewer", 0, 0, 2
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, [self.finding()]),
         )
         self.assertTrue(status["ready"])
+        self.assertEqual(
+            status["finding_counts"]["zh-code-reviewer"],
+            {"blocker": 0, "needs_fix": 0, "suggestion": 1},
+        )
         readiness_path = bundle_path / "readiness/zh-code-reviewer.json"
         readiness_bytes = readiness_path.read_bytes()
         readiness = json.loads(readiness_bytes)
@@ -413,7 +450,7 @@ raise SystemExit(7 if mode == 'fail' else 0)
                 self.candidate, "target", "HEAD", GLOSSARY_SHA256, forged
             )
         self.assertFalse(
-            (self.repo / ".git/zh-review-evidence/v3").exists(),
+            (self.repo / ".git/zh-review-evidence/v4").exists(),
             "forged routing must be rejected before evidence directories exist",
         )
 
@@ -438,10 +475,10 @@ raise SystemExit(7 if mode == 'fail' else 0)
         self.assertEqual(created["bundle_id"], described["bundle_id"])
 
         selector = ["--repo", str(self.candidate), "--bundle", created["bundle_id"]]
+        findings_json = self.findings_file(created, [self.finding()])
         recorded = json.loads(self.run_cmd(
             sys.executable, str(SCRIPT), "record-readiness", *selector,
-            "--reviewer", "zh-code-reviewer", "--blocker", "0",
-            "--needs-fix", "0", "--suggestion", "1",
+            "--reviewer", "zh-code-reviewer", "--findings-json", str(findings_json),
             cwd=self.candidate, check=True,
         ).stdout)
         self.assertTrue(recorded["ready"])
@@ -461,10 +498,12 @@ raise SystemExit(7 if mode == 'fail' else 0)
     def test_blocker_prevents_readiness(self) -> None:
         created = self.create()
         status = MODULE.record_readiness(
-            self.candidate, created["bundle_id"], "zh-code-reviewer", 1, 0, 0
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, [self.finding("blocker")]),
         )
         self.assertFalse(status["ready"])
         self.assertEqual(status["not_ready_reviewers"], ["zh-code-reviewer"])
+        self.assertEqual(status["finding_counts"]["zh-code-reviewer"]["blocker"], 1)
         with self.assertRaisesRegex(MODULE.ReviewBundleError, "not ready"):
             with MODULE.final_gate(self.candidate, created["bundle_id"]):
                 self.fail("a blocker-bearing readiness record passed the final gate")
@@ -472,22 +511,124 @@ raise SystemExit(7 if mode == 'fail' else 0)
     def test_needs_fix_prevents_readiness(self) -> None:
         created = self.create()
         status = MODULE.record_readiness(
-            self.candidate, created["bundle_id"], "zh-code-reviewer", 0, 1, 0
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, [self.finding("needs_fix")]),
         )
         self.assertFalse(status["ready"])
         self.assertEqual(status["not_ready_reviewers"], ["zh-code-reviewer"])
+
+    def test_findings_input_rejects_mutations_and_v1_downgrade(self) -> None:
+        created = self.create()
+        valid = {
+            "schema": MODULE.FINDINGS_INPUT_SCHEMA,
+            "bundle_id": created["bundle_id"],
+            "bundle_sha256": created["bundle_sha256"],
+            "routing_sha256": created["routing_sha256"],
+            "reviewer": "zh-code-reviewer",
+            "findings": [self.finding()],
+        }
+
+        mutations = []
+        unknown = json.loads(json.dumps(valid)); unknown["unknown"] = True
+        mutations.append((unknown, "fields"))
+        duplicate = json.loads(json.dumps(valid)); duplicate["findings"].append(self.finding())
+        mutations.append((duplicate, "duplicate finding id"))
+        bad_severity = json.loads(json.dumps(valid)); bad_severity["findings"][0]["severity"] = "major"
+        mutations.append((bad_severity, "severity"))
+        missing_evidence = json.loads(json.dumps(valid)); del missing_evidence["findings"][0]["evidence"]
+        mutations.append((missing_evidence, "fields"))
+        forged_reviewer = json.loads(json.dumps(valid)); forged_reviewer["reviewer"] = "translation-reviewer"
+        mutations.append((forged_reviewer, "reviewer binding"))
+        forged_bundle = json.loads(json.dumps(valid)); forged_bundle["bundle_id"] = "0" * 64
+        mutations.append((forged_bundle, "bundle_id binding"))
+        forged_routing = json.loads(json.dumps(valid)); forged_routing["routing_sha256"] = "0" * 64
+        mutations.append((forged_routing, "routing_sha256 binding"))
+        oversized_field = json.loads(json.dumps(valid)); oversized_field["findings"][0]["impact"] = "x" * (MODULE.MAX_FINDING_TEXT_LENGTH + 1)
+        mutations.append((oversized_field, "character limit"))
+        for index, (value, message) in enumerate(mutations):
+            path = self.temp / f"mutation-{index}.json"
+            path.write_bytes(MODULE.canonical_json_bytes(value))
+            with self.subTest(index=index), self.assertRaisesRegex(MODULE.ReviewBundleError, message):
+                MODULE.record_readiness(
+                    self.candidate, created["bundle_id"], "zh-code-reviewer", path
+                )
+
+        noncanonical = self.temp / "noncanonical.json"
+        noncanonical.write_text(json.dumps(valid, indent=2), encoding="utf-8")
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "not canonical"):
+            MODULE.record_readiness(
+                self.candidate, created["bundle_id"], "zh-code-reviewer", noncanonical
+            )
+        oversized = self.temp / "oversized.json"
+        oversized.write_bytes(b" " * (MODULE.MAX_FINDINGS_INPUT_BYTES + 1))
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "byte limit"):
+            MODULE.record_readiness(
+                self.candidate, created["bundle_id"], "zh-code-reviewer", oversized
+            )
+        symlink = self.temp / "findings-link.json"
+        symlink.symlink_to(self.findings_file(created, []))
+        with self.assertRaisesRegex(MODULE.UnsafeObjectError, "symlink"):
+            MODULE.record_readiness(
+                self.candidate, created["bundle_id"], "zh-code-reviewer", symlink
+            )
+
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "english"):
+            MODULE._validate_findings([self.finding()], "translation-reviewer")
+
+        MODULE.record_readiness(
+            self.candidate, created["bundle_id"], "zh-code-reviewer",
+            self.findings_file(created, []),
+        )
+        readiness_path = Path(created["bundle_path"]) / "readiness/zh-code-reviewer.json"
+        readiness = json.loads(readiness_path.read_bytes())
+        readiness["schema"] = MODULE.LEGACY_READINESS_SCHEMA
+        readiness_path.write_bytes(MODULE.canonical_json_bytes(readiness))
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "readiness schema"):
+            MODULE.validate_bundle(self.candidate, created["bundle_id"])
+
+    def test_schema_v3_bundle_is_historical_read_only(self) -> None:
+        created = self.create()
+        source = Path(created["bundle_path"])
+        manifest = json.loads((source / "bundle.json").read_bytes())
+        manifest["schema"] = MODULE.LEGACY_BUNDLE_SCHEMA
+        identity = {field: manifest[field] for field in MODULE.IDENTITY_FIELDS}
+        legacy_id = MODULE.sha256_bytes(MODULE.canonical_json_bytes(identity))
+        legacy = self.repo / ".git/zh-review-evidence/v3" / legacy_id
+        legacy.mkdir(parents=True)
+        (legacy / "bundle.json").write_bytes(MODULE.canonical_json_bytes(manifest))
+        (legacy / "routing.json").write_bytes((source / "routing.json").read_bytes())
+
+        status = MODULE.status_bundle(self.candidate, legacy_id)
+        self.assertTrue(status["valid"])
+        self.assertTrue(status["legacy_read_only"])
+        self.assertEqual(status["exit_code"], MODULE.LEGACY_READ_ONLY)
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "historical read-only"):
+            MODULE.record_readiness(
+                self.candidate, legacy_id, "zh-code-reviewer",
+                self.findings_file(created, []),
+            )
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "cannot authorize"):
+            with MODULE.final_gate(self.candidate, legacy_id):
+                self.fail("legacy bundle authorized a final action")
+
+        misplaced = self.repo / ".git/zh-review-evidence/v3" / created["bundle_id"]
+        misplaced.mkdir()
+        (misplaced / "bundle.json").write_bytes((source / "bundle.json").read_bytes())
+        (misplaced / "routing.json").write_bytes((source / "routing.json").read_bytes())
+        with self.assertRaisesRegex(MODULE.ReviewBundleError, "required evidence namespace"):
+            MODULE.validate_bundle(self.candidate, misplaced)
 
     def test_dirty_candidate_is_rejected_before_evidence_write(self) -> None:
         (self.candidate / "untracked.txt").write_text("dirty\n", encoding="utf-8")
         with self.assertRaisesRegex(MODULE.ReviewBundleError, "candidate checkout is dirty"):
             self.create()
         self.assertFalse(
-            (self.repo / ".git/zh-review-evidence/v3").exists(),
+            (self.repo / ".git/zh-review-evidence/v4").exists(),
             "dirty rejection must happen before evidence directories are created",
         )
 
     def test_glossary_mismatch_and_non_ancestor_fail_before_evidence_write(self) -> None:
-        evidence = self.repo / ".git/zh-review-evidence/v3"
+        evidence = self.repo / ".git/zh-review-evidence/v4"
         with self.assertRaisesRegex(MODULE.ReviewBundleError, "glossary_sha256"):
             MODULE.create_bundle(
                 self.candidate, "target", "HEAD", "0" * 64, self.classifier
@@ -591,6 +732,22 @@ raise SystemExit(7 if mode == 'fail' else 0)
                 "sha256": result["readiness_sha256"]["zh-code-reviewer"],
             }],
         )
+
+    def test_wrong_contract_is_rejected_before_verifier_start(self) -> None:
+        created = self.ready()
+        count = self.temp / "wrong-contract-verify-count"
+        with self.fake_environment(FAKE_VERIFY_COUNT=str(count)):
+            with self.assertRaisesRegex(
+                MODULE.ReviewBundleError, MODULE.VERIFICATION_CONTRACT
+            ):
+                MODULE.run_final(
+                    self.candidate,
+                    created["bundle_id"],
+                    self.repo,
+                    self.verifier,
+                    self.wrong_contract,
+                )
+        self.assertFalse(count.exists(), "wrong contract started the verifier")
 
     def test_final_verifier_scrubs_override_and_loader_environment(self) -> None:
         created = self.ready()
