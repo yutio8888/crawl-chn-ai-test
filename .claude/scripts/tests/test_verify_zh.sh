@@ -52,7 +52,10 @@ mkdir -p "$REPO/.claude/scripts" "$REPO/docs"
 printf '%s\n' '.claude/metrics/' '.policy-*' '.phase-runs' '.runtime-runs' '.risk-runs' \
     > "$REPO/.gitignore"
 cp "$VERIFY_SOURCE" "$REPO/.claude/scripts/verify_zh.sh"
+cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
+mkdir -p "$REPO/crawl-ref/source/dat/defaults"
+printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/check_agent_policies.py"
 chmod +x "$REPO/.claude/scripts/check_agent_policies.py"
@@ -105,7 +108,7 @@ chmod +x "$REPO/.claude/scripts/post_zh_runtime.sh"
     git init -q
     git config user.email test@example.invalid
     git config user.name test
-    git add .claude docs .gitignore
+    git add .claude docs crawl-ref .gitignore
     git commit -qm base
 )
 BASE=$(git -C "$REPO" rev-parse HEAD)

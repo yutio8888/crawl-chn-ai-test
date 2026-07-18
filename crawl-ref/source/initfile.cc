@@ -2308,7 +2308,7 @@ void read_init_file(bool runscripts)
 
     // Load default options.
     for (const char *def_file : config_defaults)
-        Options.include(datafile_path(def_file), false, runscripts);
+        Options.include_utf8(datafile_path(def_file), false, runscripts);
 
     // don't count anything up to here as customized
     Options.reset_loaded_state();
@@ -4646,6 +4646,18 @@ bool base_game_options::was_included(const string &file) const
 void base_game_options::include(const string &rawfilename, bool resolve,
                            bool runscripts)
 {
+    include_impl(rawfilename, resolve, runscripts, false);
+}
+
+void base_game_options::include_utf8(const string &rawfilename, bool resolve,
+                                     bool runscripts)
+{
+    include_impl(rawfilename, resolve, runscripts, true);
+}
+
+void base_game_options::include_impl(const string &rawfilename, bool resolve,
+                                     bool runscripts, bool utf8)
+{
     const string include_file = resolve ? resolve_include(rawfilename)
                                         : rawfilename;
 
@@ -4664,9 +4676,18 @@ void base_game_options::include(const string &rawfilename, bool resolve,
     // Also unwind any aliases defined in included files.
     unwind_var<map<string, string>> unalias(aliases);
 
-    FileLineInput fl(include_file.c_str());
-    if (!fl.error())
-        read_options(fl, runscripts, false);
+    if (utf8)
+    {
+        UTF8FileLineInput fl(include_file.c_str());
+        if (!fl.error())
+            read_options(fl, runscripts, false);
+    }
+    else
+    {
+        FileLineInput fl(include_file.c_str());
+        if (!fl.error())
+            read_options(fl, runscripts, false);
+    }
 }
 
 void base_game_options::report_error(const char* format, ...)

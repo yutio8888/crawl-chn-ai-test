@@ -374,6 +374,7 @@ struct base_game_options
 
     virtual void reset_aliases(bool clear=true);
     void include(const string &file, bool resolve, bool runscripts);
+    void include_utf8(const string &file, bool resolve, bool runscripts);
     string resolve_include(const string &file, const char *type = "");
     bool was_included(const string &file) const;
     static string resolve_include(string including_file, string included_file,
@@ -401,6 +402,8 @@ protected:
     string expand_vars(const string &field) const;
     void add_alias(const string &alias, const string &name);
     void set_option_fragment(const string &s, bool prepend);
+    void include_impl(const string &file, bool resolve, bool runscripts,
+                      bool utf8);
 };
 
 /// This class implements most of crawl's options as well as their state.

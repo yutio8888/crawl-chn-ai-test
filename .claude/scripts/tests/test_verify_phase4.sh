@@ -26,7 +26,10 @@ latest_report() {
 mkdir -p "$REPO/.claude/scripts" "$REPO/docs" "$REPO/crawl-ref/source"
 cp "$SCRIPT_DIR/../verify_zh.sh" "$REPO/.claude/scripts/verify_zh.sh"
 cp "$SCRIPT_DIR/../advisory_baseline.py" "$REPO/.claude/scripts/advisory_baseline.py"
+cp "$SCRIPT_DIR/../check_default_utf8.py" "$REPO/.claude/scripts/check_default_utf8.py"
 chmod +x "$REPO/.claude/scripts/verify_zh.sh"
+mkdir -p "$REPO/crawl-ref/source/dat/defaults"
+printf '%s\n' '# test defaults' > "$REPO/crawl-ref/source/dat/defaults/test.txt"
 printf '%s\n' '# glossary' > "$REPO/docs/glossary.md"
 printf '%s\n' '.policy-*' '.phase-runs' '.runtime-runs' '.risk-runs' \
     '.claude/metrics/' \

@@ -439,6 +439,8 @@ run_phase() {
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
         python3 "$SCRIPT_DIR/i18n_extract.py" validate "$WORKTREE/crawl-ref/source" \
             --source-txt "$WORKTREE/crawl-ref/source/dat/i18n/zh/source.txt" || rc=$?
+        python3 "$SCRIPT_DIR/check_default_utf8.py" \
+            --defaults-dir "$WORKTREE/crawl-ref/source/dat/defaults" || rc=$?
         return "$rc"
     }
     run_phase "source-db-static" 1 "Source/DB static integrity" \
