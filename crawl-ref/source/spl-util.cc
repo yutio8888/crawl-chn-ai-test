@@ -223,7 +223,7 @@ static const map<spell_type, const char*> spell_english_names = {
     { SPELL_DISPEL_UNDEAD, "Dispel Undead" },
     { SPELL_POISON_ARROW, "Poison Arrow" },
     { SPELL_BANISHMENT, "Banishment" },
-    { SPELL_STING, "Sting" },
+    { SPELL_STING, NC_("spell title", "Sting") },
     { SPELL_SUBLIMATION_OF_BLOOD, "Sublimation of Blood" },
     { SPELL_TUKIMAS_DANCE, "Tukima's Dance" },
     { SPELL_SUMMON_DEMON, "Summon Demon" },
@@ -281,7 +281,7 @@ static const map<spell_type, const char*> spell_english_names = {
     { SPELL_SUMMON_UNDEAD, "Summon Undead" },
     { SPELL_CANTRIP, "Cantrip" },
     { SPELL_QUICKSILVER_BOLT, "Quicksilver Bolt" },
-    { SPELL_METAL_SPLINTERS, "Metal Splinters" },
+    { SPELL_METAL_SPLINTERS, NC_("spell title", "Metal Splinters") },
     { SPELL_SPLINTERSPRAY, "Splinterspray" },
     { SPELL_MIASMA_BREATH, "Miasma Breath" },
     { SPELL_SUMMON_DRAKES, "Summon Drakes" },
@@ -309,7 +309,7 @@ static const map<spell_type, const char*> spell_english_names = {
     { SPELL_SUMMON_ILLUSION, "Summon Illusion" },
     { SPELL_PRIMAL_WAVE, "Primal Wave" },
     { SPELL_CALL_TIDE, "Call Tide" },
-    { SPELL_IOOD, "Orb of Destruction" },
+    { SPELL_IOOD, NC_("spell title", "Orb of Destruction") },
     { SPELL_INK_CLOUD, "Ink Cloud" },
     { SPELL_MIGHT, "Might" },
     { SPELL_MIGHT_OTHER, "Might Other" },
@@ -369,7 +369,8 @@ static const map<spell_type, const char*> spell_english_names = {
     { SPELL_PLANEREND, "Plane Rend" },
     { SPELL_CHAIN_OF_CHAOS, "Chain of Chaos" },
     { SPELL_CALL_OF_CHAOS, "Call of Chaos" },
-    { SPELL_SIGN_OF_RUIN, "Sign of Ruin" },
+    { SPELL_SIGN_OF_RUIN,
+      NC_("spell or ability title", "Sign of Ruin") },
     { SPELL_SAP_MAGIC, "Sap Magic" },
     { SPELL_MAJOR_DESTRUCTION, "Major Destruction" },
     { SPELL_BLINK_ALLIES_AWAY, "Blink Allies Away" },
@@ -1119,7 +1120,18 @@ int count_bits(uint64_t bits)
 
 const char *spell_title(spell_type spell)
 {
-    return T_(_seekspell(spell)->title);
+    const char *title = _seekspell(spell)->title;
+    if (spell == SPELL_SIGN_OF_RUIN)
+        return C_("spell or ability title", title);
+    switch (spell)
+    {
+    case SPELL_STING:
+    case SPELL_METAL_SPLINTERS:
+    case SPELL_IOOD:
+        return C_("spell title", title);
+    default:
+        return T_(title);
+    }
 }
 
 // FUNCTION APPLICATORS: Idea from Juho Snellman <jsnell@lyseo.edu.ouka.fi>

@@ -3,8 +3,17 @@
 #include "AppHdr.h"
 
 #include "i18n.h"                // T_()
+#include "ability.h"
+#include "ability-type.h"
+#include "decks.h"
+#include "item-name.h"
+#include "item-prop-enum.h"
 #include "movement-i18n.h"
 #include "options.h"
+#include "species.h"
+#include "species-type.h"
+#include "spl-util.h"
+#include "spell-type.h"
 #include "stringutil.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
@@ -232,6 +241,52 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE(string(C_("monster body part plural", "strata")) == "云层");
     REQUIRE(string(C_("structured actor possessive", "neutral singular"))
             == "其");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 66 semantic collision contexts stay distinct",
+                 "[zh-translation][issue-66]")
+{
+    REQUIRE(std::string(jewellery_effect_name(AMU_WILDSHAPE, false))
+            == "野性变形");
+    REQUIRE(std::string(jewellery_effect_name(AMU_WILDSHAPE, true))
+            == "变形");
+    REQUIRE(std::string(jewellery_effect_name(AMU_CHEMISTRY, false))
+            == "炼金术");
+    REQUIRE(std::string(jewellery_effect_name(AMU_CHEMISTRY, true))
+            == "炼金");
+
+    REQUIRE(std::string(card_name(CARD_WILD_MAGIC)) == "狂野魔法");
+    REQUIRE(std::string(C_("death cause terse", "wild magic"))
+            == "野性魔法");
+    REQUIRE(std::string(C_("death cause terse", "smitten by Beogh"))
+            == "被比欧弗击中");
+    REQUIRE(std::string(C_("death cause", "Smitten by Beogh"))
+            == "被比欧弗击杀");
+    REQUIRE(std::string(C_("shop name suffix", "Shop")) == "店铺");
+
+    init_spell_descs();
+    init_spell_name_cache();
+    REQUIRE(std::string(spell_title(SPELL_STING)) == "毒刺");
+    REQUIRE(std::string(spell_title(SPELL_METAL_SPLINTERS)) == "金属碎片");
+    REQUIRE(std::string(spell_title(SPELL_IOOD)) == "毁灭之球");
+    REQUIRE(std::string(spell_title(SPELL_SIGN_OF_RUIN)) == "毁灭征兆");
+    REQUIRE(std::string(spell_title(SPELL_SUMMON_UNDEAD)) == "召唤亡灵");
+    REQUIRE(ability_name(ABIL_KIKU_SIGN_OF_RUIN) == "毁灭征兆");
+    REQUIRE(species::name(SP_POLTERGEIST) == "吵闹鬼");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 66 status lights use full labels",
+                 "[zh-translation][issue-66][status]")
+{
+    REQUIRE(std::string(C_("status", "Flooded")) == "淹水");
+    REQUIRE(std::string(C_("status", "Rev")) == "暖机");
+    REQUIRE(std::string(C_("status", "Slow")) == "减速");
+    REQUIRE(std::string(C_("status", "Water")) == "水域");
+    REQUIRE(std::string(C_("status", "Drain")) == "衰竭");
+    REQUIRE(std::string(C_("status", "Might")) == "强效");
+    REQUIRE(std::string(C_("status", "Invis")) == "隐形");
 }
 
 TEST_CASE("UNTRANSLATED rule", "[zh-translation][zh-helpers]")

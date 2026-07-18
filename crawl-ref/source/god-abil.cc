@@ -3526,6 +3526,9 @@ static string _describe_gozag_shop(int index)
     const string type_name = shop_type_name(type);
     const string suffix =
         you.props[make_stringf(GOZAG_SHOP_SUFFIX_KEY, index)].get_string();
+    const string translated_suffix = suffix == "Shop"
+                                     ? C_("shop name suffix", "Shop")
+                                     : T_(suffix.c_str());
 
     return make_stringf(
                 T_("  [%c] %5d gold - %s %s %s"),
@@ -3533,7 +3536,7 @@ static string _describe_gozag_shop(int index)
                 cost,
                 shop_name.c_str(),
                 type_name.c_str(),
-                suffix.c_str());
+                translated_suffix.c_str());
 }
 
 /**

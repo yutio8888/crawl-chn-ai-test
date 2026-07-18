@@ -99,7 +99,11 @@ namespace species
             return raw ? def.adj_name : T_(def.adj_name);
         // Display path: use T_() for i18n translation lookup
         if (!raw && spname_type == SPNAME_PLAIN)
+        {
+            if (speci == SP_POLTERGEIST)
+                return C_("species name", "Poltergeist");
             return T_(def.name);
+        }
         return def.name;
     }
 

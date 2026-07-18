@@ -592,7 +592,8 @@ string SkillMenuSwitch::get_help()
                 causes.push_back(chinese ? T_("Hermit's Pendant")
                                          : "the Hermit's pendant");
             if (_wildshape_bonus())
-                causes.push_back(chinese ? T_("wildshape") : "wildshape");
+                causes.push_back(chinese ? C_("skill cause", "wildshape")
+                                         : "wildshape");
             if (_charlatan_bonus())
                 causes.push_back(chinese ? T_("Charlatan's Orb")
                                          : "the Charlatan's Orb");

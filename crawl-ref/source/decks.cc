@@ -190,7 +190,7 @@ const char* card_name(card_type card)
     case CARD_EXILE:           return T_("Exile");
     case CARD_ELIXIR:          return T_("the Elixir");
     case CARD_TOMB:            return T_("the Tomb");
-    case CARD_WILD_MAGIC:      return T_("Wild Magic");
+    case CARD_WILD_MAGIC:      return C_("card name", "Wild Magic");
     case CARD_ELEMENTS:        return T_("the Elements");
     case CARD_SUMMON_DEMON:    return T_("the Pentagram");
     case CARD_SUMMON_WEAPON:   return T_("the Dance");

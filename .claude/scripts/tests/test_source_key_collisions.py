@@ -736,7 +736,7 @@ class TestValidatePostCoderSourceHandoff(unittest.TestCase):
 class TestSourceDBCommandIntegrity(unittest.TestCase):
     """End-to-end verification of source-key-collisions on real source.txt.
 
-    This test verifies the exact expected output on the frozen HEAD.
+    Issue 66 requires the production SourceDB to stay collision-free.
     """
 
     def test_production_source_txt(self):
@@ -746,12 +746,12 @@ class TestSourceDBCommandIntegrity(unittest.TestCase):
             self.skipTest("Production source.txt not available")
         ec, out, err = _run_cmd(
             "source-key-collisions", "--source-txt", str(source_txt))
-        self.assertEqual(ec, 1)
-        # Exact summary from spec: 13226 / 13117 / 109 / 63 / 46
-        self.assertIn("13226 / 13117 / 109", out)
+        self.assertEqual(ec, 0)
+        self.assertIn(" / 0 / 0 runtime-equal / 0 runtime-different", out)
+        self.assertIn("OK: No canonical key collisions.", out)
 
     def test_production_inventory_deterministic(self):
-        """Inventory must be deterministic (109 groups)."""
+        """Production inventory must deterministically remain empty."""
         source_txt = ROOT / "crawl-ref/source/dat/i18n/zh/source.txt"
         if not source_txt.exists():
             self.skipTest("Production source.txt not available")
@@ -766,8 +766,8 @@ class TestSourceDBCommandIntegrity(unittest.TestCase):
             self.assertEqual(ec, 0)
             with open(out_path) as fh:
                 data = json.load(fh)
-            self.assertEqual(data['summary']['collision_groups'], 109)
-            self.assertEqual(len(data['groups']), 109)
+            self.assertEqual(data['summary']['collision_groups'], 0)
+            self.assertEqual(len(data['groups']), 0)
         finally:
             os.unlink(out_path)
 

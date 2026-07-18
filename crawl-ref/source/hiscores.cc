@@ -2816,7 +2816,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         if (chinese)
         {
             if (auxkilldata.empty())
-                desc += terse ? T_("wild magic") : T_("Killed by wild magic");
+                desc += terse ? C_("death cause terse", "wild magic")
+                              : T_("Killed by wild magic");
             else if (terse)
                 desc += terse_wild_magic();
             else
@@ -3019,7 +3020,8 @@ string scorefile_entry::death_description(death_desc_verbosity verbosity) const
         break;
 
     case KILLED_BY_BEOGH_SMITING:
-        desc += chinese ? (terse ? T_("smitten by Beogh") : T_("Smitten by Beogh"))
+        desc += chinese ? (terse ? C_("death cause terse", "smitten by Beogh")
+                                  : C_("death cause", "Smitten by Beogh"))
                         : (terse ? "smitten by Beogh" : "Smitten by Beogh");
         needs_damage = true;
         break;

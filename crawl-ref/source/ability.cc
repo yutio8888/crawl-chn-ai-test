@@ -458,7 +458,8 @@ static vector<ability_def> &_get_ability_list()
         // Kikubaaqudgha
         { ABIL_KIKU_UNEARTH_WRETCHES, "Unearth Wretches",
             3, 0, 5, -1, {fail_basis::invo, 40, 5, 20}, abflag::none },
-        { ABIL_KIKU_SIGN_OF_RUIN, "Sign of Ruin",
+        { ABIL_KIKU_SIGN_OF_RUIN,
+            NC_("spell or ability title", "Sign of Ruin"),
             5, 0, 4, -1, {fail_basis::invo, 60, 5, 20}, abflag::target },
         { ABIL_KIKU_GIFT_CAPSTONE_SPELLS, "Receive Forbidden Knowledge",
             0, 0, 0, -1, {fail_basis::invo}, abflag::none },
@@ -1421,6 +1422,8 @@ string ability_name(ability_type ability, bool dbname)
             }
 
         default:
+            if (!dbname && ability == ABIL_KIKU_SIGN_OF_RUIN)
+                return C_("spell or ability title", "Sign of Ruin");
             return dbname ? get_ability_def(ability).name
                           : T_(get_ability_def(ability).name);
     }

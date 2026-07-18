@@ -681,7 +681,7 @@ bool fill_status_info(int status, status_info& inf)
         break;
 
     case DUR_FLOODED:
-        inf.light_text  = T_("Flooded");
+        inf.light_text  = C_("status", "Flooded");
         inf.db_key      = "Flooded";
         inf.short_text  = "flooded lungs";
         inf.long_text   = make_stringf(T_("Your lungs are flooded with %s and you "
@@ -1236,7 +1236,7 @@ static void _describe_rev(status_info& inf)
     {
         case 1:
             inf.light_colour = BLUE;
-            inf.light_text   = T_("Rev");
+            inf.light_text   = C_("status", "Rev");
             inf.db_key       = "Rev";
             inf.short_text   = "revving";
             inf.long_text    = "You're starting to limber up.";
@@ -1316,7 +1316,7 @@ static void _describe_speed(status_info& inf)
     else if (slow)
     {
         inf.light_colour = RED;
-        inf.light_text   = T_("Slow");
+        inf.light_text   = C_("status", "Slow");
         inf.db_key       = "Slow";
         inf.short_text   = "slowed";
         inf.long_text    = "You are slowed.";
@@ -1377,12 +1377,12 @@ static void _describe_terrain(status_info& inf)
     {
     case DNGN_SHALLOW_WATER:
         inf.light_colour = LIGHTBLUE;
-        inf.light_text = T_("Water");
+        inf.light_text = C_("status", "Water");
         inf.db_key     = "Water";
         break;
     case DNGN_DEEP_WATER:
         inf.light_colour = BLUE;
-        inf.light_text = T_("Water");
+        inf.light_text = C_("status", "Water");
         inf.db_key     = "Water";
         break;
     case DNGN_LAVA:

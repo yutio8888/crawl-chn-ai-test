@@ -3388,7 +3388,7 @@ charming
 Cheibriados
 切布理亚多
 %%%%
-chemistry
+jewellery full name|chemistry
 炼金术
 %%%%
  choice.
@@ -8078,10 +8078,13 @@ wield weapon a, or switch to b
 Wielding:
 持有:
 %%%%
-Wild Magic
+card name|Wild Magic
 狂野魔法
 %%%%
-wildshape
+jewellery full name|wildshape
+野性变形
+%%%%
+skill cause|wildshape
 野性变形
 %%%%
 Will
@@ -11350,12 +11353,6 @@ Fire++
 Fire+
 火焰+
 %%%%
-Flooded
-淹水
-%%%%
-Drain
-汲取
-%%%%
 Bribe
 贿赂
 %%%%
@@ -11404,9 +11401,6 @@ Tesseract
 Missing
 缺失
 %%%%
-Rev
-暖机
-%%%%
 Rev+
 暖机+
 %%%%
@@ -11421,12 +11415,6 @@ Regen Will++
 %%%%
 Fast+Slow
 速+缓
-%%%%
-Slow
-减速
-%%%%
-Water
-水域
 %%%%
 Invis
 隐形
@@ -16008,7 +15996,7 @@ Cantrip
 Quicksilver Bolt
 水银箭
 %%%%
-Metal Splinters
+spell title|Metal Splinters
 金属碎片
 %%%%
 Splinterspray
@@ -16095,7 +16083,7 @@ Primal Wave
 Call Tide
 呼唤潮汐
 %%%%
-Orb of Destruction
+spell title|Orb of Destruction
 毁灭之球
 %%%%
 Ink Cloud
@@ -16952,9 +16940,6 @@ Rearrange the Pieces
 %%%%
 Recall
 召回术
-%%%%
-Regeneration
-快速再生
 %%%%
 Ring of Flames
 烈焰之环
@@ -26898,9 +26883,6 @@ Shooting star damage:
 Skill
 技能
 %%%%
-Your stasis prevents you from teleporting.
-你的停滞状态阻止你传送。
-%%%%
 Space - Change
 空格 - 更换
 %%%%
@@ -29975,7 +29957,7 @@ There isn't a suitable marionette in sight.
 耗尽了最后的能量。
 %%%%
 status|Drain
-削命
+衰竭
 %%%%
 status|extremely drained
 极度削命
@@ -36217,7 +36199,7 @@ Boutique
 Emporium
 商场
 %%%%
-Shop
+shop name suffix|Shop
 店铺
 %%%%
 Welcome to %s! What would you like to do?
@@ -37241,7 +37223,7 @@ status|Cacophony
 噪
 %%%%
 status|Catalyst
-催
+催化
 %%%%
 status|Channel
 引
@@ -37253,7 +37235,7 @@ status|Cloud
 云
 %%%%
 status|Conf
-惑
+混乱
 %%%%
 status|Constr
 缠
@@ -37265,7 +37247,7 @@ status|Corona
 晕
 %%%%
 status|Corr
-蚀
+腐蚀
 %%%%
 status|Corr (%d)
 蚀(%d)
@@ -37289,7 +37271,7 @@ status|Destr
 毁
 %%%%
 status|Devious
-诡
+狡诈
 %%%%
 status|Dig
 掘
@@ -37319,10 +37301,10 @@ status|Elixir
 灵
 %%%%
 status|Engorged
-胀
+饱食
 %%%%
 status|Enkindled
-燃
+点燃
 %%%%
 status|Enkindled (%d)
 燃(%d)
@@ -37349,7 +37331,7 @@ status|Finesse
 精
 %%%%
 status|Fire
-火
+着火
 %%%%
 status|Fire+
 火+
@@ -37364,13 +37346,13 @@ status|Flay (%d)
 剥(%d)
 %%%%
 status|Flooded
-淹
+淹水
 %%%%
 status|Flux
 变
 %%%%
 status|Fly
-飞
+飞行
 %%%%
 status|Forest
 森林
@@ -37379,10 +37361,10 @@ status|Fragile
 脆
 %%%%
 status|Frozen
-冻
+冰封
 %%%%
 status|Fugue
-赋
+赋格
 %%%%
 status|Fugue (%s%u%s)
 赋(%s%u%s)
@@ -37400,7 +37382,7 @@ status|Heavenly (%d)
 天(%d)
 %%%%
 status|Held
-缚
+受困
 %%%%
 status|Hero
 英
@@ -37421,7 +37403,7 @@ status|Howl
 嚎
 %%%%
 status|Invis
-隐
+隐形
 %%%%
 status|Jelly
 胶
@@ -37457,10 +37439,10 @@ status|Memories (%d)
 忆(%d)
 %%%%
 status|Mesm
-眠
+催眠
 %%%%
 status|Might
-力
+强效
 %%%%
 status|Missing
 缺失
@@ -37469,7 +37451,7 @@ status|Missing status description.
 缺失状态描述。
 %%%%
 status|Nightfall
-暮
+夜幕降临
 %%%%
 status|Ooze
 泥
@@ -37490,7 +37472,7 @@ status|Pact
 契
 %%%%
 status|Para
-麻
+麻痹
 %%%%
 status|Peek
 窥
@@ -37511,7 +37493,7 @@ status|Pray
 祷
 %%%%
 status|Protected
-护
+防护
 %%%%
 status|Quad
 四倍
@@ -37541,7 +37523,7 @@ status|Resist
 抗
 %%%%
 status|Rev
-转
+暖机
 %%%%
 status|Rev*
 转*
@@ -37556,7 +37538,7 @@ status|Ruin
 灭
 %%%%
 status|Sap
-弱
+枯竭
 %%%%
 status|Scarab
 虫
@@ -37577,7 +37559,7 @@ status|Shroud
 护罩
 %%%%
 status|Sick
-病
+患病
 %%%%
 status|Sil
 默
@@ -37595,7 +37577,7 @@ status|Slime
 粘
 %%%%
 status|Slow
-慢
+减速
 %%%%
 status|SlowM
 慢移
@@ -37625,10 +37607,10 @@ status|Sunder
 碎裂
 %%%%
 status|Swift
-速
+迅捷
 %%%%
 status|Tele
-传
+传送
 %%%%
 status|Tesseract
 超立方体
@@ -37661,7 +37643,7 @@ status|Vertigo
 眩
 %%%%
 status|Vexed
-恼
+恼怒
 %%%%
 status|Vit
 活
@@ -37670,13 +37652,13 @@ status|Vortex
 涡
 %%%%
 status|Water
-水
+水域
 %%%%
 status|Wave
 波
 %%%%
 status|Weak
-弱
+脆弱
 %%%%
 status|Werewolf
 狼
@@ -37798,9 +37780,6 @@ status|calling dragons
 status|calling ooze
 召唤软泥
 %%%%
-status|catalyst
-催化
-%%%%
 status|channelling
 引导中
 %%%%
@@ -37834,9 +37813,6 @@ status|corroded (%d)
 status|death channelling
 引导死亡
 %%%%
-status|devious
-狡诈
-%%%%
 status|diminished spells
 法术减弱
 %%%%
@@ -37848,12 +37824,6 @@ status|duelling
 %%%%
 status|elixired
 灵药生效
-%%%%
-status|engorged
-饱食
-%%%%
-status|enkindled
-点燃
 %%%%
 status|enlightened
 启迪
@@ -37900,12 +37870,6 @@ status|fragile (+50% incoming damage)
 status|freezing walls
 冻结墙壁
 %%%%
-status|frozen
-冰冻
-%%%%
-status|fugue
-赋格
-%%%%
 status|full of bloodlust
 充满嗜血
 %%%%
@@ -37920,9 +37884,6 @@ status|hasted
 %%%%
 status|hasted and slowed
 加速且减速
-%%%%
-status|held
-被束缚
 %%%%
 status|heroic
 英雄
@@ -37986,9 +37947,6 @@ status|mildly
 %%%%
 status|missing status
 缺失状态
-%%%%
-status|nightfall
-夜幕降临
 %%%%
 status|no stairs
 拒绝楼梯
@@ -38143,9 +38101,6 @@ status|short of breath
 status|shroud timeout
 黏液护罩破损
 %%%%
-status|sick
-疾病
-%%%%
 status|sign of ruin
 毁灭征兆
 %%%%
@@ -38175,9 +38130,6 @@ status|studying
 %%%%
 status|surrounded by blades
 刃之旋风
-%%%%
-status|swift
-迅捷
 %%%%
 status|teleporting to hostiles
 传送至敌阵
@@ -38212,9 +38164,6 @@ status|untranslocatable
 status|vertiginous
 眩晕
 %%%%
-status|vexed
-恼怒
-%%%%
 status|vitalised
 生命活力
 %%%%
@@ -38248,20 +38197,11 @@ status|berserk cooldown
 status|breath weapon
 吐息冷却
 %%%%
-status|conf
-困惑
-%%%%
-status|corr
-腐蚀
-%%%%
 status|divinely shielded
 神圣护盾
 %%%%
 status|divinely vigorous
 神圣活力
-%%%%
-status|drain
-虚弱
 %%%%
 status|ephemerally shielded
 短暂护盾
@@ -38271,12 +38211,6 @@ status|exhaust
 %%%%
 status|fiery-armoured
 火焰护甲
-%%%%
-status|fire
-着火
-%%%%
-status|fly
-飞行
 %%%%
 status|haste
 加速
@@ -38290,32 +38224,17 @@ status|infuse
 status|infused
 魔法注入
 %%%%
-status|invis
-隐形
-%%%%
-status|mesm
-催眠
-%%%%
-status|might
-强力
-%%%%
 status|nausea
 恶心
 %%%%
 status|nauseated
 恶心
 %%%%
-status|para
-麻痹
-%%%%
 status|petrify
 石化
 %%%%
 status|poisoned
 中毒
-%%%%
-status|protected
-防护
 %%%%
 status|protected from physical damage
 物理防护
@@ -38338,9 +38257,6 @@ status|repelling missiles
 status|rmissile
 弹飞弹
 %%%%
-status|sap
-枯竭
-%%%%
 status|sapped magic
 魔力枯竭
 %%%%
@@ -38353,12 +38269,6 @@ status|sleep
 status|sleeping
 睡眠
 %%%%
-status|slow
-减速
-%%%%
-status|tele
-传送
-%%%%
 status|teleporting
 传送中
 %%%%
@@ -38368,35 +38278,29 @@ status|transform
 status|transformed
 变形
 %%%%
-status|weak
-脆弱
-%%%%
 status|weakness
 脆弱
 %%%%
 regeneration
 再生
 %%%%
-Wildshape
+jewellery full name|regeneration
+再生
+%%%%
+jewellery short name|Wildshape
 变形
 %%%%
-Chemistry
+jewellery short name|Chemistry
 炼金
 %%%%
 acrobat
 杂技
 %%%%
-Condensation Shield
-凝结之盾
-%%%%
-Sign of Ruin
+spell or ability title|Sign of Ruin
 毁灭征兆
 %%%%
-Sting
+spell title|Sting
 毒刺
-%%%%
-Vortex
-漩涡
 %%%%
 growl
 低吼
@@ -38965,7 +38869,7 @@ disjoined
 Disjoined by %s
 被%s解离
 %%%%
-wild magic
+death cause terse|wild magic
 野性魔法
 %%%%
 Killed by wild magic
@@ -39037,10 +38941,10 @@ Killed by an exploding monster
 Killed by exploding %s
 被爆炸的%s杀死
 %%%%
-smitten by Beogh
+death cause terse|smitten by Beogh
 被比欧弗击中
 %%%%
-Smitten by Beogh
+death cause|Smitten by Beogh
 被比欧弗击杀
 %%%%
 Turned to stone
@@ -39319,7 +39223,7 @@ of Ashenzari
 of Bugginess
 故障之
 %%%%
-Poltergeist
+species name|Poltergeist
 吵闹鬼
 %%%%
 non-descript

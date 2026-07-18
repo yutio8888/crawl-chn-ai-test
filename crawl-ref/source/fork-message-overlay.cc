@@ -871,7 +871,8 @@ bool _enumerate_recursive_variant(
     }
 
     canonical_textdb::selected_variant root;
-    root.locator = { key, ordinal };
+    root.locator.canonical_key = key;
+    root.locator.variant_ordinal = ordinal;
     root.recursion_path = path;
     vector<recursive_identity_state> pending = {
         { variant.raw_pattern, 0, 0, { root } },

@@ -1011,9 +1011,9 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case AMU_GUARDIAN_SPIRIT:        return T_("guardian spirit");
         case AMU_FAITH:                  return T_("faith");
         case AMU_REFLECTION:             return T_("reflection");
-        case AMU_REGENERATION:           return T_("regeneration");
-        case AMU_WILDSHAPE:              return T_("wildshape");
-        case AMU_CHEMISTRY:              return T_("chemistry");
+        case AMU_REGENERATION:           return C_("jewellery full name", "regeneration");
+        case AMU_WILDSHAPE:              return C_("jewellery full name", "wildshape");
+        case AMU_CHEMISTRY:              return C_("jewellery full name", "chemistry");
         case AMU_DISSIPATION:            return T_("dissipation");
         case AMU_NOTHING:                return T_("nothing");
         default: return "buggy jewellery";
@@ -1067,8 +1067,8 @@ const char* jewellery_effect_name(int jeweltype, bool terse)
         case AMU_FAITH:                  return T_("Faith");
         case AMU_REFLECTION:             return T_("Reflect");
         case AMU_REGENERATION:           return T_("Regen");
-        case AMU_WILDSHAPE:              return T_("Wildshape");
-        case AMU_CHEMISTRY:              return T_("Chemistry");
+        case AMU_WILDSHAPE:              return C_("jewellery short name", "Wildshape");
+        case AMU_CHEMISTRY:              return C_("jewellery short name", "Chemistry");
         case AMU_DISSIPATION:            return T_("Dissipate");
         case AMU_NOTHING:                return "";
         default: return "buggy";
