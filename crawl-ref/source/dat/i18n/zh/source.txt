@@ -40268,7 +40268,7 @@ If this monster is a "program bug", then it's recommended that you save your gam
 如果这只怪物是“程序错误”，建议保存游戏并重新加载。请向相关人员报告那些伪装成程序错误，或在地牢中四处乱跑却没有适当描述的怪物。\n
 %%%%
 \nThis cloud is opaque; one tile will not block vision, but multiple will.\n
-\n 是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。\n
+\n这片云是不透明的。如果你和一个格子之间有两片或更多不透明的云，你将无法看到那个格子里的任何东西。\n
 %%%%
 \nClouds of this kind an adventurer makes will vanish %s once outside their sight.\n
 \n冒险者制造的这类云团一旦离开其视野%s就会消散。\n
