@@ -37,6 +37,7 @@
                              // bane_from_name, bane_name
 #include "mutation-type.h"
 #include "bane-type.h"       // NUM_BANES, BANE_*_REMOVED
+#include "bane-data.h"       // bane_data English translation keys
 #include "cloud.h"           // cloud_name_to_type, cloud_type_name
 #include "cloud-type.h"
 #include "branch.h"          // branch_by_shortname, branches
@@ -52,6 +53,7 @@
 #include "database.h"        // getLongDescription, getLongDescKeysByRegex
 #include "clua.h"            // clua, lua_State
 #include "stringutil.h"      // strip_suffix
+#include "positional_format.h" // make_stringf_p
 #include "options.h"         // Options.language
 #include "lang-t.h"          // lang_t
 #include "lookup-help.h"     // lookup_help_type_name, NUM_LOOKUP_HELP_TYPES
@@ -160,11 +162,10 @@ private:
 //   regression risk this test guards is therefore "a display name is not
 //   recognised", NOT "a fuzzy matcher resolves to a slightly different but
 //   valid enum". Several game lookups are inherently fuzzy (substring / prefix
-//   matching) or depend on runtime-initialised index tables that the catch2
-//   sandbox does not populate (e.g. bane_index). For those we assert
-//   RECOGNITION (a non-terminal enum) rather than exact enum equality, and
-//   document the reason inline. Where exact equality is reliable (card), we
-//   keep it strict.
+//   matching). For those we assert RECOGNITION (a non-terminal enum) rather
+//   than exact enum equality, and document the reason inline. Where exact
+//   equality is reliable (card and the initialised bane index), we keep it
+//   strict.
 TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh-help: bidirectional lookup round-trips",
                  "[zh-help][bidirectional]")
@@ -245,13 +246,9 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK(mutation_from_name(nm, /*allow_category=*/false) != NUM_MUTATIONS);
     }
 
-    // --- bane: bane_name(b, true) reads bane_data[bane_index[bane]], and
-    //     bane_index is a RUNTIME-initialised table that the catch2 sandbox
-    //     does not populate — so every enum maps to index 0 ("lethargy") here.
-    //     This is an environment limitation, not an i18n bug. Assert only that
-    //     the name is non-empty and recognised (non-terminal), skipping the
-    //     BANE_*_REMOVED gap. Exact enum equality is validated end-to-end by
-    //     the L3 ?/N path instead. ---
+    // --- bane: initialise bane_index, then require exact round-trips. This
+    //     prevents every enum from silently reading entry 0 ("lethargy"). ---
+    init_mut_index();
     for (int bi = 0; bi < NUM_BANES; ++bi)
     {
         const bane_type b = static_cast<bane_type>(bi);
@@ -259,7 +256,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         if (nm.empty())
             continue;
         INFO("bane round-trip: " << nm);
-        CHECK(bane_from_name(nm.c_str()) != NUM_BANES);
+        CHECK(bane_from_name(nm.c_str()) == b);
     }
 
     // --- feature: feat_by_desc round-trip is known-flaky (DESC formatting).
@@ -722,16 +719,37 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         CHECK_FALSE(rule_untranslated(zh, lowercase_string(zh)));
     }
 
-    // --- bane: bane_name(false) returns T_()'d Chinese ---
-    for (int bi = 0; bi < NUM_BANES; ++bi)
+    // --- bane: every persistent name/description key must resolve instead of
+    //     falling back to English. The data table includes the TAG34 removed
+    //     compatibility entry, so it is deliberately covered too. ---
+    init_mut_index();
+    for (const bane_def& def : bane_data)
     {
-        const bane_type b = static_cast<bane_type>(bi);
-        const string zh = bane_name(b, false);
-        if (zh.empty())
-            continue;
-        INFO("bane name: " << zh);
-        CHECK_FALSE(rule_untranslated(zh, lowercase_string(zh)));
+        const string short_name = T_(def.name);
+        const string display_name = bane_name(def.type, false);
+        const string short_desc = bane_desc(def.type);
+        INFO("bane: " << def.name << " -> " << display_name);
+        CHECK_FALSE(rule_untranslated(short_name, def.name));
+        CHECK_FALSE(rule_untranslated(short_desc, def.description));
+        CHECK_FALSE(rule_mixed_cn_en(display_name));
     }
+#if TAG_MAJOR_VERSION == 34
+    CHECK_FALSE(rule_untranslated(T_("the Removed"), "the Removed"));
+    CHECK_FALSE(rule_untranslated(T_("You feel a strange sense of nostalgia."),
+                                  "You feel a strange sense of nostalgia."));
+#endif
+
+    // Dilettante's held-player detail line has a separate display key from
+    // bane_desc(). Exercise its positional-capable formatting without
+    // mutating the global player used by other Catch2 cases.
+    const char* dilettante_key =
+        "\nYour %s, %s, and %s are currently affected.\n";
+    const string dilettante_format = T_(dilettante_key);
+    CHECK_FALSE(rule_untranslated(dilettante_format, dilettante_key));
+    const string dilettante_line = make_stringf_p(
+        dilettante_format.c_str(),
+        skill_name(SK_FIGHTING), skill_name(SK_ARMOUR), skill_name(SK_DODGING));
+    CHECK(dilettante_line.find('%') == string::npos);
 
     // --- branch: longname T_() produces Chinese ---
     // Spot-check a few well-known branches; full enumeration requires

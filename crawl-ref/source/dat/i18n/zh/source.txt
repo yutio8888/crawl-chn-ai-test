@@ -12545,7 +12545,7 @@ Shooting star damage:
 %%%%
 long
 
-较久
+长
 %%%%
 \n stacked deck: 
 \n 堆叠牌组：
@@ -27989,7 +27989,7 @@ Delay
 *沉默
 %%%%
 Bane
-祸根
+灾祸
 %%%%
 RegenMP
 回魔
@@ -30188,7 +30188,7 @@ verb|fire
 %s试图对%s施下咒术！
 %%%%
 %s bane
-%s克星
+%s灾祸
 %%%%
 %s draws you further into %s thrall.
 %s将你进一步拉入%s的奴役。
@@ -30398,7 +30398,7 @@ Zin's power protects your fellow warrior from evil magic!
 \n一些法术可以穿透它施放。
 %%%%
 \nThis bane usually lasts a %s time.\n
-\n此灾祸通常持续%s。\n
+\n此灾祸通常会持续%s时间。\n
 %%%%
 \nThis monster has been 
 \n这个怪物已被
@@ -30467,7 +30467,7 @@ master
 大师
 %%%%
 moderate length of
-中等时长
+中等
 %%%%
 normally 
 通常
@@ -30500,7 +30500,7 @@ Killing it yields no experience or items
 \n若杀死它，或许能取得它的皮，可用作护甲。\n
 %%%%
 short length of
-短时长
+短
 %%%%
 temporarily summoned to this location. 
 被临时召唤到此地。
@@ -36803,7 +36803,7 @@ Claustrophobia
 幽闭恐惧
 %%%%
 Your slaying and spellpower are decreased in confined spaces.
-在狭窄空间中，你的杀伤力和法术强度降低。
+在狭窄空间中，你的杀戮加成和法术威力降低。
 %%%%
 Stumbling
 踉跄
@@ -40259,7 +40259,7 @@ You cannot be affected by this spell right now. %s\n
 你目前无法受到此法术的影响。%s\n
 %%%%
 \n<lightmagenta>This bane will be lifted from you when you gain another %.1f XLs worth of experience.</lightmagenta>
-\n<lightmagenta>当你再获得%.1f级的经验值后，此灾祸将被解除。</lightmagenta>
+\n<lightmagenta>当你再获得相当于%.1f个经验等级的经验值后，此灾祸便会解除。</lightmagenta>
 %%%%
 It will release varied jellies when damaged or killed, with the number of jellies proportional to the amount of damage.\n
 它会在受到伤害或被杀死时释放各种果冻怪，果冻的数量与受到的伤害成正比。\n
@@ -40302,3 +40302,12 @@ Set Abyss speed to what? (now %d, higher value = higher speed)
 %%%%
 Mipmap Setup: Disabled because OpenGL version: %s does not provide glGenerateMipmap.
 Mipmap设置：已禁用，因为OpenGL版本%s不提供glGenerateMipmap。
+%%%%
+\nYour %s, %s, and %s are currently affected.\n
+\n你当前的%s、%s和%s受到影响。\n
+%%%%
+the Removed
+已移除者
+%%%%
+You feel a strange sense of nostalgia.
+你感到一股莫名的怀旧之情。

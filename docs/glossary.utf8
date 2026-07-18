@@ -89,6 +89,8 @@ ball python	球蟒	domain=monsters; source=EN/ZH; Scope / comment=monster; sourc
 ballistomycete	孢子炮菌	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 ballistomycete spore	孢子炮菌孢子	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 balrug	巴鲁格	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+Bane	灾祸	domain=core; source=EN/ZH; 注意事项=负面游戏机制；专名 `Bane of X` 可按语境译为“X之灾”
+bane	灾祸	domain=core; source=EN/ZH; 注意事项=负面游戏机制；专名 `Bane of X` 可按语境译为“X之灾”
 Banishment	放逐	domain=spells; source=EN/ZH; 备注=✅
 barachi	蛙人	domain=species; source=EN/ZH | domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Barding	马铠	domain=items; source=EN/ZH; Scope / comment=armour; decision=D-B-019

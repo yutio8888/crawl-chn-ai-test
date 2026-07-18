@@ -5016,7 +5016,7 @@ string bane_long_description(bane_type bane, bool ignore_player)
     if (bane == BANE_DILETTANTE && player_has)
     {
         CrawlVector& vec = you.props[DILETTANTE_SKILL_KEY].get_vector();
-        string str = make_stringf_p("\nYour %s, %s, and %s are currently affected.\n",
+        string str = make_stringf_p(T_("\nYour %s, %s, and %s are currently affected.\n"),
                                 skill_name(static_cast<skill_type>(vec[0].get_int())),
                                 skill_name(static_cast<skill_type>(vec[1].get_int())),
                                 skill_name(static_cast<skill_type>(vec[2].get_int())));
