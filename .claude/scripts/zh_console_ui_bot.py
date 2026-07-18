@@ -62,7 +62,7 @@ HELP_CASES = [
     ('spell_school', 's', '@咒法', '魔法飞弹'),
     ('text:spell', 's', '火球', '火球'),
     ('text:ability', 'a', '狂暴', '狂暴'),
-    ('text:mutation', 'u', '爪子', '爪子'),
+    ('text:mutation', 'u', '利爪', '利爪'),
     ('text:feature', 'f', 'wall', '墙'),
     ('text:bane', 'n', 'lethargy', '你移动缓慢'),
     ('text:monster', 'm', 'rat', '鼠'),

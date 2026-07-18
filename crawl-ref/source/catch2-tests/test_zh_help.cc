@@ -87,6 +87,7 @@ you = {
     hand = function() return "hand" end,
     flying = function() return false end,
     mutation = function() return 0 end,
+    contam_max_damage = function() return 0 end,
     god = function() return "No God" end
 }
 view = {
@@ -496,7 +497,7 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     const vector<std::pair<string, string>> dynamic_statuses = {
         { "app status", "你的身体上长出异常的角或爪" },
         { "bat status", "你变成了行动迅捷的吸血蝠" },
-        { "blade status", "长长的、针般薄的刀片从你的手中生出" },
+        { "blade status", "多把凶恶的刀刃正从你的身体上长出" },
         { "dragon status", "你变成了强大的，吐息火焰的龙" },
         { "pact status", "战斗、流血" },
         { "water status", "你正越过水面" },

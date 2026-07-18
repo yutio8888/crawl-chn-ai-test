@@ -250,13 +250,14 @@ run_help_bot() {
         echo "  Help RC bot exited with $timeout_rc"
         return 1
     fi
-    python3 "$CHECK_SCRIPT" --mode help --bot-stderr "$STDERR_HELP_BOT"
+    return 0
 }
 
 run_help_aggregate() {
     local args=(
         --mode help
         --catch2-stderr "$STDERR_HELP_C2"
+        --catch2-stdout "$STDOUT_HELP_C2"
         --bot-stderr "$STDERR_HELP_BOT"
     )
     if [ "${1:-}" = "baseline" ]; then
