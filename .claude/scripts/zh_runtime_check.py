@@ -68,6 +68,29 @@ VALID_KINDS = {
     "EMPTY_DB", "WHITESPACE_ANOMALY", "INVISIBLE_CHAR", "PUNCT_STYLE",
 }
 
+# Exact RC-bot coverage contract. Counts alone are insufficient: every case
+# must appear exactly once, in shard order, with its defining semantic tokens.
+BOT_CASE_MANIFESTS = {
+    "all": [
+        "probe:ui", "item:chaos_demon_whip", "item:running_boots",
+        "god:Trog", "phase:ui:done", "probe:spells",
+        "phase:spells:done", "probe:issue48",
+        "path1:unid_appearance_msg", "path3:enchantress_msg",
+        "phase:issue48:done",
+    ],
+}
+
+BOT_REQUIRED_CONTENT = {
+    "probe:ui": ("lang=zh", "你攻击"),
+    "item:chaos_demon_whip": ("恶魔之鞭",),
+    "item:running_boots": ("蜘蛛之靴",),
+    "god:Trog": ("特洛格欢迎你",),
+    "probe:spells": ("lang=zh", "你攻击"),
+    "probe:issue48": ("lang=zh",),
+    "path1:unid_appearance_msg": ("歌唱之剑",),
+    "path3:enchantress_msg": ("妖术女王",),
+}
+
 # Canonical JSON encoding: UTF-8, sort_keys=True, separators=(",",":"), ensure_ascii=False
 _CANONICAL_JSON_KWARGS = {
     "sort_keys": True,
@@ -897,6 +920,72 @@ def parse_catch2_stdout(path: str) -> Dict[str, int]:
     return summaries
 
 
+def _parse_bot_frame_records(path: str) -> List[dict]:
+    """Read FRAME_MARKER records from the combined RC-bot transcript."""
+    if not path or not os.path.isfile(path):
+        _usage_error(f"bot stderr file not found: {path!r}")
+    records = []
+    with open(path, "r", encoding="utf-8", errors="replace", newline="") as f:
+        for lineno, line in enumerate(f, 1):
+            match = re.search(
+                r"FRAME_MARKER:\s*(.+?)\s*\| ?(.*?)(?:\r?\n)?$", line
+            )
+            if match:
+                records.append({
+                    "case_id": match.group(1).strip(),
+                    "content": match.group(2),
+                    "line": lineno,
+                })
+    return records
+
+
+def _mode_bot(args) -> int:
+    """Validate the exact RC-bot case manifest, ordering, and semantics."""
+    if not args.bot_stderr:
+        _usage_error("--mode bot requires --bot-stderr")
+    if not args.bot_manifest:
+        _usage_error("--mode bot requires --bot-manifest")
+
+    expected = BOT_CASE_MANIFESTS[args.bot_manifest]
+    records = _parse_bot_frame_records(args.bot_stderr)
+    observed = [record["case_id"] for record in records]
+    counts = Counter(observed)
+    missing = [case_id for case_id in expected if counts[case_id] == 0]
+    duplicates = sorted(
+        case_id for case_id, count in counts.items() if count > 1
+    )
+    unexpected = [case_id for case_id in observed if case_id not in expected]
+    in_manifest = [case_id for case_id in observed if case_id in expected]
+    out_of_order = in_manifest != expected
+
+    unique_content = {
+        record["case_id"]: record["content"]
+        for record in records
+        if counts[record["case_id"]] == 1
+    }
+    semantic_failures = []
+    for case_id in expected:
+        absent = [
+            token for token in BOT_REQUIRED_CONTENT.get(case_id, ())
+            if token not in unique_content.get(case_id, "")
+        ]
+        if absent:
+            semantic_failures.append({
+                "case_id": case_id,
+                "missing_tokens": absent,
+            })
+
+    print(f"Bot manifest: {args.bot_manifest}")
+    print(f"Bot coverage: {len(observed)} / {len(expected)} markers")
+    print(f"Missing: {missing}")
+    print(f"Duplicates: {duplicates}")
+    print(f"Unexpected: {unexpected}")
+    print(f"Out of order: {out_of_order}")
+    print(f"Semantic failures: {semantic_failures}")
+    return 1 if (missing or duplicates or unexpected or out_of_order
+                 or semantic_failures) else 0
+
+
 # ============================================================================
 # Main CLI
 # ============================================================================
@@ -917,9 +1006,10 @@ def main():
                         help="write new baseline to this path")
 
     # Mode selection
-    parser.add_argument("--mode", choices=("generic", "help"), default=None,
+    parser.add_argument("--mode", choices=("generic", "help", "bot"), default=None,
                         help="aggregation mode: generic (Catch2 JSONL, default when "
-                             "catch2-stderr given) or help (help-system status)")
+                             "catch2-stderr given), help (help-system status), "
+                             "or bot (exact RC manifest)")
 
     # Protocol management
     parser.add_argument("--migrate-baseline-protocol",
@@ -929,11 +1019,13 @@ def main():
     parser.add_argument("--suite", choices=("zh_translation", "zh_help"),
                         help="suite for baseline protocol migration")
 
-    # Deprecated (kept for compat)
+    # Layer inputs. Lua remains accepted for compatibility; bot inputs are
+    # active only in the explicit bot mode.
     parser.add_argument("--lua-stderr", help=argparse.SUPPRESS)
-    parser.add_argument("--bot-stderr", help=argparse.SUPPRESS)
+    parser.add_argument("--bot-stderr", help="combined RC-bot transcript")
     parser.add_argument("--json", action="store_true", help=argparse.SUPPRESS)
-    parser.add_argument("--bot-manifest", help=argparse.SUPPRESS)
+    parser.add_argument("--bot-manifest", choices=tuple(BOT_CASE_MANIFESTS),
+                        help="exact RC-bot manifest to require")
 
     args = parser.parse_args()
 
@@ -960,6 +1052,9 @@ def main():
 
     if mode == "help":
         return _mode_help(args)
+
+    if mode == "bot":
+        return _mode_bot(args)
 
     # Fallback (should not reach)
     _usage_error("unrecognized mode or missing arguments")

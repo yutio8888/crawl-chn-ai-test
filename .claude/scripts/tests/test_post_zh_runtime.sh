@@ -150,12 +150,42 @@ if [ -n "$C2_REPORT" ] && [ -f "$C2_REPORT" ]; then
     fi
 fi
 
-# The JSONL checker aggregates Catch2 output. Rendered bot workflows enforce
-# their own assertions and must not invoke it with only a bot transcript.
-if grep -Fq 'python3 "$CHECK_SCRIPT" --bot-stderr' "$POST_RUNTIME"; then
-    fail "Bot path still invokes the Catch2 checker without Catch2 logs"
+# RC shards have their own exact 11-case manifest; panels/workflows enforce
+# separate rendered assertions. Verify the bot-only checker accepts the full
+# manifest and rejects a mutation with one marker removed.
+BOT_LOG="$TMP_ROOT/bot-manifest.log"
+cat > "$BOT_LOG" <<'BOTLOG'
+FRAME_MARKER: probe:ui | lang=zh 你攻击
+FRAME_MARKER: item:chaos_demon_whip | 恶魔之鞭
+FRAME_MARKER: item:running_boots | 蜘蛛之靴
+FRAME_MARKER: god:Trog | 特洛格欢迎你
+FRAME_MARKER: phase:ui:done | ok
+FRAME_MARKER: probe:spells | lang=zh 你攻击
+FRAME_MARKER: phase:spells:done | ok
+FRAME_MARKER: probe:issue48 | lang=zh
+FRAME_MARKER: path1:unid_appearance_msg | 歌唱之剑
+FRAME_MARKER: path3:enchantress_msg | 妖术女王
+FRAME_MARKER: phase:issue48:done | ok
+BOTLOG
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$BOT_LOG" --bot-manifest all >/dev/null; then
+    pass "Bot checker accepts the exact 11-case manifest"
 else
-    pass "Bot path relies on its rendered workflow assertions"
+    fail "Bot checker rejected the exact 11-case manifest"
+fi
+
+sed '/path3:enchantress_msg/d' "$BOT_LOG" > "$BOT_LOG.mutated"
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$BOT_LOG.mutated" --bot-manifest all >/dev/null 2>&1; then
+    fail "Bot checker accepted a missing manifest case"
+else
+    pass "Bot checker rejects a missing manifest case"
+fi
+
+if grep -Fq -- '--mode bot --bot-stderr "$STDERR_L3"' "$POST_RUNTIME"; then
+    pass "Bot path invokes the exact manifest checker"
+else
+    fail "Bot path does not invoke the exact manifest checker"
 fi
 
 if grep -Fq -- '--catch2-stdout "$STDOUT_HELP_C2"' "$POST_RUNTIME"; then
