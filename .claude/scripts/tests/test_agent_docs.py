@@ -113,6 +113,10 @@ class AgentDocumentationTests(unittest.TestCase):
             execute = batch.split("phase('Execute Sequential')", 1)[1].split(
                 "phase('Prepare Review Bundle')", 1)[0]
             with self.subTest(tree=tree):
+                translation_pass, code_pass = execute.split("// Pass 2:", 1)
+                self.assertIn("// Pass 1:", translation_pass)
+                self.assertNotIn("agentType: 'crawl-coder'", translation_pass)
+                self.assertNotIn("agentType: 'zh-translator'", code_pass)
                 self.assertLess(
                     execute.index("agentType: 'zh-translator'"),
                     execute.index("agentType: 'crawl-coder'"),
@@ -178,6 +182,7 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("validate_chinese_init", deploy)
         self.assertIn("VERSIONED_INIT", deploy)
         self.assertIn("FONT_SOURCE", deploy)
+        self.assertIn("MapleMono-NF-CN-Regular[.]ttf", deploy)
         self.assertIn('cmp -s "$INIT_SOURCE" "$TARGET/init.txt"', deploy)
         self.assertIn(
             'cmp -s "$FONT_SOURCE" "$TARGET/dat/tiles/$MAPLE_FONT"', deploy

@@ -36,7 +36,7 @@ validate_chinese_init() {
     grep -Eq '^[[:space:]]*language[[:space:]]*=[[:space:]]*zh([[:space:]]|$)' \
         "$init_file" || return 1
     for role in crt msg stat tip lbl; do
-        grep -Eq "^[[:space:]]*tile_font_${role}_file[[:space:]]*=[[:space:]]*dat/tiles/${MAPLE_FONT}([[:space:]]|$)" \
+        grep -Eq "^[[:space:]]*tile_font_${role}_file[[:space:]]*=[[:space:]]*dat/tiles/MapleMono-NF-CN-Regular[.]ttf([[:space:]]|$)" \
             "$init_file" || return 1
     done
 }

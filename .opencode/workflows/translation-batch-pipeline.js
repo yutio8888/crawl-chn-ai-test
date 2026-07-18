@@ -5,7 +5,7 @@ export const meta = {
     { title: 'Batch Analyze', detail: '并行分析所有 issue → 归并同根因 → 建立批次术语表' },
     { title: 'Batch Plan', detail: '基于合并后的问题集制定统一修复方案' },
     { title: 'Review Plan', detail: '方案审核闸门（最多3轮修订）' },
-    { title: 'Execute Sequential', detail: '串行落盘：每组先写翻译资产、再改代码，避免 source.txt 冲突' },
+    { title: 'Execute Sequential', detail: '两遍串行：先完成全批翻译资产，再执行全批代码修改' },
     { title: 'Prepare Review Bundle', detail: '提交边界：要求两端 clean，并由 target checkout 创建不可变 bundle' },
     { title: 'Batch Review', detail: '按文件机械路由代码/翻译 reviewer，并检查术语一致性' },
     { title: 'Cross-validate', detail: '全量校验脚本 + 遗漏检测' },
@@ -313,12 +313,13 @@ log('方案通过 ✅ (' + planIterations + ' 轮修订)')
 
 phase('Execute Sequential')
 
-const execResults = []
+const execResults = plan.mergedGroups.map((_, groupIndex) => ({ groupIndex }))
+
+// Pass 1: finish every translator-owned asset before any coder is dispatched.
 for (let g = 0; g < plan.mergedGroups.length; g++) {
   const grp = plan.mergedGroups[g]
-  log('执行组 ' + (g + 1) + '/' + plan.mergedGroups.length + ': ' + grp.rootCause.substring(0, 50) + '...')
+  log('翻译组 ' + (g + 1) + '/' + plan.mergedGroups.length + ': ' + grp.rootCause.substring(0, 50) + '...')
 
-  // Step 1: Translation assets (zh-translator) — one writer, same worktree.
   const transResult = await agent(
     'Add Chinese translations for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
     '\nTranslations needed: ' + JSON.stringify(grp.translationsNeeded) + '\n' +
@@ -339,11 +340,22 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
 
   const transOk = transResult?.verificationStatus === 'pass'
   if (!transOk) {
-    log('  G' + (g + 1) + ' 翻译验证失败；停止，代码阶段未运行。')
+    log('  G' + (g + 1) + ' 翻译验证失败；全批代码阶段未运行。')
     return { error: 'translation_execution_failed', groupIndex: g, translation: transResult }
   }
 
-  // Step 2: Code changes (crawl-coder), after required keys/assets exist.
+  execResults[g].translation = transResult
+  log('  G' + (g + 1) + ' 翻译: +' + transResult.entriesAdded + ' added, ' + (transResult.entriesModified || 0) + ' modified')
+}
+
+log('全部翻译资产已完成并验证；开始代码阶段。')
+
+// Pass 2: code may now rely on every translator-owned key and TextDB asset.
+for (let g = 0; g < plan.mergedGroups.length; g++) {
+  const grp = plan.mergedGroups[g]
+  const transResult = execResults[g].translation
+  log('代码组 ' + (g + 1) + '/' + plan.mergedGroups.length + ': ' + grp.rootCause.substring(0, 50) + '...')
+
   const codeResult = await agent(
     'Implement code changes for batch group ' + (g + 1) + '/' + plan.mergedGroups.length + '.\n' +
     '\nRoot cause: ' + grp.rootCause + '\n' +
@@ -366,17 +378,11 @@ for (let g = 0; g < plan.mergedGroups.length; g++) {
   const codeOk = codeResult?.compileStatus === 'pass'
     && codeResult?.verificationStatus === 'pass'
   if (!codeOk) {
-    log('  G' + (g + 1) + ' 代码编译或验证失败；停止后续组。')
+    log('  G' + (g + 1) + ' 代码编译或验证失败；停止后续代码组。')
     return { error: 'code_execution_failed', groupIndex: g, code: codeResult, translation: transResult }
   }
 
-  execResults.push({
-    groupIndex: g,
-    code: codeResult,
-    translation: transResult,
-  })
-
-  log('  G' + (g + 1) + ' 翻译: +' + transResult.entriesAdded + ' added, ' + (transResult.entriesModified || 0) + ' modified')
+  execResults[g].code = codeResult
   log('  G' + (g + 1) + ' 代码: ✅ | ' + (codeResult?.summary || ''))
 }
 
