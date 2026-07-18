@@ -183,6 +183,7 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("validate_chinese_init", deploy)
         self.assertIn("effective_init_value", deploy)
         self.assertIn("VERSIONED_INIT", deploy)
+        self.assertIn('cat "$VERSIONED_INIT" >> "$DEPLOY_INIT"', deploy)
         self.assertIn("FONT_SOURCE", deploy)
         self.assertIn('cmp -s "$INIT_SOURCE" "$TARGET/init.txt"', deploy)
         self.assertIn(

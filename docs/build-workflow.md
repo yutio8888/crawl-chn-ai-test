@@ -94,6 +94,11 @@ exact font, and `init.txt`, verifies the deployed copies, and clears the target
 either required asset is absent or invalid. Close the running game before
 deployment.
 
+When a local `crawl-ref/source/init.txt` exists, the helper preserves its user
+preferences but appends `init.zh.txt` to the deployed copy. The canonical
+language and five font assignments are therefore last and remain effective even
+if the local file contains duplicates or `include` directives.
+
 ## Android Deployment
 
 ```bash

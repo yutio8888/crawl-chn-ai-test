@@ -97,15 +97,31 @@ if [ ! -d "$WT_SOURCE" ]; then
     exit 1
 fi
 
-# 1. Resolve and validate deployment-only assets before an expensive build.
-if [ -f "$LOCAL_INIT" ]; then
-    INIT_SOURCE="$LOCAL_INIT"
-else
-    INIT_SOURCE="$VERSIONED_INIT"
+# 1. Build and validate the exact deployment config before an expensive build.
+if [ ! -f "$VERSIONED_INIT" ] || ! validate_chinese_init "$VERSIONED_INIT"; then
+    echo "ERROR: versioned Chinese init template is missing or invalid: $VERSIONED_INIT" >&2
+    exit 1
 fi
-if [ ! -f "$INIT_SOURCE" ] || ! validate_chinese_init "$INIT_SOURCE"; then
-    echo "ERROR: Chinese init configuration is missing or invalid: $INIT_SOURCE" >&2
-    echo "Copy $VERSIONED_INIT to $LOCAL_INIT and preserve every required setting." >&2
+
+DEPLOY_INIT="$(mktemp /tmp/crawl-deploy-init.XXXXXX)"
+cleanup() {
+    rm -f "$DEPLOY_INIT"
+}
+trap cleanup EXIT
+
+# Preserve user preferences, then append the canonical Chinese options so they
+# are the final effective assignments even when the local file uses duplicates
+# or include directives.
+if [ -f "$LOCAL_INIT" ]; then
+    cp "$LOCAL_INIT" "$DEPLOY_INIT"
+else
+    : > "$DEPLOY_INIT"
+fi
+printf '\n# Enforced Chinese deployment options (must remain last).\n' >> "$DEPLOY_INIT"
+cat "$VERSIONED_INIT" >> "$DEPLOY_INIT"
+INIT_SOURCE="$DEPLOY_INIT"
+if ! validate_chinese_init "$INIT_SOURCE"; then
+    echo "ERROR: failed to construct an effective Chinese deployment config." >&2
     exit 1
 fi
 
@@ -127,7 +143,7 @@ if [ -z "$FONT_SOURCE" ]; then
     exit 1
 fi
 echo "[1/6] Chinese deployment assets validated."
-echo "       init: $INIT_SOURCE"
+echo "       init: local preferences + $VERSIONED_INIT final overrides"
 echo "       font: $FONT_SOURCE"
 
 # 2. Sync worktree to main worktree HEAD (local only)
