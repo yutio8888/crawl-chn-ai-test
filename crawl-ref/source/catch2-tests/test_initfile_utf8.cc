@@ -37,6 +37,30 @@ private:
 unsigned int temporary_options_file::next_id = 0;
 }
 
+TEST_CASE("Chinese distribution defaults do not require init.txt",
+          "[initfile][zh-defaults]")
+{
+    game_options options;
+
+    REQUIRE(options.language == lang_t::EN);
+    options.apply_distribution_defaults();
+    REQUIRE(options.language == lang_t::ZH);
+    REQUIRE(options.lang_name);
+    REQUIRE(string(options.lang_name) == "zh");
+#ifdef USE_TILE_LOCAL
+    const string maple_font = "dat/tiles/MapleMono-NF-CN-Regular.ttf";
+    REQUIRE(options.tile_font_crt_file == maple_font);
+    REQUIRE(options.tile_font_msg_file == maple_font);
+    REQUIRE(options.tile_font_stat_file == maple_font);
+    REQUIRE(options.tile_font_tip_file == maple_font);
+    REQUIRE(options.tile_font_lbl_file == maple_font);
+    REQUIRE(options.tile_full_screen == SCREENMODE_WINDOW);
+    REQUIRE(options.tile_window_width == 1280);
+    REQUIRE(options.tile_window_height == 800);
+    REQUIRE(options.tile_window_ratio == 0);
+#endif
+}
+
 TEST_CASE("Bundled option files preserve UTF-8 without a BOM",
           "[initfile][utf8]")
 {

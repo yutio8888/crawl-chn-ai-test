@@ -16,19 +16,20 @@ cells.
 
 ## Fonts
 
-The supported Chinese deployment config uses Maple Mono NF CN as the primary
-font for every tile text role. Because the primary font already contains CJK
-glyphs, normal Chinese deployment does not depend on a DejaVu-primary/Sarasa-
-secondary pairing.
+The compiled Chinese defaults use the versioned Maple Mono NF CN file as the
+primary font for every tile text role. Because the primary font already
+contains CJK glyphs, normal Chinese deployment does not depend on a DejaVu-
+primary/Sarasa-secondary pairing.
 
 The renderer still supports a secondary CJK face for configurations whose
 primary font lacks a glyph. Candidate fallback fonts are resolved by the
 current `fontwrapper-ft.cc` implementation; documentation should not describe a
 particular fallback as mandatory unless deployment scripts enforce it.
 
-Runtime fonts are deployed to `dat/tiles/`. Source font files may come from the
-`contrib/fonts` submodule or an ignored local cache. See
-`docs/build-workflow.md` for the supported `init.txt` and deployment process.
+Runtime fonts are deployed to `dat/tiles/`. This localization repository does
+not change the upstream `contrib/fonts` submodule; the default CJK font is
+versioned directly in `dat/tiles/`. See `docs/build-workflow.md` for optional
+`init.txt` overrides and the deployment process.
 
 ## Change Verification
 

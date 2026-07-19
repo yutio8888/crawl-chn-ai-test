@@ -415,6 +415,7 @@ struct game_options : public base_game_options
 public:
     game_options();
     void reset_options() override;
+    void apply_distribution_defaults();
     void reset_paths();
     void reset_aliases(bool clear=true) override;
     void fixup_options();

@@ -51,14 +51,11 @@ sudo apt install build-essential libncursesw5-dev bison flex liblua5.4-dev \
 Tiles 版还需要 SDL2、Freetype、libpng 和 MinGW 等目标相关依赖。其他发行版、macOS、
 MSYS2 和 Android 的依赖说明以 [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md) 为准。
 
-### 2. 准备中文配置
+### 2. 中文默认配置
 
-`init.txt` 是本地文件，不提交到 Git。首次构建前从受版本控制的中文模板创建：
-
-```bash
-cd crawl-ref/source
-test -e init.txt || cp init.zh.txt init.txt
-```
+中文语言、Maple Mono NF CN 字体和本地 Tiles 窗口尺寸由 C++ 提供默认值，
+无需创建 `init.txt`。如需覆盖这些默认值，仍可使用本地且不提交 Git 的
+`crawl-ref/source/init.txt`。
 
 ### 3. 构建并运行控制台版
 
@@ -80,15 +77,9 @@ git worktree add .worktrees/mingw-tiles --detach HEAD
 git -C .worktrees/mingw-tiles submodule update --init --recursive
 ```
 
-字体已经随 `crawl-ref/source/contrib/fonts` 子模块纳入项目。使用前确认子模块已初始化：
-
-```bash
-git submodule update --init --recursive
-test -s crawl-ref/source/contrib/fonts/MapleMono-NF-CN-Regular.ttf
-```
-
-中文默认部署使用 Maple Mono NF CN；更纱黑体的 Fixed SC 和 Mono SC 字体作为仓库内的
-CJK 备选字体保留。无需再手动下载或复制字体到源码目录。
+项目不修改或扩展上游 `contrib/fonts` 子模块。中文默认部署使用仓库纳管的
+`crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf`；渲染器仍支持在
+`init.txt` 中配置其他 CJK 字体。
 
 只构建 `crawl.exe`：
 
@@ -195,8 +186,8 @@ bash .claude/scripts/verify_zh.sh --profile ci
 - 已运行与改动类型匹配的验证 profile，并记录命令、退出码和警告；
 - 已构建受影响目标，或说明为什么无需构建；
 - 新增行为、架构约束或术语决定已经更新对应权威文档；
-- 没有在受管理的字体子模块之外重复提交字体，也没有提交 `init.txt`、构建产物、缓存或
-  部署目录。
+- 没有修改字体子模块指针，也没有提交未授权字体、`init.txt`、构建产物、缓存或部署目录；
+  仓库规定的 Maple Mono NF CN 字体及其许可证除外。
 
 翻译相关候选进入合并阶段后，由维护者按不可变 commit 执行
 `review_prepare.sh`、机械路由的领域审查、`review_final_gate.sh` 和合并时校验。不要用一次
@@ -236,7 +227,8 @@ bash .claude/scripts/verify_zh.sh --profile ci
         ├── dat/i18n/zh/source.txt    # 主翻译数据库
         ├── dat/descript/zh/          # 中文描述 TextDB
         ├── dat/database/zh/          # 中文运行时 TextDB
-        ├── init.zh.txt               # 中文配置模板
+        ├── dat/tiles/MapleMono-NF-CN-Regular.ttf
+        │                              # 默认中文 Tiles 字体
         └── util/build-*.sh            # 目标隔离的构建入口
 ```
 
@@ -253,14 +245,14 @@ bash .claude/scripts/verify_zh.sh --profile ci
 本项目继承上游 DCSS，采用 GPLv2+ 许可证，详见 [LICENSE](LICENSE)。上游贡献者名单见
 [crawl-ref/CREDITS.txt](crawl-ref/CREDITS.txt)。
 
-字体文件随 `crawl-ref/source/contrib/fonts` 子模块一同分发，但不因此改用项目的 GPLv2+
-许可证；各字体继续适用其自身许可证：
+本项目不修改字体子模块。仓库随游戏分发 Maple Mono NF CN；其他第三方字体由用户自行
+取得。复制或再分发字体时仍须遵守各字体许可证：
 
-| 字体 | 仓库内文件 | 许可证 |
+| 字体 | 本地文件名 | 许可证 |
 |---|---|---|
 | Maple Mono NF CN | `MapleMono-NF-CN-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Maple-Mono.txt) |
 | 更纱黑体（Sarasa Gothic） | `SarasaFixedSC-Regular.ttf`、`SarasaMonoSC-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Sarasa-Gothic.txt) |
-| DejaVu Sans / DejaVu Sans Mono | 子模块中的 DejaVu 字体文件 | Bitstream Vera 衍生许可，DejaVu 修改部分为公有领域；见 [DejaVu 官方许可证](https://dejavu-fonts.github.io/License.html) |
+| DejaVu Sans / DejaVu Sans Mono | 上游字体子模块中的 DejaVu 字体文件 | Bitstream Vera 衍生许可，DejaVu 修改部分为公有领域；见 [DejaVu 官方许可证](https://dejavu-fonts.github.io/License.html) |
 
-OFL 1.1 允许字体随软件捆绑和再分发，但字体本身及其修改版本仍须遵守 OFL 条件；上述
-许可证副本和版权声明应与字体文件一同保留。
+OFL 1.1 允许字体随软件捆绑和再分发，但字体本身及其修改版本仍须遵守 OFL 条件；用户
+复制或再分发字体时，应同时保留许可证副本和版权声明。

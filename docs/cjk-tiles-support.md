@@ -151,7 +151,7 @@ while (charsz.x <= m_max_advance.x * 2)
 ## 字体配置（历史说明）
 
 本文件记录最初的 DejaVu/Sarasa 双字体实现，不再定义受支持的部署配置。
-当前中文部署以 Maple Mono NF CN 为所有 Tiles 文本角色的主字体；渲染器
+当前 C++ 默认值以 Maple Mono NF CN 为所有 Tiles 文本角色的主字体；渲染器
 仍支持可选回退，但不要求固定的 DejaVu/Sarasa 组合。权威配置、字体放置
 位置和部署前置条件见 [`docs/cjk-tiles-architecture.md`](cjk-tiles-architecture.md)
 与 [`docs/build-workflow.md`](build-workflow.md)。
@@ -395,7 +395,6 @@ CJK 字符宽度为 ASCII 的 2 倍，使用 `%-Ns` 等字节宽度格式化会�
 **WSL 控制台版（调试用）：**
 ```bash
 cd crawl-ref/source
-echo 'language = zh' > init.txt
 make -j8
 # 产物: crawl-ref/source/crawl
 ```
@@ -411,4 +410,4 @@ make CROSSHOST=x86_64-w64-mingw32 TILES=y -j8
 
 - 仓库内产物目录示例：`.artifacts/windows-tiles/`
 - 外部游戏目录：通过 `deploy.sh` 参数或 `DCSS_WINDOWS_DEPLOY_DIR` 指定
-- 需同步复制：`crawl.exe`、`dat/`、`init.txt` 和配置的字体
+- 需同步复制：`crawl.exe`、`dat/` 和版本化字体；`init.txt` 仅用于可选覆盖
