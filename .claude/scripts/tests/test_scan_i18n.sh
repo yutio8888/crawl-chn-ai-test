@@ -208,7 +208,7 @@ assert_contains "lua identity: race mutation is binding-specific" "you_race" /tm
 assert_contains "lua identity: class mutation is binding-specific" "you_class" /tmp/actual_lua_identity_you-class.txt
 assert_contains "lua identity: genus dataflow mutation is binding-specific" "l_you_genus" /tmp/actual_lua_identity_genus.txt
 assert_contains "lua identity: monster dataflow mutation is binding-specific" "l_you_monster" /tmp/actual_lua_identity_monster.txt
-for mutation_case in mixed-ternary overwrite-localized; do
+for mutation_case in mixed-ternary overwrite-localized pluralise-localized lowercase-after-push; do
     set +e
     python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/$mutation_case" --strict > "/tmp/actual_lua_identity_$mutation_case.txt" 2>&1
     mutation_status=$?
@@ -217,6 +217,8 @@ for mutation_case in mixed-ternary overwrite-localized; do
 done
 assert_contains "lua identity: mixed ternary identifies species" "you_species" /tmp/actual_lua_identity_mixed-ternary.txt
 assert_contains "lua identity: overwrite identifies genus" "l_you_genus" /tmp/actual_lua_identity_overwrite-localized.txt
+assert_contains "lua identity: localized pluralise RHS is rejected" "exact genus = pluralise(genus)" /tmp/actual_lua_identity_pluralise-localized.txt
+assert_contains "lua identity: lowercase after push is rejected" "lowercase processing before lua_pushstring" /tmp/actual_lua_identity_lowercase-after-push.txt
 for artifact_case in missing-artifact duplicate-definition decoy-dataflow two-artifacts; do
     set +e
     python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/$artifact_case" --strict > "/tmp/actual_lua_identity_$artifact_case.txt" 2>&1

@@ -1905,18 +1905,21 @@ def _lua_identity_contract_findings(artifacts):
         between = body[init_end:init_end + push_match.start()]
         reassignments = re.findall(
             r'\b' + re.escape(variable) + r'\s*=(?!=)\s*([^;{}]+);', between)
+        allowed_genus_pluralise = 'pluralise(' + variable + ')'
         unexpected = [rhs for rhs in reassignments
                       if not (binding == 'l_you_genus'
-                              and re.match(r'\s*pluralise\s*\(', rhs))]
+                              and _normalize_cpp_expression(rhs) == allowed_genus_pluralise)]
         if unexpected:
             findings.append(_lua_identity_finding(
-                rel_path, 'canonical identity variable must not be reassigned before lua_pushstring', binding))
+                rel_path,
+                'canonical identity variable must not be reassigned before lua_pushstring '
+                '(except exact genus = pluralise(genus))', binding))
             continue
-        if binding in ('l_you_genus', 'l_you_monster') and not re.search(r'\blowercase\s*\(\s*' + re.escape(variable) + r'\s*\)', body):
+        if binding in ('l_you_genus', 'l_you_monster') and not re.search(r'\blowercase\s*\(\s*' + re.escape(variable) + r'\s*\)', between):
             findings.append(_lua_identity_finding(
-                rel_path, f'{"genus" if binding == "l_you_genus" else "monster"} must preserve lowercase processing', binding))
-        if binding == 'l_you_genus' and not re.search(r'\bpluralise\s*\(', body):
-            findings.append(_lua_identity_finding(rel_path, 'genus must preserve pluralise processing', binding))
+                rel_path, f'{"genus" if binding == "l_you_genus" else "monster"} must preserve lowercase processing before lua_pushstring', binding))
+        if binding == 'l_you_genus' and allowed_genus_pluralise not in [_normalize_cpp_expression(rhs) for rhs in reassignments]:
+            findings.append(_lua_identity_finding(rel_path, 'genus must preserve exact pluralise(genus) processing before lua_pushstring', binding))
     return findings
 
 
