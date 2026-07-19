@@ -3,9 +3,10 @@
 .vscode/
 .vs
 
-# Claude Code / OpenCode (transient/generated — local only)
+# Agent runtimes (transient/generated — local only)
 .claude/worktrees/
 .worktrees/
+.pi-subagents/
 /.ccache/
 /.artifacts/
 /.dcss-paths.conf
