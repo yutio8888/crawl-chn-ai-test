@@ -2,20 +2,26 @@
 """Drive the console UI through a real PTY and assert rendered Chinese text."""
 
 import argparse
+import fcntl
 import json
 import os
 import pty
 import re
 import select
 import signal
+import struct
 import subprocess
 import sys
+import termios
 import time
 
 ANSI_RE = re.compile(
     rb'\x1b(?:\[[0-?]*[ -/]*[@-~]|\][^\x07]*(?:\x07|\x1b\\)'
     rb'|[()][A-Z0-9]|[=>])')
 CJK_RE = re.compile(r'[\u3400-\u9fff]')
+INITIAL_SCREEN_TIMEOUT = 15.0
+PTY_ROWS = 24
+PTY_COLUMNS = 80
 
 PANEL_CASES = [
     ('panel:religion', b'^', ('不信仰任何神祇',), (), False),
@@ -58,13 +64,13 @@ HELP_CASES = [
     ('ability', 'a', 'Berserk', '狂暴'),
     ('feature', 'f', 'wall', '墙'), ('item', 'i', 'dagger', '匕首'),
     ('mutation', 'u', 'claws', '利爪'),
-    ('bane', 'n', 'lethargy', '你移动缓慢'),
+    ('bane', 'n', 'lethargy', '你行动迟缓'),
     ('spell_school', 's', '@咒法', '魔法飞弹'),
     ('text:spell', 's', '火球', '火球'),
     ('text:ability', 'a', '狂暴', '狂暴'),
     ('text:mutation', 'u', '利爪', '利爪'),
     ('text:feature', 'f', 'wall', '墙'),
-    ('text:bane', 'n', 'lethargy', '你移动缓慢'),
+    ('text:bane', 'n', 'lethargy', '你行动迟缓'),
     ('text:monster', 'm', 'rat', '鼠'),
     ('text:item', 'i', 'dagger', '匕首'),
 ]
@@ -111,6 +117,10 @@ class BotFailure(RuntimeError):
 class PtyBot:
     def __init__(self, crawl: str, transcript: str):
         master, slave = pty.openpty()
+        # openpty() commonly starts with a 0x0 window.  Make the console layout
+        # deterministic before Crawl asks ncurses for the terminal dimensions.
+        window = struct.pack('HHHH', PTY_ROWS, PTY_COLUMNS, 0, 0)
+        fcntl.ioctl(slave, termios.TIOCSWINSZ, window)
         env = os.environ.copy()
         env.update(LC_ALL='C.UTF-8', LANG='C.UTF-8', TERM='xterm')
         command = [
@@ -150,6 +160,22 @@ class PtyBot:
         os.write(self.master, keys)
         return self.read_screen(timeout)
 
+    def wait_for_screen(self, required, timeout=INITIAL_SCREEN_TIMEOUT) -> str:
+        """Accumulate startup output until the complete initial UI is ready."""
+        deadline = time.monotonic() + timeout
+        chunks = []
+        while time.monotonic() < deadline:
+            remaining = deadline - time.monotonic()
+            chunk = self.read_screen(min(0.25, remaining))
+            if chunk:
+                chunks.append(chunk)
+                combined = ''.join(chunks)
+                if all(token in combined for token in required):
+                    return combined
+            if self.proc.poll() is not None:
+                break
+        return ''.join(chunks)
+
     def close(self) -> None:
         try:
             os.write(self.master, bytes([17]))
@@ -179,7 +205,10 @@ def assert_screen(case_id: str, text: str, required=(), forbidden=()) -> None:
         raise BotFailure(f'{case_id}: forbidden output {found_forbidden}')
     missing = [token for token in required if token not in text]
     if missing:
-        raise BotFailure(f'{case_id}: missing rendered tokens {missing}')
+        excerpt = re.sub(r'\s+', ' ', text).strip()[-400:]
+        raise BotFailure(
+            f'{case_id}: missing rendered tokens {missing}; '
+            f'rendered tail={excerpt!r}')
     if len(CJK_RE.findall(text)) < 2:
         raise BotFailure(f'{case_id}: rendered screen lacks Chinese content')
 
@@ -248,8 +277,9 @@ def validate_panel_manifest(cases=PANEL_CASES,
 
 def run_panels(bot: PtyBot) -> None:
     validate_panel_manifest()
-    initial = bot.read_screen(3.0)
-    assert_screen('panel:initial', initial, ('生命:', '魔力:', '魔法飞弹'))
+    required = ('生命:', '魔力:', '魔法飞弹')
+    initial = bot.wait_for_screen(required)
+    assert_screen('panel:initial', initial, required)
     emit('panel:initial')
     for case_id, key, required, forbidden, needs_escape in PANEL_CASES:
         screen = bot.send(key)
@@ -270,8 +300,9 @@ def exit_nested_help(bot: PtyBot) -> None:
 
 
 def run_help(bot: PtyBot) -> None:
-    initial = bot.read_screen(3.0)
-    assert_screen('help:probe', initial, ('生命:', '魔力:'))
+    required = ('生命:', '魔力:')
+    initial = bot.wait_for_screen(required)
+    assert_screen('help:probe', initial, required)
     emit('help:probe')
     for name, shortcut, query, positive in HELP_CASES:
         help_screen = bot.send(b'?')
@@ -342,9 +373,9 @@ def has_ascii_combat_punctuation(text: str) -> bool:
 
 def run_workflows(bot: PtyBot) -> None:
     evidence = WorkflowEvidence()
-    initial = bot.read_screen(3.0)
-    evidence.record('workflow:initial', initial,
-                    ('生命:', '魔力:', '魔法飞弹'))
+    required = ('生命:', '魔力:', '魔法飞弹')
+    initial = bot.wait_for_screen(required)
+    evidence.record('workflow:initial', initial, required)
 
     # Wizard state construction, followed by the real player religion panel.
     god_prompt = bot.send(b'&_')

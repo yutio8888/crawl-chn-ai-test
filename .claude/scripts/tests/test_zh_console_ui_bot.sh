@@ -4,16 +4,67 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 BOT="$SCRIPT_DIR/../zh_console_ui_bot.py"
 RUNNER="$SCRIPT_DIR/../post_zh_runtime.sh"
+DELAYED_CRAWL="$SCRIPT_DIR/fixtures/fake_delayed_zh_crawl.sh"
 TMPDIR="$(mktemp -d)"
 trap 'rm -rf "$TMPDIR"' EXIT
 
-python3 - "$BOT" <<'PY'
+python3 - "$BOT" "$DELAYED_CRAWL" "$TMPDIR" <<'PY'
 import importlib.util
+import os
 import sys
 
 spec = importlib.util.spec_from_file_location('zh_console_ui_bot', sys.argv[1])
 bot = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(bot)
+
+
+class FakeProc:
+    def __init__(self, owner):
+        self.owner = owner
+
+    def poll(self):
+        return 1 if not self.owner.parts else None
+
+
+class SplitStartupBot:
+    def __init__(self, parts):
+        self.parts = list(parts)
+        self.proc = FakeProc(self)
+
+    def read_screen(self, timeout):
+        if self.parts:
+            return self.parts.pop(0)
+        return ''
+
+
+# Startup rendering may pause for longer than read_screen's quiet interval.
+# The readiness wait must retain earlier deltas and continue until the complete
+# status area has arrived.
+split = SplitStartupBot(('正在启动中文界面', '', '生命: 10/10', '', '魔力: 5/5'))
+initial = bot.PtyBot.wait_for_screen(split, ('生命:', '魔力:'), timeout=0.5)
+bot.assert_screen('split-startup', initial, ('生命:', '魔力:'))
+
+# A child that exits before producing the required status tokens must still be
+# rejected, and the diagnostic must preserve the rendered tail.
+incomplete = SplitStartupBot(('正在启动中文界面',))
+initial = bot.PtyBot.wait_for_screen(incomplete, ('生命:', '魔力:'), timeout=0.5)
+try:
+    bot.assert_screen('incomplete-startup', initial, ('生命:', '魔力:'))
+except bot.BotFailure as exc:
+    if '正在启动中文界面' not in str(exc):
+        raise SystemExit('startup failure omitted rendered diagnostic')
+else:
+    raise SystemExit('incomplete startup screen was accepted')
+
+# Exercise the production PTY/subprocess path with a child that emits no bytes
+# until after the former three-second startup deadline.
+delayed = bot.PtyBot(sys.argv[2], os.path.join(sys.argv[3], 'delayed.typescript'))
+try:
+    initial = delayed.wait_for_screen(('生命:', '魔力:', '魔法飞弹'))
+    bot.assert_screen('delayed-startup', initial,
+                      ('生命:', '魔力:', '魔法飞弹'))
+finally:
+    delayed.close()
 
 bot.assert_screen('positive', '你的法术：魔法飞弹', ('魔法飞弹',))
 for text in (
