@@ -32,7 +32,6 @@ tools/okapi/build/
 
 # CJK fonts — used locally, not tracked in main repo
 crawl-ref/source/contrib/fonts
-crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf
 
 # Game data
 saves/

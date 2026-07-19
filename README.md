@@ -51,14 +51,11 @@ sudo apt install build-essential libncursesw5-dev bison flex liblua5.4-dev \
 Tiles 版还需要 SDL2、Freetype、libpng 和 MinGW 等目标相关依赖。其他发行版、macOS、
 MSYS2 和 Android 的依赖说明以 [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md) 为准。
 
-### 2. 准备中文配置
+### 2. 中文默认配置
 
-`init.txt` 是本地文件，不提交到 Git。首次构建前从受版本控制的中文模板创建：
-
-```bash
-cd crawl-ref/source
-test -e init.txt || cp init.zh.txt init.txt
-```
+中文语言、Maple Mono NF CN 字体和本地 Tiles 窗口尺寸由 C++ 提供默认值，
+无需创建 `init.txt`。如需覆盖这些默认值，仍可使用本地且不提交 Git 的
+`crawl-ref/source/init.txt`。
 
 ### 3. 构建并运行控制台版
 
@@ -80,17 +77,9 @@ git worktree add .worktrees/mingw-tiles --detach HEAD
 git -C .worktrees/mingw-tiles submodule update --init --recursive
 ```
 
-项目不修改或扩展上游 `contrib/fonts` 子模块。请自行取得
-`MapleMono-NF-CN-Regular.ttf`，并放入受 Git 忽略的本地字体目录：
-
-```bash
-git submodule update --init --recursive
-install -m 0644 /path/to/MapleMono-NF-CN-Regular.ttf \
-  crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf
-```
-
-中文默认部署使用 Maple Mono NF CN。渲染器仍支持配置其他 CJK 字体，但字体文件不由本
-汉化仓库或其子模块分发。
+项目不修改或扩展上游 `contrib/fonts` 子模块。中文默认部署使用仓库纳管的
+`crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf`；渲染器仍支持在
+`init.txt` 中配置其他 CJK 字体。
 
 只构建 `crawl.exe`：
 
@@ -197,7 +186,8 @@ bash .claude/scripts/verify_zh.sh --profile ci
 - 已运行与改动类型匹配的验证 profile，并记录命令、退出码和警告；
 - 已构建受影响目标，或说明为什么无需构建；
 - 新增行为、架构约束或术语决定已经更新对应权威文档；
-- 没有修改字体子模块指针，也没有提交字体文件、`init.txt`、构建产物、缓存或部署目录。
+- 没有修改字体子模块指针，也没有提交未授权字体、`init.txt`、构建产物、缓存或部署目录；
+  仓库规定的 Maple Mono NF CN 字体及其许可证除外。
 
 翻译相关候选进入合并阶段后，由维护者按不可变 commit 执行
 `review_prepare.sh`、机械路由的领域审查、`review_final_gate.sh` 和合并时校验。不要用一次
@@ -237,7 +227,8 @@ bash .claude/scripts/verify_zh.sh --profile ci
         ├── dat/i18n/zh/source.txt    # 主翻译数据库
         ├── dat/descript/zh/          # 中文描述 TextDB
         ├── dat/database/zh/          # 中文运行时 TextDB
-        ├── init.zh.txt               # 中文配置模板
+        ├── dat/tiles/MapleMono-NF-CN-Regular.ttf
+        │                              # 默认中文 Tiles 字体
         └── util/build-*.sh            # 目标隔离的构建入口
 ```
 
@@ -254,8 +245,8 @@ bash .claude/scripts/verify_zh.sh --profile ci
 本项目继承上游 DCSS，采用 GPLv2+ 许可证，详见 [LICENSE](LICENSE)。上游贡献者名单见
 [crawl-ref/CREDITS.txt](crawl-ref/CREDITS.txt)。
 
-本项目不修改字体子模块，也不分发下列第三方 CJK 字体。用户自行取得字体时，仍须遵守
-各字体许可证：
+本项目不修改字体子模块。仓库随游戏分发 Maple Mono NF CN；其他第三方字体由用户自行
+取得。复制或再分发字体时仍须遵守各字体许可证：
 
 | 字体 | 本地文件名 | 许可证 |
 |---|---|---|

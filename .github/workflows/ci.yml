@@ -362,9 +362,17 @@ jobs:
         run: |
           git describe 2>/dev/null > crawl-ref/source/util/release_ver \
             || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
-      - name: Build Windows tiles executable
-        run: make CROSSHOST=x86_64-w64-mingw32 TILES=y -j4
+      - name: Build Windows tiles package
+        run: make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4
         working-directory: crawl-ref/source
+      - name: Upload Windows tiles package
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-tiles
+          path: |
+            crawl-ref/source/stone_soup-*-tiles-win32.zip
+            !crawl-ref/source/stone_soup-latest-tiles-win32.zip
+          if-no-files-found: error
 
   build_android:
     permissions:

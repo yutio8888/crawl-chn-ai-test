@@ -51,6 +51,11 @@ bash util/build-tiles.sh
 The helper refuses a dirty `.worktrees/mingw-tiles`, synchronizes the detached
 worktree to the main checkout's exact HEAD, and runs the MinGW tiles build.
 
+GitHub Actions builds the distributable archive with
+`make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4` and uploads the
+versioned ZIP as the `windows-tiles` artifact. The package contains the binary,
+runtime data, settings directory, documentation, and versioned Maple font.
+
 Manual synchronization is discouraged. If diagnosis requires it, reproduce the
 same guard exactly:
 
@@ -115,11 +120,11 @@ bash .claude/scripts/deploy.sh
 DCSS_WINDOWS_DEPLOY_DIR=../crawl-game bash .claude/scripts/deploy.sh
 ```
 
-It first requires a valid Chinese configuration and the configured Maple font,
-then synchronizes and builds the MinGW worktree, copies `crawl.exe`, `dat/`, the
-exact font, and `init.txt`, verifies the deployed copies, and clears the target
+It first requires the versioned Maple font, then synchronizes and builds the
+MinGW worktree, copies `crawl.exe`, `dat/`, the exact font, and any non-empty
+local `init.txt` override, verifies the deployed copies, and clears the target
 `saves/db/` cache so TextDB changes are reloaded. It fails before building when
-either required asset is absent or invalid. Close the running game before
+the required font is absent or invalid. Close the running game before
 deployment.
 
 Without a path configuration, deployment goes to the ignored
@@ -127,12 +132,10 @@ repository-relative `.artifacts/windows-tiles/` directory. Relative values are
 resolved from the repository root before the script enters a build worktree;
 absolute values remain accepted when an external destination is required.
 
-When a local `crawl-ref/source/init.txt` exists, the helper preserves its user
-preferences but appends `init.zh.txt` to the deployed copy. The canonical
-template first resets aliases for the six required option names, then assigns
-the language and five fonts. Those values are therefore last and remain
-effective even if the local file contains duplicates, `include` directives, or
-`option := alias` rules.
+The Chinese language, Maple font roles, and local Tiles window geometry are C++
+defaults. A non-empty local `crawl-ref/source/init.txt` is copied unchanged as
+an optional user override; when it is empty or absent, deployment removes any
+stale target `init.txt` so it cannot override the compiled defaults.
 
 ## Android Deployment
 
@@ -149,25 +152,16 @@ repository root.
 
 ## Local `init.txt` and Fonts
 
-`crawl-ref/source/init.txt` is intentionally gitignored. The version-controlled
-`crawl-ref/source/init.zh.txt` is the supported Chinese configuration template:
-
-```bash
-cd crawl-ref/source
-test -e init.txt || cp init.zh.txt init.txt
-```
-
-This localization repository does not modify or extend the upstream
-`crawl-ref/source/contrib/fonts` submodule. Obtain
-`MapleMono-NF-CN-Regular.ttf` separately and place it in the ignored local
-`crawl-ref/source/dat/tiles/` directory. The deployment helper copies that
-local font to the target's `dat/tiles/` directory.
+`crawl-ref/source/init.txt` remains intentionally gitignored and is needed only
+for user overrides. This localization repository does not modify or extend the
+upstream `crawl-ref/source/contrib/fonts` submodule. Instead, the OFL-licensed
+`MapleMono-NF-CN-Regular.ttf` is versioned directly under
+`crawl-ref/source/dat/tiles/`, so normal builds and CI packages contain it.
 
 The configured Maple font is CJK-capable and is the default primary font for
 all tile text roles. Renderer fallback support remains available for other
-configurations; see `docs/cjk-tiles-architecture.md`. Do not commit font files
-or change the font submodule pointer. Font licensing references are listed in
-the root `README.md`.
+configurations; see `docs/cjk-tiles-architecture.md`. Do not change the font
+submodule pointer. Font licensing references are listed in the root `README.md`.
 
 ## ccache
 

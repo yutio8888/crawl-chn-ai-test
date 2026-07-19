@@ -3,7 +3,6 @@
 from pathlib import Path
 import re
 import subprocess
-import tempfile
 import unittest
 
 
@@ -32,7 +31,6 @@ AUTHORITIES = [
     ROOT / "docs/issue-tracking.md",
     ROOT / "docs/translation-architecture.md",
     ROOT / "docs/zh-testing.md",
-    ROOT / "crawl-ref/source/init.zh.txt",
 ]
 
 DOCS_TO_LINT = ENTRY_POINTS + AUTHORITIES + [ROOT / "README.md"]
@@ -192,69 +190,46 @@ class AgentDocumentationTests(unittest.TestCase):
                 self.assertIn("zh-translator", text)
 
     def test_chinese_deploy_contract_is_fail_closed(self) -> None:
-        template = (ROOT / "crawl-ref/source/init.zh.txt").read_text()
-        self.assertIn("language = zh", template)
-        self.assertIn("language := language", template)
-        for role in ("crt", "msg", "stat", "tip", "lbl"):
-            self.assertIn(f"tile_font_{role}_file := tile_font_{role}_file", template)
-            self.assertIn(
-                f"tile_font_{role}_file = dat/tiles/MapleMono-NF-CN-Regular.ttf",
-                template,
-            )
+        font = ROOT / "crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf"
+        self.assertTrue(font.is_file())
+        self.assertGreater(font.stat().st_size, 0)
+        self.assertNotIn(
+            "crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf",
+            (ROOT / ".gitignore").read_text(),
+        )
+
+        initfile = (ROOT / "crawl-ref/source/initfile.cc").read_text()
+        self.assertIn("Options.apply_distribution_defaults();", initfile)
+        self.assertIn('language_option = "zh";', initfile)
+        self.assertIn("ASSERT(set_lang(language_option.c_str()));", initfile)
+        self.assertEqual(5, initfile.count(
+            '"dat/tiles/MapleMono-NF-CN-Regular.ttf", true)'
+        ))
+        self.assertIn(
+            "new IntGameOption(SIMPLE_NAME(tile_window_width), 1280,", initfile
+        )
+        self.assertIn(
+            "new IntGameOption(SIMPLE_NAME(tile_window_height), 800,", initfile
+        )
+        self.assertIn(
+            "new IntGameOption(SIMPLE_NAME(tile_window_ratio), 0,", initfile
+        )
+        self.assertIn("SCREENMODE_WINDOW", initfile)
 
         deploy = (ROOT / ".claude/scripts/deploy.sh").read_text()
-        self.assertIn("validate_chinese_init", deploy)
-        self.assertIn("effective_init_value", deploy)
-        self.assertIn("VERSIONED_INIT", deploy)
-        self.assertIn('cat "$VERSIONED_INIT" >> "$DEPLOY_INIT"', deploy)
         self.assertIn("FONT_SOURCE", deploy)
-        self.assertIn('cmp -s "$INIT_SOURCE" "$TARGET/init.txt"', deploy)
         self.assertIn(
             'cmp -s "$FONT_SOURCE" "$TARGET/dat/tiles/$MAPLE_FONT"', deploy
         )
-        self.assertNotIn("init.txt not found in either worktree. Skipping", deploy)
-        self.assertNotIn("cp contrib/fonts/*.ttf", deploy)
+        self.assertIn('if [ -s "$LOCAL_INIT" ]; then', deploy)
+        self.assertIn('rm -f "$TARGET/init.txt"', deploy)
+        self.assertNotIn("VERSIONED_INIT", deploy)
+        self.assertNotIn("validate_chinese_init", deploy)
 
-        script = ROOT / ".claude/scripts/deploy.sh"
-        template_without_alias_resets = "\n".join(
-            line for line in template.splitlines() if ":=" not in line
-        ) + "\n"
-        cases = {
-            "canonical": (template, 0),
-            "later_language_override": (template + "\nlanguage = en\n", 1),
-            "later_font_override": (
-                template
-                + "\ntile_font_msg_file = dat/tiles/DejaVuSansMono.ttf\n",
-                1,
-            ),
-            "last_assignment_wins": ("language = en\n" + template, 0),
-            "language_alias_without_reset": (
-                "language := fake_lang\n" + template_without_alias_resets,
-                1,
-            ),
-            "font_alias_without_reset": (
-                "tile_font_msg_file := other_font\n"
-                + template_without_alias_resets,
-                1,
-            ),
-            "canonical_resets_local_alias": (
-                "language := fake_lang\n"
-                "tile_font_msg_file := other_font\n"
-                + template,
-                0,
-            ),
-        }
-        for name, (contents, expected) in cases.items():
-            with self.subTest(case=name), tempfile.NamedTemporaryFile(
-                mode="w", encoding="utf-8"
-            ) as handle:
-                handle.write(contents)
-                handle.flush()
-                result = subprocess.run(
-                    ["bash", str(script), "--validate-init", handle.name],
-                    cwd=ROOT, text=True, capture_output=True,
-                )
-                self.assertEqual(expected, result.returncode, result.stderr)
+        workflow = (ROOT / ".github/workflows/ci.yml").read_text()
+        self.assertIn("package-windows-tiles", workflow)
+        self.assertIn("name: windows-tiles", workflow)
+        self.assertIn("stone_soup-*-tiles-win32.zip", workflow)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()

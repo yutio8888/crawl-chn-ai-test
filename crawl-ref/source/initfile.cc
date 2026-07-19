@@ -918,20 +918,25 @@ const vector<GameOption*> game_options::build_options_list()
         new DisabledGameOption({"game_scale"}),
 # endif
         new IntGameOption(SIMPLE_NAME(tile_key_repeat_delay), 200, 0, INT_MAX),
-        new IntGameOption(SIMPLE_NAME(tile_window_width), -90, INT_MIN, INT_MAX),
-        new IntGameOption(SIMPLE_NAME(tile_window_height), -90, INT_MIN, INT_MAX),
-        new IntGameOption(SIMPLE_NAME(tile_window_ratio), 1618, INT_MIN, INT_MAX),
+        new IntGameOption(SIMPLE_NAME(tile_window_width), 1280, INT_MIN, INT_MAX),
+        new IntGameOption(SIMPLE_NAME(tile_window_height), 800, INT_MIN, INT_MAX),
+        new IntGameOption(SIMPLE_NAME(tile_window_ratio), 0, INT_MIN, INT_MAX),
         new BoolGameOption(SIMPLE_NAME(tile_window_limit_size), true),
-        new StringGameOption(SIMPLE_NAME(tile_font_crt_file), MONOSPACED_FONT, true),
-        new StringGameOption(SIMPLE_NAME(tile_font_msg_file), MONOSPACED_FONT, true),
-        new StringGameOption(SIMPLE_NAME(tile_font_stat_file), MONOSPACED_FONT, true),
-        new StringGameOption(SIMPLE_NAME(tile_font_tip_file), MONOSPACED_FONT, true),
-        new StringGameOption(SIMPLE_NAME(tile_font_lbl_file), PROPORTIONAL_FONT, true),
+        new StringGameOption(SIMPLE_NAME(tile_font_crt_file),
+                             "dat/tiles/MapleMono-NF-CN-Regular.ttf", true),
+        new StringGameOption(SIMPLE_NAME(tile_font_msg_file),
+                             "dat/tiles/MapleMono-NF-CN-Regular.ttf", true),
+        new StringGameOption(SIMPLE_NAME(tile_font_stat_file),
+                             "dat/tiles/MapleMono-NF-CN-Regular.ttf", true),
+        new StringGameOption(SIMPLE_NAME(tile_font_tip_file),
+                             "dat/tiles/MapleMono-NF-CN-Regular.ttf", true),
+        new StringGameOption(SIMPLE_NAME(tile_font_lbl_file),
+                             "dat/tiles/MapleMono-NF-CN-Regular.ttf", true),
         new IntGameOption(SIMPLE_NAME(tile_min_stat_width_characters), 42, 1, INT_MAX),
         new IntGameOption(SIMPLE_NAME(tile_sidebar_pixels), 32, 1, INT_MAX),
         new MultipleChoiceGameOption<screen_mode>(
             SIMPLE_NAME(tile_full_screen),
-            SCREENMODE_AUTO,
+            SCREENMODE_WINDOW,
             {{"true", SCREENMODE_FULL},
              {"false", SCREENMODE_WINDOW},
              {"maybe", SCREENMODE_AUTO},
@@ -2292,6 +2297,7 @@ void read_init_file(bool runscripts)
     unwind_bool parsing_state(crawl_state.parsing_rc, true);
 
     Options.reset_options();
+    Options.apply_distribution_defaults();
     // XX why didn't this clear first
     Options.reset_aliases(false);
 
@@ -2656,6 +2662,12 @@ game_options::game_options()
     lang_name(nullptr)
 {
     reset_options();
+}
+
+void game_options::apply_distribution_defaults()
+{
+    language_option = "zh";
+    ASSERT(set_lang(language_option.c_str()));
 }
 
 void base_game_options::reset_aliases(bool clear)
