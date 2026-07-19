@@ -47,10 +47,24 @@ end
 
 -- 2.  Character + level setup -----------------------------------------------
 you.init("mifi", "mace")
+-- Protocol identities must remain canonical English even while display text is ZH.
+assert(you.race() == "Minotaur", "you.race() is not canonical English")
+assert(you.species() == "Minotaur", "you.species() is not canonical English")
+assert(you.class() == "Fighter", "you.class() is not canonical English")
+assert(you.monster() == "minotaur", "you.monster() is not canonical English")
+assert(you.genus() == "minotaur", "you.genus() is not canonical English")
+emit("lua_identity", table.concat({you.race(), you.species(), you.genus(),
+                                   you.class(), you.monster()}, ","))
 debug.reset_player_data()
 debug.goto_place("D:1")
 debug.generate_level()
 dgn.grid(2, 2, "floor")
+-- Exercise the production map placement path, including the vault Lua prelude.
+local arrival = dgn.map_by_name("heliophobic_arrival_battle_scene")
+assert(arrival, "named vault not found: heliophobic_arrival_battle_scene")
+assert(dgn.place_map(arrival, true, true),
+       "named vault could not be placed: heliophobic_arrival_battle_scene")
+emit("arrival_vault", "heliophobic_arrival_battle_scene placed")
 you.moveto(2, 2)
 crawl.clear_message_store()
 

@@ -1810,6 +1810,45 @@ def has_cjk(s: str) -> bool:
     return bool(re.search(r'[⺀-鿿]', s))
 
 
+# Protocol-facing Lua identity producers.  Keep this contract deliberately
+# scoped to l-you.cc and the five exact binding implementations: unrelated
+# display-name APIs (including mons_type_name uses elsewhere) are not covered.
+LUA_IDENTITY_CONTRACT = {
+    'you_species': r'species::name\s*\([^;{}]*SPNAME_PLAIN[^;{}]*,\s*true\s*\)',
+    'you_race': r'species::name\s*\([^;{}]*SPNAME_PLAIN[^;{}]*,\s*true\s*\)',
+    'you_class': r'get_job_name_en\s*\(',
+    'l_you_genus': r'species::name\s*\([^;{}]*SPNAME_GENUS[^;{}]*,\s*true\s*\)',
+    'l_you_monster': r'mons_type_name_en\s*\(',
+}
+
+
+def _lua_identity_findings(filepath, source, rel_path):
+    """Validate canonical English producers for the five Lua identity bindings."""
+    if os.path.basename(filepath) != 'l-you.cc':
+        return []
+    masked = _mask_cpp_comments(source)
+    findings = []
+    for function, expression in LUA_IDENTITY_CONTRACT.items():
+        if function in ('you_species', 'you_race', 'you_class'):
+            # These are LUARET1 producers; constrain the match to the named
+            # function rather than searching for an accessor token globally.
+            match = re.search(
+                r'LUARET1\s*\(\s*' + function + r'\s*,[^\n]*\)', masked)
+            body = match.group(0) if match else ''
+        else:
+            bodies = list(_iter_named_function_bodies(masked, [function]))
+            body = masked[bodies[0][1]:bodies[0][2]] if len(bodies) == 1 else ''
+        if not body or not re.search(expression, body):
+            findings.append({
+                'level': '🔴',
+                'rule': 'Lua protocol identity must be canonical English',
+                'location': f'{rel_path}:{function}',
+                'detail': 'use the raw/en accessor; protocol identity must not use localized display names',
+                'snippet': function,
+            })
+    return findings
+
+
 def cmd_anti_patterns(args):
     """Detect known anti-patterns in modified files."""
     findings = []
@@ -1828,7 +1867,9 @@ def cmd_anti_patterns(args):
         rel_path = os.path.relpath(filepath, source_dir)
 
         with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
-            lines = f.readlines()
+            source = f.read()
+        findings.extend(_lua_identity_findings(filepath, source, rel_path))
+        lines = source.splitlines(keepends=True)
 
         for lineno, line in enumerate(lines, 1):
             stripped = line.strip()

@@ -86,19 +86,19 @@ LUARET1(you_name, string, you.your_name.c_str())
  * @treturn string
  * @function species
  */
-LUARET1(you_species, string, species::name(you.species).c_str())
+LUARET1(you_species, string, species::name(you.species, species::SPNAME_PLAIN, true).c_str())
 
 /*** Get name of player's race.
  * @treturn string
  * @function race
  */
-LUARET1(you_race, string, species::name(you.species).c_str())
+LUARET1(you_race, string, species::name(you.species, species::SPNAME_PLAIN, true).c_str())
 
 /*** Get name of player's background.
  * @treturn string
  * @function class
  */
-LUARET1(you_class, string, get_job_name(you.char_class))
+LUARET1(you_class, string, get_job_name_en(you.char_class))
 
 /*** Get noun for player's hands.
  * @treturn string
@@ -784,7 +784,7 @@ static int l_you_monster(lua_State *ls)
 {
     const monster_type mons = you.mons_species();
 
-    string name = mons_type_name(mons, DESC_PLAIN);
+    string name = mons_type_name_en(mons, DESC_PLAIN);
     lowercase(name);
 
     lua_pushstring(ls, name.c_str());
@@ -799,7 +799,7 @@ static int l_you_monster(lua_State *ls)
 static int l_you_genus(lua_State *ls)
 {
     bool plural = lua_toboolean(ls, 1);
-    string genus = species::name(you.species, species::SPNAME_GENUS);
+    string genus = species::name(you.species, species::SPNAME_GENUS, true);
     lowercase(genus);
     if (plural)
         genus = pluralise(genus);

@@ -28,12 +28,17 @@ only saying that verification “passed”.
 The runtime suite combines:
 
 - Catch2 translation and message-overlay checks;
-- dlua translation/database smoke tests;
+- dlua translation/database smoke tests, including ZH canonical-English
+  identity assertions for the five protocol-facing `you.*` bindings;
 - RC bot UI and gameplay workflows;
 - aggregation against version-controlled baselines.
 
-Use `.claude/scripts/post_zh_runtime.sh --help` and
-`.claude/scripts/TOOLCHAIN.md` for current modes and artifact locations. Avoid
+The identity runtime case also constructs the named
+`heliophobic_arrival_battle_scene` arrival vault through the production Vault
+path; it fails if the vault cannot be found or placed, rather than claiming
+coverage from a parser-only check. Use `.claude/scripts/post_zh_runtime.sh
+--help` and `.claude/scripts/TOOLCHAIN.md` for current modes and artifact
+locations. Avoid
 hard-coded test/assertion/marker counts in prose because the suites evolve.
 
 Expensive suites such as full runtime, help-full, or the tooling test suite run

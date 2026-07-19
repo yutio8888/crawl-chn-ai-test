@@ -46,7 +46,10 @@ values are translated. Preserve separators, format placeholders, control charact
 
 Serialization identifiers, Lua/JSON comparison keys, `.des` tags, save-file
 values, enum identifiers, and TextDB lookup keys stay English. Translate only
-at a display boundary.
+at a display boundary. The protocol-facing Lua bindings `you.race()`,
+`you.species()`, `you.genus()`, `you.class()`, and `you.monster()` therefore
+produce canonical English identities (using raw or `_en` accessors); callers
+may still apply their existing lowercase/pluralisation conventions.
 
 ## Context and Extraction
 
@@ -69,6 +72,8 @@ The normative single-writer rules are in
 ## Terminology and Verification
 
 `docs/glossary.md` is the only terminology source. Generate focused context
-with `context_resolve.sh` before work. Use the matching development profile in
+with `context_resolve.sh` before work. The `scan_i18n.py anti-patterns` gate
+function-qualifies these five Lua identity producers and includes positive and
+negative accessor fixtures. Use the matching development profile in
 `verify_zh.sh`; detailed scanners and exit codes are documented in
 `.claude/scripts/TOOLCHAIN.md`.

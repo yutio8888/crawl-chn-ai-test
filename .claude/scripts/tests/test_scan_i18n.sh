@@ -186,6 +186,17 @@ assert_contains "display registry: duplicate builder fails closed" \
     "DISPLAY006 builder contract update_tip_text: expected exactly one definition, found 2" \
     /tmp/actual_contract_duplicate-builder.txt
 
+# ── Lua protocol identity producers (function-qualified, fail-closed) ──
+echo "--- lua-identity ---"
+python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/pass" --strict > /tmp/actual_lua_identity_pass.txt 2>&1
+assert_status "lua identity: canonical/raw accessors pass" 0 $?
+set +e
+python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/fail" --strict > /tmp/actual_lua_identity_fail.txt 2>&1
+lua_identity_fail_status=$?
+set -e
+assert_status "lua identity: localized accessor mutation blocks" 1 "$lua_identity_fail_status"
+assert_contains "lua identity: failure identifies binding contract" "you_species" /tmp/actual_lua_identity_fail.txt
+
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \
     "$REPO_ROOT/crawl-ref/source" > /tmp/actual_i18n_extract.txt
