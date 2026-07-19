@@ -1813,13 +1813,21 @@ def has_cjk(s: str) -> bool:
 # Protocol-facing Lua identity producers.  Keep this contract deliberately
 # scoped to l-you.cc and the five exact binding implementations: unrelated
 # display-name APIs (including mons_type_name uses elsewhere) are not covered.
+# Exact canonical expressions returned by these protocol bindings.  Comparison
+# removes whitespace only; it intentionally does not parse or accept wrappers,
+# ternaries, or additional expression text.
 LUA_IDENTITY_CONTRACT = {
-    'you_species': r'species::name\s*\([^;{}]*SPNAME_PLAIN[^;{}]*,\s*true\s*\)',
-    'you_race': r'species::name\s*\([^;{}]*SPNAME_PLAIN[^;{}]*,\s*true\s*\)',
-    'you_class': r'get_job_name_en\s*\(',
-    'l_you_genus': r'species::name\s*\([^;{}]*SPNAME_GENUS[^;{}]*,\s*true\s*\)',
-    'l_you_monster': r'mons_type_name_en\s*\(',
+    'you_species': 'species::name(you.species, species::SPNAME_PLAIN, true).c_str()',
+    'you_race': 'species::name(you.species, species::SPNAME_PLAIN, true).c_str()',
+    'you_class': 'get_job_name_en(you.char_class)',
+    'l_you_genus': 'species::name(you.species, species::SPNAME_GENUS, true)',
+    'l_you_monster': 'mons_type_name_en(mons, DESC_PLAIN)',
 }
+
+
+def _normalize_cpp_expression(expression):
+    return re.sub(r'\s+', '', expression)
+
 
 
 def _lua_identity_finding(rel_path, detail, binding=None):
@@ -1860,7 +1868,7 @@ def _lua_identity_contract_findings(artifacts):
                 continue
             args = matches[0][2]
             actual = args[2][0] if len(args) >= 3 else ''
-            if not re.search(expression, actual):
+            if _normalize_cpp_expression(actual) != _normalize_cpp_expression(expression):
                 findings.append(_lua_identity_finding(
                     rel_path, 'the LUARET1 third expression is not the canonical raw/en accessor', binding))
             continue
@@ -1871,17 +1879,40 @@ def _lua_identity_contract_findings(artifacts):
                 rel_path, f'expected exactly one function definition, found {len(bodies)}', binding))
             continue
         body = masked[bodies[0][1]:bodies[0][2]]
-        accessor = expression
+        expected = _normalize_cpp_expression(expression)
         # The accessor must initialize the exact variable subsequently pushed;
         # a decoy accessor elsewhere in the function is not sufficient.
-        assignment = re.search(
-            r'\b(?:string|auto)\s+(\w+)\s*=\s*(' + accessor + r'[^;{}]*);', body)
+        declarations = list(re.finditer(
+            r'\b(?:string|auto)\s+(\w+)\s*=\s*([^;{}]+);', body))
         pushed = re.findall(r'lua_pushstring\s*\(\s*[^,]+,\s*(\w+)\s*\.c_str\s*\(\s*\)\s*\)', body)
-        if not assignment or assignment.group(1) not in pushed:
+        assignments = [d for d in declarations
+                       if _normalize_cpp_expression(d.group(2)) == expected
+                       and d.group(1) in pushed]
+        if len(pushed) != 1 or len(assignments) != 1:
             findings.append(_lua_identity_finding(
                 rel_path, 'canonical accessor must initialize the variable passed to lua_pushstring', binding))
             continue
-        if binding in ('l_you_genus', 'l_you_monster') and not re.search(r'\blowercase\s*\(\s*' + re.escape(assignment.group(1)) + r'\s*\)', body):
+        variable = assignments[0].group(1)
+        init_end = assignments[0].end()
+        push_match = re.search(
+            r'lua_pushstring\s*\(\s*[^,]+,\s*' + re.escape(variable) + r'\s*\.c_str\s*\(\s*\)\s*\)',
+            body[init_end:])
+        if not push_match:
+            findings.append(_lua_identity_finding(
+                rel_path, 'canonical accessor must initialize the variable passed to lua_pushstring', binding))
+            continue
+        # Keep this narrow; it is not general C++ data-flow analysis.
+        between = body[init_end:init_end + push_match.start()]
+        reassignments = re.findall(
+            r'\b' + re.escape(variable) + r'\s*=(?!=)\s*([^;{}]+);', between)
+        unexpected = [rhs for rhs in reassignments
+                      if not (binding == 'l_you_genus'
+                              and re.match(r'\s*pluralise\s*\(', rhs))]
+        if unexpected:
+            findings.append(_lua_identity_finding(
+                rel_path, 'canonical identity variable must not be reassigned before lua_pushstring', binding))
+            continue
+        if binding in ('l_you_genus', 'l_you_monster') and not re.search(r'\blowercase\s*\(\s*' + re.escape(variable) + r'\s*\)', body):
             findings.append(_lua_identity_finding(
                 rel_path, f'{"genus" if binding == "l_you_genus" else "monster"} must preserve lowercase processing', binding))
         if binding == 'l_you_genus' and not re.search(r'\bpluralise\s*\(', body):

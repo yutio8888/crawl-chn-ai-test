@@ -1,4 +1,4 @@
-LUARET1(you_species, string, species::name(you.species, species::SPNAME_PLAIN, true).c_str())
+LUARET1(you_species, string, you.language ? species::name(you.species, species::SPNAME_PLAIN, true).c_str() : T_("localized"))
 LUARET1(you_race, string, species::name(you.species, species::SPNAME_PLAIN, true).c_str())
 LUARET1(you_class, string, get_job_name_en(you.char_class))
 static int l_you_genus(lua_State *ls)

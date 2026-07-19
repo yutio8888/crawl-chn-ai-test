@@ -208,7 +208,16 @@ assert_contains "lua identity: race mutation is binding-specific" "you_race" /tm
 assert_contains "lua identity: class mutation is binding-specific" "you_class" /tmp/actual_lua_identity_you-class.txt
 assert_contains "lua identity: genus dataflow mutation is binding-specific" "l_you_genus" /tmp/actual_lua_identity_genus.txt
 assert_contains "lua identity: monster dataflow mutation is binding-specific" "l_you_monster" /tmp/actual_lua_identity_monster.txt
-for artifact_case in missing-artifact duplicate-definition decoy-dataflow; do
+for mutation_case in mixed-ternary overwrite-localized; do
+    set +e
+    python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/$mutation_case" --strict > "/tmp/actual_lua_identity_$mutation_case.txt" 2>&1
+    mutation_status=$?
+    set -e
+    assert_status "lua identity: $mutation_case fails closed" 1 "$mutation_status"
+done
+assert_contains "lua identity: mixed ternary identifies species" "you_species" /tmp/actual_lua_identity_mixed-ternary.txt
+assert_contains "lua identity: overwrite identifies genus" "l_you_genus" /tmp/actual_lua_identity_overwrite-localized.txt
+for artifact_case in missing-artifact duplicate-definition decoy-dataflow two-artifacts; do
     set +e
     python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/$artifact_case" --strict > "/tmp/actual_lua_identity_$artifact_case.txt" 2>&1
     artifact_status=$?
@@ -218,6 +227,7 @@ done
 assert_contains "lua identity: missing artifact is explicit" "exactly one production l-you.cc artifact" /tmp/actual_lua_identity_missing-artifact.txt
 assert_contains "lua identity: duplicate definition is explicit" "exactly one LUARET1 definition" /tmp/actual_lua_identity_duplicate-definition.txt
 assert_contains "lua identity: decoy dataflow is rejected" "canonical accessor must initialize" /tmp/actual_lua_identity_decoy-dataflow.txt
+assert_contains "lua identity: duplicate artifacts are explicit" "exactly one production l-you.cc artifact" /tmp/actual_lua_identity_two-artifacts.txt
 
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \

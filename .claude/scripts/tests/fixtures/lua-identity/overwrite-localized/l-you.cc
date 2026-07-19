@@ -4,6 +4,7 @@ LUARET1(you_class, string, get_job_name_en(you.char_class))
 static int l_you_genus(lua_State *ls)
 {
     string genus = species::name(you.species, species::SPNAME_GENUS, true);
+    genus = T_("localized");
     lowercase(genus);
     if (lua_toboolean(ls, 1)) genus = pluralise(genus);
     lua_pushstring(ls, genus.c_str());
