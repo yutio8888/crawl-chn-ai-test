@@ -38,6 +38,7 @@ SCOPED_GLOBS = (
     ".opencode/**/*.js",
     ".pi/**/*.md",
     ".pi/**/*.json",
+    ".pi/**/*.mjs",
     ".pi/**/*.ts",
     "docs/**/*.md",
     "crawl-ref/source/util/build-console.sh",

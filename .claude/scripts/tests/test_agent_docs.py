@@ -88,8 +88,13 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn('"defaultModel": "gpt-5.6-sol"', settings)
         self.assertTrue((ROOT / ".pi/prompts/goal.md").is_file())
         guard = (ROOT / ".pi/extensions/enforce-worktree-path.ts").read_text()
-        self.assertIn('const ALLOWED_PREFIX = ".worktrees/"', guard)
         self.assertIn('pi.on("tool_call"', guard)
+        self.assertIn('name: "project_worktree"', guard)
+        adapter = (ROOT / ".pi/APPEND_SYSTEM.md").read_text()
+        self.assertIn("Do not use `pi-subagents` `worktree: true`", adapter)
+        self.assertIn("project_worktree", adapter)
+        self.assertIn("returned absolute `cwd`", adapter)
+        self.assertIn(".pi-subagents/", (ROOT / ".gitignore").read_text())
         expected_agents = {
             "crawl-coder", "ocr", "translation-reviewer",
             "zh-code-reviewer", "zh-translator",

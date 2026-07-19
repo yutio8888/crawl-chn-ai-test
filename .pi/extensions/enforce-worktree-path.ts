@@ -1,73 +1,70 @@
+import type { ExtensionAPI } from "@earendil-works/pi-coding-agent";
+import { StringEnum } from "@earendil-works/pi-ai";
+import { Type } from "typebox";
 import {
-  isToolCallEventType,
-  type ExtensionAPI,
-} from "@earendil-works/pi-coding-agent";
+  manageProjectWorktree,
+  worktreeToolCallViolation,
+} from "./worktree-policy.mjs";
 
-const ALLOWED_PREFIX = ".worktrees/";
+let mutationQueue: Promise<unknown> = Promise.resolve();
 
-export function extractWorktreeAddSegments(command: string): string[] {
-  const segments: string[] = [];
-  const parts = command.split(/&&|\|\||;|\n|\|/);
-  for (const part of parts) {
-    if (/\bgit\b[\s\S]*\bworktree\b[\s\S]*\badd\b/.test(part)) {
-      segments.push(part.trim());
-    }
-  }
-  return segments;
+function serializeMutation<T>(operation: () => Promise<T>): Promise<T> {
+  const run = mutationQueue.then(operation, operation);
+  mutationQueue = run.then(() => undefined, () => undefined);
+  return run;
 }
 
-export function extractTargetPath(segment: string): string | null {
-  const tokens = segment.match(/(?:[^\s"']+|"[^"]*"|'[^']*')+/g) ?? [];
-  const addIndex = tokens.findIndex((token) => token === "add");
-  if (addIndex === -1) return null;
-
-  const valueFlags = new Set(["-b", "-B", "--reason"]);
-  let index = addIndex + 1;
-  while (index < tokens.length) {
-    const token = tokens[index];
-    if (valueFlags.has(token)) {
-      index += 2;
-      continue;
-    }
-    if (token.startsWith("--") && token.includes("=")) {
-      index += 1;
-      continue;
-    }
-    if (token.startsWith("-")) {
-      index += 1;
-      continue;
-    }
-    return token.replace(/^["']|["']$/g, "");
-  }
-  return null;
-}
-
-export function isCompliantWorktreeTarget(target: string | null): boolean {
-  if (!target) return false;
-  if (target.startsWith("/") || target.startsWith("~") || target.startsWith("../")) {
-    return false;
-  }
-  if (target.includes("/../")) return false;
-  return target.startsWith(ALLOWED_PREFIX);
+function formatResult(result: unknown): string {
+  return JSON.stringify(result, null, 2);
 }
 
 export default function enforceWorktreePath(pi: ExtensionAPI): void {
   pi.on("tool_call", (event) => {
-    if (!isToolCallEventType("bash", event)) return;
+    const reason = worktreeToolCallViolation(event);
+    if (reason) return { block: true, reason };
+  });
 
-    for (const segment of extractWorktreeAddSegments(event.input.command)) {
-      const target = extractTargetPath(segment);
-      if (!isCompliantWorktreeTarget(target)) {
-        return {
-          block: true,
-          reason:
-            `[worktree-policy] Blocked: worktree must be created inside '${ALLOWED_PREFIX}' ` +
-            `at the repo root using a relative path. Offending command: ${segment}; ` +
-            `detected target: ${target ?? "(none)"}; correct form: ` +
-            `git worktree add ${ALLOWED_PREFIX}<name> <branch>. See AGENTS.md and ` +
-            `.agents/policies/worktree-policy.md.`,
-        };
-      }
-    }
+  pi.registerTool({
+    name: "project_worktree",
+    label: "Project Worktree",
+    description:
+      "List, create, or safely remove project-policy worktrees. Creation runs from " +
+      "the primary checkout with a relative .worktrees/<name> target and returns an " +
+      "absolute cwd for a later subagent call. Omit branch for detached HEAD; supplied " +
+      "task branches must start with pi/. Removal refuses dirty or active worktrees and " +
+      "retains branches.",
+    promptSnippet: "Manage policy-compliant project worktrees for isolated subagent cwd dispatch",
+    promptGuidelines: [
+      "Use project_worktree instead of pi-subagents worktree:true in this repository.",
+      "After project_worktree create, pass its returned cwd to subagent with worktree:false or without the worktree field.",
+      "Do not remove a project worktree until its changes are committed or intentionally discarded and the worktree is clean.",
+    ],
+    parameters: Type.Object({
+      action: StringEnum(["list", "create", "remove"] as const, {
+        description: "Lifecycle action",
+      }),
+      name: Type.Optional(Type.String({
+        description: "One-component directory name below .worktrees; required for create/remove",
+      })),
+      branch: Type.Optional(Type.String({
+        description: "New pi/<topic> task branch for create; omit to create detached",
+      })),
+      startPoint: Type.Optional(Type.String({
+        description: "Commit-ish for create; defaults to the active checkout's exact HEAD",
+      })),
+    }, { additionalProperties: false }),
+    async execute(_toolCallId, params, signal, _onUpdate, ctx) {
+      const operation = () => manageProjectWorktree(params, {
+        cwd: ctx.cwd,
+        signal,
+        exec: (command: string, args: string[], options: Record<string, unknown>) =>
+          pi.exec(command, args, options),
+      });
+      const result = params.action === "list" ? await operation() : await serializeMutation(operation);
+      return {
+        content: [{ type: "text", text: formatResult(result) }],
+        details: result,
+      };
+    },
   });
 }

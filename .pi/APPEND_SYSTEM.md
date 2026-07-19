@@ -53,12 +53,27 @@ Pi does not execute the hosted DSL files under `.opencode/workflows/` or
 phases with `subagent` chains or ordinary role dispatches. Never execute those
 DSL files with Node.js or a shell.
 
+## Worktrees
+
+Do not use `pi-subagents` `worktree: true`; its native placement does not meet
+this repository's relative-path contract and the project extension blocks it.
+Use the project tool instead:
+
+1. Call `project_worktree` with `action: "create"`, a one-component `name`,
+   and optionally a new `pi/<topic>` branch. Omit `branch` for detached HEAD.
+2. Pass the returned absolute `cwd` to `subagent(...)` without `worktree: true`.
+3. Commit or intentionally discard the child changes, then call
+   `project_worktree` with `action: "remove"`. Removal refuses dirty or active
+   worktrees and retains any task branch.
+
+`project_worktree` discovers the primary checkout, executes Git there with a
+relative `.worktrees/<name>` target, and supports `list` for recovery. The
+bash guard in `.pi/extensions/enforce-worktree-path.ts` blocks direct
+agent-issued Git worktree lifecycle commands; use `project_worktree` instead.
+
 ## Commands and Extensions
 
 - `/goal <goal>` expands the project prompt template for end-to-end work.
-- `.pi/extensions/enforce-worktree-path.ts` blocks agent-issued
-  `git worktree add` commands whose target is outside relative
-  `.worktrees/<name>` paths.
 - Run `/reload` after changing project agents, skills, prompts, or extensions.
 
 ## Compatibility Trees

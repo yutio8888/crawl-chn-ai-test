@@ -3,10 +3,10 @@
 .vscode/
 .vs
 
-# Agent runtimes (transient/generated — local only)
+# Agent runtime artifacts and worktrees (transient/generated — local only)
 .claude/worktrees/
-.worktrees/
 .pi-subagents/
+.worktrees/
 /.ccache/
 /.artifacts/
 /.dcss-paths.conf
