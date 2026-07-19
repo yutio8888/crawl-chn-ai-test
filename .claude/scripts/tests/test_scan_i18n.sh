@@ -196,6 +196,27 @@ lua_identity_fail_status=$?
 set -e
 assert_status "lua identity: localized accessor mutation blocks" 1 "$lua_identity_fail_status"
 assert_contains "lua identity: failure identifies binding contract" "you_species" /tmp/actual_lua_identity_fail.txt
+for binding_case in you-species you-race you-class genus monster; do
+    set +e
+    python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/fail-$binding_case" --strict > "/tmp/actual_lua_identity_$binding_case.txt" 2>&1
+    binding_status=$?
+    set -e
+    assert_status "lua identity: independent $binding_case mutation blocks" 1 "$binding_status"
+done
+assert_contains "lua identity: race mutation is binding-specific" "you_race" /tmp/actual_lua_identity_you-race.txt
+assert_contains "lua identity: class mutation is binding-specific" "you_class" /tmp/actual_lua_identity_you-class.txt
+assert_contains "lua identity: genus dataflow mutation is binding-specific" "l_you_genus" /tmp/actual_lua_identity_genus.txt
+assert_contains "lua identity: monster dataflow mutation is binding-specific" "l_you_monster" /tmp/actual_lua_identity_monster.txt
+for artifact_case in missing-artifact duplicate-definition decoy-dataflow; do
+    set +e
+    python3 "$SCAN_I18N" anti-patterns "$FIXTURES/lua-identity/$artifact_case" --strict > "/tmp/actual_lua_identity_$artifact_case.txt" 2>&1
+    artifact_status=$?
+    set -e
+    assert_status "lua identity: $artifact_case fails closed" 1 "$artifact_status"
+done
+assert_contains "lua identity: missing artifact is explicit" "exactly one production l-you.cc artifact" /tmp/actual_lua_identity_missing-artifact.txt
+assert_contains "lua identity: duplicate definition is explicit" "exactly one LUARET1 definition" /tmp/actual_lua_identity_duplicate-definition.txt
+assert_contains "lua identity: decoy dataflow is rejected" "canonical accessor must initialize" /tmp/actual_lua_identity_decoy-dataflow.txt
 
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \

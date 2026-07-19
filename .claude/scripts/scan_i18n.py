@@ -1822,31 +1822,75 @@ LUA_IDENTITY_CONTRACT = {
 }
 
 
-def _lua_identity_findings(filepath, source, rel_path):
-    """Validate canonical English producers for the five Lua identity bindings."""
-    if os.path.basename(filepath) != 'l-you.cc':
-        return []
+def _lua_identity_finding(rel_path, detail, binding=None):
+    return {
+        'level': '🔴',
+        'rule': 'Lua protocol identity must be canonical English',
+        'location': f'{rel_path}:{binding}' if binding else rel_path,
+        'detail': detail,
+        'snippet': binding or 'l-you.cc',
+    }
+
+
+def _lua_identity_contract_findings(artifacts):
+    """Validate the complete, production-qualified Lua identity contract.
+
+    Do not accept a token found in an unrelated file: these values are protocol
+    identities and the production l-you.cc artifact is itself an invariant.
+    """
+    if len(artifacts) != 1:
+        return [_lua_identity_finding(
+            'source', 'expected exactly one production l-you.cc artifact, '
+            f'found {len(artifacts)}')]
+    filepath, rel_path = artifacts[0]
+    with open(filepath, 'r', encoding='utf-8', errors='replace') as f:
+        source = f.read()
     masked = _mask_cpp_comments(source)
     findings = []
-    for function, expression in LUA_IDENTITY_CONTRACT.items():
-        if function in ('you_species', 'you_race', 'you_class'):
-            # These are LUARET1 producers; constrain the match to the named
-            # function rather than searching for an accessor token globally.
-            match = re.search(
-                r'LUARET1\s*\(\s*' + function + r'\s*,[^\n]*\)', masked)
-            body = match.group(0) if match else ''
-        else:
-            bodies = list(_iter_named_function_bodies(masked, [function]))
-            body = masked[bodies[0][1]:bodies[0][2]] if len(bodies) == 1 else ''
-        if not body or not re.search(expression, body):
-            findings.append({
-                'level': '🔴',
-                'rule': 'Lua protocol identity must be canonical English',
-                'location': f'{rel_path}:{function}',
-                'detail': 'use the raw/en accessor; protocol identity must not use localized display names',
-                'snippet': function,
-            })
+
+    # LUARET1's third expression is the value returned to Lua.  Parse the call
+    # rather than searching the function's file for a convenient accessor token.
+    calls = list(_iter_named_calls(masked, ['LUARET1']))
+    for binding, expression in LUA_IDENTITY_CONTRACT.items():
+        if binding in ('you_species', 'you_race', 'you_class'):
+            matches = [c for c in calls if c[2] and c[2][0][0].strip() == binding]
+            if len(matches) != 1:
+                findings.append(_lua_identity_finding(
+                    rel_path, f'expected exactly one LUARET1 definition, found {len(matches)}', binding))
+                continue
+            args = matches[0][2]
+            actual = args[2][0] if len(args) >= 3 else ''
+            if not re.search(expression, actual):
+                findings.append(_lua_identity_finding(
+                    rel_path, 'the LUARET1 third expression is not the canonical raw/en accessor', binding))
+            continue
+
+        bodies = list(_iter_named_function_bodies(masked, [binding]))
+        if len(bodies) != 1:
+            findings.append(_lua_identity_finding(
+                rel_path, f'expected exactly one function definition, found {len(bodies)}', binding))
+            continue
+        body = masked[bodies[0][1]:bodies[0][2]]
+        accessor = expression
+        # The accessor must initialize the exact variable subsequently pushed;
+        # a decoy accessor elsewhere in the function is not sufficient.
+        assignment = re.search(
+            r'\b(?:string|auto)\s+(\w+)\s*=\s*(' + accessor + r'[^;{}]*);', body)
+        pushed = re.findall(r'lua_pushstring\s*\(\s*[^,]+,\s*(\w+)\s*\.c_str\s*\(\s*\)\s*\)', body)
+        if not assignment or assignment.group(1) not in pushed:
+            findings.append(_lua_identity_finding(
+                rel_path, 'canonical accessor must initialize the variable passed to lua_pushstring', binding))
+            continue
+        if binding == 'l_you_genus' and not re.search(r'\blowercase\s*\(\s*' + re.escape(assignment.group(1)) + r'\s*\)', body):
+            findings.append(_lua_identity_finding(rel_path, 'genus must preserve lowercase processing', binding))
+        if binding == 'l_you_genus' and not re.search(r'\bpluralise\s*\(', body):
+            findings.append(_lua_identity_finding(rel_path, 'genus must preserve pluralise processing', binding))
     return findings
+
+
+def _lua_identity_findings(filepath, source, rel_path):
+    """Compatibility wrapper for callers; production validation is global."""
+    return []
 
 
 def cmd_anti_patterns(args):
@@ -1855,13 +1899,19 @@ def cmd_anti_patterns(args):
     strict_only = args.strict
     source_dir = args.source_dir
 
-    # Collect files to scan
+    # Collect files to scan.  l-you.cc is a production artifact, not an
+    # optional fixture: validate its cardinality before scanning unrelated files.
     files_to_scan = []
+    lua_artifacts = []
     for dirpath, dirnames, filenames in os.walk(source_dir):
         prune_dirs(dirnames)
         for fn in sorted(filenames):
             if fn.endswith('.cc') or fn.endswith('.h') or fn.endswith('.txt'):
-                files_to_scan.append(os.path.join(dirpath, fn))
+                filepath = os.path.join(dirpath, fn)
+                files_to_scan.append(filepath)
+                if fn == 'l-you.cc':
+                    lua_artifacts.append((filepath, os.path.relpath(filepath, source_dir)))
+    findings.extend(_lua_identity_contract_findings(lua_artifacts))
 
     for filepath in files_to_scan:
         rel_path = os.path.relpath(filepath, source_dir)
