@@ -50,11 +50,13 @@ const MERGED_PLAN_SCHEMA = {
       } } },
     } } },
     risks: { type: 'array', items: { type: 'string' } },
+    acceptanceCriteria: { type: 'array', items: { type: 'string' } },
+    nonGoals: { type: 'array', items: { type: 'string' } },
     batchGlossary: { type: 'array', items: { type: 'object', properties: {
       term: { type: 'string' }, translation: { type: 'string' }, rationale: { type: 'string' },
     } } },
   },
-  required: ['approach', 'mergedGroups', 'batchGlossary'],
+  required: ['approach', 'mergedGroups', 'risks', 'acceptanceCriteria', 'nonGoals', 'batchGlossary'],
 }
 
 const REVIEW_PLAN_SCHEMA = {
@@ -63,8 +65,10 @@ const REVIEW_PLAN_SCHEMA = {
     verdict: { type: 'string', enum: ['approved', 'changes_requested', 'rejected'] },
     issues: { type: 'array', items: { type: 'object', properties: {
       severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+      category: { type: 'string', enum: ['core_gap', 'implementation_gap', 'out_of_scope', 'design_induced'] },
+      preferredAction: { type: 'string', enum: ['delete', 'reuse', 'narrow', 'add'] },
       description: { type: 'string' }, suggestion: { type: 'string' },
-    } } },
+    }, required: ['severity', 'category', 'preferredAction', 'description', 'suggestion'] } },
   },
   required: ['verdict', 'issues'],
 }
@@ -313,6 +317,9 @@ let plan = await agent(
   '\n\nFor EACH merged group, specify:\n' +
   '- codeChanges: files to modify, what to change, why\n' +
   '- translationsNeeded: English text + context for each entry\n' +
+  '\nBefore proposing changes, inspect current scripts, tests, and verification entry points. State observable acceptance criteria and explicit non-goals. Prefer extending existing files.\n' +
+  'If proposing a new module, schema, persistent state, or directory, explain in that change\'s reason: the observed failure, why the existing mechanism is insufficient, and why the simplest alternative is not viable.\n' +
+  'Do not add merge protocols, leases, recovery state, trusted clocks, reflog handling, or other infrastructure unless explicitly required by the user.\n' +
   '\nCRITICAL: Use the batch glossary for ALL terminology. Consistency across groups is mandatory.\n' +
   'Follow .agents/policies/i18n-safety.md: mprf_p for positional %n$s formats, no .c_str() on const char*, no protocol translation.\n' +
   'For Type III: plan the translator-owned source.txt entry before the coder-owned T_(variable). For Type V: text should stay English.',
@@ -334,12 +341,12 @@ let planReview = await agent(
   'Review this batch fix plan. Be a skeptical gatekeeper.\n' +
   '\nPlan: ' + JSON.stringify(plan) + '\n' +
   'Analyses: ' + JSON.stringify(validAnalyses) + '\n' +
-  '\nCheck:\n' +
-  '1. Are ALL issues covered by the merged groups?\n' +
-  '2. Is the batch glossary consistent with docs/glossary.md?\n' +
-  '3. Any groups that should be merged further?\n' +
-  '4. Format string risks? Convention violations?\n' +
-  '5. Can all items execute sequentially without file conflicts?\n' +
+  '\nReview in this order:\n' +
+  '1. Scope and simplicity: does every change serve an acceptance criterion; can any mechanism be deleted, reused, or narrowed; does the plan duplicate repository infrastructure?\n' +
+  '2. In-scope coverage: are confirmed issues, failure paths, required tests, and glossary constraints covered?\n' +
+  '3. Implementability: do referenced files, commands, and entry points exist; can all items execute sequentially without file conflicts?\n' +
+  '4. Internal consistency: do the plan, risks, acceptance criteria, non-goals, and batch glossary agree?\n' +
+  '\nClassify every issue. Out-of-scope risks do not block this plan. For design-induced issues, prefer deleting the responsible mechanism. Recommend adding a mechanism only after delete, reuse, and narrow are insufficient. Reject the plan when it requires new infrastructure or material scope expansion that needs user approval.\n' +
   '\nVerdict: approved | changes_requested | rejected',
   { label: 'review-plan', schema: REVIEW_PLAN_SCHEMA }
 )
@@ -360,17 +367,19 @@ while (planReview.verdict !== 'approved' && planIterations < 3) {
   }
 
   plan = await agent(
-    'Revise the batch plan. Address ALL review issues.\n' +
+    'Revise the batch plan after classifying every review issue.\n' +
     'Review issues: ' + JSON.stringify(planReview.issues) + '\n' +
-    'Current plan: ' + JSON.stringify(plan),
+    'Current plan: ' + JSON.stringify(plan) + '\n' +
+    'Resolve blocker or major issues only when they are inside the acceptance criteria or caused by the proposed diff. Preserve non-goals for out_of_scope issues. For design_induced issues, delete or narrow the responsible mechanism before adding one. A finding may be rejected with concrete repository evidence; reviewer suggestions are not commands.',
     { label: 'revise-plan-r' + planIterations, schema: MERGED_PLAN_SCHEMA }
   )
   if (!plan) { log('FAIL: Plan revision failed'); return { error: 'plan_revision_failed' } }
 
   planReview = await agent(
-    'Re-review. Were ALL previous issues addressed?\n' +
+    'Re-review the revised plan.\n' +
     'Previous issues: ' + JSON.stringify(planReview.issues) + '\n' +
-    'Revised plan: ' + JSON.stringify(plan),
+    'Revised plan: ' + JSON.stringify(plan) + '\n' +
+    'Are all in-scope blocking issues resolved, rejected with concrete repository evidence, or eliminated by deleting the design that created them? Did the revision remain within the original non-goals?',
     { label: 'rereview-plan-r' + planIterations, schema: REVIEW_PLAN_SCHEMA }
   )
   if (!planReview) { log('FAIL: Re-review failed'); return { error: 'plan_rereview_failed' } }

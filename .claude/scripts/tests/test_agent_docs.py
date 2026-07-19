@@ -96,6 +96,53 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn('Agent(subagent_type="general"', text)
         self.assertIn(".opencode/workflows/*.js", text)
 
+    def test_codex_pipeline_skill_is_present_and_reference_driven(self) -> None:
+        path = ROOT / ".agents/skills/translation-pipeline/SKILL.md"
+        text = path.read_text()
+        self.assertIn("$dcss-translation-context", text)
+        self.assertIn(".agents/policies/asset-ownership.md", text)
+        self.assertIn(".agents/policies/translation-integrity.md", text)
+        self.assertIn(".agents/policies/review-contract.md", text)
+        self.assertIn("docs/agent-routing.md", text)
+        self.assertIn("review_prepare.sh", text)
+        self.assertIn("review_final_gate.sh", text)
+        self.assertNotIn('Agent(subagent_type=', text)
+        self.assertNotIn('task(subagent_type=', text)
+        self.assertNotIn("node .claude/workflows/", text)
+
+    def test_plan_review_enforces_minimal_sufficient_design(self) -> None:
+        required_fragments = (
+            "acceptanceCriteria",
+            "nonGoals",
+            "design_induced",
+            "preferredAction",
+            "delete, reuse, and narrow",
+            "reviewer suggestions are not commands",
+        )
+        for name in ("translation-fix-pipeline.js",
+                     "translation-batch-pipeline.js"):
+            text = (ROOT / ".claude/workflows" / name).read_text()
+            for fragment in required_fragments:
+                with self.subTest(workflow=name, fragment=fragment):
+                    self.assertIn(fragment, text)
+            self.assertNotIn("Address EVERY issue", text)
+            self.assertNotIn("Address ALL review issues", text)
+            self.assertNotIn("Were ALL previous issues addressed", text)
+            self.assertNotIn("scope_expansion_required", text)
+            self.assertNotIn("newMechanisms", text)
+
+        for path in (
+            ROOT / ".claude/skills/translation-pipeline.md",
+            ROOT / ".opencode/skills/translation-pipeline/SKILL.md",
+        ):
+            text = path.read_text()
+            with self.subTest(skill=path.relative_to(ROOT)):
+                self.assertIn("最小充分方案边界", text)
+                self.assertIn("验收标准和明确非目标", text)
+                self.assertIn("design_induced", text)
+                self.assertIn("删除、复用、缩小、新增", text)
+                self.assertIn("`rejected`", text)
+
     def test_codex_does_not_claim_other_runtime_authorship(self) -> None:
         text = (ROOT / "CODEX.md").read_text()
         self.assertNotIn("Co-Authored-By: opencode", text)

@@ -122,6 +122,19 @@ bash .claude/scripts/context_resolve.sh "<issue/task>" \
 `docs/glossary.md` SHA-256。执行期间若术语表发生变化，重新生成上下文；
 不得用工作流或 Skill 内的静态术语副本覆盖当前术语表。
 
+## 最小充分方案边界
+
+计划必须列出可观察的验收标准和明确非目标，并先调查现有扫描器、测试与
+`verify_zh.sh` 入口。优先扩展现有文件。新增模块、schema、持久状态或目录时，
+必须在变更理由中说明对应的已观察失败、现有机制为何不足，以及最简单替代
+为何不可行；任一缺失则不加入。
+
+方案审核在一次调用中依次检查：范围与简化、范围内覆盖、可实施性、内部一致性。
+Finding 分类为 `core_gap`、`implementation_gap`、`out_of_scope` 或
+`design_induced`，并按删除、复用、缩小、新增的顺序处理。超范围理论风险不
+扩大当前方案；若确需新基础设施或实质扩大范围，以 `rejected` 停止并交还用户
+决定。Reviewer 建议不是必须逐字执行的命令。
+
 `.opencode/workflows/*.js` 使用宿主注入的 `args`、`agent()`、`phase()` 等
 DSL，不是普通 Node.js 程序，**不得**用 `node file.js` 直接执行。只有当前
 OpenCode 宿主明确提供兼容 workflow runner 时，才通过该 runner 启动。

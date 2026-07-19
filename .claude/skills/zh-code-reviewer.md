@@ -39,8 +39,9 @@ performance optimizations.
 ## Finding model
 
 - **Blocker**: runtime/functional failure, undefined behaviour, protocol or
-  lookup corruption, structural data damage, compilation failure, incomplete
-  scope, or an interrupted required verification.
+  lookup corruption, structural data damage, compilation failure, failure to
+  review the complete prepared diff, an unmet confirmed acceptance criterion
+  within that diff, or an interrupted required verification.
 - **Needs Fix**: a definite semantic, terminology, accuracy, completeness, or
   language error without runtime corruption.
 - **Suggestion**: a non-required style preference.
@@ -54,6 +55,15 @@ Readiness is derived mechanically:
 Suggestions do not block readiness. Schema-v4 merge authorization has no
 Conditional Go: a definite fix is completed before final verification, while
 deployment or release conditions are outside the immutable code-review proof.
+
+Plan non-goals do not excuse defects introduced by the prepared diff. Reviewers
+inspect the complete immutable diff for real runtime, semantic, structural, and
+verification defects. A theoretical risk outside the task acceptance criteria
+is non-blocking unless the prepared diff creates or materially worsens it.
+
+When proposing a resolution, prefer deleting unnecessary design, reusing
+repository mechanisms, and narrowing the commitment, in that order. Add a new
+mechanism only when those options are insufficient.
 
 ## Reviewer ownership
 
@@ -183,7 +193,11 @@ deployment check, parser-facing test, or other verification control.
   relaxed helper test is insufficient unless a stricter end-to-end test covers
   the behaviour it omits.
 - Fail closed when required input is missing, parsing is incomplete, an unknown
-  field or state appears, or the complete invariant cannot be evaluated.
+  field or state appears, or the complete invariant cannot be evaluated. Expose
+  the failure through the validator's existing interface, normally a non-zero
+  exit or an existing structured unresolved result. This requirement does not
+  introduce a new result protocol, parser, persistent state, distributed
+  coordination, recovery mechanism, or general compiler.
 - Give every invariant a passing fixture and a minimal negative mutation that
   breaks only that invariant and must be rejected.
 - Preserve raw tool evidence. Report the exact command, exit code, blocking

@@ -43,6 +43,22 @@ Do not copy model assignments, script counts, branch lists, test counts, or
 other volatile state into prose. Read the corresponding configuration, Git
 state, script `--help`, or CI workflow instead.
 
+## Minimal Sufficient Design
+
+- Optimize for the fewest new concepts needed to satisfy confirmed acceptance
+  criteria.
+- Before planning, identify acceptance criteria, explicit non-goals, and
+  existing repository mechanisms that can be extended.
+- Prefer modifying an existing script, test, Skill, or verification entry
+  point.
+- A new module, schema, persistent state, or directory requires an observed
+  failure, evidence that existing mechanisms are insufficient, and rejection
+  of the simplest alternative.
+- Reviewer findings do not automatically expand task scope. Resolve them by
+  deleting, reusing, or narrowing before adding mechanisms.
+- If a fix requires new infrastructure or material scope expansion, stop and
+  return the decision to the user.
+
 ## Mandatory Terminology Context
 
 For every translation, i18n implementation, or translation review task, resolve

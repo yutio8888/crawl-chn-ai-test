@@ -23,9 +23,9 @@ defined per concern; no one monolithic file is authoritative for everything.
 
 | Policy | Source | Generated targets |
 |---|---|---|
-| i18n safety | `.agents/policies/i18n-safety.md` | coder and code-reviewer prompts/skills plus the translation-context skill |
-| review contract | `.agents/policies/review-contract.md` | code/translation reviewer prompts/skills plus the translation-context skill |
-| asset ownership | `.agents/policies/asset-ownership.md` | coder/translator prompts and relevant skills |
+| i18n safety | `.agents/policies/i18n-safety.md` | coder and code-reviewer prompts/skills |
+| review contract | `.agents/policies/review-contract.md` | code/translation reviewer prompts/skills |
+| asset ownership | `.agents/policies/asset-ownership.md` | coder/translator prompts and runtime pipeline skills |
 | verification authoring | `.agents/policies/verification-authoring.md` | coder and code-reviewer prompts/skills |
 | translation integrity | `.agents/policies/translation-integrity.md` | translator prompts and translation-pipeline skills |
 | worktree policy | `.agents/policies/worktree-policy.md` | referenced by every runtime entry point; OpenCode adds a hard plugin guard |

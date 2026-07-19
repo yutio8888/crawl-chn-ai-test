@@ -46,8 +46,10 @@ const PLAN_SCHEMA = {
       english: { type: 'string' }, context: { type: 'string' },
     } } },
     risks: { type: 'array', items: { type: 'string' } },
+    acceptanceCriteria: { type: 'array', items: { type: 'string' } },
+    nonGoals: { type: 'array', items: { type: 'string' } },
   },
-  required: ['approach', 'codeChanges', 'translationsNeeded'],
+  required: ['approach', 'codeChanges', 'translationsNeeded', 'risks', 'acceptanceCriteria', 'nonGoals'],
 }
 
 const REVIEW_PLAN_SCHEMA = {
@@ -56,8 +58,10 @@ const REVIEW_PLAN_SCHEMA = {
     verdict: { type: 'string', enum: ['approved', 'changes_requested', 'rejected'] },
     issues: { type: 'array', items: { type: 'object', properties: {
       severity: { type: 'string', enum: ['blocker', 'major', 'minor'] },
+      category: { type: 'string', enum: ['core_gap', 'implementation_gap', 'out_of_scope', 'design_induced'] },
+      preferredAction: { type: 'string', enum: ['delete', 'reuse', 'narrow', 'add'] },
       description: { type: 'string' }, suggestion: { type: 'string' },
-    } } },
+    }, required: ['severity', 'category', 'preferredAction', 'description', 'suggestion'] } },
     summary: { type: 'string' },
   },
   required: ['verdict', 'issues'],
@@ -245,12 +249,20 @@ ${JSON.stringify(analysis, null, 2)}
 
 Issue: ${ISSUE}
 
-Design the minimal, correct fix:
+Design the smallest sufficient fix:
 - Type I: wrap with T_() + add source.txt entry
 - Type II: fix the wrapper function's internal T_() call
 - Type III: add source.txt entries, run audit_data_i18n.py to verify
 - Type IV: add/update entry in zh/*.txt database file (English key, Chinese value)
 - Type V: revert to English — this is NOT a bug
+
+Before proposing changes, inspect the current scripts, tests, and verification entry points.
+State observable acceptance criteria and explicit non-goals. Prefer extending existing files.
+If proposing a new module, schema, persistent state, or directory, explain in that change's reason:
+1. the observed failure it addresses;
+2. why the existing mechanism is insufficient;
+3. why the simplest alternative is not viable.
+Do not add merge protocols, leases, recovery state, trusted clocks, reflog handling, or other infrastructure unless explicitly required by the user.
 
 For each code change: file path, what to change, why.
 For each translation: English text and context.
@@ -275,13 +287,13 @@ let planReview = await agent(
 Analysis: ${JSON.stringify(analysis)}
 Plan: ${JSON.stringify(plan)}
 
-Check:
-1. Translation type classification correct?
-2. ALL affected files identified? (grep to verify)
-3. Approach minimal — only changes what's needed?
-4. Format string risks (%s count, arg order)?
-5. Project conventions followed (AGENTS.md and .agents/policies/)?
-6. Missing edge cases or side effects?
+Review in this order:
+1. Scope and simplicity: does every change serve an acceptance criterion; can any mechanism be deleted, reused, or narrowed; does the plan duplicate repository infrastructure?
+2. In-scope coverage: are confirmed failure paths and required tests covered?
+3. Implementability: do referenced files, commands, and entry points exist; can the work proceed without ownership conflicts?
+4. Internal consistency: do the plan, risks, acceptance criteria, and non-goals agree?
+
+Classify every issue. Out-of-scope risks do not block this plan. For design-induced issues, prefer deleting the responsible mechanism. Recommend adding a mechanism only after delete, reuse, and narrow are insufficient. Reject the plan when it requires new infrastructure or material scope expansion that needs user approval.
 
 Verdict: approved (proceed) | changes_requested (revise) | rejected (abort)`,
   { label: 'review-plan', schema: REVIEW_PLAN_SCHEMA }
@@ -303,21 +315,23 @@ while (planReview.verdict !== 'approved' && planIterations < 3) {
   }
 
   plan = await agent(
-    `Revise the plan. Address EVERY issue from the review.
+    `Revise the plan after classifying every review issue.
 
 Review issues: ${JSON.stringify(planReview.issues)}
 Current plan: ${JSON.stringify(plan)}
 
-Explain how each revision addresses the feedback.`,
+Resolve blocker or major issues only when they are inside the acceptance criteria or caused by the proposed diff. Preserve non-goals for out_of_scope issues. For design_induced issues, delete or narrow the responsible mechanism before adding one. A finding may be rejected with concrete repository evidence; reviewer suggestions are not commands.`,
     { label: 'revise-plan-r' + planIterations, schema: PLAN_SCHEMA }
   )
   if (!plan) { log('FAIL: Revision failed'); return { error: 'plan_revision_failed' } }
 
   planReview = await agent(
-    `Re-review. Were ALL previous issues addressed?
+    `Re-review the revised plan.
 
 Previous issues: ${JSON.stringify(planReview.issues)}
-Revised plan: ${JSON.stringify(plan)}`,
+Revised plan: ${JSON.stringify(plan)}
+
+Are all in-scope blocking issues resolved, rejected with concrete repository evidence, or eliminated by deleting the design that created them? Did the revision remain within the original non-goals?`,
     { label: 'rereview-plan-r' + planIterations, schema: REVIEW_PLAN_SCHEMA }
   )
   if (!planReview) { log('FAIL: Re-review failed'); return { error: 'plan_rereview_failed' } }

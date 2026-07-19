@@ -1,0 +1,4 @@
+interface:
+  display_name: "DCSS Translation Pipeline"
+  short_description: "Run the end-to-end DCSS Chinese translation repair workflow"
+  default_prompt: "Use $translation-pipeline to fix this DCSS Chinese translation issue with the smallest sufficient change."
