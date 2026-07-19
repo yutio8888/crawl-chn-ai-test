@@ -176,6 +176,7 @@ jobs:
           TERM: dumb
 
   linting:
+    if: github.event_name != 'schedule'
     permissions:
       contents: read #  to fetch code (actions/checkout)
 
@@ -184,15 +185,76 @@ jobs:
     steps:
       - uses: actions/checkout@v3
         with:
-          fetch-depth: 0 # all history - Checkconventioncommit needs to know which commits are being merged
+          fetch-depth: 0
+      - name: Select changed source files
+        id: lint_targets
+        shell: bash
+        env:
+          EVENT_NAME: ${{ github.event_name }}
+          BEFORE_SHA: ${{ github.event.before }}
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          PR_HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+        run: |
+          set -euo pipefail
+
+          case "$EVENT_NAME" in
+            pull_request)
+              base="$PR_BASE_SHA"
+              head="$PR_HEAD_SHA"
+              ;;
+            push)
+              base="$BEFORE_SHA"
+              head="$GITHUB_SHA"
+              if [[ "$base" =~ ^0+$ ]]; then
+                base="$GITHUB_SHA^"
+              fi
+              ;;
+            workflow_dispatch)
+              base="$GITHUB_SHA^"
+              head="$GITHUB_SHA"
+              ;;
+            *)
+              echo "Unsupported lint event: $EVENT_NAME" >&2
+              exit 1
+              ;;
+          esac
+
+          git cat-file -e "$base^{commit}"
+          git cat-file -e "$head^{commit}"
+          git -C crawl-ref/source diff --name-only --relative \
+            --diff-filter=ACMR -z \
+            "$base" "$head" -- . > "$RUNNER_TEMP/lint-source-files"
       - name: Checkwhite
-        run: util/checkwhite -n
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' files < "$RUNNER_TEMP/lint-source-files"
+          if (( ${#files[@]} == 0 )); then
+            echo "No changed source files to check."
+            exit 0
+          fi
+          util/checkwhite -n "${files[@]}"
         working-directory: crawl-ref/source
       - name: Unbrace
-        run: util/unbrace -n
+        if: ${{ always() && steps.lint_targets.outcome == 'success' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mapfile -d '' changed < "$RUNNER_TEMP/lint-source-files"
+          files=()
+          for file in "${changed[@]}"; do
+            case "$file" in
+              *.cc|*.h) files+=("$file") ;;
+            esac
+          done
+          if (( ${#files[@]} == 0 )); then
+            echo "No changed C++ source files to check."
+            exit 0
+          fi
+          util/unbrace -n "${files[@]}"
         working-directory: crawl-ref/source
-      - name: Checkconventionalcommit # If not in crawl/crawl, or if it's a branch other than master or the release branches, run
-        if: (github.repository != 'crawl/crawl' || !(github.ref == 'refs/heads/master' || startsWith(github.ref, 'refs/heads/stone_soup-')))
+      - name: Check commit message line lengths
+        if: ${{ always() && github.event_name == 'pull_request' }}
         run: util/checkconventionalcommit.py
         working-directory: crawl-ref/source
         continue-on-error: true

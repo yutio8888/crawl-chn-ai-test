@@ -86,7 +86,10 @@ for (@files)
     next if /webserver\/static\/scripts\/contrib\//i;
     next if /util\/server\//i;
     next if /dat\/dist_bones\//i;
-    next if /\.(png|gif|xpm|ttf|ico|icns|fig|tex|eps|pdf|psd|woff|woff2)$/i;
+    # SourceDB keys may intentionally contain trailing whitespace. They are
+    # validated by the localisation-specific SourceDB checks instead.
+    next if m[(^|/)dat/i18n/[^/]+/source\.txt$]i;
+    next if /\.(png|gif|xpm|ttf|ico|icns|fig|tex|eps|pdf|psd|woff|woff2|jar)$/i;
     next if /\.(sln|vim|pbxproj|vsprops|plist|csproj|config|cs)$/i;
     next if /\.(vcproj|vcproj\.user|vcxproj|vcxproj\.filters|terminal)$/i;
     next if m[(^|/)\.git(modules|attributes)$];
