@@ -1,7 +1,7 @@
 ---
 name: crawl-coder
 description: DCSS Chinese i18n code implementation agent — C++ source modification, TextDB loader/schema and assigned structural repairs, T_() migration, compilation verification
-model: openai-codex/gpt-5.6-sol
+model: openai-codex/gpt-5.6-luna
 tools: read, grep, find, ls, bash, edit, write
 systemPromptMode: replace
 inheritProjectContext: true
