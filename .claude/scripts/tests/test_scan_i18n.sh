@@ -203,6 +203,7 @@ for binding_case in you-species you-race you-class genus monster; do
     set -e
     assert_status "lua identity: independent $binding_case mutation blocks" 1 "$binding_status"
 done
+assert_contains "lua identity: species mutation is binding-specific" "you_species" /tmp/actual_lua_identity_you-species.txt
 assert_contains "lua identity: race mutation is binding-specific" "you_race" /tmp/actual_lua_identity_you-race.txt
 assert_contains "lua identity: class mutation is binding-specific" "you_class" /tmp/actual_lua_identity_you-class.txt
 assert_contains "lua identity: genus dataflow mutation is binding-specific" "l_you_genus" /tmp/actual_lua_identity_genus.txt

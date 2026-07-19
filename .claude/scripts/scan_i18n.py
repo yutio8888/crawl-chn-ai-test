@@ -1881,8 +1881,9 @@ def _lua_identity_contract_findings(artifacts):
             findings.append(_lua_identity_finding(
                 rel_path, 'canonical accessor must initialize the variable passed to lua_pushstring', binding))
             continue
-        if binding == 'l_you_genus' and not re.search(r'\blowercase\s*\(\s*' + re.escape(assignment.group(1)) + r'\s*\)', body):
-            findings.append(_lua_identity_finding(rel_path, 'genus must preserve lowercase processing', binding))
+        if binding in ('l_you_genus', 'l_you_monster') and not re.search(r'\blowercase\s*\(\s*' + re.escape(assignment.group(1)) + r'\s*\)', body):
+            findings.append(_lua_identity_finding(
+                rel_path, f'{"genus" if binding == "l_you_genus" else "monster"} must preserve lowercase processing', binding))
         if binding == 'l_you_genus' and not re.search(r'\bpluralise\s*\(', body):
             findings.append(_lua_identity_finding(rel_path, 'genus must preserve pluralise processing', binding))
     return findings
