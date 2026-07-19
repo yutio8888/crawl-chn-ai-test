@@ -80,15 +80,17 @@ git worktree add .worktrees/mingw-tiles --detach HEAD
 git -C .worktrees/mingw-tiles submodule update --init --recursive
 ```
 
-字体已经随 `crawl-ref/source/contrib/fonts` 子模块纳入项目。使用前确认子模块已初始化：
+项目不修改或扩展上游 `contrib/fonts` 子模块。请自行取得
+`MapleMono-NF-CN-Regular.ttf`，并放入受 Git 忽略的本地字体目录：
 
 ```bash
 git submodule update --init --recursive
-test -s crawl-ref/source/contrib/fonts/MapleMono-NF-CN-Regular.ttf
+install -m 0644 /path/to/MapleMono-NF-CN-Regular.ttf \
+  crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf
 ```
 
-中文默认部署使用 Maple Mono NF CN；更纱黑体的 Fixed SC 和 Mono SC 字体作为仓库内的
-CJK 备选字体保留。无需再手动下载或复制字体到源码目录。
+中文默认部署使用 Maple Mono NF CN。渲染器仍支持配置其他 CJK 字体，但字体文件不由本
+汉化仓库或其子模块分发。
 
 只构建 `crawl.exe`：
 
@@ -195,8 +197,7 @@ bash .claude/scripts/verify_zh.sh --profile ci
 - 已运行与改动类型匹配的验证 profile，并记录命令、退出码和警告；
 - 已构建受影响目标，或说明为什么无需构建；
 - 新增行为、架构约束或术语决定已经更新对应权威文档；
-- 没有在受管理的字体子模块之外重复提交字体，也没有提交 `init.txt`、构建产物、缓存或
-  部署目录。
+- 没有修改字体子模块指针，也没有提交字体文件、`init.txt`、构建产物、缓存或部署目录。
 
 翻译相关候选进入合并阶段后，由维护者按不可变 commit 执行
 `review_prepare.sh`、机械路由的领域审查、`review_final_gate.sh` 和合并时校验。不要用一次
@@ -253,14 +254,14 @@ bash .claude/scripts/verify_zh.sh --profile ci
 本项目继承上游 DCSS，采用 GPLv2+ 许可证，详见 [LICENSE](LICENSE)。上游贡献者名单见
 [crawl-ref/CREDITS.txt](crawl-ref/CREDITS.txt)。
 
-字体文件随 `crawl-ref/source/contrib/fonts` 子模块一同分发，但不因此改用项目的 GPLv2+
-许可证；各字体继续适用其自身许可证：
+本项目不修改字体子模块，也不分发下列第三方 CJK 字体。用户自行取得字体时，仍须遵守
+各字体许可证：
 
-| 字体 | 仓库内文件 | 许可证 |
+| 字体 | 本地文件名 | 许可证 |
 |---|---|---|
 | Maple Mono NF CN | `MapleMono-NF-CN-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Maple-Mono.txt) |
 | 更纱黑体（Sarasa Gothic） | `SarasaFixedSC-Regular.ttf`、`SarasaMonoSC-Regular.ttf` | SIL Open Font License 1.1；见 [许可证副本](docs/fonts/LICENSE-Sarasa-Gothic.txt) |
-| DejaVu Sans / DejaVu Sans Mono | 子模块中的 DejaVu 字体文件 | Bitstream Vera 衍生许可，DejaVu 修改部分为公有领域；见 [DejaVu 官方许可证](https://dejavu-fonts.github.io/License.html) |
+| DejaVu Sans / DejaVu Sans Mono | 上游字体子模块中的 DejaVu 字体文件 | Bitstream Vera 衍生许可，DejaVu 修改部分为公有领域；见 [DejaVu 官方许可证](https://dejavu-fonts.github.io/License.html) |
 
-OFL 1.1 允许字体随软件捆绑和再分发，但字体本身及其修改版本仍须遵守 OFL 条件；上述
-许可证副本和版权声明应与字体文件一同保留。
+OFL 1.1 允许字体随软件捆绑和再分发，但字体本身及其修改版本仍须遵守 OFL 条件；用户
+复制或再分发字体时，应同时保留许可证副本和版权声明。

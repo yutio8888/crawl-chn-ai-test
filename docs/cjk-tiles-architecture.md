@@ -26,9 +26,10 @@ primary font lacks a glyph. Candidate fallback fonts are resolved by the
 current `fontwrapper-ft.cc` implementation; documentation should not describe a
 particular fallback as mandatory unless deployment scripts enforce it.
 
-Runtime fonts are deployed to `dat/tiles/`. Source font files may come from the
-`contrib/fonts` submodule or an ignored local cache. See
-`docs/build-workflow.md` for the supported `init.txt` and deployment process.
+Runtime fonts are deployed to `dat/tiles/`. This localization repository does
+not change the upstream `contrib/fonts` submodule; CJK source fonts belong in
+the ignored local `dat/tiles/` directory. See `docs/build-workflow.md` for the
+supported `init.txt`, font placement, and deployment process.
 
 ## Change Verification
 
