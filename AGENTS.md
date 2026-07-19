@@ -1,8 +1,8 @@
 # AGENTS.md — Shared Agent Entry Point
 
 > Status: **canonical shared instructions**. This file is intentionally
-> runtime-neutral. Runtime-specific tool syntax belongs in `CODEX.md`,
-> `CLAUDE.md`, or `.opencode/RUNTIME.md`.
+> runtime-neutral. Runtime-specific tool syntax belongs in
+> `.pi/APPEND_SYSTEM.md`, `CODEX.md`, `CLAUDE.md`, or `.opencode/RUNTIME.md`.
 
 This repository contains the DCSS Chinese translation, i18n tooling, and CJK
 tiles work. Read this file first in every agent runtime. For the source-of-truth
@@ -14,6 +14,7 @@ After this file, read only the adapter for the active runtime:
 
 | Runtime | Adapter |
 |---|---|
+| Pi | `.pi/APPEND_SYSTEM.md` |
 | OpenCode | `.opencode/RUNTIME.md` |
 | Codex | `CODEX.md` |
 | Claude Code | `CLAUDE.md` |
@@ -120,8 +121,9 @@ git worktree add .worktrees/<name> <branch>
 ```
 
 Never create a worktree under an absolute path, `~`, `../`, or the deprecated
-`.claude/worktrees/`. OpenCode additionally enforces this with
-`.opencode/plugin/enforce-worktree-path.js`. Follow the complete shared policy
+`.claude/worktrees/`. OpenCode and Pi additionally enforce this with
+`.opencode/plugin/enforce-worktree-path.js` and
+`.pi/extensions/enforce-worktree-path.ts`, respectively. Follow the complete shared policy
 in `.agents/policies/worktree-policy.md`.
 
 Repository documentation and script defaults must not embed clone-specific
@@ -169,8 +171,9 @@ Authorship must match the runtime that actually produced the change:
   claim OpenCode or Claude authorship. If no trailer is required, omit it rather
   than inventing or borrowing an identity.
 
-Branch names are an ownership signal: Codex uses `codex/<topic>`; OpenCode uses
-`<topic>` or `consolidate-*` unless the user requests another name.
+Branch names are an ownership signal: Pi uses `pi/<topic>`; Codex uses
+`codex/<topic>`; OpenCode uses `<topic>` or `consolidate-*` unless the user
+requests another name.
 
 ## Configuration Maintenance
 
@@ -182,7 +185,8 @@ python3 .claude/scripts/sync_agent_policies.py --check
 python3 .claude/scripts/sync_agent_policies.py --write
 ```
 
-Do not edit generated blocks directly. Do not delete `.claude/agents/` or
-`.claude/skills/` as “legacy” while they remain synchronization and test
-targets. Before changing or removing a compatibility tree, update the source
-map, synchronizer, tests, and every runtime reference in the same change.
+Do not edit generated blocks directly. Do not delete `.pi/agents/`,
+`.claude/agents/`, or `.claude/skills/` as “legacy” while they remain
+synchronization and test targets. Before changing or removing a compatibility
+tree, update the source map, synchronizer, tests, and every runtime reference
+in the same change.

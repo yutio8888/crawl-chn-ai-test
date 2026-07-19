@@ -12,6 +12,7 @@ ENTRY_POINTS = [
     ROOT / "AGENTS.md",
     ROOT / "CODEX.md",
     ROOT / "CLAUDE.md",
+    ROOT / ".pi/APPEND_SYSTEM.md",
     ROOT / ".opencode/RUNTIME.md",
 ]
 
@@ -60,6 +61,7 @@ class AgentDocumentationTests(unittest.TestCase):
             "AGENTS.md": 220,
             "CODEX.md": 100,
             "CLAUDE.md": 100,
+            ".pi/APPEND_SYSTEM.md": 100,
             ".opencode/RUNTIME.md": 100,
         }
         for path in ENTRY_POINTS:
@@ -79,6 +81,23 @@ class AgentDocumentationTests(unittest.TestCase):
         for path in ENTRY_POINTS:
             with self.subTest(path=path.relative_to(ROOT)):
                 self.assertIsNone(model_pattern.search(path.read_text()))
+
+    def test_pi_runtime_configuration_is_native_and_guarded(self) -> None:
+        settings = (ROOT / ".pi/settings.json").read_text()
+        self.assertIn('"defaultProvider": "openai-codex"', settings)
+        self.assertIn('"defaultModel": "gpt-5.6-sol"', settings)
+        self.assertTrue((ROOT / ".pi/prompts/goal.md").is_file())
+        guard = (ROOT / ".pi/extensions/enforce-worktree-path.ts").read_text()
+        self.assertIn('const ALLOWED_PREFIX = ".worktrees/"', guard)
+        self.assertIn('pi.on("tool_call"', guard)
+        expected_agents = {
+            "crawl-coder", "ocr", "translation-reviewer",
+            "zh-code-reviewer", "zh-translator",
+        }
+        self.assertEqual(
+            expected_agents,
+            {path.stem for path in (ROOT / ".pi/agents").glob("*.md")},
+        )
 
     def test_workflow_dsl_is_not_shown_as_an_executable_command(self) -> None:
         command = re.compile(
@@ -207,6 +226,7 @@ class AgentDocumentationTests(unittest.TestCase):
             *ROOT.glob(".claude/skills/*.md"),
             *ROOT.glob(".opencode/agents/*.md"),
             *ROOT.glob(".opencode/skills/*/SKILL.md"),
+            *ROOT.glob(".pi/agents/*.md"),
             *ROOT.glob(".codex/agents/*.toml"),
         ]
         for path in paths:
@@ -221,6 +241,7 @@ class AgentDocumentationTests(unittest.TestCase):
             ROOT / ".claude/skills/crawl-coder.md",
             ROOT / ".opencode/agents/crawl-coder.md",
             ROOT / ".opencode/skills/crawl-coder/SKILL.md",
+            ROOT / ".pi/agents/crawl-coder.md",
             ROOT / ".codex/agents/crawl-coder.toml",
         ]
         forbidden = (

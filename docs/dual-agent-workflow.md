@@ -1,4 +1,4 @@
-# Cross-Runtime Collaboration — Codex, OpenCode, and Claude Code
+# Cross-Runtime Collaboration — Pi, Codex, OpenCode, and Claude Code
 
 This document defines shared handoff and ownership. Runtime capabilities and
 model assignments change over time; read current runtime configuration instead
@@ -26,6 +26,7 @@ claims here.
 
 ### Branches identify ownership
 
+- Pi-authored branches use `pi/<topic>` by default.
 - Codex-authored branches use `codex/<topic>` by default.
 - OpenCode-authored branches use `<topic>` or `consolidate-*` by default.
 - Claude Code uses the branch explicitly assigned by the user or orchestrator.
@@ -47,16 +48,16 @@ from disk without relying on conversation memory.
 
 ### Worktrees are shared infrastructure
 
-Every runtime follows `.agents/policies/worktree-policy.md`. OpenCode has an
-additional plugin guard, while other runtimes must obey the same relative
-`.worktrees/<name>` rule through their shell behavior.
+Every runtime follows `.agents/policies/worktree-policy.md`. OpenCode and Pi
+have additional plugin/extension guards, while other runtimes must obey the
+same relative `.worktrees/<name>` rule through their shell behavior.
 
 ### Authorship is truthful
 
 - OpenCode uses its OpenCode trailer.
 - Claude Code uses its Claude trailer.
-- Codex and other runtimes do not borrow either identity. They use a declared
-  runtime identity when required or omit the co-author trailer.
+- Pi, Codex, and other runtimes do not borrow either identity. They use a
+  declared runtime identity when required or omit the co-author trailer.
 
 ## Handoff Protocol
 

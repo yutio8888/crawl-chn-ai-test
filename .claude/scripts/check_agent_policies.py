@@ -12,6 +12,7 @@ import sys
 
 SCRIPT_ROOT = Path(__file__).resolve().parents[2]
 CONFIG_ROOTS = [SCRIPT_ROOT / ".agents" / "skills",
+                SCRIPT_ROOT / ".pi" / "agents",
                 SCRIPT_ROOT / ".codex" / "agents",
                 SCRIPT_ROOT / ".claude" / "agents",
                 SCRIPT_ROOT / ".claude" / "skills",
@@ -31,8 +32,8 @@ FORBIDDEN = {
 
 def config_files(root: Path) -> list[Path]:
     result: list[Path] = []
-    config_roots = [root / ".agents" / "skills", root / ".codex" / "agents",
-                    root / ".claude" / "agents",
+    config_roots = [root / ".agents" / "skills", root / ".pi" / "agents",
+                    root / ".codex" / "agents", root / ".claude" / "agents",
                     root / ".claude" / "skills", root / ".opencode" / "agents",
                     root / ".opencode" / "skills"]
     for config_root in config_roots:
