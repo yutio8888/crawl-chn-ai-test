@@ -31,8 +31,9 @@ class PolicySyncTests(unittest.TestCase):
         self.assertIn(".claude/agents/zh-translator.md", SYNC.TARGETS["asset-ownership"])
         self.assertIn(".opencode/skills/translation-pipeline/SKILL.md",
                       SYNC.TARGETS["asset-ownership"])
-        self.assertIn(".agents/skills/dcss-translation-context/SKILL.md",
-                      SYNC.TARGETS["asset-ownership"])
+        context_skill = ".agents/skills/dcss-translation-context/SKILL.md"
+        for policy in ("i18n-safety", "review-contract", "asset-ownership"):
+            self.assertNotIn(context_skill, SYNC.TARGETS[policy])
 
     def test_verification_authoring_has_exact_role_scope(self) -> None:
         self.assertEqual(
