@@ -18212,6 +18212,9 @@ acrobatic
 antennae
 触角
 %%%%
+ant
+蚁
+%%%%
 antimagic bite
 禁魔咬击
 %%%%
@@ -18362,11 +18365,17 @@ frail
 freezing cloud immunity
 冰冻云免疫
 %%%%
+frog
+蛙
+%%%%
 frog-like legs
 蛙腿
 %%%%
 gelatinous body
 凝胶身体
+%%%%
+geist
+幽灵
 %%%%
 hated by all
 被所有生物憎恨

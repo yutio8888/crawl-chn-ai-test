@@ -694,7 +694,7 @@ A permanent teleport trap
 A web
 
 一个蜘蛛网。留下这张网的蜘蛛肯定是个大家伙，
-因为这似乎是用来诱捕{{ return you.genus(true) }}而不是苍蝇的。
+因为这似乎是用来诱捕{{ return crawl.t_(you.genus()) }}而不是苍蝇的。
 %%%%
 A Zot trap
 

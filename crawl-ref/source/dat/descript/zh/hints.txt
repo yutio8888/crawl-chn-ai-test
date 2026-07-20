@@ -3,7 +3,7 @@ welcome
 
 <white>欢迎你来到地牢爬行者的游戏世界！</white>
 
-你的任务是扮演<w>{{ return you.race() }} {{ return you.class() }}</w>
+你的任务是扮演<w>{{ return crawl.t_(you.race()) .. " " .. crawl.t_(you.class()) }}</w>
 角色深入地城深处，找到传说中的佐特之球并带着它返回地面。不过，在刚开始玩的时候，
 你只要探索地城就好。尽你所能层层推进，不过要小心：死亡的危险无处不在。
 
@@ -132,8 +132,8 @@ finished random 3
 %%%%
 dissection reminder
 
-如果你不想吃掉尸体，按下 <input>p</input>可以献祭给 {{ return you.god()
-}}<tiles>。你也可以通过点击地上的尸体或者 <input>鼠标左键</input>
+如果你不想吃掉尸体，按下 <input>p</input>可以献祭给 {{ return crawl.t_(you.god()) }}
+<tiles>。你也可以通过点击地上的尸体或者 <input>鼠标左键</input>
 点击背包中的尸体将其剁碎</tiles>。
 在提示模式中你每遇到一具尸体都可以重读一遍本提示。
 %%%%
@@ -227,7 +227,7 @@ HINT_CONTAMINATION_SEVERE
 %%%%
 HINT_CONVERT
 
-你刚刚皈依了 <w>{{ return you.god() }}</w>。你的虔诚值（神眷）
+你刚刚皈依了 <w>{{ return crawl.t_(you.god()) }}</w>。你的虔诚值（神眷）
 会随着你做出取悦新神的事情而增加，并会随时间逐渐减少。
 
 你可以查看你的神的喜好和厌恶，以及你当前的声望和神圣能力，

@@ -2969,7 +2969,7 @@ _hostile_orc_beogh_believer_speech_common_
 
 @The_monster@ 对 @foe@ 咕哝道："你？救世主？你连个样子都不像！"
 
-@The_monster@ @_orc_says_to_foe_@："救世主绝不会是个 {{ return you.race() }}！"
+@The_monster@ @_orc_says_to_foe_@："救世主绝不会是个 {{ return crawl.t_(you.race()) }}！"
 
 @The_monster@ @_orc_says_to_foe_@："救世主必定是个真正的兽人！"
 
@@ -4123,7 +4123,7 @@ _Saint Roka rival_
 
 
 
-@The_monster@喊道："兽人们，注意了：这个骗子不过是个{{ return you.race() }}！"
+@The_monster@喊道："兽人们，注意了：这个骗子不过是个{{ return crawl.t_(you.race()) }}！"
 %%%%
 _Sojobo_advice_
 
@@ -6885,7 +6885,7 @@ _suck_up_noun_
 
 
 
-仁慈的{{ return you.genus() }}
+仁慈的{{ return crawl.t_(you.genus()) }}
 %%%%
 _vassalage_
 
