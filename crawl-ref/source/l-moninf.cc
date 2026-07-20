@@ -867,7 +867,20 @@ LUAFN(moninf_get_status)
 LUAFN(moninf_get_name)
 {
     MONINF(ls, 1, mi);
-    string s = mi->full_name();
+    ScopedLangEn en;
+    const string s = mi->full_name();
+    lua_pushstring(ls, s.c_str());
+    return 1;
+}
+
+/**** The monster's ordinary localized display name.
+ * @treturn string
+ * @function display_name
+ */
+LUAFN(moninf_get_display_name)
+{
+    MONINF(ls, 1, mi);
+    const string s = mi->full_name();
     lua_pushstring(ls, s.c_str());
     return 1;
 }
@@ -947,6 +960,7 @@ static const struct luaL_Reg moninf_lib[] =
     MIREG(desc),
     MIREG(status),
     MIREG(name),
+    MIREG(display_name),
     MIREG(title_name),
     MIREG(speed_description),
     MIREG(spells),

@@ -10,6 +10,7 @@
 #include "database.h"
 #include "dlua.h"
 #include "items.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "mon-act.h"
 #include "mon-behv.h"
@@ -52,7 +53,9 @@ void push_monster(lua_State *ls, monster* mons)
 
 MDEF(name)
 {
-    PLUARET(string, mons->name(DESC_PLAIN, true).c_str());
+    ScopedLangEn en;
+    const string name = mons->name(DESC_PLAIN, true);
+    PLUARET(string, name.c_str());
 }
 
 MDEF(unique)
@@ -62,10 +65,19 @@ MDEF(unique)
 
 MDEF(base_name)
 {
-    PLUARET(string, mons->base_name(DESC_PLAIN, true).c_str());
+    ScopedLangEn en;
+    const string name = mons->base_name(DESC_PLAIN, true);
+    PLUARET(string, name.c_str());
 }
 
 MDEF(full_name)
+{
+    ScopedLangEn en;
+    const string name = mons->full_name(DESC_PLAIN);
+    PLUARET(string, name.c_str());
+}
+
+MDEF(display_name)
 {
     PLUARET(string, mons->full_name(DESC_PLAIN).c_str());
 }
@@ -78,12 +90,14 @@ MDEF(title_name)
 
 MDEF(db_name)
 {
-    PLUARET(string, mons->name(DESC_DBNAME, true).c_str());
+    ScopedLangEn en;
+    const string name = mons->name(DESC_DBNAME, true);
+    PLUARET(string, name.c_str());
 }
 
 MDEF(type_name)
 {
-    PLUARET(string, mons_type_name(mons->type, DESC_PLAIN).c_str());
+    PLUARET(string, mons_type_name_en(mons->type, DESC_PLAIN).c_str());
 }
 
 MDEF(entry_name)
@@ -156,7 +170,9 @@ MDEFN(add_energy, add_energy)
            lua_isstring(ls, 1)?                                      \
            description_type_by_name(luaL_checkstring(ls, 1))         \
            : DESC_PLAIN;                                             \
-       PLUARET(string, expr.c_str());             \
+       ScopedLangEn en;                            \
+       const string result = expr;                  \
+       PLUARET(string, result.c_str());             \
     }                                             \
     MDEFN(name, name##_fn)                        \
 
@@ -534,6 +550,7 @@ static MonsAccessor mons_attrs[] =
     { "name",           l_mons_name      },
     { "base_name",      l_mons_base_name },
     { "full_name",      l_mons_full_name },
+    { "display_name",   l_mons_display_name },
     { "title_name",     l_mons_title_name },
     { "db_name",        l_mons_db_name   },
     { "type_name",      l_mons_type_name },

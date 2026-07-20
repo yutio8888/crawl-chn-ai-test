@@ -107,7 +107,8 @@ test.eq(vv.title_name(), "流亡的芙芙", "Vv title_name")
 
 local mi = monster.get_monster_at(place.x, place.y)
 assert(mi, "Could not get monster.info for Vv")
-test.eq(mi.name(), "芙芙", "Vv monster.info name")
+test.eq(mi.name(), "Vv", "Vv monster.info canonical name")
+test.eq(mi.display_name(), "芙芙", "Vv monster.info display name")
 test.eq(mi.title_name(), "流亡的芙芙", "Vv monster.info title_name")
 
 dgn.dismiss_monsters()
