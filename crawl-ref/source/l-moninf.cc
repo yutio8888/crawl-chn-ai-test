@@ -12,6 +12,7 @@
 #include "env.h"
 #include "fight.h"
 #include "l-defs.h"
+#include "lang-en-guard.h"
 #include "libutil.h" // map_find
 #include "mon-book.h"
 #include "mon-pick.h"
@@ -832,13 +833,24 @@ LUAFN(moninf_get_status)
     if (lua_gettop(ls) >= 2)
         which = luaL_checkstring(ls, 2);
 
-    vector<string> status = mi->attributes();
+    vector<string> display_status = mi->attributes();
     if (!which)
     {
-        PLUARET(string, comma_separated_line(status.begin(),
-                                             status.end(), ", ").c_str());
+        PLUARET(string, comma_separated_line(display_status.begin(),
+                                             display_status.end(), ", ").c_str());
     }
-    for (const auto &st : status)
+
+    // Compare protocol callers against an English snapshot, while retaining
+    // the localized vector for the no-argument display API.
+    vector<string> english_status;
+    {
+        ScopedLangEn en;
+        english_status = mi->attributes();
+    }
+    for (const auto &st : english_status)
+        if (st == which)
+            PLUARET(boolean, true);
+    for (const auto &st : display_status)
         if (st == which)
             PLUARET(boolean, true);
 

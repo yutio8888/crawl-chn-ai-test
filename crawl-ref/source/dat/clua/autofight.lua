@@ -271,7 +271,7 @@ local function get_monster_info(dx,dy,no_move)
   info.injury = m:damage_level()
   info.threat = m:threat()
   info.orc_priest_wizard = (name == "orc priest" or name == "orc wizard") and 1 or 0
-  info.bullseye_target = (info.attack_type == AF_FIRE and m:status("targeted by your dimensional bullseye")) and -1 or 0
+  info.bullseye_target = (info.attack_type == AF_FIRE and m:is("bullseye_target")) and -1 or 0
   return info
 end
 

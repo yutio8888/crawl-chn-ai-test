@@ -1364,7 +1364,7 @@ LUAFN(you_status)
         {
             if (which)
             {
-                if (inf.short_text == which)
+                if (inf.short_db_key == which || inf.short_text == which)
                     PLUARET(boolean, true);
             }
             else
