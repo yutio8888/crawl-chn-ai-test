@@ -1441,7 +1441,7 @@ LUAFN(you_zot_orb_monster)
     if (you.zot_orb_monster_known)
     {
         const string monname = pluralise_monster(
-                mons_type_name(you.zot_orb_monster, DESC_DBNAME)).c_str();
+                mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
         lua_pushstring(ls, monname.c_str());
     }
     else

@@ -127,7 +127,7 @@ LUAFN(dgn_level_name)
 
 LUAFN(dgn_zot_orb_type)
 {
-    lua_pushstring(ls, mons_type_name(you.zot_orb_monster, DESC_DBNAME).c_str());
+    lua_pushstring(ls, mons_type_name_en(you.zot_orb_monster, DESC_DBNAME).c_str());
     return 1;
 }
 

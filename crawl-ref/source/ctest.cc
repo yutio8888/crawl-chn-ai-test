@@ -82,11 +82,32 @@ static int crawl_script_args(lua_State *ls)
     return clua_stringtable(ls, crawl_state.script_args);
 }
 
+// Test-only deterministic injection for the three Zot orb variants.  This is
+// intentionally not part of the production CLua/DLua API.
+static int crawl_set_zot_orb_monster(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    monster_type type;
+    if (value == "fire")
+        type = MONS_ORB_OF_FIRE;
+    else if (value == "winter")
+        type = MONS_ORB_OF_WINTER;
+    else if (value == "entropy")
+        type = MONS_ORB_OF_ENTROPY;
+    else
+        return luaL_error(ls, "unknown Zot orb variant: %s", value.c_str());
+
+    you.zot_orb_monster = type;
+    you.zot_orb_monster_known = true;
+    return 0;
+}
+
 static const struct luaL_Reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
     { "test_success", crawl_test_success },
     { "script_args", crawl_script_args },
+    { "set_zot_orb_monster", crawl_set_zot_orb_monster },
     { nullptr, nullptr }
 };
 

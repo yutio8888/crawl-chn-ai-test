@@ -121,7 +121,8 @@ void seen_notable_thing(dungeon_feature_type which_thing, const coord_def& pos)
         _seen_portal(which_thing, pos);
     else if (which_thing == DNGN_ZOT_STATUE && !you.zot_orb_monster_known)
     {
-        const string monname = pluralise_monster(mons_type_name(you.zot_orb_monster, DESC_DBNAME)).c_str();
+        const string monname = pluralise_monster(
+            mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
         mark_milestone("zotorb", make_stringf("will face %s", monname.c_str()));
         you.zot_orb_monster_known = true;
     }
@@ -251,7 +252,8 @@ string overview_description_string(bool display)
     disp += _get_branches(display);
     if (you.zot_orb_monster_known)
     {
-        string mon_name = pluralise(mons_type_name(you.zot_orb_monster, DESC_DBNAME));
+        const string mon_name = mons_type_name(you.zot_orb_monster,
+                                               DESC_DBNAME);
         disp += make_stringf(T_("\nThe Realm of Zot is guarded by %s.\n"),
                              mon_name.c_str());
     }
