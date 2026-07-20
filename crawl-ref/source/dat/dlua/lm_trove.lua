@@ -295,72 +295,16 @@ function TroveMarker:write(marker, th)
   lmark.marshall_table(th, self.toll)
 end
 
--- We need to implement our own version of item_name because
--- self.props.toll_item is not really an item. It is a table that contains
--- all the important information about what the toll item should be.
+-- The toll is a persistent English protocol table, not a live item. Rebuild a
+-- temporary item in C++ only for display so comparisons and serialization
+-- never observe localized values.
 function TroveMarker:item_name(do_grammar)
   local item = get_toll(self).item
   if item == nil then
     error("item_name called on a toll without an item", 2)
   end
-
-  local s = ""
-  if item.quantity > 1 then
-    s = s .. item.quantity
-  end
-
-  if item.sub_type == "rune of Zot" then
-    if do_grammar == false then
-      -- See trove.des where the name of the rune is stuffed into this variable.
-      -- The format is "xxx rune of Zot". Not just "xxx".
-      -- Where "xxx" is like "slimy".
-      return item.ego_type
-    else
-      return crawl.grammar(item.ego_type, "the")
-    end
-  end
-
-  if item.sub_type == "horn of Geryon" then
-    if do_grammar == false then
-      return "horn of Geryon"
-    else
-      return "the horn of Geryon"
-    end
-  end
-
-  if item.base_type == "weapon" or item.base_type == "armour" then
-    if item.plus1 ~= false and item.plus1 ~= nil then
-      s = s .. " "
-      if item.plus1 > -1 then
-        s = s .. "+"
-      end
-      s = s .. item.plus1
-    end
-  end
-
-  if item.base_type == "potion" or item.base_type == "scroll" then
-    if item.quantity > 1 then
-      s = s .. " " .. item.base_type .. "s of"
-    else
-      s = s .. " " .. item.base_type .. " of"
-    end
-  end
-
-  if string.find(item.sub_type, "demon") then
-    s = s .. " " .. "demon weapon"
-  else
-    s = s .. " " .. item.sub_type
-  end
-
-  s = util.trim(s)
-
-  if string.find(s, "^%d+")
-     or string.find(item.sub_type, "dragon scales")
-     or do_grammar == false then
-    return s
-  else
-    return crawl.grammar(s, "a")
-  end
+  return items.trove_name(item.base_type, item.sub_type, item.quantity,
+                          item.plus1, item.ego_type, do_grammar ~= false)
 end
 
 function TroveMarker:search_for_rune(marker, pname, dry_run)

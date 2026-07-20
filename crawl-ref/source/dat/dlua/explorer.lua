@@ -315,13 +315,7 @@ function explorer.describe_mons(mons)
         feat_string = " (" .. table.concat(feats, ", ") .. ")"
     end
 
-    local name_string = "bug"
-
-    if mons.type_name == "player ghost" then
-        name_string = mons.type_name
-    else
-        name_string = mons.display_name
-    end
+    local name_string = mons.display_name
     if (force_notable or explorer.mons_notable(mons) or #feats > 0) then
         return name_string .. feat_string
     else

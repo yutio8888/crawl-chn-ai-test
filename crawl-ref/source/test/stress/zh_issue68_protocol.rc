@@ -1,0 +1,124 @@
+name = zh_issue68_protocol
+species = mu
+background = ck
+weapon = mace
+restart_after_game = false
+show_more = false
+
+Lua{
+local eol = string.char(13)
+local action = 0
+local trap_hook_arg = nil
+
+local function emit(case_id, text)
+    if text == nil then text = "<nil>" end
+    local one_line = tostring(text):gsub("\r\n", "\\n"):gsub("\n", "\\n")
+    crawl.stderr("FRAME_MARKER: " .. case_id .. " | " .. one_line .. eol)
+end
+
+function c_trap_is_safe(trap)
+    trap_hook_arg = trap
+    return trap == "permanent teleport"
+end
+
+local function replace_cloud(name)
+    local chunk = "local x,y=you.pos();" ..
+                  "dgn.delete_cloud(x,y);" ..
+                  "dgn.place_cloud(x,y," .. string.format("%q", name) .. ",100);" ..
+                  "return true"
+    return crawl.call_dlua(chunk)
+end
+
+function ready()
+    action = action + 1
+
+    if action == 1 then
+        crawl.enable_more(false)
+        crawl.set_sendkeys_errors(true)
+        emit("probe:issue68", "lang=" .. crawl.language())
+        crawl.sendkeys(".")
+    elseif action == 2 then
+        assert(replace_cloud("noxious fumes"), "could not place noxious fumes")
+        crawl.sendkeys(".")
+    elseif action == 3 then
+        crawl.sendkeys(".")
+    elseif action == 4 then
+        local cloud = view.cloud_at(0, 0)
+        assert(cloud == "noxious fumes", "unexpected cloud token: " .. tostring(cloud))
+        emit("protocol:cloud:noxious", cloud)
+
+        assert(replace_cloud("freezing vapour"), "could not place freezing vapour")
+        crawl.sendkeys(".")
+    elseif action == 5 then
+        crawl.sendkeys(".")
+    elseif action == 6 then
+        local cloud = view.cloud_at(0, 0)
+        assert(cloud == "freezing vapour", "unexpected cloud token: " .. tostring(cloud))
+        emit("protocol:cloud:freezing", cloud)
+
+        assert(replace_cloud("foul pestilence"), "could not place foul pestilence")
+        crawl.sendkeys(".")
+    elseif action == 7 then
+        crawl.sendkeys(".")
+    elseif action == 8 then
+        local cloud = view.cloud_at(0, 0)
+        assert(cloud == "foul pestilence", "unexpected cloud token: " .. tostring(cloud))
+        emit("protocol:cloud:foul", cloud)
+
+        assert(crawl.call_dlua([[
+            debug.goto_place("D:1")
+            dgn.reset_level()
+            dgn.fill_grd_area(1, 1, dgn.GXM - 2, dgn.GYM - 2, "floor")
+            return true
+        ]]), "could not reset trap test level")
+        local placed = crawl.call_dlua([[
+            local map = dgn.map_by_name("laboratory")
+            if not map then return -1 end
+            if not dgn.place_map(map, false, true) then return -2 end
+            local maps = dgn.maps_used_here()
+            local vault = maps[#maps]
+            if not vault then return -3 end
+            local p, size = vault:pos(), vault:size()
+            local x = p.x + math.floor(size.x / 2)
+            local y = p.y + math.floor(size.y / 2)
+            dgn.grid(x, y, "floor")
+            you.moveto(x, y)
+            return 1
+        ]])
+        assert(placed == 1, "could not prepare permanent teleport trap")
+        crawl.sendkeys(".")
+    elseif action == 9 then
+        crawl.sendkeys(".")
+    elseif action == 10 then
+        local trap_dx, trap_dy
+        for dx = -40, 40 do
+            for dy = -35, 35 do
+                if view.trap_at(dx, dy) == "permanent teleport" then
+                    trap_dx, trap_dy = dx, dy
+                    break
+                end
+            end
+            if trap_dx then break end
+        end
+        assert(trap_dx, "production vault trap was not observable")
+        local moved = crawl.call_dlua(
+            "local x,y=you.pos();" ..
+            "dgn.grid(x+" .. trap_dx .. "-1,y+" .. trap_dy .. ",'floor');" ..
+            "you.moveto(x+" .. trap_dx .. "-1,y+" .. trap_dy .. ");" ..
+            "return true")
+        assert(moved, "could not move next to production vault trap")
+        crawl.sendkeys(".")
+    elseif action == 11 then
+        crawl.sendkeys(".")
+    elseif action == 12 then
+        local trap = view.trap_at(1, 0)
+        assert(trap == "permanent teleport", "unexpected trap token: " .. tostring(trap))
+        local safe = view.is_safe_square(1, 0)
+        assert(safe and trap_hook_arg == trap,
+               "c_trap_is_safe did not receive canonical trap token")
+        emit("protocol:trap:permanent", trap .. " hook=" .. tostring(trap_hook_arg))
+        emit("phase:issue68:done", "done")
+        crawl.sendkeys(string.char(19))
+    end
+end
+}

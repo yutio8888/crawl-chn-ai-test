@@ -15087,6 +15087,9 @@ demon trident
 demon whip
 恶魔之鞭
 %%%%
+demon weapon
+恶魔武器
+%%%%
 dire flail
 双头链枷
 %%%%

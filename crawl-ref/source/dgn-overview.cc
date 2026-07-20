@@ -21,6 +21,7 @@
 #include "feature.h"
 #include "files.h"
 #include "libutil.h"
+#include "lang-en-guard.h"
 #include "macro.h"
 #include "menu.h"
 #include "message.h"
@@ -121,11 +122,17 @@ void seen_notable_thing(dungeon_feature_type which_thing, const coord_def& pos)
         _seen_portal(which_thing, pos);
     else if (which_thing == DNGN_ZOT_STATUE && !you.zot_orb_monster_known)
     {
-        const string monname = pluralise_monster(
-            mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
-        mark_milestone("zotorb", make_stringf("will face %s", monname.c_str()));
+        mark_milestone("zotorb", zot_orb_milestone_text());
         you.zot_orb_monster_known = true;
     }
+}
+
+string zot_orb_milestone_text()
+{
+    ScopedLangEn en;
+    const string monname = pluralise_monster(
+        mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
+    return make_stringf("will face %s", monname.c_str());
 }
 
 bool move_notable_thing(const coord_def& orig, const coord_def& dest)

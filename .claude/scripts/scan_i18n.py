@@ -150,6 +150,215 @@ DISPLAY_TEXT_BUILDERS = {
     },
 }
 
+# Issue 68 protocol/display producer registry. Each artifact is bounded by two
+# production anchors so a convenient token elsewhere in the file (a decoy)
+# cannot satisfy the contract. Required producer cardinality is fail-closed;
+# forbidden localized producers must be absent from the same scope.
+PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
+    ('zot-dgn', ({
+        'file': 'l-dgnlvl.cc', 'start': r'LUAFN\(dgn_zot_orb_type\)',
+        'end': r'const\s+struct\s+luaL_Reg\s+dgn_level_dlib',
+        'required': ((r'mons_type_name_en\s*\(', 1),),
+        'forbidden': (r'mons_type_name\s*\(',),
+        'localized': 'mons_type_name(',
+    },)),
+    ('zot-you', ({
+        'file': 'l-you.cc', 'start': r'LUAFN\(you_zot_orb_monster\)',
+        'end': r'static\s+const\s+struct\s+luaL_Reg\s+you_clib',
+        'required': ((r'mons_type_name_en\s*\(', 1),
+                     (r'pluralise_monster\s*\(', 1),
+                     (r'ScopedLangEn\s+en\s*;', 1)),
+        'forbidden': (r'mons_type_name\s*\(',),
+        'localized': 'mons_type_name(',
+    },)),
+    ('zot-milestone', ({
+        'file': 'dgn-overview.cc',
+        'start': r'void\s+seen_notable_thing\s*\(',
+        'end': r'bool\s+move_notable_thing\s*\(',
+        'required': ((r'mons_type_name_en\s*\(', 1),
+                     (r'pluralise_monster\s*\(', 1),
+                     (r'ScopedLangEn\s+en\s*;', 1)),
+        'forbidden': (r'mons_type_name\s*\(',),
+        'localized': 'mons_type_name(',
+    },)),
+    ('zot-overview', ({
+        'file': 'dgn-overview.cc',
+        'start': r'string\s+overview_description_string\s*\(',
+        'end': r'static\s+string\s+_pad_cs\s*\(',
+        'required': ((r'mons_type_name\s*\(', 1),
+                     (r'T_\s*\(\s*"\\nThe Realm of Zot', 1)),
+        'forbidden': (r'mons_type_name_en\s*\(', r'pluralise\s*\('),
+        'localized': 'mons_type_name_en(',
+    },)),
+    ('status-you', ({
+        'file': 'l-you.cc', 'start': r'LUAFN\(you_status\)',
+        'end': r'LUAFN\(you_quiver_valid\)',
+        'required': ((r'inf\.short_db_key\s*==\s*which', 1),
+                     (r'inf\.short_text\s*==\s*which', 1)),
+        'forbidden': (r'which\s*==\s*inf\.short_text\s*\)',),
+        'localized': 'which == inf.short_text)',
+    },)),
+    ('status-mon', ({
+        'file': 'l-moninf.cc', 'start': r'LUAFN\(moninf_get_status\)',
+        'end': r'LUAFN\(moninf_get_name\)',
+        'required': ((r'vector<string>\s+display_status\s*=\s*mi->attributes', 1),
+                     (r'ScopedLangEn\s+en\s*;', 1),
+                     (r'english_status\s*=\s*mi->attributes', 1)),
+        'forbidden': (r'vector<string>\s+english_status\s*=\s*display_status',),
+        'localized': 'vector<string> english_status = display_status',
+    },)),
+    ('mon-clua', ({
+        'file': 'l-moninf.cc', 'start': r'LUAFN\(moninf_get_name\)',
+        'end': r'LUAFN\(moninf_get_display_name\)',
+        'required': ((r'ScopedLangEn\s+en\s*;', 1),
+                     (r'mi->full_name\s*\(', 1)),
+        'forbidden': (r'zh_monster_name\s*\(',),
+        'localized': 'zh_monster_name(',
+    },)),
+    ('mon-dlua', (
+        {
+            'file': 'l-mons.cc', 'start': r'^MDEF\(name\)',
+            'end': r'^MDEF\(unique\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'zh_monster_name\s*\(',),
+            'localized': 'zh_monster_name(',
+        },
+        {
+            'file': 'l-mons.cc', 'start': r'MDEF\(base_name\)',
+            'end': r'MDEF\(full_name\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'zh_monster_name\s*\(',),
+            'localized': 'zh_monster_name(',
+        },
+        {
+            'file': 'l-mons.cc', 'start': r'MDEF\(full_name\)',
+            'end': r'MDEF\(display_name\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'zh_monster_name\s*\(',),
+            'localized': 'zh_monster_name(',
+        },
+        {
+            'file': 'l-mons.cc', 'start': r'MDEF\(type_name\)',
+            'end': r'MDEF\(entry_name\)',
+            'required': ((r'mons_type_name_en\s*\(', 1),),
+            'forbidden': (r'mons_type_name\s*\(',),
+            'localized': 'mons_type_name(',
+        },
+    )),
+    ('mon-display', (
+        {
+            'file': 'l-moninf.cc',
+            'start': r'LUAFN\(moninf_get_display_name\)',
+            'end': r'LUAFN\(moninf_get_title_name\)',
+            'required': ((r'mi->full_name\s*\(', 1),),
+            'forbidden': (r'ScopedLangEn', r'mons_type_name_en\s*\('),
+            'localized': 'ScopedLangEn',
+        },
+        {
+            'file': 'l-mons.cc', 'start': r'MDEF\(display_name\)',
+            'end': r'MDEF\(title_name\)',
+            'required': ((r'mons->full_name\s*\(', 1),),
+            'forbidden': (r'ScopedLangEn', r'mons_type_name_en\s*\('),
+            'localized': 'ScopedLangEn',
+        },
+    )),
+    ('item-clua', (
+        {
+            'file': 'l-item.cc',
+            'start': r'static\s+int\s+l_item_do_subtype_en\s*\(',
+            'end': r'/\*\*\*\s+What is the subtype',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'const\s+string\s+subtype\s*=\s*_item_subtype[^;]+;\s*ScopedLangEn',),
+            'localized': 'const string subtype = _item_subtype(*item, armour_slots); ScopedLangEn',
+        },
+        {
+            'file': 'l-item.cc',
+            'start': r'static\s+int\s+l_item_do_ego_en\s*\(',
+            'end': r'/\*\*\*\s+What is the ego',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'const\s+string\s+ego\s*=\s*_item_ego[^;]+;\s*ScopedLangEn',),
+            'localized': 'const string ego = _item_ego(*item, terse); ScopedLangEn',
+        },
+        {
+            'file': 'l-item.cc', 'start': r'IDEF\(weap_skill_en\)',
+            'end': r'IDEF\(is_ranged\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (r'return\s+_push_weap_skill[^;]+;\s*ScopedLangEn',),
+            'localized': 'return _push_weap_skill(ls, item); ScopedLangEn',
+        },
+    )),
+    ('item-dlua', (
+        {
+            'file': 'l-item.cc', 'start': r'IDEF\(base_type\)',
+            'end': r'IDEF\(sub_type\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (), 'localized': 'base_type_string(',
+        },
+        {
+            'file': 'l-item.cc', 'start': r'IDEF\(sub_type\)',
+            'end': r'IDEF\(ego_type\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (), 'localized': 'sub_type_string(',
+        },
+        {
+            'file': 'l-item.cc', 'start': r'IDEF\(ego_type\)',
+            'end': r'IDEF\(ego_type_terse\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (), 'localized': 'ego_type_string(',
+        },
+        {
+            'file': 'l-item.cc', 'start': r'IDEF\(ego_type_terse\)',
+            'end': r'IDEF\(artefact_name\)',
+            'required': ((r'ScopedLangEn\s+en\s*;', 1),),
+            'forbidden': (), 'localized': 'ego_type_string(',
+        },
+    )),
+    ('item-marker', (
+        {
+            'file': 'l-item.cc',
+            'start': r'static\s+int\s+l_item_do_marker_identity\s*\(',
+            'end': r'/\*\*\*\s+Get this item',
+            'required': ((r'canonical\.quantity\s*=\s*1\s*;', 1),
+                         (r'canonical\.inscription\.clear\s*\(\s*\)', 1),
+                         (r'ScopedLangEn\s+en\s*;', 1),
+                         (r'canonical\.name\s*\(\s*DESC_PLAIN\s*,\s*false\s*,\s*true\s*,\s*false\s*\)', 1)),
+            'forbidden': (r'_item_name\s*\(',),
+            'localized': '_item_name(',
+        },
+        {
+            'file': 'dat/dlua/lm_trig.lua',
+            'start': r'function\s+DgnTriggerer:capture_item_target\s*\(',
+            'end': r'function\s+DgnTriggerer:added\s*\(',
+            'required': ((r'items\[1\]\.marker_identity\s*\(\s*\)', 1),),
+            'forbidden': (r'items\[1\]\.name\s*\(',),
+            'localized': 'items[1].name(',
+        },
+    )),
+    ('trap', (
+        {
+            'file': 'traps.cc', 'start': r'bool\s+trap_def::is_safe\s*\(',
+            'end': r'bool\s+chaos_lace_criteria\s*\(',
+            'required': ((r'trap_name_en\s*\(', 1),),
+            'forbidden': (r'trap_name\s*\(',),
+            'localized': 'trap_name(',
+        },
+        {
+            'file': 'l-view.cc', 'start': r'LUAFN\(view_trap_at\)',
+            'end': r'/\*\*\*\s+Is it safe here',
+            'required': ((r'trap_name_en\s*\(', 1),),
+            'forbidden': (r'trap_name\s*\(',),
+            'localized': 'trap_name(',
+        },
+    )),
+    ('cloud', ({
+        'file': 'l-view.cc', 'start': r'LUAFN\(view_cloud_at\)',
+        'end': r'/\*\*\*\s+What kind of trap',
+        'required': ((r'cloud_type_name_en\s*\(', 1),),
+        'forbidden': (r'cloud_type_name\s*\(',),
+        'localized': 'cloud_type_name(',
+    },)),
+])
+
 DISPLAY_SKIP_FILE_RE = re.compile(r'^(?:wiz-|dbg-)')
 
 # Wrappers which translate a literal key internally (for example via
@@ -3616,6 +3825,71 @@ def cmd_validate_post_coder_source_handoff(args):
     return 0
 
 
+def _protocol_boundary_scope(source, artifact):
+    starts = list(re.finditer(artifact['start'], source, re.MULTILINE))
+    if len(starts) != 1:
+        return None, (f"start anchor expected exactly once, found "
+                      f"{len(starts)}")
+    ends = list(re.finditer(artifact['end'], source[starts[0].end():],
+                           re.MULTILINE))
+    if len(ends) < 1:
+        return None, "end anchor not found after start anchor"
+    end = starts[0].end() + ends[0].start()
+    return source[starts[0].end():end], None
+
+
+def protocol_boundary_findings(source_dir, only=None):
+    """Validate registered Issue 68 producer scopes and cardinality."""
+    findings = []
+    contract_ids = [only] if only else list(PROTOCOL_BOUNDARY_CONTRACTS)
+    for contract_id in contract_ids:
+        artifacts = PROTOCOL_BOUNDARY_CONTRACTS.get(contract_id)
+        if artifacts is None:
+            findings.append((contract_id, '<registry>',
+                             'unknown registry contract'))
+            continue
+        for index, artifact in enumerate(artifacts, 1):
+            path = os.path.join(source_dir, artifact['file'])
+            label = f"{artifact['file']}#{index}"
+            if not os.path.isfile(path):
+                findings.append((contract_id, label, 'artifact missing'))
+                continue
+            with open(path, 'r', encoding='utf-8', errors='replace') as f:
+                source = f.read()
+            scope, error = _protocol_boundary_scope(source, artifact)
+            if error:
+                findings.append((contract_id, label, error))
+                continue
+            for pattern, expected in artifact['required']:
+                count = len(re.findall(pattern, scope, re.MULTILINE))
+                if count != expected:
+                    findings.append((
+                        contract_id, label,
+                        f"required producer {pattern!r}: expected {expected}, "
+                        f"found {count}"))
+            for pattern in artifact['forbidden']:
+                count = len(re.findall(pattern, scope, re.MULTILINE))
+                if count:
+                    findings.append((
+                        contract_id, label,
+                        f"forbidden localized producer {pattern!r}: found "
+                        f"{count}"))
+    return findings
+
+
+def cmd_protocol_boundaries(args):
+    findings = protocol_boundary_findings(args.source_dir, args.only)
+    print("--- scan_i18n.py protocol-boundaries ---")
+    if findings:
+        for contract_id, artifact, detail in findings:
+            print(f"PROTOCOL001 {contract_id} {artifact}: {detail}")
+        print(f"FAIL: {len(findings)} registered contract violation(s)")
+        return 1
+    count = 1 if args.only else len(PROTOCOL_BOUNDARY_CONTRACTS)
+    print(f"OK: {count} registered protocol/display contract(s) passed")
+    return 0
+
+
 def main():
     parser = argparse.ArgumentParser(
         description="T_() world translation blind-spot scanner"
@@ -3716,6 +3990,13 @@ def main():
     p_ap.add_argument("source_dir", help="Root of source tree")
     p_ap.add_argument("--strict", action="store_true",
                       help="Only strict (zero-FP) rules")
+
+    p_pb = subparsers.add_parser(
+        "protocol-boundaries",
+        help="Validate registered Issue 68 protocol/display producers")
+    p_pb.add_argument("source_dir", help="Root of Crawl source tree")
+    p_pb.add_argument("--only", choices=tuple(PROTOCOL_BOUNDARY_CONTRACTS),
+                      help="Validate one registry row (fixture support)")
 
     # species-consistency
     p_sc = subparsers.add_parser(
@@ -3941,6 +4222,8 @@ def main():
         return cmd_validate_terms(args)
     elif args.command == "anti-patterns":
         return cmd_anti_patterns(args)
+    elif args.command == "protocol-boundaries":
+        return cmd_protocol_boundaries(args)
     elif args.command == "species-consistency":
         return cmd_species_consistency(args)
     elif args.command == "monster-compound-consistency":

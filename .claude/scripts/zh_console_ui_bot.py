@@ -352,7 +352,8 @@ def inventory_letter_for(text: str, item_name: str) -> str:
 
 
 COMBAT_ACTION_RE = re.compile(
-    r'你(?P<action>[^\r\n。！.!]{1,80})了老鼠(?P<punct>[。！.!])')
+    r'你(?P<action>[^\r\n。！.!]{1,80})了老鼠'
+    r'(?: for \d+)?(?P<punct>[。！.!])')
 
 
 def combat_attack_matches(text: str):
@@ -410,10 +411,10 @@ def run_workflows(bot: PtyBot) -> None:
     for turn in range(1, 13):
         step = drain_more(bot, bot.send(b'\t', 1.5))
         combat_text += step
-        if has_ascii_combat_punctuation(step):
+        if has_ascii_combat_punctuation(combat_text):
             raise BotFailure(
                 'workflow:combat: Chinese attack ended in ASCII punctuation')
-        if not attacked and has_combat_attack_evidence(step):
+        if not attacked and has_combat_attack_evidence(combat_text):
             evidence.record('workflow:combat:attack', combat_text, ('老鼠',),
                             ('You hit', 'You miss', 'rat', '你攻击了老鼠.'),
                             turns=turn)

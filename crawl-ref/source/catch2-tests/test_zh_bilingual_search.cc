@@ -20,8 +20,10 @@
 #include "AppHdr.h"
 
 #include <cstring>
+#include <initializer_list>
 #include <string>
 
+#include "clua.h"                    // clua
 #include "directn.h"                 // feature_description(feat,trap)
 #include "dungeon-feature-type.h"    // DNGN_* feature types
 #include "item-def.h"                 // item_def
@@ -32,6 +34,7 @@
 #include "lang-en-guard.h"            // ScopedLangEn
 #include "options.h"                  // Options, lang_t
 #include "potion-type.h"              // POT_HEAL_WOUNDS
+#include "stash.h"                    // stash_annotate_item
 #include "test_zh_fixture.h"
 
 // =========================================================================
@@ -43,6 +46,12 @@
 // (e.g. "potion of heal wounds") rather than a generic descriptor.
 static item_def _make_identified_item(object_class_type type, int sub_type)
 {
+    static const bool properties_initialized = []() {
+        init_properties();
+        return true;
+    }();
+    (void) properties_initialized;
+
     item_def item;
     item.base_type = type;
     item.sub_type  = sub_type;
@@ -50,6 +59,32 @@ static item_def _make_identified_item(object_class_type type, int sub_type)
     // Mark identified so name_aux includes both category and specific type.
     item.flags |= ISFLAG_IDENTIFIED;
     return item;
+}
+
+static string _stash_annotation(const item_def &item)
+{
+    static bool stash_lua_loaded = false;
+    if (!stash_lua_loaded)
+    {
+        // fake-main.hpp constructs CLua but does not run normal startup.cc,
+        // so initialise item property indexes and install the production item
+        // userdata bindings before loading the builtin annotation function.
+        clua.init_libraries();
+        REQUIRE_FALSE(clua.execfile("clua/stash.lua", false, false));
+        INFO("stash.lua error: " << clua.error);
+        REQUIRE(clua.error.empty());
+        stash_lua_loaded = true;
+    }
+    return stash_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
+}
+
+static void _require_annotation_tokens(
+    const item_def &item, std::initializer_list<const char *> tokens)
+{
+    const string annotation = _stash_annotation(item);
+    INFO("stash annotation: " << annotation);
+    for (const char *token : tokens)
+        REQUIRE(annotation.find(token) != string::npos);
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
@@ -109,6 +144,78 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         INFO("weapon en name: \"" << en << "\"");
         REQUIRE(en.find("broad") != string::npos);
         REQUIRE(en.find("axe") != string::npos);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh-search: stash annotations keep canonical EN tokens",
+                 "[zh-search][stash-annotation]")
+{
+    SECTION("normal armour has no ego and does not concatenate nil")
+    {
+        const item_def boots = _make_identified_item(OBJ_ARMOUR, ARM_BOOTS);
+        _require_annotation_tokens(boots,
+            {"{boots armour}", "{boots armor}", "{auxiliary armour}"});
+    }
+
+    SECTION("throwing ammunition")
+    {
+        const item_def javelin =
+            _make_identified_item(OBJ_MISSILES, MI_JAVELIN);
+        _require_annotation_tokens(javelin,
+            {"{throwable}", "{Throwing}", "{missile}"});
+        REQUIRE(_stash_annotation(javelin).find("-handed}") == string::npos);
+    }
+
+    SECTION("resistance potion and revelation scroll")
+    {
+        const item_def resistance =
+            _make_identified_item(OBJ_POTIONS, POT_RESISTANCE);
+        _require_annotation_tokens(resistance,
+            {"{rF+ rC+ rElec rPois rCorr}", "{fire resistance}",
+             "{cold resistance}", "{poison resistance}"});
+
+        const item_def revelation =
+            _make_identified_item(OBJ_SCROLLS, SCR_REVELATION);
+        _require_annotation_tokens(revelation,
+            {"{sInv}", "{magic mapping}", "{scroll}"});
+    }
+
+    SECTION("fire staff")
+    {
+        const item_def staff = _make_identified_item(OBJ_STAVES, STAFF_FIRE);
+        _require_annotation_tokens(staff,
+            {"{weapon}", "{rF+}", "{fire resistance}", "{magical staff}"});
+    }
+
+    SECTION("flying armour ego")
+    {
+        item_def robe = _make_identified_item(OBJ_ARMOUR, ARM_ROBE);
+        robe.brand = SPARM_FLYING;
+        _require_annotation_tokens(robe,
+            {"{flight}", "{Fly}", "{body armour}", "{body armor}"});
+    }
+
+    SECTION("jewellery ego and plus vocabulary")
+    {
+        const item_def flight_ring =
+            _make_identified_item(OBJ_JEWELLERY, RING_FLIGHT);
+        _require_annotation_tokens(flight_ring, {"{Fly}", "{jewellery}"});
+
+        item_def protection =
+            _make_identified_item(OBJ_JEWELLERY, RING_PROTECTION);
+        protection.plus = 3;
+        _require_annotation_tokens(protection, {"{AC+3}", "{jewellery}"});
+    }
+
+    SECTION("golden dragon armour")
+    {
+        const item_def armour =
+            _make_identified_item(OBJ_ARMOUR, ARM_GOLDEN_DRAGON_ARMOUR);
+        _require_annotation_tokens(armour,
+            {"{rF+ rC+ rPois}", "{fire resistance}",
+             "{cold resistance}", "{poison resistance}",
+             "{body armour}", "{body armor}"});
     }
 }
 

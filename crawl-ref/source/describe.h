@@ -124,6 +124,7 @@ string artefact_inscription(const item_def& item);
 void add_inscription(item_def &item, string inscrip);
 
 string trap_name(trap_type trap);
+string trap_name_en(trap_type trap);
 string full_trap_name(trap_type trap);
 int str_to_trap(const string &s);
 

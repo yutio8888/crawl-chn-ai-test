@@ -1440,8 +1440,9 @@ LUAFN(you_zot_orb_monster)
 {
     if (you.zot_orb_monster_known)
     {
+        ScopedLangEn en;
         const string monname = pluralise_monster(
-                mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
+            mons_type_name_en(you.zot_orb_monster, DESC_DBNAME));
         lua_pushstring(ls, monname.c_str());
     }
     else

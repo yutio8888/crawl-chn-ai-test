@@ -73,16 +73,17 @@ function ch_stash_search_annotate_item(it)
     end
   end
 
-  if it.ego_en(true) ~= "" and it.ego_en(true) ~= "unknown" then
+  local ego = it.ego_en(true) or ""
+  if ego ~= "" and ego ~= "unknown" then
     if it.class(true) == "jewellery" then
-      annot = annot .. "{" .. it.ego_en(true)
-      if it.ego_en(true) == "Ice" then
+      annot = annot .. "{" .. ego
+      if ego == "Ice" then
         annot = annot .. " rC+ rF-"
-      elseif it.ego_en(true) == "Fire" then
+      elseif ego == "Fire" then
         annot = annot .. " rF+ rC-"
-      elseif it.ego_en(true) == "Str" or it.ego_en(true) == "Int"
-         or it.ego_en(true) == "Dex" or it.ego_en(true) == "Slay"
-         or it.ego_en(true) == "EV" or it.ego_en(true) == "AC" then
+      elseif ego == "Str" or ego == "Int"
+         or ego == "Dex" or ego == "Slay"
+         or ego == "EV" or ego == "AC" then
         if it.plus == nil then
           annot = annot .. "+"
         else
@@ -91,10 +92,10 @@ function ch_stash_search_annotate_item(it)
       end
       annot = annot .. "} "
     else
-      if it.ego_en(true) == "Fly" then
+      if ego == "Fly" then
         annot = annot .. "{flight} "
       end
-      annot = annot .. "{" .. it.ego_en(true) .. "} "
+      annot = annot .. "{" .. ego .. "} "
     end
   end
 

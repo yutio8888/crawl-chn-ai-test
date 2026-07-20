@@ -18,6 +18,7 @@ int  overview_knows_num_portals(dungeon_feature_type portal);
 void display_overview();
 void unnotice_feature(const level_pos &pos);
 string overview_description_string(bool display);
+string zot_orb_milestone_text();
 void enter_branch(branch_type branch, level_id from);
 void mark_corrupted_level(level_id li);
 void seen_tracked_feature(dungeon_feature_type feat);

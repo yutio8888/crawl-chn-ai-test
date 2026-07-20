@@ -370,9 +370,9 @@ function c_message(text, channel) end
 --
 -- This hook can be defined to extend trap safety checks.
 --
--- Crawl will call this hook with the trap name when the player tries to move
--- onto a tile with a trap. A failed check will result in the user being
--- prompted if they try to move onto the trap.
+-- Crawl will call this hook with the canonical English base trap name when the
+-- player tries to move onto a tile with a trap. A failed check will result in
+-- the user being prompted if they try to move onto the trap.
 --
 -- @tparam string trapname
 -- @treturn boolean

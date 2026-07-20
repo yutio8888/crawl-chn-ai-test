@@ -150,7 +150,7 @@ if [ -n "$C2_REPORT" ] && [ -f "$C2_REPORT" ]; then
     fi
 fi
 
-# RC shards have their own exact 11-case manifest; panels/workflows enforce
+# RC shards have their own exact 17-case manifest; panels/workflows enforce
 # separate rendered assertions. Verify the bot-only checker accepts the full
 # manifest and rejects a mutation with one marker removed.
 BOT_LOG="$TMP_ROOT/bot-manifest.log"
@@ -162,6 +162,12 @@ FRAME_MARKER: god:Trog | 特洛格欢迎你
 FRAME_MARKER: phase:ui:done | ok
 FRAME_MARKER: probe:spells | lang=zh 你攻击
 FRAME_MARKER: phase:spells:done | ok
+FRAME_MARKER: probe:issue68 | lang=zh
+FRAME_MARKER: protocol:cloud:noxious | noxious fumes
+FRAME_MARKER: protocol:cloud:freezing | freezing vapour
+FRAME_MARKER: protocol:cloud:foul | foul pestilence
+FRAME_MARKER: protocol:trap:permanent | permanent teleport hook=permanent teleport
+FRAME_MARKER: phase:issue68:done | ok
 FRAME_MARKER: probe:issue48 | lang=zh
 FRAME_MARKER: path1:unid_appearance_msg | 歌唱之剑
 FRAME_MARKER: path3:enchantress_msg | 妖术女王
@@ -169,9 +175,9 @@ FRAME_MARKER: phase:issue48:done | ok
 BOTLOG
 if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
     --bot-stderr "$BOT_LOG" --bot-manifest all >/dev/null; then
-    pass "Bot checker accepts the exact 11-case manifest"
+    pass "Bot checker accepts the exact 17-case manifest"
 else
-    fail "Bot checker rejected the exact 11-case manifest"
+    fail "Bot checker rejected the exact 17-case manifest"
 fi
 
 sed '/path3:enchantress_msg/d' "$BOT_LOG" > "$BOT_LOG.mutated"

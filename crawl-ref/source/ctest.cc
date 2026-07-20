@@ -20,8 +20,12 @@
 
 #include "clua.h"
 #include "cluautil.h"
+#include "cloud.h"
 #include "coordit.h"
+#include "database.h"
+#include "describe.h"
 #include "dlua.h"
+#include "dgn-overview.h"
 #include "end.h"
 #include "errors.h"
 #include "files.h"
@@ -36,8 +40,11 @@
 #include "mon-place.h"
 #include "mon-util.h"
 #include "ng-init.h"
+#include "options.h"
+#include "religion.h"
 #include "state.h"
 #include "stringutil.h"
+#include "tags.h"
 #include "xom.h"
 
 static const string test_dir = "test";
@@ -84,9 +91,33 @@ static int crawl_script_args(lua_State *ls)
 
 // Test-only deterministic injection for the three Zot orb variants.  This is
 // intentionally not part of the production CLua/DLua API.
+static bool zot_test_state_saved = false;
+static monster_type saved_zot_orb_monster;
+static bool saved_zot_orb_monster_known;
+static lang_t saved_zot_language;
+
 static int crawl_set_zot_orb_monster(lua_State *ls)
 {
     const string value = luaL_checkstring(ls, 1);
+    if (value == "restore")
+    {
+        if (!zot_test_state_saved)
+            return luaL_error(ls, "Zot test state was not saved");
+        you.zot_orb_monster = saved_zot_orb_monster;
+        you.zot_orb_monster_known = saved_zot_orb_monster_known;
+        Options.language = saved_zot_language;
+        zot_test_state_saved = false;
+        return 0;
+    }
+
+    if (!zot_test_state_saved)
+    {
+        saved_zot_orb_monster = you.zot_orb_monster;
+        saved_zot_orb_monster_known = you.zot_orb_monster_known;
+        saved_zot_language = Options.language;
+        zot_test_state_saved = true;
+    }
+
     monster_type type;
     if (value == "fire")
         type = MONS_ORB_OF_FIRE;
@@ -102,12 +133,181 @@ static int crawl_set_zot_orb_monster(lua_State *ls)
     return 0;
 }
 
+// Test-only language switch for exercising language-stable serialized Lua
+// identities in one ctest process. It is not installed in production DLua.
+static int crawl_set_test_language(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    if (value == "en")
+        Options.language = lang_t::EN;
+    else if (value == "zh")
+        Options.language = lang_t::ZH;
+    else
+        return luaL_error(ls, "unknown test language: %s", value.c_str());
+    return 0;
+}
+
+static int crawl_set_test_duration(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    duration_type duration;
+    if (value == "immotile")
+        duration = DUR_NO_MOMENTUM;
+    else if (value == "mighty")
+        duration = DUR_MIGHT;
+    else if (value == "slow")
+        duration = DUR_SLOW;
+    else
+        return luaL_error(ls, "unknown test duration: %s", value.c_str());
+    you.duration[duration] = luaL_optinteger(ls, 2, 20);
+    return 0;
+}
+
+static int crawl_set_test_rune(lua_State *ls)
+{
+    const int rune = luaL_safe_checkint(ls, 1);
+    if (rune < 0 || rune >= NUM_RUNE_TYPES)
+        return luaL_error(ls, "unknown test rune: %d", rune);
+    you.runes.set(rune, lua_toboolean(ls, 2));
+    return 0;
+}
+
+static int crawl_zot_overview(lua_State *ls)
+{
+    lua_pushstring(ls, overview_description_string(false).c_str());
+    return 1;
+}
+
+static int crawl_zot_milestone(lua_State *ls)
+{
+    lua_pushstring(ls, zot_orb_milestone_text().c_str());
+    return 1;
+}
+
+static int crawl_test_hint_text(lua_State *ls)
+{
+    lua_pushstring(ls, getHintString(luaL_checkstring(ls, 1)).c_str());
+    return 1;
+}
+
+static int crawl_test_speak_text(lua_State *ls)
+{
+    lua_pushstring(ls, getSpeakString(luaL_checkstring(ls, 1)).c_str());
+    return 1;
+}
+
+static int crawl_test_long_description(lua_State *ls)
+{
+    lua_pushstring(ls, getLongDescription(luaL_checkstring(ls, 1)).c_str());
+    return 1;
+}
+
+static int crawl_test_trap_display_name(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    if (value != "permanent teleport")
+        return luaL_error(ls, "unknown test trap: %s", value.c_str());
+    lua_pushstring(ls, trap_name(TRAP_TELEPORT_PERMANENT).c_str());
+    return 1;
+}
+
+static int crawl_test_cloud_display_name(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    cloud_type type;
+    if (value == "noxious fumes")
+        type = CLOUD_MEPHITIC;
+    else if (value == "freezing vapour")
+        type = CLOUD_COLD;
+    else if (value == "foul pestilence")
+        type = CLOUD_MIASMA;
+    else
+        return luaL_error(ls, "unknown test cloud: %s", value.c_str());
+    lua_pushstring(ls, cloud_type_name(type).c_str());
+    return 1;
+}
+
+static bool god_test_state_saved = false;
+static god_type saved_test_god;
+
+static int crawl_set_test_god(lua_State *ls)
+{
+    const string value = luaL_checkstring(ls, 1);
+    if (value == "restore")
+    {
+        if (!god_test_state_saved)
+            return luaL_error(ls, "god test state was not saved");
+        you.religion = saved_test_god;
+        god_test_state_saved = false;
+        return 0;
+    }
+    const god_type god = str_to_god(value);
+    if (god == GOD_NO_GOD)
+        return luaL_error(ls, "unknown test god: %s", value.c_str());
+    if (!god_test_state_saved)
+    {
+        saved_test_god = you.religion;
+        god_test_state_saved = true;
+    }
+    you.religion = god;
+    return 0;
+}
+
+// Round-trip one DLua marker through its production write/read methods using
+// the same lmark/file marshalling code as a save. The byte buffer is confined
+// to ctest and does not create a second serialization format.
+static int _roundtrip_dlua_marker(lua_State *ls, const char *class_name)
+{
+    luaL_checktype(ls, 1, LUA_TTABLE);
+
+    vector<unsigned char> data;
+    writer out(&data);
+    lua_getglobal(ls, class_name);
+    lua_getfield(ls, -1, "write");
+    lua_pushvalue(ls, 1);
+    lua_pushnil(ls);
+    lua_pushlightuserdata(ls, &out);
+    lua_call(ls, 3, 0);
+
+    reader in(data, TAG_MINOR_VERSION);
+    lua_getfield(ls, -1, "read");
+    lua_pushvalue(ls, -2);
+    lua_pushnil(ls);
+    lua_pushlightuserdata(ls, &in);
+    lua_call(ls, 3, 1);
+    lua_remove(ls, -2);
+    return 1;
+}
+
+static int crawl_roundtrip_dgn_triggerer(lua_State *ls)
+{
+    return _roundtrip_dlua_marker(ls, "DgnTriggerer");
+}
+
+static int crawl_roundtrip_trove_marker(lua_State *ls)
+{
+    return _roundtrip_dlua_marker(ls, "TroveMarker");
+}
+
 static const struct luaL_Reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
     { "test_success", crawl_test_success },
     { "script_args", crawl_script_args },
     { "set_zot_orb_monster", crawl_set_zot_orb_monster },
+    { "set_test_language", crawl_set_test_language },
+    { "set_test_duration", crawl_set_test_duration },
+    { "set_test_rune", crawl_set_test_rune },
+    { "zot_overview", crawl_zot_overview },
+    { "zot_milestone", crawl_zot_milestone },
+    { "test_hint_text", crawl_test_hint_text },
+    { "test_speak_text", crawl_test_speak_text },
+    { "test_long_description", crawl_test_long_description },
+    { "test_trap_display_name", crawl_test_trap_display_name },
+    { "test_cloud_display_name", crawl_test_cloud_display_name },
+    { "set_test_god", crawl_set_test_god },
+    { "roundtrip_dgn_triggerer", crawl_roundtrip_dgn_triggerer },
+    { "roundtrip_trove_marker", crawl_roundtrip_trove_marker },
     { nullptr, nullptr }
 };
 

@@ -189,6 +189,9 @@ run_concat_advisory() {
     run_check "Anti-patterns (strict)" blocking \
         python3 "$SCRIPT_DIR/scan_i18n.py" anti-patterns crawl-ref/source/ \
         --strict
+    run_check "Registered protocol/display boundaries" blocking \
+        python3 "$SCRIPT_DIR/scan_i18n.py" protocol-boundaries \
+        crawl-ref/source/
     run_check "Species term consistency" blocking \
         python3 "$SCRIPT_DIR/scan_i18n.py" species-consistency \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

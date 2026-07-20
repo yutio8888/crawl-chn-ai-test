@@ -124,6 +124,9 @@ run_scoped_scanner() {
         crawl-ref/source/mon-death.cc crawl-ref/source/tags.cc
     run_check "Anti-patterns (strict + lenient)" \
         python3 "$SCRIPT_DIR/scan_i18n.py" anti-patterns crawl-ref/source/
+    run_check "Registered protocol/display boundaries" \
+        python3 "$SCRIPT_DIR/scan_i18n.py" protocol-boundaries \
+        crawl-ref/source/
     run_scoped_scanner "std::string in variadic args (Issue #42 UB, tree-sitter AST)" \
         varargs python3 "$SCRIPT_DIR/scan_varargs_string.py" \
         --format text --require-parser

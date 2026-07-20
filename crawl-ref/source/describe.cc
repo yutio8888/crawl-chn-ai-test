@@ -945,10 +945,15 @@ static const char *trap_names[] =
 
 string trap_name(trap_type trap)
 {
+    return T_(trap_name_en(trap).c_str());
+}
+
+string trap_name_en(trap_type trap)
+{
     COMPILE_CHECK(ARRAYSZ(trap_names) == NUM_TRAPS);
 
     if (trap >= 0 && trap < NUM_TRAPS)
-        return T_(trap_names[trap]);
+        return trap_names[trap];
     return "";
 }
 

@@ -16,9 +16,11 @@
 #include "colour.h"
 #include "coord.h"
 #include "describe.h"
+#include "english.h"
 #include "env.h"
 #include "evoke.h" // evoke_damage_string()
 #include "invent.h"
+#include "item-name.h"
 #include "item-prop.h"
 #include "item-status-flag-type.h"
 #include "items.h"
@@ -458,6 +460,42 @@ static int l_item_do_name(lua_State *ls)
     return 1;
 }
 
+static int l_item_do_name_en(lua_State *ls)
+{
+    ASSERT_DLUA;
+    UDATA_ITEM(item);
+
+    if (item)
+    {
+        ScopedLangEn en;
+        const string name = _item_name(ls, item);
+        lua_pushstring(ls, name.c_str());
+    }
+    else
+        lua_pushnil(ls);
+    return 1;
+}
+
+static int l_item_do_marker_identity(lua_State *ls)
+{
+    ASSERT_DLUA;
+    UDATA_ITEM(item);
+
+    if (!item)
+    {
+        lua_pushnil(ls);
+        return 1;
+    }
+
+    item_def canonical = *item;
+    canonical.quantity = 1;
+    canonical.inscription.clear();
+    ScopedLangEn en;
+    const string identity = canonical.name(DESC_PLAIN, false, true, false);
+    lua_pushstring(ls, identity.c_str());
+    return 1;
+}
+
 /*** Get this item's name.
  * For the levels of item descriptions see @{crawl.grammar}
  * @tparam[opt="plain"] string desc description type
@@ -466,6 +504,8 @@ static int l_item_do_name(lua_State *ls)
  * @function name
  */
 IDEFN(name, do_name)
+IDEFN(name_en, do_name_en)
+IDEFN(marker_identity, do_marker_identity)
 
 static int l_item_do_name_coloured(lua_State *ls)
 {
@@ -1194,7 +1234,9 @@ IDEF(base_type)
 {
     ASSERT_DLUA;
 
-    lua_pushstring(ls, base_type_string(*item));
+    ScopedLangEn en;
+    const string base_type = base_type_string(*item);
+    lua_pushstring(ls, base_type.c_str());
     return 1;
 }
 
@@ -1202,7 +1244,9 @@ IDEF(sub_type)
 {
     ASSERT_DLUA;
 
-    lua_pushstring(ls, sub_type_string(*item).c_str());
+    ScopedLangEn en;
+    const string sub_type = sub_type_string(*item);
+    lua_pushstring(ls, sub_type.c_str());
     return 1;
 }
 
@@ -1215,7 +1259,9 @@ IDEF(ego_type)
         return 1;
     }
 
-    lua_pushstring(ls, ego_type_string(*item).c_str());
+    ScopedLangEn en;
+    const string ego_type = ego_type_string(*item);
+    lua_pushstring(ls, ego_type.c_str());
     return 1;
 }
 
@@ -1228,7 +1274,9 @@ IDEF(ego_type_terse)
         return 1;
     }
 
-    lua_pushstring(ls, ego_type_string(*item, true).c_str());
+    ScopedLangEn en;
+    const string ego_type = ego_type_string(*item, true);
+    lua_pushstring(ls, ego_type.c_str());
     return 1;
 }
 
@@ -1814,6 +1862,142 @@ LUAFN(l_item_pickable)
     return 1;
 }
 
+/*** Render a treasure-trove item marker for display.
+ *
+ * The marker fields are an English persistence and comparison protocol. This
+ * function reconstructs a temporary identified item from copies of those
+ * fields and returns its normal localized name without modifying the marker.
+ *
+ * @tparam string base_type canonical English base type
+ * @tparam string sub_type canonical English subtype
+ * @tparam int quantity requested quantity
+ * @tparam int|boolean plus requested enchantment, or false
+ * @tparam string|boolean ego_type canonical English ego, or false
+ * @tparam[opt=true] boolean grammar add the normal article when appropriate
+ * @treturn string localized display name
+ * @function trove_name
+ */
+LUAFN(l_item_trove_name)
+{
+    ASSERT_DLUA;
+
+    const string base_type = luaL_checkstring(ls, 1);
+    const string sub_type = luaL_checkstring(ls, 2);
+    const int quantity = luaL_safe_checkint(ls, 3);
+    const bool has_plus = lua_isnumber(ls, 4);
+    const int plus = has_plus ? luaL_safe_checkint(ls, 4) : 0;
+    const string ego_type = lua_isstring(ls, 5) ? lua_tostring(ls, 5) : "";
+    const bool do_grammar = lua_isnoneornil(ls, 6) || lua_toboolean(ls, 6);
+
+    if (quantity < 1)
+        return luaL_error(ls, "Invalid trove item quantity: %d", quantity);
+    if (quantity > 1 && base_type != "scroll" && base_type != "potion")
+    {
+        return luaL_error(ls,
+                          "Non-consumable trove item has quantity %d: %s",
+                          quantity, sub_type.c_str());
+    }
+
+    const bool is_rune = base_type == "miscellaneous"
+                         && sub_type == "rune of Zot";
+    const bool is_horn = base_type == "miscellaneous"
+                         && sub_type == "horn of Geryon";
+    const bool is_demon_weapon = base_type == "weapon"
+        && (sub_type == "demon whip" || sub_type == "demon trident"
+            || sub_type == "demon blade");
+
+    // Troves intentionally accept any of the three demon-weapon subtypes, so
+    // their display must remain generic rather than naming the generated one.
+    if (is_demon_weapon)
+    {
+        string display = T_("demon weapon");
+        if (has_plus)
+            display = make_stringf("%+d %s", plus, display.c_str());
+        if (quantity > 1)
+            display = make_stringf("%d %s", quantity, display.c_str());
+        if (do_grammar)
+            display = thing_do_grammar(DESC_A, display);
+        lua_pushstring(ls, display.c_str());
+        return 1;
+    }
+
+    string lookup_name;
+    if (is_rune)
+    {
+        if (ego_type.empty())
+            return luaL_error(ls, "Trove rune marker has no rune identity");
+        lookup_name = ego_type;
+    }
+    else if (base_type == "scroll" || base_type == "potion")
+        lookup_name = base_type + " of " + sub_type;
+    else
+        lookup_name = sub_type;
+
+    const item_kind kind = item_kind_by_name(lookup_name);
+    if (kind.base_type == OBJ_UNASSIGNED)
+    {
+        return luaL_error(ls, "Invalid trove item identity: %s",
+                          lookup_name.c_str());
+    }
+
+    item_def item;
+    item.base_type = static_cast<object_class_type>(kind.base_type);
+    item.sub_type = kind.sub_type;
+    item.plus = has_plus ? plus : kind.plus;
+    item.plus2 = kind.plus2;
+    item.quantity = quantity;
+    item.flags |= ISFLAG_IDENTIFIED;
+
+    if (!is_rune)
+    {
+        string resolved_base;
+        {
+            ScopedLangEn en;
+            resolved_base = base_type_string(item);
+        }
+        if (resolved_base != base_type)
+        {
+            return luaL_error(ls,
+                              "Trove base type mismatch for %s: %s != %s",
+                              lookup_name.c_str(), resolved_base.c_str(),
+                              base_type.c_str());
+        }
+    }
+
+    if (!ego_type.empty() && ego_type != "unknown" && !is_rune
+        && (item.base_type == OBJ_WEAPONS || item.base_type == OBJ_ARMOUR
+            || item.base_type == OBJ_MISSILES))
+    {
+        const string ego_key = replace_all_of(ego_type, " ", "_");
+        const int ego = str_to_ego(item.base_type, ego_key);
+        if (ego <= 0 || !set_item_ego_type(item, item.base_type, ego))
+        {
+            return luaL_error(ls, "Invalid trove item ego: %s",
+                              ego_type.c_str());
+        }
+    }
+
+    // A synthetic horn has no live evoker charge state. Use its database name
+    // to avoid inventing an "inert" suffix, then apply only the requested
+    // article. Runes and all ordinary items can use their complete item name.
+    string display;
+    if (is_horn)
+    {
+        display = item.name(DESC_DBNAME, false, true, false);
+        if (do_grammar)
+            display = thing_do_grammar(DESC_THE, display);
+    }
+    else
+    {
+        description_level_type desc = DESC_PLAIN;
+        if (do_grammar)
+            desc = is_rune ? DESC_THE : DESC_A;
+        display = item.name(desc, false, true, false);
+    }
+    lua_pushstring(ls, display.c_str());
+    return 1;
+}
+
 
 struct ItemAccessor
 {
@@ -1837,6 +2021,8 @@ static ItemAccessor item_attrs[] =
     { "ego_en",            l_item_ego_en },
     { "cursed",            l_item_cursed },
     { "name",              l_item_name },
+    { "name_en",           l_item_name_en },
+    { "marker_identity",   l_item_marker_identity },
     { "name_coloured",     l_item_name_coloured },
     { "stacks",            l_item_stacks },
     { "quantity",          l_item_quantity },
@@ -1926,6 +2112,7 @@ static const struct luaL_Reg item_lib[] =
     { "excluded_from_set", l_item_excluded_from_set },
     { "item_for_set",      l_item_for_set },
     { "pickable",          l_item_pickable },
+    { "trove_name",        l_item_trove_name },
     { nullptr, nullptr },
 };
 

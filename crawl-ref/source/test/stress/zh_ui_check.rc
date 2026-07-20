@@ -42,8 +42,39 @@ function ready()
     elseif action == 7 then
         crawl.sendkeys(".")
     elseif action == 8 then
-        local msgs = crawl.messages(20) or ""
-        emit("item:running_boots", msgs)
+        local boots_name = nil
+        local protocol = nil
+        for _, it in pairs(items.inventory()) do
+            if it.subtype_en(false) == "mace" then
+                local skill = it.weap_skill_en
+                local ego = it.ego_en(true)
+                local annot = ch_stash_search_annotate_item(it)
+                assert(skill == "Maces & Flails",
+                       "unexpected canonical weapon skill: " .. tostring(skill))
+                assert(ego and not ego:find("[^%w ]"),
+                       "unexpected canonical weapon ego: " .. tostring(ego))
+                assert(annot:find("{Maces & Flails}", 1, true),
+                       "stash annotation omitted canonical weapon skill")
+                assert(annot:find("{" .. ego .. "}", 1, true),
+                       "stash annotation omitted canonical weapon ego")
+                assert(ego == "chaos",
+                       "unexpected canonical starter weapon ego: " .. ego)
+                protocol = " subtype=mace skill=" .. skill .. " ego=" .. ego
+                break
+            end
+        end
+        for _, it in ipairs(items.get_items_at(0, 0) or {}) do
+            if it.subtype_en() == "boots" then
+                boots_name = it.name()
+                assert(ch_stash_search_annotate_item(it):find("{boots armor}",
+                                                       1, true),
+                       "stash annotation failed for boots without a normal ego")
+                break
+            end
+        end
+        assert(protocol, "starter weapon protocol fields were not available")
+        assert(boots_name, "created boots were not visible at the player's feet")
+        emit("item:running_boots", boots_name .. protocol)
         crawl.sendkeys(".")
     elseif action == 9 then
         crawl.clear_messages(false)

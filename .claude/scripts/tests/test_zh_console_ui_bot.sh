@@ -175,15 +175,19 @@ for mutation in ('\na - +0 匕首\n',
     else:
         raise SystemExit('workflow accepted ambiguous/missing item letter')
 
-for evidence_text in ('你攻击了老鼠。', '你穿刺了老鼠！'):
+for evidence_text in ('你攻击了老鼠。', '你穿刺了老鼠！',
+                      '你穿刺了老鼠 for 7！'):
     if not bot.has_combat_attack_evidence(evidence_text):
         raise SystemExit(f'workflow rejected real combat evidence: {evidence_text}')
 for mutation in ('老鼠在附近。a) +0 匕首', '你穿刺了老鼠.',
+                 '你穿刺了老鼠 for seven！',
                  '你杀死了老鼠！', '你遭遇了老鼠。'):
     if bot.has_combat_attack_evidence(mutation):
         raise SystemExit('workflow accepted invalid combat evidence')
 if not bot.has_ascii_combat_punctuation('你穿刺了老鼠.'):
     raise SystemExit('workflow missed ASCII combat punctuation')
+if not bot.has_ascii_combat_punctuation('你穿刺了老鼠 for 7!'):
+    raise SystemExit('workflow missed ASCII punctuation after damage suffix')
 for valid in ('你穿刺了老鼠！', '你杀死了老鼠！', '你遭遇了老鼠。'):
     if bot.has_ascii_combat_punctuation(valid):
         raise SystemExit('workflow rejected Chinese/non-attack punctuation')
@@ -212,6 +216,7 @@ cp "$SCRIPT_DIR/fixtures/fake_zh_crawl.sh" "$TMPDIR/fake-source/crawl"
 chmod +x "$TMPDIR/fake-source/crawl"
 touch "$TMPDIR/fake-source/test/stress/zh_ui_check.rc"
 touch "$TMPDIR/fake-source/test/stress/zh_ui_smoke.rc"
+touch "$TMPDIR/fake-source/test/stress/zh_issue68_protocol.rc"
 touch "$TMPDIR/fake-source/test/stress/zh_probe48.rc"
 set +e
 ZH_RUNTIME_SOURCE_DIR="$TMPDIR/fake-source" \

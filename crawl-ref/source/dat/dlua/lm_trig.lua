@@ -643,6 +643,26 @@ function DgnTriggerer:setup()
   self.method = "dgn_event"
 end
 
+function DgnTriggerer:item_target_matches(it)
+  return it.marker_identity() == self.target
+         or it.name() == self.target
+         or it.name_en() == self.target
+end
+
+function DgnTriggerer:capture_item_target(marker)
+  if self.target ~= "auto" then
+    return
+  end
+
+  local items = dgn.items_at(marker:pos())
+  if #items == 0 then
+    error("No vault item for " .. self.type)
+  elseif #items > 1 then
+    error("Too many vault items for " .. self.type)
+  end
+  self.target = items[1].marker_identity()
+end
+
 function DgnTriggerer:added(triggerable)
   if self.type == "item_pickup" then
     -- Automatically move the triggerable if the item we're watching is moved
@@ -666,16 +686,7 @@ function DgnTriggerer:activate(triggerable, marker, x, y)
   end
 
   if self.type == "item_moved" or self.type == "item_pickup" then
-    if self.target == "auto" then
-      local items = dgn.items_at(marker:pos())
-
-      if #items == 0 then
-        error("No vault item for " .. self.type)
-      elseif #items > 1 then
-        error("Too many vault items for " .. self.type)
-      end
-      self.target = items[1].name()
-    end
+    self:capture_item_target(marker)
   end
 
   local et = dgn.dgn_event_type(self.type)
@@ -743,7 +754,7 @@ function DgnTriggerer:item_moved(triggerable, marker, ev)
     error("DgnTriggerer:item_moved() didn't get a valid item index")
   end
 
-  if it.name() == self.target then
+  if self:item_target_matches(it) then
     if self.marker_mover then
       -- We only exist to move the triggerable if the item moves
       triggerable:move(marker, ev:dest())
@@ -761,7 +772,7 @@ function DgnTriggerer:item_pickup(triggerable, marker, ev)
     error("DgnTriggerer:item_pickup() didn't get a valid item index")
   end
 
-  if it.name() == self.target then
+  if self:item_target_matches(it) then
     triggerable:do_trigger(self, marker, ev)
   end
 end
@@ -841,5 +852,11 @@ function DgnTriggerer:read(marker, th)
   local tr = lmark.unmarshall_table(th)
   setmetatable(tr, DgnTriggerer)
   tr:setup()
+  if (tr.type == "item_moved" or tr.type == "item_pickup")
+     and type(tr.target) == "string"
+     and string.find(tr.target, "[\128-\255]") then
+    crawl.mpr("Legacy item trigger target contains non-ASCII text; " ..
+              "cross-language restoration is not guaranteed.", "error")
+  end
   return tr
 end

@@ -170,7 +170,16 @@ run_lua() {
         echo "  Lua smoke test: end marker missing (check $STDERR_L2)"
         return 1
     fi
-    echo "  Lua smoke test: OK (setup/end markers found)"
+    if ! python3 "$CHECK_SCRIPT" --mode bot --bot-stderr "$STDERR_L2" \
+        --bot-manifest issue68-l2; then
+        echo "  Lua smoke test: Issue 68 manifest rejected (check $STDERR_L2)"
+        return 1
+    fi
+    if ! grep -Fq 'Legacy item trigger target contains non-ASCII text; cross-language restoration is not guaranteed.' "$STDERR_L2"; then
+        echo "  Lua smoke test: legacy item-trigger warning missing (check $STDERR_L2)"
+        return 1
+    fi
+    echo "  Lua smoke test: OK (exact Issue 68 manifest and warning found)"
     return 0
 }
 
@@ -195,10 +204,11 @@ run_bot() {
 
     : > "$STDERR_L3"
     local shard rcfile transcript rc
-    for shard in ui spells issue48; do
+    for shard in ui spells issue68 issue48; do
         case "$shard" in
             ui) rcfile=test/stress/zh_ui_check.rc ;;
             spells) rcfile=test/stress/zh_ui_smoke.rc ;;
+            issue68) rcfile=test/stress/zh_issue68_protocol.rc ;;
             issue48) rcfile=test/stress/zh_probe48.rc ;;
         esac
         [ -f "$rcfile" ] || { echo "  Missing required shard: $rcfile"; return 1; }
@@ -438,6 +448,7 @@ case "$MODE" in
         [ -f "$SOURCE_DIR/test/zh_runtime.lua" ] || { echo "Missing test/zh_runtime.lua"; exit 1; }
         run_step "L2-lua" run_lua || true
         [ -f "$SOURCE_DIR/test/stress/zh_ui_check.rc" ] || { echo "Missing zh_ui_check.rc"; exit 1; }
+        [ -f "$SOURCE_DIR/test/stress/zh_issue68_protocol.rc" ] || { echo "Missing zh_issue68_protocol.rc"; exit 1; }
         run_step "L3-bot" run_bot || true
         run_step "aggregate" run_aggregate full
         ;;

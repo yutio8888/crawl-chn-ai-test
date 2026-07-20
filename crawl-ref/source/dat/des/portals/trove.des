@@ -47,7 +47,11 @@ function trove.get_trove_item(e, value, base_item)
     item.sub_type = base_item.sub_type
     item.artefact_name = base_item.artefact_name
     if (base_item.sub_type == "rune of Zot") then
-      item.ego_type = base_item.name()
+      -- Trove's persistent rune shape predates OBJ_RUNES and is consumed as a
+      -- miscellaneous item by search_for_rune(). Keep that protocol stable
+      -- when a wizard supplies a real rune userdata.
+      item.base_type = "miscellaneous"
+      item.ego_type = base_item.marker_identity()
     end
     return item
   end

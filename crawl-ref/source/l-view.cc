@@ -67,7 +67,7 @@ LUAFN(view_cloud_at)
         lua_pushnil(ls);
         return 1;
     }
-    lua_pushstring(ls, cloud_type_name(c).c_str());
+    lua_pushstring(ls, cloud_type_name_en(c).c_str());
     return 1;
 }
 
@@ -95,7 +95,7 @@ LUAFN(view_trap_at)
         return 1;
     }
 
-    lua_pushstring(ls, trap_name(trap->type).c_str());
+    lua_pushstring(ls, trap_name_en(trap->type).c_str());
     return 1;
 }
 

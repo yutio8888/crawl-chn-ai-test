@@ -231,6 +231,101 @@ assert_contains "lua identity: duplicate definition is explicit" "exactly one LU
 assert_contains "lua identity: decoy dataflow is rejected" "canonical accessor must initialize" /tmp/actual_lua_identity_decoy-dataflow.txt
 assert_contains "lua identity: duplicate artifacts are explicit" "exactly one production l-you.cc artifact" /tmp/actual_lua_identity_two-artifacts.txt
 
+# ── Issue 68 registered protocol/display producers ──
+echo "--- protocol-boundaries ---"
+set +e
+python3 - "$SCAN_I18N" "$REPO_ROOT/crawl-ref/source" \
+    > /tmp/actual_protocol_boundaries.txt 2>&1 <<'PY'
+import importlib.util
+import os
+import re
+import shutil
+import sys
+import tempfile
+
+scan_path, source_root = sys.argv[1:]
+spec = importlib.util.spec_from_file_location("scan_i18n", scan_path)
+scan = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(scan)
+
+
+def copy_contract(root, contract_id):
+    for artifact in scan.PROTOCOL_BOUNDARY_CONTRACTS[contract_id]:
+        src = os.path.join(source_root, artifact["file"])
+        dst = os.path.join(root, artifact["file"])
+        os.makedirs(os.path.dirname(dst), exist_ok=True)
+        shutil.copyfile(src, dst)
+
+
+def mutate(root, contract_id, artifact_index, kind):
+    artifact = scan.PROTOCOL_BOUNDARY_CONTRACTS[contract_id][artifact_index]
+    path = os.path.join(root, artifact["file"])
+    with open(path, "r", encoding="utf-8") as f:
+        source = f.read()
+    start = list(re.finditer(artifact["start"], source, re.MULTILINE))[0]
+    end = re.search(artifact["end"], source[start.end():], re.MULTILINE)
+    scope_end = start.end() + end.start()
+    pattern = artifact["required"][0][0]
+    match = re.search(pattern, source[start.end():scope_end], re.MULTILINE)
+    if not match:
+        raise AssertionError(f"fixture producer missing for {contract_id}")
+    left = start.end() + match.start()
+    right = start.end() + match.end()
+    token = source[left:right]
+    if kind == "localized":
+        replacement = artifact["localized"]
+    elif kind == "missing":
+        replacement = ""
+    elif kind == "duplicate":
+        replacement = token + "\n" + token
+    elif kind == "decoy":
+        replacement = ""
+        source += "\n" + token + "\n"
+    else:
+        raise AssertionError(kind)
+    source = source[:left] + replacement + source[right:]
+    with open(path, "w", encoding="utf-8") as f:
+        f.write(source)
+
+
+failures = []
+artifact_count = 0
+fixture_count = 0
+for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
+    artifacts = scan.PROTOCOL_BOUNDARY_CONTRACTS[contract_id]
+    artifact_count += len(artifacts)
+    with tempfile.TemporaryDirectory() as root:
+        copy_contract(root, contract_id)
+        fixture_count += 1
+        if scan.protocol_boundary_findings(root, contract_id):
+            failures.append(f"{contract_id}: passing fixture rejected")
+    for artifact_index, artifact in enumerate(artifacts):
+        artifact_label = f'{artifact["file"]}#{artifact_index + 1}'
+        for kind in ("localized", "missing", "duplicate", "decoy"):
+            with tempfile.TemporaryDirectory() as root:
+                copy_contract(root, contract_id)
+                mutate(root, contract_id, artifact_index, kind)
+                fixture_count += 1
+                if not scan.protocol_boundary_findings(root, contract_id):
+                    failures.append(
+                        f"{contract_id}/{artifact_label}: {kind} fixture accepted"
+                    )
+
+if failures:
+    print("\n".join(failures))
+    raise SystemExit(1)
+print(f"OK: {len(scan.PROTOCOL_BOUNDARY_CONTRACTS)} rows, "
+      f"{artifact_count} artifacts, {fixture_count} fixtures passed")
+PY
+protocol_boundary_status=$?
+set -e
+cat /tmp/actual_protocol_boundaries.txt
+assert_status "protocol registry: passing/localized/missing/duplicate/decoy matrix" \
+    0 "$protocol_boundary_status"
+assert_contains "protocol registry: every artifact receives negative mutations" \
+    "OK: 14 rows, 25 artifacts, 114 fixtures passed" \
+    /tmp/actual_protocol_boundaries.txt
+
 # ── direct T_ branches remain extractable ──
 python3 "$SCRIPT_DIR/../i18n_extract.py" extract \
     "$REPO_ROOT/crawl-ref/source" > /tmp/actual_i18n_extract.txt
