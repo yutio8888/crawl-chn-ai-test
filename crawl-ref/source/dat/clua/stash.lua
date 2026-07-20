@@ -54,7 +54,7 @@ function ch_stash_search_annotate_item(it)
     annot = annot .. "{god gift} "
   end
 
-  local skill = it.weap_skill
+  local skill = it.weap_skill_en
   if skill then
     local skills = crawl.split(skill, ",")
     for i = 1, #skills, 1
@@ -73,16 +73,16 @@ function ch_stash_search_annotate_item(it)
     end
   end
 
-  if it.ego_type_terse ~= "" and it.ego_type_terse ~= "unknown" then
+  if it.ego_en(true) ~= "" and it.ego_en(true) ~= "unknown" then
     if it.class(true) == "jewellery" then
-      annot = annot .. "{" .. it.ego_type_terse
-      if it.ego_type_terse == "Ice" then
+      annot = annot .. "{" .. it.ego_en(true)
+      if it.ego_en(true) == "Ice" then
         annot = annot .. " rC+ rF-"
-      elseif it.ego_type_terse == "Fire" then
+      elseif it.ego_en(true) == "Fire" then
         annot = annot .. " rF+ rC-"
-      elseif it.ego_type_terse == "Str" or it.ego_type_terse == "Int"
-         or it.ego_type_terse == "Dex" or it.ego_type_terse == "Slay"
-         or it.ego_type_terse == "EV" or it.ego_type_terse == "AC" then
+      elseif it.ego_en(true) == "Str" or it.ego_en(true) == "Int"
+         or it.ego_en(true) == "Dex" or it.ego_en(true) == "Slay"
+         or it.ego_en(true) == "EV" or it.ego_en(true) == "AC" then
         if it.plus == nil then
           annot = annot .. "+"
         else
@@ -91,10 +91,10 @@ function ch_stash_search_annotate_item(it)
       end
       annot = annot .. "} "
     else
-      if it.ego_type_terse == "Fly" then
+      if it.ego_en(true) == "Fly" then
         annot = annot .. "{flight} "
       end
-      annot = annot .. "{" .. it.ego_type_terse .. "} "
+      annot = annot .. "{" .. it.ego_en(true) .. "} "
     end
   end
 
@@ -105,8 +105,8 @@ function ch_stash_search_annotate_item(it)
       ["resistance"] = "rF+ rC+ rElec rPois rCorr",
       ["revelation"] = "sInv"
     }
-    if props[it.subtype()] then
-      annot = annot .. "{" .. props[it.subtype()] .. "} "
+    if props[it.subtype_en()] then
+      annot = annot .. "{" .. props[it.subtype_en()] .. "} "
     end
   end
 
@@ -119,8 +119,8 @@ function ch_stash_search_annotate_item(it)
       ["fire"] = "rF+",
       ["alchemy"] = "rPois"
     }
-    if props[it.subtype()] then
-      annot = annot .. "{" .. props[it.subtype()] .. "} "
+    if props[it.subtype_en()] then
+      annot = annot .. "{" .. props[it.subtype_en()] .. "} "
     end
   end
 
@@ -145,7 +145,7 @@ function ch_stash_search_annotate_item(it)
   end
 
   if it.class(true) == "armour" then
-      annot = annot .. "{" .. it.subtype() .. " "
+      annot = annot .. "{" .. it.subtype_en() .. " "
   elseif it.class(true) == "weapon" then
       if it.is_ranged then
         annot = annot .. "{ranged "
@@ -158,8 +158,8 @@ function ch_stash_search_annotate_item(it)
   annot = annot .. it.class(true) .. "}"
 
   if it.class(true) == "armour" then
-      annot = annot .. " {" .. it.subtype() .. " armor}"
-      if it.subtype() ~= "body" then
+      annot = annot .. " {" .. it.subtype_en() .. " armor}"
+      if it.subtype_en() ~= "body" then
           annot = annot .. " {auxiliary armor} {auxiliary armour}"
       end
       if it.is_shield() then
@@ -189,7 +189,7 @@ function ch_stash_search_annotate_item(it)
   end
 
   -- Tag revelation as mapping for back-compat.
-  if it.class(true) == "scroll" and it.subtype() == "revelation" then
+  if it.class(true) == "scroll" and it.subtype_en() == "revelation" then
     annot = annot .. " {magic mapping}"
   end
 

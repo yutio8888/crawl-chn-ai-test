@@ -23,6 +23,7 @@
 #include "item-status-flag-type.h"
 #include "items.h"
 #include "item-use.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "mapdef.h" // item_spec
 #include "mon-util.h"
@@ -294,43 +295,56 @@ static int l_item_do_class(lua_State *ls)
  */
 IDEFN(class, do_class)
 
+static string _item_subtype(const item_def& item, bool armour_slots)
+{
+    if (item.base_type != OBJ_WEAPONS && item.base_type != OBJ_ARMOUR
+        && !item.is_identified())
+        return "";
+
+    // Special-case OBJ_ARMOUR behavior to maintain compatibility with
+    // existing scripts.
+    if (armour_slots && item.base_type == OBJ_ARMOUR)
+    {
+        const equipment_slot slot = get_armour_slot(item);
+        if (slot == SLOT_BODY_ARMOUR)
+            return "body";
+        return lowercase_string(equip_slot_name(slot));
+    }
+    return sub_type_string(item);
+}
+
 static int l_item_do_subtype(lua_State *ls)
 {
     UDATA_ITEM(item);
-
     if (!item)
     {
         lua_pushnil(ls);
         return 1;
     }
-
-    bool armour_slots = true;
-    if (lua_isboolean(ls, 1))
-        armour_slots = lua_toboolean(ls, 1);
-
-    if (item->base_type == OBJ_WEAPONS || item->base_type == OBJ_ARMOUR
-                                       || item->is_identified())
-    {
-        string s;
-
-        // Special-case OBJ_ARMOUR behavior to maintain compatibility with
-        // existing scripts.
-        if (armour_slots && item->base_type == OBJ_ARMOUR)
-        {
-            equipment_slot slot = get_armour_slot(*item);
-            if (slot == SLOT_BODY_ARMOUR)
-                s = "body";
-            else
-                s = lowercase_string(equip_slot_name(slot));
-        }
-        else
-            s = sub_type_string(*item);
-
-        lua_pushstring(ls, s.c_str());
-    }
-    else
+    const bool armour_slots = !lua_isboolean(ls, 1) || lua_toboolean(ls, 1);
+    const string subtype = _item_subtype(*item, armour_slots);
+    if (subtype.empty())
         lua_pushnil(ls);
+    else
+        lua_pushstring(ls, subtype.c_str());
+    return 1;
+}
 
+static int l_item_do_subtype_en(lua_State *ls)
+{
+    UDATA_ITEM(item);
+    if (!item)
+    {
+        lua_pushnil(ls);
+        return 1;
+    }
+    const bool armour_slots = !lua_isboolean(ls, 1) || lua_toboolean(ls, 1);
+    ScopedLangEn en;
+    const string subtype = _item_subtype(*item, armour_slots);
+    if (subtype.empty())
+        lua_pushnil(ls);
+    else
+        lua_pushstring(ls, subtype.c_str());
     return 1;
 }
 
@@ -340,6 +354,7 @@ static int l_item_do_subtype(lua_State *ls)
   * @function subtype
  */
 IDEFN(subtype, do_subtype)
+IDEFN(subtype_en, do_subtype_en)
 
 static int l_item_do_is_shield(lua_State *ls)
 {
@@ -362,6 +377,13 @@ static int l_item_do_is_shield(lua_State *ls)
 IDEFN(is_shield, do_is_shield)
 
 
+static string _item_ego(const item_def& item, bool terse)
+{
+    if (item.is_identified() || item.base_type == OBJ_MISSILES)
+        return ego_type_string(item, terse);
+    return "";
+}
+
 static int l_item_do_ego(lua_State *ls)
 {
     UDATA_ITEM(item);
@@ -370,22 +392,30 @@ static int l_item_do_ego(lua_State *ls)
         lua_pushnil(ls);
         return 1;
     }
+    const bool terse = lua_isboolean(ls, 1) && lua_toboolean(ls, 1);
+    const string ego = _item_ego(*item, terse);
+    if (ego.empty())
+        lua_pushnil(ls);
+    else
+        lua_pushstring(ls, ego.c_str());
+    return 1;
+}
 
-    bool terse = false;
-    if (lua_isboolean(ls, 1))
-        terse = lua_toboolean(ls, 1);
-
-    if (item->is_identified() || item->base_type == OBJ_MISSILES)
+static int l_item_do_ego_en(lua_State *ls)
+{
+    UDATA_ITEM(item);
+    if (!item)
     {
-        const string s = ego_type_string(*item, terse);
-        if (!s.empty())
-        {
-            lua_pushstring(ls, s.c_str());
-            return 1;
-        }
+        lua_pushnil(ls);
+        return 1;
     }
-
-    lua_pushnil(ls);
+    const bool terse = lua_isboolean(ls, 1) && lua_toboolean(ls, 1);
+    ScopedLangEn en;
+    const string ego = _item_ego(*item, terse);
+    if (ego.empty())
+        lua_pushnil(ls);
+    else
+        lua_pushstring(ls, ego.c_str());
     return 1;
 }
 
@@ -395,6 +425,7 @@ static int l_item_do_ego(lua_State *ls)
  * @function ego
  */
 IDEFN(ego, do_ego)
+IDEFN(ego_en, do_ego_en)
 
 /*** Is this item cursed?
  * @field cursed boolean
@@ -559,7 +590,7 @@ IDEF(equip_type)
 /*** The weapon skill this item requires.
  * @field weap_skill string|nil nil for non-weapons
  */
-IDEF(weap_skill)
+static int _push_weap_skill(lua_State *ls, item_def *item)
 {
     if (!item || !item->defined())
         return 0;
@@ -570,14 +601,26 @@ IDEF(weap_skill)
 
     if (is_unrandom_artefact(*item, UNRAND_LOCHABER_AXE))
     {
-        lua_pushstring(ls, make_stringf("%s,%s",
-                                        skill_name(SK_POLEARMS),
-                                        skill_name(SK_AXES)).c_str());
+        const string skills = make_stringf("%s,%s",
+                                           skill_name(SK_POLEARMS),
+                                           skill_name(SK_AXES));
+        lua_pushstring(ls, skills.c_str());
     }
     else
         lua_pushstring(ls, skill_name(skill));
     lua_pushinteger(ls, skill);
     return 2;
+}
+
+IDEF(weap_skill)
+{
+    return _push_weap_skill(ls, item);
+}
+
+IDEF(weap_skill_en)
+{
+    ScopedLangEn en;
+    return _push_weap_skill(ls, item);
 }
 
 /*** The reach range of this item.
@@ -1789,7 +1832,9 @@ static ItemAccessor item_attrs[] =
     { "plus2",             l_item_plus2 },
     { "class",             l_item_class },
     { "subtype",           l_item_subtype },
+    { "subtype_en",        l_item_subtype_en },
     { "ego",               l_item_ego },
+    { "ego_en",            l_item_ego_en },
     { "cursed",            l_item_cursed },
     { "name",              l_item_name },
     { "name_coloured",     l_item_name_coloured },
@@ -1804,6 +1849,7 @@ static ItemAccessor item_attrs[] =
     { "equipped",          l_item_equipped },
     { "equip_type",        l_item_equip_type },
     { "weap_skill",        l_item_weap_skill },
+    { "weap_skill_en",     l_item_weap_skill_en },
     { "reach_range",       l_item_reach_range },
     { "is_ranged",         l_item_is_ranged },
     { "is_throwable",      l_item_is_throwable },
