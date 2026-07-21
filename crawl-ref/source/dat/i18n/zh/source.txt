@@ -40992,3 +40992,12 @@ terrain swap preposition|beneath
 %%%%
 %1$s moves from %2$s %3$s to %4$s %5$s!
 %1$s从%3$s%2$s移到了%5$s%4$s！
+%%%%
+great serpentine sword
+蛇形巨剑
+%%%%
+ruby sceptre
+红宝石权杖
+%%%%
+opalescent scaly cloak
+乳白色鳞片斗篷
