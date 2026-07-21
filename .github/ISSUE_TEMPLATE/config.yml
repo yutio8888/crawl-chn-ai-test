@@ -1,0 +1,5 @@
+blank_issues_enabled: false
+contact_links:
+  - name: DCSS 上游问题
+    url: https://github.com/crawl/crawl/issues/new/choose
+    about: 与中文本地化、i18n 或 CJK 渲染无关的通用 DCSS 问题请提交到上游。

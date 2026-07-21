@@ -221,7 +221,7 @@ const analyses = await parallel(
     agent(
       'Analyze this DCSS Chinese translation issue.\n' +
       '\nIssue #' + (i + 1) + ': ' + (issue.description || '未提供描述') +
-      (issue.issueFile ? '\nTracking file: ' + issue.issueFile : '') +
+      (issue.issueRef ? '\nGitHub issue: ' + issue.issueRef : '') +
       '\n\nSteps:\n' +
       '1. grep the codebase for the reported English text\n' +
       '2. Read surrounding code to understand display context\n' +

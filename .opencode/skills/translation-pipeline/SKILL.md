@@ -95,19 +95,19 @@ integrity.
 3. **触发场景**: 文本出现时正在做什么？
 4. **期望结果**: 应该显示什么中文？（可选）
 
-## 创建 Issue 跟踪文件
+## 创建或复用 GitHub Issue
 
-在 `${DCSS_ISSUES_DIR:-../issues}/` 下创建 issue 文件；该相对默认值以仓库
-根目录为基准，可通过 `DCSS_ISSUES_DIR` 指向其他位置：
+问题、当前状态和验收标准只在
+`yutio8888/crawl-chn-ai-test` GitHub Issues 中维护。已有对应 Issue 时直接
+复用；否则使用中文翻译 Issue Form 或显式指定仓库创建：
 
-```markdown
-# Issue <N>: <简述>
-- **日期**: YYYY-MM-DD
-- **状态**: Analyzing
-- **来源**: <玩家反馈/自查>
-- **原文**: <EN text>
-- **位置**: <game location>
+```bash
+gh issue create --repo yutio8888/crawl-chn-ai-test \
+  --label type/translation --label status/needs-triage
 ```
+
+调研进展、裁决和跨会话交接写入 Issue 评论；实现、精确提交审查和
+CI 证据写入关联 PR。不得在旧 Issue 仓库中创建文件、分配编号或更新状态。
 
 ## 启动修复流程
 

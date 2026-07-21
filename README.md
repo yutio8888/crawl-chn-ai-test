@@ -27,9 +27,9 @@
 bash .claude/scripts/verify_zh.sh --profile translation
 ```
 
-已追踪任务以独立 Issue 仓库的 `INDEX.md` 为准，位置和接入方式见
-[docs/issue-tracking.md](docs/issue-tracking.md)；仓库内零散事项见
-[docs/known-issues-zh.md](docs/known-issues-zh.md)。
+当前问题、状态和验收标准以
+[GitHub Issues](https://github.com/yutio8888/crawl-chn-ai-test/issues) 为唯一来源；
+使用方式和历史归档说明见 [docs/issue-tracking.md](docs/issue-tracking.md)。
 
 ## 快速开始
 
@@ -115,7 +115,7 @@ TextDB 缓存以确保文本更新生效。运行中的游戏应先关闭。完�
 1. 先阅读 [AGENTS.md](AGENTS.md)；使用 Codex、Claude Code 或 OpenCode 时，再读取对应的
    runtime adapter。
 2. 从仓库当前默认/集成分支创建任务分支，不要依赖 README 中的静态“活跃分支”清单。
-3. 开工前查看独立 Issue 仓库的 `INDEX.md`，确认任务状态、文件所有权和已有分析。
+3. 开工前查看对应 GitHub Issue，确认验收标准、任务状态、文件所有权和已有分析。
 4. 若使用 Git worktree，只能从仓库根目录创建在 `.worktrees/<name>` 下；不要让 linked
    worktree 占用集成分支。
 

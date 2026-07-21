@@ -48,7 +48,7 @@ class PathPortabilityTests(unittest.TestCase):
             path.write_text(
                 "repo=docs/glossary.md\n"
                 "artifacts=.artifacts/windows-tiles\n"
-                "issues=${DCSS_ISSUES_DIR:-../issues}\n"
+                "issues=https://github.com/example/project/issues\n"
                 "sdk=${ANDROID_SDK_ROOT:-$HOME/Android}\n"
                 "null=/dev/null\n",
                 encoding="utf-8",

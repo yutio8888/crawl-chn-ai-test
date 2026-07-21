@@ -1,0 +1,60 @@
+name: i18n / 工具链问题
+description: 报告协议与显示边界、TextDB、扫描器、验证或自动化问题
+title: "[i18n]: "
+labels:
+  - type/i18n-code
+  - status/needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        请先描述可观察的故障。producer → transformation → consumer 链路可在已知时补充，不要为了填表而猜测。
+  - type: input
+    id: version
+    attributes:
+      label: 游戏版本或 commit
+      placeholder: 0.34.1 / commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: problem
+    attributes:
+      label: 问题描述
+      description: 说明实际结果、期望结果和影响。
+    validations:
+      required: true
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 复现命令或步骤
+      description: 包含语言设置、构建模式、输入数据和实际输出。
+    validations:
+      required: true
+  - type: dropdown
+    id: text_role
+    attributes:
+      label: 涉及的文本角色
+      options:
+        - 不确定
+        - 协议或身份文本
+        - 用户可见显示文本
+        - 两者边界混用
+    validations:
+      required: true
+  - type: textarea
+    id: dataflow
+    attributes:
+      label: producer → transformation → consumer
+      description: 可选；请附上已确认的函数、文件或数据键。
+  - type: textarea
+    id: acceptance
+    attributes:
+      label: 可观察的验收标准
+      description: 说明修复后应通过的实际场景或门禁。
+    validations:
+      required: true
+  - type: textarea
+    id: non_goals
+    attributes:
+      label: 已知非目标
+      description: 可选；仅填写已经明确排除的范围。

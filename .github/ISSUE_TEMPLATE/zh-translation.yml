@@ -1,0 +1,60 @@
+name: 中文翻译问题
+description: 报告未翻译、误译、术语不一致或中英混排
+title: "[Translation]: "
+labels:
+  - type/translation
+  - status/needs-triage
+body:
+  - type: markdown
+    attributes:
+      value: |
+        感谢反馈。请尽量保留游戏中的英文原文、当前译文和出现场景。
+  - type: input
+    id: version
+    attributes:
+      label: 游戏版本或 commit
+      description: 可在游戏中按 ?v 查看。
+      placeholder: 0.34.1 / commit SHA
+    validations:
+      required: true
+  - type: textarea
+    id: source
+    attributes:
+      label: 英文原文
+      description: 请原样粘贴，并保留占位符、标记和换行。
+    validations:
+      required: true
+  - type: textarea
+    id: current_translation
+    attributes:
+      label: 当前显示或译文
+      description: 未翻译时可填写“仍显示英文”。
+    validations:
+      required: true
+  - type: textarea
+    id: context
+    attributes:
+      label: 出现场景与复现步骤
+      description: 说明界面、操作、角色状态和可重复程度。
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: 期望译文或期望结果
+      description: 可选；维护者会结合术语表做最终裁决。
+  - type: dropdown
+    id: terminology
+    attributes:
+      label: 是否可能涉及术语统一
+      options:
+        - 不确定
+        - 是
+        - 否
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: 截图、存档或其他证据
+      description: 可直接拖入图片或附上相关日志。

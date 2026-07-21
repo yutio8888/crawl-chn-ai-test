@@ -1,26 +1,9 @@
-# 已知未完成的小问题（快速参考）
+# 中文本地化历史状态参考
 
-> 本文件仅记录太小而无需开 issue 的零散问题。
-> 翻译工程进展和已追踪的 issue → `${DCSS_ISSUES_DIR:-../issues}/INDEX.md`
+> 本文件仅保留早期完成情况与主动不翻译决策，不再承担 backlog 或状态跟踪。
+> 当前可行动问题 → <https://github.com/yutio8888/crawl-chn-ai-test/issues>
 > 翻译裁决（术语选择）→ docs/decisions.md
-> 最后更新：2026-07-19
-
----
-
-## 已由 Issue 系统追踪
-
-| Issue | 状态 | 说明 |
-|-------|------|------|
-| #6 | approved | MinGW towlower CJK 损坏修复 |
-| #7 | approved | 存档界面 + 技能称号中文化 |
-| #8 | approved | 15 条混合中英文日志消息修复 |
-| #9 | approved | 10 个 Portal .des 文件翻译 |
-| #10 | approved | 10 种龙鳞护甲中文名 |
-| #11 | approved | 拾取消息 + 技能菜单 UI + 怪物语音 |
-| #12 | closed | dat/database/zh/ 数据库翻译；monname.txt 于 2026-07-19 补齐 |
-| #13 | documented | 神祇名统一 + 文档修正 |
-| #14 | documented | 翻译工程同步架构 |
-| #15 | analyzed | 项目文档管理 |
+> 冻结日期：2026-07-21
 
 ---
 
@@ -38,7 +21,10 @@
 
 ---
 
-## ✅ 数据库翻译已完成（Issue 12；monname.txt 于 2026-07-19 补齐）
+## 数据库翻译历史里程碑
+
+[Legacy issue 12](https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/12)
+记录了数据库翻译批次；`monname.txt` 于 2026-07-19 补齐。
 
 当前 23 个 `dat/database/zh/*.txt` 文件均已纳入中文本地化；具体覆盖率如下。
 
@@ -62,7 +48,10 @@
 
 ---
 
-## 主动选择不翻译
+## 冻结时的主动不翻译记录
+
+以下内容只说明 2026-07-21 冻结时的历史取舍，不表示当前版本仍存在、
+也不构成待办。若在当前默认分支复现，请创建 GitHub Issue 并记录当前证据。
 
 ### chardump.cc 咒语列表段落未翻译
 
@@ -70,7 +59,7 @@
 - **文件**: `crawl-ref/source/chardump.cc`
 - **位置**: 行 1057, 1059, 1122, 1123, 1127, 1128
 - **内容**: "You knew/know the following spells", "Your spell library was/is empty", "Your spell library contained/contains the following spells" 等整句
-- **状态**: 暂不修复，需统一 T_() 迁移（涉及过去时/现在时切换）
+- **冻结时处理**: 未纳入当时的 T_() 迁移批次（涉及过去时/现在时切换）。
 
 ### spl-cast.cc "N/A" 未翻译
 
@@ -78,4 +67,4 @@
 - **文件**: `crawl-ref/source/spl-cast.cc`
 - **位置**: 行 178
 - **内容**: `"N/A"` — 咒语伤害描述中的无伤害占位符
-- **状态**: 暂不修复，中国玩家理解 "N/A"，且需要确认 source.txt 是否已有条目
+- **冻结时处理**: 保留 `N/A`；当时认为玩家可理解，未继续验证 `source.txt` 覆盖。
