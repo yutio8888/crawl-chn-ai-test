@@ -96,8 +96,9 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("returned absolute `cwd`", adapter)
         self.assertIn(".pi-subagents/", (ROOT / ".gitignore").read_text())
         expected_agents = {
-            "crawl-coder", "ocr", "translation-reviewer",
-            "zh-code-reviewer", "zh-translator",
+            "crawl-coder", "ocr", "reviewer", "scout",
+            "translation-reviewer", "worker", "zh-code-reviewer",
+            "zh-translator",
         }
         self.assertEqual(
             expected_agents,
