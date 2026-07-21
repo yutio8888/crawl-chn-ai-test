@@ -125,10 +125,20 @@ run_concat_advisory() {
         return 0
     fi
     mapfile -d '' -t args < <(scanner_args concat)
-    # Finding exit status is intentionally ignored: this scanner is advisory.
+    # Findings are advisory, but discovery/parser/read failures are not.
+    set +e
     python3 "$SCRIPT_DIR/scan_string_concat.py" "${args[@]}" \
-        --skip-low --format json > "$scan_json" || true
+        --skip-low --format json > "$scan_json"
+    local scanner_status=$?
+    set -e
     echo "--- String concatenation blind spots (baseline diff) ---"
+    if [[ "$scanner_status" -eq 2 ]]; then
+        echo "RESULT: FAIL (scanner infrastructure/input failure)"
+        FAILURES=$((FAILURES + 1))
+        echo ""
+        release_temp "$scan_json"
+        return 0
+    fi
     local comparison
     if comparison=$(python3 "$SCRIPT_DIR/advisory_baseline.py" \
         --input "$scan_json" \

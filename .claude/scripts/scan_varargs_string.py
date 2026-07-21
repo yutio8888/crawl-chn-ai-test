@@ -45,6 +45,9 @@ import re
 import sys
 from collections import defaultdict
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import CPP_SOURCE_EXTENSIONS, ScanCoverage, discover_source_files
+
 TREE_SITTER_AVAILABLE = False
 _tscpp = None
 _Language = None
@@ -69,6 +72,13 @@ VARARG_FUNCS = {
     "cprintf", "nowrap_eol_cprintf",
     "die", "die_noline", "debuglog", "fail", "sysfail", "corrupted",
     "snprintf", "vsnprintf",
+}
+
+FORMAT_SLOTS = {
+    "snprintf": (2,), "vsnprintf": (2,),
+    "mpr": (0, 1), "mprf": (0, 1),
+    "mprf_p": (0, 1),
+    "mprf_nojoin": (0, 1), "mprf_nocap": (0, 1),
 }
 
 # String-wrapping macros/functions whose result is const char* (safe as %s).
@@ -277,7 +287,23 @@ def _receiver_type(call_node, src, type_bindings):
     if not candidates:
         return ""
     # Innermost scope wins; within it, use the nearest preceding declaration.
-    return max(candidates, key=lambda b: (b["depth"], b["position"]))["type"]
+    return max(candidates, key=lambda b: (
+        -(b["scope_end"] - b["scope_start"]), b["position"]))["type"]
+
+
+def _identifier_type(node, src, type_bindings):
+    if node.type != "identifier":
+        return ""
+    name = _text(node, src)
+    candidates = [binding for binding in type_bindings.get(name, [])
+                  if binding["position"] <= node.start_byte
+                  and binding["scope_start"] <= node.start_byte
+                  < binding["scope_end"]]
+    if not candidates:
+        return ""
+    return max(candidates, key=lambda binding: (
+        -(binding["scope_end"] - binding["scope_start"]),
+        binding["position"]))["type"]
 
 
 def _is_const_char_wrapper_call(node, src):
@@ -328,14 +354,15 @@ def _contains_string_temp(node, src, depth=0):
     return False
 
 
-def _format_arg_index(args, src):
-    """Locate the format-string argument among the call's argument nodes.
-    Returns index of the first arg that is a string_literal, concatenated_string,
-    or a const-char* wrapper call (T_(...)). Returns -1 if none found."""
-    for i, arg in enumerate(args):
-        if arg.type in ("string_literal", "concatenated_string"):
-            return i
-        if arg.type == "call_expression" and _is_const_char_wrapper_call(arg, src):
+def _format_arg_index(callee, args, src):
+    """Resolve the declared format slot, including the mprf_p overload."""
+    for i in FORMAT_SLOTS.get(callee, (0,)):
+        if i >= len(args):
+            continue
+        arg = args[i]
+        if (arg.type in ("string_literal", "concatenated_string")
+                or (arg.type == "call_expression"
+                    and _is_const_char_wrapper_call(arg, src))):
             return i
     return -1
 
@@ -478,6 +505,9 @@ def _classify_vararg(arg, src, type_bindings):
     if _is_string_ctor(arg, src):
         return "STRING_CTOR", "HIGH"
 
+    if _identifier_type(arg, src, type_bindings) in {"string", "basic_string"}:
+        return "STRING_OBJECT", "HIGH"
+
     if arg.type == "binary_expression":
         for child in arg.children:
             if not child.is_named and _text(child, src) == "+":
@@ -486,8 +516,10 @@ def _classify_vararg(arg, src, type_bindings):
                 return None, None
 
     if arg.type == "conditional_expression":
-        for c in arg.named_children:
-            if _contains_string_temp(c, src):
+        branches = list(arg.named_children)[1:]
+        for branch in branches:
+            rule, risk = _classify_vararg(branch, src, type_bindings)
+            if risk == "HIGH" or _contains_string_temp(branch, src):
                 return "TERNARY", "HIGH"
         return None, None
 
@@ -527,7 +559,7 @@ def _scan_call(call_node, src, findings, type_bindings):
     if args_node is None:
         return
     args = [c for c in args_node.named_children]
-    fmt_idx = _format_arg_index(args, src)
+    fmt_idx = _format_arg_index(callee, args, src)
     if fmt_idx < 0:
         return
     fmt_text = _format_literal_text(args[fmt_idx], src)
@@ -558,12 +590,8 @@ def _walk(node, src, findings, type_bindings):
 
 
 def scan_file(filepath, parser):
-    try:
-        with open(filepath, "rb") as f:
-            src = f.read()
-    except OSError as e:
-        print(f"Warning: cannot read {filepath}: {e}", file=sys.stderr)
-        return []
+    with open(filepath, "rb") as f:
+        src = f.read()
     tree = parser.parse(src)
     findings = []
     type_bindings = _build_type_bindings(tree.root_node, src)
@@ -604,31 +632,42 @@ def main():
         return 0
 
     files = []
+    coverage = ScanCoverage()
     if args.files:
         for f in args.files.split(","):
             f = f.strip()
-            if f and os.path.isfile(f) and os.path.splitext(f)[1] in (".cc", ".h", ".cpp", ".hpp"):
-                files.append(os.path.abspath(f))
+            if not f:
+                continue
+            if (not os.path.isfile(f)
+                    or os.path.splitext(f)[1].lower() not in CPP_SOURCE_EXTENSIONS):
+                print(f"ERROR: File not found or not C++: {f}", file=sys.stderr)
+                return 2
+            files.append(os.path.abspath(f))
     else:
         root = os.path.abspath(args.source_dir)
-        for dp, dn, fn in os.walk(root):
-            dn[:] = [d for d in dn if d not in SKIP_DIRS]
-            for name in sorted(fn):
-                if name in SKIP_FILES:
-                    continue
-                if os.path.splitext(name)[1] in (".cc", ".h"):
-                    files.append(os.path.join(dp, name))
+        try:
+            files = [path for path in discover_source_files(
+                root, skip_dirs=SKIP_DIRS)
+                if os.path.basename(path) not in SKIP_FILES]
+        except (OSError, ValueError) as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
 
     if not files:
         print("No C++ source files found to scan.", file=sys.stderr)
-        return 0
+        return 2
+    coverage.discovered = len(files)
 
     lang = _Language(_tscpp.language())
     parser = _Parser(lang)
 
     all_findings = []
     for fp in files:
-        all_findings.extend(scan_file(fp, parser))
+        try:
+            all_findings.extend(scan_file(fp, parser))
+            coverage.scanned += 1
+        except (OSError, ValueError) as exc:
+            coverage.failed.append(f"{fp}: {exc}")
 
     if not args.include_warn:
         all_findings = [f for f in all_findings if f["risk"] != "WARN"]
@@ -645,6 +684,7 @@ def main():
                 "HIGH": sum(1 for f in all_findings if f["risk"] == "HIGH"),
                 "WARN": sum(1 for f in all_findings if f["risk"] == "WARN"),
             },
+            "coverage": coverage.as_dict(),
         }, indent=2, ensure_ascii=False))
     else:
         high = [f for f in all_findings if f["risk"] == "HIGH"]
@@ -659,6 +699,10 @@ def main():
         else:
             print("OK: No std::string passed to variadic functions.")
 
+    if coverage.failed:
+        for failure in coverage.failed:
+            print(f"ERROR: {failure}", file=sys.stderr)
+        return 2
     high_count = sum(1 for f in all_findings if f["risk"] == "HIGH")
     return 1 if high_count > 0 else 0
 

@@ -40,7 +40,7 @@ except ImportError:
     _tscpp = _Language = _Parser = None
 
 
-CPP_EXTENSIONS = {".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}
+CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}
 SKIP_DIRS = {
     "contrib", ".git", "worktrees", ".worktrees", "__pycache__",
     "catch2-tests", "rltiles", "util",
@@ -1383,6 +1383,31 @@ def _borrowed_call_match(masked: str, index: Index,
     return re.search(pattern, masked[start:end])
 
 
+def _aggregate_slot(initializer: str, call_start: int) -> int:
+    """Return the positional field containing a call in a braced element."""
+    brace_stack = []
+    for pos, char in enumerate(initializer[:call_start]):
+        if char == "{":
+            brace_stack.append(pos)
+        elif char == "}" and brace_stack:
+            brace_stack.pop()
+    if not brace_stack:
+        return -1
+    opening = brace_stack[-1]
+    brace = paren = bracket = 0
+    slot = 0
+    for char in initializer[opening + 1:call_start]:
+        if char == "{": brace += 1
+        elif char == "}" and brace: brace -= 1
+        elif char == "(": paren += 1
+        elif char == ")" and paren: paren -= 1
+        elif char == "[": bracket += 1
+        elif char == "]" and bracket: bracket -= 1
+        elif char == "," and brace == paren == bracket == 0:
+            slot += 1
+    return slot
+
+
 def _raw_container_path(type_text: str, index: Index) -> Optional[str]:
     """Resolve a container's raw element, including aggregate element fields."""
     container_pattern = "|".join(
@@ -1495,8 +1520,39 @@ def _scan_large_lexical(path: str, index: Index,
             continue
         kind = declaration.group("kind")
         aggregate_names = re.findall(r"[A-Za-z_]\w*", kind)
-        if any(any(field.raw for field in index.fields.get(name, []))
-               for name in aggregate_names):
+        aggregate_fields = next((index.fields[name] for name in aggregate_names
+                                 if index.fields.get(name)), None)
+        if aggregate_fields:
+            cursor = 0
+            while True:
+                aggregate_call = _borrowed_call_match(initializer, index,
+                                                      cursor)
+                if not aggregate_call:
+                    break
+                call_start = cursor + aggregate_call.start()
+                slot = _aggregate_slot(initializer, call_start)
+                cursor = cursor + aggregate_call.end()
+                if slot < 0 or slot >= len(aggregate_fields):
+                    continue
+                field = aggregate_fields[slot]
+                if not field.raw and not field.owning:
+                    continue
+                absolute = declaration.start("assign") + call_start
+                fact = _lexical_source_fact(source, masked, absolute)
+                storage = "function-static" if local else "namespace-global"
+                field_path = f"[].{field.name}"
+                if field.raw:
+                    rule, risk = (("LIFE001", "HIGH") if local
+                                  else ("LIFE101", "WARN"))
+                    findings.append(_make_finding(
+                        rule, risk, fake, fact, storage, "raw-pointer-container",
+                        field_path, fact.text,
+                        "borrowed translation stored in persistent raw storage"))
+                else:
+                    findings.append(_make_finding(
+                        "LIFE102", "WARN", fake, fact, storage,
+                        "owning-container", field_path, fact.text,
+                        "persistent owning storage freezes the active translation"))
             continue
         absolute = declaration.start("assign") + call.start()
         fact = _lexical_source_fact(source, masked, absolute)
@@ -1786,22 +1842,21 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     pre_findings: List[dict] = []
     cross_candidates: List[dict] = []
     try:
-        explicit_subset = bool(args.files or os.path.isfile(os.path.abspath(args.source or "")))
-        large_lexical = (len(index_paths) > 200
-                         or any(os.path.getsize(path) >= 100000
-                                for path in targets))
-        if large_lexical:
-            index = _build_lexical_index(index_paths)
-            errors, index_trees, parsed_targets = [], [], {}
-            for target in targets:
-                pre_findings.extend(_scan_large_lexical(
-                    target, index, validate=explicit_subset))
-            language = None
-        else:
-            language = _Language(_tscpp.language())
-            index, errors, index_trees, parsed_targets = _build_index(
-                index_paths, language, retained_targets,
-                retained_targets)
+        source_arg = os.path.abspath(args.source or "")
+        explicit_subset = bool(args.files or os.path.isfile(source_arg))
+        production_root = (os.path.basename(source_arg) == "source"
+                           and os.path.basename(os.path.dirname(source_arg))
+                           == "crawl-ref")
+        validate_lexical = explicit_subset or not production_root
+        # Use one scanner engine for every invocation size.  The previous
+        # >200-file switch made a finding depend on whether the same file was
+        # scanned alone or as part of the source root.
+        index = _build_lexical_index(index_paths)
+        errors, index_trees, parsed_targets = [], [], {}
+        for target in targets:
+            pre_findings.extend(_scan_large_lexical(
+                target, index, validate=validate_lexical))
+        language = None
     except Exception as exc:
         print(f"ERROR: cannot initialize/build tree-sitter index: {exc}", file=sys.stderr)
         return 2
@@ -1824,7 +1879,8 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 candidate["source"].text, message))
     target_parser = None
     for path in targets:
-        if large_lexical:
+        # All targets were handled by the scope-independent lexical engine.
+        if language is None:
             continue
         pf = parsed_targets.get(os.path.abspath(path))
         if pf is not None and explicit_subset and pf.root.has_error:
@@ -1867,6 +1923,11 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
             "scanner": "scan_i18n_lifetime.py",
             "findings": rendered,
             "summary": summary,
+            "coverage": {
+                "discovered": len(targets),
+                "scanned": len(targets),
+                "failed": [],
+            },
         }, ensure_ascii=False, indent=2, sort_keys=False))
     elif rendered:
         print("=== Persistent i18n lifetime findings ===")

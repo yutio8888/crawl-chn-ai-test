@@ -11,6 +11,55 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Optional, List, Tuple
 
+
+CPP_SOURCE_EXTENSIONS = frozenset({
+    ".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx",
+})
+DEFAULT_SCAN_SKIP_DIRS = frozenset({
+    ".git", ".worktrees", "worktrees", "__pycache__", "contrib",
+})
+
+
+@dataclass
+class ScanCoverage:
+    """Fail-visible discovery/read accounting shared by i18n scanners."""
+
+    discovered: int = 0
+    scanned: int = 0
+    failed: List[str] = field(default_factory=list)
+
+    def as_dict(self) -> dict:
+        return {
+            "discovered": self.discovered,
+            "scanned": self.scanned,
+            "failed": list(self.failed),
+        }
+
+
+def discover_source_files(root: str, extensions=CPP_SOURCE_EXTENSIONS,
+                          skip_dirs=DEFAULT_SCAN_SKIP_DIRS) -> List[str]:
+    """Return a deterministic source-file inventory or raise on bad input."""
+    root = os.path.abspath(root)
+    if not os.path.exists(root):
+        raise FileNotFoundError(root)
+    if os.path.isfile(root):
+        if os.path.splitext(root)[1].lower() not in extensions:
+            raise ValueError(f"not a supported source file: {root}")
+        return [root]
+    files = []
+    for dirpath, dirnames, filenames in os.walk(root):
+        dirnames[:] = sorted(d for d in dirnames if d not in skip_dirs)
+        for name in sorted(filenames):
+            if os.path.splitext(name)[1].lower() in extensions:
+                files.append(os.path.join(dirpath, name))
+    return files
+
+
+def read_utf8(path: str) -> str:
+    """Read source strictly so encoding/read failures cannot look clean."""
+    with open(path, "r", encoding="utf-8", errors="strict") as stream:
+        return stream.read()
+
 # libc towlower for parity with C++ database.cc lowercase_string()
 _libc = None
 def _get_towlower():

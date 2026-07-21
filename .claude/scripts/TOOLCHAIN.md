@@ -116,6 +116,9 @@ source.txt 对比。`N_`/`NC_` 只标记“之后会进入动态 `T_`/`C_`，且
 constexpr helper，因此运行时 `const char*` 和命名字符数组都会编译失败。
 宏返回稳定英文字面量且不查缓存；选中后仍必须用匹配的
 `T_`/`C_` 即时翻译。协议/内部表和已有专用审计的数据源不需一律标记。
+有限 `?:` 表达式中的所有字面量分支也会提取；若仅部分分支可静态确定，
+可确定分支进入覆盖清单，同时在 stderr 报告动态分支。Lua 使用轻量词法器，
+不会把注释、普通字符串或 long string 中的伪调用当成键。
 
 **已知限制**：不会猜测 `T_(变量)` 的取值范围。若变量来自 C++ 字面量持久表，
 必须在表中用 `N_`/`NC_` 标记；以下非 C++ 数据场景由专用审计补充：
@@ -125,9 +128,7 @@ constexpr helper，因此运行时 `const char*` 和命名字符数组都会编�
 
 这些场景由 `audit_data_i18n.py` 补充扫描。
 
-`N_`/`NC_` 支持 C++ 相邻字符串字面量合并；既有 `T_`/`C_` 的相邻字面量
-仍保持历史上的单字面量提取范围，是独立范围债，本次不通过未翻译基线
-隐藏或批量生成译文。
+`T_`/`C_`/`N_`/`NC_` 都支持 C++ 相邻字符串字面量合并。
 
 `//` 和 `/* ... */` 注释中的 `N_("字面量")` /
 `NC_("上下文", "字面量")` 是显式 extraction annotation，会纳入覆盖验证；
@@ -142,7 +143,8 @@ fail-closed，不尝试展开或猜测。
 ```bash
 python3 .claude/scripts/i18n_extract.py extract crawl-ref/source/        # 提取所有 T_() 键
 python3 .claude/scripts/i18n_extract.py validate crawl-ref/source/ \     # 验证覆盖率（CI 阻断）
-    --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    --source-txt crawl-ref/source/dat/i18n/zh/source.txt \
+    --report-json /tmp/i18n-extract-coverage.json
 python3 .claude/scripts/i18n_extract.py missing crawl-ref/source/ \      # 生成缺失键存根
     --source-txt crawl-ref/source/dat/i18n/zh/source.txt
 python3 .claude/scripts/i18n_extract.py stale crawl-ref/source/ \        # 查找死条目
@@ -244,14 +246,15 @@ python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ --require-parser
 python3 .claude/scripts/scan_i18n_lifetime.py crawl-ref/source/ \
     --include-warn --format json --require-parser
 
-# 单元测试（同时覆盖小型 AST 与大型词法路径）
+# 单元测试（同时覆盖单文件、小目录和大型目录语义）
 python3 .claude/scripts/tests/test_scan_i18n_lifetime.py
 ```
 
-实现对小型目标使用 tree-sitter AST，对大型/完整仓库使用屏蔽注释与字面量的
-词法候选切片，避免旧 binding 在超大 C++ initializer 上的 native 崩溃。两条路径
-都检查 helper、聚合字段、成员赋值、容器 mutation、延迟 lambda 与立即调用
-lambda。解析器缺失、输入无效或严格目标解析失败均退出 2；CI 以 fail-closed 运行。
+所有扫描范围统一使用屏蔽注释与字面量的词法候选切片，避免结果因“单文件或
+完整仓库”而切换语义，也避免旧 binding 在超大 C++ initializer 上的 native 崩溃。
+它检查 helper、聚合字段、成员赋值、容器 mutation、延迟 lambda 与立即调用
+lambda。解析器缺失、输入无效或严格目标解析失败均退出 2；JSON 输出包含统一的
+`discovered/scanned/failed` 覆盖字段，CI 以 fail-closed 运行。
 
 修复时让持久表只保存稳定英文 key，在消费点调用 `T_()`/`C_()` 并立即复制；
 同一英文 key 需要不同译文时必须使用 `C_()` 的 context，不能覆盖全局译文。
@@ -402,8 +405,10 @@ python3 .claude/scripts/scan_varargs_string.py --files prompt.cc,describe.cc
 python3 .claude/scripts/scan_varargs_string.py crawl-ref/source/ --format json --require-parser
 ```
 
-规则：`STRING_CTOR`/`CONCAT`/`TERNARY` 为 **HIGH（阻断）**，`CALL_NO_CSTR` 为
-**WARN**。修复：先构造 `std::string` 局部变量再传 `.c_str()`；三元 `cond ? string(a) : ""`
+规则：`STRING_CTOR`/`STRING_OBJECT`/`CONCAT`/`TERNARY` 为 **HIGH（阻断）**，
+`CALL_NO_CSTR` 为 **WARN**。格式参数按函数签名及重载槽位解析，不再取首个
+字面量；局部标识符按最内层声明类型判断，三元表达式检查每个结果分支。
+修复：先构造 `std::string` 局部变量再传 `.c_str()`；三元 `cond ? string(a) : ""`
 会把两个分支都提升为 `std::string`。依赖 `pip3 install tree-sitter tree-sitter-cpp`。
 
 ### 编排者工具
@@ -493,6 +498,10 @@ python3 .claude/scripts/advisory_baseline.py \
   --input /tmp/string-concat.json \
   --baseline .claude/scripts/data/string_concat_advisory_baseline.json --write
 ```
+
+stream builder 若直接以 `builder.str()` 进入 `mpr`/`mprf` 等高置信显示 sink，
+报告会携带 sink provenance 并提升为 HIGH；`N_`/`NC_` 仅是延迟键标记，不被
+误认为已翻译。发现仍为 advisory，但扫描器输入、读取或解析失败按退出码 2 阻断。
 
 每个 profile 运行 core-static 检查（始终阻断）加上领域特定检查。
 报告写入 `.claude/metrics/verify/verify-<profile>-<timestamp>.log`。
@@ -648,6 +657,7 @@ python3 .claude/scripts/scan_i18n.py arg-mismatch \
 | `verify_zh.sh` | `--profile translation/code/review/ci` | 1（有 blocking failure） |
 | `i18n_extract.py` | `validate` | 1（有缺失 key） |
 | `i18n_extract.py` | `stale`, `missing`, `extract` | 0（信息性） |
+| i18n 扫描器 | 输入/依赖/发现/读取/解析失败 | 2（基础设施失败） |
 | `scan_i18n.py` | `missing-t`, `mprf-p`, `arg-mismatch`, `check-gaps`, `source-txt-integrity` | 1（有违规） |
 | `scan_i18n.py` | `validate-terms`, `species-consistency`, `monster-*-consistency` | 1（有违规） |
 | `scan_i18n.py` | `anti-patterns --strict` | 1（有 strict 发现） |

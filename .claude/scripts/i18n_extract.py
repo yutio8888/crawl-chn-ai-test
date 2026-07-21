@@ -26,13 +26,15 @@ Usage:
 
 import argparse
 import bisect
+import json
 import os
 import re
 import sys
 from collections import OrderedDict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import parse_source_txt
+from i18n_shared import (CPP_SOURCE_EXTENSIONS, ScanCoverage,
+                         discover_source_files, parse_source_txt, read_utf8)
 
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -63,22 +65,6 @@ def i18n_escape(raw: str) -> str:
 # C++ extraction uses the lexer below rather than a whole-file regex. This is
 # important: marker-looking text in comments, ordinary strings, and raw strings
 # must not satisfy coverage, while adjacent C++ string literals form one key.
-
-
-# ── Regex for extracting crawl.t_("...") and crawl.t_('...') from Lua ──
-
-# Matches crawl.t_("string") — Lua uses same C-style escapes in strings.
-LUA_T_RE_DQ = re.compile(r'''
-    \b crawl \s* \. \s* t_ \s* \( \s*
-    " ( (?: [^"\\] | \\. )* ) "   # group 1: double-quoted string
-    \s* \)
-''', re.VERBOSE)
-
-LUA_T_RE_SQ = re.compile(r'''
-    \b crawl \s* \. \s* t_ \s* \( \s*
-    ' ( (?: [^'\\] | \\. )* ) '   # group 1: single-quoted string
-    \s* \)
-''', re.VERBOSE)
 
 
 def cpp_unescape(s: str) -> str:
@@ -322,6 +308,142 @@ def _literal_argument(tokens, index, adjacent=True):
     return ''.join(parts), index
 
 
+def _argument_end(tokens, index):
+    """Find the comma/closing paren ending one call argument."""
+    stack = []
+    pairs = {"(": ")", "[": "]", "{": "}"}
+    while index < len(tokens):
+        kind = tokens[index][0]
+        if kind in pairs:
+            stack.append(pairs[kind])
+        elif stack and kind == stack[-1]:
+            stack.pop()
+        elif not stack and kind in {",", ")"}:
+            break
+        index += 1
+    return index
+
+
+def _strip_grouping(tokens):
+    while len(tokens) >= 2 and tokens[0][0] == "(" and tokens[-1][0] == ")":
+        depth = 0
+        closes_at_end = False
+        for pos, token in enumerate(tokens):
+            if token[0] == "(":
+                depth += 1
+            elif token[0] == ")":
+                depth -= 1
+                if depth == 0:
+                    closes_at_end = pos == len(tokens) - 1
+                    break
+        if not closes_at_end:
+            break
+        tokens = tokens[1:-1]
+    return tokens
+
+
+def _finite_literal_leaves(tokens):
+    """Return (literal leaves, complete) for a finite ?: expression."""
+    tokens = _strip_grouping(list(tokens))
+    literal, end = _literal_argument(tokens, 0, adjacent=True)
+    if literal is not None and end == len(tokens):
+        return [literal], True
+
+    depth = 0
+    question = None
+    nested_questions = 0
+    colon = None
+    for pos, token in enumerate(tokens):
+        kind = token[0]
+        if kind in {"(", "[", "{"}:
+            depth += 1
+        elif kind in {")", "]", "}"}:
+            depth -= 1
+        elif depth == 0 and kind == "?":
+            if question is None:
+                question = pos
+            else:
+                nested_questions += 1
+        elif depth == 0 and kind == ":" and question is not None:
+            if nested_questions:
+                nested_questions -= 1
+            else:
+                colon = pos
+                break
+    if question is None or colon is None:
+        return [], False
+    left, left_complete = _finite_literal_leaves(tokens[question + 1:colon])
+    right, right_complete = _finite_literal_leaves(tokens[colon + 1:])
+    return left + right, left_complete and right_complete
+
+
+def _lua_tokens(content):
+    """Tokenize enough Lua to find real crawl.t_(literal) calls."""
+    i, size = 0, len(content)
+    while i < size:
+        if content[i].isspace():
+            i += 1
+            continue
+        long_comment = re.match(r"--\[(=*)\[", content[i:])
+        if long_comment:
+            close = "]" + long_comment.group(1) + "]"
+            end = content.find(close, i + long_comment.end())
+            i = size if end < 0 else end + len(close)
+            continue
+        if content.startswith("--", i):
+            end = content.find("\n", i + 2)
+            i = size if end < 0 else end + 1
+            continue
+        long_string = re.match(r"\[(=*)\[", content[i:])
+        if long_string:
+            start = i
+            close = "]" + long_string.group(1) + "]"
+            body_start = i + long_string.end()
+            end = content.find(close, body_start)
+            if end < 0:
+                raise ValueError(f"unterminated Lua long string at offset {start}")
+            yield "STRING", content[body_start:end], start
+            i = end + len(close)
+            continue
+        if content[i] in {'"', "'"}:
+            quote, start = content[i], i
+            i += 1
+            raw = []
+            while i < size and content[i] != quote:
+                if content[i] == "\\" and i + 1 < size:
+                    raw.extend(content[i:i + 2])
+                    i += 2
+                else:
+                    raw.append(content[i])
+                    i += 1
+            if i >= size:
+                raise ValueError(f"unterminated Lua string at offset {start}")
+            i += 1
+            yield "STRING", cpp_unescape(''.join(raw)), start
+            continue
+        if content[i].isalpha() or content[i] == "_":
+            start = i
+            i += 1
+            while i < size and (content[i].isalnum() or content[i] == "_"):
+                i += 1
+            yield "IDENT", content[start:i], start
+            continue
+        yield content[i], content[i], i
+        i += 1
+
+
+def _extract_lua_calls(content):
+    tokens = list(_lua_tokens(content))
+    for i in range(len(tokens) - 5):
+        if (tokens[i][:2] == ("IDENT", "crawl")
+                and tokens[i + 1][0] == "."
+                and tokens[i + 2][:2] == ("IDENT", "t_")
+                and tokens[i + 3][0] == "("
+                and tokens[i + 4][0] == "STRING"
+                and tokens[i + 5][0] == ")"):
+            yield tokens[i + 4][1], tokens[i][2]
+
+
 def _is_marker_definition(content: str, offset: int, name: str) -> bool:
     """Return true only for the marker's own #define declaration line."""
     start = content.rfind("\n", 0, offset) + 1
@@ -397,12 +519,21 @@ def _extract_cpp_calls(content: str, ignore_marker_definitions=False):
         # Join adjacent C++ string literals for all T_/C_/N_/NC_.
         # C++ compilers concatenate adjacent "foo" "bar" into "foobar";
         # our extractor mirrors this by joining consecutive STRING tokens.
+        arg_end = _argument_end(tokens, i + 2)
         first, j = _literal_argument(tokens, i + 2, adjacent=True)
         if first is None:
             original_offset = original_offsets[token[2]]
             is_own_definition = (ignore_marker_definitions
                                  and _is_marker_definition(
                                      content, original_offset, token[1]))
+            leaves, complete = _finite_literal_leaves(tokens[i + 2:arg_end])
+            if not contextual and leaves and not deferred:
+                results.extend((leaf, None, original_offset) for leaf in leaves)
+                if not complete:
+                    print(f"WARNING: dynamic {token[1]}() branch at offset "
+                          f"{original_offset}; extracted literal arms only",
+                          file=sys.stderr)
+                continue
             if deferred and not is_own_definition:
                 raise DeferredMarkerSyntaxError(
                     f"{token[1]} requires string-literal arguments",
@@ -415,8 +546,20 @@ def _extract_cpp_calls(content: str, ignore_marker_definitions=False):
                         "NC_ requires a literal context and key",
                         original_offsets[token[2]])
                 continue
-            second, j = _literal_argument(tokens, j + 1, adjacent=True)
+            second_start = j + 1
+            second_end = _argument_end(tokens, second_start)
+            second, j = _literal_argument(tokens, second_start, adjacent=True)
             if second is None:
+                leaves, complete = _finite_literal_leaves(
+                    tokens[second_start:second_end])
+                if leaves and not deferred:
+                    results.extend((leaf, first, original_offsets[token[2]])
+                                   for leaf in leaves)
+                    if not complete:
+                        print(f"WARNING: dynamic {token[1]}() branch at offset "
+                              f"{original_offsets[token[2]]}; extracted literal arms only",
+                              file=sys.stderr)
+                    continue
                 if deferred:
                     raise DeferredMarkerSyntaxError(
                         "NC_ requires a literal context and key",
@@ -448,8 +591,7 @@ def extract_keys_from_file(filepath: str):
     key: the normalized source.txt key (cpp_unescape + i18n_escape applied)
     context: None for T_()/N_()/crawl.t_(), context string for C_()/NC_()
     """
-    with open(filepath, "r", encoding="utf-8", errors="replace") as f:
-        content = f.read()
+    content = read_utf8(filepath)
 
     offsets = _build_lineno_map(content)
     lines = content.split("\n")
@@ -457,20 +599,9 @@ def extract_keys_from_file(filepath: str):
     is_lua = filepath.endswith(".lua")
 
     if is_lua:
-        # Scan for crawl.t_("...") and crawl.t_('...') in Lua
-        for match in LUA_T_RE_DQ.finditer(content):
-            str_raw = match.group(1)
-            key_runtime = cpp_unescape(str_raw)
+        for key_runtime, offset in _extract_lua_calls(content):
             key = i18n_escape(key_runtime)
-            lineno = _offset_to_lineno(offsets, match.start())
-            line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
-            yield (key, None, filepath, lineno, line_text)
-
-        for match in LUA_T_RE_SQ.finditer(content):
-            str_raw = match.group(1)
-            key_runtime = cpp_unescape(str_raw)
-            key = i18n_escape(key_runtime)
-            lineno = _offset_to_lineno(offsets, match.start())
+            lineno = _offset_to_lineno(offsets, offset)
             line_text = lines[lineno - 1].strip() if lineno <= len(lines) else ""
             yield (key, None, filepath, lineno, line_text)
         return
@@ -510,25 +641,47 @@ def _offset_to_lineno(offsets: list, pos: int) -> int:
     return idx + 1  # 1-based
 
 
-def scan_source_dir(root: str) -> list:
+def scan_source_dir(root: str, coverage=None) -> list:
     """Walk source and extract T_/C_/N_/NC_/crawl.t_ literal keys."""
     all_keys = []  # [(key, context, file, line, line_text), ...]
-    for dirpath, dirnames, filenames in os.walk(root):
-        # Vendored libraries have independent gettext-style N_ macros. They are
-        # not DCSS source translation keys and must not be interpreted as our
-        # fail-closed deferred markers.
-        dirnames[:] = [name for name in dirnames if name != "contrib"]
-        for fn in filenames:
-            if fn.endswith(".cc") or fn.endswith(".h") or fn.endswith(".lua"):
-                filepath = os.path.join(dirpath, fn)
-                for item in extract_keys_from_file(filepath):
-                    all_keys.append(item)
+    extensions = set(CPP_SOURCE_EXTENSIONS) | {".lua"}
+    files = discover_source_files(root, extensions=extensions)
+    coverage = coverage or ScanCoverage()
+    coverage.discovered = len(files)
+    if not files:
+        raise ValueError(f"no supported source files found under {root}")
+    for filepath in files:
+        try:
+            all_keys.extend(extract_keys_from_file(filepath))
+            coverage.scanned += 1
+        except (OSError, UnicodeError, ValueError) as exc:
+            coverage.failed.append(f"{filepath}: {exc}")
+    if coverage.failed:
+        raise OSError("source scan failed: " + "; ".join(coverage.failed))
     return all_keys
+
+
+def _scan_with_report(args):
+    coverage = ScanCoverage()
+    keys = scan_source_dir(args.source_dir, coverage)
+    if getattr(args, "report_json", None):
+        with open(args.report_json, "w", encoding="utf-8") as report:
+            json.dump({"scanner": "i18n_extract.py",
+                       "coverage": coverage.as_dict()}, report,
+                      ensure_ascii=False, indent=2)
+            report.write("\n")
+    return keys
+
+
+def _load_source_entries(path):
+    if not os.path.isfile(path):
+        raise FileNotFoundError(path)
+    return parse_source_txt(path)
 
 
 def cmd_extract(args):
     """Print all extracted keys."""
-    keys = scan_source_dir(args.source_dir)
+    keys = _scan_with_report(args)
     # Sort by key, then by file
     keys.sort(key=lambda x: (x[0], x[2]))
     for key, ctx, fpath, lineno, line_text in keys:
@@ -540,8 +693,8 @@ def cmd_extract(args):
 
 def cmd_validate(args):
     """Check which extracted keys are missing from source.txt."""
-    keys = scan_source_dir(args.source_dir)
-    entries = parse_source_txt(args.source_txt)
+    keys = _scan_with_report(args)
+    entries = _load_source_entries(args.source_txt)
 
     # Deduplicate keys
     seen = set()
@@ -559,7 +712,7 @@ def cmd_validate(args):
 
     if not seen:
         print("WARNING: No T_() or C_() calls found in source directory.")
-        return 1
+        return 2
     if missing:
         print(f"MISSING: {len(missing)} keys in source code but not in {args.source_txt}")
         print()
@@ -576,8 +729,8 @@ def cmd_validate(args):
 
 def cmd_missing(args):
     """Print stub entries for missing keys."""
-    keys = scan_source_dir(args.source_dir)
-    entries = parse_source_txt(args.source_txt)
+    keys = _scan_with_report(args)
+    entries = _load_source_entries(args.source_txt)
 
     seen = set()
     missing_entries = OrderedDict()
@@ -602,8 +755,8 @@ def cmd_missing(args):
 
 def cmd_stale(args):
     """Find keys in source.txt that are no longer referenced in code."""
-    keys = scan_source_dir(args.source_dir)
-    entries = parse_source_txt(args.source_txt)
+    keys = _scan_with_report(args)
+    entries = _load_source_entries(args.source_txt)
 
     referenced = set()
     for key, ctx, _, _, _ in keys:
@@ -629,8 +782,8 @@ def cmd_stale(args):
 
 def cmd_check_escapes(args):
     """Verify that source.txt keys with backslash follow the escape convention."""
-    keys = scan_source_dir(args.source_dir)
-    entries = parse_source_txt(args.source_txt)
+    keys = _scan_with_report(args)
+    entries = _load_source_entries(args.source_txt)
 
     # Collect all keys from code
     code_keys = set()
@@ -669,26 +822,31 @@ def main():
     p_extract = subparsers.add_parser("extract", help="Print all extracted keys")
     p_extract.add_argument("source_dir", help="Root of C++ source tree")
     p_extract.add_argument("-v", "--verbose", action="store_true")
+    p_extract.add_argument("--report-json")
 
     p_validate = subparsers.add_parser("validate", help="Check key coverage")
     p_validate.add_argument("source_dir")
     p_validate.add_argument("--source-txt", required=True,
                             help="Path to source.txt")
+    p_validate.add_argument("--report-json")
 
     p_missing = subparsers.add_parser("missing",
                                        help="Print stub entries for missing keys")
     p_missing.add_argument("source_dir")
     p_missing.add_argument("--source-txt", required=True)
+    p_missing.add_argument("--report-json")
 
     p_stale = subparsers.add_parser("stale",
                                      help="Find unreferenced source.txt entries")
     p_stale.add_argument("source_dir")
     p_stale.add_argument("--source-txt", required=True)
+    p_stale.add_argument("--report-json")
 
     p_escape = subparsers.add_parser("check-escapes",
                                       help="Check backslash escape consistency")
     p_escape.add_argument("source_dir")
     p_escape.add_argument("--source-txt", required=True)
+    p_escape.add_argument("--report-json")
 
     args = parser.parse_args()
 
@@ -706,9 +864,9 @@ def main():
         else:
             parser.print_help()
             return 1
-    except DeferredMarkerSyntaxError as exc:
+    except (DeferredMarkerSyntaxError, OSError, UnicodeError, ValueError) as exc:
         print(f"ERROR: {exc}", file=sys.stderr)
-        return 1
+        return 2
 
 
 if __name__ == "__main__":

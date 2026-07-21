@@ -373,6 +373,13 @@ assert_output "lang-args: finds language-dependent args" \
 # ── varargs-string (Issue #42 UB) ──
 echo "--- varargs-string ---"
 set +e
+python3 "$SCRIPT_DIR/test_scanner_completeness.py" \
+    > /tmp/actual_scanner_completeness.txt 2>&1
+scanner_completeness_status=$?
+set -e
+assert_status "scanner completeness: cross-scanner unit suite" 0 \
+    "$scanner_completeness_status"
+set +e
 python3 "$SCRIPT_DIR/../scan_varargs_string.py" "$FIXTURES/varargs-string/" --include-warn > /tmp/actual_varargs.txt 2>&1
 varargs_status=$?
 set -e

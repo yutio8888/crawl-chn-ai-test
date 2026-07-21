@@ -33,6 +33,9 @@ import re
 import sys
 from collections import defaultdict
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import CPP_SOURCE_EXTENSIONS, ScanCoverage, discover_source_files
+
 # ── Tree-sitter availability ──────────────────────────────────────────────────
 
 TREE_SITTER_AVAILABLE = False
@@ -51,7 +54,7 @@ except ImportError:
 
 # ── Configuration ─────────────────────────────────────────────────────────────
 
-TRANSLATION_WRAPPERS = {"T_", "N_", "C_"}
+TRANSLATION_WRAPPERS = {"T_", "C_"}
 """Functions whose string-literal arguments are considered translated."""
 
 TEXT_METHODS = {"append"}
@@ -674,7 +677,19 @@ def _hard_exclude(finding, filepath, source_bytes):
 
 # ── Risk Scoring ──────────────────────────────────────────────────────────────
 
-def _score_finding(finding, filepath, source_bytes):
+def _display_stream_sinks(source_bytes):
+    """Map local stream builders passed directly to display sinks."""
+    source = source_bytes.decode("utf-8", errors="replace")
+    sinks = {}
+    pattern = re.compile(
+        r"\b(?P<sink>mpr|mprf|mprf_p|cprintf|formatted_message_history)\s*"
+        r"\(\s*(?P<receiver>[A-Za-z_]\w*)\s*\.\s*str\s*\(")
+    for match in pattern.finditer(source):
+        sinks[match.group("receiver")] = match.group("sink")
+    return sinks
+
+
+def _score_finding(finding, filepath, source_bytes, display_sinks=None):
     """Compute a numeric risk score for a finding."""
     score = 0
     reasons = []
@@ -682,6 +697,12 @@ def _score_finding(finding, filepath, source_bytes):
     content = finding["literal"]
     receiver = finding["receiver"]
     node = finding["node"]
+    display_sinks = display_sinks or {}
+
+    if receiver in display_sinks:
+        score += 6
+        finding["sink"] = display_sinks[receiver]
+        reasons.append(f"display-sink={display_sinks[receiver]} (+6)")
 
     # Detect layout strings: very low alphabetic ratio in non-whitespace chars
     nonspace = [c for c in content if not c.isspace()]
@@ -820,12 +841,8 @@ def _walk_node(node, source_bytes, filepath, findings, include_wrapped,
 
 def scan_file(filepath, parser, include_wrapped=False):
     """Parse a C++ source file and return a list of raw findings."""
-    try:
-        with open(filepath, "rb") as f:
-            source_bytes = f.read()
-    except (OSError, UnicodeDecodeError) as e:
-        print(f"Warning: Cannot read {filepath}: {e}", file=sys.stderr)
-        return [], b""
+    with open(filepath, "rb") as f:
+        source_bytes = f.read()
 
     tree = parser.parse(source_bytes)
     findings = []
@@ -904,7 +921,7 @@ def format_text(findings, source_dir):
     return "\n".join(output)
 
 
-def format_json(findings, source_dir, files_scanned):
+def format_json(findings, source_dir, coverage):
     """Format findings as structured JSON."""
     summary = defaultdict(lambda: defaultdict(int))
     per_file = defaultdict(lambda: defaultdict(int))
@@ -923,6 +940,7 @@ def format_json(findings, source_dir, files_scanned):
             "receiver": f["receiver"],
             "wrapped": f.get("wrapped", False),
             "reason": f["reason"],
+            "sink": f.get("sink"),
         })
         summary[f["rule"]][f["risk"]] += 1
         per_file[rel_path][f["risk"]] += 1
@@ -936,7 +954,7 @@ def format_json(findings, source_dir, files_scanned):
             "version": "1.0.0",
             "mode": "all" if has_wrapped else "bare-only",
             "source": source_dir or "(files)",
-            "files_scanned": files_scanned,
+            "coverage": coverage.as_dict(),
         },
         "findings": finding_dicts,
         "summary": {
@@ -1024,32 +1042,32 @@ def main():
 
     # ── Collect files to scan ─────────────────────────────────────────────
     files_to_scan = []
+    coverage = ScanCoverage()
 
     if args.files:
         for f in args.files.split(","):
             f = f.strip()
-            if f and os.path.isfile(f):
-                ext = os.path.splitext(f)[1]
-                if ext in (".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"):
-                    files_to_scan.append(os.path.abspath(f))
-            elif f:
-                print(f"Warning: File not found or not C++: {f}",
-                      file=sys.stderr)
+            if not f:
+                continue
+            if (not os.path.isfile(f)
+                    or os.path.splitext(f)[1].lower() not in CPP_SOURCE_EXTENSIONS):
+                print(f"ERROR: File not found or not C++: {f}", file=sys.stderr)
+                return 2
+            files_to_scan.append(os.path.abspath(f))
     elif args.source_dir:
         source_dir = os.path.abspath(args.source_dir)
-        for dirpath, dirnames, filenames in os.walk(source_dir):
-            dirnames[:] = [d for d in dirnames if d not in SKIP_DIRS]
-
-            for fn in sorted(filenames):
-                if fn in SKIP_FILES:
-                    continue
-                ext = os.path.splitext(fn)[1]
-                if ext in (".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"):
-                    files_to_scan.append(os.path.join(dirpath, fn))
+        try:
+            files_to_scan = [path for path in discover_source_files(
+                source_dir, skip_dirs=SKIP_DIRS)
+                if os.path.basename(path) not in SKIP_FILES]
+        except (OSError, ValueError) as exc:
+            print(f"ERROR: {exc}", file=sys.stderr)
+            return 2
 
     if not files_to_scan:
         print("No C++ source files found to scan.", file=sys.stderr)
-        return 0
+        return 2
+    coverage.discovered = len(files_to_scan)
 
     # ── Initialize parser ─────────────────────────────────────────────────
     lang = _Language(_tscpp.language())
@@ -1058,18 +1076,22 @@ def main():
     # ── Scan files ────────────────────────────────────────────────────────
     include_wrapped = args.all
     all_findings = []
-    files_scanned = 0
-
     for filepath in files_to_scan:
-        raw_findings, source_bytes = scan_file(filepath, ts_parser,
-                                               include_wrapped)
-        files_scanned += 1
+        try:
+            raw_findings, source_bytes = scan_file(filepath, ts_parser,
+                                                   include_wrapped)
+            coverage.scanned += 1
+        except (OSError, ValueError) as exc:
+            coverage.failed.append(f"{filepath}: {exc}")
+            continue
 
+        display_sinks = _display_stream_sinks(source_bytes)
         for finding in raw_findings:
             if _hard_exclude(finding, filepath, source_bytes):
                 continue
 
-            score, reasons = _score_finding(finding, filepath, source_bytes)
+            score, reasons = _score_finding(
+                finding, filepath, source_bytes, display_sinks)
             risk = _score_to_risk(score)
 
             risk_order = {"LOW": 0, "MED": 1, "HIGH": 2}
@@ -1093,7 +1115,7 @@ def main():
     out_dir = _display_root(files_to_scan, args.source_dir)
 
     if args.format == "json":
-        output = format_json(all_findings, out_dir, files_scanned)
+        output = format_json(all_findings, out_dir, coverage)
         if args.json_output:
             with open(args.json_output, "w", encoding="utf-8") as f:
                 f.write(output)
@@ -1105,6 +1127,11 @@ def main():
         print(output)
 
     # ── Exit code ─────────────────────────────────────────────────────────
+    if coverage.failed:
+        for failure in coverage.failed:
+            print(f"ERROR: {failure}", file=sys.stderr)
+        return 2
+
     high_count = sum(1 for f in all_findings if f["risk"] == "HIGH")
     med_count = sum(1 for f in all_findings if f["risk"] == "MED")
     low_count = sum(1 for f in all_findings if f["risk"] == "LOW")

@@ -116,7 +116,7 @@ class DeferredMarkerTests(unittest.TestCase):
                     [sys.executable, str(SCRIPT), "validate", str(root),
                      "--source-txt", str(source_txt)],
                     text=True, capture_output=True, check=False)
-            self.assertEqual(1, proc.returncode)
+            self.assertEqual(2, proc.returncode)
             self.assertIn("requires string-literal arguments", proc.stderr)
 
     def test_validate_cannot_pass_by_missing_an_adjacent_literal_key(self):
@@ -132,7 +132,7 @@ class DeferredMarkerTests(unittest.TestCase):
                 [sys.executable, str(SCRIPT), "validate", str(root),
                  "--source-txt", str(source_txt)],
                 text=True, capture_output=True, check=False)
-        self.assertEqual(1, proc.returncode)
+            self.assertEqual(1, proc.returncode)
         self.assertIn("missing adjacent", proc.stdout)
         self.assertNotIn("comment ghost", proc.stdout)
 
@@ -170,6 +170,29 @@ class DeferredMarkerTests(unittest.TestCase):
             # Negative cases produce no extraction
         ], keys)
 
+    def test_conditional_literal_arms_are_all_extracted(self):
+        keys = self._extract_source(
+            'auto a = T_(pick ? "Random " : "Recommended ");\n'
+            'auto b = C_("book_type", manual ? "manual" : "book");\n'
+            'auto c = T_(a ? "one" : b ? "two" : "three");\n')
+        self.assertEqual([
+            ("Random ", None), ("Recommended ", None),
+            ("manual", "book_type"), ("book", "book_type"),
+            ("one", None), ("two", None), ("three", None),
+        ], keys)
+
+    def test_lua_lexer_ignores_comments_and_string_lookalikes(self):
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "sample.lua"
+            path.write_text(
+                '-- crawl.t_("comment")\n'
+                'local fake = [[crawl.t_("long string")]]\n'
+                'local quoted = "crawl.t_(\\\"nested\\\")"\n'
+                'local real = crawl.t_("visible")\n', encoding="utf-8")
+            keys = [(key, context) for key, context, *_
+                    in EXTRACT.extract_keys_from_file(str(path))]
+        self.assertEqual([("visible", None)], keys)
+
     def test_nonliteral_comment_marker_fails_closed(self):
         with tempfile.TemporaryDirectory() as td:
             root = Path(td)
@@ -183,7 +206,7 @@ class DeferredMarkerTests(unittest.TestCase):
                 [sys.executable, str(SCRIPT), "validate", str(root),
                  "--source-txt", str(source_txt)],
                 text=True, capture_output=True, check=False)
-        self.assertEqual(1, proc.returncode)
+        self.assertEqual(2, proc.returncode)
         self.assertIn("requires string-literal arguments", proc.stderr)
 
     def test_validate_blocks_missing_deferred_key(self):
