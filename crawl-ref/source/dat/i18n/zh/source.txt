@@ -40953,3 +40953,42 @@ Quit menu          q, Ctrl-Q
 %%%%
  Zot: <%s>%d</%s>
  佐特：<%s>%d</%s>
+%%%%
+terrain swap actor|you
+你
+%%%%
+terrain swap preposition|beside
+旁边
+%%%%
+terrain swap preposition|around
+周围
+%%%%
+terrain swap preposition|above
+上方
+%%%%
+terrain swap preposition|beneath
+下方
+%%%%
+%1$s suddenly disappears!
+%1$s突然消失了！
+%%%%
+%1$s suddenly disappears from %2$s %3$s!
+%1$s突然从%3$s%2$s消失了！
+%%%%
+%1$s suddenly appears!
+%1$s突然出现了！
+%%%%
+%1$s suddenly appears %2$s %3$s!
+%1$s突然出现在%3$s%2$s！
+%%%%
+%1$s moves!
+%1$s移动了！
+%%%%
+%1$s moves from %2$s %3$s!
+%1$s从%3$s%2$s移走了！
+%%%%
+%1$s moves to %2$s %3$s!
+%1$s移到了%3$s%2$s！
+%%%%
+%1$s moves from %2$s %3$s to %4$s %5$s!
+%1$s从%3$s%2$s移到了%5$s%4$s！
