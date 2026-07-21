@@ -1,37 +1,38 @@
-# Security Policy for DCSS
+# Security Policy for the DCSS Chinese Fork
 
-Last updated Jan 2022.
+Last reviewed: 2026-07-21.
 
 ## Supported Versions
 
-Generally, we fully support the current unstable version, and the most recent
-stable version. At time of writing, this is:
+This repository is a downstream Chinese-localization fork based on the upstream
+DCSS `0.34.1` tag. Security fixes are maintained only on the current default
+branch:
 
-| Version | Supported          |
-| ------- | ------------------ |
-| 0.29-a  | :white_check_mark: |
-| 0.28-b  | :white_check_mark: |
-| 0.27.1  | :white_check_mark: |
-| <0.27.1 | :x:                |
+| Version | Supported |
+|---|---|
+| Current default branch based on `0.34.1` | Yes |
+| Older fork branches, commits, and build artifacts | No guaranteed support |
+| Upstream DCSS releases and online servers | Maintained by the upstream project |
 
-We may, if the vulnerability is severe and affects online play, attempt to
-patch earlier versions. Versions before around 0.14 do not reliably build any
-more and may be impossible to patch regardless of severity.
-
-Online servers generally run a webtiles server version drawn from trunk, even
-if they allow play on older versions of dcss, so any vulnerability in an
-up-to-date webtiles server is covered (e.g. in the python code).
+The default branch contains localization and platform changes after the tag; it
+is not a byte-for-byte copy of upstream `0.34.1`. A report against an older
+revision should be reproduced on the current default branch when possible.
 
 ## Reporting a Vulnerability
 
-Open an issue on github in this repository, or contact the devteam in
-`#crawl-dev` on Libera IRC. If you would prefer to report the issue in private,
-we recommend either contacting one of the currently active devs directly (e.g.
-via an IRC private message), or sending an email to [security@dcss.io] with a
-subject line including the phrase `dcss security report`. Currently this email
-forwards to @rawlins / advil, who will send an acknowledgement and report the
-issue to the devteam more generally.
+For an ordinary bug without sensitive exploit details, open a
+[GitHub Issue](https://github.com/yutio8888/crawl-chn-ai-test/issues) and include
+the affected commit, platform, build type, reproduction steps, and impact.
 
-If you have access (devteam and server owners) you can directly report a
-security issue in private by opening an issue in the https://github.com/crawl/dcss-security
-repository.
+Do **not** publish credentials, private server data, a working exploit, or other
+details that would make active abuse easier. For a vulnerability inherited from
+upstream DCSS, or one that affects upstream code or public online servers, use
+the [upstream DCSS security policy](https://github.com/crawl/crawl/security/policy).
+GitHub private vulnerability reporting is not currently enabled for this fork.
+For a sensitive fork-specific problem, open only a minimal issue asking the
+repository owner to establish a private channel; do not include exploit details
+in that issue.
+
+Security remediation and disclosure timing are tracked privately while details
+remain sensitive. A public GitHub Issue may be created after a fix is available
+and disclosure no longer increases risk.

@@ -53,7 +53,7 @@ Never edit generated blocks directly.
 | CJK tiles design | `docs/cjk-tiles-architecture.md` |
 | Verification | `docs/zh-testing.md`, `.claude/scripts/TOOLCHAIN.md` |
 | Cross-runtime handoff | `docs/dual-agent-workflow.md` |
-| Issue files | `docs/issue-tracking.md` |
+| Issue tracking | `docs/issue-tracking.md` |
 | Path portability | `.agents/policies/path-portability.md` |
 
 ## Change Rules

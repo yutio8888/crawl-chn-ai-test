@@ -1,8 +1,15 @@
-# zh-runtime-tests — Progress Report
+# zh-runtime-tests — Historical Completion Report
 
-Workspace: worktree `.claude/worktrees/zh-runtime-tests-m1`
-Branch: `worktree-zh-runtime-tests-m1` based on `chn-0.34.1-base`
-Plan: external planning artifact (not required to reproduce this historical report)
+> **Historical snapshot.** This report records the completed runtime-test project
+> at commit `8e641d07a2` on a downstream branch based on upstream tag `0.34.1`.
+> The old worktree and branch names below are provenance, not current setup
+> instructions. Counts and findings are not a current backlog; rerun the
+> maintained verification entry points for current results and use GitHub Issues
+> for remaining work.
+
+Historical workspace: `.claude/worktrees/zh-runtime-tests-m1`
+Historical branch: `worktree-zh-runtime-tests-m1`
+Plan: external planning artifact (not required to reproduce this report)
 
 ## Status: **COMPLETE ✅ — All milestones delivered, false positives cleaned, baseline stable at 160 issues**
 
@@ -254,7 +261,11 @@ Discovered during implementation and recorded here for future reference:
 
 ---
 
-## Remaining Work
+## Historical Follow-ups at Completion
+
+The following items were observations at the recorded candidate boundary. They
+must not be treated as current open work without reproducing them on the current
+default branch and filing or updating a GitHub Issue.
 
 | Priority | Task | Notes |
 |----------|------|-------|

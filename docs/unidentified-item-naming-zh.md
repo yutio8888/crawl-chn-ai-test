@@ -1,5 +1,9 @@
 # 未鉴定药水与卷轴的中文命名方案
 
+> **0.34.1 下游实现记录。** 本文描述的药水限定词和卷轴外观方案已经进入当前
+> 代码；它不是待实施提案。文末“未覆盖项”只记录当时的范围边界，当前待办以
+> [GitHub Issues](https://github.com/yutio8888/crawl-chn-ai-test/issues) 为准。
+
 ## 问题
 
 未鉴定物品通过随机外观描述来区分不同子类型：
@@ -7,7 +11,8 @@
 - **药水**：修饰词 + 颜色 + "potion"（如 "bubbling blue potion"）
 - **卷轴**：`make_name(seed, MNAME_SCROLL)` 生成拉丁字母标签（如 "scroll labelled YSTORVO GHEMMI"）
 
-chn-0.34.1-base 分支已中文化了结构词（"药水"、"卷轴"），但内容词未翻译：
+在以 `0.34.1` 为基线的早期下游候选中，结构词（“药水”“卷轴”）已经中文化，
+但内容词尚未翻译：
 
 - 药水输出 `fizzy yellow药水`（修饰词和颜色仍是英文）
 - 卷轴输出 `标有YSTORVO GHEMMI的卷轴`（拉丁标签未处理）
@@ -219,7 +224,10 @@ enum scroll_seal_type {
 | `crawl-ref/source/Makefile.obj` | 添加 `zh-scroll-appearance.o` |
 | `crawl-ref/source/Makefile` | `OBJECTS += zh-scroll-appearance.o` |
 
-## 未覆盖项
+## 当时未覆盖的范围
+
+下表记录该实现批次没有处理的物品类型，不表示它们在当前默认分支仍必然存在同样
+问题。需要行动时应先用当前构建复现，再由 GitHub Issue 跟踪。
 
 以下未鉴定物品类型暂未纳入本次修改，但存在同样的"半翻译"问题：
 
@@ -230,4 +238,5 @@ enum scroll_seal_type {
 | 项链 (amulet) | `sapphire dented amulet` → 英文不变 | 材质 × 特征 |
 | 法杖 (staff) | `glowing crooked staff` → 英文不变 | 特征 × 形状 |
 
-这些可以后续用同样的模式处理（魔杖/戒指/项链/法杖走 T_()，因为描述词英文本身有意义）。
+当时建议后续按同样模式评估这些类型（魔杖/戒指/项链/法杖可考虑走 T_()，
+因为描述词英文本身有意义）；当前是否仍需该方案必须重新验证。

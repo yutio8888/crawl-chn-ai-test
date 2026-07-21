@@ -1,5 +1,8 @@
 # TextDB 消息国际化 Phase 1 实施记录
 
+> 版本基线：上游 DCSS `0.34.1`。本文保存已完成实现的设计边界和验证证据；
+> 可行动问题与后续扩展不在本文维护，以 GitHub Issues 为准。
+
 状态：**Phase 1 基础设施已完成；Phase 2 的 262-key 数据迁移已完成。当前
 catalog 跟踪 262 个 canonical key、355 个 canonical variant：250 个 key、
 341 个 variant 进入 structured 路径，10 个 key、12 个 variant 为

@@ -1,5 +1,10 @@
 [![Build Status](https://github.com/crawl/crawl/workflows/Build/badge.svg)](https://github.com/crawl/crawl/actions/)
 
+> **Upstream 0.34.1 documentation snapshot.** This file preserves the upstream
+> project overview for the fork's game-content baseline. Repository-relative
+> links are adjusted for the `crawl-ref/` layout. It does not describe the
+> Chinese fork's support status or issue tracker; see [README.md](README.md).
+
 # Dungeon Crawl Stone Soup
 
 Dungeon Crawl Stone Soup is a game of dungeon exploration, combat and magic, involving characters of diverse skills, worshipping deities of great power and caprice. To win, you'll need to be a master of tactics and strategy, and prevail against overwhelming odds.

@@ -1,7 +1,10 @@
 # 法术名称翻译规则审查报告 — 修改提案
 
 > 对 `docs/spell-naming-rules.md`（草案）的逐条修改建议。
-> 基于 2026-07-12 分析，项目处于内部测试阶段，改名成本忽略不计。
+> **历史审查输入。** 基于上游 0.34.1 内容和 2026-07-12 当时的项目状态；其中
+> “内部测试阶段”等描述不是长期现状。已采纳结论见
+> [`docs/spell-naming-rules.md`](spell-naming-rules.md)，回应和拒绝理由见
+> [`docs/spell-naming-rules-review-response.md`](spell-naming-rules-review-response.md)。
 
 ---
 

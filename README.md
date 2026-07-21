@@ -10,6 +10,19 @@
 > 上游说明见 [README.upstream.md](README.upstream.md)，上游构建细节见
 > [crawl-ref/INSTALL.md](crawl-ref/INSTALL.md)。
 
+## 版本基线与文档语境
+
+- 游戏内容和上游代码以仓库中的 annotated tag `0.34.1` 为基线；中文翻译、i18n
+  适配、测试和 CJK Tiles 支持是该标签之后的下游改动，因此默认分支不会与标签
+  逐字节相同。
+- 当前检出的具体版本以 Git 为准；不要在文档中写死默认分支的 commit 或
+  `git describe` 输出。可用 `git merge-base --is-ancestor 0.34.1 HEAD` 确认某个候选
+  仍建立在该基线上。
+- `crawl-ref/` 中未被本项目修改的上游文档保留 0.34.1 发布时的历史版本号、旧标签和
+  `trunk` 语境；这些文字不是本中文分支的支持矩阵或开发状态。
+- 标为“历史记录”“阶段快照”或“审查输入”的文档只保存当时证据。当前问题和进度以
+  GitHub Issues 为准，当前架构、术语和流程以 `AGENTS.md` 中列出的权威文档为准。
+
 ## 当前状态
 
 项目目前已具备可持续开发和验证的完整链路：

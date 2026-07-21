@@ -2,6 +2,13 @@
 
 Analysis of P1-P4 batch translation session failures. Date: 2026-07-07.
 
+> **Historical incident analysis for the downstream 0.34.1 work.** Paths,
+> proposed priorities, tool behavior, and missing safeguards below describe the
+> repository at the incident boundary. Current routing and policy are defined by
+> `AGENTS.md`, `.agents/policies/`, and the maintained verification scripts.
+> Reproduce any alleged gap on the current default branch before opening or
+> scheduling work; GitHub Issues is the only current backlog.
+
 ---
 
 ## 1. Root Cause Summary Per Problem

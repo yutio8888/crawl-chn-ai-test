@@ -1,10 +1,13 @@
 # TextDB 消息国际化 Phase 0 实施记录
 
-状态：**Phase 0 已完成并通过架构验收；Phase 1 可以开始，但尚未实施。**
+> **历史阶段快照，基线为上游 0.34.1。** Phase 0 当时已完成并通过架构验收；
+> 此后 Phase 1 基础设施和 Phase 2 数据迁移也已完成。当前总状态见
+> [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md)，后续实现记录见
+> [`textdb-i18n-phase1.md`](textdb-i18n-phase1.md)。
 
 本文记录 [`textdb-i18n-architecture.md`](textdb-i18n-architecture.md) 的
-Phase 0 原型、数据契约和验证证据。TextDB structured 选择、catalog 与模板均未
-接入游戏路径；当前游戏仍完全使用 legacy TextDB。进入现有施法调用链的改动只有
+Phase 0 原型、数据契约和验证证据。在这个历史边界上，TextDB structured 选择、
+catalog 与模板尚未接入游戏路径，游戏仍完全使用 legacy TextDB。进入当时施法调用链的改动只有
 目标与 beam 的 typed compatibility seams；其 adapters 仍产出原有 prep/target/beam
 字符串。
 
@@ -288,7 +291,7 @@ substring site ordinal/bound/index、英文逐字节输出以及最终 RNG state
 TextDB，也不执行递归、Lua、`[a|b]` 或任何 RNG。这闭合了 canonical English 共享
 轨迹到本地化最终模板的最小端到端证明。
 
-## 当前验证证据
+## Phase 0 验证证据
 
 - C++14 Catch2 完整链接：通过；
 - `[textdb][phase0]`：18 cases / 736,197 assertions，通过；

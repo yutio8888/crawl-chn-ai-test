@@ -26,7 +26,7 @@
 [Legacy issue 12](https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/12)
 记录了数据库翻译批次；`monname.txt` 于 2026-07-19 补齐。
 
-当前 23 个 `dat/database/zh/*.txt` 文件均已纳入中文本地化；具体覆盖率如下。
+冻结时，23 个 `dat/database/zh/*.txt` 文件均已纳入中文本地化；当时记录的覆盖率如下。
 
 | 项目 | 文件 | 覆盖率 |
 |------|------|--------|
