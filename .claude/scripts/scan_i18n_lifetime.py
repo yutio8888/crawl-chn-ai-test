@@ -53,6 +53,19 @@ KNOWN_PRODUCTION_LEXICAL_DEBT = {
     ("threads.h", "unclosed ( at offset 1016"),
     ("xom.cc", "unmatched ) at offset 177033"),
 }
+
+
+def _production_lexical_prerequisite(relative_path: str,
+                                     lexical_error: Optional[str]) -> Optional[str]:
+    """Accept only an exact, reviewed production-tree lexical prerequisite."""
+    if not lexical_error:
+        return None
+    debt = (relative_path, lexical_error)
+    if debt not in KNOWN_PRODUCTION_LEXICAL_DEBT:
+        raise ValueError(
+            f"unrecognized production lexical error: {relative_path}: "
+            f"{lexical_error}")
+    return f"{relative_path}: {lexical_error}"
 TRANSLATION_CALLS = {"T_", "C_"}
 CONTAINER_MUTATORS = {
     "push_back", "push_front", "emplace", "emplace_back", "emplace_front",
@@ -1868,13 +1881,9 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                     source_text = source_stream.read()
                 _masked, lexical_error = _lex_cpp(source_text)
                 if lexical_error:
-                    debt = (os.path.relpath(target, source_arg), lexical_error)
-                    if debt not in KNOWN_PRODUCTION_LEXICAL_DEBT:
-                        raise ValueError(
-                            f"lexical integrity error in target {target}: "
-                            f"{lexical_error}")
-                    lexical_prerequisites.append(
-                        f"{debt[0]}: {debt[1]}")
+                    prerequisite = _production_lexical_prerequisite(
+                        os.path.relpath(target, source_arg), lexical_error)
+                    lexical_prerequisites.append(prerequisite)
             pre_findings.extend(_scan_large_lexical(
                 target, index, validate=validate_lexical))
         language = None

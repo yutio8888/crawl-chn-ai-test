@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import json
+import importlib.util
 import subprocess
+import sys
 import tempfile
 import textwrap
 import unittest
@@ -12,9 +14,25 @@ from pathlib import Path
 
 
 SCANNER = Path(__file__).resolve().parents[1] / "scan_i18n_lifetime.py"
+SPEC = importlib.util.spec_from_file_location("scan_i18n_lifetime", SCANNER)
+MODULE = importlib.util.module_from_spec(SPEC)
+sys.modules[SPEC.name] = MODULE
+assert SPEC.loader is not None
+SPEC.loader.exec_module(MODULE)
 
 
 class LifetimeScannerTests(unittest.TestCase):
+    def test_production_lexical_prerequisite_is_exact(self):
+        expected = "branch-data.h: unmatched } at offset 12640"
+        self.assertEqual(expected, MODULE._production_lexical_prerequisite(
+            "branch-data.h", "unmatched } at offset 12640"))
+        for path, error in (
+                ("branch-data.h", "unmatched } at offset 12641"),
+                ("new-file.cc", "unmatched } at offset 12640")):
+            with self.subTest(path=path, error=error):
+                with self.assertRaisesRegex(ValueError, "unrecognized"):
+                    MODULE._production_lexical_prerequisite(path, error)
+
     def run_scan(self, files: dict[str, str], *args: str):
         with tempfile.TemporaryDirectory() as temp:
             root = Path(temp)
