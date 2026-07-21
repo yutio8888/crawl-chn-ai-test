@@ -43,6 +43,23 @@ class ScannerCompletenessTests(unittest.TestCase):
         self.assertEqual(data["coverage"],
                          {"discovered": 1, "scanned": 1, "failed": []})
 
+    def test_relevant_parser_errors_fail_visible(self):
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "broken.cc"
+            source.write_text('void f( { auto x = "broken";\n',
+                              encoding="utf-8")
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                with self.subTest(scanner=scanner):
+                    proc = self.run_scanner(scanner, "--files", source,
+                                            "--format", "json")
+                    self.assertEqual(2, proc.returncode, proc.stderr)
+                    data = json.loads(proc.stdout)
+                    coverage = (data["coverage"] if "coverage" in data
+                                else data["meta"]["coverage"])
+                    self.assertEqual(coverage["scanned"], 0)
+                    self.assertEqual(len(coverage["failed"]), 1)
+
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / "sample.cc"
@@ -51,6 +68,11 @@ class ScannerCompletenessTests(unittest.TestCase):
                     ostringstream text;
                     text << N_("deferred raw text");
                     mpr(text.str());
+                }
+                void unrelated() {
+                    ostringstream text;
+                    text << "same receiver, different function";
+                    // mpr(text.str());
                 }
             ''', encoding="utf-8")
             proc = self.run_scanner(
@@ -62,6 +84,10 @@ class ScannerCompletenessTests(unittest.TestCase):
                          {"discovered": 1, "scanned": 1, "failed": []})
         self.assertEqual(data["findings"][0]["sink"], "mpr")
         self.assertEqual(data["findings"][0]["literal"], "deferred raw text")
+        unrelated = next(item for item in data["findings"]
+                         if item["literal"] ==
+                         "same receiver, different function")
+        self.assertIsNone(unrelated["sink"])
 
     def test_varargs_uses_local_type_and_every_ternary_arm(self):
         with tempfile.TemporaryDirectory() as td:

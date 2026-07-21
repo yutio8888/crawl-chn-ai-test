@@ -34,7 +34,8 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import CPP_SOURCE_EXTENSIONS, ScanCoverage, discover_source_files
+from i18n_shared import (CPP_SOURCE_EXTENSIONS, ScanCoverage,
+                         discover_source_files, has_relevant_parse_error)
 
 # ── Tree-sitter availability ──────────────────────────────────────────────────
 
@@ -389,6 +390,16 @@ def _find_enclosing_function(node, source_bytes):
     return ""
 
 
+def _enclosing_function_scope(node):
+    """Return a stable per-file function range for provenance binding."""
+    current = node
+    while current:
+        if current.type == "function_definition":
+            return current.start_byte, current.end_byte
+        current = current.parent
+    return -1, -1
+
+
 def _find_enclosing_line_text(node, source_bytes):
     """Get the full text of the enclosing source line."""
     row, _ = node.start_point
@@ -677,15 +688,29 @@ def _hard_exclude(finding, filepath, source_bytes):
 
 # ── Risk Scoring ──────────────────────────────────────────────────────────────
 
-def _display_stream_sinks(source_bytes):
-    """Map local stream builders passed directly to display sinks."""
-    source = source_bytes.decode("utf-8", errors="replace")
+def _display_stream_sinks(root, source_bytes):
+    """Map function-local stream builders passed directly to display sinks."""
     sinks = {}
-    pattern = re.compile(
-        r"\b(?P<sink>mpr|mprf|mprf_p|cprintf|formatted_message_history)\s*"
-        r"\(\s*(?P<receiver>[A-Za-z_]\w*)\s*\.\s*str\s*\(")
-    for match in pattern.finditer(source):
-        sinks[match.group("receiver")] = match.group("sink")
+    display_calls = {
+        "mpr", "mprf", "mprf_p", "cprintf", "formatted_message_history",
+    }
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.type == "call_expression":
+            sink = _extract_callee_name(node, source_bytes)
+            if sink in display_calls:
+                args = next((child for child in node.named_children
+                             if child.type == "argument_list"), None)
+                if args is not None:
+                    for arg in args.named_children:
+                        match = re.fullmatch(
+                            r"\s*([A-Za-z_]\w*)\s*\.\s*str\s*\(\s*\)\s*",
+                            _text(arg, source_bytes))
+                        if match:
+                            scope = _enclosing_function_scope(node)
+                            sinks[(scope, match.group(1))] = sink
+        stack.extend(node.children)
     return sinks
 
 
@@ -699,10 +724,11 @@ def _score_finding(finding, filepath, source_bytes, display_sinks=None):
     node = finding["node"]
     display_sinks = display_sinks or {}
 
-    if receiver in display_sinks:
+    sink_key = (_enclosing_function_scope(node), receiver)
+    if sink_key in display_sinks:
         score += 6
-        finding["sink"] = display_sinks[receiver]
-        reasons.append(f"display-sink={display_sinks[receiver]} (+6)")
+        finding["sink"] = display_sinks[sink_key]
+        reasons.append(f"display-sink={display_sinks[sink_key]} (+6)")
 
     # Detect layout strings: very low alphabetic ratio in non-whitespace chars
     nonspace = [c for c in content if not c.isspace()]
@@ -839,16 +865,19 @@ def _walk_node(node, source_bytes, filepath, findings, include_wrapped,
 
 # ── File Scanner ──────────────────────────────────────────────────────────────
 
-def scan_file(filepath, parser, include_wrapped=False):
+def scan_file(filepath, parser, include_wrapped=False, validate_parse=False):
     """Parse a C++ source file and return a list of raw findings."""
     with open(filepath, "rb") as f:
         source_bytes = f.read()
 
     tree = parser.parse(source_bytes)
+    if validate_parse and has_relevant_parse_error(tree.root_node, source_bytes):
+        raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
     _walk_node(tree.root_node, source_bytes, filepath, findings,
                include_wrapped)
-    return findings, source_bytes
+    return findings, source_bytes, _display_stream_sinks(
+        tree.root_node, source_bytes)
 
 
 # ── Output Formatters ─────────────────────────────────────────────────────────
@@ -1068,6 +1097,11 @@ def main():
         print("No C++ source files found to scan.", file=sys.stderr)
         return 2
     coverage.discovered = len(files_to_scan)
+    source_arg = os.path.abspath(args.source_dir or "")
+    production_root = (os.path.basename(source_arg) == "source"
+                       and os.path.basename(os.path.dirname(source_arg))
+                       == "crawl-ref")
+    validate_parse = bool(args.files) or not production_root
 
     # ── Initialize parser ─────────────────────────────────────────────────
     lang = _Language(_tscpp.language())
@@ -1078,14 +1112,13 @@ def main():
     all_findings = []
     for filepath in files_to_scan:
         try:
-            raw_findings, source_bytes = scan_file(filepath, ts_parser,
-                                                   include_wrapped)
+            raw_findings, source_bytes, display_sinks = scan_file(
+                filepath, ts_parser, include_wrapped, validate_parse)
             coverage.scanned += 1
         except (OSError, ValueError) as exc:
             coverage.failed.append(f"{filepath}: {exc}")
             continue
 
-        display_sinks = _display_stream_sinks(source_bytes)
         for finding in raw_findings:
             if _hard_exclude(finding, filepath, source_bytes):
                 continue

@@ -46,6 +46,13 @@ SKIP_DIRS = {
     "catch2-tests", "rltiles", "util",
 }
 SKIP_FILES = {"catch_amalgamated.cc"}
+KNOWN_PRODUCTION_LEXICAL_DEBT = {
+    ("branch-data.h", "unmatched } at offset 12640"),
+    ("end.cc", "unmatched } at offset 12112"),
+    ("macros.h", "unmatched ) at offset 1874"),
+    ("threads.h", "unclosed ( at offset 1016"),
+    ("xom.cc", "unmatched ) at offset 177033"),
+}
 TRANSLATION_CALLS = {"T_", "C_"}
 CONTAINER_MUTATORS = {
     "push_back", "push_front", "emplace", "emplace_back", "emplace_front",
@@ -1841,6 +1848,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
     retained_targets = {os.path.abspath(path) for path in targets}
     pre_findings: List[dict] = []
     cross_candidates: List[dict] = []
+    lexical_prerequisites: List[str] = []
     try:
         source_arg = os.path.abspath(args.source or "")
         explicit_subset = bool(args.files or os.path.isfile(source_arg))
@@ -1854,6 +1862,19 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         index = _build_lexical_index(index_paths)
         errors, index_trees, parsed_targets = [], [], {}
         for target in targets:
+            if production_root:
+                with open(target, "r", encoding="utf-8",
+                          errors="strict") as source_stream:
+                    source_text = source_stream.read()
+                _masked, lexical_error = _lex_cpp(source_text)
+                if lexical_error:
+                    debt = (os.path.relpath(target, source_arg), lexical_error)
+                    if debt not in KNOWN_PRODUCTION_LEXICAL_DEBT:
+                        raise ValueError(
+                            f"lexical integrity error in target {target}: "
+                            f"{lexical_error}")
+                    lexical_prerequisites.append(
+                        f"{debt[0]}: {debt[1]}")
             pre_findings.extend(_scan_large_lexical(
                 target, index, validate=validate_lexical))
         language = None
@@ -1927,6 +1948,7 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
                 "discovered": len(targets),
                 "scanned": len(targets),
                 "failed": [],
+                "prerequisites": lexical_prerequisites,
             },
         }, ensure_ascii=False, indent=2, sort_keys=False))
     elif rendered:

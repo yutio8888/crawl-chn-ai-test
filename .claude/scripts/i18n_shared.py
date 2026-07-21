@@ -60,6 +60,21 @@ def read_utf8(path: str) -> str:
     with open(path, "r", encoding="utf-8", errors="strict") as stream:
         return stream.read()
 
+
+def has_relevant_parse_error(root, source: bytes) -> bool:
+    """Ignore only recoverable standalone preprocessor directive errors."""
+    stack = [root]
+    while stack:
+        node = stack.pop()
+        if node.is_missing:
+            return True
+        if node.type == "ERROR":
+            fragment = source[node.start_byte:node.end_byte].lstrip()
+            if not fragment.startswith(b"#"):
+                return True
+        stack.extend(node.children)
+    return False
+
 # libc towlower for parity with C++ database.cc lowercase_string()
 _libc = None
 def _get_towlower():

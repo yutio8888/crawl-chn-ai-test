@@ -254,7 +254,9 @@ python3 .claude/scripts/tests/test_scan_i18n_lifetime.py
 完整仓库”而切换语义，也避免旧 binding 在超大 C++ initializer 上的 native 崩溃。
 它检查 helper、聚合字段、成员赋值、容器 mutation、延迟 lambda 与立即调用
 lambda。解析器缺失、输入无效或严格目标解析失败均退出 2；JSON 输出包含统一的
-`discovered/scanned/failed` 覆盖字段，CI 以 fail-closed 运行。
+`discovered/scanned/failed` 覆盖字段，CI 以 fail-closed 运行。完整生产树中由
+条件编译造成、且已精确绑定到文件与错误 offset 的词法债务列在
+`coverage.prerequisites`；任何新增或位置变化的词法错误仍立即退出 2。
 
 修复时让持久表只保存稳定英文 key，在消费点调用 `T_()`/`C_()` 并立即复制；
 同一英文 key 需要不同译文时必须使用 `C_()` 的 context，不能覆盖全局译文。

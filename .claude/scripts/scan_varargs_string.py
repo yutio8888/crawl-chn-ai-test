@@ -46,7 +46,8 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import CPP_SOURCE_EXTENSIONS, ScanCoverage, discover_source_files
+from i18n_shared import (CPP_SOURCE_EXTENSIONS, ScanCoverage,
+                         discover_source_files, has_relevant_parse_error)
 
 TREE_SITTER_AVAILABLE = False
 _tscpp = None
@@ -589,10 +590,12 @@ def _walk(node, src, findings, type_bindings):
         _walk(child, src, findings, type_bindings)
 
 
-def scan_file(filepath, parser):
+def scan_file(filepath, parser, validate_parse=False):
     with open(filepath, "rb") as f:
         src = f.read()
     tree = parser.parse(src)
+    if validate_parse and has_relevant_parse_error(tree.root_node, src):
+        raise ValueError(f"tree-sitter parse error in {filepath}")
     findings = []
     type_bindings = _build_type_bindings(tree.root_node, src)
     _walk(tree.root_node, src, findings, type_bindings)
@@ -657,6 +660,11 @@ def main():
         print("No C++ source files found to scan.", file=sys.stderr)
         return 2
     coverage.discovered = len(files)
+    source_arg = os.path.abspath(args.source_dir or "")
+    production_root = (os.path.basename(source_arg) == "source"
+                       and os.path.basename(os.path.dirname(source_arg))
+                       == "crawl-ref")
+    validate_parse = bool(args.files) or not production_root
 
     lang = _Language(_tscpp.language())
     parser = _Parser(lang)
@@ -664,7 +672,7 @@ def main():
     all_findings = []
     for fp in files:
         try:
-            all_findings.extend(scan_file(fp, parser))
+            all_findings.extend(scan_file(fp, parser, validate_parse))
             coverage.scanned += 1
         except (OSError, ValueError) as exc:
             coverage.failed.append(f"{fp}: {exc}")
