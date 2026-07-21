@@ -5,7 +5,10 @@
 #include "i18n.h"                // T_()
 #include "ability.h"
 #include "ability-type.h"
+#include "art-enum.h"
+#include "artefact.h"
 #include "decks.h"
+#include "item-status-flag-type.h"
 #include "item-name.h"
 #include "item-prop-enum.h"
 #include "movement-i18n.h"
@@ -15,9 +18,11 @@
 #include "spl-util.h"
 #include "spell-type.h"
 #include "stringutil.h"
+#include "tags.h"
 #include "terrain.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
+#include "unwind.h"
 
 #include <cstring>
 #include <array>
@@ -162,6 +167,74 @@ TEST_CASE_METHOD(ZhTranslationFixture,
                 std::get<1>(row), std::get<0>(row), std::get<2>(row),
                 std::get<3>(row), std::get<4>(row), std::get<5>(row))
             == std::get<6>(row));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: fixed artefact appearances translate only for display",
+                 "[zh-translation][artefact-appearance]")
+{
+    using Row = std::tuple<int, const char*, const char*, const char*>;
+    const auto row = GENERATE(table<int, const char*, const char*, const char*>({
+        Row{UNRAND_CEREBOV, "great serpentine sword", "蛇形巨剑",
+            "塞雷博夫之剑"},
+        Row{UNRAND_ASMODEUS, "ruby sceptre", "红宝石权杖",
+            "阿斯摩蒂斯之权杖"},
+        Row{UNRAND_DRAGONSKIN, "opalescent scaly cloak",
+            "乳白色鳞片斗篷", "龙皮斗篷"},
+    }));
+
+    item_def item;
+    item.quantity = 1;
+    const unique_item_status_type prior_status =
+        get_unique_item_status(std::get<0>(row));
+    REQUIRE(make_item_unrandart(item, std::get<0>(row)));
+    unwinder restore_status([&item, prior_status]() {
+        set_unique_item_status(item, prior_status);
+    });
+    item.flags &= ~ISFLAG_IDENTIFIED;
+
+    REQUIRE(item.props[ARTEFACT_APPEAR_KEY].get_string()
+            == std::get<1>(row));
+    REQUIRE(get_artefact_name(item) == std::get<2>(row));
+
+    item.flags |= ISFLAG_IDENTIFIED;
+    REQUIRE(get_artefact_name(item) == std::get<3>(row));
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+    item.flags &= ~ISFLAG_IDENTIFIED;
+    REQUIRE(get_artefact_name(item) == std::get<1>(row));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: fixed artefact appearance identity survives save roundtrip",
+                 "[zh-translation][artefact-appearance][tags]")
+{
+    item_def item;
+    item.quantity = 1;
+    const unique_item_status_type prior_status =
+        get_unique_item_status(UNRAND_CEREBOV);
+    REQUIRE(make_item_unrandart(item, UNRAND_CEREBOV));
+    unwinder restore_status([&item, prior_status]() {
+        set_unique_item_status(item, prior_status);
+    });
+    item.flags &= ~ISFLAG_IDENTIFIED;
+    item.pos = coord_def(-1, -1);
+
+    vector<unsigned char> buffer;
+    writer output(&buffer);
+    marshallItem(output, item, true);
+
+    reader input(buffer);
+    input.setMinorVersion(TAG_MINOR_VERSION);
+    item_def loaded;
+    unmarshallItem(input, loaded);
+
+    REQUIRE(loaded.unrand_idx == UNRAND_CEREBOV);
+    REQUIRE(loaded.props[ARTEFACT_APPEAR_KEY].get_string()
+            == "great serpentine sword");
+    REQUIRE(get_artefact_name(loaded) == "蛇形巨剑");
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

@@ -1745,10 +1745,14 @@ string get_artefact_name(const item_def &item, bool force_known)
             return T_(_seekunrandart(item)->name);
         return make_artefact_name(item, false);
     }
-    // print artefact appearance
+    // Keep the stored appearance language-neutral for save compatibility;
+    // fixed artefact aliases are translated only at this display boundary.
+    string appearance;
     if (item.props.exists(ARTEFACT_APPEAR_KEY))
-        return item.props[ARTEFACT_APPEAR_KEY].get_string();
-    return make_artefact_name(item, true);
+        appearance = item.props[ARTEFACT_APPEAR_KEY].get_string();
+    else
+        appearance = make_artefact_name(item, true);
+    return is_unrandom_artefact(item) ? T_(appearance.c_str()) : appearance;
 }
 
 void set_artefact_name(item_def &item, const string &name)
