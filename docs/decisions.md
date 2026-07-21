@@ -26,7 +26,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-26
-- **Source**: issues/2 (TODO_GODNAME.md)
+- **Source**: [legacy issue 2 `TODO_GODNAME.md`][legacy-2-godname]
 - **Choice**: 西芙·穆娜
 - **Rejected**: 席夫·穆纳
 - **Rationale**: `芙` (lotus) is common in goddess names, better matches the Norse goddess gender than `夫` (man/husband)
@@ -36,8 +36,8 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `dat/database/zh/godspeak.txt` (×2) ✅
   - `dat/database/zh/FAQ.txt` ✅
   - `dat/descript/zh/features.txt` ✅
-- **Tracking issue**: issue 13
-- **Resolved**: 2026-06-27 (commit: issue 13 + follow-up)
+- **Tracking issue**: [legacy issue 13][legacy-13]
+- **Resolved**: 2026-06-27 (legacy issue 13 + follow-up)
 
 ---
 
@@ -46,7 +46,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-26
-- **Source**: issues/2 (TODO_GODNAME.md)
+- **Source**: [legacy issue 2 `TODO_GODNAME.md`][legacy-2-godname]
 - **Choice**: 特洛格
 - **Rejected**: 特洛戈
 - **Rationale**: `格` matches the hard 'g' ending better; `戈` (dagger-axe) reads as an ancient weapon rather than a name syllable
@@ -65,8 +65,8 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `dat/descript/zh/features.txt` ✅
   - `dat/descript/zh/tutorial.txt` (×2) ✅
   - `dat/descript/zh/ability.txt` ✅
-- **Tracking issue**: issue 13
-- **Resolved**: 2026-06-27 (commit: issue 13 + follow-up)
+- **Tracking issue**: [legacy issue 13][legacy-13]
+- **Resolved**: 2026-06-27 (legacy issue 13 + follow-up)
 
 ---
 
@@ -75,7 +75,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 13
+- **Source**: [legacy issue 13][legacy-13]
 - **Choice**: 奇库巴库哈
 - **Rejected**: 奇库巴库加
 - **Rationale**: `哈` preserves the breathy 'gha' ending; `加` (add/plus) was a phonetic mismatch
@@ -87,7 +87,7 @@ file exists and should be consulted. This file stores the actual ruling content.
   - `dat/descript/zh/items.txt` ✅
   - `dat/descript/zh/monsters.txt` ✅
   - `dat/database/zh/graffiti.txt` ✅ (created with correct name in Phase 1)
-- **Tracking issue**: issue 13
+- **Tracking issue**: [legacy issue 13][legacy-13]
 
 ---
 
@@ -96,14 +96,14 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 12 Phase 0
+- **Source**: [legacy issue 12][legacy-12] Phase 0
 - **Choice**: U+00B7 (·) as separator in 尼姆雷斯·索布
 - **Rejected**: U+30FB (・) katakana middle dot
 - **Rationale**: U+00B7 is the standard Chinese middle dot; U+30FB is CJK-specific and renders inconsistently across fonts
 - **Affected files**:
   - `dat/database/zh/godname.txt` ✅
   - All other references use U+00B7 ✅
-- **Tracking issue**: issue 12
+- **Tracking issue**: [legacy issue 12][legacy-12]
 
 ---
 
@@ -112,12 +112,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 12 Phase 0
+- **Source**: [legacy issue 12][legacy-12] Phase 0
 - **Choice**: 维胡梅特
 - **Rejected**: (none — this was the original translation, confirmed correct)
 - **Rationale**: Phonetic transliteration is accurate and already in use across all files
 - **Affected files**: All files use 维胡梅特 ✅
-- **Tracking issue**: issue 12
+- **Tracking issue**: [legacy issue 12][legacy-12]
 
 ---
 
@@ -126,12 +126,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 12 Phase 0
+- **Source**: [legacy issue 12][legacy-12] Phase 0
 - **Choice**: 光辉者
 - **Rejected**: (none — confirmed correct)
 - **Rationale**: Semantic translation; `光辉` (radiance/glory) + `者` (-er suffix) matches the god title pattern
 - **Affected files**: All files use 光辉者 ✅
-- **Tracking issue**: issue 12
+- **Tracking issue**: [legacy issue 12][legacy-12]
 
 ---
 
@@ -491,7 +491,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms]
 - **Choice**: Unify `polter-` root under 骚灵
   - `poltergeist → 骚灵`
   - `polterguardian → 骚灵护卫` (no change needed)
@@ -499,7 +499,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: 骚灵 (restless spirit) is the standard Chinese fantasy translation for "poltergeist" — matches the German root "poltern" (to rumble/make noise). 吵闹鬼 is too literal and loses the ethereal quality. Unifying under 骚灵 makes `polterguardian` predictable from `poltergeist`.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅ (`poltergeist`)
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -509,13 +509,13 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms]
 - **Choice**: 恶灵恶魔
 - **Rejected**: 恶灵 (loses demon classification — 混入幽灵系); 恶灵魔 (unnecessary shortening)
 - **Rationale**: Preserves both the "evil spirit" (恶灵) character of the original and the demon classification (恶魔). All other demon-type monsters use 恶魔 as their base classifier; `cacodemon` should not be an exception. 恶灵恶魔 keeps the unique flavor while maintaining terminological consistency.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -525,7 +525,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms]
 - **Choice**: All fiends → 邪魔
   - `Ice Fiend → 冰霜邪魔`
   - `Brimstone Fiend → 硫磺邪魔`
@@ -534,7 +534,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: 邪魔 conveys a more malevolent/sinister connotation than the relatively neutral 恶魔 — appropriate for fiend-type creatures. The project distinguishes between demon, fiend, and devil as three separate creature families; using distinct classifiers preserves this distinction in Chinese.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅ (Ice Fiend, Brimstone Fiend, shadow fiend)
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -544,7 +544,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms]
 - **Choice**: Base monster name `vampire → 吸血鬼`, compounds follow 吸血鬼 pattern
   - `vampire (monster) → 吸血鬼`
   - `vampire bat → 吸血鬼蝙蝠`
@@ -553,7 +553,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: The base monster name `vampire` is a noun (the creature), not an adjective. Using 吸血 for the base form creates a noun/adjective inconsistency with all compound forms (吸血鬼骑士, 吸血鬼法师) where 吸血鬼 is the noun prefix. Vampire bat is also a creature name, so follows the same pattern.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -563,7 +563,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review (P2)
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms] (P2)
 - **Choice**: Unify all skeleton forms to 骷髅
   - `skeleton → 骷髅` (from 骸骨)
   - `large skeleton → 大型骷髅` (no change)
@@ -572,7 +572,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: 骷髅 is the standard term for skeleton monsters in Chinese gaming culture. 骸骨 (skeletal remains/bones) is more anatomical and less idiomatic for a hostile creature. The compound forms already use 骷髅; unifying the base form eliminates the inconsistency.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -582,7 +582,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: A — Entity ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review (P2)
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms] (P2)
 - **Choice**: All wraith forms → 幽魂
   - `wraith → 幽魂` (from 幽灵)
   - `the Wraith → 幽魂` (no change)
@@ -592,7 +592,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: 幽魂 (wraith/restless spirit) in Chinese gaming commonly denotes ethereal, life-draining undead — distinct from 幽灵 (ghost, more general). Using 幽魂 for wraiths preserves the undead subtype distinction and matches the unique monster `the Wraith` which already used 幽魂.
 - **Affected files**:
   - `dat/i18n/zh/source.txt` ✅
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -602,7 +602,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-07-09
-- **Source**: Issue 49 monster name terminology review (P2)
+- **Source**: [legacy issue 49 monster name terminology review][legacy-49-terms] (P2)
 - **Choice**: Canonical monster orb naming pattern: `X之球`
   - `Orb of Destruction → 毁灭之球` (no change)
   - `great orb of eyes → 巨眼之球` (no change)
@@ -615,7 +615,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rejected**: `X法球` (arcane orb, reads as a spell school rather than monster); mixed patterns (inconsistent genus-species feel)
 - **Rationale**: `X之球` is the dominant pattern (6 of 8 cases). Standardizing eliminates the exception without affecting the two justified outliers (Orb of Zot as a unique game object, Orb of Electricity as a spell name).
 - **Scope**: All monster orbs (entity names, not spell names)
-- **Tracking issue**: Issue 49 (monster-name-terminology.md)
+- **Tracking issue**: [legacy issue 49 `monster-name-terminology.md`][legacy-49-terms]
 - **Resolved**: 2026-07-09
 
 ---
@@ -629,12 +629,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/8 commit 3
+- **Source**: [legacy issue 8][legacy-8] commit 3
 - **Choice**: `Y之X` for all weapon/armour brand names (e.g., `flaming sword` → `火焰之剑`)
 - **Rejected**: `Y的X` (colloquial form)
 - **Rationale**: `之` is the literary/classical genitive marker appropriate for item names; `的` is colloquial and reads as lower register. Unified across all brands to avoid mixed styles.
 - **Scope**: `item-name.cc` brand naming, all weapon/armour ego prefixes
-- **Tracking issue**: issues/8
+- **Tracking issue**: [legacy issue 8][legacy-8]
 
 ---
 
@@ -643,12 +643,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/8 commit 2
+- **Source**: [legacy issue 8][legacy-8] commit 2
 - **Choice**: `、` (U+3001) for list separator, `和` for final conjunction
 - **Rejected**: English `, ` and ` and `
 - **Rationale**: Chinese enumeration uses `、` between items and `和` before the last item. Using English separators reads as a formatting bug.
 - **Scope**: All `comma_separated_line()` calls where the output is player-visible Chinese text
-- **Tracking issue**: issues/8
+- **Tracking issue**: [legacy issue 8][legacy-8]
 
 ---
 
@@ -657,12 +657,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/8 commit 1
+- **Source**: [legacy issue 8][legacy-8] commit 1
 - **Choice**: `article_a()` returns empty string in Chinese mode
 - **Rejected**: Translating "a/an" as "一个" (over-specifies quantity)
 - **Rationale**: Chinese has no articles. Adding `一个` where English uses `a/an` introduces unwanted quantification. Omission is the correct default.
 - **Scope**: `english.cc:article_a()`
-- **Tracking issue**: issues/8
+- **Tracking issue**: [legacy issue 8][legacy-8]
 
 ---
 
@@ -671,12 +671,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/8 anti-pattern #2
+- **Source**: [legacy issue 8][legacy-8] anti-pattern #2
 - **Choice**: Never call `conj_verb()` on Chinese strings
 - **Rejected**: Calling `conj_verb()` and getting garbled output (e.g., `"抓取s"`)
 - **Rationale**: `conj_verb()` applies English conjugation rules (adding -s/-es/-ing suffix). Chinese has no verb conjugation — person/number/tense are expressed through particles and word order, not suffixes.
 - **Scope**: All .cc files — this is a NEVER rule in `.agents/policies/i18n-safety.md`
-- **Tracking issue**: issues/8
+- **Tracking issue**: [legacy issue 8][legacy-8]
 
 ---
 
@@ -685,12 +685,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/8 commit 2
+- **Source**: [legacy issue 8][legacy-8] commit 2
 - **Choice**: Remove English plural `"s"` suffix logic in Chinese mode
 - **Rejected**: Retaining English plural markers on Chinese text
 - **Rationale**: Chinese nouns have no singular/plural distinction. Plurality is expressed through context, numbers, or measure words — never through noun suffixes.
 - **Scope**: All string formatting that conditionally appends "s" based on count
-- **Tracking issue**: issues/8
+- **Tracking issue**: [legacy issue 8][legacy-8]
 
 ---
 
@@ -713,7 +713,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 16
+- **Source**: [legacy issue 16][legacy-16]
 - **Choice**: Database keys use `spell_english_names` (English), not `spell_title()` (Chinese).
   `spell_title()` translation revisions do not require syncing `zh/spells.txt` keys.
 - **Rejected**: Chinese spell_title() as DB key source — causes key breakage on translation change
@@ -721,10 +721,10 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: English keys eliminate the translation-revision→key-breakage fragility.
   zh/spells.txt now matches all 9 other zh/ database files in using English keys.
 - **Scope**: `ability.cc` (ABIL_SIF_MUNA_REPEAT_EXEGESIS), `zh/spells.txt` keys
-- **Note**: Issue 16 listed 3 "missing" spells (Gell's Gravity, Unleash Destruction, Stoneshock)
+- **Note**: [Legacy issue 16][legacy-16] listed 3 "missing" spells (Gell's Gravity, Unleash Destruction, Stoneshock)
   whose EN keys do not exist in the 0.34.1 spells.txt database. These were likely misidentified
   or refer to spells removed/renamed in earlier versions. No action needed.
-- **Tracking issue**: issue 16
+- **Tracking issue**: [legacy issue 16][legacy-16]
 
 ---
 
@@ -737,12 +737,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: C — Batch ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues/7
+- **Source**: [legacy issue 7][legacy-7]
 - **Choice**: Full Chinese translation of all 216 skill rank titles via `zh_skill_titles` map
 - **Rejected**: Partial translation or machine-only translation
 - **Rationale**: Skill titles are high-visibility UI text. Each title was manually translated with attention to rank hierarchy and thematic consistency within each skill.
 - **Scope**: `skills.cc:zh_skill_titles` map + `skill_title_by_rank()` lookup
-- **Tracking issue**: issues/7
+- **Tracking issue**: [legacy issue 7][legacy-7]
 
 ---
 
@@ -771,12 +771,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: C — Batch ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 10
+- **Source**: [legacy issue 10][legacy-10]
 - **Choice**: Chinese `item_base_name()` mapping for all item types
 - **Rejected**: English-only item names in Chinese mode
 - **Rationale**: Item names are Type I static display data — must be translated at the data layer for consistency.
 - **Scope**: `item-name.cc:item_base_name()`
-- **Tracking issue**: issue 10
+- **Tracking issue**: [legacy issue 10][legacy-10]
 - **Resolved**: 2026-06-27
 
 ---
@@ -786,12 +786,12 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: C — Batch ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 9
+- **Source**: [legacy issue 9][legacy-9]
 - **Choice**: Chinese initmsg/finalmsg for all 13 portal vault .des files
 - **Rejected**: English-only portal messages
 - **Rationale**: Portal entry/exit messages are player-visible atmospheric text. Uses `crawl.language()` Lua function for runtime language selection.
 - **Scope**: `dat/des/variable/*.des` portal files
-- **Tracking issue**: issue 9
+- **Tracking issue**: [legacy issue 9][legacy-9]
 - **Resolved**: 2026-06-27
 
 ---
@@ -925,7 +925,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 17
+- **Source**: [legacy issue 17][legacy-17]
 - **Choice**: ZH descriptions (descript/zh/) must not add, remove, or alter game
   mechanics described in the corresponding EN entry.
 - **Rejected**: Fabricating mechanics in translation (e.g., adding healing effects,
@@ -936,7 +936,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Scope**: All `dat/descript/zh/*.txt` files
 - **Verification**: `check_consistency.sh --descript` catches key mismatches;
   content parity requires periodic manual EN/ZH sampling.
-- **Tracking issue**: issue 17
+- **Tracking issue**: [legacy issue 17][legacy-17]
 
 ---
 
@@ -945,7 +945,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issue 18
+- **Source**: [legacy issue 18][legacy-18]
 - **Choice**: Every @keyword@ referenced in a ZH database file must have a
   corresponding definition in either the same ZH file or the EN fallback.
   Prefix conventions (e.g., `@_graffiti_xxx_@`) must match exactly.
@@ -953,10 +953,10 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rationale**: @keyword@ references are resolved at display time. A missing
   definition produces blank output or raw `@_key_@` text — both are
   user-visible bugs. Prefix mismatches (e.g., `@_hailed_god_@` missing
-  the `graffiti_` prefix) are a known failure mode (issue 19).
+  the `graffiti_` prefix) are a known failure mode ([legacy issue 19][legacy-19]).
 - **Scope**: All `dat/database/zh/*.txt` files
 - **Verification**: `check_consistency.sh --database --keywords`
-- **Tracking issue**: issue 18
+- **Tracking issue**: [legacy issue 18][legacy-18]
 
 ---
 
@@ -965,7 +965,7 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-27
-- **Source**: issues 17+18
+- **Source**: [legacy issue 17][legacy-17] + [legacy issue 18][legacy-18]
 - **Choice**: When EN database/descript entries are modified (content change, not
   just formatting), the corresponding ZH entries must be flagged for review.
 - **Rejected**: ZH entries silently drifting out of sync with updated EN content
@@ -975,14 +975,14 @@ file exists and should be consulted. This file stores the actual ruling content.
   that evolve across versions.
 - **Scope**: All `dat/descript/zh/*.txt` and `dat/database/zh/*.txt`
 - **Verification**: `check_consistency.sh --stale`
-- **Tracking issue**: issues 17+18
+- **Tracking issue**: [legacy issue 17][legacy-17] + [legacy issue 18][legacy-18]
 
 ### D-B-011 — 工具函数语言守卫
 
 - **Type**: B — Rule ruling
 - **Status**: active
 - **Date**: 2026-06-28
-- **Source**: issue 22
+- **Source**: [legacy issue 22][legacy-22]
 - **Choice**: 返回用户可见字符串的工具函数必须有语言守卫。
   典型模式：`return zh ? "中文" : "English";`
   或在调用点包裹 `Options.language` 检查。
@@ -993,7 +993,21 @@ file exists and should be consulted. This file stores the actual ruling content.
   `scan_untranslated.sh --layer3` 可自动检测 `zh ? "X" : "X"` stub 模式。
 - **Scope**: 所有返回用户可见字符串的 `_zh_*` 工具函数、Layer 3 显示函数、
   `zh_names` map 查找函数、`dungeon_feature_name_zh` 等。
-- **Tracking issue**: issue 22
+- **Tracking issue**: [legacy issue 22][legacy-22]
+
+[legacy-2-godname]: https://github.com/yutio8888/crawl-chn-issues-archive/blob/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/2/TODO_GODNAME.md
+[legacy-7]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/7
+[legacy-8]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/8
+[legacy-9]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/9
+[legacy-10]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/10
+[legacy-12]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/12
+[legacy-13]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/13
+[legacy-16]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/16
+[legacy-17]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/17
+[legacy-18]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/18
+[legacy-19]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/19
+[legacy-22]: https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/22
+[legacy-49-terms]: https://github.com/yutio8888/crawl-chn-issues-archive/blob/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/49/monster-name-terminology.md
 
 ---
 

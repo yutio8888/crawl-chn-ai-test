@@ -2,7 +2,7 @@
 
 > 统一人工维护 SSOT——翻译 Agent 在翻译前必须查阅此文件。
 > 物品显示名称区域另可导出为 OmegaT UTF-8 TSV：第一列源语、第二列译语、第三列作用域/备注。
-> 来源合并：`docs/decisions.md` + `issues/12/glossary_and_style.md` + `zh-translator.md` prompt
+> 来源合并：`docs/decisions.md` + [legacy issue 12 glossary][legacy-12-glossary] + `zh-translator.md` prompt
 > 维护规则：术语变更必须同步更新此文件和相关 decisions.md 裁决。
 
 ---
@@ -1275,4 +1275,6 @@
 
 ---
 
-*最后更新：2026-07-12 | 来源：docs/decisions.md + docs/spell-naming-rules.md + issues/12/glossary_and_style.md + zh-translator.md*
+*最后更新：2026-07-12 | 来源：docs/decisions.md + docs/spell-naming-rules.md + [legacy issue 12 glossary][legacy-12-glossary] + zh-translator.md*
+
+[legacy-12-glossary]: https://github.com/yutio8888/crawl-chn-issues-archive/blob/d31fccd3eb2c2cd612739646769ee1b45b6dfb01/12/glossary_and_style.md

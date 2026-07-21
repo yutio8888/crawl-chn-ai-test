@@ -26,9 +26,12 @@ gh issue comment <number> --repo yutio8888/crawl-chn-ai-test
 
 The legacy issue repository was frozen on 2026-07-21. It is historical
 evidence only and must not receive new files, numbers, status updates, or
-handoffs. Its public archive is intended to live at:
+handoffs. GitHub marks its public repository as archived:
 
 <https://github.com/yutio8888/crawl-chn-issues-archive>
+
+The immutable freeze commit is
+[`d31fccd3eb2c2cd612739646769ee1b45b6dfb01`](https://github.com/yutio8888/crawl-chn-issues-archive/tree/d31fccd3eb2c2cd612739646769ee1b45b6dfb01).
 
 ## Issue Lifecycle
 
@@ -63,3 +66,38 @@ Migrated issues use the `legacy-migrated` label and include both the legacy ID
 and an immutable archive link. Do not try to preserve the old number or
 creation timestamp. Historical citations in `docs/` continue to point to the
 archived source commit rather than being rewritten as new GitHub issue IDs.
+
+The cutover migrated only legacy work with a remaining action. This mapping is
+an identity record, not a second status tracker:
+
+| Legacy ID | GitHub Issue |
+|---:|---:|
+| 33 | [#5](https://github.com/yutio8888/crawl-chn-ai-test/issues/5) |
+| 47 | [#6](https://github.com/yutio8888/crawl-chn-ai-test/issues/6) |
+| 55 | [#3](https://github.com/yutio8888/crawl-chn-ai-test/issues/3) |
+| 56 | [#7](https://github.com/yutio8888/crawl-chn-ai-test/issues/7) |
+| 58 | [#8](https://github.com/yutio8888/crawl-chn-ai-test/issues/8) |
+| 59 | [#9](https://github.com/yutio8888/crawl-chn-ai-test/issues/9) |
+| 62 | [#10](https://github.com/yutio8888/crawl-chn-ai-test/issues/10) |
+| 66 | [#11](https://github.com/yutio8888/crawl-chn-ai-test/issues/11) |
+| 67 | [#12](https://github.com/yutio8888/crawl-chn-ai-test/issues/12) |
+| 68 | [#4](https://github.com/yutio8888/crawl-chn-ai-test/issues/4) |
+
+Completed implementation records, historical reviews, and superseded work were
+not recreated. Their evidence remains available only in the archived repository.
+
+## Legacy Tool Disposition
+
+The archived repository's `scripts/` directory has no active caller in this
+repository. Its tools were reviewed during cutover rather than copied blindly:
+
+| Archived tool | Disposition |
+|---|---|
+| `i18n_extract.py` | Superseded by the maintained `.claude/scripts/i18n_extract.py` and its tests. |
+| `extract_ternaries.py` | One-time pre-`T_()` migration helper; the migration is complete and no current workflow calls it. |
+| `replace_with_T.py` | One-time mechanical rewrite helper; retired for the same reason. |
+| `validate_i18n.sh` | Superseded by `verify_zh.sh`, the maintained scanners, and their test runners. |
+
+If a future task needs behavior found only in an archived tool, port the
+smallest required behavior into an existing maintained script with tests; do
+not resume execution from the archived repository.
