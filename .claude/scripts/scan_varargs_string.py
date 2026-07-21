@@ -76,9 +76,9 @@ VARARG_FUNCS = {
 
 FORMAT_SLOTS = {
     "snprintf": (2,), "vsnprintf": (2,),
-    "mpr": (0, 1), "mprf": (0, 1),
-    "mprf_p": (0, 1),
-    "mprf_nojoin": (0, 1), "mprf_nocap": (0, 1),
+    "mprf": (0, 1, 2), "mprf_p": (0, 1, 2),
+    "mprf_nojoin": (0, 1), "mprf_nocap": (0, 1, 2),
+    "die": (2,),
 }
 
 # String-wrapping macros/functions whose result is const char* (safe as %s).

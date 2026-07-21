@@ -71,6 +71,8 @@ class ScannerCompletenessTests(unittest.TestCase):
                     string local;
                     make_stringf("%s", local);
                     make_stringf("%s", flag ? T_("safe") : local);
+                    mprf(MSGCH_PLAIN, 0, "%s", local);
+                    die(__FILE__, __LINE__, "%s", local);
                 }
             ''', encoding="utf-8")
             proc = self.run_scanner(
@@ -79,7 +81,8 @@ class ScannerCompletenessTests(unittest.TestCase):
         self.assertEqual(1, proc.returncode, proc.stderr)
         data = json.loads(proc.stdout)
         self.assertEqual([item["rule"] for item in data["findings"]],
-                         ["STRING_OBJECT", "TERNARY"])
+                         ["STRING_OBJECT", "TERNARY",
+                          "STRING_OBJECT", "STRING_OBJECT"])
         self.assertEqual(data["coverage"],
                          {"discovered": 1, "scanned": 1, "failed": []})
 
