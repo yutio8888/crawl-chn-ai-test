@@ -16,9 +16,6 @@ from collections import defaultdict
 from dataclasses import dataclass
 from typing import Mapping
 
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import parse_source_txt
-
 
 # These quotation entries deliberately use a literary, historical, religious,
 # or ordinary-language rendering instead of the in-game monster display name.
@@ -98,14 +95,51 @@ def _read(path: str) -> str:
         raise AuditInputError(f"cannot read required input '{path}': {exc}") from exc
 
 
-def _parse_required_textdb(path: str) -> dict[str, str]:
-    # parse_source_txt historically treats a missing path as an empty DB. This
-    # audit must distinguish missing input from a valid, empty lookup result.
-    _read(path)
-    try:
-        return parse_source_txt(path)
-    except (OSError, UnicodeError, ValueError) as exc:
-        raise AuditInputError(f"cannot parse required TextDB '{path}': {exc}") from exc
+def _parse_required_textdb(path: str, *, trim_keys: bool = True) -> dict[str, str]:
+    """Parse one required TextDB with database.cc `_parse_text_db` semantics."""
+    content = _read(path)
+    if "\0" in content:
+        raise AuditInputError(f"required TextDB contains an embedded NUL: '{path}'")
+    if content.startswith("\ufeff"):
+        content = content[1:]
+
+    entries: dict[str, str] = {}
+    key = ""
+    value = ""
+    in_entry = False
+
+    def flush() -> None:
+        nonlocal key, value
+        if key:
+            # database.cc removes leading newlines, retains the final newline,
+            # and replaces an earlier definition of the same lowercased key.
+            entries[key] = value.lstrip("\n")
+        key = ""
+        value = ""
+
+    lines = content.split("\n")
+    if not content.endswith("\n"):
+        # UTF8FileLineInput performs one final empty read before reporting EOF.
+        lines.append("")
+    for line in lines:
+        # Production comments and separators are recognized only at column 0.
+        if line.startswith("#"):
+            continue
+        if line.startswith("%%%%"):
+            flush()
+            in_entry = True
+            continue
+        if not in_entry:
+            continue
+        if not key:
+            key = (line.strip() if trim_keys else line).lower()
+        else:
+            value += line.rstrip() + "\n"
+    flush()
+
+    if not entries:
+        raise AuditInputError(f"required TextDB contains no entries: '{path}'")
+    return entries
 
 
 def _load_monster_definitions(source_dir: str) -> list[MonsterDefinition]:
@@ -385,7 +419,8 @@ def audit_repository(
     definitions = _load_monster_definitions(source_dir)
     monsters = _canonicalize(definitions)
 
-    src_entries = _parse_required_textdb(source_txt)
+    # SourceDB is the sole production TextDB which disables key trimming.
+    src_entries = _parse_required_textdb(source_txt, trim_keys=False)
     zh_montitle = _parse_required_textdb(
         os.path.join(source_dir, "dat", "database", "zh", "montitle.txt")
     )

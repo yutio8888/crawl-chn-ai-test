@@ -49,23 +49,23 @@ class Fixture:
         _write_textdb(self.source_txt, self.zh_names)
         _write_textdb(
             self.source_dir / "dat" / "database" / "zh" / "montitle.txt",
-            self.montitles,
+            {"__fixture_title__": "fixture", **self.montitles},
         )
         _write_textdb(
             self.source_dir / "dat" / "descript" / "monsters.txt",
-            self.en_monsters,
+            {"__fixture_monster__": "fixture", **self.en_monsters},
         )
         _write_textdb(
             self.source_dir / "dat" / "descript" / "zh" / "monsters.txt",
-            self.zh_monsters,
+            {"__fixture_monster__": "fixture", **self.zh_monsters},
         )
         _write_textdb(
             self.source_dir / "dat" / "descript" / "quotes.txt",
-            self.en_quotes,
+            {"__fixture_quote__": "fixture", **self.en_quotes},
         )
         _write_textdb(
             self.source_dir / "dat" / "descript" / "zh" / "quotes.txt",
-            self.zh_quotes,
+            {"__fixture_quote__": "fixture", **self.zh_quotes},
         )
 
     def audit(self, *, quote_exceptions=None, reverse_exceptions=None):
@@ -81,6 +81,36 @@ class Fixture:
 
 
 class MonsterNameSsotTests(unittest.TestCase):
+    def test_textdb_separator_prefix_matches_production_parser(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "sample.txt"
+            path.write_text(
+                "ignored before first separator\n"
+                "%%%% suffix accepted by database.cc\n"
+                "  Mixed Case Key  \n"
+                "first line   \n"
+                "# comment omitted\n"
+                "second line\n",
+                encoding="utf-8",
+            )
+            entries = audit._parse_required_textdb(str(path))
+        self.assertEqual(
+            {"mixed case key": "first line\nsecond line\n\n"}, entries
+        )
+
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "source.txt"
+            path.write_text("%%%% source\n  Untrimmed Key  \nvalue\n", encoding="utf-8")
+            entries = audit._parse_required_textdb(str(path), trim_keys=False)
+        self.assertIn("  untrimmed key  ", entries)
+
+    def test_empty_required_textdb_fails_closed(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            path = Path(tmp) / "empty.txt"
+            path.write_text("# comments and whitespace only\n\n", encoding="utf-8")
+            with self.assertRaises(audit.AuditInputError):
+                audit._parse_required_textdb(str(path))
+
     def test_real_repository_passes_complete_inventory(self) -> None:
         source_dir = REPO_ROOT / "crawl-ref" / "source"
         result = audit.audit_repository(

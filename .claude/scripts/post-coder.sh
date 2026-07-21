@@ -190,6 +190,8 @@ run_concat_advisory() {
     run_check "Monster name SSOT (source.txt authority)" blocking \
         python3 "$SCRIPT_DIR/monster_name_ssot.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
+    run_check "Monster name SSOT regression tests" blocking \
+        python3 "$SCRIPT_DIR/tests/test_monster_name_ssot.py"
     run_check "mprf_p compatibility" blocking \
         python3 "$SCRIPT_DIR/scan_i18n.py" mprf-p crawl-ref/source/ \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt

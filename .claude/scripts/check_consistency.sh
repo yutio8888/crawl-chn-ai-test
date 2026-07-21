@@ -8,7 +8,7 @@
 #   --format    : Check %%%% separator count parity between EN and ZH database files
 #   --spells    : Verify spell key consistency (duplicates, orphans, missing)
 #   --database  : Verify @keyword@ reference integrity in database/zh/
-#   --monster-ssot : Enforce source.txt as unique-monster name SSOT
+#   --monster-ssot : Enforce source.txt across the complete normalized monster inventory
 #   --items     : Verify canonical item names and reject superseded names
 #
 # Usage:
@@ -631,7 +631,7 @@ while [ $# -gt 0 ]; do
             echo "  --format    Check %%%% separator count parity"
             echo "  --spells    Verify spell key consistency (duplicates, orphans, missing)"
             echo "  --database  Verify @keyword@ reference integrity in database/zh/"
-            echo "  --monster-ssot  Enforce source.txt as unique-monster name SSOT"
+            echo "  --monster-ssot  Enforce source.txt across the complete normalized monster inventory"
             echo "  --items     Verify canonical item names and rejected names"
             echo "  --all       Run all modes"
             echo "  --strict    Exit with non-zero code when violations are found"
