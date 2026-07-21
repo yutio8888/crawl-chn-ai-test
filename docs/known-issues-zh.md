@@ -1,26 +1,9 @@
-# 已知未完成的小问题（快速参考）
+# 中文本地化历史状态参考
 
-> 本文件仅记录太小而无需开 issue 的零散问题。
-> 翻译工程进展和已追踪的 issue → `${DCSS_ISSUES_DIR:-../issues}/INDEX.md`
+> 本文件仅保留早期完成情况与主动不翻译决策，不再承担 backlog 或状态跟踪。
+> 当前可行动问题 → <https://github.com/yutio8888/crawl-chn-ai-test/issues>
 > 翻译裁决（术语选择）→ docs/decisions.md
-> 最后更新：2026-07-19
-
----
-
-## 已由 Issue 系统追踪
-
-| Issue | 状态 | 说明 |
-|-------|------|------|
-| #6 | approved | MinGW towlower CJK 损坏修复 |
-| #7 | approved | 存档界面 + 技能称号中文化 |
-| #8 | approved | 15 条混合中英文日志消息修复 |
-| #9 | approved | 10 个 Portal .des 文件翻译 |
-| #10 | approved | 10 种龙鳞护甲中文名 |
-| #11 | approved | 拾取消息 + 技能菜单 UI + 怪物语音 |
-| #12 | closed | dat/database/zh/ 数据库翻译；monname.txt 于 2026-07-19 补齐 |
-| #13 | documented | 神祇名统一 + 文档修正 |
-| #14 | documented | 翻译工程同步架构 |
-| #15 | analyzed | 项目文档管理 |
+> 冻结日期：2026-07-21
 
 ---
 

@@ -32,18 +32,19 @@ claims here.
 
 Branch naming does not replace commit review or attribution.
 
-### State lives on disk
+### State lives in durable shared artifacts
 
 Runtime-private memory is not a cross-runtime handoff mechanism. Record the
-following in a shared file:
+following in the shared authority that owns it:
 
-- active plan, owner, file scope, branch, and commit range in
-  `.claude/ORCHESTRATION_STATE.md`; or
-- issue-specific analysis and status in the repository described by
-  `docs/issue-tracking.md`.
+- issue-specific analysis, status, acceptance criteria, and handoffs in the
+  GitHub Issue described by `docs/issue-tracking.md`;
+- implementation, exact commit range, code review, and CI evidence in the
+  linked pull request; and
+- only cross-issue orchestration constraints in `.claude/ORCHESTRATION_STATE.md`.
 
 A handoff is incomplete until the receiving runtime can reconstruct the task
-from disk without relying on conversation memory.
+from these durable artifacts without relying on conversation memory.
 
 ### Worktrees are shared infrastructure
 
@@ -72,7 +73,8 @@ The handing-off runtime records:
 6. required verification.
 
 The implementing runtime confirms file ownership before editing and reports the
-resulting commit plus verification evidence back to the same state file.
+resulting commit plus verification evidence back to the same GitHub Issue and
+linked pull request.
 
 ### Implementation → review
 

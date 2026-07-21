@@ -101,6 +101,27 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertNotIn("Co-Authored-By: opencode", text)
         self.assertNotIn("Co-Authored-By: Claude", text)
 
+    def test_legacy_issue_repository_is_not_a_live_dependency(self) -> None:
+        paths = (
+            ROOT / "README.md",
+            ROOT / "docs/issue-tracking.md",
+            ROOT / "docs/known-issues-zh.md",
+            ROOT / "docs/dual-agent-workflow.md",
+            ROOT / ".claude/ORCHESTRATION_STATE.md",
+            ROOT / ".claude/skills/translation-pipeline.md",
+            ROOT / ".opencode/skills/translation-pipeline/SKILL.md",
+            ROOT / ".claude/workflows/translation-fix-pipeline.js",
+            ROOT / ".claude/workflows/translation-batch-pipeline.js",
+            ROOT / ".opencode/workflows/translation-fix-pipeline.js",
+            ROOT / ".opencode/workflows/translation-batch-pipeline.js",
+        )
+        forbidden = ("DCSS_ISSUES_DIR", "issueFile", "../issues")
+        for path in paths:
+            text = path.read_text()
+            for fragment in forbidden:
+                with self.subTest(path=path.relative_to(ROOT), fragment=fragment):
+                    self.assertNotIn(fragment, text)
+
     def test_workflow_compatibility_copies_are_identical(self) -> None:
         for name in ("translation-fix-pipeline.js",
                      "translation-batch-pipeline.js"):

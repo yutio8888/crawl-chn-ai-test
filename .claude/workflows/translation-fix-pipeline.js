@@ -15,7 +15,7 @@ export const meta = {
 }
 
 const ISSUE = args?.description || '未提供问题描述'
-const ISSUE_FILE = args?.issueFile || null
+const ISSUE_REF = args?.issueRef || null
 const TARGET_ROOT = args?.targetRoot || null
 const TARGET_BRANCH = args?.targetBranch || null
 const CANDIDATE_BRANCH = args?.candidateBranch || null
@@ -211,7 +211,7 @@ const analysis = await agent(
   `Analyze this DCSS Chinese translation issue to find the root cause.
 
 Issue: ${ISSUE}
-${ISSUE_FILE ? 'Tracking file: ' + ISSUE_FILE : ''}
+${ISSUE_REF ? 'GitHub issue: ' + ISSUE_REF : ''}
 
 Steps:
 1. grep the codebase for the reported English text to locate the source
@@ -340,7 +340,7 @@ const translationResult = await agent(
 
 Translations needed: ${JSON.stringify(plan.translationsNeeded)}
 Context: ${ISSUE}
-${ISSUE_FILE ? 'Issue file: ' + ISSUE_FILE : ''}
+${ISSUE_REF ? 'GitHub issue: ' + ISSUE_REF : ''}
 
 Steps:
 1. Run context_resolve.sh with --task-type translate for the exact target files

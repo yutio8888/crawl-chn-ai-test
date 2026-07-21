@@ -11,7 +11,7 @@ session_id: b34cf734-660f-441b-aee1-094015fbe006
 > 每次做决策、调度 Agent、或评估 review 结果后，必须更新此文件。
 >
 > 职责边界：
-> - 不存 issue 状态 → `${DCSS_ISSUES_DIR:-../issues}/INDEX.md`
+> - 不存 issue 状态 → `yutio8888/crawl-chn-ai-test` GitHub Issues
 > - 不存翻译决策 → `docs/decisions.md`
 > - 不存脚本输出 → `.claude/metrics/verify/`
 > - **只存**：为什么做决策、跨 issue 约束、编排者在忙什么
