@@ -412,7 +412,7 @@ wiz-monster
 <w>place:Abyss</w>
 
 使用<w>place</w>:表示你要生成一个随机怪物。
-你也可以在其他深度有随机怪物的楼层生成僵尸，例如：
+你也可以在其他深度有随机怪物的楼层生成丧尸，例如：
 
 <w>place:Elf:3 zombie</w>
 
@@ -481,7 +481,7 @@ The <w>name_definite</w>标记会确保它永远不会被冠以“<cyan>a</cyan>
 
 <w>kobold name:goblin name_replace name_descriptor name_definite</w>
 
-<w>name_zombie</w>可以用来重新定义已经僵尸化的怪物（包括骷髅、拟像和幽灵）。
+<w>name_zombie</w>可以用来重新定义已经亡灵化的怪物（包括骷髅、拟像和幽灵）。
 
 最后，<w>name_nocorpse</w>能让尸体的名称完全被隐去。例如：
 

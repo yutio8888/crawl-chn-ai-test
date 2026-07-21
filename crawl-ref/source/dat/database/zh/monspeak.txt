@@ -2065,7 +2065,7 @@ w:50
 
 @The_monster@ 说："奇库巴库哈说多做死灵术。我恨做死灵术。"
 
-@The_monster@ 说："我有了一群僵尸。它们连自己都绊倒。有什么用？"
+@The_monster@ 说："我有了一群丧尸。它们连自己都绊倒。有什么用？"
 
 @The_monster@ 说："我讨厌这些尸体。我讨厌关于死亡的谈话。但我喜欢力量。"
 
@@ -7088,15 +7088,15 @@ _yredelemnul_Donald_
 
 
 
-@The_monster@说："啊。那些僵尸是你搞出来的吧。"
+@The_monster@说："啊。那些丧尸是你搞出来的吧。"
 
 
 
-@The_monster@说："我讨厌僵尸。"
+@The_monster@说："我讨厌丧尸。"
 
 
 
-@The_monster@说："僵尸？幽灵？没有真正的同伴，你不无聊吗？"
+@The_monster@说："丧尸？幽灵？没有真正的同伴，你不无聊吗？"
 
 
 
@@ -10076,7 +10076,7 @@ Kikubaaqudgha player ghost
 @The_monster@ @to_foe@说："死亡终将战胜生命。"
 
 
-@The_monster@ @to_foe@说："你会成为一具不错的僵尸。"
+@The_monster@ @to_foe@说："你会成为一具不错的丧尸。"
 %%%%
 Long Blades player ghost
 

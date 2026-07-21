@@ -576,7 +576,7 @@ do_monster_ssot() {
     if python3 "$SCRIPT_DIR/monster_name_ssot.py" \
         --source-txt crawl-ref/source/dat/i18n/zh/source.txt
     then
-        echo "  ✅ source.txt is authoritative for unique monster names"
+        echo "  ✅ source.txt is authoritative for the complete monster inventory"
     else
         violations_found=true
     fi

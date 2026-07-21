@@ -171,7 +171,8 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Rejected**: 半兽人 (orcs are a distinct race, not half-human)
 - **Rationale**: Standard convention from Warcraft/LoTR translations. All entries consistent.
 - **Examples**: orc knight → 兽人骑士, orc warlord → 兽人军阀, orc apostle → 兽人使徒
-- **Known issue**: "orc wizard" and "orc sorcerer" both resolve to 兽人巫师. Monitor for player confusion; if necessary, differentiate as 兽人巫师 (wizard) / 兽人术士 (sorcerer).
+- **Resolved issue**: `orc wizard → 兽人巫师` and
+  `orc sorcerer → 兽人术士` are now distinct; see D-A-041.
 
 ---
 
@@ -1271,6 +1272,48 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-041 — 非 unique 怪物显示名消歧与文学引文例外
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-21
+- **Source**: [GitHub Issue #3](https://github.com/yutio8888/crawl-chn-ai-test/issues/3)
+  and the archived `monster-name-ssot-nonunique` experiment
+- **Problem**: distinct English monsters shared the same Chinese display name,
+  while prose databases sometimes used an accidental synonym and sometimes a
+  contextually required literary, religious, historical, or lexical rendering.
+- **Display-name choices**:
+  - `orc sorcerer → 兽人术士`; retain `orc wizard → 兽人巫师`.
+  - `alligator snapping turtle → 巨鳄龟`; retain `snapping turtle → 鳄龟`.
+  - `Spatial Maelstrom → 空间乱流`; retain `spatial vortex → 空间漩涡`.
+  - `zombie → 丧尸`; retain `Jiangshi → 僵尸` for the Chinese
+    hopping-vampire entity. Established work titles retain their published
+    form, such as 《僵尸世界大战》.
+- **Description rule**: when an English monster description explicitly names
+  its subject, the Chinese description uses the `source.txt` display name.
+  This is a lexical consistency invariant, not permission to replace natural
+  Chinese words that refer to a different sense.
+- **Quote rule**: ordinary self-reference uses the display-name SSOT
+  (`boggart → 博加特`). A quote may retain a different rendering only
+  through an exact-key exception with a non-empty contextual reason. Examples
+  include Biblical `cherub → 基路伯`, Tolkien's `goblin → 哥布林`,
+  natural-history `jackal → 胡狼`, the proper mythic name
+  `kraken → 克拉肯`, and lexical `wight → 人`. The blocking checker
+  owns the complete executable exception set and rejects stale exceptions.
+- **Rejected**: preserving ambiguous display-name collisions; mechanically
+  replacing every prose occurrence; global Chinese-word exceptions; treating
+  an allowlist as proof that an unrelated future mismatch is valid.
+- **Rationale**: map/log identity needs distinct stable names, but literary
+  fidelity requires preserving source-specific proper names, established
+  scripture terminology, work titles, and genuine alternate senses.
+- **Affected authorities**:
+  - `dat/i18n/zh/source.txt` and matching ZH prose assets
+  - `docs/glossary.md`
+  - `.claude/scripts/monster_name_ssot.py`
+- **Resolved**: 2026-07-21
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -1313,6 +1356,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-006 | Lightning Rod | 雷击杖 | active ✅ |
 | D-A-039 | Felid (player species) | 猫 | active ✅ |
 | D-A-040 | Octopode (player species) | 章鱼 | active ✅ |
+| D-A-041 | non-unique monster display names and quote exceptions | 术士 / 巨鳄龟 / 乱流 / 丧尸 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
 | D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |

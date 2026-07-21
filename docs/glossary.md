@@ -495,7 +495,7 @@
 | adder | 蝰蛇 | monster; source=source.txt |
 | air elemental | 气元素 | monster; source=source.txt |
 | alligator | 短吻鳄 | monster; source=source.txt |
-| alligator snapping turtle | 鳄龟 | monster; source=source.txt |
+| alligator snapping turtle | 巨鳄龟 | monster; source=source.txt; distinguished from snapping turtle → 鳄龟 |
 | anaconda | 水蟒 | monster; source=source.txt |
 | ancestor | 先祖 | monster; source=source.txt |
 | ancient champion | 远古冠军 | monster; source=source.txt |
@@ -565,6 +565,13 @@
 | curse toe | 诅咒趾 | monster; source=source.txt |
 | cyclops | 独眼巨人 | monster; source=source.txt |
 | daeva | 德瓦 | monster; source=source.txt |
+| Jiangshi | 僵尸 | monster; source=source.txt; Chinese hopping-vampire name, distinguished from zombie → 丧尸 |
+| orc sorcerer | 兽人术士 | monster; source=source.txt; distinguished from orc wizard → 兽人巫师 |
+| orc wizard | 兽人巫师 | monster; source=source.txt |
+| snapping turtle | 鳄龟 | monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟 |
+| Spatial Maelstrom | 空间乱流 | monster; source=source.txt; distinguished from spatial vortex → 空间漩涡 |
+| spatial vortex | 空间漩涡 | monster; source=source.txt |
+| zombie | 丧尸 | monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸” |
 
 | Serpent of Hell | 地狱巨蛇 | monster; source=source.txt; shared display name |
 | Serpent of Hell gehenna | 欣嫩谷地狱巨蛇 | unique-monster; source=monsters.txt; branch-qualified display name |

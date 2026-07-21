@@ -32,7 +32,7 @@ Alchemy	炼金术	domain=magic; source=EN/ZH
 Alistair's Intoxication	阿利斯泰尔之醉	domain=spells; source=EN/ZH; 备注=✅
 Alistair's Walking Alembic	阿利斯泰尔之行走蒸馏器	domain=spells; source=EN/ZH; 备注=✅
 alligator	短吻鳄	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-alligator snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
+alligator snapping turtle	巨鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from snapping turtle → 鳄龟
 Amaemon	亚麦蒙	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Amaemon title	恶魔投毒者亚麦蒙	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 amulet	项链	domain=items; source=EN/ZH
@@ -497,6 +497,7 @@ Iskenderun's Battlesphere	伊斯肯德伦之战斗球	domain=spells; source=EN/Z
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
 Jeremiah	耶利米	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Jessica	杰西卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
+Jiangshi	僵尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; Chinese hopping-vampire name, distinguished from zombie → 丧尸
 Jinxbite	厄运之咬	domain=spells; source=EN/ZH; 备注=✅
 Jiyva	吉瓦	domain=gods; source=EN/ZH; 类型=音译
 Jorgrun	约格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -622,6 +623,8 @@ Orb of Destruction	毁灭之球	domain=spells; source=EN/ZH; 备注=✅
 Orb of Electricity	电光球	domain=spells; source=EN/ZH; 备注=✅
 Orb of Zot	佐特宝珠 / 力量宝珠	domain=core; source=EN/ZH; 注意事项=两种译法均可
 orc	兽人	domain=species; source=EN/ZH; 复合格式=兽人 + 职业（兽人骑士、兽人大祭司）
+orc sorcerer	兽人术士	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from orc wizard → 兽人巫师
+orc wizard	兽人巫师	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Ostracise	排斥	domain=spells; source=EN/ZH; 备注=✅
 Ozocubu's Armour	奥佐库布之护甲	domain=spells; source=EN/ZH; 备注=✅
 Ozocubu's Refrigeration	奥佐库布之制冷	domain=spells; source=EN/ZH; 备注=✅
@@ -773,6 +776,7 @@ slimy green scales	黏滑绿鳞	domain=mutations; source=EN/ZH; Scope / comment=
 Slow	减速	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=📝
 Slug Dart	弹丸飞镖	domain=spells; source=EN/ZH; 备注=✅
 Smiting	惩击	domain=spells; source=EN/ZH; 备注=✅
+snapping turtle	鳄龟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from alligator snapping turtle → 巨鳄龟
 snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -782,6 +786,8 @@ Sonic wave	音波	domain=spells; source=EN/ZH; 备注=✅
 Sonja	索尼娅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 soul	灵魂	domain=core; source=EN/ZH
 Soul Splinter	灵魂分裂	domain=spells; source=EN/ZH; 备注=✅
+Spatial Maelstrom	空间乱流	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from spatial vortex → 空间漩涡
+spatial vortex	空间漩涡	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Spawn Tentacles	生成触须	domain=spells; source=EN/ZH; 备注=✅
 Spectral Cloud	幽灵云	domain=spells; source=EN/ZH; 备注=✅
 Spectral Weapon	灵体武器	domain=spells; source=EN/ZH; 备注=✅
@@ -957,4 +963,5 @@ yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译
 Zenata	泽娜塔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Zin	辛	domain=gods; source=EN/ZH; 类型=单字音译
+zombie	丧尸	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt; distinguished from Jiangshi → 僵尸; established work titles may retain “僵尸”
 Zot	佐特	domain=gods; source=EN/ZH; 类型=音译

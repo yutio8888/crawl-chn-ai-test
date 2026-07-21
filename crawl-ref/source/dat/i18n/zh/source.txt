@@ -7240,7 +7240,7 @@ The roots
 根须
 %%%%
 The zombie hands
-僵尸之手
+尸手
 %%%%
 The vines
 藤蔓
@@ -7249,7 +7249,7 @@ the roots'
 树根
 %%%%
 the zombie hands'
-僵尸之手
+尸手
 %%%%
 the vines'
 藤蔓
@@ -7423,10 +7423,10 @@ The Wrath of Qazlal
 卡兹拉之怒
 %%%%
 The zombie hands holding %s return to the earth.
-抓住%s的僵尸之手回到了地下。
+抓住%s的尸手沉回了地下。
 %%%%
 The zombie hands holding you return to the earth.
-抓住你的僵尸之手回到了土里。
+抓住你的尸手沉回了地下。
 %%%%
 There are many items here.
 这里有很多物品。
@@ -11321,7 +11321,7 @@ Zin cleanses your body of Beogh's taint.
 辛净化了你体内比欧弗的污点。
 %%%%
 Zombie hands grab %s from below!
-僵尸手从下方抓住了%s！
+尸手从地下抓住了%s！
 %%%%
 Zot (%d)
 佐特（%d）
@@ -13846,7 +13846,7 @@ Teletunneler
 传送隧道者
 %%%%
 Spatial Maelstrom
-空间漩涡
+空间乱流
 %%%%
 Swamp Dragon
 沼泽龙
@@ -20613,7 +20613,7 @@ constricted by roots
 被树根缠绕
 %%%%
 constricted by zombie hands
-被僵尸之手抓住
+被尸手抓住
 %%%%
 skewered by barbs
 被倒刺刺穿
@@ -21129,7 +21129,7 @@ this level
 本层
 %%%%
 zombie
-僵尸
+丧尸
 %%%%
  <%s>%c %c </%s><%s>%4d gold   %s%s</%s>
  <%s>%c %c </%s><%s>%4d 金币   %s%s</%s>
@@ -23034,7 +23034,7 @@ Malign forces permeate your being, awaiting release.
 邪恶的力量渗透了你的身体，等待释放。
 %%%%
 You dismiss your zombies and call upon the dead to rise afresh.
-你遣散了僵尸，重新召唤亡者复苏。
+你遣散了丧尸，重新召唤亡者复苏。
 %%%%
 You call upon the dead to rise.
 你召唤亡者复苏。
@@ -31520,7 +31520,7 @@ alligator
 短吻鳄
 %%%%
 alligator snapping turtle
-鳄龟
+巨鳄龟
 %%%%
 anaconda
 水蟒
@@ -32240,7 +32240,7 @@ large skeleton
 大型骷髅
 %%%%
 large zombie
-大型僵尸
+大型丧尸
 %%%%
 lava fish
 熔岩鱼
@@ -32429,7 +32429,7 @@ orc priest
 兽人祭司
 %%%%
 orc sorcerer
-兽人巫师
+兽人术士
 %%%%
 orc warlord
 兽人军阀
@@ -32648,7 +32648,7 @@ small skeleton
 小型骷髅
 %%%%
 small zombie
-小型僵尸
+小型丧尸
 %%%%
 smoke demon
 烟雾恶魔
