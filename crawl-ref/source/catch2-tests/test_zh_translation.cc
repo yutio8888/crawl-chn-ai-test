@@ -15,6 +15,7 @@
 #include "spl-util.h"
 #include "spell-type.h"
 #include "stringutil.h"
+#include "terrain.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
 
@@ -130,6 +131,75 @@ TEST_CASE_METHOD(ZhTranslationFixture,
         "hop", move_phrase_context::bare);
     REQUIRE(make_stringf(T_("Are you sure you want to cancel this %s?"), hop)
             == "你确定要取消此次跳跃吗？");
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: terrain swap messages preserve every visibility branch",
+                 "[zh-translation][terrain-swap]")
+{
+    using Row = std::tuple<dungeon_feature_type, const char*, const char*,
+                           const char*, bool, bool, const char*>;
+    const auto row = GENERATE(table<dungeon_feature_type, const char*,
+                                    const char*, const char*, bool, bool,
+                                    const char*>({
+        Row{DNGN_FLOOR, "石梯", "", "", true, false,
+            "石梯突然消失了！"},
+        Row{DNGN_STONE_ARCH, "石梯", "你", "", true, false,
+            "石梯突然从你旁边消失了！"},
+        Row{DNGN_FLOOR, "石梯", "", "", false, true,
+            "石梯突然出现了！"},
+        Row{DNGN_ROCK_WALL, "石梯", "", "你", false, true,
+            "石梯突然出现在你周围！"},
+        Row{DNGN_FLOOR, "石梯", "", "", true, true, "石梯移动了！"},
+        Row{DNGN_ESCAPE_HATCH_UP, "石梯", "你", "", true, true,
+            "石梯从你上方移走了！"},
+        Row{DNGN_FLOOR, "石梯", "", "兽人", true, true,
+            "石梯移到了兽人下方！"},
+        Row{DNGN_STONE_ARCH, "石梯", "你", "兽人", true, true,
+            "石梯从你旁边移到了兽人旁边！"},
+    }));
+    REQUIRE(format_feature_swap_message(
+                std::get<1>(row), std::get<0>(row), std::get<2>(row),
+                std::get<3>(row), std::get<4>(row), std::get<5>(row))
+            == std::get<6>(row));
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "en: terrain swap messages preserve legacy output",
+                 "[zh-translation][terrain-swap]")
+{
+    using Row = std::tuple<dungeon_feature_type, const char*, const char*,
+                           bool, bool, const char*>;
+    const auto row = GENERATE(table<dungeon_feature_type, const char*,
+                                    const char*, bool, bool, const char*>({
+        Row{DNGN_FLOOR, "", "", true, false,
+            "the stone staircase suddenly disappears!"},
+        Row{DNGN_STONE_ARCH, "you", "", true, false,
+            "the stone staircase suddenly disappears from beside you!"},
+        Row{DNGN_FLOOR, "", "", false, true,
+            "the stone staircase suddenly appears!"},
+        Row{DNGN_ROCK_WALL, "", "you", false, true,
+            "the stone staircase suddenly appears around you!"},
+        Row{DNGN_FLOOR, "", "", true, true,
+            "the stone staircase moves!"},
+        Row{DNGN_ESCAPE_HATCH_UP, "you", "", true, true,
+            "the stone staircase moves from above you!"},
+        Row{DNGN_FLOOR, "", "the orc", true, true,
+            "the stone staircase moves to beneath the orc!"},
+        Row{DNGN_STONE_ARCH, "you", "the orc", true, true,
+            "the stone staircase moves from beside you to beside the orc!"},
+    }));
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+    REQUIRE(format_feature_swap_message(
+                "the stone staircase", std::get<0>(row), std::get<1>(row),
+                std::get<2>(row), std::get<3>(row), std::get<4>(row))
+            == std::get<5>(row));
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    i18n_cache_clear();
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

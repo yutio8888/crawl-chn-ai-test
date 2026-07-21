@@ -44,6 +44,7 @@
 #include "mon-util.h"
 #include "ouch.h"
 #include "player.h"
+#include "positional_format.h"
 #include "random.h"
 #include "religion.h"
 #include "species.h"
@@ -61,6 +62,73 @@
 #include "database.h"
 
 static bool _revert_terrain_to(coord_def pos, dungeon_feature_type feat);
+
+static string _translated_swap_preposition(dungeon_feature_type feature)
+{
+    const string preposition = feat_preposition(feature, false);
+    if (preposition == "beside")
+        return C_("terrain swap preposition", "beside");
+    if (preposition == "around")
+        return C_("terrain swap preposition", "around");
+    if (preposition == "above")
+        return C_("terrain swap preposition", "above");
+    if (preposition == "beneath")
+        return C_("terrain swap preposition", "beneath");
+    return preposition;
+}
+
+string format_feature_swap_message(const string &feature_name,
+                                   dungeon_feature_type feature,
+                                   const string &origin_actor,
+                                   const string &destination_actor,
+                                   bool origin_visible,
+                                   bool destination_visible)
+{
+    const string preposition = _translated_swap_preposition(feature);
+
+    if (origin_visible && !destination_visible)
+    {
+        if (origin_actor.empty())
+        {
+            return make_stringf_p(T_("%1$s suddenly disappears!"),
+                                  feature_name.c_str());
+        }
+        return make_stringf_p(
+            T_("%1$s suddenly disappears from %2$s %3$s!"),
+            feature_name.c_str(), preposition.c_str(), origin_actor.c_str());
+    }
+
+    if (!origin_visible && destination_visible)
+    {
+        if (destination_actor.empty())
+        {
+            return make_stringf_p(T_("%1$s suddenly appears!"),
+                                  feature_name.c_str());
+        }
+        return make_stringf_p(T_("%1$s suddenly appears %2$s %3$s!"),
+                              feature_name.c_str(), preposition.c_str(),
+                              destination_actor.c_str());
+    }
+
+    if (origin_actor.empty() && destination_actor.empty())
+        return make_stringf_p(T_("%1$s moves!"), feature_name.c_str());
+    if (destination_actor.empty())
+    {
+        return make_stringf_p(T_("%1$s moves from %2$s %3$s!"),
+                              feature_name.c_str(), preposition.c_str(),
+                              origin_actor.c_str());
+    }
+    if (origin_actor.empty())
+    {
+        return make_stringf_p(T_("%1$s moves to %2$s %3$s!"),
+                              feature_name.c_str(), preposition.c_str(),
+                              destination_actor.c_str());
+    }
+    return make_stringf_p(
+        T_("%1$s moves from %2$s %3$s to %4$s %5$s!"),
+        feature_name.c_str(), preposition.c_str(), origin_actor.c_str(),
+        preposition.c_str(), destination_actor.c_str());
+}
 
 actor* actor_at(const coord_def& c)
 {
@@ -1439,11 +1507,9 @@ static void _announce_swap_real(coord_def orig_pos, coord_def dest_pos)
         feature_description_at(dest_pos, false,
                             you.see_cell(orig_pos) ? DESC_THE : DESC_A);
 
-    string prep = feat_preposition(orig_feat, false);
-
     string orig_actor, dest_actor;
     if (orig_pos == you.pos())
-        orig_actor = "you";
+        orig_actor = C_("terrain swap actor", "you");
     else if (const monster* m = monster_at(orig_pos))
     {
         if (you.can_see(*m))
@@ -1451,37 +1517,17 @@ static void _announce_swap_real(coord_def orig_pos, coord_def dest_pos)
     }
 
     if (dest_pos == you.pos())
-        dest_actor = "you";
+        dest_actor = C_("terrain swap actor", "you");
     else if (const monster* m = monster_at(dest_pos))
     {
         if (you.can_see(*m))
             dest_actor = m->name(DESC_THE);
     }
 
-    ostringstream str;
-    str << orig_name << " ";
-    if (you.see_cell(orig_pos) && !you.see_cell(dest_pos))
-    {
-        str << "suddenly disappears";
-        if (!orig_actor.empty())
-            str << " from " << prep << " " << orig_actor;
-    }
-    else if (!you.see_cell(orig_pos) && you.see_cell(dest_pos))
-    {
-        str << "suddenly appears";
-        if (!dest_actor.empty())
-            str << " " << prep << " " << dest_actor;
-    }
-    else
-    {
-        str << "moves";
-        if (!orig_actor.empty())
-            str << " from " << prep << " " << orig_actor;
-        if (!dest_actor.empty())
-            str << " to " << prep << " " << dest_actor;
-    }
-    str << "!";
-    mpr(str.str());
+    mpr(format_feature_swap_message(orig_name, orig_feat,
+                                    orig_actor, dest_actor,
+                                    you.see_cell(orig_pos),
+                                    you.see_cell(dest_pos)));
 }
 
 static void _announce_swap(coord_def pos1, coord_def pos2)

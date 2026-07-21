@@ -72,6 +72,12 @@ bool feat_is_gate(dungeon_feature_type feat);
 
 string feat_preposition(dungeon_feature_type feat, bool active = false,
                         const actor* who = nullptr);
+string format_feature_swap_message(const string &feature_name,
+                                   dungeon_feature_type feature,
+                                   const string &origin_actor,
+                                   const string &destination_actor,
+                                   bool origin_visible,
+                                   bool destination_visible);
 string stair_climb_verb(dungeon_feature_type feat);
 
 bool feat_is_deep_water(dungeon_feature_type feat);
