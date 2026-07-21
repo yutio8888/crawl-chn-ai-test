@@ -3186,8 +3186,11 @@ Bonus from skill manuals is in <lightred>red</lightred>.
 book
 书籍
 %%%%
-book_type:book
+book_type|book
 书
+%%%%
+book_type|manual
+手册
 %%%%
  booms out: Revellers, it's time to dance!
  洪声说道：狂欢者们，起舞的时刻到了！
@@ -5639,6 +5642,9 @@ rampage
 random
 随机
 %%%%
+Random 
+随机
+%%%%
 Random character
 随机角色
 %%%%
@@ -5701,6 +5707,9 @@ Really remove and destroy %s?%s
 %%%%
  recites the Axioms of Law to you!
  向你朗诵秩序之律！
+%%%%
+Recommended 
+推荐
 %%%%
 Recommended character
 推荐角色
