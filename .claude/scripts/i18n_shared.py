@@ -18,6 +18,9 @@ CPP_SOURCE_EXTENSIONS = frozenset({
 DEFAULT_SCAN_SKIP_DIRS = frozenset({
     ".git", ".worktrees", "worktrees", "__pycache__", "contrib",
 })
+CPP_AST_SCAN_SKIP_DIRS = DEFAULT_SCAN_SKIP_DIRS | frozenset({
+    "catch2-tests", "rltiles", "util",
+})
 
 
 @dataclass

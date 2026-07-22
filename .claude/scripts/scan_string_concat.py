@@ -34,7 +34,7 @@ import sys
 from collections import defaultdict
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from i18n_shared import (CPP_SOURCE_EXTENSIONS, ScanCoverage,
+from i18n_shared import (CPP_AST_SCAN_SKIP_DIRS, CPP_SOURCE_EXTENSIONS, ScanCoverage,
                          discover_source_files, has_relevant_parse_error)
 
 # ── Tree-sitter availability ──────────────────────────────────────────────────
@@ -88,10 +88,6 @@ UI_FUNC_KEYWORDS = {
     "name", "title", "tooltip", "help", "status", "note",
     "report", "summary", "display", "format", "print",
 }
-
-# Directories to skip during recursive walk
-SKIP_DIRS = {"contrib", ".git", "worktrees", "__pycache__", "catch2-tests",
-             "rltiles", "util"}
 
 # Files to skip (third-party)
 SKIP_FILES = {"catch_amalgamated.cc"}
@@ -1087,7 +1083,7 @@ def main():
         source_dir = os.path.abspath(args.source_dir)
         try:
             files_to_scan = [path for path in discover_source_files(
-                source_dir, skip_dirs=SKIP_DIRS)
+                source_dir, skip_dirs=CPP_AST_SCAN_SKIP_DIRS)
                 if os.path.basename(path) not in SKIP_FILES]
         except (OSError, ValueError) as exc:
             print(f"ERROR: {exc}", file=sys.stderr)

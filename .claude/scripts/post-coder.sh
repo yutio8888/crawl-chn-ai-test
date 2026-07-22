@@ -42,14 +42,34 @@ trap cleanup_temps EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 trap 'exit 129' HUP
+
+CPP_AST_SCAN_SKIP_COMPONENTS=$(
+    PYTHONPATH="$SCRIPT_DIR${PYTHONPATH:+:$PYTHONPATH}" python3 -c \
+        'from i18n_shared import CPP_AST_SCAN_SKIP_DIRS; print("\n".join(sorted(CPP_AST_SCAN_SKIP_DIRS)))'
+)
+if [[ -z "$CPP_AST_SCAN_SKIP_COMPONENTS" ]]; then
+    echo "ERROR: CPP_AST_SCAN_SKIP_DIRS import returned no directory components" >&2
+    exit 2
+fi
+declare -A CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP=()
+while IFS= read -r component; do
+    CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP["$component"]=1
+done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
+
 SCOPE="${ZH_VERIFY_SCOPE:-full}"
 CHANGED_CPP=()
 while IFS= read -r path; do
+    skip_path=0
+    IFS='/' read -r -a path_components <<< "$path"
+    for component in "${path_components[@]}"; do
+        if [[ -n "${CPP_AST_SCAN_SKIP_COMPONENT_LOOKUP["$component"]:-}" ]]; then
+            skip_path=1
+            break
+        fi
+    done
+    [[ "$skip_path" -eq 0 ]] || continue
+
     case "$path" in
-        */contrib/*|*/.git/*|*/worktrees/*|*/__pycache__/*|\
-        */catch2-tests/*|*/rltiles/*|*/util/*)
-            continue
-            ;;
         crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
         crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
         crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)

@@ -78,6 +78,37 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: invalid .des hydra head specifications fail closed",
+                 "[zh-translation][des-protocol][issue-14]")
+{
+    init_monsters();
+
+    const auto definition = GENERATE(values({
+        "0-headed hydra",
+        "21-headed hydra",
+        "21-headed slymdra",
+        "eightjunk-headed hydra",
+        "8-junk-headed hydra",
+        "one-junk-headed slymdra",
+        "twenty-one-headed hydra",
+        "unknown-headed hydra",
+    }));
+    const auto language = GENERATE(lang_t::EN, lang_t::ZH);
+
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    i18n_cache_clear();
+
+    mons_list monsters;
+    const string error = monsters.add_mons(definition);
+    INFO("definition=\"" << definition << "\", language="
+         << (language == lang_t::ZH ? "zh" : "en")
+         << ", error=\"" << error << "\"");
+    REQUIRE_FALSE(error.empty());
+    REQUIRE(monsters.size() == 0);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Lernaean hydra remains a distinct .des identity",
                  "[zh-translation][des-protocol][issue-14]")
 {

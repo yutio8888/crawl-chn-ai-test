@@ -11,41 +11,52 @@ FAKEBIN="$REPO/fakebin"
 TEMPDIR="$REPO/tmp"
 PASS=0
 FAIL=0
+CPP_AST_SCAN_SKIP_COMPONENTS=$(
+    PYTHONPATH="$SCRIPT_DIR/..${PYTHONPATH:+:$PYTHONPATH}" python3 -c \
+        'from i18n_shared import CPP_AST_SCAN_SKIP_DIRS; print("\n".join(sorted(CPP_AST_SCAN_SKIP_DIRS)))'
+)
+[[ -n "$CPP_AST_SCAN_SKIP_COMPONENTS" ]]
+export CPP_AST_SCAN_SKIP_COMPONENTS
 
 pass() { echo "  PASS: $1"; PASS=$((PASS + 1)); }
 fail() { echo "  FAIL: $1"; FAIL=$((FAIL + 1)); }
 
 mkdir -p "$REPO/.claude/scripts/data" "$REPO/.claude/metrics/verify" \
-    "$REPO/crawl-ref/source/nested/contrib" \
-    "$REPO/crawl-ref/source/nested/.git" \
-    "$REPO/crawl-ref/source/nested/worktrees" \
-    "$REPO/crawl-ref/source/nested/__pycache__" \
-    "$REPO/crawl-ref/source/nested/catch2-tests" \
-    "$REPO/crawl-ref/source/nested/rltiles" \
-    "$REPO/crawl-ref/source/nested/util" "$FAKEBIN" "$TEMPDIR"
+    "$REPO/crawl-ref/source/nested" "$FAKEBIN" "$TEMPDIR"
 cp "$SCRIPT_DIR/../post-coder.sh" "$REPO/.claude/scripts/post-coder.sh"
 printf '{}\n' > "$REPO/.claude/scripts/data/string_concat_advisory_baseline.json"
 printf 'int value;\n' > "$REPO/crawl-ref/source/sample.cc"
-for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+while IFS= read -r excluded; do
+    mkdir -p "$REPO/crawl-ref/source/nested/$excluded"
     printf 'int excluded;\n' \
         > "$REPO/crawl-ref/source/nested/$excluded/test_sample.cc"
-done
+done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
 
 cat > "$FAKEBIN/python3" <<'SH'
 #!/bin/bash
+if [[ "$*" == *CPP_AST_SCAN_SKIP_DIRS* ]]; then
+    case "${CLEANUP_MODE:-normal}" in
+        import_fail) exit 42 ;;
+        import_empty) exit 0 ;;
+    esac
+    printf '%s\n' "$CPP_AST_SCAN_SKIP_COMPONENTS"
+    exit 0
+fi
 case "$*" in
     *scan_varargs_string.py*|*scan_i18n_lifetime.py*)
         if [[ "${CLEANUP_MODE:-normal}" == reject_excluded ]]; then
-            for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+            [[ "$*" == *crawl-ref/source/sample.cc* ]] || exit 43
+            while IFS= read -r excluded; do
                 [[ "$*" == *"/$excluded/"* ]] && exit 42
-            done
+            done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
         fi
         ;;
     *scan_string_concat.py*)
         if [[ "${CLEANUP_MODE:-normal}" == reject_excluded ]]; then
-            for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+            [[ "$*" == *crawl-ref/source/sample.cc* ]] || exit 43
+            while IFS= read -r excluded; do
                 [[ "$*" == *"/$excluded/"* ]] && exit 42
-            done
+            done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
         fi
         case "${CLEANUP_MODE:-normal}" in
             scanner_fail) exit 9 ;;
@@ -100,17 +111,30 @@ run_mode normal
     || fail "normal advisory run succeeds (rc=$MODE_RC)"
 assert_clean "normal return removes advisory temp"
 
-set +e
-(cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
-    ZH_VERIFY_SCOPE=changed CLEANUP_MODE=reject_excluded \
-    ZH_VERIFY_CHANGED_FILES=$'crawl-ref/source/sample.cc\ncrawl-ref/source/nested/contrib/test_sample.cc\ncrawl-ref/source/nested/.git/test_sample.cc\ncrawl-ref/source/nested/worktrees/test_sample.cc\ncrawl-ref/source/nested/__pycache__/test_sample.cc\ncrawl-ref/source/nested/catch2-tests/test_sample.cc\ncrawl-ref/source/nested/rltiles/test_sample.cc\ncrawl-ref/source/nested/util/test_sample.cc' \
-    /bin/bash .claude/scripts/post-coder.sh) >/dev/null 2>&1
-changed_scope_rc=$?
-set -e
-[[ "$changed_scope_rc" -eq 0 ]] \
-    && pass "changed scope preserves recursive scanner exclusions" \
-    || fail "changed scope exclusions (rc=$changed_scope_rc)"
-assert_clean "changed scope removes advisory temp"
+while IFS= read -r excluded; do
+    changed_files=$'crawl-ref/source/sample.cc\n'"crawl-ref/source/nested/$excluded/test_sample.cc"
+    set +e
+    (cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
+        ZH_VERIFY_SCOPE=changed CLEANUP_MODE=reject_excluded \
+        ZH_VERIFY_CHANGED_FILES="$changed_files" \
+        /bin/bash .claude/scripts/post-coder.sh) >/dev/null 2>&1
+    changed_scope_rc=$?
+    set -e
+    [[ "$changed_scope_rc" -eq 0 ]] \
+        && pass "changed scope excludes nested $excluded and scans sample" \
+        || fail "changed scope $excluded exclusion (rc=$changed_scope_rc)"
+    assert_clean "changed scope $excluded removes advisory temp"
+done <<< "$CPP_AST_SCAN_SKIP_COMPONENTS"
+
+run_mode import_fail
+[[ "$MODE_RC" -eq 42 ]] && pass "skip-directory import failure propagates" \
+    || fail "skip-directory import failure (expected 42, got $MODE_RC)"
+assert_clean "skip-directory import failure runs cleanup"
+
+run_mode import_empty
+[[ "$MODE_RC" -eq 2 ]] && pass "empty skip-directory import fails closed" \
+    || fail "empty skip-directory import (expected 2, got $MODE_RC)"
+assert_clean "empty skip-directory import runs cleanup"
 
 run_mode scanner_fail
 [[ "$MODE_RC" -eq 0 ]] && pass "scanner finding/failure remains advisory" \
