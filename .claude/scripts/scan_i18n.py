@@ -374,6 +374,13 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
             'localized': 'getSpeakString(god_name(',
         },
         {
+            'file': 'lookup-help.cc', 'start': r'static\s+vector<string>\s+_get_skill_keys\s*\(\s*\)',
+            'end': r'static\s+bool\s+_monster_filter\s*\(',
+            'required': ((r'skill_name_en\s*\(', 1),),
+            'forbidden': (r'skill_name\s*\(',),
+            'localized': 'skill_name(',
+        },
+        {
             'file': 'spl-miscast.cc', 'start': r'static\s+void\s+_do_msg\s*\(',
             'end': r'static\s+void\s+_ouch\s*\(',
             'required': ((r'spelltype_long_name_en\s*\(', 1),),
