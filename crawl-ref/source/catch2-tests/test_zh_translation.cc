@@ -7,15 +7,20 @@
 #include "ability-type.h"
 #include "art-enum.h"
 #include "artefact.h"
+#include "database.h"
 #include "decks.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
 #include "item-prop-enum.h"
+#include "jobs.h"
 #include "mapdef.h"
 #include "mgen-data.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "options.h"
+#include "random.h"
+#include "religion.h"
+#include "skills.h"
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
@@ -142,6 +147,72 @@ TEST_CASE_METHOD(ZhTranslationFixture,
              << spell_english_name(spell) << "\"");
         REQUIRE(spell_by_name(spell_english_name(spell)) == spell);
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 16 identity accessors stay canonical at display boundaries",
+                 "[zh-translation][issue-16][protocol]")
+{
+    init_spell_descs();
+    init_spell_name_cache();
+
+    REQUIRE(std::string(_god_name_en(GOD_ZIN)) == "Zin");
+    REQUIRE(std::string(get_job_name_en(JOB_FIGHTER)) == "Fighter");
+    REQUIRE(std::string(skill_name_en(SK_FIGHTING)) == "Fighting");
+    REQUIRE(std::string(spelltype_long_name_en(spschool::fire)) == "Fire");
+    REQUIRE(std::string(spell_english_name(SPELL_BLINK)) == "Blink");
+
+    CHECK(god_name(GOD_ZIN) != _god_name_en(GOD_ZIN));
+    CHECK(std::string(get_job_name(JOB_FIGHTER))
+          != get_job_name_en(JOB_FIGHTER));
+    CHECK(std::string(skill_name(SK_FIGHTING)) != skill_name_en(SK_FIGHTING));
+    CHECK(std::string(spelltype_long_name(spschool::fire))
+          != spelltype_long_name_en(spschool::fire));
+    CHECK(std::string(spell_title(SPELL_BLINK))
+          != spell_english_name(SPELL_BLINK));
+}
+
+TEST_CASE("Issue 16 TextDB lookup consumes identical gameplay RNG in EN and ZH",
+          "[zh-translation][issue-16][textdb][rng]")
+{
+    struct observation
+    {
+        string message;
+        uint64_t state;
+        uint64_t count;
+        int next;
+    };
+
+    const auto observe = [](lang_t language, const string &key)
+    {
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        i18n_cache_clear();
+        rng::subgenerator scoped_rng(0x1600160016001600ULL,
+                                     0xabcddcba12344321ULL);
+        observation result;
+        result.message = getSpeakString(key);
+        result.state = rng::current_generator().get_state();
+        result.count = rng::current_generator().get_count();
+        result.next = random2(1000000);
+        return result;
+    };
+
+    const observation english = observe(lang_t::EN, "Zin welcome");
+    const observation chinese = observe(lang_t::ZH, "Zin welcome");
+    REQUIRE_FALSE(english.message.empty());
+    REQUIRE_FALSE(chinese.message.empty());
+    CHECK(english.state == chinese.state);
+    CHECK(english.count == chinese.count);
+    CHECK(english.next == chinese.next);
+
+    const observation en_missing = observe(lang_t::EN, "issue16 missing key");
+    const observation zh_missing = observe(lang_t::ZH, "issue16 missing key");
+    CHECK(en_missing.message.empty());
+    CHECK(zh_missing.message.empty());
+    CHECK(en_missing.state == zh_missing.state);
+    CHECK(en_missing.count == zh_missing.count);
+    CHECK(en_missing.next == zh_missing.next);
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

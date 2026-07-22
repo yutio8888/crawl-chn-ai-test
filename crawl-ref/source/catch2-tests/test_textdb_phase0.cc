@@ -870,6 +870,42 @@ TEST_CASE("Phase 0 canonical English SpeakDB dump is deterministic",
     CHECK(key_set_fingerprint(monspell_keys) == 0xc87868127106d293ULL);
 }
 
+TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
+          "[single-file][textdb][phase0][issue-16]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+    const vector<textdb_phase0::canonical_entry> localized =
+        textdb_phase0::dump_localized_speakdb_typed("zh").entries;
+
+    const vector<string> restored_roots =
+    {
+        "aizul", "crazy yiuf", "harold", "robin", "joseph",
+        "azrael", "menkaure", "dowan", "swamp donald",
+    };
+    for (const string &key : restored_roots)
+    {
+        INFO(key);
+        const textdb_phase0::canonical_entry *entry =
+            find_canonical_entry(localized, key);
+        REQUIRE(entry != nullptr);
+        CHECK(entry->parse_error.empty());
+        CHECK_FALSE(entry->body_empty);
+        CHECK(has_source_history(*entry, "database/zh/monspeak.txt"));
+    }
+
+    const textdb_phase0::canonical_entry *jory =
+        find_canonical_entry(localized, "_jory_silent_");
+    REQUIRE(jory != nullptr);
+    REQUIRE(jory->parse_error.empty());
+    REQUIRE(jory->variants.size() == 11);
+    for (const textdb_phase0::canonical_variant &variant : jory->variants)
+    {
+        INFO(variant.locator.variant_ordinal);
+        CHECK(variant.raw_pattern.rfind("VISUAL:", 0) == 0);
+    }
+}
+
 TEST_CASE("Phase 0 legacy EN and ZH database traces expose known drift",
           "[single-file][textdb][phase0]")
 {

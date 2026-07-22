@@ -323,7 +323,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing/localized/missing/duplicate/decoy matrix" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 15 rows, 26 artifacts, 119 fixtures passed" \
+    "OK: 20 rows, 59 artifacts, 256 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──
