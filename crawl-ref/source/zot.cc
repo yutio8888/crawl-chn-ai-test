@@ -358,7 +358,7 @@ void incr_gem_clock()
     if (you.gems_found[gem])
     {
         take_note(Note(NOTE_GEM_LOST, gem));
-        mark_milestone("gem.lost", make_stringf(T_("lost the %s gem!"),
+        mark_milestone("gem.lost", make_stringf("lost the %s gem!",
                                                 gem_adj(gem)));
         you.gems_shattered.set(gem);
 

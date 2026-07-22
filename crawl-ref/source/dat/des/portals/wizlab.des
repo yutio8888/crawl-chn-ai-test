@@ -113,20 +113,20 @@ function wizlab_portal (e, crystalise)
 
     local messager =
       timed_msg {
-           initmsg = { crawl.t_("You hear the crackle of arcane power."),
-                       crawl.t_("There is an entrance to a wizard's laboratory on "
+           initmsg = { "You hear the crackle of arcane power.",
+                       "There is an entrance to a wizard's laboratory on "
                        .. "this level! Hurry and find it before the "
-                       .. "portal closes forever!") },
-        finalmsg = crawl.t_("The crackle of the magical portal is almost imperceptible now."),
+                       .. "portal closes forever!" },
+        finalmsg = "The crackle of the magical portal is almost imperceptible now.",
 
         verb = 'crackle',
         noisemaker = 'magical portal',
-        range_msg_fmt = crawl.t_("You hear the {prefix}crackle of the {distance} {noisemaker}.")
+        range_msg_fmt = "You hear the {prefix}crackle of the {distance} {noisemaker}."
     }
 
     e.lua_marker('O',
       timed_marker {
-        disappear = crawl.t_("The flow of magic halts."),
+        disappear = "The flow of magic halts.",
         entity = 'portal',
         turns = timeout_turns,
         single_timed = true,

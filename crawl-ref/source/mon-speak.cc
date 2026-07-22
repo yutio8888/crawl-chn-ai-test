@@ -580,7 +580,7 @@ bool mons_speaks(monster* mons)
         // Use the *ghost's* religion, to get speech about its god. Only
         // sometimes, though, so we can get skill-based messages as well.
         if (coinflip())
-            prefixes.push_back(god_name(mons->ghost->religion));
+            prefixes.push_back(_god_name_en(mons->ghost->religion));
     }
     else
     {
@@ -589,7 +589,7 @@ bool mons_speaks(monster* mons)
         if (is_good_god(god) && coinflip())
             prefixes.emplace_back("good god");
         else
-            prefixes.push_back(god_name(you.religion));
+            prefixes.push_back(_god_name_en(you.religion));
     }
 
     // Include our current branch, too. It can make speech vary by branch for
@@ -633,7 +633,7 @@ bool mons_speaks(monster* mons)
         if (one_chance_in(5))
         {
             const ghost_demon &ghost = *(mons->ghost);
-            string ghost_skill  = skill_name(ghost.best_skill);
+            string ghost_skill  = skill_name_en(ghost.best_skill);
             vector<string> with_skill = prefixes;
             with_skill.push_back(ghost_skill);
             msg = _get_speak_string(with_skill, "player ghost", mons,

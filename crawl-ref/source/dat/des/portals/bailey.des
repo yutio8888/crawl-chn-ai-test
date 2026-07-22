@@ -18,10 +18,10 @@ function bailey_portal(e, ptype)
 
   local messager =
     timed_msg {
-      initmsg = { crawl.t_("You hear the roar of battle."),
-                  crawl.t_("There is an entrance to a bailey on this level. "
-                  .. "Hurry and find it before the portal closes forever!") },
-      finalmsg = crawl.t_("$F{The} has been lowered almost to the ground."),
+      initmsg = { "You hear the roar of battle.",
+                  "There is an entrance to a bailey on this level. "
+                  .. "Hurry and find it before the portal closes forever!" },
+      finalmsg = "$F{The} has been lowered almost to the ground.",
 
       verb = 'creaking',
       noisemaker = 'portcullis',
@@ -30,14 +30,14 @@ function bailey_portal(e, ptype)
           { 2500, 'steady ' }, { 1500, 'quick ' },
           { 0, 'loud ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}creaking of the {distance} {noisemaker}.")
+      range_msg_fmt = "You hear the {prefix}creaking of the {distance} {noisemaker}."
     }
 
   dgn.persist.bailey_type = "bailey_" .. ptype
 
   e.lua_marker('O',
       timed_marker {
-        disappear = crawl.t_("The portal closes with a thud."),
+        disappear = "The portal closes with a thud.",
         entity = 'portcullis',
         bailey_type = ptype,
         turns = timeout_turns,

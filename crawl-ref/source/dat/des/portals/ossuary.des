@@ -19,10 +19,10 @@ function ossuary_portal(e)
 
   local messager =
     timed_msg {
-      initmsg = { crawl.t_("You hear the hiss of flowing sand."),
-                  crawl.t_("There is an entrance to an ossuary on this level. "
-                  .. "Hurry and find it before the portal is buried!") },
-      finalmsg = crawl.t_("The hiss of flowing sand is almost imperceptible now."),
+      initmsg = { "You hear the hiss of flowing sand.",
+                  "There is an entrance to an ossuary on this level. "
+                  .. "Hurry and find it before the portal is buried!" },
+      finalmsg = "The hiss of flowing sand is almost imperceptible now.",
 
       verb = 'hiss',
       -- This is always preceded by an article, so...
@@ -32,12 +32,12 @@ function ossuary_portal(e)
         { 2500, 'brisk ' }, { 1500, 'quick ' },
         { 0, 'rapid ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}hiss of the {distance} {noisemaker}.")
+      range_msg_fmt = "You hear the {prefix}hiss of the {distance} {noisemaker}."
     }
 
   e.lua_marker('O',
       timed_marker {
-        disappear = crawl.t_("The hiss of flowing sand is gone."),
+        disappear = "The hiss of flowing sand is gone.",
         entity = 'staircase',
         turns = timeout_turns,
         single_timed = true,

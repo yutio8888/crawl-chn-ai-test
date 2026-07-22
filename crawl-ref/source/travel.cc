@@ -334,11 +334,11 @@ bool feat_is_traversable(dungeon_feature_type feat, bool try_fallback)
 
 static const char *_run_mode_name(int runmode)
 {
-    return runmode == RMODE_TRAVEL         ? (T_("travel")) :
-           runmode == RMODE_INTERLEVEL     ? (T_("intertravel")) :
-           runmode == RMODE_EXPLORE        ? (T_("explore")) :
-           runmode == RMODE_EXPLORE_GREEDY ? (T_("explore_greedy")) :
-           runmode > 0                     ? (T_("run"))
+    return runmode == RMODE_TRAVEL         ? "travel" :
+           runmode == RMODE_INTERLEVEL     ? "intertravel" :
+           runmode == RMODE_EXPLORE        ? "explore" :
+           runmode == RMODE_EXPLORE_GREEDY ? "explore_greedy" :
+           runmode > 0                     ? "run"
                                            : "";
 }
 

@@ -19,11 +19,11 @@ function desolation_portal(e)
 
     local messager = timed_msg {
         initmsg = {
-            crawl.t_("You hear a distant wind."),
-            crawl.t_("There is a portal to the Desolation of Salt on this level." ..
-            " Hurry and find it before the gateway collapses!")
+            "You hear a distant wind.",
+            "There is a portal to the Desolation of Salt on this level." ..
+            " Hurry and find it before the gateway collapses!"
         },
-        finalmsg = crawl.t_("The wind is rapidly growing quiet."),
+        finalmsg = "The wind is rapidly growing quiet.",
 
         verb = 'whistling',
         noisemaker = 'wind',
@@ -32,12 +32,12 @@ function desolation_portal(e)
             { 2500, '' }, { 1500, 'loud ' },
             { 0, 'ear-piercing ' }
         },
-        range_msg_fmt = crawl.t_("You hear the {prefix}whistling of the {distance} {noisemaker}.")
+        range_msg_fmt = "You hear the {prefix}whistling of the {distance} {noisemaker}."
     }
 
     e.lua_marker('O',
         timed_marker {
-            disappear = crawl.t_("The gateway collapses."),
+            disappear = "The gateway collapses.",
             entity = 'gateway',
             turns = timeout_turns,
             single_timed = true,

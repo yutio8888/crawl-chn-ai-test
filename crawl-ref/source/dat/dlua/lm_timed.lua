@@ -89,7 +89,11 @@ function TimedMarker:timeout(marker, verbose)
 
   if verbose then
     if you.see_cell(marker:pos()) then
-      crawl.mpr( util.expand_entity(self.props.entity, self.props.disappear) or
+      local disappear = self.props.disappear
+      if type(disappear) == 'string' then
+        disappear = crawl.t_(disappear)
+      end
+      crawl.mpr( util.expand_entity(self.props.entity, disappear) or
                  dgn.feature_desc_at(x, y, "The") .. " disappears!")
     else
       crawl.mpr(crawl.t_("The walls and floor vibrate strangely for a moment."))

@@ -569,7 +569,7 @@ LUAFN(moninf_get_spells)
     bool abjuration = false;
     for (const auto& slot : unique_slots)
     {
-        spell_titles.emplace_back(spell_title(slot.spell));
+        spell_titles.emplace_back(spell_english_name(slot.spell));
 
         // XXX: Probably get_unique_spells() could just do this for us.
         if (get_spell_flags(slot.spell) & spflag::mons_abjure)
@@ -577,7 +577,7 @@ LUAFN(moninf_get_spells)
     }
 
     if (abjuration)
-        spell_titles.emplace_back(spell_title(SPELL_ABJURATION));
+        spell_titles.emplace_back(spell_english_name(SPELL_ABJURATION));
 
     clua_stringtable(ls, spell_titles);
     return 1;
@@ -833,24 +833,18 @@ LUAFN(moninf_get_status)
     if (lua_gettop(ls) >= 2)
         which = luaL_checkstring(ls, 2);
 
-    vector<string> display_status = mi->attributes();
-    if (!which)
-    {
-        PLUARET(string, comma_separated_line(display_status.begin(),
-                                             display_status.end(), ", ").c_str());
-    }
-
-    // Compare protocol callers against an English snapshot, while retaining
-    // the localized vector for the no-argument display API.
     vector<string> english_status;
     {
         ScopedLangEn en;
         english_status = mi->attributes();
     }
+    if (!which)
+    {
+        PLUARET(string, comma_separated_line(english_status.begin(),
+                                             english_status.end(), ", ").c_str());
+    }
+
     for (const auto &st : english_status)
-        if (st == which)
-            PLUARET(boolean, true);
-    for (const auto &st : display_status)
         if (st == which)
             PLUARET(boolean, true);
 

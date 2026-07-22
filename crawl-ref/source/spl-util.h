@@ -103,6 +103,7 @@ const char *spell_title(spell_type which_spell);
 const char* spell_english_name(spell_type spell);
 const char* spelltype_short_name(spschool which_spelltype);
 const char* spelltype_long_name(spschool which_spelltype);
+const char* spelltype_long_name_en(spschool which_spelltype);
 
 typedef function<int (coord_def where)> cell_func;
 typedef function<int (coord_def where, int pow, int spreadrate,

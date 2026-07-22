@@ -1951,6 +1951,12 @@ const char *skill_name(skill_type which_skill)
     return T_(_skill_english_name(which_skill));
 }
 
+const char *skill_name_en(skill_type which_skill)
+{
+    ASSERT(which_skill < NUM_SKILLS);
+    return _skill_english_name(which_skill);
+}
+
 const char * skill_abbr(skill_type which_skill)
 {
     ASSERT(which_skill < NUM_SKILLS);

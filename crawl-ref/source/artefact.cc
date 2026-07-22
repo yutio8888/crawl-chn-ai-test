@@ -1631,7 +1631,8 @@ string make_artefact_name(const item_def &item, bool appearance)
 
         if (item_orig > GOD_NO_GOD && item_orig < NUM_GODS)
         {
-            lookup += god_name(static_cast<god_type>(item_orig), false) + " ";
+            lookup += string(_god_name_en(static_cast<god_type>(item_orig)))
+                      + " ";
             god_gift = true;
         }
     }
