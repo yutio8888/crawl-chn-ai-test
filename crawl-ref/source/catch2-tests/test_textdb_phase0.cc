@@ -8,6 +8,7 @@
 #include "env.h"
 #include "initfile.h"
 #include "mon-cast-target.h"
+#include "mon-speak.h"
 #include "monster.h"
 #include "player.h"
 #include "random.h"
@@ -903,6 +904,62 @@ TEST_CASE("Issue 16 repaired Chinese monspeak boundaries parse as intended",
     {
         INFO(variant.locator.variant_ordinal);
         CHECK(variant.raw_pattern.rfind("VISUAL:", 0) == 0);
+    }
+}
+
+TEST_CASE("Issue 16 restored Chinese VISUAL lines retain production channels",
+          "[single-file][textdb][phase0][issue-16][monspeak]")
+{
+    ensure_test_data_root();
+    databaseSystemInit();
+    const vector<textdb_phase0::canonical_entry> localized =
+        textdb_phase0::dump_localized_speakdb_typed("zh").entries;
+
+    using Row = pair<const char *, const char *>;
+    const vector<Row> restored =
+    {
+        { "_mara_rare_", "VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。" },
+        { "nobody", "VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。" },
+        { "_pikel_common_", "VISUAL:@The_monster@ 敲打着某种节奏。" },
+        { "_eustachio_common_", "VISUAL:@The_monster@ 试图偷偷溜到你身后。" },
+        { "_eustachio_common_", "VISUAL:@The_monster@ 快速环顾四周寻找出口。" },
+        { "_roxanne_common_", "VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。" },
+        { "_roxanne_common_", "VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。" },
+        { "roxanne blink_other_closer", "VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。" },
+        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 疯狂地比划着手势。" },
+        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 说着什么，但你什么都听不到。" },
+        { "_hostile_imp_rare_", "VISUAL:@The_monster@ 看起来很困惑。" },
+        { "default stupid friendly humanoid", "VISUAL:@The_monster@ 挠了挠头。" },
+        { "default stupid silenced humanoid", "VISUAL:@The_monster@ 试图说话，但什么声音都没有。" },
+        { "default fleeing silenced humanoid", "VISUAL:@The_monster@ 无声地惊恐尖叫着。" },
+        { "default friendly silenced humanoid", "VISUAL:@The_monster@ 友好地挥着手。" },
+        { "default silenced humanoid", "VISUAL:@The_monster@ 无声地说着什么。" },
+        { "default friendly confused humanoid", "VISUAL:@The_monster@ 友好但困惑地挥着手。" },
+        { "default friendly humanoid", "VISUAL:@The_monster@ 开心地点着头。" },
+        { "_jory_common_", "VISUAL:@The_monster@ 静静地打量着你。" },
+        { "_jory_common_", "VISUAL:@The_monster@ 缓缓地拔出剑。" },
+    };
+
+    for (const Row &row : restored)
+    {
+        INFO(row.first << ": " << row.second);
+        const textdb_phase0::canonical_entry *entry =
+            find_canonical_entry(localized, row.first);
+        REQUIRE(entry != nullptr);
+        const auto variant = std::find_if(
+            entry->variants.begin(), entry->variants.end(),
+            [&row](const textdb_phase0::canonical_variant &candidate)
+            {
+                return candidate.raw_pattern == row.second;
+            });
+        REQUIRE(variant != entry->variants.end());
+
+        string rendered = variant->raw_pattern;
+        msg_channel_type channel = MSGCH_TALK;
+        REQUIRE(resolve_mon_speech_line_channel(rendered, channel,
+                                                false, false));
+        CHECK(channel == MSGCH_TALK_VISUAL);
+        CHECK(rendered == string(row.second).substr(strlen("VISUAL:")));
     }
 }
 
