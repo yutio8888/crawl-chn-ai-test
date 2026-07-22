@@ -26,6 +26,8 @@ string conjugate_verb(const string &verb, bool plural);
 const char *decline_pronoun(gender_type gender, pronoun_type variant);
 string walk_verb_to_present(string verb);
 
+// Locale-independent form for protocol and internal string matching.
+string number_in_words_en(unsigned number);
 string number_in_words(unsigned number);
 
 string article_a(const string &name, bool lowercase = true);

@@ -440,11 +440,16 @@ static string _chinese_number_in_words(unsigned num)
     return result;
 }
 
+string number_in_words_en(unsigned num)
+{
+    return _number_in_words(num, 0);
+}
+
 string number_in_words(unsigned num)
 {
     if (Options.language == lang_t::ZH)
         return _chinese_number_in_words(num);
-    return _number_in_words(num, 0);
+    return number_in_words_en(num);
 }
 
 static string _number_to_string(unsigned number, bool in_words)

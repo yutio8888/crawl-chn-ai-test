@@ -11,6 +11,9 @@
 #include "item-status-flag-type.h"
 #include "item-name.h"
 #include "item-prop-enum.h"
+#include "mapdef.h"
+#include "mgen-data.h"
+#include "mon-util.h"
 #include "movement-i18n.h"
 #include "options.h"
 #include "species.h"
@@ -28,6 +31,67 @@
 #include <array>
 #include <string>
 #include <tuple>
+
+namespace
+{
+mons_spec parse_des_monster(const char* definition, lang_t language)
+{
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    i18n_cache_clear();
+
+    mons_list monsters;
+    const string error = monsters.add_mons(definition);
+    INFO("definition=\"" << definition << "\", language="
+         << (language == lang_t::ZH ? "zh" : "en")
+         << ", error=\"" << error << "\"");
+    REQUIRE(error.empty());
+    REQUIRE(monsters.size() == 1);
+    REQUIRE(monsters.slot_size(0) == 1);
+    return monsters.get_monster(0, 0);
+}
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: .des hydra head words are locale independent",
+                 "[zh-translation][des-protocol][issue-14]")
+{
+    init_monsters();
+
+    using Row = std::tuple<const char*, monster_type, int>;
+    const auto row = GENERATE(table<const char*, monster_type, int>({
+        Row{"one-headed hydra", MONS_HYDRA, 1},
+        Row{"eight-headed hydra", MONS_HYDRA, 8},
+        Row{"twenty-headed hydra", MONS_HYDRA, 20},
+        Row{"six-headed slymdra", MONS_SLYMDRA, 6},
+        Row{"8-headed hydra", MONS_HYDRA, 8},
+    }));
+
+    const mons_spec english = parse_des_monster(std::get<0>(row), lang_t::EN);
+    const mons_spec chinese = parse_des_monster(std::get<0>(row), lang_t::ZH);
+
+    REQUIRE(english.type == std::get<1>(row));
+    REQUIRE(chinese.type == english.type);
+    REQUIRE(english.props[MGEN_NUM_HEADS].get_int() == std::get<2>(row));
+    REQUIRE(chinese.props[MGEN_NUM_HEADS].get_int()
+            == english.props[MGEN_NUM_HEADS].get_int());
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Lernaean hydra remains a distinct .des identity",
+                 "[zh-translation][des-protocol][issue-14]")
+{
+    init_monsters();
+    init_mon_name_cache();
+
+    const mons_spec english = parse_des_monster("Lernaean hydra", lang_t::EN);
+    const mons_spec chinese = parse_des_monster("Lernaean hydra", lang_t::ZH);
+
+    REQUIRE(english.type == MONS_LERNAEAN_HYDRA);
+    REQUIRE(chinese.type == MONS_LERNAEAN_HYDRA);
+    REQUIRE_FALSE(english.props.exists(MGEN_NUM_HEADS));
+    REQUIRE_FALSE(chinese.props.exists(MGEN_NUM_HEADS));
+}
 
 // =============================================================================
 // M1 milestone scope:

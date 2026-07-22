@@ -4442,7 +4442,7 @@ mons_spec mons_list::get_hydra_spec(const string &name, monster_type mtype) cons
     {
         // Might be "two-headed hydra" type string.
         for (int i = 0; i <= 20; ++i)
-            if (number_in_words(i) == prefix)
+            if (number_in_words_en(i) == prefix)
             {
                 nheads = i;
                 break;
