@@ -60,6 +60,38 @@ class ScannerCompletenessTests(unittest.TestCase):
                     self.assertEqual(coverage["scanned"], 0)
                     self.assertEqual(len(coverage["failed"]), 1)
 
+    def test_valid_preprocessor_and_member_pointer_nodes_are_recoverable(self):
+        with tempfile.TemporaryDirectory() as td:
+            source = Path(td) / "valid.cc"
+            source.write_text(r'''
+                struct sample {
+                    void invoke(void (sample::*member)());
+                };
+                void sample::invoke(void (sample::*member)()) {
+                    (this->*member)();
+                    const char* values[] = {
+                #if TAG_MAJOR_VERSION == 34
+                        "legacy",
+                #endif
+                        "current",
+                    };
+                }
+            ''', encoding="utf-8")
+            for scanner in ("scan_string_concat.py",
+                            "scan_varargs_string.py"):
+                with self.subTest(scanner=scanner):
+                    proc = self.run_scanner(scanner, "--files", source,
+                                            "--format", "json",
+                                            "--require-parser")
+                    self.assertEqual(0, proc.returncode, proc.stderr)
+                    data = json.loads(proc.stdout)
+                    coverage = (data["coverage"] if "coverage" in data
+                                else data["meta"]["coverage"])
+                    self.assertEqual(coverage,
+                                     {"discovered": 1,
+                                      "scanned": 1,
+                                      "failed": []})
+
     def test_deferred_stream_builder_traces_to_display_sink(self):
         with tempfile.TemporaryDirectory() as td:
             source = Path(td) / "sample.cc"

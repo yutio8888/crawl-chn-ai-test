@@ -155,6 +155,14 @@ DISPLAY_TEXT_BUILDERS = {
 # cannot satisfy the contract. Required producer cardinality is fail-closed;
 # forbidden localized producers must be absent from the same scope.
 PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
+    ('des-hydra-heads', ({
+        'file': 'mapdef.cc',
+        'start': r'mons_spec\s+mons_list::get_hydra_spec\s*\(',
+        'end': r'mons_spec\s+mons_list::get_slime_spec\s*\(',
+        'required': ((r'number_in_words_en\s*\(', 1),),
+        'forbidden': (r'number_in_words\s*\(',),
+        'localized': 'number_in_words(',
+    },)),
     ('zot-dgn', ({
         'file': 'l-dgnlvl.cc', 'start': r'LUAFN\(dgn_zot_orb_type\)',
         'end': r'const\s+struct\s+luaL_Reg\s+dgn_level_dlib',

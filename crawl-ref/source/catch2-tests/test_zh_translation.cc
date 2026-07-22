@@ -93,6 +93,82 @@ TEST_CASE_METHOD(ZhTranslationFixture,
     REQUIRE_FALSE(chinese.props.exists(MGEN_NUM_HEADS));
 }
 
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: every canonical English spell name survives a fresh cache",
+                 "[zh-translation][des-protocol][issue-15]")
+{
+    init_monsters();
+    init_spell_descs();
+    init_spell_name_cache();
+
+    for (int i = SPELL_FIRST_SPELL; i < NUM_SPELLS; ++i)
+    {
+        const spell_type spell = static_cast<spell_type>(i);
+        if (!is_valid_spell(spell))
+            continue;
+
+        INFO("spell=" << i << ", English name=\""
+             << spell_english_name(spell) << "\"");
+        REQUIRE(spell_by_name(spell_english_name(spell)) == spell);
+    }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: representative .des lists are language equivalent",
+                 "[zh-translation][des-protocol][issue-15]")
+{
+    init_monsters();
+    init_mon_name_cache();
+    init_item_name_cache();
+
+    Options.language = lang_t::EN;
+    Options.lang_name = nullptr;
+    i18n_cache_clear();
+    mons_list english_monsters;
+    item_list english_items;
+    keyed_mapspec english_key;
+    REQUIRE(english_monsters.add_mons("yak").empty());
+    REQUIRE(english_items.add_item("potion of curing").empty());
+    REQUIRE(english_key.set_mons("yak", false).empty());
+    REQUIRE(english_key.set_item("potion of curing", false).empty());
+    REQUIRE(english_key.set_feat(".", false).empty());
+
+    Options.language = lang_t::ZH;
+    Options.lang_name = "zh";
+    i18n_cache_clear();
+    mons_list chinese_monsters;
+    item_list chinese_items;
+    keyed_mapspec chinese_key;
+    REQUIRE(chinese_monsters.add_mons("yak").empty());
+    REQUIRE(chinese_items.add_item("potion of curing").empty());
+    REQUIRE(chinese_key.set_mons("yak", false).empty());
+    REQUIRE(chinese_key.set_item("potion of curing", false).empty());
+    REQUIRE(chinese_key.set_feat(".", false).empty());
+
+    REQUIRE(english_monsters.get_monster(0, 0).type == MONS_YAK);
+    REQUIRE(chinese_monsters.get_monster(0, 0).type
+            == english_monsters.get_monster(0, 0).type);
+
+    const item_spec english_item = english_items.get_item(0);
+    const item_spec chinese_item = chinese_items.get_item(0);
+    REQUIRE(english_item.base_type == OBJ_POTIONS);
+    REQUIRE(english_item.sub_type == POT_CURING);
+    REQUIRE(chinese_item.base_type == english_item.base_type);
+    REQUIRE(chinese_item.sub_type == english_item.sub_type);
+
+    REQUIRE(chinese_key.get_monsters().get_monster(0, 0).type
+            == english_key.get_monsters().get_monster(0, 0).type);
+    REQUIRE(chinese_key.get_items().get_item(0).base_type
+            == english_key.get_items().get_item(0).base_type);
+    REQUIRE(chinese_key.get_items().get_item(0).sub_type
+            == english_key.get_items().get_item(0).sub_type);
+    REQUIRE(english_key.feat.feats.size() == 1);
+    REQUIRE(chinese_key.feat.feats.size() == 1);
+    REQUIRE(english_key.feat.feats[0].glyph == '.');
+    REQUIRE(chinese_key.feat.feats[0].glyph
+            == english_key.feat.feats[0].glyph);
+}
+
 // =============================================================================
 // M1 milestone scope:
 //   1) Smoke test: assert ZhTranslationFixture actually flips the language,

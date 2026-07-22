@@ -46,6 +46,10 @@ SCOPE="${ZH_VERIFY_SCOPE:-full}"
 CHANGED_CPP=()
 while IFS= read -r path; do
     case "$path" in
+        */contrib/*|*/.git/*|*/worktrees/*|*/__pycache__/*|\
+        */catch2-tests/*|*/rltiles/*|*/util/*)
+            continue
+            ;;
         crawl-ref/source/*.c|crawl-ref/source/*.cc|crawl-ref/source/*.cpp|\
         crawl-ref/source/*.cxx|crawl-ref/source/*.h|crawl-ref/source/*.hh|\
         crawl-ref/source/*.hpp|crawl-ref/source/*.hxx)

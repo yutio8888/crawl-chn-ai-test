@@ -70,8 +70,27 @@ def has_relevant_parse_error(root, source: bytes) -> bool:
             return True
         if node.type == "ERROR":
             fragment = source[node.start_byte:node.end_byte].lstrip()
-            if not fragment.startswith(b"#"):
-                return True
+            line_start = source.rfind(b"\n", 0, node.start_byte) + 1
+            line_end = source.find(b"\n", node.end_byte)
+            if line_end < 0:
+                line_end = len(source)
+            line = source[line_start:line_end].lstrip()
+
+            # tree-sitter-cpp can split one preprocessor directive into
+            # multiple ERROR nodes (for example '#if TAG == 34' and '34').
+            if fragment.startswith(b"#") or line.startswith(b"#"):
+                stack.extend(node.children)
+                continue
+
+            # This is a standard pointer-to-member invocation. The bundled
+            # grammar currently emits an ERROR node for the operator token.
+            if (b"this->*" in line
+                    and (fragment.strip().startswith(b"this->*")
+                         or fragment.strip().startswith(b"->*"))):
+                stack.extend(node.children)
+                continue
+
+            return True
         stack.extend(node.children)
     return False
 

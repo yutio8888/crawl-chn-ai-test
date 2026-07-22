@@ -16,15 +16,37 @@ pass() { echo "  PASS: $1"; PASS=$((PASS + 1)); }
 fail() { echo "  FAIL: $1"; FAIL=$((FAIL + 1)); }
 
 mkdir -p "$REPO/.claude/scripts/data" "$REPO/.claude/metrics/verify" \
-    "$REPO/crawl-ref/source" "$FAKEBIN" "$TEMPDIR"
+    "$REPO/crawl-ref/source/nested/contrib" \
+    "$REPO/crawl-ref/source/nested/.git" \
+    "$REPO/crawl-ref/source/nested/worktrees" \
+    "$REPO/crawl-ref/source/nested/__pycache__" \
+    "$REPO/crawl-ref/source/nested/catch2-tests" \
+    "$REPO/crawl-ref/source/nested/rltiles" \
+    "$REPO/crawl-ref/source/nested/util" "$FAKEBIN" "$TEMPDIR"
 cp "$SCRIPT_DIR/../post-coder.sh" "$REPO/.claude/scripts/post-coder.sh"
 printf '{}\n' > "$REPO/.claude/scripts/data/string_concat_advisory_baseline.json"
 printf 'int value;\n' > "$REPO/crawl-ref/source/sample.cc"
+for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+    printf 'int excluded;\n' \
+        > "$REPO/crawl-ref/source/nested/$excluded/test_sample.cc"
+done
 
 cat > "$FAKEBIN/python3" <<'SH'
 #!/bin/bash
 case "$*" in
+    *scan_varargs_string.py*|*scan_i18n_lifetime.py*)
+        if [[ "${CLEANUP_MODE:-normal}" == reject_excluded ]]; then
+            for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+                [[ "$*" == *"/$excluded/"* ]] && exit 42
+            done
+        fi
+        ;;
     *scan_string_concat.py*)
+        if [[ "${CLEANUP_MODE:-normal}" == reject_excluded ]]; then
+            for excluded in contrib .git worktrees __pycache__ catch2-tests rltiles util; do
+                [[ "$*" == *"/$excluded/"* ]] && exit 42
+            done
+        fi
         case "${CLEANUP_MODE:-normal}" in
             scanner_fail) exit 9 ;;
             signal_term) kill -TERM "$PPID"; sleep 1; exit 0 ;;
@@ -77,6 +99,18 @@ run_mode normal
 [[ "$MODE_RC" -eq 0 ]] && pass "normal advisory run succeeds" \
     || fail "normal advisory run succeeds (rc=$MODE_RC)"
 assert_clean "normal return removes advisory temp"
+
+set +e
+(cd "$REPO" && TMPDIR="$TEMPDIR" PATH="$FAKEBIN:$PATH" \
+    ZH_VERIFY_SCOPE=changed CLEANUP_MODE=reject_excluded \
+    ZH_VERIFY_CHANGED_FILES=$'crawl-ref/source/sample.cc\ncrawl-ref/source/nested/contrib/test_sample.cc\ncrawl-ref/source/nested/.git/test_sample.cc\ncrawl-ref/source/nested/worktrees/test_sample.cc\ncrawl-ref/source/nested/__pycache__/test_sample.cc\ncrawl-ref/source/nested/catch2-tests/test_sample.cc\ncrawl-ref/source/nested/rltiles/test_sample.cc\ncrawl-ref/source/nested/util/test_sample.cc' \
+    /bin/bash .claude/scripts/post-coder.sh) >/dev/null 2>&1
+changed_scope_rc=$?
+set -e
+[[ "$changed_scope_rc" -eq 0 ]] \
+    && pass "changed scope preserves recursive scanner exclusions" \
+    || fail "changed scope exclusions (rc=$changed_scope_rc)"
+assert_clean "changed scope removes advisory temp"
 
 run_mode scanner_fail
 [[ "$MODE_RC" -eq 0 ]] && pass "scanner finding/failure remains advisory" \

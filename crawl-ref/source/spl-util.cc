@@ -575,6 +575,7 @@ const char* spell_english_name(spell_type spell)
 void init_spell_name_cache()
 {
     spell_name_map &cache = _get_spell_name_cache();
+    cache.clear();
     for (int i = 0; i < NUM_SPELLS; i++)
     {
         spell_type type = static_cast<spell_type>(i);
@@ -587,13 +588,10 @@ void init_spell_name_cache()
         const string spell_name = lowercase_string(sptitle);
         cache[spell_name] = type;
 
-        // Also add English name for .des file parsing compatibility
-        auto it = spell_english_names.find(type);
-        if (it != spell_english_names.end())
-        {
-            const string en_name = lowercase_string(it->second);
-            cache.emplace(en_name, type);
-        }
+        // Also add the canonical English name for .des compatibility. The
+        // accessor falls back to spl-data.h when no explicit override exists.
+        const string en_name = lowercase_string(spell_english_name(type));
+        cache.emplace(en_name, type);
     }
 }
 
@@ -640,8 +638,7 @@ spell_type spell_by_name(string name, bool partial_match)
     if (sp == NUM_SPELLS && Options.language == lang_t::ZH)
     {
         auto english_name = [](spell_type s) -> const char* {
-            auto it = spell_english_names.find(s);
-            return it != spell_english_names.end() ? it->second : "";
+            return is_valid_spell(s) ? spell_english_name(s) : "";
         };
         sp = find_earliest_match(
             name, SPELL_NO_SPELL, NUM_SPELLS,
