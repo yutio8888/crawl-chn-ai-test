@@ -209,11 +209,11 @@ PROTOCOL_BOUNDARY_CONTRACTS = OrderedDict([
     ('status-mon', ({
         'file': 'l-moninf.cc', 'start': r'LUAFN\(moninf_get_status\)',
         'end': r'LUAFN\(moninf_get_name\)',
-        'required': ((r'vector<string>\s+english_status\s*;', 1),
+        'required': ((r'vector<string>\s+display_status\s*=\s*mi->attributes', 1),
                      (r'ScopedLangEn\s+en\s*;', 1),
                      (r'english_status\s*=\s*mi->attributes', 1)),
-        'forbidden': (r'vector<string>\s+english_status\s*=\s*mi->attributes',),
-        'localized': 'vector<string> english_status = mi->attributes()',
+        'forbidden': (r'vector<string>\s+english_status\s*=\s*display_status',),
+        'localized': 'vector<string> english_status = display_status',
     },)),
     ('mon-clua', ({
         'file': 'l-moninf.cc', 'start': r'LUAFN\(moninf_get_name\)',
