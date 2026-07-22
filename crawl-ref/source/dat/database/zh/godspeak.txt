@@ -1685,7 +1685,7 @@ w:20
 
 具现出的噬魔者压倒了你的力量与思绪！
 
-你的魔力从你的[@random_body_part_internal_singular@|@random_body_part_internal_plural@]中硬生生扯出自身！
+你的魔力硬生生从你的[@random_body_part_internal_singular@|@random_body_part_internal_plural@]中挣脱了出来！
 
 你的魔力从你的[@random_body_part_external_singular@|@random_body_part_external_plural@]中流了出去！
 

@@ -1360,7 +1360,7 @@ _Mara_rare_
 
 @The_monster@ 低语道："你以为你是谁？你什么也不是。什么人都不是。"
 
-@The_monster@ 在空中书写着闪闪发光的幻影符号。
+VISUAL:@The_monster@ 在空中书写着闪闪发光的幻影符号。
 %%%%
 Mara riddle
 
@@ -1524,7 +1524,7 @@ Nobody
 
 @The_monster@ 哀叹道："无名的……被遗忘的……"
 
-@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。
+VISUAL:@The_monster@ 的许多面孔在它头部的不同侧面短暂地争吵着。
 %%%%
 ############ PIKEL ### 音乐感十足的奴隶贩子
 Pikel
@@ -1536,7 +1536,7 @@ w:5
 %%%%
 _Pikel_common_
 
-@The_monster@ 敲打着某种节奏。
+VISUAL:@The_monster@ 敲打着某种节奏。
 
 @The_monster@ 说："皮克尔有奴隶。你，下一个！"
 
@@ -1699,7 +1699,7 @@ w:5
 %%%%
 _Eustachio_common_
 
-@The_monster@ 试图偷偷溜到你身后。
+VISUAL:@The_monster@ 试图偷偷溜到你身后。
 
 @The_monster@ 说："嘘，别出声。"
 
@@ -1707,7 +1707,7 @@ _Eustachio_common_
 
 @The_monster@ 对 @foe@ 说："我们可以谈价格。你不必死的。"
 
-@The_monster@ 快速环顾四周寻找出口。
+VISUAL:@The_monster@ 快速环顾四周寻找出口。
 %%%%
 _Eustachio_rare_
 
@@ -1769,13 +1769,13 @@ w:5
 %%%%
 _Roxanne_common_
 
-@The_monster@ 让大地在 @possessive@ 脚下轻微震动。
+VISUAL:@The_monster@ 让大地在 @possessive@ 脚下轻微震动。
 
 @The_monster@ 说："我研究岩石已经几百年了。你很柔软。"
 
 @The_monster@ 咕哝道："这里的地质构造极其有趣。"
 
-@The_monster@ 捡起一块石头，若有所思地审视着它。
+VISUAL:@The_monster@ 捡起一块石头，若有所思地审视着它。
 %%%%
 _Roxanne_rare_
 
@@ -1789,7 +1789,7 @@ Roxanne blink_other_closer
 
 @The_monster@ 低语道："靠近些。让我好好看看你。"
 
-@The_monster@ 的空间在你周围扭曲，将你拉近。
+VISUAL:@The_monster@ 的空间在你周围扭曲，将你拉近。
 %%%%
 ############ SNORG ### 极度饥饿的巨魔
 Snorg
@@ -2367,11 +2367,11 @@ _hostile_imp_rare_
 
 @The_monster@ 咯咯笑道："多么美味的小点心……"
 
-@The_monster@ 疯狂地比划着手势。
+VISUAL:@The_monster@ 疯狂地比划着手势。
 
-@The_monster@ 说着什么，但你什么都听不到。
+VISUAL:@The_monster@ 说着什么，但你什么都听不到。
 
-@The_monster@ 看起来很困惑。
+VISUAL:@The_monster@ 看起来很困惑。
 
 @The_monster@ 说："我真希望我更像一位恶魔领主。"
 
@@ -2526,11 +2526,11 @@ default stupid friendly humanoid
 
 @The_monster@ 茫然地看着你。
 
-@The_monster@ 挠了挠头。
+VISUAL:@The_monster@ 挠了挠头。
 %%%%
 default stupid silenced humanoid
 
-@The_monster@ 试图说话，但什么声音都没有。
+VISUAL:@The_monster@ 试图说话，但什么声音都没有。
 %%%%
 default silenced confused humanoid
 
@@ -2548,21 +2548,21 @@ VISUAL:@The_monster@ 开心地笑了。
 %%%%
 default fleeing silenced humanoid
 
-@The_monster@ 无声地惊恐尖叫着。
+VISUAL:@The_monster@ 无声地惊恐尖叫着。
 %%%%
 default friendly silenced humanoid
 
-@The_monster@ 友好地挥着手。
+VISUAL:@The_monster@ 友好地挥着手。
 %%%%
 default silenced humanoid
 
-@The_monster@ 无声地说着什么。
+VISUAL:@The_monster@ 无声地说着什么。
 %%%%
 default friendly confused humanoid
 
 @The_monster@ 困惑地歪着头。
 
-@The_monster@ 友好但困惑地挥着手。
+VISUAL:@The_monster@ 友好但困惑地挥着手。
 %%%%
 default friendly fleeing humanoid
 
@@ -2578,7 +2578,7 @@ default friendly humanoid
 
 @The_monster@ 友好地挥着手。
 
-@The_monster@ 开心地点着头。
+VISUAL:@The_monster@ 开心地点着头。
 %%%%
 # ===================================
 # 剩余 Donald 变体
@@ -2682,9 +2682,9 @@ w:2
 %%%%
 _Jory_common_
 
-@The_monster@ 静静地打量着你。
+VISUAL:@The_monster@ 静静地打量着你。
 
-@The_monster@ 缓缓地拔出剑。
+VISUAL:@The_monster@ 缓缓地拔出剑。
 
 @The_monster@ 什么都没说。只是凝视着。
 %%%%
