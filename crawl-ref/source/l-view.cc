@@ -371,7 +371,7 @@ LUAFN(view_get_map)
         bool unsafe = false;
         if (cell.cloud() != CLOUD_NONE)
         {
-            LUA_PUSHSTRING("cloud", cloud_type_name(cell.cloud()).c_str());
+            LUA_PUSHSTRING("cloud", cloud_type_name_en(cell.cloud()).c_str());
             auto killer = cell.cloudinfo()->killer;
             if (is_damaging_cloud(cell.cloud(), true, YOU_KILL(killer)))
                 unsafe = true;

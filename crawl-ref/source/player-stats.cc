@@ -158,9 +158,9 @@ bool attribute_increase()
 
 static const char* descs[NUM_STATS][NUM_STAT_DESCS] =
 {
-    { T_("strength"), T_("weakened"), T_("weaker"), T_("stronger") },
-    { T_("intelligence"), T_("dopey"), T_("stupid"), T_("clever") },
-    { T_("dexterity"), T_("clumsy"), T_("clumsy"), T_("agile") }
+    { N_("strength"), N_("weakened"), N_("weaker"), N_("stronger") },
+    { N_("intelligence"), N_("dopey"), N_("stupid"), N_("clever") },
+    { N_("dexterity"), N_("clumsy"), N_("clumsy"), N_("agile") }
 };
 
 const char* stat_desc(stat_type stat, stat_desc_type desc)

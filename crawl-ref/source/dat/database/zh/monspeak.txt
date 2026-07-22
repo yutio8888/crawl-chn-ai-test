@@ -82,6 +82,8 @@ _Sigmund_rare_
 @The_monster@ 低语道："你只是庞大机器中的一个小小齿轮……"
 
 @The_monster@ 狂笑道："你以为你能打败我？我杀过的比你更高大！"
+
+VISUAL:@The_monster@ 露出令人不寒而栗的微笑。
 %%%%
 Sigmund triumphant
 
@@ -90,6 +92,8 @@ Sigmund triumphant
 @The_monster@ 低语道："命运站在我这一边。"
 
 @The_monster@ 喊道："看见了吗？没人能打败西格蒙德！"
+
+VISUAL:@The_monster@ 开始在 @possessive@ 的镰刀上再刻一道痕。
 %%%%
 ############ EDMUND ### 嫉妒的弟弟
 Edmund
@@ -462,6 +466,7 @@ Erolcha banished
 
 __NONE
 
+%%%%
 ############ AIZUL ### 嗜睡的守护蛇
 Aizul
 
@@ -688,6 +693,9 @@ VISUAL:@The_monster@ 露出了 @possessive@ 的牙齿。
 
 @The_monster@ 发出了一声令人生畏的嚎叫。
 
+VISUAL:@The_monster@ 嗅了嗅空气，随即飞快地环顾四周。
+
+%%%%
 ############ CRAZY YIUF ### 疯狂的隐士
 Crazy Yiuf
 
@@ -848,6 +856,7 @@ _crazy_yiuf_sentence_
 
 宇宙是一个汉堡包
 
+%%%%
 ############ HAROLD ### 即将退休的赏金猎人
 Harold
 
@@ -978,6 +987,7 @@ _Harold_ret_hobby_
 
 绘画
 
+%%%%
 ############ ROBIN ### 自负的哥布林首领
 Robin
 
@@ -1075,6 +1085,7 @@ VISUAL:@The_monster@ 与 @objective@ 身边的空气进行了一场热烈的交�
 
 @The_monster@ 说："从一个老妇人那里听听忠告：你的时间到了。"
 
+%%%%
 ############ JOSEPH ### 乐在其中的佣兵守卫
 Joseph
 
@@ -1146,6 +1157,7 @@ VISUAL:@the_monster_possessive@ 的一根冰冷手指掉了下来。
 
 @The_monster@ 对 @foe@ 说："你的死法会非常有趣。"
 
+%%%%
 ############ AZRAEL ### 纵火的恶魔
 Azrael
 
@@ -1335,6 +1347,10 @@ VISUAL:@The_monster@ 投下了一个巨大而不祥的影子。
 @The_monster@ 笑道："你以为你是真实的？你只是你自己的影子。"
 
 VISUAL:@The_monster@ 短暂地分裂成了三个幻影。
+
+VISUAL:@The_monster@ 浮夸地朝前一指。
+
+VISUAL:@The_monster@ 编织出一道幻象。
 %%%%
 _Mara_rare_
 
@@ -1380,6 +1396,7 @@ _Maurice_rare_
 
 @The_monster@ 说："我偷过王座、宝珠、还有某个领主的假牙。你那点小玩意不值得我费心。"
 
+%%%%
 ############ MENKAURE ### 不安宁的法老木乃伊
 Menkaure
 
@@ -1409,6 +1426,8 @@ VISUAL:@The_monster@ 迸发出黑暗的能量！
 VISUAL:@The_monster@ 干燥地 @_Menkaure_verb_@ 着。
 
 @The_monster@ @_Menkaure_verb_@："如果你自己把脑子从鼻子里拉出来，其实不疼。"
+
+VISUAL:@The_monster@ 咧嘴一笑。
 %%%%
 _Menkaure_rare_
 
@@ -1534,6 +1553,10 @@ _Pikel_rare_
 @The_monster@ 哼着一首欢快的小调。
 
 @The_monster@ 说："皮克尔可以用你的骨头做很好的排箫。"
+
+VISUAL:@The_monster@ 检查着 @possessive@ 的钱袋，皱起眉头。
+
+VISUAL:@The_monster@ 阴沉着脸，在 @possessive@ 的长袍上擦了擦手。
 %%%%
 Pikel triumphant
 
@@ -1571,6 +1594,7 @@ _Prince_Ribbit_rare_
 
 VISUAL:@The_monster@ 用 @possessive@ 的舌头抓住了一只路过的苍蝇。王子也需要吃东西。
 
+%%%%
 ############ DOWAN ### 双胞胎中的男法师
 Dowan
 
@@ -1692,12 +1716,16 @@ _Eustachio_rare_
 @The_monster@ 说："我只是恰好出现在犯罪现场。"
 
 @The_monster@ 对 @foe@ 说："你看起来是个讲道理的人。我们好好谈谈。"
+
+VISUAL:@The_monster@ 捻着 @possessive@ 的胡须。
 %%%%
 Eustachio triumphant
 
 @The_monster@ 说："又一个问题被解决了。"
 
 @The_monster@ 说："没人会知道了。"
+
+VISUAL:@The_monster@ 捻着 @possessive@ 的胡须。
 %%%%
 ############ NORRIS ### 热爱生活的冲浪哲学家
 Norris
@@ -1716,6 +1744,10 @@ VISUAL:@The_monster@ 摆出一个惬意的姿势，仿佛正乘着一道看不�
 @The_monster@ 说："生活就是一场大浪。要么你驾驭它，要么它把你卷走。"
 
 @The_monster@ 对 @foe@ 说："放松点！这副本也不是那么糟糕。"
+
+VISUAL:@The_monster@ 周身笼罩着平和的气息。
+
+VISUAL:@The_monster@ 朝 @foe@ 微微一笑。
 %%%%
 _Norris_rare_
 
@@ -1776,6 +1808,14 @@ VISUAL:@The_monster@ 拍了拍 @possessive@ 的大肚子。
 @The_monster@ 吼道："斯诺格要吃了你！连骨头一起！"
 
 @The_monster@ 盯着 @foe@。"你看上去……好吃。"
+
+VISUAL:@The_monster@ 轻轻地招了招手。
+
+VISUAL:@The_monster@ 和善地笑了笑。
+
+VISUAL:@The_monster_possessive@ 脸上一闪而过怒色。
+
+VISUAL:@The_monster@ 用长爪轻轻划过 @possessive@ 的肚皮。
 %%%%
 _Snorg_rare_
 
@@ -1802,6 +1842,8 @@ VISUAL:@The_monster@ 冷冷地打量着你。
 @The_monster@ 对 @foe@ 说："有人出价很高。我不能拒绝。"
 
 VISUAL:@The_monster@ 检查着 @possessive@ 的刀刃。
+
+VISUAL:@The_monster@ 优雅地鞠了一躬。
 %%%%
 _Sonja_rare_
 
@@ -1817,6 +1859,11 @@ Sonja triumphant
 
 @The_monster@ 说："该去收报酬了。"
 
+VISUAL:@The_monster@ 鞠了一躬。
+
+VISUAL:@The_monster@ 为 @reflexive@ 鼓起掌来。
+
+%%%%
 ############ DONALD ### 永远在抱怨的冒险者
 # 唐纳德是一个贯穿全游戏的独特怪物，在不同分支有不同的抱怨内容
 # 核心性格：讽刺、厌世、对一切都有意见
@@ -1826,29 +1873,29 @@ Swamp Donald
 w:50
 @_generic_Donald_@
 
-@The_monster@ 说："那是什么可怕的味道？闻起来像……呕。"
+@The_monster@ 说："这什么臭味道？简直像……呕。"
 
-@The_monster@ 说："如果说我有什么比水更恨的，那就是沼泽的咸水。"
+@The_monster@ 说："如果说有什么事比水更让我讨厌，那就是又咸又苦的沼泽水。"
 
-@The_monster@ 说："我恨树。我恨沼泽水。我恨这地方。"
+@The_monster@ 说："我讨厌树。我讨厌沼泽水。我讨厌这地方。"
 
-@The_monster@ 说："那嗡嗡声？那是我最恨的。"
+@The_monster@ 说："那嗡嗡声？我最讨厌那个。"
 
-@The_monster@ 说："蚊子到底想要我的血干什么？"
+@The_monster@ 说："蚊子要我的血干嘛？"
 
-@The_monster@ 说："我希望这些沼泽虫子全淹死。"
+@The_monster@ 说："希望这些沼泽蠕虫都淹死。"
 
-@The_monster@ 说："该死的，我把我的火焰剑忘在家了。"
+@The_monster@ 说："该死，我把火焰剑忘在家里了。"
 
-@The_monster@ 说："你不恨水蛭吗？我知道我恨。"
+@The_monster@ 说："你不讨厌水蛭吗？反正我讨厌。"
 
-@The_monster@ 说："我恨蚊子。几乎跟我恨沼泽水一样恨。"
+@The_monster@ 说："我讨厌蚊子。差不多跟讨厌沼泽水一样。"
 
-@The_monster@ 说："至少还有点干地。我讨厌被弄湿。"
+@The_monster@ 说："好歹有块干燥的陆地。我讨厌被弄湿。"
 
-@The_monster@ 说："这是青蛙灾害还是怎么？至少不是蝗虫。"
+@The_monster@ 说："是不是爆发什么青蛙瘟疫了？还好不是蝗虫。"
 
-@The_monster@ 说："它们长的头越多，我就越恨多头蛇。"
+@The_monster@ 说："多头蛇的头越多，我就越讨厌它们。"
 %%%%
 Shoals Donald
 
@@ -1988,6 +2035,8 @@ w:50
 @The_monster@ 说："我想知道他们有没有更值钱的东西。"
 
 @The_monster@ 说："至少他们很容易被激怒。等等，我恨那个。"
+
+VISUAL:@The_monster@ 踢开一块石头，阴沉着脸。
 %%%%
 Crypt Donald
 
@@ -2186,6 +2235,12 @@ _generic_Donald_
 @The_monster@ 说："我恨冒险。"
 
 @The_monster@ 说："退休听起来不错。真的不错。"
+
+VISUAL:@The_monster@ 畏缩了一下。
+
+VISUAL:@The_monster@ 对你做了个粗鲁的手势。
+
+VISUAL:@The_monster@ 摇了摇 @possessive@ 的头。
 %%%%
 ############ BORIS ### 无法被杀死的古老战士
 Boris
@@ -2254,6 +2309,8 @@ VISUAL:@The_monster@ 耍弄着他的剑。
 @The_monster@ 说："你面对的是弗雷德里克——本地区最伟大的剑客。"
 
 @The_monster@ 说："我学过好几年的剑术。你没有机会的。"
+
+VISUAL:@The_monster@ 夸张地打了个哈欠。
 %%%%
 _Frederick_rare_
 
@@ -2262,6 +2319,12 @@ _Frederick_rare_
 @The_monster@ 说："也许我会饶了你。或者也许不会。"
 
 @The_monster@ 说："我今天的发型很完美。连战斗都不能弄乱它。"
+
+VISUAL:@The_monster@ 擦拭着 @possessive@ 的单片眼镜。
+
+VISUAL:@The_monster@ 显得百无聊赖。
+
+VISUAL:@The_monster@ 叹了口气。
 %%%%
 Frederick triumphant
 
@@ -2275,6 +2338,7 @@ Frederick riddle
 # ===================================
 # 共享库条目
 # ===================================
+%%%%
 
 _hostile_imp_
 
@@ -2294,14 +2358,6 @@ VISUAL:@The_monster@ 甩动着 @possessive@ 的尾巴。
 VISUAL:@The_monster@ 磨着 @possessive@ 的牙齿。
 
 VISUAL:@The_monster@ 朝 @foe@ 喷出雾气。
-
-VISUAL:@The_monster@ 朝 @foe@ 吐口水。
-
-VISUAL:@The_monster@ 捡起一只甲虫吃了下去。
-
-VISUAL:@The_monster@ 短暂地消失了。
-
-VISUAL:@The_monster@ 召唤了一群苍蝇。
 %%%%
 _hostile_imp_rare_
 
@@ -2318,6 +2374,14 @@ VISUAL:@The_monster@ 说着什么，但你什么都听不到。
 VISUAL:@The_monster@ 看起来很困惑。
 
 @The_monster@ 说："我真希望我更像一位恶魔领主。"
+
+VISUAL:@The_monster@ 朝 @foe@ 吐口水。
+
+VISUAL:@The_monster@ 捡起一只甲虫吃了下去。
+
+VISUAL:@The_monster@ 短暂地消失了。
+
+VISUAL:@The_monster@ 召唤了一群苍蝇。
 %%%%
 _player_ghost_common_
 
@@ -2332,6 +2396,8 @@ VISUAL:@The_monster@ 转向你，目光中充满了怨恨。
 @The_monster@ 低语道："离开……这地方……"
 
 @The_monster@ 低语道："你不是……我们中的一员……"
+
+VISUAL:@The_monster@ 的身影泛起涟漪。
 %%%%
 _player_ghost_medium_
 
@@ -2344,6 +2410,8 @@ _player_ghost_medium_
 @The_monster@ 低语道："你也将加入我们……"
 
 @The_monster@ 喊道："死在这里！像我们一样！"
+
+VISUAL:@The_monster@ 邪恶地咧嘴一笑。
 %%%%
 _fleeing_humanoid_common_
 
@@ -2354,6 +2422,10 @@ _fleeing_humanoid_common_
 @The_monster@ 尖叫道："别杀我！"
 
 @The_monster@ 喊道："我投降！我投降！"
+
+VISUAL:@The_monster@ 放弃了抵抗。
+
+VISUAL:@The_monster@ 逃跑时险些绊倒。
 %%%%
 _fleeing_humanoid_rare_
 
@@ -2362,6 +2434,14 @@ _fleeing_humanoid_rare_
 @The_monster@ 喊道："这不是我报名参加的！"
 
 @The_monster@ 喊道："我得重新考虑我的人生选择了！"
+
+VISUAL:@The_monster@ 看起来[惊魂未定|吓得僵住|魂不附体]。
+
+VISUAL:@The_monster@ 绝望地寻找着逃跑路线。
+
+VISUAL:@The_monster@ 试图恢复镇定。
+
+VISUAL:@The_monster@ 试图找回失去的勇气。
 %%%%
 _suck_up_adj2_
 
@@ -2408,6 +2488,17 @@ VISUAL:@The_monster@ 舔着你的手。
 @The_monster@ 把一根棍子叼到你面前。
 
 @The_monster@ 期待地看着你。
+
+VISUAL:@The_monster@ 傻乎乎地绕着圈跑！
+
+VISUAL:@The_monster@ 挠了挠 @possessive@ 的耳朵。
+
+VISUAL:@The_monster@ 歪着头看你。
+
+VISUAL:@The_monster@ 抓挠着身上的跳蚤。
+
+w:1
+VISUAL:@The_monster@ 啃着一根骨头——这是从哪儿来的？
 %%%%
 # ===================================
 # 默认通用行为状态
@@ -2422,6 +2513,14 @@ default hostile confused Donald
 @The_monster@ 说："我恨被搞糊涂。"
 
 @The_monster@ 喊道："停下来！让我想想！"
+
+VISUAL:@The_monster@ 开心地跳了支小舞。
+
+VISUAL:@The_monster@ 把手指伸进 @possessive@ 的鼻孔。
+
+VISUAL:@The_monster@ 揪了揪 @possessive@ 的头发。
+
+VISUAL:@The_monster@ 在原地轻轻转起圈来。
 %%%%
 default stupid friendly humanoid
 
@@ -2438,6 +2537,14 @@ default silenced confused humanoid
 VISUAL:@The_monster@ 看起来很困惑。
 
 VISUAL:@The_monster@ 做着夸张的哑剧动作。
+
+VISUAL:@The_monster@ 疯狂地比划着。
+
+VISUAL:@The_monster@ 说着什么，但你什么也没听见。
+
+VISUAL:@The_monster@ 邪恶地咧嘴一笑。
+
+VISUAL:@The_monster@ 开心地笑了。
 %%%%
 default fleeing silenced humanoid
 
@@ -2583,13 +2690,28 @@ VISUAL:@The_monster@ 缓缓地拔出剑。
 %%%%
 _Jory_silent_
 
-@The_monster@ 没说一句话。
+VISUAL:@The_monster@ 朝你疯狂地比划着。 @player_only@
 
-VISUAL:@The_monster@ 用手指指着你。
+VISUAL:@The_monster@ 戏谑地比划出被斩首的样子。
 
-VISUAL:@The_monster@ 用口型说着一个字："死。"
+VISUAL:@The_monster@ 仔细地端详着你。 @player_only@
 
-@The_monster@ 踏前一步。安静地。致命地。
+VISUAL:@The_monster@ 夸张地甩动着 @possessive@ 的斗篷。
+
+VISUAL:@The_monster@ 皱起眉头。
+
+VISUAL:@The_monster@ 一时怒不可遏！
+
+w:5
+VISUAL:@The_monster@ 落下了一滴泪。
+
+VISUAL:@The_monster@ 朝你做了个粗鲁的手势。 @player_only@
+
+VISUAL:@The_monster@ 得意地一笑，露出闪亮的獠牙。
+
+VISUAL:@The_monster@ 比划着露出 @possessive@ 的脖子。
+
+VISUAL:@The_monster@ 无声地嘶嘶作响。
 %%%%
 _Jory_rare_
 
@@ -2651,6 +2773,8 @@ _Asterion_common_
 VISUAL:@The_monster@ 用蹄子刨着地面。
 
 @The_monster@ 咆哮道："他们把我关在这里。现在我把他们关在这里。还有你。"
+
+VISUAL:@The_monster@ 缓缓地用手中的武器敲击着掌心。
 %%%%
 _Asterion_rare_
 
@@ -2709,8 +2833,11 @@ _Jeremiah_rare_
 @The_monster@ 抽泣道："我不想要。让它停下！让它停下！"
 
 @The_monster@ 说："哦，这一定是个梦。这完全不合理。"
+
+VISUAL:@The_monster@ 掐了掐 @reflexive@。
 %%%%
 ############ BLORKULA ### 兽人吸血鬼
+%%%%
 Blorkula the orcula
 
 @_Blorkula_common_@
@@ -2729,6 +2856,10 @@ _Blorkula_common_
 VISUAL:@The_monster@ 试图变成蝙蝠——变成了一个长着獠牙的绿色小飞球。
 
 @The_monster@ 说："喝血！强壮的兽人需要血！不是麦酒——血！"
+
+VISUAL:@The_monster@ 安详地咧嘴一笑。
+
+VISUAL:@The_monster_possessive@ 的眼睛泛着 @_blorkula_colour_@ 光芒。
 %%%%
 _Blorkula_rare_
 
@@ -2737,6 +2868,8 @@ _Blorkula_rare_
 @The_monster@ 说："数百年。我已经数百年没吃过蒜香面包了。"
 
 @The_monster@ 对 @foe@ 说："你——新鲜。温暖。还活着。完美。"
+
+VISUAL:@The_monster@ 琢磨着比欧弗的神庙刷成 @_blorkula_colour_@ 会不会更好看。
 %%%%
 ############ FRANCES ### 烦躁的猎人
 Frances
@@ -2755,12 +2888,16 @@ _Frances_common_
 VISUAL:@The_monster@ 调整着她的弓弦。
 
 @The_monster@ 对 @foe@ 说："我不在乎赏金。我在乎挑战。"
+
+VISUAL:@The_monster@ 抚过 @possessive@ 的伤疤。
 %%%%
 _Frances_rare_
 
 @The_monster@ 说："你比大多数人跑得远。不过还是不够。"
 
 @The_monster@ 说："我见过更大的。更快的。更丑的。你只是又一个标记。"
+
+VISUAL:@The_monster@ 摆出了防御架势。
 %%%%
 ############ KILLER KLOWN ### 杀人的小丑
 Killer Klown
@@ -2779,6 +2916,16 @@ VISUAL:@The_monster@ 向你抛出了一个馅饼。它有毒。
 @The_monster@ 咯咯笑道："我的鞋太大了！但我的刀刚好！"
 
 VISUAL:@The_monster@ 从袖子里拉出一条无穷无尽的围巾。
+
+VISUAL:@The_monster@ 朝 @foe@ 招了招手。
+
+VISUAL:@The_monster@ 翻了个跟头。
+
+VISUAL:@The_monster@ 朝 @foe@ 微微一笑。
+
+VISUAL:@The_monster@ 从帽子里抽出十根火把，抛接起来。
+
+VISUAL:@The_monster@ 朝 @foe@ 喷水。
 %%%%
 _Killer_Klown_rare_
 
@@ -2787,6 +2934,14 @@ _Killer_Klown_rare_
 @The_monster@ 说："每个人都在笑。直到他们不再笑。"
 
 @The_monster@ 咯咯笑道："有趣的是如何……致命的。对，致命的。"
+
+VISUAL:@The_monster@ 模仿着处决 @foe@ 的样子。
+
+VISUAL:@The_monster@ 吐出 @possessive@ 的舌头。
+
+VISUAL:@The_monster@ 又长出四颗脑袋，摘下来抛接起来！
+
+VISUAL:@The_monster@ 蹦蹦跳跳了一阵。
 %%%%
 hound
 
@@ -5444,57 +5599,9 @@ _deck_of_summoning_line_
 
 @The_monster@抽到了五芒星。"希望恶魔友善点！"
 
-@The_monster@抽到了游侠。"会射箭的新朋友！"
+@The_monster@抽到了游侠。"会射击的新朋友！"
 
-@The_monster@抽到了虫群。"到处都是蜜蜂！"
-%%%%
-_deck_of_destruction_line_
-
-
-@The_monster@抽到了堕落。"有太多方法可以变异了！"
-
-
-
-@The_monster@抽到了宝珠。"毁灭之球可疼了！"
-
-
-
-@The_monster@抽到了痛苦。"死灵术可疼了！"
-
-
-
-@The_monster@抽到了风暴。"到处都是雷与电！"
-
-
-
-@The_monster@抽到了硫酸。"强酸可疼了！"
-
-
-
-@The_monster@抽到了狂野魔法。"魔法出错的方式有千千万！"
-%%%%
-_deck_of_escape_line_
-
-
-@The_monster@抽到了云雾。"敌人别想呼吸新鲜空气！"
-
-
-
-@The_monster@抽到了灵药。"回血又回魔？哇呼！"
-
-
-
-@The_monster@抽到了放逐。"深渊可是个可怕的地方！"
-
-
-
-@The_monster@抽到了坟墓。"我可不想被封在没窗户的地方！"
-
-
-
-# Kenny Rogers, "The Gambler"
-
-@The_monster@抽到了速度。"知道何时该走，知道何时该跑。"
+@The_monster@抽到了蜂群。"蜜蜂，到处都是蜜蜂！"
 %%%%
 _deck_of_oddities_card_
 
@@ -5545,31 +5652,6 @@ _deck_of_punishment_line_
 
 
 @The_monster@抽到了神怒。"神明惩罚你的方式太多了！"
-%%%%
-_deck_of_summoning_line_
-
-
-@The_monster@抽到了剑舞。"希望武器的准头不错！"
-
-
-
-@The_monster@抽到了元素。"到处都是元素兽！"
-
-
-
-@The_monster@抽到了幻象。"我现在有个分身了！"
-
-
-
-@The_monster@抽到了五芒星。"希望恶魔友善点！"
-
-
-
-@The_monster@抽到了游侠。"会射击的新朋友！"
-
-
-
-@The_monster@抽到了蜂群。"蜜蜂，到处都是蜜蜂！"
 %%%%
 _demon_taunt_
 
@@ -7118,17 +7200,6 @@ _yredelemnul_Donald_
 
 @The_monster@说："我讨厌被束缚。"
 %%%%
-Aizul
-
-
-@_Aizul_common_@
-
-
-
-w:5
-
-@_Aizul_rare_@
-%%%%
 Amaemon
 
 
@@ -7174,16 +7245,6 @@ Arachne
 
 @The_monster@对@foe@说："我会为我们大家织一个新家。"
 %%%%
-Azrael
-
-
-@_Azrael_common_@
-
-
-
-w:2
-
-@_Azrael_rare_@
 %%%%
 Cassandra
 
@@ -7230,11 +7291,6 @@ w:5
 
 @The_monster@说："纵使我们不过是命运的奴隶，我仍将讲出真相，直至最后一息。"
 %%%%
-Crazy Yiuf
-
-
-@_crazy_yiuf_speech_@
-%%%%
 Dissolution
 
 
@@ -7245,17 +7301,6 @@ Dissolution
 w:5
 
 @_dissolution_speech_@
-%%%%
-Dowan
-
-
-@_Dowan_common_@
-
-
-
-w:2
-
-@_Dowan_rare_@
 %%%%
 Dowan_Duvessa_dies_distance_bytwin
 
@@ -7293,17 +7338,6 @@ w:2
 
 @_Grunn_rare_@
 %%%%
-Harold
-
-
-@_Harold_common_@
-
-
-
-w:6
-
-@_Harold_rare_@
-%%%%
 Ignacio
 
 
@@ -7336,17 +7370,6 @@ Jorgrun
 w:5
 
 @_Jorgrun_rare_@
-%%%%
-Joseph
-
-
-@_Joseph_common_@
-
-
-
-w:2
-
-@_Joseph_rare_@
 %%%%
 Josephine
 
@@ -7499,17 +7522,6 @@ w:5
 
 @_Margery_rare_@
 %%%%
-Menkaure
-
-
-@_Menkaure_common_@
-
-
-
-w:2
-
-@_Menkaure_rare_@
-%%%%
 Murray
 
 
@@ -7558,18 +7570,6 @@ Polyphemus
 w:5
 
 @_Polyphemus_rare_@
-%%%%
-Robin
-
-
-@_Robin_common_@
-
-
-
-w:5
-
-@_Robin_rare_@
-
 %%%%
 Rupert
 
@@ -10578,49 +10578,6 @@ VISUAL:@The_monster@ 从 @possessive@ 的帽子里拽出了一只短尾矮袋鼠
 
 
 @The_monster@ 说："有朋友真好。"
-%%%%
-Swamp Donald
-
-
-w:50
-
-@_generic_Donald_@
-
-
-@The_monster@ 说："这什么臭味道？简直像……呕。"
-
-
-@The_monster@ 说："如果说有什么事比水更让我讨厌，那就是又咸又苦的沼泽水。"
-
-
-@The_monster@ 说："我讨厌树。我讨厌沼泽水。我讨厌这地方。"
-
-
-@The_monster@ 说："那嗡嗡声？我最讨厌那个。"
-
-
-@The_monster@ 说："蚊子要我的血干嘛？"
-
-
-@The_monster@ 说："希望这些沼泽蠕虫都淹死。"
-
-
-@The_monster@ 说："该死，我把火焰剑忘在家里了。"
-
-
-@The_monster@ 说："你不讨厌水蛭吗？反正我讨厌。"
-
-
-@The_monster@ 说："我讨厌蚊子。差不多跟讨厌沼泽水一样。"
-
-
-@The_monster@ 说："好歹有块干燥的陆地。我讨厌被弄湿。"
-
-
-@The_monster@ 说："是不是爆发什么青蛙瘟疫了？还好不是蝗虫。"
-
-
-@The_monster@ 说："多头蛇的头越多，我就越讨厌它们。"
 %%%%
 Temple Donald
 

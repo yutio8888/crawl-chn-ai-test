@@ -7,15 +7,26 @@
 #include "ability-type.h"
 #include "art-enum.h"
 #include "artefact.h"
+#include "database.h"
 #include "decks.h"
+#include "dungeon.h"
+#include "duration-type.h"
+#include "env.h"
+#include "hiscores.h"
 #include "item-status-flag-type.h"
 #include "item-name.h"
+#include "item-prop.h"
 #include "item-prop-enum.h"
+#include "jobs.h"
 #include "mapdef.h"
 #include "mgen-data.h"
 #include "mon-util.h"
 #include "movement-i18n.h"
 #include "options.h"
+#include "player.h"
+#include "random.h"
+#include "religion.h"
+#include "skills.h"
 #include "species.h"
 #include "species-type.h"
 #include "spl-util.h"
@@ -23,6 +34,7 @@
 #include "stringutil.h"
 #include "tags.h"
 #include "terrain.h"
+#include "unicode.h"
 #include "test_zh_fixture.h"
 #include "test_zh_helpers.h"
 #include "unwind.h"
@@ -78,6 +90,37 @@ TEST_CASE_METHOD(ZhTranslationFixture,
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: invalid .des hydra head specifications fail closed",
+                 "[zh-translation][des-protocol][issue-14]")
+{
+    init_monsters();
+
+    const auto definition = GENERATE(values({
+        "0-headed hydra",
+        "21-headed hydra",
+        "21-headed slymdra",
+        "eightjunk-headed hydra",
+        "8-junk-headed hydra",
+        "one-junk-headed slymdra",
+        "twenty-one-headed hydra",
+        "unknown-headed hydra",
+    }));
+    const auto language = GENERATE(lang_t::EN, lang_t::ZH);
+
+    Options.language = language;
+    Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+    i18n_cache_clear();
+
+    mons_list monsters;
+    const string error = monsters.add_mons(definition);
+    INFO("definition=\"" << definition << "\", language="
+         << (language == lang_t::ZH ? "zh" : "en")
+         << ", error=\"" << error << "\"");
+    REQUIRE_FALSE(error.empty());
+    REQUIRE(monsters.size() == 0);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
                  "zh: Lernaean hydra remains a distinct .des identity",
                  "[zh-translation][des-protocol][issue-14]")
 {
@@ -111,6 +154,180 @@ TEST_CASE_METHOD(ZhTranslationFixture,
              << spell_english_name(spell) << "\"");
         REQUIRE(spell_by_name(spell_english_name(spell)) == spell);
     }
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 16 identity accessors stay canonical at display boundaries",
+                 "[zh-translation][issue-16][protocol]")
+{
+    init_spell_descs();
+    init_spell_name_cache();
+
+    REQUIRE(std::string(_god_name_en(GOD_ZIN)) == "Zin");
+    REQUIRE(std::string(get_job_name_en(JOB_FIGHTER)) == "Fighter");
+    REQUIRE(std::string(skill_name_en(SK_FIGHTING)) == "Fighting");
+    REQUIRE(std::string(spelltype_long_name_en(spschool::fire)) == "Fire");
+    REQUIRE(std::string(spell_english_name(SPELL_BLINK)) == "Blink");
+
+    CHECK(god_name(GOD_ZIN) != _god_name_en(GOD_ZIN));
+    CHECK(std::string(get_job_name(JOB_FIGHTER))
+          != get_job_name_en(JOB_FIGHTER));
+    CHECK(std::string(skill_name(SK_FIGHTING)) != skill_name_en(SK_FIGHTING));
+    CHECK(std::string(spelltype_long_name(spschool::fire))
+          != spelltype_long_name_en(spschool::fire));
+    CHECK(std::string(spell_title(SPELL_BLINK))
+          != spell_english_name(SPELL_BLINK));
+}
+
+TEST_CASE("Issue 16 TextDB lookup consumes identical gameplay RNG in EN and ZH",
+          "[zh-translation][issue-16][textdb][rng]")
+{
+    struct observation
+    {
+        string message;
+        uint64_t state;
+        uint64_t count;
+        int next;
+    };
+
+    const auto observe = [](lang_t language, const string &key)
+    {
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        i18n_cache_clear();
+        rng::subgenerator scoped_rng(0x1600160016001600ULL,
+                                     0xabcddcba12344321ULL);
+        observation result;
+        result.message = getSpeakString(key);
+        result.state = rng::current_generator().get_state();
+        result.count = rng::current_generator().get_count();
+        result.next = random2(1000000);
+        return result;
+    };
+
+    const observation english = observe(lang_t::EN, "Zin welcome");
+    const observation chinese = observe(lang_t::ZH, "Zin welcome");
+    REQUIRE_FALSE(english.message.empty());
+    REQUIRE_FALSE(chinese.message.empty());
+    CHECK(english.state == chinese.state);
+    CHECK(english.count == chinese.count);
+    CHECK(english.next == chinese.next);
+
+    const observation en_missing = observe(lang_t::EN, "issue16 missing key");
+    const observation zh_missing = observe(lang_t::ZH, "issue16 missing key");
+    CHECK(en_missing.message.empty());
+    CHECK(zh_missing.message.empty());
+    CHECK(en_missing.state == zh_missing.state);
+    CHECK(en_missing.count == zh_missing.count);
+    CHECK(en_missing.next == zh_missing.next);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 16 god-only artefact fallback uses canonical keys",
+                 "[zh-translation][issue-16][artefact]")
+{
+    item_def item;
+    item.base_type = OBJ_WEAPONS;
+    item.sub_type = WPN_DAGGER;
+    item.quantity = 1;
+    item.flags = ISFLAG_RANDART | ISFLAG_IDENTIFIED;
+    item.orig_monnum = -GOD_ASHENZARI;
+
+    const auto observe = [&item](lang_t language)
+    {
+        Options.language = language;
+        Options.lang_name = language == lang_t::ZH ? "zh" : nullptr;
+        i18n_cache_clear();
+
+        // Pick a deterministic stream where _pick_db_name() succeeds and
+        // Ashenzari's fallback produces a name within the production limit.
+        uint64_t seed = 0;
+        for (uint64_t candidate = 1; candidate < 10000; ++candidate)
+        {
+            rng::subgenerator candidate_rng(candidate, 0x16a57eULL);
+            if (!coinflip())
+                continue;
+            REQUIRE(getRandNameString("Ashenzari weapon").empty());
+            const string candidate_name = replace_name_parts(
+                getRandNameString("Ashenzari"), item);
+            if (!candidate_name.empty() && strwidth(candidate_name) <= 25)
+            {
+                seed = candidate;
+                break;
+            }
+        }
+        REQUIRE(seed != 0);
+
+        string fallback_name;
+        {
+            rng::subgenerator expected_rng(seed, 0x16a57eULL);
+            REQUIRE(coinflip());
+            REQUIRE(getRandNameString("Ashenzari weapon").empty());
+            fallback_name = replace_name_parts(
+                getRandNameString("Ashenzari"), item);
+        }
+        REQUIRE_FALSE(fallback_name.empty());
+
+        const string base_name = item_base_name(item);
+        const string expected = language == lang_t::ZH
+            ? fallback_name + base_name
+            : base_name + " " + fallback_name;
+        rng::subgenerator actual_rng(seed, 0x16a57eULL);
+        return std::make_pair(make_artefact_name(item), expected);
+    };
+
+    const auto english = observe(lang_t::EN);
+    const auto chinese = observe(lang_t::ZH);
+    CHECK(english.first == english.second);
+    CHECK(chinese.first == chinese.second);
+}
+
+TEST_CASE_METHOD(ZhTranslationFixture,
+                 "zh: Issue 16 real score entries keep protocol fields English",
+                 "[zh-translation][issue-16][hiscores]")
+{
+    unwind_var<player> restore_player(you);
+    you = player();
+    you.your_name = "Issue16";
+    you.species = SP_HUMAN;
+    you.char_class = JOB_MONK;
+    you.chr_class_name = get_job_name(you.char_class);
+    you.set_position(coord_def(20, 20));
+
+    const coord_def player_position = you.pos();
+    const unsigned old_map_id = env.level_map_ids(player_position);
+    unwinder restore_map_id([player_position, old_map_id]() {
+        env.level_map_ids(player_position) = old_map_id;
+    });
+    env.level_map_ids(player_position) = INVALID_MAP_INDEX;
+
+    for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
+        you.skills[sk] = 0;
+    you.skills[SK_FIGHTING] = 27;
+    you.skills[SK_AXES] = 15;
+    you.duration[DUR_HASTE] = 100;
+
+    REQUIRE(Options.language == lang_t::ZH);
+    scorefile_entry entry;
+    entry.init_death_cause(0, MID_NOBODY, KILLED_BY_QUITTING, "", nullptr);
+    entry.init(1600000000);
+    const string raw = entry.raw_string();
+    REQUIRE_FALSE(raw.empty());
+
+    const xlog_fields fields = entry.get_fields();
+    CHECK(fields.str_field("title") == "Conqueror");
+    CHECK(fields.str_field("maxskills") == "Fighting");
+    CHECK(fields.str_field("fifteenskills") == "Fighting,Axes");
+    CHECK(fields.str_field("status") == "agile,hasted");
+    CHECK(raw.find("title=Conqueror") != string::npos);
+    CHECK(raw.find("maxskills=Fighting") != string::npos);
+    CHECK(raw.find("fifteenskills=Fighting,Axes") != string::npos);
+    CHECK(raw.find("status=agile,hasted") != string::npos);
+
+    CHECK(fields.str_field("title") != player_title(false));
+    CHECK(fields.str_field("maxskills") != skill_name(SK_FIGHTING));
+    CHECK(fields.str_field("fifteenskills")
+          != string(skill_name(SK_FIGHTING)) + "," + skill_name(SK_AXES));
 }
 
 TEST_CASE_METHOD(ZhTranslationFixture,

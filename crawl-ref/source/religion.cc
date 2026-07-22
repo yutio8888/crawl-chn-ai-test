@@ -688,7 +688,7 @@ void dec_penance(god_type god, int val)
         you.penance[god] = 0;
 
         mark_milestone("god.mollify",
-                       (T_("mollified ")) + string(_god_name_en(god)) + ".");
+                       "mollified " + string(_god_name_en(god)) + ".");
 
         if (god == GOD_IGNIS)
         {
@@ -2673,7 +2673,7 @@ bool gain_piety(int original_gain, int denominator, bool should_scale_piety)
         if (you.raw_piety >= piety_breakpoint(5)
             && you.piety_max[you.religion] < piety_breakpoint(5))
         {
-            mark_milestone("god.maxpiety", T_("became the Champion of ")
+            mark_milestone("god.maxpiety", "became the Champion of "
                            + string(_god_name_en(you.religion)) + ".");
         }
         you.piety_max[you.religion] = you.raw_piety;
@@ -2989,7 +2989,8 @@ void excommunication(bool voluntary, god_type new_god)
         update_player_symbol();
     }
 
-    mark_milestone("god.renounce", (T_("abandoned ")) + string(_god_name_en(old_god)) + ".");
+    mark_milestone("god.renounce",
+                   "abandoned " + string(_god_name_en(old_god)) + ".");
     update_whereis();
 
     if (old_god == GOD_IGNIS)
@@ -3940,7 +3941,7 @@ void join_religion(god_type which_god)
     _set_initial_god_piety();
 
     // Only mark the milestone now that piety has been set due to invo titles.
-    mark_milestone("god.worship", (T_("became a worshipper of "))
+    mark_milestone("god.worship", "became a worshipper of "
                    + string(_god_name_en(you.religion)) + ".");
     take_note(Note(NOTE_GET_GOD, you.religion));
     you.piety_info.register_join();

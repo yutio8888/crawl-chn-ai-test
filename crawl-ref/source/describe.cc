@@ -1193,7 +1193,7 @@ static string _describe_demon(const string& name, bool flying, colour_t colour)
  */
 static string _describe_mutant_beast_tier(int tier)
 {
-    static const string tier_descs[] = {
+    const string tier_descs[] = {
         T_("It is of an unusually buggy age."),
         T_("It is larval and weak, freshly emerged from its mother's pouch."),
         T_("It is a juvenile, no longer larval but below its mature strength."),
@@ -1218,7 +1218,7 @@ static string _describe_mutant_beast_tier(int tier)
  */
 static string _describe_mutant_beast_facets(const CrawlVector &facets)
 {
-    static const string facet_descs[] = {
+    const string facet_descs[] = {
         T_(" seems unusually buggy."),
         T_(" sports a set of venomous tails"),
         T_(" flies swiftly and unpredictably"),
@@ -1237,7 +1237,7 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
         // The English construction relies on a leading "It", possessive
         // fragments, and an English conjunction. Chinese needs the subject
         // and all facet predicates assembled as one complete sentence.
-        static const string zh_facet_descs[] = {
+        const string zh_facet_descs[] = {
             T_("It seems unusually buggy."),
             T_("It sports a set of venomous tails."),
             T_("It flies swiftly and unpredictably."),
@@ -1249,7 +1249,8 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
         COMPILE_CHECK(ARRAYSZ(zh_facet_descs) == NUM_BEAST_FACETS);
 
         const string description = comma_separated_fn(
-            begin(facets), end(facets), [] (const CrawlStoreValue &sv) -> string
+            begin(facets), end(facets),
+            [&zh_facet_descs] (const CrawlStoreValue &sv) -> string
             {
                 const int facet = sv.get_int();
                 ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
@@ -1259,7 +1260,7 @@ static string _describe_mutant_beast_facets(const CrawlVector &facets)
     }
 
     return "It" + comma_separated_fn(begin(facets), end(facets),
-                      [] (const CrawlStoreValue &sv) -> string {
+                      [&facet_descs] (const CrawlStoreValue &sv) -> string {
                           const int facet = sv.get_int();
                           ASSERT_RANGE(facet, 0, NUM_BEAST_FACETS);
                           return facet_descs[facet];
@@ -3852,7 +3853,7 @@ static vector<command_type> _allowed_actions(const item_def& item)
 static string _actions_desc(const vector<command_type>& actions)
 {
     // XX code duplication
-    static const map<command_type, string> act_str =
+    const map<command_type, string> act_str =
     {
         { CMD_WIELD_WEAPON, T_("(w)ield") },
         { CMD_UNWIELD_WEAPON, T_("(u)nwield") },
@@ -3873,7 +3874,7 @@ static string _actions_desc(const vector<command_type>& actions)
     };
     bool push_quiver = false;
     return comma_separated_fn(begin(actions), end(actions),
-                                [&push_quiver] (command_type cmd)
+                                [&push_quiver, &act_str] (command_type cmd)
                                 {
                                     if (cmd == CMD_QUAFF) // assumes quaff appears first
                                         push_quiver = true;
@@ -5073,7 +5074,7 @@ static string _describe_draconian(const monster_info& mi)
     if (subsp != mi.type)
     {
         // Draconian scale color description
-        static const map<monster_type, string> scale_desc = {
+        const map<monster_type, string> scale_desc = {
             { MONS_BLACK_DRACONIAN,  T_("It has black scales. ") },
             { MONS_YELLOW_DRACONIAN, T_("It has yellow scales. ") },
             { MONS_GREEN_DRACONIAN,  T_("It has green scales. ") },
@@ -5090,7 +5091,7 @@ static string _describe_draconian(const monster_info& mi)
 
     {
         // Draconian ability description
-        static const map<monster_type, string> ability_desc = {
+        const map<monster_type, string> ability_desc = {
             { MONS_BLACK_DRACONIAN,
                 T_("Sparks flare out of its mouth and nostrils.") },
             { MONS_YELLOW_DRACONIAN,
@@ -5880,7 +5881,7 @@ static void _describe_aux_hit_chance(ostringstream &result, vector<string>& auxe
            << chance << (T_("% to hit with your "));
 
     // Translate common aux attack names via T_()
-    static const map<string, string> aux_names = {
+    const map<string, string> aux_names = {
         { "off-hand punch",    T_("off-hand punch") },
         { "kick",              T_("kick") },
         { "headbutt",          T_("headbutt") },
@@ -5994,7 +5995,7 @@ void describe_hit_chance(int hit_chance, ostringstream &result, const item_def *
             // hand_name(true) — in ZH mode hand_name may return
             // Chinese (C_ translation) or singular English (fallback),
             // neither of which will match, so we handle that in the else.
-            static const map<string, string> hand_names = {
+            const map<string, string> hand_names = {
                 { "hands",     T_("your hands") },
                 { "claws",     T_("your claws") },
                 { "tentacles", T_("your tentacles") },
@@ -6221,12 +6222,12 @@ string _monster_habitat_description(const monster_info& mi)
 // Size adjectives
 const char* const size_adj[] =
 {
-    T_("tiny"),
-    T_("very small"),
-    T_("small"),
-    T_("medium"),
-    T_("large"),
-    T_("giant"),
+    N_("tiny"),
+    N_("very small"),
+    N_("small"),
+    N_("medium"),
+    N_("large"),
+    N_("giant"),
 };
 COMPILE_CHECK(ARRAYSZ(size_adj) == NUM_SIZE_LEVELS);
 
@@ -7547,14 +7548,14 @@ int describe_monster(const monster_info &mi, const string& /*footer*/)
 
 static const char* xl_rank_names[] =
 {
-    T_("weakling"),
-    T_("amateur"),
-    T_("novice"),
-    T_("journeyman"),
-    T_("adept"),
-    T_("veteran"),
-    T_("master"),
-    T_("legendary")
+    N_("weakling"),
+    N_("amateur"),
+    N_("novice"),
+    N_("journeyman"),
+    N_("adept"),
+    N_("veteran"),
+    N_("master"),
+    N_("legendary")
 };
 
 static string _xl_rank_name(const int xl_rank)

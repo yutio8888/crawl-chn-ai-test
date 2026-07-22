@@ -4431,34 +4431,29 @@ void mons_list::get_zombie_type(string s, mons_spec &spec) const
 
 mons_spec mons_list::get_hydra_spec(const string &name, monster_type mtype) const
 {
-    string prefix = name.substr(0, name.find("-"));
+    const string suffix = mtype == MONS_HYDRA ? "-headed hydra"
+                          : mtype == MONS_SLYMDRA ? "-headed slymdra"
+                          : "";
+    if (suffix.empty() || !ends_with(name, suffix))
+        return MONS_PROGRAM_BUG;
 
-    int nheads = atoi(prefix.c_str());
-    if (nheads != 0)
-        ;
-    else if (prefix == "0")
-        nheads = 0;
-    else
+    const string head_token = name.substr(0, name.size() - suffix.size());
+    int nheads;
+    if (!parse_int(head_token.c_str(), nheads))
     {
-        // Might be "two-headed hydra" type string.
-        for (int i = 0; i <= 20; ++i)
-            if (number_in_words_en(i) == prefix)
+        nheads = 0;
+        for (int i = 1; i <= 20; ++i)
+        {
+            if (number_in_words_en(i) == head_token)
             {
                 nheads = i;
                 break;
             }
+        }
     }
 
-    if (nheads < 1)
-        nheads = 27;  // What can I say? :P
-    else if (nheads > 20)
-    {
-#if defined(DEBUG) || defined(DEBUG_DIAGNOSTICS)
-        mprf(MSGCH_DIAGNOSTICS, "Hydra spec wants %d heads, clamping to 20.",
-             nheads);
-#endif
-        nheads = 20;
-    }
+    if (nheads < 1 || nheads > 20)
+        return MONS_PROGRAM_BUG;
 
     mons_spec spec(mtype);
     spec.props[MGEN_NUM_HEADS] = nheads;

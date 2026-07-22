@@ -57,10 +57,10 @@ function necropolis_portal_entry(e)
     local timeout_turns = crawl.random_range(900, 1200)
 
     local messager = timed_msg {
-        initmsg = { crawl.t_("You hear the solemn chanting of funerary rites."),
-                    crawl.t_("There is an entrance to the Necropolis on this level. "
-                    .. "Hurry and find it before the portal closes!") },
-        finalmsg = crawl.t_("The funeral rites reach a fever pitch!"),
+        initmsg = { "You hear the solemn chanting of funerary rites.",
+                    "There is an entrance to the Necropolis on this level. "
+                    .. "Hurry and find it before the portal closes!" },
+        finalmsg = "The funeral rites reach a fever pitch!",
         verb = '',
         noisemaker = 'funeral chant',
         ranges = {
@@ -68,14 +68,14 @@ function necropolis_portal_entry(e)
             { 3250, 'gathering chorus' }, { 2250, 'rising multitudes' },
             { 0, 'full choir' }
         },
-        range_msg_fmt = crawl.t_("You hear the {distance} {noisemaker} {prefix}.")
+        range_msg_fmt = "You hear the {distance} {noisemaker} {prefix}."
     }
     dgn.persist.necropolis_difficulty = necropolis_difficulty()
 
     e.lua_marker('O',
         timed_marker {
-          disappear = crawl.t_("The funeral rites fall silent, "
-                      .. "and the phantasmal passage disappears!"),
+          disappear = "The funeral rites fall silent, "
+                      .. "and the phantasmal passage disappears!",
           entity = 'archway',
           turns = timeout_turns,
           single_timed = true,

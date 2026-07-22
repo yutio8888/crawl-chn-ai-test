@@ -257,7 +257,7 @@ def copy_contract(root, contract_id):
         shutil.copyfile(src, dst)
 
 
-def mutate(root, contract_id, artifact_index, kind):
+def mutate(root, contract_id, artifact_index, required_index, kind):
     artifact = scan.PROTOCOL_BOUNDARY_CONTRACTS[contract_id][artifact_index]
     path = os.path.join(root, artifact["file"])
     with open(path, "r", encoding="utf-8") as f:
@@ -265,7 +265,7 @@ def mutate(root, contract_id, artifact_index, kind):
     start = list(re.finditer(artifact["start"], source, re.MULTILINE))[0]
     end = re.search(artifact["end"], source[start.end():], re.MULTILINE)
     scope_end = start.end() + end.start()
-    pattern = artifact["required"][0][0]
+    pattern = artifact["required"][required_index][0]
     match = re.search(pattern, source[start.end():scope_end], re.MULTILINE)
     if not match:
         raise AssertionError(f"fixture producer missing for {contract_id}")
@@ -301,14 +301,24 @@ for contract_id in scan.PROTOCOL_BOUNDARY_CONTRACTS:
             failures.append(f"{contract_id}: passing fixture rejected")
     for artifact_index, artifact in enumerate(artifacts):
         artifact_label = f'{artifact["file"]}#{artifact_index + 1}'
-        for kind in ("localized", "missing", "duplicate", "decoy"):
+        # Each required invariant must independently fail closed.  The
+        # localized producer replacement remains artifact-level metadata;
+        # missing/duplicate/decoy mutations exercise every required pattern.
+        mutations = [(0, "localized")]
+        mutations.extend(
+            (required_index, kind)
+            for required_index in range(len(artifact["required"]))
+            for kind in ("missing", "duplicate", "decoy")
+        )
+        for required_index, kind in mutations:
             with tempfile.TemporaryDirectory() as root:
                 copy_contract(root, contract_id)
-                mutate(root, contract_id, artifact_index, kind)
+                mutate(root, contract_id, artifact_index, required_index, kind)
                 fixture_count += 1
                 if not scan.protocol_boundary_findings(root, contract_id):
                     failures.append(
-                        f"{contract_id}/{artifact_label}: {kind} fixture accepted"
+                        f"{contract_id}/{artifact_label}/required#"
+                        f"{required_index + 1}: {kind} fixture accepted"
                     )
 
 if failures:
@@ -323,7 +333,7 @@ cat /tmp/actual_protocol_boundaries.txt
 assert_status "protocol registry: passing/localized/missing/duplicate/decoy matrix" \
     0 "$protocol_boundary_status"
 assert_contains "protocol registry: every artifact receives negative mutations" \
-    "OK: 15 rows, 26 artifacts, 119 fixtures passed" \
+    "OK: 21 rows, 67 artifacts, 406 fixtures passed" \
     /tmp/actual_protocol_boundaries.txt
 
 # ── direct T_ branches remain extractable ──

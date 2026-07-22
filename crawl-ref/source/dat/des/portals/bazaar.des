@@ -24,21 +24,21 @@ end
 function bazaar_portal()
   local messager =
     timed_msg {
-      initmsg = { crawl.t_("You hear coins being counted."),
-                  crawl.t_("An interdimensional caravan has stopped on this level "
+      initmsg = { "You hear coins being counted.",
+                  "An interdimensional caravan has stopped on this level "
                   .. "and set up a bazaar. Hurry and find its entrance before "
-                  .. "they move on!") },
-      finalmsg = crawl.t_("You hear the last, dying notes of the bell."),
+                  .. "they move on!" },
+      finalmsg = "You hear the last, dying notes of the bell.",
       verb = 'tolling',
       noisemaker = 'bell',
-      range_msg_fmt = crawl.t_("You hear the {prefix}tolling of the {distance} {noisemaker}.")
+      range_msg_fmt = "You hear the {prefix}tolling of the {distance} {noisemaker}."
     }
   local blow = 200 + 30*(40 - you.absdepth()) + crawl.random2(200)
   local bhigh = blow + crawl.random2(blow) + 100
 
   return timed_marker {
                low=blow, high=bhigh, msg=messager, single_timed=true,
-               disappear= crawl.t_('The gate to the bazaar disappears!'),
+               disappear= 'The gate to the bazaar disappears!',
                desc = "flickering gateway to a bazaar",
                floor = 'stone_arch', feat_tile = 'dngn_portal_bazaar_gone'
   }

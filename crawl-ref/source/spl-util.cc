@@ -792,7 +792,7 @@ bool add_spell_to_memory(spell_type spell)
 
     int slot_i;
     int letter_j = -1;
-    string sname = spell_title(spell);
+    string sname = spell_english_name(spell);
     lowercase(sname);
     // first we find a slot in our head:
     for (slot_i = 0; slot_i < MAX_KNOWN_SPELLS; slot_i++)
@@ -829,7 +829,7 @@ bool add_spell_to_memory(spell_type spell)
                 else if (overwrite)
                 {
                     const string ename = lowercase_string(
-                            spell_title(get_spell_by_letter(ch)));
+                            spell_english_name(get_spell_by_letter(ch)));
                     // Don't overwrite a spell matched by the same rule.
                     if (!entry.first.matches(ename))
                     {
@@ -1412,37 +1412,42 @@ const char* spelltype_short_name(spschool which_spelltype)
     }
 }
 
-const char* spelltype_long_name(spschool which_spelltype)
+const char* spelltype_long_name_en(spschool which_spelltype)
 {
     switch (which_spelltype)
     {
     case spschool::conjuration:
-        return T_("Conjuration");
+        return N_("Conjuration");
     case spschool::hexes:
-        return T_("Hexes");
+        return N_("Hexes");
     case spschool::fire:
-        return T_("Fire");
+        return N_("Fire");
     case spschool::ice:
-        return T_("Ice");
+        return N_("Ice");
     case spschool::necromancy:
-        return T_("Necromancy");
+        return N_("Necromancy");
     case spschool::summoning:
-        return T_("Summoning");
+        return N_("Summoning");
     case spschool::forgecraft:
-        return T_("Forgecraft");
+        return N_("Forgecraft");
     case spschool::translocation:
-        return T_("Translocation");
+        return N_("Translocation");
     case spschool::alchemy:
-        return T_("Alchemy");
+        return N_("Alchemy");
     case spschool::earth:
-        return T_("Earth");
+        return N_("Earth");
     case spschool::air:
-        return T_("Air");
+        return N_("Air");
     case spschool::random:
-        return T_("Random");
+        return N_("Random");
     default:
-        return T_("Error");
+        return N_("Error");
     }
+}
+
+const char* spelltype_long_name(spschool which_spelltype)
+{
+    return T_(spelltype_long_name_en(which_spelltype));
 }
 
 skill_type spell_type2skill(spschool spelltype)

@@ -24,6 +24,7 @@
 #include "hints.h"
 #include "item-status-flag-type.h"
 #include "jobs.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "macro.h"
 #include "message.h"
@@ -91,7 +92,7 @@ static string _shout_key(const monster &mons)
     if (mons.type == MONS_PLAYER_GHOST)
     {
         const ghost_demon &ghost = *(mons.ghost);
-        const string ghost_job         = get_job_name(ghost.job);
+        const string ghost_job         = get_job_name_en(ghost.job);
         return ghost_job + " player ghost";
     }
 
@@ -391,7 +392,11 @@ void noisy_equipment(const item_def &weapon)
 
     if (is_unrandom_artefact(weapon))
     {
-        string name = weapon.name(DESC_QUALNAME, false, true, false, false);
+        string name;
+        {
+            ScopedLangEn en;
+            name = weapon.name(DESC_QUALNAME, false, true, false, false);
+        }
         msg = getSpeakString(name);
         if (msg == "NONE")
             return;

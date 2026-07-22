@@ -28,6 +28,8 @@ import sys
 from dataclasses import dataclass, field
 from typing import Dict, Iterable, Iterator, List, Optional, Sequence, Set, Tuple
 
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+from i18n_shared import CPP_AST_SCAN_SKIP_DIRS
 
 
 try:
@@ -41,10 +43,6 @@ except ImportError:
 
 
 CPP_EXTENSIONS = {".c", ".cc", ".cpp", ".cxx", ".h", ".hh", ".hpp", ".hxx"}
-SKIP_DIRS = {
-    "contrib", ".git", "worktrees", ".worktrees", "__pycache__",
-    "catch2-tests", "rltiles", "util",
-}
 SKIP_FILES = {"catch_amalgamated.cc"}
 KNOWN_PRODUCTION_LEXICAL_DEBT = {
     ("branch-data.h", "unmatched } at offset 12640"),
@@ -1047,7 +1045,7 @@ def _deduplicate(findings: Iterable[dict]) -> List[dict]:
 def _discover(root: str) -> List[str]:
     paths = []
     for directory, dirs, files in os.walk(root):
-        dirs[:] = sorted(d for d in dirs if d not in SKIP_DIRS)
+        dirs[:] = sorted(d for d in dirs if d not in CPP_AST_SCAN_SKIP_DIRS)
         for name in sorted(files):
             if name in SKIP_FILES or os.path.splitext(name)[1].lower() not in CPP_EXTENSIONS:
                 continue

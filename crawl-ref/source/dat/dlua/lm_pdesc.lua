@@ -33,7 +33,8 @@ end
 
 function PortalDescriptor:property(marker, pname)
   if pname == 'feature_description' then
-    return self:unmangle(self.props.desc)
+    local desc = self:unmangle(self.props.desc)
+    return type(desc) == 'string' and crawl.t_(desc) or desc
   end
 
   return self:unmangle(self.props and self.props[pname] or '')

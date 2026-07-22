@@ -611,7 +611,7 @@ end
 function TroveMarker:note_payed(toll_item, item_taken, rune_name)
   local toll_desc
   if self.props.toll_desc then
-    toll_desc = self.props.toll_desc
+    toll_desc = crawl.t_(self.props.toll_desc)
   else
     toll_desc = "at " .. crawl.article_a(self.props.desc)
   end

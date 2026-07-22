@@ -289,6 +289,28 @@ static int crawl_roundtrip_trove_marker(lua_State *ls)
     return _roundtrip_dlua_marker(ls, "TroveMarker");
 }
 
+static int crawl_roundtrip_timed_messaging(lua_State *ls)
+{
+    luaL_checktype(ls, 1, LUA_TTABLE);
+
+    vector<unsigned char> data;
+    writer out(&data);
+    lua_getglobal(ls, "TimedMessaging");
+    lua_getfield(ls, -1, "write");
+    lua_pushvalue(ls, 1);
+    lua_pushlightuserdata(ls, &out);
+    lua_call(ls, 2, 0);
+
+    reader in(data, TAG_MINOR_VERSION);
+    lua_getfield(ls, -1, "read");
+    lua_pushvalue(ls, -2);
+    lua_pushnil(ls);
+    lua_pushlightuserdata(ls, &in);
+    lua_call(ls, 3, 1);
+    lua_remove(ls, -2);
+    return 1;
+}
+
 static const struct luaL_Reg crawl_test_lib[] =
 {
     { "begin_test", crawl_begin_test },
@@ -308,6 +330,7 @@ static const struct luaL_Reg crawl_test_lib[] =
     { "set_test_god", crawl_set_test_god },
     { "roundtrip_dgn_triggerer", crawl_roundtrip_dgn_triggerer },
     { "roundtrip_trove_marker", crawl_roundtrip_trove_marker },
+    { "roundtrip_timed_messaging", crawl_roundtrip_timed_messaging },
     { nullptr, nullptr }
 };
 

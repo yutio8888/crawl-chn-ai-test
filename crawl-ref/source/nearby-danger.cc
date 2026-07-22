@@ -23,6 +23,7 @@
 #include "fprop.h"
 #include "god-abil.h"
 #include "god-passive.h"
+#include "lang-en-guard.h"
 #include "monster.h"
 #include "mon-movetarget.h"
 #include "mon-pathfind.h"
@@ -133,9 +134,14 @@ bool mons_is_safe(const monster* mon, const bool want_move,
                       || want_move;
 
         bool result = is_safe;
+        string canonical_name;
+        {
+            ScopedLangEn en;
+            canonical_name = mon->name(DESC_PLAIN);
+        }
 
         if (clua.callfn("ch_mon_is_safe", "sbbd>b",
-                        mon->name(DESC_PLAIN).c_str(), is_safe, moving, dist,
+                        canonical_name.c_str(), is_safe, moving, dist,
                         &result))
         {
             is_safe = result;

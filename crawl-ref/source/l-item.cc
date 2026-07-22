@@ -282,6 +282,7 @@ static int l_item_do_class(lua_State *ls)
         if (lua_isboolean(ls, 1))
             terse = lua_toboolean(ls, 1);
 
+        ScopedLangEn en;
         string s = item_class_name(item->base_type, terse);
         lua_pushstring(ls, s.c_str());
     }
@@ -324,6 +325,7 @@ static int l_item_do_subtype(lua_State *ls)
         return 1;
     }
     const bool armour_slots = !lua_isboolean(ls, 1) || lua_toboolean(ls, 1);
+    ScopedLangEn en;
     const string subtype = _item_subtype(*item, armour_slots);
     if (subtype.empty())
         lua_pushnil(ls);
@@ -395,6 +397,7 @@ static int l_item_do_ego(lua_State *ls)
         return 1;
     }
     const bool terse = lua_isboolean(ls, 1) && lua_toboolean(ls, 1);
+    ScopedLangEn en;
     const string ego = _item_ego(*item, terse);
     if (ego.empty())
         lua_pushnil(ls);
@@ -609,18 +612,10 @@ IDEF(equip_type)
 
     if (eq != SLOT_UNUSED)
     {
-        // equip_slot_name() returns Chinese in ZH mode, but Lua scripts
-        // compare against English slot name strings.
+        ScopedLangEn en;
         const string slot_name = equip_slot_name(eq);
-        static const map<string, string> equip_slot_en = {
-            {"武器", "weapon"}, {"披风", "cloak"}, {"头盔", "helmet"},
-            {"手套", "gloves"}, {"靴子", "boots"}, {"副手", "offhand"},
-            {"身体护甲", "body armour"}, {"护甲", "armour"}, {"战甲", "barding"},
-            {"戒指", "ring"}, {"项链", "amulet"}, {"护身符", "amulet"},
-            {"小装置", "gizmo"},
-        };
-        const string* en = map_find(equip_slot_en, slot_name);
-        lua_pushstring(ls, lowercase_string(en ? *en : slot_name).c_str());
+        const string canonical_name = lowercase_string(slot_name);
+        lua_pushstring(ls, canonical_name.c_str());
     }
     else
         lua_pushnil(ls);
@@ -642,12 +637,12 @@ static int _push_weap_skill(lua_State *ls, item_def *item)
     if (is_unrandom_artefact(*item, UNRAND_LOCHABER_AXE))
     {
         const string skills = make_stringf("%s,%s",
-                                           skill_name(SK_POLEARMS),
-                                           skill_name(SK_AXES));
+                                           skill_name_en(SK_POLEARMS),
+                                           skill_name_en(SK_AXES));
         lua_pushstring(ls, skills.c_str());
     }
     else
-        lua_pushstring(ls, skill_name(skill));
+        lua_pushstring(ls, skill_name_en(skill));
     lua_pushinteger(ls, skill);
     return 2;
 }
@@ -918,7 +913,7 @@ IDEF(spells)
 
     for (spell_type stype : spells_in_book(*item))
     {
-        lua_pushstring(ls, spell_title(stype));
+        lua_pushstring(ls, spell_english_name(stype));
         lua_rawseti(ls, -2, ++index);
     }
 

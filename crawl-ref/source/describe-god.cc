@@ -132,118 +132,118 @@ static const char *divine_title[][8] =
 {
 
     // No god.
-    {T_("Buglet"),             T_("Firebug"),               T_("Bogeybug"),                 T_("Bugger"),
-        T_("Bugbear"),            T_("Bugged One"),            T_("Giant Bug"),                T_("Lord of the Bugs")},
+    {N_("Buglet"),             N_("Firebug"),               N_("Bogeybug"),                 N_("Bugger"),
+        N_("Bugbear"),            N_("Bugged One"),            N_("Giant Bug"),                N_("Lord of the Bugs")},
 
     // Zin.
-    {T_("Blasphemer"),         T_("Anchorite"),             T_("Apologist"),                T_("Pious"),
-        T_("Devout"),             T_("Orthodox"),              T_("Immaculate"),               T_("Bringer of Law")},
+    {N_("Blasphemer"),         N_("Anchorite"),             N_("Apologist"),                N_("Pious"),
+        N_("Devout"),             N_("Orthodox"),              N_("Immaculate"),               N_("Bringer of Law")},
 
     // The Shining One.
-    {T_("Honourless"),         T_("Acolyte"),               T_("Righteous"),                T_("Unflinching"),
-        T_("Holy Warrior"),       T_("Exorcist"),              T_("Demon Slayer"),             T_("Bringer of Light")},
+    {N_("Honourless"),         N_("Acolyte"),               N_("Righteous"),                N_("Unflinching"),
+        N_("Holy Warrior"),       N_("Exorcist"),              N_("Demon Slayer"),             N_("Bringer of Light")},
 
     // Kikubaaqudgha -- death scholar theme.
-    {T_("Tormented"),          T_("Purveyor of Pain"),       T_("Pupil of Sorrows"),        T_("Merchant of Misery"),
-     T_("Scholar of Souls"),   T_("Artisan of Death"),       T_("Demagogue of Despair"),    T_("Lord of Darkness")},
+    {N_("Tormented"),          N_("Purveyor of Pain"),       N_("Pupil of Sorrows"),        N_("Merchant of Misery"),
+     N_("Scholar of Souls"),   N_("Artisan of Death"),       N_("Demagogue of Despair"),    N_("Lord of Darkness")},
 
     // Yredelemnul -- fervent death knight theme.
-    {T_("Traitor"),            T_("Torchbearer"),            T_("Despoiler"),               T_("Black Crusader"),
-     T_("Fallen @Genus@"),     T_("Harbinger of Doom"),      T_("Inexorable Tide"),         T_("Bringer of Blasphemy")},
+    {N_("Traitor"),            N_("Torchbearer"),            N_("Despoiler"),               N_("Black Crusader"),
+     N_("Fallen @Genus@"),     N_("Harbinger of Doom"),      N_("Inexorable Tide"),         N_("Bringer of Blasphemy")},
 
     // Xom.
-    {T_("Toy"),                T_("Toy"),                   T_("Toy"),                      T_("Toy"),
-        T_("Toy"),                T_("Toy"),                   T_("Toy"),                      T_("Toy")},
+    {N_("Toy"),                N_("Toy"),                   N_("Toy"),                      N_("Toy"),
+        N_("Toy"),                N_("Toy"),                   N_("Toy"),                      N_("Toy")},
 
     // Vehumet -- battle mage theme.
-    {T_("Meek"),               T_("Sorcerer's Apprentice"), T_("Scholar of Destruction"),   T_("Caster of Ruination"),
-        T_("Traumaturge"),        T_("Battlemage"),            T_("Warlock"),                  T_("Luminary of Lethal Lore")},
+    {N_("Meek"),               N_("Sorcerer's Apprentice"), N_("Scholar of Destruction"),   N_("Caster of Ruination"),
+        N_("Traumaturge"),        N_("Battlemage"),            N_("Warlock"),                  N_("Luminary of Lethal Lore")},
 
     // Okawaru -- battle theme.
-    {T_("Coward"),             T_("Struggler"),             T_("Combatant"),                T_("@Genus@-At-Arms"),
-        T_("Knight"),             T_("Myrmidon"),             T_("Warmonger"),                T_("Victor of a Thousand Battles")},
+    {N_("Coward"),             N_("Struggler"),             N_("Combatant"),                N_("@Genus@-At-Arms"),
+        N_("Knight"),             N_("Myrmidon"),             N_("Warmonger"),                N_("Victor of a Thousand Battles")},
 
     // Makhleb -- chaos theme.
-    {T_("Orderly"),            T_("Spawn of Chaos"),        T_("Disciple of Destruction"),  T_("Fanfare of Bloodshed"),
-        T_("Fiendish"),           T_("Demolition @Genus@"),    T_("Pandemonic"),               T_("Champion of Chaos")},
+    {N_("Orderly"),            N_("Spawn of Chaos"),        N_("Disciple of Destruction"),  N_("Fanfare of Bloodshed"),
+        N_("Fiendish"),           N_("Demolition @Genus@"),    N_("Pandemonic"),               N_("Champion of Chaos")},
 
     // Sif Muna -- generalist scholarly theme.
-    {T_("Ignorant"),           T_("Disciple"),              T_("Student"),                  T_("Adept"),
-        T_("Scribe"),             T_("Scholar"),               T_("Sage"),                     T_("Genius of the Arcane")},
+    {N_("Ignorant"),           N_("Disciple"),              N_("Student"),                  N_("Adept"),
+        N_("Scribe"),             N_("Scholar"),               N_("Sage"),                     N_("Genius of the Arcane")},
 
     // Trog -- anger theme.
-    {T_("Puny"),               T_("Troglodyte"),            T_("Angry Troglodyte"),         T_("Frenzied"),
-        T_("@Genus@ of Prey"),    T_("Rampant"),               T_("Wild @Genus@"),             T_("Bane of Scribes")},
+    {N_("Puny"),               N_("Troglodyte"),            N_("Angry Troglodyte"),         N_("Frenzied"),
+        N_("@Genus@ of Prey"),    N_("Rampant"),               N_("Wild @Genus@"),             N_("Bane of Scribes")},
 
     // Nemelex Xobeh -- alluding to Tarot and cards.
-    {T_("Unlucky @Genus@"),    T_("Pannier"),               T_("Jester"),                   T_("Fortune-Teller"),
-        T_("Soothsayer"),         T_("Magus"),                 T_("Cardsharp"),                T_("Hand of Fortune")},
+    {N_("Unlucky @Genus@"),    N_("Pannier"),               N_("Jester"),                   N_("Fortune-Teller"),
+        N_("Soothsayer"),         N_("Magus"),                 N_("Cardsharp"),                N_("Hand of Fortune")},
 
     // Elyvilon.
-    {T_("Sinner"),                T_("Practitioner"),       T_("Comforter"),             T_("Caregiver"),
-        T_("Mender"),           T_("Pacifist"),                T_("Purifying @Genus@"),        T_("Bringer of Life")},
+    {N_("Sinner"),                N_("Practitioner"),       N_("Comforter"),             N_("Caregiver"),
+        N_("Mender"),           N_("Pacifist"),                N_("Purifying @Genus@"),        N_("Bringer of Life")},
 
     // Lugonu -- distortion theme.
-    {T_("Pure"),               T_("Abyss-Baptised"),        T_("Unweaver"),                 T_("Distorting @Genus@"),
-        T_("Agent of Entropy"),   T_("Schismatic"),            T_("Envoy of Void"),            T_("Corrupter of Planes")},
+    {N_("Pure"),               N_("Abyss-Baptised"),        N_("Unweaver"),                 N_("Distorting @Genus@"),
+        N_("Agent of Entropy"),   N_("Schismatic"),            N_("Envoy of Void"),            N_("Corrupter of Planes")},
 
     // Beogh -- messiah theme.
-    {T_("Apostate"),           T_("Convert"),               T_("Proselytiser"),             T_("Priest"),
-        T_("Missionary"),         T_("Evangelist"),            T_("Unifier"),                  T_("Messiah")},
+    {N_("Apostate"),           N_("Convert"),               N_("Proselytiser"),             N_("Priest"),
+        N_("Missionary"),         N_("Evangelist"),            N_("Unifier"),                  N_("Messiah")},
 
     // Jiyva -- slime and jelly theme.
-    {T_("Scum"),               T_("Squelcher"),             T_("Ooze"),                     T_("Jelly"),
-        T_("Slime Creature"),     T_("Dissolving @Genus@"),    T_("Blob"),                     T_("Royal Jelly")},
+    {N_("Scum"),               N_("Squelcher"),             N_("Ooze"),                     N_("Jelly"),
+        N_("Slime Creature"),     N_("Dissolving @Genus@"),    N_("Blob"),                     N_("Royal Jelly")},
 
     // Fedhas Madash -- nature theme.
-    {T_("@Walking@ Fertiliser"), T_("Fungal"),              T_("Green @Genus@"),            T_("Cultivator"),
-        T_("Fruitful"),           T_("Photosynthesist"),       T_("Green Death"),              T_("Force of Nature")},
+    {N_("@Walking@ Fertiliser"), N_("Fungal"),              N_("Green @Genus@"),            N_("Cultivator"),
+        N_("Fruitful"),           N_("Photosynthesist"),       N_("Green Death"),              N_("Force of Nature")},
 
     // Cheibriados -- slow theme
-    {T_("Hasty"),              T_("Sluggish @Genus@"),      T_("Deliberate"),               T_("Unhurried"),
-     T_("Contemplative"),         T_("Epochal"),               T_("Timeless"),                 T_("@Adj@ Aeon")},
+    {N_("Hasty"),              N_("Sluggish @Genus@"),      N_("Deliberate"),               N_("Unhurried"),
+     N_("Contemplative"),         N_("Epochal"),               N_("Timeless"),                 N_("@Adj@ Aeon")},
 
     // Ashenzari -- divination theme
-    {T_("Star-crossed"),       T_("Cursed"),                T_("Initiated"),                T_("Seer"),
-        T_("Oracle"),            T_("Illuminatus"),            T_("Prince of Secrets"),        T_("Omniscient")},
+    {N_("Star-crossed"),       N_("Cursed"),                N_("Initiated"),                N_("Seer"),
+        N_("Oracle"),            N_("Illuminatus"),            N_("Prince of Secrets"),        N_("Omniscient")},
 
     // Dithmenos -- darkness theme
-    {T_("Conspicuous"),         T_("Nocturnal"),            T_("Bump in the Night"),        T_("Thespian"),
-        T_("Tenebrous"),          T_("Puppetmaster"),          T_("@Walking@ Midnight"),       T_("Who Hides the Stars")},
+    {N_("Conspicuous"),         N_("Nocturnal"),            N_("Bump in the Night"),        N_("Thespian"),
+        N_("Tenebrous"),          N_("Puppetmaster"),          N_("@Walking@ Midnight"),       N_("Who Hides the Stars")},
 
     // Gozag -- entrepreneur theme
-    {T_("Profligate"),         T_("Pauper"),                T_("Entrepreneur"),             T_("Capitalist"),
-        T_("Rich"),               T_("Opulent"),               T_("Tycoon"),                   T_("Plutocrat")},
+    {N_("Profligate"),         N_("Pauper"),                N_("Entrepreneur"),             N_("Capitalist"),
+        N_("Rich"),               N_("Opulent"),               N_("Tycoon"),                   N_("Plutocrat")},
 
     // Qazlal -- natural disaster theme
-    {T_("Unspoiled"),          T_("@Adj@ Mishap"),          T_("Lightning Rod"),            T_("@Adj@ Disaster"),
-        T_("Eye of the Storm"),   T_("@Adj@ Catastrophe"),     T_("@Adj@ Cataclysm"),          T_("End of an Era")},
+    {N_("Unspoiled"),          N_("@Adj@ Mishap"),          N_("Lightning Rod"),            N_("@Adj@ Disaster"),
+        N_("Eye of the Storm"),   N_("@Adj@ Catastrophe"),     N_("@Adj@ Cataclysm"),          N_("End of an Era")},
 
     // Ru -- enlightenment theme
-    {T_("Sleeper"),           T_("Questioner"),             T_("Initiate"),                 T_("Seeker of Truth"),
-        T_("@Walker@ of the Path"),T_("Lifter of the Veil"),     T_("Transcendent"),     T_("Drop of Water")},
+    {N_("Sleeper"),           N_("Questioner"),             N_("Initiate"),                 N_("Seeker of Truth"),
+        N_("@Walker@ of the Path"),N_("Lifter of the Veil"),     N_("Transcendent"),     N_("Drop of Water")},
 
 #if TAG_MAJOR_VERSION == 34
     // Pakellas -- inventor theme
-    {T_("Reactionary"),       T_("Apprentice"),             T_("Inquisitive"),              T_("Experimenter"),
-        T_("Inventor"),           T_("Pioneer"),               T_("Brilliant"),                T_("Grand Gadgeteer")},
+    {N_("Reactionary"),       N_("Apprentice"),             N_("Inquisitive"),              N_("Experimenter"),
+        N_("Inventor"),           N_("Pioneer"),               N_("Brilliant"),                N_("Grand Gadgeteer")},
 #endif
 
     // Uskayaw -- reveler theme
-    {T_("Prude"),             T_("Wallflower"),             T_("Party-goer"),              T_("Dancer"),
-        T_("Impassioned"),        T_("Rapturous"),             T_("Ecstatic"),                T_("Rhythm of Life and Death")},
+    {N_("Prude"),             N_("Wallflower"),             N_("Party-goer"),              N_("Dancer"),
+        N_("Impassioned"),        N_("Rapturous"),             N_("Ecstatic"),                N_("Rhythm of Life and Death")},
 
     // Hepliaklqana -- memory/ancestry theme
-    {T_("Damnatio Memoriae"),       T_("Hazy"),             T_("@Adj@ @Child@"),              T_("Storyteller"),
-        T_("Brooding"),           T_("Anamnesiscian"),               T_("Grand Scion"),                T_("Unforgettable")},
+    {N_("Damnatio Memoriae"),       N_("Hazy"),             N_("@Adj@ @Child@"),              N_("Storyteller"),
+        N_("Brooding"),           N_("Anamnesiscian"),               N_("Grand Scion"),                N_("Unforgettable")},
 
     // Wu Jian -- animal/chinese martial arts monk theme
-    {T_("Wooden Rat"),          T_("Young Dog"),             T_("Young Crane"),              T_("Young Tiger"),
-        T_("Young Dragon"),     T_("Red Sash"),               T_("Golden Sash"),              T_("Sifu")},
+    {N_("Wooden Rat"),          N_("Young Dog"),             N_("Young Crane"),              N_("Young Tiger"),
+        N_("Young Dragon"),     N_("Red Sash"),               N_("Golden Sash"),              N_("Sifu")},
 
     // Ignis -- fire/candles theme
-    {T_("Extinguished"),          T_("Last Ember"),             T_("Glowing Coal"),              T_("Thurifer"),
-        T_("Hearthfire"),     T_("Furnace"),               T_("Raging Flame"),              T_("Inferno")},
+    {N_("Extinguished"),          N_("Last Ember"),             N_("Glowing Coal"),              N_("Thurifer"),
+        N_("Hearthfire"),     N_("Furnace"),               N_("Raging Flame"),              N_("Inferno")},
 
 };
 COMPILE_CHECK(ARRAYSZ(divine_title) == NUM_GODS);

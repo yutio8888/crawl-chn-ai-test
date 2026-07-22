@@ -73,6 +73,9 @@ printf '%s\n' \
     'exit "$(cat .phase-rc 2>/dev/null || echo 0)"' \
     > "$REPO/.claude/scripts/post-reviewer.sh"
 chmod +x "$REPO/.claude/scripts/post-reviewer.sh"
+printf '%s\n' '#!/bin/bash' 'exit 0' \
+    > "$REPO/.claude/scripts/post-coder.sh"
+chmod +x "$REPO/.claude/scripts/post-coder.sh"
 printf '%s\n' '#!/usr/bin/env python3' 'raise SystemExit(0)' \
     > "$REPO/.claude/scripts/scan_i18n.py"
 chmod +x "$REPO/.claude/scripts/scan_i18n.py"
@@ -202,6 +205,8 @@ assert data["worktree"] == worktree
 assert data["started_at"]
 assert data["completed_at"]
 assert data["failures"] == 0
+assert data["risk_zh_test_runtime"] is False
+assert data["runtime_mode"] == "catch2"
 assert data["run_id"] == os.path.basename(os.path.dirname(path))
 assert [phase["id"] for phase in data["phases"]] == [
     "policy-sync", "source-db-static", "review-static",
@@ -295,6 +300,68 @@ if [[ "$RUN_COUNT" -eq 3 ]]; then
 else
     fail "expected 3 unique run directories, found $RUN_COUNT"
 fi
+
+echo "--- ZH Catch2 risk routing ---"
+mkdir -p "$REPO/crawl-ref/source/catch2-tests"
+printf '%s\n' 'int zh_runtime_test;' \
+    > "$REPO/crawl-ref/source/catch2-tests/test_zh_runtime_risk.cc"
+rm -f "$REPO/.observed-runtime-mode"
+(
+    cd "$REPO"
+    bash .claude/scripts/verify_zh.sh --profile code
+) > "$TMP_ROOT/zh-test-risk.out" 2>&1
+RC=$?
+assert_status "ZH test .cc risk run succeeds" 0 "$RC"
+RUN_DIR=$(latest_run_dir)
+python3 - "$RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as stream:
+    data = json.load(stream)
+assert data["profile"] == "code"
+assert data["risk_cjk_runtime"] is False
+assert data["risk_zh_test_runtime"] is True
+assert data["runtime_mode"] == "catch2"
+assert "zh-runtime-catch2" in [phase["id"] for phase in data["phases"]]
+PY
+assert_status "ZH test .cc metadata selects Catch2 independently of CJK risk" \
+    0 "$?"
+assert_contains "ZH test .cc invokes Catch2 runtime mode" \
+    "catch2" "$REPO/.observed-runtime-mode"
+rm "$REPO/crawl-ref/source/catch2-tests/test_zh_runtime_risk.cc"
+
+for extension in cc h; do
+    ordinary="$REPO/crawl-ref/source/ordinary.$extension"
+    printf '%s\n' 'int ordinary_source;' > "$ordinary"
+    rm -f "$REPO/.observed-runtime-mode"
+    (
+        cd "$REPO"
+        bash .claude/scripts/verify_zh.sh --profile code
+    ) > "$TMP_ROOT/ordinary-$extension.out" 2>&1
+    RC=$?
+    assert_status "ordinary .$extension risk run succeeds" 0 "$RC"
+    RUN_DIR=$(latest_run_dir)
+    python3 - "$RUN_DIR/metadata.json" <<'PY'
+import json
+import sys
+
+with open(sys.argv[1], encoding="utf-8") as stream:
+    data = json.load(stream)
+assert data["profile"] == "code"
+assert data["risk_cjk_runtime"] is False
+assert data["risk_zh_test_runtime"] is False
+assert data["runtime_mode"] == "none"
+assert "zh-runtime-catch2" not in [phase["id"] for phase in data["phases"]]
+PY
+    assert_status "ordinary .$extension does not select ZH Catch2 risk" 0 "$?"
+    if [[ -e "$REPO/.observed-runtime-mode" ]]; then
+        fail "ordinary .$extension unexpectedly invoked runtime"
+    else
+        pass "ordinary .$extension leaves runtime phase absent"
+    fi
+    rm "$ordinary"
+done
 
 python3 - "$SCRIPT_DIR/../data/review_verification_contract_v4.json" <<'PY'
 import json

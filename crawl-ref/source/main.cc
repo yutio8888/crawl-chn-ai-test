@@ -754,9 +754,11 @@ static void _god_greeting_message(bool game_start)
     else if (player_under_penance())
         msg = " penance";
 
-    if (!msg.empty() && !(result = getSpeakString(god_name(you.religion) + msg)).empty())
+    if (!msg.empty()
+        && !(result = getSpeakString(string(_god_name_en(you.religion)) + msg)).empty())
         god_speaks(you.religion, result.c_str());
-    else if (!(result = getSpeakString(god_name(you.religion) + " welcome")).empty())
+    else if (!(result = getSpeakString(string(_god_name_en(you.religion))
+                                       + " welcome")).empty())
         god_speaks(you.religion, result.c_str());
 }
 

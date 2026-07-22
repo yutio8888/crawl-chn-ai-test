@@ -40,6 +40,7 @@
 # include "json-wrapper.h"
 #endif
 #include "kills.h"
+#include "lang-en-guard.h"
 #include "libutil.h"
 #include "menu.h"
 #include "misc.h"
@@ -1142,11 +1143,18 @@ void scorefile_entry::set_base_xlog_fields() const
     if (tiles)
         fields->add_field("tiles", "%d", tiles);
     fields->add_field("name", "%s", name.c_str());
-    fields->add_field("race", "%s", _species_name(race).c_str());
-    fields->add_field("cls",  "%s", _job_name(job));
+    const string race_name = race >= 0 && race < NUM_SPECIES
+                             ? species::name(static_cast<species_type>(race),
+                                             species::SPNAME_PLAIN, true)
+                             : _species_name(race);
+    const char* job_name = job >= 0 && job < NUM_JOBS
+                           ? get_job_name_en(static_cast<job_type>(job))
+                           : _job_name(job);
+    fields->add_field("race", "%s", race_name.c_str());
+    fields->add_field("cls",  "%s", job_name);
     fields->add_field("char", "%s", race_class_name.c_str());
     fields->add_field("xl",    "%d", lvl);
-    fields->add_field("sk",    "%s", skill_name(best_skill));
+    fields->add_field("sk",    "%s", skill_name_en(best_skill));
     fields->add_field("sklev", "%d", best_skill_lvl);
     fields->add_field("title", "%s", title.c_str());
 
@@ -1176,7 +1184,7 @@ void scorefile_entry::set_base_xlog_fields() const
     fields->add_field("sh", "%d", sh);
 
     fields->add_field("god", "%s", god == GOD_NO_GOD ? "" :
-                      god_name(god).c_str());
+                      _god_name_en(god));
 
     if (wiz_mode)
         fields->add_field("wiz", "%d", wiz_mode);
@@ -1719,7 +1727,10 @@ void scorefile_entry::init(time_t dt)
     lvl            = you.experience_level;
     best_skill     = ::best_skill(SK_FIRST_SKILL, SK_LAST_SKILL);
     best_skill_lvl = you.skills[ best_skill ];
-    title          = player_title(false);
+    {
+        ScopedLangEn protocol_language;
+        title = player_title(false);
+    }
 
     // Note all skills at level 27, and also all skills at level >= 15.
     for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
@@ -1728,24 +1739,27 @@ void scorefile_entry::init(time_t dt)
         {
             if (!maxed_skills.empty())
                 maxed_skills += ",";
-            maxed_skills += skill_name(sk);
+            maxed_skills += skill_name_en(sk);
         }
         if (you.skills[sk] >= 15)
         {
             if (!fifteen_skills.empty())
                 fifteen_skills += ",";
-            fifteen_skills += skill_name(sk);
+            fifteen_skills += skill_name_en(sk);
         }
     }
 
-    status_info inf;
-    for (unsigned i = 0; i <= STATUS_LAST_STATUS; ++i)
     {
-        if (fill_status_info(i, inf) && !inf.short_text.empty())
+        ScopedLangEn protocol_language;
+        status_info inf;
+        for (unsigned i = 0; i <= STATUS_LAST_STATUS; ++i)
         {
-            if (!status_effects.empty())
-                status_effects += ",";
-            status_effects += inf.short_text;
+            if (fill_status_info(i, inf) && !inf.short_text.empty())
+            {
+                if (!status_effects.empty())
+                    status_effects += ",";
+                status_effects += inf.short_text;
+            }
         }
     }
 

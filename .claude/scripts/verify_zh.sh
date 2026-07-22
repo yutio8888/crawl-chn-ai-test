@@ -51,6 +51,7 @@ WORKTREE=""
 CHANGED_FILES=""
 RISK_CPP_I18N=0
 RISK_CJK_RUNTIME=0
+RISK_ZH_TEST_RUNTIME=0
 RISK_MESSAGE_OVERLAY=0
 
 usage() {
@@ -234,6 +235,12 @@ if [[ -n "$CHANGED_FILES" ]]; then
                 RISK_CJK_RUNTIME=1
                 ;;
         esac
+        case "$changed_file" in
+            crawl-ref/source/catch2-tests/test_zh_*.cc|\
+            crawl-ref/source/catch2-tests/test_zh_*.h)
+                RISK_ZH_TEST_RUNTIME=1
+                ;;
+        esac
     done <<< "$CHANGED_FILES"
 fi
 
@@ -265,7 +272,8 @@ write_metadata() {
         "$DIFF_HASH" "$DIFF_SHA256" "$GLOSSARY_SHA256" "$WORKTREE" \
         "$STARTED_AT" "$completed_at" "$failures" "$RUN_ID" "$SCOPE" \
         "$ROUTING_SHA256" "$CONTROL_PLANE_SHA256" "$VERIFICATION_CONTRACT" \
-        "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_MESSAGE_OVERLAY" \
+        "$RISK_CPP_I18N" "$RISK_CJK_RUNTIME" "$RISK_ZH_TEST_RUNTIME" \
+        "$RISK_MESSAGE_OVERLAY" \
         "$EXPLICIT_FULL" "$PHASES_FILE" "$REPORT_FILE" <<'PY'
 import json
 import os
@@ -275,8 +283,8 @@ import sys
     path, status, profile, base, head, diff_hash, diff_sha256,
     glossary_sha256, worktree, started_at, completed_at, failures, run_id,
     scope, routing_sha256, control_plane_sha256, verification_contract,
-    risk_cpp_i18n, risk_cjk_runtime, risk_message_overlay, explicit_full,
-    phases_path, report_path,
+    risk_cpp_i18n, risk_cjk_runtime, risk_zh_test_runtime,
+    risk_message_overlay, explicit_full, phases_path, report_path,
 ) = sys.argv[1:]
 phases = []
 if os.path.isfile(phases_path):
@@ -317,9 +325,12 @@ payload = {
     "control_plane_sha256": control_plane_sha256 or None,
     "risk_cpp_i18n": risk_cpp_i18n == "1",
     "risk_cjk_runtime": risk_cjk_runtime == "1",
+    "risk_zh_test_runtime": risk_zh_test_runtime == "1",
     "risk_message_overlay": risk_message_overlay == "1",
     "runtime_mode": ("full" if explicit_full == "1" else
-                     "catch2" if profile in ("review", "ci") or risk_cjk_runtime == "1"
+                     "catch2" if profile != "ci"
+                     and (profile == "review" or risk_cjk_runtime == "1"
+                          or risk_zh_test_runtime == "1")
                      else "none"),
     "phases": phases,
     "artifacts": artifacts,
@@ -415,7 +426,7 @@ run_phase() {
     echo "=== verify_zh.sh --profile $PROFILE @ $STARTED_AT ==="
     echo "Run ID: $RUN_ID"
     echo "Scope: $SCOPE"
-    echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME message_overlay=$RISK_MESSAGE_OVERLAY explicit_full=$EXPLICIT_FULL"
+    echo "Risk: cpp_i18n=$RISK_CPP_I18N cjk_runtime=$RISK_CJK_RUNTIME zh_test_runtime=$RISK_ZH_TEST_RUNTIME message_overlay=$RISK_MESSAGE_OVERLAY explicit_full=$EXPLICIT_FULL"
     if [[ -n "$BASE_SHA" ]]; then
         echo "Base: $BASE_SHA"
         echo "Head: $HEAD_SHA"
@@ -525,7 +536,7 @@ run_phase() {
     if [[ "$EXPLICIT_FULL" -eq 1 ]]; then
         run_phase "zh-runtime-full" 1 "Risk gate: full ZH runtime" run_runtime full \
             || RESULTS=$((RESULTS + 1))
-    elif [[ "$PROFILE" != ci && ( "$RISK_CJK_RUNTIME" -eq 1 || "$PROFILE" == review ) ]]; then
+    elif [[ "$PROFILE" != ci && ( "$RISK_CJK_RUNTIME" -eq 1 || "$RISK_ZH_TEST_RUNTIME" -eq 1 || "$PROFILE" == review ) ]]; then
         # post_zh_runtime.sh calls its build-and-run Catch2 path "catch2";
         # its "fast" mode only re-aggregates an existing evidence directory.
         # ci profile is truly static — skip runtime entirely.

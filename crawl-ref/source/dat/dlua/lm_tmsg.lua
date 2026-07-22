@@ -7,6 +7,9 @@ TimedMessaging = { CLASS = "TimedMessaging" }
 TimedMessaging.__index = TimedMessaging
 
 local function translate_key(s)
+    if type(s) ~= 'string' then
+        return s
+    end
     local result = crawl.t_(s)
     if result == s then
         -- Lookup failed; try without trailing whitespace
@@ -116,7 +119,7 @@ function TimedMessaging:emit_message(cm, msg)
       return
     end
 
-    crawl.mpr(util.expand_entity(self.entity, msg), self:channel())
+    crawl.mpr(util.expand_entity(self.entity, translate_key(msg)), self:channel())
   end
 end
 
@@ -178,7 +181,7 @@ function TimedMessaging:say_message(cm, dur)
   if self.range_msg_fmt then
     self:proc_ranges(self.ranges, dur,
                      function (chk)
-                        local msg = self.range_msg_fmt
+                        local msg = translate_key(self.range_msg_fmt)
                           :gsub("{prefix}", translate_key(chk[2]))
                           :gsub("{verb}", translate_key(self.verb))
                           :gsub("{noisemaker}", translate_key(self.noisemaker))

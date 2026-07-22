@@ -285,7 +285,7 @@ void leaving_level_now(dungeon_feature_type stair_used)
     {
         if (you.depth == 27)
             _complete_zig();
-        mark_milestone("zig.exit", make_stringf(T_("left a ziggurat at level %d."),
+        mark_milestone("zig.exit", make_stringf("left a ziggurat at level %d.",
                        you.depth));
     }
 

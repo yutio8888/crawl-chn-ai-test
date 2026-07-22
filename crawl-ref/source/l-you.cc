@@ -273,7 +273,7 @@ LUAFN(you_is_useless_skill)
  * @function best_skill
  */
 LUARET1(you_best_skill, string,
-        skill_name(best_skill(SK_FIRST_SKILL, SK_LAST_SKILL)))
+        skill_name_en(best_skill(SK_FIRST_SKILL, SK_LAST_SKILL)))
 
 /*** Unarmed damage rating.
  * @treturn number The damage rating for unarmed combat.
@@ -832,7 +832,7 @@ static int l_you_spells(lua_State *ls)
         if (spell == SPELL_NO_SPELL)
             continue;
 
-        lua_pushstring(ls, spell_title(spell));
+        lua_pushstring(ls, spell_english_name(spell));
         lua_rawseti(ls, -2, ++index);
     }
     return 1;
@@ -884,7 +884,7 @@ static int l_you_spell_table(lua_State *ls)
             continue;
 
         lua_pushstring(ls, buf);
-        lua_pushstring(ls, spell_title(spell));
+        lua_pushstring(ls, spell_english_name(spell));
         lua_rawset(ls, -3);
     }
     return 1;
@@ -903,7 +903,7 @@ static int l_you_mem_spells(lua_State *ls)
 
     for (size_t i = 0; i < mem_spells.size(); ++i)
     {
-        lua_pushstring(ls, spell_title(mem_spells[i]));
+        lua_pushstring(ls, spell_english_name(mem_spells[i]));
         lua_rawseti(ls, -2, i + 1);
     }
     return 1;
@@ -960,7 +960,8 @@ LUAFN(you_get_ability_info)
             continue;
 
         lua_newtable(ls);
-        lua_pushstring(ls, ability_name(tal.which).c_str());
+        const string canonical_name = ability_name(tal.which, true);
+        lua_pushstring(ls, canonical_name.c_str());
         lua_rawseti(ls, -2, 1);
         lua_pushboolean(ls, check_ability_possible(tal.which, true));
         lua_rawseti(ls, -2, 2);
@@ -1897,7 +1898,7 @@ LUAFN(you_init)
     setup_game(ng);
     you.save->unlink();
     you.save = nullptr;
-    PLUARET(string, skill_name(item_attack_skill(OBJ_WEAPONS, ng.weapon)));
+    PLUARET(string, skill_name_en(item_attack_skill(OBJ_WEAPONS, ng.weapon)));
 }
 
 #ifdef WIZARD
