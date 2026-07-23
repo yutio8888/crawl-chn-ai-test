@@ -268,6 +268,50 @@ def _validate_member_names(
             )
 
 
+def _validate_zh_member_set(
+    archive_name: str,
+    members: list[tuple[str, bool]],
+    rule: ArtifactRule,
+) -> None:
+    expected_files = {
+        contract.member
+        for contract in rule.content_sources
+        if any(
+            contract.source.startswith(f"{tree}/")
+            for tree in ZH_DATA_TREES
+        )
+    }
+    prefixes = tuple(
+        f"{rule.data_root}/"
+        f"{Path(tree).relative_to('crawl-ref/source/dat').as_posix()}"
+        for tree in ZH_DATA_TREES
+    )
+    expected_directories: set[str] = set()
+    for filename in expected_files:
+        parent = PurePosixPath(filename).parent
+        while any(
+            str(parent) == prefix or str(parent).startswith(f"{prefix}/")
+            for prefix in prefixes
+        ):
+            expected_directories.add(str(parent))
+            parent = parent.parent
+
+    for name, is_directory in members:
+        canonical = name.rstrip("/")
+        if not any(
+            canonical == prefix or canonical.startswith(f"{prefix}/")
+            for prefix in prefixes
+        ):
+            continue
+        expected = expected_directories if is_directory else expected_files
+        if canonical not in expected:
+            kind = "directory" if is_directory else "file"
+            raise ReleaseArtifactError(
+                f"{archive_name}: unexpected ZH archive {kind}: "
+                f"{canonical!r}"
+            )
+
+
 def _validate_zip(path: Path, rule: ArtifactRule, source_root: Path) -> None:
     try:
         with zipfile.ZipFile(path) as archive:
@@ -276,6 +320,11 @@ def _validate_zip(path: Path, rule: ArtifactRule, source_root: Path) -> None:
                 [info.filename for info in infos],
                 root=rule.root,
                 archive_name=path.name,
+            )
+            _validate_zh_member_set(
+                path.name,
+                [(info.filename, info.is_dir()) for info in infos],
+                rule,
             )
             permissions: dict[str, int] = {}
             for info in infos:
@@ -322,6 +371,11 @@ def _validate_tar(path: Path, rule: ArtifactRule, source_root: Path) -> None:
                 [member.name for member in members],
                 root=rule.root,
                 archive_name=path.name,
+            )
+            _validate_zh_member_set(
+                path.name,
+                [(member.name, member.isdir()) for member in members],
+                rule,
             )
             sizes: dict[str, int] = {}
             permissions: dict[str, int] = {}

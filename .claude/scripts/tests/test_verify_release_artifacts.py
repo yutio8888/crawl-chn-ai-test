@@ -273,6 +273,32 @@ class ReleaseArtifactTest(unittest.TestCase):
         linked.symlink_to(target)
         self.assert_rejected("symbolic link in required ZH data tree")
 
+    def test_archives_reject_unknown_zh_files_and_directories(self) -> None:
+        for rule in self.rules:
+            payloads = self._payloads(rule)
+            unknown = f"{rule.data_root}/database/zh/unexpected.txt"
+            if rule.archive_type == "zip":
+                self._write_zip(
+                    rule,
+                    payloads,
+                    extra=[(unknown, b"unexpected\n", stat.S_IFREG | 0o644)],
+                )
+            else:
+                info = tarfile.TarInfo(unknown)
+                self._write_tar(rule, payloads, extra=[info])
+            with self.subTest(archive=rule.filename, kind="file"):
+                self.assert_rejected("unexpected ZH archive file")
+            self._rewrite(rule, payloads)
+
+        zip_rule = self.rules[0]
+        unknown_directory = f"{zip_rule.data_root}/database/zh/unexpected/"
+        self._write_zip(
+            zip_rule,
+            self._payloads(zip_rule),
+            extra=[(unknown_directory, b"", stat.S_IFDIR | 0o755)],
+        )
+        self.assert_rejected("unexpected ZH archive directory")
+
     def test_source_inputs_fail_closed_when_missing_empty_or_symlinked(self) -> None:
         contract = next(
             item for item in self.rules[0].content_sources
