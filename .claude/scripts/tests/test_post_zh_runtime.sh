@@ -188,6 +188,49 @@ else
     pass "Bot checker rejects a missing manifest case"
 fi
 
+# L2 has a separate manifest. Keep its expected order aligned with the Lua
+# producer, where portal_late_translation is emitted before item_trigger_identity.
+L2_LOG="$TMP_ROOT/l2-manifest.log"
+cat > "$L2_LOG" <<'L2LOG'
+FRAME_MARKER: setup | language=zh 你攻击
+FRAME_MARKER: lua_identity | Minotaur Fighter minotaur
+FRAME_MARKER: display_assets | 牛头人 战士 特洛格 蜘蛛网
+FRAME_MARKER: arrival_vault | heliophobic_arrival_battle_scene placed
+FRAME_MARKER: trove_quantity | scroll acquirement 2 获取卷轴
+FRAME_MARKER: trove_plus | armour golden dragon scales +4 金龙鳞甲
+FRAME_MARKER: trove_rune | rune of Zot slimy rune of Zot 黏液 佐特符文
+FRAME_MARKER: trove_horn | horn of Geryon 格律翁之角
+FRAME_MARKER: trove_ego | weapon war axe flaming +2 烈焰之战斧
+FRAME_MARKER: trove_jewellery | jewellery ring of protection +3 防护戒指
+FRAME_MARKER: trove_demon_weapon | demon whip 恶魔武器
+FRAME_MARKER: trove_demon_alternative | demon blade
+FRAME_MARKER: portal_late_translation | You hear coins being counted. 你听到了数钱的声音。
+FRAME_MARKER: item_trigger_identity | scroll of blinking legacy_zh=
+FRAME_MARKER: status_boundary | immotile=true mighty=true
+FRAME_MARKER: monster_boundary | orc priest
+FRAME_MARKER: zot_boundary | orb of fire orb of winter orb of entropy 佐特领域
+FRAME_MARKER: level_up | 你已达到20级
+FRAME_MARKER: godspeak_trog | Trog bestows a gift
+FRAME_MARKER: godspeak_xom | Xom thinks this is hilarious
+FRAME_MARKER: end | ok
+L2LOG
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$L2_LOG" --bot-manifest issue68-l2 >/dev/null; then
+    pass "Bot checker accepts the Lua producer's exact L2 marker order"
+else
+    fail "Bot checker rejected the Lua producer's exact L2 marker order"
+fi
+
+sed '/portal_late_translation/{h;d}; /item_trigger_identity/{p;x}' \
+    "$L2_LOG" > "$L2_LOG.mutated"
+if python3 "$ZH_RUNTIME_CHECK_SCRIPT" --mode bot \
+    --bot-stderr "$L2_LOG.mutated" --bot-manifest issue68-l2 \
+    >/dev/null 2>&1; then
+    fail "Bot checker accepted reversed portal/item L2 markers"
+else
+    pass "Bot checker rejects reversed portal/item L2 markers"
+fi
+
 if grep -Fq -- '--mode bot --bot-stderr "$STDERR_L3"' "$POST_RUNTIME"; then
     pass "Bot path invokes the exact manifest checker"
 else
