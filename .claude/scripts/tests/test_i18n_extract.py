@@ -97,6 +97,25 @@ class DeferredMarkerTests(unittest.TestCase):
             ("joinedstring", None),
         ], keys)
 
+    def test_splice_identity_fast_path_preserves_offsets(self):
+        for source in ("", 'auto value = N_("plain");\n'):
+            with self.subTest(source=source):
+                spliced, offsets = EXTRACT._splice_cpp_lines(source)
+                self.assertEqual(source, spliced)
+                self.assertEqual(list(range(len(source))), list(offsets))
+
+    def test_spliced_call_keeps_original_offset_and_line(self):
+        source = 'auto x = N_\\\n("joined");\n'
+        self.assertEqual(
+            [("joined", None, source.index("N_"))],
+            list(EXTRACT._extract_cpp_calls(source)))
+        with tempfile.TemporaryDirectory() as td:
+            path = Path(td) / "sample.cc"
+            path.write_text(source, encoding="utf-8")
+            findings = list(EXTRACT.extract_keys_from_file(str(path)))
+        self.assertEqual(1, findings[0][3])
+        self.assertEqual('auto x = N_\\', findings[0][4])
+
     def test_nonliteral_deferred_marker_calls_fail_closed(self):
         for filename, prefix in (
                 ("sample.cc", ""),
