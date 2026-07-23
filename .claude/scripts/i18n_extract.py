@@ -116,6 +116,14 @@ def _splice_cpp_lines(content: str):
     and ordinary strings are recognized. Raw-string bodies retain their source
     spelling, as required by the later raw-string phase adjustment.
     """
+    # Almost every production source file has no phase-2 splice.  Avoid an
+    # otherwise full character-by-character copy and offset-list allocation in
+    # that common case.  ``range`` preserves the indexing contract used by the
+    # extractor while representing the identity offset map without allocating
+    # one Python integer per source character.
+    if "\\\n" not in content and "\\\r\n" not in content:
+        return content, range(len(content))
+
     out, offsets = [], []
     i, n = 0, len(content)
     state = "normal"

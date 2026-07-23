@@ -2,9 +2,11 @@
 # run_all.sh — Auto-discover and run all test_*.py and test_*.sh scripts.
 #
 # Discovers tests from .claude/scripts/tests/ top-level (maxdepth=1).
-# Runs .py with python3, .sh with bash.
+# Runs .py with python3, .sh with bash, up to four tests concurrently.
+# Set ZH_TOOLING_TEST_JOBS to override the concurrency limit.
 # Records both discovered and executed arrays; requires set equality.
 # Continues after each individual test failure.
+# Captures each test independently and replays output in discovery order.
 # Exits 1 if ANY test failed.
 
 set -euo pipefail
@@ -14,6 +16,23 @@ PASS=0
 FAIL=0
 DISCOVERED=()
 EXECUTED=()
+MAX_JOBS="${ZH_TOOLING_TEST_JOBS:-4}"
+ACTIVE=0
+TEST_LOG_DIR=$(mktemp -d)
+
+cleanup() {
+    local pid
+    while IFS= read -r pid; do
+        [[ -n "$pid" ]] && kill "$pid" 2>/dev/null || true
+    done < <(jobs -pr)
+    rm -rf -- "$TEST_LOG_DIR"
+}
+trap cleanup EXIT
+
+if [[ ! "$MAX_JOBS" =~ ^[1-9][0-9]*$ ]]; then
+    echo "ZH_TOOLING_TEST_JOBS must be a positive integer" >&2
+    exit 2
+fi
 
 echo "=== .claude/scripts Test Suite ==="
 echo ""
@@ -34,19 +53,63 @@ for t in "${DISCOVERED[@]}"; do
 done
 echo ""
 
-# Run each test
-for test_script in "${DISCOVERED[@]}"; do
-    test_name="$(basename "$test_script")"
-    echo ">>> $test_name"
+# Run each test in a worker. Workers always exit successfully after recording
+# the real status so one failure cannot prevent the remaining tests from
+# starting or being collected.
+run_test_worker() {
+    local index="$1" test_script="$2"
+    local log_file="$TEST_LOG_DIR/$index.log"
+    local status_file="$TEST_LOG_DIR/$index.status"
+    local rc
     set +e
     if [[ "$test_script" == *.py ]]; then
-        python3 "$test_script"
+        python3 "$test_script" >"$log_file" 2>&1
         rc=$?
     else
-        bash "$test_script"
+        bash "$test_script" >"$log_file" 2>&1
         rc=$?
     fi
-    set -e
+    printf '%s\n' "$rc" >"$status_file"
+    return 0
+}
+
+requires_foreground() {
+    # An asynchronous Bash job inherits SIGINT as ignored.  This test
+    # deliberately sends SIGINT to its parent to verify signal-style cleanup,
+    # so it must retain foreground signal semantics.
+    [[ "$(basename "$1")" == "test_post_coder_cleanup.sh" ]]
+}
+
+for index in "${!DISCOVERED[@]}"; do
+    if requires_foreground "${DISCOVERED[$index]}"; then
+        continue
+    fi
+    (run_test_worker "$index" "${DISCOVERED[$index]}") &
+    ACTIVE=$((ACTIVE + 1))
+    if [[ "$ACTIVE" -ge "$MAX_JOBS" ]]; then
+        wait -n
+        ACTIVE=$((ACTIVE - 1))
+    fi
+done
+while [[ "$ACTIVE" -gt 0 ]]; do
+    wait -n
+    ACTIVE=$((ACTIVE - 1))
+done
+
+# Run signal-sensitive tests in the foreground after parallel workers finish.
+for index in "${!DISCOVERED[@]}"; do
+    if requires_foreground "${DISCOVERED[$index]}"; then
+        (run_test_worker "$index" "${DISCOVERED[$index]}")
+    fi
+done
+
+# Replay output and aggregate results deterministically.
+for index in "${!DISCOVERED[@]}"; do
+    test_script="${DISCOVERED[$index]}"
+    test_name="$(basename "$test_script")"
+    echo ">>> $test_name"
+    cat "$TEST_LOG_DIR/$index.log"
+    rc=$(<"$TEST_LOG_DIR/$index.status")
     EXECUTED+=("$test_script")
     if [ "$rc" -eq 0 ]; then
         PASS=$((PASS + 1))

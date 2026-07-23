@@ -10,6 +10,7 @@ import sys
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
 from pathlib import Path
 
 
@@ -32,6 +33,29 @@ class LifetimeScannerTests(unittest.TestCase):
             with self.subTest(path=path, error=error):
                 with self.assertRaisesRegex(ValueError, "unrecognized"):
                     MODULE._production_lexical_prerequisite(path, error)
+
+    def test_parenthesis_index_matches_reference_scanner(self):
+        masked = ") call(one, nested(two)) + tail(three)"
+        depth_index = MODULE._parenthesis_depth_index(masked)
+        for position in range(len(masked) + 1):
+            with self.subTest(position=position):
+                self.assertEqual(
+                    MODULE._inside_parentheses(masked, position),
+                    MODULE._inside_parentheses(masked, position, depth_index))
+
+    def test_preprocessed_source_is_reused_without_reopening(self):
+        source = textwrap.dedent(r'''
+            const char *T_(const char *);
+            void f() { static const char *value = T_("cached"); }
+        ''')
+        masked, error = MODULE._lex_cpp(source)
+        self.assertIsNone(error)
+        index = MODULE._build_lexical_index([])
+        with mock.patch("builtins.open", side_effect=AssertionError("reopened")):
+            findings = MODULE._scan_large_lexical(
+                "sample.cc", index, validate=False, source=source,
+                masked=masked)
+        self.assertEqual(["LIFE001"], [item["rule"] for item in findings])
 
     def run_scan(self, files: dict[str, str], *args: str):
         with tempfile.TemporaryDirectory() as temp:

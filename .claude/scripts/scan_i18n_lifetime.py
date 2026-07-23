@@ -20,6 +20,7 @@ other tree-sitter scanners.
 from __future__ import annotations
 
 import argparse
+import bisect
 import hashlib
 import json
 import os
@@ -1357,7 +1358,30 @@ def _initializer_end(masked: str, opening: int) -> int:
     return len(masked)
 
 
-def _inside_parentheses(masked: str, position: int) -> bool:
+def _parenthesis_depth_index(masked: str) -> Tuple[List[int], List[int]]:
+    """Return sparse positions and resulting depths for parentheses."""
+    positions: List[int] = []
+    depths: List[int] = []
+    depth = 0
+    for position, character in enumerate(masked):
+        if character == "(":
+            depth += 1
+        elif character == ")" and depth:
+            depth -= 1
+        else:
+            continue
+        positions.append(position)
+        depths.append(depth)
+    return positions, depths
+
+
+def _inside_parentheses(masked: str, position: int,
+                        depth_index: Optional[Tuple[List[int], List[int]]] = None
+                        ) -> bool:
+    if depth_index is not None:
+        positions, depths = depth_index
+        event = bisect.bisect_left(positions, position) - 1
+        return event >= 0 and depths[event] > 0
     depth = 0
     for character in masked[:position]:
         if character == "(": depth += 1
@@ -1451,13 +1475,20 @@ def _lexical_source_fact(source: str, masked: str, absolute: int) -> SourceFact:
 
 
 def _scan_large_lexical(path: str, index: Index,
-                        validate: bool = True) -> List[dict]:
-    source = open(path, "r", encoding="utf-8", errors="replace").read()
-    masked, lexical_error = _lex_cpp(source)
+                        validate: bool = True,
+                        source: Optional[str] = None,
+                        masked: Optional[str] = None) -> List[dict]:
+    if source is None:
+        source = open(path, "r", encoding="utf-8", errors="replace").read()
+    if masked is None:
+        masked, lexical_error = _lex_cpp(source)
+    else:
+        lexical_error = None
     if lexical_error and validate:
         raise ValueError(f"lexical integrity error in target {path}: {lexical_error}")
     findings = []
     function_ranges = _function_ranges(masked)
+    parenthesis_depths = _parenthesis_depth_index(masked)
     fake = ParsedFile(os.path.abspath(path), source.encode(), None)
     aggregate_ranges: List[Tuple[int, int, Set[str], Set[str]]] = []
     for aggregate in re.finditer(
@@ -1493,7 +1524,8 @@ def _scan_large_lexical(path: str, index: Index,
         r"(?:const\s+)?(?P<name>[A-Za-z_]\w*)\s*"
         r"(?:\[[^\]]*\]\s*)*(?P<assign>=|\{)", re.S)
     for declaration in raw_re.finditer(masked):
-        if _inside_parentheses(masked, declaration.start("assign")):
+        if _inside_parentheses(masked, declaration.start("assign"),
+                               parenthesis_depths):
             continue
         end = _initializer_end(masked, declaration.start("assign"))
         initializer = _without_deferred_lambdas(
@@ -1525,7 +1557,8 @@ def _scan_large_lexical(path: str, index: Index,
         r"(?P<name>[A-Za-z_]\w*)\s*(?:\[[^\]]*\]\s*)*"
         r"(?P<assign>=|\{)", re.S)
     for declaration in owning_re.finditer(masked):
-        if _inside_parentheses(masked, declaration.start("assign")):
+        if _inside_parentheses(masked, declaration.start("assign"),
+                               parenthesis_depths):
             continue
         local = _inside_lexical_function(declaration.start(), function_ranges)
         if local and not declaration.group("static"):
@@ -1593,7 +1626,8 @@ def _scan_large_lexical(path: str, index: Index,
         r"(?P<static>\bstatic\s+)?\bauto\s+[A-Za-z_]\w*\s*"
         r"(?P<assign>=|\{)")
     for declaration in auto_re.finditer(masked):
-        if _inside_parentheses(masked, declaration.start("assign")):
+        if _inside_parentheses(masked, declaration.start("assign"),
+                               parenthesis_depths):
             continue
         local = _inside_lexical_function(declaration.start(), function_ranges)
         if local and not declaration.group("static"):
@@ -1866,24 +1900,29 @@ def main(argv: Optional[Sequence[str]] = None) -> int:
         production_root = (os.path.basename(source_arg) == "source"
                            and os.path.basename(os.path.dirname(source_arg))
                            == "crawl-ref")
-        validate_lexical = explicit_subset or not production_root
         # Use one scanner engine for every invocation size.  The previous
         # >200-file switch made a finding depend on whether the same file was
         # scanned alone or as part of the source root.
         index = _build_lexical_index(index_paths)
         errors, index_trees, parsed_targets = [], [], {}
         for target in targets:
+            with open(target, "r", encoding="utf-8",
+                      errors="strict" if production_root else "replace") \
+                    as source_stream:
+                source_text = source_stream.read()
+            masked, lexical_error = _lex_cpp(source_text)
             if production_root:
-                with open(target, "r", encoding="utf-8",
-                          errors="strict") as source_stream:
-                    source_text = source_stream.read()
-                _masked, lexical_error = _lex_cpp(source_text)
-                if lexical_error:
-                    prerequisite = _production_lexical_prerequisite(
-                        os.path.relpath(target, source_arg), lexical_error)
+                prerequisite = _production_lexical_prerequisite(
+                    os.path.relpath(target, source_arg), lexical_error)
+                if prerequisite:
                     lexical_prerequisites.append(prerequisite)
+            elif lexical_error:
+                raise ValueError(
+                    f"lexical integrity error in target {target}: "
+                    f"{lexical_error}")
             pre_findings.extend(_scan_large_lexical(
-                target, index, validate=validate_lexical))
+                target, index, validate=False, source=source_text,
+                masked=masked))
         language = None
     except Exception as exc:
         print(f"ERROR: cannot initialize/build tree-sitter index: {exc}", file=sys.stderr)
