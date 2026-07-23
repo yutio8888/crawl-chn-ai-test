@@ -33,7 +33,9 @@ chomp;
 
 my ($major, $tag, $pretyp) = ($2, $1, $3);
 
-my $rel = defined($pretyp) ? $pretyp le "b" ? "ALPHA" : "BETA" : "FINAL";
+my $rel = !defined($pretyp) || $pretyp =~ /^zh[1-9][0-9]*$/
+    ? "FINAL"
+    : $pretyp le "b" ? "ALPHA" : "BETA";
 
 my $prefix = "CRAWL";
 

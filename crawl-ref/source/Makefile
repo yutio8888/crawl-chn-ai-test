@@ -1660,6 +1660,7 @@ ifdef TILES
 ifneq (,$(INSTALL_FONTS))
 	$(COPY) $(INSTALL_FONTS) $(datadir_fp)/dat/tiles/
 endif
+	$(COPY) ../../docs/fonts/LICENSE-Maple-Mono.txt $(datadir_fp)/docs/license/
 endif
 # copy init.txt for Android platform
 ifdef ANDROID

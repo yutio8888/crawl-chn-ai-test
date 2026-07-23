@@ -18,6 +18,8 @@
 - 当前检出的具体版本以 Git 为准；不要在文档中写死默认分支的 commit 或
   `git describe` 输出。可用 `git merge-base --is-ancestor 0.34.1 HEAD` 确认某个候选
   仍建立在该基线上。
+- 正式版标签、平台范围、自动产物门禁和人工公开条件见
+  [docs/release-workflow.md](docs/release-workflow.md)。
 - `crawl-ref/` 中未被本项目修改的上游文档保留 0.34.1 发布时的历史版本号、旧标签和
   `trunk` 语境；这些文字不是本中文分支的支持矩阵或开发状态。
 - 标为“历史记录”“阶段快照”或“审查输入”的文档只保存当时证据。当前问题和进度以

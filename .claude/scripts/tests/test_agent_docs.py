@@ -325,6 +325,12 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("package-windows-tiles", workflow)
         self.assertIn("name: windows-tiles", workflow)
         self.assertIn("stone_soup-*-tiles-win32.zip", workflow)
+        self.assertIn("!crawl-ref/source/mac-app-zips/latest.zip", workflow)
+        self.assertIn("release_draft:", workflow)
+        self.assertIn("Create verified draft release", workflow)
+        self.assertIn("verify_release_artifacts.py", workflow)
+        self.assertIn("--draft --verify-tag", workflow)
+        self.assertIn("Refusing to overwrite a published release", workflow)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()

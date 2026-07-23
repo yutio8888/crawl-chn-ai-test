@@ -12,6 +12,10 @@ worktrees to mutate shared caches.
 | `.worktrees/mingw-tiles` | Windows tiles | `crawl-ref/source/util/build-tiles.sh` |
 | `.worktrees/android-tiles` | Android APK | `crawl-ref/source/util/build-android.sh` |
 
+Formal version tags, closed-world artifact validation, checksums, draft
+Releases, and the manual publication gate are defined in
+[release-workflow.md](release-workflow.md).
+
 Use at most eight parallel build jobs. Agents compiling while other work is in
 progress should use four jobs and avoid concurrent compile storms.
 
