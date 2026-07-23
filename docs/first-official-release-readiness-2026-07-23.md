@@ -11,9 +11,11 @@
 
 **当前代码与汉化资产已经达到“正式版候选”质量，但项目今天还不宜直接发布首个正式版。**
 
-> 发布决策更新（2026-07-24）：发布负责人已冻结首版为 `0.34.1-zh1`，仅包含
-> Windows Tiles。macOS Tiles 因缺少可用验收环境，只保留 CI 编译产物，不生成正式
-> Release 资产；Linux 只保留 CI 编译验证，Android 继续延期。因此下文关于“评估时尚未
+> 发布决策更新（2026-07-24）：发布负责人已冻结首版平台范围为仅 Windows Tiles。
+> `0.34.1-zh1` 标签 CI 因 checkout 丢失 annotated tag 身份而失败，且未创建 Release；
+> 该标签保持不动，修复候选递增为 `0.34.1-zh2`。macOS Tiles 因缺少可用验收环境，只保留
+> CI 编译产物，不生成正式 Release 资产；Linux 只保留 CI 编译验证，Android 继续延期。
+> 因此下文关于“评估时尚未
 > 冻结版本/范围”的内容保留为原始审计记录，不再是当前候选的未决事项。
 >
 > 实施进度：`codex/first-release-readiness` 已开始补齐
@@ -153,7 +155,8 @@ GitHub 在评估时有 5 个开放 issue，全部没有 milestone：
 “允许延期”或“必须完成”。
 
 后续创建的 [Issue #20](https://github.com/yutio8888/crawl-chn-ai-test/issues/20)
-已经记录正式范围、`0.34.1-zh1` 和人工门禁。版本与平台范围现已确认，本 blocker 中的
+已经记录正式范围、当前修复候选 `0.34.1-zh2` 和人工门禁。版本与平台范围现已确认，本
+blocker 中的
 范围决策部分已解除；标签、人工验收和公开批准仍按发布工作流跟踪。
 
 ### Blocker 2：没有正式版本身份和永久发行资产
@@ -225,6 +228,6 @@ release scope 和 known issues。
 
 ## 推荐决策
 
-- **当前：先完成 `0.34.1-zh1` 的候选合并、标签 CI 和 Windows 人工验收。**
+- **当前：先完成 `0.34.1-zh2` 的候选合并、标签 CI 和 Windows 人工验收。**
 - **Windows 首版：完成上述最小清单后可转 Go；目前没有发现需要大规模返工的代码缺陷。**
-- **macOS/Linux/Android：本版延期，不阻塞 `0.34.1-zh1`。**
+- **macOS/Linux/Android：本版延期，不阻塞 `0.34.1-zh2`。**

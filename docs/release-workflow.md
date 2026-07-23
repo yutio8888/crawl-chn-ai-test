@@ -10,7 +10,8 @@
 
 - 上游内容基线：`0.34.1`。
 - 下游正式版标签：`0.34.1-zhN`，其中 `N` 从 1 开始单调递增。
-- 首版候选标签：`0.34.1-zh1`。
+- 首版修复候选标签：`0.34.1-zh2`。`0.34.1-zh1` 已推送，但标签 CI 因 checkout
+  丢失 annotated tag 身份而失败，且未创建 Release；该失败标签保持不动，不得复用。
 - 首发平台：仅 Windows Tiles。
 - macOS Tiles 因缺少可用验收环境，不作为首版正式资产，但继续由 CI 构建并保存临时
   Actions artifact。Linux 仍保留日常 CI 编译验证，Android 暂缓；只有平台发布资产及
@@ -50,8 +51,8 @@ alpha/beta/rc 预发布版。标签必须指向已经提交且通过项目审查
 4. 经发布负责人确认版本号后，创建 annotated tag：
 
    ```bash
-   git tag -a 0.34.1-zh1 -m "DCSS 中文版 0.34.1-zh1"
-   git push origin 0.34.1-zh1
+   git tag -a 0.34.1-zh2 -m "DCSS 中文版 0.34.1-zh2"
+   git push origin 0.34.1-zh2
    ```
 
 标签推送会启动自动门禁。不要在候选提交、审查记录或版本名尚未确认时执行这一步。

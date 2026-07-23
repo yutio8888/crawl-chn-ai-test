@@ -92,9 +92,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build catch2-tests and run [zh-translation] + [message-overlay]
         run: bash .claude/scripts/post_zh_runtime.sh catch2
         env:
@@ -131,9 +129,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build and run full ZH runtime (L1+L2+L3)
         run: bash .claude/scripts/post_zh_runtime.sh full
         env:
@@ -169,9 +165,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build and run help-system runtime tests
         run: bash .claude/scripts/post_zh_runtime.sh help-full
         env:
@@ -291,9 +285,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Linux console
         run: make -j4
         working-directory: crawl-ref/source
@@ -318,9 +310,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install pyyaml
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build macOS tiles app
         run: make -j4 TILES=y mac-app-tiles
         working-directory: crawl-ref/source
@@ -363,9 +353,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Build Windows tiles package
         run: make CROSSHOST=x86_64-w64-mingw32 package-windows-tiles -j4
         working-directory: crawl-ref/source
@@ -421,9 +409,7 @@ jobs:
       - name: "Setup ccache: update symlinks"
         run: "/usr/sbin/update-ccache-symlinks"
       - name: Ensure version info
-        run: |
-          git describe 2>/dev/null > crawl-ref/source/util/release_ver \
-            || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
+        run: bash .claude/scripts/ensure_version_info.sh
       - name: Prepare Android build
         run: make ANDROID=1 TILES=y android -j4
         working-directory: crawl-ref/source

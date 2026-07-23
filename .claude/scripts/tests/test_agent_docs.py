@@ -338,6 +338,17 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("name: macos-tiles-app", workflow)
         self.assertIn("首个中文 Windows 正式版", workflow)
         self.assertIn("macOS Tiles：仅保留 CI 编译产物", workflow)
+        self.assertEqual(7, workflow.count("name: Ensure version info"))
+        self.assertEqual(
+            7,
+            workflow.count(
+                "run: bash .claude/scripts/ensure_version_info.sh"
+            ),
+        )
+        self.assertNotIn(
+            "git describe 2>/dev/null > crawl-ref/source/util/release_ver",
+            workflow,
+        )
         release_draft = workflow.split("  release_draft:\n", 1)[1]
         release_needs = release_draft.split("    permissions:\n", 1)[0]
         self.assertNotIn("- build_linux_console", release_needs)
