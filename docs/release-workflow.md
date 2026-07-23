@@ -25,16 +25,18 @@ alpha/beta/rc 预发布版。标签必须指向已经提交且通过项目审查
 2. 构建 Windows Tiles、macOS Tiles 和 Linux Console x86_64；
 3. 验证三个归档文件形成精确的封闭集合；
 4. 检查归档路径安全、成员唯一性、Unix 主程序可执行位、平台主程序、中文 TextDB、
-   设置文件、许可证，以及 Tiles 包中的 Maple 字体和 OFL 许可证；数据、设置、字体和
-   许可证内容必须与标签检出的源文件一致（Windows 文本按打包行为归一化 CRLF）；
+   设置文件、许可证，以及 Tiles 包中的 Maple 字体和 OFL 许可证；`i18n/zh`、
+   `database/zh`、`descript/zh` 三棵运行时中文数据树会从标签 checkout 完整枚举，数据、
+   设置、字体和许可证内容必须与源文件一致（Windows 文本按打包行为归一化 CRLF）；
 5. 生成 `SHA256SUMS` 与绑定标签、40 位提交 SHA、平台范围的
    `RELEASE-MANIFEST.txt`；
-6. 创建或刷新 GitHub 草稿 Release。
+6. 仅创建一次 GitHub 草稿 Release。
 
 校验器是 `.claude/scripts/verify_release_artifacts.py`。缺少文件、空文件、未知产物、
 内容漂移、不可执行主程序、重复/大小写冲突成员、路径穿越、符号链接、特殊归档成员或
 损坏归档都会使发布失败。
-自动流程拒绝覆盖已经公开的 Release。
+自动流程拒绝任何同标签的既有 Release（包括 draft），也不会上传或刷新其资产。工作流若在
+草稿创建后重跑，会停在 create-only 边界；需要修复产物时必须使用新的 `0.34.1-zhN` 标签。
 
 ## 候选准备
 

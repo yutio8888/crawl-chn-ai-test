@@ -39,13 +39,21 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.artifacts.mkdir()
         self.source_root = self.root / "source"
         self.source_root.mkdir()
-        self.rules = MODULE.artifact_rules(TAG)
-        for rule in self.rules:
+        base_rules = MODULE.artifact_rules(TAG)
+        for rule in base_rules:
             for contract in rule.content_sources:
                 source = self.source_root / contract.source
                 source.parent.mkdir(parents=True, exist_ok=True)
                 if not source.exists():
                     source.write_bytes(f"source:{contract.source}\n".encode())
+        for relative in (
+            "crawl-ref/source/dat/database/zh/messages.txt",
+            "crawl-ref/source/dat/descript/zh/monsters.txt",
+        ):
+            source = self.source_root / relative
+            source.parent.mkdir(parents=True, exist_ok=True)
+            source.write_bytes(f"source:{relative}\n".encode())
+        self.rules = MODULE.release_rules(TAG, self.source_root)
         self._write_valid_set()
 
     def tearDown(self) -> None:
@@ -238,8 +246,38 @@ class ReleaseArtifactTest(unittest.TestCase):
                     self.assert_rejected("archived content differs")
                     self._rewrite(rule, original)
 
+    def test_new_or_missing_zh_tree_members_fail_closed(self) -> None:
+        new_source = (
+            self.source_root
+            / "crawl-ref/source/dat/database/zh/new-runtime-entry.txt"
+        )
+        new_source.write_bytes(b"new runtime entry\n")
+        self.assert_rejected("missing required file")
+        new_source.unlink()
+
+        existing = (
+            self.source_root / "crawl-ref/source/dat/descript/zh/monsters.txt"
+        )
+        original = existing.read_bytes()
+        existing.unlink()
+        self.assert_rejected("required ZH data tree is empty")
+        existing.write_bytes(original)
+
+    def test_zh_tree_rejects_symbolic_links(self) -> None:
+        target = self.root / "zh-tree-target"
+        target.write_bytes(b"target\n")
+        linked = (
+            self.source_root
+            / "crawl-ref/source/dat/database/zh/symbolic-link.txt"
+        )
+        linked.symlink_to(target)
+        self.assert_rejected("symbolic link in required ZH data tree")
+
     def test_source_inputs_fail_closed_when_missing_empty_or_symlinked(self) -> None:
-        contract = self.rules[0].content_sources[0]
+        contract = next(
+            item for item in self.rules[0].content_sources
+            if item.source == "LICENSE"
+        )
         source = self.source_root / contract.source
         original = source.read_bytes()
         source.unlink()
@@ -272,6 +310,10 @@ class ReleaseArtifactTest(unittest.TestCase):
         mutations = (
             ("unsafe archive member", [("../escape", b"x", None)]),
             ("unsafe archive member", [("/absolute", b"x", None)]),
+            (
+                "unsafe archive member",
+                [(f"{rule.root}/./crawl.exe", b"x", None)],
+            ),
             ("invalid archive member", [("bad\\path", b"x", None)]),
             ("invalid archive member", [(f"{rule.root}//double", b"x", None)]),
             ("outside expected root", [("other-root/file", b"x", None)]),
@@ -303,6 +345,7 @@ class ReleaseArtifactTest(unittest.TestCase):
         for name, pattern in (
             ("../escape", "unsafe archive member"),
             ("/absolute", "unsafe archive member"),
+            (f"{rule.root}/./crawl", "unsafe archive member"),
             ("bad\\path", "invalid archive member"),
             (f"{rule.root}//double", "invalid archive member"),
             ("other-root/file", "outside expected root"),

@@ -515,7 +515,7 @@ jobs:
             echo
             echo "发布前请按 SHA256SUMS 校验下载文件，并完成全新环境解压与启动验收。"
           } > "$RUNNER_TEMP/release-notes.md"
-      - name: Create or refresh draft release
+      - name: Create draft release once
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -528,17 +528,6 @@ jobs:
             echo "Expected 5 release assets after evidence generation" >&2
             exit 1
           fi
-          if existing=$(gh release view "$GITHUB_REF_NAME" \
-              --json isDraft --jq .isDraft 2>/dev/null); then
-            if [[ "$existing" != "true" ]]; then
-              echo "Refusing to overwrite a published release" >&2
-              exit 1
-            fi
-            gh release upload "$GITHUB_REF_NAME" "${assets[@]}" --clobber
-            gh release edit "$GITHUB_REF_NAME" \
-              --draft --title "$title" --notes-file "$RUNNER_TEMP/release-notes.md"
-          else
-            gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
-              --draft --verify-tag --title "$title" \
-              --notes-file "$RUNNER_TEMP/release-notes.md"
-          fi
+          gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
+            --draft --verify-tag --title "$title" \
+            --notes-file "$RUNNER_TEMP/release-notes.md"

@@ -9,12 +9,17 @@ import re
 import stat
 import tarfile
 import zipfile
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
 
 
 RELEASE_TAG_RE = re.compile(r"0\.34\.1-zh[1-9][0-9]*\Z")
 COMMIT_RE = re.compile(r"[0-9a-f]{40}\Z")
+ZH_DATA_TREES = (
+    "crawl-ref/source/dat/i18n/zh",
+    "crawl-ref/source/dat/database/zh",
+    "crawl-ref/source/dat/descript/zh",
+)
 
 
 class ReleaseArtifactError(RuntimeError):
@@ -36,6 +41,8 @@ class ArtifactRule:
     required_files: tuple[str, ...]
     executable_files: tuple[str, ...]
     content_sources: tuple[ContentSource, ...]
+    data_root: str
+    normalize_text_crlf: bool
 
 
 def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
@@ -78,6 +85,8 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
                 ),
                 ContentSource(f"{windows_root}/LICENSE", "LICENSE"),
             ),
+            data_root=f"{windows_root}/dat",
+            normalize_text_crlf=True,
         ),
         ArtifactRule(
             filename=f"stone_soup-{tag}-tiles-macosx.zip",
@@ -127,6 +136,8 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
                     f"{mac_root}/Contents/Resources/LICENSE.txt", "LICENSE"
                 ),
             ),
+            data_root=f"{mac_root}/Contents/Resources/dat",
+            normalize_text_crlf=False,
         ),
         ArtifactRule(
             filename=f"{linux_root}.tar.gz",
@@ -149,8 +160,73 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
                 ),
                 ContentSource(f"{linux_root}/LICENSE", "LICENSE"),
             ),
+            data_root=f"{linux_root}/dat",
+            normalize_text_crlf=False,
         ),
     )
+
+
+def release_rules(tag: str, source_root: Path) -> tuple[ArtifactRule, ...]:
+    data_source_root = source_root / "crawl-ref/source/dat"
+    tree_files: list[Path] = []
+    for relative_tree in ZH_DATA_TREES:
+        tree = source_root / relative_tree
+        if tree.is_symlink() or not tree.is_dir():
+            raise ReleaseArtifactError(
+                f"required ZH data tree is missing or unsafe: {relative_tree!r}"
+            )
+        files: list[Path] = []
+        for entry in tree.rglob("*"):
+            if entry.is_symlink():
+                raise ReleaseArtifactError(
+                    f"symbolic link in required ZH data tree: "
+                    f"{entry.relative_to(source_root).as_posix()!r}"
+                )
+            if entry.is_dir():
+                continue
+            if not entry.is_file():
+                raise ReleaseArtifactError(
+                    f"special entry in required ZH data tree: "
+                    f"{entry.relative_to(source_root).as_posix()!r}"
+                )
+            files.append(entry)
+        if not files:
+            raise ReleaseArtifactError(
+                f"required ZH data tree is empty: {relative_tree!r}"
+            )
+        tree_files.extend(sorted(files))
+
+    expanded: list[ArtifactRule] = []
+    for rule in artifact_rules(tag):
+        sources = {contract.member: contract for contract in rule.content_sources}
+        required = list(rule.required_files)
+        for source in tree_files:
+            data_relative = source.relative_to(data_source_root).as_posix()
+            member = f"{rule.data_root}/{data_relative}"
+            contract = ContentSource(
+                member,
+                source.relative_to(source_root).as_posix(),
+                normalize_crlf=(
+                    rule.normalize_text_crlf
+                    and source.suffix.lower() in (".txt", ".des")
+                ),
+            )
+            existing = sources.get(member)
+            if existing is not None and existing != contract:
+                raise ReleaseArtifactError(
+                    f"conflicting content contract for archive member {member!r}"
+                )
+            sources[member] = contract
+            if member not in required:
+                required.append(member)
+        expanded.append(
+            replace(
+                rule,
+                required_files=tuple(required),
+                content_sources=tuple(sources.values()),
+            )
+        )
+    return tuple(expanded)
 
 
 def _validate_member_names(
@@ -164,12 +240,16 @@ def _validate_member_names(
             raise ReleaseArtifactError(
                 f"{archive_name}: invalid archive member path {name!r}"
             )
-        path = PurePosixPath(name)
-        if path.is_absolute() or any(part in ("", ".", "..") for part in path.parts):
+        canonical = name.rstrip("/")
+        raw_parts = canonical.split("/")
+        path = PurePosixPath(canonical)
+        if (
+            path.is_absolute()
+            or any(part in ("", ".", "..") for part in raw_parts)
+        ):
             raise ReleaseArtifactError(
                 f"{archive_name}: unsafe archive member path {name!r}"
             )
-        canonical = name.rstrip("/")
         if canonical in seen:
             raise ReleaseArtifactError(
                 f"{archive_name}: duplicate archive member {canonical!r}"
@@ -372,7 +452,7 @@ def validate_release(
             f"symbolic links in artifact set are not allowed: {symlinks}"
         )
 
-    rules = artifact_rules(tag)
+    rules = release_rules(tag, source_root)
     expected = {rule.filename for rule in rules}
     actual = {path.name for path in entries if path.is_file()}
     directories = sorted(path.name for path in entries if path.is_dir())

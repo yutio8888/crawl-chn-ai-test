@@ -330,7 +330,9 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("Create verified draft release", workflow)
         self.assertIn("verify_release_artifacts.py", workflow)
         self.assertIn("--draft --verify-tag", workflow)
-        self.assertIn("Refusing to overwrite a published release", workflow)
+        self.assertIn("Create draft release once", workflow)
+        self.assertNotIn("gh release upload", workflow)
+        self.assertNotIn("gh release edit", workflow)
 
     def test_readme_avoids_volatile_counts_and_legacy_font_contract(self) -> None:
         text = (ROOT / "README.md").read_text()
