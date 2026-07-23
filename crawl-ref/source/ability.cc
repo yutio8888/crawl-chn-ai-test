@@ -1935,12 +1935,14 @@ static bool _check_ability_possible(const ability_def& abil, bool quiet = false)
         vector<text_pattern> &actions = Options.confirm_action;
         if (!actions.empty())
         {
-            string name = ability_name(abil.ability);
+            const string match_name = ability_name(abil.ability, true);
             for (const text_pattern &action : actions)
             {
-                if (action.matches(name))
+                if (action.matches(match_name))
                 {
-                    string prompt = make_stringf(T_("Really use %s?"), name.c_str());
+                    const string display_name = ability_name(abil.ability);
+                    string prompt = make_stringf(T_("Really use %s?"),
+                                                 display_name.c_str());
                     if (!yesno(prompt.c_str(), false, 'n'))
                     {
                         canned_msg(MSG_OK);

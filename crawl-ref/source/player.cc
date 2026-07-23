@@ -3318,8 +3318,8 @@ void level_change(bool skip_attribute_increase)
                             if (you.experience_level == level)
                             {
                                 mprf(MSGCH_MUTATION, T_("As your demonic ancestry asserts itself, you feel your body warp and mutate."));
-                                mark_milestone("monstrous", T_("discovered their "
-                                                      "monstrous ancestry!"));
+                                mark_milestone("monstrous", "discovered their "
+                                                      "monstrous ancestry!");
                                 take_note(Note(NOTE_MESSAGE, 0, 0,
                                      "Discovered your monstrous ancestry."));
                             }

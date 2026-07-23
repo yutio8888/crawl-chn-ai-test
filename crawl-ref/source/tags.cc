@@ -1660,7 +1660,7 @@ static void _tag_construct_char(writer &th)
     marshallByte(th, you.species);
     marshallByte(th, you.char_class);
     marshallByte(th, you.experience_level);
-    marshallString2(th, string(get_job_name(you.char_class)));
+    marshallString2(th, string(get_job_name_en(you.char_class)));
     marshallByte(th, you.religion);
     marshallString2(th, you.jiyva_second_name);
 
@@ -1671,8 +1671,8 @@ static void _tag_construct_char(writer &th)
     if (crawl_state.game_is_tutorial())
         marshallString2(th, crawl_state.map);
 
-    marshallString2(th, species::name(you.species, species::SPNAME_PLAIN, false));
-    marshallString2(th, you.religion ? god_name(you.religion) : "");
+    marshallString2(th, species::name(you.species, species::SPNAME_PLAIN, true));
+    marshallString2(th, you.religion ? _god_name_en(you.religion) : "");
 
     // separate from the tutorial so we don't have to bump TAG_CHR_FORMAT
     marshallString2(th, crawl_state.map);

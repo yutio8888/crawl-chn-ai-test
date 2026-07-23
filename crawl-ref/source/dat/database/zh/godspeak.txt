@@ -59,15 +59,6 @@ Xom single summon
 
 佐姆打开了一扇门。
 %%%%
-# 几个恶魔
-Xom multiple summons
-
-“照顾这个凡人，我的孩子们！”
-
-佐姆给了你一些临时援助。
-
-佐姆瞬间打开了一扇门。
-%%%%
 Xom animate monster weapon
 
 “是时候找点乐子了!”
@@ -79,7 +70,7 @@ Xom animate monster weapon
 佐姆对你微笑。
 %%%%
 # 改变场景
-Xom scenery
+Xom scenery generic
 
 佐姆略略地接触你周围的环境。
 
@@ -136,7 +127,7 @@ Xom confusion
 佐姆咯咯地笑着。
 %%%%
 # 50％属性值降低，25％衰竭，25％折磨
-Xom draining or torment
+Xom suffering
 
 “你惹恼了我，凡人。”
 
@@ -1479,7 +1470,7 @@ Xom scenery altar_xom
 
 "只是一个小小的改进……"
 
-@Xom scenery@
+@Xom scenery generic@
 
 %%%%
 Xom scenery cache_of_baked_goods
@@ -1503,7 +1494,7 @@ Xom scenery cache_of_meat
 %%%%
 Xom scenery closed_door
 
-@Xom scenery@
+@Xom scenery generic@
 
 %%%%
 Xom scenery enter_abyss
@@ -1517,7 +1508,7 @@ Xom scenery enter_abyss
 %%%%
 Xom scenery open_door
 
-@Xom scenery@
+@Xom scenery generic@
 
 %%%%
 Xom scenery trap_teleport
@@ -1685,3 +1676,17 @@ w:20
 
 w:20
 佐姆好奇地将能量从你的身体中导出了。
+%%%%
+# 仅在成功召唤出召唤物时显示
+Xom drained brain
+
+w:20
+你的魔力从昏沉的心智中溜走了！
+
+具现出的噬魔者压倒了你的力量与思绪！
+
+你的魔力硬生生从你的[@random_body_part_internal_singular@|@random_body_part_internal_plural@]中挣脱了出来！
+
+你的魔力从你的[@random_body_part_external_singular@|@random_body_part_external_plural@]中流了出去！
+
+你的魔力从你的[@random_body_part_any_singular@|@random_body_part_any_plural@]中撕裂而出！

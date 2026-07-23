@@ -569,7 +569,7 @@ LUAFN(moninf_get_spells)
     bool abjuration = false;
     for (const auto& slot : unique_slots)
     {
-        spell_titles.emplace_back(spell_title(slot.spell));
+        spell_titles.emplace_back(spell_english_name(slot.spell));
 
         // XXX: Probably get_unique_spells() could just do this for us.
         if (get_spell_flags(slot.spell) & spflag::mons_abjure)
@@ -577,7 +577,7 @@ LUAFN(moninf_get_spells)
     }
 
     if (abjuration)
-        spell_titles.emplace_back(spell_title(SPELL_ABJURATION));
+        spell_titles.emplace_back(spell_english_name(SPELL_ABJURATION));
 
     clua_stringtable(ls, spell_titles);
     return 1;

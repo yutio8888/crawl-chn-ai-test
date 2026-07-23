@@ -910,7 +910,7 @@ string actor::resist_margin_phrase(int margin) const
     if (willpower() == WILL_INVULN)
         return T_(" are unaffected.");
 
-    static const string resist_phrases[] =
+    const string resist_phrases[] =
     {
         T_(" barely resist."),
         T_(" struggle to resist."),

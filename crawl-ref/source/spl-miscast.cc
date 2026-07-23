@@ -36,7 +36,7 @@ static void _do_msg(actor& target, spschool which, int dam)
     if (!you.see_cell(target.pos()))
         return;
 
-    string db_key = string(spelltype_long_name(which)) + " miscast ";
+    string db_key = string(spelltype_long_name_en(which)) + " miscast ";
     if (target.is_player())
         db_key += "player";
     else if (you.can_see(target))

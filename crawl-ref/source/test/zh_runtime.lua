@@ -322,6 +322,45 @@ for index, trove_case in ipairs(trove_cases) do
 end
 crawl.set_test_language("zh")
 
+-- Issue 16: portal marker messages persist canonical English keys and are
+-- translated only when emitted. Exercise the production TimedMessaging
+-- lmark/file serializer in both language-switch directions.
+crawl_require('dlua/lm_tmsg.lua')
+local portal_message_key = "You hear coins being counted."
+local function roundtrip_portal_message(created_language, emitted_language)
+    crawl.set_test_language(created_language)
+    local marker_message = timed_msg {
+        initmsg = portal_message_key,
+        noisemaker = "bell",
+        verb = "tolling",
+    }
+    local loaded = crawl.roundtrip_timed_messaging(marker_message)
+    assert(loaded.initmsg == portal_message_key,
+           "portal save persisted translated initmsg")
+
+    crawl.set_test_language(emitted_language)
+    crawl.clear_message_store()
+    loaded:emit_message(nil, loaded.initmsg)
+    crawl.redraw_view()
+    local rendered = crawl.messages(5) or ""
+    if emitted_language == "en" then
+        assert(string.find(rendered, portal_message_key, 1, true),
+               "ZH-created portal did not emit English after EN load")
+    else
+        local translated = crawl.t_(portal_message_key)
+        assert(translated ~= portal_message_key
+               and string.find(rendered, translated, 1, true),
+               "EN-created portal did not emit Chinese after ZH load")
+        assert(not string.find(rendered, portal_message_key, 1, true),
+               "portal emit leaked persisted English display text")
+    end
+    return rendered
+end
+local zh_to_en = roundtrip_portal_message("zh", "en")
+local en_to_zh = roundtrip_portal_message("en", "zh")
+emit("portal_late_translation", zh_to_en .. " || " .. en_to_zh)
+crawl.set_test_language("zh")
+
 -- Issue 68 S8: protocol accessors are covered by the RC fixture; exercise the
 -- paired production C++ display helpers here to prove they remain localized.
 local trap_display = crawl.test_trap_display_name("permanent teleport")

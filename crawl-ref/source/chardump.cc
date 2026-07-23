@@ -1425,52 +1425,52 @@ static string _describe_action(caction_type type)
 
 static const char* _stab_names[] =
 {
-    T_("Normal"),
-    T_("Distracted"),
-    T_("Confused"),
-    T_("Fleeing"),
-    T_("Invisible"),
-    T_("Held in net/web"),
-    T_("Petrifying"), // could be nice to combine the two
-    T_("Petrified"),
-    T_("Paralysed"),
-    T_("Sleeping"),
-    T_("Betrayed ally"),
-    T_("Blind"),
+    N_("Normal"),
+    N_("Distracted"),
+    N_("Confused"),
+    N_("Fleeing"),
+    N_("Invisible"),
+    N_("Held in net/web"),
+    N_("Petrifying"), // could be nice to combine the two
+    N_("Petrified"),
+    N_("Paralysed"),
+    N_("Sleeping"),
+    N_("Betrayed ally"),
+    N_("Blind"),
 };
 
 static const char* _aux_attack_names[] =
 {
-    T_("No attack"),
-    T_("Constrict"),
-    T_("Kick"),
-    T_("Headbutt"),
-    T_("Peck"),
-    T_("Tailslap"),
-    T_("Touch"),
-    T_("Punch"),
-    T_("Bite"),
-    T_("Pseudopods"),
-    T_("Tentacles"),
-    T_("Maw"),
-    T_("Executioner Blades"),
-    T_("Fungal Fists"),
-    T_("Stingers"),
-    T_("Blades"),
-    T_("Blades"),
+    N_("No attack"),
+    N_("Constrict"),
+    N_("Kick"),
+    N_("Headbutt"),
+    N_("Peck"),
+    N_("Tailslap"),
+    N_("Touch"),
+    N_("Punch"),
+    N_("Bite"),
+    N_("Pseudopods"),
+    N_("Tentacles"),
+    N_("Maw"),
+    N_("Executioner Blades"),
+    N_("Fungal Fists"),
+    N_("Stingers"),
+    N_("Blades"),
+    N_("Blades"),
 };
 COMPILE_CHECK(ARRAYSZ(_aux_attack_names) == NUM_UNARMED_ATTACKS);
 
 static const char* _attack_count_names[]
 {
-    T_("Normal"),
-    T_("Lunge"),
-    T_("Whirlwind"),
-    T_("Riposte"),
-    T_("Spellmotor"),
-    T_("Spellclaws"),
-    T_("Drunken Brawl"),
-    T_("Sundering"),
+    N_("Normal"),
+    N_("Lunge"),
+    N_("Whirlwind"),
+    N_("Riposte"),
+    N_("Spellmotor"),
+    N_("Spellclaws"),
+    N_("Drunken Brawl"),
+    N_("Sundering"),
 };
 COMPILE_CHECK(ARRAYSZ(_attack_count_names) == NUM_ATTACK_COUNT_TYPES);
 
@@ -1498,7 +1498,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
             else
             {
                 ASSERT_RANGE(auxtype, 0, NUM_UNARMED_ATTACKS);
-                return _aux_attack_names[auxtype];
+                return T_(_aux_attack_names[auxtype]);
             }
         }
         else if (subtype >= UNRAND_START)
@@ -1582,7 +1582,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
     case CACT_STAB:
         COMPILE_CHECK(ARRAYSZ(_stab_names) == NUM_STABS);
         ASSERT_RANGE(subtype, 1, NUM_STABS);
-        return _stab_names[subtype];
+        return T_(_stab_names[subtype]);
     case CACT_FORM:
         if ((transformation)subtype == transformation::none)
             return T_("Default");
@@ -1590,7 +1590,7 @@ static string _describe_action_subtype(caction_type type, int compound_subtype)
             return get_form((transformation)subtype)->short_name;
     case CACT_ATTACK:
         ASSERT_RANGE(subtype, 0, NUM_ATTACK_COUNT_TYPES);
-        return _attack_count_names[subtype];
+        return T_(_attack_count_names[subtype]);
     case CACT_DRINK:
         return uppercase_first(potion_type_name(subtype));
     case CACT_READ:

@@ -758,14 +758,14 @@ static string _gen_randbook_name(string subject, string owner,
     string type_name;
     if (disc1 != disc2 && !one_chance_in(3))
     {
-        string lookup = spelltype_long_name(disc2);
+        string lookup = spelltype_long_name_en(disc2);
         type_name = getRandNameString(lookup + " adj");
     }
 
     if (type_name.empty())
     {
         // No adjective found, use the normal method of combining two nouns.
-        type_name = getRandNameString(spelltype_long_name(disc1));
+        type_name = getRandNameString(spelltype_long_name_en(disc1));
         if (type_name.empty())
             name += spelltype_long_name(disc1);
         else
@@ -774,7 +774,7 @@ static string _gen_randbook_name(string subject, string owner,
         if (disc1 != disc2)
         {
             name += T_(" and ");
-            type_name = getRandNameString(spelltype_long_name(disc2));
+            type_name = getRandNameString(spelltype_long_name_en(disc2));
 
             if (type_name.empty())
                 name += spelltype_long_name(disc2);
@@ -787,7 +787,7 @@ static string _gen_randbook_name(string subject, string owner,
         string bookname = type_name + _book_title_separator();
 
         // Add the noun for the first discipline.
-        type_name = getRandNameString(spelltype_long_name(disc1));
+        type_name = getRandNameString(spelltype_long_name_en(disc1));
         if (type_name.empty())
             bookname += spelltype_long_name(disc1);
         else
@@ -852,11 +852,12 @@ static string _gen_randbook_owner(god_type god, spschool disc1,
     if (god_gift && one_chance_in(3) || one_chance_in(5))
     {
         vector<string> lookups;
-        const string d1_name = spelltype_long_name(disc1);
+        const string d1_name = spelltype_long_name_en(disc1);
 
         if (disc1 != disc2)
         {
-            const string lookup = d1_name + " " + spelltype_long_name(disc2);
+            const string lookup = d1_name + " "
+                                  + spelltype_long_name_en(disc2);
             if (highlevel)
                 lookups.push_back("highlevel " + lookup + " owner");
             lookups.push_back(lookup + " owner");

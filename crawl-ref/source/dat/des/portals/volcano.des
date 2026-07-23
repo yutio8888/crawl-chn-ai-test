@@ -50,10 +50,10 @@ function volcano_portal (e)
 
     local messager =
       timed_msg {
-        initmsg = { crawl.t_("You feel an oppressive heat about you."),
-                    crawl.t_("There is an entrance to a volcano on this level. "
-                    .. "Hurry and find it before the entrance collapses!") },
-        finalmsg = crawl.t_("The sound of falling rocks suddenly begins to subside."),
+        initmsg = { "You feel an oppressive heat about you.",
+                    "There is an entrance to a volcano on this level. "
+                    .. "Hurry and find it before the entrance collapses!" },
+        finalmsg = "The sound of falling rocks suddenly begins to subside.",
 
         verb = 'rumble',
         noisemaker = 'avalanche of rocks',
@@ -62,13 +62,13 @@ function volcano_portal (e)
           { 2500, 'brisk ' }, { 1500, 'quick ' },
           { 0, 'rapid ' }
         },
-        range_msg_fmt = crawl.t_("You hear the {prefix}rumble of the {distance} {noisemaker}.")
+        range_msg_fmt = "You hear the {prefix}rumble of the {distance} {noisemaker}."
       }
 
     e.lua_marker('O',
       timed_marker {
-        disappear = crawl.t_("There is a deep roar from within the tunnel. Moments "
-                    .. "later, a river of lava pours forth, sealing it permanently."),
+        disappear = "There is a deep roar from within the tunnel. Moments "
+                    .. "later, a river of lava pours forth, sealing it permanently.",
         entity = 'tunnel',
         turns = timeout_turns,
         single_timed = true,

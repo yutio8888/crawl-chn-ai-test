@@ -13,17 +13,17 @@ function gauntlet_portal(e)
 
   local messager =
     timed_msg {
-      initmsg = { crawl.t_("You hear a distant snort."),
-                  crawl.t_("Hark! There is a gateway to a gauntlet on this level. " ..
-                  "Find the entrance quickly before the gate is sealed!") },
-      finalmsg = crawl.t_("After a thunderous strike, the drumbeats cease."),
+      initmsg = { "You hear a distant snort.",
+                  "Hark! There is a gateway to a gauntlet on this level. " ..
+                  "Find the entrance quickly before the gate is sealed!" },
+      finalmsg = "After a thunderous strike, the drumbeats cease.",
       verb = 'beating',
       noisemaker = 'drum',
       ranges = {
         { 5000, 'faint ' },  { 4000, '' }, { 2500, 'loud ' },
         { 1500, 'thunderous ' }, { 0, 'deafening ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}beating of the {distance} {noisemaker}.")
+      range_msg_fmt = "You hear the {prefix}beating of the {distance} {noisemaker}."
     }
 
     e.lua_marker('O',

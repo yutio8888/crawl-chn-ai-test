@@ -1263,13 +1263,14 @@ static bool _spellcasting_aborted(spell_type spell, bool fake_spell)
     vector<text_pattern> &actions = Options.confirm_action;
     if (!actions.empty())
     {
-        const char* name = spell_title(spell);
+        const char* match_name = spell_english_name(spell);
         for (const text_pattern &action : actions)
         {
-            if (!action.matches(name))
+            if (!action.matches(match_name))
                 continue;
 
-            string prompt = make_stringf(T_("Really cast %s?"), name);
+            const char* display_name = spell_title(spell);
+            string prompt = make_stringf(T_("Really cast %s?"), display_name);
             if (!yesno(prompt.c_str(), false, 'n'))
             {
                 canned_msg(MSG_OK);
@@ -2997,12 +2998,12 @@ int fail_severity(spell_type spell)
 
 const char *fail_severity_adjs[] =
 {
-    T_("safe"),
-    T_("mildly dangerous"),
-    T_("dangerous"),
-    T_("quite dangerous"),
-    T_("extremely dangerous"),
-    T_("astonishingly dangerous"),
+    N_("safe"),
+    N_("mildly dangerous"),
+    N_("dangerous"),
+    N_("quite dangerous"),
+    N_("extremely dangerous"),
+    N_("astonishingly dangerous"),
 };
 COMPILE_CHECK(ARRAYSZ(fail_severity_adjs) > 3);
 

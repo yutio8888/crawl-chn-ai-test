@@ -415,7 +415,8 @@ static vector<string> _get_god_keys()
         god_type which_god = static_cast<god_type>(i);
 #if TAG_MAJOR_VERSION == 34
         // XXX: currently disabled.
-        if (which_god != GOD_PAKELLAS)
+        if (which_god == GOD_PAKELLAS)
+            continue;
 #endif
         names.push_back(_god_name_en(which_god));
     }
@@ -460,7 +461,7 @@ static vector<string> _get_skill_keys()
     vector<string> names;
     for (skill_type sk = SK_FIRST_SKILL; sk < NUM_SKILLS; ++sk)
     {
-        const string name = lowercase_string(skill_name(sk));
+        const string name = lowercase_string(skill_name_en(sk));
 #if TAG_MAJOR_VERSION == 34
         if (getLongDescription(name).empty())
             continue; // obsolete skills
@@ -1390,9 +1391,11 @@ static string _branch_location(branch_type br)
         if (min == max)
         {
             if (branches[parent].numlevels == 1)
+            {
                 desc = make_stringf_p(
                         T_("\n\nThe entrance to this branch can be found in %s."),
                         parent_name);
+            }
             else
                 desc = make_stringf_p(
                         T_("\n\nThe entrance to this branch can be found on level %d of %s."),
@@ -1637,8 +1640,10 @@ static string _keylist_invalid_reason(const vector<string> &key_list,
     if (key_list.empty())
     {
         if (by_symbol)
+        {
             return make_stringf_p(T_("No %s with symbol '%s'."),
                                   type_name.c_str(), regex.c_str());
+        }
         return make_stringf_p(T_("No matching %s for search string '%s'."),
             type_name.c_str(), regex.c_str());
     }

@@ -102,8 +102,12 @@ static bool will_autoinscribe = false;
 
 static inline string _autopickup_item_name(const item_def &item)
 {
-    return userdef_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item)
-           + item_prefix(item, false) + " " + item.name(DESC_PLAIN);
+    string name = userdef_annotate_item(STASH_LUA_SEARCH_ANNOTATE, &item);
+    {
+        ScopedLangEn en;
+        name += item_prefix(item, false) + " " + item.name(DESC_PLAIN);
+    }
+    return name;
 }
 
 // Used to be called "unlink_items", but all it really does is make
@@ -793,6 +797,7 @@ bool item_is_unusual(const item_def& item)
     }
 
     const auto &patterns = Options.unusual_monster_items;
+    ScopedLangEn en;
     const string name = item.name(DESC_A, false, false, true, false);
 
     return any_of(begin(patterns), end(patterns),

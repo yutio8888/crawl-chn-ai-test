@@ -26,10 +26,10 @@ function sewer_portal(e)
 
   local messager =
     timed_msg {
-       initmsg = { crawl.t_("You hear the sound of rushing water."),
-                   crawl.t_("There is an entrance to a sewer on this level. "
-                    .. "Hurry and find it before the portal rusts away!") },
-      finalmsg = crawl.t_("You hear the drain falling apart."),
+       initmsg = { "You hear the sound of rushing water.",
+                   "There is an entrance to a sewer on this level. "
+                    .. "Hurry and find it before the portal rusts away!" },
+      finalmsg = "You hear the drain falling apart.",
 
       verb = 'rusting',
       noisemaker = 'drain',
@@ -38,7 +38,7 @@ function sewer_portal(e)
         { 2500, 'brisk ' }, { 1500, 'quick ' },
         { 0, 'rapid ' }
       },
-      range_msg_fmt = crawl.t_("You hear the {prefix}rusting of the {distance} {noisemaker}.")
+      range_msg_fmt = "You hear the {prefix}rusting of the {distance} {noisemaker}."
     }
 
   e.lua_marker('O',
