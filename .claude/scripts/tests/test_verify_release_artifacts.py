@@ -4,14 +4,12 @@
 from __future__ import annotations
 
 import importlib.util
-import io
 import os
 import shutil
 import stat
 import struct
 import subprocess
 import sys
-import tarfile
 import tempfile
 import unittest
 import warnings
@@ -100,48 +98,21 @@ class ReleaseArtifactTest(unittest.TestCase):
                     info.external_attr = mode << 16
                 archive.writestr(info, payload)
 
-    def _write_tar(
-        self,
-        rule,
-        payloads: dict[str, bytes],
-        *,
-        extra: list[tarfile.TarInfo] | None = None,
-        mode_overrides: dict[str, int] | None = None,
-    ) -> None:
-        with tarfile.open(self.artifacts / rule.filename, "w:gz") as archive:
-            for name, payload in payloads.items():
-                info = tarfile.TarInfo(name)
-                info.size = len(payload)
-                info.mode = 0o755 if name in rule.executable_files else 0o644
-                if mode_overrides and name in mode_overrides:
-                    info.mode = mode_overrides[name]
-                archive.addfile(info, io.BytesIO(payload))
-            for info in extra or []:
-                archive.addfile(info)
-
     def _rewrite(
         self,
         rule,
         payloads,
         *,
         zip_extra=None,
-        tar_extra=None,
         mode_overrides=None,
     ) -> None:
-        if rule.archive_type == "zip":
-            self._write_zip(
-                rule,
-                payloads,
-                extra=zip_extra,
-                mode_overrides=mode_overrides,
-            )
-        else:
-            self._write_tar(
-                rule,
-                payloads,
-                extra=tar_extra,
-                mode_overrides=mode_overrides,
-            )
+        self.assertEqual("zip", rule.archive_type)
+        self._write_zip(
+            rule,
+            payloads,
+            extra=zip_extra,
+            mode_overrides=mode_overrides,
+        )
 
     def _write_valid_set(self) -> None:
         for rule in self.rules:
@@ -170,7 +141,20 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertEqual(first_manifest, (self.root / "RELEASE-MANIFEST.txt").read_bytes())
         self.assertIn(TAG.encode(), first_manifest)
         self.assertIn(COMMIT.encode(), first_manifest)
-        self.assertIn(b"Deferred: Android", first_manifest)
+        self.assertIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
+        self.assertIn(b"Deferred: Linux", first_manifest)
+        self.assertIn(b"Android", first_manifest)
+        self.assertNotIn(b"Included: Windows Tiles; macOS Tiles; Linux", first_manifest)
+
+    def test_release_scope_is_exactly_windows_and_macos_tiles(self) -> None:
+        self.assertEqual(2, len(self.rules))
+        self.assertEqual(
+            {
+                f"stone_soup-{TAG}-tiles-win32.zip",
+                f"stone_soup-{TAG}-tiles-macosx.zip",
+            },
+            {rule.filename for rule in self.rules},
+        )
 
     def test_tag_and_commit_identity_are_strict(self) -> None:
         for tag in ("0.34.1", "0.34.1-zh0", "v0.34.1-zh1", "0.35.0-zh1"):
@@ -277,15 +261,11 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             payloads = self._payloads(rule)
             unknown = f"{rule.data_root}/database/zh/unexpected.txt"
-            if rule.archive_type == "zip":
-                self._write_zip(
-                    rule,
-                    payloads,
-                    extra=[(unknown, b"unexpected\n", stat.S_IFREG | 0o644)],
-                )
-            else:
-                info = tarfile.TarInfo(unknown)
-                self._write_tar(rule, payloads, extra=[info])
+            self._write_zip(
+                rule,
+                payloads,
+                extra=[(unknown, b"unexpected\n", stat.S_IFREG | 0o644)],
+            )
             with self.subTest(archive=rule.filename, kind="file"):
                 self.assert_rejected("unexpected ZH archive file")
             self._rewrite(rule, payloads)
@@ -365,33 +345,6 @@ class ReleaseArtifactTest(unittest.TestCase):
         self._write_zip(rule, payloads, extra=[(collision, b"again", None)])
         self.assert_rejected("case-insensitive member collision")
 
-    def test_tar_paths_links_duplicates_case_collisions_and_root_are_rejected(self) -> None:
-        rule = self.rules[2]
-        payloads = self._payloads(rule)
-        for name, pattern in (
-            ("../escape", "unsafe archive member"),
-            ("/absolute", "unsafe archive member"),
-            (f"{rule.root}/./crawl", "unsafe archive member"),
-            ("bad\\path", "invalid archive member"),
-            (f"{rule.root}//double", "invalid archive member"),
-            ("other-root/file", "outside expected root"),
-        ):
-            with self.subTest(name=name):
-                info = tarfile.TarInfo(name)
-                self._write_tar(rule, payloads, extra=[info])
-                self.assert_rejected(pattern)
-        link = tarfile.TarInfo(f"{rule.root}/link")
-        link.type = tarfile.SYMTYPE
-        link.linkname = "crawl"
-        self._write_tar(rule, payloads, extra=[link])
-        self.assert_rejected("links and special members")
-        duplicate = tarfile.TarInfo(rule.required_files[0])
-        self._write_tar(rule, payloads, extra=[duplicate])
-        self.assert_rejected("duplicate archive member")
-        collision = tarfile.TarInfo(rule.required_files[0].swapcase())
-        self._write_tar(rule, payloads, extra=[collision])
-        self.assert_rejected("case-insensitive member collision")
-
     def test_corrupt_archives_are_rejected(self) -> None:
         zip_rule = self.rules[0]
         zip_path = self.artifacts / zip_rule.filename
@@ -410,7 +363,7 @@ class ReleaseArtifactTest(unittest.TestCase):
         for rule in self.rules:
             with self.subTest(rule=rule.filename):
                 (self.artifacts / rule.filename).write_bytes(b"not an archive")
-                self.assert_rejected("invalid (ZIP|tar.gz archive)")
+                self.assert_rejected("invalid ZIP")
                 self._rewrite(rule, self._payloads(rule))
 
     def test_downstream_version_is_reported_as_final(self) -> None:

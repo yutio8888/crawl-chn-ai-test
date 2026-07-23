@@ -295,28 +295,8 @@ jobs:
           git describe 2>/dev/null > crawl-ref/source/util/release_ver \
             || echo "0.0.0-dev0" > crawl-ref/source/util/release_ver
       - name: Build Linux console
-        run: make -j4 DESTDIR="$RUNNER_TEMP/stone_soup-$(git describe --exact-match --tags 2>/dev/null || git describe)-console-linux-x86_64"
+        run: make -j4
         working-directory: crawl-ref/source
-      - name: Package Linux console
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          version=$(git describe --exact-match --tags "$GITHUB_SHA")
-          package="stone_soup-${version}-console-linux-x86_64"
-          stage="$RUNNER_TEMP/$package"
-          make DESTDIR="$stage" install
-          cp ../../LICENSE "$stage/LICENSE"
-          "$stage/crawl" -version
-          tar -C "$RUNNER_TEMP" -czf "$RUNNER_TEMP/$package.tar.gz" "$package"
-        working-directory: crawl-ref/source
-      - name: Upload Linux console package
-        if: ${{ startsWith(github.ref, 'refs/tags/0.34.1-zh') }}
-        uses: actions/upload-artifact@v4
-        with:
-          name: linux-console
-          path: ${{ runner.temp }}/stone_soup-*-console-linux-x86_64.tar.gz
-          if-no-files-found: error
 
   build_macos_tiles:
     permissions:
@@ -460,7 +440,6 @@ jobs:
       - zh_runtime_full
       - zh_help_runtime
       - linting
-      - build_linux_console
       - build_macos_tiles
       - build_windows_tiles
     permissions:
@@ -481,11 +460,6 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: macos-tiles-app
-          path: ${{ runner.temp }}/release-assets
-      - name: Download Linux package
-        uses: actions/download-artifact@v4
-        with:
-          name: linux-console
           path: ${{ runner.temp }}/release-assets
       - name: Validate closed-world release artifact set
         shell: bash
@@ -509,9 +483,9 @@ jobs:
             echo
             echo "首个桌面正式版候选。发布身份绑定提交 $GITHUB_SHA。"
             echo
-            echo "包含：Windows Tiles、macOS Tiles、Linux Console x86_64。"
+            echo "包含：Windows Tiles、macOS Tiles。"
             echo
-            echo "Android 暂缓；签名 APK、真机验收和移动端已知问题关闭后另行发布。"
+            echo "Linux 和 Android 不在本次正式发布范围内；Linux 仅保留 CI 编译验证，Android 待签名 APK、真机验收和移动端已知问题关闭后另行发布。"
             echo
             echo "发布前请按 SHA256SUMS 校验下载文件，并完成全新环境解压与启动验收。"
           } > "$RUNNER_TEMP/release-notes.md"
@@ -524,8 +498,8 @@ jobs:
           title="DCSS 中文版 $GITHUB_REF_NAME"
           mapfile -t assets < <(find "$RUNNER_TEMP/release-assets" \
             -maxdepth 1 -type f -print | LC_ALL=C sort)
-          if [[ ${#assets[@]} -ne 5 ]]; then
-            echo "Expected 5 release assets after evidence generation" >&2
+          if [[ ${#assets[@]} -ne 4 ]]; then
+            echo "Expected 4 release assets after evidence generation" >&2
             exit 1
           fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \

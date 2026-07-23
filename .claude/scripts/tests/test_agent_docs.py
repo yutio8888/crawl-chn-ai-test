@@ -331,6 +331,13 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("verify_release_artifacts.py", workflow)
         self.assertIn("--draft --verify-tag", workflow)
         self.assertIn("Create draft release once", workflow)
+        self.assertIn("Expected 4 release assets", workflow)
+        self.assertNotIn("Download Linux package", workflow)
+        self.assertNotIn("name: linux-console", workflow)
+        release_draft = workflow.split("  release_draft:\n", 1)[1]
+        self.assertNotIn("- build_linux_console", release_draft.split(
+            "    permissions:\n", 1
+        )[0])
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("gh release edit", workflow)
 

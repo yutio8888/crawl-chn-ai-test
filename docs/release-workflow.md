@@ -11,8 +11,9 @@
 - 上游内容基线：`0.34.1`。
 - 下游正式版标签：`0.34.1-zhN`，其中 `N` 从 1 开始单调递增。
 - 首版候选标签：`0.34.1-zh1`。
-- 首发平台：Windows Tiles、macOS Tiles、Linux Console x86_64。
-- Android 暂缓。只有签名 APK、真机验收和移动端已知问题完成后，才可加入正式版范围。
+- 首发平台：Windows Tiles、macOS Tiles。
+- Linux 不作为首版正式资产，仍保留日常 CI 编译验证；Android 暂缓。只有平台发布资产及
+  相应验收完成后，才可在后续版本加入正式版范围。
 
 `crawl-ref/source/util/gen_ver.pl` 将合法的 `-zhN` 版本识别为正式版，而不是上游
 alpha/beta/rc 预发布版。标签必须指向已经提交且通过项目审查边界的不可变候选。
@@ -22,8 +23,9 @@ alpha/beta/rc 预发布版。标签必须指向已经提交且通过项目审查
 推送匹配 `0.34.1-zh*` 的标签后，`.github/workflows/ci.yml` 会：
 
 1. 运行工具测试、静态 ZH CI、Catch2、帮助系统运行时测试和完整 L1+L2+L3 运行时；
-2. 构建 Windows Tiles、macOS Tiles 和 Linux Console x86_64；
-3. 验证三个归档文件形成精确的封闭集合；
+2. 构建 Windows Tiles 和 macOS Tiles 正式资产；Linux Console 继续作为独立 CI
+   质量信号，但不阻塞草稿 Release；
+3. 验证两个归档文件形成精确的封闭集合；
 4. 检查归档路径安全、成员唯一性、Unix 主程序可执行位、平台主程序、中文 TextDB、
    设置文件、许可证，以及 Tiles 包中的 Maple 字体和 OFL 许可证；`i18n/zh`、
    `database/zh`、`descript/zh` 三棵运行时中文数据树会从标签 checkout 完整枚举，数据、
@@ -55,15 +57,14 @@ alpha/beta/rc 预发布版。标签必须指向已经提交且通过项目审查
 
 ## 草稿验收与公开
 
-所有 CI job 成功后，发布负责人在草稿 Release 中完成以下人工验收：
+所有正式发布门禁 job 成功后，发布负责人在草稿 Release 中完成以下人工验收：
 
-- 用 `sha256sum -c SHA256SUMS`（或平台等价工具）复核三个下载文件；
+- 用 `sha256sum -c SHA256SUMS`（或平台等价工具）复核两个下载文件；
 - 在全新 Windows 环境解压并启动 Tiles，确认中文默认语言、中文字体和主菜单；
 - 在全新 macOS 环境解压并启动 App，记录系统版本、CPU 架构和 Gatekeeper 结果；
-- 在声明兼容的 Linux x86_64 环境解压，运行 `./crawl -version` 并启动游戏；
 - 核对发布说明中的玩家可见变化、支持平台、已知问题、延期项目和准确提交 SHA；
-- 核对 Release 仍为 draft，且资产只有三个平台归档、`SHA256SUMS` 和
-  `RELEASE-MANIFEST.txt`。
+- 核对 Release 仍为 draft，且资产只有 Windows/macOS 两个归档、`SHA256SUMS` 和
+  `RELEASE-MANIFEST.txt`，共四项。
 
 自动流程到草稿为止。只有上述人工验收全部有记录，且发布负责人明确批准后，才能在
 GitHub 界面公开 Release。若任一项失败，保留草稿和 CI 原始证据，修复后用新的

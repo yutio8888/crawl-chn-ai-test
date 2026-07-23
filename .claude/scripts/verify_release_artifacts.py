@@ -7,7 +7,6 @@ import argparse
 import hashlib
 import re
 import stat
-import tarfile
 import zipfile
 from dataclasses import dataclass, replace
 from pathlib import Path, PurePosixPath
@@ -49,7 +48,6 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
     major = ".".join(tag.split("-", 1)[0].split(".")[:2])
     windows_root = f"stone_soup-tiles-{major}"
     mac_root = "Dungeon Crawl Stone Soup - Tiles.app"
-    linux_root = f"stone_soup-{tag}-console-linux-x86_64"
     return (
         ArtifactRule(
             filename=f"stone_soup-{tag}-tiles-win32.zip",
@@ -137,30 +135,6 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
                 ),
             ),
             data_root=f"{mac_root}/Contents/Resources/dat",
-            normalize_text_crlf=False,
-        ),
-        ArtifactRule(
-            filename=f"{linux_root}.tar.gz",
-            archive_type="tar.gz",
-            root=linux_root,
-            required_files=(
-                f"{linux_root}/crawl",
-                f"{linux_root}/dat/i18n/zh/source.txt",
-                f"{linux_root}/settings/init.txt",
-                f"{linux_root}/LICENSE",
-            ),
-            executable_files=(f"{linux_root}/crawl",),
-            content_sources=(
-                ContentSource(
-                    f"{linux_root}/dat/i18n/zh/source.txt",
-                    "crawl-ref/source/dat/i18n/zh/source.txt",
-                ),
-                ContentSource(
-                    f"{linux_root}/settings/init.txt", "crawl-ref/settings/init.txt"
-                ),
-                ContentSource(f"{linux_root}/LICENSE", "LICENSE"),
-            ),
-            data_root=f"{linux_root}/dat",
             normalize_text_crlf=False,
         ),
     )
@@ -363,56 +337,6 @@ def _validate_zip(path: Path, rule: ArtifactRule, source_root: Path) -> None:
     _validate_content_sources(path.name, content, rule.content_sources, source_root)
 
 
-def _validate_tar(path: Path, rule: ArtifactRule, source_root: Path) -> None:
-    try:
-        with tarfile.open(path, mode="r:gz") as archive:
-            members = archive.getmembers()
-            _validate_member_names(
-                [member.name for member in members],
-                root=rule.root,
-                archive_name=path.name,
-            )
-            _validate_zh_member_set(
-                path.name,
-                [(member.name, member.isdir()) for member in members],
-                rule,
-            )
-            sizes: dict[str, int] = {}
-            permissions: dict[str, int] = {}
-            content: dict[str, bytes] = {}
-            content_members = {
-                contract.member for contract in rule.content_sources
-            }
-            for member in members:
-                if member.isdir():
-                    continue
-                if not member.isfile():
-                    raise ReleaseArtifactError(
-                        f"{path.name}: links and special members are not allowed: "
-                        f"{member.name!r}"
-                    )
-                stream = archive.extractfile(member)
-                if stream is None:
-                    raise ReleaseArtifactError(
-                        f"{path.name}: cannot read member {member.name!r}"
-                    )
-                captured = bytearray()
-                while chunk := stream.read(1024 * 1024):
-                    if member.name in content_members:
-                        captured.extend(chunk)
-                sizes[member.name.rstrip("/")] = member.size
-                permissions[member.name.rstrip("/")] = member.mode & 0o777
-                if member.name in content_members:
-                    content[member.name] = bytes(captured)
-    except (OSError, tarfile.TarError) as error:
-        raise ReleaseArtifactError(
-            f"{path.name}: invalid tar.gz archive: {error}"
-        ) from error
-    _validate_required_files(path.name, sizes, rule.required_files)
-    _validate_executables(path.name, permissions, rule.executable_files)
-    _validate_content_sources(path.name, content, rule.content_sources, source_root)
-
-
 def _validate_required_files(
     archive_name: str, sizes: dict[str, int], required_files: tuple[str, ...]
 ) -> None:
@@ -534,8 +458,6 @@ def validate_release(
         path = artifacts_dir / rule.filename
         if rule.archive_type == "zip":
             _validate_zip(path, rule, source_root)
-        elif rule.archive_type == "tar.gz":
-            _validate_tar(path, rule, source_root)
         else:
             raise ReleaseArtifactError(
                 f"{rule.filename}: unknown archive type {rule.archive_type!r}"
@@ -546,8 +468,9 @@ def validate_release(
     manifest = (
         f"Release tag: {tag}\n"
         f"Commit: {commit}\n"
-        "Included: Windows Tiles; macOS Tiles; Linux Console x86_64\n"
-        "Deferred: Android (signed APK and physical-device acceptance pending)\n"
+        "Included: Windows Tiles; macOS Tiles\n"
+        "Deferred: Linux (not an official release asset); Android "
+        "(signed APK and physical-device acceptance pending)\n"
         "Artifacts:\n"
         + "".join(f"- {name}: sha256:{digest}\n" for name, digest in digests)
     )
@@ -575,7 +498,7 @@ def main() -> int:
         )
     except ReleaseArtifactError as error:
         parser.error(str(error))
-    print(f"OK: validated 3 desktop release archives for {args.tag}")
+    print(f"OK: validated 2 desktop release archives for {args.tag}")
     return 0
 
 
