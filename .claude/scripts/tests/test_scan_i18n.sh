@@ -129,6 +129,28 @@ assert_output "missing-t: sinks, producers, and builders block by default" \
 assert_status "missing-t: every registered display contract blocks" \
     1 "$DISPLAY_AUDIT_RC"
 
+# ── ranged weapon noise display builder ──
+RANGED_NOISE_FIXTURES="$FIXTURES/display-ranged-noise"
+python3 "$SCAN_I18N" missing-t "$RANGED_NOISE_FIXTURES/pass/" \
+    --display-contracts-only \
+    --source-txt "$FIXTURES/display-audit/source.txt" \
+    > /tmp/actual_ranged_noise_pass.txt 2>&1
+assert_contains "ranged noise: translated msg assignments pass" \
+    "DISPLAY: 0 candidates" /tmp/actual_ranged_noise_pass.txt
+
+set +e
+python3 "$SCAN_I18N" missing-t "$RANGED_NOISE_FIXTURES/fail/" \
+    --display-contracts-only \
+    --source-txt "$FIXTURES/display-audit/source.txt" \
+    > /tmp/actual_ranged_noise_fail.txt 2>&1
+RANGED_NOISE_FAIL_RC=$?
+set -e
+assert_status "ranged noise: raw msg assignment blocks" \
+    1 "$RANGED_NOISE_FAIL_RC"
+assert_contains "ranged noise: finding identifies the raw bow message" \
+    "DISPLAY004 _throw_noise msg: You hear a bow twang." \
+    /tmp/actual_ranged_noise_fail.txt
+
 set +e
 python3 "$SCAN_I18N" missing-t "$FIXTURES/display-audit/" \
     --extended-display-audit \

@@ -10048,6 +10048,12 @@ You haven't found that spell!
 You heal %s.
 你治疗了%s。
 %%%%
+You hear a bow twang.
+你听到弓弦发出“嘣”的一声。
+%%%%
+You hear a crossbow thunk.
+你听到重弩发出“咚”的一声。
+%%%%
 You hear a distant and violent thrashing sound.
 你听到远处传来一阵剧烈的挣扎声。
 %%%%
@@ -10057,6 +10063,9 @@ You hear a distant slurping noise.
 You hear a grinding noise.
 你听到一阵研磨声。
 %%%%
+You hear a hand cannon's boom.
+你听到手炮发出“轰”的一声。
+%%%%
 You hear a loud "Zot"!
 你听到一声响亮的"佐特"！
 %%%%
@@ -10065,6 +10074,9 @@ You hear a loud magical explosion!
 %%%%
 You hear a sizzling sound!
 你听到一阵嘶嘶声！
+%%%%
+You hear a sling whirr.
+你听到投石索呼呼作响。
 %%%%
 You hear a snapping sound.
 你听到啪的一声。
@@ -10077,6 +10089,9 @@ You hear a splashing noise.
 %%%%
 You hear a slurping noise.
 你听到一声啜饮声。
+%%%%
+You hear a triple crossbow go thunk-thunk-thunk.
+你听到三弦弩“咚、咚、咚”地连响三声。
 %%%%
 You hear Kikubaaqudgha cackling.
 你听到库巴库德加咯咯地笑。

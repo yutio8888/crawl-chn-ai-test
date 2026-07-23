@@ -112,6 +112,9 @@ DISPLAY_TEXT_BUILDERS = {
         '_iood_hit_setup': ('beam.name',),
         '_annihilation_explode_setup': ('beam.name',),
     },
+    'throw.cc': {
+        '_throw_noise': ('msg',),
+    },
     'tilereg-doll.cc': {
         'render': ('part_name', 'item_str', 'doll_name', 'mode_name',
                    'cat_name', 'info_str', 'help_text'),

@@ -333,10 +333,11 @@ bool fire_warn_if_impossible(bool silent, item_def *weapon)
                 mprf(T_("You cannot throw/fire anything while %s."), held_status());
             return true;
         }
-        else
+        bool held_blocks_shooting = true;
 #if TAG_MAJOR_VERSION == 34
-             if (weapon->sub_type != WPN_BLOWGUN)
+        held_blocks_shooting = weapon->sub_type != WPN_BLOWGUN;
 #endif
+        if (held_blocks_shooting)
         {
             if (!silent)
             {
@@ -521,29 +522,29 @@ static void _throw_noise(actor* act, const item_def &ammo)
     if (launcher == nullptr || !is_range_weapon(*launcher))
         return; // moooom, players are tossing their weapons again
 
-    const char* msg   = nullptr;
+    string msg;
     int noise = 5;
 
     // XXX: move both messages into item-prop.cc?
     switch (launcher->sub_type)
     {
     case WPN_SLING:
-        msg   = "You hear a sling whirr.";
+        msg = T_("You hear a sling whirr.");
         break;
     case WPN_SHORTBOW:
     case WPN_ORCBOW:
     case WPN_LONGBOW:
-        msg   = "You hear a bow twang.";
+        msg = T_("You hear a bow twang.");
         break;
     case WPN_ARBALEST:
-        msg   = "You hear a crossbow thunk.";
+        msg = T_("You hear a crossbow thunk.");
         break;
     case WPN_TRIPLE_CROSSBOW:
-        msg   = "You hear a triple crossbow go thunk-thunk-thunk.";
+        msg = T_("You hear a triple crossbow go thunk-thunk-thunk.");
         break;
     case WPN_HAND_CANNON:
         noise *= 2;
-        msg = "You hear a hand cannon's boom.";
+        msg = T_("You hear a hand cannon's boom.");
         break;
 
     default:
@@ -553,10 +554,10 @@ static void _throw_noise(actor* act, const item_def &ammo)
     }
 
     if (act->is_player() || you.can_see(*act))
-        msg = nullptr;
+        msg.clear();
 
 
-    noisy(noise, act->pos(), msg, act->mid);
+    noisy(noise, act->pos(), msg.empty() ? nullptr : msg.c_str(), act->mid);
 }
 
 static vector<ranged_attack_beam> _construct_player_ranged_beams(item_def* throwing_weapon = nullptr)
