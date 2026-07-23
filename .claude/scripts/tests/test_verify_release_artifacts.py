@@ -141,18 +141,16 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertEqual(first_manifest, (self.root / "RELEASE-MANIFEST.txt").read_bytes())
         self.assertIn(TAG.encode(), first_manifest)
         self.assertIn(COMMIT.encode(), first_manifest)
-        self.assertIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
-        self.assertIn(b"Deferred: Linux", first_manifest)
+        self.assertIn(b"Included: Windows Tiles", first_manifest)
+        self.assertIn(b"Deferred: macOS", first_manifest)
+        self.assertIn(b"Linux (CI build only)", first_manifest)
         self.assertIn(b"Android", first_manifest)
-        self.assertNotIn(b"Included: Windows Tiles; macOS Tiles; Linux", first_manifest)
+        self.assertNotIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
 
-    def test_release_scope_is_exactly_windows_and_macos_tiles(self) -> None:
-        self.assertEqual(2, len(self.rules))
+    def test_release_scope_is_exactly_windows_tiles(self) -> None:
+        self.assertEqual(1, len(self.rules))
         self.assertEqual(
-            {
-                f"stone_soup-{TAG}-tiles-win32.zip",
-                f"stone_soup-{TAG}-tiles-macosx.zip",
-            },
+            {f"stone_soup-{TAG}-tiles-win32.zip"},
             {rule.filename for rule in self.rules},
         )
 
@@ -297,18 +295,6 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assert_rejected("required source file is missing or unsafe")
         source.unlink()
         source.write_bytes(original)
-
-    def test_every_unix_executable_requires_an_executable_bit(self) -> None:
-        for rule in self.rules:
-            for executable in rule.executable_files:
-                with self.subTest(archive=rule.filename, executable=executable):
-                    self._rewrite(
-                        rule,
-                        self._payloads(rule),
-                        mode_overrides={executable: 0o644},
-                    )
-                    self.assert_rejected("executable bit is missing")
-                    self._rewrite(rule, self._payloads(rule))
 
     def test_zip_paths_duplicates_case_collisions_links_and_root_are_rejected(self) -> None:
         rule = self.rules[0]

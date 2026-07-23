@@ -331,13 +331,17 @@ class AgentDocumentationTests(unittest.TestCase):
         self.assertIn("verify_release_artifacts.py", workflow)
         self.assertIn("--draft --verify-tag", workflow)
         self.assertIn("Create draft release once", workflow)
-        self.assertIn("Expected 4 release assets", workflow)
+        self.assertIn("Expected 3 release assets", workflow)
         self.assertNotIn("Download Linux package", workflow)
         self.assertNotIn("name: linux-console", workflow)
+        self.assertNotIn("Download macOS package", workflow)
+        self.assertIn("name: macos-tiles-app", workflow)
+        self.assertIn("首个中文 Windows 正式版", workflow)
+        self.assertIn("macOS Tiles：仅保留 CI 编译产物", workflow)
         release_draft = workflow.split("  release_draft:\n", 1)[1]
-        self.assertNotIn("- build_linux_console", release_draft.split(
-            "    permissions:\n", 1
-        )[0])
+        release_needs = release_draft.split("    permissions:\n", 1)[0]
+        self.assertNotIn("- build_linux_console", release_needs)
+        self.assertNotIn("- build_macos_tiles", release_needs)
         self.assertNotIn("gh release upload", workflow)
         self.assertNotIn("gh release edit", workflow)
 

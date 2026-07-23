@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed validation for DCSS Chinese desktop release archives."""
+"""Fail-closed validation for the DCSS Chinese Windows release archive."""
 
 from __future__ import annotations
 
@@ -47,7 +47,6 @@ class ArtifactRule:
 def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
     major = ".".join(tag.split("-", 1)[0].split(".")[:2])
     windows_root = f"stone_soup-tiles-{major}"
-    mac_root = "Dungeon Crawl Stone Soup - Tiles.app"
     return (
         ArtifactRule(
             filename=f"stone_soup-{tag}-tiles-win32.zip",
@@ -85,57 +84,6 @@ def artifact_rules(tag: str) -> tuple[ArtifactRule, ...]:
             ),
             data_root=f"{windows_root}/dat",
             normalize_text_crlf=True,
-        ),
-        ArtifactRule(
-            filename=f"stone_soup-{tag}-tiles-macosx.zip",
-            archive_type="zip",
-            root=mac_root,
-            required_files=(
-                f"{mac_root}/Contents/MacOS/Dungeon Crawl Stone Soup - Tiles",
-                f"{mac_root}/Contents/Resources/dat/i18n/zh/source.txt",
-                (
-                    f"{mac_root}/Contents/Resources/dat/tiles/"
-                    "MapleMono-NF-CN-Regular.ttf"
-                ),
-                (
-                    f"{mac_root}/Contents/Resources/docs/license/"
-                    "LICENSE-Maple-Mono.txt"
-                ),
-                f"{mac_root}/Contents/Resources/settings/init.txt",
-                f"{mac_root}/Contents/Resources/LICENSE.txt",
-            ),
-            executable_files=(
-                f"{mac_root}/Contents/MacOS/Dungeon Crawl Stone Soup - Tiles",
-            ),
-            content_sources=(
-                ContentSource(
-                    f"{mac_root}/Contents/Resources/dat/i18n/zh/source.txt",
-                    "crawl-ref/source/dat/i18n/zh/source.txt",
-                ),
-                ContentSource(
-                    (
-                        f"{mac_root}/Contents/Resources/dat/tiles/"
-                        "MapleMono-NF-CN-Regular.ttf"
-                    ),
-                    "crawl-ref/source/dat/tiles/MapleMono-NF-CN-Regular.ttf",
-                ),
-                ContentSource(
-                    (
-                        f"{mac_root}/Contents/Resources/docs/license/"
-                        "LICENSE-Maple-Mono.txt"
-                    ),
-                    "docs/fonts/LICENSE-Maple-Mono.txt",
-                ),
-                ContentSource(
-                    f"{mac_root}/Contents/Resources/settings/init.txt",
-                    "crawl-ref/settings/init.txt",
-                ),
-                ContentSource(
-                    f"{mac_root}/Contents/Resources/LICENSE.txt", "LICENSE"
-                ),
-            ),
-            data_root=f"{mac_root}/Contents/Resources/dat",
-            normalize_text_crlf=False,
         ),
     )
 
@@ -468,8 +416,9 @@ def validate_release(
     manifest = (
         f"Release tag: {tag}\n"
         f"Commit: {commit}\n"
-        "Included: Windows Tiles; macOS Tiles\n"
-        "Deferred: Linux (not an official release asset); Android "
+        "Included: Windows Tiles\n"
+        "Deferred: macOS (CI artifact only; acceptance environment unavailable); "
+        "Linux (CI build only); Android "
         "(signed APK and physical-device acceptance pending)\n"
         "Artifacts:\n"
         + "".join(f"- {name}: sha256:{digest}\n" for name, digest in digests)
@@ -498,7 +447,7 @@ def main() -> int:
         )
     except ReleaseArtifactError as error:
         parser.error(str(error))
-    print(f"OK: validated 2 desktop release archives for {args.tag}")
+    print(f"OK: validated 1 Windows release archive for {args.tag}")
     return 0
 
 
