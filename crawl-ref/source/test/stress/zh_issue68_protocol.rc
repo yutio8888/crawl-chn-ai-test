@@ -9,6 +9,7 @@ Lua{
 local eol = string.char(13)
 local action = 0
 local trap_hook_arg = nil
+local cloud_dx, cloud_dy = 1, 0
 
 local function emit(case_id, text)
     if text == nil then text = "<nil>" end
@@ -23,8 +24,10 @@ end
 
 local function replace_cloud(name)
     local chunk = "local x,y=you.pos();" ..
-                  "dgn.delete_cloud(x,y);" ..
-                  "dgn.place_cloud(x,y," .. string.format("%q", name) .. ",100);" ..
+                  "dgn.delete_cloud(x+" .. cloud_dx .. ",y+" .. cloud_dy .. ");" ..
+                  "dgn.grid(x+" .. cloud_dx .. ",y+" .. cloud_dy .. ",'floor');" ..
+                  "dgn.place_cloud(x+" .. cloud_dx .. ",y+" .. cloud_dy .. "," ..
+                      string.format("%q", name) .. ",100);" ..
                   "return true"
     return crawl.call_dlua(chunk)
 end
@@ -43,7 +46,7 @@ function ready()
     elseif action == 3 then
         crawl.sendkeys(".")
     elseif action == 4 then
-        local cloud = view.cloud_at(0, 0)
+        local cloud = view.cloud_at(cloud_dx, cloud_dy)
         assert(cloud == "noxious fumes", "unexpected cloud token: " .. tostring(cloud))
         emit("protocol:cloud:noxious", cloud)
 
@@ -52,7 +55,7 @@ function ready()
     elseif action == 5 then
         crawl.sendkeys(".")
     elseif action == 6 then
-        local cloud = view.cloud_at(0, 0)
+        local cloud = view.cloud_at(cloud_dx, cloud_dy)
         assert(cloud == "freezing vapour", "unexpected cloud token: " .. tostring(cloud))
         emit("protocol:cloud:freezing", cloud)
 
@@ -61,7 +64,7 @@ function ready()
     elseif action == 7 then
         crawl.sendkeys(".")
     elseif action == 8 then
-        local cloud = view.cloud_at(0, 0)
+        local cloud = view.cloud_at(cloud_dx, cloud_dy)
         assert(cloud == "foul pestilence", "unexpected cloud token: " .. tostring(cloud))
         emit("protocol:cloud:foul", cloud)
 
@@ -75,6 +78,7 @@ function ready()
             local map = dgn.map_by_name("laboratory")
             if not map then return -1 end
             if not dgn.place_map(map, false, true) then return -2 end
+            dgn.dismiss_monsters()
             local maps = dgn.maps_used_here()
             local vault = maps[#maps]
             if not vault then return -3 end
