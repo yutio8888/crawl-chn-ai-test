@@ -120,8 +120,14 @@ bool StatRegion::update_tip_text(string& tip)
                 return true;
             }
 
-            tip = inf.light_text;
-            return true;
+            // A cached hitbox can outlive a dynamic status (for example a
+            // channelled spell). Never claim a tooltip when all texts are empty.
+            if (!inf.light_text.empty())
+            {
+                tip = inf.light_text;
+                return true;
+            }
+            continue;
         }
     }
 

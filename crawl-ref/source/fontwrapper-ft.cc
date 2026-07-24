@@ -18,6 +18,7 @@
 #include "syscalls.h"
 #include "tilebuf.h"
 #include "tilefont.h"
+#include "tilefont-internal.h"
 #include "tilesdl.h"
 #include "unicode.h"
 #include "unwind.h"
@@ -892,84 +893,17 @@ int FTFontWrapper::find_index_before_width(const char *text, int max_str_width)
     return INT_MAX;
 }
 
-static int _find_newline(const char *s)
-{
-    const char *nl = strchr(s, '\n');
-    return nl ? nl-s : INT_MAX;
-}
-
 formatted_string FTFontWrapper::split(const formatted_string &str,
                                       unsigned int max_str_width,
                                       unsigned int max_str_height)
 {
     int max_lines = display_density.logical_to_device(max_str_height)
                                                         / char_height(false);
-
-    if (max_lines < 1)
-        return formatted_string();
-
-    formatted_string ret;
-    ret += str;
-
-    string base = str.tostring();
-    int num_lines = 0;
-
-    char *line = &base[0];
-    while (true)
-    {
-        int nl = _find_newline(line);
-        int line_end = find_index_before_width(line, max_str_width);
-        if (line_end == INT_MAX && nl == INT_MAX)
-            break;
-
-        int space_idx = 0;
-        if (nl < line_end)
-            space_idx = nl;
-        else
+    return tilefont_internal::split_formatted_string(str, max_lines,
+        [this, max_str_width](const char *line)
         {
-            space_idx = -1;
-            for (char *search = &line[line_end];
-                 search > line;
-                 search = prev_glyph(search, line))
-            {
-                if (*search == ' ')
-                {
-                    space_idx = search - line;
-                    break;
-                }
-            }
-        }
-
-        if (++num_lines >= max_lines || space_idx == -1)
-        {
-            line_end = min(line_end, nl);
-            int ellipses;
-            if (space_idx != -1 && space_idx - line_end > 2)
-                ellipses = space_idx;
-            else
-            {
-                ellipses = line_end;
-                for (unsigned i = 0; i < strlen(".."); i++)
-                {
-                    char *prev = prev_glyph(&line[ellipses], line);
-                    ellipses = (prev ? prev : line) - line;
-                }
-            }
-
-            ret = ret.chop_bytes(&line[ellipses] - &base[0]);
-            ret += "..";
-            return ret;
-        }
-        else if (space_idx != nl)
-        {
-            line[space_idx] = '\n';
-            ret[&line[space_idx] - &base[0]] = '\n';
-        }
-
-        line = &line[space_idx+1];
-    }
-
-    return ret;
+            return find_index_before_width(line, max_str_width);
+        });
 }
 
 /**
@@ -981,41 +915,37 @@ formatted_string FTFontWrapper::split(const formatted_string &str,
  * @param min_pos the top-left boundary of the screen
  * @param max_pos the bottom-right boundary of the screen
  */
-void FTFontWrapper::render_tooltip(unsigned int px, unsigned int py,
+void FTFontWrapper::render_tooltip(int px, int py,
                                   const formatted_string &text,
                                   const coord_def &min_pos,
                                   const coord_def &max_pos)
 {
-    int outline = 7;
-    const int wx = string_width(text);
-    const int wy = string_height(text);
+    const int outline = 7;
+    const int max_text_width = max_pos.x - min_pos.x - 2 * outline;
+    const int max_text_height = max_pos.y - min_pos.y - 2 * outline;
+    if (max_text_width <= 0 || max_text_height <= 0)
+        return;
 
-    // text starting location
-    int tx = px - 15, ty = py + 20;
+    const formatted_string fitted = split(text, max_text_width,
+                                           max_text_height);
+    if (fitted.empty())
+        return;
 
-    // box position, before shifting
-    const int sx = tx - outline;
-    const int sy = ty - outline;
-    const int ex = tx + wx + outline;
-    const int ey = ty + wy + outline;
-
-    if (ex > max_pos.x)
-        tx += max_pos.x - ex;
-    else if (sx < min_pos.x)
-        tx -= sx - min_pos.x;
-
-    if (ey > max_pos.y)
-        ty += max_pos.y - ey;
-    else if (sy < min_pos.y)
-        ty -= sy - min_pos.y;
+    const int wx = string_width(fitted);
+    const int wy = string_height(fitted);
+    const tilefont_internal::tooltip_position pos =
+        tilefont_internal::place_tooltip(px, py, wx, wy, outline,
+                                         min_pos, max_pos);
 
     const VColour border_colour(125, 98, 60);
     const VColour bg_colour(4, 2, 4);
-    _draw_box(tx-outline, ty-outline, wx+2*outline, wy+2*outline, border_colour);
-    outline -= 2;
-    _draw_box(tx-outline, ty-outline, wx+2*outline, wy+2*outline, bg_colour);
+    _draw_box(pos.x - outline, pos.y - outline,
+              wx + 2 * outline, wy + 2 * outline, border_colour);
+    const int inner_outline = outline - 2;
+    _draw_box(pos.x - inner_outline, pos.y - inner_outline,
+              wx + 2 * inner_outline, wy + 2 * inner_outline, bg_colour);
 
-    render_string(tx, ty, text);
+    render_string(pos.x, pos.y, fitted);
 }
 
 /**
@@ -1026,7 +956,7 @@ void FTFontWrapper::render_tooltip(unsigned int px, unsigned int py,
  * @param text the string to render
  * @param font_colour the text colour to use
  */
-void FTFontWrapper::render_string(unsigned int px, unsigned int py,
+void FTFontWrapper::render_string(int px, int py,
                                   const formatted_string &text)
 {
     clear_pins();
@@ -1044,7 +974,7 @@ void FTFontWrapper::render_string(unsigned int px, unsigned int py,
  * @param text the string to render
  * @param font_colour the text colour to use
  */
-void FTFontWrapper::render_hover_string(unsigned int px, unsigned int py,
+void FTFontWrapper::render_hover_string(int px, int py,
                                   const formatted_string &text)
 {
     const int wx = string_width(text);

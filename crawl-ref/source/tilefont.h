@@ -38,15 +38,15 @@ public:
                                   bool drop_shadow = false) = 0;
 
     // render text + background box
-    virtual void render_tooltip(unsigned int x, unsigned int y,
+    virtual void render_tooltip(int x, int y,
                                const formatted_string &text,
                                const coord_def &min_pos,
                                const coord_def &max_pos) = 0;
 
-    virtual void render_string(unsigned int x, unsigned int y,
+    virtual void render_string(int x, int y,
                                const formatted_string &text) = 0;
 
-    virtual void render_hover_string(unsigned int x, unsigned int y,
+    virtual void render_hover_string(int x, int y,
                                const formatted_string &text) = 0;
 
     // FontBuffer helper functions

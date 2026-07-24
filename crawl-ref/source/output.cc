@@ -1449,6 +1449,11 @@ static void _print_status_lights(int y)
     vector<status_light> lights;
     static int last_number_of_lights = 0;
     _get_status_lights(lights);
+#ifdef USE_TILE_LOCAL
+    // The registry is a per-layout snapshot and must be dropped before any
+    // early return, otherwise stale hitboxes remain active while no lights do.
+    clear_status_hitboxes();
+#endif
     if (lights.empty() && last_number_of_lights == 0)
     {
         you.redraw_status_lights = false;
@@ -1457,8 +1462,6 @@ static void _print_status_lights(int y)
     last_number_of_lights = lights.size();
 
 #ifdef USE_TILE_LOCAL
-    clear_status_hitboxes();
-
     if (_uses_top_bar())
     {
         int status_x = 1;

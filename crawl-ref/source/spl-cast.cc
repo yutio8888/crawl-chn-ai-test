@@ -3531,6 +3531,7 @@ void stop_channelling_spells(bool quiet)
 
     you.attribute[ATTR_CHANNELLED_SPELL] = 0;
     you.attribute[ATTR_CHANNEL_DURATION] = 0;
+    you.redraw_status_lights = true;
 
     if (quiet)
         return;
