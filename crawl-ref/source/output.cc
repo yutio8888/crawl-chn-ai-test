@@ -183,7 +183,7 @@ enum touchui_states
     TOUCH_T_QV    = 0x010B,
     TOUCH_V_QV    = 0x020B, // dummy
     TOUCH_V_LIGHT = 0x010C,
-    // Explicit state used by the compact top bar.  Top-bar coordinates are
+    // Explicit state used by the compact top bar. Top-bar coordinates are
     // already final screen coordinates; keeping a distinct state prevents
     // them from being remapped as legacy vertical-HUD fields.
     TOUCH_S_TOPBAR = 0x7F00,
@@ -197,7 +197,7 @@ static void _cgotoxy_touchui(int x, int y, GotoRegion region = GOTO_CRT)
     else
         TOUCH_UI_STATE = TOUCH_S_INIT;
 
-    // Compact top-bar coordinates are final coordinates.  Still pass them
+    // Compact top-bar coordinates are final coordinates. Still pass them
     // through TouchUI so callers use one drawing path, but do not apply the
     // legacy vertical-HUD remapping below.
     if (crawl_view.hudsz.y <= 7)
@@ -706,7 +706,7 @@ void update_message_status()
 
 void update_turn_count()
 {
-    // The compact Android top bar owns the entire stat region.  The legacy
+    // The compact Android top bar owns the entire stat region. The legacy
     // turn/time line would otherwise be remapped onto its fourth row.
     if (_uses_top_bar())
         return;

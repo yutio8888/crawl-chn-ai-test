@@ -140,9 +140,7 @@ formatted_string split_formatted_string(const formatted_string &text,
         }
 
         if (space_idx == newline)
-        {
             line_start += newline + 1;
-        }
         else if (space_idx != -1)
         {
             const size_t break_at = line_start + space_idx;

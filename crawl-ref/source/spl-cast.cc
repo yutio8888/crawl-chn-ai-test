@@ -743,9 +743,7 @@ bool can_cast_spells(bool quiet)
     if (you.duration[DUR_NO_CAST])
     {
         if (!quiet)
-        {
             mpr(T_("You are unable to access your magic!"));
-        }
         return false;
     }
 
@@ -753,9 +751,7 @@ bool can_cast_spells(bool quiet)
     if (you.no_cast())
     {
         if (!quiet)
-        {
             mpr(T_("Something interferes with your magic!"));
-        }
         return false;
     }
 
@@ -769,9 +765,7 @@ bool can_cast_spells(bool quiet)
     if (you.confused())
     {
         if (!quiet)
-        {
             mpr(T_("You're too confused to cast spells."));
-        }
         return false;
     }
 
@@ -824,9 +818,7 @@ static void _handle_energy_orb(int cost, spret cast_result)
         int drain = !targs.empty() ? random_range(1, 3) + targs.size() / 2 : 0;
 
         if (targs.empty())
-        {
             mpr(T_("Magical energy flows into your mind!"));
-        }
         else
         {
             mprf(T_("Magical energy flows from %s into your mind!"),
@@ -3571,8 +3563,10 @@ bool warn_about_contam_cost(int max_contam)
     const int mul = you.has_mutation(MUT_CONTAMINATION_SUSCEPTIBLE) ? 2 : 1;
 
     if (you.magic_contamination + (max_contam * mul) >= 1000)
+    {
         return !yesno(T_("Casting now could cause dangerous contamination. Continue?"),
                       true, 'n');
+    }
 
     return false;
 }

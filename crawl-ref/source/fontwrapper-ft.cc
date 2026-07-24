@@ -272,9 +272,7 @@ bool FTFontWrapper::configure_font()
     m_pinned.assign(m_atlas_capacity, 0);
 
     for (unsigned int i = 0; i < m_atlas_capacity; i++)
-    {
         m_atlas[i] = FontAtlasEntry();
-    }
 
     // Slot 0: full-white block (reserved, never evicted)
     // used by colour_bar
