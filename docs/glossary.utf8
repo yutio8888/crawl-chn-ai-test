@@ -101,7 +101,6 @@ Battlecry	战吼	domain=spells; source=EN/ZH; 备注=✅
 battlesphere	战斗法球	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 beak	鸟喙	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 Beam	光束	domain=magic; source=EN/ZH; 状态=✅ 已确认（2 项现行；`Shadow Beam` 已在 Shadow 批次审阅）
-Beastly Appendage	野兽肢体	domain=spells; source=EN/ZH; 备注=✅
 Beckoning Gale	召唤强风	domain=spells; source=EN/ZH; 备注=✅
 begs	乞求道	domain=dialogue; source=EN/ZH; 适用角色=濒死角色
 bennu	贝努鸟	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
@@ -115,7 +114,6 @@ Bind Souls	绑定灵魂	domain=spells; source=EN/ZH; 备注=✅
 black bear	黑熊	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black draconian	黑龙人	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 black mamba	黑曼巴蛇	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
-Blade Hands	利刃之手	domain=spells; source=EN/ZH; 备注=✅
 blazeheart core	焰心核心	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 blazeheart golem	焰心魔像	domain=monsters; source=EN/ZH; Scope / comment=monster; source=source.txt
 Blink	闪烁	domain=magic; source=EN/ZH; 状态=✅ 已确认（现行 8 项；另有 1 项已移除／TAG 34 兼容记录） | domain=spells; source=EN/ZH; 备注=✅ 现行
@@ -312,7 +310,7 @@ Dowan	多万	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monste
 draconian	龙人	domain=species; source=EN/ZH; 裁决=[D-A-007]; 复合格式=颜色 + 龙人（黑龙人、绿龙人）
 Draconian Breath	龙人吐息	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 dragon	龙	domain=core; source=EN/ZH
-Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=✅
+Dragon Form	巨龙变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Dragon's Call	龙之呼唤	domain=spells; source=EN/ZH; 备注=✅
 dragon-coil talisman	盘龙护符	domain=items; source=EN/ZH; Scope / comment=talisman; decision=D-B-018
 Drain	汲取	domain=combat; source=EN/ZH; column3=生命/魔力吸取效果
@@ -391,6 +389,7 @@ Forge Monarch Bomb	锻造君主炸弹	domain=spells; source=EN/ZH; 备注=✅
 Forge Phalanx Beetle	锻造方阵甲虫	domain=spells; source=EN/ZH; 备注=✅
 Forgecraft	锻造术	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Forgewright	锻造师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
+Form	变形	domain=magic; source=EN/ZH; 状态=⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用）
 formicid	蚁人	domain=species; source=EN/ZH
 Fortress Blast	堡垒冲击	domain=spells; source=EN/ZH; 备注=✅
 Foxfire	狐火	domain=spells; source=EN/ZH; 备注=🆕
@@ -473,8 +472,8 @@ Hurl Damnation	投掷天谴	domain=abilities; source=EN/ZH; Scope / comment=abil
 Hurl Damnation	投掷诅咒	domain=spells; source=EN/ZH; 备注=✅
 Hurl Sludge	投掷污泥	domain=spells; source=EN/ZH; 备注=✅
 Hurl Torchlight	投掷火炬之光	domain=spells; source=EN/ZH; 备注=✅
-Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=✅
-Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=✅
+Hydra Form	多头蛇变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
+Ice Form	寒冰变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Ice Magic	寒冰魔法	domain=magic; source=EN/ZH | domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Iceblast	冰爆	domain=spells; source=EN/ZH; 备注=✅
 icy blue scales	冰蓝鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
@@ -609,7 +608,6 @@ Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/
 Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅
 Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Necromancy	死灵术	domain=magic; source=EN/ZH
-Necromutation	亡灵变形	domain=spells; source=EN/ZH; 备注=✅
 Nellie	内莉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Nemelex Xobeh	尼姆雷斯·索布	domain=gods; source=EN/ZH; 类型=音译·U+00B7; 裁决=[D-A-004]
 Nergalle	内尔加勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -806,7 +804,7 @@ Spellcasting	施法能力	domain=skills; source=EN/ZH; Scope / comment=skill; so
 spellpower	法术威力	domain=core; source=EN/ZH; 注意事项=**绝不**译为"法力"——法力 = MP
 Spellspark Servitor	法术火花仆从	domain=spells; source=EN/ZH; 备注=✅
 Sphinx Sisters	斯芬克斯姐妹	domain=spells; source=EN/ZH; 备注=✅
-Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=✅
+Spider Form	蜘蛛变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Spit Acid	喷吐酸液	domain=spells; source=EN/ZH; 备注=✅
 Spit Lava	喷吐岩浆	domain=spells; source=EN/ZH; 备注=✅
 Spit Poison	喷吐毒液	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
@@ -817,7 +815,7 @@ Sporulate	产孢	domain=spells; source=EN/ZH; 备注=✅
 spriggan	小精灵	domain=species; source=EN/ZH; 裁决=[D-A-011]; 复合格式=小精灵 + 职业（小精灵气法师、小精灵狂战士）
 Starburst	星爆	domain=spells; source=EN/ZH; 备注=✅
 Static Discharge	静电释放	domain=spells; source=EN/ZH; 备注=✅
-Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=✅
+Statue Form	石像变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Staves	杖类	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Steam Ball	蒸汽球	domain=spells; source=EN/ZH; 备注=✅
 Steam Breath	蒸汽吐息	domain=spells; source=EN/ZH; 备注=✅
@@ -830,7 +828,7 @@ stinger	毒刺	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=
 Stoke Flames	煽旺火焰	domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺，并召出蔓延炼狱 | domain=spells; source=EN/ZH; 备注=📝；`stoke` 指添燃料使火势更旺
 Stone Arrow	石箭	domain=spells; source=EN/ZH; 备注=✅
 Stoneskin	石肤术	domain=spells; source=EN/ZH; 备注=✅
-Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=✅
+Storm Form	风暴变形	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
 Striking	打击术	domain=spells; source=EN/ZH; 备注=✅
 Strip Willpower	剥离意志力	domain=spells; source=EN/ZH; 备注=✅
 strong	强壮	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

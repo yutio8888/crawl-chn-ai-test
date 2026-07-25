@@ -906,6 +906,42 @@ TextDB 描述，8 项玩家能力另由 ability TextDB 提供或补充描述；4
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
 
+## Form 词形系列
+
+边界：英文标题以独立 `Form` 结尾的 6 项法术，全部为
+`TAG_MAJOR_VERSION == 34` 已移除兼容记录；没有现行成员。
+
+| Enum | 生命周期 | 当前译名 | 当前机制证据 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_HYDRA_FORM` | 已移除兼容 | 多头蛇变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_SPIDER_FORM` | 已移除兼容 | 蜘蛛变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_ICE_FORM` | 已移除兼容 | 寒冰变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_STATUE_FORM` | 已移除兼容 | 石像变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_STORM_FORM` | 已移除兼容 | 风暴变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+| `SPELL_DRAGON_FORM` | 已移除兼容 | 巨龙变形 | 无当前描述或实现 | 证据不足，暂沿用 |
+
+名称结论：六项都采用自然且一致的 `Form → 变形` 结构，并准确标出目标
+形态；但当前源码只有 `AXED_SPELL` 身份。没有现行描述和实现时，不凭
+历史记忆判断强度或附加机制，也不以现行护符变形系统反推旧法术重命名。
+
+证据：511 项 inventory 的生命周期与描述存在性字段；
+`spl-data.h:4733`—`4739` 的六项 `AXED_SPELL` 记录；
+`spell-type.h` 中受 `TAG_MAJOR_VERSION == 34` 保护的独立身份。
+
+### 落地状态
+
+- [x] 6/6 生命周期证据与标题裁定
+- [x] 无翻译资产修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-027`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T165142383612000+0800-51642-6a3c231a76d9`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`b2d3de29d93544445001b1afca83b4312e23861a331cc08b426325af5986c2c5`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`1829b52622d79de772a3de6ac84fb9da0be2431cc3c774b35613e0e73629dbb0`。
+
 ## Gaze 词形系列
 
 边界：英文标题以独立 `Gaze` 结尾的 7 项现行法术，无已移除兼容成员。

@@ -97,6 +97,7 @@
 | Arrow | 箭 | ✅ 已确认（4 项现行；`Mercury Arrow → 汞矢` 为消除重名的辨识性例外） |
 | Flame / Flames | 火焰 / 焰 | ✅ 已确认（7 项现行；另有 3 项已移除兼容；复合标题允许“焰／烈焰”） |
 | Touch | 触 | ✅ 已确认（2 项现行） |
+| Form | 变形 | ⚠️ 已审阅（6 项均为已移除／TAG 34 兼容记录；机制证据不足，暂沿用） |
 | Dispel | 驱散 | ✅ 已确认 |
 
 其他词根将在逐批审阅中确认并补充。
@@ -886,19 +887,16 @@
 | Conjure Flame | 召唤火焰 | ⚠️ 已移除／TAG 34 兼容 |
 | Flame Tongue | 火焰之舌 | ⚠️ 已移除／TAG 34 兼容 |
 
-### Form（9）
+### Form（6）
 
 | EN | ZH | 备注 |
 |---------|------|------|
-| Beastly Appendage | 野兽肢体 | ✅ |
-| Blade Hands | 利刃之手 | ✅ |
-| Dragon Form | 巨龙变形 | ✅ |
-| Hydra Form | 多头蛇变形 | ✅ |
-| Ice Form | 寒冰变形 | ✅ |
-| Necromutation | 亡灵变形 | ✅ |
-| Spider Form | 蜘蛛变形 | ✅ |
-| Statue Form | 石像变形 | ✅ |
-| Storm Form | 风暴变形 | ✅ |
+| Dragon Form | 巨龙变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Hydra Form | 多头蛇变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Ice Form | 寒冰变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Spider Form | 蜘蛛变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Statue Form | 石像变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
+| Storm Form | 风暴变形 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 
 ### Possessive（35）
 

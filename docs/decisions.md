@@ -1374,6 +1374,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-027 — Spell name review: Form 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前生命周期与兼容记录逐项复核
+- **Scope**: 6 项以独立 `Form` 结尾的标题，全部为
+  `TAG_MAJOR_VERSION == 34` 已移除兼容记录
+- **Choice**: `Hydra Form → 多头蛇变形`、`Spider Form → 蜘蛛变形`、
+  `Ice Form → 寒冰变形`、`Statue Form → 石像变形`、
+  `Storm Form → 风暴变形` 与 `Dragon Form → 巨龙变形` 均暂沿用。
+- **Series rule**: 此组历史标题稳定采用 `Form → 变形`；该规则仅说明
+  当前兼容标题的一致性，不把已移除法术的历史机制当作现行事实。
+- **Rationale**: 六个中文标题都准确表达相应目标形态，内部结构一致；
+  但当前源码只保留 `AXED_SPELL` 身份，没有现行描述或实现。缺少可验证
+  机制时不凭历史记忆重译，也不把旧法术与现行护符变形系统混为一谈。
+- **Description corrections**: 无；六项均无当前英中描述。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -1883,3 +1907,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-024 | Spell name review — Touch 词形系列 | 2 current；1 description fix | active |
 | D-C-025 | Spell name review — Arrow 词形系列 | 4 current；4 description fixes | active |
 | D-C-026 | Spell name review — Flame/Flames 词形系列 | 1 fix；7 current + 3 axed compatibility；2 description fixes | active |
+| D-C-027 | Spell name review — Form 词形系列 | 6 axed compatibility | active |
