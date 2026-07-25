@@ -1736,6 +1736,32 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-041 — Spell name review: Nazja's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与构装体修复／强化实现逐项复核
+- **Scope**: 2 项以 `Nazja's` 开头的现行标题
+- **Choice**: 保留 `Nazja's All-Purpose Tempering → 纳兹亚之通用淬炼`
+  与 `Nazja's Percussive Tempering → 纳兹亚之冲击淬炼`。
+- **Series rule**: 人名 `Nazja → 纳兹亚`，所有格采用“纳兹亚之……”；
+  `Tempering → 淬炼`，`All-Purpose → 通用`，`Percussive → 冲击`。
+- **Rationale**: 两项均以魔法锤修复并强化构装体，故“淬炼”准确；
+  怪物版可影响任意附近构装体，适合“通用”，玩家版敲击时迸发伤害性
+  冲击波，适合“冲击”。
+- **Description corrections**: 两段中文仍描述旧版强化已装备武器或护甲。
+  本批按当前英文与实现重译，恢复构装体目标、修复与攻击强化、邻近敌人
+  冲击波伤害，以及强化消退前不可重复施放；并明确玩家版只作用于自身
+  锻造术创造物，怪物版可作用于任意附近构装体。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2259,3 +2285,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-038 | Spell name review — Borgnjor's 专名系列 | 1 fix；2 current；1 description fix | active |
 | D-C-039 | Spell name review — Alistair's 专名系列 | 2 current；1 description clarification | active |
 | D-C-040 | Spell name review — Eringya's 专名系列 | 2 current；1 description + 1 quote fix | active |
+| D-C-041 | Spell name review — Nazja's 专名系列 | 2 current；2 description fixes | active |

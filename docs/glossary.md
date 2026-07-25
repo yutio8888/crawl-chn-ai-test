@@ -961,8 +961,8 @@
 | Martyr's Knell | 殉道者之丧钟 | ✅ |
 | Maxwell's Capacitive Coupling | 麦克斯韦之电容耦合 | ✅；专名统一为“麦克斯韦” |
 | Maxwell's Portable Piledriver | 麦克斯韦之便携打桩机 | ✅；空间压缩后将整列生物推向障碍物 |
-| Nazja's All-Purpose Tempering | 纳兹亚之通用淬炼 | ✅ |
-| Nazja's Percussive Tempering | 纳兹亚之冲击淬炼 | ✅ |
+| Nazja's All-Purpose Tempering | 纳兹亚之通用淬炼 | ✅；可修复并强化附近任意构装体 |
+| Nazja's Percussive Tempering | 纳兹亚之冲击淬炼 | ✅；修复并强化施法者锻造的构装体 |
 | Olgreb's Toxic Radiance | 奥尔格雷布之毒辐射 | ✅ |
 | Ozocubu's Armour | 奥佐库布之护甲 | ✅；厚冰护体并提高护甲，移动后消失 |
 | Ozocubu's Refrigeration | 奥佐库布之制冷 | ✅；冻结视野内其他生物，邻接盟友可减伤 |

@@ -606,8 +606,8 @@ mutters	咕哝道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Cra
 naga	纳迦	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
 nagaraja	纳迦王	domain=species; source=EN/ZH; 裁决=[D-A-012]; 复合格式=纳迦 + 职业（纳迦法师、纳迦神射手）
 Natasha	娜塔莎	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/ZH; 备注=✅
-Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅
+Nazja's All-Purpose Tempering	纳兹亚之通用淬炼	domain=spells; source=EN/ZH; 备注=✅；可修复并强化附近任意构装体
+Nazja's Percussive Tempering	纳兹亚之冲击淬炼	domain=spells; source=EN/ZH; 备注=✅；修复并强化施法者锻造的构装体
 Necromancer	死灵法师	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Necromancy	死灵术	domain=magic; source=EN/ZH
 Nellie	内莉	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
