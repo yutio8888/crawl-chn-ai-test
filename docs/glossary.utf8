@@ -290,7 +290,7 @@ Dispater title	迪斯帕特，铁城领主	domain=monster-titles; source=EN/ZH; 
 Dispel	驱散	domain=magic; source=EN/ZH; 状态=✅ 已确认
 Dispel Undead	驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
 Dispel Undead Range	远程驱散亡灵	domain=spells; source=EN/ZH; 备注=✅
-Dispersal	驱散	domain=spells; source=EN/ZH; 备注=✅
+Dispersal	空间驱离	domain=spells; source=EN/ZH; 备注=✅；传送系法术，将附近生物传送或闪送离开；与 Dispel「驱散」区分
 Dissolution	分解者	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Dissolution title	分解者，吉瓦的高级祭司	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 Dithmenos	迪斯姆诺	domain=gods; source=EN/ZH; 类型=音译

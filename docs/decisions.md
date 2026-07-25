@@ -1314,6 +1314,23 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 
 ---
 
+### D-A-042 — Dispersal → 空间驱离
+
+- **Type**: A — Entity ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 当前法术描述与 `cast_dispersal` 实现复核
+- **Choice**: 空间驱离
+- **Rejected**: 驱散（Dispersal 旧译；仅否定该法术名，不否定 Dispel 及普通动词“驱散”）
+- **Rationale**: `Dispersal` 会将施法者附近的生物传送到远处；成功抵抗的生物仍会被强制闪送一小段距离。“空间驱离”同时表达空间位移和使目标远离，并与已确认的 `Dispel → 驱散` 明确区分，避免误解为解除魔法效果。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt` ✅
+  - `docs/glossary.md` ✅
+  - `docs/glossary.utf8` ✅
+- **Resolved**: 2026-07-25
+
+---
+
 ## Quick Reference: All Decision IDs
 
 | ID | Entity | Choice | Status |
@@ -1357,6 +1374,7 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-A-039 | Felid (player species) | 猫 | active ✅ |
 | D-A-040 | Octopode (player species) | 章鱼 | active ✅ |
 | D-A-041 | non-unique monster display names and quote exceptions | 术士 / 巨鳄龟 / 乱流 / 丧尸 | active ✅ |
+| D-A-042 | Dispersal | 空间驱离 | active ✅ |
 | D-C-007 | Spell name revision — Bolt 系列去"之" | 6 fixes | active |
 | D-C-008 | Spell name revision — Cloud 重名拆分 | 2 fixes | active |
 | D-C-009 | Spell name revision — Call 系列统一"呼唤" | 5 fixes | active |

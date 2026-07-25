@@ -1028,7 +1028,7 @@
 | Diminish Spells | 削弱法术 | ✅ |
 | Discord | 纷乱 | 📝 |
 | Disjunction | 空间分离 | ✅ |
-| Dispersal | 驱散 | ✅ |
+| Dispersal | 空间驱离 | ✅；传送系法术，将附近生物传送或闪送离开；与 Dispel「驱散」区分 |
 | Divine Armament | 神圣武装 | ✅ |
 | Dominate Undead | 支配亡灵 | ✅ |
 | Doomsaying | 宣告厄运 | ✅ |

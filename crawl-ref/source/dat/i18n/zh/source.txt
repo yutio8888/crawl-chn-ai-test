@@ -309,7 +309,7 @@ crumbled stone wall
 崩塌的石墙
 %%%%
 Dispersal
-驱散
+空间驱离
 %%%%
 Enfeeble
 衰弱
