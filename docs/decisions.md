@@ -2213,6 +2213,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-063 — Spell name review: Song 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Siren Song → 塞壬之歌`、`Avatar Song → 化身之歌`
+  与 `Song of Shielding → 护盾之歌`。
+- **Series rule**: `Song → 歌`；所属实体或作用采用“X之歌”。
+- **Rationale**: 三项分别准确保留塞壬、化身和护盾意象；现行两项标题
+  不需展开意志抵抗、移动限制、眩晕或召来溺魂等后续效果。
+- **Description corrections**: 无；现行中英文描述一致。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2758,3 +2777,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-060 | Spell name review — Invisibility 词形系列 | 2 current；1 rename | active |
 | D-C-061 | Spell name review — Abjuration 词形系列 | 1 current + 1 axed；1 wording fix | active |
 | D-C-062 | Spell name review — Infusion 词形系列 | 3 axed；no text fixes | active |
+| D-C-063 | Spell name review — Song 词形系列 | 2 current + 1 axed；no text fixes | active |

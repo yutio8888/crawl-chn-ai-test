@@ -2145,6 +2145,38 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
 
+## Song 词形系列
+
+边界：标题含 `Song` 的 3 项法术；2 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_SIREN_SONG` | 现行 | 塞壬之歌 | 迷魂附近听众；限制冒险者远离并眩晕其他生物 | 保留 |
+| `SPELL_AVATAR_SONG` | 现行 | 化身之歌 | 更强的歌声效果，且可能从深水召来溺魂 | 保留 |
+| `SPELL_SONG_OF_SHIELDING` | 已移除兼容 | 护盾之歌 | 无当前描述或实现 | 保留 |
+
+名称结论：三项自然采用“X之歌”结构，分别保留塞壬、化身和护盾意象；
+标题无需枚举意志抵抗、移动限制、眩晕或召来溺魂等后续机制。
+
+现行两项中英文描述准确一致；兼容标题无当前描述或实现。
+
+证据：对应 `spl-data.h` 三项条目及 `dat/descript/spells.txt:76`—`85`、
+`1896`—`1902`。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制证据与名称裁定
+- [x] 无游戏文本修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-063`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T180907580005000+0800-17233-7a0d313eb6e6`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`de13b8ddbe0891b689ce97e9637405d5f4dc57b61a8dfb6d7ae6f08ef8f5af36`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`c392f90fa10ecbdf48d9fdcf1e7f47cbf16d18454c2043495490bdf34dd5fff1`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

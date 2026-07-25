@@ -73,7 +73,7 @@ Asterion	阿斯忒里翁	domain=unique-monsters; source=EN/ZH; Scope / comment=u
 Asterion title	堕落之王阿斯忒里翁	domain=monster-titles; source=EN/ZH; Scope / comment=monster-title; source=database/zh/montitle.txt
 attack	攻击	domain=combat; source=EN/ZH
 Aura of Abjuration	驱逐灵气	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
-Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅
+Avatar Song	化身之歌	domain=spells; source=EN/ZH; 备注=✅；限制冒险者远离、眩晕其他生物并可能召来溺魂
 Awaken	唤醒	domain=magic; source=EN/ZH; 状态=✅ 已确认（4 项现行；另有 1 项已移除兼容）
 Awaken Armour	唤醒护甲	domain=spells; source=EN/ZH; 备注=✅
 Awaken Earth	唤醒大地	domain=spells; source=EN/ZH; 备注=⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用
@@ -780,7 +780,7 @@ Silence	沉默	domain=core; source=EN/ZH; 注意事项=禁止施法/阅读卷轴
 Silver Blast	白银冲击	domain=spells; source=EN/ZH; 备注=✅
 Singularity	奇点术	domain=spells; source=EN/ZH; 备注=✅
 Siphon Essence	吸取精华	domain=spells; source=EN/ZH; 备注=✅
-Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅
+Siren Song	塞壬之歌	domain=spells; source=EN/ZH; 备注=✅；迷魂附近听众，离开施法者视野后解除移动限制
 skill	技能	domain=core; source=EN/ZH
 Sleep	睡眠	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅
 Sleetstrike	冰雨打击	domain=spells; source=EN/ZH; 备注=✅
@@ -793,7 +793,7 @@ snarls	咆哮道	domain=dialogue; source=EN/ZH; 适用角色=野兽、狼人
 Snorg	斯诺格	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojobo	索乔波	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Sojourning Bolt	羁旅箭	domain=spells; source=EN/ZH; 备注=📝 现行
-Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=✅
+Song of Shielding	护盾之歌	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Sonic wave	音波	domain=spells; source=EN/ZH; 备注=✅
 Sonja	索尼娅	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 soul	灵魂	domain=core; source=EN/ZH

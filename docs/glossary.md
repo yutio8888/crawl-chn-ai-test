@@ -1040,7 +1040,7 @@
 | Apportation | 隔空取物 | ✅ |
 | Arcjolt | 电弧震击 | ✅ |
 | Aura of Abjuration | 驱逐灵气 | ✅；已移除兼容标题 |
-| Avatar Song | 化身之歌 | ✅ |
+| Avatar Song | 化身之歌 | ✅；限制冒险者远离、眩晕其他生物并可能召来溺魂 |
 | Awaken Armour | 唤醒护甲 | ✅ |
 | Awaken Earth | 唤醒大地 | ⚠️ 已移除／TAG 34 兼容；机制证据不足，暂沿用 |
 | Awaken Flesh | 唤醒血肉 | ✅ |
@@ -1280,12 +1280,12 @@
 | Silver Blast | 白银冲击 | ✅ |
 | Singularity | 奇点术 | ✅ |
 | Siphon Essence | 吸取精华 | ✅ |
-| Siren Song | 塞壬之歌 | ✅ |
+| Siren Song | 塞壬之歌 | ✅；迷魂附近听众，离开施法者视野后解除移动限制 |
 | Sleep | 睡眠 | ✅ |
 | Sleetstrike | 冰雨打击 | ✅ |
 | Slow | 减速 | 📝 |
 | Smiting | 惩击 | ✅ |
-| Song of Shielding | 护盾之歌 | ✅ |
+| Song of Shielding | 护盾之歌 | ✅；已移除兼容标题 |
 | Sonic wave | 音波 | ✅ |
 | Soul Splinter | 灵魂分裂 | ✅ |
 | Spectral Weapon | 灵体武器 | ✅ |
