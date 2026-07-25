@@ -1348,6 +1348,42 @@ Gravitas 没有独立法术描述，但重力铃鼓的中文说明把效果范�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## Eringya's 专名系列
+
+边界：英文标题以 `Eringya's` 开头的 2 项现行法术，无已移除兼容成员。
+
+| Enum | 等级 / 学派 / flags | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_NOXIOUS_BOG` | 6 / 炼金 / `no_ghost, destructive` | 埃林吉亚之毒沼 | 有毒污泥把附近合适地面暂时变成伤害并毒害怪物的毒沼 | 保留 |
+| `SPELL_SURPRISING_CROCODILE` | 4 / 召唤、传送 / `target, no_ghost, not_self` | 埃林吉亚之意外鳄鱼 | 鳄鱼从施法者脚下出现，强化攻击相邻目标并拖拽双方 | 保留 |
+
+名称结论：专名稳定采用 `Eringya → 埃林吉亚`。“毒沼”准确表达 noxious
+bog 的地形与毒害效果；“意外鳄鱼”保留英文故意突兀的戏谑感，也符合鳄鱼
+突然从施法者脚下现身的演出，无需改成过度说明性的“突袭鳄鱼”。
+
+描述审阅修正 1 项严重旧译：Surprising Crocodile 原中文仅称在目标附近
+召唤并攻击，遗漏当前英文的出现位置、强化攻击、拖拽施法者和目标、下马
+落位及不可重施规则。本批完整补回，并把关联引文中的“埃琳吉娅”统一为
+已确认专名“埃林吉亚”。Noxious Bog 描述与当前英文一致。
+
+证据：`spl-data.h:3414`—`3421`、`spl-data.h:4285`—`4292`、
+`dat/descript/spells.txt:651`—`666`、`spl-damage.cc:4709`—`4758`、
+`spl-summoning.cc:3914`—`4035`、`dat/descript/quotes.txt:523`—`527`。
+
+### 落地状态
+
+- [x] 2/2 机制证据与名称裁定
+- [x] 单一翻译写入者描述与关联引文修正
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-040`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T172406621637000+0800-20271-c4f1b1ef858b`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`1384a328a02912da8487f61644548a750e29d6528f6f89cafa89fbbb2e761aaf`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

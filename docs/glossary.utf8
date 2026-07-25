@@ -339,8 +339,8 @@ Entropic Weave	熵之编织	domain=spells; source=EN/ZH; 备注=✅
 Ephemeral Infusion	短暂灌注	domain=spells; source=EN/ZH; 备注=✅
 Ereshkigal	埃列什基伽勒	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Erica	艾丽卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
-Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=📝
-Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source=EN/ZH; 备注=📝
+Eringya's Noxious Bog	埃林吉亚之毒沼	domain=spells; source=EN/ZH; 备注=✅；有毒污泥将附近坚实地面暂时转为毒沼
+Eringya's Surprising Crocodile	埃林吉亚之意外鳄鱼	domain=spells; source=EN/ZH; 备注=✅；保留原名刻意突兀的戏谑语气
 Erolcha	伊罗查	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Eruption	喷发	domain=spells; source=EN/ZH; 备注=✅
 Eustachio	尤斯塔奇奥	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt

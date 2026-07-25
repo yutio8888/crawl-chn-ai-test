@@ -949,8 +949,8 @@
 | Death's Door | 死亡之门 | ✅ |
 | Dragon's Call | 龙之呼唤 | ✅ |
 | Druid's Call | 德鲁伊呼唤 | ✅；召回同层已有林地生物，非创造召唤物 |
-| Eringya's Noxious Bog | 埃林吉亚之毒沼 | 📝 |
-| Eringya's Surprising Crocodile | 埃林吉亚之意外鳄鱼 | 📝 |
+| Eringya's Noxious Bog | 埃林吉亚之毒沼 | ✅；有毒污泥将附近坚实地面暂时转为毒沼 |
+| Eringya's Surprising Crocodile | 埃林吉亚之意外鳄鱼 | ✅；保留原名刻意突兀的戏谑语气 |
 | Gell's Gavotte | 盖尔之加沃特 | ✅；重定向局部重力，使视野内生物随方向翻滚 |
 | Gell's Gravitas | 盖尔之重力 | ✅；重力铃鼓专用效果，将怪物拉拢并固定 |
 | Iskenderun's Battlesphere | 伊斯肯德伦之战斗法球 | 🆕；与实体及运行时 `battlesphere → 战斗法球` 统一 |

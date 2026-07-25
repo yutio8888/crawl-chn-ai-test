@@ -1710,6 +1710,32 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-040 — Spell name review: Eringya's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与毒沼地形、鳄鱼攻击及拖拽实现逐项复核
+- **Scope**: 2 项以 `Eringya's` 开头的现行标题，无已移除兼容成员
+- **Choice**: 保留 `Eringya's Noxious Bog → 埃林吉亚之毒沼` 与
+  `Eringya's Surprising Crocodile → 埃林吉亚之意外鳄鱼`。
+- **Series rule**: 人名 `Eringya → 埃林吉亚`，所有格采用
+  “埃林吉亚之……”；关联引文中的人名同步使用同一译法。
+- **Rationale**: “毒沼”准确概括污泥造成的有毒沼泽地形；“意外鳄鱼”
+  保留 `Surprising Crocodile` 刻意突兀、荒诞的标题语气，也符合鳄鱼从
+  施法者脚下突然出现并发动攻击的机制。
+- **Description corrections**: 鳄鱼法术旧中文只写“在目标附近召唤并攻击”，
+  本批补全相邻目标、从施法者脚下随浑水出现、强化攻击、拖拽双方、安全
+  下马及存续期间不可重施；关联引文“埃琳吉娅”统一为“埃林吉亚”。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `crawl-ref/source/dat/descript/zh/quotes.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2232,3 +2258,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-037 | Spell name review — Gell's 专名系列 | 2 current；1 related item description fix | active |
 | D-C-038 | Spell name review — Borgnjor's 专名系列 | 1 fix；2 current；1 description fix | active |
 | D-C-039 | Spell name review — Alistair's 专名系列 | 2 current；1 description clarification | active |
+| D-C-040 | Spell name review — Eringya's 专名系列 | 2 current；1 description + 1 quote fix | active |
