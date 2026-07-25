@@ -141,17 +141,26 @@ class ReleaseArtifactTest(unittest.TestCase):
         self.assertEqual(first_manifest, (self.root / "RELEASE-MANIFEST.txt").read_bytes())
         self.assertIn(TAG.encode(), first_manifest)
         self.assertIn(COMMIT.encode(), first_manifest)
-        self.assertIn(b"Included: Windows Tiles", first_manifest)
-        self.assertIn(b"Deferred: macOS", first_manifest)
+        self.assertIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
         self.assertIn(b"Linux (CI build only)", first_manifest)
         self.assertIn(b"Android", first_manifest)
-        self.assertNotIn(b"Included: Windows Tiles; macOS Tiles", first_manifest)
+        self.assertNotIn(b"Deferred: macOS", first_manifest)
 
-    def test_release_scope_is_exactly_windows_tiles(self) -> None:
-        self.assertEqual(1, len(self.rules))
+    def test_release_scope_is_exactly_windows_and_macos_tiles(self) -> None:
+        self.assertEqual(2, len(self.rules))
         self.assertEqual(
-            {f"stone_soup-{TAG}-tiles-win32.zip"},
+            {
+                f"stone_soup-{TAG}-tiles-win32.zip",
+                f"stone_soup-{TAG}-tiles-macosx.zip",
+            },
             {rule.filename for rule in self.rules},
+        )
+        macos = next(
+            rule for rule in self.rules if rule.filename.endswith("-macosx.zip")
+        )
+        self.assertIn(
+            "Dungeon Crawl Stone Soup - Tiles.app/Contents/Info.plist",
+            macos.required_files,
         )
 
     def test_tag_and_commit_identity_are_strict(self) -> None:

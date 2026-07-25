@@ -9,6 +9,7 @@ worktrees to mutate shared caches.
 | Worktree | Target | Helper |
 |---|---|---|
 | Main repository | WSL console | `crawl-ref/source/util/build-console.sh` |
+| Main repository (macOS) | macOS Tiles | `make TILES=y mac-app-tiles -j4` |
 | `.worktrees/mingw-tiles` | Windows tiles | `crawl-ref/source/util/build-tiles.sh` |
 | `.worktrees/android-tiles` | Android APK | `crawl-ref/source/util/build-android.sh` |
 
@@ -29,6 +30,19 @@ bash util/build-console.sh
 ```
 
 The helper configures the console ccache profile and builds the `crawl` binary.
+
+## macOS Tiles
+
+From the main worktree on macOS:
+
+```bash
+cd crawl-ref/source
+make TILES=y mac-app-tiles -j4
+```
+
+The build produces an Apple application ZIP under `mac-app-zips/`. GitHub
+Actions uploads the versioned ZIP as the `macos-tiles-app` artifact and includes
+it in tagged draft Releases after closed-world artifact validation.
 
 ## Windows Tiles
 

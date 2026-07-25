@@ -426,6 +426,7 @@ jobs:
       - zh_runtime_full
       - zh_help_runtime
       - linting
+      - build_macos_tiles
       - build_windows_tiles
     permissions:
       contents: write
@@ -440,6 +441,11 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: windows-tiles
+          path: ${{ runner.temp }}/release-assets
+      - name: Download macOS package
+        uses: actions/download-artifact@v4
+        with:
+          name: macos-tiles-app
           path: ${{ runner.temp }}/release-assets
       - name: Validate closed-world release artifact set
         shell: bash
@@ -461,7 +467,7 @@ jobs:
           {
             echo "# DCSS 中文版 $GITHUB_REF_NAME"
             echo
-            echo "基于上游 DCSS 0.34.1 的首个中文 Windows 正式版。发布身份绑定提交 \`$GITHUB_SHA\`。"
+            echo "基于上游 DCSS 0.34.1 的中文桌面正式版。发布身份绑定提交 \`$GITHUB_SHA\`。"
             echo
             echo "## 主要内容"
             echo
@@ -472,18 +478,18 @@ jobs:
             echo "## 支持平台"
             echo
             echo "- Windows Tiles：便携 ZIP，解压后运行 \`crawl.exe\`。"
+            echo "- macOS Tiles：应用 ZIP，解压后运行 \`Dungeon Crawl Stone Soup - Tiles.app\`。"
             echo
             echo "## 延期平台"
             echo
-            echo "- macOS Tiles：仅保留 CI 编译产物，因缺少验收环境暂不作为正式资产。"
             echo "- Linux：仅保留 CI 编译验证。"
             echo "- Android：待签名 APK、真机验收和移动端已知问题关闭后另行发布。"
             echo
             echo "## 下载校验"
             echo
-            echo "请使用 \`SHA256SUMS\` 校验 Windows ZIP；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
+            echo "请使用 \`SHA256SUMS\` 校验 Windows 与 macOS ZIP；\`RELEASE-MANIFEST.txt\` 记录标签、准确提交和资产摘要。"
             echo
-            echo "本 Release 由自动流程创建为草稿；完成全新 Windows 环境解压、启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
+            echo "本 Release 由自动流程创建为草稿；完成 Windows 与 macOS 环境解压、启动、中文显示、新游戏、帮助和存读档验收后方可公开。"
           } > "$RUNNER_TEMP/release-notes.md"
       - name: Create draft release once
         shell: bash
@@ -494,8 +500,8 @@ jobs:
           title="DCSS 中文版 $GITHUB_REF_NAME"
           mapfile -t assets < <(find "$RUNNER_TEMP/release-assets" \
             -maxdepth 1 -type f -print | LC_ALL=C sort)
-          if [[ ${#assets[@]} -ne 3 ]]; then
-            echo "Expected 3 release assets after evidence generation" >&2
+          if [[ ${#assets[@]} -ne 4 ]]; then
+            echo "Expected 4 release assets after evidence generation" >&2
             exit 1
           fi
           gh release create "$GITHUB_REF_NAME" "${assets[@]}" \
