@@ -16210,7 +16210,7 @@ Thunderbolt
 雷击
 %%%%
 Iskenderun's Battlesphere
-伊斯肯德伦之战斗球
+伊斯肯德伦之战斗法球
 %%%%
 Summon Minor Demon
 召唤次级恶魔

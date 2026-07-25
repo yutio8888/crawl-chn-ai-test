@@ -953,7 +953,7 @@
 | Eringya's Surprising Crocodile | 埃林吉亚之意外鳄鱼 | 📝 |
 | Gell's Gavotte | 盖尔之加沃特 | ✅ |
 | Gell's Gravitas | 盖尔之重力 | ✅ |
-| Iskenderun's Battlesphere | 伊斯肯德伦之战斗球 | ✅ |
+| Iskenderun's Battlesphere | 伊斯肯德伦之战斗法球 | 🆕；与实体及运行时 `battlesphere → 战斗法球` 统一 |
 | Iskenderun's Mystic Blast | 伊斯肯德伦之神秘冲击 | ✅ |
 | Leda's Liquefaction | 勒达之液化 | ✅ |
 | Lee's Rapid Deconstruction | 李之快速解构 | ✅ |

@@ -1528,6 +1528,33 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-033 — Spell name review: Iskenderun's 专名系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Source**: 511 项 spell inventory、当前英中描述与战斗法球／冲击实现逐项复核
+- **Scope**: 2 项以 `Iskenderun's` 开头的现行标题，无已移除兼容成员
+- **Choice**: `Iskenderun's Battlesphere` 由“伊斯肯德伦之战斗球”重译为
+  **“伊斯肯德伦之战斗法球”**；保留
+  `Iskenderun's Mystic Blast → 伊斯肯德伦之神秘冲击`。
+- **Series rule**: 人名 `Iskenderun → 伊斯肯德伦`，所有格采用
+  “伊斯肯德伦之……”；实体 `battlesphere` 统一译为“战斗法球”。
+- **Rationale**: 运行时消息、怪物名和术语表均已使用“战斗法球”，旧标题
+  “战斗球”既破坏实体一致性，也易被理解成普通球类。神秘冲击则准确保留
+  原名意象，并不需要把范围击退机制塞入标题。
+- **Description corrections**: 战斗法球描述恢复最重伤目标优先、必中齐射
+  及创造者可安全穿透法球位置的规则；神秘冲击补回法术威力提高伤害和
+  击退距离。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2043,3 +2070,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-030 | Spell name review — Awaken 词形系列 | 4 current + 1 axed compatibility | active |
 | D-C-031 | Spell name review — Maxwell's 专名系列 | 2 current；2 description fixes | active |
 | D-C-032 | Spell name review — Forge 词形系列 | 4 current；4 description fixes | active |
+| D-C-033 | Spell name review — Iskenderun's 专名系列 | 1 fix；2 current；2 description fixes | active |

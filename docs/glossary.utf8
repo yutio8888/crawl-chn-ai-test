@@ -503,7 +503,7 @@ Invisibility Other	隐身他人	domain=spells; source=EN/ZH; 备注=✅
 Invocations	祈神	domain=skills; source=EN/ZH; Scope / comment=skill; source=source.txt; decision=D-C-001
 Iron Shot	铁弹	domain=spells; source=EN/ZH; 备注=✅
 Irradiate	辐射	domain=spells; source=EN/ZH; 备注=✅
-Iskenderun's Battlesphere	伊斯肯德伦之战斗球	domain=spells; source=EN/ZH; 备注=✅
+Iskenderun's Battlesphere	伊斯肯德伦之战斗法球	domain=spells; source=EN/ZH; 备注=🆕；与实体及运行时 `battlesphere → 战斗法球` 统一
 Iskenderun's Mystic Blast	伊斯肯德伦之神秘冲击	domain=spells; source=EN/ZH; 备注=✅
 Jeremiah	耶利米	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Jessica	杰西卡	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
