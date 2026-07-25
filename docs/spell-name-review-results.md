@@ -2426,6 +2426,40 @@ Iskenderun's 专名系列完成，不重复计数。
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `dfb2d3c1272afacf21d92cce46a0d8ca727c66118ef0fea25ea0735190bbdfa6`。
 
+## Warp 词形系列
+
+边界：英文标题以 `Warp` 开头的 3 项法术；2 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_WARP_SPACE` | 现行 | 扭曲空间 | 空间裂隙造成范围伤害并可能令目标短距闪现 | 保留 |
+| `SPELL_WARP_BODY` | 现行 | 扭曲身体 | 造成少量伤害和短暂变异，变异过多时改为玻璃化 | 保留 |
+| `SPELL_WARP_BRAND` | 已移除兼容 | 扭曲武器 | 无当前描述或实现 | 保留 |
+
+名称结论：三项均准确采用 `Warp → 扭曲` 并指出被改变的空间、身体或武器；
+标题不需枚举伤害、变异、玻璃化或闪现等后续机制。
+
+两项现行中文描述均对应旧机制。`Warp Body` 已修正目标并补全少量伤害、
+短暂变异及玻璃化替代；`Warp Space` 已从单体随机传送重译为范围裂隙伤害
+及偶发短距闪现。已移除的 `Warp Weapon` 无当前描述或实现。
+
+证据：`spl-data.h:3281`—`3289`、`4530`—`4539`、`4706`，
+`dat/descript/spells.txt:2396`—`2405`。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-071`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T182538532243000+0800-52509-49e725d5d0a4`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`1b57cedae1d0164d49f5c8073abf8a9ba75401b208ad9abdda6993d6dea92801`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`dfb2d3c1272afacf21d92cce46a0d8ca727c66118ef0fea25ea0735190bbdfa6`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

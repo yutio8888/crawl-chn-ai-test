@@ -948,9 +948,9 @@ Wall of Brambles	荆棘之墙	domain=spells; source=EN/ZH; 备注=✅
 wand	魔杖	domain=items; source=EN/ZH
 Wanderer	漫游者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Warning Cry	警告之嚎	domain=spells; source=EN/ZH; 备注=✅
-Warp Body	扭曲身体	domain=spells; source=EN/ZH; 备注=✅
-Warp Space	扭曲空间	domain=spells; source=EN/ZH; 备注=✅
-Warp Weapon	扭曲武器	domain=spells; source=EN/ZH; 备注=✅
+Warp Body	扭曲身体	domain=spells; source=EN/ZH; 备注=✅；造成少量伤害和短暂变异，变异过多时改为玻璃化
+Warp Space	扭曲空间	domain=spells; source=EN/ZH; 备注=✅；空间裂隙造成范围伤害并可能短距闪现目标
+Warp Weapon	扭曲武器	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Warper	折跃者	domain=backgrounds; source=EN/ZH; Scope / comment=background; source=backgrounds.txt
 Waterstrike	水击	domain=spells; source=EN/ZH; 备注=✅
 weak	虚弱	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt

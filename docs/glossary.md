@@ -1340,9 +1340,9 @@
 | Vortex | 漩涡 | 🆕 |
 | Wall of Brambles | 荆棘之墙 | ✅ |
 | Warning Cry | 警告之嚎 | ✅ |
-| Warp Body | 扭曲身体 | ✅ |
-| Warp Space | 扭曲空间 | ✅ |
-| Warp Weapon | 扭曲武器 | ✅ |
+| Warp Body | 扭曲身体 | ✅；造成少量伤害和短暂变异，变异过多时改为玻璃化 |
+| Warp Space | 扭曲空间 | ✅；空间裂隙造成范围伤害并可能短距闪现目标 |
+| Warp Weapon | 扭曲武器 | ✅；已移除兼容标题 |
 | Waterstrike | 水击 | ✅ |
 | Wind Blast | 风击 | ✅；锥形强风推开生物和云雾，碰撞会造成伤害 |
 | Woodweal | 木质愈合 | ✅ |

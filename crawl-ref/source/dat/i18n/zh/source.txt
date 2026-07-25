@@ -16135,7 +16135,7 @@ Call Tide
 呼唤潮汐
 %%%%
 spell title|Orb of Destruction
-毁灭之球
+毁灭法球
 %%%%
 Ink Cloud
 墨云

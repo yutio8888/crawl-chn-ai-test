@@ -2389,6 +2389,26 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-071 — Spell name review: Warp 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Warp Space → 扭曲空间`、`Warp Body → 扭曲身体`
+  与 `Warp Weapon → 扭曲武器`。
+- **Series rule**: 表示异常改变空间、身体或武器性质时，`Warp → 扭曲`。
+- **Rationale**: 三项名称均准确指向被扭曲的对象，不承诺具体后续效果。
+- **Description corrections**: 重译两项现行描述，恢复 `Warp Body` 的目标、
+  伤害、短暂变异和玻璃化替代，以及 `Warp Space` 的范围伤害与短距闪现。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2942,3 +2962,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-068 | Spell name review — Blast 词形系列 | 2 current + 1 axed；1 description retranslation | active |
 | D-C-069 | Spell name review — Blade 词形系列 | 1 current + 2 axed；1 description retranslation | active |
 | D-C-070 | Spell name review — Destruction 词形系列 | 4 current；1 rename + glossary sync | active |
+| D-C-071 | Spell name review — Warp 词形系列 | 2 current + 1 axed；2 description retranslations | active |
