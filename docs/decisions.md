@@ -2409,6 +2409,30 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-072 — Spell name review: Might/Other 目标系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 5 项现行法术（4 项 `Other` 后缀及基础 `Might`）
+- **Choice**: 保留 `Might → 强壮`、`Might Other → 强壮他人`、
+  `Heal Other → 治愈他人`、`Berserk Other → 狂暴他人` 与
+  `Regenerate Other → 再生他人`。
+- **Series rule**: `X Other` 作为对他人施加 X 效果的紧凑标题时采用
+  “X他人”；法术显示标题 `Might → 强壮` 与状态机制域“强效”分开。
+- **Rationale**: 五项均清楚表达施法者自身或他人作为效果目标，且与
+  “加速他人”“使他人隐形”等已审阅标题的紧凑命名方式相容。
+- **Description corrections**: 修正 `Might` 两项的中文病句，
+  `Heal Other` 与 `Berserk Other` 的目标、语序和伤害术语，并补回
+  `Regenerate Other` 恢复量与目标最大生命值成正比的规则。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2963,3 +2987,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-069 | Spell name review — Blade 词形系列 | 1 current + 2 axed；1 description retranslation | active |
 | D-C-070 | Spell name review — Destruction 词形系列 | 4 current；1 rename + glossary sync | active |
 | D-C-071 | Spell name review — Warp 词形系列 | 2 current + 1 axed；2 description retranslations | active |
+| D-C-072 | Spell name review — Might/Other 目标系列 | 5 current；5 description fixes | active |

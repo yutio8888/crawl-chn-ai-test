@@ -101,8 +101,7 @@ Berserker Rage spell
 %%%%
 Berserk Other spell
 
-使附近的友方爆发狂怒。
-进入狂暴状态后，会暂时提升生命值、速度以及近战攻击力。
+使附近的一个盟友陷入狂暴状态。狂暴会暂时提升生命值、速度和近战伤害。
 %%%%
 Bind Souls spell
 
@@ -617,7 +616,7 @@ Haunt spell
 %%%%
 Heal Other spell
 
-治疗一个附近的友方。
+治疗附近的一个盟友。
 %%%%
 Hellfire Court spell
 
@@ -868,11 +867,11 @@ Miasma Breath spell
 %%%%
 Might Other spell
 
-大大增加周围友方的近战的攻击力。
+大幅提高一个附近友方造成的近战伤害。
 %%%%
 Might spell
 
-大大增加施法者的近战的攻击力。
+大幅提高施法者造成的近战伤害。
 %%%%
 Mindburst spell
 
@@ -1895,7 +1894,7 @@ Rebounding Chill spell
 %%%%
 Regenerate Other spell
 
-大幅提高一个目标的自然生命值恢复速度。
+使另一个生物在短时间内快速再生。恢复量与该生物的最大生命值成正比。
 %%%%
 Rending Blade spell
 

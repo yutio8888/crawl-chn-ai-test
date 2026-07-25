@@ -2460,6 +2460,47 @@ Iskenderun's 专名系列完成，不重复计数。
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `dfb2d3c1272afacf21d92cce46a0d8ca727c66118ef0fea25ea0735190bbdfa6`。
 
+## Might/Other 目标系列
+
+边界：尚未审阅的 4 项 `Other` 后缀法术及与其中一项成对的基础
+`Might`，共 5 项现行法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_MIGHT` | 强壮 | 提高施法者造成的近战伤害 | 保留 |
+| `SPELL_MIGHT_OTHER` | 强壮他人 | 提高附近友方造成的近战伤害 | 保留 |
+| `SPELL_HEAL_OTHER` | 治愈他人 | 治疗附近友方 | 保留 |
+| `SPELL_BERSERK_OTHER` | 狂暴他人 | 使附近友方狂暴，提升生命、速度和近战伤害 | 保留 |
+| `SPELL_REGENERATE_OTHER` | 再生他人 | 使其他生物短时快速再生，恢复量随最大生命值提高 | 保留 |
+
+名称结论：四项 `Other` 标题均以紧凑的“X他人”清楚标示目标，与既有
+“加速他人”等标题一致。`Might → 强壮` 是法术显示标题；机制和状态域
+可继续使用“强效”，二者不应在本批机械替换。
+
+描述审阅修正 `Might` 与 `Might Other` 的“近战的攻击力”病句，并为
+`Regenerate Other` 补回按目标最大生命值计算恢复量的规则；同时修正
+`Heal Other` 的 ally 术语和语序，以及 `Berserk Other` 的单个目标表述
+和近战伤害术语。
+
+证据：`spl-data.h:1818`—`1826`、`1906`—`1915`、
+`2860`—`2868`、`3835`—`3843` 及基础 `Might` 条目，
+`dat/descript/spells.txt:131`—`134`、`972`—`974`、
+`1351`—`1358`、`1674`—`1677`。
+
+### 落地状态
+
+- [x] 5/5 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-072`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T182823288832000+0800-57186-aff7f30708d3`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`0932d0066d6f177c03c952916cb43af86a7a87f5bcf2501c1b19630309859427`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`dfb2d3c1272afacf21d92cce46a0d8ca727c66118ef0fea25ea0735190bbdfa6`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

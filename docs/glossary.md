@@ -1049,7 +1049,7 @@
 | Banishment | 放逐 | ✅ |
 | Battlecry | 战吼 | ✅ |
 | Beckoning Gale | 召唤强风 | ✅ |
-| Berserk Other | 狂暴他人 | ✅ |
+| Berserk Other | 狂暴他人 | ✅；使附近一个盟友进入狂暴 |
 | Berserker Rage | 狂暴之怒 | ✅ |
 | Bestow Arms | 赐予武器 | ✅ |
 | Bind Souls | 绑定灵魂 | ✅ |
@@ -1158,7 +1158,7 @@
 | Haste Other | 加速他人 | ✅；提高附近盟友行动速度 |
 | Haste Plants | 加速植物 | ✅；已移除兼容标题 |
 | Haunt | 鬼魂缠身 | ✅ |
-| Heal Other | 治愈他人 | ✅ |
+| Heal Other | 治愈他人 | ✅；治疗附近一个盟友 |
 | Hellfire Court | 地狱火法庭 | ✅ |
 | Hellfire Mortar | 地狱火迫击炮 | ✅ |
 | Hoarfrost Bullet | 白霜弹 | ✅；火炮发射的冰霜碎片，命中后施加脆霜减速 |
@@ -1212,8 +1212,8 @@
 | Mesmerise | 迷魂 | ✅；5 级怪物诅咒法术，使冒险者无法主动远离施法者、使其他生物眩晕；与 Sleep「沉睡」及 Charm「魅惑」区分；裁决=[D-A-043] |
 | Metabolic Englaciation | 深度冻结 | ✅ |
 | Metal Splinters | 金属碎片 | ✅ |
-| Might | 强壮 | ✅ |
-| Might Other | 强壮他人 | ✅ |
+| Might | 强壮 | ✅；法术显示标题，区别于状态/机制域 `Might → 强效` |
+| Might Other | 强壮他人 | ✅；对附近友方施加同类近战伤害增益 |
 | Mindburst | 心智爆发 | ✅ |
 | Minor Healing | 小型治疗 | ✅ |
 | Mislead | 误导术 | ✅ |
@@ -1250,7 +1250,7 @@
 | Rearrange the Pieces | 重新布局 | ✅ |
 | Rebounding Blaze | 弹跳烈焰 | ✅ |
 | Rebounding Chill | 弹跳寒流 | 🆕；穿透性寒气束可从墙壁反弹并命中两次 |
-| Regenerate Other | 再生他人 | 📝 |
+| Regenerate Other | 再生他人 | ✅；恢复量与目标最大生命值成正比 |
 | Regeneration | 快速再生 | ✅ |
 | Rending Blade | 撕裂之刃 | ✅；近战命中时在附近敌人间来回撕裂 |
 | Resonance Strike | 共鸣打击 | ✅ |
