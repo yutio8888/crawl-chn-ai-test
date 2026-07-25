@@ -1072,8 +1072,8 @@
 | Conjure Living Spells | 召唤活体法术 | ✅ |
 | Construct Spike Launcher | 构建尖刺发射器 | ✅ |
 | Control Teleport | 控制传送 | 🆕；已移除兼容标题，修正中文倒装 |
-| Control Undead | 亡灵控制 | ✅ |
-| Control Winds | 控风术 | ✅ |
+| Control Undead | 控制亡灵 | 🆕；已移除兼容标题，修正中文倒装 |
+| Control Winds | 控风术 | ✅；已移除兼容标题 |
 | Corona | 怪异发光球 | ✅ |
 | Corpse Rot | 尸体腐烂 | ✅ |
 | Corrupt | 腐化 | ✅ |

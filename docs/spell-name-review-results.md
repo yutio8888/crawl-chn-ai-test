@@ -1955,6 +1955,37 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `63c8bea2fe5acdd6995eda8e5bae0ba2992814c508c09b323c59e27984ee7e1b`。
 
+## Control 词形系列
+
+边界：以 `Control` 开头的 3 项已移除兼容法术标题；Control Teleport
+已在 Teleport 批次审阅，本批新增 2 项。
+
+| Enum | 当前译名 | 机制证据 | 裁定 |
+|---|---|---|---|
+| `SPELL_CONTROL_UNDEAD` | 亡灵控制 | 无当前描述或实现 | 修正为“控制亡灵” |
+| `SPELL_CONTROL_WINDS` | 控风术 | 无当前描述或实现 | 保留 |
+| `SPELL_CONTROL_TELEPORT` | 控制传送 | 无当前描述或实现 | 保留（复用 D-C-056） |
+
+名称结论：三项都缺少当前机制证据，但标题自身足以判断中文语序。
+“亡灵控制”是英语词序移植，改为动宾结构“控制亡灵”；“控风术”和
+“控制传送”均自然明确。
+
+证据：`spl-data.h:4652`—`4654` 的 AXED 兼容记录及中文标题映射。
+
+### 落地状态
+
+- [x] 3/3 生命周期与语言证据裁定（2 项新增，1 项复用）
+- [x] 单一翻译写入者名称落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-057`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T175632754190000+0800-89149-05c69294cbe0`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`f9d428e76130f7ad06a6ed70bea09aa0859a16801a841c30d6efe440f1c99336`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

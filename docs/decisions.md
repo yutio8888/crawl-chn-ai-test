@@ -2091,6 +2091,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-057 — Spell name review: Control 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 3 项已移除兼容标题；1 项复用 Teleport 批次，2 项新增
+- **Choice**: 将 `Control Undead → 亡灵控制` 修正为“控制亡灵”；
+  保留 `Control Winds → 控风术` 与已审阅的“控制传送”。
+- **Series rule**: `Control + object` 采用动宾结构；可在自然且无歧义时
+  缩写为“控X术”。
+- **Rationale**: “亡灵控制”是英语词序移植，“控制亡灵”才明确表达
+  动作和对象；“控风术”已经是自然、明确的同义压缩。
+- **Description corrections**: 无；三项均无当前描述或实现。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2630,3 +2651,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-054 | Spell name review — Fireball 词形系列 | 2 current + 1 axed；1 description fix | active |
 | D-C-055 | Spell name review — Death 独立词形系列 | 3 current；2 description fixes | active |
 | D-C-056 | Spell name review — Teleport 词形系列 | 1 current + 2 axed；1 rename + 1 description retranslation | active |
+| D-C-057 | Spell name review — Control 词形系列 | 3 axed；2 new + 1 reused；1 rename | active |

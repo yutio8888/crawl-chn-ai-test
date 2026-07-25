@@ -16888,7 +16888,7 @@ Control Teleport
 控制传送
 %%%%
 Control Undead
-亡灵控制
+控制亡灵
 %%%%
 Control Winds
 控风术

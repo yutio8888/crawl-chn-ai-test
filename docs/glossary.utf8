@@ -237,8 +237,8 @@ Constriction	束缚	domain=status; source=EN/ZH; Scope / comment=status; source=
 Construct Spike Launcher	构建尖刺发射器	domain=spells; source=EN/ZH; 备注=✅
 Contamination	诱变辐射	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Control Teleport	控制传送	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
-Control Undead	亡灵控制	domain=spells; source=EN/ZH; 备注=✅
-Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅
+Control Undead	控制亡灵	domain=spells; source=EN/ZH; 备注=🆕；已移除兼容标题，修正中文倒装
+Control Winds	控风术	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Controlled Blink	受控闪烁	domain=spells; source=EN/ZH; 备注=✅ 已移除／TAG 34 兼容
 Corona	怪异发光球	domain=spells; source=EN/ZH; 备注=✅
 Corpse Rot	尸体腐烂	domain=spells; source=EN/ZH; 备注=✅
