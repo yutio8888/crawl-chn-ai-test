@@ -585,13 +585,17 @@ def build_inventory():
     tr_body = function_body(item_name, "special_armour_type_name")
     def branch_cases(body, marker):
         part = body.split(marker, 1)[0] if marker else body
-        return {
-            identity: literal
-            for identity, literal in re.findall(
-                r"case\s+(SPARM_[A-Z0-9_]+)\s*:\s*return\s+T_?\(\"([^\"]+)\"\)\s*;",
-                part,
-            )
-        }
+        cases = {}
+        pattern = re.compile(
+            r"case\s+(SPARM_[A-Z0-9_]+)\s*:\s*return\s+"
+            r"(T_|C_)\((?:\"([^\"]+)\"\s*,\s*)?\"([^\"]+)\"\)\s*;"
+        )
+        for identity, wrapper, context, literal in pattern.findall(part):
+            cases[identity] = {
+                "key": f"{context}|{literal}" if wrapper == "C_" else literal,
+                "en": literal,
+            }
+        return cases
     tr_verbose_part = tr_body.split("else", 1)[0]
     tr_terse_part = tr_body.split("else", 1)[1]
     tr_verbose = branch_cases(tr_verbose_part, None)
@@ -599,8 +603,12 @@ def build_inventory():
     for compatibility_identity in (
         "SPARM_RUNNING", "SPARM_JUMPING", "SPARM_CLOUD_IMMUNE"
     ):
-        tr_verbose[compatibility_identity] = "obsolescence"
-        tr_terse[compatibility_identity] = "obsolete"
+        tr_verbose[compatibility_identity] = {
+            "key": "obsolescence", "en": "obsolescence",
+        }
+        tr_terse[compatibility_identity] = {
+            "key": "obsolete", "en": "obsolete",
+        }
     en_verbose = tr_verbose
     en_terse = tr_terse
     for identity in sorted(en_verbose):
@@ -608,22 +616,27 @@ def build_inventory():
             "verbose": en_verbose[identity],
             "terse": en_terse.get(identity),
         }
+        verbose = forms["verbose"]
         rows.append({
             "identity": f"armour_ego:{identity}",
             "category": "armour_ego",
             "lifecycle": (
-                "compatibility" if forms["verbose"] == "obsolescence"
+                "compatibility" if verbose["en"] == "obsolescence"
                 else "current"
             ),
-            "english_source_name": forms["verbose"],
-            "translation_key": forms["verbose"],
-            "current_chinese_name": db.get(forms["verbose"].lower(),
-                                           forms["verbose"]),
-            "translation_present": forms["verbose"].lower() in db,
+            "english_source_name": verbose["en"],
+            "translation_key": verbose["key"],
+            "current_chinese_name": db.get(
+                verbose["key"].lower(), verbose["en"]
+            ),
+            "translation_present": verbose["key"].lower() in db,
             "runtime_lookup": True,
             "forms": {
-                form: {"en": key, "zh": db.get(key.lower()) if key else None}
-                for form, key in forms.items()
+                form: {
+                    "en": data["en"] if data else None,
+                    "zh": db.get(data["key"].lower()) if data else None,
+                }
+                for form, data in forms.items()
             },
         })
 

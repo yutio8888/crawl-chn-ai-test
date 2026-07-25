@@ -223,6 +223,15 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
         self.assertFalse(payload["unexpected_identities"])
         self.assertFalse(payload["missing_chinese"])
         self.assertFalse(payload["missing_forms"])
+        by_identity = {row["identity"]: row for row in payload["rows"]}
+        self.assertEqual(
+            "armour ego full name|invisibility",
+            by_identity["armour_ego:SPARM_INVISIBILITY"]["translation_key"],
+        )
+        self.assertEqual(
+            "armour ego full name|infusion",
+            by_identity["armour_ego:SPARM_INFUSION"]["translation_key"],
+        )
 
     def test_cli_returns_failure_when_inventory_has_violation(self):
         payload = {
