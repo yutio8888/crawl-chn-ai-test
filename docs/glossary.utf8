@@ -527,8 +527,8 @@ laughs	笑道	domain=dialogue; source=EN/ZH; 适用角色=Xom、小恶魔
 Launch Bomblet	发射小型炸弹	domain=spells; source=EN/ZH; 备注=✅
 Launch Clockwork Bee	发射发条蜜蜂	domain=spells; source=EN/ZH; 备注=✅
 Launch Sporangium	发射孢子囊	domain=spells; source=EN/ZH; 备注=✅
-Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅
-Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅
+Leda's Liquefaction	勒达之液化	domain=spells; source=EN/ZH; 备注=✅；液化施法者周围地面
+Lee's Rapid Deconstruction	李之快速解构	domain=spells; source=EN/ZH; 备注=✅；粉碎墙壁或脆性目标形成爆炸碎片
 Legendary Destruction	传奇毁灭	domain=spells; source=EN/ZH; 备注=✅
 Lehudib's Crystal Spear	勒胡迪布之水晶矛	domain=spells; source=EN/ZH; 备注=✅；短射程高伤害水晶投射物
 Lernaean hydra	勒拿多头蛇	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -561,7 +561,7 @@ Mara Summon	玛拉召唤	domain=spells; source=EN/ZH; 备注=✅
 March of Sorrows	悲伤行军	domain=spells; source=EN/ZH; 备注=✅
 Margery	玛杰丽	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Marshlight	沼泽之光	domain=spells; source=EN/ZH; 备注=✅
-Martyr's Knell	殉道者之丧钟	domain=spells; source=EN/ZH; 备注=✅
+Martyr's Knell	殉道者之丧钟	domain=spells; source=EN/ZH; 备注=✅；殉道者灵魂替盟友分担伤害
 Mass Confusion	群体混乱	domain=spells; source=EN/ZH; 备注=✅
 Mass Regeneration	群体再生	domain=spells; source=EN/ZH; 备注=✅
 Maurice	莫里斯	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
@@ -969,7 +969,7 @@ Xom	佐姆	domain=gods; source=EN/ZH; 类型=音译
 XP	经验值	domain=core; source=EN/ZH
 Xtahua	扎塔瓦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 yaktaur	牦牛人马	domain=species; source=EN/ZH; 复合格式=牦牛人马 + 职业
-Yara's Violent Unravelling	亚拉之猛烈解构	domain=spells; source=EN/ZH; 备注=✅
+Yara's Violent Unravelling	亚拉之猛烈解构	domain=spells; source=EN/ZH; 备注=✅；撕裂附魔并转化为诱变爆炸
 yellow scales	黄色鳞片	domain=mutations; source=EN/ZH; Scope / comment=mutation; source=mutations.txt
 yells	大喊	domain=dialogue; source=EN/ZH; 适用角色=战士、兽人
 Yredelemnul	伊莱德莱姆努尔	domain=gods; source=EN/ZH; 类型=音译

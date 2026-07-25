@@ -955,10 +955,10 @@
 | Gell's Gravitas | 盖尔之重力 | ✅；重力铃鼓专用效果，将怪物拉拢并固定 |
 | Iskenderun's Battlesphere | 伊斯肯德伦之战斗法球 | 🆕；与实体及运行时 `battlesphere → 战斗法球` 统一 |
 | Iskenderun's Mystic Blast | 伊斯肯德伦之神秘冲击 | ✅ |
-| Leda's Liquefaction | 勒达之液化 | ✅ |
-| Lee's Rapid Deconstruction | 李之快速解构 | ✅ |
+| Leda's Liquefaction | 勒达之液化 | ✅；液化施法者周围地面 |
+| Lee's Rapid Deconstruction | 李之快速解构 | ✅；粉碎墙壁或脆性目标形成爆炸碎片 |
 | Lehudib's Crystal Spear | 勒胡迪布之水晶矛 | ✅；短射程高伤害水晶投射物 |
-| Martyr's Knell | 殉道者之丧钟 | ✅ |
+| Martyr's Knell | 殉道者之丧钟 | ✅；殉道者灵魂替盟友分担伤害 |
 | Maxwell's Capacitive Coupling | 麦克斯韦之电容耦合 | ✅；专名统一为“麦克斯韦” |
 | Maxwell's Portable Piledriver | 麦克斯韦之便携打桩机 | ✅；空间压缩后将整列生物推向障碍物 |
 | Nazja's All-Purpose Tempering | 纳兹亚之通用淬炼 | ✅；可修复并强化附近任意构装体 |
@@ -972,7 +972,7 @@
 | Tukima's Dance | 图基玛之舞 | ✅ |
 | Vhi's Electric Charge | 维之电击冲锋 | 🆕；`charge` 是向敌人冲锋，不是静态“电荷” |
 | Vhi's Electrolunge | 维之电击突进 | 🆕；怪物版近身突进，与玩家版“冲锋”区分 |
-| Yara's Violent Unravelling | 亚拉之猛烈解构 | ✅ |
+| Yara's Violent Unravelling | 亚拉之猛烈解构 | ✅；撕裂附魔并转化为诱变爆炸 |
 
 ### Projectile（7）
 

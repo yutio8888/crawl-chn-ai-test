@@ -109,7 +109,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
 
 ### 全量复审
 
-当前已完成 210/511 项逐项审阅。
+当前已完成 214/511 项逐项审阅。
 
 - [ ] 共享词根系列
   - [x] Call 词形系列（10 项现行法术；translation profile 已完成）
@@ -141,6 +141,7 @@ python3 .claude/scripts/migrate_spell_titles.py inventory --require-zh-titles
   - [x] Nazja's 专名系列（2 项证据、裁定、描述重译及 translation profile 已完成）
   - [x] Olgreb's 专名系列（1 项证据、裁定、描述润色及 translation profile 已完成）
   - [x] Lehudib's 专名系列（1 项证据、裁定、描述润色及 translation profile 已完成）
+  - [x] 单成员专名批次 A（Yara、Leda、Lee、Martyr；4 项证据、裁定及 translation profile 已完成）
 - [ ] 实体、元素和状态术语系列
 - [ ] 独立法术
 - [ ] 集合相等性终检

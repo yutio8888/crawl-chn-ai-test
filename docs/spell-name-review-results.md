@@ -1481,6 +1481,37 @@ Crystal Spear 的材质与尖锐长形投射物意象，也符合短射程、高
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
 
+## 单成员专名批次 A
+
+边界：Yara、Leda、Lee、Martyr 各自唯一的现行法术，共 4 项。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_VIOLENT_UNRAVELLING` | 亚拉之猛烈解构 | 撕裂附魔，诱变爆炸并驱散召唤物 | 保留 |
+| `SPELL_LEDAS_LIQUEFACTION` | 勒达之液化 | 液化周围地面，妨碍移动与近战 | 保留 |
+| `SPELL_LRD` | 李之快速解构 | 粉碎墙壁或脆性生物形成爆炸碎片 | 保留 |
+| `SPELL_MARTYRS_KNELL` | 殉道者之丧钟 | 召唤替盟友分担伤害的殉道者灵魂 | 保留 |
+
+名称结论：四项名称均准确对应当前核心效果。描述审阅只发现 Yara 一项
+指代缺损：补足“任何相邻生物”，并把召唤物统一为“它们”；其余三项
+与英文一致。
+
+证据：对应 `spl-data.h` 条目、英文与中文 TextDB，以及各项施法实现。
+
+### 落地状态
+
+- [x] 4/4 机制证据与名称裁定
+- [x] 单一翻译写入者描述澄清
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-044`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T173107850002000+0800-35267-699a1244b4eb`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`364c07cfa2bd2c4b92dbce38b3f4dc9e83ded7a2079f486bca1b496e5252799b`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d9736ee6b3113b7ab8bef126c8444805aec33f4c672437b663210528cc58db86`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

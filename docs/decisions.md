@@ -1805,6 +1805,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-044 — Spell name review: 单成员专名批次 A
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: Yara、Leda、Lee、Martyr 各 1 项现行标题
+- **Choice**: 保留 `Yara's Violent Unravelling → 亚拉之猛烈解构`、
+  `Leda's Liquefaction → 勒达之液化`、`Lee's Rapid Deconstruction →
+  李之快速解构` 与 `Martyr's Knell → 殉道者之丧钟`。
+- **Rationale**: 四项分别准确对应撕裂附魔、液化地面、快速粉碎目标，
+  以及殉道者灵魂死亡／转化的丧钟意象。
+- **Description corrections**: Leda、Lee、Martyr 描述与英文一致；
+  Yara 补足“相邻生物”中心词并统一非人称代词。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2331,3 +2352,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-041 | Spell name review — Nazja's 专名系列 | 2 current；2 description fixes | active |
 | D-C-042 | Spell name review — Olgreb's 专名系列 | 1 current；1 wording fix | active |
 | D-C-043 | Spell name review — Lehudib's 专名系列 | 1 current；1 wording fix | active |
+| D-C-044 | Spell name review — 单成员专名批次 A | 4 current；1 description clarification | active |
