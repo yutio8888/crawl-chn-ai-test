@@ -91,6 +91,29 @@ class ItemNameInventoryAuditTest(unittest.TestCase):
                 ):
                     MODULE.active_source(source)
 
+    def test_tag_branch_filter_rejects_mixed_elif_chain(self):
+        for tag_condition in ("== 34", "> 34"):
+            with self.subTest(tag_condition=tag_condition):
+                with tempfile.TemporaryDirectory() as directory:
+                    source = Path(directory) / "sample.cc"
+                    source.write_text(
+                        f"#if TAG_MAJOR_VERSION {tag_condition}\n"
+                        "tag branch\n"
+                        "#elif defined(TEST_ONLY)\n"
+                        "unknown branch\n"
+                        "#else\n"
+                        "fallback branch\n"
+                        "#endif\n",
+                        encoding="utf-8",
+                    )
+                    with mock.patch.object(MODULE, "tag_major_version",
+                                           return_value=34):
+                        with self.assertRaisesRegex(
+                            RuntimeError,
+                            "unsupported non-TAG #elif in TAG condition chain",
+                        ):
+                            MODULE.active_source(source)
+
     def test_inventory_violations_reject_each_minimal_mutation(self):
         valid = [{
             "identity": "weapon:WPN_TEST",

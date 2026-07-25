@@ -126,7 +126,12 @@ def active_source(path):
                 raise RuntimeError(f"unmatched #elif in {path}")
             frame = stack[-1]
             condition = _tag_condition(expression, version)
-            if frame["tag"] and condition is not None:
+            if frame["tag"]:
+                if condition is None:
+                    raise RuntimeError(
+                        "unsupported non-TAG #elif in TAG condition chain: "
+                        f"{expression.strip()}"
+                    )
                 active = frame["parent"] and not frame["taken"] and condition
                 frame["taken"] = frame["taken"] or condition
             else:
