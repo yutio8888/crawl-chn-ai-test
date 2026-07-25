@@ -2134,6 +2134,25 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-059 — Spell name review: Haste 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术及 1 项已移除兼容标题
+- **Choice**: 保留 `Haste → 加速`、`Haste Other → 加速他人`、
+  `Haste Plants → 加速植物`。
+- **Series rule**: `Haste → 加速`；受事者后置。
+- **Rationale**: 三项标题分别准确表达提高施法者、附近盟友或植物的行动
+  速度；现行两项描述与英文一致。
+- **Description corrections**: 无。
+- **Affected files**:
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -2675,3 +2694,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-056 | Spell name review — Teleport 词形系列 | 1 current + 2 axed；1 rename + 1 description retranslation | active |
 | D-C-057 | Spell name review — Control 词形系列 | 3 axed；2 new + 1 reused；1 rename | active |
 | D-C-058 | Spell name review — Fire Storm 词形系列 | 1 current + 1 axed；1 description wording fix | active |
+| D-C-059 | Spell name review — Haste 词形系列 | 2 current + 1 axed；no text fixes | active |

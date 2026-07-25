@@ -2019,6 +2019,38 @@ Teleport Other 原中文误写为即时“随机传送”，遗漏短暂延迟�
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
 
+## Haste 词形系列
+
+边界：标题含 `Haste` 的 3 项法术；2 项现行，1 项已移除兼容。
+
+| Enum | 生命周期 | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|---|
+| `SPELL_HASTE` | 现行 | 加速 | 提高施法者行动速度 | 保留 |
+| `SPELL_HASTE_OTHER` | 现行 | 加速他人 | 提高附近盟友行动速度 | 保留 |
+| `SPELL_HASTE_PLANTS` | 已移除兼容 | 加速植物 | 无当前描述或实现 | 保留 |
+
+名称结论：三项稳定采用 `Haste → 加速`，并以后置受事者区分自身、他人
+与植物；译名自然且没有误示持续时间或额外效果。
+
+现行两项中英文描述准确一致；兼容标题无当前描述或实现。
+
+证据：`spl-data.h:231`—`239`、`spl-data.h:1684`—`1693`、
+`spl-data.h:4673`，`dat/descript/spells.txt:939`—`950`。
+
+### 落地状态
+
+- [x] 3/3 生命周期、机制证据与名称裁定
+- [x] 无游戏文本修改
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-059`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T180057618805000+0800-105-748f34c7c12b`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`cd03726dadca42a76a52fe76dd6f16f4738a993f50251293048946e6aed285db`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`34e7f6f24cd6c466a32f3b8e6a17dd705f2fdd33c0011d7c5dea7e782a24f9a3`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、

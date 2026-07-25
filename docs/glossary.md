@@ -1153,9 +1153,9 @@
 | Greater Ensnare | 强力束缚 | ✅ |
 | Hailstorm | 冰雹风暴 | ✅；环形冰雹避开紧邻施法者的目标 |
 | Harpoon Shot | 鱼叉射击 | ✅ |
-| Haste | 加速 | 🆕 |
-| Haste Other | 加速他人 | ✅ |
-| Haste Plants | 加速植物 | ✅ |
+| Haste | 加速 | ✅；提高施法者行动速度 |
+| Haste Other | 加速他人 | ✅；提高附近盟友行动速度 |
+| Haste Plants | 加速植物 | ✅；已移除兼容标题 |
 | Haunt | 鬼魂缠身 | ✅ |
 | Heal Other | 治愈他人 | ✅ |
 | Hellfire Court | 地狱火法庭 | ✅ |

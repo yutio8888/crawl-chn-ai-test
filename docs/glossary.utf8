@@ -444,9 +444,9 @@ Grunn	格伦	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monste
 Hailstorm	冰雹风暴	domain=spells; source=EN/ZH; 备注=✅；环形冰雹避开紧邻施法者的目标
 Harold	哈罗德	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Harpoon Shot	鱼叉射击	domain=spells; source=EN/ZH; 备注=✅
-Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=🆕
-Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅
-Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅
+Haste	加速	domain=core; source=EN/ZH; 注意事项=行动速度 +50% | domain=status; source=EN/ZH; Scope / comment=status; source=status.txt | domain=spells; source=EN/ZH; 备注=✅；提高施法者行动速度
+Haste Other	加速他人	domain=spells; source=EN/ZH; 备注=✅；提高附近盟友行动速度
+Haste Plants	加速植物	domain=spells; source=EN/ZH; 备注=✅；已移除兼容标题
 Haunt	鬼魂缠身	domain=spells; source=EN/ZH; 备注=✅
 Heal Other	治愈他人	domain=spells; source=EN/ZH; 备注=✅
 Heal Wounds	治疗创伤	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
