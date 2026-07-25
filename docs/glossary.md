@@ -1230,8 +1230,8 @@
 | Passwall | 穿墙术 | ✅ |
 | Permafrost Eruption | 永冻爆发 | ✅；地底严寒与落石轰击敌人最密集处，不在施法者身旁爆发 |
 | Petrify | 石化 | ✅ |
-| Phantom Blitz | 幻影突击 | ✅ |
-| Phantom Mirror | 幻影镜 | ✅ |
+| Phantom Blitz | 幻影突击 | ✅；发射保有施法者战斗能力的幻影复制体 |
+| Phantom Mirror | 幻影镜 | ✅；制造较脆弱但近似原体的怪物幻影 |
 | Phase Shift | 相位变换 | ✅ |
 | Planar Overlay | 位面叠加 | ✅ |
 | Plane Rend | 位面撕裂 | ✅ |

@@ -652,8 +652,8 @@ Permafrost Eruption	永冻爆发	domain=spells; source=EN/ZH; 备注=✅；地�
 Petrification	石化	domain=status; source=EN/ZH; Scope / comment=status; source=status.txt
 Petrify	石化	domain=spells; source=EN/ZH; 备注=✅
 Petrifying Cloud	石化云	domain=spells; source=EN/ZH; 备注=✅ 现行
-Phantom Blitz	幻影突击	domain=spells; source=EN/ZH; 备注=✅
-Phantom Mirror	幻影镜	domain=spells; source=EN/ZH; 备注=✅
+Phantom Blitz	幻影突击	domain=spells; source=EN/ZH; 备注=✅；发射保有施法者战斗能力的幻影复制体
+Phantom Mirror	幻影镜	domain=spells; source=EN/ZH; 备注=✅；制造较脆弱但近似原体的怪物幻影
 Phase Shift	相位变换	domain=spells; source=EN/ZH; 备注=✅
 Pikel	皮克尔	domain=unique-monsters; source=EN/ZH; Scope / comment=unique-monster; source=source.txt
 Planar Overlay	位面叠加	domain=spells; source=EN/ZH; 备注=✅

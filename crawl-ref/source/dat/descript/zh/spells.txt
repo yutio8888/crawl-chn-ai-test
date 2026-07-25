@@ -1847,7 +1847,8 @@ Permafrost Eruption spell
 %%%%
 Phantom Blitz spell
 
-将施法者暂时变成一道幻影，以极高的速度向前冲刺并穿过敌人。
+编织出施法者的幻影复制体，并将其猛烈射出。这些幻影拥有与施法者相同的
+武艺和神秘力量；临时组成的幻影夜行队足以压倒施法者的受害者。
 %%%%
 Planar Overlay spell
 

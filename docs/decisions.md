@@ -2537,6 +2537,27 @@ file exists and should be consulted. This file stores the actual ruling content.
 
 ---
 
+### D-C-078 — Spell name review: Phantom 词形系列
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: 2 项现行法术
+- **Choice**: 保留 `Phantom Mirror → 幻影镜` 与
+  `Phantom Blitz → 幻影突击`。
+- **Series rule**: 由原体生成的短暂复制体采用 `Phantom → 幻影`。
+- **Rationale**: 前者以镜面复制怪物，后者发射施法者的幻影复制体；
+  “幻影”准确表示近似原体但短暂存在的复制物。
+- **Description corrections**: 重译 `Phantom Blitz`，移除旧版“施法者化为
+  幻影冲刺”机制，恢复编织、发射复制体及复制施法者战斗能力。
+- **Affected files**:
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
 ### D-B-008 — Descript ZH 必须与 EN 保持机制一致
 
 - **Type**: B — Rule ruling
@@ -3097,3 +3118,4 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-075 | Spell name review — Sacrifice 词形系列 | 1 current + 1 axed；1 description retranslation | active |
 | D-C-076 | Spell name review — Regeneration 词形系列 | 1 current + 1 axed；1 description fix + glossary sync | active |
 | D-C-077 | Spell name review — Recall 词形系列 | 1 current + 1 axed；no text fixes | active |
+| D-C-078 | Spell name review — Phantom 词形系列 | 2 current；1 description retranslation | active |

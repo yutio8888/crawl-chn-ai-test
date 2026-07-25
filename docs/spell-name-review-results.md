@@ -2667,6 +2667,40 @@ TextDB 会折叠键的大小写，因此不新增重复的 `Vortex` 键，而是
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
 `d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
 
+## Phantom 词形系列
+
+边界：英文标题含独立 `Phantom` 的 2 项现行法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_PHANTOM_MIRROR` | 幻影镜 | 制造较脆弱但近似原体的怪物幻影 | 保留 |
+| `SPELL_PHANTOM_BLITZ` | 幻影突击 | 编织并发射拥有施法者同等战斗能力的幻影复制体 | 保留 |
+
+名称结论：两项稳定采用 `Phantom → 幻影`，准确表示近似原体、但更脆弱
+或短暂存在的复制物；“镜”和“突击”分别对应复制媒介与发射式攻击。
+
+描述审阅发现 `Phantom Blitz` 中文仍写成施法者自身化为幻影冲刺，
+与英文和实现不符。现已重译为编织并发射施法者复制体，说明复制体保有
+同等武艺和神秘力量；`Phantom Mirror` 描述准确。
+
+证据：`spl-data.h:2609`—`2617`、`4047`—`4055`，
+`dat/descript/spells.txt:1528`—`1537`，
+`beam.cc:2774`—`2808` 及召唤上限表 `spl-summoning.cc:2516`。
+
+### 落地状态
+
+- [x] 2/2 生命周期、机制证据与名称裁定
+- [x] 单一翻译写入者描述落地
+- [x] translation profile
+- [x] 系列裁定登记（`D-C-078`）
+
+验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T184328894563000+0800-86978-aabb733ff919`。本批裁定后的
+`docs/glossary.md` SHA-256 为
+`84583fd23a5b0fe50e5b9893b8ccc47ec5314af68dd2de5d1e1aedde175e877f`；
+511 项 inventory 完整性断言全部通过，JSON SHA-256 为
+`d4a0192de4e719ba0e885085e10d9657836835f687b28306fc85d84dada150ae`。
+
 ## Awaken 词形系列
 
 边界：英文标题以 `Awaken` 开头的 5 项法术；其中 4 项现行、
