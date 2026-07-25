@@ -16012,7 +16012,7 @@ Major Healing
 大型治疗
 %%%%
 Woodweal
-木质愈合
+林木疗愈
 %%%%
 Hurl Damnation
 投掷天谴
@@ -16441,7 +16441,7 @@ Weakening Gaze
 虚弱凝视
 %%%%
 Mourning Wail
-哀悼嚎哭
+哀恸之嚎
 %%%%
 Death Rattle
 死亡之响

@@ -595,7 +595,7 @@ Monk	武僧	domain=backgrounds; source=EN/ZH; Scope / comment=background; source
 monster	怪物	domain=core; source=EN/ZH; 注意事项=通用
 Monstrous Menagerie	怪物动物园	domain=spells; source=EN/ZH; 备注=✅
 morningstar	晨星锤	domain=items; source=EN/ZH; Scope / comment=weapon; paired with eveningstar; decision=D-B-017
-Mourning Wail	哀悼嚎哭	domain=spells; source=EN/ZH; 备注=✅
+Mourning Wail	哀恸之嚎	domain=spells; source=EN/ZH; 备注=🆕；吐出遗忘悲恸形成负能量云
 MP	法力	domain=core; source=EN/ZH; 注意事项=施法资源
 Mud Breath	泥浆吐息	domain=spells; source=EN/ZH; 备注=✅
 mumbles	嘟囔道	domain=dialogue; source=EN/ZH; 适用角色=疯狂角色（Crazy Yiuf）
@@ -961,7 +961,7 @@ Weave Shadows	编织暗影	domain=spells; source=EN/ZH; 备注=⚠️ 已移除�
 whispers	低语 / 轻声说	domain=dialogue; source=EN/ZH; 适用角色=幽灵、潜行角色
 wield	持握	domain=items; source=EN/ZH
 Wind Blast	风击	domain=spells; source=EN/ZH; 备注=✅；锥形强风推开生物和云雾，碰撞会造成伤害
-Woodweal	木质愈合	domain=spells; source=EN/ZH; 备注=✅
+Woodweal	林木疗愈	domain=spells; source=EN/ZH; 备注=🆕；借相邻树木的叶与树皮活力治疗伤势
 Word of Chaos	混沌之语	domain=abilities; source=EN/ZH; Scope / comment=ability; source=ability.txt
 Word of Recall	召回之言	domain=spells; source=EN/ZH; 备注=✅；短暂延迟后召回同层有智慧盟友
 Wu Jian	无间门派	domain=gods; source=EN/ZH; 类型=意译（门派=sect）

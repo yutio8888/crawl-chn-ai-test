@@ -1218,7 +1218,7 @@
 | Minor Healing | 小型治疗 | ✅；治疗施法者身体所受的少量伤害 |
 | Mislead | 误导术 | ✅ |
 | Momentum Strike | 动量打击 | ✅；借用未来移动能量攻击并令施法者短时无法移动 |
-| Mourning Wail | 哀悼嚎哭 | ✅ |
+| Mourning Wail | 哀恸之嚎 | 🆕；吐出遗忘悲恸形成负能量云 |
 | Oblivion Howl | 湮灭嚎叫 | ✅ |
 | Old Deflect Missiles | 旧版偏转飞弹 | ✅；已移除兼容标题 |
 | Orb of Destruction | 毁灭法球 | ✅；缓慢追踪、初生时伤害较低的纯毁灭魔力法球 |
@@ -1345,7 +1345,7 @@
 | Warp Weapon | 扭曲武器 | ✅；已移除兼容标题 |
 | Waterstrike | 水击 | ✅ |
 | Wind Blast | 风击 | ✅；锥形强风推开生物和云雾，碰撞会造成伤害 |
-| Woodweal | 木质愈合 | ✅ |
+| Woodweal | 林木疗愈 | 🆕；借相邻树木的叶与树皮活力治疗伤势 |
 | nonexistent spell | 不存在的法术 | ✅ |
 
 **汇总**：511 法术，✅ 保留 469，📝 修订 30，🆕 新增 12。

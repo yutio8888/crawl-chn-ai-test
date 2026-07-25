@@ -104,7 +104,7 @@ Berserk Other spell
 %%%%
 Bind Souls spell
 
-对附近的生物施法，它们被杀死后会变成拟像。
+为附近其他活物施加魔法，使其被杀死后化为拟像。
 %%%%
 Sentinel's Mark spell
 
@@ -330,7 +330,7 @@ Corrupt spell
 Corrupting Pulse spell
 
 向所有可见目标注入腐化，暂时对他们的身体造成有害的变异。
-它不会影响人造物，亡灵受到影响也能消解它。
+它不会影响人造物；亡灵若受到影响则会腐朽。
 %%%%
 Creeping Frost spell
 
@@ -513,7 +513,7 @@ Flash Freeze spell
 %%%%
 Fleetfoot spell
 
-使施法者在短时间内更快地穿越地形。
+召来风力，在短时间内提高施法者的移动速度。
 %%%%
 Force Lance spell
 
@@ -989,8 +989,8 @@ Phantom Mirror spell
 %%%%
 Plane Rend spell
 
-从黏液坑洞、精灵殿堂、宝库、墓室或远古坟冢，其中之一召唤一些生物，
-每次施法时，分支都会有所不同。
+从黏液坑洞、精灵殿堂、宝库、墓室、远古坟冢或佐特领域之一
+召唤强大威胁；每次施法选择的分支都可能不同。
 %%%%
 Plasma Beam spell
 
@@ -1077,7 +1077,7 @@ Sculpt Simulacrum spell
 %%%%
 Seal Doors spell
 
-封印附近的门和楼梯，防止非施法者的友方穿过它们。
+封印附近的门和楼梯，阻止不属于施法者盟友的生物通过。
 %%%%
 Searing Ray spell
 
@@ -1171,10 +1171,11 @@ Spectral Cloud spell
 %%%%
 Spellspark Servitor spell
 
-召唤一个界外元素，并将其束缚到由施法者自己的魔法锻造的坚固外壳之中。
-仆从有能力释放其创造者所知的一些破坏性法术，
-尽管最强大和最不稳定的魔法不会以这种方式灌输进去。
-仆从的力量随法术威力的增强而增加。
+构造一个金属仆从，以施法者自身奥术知识的火花为核心。
+它能施放创造者掌握的部分破坏性法术，但无法灌注最强大、最不稳定的魔法。
+仆从的力量随法术威力提高。
+
+（掌握此法术时，可通过“灌注仆从”能力选择它施放的合格法术。）
 %%%%
 Spit Acid spell
 
@@ -1182,7 +1183,7 @@ Spit Acid spell
 %%%%
 Spit Lava spell
 
-向一个目标生物喷吐熔岩。它造成的一半伤害，火抗无法抵御。
+向一个目标生物喷吐岩浆；造成的伤害有一半无视火焰抗性。
 %%%%
 Spit Poison spell
 
@@ -1895,7 +1896,7 @@ Ravenous Swarm spell
 %%%%
 Rebounding Blaze spell
 
-在施法者周围创造一圈火焰，反弹近战攻击并灼烧攻击者。
+发射一道充满能量的穿透火焰束，可从墙壁弹回并二次命中目标。
 %%%%
 Rebounding Chill spell
 
@@ -1978,7 +1979,9 @@ Shred spell
 %%%%
 Sign of Ruin spell
 
-用毁灭之印标记目标，使其每次受到近战伤害时被严重削弱和减速。
+为一群敌人施加毁灭印记，使其躯体不可避免地衰败崩解。
+带有印记者每次受到近战伤害时都会遭受严重汲取，
+并可能额外陷入缓慢、虚弱或失明之一。
 %%%%
 Siphon Essence spell
 

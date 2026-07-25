@@ -3088,7 +3088,7 @@ Static Discharge 的返回伤害与护甲；Sculpt Simulacrum 的目标类别及
 |---|---|---|---|
 | `SPELL_FULMINANT_PRISM` | 爆裂棱镜 | 生成延时爆炸、提前摧毁则减弱的棱镜 | 保留 |
 | `SPELL_PARALYSE` | 麻痹 | 短时间阻止目标采取行动 | 保留 |
-| `SPELL_WOODWEAL` | 木质愈合 | 借相邻树木的活力治疗大量伤害 | 保留 |
+| `SPELL_WOODWEAL` | 木质愈合 | 借相邻树木的活力治疗大量伤害 | 重译为“林木疗愈” |
 | `SPELL_BRAIN_BITE` | 脑噬 | 汲取可见敌人的心智和魔力，低魔力时伤害翻倍 | 保留 |
 | `SPELL_STEAM_BALL` | 蒸汽球 | 向目标投射高温蒸汽球 | 保留 |
 | `SPELL_CANTRIP` | 小戏法 | 随机施放无明显效果的微小法术鼓舞自己 | 保留 |
@@ -3109,7 +3109,9 @@ Static Discharge 的返回伤害与护甲；Sculpt Simulacrum 的目标类别及
 
 名称结论：`Primal Wave` 以原初力量召出具有击退效果的激流，
 “原初浪潮”比“原始波浪”更自然，也更符合六级怪物法术的规模。
-其余 19 项标题都能准确辨识其核心实体、动作或状态。
+`Woodweal` 借相邻树木的叶与树皮活力治疗，“林木疗愈”比误示木材
+本身愈合的“木质愈合”更自然。其余 18 项标题都能准确辨识其核心实体、
+动作或状态。
 
 描述审阅修正七项：Fulminant Prism 补回材质与延时爆炸；
 Primal Wave 把“击倒”纠正为击退；Vanquished Vanguard、
@@ -3123,16 +3125,71 @@ Dimension Anchor 将“跨层”纠正为跨位面。
 ### 落地状态
 
 - [x] 20/20 机制证据与名称裁定
-- [x] 单一翻译写入者完成 1 项名称与 7 项描述落地
+- [x] 单一翻译写入者完成 2 项名称与 7 项描述落地
 - [x] translation profile
 - [x] 批次裁定登记（`D-C-087`）
 
-验证结果：`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
-`20260725T190954711331000+0800-47257-38b7c6fc44e1`。本批裁定后的
+初轮 Run ID `20260725T190954711331000+0800-47257-38b7c6fc44e1`
+在 Woodweal 自然度复核前已通过。将其进一步改为“林木疗愈”后，与 A4
+共同运行的 translation profile 仍通过，0 项失败；Run ID
+`20260725T191540235476000+0800-61036-bdfb8a964679`。最终
 `docs/glossary.md` SHA-256 为
-`603168dd636a8189c12626ddd48c4c880d4a1610381bc51667377e5f09497176`；
+`7dacdefbc4d60ecc52c335def33e07962b4a54782d5565e96e11c2be0abc35ce`；
 511 项 inventory 完整性断言全部通过，JSON SHA-256 为
-`dbef292f63a05cedcef2e2bc712213b8703dd1f19a0454634aa16790f7b30cf1`。
+`6452c99a6a751039be6531bd14c2439c08a1c1cc834ade1e7d9057d53aed4e99`。
+
+## 独立法术批次 A4
+
+边界：inventory 差集顺序第 61–80 项，共 20 项现行独立法术。
+
+| Enum | 当前译名 | 核心效果 | 裁定 |
+|---|---|---|---|
+| `SPELL_WATERSTRIKE` | 水击 | 搅动目标周围或下方水体造成伤害 | 保留 |
+| `SPELL_STRIP_WILLPOWER` | 剥离意志力 | 大幅降低目标意志力 | 保留 |
+| `SPELL_FUGUE_OF_THE_FALLEN` | 亡灵赋格 | 击杀非召唤敌人累积灵魂以强化攻势 | 保留 |
+| `SPELL_SEARING_RAY` | 灼热射线 | 持续专注时追踪目标的穿透奥术射线 | 保留 |
+| `SPELL_DISCORD` | 纷乱 | 使附近生物狂乱并攻击周围一切 | 保留 |
+| `SPELL_VIRULENCE` | 毒性 | 使目标更易受毒素影响 | 保留 |
+| `SPELL_PLANEREND` | 位面撕裂 | 从六个高危分支之一召来强大威胁 | 保留 |
+| `SPELL_CHAIN_OF_CHAOS` | 混沌之链 | 混沌电弧以不可预测效果连击附近生物 | 保留 |
+| `SPELL_SIGN_OF_RUIN` | 毁灭印记 | 群体印记在受近战伤害时触发汲取与削弱 | 保留 |
+| `SPELL_REBOUNDING_BLAZE` | 弹跳烈焰 | 穿透火焰束可从墙壁反弹并二次命中 | 保留 |
+| `SPELL_SPELLSPARK_SERVITOR` | 法术火花仆从 | 构造可施放主人部分破坏法术的金属仆从 | 保留 |
+| `SPELL_IRRADIATE` | 辐射 | 以自身表层转化的魔能轰击邻敌并积累污染 | 保留 |
+| `SPELL_SPIT_LAVA` | 喷吐岩浆 | 喷吐半数伤害无视火抗的岩浆 | 保留 |
+| `SPELL_BATTLECRY` | 战吼 | 提高附近盟友攻击威力 | 保留 |
+| `SPELL_WARNING_CRY` | 警告之嚎 | 制造巨响警醒附近敌人 | 保留 |
+| `SPELL_FUNERAL_DIRGE` | 葬礼哀歌 | 仪式吟唱暂时加速并强化附近亡灵盟友 | 保留 |
+| `SPELL_SEAL_DOORS` | 封印门 | 封住附近门与楼梯阻挡非盟友通行 | 保留 |
+| `SPELL_FLAY` | 剥皮 | 制造非致命的幻痛伤口 | 保留 |
+| `SPELL_CORRUPTING_PULSE` | 腐化脉冲 | 暂时恶性变异所有可见目标 | 保留 |
+| `SPELL_MOURNING_WAIL` | 哀悼嚎哭 | 吐出悲恸形成汲取活物生命的负能量云 | 重译为“哀恸之嚎” |
+
+名称结论：`Mourning Wail` 的旧译“哀悼嚎哭”构词生硬，
+“哀恸之嚎”自然保留悲恸情绪与发声意象。其余 19 项准确概括目标、
+投射物、状态或核心动作。
+
+描述审阅修正三项：Plane Rend 补回佐特领域并明确召来强大威胁；
+Rebounding Blaze 改回穿透且可沿墙反弹的火焰束；Sign of Ruin
+补回群体目标、汲取及缓慢、虚弱或失明的附加状态。
+
+证据：对应 `spl-data.h` 的 20 个 `SPELL_*` 记录、
+`dat/descript/spells.txt` 与中文同名键，以及 `mon-cast.cc`、
+`spl-damage.cc`、`spl-summoning.cc`、`beam.cc` 中相应 enum 分支。
+
+### 落地状态
+
+- [x] 20/20 机制证据与名称裁定
+- [x] 单一翻译写入者完成 1 项名称与 3 项描述落地
+- [x] translation profile
+- [x] 批次裁定登记（`D-C-088`）
+
+验证结果：覆盖 A3 自然度复核与 A4 当前差异的
+`verify_zh.sh --profile translation` 通过，0 项失败；Run ID
+`20260725T191540235476000+0800-61036-bdfb8a964679`。
+本批裁定后的 glossary 与 inventory SHA-256 分别为
+`7dacdefbc4d60ecc52c335def33e07962b4a54782d5565e96e11c2be0abc35ce`
+和 `6452c99a6a751039be6531bd14c2439c08a1c1cc834ade1e7d9057d53aed4e99`。
 
 ## Awaken 词形系列
 

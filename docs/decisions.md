@@ -2748,12 +2748,38 @@ file exists and should be consulted. This file stores the actual ruling content.
 - **Date**: 2026-07-25
 - **Scope**: inventory 差集顺序第 41–60 项现行独立法术
 - **Choice**: 将 `Primal Wave → 原始波浪` 重译为“原初浪潮”；
-  其余 19 项保留。
+  将 `Woodweal → 木质愈合` 重译为“林木疗愈”；其余 18 项保留。
 - **Rationale**: Primal 表示原初力量，Wave 的实际表现是可击退目标并留下
   浅水的激流；“原初浪潮”比生硬的“原始波浪”更符合强度与语体。
+  Woodweal 借相邻树木的叶与树皮活力治疗，“木质愈合”像在描述木材
+  本身愈合，“林木疗愈”能明确力量来源和治疗效果。
 - **Description corrections**: 修正 Fulminant Prism、Primal Wave、
   Vanquished Vanguard、Sticks to Snakes、Malmutate、Gloom 与
   Dimension Anchor 的机制、目标类别或位面术语。
+- **Affected files**:
+  - `crawl-ref/source/dat/i18n/zh/source.txt`
+  - `crawl-ref/source/dat/descript/zh/spells.txt`
+  - `docs/glossary.md`
+  - `docs/glossary.utf8`
+  - `docs/decisions.md`
+
+---
+
+### D-C-088 — Spell name review: 独立批次 A4
+
+- **Type**: C — Batch ruling
+- **Status**: active
+- **Date**: 2026-07-25
+- **Scope**: inventory 差集顺序第 61–80 项现行独立法术
+- **Choice**: 将 `Mourning Wail → 哀悼嚎哭` 重译为“哀恸之嚎”；
+  其余 19 项保留。
+- **Rationale**: Mourning Wail 吐出遗忘的悲恸并留下负能量云，
+  “哀悼嚎哭”构词生硬，“哀恸之嚎”更自然地保留情绪和发声意象。
+  `Rebounding Blaze → 弹跳烈焰` 与已裁定的
+  `Rebounding Chill → 弹跳寒流` 保持同机制词根一致。
+- **Description corrections**: 修正 Plane Rend 的召唤分支和强度、
+  Rebounding Blaze 的穿透反弹机制，以及 Sign of Ruin 的群体目标、
+  汲取和附加状态。
 - **Affected files**:
   - `crawl-ref/source/dat/i18n/zh/source.txt`
   - `crawl-ref/source/dat/descript/zh/spells.txt`
@@ -3332,4 +3358,5 @@ The glossary and context_resolve.sh use these tables for disambiguation.
 | D-C-084 | Spell name review — 成对词根批次 | 16 current + 7 axed；3 renames + 7 description fixes | active |
 | D-C-085 | Spell name review — 独立批次 A1 | 20 current；6 description fixes | active |
 | D-C-086 | Spell name review — 独立批次 A2 | 20 current；2 renames + 9 description fixes | active |
-| D-C-087 | Spell name review — 独立批次 A3 | 20 current；1 rename + 7 description fixes | active |
+| D-C-087 | Spell name review — 独立批次 A3 | 20 current；2 renames + 7 description fixes | active |
+| D-C-088 | Spell name review — 独立批次 A4 | 20 current；1 rename + 3 description fixes | active |
